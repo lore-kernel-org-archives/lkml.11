@@ -2,90 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 430D5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 08:02:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 664C7C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 08:03:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234719AbiGVICZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 04:02:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52896 "EHLO
+        id S234726AbiGVIDJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 04:03:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234718AbiGVICO (ORCPT
+        with ESMTP id S229682AbiGVICy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 04:02:14 -0400
-X-Greylist: delayed 359 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 22 Jul 2022 01:02:10 PDT
-Received: from smtp-42af.mail.infomaniak.ch (smtp-42af.mail.infomaniak.ch [IPv6:2001:1600:3:17::42af])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 247AC9B1BF
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 01:02:09 -0700 (PDT)
-Received: from smtp-3-0001.mail.infomaniak.ch (unknown [10.4.36.108])
-        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4Lq1w620jpzMrM2M;
-        Fri, 22 Jul 2022 09:56:06 +0200 (CEST)
-Received: from philippe-pc.cardiotech.int (unknown [37.17.235.10])
-        by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4Lq1w506PJzln8Vr;
-        Fri, 22 Jul 2022 09:56:04 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=pschenker.ch;
-        s=20220412; t=1658476566;
-        bh=XdvGbBvtjR3nhNigZS2yI8bt0t700ywhSrOK9IxLigg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=anodZdDmcrGpexROkOr+TnHNItJocUmz/ej4CCv07jJn6bR0eACEAhKP69fp6b9wJ
-         GiHom7h6WqzHwqQwbU4gaLlZrjJIaTGVN6iAZ1DmLNgRYtwn1BwqwTBs+4/paXaB2o
-         9T0G1XaPXSoy8WEAkXUJ49ei1ritpToRUKkoDDrE=
-From:   Philippe Schenker <dev@pschenker.ch>
-To:     Shawn Guo <shawnguo@kernel.org>
-Cc:     Peter Chen <peter.chen@kernel.org>, linux-usb@vger.kernel.org,
-        Philippe Schenker <philippe.schenker@toradex.com>,
-        Andrejs Cainikovs <andrejs.cainikovs@toradex.com>,
-        Fabio Estevam <festevam@gmail.com>,
+        Fri, 22 Jul 2022 04:02:54 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79F2D9B54D
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 01:02:52 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id b26so5440074wrc.2
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 01:02:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=bvEexGq32Q2q4yLSZgYal6lzMRVPSRDwzzKaxMf771o=;
+        b=evku2628x8f7AayzAAE1I5iATAY92Nv0ST8sh2IwQ63jYO3pXS+81O5kKMh8cHWdg0
+         fEOkQP44gh9YLaDgU6h5fw/TpHvTGXIzsMK0BxkOSokAGiT68uJq0o96IoR2t5yzmWBC
+         VONUbj8m7D9BYNUlm3vlO2DdcFlELpkCnzGMPiEONQNVbHIXhqcwWp1+3duanEX8gJ6h
+         8jvXFXifWx+fyevCpsJfdidOmZW23cDFW7y1rYjc9Q2kscaK51y6ThurHiBUfZNLTU3E
+         6EjzRr7ORduLoY/7B56rQC69Sqo+R8xspanSeOHAS5/6QEKNk7EmzzFvPaYKI6JpEX0Z
+         11Hg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=bvEexGq32Q2q4yLSZgYal6lzMRVPSRDwzzKaxMf771o=;
+        b=M9KLpDFuIuqZ2WG95Q5jeQmZA5yn/3iIUoBADIj+OkKq7PAPfHE6vzHWes5KFFKDIr
+         lLDaExEADe7dEx1jycMlBK+SlSHHQsk/qxqJRsdvzW0LyvUmwk9qYR6Q1UHd2sprPBCs
+         92Ww05GoW6uUzqv+LhXyEfGJZSlG8/sst/B+TBeV2/tKudyjIwV6aAV2KHlb5mTu/D/Z
+         DHeWTiSpD0Q7mkCT9o2HQpCpnKC+FtMF+Yun1phGXpvV1geP9TImDu2ZCgRvSGunKZlA
+         gz4CWv/ZHtRHtZrfoZtvMGbD52qhbGXdOK0yvo/Y1bLaMe5j2191K6KgtmxqLxQXqavi
+         ZMsQ==
+X-Gm-Message-State: AJIora+rcl1g50yokr08eLDizxvsY15mdyAQbBys3lQDEQ3dswAn+LjX
+        I0Pu//xCsYWCq1M2yo7k+GBpcA==
+X-Google-Smtp-Source: AGRyM1v1LK4VrBLGMhVxuBKsl0VRF2RpAftCZFCp1jKEXOMgOZ9vuAekYBfklMuNr345fGlUFFQQHg==
+X-Received: by 2002:adf:fb10:0:b0:207:af88:1eb9 with SMTP id c16-20020adffb10000000b00207af881eb9mr1575350wrr.238.1658476970912;
+        Fri, 22 Jul 2022 01:02:50 -0700 (PDT)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id m9-20020a056000024900b0021d746d4820sm3868746wrz.37.2022.07.22.01.02.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Jul 2022 01:02:50 -0700 (PDT)
+Date:   Fri, 22 Jul 2022 09:02:48 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] arm64: dts: verdin-imx8mm: add otg2 pd to usbphy
-Date:   Fri, 22 Jul 2022 09:55:59 +0200
-Message-Id: <20220722075600.10943-1-dev@pschenker.ch>
-X-Mailer: git-send-email 2.37.1
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: mfd: stm32-timers: Move fixed string node
+ names under 'properties'
+Message-ID: <YtpZqNm7Cgzz9+ZC@google.com>
+References: <20220706211934.567432-1-robh@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220706211934.567432-1-robh@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Philippe Schenker <philippe.schenker@toradex.com>
+On Wed, 06 Jul 2022, Rob Herring wrote:
 
-The Verdin iMX8M Mini System on Module does not have VBUS signal
-connected on Verdin USB_2 (usbotg2). On Verdin Development board this is
-no problem, as we have connected a USB-Hub that is always connected.
+> Fixed string node names should be under 'properties' rather than
+> 'patternProperties'. Additionally, without beginning and end of line
+> anchors, any prefix or suffix is allowed on the specified node name.
+> 
+> Move the stm32 timers 'counter' and 'timer' nodes to the 'properties'
+> section.
+> 
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+>  .../bindings/mfd/st,stm32-lptimer.yaml        | 28 +++++++++----------
+>  .../bindings/mfd/st,stm32-timers.yaml         | 20 ++++++-------
+>  2 files changed, 24 insertions(+), 24 deletions(-)
 
-However, if Verdin USB_2 is desired to be used as a single USB-Host port
-the chipidea driver does not detect if a USB device is plugged into this
-port, due to runtime pm shutting down the PHY.
+Applied, thanks.
 
-Add the power-domain &pgc_otg2 to &usbphynop2 in order to detect
-plugging events and enumerate the usb device.
-
-Fixes: 6a57f224f734 ("arm64: dts: freescale: add initial support for verdin imx8m mini")
-Signed-off-by: Philippe Schenker <philippe.schenker@toradex.com>
-
----
-
- arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi b/arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi
-index eafa88d980b3..197da74837ca 100644
---- a/arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi
-+++ b/arch/arm64/boot/dts/freescale/imx8mm-verdin.dtsi
-@@ -737,6 +737,7 @@ &usbphynop1 {
- };
- 
- &usbphynop2 {
-+	power-domains = <&pgc_otg2>;
- 	vcc-supply = <&reg_vdd_3v3>;
- };
- 
 -- 
-2.37.1
-
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
