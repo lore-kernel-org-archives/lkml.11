@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C4C3C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:18:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C841FC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:18:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235806AbiGVJSY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 05:18:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50596 "EHLO
+        id S235344AbiGVJSc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 05:18:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235603AbiGVJRz (ORCPT
+        with ESMTP id S235813AbiGVJSE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 05:17:55 -0400
+        Fri, 22 Jul 2022 05:18:04 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FB3EA0B93;
-        Fri, 22 Jul 2022 02:12:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05661B8784;
+        Fri, 22 Jul 2022 02:12:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9F257B827B6;
-        Fri, 22 Jul 2022 09:12:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB8ADC341CA;
-        Fri, 22 Jul 2022 09:12:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6923CB827C7;
+        Fri, 22 Jul 2022 09:12:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B39C5C341C6;
+        Fri, 22 Jul 2022 09:12:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658481160;
-        bh=YvCCv6eVb0NnonWUapO+9jBOvrlJBiS1ajCBCiUvIjQ=;
+        s=korg; t=1658481166;
+        bh=hff1j457xnb18OdE/bo9iM0uQJtV9b7GJETPm1tbrBA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Un/x3LIEQv15xQMITwstqA1CMWPFSrWRQu6b1JTlvou7mwlehn8gmsoI/KXuchtGV
-         b5J9ZGbhMxKNp144pJjM9xlpWAN4E9KhwsYjmvTzfK5E/+1dLOT0cobv7cxatqdDG1
-         2rdDeoUe6LCNnsTFAw3SAtjuuZFgy73yvYHHHswg=
+        b=uuAqIoJgHMzkgh6KAbX0f6DwRFrMbXvURWgt63tDpZ7VBrJIX+yWkgA+fJRdm++YN
+         VuyO+ITt2F3MfnDbskMcnHk4tbVlOiRePugEELTmt7zymSVyIt1kFlVZRI87fL9otJ
+         Z2LpdgG89GIIVh0ZwO0F71bymksIikxzqfOxS6pU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lai Jiangshan <jiangshan.ljs@antgroup.com>,
-        Borislav Petkov <bp@suse.de>, Juergen Gross <jgross@suse.com>,
+        stable@vger.kernel.org,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Borislav Petkov <bp@suse.de>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.15 03/89] x86/entry: Move PUSH_AND_CLEAR_REGS out of error_entry()
-Date:   Fri, 22 Jul 2022 11:10:37 +0200
-Message-Id: <20220722091133.555153955@linuxfoundation.org>
+Subject: [PATCH 5.15 05/89] objtool: Classify symbols
+Date:   Fri, 22 Jul 2022 11:10:39 +0200
+Message-Id: <20220722091133.674439447@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220722091133.320803732@linuxfoundation.org>
 References: <20220722091133.320803732@linuxfoundation.org>
@@ -49,78 +52,135 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-commit ee774dac0da1543376a69fd90840af6aa86879b3 upstream.
+commit 1739c66eb7bd5f27f1b69a5a26e10e8327d1e136 upstream.
 
-The macro idtentry() (through idtentry_body()) calls error_entry()
-unconditionally even on XENPV. But XENPV needs to only push and clear
-regs.
+In order to avoid calling str*cmp() on symbol names, over and over, do
+them all once upfront and store the result.
 
-PUSH_AND_CLEAR_REGS in error_entry() makes the stack not return to its
-original place when the function returns, which means it is not possible
-to convert it to a C function.
-
-Carve out PUSH_AND_CLEAR_REGS out of error_entry() and into a separate
-function and call it before error_entry() in order to avoid calling
-error_entry() on XENPV.
-
-It will also allow for error_entry() to be converted to C code that can
-use inlined sync_regs() and save a function call.
-
-  [ bp: Massage commit message. ]
-
-Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Juergen Gross <jgross@suse.com>
-Link: https://lore.kernel.org/r/20220503032107.680190-4-jiangshanlai@gmail.com
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Borislav Petkov <bp@suse.de>
+Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Tested-by: Alexei Starovoitov <ast@kernel.org>
+Link: https://lore.kernel.org/r/20211026120309.658539311@infradead.org
+[cascardo: no pv_target on struct symbol, because of missing
+ db2b0c5d7b6f19b3c2cab08c531b65342eb5252b]
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/entry/entry_64.S |   15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ tools/objtool/check.c               |   34 ++++++++++++++++++++++------------
+ tools/objtool/include/objtool/elf.h |    7 +++++--
+ 2 files changed, 27 insertions(+), 14 deletions(-)
 
---- a/arch/x86/entry/entry_64.S
-+++ b/arch/x86/entry/entry_64.S
-@@ -315,6 +315,14 @@ SYM_CODE_END(ret_from_fork)
- #endif
- .endm
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -859,8 +859,7 @@ static void add_call_dest(struct objtool
+ 	 * so they need a little help, NOP out any KCOV calls from noinstr
+ 	 * text.
+ 	 */
+-	if (insn->sec->noinstr &&
+-	    !strncmp(insn->call_dest->name, "__sanitizer_cov_", 16)) {
++	if (insn->sec->noinstr && insn->call_dest->kcov) {
+ 		if (reloc) {
+ 			reloc->type = R_NONE;
+ 			elf_write_reloc(file->elf, reloc);
+@@ -884,7 +883,7 @@ static void add_call_dest(struct objtool
+ 		}
+ 	}
  
-+/* Save all registers in pt_regs */
-+SYM_CODE_START_LOCAL(push_and_clear_regs)
-+	UNWIND_HINT_FUNC
-+	PUSH_AND_CLEAR_REGS save_ret=1
-+	ENCODE_FRAME_POINTER 8
-+	RET
-+SYM_CODE_END(push_and_clear_regs)
+-	if (mcount && !strcmp(insn->call_dest->name, "__fentry__")) {
++	if (mcount && insn->call_dest->fentry) {
+ 		if (sibling)
+ 			WARN_FUNC("Tail call to __fentry__ !?!?", insn->sec, insn->offset);
+ 
+@@ -934,7 +933,7 @@ static int add_jump_destinations(struct
+ 		} else if (reloc->sym->type == STT_SECTION) {
+ 			dest_sec = reloc->sym->sec;
+ 			dest_off = arch_dest_reloc_offset(reloc->addend);
+-		} else if (arch_is_retpoline(reloc->sym)) {
++		} else if (reloc->sym->retpoline_thunk) {
+ 			/*
+ 			 * Retpoline jumps are really dynamic jumps in
+ 			 * disguise, so convert them accordingly.
+@@ -1075,7 +1074,7 @@ static int add_call_destinations(struct
+ 
+ 			add_call_dest(file, insn, dest, false);
+ 
+-		} else if (arch_is_retpoline(reloc->sym)) {
++		} else if (reloc->sym->retpoline_thunk) {
+ 			/*
+ 			 * Retpoline calls are really dynamic calls in
+ 			 * disguise, so convert them accordingly.
+@@ -1759,17 +1758,28 @@ static int read_intra_function_calls(str
+ 	return 0;
+ }
+ 
+-static int read_static_call_tramps(struct objtool_file *file)
++static int classify_symbols(struct objtool_file *file)
+ {
+ 	struct section *sec;
+ 	struct symbol *func;
+ 
+ 	for_each_sec(file, sec) {
+ 		list_for_each_entry(func, &sec->symbol_list, list) {
+-			if (func->bind == STB_GLOBAL &&
+-			    !strncmp(func->name, STATIC_CALL_TRAMP_PREFIX_STR,
++			if (func->bind != STB_GLOBAL)
++				continue;
 +
- /**
-  * idtentry_body - Macro to emit code calling the C function
-  * @cfunc:		C function to be called
-@@ -322,6 +330,9 @@ SYM_CODE_END(ret_from_fork)
-  */
- .macro idtentry_body cfunc has_error_code:req
- 
-+	call push_and_clear_regs
-+	UNWIND_HINT_REGS
++			if (!strncmp(func->name, STATIC_CALL_TRAMP_PREFIX_STR,
+ 				     strlen(STATIC_CALL_TRAMP_PREFIX_STR)))
+ 				func->static_call_tramp = true;
 +
- 	call	error_entry
- 	movq	%rax, %rsp			/* switch to the task stack if from userspace */
- 	ENCODE_FRAME_POINTER
-@@ -965,13 +976,11 @@ SYM_CODE_START_LOCAL(paranoid_exit)
- SYM_CODE_END(paranoid_exit)
++			if (arch_is_retpoline(func))
++				func->retpoline_thunk = true;
++
++			if (!strcmp(func->name, "__fentry__"))
++				func->fentry = true;
++
++			if (!strncmp(func->name, "__sanitizer_cov_", 16))
++				func->kcov = true;
+ 		}
+ 	}
  
- /*
-- * Save all registers in pt_regs, and switch GS if needed.
-+ * Switch GS and CR3 if needed.
-  */
- SYM_CODE_START_LOCAL(error_entry)
- 	UNWIND_HINT_FUNC
- 	cld
--	PUSH_AND_CLEAR_REGS save_ret=1
--	ENCODE_FRAME_POINTER 8
- 	testb	$3, CS+8(%rsp)
- 	jz	.Lerror_kernelspace
+@@ -1831,7 +1841,7 @@ static int decode_sections(struct objtoo
+ 	/*
+ 	 * Must be before add_{jump_call}_destination.
+ 	 */
+-	ret = read_static_call_tramps(file);
++	ret = classify_symbols(file);
+ 	if (ret)
+ 		return ret;
  
+@@ -1889,9 +1899,9 @@ static int decode_sections(struct objtoo
+ 
+ static bool is_fentry_call(struct instruction *insn)
+ {
+-	if (insn->type == INSN_CALL && insn->call_dest &&
+-	    insn->call_dest->type == STT_NOTYPE &&
+-	    !strcmp(insn->call_dest->name, "__fentry__"))
++	if (insn->type == INSN_CALL &&
++	    insn->call_dest &&
++	    insn->call_dest->fentry)
+ 		return true;
+ 
+ 	return false;
+--- a/tools/objtool/include/objtool/elf.h
++++ b/tools/objtool/include/objtool/elf.h
+@@ -54,8 +54,11 @@ struct symbol {
+ 	unsigned long offset;
+ 	unsigned int len;
+ 	struct symbol *pfunc, *cfunc, *alias;
+-	bool uaccess_safe;
+-	bool static_call_tramp;
++	u8 uaccess_safe      : 1;
++	u8 static_call_tramp : 1;
++	u8 retpoline_thunk   : 1;
++	u8 fentry            : 1;
++	u8 kcov              : 1;
+ };
+ 
+ struct reloc {
 
 
