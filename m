@@ -2,92 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B28AC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 19:39:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41F01C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 19:40:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236515AbiGVTjl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 15:39:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40354 "EHLO
+        id S236520AbiGVTkx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 15:40:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229986AbiGVTjh (ORCPT
+        with ESMTP id S229986AbiGVTkw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 15:39:37 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F76774DEC
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 12:39:36 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D4C66B82A1A
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 19:39:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11267C341CA;
-        Fri, 22 Jul 2022 19:39:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658518773;
-        bh=pTCw8ObXsDCRk0h5jJUavUZSjr/XJYr7gxR45qvE8nY=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=UDjmED47uZ+4Boj+sIyCQNmprg449KHHSlhBH261Qa+HAVgZy1Go92lIzsIU9sVsI
-         SQb+2985ikSNT6tvxCIz7vbL0Su/LiBjnOnJjZaV5Ckprqn2fAqE6crpbOIqmTDVMP
-         2ne0mNp3nTqGzPLapehEd4A2sm95OzK07BVEVdQw2r+vGUeOB32FkzSAdSS04mwA3e
-         OjOvl4mXPpCxz7SObHP2oGfwufxXFLmI9g6Z9PzucP3n0r+QAAKBCu2qQTp3qYmi95
-         XIHaX5dX67/7F0L2Iqvb3avwbVyGApFPuKf9iLgyGvzew5Ch+A+SFyfIh5q39z0eoc
-         oUBUHMAks2fbQ==
-From:   Mark Brown <broonie@kernel.org>
-To:     Liam Girdwood <lgirdwood@gmail.com>,
-        Cristian Ciocaltea <cristian.ciocaltea@collabora.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>
-Cc:     kernel@collabora.com, linux-kernel@vger.kernel.org,
-        alsa-devel@alsa-project.org
-In-Reply-To: <20220722092700.8269-1-cristian.ciocaltea@collabora.com>
-References: <20220722092700.8269-1-cristian.ciocaltea@collabora.com>
-Subject: Re: [PATCH v2] ASoC: amd: vangogh: Use non-legacy DAI naming for cs35l41
-Message-Id: <165851877179.1163063.11067472493999733976.b4-ty@kernel.org>
-Date:   Fri, 22 Jul 2022 20:39:31 +0100
+        Fri, 22 Jul 2022 15:40:52 -0400
+Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 714BFA1A9;
+        Fri, 22 Jul 2022 12:40:47 -0700 (PDT)
+X-QQ-mid: bizesmtp72t1658518829t32f9ayz
+Received: from harry-jrlc.. ( [125.70.163.183])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Sat, 23 Jul 2022 03:40:16 +0800 (CST)
+X-QQ-SSF: 0100000000200030C000000A0000020
+X-QQ-FEAT: +bXiSo2NuBf53w60E3TEIm1fPbBTpgj48TNTmNgo240QYvkObRgBbQ6aMZc41
+        HrLbNJS7d5baihB3AQxFKuLAxs4WAp4MZckpFdZ3EODCEJSPs3uLcuHXFvjE2dh9OtlTP3X
+        pXuhPSKE2AvrEHXL+61GtNXzbB76VPXMA8PTGRn3gLOjjLdsY1cXrHgn+G8CYizEPunX6dE
+        DtJsnchxPchrOX0bvTNzyftpP71r1wlqBpJVCzhCoblpjofFI3CJTToVU3wi21BIZXK4FKb
+        +uWJqw92rxo3sAoTCTJg2aCas6/gM/6VWjtCK+pBiwmXHmt9Tc4KfPkmb92Q+ZGOi+syKZ1
+        iGqGxot1veOUjW4PrxKAIl72CKQxHqeu5zrI4oZwxYYKEjgmBA=
+X-QQ-GoodBg: 0
+From:   Xin Gao <gaoxin@cdjrlc.com>
+To:     djwong@kernel.org
+Cc:     dchinner@redhat.com, chandan.babu@oracle.com,
+        linux-xfs@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xin Gao <gaoxin@cdjrlc.com>
+Subject: [PATCH] xfs: Fix comment typo
+Date:   Sat, 23 Jul 2022 03:40:14 +0800
+Message-Id: <20220722194014.18184-1-gaoxin@cdjrlc.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-X-Mailer: b4 0.10.0-dev-d952f
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 22 Jul 2022 12:27:00 +0300, Cristian Ciocaltea wrote:
-> Unlike most CODEC drivers, the CS35L41 driver did not have the
-> non_legacy_dai_naming set, meaning the corresponding DAI has been
-> traditionally registered using the legacy naming: spi-VLV1776:0x
-> 
-> The recent migration to the new legacy DAI naming style has implicitly
-> corrected that behavior and DAI gets now registered via the non-legacy
-> naming, i.e. cs35l41-pcm.
-> 
-> [...]
+The double `extent' is duplicated in line 837, remove one.
 
-Applied to
+Signed-off-by: Xin Gao <gaoxin@cdjrlc.com>
+---
+ fs/xfs/libxfs/xfs_alloc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
+diff --git a/fs/xfs/libxfs/xfs_alloc.c b/fs/xfs/libxfs/xfs_alloc.c
+index d3f2886fdc08..f6bd9181cb13 100644
+--- a/fs/xfs/libxfs/xfs_alloc.c
++++ b/fs/xfs/libxfs/xfs_alloc.c
+@@ -833,7 +833,7 @@ xfs_alloc_cur_close(
+ /*
+  * Check an extent for allocation and track the best available candidate in the
+  * allocation structure. The cursor is deactivated if it has entered an out of
+- * range state based on allocation arguments. Optionally return the extent
++ * range state based on allocation arguments. Optionally return the
+  * extent geometry and allocation status if requested by the caller.
+  */
+ static int
+-- 
+2.30.2
 
-Thanks!
-
-[1/1] ASoC: amd: vangogh: Use non-legacy DAI naming for cs35l41
-      commit: b340128432a2b8849cc34f9653d7c43c83102bbd
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
