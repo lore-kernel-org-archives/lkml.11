@@ -2,82 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C764CC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 12:44:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F627C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 12:48:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235043AbiGVMoO convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 08:44:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59636 "EHLO
+        id S234605AbiGVMsH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 08:48:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234532AbiGVMoL (ORCPT
+        with ESMTP id S229936AbiGVMsG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 08:44:11 -0400
-X-Greylist: delayed 373 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 22 Jul 2022 05:44:09 PDT
-Received: from lynxeye.de (ns.lynxeye.de [87.118.118.114])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E0A8F796BF;
-        Fri, 22 Jul 2022 05:44:09 -0700 (PDT)
-Received: by lynxeye.de (Postfix, from userid 501)
-        id D554DE74011; Fri, 22 Jul 2022 14:37:24 +0200 (CEST)
-Received: from [192.168.178.22] (a89-183-85-87.net-htp.de [89.183.85.87])
-        by lynxeye.de (Postfix) with ESMTPSA id B3989E74004;
-        Fri, 22 Jul 2022 14:37:23 +0200 (CEST)
-Message-ID: <9b0fad63e5610533da3d3423fd5f7c8719a86d73.camel@lynxeye.de>
-Subject: Re: [PATCH v1 11/12] arm64: dts: mnt-reform2: don't use multiple
- blank lines
-From:   Lucas Stach <dev@lynxeye.de>
-To:     Marcel Ziswiler <marcel@ziswiler.com>,
-        linux-arm-kernel@lists.infradead.org
-Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Arnaud Ferraris <arnaud.ferraris@collabora.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Markus Niebel <Markus.Niebel@ew.tq-group.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Fri, 22 Jul 2022 14:37:23 +0200
-In-Reply-To: <20220721195936.1082422-12-marcel@ziswiler.com>
-References: <20220721195936.1082422-1-marcel@ziswiler.com>
-         <20220721195936.1082422-12-marcel@ziswiler.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.44.3 (3.44.3-1.fc36) 
+        Fri, 22 Jul 2022 08:48:06 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ADE397A33;
+        Fri, 22 Jul 2022 05:48:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1658494085; x=1690030085;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=SlbI3YoffkAc0xkVCuanBN99ne2tbCxFNSGgTOw0Jqg=;
+  b=t8paMzPL6n9xV6+V9P5NEh4w0a+GGc3iqUWD2A5gWWlUcUtMq8RhCr7J
+   VOStY13Vrj9td/a+SLm5qPTFJJz4IXMNwn7KAcusmje9oOPKrn45/z/wU
+   GEXXE4i4OBMd0fU0h6tAIr9PPGhUIu3VekQEy6vrGaSJCiqsDAYdhlV2D
+   10Oa6DxS1ILw5EZcNrOzzSvTrthtIQYi/vreBITShzJfEDZvTpy9k7HGG
+   SJGEIW6CHEmRUgkz0GcbD3pOttdVj5tBLiQhKmhPlNjO1Vtg5Cu4tCyIX
+   seUa2JhkRyy+dOpXwgE4EZ/e+qPU8ds/mVp7b1cnDNnhlpzeT5RY4xyEM
+   g==;
+X-IronPort-AV: E=Sophos;i="5.93,185,1654585200"; 
+   d="scan'208";a="183324445"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Jul 2022 05:48:04 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Fri, 22 Jul 2022 05:48:04 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.28 via Frontend
+ Transport; Fri, 22 Jul 2022 05:48:04 -0700
+Date:   Fri, 22 Jul 2022 14:52:13 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+CC:     <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <nicolas.ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <claudiu.beznea@microchip.com>,
+        <arnd@arndb.de>, <olof@lixom.net>, <soc@kernel.org>,
+        <UNGLinuxDriver@microchip.com>, <maxime.chevallier@bootlin.com>
+Subject: Re: [PATCH 1/2] dt-bindings: arm: at91: add lan966 pcb8309 board
+Message-ID: <20220722125213.ihz3sccjddikqyq6@soft-dev3-1.localhost>
+References: <20220720194904.2025384-1-horatiu.vultur@microchip.com>
+ <20220720194904.2025384-2-horatiu.vultur@microchip.com>
+ <d66aae55-1615-1bbc-4f56-2b4806635db4@linaro.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <d66aae55-1615-1bbc-4f56-2b4806635db4@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Donnerstag, dem 21.07.2022 um 21:59 +0200 schrieb Marcel Ziswiler:
-> From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+The 07/21/2022 08:46, Krzysztof Kozlowski wrote:
 > 
-> Avoid the following checkpatch warning:
+> On 20/07/2022 21:49, Horatiu Vultur wrote:
+> > Add documentation for Microchip LAN9662 PCB8309.
+> >
+> > Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+> > ---
+> >  Documentation/devicetree/bindings/arm/atmel-at91.yaml | 6 ++++++
+> >  1 file changed, 6 insertions(+)
+> >
+> > diff --git a/Documentation/devicetree/bindings/arm/atmel-at91.yaml b/Documentation/devicetree/bindings/arm/atmel-at91.yaml
+> > index 4e495e03264b..9dc9ad81193a 100644
+> > --- a/Documentation/devicetree/bindings/arm/atmel-at91.yaml
+> > +++ b/Documentation/devicetree/bindings/arm/atmel-at91.yaml
+> > @@ -169,6 +169,12 @@ properties:
+> >            - const: microchip,lan9662
+> >            - const: microchip,lan966
+> >
+> > +      - description: Microchip LAN9662 PCB8309 Evaluation Board.
+> > +        items:
+> > +          - const: microchip,lan9662-pcb8309
 > 
-> arch/arm/boot/dts/imx8mq-mnt-reform2.dts:213: check: Please don't use
->  multiple blank lines
-> 
-> Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+> This and other lan9662 boards should be just an enum. You grow the file
+> needlessly... Unless it is clear preference of maintainer. Other boards
+> follow normal enum approach, so it seems there is no such preference.
 
-Acked-by: Lucas Stach <dev@lynxeye.de>
+I can see your point. I will change it in the next version.
 
-> ---
 > 
->  arch/arm64/boot/dts/freescale/imx8mq-mnt-reform2.dts | 1 -
->  1 file changed, 1 deletion(-)
 > 
-> diff --git a/arch/arm64/boot/dts/freescale/imx8mq-mnt-reform2.dts b/arch/arm64/boot/dts/freescale/imx8mq-mnt-reform2.dts
-> index 8956a46788fa..055031bba8c4 100644
-> --- a/arch/arm64/boot/dts/freescale/imx8mq-mnt-reform2.dts
-> +++ b/arch/arm64/boot/dts/freescale/imx8mq-mnt-reform2.dts
-> @@ -210,7 +210,6 @@ &pwm2 {
->  	status = "okay";
->  };
->  
-> -
->  &reg_1p8v {
->  	vin-supply = <&reg_main_5v>;
->  };
+> Best regards,
+> Krzysztof
 
+-- 
+/Horatiu
