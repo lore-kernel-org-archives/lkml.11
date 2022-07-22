@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B595C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:15:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 041FFC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:15:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235593AbiGVJPE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 05:15:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40850 "EHLO
+        id S235614AbiGVJPO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 05:15:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235584AbiGVJOM (ORCPT
+        with ESMTP id S235598AbiGVJOO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 05:14:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F000DAF947;
-        Fri, 22 Jul 2022 02:11:01 -0700 (PDT)
+        Fri, 22 Jul 2022 05:14:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7411FA8771;
+        Fri, 22 Jul 2022 02:11:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6FFB1B827B2;
-        Fri, 22 Jul 2022 09:11:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D3BDC341CF;
-        Fri, 22 Jul 2022 09:10:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F302361F6A;
+        Fri, 22 Jul 2022 09:11:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1E27C341D4;
+        Fri, 22 Jul 2022 09:11:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658481059;
-        bh=h88RRdhALqRqeQGkQu8w5tHHC/J2GjUZi8h4KKxYYFo=;
+        s=korg; t=1658481062;
+        bh=UuWq9FZpbgAxtMkPfvB2tYv3OqJJFLEEzrdmc9dWz/w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R3yI+YHsmVcj4ibO9+XpBJfyR3D+iA/Lw/6VEEXRcKzJMOX/2bjebPOBxdcMp5Rnt
-         yx91Qub3A5LeUjsZoMdZFJk5GzFzpd3YHmu/yMnVKSVsWdO0BkWNVkTcPa5GYrMmu9
-         S6Pc+pYPSORHtDAS+HLR1OcRt7Wh5iPGB4WEp8XA=
+        b=laY7pSbyL71FJneicnVdPgvnPL+n8R04AVAqsKWBuEVwOSWJCyy6xkaHAGfjhdpvU
+         qgPpNKFVby6/G5vrCaESUF1y0GMuz5soNEpk5d5oO9HUcR4GXjVfaWWE6269df/kdn
+         jRNwZe/9ESb4H0Zwe3xqYthrof93CJtN4WHwp+hI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Borislav Petkov <bp@suse.de>,
         Josh Poimboeuf <jpoimboe@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.18 39/70] objtool: Add entry UNRET validation
-Date:   Fri, 22 Jul 2022 11:07:34 +0200
-Message-Id: <20220722090652.907999861@linuxfoundation.org>
+Subject: [PATCH 5.18 30/70] x86/speculation: Add spectre_v2=ibrs option to support Kernel IBRS
+Date:   Fri, 22 Jul 2022 11:07:25 +0200
+Message-Id: <20220722090652.406499985@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220722090650.665513668@linuxfoundation.org>
 References: <20220722090650.665513668@linuxfoundation.org>
@@ -51,542 +52,208 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+From: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
 
-commit a09a6e2399ba0595c3042b3164f3ca68a3cff33e upstream.
+commit 7c693f54c873691a4b7da05c7e0f74e67745d144 upstream.
 
-Since entry asm is tricky, add a validation pass that ensures the
-retbleed mitigation has been done before the first actual RET
-instruction.
+Extend spectre_v2= boot option with Kernel IBRS.
 
-Entry points are those that either have UNWIND_HINT_ENTRY, which acts
-as UNWIND_HINT_EMPTY but marks the instruction as an entry point, or
-those that have UWIND_HINT_IRET_REGS at +0.
+  [jpoimboe: no STIBP with IBRS]
 
-This is basically a variant of validate_branch() that is
-intra-function and it will simply follow all branches from marked
-entry points and ensures that all paths lead to ANNOTATE_UNRET_END.
-
-If a path hits RET or an indirection the path is a fail and will be
-reported.
-
-There are 3 ANNOTATE_UNRET_END instances:
-
- - UNTRAIN_RET itself
- - exception from-kernel; this path doesn't need UNTRAIN_RET
- - all early exceptions; these also don't need UNTRAIN_RET
-
+Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
 Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
-[cascardo: tools/objtool/builtin-check.c no link option validation]
-[cascardo: tools/objtool/check.c opts.ibt is ibt]
-[cascardo: tools/objtool/include/objtool/builtin.h leave unret option as bool, no struct opts]
-[cascardo: objtool is still called from scripts/link-vmlinux.sh]
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/entry/entry_64.S               |    3 
- arch/x86/entry/entry_64_compat.S        |    6 -
- arch/x86/include/asm/nospec-branch.h    |   12 ++
- arch/x86/include/asm/unwind_hints.h     |    4 
- arch/x86/kernel/head_64.S               |    5 
- arch/x86/xen/xen-asm.S                  |   10 -
- include/linux/objtool.h                 |    3 
- scripts/link-vmlinux.sh                 |    3 
- tools/include/linux/objtool.h           |    3 
- tools/objtool/builtin-check.c           |    3 
- tools/objtool/check.c                   |  177 ++++++++++++++++++++++++++++++--
- tools/objtool/include/objtool/builtin.h |    2 
- tools/objtool/include/objtool/check.h   |   11 +
- 13 files changed, 220 insertions(+), 22 deletions(-)
+ Documentation/admin-guide/kernel-parameters.txt |    1 
+ arch/x86/include/asm/nospec-branch.h            |    1 
+ arch/x86/kernel/cpu/bugs.c                      |   66 ++++++++++++++++++------
+ 3 files changed, 54 insertions(+), 14 deletions(-)
 
---- a/arch/x86/entry/entry_64.S
-+++ b/arch/x86/entry/entry_64.S
-@@ -85,7 +85,7 @@
-  */
+--- a/Documentation/admin-guide/kernel-parameters.txt
++++ b/Documentation/admin-guide/kernel-parameters.txt
+@@ -5503,6 +5503,7 @@
+ 			eibrs		  - enhanced IBRS
+ 			eibrs,retpoline   - enhanced IBRS + Retpolines
+ 			eibrs,lfence      - enhanced IBRS + LFENCE
++			ibrs		  - use IBRS to protect kernel
  
- SYM_CODE_START(entry_SYSCALL_64)
--	UNWIND_HINT_EMPTY
-+	UNWIND_HINT_ENTRY
- 	ENDBR
- 
- 	swapgs
-@@ -1088,6 +1088,7 @@ SYM_CODE_START_LOCAL(error_entry)
- .Lerror_entry_done_lfence:
- 	FENCE_SWAPGS_KERNEL_ENTRY
- 	leaq	8(%rsp), %rax			/* return pt_regs pointer */
-+	ANNOTATE_UNRET_END
- 	RET
- 
- .Lbstep_iret:
---- a/arch/x86/entry/entry_64_compat.S
-+++ b/arch/x86/entry/entry_64_compat.S
-@@ -49,7 +49,7 @@
-  * 0(%ebp) arg6
-  */
- SYM_CODE_START(entry_SYSENTER_compat)
--	UNWIND_HINT_EMPTY
-+	UNWIND_HINT_ENTRY
- 	ENDBR
- 	/* Interrupts are off on entry. */
- 	SWAPGS
-@@ -204,7 +204,7 @@ SYM_CODE_END(entry_SYSENTER_compat)
-  * 0(%esp) arg6
-  */
- SYM_CODE_START(entry_SYSCALL_compat)
--	UNWIND_HINT_EMPTY
-+	UNWIND_HINT_ENTRY
- 	ENDBR
- 	/* Interrupts are off on entry. */
- 	swapgs
-@@ -353,7 +353,7 @@ SYM_CODE_END(entry_SYSCALL_compat)
-  * ebp  arg6
-  */
- SYM_CODE_START(entry_INT80_compat)
--	UNWIND_HINT_EMPTY
-+	UNWIND_HINT_ENTRY
- 	ENDBR
- 	/*
- 	 * Interrupts are off on entry.
+ 			Not specifying this option is equivalent to
+ 			spectre_v2=auto.
 --- a/arch/x86/include/asm/nospec-branch.h
 +++ b/arch/x86/include/asm/nospec-branch.h
-@@ -82,6 +82,17 @@
- #define ANNOTATE_UNRET_SAFE ANNOTATE_RETPOLINE_SAFE
- 
- /*
-+ * Abuse ANNOTATE_RETPOLINE_SAFE on a NOP to indicate UNRET_END, should
-+ * eventually turn into it's own annotation.
-+ */
-+.macro ANNOTATE_UNRET_END
-+#ifdef CONFIG_DEBUG_ENTRY
-+	ANNOTATE_RETPOLINE_SAFE
-+	nop
-+#endif
-+.endm
-+
-+/*
-  * JMP_NOSPEC and CALL_NOSPEC macros can be used instead of a simple
-  * indirect jmp/call which may be susceptible to the Spectre variant 2
-  * attack.
-@@ -131,6 +142,7 @@
-  */
- .macro UNTRAIN_RET
- #ifdef CONFIG_RETPOLINE
-+	ANNOTATE_UNRET_END
- 	ALTERNATIVE_2 "",						\
- 	              "call zen_untrain_ret", X86_FEATURE_UNRET,	\
- 		      "call entry_ibpb", X86_FEATURE_ENTRY_IBPB
---- a/arch/x86/include/asm/unwind_hints.h
-+++ b/arch/x86/include/asm/unwind_hints.h
-@@ -11,6 +11,10 @@
- 	UNWIND_HINT sp_reg=ORC_REG_UNDEFINED type=UNWIND_HINT_TYPE_CALL end=1
- .endm
- 
-+.macro UNWIND_HINT_ENTRY
-+	UNWIND_HINT sp_reg=ORC_REG_UNDEFINED type=UNWIND_HINT_TYPE_ENTRY end=1
-+.endm
-+
- .macro UNWIND_HINT_REGS base=%rsp offset=0 indirect=0 extra=1 partial=0
- 	.if \base == %rsp
- 		.if \indirect
---- a/arch/x86/kernel/head_64.S
-+++ b/arch/x86/kernel/head_64.S
-@@ -334,6 +334,8 @@ SYM_CODE_START_NOALIGN(vc_boot_ghcb)
- 	UNWIND_HINT_IRET_REGS offset=8
- 	ENDBR
- 
-+	ANNOTATE_UNRET_END
-+
- 	/* Build pt_regs */
- 	PUSH_AND_CLEAR_REGS
- 
-@@ -393,6 +395,7 @@ SYM_CODE_END(early_idt_handler_array)
- 
- SYM_CODE_START_LOCAL(early_idt_handler_common)
- 	UNWIND_HINT_IRET_REGS offset=16
-+	ANNOTATE_UNRET_END
- 	/*
- 	 * The stack is the hardware frame, an error code or zero, and the
- 	 * vector number.
-@@ -442,6 +445,8 @@ SYM_CODE_START_NOALIGN(vc_no_ghcb)
- 	UNWIND_HINT_IRET_REGS offset=8
- 	ENDBR
- 
-+	ANNOTATE_UNRET_END
-+
- 	/* Build pt_regs */
- 	PUSH_AND_CLEAR_REGS
- 
---- a/arch/x86/xen/xen-asm.S
-+++ b/arch/x86/xen/xen-asm.S
-@@ -121,7 +121,7 @@ SYM_FUNC_END(xen_read_cr2_direct);
- 
- .macro xen_pv_trap name
- SYM_CODE_START(xen_\name)
--	UNWIND_HINT_EMPTY
-+	UNWIND_HINT_ENTRY
- 	ENDBR
- 	pop %rcx
- 	pop %r11
-@@ -235,7 +235,7 @@ SYM_CODE_END(xenpv_restore_regs_and_retu
- 
- /* Normal 64-bit system call target */
- SYM_CODE_START(xen_entry_SYSCALL_64)
--	UNWIND_HINT_EMPTY
-+	UNWIND_HINT_ENTRY
- 	ENDBR
- 	popq %rcx
- 	popq %r11
-@@ -255,7 +255,7 @@ SYM_CODE_END(xen_entry_SYSCALL_64)
- 
- /* 32-bit compat syscall target */
- SYM_CODE_START(xen_entry_SYSCALL_compat)
--	UNWIND_HINT_EMPTY
-+	UNWIND_HINT_ENTRY
- 	ENDBR
- 	popq %rcx
- 	popq %r11
-@@ -273,7 +273,7 @@ SYM_CODE_END(xen_entry_SYSCALL_compat)
- 
- /* 32-bit compat sysenter target */
- SYM_CODE_START(xen_entry_SYSENTER_compat)
--	UNWIND_HINT_EMPTY
-+	UNWIND_HINT_ENTRY
- 	ENDBR
- 	/*
- 	 * NB: Xen is polite and clears TF from EFLAGS for us.  This means
-@@ -297,7 +297,7 @@ SYM_CODE_END(xen_entry_SYSENTER_compat)
- 
- SYM_CODE_START(xen_entry_SYSCALL_compat)
- SYM_CODE_START(xen_entry_SYSENTER_compat)
--	UNWIND_HINT_EMPTY
-+	UNWIND_HINT_ENTRY
- 	ENDBR
- 	lea 16(%rsp), %rsp	/* strip %rcx, %r11 */
- 	mov $-ENOSYS, %rax
---- a/include/linux/objtool.h
-+++ b/include/linux/objtool.h
-@@ -32,11 +32,14 @@ struct unwind_hint {
-  *
-  * UNWIND_HINT_FUNC: Generate the unwind metadata of a callable function.
-  * Useful for code which doesn't have an ELF function annotation.
-+ *
-+ * UNWIND_HINT_ENTRY: machine entry without stack, SYSCALL/SYSENTER etc.
-  */
- #define UNWIND_HINT_TYPE_CALL		0
- #define UNWIND_HINT_TYPE_REGS		1
- #define UNWIND_HINT_TYPE_REGS_PARTIAL	2
- #define UNWIND_HINT_TYPE_FUNC		3
-+#define UNWIND_HINT_TYPE_ENTRY		4
- 
- #ifdef CONFIG_STACK_VALIDATION
- 
---- a/scripts/link-vmlinux.sh
-+++ b/scripts/link-vmlinux.sh
-@@ -130,6 +130,9 @@ objtool_link()
- 
- 	if is_enabled CONFIG_VMLINUX_VALIDATION; then
- 		objtoolopt="${objtoolopt} --noinstr"
-+		if is_enabled CONFIG_RETPOLINE; then
-+			objtoolopt="${objtoolopt} --unret"
-+		fi
- 	fi
- 
- 	if [ -n "${objtoolopt}" ]; then
---- a/tools/include/linux/objtool.h
-+++ b/tools/include/linux/objtool.h
-@@ -32,11 +32,14 @@ struct unwind_hint {
-  *
-  * UNWIND_HINT_FUNC: Generate the unwind metadata of a callable function.
-  * Useful for code which doesn't have an ELF function annotation.
-+ *
-+ * UNWIND_HINT_ENTRY: machine entry without stack, SYSCALL/SYSENTER etc.
-  */
- #define UNWIND_HINT_TYPE_CALL		0
- #define UNWIND_HINT_TYPE_REGS		1
- #define UNWIND_HINT_TYPE_REGS_PARTIAL	2
- #define UNWIND_HINT_TYPE_FUNC		3
-+#define UNWIND_HINT_TYPE_ENTRY		4
- 
- #ifdef CONFIG_STACK_VALIDATION
- 
---- a/tools/objtool/builtin-check.c
-+++ b/tools/objtool/builtin-check.c
-@@ -21,7 +21,7 @@
- 
- bool no_fp, no_unreachable, retpoline, module, backtrace, uaccess, stats,
-      lto, vmlinux, mcount, noinstr, backup, sls, dryrun,
--     ibt;
-+     ibt, unret;
- 
- static const char * const check_usage[] = {
- 	"objtool check [<options>] file.o",
-@@ -37,6 +37,7 @@ const struct option check_options[] = {
- 	OPT_BOOLEAN('f', "no-fp", &no_fp, "Skip frame pointer validation"),
- 	OPT_BOOLEAN('u', "no-unreachable", &no_unreachable, "Skip 'unreachable instruction' warnings"),
- 	OPT_BOOLEAN('r', "retpoline", &retpoline, "Validate retpoline assumptions"),
-+	OPT_BOOLEAN(0,   "unret", &unret, "validate entry unret placement"),
- 	OPT_BOOLEAN('m', "module", &module, "Indicates the object will be part of a kernel module"),
- 	OPT_BOOLEAN('b', "backtrace", &backtrace, "unwind on error"),
- 	OPT_BOOLEAN('a', "uaccess", &uaccess, "enable uaccess checking"),
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -2031,16 +2031,24 @@ static int read_unwind_hints(struct objt
- 
- 		insn->hint = true;
- 
--		if (ibt && hint->type == UNWIND_HINT_TYPE_REGS_PARTIAL) {
-+		if (hint->type == UNWIND_HINT_TYPE_REGS_PARTIAL) {
- 			struct symbol *sym = find_symbol_by_offset(insn->sec, insn->offset);
- 
--			if (sym && sym->bind == STB_GLOBAL &&
--			    insn->type != INSN_ENDBR && !insn->noendbr) {
--				WARN_FUNC("UNWIND_HINT_IRET_REGS without ENDBR",
--					  insn->sec, insn->offset);
-+			if (sym && sym->bind == STB_GLOBAL) {
-+				if (ibt && insn->type != INSN_ENDBR && !insn->noendbr) {
-+					WARN_FUNC("UNWIND_HINT_IRET_REGS without ENDBR",
-+						  insn->sec, insn->offset);
-+				}
-+
-+				insn->entry = 1;
- 			}
- 		}
- 
-+		if (hint->type == UNWIND_HINT_TYPE_ENTRY) {
-+			hint->type = UNWIND_HINT_TYPE_CALL;
-+			insn->entry = 1;
-+		}
-+
- 		if (hint->type == UNWIND_HINT_TYPE_FUNC) {
- 			insn->cfi = &func_cfi;
- 			continue;
-@@ -2115,8 +2123,9 @@ static int read_retpoline_hints(struct o
- 
- 		if (insn->type != INSN_JUMP_DYNAMIC &&
- 		    insn->type != INSN_CALL_DYNAMIC &&
--		    insn->type != INSN_RETURN) {
--			WARN_FUNC("retpoline_safe hint not an indirect jump/call/ret",
-+		    insn->type != INSN_RETURN &&
-+		    insn->type != INSN_NOP) {
-+			WARN_FUNC("retpoline_safe hint not an indirect jump/call/ret/nop",
- 				  insn->sec, insn->offset);
- 			return -1;
- 		}
-@@ -3412,8 +3421,8 @@ static int validate_branch(struct objtoo
- 			return 1;
- 		}
- 
--		visited = 1 << state.uaccess;
--		if (insn->visited) {
-+		visited = VISITED_BRANCH << state.uaccess;
-+		if (insn->visited & VISITED_BRANCH_MASK) {
- 			if (!insn->hint && !insn_cfi_match(insn, &state.cfi))
- 				return 1;
- 
-@@ -3642,6 +3651,145 @@ static int validate_unwind_hints(struct
- 	return warnings;
- }
- 
-+/*
-+ * Validate rethunk entry constraint: must untrain RET before the first RET.
-+ *
-+ * Follow every branch (intra-function) and ensure ANNOTATE_UNRET_END comes
-+ * before an actual RET instruction.
-+ */
-+static int validate_entry(struct objtool_file *file, struct instruction *insn)
-+{
-+	struct instruction *next, *dest;
-+	int ret, warnings = 0;
-+
-+	for (;;) {
-+		next = next_insn_to_validate(file, insn);
-+
-+		if (insn->visited & VISITED_ENTRY)
-+			return 0;
-+
-+		insn->visited |= VISITED_ENTRY;
-+
-+		if (!insn->ignore_alts && !list_empty(&insn->alts)) {
-+			struct alternative *alt;
-+			bool skip_orig = false;
-+
-+			list_for_each_entry(alt, &insn->alts, list) {
-+				if (alt->skip_orig)
-+					skip_orig = true;
-+
-+				ret = validate_entry(file, alt->insn);
-+				if (ret) {
-+				        if (backtrace)
-+						BT_FUNC("(alt)", insn);
-+					return ret;
-+				}
-+			}
-+
-+			if (skip_orig)
-+				return 0;
-+		}
-+
-+		switch (insn->type) {
-+
-+		case INSN_CALL_DYNAMIC:
-+		case INSN_JUMP_DYNAMIC:
-+		case INSN_JUMP_DYNAMIC_CONDITIONAL:
-+			WARN_FUNC("early indirect call", insn->sec, insn->offset);
-+			return 1;
-+
-+		case INSN_JUMP_UNCONDITIONAL:
-+		case INSN_JUMP_CONDITIONAL:
-+			if (!is_sibling_call(insn)) {
-+				if (!insn->jump_dest) {
-+					WARN_FUNC("unresolved jump target after linking?!?",
-+						  insn->sec, insn->offset);
-+					return -1;
-+				}
-+				ret = validate_entry(file, insn->jump_dest);
-+				if (ret) {
-+					if (backtrace) {
-+						BT_FUNC("(branch%s)", insn,
-+							insn->type == INSN_JUMP_CONDITIONAL ? "-cond" : "");
-+					}
-+					return ret;
-+				}
-+
-+				if (insn->type == INSN_JUMP_UNCONDITIONAL)
-+					return 0;
-+
-+				break;
-+			}
-+
-+			/* fallthrough */
-+		case INSN_CALL:
-+			dest = find_insn(file, insn->call_dest->sec,
-+					 insn->call_dest->offset);
-+			if (!dest) {
-+				WARN("Unresolved function after linking!?: %s",
-+				     insn->call_dest->name);
-+				return -1;
-+			}
-+
-+			ret = validate_entry(file, dest);
-+			if (ret) {
-+				if (backtrace)
-+					BT_FUNC("(call)", insn);
-+				return ret;
-+			}
-+			/*
-+			 * If a call returns without error, it must have seen UNTRAIN_RET.
-+			 * Therefore any non-error return is a success.
-+			 */
-+			return 0;
-+
-+		case INSN_RETURN:
-+			WARN_FUNC("RET before UNTRAIN", insn->sec, insn->offset);
-+			return 1;
-+
-+		case INSN_NOP:
-+			if (insn->retpoline_safe)
-+				return 0;
-+			break;
-+
-+		default:
-+			break;
-+		}
-+
-+		if (!next) {
-+			WARN_FUNC("teh end!", insn->sec, insn->offset);
-+			return -1;
-+		}
-+		insn = next;
-+	}
-+
-+	return warnings;
-+}
-+
-+/*
-+ * Validate that all branches starting at 'insn->entry' encounter UNRET_END
-+ * before RET.
-+ */
-+static int validate_unret(struct objtool_file *file)
-+{
-+	struct instruction *insn;
-+	int ret, warnings = 0;
-+
-+	for_each_insn(file, insn) {
-+		if (!insn->entry)
-+			continue;
-+
-+		ret = validate_entry(file, insn);
-+		if (ret < 0) {
-+			WARN_FUNC("Failed UNRET validation", insn->sec, insn->offset);
-+			return ret;
-+		}
-+		warnings += ret;
-+	}
-+
-+	return warnings;
-+}
-+
- static int validate_retpoline(struct objtool_file *file)
- {
- 	struct instruction *insn;
-@@ -4005,6 +4153,17 @@ int check(struct objtool_file *file)
- 		goto out;
- 	warnings += ret;
- 
-+	if (unret) {
-+		/*
-+		 * Must be after validate_branch() and friends, it plays
-+		 * further games with insn->visited.
-+		 */
-+		ret = validate_unret(file);
-+		if (ret < 0)
-+			return ret;
-+		warnings += ret;
-+	}
-+
- 	if (ibt) {
- 		ret = validate_ibt(file);
- 		if (ret < 0)
---- a/tools/objtool/include/objtool/builtin.h
-+++ b/tools/objtool/include/objtool/builtin.h
-@@ -10,7 +10,7 @@
- extern const struct option check_options[];
- extern bool no_fp, no_unreachable, retpoline, module, backtrace, uaccess, stats,
- 	    lto, vmlinux, mcount, noinstr, backup, sls, dryrun,
--	    ibt;
-+	    ibt, unret;
- 
- extern int cmd_parse_options(int argc, const char **argv, const char * const usage[]);
- 
---- a/tools/objtool/include/objtool/check.h
-+++ b/tools/objtool/include/objtool/check.h
-@@ -51,8 +51,10 @@ struct instruction {
- 	   ignore_alts	: 1,
- 	   hint		: 1,
- 	   retpoline_safe : 1,
--	   noendbr	: 1;
--		/* 2 bit hole */
-+	   noendbr	: 1,
-+	   entry	: 1;
-+		/* 1 bit hole */
-+
- 	s8 instr;
- 	u8 visited;
- 	/* u8 hole */
-@@ -69,6 +71,11 @@ struct instruction {
- 	struct cfi_state *cfi;
+@@ -211,6 +211,7 @@ enum spectre_v2_mitigation {
+ 	SPECTRE_V2_EIBRS,
+ 	SPECTRE_V2_EIBRS_RETPOLINE,
+ 	SPECTRE_V2_EIBRS_LFENCE,
++	SPECTRE_V2_IBRS,
  };
  
-+#define VISITED_BRANCH		0x01
-+#define VISITED_BRANCH_UACCESS	0x02
-+#define VISITED_BRANCH_MASK	0x03
-+#define VISITED_ENTRY		0x04
-+
- static inline bool is_static_jump(struct instruction *insn)
+ /* The indirect branch speculation control variants */
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -965,6 +965,7 @@ enum spectre_v2_mitigation_cmd {
+ 	SPECTRE_V2_CMD_EIBRS,
+ 	SPECTRE_V2_CMD_EIBRS_RETPOLINE,
+ 	SPECTRE_V2_CMD_EIBRS_LFENCE,
++	SPECTRE_V2_CMD_IBRS,
+ };
+ 
+ enum spectre_v2_user_cmd {
+@@ -1037,11 +1038,12 @@ spectre_v2_parse_user_cmdline(enum spect
+ 	return SPECTRE_V2_USER_CMD_AUTO;
+ }
+ 
+-static inline bool spectre_v2_in_eibrs_mode(enum spectre_v2_mitigation mode)
++static inline bool spectre_v2_in_ibrs_mode(enum spectre_v2_mitigation mode)
  {
- 	return insn->type == INSN_JUMP_CONDITIONAL ||
+-	return (mode == SPECTRE_V2_EIBRS ||
+-		mode == SPECTRE_V2_EIBRS_RETPOLINE ||
+-		mode == SPECTRE_V2_EIBRS_LFENCE);
++	return mode == SPECTRE_V2_IBRS ||
++	       mode == SPECTRE_V2_EIBRS ||
++	       mode == SPECTRE_V2_EIBRS_RETPOLINE ||
++	       mode == SPECTRE_V2_EIBRS_LFENCE;
+ }
+ 
+ static void __init
+@@ -1106,12 +1108,12 @@ spectre_v2_user_select_mitigation(enum s
+ 	}
+ 
+ 	/*
+-	 * If no STIBP, enhanced IBRS is enabled or SMT impossible, STIBP is not
+-	 * required.
++	 * If no STIBP, IBRS or enhanced IBRS is enabled, or SMT impossible,
++	 * STIBP is not required.
+ 	 */
+ 	if (!boot_cpu_has(X86_FEATURE_STIBP) ||
+ 	    !smt_possible ||
+-	    spectre_v2_in_eibrs_mode(spectre_v2_enabled))
++	    spectre_v2_in_ibrs_mode(spectre_v2_enabled))
+ 		return;
+ 
+ 	/*
+@@ -1143,6 +1145,7 @@ static const char * const spectre_v2_str
+ 	[SPECTRE_V2_EIBRS]			= "Mitigation: Enhanced IBRS",
+ 	[SPECTRE_V2_EIBRS_LFENCE]		= "Mitigation: Enhanced IBRS + LFENCE",
+ 	[SPECTRE_V2_EIBRS_RETPOLINE]		= "Mitigation: Enhanced IBRS + Retpolines",
++	[SPECTRE_V2_IBRS]			= "Mitigation: IBRS",
+ };
+ 
+ static const struct {
+@@ -1160,6 +1163,7 @@ static const struct {
+ 	{ "eibrs,lfence",	SPECTRE_V2_CMD_EIBRS_LFENCE,	  false },
+ 	{ "eibrs,retpoline",	SPECTRE_V2_CMD_EIBRS_RETPOLINE,	  false },
+ 	{ "auto",		SPECTRE_V2_CMD_AUTO,		  false },
++	{ "ibrs",		SPECTRE_V2_CMD_IBRS,              false },
+ };
+ 
+ static void __init spec_v2_print_cond(const char *reason, bool secure)
+@@ -1222,6 +1226,24 @@ static enum spectre_v2_mitigation_cmd __
+ 		return SPECTRE_V2_CMD_AUTO;
+ 	}
+ 
++	if (cmd == SPECTRE_V2_CMD_IBRS && boot_cpu_data.x86_vendor != X86_VENDOR_INTEL) {
++		pr_err("%s selected but not Intel CPU. Switching to AUTO select\n",
++		       mitigation_options[i].option);
++		return SPECTRE_V2_CMD_AUTO;
++	}
++
++	if (cmd == SPECTRE_V2_CMD_IBRS && !boot_cpu_has(X86_FEATURE_IBRS)) {
++		pr_err("%s selected but CPU doesn't have IBRS. Switching to AUTO select\n",
++		       mitigation_options[i].option);
++		return SPECTRE_V2_CMD_AUTO;
++	}
++
++	if (cmd == SPECTRE_V2_CMD_IBRS && boot_cpu_has(X86_FEATURE_XENPV)) {
++		pr_err("%s selected but running as XenPV guest. Switching to AUTO select\n",
++		       mitigation_options[i].option);
++		return SPECTRE_V2_CMD_AUTO;
++	}
++
+ 	spec_v2_print_cond(mitigation_options[i].option,
+ 			   mitigation_options[i].secure);
+ 	return cmd;
+@@ -1261,6 +1283,14 @@ static void __init spectre_v2_select_mit
+ 			break;
+ 		}
+ 
++		if (boot_cpu_has_bug(X86_BUG_RETBLEED) &&
++		    retbleed_cmd != RETBLEED_CMD_OFF &&
++		    boot_cpu_has(X86_FEATURE_IBRS) &&
++		    boot_cpu_data.x86_vendor == X86_VENDOR_INTEL) {
++			mode = SPECTRE_V2_IBRS;
++			break;
++		}
++
+ 		mode = spectre_v2_select_retpoline();
+ 		break;
+ 
+@@ -1277,6 +1307,10 @@ static void __init spectre_v2_select_mit
+ 		mode = spectre_v2_select_retpoline();
+ 		break;
+ 
++	case SPECTRE_V2_CMD_IBRS:
++		mode = SPECTRE_V2_IBRS;
++		break;
++
+ 	case SPECTRE_V2_CMD_EIBRS:
+ 		mode = SPECTRE_V2_EIBRS;
+ 		break;
+@@ -1293,7 +1327,7 @@ static void __init spectre_v2_select_mit
+ 	if (mode == SPECTRE_V2_EIBRS && unprivileged_ebpf_enabled())
+ 		pr_err(SPECTRE_V2_EIBRS_EBPF_MSG);
+ 
+-	if (spectre_v2_in_eibrs_mode(mode)) {
++	if (spectre_v2_in_ibrs_mode(mode)) {
+ 		/* Force it so VMEXIT will restore correctly */
+ 		x86_spec_ctrl_base |= SPEC_CTRL_IBRS;
+ 		write_spec_ctrl_current(x86_spec_ctrl_base, true);
+@@ -1304,6 +1338,10 @@ static void __init spectre_v2_select_mit
+ 	case SPECTRE_V2_EIBRS:
+ 		break;
+ 
++	case SPECTRE_V2_IBRS:
++		setup_force_cpu_cap(X86_FEATURE_KERNEL_IBRS);
++		break;
++
+ 	case SPECTRE_V2_LFENCE:
+ 	case SPECTRE_V2_EIBRS_LFENCE:
+ 		setup_force_cpu_cap(X86_FEATURE_RETPOLINE_LFENCE);
+@@ -1330,17 +1368,17 @@ static void __init spectre_v2_select_mit
+ 	pr_info("Spectre v2 / SpectreRSB mitigation: Filling RSB on context switch\n");
+ 
+ 	/*
+-	 * Retpoline means the kernel is safe because it has no indirect
+-	 * branches. Enhanced IBRS protects firmware too, so, enable restricted
+-	 * speculation around firmware calls only when Enhanced IBRS isn't
+-	 * supported.
++	 * Retpoline protects the kernel, but doesn't protect firmware.  IBRS
++	 * and Enhanced IBRS protect firmware too, so enable IBRS around
++	 * firmware calls only when IBRS / Enhanced IBRS aren't otherwise
++	 * enabled.
+ 	 *
+ 	 * Use "mode" to check Enhanced IBRS instead of boot_cpu_has(), because
+ 	 * the user might select retpoline on the kernel command line and if
+ 	 * the CPU supports Enhanced IBRS, kernel might un-intentionally not
+ 	 * enable IBRS around firmware calls.
+ 	 */
+-	if (boot_cpu_has(X86_FEATURE_IBRS) && !spectre_v2_in_eibrs_mode(mode)) {
++	if (boot_cpu_has(X86_FEATURE_IBRS) && !spectre_v2_in_ibrs_mode(mode)) {
+ 		setup_force_cpu_cap(X86_FEATURE_USE_IBRS_FW);
+ 		pr_info("Enabling Restricted Speculation for firmware calls\n");
+ 	}
+@@ -2082,7 +2120,7 @@ static ssize_t mmio_stale_data_show_stat
+ 
+ static char *stibp_state(void)
+ {
+-	if (spectre_v2_in_eibrs_mode(spectre_v2_enabled))
++	if (spectre_v2_in_ibrs_mode(spectre_v2_enabled))
+ 		return "";
+ 
+ 	switch (spectre_v2_user_stibp) {
 
 
