@@ -2,306 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FD8DC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:20:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09C2DC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:20:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235998AbiGVJUw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 05:20:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37142 "EHLO
+        id S236015AbiGVJUy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 05:20:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235981AbiGVJUT (ORCPT
+        with ESMTP id S236000AbiGVJU2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 05:20:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF566BB5FD;
+        Fri, 22 Jul 2022 05:20:28 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBE0FBB8CC
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 02:13:45 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id t2-20020a17090a4e4200b001f21572f3a4so3708295pjl.0
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 02:13:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=OFu95XsV5rEYBt/DoXMJzDAz5PRwolc7OS134C8DnKc=;
+        b=0fFghdJIPyc8ja/Ja4cKlCxsHImbwt+x6cqArGd1WjVLRO4xLsTp5Ca04dFVCKuBNy
+         Ta+da7cU7Xo+M+dPdbyJDLrM5tL+bKeXEp3EcjbveyUQCvoKhmEVRi93T35xYtim1vv+
+         GSzumERbIJEqvSZ5EW9yMhkKCP8l/8QVrL8/DMr3lYL0Rd7KamuMNvpZ3iLlt5nFNDKL
+         RfTayBaT+0CLhFuTN8dWH0NxsH0JbbpqgBHNgBx2p5qeUZzS4esMo94tI7Cu+0Kv6oiY
+         Jn5cvW95wnOV/W8+XQk1skB9V70mIOsQdccwk69ISskNQCyRWGc+E/bJeEaHSwE9jTnU
+         IeIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=OFu95XsV5rEYBt/DoXMJzDAz5PRwolc7OS134C8DnKc=;
+        b=HaAOHSot6MPDZlD51rB/HilcwSPFRUpldUxyns37J6zIvve2X5d4/bkMh9cx6b+UA1
+         5k+5TJubk+A8dFBrWjF91USuNEz5RfhDN++xA1OAMHbtQv4qmOd7EKTF3CCZQ32aIhno
+         oxgM+/7g2E5OBO4lWQ/sVqr68xfKQcNgqgmruNU+W4GpyPYedlOkt7wakJQ53WDTa/m3
+         6NW/MnQuT9LTFqfGPPTInlhiQl+vhA3I9h/GDwa69BZiwtmrxMktigInAP55X/gLrmNu
+         cMCZSqhaih3xZ3kbhDh8a87YUmAw9u0ysnlWIoA/k8Q9BOLaLmy6gQAXeFIHrwQfevpu
+         ZkEA==
+X-Gm-Message-State: AJIora89UKuVY8Mt79kIMxTBWe3xVnOKBYoDClx1kxuHDbCerQ7QqROr
+        d7BQjHz0icwfkdvKvTQSYzySUA==
+X-Google-Smtp-Source: AGRyM1v6F78+NCt09f2hsDWr95VGuj60HNdNaZDsiSJ72K0JCl0CYXqR5FUuwfkIkofOdUs4kEv6kw==
+X-Received: by 2002:a17:902:c94b:b0:16c:7289:b402 with SMTP id i11-20020a170902c94b00b0016c7289b402mr2486506pla.66.1658481224853;
         Fri, 22 Jul 2022 02:13:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4BE6C61F9B;
-        Fri, 22 Jul 2022 09:13:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58137C341C6;
-        Fri, 22 Jul 2022 09:13:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658481223;
-        bh=M/ZPKqt0j0T7I2NcmVrKlcDTEsrTDC977YKGpWP093M=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Icue4uXws7w79Q5AcV3gB0/2ISDB93yYTJJ/C/m1yIq7sKk87xRro6coOljJ/V584
-         DpiSq8rLUqPmk2Ba1n+7e5lPprYgroLcTLTF/jIlJ+bGJeaxHmyeCiezWm1g+uaZN7
-         crkGABoln4dJOOpbIsvZYRNhbo1monn+KEVCp4Ak=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.15 19/89] bpf,x86: Simplify computing label offsets
-Date:   Fri, 22 Jul 2022 11:10:53 +0200
-Message-Id: <20220722091134.446936858@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220722091133.320803732@linuxfoundation.org>
-References: <20220722091133.320803732@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from [10.4.231.121] ([139.177.225.245])
+        by smtp.gmail.com with ESMTPSA id o12-20020a170902778c00b0016d1f474653sm2923403pll.52.2022.07.22.02.13.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 22 Jul 2022 02:13:44 -0700 (PDT)
+Message-ID: <d540aaff-ec6a-3f25-dd79-b27b4ad81b36@bytedance.com>
+Date:   Fri, 22 Jul 2022 17:13:39 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.0
+Subject: Re: [PATCH v1 1/2] arm64: run softirqs on the per-CPU IRQ stack
+Content-Language: en-US
+To:     Will Deacon <will@kernel.org>
+Cc:     arnd@arndb.de, catalin.marinas@arm.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220708094950.41944-1-zhengqi.arch@bytedance.com>
+ <20220708094950.41944-2-zhengqi.arch@bytedance.com>
+ <20220722090440.GB18125@willie-the-truck>
+From:   Qi Zheng <zhengqi.arch@bytedance.com>
+In-Reply-To: <20220722090440.GB18125@willie-the-truck>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
-
-commit dceba0817ca329868a15e2e1dd46eb6340b69206 upstream.
-
-Take an idea from the 32bit JIT, which uses the multi-pass nature of
-the JIT to compute the instruction offsets on a prior pass in order to
-compute the relative jump offsets on a later pass.
-
-Application to the x86_64 JIT is slightly more involved because the
-offsets depend on program variables (such as callee_regs_used and
-stack_depth) and hence the computed offsets need to be kept in the
-context of the JIT.
-
-This removes, IMO quite fragile, code that hard-codes the offsets and
-tries to compute the length of variable parts of it.
-
-Convert both emit_bpf_tail_call_*() functions which have an out: label
-at the end. Additionally emit_bpt_tail_call_direct() also has a poke
-table entry, for which it computes the offset from the end (and thus
-already relies on the previous pass to have computed addrs[i]), also
-convert this to be a forward based offset.
-
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Borislav Petkov <bp@suse.de>
-Acked-by: Alexei Starovoitov <ast@kernel.org>
-Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Tested-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/r/20211026120310.552304864@infradead.org
-Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/x86/net/bpf_jit_comp.c |  123 +++++++++++++++-----------------------------
- 1 file changed, 42 insertions(+), 81 deletions(-)
-
---- a/arch/x86/net/bpf_jit_comp.c
-+++ b/arch/x86/net/bpf_jit_comp.c
-@@ -224,6 +224,14 @@ static void jit_fill_hole(void *area, un
- 
- struct jit_context {
- 	int cleanup_addr; /* Epilogue code offset */
-+
-+	/*
-+	 * Program specific offsets of labels in the code; these rely on the
-+	 * JIT doing at least 2 passes, recording the position on the first
-+	 * pass, only to generate the correct offset on the second pass.
-+	 */
-+	int tail_call_direct_label;
-+	int tail_call_indirect_label;
- };
- 
- /* Maximum number of bytes emitted while JITing one eBPF insn */
-@@ -379,22 +387,6 @@ int bpf_arch_text_poke(void *ip, enum bp
- 	return __bpf_arch_text_poke(ip, t, old_addr, new_addr, true);
- }
- 
--static int get_pop_bytes(bool *callee_regs_used)
--{
--	int bytes = 0;
--
--	if (callee_regs_used[3])
--		bytes += 2;
--	if (callee_regs_used[2])
--		bytes += 2;
--	if (callee_regs_used[1])
--		bytes += 2;
--	if (callee_regs_used[0])
--		bytes += 1;
--
--	return bytes;
--}
--
- /*
-  * Generate the following code:
-  *
-@@ -410,29 +402,12 @@ static int get_pop_bytes(bool *callee_re
-  * out:
-  */
- static void emit_bpf_tail_call_indirect(u8 **pprog, bool *callee_regs_used,
--					u32 stack_depth)
-+					u32 stack_depth, u8 *ip,
-+					struct jit_context *ctx)
- {
- 	int tcc_off = -4 - round_up(stack_depth, 8);
--	u8 *prog = *pprog;
--	int pop_bytes = 0;
--	int off1 = 42;
--	int off2 = 31;
--	int off3 = 9;
--
--	/* count the additional bytes used for popping callee regs from stack
--	 * that need to be taken into account for each of the offsets that
--	 * are used for bailing out of the tail call
--	 */
--	pop_bytes = get_pop_bytes(callee_regs_used);
--	off1 += pop_bytes;
--	off2 += pop_bytes;
--	off3 += pop_bytes;
--
--	if (stack_depth) {
--		off1 += 7;
--		off2 += 7;
--		off3 += 7;
--	}
-+	u8 *prog = *pprog, *start = *pprog;
-+	int offset;
- 
- 	/*
- 	 * rdi - pointer to ctx
-@@ -447,8 +422,9 @@ static void emit_bpf_tail_call_indirect(
- 	EMIT2(0x89, 0xD2);                        /* mov edx, edx */
- 	EMIT3(0x39, 0x56,                         /* cmp dword ptr [rsi + 16], edx */
- 	      offsetof(struct bpf_array, map.max_entries));
--#define OFFSET1 (off1 + RETPOLINE_RCX_BPF_JIT_SIZE) /* Number of bytes to jump */
--	EMIT2(X86_JBE, OFFSET1);                  /* jbe out */
-+
-+	offset = ctx->tail_call_indirect_label - (prog + 2 - start);
-+	EMIT2(X86_JBE, offset);                   /* jbe out */
- 
- 	/*
- 	 * if (tail_call_cnt > MAX_TAIL_CALL_CNT)
-@@ -456,8 +432,9 @@ static void emit_bpf_tail_call_indirect(
- 	 */
- 	EMIT2_off32(0x8B, 0x85, tcc_off);         /* mov eax, dword ptr [rbp - tcc_off] */
- 	EMIT3(0x83, 0xF8, MAX_TAIL_CALL_CNT);     /* cmp eax, MAX_TAIL_CALL_CNT */
--#define OFFSET2 (off2 + RETPOLINE_RCX_BPF_JIT_SIZE)
--	EMIT2(X86_JA, OFFSET2);                   /* ja out */
-+
-+	offset = ctx->tail_call_indirect_label - (prog + 2 - start);
-+	EMIT2(X86_JA, offset);                    /* ja out */
- 	EMIT3(0x83, 0xC0, 0x01);                  /* add eax, 1 */
- 	EMIT2_off32(0x89, 0x85, tcc_off);         /* mov dword ptr [rbp - tcc_off], eax */
- 
-@@ -470,12 +447,11 @@ static void emit_bpf_tail_call_indirect(
- 	 *	goto out;
- 	 */
- 	EMIT3(0x48, 0x85, 0xC9);                  /* test rcx,rcx */
--#define OFFSET3 (off3 + RETPOLINE_RCX_BPF_JIT_SIZE)
--	EMIT2(X86_JE, OFFSET3);                   /* je out */
- 
--	*pprog = prog;
--	pop_callee_regs(pprog, callee_regs_used);
--	prog = *pprog;
-+	offset = ctx->tail_call_indirect_label - (prog + 2 - start);
-+	EMIT2(X86_JE, offset);                    /* je out */
-+
-+	pop_callee_regs(&prog, callee_regs_used);
- 
- 	EMIT1(0x58);                              /* pop rax */
- 	if (stack_depth)
-@@ -495,38 +471,18 @@ static void emit_bpf_tail_call_indirect(
- 	RETPOLINE_RCX_BPF_JIT();
- 
- 	/* out: */
-+	ctx->tail_call_indirect_label = prog - start;
- 	*pprog = prog;
- }
- 
- static void emit_bpf_tail_call_direct(struct bpf_jit_poke_descriptor *poke,
--				      u8 **pprog, int addr, u8 *image,
--				      bool *callee_regs_used, u32 stack_depth)
-+				      u8 **pprog, u8 *ip,
-+				      bool *callee_regs_used, u32 stack_depth,
-+				      struct jit_context *ctx)
- {
- 	int tcc_off = -4 - round_up(stack_depth, 8);
--	u8 *prog = *pprog;
--	int pop_bytes = 0;
--	int off1 = 20;
--	int poke_off;
--
--	/* count the additional bytes used for popping callee regs to stack
--	 * that need to be taken into account for jump offset that is used for
--	 * bailing out from of the tail call when limit is reached
--	 */
--	pop_bytes = get_pop_bytes(callee_regs_used);
--	off1 += pop_bytes;
--
--	/*
--	 * total bytes for:
--	 * - nop5/ jmpq $off
--	 * - pop callee regs
--	 * - sub rsp, $val if depth > 0
--	 * - pop rax
--	 */
--	poke_off = X86_PATCH_SIZE + pop_bytes + 1;
--	if (stack_depth) {
--		poke_off += 7;
--		off1 += 7;
--	}
-+	u8 *prog = *pprog, *start = *pprog;
-+	int offset;
- 
- 	/*
- 	 * if (tail_call_cnt > MAX_TAIL_CALL_CNT)
-@@ -534,28 +490,30 @@ static void emit_bpf_tail_call_direct(st
- 	 */
- 	EMIT2_off32(0x8B, 0x85, tcc_off);             /* mov eax, dword ptr [rbp - tcc_off] */
- 	EMIT3(0x83, 0xF8, MAX_TAIL_CALL_CNT);         /* cmp eax, MAX_TAIL_CALL_CNT */
--	EMIT2(X86_JA, off1);                          /* ja out */
-+
-+	offset = ctx->tail_call_direct_label - (prog + 2 - start);
-+	EMIT2(X86_JA, offset);                        /* ja out */
- 	EMIT3(0x83, 0xC0, 0x01);                      /* add eax, 1 */
- 	EMIT2_off32(0x89, 0x85, tcc_off);             /* mov dword ptr [rbp - tcc_off], eax */
- 
--	poke->tailcall_bypass = image + (addr - poke_off - X86_PATCH_SIZE);
-+	poke->tailcall_bypass = ip + (prog - start);
- 	poke->adj_off = X86_TAIL_CALL_OFFSET;
--	poke->tailcall_target = image + (addr - X86_PATCH_SIZE);
-+	poke->tailcall_target = ip + ctx->tail_call_direct_label - X86_PATCH_SIZE;
- 	poke->bypass_addr = (u8 *)poke->tailcall_target + X86_PATCH_SIZE;
- 
- 	emit_jump(&prog, (u8 *)poke->tailcall_target + X86_PATCH_SIZE,
- 		  poke->tailcall_bypass);
- 
--	*pprog = prog;
--	pop_callee_regs(pprog, callee_regs_used);
--	prog = *pprog;
-+	pop_callee_regs(&prog, callee_regs_used);
- 	EMIT1(0x58);                                  /* pop rax */
- 	if (stack_depth)
- 		EMIT3_off32(0x48, 0x81, 0xC4, round_up(stack_depth, 8));
- 
- 	memcpy(prog, x86_nops[5], X86_PATCH_SIZE);
- 	prog += X86_PATCH_SIZE;
-+
- 	/* out: */
-+	ctx->tail_call_direct_label = prog - start;
- 
- 	*pprog = prog;
- }
-@@ -1453,13 +1411,16 @@ st:			if (is_imm8(insn->off))
- 		case BPF_JMP | BPF_TAIL_CALL:
- 			if (imm32)
- 				emit_bpf_tail_call_direct(&bpf_prog->aux->poke_tab[imm32 - 1],
--							  &prog, addrs[i], image,
-+							  &prog, image + addrs[i - 1],
- 							  callee_regs_used,
--							  bpf_prog->aux->stack_depth);
-+							  bpf_prog->aux->stack_depth,
-+							  ctx);
- 			else
- 				emit_bpf_tail_call_indirect(&prog,
- 							    callee_regs_used,
--							    bpf_prog->aux->stack_depth);
-+							    bpf_prog->aux->stack_depth,
-+							    image + addrs[i - 1],
-+							    ctx);
- 			break;
- 
- 			/* cond jump */
 
 
+On 2022/7/22 17:04, Will Deacon wrote:
+> On Fri, Jul 08, 2022 at 05:49:49PM +0800, Qi Zheng wrote:
+>> Currently arm64 supports per-CPU IRQ stack, but softirqs
+>> are still handled in the task context.
+>>
+>> Since any call to local_bh_enable() at any level in the task's
+>> call stack may trigger a softirq processing run, which could
+>> potentially cause a task stack overflow if the combined stack
+>> footprints exceed the stack's size, let's run these softirqs
+>> on the IRQ stack as well.
+>>
+>> Signed-off-by: Qi Zheng <zhengqi.arch@bytedance.com>
+>> ---
+>>   arch/arm64/Kconfig      |  1 +
+>>   arch/arm64/kernel/irq.c | 13 +++++++++++++
+>>   2 files changed, 14 insertions(+)
+>>
+>> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+>> index 4c1e1d2d2f8b..be0a9f0052ee 100644
+>> --- a/arch/arm64/Kconfig
+>> +++ b/arch/arm64/Kconfig
+>> @@ -230,6 +230,7 @@ config ARM64
+>>   	select HAVE_ARCH_USERFAULTFD_MINOR if USERFAULTFD
+>>   	select TRACE_IRQFLAGS_SUPPORT
+>>   	select TRACE_IRQFLAGS_NMI_SUPPORT
+>> +	select HAVE_SOFTIRQ_ON_OWN_STACK
+>>   	help
+>>   	  ARM 64-bit (AArch64) Linux support.
+>>   
+>> diff --git a/arch/arm64/kernel/irq.c b/arch/arm64/kernel/irq.c
+>> index bda49430c9ea..c36ad20a52f3 100644
+>> --- a/arch/arm64/kernel/irq.c
+>> +++ b/arch/arm64/kernel/irq.c
+>> @@ -22,6 +22,7 @@
+>>   #include <linux/vmalloc.h>
+>>   #include <asm/daifflags.h>
+>>   #include <asm/vmap_stack.h>
+>> +#include <asm/exception.h>
+>>   
+>>   /* Only access this in an NMI enter/exit */
+>>   DEFINE_PER_CPU(struct nmi_ctx, nmi_contexts);
+>> @@ -71,6 +72,18 @@ static void init_irq_stacks(void)
+>>   }
+>>   #endif
+>>   
+>> +#ifndef CONFIG_PREEMPT_RT
+>> +static void ____do_softirq(struct pt_regs *regs)
+>> +{
+>> +	__do_softirq();
+>> +}
+>> +
+>> +void do_softirq_own_stack(void)
+>> +{
+>> +	call_on_irq_stack(NULL, ____do_softirq);
+>> +}
+>> +#endif
+> 
+> Acked-by: Will Deacon <will@kernel.org>
+> 
+> Please can you repost this at -rc1 and we can queue it up for 5.21?
+
+Sure, will do.
+
+Thanks,
+Qi
+
+> 
+> Thanks,
+> 
+> Will
+
+-- 
+Thanks,
+Qi
