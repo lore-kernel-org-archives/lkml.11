@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0970CCA489
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 08:18:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21279CCA47F
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 08:19:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234787AbiGVISz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 04:18:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43678 "EHLO
+        id S234836AbiGVITQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 04:19:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229682AbiGVISw (ORCPT
+        with ESMTP id S229682AbiGVITP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 04:18:52 -0400
+        Fri, 22 Jul 2022 04:19:15 -0400
 Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2100.outbound.protection.outlook.com [40.107.236.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 507CF9DEE3;
-        Fri, 22 Jul 2022 01:18:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98F9A9DEE6;
+        Fri, 22 Jul 2022 01:19:14 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VEfUgRt92qzWAbF5kdguedH1w1THpTacr77TB/bfi5JNaDv/hJxeHJTC3l5507L/M+eGBjcQX/JXSI96BXL0K7oR7Zo4Dw8mBED71NMr3Gn3O+Kqyey1t4Y2rLEyA629yn0P5tWKwBmjLv8kyvwrqHrNvawZ0dSxNF1DI4+h59MPUBhVU7ec9YKQ4/rjXAI+q6Qenz7qTsCRFLNtlqFxjwPSGkIaj3Fw+Qynl5qoN+DsCMOjktUX3F1SO5+URi9haPRpBikSn/jYktT6E0CWut240rkiD2ugvTzw4jzpLnp21ERUx70fKjlh0MRXTOSPUURNMIXa4NsTH1OZMFDljQ==
+ b=OkHM8Uk96sHCeBgRgb99ccz0Bd0V/r5GBkTUflo2oLpKItk/WqTCV+xh3Qu0HmJACjeSYxEQ8HJP9pU0D/REF3CV3TaCkgg7/UMqtijjuuN6UvnlbaKv0xgPWRDT9ZlXorwiylXjCmZ5gFvjwSeL9TkGUG2T03SOGZJw8S5j092gS6vWqX/epVk5A/CN6VlxvFWxCkmCZDsDsQY7yA7qDy7L6yhDv+V7kPxW3EdYGau8E+Dg7qhNCgwnW7YZDFMeLWCBAE+shK13NLuR2z1hwW8AMaSiMM4wuMTsroMviP4SdydQXYeC65umZorZt2omGE1kq/MMvK2Ee3U80ukz5A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=PII8ZTfTSFW1bBpp4hMzebR9TmVODZU7ENQ4BBYEwW8=;
- b=Axe3Hkjwww9z3LxqVaam52EFnFeOKV+uGbzt76G2uxepIy59R0OxZ6mT06VIMKWvQICK8zijHP4SnH8deSYJrSo3SeTTsaCLRA/4zYcBEURuopvBSmR0Yd4vHLRZpmwY72KgvF587taG0g7j1s4AUxHx25Q5IKdOEsirrNxbBLw9ivucT49ThX0yp78Un0emSk+qb378HRUSyVCl8B6tEgY1RFWqGvWcY+p5ZweegT3B+RohhnF2rp6RIy9xsvIpPrnM+HS+GoV0HkwRbRYQnr5OXxzPgqyPwQ11PSN+A9e/YsVArMEm0+9tfL7xlq/26yHJ/JiR6rfwcbR3++ZYKQ==
+ bh=DJF3NB6jgHIABUR079P15okPbHbjcE2F71rF1xFXYBw=;
+ b=DUlqBJjDMnPbzIVaBNFy4f1wAA97AEyhiNldm0DZAQKV5deTqvvU729PHdhSLXZSEL8+BBDoEurzcE9YEtK0Nrm6OJpSCxjL1FU14EvCsUiQ2M/J/FrTYtmTrvJIUw8rFm2sYaic0+3TqEjMO3aBUyda6XOd3waJy+v3OLJneZJwwvp2VSKeY610+Sp8w7ZMOA3RDP1C5EfeWrhI5u4V9I4qgOvIJCB5lT4okYP0tcs0Xlk4l6i+pHCH/Gb5n9dbeFosf4zsrY+HZlveuO1x1VzLJJVFsNA+ZF5Q7Tjd9JWarLhqGSZ2k6p17Nejci0Nruo8QZ9ej9r9YZjSZyvVFQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=analogixsemi.com; dmarc=pass action=none
  header.from=analogixsemi.com; dkim=pass header.d=analogixsemi.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=Analogixsemi.onmicrosoft.com; s=selector2-Analogixsemi-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PII8ZTfTSFW1bBpp4hMzebR9TmVODZU7ENQ4BBYEwW8=;
- b=oJ2hh3SN4z/Txfd21VWW2WznAbtzzSx9w1pCYB9Q3KE+geGXBMJW5qIOgTmtZydYeztdTm4OL6d4R7RE5zLl6k+TdLkUzR4rK88WmY3iNPVgkyLBQIObjTJ3jVsIhgWRYjeSVVcmGSsEe9tJOo28Srgkk2yBUtSrzKY+4y3GBAs=
+ bh=DJF3NB6jgHIABUR079P15okPbHbjcE2F71rF1xFXYBw=;
+ b=08Os6o/2dwRhVE3jDFB8mxrwWtzrvpa9Z+nk1k9wmSoDzSHj5Xk4BdrkYW4APHGXf+P1wsxi3E3ytuQzgPKXf1ugjW8Vfa4FXg6nYcC6IoqpH43TTuGtpqhakcQ1rjBtHP8KNBy0wjSjTdGYpfuaWPlTZ4eB7dyiyj+CWkVB9e8=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=analogixsemi.com;
 Received: from BY5PR04MB6739.namprd04.prod.outlook.com (2603:10b6:a03:229::8)
  by BN8PR04MB5986.namprd04.prod.outlook.com (2603:10b6:408:57::19) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.19; Fri, 22 Jul
- 2022 08:18:48 +0000
+ 2022 08:19:13 +0000
 Received: from BY5PR04MB6739.namprd04.prod.outlook.com
  ([fe80::f02d:f2e:cba9:223b]) by BY5PR04MB6739.namprd04.prod.outlook.com
  ([fe80::f02d:f2e:cba9:223b%6]) with mapi id 15.20.5458.018; Fri, 22 Jul 2022
- 08:18:48 +0000
+ 08:19:13 +0000
 From:   Xin Ji <xji@analogixsemi.com>
 To:     Heikki Krogerus <heikki.krogerus@linux.intel.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -48,104 +48,97 @@ To:     Heikki Krogerus <heikki.krogerus@linux.intel.com>,
 Cc:     bliang@analogixsemi.com, qwen@analogixsemi.com,
         jli@analogixsemi.com, linux-usb@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 1/3] usb: typec: anx7411: fix passing zero to 'PTR_ERR'
-Date:   Fri, 22 Jul 2022 16:18:34 +0800
-Message-Id: <20220722081836.3380885-1-xji@analogixsemi.com>
+Subject: [PATCH 3/3] usb: typec: anx7411: fix missing error code 'ret'
+Date:   Fri, 22 Jul 2022 16:18:36 +0800
+Message-Id: <20220722081836.3380885-3-xji@analogixsemi.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220722081836.3380885-1-xji@analogixsemi.com>
+References: <20220722081836.3380885-1-xji@analogixsemi.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: TYWP286CA0025.JPNP286.PROD.OUTLOOK.COM
- (2603:1096:400:262::13) To BY5PR04MB6739.namprd04.prod.outlook.com
+X-ClientProxiedBy: TY2PR06CA0013.apcprd06.prod.outlook.com
+ (2603:1096:404:42::25) To BY5PR04MB6739.namprd04.prod.outlook.com
  (2603:10b6:a03:229::8)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 51444700-8089-4749-1bf5-08da6bbacda1
+X-MS-Office365-Filtering-Correlation-Id: 0d38d6fa-5102-4b74-87fe-08da6bbadc41
 X-MS-TrafficTypeDiagnostic: BN8PR04MB5986:EE_
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 2WMzWBUJbX3YzhiQpofiQGmw4oDeLJVffHrfREL6+DcUJ0RZX8tbPQ3OZonSm+FYP9oQG9d1Wmsf3AGCAnEKsVD24dGF+qasqMI/8IIph2t6oI6DrNuq0t8wkBsBh41jRgxVLCJClNHhjYdBx3WyfnxEL6dwMYqiizdxT5ZXNSwE58wn4GEyEbDXfcivUV4LG6uH+uwPUyWVblINeY1Vd+j7Yb87a0ovuw4euSEME4nlczFOpmbSaW+A/vfLN2OA9fulRfvLFieh6kxnrTBG824gR/VWqVT5oDII6pk082JdFOZuyXgGxRbNkgddTWchKfLue+G4rRb9mHLLuFdgYsrdsLV2AksaD2b33ogOQm6sSVhxz1ETE31KEOjACRDFnGUhIcBFuNmoSn4XmgmVTVmnUWj7pzmRvLBg4vJ/yKJj14blhlaJ4ZQBrQGNHeoS1b/JHWLxk22TYRU3JpSaP2Ta/GCoDqfBAWo9Rf7sDVgYuUOBr4gVHSiJIFiQ0oNOZdOfIrx7Izc9OxJI7A8bMaZpYYO0vAtgxiqWLZKPhvlU5COjAPfjhg9b4xJhYiSFPbRza4gRxny8wdsoK1XiXP2IM2juf4Sgn2dcpElMpCy8Y+ulRQjpP4fCEgjgMqQmwOS55Bxi4gkfT5WfCmkYMB+HeCgt4f5TJN4UtKWvVFyUfkJfzh3wBSCTPz1+2W0OfmAlS6AETji9Qo5ASnlVZ/t1s0e5nO+APusea0nqMsbwql0Wg1xy/OV0Uz8B3uXDyB6+9UbSxGIIFKsJb4xCo19CJ0XSiMVsRSxBA05ECg8=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR04MB6739.namprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(376002)(346002)(39840400004)(366004)(396003)(4326008)(8676002)(66476007)(66556008)(83380400001)(7049001)(66946007)(6512007)(41300700001)(6666004)(2906002)(26005)(478600001)(8936002)(5660300002)(6506007)(86362001)(52116002)(6486002)(38350700002)(38100700002)(110136005)(186003)(36756003)(316002)(2616005)(1076003);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: 2qYrKNPsU8NjtK6X3UQn98Und1tEVtwoYUY2/0k4tlTOQgeRKLfez1Wmyc1CH8wK9U2kKlEwdNf2ZgGGRUa69+EZlF9sb+nOgztfMM371HYGiDxlZk+hBzVzyCoNYRhzVcKhK0vx2OTstnduMtCtX6dE8em5D6MP3n865894H+uIL/I8LAevxezOmR7RG7WGOhQYttlKGT7kn3CPUN12Nn1ySvercgFRV90PNfdRMcfOEkGNLQni2xANUOouTCoYrjYuy+vLniVG5rzO8Bto0wx2dLpkxeeM0URY2vj9sGh0KzKN6PPWnPFEfcP3Jvy590HM9KK0OOIfDGefxScSslzSWL+ivyUQJK2s8gG0kFyu8SVqU1dTN1KcHqo0vTvE8cTxloW+eAx1hi3QCcV0aWLm4/gfSpgXjgR2M3w6sUEvVChEUpeDTwG4h8rfcFO/hxcNtDmWi/TUiaK48BTxFWsqC4QtXNDxGTPvHztkBx/SwIBfcldaGCgyQYB9M5rUOMtTJ5XFB28h4DwhS7ucQxrJUqjYA8uM1HSrnMqSu1Q+WlTxgiqf0V0XcFZwqbWU8dRphiLGZucoHfBUxWCvE3v8JeENGoKzAe9o/ilhryNduP3uZCB8TFxwNEnIn0aYGwm/kknm16DUjAaxSVYD9uOSC3uU2VgwPLY/Pbe3l+Our4KoQaG7QZMTrc1xwWHHtWqeRJWKPbftolRXghodxw7RPyqMJDOXExVM677VBBeI+1quhxLakUUJsbI248mzapbhFADcevxKnmMoL01pKA4p6JHZIg3ThH7hiMW0cNGaNOkDeYnt2fqkP/vAVe1g
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR04MB6739.namprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(376002)(346002)(39840400004)(366004)(396003)(4326008)(8676002)(66476007)(66556008)(83380400001)(7049001)(66946007)(6512007)(41300700001)(6666004)(2906002)(26005)(478600001)(8936002)(4744005)(5660300002)(6506007)(86362001)(52116002)(6486002)(38350700002)(38100700002)(110136005)(186003)(36756003)(316002)(2616005)(1076003);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?U8x8+7gDKBUVQPhvRRnIh+/G0nQJXfWjCiMXZsa0mglyFpjrZbGAGukAVPM9?=
- =?us-ascii?Q?EG4Mvqkbc4A6azIkzbGhVgLLe70AU5Qmj63iVwrm+QO9LYzfKpJVR9lMRUOe?=
- =?us-ascii?Q?sRNIBa8EU8XSUGhpXMk9uSVGlfYucru9EIZk9hUa9ZXAuqRaIFcZUXsCWq3g?=
- =?us-ascii?Q?od6eMy2oV4mQJW/gSdfhdrGZZrqPu/g5QbXlk++06P2ijgdIf4yfDsNhrGpu?=
- =?us-ascii?Q?UBrwlQ6FJ2amC+hc7V8Hlm324FMQr2+r+BH3DquiJ8MAfTY2XC2T39HjKnfz?=
- =?us-ascii?Q?WSnXT5hL/FCPPXIsw8BX1fclM/n4ML1KzHcRq8iArdXcQuXhpMNgEn0MRuSR?=
- =?us-ascii?Q?OSBWShPKoVCqnfNRZsdjzEEHu5c2CygDQT0M5VMH6JzsdX+zQ7Dwne+R6rUH?=
- =?us-ascii?Q?NTnXKqGr8Qqtbz6XVHr1ZKw555ZS1xgqK+QbmgqihGhcHJO+W0wJYkbt9j7k?=
- =?us-ascii?Q?4fCSU6QDnzGPF5S8ovuBUM+Xk/KK5rPrfhS67qYu1r66GPNJIHj5PFYemmcs?=
- =?us-ascii?Q?kA1SLEEAvhzYAN0Cwm6oQo1nX012qVSRYw57cth84UAOyZS9/dLG94uq+76K?=
- =?us-ascii?Q?gUP/U5z/zl3zkotV+9+fnKUzKvk3OiAnhdzUW8FI49Gd4pznsFSS4pMrxOIv?=
- =?us-ascii?Q?1Gh0flof/z9Mp3RuAJPpSjsWZiE3hue4KG5busG+jbn3MyewhlFAozCLJ5Ud?=
- =?us-ascii?Q?2Hov7yiuHFB/2Uzdz5sng3y2/QxzyCWYsCxwgSQSHcNYjOdigD+sEWynbkBd?=
- =?us-ascii?Q?25PTRa85kSRXM5HU+jl1CZDRzaJu1qBmIL3ewZd5CiGBq6EQh+7o0b8SLDkS?=
- =?us-ascii?Q?mIlnCQuBlsDjcxEqb6F14jMAEj6rE0p5tIj7I7NdaajzcvpEZnmNPxGZkRtk?=
- =?us-ascii?Q?AbQs/508HWZllPF3zEKnTgNMzSh1OaavuobVkKrXEX3UofjKMSjqXMVmhQoi?=
- =?us-ascii?Q?ycuQL3ZIR0NDyi7y87gcYvEmIHUV+QimqcG2OZ5Ey2CYkav0ehvPgqbrBRLH?=
- =?us-ascii?Q?lV371uiMnuXZtvb2u5jtIHxKcKqgk5bAPNTNp4P1b5y02zMxUta/cWFEcjxg?=
- =?us-ascii?Q?+6B0Uyz6I7VmcQydVWi5JvJFUyJtMjc1uZ/GEKbhOysjkHBm7TbROgV/AgPC?=
- =?us-ascii?Q?le0nWE49PUYkLDjlstkjt2JBRIjIKgDymqIqoZfVWZe7jREJtawBLRwZj0kz?=
- =?us-ascii?Q?zO8nsrKYgwWXzvN4mLqHXJi25u39QkLY9970PCNfrsaGlxZQIAej6J5V7Wr6?=
- =?us-ascii?Q?GnjasoAjLWfm3GXrpofcSps6VT219h0uM5FP5GPTvEb+C6ERTUSdvhn02jeT?=
- =?us-ascii?Q?dzmCnn6DOZVRhmevX47eJ73ytQ8bHVSXIb7BzvatjL6+7fg7//EWMwzWKY6j?=
- =?us-ascii?Q?rL/CBjEWczKopA3LdaCQRFN88u7y6U/9TF6+j+xqIqJIF9598MXQpS0fzRYI?=
- =?us-ascii?Q?craePx+qi/W/38hOjp0ubHtydme66JZHPGEq82YTzHZ4DCXZIc3O33SUM2Q2?=
- =?us-ascii?Q?5HC9NxN9Y5DS6StfWUoAOM0bydhA2/YSoVW5yP5Qm7rGBbuK/4o6RbstR607?=
- =?us-ascii?Q?FSXLLFnh/u3ILvBs9vLoa94mlSpq/GcQ+MFP4W94?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?WMaGnVdkP9+AmpRe66J0J31fw24P4y9I1VkCyIqX7wXBpgM0saDBrxCQhVtU?=
+ =?us-ascii?Q?I1b/kLfj//tDe6twWFw6w0vbiHkP8wHJtVzomTV/MiKMMfYqnitoXGCpKbR2?=
+ =?us-ascii?Q?IQN4bIV1JRrpT+jd+ku3U83NiEpW643xmfjKJXggkz8T9f+mTU065+bqW6oN?=
+ =?us-ascii?Q?hU+MRaUtubco0S7E9WbiCG1BSbEfGTx6AMzYS+uNbK8OwpB+Xg0K76uH0Vlo?=
+ =?us-ascii?Q?+NIdq2MoLz6kLarw084oWkP3pM2FI3iJFaLW/MYNH5q3hV7irprYqX53Jy2r?=
+ =?us-ascii?Q?GZIrvqwxM+93yiz6itNxE+8hFsEj5BWV2yngZhHjmQ07/x+x5gmXOLMUzUOl?=
+ =?us-ascii?Q?iT7VDa9KgP4fn+Y0wcryDcFgfqMvJyvAgUPk6k6OOwg1FZcVxzcou3KDkcSU?=
+ =?us-ascii?Q?uvwxYC9z23lXBUs8g4Jk9ILWHi/e9/g55ZLpEsAcXLFQPKj1wy5CUBxtflYU?=
+ =?us-ascii?Q?2Sxv+roks44bEAbEfY1DSY0M0eGUAL9shwayONgVWeYKNPaRbVRitHACk9d1?=
+ =?us-ascii?Q?jskbo2j8w3SGWEOMGvWfF3BZ6VH6GhiZMnSsxCE7e1OYN5KPDmb52058J25W?=
+ =?us-ascii?Q?la+ZVsz0fn/vysH0Pvv+niFwzHJJNHnzPAyT9asDCDy1/EhJNUBzBp9E5NFf?=
+ =?us-ascii?Q?ukQDAKVGXG0zwFATZz+sdvvz7zkIDCZU2OvQdScuPV/NCyI3q22Emz6256wu?=
+ =?us-ascii?Q?cYBvBmoUDrWV1fmrUuTCEmMQ2NauJVg+m9RiAkYUI3pyIMX2kxCY+wFq7HBk?=
+ =?us-ascii?Q?dNZ7n/h6Wd+bhWqve/nXmdws/8IBBweD2jSVgz/E72ouVCRZYPBlHnjC7X9A?=
+ =?us-ascii?Q?Ip5h13IuQwZMYTLWbtZ5/1M9XHOALSg4pi9o0xB2TV0DGoHWidwwQt5q3jtN?=
+ =?us-ascii?Q?BpWy0bbRa1BTgzeQTaA4kwo50uAwVgZsbZVa4W1BYk4JaYiSEevicWrr/u9L?=
+ =?us-ascii?Q?KsUplaOaOoDhNyovJ8OusGEOfKFBynl+P6bIMVpBRMEoYU9ahnv9jQQfYLGl?=
+ =?us-ascii?Q?eQ4Uj5GPQVRamnd3vaxKDUNs8Wri3RVqzlX5wxRKOkgPjpsOjrJGkWUPP7uo?=
+ =?us-ascii?Q?Vn4fifOlbvvLE/9z+mgXjEW+Urg1g/B/XhKSJONQ3LvlhkrZ3bOu9aT4xZK3?=
+ =?us-ascii?Q?RdsWkLBlIgUZ++4ws8YZHoKFJMIisT8MD7NIuibCKIOwQOx9Hfm72mHZGDB/?=
+ =?us-ascii?Q?JGMCsil/nK6wT6DNAO7TxWPyrfu/WLX/64TmTeZzqq2XmIXzjd/WGNn9WMUo?=
+ =?us-ascii?Q?VsXeKu8DkNub6j70Yg/6OA6fjmPVB2dzb3e3nscjIhnnebpRZVFIgEe2Tgoh?=
+ =?us-ascii?Q?De05142vLD53H8gzJxwZExqMuTTexDp9H4RR8tq2p87C5xdj9p9dtM/tsCvO?=
+ =?us-ascii?Q?Rsv9TnaGilokiaJjF6xyWltT/BGGy3aowN27ChLWMxQM2iMaD+F/ZgHNiymd?=
+ =?us-ascii?Q?gnIli1j1UIejsH0TrqFRuJuQrISvMzfY7Sx6IZgxKvzZTbLNmlXASmXDHPRf?=
+ =?us-ascii?Q?qYuS7donow8UvHOq8A+Q1jGbb47qZND1SRhPWMQkKvcCjOqTzBwNvdxA1VDV?=
+ =?us-ascii?Q?6CIrHRc/1sODAwVbTfRFycUhufM/nywIe9BbXXER?=
 X-OriginatorOrg: analogixsemi.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 51444700-8089-4749-1bf5-08da6bbacda1
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0d38d6fa-5102-4b74-87fe-08da6bbadc41
 X-MS-Exchange-CrossTenant-AuthSource: BY5PR04MB6739.namprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jul 2022 08:18:48.6198
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jul 2022 08:19:13.0667
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: b099b0b4-f26c-4cf5-9a0f-d5be9acab205
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: go6vw5LucQ2GynlV8c4MQkMsPyf2+437A60aJ5JPa7egkz8QcM7MZzQ0N749uvz3+P8AaH0E7XA3FAUMgVWFXw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: DQiFWt1oNYgID6eMw2t4RSnjdip0Ps7Sa8t4rngENHy+BRajsHyUEuzYM5ttlOOJFtAkNWOPXoAaSCx5HsIZ5A==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR04MB5986
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix anx7411_register_partner() warn: passing zero to 'PTR_ERR'
+Fix anx7411_i2c_probe() warn: missing error code 'ret'.
 
 Fixes: fe6d8a9c8e64 ("usb: typec: anx7411: Add Analogix PD ANX7411 support")
 Signed-off-by: Xin Ji <xji@analogixsemi.com>
 ---
- drivers/usb/typec/anx7411.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ drivers/usb/typec/anx7411.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/usb/typec/anx7411.c b/drivers/usb/typec/anx7411.c
-index b990376991f8..7b45d7440a9d 100644
+index dc86b6704cbd..525022c24e05 100644
 --- a/drivers/usb/typec/anx7411.c
 +++ b/drivers/usb/typec/anx7411.c
-@@ -374,6 +374,7 @@ static int anx7411_register_partner(struct anx7411_data *ctx,
- 				    int pd, int accessory)
- {
- 	struct typec_partner_desc desc;
-+	struct typec_partner *partner;
+@@ -1483,12 +1483,14 @@ static int anx7411_i2c_probe(struct i2c_client *client,
  
- 	if (ctx->typec.partner)
- 		return 0;
-@@ -381,11 +382,11 @@ static int anx7411_register_partner(struct anx7411_data *ctx,
- 	desc.usb_pd = pd;
- 	desc.accessory = accessory;
- 	desc.identity = NULL;
--	ctx->typec.partner = typec_register_partner(ctx->typec.port, &desc);
--	if (IS_ERR(ctx->typec.partner)) {
--		ctx->typec.partner = NULL;
--		return PTR_ERR(ctx->typec.partner);
--	}
-+	partner = typec_register_partner(ctx->typec.port, &desc);
-+	if (IS_ERR(partner))
-+		return PTR_ERR(partner);
-+
-+	ctx->typec.partner = partner;
+ 	if (!plat->intp_irq) {
+ 		dev_err(dev, "fail to get interrupt IRQ\n");
++		ret = -ENODEV;
+ 		goto free_typec_port;
+ 	}
  
- 	return 0;
- }
+ 	plat->dev = dev;
+ 	plat->psy_online = ANX7411_PSY_OFFLINE;
+-	if (anx7411_psy_register(plat)) {
++	ret = anx7411_psy_register(plat);
++	if (ret) {
+ 		dev_err(dev, "register psy\n");
+ 		goto free_typec_port;
+ 	}
 -- 
 2.25.1
 
