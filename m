@@ -2,223 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDD07C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 15:27:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8DF0C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 15:27:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232365AbiGVP1h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 11:27:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44414 "EHLO
+        id S233577AbiGVP1r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 11:27:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231178AbiGVP1e (ORCPT
+        with ESMTP id S231178AbiGVP1o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 11:27:34 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA0A29EC6B
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 08:27:32 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id y141so4708071pfb.7
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 08:27:32 -0700 (PDT)
+        Fri, 22 Jul 2022 11:27:44 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01F459F050;
+        Fri, 22 Jul 2022 08:27:43 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id d16so6966102wrv.10;
+        Fri, 22 Jul 2022 08:27:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dabbelt-com.20210112.gappssmtp.com; s=20210112;
-        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JiTsgIyx7zIuebw3jPBiJz5uZKu7LJAxJF1fKKcrwMc=;
-        b=rrckFJbUDVsImQF7IueIbd0/U72biyUAgvOzS+WhlcjHCI3ldV94QbLnmmGX/EQSr+
-         c8TSWho4ZocrCsAjV6gxmPElF1BHN92O4e1VfJB6B8bR82dmtAYAf8QTGOxStbnKVdnF
-         Rr9z7B4FLIxTcqsj3J4Ep53UwR44wRjA2i+TA8UHQ9jC0eqwkKnSRwGNwiYl3JihLKdL
-         1oyg1K4t6/seSECyO7ysuzncwYAIxoww5m1UBmjQwNf0zHUNZHFNBBwqN39nCLjmjVJG
-         LHZtpEy0JFK7N84KO0Jz7kvgGjh7WVGK2YZaqOzvnCz0FdvPKk9PLma/CLmmlb2xLLpZ
-         9q9Q==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=91TgSgSA/YJ92ess13xjquT9UadVbNK7ich3jTvC5qI=;
+        b=k/TFir2d6KAVi3xNxGUZuwCh/ybufbrNaeiH3SeOXE+3Cj6IUDA0NhAjhrSsJOPn8V
+         WFM1U/tGr+K90lpQ+BiLn9ciICmiGj+8hT2H9d67MEfZgGHXvfxKJlwP4xW/EVhHjfJ+
+         UaxibEcgJ/3Yj5dxKkcD+oTXGzWRJMKJPyEXQc88EIJGJc2V366zNJ6XXxKxId/snIUQ
+         j8gXQi9CCaTu1exkGoZRw5cpQxmhjHBdG82ie8fthDyijBDdSM8HBTVoud6O23HMLJm8
+         hEN53vuJ0zAIxgkyq2d0UDgH2RqtMHaUIR8LNTLACioSRku209F4g4t9PNX8fFF/9RpU
+         x8SA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
-         :mime-version:content-transfer-encoding;
-        bh=JiTsgIyx7zIuebw3jPBiJz5uZKu7LJAxJF1fKKcrwMc=;
-        b=X2rCxoBPz7eY9VueDQACwiutihYlgfEWDMuyl4Cl5qoQ9/73AtXH6SEyPlVdTXe8zW
-         jC9yx/Ij3LSIw81Z0TdaoOZ9DSBWH5x8nFBt4ZxL5nJTfYM63hzu9VJjcZF034yNohvQ
-         dDvFQCbvPcZsv2rQruqVSNXf9hURo/7Uipw0KWQyz6vtefTqQV8VHOHYb2ip/JTEma6k
-         02R+iLCRJS6o+pYKHLInqAEPFYNxFmZgFZv2JAo25yGPE12whFzOEWE5ooMDVstgEEz2
-         voBybyUTkwSGsTdV7XzN/eV+Lb6TcKYN8wAJsn7wUxRCExK4KYCf3I+2c1l3e4TAwIHr
-         /J/w==
-X-Gm-Message-State: AJIora/UjjCZrPkmpax6CKNMgFqd5ho3lJMmX9nZvR7Tx5BQOzMTQ9wz
-        NMqsHIIKj5rLSeR9Nv0LyWg5Ig==
-X-Google-Smtp-Source: AGRyM1vjiNi3gAsTSR6PPVAuJFh976n3sC3CS18PuJ5NGShYw7q13nR9jGjBImNfgAPUs0Ag9vo1kQ==
-X-Received: by 2002:a65:460b:0:b0:41a:6637:6544 with SMTP id v11-20020a65460b000000b0041a66376544mr257298pgq.511.1658503652107;
-        Fri, 22 Jul 2022 08:27:32 -0700 (PDT)
-Received: from localhost (76-210-143-223.lightspeed.sntcca.sbcglobal.net. [76.210.143.223])
-        by smtp.gmail.com with ESMTPSA id p4-20020a17090a930400b001e292e30129sm3562385pjo.22.2022.07.22.08.27.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Jul 2022 08:27:31 -0700 (PDT)
-Date:   Fri, 22 Jul 2022 08:27:31 -0700 (PDT)
-X-Google-Original-Date: Fri, 22 Jul 2022 08:27:30 PDT (-0700)
-Subject:     Re: [PATCH v3 2/2] asm-generic: Add new pci.h and use it
-In-Reply-To: <CAL_Jsq+_5-fhXddhxG2mr-4HD_brcKZExkZqvME1yEpa6dOGGg@mail.gmail.com>
-CC:     shorne@gmail.com, linux-kernel@vger.kernel.org,
-        Arnd Bergmann <arnd@arndb.de>, catalin.marinas@arm.com,
-        Will Deacon <will@kernel.org>, guoren@kernel.org,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        aou@eecs.berkeley.edu, richard@nod.at,
-        anton.ivanov@cambridgegreys.com, johannes@sipsolutions.net,
-        linux-arm-kernel@lists.infradead.org, linux-csky@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-um@lists.infradead.org,
-        linux-pci@vger.kernel.org, linux-arch@vger.kernel.org
-From:   Palmer Dabbelt <palmer@dabbelt.com>
-To:     Rob Herring <robh@kernel.org>, bhelgaas@google.com,
-        macro@orcam.me.uk
-Message-ID: <mhng-7e3146ca-79b8-4e16-98a9-e354fb6d03ba@palmer-mbp2014>
-Mime-Version: 1.0 (MHng)
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=91TgSgSA/YJ92ess13xjquT9UadVbNK7ich3jTvC5qI=;
+        b=O1gubIcM7ZNRk+LS5+nzamVaGo5+Pmx0jIbSy4GPDDiyqt0zsKpy9AZHVFZi8ltK/K
+         knKgpeC8U/4rDfixsyissR5TeKex12KrKQprFt+zgpgryw+2cR+vKciGEN+i7Sncz2TW
+         CR1huiboXZYo0BpJYewji/e41n/xN45/XhmWxYeSMfElnLE8WJoAVNyQU+Vf/rbLHqdL
+         pEk0iSzLmLnHQxIavbvV8hgw4qdi8E+UzjWqIT0guw449NGym8ifl+1jehAVd2woEmPW
+         nvBm1DnSK5dT4flSZThk/We/foOPaS9cWtSC9NfNRNv7HfQcqoE/f7ODVsesv7JlgNK4
+         nQyg==
+X-Gm-Message-State: AJIora86MTsPiD64sHmNKasln8y+uW7qkh54aA0cjKl3xKXoMwnyA7Qd
+        eZqPi625lfmVxVMHIyFIMEJrlKrbcn6m+WGmz5jwmcOz
+X-Google-Smtp-Source: AGRyM1t/dc5V3tlwl/q7T8kwCuJ7BkOWFAp3DDWr7S604HLVvUwtxwwAR54eidgUx5YB6yIo4YaTjmqjVK/7CXLbmNU=
+X-Received: by 2002:a05:6000:18a3:b0:21d:c651:4de7 with SMTP id
+ b3-20020a05600018a300b0021dc6514de7mr288256wri.679.1658503661395; Fri, 22 Jul
+ 2022 08:27:41 -0700 (PDT)
+MIME-Version: 1.0
+References: <1657346375-1461-1-git-send-email-quic_akhilpo@quicinc.com>
+ <20220709112837.v2.5.I7291c830ace04fce07e6bd95a11de4ba91410f7b@changeid>
+ <CAD=FV=XzvcjS51q78BZ=FPCEVUDMD+VKJ70ksCm5V4qwHN_wRg@mail.gmail.com>
+ <c022538d-c616-8f1a-e1c2-c11b5f0de670@quicinc.com> <e4dcdd8d-18a9-8da3-7ac3-6cc792139f70@quicinc.com>
+ <CAE-0n52TG3hsytN5nRU7W=S6PffSj8yQDmuicN0-qxoW-jxiZQ@mail.gmail.com>
+ <0c050434-27ca-1099-d93d-8ad6ace3396e@quicinc.com> <CAE-0n53J=dADDTrydVuNZzw38dW_-+Baf8cfn0Q6DSVX_6cLNg@mail.gmail.com>
+ <b6ab023b-601d-1df2-b04b-af5961b73bea@quicinc.com> <698d3279-6a02-9b1e-a3bd-627b6afbc57e@quicinc.com>
+ <1e39d008-f8e5-eea5-90f4-78293bf2c580@quicinc.com>
+In-Reply-To: <1e39d008-f8e5-eea5-90f4-78293bf2c580@quicinc.com>
+From:   Rob Clark <robdclark@gmail.com>
+Date:   Fri, 22 Jul 2022 08:28:03 -0700
+Message-ID: <CAF6AEGsSfB6wY6mxhxO6H0h0OxiSn8yw5WuKJ-v-U9i9mn8AEw@mail.gmail.com>
+Subject: Re: [Freedreno] [PATCH v2 5/7] arm64: dts: qcom: sc7280: Update gpu
+ register list
+To:     Akhil P Oommen <quic_akhilpo@quicinc.com>
+Cc:     Rajendra Nayak <quic_rjendra@quicinc.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Doug Anderson <dianders@chromium.org>,
+        Taniya Das <quic_tdas@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, Jonathan Marek <jonathan@marek.ca>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jordan Crouse <jordan@cosmicpenguin.net>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 21 Jul 2022 16:06:52 PDT (-0700), Rob Herring wrote:
-> On Tue, Jul 19, 2022 at 9:59 AM Palmer Dabbelt <palmer@dabbelt.com> wrote:
->>
->> On Sun, 17 Jul 2022 17:41:14 PDT (-0700), shorne@gmail.com wrote:
->> > The asm/pci.h used for many newer architectures share similar
->> > definitions.  Move the common parts to asm-generic/pci.h to allow for
->> > sharing code.
->> >
->> > Two things to note are:
->> >
->> >  - isa_dma_bridge_buggy, traditionally this is defined in asm/dma.h but
->> >    these architectures avoid creating that file and add the definition
->> >    to asm/pci.h.
->> >  - ARCH_GENERIC_PCI_MMAP_RESOURCE, csky does not define this so we
->> >    undefine it after including asm-generic/pci.h.  Why doesn't csky
->> >    define it?
->> >  - pci_get_legacy_ide_irq, This function is only used on architectures
->> >    that support PNP.  It is only maintained for arm64, in other
->> >    architectures it is removed.
->> >
->> > Suggested-by: Arnd Bergmann <arnd@arndb.de>
->> > Link: https://lore.kernel.org/lkml/CAK8P3a0JmPeczfmMBE__vn=Jbvf=nkbpVaZCycyv40pZNCJJXQ@mail.gmail.com/
->> > Signed-off-by: Stafford Horne <shorne@gmail.com>
->> > ---
->> > Second note on isa_dma_bridge_buggy, this is set on x86 but it it also set in
->> > pci/quirks.c.  We discussed limiting it only to x86 though as its a general
->> > quick triggered by pci ids I think it will be more tricky than we thought so I
->> > will leave as is.  It might be nice to move it out of asm/dma.h and into
->> > asm/pci.h though.
->> >
->> > Since v2:
->> >  - Nothing
->> > Since v1:
->> >  - Remove definition of pci_get_legacy_ide_irq
->> >
->> >  arch/arm64/include/asm/pci.h | 12 +++---------
->> >  arch/csky/include/asm/pci.h  | 24 ++++--------------------
->> >  arch/riscv/include/asm/pci.h | 25 +++----------------------
->> >  arch/um/include/asm/pci.h    | 24 ++----------------------
->> >  include/asm-generic/pci.h    | 36 ++++++++++++++++++++++++++++++++++++
->> >  5 files changed, 48 insertions(+), 73 deletions(-)
->> >  create mode 100644 include/asm-generic/pci.h
->> >
->> > diff --git a/arch/arm64/include/asm/pci.h b/arch/arm64/include/asm/pci.h
->> > index b33ca260e3c9..1180e83712f5 100644
->> > --- a/arch/arm64/include/asm/pci.h
->> > +++ b/arch/arm64/include/asm/pci.h
->> > @@ -9,7 +9,6 @@
->> >  #include <asm/io.h>
->> >
->> >  #define PCIBIOS_MIN_IO               0x1000
->> > -#define PCIBIOS_MIN_MEM              0
->> >
->> >  /*
->> >   * Set to 1 if the kernel should re-assign all PCI bus numbers
->> > @@ -18,9 +17,6 @@
->> >       (pci_has_flag(PCI_REASSIGN_ALL_BUS))
->> >
->> >  #define arch_can_pci_mmap_wc() 1
->> > -#define ARCH_GENERIC_PCI_MMAP_RESOURCE       1
->> > -
->> > -extern int isa_dma_bridge_buggy;
->> >
->> >  #ifdef CONFIG_PCI
->> >  static inline int pci_get_legacy_ide_irq(struct pci_dev *dev, int channel)
->> > @@ -28,11 +24,9 @@ static inline int pci_get_legacy_ide_irq(struct pci_dev *dev, int channel)
->> >       /* no legacy IRQ on arm64 */
->> >       return -ENODEV;
->> >  }
->> > -
->> > -static inline int pci_proc_domain(struct pci_bus *bus)
->> > -{
->> > -     return 1;
->> > -}
->> >  #endif  /* CONFIG_PCI */
->> >
->> > +/* Generic PCI */
->> > +#include <asm-generic/pci.h>
->> > +
->> >  #endif  /* __ASM_PCI_H */
->> > diff --git a/arch/csky/include/asm/pci.h b/arch/csky/include/asm/pci.h
->> > index ebc765b1f78b..44866c1ad461 100644
->> > --- a/arch/csky/include/asm/pci.h
->> > +++ b/arch/csky/include/asm/pci.h
->> > @@ -9,26 +9,10 @@
->> >
->> >  #include <asm/io.h>
->> >
->> > -#define PCIBIOS_MIN_IO               0
->> > -#define PCIBIOS_MIN_MEM              0
->> > +/* Generic PCI */
->> > +#include <asm-generic/pci.h>
->> >
->> > -/* C-SKY shim does not initialize PCI bus */
->> > -#define pcibios_assign_all_busses() 1
->> > -
->> > -extern int isa_dma_bridge_buggy;
->> > -
->> > -#ifdef CONFIG_PCI
->> > -static inline int pci_get_legacy_ide_irq(struct pci_dev *dev, int channel)
->> > -{
->> > -     /* no legacy IRQ on csky */
->> > -     return -ENODEV;
->> > -}
->> > -
->> > -static inline int pci_proc_domain(struct pci_bus *bus)
->> > -{
->> > -     /* always show the domain in /proc */
->> > -     return 1;
->> > -}
->> > -#endif  /* CONFIG_PCI */
->> > +/* csky doesn't use generic pci resource mapping */
->> > +#undef ARCH_GENERIC_PCI_MMAP_RESOURCE
->> >
->> >  #endif  /* __ASM_CSKY_PCI_H */
->> > diff --git a/arch/riscv/include/asm/pci.h b/arch/riscv/include/asm/pci.h
->> > index 7fd52a30e605..12ce8150cfb0 100644
->> > --- a/arch/riscv/include/asm/pci.h
->> > +++ b/arch/riscv/include/asm/pci.h
->> > @@ -12,29 +12,7 @@
->> >
->> >  #include <asm/io.h>
->> >
->> > -#define PCIBIOS_MIN_IO               0
->> > -#define PCIBIOS_MIN_MEM              0
->>
->> My for-next changes these in bb356ddb78b2 ("RISC-V: PCI: Avoid handing
->> out address 0 to devices").  Do you mind either splitting out the
->> arch/riscv bits or having this in via some sort of shared tag?
+On Thu, Jul 21, 2022 at 9:04 AM Akhil P Oommen <quic_akhilpo@quicinc.com> wrote:
 >
-> Shouldn't the values not matter here if the IO and mem resources are
-> described in the DT (and don't use 0)? The values of 4 and 16 look
-> odd.
+> On 7/20/2022 11:34 AM, Akhil P Oommen wrote:
+> > On 7/19/2022 3:26 PM, Rajendra Nayak wrote:
+> >>
+> >>
+> >> On 7/19/2022 12:49 PM, Stephen Boyd wrote:
+> >>> Quoting Akhil P Oommen (2022-07-18 23:37:16)
+> >>>> On 7/19/2022 11:19 AM, Stephen Boyd wrote:
+> >>>>> Quoting Akhil P Oommen (2022-07-18 21:07:05)
+> >>>>>> On 7/14/2022 11:10 AM, Akhil P Oommen wrote:
+> >>>>>>> IIUC, qcom gdsc driver doesn't ensure hardware is collapsed
+> >>>>>>> since they
+> >>>>>>> are vote-able switches. Ideally, we should ensure that the hw has
+> >>>>>>> collapsed for gpu recovery because there could be transient
+> >>>>>>> votes from
+> >>>>>>> other subsystems like hypervisor using their vote register.
+> >>>>>>>
+> >>>>>>> I am not sure how complex the plumbing to gpucc driver would be
+> >>>>>>> to allow
+> >>>>>>> gpu driver to check hw status. OTOH, with this patch, gpu driver
+> >>>>>>> does a
+> >>>>>>> read operation on a gpucc register which is in always-on domain.
+> >>>>>>> That
+> >>>>>>> means we don't need to vote any resource to access this register.
+> >>>
+> >>> Reading between the lines here, you're saying that you have to read the
+> >>> gdsc register to make sure that the gdsc is in some state? Can you
+> >>> clarify exactly what you're doing? And how do you know that something
+> >>> else in the kernel can't cause the register to change after it is read?
+> >>> It certainly seems like we can't be certain because there is voting
+> >>> involved.
+> > From gpu driver, cx_gdscr.bit[31] (power off status) register can be
+> > polled to ensure that it *collapsed at least once*. We don't need to
+> > care if something turns ON gdsc after that.
+> >
+> >>
+> >> yes, this looks like the best case effort to get the gpu to recover, but
+> >> the kernel driver really has no control to make sure this condition can
+> >> always be met (because it depends on other entities like hyp,
+> >> trustzone etc right?)
+> >> Why not just put a worst case polling delay?
+> >
+> > I didn't get you entirely. Where do you mean to keep the polling delay?
+> >>
+> >>>
+> >>>>>>>
+> >>>>>>> Stephen/Rajendra/Taniya, any suggestion?
+> >>>>> Why can't you assert a gpu reset signal with the reset APIs? This
+> >>>>> series
+> >>>>> seems to jump through a bunch of hoops to get the gdsc and power
+> >>>>> domain
+> >>>>> to "reset" when I don't know why any of that is necessary. Can't we
+> >>>>> simply assert a reset to the hardware after recovery completes so the
+> >>>>> device is back into a good known POR (power on reset) state?
+> >>>> That is because there is no register interface to reset GPU CX domain.
+> >>>> The recommended sequence from HW design folks is to collapse both
+> >>>> cx and
+> >>>> gx gdsc to properly reset gpu/gmu.
+> >>>>
+> >>>
+> >>> Ok. One knee jerk reaction is to treat the gdsc as a reset then and
+> >>> possibly mux that request along with any power domain on/off so that if
+> >>> the reset is requested and the power domain is off nothing happens.
+> >>> Otherwise if the power domain is on then it manually sequences and
+> >>> controls the two gdscs so that the GPU is reset and then restores the
+> >>> enable state of the power domain.
+> > It would be fatal to asynchronously pull the plug on CX gdsc
+> > forcefully because there might be another gpu/smmu driver thread
+> > accessing registers in cx domain.
+> >
+> > -Akhil.
+> >
+> But, we can move the cx collapse polling to gpucc and expose it to gpu
+> driver using 'reset' framework. I am not very familiar with clk driver,
+> but I did a rough prototype here (untested):
+> https://zerobin.net/?d34b5f958be3b9b8#NKGzdPy9fgcuOqXZ/XqjI7b8JWcivqe+oSTf4yWHSOU=
+>
+> If this approach is acceptable, I will send it out as a separate series.
+>
 
-The linked thread has a fairly long discussion 
-<https://lore.kernel.org/all/alpine.DEB.2.21.2202260044180.25061@angie.orcam.me.uk/>.  
-I agree it's odd to have this in arch code: "don't hand out address 0" 
-isn't really a RISC-V constraint (ie, we don't have architecture-defined 
-limitations on these address spaces) but a constraint that comes from 
-the generic port I/O functions and some other related PCI/resource code 
-where the value 0 is a sentinel.
+I'm not super familiar w/ reset framework, but this approach seems
+like it would avoid needing to play games with working around runpm as
+well.  So that seems like a cleaner approach.
 
-Maybe the right thing to do here is actually to make the default 
-definitions of these macros non-zero, or to add some sort of ARCH_ 
-flavor of them and move that non-zero requirement closer to where it 
-comes from?  From the look of it any port that uses the generic port I/O 
-functions and has 0 for these will be broken in the same way.
-
-That said, I'm not really a PCI guy so maybe Bjorn or Maciej has a 
-better idea?
+BR,
+-R
