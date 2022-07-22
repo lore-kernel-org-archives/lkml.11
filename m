@@ -2,70 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F35A3C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 08:23:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3ADCCCA47F
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 08:24:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234973AbiGVIXD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 04:23:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49956 "EHLO
+        id S234976AbiGVIYR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 04:24:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234930AbiGVIXC (ORCPT
+        with ESMTP id S234237AbiGVIYO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 04:23:02 -0400
-Received: from mail-m971.mail.163.com (mail-m971.mail.163.com [123.126.97.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EDA5D9E2B5;
-        Fri, 22 Jul 2022 01:23:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=EKCzv
-        8X/Wpy29c+oOWbNpUVxsSnAvfHjUU+SI7a4Ngs=; b=LlN4OD08bfPW/LUB0SkLn
-        81e28F+g68gi48wXND+fdVrRq8iF4vJjN4zWg5nagdbBB/16a9cio/iBo1scmPVs
-        3/3MGNvQE6vastxvNp7totOYQ3n2p1w761BFKi+D0T+5c6fwpfBrsbiid+4WeI+Q
-        dvCn5fyfQaOfWFfNEKXO8s=
-Received: from localhost.localdomain (unknown [112.97.59.29])
-        by smtp1 (Coremail) with SMTP id GdxpCgB3e8NEXtpi+K0fPw--.6434S2;
-        Fri, 22 Jul 2022 16:22:30 +0800 (CST)
-From:   Slark Xiao <slark_xiao@163.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, elder@kernel.org
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Slark Xiao <slark_xiao@163.com>
-Subject: [PATCH] net: ipa: Fix typo 'the the' in comment
-Date:   Fri, 22 Jul 2022 16:22:27 +0800
-Message-Id: <20220722082227.74274-1-slark_xiao@163.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 22 Jul 2022 04:24:14 -0400
+Received: from mail.zeus03.de (www.zeus03.de [194.117.254.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97B879E795
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 01:24:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=k1; bh=G7DpDeN+J+UKLSZ3ZAUmo1+Q13ja
+        LhczmLdzIypc5iw=; b=dx9scorbcb3LAJsGOtXnijWvyPNZJos6oAAPbljl4hif
+        LOvhy6QU5/+2cjU1PejQi6Zq2vNpHmS4CK5snERMumvh0yFRYdVP9ElUcyfLmIXP
+        eTQh3GWBFQhaKWGQ+1/hXAnFXyJ8XFxMi6hogYJ/DAhR7OInIBrjuin8hBjuRfU=
+Received: (qmail 1290898 invoked from network); 22 Jul 2022 10:24:04 +0200
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 22 Jul 2022 10:24:04 +0200
+X-UD-Smtp-Session: l3s3148p1@t5ZNjmDk7DtZzJki
+Date:   Fri, 22 Jul 2022 10:23:58 +0200
+From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: timer: renesas,cmt: Fix R-Car Gen4 fall-out
+Message-ID: <YtpedafKl9xJhi61@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org
+References: <2e3863ae32e17d49f41111580f195dd34e2b769d.1658303544.git.geert+renesas@glider.be>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: GdxpCgB3e8NEXtpi+K0fPw--.6434S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrZFWUWr48Xw1xJrW5AF4UCFg_yoW3twbE9r
-        yfW3WSqw4rKw1xtws09Fs5ZFySyF1qvr9YvFs0v34Fq347Xr4xArWvyF9rJrn8uryDGasr
-        WrZxCF18CasFgjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRCv31PUUUUU==
-X-Originating-IP: [112.97.59.29]
-X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/xtbCdQZGZGBbEbyAhgAAsB
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="XJU1ImY/AXCixQxc"
+Content-Disposition: inline
+In-Reply-To: <2e3863ae32e17d49f41111580f195dd34e2b769d.1658303544.git.geert+renesas@glider.be>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace 'the the' with 'the' in the comment.
 
-Signed-off-by: Slark Xiao <slark_xiao@163.com>
----
- drivers/net/ipa/ipa_qmi_msg.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+--XJU1ImY/AXCixQxc
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/net/ipa/ipa_qmi_msg.h b/drivers/net/ipa/ipa_qmi_msg.h
-index 3233d145fd87..495e85abe50b 100644
---- a/drivers/net/ipa/ipa_qmi_msg.h
-+++ b/drivers/net/ipa/ipa_qmi_msg.h
-@@ -214,7 +214,7 @@ struct ipa_init_modem_driver_req {
- 
- /* The response to a IPA_QMI_INIT_DRIVER request begins with a standard
-  * QMI response, but contains other information as well.  Currently we
-- * simply wait for the the INIT_DRIVER transaction to complete and
-+ * simply wait for the INIT_DRIVER transaction to complete and
-  * ignore any other data that might be returned.
-  */
- struct ipa_init_modem_driver_rsp {
--- 
-2.25.1
+On Wed, Jul 20, 2022 at 09:53:34AM +0200, Geert Uytterhoeven wrote:
+> Restore sort order (by family, followed by type).
+> Update the conditional sections specifying the number of interrupts.
+>=20
+> Fixes: 525b296185b4b0ab ("dt-bindings: timer: renesas,cmt: Add r8a779f0 a=
+nd generic Gen4 CMT support")
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
+Thank you, Geert, looks good to me!
+
+Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+
+
+--XJU1ImY/AXCixQxc
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmLaXp0ACgkQFA3kzBSg
+KbY7ng/9EftoPPaWNzC3yanwkmpjMRigJf4LJb9cBxoBnhDrerfG8zog8a+VrOgZ
+210XXsohukbHFJdaqA5tQX4XU5OXTlnzD2H0sC4hIRql5NI4t6xNDH1vl9mf1ucq
+OorY7d6T98TnzU6XMGIfpfvUgVu4iL9GxTCcYPOMJn6gSpce0ciEDsR/mmrPiPkH
+HaPgBTKAWMCDAR3BDu3a82F8qw8lCEFKZxAbbAnemGDuKao7XRE+eTw20sMhKHR+
+nRcui3z5EimpP22h/6Fz51waZftkAVtcAxAMHhVYm8qlkDvYqCmOYr957802mY5w
+Uo1IBProk4xw8z8sdnbfHSF56daIXaKVS51UZkzMFpWoRN1mbHTU5H1gkNsfyg9o
+w2i6qQgwkrUVM0naY6N5XZ5M/66QrMjE5jwjEExjn5gyrP5jYR7Zg/nPsDiOcbUv
+APssbGzGgnO6fH5cqqS5Tb36B//iuCBiY8MJgjOKayZZuijIh6NMNqChSNnCaq9l
+24UyIk4SityUHTdKjpv2EdIVykyJin1493tfMBpGyIXctw2BpaPffCnudyyHO5mg
+kpH76wz6RYVoFMYEUo2agfWqZTZsaCe5+CENJcgjcXnyRC4aaqpbXKVAyYwIDXHU
+/uJoPqqQmXFY6lcOziRyvpjehM7T5v04rN8Gsx38Lf1vaXhspJI=
+=fh/7
+-----END PGP SIGNATURE-----
+
+--XJU1ImY/AXCixQxc--
