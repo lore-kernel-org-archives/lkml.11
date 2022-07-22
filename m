@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 771ACC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:12:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CDFCC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:13:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235449AbiGVJM5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 05:12:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39682 "EHLO
+        id S235461AbiGVJND (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 05:13:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235393AbiGVJMO (ORCPT
+        with ESMTP id S234638AbiGVJMR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 05:12:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ABBA2B9;
-        Fri, 22 Jul 2022 02:10:05 -0700 (PDT)
+        Fri, 22 Jul 2022 05:12:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 849011163;
+        Fri, 22 Jul 2022 02:10:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CBF7FB827BC;
-        Fri, 22 Jul 2022 09:10:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C682C341C6;
-        Fri, 22 Jul 2022 09:10:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0BB9161EE6;
+        Fri, 22 Jul 2022 09:10:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12362C341C6;
+        Fri, 22 Jul 2022 09:10:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658481002;
-        bh=wPsbQJ1Esnk4q8K/3ZlNTMTr2q0GgDEreGwpsNW0F9s=;
+        s=korg; t=1658481008;
+        bh=HytcfT2UpPGDmTSPalV+ComyLV1EIZVjO8X2fhichWg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N+300ZjXRmlqMK/N6J4nzv79eymtUCzPCwY+t5oNxDvtPB2gF8Yk8gbfIuXayqSuk
-         PgxoYfsZ84Zi/lQ2NiV5aFpI7a4IBY00O4vJQXmtymOt7dxxC4Vx/BDBa+mkzWBR+N
-         +T36gFTuaQj4aN8Z2mXR7/n0lKajjCJjqWgwNkKg=
+        b=x76GApCbamZMkKbmv5Bjgv2UQo8WA1S4bW0Lzn0rtS3qWZJLd9gc3f4M9v+f7l1LV
+         mBgwR1Iw+zoUt7PGMelJbOPcdNGI4rGhA38Izo6bkxtdAgdKHUvu6Lu+dVNCh/OEge
+         ltBBq0rSirGUL/tpbvMeMeuUmyycdlV3W5QWlaks=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -36,9 +36,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Borislav Petkov <bp@suse.de>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.18 44/70] x86/speculation: Use cached host SPEC_CTRL value for guest entry/exit
-Date:   Fri, 22 Jul 2022 11:07:39 +0200
-Message-Id: <20220722090653.186522929@linuxfoundation.org>
+Subject: [PATCH 5.18 46/70] objtool: Re-add UNWIND_HINT_{SAVE_RESTORE}
+Date:   Fri, 22 Jul 2022 11:07:41 +0200
+Message-Id: <20220722090653.296580147@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220722090650.665513668@linuxfoundation.org>
 References: <20220722090650.665513668@linuxfoundation.org>
@@ -52,10 +52,14 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 
-commit bbb69e8bee1bd882784947095ffb2bfe0f7c9470 upstream.
+commit 8faea26e611189e933ea2281975ff4dc7c1106b6 upstream.
 
-There's no need to recalculate the host value for every entry/exit.
-Just use the cached value in spec_ctrl_current().
+Commit
+
+  c536ed2fffd5 ("objtool: Remove SAVE/RESTORE hints")
+
+removed the save/restore unwind hints because they were no longer
+needed. Now they're going to be needed again so re-add them.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
@@ -63,43 +67,188 @@ Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/cpu/bugs.c |   12 +-----------
- 1 file changed, 1 insertion(+), 11 deletions(-)
+ arch/x86/include/asm/unwind_hints.h   |   12 ++++++++--
+ include/linux/objtool.h               |    6 +++--
+ tools/include/linux/objtool.h         |    6 +++--
+ tools/objtool/check.c                 |   40 ++++++++++++++++++++++++++++++++++
+ tools/objtool/include/objtool/check.h |   19 ++++++++--------
+ 5 files changed, 68 insertions(+), 15 deletions(-)
 
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -208,7 +208,7 @@ void __init check_bugs(void)
- void
- x86_virt_spec_ctrl(u64 guest_spec_ctrl, u64 guest_virt_spec_ctrl, bool setguest)
- {
--	u64 msrval, guestval, hostval = x86_spec_ctrl_base;
-+	u64 msrval, guestval, hostval = spec_ctrl_current();
- 	struct thread_info *ti = current_thread_info();
+--- a/arch/x86/include/asm/unwind_hints.h
++++ b/arch/x86/include/asm/unwind_hints.h
+@@ -8,11 +8,11 @@
+ #ifdef __ASSEMBLY__
  
- 	/* Is MSR_SPEC_CTRL implemented ? */
-@@ -221,15 +221,6 @@ x86_virt_spec_ctrl(u64 guest_spec_ctrl,
- 		guestval = hostval & ~x86_spec_ctrl_mask;
- 		guestval |= guest_spec_ctrl & x86_spec_ctrl_mask;
+ .macro UNWIND_HINT_EMPTY
+-	UNWIND_HINT sp_reg=ORC_REG_UNDEFINED type=UNWIND_HINT_TYPE_CALL end=1
++	UNWIND_HINT type=UNWIND_HINT_TYPE_CALL end=1
+ .endm
  
--		/* SSBD controlled in MSR_SPEC_CTRL */
--		if (static_cpu_has(X86_FEATURE_SPEC_CTRL_SSBD) ||
--		    static_cpu_has(X86_FEATURE_AMD_SSBD))
--			hostval |= ssbd_tif_to_spec_ctrl(ti->flags);
--
--		/* Conditional STIBP enabled? */
--		if (static_branch_unlikely(&switch_to_cond_stibp))
--			hostval |= stibp_tif_to_spec_ctrl(ti->flags);
--
- 		if (hostval != guestval) {
- 			msrval = setguest ? guestval : hostval;
- 			wrmsrl(MSR_IA32_SPEC_CTRL, msrval);
-@@ -1390,7 +1381,6 @@ static void __init spectre_v2_select_mit
- 		pr_err(SPECTRE_V2_EIBRS_EBPF_MSG);
+ .macro UNWIND_HINT_ENTRY
+-	UNWIND_HINT sp_reg=ORC_REG_UNDEFINED type=UNWIND_HINT_TYPE_ENTRY end=1
++	UNWIND_HINT type=UNWIND_HINT_TYPE_ENTRY end=1
+ .endm
  
- 	if (spectre_v2_in_ibrs_mode(mode)) {
--		/* Force it so VMEXIT will restore correctly */
- 		x86_spec_ctrl_base |= SPEC_CTRL_IBRS;
- 		write_spec_ctrl_current(x86_spec_ctrl_base, true);
- 	}
+ .macro UNWIND_HINT_REGS base=%rsp offset=0 indirect=0 extra=1 partial=0
+@@ -56,6 +56,14 @@
+ 	UNWIND_HINT sp_reg=ORC_REG_SP sp_offset=8 type=UNWIND_HINT_TYPE_FUNC
+ .endm
+ 
++.macro UNWIND_HINT_SAVE
++	UNWIND_HINT type=UNWIND_HINT_TYPE_SAVE
++.endm
++
++.macro UNWIND_HINT_RESTORE
++	UNWIND_HINT type=UNWIND_HINT_TYPE_RESTORE
++.endm
++
+ #else
+ 
+ #define UNWIND_HINT_FUNC \
+--- a/include/linux/objtool.h
++++ b/include/linux/objtool.h
+@@ -40,6 +40,8 @@ struct unwind_hint {
+ #define UNWIND_HINT_TYPE_REGS_PARTIAL	2
+ #define UNWIND_HINT_TYPE_FUNC		3
+ #define UNWIND_HINT_TYPE_ENTRY		4
++#define UNWIND_HINT_TYPE_SAVE		5
++#define UNWIND_HINT_TYPE_RESTORE	6
+ 
+ #ifdef CONFIG_STACK_VALIDATION
+ 
+@@ -125,7 +127,7 @@ struct unwind_hint {
+  * the debuginfo as necessary.  It will also warn if it sees any
+  * inconsistencies.
+  */
+-.macro UNWIND_HINT sp_reg:req sp_offset=0 type:req end=0
++.macro UNWIND_HINT type:req sp_reg=0 sp_offset=0 end=0
+ .Lunwind_hint_ip_\@:
+ 	.pushsection .discard.unwind_hints
+ 		/* struct unwind_hint */
+@@ -178,7 +180,7 @@ struct unwind_hint {
+ #define ASM_REACHABLE
+ #else
+ #define ANNOTATE_INTRA_FUNCTION_CALL
+-.macro UNWIND_HINT sp_reg:req sp_offset=0 type:req end=0
++.macro UNWIND_HINT type:req sp_reg=0 sp_offset=0 end=0
+ .endm
+ .macro STACK_FRAME_NON_STANDARD func:req
+ .endm
+--- a/tools/include/linux/objtool.h
++++ b/tools/include/linux/objtool.h
+@@ -40,6 +40,8 @@ struct unwind_hint {
+ #define UNWIND_HINT_TYPE_REGS_PARTIAL	2
+ #define UNWIND_HINT_TYPE_FUNC		3
+ #define UNWIND_HINT_TYPE_ENTRY		4
++#define UNWIND_HINT_TYPE_SAVE		5
++#define UNWIND_HINT_TYPE_RESTORE	6
+ 
+ #ifdef CONFIG_STACK_VALIDATION
+ 
+@@ -125,7 +127,7 @@ struct unwind_hint {
+  * the debuginfo as necessary.  It will also warn if it sees any
+  * inconsistencies.
+  */
+-.macro UNWIND_HINT sp_reg:req sp_offset=0 type:req end=0
++.macro UNWIND_HINT type:req sp_reg=0 sp_offset=0 end=0
+ .Lunwind_hint_ip_\@:
+ 	.pushsection .discard.unwind_hints
+ 		/* struct unwind_hint */
+@@ -178,7 +180,7 @@ struct unwind_hint {
+ #define ASM_REACHABLE
+ #else
+ #define ANNOTATE_INTRA_FUNCTION_CALL
+-.macro UNWIND_HINT sp_reg:req sp_offset=0 type:req end=0
++.macro UNWIND_HINT type:req sp_reg=0 sp_offset=0 end=0
+ .endm
+ .macro STACK_FRAME_NON_STANDARD func:req
+ .endm
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -2031,6 +2031,17 @@ static int read_unwind_hints(struct objt
+ 
+ 		insn->hint = true;
+ 
++		if (hint->type == UNWIND_HINT_TYPE_SAVE) {
++			insn->hint = false;
++			insn->save = true;
++			continue;
++		}
++
++		if (hint->type == UNWIND_HINT_TYPE_RESTORE) {
++			insn->restore = true;
++			continue;
++		}
++
+ 		if (hint->type == UNWIND_HINT_TYPE_REGS_PARTIAL) {
+ 			struct symbol *sym = find_symbol_by_offset(insn->sec, insn->offset);
+ 
+@@ -3436,6 +3447,35 @@ static int validate_branch(struct objtoo
+ 			state.instr += insn->instr;
+ 
+ 		if (insn->hint) {
++			if (insn->restore) {
++				struct instruction *save_insn, *i;
++
++				i = insn;
++				save_insn = NULL;
++
++				sym_for_each_insn_continue_reverse(file, func, i) {
++					if (i->save) {
++						save_insn = i;
++						break;
++					}
++				}
++
++				if (!save_insn) {
++					WARN_FUNC("no corresponding CFI save for CFI restore",
++						  sec, insn->offset);
++					return 1;
++				}
++
++				if (!save_insn->visited) {
++					WARN_FUNC("objtool isn't smart enough to handle this CFI save/restore combo",
++						  sec, insn->offset);
++					return 1;
++				}
++
++				insn->cfi = save_insn->cfi;
++				nr_cfi_reused++;
++			}
++
+ 			state.cfi = *insn->cfi;
+ 		} else {
+ 			/* XXX track if we actually changed state.cfi */
+--- a/tools/objtool/include/objtool/check.h
++++ b/tools/objtool/include/objtool/check.h
+@@ -46,18 +46,19 @@ struct instruction {
+ 	enum insn_type type;
+ 	unsigned long immediate;
+ 
+-	u8 dead_end	: 1,
+-	   ignore	: 1,
+-	   ignore_alts	: 1,
+-	   hint		: 1,
+-	   retpoline_safe : 1,
+-	   noendbr	: 1,
+-	   entry	: 1;
+-		/* 1 bit hole */
++	u16 dead_end		: 1,
++	   ignore		: 1,
++	   ignore_alts		: 1,
++	   hint			: 1,
++	   save			: 1,
++	   restore		: 1,
++	   retpoline_safe	: 1,
++	   noendbr		: 1,
++	   entry		: 1;
++		/* 7 bit hole */
+ 
+ 	s8 instr;
+ 	u8 visited;
+-	/* u8 hole */
+ 
+ 	struct alt_group *alt_group;
+ 	struct symbol *call_dest;
 
 
