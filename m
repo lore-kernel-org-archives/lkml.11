@@ -2,76 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 196F0C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 00:50:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CED3C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 00:54:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233956AbiGVAun (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 20:50:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39248 "EHLO
+        id S233397AbiGVAy4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 20:54:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230248AbiGVAuj (ORCPT
+        with ESMTP id S229508AbiGVAyx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 20:50:39 -0400
-Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E6AC95C37
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 17:50:38 -0700 (PDT)
-Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-31e7c4b593fso33432607b3.13
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 17:50:38 -0700 (PDT)
+        Thu, 21 Jul 2022 20:54:53 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A2EC95C3F
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 17:54:52 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id j22so6025159ejs.2
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 17:54:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
+        d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=zWIVvYuXfIBjeEz1L1BUQJGM60Wr07LvtDNRs/D6R2E=;
-        b=eAmLULbAhQWopUkGzyAvOQn37WHywZEHMsK6LudhADG0r2Dl1qcbci6rKpNDscS0Eu
-         PIHTrIsozJ4K4+x1t9s8KWZ7z1DPHwAqkja+/xNv8S9eQAf/bAYfB4L4LCYMI3CNTrsa
-         vg5Kfy4MDfb+8JzUsOjWC8qp9LIcpNCm6uil8=
+        bh=U8J/Z5o8rP43OFNK4dwBwF5FHxDhcbpnryZtpACIPwU=;
+        b=aakNHfhMNCA0Ayjj5tI1Ms0awBaD3YllV8NPK58+gKhSeUP1jJPwOhaWZhyYmdCU+/
+         6BulWvYbOgQK+FnZ0gds7HGdnRuC+2FVN1Vpre7P3BF8b7DbG9CieOE1SxfIBFF9whwq
+         AYQn4tOGAWlb0quQAOQ2AMk8VeEmg75zQzeQIdvyImKWNGHUvH6GSJDAUlgL2EyXzW4x
+         iCqBRjFtavWA5jJU7BSqJ7xa1dJhU/CDE+7SQB3B5qm6V+zQ12QME6KJkaaJOqawRDc2
+         D2JjOosC7qxjEpplxHSnlP1CrtEWAGgCu1cxAf5By3vLp4reWfCmo8S4lJ3RPC41VDin
+         WtFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=zWIVvYuXfIBjeEz1L1BUQJGM60Wr07LvtDNRs/D6R2E=;
-        b=52kQsKqQddMtQWXnoBwJzFrcAvE4hBm0srVU+B7TE63fxE7e0s2LKD8q5DRWCBZZa6
-         8pOLHoQclwI+6BQjH0S4U3i8FXf8D14DQqdWddbng2ZvZjmiHCzEcDaUxGeXopLx4ba6
-         DUAgzYx5aEEwssfHiWjZql1VTk9R7zBwQ9i2EqwR8qAlvM/mh/NxYEa9BJ/yxP6CMSN5
-         vhqMT3mbVcFY070UymiUa8FD9rEV2+zbyxC9RNievw2LrBee3KqROudY9pGDR7DNnB/e
-         j9/WbewMOJLCZeP9PHPgaOkdeZ8cV9P+zn1z1KVTebqFXn0rMgn8RzF9zDWfWYzcQsWm
-         71Mw==
-X-Gm-Message-State: AJIora817J8Yj8S1MUz4ja1qfFK/dhELNf/jJZqo8Gmql6AcF5QsO5u8
-        RDqa8u5dJwiNgL492rSnSqdfc7DuSr2IKYEQH4TAR2A3SsjWTQ==
-X-Google-Smtp-Source: AGRyM1tUfLrddZjiTZkDHLKPZXunu9XMp+3SRpRI0F+IguB+doIxRTG9J4h/gfTxAlh/t7QwYDU/8+UMiq5eO5SiN9I=
-X-Received: by 2002:a81:3dd7:0:b0:31e:347e:ef18 with SMTP id
- k206-20020a813dd7000000b0031e347eef18mr1060784ywa.420.1658451037394; Thu, 21
- Jul 2022 17:50:37 -0700 (PDT)
+        bh=U8J/Z5o8rP43OFNK4dwBwF5FHxDhcbpnryZtpACIPwU=;
+        b=asbM8RlnQyH9sGmjZO7eWBHPvRulcs6tWvm0+9PKUs4RSuhyUqWDBRoJC2PLQO5RG1
+         qIsgmvboreHQ80YyfEGr7hb86h0+eJiBHYqliIwb0wk46/ZDKu7V83Zw5qct2SPun9GP
+         3dYb2Ssf75f+0S2mhoGq/JRXJmDYNXSvr5iQDgLpTH8O+GpUo63VH1jYWJA5Lwq9wrSK
+         RfVJLt43Eho3wXA1gGDLbGHRJsbp+9HN3OO+9LaUmcuqSHxlLOASG1FQWafwelJZ3eA0
+         YrSin6tr1ywc7VDiyylF2vJEgTnyHbrjvijsECx51gK4ChEoDiK/feOCKqPEuNU0cdzw
+         1YvA==
+X-Gm-Message-State: AJIora/pONIiWNwSP7d4LHZ+YSCcuG8760aUyeV2hPJtpPMglZhTdMX8
+        oHdcMflRfwEg5LzlbwCZklnfa6S/v4/yIPTEYZQfRw==
+X-Google-Smtp-Source: AGRyM1uDxgMvrFAGOH8NXgwd24p1U2/l21XSULTaM0eD9AEgA+DYH5MNUIJIQI2mbjPa9ZYg3esSksCRsYBkV4p1gVA=
+X-Received: by 2002:a17:907:7d8b:b0:72f:2306:329a with SMTP id
+ oz11-20020a1709077d8b00b0072f2306329amr954052ejc.369.1658451290242; Thu, 21
+ Jul 2022 17:54:50 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220601011103.12681-1-dlunev@google.com> <20220601111059.v4.2.I692165059274c30b59bed56940b54a573ccb46e4@changeid>
- <CAJfpegsitwAnrU3H3ig3a7AWKknTZNo0cFc5kPm09KzZGgO-bQ@mail.gmail.com>
-In-Reply-To: <CAJfpegsitwAnrU3H3ig3a7AWKknTZNo0cFc5kPm09KzZGgO-bQ@mail.gmail.com>
-From:   Daniil Lunev <dlunev@chromium.org>
-Date:   Fri, 22 Jul 2022 10:50:26 +1000
-Message-ID: <CAONX=-cB+hhjoZc_sy_swe6Tq6yMPdgdXu6mQE6y=fT+PVtMyg@mail.gmail.com>
-Subject: Re: [PATCH v4 2/2] FUSE: Retire superblock on force unmount
-To:     Miklos Szeredi <miklos@szeredi.hu>
-Cc:     linux-fsdevel@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
-        Christoph Hellwig <hch@infradead.org>,
-        "Theodore Ts'o" <tytso@mit.edu>, linux-kernel@vger.kernel.org,
-        fuse-devel <fuse-devel@lists.sourceforge.net>,
-        Daniil Lunev <dlunev@google.com>
+References: <20220721081026.1247067-1-sadiyakazi@google.com>
+In-Reply-To: <20220721081026.1247067-1-sadiyakazi@google.com>
+From:   Daniel Latypov <dlatypov@google.com>
+Date:   Thu, 21 Jul 2022 17:54:38 -0700
+Message-ID: <CAGS_qxoE7F0iWCghO2BmK+-4k-cicriGUaTuE_86oSFP_dBeBQ@mail.gmail.com>
+Subject: Re: [PATCH v2] Documentation: kunit: Add CLI args for kunit_tool
+To:     Sadiya Kazi <sadiyakazi@google.com>
+Cc:     brendanhiggins@google.com, davidgow@google.com,
+        skhan@linuxfoundation.org, corbet@lwn.net, mairacanal@riseup.net,
+        linux-kselftest@vger.kernel.org, kunit-dev@googlegroups.com,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Miklos,
-Thanks for your response and apologies for my delayed reply.
+On Thu, Jul 21, 2022 at 1:26 AM 'Sadiya Kazi' via KUnit Development
+<kunit-dev@googlegroups.com> wrote:
+>
+> Run_wrapper.rst was missing some command line arguments. Added
+> additional args in the file.
+>
+> Signed-off-by: Sadiya Kazi <sadiyakazi@google.com>
 
-> Why the double sign-off?
-Some misconfiguration on my side. I will remove the extra line in the
-next patch version
+Reviewed-by: Daniel Latypov <dlatypov@google.com>
 
-> And this is called for both block and non-block supers.  Which means
-> that the bdi will be unregistered, yet the sb could still be reused
-> (see fuse_test_super()).
+Looks good!
+A minor suggestion down below to go along with what everyone else has said.
 
-Just to confirm my understanding, fuse_test_super needs to have the
-same check as the super.c test_* function, correct?
---Daniil
+> +- ``--qemu_config``: Specifies the path to a file containing a
+> +  custom qemu architecture definition. This should be a python file
+> +  containing a `QemuArchParams` object.
+> +
+> +- ``--qemu_args``: Specifies additional QEMU arguments, for example, "-smp 8".
+
+Minor nit: I think ``-smp 8`` would be a bit better here.
+It feels like it would fit what we did with other example arguments.
