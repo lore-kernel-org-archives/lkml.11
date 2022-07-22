@@ -2,78 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB716C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 02:46:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA878C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 02:52:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234010AbiGVCqz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 22:46:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53580 "EHLO
+        id S233647AbiGVCwT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 22:52:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229997AbiGVCqx (ORCPT
+        with ESMTP id S229997AbiGVCwR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 22:46:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF3B51706C;
-        Thu, 21 Jul 2022 19:46:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Thu, 21 Jul 2022 22:52:17 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB5BA98201;
+        Thu, 21 Jul 2022 19:52:15 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6A663B8267D;
-        Fri, 22 Jul 2022 02:46:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CAA0C3411E;
-        Fri, 22 Jul 2022 02:46:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658458009;
-        bh=DMU2aTfUCpJW9cUvpkfGbZpKN9z1rjIONQRzkO+HXAs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=hLIvhnYt+XSJZ0VbVVJ7oIgmuHHqywnFlQs4ry3kobanp1sih8y99DSuRuhDejpov
-         OwqbAJoCVgVlhjU4kVksHNsu5h4BzTlyIw5k0MoTdnRtwBGo11De2DDc/8FzMBGmGA
-         0iAI7AGJ5D4RQzSS7CU2/qpalJxjj6G5+yWvKQLs1vKp3o6Kax5Cs6V0hvXE4MPOq9
-         mg9L9tIjpf41GKG53axtsMtE442EkiMyySRgohAMhnG/jAPR2iS+CGYBEiFE2YBzmP
-         mxja1C++pcRO6yYjYY7p+jQw8eyXd4iNwLF0mr+cJWrayo+L/cwEbO2EvAIhaORhnk
-         2KcrtAqPkVkxw==
-Date:   Thu, 21 Jul 2022 19:46:48 -0700
-From:   "Darrick J. Wong" <djwong@kernel.org>
-To:     Xin Gao <gaoxin@cdjrlc.com>
-Cc:     linux-xfs@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] xfs: Fix comment typo
-Message-ID: <YtoPmIgHSxCnRf81@magnolia>
-References: <20220722022626.16082-1-gaoxin@cdjrlc.com>
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Lpv9T5FMwz4x7X;
+        Fri, 22 Jul 2022 12:52:13 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1658458333;
+        bh=nYihNt+NelT1izzjXR5iJdDE3j5yqhhTu7Dvm/iFMeE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=CSRK389QJr80OXc63mvxAeBStUyqTfaIpgvMvf8fZe4Y90fSmP1HUU9aDi4/SgkDv
+         pMNcp0n8lUVpAaaaeHNseZsSqTMnXU3uT8eyLv8/JSbCEn2zYHAdg39sf5UPjIBpU7
+         +On/3+dY5lw7PX/1ebfoa2q+7hGwPUfLiWenOh0Cj3DvPZCle8xnRs6VFjuBJoyri5
+         6bGibBKsGgImXudSgYf3kgiyADnWcKt7H7G0ZygUkqmV2gYbRHzuNKHXkBb7WAqDhI
+         QjqJACcMZ0YK4pxWhsalYjRjWta6tJ+fpg6NhAJDcFif5fBm7WCS04ozgHVFBlk0jv
+         7jgfORduiz/+Q==
+Date:   Fri, 22 Jul 2022 12:52:12 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Alex Deucher <alexdeucher@gmail.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build failure after merge of the amdgpu tree
+Message-ID: <20220722125212.2af3601f@canb.auug.org.au>
+In-Reply-To: <20220721121618.049b9c00@canb.auug.org.au>
+References: <20220719123607.63cbb3c5@canb.auug.org.au>
+        <20220720124732.4aeb3748@canb.auug.org.au>
+        <20220721121618.049b9c00@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220722022626.16082-1-gaoxin@cdjrlc.com>
+Content-Type: multipart/signed; boundary="Sig_/NP/Ofe+VdNgQVCiX/k4m2Tu";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 22, 2022 at 10:26:26AM +0800, Xin Gao wrote:
-> The double `the' is duplicated in line 552, remove one.
-> 
-> Signed-off-by: Xin Gao <gaoxin@cdjrlc.com>
+--Sig_/NP/Ofe+VdNgQVCiX/k4m2Tu
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Applied, thanks.
-Reviewed-by: Darrick J. Wong <djwong@kernel.org>
+Hi all,
 
---D
+On Thu, 21 Jul 2022 12:16:18 +1000 Stephen Rothwell <sfr@canb.auug.org.au> =
+wrote:
+>
+> Hi all,
+>=20
+> On Wed, 20 Jul 2022 12:47:32 +1000 Stephen Rothwell <sfr@canb.auug.org.au=
+> wrote:
+> >  =20
+> > > drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn32/display_mode_vba_3=
+2.c: In function 'dml32_ModeSupportAndSystemConfigurationFull':
+> > > drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn32/display_mode_vba_3=
+2.c:3799:1: error: the frame size of 2464 bytes is larger than 2048 bytes [=
+-Werror=3Dframe-larger-than=3D]
+> > >  3799 | } // ModeSupportAndSystemConfigurationFull
+> > >       | ^   =20
+> >=20
+> > This is still here, but the frame size is down to 2336. =20
+>=20
+> Today it is down to 2128.
 
-> ---
->  fs/xfs/xfs_dquot.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/fs/xfs/xfs_dquot.c b/fs/xfs/xfs_dquot.c
-> index 5a6c3c3c4de2..8fb90da89787 100644
-> --- a/fs/xfs/xfs_dquot.c
-> +++ b/fs/xfs/xfs_dquot.c
-> @@ -549,7 +549,7 @@ xfs_dquot_check_type(
->  	 * at the same time.  The non-user quota file can be switched between
->  	 * group and project quota uses depending on the mount options, which
->  	 * means that we can encounter the other type when we try to load quota
-> -	 * defaults.  Quotacheck will soon reset the the entire quota file
-> +	 * defaults.  Quotacheck will soon reset the entire quota file
->  	 * (including the root dquot) anyway, but don't log scary corruption
->  	 * reports to dmesg.
->  	 */
-> -- 
-> 2.30.2
-> 
+And today we are back up to 2152.  I can only imagine that maybe things
+are being inlined?
+
+My compiler (in case it matters):
+
+$ x86_64-linux-gnu-gcc --version
+x86_64-linux-gnu-gcc (Debian 11.2.0-9) 11.2.0
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/NP/Ofe+VdNgQVCiX/k4m2Tu
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLaENwACgkQAVBC80lX
+0GzfYgf+NvDue/RQTedFHbyjc/uAnLRpQP82QEAm9O11k9o+O2mvx4rSnmh5SDec
+uSu+RSS5pw3Jd2O0lmLq/FJUd9uym/Y6tO3YT6x0sWD1h0ZOXpYfLW8rBd+LDTmb
+ao87KYl8g8t4T6mSOIhApvsKB2GUei8Uf9+1FosmEfB/CUA+KyiHW49jI/nQ3f2o
+HmgE3X3S/dw5btRYik0YfaYefEwmaQ6+TnSpoD+KLwSfhzCuNt8lbUSY/UHO3ty7
+2GRKgtsSdgGoigBBQubMZnJ/dPMpTyS1UjsBXrW0GTuiSHnz44PKPKeXHM/NVRAo
+pzvUHRA3yYN1JJqyH2BalZCpsN8IYg==
+=Ochr
+-----END PGP SIGNATURE-----
+
+--Sig_/NP/Ofe+VdNgQVCiX/k4m2Tu--
