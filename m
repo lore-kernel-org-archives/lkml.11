@@ -2,147 +2,297 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09C2DC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:20:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38B91C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:21:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236015AbiGVJUy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 05:20:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37752 "EHLO
+        id S236050AbiGVJVG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 05:21:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236000AbiGVJU2 (ORCPT
+        with ESMTP id S236047AbiGVJUe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 05:20:28 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBE0FBB8CC
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 02:13:45 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id t2-20020a17090a4e4200b001f21572f3a4so3708295pjl.0
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 02:13:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=OFu95XsV5rEYBt/DoXMJzDAz5PRwolc7OS134C8DnKc=;
-        b=0fFghdJIPyc8ja/Ja4cKlCxsHImbwt+x6cqArGd1WjVLRO4xLsTp5Ca04dFVCKuBNy
-         Ta+da7cU7Xo+M+dPdbyJDLrM5tL+bKeXEp3EcjbveyUQCvoKhmEVRi93T35xYtim1vv+
-         GSzumERbIJEqvSZ5EW9yMhkKCP8l/8QVrL8/DMr3lYL0Rd7KamuMNvpZ3iLlt5nFNDKL
-         RfTayBaT+0CLhFuTN8dWH0NxsH0JbbpqgBHNgBx2p5qeUZzS4esMo94tI7Cu+0Kv6oiY
-         Jn5cvW95wnOV/W8+XQk1skB9V70mIOsQdccwk69ISskNQCyRWGc+E/bJeEaHSwE9jTnU
-         IeIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=OFu95XsV5rEYBt/DoXMJzDAz5PRwolc7OS134C8DnKc=;
-        b=HaAOHSot6MPDZlD51rB/HilcwSPFRUpldUxyns37J6zIvve2X5d4/bkMh9cx6b+UA1
-         5k+5TJubk+A8dFBrWjF91USuNEz5RfhDN++xA1OAMHbtQv4qmOd7EKTF3CCZQ32aIhno
-         oxgM+/7g2E5OBO4lWQ/sVqr68xfKQcNgqgmruNU+W4GpyPYedlOkt7wakJQ53WDTa/m3
-         6NW/MnQuT9LTFqfGPPTInlhiQl+vhA3I9h/GDwa69BZiwtmrxMktigInAP55X/gLrmNu
-         cMCZSqhaih3xZ3kbhDh8a87YUmAw9u0ysnlWIoA/k8Q9BOLaLmy6gQAXeFIHrwQfevpu
-         ZkEA==
-X-Gm-Message-State: AJIora89UKuVY8Mt79kIMxTBWe3xVnOKBYoDClx1kxuHDbCerQ7QqROr
-        d7BQjHz0icwfkdvKvTQSYzySUA==
-X-Google-Smtp-Source: AGRyM1v6F78+NCt09f2hsDWr95VGuj60HNdNaZDsiSJ72K0JCl0CYXqR5FUuwfkIkofOdUs4kEv6kw==
-X-Received: by 2002:a17:902:c94b:b0:16c:7289:b402 with SMTP id i11-20020a170902c94b00b0016c7289b402mr2486506pla.66.1658481224853;
-        Fri, 22 Jul 2022 02:13:44 -0700 (PDT)
-Received: from [10.4.231.121] ([139.177.225.245])
-        by smtp.gmail.com with ESMTPSA id o12-20020a170902778c00b0016d1f474653sm2923403pll.52.2022.07.22.02.13.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 Jul 2022 02:13:44 -0700 (PDT)
-Message-ID: <d540aaff-ec6a-3f25-dd79-b27b4ad81b36@bytedance.com>
-Date:   Fri, 22 Jul 2022 17:13:39 +0800
+        Fri, 22 Jul 2022 05:20:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 976587E00B;
+        Fri, 22 Jul 2022 02:13:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F25DCB827C8;
+        Fri, 22 Jul 2022 09:13:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F96BC341C6;
+        Fri, 22 Jul 2022 09:13:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658481226;
+        bh=wpBmRMd+SkGmzZJsNlYrzIGWj1oIwGeg0RtrD2E2B6s=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=MJepmbIMZQ2AGvrM7IFAP6JBR4G775xSd0CgoDO5XFDeEZYafuFhv/B+Da9g9YWQP
+         H2OMgwMzWWUn2wG8E/GAMTczhzC9Fjdm5+o8SHRsAtMKBwCdGHnDJnPpplhSf2SQil
+         Bh/H0wyoA2WwfamQbLaJLS0xEi6cvh4wvP3XsP0M=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Borislav Petkov <bp@suse.de>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Subject: [PATCH 5.15 20/89] bpf,x86: Respect X86_FEATURE_RETPOLINE*
+Date:   Fri, 22 Jul 2022 11:10:54 +0200
+Message-Id: <20220722091134.502726755@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220722091133.320803732@linuxfoundation.org>
+References: <20220722091133.320803732@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.0
-Subject: Re: [PATCH v1 1/2] arm64: run softirqs on the per-CPU IRQ stack
-Content-Language: en-US
-To:     Will Deacon <will@kernel.org>
-Cc:     arnd@arndb.de, catalin.marinas@arm.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220708094950.41944-1-zhengqi.arch@bytedance.com>
- <20220708094950.41944-2-zhengqi.arch@bytedance.com>
- <20220722090440.GB18125@willie-the-truck>
-From:   Qi Zheng <zhengqi.arch@bytedance.com>
-In-Reply-To: <20220722090440.GB18125@willie-the-truck>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Peter Zijlstra <peterz@infradead.org>
+
+commit 87c87ecd00c54ecd677798cb49ef27329e0fab41 upstream.
+
+Current BPF codegen doesn't respect X86_FEATURE_RETPOLINE* flags and
+unconditionally emits a thunk call, this is sub-optimal and doesn't
+match the regular, compiler generated, code.
+
+Update the i386 JIT to emit code equal to what the compiler emits for
+the regular kernel text (IOW. a plain THUNK call).
+
+Update the x86_64 JIT to emit code similar to the result of compiler
+and kernel rewrites as according to X86_FEATURE_RETPOLINE* flags.
+Inlining RETPOLINE_AMD (lfence; jmp *%reg) and !RETPOLINE (jmp *%reg),
+while doing a THUNK call for RETPOLINE.
+
+This removes the hard-coded retpoline thunks and shrinks the generated
+code. Leaving a single retpoline thunk definition in the kernel.
+
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Borislav Petkov <bp@suse.de>
+Acked-by: Alexei Starovoitov <ast@kernel.org>
+Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Tested-by: Alexei Starovoitov <ast@kernel.org>
+Link: https://lore.kernel.org/r/20211026120310.614772675@infradead.org
+[cascardo: RETPOLINE_AMD was renamed to RETPOLINE_LFENCE]
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/x86/include/asm/nospec-branch.h |   59 -----------------------------------
+ arch/x86/net/bpf_jit_comp.c          |   46 +++++++++++++--------------
+ arch/x86/net/bpf_jit_comp32.c        |   22 +++++++++++--
+ 3 files changed, 41 insertions(+), 86 deletions(-)
+
+--- a/arch/x86/include/asm/nospec-branch.h
++++ b/arch/x86/include/asm/nospec-branch.h
+@@ -320,63 +320,4 @@ static inline void mds_idle_clear_cpu_bu
+ 
+ #endif /* __ASSEMBLY__ */
+ 
+-/*
+- * Below is used in the eBPF JIT compiler and emits the byte sequence
+- * for the following assembly:
+- *
+- * With retpolines configured:
+- *
+- *    callq do_rop
+- *  spec_trap:
+- *    pause
+- *    lfence
+- *    jmp spec_trap
+- *  do_rop:
+- *    mov %rcx,(%rsp) for x86_64
+- *    mov %edx,(%esp) for x86_32
+- *    retq
+- *
+- * Without retpolines configured:
+- *
+- *    jmp *%rcx for x86_64
+- *    jmp *%edx for x86_32
+- */
+-#ifdef CONFIG_RETPOLINE
+-# ifdef CONFIG_X86_64
+-#  define RETPOLINE_RCX_BPF_JIT_SIZE	17
+-#  define RETPOLINE_RCX_BPF_JIT()				\
+-do {								\
+-	EMIT1_off32(0xE8, 7);	 /* callq do_rop */		\
+-	/* spec_trap: */					\
+-	EMIT2(0xF3, 0x90);       /* pause */			\
+-	EMIT3(0x0F, 0xAE, 0xE8); /* lfence */			\
+-	EMIT2(0xEB, 0xF9);       /* jmp spec_trap */		\
+-	/* do_rop: */						\
+-	EMIT4(0x48, 0x89, 0x0C, 0x24); /* mov %rcx,(%rsp) */	\
+-	EMIT1(0xC3);             /* retq */			\
+-} while (0)
+-# else /* !CONFIG_X86_64 */
+-#  define RETPOLINE_EDX_BPF_JIT()				\
+-do {								\
+-	EMIT1_off32(0xE8, 7);	 /* call do_rop */		\
+-	/* spec_trap: */					\
+-	EMIT2(0xF3, 0x90);       /* pause */			\
+-	EMIT3(0x0F, 0xAE, 0xE8); /* lfence */			\
+-	EMIT2(0xEB, 0xF9);       /* jmp spec_trap */		\
+-	/* do_rop: */						\
+-	EMIT3(0x89, 0x14, 0x24); /* mov %edx,(%esp) */		\
+-	EMIT1(0xC3);             /* ret */			\
+-} while (0)
+-# endif
+-#else /* !CONFIG_RETPOLINE */
+-# ifdef CONFIG_X86_64
+-#  define RETPOLINE_RCX_BPF_JIT_SIZE	2
+-#  define RETPOLINE_RCX_BPF_JIT()				\
+-	EMIT2(0xFF, 0xE1);       /* jmp *%rcx */
+-# else /* !CONFIG_X86_64 */
+-#  define RETPOLINE_EDX_BPF_JIT()				\
+-	EMIT2(0xFF, 0xE2)        /* jmp *%edx */
+-# endif
+-#endif
+-
+ #endif /* _ASM_X86_NOSPEC_BRANCH_H_ */
+--- a/arch/x86/net/bpf_jit_comp.c
++++ b/arch/x86/net/bpf_jit_comp.c
+@@ -387,6 +387,25 @@ int bpf_arch_text_poke(void *ip, enum bp
+ 	return __bpf_arch_text_poke(ip, t, old_addr, new_addr, true);
+ }
+ 
++#define EMIT_LFENCE()	EMIT3(0x0F, 0xAE, 0xE8)
++
++static void emit_indirect_jump(u8 **pprog, int reg, u8 *ip)
++{
++	u8 *prog = *pprog;
++
++#ifdef CONFIG_RETPOLINE
++	if (cpu_feature_enabled(X86_FEATURE_RETPOLINE_LFENCE)) {
++		EMIT_LFENCE();
++		EMIT2(0xFF, 0xE0 + reg);
++	} else if (cpu_feature_enabled(X86_FEATURE_RETPOLINE)) {
++		emit_jump(&prog, &__x86_indirect_thunk_array[reg], ip);
++	} else
++#endif
++	EMIT2(0xFF, 0xE0 + reg);
++
++	*pprog = prog;
++}
++
+ /*
+  * Generate the following code:
+  *
+@@ -468,7 +487,7 @@ static void emit_bpf_tail_call_indirect(
+ 	 * rdi == ctx (1st arg)
+ 	 * rcx == prog->bpf_func + X86_TAIL_CALL_OFFSET
+ 	 */
+-	RETPOLINE_RCX_BPF_JIT();
++	emit_indirect_jump(&prog, 1 /* rcx */, ip + (prog - start));
+ 
+ 	/* out: */
+ 	ctx->tail_call_indirect_label = prog - start;
+@@ -1185,8 +1204,7 @@ static int do_jit(struct bpf_prog *bpf_p
+ 			/* speculation barrier */
+ 		case BPF_ST | BPF_NOSPEC:
+ 			if (boot_cpu_has(X86_FEATURE_XMM2))
+-				/* Emit 'lfence' */
+-				EMIT3(0x0F, 0xAE, 0xE8);
++				EMIT_LFENCE();
+ 			break;
+ 
+ 			/* ST: *(u8*)(dst_reg + off) = imm */
+@@ -2122,24 +2140,6 @@ cleanup:
+ 	return ret;
+ }
+ 
+-static int emit_fallback_jump(u8 **pprog)
+-{
+-	u8 *prog = *pprog;
+-	int err = 0;
+-
+-#ifdef CONFIG_RETPOLINE
+-	/* Note that this assumes the the compiler uses external
+-	 * thunks for indirect calls. Both clang and GCC use the same
+-	 * naming convention for external thunks.
+-	 */
+-	err = emit_jump(&prog, __x86_indirect_thunk_rdx, prog);
+-#else
+-	EMIT2(0xFF, 0xE2);	/* jmp rdx */
+-#endif
+-	*pprog = prog;
+-	return err;
+-}
+-
+ static int emit_bpf_dispatcher(u8 **pprog, int a, int b, s64 *progs)
+ {
+ 	u8 *jg_reloc, *prog = *pprog;
+@@ -2161,9 +2161,7 @@ static int emit_bpf_dispatcher(u8 **ppro
+ 		if (err)
+ 			return err;
+ 
+-		err = emit_fallback_jump(&prog);	/* jmp thunk/indirect */
+-		if (err)
+-			return err;
++		emit_indirect_jump(&prog, 2 /* rdx */, prog);
+ 
+ 		*pprog = prog;
+ 		return 0;
+--- a/arch/x86/net/bpf_jit_comp32.c
++++ b/arch/x86/net/bpf_jit_comp32.c
+@@ -15,6 +15,7 @@
+ #include <asm/cacheflush.h>
+ #include <asm/set_memory.h>
+ #include <asm/nospec-branch.h>
++#include <asm/asm-prototypes.h>
+ #include <linux/bpf.h>
+ 
+ /*
+@@ -1267,6 +1268,21 @@ static void emit_epilogue(u8 **pprog, u3
+ 	*pprog = prog;
+ }
+ 
++static int emit_jmp_edx(u8 **pprog, u8 *ip)
++{
++	u8 *prog = *pprog;
++	int cnt = 0;
++
++#ifdef CONFIG_RETPOLINE
++	EMIT1_off32(0xE9, (u8 *)__x86_indirect_thunk_edx - (ip + 5));
++#else
++	EMIT2(0xFF, 0xE2);
++#endif
++	*pprog = prog;
++
++	return cnt;
++}
++
+ /*
+  * Generate the following code:
+  * ... bpf_tail_call(void *ctx, struct bpf_array *array, u64 index) ...
+@@ -1280,7 +1296,7 @@ static void emit_epilogue(u8 **pprog, u3
+  *   goto *(prog->bpf_func + prologue_size);
+  * out:
+  */
+-static void emit_bpf_tail_call(u8 **pprog)
++static void emit_bpf_tail_call(u8 **pprog, u8 *ip)
+ {
+ 	u8 *prog = *pprog;
+ 	int cnt = 0;
+@@ -1362,7 +1378,7 @@ static void emit_bpf_tail_call(u8 **ppro
+ 	 * eax == ctx (1st arg)
+ 	 * edx == prog->bpf_func + prologue_size
+ 	 */
+-	RETPOLINE_EDX_BPF_JIT();
++	cnt += emit_jmp_edx(&prog, ip + cnt);
+ 
+ 	if (jmp_label1 == -1)
+ 		jmp_label1 = cnt;
+@@ -2122,7 +2138,7 @@ static int do_jit(struct bpf_prog *bpf_p
+ 			break;
+ 		}
+ 		case BPF_JMP | BPF_TAIL_CALL:
+-			emit_bpf_tail_call(&prog);
++			emit_bpf_tail_call(&prog, image + addrs[i - 1]);
+ 			break;
+ 
+ 		/* cond jump */
 
 
-On 2022/7/22 17:04, Will Deacon wrote:
-> On Fri, Jul 08, 2022 at 05:49:49PM +0800, Qi Zheng wrote:
->> Currently arm64 supports per-CPU IRQ stack, but softirqs
->> are still handled in the task context.
->>
->> Since any call to local_bh_enable() at any level in the task's
->> call stack may trigger a softirq processing run, which could
->> potentially cause a task stack overflow if the combined stack
->> footprints exceed the stack's size, let's run these softirqs
->> on the IRQ stack as well.
->>
->> Signed-off-by: Qi Zheng <zhengqi.arch@bytedance.com>
->> ---
->>   arch/arm64/Kconfig      |  1 +
->>   arch/arm64/kernel/irq.c | 13 +++++++++++++
->>   2 files changed, 14 insertions(+)
->>
->> diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
->> index 4c1e1d2d2f8b..be0a9f0052ee 100644
->> --- a/arch/arm64/Kconfig
->> +++ b/arch/arm64/Kconfig
->> @@ -230,6 +230,7 @@ config ARM64
->>   	select HAVE_ARCH_USERFAULTFD_MINOR if USERFAULTFD
->>   	select TRACE_IRQFLAGS_SUPPORT
->>   	select TRACE_IRQFLAGS_NMI_SUPPORT
->> +	select HAVE_SOFTIRQ_ON_OWN_STACK
->>   	help
->>   	  ARM 64-bit (AArch64) Linux support.
->>   
->> diff --git a/arch/arm64/kernel/irq.c b/arch/arm64/kernel/irq.c
->> index bda49430c9ea..c36ad20a52f3 100644
->> --- a/arch/arm64/kernel/irq.c
->> +++ b/arch/arm64/kernel/irq.c
->> @@ -22,6 +22,7 @@
->>   #include <linux/vmalloc.h>
->>   #include <asm/daifflags.h>
->>   #include <asm/vmap_stack.h>
->> +#include <asm/exception.h>
->>   
->>   /* Only access this in an NMI enter/exit */
->>   DEFINE_PER_CPU(struct nmi_ctx, nmi_contexts);
->> @@ -71,6 +72,18 @@ static void init_irq_stacks(void)
->>   }
->>   #endif
->>   
->> +#ifndef CONFIG_PREEMPT_RT
->> +static void ____do_softirq(struct pt_regs *regs)
->> +{
->> +	__do_softirq();
->> +}
->> +
->> +void do_softirq_own_stack(void)
->> +{
->> +	call_on_irq_stack(NULL, ____do_softirq);
->> +}
->> +#endif
-> 
-> Acked-by: Will Deacon <will@kernel.org>
-> 
-> Please can you repost this at -rc1 and we can queue it up for 5.21?
-
-Sure, will do.
-
-Thanks,
-Qi
-
-> 
-> Thanks,
-> 
-> Will
-
--- 
-Thanks,
-Qi
