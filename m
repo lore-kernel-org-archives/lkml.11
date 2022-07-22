@@ -2,72 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7C17C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 08:40:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63AB0C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 08:41:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234156AbiGVIk5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 04:40:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37900 "EHLO
+        id S234282AbiGVIl1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 04:41:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229559AbiGVIkx (ORCPT
+        with ESMTP id S229559AbiGVIlY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 04:40:53 -0400
-Received: from mail-m974.mail.163.com (mail-m974.mail.163.com [123.126.97.4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3E1DB1A824;
-        Fri, 22 Jul 2022 01:40:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=6EDb4
-        G5ADHDuyZVUrVAFI+dIgqEy+uJADjwZ1OKxSMg=; b=AO9j6XFLpM6Q89EvPRLbu
-        4NqxNnPcpoI64UhR0HQ7BLDfnr4rXnywIgNAeReQeUzvFu1HlM64LfK19YWu6uoC
-        sMElOzaafwRJ8UtwBE3GwfAFiwGezdUJFJQPF7J47YZkPAjB7885TJN30sCHbuA/
-        K/gjSg3QvLzrUOZ4HaDAuo=
-Received: from localhost.localdomain (unknown [112.97.59.29])
-        by smtp4 (Coremail) with SMTP id HNxpCgB3HOxFYtpiVZl4QA--.20992S2;
-        Fri, 22 Jul 2022 16:39:36 +0800 (CST)
-From:   Slark Xiao <slark_xiao@163.com>
-To:     amitkarwar@gmail.com, ganapathi017@gmail.com,
-        sharvari.harisangam@nxp.com, huxinming820@gmail.com,
-        kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, Slark Xiao <slark_xiao@163.com>
-Subject: [PATCH] mwifiex: Fix typo 'the the' in comment
-Date:   Fri, 22 Jul 2022 16:39:32 +0800
-Message-Id: <20220722083932.75388-1-slark_xiao@163.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 22 Jul 2022 04:41:24 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE5D11B7BA
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 01:41:22 -0700 (PDT)
+Received: from fraeml736-chm.china.huawei.com (unknown [172.18.147.200])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Lq2rD4J1mz67tVr;
+        Fri, 22 Jul 2022 16:37:48 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml736-chm.china.huawei.com (10.206.15.217) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 22 Jul 2022 10:41:20 +0200
+Received: from [10.195.247.3] (10.195.247.3) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 22 Jul
+ 2022 09:41:19 +0100
+Message-ID: <6f18325e-cb40-b1f7-4236-3aa22e05694b@huawei.com>
+Date:   Fri, 22 Jul 2022 09:41:18 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: HNxpCgB3HOxFYtpiVZl4QA--.20992S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrZFWUWr13KF45WF48Gw1xKrg_yoWfJFgEgw
-        1xuws3KrsxAwn7Kr4UZrWavr1vk3y8XFs7CFsxtrWfW3y0va9xurn5Zrs5J3s0kwsIvFnx
-        Jrn8JFy7Jay5WjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRCE_KPUUUUU==
-X-Originating-IP: [112.97.59.29]
-X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/1tbiRwhGZFc7YxCiyAAAsY
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.1
+Subject: Re: [PATCH 2/2] scripts/faddr2line: Add CONFIG_DEBUG_INFO check
+To:     Josh Poimboeuf <jpoimboe@kernel.org>, <x86@kernel.org>
+CC:     <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>
+References: <cover.1658426357.git.jpoimboe@kernel.org>
+ <ffa7734c929445caa374bf9e68078300174f09b4.1658426357.git.jpoimboe@kernel.org>
+From:   John Garry <john.garry@huawei.com>
+In-Reply-To: <ffa7734c929445caa374bf9e68078300174f09b4.1658426357.git.jpoimboe@kernel.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.195.247.3]
+X-ClientProxiedBy: lhreml748-chm.china.huawei.com (10.201.108.198) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace 'the the' with 'the' in the comment.
+On 21/07/2022 19:01, Josh Poimboeuf wrote:
+> Otherwise without DWARF it spits out gibberish and gives no indication
+> of what the problem is.
+> 
+> Suggested-by: John Garry <john.garry@huawei.com>
+> Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 
-Signed-off-by: Slark Xiao <slark_xiao@163.com>
----
- drivers/net/wireless/marvell/mwifiex/sdio.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Seems to work fine, thanks
 
-diff --git a/drivers/net/wireless/marvell/mwifiex/sdio.c b/drivers/net/wireless/marvell/mwifiex/sdio.c
-index 1a886978ed5d..b8dc3b5c9ad9 100644
---- a/drivers/net/wireless/marvell/mwifiex/sdio.c
-+++ b/drivers/net/wireless/marvell/mwifiex/sdio.c
-@@ -1537,7 +1537,7 @@ static int mwifiex_prog_fw_w_helper(struct mwifiex_adapter *adapter,
- /*
-  * This function decode sdio aggreation pkt.
-  *
-- * Based on the the data block size and pkt_len,
-+ * Based on the data block size and pkt_len,
-  * skb data will be decoded to few packets.
-  */
- static void mwifiex_deaggr_sdio_pkt(struct mwifiex_adapter *adapter,
--- 
-2.25.1
+Tested-by: John Garry <john.garry@huawei.com>
+
+> ---
+>   scripts/faddr2line | 3 +++
+>   1 file changed, 3 insertions(+)
+> 
+> diff --git a/scripts/faddr2line b/scripts/faddr2line
+> index 57099687e5e1..5514c23f45c2 100755
+> --- a/scripts/faddr2line
+> +++ b/scripts/faddr2line
+> @@ -61,6 +61,7 @@ die() {
+>   READELF="${CROSS_COMPILE:-}readelf"
+>   ADDR2LINE="${CROSS_COMPILE:-}addr2line"
+>   AWK="awk"
+> +GREP="grep"
+>   
+>   command -v ${AWK} >/dev/null 2>&1 || die "${AWK} isn't installed"
+>   command -v ${READELF} >/dev/null 2>&1 || die "${READELF} isn't installed"
+> @@ -271,6 +272,8 @@ LIST=0
+>   [[ ! -f $objfile ]] && die "can't find objfile $objfile"
+>   shift
+>   
+> +${READELF} --section-headers --wide $objfile | ${GREP} -q '\.debug_info' || die "CONFIG_DEBUG_INFO not enabled"
+> +
+>   DIR_PREFIX=supercalifragilisticexpialidocious
+>   find_dir_prefix $objfile
+>   
 
