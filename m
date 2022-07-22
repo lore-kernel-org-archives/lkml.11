@@ -2,117 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05FB7C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 07:48:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14DC5C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 07:49:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234289AbiGVHsU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 03:48:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40368 "EHLO
+        id S234427AbiGVHtS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 03:49:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229519AbiGVHsS (ORCPT
+        with ESMTP id S234364AbiGVHtL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 03:48:18 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7785A79EED
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 00:48:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658476095;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=3hxncbcIe4Kl6PZy4gQqi0arV/C4q3zp6iiC7bYlb70=;
-        b=ZJz22yDdMQGF3mzy4nymmWe3JsVFgs2ea5ToGIyGCXbnZ5luJfBGUyL88HbeA7QO5A31VS
-        PSqmwF0n2DQCf18bUc1RQ7R2zveuuzDLBX2P/u80uCa3RQUly9vNqjhHEWnyUqZJqUBv0J
-        RO6GHkkTKb8i8R+XRkbYU1A03vOD0yk=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-340-hoGTVvVGN8OmaUcLoSCC1g-1; Fri, 22 Jul 2022 03:48:14 -0400
-X-MC-Unique: hoGTVvVGN8OmaUcLoSCC1g-1
-Received: by mail-wm1-f69.google.com with SMTP id v11-20020a1cf70b000000b003a318238826so1490422wmh.2
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 00:48:13 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3hxncbcIe4Kl6PZy4gQqi0arV/C4q3zp6iiC7bYlb70=;
-        b=Oq/jg6JMY429hjOHowiOHbePxjt+uZQM6OZy1ilMP/mXp8p9Rp+Fp7mE3x7m93mfE1
-         wFM6EmknrdgAZ9kNXzLto9zya2sdYDIyTmMD5z/Q6NW+8mdYuFQveRBOcsq8qiStTpMB
-         uKMrvkOXgadyUXhgUy3rnMj3okBJW2NHyplE27Q99wbsee5WMe73KFrl4Wxe37jMyzlJ
-         VL+sMWg7IOps/atdreBC2zBpu7TvJMN+Hc7x7Io0DLWZKFSFopd+EFzCYs/uaCNsvByI
-         C7PbZ1Lh7wkiSLx8u6E3RvL/Ct5YDAR+nmNXfssawO1WLPjnG0Dj7EZ6eaMWvZL3KBE1
-         6gVA==
-X-Gm-Message-State: AJIora+8AnD3MfGlsqwfPN6+Sv8LnczBSalucOXnd0zHBCcuOHZkNTAx
-        seT8yHbmpfPWylx6+G5eyVZGLAQf6hUpEen5GuVwFA0fkDl2SLcRwIOLzSCClRWMXwZAMUMO5CD
-        rJUWRAp8BWBvG7UxvYAh3vHrO0vt5ymVYAKQ5jOWuMxE6LSn0+i6TTxKi49uAFINl1ap0VnYwjd
-        8=
-X-Received: by 2002:a05:6000:156a:b0:21d:b22b:e5b with SMTP id 10-20020a056000156a00b0021db22b0e5bmr1525073wrz.348.1658476092693;
-        Fri, 22 Jul 2022 00:48:12 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1sDNNi2fuV3Q+f07HSbxoQkeX1wVwLud1oPEReIagKxVgo1g2hage93fB9UK5tJJAF3bhMQdA==
-X-Received: by 2002:a05:6000:156a:b0:21d:b22b:e5b with SMTP id 10-20020a056000156a00b0021db22b0e5bmr1525046wrz.348.1658476092351;
-        Fri, 22 Jul 2022 00:48:12 -0700 (PDT)
-Received: from minerva.home (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id f5-20020adff445000000b0021e5f32ade7sm553115wrp.68.2022.07.22.00.48.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Jul 2022 00:48:11 -0700 (PDT)
-From:   Javier Martinez Canillas <javierm@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Erico Nunes <ernunes@redhat.com>,
-        Enric Balletbo i Serra <eballetbo@redhat.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Douglas Anderson <dianders@chromium.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH] drm/bridge: ti-sn65dsi86: Use dev_err_probe() to avoid polluting the log
-Date:   Fri, 22 Jul 2022 09:47:55 +0200
-Message-Id: <20220722074755.660258-1-javierm@redhat.com>
-X-Mailer: git-send-email 2.36.1
+        Fri, 22 Jul 2022 03:49:11 -0400
+Received: from mailbox.box.xen0n.name (mail.xen0n.name [115.28.160.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB8289A5D8
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 00:49:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xen0n.name; s=mail;
+        t=1658476145; bh=D7dPB4B0Ci6KwFGskz6CnVceeEcRoUxZ7uwpqc3Ex6E=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=Qef991VRc4Uy0n3RBy2ITcz6jZDviFFNegVfMweNPVi4Q6p/tlPFx/WzZb3ySFgUz
+         QDkY1LYzloqChyGMZGqG+vJuZU2GqgTd8q3QyunF+sTpjUfno5xjb2vGAaZ3N5GeFT
+         zgf/TljJ/du1D1iMokmP6qXt6OTN3B+IRNCdWL04=
+Received: from [100.100.35.250] (unknown [58.34.185.106])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by mailbox.box.xen0n.name (Postfix) with ESMTPSA id 0BBA560610;
+        Fri, 22 Jul 2022 15:49:05 +0800 (CST)
+Message-ID: <6c89e5de-927d-2cf1-1ed5-fef882f45a5a@xen0n.name>
+Date:   Fri, 22 Jul 2022 15:49:04 +0800
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:104.0)
+ Gecko/20100101 Thunderbird/104.0a1
+Subject: Re: [PATCH] LoongArch: Fix wrong "ROM Size" of boardinfo
+To:     Tiezhu Yang <yangtiezhu@loongson.cn>,
+        Huacai Chen <chenhuacai@kernel.org>
+Cc:     WANG Xuerui <kernel@xen0n.name>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        loongarch@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <1658397181-2095-1-git-send-email-yangtiezhu@loongson.cn>
+Content-Language: en-US
+From:   WANG Xuerui <kernel@xen0n.name>
+In-Reply-To: <1658397181-2095-1-git-send-email-yangtiezhu@loongson.cn>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If devm_drm_of_get_bridge() can't find the connected bridge, it returns an
-ERR_PTR(-EPROBE_DEFER) to indicate that the probe should be deferred.
+On 2022/7/21 17:53, Tiezhu Yang wrote:
+> We can see the "ROM Size" is different in the following outputs:
+>
+> [root@linux loongson]# cat /sys/firmware/loongson/boardinfo
+> BIOS Information
+> Vendor                  : Loongson
+> Version                 : vUDK2018-LoongArch-V2.0.pre-beta8
+> ROM Size                : 63 KB
+> Release Date            : 06/15/2022
+>
+> Board Information
+> Manufacturer            : Loongson
+> Board Name              : Loongson-LS3A5000-7A1000-1w-A2101
+> Family                  : LOONGSON64
+>
+> [root@linux loongson]# dmidecode | head -11
+> ...
+> Handle 0x0000, DMI type 0, 26 bytes
+> BIOS Information
+> 	Vendor: Loongson
+> 	Version: vUDK2018-LoongArch-V2.0.pre-beta8
+> 	Release Date: 06/15/2022
+> 	ROM Size: 4 MB
+>
+> According to "BIOS Information (Type 0) structure" in the SMBIOS
+> Reference Specification [1], it shows 64K * (n+1) is the size of
+> the physical device containing the BIOS if the size is less than
+> 16M.
+>
+> Additionally, we can see the related code in dmidecode [2]:
+>
+>    u64 s = { .l = (code1 + 1) << 6 };
+>
+> So the output of dmidecode is correct, the output of boardinfo
+> is wrong, fix it.
+>
+> By the way, at present no need to consider the size is 16M or
+> greater on LoongArch, because it is usually 4M or 8M which is
+> enough to use.
+Although the commit message is a bit Chinglish, the inclusion of code 
+and snippets have all complemented the description, so overall it 
+doesn't hamper understanding and I'm mostly okay with it.
+>
+> [1] https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_3.6.0.pdf
+> [2] https://git.savannah.nongnu.org/cgit/dmidecode.git/tree/dmidecode.c#n347
+>
+> Fixes: 628c3bb40e9a ("LoongArch: Add boot and setup routines")
+> Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+> ---
+>   arch/loongarch/kernel/setup.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/arch/loongarch/kernel/setup.c b/arch/loongarch/kernel/setup.c
+> index c74860b..8f5c2f9 100644
+> --- a/arch/loongarch/kernel/setup.c
+> +++ b/arch/loongarch/kernel/setup.c
+> @@ -126,7 +126,7 @@ static void __init parse_bios_table(const struct dmi_header *dm)
+>   	char *dmi_data = (char *)dm;
+>   
+>   	bios_extern = *(dmi_data + SMBIOS_BIOSEXTERN_OFFSET);
+> -	b_info.bios_size = *(dmi_data + SMBIOS_BIOSSIZE_OFFSET);
+> +	b_info.bios_size = (*(dmi_data + SMBIOS_BIOSSIZE_OFFSET) + 1) << 6;
+>   
+>   	if (bios_extern & LOONGSON_EFI_ENABLE)
+>   		set_bit(EFI_BOOT, &efi.flags);
 
-But this path also prints an error message, which pollutes the kernel log
-since is printed on every probe deferral, i.e:
+I've tested on real 3A5000 hardware and confirmed this is working.
 
-  $ dmesg | grep "failed to create panel bridge" | wc -l
-  38
+$ cat /sys/firmware/loongson/boardinfo
+BIOS Information
+Vendor                  : Loongson
+Version                 : vUDK2018-LoongArch-V2.0.pre-beta8
+ROM Size                : 4096 KB
+Release Date            : 06/15/2022
 
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
----
+Board Information
+Manufacturer            : Loongson
+Board Name              : Loongson-LS3A5000-7A1000-1w-A2101
+Family                  : LOONGSON64
 
- drivers/gpu/drm/bridge/ti-sn65dsi86.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/bridge/ti-sn65dsi86.c b/drivers/gpu/drm/bridge/ti-sn65dsi86.c
-index 369bf72717f6..90bbabde1595 100644
---- a/drivers/gpu/drm/bridge/ti-sn65dsi86.c
-+++ b/drivers/gpu/drm/bridge/ti-sn65dsi86.c
-@@ -1206,10 +1206,9 @@ static int ti_sn_bridge_probe(struct auxiliary_device *adev,
- 	int ret;
- 
- 	pdata->next_bridge = devm_drm_of_get_bridge(pdata->dev, np, 1, 0);
--	if (IS_ERR(pdata->next_bridge)) {
--		DRM_ERROR("failed to create panel bridge\n");
--		return PTR_ERR(pdata->next_bridge);
--	}
-+	if (IS_ERR(pdata->next_bridge))
-+		return dev_err_probe(pdata->dev, PTR_ERR(pdata->next_bridge),
-+				     "failed to create panel bridge\n");
- 
- 	ti_sn_bridge_parse_lanes(pdata, np);
- 
--- 
-2.36.1
+So,
+
+Reviewed-by: WANG Xuerui <git@xen0n.name>
 
