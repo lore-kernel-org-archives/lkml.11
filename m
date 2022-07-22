@@ -2,70 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25082C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 19:35:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FAA4C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 19:37:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236387AbiGVTfS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 15:35:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36760 "EHLO
+        id S236403AbiGVThC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 15:37:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236369AbiGVTfO (ORCPT
+        with ESMTP id S231459AbiGVThB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 15:35:14 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCC1D13FBA;
-        Fri, 22 Jul 2022 12:35:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-        Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-        bh=ZKWhIcTjjDkCKE0uu1WuJZU2sm3otMhe7wLNA0ixMbY=; b=Vn9sqaulaf5aOuf2PdhO6cATnR
-        +DnMvipPl3YfEyB6Wa2PmzOvHb/fJoDbPVU4qQZWeEK/K7bdCQG3+aU/KwWZRtuRh3ScD/c6+5i/U
-        JWUd8gmMpalC8T87QyC1oNsz749sGV2R2kazBndIfaishgNnh1a2Pwf9Wo9P5AUgUOi/y0RBYnjKa
-        fbjBWWOQa8LDgjAWBJdFf8OjfuKmU9e+THPQdGm+ZxXpSGl0DCZflcUPCPXNe4fdl+/YJVxn56+Xi
-        3DE9mCrK1iQYK4kJvBy/IdOWRdGtf1xn0eUZ/F6cDwvmVpWP0Aue0Vm+OLATzVoXBWOBeJoKGwhf6
-        VSliJOww==;
-Received: from [2601:1c0:6280:3f0::a6b3]
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oEyQb-009RfF-8q; Fri, 22 Jul 2022 19:35:13 +0000
-Message-ID: <92ed10f9-2c84-ad42-20d1-f8a101f78f08@infradead.org>
-Date:   Fri, 22 Jul 2022 12:35:12 -0700
+        Fri, 22 Jul 2022 15:37:01 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D73E11A08
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 12:37:00 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id fy29so10139159ejc.12
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 12:36:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=9W/4o6EfnGEwcuq6LL3x9yV4yD4TMmlvYfYSl/PJ+po=;
+        b=OUrpMUo1mPHxCgem1t33sG/aMPFP0rgndCMXXZg/xPhFvx/uJYQRPdDXzmVY8//emD
+         EFfcjXa0xHrrokvrGFHKEvOq6PyLMeYi9Px++Q1u9z23a5dZVMwPoOpZ/7nT0ZE+iCEQ
+         KPKv8+fgZMzF60dkAZNSKBbh+XkBUlhWoRaGjF/wrx3v6r1ddzWbjgect1rmrc0gA5Ds
+         ZgNt9y9cx8r6UXN9udC2y+Mp0sdAsuJBzqU9HReOcPS8lXrssTRK8kfrmMrV9mBRqMfU
+         OL+/CTwarPGXQMoFxD8tAHY7seUIh78xZdfwwPrSL3ivyrJMLRXLdotAkRh6/y9f8psg
+         +06A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=9W/4o6EfnGEwcuq6LL3x9yV4yD4TMmlvYfYSl/PJ+po=;
+        b=p2hdTyhUYm3fqIz65eUK3Xb3v5NfMScO5ceTYGZJvz6CIlHWOVn0l8ioQ5pqDTRC8/
+         KG54gQ0Dooc1XIJsjdzlHFyTw9qy/WPm4TYNarB683W4fXcfpr4QKTvlAoBSm7MXlefJ
+         KH9UNPL3l3E3qmNp7yEIm/kulumioanlsULjXYrUOEAAvLygaFTWP7ZseTHXv/0T9tbA
+         mWQUUA4G7M4Zr519Fb1BDobUCtZH8fCb+hxkyNpDRguYsJjrnCPvn44nQX2KKzFOVU8z
+         /Pa5kBoAkVjoD2ZGsQp5MTb+CneAx/yq+CFpNFwCnLyMGSymi1c1jRjvYgvponr0qfyO
+         +oSA==
+X-Gm-Message-State: AJIora8X11IPnsXwIs+4dcf/achF4OSqQNUatR6fKIqP2JdkelCU793/
+        Yzk0skwixV8vFL7diHu4K+SeZ1uGDEK4yRNJNa7YPg==
+X-Google-Smtp-Source: AGRyM1toX1qxA/Y2sQze7fN7WWkk6TqYES76pKd7tls/ES17kIur8GJebyxRwlYo4tOwxeEXQE4zm+qv2gj0Pc0sytg=
+X-Received: by 2002:a17:907:7fa7:b0:72e:f88c:db16 with SMTP id
+ qk39-20020a1709077fa700b0072ef88cdb16mr1077472ejc.366.1658518618331; Fri, 22
+ Jul 2022 12:36:58 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: linux-next: Tree for Jul 22
- (drivers/hid/amd-sfh-hid/sfh1_1/amd_sfh_interface.c)
-Content-Language: en-US
-To:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Basavaraj Natikar <basavaraj.natikar@amd.com>,
-        linux-input@vger.kernel.org
-References: <20220722204335.478b1598@canb.auug.org.au>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220722204335.478b1598@canb.auug.org.au>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220722091133.320803732@linuxfoundation.org>
+In-Reply-To: <20220722091133.320803732@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Sat, 23 Jul 2022 01:06:47 +0530
+Message-ID: <CA+G9fYuu1QroLm-9a7vXmq77pS03q=fBCfjhfURbAZVNA=a2rg@mail.gmail.com>
+Subject: Re: [PATCH 5.15 00/89] 5.15.57-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, 22 Jul 2022 at 14:43, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> This is the start of the stable review cycle for the 5.15.57 release.
+> There are 89 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Sun, 24 Jul 2022 09:10:51 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
+5.15.57-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-5.15.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-On 7/22/22 03:43, Stephen Rothwell wrote:
-> Hi all,
-> 
-> Changes since 20220721:
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-on i386:
+## Build
+* kernel: 5.15.57-rc1
+* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
+* git branch: linux-5.15.y
+* git commit: 377c0f983cd943f563003e5be4947692afba815c
+* git describe: v5.15.56-90-g377c0f983cd9
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.15.y/build/v5.15=
+.56-90-g377c0f983cd9
 
-../drivers/hid/amd-sfh-hid/sfh1_1/amd_sfh_interface.c: In function ‘amd_stop_sensor’:
-../drivers/hid/amd-sfh-hid/sfh1_1/amd_sfh_interface.c:48:9: error: implicit declaration of function ‘writeq’; did you mean ‘writel’? [-Werror=implicit-function-declaration]
-   48 |         writeq(0x0, privdata->mmio + AMD_C2P_MSG(1));
-      |         ^~~~~~
-      |         writel
+## Test Regressions (compared to v5.15.55)
+No test regressions found.
 
+## Metric Regressions (compared to v5.15.55)
+No metric regressions found.
 
+## Test Fixes (compared to v5.15.55)
+No test fixes found.
 
--- 
-~Randy
+## Metric Fixes (compared to v5.15.55)
+No metric fixes found.
+
+## Test result summary
+total: 140090, pass: 126270, fail: 474, skip: 12514, xfail: 832
+
+## Build Summary
+* arc: 10 total, 10 passed, 0 failed
+* arm: 308 total, 308 passed, 0 failed
+* arm64: 62 total, 60 passed, 2 failed
+* i386: 52 total, 50 passed, 2 failed
+* mips: 45 total, 45 passed, 0 failed
+* parisc: 12 total, 12 passed, 0 failed
+* powerpc: 54 total, 54 passed, 0 failed
+* riscv: 22 total, 22 passed, 0 failed
+* s390: 21 total, 21 passed, 0 failed
+* sh: 24 total, 24 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x86_64: 56 total, 54 passed, 2 failed
+
+## Test suites summary
+* fwts
+* igt-gpu-tools
+* kunit
+* kvm-unit-tests
+* libgpiod
+* libhugetlbfs
+* log-parser-boot
+* log-parser-test
+* ltp-cap_bounds
+* ltp-commands
+* ltp-containers
+* ltp-controllers
+* ltp-cpuhotplug
+* ltp-crypto
+* ltp-cve
+* ltp-dio
+* ltp-fcntl-locktests
+* ltp-filecaps
+* ltp-fs
+* ltp-fs_bind
+* ltp-fs_perms_simple
+* ltp-fsx
+* ltp-hugetlb
+* ltp-io
+* ltp-ipc
+* ltp-math
+* ltp-mm
+* ltp-nptl
+* ltp-open-posix-tests
+* ltp-pty
+* ltp-sched
+* ltp-securebits
+* ltp-smoke
+* ltp-syscalls
+* ltp-tracing
+* network-basic-tests
+* packetdrill
+* perf
+* perf/Zstd-perf.data-compression
+* rcutorture
+* ssuite
+* v4l2-compliance
+* vdso
+
+--
+Linaro LKFT
+https://lkft.linaro.org
