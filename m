@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 615C6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:18:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8DFAC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:18:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235849AbiGVJSP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 05:18:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50944 "EHLO
+        id S235794AbiGVJSV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 05:18:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235821AbiGVJRr (ORCPT
+        with ESMTP id S235799AbiGVJRz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 05:17:47 -0400
+        Fri, 22 Jul 2022 05:17:55 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCE2BB852F;
-        Fri, 22 Jul 2022 02:12:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B21BAF710;
+        Fri, 22 Jul 2022 02:12:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F283461F65;
-        Fri, 22 Jul 2022 09:12:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0630CC341C6;
-        Fri, 22 Jul 2022 09:12:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C617961F65;
+        Fri, 22 Jul 2022 09:12:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD2E7C341C6;
+        Fri, 22 Jul 2022 09:12:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658481157;
-        bh=1DCPxPvjrPP4RCFt/kmt9VosaPKCE1ukz5C8TaZI250=;
+        s=korg; t=1658481163;
+        bh=h3iReVKDzdMz+8WX8FARpZMNUnMO2N+ZvQj1NqSINQo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xREj9Lnct+c387AfA4H6fBtOnoxgruQ6mKjQwAWi7srZcXvBOvKx3LOLaT9FD7YEY
-         /0oTkEwjFNDnadMpR+nRUPILtFY7XvKT0PWSrEOqMiK9bZBwwyn2EpxxqkE1CmiS0R
-         NVO2XEyImHtNyoH09XTmpzVWyzEapGkM1/DIdV74=
+        b=hiBlzeMZ5tHFbZhRrC/W9mX1+dPwj+c139sazVYm2soptDHNjKy7s5/ECoqiWUWtb
+         Aqx2xAr+ALhfWLJjoCgRB0qhgsrQarQy+ChO+wCJaEOhX+Dhz0nY59PcLaKFUzGVtc
+         6WSSQ8yGn2+TxnzQEvf1NqAFYtQ5QkEPj72IVu1s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Lai Jiangshan <jiangshan.ljs@antgroup.com>,
-        Borislav Petkov <bp@suse.de>,
+        Borislav Petkov <bp@suse.de>, Juergen Gross <jgross@suse.com>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.15 02/89] x86/entry: Switch the stack after error_entry() returns
-Date:   Fri, 22 Jul 2022 11:10:36 +0200
-Message-Id: <20220722091133.500016168@linuxfoundation.org>
+Subject: [PATCH 5.15 04/89] x86/entry: Dont call error_entry() for XENPV
+Date:   Fri, 22 Jul 2022 11:10:38 +0200
+Message-Id: <20220722091133.617676206@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220722091133.320803732@linuxfoundation.org>
 References: <20220722091133.320803732@linuxfoundation.org>
@@ -51,79 +51,47 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 
-commit 520a7e80c96d655fbe4650d9cc985bd9d0443389 upstream.
+commit 64cbd0acb58203fb769ed2f4eab526d43e243847 upstream.
 
-error_entry() calls fixup_bad_iret() before sync_regs() if it is a fault
-from a bad IRET, to copy pt_regs to the kernel stack. It switches to the
-kernel stack directly after sync_regs().
+XENPV guests enter already on the task stack and they can't fault for
+native_iret() nor native_load_gs_index() since they use their own pvop
+for IRET and load_gs_index(). A CR3 switch is not needed either.
 
-But error_entry() itself is also a function call, so it has to stash
-the address it is going to return to, in %r12 which is unnecessarily
-complicated.
-
-Move the stack switching after error_entry() and get rid of the need to
-handle the return address.
+So there is no reason to call error_entry() in XENPV.
 
   [ bp: Massage commit message. ]
 
 Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20220503032107.680190-3-jiangshanlai@gmail.com
+Reviewed-by: Juergen Gross <jgross@suse.com>
+Link: https://lore.kernel.org/r/20220503032107.680190-6-jiangshanlai@gmail.com
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/entry/entry_64.S |   16 ++++++----------
- 1 file changed, 6 insertions(+), 10 deletions(-)
+ arch/x86/entry/entry_64.S |   13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
 
 --- a/arch/x86/entry/entry_64.S
 +++ b/arch/x86/entry/entry_64.S
-@@ -323,6 +323,8 @@ SYM_CODE_END(ret_from_fork)
- .macro idtentry_body cfunc has_error_code:req
- 
- 	call	error_entry
-+	movq	%rax, %rsp			/* switch to the task stack if from userspace */
-+	ENCODE_FRAME_POINTER
+@@ -333,8 +333,17 @@ SYM_CODE_END(push_and_clear_regs)
+ 	call push_and_clear_regs
  	UNWIND_HINT_REGS
  
- 	movq	%rsp, %rdi			/* pt_regs pointer into 1st argument*/
-@@ -982,14 +984,10 @@ SYM_CODE_START_LOCAL(error_entry)
- 	/* We have user CR3.  Change to kernel CR3. */
- 	SWITCH_TO_KERNEL_CR3 scratch_reg=%rax
- 
-+	leaq	8(%rsp), %rdi			/* arg0 = pt_regs pointer */
- .Lerror_entry_from_usermode_after_swapgs:
- 	/* Put us onto the real thread stack. */
--	popq	%r12				/* save return addr in %12 */
--	movq	%rsp, %rdi			/* arg0 = pt_regs pointer */
- 	call	sync_regs
--	movq	%rax, %rsp			/* switch stack */
--	ENCODE_FRAME_POINTER
--	pushq	%r12
- 	RET
- 
- 	/*
-@@ -1021,6 +1019,7 @@ SYM_CODE_START_LOCAL(error_entry)
- 	 */
- .Lerror_entry_done_lfence:
- 	FENCE_SWAPGS_KERNEL_ENTRY
-+	leaq	8(%rsp), %rax			/* return pt_regs pointer */
- 	RET
- 
- .Lbstep_iret:
-@@ -1041,12 +1040,9 @@ SYM_CODE_START_LOCAL(error_entry)
- 	 * Pretend that the exception came from user mode: set up pt_regs
- 	 * as if we faulted immediately after IRET.
- 	 */
--	popq	%r12				/* save return addr in %12 */
--	movq	%rsp, %rdi			/* arg0 = pt_regs pointer */
-+	leaq	8(%rsp), %rdi			/* arg0 = pt_regs pointer */
- 	call	fixup_bad_iret
--	mov	%rax, %rsp
--	ENCODE_FRAME_POINTER
--	pushq	%r12
-+	mov	%rax, %rdi
- 	jmp	.Lerror_entry_from_usermode_after_swapgs
- SYM_CODE_END(error_entry)
+-	call	error_entry
+-	movq	%rax, %rsp			/* switch to the task stack if from userspace */
++	/*
++	 * Call error_entry() and switch to the task stack if from userspace.
++	 *
++	 * When in XENPV, it is already in the task stack, and it can't fault
++	 * for native_iret() nor native_load_gs_index() since XENPV uses its
++	 * own pvops for IRET and load_gs_index().  And it doesn't need to
++	 * switch the CR3.  So it can skip invoking error_entry().
++	 */
++	ALTERNATIVE "call error_entry; movq %rax, %rsp", \
++		"", X86_FEATURE_XENPV
++
+ 	ENCODE_FRAME_POINTER
+ 	UNWIND_HINT_REGS
  
 
 
