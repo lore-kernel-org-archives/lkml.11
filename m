@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40C00C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:21:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FB24C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:21:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236128AbiGVJVl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 05:21:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34172 "EHLO
+        id S236155AbiGVJVr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 05:21:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235848AbiGVJVB (ORCPT
+        with ESMTP id S236022AbiGVJVC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 05:21:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2E0FBDA26;
-        Fri, 22 Jul 2022 02:14:01 -0700 (PDT)
+        Fri, 22 Jul 2022 05:21:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7497BB8C5;
+        Fri, 22 Jul 2022 02:14:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C3429B827B7;
-        Fri, 22 Jul 2022 09:13:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22788C341C6;
-        Fri, 22 Jul 2022 09:13:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0EF1C61F4F;
+        Fri, 22 Jul 2022 09:14:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11153C341C6;
+        Fri, 22 Jul 2022 09:14:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658481238;
-        bh=JJSNyrfNibeUqygLpJNgYwMGm3xzO2AiaKKXC6Kdh18=;
+        s=korg; t=1658481241;
+        bh=qacdNg+CHgEBr87Bsa9Gl97JvK9Xxo1hJTyqVM0AasY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rpGr1fOQT1eV9vfTCP5Ubap0aOVoE4paxYDxp9NuaTN3K11p7T2AdrpWVDe96VN0Y
-         vBhR2812rCyq4nr/SX0bzUt41QjD7xpm2RBaZ0CIzSj/YBi1KGXND8iqgRteXaWZwW
-         k/LstyeI85HU0+eBWH58UNMk2fZFv5tU/c4nX264=
+        b=OvWViKwGlZhKa+nIMJD7ScIN7i4Dxx98Nwyn6/vzpeCLkaxHz16oUQkjamwoW2KTj
+         ARnTzYtsJz6kN3XX+qbur7hByF+gXyhRFsXok1DB6uQWHSqx2SKmdAO/CfN0fsfZ2X
+         jzgirtt1+nU99jsM490sm7UQ8JB8gdIMT7s37UAw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Borislav Petkov <bp@suse.de>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.15 24/89] x86/kvm/vmx: Make noinstr clean
-Date:   Fri, 22 Jul 2022 11:10:58 +0200
-Message-Id: <20220722091134.722506985@linuxfoundation.org>
+Subject: [PATCH 5.15 15/89] x86/alternative: Implement .retpoline_sites support
+Date:   Fri, 22 Jul 2022 11:10:49 +0200
+Message-Id: <20220722091134.226124208@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220722091133.320803732@linuxfoundation.org>
 References: <20220722091133.320803732@linuxfoundation.org>
@@ -52,72 +54,282 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peter Zijlstra <peterz@infradead.org>
 
-commit 742ab6df974ae8384a2dd213db1a3a06cf6d8936 upstream.
+commit 7508500900814d14e2e085cdc4e28142721abbdf upstream.
 
-The recent mmio_stale_data fixes broke the noinstr constraints:
+Rewrite retpoline thunk call sites to be indirect calls for
+spectre_v2=off. This ensures spectre_v2=off is as near to a
+RETPOLINE=n build as possible.
 
-  vmlinux.o: warning: objtool: vmx_vcpu_enter_exit+0x15b: call to wrmsrl.constprop.0() leaves .noinstr.text section
-  vmlinux.o: warning: objtool: vmx_vcpu_enter_exit+0x1bf: call to kvm_arch_has_assigned_device() leaves .noinstr.text section
+This is the replacement for objtool writing alternative entries to
+ensure the same and achieves feature-parity with the previous
+approach.
 
-make it all happy again.
+One noteworthy feature is that it relies on the thunks to be in
+machine order to compute the register index.
+
+Specifically, this does not yet address the Jcc __x86_indirect_thunk_*
+calls generated by clang, a future patch will add this.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Borislav Petkov <bp@suse.de>
+Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Tested-by: Alexei Starovoitov <ast@kernel.org>
+Link: https://lore.kernel.org/r/20211026120310.232495794@infradead.org
+[cascardo: small conflict fixup at arch/x86/kernel/module.c]
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/vmx/vmx.c   |    6 +++---
- arch/x86/kvm/x86.c       |    4 ++--
- include/linux/kvm_host.h |    2 +-
- 3 files changed, 6 insertions(+), 6 deletions(-)
+ arch/um/kernel/um_arch.c           |    4 +
+ arch/x86/include/asm/alternative.h |    1 
+ arch/x86/kernel/alternative.c      |  141 +++++++++++++++++++++++++++++++++++--
+ arch/x86/kernel/module.c           |    9 ++
+ 4 files changed, 150 insertions(+), 5 deletions(-)
 
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -380,9 +380,9 @@ static __always_inline void vmx_disable_
- 	if (!vmx->disable_fb_clear)
- 		return;
- 
--	rdmsrl(MSR_IA32_MCU_OPT_CTRL, msr);
-+	msr = __rdmsr(MSR_IA32_MCU_OPT_CTRL);
- 	msr |= FB_CLEAR_DIS;
--	wrmsrl(MSR_IA32_MCU_OPT_CTRL, msr);
-+	native_wrmsrl(MSR_IA32_MCU_OPT_CTRL, msr);
- 	/* Cache the MSR value to avoid reading it later */
- 	vmx->msr_ia32_mcu_opt_ctrl = msr;
- }
-@@ -393,7 +393,7 @@ static __always_inline void vmx_enable_f
- 		return;
- 
- 	vmx->msr_ia32_mcu_opt_ctrl &= ~FB_CLEAR_DIS;
--	wrmsrl(MSR_IA32_MCU_OPT_CTRL, vmx->msr_ia32_mcu_opt_ctrl);
-+	native_wrmsrl(MSR_IA32_MCU_OPT_CTRL, vmx->msr_ia32_mcu_opt_ctrl);
+--- a/arch/um/kernel/um_arch.c
++++ b/arch/um/kernel/um_arch.c
+@@ -421,6 +421,10 @@ void __init check_bugs(void)
+ 	os_check_bugs();
  }
  
- static void vmx_update_fb_clear_dis(struct kvm_vcpu *vcpu, struct vcpu_vmx *vmx)
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -12179,9 +12179,9 @@ void kvm_arch_end_assignment(struct kvm
- }
- EXPORT_SYMBOL_GPL(kvm_arch_end_assignment);
- 
--bool kvm_arch_has_assigned_device(struct kvm *kvm)
-+bool noinstr kvm_arch_has_assigned_device(struct kvm *kvm)
- {
--	return atomic_read(&kvm->arch.assigned_device_count);
-+	return arch_atomic_read(&kvm->arch.assigned_device_count);
- }
- EXPORT_SYMBOL_GPL(kvm_arch_has_assigned_device);
- 
---- a/include/linux/kvm_host.h
-+++ b/include/linux/kvm_host.h
-@@ -1233,7 +1233,7 @@ static inline void kvm_arch_end_assignme
++void apply_retpolines(s32 *start, s32 *end)
++{
++}
++
+ void apply_alternatives(struct alt_instr *start, struct alt_instr *end)
  {
  }
+--- a/arch/x86/include/asm/alternative.h
++++ b/arch/x86/include/asm/alternative.h
+@@ -75,6 +75,7 @@ extern int alternatives_patched;
  
--static inline bool kvm_arch_has_assigned_device(struct kvm *kvm)
-+static __always_inline bool kvm_arch_has_assigned_device(struct kvm *kvm)
- {
- 	return false;
+ extern void alternative_instructions(void);
+ extern void apply_alternatives(struct alt_instr *start, struct alt_instr *end);
++extern void apply_retpolines(s32 *start, s32 *end);
+ 
+ struct module;
+ 
+--- a/arch/x86/kernel/alternative.c
++++ b/arch/x86/kernel/alternative.c
+@@ -29,6 +29,7 @@
+ #include <asm/io.h>
+ #include <asm/fixmap.h>
+ #include <asm/paravirt.h>
++#include <asm/asm-prototypes.h>
+ 
+ int __read_mostly alternatives_patched;
+ 
+@@ -113,6 +114,7 @@ static void __init_or_module add_nops(vo
+ 	}
  }
+ 
++extern s32 __retpoline_sites[], __retpoline_sites_end[];
+ extern struct alt_instr __alt_instructions[], __alt_instructions_end[];
+ extern s32 __smp_locks[], __smp_locks_end[];
+ void text_poke_early(void *addr, const void *opcode, size_t len);
+@@ -221,7 +223,7 @@ static __always_inline int optimize_nops
+  * "noinline" to cause control flow change and thus invalidate I$ and
+  * cause refetch after modification.
+  */
+-static void __init_or_module noinline optimize_nops(struct alt_instr *a, u8 *instr)
++static void __init_or_module noinline optimize_nops(u8 *instr, size_t len)
+ {
+ 	struct insn insn;
+ 	int i = 0;
+@@ -239,11 +241,11 @@ static void __init_or_module noinline op
+ 		 * optimized.
+ 		 */
+ 		if (insn.length == 1 && insn.opcode.bytes[0] == 0x90)
+-			i += optimize_nops_range(instr, a->instrlen, i);
++			i += optimize_nops_range(instr, len, i);
+ 		else
+ 			i += insn.length;
+ 
+-		if (i >= a->instrlen)
++		if (i >= len)
+ 			return;
+ 	}
+ }
+@@ -331,10 +333,135 @@ void __init_or_module noinline apply_alt
+ 		text_poke_early(instr, insn_buff, insn_buff_sz);
+ 
+ next:
+-		optimize_nops(a, instr);
++		optimize_nops(instr, a->instrlen);
+ 	}
+ }
+ 
++#if defined(CONFIG_RETPOLINE) && defined(CONFIG_STACK_VALIDATION)
++
++/*
++ * CALL/JMP *%\reg
++ */
++static int emit_indirect(int op, int reg, u8 *bytes)
++{
++	int i = 0;
++	u8 modrm;
++
++	switch (op) {
++	case CALL_INSN_OPCODE:
++		modrm = 0x10; /* Reg = 2; CALL r/m */
++		break;
++
++	case JMP32_INSN_OPCODE:
++		modrm = 0x20; /* Reg = 4; JMP r/m */
++		break;
++
++	default:
++		WARN_ON_ONCE(1);
++		return -1;
++	}
++
++	if (reg >= 8) {
++		bytes[i++] = 0x41; /* REX.B prefix */
++		reg -= 8;
++	}
++
++	modrm |= 0xc0; /* Mod = 3 */
++	modrm += reg;
++
++	bytes[i++] = 0xff; /* opcode */
++	bytes[i++] = modrm;
++
++	return i;
++}
++
++/*
++ * Rewrite the compiler generated retpoline thunk calls.
++ *
++ * For spectre_v2=off (!X86_FEATURE_RETPOLINE), rewrite them into immediate
++ * indirect instructions, avoiding the extra indirection.
++ *
++ * For example, convert:
++ *
++ *   CALL __x86_indirect_thunk_\reg
++ *
++ * into:
++ *
++ *   CALL *%\reg
++ *
++ */
++static int patch_retpoline(void *addr, struct insn *insn, u8 *bytes)
++{
++	retpoline_thunk_t *target;
++	int reg, i = 0;
++
++	target = addr + insn->length + insn->immediate.value;
++	reg = target - __x86_indirect_thunk_array;
++
++	if (WARN_ON_ONCE(reg & ~0xf))
++		return -1;
++
++	/* If anyone ever does: CALL/JMP *%rsp, we're in deep trouble. */
++	BUG_ON(reg == 4);
++
++	if (cpu_feature_enabled(X86_FEATURE_RETPOLINE))
++		return -1;
++
++	i = emit_indirect(insn->opcode.bytes[0], reg, bytes);
++	if (i < 0)
++		return i;
++
++	for (; i < insn->length;)
++		bytes[i++] = BYTES_NOP1;
++
++	return i;
++}
++
++/*
++ * Generated by 'objtool --retpoline'.
++ */
++void __init_or_module noinline apply_retpolines(s32 *start, s32 *end)
++{
++	s32 *s;
++
++	for (s = start; s < end; s++) {
++		void *addr = (void *)s + *s;
++		struct insn insn;
++		int len, ret;
++		u8 bytes[16];
++		u8 op1, op2;
++
++		ret = insn_decode_kernel(&insn, addr);
++		if (WARN_ON_ONCE(ret < 0))
++			continue;
++
++		op1 = insn.opcode.bytes[0];
++		op2 = insn.opcode.bytes[1];
++
++		switch (op1) {
++		case CALL_INSN_OPCODE:
++		case JMP32_INSN_OPCODE:
++			break;
++
++		default:
++			WARN_ON_ONCE(1);
++			continue;
++		}
++
++		len = patch_retpoline(addr, &insn, bytes);
++		if (len == insn.length) {
++			optimize_nops(bytes, len);
++			text_poke_early(addr, bytes, len);
++		}
++	}
++}
++
++#else /* !RETPOLINES || !CONFIG_STACK_VALIDATION */
++
++void __init_or_module noinline apply_retpolines(s32 *start, s32 *end) { }
++
++#endif /* CONFIG_RETPOLINE && CONFIG_STACK_VALIDATION */
++
+ #ifdef CONFIG_SMP
+ static void alternatives_smp_lock(const s32 *start, const s32 *end,
+ 				  u8 *text, u8 *text_end)
+@@ -643,6 +770,12 @@ void __init alternative_instructions(voi
+ 	apply_paravirt(__parainstructions, __parainstructions_end);
+ 
+ 	/*
++	 * Rewrite the retpolines, must be done before alternatives since
++	 * those can rewrite the retpoline thunks.
++	 */
++	apply_retpolines(__retpoline_sites, __retpoline_sites_end);
++
++	/*
+ 	 * Then patch alternatives, such that those paravirt calls that are in
+ 	 * alternatives can be overwritten by their immediate fragments.
+ 	 */
+--- a/arch/x86/kernel/module.c
++++ b/arch/x86/kernel/module.c
+@@ -252,7 +252,8 @@ int module_finalize(const Elf_Ehdr *hdr,
+ 		    struct module *me)
+ {
+ 	const Elf_Shdr *s, *text = NULL, *alt = NULL, *locks = NULL,
+-		*para = NULL, *orc = NULL, *orc_ip = NULL;
++		*para = NULL, *orc = NULL, *orc_ip = NULL,
++		*retpolines = NULL;
+ 	char *secstrings = (void *)hdr + sechdrs[hdr->e_shstrndx].sh_offset;
+ 
+ 	for (s = sechdrs; s < sechdrs + hdr->e_shnum; s++) {
+@@ -268,6 +269,8 @@ int module_finalize(const Elf_Ehdr *hdr,
+ 			orc = s;
+ 		if (!strcmp(".orc_unwind_ip", secstrings + s->sh_name))
+ 			orc_ip = s;
++		if (!strcmp(".retpoline_sites", secstrings + s->sh_name))
++			retpolines = s;
+ 	}
+ 
+ 	/*
+@@ -278,6 +281,10 @@ int module_finalize(const Elf_Ehdr *hdr,
+ 		void *pseg = (void *)para->sh_addr;
+ 		apply_paravirt(pseg, pseg + para->sh_size);
+ 	}
++	if (retpolines) {
++		void *rseg = (void *)retpolines->sh_addr;
++		apply_retpolines(rseg, rseg + retpolines->sh_size);
++	}
+ 	if (alt) {
+ 		/* patch .altinstructions */
+ 		void *aseg = (void *)alt->sh_addr;
 
 
