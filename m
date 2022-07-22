@@ -2,42 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3BC8C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:30:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 667F0C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:30:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236593AbiGVJaH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 05:30:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50178 "EHLO
+        id S236604AbiGVJaN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 05:30:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236644AbiGVJ3O (ORCPT
+        with ESMTP id S236415AbiGVJ2s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 05:29:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0157AB853F;
-        Fri, 22 Jul 2022 02:18:29 -0700 (PDT)
+        Fri, 22 Jul 2022 05:28:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8FF7CE50B;
+        Fri, 22 Jul 2022 02:18:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5ACD961FE2;
-        Fri, 22 Jul 2022 09:18:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF71AC341C7;
-        Fri, 22 Jul 2022 09:18:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 34DD862042;
+        Fri, 22 Jul 2022 09:18:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 129A6C341C6;
+        Fri, 22 Jul 2022 09:17:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658481507;
-        bh=L3M/deO4bPjfzCEmweW+RhMFW4+Va2mUNei6jUUYjGw=;
+        s=korg; t=1658481480;
+        bh=ze0822n0nxVF2+Hjej3Bi4CnTfdeJ8EEBwglk8+o4o8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2tNRhe3azqWofMWrqBv0ChHA+mYCRoEYZEAq6EmFFC3/KFl1PWjuCwD7yC90Y2/JE
-         QK9gciqTTTmQUJdZ3B1RzrtgAH4BVHAyCkhqU/9A8bX1dTlaZJcH29XPBgrxs6CxQr
-         n8UwDKNCQi5slMYWpx9zEDFz0DPpdbHGm3ug1ZN8=
+        b=vlDGpLI469nSo1yAqnE5slphNdOvkS99Q09IcjqxS9JyyoaiBFvDugelj+xp3xnAJ
+         XuuEhFH+Xx0BT1eAsuku4aWO2qm4svfjMNhgMJhQQ/g0KRoCpy5LfhKKiURSQ5vTUV
+         EQfIwBbMTDv+wl3NMDOf0TfBt+wAI/zOOcIlgULk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>
-Subject: [PATCH 5.15 88/89] um: Add missing apply_returns()
-Date:   Fri, 22 Jul 2022 11:12:02 +0200
-Message-Id: <20220722091138.260588567@linuxfoundation.org>
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
+        Borislav Petkov <bp@suse.de>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Linux Kernel Functional Testing <lkft@linaro.org>,
+        Jack Wang <jinpu.wang@ionos.com>,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: [PATCH 5.15 83/89] x86/kvm: fix FASTOP_SIZE when return thunks are enabled
+Date:   Fri, 22 Jul 2022 11:11:57 +0200
+Message-Id: <20220722091137.984544806@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220722091133.320803732@linuxfoundation.org>
 References: <20220722091133.320803732@linuxfoundation.org>
@@ -49,35 +54,127 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 
-commit 564d998106397394b6aad260f219b882b3347e62 upstream.
+commit 84e7051c0bc1f2a13101553959b3a9d9a8e24939 upstream.
 
-Implement apply_returns() stub for UM, just like all the other patching
-routines.
+The return thunk call makes the fastop functions larger, just like IBT
+does. Consider a 16-byte FASTOP_SIZE when CONFIG_RETHUNK is enabled.
 
-Fixes: 15e67227c49a ("x86: Undo return-thunk damage")
-Reported-by: Randy Dunlap <rdunlap@infradead.org)
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/Ys%2Ft45l%2FgarIrD0u@worktop.programming.kicks-ass.net
+Otherwise, functions will be incorrectly aligned and when computing their
+position for differently sized operators, they will executed in the middle
+or end of a function, which may as well be an int3, leading to a crash
+like:
+
+[   36.091116] int3: 0000 [#1] SMP NOPTI
+[   36.091119] CPU: 3 PID: 1371 Comm: qemu-system-x86 Not tainted 5.15.0-41-generic #44
+[   36.091120] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.15.0-1 04/01/2014
+[   36.091121] RIP: 0010:xaddw_ax_dx+0x9/0x10 [kvm]
+[   36.091185] Code: 00 0f bb d0 c3 cc cc cc cc 48 0f bb d0 c3 cc cc cc cc 0f 1f 80 00 00 00 00 0f c0 d0 c3 cc cc cc cc 66 0f c1 d0 c3 cc cc cc cc <0f> 1f 80 00 00 00 00 0f c1 d0 c3 cc cc cc cc 48 0f c1 d0 c3 cc cc
+[   36.091186] RSP: 0018:ffffb1f541143c98 EFLAGS: 00000202
+[   36.091188] RAX: 0000000089abcdef RBX: 0000000000000001 RCX: 0000000000000000
+[   36.091188] RDX: 0000000076543210 RSI: ffffffffc073c6d0 RDI: 0000000000000200
+[   36.091189] RBP: ffffb1f541143ca0 R08: ffff9f1803350a70 R09: 0000000000000002
+[   36.091190] R10: ffff9f1803350a70 R11: 0000000000000000 R12: ffff9f1803350a70
+[   36.091190] R13: ffffffffc077fee0 R14: 0000000000000000 R15: 0000000000000000
+[   36.091191] FS:  00007efdfce8d640(0000) GS:ffff9f187dd80000(0000) knlGS:0000000000000000
+[   36.091192] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   36.091192] CR2: 0000000000000000 CR3: 0000000009b62002 CR4: 0000000000772ee0
+[   36.091195] PKRU: 55555554
+[   36.091195] Call Trace:
+[   36.091197]  <TASK>
+[   36.091198]  ? fastop+0x5a/0xa0 [kvm]
+[   36.091222]  x86_emulate_insn+0x7b8/0xe90 [kvm]
+[   36.091244]  x86_emulate_instruction+0x2f4/0x630 [kvm]
+[   36.091263]  ? kvm_arch_vcpu_load+0x7c/0x230 [kvm]
+[   36.091283]  ? vmx_prepare_switch_to_host+0xf7/0x190 [kvm_intel]
+[   36.091290]  complete_emulated_mmio+0x297/0x320 [kvm]
+[   36.091310]  kvm_arch_vcpu_ioctl_run+0x32f/0x550 [kvm]
+[   36.091330]  kvm_vcpu_ioctl+0x29e/0x6d0 [kvm]
+[   36.091344]  ? kvm_vcpu_ioctl+0x120/0x6d0 [kvm]
+[   36.091357]  ? __fget_files+0x86/0xc0
+[   36.091362]  ? __fget_files+0x86/0xc0
+[   36.091363]  __x64_sys_ioctl+0x92/0xd0
+[   36.091366]  do_syscall_64+0x59/0xc0
+[   36.091369]  ? syscall_exit_to_user_mode+0x27/0x50
+[   36.091370]  ? do_syscall_64+0x69/0xc0
+[   36.091371]  ? syscall_exit_to_user_mode+0x27/0x50
+[   36.091372]  ? __x64_sys_writev+0x1c/0x30
+[   36.091374]  ? do_syscall_64+0x69/0xc0
+[   36.091374]  ? exit_to_user_mode_prepare+0x37/0xb0
+[   36.091378]  ? syscall_exit_to_user_mode+0x27/0x50
+[   36.091379]  ? do_syscall_64+0x69/0xc0
+[   36.091379]  ? do_syscall_64+0x69/0xc0
+[   36.091380]  ? do_syscall_64+0x69/0xc0
+[   36.091381]  ? do_syscall_64+0x69/0xc0
+[   36.091381]  entry_SYSCALL_64_after_hwframe+0x61/0xcb
+[   36.091384] RIP: 0033:0x7efdfe6d1aff
+[   36.091390] Code: 00 48 89 44 24 18 31 c0 48 8d 44 24 60 c7 04 24 10 00 00 00 48 89 44 24 08 48 8d 44 24 20 48 89 44 24 10 b8 10 00 00 00 0f 05 <41> 89 c0 3d 00 f0 ff ff 77 1f 48 8b 44 24 18 64 48 2b 04 25 28 00
+[   36.091391] RSP: 002b:00007efdfce8c460 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+[   36.091393] RAX: ffffffffffffffda RBX: 000000000000ae80 RCX: 00007efdfe6d1aff
+[   36.091393] RDX: 0000000000000000 RSI: 000000000000ae80 RDI: 000000000000000c
+[   36.091394] RBP: 0000558f1609e220 R08: 0000558f13fb8190 R09: 00000000ffffffff
+[   36.091394] R10: 0000558f16b5e950 R11: 0000000000000246 R12: 0000000000000000
+[   36.091394] R13: 0000000000000001 R14: 0000000000000000 R15: 0000000000000000
+[   36.091396]  </TASK>
+[   36.091397] Modules linked in: isofs nls_iso8859_1 kvm_intel joydev kvm input_leds serio_raw sch_fq_codel dm_multipath scsi_dh_rdac scsi_dh_emc scsi_dh_alua ipmi_devintf ipmi_msghandler drm msr ip_tables x_tables autofs4 btrfs blake2b_generic zstd_compress raid10 raid456 async_raid6_recov async_memcpy async_pq async_xor async_tx xor raid6_pq libcrc32c raid1 raid0 multipath linear crct10dif_pclmul crc32_pclmul ghash_clmulni_intel aesni_intel virtio_net net_failover crypto_simd ahci xhci_pci cryptd psmouse virtio_blk libahci xhci_pci_renesas failover
+[   36.123271] ---[ end trace db3c0ab5a48fabcc ]---
+[   36.123272] RIP: 0010:xaddw_ax_dx+0x9/0x10 [kvm]
+[   36.123319] Code: 00 0f bb d0 c3 cc cc cc cc 48 0f bb d0 c3 cc cc cc cc 0f 1f 80 00 00 00 00 0f c0 d0 c3 cc cc cc cc 66 0f c1 d0 c3 cc cc cc cc <0f> 1f 80 00 00 00 00 0f c1 d0 c3 cc cc cc cc 48 0f c1 d0 c3 cc cc
+[   36.123320] RSP: 0018:ffffb1f541143c98 EFLAGS: 00000202
+[   36.123321] RAX: 0000000089abcdef RBX: 0000000000000001 RCX: 0000000000000000
+[   36.123321] RDX: 0000000076543210 RSI: ffffffffc073c6d0 RDI: 0000000000000200
+[   36.123322] RBP: ffffb1f541143ca0 R08: ffff9f1803350a70 R09: 0000000000000002
+[   36.123322] R10: ffff9f1803350a70 R11: 0000000000000000 R12: ffff9f1803350a70
+[   36.123323] R13: ffffffffc077fee0 R14: 0000000000000000 R15: 0000000000000000
+[   36.123323] FS:  00007efdfce8d640(0000) GS:ffff9f187dd80000(0000) knlGS:0000000000000000
+[   36.123324] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   36.123325] CR2: 0000000000000000 CR3: 0000000009b62002 CR4: 0000000000772ee0
+[   36.123327] PKRU: 55555554
+[   36.123328] Kernel panic - not syncing: Fatal exception in interrupt
+[   36.123410] Kernel Offset: 0x1400000 from 0xffffffff81000000 (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
+[   36.135305] ---[ end Kernel panic - not syncing: Fatal exception in interrupt ]---
+
+Fixes: aa3d480315ba ("x86: Use return-thunk in asm code")
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Co-developed-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Cc: Borislav Petkov <bp@suse.de>
+Cc: Josh Poimboeuf <jpoimboe@kernel.org>
+Cc: Paolo Bonzini <pbonzini@redhat.com>
+Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+Message-Id: <20220713171241.184026-1-cascardo@canonical.com>
+Tested-by: Jack Wang <jinpu.wang@ionos.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/um/kernel/um_arch.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ arch/x86/kvm/emulate.c |   10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
---- a/arch/um/kernel/um_arch.c
-+++ b/arch/um/kernel/um_arch.c
-@@ -425,6 +425,10 @@ void apply_retpolines(s32 *start, s32 *e
- {
- }
+--- a/arch/x86/kvm/emulate.c
++++ b/arch/x86/kvm/emulate.c
+@@ -187,8 +187,12 @@
+ #define X8(x...) X4(x), X4(x)
+ #define X16(x...) X8(x), X8(x)
  
-+void apply_returns(s32 *start, s32 *end)
-+{
-+}
-+
- void apply_alternatives(struct alt_instr *start, struct alt_instr *end)
- {
- }
+-#define NR_FASTOP (ilog2(sizeof(ulong)) + 1)
+-#define FASTOP_SIZE 8
++#define NR_FASTOP	(ilog2(sizeof(ulong)) + 1)
++#define RET_LENGTH	(1 + (4 * IS_ENABLED(CONFIG_RETHUNK)) + \
++			 IS_ENABLED(CONFIG_SLS))
++#define FASTOP_LENGTH	(ENDBR_INSN_SIZE + 7 + RET_LENGTH)
++#define FASTOP_SIZE	(8 << ((FASTOP_LENGTH > 8) & 1) << ((FASTOP_LENGTH > 16) & 1))
++static_assert(FASTOP_LENGTH <= FASTOP_SIZE);
+ 
+ struct opcode {
+ 	u64 flags : 56;
+@@ -437,8 +441,6 @@ static int fastop(struct x86_emulate_ctx
+  * RET | JMP __x86_return_thunk	[1,5 bytes; CONFIG_RETHUNK]
+  * INT3				[1 byte; CONFIG_SLS]
+  */
+-#define RET_LENGTH	(1 + (4 * IS_ENABLED(CONFIG_RETHUNK)) + \
+-			 IS_ENABLED(CONFIG_SLS))
+ #define SETCC_LENGTH	(3 + RET_LENGTH)
+ #define SETCC_ALIGN	(4 << ((SETCC_LENGTH > 4) & 1) << ((SETCC_LENGTH > 8) & 1))
+ static_assert(SETCC_LENGTH <= SETCC_ALIGN);
 
 
