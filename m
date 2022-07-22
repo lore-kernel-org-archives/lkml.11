@@ -2,170 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9E00C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 15:08:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3A4CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 15:10:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232972AbiGVPId (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 11:08:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55540 "EHLO
+        id S235533AbiGVPKO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 11:10:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235502AbiGVPIc (ORCPT
+        with ESMTP id S229880AbiGVPKM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 11:08:32 -0400
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3241A88F37
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 08:08:30 -0700 (PDT)
-Received: from pps.filterd (m0279868.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26MENVeq007256;
-        Fri, 22 Jul 2022 15:08:19 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=from : to : cc :
- subject : date : message-id; s=qcppdkim1;
- bh=nUADTmTOViYJUoOL2poj7e8y6wxZSdNyN8C0LFw6b6g=;
- b=jBMnBQW+COtoS2GvW0iAnVN1c3HVh6OsC0FB2in2/itjARvqTUEIrslu9Ia2P215FAr7
- CJnqEeMYEhKawmP7o9EICYAss5qGBlm/ntn9B3cWk95uMGQIRg0xUoixUbBMUJo+1ZaF
- yOstFb6iKRW6B8ti73+YNkT3h3L+jG99tM7XKJmq56UjPxUXalg/boe/XAxk4TAag5h3
- zuAJGfJyYbDC0htC9kUnQ7qLz8TPR8kCJiE4WBgJQFl7c+9mvXoJObO01fRCXOPXgDM0
- /k5mUWK932yeozN/RUqU9T4Iny3AIX3SJBeAOXFCWT3SvCuLp6rVwFLRktPfOPxXpaJv ww== 
-Received: from aptaippmta02.qualcomm.com (tpe-colo-wan-fw-bordernet.qualcomm.com [103.229.16.4])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3hfs5arsfw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 22 Jul 2022 15:08:19 +0000
-Received: from pps.filterd (APTAIPPMTA02.qualcomm.com [127.0.0.1])
-        by APTAIPPMTA02.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTP id 26MF8FOB012573;
-        Fri, 22 Jul 2022 15:08:15 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by APTAIPPMTA02.qualcomm.com (PPS) with ESMTPS id 3hc6rjn0k2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Fri, 22 Jul 2022 15:08:15 +0000
-Received: from APTAIPPMTA02.qualcomm.com (APTAIPPMTA02.qualcomm.com [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26MF8Fve012568;
-        Fri, 22 Jul 2022 15:08:15 GMT
-Received: from maow2-gv.ap.qualcomm.com (maow2-gv.qualcomm.com [10.232.193.133])
-        by APTAIPPMTA02.qualcomm.com (PPS) with ESMTP id 26MF8Fbb012567;
-        Fri, 22 Jul 2022 15:08:15 +0000
-Received: by maow2-gv.ap.qualcomm.com (Postfix, from userid 399080)
-        id 20E4E21029A4; Fri, 22 Jul 2022 23:08:14 +0800 (CST)
-From:   Kassey Li <quic_yingangl@quicinc.com>
-To:     akpm@linux-foundation.org
-Cc:     Kassey Li <quic_yingangl@quicinc.com>, minchan@kernel.org,
-        iamjoonsoo.kim@lge.com, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org
-Subject: [PATCH] mm/page_owner.c: allow page_owner with given start_pfn/count
-Date:   Fri, 22 Jul 2022 23:08:10 +0800
-Message-Id: <20220722150810.27740-1-quic_yingangl@quicinc.com>
-X-Mailer: git-send-email 2.17.1
-X-QCInternal: smtphost
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-GUID: EYlyzmaQTzIVM6rs4ixBFCEZUq27NRMJ
-X-Proofpoint-ORIG-GUID: EYlyzmaQTzIVM6rs4ixBFCEZUq27NRMJ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-22_06,2022-07-21_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 mlxscore=0
- impostorscore=0 priorityscore=1501 mlxlogscore=763 phishscore=0
- clxscore=1011 bulkscore=0 suspectscore=0 spamscore=0 adultscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2207220064
+        Fri, 22 Jul 2022 11:10:12 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0E5462D9;
+        Fri, 22 Jul 2022 08:10:10 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id r186so4684532pgr.2;
+        Fri, 22 Jul 2022 08:10:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=YVg6xk0ns/bX90Xit3i5w/DtXugnCkyCcpIxJMAM3pA=;
+        b=LL5FZE977jrCB5ZAgNVPkQDR4/zpHzx8vl/KlVv89Pe1NocPWaX76UmoR1r5p6Ca6P
+         op3OoDkvbpyqjPWqKa6LPArhGHmdOGKtxpJbobn57bzFg8wmkOKWvPaP8WfO3UAJjsCS
+         1P2L4SlX26Czd/zDZwj81/x3FvJ9fsu3eL0V5pZK3HjIkl6QAEpLht26PZmuWs3BehYL
+         aYQH8vR48dD7Lglb3mPRibz9j1sMU3zzo4NybsTQrlZe1r7Yd3bD5NuGFZzx4y+GrDVP
+         xZe7jhahb4KAHNC/W4pziGwc4ii18RZHNW6la63aRzQLCrE0GZ+GeckuGcSlR+utztZ2
+         4zYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=YVg6xk0ns/bX90Xit3i5w/DtXugnCkyCcpIxJMAM3pA=;
+        b=fiD3m3omMflfrx6HkAx2v2AIcvYK1kmzVSoHDkfy2sQsUiCxXjznbV0fFOuZrUyNiF
+         26txfRIK3QgHIY/sDRfIf3Z5WAiJh1mbvf8c4c/TufEhHIqtPNgiO93UhYEanWjpdh8O
+         CPwh8flWSaD9rLQVY80ISGtwSh1dTqk6iHDqO8OZfB60zEt422WznkZFU1TPNUJSrV8L
+         oM728FrV38bWxCqaYQgCuh3OF4rPnt1dzMy51ul6+8stfEkKeVCCEZwrpv0NAetTjQMl
+         +mHYenopuzZ7MqYa5KxYAzlPwDWmaESJilM/tiO7haevSFR9KFEZiHbO5Y0zPtf4zHZN
+         lLSA==
+X-Gm-Message-State: AJIora/EFP4yvJe9wG5vuilusRDvMcbHQZk07aLqs+PJzlLV62BLyL4K
+        vB8XM9nA46abZ3o/DrYz2/Y=
+X-Google-Smtp-Source: AGRyM1sXMPWj4vJ6IC9x5Q7CbBRfVblVD/pWaxIOirjZAfLC4CR2biym7nnpldjD3PGRhQgq5y17/A==
+X-Received: by 2002:a05:6a00:815:b0:52b:295a:fad with SMTP id m21-20020a056a00081500b0052b295a0fadmr458346pfk.62.1658502610253;
+        Fri, 22 Jul 2022 08:10:10 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id w184-20020a6230c1000000b0052b84ca900csm4024677pfw.62.2022.07.22.08.10.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 22 Jul 2022 08:10:09 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <cdc16106-0687-ae2b-0a42-c1f04cc8032a@roeck-us.net>
+Date:   Fri, 22 Jul 2022 08:10:07 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] [3/3] watchdog: mediatek: mt8188: add wdt support
+Content-Language: en-US
+To:     Runyang Chen <Runyang.Chen@mediatek.com>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>, nfraprado@collabora.com
+Cc:     angelogioacchino.delregno@collabora.com,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org
+References: <20220722072316.582-1-Runyang.Chen@mediatek.com>
+ <20220722072316.582-4-Runyang.Chen@mediatek.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+In-Reply-To: <20220722072316.582-4-Runyang.Chen@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-by default, page_owner iterates all page from min_low_pfn to
-max_pfn, this cost too much time if we want an alternative pfn range.
+On 7/22/22 00:23, Runyang Chen wrote:
+> From: Runyang Chen <runyang.chen@mediatek.com>
+> 
+> Support MT8188 watchdog device.
+> 
+> Signed-off-by: Runyang Chen <runyang.chen@mediatek.com>
 
-with this patch it allows user to set pfn range to dump the page_onwer.
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
 
-Signed-off-by: Kassey Li <quic_yingangl@quicinc.com>
----
- mm/page_owner.c | 45 ++++++++++++++++++++++++++++++++++++++++++---
- 1 file changed, 42 insertions(+), 3 deletions(-)
-
-diff --git a/mm/page_owner.c b/mm/page_owner.c
-index e4c6f3f1695b..79c634d11ee6 100644
---- a/mm/page_owner.c
-+++ b/mm/page_owner.c
-@@ -41,6 +41,39 @@ static depot_stack_handle_t dummy_handle;
- static depot_stack_handle_t failure_handle;
- static depot_stack_handle_t early_handle;
- 
-+static u64 start_pfn;
-+static u64 end_pfn;
-+
-+static int debugfs_start_pfn_u64_set(void *data, u64 val)
-+{
-+	if (val < min_low_pfn || val > max_pfn)
-+		return -EINVAL;
-+	start_pfn = val;
-+	return 0;
-+}
-+static int debugfs_start_pfn_u64_get(void *data, u64 *val)
-+{
-+	*val = start_pfn;
-+	return 0;
-+}
-+DEFINE_DEBUGFS_ATTRIBUTE(fops_start_pfn, debugfs_start_pfn_u64_get,
-+	debugfs_start_pfn_u64_set, "%lld\n");
-+
-+static int debugfs_end_pfn_u64_set(void *data, u64 val)
-+{
-+	if (val > max_pfn || val < start_pfn)
-+		return -EINVAL;
-+	end_pfn = val;
-+	return 0;
-+}
-+static int debugfs_end_pfn_u64_get(void *data, u64 *val)
-+{
-+	*val = end_pfn;
-+	return 0;
-+}
-+DEFINE_DEBUGFS_ATTRIBUTE(fops_end_pfn, debugfs_end_pfn_u64_get,
-+	debugfs_end_pfn_u64_set, "%lld\n");
-+
- static void init_early_allocated_pages(void);
- 
- static int __init early_page_owner_param(char *buf)
-@@ -497,7 +530,7 @@ read_page_owner(struct file *file, char __user *buf, size_t count, loff_t *ppos)
- 		return -EINVAL;
- 
- 	page = NULL;
--	pfn = min_low_pfn + *ppos;
-+	pfn = start_pfn + *ppos;
- 
- 	/* Find a valid PFN or the start of a MAX_ORDER_NR_PAGES area */
- 	while (!pfn_valid(pfn) && (pfn & (MAX_ORDER_NR_PAGES - 1)) != 0)
-@@ -506,7 +539,7 @@ read_page_owner(struct file *file, char __user *buf, size_t count, loff_t *ppos)
- 	drain_all_pages(NULL);
- 
- 	/* Find an allocated page */
--	for (; pfn < max_pfn; pfn++) {
-+	for (; pfn < end_pfn; pfn++) {
- 		/*
- 		 * If the new page is in a new MAX_ORDER_NR_PAGES area,
- 		 * validate the area as existing, skip it if not
-@@ -561,7 +594,7 @@ read_page_owner(struct file *file, char __user *buf, size_t count, loff_t *ppos)
- 			continue;
- 
- 		/* Record the next PFN to read in the file offset */
--		*ppos = (pfn - min_low_pfn) + 1;
-+		*ppos = (pfn - start_pfn) + 1;
- 
- 		return print_page_owner(buf, count, pfn, page,
- 				page_owner, handle);
-@@ -671,6 +704,12 @@ static int __init pageowner_init(void)
- 
- 	debugfs_create_file("page_owner", 0400, NULL, NULL,
- 			    &proc_page_owner_operations);
-+	debugfs_create_file("page_owner_start_pfn", 0644, NULL, NULL,
-+				&fops_start_pfn);
-+	debugfs_create_file("page_owner_end_pfn", 0644, NULL, NULL,
-+				&fops_end_pfn);
-+	start_pfn = min_low_pfn;
-+	end_pfn = max_pfn;
- 
- 	return 0;
- }
--- 
-2.17.1
+> ---
+>   drivers/watchdog/mtk_wdt.c | 6 ++++++
+>   1 file changed, 6 insertions(+)
+> 
+> diff --git a/drivers/watchdog/mtk_wdt.c b/drivers/watchdog/mtk_wdt.c
+> index f0d4e3cc7459..ce7dc96bfa4b 100644
+> --- a/drivers/watchdog/mtk_wdt.c
+> +++ b/drivers/watchdog/mtk_wdt.c
+> @@ -13,6 +13,7 @@
+>   #include <dt-bindings/reset/mt7986-resets.h>
+>   #include <dt-bindings/reset/mt8183-resets.h>
+>   #include <dt-bindings/reset/mt8186-resets.h>
+> +#include <dt-bindings/reset/mt8188-resets.h>
+>   #include <dt-bindings/reset/mt8192-resets.h>
+>   #include <dt-bindings/reset/mt8195-resets.h>
+>   #include <linux/delay.h>
+> @@ -90,6 +91,10 @@ static const struct mtk_wdt_data mt8186_data = {
+>   	.toprgu_sw_rst_num = MT8186_TOPRGU_SW_RST_NUM,
+>   };
+>   
+> +static const struct mtk_wdt_data mt8188_data = {
+> +	.toprgu_sw_rst_num = MT8188_TOPRGU_SW_RST_NUM,
+> +};
+> +
+>   static const struct mtk_wdt_data mt8192_data = {
+>   	.toprgu_sw_rst_num = MT8192_TOPRGU_SW_RST_NUM,
+>   };
+> @@ -431,6 +436,7 @@ static const struct of_device_id mtk_wdt_dt_ids[] = {
+>   	{ .compatible = "mediatek,mt7986-wdt", .data = &mt7986_data },
+>   	{ .compatible = "mediatek,mt8183-wdt", .data = &mt8183_data },
+>   	{ .compatible = "mediatek,mt8186-wdt", .data = &mt8186_data },
+> +	{ .compatible = "mediatek,mt8188-wdt", .data = &mt8188_data },
+>   	{ .compatible = "mediatek,mt8192-wdt", .data = &mt8192_data },
+>   	{ .compatible = "mediatek,mt8195-wdt", .data = &mt8195_data },
+>   	{ /* sentinel */ }
 
