@@ -2,111 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7520C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 08:27:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9259FC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 08:28:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231487AbiGVI1j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 04:27:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53870 "EHLO
+        id S234990AbiGVI2b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 04:28:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234984AbiGVI1i (ORCPT
+        with ESMTP id S229637AbiGVI23 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 04:27:38 -0400
-Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87CFD9E7BD
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 01:27:35 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R841e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=4;SR=0;TI=SMTPD_---0VK4RflD_1658478452;
-Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0VK4RflD_1658478452)
-          by smtp.aliyun-inc.com;
-          Fri, 22 Jul 2022 16:27:32 +0800
-From:   Jeffle Xu <jefflexu@linux.alibaba.com>
-To:     xiang@kernel.org, chao@kernel.org, linux-erofs@lists.ozlabs.org
-Cc:     linux-kernel@vger.kernel.org
-Subject: [PATCH v4] erofs: update ctx->pos for every emitted dirent
-Date:   Fri, 22 Jul 2022 16:27:32 +0800
-Message-Id: <20220722082732.30935-1-jefflexu@linux.alibaba.com>
-X-Mailer: git-send-email 2.27.0
+        Fri, 22 Jul 2022 04:28:29 -0400
+X-Greylist: delayed 424 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 22 Jul 2022 01:28:29 PDT
+Received: from redcrew.org (redcrew.org [37.157.195.192])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E0CF9E793
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 01:28:29 -0700 (PDT)
+Received: from server.danny.cz (85-71-161-19.rce.o2.cz [85.71.161.19])
+        by redcrew.org (Postfix) with ESMTP id 8CBCFA0C;
+        Fri, 22 Jul 2022 10:21:23 +0200 (CEST)
+Received: from talos.danny.cz (unknown [IPv6:2001:470:5c11:160:47df:83f6:718e:218])
+        by server.danny.cz (Postfix) with ESMTP id C649E11AA6B;
+        Fri, 22 Jul 2022 10:21:22 +0200 (CEST)
+From:   =?UTF-8?q?Dan=20Hor=C3=A1k?= <dan@danny.cz>
+To:     amd-gfx@lists.freedesktop.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Michael Ellerman <michael@ellerman.id.au>,
+        linux-kernel@vger.kernel.org
+Cc:     Alex Deucher <alexdeucher@gmail.com>
+Subject: [PATCH] amdgpu: re-enable DCN for ppc64le
+Date:   Fri, 22 Jul 2022 10:21:22 +0200
+Message-Id: <20220722082122.571974-1-dan@danny.cz>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hongnan Li <hongnan.li@linux.alibaba.com>
+Commit d11219ad53dc disabled the DCN driver for all platforms that
+define PPC64 due long build issues during "make allmodconfig" using
+cross-compilation. Cross-compilation defaults to the ppc64_defconfig
+and thus big-endian toolchain configuration. The ppc64le platform uses a
+different ABI and doesn't suffer from the build issues. Thus keep the
+DCN driver disabled only for big-endian ppc64 builds and avoid
+regression for ppc64le users of the amdgpu driver. Distros are mostly
+focusing on ppc64le and that's likely why it got unnoticed, because
+there were no build issues related to the amdgpu driver on ppc64le in
+the 5.19 development cycle.
 
-erofs_readdir update ctx->pos after filling a batch of dentries
-and it may cause dir/files duplication for NFS readdirplus which
-depends on ctx->pos to fill dir correctly. So update ctx->pos for
-every emitted dirent in erofs_fill_dentries to fix it.
+Tested by a local rebuild on ppc64le and using make.cross from a x86_64
+machines.
 
-Also fix the update of ctx->pos when the initial file position has
-exceeded nameoff.
+Fixes: d11219ad53dc ("amdgpu: disable powerpc support for the newer display engine")
 
-Fixes: 3e917cc305c6 ("erofs: make filesystem exportable")
-Signed-off-by: Hongnan Li <hongnan.li@linux.alibaba.com>
-Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
+Signed-off-by: Dan Horák <dan@danny.cz>
+Acked-by: Alex Deucher <alexdeucher@gmail.com>
+Link: https://gitlab.freedesktop.org/drm/amd/-/issues/2100
 ---
- fs/erofs/dir.c | 16 +++++++---------
- 1 file changed, 7 insertions(+), 9 deletions(-)
+ drivers/gpu/drm/amd/display/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/erofs/dir.c b/fs/erofs/dir.c
-index 18e59821c597..47c85f1b80d8 100644
---- a/fs/erofs/dir.c
-+++ b/fs/erofs/dir.c
-@@ -22,10 +22,9 @@ static void debug_one_dentry(unsigned char d_type, const char *de_name,
- }
- 
- static int erofs_fill_dentries(struct inode *dir, struct dir_context *ctx,
--			       void *dentry_blk, unsigned int *ofs,
-+			       void *dentry_blk, struct erofs_dirent *de,
- 			       unsigned int nameoff, unsigned int maxsize)
- {
--	struct erofs_dirent *de = dentry_blk + *ofs;
- 	const struct erofs_dirent *end = dentry_blk + nameoff;
- 
- 	while (de < end) {
-@@ -59,9 +58,8 @@ static int erofs_fill_dentries(struct inode *dir, struct dir_context *ctx,
- 			/* stopped by some reason */
- 			return 1;
- 		++de;
--		*ofs += sizeof(struct erofs_dirent);
-+		ctx->pos += sizeof(struct erofs_dirent);
- 	}
--	*ofs = maxsize;
- 	return 0;
- }
- 
-@@ -95,7 +93,7 @@ static int erofs_readdir(struct file *f, struct dir_context *ctx)
- 				  "invalid de[0].nameoff %u @ nid %llu",
- 				  nameoff, EROFS_I(dir)->nid);
- 			err = -EFSCORRUPTED;
--			goto skip_this;
-+			break;
- 		}
- 
- 		maxsize = min_t(unsigned int,
-@@ -106,17 +104,17 @@ static int erofs_readdir(struct file *f, struct dir_context *ctx)
- 			initial = false;
- 
- 			ofs = roundup(ofs, sizeof(struct erofs_dirent));
-+			ctx->pos = blknr_to_addr(i) + ofs;
- 			if (ofs >= nameoff)
- 				goto skip_this;
- 		}
- 
--		err = erofs_fill_dentries(dir, ctx, de, &ofs,
-+		err = erofs_fill_dentries(dir, ctx, de, (void *)de + ofs,
- 					  nameoff, maxsize);
--skip_this:
--		ctx->pos = blknr_to_addr(i) + ofs;
--
- 		if (err)
- 			break;
-+skip_this:
-+		ctx->pos = blknr_to_addr(i) + maxsize;
- 		++i;
- 		ofs = 0;
- 	}
+diff --git a/drivers/gpu/drm/amd/display/Kconfig b/drivers/gpu/drm/amd/display/Kconfig
+index 0ba0598eba20..778a6f58047c 100644
+--- a/drivers/gpu/drm/amd/display/Kconfig
++++ b/drivers/gpu/drm/amd/display/Kconfig
+@@ -6,7 +6,7 @@ config DRM_AMD_DC
+ 	bool "AMD DC - Enable new display engine"
+ 	default y
+ 	select SND_HDA_COMPONENT if SND_HDA_CORE
+-	select DRM_AMD_DC_DCN if X86 && !(KCOV_INSTRUMENT_ALL && KCOV_ENABLE_COMPARISONS)
++	select DRM_AMD_DC_DCN if (X86 || (PPC64 && CPU_LITTLE_ENDIAN)) && !(KCOV_INSTRUMENT_ALL && KCOV_ENABLE_COMPARISONS)
+ 	help
+ 	  Choose this option if you want to use the new display engine
+ 	  support for AMDGPU. This adds required support for Vega and
 -- 
-2.27.0
+2.37.1
 
