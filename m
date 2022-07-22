@@ -2,99 +2,210 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AA56C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 17:22:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0FA9C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 17:22:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235982AbiGVRWd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 13:22:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43878 "EHLO
+        id S236101AbiGVRWx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 13:22:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232706AbiGVRWc (ORCPT
+        with ESMTP id S235275AbiGVRWs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 13:22:32 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2149854642;
-        Fri, 22 Jul 2022 10:22:31 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id b11so9611315eju.10;
-        Fri, 22 Jul 2022 10:22:31 -0700 (PDT)
+        Fri, 22 Jul 2022 13:22:48 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 282D165D64;
+        Fri, 22 Jul 2022 10:22:47 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id x24-20020a17090ab01800b001f21556cf48so8721229pjq.4;
+        Fri, 22 Jul 2022 10:22:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=sender:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=YkC3eY7Vl6bSmPtjcXgP6cjyIo/TnsfJzy20Et5wz7c=;
-        b=KN5yd+53sH4Wb8HPNnZgi8AEjMBzBJZ2b0S99H1pJSSGFaXJ5zhfd3Yct+FeSd08g4
-         DRP86PSFIY+OF7m4l51JNbIb3qM1rWn2atS6imjcTzB9Gecg63D9PqJfnmlBh8Z82HpX
-         Qee1NLvmL+kiMW4EkgFLZgWGjRsExUoFQ2OH3EKwTTwmb2es8bvaKAv7fQzH3jfuZITt
-         CHDL+XfVc6Qzb/+525qvwryYxfoBJcBdQCg73/z3r6vydOqYKYBv+C2KftA4L/1hp79X
-         Lo94Rmj5clKKZFn1Y3eyWsZbtxw6KUYmPesRNrwIwGFtZ1fdFvzt4Gi4TY/vy2cSjuE2
-         t3cA==
+        bh=qeiIlgvumKK5S0+PlFlhTMVYAJ0Lvpf2jQ1NG55lcEY=;
+        b=IcL1/yuk0eNs+nlfp8kWoKt6OGOm/JV1gT/3grJG+GvdWS6RJpqrH2Ut4HlGhz3vJM
+         M1d97/cuDJPWvkbaoEWNN6dRtUU64tRNPeQgZfI0UZRhSj82mmG671hnfX9BTNVaa0HK
+         TLsExZf5TsmWSDL5z3FIuo/AqmWqhMq9362l3CAZrRho01+E+qvhDgSSYTe6wMY3D9Bv
+         MbYBL2qiUAtJWgymLRA9PUMGlcW69sGZrTkJORrmR2fGoXL+/QWj4RUPGlqsvmkphGB2
+         8CHBrQlwItqZsNLpQr8VTL7k/2I3/4+zWly+FVWwRAPRE4On1nsbxuRTZaZxhzIsnuXW
+         uuEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
-         :subject:content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=YkC3eY7Vl6bSmPtjcXgP6cjyIo/TnsfJzy20Et5wz7c=;
-        b=yCzN3LyWSEdhTPqnGjTJuqyS0fWYXBwrMYKbBYvTxo0O/wKjYBDlwQckwjT8UpfaTS
-         saMybCv6TMAQ2SqYl7fGPKOhM1ZvO1fQZASAriQpsDGTXjr64Qs2zdLB3dG6WrprpuK7
-         umtme8XVlreU9kEC7J9U2B/ZzSaucHQtUcAehQpQZkMg29PCz2K6DjMSe74tyLrYgWJn
-         2z6oLCfPRR/lrVR/6VeApWgxV+P/TZFc0ItQlUgDSVJ8eaIUa9Gf05X3KXB5iu6K/++7
-         S72I34Z9NN5PTU4o2NN8gRAwVqNCWk7nc1xxedit53KX1+GPF/q+ciFdCSkZqhQmpbvv
-         gzng==
-X-Gm-Message-State: AJIora8IAacT7nWLav8nZnco1d2sN2l6WCefQF4kLgTMqTxXACzulu/Q
-        zjpFBCCK1pQ0jLSryLlNLDs=
-X-Google-Smtp-Source: AGRyM1swhtBRtCTeArxoepNlVydfAHn99mPfz+udv+1XrqoqrvjzL6vRX3Y19KQPBHuFjWxdmjpCFA==
-X-Received: by 2002:a17:906:9be4:b0:72b:cf9:99d8 with SMTP id de36-20020a1709069be400b0072b0cf999d8mr665118ejc.747.1658510549556;
-        Fri, 22 Jul 2022 10:22:29 -0700 (PDT)
-Received: from ?IPV6:2001:b07:6468:f312:9af8:e5f5:7516:fa89? ([2001:b07:6468:f312:9af8:e5f5:7516:fa89])
-        by smtp.googlemail.com with ESMTPSA id ej22-20020a056402369600b00437d3e6c4c7sm2816248edb.53.2022.07.22.10.22.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 Jul 2022 10:22:29 -0700 (PDT)
-Sender: Paolo Bonzini <paolo.bonzini@gmail.com>
-Message-ID: <0741719d-17b4-96fe-1ee8-5f22cf3e255b@redhat.com>
-Date:   Fri, 22 Jul 2022 19:22:27 +0200
+        bh=qeiIlgvumKK5S0+PlFlhTMVYAJ0Lvpf2jQ1NG55lcEY=;
+        b=BkVXORX4eFNpgSIX8BixkQ0mWPIgWU2zBD4kprzavY23xxhzoPqlyYUvkljxoZbIiA
+         aZu8hYZoHiRTYdKPBzhHISTBllYLzwJ3HJkMdr3n0KmOjkIoj2T5V+X15gcBiu1AZ+si
+         wLZ9bv6ugm1iQG3chjDTYjbn0WktfewxddkoDVlP6qNST/sgCEkeauS1Hde/dlCRDnvw
+         9FgUXVa2vgRtzPTHdGHtHQLORmxs2TntcuAzQOFZ2wu+gQj69pbfmdDdzC4+k5lE1IcU
+         F54LV/6ArXgdkyA0suGCSKpzVKC9j3E3vlYlbJ78tU0fI2IR2NFi0FlZC/120MxpOVh8
+         UU1A==
+X-Gm-Message-State: AJIora/2JPZSBtPPCl2WmGN4E9HTD7zNM9GtDVhdgsT64BlPEVEOz0Qm
+        sz4gD8CSZenohypIyp+4sOM=
+X-Google-Smtp-Source: AGRyM1s+gkXYyczPUE2+QAKLCqqm5OhlVQZ1bdrCzaAps2IrdGgS1DxAKjzsy/3Otg0cJ4ZCgLnYdg==
+X-Received: by 2002:a17:90a:5513:b0:1f1:c93c:7ad8 with SMTP id b19-20020a17090a551300b001f1c93c7ad8mr18163136pji.88.1658510566454;
+        Fri, 22 Jul 2022 10:22:46 -0700 (PDT)
+Received: from potin-quanta.. (125-228-123-29.hinet-ip.hinet.net. [125.228.123.29])
+        by smtp.gmail.com with ESMTPSA id bf17-20020a656d11000000b003fd4831e6fesm3625505pgb.70.2022.07.22.10.22.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Jul 2022 10:22:45 -0700 (PDT)
+From:   Potin Lai <potin.lai.pt@gmail.com>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Cc:     Patrick Williams <patrick@stwcx.xyz>,
+        Potin Lai <potin.lai@quantatw.com>,
+        Potin Lai <potin.lai.pt@gmail.com>, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 1/1] iio: humidity: hdc100x: add manufacturer and device id cehck
+Date:   Sat, 23 Jul 2022 01:20:34 +0800
+Message-Id: <20220722172035.44977-1-potin.lai.pt@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v4 01/25] KVM: x86: hyper-v: Expose access to debug MSRs
- in the partition privilege flags
-Content-Language: en-US
-To:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>
-Cc:     kvm@vger.kernel.org,
-        Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220714091327.1085353-1-vkuznets@redhat.com>
- <20220714091327.1085353-2-vkuznets@redhat.com> <YtnIgQOPbcZOQK2D@google.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <YtnIgQOPbcZOQK2D@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/21/22 23:43, Sean Christopherson wrote:
-> diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
-> index c284a605e453..ca91547034e4 100644
-> --- a/arch/x86/kvm/hyperv.c
-> +++ b/arch/x86/kvm/hyperv.c
-> @@ -1282,7 +1282,7 @@ static bool hv_check_msr_access(struct kvm_vcpu_hv *hv_vcpu, u32 msr)
->          case HV_X64_MSR_SYNDBG_OPTIONS:
->          case HV_X64_MSR_SYNDBG_CONTROL ... HV_X64_MSR_SYNDBG_PENDING_BUFFER:
->                  return hv_vcpu->cpuid_cache.features_edx &
-> -                       HV_FEATURE_DEBUG_MSRS_AVAILABLE;
-> +                       HV_ACCESS_DEBUG_MSRS;
->          default:
->                  break;
->          }
-> 
+Add manufacturer and device id checking during probe, and Skip the
+checking if chip model not supported.
 
-Yes, and this will need some kind of hack in QEMU to expose both CPUID 
-bits.  Fortunately hv-syndbg shouldn't be in much use in the wild, so I 
-think we can avoid quirks etc.
+Supported:
+- HDC1000
+- HDC1010
+- HDC1050
+- HDC1080
 
-Paolo
+Not supported:
+- HDC1008
+
+Signed-off-by: Potin Lai <potin.lai.pt@gmail.com>
+---
+ drivers/iio/humidity/hdc100x.c | 87 +++++++++++++++++++++++++++++-----
+ 1 file changed, 76 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/iio/humidity/hdc100x.c b/drivers/iio/humidity/hdc100x.c
+index 9e0fce917ce4..b8ae8d2ae7f0 100644
+--- a/drivers/iio/humidity/hdc100x.c
++++ b/drivers/iio/humidity/hdc100x.c
+@@ -34,6 +34,32 @@
+ #define HDC100X_REG_CONFIG_ACQ_MODE		BIT(12)
+ #define HDC100X_REG_CONFIG_HEATER_EN		BIT(13)
+ 
++#define HDC100X_REG_MFR_ID	0xFE
++#define HDC100X_REG_DEV_ID	0xFF
++
++#define HDC100X_MFR_ID	0x5449
++
++enum {
++	HDC100X,
++	HDC1000,
++	HDC1008,
++	HDC1010,
++	HDC1050,
++	HDC1080
++};
++
++struct hdc100x_of_data {
++	bool support_mfr_check;
++};
++
++static const struct hdc100x_of_data hdc100x_of_data = {
++	.support_mfr_check	= true,
++};
++
++static const struct hdc100x_of_data hdc1008_of_data = {
++	.support_mfr_check	= false,
++};
++
+ struct hdc100x_data {
+ 	struct i2c_client *client;
+ 	struct mutex lock;
+@@ -351,6 +377,42 @@ static const struct iio_info hdc100x_info = {
+ 	.attrs = &hdc100x_attribute_group,
+ };
+ 
++static int hdc100x_read_mfr_id(struct i2c_client *client)
++{
++	return i2c_smbus_read_word_swapped(client, HDC100X_REG_MFR_ID);
++}
++
++static int hdc100x_read_dev_id(struct i2c_client *client)
++{
++	return i2c_smbus_read_word_swapped(client, HDC100X_REG_DEV_ID);
++}
++
++static const struct of_device_id hdc100x_dt_ids[];
++static bool is_valid_hdc100x(struct i2c_client *client,
++			     const struct i2c_device_id *id)
++{
++	const struct of_device_id *match;
++	struct hdc100x_of_data *of_data;
++	int mfr_id, dev_id;
++
++	match = i2c_of_match_device(hdc100x_dt_ids, client);
++
++	if (match) {
++		of_data = (struct hdc100x_of_data *)match->data;
++		if (!of_data->support_mfr_check)
++			return true;
++	} else if (id->driver_data == HDC1008)
++		return true;
++
++	mfr_id = hdc100x_read_mfr_id(client);
++	dev_id = hdc100x_read_dev_id(client);
++	if (mfr_id == HDC100X_MFR_ID &&
++	   (dev_id == 0x1000 || dev_id == 0x1050))
++		return true;
++
++	return false;
++}
++
+ static int hdc100x_probe(struct i2c_client *client,
+ 			 const struct i2c_device_id *id)
+ {
+@@ -362,6 +424,9 @@ static int hdc100x_probe(struct i2c_client *client,
+ 				     I2C_FUNC_SMBUS_BYTE | I2C_FUNC_I2C))
+ 		return -EOPNOTSUPP;
+ 
++	if (!is_valid_hdc100x(client, id))
++		return -EOPNOTSUPP;
++
+ 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+ 	if (!indio_dev)
+ 		return -ENOMEM;
+@@ -397,22 +462,22 @@ static int hdc100x_probe(struct i2c_client *client,
+ }
+ 
+ static const struct i2c_device_id hdc100x_id[] = {
+-	{ "hdc100x", 0 },
+-	{ "hdc1000", 0 },
+-	{ "hdc1008", 0 },
+-	{ "hdc1010", 0 },
+-	{ "hdc1050", 0 },
+-	{ "hdc1080", 0 },
++	{ "hdc100X", HDC100X },
++	{ "hdc1000", HDC1000 },
++	{ "hdc1008", HDC1008 },
++	{ "hdc1010", HDC1010 },
++	{ "hdc1050", HDC1050 },
++	{ "hdc1080", HDC1080 },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(i2c, hdc100x_id);
+ 
+ static const struct of_device_id hdc100x_dt_ids[] = {
+-	{ .compatible = "ti,hdc1000" },
+-	{ .compatible = "ti,hdc1008" },
+-	{ .compatible = "ti,hdc1010" },
+-	{ .compatible = "ti,hdc1050" },
+-	{ .compatible = "ti,hdc1080" },
++	{ .compatible = "ti,hdc1000", .data = &hdc100x_of_data },
++	{ .compatible = "ti,hdc1008", .data = &hdc1008_of_data },
++	{ .compatible = "ti,hdc1010", .data = &hdc100x_of_data },
++	{ .compatible = "ti,hdc1050", .data = &hdc100x_of_data },
++	{ .compatible = "ti,hdc1080", .data = &hdc100x_of_data },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, hdc100x_dt_ids);
+-- 
+2.34.1
+
