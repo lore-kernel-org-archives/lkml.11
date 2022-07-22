@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F453C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:22:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1194DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:23:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236216AbiGVJWz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 05:22:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38310 "EHLO
+        id S235831AbiGVJXC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 05:23:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236177AbiGVJWY (ORCPT
+        with ESMTP id S236039AbiGVJWZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 05:22:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDA25BF9AC;
-        Fri, 22 Jul 2022 02:14:36 -0700 (PDT)
+        Fri, 22 Jul 2022 05:22:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 282B6BF9B7;
+        Fri, 22 Jul 2022 02:14:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 36B26B827C1;
-        Fri, 22 Jul 2022 09:14:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96BE1C341C6;
-        Fri, 22 Jul 2022 09:14:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7120A61FDF;
+        Fri, 22 Jul 2022 09:14:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B489C341C6;
+        Fri, 22 Jul 2022 09:14:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658481274;
-        bh=9d+Kp6/2NX6lzNnjWTljAdV1EFVIu8UX09rYANXkE74=;
+        s=korg; t=1658481276;
+        bh=6H9Lyl9oIAdqchAN6Gj+v6lW5keext/SAPl2qXlkcwg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sPmL8EQLKjQaVuqAY/G+UTqhSsXYgJxl/a0Z2xbMcFIYchGs0L20MWoS2w2nAHif2
-         8G75XVdntmtNJ/fDwdtSiIbcghSlliBHim73DHT4P+d9NT5k1sarNhkqPC0o9aLtFC
-         HDj31sgDt9fL5ATsM8I7dL6n/N40AXSaQb4KAXZE=
+        b=cCYlOHweN81SlxJ5jCx7BDZPXztZne6n2EA4B5NKt9nOdzW0aak06E0C0ONVyFqtM
+         459EG6tc/U1c632ogRHiAm/FgKF9vsQ8m60zg76CpAQfdw9hzYbGttsHgjg+DsPkhu
+         OoYirLo4G595GGtCXK5Xb6L6n2v3hIuLRsVhYPzU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
+        stable@vger.kernel.org, Kim Phillips <kim.phillips@amd.com>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Borislav Petkov <bp@suse.de>,
         Josh Poimboeuf <jpoimboe@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.15 54/89] x86/xen: Add UNTRAIN_RET
-Date:   Fri, 22 Jul 2022 11:11:28 +0200
-Message-Id: <20220722091136.385237728@linuxfoundation.org>
+Subject: [PATCH 5.15 37/89] x86/sev: Avoid using __x86_return_thunk
+Date:   Fri, 22 Jul 2022 11:11:11 +0200
+Message-Id: <20220722091135.437412058@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220722091133.320803732@linuxfoundation.org>
 References: <20220722091133.320803732@linuxfoundation.org>
@@ -51,12 +51,15 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Kim Phillips <kim.phillips@amd.com>
 
-commit d147553b64bad34d2f92cb7d8ba454ae95c3baac upstream.
+commit 0ee9073000e8791f8b134a8ded31bcc767f7f232 upstream.
 
-Ensure the Xen entry also passes through UNTRAIN_RET.
+Specifically, it's because __enc_copy() encrypts the kernel after
+being relocated outside the kernel in sme_encrypt_execute(), and the
+RET macro's jmp offset isn't amended prior to execution.
 
+Signed-off-by: Kim Phillips <kim.phillips@amd.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
 Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
@@ -64,32 +67,31 @@ Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/entry/entry_64.S |    8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ arch/x86/mm/mem_encrypt_boot.S |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/arch/x86/entry/entry_64.S
-+++ b/arch/x86/entry/entry_64.S
-@@ -320,6 +320,12 @@ SYM_CODE_END(ret_from_fork)
- #endif
- .endm
+--- a/arch/x86/mm/mem_encrypt_boot.S
++++ b/arch/x86/mm/mem_encrypt_boot.S
+@@ -65,7 +65,9 @@ SYM_FUNC_START(sme_encrypt_execute)
+ 	movq	%rbp, %rsp		/* Restore original stack pointer */
+ 	pop	%rbp
  
-+SYM_CODE_START_LOCAL(xen_error_entry)
-+	UNWIND_HINT_FUNC
-+	UNTRAIN_RET
-+	RET
-+SYM_CODE_END(xen_error_entry)
-+
- /**
-  * idtentry_body - Macro to emit code calling the C function
-  * @cfunc:		C function to be called
-@@ -339,7 +345,7 @@ SYM_CODE_END(ret_from_fork)
- 	 * switch the CR3.  So it can skip invoking error_entry().
- 	 */
- 	ALTERNATIVE "call error_entry; movq %rax, %rsp", \
--		"", X86_FEATURE_XENPV
-+		    "call xen_error_entry", X86_FEATURE_XENPV
+-	RET
++	/* Offset to __x86_return_thunk would be wrong here */
++	ret
++	int3
+ SYM_FUNC_END(sme_encrypt_execute)
  
- 	ENCODE_FRAME_POINTER
- 	UNWIND_HINT_REGS
+ SYM_FUNC_START(__enc_copy)
+@@ -151,6 +153,8 @@ SYM_FUNC_START(__enc_copy)
+ 	pop	%r12
+ 	pop	%r15
+ 
+-	RET
++	/* Offset to __x86_return_thunk would be wrong here */
++	ret
++	int3
+ .L__enc_copy_end:
+ SYM_FUNC_END(__enc_copy)
 
 
