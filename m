@@ -2,108 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 697BDC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 08:51:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB867C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 08:52:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235159AbiGVIvp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 04:51:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50204 "EHLO
+        id S235199AbiGVIwm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 04:52:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235150AbiGVIvM (ORCPT
+        with ESMTP id S235137AbiGVIwY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 04:51:12 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5093745049;
-        Fri, 22 Jul 2022 01:50:56 -0700 (PDT)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id A82CF6601AC4;
-        Fri, 22 Jul 2022 09:50:53 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1658479855;
-        bh=64MEcYd26mgc62O6DF4etIzTxMQl7QOWdieKUap4UbY=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=T/A40FtZ280EKJL8nX/BLp/cTUlqftolv8yxEvbb7h02PmxTUkEp/D8v6nsI1IlZl
-         iYriZPWn2vB2le9rlbYyjoUxaWOxcYPkVxilpoXZb1bgJzebDsYFsZqamgNkXCd2N6
-         m9s1r5ptDyFOQkPognV/cNobJS+c7QFpmzcj9vhsZ0pO/u2Zyhqwlo92trow/cOb9t
-         NmokpkY7swg/QNv4Ug7xGBSxY2WEwXKBTy7820JiJZTJoS1Y4yM5SgARxiMATkNwph
-         Z95/4B639NYvL79r4hRY6WXWLw1xDCqHssf1Po1mrNV1QHn6vAOKGvK5b0aafe7NpI
-         r9Nu4FnsyamYQ==
-Message-ID: <d96a2f25-cfb7-7440-9fc1-ffd36852495c@collabora.com>
-Date:   Fri, 22 Jul 2022 10:50:50 +0200
+        Fri, 22 Jul 2022 04:52:24 -0400
+Received: from smtpbg501.qq.com (smtpbg501.qq.com [203.205.250.101])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B43239B9C1
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 01:51:39 -0700 (PDT)
+X-QQ-mid: bizesmtp77t1658479880tvwfy0qv
+Received: from bupt-poweredger310.tendawifi.co ( [223.72.68.172])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Fri, 22 Jul 2022 16:51:19 +0800 (CST)
+X-QQ-SSF: 01400000002000B0V000B00A0000000
+X-QQ-FEAT: R3vftN8GVq+7+a8rsE5Vq0K470afRMomw7k6aHZzPiSoUvyVrZmCHCdzV0xCv
+        p0ZmVEi6GF60uG4nh2g9hGI9iFdwT30Gs9GNkEgblQDov8iAlzb8OLBZo4qjN9VKnvrat35
+        suLSiYTPG4w2R4mNW6h9I5I9WFOU3LzGb34AQE8zDJRxlsF8cUFYj1kbxvgsTRBixYuECSk
+        A4q0ZvE66OJFnQdaFxURLXL6ohoBdTtLsR5cz2vp0AqZ/BwW0kinbSEt/Xuc9ni5Ly8CQuz
+        rUQM7UI9SLmsGZABTryLaQNd97l0jvCu9lU2BrFAVQuBrJB6msX0APlMJAs8TPmHqbef2QC
+        PW+C/9ADbdTkM3ZVp6fbAHbcxF4Urt3JTxOQ0I5Bww5f8ngGpnMTLxF6wQ5CjH86JqOFmZm
+        tnalZMBgkZA=
+X-QQ-GoodBg: 2
+From:   Yan Xinyu <sdlyyxy@bupt.edu.cn>
+To:     johan@kernel.org, gregkh@linuxfoundation.org
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Yan Xinyu <sdlyyxy@bupt.edu.cn>
+Subject: [PATCH v3] USB: serial: usb_wwan: replace DTR/RTS magic numbers with macros
+Date:   Fri, 22 Jul 2022 16:50:40 +0800
+Message-Id: <20220722085040.704885-1-sdlyyxy@bupt.edu.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v5 0/7] MediaTek Helio X10 MT6795 - Clock drivers
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        robh+dt@kernel.org
-Cc:     krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
-        mturquette@baylibre.com, sboyd@kernel.org, p.zabel@pengutronix.de,
-        y.oudjana@protonmail.com, jason-jh.lin@mediatek.com,
-        ck.hu@mediatek.com, fparent@baylibre.com, rex-bc.chen@mediatek.com,
-        tinghan.shen@mediatek.com, chun-jie.chen@mediatek.com,
-        weiyi.lu@mediatek.com, ikjn@chromium.org, miles.chen@mediatek.com,
-        sam.shih@mediatek.com, wenst@chromium.org,
-        bgolaszewski@baylibre.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-clk@vger.kernel.org,
-        konrad.dybcio@somainline.org, marijn.suijten@somainline.org,
-        martin.botka@somainline.org, ~postmarketos/upstreaming@lists.sr.ht,
-        phone-devel@vger.kernel.org, paul.bouchara@somainline.org,
-        kernel@collabora.com
-References: <20220629110254.184213-1-angelogioacchino.delregno@collabora.com>
- <45ff2e82-caeb-9575-ce73-1bd43c37c0c5@collabora.com>
- <3c781dd6-865f-e59b-17dd-c583e79ef152@linaro.org>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <3c781dd6-865f-e59b-17dd-c583e79ef152@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:bupt.edu.cn:qybgforeign:qybgforeign10
+X-QQ-Bgrelay: 1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 21/07/22 18:38, Krzysztof Kozlowski ha scritto:
-> On 21/07/2022 10:53, AngeloGioacchino Del Regno wrote:
->> Il 29/06/22 13:02, AngeloGioacchino Del Regno ha scritto:
->>> In an effort to give some love to the apparently forgotten MT6795 SoC,
->>> I am upstreaming more components that are necessary to support platforms
->>> powered by this one apart from a simple boot to serial console.
->>>
->>> This (very big) series introduces system clock, multimedia clock drivers
->>> (including resets) for this SoC.
->>>
->>> Tested on a MT6795 Sony Xperia M5 (codename "Holly") smartphone.
->>>
->>> This series depends on, and can be merged on top of:
->>> [1]: https://patchwork.kernel.org/project/linux-mediatek/list/?series=640122
->>> [2]: https://patchwork.kernel.org/project/linux-mediatek/list/?series=637849
->>>
->>
->> Gentle ping for this series...
->> ...I've got a lot of commits to send that depend on this one...
->>
->> P.S.: The dependencies in [1] and [2] are already upstream.
->>
-> 
-> You sent this message to Rob (not to others) and you did not mention
-> whom are you pinging. Rob provided all necessary tags for you.
-> 
-> If you want to ping someone, put proper names in "To" but best - mention
-> by name.
-> 
-> Best regards,
-> Krzysztof
+The usb_wwan_send_setup function generates DTR/RTS signals in compliance
+with CDC ACM standard. This patch changes magic numbers in this function
+to equivalent macros.
 
-Right. The ping wasn't for Rob, as he reviewed/acked all of the dt-bindings
-patches in this series.
+Signed-off-by: Yan Xinyu <sdlyyxy@bupt.edu.cn>
+---
+v1->v2:
+ * Fix Signed-off-by name.
+v2->v3:
+ * Use already defined ACM_CTRL_DTR and ACM_CTRL_RTS in drivers/usb/class/cdc-acm.h
+---
+ drivers/usb/serial/usb_wwan.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-Next time I'll be more specific - thanks for that.
+diff --git a/drivers/usb/serial/usb_wwan.c b/drivers/usb/serial/usb_wwan.c
+index dab38b63eaf7..5c8303bd3676 100644
+--- a/drivers/usb/serial/usb_wwan.c
++++ b/drivers/usb/serial/usb_wwan.c
+@@ -29,8 +29,10 @@
+ #include <linux/bitops.h>
+ #include <linux/uaccess.h>
+ #include <linux/usb.h>
++#include <linux/usb/cdc.h>
+ #include <linux/usb/serial.h>
+ #include <linux/serial.h>
++#include "../class/cdc-acm.h"
+ #include "usb-wwan.h"
+ 
+ /*
+@@ -48,9 +50,9 @@ static int usb_wwan_send_setup(struct usb_serial_port *port)
+ 	portdata = usb_get_serial_port_data(port);
+ 
+ 	if (portdata->dtr_state)
+-		val |= 0x01;
++		val |= ACM_CTRL_DTR;
+ 	if (portdata->rts_state)
+-		val |= 0x02;
++		val |= ACM_CTRL_RTS;
+ 
+ 	ifnum = serial->interface->cur_altsetting->desc.bInterfaceNumber;
+ 
+@@ -59,8 +61,9 @@ static int usb_wwan_send_setup(struct usb_serial_port *port)
+ 		return res;
+ 
+ 	res = usb_control_msg(serial->dev, usb_sndctrlpipe(serial->dev, 0),
+-				0x22, 0x21, val, ifnum, NULL, 0,
+-				USB_CTRL_SET_TIMEOUT);
++				USB_CDC_REQ_SET_CONTROL_LINE_STATE,
++				USB_DIR_OUT | USB_TYPE_CLASS | USB_RECIP_INTERFACE,
++				val, ifnum, NULL, 0, USB_CTRL_SET_TIMEOUT);
+ 
+ 	usb_autopm_put_interface(port->serial->interface);
+ 
+-- 
+2.25.1
 
-Cheers!
-Angelo
+
 
