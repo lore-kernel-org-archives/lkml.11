@@ -2,210 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 280BAC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 15:12:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4554CCA489
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 15:12:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235725AbiGVPMt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 11:12:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60212 "EHLO
+        id S235704AbiGVPM6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 11:12:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235720AbiGVPMi (ORCPT
+        with ESMTP id S235703AbiGVPMr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 11:12:38 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D34409E7A7
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 08:12:37 -0700 (PDT)
-Received: from hermes-devbox.fritz.box (82-71-8-225.dsl.in-addr.zen.co.uk [82.71.8.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Fri, 22 Jul 2022 11:12:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D60119C279;
+        Fri, 22 Jul 2022 08:12:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: bbeckett)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 1C81E6601ACC;
-        Fri, 22 Jul 2022 16:12:36 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1658502756;
-        bh=7kxqIhkpFGzA8g1mO3RcDy33zlRVQ9b4n6SfLajQTFE=;
-        h=From:To:Cc:Subject:Date:From;
-        b=A0Xo+vsk5A7BpQmmpevs9QUudkjsBbh+Gs+ldVahhj8C3krro4cuyAhRA+EGu1FQd
-         5dSBKbg1zLYaGhWcna+yNwCVe/SvMhrMsZk0UGa3wDUfpR5aKR5mhBONvUXK3+9ycQ
-         qvcwIZRCq1gAyDgTelNtWY9518J2Z2aHk57hcvrfgCZBIv932HxJy3UnXA7ez1dlWP
-         qOozJJSHKTMZdWbSYI1Zyh2yujAlEZtbmrKnNALjRX7QgNAO5OB1/C2UtplFW7PWK6
-         ty92vThvDBl8oGwwhFRS5llMve0kdaYRVGJkwVJLensPn37nVt0LkN9H7MCa2QXCUq
-         VW4GWbFUM7Ebw==
-From:   Robert Beckett <bob.beckett@collabora.com>
-To:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     kernel@collabora.com, Robert Beckett <bob.beckett@collabora.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Thomas Hellstrom <thomas.hellstrom@intel.com>,
-        Matthew Auld <matthew.auld@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@intel.com>,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3] drm/i915: stop using swiotlb
-Date:   Fri, 22 Jul 2022 16:12:04 +0100
-Message-Id: <20220722151204.1534489-1-bob.beckett@collabora.com>
-X-Mailer: git-send-email 2.25.1
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2B8C2B827C3;
+        Fri, 22 Jul 2022 15:12:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11E56C341C6;
+        Fri, 22 Jul 2022 15:12:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658502762;
+        bh=QNDA1Wl/P9Tdabb9er+hcjmLg+ZWPQYKQjQn31syPZs=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=TOvvu0qlyhr+tmgrzFarODSHy2nmwd/vZkaOfw7UOlCrWttzwGKU19rg8AV7A8T7i
+         IfjgWg0t2g4Ij3/wDGk0CzmXgSTPXgE3n1u2iwGUjmleTogf4uINMSXjxmVGVqzSDf
+         NdnzljfzlPJdmijyVLMwEzZZ53euLLK3T+7lg1++pTTDKLDbOWkoP2Kq2RUZ3s84P6
+         FBICts7HV/wapVFQ1AVuS+EXg97CVEyaQ8kbfAxQREHvjUc07BdPWl0gXMD41NG9LD
+         308lnEB6RcxuafVaPDXSt3EJNt5k6THt96Bq2WKrP+Lj0X4kKIL9pRDDVTaN2puF9b
+         HBK7vSUuswD+Q==
+Message-ID: <8430301c-3682-fde0-4bf3-033450563be3@kernel.org>
+Date:   Fri, 22 Jul 2022 10:12:34 -0500
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 1/6] ARM: refresh defconfig files
+Content-Language: en-US
+To:     Arnd Bergmann <arnd@kernel.org>,
+        linux-arm-kernel@lists.infradead.org
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Russell King <linux@armlinux.org.uk>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Ray Jui <rjui@broadcom.com>,
+        Scott Branden <sbranden@broadcom.com>,
+        Alexander Shiyan <shc_work@mail.ru>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Taichi Sugaya <sugaya.taichi@socionext.com>,
+        Takao Orito <orito.takao@socionext.com>,
+        Liviu Dudau <liviu.dudau@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Aaro Koskinen <aaro.koskinen@iki.fi>,
+        Janusz Krzysztofik <jmkrzyszt@gmail.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-aspeed@lists.ozlabs.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-rpi-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-oxnas@groups.io, linux-stm32@st-md-mailman.stormreply.com,
+        linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
+        linux-sh@vger.kernel.org
+References: <20220721141325.2413920-1-arnd@kernel.org>
+ <20220721141325.2413920-2-arnd@kernel.org>
+From:   Dinh Nguyen <dinguyen@kernel.org>
+In-Reply-To: <20220721141325.2413920-2-arnd@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Calling swiotlb functions directly is nowadays considered harmful. See
-https://lore.kernel.org/intel-gfx/20220711082614.GA29487@lst.de/
 
-Replace swiotlb_max_segment() calls with dma_max_mapping_size().
-In i915_gem_object_get_pages_internal() no longer consider max_segment
-only if CONFIG_SWIOTLB is enabled. There can be other (iommu related)
-causes of specific max segment sizes.
 
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>
-Cc: Thomas Hellstrom <thomas.hellstrom@intel.com>
-Cc: Matthew Auld <matthew.auld@intel.com>
+On 7/21/22 09:13, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> A lot of Kconfig options have changed over the years, and we tend
+> to not do a blind 'make defconfig' to refresh the files, to ensure
+> we catch options that should not have gone away.
+> 
+> I used some a bit of scripting to only rework the bits where an
+> option moved around in any of the defconfig files, without also
+> dropping any of the other lines, to make it clearer which options
+> we no longer have.
+> 
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+>   arch/arm/configs/am200epdkit_defconfig    |  26 ++---
+>   arch/arm/configs/aspeed_g4_defconfig      |  16 +--
+>   arch/arm/configs/aspeed_g5_defconfig      |  16 +--
+>   arch/arm/configs/assabet_defconfig        |   8 +-
+>   arch/arm/configs/at91_dt_defconfig        |  10 +-
+>   arch/arm/configs/axm55xx_defconfig        |  22 ++--
+>   arch/arm/configs/badge4_defconfig         |   8 +-
+>   arch/arm/configs/bcm2835_defconfig        |  36 +++----
+>   arch/arm/configs/cerfcube_defconfig       |  16 +--
+>   arch/arm/configs/clps711x_defconfig       |   2 +-
+>   arch/arm/configs/cm_x300_defconfig        |  26 ++---
+>   arch/arm/configs/cns3420vb_defconfig      |  18 ++--
+>   arch/arm/configs/colibri_pxa270_defconfig |  32 +++---
+>   arch/arm/configs/colibri_pxa300_defconfig |  10 +-
+>   arch/arm/configs/collie_defconfig         |  20 ++--
+>   arch/arm/configs/corgi_defconfig          |  44 ++++----
+>   arch/arm/configs/davinci_all_defconfig    |  26 ++---
+>   arch/arm/configs/dove_defconfig           |  28 ++---
+>   arch/arm/configs/ep93xx_defconfig         |  16 +--
+>   arch/arm/configs/eseries_pxa_defconfig    |  26 ++---
+>   arch/arm/configs/exynos_defconfig         |  20 ++--
+>   arch/arm/configs/ezx_defconfig            |  72 ++++++-------
+>   arch/arm/configs/footbridge_defconfig     |  14 +--
+>   arch/arm/configs/h3600_defconfig          |  10 +-
+>   arch/arm/configs/h5000_defconfig          |  18 ++--
+>   arch/arm/configs/hackkit_defconfig        |   4 +-
+>   arch/arm/configs/hisi_defconfig           |  24 ++---
+>   arch/arm/configs/imx_v4_v5_defconfig      |   8 +-
+>   arch/arm/configs/imx_v6_v7_defconfig      |   8 +-
+>   arch/arm/configs/integrator_defconfig     |   2 +-
+>   arch/arm/configs/iop32x_defconfig         |  20 ++--
+>   arch/arm/configs/jornada720_defconfig     |  10 +-
+>   arch/arm/configs/keystone_defconfig       |  62 +++++------
+>   arch/arm/configs/lart_defconfig           |   6 +-
+>   arch/arm/configs/lpc18xx_defconfig        |  12 +--
+>   arch/arm/configs/lpc32xx_defconfig        |   8 +-
+>   arch/arm/configs/lpd270_defconfig         |   6 +-
+>   arch/arm/configs/lubbock_defconfig        |  10 +-
+>   arch/arm/configs/magician_defconfig       |  30 +++---
+>   arch/arm/configs/mainstone_defconfig      |   4 +-
+>   arch/arm/configs/milbeaut_m10v_defconfig  |   6 +-
+>   arch/arm/configs/mini2440_defconfig       |   6 +-
+>   arch/arm/configs/mmp2_defconfig           |  28 ++---
+>   arch/arm/configs/moxart_defconfig         |  18 ++--
+>   arch/arm/configs/mps2_defconfig           |  14 +--
+>   arch/arm/configs/multi_v4t_defconfig      |   4 +-
+>   arch/arm/configs/multi_v5_defconfig       |  12 +--
+>   arch/arm/configs/multi_v7_defconfig       |  62 +++++------
+>   arch/arm/configs/mv78xx0_defconfig        |  32 +++---
+>   arch/arm/configs/mvebu_v5_defconfig       |  28 ++---
+>   arch/arm/configs/mvebu_v7_defconfig       |   2 +-
+>   arch/arm/configs/mxs_defconfig            |   4 +-
+>   arch/arm/configs/neponset_defconfig       |  24 ++---
+>   arch/arm/configs/netwinder_defconfig      |  10 +-
+>   arch/arm/configs/nhk8815_defconfig        |   6 +-
+>   arch/arm/configs/omap1_defconfig          |  74 ++++++-------
+>   arch/arm/configs/omap2plus_defconfig      |  16 +--
+>   arch/arm/configs/orion5x_defconfig        |  32 +++---
+>   arch/arm/configs/oxnas_v6_defconfig       |  14 +--
+>   arch/arm/configs/palmz72_defconfig        |  14 +--
+>   arch/arm/configs/pcm027_defconfig         |  22 ++--
+>   arch/arm/configs/pleb_defconfig           |   6 +-
+>   arch/arm/configs/pxa168_defconfig         |  18 ++--
+>   arch/arm/configs/pxa255-idp_defconfig     |  10 +-
+>   arch/arm/configs/pxa3xx_defconfig         |  18 ++--
+>   arch/arm/configs/pxa910_defconfig         |  22 ++--
+>   arch/arm/configs/pxa_defconfig            | 126 +++++++++++-----------
+>   arch/arm/configs/qcom_defconfig           |  60 +++++------
+>   arch/arm/configs/realview_defconfig       |   8 +-
+>   arch/arm/configs/rpc_defconfig            |  18 ++--
+>   arch/arm/configs/s3c2410_defconfig        |   8 +-
+>   arch/arm/configs/s3c6400_defconfig        |   2 +-
+>   arch/arm/configs/s5pv210_defconfig        |   4 +-
+>   arch/arm/configs/sama5_defconfig          |   8 +-
+>   arch/arm/configs/sama7_defconfig          |   8 +-
+>   arch/arm/configs/shannon_defconfig        |   8 +-
+>   arch/arm/configs/simpad_defconfig         |  18 ++--
+>   arch/arm/configs/socfpga_defconfig        |   4 +-
 
-v2: - restore UINT_MAX clamp in i915_sg_segment_size()
-    - drop PAGE_SIZE check as it will always be >= PAGE_SIZE
-v3: - actually clamp to UINT_MAX in i915_sg_segment_size()
+for socfpga
 
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
-Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
----
- drivers/gpu/drm/i915/gem/i915_gem_internal.c | 19 ++++---------------
- drivers/gpu/drm/i915/gem/i915_gem_shmem.c    |  2 +-
- drivers/gpu/drm/i915/gem/i915_gem_ttm.c      |  4 ++--
- drivers/gpu/drm/i915/gem/i915_gem_userptr.c  |  2 +-
- drivers/gpu/drm/i915/i915_scatterlist.h      | 16 +++-------------
- 5 files changed, 11 insertions(+), 32 deletions(-)
-
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_internal.c b/drivers/gpu/drm/i915/gem/i915_gem_internal.c
-index c698f95af15f..24f37658f1bb 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_internal.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_internal.c
-@@ -6,7 +6,6 @@
- 
- #include <linux/scatterlist.h>
- #include <linux/slab.h>
--#include <linux/swiotlb.h>
- 
- #include "i915_drv.h"
- #include "i915_gem.h"
-@@ -38,22 +37,12 @@ static int i915_gem_object_get_pages_internal(struct drm_i915_gem_object *obj)
- 	struct scatterlist *sg;
- 	unsigned int sg_page_sizes;
- 	unsigned int npages;
--	int max_order;
-+	int max_order = MAX_ORDER;
-+	unsigned int max_segment;
- 	gfp_t gfp;
- 
--	max_order = MAX_ORDER;
--#ifdef CONFIG_SWIOTLB
--	if (is_swiotlb_active(obj->base.dev->dev)) {
--		unsigned int max_segment;
--
--		max_segment = swiotlb_max_segment();
--		if (max_segment) {
--			max_segment = max_t(unsigned int, max_segment,
--					    PAGE_SIZE) >> PAGE_SHIFT;
--			max_order = min(max_order, ilog2(max_segment));
--		}
--	}
--#endif
-+	max_segment = i915_sg_segment_size(i915->drm.dev) >> PAGE_SHIFT;
-+	max_order = min(max_order, ilog2(max_segment));
- 
- 	gfp = GFP_KERNEL | __GFP_HIGHMEM | __GFP_RECLAIMABLE;
- 	if (IS_I965GM(i915) || IS_I965G(i915)) {
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_shmem.c b/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
-index 4eed3dd90ba8..34b9c76cd8e6 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_shmem.c
-@@ -194,7 +194,7 @@ static int shmem_get_pages(struct drm_i915_gem_object *obj)
- 	struct intel_memory_region *mem = obj->mm.region;
- 	struct address_space *mapping = obj->base.filp->f_mapping;
- 	const unsigned long page_count = obj->base.size / PAGE_SIZE;
--	unsigned int max_segment = i915_sg_segment_size();
-+	unsigned int max_segment = i915_sg_segment_size(i915->drm.dev);
- 	struct sg_table *st;
- 	struct sgt_iter sgt_iter;
- 	struct page *page;
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-index 5a5cf332d8a5..7a828c9c0f6d 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_ttm.c
-@@ -189,7 +189,7 @@ static int i915_ttm_tt_shmem_populate(struct ttm_device *bdev,
- 	struct drm_i915_private *i915 = container_of(bdev, typeof(*i915), bdev);
- 	struct intel_memory_region *mr = i915->mm.regions[INTEL_MEMORY_SYSTEM];
- 	struct i915_ttm_tt *i915_tt = container_of(ttm, typeof(*i915_tt), ttm);
--	const unsigned int max_segment = i915_sg_segment_size();
-+	const unsigned int max_segment = i915_sg_segment_size(i915->drm.dev);
- 	const size_t size = (size_t)ttm->num_pages << PAGE_SHIFT;
- 	struct file *filp = i915_tt->filp;
- 	struct sgt_iter sgt_iter;
-@@ -568,7 +568,7 @@ static struct i915_refct_sgt *i915_ttm_tt_get_st(struct ttm_tt *ttm)
- 	ret = sg_alloc_table_from_pages_segment(st,
- 			ttm->pages, ttm->num_pages,
- 			0, (unsigned long)ttm->num_pages << PAGE_SHIFT,
--			i915_sg_segment_size(), GFP_KERNEL);
-+			i915_sg_segment_size(i915_tt->dev), GFP_KERNEL);
- 	if (ret) {
- 		st->sgl = NULL;
- 		return ERR_PTR(ret);
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_userptr.c b/drivers/gpu/drm/i915/gem/i915_gem_userptr.c
-index 094f06b4ce33..dfc35905dba2 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_userptr.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_userptr.c
-@@ -129,7 +129,7 @@ static void i915_gem_object_userptr_drop_ref(struct drm_i915_gem_object *obj)
- static int i915_gem_userptr_get_pages(struct drm_i915_gem_object *obj)
- {
- 	const unsigned long num_pages = obj->base.size >> PAGE_SHIFT;
--	unsigned int max_segment = i915_sg_segment_size();
-+	unsigned int max_segment = i915_sg_segment_size(obj->base.dev->dev);
- 	struct sg_table *st;
- 	unsigned int sg_page_sizes;
- 	struct page **pvec;
-diff --git a/drivers/gpu/drm/i915/i915_scatterlist.h b/drivers/gpu/drm/i915/i915_scatterlist.h
-index 9ddb3e743a3e..48a8ce67371a 100644
---- a/drivers/gpu/drm/i915/i915_scatterlist.h
-+++ b/drivers/gpu/drm/i915/i915_scatterlist.h
-@@ -9,7 +9,7 @@
- 
- #include <linux/pfn.h>
- #include <linux/scatterlist.h>
--#include <linux/swiotlb.h>
-+#include <linux/dma-mapping.h>
- 
- #include "i915_gem.h"
- 
-@@ -127,19 +127,9 @@ static inline unsigned int i915_sg_dma_sizes(struct scatterlist *sg)
- 	return page_sizes;
- }
- 
--static inline unsigned int i915_sg_segment_size(void)
-+static inline unsigned int i915_sg_segment_size(struct device *dev)
- {
--	unsigned int size = swiotlb_max_segment();
--
--	if (size == 0)
--		size = UINT_MAX;
--
--	size = rounddown(size, PAGE_SIZE);
--	/* swiotlb_max_segment_size can return 1 byte when it means one page. */
--	if (size < PAGE_SIZE)
--		size = PAGE_SIZE;
--
--	return size;
-+	return min_t(size_t, UINT_MAX, dma_max_mapping_size(dev));
- }
- 
- bool i915_sg_trim(struct sg_table *orig_st);
--- 
-2.25.1
-
+Acked-by: Dinh Nguyen <dinguyen@kernel.org>
