@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1DC5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:20:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6004C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:20:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236040AbiGVJUd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 05:20:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53014 "EHLO
+        id S236060AbiGVJUk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 05:20:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236187AbiGVJT1 (ORCPT
+        with ESMTP id S235870AbiGVJT5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 05:19:27 -0400
+        Fri, 22 Jul 2022 05:19:57 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC291BB23F;
-        Fri, 22 Jul 2022 02:13:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96B2EBB5D7;
+        Fri, 22 Jul 2022 02:13:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0794161F6A;
-        Fri, 22 Jul 2022 09:13:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 102C4C341C7;
-        Fri, 22 Jul 2022 09:13:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C64E61F63;
+        Fri, 22 Jul 2022 09:13:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7718EC341C6;
+        Fri, 22 Jul 2022 09:13:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658481214;
-        bh=mF/NTo3jFPn5PYFhpdCOvlbKcfW1wEd+E7B0WinnZkY=;
+        s=korg; t=1658481217;
+        bh=WBiwT2yc/NGkHe0muEFiSHX5dPep+wgeR6ZmXIblcp0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ERZpNM7jBKsKHkD6j50YTVrm1ZiDHJlcbu7YxeiNucW4JYfTp6IcfqhDz3xM1nQ5V
-         rrOqxGS6IsIgHKUiiFOwIjTdG2ermppKn1zAJ5j5u+Lvj2zRAYWzLUjoeg9lMF8Z51
-         767/Fq2L97xcUUMgfJuQlOckhhQLg0YHSaMHYwHg=
+        b=Hb/nxUdAK1Tn8XDu2/2uutuvA6X3UT+hex+JcBrla4wGD0i/C2P5TDpeTJ/YtbLan
+         0vtZ3Uh9lzrj+6odofrPTt59JnRcrFym0kEd5Nje3NXr/KLzKGk4n86RfqpNzJO1JG
+         BrbyzcpDsveIEBrxiiK0gWzsE4chaK0hBobpjCsw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Borislav Petkov <bp@suse.de>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.15 34/89] x86/bpf: Use alternative RET encoding
-Date:   Fri, 22 Jul 2022 11:11:08 +0200
-Message-Id: <20220722091135.272342062@linuxfoundation.org>
+Subject: [PATCH 5.15 17/89] x86/alternative: Try inline spectre_v2=retpoline,amd
+Date:   Fri, 22 Jul 2022 11:10:51 +0200
+Message-Id: <20220722091134.336521073@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220722091133.320803732@linuxfoundation.org>
 References: <20220722091133.320803732@linuxfoundation.org>
@@ -53,61 +54,94 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peter Zijlstra <peterz@infradead.org>
 
-commit d77cfe594ad50e0bf95d457e02ccd578791b2a15 upstream.
+commit bbe2df3f6b6da7848398d55b1311d58a16ec21e4 upstream.
 
-Use the return thunk in eBPF generated code, if needed.
+Try and replace retpoline thunk calls with:
+
+  LFENCE
+  CALL    *%\reg
+
+for spectre_v2=retpoline,amd.
+
+Specifically, the sequence above is 5 bytes for the low 8 registers,
+but 6 bytes for the high 8 registers. This means that unless the
+compilers prefix stuff the call with higher registers this replacement
+will fail.
+
+Luckily GCC strongly favours RAX for the indirect calls and most (95%+
+for defconfig-x86_64) will be converted. OTOH clang strongly favours
+R11 and almost nothing gets converted.
+
+Note: it will also generate a correct replacement for the Jcc.d32
+case, except unless the compilers start to prefix stuff that, it'll
+never fit. Specifically:
+
+  Jncc.d8 1f
+  LFENCE
+  JMP     *%\reg
+1:
+
+is 7-8 bytes long, where the original instruction in unpadded form is
+only 6 bytes.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Borislav Petkov <bp@suse.de>
+Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Tested-by: Alexei Starovoitov <ast@kernel.org>
+Link: https://lore.kernel.org/r/20211026120310.359986601@infradead.org
+[cascardo: RETPOLINE_AMD was renamed to RETPOLINE_LFENCE]
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/net/bpf_jit_comp.c |   19 +++++++++++++++++--
- 1 file changed, 17 insertions(+), 2 deletions(-)
+ arch/x86/kernel/alternative.c |   16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
 
---- a/arch/x86/net/bpf_jit_comp.c
-+++ b/arch/x86/net/bpf_jit_comp.c
-@@ -406,6 +406,21 @@ static void emit_indirect_jump(u8 **ppro
- 	*pprog = prog;
- }
+--- a/arch/x86/kernel/alternative.c
++++ b/arch/x86/kernel/alternative.c
+@@ -389,6 +389,7 @@ static int emit_indirect(int op, int reg
+  *
+  *   CALL *%\reg
+  *
++ * It also tries to inline spectre_v2=retpoline,amd when size permits.
+  */
+ static int patch_retpoline(void *addr, struct insn *insn, u8 *bytes)
+ {
+@@ -405,7 +406,8 @@ static int patch_retpoline(void *addr, s
+ 	/* If anyone ever does: CALL/JMP *%rsp, we're in deep trouble. */
+ 	BUG_ON(reg == 4);
  
-+static void emit_return(u8 **pprog, u8 *ip)
-+{
-+	u8 *prog = *pprog;
-+
-+	if (cpu_feature_enabled(X86_FEATURE_RETHUNK)) {
-+		emit_jump(&prog, &__x86_return_thunk, ip);
-+	} else {
-+		EMIT1(0xC3);		/* ret */
-+		if (IS_ENABLED(CONFIG_SLS))
-+			EMIT1(0xCC);	/* int3 */
+-	if (cpu_feature_enabled(X86_FEATURE_RETPOLINE))
++	if (cpu_feature_enabled(X86_FEATURE_RETPOLINE) &&
++	    !cpu_feature_enabled(X86_FEATURE_RETPOLINE_LFENCE))
+ 		return -1;
+ 
+ 	op = insn->opcode.bytes[0];
+@@ -418,8 +420,9 @@ static int patch_retpoline(void *addr, s
+ 	 * into:
+ 	 *
+ 	 *   Jncc.d8 1f
++	 *   [ LFENCE ]
+ 	 *   JMP *%\reg
+-	 *   NOP
++	 *   [ NOP ]
+ 	 * 1:
+ 	 */
+ 	/* Jcc.d32 second opcode byte is in the range: 0x80-0x8f */
+@@ -434,6 +437,15 @@ static int patch_retpoline(void *addr, s
+ 		op = JMP32_INSN_OPCODE;
+ 	}
+ 
++	/*
++	 * For RETPOLINE_AMD: prepend the indirect CALL/JMP with an LFENCE.
++	 */
++	if (cpu_feature_enabled(X86_FEATURE_RETPOLINE_LFENCE)) {
++		bytes[i++] = 0x0f;
++		bytes[i++] = 0xae;
++		bytes[i++] = 0xe8; /* LFENCE */
 +	}
 +
-+	*pprog = prog;
-+}
-+
- /*
-  * Generate the following code:
-  *
-@@ -1681,7 +1696,7 @@ emit_jmp:
- 			ctx->cleanup_addr = proglen;
- 			pop_callee_regs(&prog, callee_regs_used);
- 			EMIT1(0xC9);         /* leave */
--			EMIT1(0xC3);         /* ret */
-+			emit_return(&prog, image + addrs[i - 1] + (prog - temp));
- 			break;
- 
- 		default:
-@@ -2127,7 +2142,7 @@ int arch_prepare_bpf_trampoline(struct b
- 	if (flags & BPF_TRAMP_F_SKIP_FRAME)
- 		/* skip our return address and return to parent */
- 		EMIT4(0x48, 0x83, 0xC4, 8); /* add rsp, 8 */
--	EMIT1(0xC3); /* ret */
-+	emit_return(&prog, prog);
- 	/* Make sure the trampoline generation logic doesn't overflow */
- 	if (WARN_ON_ONCE(prog > (u8 *)image_end - BPF_INSN_SAFETY)) {
- 		ret = -EFAULT;
+ 	ret = emit_indirect(op, reg, bytes + i);
+ 	if (ret < 0)
+ 		return ret;
 
 
