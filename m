@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86344C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:08:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2271C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:08:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234049AbiGVJIn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 05:08:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36282 "EHLO
+        id S234770AbiGVJIq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 05:08:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232299AbiGVJI0 (ORCPT
+        with ESMTP id S232572AbiGVJIa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 05:08:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10F6782FBA;
-        Fri, 22 Jul 2022 02:08:25 -0700 (PDT)
+        Fri, 22 Jul 2022 05:08:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3B9383F39;
+        Fri, 22 Jul 2022 02:08:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B1D11B827BC;
-        Fri, 22 Jul 2022 09:08:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20F48C341C6;
-        Fri, 22 Jul 2022 09:08:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A27061EE6;
+        Fri, 22 Jul 2022 09:08:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 097F1C341C6;
+        Fri, 22 Jul 2022 09:08:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658480902;
-        bh=Az7tafjlMAHHUibJrTHvA+4CWrMRaYbgi8eIJ5nAc2E=;
+        s=korg; t=1658480908;
+        bh=QFtu6LEUVhhyyGMdTOWNVD0uhJnGgEZyFjkPl/nR0kk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nfLzmtmV20H0Iv03A27bERnKVY1rNb0l2Lq2MuMgDqmm8V8wQAKdbJL93QbEFt1yy
-         YTi/uD4IZ/gK2PxS1y4+7W+ZSVmyPHwX25JvigOfQnTtuqhXXgTn1m5vCjY67ozsta
-         zLcgezZTXmJtnK89WuOw+GukY1p+s0CoOUw3vOIs=
+        b=ABy398lFlxFLNJRIfZSkoTkTB41iKNW0VXhlQxH/8GZ9hp9DfWXB6EyB9lj+Xz7CV
+         k2ozXBRfo1qC4eYZ8lgdDbGPkMXY9dOd5EyyLC0QYO6/t1ry08Pc0WNz2REAGPcWB4
+         EsxwD2Dyxq11/pYGKAT82EJX+eB9c++R0e1Fx5h8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lai Jiangshan <jiangshan.ljs@antgroup.com>,
-        Borislav Petkov <bp@suse.de>, Juergen Gross <jgross@suse.com>,
+        stable@vger.kernel.org,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Borislav Petkov <bp@suse.de>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.18 03/70] x86/entry: Move PUSH_AND_CLEAR_REGS out of error_entry()
-Date:   Fri, 22 Jul 2022 11:06:58 +0200
-Message-Id: <20220722090650.913242285@linuxfoundation.org>
+Subject: [PATCH 5.18 05/70] x86/entry: Remove skip_r11rcx
+Date:   Fri, 22 Jul 2022 11:07:00 +0200
+Message-Id: <20220722090651.024005915@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220722090650.665513668@linuxfoundation.org>
 References: <20220722090650.665513668@linuxfoundation.org>
@@ -49,78 +50,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-commit ee774dac0da1543376a69fd90840af6aa86879b3 upstream.
+commit 1b331eeea7b8676fc5dbdf80d0a07e41be226177 upstream.
 
-The macro idtentry() (through idtentry_body()) calls error_entry()
-unconditionally even on XENPV. But XENPV needs to only push and clear
-regs.
+Yes, r11 and rcx have been restored previously, but since they're being
+popped anyway (into rsi) might as well pop them into their own regs --
+setting them to the value they already are.
 
-PUSH_AND_CLEAR_REGS in error_entry() makes the stack not return to its
-original place when the function returns, which means it is not possible
-to convert it to a C function.
+Less magical code.
 
-Carve out PUSH_AND_CLEAR_REGS out of error_entry() and into a separate
-function and call it before error_entry() in order to avoid calling
-error_entry() on XENPV.
-
-It will also allow for error_entry() to be converted to C code that can
-use inlined sync_regs() and save a function call.
-
-  [ bp: Massage commit message. ]
-
-Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Juergen Gross <jgross@suse.com>
-Link: https://lore.kernel.org/r/20220503032107.680190-4-jiangshanlai@gmail.com
+Link: https://lore.kernel.org/r/20220506121631.365070674@infradead.org
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/entry/entry_64.S |   15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ arch/x86/entry/calling.h  |   10 +---------
+ arch/x86/entry/entry_64.S |    3 +--
+ 2 files changed, 2 insertions(+), 11 deletions(-)
 
---- a/arch/x86/entry/entry_64.S
-+++ b/arch/x86/entry/entry_64.S
-@@ -318,6 +318,14 @@ SYM_CODE_END(ret_from_fork)
- #endif
+--- a/arch/x86/entry/calling.h
++++ b/arch/x86/entry/calling.h
+@@ -119,27 +119,19 @@ For 32-bit we have the following convent
+ 	CLEAR_REGS
  .endm
  
-+/* Save all registers in pt_regs */
-+SYM_CODE_START_LOCAL(push_and_clear_regs)
-+	UNWIND_HINT_FUNC
-+	PUSH_AND_CLEAR_REGS save_ret=1
-+	ENCODE_FRAME_POINTER 8
-+	RET
-+SYM_CODE_END(push_and_clear_regs)
-+
- /**
-  * idtentry_body - Macro to emit code calling the C function
-  * @cfunc:		C function to be called
-@@ -325,6 +333,9 @@ SYM_CODE_END(ret_from_fork)
-  */
- .macro idtentry_body cfunc has_error_code:req
+-.macro POP_REGS pop_rdi=1 skip_r11rcx=0
++.macro POP_REGS pop_rdi=1
+ 	popq %r15
+ 	popq %r14
+ 	popq %r13
+ 	popq %r12
+ 	popq %rbp
+ 	popq %rbx
+-	.if \skip_r11rcx
+-	popq %rsi
+-	.else
+ 	popq %r11
+-	.endif
+ 	popq %r10
+ 	popq %r9
+ 	popq %r8
+ 	popq %rax
+-	.if \skip_r11rcx
+-	popq %rsi
+-	.else
+ 	popq %rcx
+-	.endif
+ 	popq %rdx
+ 	popq %rsi
+ 	.if \pop_rdi
+--- a/arch/x86/entry/entry_64.S
++++ b/arch/x86/entry/entry_64.S
+@@ -191,8 +191,7 @@ SYM_INNER_LABEL(entry_SYSCALL_64_after_h
+ 	 * perf profiles. Nothing jumps here.
+ 	 */
+ syscall_return_via_sysret:
+-	/* rcx and r11 are already restored (see code above) */
+-	POP_REGS pop_rdi=0 skip_r11rcx=1
++	POP_REGS pop_rdi=0
  
-+	call push_and_clear_regs
-+	UNWIND_HINT_REGS
-+
- 	call	error_entry
- 	movq	%rax, %rsp			/* switch to the task stack if from userspace */
- 	ENCODE_FRAME_POINTER
-@@ -986,13 +997,11 @@ SYM_CODE_START_LOCAL(paranoid_exit)
- SYM_CODE_END(paranoid_exit)
- 
- /*
-- * Save all registers in pt_regs, and switch GS if needed.
-+ * Switch GS and CR3 if needed.
-  */
- SYM_CODE_START_LOCAL(error_entry)
- 	UNWIND_HINT_FUNC
- 	cld
--	PUSH_AND_CLEAR_REGS save_ret=1
--	ENCODE_FRAME_POINTER 8
- 	testb	$3, CS+8(%rsp)
- 	jz	.Lerror_kernelspace
- 
+ 	/*
+ 	 * Now all regs are restored except RSP and RDI.
 
 
