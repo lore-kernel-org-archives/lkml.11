@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95878C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:10:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ADF7C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:10:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234777AbiGVJKq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 05:10:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39738 "EHLO
+        id S235289AbiGVJKu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 05:10:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235252AbiGVJKC (ORCPT
+        with ESMTP id S235106AbiGVJKD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 05:10:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AE2EA6FB0;
-        Fri, 22 Jul 2022 02:09:13 -0700 (PDT)
+        Fri, 22 Jul 2022 05:10:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11AD3A874C;
+        Fri, 22 Jul 2022 02:09:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D4B50B827C8;
-        Fri, 22 Jul 2022 09:09:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2493AC341C6;
-        Fri, 22 Jul 2022 09:09:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1BB7C61F05;
+        Fri, 22 Jul 2022 09:09:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21516C341C6;
+        Fri, 22 Jul 2022 09:09:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658480951;
-        bh=YviMuseI7ZZnS9AUuLIn0isWO6Kg2NnspcB5yQa98XU=;
+        s=korg; t=1658480954;
+        bh=LcmL7A4xGcUiPi7IxZ5DfrFD9qmxQRA2uRcQDnvpRuc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mpBmd5CRF71o2aaVs0gwNPwcXogNS4ygiDk95+rAv0W/bQqoOakU7qsTL49fjr9Bh
-         0rFb+JbfPor0xdZydmGjv+xy1oysSLUlMS8tGO3X7yahvwS4lp0Q1bqPTaws4LOwnn
-         Ka/9Ago4UVwMutlwN2ZymyXYIJ+ZKD/U5rmSFAy8=
+        b=IERFmVvevO8cZbfGBkoywhF/LzHzq5Dm35LZlAQRFeb3cYZh04ZrXYfRXffuDsH+2
+         CrxgbIA8vVEx/FgTorPV/URVHB8rz6goE3liW/9W2pfK1PPRoutKWDvSU1mk2Yz+Vl
+         +bwZgJ50Z3mjhxmLn5iLLySSBw1OXFmDe1cJjzXc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Borislav Petkov <bp@suse.de>,
+        Nick Desaulniers <ndesaulniers@google.com>,
         Josh Poimboeuf <jpoimboe@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.18 27/70] x86/bugs: Keep a per-CPU IA32_SPEC_CTRL value
-Date:   Fri, 22 Jul 2022 11:07:22 +0200
-Message-Id: <20220722090652.240706009@linuxfoundation.org>
+Subject: [PATCH 5.18 10/70] x86/retpoline: Use -mfunction-return
+Date:   Fri, 22 Jul 2022 11:07:05 +0200
+Message-Id: <20220722090651.298962844@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220722090650.665513668@linuxfoundation.org>
 References: <20220722090650.665513668@linuxfoundation.org>
@@ -53,116 +54,75 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peter Zijlstra <peterz@infradead.org>
 
-commit caa0ff24d5d0e02abce5e65c3d2b7f20a6617be5 upstream.
+commit 0b53c374b9eff2255a386f1f1cfb9a928e52a5ae upstream.
 
-Due to TIF_SSBD and TIF_SPEC_IB the actual IA32_SPEC_CTRL value can
-differ from x86_spec_ctrl_base. As such, keep a per-CPU value
-reflecting the current task's MSR content.
+Utilize -mfunction-return=thunk-extern when available to have the
+compiler replace RET instructions with direct JMPs to the symbol
+__x86_return_thunk. This does not affect assembler (.S) sources, only C
+sources.
 
-  [jpoimboe: rename]
+-mfunction-return=thunk-extern has been available since gcc 7.3 and
+clang 15.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
+Tested-by: Nick Desaulniers <ndesaulniers@google.com>
 Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/nospec-branch.h |    1 +
- arch/x86/kernel/cpu/bugs.c           |   28 +++++++++++++++++++++++-----
- arch/x86/kernel/process.c            |    2 +-
- 3 files changed, 25 insertions(+), 6 deletions(-)
+ arch/x86/Makefile                    |    2 ++
+ arch/x86/include/asm/nospec-branch.h |    2 ++
+ arch/x86/lib/retpoline.S             |   13 +++++++++++++
+ 3 files changed, 17 insertions(+)
 
+--- a/arch/x86/Makefile
++++ b/arch/x86/Makefile
+@@ -15,11 +15,13 @@ endif
+ ifdef CONFIG_CC_IS_GCC
+ RETPOLINE_CFLAGS	:= $(call cc-option,-mindirect-branch=thunk-extern -mindirect-branch-register)
+ RETPOLINE_CFLAGS	+= $(call cc-option,-mindirect-branch-cs-prefix)
++RETPOLINE_CFLAGS	+= $(call cc-option,-mfunction-return=thunk-extern)
+ RETPOLINE_VDSO_CFLAGS	:= $(call cc-option,-mindirect-branch=thunk-inline -mindirect-branch-register)
+ endif
+ ifdef CONFIG_CC_IS_CLANG
+ RETPOLINE_CFLAGS	:= -mretpoline-external-thunk
+ RETPOLINE_VDSO_CFLAGS	:= -mretpoline
++RETPOLINE_CFLAGS	+= $(call cc-option,-mfunction-return=thunk-extern)
+ endif
+ export RETPOLINE_CFLAGS
+ export RETPOLINE_VDSO_CFLAGS
 --- a/arch/x86/include/asm/nospec-branch.h
 +++ b/arch/x86/include/asm/nospec-branch.h
-@@ -253,6 +253,7 @@ static inline void indirect_branch_predi
+@@ -123,6 +123,8 @@
+ typedef u8 retpoline_thunk_t[RETPOLINE_THUNK_SIZE];
+ extern retpoline_thunk_t __x86_indirect_thunk_array[];
  
- /* The Intel SPEC CTRL MSR base value cache */
- extern u64 x86_spec_ctrl_base;
-+extern void write_spec_ctrl_current(u64 val);
- 
- /*
-  * With retpoline, we must use IBRS to restrict branch prediction
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -49,12 +49,30 @@ static void __init mmio_select_mitigatio
- static void __init srbds_select_mitigation(void);
- static void __init l1d_flush_select_mitigation(void);
- 
--/* The base value of the SPEC_CTRL MSR that always has to be preserved. */
-+/* The base value of the SPEC_CTRL MSR without task-specific bits set */
- u64 x86_spec_ctrl_base;
- EXPORT_SYMBOL_GPL(x86_spec_ctrl_base);
++extern void __x86_return_thunk(void);
 +
-+/* The current value of the SPEC_CTRL MSR with task-specific bits set */
-+DEFINE_PER_CPU(u64, x86_spec_ctrl_current);
-+EXPORT_SYMBOL_GPL(x86_spec_ctrl_current);
-+
- static DEFINE_MUTEX(spec_ctrl_mutex);
+ #ifdef CONFIG_RETPOLINE
  
- /*
-+ * Keep track of the SPEC_CTRL MSR value for the current task, which may differ
-+ * from x86_spec_ctrl_base due to STIBP/SSB in __speculation_ctrl_update().
-+ */
-+void write_spec_ctrl_current(u64 val)
-+{
-+	if (this_cpu_read(x86_spec_ctrl_current) == val)
-+		return;
-+
-+	this_cpu_write(x86_spec_ctrl_current, val);
-+	wrmsrl(MSR_IA32_SPEC_CTRL, val);
-+}
+ #define GEN(reg) \
+--- a/arch/x86/lib/retpoline.S
++++ b/arch/x86/lib/retpoline.S
+@@ -67,3 +67,16 @@ SYM_CODE_END(__x86_indirect_thunk_array)
+ #define GEN(reg) EXPORT_THUNK(reg)
+ #include <asm/GEN-for-each-reg.h>
+ #undef GEN
 +
 +/*
-  * The vendor and possibly platform specific bits which can be modified in
-  * x86_spec_ctrl_base.
-  */
-@@ -1272,7 +1290,7 @@ static void __init spectre_v2_select_mit
- 	if (spectre_v2_in_eibrs_mode(mode)) {
- 		/* Force it so VMEXIT will restore correctly */
- 		x86_spec_ctrl_base |= SPEC_CTRL_IBRS;
--		wrmsrl(MSR_IA32_SPEC_CTRL, x86_spec_ctrl_base);
-+		write_spec_ctrl_current(x86_spec_ctrl_base);
- 	}
- 
- 	switch (mode) {
-@@ -1327,7 +1345,7 @@ static void __init spectre_v2_select_mit
- 
- static void update_stibp_msr(void * __unused)
- {
--	wrmsrl(MSR_IA32_SPEC_CTRL, x86_spec_ctrl_base);
-+	write_spec_ctrl_current(x86_spec_ctrl_base);
- }
- 
- /* Update x86_spec_ctrl_base in case SMT state changed. */
-@@ -1570,7 +1588,7 @@ static enum ssb_mitigation __init __ssb_
- 			x86_amd_ssb_disable();
- 		} else {
- 			x86_spec_ctrl_base |= SPEC_CTRL_SSBD;
--			wrmsrl(MSR_IA32_SPEC_CTRL, x86_spec_ctrl_base);
-+			write_spec_ctrl_current(x86_spec_ctrl_base);
- 		}
- 	}
- 
-@@ -1821,7 +1839,7 @@ int arch_prctl_spec_ctrl_get(struct task
- void x86_spec_ctrl_setup_ap(void)
- {
- 	if (boot_cpu_has(X86_FEATURE_MSR_SPEC_CTRL))
--		wrmsrl(MSR_IA32_SPEC_CTRL, x86_spec_ctrl_base);
-+		write_spec_ctrl_current(x86_spec_ctrl_base);
- 
- 	if (ssb_mode == SPEC_STORE_BYPASS_DISABLE)
- 		x86_amd_ssb_disable();
---- a/arch/x86/kernel/process.c
-+++ b/arch/x86/kernel/process.c
-@@ -600,7 +600,7 @@ static __always_inline void __speculatio
- 	}
- 
- 	if (updmsr)
--		wrmsrl(MSR_IA32_SPEC_CTRL, msr);
-+		write_spec_ctrl_current(msr);
- }
- 
- static unsigned long speculation_ctrl_update_tif(struct task_struct *tsk)
++ * This function name is magical and is used by -mfunction-return=thunk-extern
++ * for the compiler to generate JMPs to it.
++ */
++SYM_CODE_START(__x86_return_thunk)
++	UNWIND_HINT_EMPTY
++	ANNOTATE_NOENDBR
++	ret
++	int3
++SYM_CODE_END(__x86_return_thunk)
++
++__EXPORT_THUNK(__x86_return_thunk)
 
 
