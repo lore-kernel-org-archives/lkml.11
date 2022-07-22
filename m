@@ -2,160 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBB5FC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 17:31:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E73B4C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 17:32:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231895AbiGVRa7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 13:30:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52202 "EHLO
+        id S234974AbiGVRcB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 13:32:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230443AbiGVRa5 (ORCPT
+        with ESMTP id S229667AbiGVRb7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 13:30:57 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86DDB3ED4F
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 10:30:55 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id z22so8721119lfu.7
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 10:30:55 -0700 (PDT)
+        Fri, 22 Jul 2022 13:31:59 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADC5687F58;
+        Fri, 22 Jul 2022 10:31:58 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id n10-20020a17090a670a00b001f22ebae50aso4783016pjj.3;
+        Fri, 22 Jul 2022 10:31:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=t7veweybfk179UKb3IrKCj03NDdZ/nZzV2xlu4JwTvY=;
-        b=fTr3nDukdMHnjKx6uluoCUVKArChghwSQVlLC95LtJoIOzZUBplkH96Ev/HvC9u4vT
-         PtjX7MKC0woAjFWYCXfayxLdNaZXxahDfey8ymfG1o09wTowceMfOqCj8wwzXPtN3RWK
-         nUnd66s8ZSNw06b8nruU+EcB1cSbWOnlsUh/twQm4sosNyKAxMDTf0RuVL6algAqMhw5
-         RU15IYmlaere/r/cmEtq80mxEQhy8jazZ3D/d5w7kdEX9TmKGLZ0dZIcG7pQNmbxKASa
-         okmJJCdtREThG3Y82TFJCOxfPHY9hdUwrVco2SPfx+7yIWQgXcaoNYP4VdGksLLXSB8Z
-         AZLw==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ThQlVicPs1rWFVsyGw86UI+Xw2uWwAxd1Fpjx4xaCns=;
+        b=UEsBag87mGWy5BVFAdUXkdk1qCdUs2lOxfmigRvBLhdNgdqYBneUn0atXOS+eQR4IM
+         6sHV41s76ygcnA0g4U0PIhhTQSp/icVkckXBJOtOKU/KBb8UYmIZ6kgXiiBTh9ASEuQE
+         FRnxfAxWVvVk/3dARMgqQYPFzAduNrwCT67rR4WAok6Ld2NqmRtzKx62vuf7VMtDU1xU
+         BKjflmwuAZLUav13K7J/sgHTXP4Pyan/eLgIR8/JeCTouevC77O//rOVekJrjWcgZt12
+         nWWte9PC3FoPJCgsJ7qoIU6cKZU6BU7BZZGsNnlUbLj96QB6rwu9iovQvp65x2ESCE2o
+         Xmaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=t7veweybfk179UKb3IrKCj03NDdZ/nZzV2xlu4JwTvY=;
-        b=3CDR6iztwNdBc35JDtNiYn9njh3nh/ruc54vm+p138JfuO1ppCdC+10oxA1/VFe495
-         OeXhc/eMt24H4NdXFpUqYNzhyreQ9exHPghg25aXY0KXnGXSc9PJhzjTvcD4AqacdkNj
-         5n0/ydnoXZQiq1SRsllEQFaJOIvSNcdd+xrITsOXM5AR0a2Y1NssiRHgCyCL4BYW30kI
-         LrIygXJmE8tinijMyJ6BcHLKFkmwiDgv1WAOWwVG+drOnSF88uldA6VHwQCNItJmNsr3
-         +D6xcIwzdIjqGyy52WrvSLtiZ0XgRenQLM0xtLsA+h5v5rmRKskl5p5vjpOp/6x3IbqE
-         3WVQ==
-X-Gm-Message-State: AJIora+mkwSVapfc6l26sPaQB/h+0EQ6RdFSuU94ixvBBk+RyW2gCv+K
-        aHzhh5p+B2WPL2pePPjwjaLVfA==
-X-Google-Smtp-Source: AGRyM1siPOzdeE10dzF1RJ3lwq97+AZtUXchbYEQBCidalf1ASbVKSR6WXG1WpaNUU5I14Nq/ewfag==
-X-Received: by 2002:a05:6512:3d19:b0:48a:7d10:b972 with SMTP id d25-20020a0565123d1900b0048a7d10b972mr290173lfv.615.1658511053797;
-        Fri, 22 Jul 2022 10:30:53 -0700 (PDT)
-Received: from [192.168.10.173] (93.81-167-86.customer.lyse.net. [81.167.86.93])
-        by smtp.gmail.com with ESMTPSA id o18-20020ac24c52000000b0047f933622c8sm1162386lfk.163.2022.07.22.10.30.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 Jul 2022 10:30:53 -0700 (PDT)
-Message-ID: <96552a95-8939-3ac2-c9b3-14dabaf53923@linaro.org>
-Date:   Fri, 22 Jul 2022 19:30:51 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 10/10] arm64: dts: qcom: sdm845: add LLCC BWMON
-Content-Language: en-US
-To:     Steev Klimaszewski <steev@kali.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Georgi Djakov <djakov@kernel.org>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ThQlVicPs1rWFVsyGw86UI+Xw2uWwAxd1Fpjx4xaCns=;
+        b=LP0ag3SxVcb8GV+eNq2CjGEAEnbJ7aVjfwJYFKTEMzQ393wgo+iNLRReLOtcKvg6gP
+         4Fah2oFFdAkAliIPIsjM4gpwlJsehv9A9IR/1+JzAHtJewOYby5eo5QpECthTXAtAQVK
+         H2pqqEWra53L02zyUC44U+RwHTaxIlE2zp9iEkVkWmHee3EeCyQfzzVIrJZp87Pulhtc
+         XZ/vKV1vwoNw+q43tFRZLjtrUka2DLaCr3inK8I0qLFS9dEyg7Im20u2a08Q/vNrRnTT
+         EhDXNNhncBRrhaJ8BzxtUpFiXbbvHJguephVp6ukh33atOsAW9pa1okp1MBZvjwiVviN
+         RyRg==
+X-Gm-Message-State: AJIora+Uhf28RWO+VmgFkj4D1Is/hNckJub9hOQnY6kn16RtpIH4qmvA
+        TGpnX7pNCDAACSjCWyFHjVc=
+X-Google-Smtp-Source: AGRyM1vKQxvXfAZ5zbgWjOJAsSYiM30LcNcKWPMY9QnHFGqydzpTE5Lb5lNKPDScqfQFMMIF3bwNvg==
+X-Received: by 2002:a17:90b:188a:b0:1f2:3570:5f9f with SMTP id mn10-20020a17090b188a00b001f235705f9fmr720721pjb.75.1658511118005;
+        Fri, 22 Jul 2022 10:31:58 -0700 (PDT)
+Received: from 9a2d8922b8f1 ([115.98.179.206])
+        by smtp.gmail.com with ESMTPSA id x21-20020aa79ad5000000b00528a097aeffsm4174567pfp.118.2022.07.22.10.31.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Jul 2022 10:31:57 -0700 (PDT)
+Date:   Fri, 22 Jul 2022 23:01:52 +0530
+From:   Kuldeep Singh <singh.kuldeep87k@gmail.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Vinod Koul <vkoul@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, dmaengine@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Gross <agross@kernel.org>, devicetree@vger.kernel.org,
         Rob Herring <robh+dt@kernel.org>,
-        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Rajendra Nayak <quic_rjendra@quicinc.com>
-References: <20220720192807.130098-1-krzysztof.kozlowski@linaro.org>
- <20220720192807.130098-11-krzysztof.kozlowski@linaro.org>
- <25673493-4171-62b0-f696-1316d115f388@kali.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <25673493-4171-62b0-f696-1316d115f388@kali.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: Re: [PATCH v3 6/6] dt-bindings: dma: Convert Qualcomm BAM DMA
+ binding to json format
+Message-ID: <20220722173152.GA54768@9a2d8922b8f1>
+References: <20220417210436.6203-1-singh.kuldeep87k@gmail.com>
+ <20220417210436.6203-7-singh.kuldeep87k@gmail.com>
+ <20220721195215.GA1817266-robh@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220721195215.GA1817266-robh@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22/07/2022 03:22, Steev Klimaszewski wrote:
-> Hi Krzysztof,
-> 
-> On 7/20/22 2:28 PM, Krzysztof Kozlowski wrote:
->> The SDM845 comes with few instances of Bandwidth Monitor.  The already
->> supported one monitors traffic between CPU and Last Level Cache
->> Controller (LLCC) and in downstream sources is called BWMON v4 (or v4 of
->> register layout).
->>
->> SDM845 also has also BWMON instance measuring traffic between LLCC and
->> memory with different register layout: called v5.
->>
->> Cc: Rajendra Nayak <quic_rjendra@quicinc.com>
->> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->> ---
->>   arch/arm64/boot/dts/qcom/sdm845.dtsi | 37 ++++++++++++++++++++++++++++
->>   1 file changed, 37 insertions(+)
->>
->> diff --git a/arch/arm64/boot/dts/qcom/sdm845.dtsi b/arch/arm64/boot/dts/qcom/sdm845.dtsi
->> index fe14f7e7523b..4aab464e2bd6 100644
->> --- a/arch/arm64/boot/dts/qcom/sdm845.dtsi
->> +++ b/arch/arm64/boot/dts/qcom/sdm845.dtsi
->> @@ -2053,6 +2053,43 @@ llcc: system-cache-controller@1100000 {
->>   			interrupts = <GIC_SPI 582 IRQ_TYPE_LEVEL_HIGH>;
->>   		};
->>   
->> +		pmu@114a000 {
->> +			compatible = "qcom,sdm845-llcc-bwmon";
->> +			reg = <0 0x0114a000 0 0x1000>;
->> +			interrupts = <GIC_SPI 580 IRQ_TYPE_LEVEL_HIGH>;
->> +			interconnects = <&mem_noc MASTER_LLCC 3 &mem_noc SLAVE_EBI1 3>;
->> +
->> +			operating-points-v2 = <&llcc_bwmon_opp_table>;
->> +
->> +			llcc_bwmon_opp_table: opp-table {
->> +				compatible = "operating-points-v2";
->> +
->> +				/*
->> +				 * The interconnect path bandwidth taken from
->> +				 * cpu4_opp_table bandwidth for gladiator_noc-mem_noc
->> +				 * interconnect.  This also matches the
->> +				 * bandwidth table of qcom,llccbw (qcom,bw-tbl,
->> +				 * bus width: 4 bytes) from msm-4.9 downstream
->> +				 * kernel.
->> +				 */
->> +				opp-0 {
->> +					opp-peak-kBps = <800000>;
->> +				};
->> +				opp-1 {
->> +					opp-peak-kBps = <1804000>;
->> +				};
->> +				opp-2 {
->> +					opp-peak-kBps = <3072000>;
->> +				};
->> +				opp-3 {
->> +					opp-peak-kBps = <5412000>;
->> +				};
->> +				opp-4 {
->> +					opp-peak-kBps = <7216000>;
->> +				};
->> +			};
->> +		};
->> +
->>   		pmu@1436400 {
->>   			compatible = "qcom,sdm845-bwmon", "qcom,msm8998-bwmon";
->>   			reg = <0 0x01436400 0 0x600>;
-> 
-> 
-> With this series applied, testing on a Lenovo Yoga C630, which has an 
-> SDM850, I see the following:
-> 
-> [    3.673660] qcom-bwmon 114a000.pmu: can't request region for resource 
-> [mem 0x0114a000-0x0114afff]
-> [    3.673673] qcom-bwmon 114a000.pmu: error -EBUSY: failed to map bwmon 
-> registers
-> [    3.673678] qcom-bwmon: probe of 114a000.pmu failed with error -16
-> 
+> This is the 11th most warned on (168 warnings) for missing a schema, so 
+> I've implemented my only comment and applied. It seems neither this one 
+> or the other attempt at converting are getting respun.
 
-Thanks for the report. What are you running there? `uname -r`? Maybe
-your secure world uses it?
+I didn't respin because Bhupesh mentioned he will send his v5 and then I
+couldn't followup.
 
-Best regards,
-Krzysztof
+I realized I should have anyway respin my patch.
+Thanks for incorporating the changes.
+
+Regards
+Kuldeep
