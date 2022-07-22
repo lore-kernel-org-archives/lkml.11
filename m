@@ -2,95 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7FD8CCA48D
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 16:16:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBAB5C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 16:16:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231166AbiGVQQt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 12:16:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49252 "EHLO
+        id S235553AbiGVQQw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 12:16:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229593AbiGVQQs (ORCPT
+        with ESMTP id S232511AbiGVQQs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 22 Jul 2022 12:16:48 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86B06FD4;
-        Fri, 22 Jul 2022 09:16:46 -0700 (PDT)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 26MGGL52061918;
-        Fri, 22 Jul 2022 11:16:21 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1658506582;
-        bh=08PwfHBp1fRyc02qP294VlTMgUbHFS8jzINDzdDZnxc=;
-        h=Date:From:To:CC:Subject:References:In-Reply-To;
-        b=DyD146mnXS6SnL91b4jDyoEvMxap92DghfdyWRa6UQTDYylbwrmLImf1YJomfvkAn
-         DDWy1vsLJy0v4AlFCzxd8lglpHv9ZQ2Rg/MENCCKDbGnlrPEaKTHBbtp3W5YOlcf3l
-         IzwGK/3a90lphq6ZflVziQzQhEhTgJz1A92HuKLc=
-Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 26MGGL7N018124
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 22 Jul 2022 11:16:21 -0500
-Received: from DLEE100.ent.ti.com (157.170.170.30) by DLEE114.ent.ti.com
- (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 22
- Jul 2022 11:16:21 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE100.ent.ti.com
- (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Fri, 22 Jul 2022 11:16:21 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 26MGGLwu121736;
-        Fri, 22 Jul 2022 11:16:21 -0500
-Date:   Fri, 22 Jul 2022 11:16:21 -0500
-From:   Nishanth Menon <nm@ti.com>
-To:     Rob Herring <robh@kernel.org>
-CC:     Aradhya Bhatia <a-bhatia1@ti.com>,
-        Tomi Valkeinen <tomba@kernel.org>,
-        Jyri Sarha <jyri.sarha@iki.fi>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Darren Etheridge <detheridge@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Rahul T R <r-ravikumar@ti.com>,
-        Krunal Bhargav <k-bhargav@ti.com>,
-        Devarsh Thakkar <devarsht@ti.com>,
-        DRI Development List <dri-devel@lists.freedesktop.org>,
-        Devicetree List <devicetree@vger.kernel.org>,
-        Linux Kernel List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 1/8] dt-bindings: display: ti,am65x-dss: Add port
- properties for DSS
-Message-ID: <20220722161621.p35apy5mstpgqhef@reverence>
-References: <20220719080845.22122-1-a-bhatia1@ti.com>
- <20220719080845.22122-2-a-bhatia1@ti.com>
- <20220720232845.GA4164694-robh@kernel.org>
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88B97140F1;
+        Fri, 22 Jul 2022 09:16:47 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id j22so9416460ejs.2;
+        Fri, 22 Jul 2022 09:16:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=97WFVBFeJ/mP7POIyyy1UP0JWOMgZ/bOiCTe1ETU5XI=;
+        b=DPr5GbzJ9gljq8DfC08aakia49SnfaLxsujJZQI7oAQIHdY1grFo4OcBO4dxciU+Qa
+         Or/8tRV8tnIpJ6L8w0iBpM939aGWIBdUIb2ZNSxQzwAj0uIZ6XE13dGUGQzsNipcg9ms
+         tNsO/k+a8prGjijrm4qyOaNWV7VDKznCJNtZD37vsxaAynSdg9lFsqrMGb91IKAuu6tt
+         THrcBbNLQrN2V6v1jn3kyOpm7/cv7uoR3GgfFs9r9BnqO4bX4WeoF4WjEVmGvH3fW1Is
+         jL+u6LyLUyyWEepxJfwOJF/sXhEbu3kloQstYAVH+wMbj89Qwd4H8WyGvPErw6PHUx0/
+         Lbog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=97WFVBFeJ/mP7POIyyy1UP0JWOMgZ/bOiCTe1ETU5XI=;
+        b=k889UcTzbHcOn3s2Tk+dZ7AMEX08HpvqjQdbFp6PTYSjU+RrELOc1PCyZBM1hCd6Dm
+         s2oisZKynsN8nYNUYka002cZIAf0FD4g1mDpGRECllmmh0NMmd3Sm12jx+PzhPPxQSb2
+         u4Qm4pgMPth7wnHkZ3p8wHqNqTxr8UF9uX62QqD8BjP7C9uL1AxQMLVD+m7yEqZimQW5
+         gSrDKHwTHrO1KkyTb3tNqP/5w2YZINZLzIq9x3g0V1ym2UIKNpzi7VQow1BLNLlk8Oa1
+         KtuZISiFZ0IHHleRYHQppuH2MwbI8gyWMGMPJ+HqVXW+K0ffFow78Xq2X1FofSHHlCuZ
+         D03A==
+X-Gm-Message-State: AJIora+6orXxjz7G992ffRTKj9zy4L9Tzx5QpVKydG2xBMA967RA/X2d
+        rl+51D2u1CrQqYJQkt4Oq25CGPETsJ5wc9LnpOOVjWO7TH4=
+X-Google-Smtp-Source: AGRyM1v1fHCwpN/hlsbBmFOHa0gm/aGOOZHGLRZMX0jdSmOSXL/mCoYZb8NkvX8F2/xv5DnONwmLJbh9lwhOEJ1Cqrg=
+X-Received: by 2002:a17:906:9b86:b0:6fe:d37f:b29d with SMTP id
+ dd6-20020a1709069b8600b006fed37fb29dmr488369ejc.327.1658506605946; Fri, 22
+ Jul 2022 09:16:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220720232845.GA4164694-robh@kernel.org>
-User-Agent: NeoMutt/20171215
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+References: <20220721153625.1282007-3-benjamin.tissoires@redhat.com> <20220722084556.1342406-1-benjamin.tissoires@redhat.com>
+In-Reply-To: <20220722084556.1342406-1-benjamin.tissoires@redhat.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 22 Jul 2022 09:16:34 -0700
+Message-ID: <CAADnVQLypx8Yd7L4GByGNEJaWgg0R6ukNV9hz0ge1+ZdW4mdgQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v8 02/24] bpf/verifier: allow kfunc to read user
+ provided context
+To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 17:28-20220720, Rob Herring wrote:
-> > On the bridge side R0->R2, G0->G1, B0->B2 would be tied to ground.
-> > The bridge sees 24bits of data,  but the lsb's are always zero.
-> 
-> Unless the bridge ignores the LSBs, that's not the right way to do 16 to 
-> 24 bit. The LSBs should be connected to the MSB of the color component 
-> to get full color range.
+On Fri, Jul 22, 2022 at 1:46 AM Benjamin Tissoires
+<benjamin.tissoires@redhat.com> wrote:
+>
+> When a kfunc was trying to access data from context in a syscall eBPF
+> program, the verifier was rejecting the call.
+> This is because the syscall context is not known at compile time, and
+> so we need to check this when actually accessing it.
+>
+> Check for the valid memory access and allow such situation to happen.
+>
+> Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+>
+> ---
+>
+> changes in v8:
+> - fixup comment
+> - return -EACCESS instead of -EINVAL for consistency
+>
+> changes in v7:
+> - renamed access_t into atype
+> - allow zero-byte read
+> - check_mem_access() to the correct offset/size
+>
+> new in v6
+> ---
+>  kernel/bpf/verifier.c | 21 +++++++++++++++++++++
+>  1 file changed, 21 insertions(+)
+>
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index 7c1e056624f9..c807c5d7085a 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -248,6 +248,7 @@ struct bpf_call_arg_meta {
+>         struct bpf_map *map_ptr;
+>         bool raw_mode;
+>         bool pkt_access;
+> +       bool is_kfunc;
+>         u8 release_regno;
+>         int regno;
+>         int access_size;
+> @@ -5170,6 +5171,7 @@ static int check_helper_mem_access(struct bpf_verifier_env *env, int regno,
+>                                    struct bpf_call_arg_meta *meta)
+>  {
+>         struct bpf_reg_state *regs = cur_regs(env), *reg = &regs[regno];
+> +       enum bpf_prog_type prog_type = resolve_prog_type(env->prog);
+>         u32 *max_access;
+>
+>         switch (base_type(reg->type)) {
+> @@ -5223,6 +5225,24 @@ static int check_helper_mem_access(struct bpf_verifier_env *env, int regno,
+>                                 env,
+>                                 regno, reg->off, access_size,
+>                                 zero_size_allowed, ACCESS_HELPER, meta);
+> +       case PTR_TO_CTX:
+> +               /* in case of a kfunc called in a program of type SYSCALL, the context is
+> +                * user supplied, so not computed statically.
+> +                * Dynamically check it now
+> +                */
+> +               if (prog_type == BPF_PROG_TYPE_SYSCALL && meta && meta->is_kfunc) {
 
-I unfortunately cannot point specifics without violating NDAs, so
-will just give a broad perspective.
+prog_type check looks a bit odd here.
+Can we generalize with
+if (!env->ops->convert_ctx_access
 
-Correct, this is not ideal, but in certain scenarios with limited
-pins (due to iovoltage groups), we are indeed starting to see this
-kind of usage model starting to pop up. Tradeoff is in a limit on
-image quality, but that tends to be acceptable in certain lower cost
-solutions.
+In other words any program type that doesn't have ctx rewrites can
+use helpers to access ctx fields ?
 
--- 
-Regards,
-Nishanth Menon
-Key (0xDDB5849D1736249D) / Fingerprint: F8A2 8693 54EB 8232 17A3  1A34 DDB5 849D 1736 249D
+Also why kfunc only?
+It looks safe to allow normal helpers as well.
