@@ -2,215 +2,240 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B4BDC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 04:06:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D74E7CCA47F
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 04:06:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232881AbiGVEGV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 00:06:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39970 "EHLO
+        id S233866AbiGVEGh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 00:06:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229783AbiGVEGS (ORCPT
+        with ESMTP id S233663AbiGVEGa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 00:06:18 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A94F7114
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 21:06:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658462776; x=1689998776;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=zE6KJgZUX+0VMPVrPnAX03mn0xq0LtMVZQJay9I+iZQ=;
-  b=O1K6d6uwRwot1w6jAUQGIfKVfR0xARB2gB2M4UAkNs4qOoLbmKGduSby
-   yphVThzBOMy+j0ijTyZHQXbwY5EY0pm5vlahRF0ak6tNbTXtKXpYOEwAc
-   QbX4fyWWxiquxnHcBRfI3WjnjFs/dFwTjdV8a8K1r8qocOLnBCsd06sNm
-   UGODUk6lyT+pfpaa2X4rucZmpOlco0uoL9sAji1CqK9+Z2NkHWZT5wtBX
-   qzdVPJUNhnY0Wn4XsypC/UzsqKv4us77da83aDlJTBEf0pQvuptvBOf61
-   Ds8z1L7gXeWGPO+E9fuCp99p+GFxUZjcTkkHOSatjHyzIrVmwoWOTFBVt
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10415"; a="287236938"
-X-IronPort-AV: E=Sophos;i="5.93,184,1654585200"; 
-   d="scan'208";a="287236938"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 21:06:16 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,184,1654585200"; 
-   d="scan'208";a="701527383"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by fmsmga002.fm.intel.com with ESMTP; 21 Jul 2022 21:06:14 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oEjvZ-0000wU-2B;
-        Fri, 22 Jul 2022 04:06:13 +0000
-Date:   Fri, 22 Jul 2022 12:05:25 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Thomas Zimmermann <tzimmermann@suse.de>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Javier Martinez Canillas <javierm@redhat.com>
-Subject: [kraxel:drm-misc-next 5/11] drivers/video/fbdev/hyperv_fb.c:1080:26:
- warning: expression which evaluates to zero treated as a null pointer
- constant of type 'const char *'
-Message-ID: <202207221220.l3OexDU3-lkp@intel.com>
+        Fri, 22 Jul 2022 00:06:30 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2097.outbound.protection.outlook.com [40.107.220.97])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3761D89A68;
+        Thu, 21 Jul 2022 21:06:29 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cf9t2ELfDgLK4kPJbtynYOjsoKOt9+YV/R8QXg6WT/dUM02Q/TxcHRzUrB0vX0H078pJP0Ft4lDaQ5xgFVkN6R/xE7zdxOMhvA2MWzOchORxq2PTzuhCAqABK30Ro3ToAmsKLdZXa/gJ2gc2VtG/PitsBAoQVntZ9c/nF6sOjHI1nTQWxLmCz/9N6Sgb/IOjO9YexVeGK4YeYVv6T6zKjESMrpCCKqI5Wa7I7ZCuurAro9LFLFkRRLjdH7UBC8jHNBcJC1QvfX8zPekgme7uu8CcmCC4i6kgrbu4sGWeMxrk6CWGwECTRSjoWmwKWLRVvaDPG8BFlyo7u/7tYUUZ/Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=PAchGmMFX/04T3UU1T0/gNCIsHcZw3dbC8/DL+At50U=;
+ b=XOdx1sXPC0Orei/tIHVMH9yaHKpkcr9SHuv6lC2I/WMXt2NgwNmuI1b1B2/palqU2E5eFKYM7AiQldq0/aPhwvB0DJ8JVG5+CwA0ne8s6aTUCYUEULAs1s6C2q1jisO1oNMZD+IWKFTUcvWJkjupWLkoTxNyF8hE2ceg4te1CMwu6P9wHsdbLj2v4ZatBQApJoa8o8d5LOqk0YBY0uvtHOtbsYdtLlmVkjdohV3bWtZRpKHQThoQVn2S2MY7vTmaBSEpZY/BNZZp2HGLn4mRcIL3V58haaLzUyZdPvuWl/oKetJVBkJbroeamI4kI6tB+/ry++yrweL3UGVgfjtL5A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=in-advantage.com; dmarc=pass action=none
+ header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PAchGmMFX/04T3UU1T0/gNCIsHcZw3dbC8/DL+At50U=;
+ b=LsyHSQPUaw/kIXkjPBsmYbJItFUJtmFa4ZOLzn10w73Z+VO+Z2+I2XeSiVlk3oHTyunaOyBEd2P9FTb2Vyv/Uqwp8VTE4OPLGUJk8vK20fkD22VdMxR2H3xEycr1b/RooEqMDTivnWI8IfrBGxa5Nwv+QNhBpIgzrP2vsf7bS/k=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=in-advantage.com;
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37) by MN2PR10MB3919.namprd10.prod.outlook.com
+ (2603:10b6:208:1be::10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.20; Fri, 22 Jul
+ 2022 04:06:27 +0000
+Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::7451:2903:45de:3912]) by MWHPR1001MB2351.namprd10.prod.outlook.com
+ ([fe80::7451:2903:45de:3912%7]) with mapi id 15.20.5438.023; Fri, 22 Jul 2022
+ 04:06:27 +0000
+From:   Colin Foster <colin.foster@in-advantage.com>
+To:     linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Cc:     Terry Bowman <terry.bowman@amd.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Wolfram Sang <wsa@kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        UNGLinuxDriver@microchip.com,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>, katie.morris@in-advantage.com
+Subject: [PATCH v14 mfd 1/9] mfd: ocelot: add helper to get regmap from a resource
+Date:   Thu, 21 Jul 2022 21:06:01 -0700
+Message-Id: <20220722040609.91703-2-colin.foster@in-advantage.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220722040609.91703-1-colin.foster@in-advantage.com>
+References: <20220722040609.91703-1-colin.foster@in-advantage.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MW4PR03CA0044.namprd03.prod.outlook.com
+ (2603:10b6:303:8e::19) To MWHPR1001MB2351.namprd10.prod.outlook.com
+ (2603:10b6:301:35::37)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ad0ad3a1-d9fd-4afc-e634-08da6b978bc6
+X-MS-TrafficTypeDiagnostic: MN2PR10MB3919:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: QlFVrgh4YyKTScuubrFoMllhDBmxaz+R1BENR/tJ1WVk8pHD8a75gYIiMZ6HLR0wTfZIe37/2U/o8MKNh74nGOo9EC58ymGGiwSzYF/giCmBVYpIa4NA2vhS6BemYXvs6DrRwc76rZLkmNG9vKy7+cbuoMe/nJh/vMqFpBl/1G39Wh3PEsa16SvAu/hnROE1g6R0nFGFB9ghddPn+bfY2LNBuQ60N1qVgVi3dMpt8wDjBoZCJ0rAzFfv4a4z8EwXn9v4zpghMWj89uXuZ5lHRK5yfOell0E/g8hEZc0Bv8i0vqf7XBXroPTWOmkQ44Mb2PIZiDP4113NRaqD/v39kpL3ENs56H5n6PDXBRVijIeTE2Qp2XtemzGXmXlD/Q7xFePbFwapJbYXYSqtqYHiVU/RxP0HXXAPu1gFFEIrrrm9TBjxi7nhNaf/XQXeC0Y8WVFXQ8ErHHJvmsTqfhsmC2g32ANRyltLk3C/V62pVbjjlecoU4WtU6pDNDFmJR4FcNKmLLvBxa/YiUTVlf7tCPt2byvkmIyplUjXMmPR9p5EEXA9tNTGNU2s15aiMOApt5g9jA3CdJX41sIT70tmxlGyM8OfAdRuwN+lc4I/6qHFxKZsUI7U+i2h+c5fcdt4bIyACnEO0CLDBeOxeN0YnEctIPKwEo8Zx5uExQJSTvGarRqgH/lPseY8/MNxYjUAW0QdzIZ4dM7+bGwzBj56vf9A+RsESiKefn3cbwKoh1S54n0RfaHn9qd8hIQvcWEdPxbS04sykfQFnw4jpIYE2VRbgUtf8BL99xl6PK53uOkty0dpWNsPOFudJ0kTaPni
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(346002)(376002)(136003)(396003)(39840400004)(36756003)(6506007)(2906002)(44832011)(41300700001)(52116002)(5660300002)(1076003)(66556008)(8676002)(8936002)(4326008)(66476007)(186003)(6486002)(478600001)(6666004)(6512007)(7416002)(83380400001)(26005)(316002)(86362001)(38100700002)(107886003)(2616005)(38350700002)(54906003)(66946007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?r1RGFXmnVXjF4r8rekSI5i/aH3cF3JV+Hi3Is+WQDhZJbQ4HReWk/un+KkqW?=
+ =?us-ascii?Q?dz7emaIb+AD8E2KM8YiKLxm84hJN3aneBej+8HE9icM2F6W645Lq5QspRHC4?=
+ =?us-ascii?Q?tIqoxLHHwN2a32NwkGFmwvU/CYWYkK1oGRo3dBGX46AkNgcgUNG7zBXOwlAh?=
+ =?us-ascii?Q?3Op/eeSf6W0n+0D2KdDTkGX+UxlWYo1cMCP3U2jcpf1R0y1uxX1m9VlpjROG?=
+ =?us-ascii?Q?OiorpYzWhzxIfBMkh2hTzmpcsVkHCto/P6ipba57pfCEEp7qXx4ayuyYeQV8?=
+ =?us-ascii?Q?LGXOY7DX96mFotQ/UJI8J+1xiQfvRJ3dwBCcSXUss+PsH5De88gMDVVMiHsH?=
+ =?us-ascii?Q?DCFLk1p1X+3L7DrfdMNoXZTPkQAEWJpQ95JkX6L7IQL5p4BcZeLV/HATl5p+?=
+ =?us-ascii?Q?vHHzyMIyL/00v/w8MPKsXu2qWd/xou/HAGhzOR6QpMmhDorPPVfONb3NePL6?=
+ =?us-ascii?Q?eG/zrjpKwaEZsHKePP+j2ywt8DZbfCPTZWXUE+Z74lxwrpBcHitrdpY0cCmO?=
+ =?us-ascii?Q?q1bfmmrs606hzX7uhQ24XsTBklie4XUmDYKTeCL3e++BG/TSQhqrl8MfZB1O?=
+ =?us-ascii?Q?1IHFobC7sRZA8aw9XSOgVf30y5W7ZDDzoWNhuMilSab9c09gBdORqM1VgV58?=
+ =?us-ascii?Q?6/5VrL+o+uLPMx/IHjYvWr7QzD9yrCPt77g+J6oj4gqWA8wgIGOMJKHbw9Tx?=
+ =?us-ascii?Q?UMljKqXb8xWTEx9POevl4YY15fbnomHNh1Z6UsKChJs7QmPgLe6abugTFeOu?=
+ =?us-ascii?Q?wTWL1x3W6/Q9RNrcm6IWuTqEKjaC+ZfdCJCYF+3+UnXevjrGcQZ2ezZrg1HW?=
+ =?us-ascii?Q?JaGirXiGIb1ktwNG4EEHCg4MVhF4YiDWKNhlUW0wbQzAQ6nIWEl2i267Yn77?=
+ =?us-ascii?Q?8lRDxo3SXd01HOFbWPj44dxJzxllL8e+opw3Rxj2YcDIIpvX3quC2CU1Ix45?=
+ =?us-ascii?Q?MAZ39cZwNrN+kV7FgXSE66l+309NMMHo7MfbNeh1hRfx9DfmVpqU6+4RvGiV?=
+ =?us-ascii?Q?7fLbfZOqDXVAfDVzjykt6Rw5Lyih7k3CBWMf2gjKfdjjkIkdm+mp0lYSOfwf?=
+ =?us-ascii?Q?4ETjgbOM2fiROXlc5KPiMO0jTIxWNq9LBYvWVdFg0pbw7/aMJ2GHEcR7IoGO?=
+ =?us-ascii?Q?BIZ/isOKoX1brYmcTsrlzek+FnR4lBPtT1Z7M2zm0adQigWH6tzO5LvDwure?=
+ =?us-ascii?Q?INaZCjDuWXYUx8ndzA6EFXnCV4kBka0jtZdEA4VqQJHkv6oqbJH/hJ1oyA5U?=
+ =?us-ascii?Q?ykhiw1GD43MaP5vDeM5ThDYppDwk54ersUD9MARkHbW+kOC6TNtCClgYovcO?=
+ =?us-ascii?Q?QQKWU7nm6L30pOxv3r4xxy18aAZYIarhHhJeEG5+MSMzagscYJvmY0dIgKVI?=
+ =?us-ascii?Q?ZoNCG6iJHUl1uJKwT7F8NB24Ct7fOV411sGGSkoBhAsSfBg7gYBR1eBVgsqI?=
+ =?us-ascii?Q?E4BROrDqrQb8vR62aRRGKHvSQwkWmzN5nYsyrvMiNkEamWrexxjAZh0yvfNi?=
+ =?us-ascii?Q?/MNQAXmWuICPzdggMgZy3yfKyZfDEi1qdrf50m047+olCtx3nHvJxSqR4cVF?=
+ =?us-ascii?Q?ZrDZCFxlgDwYxaiJtT+dfzD3HzJ5t8sWxM7BK2PZtaUzKSqgZEPnAxd+xZwn?=
+ =?us-ascii?Q?vikojdu/677UNr2+2GUfMDs=3D?=
+X-OriginatorOrg: in-advantage.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ad0ad3a1-d9fd-4afc-e634-08da6b978bc6
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jul 2022 04:06:25.7679
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: UymYj496281dIDUKMUCB3vz5pSb6OEDx95jSFKUKy7H9MWI4BQCgxwa5UikfypAXVV3mCrEEAcovQz2eDpBy451u0l9HuwYvCo12AGhhy3Q=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR10MB3919
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kraxel.org/linux drm-misc-next
-head:   15fced5b051e6e22c228a521a5894b12c2ba0892
-commit: 8d69d008f44cb96050c35e64fe940a22dd6b0113 [5/11] fbdev: Convert drivers to aperture helpers
-config: x86_64-randconfig-a003 (https://download.01.org/0day-ci/archive/20220722/202207221220.l3OexDU3-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 72686d68c137551cce816416190a18d45b4d4e2a)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        git remote add kraxel git://git.kraxel.org/linux
-        git fetch --no-tags kraxel drm-misc-next
-        git checkout 8d69d008f44cb96050c35e64fe940a22dd6b0113
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/video/fbdev/
+Several ocelot-related modules are designed for MMIO / regmaps. As such,
+they often use a combination of devm_platform_get_and_ioremap_resource and
+devm_regmap_init_mmio.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Operating in an MFD might be different, in that it could be memory mapped,
+or it could be SPI, I2C... In these cases a fallback to use IORESOURCE_REG
+instead of IORESOURCE_MEM becomes necessary.
 
-All warnings (new ones prefixed by >>):
+When this happens, there's redundant logic that needs to be implemented in
+every driver. In order to avoid this redundancy, utilize a single function
+that, if the MFD scenario is enabled, will perform this fallback logic.
 
->> drivers/video/fbdev/hyperv_fb.c:1080:26: warning: expression which evaluates to zero treated as a null pointer constant of type 'const char *' [-Wnon-literal-null-conversion]
-                                               KBUILD_MODNAME, false);
-                                                               ^~~~~
-   1 warning generated.
+Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
 
+v14
+    * Add header guard
+    * Change regs type from u32* to void*
+    * Add Reviewed-by tag
 
-vim +1080 drivers/video/fbdev/hyperv_fb.c
+---
+ MAINTAINERS                |  5 ++++
+ include/linux/mfd/ocelot.h | 60 ++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 65 insertions(+)
+ create mode 100644 include/linux/mfd/ocelot.h
 
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09   987  
-68a2d20b79b105f drivers/video/hyperv_fb.c       Haiyang Zhang     2013-04-29   988  
-68a2d20b79b105f drivers/video/hyperv_fb.c       Haiyang Zhang     2013-04-29   989  /* Get framebuffer memory from Hyper-V video pci space */
-3546448338e76a5 drivers/video/fbdev/hyperv_fb.c Jake Oshins       2015-08-05   990  static int hvfb_getmem(struct hv_device *hdev, struct fb_info *info)
-68a2d20b79b105f drivers/video/hyperv_fb.c       Haiyang Zhang     2013-04-29   991  {
-9069fd54960304a drivers/video/hyperv_fb.c       Gerd Hoffmann     2014-02-26   992  	struct hvfb_par *par = info->par;
-9069fd54960304a drivers/video/hyperv_fb.c       Gerd Hoffmann     2014-02-26   993  	struct pci_dev *pdev  = NULL;
-68a2d20b79b105f drivers/video/hyperv_fb.c       Haiyang Zhang     2013-04-29   994  	void __iomem *fb_virt;
-9069fd54960304a drivers/video/hyperv_fb.c       Gerd Hoffmann     2014-02-26   995  	int gen2vm = efi_enabled(EFI_BOOT);
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09   996  	phys_addr_t paddr;
-9069fd54960304a drivers/video/hyperv_fb.c       Gerd Hoffmann     2014-02-26   997  	int ret;
-68a2d20b79b105f drivers/video/hyperv_fb.c       Haiyang Zhang     2013-04-29   998  
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09   999  	info->apertures = alloc_apertures(1);
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1000  	if (!info->apertures)
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1001  		return -ENOMEM;
-d21987d709e807b drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-09-18  1002  
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1003  	if (!gen2vm) {
-68a2d20b79b105f drivers/video/hyperv_fb.c       Haiyang Zhang     2013-04-29  1004  		pdev = pci_get_device(PCI_VENDOR_ID_MICROSOFT,
-68a2d20b79b105f drivers/video/hyperv_fb.c       Haiyang Zhang     2013-04-29  1005  			PCI_DEVICE_ID_HYPERV_VIDEO, NULL);
-68a2d20b79b105f drivers/video/hyperv_fb.c       Haiyang Zhang     2013-04-29  1006  		if (!pdev) {
-68a2d20b79b105f drivers/video/hyperv_fb.c       Haiyang Zhang     2013-04-29  1007  			pr_err("Unable to find PCI Hyper-V video\n");
-68a2d20b79b105f drivers/video/hyperv_fb.c       Haiyang Zhang     2013-04-29  1008  			return -ENODEV;
-68a2d20b79b105f drivers/video/hyperv_fb.c       Haiyang Zhang     2013-04-29  1009  		}
-68a2d20b79b105f drivers/video/hyperv_fb.c       Haiyang Zhang     2013-04-29  1010  
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1011  		info->apertures->ranges[0].base = pci_resource_start(pdev, 0);
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1012  		info->apertures->ranges[0].size = pci_resource_len(pdev, 0);
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1013  
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1014  		/*
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1015  		 * For Gen 1 VM, we can directly use the contiguous memory
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1016  		 * from VM. If we succeed, deferred IO happens directly
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1017  		 * on this allocated framebuffer memory, avoiding extra
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1018  		 * memory copy.
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1019  		 */
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1020  		paddr = hvfb_get_phymem(hdev, screen_fb_size);
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1021  		if (paddr != (phys_addr_t) -1) {
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1022  			par->mmio_pp = paddr;
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1023  			par->mmio_vp = par->dio_vp = __va(paddr);
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1024  
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1025  			info->fix.smem_start = paddr;
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1026  			info->fix.smem_len = screen_fb_size;
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1027  			info->screen_base = par->mmio_vp;
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1028  			info->screen_size = screen_fb_size;
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1029  
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1030  			par->need_docopy = false;
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1031  			goto getmem_done;
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1032  		}
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1033  		pr_info("Unable to allocate enough contiguous physical memory on Gen 1 VM. Using MMIO instead.\n");
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1034  	} else {
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1035  		info->apertures->ranges[0].base = screen_info.lfb_base;
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1036  		info->apertures->ranges[0].size = screen_info.lfb_size;
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1037  	}
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1038  
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1039  	/*
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1040  	 * Cannot use the contiguous physical memory.
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1041  	 * Allocate mmio space for framebuffer.
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1042  	 */
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1043  	dio_fb_size =
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1044  		screen_width * screen_height * screen_depth / 8;
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1045  
-c4b4d7047f16a8d drivers/video/fbdev/hyperv_fb.c Saurabh Sengar    2022-04-27  1046  	ret = vmbus_allocate_mmio(&par->mem, hdev, 0, -1,
-3546448338e76a5 drivers/video/fbdev/hyperv_fb.c Jake Oshins       2015-08-05  1047  				  screen_fb_size, 0x100000, true);
-9069fd54960304a drivers/video/hyperv_fb.c       Gerd Hoffmann     2014-02-26  1048  	if (ret != 0) {
-3546448338e76a5 drivers/video/fbdev/hyperv_fb.c Jake Oshins       2015-08-05  1049  		pr_err("Unable to allocate framebuffer memory\n");
-68a2d20b79b105f drivers/video/hyperv_fb.c       Haiyang Zhang     2013-04-29  1050  		goto err1;
-9069fd54960304a drivers/video/hyperv_fb.c       Gerd Hoffmann     2014-02-26  1051  	}
-68a2d20b79b105f drivers/video/hyperv_fb.c       Haiyang Zhang     2013-04-29  1052  
-5f1251a48c17b54 drivers/video/fbdev/hyperv_fb.c Dexuan Cui        2020-11-17  1053  	/*
-5f1251a48c17b54 drivers/video/fbdev/hyperv_fb.c Dexuan Cui        2020-11-17  1054  	 * Map the VRAM cacheable for performance. This is also required for
-5f1251a48c17b54 drivers/video/fbdev/hyperv_fb.c Dexuan Cui        2020-11-17  1055  	 * VM Connect to display properly for ARM64 Linux VM, as the host also
-5f1251a48c17b54 drivers/video/fbdev/hyperv_fb.c Dexuan Cui        2020-11-17  1056  	 * maps the VRAM cacheable.
-5f1251a48c17b54 drivers/video/fbdev/hyperv_fb.c Dexuan Cui        2020-11-17  1057  	 */
-5f1251a48c17b54 drivers/video/fbdev/hyperv_fb.c Dexuan Cui        2020-11-17  1058  	fb_virt = ioremap_cache(par->mem->start, screen_fb_size);
-68a2d20b79b105f drivers/video/hyperv_fb.c       Haiyang Zhang     2013-04-29  1059  	if (!fb_virt)
-68a2d20b79b105f drivers/video/hyperv_fb.c       Haiyang Zhang     2013-04-29  1060  		goto err2;
-68a2d20b79b105f drivers/video/hyperv_fb.c       Haiyang Zhang     2013-04-29  1061  
-d21987d709e807b drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-09-18  1062  	/* Allocate memory for deferred IO */
-d21987d709e807b drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-09-18  1063  	par->dio_vp = vzalloc(round_up(dio_fb_size, PAGE_SIZE));
-d21987d709e807b drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-09-18  1064  	if (par->dio_vp == NULL)
-d21987d709e807b drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-09-18  1065  		goto err3;
-d21987d709e807b drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-09-18  1066  
-d21987d709e807b drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-09-18  1067  	/* Physical address of FB device */
-d21987d709e807b drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-09-18  1068  	par->mmio_pp = par->mem->start;
-d21987d709e807b drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-09-18  1069  	/* Virtual address of FB device */
-d21987d709e807b drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-09-18  1070  	par->mmio_vp = (unsigned char *) fb_virt;
-d21987d709e807b drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-09-18  1071  
-3546448338e76a5 drivers/video/fbdev/hyperv_fb.c Jake Oshins       2015-08-05  1072  	info->fix.smem_start = par->mem->start;
-d21987d709e807b drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-09-18  1073  	info->fix.smem_len = dio_fb_size;
-d21987d709e807b drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-09-18  1074  	info->screen_base = par->dio_vp;
-d21987d709e807b drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-09-18  1075  	info->screen_size = dio_fb_size;
-68a2d20b79b105f drivers/video/hyperv_fb.c       Haiyang Zhang     2013-04-29  1076  
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09  1077  getmem_done:
-8d69d008f44cb96 drivers/video/fbdev/hyperv_fb.c Thomas Zimmermann 2022-07-18  1078  	aperture_remove_conflicting_devices(info->apertures->ranges[0].base,
-8d69d008f44cb96 drivers/video/fbdev/hyperv_fb.c Thomas Zimmermann 2022-07-18  1079  					    info->apertures->ranges[0].size,
-3a6fb6c4255c389 drivers/video/fbdev/hyperv_fb.c Wei Hu            2019-12-09 @1080  					    KBUILD_MODNAME, false);
-3cb73bc3fa2a3cb drivers/video/fbdev/hyperv_fb.c Kairui Song       2020-10-14  1081  
-3cb73bc3fa2a3cb drivers/video/fbdev/hyperv_fb.c Kairui Song       2020-10-14  1082  	if (gen2vm) {
-3cb73bc3fa2a3cb drivers/video/fbdev/hyperv_fb.c Kairui Song       2020-10-14  1083  		/* framebuffer is reallocated, clear screen_info to avoid misuse from kexec */
-3cb73bc3fa2a3cb drivers/video/fbdev/hyperv_fb.c Kairui Song       2020-10-14  1084  		screen_info.lfb_size = 0;
-3cb73bc3fa2a3cb drivers/video/fbdev/hyperv_fb.c Kairui Song       2020-10-14  1085  		screen_info.lfb_base = 0;
-3cb73bc3fa2a3cb drivers/video/fbdev/hyperv_fb.c Kairui Song       2020-10-14  1086  		screen_info.orig_video_isVGA = 0;
-3cb73bc3fa2a3cb drivers/video/fbdev/hyperv_fb.c Kairui Song       2020-10-14  1087  	} else {
-68a2d20b79b105f drivers/video/hyperv_fb.c       Haiyang Zhang     2013-04-29  1088  		pci_dev_put(pdev);
-3cb73bc3fa2a3cb drivers/video/fbdev/hyperv_fb.c Kairui Song       2020-10-14  1089  	}
-9069fd54960304a drivers/video/hyperv_fb.c       Gerd Hoffmann     2014-02-26  1090  
-68a2d20b79b105f drivers/video/hyperv_fb.c       Haiyang Zhang     2013-04-29  1091  	return 0;
-68a2d20b79b105f drivers/video/hyperv_fb.c       Haiyang Zhang     2013-04-29  1092  
-68a2d20b79b105f drivers/video/hyperv_fb.c       Haiyang Zhang     2013-04-29  1093  err3:
-68a2d20b79b105f drivers/video/hyperv_fb.c       Haiyang Zhang     2013-04-29  1094  	iounmap(fb_virt);
-68a2d20b79b105f drivers/video/hyperv_fb.c       Haiyang Zhang     2013-04-29  1095  err2:
-696ca5e82c057a2 drivers/video/fbdev/hyperv_fb.c Jake Oshins       2016-04-05  1096  	vmbus_free_mmio(par->mem->start, screen_fb_size);
-3546448338e76a5 drivers/video/fbdev/hyperv_fb.c Jake Oshins       2015-08-05  1097  	par->mem = NULL;
-68a2d20b79b105f drivers/video/hyperv_fb.c       Haiyang Zhang     2013-04-29  1098  err1:
-9069fd54960304a drivers/video/hyperv_fb.c       Gerd Hoffmann     2014-02-26  1099  	if (!gen2vm)
-68a2d20b79b105f drivers/video/hyperv_fb.c       Haiyang Zhang     2013-04-29  1100  		pci_dev_put(pdev);
-9069fd54960304a drivers/video/hyperv_fb.c       Gerd Hoffmann     2014-02-26  1101  
-68a2d20b79b105f drivers/video/hyperv_fb.c       Haiyang Zhang     2013-04-29  1102  	return -ENOMEM;
-68a2d20b79b105f drivers/video/hyperv_fb.c       Haiyang Zhang     2013-04-29  1103  }
-68a2d20b79b105f drivers/video/hyperv_fb.c       Haiyang Zhang     2013-04-29  1104  
-
-:::::: The code at line 1080 was first introduced by commit
-:::::: 3a6fb6c4255c3893ab61e2bd4e9ae01ca6bbcd94 video: hyperv: hyperv_fb: Use physical memory for fb on HyperV Gen 1 VMs.
-
-:::::: TO: Wei Hu <weh@microsoft.com>
-:::::: CC: Sasha Levin <sashal@kernel.org>
-
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 28108e4fdb8f..f781caceeb38 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -14467,6 +14467,11 @@ F:	net/dsa/tag_ocelot.c
+ F:	net/dsa/tag_ocelot_8021q.c
+ F:	tools/testing/selftests/drivers/net/ocelot/*
+ 
++OCELOT EXTERNAL SWITCH CONTROL
++M:	Colin Foster <colin.foster@in-advantage.com>
++S:	Supported
++F:	include/linux/mfd/ocelot.h
++
+ OCXL (Open Coherent Accelerator Processor Interface OpenCAPI) DRIVER
+ M:	Frederic Barrat <fbarrat@linux.ibm.com>
+ M:	Andrew Donnellan <ajd@linux.ibm.com>
+diff --git a/include/linux/mfd/ocelot.h b/include/linux/mfd/ocelot.h
+new file mode 100644
+index 000000000000..7abca80ba7dc
+--- /dev/null
++++ b/include/linux/mfd/ocelot.h
+@@ -0,0 +1,60 @@
++/* SPDX-License-Identifier: GPL-2.0 OR MIT */
++/* Copyright 2022 Innovative Advantage Inc. */
++
++#ifndef _LINUX_MFD_OCELOT_H
++#define _LINUX_MFD_OCELOT_H
++
++#include <linux/err.h>
++#include <linux/platform_device.h>
++#include <linux/regmap.h>
++#include <linux/types.h>
++
++struct resource;
++
++static inline struct regmap *
++ocelot_regmap_from_resource_optional(struct platform_device *pdev,
++				     unsigned int index,
++				     const struct regmap_config *config)
++{
++	struct device *dev = &pdev->dev;
++	struct resource *res;
++	void __iomem *regs;
++
++	/*
++	 * Don't use get_and_ioremap_resource here, since that will invoke
++	 * prints of "invalid resource" which simply add confusion
++	 */
++	res = platform_get_resource(pdev, IORESOURCE_MEM, index);
++	if (res) {
++		regs = devm_ioremap_resource(dev, res);
++		if (IS_ERR(regs))
++			return ERR_CAST(regs);
++		return devm_regmap_init_mmio(dev, regs, config);
++	}
++
++	/*
++	 * Fall back to using REG and getting the resource from the parent
++	 * device, which is possible in an MFD configuration
++	 */
++	if (dev->parent) {
++		res = platform_get_resource(pdev, IORESOURCE_REG, index);
++		if (!res)
++			return NULL;
++
++		return dev_get_regmap(dev->parent, res->name);
++	}
++
++	return NULL;
++}
++
++static inline struct regmap *
++ocelot_regmap_from_resource(struct platform_device *pdev, unsigned int index,
++			    const struct regmap_config *config)
++{
++	struct regmap *map;
++
++	map = ocelot_regmap_from_resource_optional(pdev, index, config);
++	return map ?: ERR_PTR(-ENOENT);
++}
++
++#endif
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.25.1
+
