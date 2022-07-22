@@ -2,112 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC9EDC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 13:03:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E48DC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 13:04:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235116AbiGVNDf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 09:03:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48858 "EHLO
+        id S235216AbiGVNEE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 09:04:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234982AbiGVNDe (ORCPT
+        with ESMTP id S234435AbiGVNEB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 09:03:34 -0400
-X-Greylist: delayed 515 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 22 Jul 2022 06:03:31 PDT
-Received: from redcrew.org (redcrew.org [37.157.195.192])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29EBBAF949
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 06:03:31 -0700 (PDT)
-Received: from server.danny.cz (85-71-161-19.rce.o2.cz [85.71.161.19])
-        by redcrew.org (Postfix) with ESMTP id 5175AA0C;
-        Fri, 22 Jul 2022 14:54:54 +0200 (CEST)
-Received: from talos.danny.cz (unknown [IPv6:2001:470:5c11:160:47df:83f6:718e:218])
-        by server.danny.cz (Postfix) with SMTP id 1E81B11AA6B;
-        Fri, 22 Jul 2022 14:54:54 +0200 (CEST)
-Date:   Fri, 22 Jul 2022 14:54:53 +0200
-From:   Dan =?UTF-8?B?SG9yw6Fr?= <dan@danny.cz>
-To:     Michael Ellerman <michael@ellerman.id.au>
-Cc:     amd-gfx@lists.freedesktop.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        linux-kernel@vger.kernel.org, Alex Deucher <alexdeucher@gmail.com>,
-        <linuxppc-dev@lists.ozlabs.org>
-Subject: Re: [PATCH] amdgpu: re-enable DCN for ppc64le
-Message-Id: <20220722145453.eb37bd3a99c4b738ed2e26b9@danny.cz>
-In-Reply-To: <87o7xhcoqh.fsf@mpe.ellerman.id.au>
-References: <20220722082122.571974-1-dan@danny.cz>
-        <87o7xhcoqh.fsf@mpe.ellerman.id.au>
-X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; powerpc64le-redhat-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+        Fri, 22 Jul 2022 09:04:01 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01162AF949;
+        Fri, 22 Jul 2022 06:04:01 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id a23so5143311lfm.10;
+        Fri, 22 Jul 2022 06:04:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gtx1POFQfGcm6rMrqG9zNaho/uQFWTyjs4Tf3lJFOcg=;
+        b=fJ4TxTo8srrpzKU87PviIHDVWYPWfk5KEqerQY7surMDSJcklaqAfJU/cYN4vA/QVo
+         6pfF1uFiHXk7SdsVl0D+pKyH8KDXPqzZ39G05Nb2uoCiMVNDw/Pk5hmD0nG5ILpwb4Lb
+         /m9JwBh5X+rEXlzmKnc3AJa15q3DHY2CgaI+ALCAA9SsJvY/Wdsq45eMsSjOQBMNDZnA
+         wPRaaDHJJVLFSvfkNLTgELT2n4uHVPFIAs9Az+RdyVkh2vSb8eQ4TP/LoVkdvXOkX9yP
+         Lt1BS+8l2rz4k+nqU1hX9gjVrSPIwHUS3IuoFH88mad3eiMaRSal4306btU9C19AD6PW
+         Kw6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gtx1POFQfGcm6rMrqG9zNaho/uQFWTyjs4Tf3lJFOcg=;
+        b=HCZCs98YFIZjJXno1kXk7QU2xE+1IgBnjPZp8Zd3KZKFgfhoaSQ/u7IY3CiViMnYJp
+         w8tmaWmkYLIeWUgsWaSr6LwwwMnOnyw7AEmpimrxBJXICp5CaOFd/nnQK36oxIDatjc+
+         QyHKh4vshpKs4A8UaIUtiMkbYEjgICmF3WATnK8iKaD6/Xa1hV/TFl1HAjDTyEFhSxUS
+         3HVATIJZOHoU+8cfGt3UVr4ad9QC5B7xSv90u7gr9Evx13+RYylVDctzIQdoXmeRQy2z
+         niCMpzdArczsUMgS9jSrLAMkMzcGWsKj+6/q9Jmg5q16yj4tQGqB9vVa8i0tADjilKi9
+         ubkQ==
+X-Gm-Message-State: AJIora+hSjt1+HGgzQO7w6+2GG3pE5oAafuhyGw3ASDILmGXMZuCIjAd
+        ZeRdYs+CEG9H7Ok0jhZtzfo=
+X-Google-Smtp-Source: AGRyM1sESBw/ngj8wF18Z6xJhKlZwLijIJqWMren1QpYZ+ohaNUhCpGPBjRDGSJ61Mtm1iQbMd/yTw==
+X-Received: by 2002:ac2:530b:0:b0:486:6982:5ab5 with SMTP id c11-20020ac2530b000000b0048669825ab5mr193269lfh.138.1658495039206;
+        Fri, 22 Jul 2022 06:03:59 -0700 (PDT)
+Received: from localhost.localdomain (82-209-154-112.cust.bredband2.com. [82.209.154.112])
+        by smtp.gmail.com with ESMTPSA id s18-20020a056512203200b004786d37229csm1039673lfs.155.2022.07.22.06.03.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Jul 2022 06:03:58 -0700 (PDT)
+From:   Marcus Folkesson <marcus.folkesson@gmail.com>
+To:     Marcus Folkesson <marcus.folkesson@gmail.com>,
+        Kent Gustavsson <kent@minoris.se>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v4 0/9] Improve MCP3911 driver
+Date:   Fri, 22 Jul 2022 15:07:17 +0200
+Message-Id: <20220722130726.7627-1-marcus.folkesson@gmail.com>
+X-Mailer: git-send-email 2.36.1
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 22 Jul 2022 22:32:06 +1000
-Michael Ellerman <michael@ellerman.id.au> wrote:
+Hi,
 
-> Hi Dan,
-> 
-> [ Cc += linuxppc-dev  ]
-> 
-> Dan Horák <dan@danny.cz> writes:
-> > Commit d11219ad53dc disabled the DCN driver for all platforms that
-> > define PPC64 due long build issues during "make allmodconfig" using
-> > cross-compilation. Cross-compilation defaults to the ppc64_defconfig
-> > and thus big-endian toolchain configuration. The ppc64le platform uses a
-> > different ABI and doesn't suffer from the build issues.
-> 
-> Unfortunately it's a bit messier than that.
-> 
-> The build error occurs when the compiler is built to use a 64-bit long
-> double type.
-> 
-> The ppc64le ABI document says that long double should be 128-bits, but
-> there are ppc64le compilers out there that are configured to use 64-bit
-> long double, notably the kernel.org crosstool compilers.
-> 
-> So just testing for CPU_LITTLE_ENDIAN means we'll still get build errors
-> on those compilers.
-> 
-> But I think we can detect the long double size and key off that. Can you
-> test the patch below works for you?
-> 
-> cheers
-> 
-> 
-> diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
-> index 7aa12e88c580..e9f8cd50af99 100644
-> --- a/arch/powerpc/Kconfig
-> +++ b/arch/powerpc/Kconfig
-> @@ -281,6 +281,9 @@ config PPC
->  	# Please keep this list sorted alphabetically.
->  	#
->  
-> +config PCC_LONG_DOUBLE_128
-> +	def_bool $(success,test "$(shell,echo __LONG_DOUBLE_128__ | $(CC) -E -P -)" = 1)
+This patch series intend to fix bugs and improve functionality of the
+MCP3911 driver.
+The main features added are
+- Support for buffers
+- Interrupt driven readings
+- Support for oversampling ratio
+- Support for set scale values (Gain)
 
-^^^ there is a typo s/PCC/PPC/ :-)
+Among the bug fixes, there are changes in the formula for calculate raw
+value and a fix for mismatch in the devicetree property.
 
-with that fixed, it then defines AMD_DC_DCN on Fedora 36 with
-gcc-12.1.1-1.fc36.ppc64le and we should be OK.
+Another general improvement for the driver is to use managed resources
+for all allocated resources.
+
+General changes for the series:
+
+v3:
+- Drop Phase patch
+- Add Fixes tags for those patches that are fixes
+- Move Fixes patches to the beginning of the patchset
+
+v4:
+- Split up devm-cleanup functions 
+- Cosmetic cleanups
+- Add
+    select IIO_BUFFER
+    select IIO_TRIGGERED_BUFFER
+    To Kconfig
+- Add .endianness = IIO_BE
 
 
-		Dan
+Best regards,
+Marcus Folkesson
 
-> +
->  config PPC_BARRIER_NOSPEC
->  	bool
->  	default y
-> diff --git a/drivers/gpu/drm/amd/display/Kconfig b/drivers/gpu/drm/amd/display/Kconfig
-> index b4029c0d5d8c..ec6771e87e73 100644
-> --- a/drivers/gpu/drm/amd/display/Kconfig
-> +++ b/drivers/gpu/drm/amd/display/Kconfig
-> @@ -6,7 +6,7 @@ config DRM_AMD_DC
->  	bool "AMD DC - Enable new display engine"
->  	default y
->  	select SND_HDA_COMPONENT if SND_HDA_CORE
-> -	select DRM_AMD_DC_DCN if (X86 || PPC64) && !(KCOV_INSTRUMENT_ALL && KCOV_ENABLE_COMPARISONS)
-> +	select DRM_AMD_DC_DCN if (X86 || PPC_LONG_DOUBLE_128) && !(KCOV_INSTRUMENT_ALL && KCOV_ENABLE_COMPARISONS)
->  	help
->  	  Choose this option if you want to use the new display engine
->  	  support for AMDGPU. This adds required support for Vega and
+
+
