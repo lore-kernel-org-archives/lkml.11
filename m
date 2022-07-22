@@ -2,82 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE252C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 12:50:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED575C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 12:55:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235041AbiGVMuq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 08:50:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37512 "EHLO
+        id S231792AbiGVMzV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 08:55:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229832AbiGVMun (ORCPT
+        with ESMTP id S234251AbiGVMzR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 08:50:43 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29A749EC59;
-        Fri, 22 Jul 2022 05:50:41 -0700 (PDT)
-Received: from mail-ot1-f54.google.com ([209.85.210.54]) by
- mrelayeu.kundenserver.de (mreue109 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1MQMmF-1ntCON1MCP-00MHYJ; Fri, 22 Jul 2022 14:50:38 +0200
-Received: by mail-ot1-f54.google.com with SMTP id g19-20020a9d1293000000b0061c7bfda5dfso3281281otg.1;
-        Fri, 22 Jul 2022 05:50:38 -0700 (PDT)
-X-Gm-Message-State: AJIora960o8z6v51O0WitO67/Ju5yQ/M0r8HyGl8EViwcdh5YSmn1KcF
-        6Jb8UgKh4d4pzONp7wnrXV7RydBqVedMfOX/8Ik=
-X-Google-Smtp-Source: AGRyM1sDu/TpsmUL03yo2zlYiqADzD7kWYXEumM72Hw0lH5LjdoiFgedlCyyF4Wn3/dsln+XanwsGK9LvhTX5PmDwTw=
-X-Received: by 2002:a05:6830:61cd:b0:618:d560:b787 with SMTP id
- cc13-20020a05683061cd00b00618d560b787mr184615otb.154.1658494236940; Fri, 22
- Jul 2022 05:50:36 -0700 (PDT)
+        Fri, 22 Jul 2022 08:55:17 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.73])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83E9EB30
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 05:55:06 -0700 (PDT)
+Received: from mail-oa1-f46.google.com ([209.85.160.46]) by
+ mrelayeu.kundenserver.de (mreue108 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1Mn2iP-1npBvz1zqZ-00k5Bk for <linux-kernel@vger.kernel.org>; Fri, 22 Jul
+ 2022 14:55:04 +0200
+Received: by mail-oa1-f46.google.com with SMTP id 586e51a60fabf-f2a4c51c45so6178334fac.9
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 05:55:04 -0700 (PDT)
+X-Gm-Message-State: AJIora+8IWEBZNKKxJP3s2OVjPcOWZU05yQi3EEWtbHEx+9IelGXGGHB
+        gJyK0047ZkWJIKNoDUXqHupD6npgiFN36te6pI8=
+X-Google-Smtp-Source: AGRyM1s+iHLsdgkmdkk4di9JAvPFlgedmxCorRD0IrEiusEfRXpDLrfbD9o9bDG8BEGMUnK4YNuB/edDIjYtpGCtBc4=
+X-Received: by 2002:a05:6870:6114:b0:10c:6bf:542f with SMTP id
+ s20-20020a056870611400b0010c06bf542fmr7496047oae.188.1658494503231; Fri, 22
+ Jul 2022 05:55:03 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220720190208.11270-1-lukas.bulwahn@gmail.com>
-In-Reply-To: <20220720190208.11270-1-lukas.bulwahn@gmail.com>
+References: <20220722103158.82218-1-slark_xiao@163.com>
+In-Reply-To: <20220722103158.82218-1-slark_xiao@163.com>
 From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Fri, 22 Jul 2022 14:50:20 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a04pfMoTbWDSdUPYXhXi03i3AjWM1B-8j2Z1OJKRmC14A@mail.gmail.com>
-Message-ID: <CAK8P3a04pfMoTbWDSdUPYXhXi03i3AjWM1B-8j2Z1OJKRmC14A@mail.gmail.com>
-Subject: Re: [PATCH] dma-mapping: update comment after dmabounce removal
-To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Cc:     Russell King <linux@armlinux.org.uk>,
-        Christoph Hellwig <hch@lst.de>, Arnd Bergmann <arnd@arndb.de>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        kernel-janitors <kernel-janitors@vger.kernel.org>,
+Date:   Fri, 22 Jul 2022 14:54:47 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a07wAc5iv4eBaixPQiGhdDur=9p-Dpb4Kh4MdqUkAkeww@mail.gmail.com>
+Message-ID: <CAK8P3a07wAc5iv4eBaixPQiGhdDur=9p-Dpb4Kh4MdqUkAkeww@mail.gmail.com>
+Subject: Re: [PATCH] uapi: asm-generic: fcntl: Fix typo 'the the' in comment
+To:     Slark Xiao <slark_xiao@163.com>
+Cc:     Guo Ren <guoren@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Palmer Dabbelt <palmer@rivosinc.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:WVpQ7iT7hNCW6OvsQqig5equGMLpq+3Rb9j23SIKG1yoD3fYAA9
- vTW6bkt7s1A0U6HqStjm+OJuPTlf/O47zcIUa2CRfjkdE2ewIW/wW+cETdFlhPBzLGBHBg/
- 6aOd7NFm6Zn4vhHFQTC3HyKxRSraEQ5ii1qVUB+oj1AHzzVKlEUDgQFVRYx9ZyUZ3Y/lfOZ
- vW3UnMs8lcABapbLaZShA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:G2GDVPGCiPo=:31y4G2SnKTXbubWEvhsDSi
- vZBSCBxXCS2MrHty2S9gdrfFB/hJ0rMOnlkhNoZXLnQhJgqhosvUU1vXwP0nSrnfx3nihbqoD
- 6BAwF1T9g8OjSBUw3l7t1dAG20jnpyeQRiR2qmQczCVxHAcnpsvaDs3FTbShhdAMMjz1RlRCh
- F78xlIVmuCRyakdRbJDPqmHcAsTDD8mtTVM7xh1l25ScKVYpTVI1BJPg3HuoFwFz+0ct5z/7v
- R2l8pmGpSmNw0+MMl8OtLixcsyX5EZ4eKW07V5cUPUgwK55Ko0f+oXvZtER5P5gHK/6JUY1dO
- 3vno5D0HGgYOQxjbYh/xZNa2OD4vi6fi0sjz2QarNbp8bZUwHTGDKhRqj8Xu8RrtbhwD2hAOQ
- cI9UioelujwDlLeyJFoyGVBOxMib+xvlssp8E3efN3dzQtot3Sj/KfL74a/ML2g8GKbLS5LDJ
- kpRixpF2j0lQQ3DqUPkpsCEY3cJYmAX3rm4n5Ppk8C05rom2sk5NcSi/nufVMMIDABHYIkDB3
- 4rVAN/AsQVsqCiwFUaMqIQTlboLKGFQqF7qZX8ll3i4ND8ED52BdcQNRfbncTzPzLbwYAhgFu
- BHQlZLkMFsDNEykYF8Xx9fjGNKeFpuJc+XgMSupVVAayI5p9kWJV0asa5jrzJxFL/Gm/Zknc1
- 72VwBJyLB2J2z/hsCg7UZqPNZ52G6SGNTKGOzk6lT1Ir2PkKv2HNINk1Hag9kFDRmeqyABO3I
- 1oHuO0zwowYDLJdILU1jOdRzfTZmd1A6ssvTvQ==
+X-Provags-ID: V03:K1:kmih5KotRui0dMoWIXig0tHA4lshsBJfGkbKlX8vkspOotByzQY
+ VXrW2qa+/B/e60l17E6IdIAuojxDuln9SoH86Vv2jkEcxuRxT7q26NMwunP4Zklkt7yEXRa
+ R0mO/xRcdUoUfKekAwWuft46KGU7SBTcQo7qoL0kBjh/MlBgbqhhuv2k6KVrY1iBlM8OIaC
+ ntHbe8TchSLB8KJHIjvlg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Rs3pBeOAs6c=:4eIeyH4AaFP2XO1AWNrAjs
+ mwK0zlDgrRcvKmNxSWuM7KNnLwDj86y6y0AhqKdUp1BAjlRUx2HfrpypMDvJiOoQgnt5gSbEw
+ AUex3fDrxrhWS16Zo4J9QB4U0ETRyqb9Jffo0JhnWCAgcCiryoM18NdJFduuROehKAkoyEB3o
+ im1nAlOnbe6pjG1IadVM/rUa/wZjlaY9nxeY4BjKe4z5AsClWVSA16V+8M9v87mphidvdiYuA
+ ojVyfZD3sLWWYJ6HOIeMOaJu/5dS/gxWgaW9mxL6WU4O+niVur9+n62E+e4Gf9r6hh0Q86hWr
+ d3KZoIxWAPjlik5kVhB+aeuux4wpn2gMzTe+Td8i08PWFQXAaMq5hqk5pgaF17ncwAy4Q7N3P
+ 0/cDiwtOLFday88/+XXuGQChwobDv51j44rII5VqtdBlMITruBSsUaXfxosv2XYmUkNykopcg
+ Gtkfsep9VBR/xAwFMjBNrxWsKUHCjeyd4sCJ460Mn/qp+aVWqMg7k1nBgdkx63ky9dbNi06Ts
+ TcIF6ePBnBihjquWxlHDZzCKRtgDrEvvu4VgXfWy7wVqd25pY01Y9d1lXh7gaQ2S5OgfKO4bW
+ TvTtC7689jfEyHIfDEgk5zjW9ZVpOun44PWLs/o1pf0W58izrJLAqu7NB0BrhcTBNY39D9OUC
+ wgJjTJQ4MBuGiT8+50kk2QyHVSg+wRQ/HxIQegor4hPRgng6V57wTomLMpmAs4DE7GuIY+hKz
+ sxYaLg5SRzr1G/XZwaJE7Ma4j3cY/8nhTUiphEK5WJaNn87Gq85o9fW6mr5JNLwA0SHpzWwNd
+ /g5L9JXAdO0MRb+NLjnaYPUCCEepwvy182MsN4g6YqsTTVCFn85aViclXxOsFzbBTBX9bCdk6
+ WqRIgwjzToyC5QJqz4vA==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 20, 2022 at 9:02 PM Lukas Bulwahn <lukas.bulwahn@gmail.com> wrote:
+On Fri, Jul 22, 2022 at 12:31 PM Slark Xiao <slark_xiao@163.com> wrote:
 >
-> Commit e3217540c271 ("ARM/dma-mapping: remove dmabounce") removes the
-> config DMABOUNCE. A comment to the function __dma_page_cpu_to_dev() refers
-> to this removed config DMABOUNCE.
+> Replace 'the the' with 'the' in the comment.
 >
-> Remove the obsolete explanation, but keep the recommendation not to use
-> __dma_page_cpu_to_dev() and use dma_sync_* functions instead.
->
-> Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-> ---
+> Signed-off-by: Slark Xiao <slark_xiao@163.com>
 
-Thanks!
+Applied to the asm-generic tree, thanks!
 
-Acked-by: Arnd Bergmann <arnd@arndb.de>
-
-The e3217540c271 commit is only in Christoph's dma-mapping tree, so this would
-ideally get applied on top before the merge window.
-
-        Arnd
+      Arnd
