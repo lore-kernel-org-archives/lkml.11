@@ -2,214 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD159C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 06:58:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82E95C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 07:01:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233975AbiGVG6e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 02:58:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55116 "EHLO
+        id S233761AbiGVHB2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 03:01:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231983AbiGVG62 (ORCPT
+        with ESMTP id S229519AbiGVHBX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 02:58:28 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 583568C8FB
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 23:58:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658473107; x=1690009107;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=89BMdQXKTe4szvjpaO8JoY0e/6vYgMdJ5USsliuTf+U=;
-  b=nhmrCPNVORMB+m3R0a3bDnWvfuND1zLflgC/h3FR5DRXxcPzRaVkJmTQ
-   9K4al9BEvUTgasn8xee/6hEiAPRY6Vixf2ZPmyk0twnvuA77rf8A5RgdD
-   ZvJ7WyWxyB0XmT17RaZpVibJCMiwpS9qnd2ZUqPrE44HqlMLJUv3Q4t0i
-   KTqA8pv7LS7nqXjAdZl6JdNbMJSyxVf60QOYVtM9cSod5rbidqTMW72nA
-   bNTBXDa/81x4fvkskEr77r9C9uHm7uuYbJswow1rSXzA8jVuj92lvjcUi
-   xhtaPgi7HVU1eEu/hp5hdQEsyikJ89a5Sq6z4gKm2RFd2cnT3pLXTtzU5
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10415"; a="288007176"
-X-IronPort-AV: E=Sophos;i="5.93,184,1654585200"; 
-   d="scan'208";a="288007176"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 23:58:27 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,184,1654585200"; 
-   d="scan'208";a="725325578"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 21 Jul 2022 23:58:25 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oEmcC-00016C-2J;
-        Fri, 22 Jul 2022 06:58:24 +0000
-Date:   Fri, 22 Jul 2022 14:58:02 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Keith Busch <kbusch@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Fri, 22 Jul 2022 03:01:23 -0400
+Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::224])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C6E317E33;
+        Fri, 22 Jul 2022 00:01:21 -0700 (PDT)
+Received: (Authenticated sender: jacopo@jmondi.org)
+        by mail.gandi.net (Postfix) with ESMTPSA id 5B458E0008;
+        Fri, 22 Jul 2022 07:01:18 +0000 (UTC)
+Date:   Fri, 22 Jul 2022 09:01:16 +0200
+From:   Jacopo Mondi <jacopo@jmondi.org>
+To:     Slark Xiao <slark_xiao@163.com>
+Cc:     mchehab@kernel.org, linux-media@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [kbusch:dma-prereg-v3-wip 6/6] drivers/nvme/host/pci.c:967:7:
- warning: variable 'nprps_left' is uninitialized when used here
-Message-ID: <202207221409.K6MNaHKF-lkp@intel.com>
+Subject: Re: [PATCH] media: i2c: mt9v111: Fix typo 'the the' in comment
+Message-ID: <20220722070116.ibqjejnttr55ciwh@uno.localdomain>
+References: <20220722015211.63609-1-slark_xiao@163.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
+In-Reply-To: <20220722015211.63609-1-slark_xiao@163.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/kbusch/linux.git dma-prereg-v3-wip
-head:   4625fa7adf745334c0a2eb635121d587df797b29
-commit: 4625fa7adf745334c0a2eb635121d587df797b29 [6/6] nvme-pci: implement dma_map support
-config: x86_64-randconfig-a005 (https://download.01.org/0day-ci/archive/20220722/202207221409.K6MNaHKF-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 72686d68c137551cce816416190a18d45b4d4e2a)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/kbusch/linux.git/commit/?id=4625fa7adf745334c0a2eb635121d587df797b29
-        git remote add kbusch https://git.kernel.org/pub/scm/linux/kernel/git/kbusch/linux.git
-        git fetch --no-tags kbusch dma-prereg-v3-wip
-        git checkout 4625fa7adf745334c0a2eb635121d587df797b29
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/nvme/host/
+Hello Slark Xiao
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+On Fri, Jul 22, 2022 at 09:52:11AM +0800, Slark Xiao wrote:
+> Replace 'the the' with 'the' in the comment.
+>
+> Signed-off-by: Slark Xiao <slark_xiao@163.com>
 
-All warnings (new ones prefixed by >>):
+Thanks
 
->> drivers/nvme/host/pci.c:967:7: warning: variable 'nprps_left' is uninitialized when used here [-Wuninitialized]
-                   if (nprps_left <= last_prp + 1) {
-                       ^~~~~~~~~~
-   drivers/nvme/host/pci.c:893:49: note: initialize the variable 'nprps_left' to silence this warning
-           int index, offset, i, length, nprps, nprps_left;
-                                                          ^
-                                                           = 0
-   drivers/nvme/host/pci.c:1935:7: warning: variable 'pages_per' set but not used [-Wunused-but-set-variable]
-                   int pages_per = nvme_pages;
-                       ^
-   2 warnings generated.
+Reviewed-by: Jacopo Mondi <jacopo@jmondi.org>
 
-
-vim +/nprps_left +967 drivers/nvme/host/pci.c
-
-   886	
-   887	static blk_status_t nvme_premapped(struct nvme_dev *dev, struct request *req,
-   888					   struct nvme_rw_command *cmnd,
-   889					   struct nvme_iod *iod)
-   890	{
-   891		static const int last_prp = NVME_CTRL_PAGE_SIZE / sizeof(__le64) - 1;
-   892		dma_addr_t prp_list_start, prp_list_end, prp_dma;
-   893		int index, offset, i, length, nprps, nprps_left;
-   894		void **list = nvme_pci_iod_list(req);
-   895		struct nvme_dma_mapping *mapping;
-   896		struct dma_pool *pool;
-   897		__le64 *prp_list;
-   898		bool needs_sync;
-   899	
-   900		mapping = blk_rq_dma_tag(req);
-   901		offset = blk_rq_dma_offset(req) + mapping->offset;
-   902		index = offset >> NVME_CTRL_PAGE_SHIFT;
-   903		offset = offset & (NVME_CTRL_PAGE_SIZE - 1);
-   904		needs_sync = rq_data_dir(req) == WRITE &&
-   905			 dma_need_sync(dev->dev, le64_to_cpu(mapping->prps[index]));
-   906	
-   907		/*
-   908		 * XXX: For PAGE_SIZE > NVME_CTRL_PAGE_SIZE, is it faster to save the
-   909		 * PRP list implementation and sync multiple partial pages, more
-   910		 * efficient to sync PAGE_SIZE and build the PRP list per-IO from a
-   911		 * host PAGE_SIZE representation, or cleverly sync physically
-   912		 * contiguous regions?
-   913		 */
-   914		if (needs_sync) {
-   915			dma_sync_single_for_device(dev->dev,
-   916				le64_to_cpu(mapping->prps[index]),
-   917				NVME_CTRL_PAGE_SIZE - offset, DMA_TO_DEVICE);
-   918		}
-   919	
-   920		length = blk_rq_payload_bytes(req) - (NVME_CTRL_PAGE_SIZE - offset);
-   921		cmnd->dptr.prp1 = cpu_to_le64(le64_to_cpu(mapping->prps[index++]) + offset);
-   922	
-   923		if (length <= 0)
-   924			return BLK_STS_OK;
-   925	
-   926		if (length <= NVME_CTRL_PAGE_SIZE) {
-   927			if (needs_sync)
-   928				dma_sync_single_for_device(dev->dev,
-   929					le64_to_cpu(mapping->prps[index]),
-   930					NVME_CTRL_PAGE_SIZE, DMA_TO_DEVICE);
-   931			cmnd->dptr.prp2 = mapping->prps[index];
-   932			return BLK_STS_OK;
-   933		}
-   934	
-   935		nprps = DIV_ROUND_UP(length, NVME_CTRL_PAGE_SIZE);
-   936		prp_list_start = mapping->prp_dma_addr + 8 * index;
-   937		prp_list_end = prp_list_start + 8 * nprps;
-   938	
-   939		/* Optimization when remaining list fits in one nvme page */
-   940		if ((prp_list_start >> NVME_CTRL_PAGE_SHIFT) ==
-   941		    (prp_list_end >> NVME_CTRL_PAGE_SHIFT)) {
-   942			cmnd->dptr.prp2 = cpu_to_le64(prp_list_start);
-   943			goto sync;
-   944		}
-   945	
-   946		if (nprps <= (256 / 8)) {
-   947			pool = dev->prp_small_pool;
-   948			iod->npages = 0;
-   949		} else {
-   950			pool = dev->prp_page_pool;
-   951			iod->npages = 1;
-   952		}
-   953	
-   954		prp_list = dma_pool_alloc(pool, GFP_ATOMIC, &prp_dma);
-   955		if (!prp_list) {
-   956			iod->npages = -1;
-   957			return BLK_STS_RESOURCE;
-   958		}
-   959	
-   960		list[0] = prp_list;
-   961		iod->first_dma = prp_dma;
-   962		i = 0;
-   963		for (;;) {
-   964			dma_addr_t next_prp_dma;
-   965			__le64 *next_prp_list;
-   966	
- > 967			if (nprps_left <= last_prp + 1) {
-   968				memcpy(prp_list, &mapping->prps[index], nprps_left * 8);
-   969				break;
-   970			}
-   971	
-   972			memcpy(prp_list, &mapping->prps[index],
-   973			       NVME_CTRL_PAGE_SIZE - 8);
-   974			nprps_left -= last_prp;
-   975			index += last_prp;
-   976	
-   977			next_prp_list = dma_pool_alloc(pool, GFP_ATOMIC, &next_prp_dma);
-   978			if (!next_prp_list)
-   979				goto free_prps;
-   980	
-   981			prp_list[last_prp] = cpu_to_le64(next_prp_dma);
-   982			prp_list = next_prp_list;
-   983			prp_dma = next_prp_dma;
-   984			list[iod->npages++] = prp_list;
-   985		}
-   986		cmnd->dptr.prp2 = cpu_to_le64(iod->first_dma);
-   987	
-   988	sync:
-   989		if (!needs_sync)
-   990			return BLK_STS_OK;
-   991	
-   992		for (i = 0; i < nprps; i++)
-   993			dma_sync_single_for_device(dev->dev,
-   994				le64_to_cpu(mapping->prps[index++]),
-   995				NVME_CTRL_PAGE_SIZE, DMA_TO_DEVICE);
-   996		return BLK_STS_OK;
-   997	
-   998	free_prps:
-   999		nvme_free_prps(dev, req);
-  1000		return BLK_STS_RESOURCE;
-  1001	}
-  1002	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+> ---
+>  drivers/media/i2c/mt9v111.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/media/i2c/mt9v111.c b/drivers/media/i2c/mt9v111.c
+> index 2dc4a0f24ce8..7beca0b70b72 100644
+> --- a/drivers/media/i2c/mt9v111.c
+> +++ b/drivers/media/i2c/mt9v111.c
+> @@ -633,7 +633,7 @@ static int mt9v111_hw_config(struct mt9v111_dev *mt9v111)
+>
+>  	/*
+>  	 * Set pixel integration time to the whole frame time.
+> -	 * This value controls the the shutter delay when running with AE
+> +	 * This value controls the shutter delay when running with AE
+>  	 * disabled. If longer than frame time, it affects the output
+>  	 * frame rate.
+>  	 */
+> --
+> 2.25.1
+>
