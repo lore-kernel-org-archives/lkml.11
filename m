@@ -2,64 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 135D5C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 14:16:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A12C8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 14:17:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233830AbiGVOQc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 10:16:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48988 "EHLO
+        id S233727AbiGVOR1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 10:17:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229880AbiGVOQ3 (ORCPT
+        with ESMTP id S229880AbiGVORY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 10:16:29 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A317A024B
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 07:16:29 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id va17so8889704ejb.0
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 07:16:28 -0700 (PDT)
+        Fri, 22 Jul 2022 10:17:24 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 463C4A025A
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 07:17:23 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id mf4so8864685ejc.3
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 07:17:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=nxeR7Lo5PYoDSgSUtAiC935tL0yHF6pLSDAauA9BG7w=;
-        b=MR4DklGeYf0D/wYM8Tyks/4W15tt7jHZxpOHeWkrP8SiiLYJgMMJZeb9xKy35RcKBs
-         K02sZymDAJh71V2xCJ/MwdvDF50YToUQ5aK/Gclm4R1CHh8YMaSpCriWuruPQwmdVmmO
-         nAg3zgaWjMnm7XHZdvJjYWVs694bvxq+EB2rg=
+        bh=XOFvKfEIVXIuCG4wFkll4Xj+8m/Jo4dyU0NBpZKLOaE=;
+        b=Oe2uAHcYKDidPdcan2Blg4s7Aj8e1cUpI2iL+dDn5seVv/fNHJVQg2aQQQp3XTbjad
+         NWAxBESHJ4/X5V1m4vFnM4gxIx/Q9iOJpMe8wPviVmGI64lPZFICsANkWdBL2AtAPfZd
+         ULt24o7YUW09Ix6j706SPUebafwFWZmh6JY4E=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=nxeR7Lo5PYoDSgSUtAiC935tL0yHF6pLSDAauA9BG7w=;
-        b=KWDBaAInDO96OSC8cMSzHqXz3h4iHhotZJqrgZl6DrVlv1gY+iMnehGENkYzCdFhsJ
-         nUzXRw2iQQZSBeg1LjkZK6uzB3nB5MBp9hvDeWKymbLzHazw7aGmBUUVqlwk7IGyYBRB
-         520UXyBiwznjp1v5UVVSQWDVOePflp0/VZRf6s21iaBIrcheDcH2FY3fWER79cjNIMqg
-         t2uT3mU/gCpo06rwN8g/0YIK2JnG+Tsxgu43ZWjAiuxKvDrq0OMEvIAfMpA2ckHlMPsS
-         6AkipoIMgE7i/I+1o7yI9KP1jfdR5TO+w+5fRufzeVS7muxhWLQCBA3QHd9C8v+5wzaj
-         xDLA==
-X-Gm-Message-State: AJIora+7fjKVpSEK1XvffnOHYdWPcjpSbd9gJhVvt6REN9P28jv5gIr7
-        AdV0KvD0QkkrJ1vdUCEPAKXmqkng/s5O0DCJqYA=
-X-Google-Smtp-Source: AGRyM1sGLc89RtJrp1UHBwC31h3XluWoR29LOjYaqjjXEeQUJyRgImRBJciwbkcZM/xpqKV1t1dMGQ==
-X-Received: by 2002:a17:907:a0c7:b0:72f:b204:c281 with SMTP id hw7-20020a170907a0c700b0072fb204c281mr104969ejc.720.1658499387230;
-        Fri, 22 Jul 2022 07:16:27 -0700 (PDT)
-Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com. [209.85.221.43])
-        by smtp.gmail.com with ESMTPSA id fw9-20020a170907500900b0072aebed5937sm2009462ejc.221.2022.07.22.07.16.26
+        bh=XOFvKfEIVXIuCG4wFkll4Xj+8m/Jo4dyU0NBpZKLOaE=;
+        b=4Ss9ervcoKiOZjYLEzAJZbm202Te54EI9zmLU7XCno9wdx9WsOd5xzT4/bwxHOj0Sy
+         IJPhptP7cRg+0gzItlG6o1rGrhda/Fzy75fJiPleNKdNkEMhpmcaLGVoFQ+OAMgGEtEV
+         7X2uDMHosVqCmDyvJSF3KxSlk5My1ucv1fFBUxqSc0lq8CjtKsX0AsskQhSLTmcX+pEH
+         1NyfHI39KMF4Ybult6zB6U9g7wVhHK7jcF/oKPMSmjsMCBt8SV1wUgepe8ZPNxgdLDWP
+         xYGIu5IG+S7nXiVjmQ7F0k2lBZTn6ySg/H48hZo4J+HLLFkLViJaLhu4is0HyGtg5kx6
+         7Kwg==
+X-Gm-Message-State: AJIora+immOQr5+CiSdFWAPG8v2Ngz9cRT5UPUn3DjkSfvTPFZMDp3CJ
+        p2/lNdRUCIu8gKFGfRdds3JUPLugs0UtAqBaZLY=
+X-Google-Smtp-Source: AGRyM1vKpjbdMaaGXq213F5c5DPKOWAWwzkpJ1I86O0OMNmKuA/V22esYUc8mipXkpc/cOz/lulp+A==
+X-Received: by 2002:a17:907:7348:b0:72b:44bf:96b6 with SMTP id dq8-20020a170907734800b0072b44bf96b6mr107969ejc.7.1658499441475;
+        Fri, 22 Jul 2022 07:17:21 -0700 (PDT)
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com. [209.85.221.48])
+        by smtp.gmail.com with ESMTPSA id k7-20020a056402048700b0043a61f6c389sm2608297edv.4.2022.07.22.07.17.19
         for <linux-kernel@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 Jul 2022 07:16:26 -0700 (PDT)
-Received: by mail-wr1-f43.google.com with SMTP id b26so6713015wrc.2
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 07:16:26 -0700 (PDT)
-X-Received: by 2002:adf:f90d:0:b0:20c:de32:4d35 with SMTP id
- b13-20020adff90d000000b0020cde324d35mr76737wrr.583.1658499386136; Fri, 22 Jul
- 2022 07:16:26 -0700 (PDT)
+        Fri, 22 Jul 2022 07:17:20 -0700 (PDT)
+Received: by mail-wr1-f48.google.com with SMTP id n12so6691878wrc.8
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 07:17:19 -0700 (PDT)
+X-Received: by 2002:adf:ead2:0:b0:21d:8b49:6138 with SMTP id
+ o18-20020adfead2000000b0021d8b496138mr126302wrn.138.1658499439534; Fri, 22
+ Jul 2022 07:17:19 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220722081127.228971-1-jinghung.chen3@hotmail.com> <SG2PR03MB500658668FBB9BE1DC2B3F24CC909@SG2PR03MB5006.apcprd03.prod.outlook.com>
-In-Reply-To: <SG2PR03MB500658668FBB9BE1DC2B3F24CC909@SG2PR03MB5006.apcprd03.prod.outlook.com>
+References: <20220722081127.228971-1-jinghung.chen3@hotmail.com> <SG2PR03MB50062792832700DC51EF6143CC909@SG2PR03MB5006.apcprd03.prod.outlook.com>
+In-Reply-To: <SG2PR03MB50062792832700DC51EF6143CC909@SG2PR03MB5006.apcprd03.prod.outlook.com>
 From:   Doug Anderson <dianders@chromium.org>
-Date:   Fri, 22 Jul 2022 07:16:14 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=WgzOn7EsGgWd-qkEMccBQQn1id1u_0Ph1V6qExfCEioA@mail.gmail.com>
-Message-ID: <CAD=FV=WgzOn7EsGgWd-qkEMccBQQn1id1u_0Ph1V6qExfCEioA@mail.gmail.com>
-Subject: Re: [PATCH v7 1/3] dt-bindings: arm: qcom: document sc7280 and
- villager board
+Date:   Fri, 22 Jul 2022 07:17:07 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=Vx9zOefBFw25tP7+nwuiggC1eEq0R8xAGD6YGaZdWmHg@mail.gmail.com>
+Message-ID: <CAD=FV=Vx9zOefBFw25tP7+nwuiggC1eEq0R8xAGD6YGaZdWmHg@mail.gmail.com>
+Subject: Re: [PATCH v7 3/3] arm64: dts: qcom: Add LTE SKUs for sc7280-villager family
 To:     Jimmy Chen <jinghung.chen3@hotmail.com>
 Cc:     LKML <linux-kernel@vger.kernel.org>,
         Andy Gross <agross@kernel.org>,
@@ -78,23 +77,39 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 Hi,
 
-On Fri, Jul 22, 2022 at 1:11 AM Jimmy Chen <jinghung.chen3@hotmail.com> wrote:
+On Fri, Jul 22, 2022 at 1:12 AM Jimmy Chen <jinghung.chen3@hotmail.com> wrote:
 >
-> This adds a LTE skus for Chromebook Villager to the yaml.
+> This adds LTE skus for villager device tree files.
 >
 > Signed-off-by: Jimmy Chen <jinghung.chen3@hotmail.com>
-> Reviewed-by: Douglas Anderson <dianders@chromium.org>
 > ---
 >
-> (no changes since v2)
+> (no changes since v6)
 >
-> Changes in v2:
-> -Add this patch
+> Changes in v6:
+> - Remove v5 accidentally added sc7280-herobrine-herobrine-r1-lte.dts
 >
->  Documentation/devicetree/bindings/arm/qcom.yaml | 15 +++++++++++++++
->  1 file changed, 15 insertions(+)
+> Changes in v5:
+> - Reorder '.dtb' in Makefile
+> - Put the "interconnects" line back
+>
+> Changes in v4:
+> - Reorder 'status' last
+>
+>  arch/arm64/boot/dts/qcom/Makefile               |  2 ++
+>  .../boot/dts/qcom/sc7280-chrome-common.dtsi     | 11 -----------
+>  .../boot/dts/qcom/sc7280-herobrine-crd.dts      |  1 +
+>  .../dts/qcom/sc7280-herobrine-herobrine-r1.dts  |  1 +
+>  .../boot/dts/qcom/sc7280-herobrine-lte-sku.dtsi | 17 +++++++++++++++++
+>  .../qcom/sc7280-herobrine-villager-r0-lte.dts   | 14 ++++++++++++++
+>  .../qcom/sc7280-herobrine-villager-r1-lte.dts   | 14 ++++++++++++++
+>  arch/arm64/boot/dts/qcom/sc7280-idp.dts         |  1 +
+>  8 files changed, 50 insertions(+), 11 deletions(-)
+>  create mode 100644 arch/arm64/boot/dts/qcom/sc7280-herobrine-lte-sku.dtsi
+>  create mode 100644 arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r0-lte.dts
+>  create mode 100644 arch/arm64/boot/dts/qcom/sc7280-herobrine-villager-r1-lte.dts
 
 Please carry forward tags from previous versions unless you've done
 something to justify removing them. From v6:
 
-Acked-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
