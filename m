@@ -2,69 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64757C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 07:23:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2B06C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 07:24:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234486AbiGVHXA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 03:23:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50014 "EHLO
+        id S234472AbiGVHY5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 03:24:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234461AbiGVHW6 (ORCPT
+        with ESMTP id S231742AbiGVHYy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 03:22:58 -0400
-Received: from mail-m974.mail.163.com (mail-m974.mail.163.com [123.126.97.4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AC20128717;
-        Fri, 22 Jul 2022 00:22:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=11gbh
-        NoF5cEoLfJC16ejYmefWWlsT9RKa9ERJhQ1ZQ4=; b=fNziiM6eC/CHWmt9WNhkt
-        e/Eo7SEoNlDAbMAo82Ie1GezArKzUjQLi5V9utvekGSSjYJSJwrEu0OUXLlEOfVo
-        CEn5Lp8a5PrdUmjds53fWFN+n8GzrrnJuCs3++kdMS1hVADS6CHNG/EPE7PGYoru
-        FE8bqOJaf81KH6RrK42SVE=
-Received: from localhost.localdomain (unknown [112.97.59.29])
-        by smtp4 (Coremail) with SMTP id HNxpCgC3BIVIUNpiA8ptQA--.19206S2;
-        Fri, 22 Jul 2022 15:22:51 +0800 (CST)
-From:   Slark Xiao <slark_xiao@163.com>
-To:     jh80.chung@samsung.com, ulf.hansson@linaro.org
-Cc:     linux-kernel@vger.kernel.org, linux-mmc@vger.kernel.org,
-        Slark Xiao <slark_xiao@163.com>
-Subject: [PATCH] mmc: dw_mmc: Fix typo 'the the' in comment
-Date:   Fri, 22 Jul 2022 15:22:47 +0800
-Message-Id: <20220722072247.72189-1-slark_xiao@163.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 22 Jul 2022 03:24:54 -0400
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51B502871F
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 00:24:52 -0700 (PDT)
+Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
+        by gloria.sntech.de with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <heiko@sntech.de>)
+        id 1oEn1h-0005HS-AH; Fri, 22 Jul 2022 09:24:45 +0200
+From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+To:     paul.walmsley@sifive.com, palmer@dabbelt.com,
+        aou@eecs.berkeley.edu, anup@brainfault.org, guoren@kernel.org,
+        mick@ics.forth.gr, alexandre.ghiti@canonical.com,
+        Xianting Tian <xianting.tian@linux.alibaba.com>
+Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        crash-utility@redhat.com, huanyi.xj@alibaba-inc.com,
+        heinrich.schuchardt@canonical.com, k-hagio-ab@nec.com,
+        hschauhan@nulltrace.org,
+        Xianting Tian <xianting.tian@linux.alibaba.com>
+Subject: Re: [PATCH 4/5] riscv: Add modules to virtual kernel memory layout dump
+Date:   Fri, 22 Jul 2022 09:24:44 +0200
+Message-ID: <7405851.EvYhyI6sBW@diego>
+In-Reply-To: <20220717101323.370245-5-xianting.tian@linux.alibaba.com>
+References: <20220717101323.370245-1-xianting.tian@linux.alibaba.com> <20220717101323.370245-5-xianting.tian@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: HNxpCgC3BIVIUNpiA8ptQA--.19206S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrZFWUWr1DGryfCryUur4kWFg_yoW3WFX_Kr
-        WrXr97Ww1akF9aqF1xtF1rZFWrtw4rWr4xZr95Kay3W345Zw4fX3WvvrWDJ3s8uFWDAay3
-        uF1rXryfKay5WjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRuYLyJUUUUU==
-X-Originating-IP: [112.97.59.29]
-X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/xtbCdQNGZGBbEbvYPgAAsj
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace 'the the' with 'the' in the comment.
+Am Sonntag, 17. Juli 2022, 12:13:22 CEST schrieb Xianting Tian:
+> Modules always live before the kernel, MODULES_END is fixed but
+> MODULES_VADDR isn't fixed, it depends on the kernel size.
+> Let's add it to virtual kernel memory layout dump.
+> 
+> As MODULES is only defined for CONFIG_64BIT, so we dump it when
+> CONFIG_64BIT=y.
+> 
+> eg,
+> MODULES_VADDR - MODULES_END
+> 0xffffffff01133000 - 0xffffffff80000000
+> 
+> Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
 
-Signed-off-by: Slark Xiao <slark_xiao@163.com>
----
- drivers/mmc/host/dw_mmc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I'm still not sure if it would be better to define MODULES_* constants
+even on 32bit (with their VMALLOC_START etc values) and prevent
+needing the CONFIG_64BIT ifdef, but that's for others to decide :-)
 
-diff --git a/drivers/mmc/host/dw_mmc.c b/drivers/mmc/host/dw_mmc.c
-index 581614196a84..7f00d7d7e35e 100644
---- a/drivers/mmc/host/dw_mmc.c
-+++ b/drivers/mmc/host/dw_mmc.c
-@@ -1363,7 +1363,7 @@ static void __dw_mci_start_request(struct dw_mci *host,
- 		 * is just about to roll over.
- 		 *
- 		 * We do this whole thing under spinlock and only if the
--		 * command hasn't already completed (indicating the the irq
-+		 * command hasn't already completed (indicating the irq
- 		 * already ran so we don't want the timeout).
- 		 */
- 		spin_lock_irqsave(&host->irq_lock, irqflags);
--- 
-2.25.1
+The below also looks good, so
+Reviewed-by: Heiko Stuebner <heiko@sntech.de>
+
+> ---
+>  arch/riscv/mm/init.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/arch/riscv/mm/init.c b/arch/riscv/mm/init.c
+> index d466ec670e1f..2c4a64e97aec 100644
+> --- a/arch/riscv/mm/init.c
+> +++ b/arch/riscv/mm/init.c
+> @@ -135,6 +135,10 @@ static void __init print_vm_layout(void)
+>  		(unsigned long)VMEMMAP_END);
+>  	print_ml("vmalloc", (unsigned long)VMALLOC_START,
+>  		(unsigned long)VMALLOC_END);
+> +#ifdef CONFIG_64BIT
+> +	print_ml("modules", (unsigned long)MODULES_VADDR,
+> +		(unsigned long)MODULES_END);
+> +#endif
+>  	print_ml("lowmem", (unsigned long)PAGE_OFFSET,
+>  		(unsigned long)high_memory);
+>  	if (IS_ENABLED(CONFIG_64BIT)) {
+> 
+
+
+
 
