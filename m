@@ -2,95 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 641EFC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 11:04:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5C28C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 11:05:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235422AbiGVLEY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 07:04:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39212 "EHLO
+        id S232702AbiGVLF2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 07:05:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235202AbiGVLD7 (ORCPT
+        with ESMTP id S235279AbiGVLFH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 07:03:59 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76C50BDA03
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 04:03:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=s+t+9Vi0tpfxV3Q74dVVAy3AQF79iNwAMp4hPA+2T1A=; b=ksMVr3GZZdqiAN8bDPfkOkJvTY
-        yIjVKpnsS8eOb1LfWH3noPuu6p8r1c34KD1crfHTX2hHyp2RofJTrfgycHEoS/0/ttHyn2jCQxBvZ
-        sVYjfo00V9WEBguox4ilxq5qb0haRUZhMuBiDl+DH18FADl7U17AncEXGKS0LLGW3WYC+5J49688G
-        quQEEb/l0YOHCZqJI5M6KIWDf1/khMY3JXunr9Xv9/YCVpzWNo2Yx+UbU+EStwNHGHrM5/kW3Cqhl
-        8SD8Am76MwlYDbyCaPsACHUqPmuMC62RNq2/FRINqZiFSttgjEkSY5jZmkkGLiQc8lzlPbEP3qtGs
-        5UOfhwDw==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oEqRF-005q8w-Hr; Fri, 22 Jul 2022 11:03:21 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 1290298029B; Fri, 22 Jul 2022 13:03:20 +0200 (CEST)
-Date:   Fri, 22 Jul 2022 13:03:19 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     David Laight <David.Laight@aculab.com>
-Cc:     'Linus Torvalds' <torvalds@linux-foundation.org>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Joao Moreira <joao@overdrivepizza.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        the arch/x86 maintainers <x86@kernel.org>,
-        Tim Chen <tim.c.chen@linux.intel.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        "Cooper, Andrew" <andrew.cooper3@citrix.com>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Johannes Wikner <kwikner@ethz.ch>,
-        Alyssa Milburn <alyssa.milburn@linux.intel.com>,
-        Jann Horn <jannh@google.com>, "H.J. Lu" <hjl.tools@gmail.com>,
-        "Moreira, Joao" <joao.moreira@intel.com>,
-        "Nuzman, Joseph" <joseph.nuzman@intel.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Gross, Jurgen" <jgross@suse.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Peter Collingbourne <pcc@google.com>,
-        Kees Cook <keescook@chromium.org>
-Subject: Re: [patch 00/38] x86/retbleed: Call depth tracking mitigation
-Message-ID: <YtqD96Kq4/Wg+LXQ@worktop.programming.kicks-ass.net>
-References: <CAHk-=wj6U3UamfLLV+rPu1WmKG_w3p0Bg=YbQcG1DxHpmP40Ag@mail.gmail.com>
- <YtXzgWnbTQH48JGR@worktop.programming.kicks-ass.net>
- <CAHk-=wiJNViWKCCrDPByGWmVVXuEKhRGykx4q8diXSxEqGfOMw@mail.gmail.com>
- <CAHk-=wjmUeB=_s6jcBUNoAT4GHv-aF1Mzqa6G1X4k+dcHDs1Mg@mail.gmail.com>
- <Ytbnlms90+LBLbrY@google.com>
- <Ythv7NqofIAHp3bf@worktop.programming.kicks-ass.net>
- <Ytl2vg15Hc0fh8Dl@worktop.programming.kicks-ass.net>
- <YtmTK93vHWQUFinE@worktop.programming.kicks-ass.net>
- <CAHk-=whLGENEkjME_v_3P1SwhwjzH4GK2RLA3fn=yQNuyKLBkg@mail.gmail.com>
- <d0597f7096344b10bfcd95a0ffdbad17@AcuMS.aculab.com>
+        Fri, 22 Jul 2022 07:05:07 -0400
+Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB9FEBDA1F
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 04:05:02 -0700 (PDT)
+Received: by mail-oi1-x232.google.com with SMTP id s188so5275093oie.0
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 04:05:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=usp.br; s=usp-google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ClcvuyoVSKPNIGPC6XYZgGXhO5C2e/zHEXJEcPjU7bs=;
+        b=HlbFIggBd1enoF0DBBJXL25iYInfB8KMOgRSOH0Gm/0Rnz/tw3zcqpPOaVNvCo8dbi
+         PMBfY8aZfcU8Opx4xl7RRmXkJY2X4ARJnb7rpmW7Q4n+joakPxlqp0QDoSlHgbgk/BFE
+         DIBwHFIawJ4pXB6oknmtXtXa7zUdC2/n6RZCL/wKNzQj5UeOV58unRrdzWPKcKl7Zet/
+         XiPt/FqWvisQxBNGpdiBKjjyTxE0DRKd/fvm1v36PCjK48TQ2RlYJtmcvJHh1FysUzOg
+         bstiUMl2kzKm9MTcMzOhx9TSs4vVQlBAGqboNRugdoK0CuvQow1/npjvp4Y4PsuSc64y
+         qBfg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ClcvuyoVSKPNIGPC6XYZgGXhO5C2e/zHEXJEcPjU7bs=;
+        b=hEmcxIEAmTMAttU+l3+io5YJIKvdpzOAhX0bNjGHYQZ5xLIvS1KWPDKlEIZ8kDtQ9c
+         kNpyTwKEeuAZgwtoTf21kHF6UXjeEp67BstZfgS9D1AnbndvlzgYyhHX2L+ta5Mwb2Sj
+         l8fTe8ChQ+1I+kS04ZlrYej0EIWrbiKFn2yaIeXZxLEKjo4Mn4vVaaml7niWYaqQT8NM
+         5NqpZjs2FyQBse5w9ZKuZN1bv0//xfjm3rk9Rp0+D2JffIyr2Nwpp/OuBfE5G+BrzT6Q
+         /6GVC76GD61Ug8h+aqZuQVLzq3Pr22exq9JF+yNZce2fGwDBuJYUxixjGF6NSCXxWCFo
+         fYUw==
+X-Gm-Message-State: AJIora/Oar/v2IQeFzBtBKPQijAnSqd4oojR1dP/U65RswnNdbRGQV9T
+        xXxf8dfDyBgTdYeGSJberDI3MA==
+X-Google-Smtp-Source: AGRyM1sOPgZ02x9KlIIK2eI9XwQtYb3a0w3MvEex17vJsjkcLOrRvD2nqiMuPMVayW1gZY+Usy1kiw==
+X-Received: by 2002:a05:6808:201c:b0:33a:a038:ea8b with SMTP id q28-20020a056808201c00b0033aa038ea8bmr1184432oiw.98.1658487902053;
+        Fri, 22 Jul 2022 04:05:02 -0700 (PDT)
+Received: from [192.168.1.195] ([187.36.234.139])
+        by smtp.gmail.com with ESMTPSA id u21-20020a056870421500b001019fb71e4bsm2105289oac.17.2022.07.22.04.04.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 22 Jul 2022 04:05:01 -0700 (PDT)
+Message-ID: <b1ae4f77-4e24-24c9-fd87-abcd612a3533@usp.br>
+Date:   Fri, 22 Jul 2022 08:04:51 -0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <d0597f7096344b10bfcd95a0ffdbad17@AcuMS.aculab.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v5 9/9] drm: selftest: convert drm_mm selftest to KUnit
+Content-Language: en-US
+To:     Matthew Auld <matthew.william.auld@gmail.com>
+Cc:     Isabella Basso <isabbasso@riseup.net>, magalilemes00@gmail.com,
+        tales.aparecida@gmail.com, mwen@igalia.com, andrealmeid@riseup.net,
+        siqueirajordao@riseup.net, Trevor Woerner <twoerner@gmail.com>,
+        leandro.ribeiro@collabora.com, n@nfraprado.net,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        David Airlie <airlied@linux.ie>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        =?UTF-8?Q?Micha=c5=82_Winiarski?= <michal.winiarski@intel.com>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        =?UTF-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
+        David Gow <davidgow@google.com>,
+        Daniel Latypov <dlatypov@google.com>,
+        brendanhiggins@google.com, Arthur Grillo <arthur.grillo@usp.br>,
+        kernel list <linux-kernel@vger.kernel.org>,
+        ML dri-devel <dri-devel@lists.freedesktop.org>,
+        linux-kselftest@vger.kernel.org, kunit-dev@googlegroups.com
+References: <20220708203052.236290-1-maira.canal@usp.br>
+ <20220708203052.236290-10-maira.canal@usp.br>
+ <CAM0jSHNG8Ozs+NpvwMK6zvbRm3Ve=Wa1_H7jS0uQ8FeAWgvyoA@mail.gmail.com>
+From:   =?UTF-8?Q?Ma=c3=adra_Canal?= <maira.canal@usp.br>
+In-Reply-To: <CAM0jSHNG8Ozs+NpvwMK6zvbRm3Ve=Wa1_H7jS0uQ8FeAWgvyoA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 10:01:12PM +0000, David Laight wrote:
-
-> Since: "If the callee is a variadic function, then the number of floating
-> point arguments passed to the function in vector registers must be provided
-> by the caller in the AL register."
+On 7/22/22 07:35, Matthew Auld wrote:
+> On Fri, 8 Jul 2022 at 21:32, Maíra Canal <maira.canal@usp.br> wrote:
+>>
+>> From: Arthur Grillo <arthur.grillo@usp.br>
+>>
+>> Considering the current adoption of the KUnit framework, convert the
+>> DRM mm selftest to the KUnit API.
 > 
-> And that that never happens in the kernel you can use %eax instead
-> of %r10d.
+> Is there a plan to convert the corresponding selftest IGT that was
+> responsible for running this (also drm_buddy) to somehow work with
+> kunit? Previously these IGTs were always triggered as part of
+> intel-gfx CI, but it looks like they are no longer run[1].
+> 
+> [1] https://gitlab.freedesktop.org/drm/intel/-/issues/6433
 
-Except there's the AMD BTC thing and we should (compiler patch seems
-MIA) have an unconditional: 'xor %eax,%eax' in front of every function
-call.
+Hi Matthew,
 
-(The official mitigation strategy was CALL; LFENCE IIRC, but that's so
-horrible nobody is actually considering that)
+Isabella sent a while ago a patch to IGT adding KUnit compatibility to
+IGT [1], but there wasn't any feedback on the patch. I believe that soon
+she will resend the series in order to make all KUnit DRM tests run on IGT.
 
-Yes, the suggested sequence ends with rax being zero, but since we start
-the speculation before that result is computed that's not good enough I
-suspect.
+Any feedback on the patch is welcomed so that we can fix this issue as
+soon as possible.
+
+[1] https://patchwork.freedesktop.org/patch/489985/
+
+Best Regards,
+- Maíra Canal
