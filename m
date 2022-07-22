@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B22EC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:12:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F2F3CCA47F
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:12:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235369AbiGVJMH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 05:12:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40624 "EHLO
+        id S235299AbiGVJMO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 05:12:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233321AbiGVJLX (ORCPT
+        with ESMTP id S235272AbiGVJLj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 05:11:23 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52F6DA9B90;
-        Fri, 22 Jul 2022 02:09:40 -0700 (PDT)
+        Fri, 22 Jul 2022 05:11:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F8C9A9BA5;
+        Fri, 22 Jul 2022 02:09:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 1FAA7CE28A3;
-        Fri, 22 Jul 2022 09:09:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 059B8C341CF;
-        Fri, 22 Jul 2022 09:09:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ADA98B827BC;
+        Fri, 22 Jul 2022 09:09:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11045C341C6;
+        Fri, 22 Jul 2022 09:09:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658480975;
-        bh=83KBoNHTObUwYxuqr2Qy7ZLK4DdR4Ff7RsV0XylXjOE=;
+        s=korg; t=1658480981;
+        bh=b6ihENthbUbQ5lJ4c2//Yhi5Ha1tezAvuDGyRHTe7Vk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k0V7v7dLDaALNkwpB0nHcLgcpAG3GXQPz9UwhBZsNN/d+6BZ38dendC5cHCeuj3l5
-         wzz2z6pP9K++TXY36HZqXO/RBjMlBsHC4p/TpOF234el68jJriKYy7Xmv+NdbGaSKB
-         x8SEv5bnmwvX1pMe8piAx5p8sXFtFL63OZWCIsGE=
+        b=QG0K8ydh7cL5RNJKKDopSCx+k8XQO0M9qs+0thM1XD1uv8XmUeroNDQUQvTb0qAlf
+         Woxj32tpEYgeqeYRsVtdjGLv350zBSml8SHpsnGvJ5sO1RPOsDiVCimLYTk7IAlnrE
+         C3lbG99IOadybsFkjC5d2INYUNUDMS16HPbcPjpc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Borislav Petkov <bp@suse.de>,
         Josh Poimboeuf <jpoimboe@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.18 15/70] x86/ftrace: Use alternative RET encoding
-Date:   Fri, 22 Jul 2022 11:07:10 +0200
-Message-Id: <20220722090651.577053810@linuxfoundation.org>
+Subject: [PATCH 5.18 17/70] x86/kvm: Fix SETcc emulation for return thunks
+Date:   Fri, 22 Jul 2022 11:07:12 +0200
+Message-Id: <20220722090651.688629311@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220722090650.665513668@linuxfoundation.org>
 References: <20220722090650.665513668@linuxfoundation.org>
@@ -53,9 +53,23 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peter Zijlstra <peterz@infradead.org>
 
-commit 1f001e9da6bbf482311e45e48f53c2bd2179e59c upstream.
+commit af2e140f34208a5dfb6b7a8ad2d56bda88f0524d upstream.
 
-Use the return thunk in ftrace trampolines, if needed.
+Prepare the SETcc fastop stuff for when RET can be larger still.
+
+The tricky bit here is that the expressions should not only be
+constant C expressions, but also absolute GAS expressions. This means
+no ?: and 'true' is ~0.
+
+Also ensure em_setcc() has the same alignment as the actual FOP_SETCC()
+ops, this ensures there cannot be an alignment hole between em_setcc()
+and the first op.
+
+Additionally, add a .skip directive to the FOP_SETCC() macro to fill
+any remaining space with INT3 traps; however the primary purpose of
+this directive is to generate AS warnings when the remaining space
+goes negative. Which is a very good indication the alignment magic
+went side-ways.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
@@ -64,31 +78,66 @@ Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/ftrace.c |    7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ arch/x86/kvm/emulate.c |   28 +++++++++++++++-------------
+ 1 file changed, 15 insertions(+), 13 deletions(-)
 
---- a/arch/x86/kernel/ftrace.c
-+++ b/arch/x86/kernel/ftrace.c
-@@ -303,7 +303,7 @@ union ftrace_op_code_union {
- 	} __attribute__((packed));
- };
+--- a/arch/x86/kvm/emulate.c
++++ b/arch/x86/kvm/emulate.c
+@@ -325,13 +325,15 @@ static int fastop(struct x86_emulate_ctx
+ #define FOP_RET(name) \
+ 	__FOP_RET(#name)
  
--#define RET_SIZE		1 + IS_ENABLED(CONFIG_SLS)
-+#define RET_SIZE		(IS_ENABLED(CONFIG_RETPOLINE) ? 5 : 1 + IS_ENABLED(CONFIG_SLS))
+-#define FOP_START(op) \
++#define __FOP_START(op, align) \
+ 	extern void em_##op(struct fastop *fake); \
+ 	asm(".pushsection .text, \"ax\" \n\t" \
+ 	    ".global em_" #op " \n\t" \
+-	    ".align " __stringify(FASTOP_SIZE) " \n\t" \
++	    ".align " __stringify(align) " \n\t" \
+ 	    "em_" #op ":\n\t"
  
- static unsigned long
- create_trampoline(struct ftrace_ops *ops, unsigned int *tramp_size)
-@@ -359,7 +359,10 @@ create_trampoline(struct ftrace_ops *ops
- 		goto fail;
++#define FOP_START(op) __FOP_START(op, FASTOP_SIZE)
++
+ #define FOP_END \
+ 	    ".popsection")
  
- 	ip = trampoline + size;
--	memcpy(ip, retq, RET_SIZE);
-+	if (cpu_feature_enabled(X86_FEATURE_RETHUNK))
-+		__text_gen_insn(ip, JMP32_INSN_OPCODE, ip, &__x86_return_thunk, JMP32_INSN_SIZE);
-+	else
-+		memcpy(ip, retq, sizeof(retq));
+@@ -435,16 +437,15 @@ static int fastop(struct x86_emulate_ctx
+ /*
+  * Depending on .config the SETcc functions look like:
+  *
+- * ENDBR       [4 bytes; CONFIG_X86_KERNEL_IBT]
+- * SETcc %al   [3 bytes]
+- * RET         [1 byte]
+- * INT3        [1 byte; CONFIG_SLS]
+- *
+- * Which gives possible sizes 4, 5, 8 or 9.  When rounded up to the
+- * next power-of-two alignment they become 4, 8 or 16 resp.
++ * ENDBR			[4 bytes; CONFIG_X86_KERNEL_IBT]
++ * SETcc %al			[3 bytes]
++ * RET | JMP __x86_return_thunk	[1,5 bytes; CONFIG_RETPOLINE]
++ * INT3				[1 byte; CONFIG_SLS]
+  */
+-#define SETCC_LENGTH	(ENDBR_INSN_SIZE + 4 + IS_ENABLED(CONFIG_SLS))
+-#define SETCC_ALIGN	(4 << IS_ENABLED(CONFIG_SLS) << HAS_KERNEL_IBT)
++#define RET_LENGTH	(1 + (4 * IS_ENABLED(CONFIG_RETPOLINE)) + \
++			 IS_ENABLED(CONFIG_SLS))
++#define SETCC_LENGTH	(ENDBR_INSN_SIZE + 3 + RET_LENGTH)
++#define SETCC_ALIGN	(4 << ((SETCC_LENGTH > 4) & 1) << ((SETCC_LENGTH > 8) & 1))
+ static_assert(SETCC_LENGTH <= SETCC_ALIGN);
  
- 	/* No need to test direct calls on created trampolines */
- 	if (ops->flags & FTRACE_OPS_FL_SAVE_REGS) {
+ #define FOP_SETCC(op) \
+@@ -453,9 +454,10 @@ static_assert(SETCC_LENGTH <= SETCC_ALIG
+ 	#op ": \n\t" \
+ 	ASM_ENDBR \
+ 	#op " %al \n\t" \
+-	__FOP_RET(#op)
++	__FOP_RET(#op) \
++	".skip " __stringify(SETCC_ALIGN) " - (.-" #op "), 0xcc \n\t"
+ 
+-FOP_START(setcc)
++__FOP_START(setcc, SETCC_ALIGN)
+ FOP_SETCC(seto)
+ FOP_SETCC(setno)
+ FOP_SETCC(setc)
 
 
