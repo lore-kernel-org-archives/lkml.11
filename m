@@ -2,106 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AFC4C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 21:55:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C3A3C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 21:55:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236682AbiGVVzx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 17:55:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53808 "EHLO
+        id S236719AbiGVVz4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 17:55:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236509AbiGVVz3 (ORCPT
+        with ESMTP id S236405AbiGVVzb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 17:55:29 -0400
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 743D56325;
-        Fri, 22 Jul 2022 14:55:28 -0700 (PDT)
+        Fri, 22 Jul 2022 17:55:31 -0400
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.196])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB49E21E38;
+        Fri, 22 Jul 2022 14:55:30 -0700 (PDT)
 Received: from toolbox.int.toradex.com ([81.221.243.92]) by mrelay.perfora.net
- (mreueus002 [74.208.5.2]) with ESMTPSA (Nemesis) id 0LfCzm-1ni9kn3EyG-00opOG;
- Fri, 22 Jul 2022 23:54:58 +0200
+ (mreueus002 [74.208.5.2]) with ESMTPSA (Nemesis) id 0LuO6D-1nXWeA1BmZ-011fIx;
+ Fri, 22 Jul 2022 23:55:17 +0200
 From:   Marcel Ziswiler <marcel@ziswiler.com>
 To:     linux-arm-kernel@lists.infradead.org
 Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Abel Vesa <abel.vesa@nxp.com>,
-        Arnaud Ferraris <arnaud.ferraris@collabora.com>,
-        Fabio Estevam <festevam@gmail.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Lucas Stach <dev@lynxeye.de>,
-        Markus Niebel <Markus.Niebel@ew.tq-group.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
         Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Philippe Schenker <philippe.schenker@toradex.com>,
         Rob Herring <robh+dt@kernel.org>,
         Sascha Hauer <s.hauer@pengutronix.de>,
         Shawn Guo <shawnguo@kernel.org>,
         Stefan Agner <stefan@agner.ch>, devicetree@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 00/12] ARM: arm64: dts/clk: imx8mm: indentation whitespace cleanup
-Date:   Fri, 22 Jul 2022 23:54:33 +0200
-Message-Id: <20220722215445.3548530-1-marcel@ziswiler.com>
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 08/12] ARM: dts: vf610: don't use multiple blank lines
+Date:   Fri, 22 Jul 2022 23:54:41 +0200
+Message-Id: <20220722215445.3548530-9-marcel@ziswiler.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220722215445.3548530-1-marcel@ziswiler.com>
+References: <20220722215445.3548530-1-marcel@ziswiler.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:Pa80ww+a5pcL8EDvRAjSLBvyasPlxCO3ZVMijNfrAbcgdn2N3JB
- kyCbv1Pbe4+2OAZsVr5vPiNbpGRgS43UTgs5RLlryJ/Hk6oeJQ0PqjViBFHA2pTkaDBo7TK
- A36HlZcMg6mJPvFFvacX5Et0tamRcvxN24Gkqr6sExg+TXuUFl57bXXbMdTCG5Ic3+yX8Ch
- DLPLc29C+3X7KNv92Z5PA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:7EOL6CV7BbY=:PcUb/OfF2nACHOicKQCah8
- t2aZ9m7YthG14oKwuHt4q137TcAEQ6+s1eY5J2yoZnr6jtrh7LKDMc1guWNb/HmVQftDCDaMP
- fm8Tn1e7ODrqvj3cOAKMpTFX98KQXaurwTXT4ZK8+l6Rlsx3ZsleutNHoncvoEYJiHilrknJZ
- Adym3S4+DvLvXGw4AMOaWNgTswvjqJ7o/f/CLwz9IFrEcFkntAmeDC4XxUJ2eZ4g+FeU36Omd
- Ju1Xnxrb5bfWSmOfCMK1UQpYifial2yq7c8XDQYzBuR0/vKKa0p+Nh+jXn1AVv+cnqP+QgDUs
- mkNiGqjPCvxwVWUyH4OiH/IL6XiApsv20uWaOF/tGkHOHufM76Ag/JiXTRfi5QKw3z8n/+pI3
- dFsK3CIic7Hb/enkQ32pLZvmXH1mty0EvR15E+LKuQ3JVOQr5LODawkulSzgUXss89o+3C/Ig
- 8qjZF+kQnuEF2iy4q/Ssli+nPorB1VIc3SrxSPtbeN/6RdVtHnyzg2w8MgMTvBXgeREyMGmrL
- 1+DvQgb8P9/xPUpBboOB2BtjBdrbRVJCqLpJlYvdNZzrhQPNdMLM/p3uzUUazGZOpPdV/4kWK
- asv5BtsW0BW0HCAUXgiE1F3dDIf4Ev43gf5EG38xgi8N+WWnhqpaMhNfTMxmHyUx5fyBZDAgN
- ugWX/LHuNCIn7PzUVMVtCFblRW0RRBqYniRIKwGAhBL7lNBikw2z8UgyNOREv55/a6Ud1m5hG
- 9zzjqaDjdgLBd5WEfJVysjGTugXxcMfcE7t1zQ==
+X-Provags-ID: V03:K1:SFXSl8AGDc2jnB5ZHzR13rZBPd6uPCCgOsuBioCkSetJ6w3yXws
+ fxfQAJGNWcZ9UthDDXtzDSEUTCuN3oajbvhY60KAbb2dJOTH3CMTIUUfnUrasECSetPphD9
+ uYy/9/PObTAKG54KJd+M3TnmuwzaBJ06MlybQLYHdlJdSrGnMepf9UyVX2pX8J7jMApVU2c
+ CCkYHNbdJVAK88LgszUtw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:IQNczrKdgQ8=:nmncx8v3MEm9nTUtV4MP0N
+ Utw+hgdceU4BmB9fG8VFezz3usUd4O83VLajAQGqWvGk2HMz2Ch1sxKQcwW5YGAYSAaL48F0U
+ ZLMWYLHImrdGsktBQ673cEm+saoSkSdsaFHJUZvKewa1eSz/1pnAcpYEDwZmO76UdVwftzC4s
+ 4lYOkowjHWe8v6A2I1AY28vX9KzN8n+EAJYgVCLCkF4paIDeWLQNgzznM+oRHyDY7EaKWSIt0
+ 2tkXKKgwMtNRh+n2+FicoN/X2s6fdluwwU/w0FLlER3GrBQ4DuBNrlNksW0PTlTGzkfx9aNlc
+ 8XT8oXNCsgDY5NeG+VS0DQ9RdlbKanoJVE0SuA+w5ilkp2+ZhfECZXzvrF8EPehtaaslmXLW9
+ jyUUJ5jHiDOg3N7bBK5CMmMC5913E+cY0mEDIHPamo21wauxSyeWhRBB0VZqquy33rQv5KXq2
+ Tyo61WVVvG+VJ6f2swj4FIuEANpNrLeDaO1nk+0ar2XkKyh00N8mnwdM11KT/Kt86xcR0CJGn
+ Fr3ywFBDh29emhD8I+v2fuGKFNw/sI79RmeY9RVRTBo5+bF9r7tx7z2bY1g1++zk+ZaFg6yAU
+ z2VhojCQIK7k/ORHCQFHVBR5C+1Xrn45EeTVRWPapnmdVpH1NtuEMKTDTZ4uNKhAHNB1jHXg9
+ 5j1vQikNHWXARraHnPHPB/Gx4OEzgWBIypJiDgGlHs2IqRJmJ0lGDG2rlWGzxG6MfOQZR+L94
+ AWiBsaCMXz707yN1zjmh7gBpR421YwKE9j14USGgbMnfy/gRg6yVwe8qfC4=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
+Avoid the following checkpatch warning:
 
-While synchronising them imx device trees with U-Boot I stumbled over
-various checkpatch warnings. This series addresses those trivial
-indentation and/or whitespace cleanups.
+arch/arm/boot/dts/vf610.dtsi:5: check: Please don't use multiple blank
+ lines
 
-Changes in v2:
-- The GPL part of the boilerplate license was actually GPL-2.0 only.
-- Add Alexander's acked-by. Thanks!
-- Add Lucas' acked-by. Thanks!
+Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+---
 
-Marcel Ziswiler (12):
-  ARM: dts: imx6-sabrelite: change to use SPDX identifiers
-  ARM: dts: imx6qdl-mba6: don't use multiple blank lines
-  ARM: dts: imx6qdl: phytec: no spaces at start of line, indent use tabs
-  ARM: dts: imx6qdl-sabre: change to use SPDX identifiers
-  ARM: dts: imx7d-pico: indent use tabs, no spaces at start of line
-  ARM: dts: vf610: no spaces in indent but tabs
-  ARM: dts: vf610-twr: indent use tabs, no spaces at start of line
-  ARM: dts: vf610: don't use multiple blank lines
-  arm64: dts: imx8mm-venice-gw72xx-0x: blank line at end of file
-  arm64: dts: imx8mp-verdin: don't use multiple blank lines
-  arm64: dts: mnt-reform2: don't use multiple blank lines
-  clk: imx8mm: don't use multiple blank lines
+(no changes since v1)
 
- arch/arm/boot/dts/imx6q-sabrelite.dts         | 37 +------------------
- arch/arm/boot/dts/imx6qdl-mba6.dtsi           |  1 -
- .../dts/imx6qdl-phytec-mira-peb-av-02.dtsi    |  2 +-
- arch/arm/boot/dts/imx6qdl-sabrelite.dtsi      | 37 +------------------
- arch/arm/boot/dts/imx7d-pico.dtsi             | 10 ++---
- arch/arm/boot/dts/vf610-pinfunc.h             |  2 +-
- arch/arm/boot/dts/vf610-twr.dts               |  2 +-
- arch/arm/boot/dts/vf610.dtsi                  |  1 -
- .../dts/freescale/imx8mm-venice-gw72xx-0x.dts |  1 -
- .../boot/dts/freescale/imx8mp-verdin.dtsi     |  1 -
- .../boot/dts/freescale/imx8mq-mnt-reform2.dts |  1 -
- include/dt-bindings/clock/imx8mm-clock.h      |  1 -
- 12 files changed, 10 insertions(+), 86 deletions(-)
+ arch/arm/boot/dts/vf610.dtsi | 1 -
+ 1 file changed, 1 deletion(-)
 
+diff --git a/arch/arm/boot/dts/vf610.dtsi b/arch/arm/boot/dts/vf610.dtsi
+index 956182d08e74..2fba923821d0 100644
+--- a/arch/arm/boot/dts/vf610.dtsi
++++ b/arch/arm/boot/dts/vf610.dtsi
+@@ -2,7 +2,6 @@
+ //
+ // Copyright 2013 Freescale Semiconductor, Inc.
+ 
+-
+ #include "vf500.dtsi"
+ 
+ &a5_cpu {
 -- 
 2.35.1
 
