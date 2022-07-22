@@ -2,120 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91741C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:26:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A095ECCA47F
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:26:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236353AbiGVJZ7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 05:25:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47568 "EHLO
+        id S236390AbiGVJ0D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 05:26:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50142 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236341AbiGVJZW (ORCPT
+        with ESMTP id S236361AbiGVJZd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 05:25:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5768AC5D4F;
-        Fri, 22 Jul 2022 02:16:14 -0700 (PDT)
+        Fri, 22 Jul 2022 05:25:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E7C2C5D63;
+        Fri, 22 Jul 2022 02:16:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4D26761FFF;
-        Fri, 22 Jul 2022 09:16:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 643B9C341CA;
-        Fri, 22 Jul 2022 09:16:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658481372;
-        bh=DfqqxgL1oa25Fb2YprLqTxborguWklpYaCo7MDYJn8U=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dlpPVYJuxAOJvjn3Q90c4hAautuNGHsrTL10886cg3oCLEjyJhWAc/IFJcN7ZRK62
-         MhAz9IMaZgwQmOhhRAVi4iT5nZzl8oW/5KkeRh40qSlUb+mmTRvcEHzcJa1gcPP5AE
-         Y3dRCAfVkFUM8vFb5HfsqroPGm6hSkClsCKAJwAs=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.15 74/89] x86/entry: Move PUSH_AND_CLEAR_REGS() back into error_entry
-Date:   Fri, 22 Jul 2022 11:11:48 +0200
-Message-Id: <20220722091137.485164274@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220722091133.320803732@linuxfoundation.org>
-References: <20220722091133.320803732@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8147EB827B7;
+        Fri, 22 Jul 2022 09:16:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39E7CC341C6;
+        Fri, 22 Jul 2022 09:16:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658481372;
+        bh=+MdnIBEBIPvCfL0UO13oheMzgvW0x0ZU/P8ra2XGuic=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=rlAtZjYk4YLxZerW3Gw+L9EsV8S+0KUHFSFEfWQJAWGwX8LIUQXTtr+Hypq/IRSL6
+         gCuaaAK7vUwsLQOeXljYmU4fUx9+fxxJOhVCrphK+ogWPcS8b7vO8cC8EilpAai/Ok
+         puvpJEocCUFS1UzrfhqOEtd7NpuYb5aEjSL7ebZqcLMYxtOFtfgHSwBxRdxTf+SmM/
+         XRFaI15q1RMXuIc5QMYMLglNyIuOjqIzIe7kmoK7189EVgKrhqNx9sBY4J2YKv6HNz
+         Q4W7b2aIjj7uaUDPsBxLHYegdH5P7rgs1x5oHsS2KVBjKXZiIvM95K7f9QQiYGbC8v
+         IMa1+X6PvjVWw==
+Date:   Fri, 22 Jul 2022 10:16:05 +0100
+From:   Will Deacon <will@kernel.org>
+To:     Huacai Chen <chenhuacai@loongson.cn>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Huacai Chen <chenhuacai@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        loongarch@lists.linux.dev, linux-arch@vger.kernel.org,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Feiyang Chen <chenfeiyang@loongson.cn>
+Subject: Re: [PATCH V5 3/4] mm/sparse-vmemmap: Generalise
+ vmemmap_populate_hugepages()
+Message-ID: <20220722091604.GD18125@willie-the-truck>
+References: <20220721130419.1904711-1-chenhuacai@loongson.cn>
+ <20220721130419.1904711-4-chenhuacai@loongson.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220721130419.1904711-4-chenhuacai@loongson.cn>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+On Thu, Jul 21, 2022 at 09:04:18PM +0800, Huacai Chen wrote:
+> diff --git a/mm/sparse-vmemmap.c b/mm/sparse-vmemmap.c
+> index 0abcb0a5f1b5..eafd084b8e19 100644
+> --- a/mm/sparse-vmemmap.c
+> +++ b/mm/sparse-vmemmap.c
+> @@ -694,6 +694,69 @@ int __meminit vmemmap_populate_basepages(unsigned long start, unsigned long end,
+>  	return vmemmap_populate_range(start, end, node, altmap, NULL);
+>  }
+>  
+> +void __weak __meminit vmemmap_set_pmd(pmd_t *pmd, void *p, int node,
+> +				      unsigned long addr, unsigned long next)
+> +{
+> +}
+> +
+> +int __weak __meminit vmemmap_check_pmd(pmd_t *pmd, int node, unsigned long addr,
+> +				       unsigned long next)
+> +{
+> +	return 0;
+> +}
+> +
+> +int __meminit vmemmap_populate_hugepages(unsigned long start, unsigned long end,
+> +					 int node, struct vmem_altmap *altmap)
+> +{
+> +	unsigned long addr;
+> +	unsigned long next;
+> +	pgd_t *pgd;
+> +	p4d_t *p4d;
+> +	pud_t *pud;
+> +	pmd_t *pmd;
+> +
+> +	for (addr = start; addr < end; addr = next) {
+> +		next = pmd_addr_end(addr, end);
+> +
+> +		pgd = vmemmap_pgd_populate(addr, node);
+> +		if (!pgd)
+> +			return -ENOMEM;
+> +
+> +		p4d = vmemmap_p4d_populate(pgd, addr, node);
+> +		if (!p4d)
+> +			return -ENOMEM;
+> +
+> +		pud = vmemmap_pud_populate(p4d, addr, node);
+> +		if (!pud)
+> +			return -ENOMEM;
+> +
+> +		pmd = pmd_offset(pud, addr);
+> +		if (pmd_none(READ_ONCE(*pmd))) {
+> +			void *p;
+> +
+> +			p = vmemmap_alloc_block_buf(PMD_SIZE, node, altmap);
+> +			if (p) {
+> +				vmemmap_set_pmd(pmd, p, node, addr, next);
+> +				continue;
+> +			} else if (altmap) {
+> +				/*
+> +				 * No fallback: In any case we care about, the
+> +				 * altmap should be reasonably sized and aligned
+> +				 * such that vmemmap_alloc_block_buf() will always
+> +				 * succeed. If there is no more space in the altmap
+> +				 * and we'd have to fallback to PTE (highly unlikely).
 
-commit 2c08b9b38f5b0f4a6c2d29be22b695e4ec4a556b upstream.
+Can you tweak the last couple of sentences please, as they don't make sense
+to me? To be specific, I'd suggest replacing:
 
-Commit
+  "If there is no more space in the altmap and we'd have to fallback to PTE
+  (highly unlikely). That could indicate an altmap-size configuration
+  issue."
 
-  ee774dac0da1 ("x86/entry: Move PUSH_AND_CLEAR_REGS out of error_entry()")
+with something like:
 
-moved PUSH_AND_CLEAR_REGS out of error_entry, into its own function, in
-part to avoid calling error_entry() for XenPV.
+  "For consistency with the PTE case, return an error here as failure could
+   indicate a configuration issue with the size of the altmap."
 
-However, commit
+With that:
 
-  7c81c0c9210c ("x86/entry: Avoid very early RET")
+Acked-by: Will Deacon <will@kernel.org>
 
-had to change that because the 'ret' was too early and moved it into
-idtentry, bloating the text size, since idtentry is expanded for every
-exception vector.
-
-However, with the advent of xen_error_entry() in commit
-
-  d147553b64bad ("x86/xen: Add UNTRAIN_RET")
-
-it became possible to remove PUSH_AND_CLEAR_REGS from idtentry, back
-into *error_entry().
-
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-[cascardo: error_entry still does cld]
-Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/x86/entry/entry_64.S |    9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
-
---- a/arch/x86/entry/entry_64.S
-+++ b/arch/x86/entry/entry_64.S
-@@ -320,6 +320,8 @@ SYM_CODE_END(ret_from_fork)
- 
- SYM_CODE_START_LOCAL(xen_error_entry)
- 	UNWIND_HINT_FUNC
-+	PUSH_AND_CLEAR_REGS save_ret=1
-+	ENCODE_FRAME_POINTER 8
- 	UNTRAIN_RET
- 	RET
- SYM_CODE_END(xen_error_entry)
-@@ -331,9 +333,6 @@ SYM_CODE_END(xen_error_entry)
-  */
- .macro idtentry_body cfunc has_error_code:req
- 
--	PUSH_AND_CLEAR_REGS
--	ENCODE_FRAME_POINTER
--
- 	/*
- 	 * Call error_entry() and switch to the task stack if from userspace.
- 	 *
-@@ -1014,6 +1013,10 @@ SYM_CODE_END(paranoid_exit)
- SYM_CODE_START_LOCAL(error_entry)
- 	UNWIND_HINT_FUNC
- 	cld
-+
-+	PUSH_AND_CLEAR_REGS save_ret=1
-+	ENCODE_FRAME_POINTER 8
-+
- 	testb	$3, CS+8(%rsp)
- 	jz	.Lerror_kernelspace
- 
-
-
+Will
