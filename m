@@ -2,77 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C04FBC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:30:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51902C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:30:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236632AbiGVJa0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 05:30:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48972 "EHLO
+        id S236642AbiGVJab (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 05:30:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236699AbiGVJ32 (ORCPT
+        with ESMTP id S236777AbiGVJ3f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 05:29:28 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74FACCFE60;
-        Fri, 22 Jul 2022 02:18:35 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A7C8061FFE;
-        Fri, 22 Jul 2022 09:18:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56944C341C6;
-        Fri, 22 Jul 2022 09:18:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658481514;
-        bh=ogXzme9Nd+4tRHQ/niqYL5axx8kpl4DBKD2E0Na7Ndo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eBwlBR95nRPTckAgYHfbRLIme5JRKIRue1VWL+Uym3Ie6kkQEA1kv6g/SrJUqVyPV
-         O3HeF+l4Up7jSX64pyuWVxKmRUYCj0MDW2cR37g3YNhJFTxtl2qpMAzYzvpU9qcV4C
-         WeGyedTRTiGgCuOnT/t6is25OmMM1S+qp+Qn3G3g=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.15 79/89] x86/xen: Fix initialisation in hypercall_page after rethunk
-Date:   Fri, 22 Jul 2022 11:11:53 +0200
-Message-Id: <20220722091137.764504078@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220722091133.320803732@linuxfoundation.org>
-References: <20220722091133.320803732@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Fri, 22 Jul 2022 05:29:35 -0400
+Received: from m12-16.163.com (m12-16.163.com [220.181.12.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DA761D065A
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 02:18:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=k5Mp8
+        51bIF/nWAX5C4b5qJcncsyh3b9n0PP2u9PIEgg=; b=ie2S81iS18e6VgCNkTaON
+        qipf3AZ3panpQrFNmVeIEYhksP1/z+iSs6kmENXrN0T3OnXcFAQRAuzkco6axOg7
+        Cim9i0Cc+WjzrL0TOtMfqm9upuWkfqP6BwXctjhUOVodzuMIx+iDlhIdPTfX68Yn
+        6/1B5yZzMdExKC/9beEry0=
+Received: from localhost.localdomain (unknown [123.58.221.99])
+        by smtp12 (Coremail) with SMTP id EMCowAAnNU3+atpiWEPbCw--.45S2;
+        Fri, 22 Jul 2022 17:16:54 +0800 (CST)
+From:   williamsukatube@163.com
+To:     robert.jarzmik@free.fr, miquel.raynal@bootlin.com, richard@nod.at,
+        vigneshr@ti.com, linux-mtd@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Cc:     William Dean <williamsukatube@gmail.com>,
+        Hacash Robot <hacashRobot@santino.com>
+Subject: [PATCH] mtd: check the return value of devm_ioremap() in docg3_probe()
+Date:   Fri, 22 Jul 2022 17:16:44 +0800
+Message-Id: <20220722091644.2937953-1-williamsukatube@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: EMCowAAnNU3+atpiWEPbCw--.45S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrtFWrZF15Cr1fuFyUKry8Zrb_yoWkXFc_u3
+        yfZr4xtrWktFyFgF13KF1fAryftrn29FWrWwn3tFZ3CrW7ur47urWDuFn0qrWUZr9Y9ry3
+        J3s8CrnF9F1agjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU5uOJ5UUUUU==
+X-Originating-IP: [123.58.221.99]
+X-CM-SenderInfo: xzlozx5dpv3yxdwxuvi6rwjhhfrp/xtbB0AZGg2Esra8OvAAAsu
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ben Hutchings <ben@decadent.org.uk>
+From: William Dean <williamsukatube@gmail.com>
 
-The hypercall_page is special and the RETs there should not be changed
-into rethunk calls (but can have SLS mitigation).  Change the initial
-instructions to ret + int3 padding, as was done in upstream commit
-5b2fc51576ef "x86/ibt,xen: Sprinkle the ENDBR".
+The function devm_ioremap() in docg3_probe() can fail, so
+its return value should be checked.
 
-Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 82402aeb8c81e ("mtd: docg3: Use devm_*() functions")
+Reported-by: Hacash Robot <hacashRobot@santino.com>
+Signed-off-by: William Dean <williamsukatube@gmail.com>
 ---
- arch/x86/xen/xen-head.S |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/mtd/devices/docg3.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
---- a/arch/x86/xen/xen-head.S
-+++ b/arch/x86/xen/xen-head.S
-@@ -69,9 +69,9 @@ SYM_CODE_END(asm_cpu_bringup_and_idle)
- SYM_CODE_START(hypercall_page)
- 	.rept (PAGE_SIZE / 32)
- 		UNWIND_HINT_FUNC
--		.skip 31, 0x90
- 		ANNOTATE_UNRET_SAFE
--		RET
-+		ret
-+		.skip 31, 0xcc
- 	.endr
+diff --git a/drivers/mtd/devices/docg3.c b/drivers/mtd/devices/docg3.c
+index 5b0ae5ddad74..27c08f22dec8 100644
+--- a/drivers/mtd/devices/docg3.c
++++ b/drivers/mtd/devices/docg3.c
+@@ -1974,9 +1974,14 @@ static int __init docg3_probe(struct platform_device *pdev)
+ 		dev_err(dev, "No I/O memory resource defined\n");
+ 		return ret;
+ 	}
+-	base = devm_ioremap(dev, ress->start, DOC_IOSPACE_SIZE);
  
- #define HYPERCALL(n) \
-
+ 	ret = -ENOMEM;
++	base = devm_ioremap(dev, ress->start, DOC_IOSPACE_SIZE);
++	if (!base) {
++		dev_err(dev, "devm_ioremap dev failed\n");
++		return ret;
++	}
++
+ 	cascade = devm_kcalloc(dev, DOC_MAX_NBFLOORS, sizeof(*cascade),
+ 			       GFP_KERNEL);
+ 	if (!cascade)
+-- 
+2.25.1
 
