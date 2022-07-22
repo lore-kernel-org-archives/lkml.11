@@ -2,110 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F805C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:06:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03DCDC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:06:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234622AbiGVJGr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 05:06:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35564 "EHLO
+        id S235082AbiGVJGv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 05:06:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234819AbiGVJG2 (ORCPT
+        with ESMTP id S234679AbiGVJG0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 05:06:28 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D837D820FC;
-        Fri, 22 Jul 2022 02:06:26 -0700 (PDT)
-Received: from IcarusMOD.eternityproject.eu (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id D394E6601AC4;
-        Fri, 22 Jul 2022 10:06:23 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1658480785;
-        bh=mMJ3K3TbXn/UUL3S3d3jiPJuEaitXGiVGUupceF1OPI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jrOBiCnS/BpRMjPT9WRXnEsL9rOV8m/wdtb2QAXOOhWO5TSofZfCO5+JCVNAgsAtX
-         ehbKREA2qNsN0V2/HTgCDHM/ft4MLcp6QEysX8GF9ljG/kiFQo+k0W9U8lwFkd/5QN
-         oT/95BdGOokcQmqEpGQO1yHJJk3RiArj52wreVnupD48bGw9Fu5OLK+V+jxl05tbDd
-         JjYi4V5eBJm4fwPVI+mjZ0vEJ4fLfLjo4JFv6Z8QbS9nB7MFwPE8IlDFF+ovqJ91a2
-         QZcMvHWpQxtTgwqZ6K1vjA29zLlKVDOsxrbx2z5rIpCtyAM8CPlq4oMitc+mWPxNwk
-         i9Vd23RKtivXA==
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-To:     sboyd@kernel.org
-Cc:     mturquette@baylibre.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
-        p.zabel@pengutronix.de, y.oudjana@protonmail.com,
-        angelogioacchino.delregno@collabora.com, jason-jh.lin@mediatek.com,
-        ck.hu@mediatek.com, fparent@baylibre.com, rex-bc.chen@mediatek.com,
-        tinghan.shen@mediatek.com, ikjn@chromium.org,
-        miles.chen@mediatek.com, sam.shih@mediatek.com, wenst@chromium.org,
-        bgolaszewski@baylibre.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-clk@vger.kernel.org,
-        konrad.dybcio@somainline.org, marijn.suijten@somainline.org,
-        martin.botka@somainline.org, ~postmarketos/upstreaming@lists.sr.ht,
-        phone-devel@vger.kernel.org, paul.bouchara@somainline.org,
-        kernel@collabora.com
-Subject: [PATCH v6 7/8] clk: mediatek: clk-apmixed: Add helper function to unregister ref2usb_tx
-Date:   Fri, 22 Jul 2022 11:06:08 +0200
-Message-Id: <20220722090609.52364-8-angelogioacchino.delregno@collabora.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220722090609.52364-1-angelogioacchino.delregno@collabora.com>
-References: <20220722090609.52364-1-angelogioacchino.delregno@collabora.com>
+        Fri, 22 Jul 2022 05:06:26 -0400
+Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7E1E83F39
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 02:06:23 -0700 (PDT)
+Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
+        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26M5SHGJ029230;
+        Fri, 22 Jul 2022 04:05:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=PODMain02222019;
+ bh=fUH/IDEchZ9dPIGJX0NwZHAYP1mAyq3V+B8mNGztKLE=;
+ b=RgzJDEj5WdcqKgU6kDfNFDQt6Sc9JLuq1s3B4/1AlTltHfanM5vjWNIq36o3faCI6k8x
+ KRUmqMJzG1gTEo68gerNIIDYZgLdGL9+rpxeXNv1QNCU9ECAI64xwgGKvPrqqmDAB1pg
+ 2jLbWri/ImwOqkn1jcNmA9Mkg62bQu7iDHZbAsQ/497lurs8yWo4Q63u/cynsAAnW/XE
+ 2dB4t68pBJ39NXr7TQAoezq/vbR9rEAgOYu5yEewBwKWPR52sEoquM1pjuOrrpefUYbn
+ X9y3P6aquSc9e/oKGD1DcsY9SWo9mATU7HgQzxv9k7mJtdASO2rV+h02U2cUvOVAZGSJ sQ== 
+Received: from ediex02.ad.cirrus.com ([84.19.233.68])
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3hdxffbnb0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 22 Jul 2022 04:05:34 -0500
+Received: from ediex01.ad.cirrus.com (198.61.84.80) by ediex02.ad.cirrus.com
+ (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.9; Fri, 22 Jul
+ 2022 04:05:32 -0500
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by
+ anon-ediex01.ad.cirrus.com (198.61.84.80) with Microsoft SMTP Server id
+ 15.2.1118.9 via Frontend Transport; Fri, 22 Jul 2022 04:05:32 -0500
+Received: from ediswmail.ad.cirrus.com (ediswmail.ad.cirrus.com [198.61.86.93])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id CB63D46B;
+        Fri, 22 Jul 2022 09:05:32 +0000 (UTC)
+Date:   Fri, 22 Jul 2022 09:05:32 +0000
+From:   Charles Keepax <ckeepax@opensource.cirrus.com>
+To:     Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+CC:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>, <alsa-devel@alsa-project.org>,
+        <linux-kernel@vger.kernel.org>, <kernel@collabora.com>
+Subject: Re: [PATCH] ASoC: amd: vangogh: Use non-legacy DAI naming for cs35l41
+Message-ID: <20220722090532.GF92394@ediswmail.ad.cirrus.com>
+References: <20220721233227.1459374-1-cristian.ciocaltea@collabora.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220721233227.1459374-1-cristian.ciocaltea@collabora.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-Proofpoint-ORIG-GUID: xPwS9w7hBwax5mWU939OdQEsh3UOH1LT
+X-Proofpoint-GUID: xPwS9w7hBwax5mWU939OdQEsh3UOH1LT
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The ref2usb_tx clock was introduced a long time ago and, at that time,
-the MediaTek clock drivers were using CLK_OF_DECLARE, so they would
-never unregister.
+On Fri, Jul 22, 2022 at 02:32:27AM +0300, Cristian Ciocaltea wrote:
+> Unlike most CODEC drivers, the CS35L41 driver did not have the
+> non_legacy_dai_naming set, meaning the corresponding DAI has been
+> traditionally registered using the legacy naming: spi-VLV1776:0x
+> 
+> The recent migration to the new legacy DAI naming style has implicitly
+> corrected that behavior and DAI gets now registered via the non-legacy
+> naming, i.e. cs35l41-pcm.
+> 
+> The problem is the acp5x platform driver is now broken as it continues
+> to refer to the above mentioned codec using the legacy DAI naming in
+> function acp5x_cs35l41_hw_params() and, therefore, the related setup
+> is not being executed anymore.
+> 
+> Let's fix that by replacing the obsolete DAI name with the correct one.
+> 
+> Fixes: bc949a3b4af3 ("ASoC: core: Switch core to new DAI naming flag")
 
-Nowadays, unregistering clock drivers is a thing, as we're registering
-them as platform_driver and allowing them to be kernel modules: add a
-helper function to cleanup the ref2usb_tx clock during error handling
-and upon module removal.
+Although sorry just noticed you might want to double check the SHA
+here, I think the upstream one is 129f055a2144.
 
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/clk/mediatek/clk-apmixed.c | 9 +++++++++
- drivers/clk/mediatek/clk-mtk.h     | 1 +
- 2 files changed, 10 insertions(+)
-
-diff --git a/drivers/clk/mediatek/clk-apmixed.c b/drivers/clk/mediatek/clk-apmixed.c
-index f126da693a7f..60e34f124250 100644
---- a/drivers/clk/mediatek/clk-apmixed.c
-+++ b/drivers/clk/mediatek/clk-apmixed.c
-@@ -100,4 +100,13 @@ struct clk_hw *mtk_clk_register_ref2usb_tx(const char *name,
- }
- EXPORT_SYMBOL_GPL(mtk_clk_register_ref2usb_tx);
- 
-+void mtk_clk_unregister_ref2usb_tx(struct clk_hw *hw)
-+{
-+	struct mtk_ref2usb_tx *tx = to_mtk_ref2usb_tx(hw);
-+
-+	clk_hw_unregister(hw);
-+	kfree(tx);
-+}
-+EXPORT_SYMBOL_GPL(mtk_clk_unregister_ref2usb_tx);
-+
- MODULE_LICENSE("GPL");
-diff --git a/drivers/clk/mediatek/clk-mtk.h b/drivers/clk/mediatek/clk-mtk.h
-index 1b95c484d5aa..62d650045cba 100644
---- a/drivers/clk/mediatek/clk-mtk.h
-+++ b/drivers/clk/mediatek/clk-mtk.h
-@@ -188,6 +188,7 @@ void mtk_free_clk_data(struct clk_hw_onecell_data *clk_data);
- 
- struct clk_hw *mtk_clk_register_ref2usb_tx(const char *name,
- 			const char *parent_name, void __iomem *reg);
-+void mtk_clk_unregister_ref2usb_tx(struct clk_hw *hw);
- 
- struct mtk_clk_desc {
- 	const struct mtk_gate *clks;
--- 
-2.35.1
-
+Thanks,
+Charles
