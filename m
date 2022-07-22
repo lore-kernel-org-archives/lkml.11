@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55926C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:12:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74737C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:12:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235306AbiGVJMV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 05:12:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39368 "EHLO
+        id S235399AbiGVJMc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 05:12:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235303AbiGVJLr (ORCPT
+        with ESMTP id S235087AbiGVJL6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 05:11:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9811A0B84;
-        Fri, 22 Jul 2022 02:09:48 -0700 (PDT)
+        Fri, 22 Jul 2022 05:11:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54EC9A0B91;
+        Fri, 22 Jul 2022 02:09:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 56C2761EE7;
-        Fri, 22 Jul 2022 09:09:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FA01C341C6;
-        Fri, 22 Jul 2022 09:09:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E4F77B827C8;
+        Fri, 22 Jul 2022 09:09:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54DE3C341C7;
+        Fri, 22 Jul 2022 09:09:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658480987;
-        bh=LkVA0xiAiMwnxQTu6pYRQJruQNd4vWhOLkXE1iKbhYc=;
+        s=korg; t=1658480990;
+        bh=2MIJbf8TXQQVuRBlejKSL9UpaG5j6tBin2fze29fTlM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ifSSTkJJJfkGAilV4KYmSyDEtnKudaSxQ3ut+INfFNe3MZqOi/vkOLCAAFYRfb37b
-         txbSTzru45altQcFMKUwqVpt+nerttWr5ftQg4ZVD+m6dRkWN9rLBJkZ2ga6rqOWry
-         /k3dp+W7UdM3tGn3Cclb8yyVNFoWc+M8998kRvqQ=
+        b=WZ2+OVZ1jDwOXmJ4ecLIywCNGtTobmzXzLE/WghUfWxnS2wLZ8OXdiUDuuu32FgKM
+         9plf8d/5Qhc0lIkbKsYJAe3v+G4WvdvEeIuZx7Bz95myQ64jiS4dbvwFRQ7qS/Ze6f
+         NSiNp9uhfNQjbGgBpRa5HYM1JbT0HyfE/NF5a12k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
+        stable@vger.kernel.org, Andrew Cooper <Andrew.Cooper3@citrix.com>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Borislav Petkov <bp@suse.de>,
         Josh Poimboeuf <jpoimboe@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.18 31/70] x86/bugs: Split spectre_v2_select_mitigation() and spectre_v2_user_select_mitigation()
-Date:   Fri, 22 Jul 2022 11:07:26 +0200
-Message-Id: <20220722090652.461614412@linuxfoundation.org>
+Subject: [PATCH 5.18 40/70] x86/cpu/amd: Add Spectral Chicken
+Date:   Fri, 22 Jul 2022 11:07:35 +0200
+Message-Id: <20220722090652.962971847@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220722090650.665513668@linuxfoundation.org>
 References: <20220722090650.665513668@linuxfoundation.org>
@@ -53,11 +53,16 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peter Zijlstra <peterz@infradead.org>
 
-commit 166115c08a9b0b846b783088808a27d739be6e8d upstream.
+commit d7caac991feeef1b871ee6988fd2c9725df09039 upstream.
 
-retbleed will depend on spectre_v2, while spectre_v2_user depends on
-retbleed. Break this cycle.
+Zen2 uarchs have an undocumented, unnamed, MSR that contains a chicken
+bit for some speculation behaviour. It needs setting.
 
+Note: very belatedly AMD released naming; it's now officially called
+      MSR_AMD64_DE_CFG2 and MSR_AMD64_DE_CFG2_SUPPRESS_NOBR_PRED_BIT
+      but shall remain the SPECTRAL CHICKEN.
+
+Suggested-by: Andrew Cooper <Andrew.Cooper3@citrix.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
 Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
@@ -65,88 +70,88 @@ Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/cpu/bugs.c |   25 +++++++++++++++++--------
- 1 file changed, 17 insertions(+), 8 deletions(-)
+ arch/x86/include/asm/msr-index.h |    3 +++
+ arch/x86/kernel/cpu/amd.c        |   23 ++++++++++++++++++++++-
+ arch/x86/kernel/cpu/cpu.h        |    2 ++
+ arch/x86/kernel/cpu/hygon.c      |    6 ++++++
+ 4 files changed, 33 insertions(+), 1 deletion(-)
 
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -37,8 +37,9 @@
- #include "cpu.h"
+--- a/arch/x86/include/asm/msr-index.h
++++ b/arch/x86/include/asm/msr-index.h
+@@ -553,6 +553,9 @@
+ /* Fam 17h MSRs */
+ #define MSR_F17H_IRPERF			0xc00000e9
  
- static void __init spectre_v1_select_mitigation(void);
--static void __init retbleed_select_mitigation(void);
- static void __init spectre_v2_select_mitigation(void);
-+static void __init retbleed_select_mitigation(void);
-+static void __init spectre_v2_user_select_mitigation(void);
- static void __init ssb_select_mitigation(void);
- static void __init l1tf_select_mitigation(void);
- static void __init mds_select_mitigation(void);
-@@ -145,13 +146,19 @@ void __init check_bugs(void)
- 
- 	/* Select the proper CPU mitigations before patching alternatives: */
- 	spectre_v1_select_mitigation();
-+	spectre_v2_select_mitigation();
-+	/*
-+	 * retbleed_select_mitigation() relies on the state set by
-+	 * spectre_v2_select_mitigation(); specifically it wants to know about
-+	 * spectre_v2=ibrs.
-+	 */
- 	retbleed_select_mitigation();
- 	/*
--	 * spectre_v2_select_mitigation() relies on the state set by
-+	 * spectre_v2_user_select_mitigation() relies on the state set by
- 	 * retbleed_select_mitigation(); specifically the STIBP selection is
- 	 * forced for UNRET.
- 	 */
--	spectre_v2_select_mitigation();
-+	spectre_v2_user_select_mitigation();
- 	ssb_select_mitigation();
- 	l1tf_select_mitigation();
- 	md_clear_select_mitigation();
-@@ -1006,13 +1013,15 @@ static void __init spec_v2_user_print_co
- 		pr_info("spectre_v2_user=%s forced on command line.\n", reason);
- }
- 
-+static __ro_after_init enum spectre_v2_mitigation_cmd spectre_v2_cmd;
++#define MSR_ZEN2_SPECTRAL_CHICKEN	0xc00110e3
++#define MSR_ZEN2_SPECTRAL_CHICKEN_BIT	BIT_ULL(1)
 +
- static enum spectre_v2_user_cmd __init
--spectre_v2_parse_user_cmdline(enum spectre_v2_mitigation_cmd v2_cmd)
-+spectre_v2_parse_user_cmdline(void)
- {
- 	char arg[20];
- 	int ret, i;
- 
--	switch (v2_cmd) {
-+	switch (spectre_v2_cmd) {
- 	case SPECTRE_V2_CMD_NONE:
- 		return SPECTRE_V2_USER_CMD_NONE;
- 	case SPECTRE_V2_CMD_FORCE:
-@@ -1047,7 +1056,7 @@ static inline bool spectre_v2_in_ibrs_mo
+ /* Fam 16h MSRs */
+ #define MSR_F16H_L2I_PERF_CTL		0xc0010230
+ #define MSR_F16H_L2I_PERF_CTR		0xc0010231
+--- a/arch/x86/kernel/cpu/amd.c
++++ b/arch/x86/kernel/cpu/amd.c
+@@ -862,6 +862,26 @@ static void init_amd_bd(struct cpuinfo_x
+ 	clear_rdrand_cpuid_bit(c);
  }
  
- static void __init
--spectre_v2_user_select_mitigation(enum spectre_v2_mitigation_cmd v2_cmd)
-+spectre_v2_user_select_mitigation(void)
++void init_spectral_chicken(struct cpuinfo_x86 *c)
++{
++	u64 value;
++
++	/*
++	 * On Zen2 we offer this chicken (bit) on the altar of Speculation.
++	 *
++	 * This suppresses speculation from the middle of a basic block, i.e. it
++	 * suppresses non-branch predictions.
++	 *
++	 * We use STIBP as a heuristic to filter out Zen2 from the rest of F17H
++	 */
++	if (!cpu_has(c, X86_FEATURE_HYPERVISOR) && cpu_has(c, X86_FEATURE_AMD_STIBP)) {
++		if (!rdmsrl_safe(MSR_ZEN2_SPECTRAL_CHICKEN, &value)) {
++			value |= MSR_ZEN2_SPECTRAL_CHICKEN_BIT;
++			wrmsrl_safe(MSR_ZEN2_SPECTRAL_CHICKEN, value);
++		}
++	}
++}
++
+ static void init_amd_zn(struct cpuinfo_x86 *c)
  {
- 	enum spectre_v2_user_mitigation mode = SPECTRE_V2_USER_NONE;
- 	bool smt_possible = IS_ENABLED(CONFIG_SMP);
-@@ -1060,7 +1069,7 @@ spectre_v2_user_select_mitigation(enum s
- 	    cpu_smt_control == CPU_SMT_NOT_SUPPORTED)
- 		smt_possible = false;
- 
--	cmd = spectre_v2_parse_user_cmdline(v2_cmd);
-+	cmd = spectre_v2_parse_user_cmdline();
- 	switch (cmd) {
- 	case SPECTRE_V2_USER_CMD_NONE:
- 		goto set_mode;
-@@ -1384,7 +1393,7 @@ static void __init spectre_v2_select_mit
+ 	set_cpu_cap(c, X86_FEATURE_ZEN);
+@@ -907,7 +927,8 @@ static void init_amd(struct cpuinfo_x86
+ 	case 0x12: init_amd_ln(c); break;
+ 	case 0x15: init_amd_bd(c); break;
+ 	case 0x16: init_amd_jg(c); break;
+-	case 0x17: fallthrough;
++	case 0x17: init_spectral_chicken(c);
++		   fallthrough;
+ 	case 0x19: init_amd_zn(c); break;
  	}
  
- 	/* Set up IBPB and STIBP depending on the general spectre V2 command */
--	spectre_v2_user_select_mitigation(cmd);
-+	spectre_v2_cmd = cmd;
- }
+--- a/arch/x86/kernel/cpu/cpu.h
++++ b/arch/x86/kernel/cpu/cpu.h
+@@ -61,6 +61,8 @@ static inline void tsx_init(void) { }
+ static inline void tsx_ap_init(void) { }
+ #endif /* CONFIG_CPU_SUP_INTEL */
  
- static void update_stibp_msr(void * __unused)
++extern void init_spectral_chicken(struct cpuinfo_x86 *c);
++
+ extern void get_cpu_cap(struct cpuinfo_x86 *c);
+ extern void get_cpu_address_sizes(struct cpuinfo_x86 *c);
+ extern void cpu_detect_cache_sizes(struct cpuinfo_x86 *c);
+--- a/arch/x86/kernel/cpu/hygon.c
++++ b/arch/x86/kernel/cpu/hygon.c
+@@ -302,6 +302,12 @@ static void init_hygon(struct cpuinfo_x8
+ 	/* get apicid instead of initial apic id from cpuid */
+ 	c->apicid = hard_smp_processor_id();
+ 
++	/*
++	 * XXX someone from Hygon needs to confirm this DTRT
++	 *
++	init_spectral_chicken(c);
++	 */
++
+ 	set_cpu_cap(c, X86_FEATURE_ZEN);
+ 	set_cpu_cap(c, X86_FEATURE_CPB);
+ 
 
 
