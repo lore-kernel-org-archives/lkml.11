@@ -2,202 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2E07C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 19:16:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2479C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 19:19:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236039AbiGVTQF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 15:16:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51684 "EHLO
+        id S235895AbiGVTS6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 15:18:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235796AbiGVTQB (ORCPT
+        with ESMTP id S232331AbiGVTSz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 15:16:01 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2466B5A14B
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 12:16:00 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id z22so9117281lfu.7
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 12:16:00 -0700 (PDT)
+        Fri, 22 Jul 2022 15:18:55 -0400
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 633D55E31F
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 12:18:54 -0700 (PDT)
+Received: by mail-lj1-x234.google.com with SMTP id k19so6513782lji.10
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 12:18:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=G47quR1ZrGgbuIvZ59TBsJJd6cPVPIYmhWGk53FjaIA=;
-        b=spzJf2AITB3NQPutmqI27okRtwimfTO91xAARb293I66WGKv/cLML3hywZoRzlgoO1
-         fBl9hcQgHMMGMr0yMet80vyPHKcxuoRtPmPunyfpNcyYVKp4EXf7n6gHcfs7KwqOHU/Z
-         6AQxfJ8LT+wdjKubufiFN/GsTTw/YPLnF3e6w8L26VB9pVbpq/pK50eJRaNBgBXRhore
-         47C0iCnBKDmsSj60FTjryu4yURM8Sz30TUco1YyUzbluYUuRYUx8nQBaJoG8GbaqUeTL
-         rO4m7IBmVhhJ2gEcEUE/0uE6guKEYPN7l5gwEqDPrsucx97PC4T46APB/f87qtIKLdLO
-         UmgQ==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Kjnz9jnBzE7TgHYD4icOZx+MB0ePlqFO/pSn3BcmO+0=;
+        b=zrdZV1N8rcljnnm792VSjQ58hdKWLtfgPqKQdfcSLXzUErMw+skmwdSXV2F1TitH/J
+         NXuvWrAerVaTlGh64K45PDLNZTuQHps12d5me3DX8ZH+ldaHlB9pjB4/jMARTYbq1mDC
+         At2wOShU5RXVlK1WMDpuOxXf0+b8seAI639XdkJnWGDlUJNVEw+NrXluQNBlMVrgHYFu
+         IoQENpAAY67ayReLSP6wxkz7wKMI734bKY81eb6+d64imahKqTz7wNKWoTii6KD+qhKv
+         T30tdvfqWDd7ikzgol6ERulCLyJ/niszNvhehaE7QBt7nMOzDRKQQL0F61U4Ospmw5FP
+         rqGQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=G47quR1ZrGgbuIvZ59TBsJJd6cPVPIYmhWGk53FjaIA=;
-        b=rLzR3vKNkyTa3LTB6KBKyqg9QkPK63+OJKIW+udpS+rNv983+6DGQrwiPMHwxoJDF2
-         lPygJ4zwRPTXnJoccO0nXTf+BcdMb6fFDOk5zXsG0mV91WejlFJaCDK3JLAP1YISWc49
-         mMLhKPjiXHkToAhbITq8wwlSqh+t3g1OVS3SY2+ThGIkmAAqZxTd1iwCP1BniSu+SNSa
-         OgT2RjfclYsUoVAy9a8z+H919U8aloi48YqKOHjDhCqzlqeGpbFu5EHLCgQIsq/veYgK
-         Gsi57b4YXcEf7+0/tcQDGXTWaS1ZRqqryjcv4EwNZ4tB4To0mJeZ+k+upaIz5JkWh29I
-         7n1A==
-X-Gm-Message-State: AJIora/wkFa77uDAdm4sKvcT8C+t6Sgz7XUOyMeTao/rTosbx3hRx1UT
-        xEFK/bP3dKWEVHOi3niuK+DzsQ==
-X-Google-Smtp-Source: AGRyM1vTa4j/tadJgnKEq9gHixcXZDFaetZSqHt0lkasbn82IkjJKmFFsP6XUHahqlJjNcJz6LaNrQ==
-X-Received: by 2002:a19:ad02:0:b0:48a:7246:63c6 with SMTP id t2-20020a19ad02000000b0048a724663c6mr520857lfc.541.1658517358365;
-        Fri, 22 Jul 2022 12:15:58 -0700 (PDT)
-Received: from krzk-bin.home (93.81-167-86.customer.lyse.net. [81.167.86.93])
-        by smtp.gmail.com with ESMTPSA id f7-20020a0565123b0700b0047255d211d7sm287484lfv.262.2022.07.22.12.15.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Jul 2022 12:15:57 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
-        Tomi Valkeinen <tomi.valkeinen@ti.com>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Marek Belisko <marek@goldelico.com>,
-        "H. Nikolaus Schaller" <hns@goldelico.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v2 1/1] spi/panel: dt-bindings: drop CPHA and CPOL from common properties
-Date:   Fri, 22 Jul 2022 21:15:39 +0200
-Message-Id: <20220722191539.90641-2-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220722191539.90641-1-krzysztof.kozlowski@linaro.org>
-References: <20220722191539.90641-1-krzysztof.kozlowski@linaro.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Kjnz9jnBzE7TgHYD4icOZx+MB0ePlqFO/pSn3BcmO+0=;
+        b=dv8QsfmbdAPJAbU9JLHcBrIly/vcovhsYtNZW1FtpZlSEvRnzKNnFK0gn2zReH45ry
+         9ZnFh2y88ZurVbsKKC5yKHwNYc5plJVzJotFbSmcMYpHkR2tFsrzaW7WllyBFcDqzm3K
+         HbAyrfr6VA6hIlRl+hgtPE5POElxLb25CMmKGmpttKEe3MhTTX/S7jlhE7erdjajCT4p
+         80RHyKbvjm0yfnnTQIbAbYrH7chE5gKdre+QLsSI7zPVzLeFhWTUJRx8hj8OV8VLLnRw
+         1DfkK6hV/GEPvMkWj/1cSK3QvKfSHyzZT4lbcIHiYhkB4pWOLv3xd6sjjFDu2Ffz8Xfu
+         6MPA==
+X-Gm-Message-State: AJIora/31b9bqIUrf+q9M23p2SbA8C/8I5QQT00iHG8qS/2bP1fWkFHR
+        FU1gq2V5wr0PPZBWAGbUJcz8VA==
+X-Google-Smtp-Source: AGRyM1tCLElgP8uPh4Z9md/fxoYz+LRieaRoF2qyv6YfjK5RUT+HTsr3Y0dq0yujq9NNuHAuCiG6qg==
+X-Received: by 2002:a05:651c:20e:b0:25d:521d:66e2 with SMTP id y14-20020a05651c020e00b0025d521d66e2mr517200ljn.258.1658517532596;
+        Fri, 22 Jul 2022 12:18:52 -0700 (PDT)
+Received: from [192.168.10.173] (93.81-167-86.customer.lyse.net. [81.167.86.93])
+        by smtp.gmail.com with ESMTPSA id o8-20020ac24e88000000b00484edac69ccsm1214228lfr.43.2022.07.22.12.18.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 22 Jul 2022 12:18:52 -0700 (PDT)
+Message-ID: <85199046-b1ff-0b41-0938-172c55b7a4c5@linaro.org>
+Date:   Fri, 22 Jul 2022 21:18:50 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 1/3] dt-bindings: memory-controller: Document Broadcom STB
+ MEMC
+Content-Language: en-US
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        linux-kernel@vger.kernel.org
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "moderated list:BROADCOM BCM7XXX ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>
+References: <20220722184138.2666241-1-f.fainelli@gmail.com>
+ <20220722184138.2666241-2-f.fainelli@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220722184138.2666241-2-f.fainelli@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The spi-cpha and spi-cpol properties are device specific and should be
-accepted only if device really needs them.  Drop them from common
-spi-peripheral-props.yaml schema, mention in few panel drivers which use
-them and include instead in the SPI controller bindings.  The controller
-bindings will provide CPHA/CPOL type validation and one place for
-description.  Each device schema must list the properties if they are
-applicable.
+On 22/07/2022 20:41, Florian Fainelli wrote:
+> Document the Broadcom STB memory controller which is a trivial binding
+> for now with a set of compatible strings and single register.
+> 
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> ---
+>  .../memory-controllers/brcm,memc.yaml         | 49 +++++++++++++++++++
+>  1 file changed, 49 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/memory-controllers/brcm,memc.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/memory-controllers/brcm,memc.yaml b/Documentation/devicetree/bindings/memory-controllers/brcm,memc.yaml
+> new file mode 100644
+> index 000000000000..a629734f0cd0
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/memory-controllers/brcm,memc.yaml
+> @@ -0,0 +1,49 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/memory-controllers/brcm,memc.yaml#
 
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
-Suggested-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- .../bindings/display/panel/lgphilips,lb035q02.yaml    |  3 +++
- .../bindings/display/panel/samsung,ld9040.yaml        |  3 +++
- .../bindings/display/panel/sitronix,st7789v.yaml      |  3 +++
- .../devicetree/bindings/display/panel/tpo,td.yaml     |  3 +++
- .../devicetree/bindings/spi/spi-controller.yaml       | 11 +++++++++++
- .../devicetree/bindings/spi/spi-peripheral-props.yaml | 10 ----------
- 6 files changed, 23 insertions(+), 10 deletions(-)
+Filename like first compatible, so: brcm,brcmstb-memc-ddr.yaml
 
-diff --git a/Documentation/devicetree/bindings/display/panel/lgphilips,lb035q02.yaml b/Documentation/devicetree/bindings/display/panel/lgphilips,lb035q02.yaml
-index 5e4e0e552c2f..628c4b898111 100644
---- a/Documentation/devicetree/bindings/display/panel/lgphilips,lb035q02.yaml
-+++ b/Documentation/devicetree/bindings/display/panel/lgphilips,lb035q02.yaml
-@@ -21,6 +21,9 @@ properties:
-   enable-gpios: true
-   port: true
- 
-+  spi-cpha: true
-+  spi-cpol: true
-+
- required:
-   - compatible
-   - enable-gpios
-diff --git a/Documentation/devicetree/bindings/display/panel/samsung,ld9040.yaml b/Documentation/devicetree/bindings/display/panel/samsung,ld9040.yaml
-index d525165d6d63..c0fabeb38628 100644
---- a/Documentation/devicetree/bindings/display/panel/samsung,ld9040.yaml
-+++ b/Documentation/devicetree/bindings/display/panel/samsung,ld9040.yaml
-@@ -42,6 +42,9 @@ properties:
-   panel-height-mm:
-     description: physical panel height [mm]
- 
-+  spi-cpha: true
-+  spi-cpol: true
-+
- required:
-   - compatible
-   - reg
-diff --git a/Documentation/devicetree/bindings/display/panel/sitronix,st7789v.yaml b/Documentation/devicetree/bindings/display/panel/sitronix,st7789v.yaml
-index 9e1d707c2ace..d984b59daa4a 100644
---- a/Documentation/devicetree/bindings/display/panel/sitronix,st7789v.yaml
-+++ b/Documentation/devicetree/bindings/display/panel/sitronix,st7789v.yaml
-@@ -23,6 +23,9 @@ properties:
-   backlight: true
-   port: true
- 
-+  spi-cpha: true
-+  spi-cpol: true
-+
- required:
-   - compatible
-   - reg
-diff --git a/Documentation/devicetree/bindings/display/panel/tpo,td.yaml b/Documentation/devicetree/bindings/display/panel/tpo,td.yaml
-index f902a9d74141..e8c8ee8d7c88 100644
---- a/Documentation/devicetree/bindings/display/panel/tpo,td.yaml
-+++ b/Documentation/devicetree/bindings/display/panel/tpo,td.yaml
-@@ -28,6 +28,9 @@ properties:
-   backlight: true
-   port: true
- 
-+  spi-cpha: true
-+  spi-cpol: true
-+
- required:
-   - compatible
-   - port
-diff --git a/Documentation/devicetree/bindings/spi/spi-controller.yaml b/Documentation/devicetree/bindings/spi/spi-controller.yaml
-index 678cee68b52a..655713fba7e2 100644
---- a/Documentation/devicetree/bindings/spi/spi-controller.yaml
-+++ b/Documentation/devicetree/bindings/spi/spi-controller.yaml
-@@ -95,6 +95,17 @@ patternProperties:
-     type: object
-     $ref: spi-peripheral-props.yaml
- 
-+    properties:
-+      spi-cpha:
-+        $ref: /schemas/types.yaml#/definitions/flag
-+        description:
-+          The device requires shifted clock phase (CPHA) mode.
-+
-+      spi-cpol:
-+        $ref: /schemas/types.yaml#/definitions/flag
-+        description:
-+          The device requires inverse clock polarity (CPOL) mode.
-+
-     required:
-       - compatible
-       - reg
-diff --git a/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
-index 5e32928c4fc3..2349f83c07f3 100644
---- a/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
-+++ b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
-@@ -34,16 +34,6 @@ properties:
-     description:
-       The device requires 3-wire mode.
- 
--  spi-cpha:
--    $ref: /schemas/types.yaml#/definitions/flag
--    description:
--      The device requires shifted clock phase (CPHA) mode.
--
--  spi-cpol:
--    $ref: /schemas/types.yaml#/definitions/flag
--    description:
--      The device requires inverse clock polarity (CPOL) mode.
--
-   spi-cs-high:
-     $ref: /schemas/types.yaml#/definitions/flag
-     description:
--- 
-2.34.1
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Memory controller (MEMC) for Broadcom STB
+> +
+> +maintainers:
+> +  - Florian Fainelli <f.fainelli@gmail.com>
+> +
+> +properties:
+> +  compatible:
+> +    items:
+> +      - enum:
+> +          - brcm,brcmstb-memc-ddr-rev-b.1.x
+> +          - brcm,brcmstb-memc-ddr-rev-b.2.0
+> +          - brcm,brcmstb-memc-ddr-rev-b.2.1
+> +          - brcm,brcmstb-memc-ddr-rev-b.2.2
+> +          - brcm,brcmstb-memc-ddr-rev-b.2.3
+> +          - brcm,brcmstb-memc-ddr-rev-b.2.5
+> +          - brcm,brcmstb-memc-ddr-rev-b.2.6
+> +          - brcm,brcmstb-memc-ddr-rev-b.2.7
+> +          - brcm,brcmstb-memc-ddr-rev-b.2.8
+> +          - brcm,brcmstb-memc-ddr-rev-b.3.0
+> +          - brcm,brcmstb-memc-ddr-rev-b.3.1
+> +          - brcm,brcmstb-memc-ddr-rev-c.1.0
+> +          - brcm,brcmstb-memc-ddr-rev-c.1.1
+> +          - brcm,brcmstb-memc-ddr-rev-c.1.2
+> +          - brcm,brcmstb-memc-ddr-rev-c.1.3
+> +          - brcm,brcmstb-memc-ddr-rev-c.1.4
+> +      - const: brcm,brcmstb-memc-ddr
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    memory-controller@9902000 {
+> +        compatible = "brcm,brcmstb-memc-ddr-rev-c.1.1",
+> +                        "brcm,brcmstb-memc-ddr";
 
+Could you align it with previous quote "?
+
+Other than that, looks ok, but anyway this will have to wait for merge
+window to finish.
+
+> +        reg = <0x9902000 0x600>;
+> +    };
+
+
+Best regards,
+Krzysztof
