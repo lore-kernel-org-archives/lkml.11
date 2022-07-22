@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5965CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 13:58:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2789BCCA489
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 13:58:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235166AbiGVN6k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 09:58:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34718 "EHLO
+        id S235279AbiGVN6n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 09:58:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234088AbiGVN6g (ORCPT
+        with ESMTP id S234763AbiGVN6j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 09:58:36 -0400
+        Fri, 22 Jul 2022 09:58:39 -0400
 Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 901148FD55;
-        Fri, 22 Jul 2022 06:58:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEA5A8BAAC;
+        Fri, 22 Jul 2022 06:58:38 -0700 (PDT)
 Received: from cwcc.thunk.org (pool-173-48-118-63.bstnma.fios.verizon.net [173.48.118.63])
         (authenticated bits=0)
         (User authenticated as tytso@ATHENA.MIT.EDU)
-        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 26MDwTuC016765
+        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 26MDwR8J016699
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 22 Jul 2022 09:58:30 -0400
+        Fri, 22 Jul 2022 09:58:29 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mit.edu; s=outgoing;
-        t=1658498311; bh=UGllnM1+v0SMLCV2Bs00x1y7zCVsfON5mZ1JEIRM1CY=;
+        t=1658498309; bh=KDkvkOaznIAbtg/ZOhrIdeChH7McTYcZFnsNaZUYifM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=a+LlJKGbyjxpQqu195g26HgoivBvVhSZbc39y931bM0urfYII1DqoW0HgzYltXjdn
-         PPC5ZY6P1/qoFRKQfc8KaDMCdZ1SYpfGXYJmU/GgGA0B7Mg+A/R+oWE6w3bCQ9vWBc
-         70eEy0rQNbUHik/6Glupz7KSLVPyPS+DcX3jIXy46BexbPc6Gu89U2k5XUJNOvTPPo
-         qxUqhqB6Iutl4VYB8nNjj6BoDfOKN2zaH//c7QwJd0mZdNvlvEPesXbUM/lB6XzLuC
-         AOhR1c9eQQbF2YHrNfdrlLf1FbGfBwcbsJQsM6q5Q8izJ4aLEDi7SoYFL1kDZtTMV/
-         ysTtXe/EfW/QA==
+        b=KX51YzoYHxqJv7/BLTWt4OGCnNlNrEdI59qPeq7PDj6TVY+5W98QqcEwZM0WvG9fC
+         Rlp2MkbL/yupOfoSVRwdY3vA14zRNmCFSw5P8ucKTPWP2q9hsYxhDzSnVFerCFqjQH
+         5FwrTuX2Tp0pNubaMzy/eX9KpUTvHmrwj5D5BHNzury/JnSuscP49j3ti5QKf6rP7s
+         kPRJYxARhvA9gKKRyp7ACo3uc6Lffki0XnpxLG2h2qo6pTUK1zleRYpg2huP+qcpxc
+         byU29xGAZTdbPqCNEjZ6ntCrOPS1TKn3UBOjHrdktp6pkv8RSDjowBnTo97XfFiYLt
+         V9YUBFr8mr/lA==
 Received: by cwcc.thunk.org (Postfix, from userid 15806)
-        id 768B115C3F06; Fri, 22 Jul 2022 09:58:27 -0400 (EDT)
+        id 6CE5515C3F01; Fri, 22 Jul 2022 09:58:27 -0400 (EDT)
 From:   "Theodore Ts'o" <tytso@mit.edu>
-To:     ojaswin@linux.ibm.com, linux-ext4@vger.kernel.org
+To:     jiangjian@cdjrlc.com
 Cc:     "Theodore Ts'o" <tytso@mit.edu>, linux-kernel@vger.kernel.org,
-        riteshh@linux.ibm.com, linux-fsdevel@vger.kernel.org
-Subject: Re: [PATCH] ext4: Reflect mb_optimize_scan value in options file
-Date:   Fri, 22 Jul 2022 09:58:20 -0400
-Message-Id: <165849767595.303416.6878521506996536850.b4-ty@mit.edu>
+        linux-ext4@vger.kernel.org, adilger.kernel@dilger.ca
+Subject: Re: [PATCH] ext4: aligned '*' in comments
+Date:   Fri, 22 Jul 2022 09:58:15 -0400
+Message-Id: <165849767594.303416.9706322073721252641.b4-ty@mit.edu>
 X-Mailer: git-send-email 2.31.0
-In-Reply-To: <20220704054603.21462-1-ojaswin@linux.ibm.com>
-References: <20220704054603.21462-1-ojaswin@linux.ibm.com>
+In-Reply-To: <20220621061531.19669-1-jiangjian@cdjrlc.com>
+References: <20220621061531.19669-1-jiangjian@cdjrlc.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -49,17 +49,15 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 4 Jul 2022 11:16:03 +0530, Ojaswin Mujoo wrote:
-> Add support to display the mb_optimize_scan value in
-> /proc/fs/ext4/<dev>/options file. The option is only
-> displayed when the value is non default.
+On Tue, 21 Jun 2022 14:15:31 +0800, Jiang Jian wrote:
+> The '*' in the comment is not aligned.
 > 
 > 
 
 Applied, thanks!
 
-[1/1] ext4: Reflect mb_optimize_scan value in options file
-      commit: 961edf078b5606ce480ae2ebdac64ca829ea3f75
+[1/1] ext4: aligned '*' in comments
+      commit: 5f2d635229947b4d1066c24b709c588afb69e393
 
 Best regards,
 -- 
