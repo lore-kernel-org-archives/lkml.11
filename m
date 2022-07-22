@@ -2,66 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B8F7CCA473
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 20:08:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EEC5C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 20:08:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236737AbiGVUIM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 16:08:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34836 "EHLO
+        id S236749AbiGVUIO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 16:08:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236524AbiGVUIB (ORCPT
+        with ESMTP id S236706AbiGVUIA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 16:08:01 -0400
+        Fri, 22 Jul 2022 16:08:00 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59DF88D5E8;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3554FA8746;
         Fri, 22 Jul 2022 13:07:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C17D261FB3;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6AFE461FCF;
         Fri, 22 Jul 2022 20:07:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2E27AC36AF4;
-        Fri, 22 Jul 2022 20:07:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id CC79EC341C6;
+        Fri, 22 Jul 2022 20:07:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658520478;
-        bh=fqVa7RSfwPh1h6geZ3vlLSxox2ISb3tdaKqZ6VSqQqY=;
+        s=k20201202; t=1658520477;
+        bh=ohmSvi0K7c/bHcdN+W16xxW1NzHhb+6rgP3yTO0JkHk=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=BZ6tbGP3Gx6RFxPfsC1wyb+fewQRReVWR7xOW3YFwtXyEXv7STLAOmt7ruKrVCQAW
-         +RKk8FHZiSbI2q2jx9Q2/LKjcNqB/Rk1/oinsQjwXPi74jurD6aoNXdFv3jILvDQw/
-         7wwJ010J0Orx+4iEAas6/3Sabh220P11PEI6BLVriDMrXjgKbKULFxESrWW+mcFeN9
-         lco5VLqn4ywYiPv9funbPoyc+E7WFksH2haeRcHUoETTE6MsSDbzRgXJBhnZn45bmo
-         cA2Kt4ugdICYiFPVnsvp45qR1RXmyUfr4DK5ultWW0Ew6avLKtEPvnpcE4Qvdo/lO0
-         9zQGSi+nRjHag==
+        b=p320JNphPswO6m8mpoPdiVHmNEWRCzJOqpf2kJsnyjeFnsTv6uQoHx1MVzy8NIhim
+         lnVMkJgflVlPG7gLWOmwQx6LWt/zhlpxu2yHgAAf9B0avFJSt4MREozJRXrwbKfiFS
+         yKYQFpYocUosMMEXJQh5qUuBup4oznGcPdwQ6RHmhQY8Oyxwb85+9gsnGtjyZfgOZy
+         vqTWn/mclzJMFVS3adZcPToBn0a474h9ShstCYcPHCVjhqCgFEv4TPRQIbfYIj2Swb
+         9uOyqtOkgVLUW/nA2mpxcSSpNpn3a1FKLUXk9uYx21k1u2l00do3P8EhpLCCKrDVjy
+         ys82/mkbR1xBg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 169FCE451BB;
-        Fri, 22 Jul 2022 20:07:58 +0000 (UTC)
-Subject: Re: [GIT PULL] pin control fixes for v5.19
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B54D8E451B3;
+        Fri, 22 Jul 2022 20:07:57 +0000 (UTC)
+Subject: Re: [GIT PULL] MMC fixes for v5.19-rc8
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <CACRpkdYD6anQsCdZcC=RbRUVRraWm2hOauYB314bE0rxJ9PN=A@mail.gmail.com>
-References: <CACRpkdYD6anQsCdZcC=RbRUVRraWm2hOauYB314bE0rxJ9PN=A@mail.gmail.com>
+In-Reply-To: <20220722094737.50886-1-ulf.hansson@linaro.org>
+References: <20220722094737.50886-1-ulf.hansson@linaro.org>
 X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <CACRpkdYD6anQsCdZcC=RbRUVRraWm2hOauYB314bE0rxJ9PN=A@mail.gmail.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-pinctrl.git tags/pinctrl-v5.19-3
-X-PR-Tracked-Commit-Id: 4546760619cfa9b718fe2059ceb07101cf9ff61e
+X-PR-Tracked-Message-Id: <20220722094737.50886-1-ulf.hansson@linaro.org>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/ulfh/mmc.git tags/mmc-v5.19-rc6
+X-PR-Tracked-Commit-Id: 51189eb9ddc88851edc42f539a0f9862fd0630c2
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 614719111265a7a76d0ae54758f23d8614966b82
-Message-Id: <165852047808.15752.14220270706093235366.pr-tracker-bot@kernel.org>
-Date:   Fri, 22 Jul 2022 20:07:58 +0000
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
+X-PR-Merge-Commit-Id: 85029503fc95ea16e0c0856251f5cba750847c85
+Message-Id: <165852047773.15752.15759375835312020414.pr-tracker-bot@kernel.org>
+Date:   Fri, 22 Jul 2022 20:07:57 +0000
+To:     Ulf Hansson <ulf.hansson@linaro.org>
+Cc:     Linus <torvalds@linux-foundation.org>, linux-mmc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 22 Jul 2022 14:24:27 +0200:
+The pull request you sent on Fri, 22 Jul 2022 11:47:37 +0200:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/linusw/linux-pinctrl.git tags/pinctrl-v5.19-3
+> git://git.kernel.org/pub/scm/linux/kernel/git/ulfh/mmc.git tags/mmc-v5.19-rc6
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/614719111265a7a76d0ae54758f23d8614966b82
+https://git.kernel.org/torvalds/c/85029503fc95ea16e0c0856251f5cba750847c85
 
 Thank you!
 
