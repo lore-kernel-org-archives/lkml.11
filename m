@@ -2,382 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21244C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:45:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DEF4C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:46:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229761AbiGVJpL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 05:45:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42072 "EHLO
+        id S236594AbiGVJqL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 05:46:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235286AbiGVJof (ORCPT
+        with ESMTP id S236408AbiGVJps (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 05:44:35 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B90F0BB8F6
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 02:38:54 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-31cdce3ed04so35620477b3.13
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 02:38:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=+nB20Wi810hrWlIP5pvDiRZ1VMjjX1lRuMuiUP0CtOE=;
-        b=NqWmN2shXmLgw7TB8EYBK+ZlvxKjvonEGl6fvKWYyNnGsNALfDJs3RwdTv9cpF7cQN
-         Da/3mS9qAr/skonuFDha5s9UWpMwA7xR2h56VMClowaT7ormfIfhZJpDrYsGpYx4Bux4
-         eIuZ0gVc6/uUPk7vrSc/2fzYHqeogHDQPxgV9vDeEkKUyhkaIB91BK1Gozw922XbaBfY
-         6DeCuT6aXFU0xHdK2ytnGorB7A5oBYy3uQBqHCQdhSDlCui9c2W77Ob0BaNhVe9ig9+7
-         7a28rxquDYbLIKf1SDPYtIJpTqra0+bpHUAYjBh2x17QoF3843DUR7EfonW18iPQcVDY
-         hKOw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=+nB20Wi810hrWlIP5pvDiRZ1VMjjX1lRuMuiUP0CtOE=;
-        b=m0RS7iNz/wX2qKrkRx9FIP1nIUSoyl6Au/Gipl20NeX+CTtGD+S8Hpufxp6JpeNS3T
-         bc3Kikk68FRkSNZu7MYD8fE0MSmX198ngNueUUOX6cs2OgwGzXtsdTeEwLSMP37TYOaZ
-         pQjKZ3AYiKr7V4z0vHqtm8Sl6wevekEj8JWTNoospRCUkiE3ZRPx83JoggPcqJ3ULV0q
-         BnfnfHaHizkonjFy0SgwvcgjN8WCozLWYuHImoeEaN4azOvJ8fIj1K/1Q49TPjFDx7lj
-         S8Bm/rgyc+sTtW0FRbuDRVX8P3LvQGjsSEhkXmUWmEArsqxSneSpltSkfJcCM9Oa0Hyv
-         FJsw==
-X-Gm-Message-State: AJIora/m3Mvlby9IRpQRfp27Y0dc+KOsHQD2/WPQDf3xK4AsM3KEPBuG
-        wfNz2JGcuo5d0GkGbNnCVsgNI5860UraCHLNpx4yxdCDl/adQcufdTqxts0FUa0y7LdyOBmDyhd
-        IxRdcUeA6idQH37WQOxA95PrkGS6nfX00a/j+nkJUFqoc29kfSSClAxA+9b+KXxFDXSQ=
-X-Google-Smtp-Source: AGRyM1s26ZXo/6tQtihIsdDRm6L/HqasYPcozEjSaAtHWxveiAl9+jglTQqnpl6VN9mDS39c1CYZVGIwyg==
-X-Received: from nhuck.c.googlers.com ([fda3:e722:ac3:cc00:14:4d90:c0a8:39cc])
- (user=nhuck job=sendgmr) by 2002:a25:258:0:b0:670:a3b3:b941 with SMTP id
- 85-20020a250258000000b00670a3b3b941mr2140164ybc.533.1658482733913; Fri, 22
- Jul 2022 02:38:53 -0700 (PDT)
-Date:   Fri, 22 Jul 2022 09:38:23 +0000
-In-Reply-To: <20220722093823.4158756-1-nhuck@google.com>
-Message-Id: <20220722093823.4158756-4-nhuck@google.com>
-Mime-Version: 1.0
-References: <20220722093823.4158756-1-nhuck@google.com>
-X-Mailer: git-send-email 2.37.1.359.gd136c6c3e2-goog
-Subject: [PATCH 3/3] dm-verity: Add try_verify_in_tasklet
-From:   Nathan Huckleberry <nhuck@google.com>
-To:     linux-kernel@vger.kernel.org, dm-devel@redhat.com,
-        Alasdair Kergon <agk@redhat.com>,
-        Mike Snitzer <snitzer@kernel.org>
-Cc:     Eric Biggers <ebiggers@kernel.org>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        Nathan Huckleberry <nhuck@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Fri, 22 Jul 2022 05:45:48 -0400
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80083.outbound.protection.outlook.com [40.107.8.83])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75D72B5CBF;
+        Fri, 22 Jul 2022 02:41:11 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=FHlRP9cGS5dpv+ZrgZjmjIyJ2BlXaPDccnFq8oZ2s4z8HbcYi7e0cU4rnQRq/x+CQeB4cJIp3tqERs+QnwsP/VlEOMBGl7Sv8POokySGFHwiDdIcRMhx/t5JdIq5hXzAjEi0cNHSsIXVbxlaUpE814ccqWkl5gPZQU0IJ7+tPDyOv2Rmwo+J6iuwNQfcvH582HqQm2t+3InnA+jhSowomCOQ0m8gRfDEqamrZDCekDB6vRMvus624J5nPSszu9ej+sE2EO/45upM/78tiiBLr34m8HAhchYOveIyDlrZieW2vh/kFpXN/3bRRHMJV2jKxDDa4lVnuCy/N13SQXorZA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=9f/kJvQgpgWk3ONDq1dSvvqiWwuhv8rC99LcioHPGxU=;
+ b=XfMvC8noUaGN8emuNXGwPVrQdjtFvkx/q0qt8jcITwgNpJWQKm081W/uRHF4PuJyS9DsZWcLApr9ZgCsWu/P7QIqhhiRU9nJn2nQ5nbkuZlsA2+yPFMwNTb/vKQUC5xNaQ98A4oe23z3TOH9917klMwDXoTJTWDcmwYNiCMENzhadom2XpzOWGNdkvX2vKmxSbeDuyltR3V46geXoqgwgjeZRz1exvm6bpISBfklmxdSAheDv5YfXMFRpfbtZNVGIlj/zdVtbsL404Hqbzz6pDGUrtldWEmnt80oX/G22AeKyHarllIPIo3qAbI1AGQrXBWVRL7vbjbbhiVjWGR9ig==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9f/kJvQgpgWk3ONDq1dSvvqiWwuhv8rC99LcioHPGxU=;
+ b=ra/z9uZ2QK8QWNujxjeN/SBV2gKIwsIQgPIFmmrjFICbQIPpyxYSNkPJDKFx7A/j85rX3rJDNxbrauvgIAzQtGPqgkhb5+Lt/tb6rSIZvMMu+JCkmuL+N8cbeRqkpPPzboUDQUwbzhmFGRfMlkIZSbFDAee6du37k5YQ3p2jooQ=
+Received: from AS8PR04MB8404.eurprd04.prod.outlook.com (2603:10a6:20b:3f8::7)
+ by PR3PR04MB7210.eurprd04.prod.outlook.com (2603:10a6:102:8f::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.19; Fri, 22 Jul
+ 2022 09:41:09 +0000
+Received: from AS8PR04MB8404.eurprd04.prod.outlook.com
+ ([fe80::4c81:58fd:464d:3160]) by AS8PR04MB8404.eurprd04.prod.outlook.com
+ ([fe80::4c81:58fd:464d:3160%8]) with mapi id 15.20.5458.019; Fri, 22 Jul 2022
+ 09:41:09 +0000
+From:   Sherry Sun <sherry.sun@nxp.com>
+To:     Jiri Slaby <jirislaby@kernel.org>, Michael Walle <michael@walle.cc>
+CC:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>
+Subject: RE: [PATCH 2/2] tty: serial: fsl_lpuart: writing a 1 and then a 0 to
+ trigger a break character
+Thread-Topic: [PATCH 2/2] tty: serial: fsl_lpuart: writing a 1 and then a 0 to
+ trigger a break character
+Thread-Index: AQHYl/cqr4tzMlicFUS5QAVEdKaVoa1+/W8AgAAE7pCAAAp2gIAAEHKQgAA1fYCABGXngIAGcv+w
+Date:   Fri, 22 Jul 2022 09:41:08 +0000
+Message-ID: <AS8PR04MB8404736D9C87D7C590C34A6692909@AS8PR04MB8404.eurprd04.prod.outlook.com>
+References: <20220715025944.11076-1-sherry.sun@nxp.com>
+ <20220715025944.11076-3-sherry.sun@nxp.com>
+ <509669b26b5899088e9b77ed94d103ee@walle.cc>
+ <AS8PR04MB840448675E64E4FCDEEF91A1928B9@AS8PR04MB8404.eurprd04.prod.outlook.com>
+ <e2560f01fd1731ea2422d82c97efcc6f@walle.cc>
+ <AS8PR04MB8404B8E3EB0FFCEE8ADDA283928B9@AS8PR04MB8404.eurprd04.prod.outlook.com>
+ <61c525fc87d6586c024cd6e42fcf876d@walle.cc>
+ <d75d1339-4539-330a-680b-2d940e603a72@kernel.org>
+In-Reply-To: <d75d1339-4539-330a-680b-2d940e603a72@kernel.org>
+Accept-Language: zh-CN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 37d54983-eee2-4223-9c69-08da6bc64e74
+x-ms-traffictypediagnostic: PR3PR04MB7210:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: JMVFGFSzsoRKR+1uR/yToDRjFuabibuN5IFqlz0QF3ST6eJS50wlrTqm/8ZtTjWajynXrH1n/1oJItnw2iSjCwT6xMwQNQ25GVZKr9vAR5nOREglmzDgiI/n66F6v8lQyPFv7f8hMhYPhTk9EbXu4hcl0zMpG5bgWspwThupBV7qfKSkJRwR1pcmPUR3fAs6vdXXJrRcvNCBXFH6J22WfZUirLrLq4skww5DeSGDnukMvEtVJsJsJKtVPj//sNj9WV1BQ/X6ZiTss0QhjwQ8UkYExuv9AQtBKAysqFkMDr4zhgncojiaKXwIYXyGfFifqwELyInbBKwI0HupesGuZ8OfaA0+XkLFzZ2tKrW2dO2W7ZLouQzQnIqwwhA4YYhydKwrTPlF3CGW+8Kh9kuMRlN2U5FOE9cfVxOJ+Yb6aka/DCbE2YM+bdhEr3cujyQOSCGIOqSVdoiLCROJ7Qp0+UvyWEatsWVG89EdB9xB9efdOH24H0VpCAkiEE/QUitoNlMTNb9rilCqos2luyERsdpr6V0GkidXO9tF/v7W9gqWJ3+vM4upY5wnA8U73fwn451RdMd9/6rp+yZ+EMDBQaMyHtnHmuNoPe2u4eBGyJbpCyPl5TsseMBGKLWVfpyhgP971Z/w43YFpqs//chou7p99iJ0M8FxopgZG08Ddt4d2jv4wOPHFDYjhiyLW7WmpHkaGbHFzroIll4UQwc7fNaT0/lLQ6wvTrz2eSSe6LvXrseplXlPYQFyiLvC3Cpzv97Ij+KVarvXlNNEV98r7uSdQvNYZV+/tRMUI599zDDTZkc9cynzdSqnk8LyPxCu
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR04MB8404.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(396003)(136003)(366004)(346002)(376002)(52536014)(44832011)(38070700005)(5660300002)(8936002)(122000001)(38100700002)(110136005)(54906003)(9686003)(7696005)(71200400001)(26005)(316002)(41300700001)(55016003)(6506007)(66556008)(66946007)(66446008)(83380400001)(76116006)(66476007)(186003)(64756008)(33656002)(2906002)(8676002)(86362001)(478600001)(4326008);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?ZlZ6eHpMNFhtWnI0ajV3VzBPc05BZWkyd1h2aEp3ZDFjNlcxTjlUSVhhS05a?=
+ =?utf-8?B?cGVOOXVpOTFXSVpsRERqK2ZrbDhCeDBndG5JRDJ5UFl1VlE4SGJYNG5Wb0pS?=
+ =?utf-8?B?WHQ1Skg1ZnJGQ3JwdjBVZ3JaeU1TR0t6ZkRxNHV2Z1pPeHR6N05BWk9jUjh3?=
+ =?utf-8?B?dTRsb3RyRkl5eExGaEtydi9uVnBqVUpqSjJqb0FycW54Mm01cXBKVC9pVDFp?=
+ =?utf-8?B?R0ZHYXlGY2dHam9TZmwvUW9SaG5KbEFOdldJZEZkSys4VkZTL09oUWk3NitN?=
+ =?utf-8?B?SlNqSkZHeVBBRFk2bG01akRGTnRYUGNqVW96VVcxdlBRNnJGR25YNktud3hN?=
+ =?utf-8?B?b1ZkRERsVURzT2ZyeTdVNFQwM2lvSWNxUWdXcXlVZ25nYStzamI3ZStsNHhH?=
+ =?utf-8?B?U2RZOWRrbngxQmtWUVBHNDRqaGh5QVRMZG5oVmQvRGNrU3FiUmpRSWIzVzBi?=
+ =?utf-8?B?R1g2NFFGSFUzbm5rZ3VuM0hKNHFWcjFaMHV1Umx4NGxJall1NWdpTEdTRjYv?=
+ =?utf-8?B?RlFpaVowcWdBbzA4ZEhKYURyb2ZJWWJGVzRqUlpaYlFkNG1HUllJZzJ5Y2RZ?=
+ =?utf-8?B?blVEUmV4ekRzcmUxRUx3VmxQdkhPWEg1UGd6M1BQemxtc1RLazcvQVBZNmNJ?=
+ =?utf-8?B?VFF1a0JSMDcyWk0yRWVIbXE2TW8zNWtWTnhmVExpUDdOcWo3eVVvYjQ4dVFP?=
+ =?utf-8?B?M3FNaHVXd2ZENDNlZzk5YmVlcjdEZEhJOERCV2NBNGNXemZRTUtnc3JmazBM?=
+ =?utf-8?B?ZFpleFFYUGRYaERQZ2JTSTdKZjZhN1ROeFFPSTNVdTBsN0srZ0srdG4vNTlp?=
+ =?utf-8?B?WjYvNENGWmpFTERkREFlL0thQUV3eVhJakl3NjBWUTJZMmJFczQ0ZHJxM0RM?=
+ =?utf-8?B?dEowMVNnb1Q1Nys3Q0FST0V5cnFwdlZaZlFtSVd4Y21PLzdDZnFpVlBiWHVV?=
+ =?utf-8?B?dVp5U2ZpTFU1NzcrbCtkeWdQTDFTaFJBY3dXL0E0YlM4RmJ4Y1BxZlNEZzAx?=
+ =?utf-8?B?U2E0MGk1UlZWRHdzMVlLeDJBWVl1RnVZQ04vdm9rREpnZjQ5ZXlBWm1wL2RU?=
+ =?utf-8?B?YmRRQjBDajcyUEdsNjh3Qko3L05MMjFJQUNqZU9PUFJlYXZQVzZvUXlzd0JE?=
+ =?utf-8?B?VHVWS0paVXEzOG5xYVA3dXBVcjc5bm9UdWV2N2NWL0x1Umw4d05tbXdsclEr?=
+ =?utf-8?B?RnJpZ3JYSnQyOVc3RWtzNTRObWV3R0dBYW03SHp0RkJ1MjBJTlN3VWJXRnBh?=
+ =?utf-8?B?VnNwczNQZjJERnRKSnlMc0ljOEVRdElISkcvVzZKV2NwL0lOQm1OQ21SV1Rw?=
+ =?utf-8?B?WE1BdEZ4WUdZWWEvRGsrejdUaHZzOUd0RW81MVRzN21YS3NPUUtIZzhrWHdK?=
+ =?utf-8?B?ODhjNFowUXlJUTVZVXF4cndFNW5sSkRybzdUaWxQZ213amZaUWhnNEdSTjQv?=
+ =?utf-8?B?dHQvQldNSmhZNlZob2dRdm1iM1ZuZ210empWR2FQT3FsMG0ySlBaaWdWL1J2?=
+ =?utf-8?B?UmhmeE40MEJQNmRCdytnaE5jRlFYUnRYMHgwWXA1eWtoWjQ4QjVpN0h3RkRv?=
+ =?utf-8?B?TDVWYTRHQ204V281Qm5iV3ZrRnNjdUV1K01RMGRZcjliemkzTzFDcjVtOTVa?=
+ =?utf-8?B?VWpMN2dFejhyTjBDUk92dzBhalAwWmxKWUJGOVV3dXNCNXN0U3FGcVV1Ymk4?=
+ =?utf-8?B?UitIR0tXcHhwdmVQQm1XYkxIZ0N3MXZHdmNQTEw2VytUN002d0grelhaUHJ2?=
+ =?utf-8?B?ZWZQWlBjRXNWeHRlQnpySktQU0JDOTRJZG1DYllXWmxxVm50RDBZdll3OWxR?=
+ =?utf-8?B?UUJvNmNEamhWWHNHTGw0VGVFV0JBY0VpL3NkMWx4d1RBNXBiQ2o0RXl3aHpB?=
+ =?utf-8?B?U29wbTN4cVo0V0JtU0FwWFBWU0FheDdSWE1iZVZqNEZ4UmZQOW5SNUZ0VFov?=
+ =?utf-8?B?MjExRmNxS3N3SkkxbmdOSUdySUQrblZOWWVSQ2tWY01KUGh5M0hKbzRZdVl1?=
+ =?utf-8?B?T0hFRVcwcGFDR2JENmdsaVFCbFJZWk85SVV2Rit6MEpUU0hyaEEvRzEvUE4r?=
+ =?utf-8?B?eFQ1SUYvdVhEODNIRE9HaklwV0RCTUFaTEZOdlFvMVdUTzRjeTBGQ1dOb3RD?=
+ =?utf-8?Q?pbtHSl1FbpiF9q+4eLAcHX1V8?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AS8PR04MB8404.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 37d54983-eee2-4223-9c69-08da6bc64e74
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Jul 2022 09:41:09.0151
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: jPro4ur1ii05DGqOMkcMqbsI5KEgGxdOVO5dEQaPBPQj/CHjwpTe/GUF7yOukP4UI8502D3qbiQK3tEkS5O8Dw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PR3PR04MB7210
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Using tasklets for disk verification can reduce IO latency.  When there are
-accelerated hash instructions it is often better to compute the hash immediately
-using a tasklet rather than deferring verification to a work-queue.  This
-reduces time spent waiting to schedule work-queue jobs, but requires spending
-slightly more time in interrupt context.
-
-If the dm-bufio cache does not have the required hashes we fallback to
-the work-queue implementation.
-
-The following shows a speed comparison of random reads on a dm-verity device.
-The dm-verity device uses a 1G ramdisk for data and a 1G ramdisk for hashes.
-One test was run using tasklets and one test was run using the existing
-work-queue solution.  Both tests were run when the dm-bufio cache was hot.  The
-tasklet implementation performs significantly better since there is no time
-waiting for work-queue jobs to be scheduled.
-
-# /data/fio /data/tasklet.fio | grep READ
-   READ: bw=181MiB/s (190MB/s), 181MiB/s-181MiB/s (190MB/s-190MB/s), io=512MiB
-   (537MB), run=2827-2827msec
-# /data/fio /data/workqueue.fio | grep READ
-   READ: bw=23.6MiB/s (24.8MB/s), 23.6MiB/s-23.6MiB/s (24.8MB/s-24.8MB/s),
-   io=512MiB (537MB), run=21688-21688msec
-
-Signed-off-by: Nathan Huckleberry <nhuck@google.com>
----
- drivers/md/dm-bufio.c         | 14 +++---
- drivers/md/dm-verity-target.c | 87 ++++++++++++++++++++++++++++++-----
- drivers/md/dm-verity.h        |  5 ++
- 3 files changed, 87 insertions(+), 19 deletions(-)
-
-diff --git a/drivers/md/dm-bufio.c b/drivers/md/dm-bufio.c
-index 3edeca7cfca6..039f39c29594 100644
---- a/drivers/md/dm-bufio.c
-+++ b/drivers/md/dm-bufio.c
-@@ -92,7 +92,7 @@ struct dm_bufio_client {
- 	s8 sectors_per_block_bits;
- 	void (*alloc_callback)(struct dm_buffer *);
- 	void (*write_callback)(struct dm_buffer *);
--	bool may_sleep;
-+	bool get_may_sleep;
- 
- 	struct kmem_cache *slab_buffer;
- 	struct kmem_cache *slab_cache;
-@@ -170,7 +170,7 @@ struct dm_buffer {
- 
- static void dm_bufio_lock(struct dm_bufio_client *c)
- {
--	if (c->may_sleep)
-+	if (c->get_may_sleep)
- 		mutex_lock_nested(&c->lock, dm_bufio_in_request());
- 	else
- 		spin_lock_irqsave_nested(&c->spinlock, c->spinlock_flags, dm_bufio_in_request());
-@@ -178,7 +178,7 @@ static void dm_bufio_lock(struct dm_bufio_client *c)
- 
- static int dm_bufio_trylock(struct dm_bufio_client *c)
- {
--	if (c->may_sleep)
-+	if (c->get_may_sleep)
- 		return mutex_trylock(&c->lock);
- 	else
- 		return spin_trylock_irqsave(&c->spinlock, c->spinlock_flags);
-@@ -186,7 +186,7 @@ static int dm_bufio_trylock(struct dm_bufio_client *c)
- 
- static void dm_bufio_unlock(struct dm_bufio_client *c)
- {
--	if (c->may_sleep)
-+	if (c->get_may_sleep)
- 		mutex_unlock(&c->lock);
- 	else
- 		spin_unlock_irqrestore(&c->spinlock, c->spinlock_flags);
-@@ -890,7 +890,7 @@ static struct dm_buffer *__alloc_buffer_wait_no_callback(struct dm_bufio_client
- 	 * be allocated.
- 	 */
- 	while (1) {
--		if (dm_bufio_cache_size_latch != 1 && c->may_sleep) {
-+		if (dm_bufio_cache_size_latch != 1 && c->get_may_sleep) {
- 			b = alloc_buffer(c, GFP_NOWAIT | __GFP_NORETRY | __GFP_NOMEMALLOC | __GFP_NOWARN);
- 			if (b)
- 				return b;
-@@ -1761,9 +1761,9 @@ struct dm_bufio_client *dm_bufio_client_create(struct block_device *bdev, unsign
- 	c->alloc_callback = alloc_callback;
- 	c->write_callback = write_callback;
- 
--	c->may_sleep = true;
-+	c->get_may_sleep = true;
- 	if (flags & DM_BUFIO_GET_CANT_SLEEP)
--		c->may_sleep = false;
-+		c->get_may_sleep = false;
- 
- 	for (i = 0; i < LIST_SIZE; i++) {
- 		INIT_LIST_HEAD(&c->lru[i]);
-diff --git a/drivers/md/dm-verity-target.c b/drivers/md/dm-verity-target.c
-index 5d3fc58a3c34..e4d1b674a278 100644
---- a/drivers/md/dm-verity-target.c
-+++ b/drivers/md/dm-verity-target.c
-@@ -34,6 +34,7 @@
- #define DM_VERITY_OPT_PANIC		"panic_on_corruption"
- #define DM_VERITY_OPT_IGN_ZEROES	"ignore_zero_blocks"
- #define DM_VERITY_OPT_AT_MOST_ONCE	"check_at_most_once"
-+#define DM_VERITY_OPT_TASKLET_VERIFY	"try_verify_in_tasklet"
- 
- #define DM_VERITY_OPTS_MAX		(3 + DM_VERITY_OPTS_FEC + \
- 					 DM_VERITY_ROOT_HASH_VERIFICATION_OPTS)
-@@ -286,7 +287,20 @@ static int verity_verify_level(struct dm_verity *v, struct dm_verity_io *io,
- 
- 	verity_hash_at_level(v, block, level, &hash_block, &offset);
- 
--	data = dm_bufio_read(v->bufio, hash_block, &buf);
-+	if (io->in_tasklet)
-+		data = dm_bufio_get(v->bufio, hash_block, &buf);
-+	else
-+		data = dm_bufio_read(v->bufio, hash_block, &buf);
-+
-+	if (data == NULL) {
-+		/*
-+		 * We're running as a tasklet and the hash was not in the bufio
-+		 * cache.  Return early and resume execution from a work-queue
-+		 * so that we can read the hash from disk.
-+		 */
-+		return -EAGAIN;
-+	}
-+
- 	if (IS_ERR(data))
- 		return PTR_ERR(data);
- 
-@@ -307,6 +321,14 @@ static int verity_verify_level(struct dm_verity *v, struct dm_verity_io *io,
- 		if (likely(memcmp(verity_io_real_digest(v, io), want_digest,
- 				  v->digest_size) == 0))
- 			aux->hash_verified = 1;
-+		else if (io->in_tasklet) {
-+			/*
-+			 * FEC code cannot be run in a tasklet since it may
-+			 * sleep.  We need to resume execution in a work-queue
-+			 * to handle FEC.
-+			 */
-+			return -EAGAIN;
-+		}
- 		else if (verity_fec_decode(v, io,
- 					   DM_VERITY_BLOCK_TYPE_METADATA,
- 					   hash_block, data, NULL) == 0)
-@@ -474,13 +496,12 @@ static int verity_verify_io(struct dm_verity_io *io)
- 	bool is_zero;
- 	struct dm_verity *v = io->v;
- 	struct bvec_iter start;
--	unsigned b;
- 	struct crypto_wait wait;
- 	struct bio *bio = dm_bio_from_per_bio_data(io, v->ti->per_io_data_size);
- 
--	for (b = 0; b < io->n_blocks; b++) {
-+	for (; io->block_idx < io->n_blocks; io->block_idx++) {
- 		int r;
--		sector_t cur_block = io->block + b;
-+		sector_t cur_block = io->block + io->block_idx;
- 		struct ahash_request *req = verity_io_hash_req(v, io);
- 
- 		if (v->validated_blocks &&
-@@ -527,6 +548,13 @@ static int verity_verify_io(struct dm_verity_io *io)
- 			if (v->validated_blocks)
- 				set_bit(cur_block, v->validated_blocks);
- 			continue;
-+		} else if (io->in_tasklet) {
-+			/*
-+			 * FEC code cannot be run in a tasklet since it may
-+			 * sleep.  We need to resume execution in a work-queue
-+			 * to handle FEC.
-+			 */
-+			return -EAGAIN;
- 		}
- 		else if (verity_fec_decode(v, io, DM_VERITY_BLOCK_TYPE_DATA,
- 					   cur_block, NULL, &start) == 0)
-@@ -567,7 +595,8 @@ static void verity_finish_io(struct dm_verity_io *io, blk_status_t status)
- 	bio->bi_end_io = io->orig_bi_end_io;
- 	bio->bi_status = status;
- 
--	verity_fec_finish_io(io);
-+	if (!io->in_tasklet)
-+		verity_fec_finish_io(io);
- 
- 	bio_endio(bio);
- }
-@@ -575,8 +604,28 @@ static void verity_finish_io(struct dm_verity_io *io, blk_status_t status)
- static void verity_work(struct work_struct *w)
- {
- 	struct dm_verity_io *io = container_of(w, struct dm_verity_io, work);
-+	int err;
-+
-+	io->in_tasklet = false;
-+	err = verity_verify_io(io);
- 
--	verity_finish_io(io, errno_to_blk_status(verity_verify_io(io)));
-+	verity_finish_io(io, errno_to_blk_status(err));
-+}
-+
-+static void verity_tasklet(unsigned long data)
-+{
-+	struct dm_verity_io *io = (struct dm_verity_io *) data;
-+	int err;
-+
-+	io->in_tasklet = true;
-+	err = verity_verify_io(io);
-+	if (err) {
-+		INIT_WORK(&io->work, verity_work);
-+		queue_work(io->v->verify_wq, &io->work);
-+		return;
-+	}
-+
-+	verity_finish_io(io, errno_to_blk_status(err));
- }
- 
- static void verity_end_io(struct bio *bio)
-@@ -589,8 +638,14 @@ static void verity_end_io(struct bio *bio)
- 		return;
- 	}
- 
--	INIT_WORK(&io->work, verity_work);
--	queue_work(io->v->verify_wq, &io->work);
-+	io->block_idx = 0;
-+	if (io->v->use_tasklet) {
-+		tasklet_init(&io->tasklet, verity_tasklet, (unsigned long)io);
-+		tasklet_schedule(&io->tasklet);
-+	} else {
-+		INIT_WORK(&io->work, verity_work);
-+		queue_work(io->v->verify_wq, &io->work);
-+	}
- }
- 
- /*
-@@ -1012,7 +1067,12 @@ static int verity_parse_opt_args(struct dm_arg_set *as, struct dm_verity *v,
- 				return r;
- 			continue;
- 
--		} else if (verity_is_fec_opt_arg(arg_name)) {
-+		} else if (!strcasecmp(arg_name, DM_VERITY_OPT_TASKLET_VERIFY)) {
-+			v->use_tasklet = true;
-+			continue;
-+		}
-+
-+		else if (verity_is_fec_opt_arg(arg_name)) {
- 			r = verity_fec_parse_opt_args(as, v, &argc, arg_name);
- 			if (r)
- 				return r;
-@@ -1068,6 +1128,7 @@ static int verity_ctr(struct dm_target *ti, unsigned argc, char **argv)
- 	}
- 	ti->private = v;
- 	v->ti = ti;
-+	v->use_tasklet = false;
- 
- 	r = verity_fec_ctr_alloc(v);
- 	if (r)
-@@ -1156,7 +1217,7 @@ static int verity_ctr(struct dm_target *ti, unsigned argc, char **argv)
- 		goto bad;
- 	}
- 
--	v->tfm = crypto_alloc_ahash(v->alg_name, 0, 0);
-+	v->tfm = crypto_alloc_ahash(v->alg_name, 0, CRYPTO_ALG_ASYNC);
- 	if (IS_ERR(v->tfm)) {
- 		ti->error = "Cannot initialize hash function";
- 		r = PTR_ERR(v->tfm);
-@@ -1266,7 +1327,8 @@ static int verity_ctr(struct dm_target *ti, unsigned argc, char **argv)
- 
- 	v->bufio = dm_bufio_client_create(v->hash_dev->bdev,
- 		1 << v->hash_dev_block_bits, 1, sizeof(struct buffer_aux),
--		dm_bufio_alloc_callback, NULL, 0);
-+		dm_bufio_alloc_callback, NULL, v->use_tasklet ?
-+		DM_BUFIO_GET_CANT_SLEEP : 0);
- 	if (IS_ERR(v->bufio)) {
- 		ti->error = "Cannot initialize dm-bufio";
- 		r = PTR_ERR(v->bufio);
-@@ -1281,7 +1343,8 @@ static int verity_ctr(struct dm_target *ti, unsigned argc, char **argv)
- 	}
- 
- 	/* WQ_UNBOUND greatly improves performance when running on ramdisk */
--	v->verify_wq = alloc_workqueue("kverityd", WQ_CPU_INTENSIVE | WQ_MEM_RECLAIM | WQ_UNBOUND, num_online_cpus());
-+	v->verify_wq = alloc_workqueue("kverityd", WQ_HIGHPRI | WQ_MEM_RECLAIM |
-+						   WQ_UNBOUND, num_online_cpus());
- 	if (!v->verify_wq) {
- 		ti->error = "Cannot allocate workqueue";
- 		r = -ENOMEM;
-diff --git a/drivers/md/dm-verity.h b/drivers/md/dm-verity.h
-index 4e769d13473a..4e65f93bd8d6 100644
---- a/drivers/md/dm-verity.h
-+++ b/drivers/md/dm-verity.h
-@@ -13,6 +13,7 @@
- 
- #include <linux/dm-bufio.h>
- #include <linux/device-mapper.h>
-+#include <linux/interrupt.h>
- #include <crypto/hash.h>
- 
- #define DM_VERITY_MAX_LEVELS		63
-@@ -50,6 +51,7 @@ struct dm_verity {
- 	unsigned char hash_dev_block_bits;	/* log2(hash blocksize) */
- 	unsigned char hash_per_block_bits;	/* log2(hashes in hash block) */
- 	unsigned char levels;	/* the number of tree levels */
-+	bool use_tasklet;	/* try to verify in tasklet before work-queue */
- 	unsigned char version;
- 	unsigned digest_size;	/* digest size for the current hash algorithm */
- 	unsigned int ahash_reqsize;/* the size of temporary space for crypto */
-@@ -76,10 +78,13 @@ struct dm_verity_io {
- 
- 	sector_t block;
- 	unsigned n_blocks;
-+	unsigned int block_idx;
-+	bool in_tasklet;
- 
- 	struct bvec_iter iter;
- 
- 	struct work_struct work;
-+	struct tasklet_struct tasklet;
- 
- 	/*
- 	 * Three variably-size fields follow this struct:
--- 
-2.37.1.359.gd136c6c3e2-goog
-
+PiBPbiAxNS4gMDcuIDIyLCAxMzo1MiwgTWljaGFlbCBXYWxsZSB3cm90ZToNCj4gPj4gU2VlbXMg
+d2UgaGF2ZSB0aGUgZGlmZmVyZW50IHVuZGVyc3RhbmRpbmcgb2YgdGhlIGJyZWFrX2N0bChwb3J0
+LGN0bCkNCj4gPj4gY2FsbGJhY2suIFRoZSBvcmlnaW5hbCBicmVha19jdGwodHR5LC0xKSBpbiBs
+cHVhcnQgd2lsbCBub3Qgc2VuZCB0aGUNCj4gPj4gYnJlYWsgc2lnbmFsIHVudGlsIHdlIGNhbGwg
+YnJlYWtfY3RsKHR0eSwwKS4NCj4gPg0KPiA+IFRoYXQgaXMgbm90IGNvcnJlY3QuIFRoZSBUWCBs
+aW51ZSBnb2VzIGxvdyBhcyBzb29uIGFzIHRoZSBTQksgYml0IGlzDQo+ID4gc2V0LiBTZWUgYmVs
+b3cuDQo+IA0KPiBJbiB0aGF0IGNhc2XigKYNCj4gDQo+ID4+IFBlciBteSB1bmRlcnN0YW5kaW5n
+IG9mDQo+ID4+ICJJZiBjdGwgaXMgbm9uemVybywgdGhlIGJyZWFrIHNpZ25hbCBzaG91bGQgYmUg
+dHJhbnNtaXR0ZWQiLCBjYWxsDQo+ID4+IGJyZWFrX2N0bCh0dHksLTEpIGlzIGVub3VnaCB0aGUg
+c2VuZCBvbmUgYnJlYWsgc2lnbmFsLCBub3cgbXkgcGF0Y2gNCj4gPj4gbWFrZXMgdGhlIGJlaGF2
+aW9yIGFsaWduIHdpdGggbXkgdW5kZXJzdGFuZGluZy4NCj4gPg0KPiA+IEFzIEkgc2FpZCwgR3Jl
+ZyBzaG91bGQgY2xhcmlmeSBoZXJlLg0KPiA+DQo+ID4gSW4gYW55IGNhc2UsIEkndmUgY2hlY2tl
+ZCB0aGUgaGFyZHdhcmUgKExTMTAyOEEpIGFuZCBhcyBzb29uIGFzIHlvdQ0KPiA+IHNldCB0aGUg
+U0JLIGJpdCwgdGhlIFRYIGxpbmUgZ29lcyBsb3cgKFRUTCBsZXZlbHMpIGFzIGV4cGVjdGVkLiBJ
+dA0KPiA+IHdpbGwgZ28gdG8gaGlnaCBhZ2FpbiBhcyBzb29uIGFzIHlvdSBjbGVhciB0aGUgYml0
+IGFnYWluLg0KPiA+DQo+ID4gU28gdG8gbWUgaXQgc2VlbXMgdGhlcmUgaXMgbm90aGluZyB3cm9u
+ZyBoZXJlLiBBbHNvIGhhdmUgYSBsb29rIGF0IG1hbg0KPiA+IGlvY3RsX3R0eToNCj4gPg0KPiA+
+ICDCoMKgwqDCoMKgwqAgVElPQ1NCUksNCj4gPiAgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAg
+VHVybiBicmVhayBvbiwgdGhhdCBpcywgc3RhcnQgc2VuZGluZyB6ZXJvIGJpdHMuDQo+ID4NCj4g
+PiAgwqDCoMKgwqDCoMKgIFRJT0NDQlJLDQo+ID4gIMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+IFR1cm4gYnJlYWsgb2ZmLCB0aGF0IGlzLCBzdG9wIHNlbmRpbmcgemVybyBiaXRzLg0KPiA+DQo+
+ID4gU28gdG8gc2VuZCBvbmUgYnJlYWsgImNoYXJhY3RlciIsIHlvdSBuZWVkIHRvIGRvIGlvY3Rs
+KFRJT0NTQlJLKQ0KPiA+IGZvbGxvd2VkIGJ5IGFuIGlvY3RsKFRJT0NDQlJLKS4NCj4gDQo+IOKA
+piB5b3UncmUgcmlnaHQuDQoNCkhpIEppcmkgYW5kIE1pY2hhZWwsDQoNClBlciB0aGUgdW5kZXJz
+dGFuZGluZyBvZiB0aGUgaW9jdGwgYmVoYXZpb3IgaGVyZSwgZG9lcyB0aGF0IG1lYW4gdGhlIHVh
+cnQgb3BzIGJyZWFrX2N0bChwb3J0LGN0bCkgYWxzbyBwZXJmb3JtIHRoZSBzYW1lIGJlaGF2aW9y
+IHdpdGggaW9jdGxfdHR5Pw0KYnJlYWtfY3RsKHBvcnQsLTEpIHdpbGwgdHVybiB0aGUgYnJlYWsg
+b24sIHdoaWNoIG1heSBrZWVwIFRYIGxpbmUgbG93IHVudGlsIHdlIGNhbGwgYnJlYWtfY3RsKHBv
+cnQsMCkgdG8gdHVybiBicmVhayBvZmYsIHdoaWNoIG1heSByYWlzZSB0aGUgVFggbGluZSwgcmln
+aHQ/DQoNCklmIHRoaXMgaXMgdGhlIGNvcnJlY3QgdW5kZXJzdGFuZGluZyBvZiBicmVha19jdGwo
+cG9ydCxjdGwpLCB0aGVuIEkgd2lsbCBkcm9wIHRoaXMgcGF0Y2gsIHNpbmNlIG15IHBhdGNoIGhl
+cmUgY2F1c2UgdGhlIFRYIGxpbmUgb25seSBzZW5kIG9uZSBicmVhayBzaWduYWwoOSB0byAxMyBi
+aXRzLCBvciAxMiB0byAxNSBiaXRzIGlmIFNUQVRbQlJLMTNdIGlzIHNldCkuIFRoYW5rcyENCg0K
+QmVzdCByZWdhcmRzDQpTaGVycnkNCj4gDQo+IHJlZ2FyZHMsDQo+IC0tDQo+IGpzDQo=
