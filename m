@@ -2,96 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2CBFC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 02:42:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A6E8C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 02:43:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233728AbiGVCl7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 22:41:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49946 "EHLO
+        id S233845AbiGVCnX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 22:43:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230153AbiGVCl5 (ORCPT
+        with ESMTP id S230153AbiGVCnV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 22:41:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A312868A2
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 19:41:56 -0700 (PDT)
+        Thu, 21 Jul 2022 22:43:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 560C289A7D
+        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 19:43:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1CE35B8262D
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 02:41:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1D27C341C6
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 02:41:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DD8C66201F
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 02:43:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20340C3411E;
+        Fri, 22 Jul 2022 02:43:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658457713;
-        bh=xavck+mfMP0z5ZogTwR3JahixUh3QtLQC7XQ95ds+s4=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=RGPZQ+JOTZy9DExehtfHBMU6uUSrn/iSwMM4exLjNqIyFFOLnoyWY8W8+F4AXr6M6
-         tvacNhWotErN1SL2YXw7AlFoVIv60QRxHlFge9V7NySlktLRLIrGk11g6uJM0bqK0U
-         a4PoUGGgsg/dAnwLTnZC2DsRgwP1dy8EKH2n93ygfI9yrdfK/a+AJ2BqK2jPCVGNre
-         Q4n82gFd8Qhh4rxIU3/S8qss85PXr4q88GKrRpreRJjs4T3YAffZ97En7I6LzOYgA2
-         VevKqXz2OojziVOIc5oBuFk3UGNGDDeZbSviT+au33MMHmkhstNEAfXUtcORSdICOv
-         dpl7NZxtEg8uA==
-Received: by mail-vk1-f172.google.com with SMTP id o10so1545096vkl.3
-        for <linux-kernel@vger.kernel.org>; Thu, 21 Jul 2022 19:41:53 -0700 (PDT)
-X-Gm-Message-State: AJIora/Q/SK98jY8t9E8RPxNDfcDmNVkDL/Hpg2ARLoDCaUtf+wfKoB4
-        s7lXUMXL4z9b2Oj+fER8w6kUx6Aljps8zkdifNY=
-X-Google-Smtp-Source: AGRyM1vifaQjeModGQlhpHoldb4kZ4m5SMkqNhmlkPGitXKFguWl9MbPd4msopVtdHO4VzFyF9V7eyUA1i0RR4I6PxM=
-X-Received: by 2002:a1f:a887:0:b0:36c:8458:b061 with SMTP id
- r129-20020a1fa887000000b0036c8458b061mr412967vke.19.1658457712542; Thu, 21
- Jul 2022 19:41:52 -0700 (PDT)
+        s=k20201202; t=1658457799;
+        bh=/nLfBny++QJC2G15ji7Jr16oDuC0KkPWGQcXsMuiKi4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=WLNsAbWq+O8lSxcCO5rRft70tFlZn2LKl/xrgVQtb6AH1C7Gogcg2orjH8O3xm6YF
+         NRrv/lLVzrGQAMRDB0PppYtvxh6T/FPn0QydS6eh8pKkZZTwRYHtnGi79dHYQspO/I
+         8zuyHIX/kYldyeUQPno2/XaEPHyjQCUCBYV5jP7QMzn7LfhiRA4iSoE3YAJYSGWYfm
+         dBrBlno1TOhL32WFykL8e5RhK/dkX1j8V8wgjBzWh71ZZwSDmh4nYl9AVryWti3Qrb
+         aIl/fwB1xtJCHHaeDj3Jy/lS+s7XSh6xYfpQam63QQJ50uIfEz5DFCv19SWdZaCwLf
+         eD/3UGJ6W2zMw==
+Date:   Thu, 21 Jul 2022 19:43:17 -0700
+From:   Jaegeuk Kim <jaegeuk@kernel.org>
+To:     Guowei Du <duguoweisz@gmail.com>
+Cc:     chao@kernel.org, linux-f2fs-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, duguowei <duguowei@xiaomi.com>
+Subject: Re: [PATCH] f2fs: modify task name prefix
+Message-ID: <YtoOxTyWPFUpw/Y0@google.com>
+References: <20220718081038.2279-1-duguoweisz@gmail.com>
 MIME-Version: 1.0
-References: <20220722004231.91114-1-yang.lee@linux.alibaba.com>
-In-Reply-To: <20220722004231.91114-1-yang.lee@linux.alibaba.com>
-From:   Huacai Chen <chenhuacai@kernel.org>
-Date:   Fri, 22 Jul 2022 10:41:39 +0800
-X-Gmail-Original-Message-ID: <CAAhV-H7Ap=3UvnZsXwiYsX-WtuyP9i25j1oCT-fY9JRnDGvihA@mail.gmail.com>
-Message-ID: <CAAhV-H7Ap=3UvnZsXwiYsX-WtuyP9i25j1oCT-fY9JRnDGvihA@mail.gmail.com>
-Subject: Re: [PATCH -next] LoongArch: Fix unsigned comparison with less than zero
-To:     Yang Li <yang.lee@linux.alibaba.com>
-Cc:     WANG Xuerui <kernel@xen0n.name>, loongarch@lists.linux.dev,
-        LKML <linux-kernel@vger.kernel.org>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220718081038.2279-1-duguoweisz@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Yang Li,
+On 07/18, Guowei Du wrote:
+> From: duguowei <duguowei@xiaomi.com>
+> 
+> If there are more than one f2fs sbi, there will be more
+> discard threads. But the comm is too long to show dev
+> minor. So, change the default prefix of thread from
+> "f2fs_discard" to "f2fs_dcd".
 
-Thank you for your patch. This looks good to me and will be queued for
-5.20, since Marc said he will not rebase his branch. :)
+That looks quite unreadable. What about unmap?
 
-Huacai
-
-On Fri, Jul 22, 2022 at 8:42 AM Yang Li <yang.lee@linux.alibaba.com> wrote:
->
-> The return from the call to get_timer_irq() is int, it can be
-> a negative error code, however this is being assigned to an
-> unsigned int variable 'irq', so making 'irq' an int.
->
-> Eliminate the following coccicheck warning:
-> ./arch/loongarch/kernel/time.c:146:5-8: WARNING: Unsigned expression compared with zero: irq < 0
->
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+> 
+> Before:
+> $ ps -e | grep f2fs
+> 1628 ?        00:00:00 f2fs_ckpt-7:10
+> 1629 ?        00:00:00 f2fs_flush-7:10
+> 1630 ?        00:00:00 f2fs_discard-7:
+> 1631 ?        00:00:00 f2fs_gc-7:10
+> 2030 ?        00:00:00 f2fs_ckpt-7:27
+> 2031 ?        00:00:00 f2fs_flush-7:27
+> 2032 ?        00:00:00 f2fs_discard-7:
+> 2033 ?        00:00:00 f2fs_gc-7:27
+> 
+> After:
+> $ ps -e | grep f2fs
+> 1628 ?        00:00:00 f2fs_ckpt-7:10
+> 1629 ?        00:00:00 f2fs_flush-7:10
+> 1630 ?        00:00:00 f2fs_dcd-7:10
+> 1631 ?        00:00:00 f2fs_gc-7:10
+> 2030 ?        00:00:00 f2fs_ckpt-7:27
+> 2031 ?        00:00:00 f2fs_flush-7:27
+> 2032 ?        00:00:00 f2fs_dcd-7:27
+> 2033 ?        00:00:00 f2fs_gc-7:27
+> 
+> Signed-off-by: duguowei <duguowei@xiaomi.com>
 > ---
->  arch/loongarch/kernel/time.c | 2 +-
+>  fs/f2fs/segment.c | 2 +-
 >  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/arch/loongarch/kernel/time.c b/arch/loongarch/kernel/time.c
-> index 79dc5eddf504..786735dcc8d6 100644
-> --- a/arch/loongarch/kernel/time.c
-> +++ b/arch/loongarch/kernel/time.c
-> @@ -135,7 +135,7 @@ static int get_timer_irq(void)
->
->  int constant_clockevent_init(void)
->  {
-> -       unsigned int irq;
-> +       int irq;
->         unsigned int cpu = smp_processor_id();
->         unsigned long min_delta = 0x600;
->         unsigned long max_delta = (1UL << 48) - 1;
-> --
-> 2.20.1.7.g153144c
->
+> 
+> diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
+> index 874c1b9c41a2..2eeefcbe62db 100644
+> --- a/fs/f2fs/segment.c
+> +++ b/fs/f2fs/segment.c
+> @@ -2018,7 +2018,7 @@ int f2fs_start_discard_thread(struct f2fs_sb_info *sbi)
+>  		return 0;
+>  
+>  	dcc->f2fs_issue_discard = kthread_run(issue_discard_thread, sbi,
+> -				"f2fs_discard-%u:%u", MAJOR(dev), MINOR(dev));
+> +				"f2fs_dcd-%u:%u", MAJOR(dev), MINOR(dev));
+>  	if (IS_ERR(dcc->f2fs_issue_discard))
+>  		err = PTR_ERR(dcc->f2fs_issue_discard);
+>  
+> -- 
+> 2.36.1
