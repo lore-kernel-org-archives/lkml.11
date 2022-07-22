@@ -2,22 +2,22 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03B94CCA473
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 21:55:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04CFACCA473
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 21:55:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236592AbiGVVzf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 17:55:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53810 "EHLO
+        id S236615AbiGVVzj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 17:55:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236461AbiGVVzZ (ORCPT
+        with ESMTP id S236477AbiGVVz0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 17:55:25 -0400
-Received: from mout.perfora.net (mout.perfora.net [74.208.4.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD1AC64F1;
+        Fri, 22 Jul 2022 17:55:26 -0400
+Received: from mout.perfora.net (mout.perfora.net [74.208.4.194])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15A5511818;
         Fri, 22 Jul 2022 14:55:23 -0700 (PDT)
 Received: from toolbox.int.toradex.com ([81.221.243.92]) by mrelay.perfora.net
- (mreueus002 [74.208.5.2]) with ESMTPSA (Nemesis) id 0Lh8XB-1nkdet0xBX-00oYGx;
- Fri, 22 Jul 2022 23:55:00 +0200
+ (mreueus002 [74.208.5.2]) with ESMTPSA (Nemesis) id 0M3ys8-1nNs1h3NlS-00rWIo;
+ Fri, 22 Jul 2022 23:55:08 +0200
 From:   Marcel Ziswiler <marcel@ziswiler.com>
 To:     linux-arm-kernel@lists.infradead.org
 Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
@@ -29,30 +29,30 @@ Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
         Sascha Hauer <s.hauer@pengutronix.de>,
         Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 01/12] ARM: dts: imx6-sabrelite: change to use SPDX identifiers
-Date:   Fri, 22 Jul 2022 23:54:34 +0200
-Message-Id: <20220722215445.3548530-2-marcel@ziswiler.com>
+Subject: [PATCH v2 04/12] ARM: dts: imx6qdl-sabre: change to use SPDX identifiers
+Date:   Fri, 22 Jul 2022 23:54:37 +0200
+Message-Id: <20220722215445.3548530-5-marcel@ziswiler.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220722215445.3548530-1-marcel@ziswiler.com>
 References: <20220722215445.3548530-1-marcel@ziswiler.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:nQ1jigqJiu0hN4s8Kp4208rDf8F+y54KwEWcklTy165yOsIOZe6
- hWzWT926jIyRk29nDbaPlo5268Y8Erm/pn8GBy1NsUpWeBkhTnq0nKa/Mmpv0PkAeWyFR69
- rJ5BGneXgqlqQjdoffl7fNDYYtqAwAN3FX8BCShGDcOxo3++2zSpJBYrTw9PUGMNL0Qxci7
- ir9gEjwjgic4P5hCUknvg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:htGtwYRZtc4=:pB7VAyhY1iDpob2Jf6sZWo
- KKR/d0qguv/+pYRGVwezU5ZskC0Vs+GqZUyOtvz+ocl7dAQWU9BHH/8h13/Xy9PDQfchQYpGG
- lZvOkAWTlfA+Sqsp5ks8d92QWwPWONIpAmvxWdiy3Duvmnl0QwcESIQF7lULszsoMYQdfRihC
- LTlpzpJMCYroW3UN/TVTs2CtdoBfyfoja8GCQnp4DLO/i1TM8IBZ0PSaO7abeicxsvaXWUPfJ
- 0eFt3tq3lXh+YM34bPLOzDrvOKllHWzt6+hod2RYrwql7n5mo/RC+vNMPb4urz8ozRATETV30
- 2OAzrg75V4j4lMJGO3If26DNrGUhS9L9U6HnAV2eQ2/ngpY/CiqBduv9LvLYvLHQP3ebZX4hh
- PAHJuuiiTkpCfkip8StJnqQDwhJMyRGakoomRWinJq3AXQHY02Vk+OluflERA0gr1XIct8XLP
- diTha4RxZxyZ/XiO+ljOmQ/jE6cfj9cTSfrcyGiwiwrKERIocNTPeIY5ZFAbxoEJgPROyjSSN
- lTTWTbN0LwVD6ekoerukGdbmknSyaKPyQcaF4xQ9M2TEcqQ649nZYaFjadd7E3bwVAyedefIM
- Gy3buO/fSC+C31LaTz8/y+mkzlPwH9g0MypsvLxjzZJyra/EQfZ8s/fkrYiroGSDvtJ6Bgu+F
- BWL9RWAOeDr18+yc0ad2CM5HcSGQgOoy7weMmLZYLjZssCvwCdVUsUZTmwO2QIFMlEybhYdRJ
- UyDNFyWe56GLeu7pbcla1+kT64LgUaUAqWTBjw==
+X-Provags-ID: V03:K1:eHJSavm0LH00PW/itzzUZfwNeEKkG4bkylPaIW7RJ62yDsLoC4R
+ pzHd4IFA5YtVwPYohxXis03oOPku1AXdSyeawkibC1B9yCbtgWBZwNuhmNks1QVXCauOze3
+ JX2X367LqCWa6wX9nNQfXfAd+X8J+oSf+rIi6K1+xkJLm2OhdXFp/dTafmRgEadsgsNOtSO
+ 5h5SRp2dVRrFj7AFj87zg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:FyD9/9Du60A=:evlfBDERdWUeXTiU3TKjIO
+ 381fXkHSL+CXi3rOYQgfLZ00WZgwcNixUU13C+hXIizzS7Dq0tREeDvMeG2l6B8HoGfKcgs6Z
+ hv1Xa0Deou5LBidSFlhMku/kkhBcoeDzVJ9g1WUZHPND5arjqYC8K0nJ//lO0lbbEE5vpTENH
+ Xvr9Yy9YkgG1OWrKtFAbojsMwfPtGvNSMu4rYXqlkEISfRkr675TrO1gwM4Swgp7cr61pDWFS
+ z2bsgRKQjefnBUUYCAlSCpKTjY/hhPPH9WuwxeHuvkZpiVFNgYzA+83r2fzzJRO7qMuRF8X0D
+ ycUHDjE0m2MVoiaIl2BwooPTqKuT3Pl3zNXn4Pg7s6z4u1MZ/rakPMiRif9pk0e1xsnRmiX5m
+ 4xcsy/GAXfdjB9lMUaPtYuQ8qHwLFNmLPaHec8O4tswBycOZ+c6+K+lzOhsGqUtyfedD3A9VA
+ tOJYV6BAeH9a2mRRV1063iqJrIo7EBfnwZOf0c4dbFCKQwxld0wS8WZZSqODF1lSjov+PSouH
+ /vCkm4SK8colL/uDB/SgOuYqZBUNbs/khQSp8mSSzrMg/GxPPZXeDpifcVUL7iOb85B/QVjwO
+ SazJ0WOzVnmIrcp3VJNWmgcp0YlgjRrZUjN198tHQf5FYb3ViM6Vd1SLaG4wyMyrsb6EnVg7n
+ wr7TdYqgADJwOs/rpGtfVsJpHBw+O7PmG7eLkd2tBhlFPoBECeVmCdvm7c/OvKDW4dYDQG7kQ
+ hmFmfJYiyavSadzAqfF7oxs+EqrOD+b00IwdEg==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
@@ -63,8 +63,8 @@ Replace the license text with SPDX identifiers.
 
 Avoid the following checkpatch warning:
 
-arch/arm/boot/dts/imx6q-sabrelite.dts:1: warning: Missing or malformed
- SPDX-License-Identifier tag in line 1
+arch/arm/boot/dts/imx6qdl-sabrelite.dtsi:1: warning: Missing or
+ malformed SPDX-License-Identifier tag in line 1
 
 Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
@@ -73,13 +73,13 @@ Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 Changes in v2:
 - The GPL part of the boilerplate license was actually GPL-2.0 only.
 
- arch/arm/boot/dts/imx6q-sabrelite.dts | 37 +--------------------------
+ arch/arm/boot/dts/imx6qdl-sabrelite.dtsi | 37 +-----------------------
  1 file changed, 1 insertion(+), 36 deletions(-)
 
-diff --git a/arch/arm/boot/dts/imx6q-sabrelite.dts b/arch/arm/boot/dts/imx6q-sabrelite.dts
-index dc51262e7b2f..7c6a2f234ccb 100644
---- a/arch/arm/boot/dts/imx6q-sabrelite.dts
-+++ b/arch/arm/boot/dts/imx6q-sabrelite.dts
+diff --git a/arch/arm/boot/dts/imx6qdl-sabrelite.dtsi b/arch/arm/boot/dts/imx6qdl-sabrelite.dtsi
+index 901b9a761b66..22f8e2783cdf 100644
+--- a/arch/arm/boot/dts/imx6qdl-sabrelite.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-sabrelite.dtsi
 @@ -1,43 +1,8 @@
 +// SPDX-License-Identifier: GPL-2.0 OR X11
  /*
@@ -124,7 +124,7 @@ index dc51262e7b2f..7c6a2f234ccb 100644
 - *     OTHER DEALINGS IN THE SOFTWARE.
   */
  
- /dts-v1/;
+ #include <dt-bindings/clock/imx6qdl-clock.h>
 -- 
 2.35.1
 
