@@ -2,121 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7C4CC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 19:19:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C07DEC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 19:20:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232331AbiGVTTB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 15:19:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52962 "EHLO
+        id S236151AbiGVTUC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 15:20:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233633AbiGVTS4 (ORCPT
+        with ESMTP id S232272AbiGVTUA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 15:18:56 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9983A5925F;
-        Fri, 22 Jul 2022 12:18:53 -0700 (PDT)
-Received: from zn.tnic (p200300ea97297665329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9729:7665:329c:23ff:fea6:a903])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 2AC521EC0657;
-        Fri, 22 Jul 2022 21:18:48 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1658517528;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=S7Nu4/eHKss0+qmBB7cZDNC3Q4DWm75cDoGs5TXikHo=;
-        b=LIx6g/LXOmTk6uDJhPVmnoqKJ4EyZUKtMASYEeKCWrJykfa0uvj2XCpcPqEFKveUw1OzcC
-        jVAmUcMNmbHoXPYgcGrCxhHJjA8xsZN1P/OyU403HZxaEvzq24nYzbK8bDBP+UCbWNjFE+
-        qFKSWzhGfIcthc/2fyBXoBfWXC1k5XQ=
-Date:   Fri, 22 Jul 2022 21:18:44 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Dave Hansen <dave.hansen@intel.com>
-Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joerg Roedel <jroedel@suse.de>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Varad Gautam <varad.gautam@suse.com>,
-        Dario Faggioli <dfaggioli@suse.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
-        khalid.elmously@canonical.com, philip.cox@canonical.com,
-        x86@kernel.org, linux-mm@kvack.org, linux-coco@lists.linux.dev,
-        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Mike Rapoport <rppt@linux.ibm.com>
-Subject: Re: [PATCHv7 02/14] mm: Add support for unaccepted memory
-Message-ID: <Ytr4FCV2xPGUBLqs@zn.tnic>
-References: <20220614120231.48165-1-kirill.shutemov@linux.intel.com>
- <20220614120231.48165-3-kirill.shutemov@linux.intel.com>
- <YtltYRuL+2uQkYUK@zn.tnic>
- <ebcf2979-45fc-8d41-cc28-ac8da0d24245@intel.com>
+        Fri, 22 Jul 2022 15:20:00 -0400
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E6C7904ED
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 12:19:59 -0700 (PDT)
+Received: by mail-lj1-x236.google.com with SMTP id r14so6527979ljp.2
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 12:19:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=a4bYXJlSd1ZgaIpQeG4nLdpNWkpj3aQa+2dbGTYQopQ=;
+        b=WcTfpkknrk7XnISZBeGeU6xAVW/U/1wZ5p+F3nYz/nNB3qtD8M04Y4t5BYwFAClcIy
+         mHZMWH2iJaVCQmAMF6zWYNYFDrlLzGtZAClo8Uli1jABpBC+rRovCHyq0cYEpHBSMeiv
+         /U/ezaNHvXvySC9NeRHqXt8rd3riuUq2diOJDj4fY3b+byRU1qdEn6/be9R8tfplIq2/
+         AV/qX1QMJ3vZmtnSyFNhYa19HPuMFyEO/v6Pg6esZ0LTqgp9HMJT7xbi30GAeeGBoEoK
+         6QU8UQwUcShemor6NM514mp3bzxskBb55Z9pA5tQ5rpGA+XhjPINIouqcqFHnU2lesLo
+         Ilmw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=a4bYXJlSd1ZgaIpQeG4nLdpNWkpj3aQa+2dbGTYQopQ=;
+        b=eve2UoA4swI7g5LIHRN6gdj4TNb+xF6fVaA7VxlQNtCK4gcdvh/6G/FGZIyU7R1QAn
+         VdAme7mSoiQgA0kPEbk4hT5Ub1llsXNjgabM/f0XskoVMbHR2S1j1W9KURcoR0qjLg+d
+         bcaOVhV6GoLiFJM2pgcjexzuHNav4UNBMz99EvmGjNpY3zPL/XNfjnw8qqQw15okxtol
+         c5jSFSyRd5Puam1A68KRSEN/6TyNdysjtusT3LSQ2Ootm7UKWIg8BNVi7mM45hYipX2z
+         i9eL3e6MlF33NNE2Lv5IHqKRXhH9pNZkSM8ftQCsfeu4saBGYxmgfkzoxI79t742xaeP
+         mkOA==
+X-Gm-Message-State: AJIora/IRNaZl1culRphWHFG8EieeIKFjCGBfn2kEfbAJnmAMLP7MCz+
+        FyEdB9gm72T95wX2QV3DVaPTqQ==
+X-Google-Smtp-Source: AGRyM1t3gMejbNbAPY5Pp5d2e2dazkxDwrEFj4lIc1gTz2EEKoMCen8+k7gl5W807i6wy0W+Vs4K8A==
+X-Received: by 2002:a2e:b894:0:b0:25d:9db3:5160 with SMTP id r20-20020a2eb894000000b0025d9db35160mr482866ljp.25.1658517597181;
+        Fri, 22 Jul 2022 12:19:57 -0700 (PDT)
+Received: from [192.168.10.173] (93.81-167-86.customer.lyse.net. [81.167.86.93])
+        by smtp.gmail.com with ESMTPSA id r23-20020a2e94d7000000b0025d835fe81esm1276897ljh.115.2022.07.22.12.19.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 22 Jul 2022 12:19:56 -0700 (PDT)
+Message-ID: <0974ebc0-8426-c889-b16a-1d35a4e4309e@linaro.org>
+Date:   Fri, 22 Jul 2022 21:19:55 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <ebcf2979-45fc-8d41-cc28-ac8da0d24245@intel.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 2/3] dt-bindings: arm: bcm: Refer to the YAML binding for
+ MEMC
+Content-Language: en-US
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        linux-kernel@vger.kernel.org
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Broadcom internal kernel review list 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "moderated list:BROADCOM BCM7XXX ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>
+References: <20220722184138.2666241-1-f.fainelli@gmail.com>
+ <20220722184138.2666241-3-f.fainelli@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220722184138.2666241-3-f.fainelli@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 08:49:31AM -0700, Dave Hansen wrote:
-> Acceptance is slow and the heavy lifting is done inside the TDX module.
->  It involves flushing old aliases out of the caches and initializing the
-> memory integrity metadata for every cacheline.  This implementation does
-> acceptance in 2MB chunks while holding a global lock.
+On 22/07/2022 20:41, Florian Fainelli wrote:
+> Remove the list of existing compatible strings and prefer to use the
+> YAML binding which more complete and up to date.
 
-Oh, fun.
+Ah, so this is partial conversion from TXT? Then please squash it with
+previous commit and extend the commit msg.
 
-> So, those (effective) 2MB clflush+memset's (plus a few thousand cycles
-> for the hypercall/tdcall transitions)
+> 
+> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> ---
+>  .../devicetree/bindings/arm/bcm/brcm,brcmstb.txt      | 11 ++---------
+>  1 file changed, 2 insertions(+), 9 deletions(-)
+> 
 
-So this sounds strange - page validation on AMD - judging by the
-pseudocode of the PVALIDATE insn - does a bunch of sanity checks on the
-gVA of the page and then installs it into the RMP and also "PVALIDATE
-performs the same segmentation and paging checks as a 1-byte read.
-PVALIDATE does not invalidate TLB caches."
 
-But that still sounds a lot less work than what the TDX module needs to
-do...
-
-> can't happen in parallel. They are serialized and must wait on each
-> other.
-
-Ofc, the Intel version of the RMP table needs to be protected. :-)
-
-> If you have a few hundred CPUs all trying to allocate memory (say,
-> doing the first kernel compile after a reboot), this is going to be
-> very, very painful for a while.
->
-> That said, I think this is the right place to _start_. There is going
-> to need to be some kind of follow-on solution (likely background
-> acceptance of some kind). But, even with that solution, *this* code
-> is still needed to handle the degenerate case where the background
-> accepter can't keep up with foreground memory needs.
-
-I'm still catering to the view that it should be a two-tier thing: you
-validate during boot a certain amount - say 4G - a size for which the
-boot delay is acceptable and you do the rest on-demand along with a
-background accepter.
-
-That should give you the best of both worlds...
-
-Thx.
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+Best regards,
+Krzysztof
