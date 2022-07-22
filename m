@@ -2,93 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62710C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:39:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23F4DC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:40:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234747AbiGVJjS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 05:39:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36050 "EHLO
+        id S234986AbiGVJkr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 05:40:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236648AbiGVJi2 (ORCPT
+        with ESMTP id S234639AbiGVJkc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 05:38:28 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F9EECA742
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 02:27:09 -0700 (PDT)
-Received: from localhost (unknown [188.24.146.105])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: cristicc)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 80F716601AC4;
-        Fri, 22 Jul 2022 10:27:07 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1658482027;
-        bh=bR415wpcpzInVOGQ1me2DQTG9wsahBgZxpUeugmZq4I=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Dk32ejNDLIMGxJmAmpNv5o5jh5RCm70WybaUz7EfJBzMHza2oj+KmRHJz/nKi78uE
-         cTa5+6j9fyTIbX+VW/PswFNWL0+BdX/kDsIL97uZzawV6zbziDJHVbbbSubW2UywLz
-         Z+A4X26aQsqqhJR/EundNctUzBO+kC8+M1ZiWmJkk6t85RhuTQnQ/5qHX5L/Pe+yZs
-         fxQk3obJzuXNEbLufIgoApAzz1MyWt8Kzpc2zUQOKwSA7HIK1/QUnq5dm6GOhNbE0+
-         cP/EmcsUMt2NC/BcfnwljwyYTl1ZSrWG8RJN9+2PgvGUzydUGrTpC5/rUul/mUUVcn
-         CkpK5sbJDJjVg==
-From:   Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
-To:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>
-Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        kernel@collabora.com
-Subject: [PATCH v2] ASoC: amd: vangogh: Use non-legacy DAI naming for cs35l41
-Date:   Fri, 22 Jul 2022 12:27:00 +0300
-Message-Id: <20220722092700.8269-1-cristian.ciocaltea@collabora.com>
-X-Mailer: git-send-email 2.37.1
+        Fri, 22 Jul 2022 05:40:32 -0400
+Received: from mail-m973.mail.163.com (mail-m973.mail.163.com [123.126.97.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2243FFE;
+        Fri, 22 Jul 2022 02:29:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=qIKYj
+        gj5lpl2LIg188S6dzOSHartE4lDmNN4vgXZ9yI=; b=enKLWYD5dSvqxjQVLd3Dn
+        P8aQOqraphoDLNa7RhHCtiSuFocrHX2qADzq6j8AcqPMK8tf9gJFAjDSzZjwjNYq
+        5zfJU0Nnin3ZQSUROK6UqrDPUrfOAPXCrRUA2+jMEwyqmsTzL8PpJwAVMgzwE6PZ
+        gL348uGrTx2hTdtRxexBBU=
+Received: from localhost.localdomain (unknown [112.97.59.29])
+        by smtp3 (Coremail) with SMTP id G9xpCgD3hH75bdpisZ+RQg--.7373S2;
+        Fri, 22 Jul 2022 17:29:30 +0800 (CST)
+From:   Slark Xiao <slark_xiao@163.com>
+To:     sre@kernel.org
+Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        Slark Xiao <slark_xiao@163.com>
+Subject: [PATCH] power: supply: Fix typo 'the the' in comment
+Date:   Fri, 22 Jul 2022 17:29:27 +0800
+Message-Id: <20220722092927.77315-1-slark_xiao@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: G9xpCgD3hH75bdpisZ+RQg--.7373S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7ZFyfKFWrur1kGw1DCF4kWFg_yoW8Ww4Upa
+        n5CrsYk398KFW7J3Wjy3WUWa45Ga1rA3s0krWxJ3y5u3W3A3y09r1UGFZxK343XrZ3AF4S
+        qry3tr1IvF13Gr7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pijjgrUUUUU=
+X-Originating-IP: [112.97.59.29]
+X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/1tbiGRpGZFyPdmzQ2AAAsg
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Unlike most CODEC drivers, the CS35L41 driver did not have the
-non_legacy_dai_naming set, meaning the corresponding DAI has been
-traditionally registered using the legacy naming: spi-VLV1776:0x
+Replace 'the the' with 'the' in the comment.
 
-The recent migration to the new legacy DAI naming style has implicitly
-corrected that behavior and DAI gets now registered via the non-legacy
-naming, i.e. cs35l41-pcm.
-
-The problem is the acp5x platform driver is now broken as it continues
-to refer to the above mentioned codec using the legacy DAI naming in
-function acp5x_cs35l41_hw_params() and, therefore, the related setup
-is not being executed anymore.
-
-Let's fix that by replacing the obsolete DAI name with the correct one.
-
-Fixes: 129f055a2144 ("ASoC: core: Switch core to new DAI naming flag")
-Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
-Reviewed-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+Signed-off-by: Slark Xiao <slark_xiao@163.com>
 ---
-Changes in v2:
- - Corrected the SHA for the Fixes commit
- - Added Reviewed-by tag from Charles
+ drivers/power/supply/power_supply_sysfs.c | 2 +-
+ drivers/power/supply/tps65217_charger.c   | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
- sound/soc/amd/vangogh/acp5x-mach.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+diff --git a/drivers/power/supply/power_supply_sysfs.c b/drivers/power/supply/power_supply_sysfs.c
+index 4239591e1522..5369abaceb5c 100644
+--- a/drivers/power/supply/power_supply_sysfs.c
++++ b/drivers/power/supply/power_supply_sysfs.c
+@@ -442,7 +442,7 @@ static int add_prop_uevent(struct device *dev, struct kobj_uevent_env *env,
+ 	if (ret == -ENODEV || ret == -ENODATA) {
+ 		/*
+ 		 * When a battery is absent, we expect -ENODEV. Don't abort;
+-		 * send the uevent with at least the the PRESENT=0 property
++		 * send the uevent with at least the PRESENT=0 property
+ 		 */
+ 		return 0;
+ 	}
+diff --git a/drivers/power/supply/tps65217_charger.c b/drivers/power/supply/tps65217_charger.c
+index ba33d1617e0b..a4bc9f2a10bc 100644
+--- a/drivers/power/supply/tps65217_charger.c
++++ b/drivers/power/supply/tps65217_charger.c
+@@ -50,7 +50,7 @@ static int tps65217_config_charger(struct tps65217_charger *charger)
+ 	 * tps65217 rev. G, p. 31 (see p. 32 for NTC schematic)
+ 	 *
+ 	 * The device can be configured to support a 100k NTC (B = 3960) by
+-	 * setting the the NTC_TYPE bit in register CHGCONFIG1 to 1. However it
++	 * setting the NTC_TYPE bit in register CHGCONFIG1 to 1. However it
+ 	 * is not recommended to do so. In sleep mode, the charger continues
+ 	 * charging the battery, but all register values are reset to default
+ 	 * values. Therefore, the charger would get the wrong temperature
+-- 
+2.25.1
 
-diff --git a/sound/soc/amd/vangogh/acp5x-mach.c b/sound/soc/amd/vangogh/acp5x-mach.c
-index 727de46860b1..af3737ef9707 100644
---- a/sound/soc/amd/vangogh/acp5x-mach.c
-+++ b/sound/soc/amd/vangogh/acp5x-mach.c
-@@ -178,8 +178,7 @@ static int acp5x_cs35l41_hw_params(struct snd_pcm_substream *substream,
- 	ret = 0;
- 	for (i = 0; i < num_codecs; i++) {
- 		codec_dai = asoc_rtd_to_codec(rtd, i);
--		if ((strcmp(codec_dai->name, "spi-VLV1776:00") == 0) ||
--		    (strcmp(codec_dai->name, "spi-VLV1776:01") == 0)) {
-+		if (strcmp(codec_dai->name, "cs35l41-pcm") == 0) {
- 			switch (params_rate(params)) {
- 			case 48000:
- 				bclk_val = 1536000;
---
-2.37.1
