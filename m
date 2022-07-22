@@ -2,79 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0207AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 13:03:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC9EDC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 13:03:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235029AbiGVNC7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 09:02:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48344 "EHLO
+        id S235116AbiGVNDf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 09:03:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229936AbiGVNC6 (ORCPT
+        with ESMTP id S234982AbiGVNDe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 09:02:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A42DAF878;
-        Fri, 22 Jul 2022 06:02:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 045FF61A44;
-        Fri, 22 Jul 2022 13:02:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 820BCC341C6;
-        Fri, 22 Jul 2022 13:02:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658494976;
-        bh=sXtHX633NXttQ52gjkH415MKam/LYec875q3sOrQkSI=;
-        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
-        b=e4nbcdsQD14H/vyLafcrTolZZ5pzguIDjRmSzSa4iToQwJTn0NOSfHhkYNh7RSlAg
-         Y3Bheovy6BWNZjie2kPUsAw/C2aK0eFuHPEqIbIKhnFRwMs4psaSlNOvxx2FZCj/Km
-         SkwSAtpPPIBmFAAjsx2ryOPs7DGjYbkCghOf7x6NLmEjhaJRLfjnr3ACBBrxtEo5H0
-         BKP7uOl+7YRA+d8GPkelxoWvbIflN8Kv2fAJOu+C8sQ8Z4bjsy80mGolNr1jXm66Uv
-         T5SfuDjRfN14z7Lo4d++kIXu3Zb1waAW7XW6EtIWuZsZrfIunly4gcUT3Qpq7NzBh1
-         Hx6Ju92d80JIw==
-Date:   Fri, 22 Jul 2022 15:02:52 +0200 (CEST)
-From:   Jiri Kosina <jikos@kernel.org>
-To:     Artem Borisov <dedsa2002@gmail.com>
-cc:     linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] HID: alps: Declare U1_UNICORN_LEGACY support
-In-Reply-To: <20220719145324.8107-1-dedsa2002@gmail.com>
-Message-ID: <nycvar.YFH.7.76.2207221502470.19850@cbobk.fhfr.pm>
-References: <20220719145324.8107-1-dedsa2002@gmail.com>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        Fri, 22 Jul 2022 09:03:34 -0400
+X-Greylist: delayed 515 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 22 Jul 2022 06:03:31 PDT
+Received: from redcrew.org (redcrew.org [37.157.195.192])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29EBBAF949
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 06:03:31 -0700 (PDT)
+Received: from server.danny.cz (85-71-161-19.rce.o2.cz [85.71.161.19])
+        by redcrew.org (Postfix) with ESMTP id 5175AA0C;
+        Fri, 22 Jul 2022 14:54:54 +0200 (CEST)
+Received: from talos.danny.cz (unknown [IPv6:2001:470:5c11:160:47df:83f6:718e:218])
+        by server.danny.cz (Postfix) with SMTP id 1E81B11AA6B;
+        Fri, 22 Jul 2022 14:54:54 +0200 (CEST)
+Date:   Fri, 22 Jul 2022 14:54:53 +0200
+From:   Dan =?UTF-8?B?SG9yw6Fr?= <dan@danny.cz>
+To:     Michael Ellerman <michael@ellerman.id.au>
+Cc:     amd-gfx@lists.freedesktop.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        linux-kernel@vger.kernel.org, Alex Deucher <alexdeucher@gmail.com>,
+        <linuxppc-dev@lists.ozlabs.org>
+Subject: Re: [PATCH] amdgpu: re-enable DCN for ppc64le
+Message-Id: <20220722145453.eb37bd3a99c4b738ed2e26b9@danny.cz>
+In-Reply-To: <87o7xhcoqh.fsf@mpe.ellerman.id.au>
+References: <20220722082122.571974-1-dan@danny.cz>
+        <87o7xhcoqh.fsf@mpe.ellerman.id.au>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; powerpc64le-redhat-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 19 Jul 2022, Artem Borisov wrote:
+On Fri, 22 Jul 2022 22:32:06 +1000
+Michael Ellerman <michael@ellerman.id.au> wrote:
 
-> U1_UNICORN_LEGACY id was added to the driver, but was not declared
-> in the device id table, making it impossible to use.
+> Hi Dan,
 > 
-> Fixes: 640e403 ("HID: alps: Add AUI1657 device ID")
-> Signed-off-by: Artem Borisov <dedsa2002@gmail.com>
-> ---
->  drivers/hid/hid-alps.c | 2 ++
->  1 file changed, 2 insertions(+)
+> [ Cc += linuxppc-dev  ]
 > 
-> diff --git a/drivers/hid/hid-alps.c b/drivers/hid/hid-alps.c
-> index 2b986d0dbde4..db146d0f7937 100644
-> --- a/drivers/hid/hid-alps.c
-> +++ b/drivers/hid/hid-alps.c
-> @@ -830,6 +830,8 @@ static const struct hid_device_id alps_id[] = {
->  		USB_VENDOR_ID_ALPS_JP, HID_DEVICE_ID_ALPS_U1_DUAL) },
->  	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_ANY,
->  		USB_VENDOR_ID_ALPS_JP, HID_DEVICE_ID_ALPS_U1) },
-> +	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_ANY,
-> +		USB_VENDOR_ID_ALPS_JP, HID_DEVICE_ID_ALPS_U1_UNICORN_LEGACY) },
->  	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_ANY,
->  		USB_VENDOR_ID_ALPS_JP, HID_DEVICE_ID_ALPS_T4_BTNLESS) },
->  	{ }
+> Dan Horák <dan@danny.cz> writes:
+> > Commit d11219ad53dc disabled the DCN driver for all platforms that
+> > define PPC64 due long build issues during "make allmodconfig" using
+> > cross-compilation. Cross-compilation defaults to the ppc64_defconfig
+> > and thus big-endian toolchain configuration. The ppc64le platform uses a
+> > different ABI and doesn't suffer from the build issues.
+> 
+> Unfortunately it's a bit messier than that.
+> 
+> The build error occurs when the compiler is built to use a 64-bit long
+> double type.
+> 
+> The ppc64le ABI document says that long double should be 128-bits, but
+> there are ppc64le compilers out there that are configured to use 64-bit
+> long double, notably the kernel.org crosstool compilers.
+> 
+> So just testing for CPU_LITTLE_ENDIAN means we'll still get build errors
+> on those compilers.
+> 
+> But I think we can detect the long double size and key off that. Can you
+> test the patch below works for you?
+> 
+> cheers
+> 
+> 
+> diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
+> index 7aa12e88c580..e9f8cd50af99 100644
+> --- a/arch/powerpc/Kconfig
+> +++ b/arch/powerpc/Kconfig
+> @@ -281,6 +281,9 @@ config PPC
+>  	# Please keep this list sorted alphabetically.
+>  	#
+>  
+> +config PCC_LONG_DOUBLE_128
+> +	def_bool $(success,test "$(shell,echo __LONG_DOUBLE_128__ | $(CC) -E -P -)" = 1)
 
-Applied, thanks.
+^^^ there is a typo s/PCC/PPC/ :-)
 
--- 
-Jiri Kosina
-SUSE Labs
+with that fixed, it then defines AMD_DC_DCN on Fedora 36 with
+gcc-12.1.1-1.fc36.ppc64le and we should be OK.
 
+
+		Dan
+
+> +
+>  config PPC_BARRIER_NOSPEC
+>  	bool
+>  	default y
+> diff --git a/drivers/gpu/drm/amd/display/Kconfig b/drivers/gpu/drm/amd/display/Kconfig
+> index b4029c0d5d8c..ec6771e87e73 100644
+> --- a/drivers/gpu/drm/amd/display/Kconfig
+> +++ b/drivers/gpu/drm/amd/display/Kconfig
+> @@ -6,7 +6,7 @@ config DRM_AMD_DC
+>  	bool "AMD DC - Enable new display engine"
+>  	default y
+>  	select SND_HDA_COMPONENT if SND_HDA_CORE
+> -	select DRM_AMD_DC_DCN if (X86 || PPC64) && !(KCOV_INSTRUMENT_ALL && KCOV_ENABLE_COMPARISONS)
+> +	select DRM_AMD_DC_DCN if (X86 || PPC_LONG_DOUBLE_128) && !(KCOV_INSTRUMENT_ALL && KCOV_ENABLE_COMPARISONS)
+>  	help
+>  	  Choose this option if you want to use the new display engine
+>  	  support for AMDGPU. This adds required support for Vega and
