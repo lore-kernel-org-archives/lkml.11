@@ -2,88 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFBECC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 14:28:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2592EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 14:29:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233033AbiGVO2S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 10:28:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56310 "EHLO
+        id S235211AbiGVO30 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 10:29:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229880AbiGVO2O (ORCPT
+        with ESMTP id S229555AbiGVO3Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 10:28:14 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B4F59D509;
-        Fri, 22 Jul 2022 07:28:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1658500093; x=1690036093;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=CChHpOG6bOfnxJJ2g0bXllWr/GuusE+1NY9xfBePYPU=;
-  b=vGVcwVyXVU0iQKj+OmnuOYtmQxUAqE5vulnwrOzfy87dei+l+GNKNsVB
-   Wh/b8uWtqg209X+5cZT3a0e6mgW1SGbTKCk81yzQpf4N49imB3w1L2ebi
-   XgeTIk95+ENEvGscVgLGwMlK98YoPWbihfp52bejTbycNNgEZDtlmCL8E
-   k=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 22 Jul 2022 07:28:12 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jul 2022 07:28:12 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 22 Jul 2022 07:28:11 -0700
-Received: from hu-ppareek-blr.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Fri, 22 Jul 2022 07:28:08 -0700
-From:   Parikshit Pareek <quic_ppareek@quicinc.com>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-CC:     <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Parikshit Pareek <quic_ppareek@quicinc.com>
-Subject: [PATCH v2 1/3] dt-bindings: arm: qcom: Document additional sa8540p device
-Date:   Fri, 22 Jul 2022 19:55:15 +0530
-Message-ID: <20220722142515.18592-1-quic_ppareek@quicinc.com>
-X-Mailer: git-send-email 2.17.1
+        Fri, 22 Jul 2022 10:29:24 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE1F79D50F;
+        Fri, 22 Jul 2022 07:29:22 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 9AD7C380E7;
+        Fri, 22 Jul 2022 14:29:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1658500161; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mDz/z5x/8axDpMU/GZGGFz+fsQZdDoUpZOWw7JjfVtA=;
+        b=qZ6p/Z+1GMGyxnLmZdjLyrJatnVl9lfXBov4e2cHN+fh3W1paC5pkpJ2iBYAZQqTP4ZPtw
+        wAE4+Y2tlm3pFK7tnpJOOWV597RcMfxJUSprtWrRBrGqG5XeDC8mvXfDgASQTpEFTVkYtk
+        klYXDK+14LcO7yhLC9ezK9aZqsU4rG8=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1658500161;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mDz/z5x/8axDpMU/GZGGFz+fsQZdDoUpZOWw7JjfVtA=;
+        b=XYDBG8ABue0jZcz7mwSHJSJWGKYccGQt3fRAomCBQqujW0zixIleFqsYNq32892gEeLMMG
+        VzjXLGeYtpfRe4Cg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 770C6134A9;
+        Fri, 22 Jul 2022 14:29:21 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id oGJZHEG02mJ7bwAAMHmgww
+        (envelope-from <tiwai@suse.de>); Fri, 22 Jul 2022 14:29:21 +0000
+From:   Takashi Iwai <tiwai@suse.de>
+To:     linux-fsdevel@vger.kernel.org
+Cc:     Namjae Jeon <linkinjeon@kernel.org>,
+        Sungjong Seo <sj1557.seo@samsung.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 4/4] exfat: Downgrade ENAMETOOLONG error message to debug messages
+Date:   Fri, 22 Jul 2022 16:29:16 +0200
+Message-Id: <20220722142916.29435-5-tiwai@suse.de>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220722142916.29435-1-tiwai@suse.de>
+References: <20220722142916.29435-1-tiwai@suse.de>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the ADP ride device to the valid device compatibles found on the
-sa8540p platform.
+The ENAMETOOLONG error message is printed at each time when user tries
+to operate with a too long name, and this can flood the kernel logs
+easily, as every user can trigger this.  Let's downgrade this error
+message level to a debug message for suppressing the superfluous
+logs.
 
-Signed-off-by: Parikshit Pareek <quic_ppareek@quicinc.com>
+BugLink: https://bugzilla.suse.com/show_bug.cgi?id=1201725
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 ---
+ fs/exfat/nls.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Changes since v1:
-- Make dt-binding patch as the first one in the patch set
-- Add , after year 2022, in the license header
-
- Documentation/devicetree/bindings/arm/qcom.yaml | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
-index c566276856ad..5729ce19eb16 100644
---- a/Documentation/devicetree/bindings/arm/qcom.yaml
-+++ b/Documentation/devicetree/bindings/arm/qcom.yaml
-@@ -650,6 +650,7 @@ properties:
-       - items:
-           - enum:
-               - qcom,sa8295p-adp
-+              - qcom,sa8540p-adp-ride
-           - const: qcom,sa8540p
+diff --git a/fs/exfat/nls.c b/fs/exfat/nls.c
+index ef115e673406..617aa1272265 100644
+--- a/fs/exfat/nls.c
++++ b/fs/exfat/nls.c
+@@ -509,7 +509,7 @@ static int exfat_utf8_to_utf16(struct super_block *sb,
+ 	}
  
-       - items:
+ 	if (unilen > MAX_NAME_LENGTH) {
+-		exfat_err(sb, "failed to %s (estr:ENAMETOOLONG) nls len : %d, unilen : %d > %d",
++		exfat_debug(sb, "failed to %s (estr:ENAMETOOLONG) nls len : %d, unilen : %d > %d",
+ 			  __func__, len, unilen, MAX_NAME_LENGTH);
+ 		return -ENAMETOOLONG;
+ 	}
 -- 
-2.17.1
+2.35.3
 
