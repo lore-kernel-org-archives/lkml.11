@@ -2,74 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5054BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 22:45:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF8ACC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 22:45:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237193AbiGVWpr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 18:45:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40084 "EHLO
+        id S237269AbiGVWpu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 18:45:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237014AbiGVWpX (ORCPT
+        with ESMTP id S237204AbiGVWp3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 18:45:23 -0400
-Received: from mail-oo1-f50.google.com (mail-oo1-f50.google.com [209.85.161.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49E2FC06D6;
-        Fri, 22 Jul 2022 15:45:00 -0700 (PDT)
-Received: by mail-oo1-f50.google.com with SMTP id u13-20020a4aa34d000000b00435ac6c3b52so1087715ool.11;
-        Fri, 22 Jul 2022 15:45:00 -0700 (PDT)
+        Fri, 22 Jul 2022 18:45:29 -0400
+Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05A58C06F1;
+        Fri, 22 Jul 2022 15:45:02 -0700 (PDT)
+Received: by mail-oi1-f181.google.com with SMTP id w204so7074519oie.7;
+        Fri, 22 Jul 2022 15:45:02 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=BcMkbhjHfIjOEjFO5QcCsjIr5qplL7kzWE5vPiVHFT4=;
-        b=flFoC8R27iU96U2N2zvRWcA9OIjmG0Vu0oG4NuQriVWtROFN+Ujlu3mBqmcDdHLRjn
-         u2Bet7waWeHZqhtNuTLW8FMBeYaFFX2pJljg2X3zBSFsKruW0E+PwCOEBR4aLxjkwgJd
-         UzZRbF4DSclhvniTfyH3o8Q8m2DPmLARnlInmRcVpWoH4jj/z8oE4J3bMSZddF4eKMTC
-         IC7PzV+J8JrDfFKO+KXdzxASz9luifFTze/jIzF8p9QBjitDb+LjWcIuTzEONzZHY/NH
-         MZB85WN49L6avjwB066cNmApzfw/IjZ+bxnraJ80kuNTD1iSvdIVo5eFDXhfp+4WqPvh
-         kIFA==
-X-Gm-Message-State: AJIora/oXpBiLqpAJLl34XmjOVTVS956UjG5nXtul51f27FFrLrPubMe
-        SSxqjVdOufwVANZaJHqsMw==
-X-Google-Smtp-Source: AGRyM1u+JlsunW27L1GMybZjJJKJ6kt6UFhFlmt6Cc4c/4bKbT9Sb8d8kFxkxah76TyeHIGHgrEjTw==
-X-Received: by 2002:a4a:c015:0:b0:425:6945:8382 with SMTP id v21-20020a4ac015000000b0042569458382mr764258oop.28.1658529895983;
-        Fri, 22 Jul 2022 15:44:55 -0700 (PDT)
+        bh=7XwmdpKQBMvYl+pH5ar534iWvJuw8dX5bUNNhw01JC0=;
+        b=spELbzAQgfwfjZgkEC9vp8UKDrSRh+SLdskhEdXv1oJ0bUUDkCgXYmf04Efj4AOebm
+         R3P4ta/+GI77N3TP5aILoZWJy3hb9MK12trOmLpfr6MnZp+KAGZ7C5Lu87b2F2bPUhyv
+         WYB0aP01QZWLPz3QsUqjCXedQ8mbBRfRCgS6ST0TGmOmJ6NqFHT8XMJiux3Eb9150XP4
+         rTwY1VWRysFJ3ZHtqvYYTCSAFk/qJEyk2vmph9pF4V3uJdMOlCPh9oFo+g1FjYWG+t9q
+         sXbsKxHg/LAM211Osz8shPYTyNxOVrYjifB/BvG/JcjtMc+kme1+QULdvm3p9AiW0cU/
+         BXLA==
+X-Gm-Message-State: AJIora+iIA2CCnwvCW35kSZ1sh2L+Je0J8PoAe5N1bjW65rmc5ualJIs
+        3SM5I+FhMiLD/XRDAMmyew==
+X-Google-Smtp-Source: AGRyM1t567gWXFWJV8Z8P3p6+RpUtCKsfkUs/yIOqGV6OA/Un4DLtV0hOWhNYRcnYaQXHgRiApZdsQ==
+X-Received: by 2002:a05:6808:1286:b0:33a:9a90:68d2 with SMTP id a6-20020a056808128600b0033a9a9068d2mr861852oiw.235.1658529898372;
+        Fri, 22 Jul 2022 15:44:58 -0700 (PDT)
 Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id 64-20020aca0543000000b0033a63ec17dbsm1117854oif.33.2022.07.22.15.44.54
+        by smtp.gmail.com with ESMTPSA id y7-20020a05683009c700b0061cb7f17ed7sm2466136ott.11.2022.07.22.15.44.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Jul 2022 15:44:55 -0700 (PDT)
-Received: (nullmailer pid 20328 invoked by uid 1000);
+        Fri, 22 Jul 2022 15:44:57 -0700 (PDT)
+Received: (nullmailer pid 20323 invoked by uid 1000);
         Fri, 22 Jul 2022 22:44:50 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     linux-arm-kernel@lists.infradead.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-In-Reply-To: <20220722201043.2731570-2-f.fainelli@gmail.com>
-References: <20220722201043.2731570-1-f.fainelli@gmail.com> <20220722201043.2731570-2-f.fainelli@gmail.com>
-Subject: Re: [PATCH v2 1/3] dt-bindings: memory-controller: Document Broadcom STB MEMC
+To:     Ryan.Wanner@microchip.com
+Cc:     devicetree@vger.kernel.org, alexandre.belloni@bootlin.com,
+        lgirdwood@gmail.com, linux-kernel@vger.kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        alsa-devel@alsa-project.org, linux-arm-kernel@lists.infradead.org,
+        broonie@kernel.org, claudiu.beznea@microchip.com,
+        nicolas.ferre@microchip.com
+In-Reply-To: <20220722152945.2950807-1-Ryan.Wanner@microchip.com>
+References: <20220722152945.2950807-1-Ryan.Wanner@microchip.com>
+Subject: Re: [PATCH v2] ASoC: dt-bindings: atmel-i2s: Convert to json-schema
 Date:   Fri, 22 Jul 2022 16:44:50 -0600
-Message-Id: <1658529890.363700.20325.nullmailer@robh.at.kernel.org>
+Message-Id: <1658529890.319757.20312.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 22 Jul 2022 13:10:41 -0700, Florian Fainelli wrote:
-> Document the Broadcom STB memory controller which is a trivial binding
-> for now with a set of compatible strings and single register.
+On Fri, 22 Jul 2022 08:29:45 -0700, Ryan.Wanner@microchip.com wrote:
+> From: Ryan Wanner <Ryan.Wanner@microchip.com>
 > 
-> Since we introduce this binding, the section in
-> Documentation/devicetree/bindings/arm/bcm/brcm,brcmstb.txt is removed
-> and this binding is referenced instead.
+> Convert atmel i2s devicetree binding to json-schema.
+> Change file name to match json-schema naming.
 > 
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+> Signed-off-by: Ryan Wanner <Ryan.Wanner@microchip.com>
 > ---
->  .../bindings/arm/bcm/brcm,brcmstb.txt         | 11 +---
->  .../brcm,brcmstb-memc-ddr.yaml                | 53 +++++++++++++++++++
->  2 files changed, 55 insertions(+), 9 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/memory-controllers/brcm,brcmstb-memc-ddr.yaml
+> Note: running dtbs_check will fail unless updated with this patch,
+> https://lore.kernel.org/linux-arm-kernel/20220707215812.193008-1-Ryan.Wanner@microchip.com/
+> 
+> v1 -> v2:
+> - Fix formatting for clock description.
+> - Fix formatting for dma description.
+> 
+>  .../bindings/sound/atmel,sama5d2-i2s.yaml     | 85 +++++++++++++++++++
+>  .../devicetree/bindings/sound/atmel-i2s.txt   | 46 ----------
+>  2 files changed, 85 insertions(+), 46 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/sound/atmel,sama5d2-i2s.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/sound/atmel-i2s.txt
 > 
 
 Running 'make dtbs_check' with the schema in this patch gives the
@@ -82,18 +88,11 @@ This will change in the future.
 Full log is available here: https://patchwork.ozlabs.org/patch/
 
 
-memc-ddr@2000: 'clock-frequency' is a required property
-	arch/arm/boot/dts/bcm7445-bcm97445svmb.dtb
-	arch/arm/boot/dts/bcm7445-bcm97445svmb.dtb
-	arch/arm/boot/dts/bcm7445-bcm97445svmb.dtb
-
-memc-ddr@2000: compatible:0: 'brcm,brcmstb-memc-ddr' is not one of ['brcm,brcmstb-memc-ddr-rev-b.1.x', 'brcm,brcmstb-memc-ddr-rev-b.2.0', 'brcm,brcmstb-memc-ddr-rev-b.2.1', 'brcm,brcmstb-memc-ddr-rev-b.2.2', 'brcm,brcmstb-memc-ddr-rev-b.2.3', 'brcm,brcmstb-memc-ddr-rev-b.2.5', 'brcm,brcmstb-memc-ddr-rev-b.2.6', 'brcm,brcmstb-memc-ddr-rev-b.2.7', 'brcm,brcmstb-memc-ddr-rev-b.2.8', 'brcm,brcmstb-memc-ddr-rev-b.3.0', 'brcm,brcmstb-memc-ddr-rev-b.3.1', 'brcm,brcmstb-memc-ddr-rev-c.1.0', 'brcm,brcmstb-memc-ddr-rev-c.1.1', 'brcm,brcmstb-memc-ddr-rev-c.1.2', 'brcm,brcmstb-memc-ddr-rev-c.1.3', 'brcm,brcmstb-memc-ddr-rev-c.1.4']
-	arch/arm/boot/dts/bcm7445-bcm97445svmb.dtb
-	arch/arm/boot/dts/bcm7445-bcm97445svmb.dtb
-	arch/arm/boot/dts/bcm7445-bcm97445svmb.dtb
-
-memc-ddr@2000: compatible: ['brcm,brcmstb-memc-ddr'] is too short
-	arch/arm/boot/dts/bcm7445-bcm97445svmb.dtb
-	arch/arm/boot/dts/bcm7445-bcm97445svmb.dtb
-	arch/arm/boot/dts/bcm7445-bcm97445svmb.dtb
+i2s@fc04c000: 'assigned-parrents' does not match any of the regexes: 'pinctrl-[0-9]+'
+	arch/arm/boot/dts/at91-kizbox3-hs.dtb
+	arch/arm/boot/dts/at91-sama5d27_som1_ek.dtb
+	arch/arm/boot/dts/at91-sama5d27_wlsom1_ek.dtb
+	arch/arm/boot/dts/at91-sama5d2_icp.dtb
+	arch/arm/boot/dts/at91-sama5d2_ptc_ek.dtb
+	arch/arm/boot/dts/at91-sama5d2_xplained.dtb
 
