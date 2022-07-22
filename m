@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDF02C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 22:35:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EFC6C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 22:36:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236944AbiGVWfx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 18:35:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54034 "EHLO
+        id S237010AbiGVWgG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 18:36:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236936AbiGVWeW (ORCPT
+        with ESMTP id S235642AbiGVWe1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 18:34:22 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC2F9A874D
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 15:33:44 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-31e6a8e2674so48667217b3.4
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 15:33:44 -0700 (PDT)
+        Fri, 22 Jul 2022 18:34:27 -0400
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD4F7B5568
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 15:33:49 -0700 (PDT)
+Received: by mail-yb1-xb49.google.com with SMTP id 83-20020a250156000000b006707fbc22ddso4613514ybb.3
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 15:33:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=B897zGsh0h+NJjlP8dupf4mHXaCN+/YUmygkWt/aXww=;
-        b=AAf520xnchoewzFWB9ckSkUzjGtAeU9MhxUYJK0sFGWVhQIXg57fd6Myr/k+eD5SbH
-         /UC5BaupZ5k+iedZShH9akR20cemlugPFJojVGrIsYtVN9dvjkIiJKlkJDw4t6q5qYe9
-         DQGMmpGXURylCjg9ym0DJMfobtLYnP93t+lJhcVNpBwNQB0tVwJ919vxnbFrKZXxP/pc
-         p0fEckJFu6bWJbqtlpNEKXSLTeNtmfiI50/b+buRab1wmlV9YXZlQBRG+CJA/gJTtLpV
-         TOuLQT8s2ihKnknFxa5qIQ9mRgFgUylzuNG8wXHKSs2QnLDDVrjQyI8FWkbQm8PdZvqO
-         IwQA==
+         :cc:content-transfer-encoding;
+        bh=XzAR6020Iscj71uASllNUBQa/gVtmwZpolJF7ki4tNo=;
+        b=Amy6kjq0jTBjqpm1qEeHwwivXiF6JOWdMFNFIXIkqS+XVzPrYaRGi/oHR2OIyjRCpm
+         IxjuFtv5q9PkSvrZrIMARqaxWNe1cTgAhHzm3LVM0BcreganfDdw20Ep2F4A6KOJ6vhP
+         nWW/+gtZrzCfZUWx5c/lp34kiwgu689nmE82YvI7bhYgUkdk9lsnXdD9F9dgZmQi/SG5
+         9My0caOTYR28pYIVevJXyAAm+R+uHDhO8ap6aPJxQFJd+6BlTAlegMYO65+xkjjgEN90
+         RRS6I2bX1LjFOo1ixEC3AwtsIvD9Ca9p3tqtwdq6jNNvXkZsh7keFkdZJJTr7WWLMPUS
+         /8NA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=B897zGsh0h+NJjlP8dupf4mHXaCN+/YUmygkWt/aXww=;
-        b=S0/TVr31aPkTe32eviudvPFP3cKOETahrgvsvXrIIMEMU/5pA233BdyMFi5bDN6P41
-         Srdx14nw5NZoIEh1lNrEeZ+ONuOagqtADHgsLPt72n4VkdqQnr9yqQ9DS7awz2sbz4eu
-         qIhmn0r2sOhDLUOt6zDk8N4xs5s2rqYx1j4SC8CGhiHlfFHTTgU1Xa0M6QRAU0gU1Zzi
-         pvSd7gver+iMDm5mnNRI0OZWHR2fG1Mkl1AHU6v0D8i+iPkbCTjpS4ut1t5UZr/+hq7P
-         lCklZIObnP29PpoHI+pOUs1dlU5jIycU/E/eKcX3K/kbrrym5zCDsfkegqyJPcutooyr
-         sbHQ==
-X-Gm-Message-State: AJIora/1Od0FnA//rNPfjzUQ53zBA0gDmxhtA3LRTsLhrSRdoTw5Ntpx
-        DuXD5yBR+GtrjjsGiyo1vWLyi5IbqU/A
-X-Google-Smtp-Source: AGRyM1udT8yIPm52f1zg4ZxuwSRP1APKyN0nGoVScfI9e9pvZ5JeNWsBsRYcuhDhTaVGxOlatdzs5T1sF0S3
+         :references:subject:from:to:cc:content-transfer-encoding;
+        bh=XzAR6020Iscj71uASllNUBQa/gVtmwZpolJF7ki4tNo=;
+        b=7hVpXv7EsLZBGWf2D1X9qJpSKA2H8V5bpdVxJRZfImP57ul1dC5hwXbRhwZ4C84Pm8
+         FwDJYmePjSWCxHo8DipITpQpQWVX5RE7VM6QJzozHXcnpbGTnCXTJOMNCC0dI81WqTSe
+         BqTlOgPJyDYyZ2o151D1eqzAyibF94xRE2CSq69FtBHnT5fYMHpwF4R8mGCEPDDyvPOX
+         crMXTUx44WeLihA6YKI8Mhu7XGKZF8/g10/P0pgrb3McGNQm8yXi410yJkzIGyG34hSn
+         tKzcOWgmZ2ZR17TyUOq6hmvdzaM8dFZIFf+GhKNLDTesX5vdOGvZilE9mRoodIEp8j6C
+         8arA==
+X-Gm-Message-State: AJIora8+zPKJxxDZ9Za1S9Ff1l6uvCgmQa37Z1KwJu08BtH7glGrnzht
+        MlofRUj3uprdbKhFHgMdMKVzl42ktGRg
+X-Google-Smtp-Source: AGRyM1vv5QC8nltisKdTT8SL0wVUPp4qjLYQgt9TXYtjOHSTtF69wkXRexhU/IThGmtSr+pxGRflZS/xu0W8
 X-Received: from irogers.svl.corp.google.com ([2620:15c:2d4:203:7543:ead8:55fa:3980])
- (user=irogers job=sendgmr) by 2002:a5b:941:0:b0:670:9b33:23a1 with SMTP id
- x1-20020a5b0941000000b006709b3323a1mr1735386ybq.289.1658529224077; Fri, 22
- Jul 2022 15:33:44 -0700 (PDT)
-Date:   Fri, 22 Jul 2022 15:32:29 -0700
+ (user=irogers job=sendgmr) by 2002:a81:1858:0:b0:31e:7330:4268 with SMTP id
+ 85-20020a811858000000b0031e73304268mr1703621ywy.390.1658529229568; Fri, 22
+ Jul 2022 15:33:49 -0700 (PDT)
+Date:   Fri, 22 Jul 2022 15:32:31 -0700
 In-Reply-To: <20220722223240.1618013-1-irogers@google.com>
-Message-Id: <20220722223240.1618013-21-irogers@google.com>
+Message-Id: <20220722223240.1618013-23-irogers@google.com>
 Mime-Version: 1.0
 References: <20220722223240.1618013-1-irogers@google.com>
 X-Mailer: git-send-email 2.37.1.359.gd136c6c3e2-goog
-Subject: [PATCH v1 20/31] perf vendor events: Update Intel nehalemep
+Subject: [PATCH v1 22/31] perf vendor events: Update Intel sandybridge
 From:   Ian Rogers <irogers@google.com>
 To:     perry.taylor@intel.com, caleb.biggers@intel.com,
         kshipra.bopardikar@intel.com,
@@ -75,17 +75,19 @@ To:     perry.taylor@intel.com, caleb.biggers@intel.com,
 Cc:     Stephane Eranian <eranian@google.com>,
         Ian Rogers <irogers@google.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 Use script at:
-https://github.com/intel/event-converter-for-linux-perf/blob/master/download_and_gen.py
+https://github.com/intel/event-converter-for-linux-perf/blob/master/downloa=
+d_and_gen.py
 
 to download and generate the latest events and metrics. Manually copy
-the nehalemep files into perf and update mapfile.csv.
+the sandybridge files into perf and update mapfile.csv.
 
-Tested on a non-nehalemep with 'perf test':
+Tested on a non-sandybridge with 'perf test':
  10: PMU events                                                      :
  10.1: PMU event table sanity                                        : Ok
  10.2: PMU event map aliases                                         : Ok
@@ -94,156 +96,287 @@ Tested on a non-nehalemep with 'perf test':
 
 Signed-off-by: Ian Rogers <irogers@google.com>
 ---
- tools/perf/pmu-events/arch/x86/mapfile.csv         |  4 +---
- .../perf/pmu-events/arch/x86/nehalemep/cache.json  | 14 +++++++-------
- .../arch/x86/nehalemep/floating-point.json         |  2 +-
- .../pmu-events/arch/x86/nehalemep/frontend.json    |  2 +-
- .../perf/pmu-events/arch/x86/nehalemep/memory.json |  6 +++---
- .../arch/x86/nehalemep/virtual-memory.json         |  2 +-
- 6 files changed, 14 insertions(+), 16 deletions(-)
+ tools/perf/pmu-events/arch/x86/mapfile.csv            |  2 +-
+ tools/perf/pmu-events/arch/x86/sandybridge/cache.json |  2 +-
+ .../arch/x86/sandybridge/floating-point.json          |  2 +-
+ .../pmu-events/arch/x86/sandybridge/frontend.json     |  4 ++--
+ .../perf/pmu-events/arch/x86/sandybridge/memory.json  |  2 +-
+ tools/perf/pmu-events/arch/x86/sandybridge/other.json |  2 +-
+ .../pmu-events/arch/x86/sandybridge/pipeline.json     | 10 +++++-----
+ .../pmu-events/arch/x86/sandybridge/snb-metrics.json  | 11 +++++++++--
+ .../pmu-events/arch/x86/sandybridge/uncore-other.json |  2 +-
+ .../arch/x86/sandybridge/virtual-memory.json          |  2 +-
+ 10 files changed, 23 insertions(+), 16 deletions(-)
 
-diff --git a/tools/perf/pmu-events/arch/x86/mapfile.csv b/tools/perf/pmu-events/arch/x86/mapfile.csv
-index 7d6731e81102..8336f2c8f96f 100644
+diff --git a/tools/perf/pmu-events/arch/x86/mapfile.csv b/tools/perf/pmu-ev=
+ents/arch/x86/mapfile.csv
+index ab070ba3ad48..eae103022077 100644
 --- a/tools/perf/pmu-events/arch/x86/mapfile.csv
 +++ b/tools/perf/pmu-events/arch/x86/mapfile.csv
-@@ -17,9 +17,7 @@ GenuineIntel-6-3E,v21,ivytown,core
- GenuineIntel-6-2D,v21,jaketown,core
- GenuineIntel-6-(57|85),v9,knightslanding,core
+@@ -19,12 +19,12 @@ GenuineIntel-6-(57|85),v9,knightslanding,core
  GenuineIntel-6-AA,v1.00,meteorlake,core
--GenuineIntel-6-1E,v2,nehalemep,core
--GenuineIntel-6-1F,v2,nehalemep,core
--GenuineIntel-6-1A,v2,nehalemep,core
-+GenuineIntel-6-1[AEF],v3,nehalemep,core
- GenuineIntel-6-2E,v2,nehalemex,core
+ GenuineIntel-6-1[AEF],v3,nehalemep,core
+ GenuineIntel-6-2E,v3,nehalemex,core
++GenuineIntel-6-2A,v17,sandybridge,core
  GenuineIntel-6-[4589]E,v24,skylake,core
  GenuineIntel-6-A[56],v24,skylake,core
-diff --git a/tools/perf/pmu-events/arch/x86/nehalemep/cache.json b/tools/perf/pmu-events/arch/x86/nehalemep/cache.json
-index bcf74d793ae2..1ee91300baf9 100644
---- a/tools/perf/pmu-events/arch/x86/nehalemep/cache.json
-+++ b/tools/perf/pmu-events/arch/x86/nehalemep/cache.json
-@@ -1773,7 +1773,7 @@
-         "UMask": "0x1"
-     },
-     {
--        "BriefDescription": "Offcore data reads, RFO's and prefetches satisfied by the IO, CSR, MMIO unit",
-+        "BriefDescription": "Offcore data reads, RFOs, and prefetches satisfied by the IO, CSR, MMIO unit",
-         "Counter": "2",
-         "EventCode": "0xB7",
-         "EventName": "OFFCORE_RESPONSE.DATA_IN.IO_CSR_MMIO",
-@@ -1784,7 +1784,7 @@
-         "UMask": "0x1"
-     },
-     {
--        "BriefDescription": "Offcore data reads, RFO's and prefetches statisfied by the LLC and not found in a sibling core",
-+        "BriefDescription": "Offcore data reads, RFOs, and prefetches satisfied by the LLC and not found in a sibling core",
-         "Counter": "2",
-         "EventCode": "0xB7",
-         "EventName": "OFFCORE_RESPONSE.DATA_IN.LLC_HIT_NO_OTHER_CORE",
-@@ -1795,7 +1795,7 @@
-         "UMask": "0x1"
-     },
-     {
--        "BriefDescription": "Offcore data reads, RFO's and prefetches satisfied by the LLC and HIT in a sibling core",
-+        "BriefDescription": "Offcore data reads, RFOs, and prefetches satisfied by the LLC and HIT in a sibling core",
-         "Counter": "2",
-         "EventCode": "0xB7",
-         "EventName": "OFFCORE_RESPONSE.DATA_IN.LLC_HIT_OTHER_CORE_HIT",
-@@ -1806,7 +1806,7 @@
-         "UMask": "0x1"
-     },
-     {
--        "BriefDescription": "Offcore data reads, RFO's and prefetches satisfied by the LLC  and HITM in a sibling core",
-+        "BriefDescription": "Offcore data reads, RFOs, and prefetches satisfied by the LLC  and HITM in a sibling core",
-         "Counter": "2",
-         "EventCode": "0xB7",
-         "EventName": "OFFCORE_RESPONSE.DATA_IN.LLC_HIT_OTHER_CORE_HITM",
-@@ -1861,7 +1861,7 @@
-         "UMask": "0x1"
-     },
-     {
--        "BriefDescription": "Offcore data reads, RFO's and prefetches that HIT in a remote cache",
-+        "BriefDescription": "Offcore data reads, RFOs, and prefetches that HIT in a remote cache",
-         "Counter": "2",
-         "EventCode": "0xB7",
-         "EventName": "OFFCORE_RESPONSE.DATA_IN.REMOTE_CACHE_HIT",
-@@ -1872,7 +1872,7 @@
-         "UMask": "0x1"
-     },
-     {
--        "BriefDescription": "Offcore data reads, RFO's and prefetches that HITM in a remote cache",
-+        "BriefDescription": "Offcore data reads, RFOs, and prefetches that HITM in a remote cache",
-         "Counter": "2",
-         "EventCode": "0xB7",
-         "EventName": "OFFCORE_RESPONSE.DATA_IN.REMOTE_CACHE_HITM",
-@@ -3226,4 +3226,4 @@
-         "SampleAfterValue": "200000",
-         "UMask": "0x8"
+ GenuineIntel-6-37,v13,silvermont,core
+ GenuineIntel-6-4D,v13,silvermont,core
+ GenuineIntel-6-4C,v13,silvermont,core
+-GenuineIntel-6-2A,v15,sandybridge,core
+ GenuineIntel-6-2C,v2,westmereep-dp,core
+ GenuineIntel-6-25,v2,westmereep-sp,core
+ GenuineIntel-6-2F,v2,westmereex,core
+diff --git a/tools/perf/pmu-events/arch/x86/sandybridge/cache.json b/tools/=
+perf/pmu-events/arch/x86/sandybridge/cache.json
+index 92a7269eb444..a1d622352131 100644
+--- a/tools/perf/pmu-events/arch/x86/sandybridge/cache.json
++++ b/tools/perf/pmu-events/arch/x86/sandybridge/cache.json
+@@ -1876,4 +1876,4 @@
+         "SampleAfterValue": "100003",
+         "UMask": "0x10"
      }
 -]
 \ No newline at end of file
 +]
-diff --git a/tools/perf/pmu-events/arch/x86/nehalemep/floating-point.json b/tools/perf/pmu-events/arch/x86/nehalemep/floating-point.json
-index 39af1329224a..666e466d351c 100644
---- a/tools/perf/pmu-events/arch/x86/nehalemep/floating-point.json
-+++ b/tools/perf/pmu-events/arch/x86/nehalemep/floating-point.json
-@@ -226,4 +226,4 @@
-         "SampleAfterValue": "200000",
-         "UMask": "0x8"
-     }
--]
-\ No newline at end of file
-+]
-diff --git a/tools/perf/pmu-events/arch/x86/nehalemep/frontend.json b/tools/perf/pmu-events/arch/x86/nehalemep/frontend.json
-index 8ac5c24888c5..c561ac24d91d 100644
---- a/tools/perf/pmu-events/arch/x86/nehalemep/frontend.json
-+++ b/tools/perf/pmu-events/arch/x86/nehalemep/frontend.json
-@@ -23,4 +23,4 @@
-         "SampleAfterValue": "2000000",
+diff --git a/tools/perf/pmu-events/arch/x86/sandybridge/floating-point.json=
+ b/tools/perf/pmu-events/arch/x86/sandybridge/floating-point.json
+index 713878fd062b..eb2ff2cfdf6b 100644
+--- a/tools/perf/pmu-events/arch/x86/sandybridge/floating-point.json
++++ b/tools/perf/pmu-events/arch/x86/sandybridge/floating-point.json
+@@ -135,4 +135,4 @@
+         "SampleAfterValue": "2000003",
          "UMask": "0x1"
      }
 -]
 \ No newline at end of file
 +]
-diff --git a/tools/perf/pmu-events/arch/x86/nehalemep/memory.json b/tools/perf/pmu-events/arch/x86/nehalemep/memory.json
-index 26138ae639f4..6e95de3f3409 100644
---- a/tools/perf/pmu-events/arch/x86/nehalemep/memory.json
-+++ b/tools/perf/pmu-events/arch/x86/nehalemep/memory.json
-@@ -286,7 +286,7 @@
-         "UMask": "0x1"
+diff --git a/tools/perf/pmu-events/arch/x86/sandybridge/frontend.json b/too=
+ls/perf/pmu-events/arch/x86/sandybridge/frontend.json
+index fa22f9463b66..e2c82e43a2de 100644
+--- a/tools/perf/pmu-events/arch/x86/sandybridge/frontend.json
++++ b/tools/perf/pmu-events/arch/x86/sandybridge/frontend.json
+@@ -176,7 +176,7 @@
+         "CounterMask": "1",
+         "EventCode": "0x79",
+         "EventName": "IDQ.MS_CYCLES",
+-        "PublicDescription": "This event counts cycles during which the mi=
+crocode sequencer assisted the front-end in delivering uops.  Microcode ass=
+ists are used for complex instructions or scenarios that can't be handled b=
+y the standard decoder.  Using other instructions, if possible, will usuall=
+y improve performance.  See the Intel 64 and IA-32 Architectures Optimizati=
+on Reference Manual for more information.",
++        "PublicDescription": "This event counts cycles during which the mi=
+crocode sequencer assisted the front-end in delivering uops.  Microcode ass=
+ists are used for complex instructions or scenarios that can't be handled b=
+y the standard decoder.  Using other instructions, if possible, will usuall=
+y improve performance.  See the Intel(R) 64 and IA-32 Architectures Optimiz=
+ation Reference Manual for more information.",
+         "SampleAfterValue": "2000003",
+         "UMask": "0x30"
      },
-     {
--        "BriefDescription": "Offcore data reads, RFO's and prefetches statisfied by the local DRAM.",
-+        "BriefDescription": "Offcore data reads, RFOs, and prefetches satisfied by the local DRAM.",
-         "Counter": "2",
-         "EventCode": "0xB7",
-         "EventName": "OFFCORE_RESPONSE.DATA_IN.LOCAL_DRAM",
-@@ -297,7 +297,7 @@
-         "UMask": "0x1"
-     },
-     {
--        "BriefDescription": "Offcore data reads, RFO's and prefetches statisfied by the remote DRAM",
-+        "BriefDescription": "Offcore data reads, RFOs, and prefetches satisfied by the remote DRAM",
-         "Counter": "2",
-         "EventCode": "0xB7",
-         "EventName": "OFFCORE_RESPONSE.DATA_IN.REMOTE_DRAM",
-@@ -736,4 +736,4 @@
-         "SampleAfterValue": "100000",
+@@ -311,4 +311,4 @@
+         "SampleAfterValue": "2000003",
          "UMask": "0x1"
      }
 -]
 \ No newline at end of file
 +]
-diff --git a/tools/perf/pmu-events/arch/x86/nehalemep/virtual-memory.json b/tools/perf/pmu-events/arch/x86/nehalemep/virtual-memory.json
-index 6d3247c55bcd..e88c0802e679 100644
---- a/tools/perf/pmu-events/arch/x86/nehalemep/virtual-memory.json
-+++ b/tools/perf/pmu-events/arch/x86/nehalemep/virtual-memory.json
-@@ -106,4 +106,4 @@
-         "SampleAfterValue": "200000",
+diff --git a/tools/perf/pmu-events/arch/x86/sandybridge/memory.json b/tools=
+/perf/pmu-events/arch/x86/sandybridge/memory.json
+index 931892d34076..3c283ca309f3 100644
+--- a/tools/perf/pmu-events/arch/x86/sandybridge/memory.json
++++ b/tools/perf/pmu-events/arch/x86/sandybridge/memory.json
+@@ -442,4 +442,4 @@
+         "SampleAfterValue": "100003",
          "UMask": "0x1"
      }
 -]
 \ No newline at end of file
 +]
--- 
+diff --git a/tools/perf/pmu-events/arch/x86/sandybridge/other.json b/tools/=
+perf/pmu-events/arch/x86/sandybridge/other.json
+index e251f535ec09..2f873ab14156 100644
+--- a/tools/perf/pmu-events/arch/x86/sandybridge/other.json
++++ b/tools/perf/pmu-events/arch/x86/sandybridge/other.json
+@@ -55,4 +55,4 @@
+         "SampleAfterValue": "2000003",
+         "UMask": "0x1"
+     }
+-]
+\ No newline at end of file
++]
+diff --git a/tools/perf/pmu-events/arch/x86/sandybridge/pipeline.json b/too=
+ls/perf/pmu-events/arch/x86/sandybridge/pipeline.json
+index b9a3f194a00a..2c3b6c92aa6b 100644
+--- a/tools/perf/pmu-events/arch/x86/sandybridge/pipeline.json
++++ b/tools/perf/pmu-events/arch/x86/sandybridge/pipeline.json
+@@ -609,7 +609,7 @@
+         "UMask": "0x3"
+     },
+     {
+-        "BriefDescription": "Number of occurences waiting for the checkpoi=
+nts in Resource Allocation Table (RAT) to be recovered after Nuke due to al=
+l other cases except JEClear (e.g. whenever a ucode assist is needed like S=
+SE exception, memory disambiguation, etc...).",
++        "BriefDescription": "Number of occurrences waiting for the checkpo=
+ints in Resource Allocation Table (RAT) to be recovered after Nuke due to a=
+ll other cases except JEClear (e.g. whenever a ucode assist is needed like =
+SSE exception, memory disambiguation, etc...).",
+         "Counter": "0,1,2,3",
+         "CounterHTOff": "0,1,2,3,4,5,6,7",
+         "CounterMask": "1",
+@@ -652,7 +652,7 @@
+         "CounterHTOff": "0,1,2,3,4,5,6,7",
+         "EventCode": "0x03",
+         "EventName": "LD_BLOCKS.STORE_FORWARD",
+-        "PublicDescription": "This event counts loads that followed a stor=
+e to the same address, where the data could not be forwarded inside the pip=
+eline from the store to the load.  The most common reason why store forward=
+ing would be blocked is when a load's address range overlaps with a preceed=
+ing smaller uncompleted store.  See the table of not supported store forwar=
+ds in the Intel 64 and IA-32 Architectures Optimization Reference Manual.  =
+The penalty for blocked store forwarding is that the load must wait for the=
+ store to complete before it can be issued.",
++        "PublicDescription": "This event counts loads that followed a stor=
+e to the same address, where the data could not be forwarded inside the pip=
+eline from the store to the load.  The most common reason why store forward=
+ing would be blocked is when a load's address range overlaps with a preceed=
+ing smaller uncompleted store.  See the table of not supported store forwar=
+ds in the Intel(R) 64 and IA-32 Architectures Optimization Reference Manual=
+.  The penalty for blocked store forwarding is that the load must wait for =
+the store to complete before it can be issued.",
+         "SampleAfterValue": "100003",
+         "UMask": "0x2"
+     },
+@@ -778,7 +778,7 @@
+         "CounterMask": "1",
+         "EventCode": "0x59",
+         "EventName": "PARTIAL_RAT_STALLS.FLAGS_MERGE_UOP_CYCLES",
+-        "PublicDescription": "This event counts the number of cycles spent=
+ executing performance-sensitive flags-merging uops. For example, shift CL =
+(merge_arith_flags). For more details, See the Intel 64 and IA-32 Architect=
+ures Optimization Reference Manual.",
++        "PublicDescription": "This event counts the number of cycles spent=
+ executing performance-sensitive flags-merging uops. For example, shift CL =
+(merge_arith_flags). For more details, See the Intel(R) 64 and IA-32 Archit=
+ectures Optimization Reference Manual.",
+         "SampleAfterValue": "2000003",
+         "UMask": "0x20"
+     },
+@@ -797,7 +797,7 @@
+         "CounterHTOff": "0,1,2,3,4,5,6,7",
+         "EventCode": "0x59",
+         "EventName": "PARTIAL_RAT_STALLS.SLOW_LEA_WINDOW",
+-        "PublicDescription": "This event counts the number of cycles with =
+at least one slow LEA uop being allocated. A uop is generally considered as=
+ slow LEA if it has three sources (for example, two sources and immediate) =
+regardless of whether it is a result of LEA instruction or not. Examples of=
+ the slow LEA uop are or uops with base, index, and offset source operands =
+using base and index reqisters, where base is EBR/RBP/R13, using RIP relati=
+ve or 16-bit addressing modes. See the Intel 64 and IA-32 Architectures Opt=
+imization Reference Manual for more details about slow LEA instructions.",
++        "PublicDescription": "This event counts the number of cycles with =
+at least one slow LEA uop being allocated. A uop is generally considered as=
+ slow LEA if it has three sources (for example, two sources and immediate) =
+regardless of whether it is a result of LEA instruction or not. Examples of=
+ the slow LEA uop are or uops with base, index, and offset source operands =
+using base and index reqisters, where base is EBR/RBP/R13, using RIP relati=
+ve or 16-bit addressing modes. See the Intel(R) 64 and IA-32 Architectures =
+Optimization Reference Manual for more details about slow LEA instructions.=
+",
+         "SampleAfterValue": "2000003",
+         "UMask": "0x40"
+     },
+@@ -1209,4 +1209,4 @@
+         "SampleAfterValue": "2000003",
+         "UMask": "0x1"
+     }
+-]
+\ No newline at end of file
++]
+diff --git a/tools/perf/pmu-events/arch/x86/sandybridge/snb-metrics.json b/=
+tools/perf/pmu-events/arch/x86/sandybridge/snb-metrics.json
+index c8e7050d9c26..ae7ed267b2a2 100644
+--- a/tools/perf/pmu-events/arch/x86/sandybridge/snb-metrics.json
++++ b/tools/perf/pmu-events/arch/x86/sandybridge/snb-metrics.json
+@@ -124,7 +124,7 @@
+         "MetricName": "FLOPc_SMT"
+     },
+     {
+-        "BriefDescription": "Instruction-Level-Parallelism (average number=
+ of uops executed when there is at least 1 uop executed)",
++        "BriefDescription": "Instruction-Level-Parallelism (average number=
+ of uops executed when there is execution) per-core",
+         "MetricExpr": "UOPS_DISPATCHED.THREAD / (( cpu@UOPS_DISPATCHED.COR=
+E\\,cmask\\=3D1@ / 2 ) if #SMT_on else cpu@UOPS_DISPATCHED.CORE\\,cmask\\=
+=3D1@)",
+         "MetricGroup": "Backend;Cor;Pipeline;PortsUtil",
+         "MetricName": "ILP"
+@@ -141,6 +141,12 @@
+         "MetricGroup": "Summary;TmaL1",
+         "MetricName": "Instructions"
+     },
++    {
++        "BriefDescription": "Average number of Uops retired in cycles wher=
+e at least one uop has retired.",
++        "MetricExpr": "UOPS_RETIRED.RETIRE_SLOTS / cpu@UOPS_RETIRED.RETIRE=
+_SLOTS\\,cmask\\=3D1@",
++        "MetricGroup": "Pipeline;Ret",
++        "MetricName": "Retire"
++    },
+     {
+         "BriefDescription": "Fraction of Uops delivered by the DSB (aka De=
+coded ICache; or Uop Cache)",
+         "MetricExpr": "IDQ.DSB_UOPS / (( IDQ.DSB_UOPS + LSD.UOPS + IDQ.MIT=
+E_UOPS + IDQ.MS_UOPS ) )",
+@@ -163,7 +169,8 @@
+         "BriefDescription": "Giga Floating Point Operations Per Second",
+         "MetricExpr": "( ( 1 * ( FP_COMP_OPS_EXE.SSE_SCALAR_SINGLE + FP_CO=
+MP_OPS_EXE.SSE_SCALAR_DOUBLE ) + 2 * FP_COMP_OPS_EXE.SSE_PACKED_DOUBLE + 4 =
+* ( FP_COMP_OPS_EXE.SSE_PACKED_SINGLE + SIMD_FP_256.PACKED_DOUBLE ) + 8 * S=
+IMD_FP_256.PACKED_SINGLE ) / 1000000000 ) / duration_time",
+         "MetricGroup": "Cor;Flops;HPC",
+-        "MetricName": "GFLOPs"
++        "MetricName": "GFLOPs",
++        "PublicDescription": "Giga Floating Point Operations Per Second. A=
+ggregate across all supported options of: FP precisions, scalar and vector =
+instructions, vector-width and AMX engine."
+     },
+     {
+         "BriefDescription": "Average Frequency Utilization relative nomina=
+l frequency",
+diff --git a/tools/perf/pmu-events/arch/x86/sandybridge/uncore-other.json b=
+/tools/perf/pmu-events/arch/x86/sandybridge/uncore-other.json
+index 6278068908cf..88f1e326205f 100644
+--- a/tools/perf/pmu-events/arch/x86/sandybridge/uncore-other.json
++++ b/tools/perf/pmu-events/arch/x86/sandybridge/uncore-other.json
+@@ -82,10 +82,10 @@
+     {
+         "BriefDescription": "This 48-bit fixed counter counts the UCLK cyc=
+les.",
+         "Counter": "Fixed",
++        "EventCode": "0xff",
+         "EventName": "UNC_CLOCK.SOCKET",
+         "PerPkg": "1",
+         "PublicDescription": "This 48-bit fixed counter counts the UCLK cy=
+cles.",
+-        "UMask": "0x01",
+         "Unit": "ARB"
+     }
+ ]
+diff --git a/tools/perf/pmu-events/arch/x86/sandybridge/virtual-memory.json=
+ b/tools/perf/pmu-events/arch/x86/sandybridge/virtual-memory.json
+index 4dd136d00a10..98362abba1a7 100644
+--- a/tools/perf/pmu-events/arch/x86/sandybridge/virtual-memory.json
++++ b/tools/perf/pmu-events/arch/x86/sandybridge/virtual-memory.json
+@@ -146,4 +146,4 @@
+         "SampleAfterValue": "100007",
+         "UMask": "0x20"
+     }
+-]
+\ No newline at end of file
++]
+--=20
 2.37.1.359.gd136c6c3e2-goog
 
