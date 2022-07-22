@@ -2,157 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A0EBC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 12:30:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FFD1C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 12:32:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234794AbiGVMab (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 08:30:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50044 "EHLO
+        id S234876AbiGVMcR convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 08:32:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52568 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234328AbiGVMaU (ORCPT
+        with ESMTP id S230429AbiGVMcP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 08:30:20 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82B311B7A0
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 05:30:11 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id oy13so8357583ejb.1
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 05:30:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pqrs.dk; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=5lqye/hAmqL8Fnt3guUNsgTywC89s6aIPDnodlDq5eQ=;
-        b=Gnx8GXRDxk9/3ygHEnLtTVN8bhhXjnkpykXfjNntr1aau+1ER5I1ZxMEx28Jvpa4gh
-         6Qv9UVVNEb5bNfp7EIkgCPufTHaEgD6Cg/jgkMLSD3L89oOKlbIAVQmW3CerogUZkFjl
-         ySB4vo5Wk/ppKJPITbE5ztK0zU+Jx71WeNjMo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=5lqye/hAmqL8Fnt3guUNsgTywC89s6aIPDnodlDq5eQ=;
-        b=s7n6yNqwEgoAVa804r7RowYDh+l2qqcFhgYf+st9iU9LaXTrK7gjdv/nY/D4phHLCB
-         Q5AsINmjG6L+hBuNXStvHyQX8DT7G9z7i+cF0wC5MbfqXdD9CfRlMX4MZlBPXqs4YJBq
-         jqEZGYWj5VeNkdAR8OQsSIzPcHo0H7FA2YSoqSNqJf6cIwEXstPgKQ5wjqf0YQe6wql1
-         yK+DqBDZMwF3I72FLFkd3kfdX/N4GX/M0Th1p/9vVbbpG87pByi40mfekgfdHgTu0O3I
-         54o8YZCjS/dl34FVn/bfAA5RhmEM49xtIjeJ6PuNJLSMj6HIWiy6nLgGgF6myIKLvRuZ
-         kxPw==
-X-Gm-Message-State: AJIora94NXQii3iD1n5g6NfIDVPjvlG9Pjyplk9ffbBCzMUhKWf3EP/I
-        E6HArPEXr4oWjSVN9pHBmziMfA==
-X-Google-Smtp-Source: AGRyM1v8ZZae8J7XVlQt6nOJwIGs8hqXBlcz5gENhw9RMFYyE+838PT+92etYbxcbxRe85a5a6yIew==
-X-Received: by 2002:a17:907:2cd4:b0:72b:7fa8:eafc with SMTP id hg20-20020a1709072cd400b0072b7fa8eafcmr314478ejc.438.1658493009879;
-        Fri, 22 Jul 2022 05:30:09 -0700 (PDT)
-Received: from localhost.localdomain (80.71.142.18.ipv4.parknet.dk. [80.71.142.18])
-        by smtp.gmail.com with ESMTPSA id f6-20020a05640214c600b0043a6df72c11sm2462432edx.63.2022.07.22.05.30.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Jul 2022 05:30:09 -0700 (PDT)
-From:   =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alvin@pqrs.dk>
-To:     Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Ting-Ying Li <tingying.li@cypress.com>,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        linux-wireless@vger.kernel.org,
-        brcm80211-dev-list.pdl@broadcom.com,
-        SHA-cyfmac-dev-list@infineon.com, netdev@vger.kernel.org,
+        Fri, 22 Jul 2022 08:32:15 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E703CDF0C
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 05:32:13 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Lq82f5Q7Kz4xG6;
+        Fri, 22 Jul 2022 22:32:09 +1000 (AEST)
+From:   Michael Ellerman <michael@ellerman.id.au>
+To:     Dan =?utf-8?Q?Hor=C3=A1k?= <dan@danny.cz>,
+        amd-gfx@lists.freedesktop.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Guenter Roeck <linux@roeck-us.net>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH -next 2/2] brcmfmac: don't allow arp/nd offload to be enabled if ap mode exists
-Date:   Fri, 22 Jul 2022 14:29:55 +0200
-Message-Id: <20220722122956.841786-3-alvin@pqrs.dk>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220722122956.841786-1-alvin@pqrs.dk>
-References: <20220722122956.841786-1-alvin@pqrs.dk>
+Cc:     Alex Deucher <alexdeucher@gmail.com>,
+        <linuxppc-dev@lists.ozlabs.org>
+Subject: Re: [PATCH] amdgpu: re-enable DCN for ppc64le
+In-Reply-To: <20220722082122.571974-1-dan@danny.cz>
+References: <20220722082122.571974-1-dan@danny.cz>
+Date:   Fri, 22 Jul 2022 22:32:06 +1000
+Message-ID: <87o7xhcoqh.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ting-Ying Li <tingying.li@cypress.com>
+Hi Dan,
 
-Add a condition to determine whether arp/nd offload enabling
-request is allowed. If there is any interface acts as ap
-mode and is operating, then reject the request of arp oflload
-enabling from cfg80211.
+[ Cc += linuxppc-dev  ]
 
-Signed-off-by: Ting-Ying Li <tingying.li@cypress.com>
-Signed-off-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
-Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
----
- .../broadcom/brcm80211/brcmfmac/cfg80211.c      | 17 ++++++++++++++++-
- .../broadcom/brcm80211/brcmfmac/cfg80211.h      |  1 +
- .../wireless/broadcom/brcm80211/brcmfmac/core.c |  5 +++++
- 3 files changed, 22 insertions(+), 1 deletion(-)
+Dan Horák <dan@danny.cz> writes:
+> Commit d11219ad53dc disabled the DCN driver for all platforms that
+> define PPC64 due long build issues during "make allmodconfig" using
+> cross-compilation. Cross-compilation defaults to the ppc64_defconfig
+> and thus big-endian toolchain configuration. The ppc64le platform uses a
+> different ABI and doesn't suffer from the build issues.
 
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-index 856fd5516ddf..29aa7613bcf3 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
-@@ -770,6 +770,21 @@ void brcmf_set_mpc(struct brcmf_if *ifp, int mpc)
- 	}
- }
- 
-+bool brcmf_is_apmode_operating(struct wiphy *wiphy)
-+{
-+	struct brcmf_cfg80211_info *cfg = wiphy_to_cfg(wiphy);
-+	struct brcmf_cfg80211_vif *vif;
-+	bool ret = false;
-+
-+	list_for_each_entry(vif, &cfg->vif_list, list) {
-+		if (brcmf_is_apmode(vif) &&
-+		    test_bit(BRCMF_VIF_STATUS_AP_CREATED, &vif->sme_state))
-+			ret = true;
-+	}
-+
-+	return ret;
-+}
-+
- s32 brcmf_notify_escan_complete(struct brcmf_cfg80211_info *cfg,
- 				struct brcmf_if *ifp, bool aborted,
- 				bool fw_abort)
-@@ -5057,8 +5072,8 @@ static int brcmf_cfg80211_stop_ap(struct wiphy *wiphy, struct net_device *ndev,
- 			bphy_err(drvr, "bss_enable config failed %d\n", err);
- 	}
- 	brcmf_set_mpc(ifp, 1);
--	brcmf_configure_arp_nd_offload(ifp, true);
- 	clear_bit(BRCMF_VIF_STATUS_AP_CREATED, &ifp->vif->sme_state);
-+	brcmf_configure_arp_nd_offload(ifp, true);
- 	brcmf_net_setcarrier(ifp, false);
- 
- 	return err;
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.h b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.h
-index e4ebc2fa6ebb..3133b6509870 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.h
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.h
-@@ -468,5 +468,6 @@ s32 brcmf_notify_escan_complete(struct brcmf_cfg80211_info *cfg,
- void brcmf_set_mpc(struct brcmf_if *ndev, int mpc);
- void brcmf_abort_scanning(struct brcmf_cfg80211_info *cfg);
- void brcmf_cfg80211_free_netdev(struct net_device *ndev);
-+bool brcmf_is_apmode_operating(struct wiphy *wiphy);
- 
- #endif /* BRCMFMAC_CFG80211_H */
-diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
-index 87aef211b35f..ab5ed4a9e57a 100644
---- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
-+++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/core.c
-@@ -97,6 +97,11 @@ void brcmf_configure_arp_nd_offload(struct brcmf_if *ifp, bool enable)
- 	s32 err;
- 	u32 mode;
- 
-+	if (enable && brcmf_is_apmode_operating(ifp->drvr->wiphy)) {
-+		brcmf_dbg(TRACE, "Skip ARP/ND offload enable when soft AP is running\n");
-+		return;
-+	}
-+
- 	if (enable)
- 		mode = BRCMF_ARP_OL_AGENT | BRCMF_ARP_OL_PEER_AUTO_REPLY;
- 	else
--- 
-2.37.0
+Unfortunately it's a bit messier than that.
 
+The build error occurs when the compiler is built to use a 64-bit long
+double type.
+
+The ppc64le ABI document says that long double should be 128-bits, but
+there are ppc64le compilers out there that are configured to use 64-bit
+long double, notably the kernel.org crosstool compilers.
+
+So just testing for CPU_LITTLE_ENDIAN means we'll still get build errors
+on those compilers.
+
+But I think we can detect the long double size and key off that. Can you
+test the patch below works for you?
+
+cheers
+
+
+diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
+index 7aa12e88c580..e9f8cd50af99 100644
+--- a/arch/powerpc/Kconfig
++++ b/arch/powerpc/Kconfig
+@@ -281,6 +281,9 @@ config PPC
+ 	# Please keep this list sorted alphabetically.
+ 	#
+ 
++config PCC_LONG_DOUBLE_128
++	def_bool $(success,test "$(shell,echo __LONG_DOUBLE_128__ | $(CC) -E -P -)" = 1)
++
+ config PPC_BARRIER_NOSPEC
+ 	bool
+ 	default y
+diff --git a/drivers/gpu/drm/amd/display/Kconfig b/drivers/gpu/drm/amd/display/Kconfig
+index b4029c0d5d8c..ec6771e87e73 100644
+--- a/drivers/gpu/drm/amd/display/Kconfig
++++ b/drivers/gpu/drm/amd/display/Kconfig
+@@ -6,7 +6,7 @@ config DRM_AMD_DC
+ 	bool "AMD DC - Enable new display engine"
+ 	default y
+ 	select SND_HDA_COMPONENT if SND_HDA_CORE
+-	select DRM_AMD_DC_DCN if (X86 || PPC64) && !(KCOV_INSTRUMENT_ALL && KCOV_ENABLE_COMPARISONS)
++	select DRM_AMD_DC_DCN if (X86 || PPC_LONG_DOUBLE_128) && !(KCOV_INSTRUMENT_ALL && KCOV_ENABLE_COMPARISONS)
+ 	help
+ 	  Choose this option if you want to use the new display engine
+ 	  support for AMDGPU. This adds required support for Vega and
