@@ -2,286 +2,383 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A79D3CCA47F
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 07:58:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FAF2C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 08:02:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234704AbiGVH6g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 03:58:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50274 "EHLO
+        id S234710AbiGVICL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 04:02:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229839AbiGVH6c (ORCPT
+        with ESMTP id S229871AbiGVICH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 03:58:32 -0400
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::223])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18E919A6BB;
-        Fri, 22 Jul 2022 00:58:28 -0700 (PDT)
-Received: (Authenticated sender: gregory.clement@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 3A3F460002;
-        Fri, 22 Jul 2022 07:58:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1658476704;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=J6BappVIJW2LxYwsHqvB0JW6bS9ffn3CmqTgWunNsoQ=;
-        b=dlGmslDPmhE5PzC3/mIxGv+yZ1imsh0uO2+5P26YXleDkETrq5tupFYDqfmySbWhXs/Nb/
-        Os3r2SNXvOWmlkyM8TMaE3OixnzXsZVd0dRJxLsdFgSN4rcJj0Ra+Q6O5bUmIS3mwT/xEC
-        jCdBu3Lun0lRJRcoj0mu0bQH8ncIb1CQp5+1LZcZKcQc22iCA0yvnYXh+/6KrMcfxDy7Br
-        pXln0bw9l86YY4sDXWleevW+G+OH8SBMVzM291i07eTGe1/7tdLNBQ/FQqinKJOKMc+rwv
-        pM29hcOlstYbNEvhs8Ix0ra0Q6aucdQXTEK2LwJ6Ubj+2SRFxi8TfZd2b3Ftyw==
-From:   Gregory CLEMENT <gregory.clement@bootlin.com>
-To:     Arnd Bergmann <arnd@kernel.org>,
-        linux-arm-kernel@lists.infradead.org
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        Alexander Shiyan <shc_work@mail.ru>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Taichi Sugaya <sugaya.taichi@socionext.com>,
-        Takao Orito <orito.takao@socionext.com>,
-        Liviu Dudau <liviu.dudau@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Aaro Koskinen <aaro.koskinen@iki.fi>,
-        Janusz Krzysztofik <jmkrzyszt@gmail.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-aspeed@lists.ozlabs.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-rpi-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-omap@vger.kernel.org,
-        linux-oxnas@groups.io, linux-stm32@st-md-mailman.stormreply.com,
-        linux-sunxi@lists.linux.dev, linux-tegra@vger.kernel.org,
-        linux-sh@vger.kernel.org
-Subject: Re: [PATCH 0/6] ARM: defconfig cleanups
-In-Reply-To: <20220721141325.2413920-1-arnd@kernel.org>
-References: <20220721141325.2413920-1-arnd@kernel.org>
-Date:   Fri, 22 Jul 2022 09:58:14 +0200
-Message-ID: <87o7xhpoix.fsf@BL-laptop>
+        Fri, 22 Jul 2022 04:02:07 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D92419B1BF;
+        Fri, 22 Jul 2022 01:02:02 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id n10-20020a17090a670a00b001f22ebae50aso3539905pjj.3;
+        Fri, 22 Jul 2022 01:02:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=M6s/8RD5zBTdM6tKCdA9Hka8E+QmLLY/fIYD1VeQ3LA=;
+        b=qLjWeFhX9qG4ExjvfWt7Qpo4TWsZiV+bNpSso3zL9QzLJOhsspPztaRgG0CWwMy0jp
+         kPWD2f7z4AgKxVSBobv3OSD54qGV3PB88/mnQlQwg7HghXwVwKU0hJOIyP/OIhYPWsf4
+         CJkvAsvCtXffD3pBHJbQ8jDqAVUuK4GtqE1V8V1x6j/h45OGtl59tqOK+nRovVkFbFs/
+         NCXDR+AFVyaans6Gk+eh1JYvcDH735B4gRHb4oTh4JtcCdFil0U85ujQ9VRPHv3S3lBV
+         rRAR4xqJnx8zynNfmt19XSjwJXopuwRboOdWkpvkpkLgECqTQrd12oTh+osu40F+zMVA
+         Ub9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=M6s/8RD5zBTdM6tKCdA9Hka8E+QmLLY/fIYD1VeQ3LA=;
+        b=3Sa0uZROcD8TZvweYCa61Jo0+c8jY8BLDswf8svjpbhekZ0mHEeIRSCkW062PIOW8K
+         Uj0QSI0WDsOo9xptcSO4nkxEt/MFer4VISLlxk9IOpwCA67zMJq6v9YtoOIoAZl1kjVb
+         +Rk5mURhSXfaiHGsYoKPd47Nsp5xvi9WMl5SMQFEXbnNLtECIsXV3o5PaZ+SpM4Vjx3y
+         pZTn8ZXrD8uzCEQ5+D8HBxzzukvzLv93PAies5GNI1pqt0ZAyvWjgDvlr3zFgPXJ/Dlm
+         zb7F3vZ49HnZ/amCeGp8Z9yBc7OD10F4mwZ2ZLv3LS1PFfoaHu7bgaytl/6BNAfTyWVn
+         CZcQ==
+X-Gm-Message-State: AJIora9xVfxeS9++vSVuXD56uvUHOutT1fjYj3IlO96FORdXoclVZpuO
+        cswjAek9yTjCixDIxVxJBDg=
+X-Google-Smtp-Source: AGRyM1t60nfPpUpNB2VNbbCRTLt77BVWu0RpeX1UTh7qRllYRt2S4nRF5E4VhtD2xnfJuHXDupXiSw==
+X-Received: by 2002:a17:902:d490:b0:16b:fb09:50ea with SMTP id c16-20020a170902d49000b0016bfb0950eamr2210466plg.77.1658476922210;
+        Fri, 22 Jul 2022 01:02:02 -0700 (PDT)
+Received: from ubuntu (61-216-121-34.hinet-ip.hinet.net. [61.216.121.34])
+        by smtp.gmail.com with ESMTPSA id d72-20020a621d4b000000b0052bae7a9722sm3162392pfd.116.2022.07.22.01.01.58
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 22 Jul 2022 01:02:01 -0700 (PDT)
+Date:   Fri, 22 Jul 2022 01:01:55 -0700
+From:   "yuxin.ye" <yeyuxin0925@gmail.com>
+To:     Waiman Long <longman@redhat.com>, linux-rt-users@vger.kernel.org,
+        peterz@infradead.org, mingo@redhat.com, will@kernel.org,
+        boqun.feng@gmail.com
+Cc:     linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RFC] rtmutex: Fix BUG_ON at kernel/locking/rtmutex.c:1331!
+Message-ID: <20220722080153.GA11228@ubuntu>
+References: <20220720072806.43445-1-yeyuxin0925@gmail.com>
+ <62de0805-a6ec-f2a1-00f2-1b24a95c72f0@redhat.com>
+ <20220721071656.GA8109@ubuntu>
+ <4953388d-bce4-37cd-f2b9-28dc3627c17d@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: multipart/mixed; boundary="17pEHd4RhPHOinZp"
+Content-Disposition: inline
+In-Reply-To: <4953388d-bce4-37cd-f2b9-28dc3627c17d@redhat.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Arnd Bergmann <arnd@kernel.org> writes:
 
-> From: Arnd Bergmann <arnd@arndb.de>
->
-> In the process of deprecating board files, I had to modify some defconfig
-> files and ran into the same problem as everyone else that a lot of
-> them are rather outdated. With some scripting, I managed to split out
-> a preparation patch that puts all lines into the expected order without
-> actually changing the contents.
->
-> This helped doing the cleanup separately per Kconfig option that needed
-> to be addressed. I only did a small portion of the follow-up changes
-> to get to the point of being able to rebase my board changes on top,
-> but I did manage to address some bugs that have crept in.
->
-> If there are no objections, I'd apply this set to the arm/defconfig
-> branch of the soc tree directly.
+--17pEHd4RhPHOinZp
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-For mvebu related SoCs (orion5x, dove, mv78xx0, ...)
-
-Acked-by: Gregory CLEMENT <gregory.clement@bootlin.com>
-
-Thanks,
-
-Gregory
-
-
->
->       Arnd
->
-> Arnd Bergmann (6):
->   ARM: refresh defconfig files
->   ARM: defconfig: remove irda remnants
->   ARM: defconfig: remove stale CONFIG_ZBOOT_ROM entries
->   ARM: defconfig: address renamed CONFIG_DEBUG_INFO=y
->   ARM: defconfig: remove broken CONFIG_THUMB disables
->   ARM: defconfig: kill remnants of CONFIG_LEDS
->
-> Cc: Russell King <linux@armlinux.org.uk>
-> Cc: Nicolas Ferre <nicolas.ferre@microchip.com>
-> Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
-> Cc: Claudiu Beznea <claudiu.beznea@microchip.com>
-> Cc: Florian Fainelli <f.fainelli@gmail.com>
-> Cc: Ray Jui <rjui@broadcom.com>
-> Cc: Scott Branden <sbranden@broadcom.com>
-> Cc: Alexander Shiyan <shc_work@mail.ru>
-> Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-> Cc: Alim Akhtar <alim.akhtar@samsung.com>
-> Cc: Shawn Guo <shawnguo@kernel.org>
-> Cc: Sascha Hauer <s.hauer@pengutronix.de>
-> Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
-> Cc: Fabio Estevam <festevam@gmail.com>
-> Cc: NXP Linux Team <linux-imx@nxp.com>
-> Cc: Vladimir Zapolskiy <vz@mleia.com>
-> Cc: Taichi Sugaya <sugaya.taichi@socionext.com>
-> Cc: Takao Orito <orito.takao@socionext.com>
-> Cc: Liviu Dudau <liviu.dudau@arm.com>
-> Cc: Sudeep Holla <sudeep.holla@arm.com>
-> Cc: Lorenzo Pieralisi <lpieralisi@kernel.org>
-> Cc: Andrew Lunn <andrew@lunn.ch>
-> Cc: Gregory Clement <gregory.clement@bootlin.com>
-> Cc: Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
-> Cc: Aaro Koskinen <aaro.koskinen@iki.fi>
-> Cc: Janusz Krzysztofik <jmkrzyszt@gmail.com>
-> Cc: Tony Lindgren <tony@atomide.com>
-> Cc: Neil Armstrong <narmstrong@baylibre.com>
-> Cc: Dinh Nguyen <dinguyen@kernel.org>
-> Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-> Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
-> Cc: Chen-Yu Tsai <wens@csie.org>
-> Cc: Jernej Skrabec <jernej.skrabec@gmail.com>
-> Cc: Samuel Holland <samuel@sholland.org>
-> Cc: Thierry Reding <thierry.reding@gmail.com>
-> Cc: Jonathan Hunter <jonathanh@nvidia.com>
-> Cc: Catalin Marinas <catalin.marinas@arm.com>
-> Cc: Will Deacon <will@kernel.org>
-> Cc: linux-arm-kernel@lists.infradead.org
-> Cc: linux-kernel@vger.kernel.org
-> Cc: linux-aspeed@lists.ozlabs.org
-> Cc: bcm-kernel-feedback-list@broadcom.com
-> Cc: linux-rpi-kernel@lists.infradead.org
-> Cc: linux-samsung-soc@vger.kernel.org
-> Cc: linux-omap@vger.kernel.org
-> Cc: linux-oxnas@groups.io
-> Cc: linux-stm32@st-md-mailman.stormreply.com
-> Cc: linux-sunxi@lists.linux.dev
-> Cc: linux-tegra@vger.kernel.org
-> Cc: linux-sh@vger.kernel.org
->
->  arch/arm/configs/am200epdkit_defconfig    |  28 ++---
->  arch/arm/configs/aspeed_g4_defconfig      |  17 ++-
->  arch/arm/configs/aspeed_g5_defconfig      |  17 ++-
->  arch/arm/configs/assabet_defconfig        |  19 ++-
->  arch/arm/configs/at91_dt_defconfig        |  10 +-
->  arch/arm/configs/axm55xx_defconfig        |  26 ++--
->  arch/arm/configs/badge4_defconfig         |  17 +--
->  arch/arm/configs/bcm2835_defconfig        |  38 +++---
->  arch/arm/configs/cerfcube_defconfig       |  24 ++--
->  arch/arm/configs/clps711x_defconfig       |   6 +-
->  arch/arm/configs/cm_x300_defconfig        |  28 ++---
->  arch/arm/configs/cns3420vb_defconfig      |  20 ++--
->  arch/arm/configs/colibri_pxa270_defconfig |  41 +++----
->  arch/arm/configs/colibri_pxa300_defconfig |  12 +-
->  arch/arm/configs/collie_defconfig         |  22 ++--
->  arch/arm/configs/corgi_defconfig          |  51 ++++----
->  arch/arm/configs/davinci_all_defconfig    |  28 ++---
->  arch/arm/configs/dove_defconfig           |  32 +++--
->  arch/arm/configs/ep93xx_defconfig         |  18 ++-
->  arch/arm/configs/eseries_pxa_defconfig    |  36 ++----
->  arch/arm/configs/exynos_defconfig         |  24 ++--
->  arch/arm/configs/ezx_defconfig            |  74 ++++++------
->  arch/arm/configs/footbridge_defconfig     |  31 ++---
->  arch/arm/configs/h3600_defconfig          |  16 +--
->  arch/arm/configs/h5000_defconfig          |  20 ++--
->  arch/arm/configs/hackkit_defconfig        |  12 +-
->  arch/arm/configs/hisi_defconfig           |  24 ++--
->  arch/arm/configs/imx_v4_v5_defconfig      |  10 +-
->  arch/arm/configs/imx_v6_v7_defconfig      |   8 +-
->  arch/arm/configs/integrator_defconfig     |   2 +-
->  arch/arm/configs/iop32x_defconfig         |  23 ++--
->  arch/arm/configs/ixp4xx_defconfig         |   1 -
->  arch/arm/configs/jornada720_defconfig     |  16 +--
->  arch/arm/configs/keystone_defconfig       |  64 +++++-----
->  arch/arm/configs/lart_defconfig           |  21 ++--
->  arch/arm/configs/lpc18xx_defconfig        |  16 ++-
->  arch/arm/configs/lpc32xx_defconfig        |  12 +-
->  arch/arm/configs/lpd270_defconfig         |  11 +-
->  arch/arm/configs/lubbock_defconfig        |  21 ++--
->  arch/arm/configs/magician_defconfig       |  41 +++----
->  arch/arm/configs/mainstone_defconfig      |  15 ++-
->  arch/arm/configs/milbeaut_m10v_defconfig  |   6 +-
->  arch/arm/configs/mini2440_defconfig       |   8 +-
->  arch/arm/configs/mmp2_defconfig           |  32 +++--
->  arch/arm/configs/moxart_defconfig         |  20 ++--
->  arch/arm/configs/mps2_defconfig           |  18 ++-
->  arch/arm/configs/multi_v4t_defconfig      |   6 +-
->  arch/arm/configs/multi_v5_defconfig       |  14 +--
->  arch/arm/configs/multi_v7_defconfig       |  62 +++++-----
->  arch/arm/configs/mv78xx0_defconfig        |  36 +++---
->  arch/arm/configs/mvebu_v5_defconfig       |  32 +++--
->  arch/arm/configs/mvebu_v7_defconfig       |   4 +-
->  arch/arm/configs/mxs_defconfig            |   6 +-
->  arch/arm/configs/neponset_defconfig       |  30 ++---
->  arch/arm/configs/netwinder_defconfig      |  18 +--
->  arch/arm/configs/nhk8815_defconfig        |   8 +-
->  arch/arm/configs/omap1_defconfig          |  80 ++++++-------
->  arch/arm/configs/omap2plus_defconfig      |  17 ++-
->  arch/arm/configs/orion5x_defconfig        |  36 +++---
->  arch/arm/configs/oxnas_v6_defconfig       |  14 +--
->  arch/arm/configs/palmz72_defconfig        |  16 ++-
->  arch/arm/configs/pcm027_defconfig         |  24 ++--
->  arch/arm/configs/pleb_defconfig           |   8 +-
->  arch/arm/configs/pxa168_defconfig         |  22 ++--
->  arch/arm/configs/pxa255-idp_defconfig     |  21 ++--
->  arch/arm/configs/pxa3xx_defconfig         |  20 ++--
->  arch/arm/configs/pxa910_defconfig         |  26 ++--
->  arch/arm/configs/pxa_defconfig            | 140 ++++++++++------------
->  arch/arm/configs/qcom_defconfig           |  62 +++++-----
->  arch/arm/configs/realview_defconfig       |   8 +-
->  arch/arm/configs/rpc_defconfig            |  20 ++--
->  arch/arm/configs/s3c2410_defconfig        |  12 +-
->  arch/arm/configs/s3c6400_defconfig        |   4 +-
->  arch/arm/configs/s5pv210_defconfig        |   6 +-
->  arch/arm/configs/sama5_defconfig          |   8 +-
->  arch/arm/configs/sama7_defconfig          |   8 +-
->  arch/arm/configs/shannon_defconfig        |  10 +-
->  arch/arm/configs/simpad_defconfig         |  29 ++---
->  arch/arm/configs/socfpga_defconfig        |   8 +-
->  arch/arm/configs/spear13xx_defconfig      |  18 +--
->  arch/arm/configs/spear3xx_defconfig       |  12 +-
->  arch/arm/configs/spear6xx_defconfig       |  10 +-
->  arch/arm/configs/spitz_defconfig          |  51 ++++----
->  arch/arm/configs/stm32_defconfig          |  18 ++-
->  arch/arm/configs/sunxi_defconfig          |   2 +-
->  arch/arm/configs/tct_hammer_defconfig     |  14 +--
->  arch/arm/configs/tegra_defconfig          |  20 ++--
->  arch/arm/configs/trizeps4_defconfig       |  66 +++++-----
->  arch/arm/configs/u8500_defconfig          |   2 +-
->  arch/arm/configs/versatile_defconfig      |   4 +-
->  arch/arm/configs/vexpress_defconfig       |   8 +-
->  arch/arm/configs/vf610m4_defconfig        |   2 +-
->  arch/arm/configs/viper_defconfig          |  30 +++--
->  arch/arm/configs/vt8500_v6_v7_defconfig   |   2 +-
->  arch/arm/configs/xcep_defconfig           |  32 +++--
->  arch/arm/configs/zeus_defconfig           |  28 ++---
->  arch/arm64/configs/defconfig              |   2 +-
->  arch/sh/configs/ecovec24_defconfig        |   2 -
->  100 files changed, 989 insertions(+), 1189 deletions(-)
->
-> -- 
-> 2.29.2
+On Thu, Jul 21, 2022 at 02:14:16PM -0400, Waiman Long wrote:
+> 
+> On 7/21/22 03:17, yuxin.ye wrote:
+> > On Wed, Jul 20, 2022 at 10:25:17PM -0400, Waiman Long wrote:
+> > > On 7/20/22 03:28, yuxin.ye wrote:
+> > > > before rt_mutex_adjust_prio_chain(),unlock lock->wait_lock will cause
+> > > > BUG_ON at kernel/locking/rtmutex.c:1331:
+> > > The current upstream kernel/locking/rtmutex.c has no BUG_ON() call. Which
+> > > version of the kernel are you using?
+> > > 
+> > > Cheers,
+> > > Longman
+> > > 
+> > The Linux version is 5.10.
+> > The upstream has indeed removed the BUG_ON, But in rt_mutex_adjust_prio_chain()
+> > it is still possible to have a thread is blocked by two locks. Can this situation
+> > be ignored without BUG_ON?
+> 
+> No. However, we don't remove the lock like what you do with your patch. It
+> will corrupt the data if multiple CPUs are allowed to run
+> rt_mutex_adjust_prio_chain() for the same rt_mutex simultaneously. You need
+> to find a way to fix the underlying problem.
+> 
+> BTW, I still can't see a BUG_ON at line 1331 of rtmutex.c with a v5.10
+> kernel. Does your source tree have some out-of-tree patches that modifies
+> rtmutex?
+> 
+> Cheers,
+> Longman
 >
 
+Yes, I'm sorry I overlooked that earlier. We applied the RT patch,and
+the BUG_ON are also introduced by these patches.
+
+Back to the question, I think remove the wait_lock unlock before
+rt_mutex_adjust_prio_chain() is more likely to protect some data. The
+commont on task_blocks_on_rt_mutex() indicates that must be called with
+wait_lock held, but it unlock before call rt_mutex_adjust_prio_chain().
+This may cause the owner thread to unlock the orig_lock and exit the
+thead. Finally, when calling put_task_struct(owner) in
+rt_mutex_adjust_prio_chain(), the thread is blocked by another lock that
+is deeply hidden.
+
+Actully, I'm not sure why rt_mutex_adjust_prio_chain()
+dosen't need wait_lock protection.
+
+Thanks again.
+
+--17pEHd4RhPHOinZp
+Content-Type: text/x-diff; charset=us-ascii
+Content-Disposition: attachment; filename="0162-locking-rtmutex-Handle-the-various-new-futex-race-co.patch"
+
+From 785a93a55536c33b674ef5d794f545a9d333852e Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Fri, 10 Jun 2011 11:04:15 +0200
+Subject: [PATCH 162/304] locking/rtmutex: Handle the various new futex race
+ conditions
+
+RT opens a few new interesting race conditions in the rtmutex/futex
+combo due to futex hash bucket lock being a 'sleeping' spinlock and
+therefor not disabling preemption.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ kernel/futex.c                  | 77 ++++++++++++++++++++++++++-------
+ kernel/locking/rtmutex.c        | 36 ++++++++++++---
+ kernel/locking/rtmutex_common.h |  2 +
+ 3 files changed, 94 insertions(+), 21 deletions(-)
+
+diff --git a/kernel/futex.c b/kernel/futex.c
+index 98a6e1b80bfe..c2fe58c34409 100644
+--- a/kernel/futex.c
++++ b/kernel/futex.c
+@@ -2155,6 +2155,16 @@ static int futex_requeue(u32 __user *uaddr1, unsigned int flags,
+ 				 */
+ 				requeue_pi_wake_futex(this, &key2, hb2);
+ 				continue;
++			} else if (ret == -EAGAIN) {
++				/*
++				 * Waiter was woken by timeout or
++				 * signal and has set pi_blocked_on to
++				 * PI_WAKEUP_INPROGRESS before we
++				 * tried to enqueue it on the rtmutex.
++				 */
++				this->pi_state = NULL;
++				put_pi_state(pi_state);
++				continue;
+ 			} else if (ret) {
+ 				/*
+ 				 * rt_mutex_start_proxy_lock() detected a
+@@ -3172,7 +3182,7 @@ static int futex_wait_requeue_pi(u32 __user *uaddr, unsigned int flags,
+ {
+ 	struct hrtimer_sleeper timeout, *to;
+ 	struct rt_mutex_waiter rt_waiter;
+-	struct futex_hash_bucket *hb;
++	struct futex_hash_bucket *hb, *hb2;
+ 	union futex_key key2 = FUTEX_KEY_INIT;
+ 	struct futex_q q = futex_q_init;
+ 	int res, ret;
+@@ -3224,20 +3234,55 @@ static int futex_wait_requeue_pi(u32 __user *uaddr, unsigned int flags,
+ 	/* Queue the futex_q, drop the hb lock, wait for wakeup. */
+ 	futex_wait_queue_me(hb, &q, to);
+ 
+-	spin_lock(&hb->lock);
+-	ret = handle_early_requeue_pi_wakeup(hb, &q, &key2, to);
+-	spin_unlock(&hb->lock);
+-	if (ret)
+-		goto out;
++	/*
++	 * On RT we must avoid races with requeue and trying to block
++	 * on two mutexes (hb->lock and uaddr2's rtmutex) by
++	 * serializing access to pi_blocked_on with pi_lock.
++	 */
++	raw_spin_lock_irq(&current->pi_lock);
++	if (current->pi_blocked_on) {
++		/*
++		 * We have been requeued or are in the process of
++		 * being requeued.
++		 */
++		raw_spin_unlock_irq(&current->pi_lock);
++	} else {
++		/*
++		 * Setting pi_blocked_on to PI_WAKEUP_INPROGRESS
++		 * prevents a concurrent requeue from moving us to the
++		 * uaddr2 rtmutex. After that we can safely acquire
++		 * (and possibly block on) hb->lock.
++		 */
++		current->pi_blocked_on = PI_WAKEUP_INPROGRESS;
++		raw_spin_unlock_irq(&current->pi_lock);
++
++		spin_lock(&hb->lock);
++
++		/*
++		 * Clean up pi_blocked_on. We might leak it otherwise
++		 * when we succeeded with the hb->lock in the fast
++		 * path.
++		 */
++		raw_spin_lock_irq(&current->pi_lock);
++		current->pi_blocked_on = NULL;
++		raw_spin_unlock_irq(&current->pi_lock);
++
++		ret = handle_early_requeue_pi_wakeup(hb, &q, &key2, to);
++		spin_unlock(&hb->lock);
++		if (ret)
++			goto out;
++	}
+ 
+ 	/*
+-	 * In order for us to be here, we know our q.key == key2, and since
+-	 * we took the hb->lock above, we also know that futex_requeue() has
+-	 * completed and we no longer have to concern ourselves with a wakeup
+-	 * race with the atomic proxy lock acquisition by the requeue code. The
+-	 * futex_requeue dropped our key1 reference and incremented our key2
+-	 * reference count.
++	 * In order to be here, we have either been requeued, are in
++	 * the process of being requeued, or requeue successfully
++	 * acquired uaddr2 on our behalf.  If pi_blocked_on was
++	 * non-null above, we may be racing with a requeue.  Do not
++	 * rely on q->lock_ptr to be hb2->lock until after blocking on
++	 * hb->lock or hb2->lock. The futex_requeue dropped our key1
++	 * reference and incremented our key2 reference count.
+ 	 */
++	hb2 = hash_futex(&key2);
+ 
+ 	/* Check if the requeue code acquired the second futex for us. */
+ 	if (!q.rt_waiter) {
+@@ -3246,14 +3291,15 @@ static int futex_wait_requeue_pi(u32 __user *uaddr, unsigned int flags,
+ 		 * did a lock-steal - fix up the PI-state in that case.
+ 		 */
+ 		if (q.pi_state && (q.pi_state->owner != current)) {
+-			spin_lock(q.lock_ptr);
++			spin_lock(&hb2->lock);
++			BUG_ON(&hb2->lock != q.lock_ptr);
+ 			ret = fixup_pi_state_owner(uaddr2, &q, current);
+ 			/*
+ 			 * Drop the reference to the pi state which
+ 			 * the requeue_pi() code acquired for us.
+ 			 */
+ 			put_pi_state(q.pi_state);
+-			spin_unlock(q.lock_ptr);
++			spin_unlock(&hb2->lock);
+ 			/*
+ 			 * Adjust the return value. It's either -EFAULT or
+ 			 * success (1) but the caller expects 0 for success.
+@@ -3272,7 +3318,8 @@ static int futex_wait_requeue_pi(u32 __user *uaddr, unsigned int flags,
+ 		pi_mutex = &q.pi_state->pi_mutex;
+ 		ret = rt_mutex_wait_proxy_lock(pi_mutex, to, &rt_waiter);
+ 
+-		spin_lock(q.lock_ptr);
++		spin_lock(&hb2->lock);
++		BUG_ON(&hb2->lock != q.lock_ptr);
+ 		if (ret && !rt_mutex_cleanup_proxy_lock(pi_mutex, &rt_waiter))
+ 			ret = 0;
+ 
+diff --git a/kernel/locking/rtmutex.c b/kernel/locking/rtmutex.c
+index 1d0e9bf0487a..97a5fb19119d 100644
+--- a/kernel/locking/rtmutex.c
++++ b/kernel/locking/rtmutex.c
+@@ -136,6 +136,11 @@ static void fixup_rt_mutex_waiters(struct rt_mutex *lock)
+ 		WRITE_ONCE(*p, owner & ~RT_MUTEX_HAS_WAITERS);
+ }
+ 
++static int rt_mutex_real_waiter(struct rt_mutex_waiter *waiter)
++{
++	return waiter && waiter != PI_WAKEUP_INPROGRESS;
++}
++
+ /*
+  * We can speed up the acquire/release, if there's no debugging state to be
+  * set up.
+@@ -378,7 +383,8 @@ int max_lock_depth = 1024;
+ 
+ static inline struct rt_mutex *task_blocked_on_lock(struct task_struct *p)
+ {
+-	return p->pi_blocked_on ? p->pi_blocked_on->lock : NULL;
++	return rt_mutex_real_waiter(p->pi_blocked_on) ?
++		p->pi_blocked_on->lock : NULL;
+ }
+ 
+ /*
+@@ -514,7 +520,7 @@ static int rt_mutex_adjust_prio_chain(struct task_struct *task,
+ 	 * reached or the state of the chain has changed while we
+ 	 * dropped the locks.
+ 	 */
+-	if (!waiter)
++	if (!rt_mutex_real_waiter(waiter))
+ 		goto out_unlock_pi;
+ 
+ 	/*
+@@ -947,6 +953,22 @@ static int task_blocks_on_rt_mutex(struct rt_mutex *lock,
+ 		return -EDEADLK;
+ 
+ 	raw_spin_lock(&task->pi_lock);
++	/*
++	 * In the case of futex requeue PI, this will be a proxy
++	 * lock. The task will wake unaware that it is enqueueed on
++	 * this lock. Avoid blocking on two locks and corrupting
++	 * pi_blocked_on via the PI_WAKEUP_INPROGRESS
++	 * flag. futex_wait_requeue_pi() sets this when it wakes up
++	 * before requeue (due to a signal or timeout). Do not enqueue
++	 * the task if PI_WAKEUP_INPROGRESS is set.
++	 */
++	if (task != current && task->pi_blocked_on == PI_WAKEUP_INPROGRESS) {
++		raw_spin_unlock(&task->pi_lock);
++		return -EAGAIN;
++	}
++
++       BUG_ON(rt_mutex_real_waiter(task->pi_blocked_on));
++
+ 	waiter->task = task;
+ 	waiter->lock = lock;
+ 	waiter->prio = task->prio;
+@@ -970,7 +992,7 @@ static int task_blocks_on_rt_mutex(struct rt_mutex *lock,
+ 		rt_mutex_enqueue_pi(owner, waiter);
+ 
+ 		rt_mutex_adjust_prio(owner);
+-		if (owner->pi_blocked_on)
++		if (rt_mutex_real_waiter(owner->pi_blocked_on))
+ 			chain_walk = 1;
+ 	} else if (rt_mutex_cond_detect_deadlock(waiter, chwalk)) {
+ 		chain_walk = 1;
+@@ -1066,7 +1088,7 @@ static void remove_waiter(struct rt_mutex *lock,
+ {
+ 	bool is_top_waiter = (waiter == rt_mutex_top_waiter(lock));
+ 	struct task_struct *owner = rt_mutex_owner(lock);
+-	struct rt_mutex *next_lock;
++	struct rt_mutex *next_lock = NULL;
+ 
+ 	lockdep_assert_held(&lock->wait_lock);
+ 
+@@ -1092,7 +1114,8 @@ static void remove_waiter(struct rt_mutex *lock,
+ 	rt_mutex_adjust_prio(owner);
+ 
+ 	/* Store the lock on which owner is blocked or NULL */
+-	next_lock = task_blocked_on_lock(owner);
++	if (rt_mutex_real_waiter(owner->pi_blocked_on))
++		next_lock = task_blocked_on_lock(owner);
+ 
+ 	raw_spin_unlock(&owner->pi_lock);
+ 
+@@ -1128,7 +1151,8 @@ void rt_mutex_adjust_pi(struct task_struct *task)
+ 	raw_spin_lock_irqsave(&task->pi_lock, flags);
+ 
+ 	waiter = task->pi_blocked_on;
+-	if (!waiter || rt_mutex_waiter_equal(waiter, task_to_waiter(task))) {
++	if (!rt_mutex_real_waiter(waiter) ||
++	    rt_mutex_waiter_equal(waiter, task_to_waiter(task))) {
+ 		raw_spin_unlock_irqrestore(&task->pi_lock, flags);
+ 		return;
+ 	}
+diff --git a/kernel/locking/rtmutex_common.h b/kernel/locking/rtmutex_common.h
+index b1455dc2366f..096b16cfb096 100644
+--- a/kernel/locking/rtmutex_common.h
++++ b/kernel/locking/rtmutex_common.h
+@@ -125,6 +125,8 @@ enum rtmutex_chainwalk {
+ /*
+  * PI-futex support (proxy locking functions, etc.):
+  */
++#define PI_WAKEUP_INPROGRESS	((struct rt_mutex_waiter *) 1)
++
+ extern struct task_struct *rt_mutex_next_owner(struct rt_mutex *lock);
+ extern void rt_mutex_init_proxy_locked(struct rt_mutex *lock,
+ 				       struct task_struct *proxy_owner);
 -- 
-Gregory Clement, Bootlin
-Embedded Linux and Kernel engineering
-http://bootlin.com
+2.32.0
+
+
+--17pEHd4RhPHOinZp--
