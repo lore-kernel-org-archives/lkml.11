@@ -2,159 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41CD1C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 06:31:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BDC4C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 06:32:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234189AbiGVGbc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 02:31:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38310 "EHLO
+        id S234208AbiGVGco (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 02:32:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229519AbiGVGb2 (ORCPT
+        with ESMTP id S229519AbiGVGcn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 02:31:28 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BC3C3DBF2;
-        Thu, 21 Jul 2022 23:31:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1658471485; x=1690007485;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=y9U9hgHsliqp7Qq1Blddtrmz1F+idNaVLFX9hxiQUgw=;
-  b=xmIvK/cfsaue7bZfIz30zRUJ5WNiBTXNc3xB0Q79NVfdX3QGmhnRKXLM
-   ZYNblSUxifAZ+pHuekZdnlXGwGW95alp3nwqE7hS0rcVYicH5Ncp4JCHG
-   9f8jCbjii0NNyDFy17cfnu0xkz7Y4qHT3luL9iPH9pPanw5IDQHLfipCa
-   c=;
-Received: from ironmsg-lv-alpha.qualcomm.com ([10.47.202.13])
-  by alexa-out.qualcomm.com with ESMTP; 21 Jul 2022 23:31:25 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-lv-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jul 2022 23:31:24 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 21 Jul 2022 23:31:24 -0700
-Received: from [10.50.44.100] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 21 Jul
- 2022 23:31:19 -0700
-Message-ID: <dc737abb-041b-491a-14f1-a584f9e64a3d@quicinc.com>
-Date:   Fri, 22 Jul 2022 12:01:16 +0530
+        Fri, 22 Jul 2022 02:32:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF6A93FA36;
+        Thu, 21 Jul 2022 23:32:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9C1B7B8275D;
+        Fri, 22 Jul 2022 06:32:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 409B3C341C7;
+        Fri, 22 Jul 2022 06:32:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658471559;
+        bh=ZfV/3G80JQ5U/WzbU/60kdUAzVwIklhZgtdR+E34XQg=;
+        h=In-Reply-To:References:From:Date:Subject:To:Cc:From;
+        b=uWh7jzpKluReGVDH2b6+Q+Y/moM3XVZb5l1tj+K0euN1fpAM0B4sQ4zZ4fUOKPDDM
+         icHglZKA60bnYHk8L+YtETmFDA0ge69UgyYcLhwv7j/6BiRSR83ozzwE/PBYEzh4/H
+         7NCGf36/w2etd7b5kTQM+inQ0eyT/+MSAS2yfhsFNR2XLPQjZ/k3AH3iCy75ZG7YxN
+         C+QgABdpTp1J1CkGv23ZyIX82PMLrMoz8PBuH8EtljXnywLOIuja33dbxfkyO8Rv/g
+         OKpgkMpMZxpTfJrpzodFyzjdlx1FZwILNS0DFBpwxQXr8OPQr20xSG92cDHndVP2P5
+         x5oCujYvvTL+Q==
+Received: by mail-wr1-f54.google.com with SMTP id k11so4713290wrx.5;
+        Thu, 21 Jul 2022 23:32:39 -0700 (PDT)
+X-Gm-Message-State: AJIora+JFr+bNSr0KLKjggUBTdkBMr857ih8ofbpY9EO6tHlKpFh4Gqt
+        vKmpYbJoN3MrFsVhT/UV4ZPJOiKz+MBWC06ObSQ=
+X-Google-Smtp-Source: AGRyM1u8KuxQy+sDKdavNtnIaObpDNsq25AhSqnPGVwAtCZSZUf9DyhY02FItA3LQ5/yvvy7w/e14DHqZO+azUZlQH0=
+X-Received: by 2002:adf:eacb:0:b0:21e:60a2:ae9e with SMTP id
+ o11-20020adfeacb000000b0021e60a2ae9emr1353976wrn.295.1658471557383; Thu, 21
+ Jul 2022 23:32:37 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH V15 6/9] mfd: pm8008: Use i2c_new_dummy_device() API
-Content-Language: en-US
-To:     Lee Jones <lee.jones@linaro.org>, Mark Brown <broonie@kernel.org>,
-        Stephen Boyd <swboyd@chromium.org>
-CC:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <quic_collinsd@quicinc.com>,
-        <quic_subbaram@quicinc.com>, <quic_jprakash@quicinc.com>
-References: <YrxtXdOsIZ5LKhdV@google.com>
- <f8e70198-d0d8-5500-2869-be9e3a34f3c1@quicinc.com>
- <Yr18M9dzTOWL0m2c@google.com>
- <de1f3f33-0a8c-eb87-694c-16ebf2835720@quicinc.com>
- <Yr6oLlmfWRkiAZG7@google.com>
- <52c6ab15-1cd8-324e-4bcc-c449d8bceb19@quicinc.com>
- <Yr66ZZqEnBApHYMA@google.com>
- <0481d3cc-4bb9-4969-0232-76ba57ff260d@quicinc.com>
- <YsLhxx+L3+GJDRyO@google.com>
- <bcc5f059-b991-296a-bba6-9cb1236097f2@quicinc.com>
- <Ys1tYAO39LKzEAOE@google.com>
-From:   "Satya Priya Kakitapalli (Temp)" <quic_c_skakit@quicinc.com>
-In-Reply-To: <Ys1tYAO39LKzEAOE@google.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Received: by 2002:a5d:644a:0:0:0:0:0 with HTTP; Thu, 21 Jul 2022 23:32:36
+ -0700 (PDT)
+In-Reply-To: <SG2PR04MB3899752B10CFB6CF93A6127C81879@SG2PR04MB3899.apcprd04.prod.outlook.com>
+References: <SG2PR04MB3899752B10CFB6CF93A6127C81879@SG2PR04MB3899.apcprd04.prod.outlook.com>
+From:   Namjae Jeon <linkinjeon@kernel.org>
+Date:   Fri, 22 Jul 2022 15:32:36 +0900
+X-Gmail-Original-Message-ID: <CAKYAXd-zdfcJusQX3sBxfANztnmzprp+RtEchCX0_twHq_291w@mail.gmail.com>
+Message-ID: <CAKYAXd-zdfcJusQX3sBxfANztnmzprp+RtEchCX0_twHq_291w@mail.gmail.com>
+Subject: Re: [PATCH v2 0/3] exfat: remove duplicate write directory entries
+To:     "Yuezhang.Mo@sony.com" <Yuezhang.Mo@sony.com>
+Cc:     "sj1557.seo" <sj1557.seo@samsung.com>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "Andy.Wu@sony.com" <Andy.Wu@sony.com>,
+        "Wataru.Aoyama@sony.com" <Wataru.Aoyama@sony.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Lee,
-
-> Okay, so I've taken some time to read through your previous
-> submissions to see how we ended up down this rabbit hole.
+2022-07-11 18:29 GMT+09:00, Yuezhang.Mo@sony.com <Yuezhang.Mo@sony.com>:
+> Changes for v2:
+>   - [1/3]: Fix timing of calling __exfat_write_inode()
+>     - __exfat_write_inode() should be called after updating inode.
+>     - This call will be removed in [3/3], so the patch series is
+>       no code changes between v1 and v2.
 >
-> Essentially, it looks to me like the 2 I2C devices should be kept
-> separate and the Regulator driver should be registered/probed without
-> requiring this I2C dummy device hoop jumping exercise.
 >
-> As Stephen asked in v9 [0], why can't the regulator driver be I2C?
+> These patches simplifie the code, and removes unnecessary writes for the
+> following operations.
 >
-> Then it can manage its own resources and all of this craziness can be
-> avoided.
+> 1. Write data to an empty file
+>   * Preparation
+>     ```
+>     mkdir /mnt/dir;touch /mnt/dir/file;sync
+>     ```
+>   * Capture the blktrace log of the following command
+>     ```
+>     dd if=/dev/zero of=/mnt/dir/file bs=${cluster_size} count=1 oflag=append
+> conv=notrunc
+>     ```
+>   * blktrace log
+>     * Before
+>       ```
+>       179,3    0        1     0.000000000    84  C  WS 2623488 + 1 [0]
+>  BootArea
+>       179,3    2        1    30.259435003   189  C   W 2628864 + 256 [0]
+>  /dir/file
+>       179,3    0        2    30.264066003    84  C   W 2627584 + 1 [0]
+>  BitMap
+>       179,3    2        2    30.261749337   189  C   W 2628608 + 1 [0]
+>  /dir/
+>       179,3    0        3    60.479159007    84  C   W 2628608 + 1 [0]
+>  /dir/
+>       ```
+>     * After
+>       ```
+>       179,3    0        1     0.000000000    84  C  WS 2623488 + 1 [0]
+>  BootArea
+>       179,3    3        1    30.185383337    87  C   W 2629888 + 256 [0]
+>  /dir/file
+>       179,3    0        2    30.246422004    84  C   W 2627584 + 1 [0]
+>  BitMap
+>       179,3    0        3    60.466497674    84  C   W 2628352 + 1 [0]
+>  /dir/
+>       ```
 >
-> That's not to say that the v9 submission was the right way to go
-> either.  Everything in relation to:
+> 2. Allocate a new cluster for a directory
+>   * Preparation
+>     ```
+>     mkdir /mnt/dir
+>     for ((i=1; i<cluster_size/96; i++)); do > /mnt/dir/file$i; done
+>     mkdir /mnt/dir/dir1; sync
+>     ```
+>   * Capture the blktrace log of the following command
+>     ```
+>     > /mnt/dir/file
+>     ```
+>   * blktrace log
+>     - Before
+>       ```
+>       179,3    0        1     0.000000000    84  C  WS 2623488 + 1 [0]
+>  BootArea
+>       179,3    2        1    30.263762003   189  C   W 2629504 + 128 [0]
+>  /dir/
+>       179,3    2        2    30.275596670   189  C   W 2629376 + 128 [0]
+>  /dir/
+>       179,3    2        3    30.290174003   189  C   W 2629119 + 1 [0]
+>  /dir/
+>       179,3    2        4    30.292362670   189  C   W 2628096 + 1 [0]
+>  /
+>       179,3    2        5    30.294547337   189  C   W 2627584 + 1 [0]
+>  BitMap
+>       179,3    0        2    30.296661337    84  C   W 2625536 + 1 [0]
+>  FatArea
+>       179,3    0        3    60.478775007    84  C   W 2628096 + 1 [0]
+>  /
+>       ```
+>     - After
+>       ```
+>       179,3    0        1     0.000000000    84  C  WS 2623488 + 1 [0]
+>  BootArea
+>       179,3    3        1    30.288114670    87  C   W 2631552 + 128 [0]
+>  /dir/
+>       179,3    3        2    30.303518003    87  C   W 2631424 + 128 [0]
+>  /dir/
+>       179,3    3        3    30.324212337    87  C   W 2631167 + 1 [0]
+>  /dir/
+>       179,3    3        4    30.326579003    87  C   W 2627584 + 1 [0]
+>  BitMap
+>       179,3    0        2    30.328892670    84  C   W 2625536 + 1 [0]
+>  FatArea
+>       179,3    0        3    60.503128674    84  C   W 2628096 + 1 [0]
+>  /
+>       ```
 >
->    i2c_add_driver(&pm8008_regulators_driver);
+> 3. Truncate and release cluster from the file
+>   * Preparation
+>     ```
+>     mkdir /mnt/dir
+>     dd if=/dev/zero of=/mnt/dir/file bs=${cluster_size} count=2
+>     sync
+>     ```
+>   * Capture the blktrace log of the following command
+>     ```
+>     truncate -s ${cluster_size} /mnt/dir/file
+>     ```
 >
-> ... should be moved into the Regulator driver itself.
+>   * blktrace log
+>     * Before
+>       ```
+>       179,3    0        1     0.000000000    84  C  WS 2623488 + 1 [0]
+>  BootArea
+>       179,3    1        1     5.048452334    49  C   W 2629120 + 1 [0]
+>  /dir/
+>       179,3    0        2     5.062994334    84  C   W 2627584 + 1 [0]
+>  BitMap
+>       179,3    0        3    10.031253002    84  C   W 2629120 + 1 [0]
+>  /dir/
+>       ```
+>
+>      * After
+>       ```
+>       179,3    0        1     0.000000000  9143  C  WS 2623488 + 1 [0]
+>  BootArea
+>       179,3    0        2    14.839244001  9143  C   W 2629888 + 1 [0]
+>  /dir/
+>       179,3    0        3    14.841562335  9143  C   W 2627584 + 1 [0]
+>  BitMap
+>       ```
+>
+> Yuezhang Mo (3):
+>   exfat: reuse __exfat_write_inode() to update directory entry
+>   exfat: remove duplicate write inode for truncating file
+>   exfat: remove duplicate write inode for extending dir/file
+>
+>  fs/exfat/exfat_fs.h |  1 +
+>  fs/exfat/file.c     | 82 ++++++++++++++-------------------------------
+>  fs/exfat/inode.c    | 41 ++++++-----------------
+>  fs/exfat/namei.c    | 20 -----------
+>  4 files changed, 37 insertions(+), 107 deletions(-)
 
-
-So, IIUC, we need to register the regulator driver as an i2c_driver and 
-do all the regmap init stuff in its probe, and not touch the mfd 
-driver(apart from adding reset-gpios).
-
-Then the DT would be simply:
-
-&pm8008_bus {
-     pm8008: pm8008@8 {
-         compatible = "qcom,pm8008";
-         reg = <0x8>;
-         #address-cells = <1>;
-         #size-cells = <0>;
-         #interrupt-cells = <2>;
-     };
-
-     pm8008_regulators: pm8008@9 {
-         compatible = "qcom,pm8008-regulators";
-         reg = <0x9>;
-         #address-cells = <0>;
-         #size-cells = <0>;
-
-         pm8008_l1: ldo1@4000 {
-             reg = <0x4000>;
-             regulator-name = "pm8008_l1";
-         };
-
-         pm8008_l2: ldo2@4100 {
-             reg = <0x4100>;
-             regulator-name = "pm8008_l2";
-         };
-
-         pm8008_l3: ldo3@4200 {
-             reg = <0x4200>;
-             regulator-name = "pm8008_l3";
-         };
-
-         pm8008_l4: ldo4@4300 {
-             reg = <0x4300>;
-             regulator-name = "pm8008_l4";
-         };
-
-         pm8008_l5: ldo5@4400 {
-             reg = <0x4400>;
-             regulator-name = "pm8008_l5";
-         };
-
-         pm8008_l6: ldo6@4500 {
-             reg = <0x4500>;
-             regulator-name = "pm8008_l6";
-         };
-
-         pm8008_l7: ldo7@4600 {
-             reg = <0x4600>;
-             regulator-name = "pm8008_l7";
-         };
-     };
-};
-
-
-Stephen/Mark, Please do let me know if you are OK with this design.
-
+Applied, Thanks for your work!
+>
+> --
+> 2.25.1
+>
