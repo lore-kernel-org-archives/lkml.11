@@ -2,272 +2,244 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DBCFC43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:20:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 390E8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:20:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235925AbiGVJUD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 05:20:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50852 "EHLO
+        id S235941AbiGVJUF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 05:20:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236058AbiGVJTP (ORCPT
+        with ESMTP id S236064AbiGVJTS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 05:19:15 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECAA7175AB
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 02:13:21 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id t3so5131930edd.0
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 02:13:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=JSAECi8sgajhN4HPSrW/tW526BrlCSjcOiM42VddLYA=;
-        b=QC/4tQNMWDsqBRLAmCHARVYXQFTe7n0gdL6ig+xVAHPRJJ5pZcXuQSdEUB/iIi3Fh8
-         wZR+Qlu1LZqFZJ0sPrV7xY8GTuvWwl+JcDb5NbIWTBElatsQW+jzUehlUGQ2BkGZFLmP
-         6ECsPxKpFJUrYODW/r6WbpNW+IoRNT3EheCykftKk6Eb21NaOxSo7E4J9XXxq26N5RpK
-         dflg8EIRghDqvuOEPtU3EBZuM1EIDTSpH7LmLzDQYQqNkXOsurW5S6G4LBkzYNBsqIfS
-         mj0UxAbdPRgQNMQcxx50EfGi84OcwWlW6XH4TvPR7YshM1iGnVeHcT0fbuCcr/Ln2Ctv
-         a0Gw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=JSAECi8sgajhN4HPSrW/tW526BrlCSjcOiM42VddLYA=;
-        b=Y+Ztnoi2X1Jg5xP9Oc4DwL1VCb+8jEy7JGbmN7pNLdpMUd8zkFXye/P5PvM062eIiG
-         0/3qlkoc9Woh2GQmgLr9zUj0CLl0R0pUfiCWoPdLmj5KndAdMbmnpcCU+nXMRO8r7Mus
-         XkAgmaJ7vTSXdeT5IKlDi7LylsU1UFfTnO4MOc19nz0q65JGQVo7NtIF+KiBU6UJgQJV
-         ez+7J7SeGADhaCcOB9+uaV0XOH6rKAbu0kA4/7Vq1Nz7h9Z2jNzLCDnXeqBs01oUQfFg
-         idZVy7vAvwAwa5Mi88xKBY8iTFLQbZoIBir4i9x+cqEU2YiB+8jWQ5RzEoOiZmeF1aWQ
-         s3mw==
-X-Gm-Message-State: AJIora9kTQkZSFfsg9UE2vkYTTrDDNBas0MIH24eijk6CgiKO9SesrJ/
-        SpneEKkNoyxlZ1xUzyqrlyhU5Q==
-X-Google-Smtp-Source: AGRyM1s61pYE1oFmicK9kBMG/TYCWQHDXwh6f4kdIxuT5FdGXlphF0OGM4Opshh0goHUmL8SR3yJSA==
-X-Received: by 2002:a05:6402:331e:b0:43b:cd65:a3ed with SMTP id e30-20020a056402331e00b0043bcd65a3edmr2491102eda.118.1658481199973;
-        Fri, 22 Jul 2022 02:13:19 -0700 (PDT)
-Received: from blmsp ([2001:4090:a243:806e:25e7:daa:8208:ceb])
-        by smtp.gmail.com with ESMTPSA id p9-20020a056402074900b00431962fe5d4sm2217523edy.77.2022.07.22.02.13.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Jul 2022 02:13:19 -0700 (PDT)
-Date:   Fri, 22 Jul 2022 11:13:17 +0200
-From:   Markus Schneider-Pargmann <msp@baylibre.com>
-To:     Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     Fabien Parent <fparent@baylibre.com>,
-        Alexandre Bailon <abailon@baylibre.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/4] soc: mediatek: Add support of WAYEN operations
-Message-ID: <20220722091317.c2phi3c24kpendbg@blmsp>
-References: <20220530204214.913251-1-fparent@baylibre.com>
- <20220530204214.913251-2-fparent@baylibre.com>
- <fc9f18aa-fc32-c1ec-9056-e6158d0bd1ce@gmail.com>
+        Fri, 22 Jul 2022 05:19:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62CD4BA4FD;
+        Fri, 22 Jul 2022 02:13:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 950C8B827B6;
+        Fri, 22 Jul 2022 09:13:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F238BC341C6;
+        Fri, 22 Jul 2022 09:13:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658481199;
+        bh=P6IjRrEgXyGoqViR3cgDl41Nlbkd83aXFAI+Tq/NUzg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=o11oZvQlhmQGPrTNOqpa4tXz6VgBwG/HsCTi1/qRLXvSWfp3Bo/h3hcPlCEniy04s
+         BLdEt+Xh1wMYGmQm+i5FkzocdovxQna9DKpK5SBvVLc6lnl3N/BUwbuIvgWibuIcNF
+         pxbOASOGCTHf6LWqnuRQW7d1uKalavqbJ/J9pdEI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Borislav Petkov <bp@suse.de>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Subject: [PATCH 5.15 29/89] x86: Undo return-thunk damage
+Date:   Fri, 22 Jul 2022 11:11:03 +0200
+Message-Id: <20220722091134.997557655@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220722091133.320803732@linuxfoundation.org>
+References: <20220722091133.320803732@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <fc9f18aa-fc32-c1ec-9056-e6158d0bd1ce@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Matthias,
+From: Peter Zijlstra <peterz@infradead.org>
 
-On Fri, Jun 17, 2022 at 04:20:55PM +0200, Matthias Brugger wrote:
-> 
-> 
-> On 30/05/2022 22:42, Fabien Parent wrote:
-> > From: Alexandre Bailon <abailon@baylibre.com>
-> > 
-> > This updates the power domain to support WAYEN operations.
-> 
-> Please explain better what the WAYEN operation is. Never heard of that word.
+commit 15e67227c49a57837108acfe1c80570e1bd9f962 upstream.
 
-Thanks, I will clarify this in v2. I had to look it up myself. It is
-basically called 'way_en' in the documents and controls the output
-paths of the different units. You can select which 'ways' are enabled
-with these bits. This is a bit that is present in many registers and it
-is necessary for mt8365 to control it for the power domains.
+Introduce X86_FEATURE_RETHUNK for those afflicted with needing this.
 
-Best,
-Markus
+  [ bp: Do only INT3 padding - simpler. ]
 
-> 
-> Regards,
-> Matthias
-> 
-> > This is required by the mt8365 for the MM power domain.
-> > 
-> > Signed-off-by: Alexandre Bailon <abailon@baylibre.com>
-> > Signed-off-by: Fabien Parent <fparent@baylibre.com>
-> > ---
-> >   drivers/soc/mediatek/mtk-pm-domains.c | 64 +++++++++++++++++++++------
-> >   drivers/soc/mediatek/mtk-pm-domains.h | 27 ++++++-----
-> >   2 files changed, 67 insertions(+), 24 deletions(-)
-> > 
-> > diff --git a/drivers/soc/mediatek/mtk-pm-domains.c b/drivers/soc/mediatek/mtk-pm-domains.c
-> > index 5ced254b082b..90b91b3b19a8 100644
-> > --- a/drivers/soc/mediatek/mtk-pm-domains.c
-> > +++ b/drivers/soc/mediatek/mtk-pm-domains.c
-> > @@ -44,6 +44,7 @@ struct scpsys_domain {
-> >   	struct clk_bulk_data *subsys_clks;
-> >   	struct regmap *infracfg;
-> >   	struct regmap *smi;
-> > +	struct regmap *infracfg_nao;
-> >   	struct regulator *supply;
-> >   };
-> > @@ -116,23 +117,38 @@ static int scpsys_sram_disable(struct scpsys_domain *pd)
-> >   					MTK_POLL_TIMEOUT);
-> >   }
-> > -static int _scpsys_bus_protect_enable(const struct scpsys_bus_prot_data *bpd, struct regmap *regmap)
-> > +static int _scpsys_bus_protect_enable(const struct scpsys_bus_prot_data *bpd,
-> > +				      struct regmap *regmap, struct regmap *infracfg_nao)
-> >   {
-> >   	int i, ret;
-> >   	for (i = 0; i < SPM_MAX_BUS_PROT_DATA; i++) {
-> > -		u32 val, mask = bpd[i].bus_prot_mask;
-> > +		u32 mask = bpd[i].bus_prot_mask;
-> > +		u32 val = mask, sta_mask = mask;
-> > +		struct regmap *ack_regmap = regmap;
-> >   		if (!mask)
-> >   			break;
-> > +		if (bpd[i].wayen) {
-> > +			if (!infracfg_nao)
-> > +				return -ENODEV;
-> > +
-> > +			val = 0;
-> > +			sta_mask = bpd[i].bus_prot_sta_mask;
-> > +			ack_regmap = infracfg_nao;
-> > +		}
-> > +
-> >   		if (bpd[i].bus_prot_reg_update)
-> > -			regmap_set_bits(regmap, bpd[i].bus_prot_set, mask);
-> > +			regmap_update_bits(regmap, bpd[i].bus_prot_set, mask, val);
-> >   		else
-> >   			regmap_write(regmap, bpd[i].bus_prot_set, mask);
-> > -		ret = regmap_read_poll_timeout(regmap, bpd[i].bus_prot_sta,
-> > -					       val, (val & mask) == mask,
-> > +		if (bpd[i].ignore_clr_ack)
-> > +			continue;
-> > +
-> > +		ret = regmap_read_poll_timeout(ack_regmap, bpd[i].bus_prot_sta,
-> > +					       val, (val & sta_mask) == sta_mask,
-> >   					       MTK_POLL_DELAY_US, MTK_POLL_TIMEOUT);
-> >   		if (ret)
-> >   			return ret;
-> > @@ -145,34 +161,49 @@ static int scpsys_bus_protect_enable(struct scpsys_domain *pd)
-> >   {
-> >   	int ret;
-> > -	ret = _scpsys_bus_protect_enable(pd->data->bp_infracfg, pd->infracfg);
-> > +	ret = _scpsys_bus_protect_enable(pd->data->bp_infracfg,
-> > +			pd->infracfg, pd->infracfg_nao);
-> >   	if (ret)
-> >   		return ret;
-> > -	return _scpsys_bus_protect_enable(pd->data->bp_smi, pd->smi);
-> > +	return _scpsys_bus_protect_enable(pd->data->bp_smi, pd->smi, NULL);
-> >   }
-> > +#define mask_cond(wayen, val, mask) \
-> > +	((wayen && ((val & mask) == mask)) || (!wayen && !(val & mask)))
-> > +
-> >   static int _scpsys_bus_protect_disable(const struct scpsys_bus_prot_data *bpd,
-> > -				       struct regmap *regmap)
-> > +				       struct regmap *regmap, struct regmap *infracfg_nao)
-> >   {
-> >   	int i, ret;
-> >   	for (i = SPM_MAX_BUS_PROT_DATA - 1; i >= 0; i--) {
-> > -		u32 val, mask = bpd[i].bus_prot_mask;
-> > +		u32 val = 0, mask = bpd[i].bus_prot_mask;
-> > +		u32 sta_mask = mask;
-> > +		struct regmap *ack_regmap = regmap;
-> >   		if (!mask)
-> >   			continue;
-> > +		if (bpd[i].wayen) {
-> > +			if (!infracfg_nao)
-> > +				return -ENODEV;
-> > +
-> > +			val = mask;
-> > +			sta_mask = bpd[i].bus_prot_sta_mask;
-> > +			ack_regmap = infracfg_nao;
-> > +		}
-> > +
-> >   		if (bpd[i].bus_prot_reg_update)
-> > -			regmap_clear_bits(regmap, bpd[i].bus_prot_clr, mask);
-> > +			regmap_update_bits(regmap, bpd[i].bus_prot_clr, mask, val);
-> >   		else
-> >   			regmap_write(regmap, bpd[i].bus_prot_clr, mask);
-> >   		if (bpd[i].ignore_clr_ack)
-> >   			continue;
-> > -		ret = regmap_read_poll_timeout(regmap, bpd[i].bus_prot_sta,
-> > -					       val, !(val & mask),
-> > +		ret = regmap_read_poll_timeout(ack_regmap, bpd[i].bus_prot_sta,
-> > +					       val, mask_cond(bpd[i].wayen, val, sta_mask),
-> >   					       MTK_POLL_DELAY_US, MTK_POLL_TIMEOUT);
-> >   		if (ret)
-> >   			return ret;
-> > @@ -185,11 +216,12 @@ static int scpsys_bus_protect_disable(struct scpsys_domain *pd)
-> >   {
-> >   	int ret;
-> > -	ret = _scpsys_bus_protect_disable(pd->data->bp_smi, pd->smi);
-> > +	ret = _scpsys_bus_protect_disable(pd->data->bp_smi, pd->smi, NULL);
-> >   	if (ret)
-> >   		return ret;
-> > -	return _scpsys_bus_protect_disable(pd->data->bp_infracfg, pd->infracfg);
-> > +	return _scpsys_bus_protect_disable(pd->data->bp_infracfg,
-> > +			pd->infracfg, pd->infracfg_nao);
-> >   }
-> >   static int scpsys_regulator_enable(struct regulator *supply)
-> > @@ -363,6 +395,10 @@ generic_pm_domain *scpsys_add_one_domain(struct scpsys *scpsys, struct device_no
-> >   			return ERR_CAST(pd->smi);
-> >   	}
-> > +	pd->infracfg_nao = syscon_regmap_lookup_by_phandle_optional(node, "mediatek,infracfg_nao");
-> > +	if (IS_ERR(pd->infracfg_nao))
-> > +		return ERR_CAST(pd->infracfg_nao);
-> > +
-> >   	num_clks = of_clk_get_parent_count(node);
-> >   	if (num_clks > 0) {
-> >   		/* Calculate number of subsys_clks */
-> > diff --git a/drivers/soc/mediatek/mtk-pm-domains.h b/drivers/soc/mediatek/mtk-pm-domains.h
-> > index daa24e890dd4..a3955d960233 100644
-> > --- a/drivers/soc/mediatek/mtk-pm-domains.h
-> > +++ b/drivers/soc/mediatek/mtk-pm-domains.h
-> > @@ -39,23 +39,28 @@
-> >   #define SPM_MAX_BUS_PROT_DATA		6
-> > -#define _BUS_PROT(_mask, _set, _clr, _sta, _update, _ignore) {	\
-> > -		.bus_prot_mask = (_mask),			\
-> > -		.bus_prot_set = _set,				\
-> > -		.bus_prot_clr = _clr,				\
-> > -		.bus_prot_sta = _sta,				\
-> > -		.bus_prot_reg_update = _update,			\
-> > -		.ignore_clr_ack = _ignore,			\
-> > +#define _BUS_PROT(_mask, _sta_mask, _set, _clr, _sta, _update, _ignore, _wayen) {	\
-> > +		.bus_prot_mask = (_mask),				\
-> > +		.bus_prot_set = _set,					\
-> > +		.bus_prot_clr = _clr,					\
-> > +		.bus_prot_sta = _sta,					\
-> > +		.bus_prot_sta_mask = _sta_mask,				\
-> > +		.bus_prot_reg_update = _update,				\
-> > +		.ignore_clr_ack = _ignore,				\
-> > +		.wayen = _wayen,					\
-> >   	}
-> >   #define BUS_PROT_WR(_mask, _set, _clr, _sta)			\
-> > -		_BUS_PROT(_mask, _set, _clr, _sta, false, false)
-> > +		_BUS_PROT(_mask, _mask, _set, _clr, _sta, false, false, false)
-> >   #define BUS_PROT_WR_IGN(_mask, _set, _clr, _sta)		\
-> > -		_BUS_PROT(_mask, _set, _clr, _sta, false, true)
-> > +		_BUS_PROT(_mask, _mask, _set, _clr, _sta, false, true, false)
-> >   #define BUS_PROT_UPDATE(_mask, _set, _clr, _sta)		\
-> > -		_BUS_PROT(_mask, _set, _clr, _sta, true, false)
-> > +		_BUS_PROT(_mask, _mask, _set, _clr, _sta, true, false, false)
-> > +
-> > +#define BUS_PROT_WAYEN(_en_mask, _sta_mask, _set, _sta)		\
-> > +		_BUS_PROT(_en_mask, _sta_mask, _set, _set, _sta, true, false, true)
-> >   #define BUS_PROT_UPDATE_TOPAXI(_mask)				\
-> >   		BUS_PROT_UPDATE(_mask,				\
-> > @@ -68,8 +73,10 @@ struct scpsys_bus_prot_data {
-> >   	u32 bus_prot_set;
-> >   	u32 bus_prot_clr;
-> >   	u32 bus_prot_sta;
-> > +	u32 bus_prot_sta_mask;
-> >   	bool bus_prot_reg_update;
-> >   	bool ignore_clr_ack;
-> > +	bool wayen;
-> >   };
-> >   /**
-> 
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+[cascardo: CONFIG_STACK_VALIDATION vs CONFIG_OBJTOOL]
+[cascardo: no IBT support]
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/x86/include/asm/alternative.h       |    1 
+ arch/x86/include/asm/cpufeatures.h       |    1 
+ arch/x86/include/asm/disabled-features.h |    3 +
+ arch/x86/kernel/alternative.c            |   60 +++++++++++++++++++++++++++++++
+ arch/x86/kernel/module.c                 |    8 +++-
+ arch/x86/kernel/vmlinux.lds.S            |    7 +++
+ 6 files changed, 78 insertions(+), 2 deletions(-)
+
+--- a/arch/x86/include/asm/alternative.h
++++ b/arch/x86/include/asm/alternative.h
+@@ -76,6 +76,7 @@ extern int alternatives_patched;
+ extern void alternative_instructions(void);
+ extern void apply_alternatives(struct alt_instr *start, struct alt_instr *end);
+ extern void apply_retpolines(s32 *start, s32 *end);
++extern void apply_returns(s32 *start, s32 *end);
+ 
+ struct module;
+ 
+--- a/arch/x86/include/asm/cpufeatures.h
++++ b/arch/x86/include/asm/cpufeatures.h
+@@ -298,6 +298,7 @@
+ /* FREE!				(11*32+11) */
+ #define X86_FEATURE_RETPOLINE		(11*32+12) /* "" Generic Retpoline mitigation for Spectre variant 2 */
+ #define X86_FEATURE_RETPOLINE_LFENCE	(11*32+13) /* "" Use LFENCE for Spectre variant 2 */
++#define X86_FEATURE_RETHUNK		(11*32+14) /* "" Use REturn THUNK */
+ 
+ /* Intel-defined CPU features, CPUID level 0x00000007:1 (EAX), word 12 */
+ #define X86_FEATURE_AVX_VNNI		(12*32+ 4) /* AVX VNNI instructions */
+--- a/arch/x86/include/asm/disabled-features.h
++++ b/arch/x86/include/asm/disabled-features.h
+@@ -60,7 +60,8 @@
+ # define DISABLE_RETPOLINE	0
+ #else
+ # define DISABLE_RETPOLINE	((1 << (X86_FEATURE_RETPOLINE & 31)) | \
+-				 (1 << (X86_FEATURE_RETPOLINE_LFENCE & 31)))
++				 (1 << (X86_FEATURE_RETPOLINE_LFENCE & 31)) | \
++				 (1 << (X86_FEATURE_RETHUNK & 31)))
+ #endif
+ 
+ /* Force disable because it's broken beyond repair */
+--- a/arch/x86/kernel/alternative.c
++++ b/arch/x86/kernel/alternative.c
+@@ -115,6 +115,7 @@ static void __init_or_module add_nops(vo
+ }
+ 
+ extern s32 __retpoline_sites[], __retpoline_sites_end[];
++extern s32 __return_sites[], __return_sites_end[];
+ extern struct alt_instr __alt_instructions[], __alt_instructions_end[];
+ extern s32 __smp_locks[], __smp_locks_end[];
+ void text_poke_early(void *addr, const void *opcode, size_t len);
+@@ -506,9 +507,67 @@ void __init_or_module noinline apply_ret
+ 	}
+ }
+ 
++/*
++ * Rewrite the compiler generated return thunk tail-calls.
++ *
++ * For example, convert:
++ *
++ *   JMP __x86_return_thunk
++ *
++ * into:
++ *
++ *   RET
++ */
++static int patch_return(void *addr, struct insn *insn, u8 *bytes)
++{
++	int i = 0;
++
++	if (cpu_feature_enabled(X86_FEATURE_RETHUNK))
++		return -1;
++
++	bytes[i++] = RET_INSN_OPCODE;
++
++	for (; i < insn->length;)
++		bytes[i++] = INT3_INSN_OPCODE;
++
++	return i;
++}
++
++void __init_or_module noinline apply_returns(s32 *start, s32 *end)
++{
++	s32 *s;
++
++	for (s = start; s < end; s++) {
++		void *addr = (void *)s + *s;
++		struct insn insn;
++		int len, ret;
++		u8 bytes[16];
++		u8 op1;
++
++		ret = insn_decode_kernel(&insn, addr);
++		if (WARN_ON_ONCE(ret < 0))
++			continue;
++
++		op1 = insn.opcode.bytes[0];
++		if (WARN_ON_ONCE(op1 != JMP32_INSN_OPCODE))
++			continue;
++
++		DPRINTK("return thunk at: %pS (%px) len: %d to: %pS",
++			addr, addr, insn.length,
++			addr + insn.length + insn.immediate.value);
++
++		len = patch_return(addr, &insn, bytes);
++		if (len == insn.length) {
++			DUMP_BYTES(((u8*)addr),  len, "%px: orig: ", addr);
++			DUMP_BYTES(((u8*)bytes), len, "%px: repl: ", addr);
++			text_poke_early(addr, bytes, len);
++		}
++	}
++}
+ #else /* !RETPOLINES || !CONFIG_STACK_VALIDATION */
+ 
+ void __init_or_module noinline apply_retpolines(s32 *start, s32 *end) { }
++void __init_or_module noinline apply_returns(s32 *start, s32 *end) { }
+ 
+ #endif /* CONFIG_RETPOLINE && CONFIG_STACK_VALIDATION */
+ 
+@@ -824,6 +883,7 @@ void __init alternative_instructions(voi
+ 	 * those can rewrite the retpoline thunks.
+ 	 */
+ 	apply_retpolines(__retpoline_sites, __retpoline_sites_end);
++	apply_returns(__return_sites, __return_sites_end);
+ 
+ 	/*
+ 	 * Then patch alternatives, such that those paravirt calls that are in
+--- a/arch/x86/kernel/module.c
++++ b/arch/x86/kernel/module.c
+@@ -253,7 +253,7 @@ int module_finalize(const Elf_Ehdr *hdr,
+ {
+ 	const Elf_Shdr *s, *text = NULL, *alt = NULL, *locks = NULL,
+ 		*para = NULL, *orc = NULL, *orc_ip = NULL,
+-		*retpolines = NULL;
++		*retpolines = NULL, *returns = NULL;
+ 	char *secstrings = (void *)hdr + sechdrs[hdr->e_shstrndx].sh_offset;
+ 
+ 	for (s = sechdrs; s < sechdrs + hdr->e_shnum; s++) {
+@@ -271,6 +271,8 @@ int module_finalize(const Elf_Ehdr *hdr,
+ 			orc_ip = s;
+ 		if (!strcmp(".retpoline_sites", secstrings + s->sh_name))
+ 			retpolines = s;
++		if (!strcmp(".return_sites", secstrings + s->sh_name))
++			returns = s;
+ 	}
+ 
+ 	/*
+@@ -285,6 +287,10 @@ int module_finalize(const Elf_Ehdr *hdr,
+ 		void *rseg = (void *)retpolines->sh_addr;
+ 		apply_retpolines(rseg, rseg + retpolines->sh_size);
+ 	}
++	if (returns) {
++		void *rseg = (void *)returns->sh_addr;
++		apply_returns(rseg, rseg + returns->sh_size);
++	}
+ 	if (alt) {
+ 		/* patch .altinstructions */
+ 		void *aseg = (void *)alt->sh_addr;
+--- a/arch/x86/kernel/vmlinux.lds.S
++++ b/arch/x86/kernel/vmlinux.lds.S
+@@ -284,6 +284,13 @@ SECTIONS
+ 		*(.retpoline_sites)
+ 		__retpoline_sites_end = .;
+ 	}
++
++	. = ALIGN(8);
++	.return_sites : AT(ADDR(.return_sites) - LOAD_OFFSET) {
++		__return_sites = .;
++		*(.return_sites)
++		__return_sites_end = .;
++	}
+ #endif
+ 
+ 	/*
+
+
