@@ -2,328 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE882C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:17:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 555D8C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:17:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235790AbiGVJRH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 05:17:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52702 "EHLO
+        id S235641AbiGVJRb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 05:17:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235660AbiGVJQU (ORCPT
+        with ESMTP id S234844AbiGVJRS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 05:16:20 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FB49B5070
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 02:11:56 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id g17so4092529plh.2
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 02:11:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=24+TxujgV3rUEF1of+Gq33eXW5NFSbE6j4kj4fO+oaM=;
-        b=Zds9d6bhjfEA5B8w6CLN086P1nk5guHANR55R5Et+tWtTn2F5wJ2CT2a6esYtMXcxZ
-         09XdCSxaBZDa/2ZRcCsvgxg4XbHn/50131bv4tvgklnIg3ij+3PgA4ruDQlwG4kxvo75
-         sma+4JrvBO+cv0WBujeZdQd4fRJYZITFVmbo0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=24+TxujgV3rUEF1of+Gq33eXW5NFSbE6j4kj4fO+oaM=;
-        b=YdKbylOgTenbNxXMYVprxcCD1Va0PPIjSX7NjpfW6kNKLTdKsqyd1b6smx0y88rlwZ
-         y/xOWEmI7uz66YSXLQLRUr5oTxkazCpT2iNrMmPTn42XEFITsmkOyXXZMY8CluGO4t5l
-         twmgAxBR/lTGnFBnG7V1hl/Uin/CNwC3R1WP8x+CyXCsR+w2bsqUlWGsK3IDEgy3Zbej
-         /kAwcqAOJiQR9DyuL+vW8bqb+s4qSCSGctBxDY3Mu+4IyxIevEFqY75fwa9msqJIUm0A
-         k8uGtlEtUydfViikcGUJq8jv+YCVX5tXvxztE/JA2p5BlwYyp1v21KWfbIF7f2EJr+1W
-         +wQQ==
-X-Gm-Message-State: AJIora/54GhQGThbV4L0fabQTKiZ6uDvsOJTKmDKTUBI+GzbbvXhwtCr
-        I1Rxqrppo1LW0n4dxorsyKi+9Q==
-X-Google-Smtp-Source: AGRyM1vIdS6HyYlM9oBvMWJocM2ed2QJe6CjvpjDFm/v4jAcqI04NcKCeYxzE1cYmvIuDMoEAxKebg==
-X-Received: by 2002:a17:90a:ea04:b0:1f2:242d:e2af with SMTP id w4-20020a17090aea0400b001f2242de2afmr12332387pjy.45.1658481115707;
-        Fri, 22 Jul 2022 02:11:55 -0700 (PDT)
-Received: from rahul_yocto_ubuntu18.ibn.broadcom.net ([192.19.234.250])
-        by smtp.gmail.com with ESMTPSA id p64-20020a622943000000b0052b9351737fsm3429978pfp.92.2022.07.22.02.11.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Jul 2022 02:11:55 -0700 (PDT)
-From:   Vikas Gupta <vikas.gupta@broadcom.com>
-To:     jiri@nvidia.com, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        davem@davemloft.net, dsahern@kernel.org,
-        stephen@networkplumber.org, edumazet@google.com, pabeni@redhat.com,
-        ast@kernel.org, leon@kernel.org, linux-doc@vger.kernel.org,
-        corbet@lwn.net, michael.chan@broadcom.com,
-        andrew.gospodarek@broadcom.com,
-        Vikas Gupta <vikas.gupta@broadcom.com>
-Subject: [PATCH net-next v5 2/2] bnxt_en: implement callbacks for devlink selftests
-Date:   Fri, 22 Jul 2022 14:41:29 +0530
-Message-Id: <20220722091129.2271-3-vikas.gupta@broadcom.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220722091129.2271-1-vikas.gupta@broadcom.com>
-References: <20220722091129.2271-1-vikas.gupta@broadcom.com>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000cb5e4b05e46139ba"
+        Fri, 22 Jul 2022 05:17:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F4EB5C81;
+        Fri, 22 Jul 2022 02:12:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D091661F76;
+        Fri, 22 Jul 2022 09:12:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D97AAC341C6;
+        Fri, 22 Jul 2022 09:12:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658481139;
+        bh=vDND9sgTLLOXSi8cK5qGpOrlqS641b4ivwKRFScXYUY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=qnnpznYBd+LeIauBI1O+x5GcrbmRhro1egP+86YviGeKytr6utIjjEABjxKE1ofiF
+         whOaz+woSoG2aXcX6TJQW2pj9HIXV6cR0rds4+grbaMzjpT8anIyKOPhFWctpgxYpM
+         n4cYiu3JCAg7mUbPyXxgDcJljpEY7+dwhVcWlzlI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Lai Jiangshan <jiangshan.ljs@antgroup.com>,
+        Borislav Petkov <bp@suse.de>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Subject: [PATCH 5.15 01/89] x86/traps: Use pt_regs directly in fixup_bad_iret()
+Date:   Fri, 22 Jul 2022 11:10:35 +0200
+Message-Id: <20220722091133.444699028@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220722091133.320803732@linuxfoundation.org>
+References: <20220722091133.320803732@linuxfoundation.org>
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---000000000000cb5e4b05e46139ba
+From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 
-Add callbacks
-=============
-.selftest_check: returns true for flash selftest.
-.selftest_run: runs a flash selftest.
+commit 0aca53c6b522f8d6e2681ca875acbbe105f5fdcf upstream.
 
-Also, refactor NVM APIs so that they can be
-used with devlink and ethtool both.
+Always stash the address error_entry() is going to return to, in %r12
+and get rid of the void *error_entry_ret; slot in struct bad_iret_stack
+which was supposed to account for it and pt_regs pushed on the stack.
 
-Signed-off-by: Vikas Gupta <vikas.gupta@broadcom.com>
-Reviewed-by: Michael Chan <michael.chan@broadcom.com>
-Reviewed-by: Andy Gospodarek <andrew.gospodarek@broadcom.com>
+After this, both fixup_bad_iret() and sync_regs() can work on a struct
+pt_regs pointer directly.
+
+  [ bp: Rewrite commit message, touch ups. ]
+
+Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20220503032107.680190-2-jiangshanlai@gmail.com
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../net/ethernet/broadcom/bnxt/bnxt_devlink.c | 61 +++++++++++++++++++
- .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 24 ++++----
- .../net/ethernet/broadcom/bnxt/bnxt_ethtool.h | 12 ++++
- 3 files changed, 85 insertions(+), 12 deletions(-)
+ arch/x86/entry/entry_64.S    |    5 ++++-
+ arch/x86/include/asm/traps.h |    2 +-
+ arch/x86/kernel/traps.c      |   19 +++++++------------
+ 3 files changed, 12 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-index 6b3d4f4c2a75..27214fd1ee94 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
-@@ -20,6 +20,8 @@
- #include "bnxt_ulp.h"
- #include "bnxt_ptp.h"
- #include "bnxt_coredump.h"
-+#include "bnxt_nvm_defs.h"
-+#include "bnxt_ethtool.h"
+--- a/arch/x86/entry/entry_64.S
++++ b/arch/x86/entry/entry_64.S
+@@ -1041,9 +1041,12 @@ SYM_CODE_START_LOCAL(error_entry)
+ 	 * Pretend that the exception came from user mode: set up pt_regs
+ 	 * as if we faulted immediately after IRET.
+ 	 */
+-	mov	%rsp, %rdi
++	popq	%r12				/* save return addr in %12 */
++	movq	%rsp, %rdi			/* arg0 = pt_regs pointer */
+ 	call	fixup_bad_iret
+ 	mov	%rax, %rsp
++	ENCODE_FRAME_POINTER
++	pushq	%r12
+ 	jmp	.Lerror_entry_from_usermode_after_swapgs
+ SYM_CODE_END(error_entry)
  
- static void __bnxt_fw_recover(struct bnxt *bp)
- {
-@@ -610,6 +612,63 @@ static int bnxt_dl_reload_up(struct devlink *dl, enum devlink_reload_action acti
- 	return rc;
- }
- 
-+static bool bnxt_nvm_test(struct bnxt *bp, struct netlink_ext_ack *extack)
-+{
-+	u32 datalen;
-+	u16 index;
-+	u8 *buf;
-+
-+	if (bnxt_find_nvram_item(bp->dev, BNX_DIR_TYPE_VPD,
-+				 BNX_DIR_ORDINAL_FIRST, BNX_DIR_EXT_NONE,
-+				 &index, NULL, &datalen) || !datalen) {
-+		NL_SET_ERR_MSG_MOD(extack, "nvm test vpd entry error");
-+		return false;
-+	}
-+
-+	buf = kzalloc(datalen, GFP_KERNEL);
-+	if (!buf) {
-+		NL_SET_ERR_MSG_MOD(extack, "insufficient memory for nvm test");
-+		return false;
-+	}
-+
-+	if (bnxt_get_nvram_item(bp->dev, index, 0, datalen, buf)) {
-+		NL_SET_ERR_MSG_MOD(extack, "nvm test vpd read error");
-+		goto err;
-+	}
-+
-+	if (bnxt_flash_nvram(bp->dev, BNX_DIR_TYPE_VPD, BNX_DIR_ORDINAL_FIRST,
-+			     BNX_DIR_EXT_NONE, 0, 0, buf, datalen)) {
-+		NL_SET_ERR_MSG_MOD(extack, "nvm test vpd write error");
-+		goto err;
-+	}
-+
-+	return true;
-+
-+err:
-+	kfree(buf);
-+	return false;
-+}
-+
-+static bool bnxt_dl_selftest_check(struct devlink *dl, unsigned int test_id,
-+				   struct netlink_ext_ack *extack)
-+{
-+	return test_id == DEVLINK_ATTR_SELFTEST_TEST_ID_FLASH;
-+}
-+
-+static enum devlink_selftest_test_status bnxt_dl_selftest_run(struct devlink *dl,
-+							      unsigned int test_id,
-+							      struct netlink_ext_ack *extack)
-+{
-+	struct bnxt *bp = bnxt_get_bp_from_dl(dl);
-+
-+	if (test_id == DEVLINK_ATTR_SELFTEST_TEST_ID_FLASH)
-+		return bnxt_nvm_test(bp, extack) ?
-+				DEVLINK_SELFTEST_TEST_STATUS_PASS :
-+				DEVLINK_SELFTEST_TEST_STATUS_FAIL;
-+
-+	return DEVLINK_SELFTEST_TEST_STATUS_SKIP;
-+}
-+
- static const struct devlink_ops bnxt_dl_ops = {
- #ifdef CONFIG_BNXT_SRIOV
- 	.eswitch_mode_set = bnxt_dl_eswitch_mode_set,
-@@ -622,6 +681,8 @@ static const struct devlink_ops bnxt_dl_ops = {
- 	.reload_limits	  = BIT(DEVLINK_RELOAD_LIMIT_NO_RESET),
- 	.reload_down	  = bnxt_dl_reload_down,
- 	.reload_up	  = bnxt_dl_reload_up,
-+	.selftest_check	  = bnxt_dl_selftest_check,
-+	.selftest_run	  = bnxt_dl_selftest_run,
- };
- 
- static const struct devlink_ops bnxt_vf_dl_ops;
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index 7191e5d74208..87eb5362ad70 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -2176,14 +2176,14 @@ static void bnxt_print_admin_err(struct bnxt *bp)
- 	netdev_info(bp->dev, "PF does not have admin privileges to flash or reset the device\n");
- }
- 
--static int bnxt_find_nvram_item(struct net_device *dev, u16 type, u16 ordinal,
--				u16 ext, u16 *index, u32 *item_length,
--				u32 *data_length);
-+int bnxt_find_nvram_item(struct net_device *dev, u16 type, u16 ordinal,
-+			 u16 ext, u16 *index, u32 *item_length,
-+			 u32 *data_length);
- 
--static int bnxt_flash_nvram(struct net_device *dev, u16 dir_type,
--			    u16 dir_ordinal, u16 dir_ext, u16 dir_attr,
--			    u32 dir_item_len, const u8 *data,
--			    size_t data_len)
-+int bnxt_flash_nvram(struct net_device *dev, u16 dir_type,
-+		     u16 dir_ordinal, u16 dir_ext, u16 dir_attr,
-+		     u32 dir_item_len, const u8 *data,
-+		     size_t data_len)
- {
- 	struct bnxt *bp = netdev_priv(dev);
- 	struct hwrm_nvm_write_input *req;
-@@ -2836,8 +2836,8 @@ static int bnxt_get_nvram_directory(struct net_device *dev, u32 len, u8 *data)
- 	return rc;
- }
- 
--static int bnxt_get_nvram_item(struct net_device *dev, u32 index, u32 offset,
--			       u32 length, u8 *data)
-+int bnxt_get_nvram_item(struct net_device *dev, u32 index, u32 offset,
-+			u32 length, u8 *data)
- {
- 	struct bnxt *bp = netdev_priv(dev);
- 	int rc;
-@@ -2871,9 +2871,9 @@ static int bnxt_get_nvram_item(struct net_device *dev, u32 index, u32 offset,
- 	return rc;
- }
- 
--static int bnxt_find_nvram_item(struct net_device *dev, u16 type, u16 ordinal,
--				u16 ext, u16 *index, u32 *item_length,
--				u32 *data_length)
-+int bnxt_find_nvram_item(struct net_device *dev, u16 type, u16 ordinal,
-+			 u16 ext, u16 *index, u32 *item_length,
-+			 u32 *data_length)
- {
- 	struct hwrm_nvm_find_dir_entry_output *output;
- 	struct hwrm_nvm_find_dir_entry_input *req;
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h
-index a59284215e78..a8ecef8ab82c 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h
-@@ -58,5 +58,17 @@ int bnxt_flash_package_from_fw_obj(struct net_device *dev, const struct firmware
- int bnxt_get_pkginfo(struct net_device *dev, char *ver, int size);
- void bnxt_ethtool_init(struct bnxt *bp);
- void bnxt_ethtool_free(struct bnxt *bp);
-+int bnxt_find_nvram_item(struct net_device *dev, u16 type, u16 ordinal,
-+			 u16 ext, u16 *index, u32 *item_length,
-+			 u32 *data_length);
-+int bnxt_find_nvram_item(struct net_device *dev, u16 type, u16 ordinal,
-+			 u16 ext, u16 *index, u32 *item_length,
-+			 u32 *data_length);
-+int bnxt_flash_nvram(struct net_device *dev, u16 dir_type,
-+		     u16 dir_ordinal, u16 dir_ext, u16 dir_attr,
-+		     u32 dir_item_len, const u8 *data,
-+		     size_t data_len);
-+int bnxt_get_nvram_item(struct net_device *dev, u32 index, u32 offset,
-+			u32 length, u8 *data);
- 
+--- a/arch/x86/include/asm/traps.h
++++ b/arch/x86/include/asm/traps.h
+@@ -13,7 +13,7 @@
+ #ifdef CONFIG_X86_64
+ asmlinkage __visible notrace struct pt_regs *sync_regs(struct pt_regs *eregs);
+ asmlinkage __visible notrace
+-struct bad_iret_stack *fixup_bad_iret(struct bad_iret_stack *s);
++struct pt_regs *fixup_bad_iret(struct pt_regs *bad_regs);
+ void __init trap_init(void);
+ asmlinkage __visible noinstr struct pt_regs *vc_switch_off_ist(struct pt_regs *eregs);
  #endif
--- 
-2.31.1
+--- a/arch/x86/kernel/traps.c
++++ b/arch/x86/kernel/traps.c
+@@ -762,14 +762,10 @@ sync:
+ }
+ #endif
+ 
+-struct bad_iret_stack {
+-	void *error_entry_ret;
+-	struct pt_regs regs;
+-};
+-
+-asmlinkage __visible noinstr
+-struct bad_iret_stack *fixup_bad_iret(struct bad_iret_stack *s)
++asmlinkage __visible noinstr struct pt_regs *fixup_bad_iret(struct pt_regs *bad_regs)
+ {
++	struct pt_regs tmp, *new_stack;
++
+ 	/*
+ 	 * This is called from entry_64.S early in handling a fault
+ 	 * caused by a bad iret to user mode.  To handle the fault
+@@ -778,19 +774,18 @@ struct bad_iret_stack *fixup_bad_iret(st
+ 	 * just below the IRET frame) and we want to pretend that the
+ 	 * exception came from the IRET target.
+ 	 */
+-	struct bad_iret_stack tmp, *new_stack =
+-		(struct bad_iret_stack *)__this_cpu_read(cpu_tss_rw.x86_tss.sp0) - 1;
++	new_stack = (struct pt_regs *)__this_cpu_read(cpu_tss_rw.x86_tss.sp0) - 1;
+ 
+ 	/* Copy the IRET target to the temporary storage. */
+-	__memcpy(&tmp.regs.ip, (void *)s->regs.sp, 5*8);
++	__memcpy(&tmp.ip, (void *)bad_regs->sp, 5*8);
+ 
+ 	/* Copy the remainder of the stack from the current stack. */
+-	__memcpy(&tmp, s, offsetof(struct bad_iret_stack, regs.ip));
++	__memcpy(&tmp, bad_regs, offsetof(struct pt_regs, ip));
+ 
+ 	/* Update the entry stack */
+ 	__memcpy(new_stack, &tmp, sizeof(tmp));
+ 
+-	BUG_ON(!user_mode(&new_stack->regs));
++	BUG_ON(!user_mode(new_stack));
+ 	return new_stack;
+ }
+ #endif
 
 
---000000000000cb5e4b05e46139ba
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-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
-I7qKxvF8Yo7eGTnHRTa99J+6yTd88AKVuhM5TEhpC8cS7qvrQXJje+Uing2xWC4FH76LEWIFH0Pt
-x8C1WoCU0ClXHU/XfzH2mYrFANBSCeP1Co6QdEfRAgMBAAGjggHZMIIB1TAOBgNVHQ8BAf8EBAMC
-BaAwgaMGCCsGAQUFBwEBBIGWMIGTME4GCCsGAQUFBzAChkJodHRwOi8vc2VjdXJlLmdsb2JhbHNp
-Z24uY29tL2NhY2VydC9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcnQwQQYIKwYBBQUHMAGG
-NWh0dHA6Ly9vY3NwLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwME0G
-A1UdIARGMEQwQgYKKwYBBAGgMgEoCjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3dy5nbG9iYWxz
-aWduLmNvbS9yZXBvc2l0b3J5LzAJBgNVHRMEAjAAMEkGA1UdHwRCMEAwPqA8oDqGOGh0dHA6Ly9j
-cmwuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3JsMCMGA1UdEQQc
-MBqBGHZpa2FzLmd1cHRhQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNVHSME
-GDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUUc6J11rH3s6PyZQ0zIVZHIuP20Yw
-DQYJKoZIhvcNAQELBQADggEBALvCjXn9gy9a2nU/Ey0nphGZefIP33ggiyuKnmqwBt7Wk/uDHIIc
-kkIlqtTbo0x0PqphS9A23CxCDjKqZq2WN34fL5MMW83nrK0vqnPloCaxy9/6yuLbottBY4STNuvA
-mQ//Whh+PE+DZadqiDbxXbos3IH8AeFXH4A1zIqIrc0Um2/CSD/T6pvu9QrchtvemfP0z/f1Bk+8
-QbQ4ARVP93WV1I13US69evWXw+mOv9VnejShU9PMcDK203xjXbBOi9Hm+fthrWfwIyGoC5aEf7vd
-PKkEDt4VZ9RbudZU/c3N8+kURaHNtrvu2K+mQs5w/AF7HYZThqmOzQJnvMRjuL8xggJtMIICaQIB
-ATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhH
-bG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwYjepatB64S625eswwDQYJ
-YIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIF3Ns1+C0TMCK2i4Z8FtBNupyBr0jMl2KYxv
-TxWZ6URlMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDcyMjA5
-MTE1NlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCGSAFl
-AwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQCATAN
-BgkqhkiG9w0BAQEFAASCAQAhYMZfr2amd1xqRio6zcx2trr0417QuIIFXqMpm+CTysb5nu+WJza5
-CuNnk13XHg+U/xvOUSlB5HUqCoh9ZsGM57aZlMe940A+elLPtnNusY+vaj2okJZibA0CCW/jt5lP
-bSYy4TT21NXh5xBC0IA9OR3gMyRcPo2Vf+YSPA6m6WONVP7vDT5MG0tYeuKJFXAa7wCVN3UYg4QO
-S5SuD6kl0VjmGr2LYs7nyMFbjB30hf2Z3PzhVBFWAYT5J6zXwWwWtDXyO3g6fm/eK7nPf8WwhYsW
-DsE2uck4J4kfTwU0TGFBKoMVajUnDPsU1pc2BudwPdsqDVGF5g14O+z91h+M
---000000000000cb5e4b05e46139ba--
