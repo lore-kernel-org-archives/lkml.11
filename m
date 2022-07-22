@@ -2,69 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A962C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 13:53:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5965CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 13:58:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231603AbiGVNxT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 09:53:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60470 "EHLO
+        id S235166AbiGVN6k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 09:58:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232566AbiGVNxP (ORCPT
+        with ESMTP id S234088AbiGVN6g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 09:53:15 -0400
-Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 323CB80F64
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 06:53:14 -0700 (PDT)
-Received: by mail-il1-f198.google.com with SMTP id z2-20020a056e02088200b002dc4022c15fso2810245ils.11
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 06:53:14 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=e9QsGOMfJtRjs9xn7OnAMOPYeDLRMxg6fBr0BlAh6yA=;
-        b=zsb8fUD9qF9GFvUdtiOawKxuoVPZ9zbHnQLN2XWBaH3w+31aDMAxl3IAnABEJBxmkO
-         ONQXB7KvmoDKR0k42SIvbtOmqKzZmmRJizZSNTFojVGg3s89pjIK537+wnaYv5SD1wSW
-         Wujh9GRQh28YSDHk5W9MCB3kmEebzzdL0g7CteokqT6VC05n4oYfC8VRbfiVvAkctzfq
-         9PL+QgxgYu6cOBSGFiYWJRZBZRhHlkPfxFqorXDnasyXqQokFWxdwxXGmLWlhFzhD5a/
-         lHvgso88lmkR8+vu9wwyKhJBSH9q8P62sKf9B+sN/LtZGF98+SN3KiTfUDgYCcpoJ63F
-         N7mw==
-X-Gm-Message-State: AJIora81fVHaEI8roaRs6OdnpEy0Wqv+nHAPuCSy4ggH91sxxJrgYaJy
-        Vwjtjz+o5heFxDR98yKLxPvMxoHsAwRG+KmmFDxB3dVIoiDK
-X-Google-Smtp-Source: AGRyM1vnMFC2YTSrBmwzM/i9nVw8aEOIrMrKgsN8YNh4zNF01tNWEEugq2MEE+uAN0TAHNE5NcuXctAbSAsdWJkv72ECuIX+hqJv
+        Fri, 22 Jul 2022 09:58:36 -0400
+Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 901148FD55;
+        Fri, 22 Jul 2022 06:58:35 -0700 (PDT)
+Received: from cwcc.thunk.org (pool-173-48-118-63.bstnma.fios.verizon.net [173.48.118.63])
+        (authenticated bits=0)
+        (User authenticated as tytso@ATHENA.MIT.EDU)
+        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 26MDwTuC016765
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 22 Jul 2022 09:58:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mit.edu; s=outgoing;
+        t=1658498311; bh=UGllnM1+v0SMLCV2Bs00x1y7zCVsfON5mZ1JEIRM1CY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=a+LlJKGbyjxpQqu195g26HgoivBvVhSZbc39y931bM0urfYII1DqoW0HgzYltXjdn
+         PPC5ZY6P1/qoFRKQfc8KaDMCdZ1SYpfGXYJmU/GgGA0B7Mg+A/R+oWE6w3bCQ9vWBc
+         70eEy0rQNbUHik/6Glupz7KSLVPyPS+DcX3jIXy46BexbPc6Gu89U2k5XUJNOvTPPo
+         qxUqhqB6Iutl4VYB8nNjj6BoDfOKN2zaH//c7QwJd0mZdNvlvEPesXbUM/lB6XzLuC
+         AOhR1c9eQQbF2YHrNfdrlLf1FbGfBwcbsJQsM6q5Q8izJ4aLEDi7SoYFL1kDZtTMV/
+         ysTtXe/EfW/QA==
+Received: by cwcc.thunk.org (Postfix, from userid 15806)
+        id 768B115C3F06; Fri, 22 Jul 2022 09:58:27 -0400 (EDT)
+From:   "Theodore Ts'o" <tytso@mit.edu>
+To:     ojaswin@linux.ibm.com, linux-ext4@vger.kernel.org
+Cc:     "Theodore Ts'o" <tytso@mit.edu>, linux-kernel@vger.kernel.org,
+        riteshh@linux.ibm.com, linux-fsdevel@vger.kernel.org
+Subject: Re: [PATCH] ext4: Reflect mb_optimize_scan value in options file
+Date:   Fri, 22 Jul 2022 09:58:20 -0400
+Message-Id: <165849767595.303416.6878521506996536850.b4-ty@mit.edu>
+X-Mailer: git-send-email 2.31.0
+In-Reply-To: <20220704054603.21462-1-ojaswin@linux.ibm.com>
+References: <20220704054603.21462-1-ojaswin@linux.ibm.com>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6638:1513:b0:33f:6c7c:5cd4 with SMTP id
- b19-20020a056638151300b0033f6c7c5cd4mr47032jat.279.1658497993592; Fri, 22 Jul
- 2022 06:53:13 -0700 (PDT)
-Date:   Fri, 22 Jul 2022 06:53:13 -0700
-In-Reply-To: <5843755.lOV4Wx5bFT@opensuse>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000c4d6ac05e465277a@google.com>
-Subject: Re: [syzbot] INFO: task hung in __input_unregister_device (4)
-From:   syzbot <syzbot+deb6abc36aad4008f407@syzkaller.appspotmail.com>
-To:     dmitry.torokhov@gmail.com, fmdefrancesco@gmail.com,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org, penguin-kernel@i-love.sakura.ne.jp,
-        rydberg@bitmath.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On Mon, 4 Jul 2022 11:16:03 +0530, Ojaswin Mujoo wrote:
+> Add support to display the mb_optimize_scan value in
+> /proc/fs/ext4/<dev>/options file. The option is only
+> displayed when the value is non default.
+> 
+> 
 
-syzbot has tested the proposed patch and the reproducer did not trigger any issue:
+Applied, thanks!
 
-Reported-and-tested-by: syzbot+deb6abc36aad4008f407@syzkaller.appspotmail.com
+[1/1] ext4: Reflect mb_optimize_scan value in options file
+      commit: 961edf078b5606ce480ae2ebdac64ca829ea3f75
 
-Tested on:
-
-commit:         32f02a21 Revert "platform/chrome: Add Type-C mux set c..
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/usb.git usb-testing
-console output: https://syzkaller.appspot.com/x/log.txt?x=120269d6080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=8be12c1e07a193d9
-dashboard link: https://syzkaller.appspot.com/bug?extid=deb6abc36aad4008f407
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=1141355e080000
-
-Note: testing is done by a robot and is best-effort only.
+Best regards,
+-- 
+Theodore Ts'o <tytso@mit.edu>
