@@ -2,80 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0741C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 10:19:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0DCAC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 10:20:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231732AbiGVKTN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 06:19:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52840 "EHLO
+        id S233586AbiGVKUU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 06:20:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234195AbiGVKTJ (ORCPT
+        with ESMTP id S229980AbiGVKUR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 06:19:09 -0400
-X-Greylist: delayed 487 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 22 Jul 2022 03:19:06 PDT
-Received: from mail-out.m-online.net (mail-out.m-online.net [212.18.0.9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C3987B1C5
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 03:19:06 -0700 (PDT)
-Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 4Lq4vg2j6Kz1r0nJ;
-        Fri, 22 Jul 2022 12:10:54 +0200 (CEST)
-Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 4Lq4vf4FwVz1qqkp;
-        Fri, 22 Jul 2022 12:10:54 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at mnet-online.de
-Received: from mail.mnet-online.de ([192.168.8.182])
-        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id rbkTNUbe7Ccr; Fri, 22 Jul 2022 12:10:53 +0200 (CEST)
-X-Auth-Info: 5V4d3Fnr8BDMPb3jkQu0EDJRSLyYFrjOv2Xdf5FYdjjFzWdHQsnOnSqJzPDYV4V9
-Received: from igel.home (ppp-46-244-169-212.dynamic.mnet-online.de [46.244.169.212])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Fri, 22 Jul 2022 12:10:53 +0200 (CEST)
-Received: by igel.home (Postfix, from userid 1000)
-        id 6F9AD2C3A72; Fri, 22 Jul 2022 12:10:52 +0200 (CEST)
-From:   Andreas Schwab <schwab@linux-m68k.org>
-To:     Xianting Tian <xianting.tian@linux.alibaba.com>
-Cc:     paul.walmsley@sifive.com, palmer@dabbelt.com,
-        aou@eecs.berkeley.edu, anup@brainfault.org, heiko@sntech.de,
-        guoren@kernel.org, mick@ics.forth.gr,
-        alexandre.ghiti@canonical.com, linux-riscv@lists.infradead.org,
-        linux-kernel@vger.kernel.org, crash-utility@redhat.com,
-        huanyi.xj@alibaba-inc.com, heinrich.schuchardt@canonical.com,
-        k-hagio-ab@nec.com, hschauhan@nulltrace.org
-Subject: Re: [PATCH 4/5] riscv: Add modules to virtual kernel memory layout
- dump
-References: <20220717101323.370245-1-xianting.tian@linux.alibaba.com>
-        <20220717101323.370245-5-xianting.tian@linux.alibaba.com>
-X-Yow:  You must be a CUB SCOUT!!  Have you made your MONEY-DROP today??
-Date:   Fri, 22 Jul 2022 12:10:52 +0200
-In-Reply-To: <20220717101323.370245-5-xianting.tian@linux.alibaba.com>
-        (Xianting Tian's message of "Sun, 17 Jul 2022 18:13:22 +0800")
-Message-ID: <87wnc5xxsj.fsf@igel.home>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.1.90 (gnu/linux)
+        Fri, 22 Jul 2022 06:20:17 -0400
+Received: from mail-m974.mail.163.com (mail-m974.mail.163.com [123.126.97.4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E4E3DDF4D
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 03:20:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=THWpc
+        7mp5zOgTdKtgaYC/1Yv1hebLAaDdItjTt4a1j0=; b=Xk/YZ1e99HF1wy1oudrQn
+        7leLFv7hxVc9Vc+QC4pqNhGtIVueLVh40cXY8P0Xa8mIzgrp3X7TTZ616EJCXBUn
+        FxloW2fDn3bIGEFQR9vD+aaQLH3Sh9EcclefTkZhlUXizlr3HTVW75hmsu9q/mmk
+        kAUrLmdNXVhOQo4tYcEOhY=
+Received: from localhost.localdomain (unknown [112.97.59.29])
+        by smtp4 (Coremail) with SMTP id HNxpCgAHRnatedpiaF6GQA--.23969S2;
+        Fri, 22 Jul 2022 18:19:27 +0800 (CST)
+From:   Slark Xiao <slark_xiao@163.com>
+To:     herberthbli@tencent.com, herbert@gondor.apana.org.au,
+        akpm@linux-foundation.org
+Cc:     linux-kernel@vger.kernel.org, Slark Xiao <slark_xiao@163.com>
+Subject: [PATCH] lib/mpi: Fix typo 'the the' in comment
+Date:   Fri, 22 Jul 2022 18:19:22 +0800
+Message-Id: <20220722101922.81126-1-slark_xiao@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: HNxpCgAHRnatedpiaF6GQA--.23969S2
+X-Coremail-Antispam: 1Uf129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
+        VFW2AGmfu7bjvjm3AaLaJ3UbIYCTnIWIevJa73UjIFyTuYvjTRqfOrUUUUU
+X-Originating-IP: [112.97.59.29]
+X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/xtbCdQ9GZGBbEb3UkgAAsJ
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Jul 17 2022, Xianting Tian wrote:
+Replace 'the the' with 'the' in the comment.
 
-> diff --git a/arch/riscv/mm/init.c b/arch/riscv/mm/init.c
-> index d466ec670e1f..2c4a64e97aec 100644
-> --- a/arch/riscv/mm/init.c
-> +++ b/arch/riscv/mm/init.c
-> @@ -135,6 +135,10 @@ static void __init print_vm_layout(void)
->  		(unsigned long)VMEMMAP_END);
->  	print_ml("vmalloc", (unsigned long)VMALLOC_START,
->  		(unsigned long)VMALLOC_END);
-> +#ifdef CONFIG_64BIT
-> +	print_ml("modules", (unsigned long)MODULES_VADDR,
-> +		(unsigned long)MODULES_END);
+Signed-off-by: Slark Xiao <slark_xiao@163.com>
+---
+ lib/mpi/mpiutil.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-#ifdef MODULES_VADDR ?
-
+diff --git a/lib/mpi/mpiutil.c b/lib/mpi/mpiutil.c
+index bc81419f400c..aa8c46544af8 100644
+--- a/lib/mpi/mpiutil.c
++++ b/lib/mpi/mpiutil.c
+@@ -272,7 +272,7 @@ MPI mpi_set_ui(MPI w, unsigned long u)
+ 	if (!w)
+ 		w = mpi_alloc(1);
+ 	/* FIXME: If U is 0 we have no need to resize and thus possible
+-	 * allocating the the limbs.
++	 * allocating the limbs.
+ 	 */
+ 	RESIZE_IF_NEEDED(w, 1);
+ 	w->d[0] = u;
 -- 
-Andreas Schwab, schwab@linux-m68k.org
-GPG Key fingerprint = 7578 EB47 D4E5 4D69 2510  2552 DF73 E780 A9DA AEC1
-"And now for something completely different."
+2.25.1
+
