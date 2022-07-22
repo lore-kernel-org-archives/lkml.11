@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24F61C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:15:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89A1EC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:15:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235620AbiGVJPT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 05:15:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50854 "EHLO
+        id S235547AbiGVJPf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 05:15:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235087AbiGVJOP (ORCPT
+        with ESMTP id S235302AbiGVJOl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 05:14:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DFACA8776;
-        Fri, 22 Jul 2022 02:11:06 -0700 (PDT)
+        Fri, 22 Jul 2022 05:14:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 433A8AF956;
+        Fri, 22 Jul 2022 02:11:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A24561E86;
-        Fri, 22 Jul 2022 09:11:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DE4EC341D9;
-        Fri, 22 Jul 2022 09:11:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 41E62B827C3;
+        Fri, 22 Jul 2022 09:11:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56462C341DC;
+        Fri, 22 Jul 2022 09:11:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658481065;
-        bh=Db31GERbbkoPzIxNMiIP982nUk5vWgFinkKHad116yg=;
+        s=korg; t=1658481071;
+        bh=IMBauOzRcMqflAMWHJK1bvStaZi2h2zPr/j55SL9i+A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zwmhMR3t+cAB5/OAAi5eL19ZD184rWOlOXJH1MmFCZbuWI+henaZeNmnz4CCw0RK5
-         BmmYBFEB/PDAqKIO1+ME/KjQ7K5WL3/WyoFUFtMX195BDnSEyU3fy0ztCPgMA+pC7X
-         7zoxjs1kL0sM0qhCL4I3miwkSEaBBPBPv5+eboA8=
+        b=Jm0lW8mhBeSwOStvFpG523JkClQCwXe0Rf/0IefcQLS053+XTb2teVEurINldOeaH
+         srdDBLGF4sw5AB9uZsZS57H6zGFgICLcthLnT6zC3+0sbhqr7e1i51Dg6VltWx7dvf
+         egEBu574gx4+dq/RbqPLBOxgaRUD95Y3zf6nJfIo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.18 57/70] x86/entry: Move PUSH_AND_CLEAR_REGS() back into error_entry
-Date:   Fri, 22 Jul 2022 11:07:52 +0200
-Message-Id: <20220722090653.975426411@linuxfoundation.org>
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        Borislav Petkov <bp@suse.de>, Ian Rogers <irogers@google.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.18 67/70] tools arch x86: Sync the msr-index.h copy with the kernel sources
+Date:   Fri, 22 Jul 2022 11:08:02 +0200
+Message-Id: <20220722090654.722619083@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220722090650.665513668@linuxfoundation.org>
 References: <20220722090650.665513668@linuxfoundation.org>
@@ -50,72 +53,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Arnaldo Carvalho de Melo <acme@redhat.com>
 
-commit 2c08b9b38f5b0f4a6c2d29be22b695e4ec4a556b upstream.
+commit 91d248c3b903b46a58cbc7e8d38d684d3e4007c2 upstream.
 
-Commit
+To pick up the changes from these csets:
 
-  ee774dac0da1 ("x86/entry: Move PUSH_AND_CLEAR_REGS out of error_entry()")
+  4ad3278df6fe2b08 ("x86/speculation: Disable RRSBA behavior")
+  d7caac991feeef1b ("x86/cpu/amd: Add Spectral Chicken")
 
-moved PUSH_AND_CLEAR_REGS out of error_entry, into its own function, in
-part to avoid calling error_entry() for XenPV.
+That cause no changes to tooling:
 
-However, commit
+  $ tools/perf/trace/beauty/tracepoints/x86_msr.sh > before
+  $ cp arch/x86/include/asm/msr-index.h tools/arch/x86/include/asm/msr-index.h
+  $ tools/perf/trace/beauty/tracepoints/x86_msr.sh > after
+  $ diff -u before after
+  $
 
-  7c81c0c9210c ("x86/entry: Avoid very early RET")
+Just silences this perf build warning:
 
-had to change that because the 'ret' was too early and moved it into
-idtentry, bloating the text size, since idtentry is expanded for every
-exception vector.
+  Warning: Kernel ABI header at 'tools/arch/x86/include/asm/msr-index.h' differs from latest version at 'arch/x86/include/asm/msr-index.h'
+  diff -u tools/arch/x86/include/asm/msr-index.h arch/x86/include/asm/msr-index.h
 
-However, with the advent of xen_error_entry() in commit
-
-  d147553b64bad ("x86/xen: Add UNTRAIN_RET")
-
-it became possible to remove PUSH_AND_CLEAR_REGS from idtentry, back
-into *error_entry().
-
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-[cascardo: error_entry still does cld]
-Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Borislav Petkov <bp@suse.de>
+Cc: Ian Rogers <irogers@google.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Link: https://lore.kernel.org/lkml/YtQTm9wsB3hxQWvy@kernel.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/entry/entry_64.S |    9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ tools/arch/x86/include/asm/msr-index.h |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/arch/x86/entry/entry_64.S
-+++ b/arch/x86/entry/entry_64.S
-@@ -323,6 +323,8 @@ SYM_CODE_END(ret_from_fork)
+--- a/tools/arch/x86/include/asm/msr-index.h
++++ b/tools/arch/x86/include/asm/msr-index.h
+@@ -93,6 +93,7 @@
+ #define MSR_IA32_ARCH_CAPABILITIES	0x0000010a
+ #define ARCH_CAP_RDCL_NO		BIT(0)	/* Not susceptible to Meltdown */
+ #define ARCH_CAP_IBRS_ALL		BIT(1)	/* Enhanced IBRS support */
++#define ARCH_CAP_RSBA			BIT(2)	/* RET may use alternative branch predictors */
+ #define ARCH_CAP_SKIP_VMENTRY_L1DFLUSH	BIT(3)	/* Skip L1D flush on vmentry */
+ #define ARCH_CAP_SSB_NO			BIT(4)	/*
+ 						 * Not susceptible to Speculative Store Bypass
+@@ -561,6 +562,9 @@
+ /* Fam 17h MSRs */
+ #define MSR_F17H_IRPERF			0xc00000e9
  
- SYM_CODE_START_LOCAL(xen_error_entry)
- 	UNWIND_HINT_FUNC
-+	PUSH_AND_CLEAR_REGS save_ret=1
-+	ENCODE_FRAME_POINTER 8
- 	UNTRAIN_RET
- 	RET
- SYM_CODE_END(xen_error_entry)
-@@ -334,9 +336,6 @@ SYM_CODE_END(xen_error_entry)
-  */
- .macro idtentry_body cfunc has_error_code:req
- 
--	PUSH_AND_CLEAR_REGS
--	ENCODE_FRAME_POINTER
--
- 	/*
- 	 * Call error_entry() and switch to the task stack if from userspace.
- 	 *
-@@ -1035,6 +1034,10 @@ SYM_CODE_END(paranoid_exit)
- SYM_CODE_START_LOCAL(error_entry)
- 	UNWIND_HINT_FUNC
- 	cld
++#define MSR_ZEN2_SPECTRAL_CHICKEN	0xc00110e3
++#define MSR_ZEN2_SPECTRAL_CHICKEN_BIT	BIT_ULL(1)
 +
-+	PUSH_AND_CLEAR_REGS save_ret=1
-+	ENCODE_FRAME_POINTER 8
-+
- 	testb	$3, CS+8(%rsp)
- 	jz	.Lerror_kernelspace
- 
+ /* Fam 16h MSRs */
+ #define MSR_F16H_L2I_PERF_CTL		0xc0010230
+ #define MSR_F16H_L2I_PERF_CTR		0xc0010231
 
 
