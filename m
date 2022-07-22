@@ -2,151 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACE42C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:38:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62710C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:39:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236536AbiGVJit (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 05:38:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37196 "EHLO
+        id S234747AbiGVJjS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 05:39:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236443AbiGVJiN (ORCPT
+        with ESMTP id S236648AbiGVJi2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 05:38:13 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08CA6C9E66;
-        Fri, 22 Jul 2022 02:26:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1658482019; x=1690018019;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=MM1cMaFcLeUQ5sGlQpe1ZK4RujwLzQviZH7va91CasE=;
-  b=AV7x10IhewzTQpHSA5Wa9H+keCGUHlrYkWcWBMEoIP0lxVJCtcJ0b1eS
-   PsVH1XIVrtRb4Tryb6UPhkK/haS+7l3vBQBIJKSSdNRdNuUSOr3gZzIem
-   +8XbyLFie+820LaAPhkGHXt0fmOi6Y0vO0lky1a3vfSI9hOAlm4bNLI4C
-   Hyl7628Ujgd5aY/DLE2n/7Ttx+20ah+wYiSi4G8NB8Js5B37dJPXM6o++
-   bHdmB32I7JiiTjUH/7ImdGgXTqJ4ddmrXwn4vQFWE9aoFNb5MfuhHjZcl
-   qDfAk+Q6RNuNo3xcHaWcL+DBO1IB8ZH+/UVeH4zxVEwYPjr6NwVJ8sUj/
-   w==;
-X-IronPort-AV: E=Sophos;i="5.93,185,1654585200"; 
-   d="scan'208";a="173385095"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Jul 2022 02:26:58 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Fri, 22 Jul 2022 02:26:58 -0700
-Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Fri, 22 Jul 2022 02:26:53 -0700
-From:   Arun Ramadoss <arun.ramadoss@microchip.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Woojung Huh <woojung.huh@microchip.com>,
-        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "Arun Ramadoss" <arun.ramadoss@microchip.com>,
-        Russell King <linux@armlinux.org.uk>
-Subject: [Patch net-next v1 8/9] net: dsa: microchip: ksz8795: use common xmii function
-Date:   Fri, 22 Jul 2022 14:54:58 +0530
-Message-ID: <20220722092459.18653-9-arun.ramadoss@microchip.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220722092459.18653-1-arun.ramadoss@microchip.com>
-References: <20220722092459.18653-1-arun.ramadoss@microchip.com>
+        Fri, 22 Jul 2022 05:38:28 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F9EECA742
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 02:27:09 -0700 (PDT)
+Received: from localhost (unknown [188.24.146.105])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: cristicc)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 80F716601AC4;
+        Fri, 22 Jul 2022 10:27:07 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1658482027;
+        bh=bR415wpcpzInVOGQ1me2DQTG9wsahBgZxpUeugmZq4I=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Dk32ejNDLIMGxJmAmpNv5o5jh5RCm70WybaUz7EfJBzMHza2oj+KmRHJz/nKi78uE
+         cTa5+6j9fyTIbX+VW/PswFNWL0+BdX/kDsIL97uZzawV6zbziDJHVbbbSubW2UywLz
+         Z+A4X26aQsqqhJR/EundNctUzBO+kC8+M1ZiWmJkk6t85RhuTQnQ/5qHX5L/Pe+yZs
+         fxQk3obJzuXNEbLufIgoApAzz1MyWt8Kzpc2zUQOKwSA7HIK1/QUnq5dm6GOhNbE0+
+         cP/EmcsUMt2NC/BcfnwljwyYTl1ZSrWG8RJN9+2PgvGUzydUGrTpC5/rUul/mUUVcn
+         CkpK5sbJDJjVg==
+From:   Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+To:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>
+Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        kernel@collabora.com
+Subject: [PATCH v2] ASoC: amd: vangogh: Use non-legacy DAI naming for cs35l41
+Date:   Fri, 22 Jul 2022 12:27:00 +0300
+Message-Id: <20220722092700.8269-1-cristian.ciocaltea@collabora.com>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch updates the ksz8795 cpu configuration to use the ksz common
-xmii set functions.
+Unlike most CODEC drivers, the CS35L41 driver did not have the
+non_legacy_dai_naming set, meaning the corresponding DAI has been
+traditionally registered using the legacy naming: spi-VLV1776:0x
 
-Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+The recent migration to the new legacy DAI naming style has implicitly
+corrected that behavior and DAI gets now registered via the non-legacy
+naming, i.e. cs35l41-pcm.
+
+The problem is the acp5x platform driver is now broken as it continues
+to refer to the above mentioned codec using the legacy DAI naming in
+function acp5x_cs35l41_hw_params() and, therefore, the related setup
+is not being executed anymore.
+
+Let's fix that by replacing the obsolete DAI name with the correct one.
+
+Fixes: 129f055a2144 ("ASoC: core: Switch core to new DAI naming flag")
+Signed-off-by: Cristian Ciocaltea <cristian.ciocaltea@collabora.com>
+Reviewed-by: Charles Keepax <ckeepax@opensource.cirrus.com>
 ---
- drivers/net/dsa/microchip/ksz8795.c     | 35 +------------------------
- drivers/net/dsa/microchip/ksz8795_reg.h |  8 ------
- 2 files changed, 1 insertion(+), 42 deletions(-)
+Changes in v2:
+ - Corrected the SHA for the Fixes commit
+ - Added Reviewed-by tag from Charles
 
-diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
-index 911aace42284..8f807d8eace5 100644
---- a/drivers/net/dsa/microchip/ksz8795.c
-+++ b/drivers/net/dsa/microchip/ksz8795.c
-@@ -1116,7 +1116,6 @@ void ksz8_port_mirror_del(struct ksz_device *dev, int port,
- static void ksz8795_cpu_interface_select(struct ksz_device *dev, int port)
- {
- 	struct ksz_port *p = &dev->ports[port];
--	u8 data8;
- 
- 	if (!p->interface && dev->compat_interface) {
- 		dev_warn(dev->dev,
-@@ -1126,39 +1125,7 @@ static void ksz8795_cpu_interface_select(struct ksz_device *dev, int port)
- 		p->interface = dev->compat_interface;
- 	}
- 
--	/* Configure MII interface for proper network communication. */
--	ksz_read8(dev, REG_PORT_5_CTRL_6, &data8);
--	data8 &= ~PORT_INTERFACE_TYPE;
--	data8 &= ~PORT_GMII_1GPS_MODE;
--	switch (p->interface) {
--	case PHY_INTERFACE_MODE_MII:
--		p->phydev.speed = SPEED_100;
--		break;
--	case PHY_INTERFACE_MODE_RMII:
--		data8 |= PORT_INTERFACE_RMII;
--		p->phydev.speed = SPEED_100;
--		break;
--	case PHY_INTERFACE_MODE_GMII:
--		data8 |= PORT_GMII_1GPS_MODE;
--		data8 |= PORT_INTERFACE_GMII;
--		p->phydev.speed = SPEED_1000;
--		break;
--	default:
--		data8 &= ~PORT_RGMII_ID_IN_ENABLE;
--		data8 &= ~PORT_RGMII_ID_OUT_ENABLE;
--		if (p->interface == PHY_INTERFACE_MODE_RGMII_ID ||
--		    p->interface == PHY_INTERFACE_MODE_RGMII_RXID)
--			data8 |= PORT_RGMII_ID_IN_ENABLE;
--		if (p->interface == PHY_INTERFACE_MODE_RGMII_ID ||
--		    p->interface == PHY_INTERFACE_MODE_RGMII_TXID)
--			data8 |= PORT_RGMII_ID_OUT_ENABLE;
--		data8 |= PORT_GMII_1GPS_MODE;
--		data8 |= PORT_INTERFACE_RGMII;
--		p->phydev.speed = SPEED_1000;
--		break;
--	}
--	ksz_write8(dev, REG_PORT_5_CTRL_6, data8);
--	p->phydev.duplex = 1;
-+	ksz_set_xmii(dev, port, p->interface);
- }
- 
- void ksz8_port_setup(struct ksz_device *dev, int port, bool cpu_port)
-diff --git a/drivers/net/dsa/microchip/ksz8795_reg.h b/drivers/net/dsa/microchip/ksz8795_reg.h
-index a848eb4c54cb..77487d611824 100644
---- a/drivers/net/dsa/microchip/ksz8795_reg.h
-+++ b/drivers/net/dsa/microchip/ksz8795_reg.h
-@@ -170,15 +170,7 @@
- #define REG_PORT_5_CTRL_6		0x56
- 
- #define PORT_MII_INTERNAL_CLOCK		BIT(7)
--#define PORT_GMII_1GPS_MODE		BIT(6)
--#define PORT_RGMII_ID_IN_ENABLE		BIT(4)
--#define PORT_RGMII_ID_OUT_ENABLE	BIT(3)
- #define PORT_GMII_MAC_MODE		BIT(2)
--#define PORT_INTERFACE_TYPE		0x3
--#define PORT_INTERFACE_MII		0
--#define PORT_INTERFACE_RMII		1
--#define PORT_INTERFACE_GMII		2
--#define PORT_INTERFACE_RGMII		3
- 
- #define REG_PORT_1_CTRL_7		0x17
- #define REG_PORT_2_CTRL_7		0x27
--- 
-2.36.1
+ sound/soc/amd/vangogh/acp5x-mach.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
+diff --git a/sound/soc/amd/vangogh/acp5x-mach.c b/sound/soc/amd/vangogh/acp5x-mach.c
+index 727de46860b1..af3737ef9707 100644
+--- a/sound/soc/amd/vangogh/acp5x-mach.c
++++ b/sound/soc/amd/vangogh/acp5x-mach.c
+@@ -178,8 +178,7 @@ static int acp5x_cs35l41_hw_params(struct snd_pcm_substream *substream,
+ 	ret = 0;
+ 	for (i = 0; i < num_codecs; i++) {
+ 		codec_dai = asoc_rtd_to_codec(rtd, i);
+-		if ((strcmp(codec_dai->name, "spi-VLV1776:00") == 0) ||
+-		    (strcmp(codec_dai->name, "spi-VLV1776:01") == 0)) {
++		if (strcmp(codec_dai->name, "cs35l41-pcm") == 0) {
+ 			switch (params_rate(params)) {
+ 			case 48000:
+ 				bclk_val = 1536000;
+--
+2.37.1
