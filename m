@@ -2,56 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 906FAC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 03:08:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77385C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 03:11:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234215AbiGVDIR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 23:08:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36742 "EHLO
+        id S233582AbiGVDLK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 23:11:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229682AbiGVDIP (ORCPT
+        with ESMTP id S230367AbiGVDLG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 23:08:15 -0400
-Received: from zju.edu.cn (mail.zju.edu.cn [61.164.42.155])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 259C28C588;
-        Thu, 21 Jul 2022 20:08:13 -0700 (PDT)
-Received: by ajax-webmail-mail-app3 (Coremail) ; Fri, 22 Jul 2022 11:08:01
- +0800 (GMT+08:00)
-X-Originating-IP: [10.192.176.244]
-Date:   Fri, 22 Jul 2022 11:08:01 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   "Lin Ma" <linma@zju.edu.cn>
-To:     dongchun.zhu@mediatek.com, zhengsq@rock-chips.com,
-        mchehab@kernel.org, matthias.bgg@gmail.com,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH v0] media: i2c: fix the erroneous pointer initializer
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
- Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
-In-Reply-To: <20220722022459.5030-1-linma@zju.edu.cn>
-References: <20220722022459.5030-1-linma@zju.edu.cn>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        Thu, 21 Jul 2022 23:11:06 -0400
+Received: from m12-14.163.com (m12-14.163.com [220.181.12.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B47191BEBF;
+        Thu, 21 Jul 2022 20:11:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=6h2N+
+        wVtwTpvgrUCLikpNV+DWbwPlk278dYKE8sSdoQ=; b=Jl2x+vZS+vFEXKCwf+fd7
+        VPaMZJ5fNiPmCQawiebdcpPOMBwh2HZu2wQHc7oUotwMBJbXksFYFoGOIZBvVAW9
+        L5XerxDxbqjWWD3IbzGi/yscR2ouIhyd7G6vPnCqtsqweisrpLjxONQnnr9DGNqQ
+        n9kjBgz2aofgPmY1h1apV0=
+Received: from localhost.localdomain (unknown [123.58.221.99])
+        by smtp10 (Coremail) with SMTP id DsCowABXewT4FNpivduNOg--.631S2;
+        Fri, 22 Jul 2022 11:09:47 +0800 (CST)
+From:   williamsukatube@163.com
+To:     kabel@kernel.org, wim@linux-watchdog.org, linux@roeck-us.net,
+        linux-watchdog@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     William Dean <williamsukatube@gmail.com>,
+        Hacash Robot <hacashRobot@santino.com>
+Subject: [PATCH] watchdog: armada_37xx_wdt: check the return value of devm_ioremap() in armada_37xx_wdt_probe()
+Date:   Fri, 22 Jul 2022 11:09:38 +0800
+Message-Id: <20220722030938.2925156-1-williamsukatube@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Message-ID: <693a3b3e.519a0.18223e0575b.Coremail.linma@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: cC_KCgD3_6uSFNpiD7U3AQ--.18250W
-X-CM-SenderInfo: qtrwiiyqvtljo62m3hxhgxhubq/1tbiAwMTElNG3HhAaAACsa
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWUCw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: DsCowABXewT4FNpivduNOg--.631S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrtFWrZF1xWF4ftrW5Zr4kCrg_yoWDGrgEkr
+        W7A34xWrs2kr1jqw10qwsFv3409Fn0vF1DXw1rtFWfG3yxur47trWDZrn5W34UZaykGFy7
+        Jrn8ZF4Y9r13ujkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU5_pnPUUUUU==
+X-Originating-IP: [123.58.221.99]
+X-CM-SenderInfo: xzlozx5dpv3yxdwxuvi6rwjhhfrp/xtbBSRtGg1aEEOzvlQAAsD
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SGVsbG8gdGhlcmUsCgoKPiAKPiBUaGVyZSBhcmUgb2J2aW91cyBlcnJvcnMgZm9yIHRoZSBpbml0
-aWFsaXplciBvZiBvdjAyYTEwX2kyY19kcml2ZXIsCj4gb3YyNjgyX2kyY19kcml2ZXIsIGFuZCBv
-djU2OTVfaTJjX2RyaXZlciBhcyB0aGUgY29kZSBpbnRlbmRlZCB0byBhc3NpZ24KPiAiYWRkcmVz
-cyBvZiBmdW5jdGlvbiBwb2ludGVyIiB0byBmdW5jdGlvbiBwb2ludGVyLiBUaGlzIHBhdGNoIGZp
-eGVzIHRoZW0KPiBieSByZW1vdmluZyByZWR1bmRhbnQgJiBvcGVyYXRvcnMuCj4gCj4gU2lnbmVk
-LW9mZi1ieTogTGluIE1hIDxsaW5tYUB6anUuZWR1LmNuPgoKU29ycnkgYXMgdGhpcyBpcyBhIGZh
-bHNlIGFsYXJtIDooCkkganVzdCBnZXQgY29uZnVzZWQgYnkgdGhlIGZ1bmN0aW9uIHBvaW50ZXJz
-IGFuZCBmdW5jdGlvbiBhZGRyZXNzZXMgYW5kCnRoZSBvcmlnaW5hbCBjb2RlIHdvcmtzIGZpbmUu
-CgpSZWdhcmRzCkxpbg==
+From: William Dean <williamsukatube@gmail.com>
+
+The function devm_ioremap() in armada_37xx_wdt_probe() can fail, so
+its return value should be checked.
+
+Fixes: 54e3d9b518c8a ("watchdog: Add support for Armada 37xx CPU watchdog")
+Reported-by: Hacash Robot <hacashRobot@santino.com>
+Signed-off-by: William Dean <williamsukatube@gmail.com>
+---
+ drivers/watchdog/armada_37xx_wdt.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/watchdog/armada_37xx_wdt.c b/drivers/watchdog/armada_37xx_wdt.c
+index 1635f421ef2c..854b1cc723cb 100644
+--- a/drivers/watchdog/armada_37xx_wdt.c
++++ b/drivers/watchdog/armada_37xx_wdt.c
+@@ -274,6 +274,8 @@ static int armada_37xx_wdt_probe(struct platform_device *pdev)
+ 	if (!res)
+ 		return -ENODEV;
+ 	dev->reg = devm_ioremap(&pdev->dev, res->start, resource_size(res));
++	if (!dev->reg)
++		return -ENOMEM;
+ 
+ 	/* init clock */
+ 	dev->clk = devm_clk_get(&pdev->dev, NULL);
+-- 
+2.25.1
+
