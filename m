@@ -2,48 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 555D8C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:17:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 311D5C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:17:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235641AbiGVJRb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 05:17:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50278 "EHLO
+        id S235809AbiGVJRg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 05:17:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234844AbiGVJRS (ORCPT
+        with ESMTP id S235755AbiGVJRV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 05:17:18 -0400
+        Fri, 22 Jul 2022 05:17:21 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F4EB5C81;
-        Fri, 22 Jul 2022 02:12:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79065B5C8F;
+        Fri, 22 Jul 2022 02:12:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D091661F76;
-        Fri, 22 Jul 2022 09:12:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D97AAC341C6;
-        Fri, 22 Jul 2022 09:12:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B5CA561F4F;
+        Fri, 22 Jul 2022 09:12:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD42AC341C6;
+        Fri, 22 Jul 2022 09:12:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658481139;
-        bh=vDND9sgTLLOXSi8cK5qGpOrlqS641b4ivwKRFScXYUY=;
+        s=korg; t=1658481142;
+        bh=ddghRq3UuZwjfdqG04lrwv2NjgZopcv5DfxDD/Hw6+s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qnnpznYBd+LeIauBI1O+x5GcrbmRhro1egP+86YviGeKytr6utIjjEABjxKE1ofiF
-         whOaz+woSoG2aXcX6TJQW2pj9HIXV6cR0rds4+grbaMzjpT8anIyKOPhFWctpgxYpM
-         n4cYiu3JCAg7mUbPyXxgDcJljpEY7+dwhVcWlzlI=
+        b=BTdBPnLt7iaTJ29JuHADAOkfn7YIcC3ydS6l8fEY5uYPQVEF+BZLCl+dz9+hz5U4w
+         EFWRf2QbwrIa5dfPQmzD/SRN/MNo/v5ObWJ+SPLRwXY91Pmdr3drwth4BgPGtuVD6O
+         4KePemwlIhDw/jdQ47k5w8kWBoKzVlcFc1JnY3J0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lai Jiangshan <jiangshan.ljs@antgroup.com>,
+        stable@vger.kernel.org,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Borislav Petkov <bp@suse.de>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.15 01/89] x86/traps: Use pt_regs directly in fixup_bad_iret()
-Date:   Fri, 22 Jul 2022 11:10:35 +0200
-Message-Id: <20220722091133.444699028@linuxfoundation.org>
+Subject: [PATCH 5.15 10/89] x86/retpoline: Remove unused replacement symbols
+Date:   Fri, 22 Jul 2022 11:10:44 +0200
+Message-Id: <20220722091133.950432393@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220722091133.320803732@linuxfoundation.org>
 References: <20220722091133.320803732@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -51,100 +52,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-commit 0aca53c6b522f8d6e2681ca875acbbe105f5fdcf upstream.
+commit 4fe79e710d9574a14993f8b4e16b7252da72d5e8 upstream.
 
-Always stash the address error_entry() is going to return to, in %r12
-and get rid of the void *error_entry_ret; slot in struct bad_iret_stack
-which was supposed to account for it and pt_regs pushed on the stack.
+Now that objtool no longer creates alternatives, these replacement
+symbols are no longer needed, remove them.
 
-After this, both fixup_bad_iret() and sync_regs() can work on a struct
-pt_regs pointer directly.
-
-  [ bp: Rewrite commit message, touch ups. ]
-
-Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20220503032107.680190-2-jiangshanlai@gmail.com
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Borislav Petkov <bp@suse.de>
+Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
+Tested-by: Alexei Starovoitov <ast@kernel.org>
+Link: https://lore.kernel.org/r/20211026120309.915051744@infradead.org
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/entry/entry_64.S    |    5 ++++-
- arch/x86/include/asm/traps.h |    2 +-
- arch/x86/kernel/traps.c      |   19 +++++++------------
- 3 files changed, 12 insertions(+), 14 deletions(-)
+ arch/x86/include/asm/asm-prototypes.h |   10 --------
+ arch/x86/lib/retpoline.S              |   42 ----------------------------------
+ 2 files changed, 52 deletions(-)
 
---- a/arch/x86/entry/entry_64.S
-+++ b/arch/x86/entry/entry_64.S
-@@ -1041,9 +1041,12 @@ SYM_CODE_START_LOCAL(error_entry)
- 	 * Pretend that the exception came from user mode: set up pt_regs
- 	 * as if we faulted immediately after IRET.
- 	 */
--	mov	%rsp, %rdi
-+	popq	%r12				/* save return addr in %12 */
-+	movq	%rsp, %rdi			/* arg0 = pt_regs pointer */
- 	call	fixup_bad_iret
- 	mov	%rax, %rsp
-+	ENCODE_FRAME_POINTER
-+	pushq	%r12
- 	jmp	.Lerror_entry_from_usermode_after_swapgs
- SYM_CODE_END(error_entry)
+--- a/arch/x86/include/asm/asm-prototypes.h
++++ b/arch/x86/include/asm/asm-prototypes.h
+@@ -24,14 +24,4 @@ extern void cmpxchg8b_emu(void);
+ 	extern asmlinkage void __x86_indirect_thunk_ ## reg (void);
+ #include <asm/GEN-for-each-reg.h>
  
---- a/arch/x86/include/asm/traps.h
-+++ b/arch/x86/include/asm/traps.h
-@@ -13,7 +13,7 @@
- #ifdef CONFIG_X86_64
- asmlinkage __visible notrace struct pt_regs *sync_regs(struct pt_regs *eregs);
- asmlinkage __visible notrace
--struct bad_iret_stack *fixup_bad_iret(struct bad_iret_stack *s);
-+struct pt_regs *fixup_bad_iret(struct pt_regs *bad_regs);
- void __init trap_init(void);
- asmlinkage __visible noinstr struct pt_regs *vc_switch_off_ist(struct pt_regs *eregs);
- #endif
---- a/arch/x86/kernel/traps.c
-+++ b/arch/x86/kernel/traps.c
-@@ -762,14 +762,10 @@ sync:
- }
- #endif
- 
--struct bad_iret_stack {
--	void *error_entry_ret;
--	struct pt_regs regs;
--};
+-#undef GEN
+-#define GEN(reg) \
+-	extern asmlinkage void __x86_indirect_alt_call_ ## reg (void);
+-#include <asm/GEN-for-each-reg.h>
 -
--asmlinkage __visible noinstr
--struct bad_iret_stack *fixup_bad_iret(struct bad_iret_stack *s)
-+asmlinkage __visible noinstr struct pt_regs *fixup_bad_iret(struct pt_regs *bad_regs)
- {
-+	struct pt_regs tmp, *new_stack;
-+
- 	/*
- 	 * This is called from entry_64.S early in handling a fault
- 	 * caused by a bad iret to user mode.  To handle the fault
-@@ -778,19 +774,18 @@ struct bad_iret_stack *fixup_bad_iret(st
- 	 * just below the IRET frame) and we want to pretend that the
- 	 * exception came from the IRET target.
- 	 */
--	struct bad_iret_stack tmp, *new_stack =
--		(struct bad_iret_stack *)__this_cpu_read(cpu_tss_rw.x86_tss.sp0) - 1;
-+	new_stack = (struct pt_regs *)__this_cpu_read(cpu_tss_rw.x86_tss.sp0) - 1;
+-#undef GEN
+-#define GEN(reg) \
+-	extern asmlinkage void __x86_indirect_alt_jmp_ ## reg (void);
+-#include <asm/GEN-for-each-reg.h>
+-
+ #endif /* CONFIG_RETPOLINE */
+--- a/arch/x86/lib/retpoline.S
++++ b/arch/x86/lib/retpoline.S
+@@ -41,36 +41,6 @@ SYM_FUNC_END(__x86_indirect_thunk_\reg)
+ .endm
  
- 	/* Copy the IRET target to the temporary storage. */
--	__memcpy(&tmp.regs.ip, (void *)s->regs.sp, 5*8);
-+	__memcpy(&tmp.ip, (void *)bad_regs->sp, 5*8);
- 
- 	/* Copy the remainder of the stack from the current stack. */
--	__memcpy(&tmp, s, offsetof(struct bad_iret_stack, regs.ip));
-+	__memcpy(&tmp, bad_regs, offsetof(struct pt_regs, ip));
- 
- 	/* Update the entry stack */
- 	__memcpy(new_stack, &tmp, sizeof(tmp));
- 
--	BUG_ON(!user_mode(&new_stack->regs));
-+	BUG_ON(!user_mode(new_stack));
- 	return new_stack;
- }
- #endif
+ /*
+- * This generates .altinstr_replacement symbols for use by objtool. They,
+- * however, must not actually live in .altinstr_replacement since that will be
+- * discarded after init, but module alternatives will also reference these
+- * symbols.
+- *
+- * Their names matches the "__x86_indirect_" prefix to mark them as retpolines.
+- */
+-.macro ALT_THUNK reg
+-
+-	.align 1
+-
+-SYM_FUNC_START_NOALIGN(__x86_indirect_alt_call_\reg)
+-	ANNOTATE_RETPOLINE_SAFE
+-1:	call	*%\reg
+-2:	.skip	5-(2b-1b), 0x90
+-SYM_FUNC_END(__x86_indirect_alt_call_\reg)
+-
+-STACK_FRAME_NON_STANDARD(__x86_indirect_alt_call_\reg)
+-
+-SYM_FUNC_START_NOALIGN(__x86_indirect_alt_jmp_\reg)
+-	ANNOTATE_RETPOLINE_SAFE
+-1:	jmp	*%\reg
+-2:	.skip	5-(2b-1b), 0x90
+-SYM_FUNC_END(__x86_indirect_alt_jmp_\reg)
+-
+-STACK_FRAME_NON_STANDARD(__x86_indirect_alt_jmp_\reg)
+-
+-.endm
+-
+-/*
+  * Despite being an assembler file we can't just use .irp here
+  * because __KSYM_DEPS__ only uses the C preprocessor and would
+  * only see one instance of "__x86_indirect_thunk_\reg" rather
+@@ -92,15 +62,3 @@ STACK_FRAME_NON_STANDARD(__x86_indirect_
+ #undef GEN
+ #define GEN(reg) EXPORT_THUNK(reg)
+ #include <asm/GEN-for-each-reg.h>
+-
+-#undef GEN
+-#define GEN(reg) ALT_THUNK reg
+-#include <asm/GEN-for-each-reg.h>
+-
+-#undef GEN
+-#define GEN(reg) __EXPORT_THUNK(__x86_indirect_alt_call_ ## reg)
+-#include <asm/GEN-for-each-reg.h>
+-
+-#undef GEN
+-#define GEN(reg) __EXPORT_THUNK(__x86_indirect_alt_jmp_ ## reg)
+-#include <asm/GEN-for-each-reg.h>
 
 
