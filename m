@@ -2,81 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8969BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 13:06:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59EF2C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 13:07:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235396AbiGVNGS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 09:06:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50534 "EHLO
+        id S235339AbiGVNHM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 09:07:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235368AbiGVNGD (ORCPT
+        with ESMTP id S235189AbiGVNHJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 09:06:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ACA085D7A;
-        Fri, 22 Jul 2022 06:05:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C290361F32;
-        Fri, 22 Jul 2022 13:05:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8123C341C6;
-        Fri, 22 Jul 2022 13:05:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658495148;
-        bh=PH0xzQni9tDvj6pIqW1KMJth68cyioHou2hc3CVbZ9c=;
-        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
-        b=UO2SYe+sU0lVIMfH0AHJu0XG8RczjAoZetnjTF6s8BKxm2pu/HwJjiOlRznQU42/m
-         vD1uN1GIZjanFKbJObNEDrsrnmdoJtZk1hNEDq4M1Y2a6AXTb06t/JizLkpHtHNMvP
-         h9zQvj/94tinaSHPGGGVqwaXeaRXJaMoYaqcZ+DTvxIF6UsNnZNEeQCIlbdf9Aoh9w
-         NIrODysj1MGrdO52BPgtn/icL9MdiX0EeDVlIx8KrPDhpuJj/f3z7mcjcLFIg9blL5
-         ZwD3OZNERhIdXYQFEndz9QJ4Jmg6EU47Yk5fSox7LDZ3ckDXiSdxyaEceKjsxU9n7M
-         MtL5ug3xR2Q3Q==
-Date:   Fri, 22 Jul 2022 15:05:44 +0200 (CEST)
-From:   Jiri Kosina <jikos@kernel.org>
-To:     Hilton Chain <hako@ultrarare.space>
-cc:     Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        =?ISO-8859-15?Q?Jos=E9_Exp=F3sito?= <jose.exposito89@gmail.com>,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] HID: apple: Add "GANSS" to the non-Apple list
-In-Reply-To: <y76wnc6o6w9.wl-hako@ultrarare.space>
-Message-ID: <nycvar.YFH.7.76.2207221505380.19850@cbobk.fhfr.pm>
-References: <y76wnc6o6w9.wl-hako@ultrarare.space>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+        Fri, 22 Jul 2022 09:07:09 -0400
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE27BF03;
+        Fri, 22 Jul 2022 06:07:03 -0700 (PDT)
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26MCrstn007566;
+        Fri, 22 Jul 2022 15:06:43 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=selector1;
+ bh=DxSWau7EA7rpbtVckvWdUL4zS864AWpmRNAojK/nARc=;
+ b=NBPwWjtYmZboHG/Grn0MMQu/pPlN0jx1QvuYNh4XCcvuZB5MaO77gi/vaJuhNO3yzaUL
+ VxQkrtQLzuhHbcOQvllnAT/ahv7tqMAR4NCdnh+v9SKBI8uAQ6sVnS3PgLQgnI1xdFq2
+ veXYPOty4y0MbPRyJswAXwiCEpmIBSg3M0/YtxD7BbmWhjBGNM6hDfu4PaqtDVkIIdMJ
+ 8PpiUrK3UBNbmFHS+21gVelw43nOxUnfRtfjibhLXMbqLN5vGvEDyFt3xCaP41cuFm5i
+ po4516tKUz+bL0KQL8wLe4TcsDkhpfISxYZrRD/12gFaBsPNcbnYebCJIi9nE45byMfx 5w== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3hfqjusqkr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 22 Jul 2022 15:06:43 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id AFEBE10002A;
+        Fri, 22 Jul 2022 15:06:42 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id AB933228A4F;
+        Fri, 22 Jul 2022 15:06:42 +0200 (CEST)
+Received: from localhost (10.75.127.49) by SHFDAG1NODE2.st.com (10.75.129.70)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Fri, 22 Jul
+ 2022 15:06:41 +0200
+From:   Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+To:     <gregkh@linuxfoundation.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <mka@chromium.org>,
+        <alexandre.torgue@foss.st.com>
+CC:     <arnd@arndb.de>, <linux-usb@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <amelie.delaunay@foss.st.com>
+Subject: [PATCH 4/4] ARM: multi_v7_defconfig: enable USB onboard HUB driver
+Date:   Fri, 22 Jul 2022 15:05:54 +0200
+Message-ID: <20220722130554.236925-5-fabrice.gasnier@foss.st.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220722130554.236925-1-fabrice.gasnier@foss.st.com>
+References: <20220722130554.236925-1-fabrice.gasnier@foss.st.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.49]
+X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE2.st.com
+ (10.75.129.70)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-22_04,2022-07-21_02,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 21 Jul 2022, Hilton Chain wrote:
+Enable the USB onboard HUB driver, used on STM32MP1 boards.
 
-> While using the name "SONiX USB DEVICE" for wired mode, my GANSS keyboard
-> uses "GANSS" for bluetooth mode as well, so adding this to the list.
-> 
-> Signed-off-by: Hilton Chain <hako@ultrarare.space>
-> ---
->  drivers/hid/hid-apple.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/hid/hid-apple.c b/drivers/hid/hid-apple.c
-> index 7fbde58e1219..6970797cdc56 100644
-> --- a/drivers/hid/hid-apple.c
-> +++ b/drivers/hid/hid-apple.c
-> @@ -320,7 +320,8 @@ static const struct apple_key_translation swapped_fn_leftctrl_keys[] = {
->  static const struct apple_non_apple_keyboard non_apple_keyboards[] = {
->  	{ "SONiX USB DEVICE" },
->  	{ "Keychron" },
-> -	{ "AONE" }
-> +	{ "AONE" },
-> +	{ "GANSS" }
->  };
->  
->  static bool apple_is_non_apple_keyboard(struct hid_device *hdev)
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+---
+ arch/arm/configs/multi_v7_defconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-Applied, thanks.
-
+diff --git a/arch/arm/configs/multi_v7_defconfig b/arch/arm/configs/multi_v7_defconfig
+index ce9826bce29b3..d0f16b7f682bf 100644
+--- a/arch/arm/configs/multi_v7_defconfig
++++ b/arch/arm/configs/multi_v7_defconfig
+@@ -861,6 +861,7 @@ CONFIG_USB_CHIPIDEA_UDC=y
+ CONFIG_USB_CHIPIDEA_HOST=y
+ CONFIG_USB_ISP1760=y
+ CONFIG_USB_HSIC_USB3503=y
++CONFIG_USB_ONBOARD_HUB=m
+ CONFIG_AB8500_USB=y
+ CONFIG_KEYSTONE_USB_PHY=m
+ CONFIG_NOP_USB_XCEIV=y
 -- 
-Jiri Kosina
-SUSE Labs
+2.25.1
 
