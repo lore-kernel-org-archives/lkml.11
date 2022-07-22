@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26C97C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:09:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D950C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:09:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235017AbiGVJJF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 05:09:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38860 "EHLO
+        id S234501AbiGVJJN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 05:09:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234616AbiGVJIm (ORCPT
+        with ESMTP id S234937AbiGVJIu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 05:08:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B053868AE;
-        Fri, 22 Jul 2022 02:08:41 -0700 (PDT)
+        Fri, 22 Jul 2022 05:08:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3636A8AED2;
+        Fri, 22 Jul 2022 02:08:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D67761E95;
-        Fri, 22 Jul 2022 09:08:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27383C341C6;
-        Fri, 22 Jul 2022 09:08:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E2450B827BC;
+        Fri, 22 Jul 2022 09:08:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39BC5C341C6;
+        Fri, 22 Jul 2022 09:08:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658480920;
-        bh=H1oq4uVfA8R9mjZ/zPPVepCseKRffdac0+kAYkJLC2o=;
+        s=korg; t=1658480923;
+        bh=CFdEholKIcIh8FP/B1CNlCU+W/FG+YpGdXpUqd9CToc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MYcVagKrgvlWzWuU+AQe32SVhy57U1J7G0kzRaxyiiZHxPVKk2iPUoy80xJZcsy+a
-         9gIg+A6fyuVk4mns9IK86bYCvlNBun0Chf+iV1ALje03h/44RoL/TFGcMNF/LDggwj
-         Vd4UbhIqng3OeyMsIuPc8ZGCGpQNOK8qI1G0Yk04=
+        b=MpcDA2tEB2zPTpQF3RfTRUKPdnnOh/RciOxlxnQu6+OfhiQ6vdqpHBu+QyiagvmAt
+         0RjtYJehzdJeO8Hxo9siYEx+CfUG/WibD+w+Wm/c8vq6aANLjs40WNeyk7bf1I5v2/
+         FOIMOfY5VfhEGOvFe+PWVqPJdwhMiG6Zp4BpxmgA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Borislav Petkov <bp@suse.de>,
         Josh Poimboeuf <jpoimboe@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.18 09/70] x86/retpoline: Swizzle retpoline thunk
-Date:   Fri, 22 Jul 2022 11:07:04 +0200
-Message-Id: <20220722090651.243991905@linuxfoundation.org>
+Subject: [PATCH 5.18 18/70] x86/vsyscall_emu/64: Dont use RET in vsyscall emulation
+Date:   Fri, 22 Jul 2022 11:07:13 +0200
+Message-Id: <20220722090651.744518957@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220722090650.665513668@linuxfoundation.org>
 References: <20220722090650.665513668@linuxfoundation.org>
@@ -53,38 +53,45 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peter Zijlstra <peterz@infradead.org>
 
-commit 00e1533325fd1fb5459229fe37f235462649f668 upstream.
+commit 15583e514eb16744b80be85dea0774ece153177d upstream.
 
-Put the actual retpoline thunk as the original code so that it can
-become more complicated. Specifically, it allows RET to be a JMP,
-which can't be .altinstr_replacement since that doesn't do relocations
-(except for the very first instruction).
+This is userspace code and doesn't play by the normal kernel rules.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Borislav Petkov <bp@suse.de>
 Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/lib/retpoline.S |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/x86/entry/vsyscall/vsyscall_emu_64.S |    9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
---- a/arch/x86/lib/retpoline.S
-+++ b/arch/x86/lib/retpoline.S
-@@ -33,9 +33,9 @@ SYM_INNER_LABEL(__x86_indirect_thunk_\re
- 	UNWIND_HINT_EMPTY
- 	ANNOTATE_NOENDBR
+--- a/arch/x86/entry/vsyscall/vsyscall_emu_64.S
++++ b/arch/x86/entry/vsyscall/vsyscall_emu_64.S
+@@ -19,17 +19,20 @@ __vsyscall_page:
  
--	ALTERNATIVE_2 __stringify(ANNOTATE_RETPOLINE_SAFE; jmp *%\reg), \
--		      __stringify(RETPOLINE \reg), X86_FEATURE_RETPOLINE, \
--		      __stringify(lfence; ANNOTATE_RETPOLINE_SAFE; jmp *%\reg; int3), X86_FEATURE_RETPOLINE_LFENCE
-+	ALTERNATIVE_2 __stringify(RETPOLINE \reg), \
-+		      __stringify(lfence; ANNOTATE_RETPOLINE_SAFE; jmp *%\reg; int3), X86_FEATURE_RETPOLINE_LFENCE, \
-+		      __stringify(ANNOTATE_RETPOLINE_SAFE; jmp *%\reg), ALT_NOT(X86_FEATURE_RETPOLINE)
+ 	mov $__NR_gettimeofday, %rax
+ 	syscall
+-	RET
++	ret
++	int3
  
- .endm
+ 	.balign 1024, 0xcc
+ 	mov $__NR_time, %rax
+ 	syscall
+-	RET
++	ret
++	int3
+ 
+ 	.balign 1024, 0xcc
+ 	mov $__NR_getcpu, %rax
+ 	syscall
+-	RET
++	ret
++	int3
+ 
+ 	.balign 4096, 0xcc
  
 
 
