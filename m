@@ -2,70 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2412AC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 17:06:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0ADBC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 17:06:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235885AbiGVRGF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 13:06:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58696 "EHLO
+        id S235905AbiGVRGM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 13:06:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235591AbiGVRFz (ORCPT
+        with ESMTP id S235672AbiGVRF4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 13:05:55 -0400
-Received: from out0.migadu.com (out0.migadu.com [94.23.1.103])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D8008EEDF;
-        Fri, 22 Jul 2022 10:05:50 -0700 (PDT)
-Date:   Fri, 22 Jul 2022 10:05:41 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1658509548;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Y7js1RWyqBx3oqDhoWUrWmYCp205K7/u6aMi9Husos0=;
-        b=r7ZEFRF55ukGJSsMqum8ZkCKf6/PLDX0tZRl767erRdenIBURHWA9F1mJlJDIhD2k54sd8
-        i38xddVh8wdQJ4uxAkd1BE/363j3hZ9M+lmyMSV5ta9ON9JOP2a41+b9R3+7O8Tcm3FOAA
-        8OxpP9CIfaMBpn0ieQXqAHXxtMKqouE=
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From:   Roman Gushchin <roman.gushchin@linux.dev>
-To:     Jiebin Sun <jiebin.sun@intel.com>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        cgroups@vger.kernel.org, hannes@cmpxchg.org, mhocko@kernel.org,
-        shakeelb@google.com, songmuchun@bytedance.com,
-        akpm@linux-foundation.org, tim.c.chen@intel.com,
-        ying.huang@intel.com, amadeuszx.slawinski@linux.intel.com,
-        tianyou.li@intel.com, wangyang.guo@intel.com
-Subject: Re: [PATCH] mm: Remove the redundant updating of
- stats_flush_threshold
-Message-ID: <YtrY5V+dZl4+Gtz4@castle>
-References: <20220722164949.47760-1-jiebin.sun@intel.com>
+        Fri, 22 Jul 2022 13:05:56 -0400
+Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B47A690DAD;
+        Fri, 22 Jul 2022 10:05:51 -0700 (PDT)
+Received: from cwcc.thunk.org (pool-173-48-118-63.bstnma.fios.verizon.net [173.48.118.63])
+        (authenticated bits=0)
+        (User authenticated as tytso@ATHENA.MIT.EDU)
+        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 26MH5WOt022921
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 22 Jul 2022 13:05:33 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mit.edu; s=outgoing;
+        t=1658509534; bh=x5NY6/np9zWA3SHR+ZSZe4eQA0yfCvzZw1QpBj5Mtco=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To;
+        b=WAfkNlrXDf4aPxN7fFzehBI53ZqxFDXLOQTBMm9tlVxCimVyVcRdLp72BQwtNN8hq
+         xnW7Cn8hAM7rBFQQoLd1JFmBNn1vV3bbmg6dvHuIqgvNRBTHWardQVG3KR44na1iUy
+         Q5VNv0fFa36STPRhqqf5ChNgiaqZf+HeO6KmofCzQDjYEQGTAl9qIYCi1+CKGeMz83
+         RLVWHW6SaKbQNBKNU8uM738coRNHusUs5825IxfbNZqH96qYWSQROkFt+Xv0wed+E/
+         dvJv92G3yoPkPUTGnPPcR5fMowU+n0Lk23UxHZjySPIMB3xtC+vrIgDeExEtHVwMS7
+         E35MQaRXt7ayg==
+Received: by cwcc.thunk.org (Postfix, from userid 15806)
+        id 785D015C3EF7; Fri, 22 Jul 2022 13:05:32 -0400 (EDT)
+Date:   Fri, 22 Jul 2022 13:05:32 -0400
+From:   "Theodore Ts'o" <tytso@mit.edu>
+To:     Eric Biggers <ebiggers@kernel.org>
+Cc:     linux-fsdevel@vger.kernel.org, linux-ext4@vger.kernel.org,
+        linux-f2fs-devel@lists.sourceforge.net, linux-xfs@vger.kernel.org,
+        linux-api@vger.kernel.org, linux-fscrypt@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Keith Busch <kbusch@kernel.org>
+Subject: Re: [PATCH v4 4/9] ext4: support STATX_DIOALIGN
+Message-ID: <YtrY3A/nC023v+/V@mit.edu>
+References: <20220722071228.146690-1-ebiggers@kernel.org>
+ <20220722071228.146690-5-ebiggers@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220722164949.47760-1-jiebin.sun@intel.com>
-X-Migadu-Flow: FLOW_OUT
-X-Migadu-Auth-User: linux.dev
+In-Reply-To: <20220722071228.146690-5-ebiggers@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jul 23, 2022 at 12:49:49AM +0800, Jiebin Sun wrote:
-> From: jiebin sun <jiebin.sun@intel.com>
-> 
-> Remove the redundant updating of stats_flush_threshold. If the
-> global var stats_flush_threshold has exceeded the trigger value
-> for __mem_cgroup_flush_stats, further increment is unnecessary.
-> 
-> Apply the patch and test the pts/hackbench-1.0.0 Count:4 (160 threads).
-> 
-> Score gain: 1.95x
-> Reduce CPU cycles in __mod_memcg_lruvec_state (44.88% -> 0.12%)
-> 
-> CPU: ICX 8380 x 2 sockets
-> Core number: 40 x 2 physical cores
-> Benchmark: pts/hackbench-1.0.0 Count:4 (160 threads)
-> 
-> Signed-off-by: Jiebin Sun <jiebin.sun@intel.com>
+On Fri, Jul 22, 2022 at 12:12:23AM -0700, Eric Biggers wrote:
+> -static bool ext4_dio_supported(struct kiocb *iocb, struct iov_iter *iter)
+> +/*
+> + * Returns %true if the given DIO request should be attempted with DIO, or
+> + * %false if it should fall back to buffered I/O.
+> + *
+> + * DIO isn't well specified; when it's unsupported (either due to the request
+> + * being misaligned, or due to the file not supporting DIO at all), filesystems
+> + * either fall back to buffered I/O or return EINVAL.  For files that don't use
+> + * any special features like encryption or verity, ext4 has traditionally
+> + * returned EINVAL for misaligned DIO.  iomap_dio_rw() uses this convention too.
+> + * In this case, we should attempt the DIO, *not* fall back to buffered I/O.
+> + *
+> + * In contrast, in cases where DIO is unsupported due to ext4 features, ext4
+> + * traditionally falls back to buffered I/O.
+> + *
+> + * This function implements the traditional ext4 behavior in all these cases.
 
-Reviewed-by: Roman Gushchin <roman.gushchin@linux.dev>
+Heh.  I had been under the impression that misaligned I/O fell back to
+buffered I/O for ext4, since that's what a lot of historical Unix
+systems did.  Obviously, it's not something I've tested since "you
+should never do that".
 
-Good optimization, thanks!
+There's actually some interesting discussion about what Linux *should*
+be doing in the futre in this discussion:
+
+https://patchwork.ozlabs.org/project/linux-ext4/patch/1461472078-20104-1-git-send-email-tytso@mit.edu/
+
+Including the following from Christoph Hellwig:
+
+https://patchwork.ozlabs.org/project/linux-ext4/patch/1461472078-20104-1-git-send-email-tytso@mit.edu/#1335016
+
+> I've been doing an audit of our direct I/O implementations, and most
+> of them does some form of transparent fallback, including some that
+> only pretend to support O_DIRECT, but do anything special for it at all,
+> while at the same time we go through greast efforts to check a file
+> system actualy supports direct I/O, leading to nasty no-op ->direct_IO
+> implementations as we even got that abstraction wrong.
+> 
+> At this point I wonder if we should simply treat O_DIRECT as a hint
+> and always allow it, and just let the file system optimize for it
+> (skip buffering, require alignment, relaxed Posix atomicy requirements)
+> if it is set.
+
+The thread also mentioned XFS_IOC_DIOINFO and how We Really Should
+have something with equivalent functionality to the VFS --- six years
+ago.  :-)
+
+
+Anyway, this change to ext4 looks good.
+
+Acked-by: Theodore Ts'o <tytso@mit.edu>
+
+							- Ted
