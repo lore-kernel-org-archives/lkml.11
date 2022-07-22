@@ -2,70 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 734A9CCA489
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 08:49:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF6A7CCA48B
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 08:50:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234921AbiGVItz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 04:49:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47182 "EHLO
+        id S235012AbiGVIud (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 04:50:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234360AbiGVIty (ORCPT
+        with ESMTP id S234554AbiGVIub (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 04:49:54 -0400
-Received: from mail-m971.mail.163.com (mail-m971.mail.163.com [123.126.97.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DB4E01CB05;
-        Fri, 22 Jul 2022 01:49:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=812F7
-        aMPt0o1Pmi3AnCYkux6HBSJ0u2enTRidOLHdWA=; b=bpHYGO8z1F/DloHfkUyTi
-        kIyRkzpB5OZg/y7If2X8JTM+Erogcdk5J3lMi7ZMtfmrEmVZdbOOa9VM0jQQHYuQ
-        R5tNvJtu96hOFDVFsJwDAbDvXk+/Rye9y8BbPPWAY7TYp6ZU6c5eI3x4zAx7WM0J
-        s5+BfKNLAc/Sni4lBr12OY=
-Received: from localhost.localdomain (unknown [112.97.59.29])
-        by smtp1 (Coremail) with SMTP id GdxpCgAXJKRmZNpisiUjPw--.2467S2;
-        Fri, 22 Jul 2022 16:48:40 +0800 (CST)
-From:   Slark Xiao <slark_xiao@163.com>
-To:     kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, Slark Xiao <slark_xiao@163.com>
-Subject: [PATCH] wl1251: Fix typo 'the the' in comment
-Date:   Fri, 22 Jul 2022 16:48:33 +0800
-Message-Id: <20220722084833.76159-1-slark_xiao@163.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 22 Jul 2022 04:50:31 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6C4927CCF;
+        Fri, 22 Jul 2022 01:50:30 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id t2-20020a17090a4e4200b001f21572f3a4so3659631pjl.0;
+        Fri, 22 Jul 2022 01:50:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=XGvxZvhnTAZBI+rA5TQMHLllkhlUn2KKMKKwFEJoTrQ=;
+        b=jmxWGNPrWZotRVEC446wT5rD74ZsGChwiZJLDeQcbQMpgAfjCjqDcEKhf0E4L9rmUL
+         eRQM9QL5om8cfKJnR8u+5T3zVqEgDBjybCw9BpnxKPPMgzsWnEdOeK8/uQxiXl4zQmpt
+         B76qQHf47ukLTQfQzN8guLuc7Tfoy6GWYRvouvq5f6Yen9Tbr+7ki7Es7w4TFj+scs4G
+         WjKaAxIT3sRvipY2U9/Yne+Zi9m96xmqsNPvxIRghhxqGxaAghH3kFp3Sxz+HgXJtZUO
+         dR0/YcKs9ToFzF3LKXdDELoKrn63fzPY8wzKVddc1bcYC3N2uQ+4IkHEZL8E/nqymexS
+         24+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=XGvxZvhnTAZBI+rA5TQMHLllkhlUn2KKMKKwFEJoTrQ=;
+        b=tgnFJlBFurXCvujJIL1XAHKXkIzmsFKsq85KH9XsbVm/wlkjwh3lirxU0FImY4WZtK
+         4IG2Lht9uq3B7+ig5ZkQ3LBGFOXXTqRXcISfa8BVU1KQdoa06UtRDHC9nhGiZGeczDTf
+         3P7sWZUkn2S4vS648DZ7yep9vYijtaIKogtf424E7RNrRWTwzW0kHcwSNr2cXK6f4HMz
+         iYcRYuOJ8nzAqwPzqmCpUwmXkh/6D+FPB/kxdBsnngyhtUccIgVBVwPdrrqCJ85CqC3N
+         d6mSXjgqyPqvlZ0HcldqG6zMTF80uFR7sr/+JpWeaRGJZi/Dw5IJyBVCiLHbpBjQ6mxq
+         aJMQ==
+X-Gm-Message-State: AJIora+Ur+r5/UvcIfUYpk4ngl2bE38N6hFLYc6sGUp3ZlQgKytqmZ4h
+        jc5jIx1Ny2Vu9X4UyRbdHOcCD/QRe+o=
+X-Google-Smtp-Source: AGRyM1spRFdtcN9eEyBuRdKIh7Nq4MsnGesl3K9gNf1D2r3l+Pmy8pyBFD+LrMeHnLINbPresm3wHA==
+X-Received: by 2002:a17:90a:9a97:b0:1f2:3b4b:cb85 with SMTP id e23-20020a17090a9a9700b001f23b4bcb85mr5889791pjp.15.1658479830053;
+        Fri, 22 Jul 2022 01:50:30 -0700 (PDT)
+Received: from debian.me (subs03-180-214-233-91.three.co.id. [180.214.233.91])
+        by smtp.gmail.com with ESMTPSA id l8-20020a17090a3f0800b001ef9479373fsm5031082pjc.4.2022.07.22.01.50.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Jul 2022 01:50:29 -0700 (PDT)
+Received: by debian.me (Postfix, from userid 1000)
+        id 56935104982; Fri, 22 Jul 2022 15:50:22 +0700 (WIB)
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+To:     linux-doc@vger.kernel.org
+Cc:     Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Halil Pasic <pasic@linux.ibm.com>,
+        Tony Krowiak <akrowiak@linux.ibm.com>,
+        Jason Herne <jjherne@linux.ibm.com>,
+        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Bagas Sanjaya <bagasdotme@gmail.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+Subject: [PATCH 1/8] Documentation: s390: Use note directive for changing mask note
+Date:   Fri, 22 Jul 2022 15:49:40 +0700
+Message-Id: <20220722084946.22965-2-bagasdotme@gmail.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220722084946.22965-1-bagasdotme@gmail.com>
+References: <20220722084946.22965-1-bagasdotme@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: GdxpCgAXJKRmZNpisiUjPw--.2467S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrZFWUWr13KF45XFyDtr1fZwb_yoW3Zrb_Gw
-        1xKan7G3W8AF1093yYkr95AayIy34UuF1F9F1jqa9agay5ZrW7WF93Zr17J345GFW2gFnx
-        X3sxJF1UC345WjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRZYFWPUUUUU==
-X-Originating-IP: [112.97.59.29]
-X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/1tbiGQhGZFyPdmxXywAAsm
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Replace 'the the' with 'the' in the comment.
+The changing mask note uses custom syntax (open asterisks), which triggers
+emphasis warnings as Sphinx confuses it as boldface:
 
-Signed-off-by: Slark Xiao <slark_xiao@163.com>
+Documentation/s390/vfio-ap.rst:684: WARNING: Inline strong start-string without end-string.
+Documentation/s390/vfio-ap.rst:684: WARNING: Inline emphasis start-string without end-string.
+
+Use note directive instead.
+
+Link: https://lore.kernel.org/linux-next/20220721205937.10043b5f@canb.auug.org.au/
+Fixes: cb269e0aba7c3f ("s390/vfio-ap: update docs to include dynamic config support")
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
 ---
- drivers/net/wireless/ti/wl1251/acx.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/s390/vfio-ap.rst | 18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/wireless/ti/wl1251/acx.h b/drivers/net/wireless/ti/wl1251/acx.h
-index 1da6ba95d3d4..1da6ab664e41 100644
---- a/drivers/net/wireless/ti/wl1251/acx.h
-+++ b/drivers/net/wireless/ti/wl1251/acx.h
-@@ -1229,7 +1229,7 @@ struct wl1251_acx_arp_filter {
- 	u8 address[16];	/* The IP address used to filter ARP packets.
- 			   ARP packets that do not match this address are
- 			   dropped. When the IP Version is 4, the last 12
--			   bytes of the the address are ignored. */
-+			   bytes of the address are ignored. */
- } __attribute__((packed));
+diff --git a/Documentation/s390/vfio-ap.rst b/Documentation/s390/vfio-ap.rst
+index f4b8748ab9a8cd..7aea0afe2ef390 100644
+--- a/Documentation/s390/vfio-ap.rst
++++ b/Documentation/s390/vfio-ap.rst
+@@ -681,15 +681,17 @@ These are the steps:
+ 	    default drivers pool:    adapter 0-15, domain 1
+ 	    alternate drivers pool:  adapter 16-255, domains 0, 2-255
  
- struct wl1251_acx_ac_cfg {
+-   Note ***:
+-   Changing a mask such that one or more APQNs will be taken from a vfio_ap
+-   mediated device (see below) will fail with an error (EBUSY). A message
+-   is logged to the kernel ring buffer which can be viewed with the 'dmesg'
+-   command. The output identifies each APQN flagged as 'in use' and identifies
+-   the vfio_ap mediated device to which it is assigned; for example:
++   .. note::
++   
++      Changing a mask such that one or more APQNs will be taken from a vfio_ap
++      mediated device (see below) will fail with an error (EBUSY). A message
++      is logged to the kernel ring buffer which can be viewed with the 'dmesg'
++      command. The output identifies each APQN flagged as 'in use' and
++      identifies the vfio_ap mediated device to which it is assigned; for
++      example::
+ 
+-   Userspace may not re-assign queue 05.0054 already assigned to 62177883-f1bb-47f0-914d-32a22e3a8804
+-   Userspace may not re-assign queue 04.0054 already assigned to cef03c3c-903d-4ecc-9a83-40694cb8aee4
++         Userspace may not re-assign queue 05.0054 already assigned to 62177883-f1bb-47f0-914d-32a22e3a8804
++         Userspace may not re-assign queue 04.0054 already assigned to cef03c3c-903d-4ecc-9a83-40694cb8aee4
+ 
+ Securing the APQNs for our example
+ ----------------------------------
 -- 
-2.25.1
+An old man doll... just what I always wanted! - Clara
 
