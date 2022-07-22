@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6285C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:28:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B076DC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:28:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236489AbiGVJ2O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 05:28:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50370 "EHLO
+        id S236468AbiGVJ2b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 05:28:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236485AbiGVJ1d (ORCPT
+        with ESMTP id S236370AbiGVJ1p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 05:27:33 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E365A8978;
-        Fri, 22 Jul 2022 02:17:25 -0700 (PDT)
+        Fri, 22 Jul 2022 05:27:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72065B5555;
+        Fri, 22 Jul 2022 02:17:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A7B461FFE;
-        Fri, 22 Jul 2022 09:17:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 708A2C341C6;
-        Fri, 22 Jul 2022 09:17:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 19B8CB827BE;
+        Fri, 22 Jul 2022 09:17:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68AD7C341C6;
+        Fri, 22 Jul 2022 09:17:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658481444;
-        bh=SfdQxSB5jaTWOp2wHXx0KQT53IToPjdRAv7+3JXM6qk=;
+        s=korg; t=1658481448;
+        bh=7W6eWTEXjOF812u7n64OA5d98HorY4GvtJh/QdEio40=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RiPOAjb3Jcp4sqgeZ+lAJxKNkdHPHV+S79n2HZtdkrvLevxAm9k3ELq7ntsjqCJyM
-         X3plRDNWOOlnBgqtLx+jFoiJ6tk9vcRifHi/hqVNR4kGc++rIloi4bySHGvMjU4Zr5
-         gJ5p0Q3JEUMwGtdZZ0AMqYcJcwPI2gMRLTnZWWLg=
+        b=FuFLbU5iJGtfmAhlZSpLli5+dxopqjV2NX3jCANZJjJGxyGYIt2fYQMI7wPIiGjWD
+         8zqucMFlydKMV72v3xQnk5DYbq+h5I+jDn1t/gy/H9hjEfNIbUu8/t8q7fzMKiAg0e
+         MmuSDttWCVKYTbpzyWh4g8rbzamyZuDn1RZp6IRE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Borislav Petkov <bp@suse.de>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.15 65/89] KVM: VMX: Flatten __vmx_vcpu_run()
-Date:   Fri, 22 Jul 2022 11:11:39 +0200
-Message-Id: <20220722091136.990004013@linuxfoundation.org>
+Subject: [PATCH 5.15 56/89] x86/bugs: Do IBPB fallback check only once
+Date:   Fri, 22 Jul 2022 11:11:30 +0200
+Message-Id: <20220722091136.495615045@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220722091133.320803732@linuxfoundation.org>
 References: <20220722091133.320803732@linuxfoundation.org>
@@ -52,194 +51,46 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 
-commit 8bd200d23ec42d66ccd517a72dd0b9cc6132d2fd upstream.
+commit 0fe4aeea9c01baabecc8c3afc7889c809d939bc2 upstream.
 
-Move the vmx_vm{enter,exit}() functionality into __vmx_vcpu_run().  This
-will make it easier to do the spec_ctrl handling before the first RET.
+When booting with retbleed=auto, if the kernel wasn't built with
+CONFIG_CC_HAS_RETURN_THUNK, the mitigation falls back to IBPB.  Make
+sure a warning is printed in that case.  The IBPB fallback check is done
+twice, but it really only needs to be done once.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
-[cascardo: remove ENDBR]
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/vmx/vmenter.S |  118 +++++++++++++++++----------------------------
- 1 file changed, 45 insertions(+), 73 deletions(-)
+ arch/x86/kernel/cpu/bugs.c |   15 +++++----------
+ 1 file changed, 5 insertions(+), 10 deletions(-)
 
---- a/arch/x86/kvm/vmx/vmenter.S
-+++ b/arch/x86/kvm/vmx/vmenter.S
-@@ -31,68 +31,6 @@
- .section .noinstr.text, "ax"
- 
- /**
-- * vmx_vmenter - VM-Enter the current loaded VMCS
-- *
-- * %RFLAGS.ZF:	!VMCS.LAUNCHED, i.e. controls VMLAUNCH vs. VMRESUME
-- *
-- * Returns:
-- *	%RFLAGS.CF is set on VM-Fail Invalid
-- *	%RFLAGS.ZF is set on VM-Fail Valid
-- *	%RFLAGS.{CF,ZF} are cleared on VM-Success, i.e. VM-Exit
-- *
-- * Note that VMRESUME/VMLAUNCH fall-through and return directly if
-- * they VM-Fail, whereas a successful VM-Enter + VM-Exit will jump
-- * to vmx_vmexit.
-- */
--SYM_FUNC_START_LOCAL(vmx_vmenter)
--	/* EFLAGS.ZF is set if VMCS.LAUNCHED == 0 */
--	je 2f
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -884,18 +884,13 @@ static void __init retbleed_select_mitig
+ 	case RETBLEED_CMD_AUTO:
+ 	default:
+ 		if (boot_cpu_data.x86_vendor == X86_VENDOR_AMD ||
+-		    boot_cpu_data.x86_vendor == X86_VENDOR_HYGON) {
 -
--1:	vmresume
--	RET
--
--2:	vmlaunch
--	RET
--
--3:	cmpb $0, kvm_rebooting
--	je 4f
--	RET
--4:	ud2
--
--	_ASM_EXTABLE(1b, 3b)
--	_ASM_EXTABLE(2b, 3b)
--
--SYM_FUNC_END(vmx_vmenter)
--
--/**
-- * vmx_vmexit - Handle a VMX VM-Exit
-- *
-- * Returns:
-- *	%RFLAGS.{CF,ZF} are cleared on VM-Success, i.e. VM-Exit
-- *
-- * This is vmx_vmenter's partner in crime.  On a VM-Exit, control will jump
-- * here after hardware loads the host's state, i.e. this is the destination
-- * referred to by VMCS.HOST_RIP.
-- */
--SYM_FUNC_START(vmx_vmexit)
--#ifdef CONFIG_RETPOLINE
--	ALTERNATIVE "jmp .Lvmexit_skip_rsb", "", X86_FEATURE_RETPOLINE
--	/* Preserve guest's RAX, it's used to stuff the RSB. */
--	push %_ASM_AX
--
--	/* IMPORTANT: Stuff the RSB immediately after VM-Exit, before RET! */
--	FILL_RETURN_BUFFER %_ASM_AX, RSB_CLEAR_LOOPS, X86_FEATURE_RETPOLINE
--
--	/* Clear RFLAGS.CF and RFLAGS.ZF to preserve VM-Exit, i.e. !VM-Fail. */
--	or $1, %_ASM_AX
--
--	pop %_ASM_AX
--.Lvmexit_skip_rsb:
--#endif
--	RET
--SYM_FUNC_END(vmx_vmexit)
--
--/**
-  * __vmx_vcpu_run - Run a vCPU via a transition to VMX guest mode
-  * @vmx:	struct vcpu_vmx * (forwarded to vmx_update_host_rsp)
-  * @regs:	unsigned long * (to guest registers)
-@@ -124,8 +62,7 @@ SYM_FUNC_START(__vmx_vcpu_run)
- 	/* Copy @launched to BL, _ASM_ARG3 is volatile. */
- 	mov %_ASM_ARG3B, %bl
+-			if (IS_ENABLED(CONFIG_RETPOLINE) &&
+-			    IS_ENABLED(CONFIG_CC_HAS_RETURN_THUNK))
+-				retbleed_mitigation = RETBLEED_MITIGATION_UNRET;
+-			else
+-				retbleed_mitigation = RETBLEED_MITIGATION_IBPB;
+-		}
++		    boot_cpu_data.x86_vendor == X86_VENDOR_HYGON)
++			retbleed_mitigation = RETBLEED_MITIGATION_UNRET;
  
--	/* Adjust RSP to account for the CALL to vmx_vmenter(). */
--	lea -WORD_SIZE(%_ASM_SP), %_ASM_ARG2
-+	lea (%_ASM_SP), %_ASM_ARG2
- 	call vmx_update_host_rsp
+ 		/*
+-		 * The Intel mitigation (IBRS) was already selected in
+-		 * spectre_v2_select_mitigation().
++		 * The Intel mitigation (IBRS or eIBRS) was already selected in
++		 * spectre_v2_select_mitigation().  'retbleed_mitigation' will
++		 * be set accordingly below.
+ 		 */
  
- 	/* Load @regs to RAX. */
-@@ -154,11 +91,36 @@ SYM_FUNC_START(__vmx_vcpu_run)
- 	/* Load guest RAX.  This kills the @regs pointer! */
- 	mov VCPU_RAX(%_ASM_AX), %_ASM_AX
- 
--	/* Enter guest mode */
--	call vmx_vmenter
-+	/* Check EFLAGS.ZF from 'testb' above */
-+	je .Lvmlaunch
- 
--	/* Jump on VM-Fail. */
--	jbe 2f
-+	/*
-+	 * After a successful VMRESUME/VMLAUNCH, control flow "magically"
-+	 * resumes below at 'vmx_vmexit' due to the VMCS HOST_RIP setting.
-+	 * So this isn't a typical function and objtool needs to be told to
-+	 * save the unwind state here and restore it below.
-+	 */
-+	UNWIND_HINT_SAVE
-+
-+/*
-+ * If VMRESUME/VMLAUNCH and corresponding vmexit succeed, execution resumes at
-+ * the 'vmx_vmexit' label below.
-+ */
-+.Lvmresume:
-+	vmresume
-+	jmp .Lvmfail
-+
-+.Lvmlaunch:
-+	vmlaunch
-+	jmp .Lvmfail
-+
-+	_ASM_EXTABLE(.Lvmresume, .Lfixup)
-+	_ASM_EXTABLE(.Lvmlaunch, .Lfixup)
-+
-+SYM_INNER_LABEL(vmx_vmexit, SYM_L_GLOBAL)
-+
-+	/* Restore unwind state from before the VMRESUME/VMLAUNCH. */
-+	UNWIND_HINT_RESTORE
- 
- 	/* Temporarily save guest's RAX. */
- 	push %_ASM_AX
-@@ -185,9 +147,13 @@ SYM_FUNC_START(__vmx_vcpu_run)
- 	mov %r15, VCPU_R15(%_ASM_AX)
- #endif
- 
-+	/* IMPORTANT: RSB must be stuffed before the first return. */
-+	FILL_RETURN_BUFFER %_ASM_BX, RSB_CLEAR_LOOPS, X86_FEATURE_RETPOLINE
-+
- 	/* Clear RAX to indicate VM-Exit (as opposed to VM-Fail). */
- 	xor %eax, %eax
- 
-+.Lclear_regs:
- 	/*
- 	 * Clear all general purpose registers except RSP and RAX to prevent
- 	 * speculative use of the guest's values, even those that are reloaded
-@@ -197,7 +163,7 @@ SYM_FUNC_START(__vmx_vcpu_run)
- 	 * free.  RSP and RAX are exempt as RSP is restored by hardware during
- 	 * VM-Exit and RAX is explicitly loaded with 0 or 1 to return VM-Fail.
- 	 */
--1:	xor %ecx, %ecx
-+	xor %ecx, %ecx
- 	xor %edx, %edx
- 	xor %ebx, %ebx
- 	xor %ebp, %ebp
-@@ -216,8 +182,8 @@ SYM_FUNC_START(__vmx_vcpu_run)
- 
- 	/* "POP" @regs. */
- 	add $WORD_SIZE, %_ASM_SP
--	pop %_ASM_BX
- 
-+	pop %_ASM_BX
- #ifdef CONFIG_X86_64
- 	pop %r12
- 	pop %r13
-@@ -230,9 +196,15 @@ SYM_FUNC_START(__vmx_vcpu_run)
- 	pop %_ASM_BP
- 	RET
- 
--	/* VM-Fail.  Out-of-line to avoid a taken Jcc after VM-Exit. */
--2:	mov $1, %eax
--	jmp 1b
-+.Lfixup:
-+	cmpb $0, kvm_rebooting
-+	jne .Lvmfail
-+	ud2
-+.Lvmfail:
-+	/* VM-Fail: set return value to 1 */
-+	mov $1, %eax
-+	jmp .Lclear_regs
-+
- SYM_FUNC_END(__vmx_vcpu_run)
- 
- 
+ 		break;
 
 
