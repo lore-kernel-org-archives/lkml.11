@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2789BCCA489
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 13:58:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6F92C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 13:59:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235279AbiGVN6n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 09:58:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34762 "EHLO
+        id S235335AbiGVN7B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 09:59:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234763AbiGVN6j (ORCPT
+        with ESMTP id S235284AbiGVN6v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 09:58:39 -0400
+        Fri, 22 Jul 2022 09:58:51 -0400
 Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEA5A8BAAC;
-        Fri, 22 Jul 2022 06:58:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58318904D4;
+        Fri, 22 Jul 2022 06:58:43 -0700 (PDT)
 Received: from cwcc.thunk.org (pool-173-48-118-63.bstnma.fios.verizon.net [173.48.118.63])
         (authenticated bits=0)
         (User authenticated as tytso@ATHENA.MIT.EDU)
-        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 26MDwR8J016699
+        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 26MDwUgW016796
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 22 Jul 2022 09:58:29 -0400
+        Fri, 22 Jul 2022 09:58:31 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mit.edu; s=outgoing;
-        t=1658498309; bh=KDkvkOaznIAbtg/ZOhrIdeChH7McTYcZFnsNaZUYifM=;
+        t=1658498311; bh=cyLrSzInH7AFiTBUwcPn+0ryt9qDyhkDUN8qT2vZR/A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=KX51YzoYHxqJv7/BLTWt4OGCnNlNrEdI59qPeq7PDj6TVY+5W98QqcEwZM0WvG9fC
-         Rlp2MkbL/yupOfoSVRwdY3vA14zRNmCFSw5P8ucKTPWP2q9hsYxhDzSnVFerCFqjQH
-         5FwrTuX2Tp0pNubaMzy/eX9KpUTvHmrwj5D5BHNzury/JnSuscP49j3ti5QKf6rP7s
-         kPRJYxARhvA9gKKRyp7ACo3uc6Lffki0XnpxLG2h2qo6pTUK1zleRYpg2huP+qcpxc
-         byU29xGAZTdbPqCNEjZ6ntCrOPS1TKn3UBOjHrdktp6pkv8RSDjowBnTo97XfFiYLt
-         V9YUBFr8mr/lA==
+        b=cr2HSfGBgScgh4O09NBu7B5gWqKPf3WSdAy7yt42ynvWXnGwVppqzSVHXosezljWm
+         J0N6juG8Ji5tOCP2yIuSMjUu/f4iE42DDt1IA7EcuqkoDYYG5dlLHM+I427FdKfCPu
+         oUUBg4VVMG3/6BIWjeHmtb77/NEcLBi/4PmPuG3jPEhhbRQ8yy1CcGnrqYCn8QlwHj
+         2mQTKmpL9SC8xCiVuawTUxS0/a56FzjAcKZLOnQeeB9MDAdH+v1TmVB4vlByaqz/WD
+         ZLQ7hwRP3dQlHY3842G5/9WpkczH/BC3qS8o/TRAhTqtFvT/YYubKE8LQYrCFmaXo8
+         GAxe1UjLJwtzQ==
 Received: by cwcc.thunk.org (Postfix, from userid 15806)
-        id 6CE5515C3F01; Fri, 22 Jul 2022 09:58:27 -0400 (EDT)
+        id 7D60915C3F0D; Fri, 22 Jul 2022 09:58:27 -0400 (EDT)
 From:   "Theodore Ts'o" <tytso@mit.edu>
-To:     jiangjian@cdjrlc.com
-Cc:     "Theodore Ts'o" <tytso@mit.edu>, linux-kernel@vger.kernel.org,
-        linux-ext4@vger.kernel.org, adilger.kernel@dilger.ca
-Subject: Re: [PATCH] ext4: aligned '*' in comments
-Date:   Fri, 22 Jul 2022 09:58:15 -0400
-Message-Id: <165849767594.303416.9706322073721252641.b4-ty@mit.edu>
+To:     linux-ext4@vger.kernel.org, adilger.kernel@dilger.ca,
+        Ye Bin <yebin10@huawei.com>
+Cc:     "Theodore Ts'o" <tytso@mit.edu>, jack@suse.cz,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH -next v2] ext4: fix warning in ext4_iomap_begin as race between bmap and write
+Date:   Fri, 22 Jul 2022 09:58:24 -0400
+Message-Id: <165849767593.303416.2022399899140738469.b4-ty@mit.edu>
 X-Mailer: git-send-email 2.31.0
-In-Reply-To: <20220621061531.19669-1-jiangjian@cdjrlc.com>
-References: <20220621061531.19669-1-jiangjian@cdjrlc.com>
+In-Reply-To: <20220617013935.397596-1-yebin10@huawei.com>
+References: <20220617013935.397596-1-yebin10@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -49,15 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 21 Jun 2022 14:15:31 +0800, Jiang Jian wrote:
-> The '*' in the comment is not aligned.
+On Fri, 17 Jun 2022 09:39:35 +0800, Ye Bin wrote:
+> We got issue as follows:
+> ------------[ cut here ]------------
+> WARNING: CPU: 3 PID: 9310 at fs/ext4/inode.c:3441 ext4_iomap_begin+0x182/0x5d0
+> RIP: 0010:ext4_iomap_begin+0x182/0x5d0
+> RSP: 0018:ffff88812460fa08 EFLAGS: 00010293
+> RAX: ffff88811f168000 RBX: 0000000000000000 RCX: ffffffff97793c12
+> RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000000000003
+> RBP: ffff88812c669160 R08: ffff88811f168000 R09: ffffed10258cd20f
+> R10: ffff88812c669077 R11: ffffed10258cd20e R12: 0000000000000001
+> R13: 00000000000000a4 R14: 000000000000000c R15: ffff88812c6691ee
+> FS:  00007fd0d6ff3740(0000) GS:ffff8883af180000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 00007fd0d6dda290 CR3: 0000000104a62000 CR4: 00000000000006e0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> Call Trace:
+>  iomap_apply+0x119/0x570
+>  iomap_bmap+0x124/0x150
+>  ext4_bmap+0x14f/0x250
+>  bmap+0x55/0x80
+>  do_vfs_ioctl+0x952/0xbd0
+>  __x64_sys_ioctl+0xc6/0x170
+>  do_syscall_64+0x33/0x40
+>  entry_SYSCALL_64_after_hwframe+0x44/0xa9
 > 
-> 
+> [...]
 
 Applied, thanks!
 
-[1/1] ext4: aligned '*' in comments
-      commit: 5f2d635229947b4d1066c24b709c588afb69e393
+[1/1] ext4: fix warning in ext4_iomap_begin as race between bmap and write
+      commit: b2788f44f61b34468fec945d8ce99b06b7b8b176
 
 Best regards,
 -- 
