@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E24C8C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:28:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E921BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:28:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236358AbiGVJ2n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 05:28:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50370 "EHLO
+        id S236528AbiGVJ2r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 05:28:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236471AbiGVJ2H (ORCPT
+        with ESMTP id S236537AbiGVJ21 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 05:28:07 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38901B5C90;
-        Fri, 22 Jul 2022 02:17:39 -0700 (PDT)
+        Fri, 22 Jul 2022 05:28:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7E0CCB77A;
+        Fri, 22 Jul 2022 02:17:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C1A6EB827BE;
-        Fri, 22 Jul 2022 09:17:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1E3DC341C6;
-        Fri, 22 Jul 2022 09:17:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D72461FFB;
+        Fri, 22 Jul 2022 09:17:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EF3CC341C6;
+        Fri, 22 Jul 2022 09:17:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658481456;
-        bh=/dc3mGi7bQmupPffWgNjejnw/63egPiFRy77Qic0Qag=;
+        s=korg; t=1658481461;
+        bh=HU0qyOGRgWKQDSN9xC4YQb7XWWeEPr1jwM7dKnZIpfY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2YiCPFBjMFqfNBWCyvbXkJXNUXpTkmqZYFJ/P8oe5y9taN/ZSfBYIP6KGwRdv8i42
-         qpr1008iLasKg3lsJ/K+KsthaGOUZNDQHtt2rco0nc4DTzC+PPt9/fW22Papx4PLYN
-         mimkdiAbWcn1Ts1pOyphUdiYSG2gch1XXboTIh2w=
+        b=mMOH6myrvyg+v3CMpjHJTQvlg3NXKWiUeQx60XAbQsHENb+s2i0ZA8Q/Af+QaPt2V
+         bN7UyeFzhljcmAgzsYlTKkicvWmDLEmSMqVO8joXeVAWNA7Kwi40fbV8+MrgnwNySc
+         1IgyL37DigHrtyY9wi5VHSNlysYmttj5Uqgs3DBQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>,
-        Borislav Petkov <bp@suse.de>
-Subject: [PATCH 5.15 80/89] x86/asm/32: Fix ANNOTATE_UNRET_SAFE use on 32-bit
-Date:   Fri, 22 Jul 2022 11:11:54 +0200
-Message-Id: <20220722091137.818560555@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Borislav Petkov <bp@suse.de>,
+        Kees Cook <keescook@chromium.org>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Subject: [PATCH 5.15 89/89] x86: Use -mindirect-branch-cs-prefix for RETPOLINE builds
+Date:   Fri, 22 Jul 2022 11:12:03 +0200
+Message-Id: <20220722091138.317453358@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220722091133.320803732@linuxfoundation.org>
 References: <20220722091133.320803732@linuxfoundation.org>
@@ -48,39 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiri Slaby <jslaby@suse.cz>
+From: Peter Zijlstra <peterz@infradead.org>
 
-commit 3131ef39fb03bbde237d0b8260445898f3dfda5b upstream.
+commit 68cf4f2a72ef8786e6b7af6fd9a89f27ac0f520d upstream.
 
-The build on x86_32 currently fails after commit
+In order to further enable commit:
 
-  9bb2ec608a20 (objtool: Update Retpoline validation)
+  bbe2df3f6b6d ("x86/alternative: Try inline spectre_v2=retpoline,amd")
 
-with:
+add the new GCC flag -mindirect-branch-cs-prefix:
 
-  arch/x86/kernel/../../x86/xen/xen-head.S:35: Error: no such instruction: `annotate_unret_safe'
+  https://gcc.gnu.org/g:2196a681d7810ad8b227bf983f38ba716620545e
+  https://gcc.gnu.org/bugzilla/show_bug.cgi?id=102952
+  https://bugs.llvm.org/show_bug.cgi?id=52323
 
-ANNOTATE_UNRET_SAFE is defined in nospec-branch.h. And head_32.S is
-missing this include. Fix this.
+to RETPOLINE=y builds. This should allow fully inlining retpoline,amd
+for GCC builds.
 
-Fixes: 9bb2ec608a20 ("objtool: Update Retpoline validation")
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/63e23f80-033f-f64e-7522-2816debbc367@kernel.org
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Acked-by: Nick Desaulniers <ndesaulniers@google.com>
+Link: https://lkml.kernel.org/r/20211119165630.276205624@infradead.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/head_32.S |    1 +
+ Makefile |    1 +
  1 file changed, 1 insertion(+)
 
---- a/arch/x86/kernel/head_32.S
-+++ b/arch/x86/kernel/head_32.S
-@@ -23,6 +23,7 @@
- #include <asm/cpufeatures.h>
- #include <asm/percpu.h>
- #include <asm/nops.h>
-+#include <asm/nospec-branch.h>
- #include <asm/bootparam.h>
- #include <asm/export.h>
- #include <asm/pgtable_32.h>
+--- a/Makefile
++++ b/Makefile
+@@ -687,6 +687,7 @@ endif
+ 
+ ifdef CONFIG_CC_IS_GCC
+ RETPOLINE_CFLAGS	:= $(call cc-option,-mindirect-branch=thunk-extern -mindirect-branch-register)
++RETPOLINE_CFLAGS	+= $(call cc-option,-mindirect-branch-cs-prefix)
+ RETPOLINE_VDSO_CFLAGS	:= $(call cc-option,-mindirect-branch=thunk-inline -mindirect-branch-register)
+ endif
+ ifdef CONFIG_CC_IS_CLANG
 
 
