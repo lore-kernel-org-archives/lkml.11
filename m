@@ -2,146 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D5C2CCA489
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 21:49:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB2A0C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 21:50:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233104AbiGVVt5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 17:49:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49528 "EHLO
+        id S235946AbiGVVuJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 17:50:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229593AbiGVVtz (ORCPT
+        with ESMTP id S235910AbiGVVuE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 17:49:55 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1887789AA1;
-        Fri, 22 Jul 2022 14:49:54 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id q41-20020a17090a1b2c00b001f2043c727aso5281005pjq.1;
-        Fri, 22 Jul 2022 14:49:54 -0700 (PDT)
+        Fri, 22 Jul 2022 17:50:04 -0400
+Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA42AB878A
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 14:50:03 -0700 (PDT)
+Received: by mail-qt1-x831.google.com with SMTP id h22so4481901qta.3
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 14:50:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=CKBAlUu6F1f72gxbqJqNkzmdfmg0eW3VcwrodrFMJSE=;
-        b=mLATIobE3QXc7FfUUCgVQLEfCmFrpMZ6GG9uG8a648HLGlUq/fRMW7D9IeWzvGVJak
-         yVwqGlUgGhwGkQuGIeZq62C5/vwA6JL3AX9oU0vn++3z4gJHP48Ig+3zIrTo2t5h0Ly0
-         PWzcgka4r+5QdEtQ1QUV0n/3UhrkHnHGUyhrj36GuUCI8qmalde+zda1FGWQeru79Nhn
-         eB3xFp/s2VffE2PnnHKo5JipBNAXgK+VtSnIUN91e5Tp5M6jQlbx++RmeZRTtvTTNpoU
-         fX8p9z8Rg5PN9epjGWBTUl9dntEPAFkIAQuR+Z4wag60+ixl6nNPg+hn179P7CZqSEuW
-         fpiA==
+        bh=lY5HwzJY1HkC64NTT7rUzz8AV8+0iYgX1A3GOOVUboY=;
+        b=gGSSMB3IuQ03GboemI4CuYy3gKQ3itbdhDripv2Bf+5aLkKcbxEm9Jnu1zZXTRqono
+         TXJSA1bwkt2PbWgNi5oXyZ1jbxHwdKSM9vFC2pDtqwsX9sJ2+RAPB8rYGSyCHM9B+2KE
+         /aw+T4CksZacPn6Na5E9FJpGS9Hc5wZbMmyz0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=CKBAlUu6F1f72gxbqJqNkzmdfmg0eW3VcwrodrFMJSE=;
-        b=xrKljn13VvvQyyjZjqBuIEkZyWcSZ2Nhcgkt70mPHr/rex5mnc0SbmJIbVE7jLCwuw
-         h0TkBwbTVYC0lHOGFwHylrTJTq9ZxTZ8y3n9lPWWL0IS2itIPNdwdDo2JmxD08VfMQza
-         n/f1brw4i10QNif6FBH0bE1LrSLJe4Sb/UdO5nADH0Yw5EeOCdOcU2CLbpCJZwSOxpto
-         zqCNTVvML0o63xYwLrM7QmU1yw55830s7gGIfSn9LIQU2b+M65mgGAQJ3UkxkbzgpIwv
-         yv5GPykbZlY/6ECNNr+nJsMEhAIwvEuLSWK6xxmeX8l7lK85SCkOVPjn5nJIPsWOirkX
-         CiYA==
-X-Gm-Message-State: AJIora8js7pgVY90rEj+eJU9GgjtfsJ+oeqmttjGi2/MrFxvo2SACgXw
-        /KOjT0I5Iyk5MwPWVkWZVn7zU+JJuNlq5Q==
-X-Google-Smtp-Source: AGRyM1s8ULJDRpoScEKM1GXhJVRCOVz9MUfNeZH/hFTgO9hmdkx0aULIZ3TJARZkHfVxC90HfRxKKw==
-X-Received: by 2002:a17:902:b701:b0:16d:12a7:c2fa with SMTP id d1-20020a170902b70100b0016d12a7c2famr1807096pls.67.1658526593300;
-        Fri, 22 Jul 2022 14:49:53 -0700 (PDT)
-Received: from localhost ([2409:10:24a0:4700:e8ad:216a:2a9d:6d0c])
-        by smtp.gmail.com with ESMTPSA id r143-20020a632b95000000b0040c9df2b060sm3821257pgr.30.2022.07.22.14.49.52
+        bh=lY5HwzJY1HkC64NTT7rUzz8AV8+0iYgX1A3GOOVUboY=;
+        b=bZm/Dt12ypYIThDq4u+cIGERjqraWHE223lgMqf4GnaVu054RkKCZSrcyyohLzVc32
+         +rYL54ZcYFhZA1djy5BcRPdM0j76m2wy1e/TIcsTZm3O9dwRCTYWvu4dIbR4fp7zmWdu
+         AmrMAew0/aiUA3OCHtwZkGbmfbcKyHt1si/MicbkpbgcqH4u09XrXAR6JpOikTk3/XPt
+         jhYox18jt6oxo+nizwx+OvU0u19olsdrOzN+nwY04N34tc9B/OvcHSTDlGZQrDefwjeu
+         gwH/8dlxCzvagz31Ciwka3uQPgJ0r5cKnfvoCaNGnzueFtqJBJN/PuBm8Boez6otX8au
+         PLUw==
+X-Gm-Message-State: AJIora+xYOROZD0az5ZRn5LQzv6wv2FrYdrZLbEYwXx7mZzLTYAdsBoa
+        fyRMnt8Fi9fBLDSgEsDRJaz72Zd9VYV36DYq
+X-Google-Smtp-Source: AGRyM1t0bg10Rc1JMRJaH05Q/CdwawRrdAHKfoEN8GtAxOYBq6POcf0qA1/DpBwWt1/i1yyXyEb5Mw==
+X-Received: by 2002:ac8:5e0d:0:b0:31f:239c:99c6 with SMTP id h13-20020ac85e0d000000b0031f239c99c6mr1969906qtx.189.1658526602771;
+        Fri, 22 Jul 2022 14:50:02 -0700 (PDT)
+Received: from jshargo (pool-108-14-42-16.nycmny.fios.verizon.net. [108.14.42.16])
+        by smtp.gmail.com with ESMTPSA id h22-20020ac87156000000b0031ef622a6a2sm3399575qtp.17.2022.07.22.14.50.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Jul 2022 14:49:52 -0700 (PDT)
-From:   Stafford Horne <shorne@gmail.com>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Stafford Horne <shorne@gmail.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>, Guo Ren <guoren@kernel.org>,
-        linux-riscv@lists.infradead.org, linux-csky@vger.kernel.org
-Subject: [PATCH v6 0/4] Cleanups for asm-generic/pci.h
-Date:   Sat, 23 Jul 2022 06:49:40 +0900
-Message-Id: <20220722214944.831438-1-shorne@gmail.com>
-X-Mailer: git-send-email 2.36.1
+        Fri, 22 Jul 2022 14:50:02 -0700 (PDT)
+From:   Jim Shargo <jshargo@chromium.org>
+To:     jshargo@google.com,
+        Rodrigo Siqueira <rodrigosiqueiramelo@gmail.com>,
+        Melissa Wen <melissa.srw@gmail.com>,
+        Haneen Mohammed <hamohammed.sa@gmail.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Jonathan Corbet <corbet@lwn.net>
+Cc:     Jim Shargo <jshargo@chromium.org>, dri-devel@lists.freedesktop.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 0/5] drm/vkms: Add ConfigFS Support
+Date:   Fri, 22 Jul 2022 17:50:01 -0400
+Message-Id: <20220722215001.1380608-1-jshargo@chromium.org>
+X-Mailer: git-send-email 2.37.1.359.gd136c6c3e2-goog
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When reviewing the OpenRISC PCI support patch Arnd suggested that
-we avoid copying arm64 and riscv asm/pci.h and moving that to be
-the new asm-generic/pci.h.
+Intro
+=====
 
-This patch does that by first removing the old pci.h with the definition of
-pci_get_legacy_ide_irq completely. We replace it with references to
-ATA_PRIMARY_IRQ and ATA_SECONDARY_IRQ macros.
+This patchset adds basic ConfigFS support to VKMS, allowing users to
+build new DRM devices with user-defined DRM objects and object
+relationships by creating, writing, and symlinking files.
 
-Next, we do further cleanups moving isa_dma_bridge_buggy to be only
-x86_32 specific.  This avoids having to have it in dma.h or pci.h headers.
+Usage
+=====
 
-Next, we create the new pci.h definition.
+Modprobe VKMS and mount ConfigFS:
 
-Since v5:
- - Remove include of linux/types.h in asm-generic/pci
- - Add Acked-by from Guo Ren on csky patch
-Since v4:
- - Move some pci_get_legacy_ide_irq and isa_dma_bridge_buggy cleanups
-   into the correct patches.
- - Add csky ARCH_GENERIC_PCI_MMAP_RESOURCE definition patch, suggested by Arnd
-Since v3:
- - We now completely remove pci_get_legacy_ide_irq and use libata.h macros.
- - Added a new patch to remove isa_dma_bridge_buggy in architectures
-   other than x86_32.
-Since v2:
- - Remove pci_get_legacy_ide_irq from m68k.
-Since v1:
- - Remove definition of pci_get_legacy_ide_irq on architectures
-   not using CONFIG_PNP, which eliminated most.
- - Add ifdef around PCIBIOS_MIN_MEM for consistency.
+  $ mkdir -p /config/; mount -t configfs
+  $ modprobe vkms enable_overlay=1 enable_cursor=1 enable_writeback=1
 
-Stafford Horne (4):
-  PCI: Remove pci_get_legacy_ide_irq and asm-generic/pci.h
-  PCI: Move isa_dma_bridge_buggy out of dma.h
-  csky: PCI: Define ARCH_GENERIC_PCI_MMAP_RESOURCE
-  asm-generic: Add new pci.h and use it
+This will create a `/config/vkms` directory, where users may create
+new VKMS devices. The standard default device is still created, so
+existing use-cases should be unaffected.
 
- arch/alpha/include/asm/dma.h           |  9 ------
- arch/alpha/include/asm/pci.h           |  6 ----
- arch/arc/include/asm/dma.h             |  5 ----
- arch/arm/include/asm/dma.h             |  6 ----
- arch/arm/include/asm/pci.h             |  5 ----
- arch/arm64/include/asm/pci.h           | 18 ++----------
- arch/csky/include/asm/pci.h            | 23 ++-------------
- arch/ia64/include/asm/dma.h            |  2 --
- arch/ia64/include/asm/pci.h            |  6 ----
- arch/m68k/include/asm/dma.h            |  6 ----
- arch/m68k/include/asm/pci.h            |  2 --
- arch/microblaze/include/asm/dma.h      |  6 ----
- arch/mips/include/asm/dma.h            |  8 ------
- arch/mips/include/asm/pci.h            |  6 ----
- arch/parisc/include/asm/dma.h          |  6 ----
- arch/parisc/include/asm/pci.h          |  5 ----
- arch/powerpc/include/asm/dma.h         |  6 ----
- arch/powerpc/include/asm/pci.h         |  1 -
- arch/riscv/include/asm/pci.h           | 31 +++-----------------
- arch/s390/include/asm/dma.h            |  6 ----
- arch/s390/include/asm/pci.h            |  1 -
- arch/sh/include/asm/dma.h              |  6 ----
- arch/sh/include/asm/pci.h              |  6 ----
- arch/sparc/include/asm/dma.h           |  8 ------
- arch/sparc/include/asm/pci.h           |  9 ------
- arch/um/include/asm/pci.h              | 24 ++--------------
- arch/x86/include/asm/dma.h             |  8 ------
- arch/x86/include/asm/pci.h             |  3 --
- arch/xtensa/include/asm/dma.h          |  7 -----
- arch/xtensa/include/asm/pci.h          |  3 --
- drivers/comedi/drivers/comedi_isadma.c |  2 +-
- drivers/pci/pci.c                      |  2 ++
- drivers/pci/quirks.c                   |  4 ++-
- drivers/pnp/resource.c                 |  5 ++--
- include/asm-generic/pci.h              | 39 +++++++++++++++++---------
- include/linux/isa-dma.h                | 14 +++++++++
- sound/core/isadma.c                    |  2 +-
- 37 files changed, 60 insertions(+), 246 deletions(-)
- create mode 100644 include/linux/isa-dma.h
+Creating a new device happens in three stages:
+
+  1) Create a new directory to represent a new device:
+       $ mkdir /config/vkms/dev
+
+  2) Populate the new device with crtcs, planes, connectors, encoders,
+     and CRTCs by mkdir'ing in the appropriate directories. Connect the
+     objects via symlinks.
+
+  3) To register the device:
+       $ echo 1 > /config/vkms/dev/is_registered
+
+If the write is successful, you have a new VKMS device ready to use!
+
+See the updated vkms.rst for more details and a full example.
+
+Changes within VKMS
+===================
+
+The most meaningful change within VKMS is the introduction of a list
+of "cards" representing individual virtual drivers. Each card
+maintains its own devices, arrays of objects, and output/writeback
+machinery.
+
+Until cards are registered, all of their data lives in within the
+ConfigFS tree. Only during registration do we interface with DRM at
+all to create the device.
+
+Due to limitations with ConfigFS, the default device is a special
+case, without all of the objects represented in its ConfigFS
+directory.
+
+Testing
+=======
+
+Suspend tests are not working in my VM, so I skipped those. Otherwise,
+here are the tests that I have been running:
+
+  $ igt-gpu-tools/scripts/run-tests.sh -x ".*suspend.*" \
+        -t ".*kms_flip.*" \
+        -t ".*kms_writeback.*" \
+        -t ".*kms_cursor_crc*" \
+        -t ".*kms_plane.*"
+
+I've observed no changes between passed/failed tests before and after
+my changes on the default device.
+
+IGT revision: eddc67c5c85b8ee6eb4d13752ca43da5073dc985
+
+I'll also note that I've been working on a VKMS test suite in IGT that
+exercises the new ConfigFS behavior, and that it's a work-in-progress.
+
+Future Work
+===========
+
+This should be the biggest and most invasive change in VKMS to make it
+more configurable and able to mimic real devices. That said, it should
+serve as a basis for additional useful features, including:
+
+  - Simulating hot-plugging by keeping the connectors directory live
+    and allowing users to add/remove connectors after the device is
+    registered.
+  - Additional properties could be turned on and off, or tuned, based
+    on files within object directories. For instance, GAMMA/DEGAMMA
+    LUT sizes could be configurable per-device, or support for
+    individual formats could be turned on and off.
+
+Additional Notes
+================
+
+This is my first kernel patchset, and though I've had it reviewed by
+my team (with a lot of of kernel/drm expertise), I recommend reading
+it with a bit of extra scrutiny. As you can tell by the fact this
+didn't get mailed with the other patches :P.
+
+Thanks!
+
+Jim Shargo (5):
+  drm/vkms: Merge default_config and device
+  drm/vkms: VKMS now supports more than one "card"
+  drm/vkms: Support multiple objects (crtcs, etc.) per card
+  drm/vkms: Add ConfigFS scaffolding to VKMS
+  drm/vkms: Support registering configfs devices
+
+ Documentation/gpu/vkms.rst            |  76 ++++
+ drivers/gpu/drm/Kconfig               |   1 +
+ drivers/gpu/drm/vkms/Makefile         |   1 +
+ drivers/gpu/drm/vkms/vkms_composer.c  |  28 +-
+ drivers/gpu/drm/vkms/vkms_configfs.c  | 546 ++++++++++++++++++++++++++
+ drivers/gpu/drm/vkms/vkms_crtc.c      |  88 +++--
+ drivers/gpu/drm/vkms/vkms_drv.c       | 204 ++++++----
+ drivers/gpu/drm/vkms/vkms_drv.h       | 173 ++++++--
+ drivers/gpu/drm/vkms/vkms_output.c    | 335 +++++++++++++---
+ drivers/gpu/drm/vkms/vkms_plane.c     |  43 +-
+ drivers/gpu/drm/vkms/vkms_writeback.c |  27 +-
+ 11 files changed, 1288 insertions(+), 234 deletions(-)
+ create mode 100644 drivers/gpu/drm/vkms/vkms_configfs.c
 
 -- 
-2.36.1
+2.37.1.359.gd136c6c3e2-goog
 
