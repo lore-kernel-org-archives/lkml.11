@@ -2,142 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A095ECCA47F
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:26:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7163EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:26:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236390AbiGVJ0D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 05:26:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50142 "EHLO
+        id S236306AbiGVJ0T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 05:26:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236361AbiGVJZd (ORCPT
+        with ESMTP id S236287AbiGVJZt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 05:25:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E7C2C5D63;
-        Fri, 22 Jul 2022 02:16:15 -0700 (PDT)
+        Fri, 22 Jul 2022 05:25:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45760C5D6D;
+        Fri, 22 Jul 2022 02:16:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8147EB827B7;
-        Fri, 22 Jul 2022 09:16:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39E7CC341C6;
-        Fri, 22 Jul 2022 09:16:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658481372;
-        bh=+MdnIBEBIPvCfL0UO13oheMzgvW0x0ZU/P8ra2XGuic=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rlAtZjYk4YLxZerW3Gw+L9EsV8S+0KUHFSFEfWQJAWGwX8LIUQXTtr+Hypq/IRSL6
-         gCuaaAK7vUwsLQOeXljYmU4fUx9+fxxJOhVCrphK+ogWPcS8b7vO8cC8EilpAai/Ok
-         puvpJEocCUFS1UzrfhqOEtd7NpuYb5aEjSL7ebZqcLMYxtOFtfgHSwBxRdxTf+SmM/
-         XRFaI15q1RMXuIc5QMYMLglNyIuOjqIzIe7kmoK7189EVgKrhqNx9sBY4J2YKv6HNz
-         Q4W7b2aIjj7uaUDPsBxLHYegdH5P7rgs1x5oHsS2KVBjKXZiIvM95K7f9QQiYGbC8v
-         IMa1+X6PvjVWw==
-Date:   Fri, 22 Jul 2022 10:16:05 +0100
-From:   Will Deacon <will@kernel.org>
-To:     Huacai Chen <chenhuacai@loongson.cn>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Huacai Chen <chenhuacai@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        loongarch@lists.linux.dev, linux-arch@vger.kernel.org,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Feiyang Chen <chenfeiyang@loongson.cn>
-Subject: Re: [PATCH V5 3/4] mm/sparse-vmemmap: Generalise
- vmemmap_populate_hugepages()
-Message-ID: <20220722091604.GD18125@willie-the-truck>
-References: <20220721130419.1904711-1-chenhuacai@loongson.cn>
- <20220721130419.1904711-4-chenhuacai@loongson.cn>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 839DBB827C9;
+        Fri, 22 Jul 2022 09:16:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E408CC341C6;
+        Fri, 22 Jul 2022 09:16:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658481378;
+        bh=zvjDX8b18xJxifx02nx4to4MscGcD0clud+Y979qlDs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=StMQW3zM05b0A2lze7wyiIBzCml2WU+tIbTM5IINTUummlKoYdFSQAzGr1KHwv+it
+         jKQ+wL7Ry7y7Gh+/gND1vUDzZW3R8eVvTYf4fOZxWTHcyQXMcbHXTzE/q1q1YvxyTL
+         HlQE3mdk3DxUdPbD3EkaHoOM2cFc1uJhDuc/wyhM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
+        Borislav Petkov <bp@suse.de>
+Subject: [PATCH 5.15 75/89] x86/bugs: Do not enable IBPB-on-entry when IBPB is not supported
+Date:   Fri, 22 Jul 2022 11:11:49 +0200
+Message-Id: <20220722091137.539782973@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220722091133.320803732@linuxfoundation.org>
+References: <20220722091133.320803732@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220721130419.1904711-4-chenhuacai@loongson.cn>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 09:04:18PM +0800, Huacai Chen wrote:
-> diff --git a/mm/sparse-vmemmap.c b/mm/sparse-vmemmap.c
-> index 0abcb0a5f1b5..eafd084b8e19 100644
-> --- a/mm/sparse-vmemmap.c
-> +++ b/mm/sparse-vmemmap.c
-> @@ -694,6 +694,69 @@ int __meminit vmemmap_populate_basepages(unsigned long start, unsigned long end,
->  	return vmemmap_populate_range(start, end, node, altmap, NULL);
->  }
->  
-> +void __weak __meminit vmemmap_set_pmd(pmd_t *pmd, void *p, int node,
-> +				      unsigned long addr, unsigned long next)
-> +{
-> +}
-> +
-> +int __weak __meminit vmemmap_check_pmd(pmd_t *pmd, int node, unsigned long addr,
-> +				       unsigned long next)
-> +{
-> +	return 0;
-> +}
-> +
-> +int __meminit vmemmap_populate_hugepages(unsigned long start, unsigned long end,
-> +					 int node, struct vmem_altmap *altmap)
-> +{
-> +	unsigned long addr;
-> +	unsigned long next;
-> +	pgd_t *pgd;
-> +	p4d_t *p4d;
-> +	pud_t *pud;
-> +	pmd_t *pmd;
-> +
-> +	for (addr = start; addr < end; addr = next) {
-> +		next = pmd_addr_end(addr, end);
-> +
-> +		pgd = vmemmap_pgd_populate(addr, node);
-> +		if (!pgd)
-> +			return -ENOMEM;
-> +
-> +		p4d = vmemmap_p4d_populate(pgd, addr, node);
-> +		if (!p4d)
-> +			return -ENOMEM;
-> +
-> +		pud = vmemmap_pud_populate(p4d, addr, node);
-> +		if (!pud)
-> +			return -ENOMEM;
-> +
-> +		pmd = pmd_offset(pud, addr);
-> +		if (pmd_none(READ_ONCE(*pmd))) {
-> +			void *p;
-> +
-> +			p = vmemmap_alloc_block_buf(PMD_SIZE, node, altmap);
-> +			if (p) {
-> +				vmemmap_set_pmd(pmd, p, node, addr, next);
-> +				continue;
-> +			} else if (altmap) {
-> +				/*
-> +				 * No fallback: In any case we care about, the
-> +				 * altmap should be reasonably sized and aligned
-> +				 * such that vmemmap_alloc_block_buf() will always
-> +				 * succeed. If there is no more space in the altmap
-> +				 * and we'd have to fallback to PTE (highly unlikely).
+From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 
-Can you tweak the last couple of sentences please, as they don't make sense
-to me? To be specific, I'd suggest replacing:
+commit 2259da159fbe5dba8ac00b560cf00b6a6537fa18 upstream.
 
-  "If there is no more space in the altmap and we'd have to fallback to PTE
-  (highly unlikely). That could indicate an altmap-size configuration
-  issue."
+There are some VM configurations which have Skylake model but do not
+support IBPB. In those cases, when using retbleed=ibpb, userspace is going
+to be killed and kernel is going to panic.
 
-with something like:
+If the CPU does not support IBPB, warn and proceed with the auto option. Also,
+do not fallback to IBPB on AMD/Hygon systems if it is not supported.
 
-  "For consistency with the PTE case, return an error here as failure could
-   indicate a configuration issue with the size of the altmap."
+Fixes: 3ebc17006888 ("x86/bugs: Add retbleed=ibpb")
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/x86/kernel/cpu/bugs.c |    7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-With that:
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -858,7 +858,10 @@ static void __init retbleed_select_mitig
+ 		break;
+ 
+ 	case RETBLEED_CMD_IBPB:
+-		if (IS_ENABLED(CONFIG_CPU_IBPB_ENTRY)) {
++		if (!boot_cpu_has(X86_FEATURE_IBPB)) {
++			pr_err("WARNING: CPU does not support IBPB.\n");
++			goto do_cmd_auto;
++		} else if (IS_ENABLED(CONFIG_CPU_IBPB_ENTRY)) {
+ 			retbleed_mitigation = RETBLEED_MITIGATION_IBPB;
+ 		} else {
+ 			pr_err("WARNING: kernel not compiled with CPU_IBPB_ENTRY.\n");
+@@ -873,7 +876,7 @@ do_cmd_auto:
+ 		    boot_cpu_data.x86_vendor == X86_VENDOR_HYGON) {
+ 			if (IS_ENABLED(CONFIG_CPU_UNRET_ENTRY))
+ 				retbleed_mitigation = RETBLEED_MITIGATION_UNRET;
+-			else if (IS_ENABLED(CONFIG_CPU_IBPB_ENTRY))
++			else if (IS_ENABLED(CONFIG_CPU_IBPB_ENTRY) && boot_cpu_has(X86_FEATURE_IBPB))
+ 				retbleed_mitigation = RETBLEED_MITIGATION_IBPB;
+ 		}
+ 
 
-Acked-by: Will Deacon <will@kernel.org>
 
-Will
