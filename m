@@ -2,68 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 707A9C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 20:08:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6849AC43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 20:08:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236705AbiGVUH7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 16:07:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34608 "EHLO
+        id S236652AbiGVUII (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 16:08:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236686AbiGVUHz (ORCPT
+        with ESMTP id S236715AbiGVUIB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 16:07:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67C768CE89
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 13:07:54 -0700 (PDT)
+        Fri, 22 Jul 2022 16:08:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CE71AF72B
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 13:07:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 256DFB81EDB
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 20:07:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E2A3BC341C6;
-        Fri, 22 Jul 2022 20:07:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 01C4B61FE7
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 20:07:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 67239C36AE3;
+        Fri, 22 Jul 2022 20:07:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658520471;
-        bh=yvLUvjeW4JCCFMQx/C+ldKvP9tMF7d3pHBZD2YskKoU=;
+        s=k20201202; t=1658520478;
+        bh=047vuiVh4+fUv3R154SIkND9ErP2jOTV1nb7kERwWyY=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=pNXeGkhPBrf6C2GcZAh049d0OUjyBVeLLrmwnWYgvLVA9Q2vmNmO/eHFUTsJFTqrw
-         sRzCec4ztqSHzW1JBw3nt8ORcJYVBicdb382aB4jjG+HfA2ddGo+SSk+PmhATvlZiG
-         0X1YdCaChC4vEaR5CeD/bNvuiHVwiQ4kwqmXqdN9mf4MHsDNx/gYkQqISXheLwPkBU
-         tjNipcBcemwZ81ZuyLmSMHZcHHoJaB5ZU86JRv93RZtlaTzGxS2Fvtu7StyQZQODMK
-         Vt60iSpSKXIOEsXTrvVoylujtrjZiGPPeLAPoPovbAnZYnH6aHkJUOyeKWCn8gAPqc
-         FD/T/4vrPODWg==
+        b=ltSWbRFuZPSAb7I1djmAzkCi3V/IISG/hxhZntTTTA7F4GYy2ZDp/H/1Jxj3ul4Rq
+         qB//eQyMKBLEWPHdzFlWrz3LgSyYT8Kp9T0Lrfnqo9JMNWtn2cY4j/vQ3ejCY2VKu0
+         05XBIgX4u030Y2z+8XcoqYFczVpM0eQoWdnPHdqqONBms29JjwFi4q2jYmXfMi6FXZ
+         7u7dUrPXAprD9c2UiCMf5rdT+CVIqPfpI2gH+YbqZeGjQZuQ4P7V57eudp4NlzP/fK
+         3sBZGCkiChEPirjfzl+t5I+CqhBCP9nNYs7jvv8toMByOBPOupBicOUxTGv1bkGkiH
+         W+fzHcCRSbJrg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id CFD0BE451B3;
-        Fri, 22 Jul 2022 20:07:51 +0000 (UTC)
-Subject: Re: [git pull] drm fixes for 5.19-rc8
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 54C20D9DDDD;
+        Fri, 22 Jul 2022 20:07:58 +0000 (UTC)
+Subject: Re: [GIT PULL] RISC-V Fixes for 5.19-rc8
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <CAPM=9tx177pqAbBTC586NRwr+kbx=_pQjQwKpFjB+442m-uSdw@mail.gmail.com>
-References: <CAPM=9tx177pqAbBTC586NRwr+kbx=_pQjQwKpFjB+442m-uSdw@mail.gmail.com>
-X-PR-Tracked-List-Id: Direct Rendering Infrastructure - Development
- <dri-devel.lists.freedesktop.org>
-X-PR-Tracked-Message-Id: <CAPM=9tx177pqAbBTC586NRwr+kbx=_pQjQwKpFjB+442m-uSdw@mail.gmail.com>
-X-PR-Tracked-Remote: git://anongit.freedesktop.org/drm/drm tags/drm-fixes-2022-07-22
-X-PR-Tracked-Commit-Id: 7f5ec14a4e07a2a78fbde069709d5c8806882be2
+In-Reply-To: <mhng-84a83727-f880-4d8a-b9df-0c45accff355@palmer-mbp2014>
+References: <mhng-84a83727-f880-4d8a-b9df-0c45accff355@palmer-mbp2014>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <mhng-84a83727-f880-4d8a-b9df-0c45accff355@palmer-mbp2014>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git tags/riscv-for-linus-5.19-rc8
+X-PR-Tracked-Commit-Id: c1f6eff304e4dfa4558b6a8c6b2d26a91db6c998
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 8e65afba6baaa1317efc4038cbced1268c6e2f6b
-Message-Id: <165852047184.15752.15754098115255802753.pr-tracker-bot@kernel.org>
-Date:   Fri, 22 Jul 2022 20:07:51 +0000
-To:     Dave Airlie <airlied@gmail.com>
+X-PR-Merge-Commit-Id: 70664fc10c0d722ec79d746d8ac1db8546c94114
+Message-Id: <165852047834.15752.10120575058452443828.pr-tracker-bot@kernel.org>
+Date:   Fri, 22 Jul 2022 20:07:58 +0000
+To:     Palmer Dabbelt <palmer@rivosinc.com>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        LKML <linux-kernel@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 22 Jul 2022 14:15:37 +1000:
+The pull request you sent on Fri, 22 Jul 2022 08:52:11 -0700 (PDT):
 
-> git://anongit.freedesktop.org/drm/drm tags/drm-fixes-2022-07-22
+> git://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git tags/riscv-for-linus-5.19-rc8
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/8e65afba6baaa1317efc4038cbced1268c6e2f6b
+https://git.kernel.org/torvalds/c/70664fc10c0d722ec79d746d8ac1db8546c94114
 
 Thank you!
 
