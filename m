@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05A27C43334
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:12:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37A43C43334
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 09:12:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235426AbiGVJMs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 05:12:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39316 "EHLO
+        id S235328AbiGVJMw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 05:12:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235379AbiGVJMK (ORCPT
+        with ESMTP id S235392AbiGVJMO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 05:12:10 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2243A0B93;
-        Fri, 22 Jul 2022 02:10:02 -0700 (PDT)
+        Fri, 22 Jul 2022 05:12:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A606AC53;
+        Fri, 22 Jul 2022 02:10:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 36BFFCE28A0;
-        Fri, 22 Jul 2022 09:10:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DA5CC341C6;
-        Fri, 22 Jul 2022 09:09:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 18F6161F4C;
+        Fri, 22 Jul 2022 09:10:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23881C341C6;
+        Fri, 22 Jul 2022 09:10:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658480999;
-        bh=N7xRo/S7eUzo2YjbTTxDeIjczUHyBLeWeth9bT8iJ9U=;
+        s=korg; t=1658481005;
+        bh=afUNIL8EugqzhYqa1lgD+Lbf2agMvsyXkNXYavc+OXY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SY6nIOe699KKlb80/wN+uHPI17oAZLc6NIWfvZc6myRuG5LaM6sm0PcdI4rmKxyKG
-         RH//mZrEIp4PssW2nPgMqi3rHelCIY+ys0vsBY9iTq9IOFgEZuW3SzfqWIqR65Lww9
-         mzcyH7EwVfNu08D1Q7toBIMA9368bjiCHqoeyJ5Q=
+        b=HT+lNoSt/P1tfcVroxro5KcZO/HlAPBMc/9Qocbq89xwb5bzMnJcKL+5yNDjjMUpd
+         cjZCARrgP5iyo1Bo1JXF5HBOYWLJrWTuIfys4D/jINKvx7C99X099hsa+Lfs2cXReX
+         LG7v4MF/WZ/tR1+lgUsgRgwBdFkEp2gB87jf7XEw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Borislav Petkov <bp@suse.de>,
+        Paolo Bonzini <pbonzini@redhat.com>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Subject: [PATCH 5.18 43/70] x86/speculation: Fix SPEC_CTRL write on SMT state change
-Date:   Fri, 22 Jul 2022 11:07:38 +0200
-Message-Id: <20220722090653.130842311@linuxfoundation.org>
+Subject: [PATCH 5.18 45/70] x86/speculation: Remove x86_spec_ctrl_mask
+Date:   Fri, 22 Jul 2022 11:07:40 +0200
+Message-Id: <20220722090653.241146338@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220722090650.665513668@linuxfoundation.org>
 References: <20220722090650.665513668@linuxfoundation.org>
@@ -52,31 +52,85 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Josh Poimboeuf <jpoimboe@kernel.org>
 
-commit 56aa4d221f1ee2c3a49b45b800778ec6e0ab73c5 upstream.
+commit acac5e98ef8d638a411cfa2ee676c87e1973f126 upstream.
 
-If the SMT state changes, SSBD might get accidentally disabled.  Fix
-that.
+This mask has been made redundant by kvm_spec_ctrl_test_value().  And it
+doesn't even work when MSR interception is disabled, as the guest can
+just write to SPEC_CTRL directly.
 
 Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/cpu/bugs.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/x86/kernel/cpu/bugs.c |   31 +------------------------------
+ 1 file changed, 1 insertion(+), 30 deletions(-)
 
 --- a/arch/x86/kernel/cpu/bugs.c
 +++ b/arch/x86/kernel/cpu/bugs.c
-@@ -1451,7 +1451,8 @@ static void __init spectre_v2_select_mit
+@@ -86,12 +86,6 @@ u64 spec_ctrl_current(void)
+ EXPORT_SYMBOL_GPL(spec_ctrl_current);
  
- static void update_stibp_msr(void * __unused)
+ /*
+- * The vendor and possibly platform specific bits which can be modified in
+- * x86_spec_ctrl_base.
+- */
+-static u64 __ro_after_init x86_spec_ctrl_mask = SPEC_CTRL_IBRS;
+-
+-/*
+  * AMD specific MSR info for Speculative Store Bypass control.
+  * x86_amd_ls_cfg_ssbd_mask is initialized in identify_boot_cpu().
+  */
+@@ -146,10 +140,6 @@ void __init check_bugs(void)
+ 	if (boot_cpu_has(X86_FEATURE_MSR_SPEC_CTRL))
+ 		rdmsrl(MSR_IA32_SPEC_CTRL, x86_spec_ctrl_base);
+ 
+-	/* Allow STIBP in MSR_SPEC_CTRL if supported */
+-	if (boot_cpu_has(X86_FEATURE_STIBP))
+-		x86_spec_ctrl_mask |= SPEC_CTRL_STIBP;
+-
+ 	/* Select the proper CPU mitigations before patching alternatives: */
+ 	spectre_v1_select_mitigation();
+ 	spectre_v2_select_mitigation();
+@@ -208,19 +198,10 @@ void __init check_bugs(void)
+ void
+ x86_virt_spec_ctrl(u64 guest_spec_ctrl, u64 guest_virt_spec_ctrl, bool setguest)
  {
--	write_spec_ctrl_current(x86_spec_ctrl_base, true);
-+	u64 val = spec_ctrl_current() | (x86_spec_ctrl_base & SPEC_CTRL_STIBP);
-+	write_spec_ctrl_current(val, true);
- }
+-	u64 msrval, guestval, hostval = spec_ctrl_current();
++	u64 msrval, guestval = guest_spec_ctrl, hostval = spec_ctrl_current();
+ 	struct thread_info *ti = current_thread_info();
  
- /* Update x86_spec_ctrl_base in case SMT state changed. */
+-	/* Is MSR_SPEC_CTRL implemented ? */
+ 	if (static_cpu_has(X86_FEATURE_MSR_SPEC_CTRL)) {
+-		/*
+-		 * Restrict guest_spec_ctrl to supported values. Clear the
+-		 * modifiable bits in the host base value and or the
+-		 * modifiable bits from the guest value.
+-		 */
+-		guestval = hostval & ~x86_spec_ctrl_mask;
+-		guestval |= guest_spec_ctrl & x86_spec_ctrl_mask;
+-
+ 		if (hostval != guestval) {
+ 			msrval = setguest ? guestval : hostval;
+ 			wrmsrl(MSR_IA32_SPEC_CTRL, msrval);
+@@ -1659,16 +1640,6 @@ static enum ssb_mitigation __init __ssb_
+ 	}
+ 
+ 	/*
+-	 * If SSBD is controlled by the SPEC_CTRL MSR, then set the proper
+-	 * bit in the mask to allow guests to use the mitigation even in the
+-	 * case where the host does not enable it.
+-	 */
+-	if (static_cpu_has(X86_FEATURE_SPEC_CTRL_SSBD) ||
+-	    static_cpu_has(X86_FEATURE_AMD_SSBD)) {
+-		x86_spec_ctrl_mask |= SPEC_CTRL_SSBD;
+-	}
+-
+-	/*
+ 	 * We have three CPU feature flags that are in play here:
+ 	 *  - X86_BUG_SPEC_STORE_BYPASS - CPU is susceptible.
+ 	 *  - X86_FEATURE_SSBD - CPU is able to turn off speculative store bypass
 
 
