@@ -2,250 +2,311 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61EBDC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 16:36:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A50C5C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 16:38:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235799AbiGVQgy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 12:36:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36132 "EHLO
+        id S235807AbiGVQiI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 12:38:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229567AbiGVQgw (ORCPT
+        with ESMTP id S229567AbiGVQiG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 12:36:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4E1FCE07;
-        Fri, 22 Jul 2022 09:36:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6E5E5B8296D;
-        Fri, 22 Jul 2022 16:36:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25DE9C341C6;
-        Fri, 22 Jul 2022 16:36:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658507809;
-        bh=QvtylitPgJHwkxI60rDk7regVvGnoYVxaRSt9ICAKf8=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=M9j0uO4MFq5+QCSs2pbVtqQWQmZs1G2CVcSlFU0B4BO5nLLTRWQTeaLDVwU2HTcgK
-         z26a+WHYUdxvbvcNjuus/MoA0JCW4yb7yCUbtEIt5wresfDTgZOYgD8Laow8HhuSMl
-         XAgYGWLa94FkEX9wTUiRhvRwJFIJ9JiroNvWgS8Vp8sTaOgz8JUwKl86aCZenIJNLB
-         rWJm0pwPhW7D+fGnd4PBT205otGTSJKxj5BGj2Tm9U+RH6xVlB1Y+/+v6CDiR0kuch
-         aelv4xSHjqlj7PcJTJ0Gw2x5PESHVvI7Xvqa8Dfr97kVf3v+HJosBh+zvfr+p640H9
-         7htZpi5MKFmig==
-Received: by mail-vs1-f49.google.com with SMTP id k129so4807326vsk.2;
-        Fri, 22 Jul 2022 09:36:49 -0700 (PDT)
-X-Gm-Message-State: AJIora8nA98O9oVGOsBb7L9XbVZv8NHiokgUHkJNl+2/IHFtwg1i5ojF
-        FH4vYhLeeR8Jrce300IV53p6sn/M7I/3EWqkfQ==
-X-Google-Smtp-Source: AGRyM1uWhGX+etc+342QMYfQjmA2giDXHKBGiyzp4++TdSmI/uchUQLzp2Q6hnGpgIxXHKzp2ZVUKAJRo7p2eytPGXw=
-X-Received: by 2002:a67:c088:0:b0:358:bb1:fdf7 with SMTP id
- x8-20020a67c088000000b003580bb1fdf7mr292345vsi.85.1658507808011; Fri, 22 Jul
- 2022 09:36:48 -0700 (PDT)
+        Fri, 22 Jul 2022 12:38:06 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 314159B1B1
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 09:38:05 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id b11so9419887eju.10
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 09:38:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=NBunux7mrOollq5hvSvo0a9Z7T8alUFOipmy11b8qZI=;
+        b=cUEbeCebAbKQS1jL4ZGdvTqwDQ16U0gg1PtMxvOVjay61fi7yi78kFAf8D6B4Zq58Q
+         LXaKfczR6cXxB6Mk7JNLOEuUaRPid6TQctJzlfIpkqsimD6mHKU7cX1GiFEgeCVl3rHl
+         MesDi+p9StsN8j+/1JLXf4M1hzWKc7spPbu8oNhNFHBk1Ro1jdyvZy+OwLTcoPs0xdKZ
+         1cQSXav1b3RT1MJ+2Ez816mVDeUEdHdGHCwefUcYEz8GhDVr6Pq0dn1tv6hRzUH74R+v
+         UxOabNcQbdY+kWjhQqh2hPY6QsjLrn6yS/FOf7qinJmo/KNCJY9E+ZZGjnPhPFcu+TkD
+         Ue+w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=NBunux7mrOollq5hvSvo0a9Z7T8alUFOipmy11b8qZI=;
+        b=7t69h5QCWhaQpLeemrtPGwOhQUAKUGkAd0EItxpzRgRRCJgIAftTmnFF1R8KPYlJK2
+         zOplYQ2bs8IBDqzIOPGCp7iljbjQNjgOadCcF+BsGhywgDnIPchR1Dh1ofSS6Uy8dno9
+         N9YO5wxmRcePalplDDe5tmE3+nmmaZEHsR/R0By68Gs5ElKskINox9y1RPmf3GtR0ntS
+         lv0QZhBHhjbHq38+6+5JH+wcI50UhBjv6y1VycYZ8RGtxMHlkgG1MEH7lQybE0bm7Rzj
+         LrRzO+eSXUYMK3qNYidtkGhKhoRCUF1bSn0bCqCYobq/U01MbMEMKGZ2SF/bLbVH/eZ7
+         JeZg==
+X-Gm-Message-State: AJIora8aZcoszCtAYnUuXmaQoVxnepVicmCwl02Q4KsglMGccKNwVRk/
+        3wKlloN6g4w4zFyEP0T8A28wGz3Ao+DeNklcd7o=
+X-Google-Smtp-Source: AGRyM1vfG1FdDkypi3cf3sGGoFSF7pChv8ocZB4j4um4C0V+fOmPx6jWX2b5fKGI+QvgdHpKIy9jjl8AymCJjYHCaUQ=
+X-Received: by 2002:a17:907:a05b:b0:72b:33f9:f927 with SMTP id
+ gz27-20020a170907a05b00b0072b33f9f927mr561192ejc.707.1658507883630; Fri, 22
+ Jul 2022 09:38:03 -0700 (PDT)
 MIME-Version: 1.0
-References: <CAL_Jsq+_5-fhXddhxG2mr-4HD_brcKZExkZqvME1yEpa6dOGGg@mail.gmail.com>
- <mhng-7e3146ca-79b8-4e16-98a9-e354fb6d03ba@palmer-mbp2014>
-In-Reply-To: <mhng-7e3146ca-79b8-4e16-98a9-e354fb6d03ba@palmer-mbp2014>
-From:   Rob Herring <robh@kernel.org>
-Date:   Fri, 22 Jul 2022 10:36:36 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqJHZEcnJi+UHQbYWVoy1okQjHSc9T377P1q8oOJnHBWFw@mail.gmail.com>
-Message-ID: <CAL_JsqJHZEcnJi+UHQbYWVoy1okQjHSc9T377P1q8oOJnHBWFw@mail.gmail.com>
-Subject: Re: [PATCH v3 2/2] asm-generic: Add new pci.h and use it
-To:     Palmer Dabbelt <palmer@dabbelt.com>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>, macro@orcam.me.uk,
-        Stafford Horne <shorne@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, Guo Ren <guoren@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        linux-csky@vger.kernel.org,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        linux-um@lists.infradead.org, PCI <linux-pci@vger.kernel.org>,
-        "open list:GENERIC INCLUDE/ASM HEADER FILES" 
-        <linux-arch@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+From:   Dipanjan Das <mail.dipanjan.das@gmail.com>
+Date:   Fri, 22 Jul 2022 09:37:52 -0700
+Message-ID: <CANX2M5Zw_zW6ez0_wvaXL1pbLnR2jWY=T7MgkT=4a-zNkiwVig@mail.gmail.com>
+Subject: KASAN: vmalloc-out-of-bounds Write in snd_pcm_hw_params
+To:     perex@perex.cz, tiwai@suse.com, gregkh@linuxfoundation.org,
+        consult.awy@gmail.com, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org
+Cc:     syzkaller@googlegroups.com, fleischermarius@googlemail.com,
+        its.priyanka.bose@gmail.com
+Content-Type: multipart/mixed; boundary="0000000000004323bf05e4677536"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 22, 2022 at 9:27 AM Palmer Dabbelt <palmer@dabbelt.com> wrote:
->
-> On Thu, 21 Jul 2022 16:06:52 PDT (-0700), Rob Herring wrote:
-> > On Tue, Jul 19, 2022 at 9:59 AM Palmer Dabbelt <palmer@dabbelt.com> wrote:
-> >>
-> >> On Sun, 17 Jul 2022 17:41:14 PDT (-0700), shorne@gmail.com wrote:
-> >> > The asm/pci.h used for many newer architectures share similar
-> >> > definitions.  Move the common parts to asm-generic/pci.h to allow for
-> >> > sharing code.
-> >> >
-> >> > Two things to note are:
-> >> >
-> >> >  - isa_dma_bridge_buggy, traditionally this is defined in asm/dma.h but
-> >> >    these architectures avoid creating that file and add the definition
-> >> >    to asm/pci.h.
-> >> >  - ARCH_GENERIC_PCI_MMAP_RESOURCE, csky does not define this so we
-> >> >    undefine it after including asm-generic/pci.h.  Why doesn't csky
-> >> >    define it?
-> >> >  - pci_get_legacy_ide_irq, This function is only used on architectures
-> >> >    that support PNP.  It is only maintained for arm64, in other
-> >> >    architectures it is removed.
-> >> >
-> >> > Suggested-by: Arnd Bergmann <arnd@arndb.de>
-> >> > Link: https://lore.kernel.org/lkml/CAK8P3a0JmPeczfmMBE__vn=Jbvf=nkbpVaZCycyv40pZNCJJXQ@mail.gmail.com/
-> >> > Signed-off-by: Stafford Horne <shorne@gmail.com>
-> >> > ---
-> >> > Second note on isa_dma_bridge_buggy, this is set on x86 but it it also set in
-> >> > pci/quirks.c.  We discussed limiting it only to x86 though as its a general
-> >> > quick triggered by pci ids I think it will be more tricky than we thought so I
-> >> > will leave as is.  It might be nice to move it out of asm/dma.h and into
-> >> > asm/pci.h though.
-> >> >
-> >> > Since v2:
-> >> >  - Nothing
-> >> > Since v1:
-> >> >  - Remove definition of pci_get_legacy_ide_irq
-> >> >
-> >> >  arch/arm64/include/asm/pci.h | 12 +++---------
-> >> >  arch/csky/include/asm/pci.h  | 24 ++++--------------------
-> >> >  arch/riscv/include/asm/pci.h | 25 +++----------------------
-> >> >  arch/um/include/asm/pci.h    | 24 ++----------------------
-> >> >  include/asm-generic/pci.h    | 36 ++++++++++++++++++++++++++++++++++++
-> >> >  5 files changed, 48 insertions(+), 73 deletions(-)
-> >> >  create mode 100644 include/asm-generic/pci.h
-> >> >
-> >> > diff --git a/arch/arm64/include/asm/pci.h b/arch/arm64/include/asm/pci.h
-> >> > index b33ca260e3c9..1180e83712f5 100644
-> >> > --- a/arch/arm64/include/asm/pci.h
-> >> > +++ b/arch/arm64/include/asm/pci.h
-> >> > @@ -9,7 +9,6 @@
-> >> >  #include <asm/io.h>
-> >> >
-> >> >  #define PCIBIOS_MIN_IO               0x1000
-> >> > -#define PCIBIOS_MIN_MEM              0
-> >> >
-> >> >  /*
-> >> >   * Set to 1 if the kernel should re-assign all PCI bus numbers
-> >> > @@ -18,9 +17,6 @@
-> >> >       (pci_has_flag(PCI_REASSIGN_ALL_BUS))
-> >> >
-> >> >  #define arch_can_pci_mmap_wc() 1
-> >> > -#define ARCH_GENERIC_PCI_MMAP_RESOURCE       1
-> >> > -
-> >> > -extern int isa_dma_bridge_buggy;
-> >> >
-> >> >  #ifdef CONFIG_PCI
-> >> >  static inline int pci_get_legacy_ide_irq(struct pci_dev *dev, int channel)
-> >> > @@ -28,11 +24,9 @@ static inline int pci_get_legacy_ide_irq(struct pci_dev *dev, int channel)
-> >> >       /* no legacy IRQ on arm64 */
-> >> >       return -ENODEV;
-> >> >  }
-> >> > -
-> >> > -static inline int pci_proc_domain(struct pci_bus *bus)
-> >> > -{
-> >> > -     return 1;
-> >> > -}
-> >> >  #endif  /* CONFIG_PCI */
-> >> >
-> >> > +/* Generic PCI */
-> >> > +#include <asm-generic/pci.h>
-> >> > +
-> >> >  #endif  /* __ASM_PCI_H */
-> >> > diff --git a/arch/csky/include/asm/pci.h b/arch/csky/include/asm/pci.h
-> >> > index ebc765b1f78b..44866c1ad461 100644
-> >> > --- a/arch/csky/include/asm/pci.h
-> >> > +++ b/arch/csky/include/asm/pci.h
-> >> > @@ -9,26 +9,10 @@
-> >> >
-> >> >  #include <asm/io.h>
-> >> >
-> >> > -#define PCIBIOS_MIN_IO               0
-> >> > -#define PCIBIOS_MIN_MEM              0
-> >> > +/* Generic PCI */
-> >> > +#include <asm-generic/pci.h>
-> >> >
-> >> > -/* C-SKY shim does not initialize PCI bus */
-> >> > -#define pcibios_assign_all_busses() 1
-> >> > -
-> >> > -extern int isa_dma_bridge_buggy;
-> >> > -
-> >> > -#ifdef CONFIG_PCI
-> >> > -static inline int pci_get_legacy_ide_irq(struct pci_dev *dev, int channel)
-> >> > -{
-> >> > -     /* no legacy IRQ on csky */
-> >> > -     return -ENODEV;
-> >> > -}
-> >> > -
-> >> > -static inline int pci_proc_domain(struct pci_bus *bus)
-> >> > -{
-> >> > -     /* always show the domain in /proc */
-> >> > -     return 1;
-> >> > -}
-> >> > -#endif  /* CONFIG_PCI */
-> >> > +/* csky doesn't use generic pci resource mapping */
-> >> > +#undef ARCH_GENERIC_PCI_MMAP_RESOURCE
-> >> >
-> >> >  #endif  /* __ASM_CSKY_PCI_H */
-> >> > diff --git a/arch/riscv/include/asm/pci.h b/arch/riscv/include/asm/pci.h
-> >> > index 7fd52a30e605..12ce8150cfb0 100644
-> >> > --- a/arch/riscv/include/asm/pci.h
-> >> > +++ b/arch/riscv/include/asm/pci.h
-> >> > @@ -12,29 +12,7 @@
-> >> >
-> >> >  #include <asm/io.h>
-> >> >
-> >> > -#define PCIBIOS_MIN_IO               0
-> >> > -#define PCIBIOS_MIN_MEM              0
-> >>
-> >> My for-next changes these in bb356ddb78b2 ("RISC-V: PCI: Avoid handing
-> >> out address 0 to devices").  Do you mind either splitting out the
-> >> arch/riscv bits or having this in via some sort of shared tag?
-> >
-> > Shouldn't the values not matter here if the IO and mem resources are
-> > described in the DT (and don't use 0)? The values of 4 and 16 look
-> > odd.
->
-> The linked thread has a fairly long discussion
-> <https://lore.kernel.org/all/alpine.DEB.2.21.2202260044180.25061@angie.orcam.me.uk/>.
-> I agree it's odd to have this in arch code: "don't hand out address 0"
-> isn't really a RISC-V constraint (ie, we don't have architecture-defined
-> limitations on these address spaces) but a constraint that comes from
-> the generic port I/O functions and some other related PCI/resource code
-> where the value 0 is a sentinel.
+--0000000000004323bf05e4677536
+Content-Type: text/plain; charset="UTF-8"
 
-If you look at arm32, we have a variable for PCIBIOS_MIN_MEM because
-pre-DT what platforms required was all over the place. Nothing using
-DT needs to set that variable. And arm64 uses 0 without problems. In
-all those platforms, none of them have the same restrictions? So it is
-still curious to me how PCIBIOS_MIN_MEM matters for Risc-V.
+Hi,
 
-I/O is different as Arnd said, but I'd imagine we could just set the
-min to 4 in the generic header and be done with it.
+We would like to report the following bug which has been found by our
+modified version of syzkaller.
 
-> Maybe the right thing to do here is actually to make the default
-> definitions of these macros non-zero, or to add some sort of ARCH_
-> flavor of them and move that non-zero requirement closer to where it
-> comes from?  From the look of it any port that uses the generic port I/O
-> functions and has 0 for these will be broken in the same way.
->
-> That said, I'm not really a PCI guy so maybe Bjorn or Maciej has a
-> better idea?
+======================================================
+description: KASAN: vmalloc-out-of-bounds Write in snd_pcm_hw_params
+affected file: sound/core/pcm_native.c
+kernel version: 5.10.131
+kernel commit: de62055f423f5dcb548f74cebd68f03c8903f73a
+git tree: upstream
+kernel config: https://syzkaller.appspot.com/x/.config?x=e49433cfed49b7d9
+crash reproducer: attached
+======================================================
+Crash log:
+======================================================
+BUG: KASAN: vmalloc-out-of-bounds in memset include/linux/string.h:384 [inline]
+BUG: KASAN: vmalloc-out-of-bounds in snd_pcm_hw_params+0x19b0/0x1db0
+sound/core/pcm_native.c:799
+Write of size 2097152 at addr ffffc900113b2000 by task syz-executor.5/14437
 
-From fu740:
-                       ranges = <0x81000000  0x0 0x60080000  0x0
-0x60080000 0x0 0x10000>,      /* I/O */
-                                 <0x82000000  0x0 0x60090000  0x0
-0x60090000 0x0 0xff70000>,    /* mem */
-                                 <0x82000000  0x0 0x70000000  0x0
-0x70000000 0x0 0x1000000>,    /* mem */
-                                 <0xc3000000 0x20 0x00000000 0x20
-0x00000000 0x20 0x00000000>;  /* mem prefetchable */
+CPU: 1 PID: 14437 Comm: syz-executor.5 Tainted: G           OE     5.10.131+ #3
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
+1.13.0-1ubuntu1.1 04/01/2014
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x107/0x163 lib/dump_stack.c:118
+ print_address_description.constprop.0.cold+0x5/0x4f7 mm/kasan/report.c:385
+ __kasan_report mm/kasan/report.c:545 [inline]
+ kasan_report.cold+0x1f/0x37 mm/kasan/report.c:562
+ check_memory_region_inline mm/kasan/generic.c:194 [inline]
+ check_memory_region+0x187/0x1e0 mm/kasan/generic.c:200
+ memset+0x20/0x40 mm/kasan/common.c:85
+ memset include/linux/string.h:384 [inline]
+ snd_pcm_hw_params+0x19b0/0x1db0 sound/core/pcm_native.c:799
+ snd_pcm_kernel_ioctl+0xd1/0x240 sound/core/pcm_native.c:3401
+ snd_pcm_oss_change_params_locked+0x17b6/0x3aa0 sound/core/oss/pcm_oss.c:965
+ snd_pcm_oss_change_params+0x76/0xd0 sound/core/oss/pcm_oss.c:1107
+ snd_pcm_oss_make_ready+0xb7/0x170 sound/core/oss/pcm_oss.c:1166
+ snd_pcm_oss_set_trigger.isra.0+0x34f/0x770 sound/core/oss/pcm_oss.c:2074
+ snd_pcm_oss_poll+0x679/0xb40 sound/core/oss/pcm_oss.c:2858
+ vfs_poll include/linux/poll.h:90 [inline]
+ do_pollfd fs/select.c:872 [inline]
+ do_poll fs/select.c:920 [inline]
+ do_sys_poll+0x63c/0xe40 fs/select.c:1014
+ __do_sys_poll fs/select.c:1079 [inline]
+ __se_sys_poll fs/select.c:1067 [inline]
+ __x64_sys_poll+0x18c/0x490 fs/select.c:1067
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x7f095de4f4ed
+Code: 02 b8 ff ff ff ff c3 66 0f 1f 44 00 00 f3 0f 1e fa 48 89 f8 48
+89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d
+01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007f095bdffbe8 EFLAGS: 00000246 ORIG_RAX: 0000000000000007
+RAX: ffffffffffffffda RBX: 00007f095df6df60 RCX: 00007f095de4f4ed
+RDX: 0000000000000009 RSI: 0000000000000001 RDI: 00000000200000c0
+RBP: 00007f095bdffc40 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 000000000000001d
+R13: 00007ffff286ceff R14: 00007f095df6df60 R15: 00007f095bdffd80
 
-So again, how does one get a 0 address handed out when that's not even
-a valid region according to DT? Is there some legacy stuff that
-ignores the bridge windows?
 
-Rob
+Memory state around the buggy address:
+ ffffc900115b1d00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffffc900115b1d80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>ffffc900115b1e00: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+                   ^
+ ffffc900115b1e80: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+ ffffc900115b1f00: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+==================================================================
+
+-- 
+Thanks and Regards,
+
+Dipanjan
+
+--0000000000004323bf05e4677536
+Content-Type: application/octet-stream; name="repro.syz"
+Content-Disposition: attachment; filename="repro.syz"
+Content-Transfer-Encoding: base64
+Content-ID: <f_l5wop3q81>
+X-Attachment-Id: f_l5wop3q81
+
+cjAgPSBvcGVuYXQkYWRzcDEoMHhmZmZmZmZmZmZmZmZmZjljLCAmKDB4N2YwMDAwMDAwMDQwKSwg
+MHgwLCAweDApCnBvbGwoJigweDdmMDAwMDAwMDBjMCk9W3tyMH1dLCAweDEsIDB4OSkgKGZhaWxf
+bnRoOiAxMSkK
+--0000000000004323bf05e4677536
+Content-Type: text/x-csrc; charset="US-ASCII"; name="repro.c"
+Content-Disposition: attachment; filename="repro.c"
+Content-Transfer-Encoding: base64
+Content-ID: <f_l5wop3pn0>
+X-Attachment-Id: f_l5wop3pn0
+
+Ly8gYXV0b2dlbmVyYXRlZCBieSBzeXprYWxsZXIgKGh0dHBzOi8vZ2l0aHViLmNvbS9nb29nbGUv
+c3l6a2FsbGVyKQoKI2RlZmluZSBfR05VX1NPVVJDRSAKCiNpbmNsdWRlIDxhcnBhL2luZXQuaD4K
+I2luY2x1ZGUgPGVuZGlhbi5oPgojaW5jbHVkZSA8ZXJybm8uaD4KI2luY2x1ZGUgPGZjbnRsLmg+
+CiNpbmNsdWRlIDxuZXQvaWYuaD4KI2luY2x1ZGUgPG5ldGluZXQvaW4uaD4KI2luY2x1ZGUgPHN0
+ZGFyZy5oPgojaW5jbHVkZSA8c3RkYm9vbC5oPgojaW5jbHVkZSA8c3RkaW50Lmg+CiNpbmNsdWRl
+IDxzdGRpby5oPgojaW5jbHVkZSA8c3RkbGliLmg+CiNpbmNsdWRlIDxzdHJpbmcuaD4KI2luY2x1
+ZGUgPHN5cy9zb2NrZXQuaD4KI2luY2x1ZGUgPHN5cy9zdGF0Lmg+CiNpbmNsdWRlIDxzeXMvc3lz
+Y2FsbC5oPgojaW5jbHVkZSA8c3lzL3R5cGVzLmg+CiNpbmNsdWRlIDx1bmlzdGQuaD4KCiNpbmNs
+dWRlIDxsaW51eC9nZW5ldGxpbmsuaD4KI2luY2x1ZGUgPGxpbnV4L2lmX2FkZHIuaD4KI2luY2x1
+ZGUgPGxpbnV4L2lmX2xpbmsuaD4KI2luY2x1ZGUgPGxpbnV4L2luNi5oPgojaW5jbHVkZSA8bGlu
+dXgvbmVpZ2hib3VyLmg+CiNpbmNsdWRlIDxsaW51eC9uZXQuaD4KI2luY2x1ZGUgPGxpbnV4L25l
+dGxpbmsuaD4KI2luY2x1ZGUgPGxpbnV4L3J0bmV0bGluay5oPgojaW5jbHVkZSA8bGludXgvdmV0
+aC5oPgoKc3RhdGljIHZvaWQgdXNlX3RlbXBvcmFyeV9kaXIodm9pZCkKewoJY2hhciB0bXBkaXJf
+dGVtcGxhdGVbXSA9ICIuL3N5emthbGxlci5YWFhYWFgiOwoJY2hhciogdG1wZGlyID0gbWtkdGVt
+cCh0bXBkaXJfdGVtcGxhdGUpOwoJaWYgKCF0bXBkaXIpCglleGl0KDEpOwoJaWYgKGNobW9kKHRt
+cGRpciwgMDc3NykpCglleGl0KDEpOwoJaWYgKGNoZGlyKHRtcGRpcikpCglleGl0KDEpOwp9Cgpz
+dGF0aWMgYm9vbCB3cml0ZV9maWxlKGNvbnN0IGNoYXIqIGZpbGUsIGNvbnN0IGNoYXIqIHdoYXQs
+IC4uLikKewoJY2hhciBidWZbMTAyNF07Cgl2YV9saXN0IGFyZ3M7Cgl2YV9zdGFydChhcmdzLCB3
+aGF0KTsKCXZzbnByaW50ZihidWYsIHNpemVvZihidWYpLCB3aGF0LCBhcmdzKTsKCXZhX2VuZChh
+cmdzKTsKCWJ1ZltzaXplb2YoYnVmKSAtIDFdID0gMDsKCWludCBsZW4gPSBzdHJsZW4oYnVmKTsK
+CWludCBmZCA9IG9wZW4oZmlsZSwgT19XUk9OTFkgfCBPX0NMT0VYRUMpOwoJaWYgKGZkID09IC0x
+KQoJCXJldHVybiBmYWxzZTsKCWlmICh3cml0ZShmZCwgYnVmLCBsZW4pICE9IGxlbikgewoJCWlu
+dCBlcnIgPSBlcnJubzsKCQljbG9zZShmZCk7CgkJZXJybm8gPSBlcnI7CgkJcmV0dXJuIGZhbHNl
+OwoJfQoJY2xvc2UoZmQpOwoJcmV0dXJuIHRydWU7Cn0KCnN0cnVjdCBubG1zZyB7CgljaGFyKiBw
+b3M7CglpbnQgbmVzdGluZzsKCXN0cnVjdCBubGF0dHIqIG5lc3RlZFs4XTsKCWNoYXIgYnVmWzQw
+OTZdOwp9OwoKc3RhdGljIHZvaWQgbmV0bGlua19pbml0KHN0cnVjdCBubG1zZyogbmxtc2csIGlu
+dCB0eXAsIGludCBmbGFncywKCQkJIGNvbnN0IHZvaWQqIGRhdGEsIGludCBzaXplKQp7CgltZW1z
+ZXQobmxtc2csIDAsIHNpemVvZigqbmxtc2cpKTsKCXN0cnVjdCBubG1zZ2hkciogaGRyID0gKHN0
+cnVjdCBubG1zZ2hkciopbmxtc2ctPmJ1ZjsKCWhkci0+bmxtc2dfdHlwZSA9IHR5cDsKCWhkci0+
+bmxtc2dfZmxhZ3MgPSBOTE1fRl9SRVFVRVNUIHwgTkxNX0ZfQUNLIHwgZmxhZ3M7CgltZW1jcHko
+aGRyICsgMSwgZGF0YSwgc2l6ZSk7CglubG1zZy0+cG9zID0gKGNoYXIqKShoZHIgKyAxKSArIE5M
+TVNHX0FMSUdOKHNpemUpOwp9CgpzdGF0aWMgdm9pZCBuZXRsaW5rX2F0dHIoc3RydWN0IG5sbXNn
+KiBubG1zZywgaW50IHR5cCwKCQkJIGNvbnN0IHZvaWQqIGRhdGEsIGludCBzaXplKQp7CglzdHJ1
+Y3QgbmxhdHRyKiBhdHRyID0gKHN0cnVjdCBubGF0dHIqKW5sbXNnLT5wb3M7CglhdHRyLT5ubGFf
+bGVuID0gc2l6ZW9mKCphdHRyKSArIHNpemU7CglhdHRyLT5ubGFfdHlwZSA9IHR5cDsKCWlmIChz
+aXplID4gMCkKCQltZW1jcHkoYXR0ciArIDEsIGRhdGEsIHNpemUpOwoJbmxtc2ctPnBvcyArPSBO
+TE1TR19BTElHTihhdHRyLT5ubGFfbGVuKTsKfQoKc3RhdGljIHZvaWQgbmV0bGlua19uZXN0KHN0
+cnVjdCBubG1zZyogbmxtc2csIGludCB0eXApCnsKCXN0cnVjdCBubGF0dHIqIGF0dHIgPSAoc3Ry
+dWN0IG5sYXR0ciopbmxtc2ctPnBvczsKCWF0dHItPm5sYV90eXBlID0gdHlwOwoJbmxtc2ctPnBv
+cyArPSBzaXplb2YoKmF0dHIpOwoJbmxtc2ctPm5lc3RlZFtubG1zZy0+bmVzdGluZysrXSA9IGF0
+dHI7Cn0KCnN0YXRpYyB2b2lkIG5ldGxpbmtfZG9uZShzdHJ1Y3Qgbmxtc2cqIG5sbXNnKQp7Cglz
+dHJ1Y3QgbmxhdHRyKiBhdHRyID0gbmxtc2ctPm5lc3RlZFstLW5sbXNnLT5uZXN0aW5nXTsKCWF0
+dHItPm5sYV9sZW4gPSBubG1zZy0+cG9zIC0gKGNoYXIqKWF0dHI7Cn0KCnN0YXRpYyBpbnQgbmV0
+bGlua19zZW5kX2V4dChzdHJ1Y3Qgbmxtc2cqIG5sbXNnLCBpbnQgc29jaywKCQkJICAgIHVpbnQx
+Nl90IHJlcGx5X3R5cGUsIGludCogcmVwbHlfbGVuLCBib29sIGRvZmFpbCkKewoJaWYgKG5sbXNn
+LT5wb3MgPiBubG1zZy0+YnVmICsgc2l6ZW9mKG5sbXNnLT5idWYpIHx8IG5sbXNnLT5uZXN0aW5n
+KQoJZXhpdCgxKTsKCXN0cnVjdCBubG1zZ2hkciogaGRyID0gKHN0cnVjdCBubG1zZ2hkciopbmxt
+c2ctPmJ1ZjsKCWhkci0+bmxtc2dfbGVuID0gbmxtc2ctPnBvcyAtIG5sbXNnLT5idWY7CglzdHJ1
+Y3Qgc29ja2FkZHJfbmwgYWRkcjsKCW1lbXNldCgmYWRkciwgMCwgc2l6ZW9mKGFkZHIpKTsKCWFk
+ZHIubmxfZmFtaWx5ID0gQUZfTkVUTElOSzsKCXNzaXplX3QgbiA9IHNlbmR0byhzb2NrLCBubG1z
+Zy0+YnVmLCBoZHItPm5sbXNnX2xlbiwgMCwgKHN0cnVjdCBzb2NrYWRkciopJmFkZHIsIHNpemVv
+ZihhZGRyKSk7CglpZiAobiAhPSAoc3NpemVfdCloZHItPm5sbXNnX2xlbikgewoJCWlmIChkb2Zh
+aWwpCglleGl0KDEpOwoJCXJldHVybiAtMTsKCX0KCW4gPSByZWN2KHNvY2ssIG5sbXNnLT5idWYs
+IHNpemVvZihubG1zZy0+YnVmKSwgMCk7CglpZiAocmVwbHlfbGVuKQoJCSpyZXBseV9sZW4gPSAw
+OwoJaWYgKG4gPCAwKSB7CgkJaWYgKGRvZmFpbCkKCWV4aXQoMSk7CgkJcmV0dXJuIC0xOwoJfQoJ
+aWYgKG4gPCAoc3NpemVfdClzaXplb2Yoc3RydWN0IG5sbXNnaGRyKSkgewoJCWVycm5vID0gRUlO
+VkFMOwoJCWlmIChkb2ZhaWwpCglleGl0KDEpOwoJCXJldHVybiAtMTsKCX0KCWlmIChoZHItPm5s
+bXNnX3R5cGUgPT0gTkxNU0dfRE9ORSkKCQlyZXR1cm4gMDsKCWlmIChyZXBseV9sZW4gJiYgaGRy
+LT5ubG1zZ190eXBlID09IHJlcGx5X3R5cGUpIHsKCQkqcmVwbHlfbGVuID0gbjsKCQlyZXR1cm4g
+MDsKCX0KCWlmIChuIDwgKHNzaXplX3QpKHNpemVvZihzdHJ1Y3Qgbmxtc2doZHIpICsgc2l6ZW9m
+KHN0cnVjdCBubG1zZ2VycikpKSB7CgkJZXJybm8gPSBFSU5WQUw7CgkJaWYgKGRvZmFpbCkKCWV4
+aXQoMSk7CgkJcmV0dXJuIC0xOwoJfQoJaWYgKGhkci0+bmxtc2dfdHlwZSAhPSBOTE1TR19FUlJP
+UikgewoJCWVycm5vID0gRUlOVkFMOwoJCWlmIChkb2ZhaWwpCglleGl0KDEpOwoJCXJldHVybiAt
+MTsKCX0KCWVycm5vID0gLSgoc3RydWN0IG5sbXNnZXJyKikoaGRyICsgMSkpLT5lcnJvcjsKCXJl
+dHVybiAtZXJybm87Cn0KCnN0YXRpYyBpbnQgbmV0bGlua19zZW5kKHN0cnVjdCBubG1zZyogbmxt
+c2csIGludCBzb2NrKQp7CglyZXR1cm4gbmV0bGlua19zZW5kX2V4dChubG1zZywgc29jaywgMCwg
+TlVMTCwgdHJ1ZSk7Cn0KCnN0YXRpYyBpbnQgbmV0bGlua19xdWVyeV9mYW1pbHlfaWQoc3RydWN0
+IG5sbXNnKiBubG1zZywgaW50IHNvY2ssIGNvbnN0IGNoYXIqIGZhbWlseV9uYW1lLCBib29sIGRv
+ZmFpbCkKewoJc3RydWN0IGdlbmxtc2doZHIgZ2VubGhkcjsKCW1lbXNldCgmZ2VubGhkciwgMCwg
+c2l6ZW9mKGdlbmxoZHIpKTsKCWdlbmxoZHIuY21kID0gQ1RSTF9DTURfR0VURkFNSUxZOwoJbmV0
+bGlua19pbml0KG5sbXNnLCBHRU5MX0lEX0NUUkwsIDAsICZnZW5saGRyLCBzaXplb2YoZ2VubGhk
+cikpOwoJbmV0bGlua19hdHRyKG5sbXNnLCBDVFJMX0FUVFJfRkFNSUxZX05BTUUsIGZhbWlseV9u
+YW1lLCBzdHJubGVuKGZhbWlseV9uYW1lLCBHRU5MX05BTVNJWiAtIDEpICsgMSk7CglpbnQgbiA9
+IDA7CglpbnQgZXJyID0gbmV0bGlua19zZW5kX2V4dChubG1zZywgc29jaywgR0VOTF9JRF9DVFJM
+LCAmbiwgZG9mYWlsKTsKCWlmIChlcnIgPCAwKSB7CgkJcmV0dXJuIC0xOwoJfQoJdWludDE2X3Qg
+aWQgPSAwOwoJc3RydWN0IG5sYXR0ciogYXR0ciA9IChzdHJ1Y3QgbmxhdHRyKikobmxtc2ctPmJ1
+ZiArIE5MTVNHX0hEUkxFTiArIE5MTVNHX0FMSUdOKHNpemVvZihnZW5saGRyKSkpOwoJZm9yICg7
+IChjaGFyKilhdHRyIDwgbmxtc2ctPmJ1ZiArIG47IGF0dHIgPSAoc3RydWN0IG5sYXR0ciopKChj
+aGFyKilhdHRyICsgTkxNU0dfQUxJR04oYXR0ci0+bmxhX2xlbikpKSB7CgkJaWYgKGF0dHItPm5s
+YV90eXBlID09IENUUkxfQVRUUl9GQU1JTFlfSUQpIHsKCQkJaWQgPSAqKHVpbnQxNl90KikoYXR0
+ciArIDEpOwoJCQlicmVhazsKCQl9Cgl9CglpZiAoIWlkKSB7CgkJZXJybm8gPSBFSU5WQUw7CgkJ
+cmV0dXJuIC0xOwoJfQoJcmVjdihzb2NrLCBubG1zZy0+YnVmLCBzaXplb2Yobmxtc2ctPmJ1Ziks
+IDApOwoJcmV0dXJuIGlkOwp9CgpzdGF0aWMgdm9pZCBuZXRsaW5rX2FkZF9kZXZpY2VfaW1wbChz
+dHJ1Y3Qgbmxtc2cqIG5sbXNnLCBjb25zdCBjaGFyKiB0eXBlLAoJCQkJICAgIGNvbnN0IGNoYXIq
+IG5hbWUpCnsKCXN0cnVjdCBpZmluZm9tc2cgaGRyOwoJbWVtc2V0KCZoZHIsIDAsIHNpemVvZiho
+ZHIpKTsKCW5ldGxpbmtfaW5pdChubG1zZywgUlRNX05FV0xJTkssIE5MTV9GX0VYQ0wgfCBOTE1f
+Rl9DUkVBVEUsICZoZHIsIHNpemVvZihoZHIpKTsKCWlmIChuYW1lKQoJCW5ldGxpbmtfYXR0cihu
+bG1zZywgSUZMQV9JRk5BTUUsIG5hbWUsIHN0cmxlbihuYW1lKSk7CgluZXRsaW5rX25lc3Qobmxt
+c2csIElGTEFfTElOS0lORk8pOwoJbmV0bGlua19hdHRyKG5sbXNnLCBJRkxBX0lORk9fS0lORCwg
+dHlwZSwgc3RybGVuKHR5cGUpKTsKfQoKc3RhdGljIHZvaWQgbmV0bGlua19kZXZpY2VfY2hhbmdl
+KHN0cnVjdCBubG1zZyogbmxtc2csIGludCBzb2NrLCBjb25zdCBjaGFyKiBuYW1lLCBib29sIHVw
+LAoJCQkJICBjb25zdCBjaGFyKiBtYXN0ZXIsIGNvbnN0IHZvaWQqIG1hYywgaW50IG1hY3NpemUs
+CgkJCQkgIGNvbnN0IGNoYXIqIG5ld19uYW1lKQp7CglzdHJ1Y3QgaWZpbmZvbXNnIGhkcjsKCW1l
+bXNldCgmaGRyLCAwLCBzaXplb2YoaGRyKSk7CglpZiAodXApCgkJaGRyLmlmaV9mbGFncyA9IGhk
+ci5pZmlfY2hhbmdlID0gSUZGX1VQOwoJaGRyLmlmaV9pbmRleCA9IGlmX25hbWV0b2luZGV4KG5h
+bWUpOwoJbmV0bGlua19pbml0KG5sbXNnLCBSVE1fTkVXTElOSywgMCwgJmhkciwgc2l6ZW9mKGhk
+cikpOwoJaWYgKG5ld19uYW1lKQoJCW5ldGxpbmtfYXR0cihubG1zZywgSUZMQV9JRk5BTUUsIG5l
+d19uYW1lLCBzdHJsZW4obmV3X25hbWUpKTsKCWlmIChtYXN0ZXIpIHsKCQlpbnQgaWZpbmRleCA9
+IGlmX25hbWV0b2luZGV4KG1hc3Rlcik7CgkJbmV0bGlua19hdHRyKG5sbXNnLCBJRkxBX01BU1RF
+UiwgJmlmaW5kZXgsIHNpemVvZihpZmluZGV4KSk7Cgl9CglpZiAobWFjc2l6ZSkKCQluZXRsaW5r
+X2F0dHIobmxtc2csIElGTEFfQUREUkVTUywgbWFjLCBtYWNzaXplKTsKCWludCBlcnIgPSBuZXRs
+aW5rX3NlbmQobmxtc2csIHNvY2spOwoJaWYgKGVyciA8IDApIHsKCX0KfQoKc3RhdGljIHN0cnVj
+dCBubG1zZyBubG1zZzsKCnN0YXRpYyBpbnQgaW5qZWN0X2ZhdWx0KGludCBudGgpCnsKCWludCBm
+ZDsKCWZkID0gb3BlbigiL3Byb2MvdGhyZWFkLXNlbGYvZmFpbC1udGgiLCBPX1JEV1IpOwoJaWYg
+KGZkID09IC0xKQoJZXhpdCgxKTsKCWNoYXIgYnVmWzE2XTsKCXNwcmludGYoYnVmLCAiJWQiLCBu
+dGgpOwoJaWYgKHdyaXRlKGZkLCBidWYsIHN0cmxlbihidWYpKSAhPSAoc3NpemVfdClzdHJsZW4o
+YnVmKSkKCWV4aXQoMSk7CglyZXR1cm4gZmQ7Cn0KCnN0YXRpYyB2b2lkIHNldHVwX2ZhdWx0KCkK
+ewoJc3RhdGljIHN0cnVjdCB7CgkJY29uc3QgY2hhciogZmlsZTsKCQljb25zdCBjaGFyKiB2YWw7
+CgkJYm9vbCBmYXRhbDsKCX0gZmlsZXNbXSA9IHsKCSAgICB7Ii9zeXMva2VybmVsL2RlYnVnL2Zh
+aWxzbGFiL2lnbm9yZS1nZnAtd2FpdCIsICJOIiwgdHJ1ZX0sCgkgICAgeyIvc3lzL2tlcm5lbC9k
+ZWJ1Zy9mYWlsX2Z1dGV4L2lnbm9yZS1wcml2YXRlIiwgIk4iLCBmYWxzZX0sCgkgICAgeyIvc3lz
+L2tlcm5lbC9kZWJ1Zy9mYWlsX3BhZ2VfYWxsb2MvaWdub3JlLWdmcC1oaWdobWVtIiwgIk4iLCBm
+YWxzZX0sCgkgICAgeyIvc3lzL2tlcm5lbC9kZWJ1Zy9mYWlsX3BhZ2VfYWxsb2MvaWdub3JlLWdm
+cC13YWl0IiwgIk4iLCBmYWxzZX0sCgkgICAgeyIvc3lzL2tlcm5lbC9kZWJ1Zy9mYWlsX3BhZ2Vf
+YWxsb2MvbWluLW9yZGVyIiwgIjAiLCBmYWxzZX0sCgl9OwoJdW5zaWduZWQgaTsKCWZvciAoaSA9
+IDA7IGkgPCBzaXplb2YoZmlsZXMpIC8gc2l6ZW9mKGZpbGVzWzBdKTsgaSsrKSB7CgkJaWYgKCF3
+cml0ZV9maWxlKGZpbGVzW2ldLmZpbGUsIGZpbGVzW2ldLnZhbCkpIHsKCQkJaWYgKGZpbGVzW2ld
+LmZhdGFsKQoJZXhpdCgxKTsKCQl9Cgl9Cn0KCiNkZWZpbmUgTkw4MDIxNTRfQ01EX1NFVF9TSE9S
+VF9BRERSIDExCiNkZWZpbmUgTkw4MDIxNTRfQVRUUl9JRklOREVYIDMKI2RlZmluZSBOTDgwMjE1
+NF9BVFRSX1NIT1JUX0FERFIgMTAKCnN0YXRpYyB2b2lkIHNldHVwXzgwMjE1NCgpCnsKCWludCBz
+b2NrX3JvdXRlID0gc29ja2V0KEFGX05FVExJTkssIFNPQ0tfUkFXLCBORVRMSU5LX1JPVVRFKTsK
+CWlmIChzb2NrX3JvdXRlID09IC0xKQoJZXhpdCgxKTsKCWludCBzb2NrX2dlbmVyaWMgPSBzb2Nr
+ZXQoQUZfTkVUTElOSywgU09DS19SQVcsIE5FVExJTktfR0VORVJJQyk7CglpZiAoc29ja19nZW5l
+cmljIDwgMCkKCWV4aXQoMSk7CglpbnQgbmw4MDIxNTRfZmFtaWx5X2lkID0gbmV0bGlua19xdWVy
+eV9mYW1pbHlfaWQoJm5sbXNnLCBzb2NrX2dlbmVyaWMsICJubDgwMjE1NCIsIHRydWUpOwoJZm9y
+IChpbnQgaSA9IDA7IGkgPCAyOyBpKyspIHsKCQljaGFyIGRldm5hbWVbXSA9ICJ3cGFuMCI7CgkJ
+ZGV2bmFtZVtzdHJsZW4oZGV2bmFtZSkgLSAxXSArPSBpOwoJCXVpbnQ2NF90IGh3YWRkciA9IDB4
+YWFhYWFhYWFhYWFhMDAwMiArIChpIDw8IDgpOwoJCXVpbnQxNl90IHNob3J0YWRkciA9IDB4YWFh
+MCArIGk7CgkJaW50IGlmaW5kZXggPSBpZl9uYW1ldG9pbmRleChkZXZuYW1lKTsKCQlzdHJ1Y3Qg
+Z2VubG1zZ2hkciBnZW5saGRyOwoJCW1lbXNldCgmZ2VubGhkciwgMCwgc2l6ZW9mKGdlbmxoZHIp
+KTsKCQlnZW5saGRyLmNtZCA9IE5MODAyMTU0X0NNRF9TRVRfU0hPUlRfQUREUjsKCQluZXRsaW5r
+X2luaXQoJm5sbXNnLCBubDgwMjE1NF9mYW1pbHlfaWQsIDAsICZnZW5saGRyLCBzaXplb2YoZ2Vu
+bGhkcikpOwoJCW5ldGxpbmtfYXR0cigmbmxtc2csIE5MODAyMTU0X0FUVFJfSUZJTkRFWCwgJmlm
+aW5kZXgsIHNpemVvZihpZmluZGV4KSk7CgkJbmV0bGlua19hdHRyKCZubG1zZywgTkw4MDIxNTRf
+QVRUUl9TSE9SVF9BRERSLCAmc2hvcnRhZGRyLCBzaXplb2Yoc2hvcnRhZGRyKSk7CgkJaW50IGVy
+ciA9IG5ldGxpbmtfc2VuZCgmbmxtc2csIHNvY2tfZ2VuZXJpYyk7CgkJaWYgKGVyciA8IDApIHsK
+CQl9CgkJbmV0bGlua19kZXZpY2VfY2hhbmdlKCZubG1zZywgc29ja19yb3V0ZSwgZGV2bmFtZSwg
+dHJ1ZSwgMCwgJmh3YWRkciwgc2l6ZW9mKGh3YWRkciksIDApOwoJCWlmIChpID09IDApIHsKCQkJ
+bmV0bGlua19hZGRfZGV2aWNlX2ltcGwoJm5sbXNnLCAibG93cGFuIiwgImxvd3BhbjAiKTsKCQkJ
+bmV0bGlua19kb25lKCZubG1zZyk7CgkJCW5ldGxpbmtfYXR0cigmbmxtc2csIElGTEFfTElOSywg
+JmlmaW5kZXgsIHNpemVvZihpZmluZGV4KSk7CgkJCWludCBlcnIgPSBuZXRsaW5rX3NlbmQoJm5s
+bXNnLCBzb2NrX3JvdXRlKTsKCQkJaWYgKGVyciA8IDApIHsKCQkJfQoJCX0KCX0KCWNsb3NlKHNv
+Y2tfcm91dGUpOwoJY2xvc2Uoc29ja19nZW5lcmljKTsKfQoKdWludDY0X3QgclsxXSA9IHsweGZm
+ZmZmZmZmZmZmZmZmZmZ9OwoKaW50IG1haW4odm9pZCkKewoJCXN5c2NhbGwoX19OUl9tbWFwLCAw
+eDFmZmZmMDAwdWwsIDB4MTAwMHVsLCAwdWwsIDB4MzJ1bCwgLTEsIDB1bCk7CglzeXNjYWxsKF9f
+TlJfbW1hcCwgMHgyMDAwMDAwMHVsLCAweDEwMDAwMDB1bCwgN3VsLCAweDMydWwsIC0xLCAwdWwp
+OwoJc3lzY2FsbChfX05SX21tYXAsIDB4MjEwMDAwMDB1bCwgMHgxMDAwdWwsIDB1bCwgMHgzMnVs
+LCAtMSwgMHVsKTsKCXNldHVwX2ZhdWx0KCk7CglzZXR1cF84MDIxNTQoKTsKCQkJdXNlX3RlbXBv
+cmFyeV9kaXIoKTsKCQkJCWludHB0cl90IHJlcyA9IDA7Cm1lbWNweSgodm9pZCopMHgyMDAwMDA0
+MCwgIi9kZXYvYWRzcDFcMDAwIiwgMTEpOwoJcmVzID0gc3lzY2FsbChfX05SX29wZW5hdCwgMHhm
+ZmZmZmZmZmZmZmZmZjljdWwsIDB4MjAwMDAwNDB1bCwgMHVsLCAwdWwpOwoJaWYgKHJlcyAhPSAt
+MSkKCQlyWzBdID0gcmVzOwoqKHVpbnQzMl90KikweDIwMDAwMGMwID0gclswXTsKKih1aW50MTZf
+dCopMHgyMDAwMDBjNCA9IDA7CioodWludDE2X3QqKTB4MjAwMDAwYzYgPSAwOwoJaW5qZWN0X2Zh
+dWx0KDExKTsKCXN5c2NhbGwoX19OUl9wb2xsLCAweDIwMDAwMGMwdWwsIDF1bCwgOSk7CglyZXR1
+cm4gMDsKfQo=
+--0000000000004323bf05e4677536--
