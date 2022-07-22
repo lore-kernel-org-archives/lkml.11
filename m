@@ -2,107 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD429C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 19:38:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD1B8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 19:39:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236498AbiGVTiR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 15:38:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39482 "EHLO
+        id S236504AbiGVTjj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 15:39:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229986AbiGVTiO (ORCPT
+        with ESMTP id S229632AbiGVTjg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 15:38:14 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26E9B52889;
-        Fri, 22 Jul 2022 12:38:14 -0700 (PDT)
-Received: from zn.tnic (p200300ea97297665329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9729:7665:329c:23ff:fea6:a903])
+        Fri, 22 Jul 2022 15:39:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B55857217
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 12:39:36 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id A74851EC0666;
-        Fri, 22 Jul 2022 21:38:08 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1658518688;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=oqMlhQ+9AS8F60PcU1q78Rrrk17ahXV0byauFO5z1UU=;
-        b=pfCUktwvWkG8U+aXBptEc75Naz9avVy8tj8mgVyoRbOzAP4tbeOUfcsyB1cEHRJQiRYHNN
-        OszJAzeSOi6AAD3WDUvaBlLpfBrkiXm9Br3wdsTCPfwl/qdjJMF6lwdg4DjjaBwlGllUqz
-        9n5XyBv4JtYXEaGzrdzUq78AGYDJkNM=
-Date:   Fri, 22 Jul 2022 21:38:04 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     "Kalra, Ashish" <Ashish.Kalra@amd.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-coco@lists.linux.dev" <linux-coco@lists.linux.dev>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "jroedel@suse.de" <jroedel@suse.de>,
-        "Lendacky, Thomas" <Thomas.Lendacky@amd.com>,
-        "hpa@zytor.com" <hpa@zytor.com>,
-        "ardb@kernel.org" <ardb@kernel.org>,
-        "pbonzini@redhat.com" <pbonzini@redhat.com>,
-        "vkuznets@redhat.com" <vkuznets@redhat.com>,
-        "jmattson@google.com" <jmattson@google.com>,
-        "luto@kernel.org" <luto@kernel.org>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "slp@redhat.com" <slp@redhat.com>,
-        "pgonda@google.com" <pgonda@google.com>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "srinivas.pandruvada@linux.intel.com" 
-        <srinivas.pandruvada@linux.intel.com>,
-        "rientjes@google.com" <rientjes@google.com>,
-        "dovmurik@linux.ibm.com" <dovmurik@linux.ibm.com>,
-        "tobin@ibm.com" <tobin@ibm.com>,
-        "Roth, Michael" <Michael.Roth@amd.com>,
-        "vbabka@suse.cz" <vbabka@suse.cz>,
-        "kirill@shutemov.name" <kirill@shutemov.name>,
-        "ak@linux.intel.com" <ak@linux.intel.com>,
-        "tony.luck@intel.com" <tony.luck@intel.com>,
-        "marcorr@google.com" <marcorr@google.com>,
-        "sathyanarayanan.kuppuswamy@linux.intel.com" 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        "alpergun@google.com" <alpergun@google.com>,
-        "dgilbert@redhat.com" <dgilbert@redhat.com>,
-        "jarkko@kernel.org" <jarkko@kernel.org>
-Subject: Re: [PATCH Part2 v6 05/49] x86/sev: Add RMP entry lookup helpers
-Message-ID: <Ytr8nCL6pa2Q1kWy@zn.tnic>
-References: <BYAPR12MB27595CF4328B15F0F9573D188EB29@BYAPR12MB2759.namprd12.prod.outlook.com>
- <99d72d58-a9bb-d75c-93af-79d497dfe176@intel.com>
- <BYAPR12MB275984F14B1E103935A103D98EB29@BYAPR12MB2759.namprd12.prod.outlook.com>
- <5db37cc2-4fb1-7a73-c39a-3531260414d0@intel.com>
- <BYAPR12MB2759AA368C8B6A5F1C31642F8EB29@BYAPR12MB2759.namprd12.prod.outlook.com>
- <YrTq3WfOeA6ehsk6@google.com>
- <SN6PR12MB276743CBEAD5AFE9033AFE558EB59@SN6PR12MB2767.namprd12.prod.outlook.com>
- <YtqLhHughuh3KDzH@zn.tnic>
- <Ytr0t119QrZ8PUBB@google.com>
- <Ytr5ndnlOQvqWdPP@zn.tnic>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B4BF261DA3
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 19:39:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B4DDC341C6;
+        Fri, 22 Jul 2022 19:39:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658518775;
+        bh=VHs38k86FD8Ipse+90wcagxiXIrg0RPFHyV7c6mJ+64=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=rmmlAToJHxOlSd+lXyzxqoLDHJxLNVXR0jYmTDZOW6dOP1oWf7Kd1b4EgT3/LYuYX
+         CKqhNZbCNPsPJnYzq70fkkRfRj6s5fIpWRV851NUzounrBQvNUeIm7yemANusup0pQ
+         clYcQJ6LKrd7cq9X7aBQDU9Cg3Gsufj704tzGdccOsEkAKNWlcMvSut9vwNkmpxnd6
+         /oRTAnlwNs61jSD40S+5decNTMpJ020WHU4OhkaeQUh2sHRdzvdFeDEV6WNTxv+5Er
+         wYw+TTp6+R9bSLmX9lSmNd+7+q9oV91syjwGpJ9LAq2vMt3EN66EpY+TAlwmu+HSlB
+         des/itefRM1mA==
+From:   Mark Brown <broonie@kernel.org>
+To:     Charles Keepax <ckeepax@opensource.cirrus.com>
+Cc:     lgirdwood@gmail.com, linux-kernel@vger.kernel.org,
+        alsa-devel@alsa-project.org, patches@opensource.cirrus.com
+In-Reply-To: <20220722094851.92521-1-ckeepax@opensource.cirrus.com>
+References: <20220722094851.92521-1-ckeepax@opensource.cirrus.com>
+Subject: Re: [PATCH 1/2] firmware: cs_dsp: Add pre_stop callback
+Message-Id: <165851877383.1163063.17627437769670549231.b4-ty@kernel.org>
+Date:   Fri, 22 Jul 2022 20:39:33 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <Ytr5ndnlOQvqWdPP@zn.tnic>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Mailer: b4 0.10.0-dev-d952f
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Btw,
+On Fri, 22 Jul 2022 10:48:50 +0100, Charles Keepax wrote:
+> The code already has a post_stop callback, add a matching pre_stop
+> callback to the client_ops that is called before execution is stopped.
+> This callback provides a convenient place for the client code to
+> communicate with the DSP before it is stopped.
+> 
+> 
 
-what could work is to spec only a *version* field somewhere in the HW or
-FW which says which version the RMP header has.
+Applied to
 
-Then, OS would check that field and if it doesn't support that certain
-version, it'll bail.
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
 
-I'd need to talk to folks first, though, what the whole story is behind
-not spec-ing the RMP format...
+Thanks!
 
--- 
-Regards/Gruss,
-    Boris.
+[1/2] firmware: cs_dsp: Add pre_stop callback
+      commit: dea997733575c5793ca77e166bbbf89097987eb4
+[2/2] firmware: cs_dsp: Add memory chunk helpers
+      commit: a4b976552f122ea851f556769874022cf097741e
 
-https://people.kernel.org/tglx/notes-about-netiquette
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
+
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
