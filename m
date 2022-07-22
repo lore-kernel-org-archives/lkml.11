@@ -2,84 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F30B7CCA485
-	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 02:20:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80122CCA485
+	for <linux-kernel@archiver.kernel.org>; Fri, 22 Jul 2022 02:21:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234067AbiGVCUU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 21 Jul 2022 22:20:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33050 "EHLO
+        id S233111AbiGVCVo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 21 Jul 2022 22:21:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231338AbiGVCUR (ORCPT
+        with ESMTP id S230248AbiGVCVm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 21 Jul 2022 22:20:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F3E113D0E;
-        Thu, 21 Jul 2022 19:20:16 -0700 (PDT)
+        Thu, 21 Jul 2022 22:21:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54108165A5;
+        Thu, 21 Jul 2022 19:21:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0C8DDB826CF;
-        Fri, 22 Jul 2022 02:20:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B9783C341CB;
-        Fri, 22 Jul 2022 02:20:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EE94A61FE3;
+        Fri, 22 Jul 2022 02:21:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53F8EC341C0;
+        Fri, 22 Jul 2022 02:21:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658456413;
-        bh=a2AuV6CiLWyI8BPpBH3RS8CU26ZIoTBnwSK4EBuXjp4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=a0QfnPcmBwQ9Uftw1Quujzimoyon+aN2ljmP/jgJ7mNW7rfy4dpeV8yU8SBR1+VWm
-         MbRYCkwuNHegA+UnfPSXa6yc1UYFext7D860rK5LKZtMuGIxFOrm9I7sWDcrM0BGtg
-         CVnny+6LV7rERm2uvUThOHgFu07ski+z+GAzdaO3AUSKiZ7qerXnGjPlmNUe59RJfO
-         PLRjh/X7KmhFQKrhNuJyj7bO1WcGSkyTF0VJZ2WJvOP71RWyK/RrgXIFG9ivF40j97
-         MDbI6d4KgSsC4ZSXrlX5swl6qYqUEGZKOgvoXNQtoPCoqXkmQ2rlB7z2mwRHj82wfy
-         4zYUFsu/DniIw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A375BD9DDDD;
-        Fri, 22 Jul 2022 02:20:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1658456500;
+        bh=ncGLMjzdPPmGwsftGxVVHrTSznyG4+8eYOtav3O3ENM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=RZXmgh5CAKIBO0uWGZ6PYfe3yyzPWU2LLCnBILXDwAjY9xbwFR2UKlnxpeYSwAYUp
+         mn0N5qYf8hrCA/G45tw+5HXpREdu835ZKnbkzKeunmfxS9dHqQePqiz7BmJ7dtIoKO
+         NuKbSspV2XLxLcGl18XIR3QOIbB9lfD1PVSBuAQcAhcWwwZ228k1kId44mvjI5+Io9
+         2x0odLgDayRVk/AIPJc3REu801gpkaYYQRlEfIIxaUCcPkL0nj2l0cwvSbDdPL0ACw
+         xftrtTG0gHX8OxbQDASeCKxT+jUt12VVlRcwRCB7sF7LXUOH6ySW1zUOPvpasX2B8b
+         EL8oJsgexxeTQ==
+Date:   Thu, 21 Jul 2022 19:21:39 -0700
+From:   "Darrick J. Wong" <djwong@kernel.org>
+To:     Oliver Sang <oliver.sang@intel.com>
+Cc:     Dave Chinner <david@fromorbit.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "Darrick J. Wong" <darrick.wong@oracle.com>,
+        linux-xfs@vger.kernel.org, lkp@lists.01.org, lkp@intel.com,
+        ying.huang@intel.com, feng.tang@intel.com,
+        zhengjun.xing@linux.intel.com, fengwei.yin@intel.com
+Subject: Re: [xfs]  345a4666a7:  vm-scalability.throughput -91.7% regression
+Message-ID: <YtoJs8mv7vle8Mhh@magnolia>
+References: <Ytlr9vZbF4SOfA2n@xsang-OptiPlex-9020>
+ <20220721213337.GV3861211@dread.disaster.area>
+ <YtnHa/IbHyD1QPh0@magnolia>
+ <YtoG+kcaC8yfMEZW@xsang-OptiPlex-9020>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 net-next] net: ipv6: avoid accepting values greater than 2
- for accept_untracked_na
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165845641366.11073.341683788896208979.git-patchwork-notify@kernel.org>
-Date:   Fri, 22 Jul 2022 02:20:13 +0000
-References: <20220720183632.376138-1-jhpark1013@gmail.com>
-In-Reply-To: <20220720183632.376138-1-jhpark1013@gmail.com>
-To:     Jaehee <jhpark1013@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, dsahern@gmail.com,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        shuah@kernel.org, linux-kernel@vger.kernel.org, aajith@arista.com,
-        roopa@nvidia.com, roopa.prabhu@gmail.com, aroulin@nvidia.com,
-        sbrivio@redhat.com, nicolas.dichtel@6wind.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YtoG+kcaC8yfMEZW@xsang-OptiPlex-9020>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Wed, 20 Jul 2022 14:36:32 -0400 you wrote:
-> The accept_untracked_na sysctl changed from a boolean to an integer
-> when a new knob '2' was added. This patch provides a safeguard to avoid
-> accepting values that are not defined in the sysctl. When setting a
-> value greater than 2, the user will get an 'invalid argument' warning.
+On Fri, Jul 22, 2022 at 10:10:02AM +0800, Oliver Sang wrote:
+> Hi Darrick, Hi Dave, and all,
 > 
-> Signed-off-by: Jaehee Park <jhpark1013@gmail.com>
-> Suggested-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-> Suggested-by: Roopa Prabhu <roopa@nvidia.com>
+> sorry for this report is annoying according to Darrick and Dave's comments
+> below.
+> we will investigate this case and refine our report process.
+
+FWIW, you can still send /me/ reports about the xfs development patches
+I post to djwong/xfs-linux.git, but it's not necessary to cc linux-xfs
+with that, since most of those patches are still under development
+and/or working their way through patch review.
+
+--D
+
 > 
-> [...]
-
-Here is the summary with links:
-  - [v2,net-next] net: ipv6: avoid accepting values greater than 2 for accept_untracked_na
-    https://git.kernel.org/netdev/net-next/c/b66eb3a6e427
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+> On Thu, Jul 21, 2022 at 02:38:51PM -0700, Darrick J. Wong wrote:
+> > On Fri, Jul 22, 2022 at 07:33:37AM +1000, Dave Chinner wrote:
+> > > On Thu, Jul 21, 2022 at 11:08:38PM +0800, kernel test robot wrote:
+> > > > 
+> > > > (just FYI for the possible performance impact of disabling large folios,
+> > > > our config, as attached, set default N to XFS_LARGE_FOLIOS)
+> > > > 
+> > > > 
+> > > > Greeting,
+> > > > 
+> > > > FYI, we noticed a -91.7% regression of vm-scalability.throughput due to commit:
+> > > > 
+> > > > 
+> > > > commit: 345a4666a721a81c343186768cdd95817767195f ("xfs: disable large folios except for developers")
+> > > 
+> > > Say what? I've never seen that change go past on a public list...
+> > > 
+> > > > https://git.kernel.org/cgit/linux/kernel/git/djwong/xfs-linux.git xfs-5.20-merge
+> > > 
+> > > Oh, it's in a developer's working tree, not something that has been
+> > > proposed for review let alone been merged.
+> > 
+> > Correct, djwong-dev has a patch so that I can disable multipage folios
+> > so that I could get other QA work done while willy and I try to sort out
+> > the generic/522 corruption problems.
+> > 
+> > > So why is this report being sent to lkml, linux-xfs, etc as if it
+> > > was a change merged into an upstream tree rather than just the
+> > > developer who owns the tree the commit is in?
+> > 
+> > I was wondering that myself.
+> > 
+> > --D
+> > 
+> > > -Dave.
+> > > -- 
+> > > Dave Chinner
+> > > david@fromorbit.com
