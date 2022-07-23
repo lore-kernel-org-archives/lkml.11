@@ -2,99 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8762DC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 03:38:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A0EBC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 03:39:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232070AbiGWDiz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 23:38:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45726 "EHLO
+        id S236524AbiGWDjE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 23:39:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229611AbiGWDix (ORCPT
+        with ESMTP id S232369AbiGWDiz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 23:38:53 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85DA010FFD;
-        Fri, 22 Jul 2022 20:38:51 -0700 (PDT)
+        Fri, 22 Jul 2022 23:38:55 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 613FF10FFD;
+        Fri, 22 Jul 2022 20:38:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1658547515;
-        bh=ieQTvQtVnZ7mPM09J0g6Wzs4pdOsOVS51LcLDarFaec=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=SoGdlj9nO9knroNvYNNFtaf9C/5AZ0hmXGOpGaya+9P4dtMqGPXQ/yUOVylAlfq++
-         O4Yme6xG2cy0QeLepy8M8yvMhHClLzUlaHQn+eO61cBBZHYOp0boZSN0GYEcrjo2TF
-         ruce2Vh1jIdP3qOu5Qgzu6BmY9AAFtmHTmui98k0=
+        s=badeba3b8450; t=1658547518;
+        bh=MBXn1mSzKXr07dHlRQkghNEdOJEuzq7EyPsMxlX1t64=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=HSjl2NJqaYxJrh7rjuiqICV8keiMEuUOB2RzHVdVdmcKjnElidtk5Dq5UZuHVyauz
+         7JJXXsRzGBIyZsCgM32HdbrHkVzdZvD6Juv65fmAsLjLyFOCzmB0W9t59uVa8VeTox
+         OKm2YOSGrWXYNZOYoW0S7MRWuQpz1X5sKxht5u34=
 X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
 Received: from esprimo-mx.users.agdsn.de ([141.30.226.129]) by mail.gmx.net
- (mrgmx004 [212.227.17.190]) with ESMTPSA (Nemesis) id
- 1MGhuK-1oIviD0rUQ-00DpHU; Sat, 23 Jul 2022 05:38:35 +0200
+ (mrgmx005 [212.227.17.190]) with ESMTPSA (Nemesis) id
+ 1MeCpR-1ngJ7R2Wff-00bL4j; Sat, 23 Jul 2022 05:38:38 +0200
 From:   Armin Wolf <W_Armin@gmx.de>
 To:     jdelvare@suse.com, linux@roeck-us.net
 Cc:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 0/2] hwmon: Add new pwmX_fan_channel attribute
-Date:   Sat, 23 Jul 2022 05:38:18 +0200
-Message-Id: <20220723033820.22612-1-W_Armin@gmx.de>
+Subject: [PATCH 2/2] hwmon: (dell-smm) Add support for pwmX_fan_channel attribute
+Date:   Sat, 23 Jul 2022 05:38:20 +0200
+Message-Id: <20220723033820.22612-3-W_Armin@gmx.de>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220723033820.22612-1-W_Armin@gmx.de>
+References: <20220723033820.22612-1-W_Armin@gmx.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:giKxwIsn3HIZTNYLES6JzHd4dk1//7X5fnFLMwwGtMTyvSpcAx7
- Ubum6MGnCavKfKjbdhYlggxFV65lPqWKwgDQmPS6ms+vUgpFfGCcWbg9ryrKYOBy6ICAbpr
- hhPXmd0kA8cCd3sRKYhbTo1vaLVBdhhiw/sT32y0GzRxTTTzZBR88qm22qhsVrn0B63Qacw
- 0tRLKolDZnRR1Et/mH3jw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:/y1Vg6VsGPg=:756bx/CbxIaN5R4yvO748H
- Eg7OcuzpWi8bJOnygOYcs8TlYf5DlNCu6opAWAjgGBHa36rwTpdWcbC66M198u8HjRWiNFmS6
- ZjUAcG+QnFlXi1XYUbLMY6e3LL/RI5SrtTxc8BTScLxZRLRAEpAQfeVwhTlgTFVPz/p01H8Up
- 1lM9dwycmf5q8lMg3QorDHGAc6yWH2GmlqEjcM4nj440rXFADj3poWHz7pTOW0nCmYHXzjAc4
- RNAKRlJJm/vmGJ1jKx3otbM9O00PdSZ2hQorxZQf27nkFseXTb/cK3g469xZONsUM79YPiWTi
- M4QlvB0FGyFI+bEF9p9IokY+vGKmP8sRyKPXQ1UzyvTJX/pURY8D48ar1Tab51EwI9bPYbExv
- qbiEsmS93/aHsAzxZioJ5FaPIO7ZBa8qmYW0K+jsi192Sp0i4eDC7yw4QGJBFUCLdWIDnkVRO
- woCFYyU5oyvyMi+F80Bx+t2UJfjQQl+iAr5j4+w8FSKblfSm99Rd+PvSegXcGOI3bSyM2+1mW
- 68Iy5bbNfaUMxvL1T6y7iaYAT7E4tQGS9/fy9WmH0Rxb7D3baPxlCv9VaJ15FVDR/aGzNRES0
- +ubNdh1FH8UwEIUO/UI81hKKhWtOM9tnZv1VdYK5sLBQocsk7viiRb6UNOxJ6s7vrNhaQZexF
- cyhXshQ+JQhiAdjUULnlTv9FgCNn1g0WY3tyZ3OW7VPPem4DQ4mhFa65GSyIBCSZHB1L2uh7j
- R3BF5SzmFtpLim2cev2PzT98yiLi/kKfOPz4Y2KuondKwG/G3+uKJDhJb4ABRDqpF7D0sPkKV
- DGTkIYTV//l4f50FG6OGgNN04fzUzjrTTFKVy0p9DCg1o18jHAK5pDyH1AZtyeK5YcU4fkZJv
- 2LnPoZOns6Mx/IKx4cmMqrgbDC1kvKOnnZJRG2RGVwQcJd5QAfQYFKGMw20VEP9CvFPg/R763
- 5dEnRt5X2mJAYJ3QgIJWlt4aay1mXcw+IlRoSIGPQMQciQd75Ih89JMDQMN1/11W1rKnQsyne
- bwzUU9YwBxISukN7UBLiLvqydcrUVlwGRq86IGqHxC4x5uUZqajh2jq/utDQ7Pb2c7EyH6J51
- 2txcqUor03GUiUYtYte2X1wXOznYRyI92pvtIKQOwOZ8UCPgW9ojHKkRw==
+X-Provags-ID: V03:K1:wPeN1JJb3xvUYWpN4DN3qE04tkDVlsjCRc9no7P9GJpsaVHbCxW
+ 4/jEKKbwOfJCheuVV9Mq7Cb0PW6AiZuew6EHLqUkNLyw8GLbphPMX1J3Xf5N5F/uTGJLG1J
+ 0okA6crcvyJ9TktPO8CP3GvbqnHnU0tWxpDEoKcfIlwKg6CQ11zMzE4aHXt4vuyqKN/ZuzE
+ Te3AHzDqEpiwBLOCwWx0g==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:CuYyjPeY4Iw=:h0kzkYv/QDBtbjnxELLfZ4
+ Rkwz/af90d2p/d+4ZsjY/+HIjoJ6/tdPffgVUbkniEBSR1umMnjC8YJ1JCs3cqc2WwayCJLSK
+ U8ODHFhPyGaR/gtDMSiz3F/QxqP9OYB5NRHTgHNpwIiUVOZZc6NsLQ6LGDKDrQzzqhB70QJRG
+ 2+I/JGXsbh0n4z4YA+4ST71XsBdUnMo+bNLkdN2AeSrRpQOlyJt0tzDrIOnkD4wFgJqjoGzxI
+ PwIp8+OiFMxp0TCETioEcw/hP8KaOiJ77aS8MFporTV3pbWmJW/wEBycPZ8rrurRYADw6Q/3t
+ 6iJCH+cxkTLXl9EpIxEhQYWSEk0MtsgBaDWXtFORBWPl0BlBLxC28iTQf38nylgcfyaCPT6bp
+ bdUZxx5LrH0w01TzBgfzlAzb/uraAsD9g1YikC5TemgssoOtiofqMCl3ha7o1TkOU8KPQUNmv
+ 2M/xvO5TANFmi0mHIJ1G+DJ2p6SFUKUUPmf4iK5yakGEhv1fMcUUo7fyKNhclq4crJCPtSnQ8
+ +VWbFMNDaO4mxlWfuZvC4SQLqnp5nziWq/lyWAqmkLDw8Ne4wQVWWxlrGYmPG+ewJZoTucocL
+ RqDa/NxZCM1/ZJf8wQquB79HoOxK91dXA+Ha+yio+1fr2IFNY1nx7vb+ZQtdkBNOSH9WSOW5/
+ mtbBE8A8fxQdVqolameJuQB79EDbJYwgU+xk30snBFy5JNXhV7gXVCJuUdY0xjQh68K7GXQ6e
+ Th4XMzdyySNF9YdmBy/n9AZJsI6NXqmsqL56NYF64Cp52g+Kf0eVpwi0l3kxyKbCz0D57/B46
+ 9SO/YjVFbcNEoQyUW7tlCcUEVU3bWxDfv1XZehmzi9LLTHQwKxfYVrESxpaoN1a9VovHZ4w5b
+ QYcWzihz9yH4xB48qTT9z7N4jltrngheaqkh67RaHF8maqVxcTDcm+MZ3IC8zxS9XqRyXtUWw
+ BzS0uX6NTRX1f57B7ft6NjSFwz1KlSkr5crrSmdIrK1+7mj6IQ/FefKl/K3mfJcNuzrCwGTAt
+ Hf/4+lxklyE+XzQuMFQfzTmXJ5wbkeiqpS8wifSjYf5lFLaK20AAqrp8Tdgp5cHQ6BAg3Sa2H
+ TsnVkMrovJ4vz65kkle2N5sc4DBMSdaC3FhtLicIm6VaunP3+KITGLORQ==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Userspace software which needs to know which PWM channel is
-associated with which fan channel (like fancontrol/pwmconfig)
-currently has to probe each PWM channel and watch for fan speed
-changes.
+The SMM interface does not differentiate between fan channels
+and pwm channels, so each pwmX is associated with fanX_*.
 
-This process has multiple issues:
-1. Hardware might overhead during probing of PWM channels.
-2. Not all fans react the same to PWM changes, making
-detection unreliable.
+Inform userspace programs of this with the pwmX_fan_channel
+attribute.
 
-However some hwmon chips, especially firmware-based ones, already
-know which PWM channels are associated to which fan channel,
-making probing of them unnecessary.
+Tested on a Dell Inspiron 3505.
 
-Add a new sysfs attribute to allow such chips to export
-this knowlege to userspace in a standardized manner.
+Signed-off-by: Armin Wolf <W_Armin@gmx.de>
+=2D--
+ Documentation/hwmon/dell-smm-hwmon.rst |  1 +
+ drivers/hwmon/dell-smm-hwmon.c         | 15 ++++++++++++---
+ 2 files changed, 13 insertions(+), 3 deletions(-)
 
-The first patch adds support for the new attribute to the hwmon core,
-while the second patch adds support for this new attribute to the
-dell-smm-hwmon driver.
+diff --git a/Documentation/hwmon/dell-smm-hwmon.rst b/Documentation/hwmon/=
+dell-smm-hwmon.rst
+index e5d85e40972c..2b0651c3f7c5 100644
+=2D-- a/Documentation/hwmon/dell-smm-hwmon.rst
++++ b/Documentation/hwmon/dell-smm-hwmon.rst
+@@ -38,6 +38,7 @@ fan[1-3]_min                    RO      Minimal Fan spee=
+d in RPM
+ fan[1-3]_max                    RO      Maximal Fan speed in RPM
+ fan[1-3]_target                 RO      Expected Fan speed in RPM
+ pwm[1-3]                        RW      Control the fan PWM duty-cycle.
++pwm[1-3]_fan_channel            RO      Hints which PWM is connected to w=
+hich fan
+ pwm1_enable                     WO      Enable or disable automatic BIOS =
+fan
+                                         control (not supported on all lap=
+tops,
+                                         see below for details).
+diff --git a/drivers/hwmon/dell-smm-hwmon.c b/drivers/hwmon/dell-smm-hwmon=
+.c
+index 7f8d95dd2717..e6bf65d2ffc6 100644
+=2D-- a/drivers/hwmon/dell-smm-hwmon.c
++++ b/drivers/hwmon/dell-smm-hwmon.c
+@@ -713,6 +713,11 @@ static umode_t dell_smm_is_visible(const void *drvdat=
+a, enum hwmon_sensor_types
+ 			if (data->fan[channel])
+ 				return 0644;
 
-All changes have been tested on a Dell Inspiron 3505.
++			break;
++		case hwmon_pwm_fan_channel:
++			if (data->fan[channel])
++				return 0444;
++
+ 			break;
+ 		case hwmon_pwm_enable:
+ 			if (data->auto_fan)
+@@ -800,6 +805,10 @@ static int dell_smm_read(struct device *dev, enum hwm=
+on_sensor_types type, u32 a
 
-Armin Wolf (2):
-  hwmon: Add pwmX_fan_channel attribute
-  hwmon: (dell-smm) Add support for pwmX_fan_channel attribute
+ 			*val =3D clamp_val(ret * data->i8k_pwm_mult, 0, 255);
 
- Documentation/ABI/testing/sysfs-class-hwmon |  8 ++++++++
- Documentation/hwmon/dell-smm-hwmon.rst      |  1 +
- Documentation/hwmon/sysfs-interface.rst     |  3 +++
- drivers/hwmon/dell-smm-hwmon.c              | 15 ++++++++++++---
- drivers/hwmon/hwmon.c                       |  1 +
- include/linux/hwmon.h                       |  2 ++
- 6 files changed, 27 insertions(+), 3 deletions(-)
-
++			return 0;
++		case hwmon_pwm_fan_channel:
++			*val =3D channel + 1;
++
+ 			return 0;
+ 		default:
+ 			break;
+@@ -943,9 +952,9 @@ static const struct hwmon_channel_info *dell_smm_info[=
+] =3D {
+ 			   HWMON_F_TARGET
+ 			   ),
+ 	HWMON_CHANNEL_INFO(pwm,
+-			   HWMON_PWM_INPUT | HWMON_PWM_ENABLE,
+-			   HWMON_PWM_INPUT,
+-			   HWMON_PWM_INPUT
++			   HWMON_PWM_INPUT | HWMON_PWM_FAN_CHANNEL | HWMON_PWM_ENABLE,
++			   HWMON_PWM_INPUT | HWMON_PWM_FAN_CHANNEL,
++			   HWMON_PWM_INPUT | HWMON_PWM_FAN_CHANNEL
+ 			   ),
+ 	NULL
+ };
 =2D-
 2.30.2
 
