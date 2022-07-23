@@ -2,59 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBB0FC43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 00:52:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E775C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 00:52:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236568AbiGWAwl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 20:52:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57634 "EHLO
+        id S236952AbiGWAwq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 20:52:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236451AbiGWAwL (ORCPT
+        with ESMTP id S236807AbiGWAwT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 20:52:11 -0400
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B46897A37
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 17:51:57 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id i191-20020a6387c8000000b00419ffb2bb90so3004471pge.14
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 17:51:57 -0700 (PDT)
+        Fri, 22 Jul 2022 20:52:19 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F401988752
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 17:52:00 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id c14-20020a17090abf0e00b001f2096d876bso2604081pjs.4
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 17:52:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=64xZYpakxCJygEkjp2mVBRUvoCiAstWPQbss8n4nWQQ=;
-        b=lD6PrwKpPBjyRkCVqSHLPud1g5OSqjgEDHaV7xZjneDM444GsAN05jigdCvSELw/Xj
-         0GFlfbXNINvLzye4WSMI6K1qvyMhD3x3ft9mSkDSkuSaKS1UedTyhr8SSgMAN1BYaD/S
-         0NK/Xo9K4QR84G3AASKMl/WUzsUGbcDrF1D1pwe36B+dXG5nsyxtDyfwz3q8Tl9qgTsv
-         OmUgwCyoCDWJj/fgsgtHc73tUJvuGPLW903Of4Fi6VeH4ei0bK1zzZ5YiV8LyMrKz99u
-         /RCZ2d8VwYZaj1K5IWYiw92Go0xngDmaWfJvmMotq0DZimiI0Dk+JeQgZpMKe1uKdjTZ
-         +E4Q==
+        bh=IeaBQrfkdXNfKz+ipR/TDgY2PaD5JQz8z1t6X3mNpdI=;
+        b=OnedRgo9/k6ckD+QBBSuuhgCzNxJLoP5EtLNRdxStOWiMj5OlJrWzfs2fOl1o//lHM
+         wutgW3D11vyctiBleHtCDNvwHK2s1L7HtHe3BqIYveMJ3efwr+yxx4dKkkxX45H/tOUG
+         bbA4UMUok6QCu9DRYZC8JRF9negZCfrQ9LcdHHDkmOk/9UoojUqs3mcKkWYeTRyM1K3p
+         /SrFd7AHMXfhRA+8a6XdLJ0rNJKckx1IwcgaH1vJpYwqa1AUZ2Trc4Y66pvjopN7+CTm
+         IUMPPYSsFWfUnFc/9gC0b723CvKkszZoHwpO6nSVIEyocdjsPt+YKzKky6dFwLUR8mmr
+         W1FA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=64xZYpakxCJygEkjp2mVBRUvoCiAstWPQbss8n4nWQQ=;
-        b=498JjEqdrtnuZklgfoIQUgSN46EZxmbftP56D7dF9oBHduZqYybXH05iemhghZSfPO
-         RjdmfMHvUqeLtf3rffe09QWKbDjvxw6Xw/CGZaTzsHKaTf+BkbVMggQphwxTw3N4NZ2z
-         ygcaCv0a02Tfxu7hjPLSC9Bv3u438DhiVt97MfyawI3b0RUJD3g4Pf/82e7r+tYfTA+U
-         0rE3CM9EqY6FX+EObPBlT9g7dW5DYYv4fhW0Oc7kFSC+gtjDxQ8ofOB5H92SyYcpB6KD
-         i5ezhO4Svgd3cQikfWKDPQHJYCAyTvWrFvLKVB431fCDzw3ZTMYZaIUgIwtNrGPSzaxS
-         J2cQ==
-X-Gm-Message-State: AJIora+bzVEgIN1lNBcevYd16Je3fcTm1sWjCxX8jMlplW+Q6y2FTl6D
-        qjjob3P/8Da0uyOl+F6i21xydAzyk3g=
-X-Google-Smtp-Source: AGRyM1vVZtVjOA7RgzIXwL/6Lnd83J/KU3pLnEqZ90Yg45eGPWngP27LdiXPsg3m09SAE0osu/mQ8oq3QJg=
+        bh=IeaBQrfkdXNfKz+ipR/TDgY2PaD5JQz8z1t6X3mNpdI=;
+        b=Zmth9MJa+ysVavJH90gGTHKtNv9psZ6hIAR+tdqDnf3NbIGYoJcan38WAFq0/Uhos0
+         A0jtld7h54GdqXlrrQ1cQ1evnJ9ukqNlC2pVFE06jK1LVSYNW/Cc/PeSU0o0AAY3JVse
+         fZDLms4LPwIX7r+fDZ0J1fU1DI8Tc/JRgzCp7tqR0R0t+lZBWLfbxpbOgAi+LYFfKrEq
+         Sa1Umx6/Nb5PGpefD75w/8/KZ0R0rnqppy92YLj9kJJXNtCQJhDfLs4Hc8upUwIxYxqe
+         1EfKG9k8Sg6Gv54dJrKUquOP1hAgL21DmmMy4l0LxZGKk/oSCy2RV3abR8ju5rLh4j1n
+         14XQ==
+X-Gm-Message-State: AJIora/wdzSMmLS8H/B0Rd6aKHhspu9XI1GFWVPRArNznhnkrYClOzSa
+        TlonZQDIqr+WG4an7G+4G4ESYOhr7UM=
+X-Google-Smtp-Source: AGRyM1sG3XsoD2E2Jp4QnSTv1DYXjewMRUeZEiULOQdZCOLYS5+iK56m4hOZ1Jg7tUUVgRFpbMq/qU4xtMI=
 X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a17:902:b70a:b0:16c:f62c:43aa with SMTP id
- d10-20020a170902b70a00b0016cf62c43aamr2359950pls.8.1658537516739; Fri, 22 Jul
- 2022 17:51:56 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a63:8a41:0:b0:41a:4abd:5c98 with SMTP id
+ y62-20020a638a41000000b0041a4abd5c98mr2049833pgd.292.1658537519981; Fri, 22
+ Jul 2022 17:51:59 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Sat, 23 Jul 2022 00:51:22 +0000
+Date:   Sat, 23 Jul 2022 00:51:24 +0000
 In-Reply-To: <20220723005137.1649592-1-seanjc@google.com>
-Message-Id: <20220723005137.1649592-10-seanjc@google.com>
+Message-Id: <20220723005137.1649592-12-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220723005137.1649592-1-seanjc@google.com>
 X-Mailer: git-send-email 2.37.1.359.gd136c6c3e2-goog
-Subject: [PATCH v4 09/24] KVM: nVMX: Unconditionally clear mtf_pending on
- nested VM-Exit
+Subject: [PATCH v4 11/24] KVM: x86: Rename kvm_x86_ops.queue_exception to inject_exception
 From:   Sean Christopherson <seanjc@google.com>
 To:     Sean Christopherson <seanjc@google.com>,
         Paolo Bonzini <pbonzini@redhat.com>
@@ -68,89 +67,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Clear mtf_pending on nested VM-Exit instead of handling the clear on a
-case-by-case basis in vmx_check_nested_events().  The pending MTF should
-never survive nested VM-Exit, as it is a property of KVM's run of the
-current L2, i.e. should never affect the next L2 run by L1.  In practice,
-this is likely a nop as getting to L1 with nested_run_pending is
-impossible, and KVM doesn't correctly handle morphing a pending exception
-that occurs on a prior injected exception (need for re-injected exception
-being the other case where MTF isn't cleared).  However, KVM will
-hopefully soon correctly deal with a pending exception on top of an
-injected exception.
+Rename the kvm_x86_ops hook for exception injection to better reflect
+reality, and to align with pretty much every other related function name
+in KVM.
 
-Add a TODO to document that KVM has an inversion priority bug between
-SMIs and MTF (and trap-like #DBS), and that KVM also doesn't properly
-save/restore MTF across SMI/RSM.
+No functional change intended.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 ---
- arch/x86/kvm/vmx/nested.c | 21 ++++++++++++---------
- 1 file changed, 12 insertions(+), 9 deletions(-)
+ arch/x86/include/asm/kvm-x86-ops.h | 2 +-
+ arch/x86/include/asm/kvm_host.h    | 2 +-
+ arch/x86/kvm/svm/svm.c             | 4 ++--
+ arch/x86/kvm/vmx/vmx.c             | 4 ++--
+ arch/x86/kvm/x86.c                 | 2 +-
+ 5 files changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-index 46ea7740bb9e..17df0c31f0b5 100644
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -3905,16 +3905,8 @@ static int vmx_check_nested_events(struct kvm_vcpu *vcpu)
- 	unsigned long exit_qual;
- 	bool block_nested_events =
- 	    vmx->nested.nested_run_pending || kvm_event_needs_reinjection(vcpu);
--	bool mtf_pending = vmx->nested.mtf_pending;
- 	struct kvm_lapic *apic = vcpu->arch.apic;
+diff --git a/arch/x86/include/asm/kvm-x86-ops.h b/arch/x86/include/asm/kvm-x86-ops.h
+index 51f777071584..82ba4a564e58 100644
+--- a/arch/x86/include/asm/kvm-x86-ops.h
++++ b/arch/x86/include/asm/kvm-x86-ops.h
+@@ -67,7 +67,7 @@ KVM_X86_OP(get_interrupt_shadow)
+ KVM_X86_OP(patch_hypercall)
+ KVM_X86_OP(inject_irq)
+ KVM_X86_OP(inject_nmi)
+-KVM_X86_OP(queue_exception)
++KVM_X86_OP(inject_exception)
+ KVM_X86_OP(cancel_injection)
+ KVM_X86_OP(interrupt_allowed)
+ KVM_X86_OP(nmi_allowed)
+diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+index e8281d64a431..dbb9eab979d4 100644
+--- a/arch/x86/include/asm/kvm_host.h
++++ b/arch/x86/include/asm/kvm_host.h
+@@ -1523,7 +1523,7 @@ struct kvm_x86_ops {
+ 				unsigned char *hypercall_addr);
+ 	void (*inject_irq)(struct kvm_vcpu *vcpu, bool reinjected);
+ 	void (*inject_nmi)(struct kvm_vcpu *vcpu);
+-	void (*queue_exception)(struct kvm_vcpu *vcpu);
++	void (*inject_exception)(struct kvm_vcpu *vcpu);
+ 	void (*cancel_injection)(struct kvm_vcpu *vcpu);
+ 	int (*interrupt_allowed)(struct kvm_vcpu *vcpu, bool for_injection);
+ 	int (*nmi_allowed)(struct kvm_vcpu *vcpu, bool for_injection);
+diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+index aef63aae922d..e73d79ae0e45 100644
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -454,7 +454,7 @@ static int svm_update_soft_interrupt_rip(struct kvm_vcpu *vcpu)
+ 	return 0;
+ }
  
--	/*
--	 * Clear the MTF state. If a higher priority VM-exit is delivered first,
--	 * this state is discarded.
--	 */
--	if (!block_nested_events)
--		vmx->nested.mtf_pending = false;
--
- 	if (lapic_in_kernel(vcpu) &&
- 		test_bit(KVM_APIC_INIT, &apic->pending_events)) {
- 		if (block_nested_events)
-@@ -3923,6 +3915,9 @@ static int vmx_check_nested_events(struct kvm_vcpu *vcpu)
- 		clear_bit(KVM_APIC_INIT, &apic->pending_events);
- 		if (vcpu->arch.mp_state != KVM_MP_STATE_INIT_RECEIVED)
- 			nested_vmx_vmexit(vcpu, EXIT_REASON_INIT_SIGNAL, 0, 0);
-+
-+		/* MTF is discarded if the vCPU is in WFS. */
-+		vmx->nested.mtf_pending = false;
- 		return 0;
- 	}
+-static void svm_queue_exception(struct kvm_vcpu *vcpu)
++static void svm_inject_exception(struct kvm_vcpu *vcpu)
+ {
+ 	struct vcpu_svm *svm = to_svm(vcpu);
+ 	unsigned nr = vcpu->arch.exception.nr;
+@@ -4798,7 +4798,7 @@ static struct kvm_x86_ops svm_x86_ops __initdata = {
+ 	.patch_hypercall = svm_patch_hypercall,
+ 	.inject_irq = svm_inject_irq,
+ 	.inject_nmi = svm_inject_nmi,
+-	.queue_exception = svm_queue_exception,
++	.inject_exception = svm_inject_exception,
+ 	.cancel_injection = svm_cancel_injection,
+ 	.interrupt_allowed = svm_interrupt_allowed,
+ 	.nmi_allowed = svm_nmi_allowed,
+diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
+index 1c72cde600d0..14f75e4003d3 100644
+--- a/arch/x86/kvm/vmx/vmx.c
++++ b/arch/x86/kvm/vmx/vmx.c
+@@ -1610,7 +1610,7 @@ static void vmx_clear_hlt(struct kvm_vcpu *vcpu)
+ 		vmcs_write32(GUEST_ACTIVITY_STATE, GUEST_ACTIVITY_ACTIVE);
+ }
  
-@@ -3945,6 +3940,11 @@ static int vmx_check_nested_events(struct kvm_vcpu *vcpu)
- 	 * fault-like exceptions, TSS T flag #DB (not emulated by KVM, but
- 	 * could theoretically come in from userspace), and ICEBP (INT1).
- 	 *
-+	 * TODO: SMIs have higher priority than MTF and trap-like #DBs (except
-+	 * for TSS T flag #DBs).  KVM also doesn't save/restore pending MTF
-+	 * across SMI/RSM as it should; that needs to be addressed in order to
-+	 * prioritize SMI over MTF and trap-like #DBs.
-+	 *
- 	 * Note that only a pending nested run can block a pending exception.
- 	 * Otherwise an injected NMI/interrupt should either be
- 	 * lost or delivered to the nested hypervisor in the IDT_VECTORING_INFO,
-@@ -3960,7 +3960,7 @@ static int vmx_check_nested_events(struct kvm_vcpu *vcpu)
- 		return 0;
- 	}
- 
--	if (mtf_pending) {
-+	if (vmx->nested.mtf_pending) {
- 		if (block_nested_events)
- 			return -EBUSY;
- 		nested_vmx_update_pending_dbg(vcpu);
-@@ -4557,6 +4557,9 @@ void nested_vmx_vmexit(struct kvm_vcpu *vcpu, u32 vm_exit_reason,
+-static void vmx_queue_exception(struct kvm_vcpu *vcpu)
++static void vmx_inject_exception(struct kvm_vcpu *vcpu)
+ {
  	struct vcpu_vmx *vmx = to_vmx(vcpu);
- 	struct vmcs12 *vmcs12 = get_vmcs12(vcpu);
+ 	unsigned nr = vcpu->arch.exception.nr;
+@@ -7995,7 +7995,7 @@ static struct kvm_x86_ops vmx_x86_ops __initdata = {
+ 	.patch_hypercall = vmx_patch_hypercall,
+ 	.inject_irq = vmx_inject_irq,
+ 	.inject_nmi = vmx_inject_nmi,
+-	.queue_exception = vmx_queue_exception,
++	.inject_exception = vmx_inject_exception,
+ 	.cancel_injection = vmx_cancel_injection,
+ 	.interrupt_allowed = vmx_interrupt_allowed,
+ 	.nmi_allowed = vmx_nmi_allowed,
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 68fb6393c96f..a61b6cbd7194 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -9672,7 +9672,7 @@ static void kvm_inject_exception(struct kvm_vcpu *vcpu)
  
-+	/* Pending MTF traps are discarded on VM-Exit. */
-+	vmx->nested.mtf_pending = false;
-+
- 	/* trying to cancel vmlaunch/vmresume is a bug */
- 	WARN_ON_ONCE(vmx->nested.nested_run_pending);
+ 	if (vcpu->arch.exception.error_code && !is_protmode(vcpu))
+ 		vcpu->arch.exception.error_code = false;
+-	static_call(kvm_x86_queue_exception)(vcpu);
++	static_call(kvm_x86_inject_exception)(vcpu);
+ }
  
+ static int inject_pending_event(struct kvm_vcpu *vcpu, bool *req_immediate_exit)
 -- 
 2.37.1.359.gd136c6c3e2-goog
 
