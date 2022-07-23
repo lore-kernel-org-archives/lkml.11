@@ -2,186 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2722C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 14:21:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 769DBC43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 14:22:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238000AbiGWOVu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 10:21:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50762 "EHLO
+        id S238020AbiGWOWa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 10:22:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237758AbiGWOVD (ORCPT
+        with ESMTP id S237883AbiGWOWP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 10:21:03 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B646B18;
-        Sat, 23 Jul 2022 07:20:11 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id b21-20020a05600c4e1500b003a32bc8612fso3914218wmq.3;
-        Sat, 23 Jul 2022 07:20:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=Orbvc6CQW1YKg6Y2sGBCgufY8y05m0PedIHBV+w/coI=;
-        b=YlhJxfdHBafgSyGFosLw2Dy4zSPi0x0JPAWYduhM6VJ1IPnpnrxdBK2CmK6l8ZD+Hj
-         CxkGx0G2EG+YEORNr6bkp0u07VIVRyiTScg/Tgmw1updChIPbGoIz0/rwYJKJXhFWfrK
-         aQfjo109ubPBnbTYqXihj2dD095lDCRvgwCcvg51DLu6dJT0xFK/fZsK4MVdBUA2S/Gj
-         H6wZhtDOwRJX/90hyHO6iDGyxivKp7CaYXlTGvEKeQOhzuOBcN3hoWc7pWsVXDPjy7GT
-         l46IZU2huShakQDh5hYwK70iuyq/0z2KiD7YLle/cnFDe/b+jbS62G/cSbhlq6IS7SME
-         rn+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Orbvc6CQW1YKg6Y2sGBCgufY8y05m0PedIHBV+w/coI=;
-        b=j5UAQkzQy3t7gczIgT4ZkMqkgDeYQMiY/H/wUBu+XFhxnwHpRKngqkb8DwA+wGbPkh
-         6cXIY6XDlvsQpwx864WN4NLoOYXtSpTnSt//0lrQFwJd7rx3VbFZif+z6SR+jmQ59lKX
-         7z05r6GHhGtJ7lwU/cdtEjt0vI9RVIV64EffiH9dz6I6Iu1mUhpglfzDRjNHg3jeOA0a
-         gonT/c1yy8fXzeXQyQpAL23jayaWjaeykcy3FepY4cygbl9iIxHIvR4HplSKYaDbGfC2
-         6utwQFytw40ju/ZQJr9ip73YJTIZbfpZCkzXtXPH4Fz2F2uehtLDBJFDRJ2CaM3X2lZb
-         mgDg==
-X-Gm-Message-State: AJIora9OImUyPwuJq7zoZOMrIzGQjnzhjlaiuiGPNryH8MUV5rWS5F6l
-        3VnyVxEmee2tvp+cuLlKz0g=
-X-Google-Smtp-Source: AGRyM1t3Aiw5eTXBtPSa+h8APipjqt/dtYQwmgLlEKqk3CdtFCHw9DVp1U3KlGw92ZPKwS9EIeYflg==
-X-Received: by 2002:a1c:7707:0:b0:3a2:fedc:392 with SMTP id t7-20020a1c7707000000b003a2fedc0392mr3072091wmi.20.1658586009451;
-        Sat, 23 Jul 2022 07:20:09 -0700 (PDT)
-Received: from localhost.localdomain (host-87-7-207-127.retail.telecomitalia.it. [87.7.207.127])
-        by smtp.googlemail.com with ESMTPSA id l18-20020a05600c1d1200b003a04d19dab3sm21011960wms.3.2022.07.23.07.20.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 Jul 2022 07:20:09 -0700 (PDT)
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Christian Marangi <ansuelsmth@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [net-next PATCH v3 14/14] net: dsa: qca8k: move read_switch_id function to common code
-Date:   Sat, 23 Jul 2022 16:18:45 +0200
-Message-Id: <20220723141845.10570-15-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220723141845.10570-1-ansuelsmth@gmail.com>
-References: <20220723141845.10570-1-ansuelsmth@gmail.com>
+        Sat, 23 Jul 2022 10:22:15 -0400
+Received: from mail-4325.protonmail.ch (mail-4325.protonmail.ch [185.70.43.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0291122B3B;
+        Sat, 23 Jul 2022 07:21:15 -0700 (PDT)
+Date:   Sat, 23 Jul 2022 14:21:05 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
+        s=protonmail3; t=1658586072; x=1658845272;
+        bh=SihTKt45aRpcxX9AMLARdfazz57gHKVVDZNki8wzPh8=;
+        h=Date:To:From:Cc:Reply-To:Subject:Message-ID:Feedback-ID:From:To:
+         Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID;
+        b=ppGnTOJRS6a09VAzeykPPsGl8ZqncmNFguz2ICyPauWV6Sxclwg2AXV10w350MPkm
+         Qmty8HkCK2Ro0sCCVcfOeVO+uFiyMuboHZWx/4eCzo+TklBmkjfejHItGbUJuDnwMY
+         VJQ6TDItV5K1j2R2zsRIt0ucW94DZHkcEPXv1NynL8DsoAoUDgLpp35UCAR5q0VifF
+         69m6aW2VW01rDP+GPbXtZQ0IGDUon0jQ/D6hLGEMG5fJXZAqouvnucUoBqfdrYDTrC
+         S/LFAFgQJp0QBIhn/B9VmdT/4u2+7oNkGHL0IbYQYLVtuU44Z0kz5TNyJ9wu8pitLz
+         9SB0DyQiv+A8g==
+To:     devicetree@vger.kernel.org
+From:   "Lin, Meng-Bo" <linmengbo0689@protonmail.com>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Stephan Gerhold <stephan@gerhold.net>,
+        Nikita Travkin <nikita@trvn.ru>,
+        ~postmarketos/upstreaming@lists.sr.ht
+Reply-To: "Lin, Meng-Bo" <linmengbo0689@protonmail.com>
+Subject: [PATCH v5 0/4] Add Samsung Galaxy E5/E7/Grand Max device trees
+Message-ID: <20220723141835.136196-1-linmengbo0689@protonmail.com>
+Feedback-ID: 40467236:user:proton
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The same function to read the switch id is used by drivers based on
-qca8k family switch. Move them to common code to make them accessible
-also by other drivers.
+v5: Fix Error:
+arch/arm64/boot/dts/qcom/msm8916-samsung-e2015-common.dtsi:36.2-22 Properti=
+es
+must precede subnodes
+Restore Acked-by tag in the dt-bindings patch
+v4: Disable i2c2 until lis2hh12 accelerometer is fixed.
+Add GPIO LEDs for Grand Max.
+v3: Add a cover letter and changelog
+v2: Add dt-bindings documentation
 
-Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
----
- drivers/net/dsa/qca/qca8k-8xxx.c   | 30 -----------------------------
- drivers/net/dsa/qca/qca8k-common.c | 31 ++++++++++++++++++++++++++++++
- drivers/net/dsa/qca/qca8k.h        |  1 +
- 3 files changed, 32 insertions(+), 30 deletions(-)
+Samsung Galaxy E5, E7 and Grand Max are smartphones using the MSM8916 SoC
+released in 2015.
 
-diff --git a/drivers/net/dsa/qca/qca8k-8xxx.c b/drivers/net/dsa/qca/qca8k-8xxx.c
-index 34d0c4cea68d..9fed3b638739 100644
---- a/drivers/net/dsa/qca/qca8k-8xxx.c
-+++ b/drivers/net/dsa/qca/qca8k-8xxx.c
-@@ -1877,36 +1877,6 @@ static const struct dsa_switch_ops qca8k_switch_ops = {
- 	.connect_tag_protocol	= qca8k_connect_tag_protocol,
- };
- 
--static int qca8k_read_switch_id(struct qca8k_priv *priv)
--{
--	const struct qca8k_match_data *data;
--	u32 val;
--	u8 id;
--	int ret;
--
--	/* get the switches ID from the compatible */
--	data = of_device_get_match_data(priv->dev);
--	if (!data)
--		return -ENODEV;
--
--	ret = qca8k_read(priv, QCA8K_REG_MASK_CTRL, &val);
--	if (ret < 0)
--		return -ENODEV;
--
--	id = QCA8K_MASK_CTRL_DEVICE_ID(val);
--	if (id != data->id) {
--		dev_err(priv->dev, "Switch id detected %x but expected %x", id, data->id);
--		return -ENODEV;
--	}
--
--	priv->switch_id = id;
--
--	/* Save revision to communicate to the internal PHY driver */
--	priv->switch_revision = QCA8K_MASK_CTRL_REV_ID(val);
--
--	return 0;
--}
--
- static int
- qca8k_sw_probe(struct mdio_device *mdiodev)
- {
-diff --git a/drivers/net/dsa/qca/qca8k-common.c b/drivers/net/dsa/qca/qca8k-common.c
-index 02559990a097..c33e9e11c322 100644
---- a/drivers/net/dsa/qca/qca8k-common.c
-+++ b/drivers/net/dsa/qca/qca8k-common.c
-@@ -8,6 +8,7 @@
- 
- #include <linux/netdevice.h>
- #include <net/dsa.h>
-+#include <linux/of_platform.h>
- #include <linux/if_bridge.h>
- 
- #include "qca8k.h"
-@@ -1207,3 +1208,33 @@ qca8k_port_lag_leave(struct dsa_switch *ds, int port,
- {
- 	return qca8k_lag_refresh_portmap(ds, port, lag, true);
- }
-+
-+int qca8k_read_switch_id(struct qca8k_priv *priv)
-+{
-+	const struct qca8k_match_data *data;
-+	u32 val;
-+	u8 id;
-+	int ret;
-+
-+	/* get the switches ID from the compatible */
-+	data = of_device_get_match_data(priv->dev);
-+	if (!data)
-+		return -ENODEV;
-+
-+	ret = qca8k_read(priv, QCA8K_REG_MASK_CTRL, &val);
-+	if (ret < 0)
-+		return -ENODEV;
-+
-+	id = QCA8K_MASK_CTRL_DEVICE_ID(val);
-+	if (id != data->id) {
-+		dev_err(priv->dev, "Switch id detected %x but expected %x", id, data->id);
-+		return -ENODEV;
-+	}
-+
-+	priv->switch_id = id;
-+
-+	/* Save revision to communicate to the internal PHY driver */
-+	priv->switch_revision = QCA8K_MASK_CTRL_REV_ID(val);
-+
-+	return 0;
-+}
-diff --git a/drivers/net/dsa/qca/qca8k.h b/drivers/net/dsa/qca/qca8k.h
-index e6cf1ad68a9f..efbd3438aba8 100644
---- a/drivers/net/dsa/qca/qca8k.h
-+++ b/drivers/net/dsa/qca/qca8k.h
-@@ -432,6 +432,7 @@ extern const struct qca8k_mib_desc ar8327_mib[];
- extern const struct regmap_access_table qca8k_readable_table;
- int qca8k_mib_init(struct qca8k_priv *priv);
- void qca8k_port_set_status(struct qca8k_priv *priv, int port, int enable);
-+int qca8k_read_switch_id(struct qca8k_priv *priv);
- 
- /* Common read/write/rmw function */
- int qca8k_read(struct qca8k_priv *priv, u32 reg, u32 *val);
--- 
-2.36.1
+e2015 and a2015 are similar, with some differences in accelerometer,
+MUIC and Vibrator. The common parts are shared in
+msm8916-samsung-a2015-common.dtsi to reduce duplication.
+
+The three devices (and all other variants of E5/E7/Grand Max released in
+2015) are very similar, with some differences in display, touchscreen,
+sensors and NFC. The common parts are shared in
+msm8916-samsung-e2015-common.dtsi to reduce duplication.
+
+Unfortunately, some E5/E7/Grand Max were released with outdated 32-bit
+only firmware and never received any update from Samsung. Since the 32-bit
+TrustZone firmware is signed there seems to be no way currently to
+actually boot this device tree on arm64 Linux on those variants at the
+moment.
+
+However, it is possible to use this device tree by compiling an ARM32
+kernel instead. The device tree can be easily built on ARM32 with
+an #include and it works really well there. To avoid confusion for others
+it is still better to add this device tree on arm64. Otherwise it's easy
+to forget to update this one when making some changes that affect all
+MSM8916 devices.
+
+Maybe someone finds a way to boot ARM64 Linux on those device at some
+point. In this case I expect that this device tree can be simply used
+as-is.
 
