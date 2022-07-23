@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD2CAC43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:08:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC422C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:08:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238431AbiGWKIf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 06:08:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37282 "EHLO
+        id S238755AbiGWKIi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 06:08:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238806AbiGWKIA (ORCPT
+        with ESMTP id S238618AbiGWKIP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 06:08:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 624A3C5D63;
-        Sat, 23 Jul 2022 03:01:40 -0700 (PDT)
+        Sat, 23 Jul 2022 06:08:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 285EC78205;
+        Sat, 23 Jul 2022 03:01:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BABD6B82C1D;
-        Sat, 23 Jul 2022 10:01:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B057C341C0;
-        Sat, 23 Jul 2022 10:01:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5A70FB82C1A;
+        Sat, 23 Jul 2022 10:01:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2AACC341C0;
+        Sat, 23 Jul 2022 10:01:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658570498;
-        bh=7NjT53egA3ATlJ9aTxXrE1cWTZ5hf+G2pbGremAuhQQ=;
+        s=korg; t=1658570473;
+        bh=E1G/sj44DQ1PBjU34Ar46hxoaFI0v+72xBumAP9AX4o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mziMBHQtaz31usY0NRquPJzbU6eCKzLPX9SSTY/Kkuf/8bVSfZJxMcBTxSlprvoJ2
-         t4tTgwMMIVaXicoCJb6RhhAMIKgNttvrcWjFGyi6en9ZF6febj0xYraEaE9REkIono
-         +YuPdMVt1EkfmyFjCB/77g2ZV5mcgHYGiz+fM+Gk=
+        b=bdq6rxEAZpDeLvyl48wwWpumxsWIT2kfAMUdiNfjQVnMjXadHUUau9nijMxbuhkMR
+         EaQd+zr21pZfmYO/ICwQGaBHL4ph7ZReVevolwsLAlhFgt/uF3/DQyvws35J4WTnU2
+         7jKmV5+cMSFHslU+LLDImWMK8M40BsqFVvBdq2Fs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexandre Chartre <alexandre.chartre@oracle.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>,
         Borislav Petkov <bp@suse.de>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 097/148] x86/bugs: Add AMD retbleed= boot parameter
-Date:   Sat, 23 Jul 2022 11:55:09 +0200
-Message-Id: <20220723095251.551421670@linuxfoundation.org>
+Subject: [PATCH 5.10 109/148] x86/bugs: Do IBPB fallback check only once
+Date:   Sat, 23 Jul 2022 11:55:21 +0200
+Message-Id: <20220723095254.884274073@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220723095224.302504400@linuxfoundation.org>
 References: <20220723095224.302504400@linuxfoundation.org>
@@ -53,208 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexandre Chartre <alexandre.chartre@oracle.com>
+From: Josh Poimboeuf <jpoimboe@kernel.org>
 
-commit 7fbf47c7ce50b38a64576b150e7011ae73d54669 upstream.
+commit 0fe4aeea9c01baabecc8c3afc7889c809d939bc2 upstream.
 
-Add the "retbleed=<value>" boot parameter to select a mitigation for
-RETBleed. Possible values are "off", "auto" and "unret"
-(JMP2RET mitigation). The default value is "auto".
+When booting with retbleed=auto, if the kernel wasn't built with
+CONFIG_CC_HAS_RETURN_THUNK, the mitigation falls back to IBPB.  Make
+sure a warning is printed in that case.  The IBPB fallback check is done
+twice, but it really only needs to be done once.
 
-Currently, "retbleed=auto" will select the unret mitigation on
-AMD and Hygon and no mitigation on Intel (JMP2RET is not effective on
-Intel).
-
-  [peterz: rebase; add hygon]
-  [jpoimboe: cleanups]
-
-Signed-off-by: Alexandre Chartre <alexandre.chartre@oracle.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
+Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/admin-guide/kernel-parameters.txt |   15 +++
- arch/x86/Kconfig                                |    3 
- arch/x86/kernel/cpu/bugs.c                      |  108 +++++++++++++++++++++++-
- 3 files changed, 125 insertions(+), 1 deletion(-)
+ arch/x86/kernel/cpu/bugs.c |   15 +++++----------
+ 1 file changed, 5 insertions(+), 10 deletions(-)
 
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -4656,6 +4656,21 @@
- 
- 	retain_initrd	[RAM] Keep initrd memory after extraction
- 
-+	retbleed=	[X86] Control mitigation of RETBleed (Arbitrary
-+			Speculative Code Execution with Return Instructions)
-+			vulnerability.
-+
-+			off         - unconditionally disable
-+			auto        - automatically select a migitation
-+			unret       - force enable untrained return thunks,
-+				      only effective on AMD Zen {1,2}
-+				      based systems.
-+
-+			Selecting 'auto' will choose a mitigation method at run
-+			time according to the CPU.
-+
-+			Not specifying this option is equivalent to retbleed=auto.
-+
- 	rfkill.default_state=
- 		0	"airplane mode".  All wifi, bluetooth, wimax, gps, fm,
- 			etc. communication is blocked by default.
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -465,6 +465,9 @@ config RETPOLINE
- config CC_HAS_SLS
- 	def_bool $(cc-option,-mharden-sls=all)
- 
-+config CC_HAS_RETURN_THUNK
-+	def_bool $(cc-option,-mfunction-return=thunk-extern)
-+
- config SLS
- 	bool "Mitigate Straight-Line-Speculation"
- 	depends on CC_HAS_SLS && X86_64
 --- a/arch/x86/kernel/cpu/bugs.c
 +++ b/arch/x86/kernel/cpu/bugs.c
-@@ -37,6 +37,7 @@
- #include "cpu.h"
- 
- static void __init spectre_v1_select_mitigation(void);
-+static void __init retbleed_select_mitigation(void);
- static void __init spectre_v2_select_mitigation(void);
- static void __init ssb_select_mitigation(void);
- static void __init l1tf_select_mitigation(void);
-@@ -112,6 +113,12 @@ void __init check_bugs(void)
- 
- 	/* Select the proper CPU mitigations before patching alternatives: */
- 	spectre_v1_select_mitigation();
-+	retbleed_select_mitigation();
-+	/*
-+	 * spectre_v2_select_mitigation() relies on the state set by
-+	 * retbleed_select_mitigation(); specifically the STIBP selection is
-+	 * forced for UNRET.
-+	 */
- 	spectre_v2_select_mitigation();
- 	ssb_select_mitigation();
- 	l1tf_select_mitigation();
-@@ -709,6 +716,100 @@ static int __init nospectre_v1_cmdline(c
- early_param("nospectre_v1", nospectre_v1_cmdline);
- 
- #undef pr_fmt
-+#define pr_fmt(fmt)     "RETBleed: " fmt
-+
-+enum retbleed_mitigation {
-+	RETBLEED_MITIGATION_NONE,
-+	RETBLEED_MITIGATION_UNRET,
-+};
-+
-+enum retbleed_mitigation_cmd {
-+	RETBLEED_CMD_OFF,
-+	RETBLEED_CMD_AUTO,
-+	RETBLEED_CMD_UNRET,
-+};
-+
-+const char * const retbleed_strings[] = {
-+	[RETBLEED_MITIGATION_NONE]	= "Vulnerable",
-+	[RETBLEED_MITIGATION_UNRET]	= "Mitigation: untrained return thunk",
-+};
-+
-+static enum retbleed_mitigation retbleed_mitigation __ro_after_init =
-+	RETBLEED_MITIGATION_NONE;
-+static enum retbleed_mitigation_cmd retbleed_cmd __ro_after_init =
-+	RETBLEED_CMD_AUTO;
-+
-+static int __init retbleed_parse_cmdline(char *str)
-+{
-+	if (!str)
-+		return -EINVAL;
-+
-+	if (!strcmp(str, "off"))
-+		retbleed_cmd = RETBLEED_CMD_OFF;
-+	else if (!strcmp(str, "auto"))
-+		retbleed_cmd = RETBLEED_CMD_AUTO;
-+	else if (!strcmp(str, "unret"))
-+		retbleed_cmd = RETBLEED_CMD_UNRET;
-+	else
-+		pr_err("Unknown retbleed option (%s). Defaulting to 'auto'\n", str);
-+
-+	return 0;
-+}
-+early_param("retbleed", retbleed_parse_cmdline);
-+
-+#define RETBLEED_UNTRAIN_MSG "WARNING: BTB untrained return thunk mitigation is only effective on AMD/Hygon!\n"
-+#define RETBLEED_COMPILER_MSG "WARNING: kernel not compiled with RETPOLINE or -mfunction-return capable compiler!\n"
-+
-+static void __init retbleed_select_mitigation(void)
-+{
-+	if (!boot_cpu_has_bug(X86_BUG_RETBLEED) || cpu_mitigations_off())
-+		return;
-+
-+	switch (retbleed_cmd) {
-+	case RETBLEED_CMD_OFF:
-+		return;
-+
-+	case RETBLEED_CMD_UNRET:
-+		retbleed_mitigation = RETBLEED_MITIGATION_UNRET;
-+		break;
-+
-+	case RETBLEED_CMD_AUTO:
-+	default:
-+		if (!boot_cpu_has_bug(X86_BUG_RETBLEED))
-+			break;
-+
-+		if (boot_cpu_data.x86_vendor == X86_VENDOR_AMD ||
+@@ -847,18 +847,13 @@ static void __init retbleed_select_mitig
+ 	case RETBLEED_CMD_AUTO:
+ 	default:
+ 		if (boot_cpu_data.x86_vendor == X86_VENDOR_AMD ||
+-		    boot_cpu_data.x86_vendor == X86_VENDOR_HYGON) {
+-
+-			if (IS_ENABLED(CONFIG_RETPOLINE) &&
+-			    IS_ENABLED(CONFIG_CC_HAS_RETURN_THUNK))
+-				retbleed_mitigation = RETBLEED_MITIGATION_UNRET;
+-			else
+-				retbleed_mitigation = RETBLEED_MITIGATION_IBPB;
+-		}
 +		    boot_cpu_data.x86_vendor == X86_VENDOR_HYGON)
 +			retbleed_mitigation = RETBLEED_MITIGATION_UNRET;
-+		break;
-+	}
-+
-+	switch (retbleed_mitigation) {
-+	case RETBLEED_MITIGATION_UNRET:
-+
-+		if (!IS_ENABLED(CONFIG_RETPOLINE) ||
-+		    !IS_ENABLED(CONFIG_CC_HAS_RETURN_THUNK)) {
-+			pr_err(RETBLEED_COMPILER_MSG);
-+			retbleed_mitigation = RETBLEED_MITIGATION_NONE;
-+			break;
-+		}
-+
-+		setup_force_cpu_cap(X86_FEATURE_RETHUNK);
-+		setup_force_cpu_cap(X86_FEATURE_UNRET);
-+
-+		if (boot_cpu_data.x86_vendor != X86_VENDOR_AMD &&
-+		    boot_cpu_data.x86_vendor != X86_VENDOR_HYGON)
-+			pr_err(RETBLEED_UNTRAIN_MSG);
-+		break;
-+
-+	default:
-+		break;
-+	}
-+
-+	pr_info("%s\n", retbleed_strings[retbleed_mitigation]);
-+}
-+
-+#undef pr_fmt
- #define pr_fmt(fmt)     "Spectre V2 : " fmt
  
- static enum spectre_v2_mitigation spectre_v2_enabled __ro_after_init =
-@@ -1919,7 +2020,12 @@ static ssize_t srbds_show_state(char *bu
+ 		/*
+-		 * The Intel mitigation (IBRS) was already selected in
+-		 * spectre_v2_select_mitigation().
++		 * The Intel mitigation (IBRS or eIBRS) was already selected in
++		 * spectre_v2_select_mitigation().  'retbleed_mitigation' will
++		 * be set accordingly below.
+ 		 */
  
- static ssize_t retbleed_show_state(char *buf)
- {
--	return sprintf(buf, "Vulnerable\n");
-+	if (retbleed_mitigation == RETBLEED_MITIGATION_UNRET &&
-+	    (boot_cpu_data.x86_vendor != X86_VENDOR_AMD &&
-+	     boot_cpu_data.x86_vendor != X86_VENDOR_HYGON))
-+		return sprintf(buf, "Vulnerable: untrained return thunk on non-Zen uarch\n");
-+
-+	return sprintf(buf, "%s\n", retbleed_strings[retbleed_mitigation]);
- }
- 
- static ssize_t cpu_show_common(struct device *dev, struct device_attribute *attr,
+ 		break;
 
 
