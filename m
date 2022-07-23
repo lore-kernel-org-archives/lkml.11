@@ -2,79 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B42CC43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 11:22:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F1CAC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 11:33:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235615AbiGWLWS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 07:22:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48212 "EHLO
+        id S237336AbiGWLdx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 07:33:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231377AbiGWLWO (ORCPT
+        with ESMTP id S230010AbiGWLdv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 07:22:14 -0400
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48E893DF1F;
-        Sat, 23 Jul 2022 04:22:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=dcy6i7FRX4l5Gbr0LDQ+gwpAZaDUrfwf4W+C0zpF9zY=; b=XzjWAAubT+U3O39VOBD7COtuQo
-        AOf9QP0iEkwskFRAAfV1kC1nLpuLSrszaEmxvEeuo990Q9Rq+UeITy/5G3WtlRuF3o3qfYIaeBMg8
-        9b5IqKho5Nsp9pHrndUHstA+vAhdW1N4gLtDFYGzSWhrW3sU3ksbV2hW7dZIE0Iu9SxnUXBsl96L8
-        WFOii/NhiO75NBOK1USoyAuejuWJw3374X7yUQfbvIaXOw3TUiA0GdfGvKdhdb5ECmh2wiG090taA
-        8/54Ml179UxlGL7PyBjGIsxgu0iY+y8jASEmQaQtaWopJWnfSFOefldSo6UcC/yzTB650j52dVspG
-        6LSRR++A==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oFDCR-0067Mf-Ps; Sat, 23 Jul 2022 11:21:36 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 01AA898016F; Sat, 23 Jul 2022 13:21:33 +0200 (CEST)
-Date:   Sat, 23 Jul 2022 13:21:33 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Sami Tolvanen <samitolvanen@google.com>
-Cc:     linux-kernel@vger.kernel.org, Kees Cook <keescook@chromium.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>, x86@kernel.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Joao Moreira <joao@overdrivepizza.com>,
-        Sedat Dilek <sedat.dilek@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        linux-hardening@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, llvm@lists.linux.dev
-Subject: Re: [RFC PATCH v3 20/20] x86: Add support for CONFIG_CFI_CLANG
-Message-ID: <YtvZvYHC1BKzEz1p@worktop.programming.kicks-ass.net>
-References: <20220610233513.1798771-1-samitolvanen@google.com>
- <20220610233513.1798771-21-samitolvanen@google.com>
+        Sat, 23 Jul 2022 07:33:51 -0400
+Received: from meesny.iki.fi (meesny.iki.fi [195.140.195.201])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40EA3644C;
+        Sat, 23 Jul 2022 04:33:50 -0700 (PDT)
+Received: from hillosipuli.retiisi.eu (89-27-103-169.bb.dnainternet.fi [89.27.103.169])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: sailus)
+        by meesny.iki.fi (Postfix) with ESMTPSA id 532FC2009D;
+        Sat, 23 Jul 2022 14:33:47 +0300 (EEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi; s=meesny;
+        t=1658576027;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=UK9gk65TvY3od7Ha8VfOgKiSVkqiYJvtQsYPR9Y9tkc=;
+        b=XQ//p285SaXewNX9GPDq6vxo2AQmnvue49fqtPTjsMXqHoT9Cmsg2s7uRAZ1GCjYpntdUA
+        HU/0FBf06FPm6GEbt3so4f1UkNxBZykaCUv/3CyNXTnkGo3Cj1tDPr9KyhVSkFf7FnbiEV
+        zgi+uEwl0kSkweZgBKvuEytmz8ynshQ=
+Received: from valkosipuli.retiisi.eu (valkosipuli.localdomain [192.168.4.2])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by hillosipuli.retiisi.eu (Postfix) with ESMTPS id C3FEA634C94;
+        Sat, 23 Jul 2022 14:33:46 +0300 (EEST)
+Date:   Sat, 23 Jul 2022 14:33:46 +0300
+From:   Sakari Ailus <sakari.ailus@iki.fi>
+To:     Yassine Oudjana <yassine.oudjana@gmail.com>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Tianshu Qiu <tian.shu.qiu@intel.com>,
+        Bingbu Cao <bingbu.cao@intel.com>,
+        Yassine Oudjana <y.oudjana@protonmail.com>,
+        Jacopo Mondi <jacopo@jmondi.org>, linux-media@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 3/3] media: i2c: ak7375: Add regulator management
+Message-ID: <Ytvcmpa3aPkS9NYK@valkosipuli.retiisi.eu>
+References: <20220711144039.232196-1-y.oudjana@protonmail.com>
+ <20220711144039.232196-4-y.oudjana@protonmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220610233513.1798771-21-samitolvanen@google.com>
+In-Reply-To: <20220711144039.232196-4-y.oudjana@protonmail.com>
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi;
+        s=meesny; t=1658576027;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=UK9gk65TvY3od7Ha8VfOgKiSVkqiYJvtQsYPR9Y9tkc=;
+        b=xzrAnplcTNr9Cr/YyKr7xQ/dnV4cfOdgj0D5W9hbdbZ8RjTgDyY1Bz9aMVTcEa6K/cgNzQ
+        MkuQAqYAGhCZECPFY4Vj4+dxmg24WrGB9x8H+TE+Xpp9xyxMeYuwtZbu8S0Vh+CRbEPpCi
+        RcMacOYffSaIk6eUveUHKE23B07XPjs=
+ARC-Authentication-Results: i=1;
+        ORIGINATING;
+        auth=pass smtp.auth=sailus smtp.mailfrom=sakari.ailus@iki.fi
+ARC-Seal: i=1; s=meesny; d=iki.fi; t=1658576027; a=rsa-sha256; cv=none;
+        b=Lpp9mRfOGJBp1gAC0H2uuRqPCenc+ygZc9l01/2fMccXHo84El1+AOjN6+C5Rg087qcyu+
+        dTNQ0Wkfe7oTmARMX3DuyheGNuOnxJQDpXXaaVZr4JpWasV7jgW7sb2rZACwxOAw8prhZ6
+        9USqNt8vzzVmraGDsKdTBa/RQCmAamg=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 10, 2022 at 04:35:13PM -0700, Sami Tolvanen wrote:
+Hi Yassine,
 
-> +#ifdef CONFIG_CFI_CLANG
-> +#define __CFI_TYPE(name)					\
-> +	.fill 7, 1, 0xCC ASM_NL					\
-> +	SYM_START(__cfi_##name, SYM_L_LOCAL, SYM_A_NONE)	\
-> +	int3 ASM_NL						\
-> +	int3 ASM_NL						\
-> +	mov __kcfi_typeid_##name, %eax ASM_NL			\
-> +	int3 ASM_NL						\
-> +	int3 ASM_NL						\
-> +	SYM_FUNC_END(__cfi_##name)
-> +#endif
+Thanks for the patch.
 
-Like said on IRC yesterday, this doesn't generate the right mov
-encoding.
+On Mon, Jul 11, 2022 at 06:40:39PM +0400, Yassine Oudjana wrote:
+> From: Yassine Oudjana <y.oudjana@protonmail.com>
+> 
+> Make the driver get needed regulators on probe and enable/disable
+> them on runtime PM callbacks.
+> 
+> Signed-off-by: Yassine Oudjana <y.oudjana@protonmail.com>
+> ---
+> Changes since v1:
+>   - Reorganize variable declaration
+>   - Change the power-on delay range to 3000-3500 microseconds.
+> 
+>  drivers/media/i2c/ak7375.c | 39 ++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 39 insertions(+)
+> 
+> diff --git a/drivers/media/i2c/ak7375.c b/drivers/media/i2c/ak7375.c
+> index 40b1a4aa846c..c2b2542a0056 100644
+> --- a/drivers/media/i2c/ak7375.c
+> +++ b/drivers/media/i2c/ak7375.c
+> @@ -6,6 +6,7 @@
+>  #include <linux/i2c.h>
+>  #include <linux/module.h>
+>  #include <linux/pm_runtime.h>
+> +#include <linux/regulator/consumer.h>
+>  #include <media/v4l2-ctrls.h>
+>  #include <media/v4l2-device.h>
+>  
+> @@ -23,17 +24,32 @@
+>   */
+>  #define AK7375_CTRL_STEPS	64
+>  #define AK7375_CTRL_DELAY_US	1000
+> +/*
+> + * The vcm takes around 3 ms to power on and start taking
+> + * I2C messages. This value was found experimentally due to
+> + * lack of documentation.
+> + */
+> +#define AK7375_POWER_DELAY_US	3000
+>  
+>  #define AK7375_REG_POSITION	0x0
+>  #define AK7375_REG_CONT		0x2
+>  #define AK7375_MODE_ACTIVE	0x0
+>  #define AK7375_MODE_STANDBY	0x40
+>  
+> +static const char * const ak7375_supply_names[] = {
+> +	"vdd",
+> +	"vio",
+> +};
+> +
+> +#define AK7375_NUM_SUPPLIES ARRAY_SIZE(ak7375_supply_names)
 
-	.byte 0xb8 ; .long __kcfi_typeid_##name ;		\
+Please drop this, and use ARRAY_SIZE() directly.
 
-works. Your LLVM tree already has the ZExt patch you gave me yesterday
-to fix up the linker fallout from this change.
+> +
+>  /* ak7375 device structure */
+>  struct ak7375_device {
+>  	struct v4l2_ctrl_handler ctrls_vcm;
+>  	struct v4l2_subdev sd;
+>  	struct v4l2_ctrl *focus;
+> +	struct regulator_bulk_data supplies[AK7375_NUM_SUPPLIES];
+> +
+>  	/* active or standby mode */
+>  	bool active;
+>  };
+> @@ -133,12 +149,24 @@ static int ak7375_probe(struct i2c_client *client)
+>  {
+>  	struct ak7375_device *ak7375_dev;
+>  	int ret;
+> +	int i;
+
+unsigned int, please.
+
+-- 
+Kind regards,
+
+Sakari Ailus
