@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C11C2C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 09:59:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D212C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 09:59:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237726AbiGWJ7N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 05:59:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47010 "EHLO
+        id S237528AbiGWJ7U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 05:59:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237524AbiGWJ6g (ORCPT
+        with ESMTP id S237530AbiGWJ6l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 05:58:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63E321ADBD;
-        Sat, 23 Jul 2022 02:57:32 -0700 (PDT)
+        Sat, 23 Jul 2022 05:58:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD5043F32F;
+        Sat, 23 Jul 2022 02:57:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 16D4CB82C1F;
-        Sat, 23 Jul 2022 09:57:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6757BC341C0;
-        Sat, 23 Jul 2022 09:57:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3CB07611BF;
+        Sat, 23 Jul 2022 09:57:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BD52C341C0;
+        Sat, 23 Jul 2022 09:57:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658570249;
-        bh=iodpCEhKE7vLB7Qn5wLtvrYYWXkmr5UUF3gKEJUzpEg=;
+        s=korg; t=1658570252;
+        bh=U0FSku5Q4Vl2EtM25WEcra7RlQWFvp8fSemwdMB1/5M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wSTdx66IfIH4etwzBAcZYN3r69Wf8W4jHy98h+id8uOxZLRXkcsyH4VPihvzjPQ6q
-         as29sb93PCJkoZkqchtIAGistfDRhxJmPJXOXoMSYOYu2/GBrwWDh4nyEx0Rd8QO+/
-         NclGGd5+UYEF+shwGM06dEfE9tfskXMP+oVtL+BU=
+        b=YTOLFjfIhE/ggkQI0QKqeRgXR1mB2l38W2FKT3S7RLziKxO4d9zD6Js9adNGdYr6G
+         Dxd8GqEiIEG7kWpCsOrcUNBEbNqlBMBR8OqGbnrlvPAA55IxX1ZHvy4YwyfwYOtHWs
+         OFsRTZpgqEQuGi0gKttaW19RxWLVZF8Wt9igS+AI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Juergen Gross <jgross@suse.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
+        stable@vger.kernel.org,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Borislav Petkov <bp@suse.de>, Ingo Molnar <mingo@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 010/148] x86/xen: Support objtool vmlinux.o validation in xen-head.S
-Date:   Sat, 23 Jul 2022 11:53:42 +0200
-Message-Id: <20220723095227.283321475@linuxfoundation.org>
+Subject: [PATCH 5.10 024/148] objtool: Handle per arch retpoline naming
+Date:   Sat, 23 Jul 2022 11:53:56 +0200
+Message-Id: <20220723095231.169139222@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220723095224.302504400@linuxfoundation.org>
 References: <20220723095224.302504400@linuxfoundation.org>
@@ -50,42 +51,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@redhat.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-commit f4b4bc10b0b85ec66f1a9bf5dddf475e6695b6d2 upstream.
+commit 530b4ddd9dd92b263081f5c7786d39a8129c8b2d upstream.
 
-The Xen hypercall page is filled with zeros, causing objtool to fall
-through all the empty hypercall functions until it reaches a real
-function, resulting in a stack state mismatch.
+The __x86_indirect_ naming is obviously not generic. Shorten to allow
+matching some additional magic names later.
 
-The build-time contents of the hypercall page don't matter because the
-page gets rewritten by the hypervisor.  Make it more palatable to
-objtool by making each hypervisor function a true empty function, with
-nops and a return.
-
-Cc: Juergen Gross <jgross@suse.com>
-Reviewed-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
-Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lore.kernel.org/r/0883bde1d7a1fb3b6a4c952bc0200e873752f609.1611263462.git.jpoimboe@redhat.com
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Reviewed-by: Miroslav Benes <mbenes@suse.cz>
+Link: https://lkml.kernel.org/r/20210326151259.630296706@infradead.org
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/xen/xen-head.S |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ tools/objtool/arch.h            |    2 ++
+ tools/objtool/arch/x86/decode.c |    5 +++++
+ tools/objtool/check.c           |    9 +++++++--
+ 3 files changed, 14 insertions(+), 2 deletions(-)
 
---- a/arch/x86/xen/xen-head.S
-+++ b/arch/x86/xen/xen-head.S
-@@ -68,8 +68,9 @@ SYM_CODE_END(asm_cpu_bringup_and_idle)
- 	.balign PAGE_SIZE
- SYM_CODE_START(hypercall_page)
- 	.rept (PAGE_SIZE / 32)
--		UNWIND_HINT_EMPTY
--		.skip 32
-+		UNWIND_HINT_FUNC
-+		.skip 31, 0x90
-+		ret
- 	.endr
+--- a/tools/objtool/arch.h
++++ b/tools/objtool/arch.h
+@@ -86,4 +86,6 @@ const char *arch_nop_insn(int len);
  
- #define HYPERCALL(n) \
+ int arch_decode_hint_reg(struct instruction *insn, u8 sp_reg);
+ 
++bool arch_is_retpoline(struct symbol *sym);
++
+ #endif /* _ARCH_H */
+--- a/tools/objtool/arch/x86/decode.c
++++ b/tools/objtool/arch/x86/decode.c
+@@ -620,3 +620,8 @@ int arch_decode_hint_reg(struct instruct
+ 
+ 	return 0;
+ }
++
++bool arch_is_retpoline(struct symbol *sym)
++{
++	return !strncmp(sym->name, "__x86_indirect_", 15);
++}
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -778,6 +778,11 @@ static int add_ignore_alternatives(struc
+ 	return 0;
+ }
+ 
++__weak bool arch_is_retpoline(struct symbol *sym)
++{
++	return false;
++}
++
+ /*
+  * Find the destination instructions for all jumps.
+  */
+@@ -800,7 +805,7 @@ static int add_jump_destinations(struct
+ 		} else if (reloc->sym->type == STT_SECTION) {
+ 			dest_sec = reloc->sym->sec;
+ 			dest_off = arch_dest_reloc_offset(reloc->addend);
+-		} else if (!strncmp(reloc->sym->name, "__x86_indirect_thunk_", 21)) {
++		} else if (arch_is_retpoline(reloc->sym)) {
+ 			/*
+ 			 * Retpoline jumps are really dynamic jumps in
+ 			 * disguise, so convert them accordingly.
+@@ -954,7 +959,7 @@ static int add_call_destinations(struct
+ 				return -1;
+ 			}
+ 
+-		} else if (!strncmp(reloc->sym->name, "__x86_indirect_thunk_", 21)) {
++		} else if (arch_is_retpoline(reloc->sym)) {
+ 			/*
+ 			 * Retpoline calls are really dynamic calls in
+ 			 * disguise, so convert them accordingly.
 
 
