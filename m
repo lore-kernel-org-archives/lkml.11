@@ -2,181 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FB31C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 02:37:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEED9C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 02:56:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232161AbiGWChU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 22:37:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44116 "EHLO
+        id S233544AbiGWC4K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 22:56:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231160AbiGWChR (ORCPT
+        with ESMTP id S229572AbiGWC4I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 22:37:17 -0400
-Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0C20606A7
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 19:37:15 -0700 (PDT)
-Received: by mail-ot1-x329.google.com with SMTP id br15-20020a056830390f00b0061c9d73b8bdso4628515otb.6
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 19:37:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kali.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language
-         :from:to:cc:references:in-reply-to:content-transfer-encoding;
-        bh=voGugAT13Hil5ADAXFI0Z5pBEP04QpaFfT3ChpCj5yw=;
-        b=PlpYiugUWSomUF/0hlCtQAmLPyY8rLDdlVOM61Ba7K6AcyKH+8rdr/ZHZW8P2vICUV
-         +9pvpRkiFkdxxazwuSrke9x1L0yJwWQ3MCs88vBxtiAn6b9oUwspxeqqkGEbK6er02+y
-         fTt8I3LxCC961fWWYI0tTOm4X2BJgZu+CrmKHEOk4oJRB1u6IjPkw45kGwQ4pLC7yuze
-         kX3KfCVDFZizQYirPbxBVwmW2Z8PsRpUHRcB5HWe68nEmGpie7pb+bGuIbYPi1pD3biP
-         bmj+Nq18xM53W32WjTeCFR2qW47MDy3Ul6p8K0xh+BQHW/kYO93dhS5S5iHCVGa/SX79
-         nNcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:from:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=voGugAT13Hil5ADAXFI0Z5pBEP04QpaFfT3ChpCj5yw=;
-        b=3xPQotBxwKL8GfjgOTh8a82iBM+EvMEekv4489GLDb66s9w4PeR9GNgaeyioATLJwZ
-         n//1fIfDS1MzcsOHD03mwZQJPKSnTGTU6S8E6rWtL2zMv/C3JtBP6Gcwuo7BRXA1o+pA
-         kSNvuYSwAVVoBDTSlK2ehM7cXsguaBVd/JsgIu9n7qoHAH2GEqnb18t8v0afbDDJavkA
-         ivF5acXTj14UWmMNMMZeIbLgdeHnS9pU3BEfL5yDTrVsinWw0vgM3Rg7TJhLMbVX1Nw7
-         VR8VB3+5g7MxXVBOBEEjrszE2Wo3oPz8KZjdo0N6v0oYam74OFLDTU7yzSBIlUQ5x+p/
-         XWRA==
-X-Gm-Message-State: AJIora/YbxIHy/dbGCAKJE7r8YbbBmV60HK7N+q9KbESJymvrkbUd6+m
-        mDTWOlSAJoLvbR//srx4dVtewg==
-X-Google-Smtp-Source: AGRyM1vG1vMNCzMDvxCaqBAcafZzpnlk4TyH/Rxj0qwSionFWOgG9Bd4tQwIMCPuO9cYUn4QfHSuag==
-X-Received: by 2002:a9d:554f:0:b0:61c:86e4:2f37 with SMTP id h15-20020a9d554f000000b0061c86e42f37mr1054976oti.131.1658543835142;
-        Fri, 22 Jul 2022 19:37:15 -0700 (PDT)
-Received: from [192.168.11.16] (cpe-173-173-107-246.satx.res.rr.com. [173.173.107.246])
-        by smtp.gmail.com with ESMTPSA id k14-20020a056808068e00b0033a2f6e4736sm2489061oig.20.2022.07.22.19.37.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 Jul 2022 19:37:14 -0700 (PDT)
-Message-ID: <d89a540f-672d-83de-d19d-00f10e4370d1@kali.org>
-Date:   Fri, 22 Jul 2022 21:37:12 -0500
+        Fri, 22 Jul 2022 22:56:08 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9DDFDEC4
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 19:56:05 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LqW8908tszjWx1;
+        Sat, 23 Jul 2022 10:53:13 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sat, 23 Jul 2022 10:56:00 +0800
+Subject: Re: [PATCH 5/5] hugetlbfs: fix confusing hugetlbfs stat
+To:     Mike Kravetz <mike.kravetz@oracle.com>
+CC:     <akpm@linux-foundation.org>, <songmuchun@bytedance.com>,
+        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>
+References: <20220721131637.6306-1-linmiaohe@huawei.com>
+ <20220721131637.6306-6-linmiaohe@huawei.com> <YtnvFBn8tSm7y/mV@monkey>
+ <f277d8ac-8091-78b4-e168-5dfd87314889@huawei.com> <Ytsq6TEsXzyedpH+@monkey>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <e6e2de0d-ee72-4572-75c5-02cb27e7ae95@huawei.com>
+Date:   Sat, 23 Jul 2022 10:56:00 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.11.0
-Subject: Re: [PATCH 10/10] arm64: dts: qcom: sdm845: add LLCC BWMON
+In-Reply-To: <Ytsq6TEsXzyedpH+@monkey>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-From:   Steev Klimaszewski <steev@kali.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Georgi Djakov <djakov@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Rajendra Nayak <quic_rjendra@quicinc.com>
-References: <20220720192807.130098-1-krzysztof.kozlowski@linaro.org>
- <20220720192807.130098-11-krzysztof.kozlowski@linaro.org>
- <25673493-4171-62b0-f696-1316d115f388@kali.org>
- <96552a95-8939-3ac2-c9b3-14dabaf53923@linaro.org>
- <d814a6da-b0d7-2fd1-fd14-8f1f3b88666f@kali.org>
-In-Reply-To: <d814a6da-b0d7-2fd1-fd14-8f1f3b88666f@kali.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-On 7/22/22 7:29 PM, Steev Klimaszewski wrote:
->
-> On 7/22/22 12:30 PM, Krzysztof Kozlowski wrote:
->> On 22/07/2022 03:22, Steev Klimaszewski wrote:
->>> Hi Krzysztof,
+On 2022/7/23 6:55, Mike Kravetz wrote:
+> On 07/22/22 14:38, Miaohe Lin wrote:
+>> On 2022/7/22 8:28, Mike Kravetz wrote:
+>>> On 07/21/22 21:16, Miaohe Lin wrote:
+>>>> When size option is not specified, f_blocks, f_bavail and f_bfree will be
+>>>> set to -1 instead of 0. Likewise, when nr_inodes is not specified, f_files
+>>>> and f_ffree will be set to -1 too. Check max_hpages and max_inodes against
+>>>> -1 first to make sure 0 is reported for max/free/used when no limit is set
+>>>> as the comment states.
 >>>
->>> On 7/20/22 2:28 PM, Krzysztof Kozlowski wrote:
->>>> The SDM845 comes with few instances of Bandwidth Monitor.  The already
->>>> supported one monitors traffic between CPU and Last Level Cache
->>>> Controller (LLCC) and in downstream sources is called BWMON v4 (or 
->>>> v4 of
->>>> register layout).
->>>>
->>>> SDM845 also has also BWMON instance measuring traffic between LLCC and
->>>> memory with different register layout: called v5.
->>>>
->>>> Cc: Rajendra Nayak <quic_rjendra@quicinc.com>
->>>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->>>> ---
->>>>    arch/arm64/boot/dts/qcom/sdm845.dtsi | 37 
->>>> ++++++++++++++++++++++++++++
->>>>    1 file changed, 37 insertions(+)
->>>>
->>>> diff --git a/arch/arm64/boot/dts/qcom/sdm845.dtsi 
->>>> b/arch/arm64/boot/dts/qcom/sdm845.dtsi
->>>> index fe14f7e7523b..4aab464e2bd6 100644
->>>> --- a/arch/arm64/boot/dts/qcom/sdm845.dtsi
->>>> +++ b/arch/arm64/boot/dts/qcom/sdm845.dtsi
->>>> @@ -2053,6 +2053,43 @@ llcc: system-cache-controller@1100000 {
->>>>                interrupts = <GIC_SPI 582 IRQ_TYPE_LEVEL_HIGH>;
->>>>            };
->>>>    +        pmu@114a000 {
->>>> +            compatible = "qcom,sdm845-llcc-bwmon";
->>>> +            reg = <0 0x0114a000 0 0x1000>;
->>>> +            interrupts = <GIC_SPI 580 IRQ_TYPE_LEVEL_HIGH>;
->>>> +            interconnects = <&mem_noc MASTER_LLCC 3 &mem_noc 
->>>> SLAVE_EBI1 3>;
->>>> +
->>>> +            operating-points-v2 = <&llcc_bwmon_opp_table>;
->>>> +
->>>> +            llcc_bwmon_opp_table: opp-table {
->>>> +                compatible = "operating-points-v2";
->>>> +
->>>> +                /*
->>>> +                 * The interconnect path bandwidth taken from
->>>> +                 * cpu4_opp_table bandwidth for gladiator_noc-mem_noc
->>>> +                 * interconnect.  This also matches the
->>>> +                 * bandwidth table of qcom,llccbw (qcom,bw-tbl,
->>>> +                 * bus width: 4 bytes) from msm-4.9 downstream
->>>> +                 * kernel.
->>>> +                 */
->>>> +                opp-0 {
->>>> +                    opp-peak-kBps = <800000>;
->>>> +                };
->>>> +                opp-1 {
->>>> +                    opp-peak-kBps = <1804000>;
->>>> +                };
->>>> +                opp-2 {
->>>> +                    opp-peak-kBps = <3072000>;
->>>> +                };
->>>> +                opp-3 {
->>>> +                    opp-peak-kBps = <5412000>;
->>>> +                };
->>>> +                opp-4 {
->>>> +                    opp-peak-kBps = <7216000>;
->>>> +                };
->>>> +            };
->>>> +        };
->>>> +
->>>>            pmu@1436400 {
->>>>                compatible = "qcom,sdm845-bwmon", "qcom,msm8998-bwmon";
->>>>                reg = <0 0x01436400 0 0x600>;
->>>
->>> With this series applied, testing on a Lenovo Yoga C630, which has an
->>> SDM850, I see the following:
->>>
->>> [    3.673660] qcom-bwmon 114a000.pmu: can't request region for 
->>> resource
->>> [mem 0x0114a000-0x0114afff]
->>> [    3.673673] qcom-bwmon 114a000.pmu: error -EBUSY: failed to map 
->>> bwmon
->>> registers
->>> [    3.673678] qcom-bwmon: probe of 114a000.pmu failed with error -16
->>>
->> Thanks for the report. What are you running there? `uname -r`? Maybe
->> your secure world uses it?
+>>> Just curious, where are you seeing values reported as -1?  The check
 >>
->> Best regards,
->> Krzysztof
->
-> Currently it's 5.19.0-rc7 (torvalds tree at 4ba1329c) with a few extra 
-> patches on top, the bwmon set included.  It's possible that secure 
-> world uses it, but I do not know enough about that to say one way or 
-> the other.
->
-> -- steev
->
-I think you may be right; I just applied this patchset to -next 
-(20220722) and i do not see the error message there.  On my 5.19-rc7 
-tree, i am also testing a patchset that enables qcom devices to access 
-efivars, so possibly we are ending up in secure world there?
+>> From the standard statvfs() function.
+>>
+>>> for sbinfo->spool was supposed to handle these cases.  Seems like it
+>>
+>> sbinfo->spool could be created when ctx->max_hpages == -1 while
+>> ctx->min_hpages != -1 in hugetlbfs_fill_super.
+>>
+>>> should handle the max_hpages == -1 case.  But, it doesn't look like it
+>>> considers the max_inodes == -1 case.
+>>>
+>>> If I create/mount a hugetlb filesystem without specifying size or nr_inodes,
+>>> df seems to report zero instead of -1.
+>>>
+>>> Just want to understand the reasoning behind the change.
+> 
+> Thanks for the additional information (and test program)!
+> 
+>>From the hugetlbfs documentation:
+> "If the ``size``, ``min_size`` or ``nr_inodes`` option is not provided on
+>  command line then no limits are set."
+> 
+> So, having those values set to -1 indicates there is no limit set.
+> 
+> With this change, 0 is reported for the case where there is no limit set as
+> well as the case where the max value is 0.
+
+IMHO, 0 should not be a valid max value otherwise there will be no hugetlb pages
+to use. It should mean there's no limit. But maybe I'm wrong.
+
+> 
+> There may be some value in reporting -1 as is done today.
+
+There still be a inconsistency:
+
+If the ``size`` and ``min_size`` isn't specified, then reported max value is 0.
+But if ``min_size`` is specified while ``size`` isn't specified, the reported
+max value is -1.
+
+> 
+> To be honest, I am not sure what is the correct behavior here.  Unless
+> there is a user visible issue/problem, I am hesitant to change.  Other
+> opinions are welcome.
+
+Yes, it might be better to keep it as is. Maybe we could change the comment to
+reflect what the current behavior is like below?
+
+diff --git a/fs/hugetlbfs/inode.c b/fs/hugetlbfs/inode.c
+index 44da9828e171..f03b1a019cc0 100644
+--- a/fs/hugetlbfs/inode.c
++++ b/fs/hugetlbfs/inode.c
+@@ -1080,7 +1080,7 @@ static int hugetlbfs_statfs(struct dentry *dentry, struct kstatfs *buf)
+        buf->f_bsize = huge_page_size(h);
+        if (sbinfo) {
+                spin_lock(&sbinfo->stat_lock);
+-               /* If no limits set, just report 0 for max/free/used
++               /* If no limits set, just report 0 or -1 for max/free/used
+                 * blocks, like simple_statfs() */
+                if (sbinfo->spool) {
+                        spin_lock_irq(&sbinfo->spool->lock);
+
+> 
+
+No strong opinion to keep this patch or above change. Many thanks for your comment and reply. :)
+
