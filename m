@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6953CC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:03:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0403FC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:03:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238217AbiGWKDg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 06:03:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57900 "EHLO
+        id S238230AbiGWKDn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 06:03:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237736AbiGWKDQ (ORCPT
+        with ESMTP id S237922AbiGWKDR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 06:03:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9728687205;
+        Sat, 23 Jul 2022 06:03:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 972FF87222;
         Sat, 23 Jul 2022 02:59:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 827A2B82C24;
-        Sat, 23 Jul 2022 09:59:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6994C341C0;
-        Sat, 23 Jul 2022 09:59:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 99DE86116A;
+        Sat, 23 Jul 2022 09:59:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1EB5C341C0;
+        Sat, 23 Jul 2022 09:59:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658570358;
-        bh=l9Rc68ra/4bHVh2wqbrdbsWHOSZSdMEmpI128/zN7Yg=;
+        s=korg; t=1658570361;
+        bh=DYakpdbPRHY7KHTWH+Lrd6E6Ay+oTi6Mb+KyBy/h+A8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=coLRuZAqJy2PquUev9j3WJJhRozDDh/+FoJ6HLZNV/zJzRWlPKBgPauVvfq24XBXf
-         ZqZTRU4TRuqb+6CUTGuiCifzytOQQ+LvcCD6pEBXifx9trZtjqwBTUrNvbJscLzNKa
-         J3A02C/ezAfeG4uN9g29a1Va3vn1rDThmGNq+ItA=
+        b=hSlykiNOF6NfbYtd5zTGivPsYnLmfvBnIKWvmDJytSMozIv0FhMiL6nD9DiSni/Hu
+         fkkC+WH9pHbqVz30RmcNrb4dH7KFXPBglEARTSE3BEFq3I7v7F4fbkXi5Oq1NjXjiY
+         49lC72Ofy9t3nUD/4WA59Naaf3Lt10q58Hnc6MOw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 061/148] x86/lib/atomic64_386_32: Rename things
-Date:   Sat, 23 Jul 2022 11:54:33 +0200
-Message-Id: <20220723095241.371425867@linuxfoundation.org>
+Subject: [PATCH 5.10 070/148] crypto: x86/poly1305 - Fixup SLS
+Date:   Sat, 23 Jul 2022 11:54:42 +0200
+Message-Id: <20220723095243.840940616@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220723095224.302504400@linuxfoundation.org>
 References: <20220723095224.302504400@linuxfoundation.org>
@@ -52,246 +53,208 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peter Zijlstra <peterz@infradead.org>
 
-commit 22da5a07c75e1104caf6a42f189c97b83d070073 upstream.
+commit 7ed7aa4de9421229be6d331ed52d5cd09c99f409 upstream.
 
-Principally, in order to get rid of #define RET in this code to make
-place for a new RET, but also to clarify the code, rename a bunch of
-things:
+Due to being a perl generated asm file, it got missed by the mass
+convertion script.
 
-  s/UNLOCK/IRQ_RESTORE/
-  s/LOCK/IRQ_SAVE/
-  s/BEGIN/BEGIN_IRQ_SAVE/
-  s/\<RET\>/RET_IRQ_RESTORE/
-  s/RET_ENDP/\tRET_IRQ_RESTORE\rENDP/
+arch/x86/crypto/poly1305-x86_64-cryptogams.o: warning: objtool: poly1305_init_x86_64()+0x3a: missing int3 after ret
+arch/x86/crypto/poly1305-x86_64-cryptogams.o: warning: objtool: poly1305_blocks_x86_64()+0xf2: missing int3 after ret
+arch/x86/crypto/poly1305-x86_64-cryptogams.o: warning: objtool: poly1305_emit_x86_64()+0x37: missing int3 after ret
+arch/x86/crypto/poly1305-x86_64-cryptogams.o: warning: objtool: __poly1305_block()+0x6d: missing int3 after ret
+arch/x86/crypto/poly1305-x86_64-cryptogams.o: warning: objtool: __poly1305_init_avx()+0x1e8: missing int3 after ret
+arch/x86/crypto/poly1305-x86_64-cryptogams.o: warning: objtool: poly1305_blocks_avx()+0x18a: missing int3 after ret
+arch/x86/crypto/poly1305-x86_64-cryptogams.o: warning: objtool: poly1305_blocks_avx()+0xaf8: missing int3 after ret
+arch/x86/crypto/poly1305-x86_64-cryptogams.o: warning: objtool: poly1305_emit_avx()+0x99: missing int3 after ret
+arch/x86/crypto/poly1305-x86_64-cryptogams.o: warning: objtool: poly1305_blocks_avx2()+0x18a: missing int3 after ret
+arch/x86/crypto/poly1305-x86_64-cryptogams.o: warning: objtool: poly1305_blocks_avx2()+0x776: missing int3 after ret
+arch/x86/crypto/poly1305-x86_64-cryptogams.o: warning: objtool: poly1305_blocks_avx512()+0x18a: missing int3 after ret
+arch/x86/crypto/poly1305-x86_64-cryptogams.o: warning: objtool: poly1305_blocks_avx512()+0x796: missing int3 after ret
+arch/x86/crypto/poly1305-x86_64-cryptogams.o: warning: objtool: poly1305_blocks_avx512()+0x10bd: missing int3 after ret
 
-which then leaves RET unused so it can be removed.
-
+Fixes: f94909ceb1ed ("x86: Prepare asm files for straight-line-speculation")
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20211204134907.841623970@infradead.org
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/lib/atomic64_386_32.S |   84 ++++++++++++++++++++++-------------------
- 1 file changed, 46 insertions(+), 38 deletions(-)
+ arch/x86/crypto/poly1305-x86_64-cryptogams.pl |   38 +++++++++++++-------------
+ 1 file changed, 19 insertions(+), 19 deletions(-)
 
---- a/arch/x86/lib/atomic64_386_32.S
-+++ b/arch/x86/lib/atomic64_386_32.S
-@@ -9,81 +9,83 @@
- #include <asm/alternative.h>
+--- a/arch/x86/crypto/poly1305-x86_64-cryptogams.pl
++++ b/arch/x86/crypto/poly1305-x86_64-cryptogams.pl
+@@ -297,7 +297,7 @@ ___
+ $code.=<<___;
+ 	mov	\$1,%eax
+ .Lno_key:
+-	ret
++	RET
+ ___
+ &end_function("poly1305_init_x86_64");
  
- /* if you want SMP support, implement these with real spinlocks */
--.macro LOCK reg
-+.macro IRQ_SAVE reg
- 	pushfl
- 	cli
- .endm
+@@ -373,7 +373,7 @@ $code.=<<___;
+ .cfi_adjust_cfa_offset	-48
+ .Lno_data:
+ .Lblocks_epilogue:
+-	ret
++	RET
+ .cfi_endproc
+ ___
+ &end_function("poly1305_blocks_x86_64");
+@@ -399,7 +399,7 @@ $code.=<<___;
+ 	mov	%rax,0($mac)	# write result
+ 	mov	%rcx,8($mac)
  
--.macro UNLOCK reg
-+.macro IRQ_RESTORE reg
- 	popfl
- .endm
+-	ret
++	RET
+ ___
+ &end_function("poly1305_emit_x86_64");
+ if ($avx) {
+@@ -429,7 +429,7 @@ ___
+ 	&poly1305_iteration();
+ $code.=<<___;
+ 	pop $ctx
+-	ret
++	RET
+ .size	__poly1305_block,.-__poly1305_block
  
--#define BEGIN(op) \
-+#define BEGIN_IRQ_SAVE(op) \
- .macro endp; \
- SYM_FUNC_END(atomic64_##op##_386); \
- .purgem endp; \
- .endm; \
- SYM_FUNC_START(atomic64_##op##_386); \
--	LOCK v;
-+	IRQ_SAVE v;
+ .type	__poly1305_init_avx,\@abi-omnipotent
+@@ -594,7 +594,7 @@ __poly1305_init_avx:
  
- #define ENDP endp
+ 	lea	-48-64($ctx),$ctx	# size [de-]optimization
+ 	pop %rbp
+-	ret
++	RET
+ .size	__poly1305_init_avx,.-__poly1305_init_avx
+ ___
  
--#define RET \
--	UNLOCK v; \
-+#define RET_IRQ_RESTORE \
-+	IRQ_RESTORE v; \
- 	ret
+@@ -747,7 +747,7 @@ $code.=<<___;
+ .cfi_restore	%rbp
+ .Lno_data_avx:
+ .Lblocks_avx_epilogue:
+-	ret
++	RET
+ .cfi_endproc
  
--#define RET_ENDP \
--	RET; \
--	ENDP
--
- #define v %ecx
--BEGIN(read)
-+BEGIN_IRQ_SAVE(read)
- 	movl  (v), %eax
- 	movl 4(v), %edx
--RET_ENDP
-+	RET_IRQ_RESTORE
-+ENDP
- #undef v
+ .align	32
+@@ -1452,7 +1452,7 @@ $code.=<<___	if (!$win64);
+ ___
+ $code.=<<___;
+ 	vzeroupper
+-	ret
++	RET
+ .cfi_endproc
+ ___
+ &end_function("poly1305_blocks_avx");
+@@ -1508,7 +1508,7 @@ $code.=<<___;
+ 	mov	%rax,0($mac)	# write result
+ 	mov	%rcx,8($mac)
  
- #define v %esi
--BEGIN(set)
-+BEGIN_IRQ_SAVE(set)
- 	movl %ebx,  (v)
- 	movl %ecx, 4(v)
--RET_ENDP
-+	RET_IRQ_RESTORE
-+ENDP
- #undef v
+-	ret
++	RET
+ ___
+ &end_function("poly1305_emit_avx");
  
- #define v  %esi
--BEGIN(xchg)
-+BEGIN_IRQ_SAVE(xchg)
- 	movl  (v), %eax
- 	movl 4(v), %edx
- 	movl %ebx,  (v)
- 	movl %ecx, 4(v)
--RET_ENDP
-+	RET_IRQ_RESTORE
-+ENDP
- #undef v
+@@ -1675,7 +1675,7 @@ $code.=<<___;
+ .cfi_restore 	%rbp
+ .Lno_data_avx2$suffix:
+ .Lblocks_avx2_epilogue$suffix:
+-	ret
++	RET
+ .cfi_endproc
  
- #define v %ecx
--BEGIN(add)
-+BEGIN_IRQ_SAVE(add)
- 	addl %eax,  (v)
- 	adcl %edx, 4(v)
--RET_ENDP
-+	RET_IRQ_RESTORE
-+ENDP
- #undef v
+ .align	32
+@@ -2201,7 +2201,7 @@ $code.=<<___	if (!$win64);
+ ___
+ $code.=<<___;
+ 	vzeroupper
+-	ret
++	RET
+ .cfi_endproc
+ ___
+ if($avx > 2 && $avx512) {
+@@ -2792,7 +2792,7 @@ $code.=<<___	if (!$win64);
+ .cfi_def_cfa_register	%rsp
+ ___
+ $code.=<<___;
+-	ret
++	RET
+ .cfi_endproc
+ ___
  
- #define v %ecx
--BEGIN(add_return)
-+BEGIN_IRQ_SAVE(add_return)
- 	addl  (v), %eax
- 	adcl 4(v), %edx
- 	movl %eax,  (v)
- 	movl %edx, 4(v)
--RET_ENDP
-+	RET_IRQ_RESTORE
-+ENDP
- #undef v
+@@ -2893,7 +2893,7 @@ $code.=<<___	if ($flavour =~ /elf32/);
+ ___
+ $code.=<<___;
+ 	mov	\$1,%eax
+-	ret
++	RET
+ .size	poly1305_init_base2_44,.-poly1305_init_base2_44
+ ___
+ {
+@@ -3010,7 +3010,7 @@ poly1305_blocks_vpmadd52:
+ 	jnz		.Lblocks_vpmadd52_4x
  
- #define v %ecx
--BEGIN(sub)
-+BEGIN_IRQ_SAVE(sub)
- 	subl %eax,  (v)
- 	sbbl %edx, 4(v)
--RET_ENDP
-+	RET_IRQ_RESTORE
-+ENDP
- #undef v
+ .Lno_data_vpmadd52:
+-	ret
++	RET
+ .size	poly1305_blocks_vpmadd52,.-poly1305_blocks_vpmadd52
+ ___
+ }
+@@ -3451,7 +3451,7 @@ poly1305_blocks_vpmadd52_4x:
+ 	vzeroall
  
- #define v %ecx
--BEGIN(sub_return)
-+BEGIN_IRQ_SAVE(sub_return)
- 	negl %edx
- 	negl %eax
- 	sbbl $0, %edx
-@@ -91,47 +93,52 @@ BEGIN(sub_return)
- 	adcl 4(v), %edx
- 	movl %eax,  (v)
- 	movl %edx, 4(v)
--RET_ENDP
-+	RET_IRQ_RESTORE
-+ENDP
- #undef v
+ .Lno_data_vpmadd52_4x:
+-	ret
++	RET
+ .size	poly1305_blocks_vpmadd52_4x,.-poly1305_blocks_vpmadd52_4x
+ ___
+ }
+@@ -3824,7 +3824,7 @@ $code.=<<___;
+ 	vzeroall
  
- #define v %esi
--BEGIN(inc)
-+BEGIN_IRQ_SAVE(inc)
- 	addl $1,  (v)
- 	adcl $0, 4(v)
--RET_ENDP
-+	RET_IRQ_RESTORE
-+ENDP
- #undef v
+ .Lno_data_vpmadd52_8x:
+-	ret
++	RET
+ .size	poly1305_blocks_vpmadd52_8x,.-poly1305_blocks_vpmadd52_8x
+ ___
+ }
+@@ -3861,7 +3861,7 @@ poly1305_emit_base2_44:
+ 	mov	%rax,0($mac)	# write result
+ 	mov	%rcx,8($mac)
  
- #define v %esi
--BEGIN(inc_return)
-+BEGIN_IRQ_SAVE(inc_return)
- 	movl  (v), %eax
- 	movl 4(v), %edx
- 	addl $1, %eax
- 	adcl $0, %edx
- 	movl %eax,  (v)
- 	movl %edx, 4(v)
--RET_ENDP
-+	RET_IRQ_RESTORE
-+ENDP
- #undef v
+-	ret
++	RET
+ .size	poly1305_emit_base2_44,.-poly1305_emit_base2_44
+ ___
+ }	}	}
+@@ -3916,7 +3916,7 @@ xor128_encrypt_n_pad:
  
- #define v %esi
--BEGIN(dec)
-+BEGIN_IRQ_SAVE(dec)
- 	subl $1,  (v)
- 	sbbl $0, 4(v)
--RET_ENDP
-+	RET_IRQ_RESTORE
-+ENDP
- #undef v
+ .Ldone_enc:
+ 	mov	$otp,%rax
+-	ret
++	RET
+ .size	xor128_encrypt_n_pad,.-xor128_encrypt_n_pad
  
- #define v %esi
--BEGIN(dec_return)
-+BEGIN_IRQ_SAVE(dec_return)
- 	movl  (v), %eax
- 	movl 4(v), %edx
- 	subl $1, %eax
- 	sbbl $0, %edx
- 	movl %eax,  (v)
- 	movl %edx, 4(v)
--RET_ENDP
-+	RET_IRQ_RESTORE
-+ENDP
- #undef v
+ .globl	xor128_decrypt_n_pad
+@@ -3967,7 +3967,7 @@ xor128_decrypt_n_pad:
  
- #define v %esi
--BEGIN(add_unless)
-+BEGIN_IRQ_SAVE(add_unless)
- 	addl %eax, %ecx
- 	adcl %edx, %edi
- 	addl  (v), %eax
-@@ -143,7 +150,7 @@ BEGIN(add_unless)
- 	movl %edx, 4(v)
- 	movl $1, %eax
- 2:
--	RET
-+	RET_IRQ_RESTORE
- 3:
- 	cmpl %edx, %edi
- 	jne 1b
-@@ -153,7 +160,7 @@ ENDP
- #undef v
+ .Ldone_dec:
+ 	mov	$otp,%rax
+-	ret
++	RET
+ .size	xor128_decrypt_n_pad,.-xor128_decrypt_n_pad
+ ___
+ }
+@@ -4109,7 +4109,7 @@ avx_handler:
+ 	pop	%rbx
+ 	pop	%rdi
+ 	pop	%rsi
+-	ret
++	RET
+ .size	avx_handler,.-avx_handler
  
- #define v %esi
--BEGIN(inc_not_zero)
-+BEGIN_IRQ_SAVE(inc_not_zero)
- 	movl  (v), %eax
- 	movl 4(v), %edx
- 	testl %eax, %eax
-@@ -165,7 +172,7 @@ BEGIN(inc_not_zero)
- 	movl %edx, 4(v)
- 	movl $1, %eax
- 2:
--	RET
-+	RET_IRQ_RESTORE
- 3:
- 	testl %edx, %edx
- 	jne 1b
-@@ -174,7 +181,7 @@ ENDP
- #undef v
- 
- #define v %esi
--BEGIN(dec_if_positive)
-+BEGIN_IRQ_SAVE(dec_if_positive)
- 	movl  (v), %eax
- 	movl 4(v), %edx
- 	subl $1, %eax
-@@ -183,5 +190,6 @@ BEGIN(dec_if_positive)
- 	movl %eax,  (v)
- 	movl %edx, 4(v)
- 1:
--RET_ENDP
-+	RET_IRQ_RESTORE
-+ENDP
- #undef v
+ .section	.pdata
 
 
