@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9FB9C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 14:56:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0539C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 14:56:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238028AbiGWO4M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 10:56:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50254 "EHLO
+        id S238419AbiGWO4P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 10:56:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236191AbiGWO4G (ORCPT
+        with ESMTP id S237274AbiGWO4H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 10:56:06 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCA21101DA;
-        Sat, 23 Jul 2022 07:56:04 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id tk8so13140132ejc.7;
-        Sat, 23 Jul 2022 07:56:04 -0700 (PDT)
+        Sat, 23 Jul 2022 10:56:07 -0400
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C6D112A96;
+        Sat, 23 Jul 2022 07:56:06 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id g1so8874374edb.12;
+        Sat, 23 Jul 2022 07:56:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=TYMK3ln+pSNgbS7KOrXcaQql59e3lfO5o9Vh/Disa6M=;
-        b=IWTtt2ngyBcGG/5CAnF4n7K/4H5wmjxVFDsP+5b2f9FxGZ3uaiEaxDksAazRtynZiG
-         HrA+VZZtXSicN4WovL6uTfUc5YGnimXnNXO3waCHc4S7d8Fne90NEB5ZjwPlQ0yzSlMz
-         UZ4Ji3CNSFnxfRozRV7fZX5GfBpoKswUQjtcORSzvIjAStQgLdbgEsv0ATkfZzfhcFpq
-         kEzzNx95Y7JrMgtvzvCwaJ3//y+rktDRWj8qZlIywCcCcaSQIWCx358FLpOgovdUuX8e
-         nSF54S3HkmudGREQP+tmVcvqgY7YR6lFdJzqlwg9i5CDFRj1AYK7yIc4vCQMRWFHeMjQ
-         HlZw==
+        bh=dCntW+N4qFqJP1njW6qSw/U6Vf1iTyFtCTiRKA2t2aE=;
+        b=VyKK6R4d30UkLENldCcfiTaiaoYpWNZ5FFG+13E1fK6IQDtRYqmg2sMK3EWV9H50kS
+         xq8wdS3t5hfLyosERiSyVEgM2HaM3eUnQ3IxNgU+D5gQvH1kgQbn7GLNR5KV7vkURUE4
+         +3En4F3ek9/0aJVNn9gAnCUGfSQleYFs7mkXENfapOkA3k/6Ro8qO29zd8+82R/vGqvR
+         sKWkQ3wwTYyqVa4bQgRkl4RmI7IOcOZnh1qlJm3E7IClIRFUjO4xJDvwhLfTxDJMiFiq
+         edKO6LQxYm89cMhIxCpDrEXZB4PlEKpiu858K2+/e9zXrE6z5HTH30P4KEP7dCjZNY3H
+         WZQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=TYMK3ln+pSNgbS7KOrXcaQql59e3lfO5o9Vh/Disa6M=;
-        b=aUNBLAetlkUhcTtfhl9098helRy5uSyNz2vEzhi4TcPIntko7UGydBHoIKow+Ue02x
-         qlpY/8YlkQJ2bk8Onr4Z63ZQnyLWWOgnQK3Sk/TVffC21c/MR4rW3hnAVi7EOa/eFH6R
-         Qi5cqPLduqO3u5hQL/5oodshra4UrNhkQ55SsjUwFm53vkm/xAQZUjBGxku0fQv1M6N3
-         XTnu4S51O9jkJB3+tC7uSx5InWcE/vb4F6OCiUlR+Yxs6sRzvCcQM6x0D0nl1DWPOasB
-         L1j3EslcdCCdWvs+k/leLaB98vevnUCIXPkwQ8wG2efRL7eAYj5ceODQGRUBbaDWQ2Pk
-         70MA==
-X-Gm-Message-State: AJIora80KeoQDVviwkzApQRg236txSF6keq0TWKBXu7jlm72BVOOsXsY
-        SX8Wbj0yedCdPl/gdEyS3sGpCdUwQ3U=
-X-Google-Smtp-Source: AGRyM1uJOSRbEs9FMeIIof8y6QSVSs3G/IJBSDg5ZCvC0xUq2NHaIIDR3Qd5xj5tMuIZ1pG6Ww8O9g==
-X-Received: by 2002:a17:906:478b:b0:72b:5cd6:3f50 with SMTP id cw11-20020a170906478b00b0072b5cd63f50mr3712733ejc.514.1658588163186;
-        Sat, 23 Jul 2022 07:56:03 -0700 (PDT)
+        bh=dCntW+N4qFqJP1njW6qSw/U6Vf1iTyFtCTiRKA2t2aE=;
+        b=BiJD4HI/0IATb3eKhXJPzlhwk21enV26OA0v+h7gek6Uu7PTsXqgeRrDbHnQekYq3Q
+         Q593FpwvLJXmK3smIh7f6iox8GDpYqAgS8xdIBI8LMuYCeqC6++g7uwLDt1VtCMwv7ll
+         byhDZKmuLAiNPryB7UjodYlER72XxViQlHeqgpvs46adJ0OfX5G5k+3ao2gTU0bPA/mc
+         b0qviTUM/TLHBqfMgB2j3AJTsB4+58VQdWslxn47vhQ1tC2dVWAZtpnqtEelKRHr62+P
+         1f/9qf4/IVEzK6Aym6JTu8SUwBv5LiNQiVz2MQ6ZKshFU/YzjsQBlrIQUA/uuJRktbyO
+         qqfg==
+X-Gm-Message-State: AJIora9QIQnThEBIgQE15o1UfaYLPI1yCOk5apeCCWgVg9FIuvmvj3b1
+        zaq8vNWW85eGMdEoyq0dfWE=
+X-Google-Smtp-Source: AGRyM1tbbIAfKL2bPbXr8tRU/rHmChn91fpKl2CxQjsJf3FCTVGQyhYSKIvMsAcVWmdx8ta6EU9hSQ==
+X-Received: by 2002:a05:6402:1c97:b0:43b:b984:f817 with SMTP id cy23-20020a0564021c9700b0043bb984f817mr4815344edb.196.1658588165647;
+        Sat, 23 Jul 2022 07:56:05 -0700 (PDT)
 Received: from localhost.localdomain (host-87-7-207-127.retail.telecomitalia.it. [87.7.207.127])
-        by smtp.googlemail.com with ESMTPSA id cy24-20020a0564021c9800b0043ba1ecb0dfsm4143781edb.75.2022.07.23.07.56.01
+        by smtp.googlemail.com with ESMTPSA id cy24-20020a0564021c9800b0043ba1ecb0dfsm4143781edb.75.2022.07.23.07.56.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 Jul 2022 07:56:02 -0700 (PDT)
+        Sat, 23 Jul 2022 07:56:05 -0700 (PDT)
 From:   Christian Marangi <ansuelsmth@gmail.com>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -58,11 +58,10 @@ To:     Andy Gross <agross@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Cc:     Christian Marangi <ansuelsmth@gmail.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Subject: [PATCH v6 2/4] clk: qcom: lcc-ipq806x: add reset definition
-Date:   Sat, 23 Jul 2022 16:55:56 +0200
-Message-Id: <20220723145558.25210-2-ansuelsmth@gmail.com>
+Cc:     Christian Marangi <ansuelsmth@gmail.com>
+Subject: [PATCH v6 4/4] clk: qcom: lcc-ipq806x: use ARRAY_SIZE for num_parents
+Date:   Sat, 23 Jul 2022 16:55:58 +0200
+Message-Id: <20220723145558.25210-4-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220723145558.25210-1-ansuelsmth@gmail.com>
 References: <20220723145558.25210-1-ansuelsmth@gmail.com>
@@ -72,51 +71,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add reset definition for lcc-ipq806x.
+Use ARRAY_SIZE for num_parents instead of raw number to prevent any
+confusion/mistake.
 
 Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 ---
-v3:
- - Added review tag
-v2:
- - Fix Sob tag
-
- drivers/clk/qcom/lcc-ipq806x.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/clk/qcom/lcc-ipq806x.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/clk/qcom/lcc-ipq806x.c b/drivers/clk/qcom/lcc-ipq806x.c
-index 1a2be4aeb31d..ba90bebba597 100644
+index 1833e59a6434..81a44a9a9abc 100644
 --- a/drivers/clk/qcom/lcc-ipq806x.c
 +++ b/drivers/clk/qcom/lcc-ipq806x.c
-@@ -22,6 +22,7 @@
- #include "clk-branch.h"
- #include "clk-regmap-divider.h"
- #include "clk-regmap-mux.h"
-+#include "reset.h"
- 
- static struct clk_pll pll4 = {
- 	.l_reg = 0x4,
-@@ -405,6 +406,10 @@ static struct clk_regmap *lcc_ipq806x_clks[] = {
- 	[AHBIX_CLK] = &ahbix_clk.clkr,
- };
- 
-+static const struct qcom_reset_map lcc_ipq806x_resets[] = {
-+	[LCC_PCM_RESET] = { 0x54, 13 },
-+};
-+
- static const struct regmap_config lcc_ipq806x_regmap_config = {
- 	.reg_bits	= 32,
- 	.reg_stride	= 4,
-@@ -417,6 +422,8 @@ static const struct qcom_cc_desc lcc_ipq806x_desc = {
- 	.config = &lcc_ipq806x_regmap_config,
- 	.clks = lcc_ipq806x_clks,
- 	.num_clks = ARRAY_SIZE(lcc_ipq806x_clks),
-+	.resets = lcc_ipq806x_resets,
-+	.num_resets = ARRAY_SIZE(lcc_ipq806x_resets),
- };
- 
- static const struct of_device_id lcc_ipq806x_match_table[] = {
+@@ -134,7 +134,7 @@ static struct clk_rcg mi2s_osr_src = {
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "mi2s_osr_src",
+ 			.parent_data = lcc_pxo_pll4,
+-			.num_parents = 2,
++			.num_parents = ARRAY_SIZE(lcc_pxo_pll4),
+ 			.ops = &clk_rcg_ops,
+ 			.flags = CLK_SET_RATE_GATE,
+ 		},
+@@ -251,7 +251,7 @@ static struct clk_rcg pcm_src = {
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "pcm_src",
+ 			.parent_data = lcc_pxo_pll4,
+-			.num_parents = 2,
++			.num_parents = ARRAY_SIZE(lcc_pxo_pll4),
+ 			.ops = &clk_rcg_ops,
+ 			.flags = CLK_SET_RATE_GATE,
+ 		},
+@@ -335,7 +335,7 @@ static struct clk_rcg spdif_src = {
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "spdif_src",
+ 			.parent_data = lcc_pxo_pll4,
+-			.num_parents = 2,
++			.num_parents = ARRAY_SIZE(lcc_pxo_pll4),
+ 			.ops = &clk_rcg_ops,
+ 			.flags = CLK_SET_RATE_GATE,
+ 		},
+@@ -392,7 +392,7 @@ static struct clk_rcg ahbix_clk = {
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "ahbix",
+ 			.parent_data = lcc_pxo_pll4,
+-			.num_parents = 2,
++			.num_parents = ARRAY_SIZE(lcc_pxo_pll4),
+ 			.ops = &clk_rcg_lcc_ops,
+ 		},
+ 	},
 -- 
 2.36.1
 
