@@ -2,153 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A2B3C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 08:30:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70E53CCA483
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 08:30:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237139AbiGWIaW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 04:30:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52218 "EHLO
+        id S237168AbiGWIaf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 04:30:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230309AbiGWIaQ (ORCPT
+        with ESMTP id S237150AbiGWIad (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 04:30:16 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AECD2BE6
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Jul 2022 01:30:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658565014; x=1690101014;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=l+WRDwDn8RFs/v3cxwM8NeQyyKRnZQ8u4KQSj/cx4oQ=;
-  b=IeXcyBabDbkXCyIkYMa40pP8gIp/RvsAwN5iS7gg4ocAHPuP4Qyb1VUa
-   gQLVKCYQWnIgl9cmq0NMfGSG3h0eBt/EVHLl0xvyRk+JGAhqFphNX6qK6
-   ERDRwY/iaD37/HBOrvQfuj39NUUgI3Tm5y+by0BQoMXM2Z1CCNb/TcDbh
-   IEtAZwpP0bjMbdrA/9lJLHn4LH9ys4WLCTg+UnUVwW6L0bKTzCswd6+do
-   NsKmIFtM+jsRW0Sfam24GxJlTwHM7Qb7UOUw3/dxiydeSPvw+mhlgLXxN
-   T3uwbOZ4QBhPnwVA/VlzE4Rixhq5de55ie+hpOfloioBtxo+6wlfaiCW1
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10416"; a="373760259"
-X-IronPort-AV: E=Sophos;i="5.93,187,1654585200"; 
-   d="scan'208";a="373760259"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jul 2022 01:30:14 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,187,1654585200"; 
-   d="scan'208";a="631817685"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 23 Jul 2022 01:30:12 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oFAWZ-0002Qn-0z;
-        Sat, 23 Jul 2022 08:30:11 +0000
-Date:   Sat, 23 Jul 2022 16:29:52 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Tejun Heo <tj@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Ammar Faizi <ammarfaizi2@gnuweeb.org>,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:tj/cgroup/for-next 7/8]
- kernel/cgroup/cgroup.c:1310:32: error: use of undeclared identifier
- 'CGRP_ROOT_FAVOR_DYNMODS'
-Message-ID: <202207231608.bk36zznz-lkp@intel.com>
+        Sat, 23 Jul 2022 04:30:33 -0400
+Received: from mx01.omp.ru (mx01.omp.ru [90.154.21.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 153E51836A;
+        Sat, 23 Jul 2022 01:30:29 -0700 (PDT)
+Received: from [192.168.1.103] (31.173.80.87) by msexch01.omp.ru (10.188.4.12)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.986.14; Sat, 23 Jul
+ 2022 11:30:17 +0300
+Subject: Re: [PATCH 1/3] mtd: spi-nor: Use the spi-mem poll status APIs.
+To:     =?UTF-8?B?5ZGo55Cw5p2wIChaaG91IFlhbmppZSk=?= 
+        <zhouyanjie@wanyeetech.com>, <tudor.ambarus@microchip.com>,
+        <p.yadav@ti.com>, <michael@walle.cc>, <miquel.raynal@bootlin.com>,
+        <richard@nod.at>, <vigneshr@ti.com>, <broonie@kernel.org>,
+        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>
+CC:     <linux-mtd@lists.infradead.org>, <linux-spi@vger.kernel.org>,
+        <linux-mips@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <aidanmacdonald.0x0@gmail.com>,
+        <tmn505@gmail.com>, <paul@crapouillou.net>,
+        <dongsheng.qiu@ingenic.com>, <aric.pzqi@ingenic.com>,
+        <rick.tyliu@ingenic.com>, <jinghui.liu@ingenic.com>,
+        <sernia.zhou@foxmail.com>, <reimu@sudomaker.com>
+References: <1658508510-15400-1-git-send-email-zhouyanjie@wanyeetech.com>
+ <1658508510-15400-2-git-send-email-zhouyanjie@wanyeetech.com>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <1926ce77-6de0-0d87-d676-6ae93fa5c527@omp.ru>
+Date:   Sat, 23 Jul 2022 11:30:16 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+In-Reply-To: <1658508510-15400-2-git-send-email-zhouyanjie@wanyeetech.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [31.173.80.87]
+X-ClientProxiedBy: msexch01.omp.ru (10.188.4.12) To msexch01.omp.ru
+ (10.188.4.12)
+X-KSE-ServerInfo: msexch01.omp.ru, 9
+X-KSE-AntiSpam-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.20, Database issued on: 07/23/2022 08:13:55
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 59
+X-KSE-AntiSpam-Info: Lua profiles 171890 [Jul 23 2022]
+X-KSE-AntiSpam-Info: Version: 5.9.20.0
+X-KSE-AntiSpam-Info: Envelope from: s.shtylyov@omp.ru
+X-KSE-AntiSpam-Info: LuaCore: 493 493 c80a237886b75a8eec705b487193915475443854
+X-KSE-AntiSpam-Info: {rep_avail}
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: {relay has no DNS name}
+X-KSE-AntiSpam-Info: {SMTP from is not routable}
+X-KSE-AntiSpam-Info: {Found in DNSBL: 31.173.80.87 in (user)
+ b.barracudacentral.org}
+X-KSE-AntiSpam-Info: {Found in DNSBL: 31.173.80.87 in (user) dbl.spamhaus.org}
+X-KSE-AntiSpam-Info: 127.0.0.199:7.1.2;31.173.80.87:7.7.3,7.4.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;omp.ru:7.1.1
+X-KSE-AntiSpam-Info: {iprep_blacklist}
+X-KSE-AntiSpam-Info: {Track_Chinese_Simplified, text}
+X-KSE-AntiSpam-Info: ApMailHostAddress: 31.173.80.87
+X-KSE-AntiSpam-Info: {DNS response errors}
+X-KSE-AntiSpam-Info: Rate: 59
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-AntiSpam-Info: Auth:dmarc=temperror header.from=omp.ru;spf=temperror
+ smtp.mailfrom=omp.ru;dkim=none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Heuristic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 07/23/2022 08:17:00
+X-KSE-AttachmentFiltering-Interceptor-Info: protection disabled
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: Clean, bases: 7/23/2022 6:36:00 AM
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block tj/cgroup/for-next
-head:   c87b1452249c69cdec70d5de64ea81f56e1ba3f8
-commit: 79276d9e0dda30071b9a98045a3efa7e0a76938b [7/8] cgroup: Make !percpu threadgroup_rwsem operations optional
-config: hexagon-randconfig-r041-20220722 (https://download.01.org/0day-ci/archive/20220723/202207231608.bk36zznz-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 12fbd2d377e396ad61bce56d71c98a1eb1bebfa9)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/79276d9e0dda30071b9a98045a3efa7e0a76938b
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block tj/cgroup/for-next
-        git checkout 79276d9e0dda30071b9a98045a3efa7e0a76938b
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash kernel/cgroup/
+Hello!
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+On 7/22/22 7:48 PM, 周琰杰 (Zhou Yanjie) wrote:
 
-All error/warnings (new ones prefixed by >>):
+> With advanced controllers (such as Ingenic SFC), it is possible to poll
+> the status register of the device. This could be done to offload the CPU
+> during a erase or write operation. Make use of spi-mem poll status APIs
+> to handle this feature.
+> 
+> Previously, when erasing large area (e.g. 32MiB), in non-offload case,
+> CPU load could reach ~90% and would generate ~3.92 million interrupts,
+> now it decrease to ~15% CPU load and 0.15 million interrupts.
+> 
+> This should also fix the high CPU usage for system which don't have a
+> dedicated poll status block logic (decrease to ~80% CPU load and ~1.61
+> million interrupts.).
+> 
+> Signed-off-by: 周琰杰 (Zhou Yanjie) <zhouyanjie@wanyeetech.com>
+> ---
+>  drivers/mtd/spi-nor/core.c | 42 ++++++++++++++++++++++++++++++++----------
+>  1 file changed, 32 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
+> index 502967c..6a31132 100644
+> --- a/drivers/mtd/spi-nor/core.c
+> +++ b/drivers/mtd/spi-nor/core.c
+> @@ -617,19 +617,41 @@ static int spi_nor_wait_till_ready_with_timeout(struct spi_nor *nor,
+>  	unsigned long deadline;
+>  	int timeout = 0, ret;
+>  
+> -	deadline = jiffies + timeout_jiffies;
+> +	if (nor->spimem && !nor->params->ready) {
+> +		struct spi_mem_op op = SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_RDSR, 0),
+> +						       SPI_MEM_OP_NO_ADDR,
+> +						       SPI_MEM_OP_NO_DUMMY,
+> +						       SPI_MEM_OP_DATA_IN(1, nor->bouncebuf, 0));
 
->> kernel/cgroup/cgroup.c:1310:32: error: use of undeclared identifier 'CGRP_ROOT_FAVOR_DYNMODS'
-           bool favoring = root->flags & CGRP_ROOT_FAVOR_DYNMODS;
-                                         ^
-   kernel/cgroup/cgroup.c:1315:18: error: use of undeclared identifier 'CGRP_ROOT_FAVOR_DYNMODS'
-                   root->flags |= CGRP_ROOT_FAVOR_DYNMODS;
-                                  ^
-   kernel/cgroup/cgroup.c:1318:19: error: use of undeclared identifier 'CGRP_ROOT_FAVOR_DYNMODS'
-                   root->flags &= ~CGRP_ROOT_FAVOR_DYNMODS;
-                                   ^
->> kernel/cgroup/cgroup.c:1308:6: warning: no previous prototype for function 'cgroup_favor_dynmods' [-Wmissing-prototypes]
-   void cgroup_favor_dynmods(struct cgroup_root *root, bool favor)
-        ^
-   kernel/cgroup/cgroup.c:1308:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void cgroup_favor_dynmods(struct cgroup_root *root, bool favor)
-   ^
-   static 
-   kernel/cgroup/cgroup.c:1912:17: error: use of undeclared identifier 'CGRP_ROOT_FAVOR_DYNMODS'
-                   ctx->flags |= CGRP_ROOT_FAVOR_DYNMODS;
-                                 ^
-   kernel/cgroup/cgroup.c:1915:18: error: use of undeclared identifier 'CGRP_ROOT_FAVOR_DYNMODS'
-                   ctx->flags &= ~CGRP_ROOT_FAVOR_DYNMODS;
-                                  ^
-   kernel/cgroup/cgroup.c:1942:23: error: use of undeclared identifier 'CGRP_ROOT_FAVOR_DYNMODS'
-                                        root_flags & CGRP_ROOT_FAVOR_DYNMODS);
-                                                     ^
-   kernel/cgroup/cgroup.c:1960:28: error: use of undeclared identifier 'CGRP_ROOT_FAVOR_DYNMODS'
-           if (cgrp_dfl_root.flags & CGRP_ROOT_FAVOR_DYNMODS)
-                                     ^
-   kernel/cgroup/cgroup.c:2013:30: error: use of undeclared identifier 'CGRP_ROOT_FAVOR_DYNMODS'
-           root->flags = ctx->flags & ~CGRP_ROOT_FAVOR_DYNMODS;
-                                       ^
-   1 warning and 8 errors generated.
---
->> kernel/cgroup/cgroup-v1.c:878:20: error: use of undeclared identifier 'CGRP_ROOT_FAVOR_DYNMODS'
-           if (root->flags & CGRP_ROOT_FAVOR_DYNMODS)
-                             ^
-   kernel/cgroup/cgroup-v1.c:970:17: error: use of undeclared identifier 'CGRP_ROOT_FAVOR_DYNMODS'
-                   ctx->flags |= CGRP_ROOT_FAVOR_DYNMODS;
-                                 ^
-   kernel/cgroup/cgroup-v1.c:973:18: error: use of undeclared identifier 'CGRP_ROOT_FAVOR_DYNMODS'
-                   ctx->flags &= ~CGRP_ROOT_FAVOR_DYNMODS;
-                                  ^
->> kernel/cgroup/cgroup-v1.c:1227:3: error: call to undeclared function 'cgroup_favor_dynmods'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-                   cgroup_favor_dynmods(root, ctx->flags & CGRP_ROOT_FAVOR_DYNMODS);
-                   ^
-   kernel/cgroup/cgroup-v1.c:1227:43: error: use of undeclared identifier 'CGRP_ROOT_FAVOR_DYNMODS'
-                   cgroup_favor_dynmods(root, ctx->flags & CGRP_ROOT_FAVOR_DYNMODS);
-                                                           ^
-   5 errors generated.
+   Strange indentation...
 
+[...]
+> +		return spi_mem_poll_status(nor->spimem, &op, SR_WIP, 0, 0, 10,
+> +						       jiffies_to_msecs(timeout_jiffies));
 
-vim +/CGRP_ROOT_FAVOR_DYNMODS +1310 kernel/cgroup/cgroup.c
+   Here as well...
 
-  1307	
-> 1308	void cgroup_favor_dynmods(struct cgroup_root *root, bool favor)
-  1309	{
-> 1310		bool favoring = root->flags & CGRP_ROOT_FAVOR_DYNMODS;
-  1311	
-  1312		/* see the comment above CGRP_ROOT_FAVOR_DYNMODS definition */
-  1313		if (favor && !favoring) {
-  1314			rcu_sync_enter(&cgroup_threadgroup_rwsem.rss);
-  1315			root->flags |= CGRP_ROOT_FAVOR_DYNMODS;
-  1316		} else if (!favor && favoring) {
-  1317			rcu_sync_exit(&cgroup_threadgroup_rwsem.rss);
-  1318			root->flags &= ~CGRP_ROOT_FAVOR_DYNMODS;
-  1319		}
-  1320	}
-  1321	
+[...]
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+MBR, Sergey
