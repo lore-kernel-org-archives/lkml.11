@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCD6FC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:08:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BD40C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:08:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238810AbiGWKIE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 06:08:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40706 "EHLO
+        id S238173AbiGWKIU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 06:08:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238702AbiGWKHT (ORCPT
+        with ESMTP id S238748AbiGWKHv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 06:07:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED12FC5207;
-        Sat, 23 Jul 2022 03:01:27 -0700 (PDT)
+        Sat, 23 Jul 2022 06:07:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86013C5234;
+        Sat, 23 Jul 2022 03:01:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D23C360C81;
-        Sat, 23 Jul 2022 10:01:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDB1AC341C7;
-        Sat, 23 Jul 2022 10:01:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6DDB361272;
+        Sat, 23 Jul 2022 10:01:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AF5BC341C0;
+        Sat, 23 Jul 2022 10:01:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658570487;
-        bh=aLjl1sz+9TKvEHYRGFyleZovb2+KqWCsBPr2RrNcDeM=;
+        s=korg; t=1658570492;
+        bh=M1JAbX+riJW6E/VEEoTjpyBBCJ7lGmUIn2OY4L/SFy8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u3U0Xo/axxSRwzAs/+TeP8CQ5pot2Och/OctWNeQHrlGawFtE7fb3HF3kVUrWXeWN
-         b2ZzQmBmnw6Wa/0MEBHIoVusYXjHTjb3TQCGTid1Cahl7a7aH9DRsCK3DwaYGXqvuF
-         hnphVeXF9RdT6J1D0IkX2zyuvyiRRyJH9WqgPbEU=
+        b=di9W/rQripDU9eKZYIwauxxxn2PM9Nusc3UO0cULqob2SDwseZXY75iZN3bW7ICXb
+         JDT9TawDnMijbiPFYKYra7DfId1vzMhSs6dBunOUjLa6kuxwS3r6yX/f+WGjaKxa20
+         Csiz7IYOyr+QYXQ7d5lUU4NyUwSj8pjY6thGF/hU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
+        stable@vger.kernel.org, Tim Chen <tim.c.chen@linux.intel.com>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Borislav Petkov <bp@suse.de>,
         Josh Poimboeuf <jpoimboe@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 103/148] x86/bugs: Split spectre_v2_select_mitigation() and spectre_v2_user_select_mitigation()
-Date:   Sat, 23 Jul 2022 11:55:15 +0200
-Message-Id: <20220723095253.224246000@linuxfoundation.org>
+Subject: [PATCH 5.10 105/148] intel_idle: Disable IBRS during long idle
+Date:   Sat, 23 Jul 2022 11:55:17 +0200
+Message-Id: <20220723095253.758095406@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220723095224.302504400@linuxfoundation.org>
 References: <20220723095224.302504400@linuxfoundation.org>
@@ -54,101 +54,181 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peter Zijlstra <peterz@infradead.org>
 
-commit 166115c08a9b0b846b783088808a27d739be6e8d upstream.
+commit bf5835bcdb9635c97f85120dba9bfa21e111130f upstream.
 
-retbleed will depend on spectre_v2, while spectre_v2_user depends on
-retbleed. Break this cycle.
+Having IBRS enabled while the SMT sibling is idle unnecessarily slows
+down the running sibling. OTOH, disabling IBRS around idle takes two
+MSR writes, which will increase the idle latency.
 
+Therefore, only disable IBRS around deeper idle states. Shallow idle
+states are bounded by the tick in duration, since NOHZ is not allowed
+for them by virtue of their short target residency.
+
+Only do this for mwait-driven idle, since that keeps interrupts disabled
+across idle, which makes disabling IBRS vs IRQ-entry a non-issue.
+
+Note: C6 is a random threshold, most importantly C1 probably shouldn't
+disable IBRS, benchmarking needed.
+
+Suggested-by: Tim Chen <tim.c.chen@linux.intel.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
 Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
+[cascardo: no CPUIDLE_FLAG_IRQ_ENABLE]
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/cpu/bugs.c |   25 +++++++++++++++++--------
- 1 file changed, 17 insertions(+), 8 deletions(-)
+ arch/x86/include/asm/nospec-branch.h |    1 
+ arch/x86/kernel/cpu/bugs.c           |    6 ++++
+ drivers/idle/intel_idle.c            |   43 ++++++++++++++++++++++++++++++-----
+ 3 files changed, 44 insertions(+), 6 deletions(-)
 
+--- a/arch/x86/include/asm/nospec-branch.h
++++ b/arch/x86/include/asm/nospec-branch.h
+@@ -256,6 +256,7 @@ static inline void indirect_branch_predi
+ /* The Intel SPEC CTRL MSR base value cache */
+ extern u64 x86_spec_ctrl_base;
+ extern void write_spec_ctrl_current(u64 val, bool force);
++extern u64 spec_ctrl_current(void);
+ 
+ /*
+  * With retpoline, we must use IBRS to restrict branch prediction
 --- a/arch/x86/kernel/cpu/bugs.c
 +++ b/arch/x86/kernel/cpu/bugs.c
-@@ -37,8 +37,9 @@
- #include "cpu.h"
- 
- static void __init spectre_v1_select_mitigation(void);
--static void __init retbleed_select_mitigation(void);
- static void __init spectre_v2_select_mitigation(void);
-+static void __init retbleed_select_mitigation(void);
-+static void __init spectre_v2_user_select_mitigation(void);
- static void __init ssb_select_mitigation(void);
- static void __init l1tf_select_mitigation(void);
- static void __init mds_select_mitigation(void);
-@@ -137,13 +138,19 @@ void __init check_bugs(void)
- 
- 	/* Select the proper CPU mitigations before patching alternatives: */
- 	spectre_v1_select_mitigation();
-+	spectre_v2_select_mitigation();
-+	/*
-+	 * retbleed_select_mitigation() relies on the state set by
-+	 * spectre_v2_select_mitigation(); specifically it wants to know about
-+	 * spectre_v2=ibrs.
-+	 */
- 	retbleed_select_mitigation();
- 	/*
--	 * spectre_v2_select_mitigation() relies on the state set by
-+	 * spectre_v2_user_select_mitigation() relies on the state set by
- 	 * retbleed_select_mitigation(); specifically the STIBP selection is
- 	 * forced for UNRET.
- 	 */
--	spectre_v2_select_mitigation();
-+	spectre_v2_user_select_mitigation();
- 	ssb_select_mitigation();
- 	l1tf_select_mitigation();
- 	md_clear_select_mitigation();
-@@ -969,13 +976,15 @@ static void __init spec_v2_user_print_co
- 		pr_info("spectre_v2_user=%s forced on command line.\n", reason);
+@@ -78,6 +78,12 @@ void write_spec_ctrl_current(u64 val, bo
+ 		wrmsrl(MSR_IA32_SPEC_CTRL, val);
  }
  
-+static __ro_after_init enum spectre_v2_mitigation_cmd spectre_v2_cmd;
++u64 spec_ctrl_current(void)
++{
++	return this_cpu_read(x86_spec_ctrl_current);
++}
++EXPORT_SYMBOL_GPL(spec_ctrl_current);
 +
- static enum spectre_v2_user_cmd __init
--spectre_v2_parse_user_cmdline(enum spectre_v2_mitigation_cmd v2_cmd)
-+spectre_v2_parse_user_cmdline(void)
- {
- 	char arg[20];
- 	int ret, i;
+ /*
+  * The vendor and possibly platform specific bits which can be modified in
+  * x86_spec_ctrl_base.
+--- a/drivers/idle/intel_idle.c
++++ b/drivers/idle/intel_idle.c
+@@ -47,11 +47,13 @@
+ #include <linux/tick.h>
+ #include <trace/events/power.h>
+ #include <linux/sched.h>
++#include <linux/sched/smt.h>
+ #include <linux/notifier.h>
+ #include <linux/cpu.h>
+ #include <linux/moduleparam.h>
+ #include <asm/cpu_device_id.h>
+ #include <asm/intel-family.h>
++#include <asm/nospec-branch.h>
+ #include <asm/mwait.h>
+ #include <asm/msr.h>
  
--	switch (v2_cmd) {
-+	switch (spectre_v2_cmd) {
- 	case SPECTRE_V2_CMD_NONE:
- 		return SPECTRE_V2_USER_CMD_NONE;
- 	case SPECTRE_V2_CMD_FORCE:
-@@ -1010,7 +1019,7 @@ static inline bool spectre_v2_in_ibrs_mo
+@@ -94,6 +96,12 @@ static unsigned int mwait_substates __in
+ #define CPUIDLE_FLAG_ALWAYS_ENABLE	BIT(15)
+ 
+ /*
++ * Disable IBRS across idle (when KERNEL_IBRS), is exclusive vs IRQ_ENABLE
++ * above.
++ */
++#define CPUIDLE_FLAG_IBRS		BIT(16)
++
++/*
+  * MWAIT takes an 8-bit "hint" in EAX "suggesting"
+  * the C-state (top nibble) and sub-state (bottom nibble)
+  * 0x00 means "MWAIT(C1)", 0x10 means "MWAIT(C2)" etc.
+@@ -132,6 +140,24 @@ static __cpuidle int intel_idle(struct c
+ 	return index;
  }
  
- static void __init
--spectre_v2_user_select_mitigation(enum spectre_v2_mitigation_cmd v2_cmd)
-+spectre_v2_user_select_mitigation(void)
- {
- 	enum spectre_v2_user_mitigation mode = SPECTRE_V2_USER_NONE;
- 	bool smt_possible = IS_ENABLED(CONFIG_SMP);
-@@ -1023,7 +1032,7 @@ spectre_v2_user_select_mitigation(enum s
- 	    cpu_smt_control == CPU_SMT_NOT_SUPPORTED)
- 		smt_possible = false;
++static __cpuidle int intel_idle_ibrs(struct cpuidle_device *dev,
++				     struct cpuidle_driver *drv, int index)
++{
++	bool smt_active = sched_smt_active();
++	u64 spec_ctrl = spec_ctrl_current();
++	int ret;
++
++	if (smt_active)
++		wrmsrl(MSR_IA32_SPEC_CTRL, 0);
++
++	ret = intel_idle(dev, drv, index);
++
++	if (smt_active)
++		wrmsrl(MSR_IA32_SPEC_CTRL, spec_ctrl);
++
++	return ret;
++}
++
+ /**
+  * intel_idle_s2idle - Ask the processor to enter the given idle state.
+  * @dev: cpuidle device of the target CPU.
+@@ -653,7 +679,7 @@ static struct cpuidle_state skl_cstates[
+ 	{
+ 		.name = "C6",
+ 		.desc = "MWAIT 0x20",
+-		.flags = MWAIT2flg(0x20) | CPUIDLE_FLAG_TLB_FLUSHED,
++		.flags = MWAIT2flg(0x20) | CPUIDLE_FLAG_TLB_FLUSHED | CPUIDLE_FLAG_IBRS,
+ 		.exit_latency = 85,
+ 		.target_residency = 200,
+ 		.enter = &intel_idle,
+@@ -661,7 +687,7 @@ static struct cpuidle_state skl_cstates[
+ 	{
+ 		.name = "C7s",
+ 		.desc = "MWAIT 0x33",
+-		.flags = MWAIT2flg(0x33) | CPUIDLE_FLAG_TLB_FLUSHED,
++		.flags = MWAIT2flg(0x33) | CPUIDLE_FLAG_TLB_FLUSHED | CPUIDLE_FLAG_IBRS,
+ 		.exit_latency = 124,
+ 		.target_residency = 800,
+ 		.enter = &intel_idle,
+@@ -669,7 +695,7 @@ static struct cpuidle_state skl_cstates[
+ 	{
+ 		.name = "C8",
+ 		.desc = "MWAIT 0x40",
+-		.flags = MWAIT2flg(0x40) | CPUIDLE_FLAG_TLB_FLUSHED,
++		.flags = MWAIT2flg(0x40) | CPUIDLE_FLAG_TLB_FLUSHED | CPUIDLE_FLAG_IBRS,
+ 		.exit_latency = 200,
+ 		.target_residency = 800,
+ 		.enter = &intel_idle,
+@@ -677,7 +703,7 @@ static struct cpuidle_state skl_cstates[
+ 	{
+ 		.name = "C9",
+ 		.desc = "MWAIT 0x50",
+-		.flags = MWAIT2flg(0x50) | CPUIDLE_FLAG_TLB_FLUSHED,
++		.flags = MWAIT2flg(0x50) | CPUIDLE_FLAG_TLB_FLUSHED | CPUIDLE_FLAG_IBRS,
+ 		.exit_latency = 480,
+ 		.target_residency = 5000,
+ 		.enter = &intel_idle,
+@@ -685,7 +711,7 @@ static struct cpuidle_state skl_cstates[
+ 	{
+ 		.name = "C10",
+ 		.desc = "MWAIT 0x60",
+-		.flags = MWAIT2flg(0x60) | CPUIDLE_FLAG_TLB_FLUSHED,
++		.flags = MWAIT2flg(0x60) | CPUIDLE_FLAG_TLB_FLUSHED | CPUIDLE_FLAG_IBRS,
+ 		.exit_latency = 890,
+ 		.target_residency = 5000,
+ 		.enter = &intel_idle,
+@@ -714,7 +740,7 @@ static struct cpuidle_state skx_cstates[
+ 	{
+ 		.name = "C6",
+ 		.desc = "MWAIT 0x20",
+-		.flags = MWAIT2flg(0x20) | CPUIDLE_FLAG_TLB_FLUSHED,
++		.flags = MWAIT2flg(0x20) | CPUIDLE_FLAG_TLB_FLUSHED | CPUIDLE_FLAG_IBRS,
+ 		.exit_latency = 133,
+ 		.target_residency = 600,
+ 		.enter = &intel_idle,
+@@ -1501,6 +1527,11 @@ static void __init intel_idle_init_cstat
+ 		/* Structure copy. */
+ 		drv->states[drv->state_count] = cpuidle_state_table[cstate];
  
--	cmd = spectre_v2_parse_user_cmdline(v2_cmd);
-+	cmd = spectre_v2_parse_user_cmdline();
- 	switch (cmd) {
- 	case SPECTRE_V2_USER_CMD_NONE:
- 		goto set_mode;
-@@ -1347,7 +1356,7 @@ static void __init spectre_v2_select_mit
- 	}
- 
- 	/* Set up IBPB and STIBP depending on the general spectre V2 command */
--	spectre_v2_user_select_mitigation(cmd);
-+	spectre_v2_cmd = cmd;
- }
- 
- static void update_stibp_msr(void * __unused)
++		if (cpu_feature_enabled(X86_FEATURE_KERNEL_IBRS) &&
++		    cpuidle_state_table[cstate].flags & CPUIDLE_FLAG_IBRS) {
++			drv->states[drv->state_count].enter = intel_idle_ibrs;
++		}
++
+ 		if ((disabled_states_mask & BIT(drv->state_count)) ||
+ 		    ((icpu->use_acpi || force_use_acpi) &&
+ 		     intel_idle_off_by_default(mwait_hint) &&
 
 
