@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CA6BC43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:10:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D0EEC43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:10:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239072AbiGWKKN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 06:10:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43168 "EHLO
+        id S239096AbiGWKKQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 06:10:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238748AbiGWKIu (ORCPT
+        with ESMTP id S238903AbiGWKI7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 06:08:50 -0400
+        Sat, 23 Jul 2022 06:08:59 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96821C9E7A;
-        Sat, 23 Jul 2022 03:01:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22106CA750;
+        Sat, 23 Jul 2022 03:02:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4312D6116A;
-        Sat, 23 Jul 2022 10:01:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 526D7C341C0;
-        Sat, 23 Jul 2022 10:01:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C357D60C81;
+        Sat, 23 Jul 2022 10:02:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2868C341C0;
+        Sat, 23 Jul 2022 10:02:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658570495;
-        bh=s9BBdXTRzWO6rilbhoZPvTfn8C7dwgczJt4XxU408Fs=;
+        s=korg; t=1658570527;
+        bh=TxC15aCWJTESKfDiZYzcZB3KhHflPWx08diIkyKVH6A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N0vlzdrpULs29z6OTQr+6AENsrGvpG29z0KA0Q9NisG0a+m+wuAhRa1mI/asybxd8
-         WEMhVAOg57tkEENHeDyFsTeb8jDhlnkM4+sdbubVhsXAmgSzuWbJ16GXctX0BFfmSP
-         XuOopOHyhlR4g1cvnHC/NmZp+oDGdEezAfHG1TKs=
+        b=XYr/jmT7mpmed0gzfDvGHX3cYayCQmUe33mG6nTf7N2SeEXhiJYM78/iXzunyeoyZ
+         3KmaPNEYscPBGiS6OgIQgPQziWl67HPb0GlUSR9xdnu/3RcjG3XJ9ZTI1txutzcK1d
+         w+jXwE1i3oTi3K8RosY1VwnJftisj4Xn/Vjsqrf4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
+        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Borislav Petkov <bp@suse.de>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 106/148] objtool: Update Retpoline validation
-Date:   Sat, 23 Jul 2022 11:55:18 +0200
-Message-Id: <20220723095254.035382699@linuxfoundation.org>
+Subject: [PATCH 5.10 117/148] objtool: Re-add UNWIND_HINT_{SAVE_RESTORE}
+Date:   Sat, 23 Jul 2022 11:55:29 +0200
+Message-Id: <20220723095257.114909578@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220723095224.302504400@linuxfoundation.org>
 References: <20220723095224.302504400@linuxfoundation.org>
@@ -52,112 +51,185 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Josh Poimboeuf <jpoimboe@kernel.org>
 
-commit 9bb2ec608a209018080ca262f771e6a9ff203b6f upstream.
+commit 8faea26e611189e933ea2281975ff4dc7c1106b6 upstream.
 
-Update retpoline validation with the new CONFIG_RETPOLINE requirement of
-not having bare naked RET instructions.
+Commit
 
+  c536ed2fffd5 ("objtool: Remove SAVE/RESTORE hints")
+
+removed the save/restore unwind hints because they were no longer
+needed. Now they're going to be needed again so re-add them.
+
+Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-[cascardo: conflict fixup at arch/x86/xen/xen-head.S]
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/nospec-branch.h |    6 ++++++
- arch/x86/mm/mem_encrypt_boot.S       |    2 ++
- arch/x86/xen/xen-head.S              |    1 +
- tools/objtool/check.c                |   19 +++++++++++++------
- 4 files changed, 22 insertions(+), 6 deletions(-)
+ arch/x86/include/asm/unwind_hints.h |   12 +++++++++-
+ include/linux/objtool.h             |    6 +++--
+ tools/include/linux/objtool.h       |    6 +++--
+ tools/objtool/check.c               |   40 ++++++++++++++++++++++++++++++++++++
+ tools/objtool/check.h               |    1 
+ 5 files changed, 59 insertions(+), 6 deletions(-)
 
---- a/arch/x86/include/asm/nospec-branch.h
-+++ b/arch/x86/include/asm/nospec-branch.h
-@@ -76,6 +76,12 @@
+--- a/arch/x86/include/asm/unwind_hints.h
++++ b/arch/x86/include/asm/unwind_hints.h
+@@ -8,11 +8,11 @@
+ #ifdef __ASSEMBLY__
+ 
+ .macro UNWIND_HINT_EMPTY
+-	UNWIND_HINT sp_reg=ORC_REG_UNDEFINED type=UNWIND_HINT_TYPE_CALL end=1
++	UNWIND_HINT type=UNWIND_HINT_TYPE_CALL end=1
  .endm
  
- /*
-+ * (ab)use RETPOLINE_SAFE on RET to annotate away 'bare' RET instructions
-+ * vs RETBleed validation.
-+ */
-+#define ANNOTATE_UNRET_SAFE ANNOTATE_RETPOLINE_SAFE
+ .macro UNWIND_HINT_ENTRY
+-	UNWIND_HINT sp_reg=ORC_REG_UNDEFINED type=UNWIND_HINT_TYPE_ENTRY end=1
++	UNWIND_HINT type=UNWIND_HINT_TYPE_ENTRY end=1
+ .endm
+ 
+ .macro UNWIND_HINT_REGS base=%rsp offset=0 indirect=0 extra=1 partial=0
+@@ -56,6 +56,14 @@
+ 	UNWIND_HINT sp_reg=ORC_REG_SP sp_offset=8 type=UNWIND_HINT_TYPE_FUNC
+ .endm
+ 
++.macro UNWIND_HINT_SAVE
++	UNWIND_HINT type=UNWIND_HINT_TYPE_SAVE
++.endm
 +
-+/*
-  * JMP_NOSPEC and CALL_NOSPEC macros can be used instead of a simple
-  * indirect jmp/call which may be susceptible to the Spectre variant 2
-  * attack.
---- a/arch/x86/mm/mem_encrypt_boot.S
-+++ b/arch/x86/mm/mem_encrypt_boot.S
-@@ -66,6 +66,7 @@ SYM_FUNC_START(sme_encrypt_execute)
- 	pop	%rbp
++.macro UNWIND_HINT_RESTORE
++	UNWIND_HINT type=UNWIND_HINT_TYPE_RESTORE
++.endm
++
+ #endif /* __ASSEMBLY__ */
  
- 	/* Offset to __x86_return_thunk would be wrong here */
-+	ANNOTATE_UNRET_SAFE
- 	ret
- 	int3
- SYM_FUNC_END(sme_encrypt_execute)
-@@ -154,6 +155,7 @@ SYM_FUNC_START(__enc_copy)
- 	pop	%r15
+ #endif /* _ASM_X86_UNWIND_HINTS_H */
+--- a/include/linux/objtool.h
++++ b/include/linux/objtool.h
+@@ -40,6 +40,8 @@ struct unwind_hint {
+ #define UNWIND_HINT_TYPE_REGS_PARTIAL	2
+ #define UNWIND_HINT_TYPE_FUNC		3
+ #define UNWIND_HINT_TYPE_ENTRY		4
++#define UNWIND_HINT_TYPE_SAVE		5
++#define UNWIND_HINT_TYPE_RESTORE	6
  
- 	/* Offset to __x86_return_thunk would be wrong here */
-+	ANNOTATE_UNRET_SAFE
- 	ret
- 	int3
- .L__enc_copy_end:
---- a/arch/x86/xen/xen-head.S
-+++ b/arch/x86/xen/xen-head.S
-@@ -70,6 +70,7 @@ SYM_CODE_START(hypercall_page)
- 	.rept (PAGE_SIZE / 32)
- 		UNWIND_HINT_FUNC
- 		.skip 31, 0x90
-+		ANNOTATE_UNRET_SAFE
- 		RET
- 	.endr
+ #ifdef CONFIG_STACK_VALIDATION
+ 
+@@ -102,7 +104,7 @@ struct unwind_hint {
+  * the debuginfo as necessary.  It will also warn if it sees any
+  * inconsistencies.
+  */
+-.macro UNWIND_HINT sp_reg:req sp_offset=0 type:req end=0
++.macro UNWIND_HINT type:req sp_reg=0 sp_offset=0 end=0
+ .Lunwind_hint_ip_\@:
+ 	.pushsection .discard.unwind_hints
+ 		/* struct unwind_hint */
+@@ -126,7 +128,7 @@ struct unwind_hint {
+ #define STACK_FRAME_NON_STANDARD(func)
+ #else
+ #define ANNOTATE_INTRA_FUNCTION_CALL
+-.macro UNWIND_HINT sp_reg:req sp_offset=0 type:req end=0
++.macro UNWIND_HINT type:req sp_reg=0 sp_offset=0 end=0
+ .endm
+ #endif
+ 
+--- a/tools/include/linux/objtool.h
++++ b/tools/include/linux/objtool.h
+@@ -40,6 +40,8 @@ struct unwind_hint {
+ #define UNWIND_HINT_TYPE_REGS_PARTIAL	2
+ #define UNWIND_HINT_TYPE_FUNC		3
+ #define UNWIND_HINT_TYPE_ENTRY		4
++#define UNWIND_HINT_TYPE_SAVE		5
++#define UNWIND_HINT_TYPE_RESTORE	6
+ 
+ #ifdef CONFIG_STACK_VALIDATION
+ 
+@@ -102,7 +104,7 @@ struct unwind_hint {
+  * the debuginfo as necessary.  It will also warn if it sees any
+  * inconsistencies.
+  */
+-.macro UNWIND_HINT sp_reg:req sp_offset=0 type:req end=0
++.macro UNWIND_HINT type:req sp_reg=0 sp_offset=0 end=0
+ .Lunwind_hint_ip_\@:
+ 	.pushsection .discard.unwind_hints
+ 		/* struct unwind_hint */
+@@ -126,7 +128,7 @@ struct unwind_hint {
+ #define STACK_FRAME_NON_STANDARD(func)
+ #else
+ #define ANNOTATE_INTRA_FUNCTION_CALL
+-.macro UNWIND_HINT sp_reg:req sp_offset=0 type:req end=0
++.macro UNWIND_HINT type:req sp_reg=0 sp_offset=0 end=0
+ .endm
+ #endif
  
 --- a/tools/objtool/check.c
 +++ b/tools/objtool/check.c
-@@ -1799,8 +1799,9 @@ static int read_retpoline_hints(struct o
- 		}
+@@ -1752,6 +1752,17 @@ static int read_unwind_hints(struct objt
  
- 		if (insn->type != INSN_JUMP_DYNAMIC &&
--		    insn->type != INSN_CALL_DYNAMIC) {
--			WARN_FUNC("retpoline_safe hint not an indirect jump/call",
-+		    insn->type != INSN_CALL_DYNAMIC &&
-+		    insn->type != INSN_RETURN) {
-+			WARN_FUNC("retpoline_safe hint not an indirect jump/call/ret",
- 				  insn->sec, insn->offset);
- 			return -1;
- 		}
-@@ -3051,7 +3052,8 @@ static int validate_retpoline(struct obj
+ 		insn->hint = true;
  
- 	for_each_insn(file, insn) {
- 		if (insn->type != INSN_JUMP_DYNAMIC &&
--		    insn->type != INSN_CALL_DYNAMIC)
-+		    insn->type != INSN_CALL_DYNAMIC &&
-+		    insn->type != INSN_RETURN)
- 			continue;
- 
- 		if (insn->retpoline_safe)
-@@ -3066,9 +3068,14 @@ static int validate_retpoline(struct obj
- 		if (!strcmp(insn->sec->name, ".init.text") && !module)
- 			continue;
- 
--		WARN_FUNC("indirect %s found in RETPOLINE build",
--			  insn->sec, insn->offset,
--			  insn->type == INSN_JUMP_DYNAMIC ? "jump" : "call");
-+		if (insn->type == INSN_RETURN) {
-+			WARN_FUNC("'naked' return found in RETPOLINE build",
-+				  insn->sec, insn->offset);
-+		} else {
-+			WARN_FUNC("indirect %s found in RETPOLINE build",
-+				  insn->sec, insn->offset,
-+				  insn->type == INSN_JUMP_DYNAMIC ? "jump" : "call");
++		if (hint->type == UNWIND_HINT_TYPE_SAVE) {
++			insn->hint = false;
++			insn->save = true;
++			continue;
 +		}
++
++		if (hint->type == UNWIND_HINT_TYPE_RESTORE) {
++			insn->restore = true;
++			continue;
++		}
++
+ 		if (hint->type == UNWIND_HINT_TYPE_REGS_PARTIAL) {
+ 			struct symbol *sym = find_symbol_by_offset(insn->sec, insn->offset);
  
- 		warnings++;
- 	}
+@@ -2847,6 +2858,35 @@ static int validate_branch(struct objtoo
+ 			state.instr += insn->instr;
+ 
+ 		if (insn->hint) {
++			if (insn->restore) {
++				struct instruction *save_insn, *i;
++
++				i = insn;
++				save_insn = NULL;
++
++				sym_for_each_insn_continue_reverse(file, func, i) {
++					if (i->save) {
++						save_insn = i;
++						break;
++					}
++				}
++
++				if (!save_insn) {
++					WARN_FUNC("no corresponding CFI save for CFI restore",
++						  sec, insn->offset);
++					return 1;
++				}
++
++				if (!save_insn->visited) {
++					WARN_FUNC("objtool isn't smart enough to handle this CFI save/restore combo",
++						  sec, insn->offset);
++					return 1;
++				}
++
++				insn->cfi = save_insn->cfi;
++				nr_cfi_reused++;
++			}
++
+ 			state.cfi = *insn->cfi;
+ 		} else {
+ 			/* XXX track if we actually changed state.cfi */
+--- a/tools/objtool/check.h
++++ b/tools/objtool/check.h
+@@ -47,6 +47,7 @@ struct instruction {
+ 	unsigned long immediate;
+ 	bool dead_end, ignore, ignore_alts;
+ 	bool hint;
++	bool save, restore;
+ 	bool retpoline_safe;
+ 	bool entry;
+ 	s8 instr;
 
 
