@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B63CECCA48C
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:10:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CA6BC43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:10:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239014AbiGWKKJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 06:10:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43060 "EHLO
+        id S239072AbiGWKKN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 06:10:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238239AbiGWKIm (ORCPT
+        with ESMTP id S238748AbiGWKIu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 06:08:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FC7EC5D77;
-        Sat, 23 Jul 2022 03:01:47 -0700 (PDT)
+        Sat, 23 Jul 2022 06:08:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96821C9E7A;
+        Sat, 23 Jul 2022 03:01:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F78161265;
-        Sat, 23 Jul 2022 10:01:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98550C341C0;
-        Sat, 23 Jul 2022 10:01:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4312D6116A;
+        Sat, 23 Jul 2022 10:01:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 526D7C341C0;
+        Sat, 23 Jul 2022 10:01:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658570507;
-        bh=J9Pf+qzW800PVoLP/QpqWlIKLOEjtqTEYoBrXWnkZow=;
+        s=korg; t=1658570495;
+        bh=s9BBdXTRzWO6rilbhoZPvTfn8C7dwgczJt4XxU408Fs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HS3EqPRsi6wiSsidc1u3cZHYAZS/k6BWOvIY1j2u5bUoyHfbvQ9pYyWbMLv1/0hjZ
-         NuXRoBG4ZtZPsLbDPUx7Ha41nYR46mD6wya3Sl+3gfMTioAExzVoj5saUJXj/XX10p
-         uiBoXQKpgV7kFX4C/398B4M2YanE9Khd8PiqOePc=
+        b=N0vlzdrpULs29z6OTQr+6AENsrGvpG29z0KA0Q9NisG0a+m+wuAhRa1mI/asybxd8
+         WEMhVAOg57tkEENHeDyFsTeb8jDhlnkM4+sdbubVhsXAmgSzuWbJ16GXctX0BFfmSP
+         XuOopOHyhlR4g1cvnHC/NmZp+oDGdEezAfHG1TKs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>,
+        stable@vger.kernel.org,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Borislav Petkov <bp@suse.de>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 121/148] KVM: VMX: Fix IBRS handling after vmexit
-Date:   Sat, 23 Jul 2022 11:55:33 +0200
-Message-Id: <20220723095258.204130737@linuxfoundation.org>
+Subject: [PATCH 5.10 106/148] objtool: Update Retpoline validation
+Date:   Sat, 23 Jul 2022 11:55:18 +0200
+Message-Id: <20220723095254.035382699@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220723095224.302504400@linuxfoundation.org>
 References: <20220723095224.302504400@linuxfoundation.org>
@@ -51,39 +52,112 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@kernel.org>
+From: Peter Zijlstra <peterz@infradead.org>
 
-commit bea7e31a5caccb6fe8ed989c065072354f0ecb52 upstream.
+commit 9bb2ec608a209018080ca262f771e6a9ff203b6f upstream.
 
-For legacy IBRS to work, the IBRS bit needs to be always re-written
-after vmexit, even if it's already on.
+Update retpoline validation with the new CONFIG_RETPOLINE requirement of
+not having bare naked RET instructions.
 
-Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+[cascardo: conflict fixup at arch/x86/xen/xen-head.S]
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/vmx/vmx.c |    7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ arch/x86/include/asm/nospec-branch.h |    6 ++++++
+ arch/x86/mm/mem_encrypt_boot.S       |    2 ++
+ arch/x86/xen/xen-head.S              |    1 +
+ tools/objtool/check.c                |   19 +++++++++++++------
+ 4 files changed, 22 insertions(+), 6 deletions(-)
 
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -6706,8 +6706,13 @@ void noinstr vmx_spec_ctrl_restore_host(
+--- a/arch/x86/include/asm/nospec-branch.h
++++ b/arch/x86/include/asm/nospec-branch.h
+@@ -76,6 +76,12 @@
+ .endm
  
- 	/*
- 	 * If the guest/host SPEC_CTRL values differ, restore the host value.
-+	 *
-+	 * For legacy IBRS, the IBRS bit always needs to be written after
-+	 * transitioning from a less privileged predictor mode, regardless of
-+	 * whether the guest/host values differ.
- 	 */
--	if (vmx->spec_ctrl != hostval)
-+	if (cpu_feature_enabled(X86_FEATURE_KERNEL_IBRS) ||
-+	    vmx->spec_ctrl != hostval)
- 		native_wrmsrl(MSR_IA32_SPEC_CTRL, hostval);
+ /*
++ * (ab)use RETPOLINE_SAFE on RET to annotate away 'bare' RET instructions
++ * vs RETBleed validation.
++ */
++#define ANNOTATE_UNRET_SAFE ANNOTATE_RETPOLINE_SAFE
++
++/*
+  * JMP_NOSPEC and CALL_NOSPEC macros can be used instead of a simple
+  * indirect jmp/call which may be susceptible to the Spectre variant 2
+  * attack.
+--- a/arch/x86/mm/mem_encrypt_boot.S
++++ b/arch/x86/mm/mem_encrypt_boot.S
+@@ -66,6 +66,7 @@ SYM_FUNC_START(sme_encrypt_execute)
+ 	pop	%rbp
  
- 	barrier_nospec();
+ 	/* Offset to __x86_return_thunk would be wrong here */
++	ANNOTATE_UNRET_SAFE
+ 	ret
+ 	int3
+ SYM_FUNC_END(sme_encrypt_execute)
+@@ -154,6 +155,7 @@ SYM_FUNC_START(__enc_copy)
+ 	pop	%r15
+ 
+ 	/* Offset to __x86_return_thunk would be wrong here */
++	ANNOTATE_UNRET_SAFE
+ 	ret
+ 	int3
+ .L__enc_copy_end:
+--- a/arch/x86/xen/xen-head.S
++++ b/arch/x86/xen/xen-head.S
+@@ -70,6 +70,7 @@ SYM_CODE_START(hypercall_page)
+ 	.rept (PAGE_SIZE / 32)
+ 		UNWIND_HINT_FUNC
+ 		.skip 31, 0x90
++		ANNOTATE_UNRET_SAFE
+ 		RET
+ 	.endr
+ 
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -1799,8 +1799,9 @@ static int read_retpoline_hints(struct o
+ 		}
+ 
+ 		if (insn->type != INSN_JUMP_DYNAMIC &&
+-		    insn->type != INSN_CALL_DYNAMIC) {
+-			WARN_FUNC("retpoline_safe hint not an indirect jump/call",
++		    insn->type != INSN_CALL_DYNAMIC &&
++		    insn->type != INSN_RETURN) {
++			WARN_FUNC("retpoline_safe hint not an indirect jump/call/ret",
+ 				  insn->sec, insn->offset);
+ 			return -1;
+ 		}
+@@ -3051,7 +3052,8 @@ static int validate_retpoline(struct obj
+ 
+ 	for_each_insn(file, insn) {
+ 		if (insn->type != INSN_JUMP_DYNAMIC &&
+-		    insn->type != INSN_CALL_DYNAMIC)
++		    insn->type != INSN_CALL_DYNAMIC &&
++		    insn->type != INSN_RETURN)
+ 			continue;
+ 
+ 		if (insn->retpoline_safe)
+@@ -3066,9 +3068,14 @@ static int validate_retpoline(struct obj
+ 		if (!strcmp(insn->sec->name, ".init.text") && !module)
+ 			continue;
+ 
+-		WARN_FUNC("indirect %s found in RETPOLINE build",
+-			  insn->sec, insn->offset,
+-			  insn->type == INSN_JUMP_DYNAMIC ? "jump" : "call");
++		if (insn->type == INSN_RETURN) {
++			WARN_FUNC("'naked' return found in RETPOLINE build",
++				  insn->sec, insn->offset);
++		} else {
++			WARN_FUNC("indirect %s found in RETPOLINE build",
++				  insn->sec, insn->offset,
++				  insn->type == INSN_JUMP_DYNAMIC ? "jump" : "call");
++		}
+ 
+ 		warnings++;
+ 	}
 
 
