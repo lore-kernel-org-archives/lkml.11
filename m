@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B8C2CCA483
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 09:59:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 483ACCCA483
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 09:59:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237765AbiGWJ73 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 05:59:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46762 "EHLO
+        id S237788AbiGWJ7j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 05:59:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237541AbiGWJ6r (ORCPT
+        with ESMTP id S237488AbiGWJ64 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 05:58:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D9B16A9CF;
-        Sat, 23 Jul 2022 02:57:39 -0700 (PDT)
+        Sat, 23 Jul 2022 05:58:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE94C6D2CF;
+        Sat, 23 Jul 2022 02:57:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E8D61611CD;
-        Sat, 23 Jul 2022 09:57:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F063FC341C7;
-        Sat, 23 Jul 2022 09:57:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7873BB827CC;
+        Sat, 23 Jul 2022 09:57:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCC8EC341C0;
+        Sat, 23 Jul 2022 09:57:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658570258;
-        bh=E7rbmcrV7XwUzajBPQnJcFe7GQ/LEzE1EoPxgXcQPSg=;
+        s=korg; t=1658570261;
+        bh=fUn8IkFO0m8VZnxYLrY3/qaO1ly3x4v0tCiWNKY25ks=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=grD3uyMCvns6A5FCiW/z3Zqkaqp+IF2FkF+0IM6ZFwvrbVwUGMVatDG4zELR6OC9K
-         A99bFgNMT+UP+gtAAGJkutbQB9YWaCcT1/Kp7rk54VTbbS1ZmeuRPchccsN/8rCTqv
-         S4HXxN5m0UtDhzO43QZ2Y3hABe600XonmMaDuQF0=
+        b=qfghO25L21MW3RlV1WF/RsFn+Hlwdt9E85eMWfIcQvu/mgFak0Hg9Tmhp1hxcxHnm
+         3OxRznv1Cfhe7w+aD9nFUI4/9zOa3/86ZO3tTewJnH+4X0pSQ2c1GNcKnwqk6ZvUZe
+         1KQTbr8UdvT5B0wYxDVGUVnzB9AOJ9eTBb+ChZoA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,9 +37,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Borislav Petkov <bp@suse.de>, Ingo Molnar <mingo@kernel.org>,
         Miroslav Benes <mbenes@suse.cz>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 034/148] objtool/x86: Rewrite retpoline thunk calls
-Date:   Sat, 23 Jul 2022 11:54:06 +0200
-Message-Id: <20220723095233.874778711@linuxfoundation.org>
+Subject: [PATCH 5.10 025/148] objtool: Rework the elf_rebuild_reloc_section() logic
+Date:   Sat, 23 Jul 2022 11:53:57 +0200
+Message-Id: <20220723095231.451413936@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220723095224.302504400@linuxfoundation.org>
 References: <20220723095224.302504400@linuxfoundation.org>
@@ -53,260 +53,124 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peter Zijlstra <peterz@infradead.org>
 
-commit 9bc0bb50727c8ac69fbb33fb937431cf3518ff37 upstream.
+commit 3a647607b57ad8346e659ddd3b951ac292c83690 upstream.
 
-When the compiler emits: "CALL __x86_indirect_thunk_\reg" for an
-indirect call, have objtool rewrite it to:
+Instead of manually calling elf_rebuild_reloc_section() on sections
+we've called elf_add_reloc() on, have elf_write() DTRT.
 
-	ALTERNATIVE "call __x86_indirect_thunk_\reg",
-		    "call *%reg", ALT_NOT(X86_FEATURE_RETPOLINE)
-
-Additionally, in order to not emit endless identical
-.altinst_replacement chunks, use a global symbol for them, see
-__x86_indirect_alt_*.
-
-This also avoids objtool from having to do code generation.
+This makes it easier to add random relocations in places without
+carefully tracking when we're done and need to flush what section.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Ingo Molnar <mingo@kernel.org>
 Reviewed-by: Miroslav Benes <mbenes@suse.cz>
-Link: https://lkml.kernel.org/r/20210326151300.320177914@infradead.org
-[bwh: Backported to 5.10: include "arch_elf.h" instead of "arch/elf.h"]
+Link: https://lkml.kernel.org/r/20210326151259.754213408@infradead.org
+[bwh: Backported to 5.10: drop changes in create_mcount_loc_sections()]
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/asm-prototypes.h |   12 ++-
- arch/x86/lib/retpoline.S              |   41 +++++++++++
- tools/objtool/arch/x86/decode.c       |  117 ++++++++++++++++++++++++++++++++++
- 3 files changed, 167 insertions(+), 3 deletions(-)
+ tools/objtool/check.c   |    3 ---
+ tools/objtool/elf.c     |   20 ++++++++++++++------
+ tools/objtool/elf.h     |    1 -
+ tools/objtool/orc_gen.c |    3 ---
+ 4 files changed, 14 insertions(+), 13 deletions(-)
 
---- a/arch/x86/include/asm/asm-prototypes.h
-+++ b/arch/x86/include/asm/asm-prototypes.h
-@@ -19,11 +19,19 @@ extern void cmpxchg8b_emu(void);
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -542,9 +542,6 @@ static int create_static_call_sections(s
+ 		idx++;
+ 	}
  
- #ifdef CONFIG_RETPOLINE
- 
--#define DECL_INDIRECT_THUNK(reg) \
-+#undef GEN
-+#define GEN(reg) \
- 	extern asmlinkage void __x86_indirect_thunk_ ## reg (void);
-+#include <asm/GEN-for-each-reg.h>
-+
-+#undef GEN
-+#define GEN(reg) \
-+	extern asmlinkage void __x86_indirect_alt_call_ ## reg (void);
-+#include <asm/GEN-for-each-reg.h>
- 
- #undef GEN
--#define GEN(reg) DECL_INDIRECT_THUNK(reg)
-+#define GEN(reg) \
-+	extern asmlinkage void __x86_indirect_alt_jmp_ ## reg (void);
- #include <asm/GEN-for-each-reg.h>
- 
- #endif /* CONFIG_RETPOLINE */
---- a/arch/x86/lib/retpoline.S
-+++ b/arch/x86/lib/retpoline.S
-@@ -10,6 +10,8 @@
- #include <asm/unwind_hints.h>
- #include <asm/frame.h>
- 
-+	.section .text.__x86.indirect_thunk
-+
- .macro RETPOLINE reg
- 	ANNOTATE_INTRA_FUNCTION_CALL
- 	call    .Ldo_rop_\@
-@@ -25,9 +27,9 @@
- .endm
- 
- .macro THUNK reg
--	.section .text.__x86.indirect_thunk
- 
- 	.align 32
-+
- SYM_FUNC_START(__x86_indirect_thunk_\reg)
- 
- 	ALTERNATIVE_2 __stringify(ANNOTATE_RETPOLINE_SAFE; jmp *%\reg), \
-@@ -39,6 +41,32 @@ SYM_FUNC_END(__x86_indirect_thunk_\reg)
- .endm
- 
- /*
-+ * This generates .altinstr_replacement symbols for use by objtool. They,
-+ * however, must not actually live in .altinstr_replacement since that will be
-+ * discarded after init, but module alternatives will also reference these
-+ * symbols.
-+ *
-+ * Their names matches the "__x86_indirect_" prefix to mark them as retpolines.
-+ */
-+.macro ALT_THUNK reg
-+
-+	.align 1
-+
-+SYM_FUNC_START_NOALIGN(__x86_indirect_alt_call_\reg)
-+	ANNOTATE_RETPOLINE_SAFE
-+1:	call	*%\reg
-+2:	.skip	5-(2b-1b), 0x90
-+SYM_FUNC_END(__x86_indirect_alt_call_\reg)
-+
-+SYM_FUNC_START_NOALIGN(__x86_indirect_alt_jmp_\reg)
-+	ANNOTATE_RETPOLINE_SAFE
-+1:	jmp	*%\reg
-+2:	.skip	5-(2b-1b), 0x90
-+SYM_FUNC_END(__x86_indirect_alt_jmp_\reg)
-+
-+.endm
-+
-+/*
-  * Despite being an assembler file we can't just use .irp here
-  * because __KSYM_DEPS__ only uses the C preprocessor and would
-  * only see one instance of "__x86_indirect_thunk_\reg" rather
-@@ -61,3 +89,14 @@ SYM_FUNC_END(__x86_indirect_thunk_\reg)
- #define GEN(reg) EXPORT_THUNK(reg)
- #include <asm/GEN-for-each-reg.h>
- 
-+#undef GEN
-+#define GEN(reg) ALT_THUNK reg
-+#include <asm/GEN-for-each-reg.h>
-+
-+#undef GEN
-+#define GEN(reg) __EXPORT_THUNK(__x86_indirect_alt_call_ ## reg)
-+#include <asm/GEN-for-each-reg.h>
-+
-+#undef GEN
-+#define GEN(reg) __EXPORT_THUNK(__x86_indirect_alt_jmp_ ## reg)
-+#include <asm/GEN-for-each-reg.h>
---- a/tools/objtool/arch/x86/decode.c
-+++ b/tools/objtool/arch/x86/decode.c
-@@ -16,6 +16,7 @@
- #include "../../arch.h"
- #include "../../warn.h"
- #include <asm/orc_types.h>
-+#include "arch_elf.h"
- 
- static unsigned char op_to_cfi_reg[][2] = {
- 	{CFI_AX, CFI_R8},
-@@ -585,6 +586,122 @@ const char *arch_nop_insn(int len)
- 	return nops[len-1];
+-	if (elf_rebuild_reloc_section(file->elf, reloc_sec))
+-		return -1;
+-
+ 	return 0;
  }
  
-+/* asm/alternative.h ? */
+--- a/tools/objtool/elf.c
++++ b/tools/objtool/elf.c
+@@ -530,6 +530,8 @@ void elf_add_reloc(struct elf *elf, stru
+ 
+ 	list_add_tail(&reloc->list, &sec->reloc_list);
+ 	elf_hash_add(elf->reloc_hash, &reloc->hash, reloc_hash(reloc));
 +
-+#define ALTINSTR_FLAG_INV	(1 << 15)
-+#define ALT_NOT(feat)		((feat) | ALTINSTR_FLAG_INV)
-+
-+struct alt_instr {
-+	s32 instr_offset;	/* original instruction */
-+	s32 repl_offset;	/* offset to replacement instruction */
-+	u16 cpuid;		/* cpuid bit set for replacement */
-+	u8  instrlen;		/* length of original instruction */
-+	u8  replacementlen;	/* length of new instruction */
-+} __packed;
-+
-+static int elf_add_alternative(struct elf *elf,
-+			       struct instruction *orig, struct symbol *sym,
-+			       int cpuid, u8 orig_len, u8 repl_len)
-+{
-+	const int size = sizeof(struct alt_instr);
-+	struct alt_instr *alt;
-+	struct section *sec;
-+	Elf_Scn *s;
-+
-+	sec = find_section_by_name(elf, ".altinstructions");
-+	if (!sec) {
-+		sec = elf_create_section(elf, ".altinstructions",
-+					 SHF_WRITE, size, 0);
-+
-+		if (!sec) {
-+			WARN_ELF("elf_create_section");
-+			return -1;
-+		}
-+	}
-+
-+	s = elf_getscn(elf->elf, sec->idx);
-+	if (!s) {
-+		WARN_ELF("elf_getscn");
-+		return -1;
-+	}
-+
-+	sec->data = elf_newdata(s);
-+	if (!sec->data) {
-+		WARN_ELF("elf_newdata");
-+		return -1;
-+	}
-+
-+	sec->data->d_size = size;
-+	sec->data->d_align = 1;
-+
-+	alt = sec->data->d_buf = malloc(size);
-+	if (!sec->data->d_buf) {
-+		perror("malloc");
-+		return -1;
-+	}
-+	memset(sec->data->d_buf, 0, size);
-+
-+	if (elf_add_reloc_to_insn(elf, sec, sec->sh.sh_size,
-+				  R_X86_64_PC32, orig->sec, orig->offset)) {
-+		WARN("elf_create_reloc: alt_instr::instr_offset");
-+		return -1;
-+	}
-+
-+	if (elf_add_reloc(elf, sec, sec->sh.sh_size + 4,
-+			  R_X86_64_PC32, sym, 0)) {
-+		WARN("elf_create_reloc: alt_instr::repl_offset");
-+		return -1;
-+	}
-+
-+	alt->cpuid = cpuid;
-+	alt->instrlen = orig_len;
-+	alt->replacementlen = repl_len;
-+
-+	sec->sh.sh_size += size;
 +	sec->changed = true;
+ }
+ 
+ static int read_rel_reloc(struct section *sec, int i, struct reloc *reloc, unsigned int *symndx)
+@@ -609,7 +611,9 @@ static int read_relocs(struct elf *elf)
+ 				return -1;
+ 			}
+ 
+-			elf_add_reloc(elf, reloc);
++			list_add_tail(&reloc->list, &sec->reloc_list);
++			elf_hash_add(elf->reloc_hash, &reloc->hash, reloc_hash(reloc));
 +
-+	return 0;
-+}
-+
-+#define X86_FEATURE_RETPOLINE                ( 7*32+12)
-+
-+int arch_rewrite_retpolines(struct objtool_file *file)
-+{
-+	struct instruction *insn;
-+	struct reloc *reloc;
-+	struct symbol *sym;
-+	char name[32] = "";
-+
-+	list_for_each_entry(insn, &file->retpoline_call_list, call_node) {
-+
-+		if (!strcmp(insn->sec->name, ".text.__x86.indirect_thunk"))
-+			continue;
-+
-+		reloc = insn->reloc;
-+
-+		sprintf(name, "__x86_indirect_alt_%s_%s",
-+			insn->type == INSN_JUMP_DYNAMIC ? "jmp" : "call",
-+			reloc->sym->name + 21);
-+
-+		sym = find_symbol_by_name(file->elf, name);
-+		if (!sym) {
-+			sym = elf_create_undef_symbol(file->elf, name);
-+			if (!sym) {
-+				WARN("elf_create_undef_symbol");
+ 			nr_reloc++;
+ 		}
+ 		max_reloc = max(max_reloc, nr_reloc);
+@@ -920,14 +924,11 @@ static int elf_rebuild_rela_reloc_sectio
+ 	return 0;
+ }
+ 
+-int elf_rebuild_reloc_section(struct elf *elf, struct section *sec)
++static int elf_rebuild_reloc_section(struct elf *elf, struct section *sec)
+ {
+ 	struct reloc *reloc;
+ 	int nr;
+ 
+-	sec->changed = true;
+-	elf->changed = true;
+-
+ 	nr = 0;
+ 	list_for_each_entry(reloc, &sec->reloc_list, list)
+ 		nr++;
+@@ -991,9 +992,15 @@ int elf_write(struct elf *elf)
+ 	struct section *sec;
+ 	Elf_Scn *s;
+ 
+-	/* Update section headers for changed sections: */
++	/* Update changed relocation sections and section headers: */
+ 	list_for_each_entry(sec, &elf->sections, list) {
+ 		if (sec->changed) {
++			if (sec->base &&
++			    elf_rebuild_reloc_section(elf, sec)) {
++				WARN("elf_rebuild_reloc_section");
 +				return -1;
 +			}
-+		}
 +
-+		if (elf_add_alternative(file->elf, insn, sym,
-+					ALT_NOT(X86_FEATURE_RETPOLINE), 5, 5)) {
-+			WARN("elf_add_alternative");
-+			return -1;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
- int arch_decode_hint_reg(struct instruction *insn, u8 sp_reg)
- {
- 	struct cfi_reg *cfa = &insn->cfi.cfa;
+ 			s = elf_getscn(elf->elf, sec->idx);
+ 			if (!s) {
+ 				WARN_ELF("elf_getscn");
+@@ -1005,6 +1012,7 @@ int elf_write(struct elf *elf)
+ 			}
+ 
+ 			sec->changed = false;
++			elf->changed = true;
+ 		}
+ 	}
+ 
+--- a/tools/objtool/elf.h
++++ b/tools/objtool/elf.h
+@@ -142,7 +142,6 @@ struct reloc *find_reloc_by_dest_range(c
+ struct symbol *find_func_containing(struct section *sec, unsigned long offset);
+ void insn_to_reloc_sym_addend(struct section *sec, unsigned long offset,
+ 			      struct reloc *reloc);
+-int elf_rebuild_reloc_section(struct elf *elf, struct section *sec);
+ 
+ #define for_each_sec(file, sec)						\
+ 	list_for_each_entry(sec, &file->elf->sections, list)
+--- a/tools/objtool/orc_gen.c
++++ b/tools/objtool/orc_gen.c
+@@ -251,8 +251,5 @@ int orc_create(struct objtool_file *file
+ 			return -1;
+ 	}
+ 
+-	if (elf_rebuild_reloc_section(file->elf, ip_rsec))
+-		return -1;
+-
+ 	return 0;
+ }
 
 
