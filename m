@@ -2,50 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6547BC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:13:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12EA4C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:13:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239501AbiGWKNh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 06:13:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54606 "EHLO
+        id S239318AbiGWKNm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 06:13:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239535AbiGWKNN (ORCPT
+        with ESMTP id S239252AbiGWKNR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 06:13:13 -0400
+        Sat, 23 Jul 2022 06:13:17 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ABEE8B4A2;
-        Sat, 23 Jul 2022 03:03:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 974DE8AB3D;
+        Sat, 23 Jul 2022 03:03:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C131DB82C1B;
-        Sat, 23 Jul 2022 10:03:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BE96C341C0;
-        Sat, 23 Jul 2022 10:03:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B912BB82C1A;
+        Sat, 23 Jul 2022 10:03:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10494C341C0;
+        Sat, 23 Jul 2022 10:03:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658570605;
-        bh=zMPVrNhp/F3QfRcx1IwmUr2ts61b2A89EFn63wrxbtY=;
+        s=korg; t=1658570608;
+        bh=iGIXm+MJ2pyHxJsG/SZdynCWcn2aikgM28KIxvJ1Ohg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tJc7e3WAQ9MG/JsLo6JpnxCMs5Gwr+Pa/wESpXLKykzDY2lOJnHWeN7OibGB4Jtb9
-         HwwgrQTj3toxmQ4UPItVA2qFURaAwNm4eEHo2Hbf8hEGJPIQzmogQYmz+skSEec5To
-         o8t3X5PdZ8vyfcy8sV5+ra38rEg+EZX5FmT6UWjk=
+        b=CklgUZSWx3AKnrGehuhHcwRT+ZpPQtyBhaAKD4cn2zWku5wNIPMlJIeVhCaMrisHz
+         vAGrLcCuBGnqDY9VmrfSXGRFvS7PHRWKswWlxbujIMpZ5eOaBximjk60iIh1yYIx0X
+         8bCYzU3Cfuksrfih4DBpfNeO+XzobhoI999GdHHQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
         Nathan Chancellor <nathan@kernel.org>,
         Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.10 145/148] kvm: fix objtool relocation warning
-Date:   Sat, 23 Jul 2022 11:55:57 +0200
-Message-Id: <20220723095304.971051168@linuxfoundation.org>
+Subject: [PATCH 5.10 136/148] x86/speculation: Use DECLARE_PER_CPU for x86_spec_ctrl_current
+Date:   Sat, 23 Jul 2022 11:55:48 +0200
+Message-Id: <20220723095302.474417251@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220723095224.302504400@linuxfoundation.org>
 References: <20220723095224.302504400@linuxfoundation.org>
@@ -57,61 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Nathan Chancellor <nathan@kernel.org>
 
-commit 291073a566b2094c7192872cc0f17ce73d83cb76 upstream.
+commit db886979683a8360ced9b24ab1125ad0c4d2cf76 upstream.
 
-The recent change to make objtool aware of more symbol relocation types
-(commit 24ff65257375: "objtool: Teach get_alt_entry() about more
-relocation types") also added another check, and resulted in this
-objtool warning when building kvm on x86:
+Clang warns:
 
-    arch/x86/kvm/emulate.o: warning: objtool: __ex_table+0x4: don't know how to handle reloc symbol type: kvm_fastop_exception
+  arch/x86/kernel/cpu/bugs.c:58:21: error: section attribute is specified on redeclared variable [-Werror,-Wsection]
+  DEFINE_PER_CPU(u64, x86_spec_ctrl_current);
+                      ^
+  arch/x86/include/asm/nospec-branch.h:283:12: note: previous declaration is here
+  extern u64 x86_spec_ctrl_current;
+             ^
+  1 error generated.
 
-The reason seems to be that kvm_fastop_exception() is marked as a global
-symbol, which causes the relocation to ke kept around for objtool.  And
-at the same time, the kvm_fastop_exception definition (which is done as
-an inline asm statement) doesn't actually set the type of the global,
-which then makes objtool unhappy.
+The declaration should be using DECLARE_PER_CPU instead so all
+attributes stay in sync.
 
-The minimal fix is to just not mark kvm_fastop_exception as being a
-global symbol.  It's only used in that one compilation unit anyway, so
-it was always pointless.  That's how all the other local exception table
-labels are done.
-
-I'm not entirely happy about the kinds of games that the kvm code plays
-with doing its own exception handling, and the fact that it confused
-objtool is most definitely a symptom of the code being a bit too subtle
-and ad-hoc.  But at least this trivial one-liner makes objtool no longer
-upset about what is going on.
-
-Fixes: 24ff65257375 ("objtool: Teach get_alt_entry() about more relocation types")
-Link: https://lore.kernel.org/lkml/CAHk-=wiZwq-0LknKhXN4M+T8jbxn_2i9mcKpO+OaBSSq_Eh7tg@mail.gmail.com/
-Cc: Borislav Petkov <bp@suse.de>
-Cc: Paolo Bonzini <pbonzini@redhat.com>
-Cc: Sean Christopherson <seanjc@google.com>
-Cc: Vitaly Kuznetsov <vkuznets@redhat.com>
-Cc: Wanpeng Li <wanpengli@tencent.com>
-Cc: Jim Mattson <jmattson@google.com>
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Josh Poimboeuf <jpoimboe@redhat.com>
-Cc: Nathan Chancellor <nathan@kernel.org>
+Cc: stable@vger.kernel.org
+Fixes: fc02735b14ff ("KVM: VMX: Prevent guest RSB poisoning attacks with eIBRS")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
 Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/emulate.c |    1 -
- 1 file changed, 1 deletion(-)
+ arch/x86/include/asm/nospec-branch.h |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/arch/x86/kvm/emulate.c
-+++ b/arch/x86/kvm/emulate.c
-@@ -452,7 +452,6 @@ static int fastop(struct x86_emulate_ctx
- 	".skip " __stringify(SETCC_ALIGN) " - (.-" #op "), 0xcc \n\t"
+--- a/arch/x86/include/asm/nospec-branch.h
++++ b/arch/x86/include/asm/nospec-branch.h
+@@ -11,6 +11,7 @@
+ #include <asm/cpufeatures.h>
+ #include <asm/msr-index.h>
+ #include <asm/unwind_hints.h>
++#include <asm/percpu.h>
  
- asm(".pushsection .fixup, \"ax\"\n"
--    ".global kvm_fastop_exception \n"
-     "kvm_fastop_exception: xor %esi, %esi; " ASM_RET
-     ".popsection");
+ #define RETPOLINE_THUNK_SIZE	32
+ 
+@@ -281,7 +282,7 @@ static inline void indirect_branch_predi
+ 
+ /* The Intel SPEC CTRL MSR base value cache */
+ extern u64 x86_spec_ctrl_base;
+-extern u64 x86_spec_ctrl_current;
++DECLARE_PER_CPU(u64, x86_spec_ctrl_current);
+ extern void write_spec_ctrl_current(u64 val, bool force);
+ extern u64 spec_ctrl_current(void);
  
 
 
