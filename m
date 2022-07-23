@@ -2,56 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E42C9C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 13:20:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAA57C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 13:21:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230483AbiGWNUa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 09:20:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47044 "EHLO
+        id S234101AbiGWNVV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 09:21:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229469AbiGWNU0 (ORCPT
+        with ESMTP id S231201AbiGWNVK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 09:20:26 -0400
-Received: from sender-of-o51.zoho.in (sender-of-o51.zoho.in [103.117.158.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D45B7662
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Jul 2022 06:20:25 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1658582410; cv=none; 
-        d=zohomail.in; s=zohoarc; 
-        b=GKrF4lVF8/lGlNX8+pbwvgmwXouFLLFgfjH7SEuJrsYid5O8CuThyIa6ouhzuGLice7iofDUrbOgLqdbVpU4NcnMWfR0+/imFT+A5Kskx6WIjOxPlmdbhQx3fol+wa4/is4lMJC+2NO10U2/kZpLzbNPRhyZjEVc4mctvoi7LHU=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
-        t=1658582410; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=e078esKtfkKf8uBCEFGUMF94RkrFcBEGTMP9CV9qNAM=; 
-        b=GOtU7uQbXCYyCmhPHUTu/0Y7KDRBzOt06HtqIFbgfhBKrJTDuPLHvODGFVTsHQfMNUEuiP/NCgh4raiCzr1PRM2XkFQyxaxvJ0QwyALHbOlVep0bkG9weXzTt4BIp6Pdlgl55MTSE2jHey/MgFYbiQbztF2zBaIq1B8JLX15s/E=
-ARC-Authentication-Results: i=1; mx.zohomail.in;
-        dkim=pass  header.i=siddh.me;
-        spf=pass  smtp.mailfrom=code@siddh.me;
-        dmarc=pass header.from=<code@siddh.me>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1658582410;
-        s=zmail; d=siddh.me; i=code@siddh.me;
-        h=From:From:To:To:Cc:Cc:Message-ID:Subject:Subject:Date:Date:In-Reply-To:References:MIME-Version:Content-Transfer-Encoding:Content-Type:Message-Id:Reply-To;
-        bh=e078esKtfkKf8uBCEFGUMF94RkrFcBEGTMP9CV9qNAM=;
-        b=rc9gEVdIN4EIlZaIpwWogQfKTZsaXKCVuSFWxdhizlZB/upcvJf86ma6/qbDVTUI
-        U8dhnAxKZMUBF19zlgub5ljuQm2Gv+V58oKHHsotK8AYGBwqgecSUfu+OIj/4cAG4se
-        CfbufaVUYx9BzObBm80zPoeqqCpylc3CmnA+yJe4=
-Received: from localhost.localdomain (43.250.158.127 [43.250.158.127]) by mx.zoho.in
-        with SMTPS id 1658582409930951.2066169296836; Sat, 23 Jul 2022 18:50:09 +0530 (IST)
-From:   Siddh Raman Pant <code@siddh.me>
-To:     syzbot+c70d87ac1d001f29a058@syzkaller.appspotmail.com
-Cc:     christophe.jaillet@wanadoo.fr, dhowells@redhat.com,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Message-ID: <20220723132000.195982-1-code@siddh.me>
-Subject: Re: [syzbot] KASAN: use-after-free Read in post_one_notification
-Date:   Sat, 23 Jul 2022 18:50:00 +0530
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <000000000000aa07b205daba6d49@google.com>
-References: <000000000000aa07b205daba6d49@google.com>
+        Sat, 23 Jul 2022 09:21:10 -0400
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C50BD140FB
+        for <linux-kernel@vger.kernel.org>; Sat, 23 Jul 2022 06:21:09 -0700 (PDT)
+Received: by mail-io1-f72.google.com with SMTP id 130-20020a6b0188000000b0067bd829cf29so2666650iob.17
+        for <linux-kernel@vger.kernel.org>; Sat, 23 Jul 2022 06:21:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=hmffAVNxlHiOEaYApp52B8xMvW5HPizAGf30S8q82RU=;
+        b=KvKQUkJ8r7teD9EL9Org1mPL7NAViAS8zOBcj3JhW3uQBBIrXRDG3BnNoAB9NEnQ2A
+         iyQmSrIs+/6ZZUXrj4D3J5WXyNoJ1pFTzz8EvrpBxR2ATCU2P/qBO/P39k1wJsWvm2V6
+         VEafApnlXkzYvKqHvuonH1ZmVjgUBoxai0VCpb/7MM7/hJZVNkbq4KbV4jA4SFKb8HjX
+         /WEAUxx91r/IY/ztZvySQfu3ZB8OkIS0mRpnZPkcSdex4gRNEHmPZHGQoogvSVIYRHrV
+         TBqJL006Wo7fn1Lxd3+Knx2HzyCluBviRc77/GNfUhsRUvyr8n+IQb0CIlGqmy3j9Dvq
+         qBfg==
+X-Gm-Message-State: AJIora9NZYC8SDvUheifkUI6q51DbE3HHgAPMOg8Wn2ss24D58n11+lE
+        CtYcqq99bNZEigXRNQ1goGKv3A/EbiUwRFeWBoW1dlN9/cAl
+X-Google-Smtp-Source: AGRyM1tJQ4gIpOa7fvV3PVWav4bilscZ5HguvTEDva3342vs8XKa3YhxyvAz6czHce3m1++6RnT1knWXxDJtmJAbRGYkITLCkBJ8
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-ZohoMailClient: External
-Content-Type: text/plain; charset=utf8
+X-Received: by 2002:a05:6e02:1c4c:b0:2dd:bfd:f2d8 with SMTP id
+ d12-20020a056e021c4c00b002dd0bfdf2d8mr1728233ilg.106.1658582469220; Sat, 23
+ Jul 2022 06:21:09 -0700 (PDT)
+Date:   Sat, 23 Jul 2022 06:21:09 -0700
+In-Reply-To: <20220723132000.195982-1-code@siddh.me>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000e8a18905e478d258@google.com>
+Subject: Re: [syzbot] KASAN: use-after-free Read in post_one_notification
+From:   syzbot <syzbot+c70d87ac1d001f29a058@syzkaller.appspotmail.com>
+To:     christophe.jaillet@wanadoo.fr, code@siddh.me, dhowells@redhat.com,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-#syz test: git@github.com:siddhpant/linux.git post_one_notification
+Hello,
 
+syzbot tried to test the proposed patch but the build/boot failed:
+
+failed to checkout kernel repo git@github.com:siddhpant/linux.git/post_one_notification: failed to run ["git" "fetch" "--force" "219a8dc7158a7de03b74c244ef07dcd062b9b3f7" "post_one_notification"]: exit status 128
+Host key verification failed.
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+
+
+
+Tested on:
+
+commit:         [unknown 
+git tree:       git@github.com:siddhpant/linux.git post_one_notification
+dashboard link: https://syzkaller.appspot.com/bug?extid=c70d87ac1d001f29a058
+compiler:       
+
+Note: no patches were applied.
