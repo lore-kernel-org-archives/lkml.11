@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65894C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 00:52:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C225C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 00:52:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236702AbiGWAwJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 20:52:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57636 "EHLO
+        id S236824AbiGWAwX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 20:52:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236451AbiGWAv5 (ORCPT
+        with ESMTP id S236563AbiGWAv6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 20:51:57 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C63388757
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 17:51:51 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id m11-20020a5b040b000000b0066fcc60d1a0so4810824ybp.19
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 17:51:50 -0700 (PDT)
+        Fri, 22 Jul 2022 20:51:58 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F6838CC8F
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 17:51:54 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id c12-20020a17090a8d0c00b001f20d603777so5015796pjo.4
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 17:51:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=f8GyotJFmeLYyYzTha23JlR3kgjrkc9nFL5Ec/loSRI=;
-        b=Yd9z2Jplm3eV1w/a/hrPMLm3C3a+cD40y+2Sqp92HUKFQ5tDi7wcfJ0oEG3kNjTee2
-         dISrKizEMjEfO7imToA4mU64rfvbrl2Bd41hOdt1gbvB57hrIh+na7+ygq50w0i4RcTi
-         ZhE9NZPn9fmZTkC2Gu0x0W3PIJIkYYKkkLTyYxMTRYPfT3abSSkQub1IZSfUNS4aVsXI
-         csuU8+LP9AsfHYf0Rmb5fv4ddSidsfQXThB1rlciZgVtBh85gNLzDb2hgCKDftDPrDVV
-         ia7GLx7WTs7lqYA9sLgwASYr5razZj/uyUqNwneMhjqVpTCz8KsWGSufx2gGXwvD8bNb
-         U4OA==
+        bh=RtVR2Tkco0tuXD7bLAFV7Fg1ldNSfzq0D9HUqql94JM=;
+        b=JlCKvFLufslNPFBb2FTFua18M+4EkJnw4RZBxfm4Kn7ZqfIDkj+uEaVJRC1D4a9UuG
+         Bqkv1vEvi8eJ1dmoYbX8sOEyx0atakWIVMTcSn6S0oS0ONdVBGxmtB35y8BtmLNFwjFM
+         Dr33xD2jTN9GLFmWh6aYzXEADCXXw19/QpupXTlCSSLSBQTXRMF/TviTi01uQ9oaCOBy
+         XctvQJWiXIIW50Mg0Ld6F6SIMU0KRH3EVKNWFsp0I2Pg/az3oMZnCT1w4NkdzcP1dy6h
+         3tOeZjPdmMnhi8hAGvyd2n1Sx4aHvDGOBBd8JInbNURIUXHQFa7BJEt1jV9lxFbaHCbs
+         1Stw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=f8GyotJFmeLYyYzTha23JlR3kgjrkc9nFL5Ec/loSRI=;
-        b=O1RBb8Jqd5yph86zwMctUgWQVsKBpZfZSBT2BugFCo4mJfyqBwn/Rrd2QRcZOD5NKd
-         kEMu2en9CCXn6j+QevJfAFoeIm+T17ZvwZhg8h/mUMcKNzEJ5w0O+wyIgxV8n7/9/Tv7
-         YBlpVqLtjGuk/oK1A+xUOkPBIQCxzFL1TJiHUiRsXcYWpAmjDBItQjg+bn6n48IHUE8g
-         zb8V5+Mq08XcaRy1noHYrwUMIUZsfSOemX4S1dtHAb4uyEg7GajhXtz2fcDwUA/QKuKm
-         Xm/vFPkGkxPFdimwZXuqAjg8PbDJ/FpScZI0qOJqV5BoLd8iJVJR3LfwGPK/l5B9WoDY
-         DJQw==
-X-Gm-Message-State: AJIora9GScjNAQTjtwlHUwst0/afnTwqDMwrPT12KKiOfajUCn1YbT37
-        y7H1GNmog7HS8OoYC9Y779o6qlJc0+Y=
-X-Google-Smtp-Source: AGRyM1sgyhp9a5lQ6bjYiJsvHVkWKbsxLvnsPELm9w4w/UWzf+gSjkaZxI09MiazwcxB/ufnKJsqbLKLAAk=
+        bh=RtVR2Tkco0tuXD7bLAFV7Fg1ldNSfzq0D9HUqql94JM=;
+        b=YNjWB/PZnI1l5J59yE0OplMwpVPK8HTOaxAHHB9peDDf2N4M9Js3ZqZXEtQiKq0Af2
+         c6bMfkqgwAVp92LvfO8WvS0P8nBpQzdKaSer7dmjgClBYHwGQfpnTkG3WY9wBEs9/NTh
+         GfyzCqYKZfQO5394F6gkfPTSsZebCWi6crNj13sjJr1ijFtxCqMByoP170U+rMqJVafr
+         hU9Mr/zuhnWAw4pXVFtomyLhWyBBE+9Ba2gvpmBul6vnIGuo074Oe09ESN4aeYulxJZY
+         d1jmnyxDQXEjQl9+LVcYo8e6uqlLdxr5gXSqXTM9O7KklDfWFQF7VbNnqoi5/LWoAiFV
+         KVUA==
+X-Gm-Message-State: AJIora/7ivnC14nFxNdnYwECBaFYcCFlLJr3TRy9RrmlIL0z0CTrsXVj
+        LXI9Ph5Fh9vxSVSOzsWEZDpGFutuqJg=
+X-Google-Smtp-Source: AGRyM1tDknBN2M+wi6EP6p98NDwZtB00KTdlSsvJ1NXCoLJgAlNlfqBfaq7Td2vZ3FATLnMSGw7V9BakbVc=
 X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a81:a194:0:b0:31e:62c4:e710 with SMTP id
- y142-20020a81a194000000b0031e62c4e710mr2095659ywg.312.1658537510167; Fri, 22
- Jul 2022 17:51:50 -0700 (PDT)
+ (user=seanjc job=sendgmr) by 2002:a17:90b:4c08:b0:1f2:977:c147 with SMTP id
+ na8-20020a17090b4c0800b001f20977c147mr20329213pjb.6.1658537513521; Fri, 22
+ Jul 2022 17:51:53 -0700 (PDT)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Sat, 23 Jul 2022 00:51:18 +0000
+Date:   Sat, 23 Jul 2022 00:51:20 +0000
 In-Reply-To: <20220723005137.1649592-1-seanjc@google.com>
-Message-Id: <20220723005137.1649592-6-seanjc@google.com>
+Message-Id: <20220723005137.1649592-8-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220723005137.1649592-1-seanjc@google.com>
 X-Mailer: git-send-email 2.37.1.359.gd136c6c3e2-goog
-Subject: [PATCH v4 05/24] KVM: nVMX: Prioritize TSS T-flag #DBs over Monitor
- Trap Flag
+Subject: [PATCH v4 07/24] KVM: x86: Use DR7_GD macro instead of open coding
+ check in emulator
 From:   Sean Christopherson <seanjc@google.com>
 To:     Sean Christopherson <seanjc@google.com>,
         Paolo Bonzini <pbonzini@redhat.com>
@@ -68,49 +68,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Service TSS T-flag #DBs prior to pending MTFs, as such #DBs are higher
-priority than MTF.  KVM itself doesn't emulate TSS #DBs, and any such
-exceptions injected from L1 will be handled by hardware (or morphed to
-a fault-like exception if injection fails), but theoretically userspace
-could pend a TSS T-flag #DB in conjunction with a pending MTF.
+Use DR7_GD in the emulator instead of open coding the check, and drop a
+comically wrong comment.
 
-Note, there's no known use case this fixes, it's purely to be technically
-correct with respect to Intel's SDM.
-
-Cc: Oliver Upton <oupton@google.com>
-Cc: Peter Shier <pshier@google.com>
-Fixes: 5ef8acbdd687 ("KVM: nVMX: Emulate MTF when performing instruction emulation")
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
 ---
- arch/x86/kvm/vmx/nested.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ arch/x86/kvm/emulate.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/arch/x86/kvm/vmx/nested.c b/arch/x86/kvm/vmx/nested.c
-index 456449778598..6b4368d96d9e 100644
---- a/arch/x86/kvm/vmx/nested.c
-+++ b/arch/x86/kvm/vmx/nested.c
-@@ -3939,15 +3939,17 @@ static int vmx_check_nested_events(struct kvm_vcpu *vcpu)
- 	}
+diff --git a/arch/x86/kvm/emulate.c b/arch/x86/kvm/emulate.c
+index bd9e9c5627d0..fdeccf446b28 100644
+--- a/arch/x86/kvm/emulate.c
++++ b/arch/x86/kvm/emulate.c
+@@ -4181,8 +4181,7 @@ static int check_dr7_gd(struct x86_emulate_ctxt *ctxt)
  
- 	/*
--	 * Process any exceptions that are not debug traps before MTF.
-+	 * Process exceptions that are higher priority than Monitor Trap Flag:
-+	 * fault-like exceptions, TSS T flag #DB (not emulated by KVM, but
-+	 * could theoretically come in from userspace), and ICEBP (INT1).
- 	 *
- 	 * Note that only a pending nested run can block a pending exception.
- 	 * Otherwise an injected NMI/interrupt should either be
- 	 * lost or delivered to the nested hypervisor in the IDT_VECTORING_INFO,
- 	 * while delivering the pending exception.
- 	 */
--
--	if (vcpu->arch.exception.pending && !vmx_get_pending_dbg_trap(vcpu)) {
-+	if (vcpu->arch.exception.pending &&
-+	    !(vmx_get_pending_dbg_trap(vcpu) & ~DR6_BT)) {
- 		if (vmx->nested.nested_run_pending)
- 			return -EBUSY;
- 		if (!nested_vmx_check_exception(vcpu, &exit_qual))
+ 	ctxt->ops->get_dr(ctxt, 7, &dr7);
+ 
+-	/* Check if DR7.Global_Enable is set */
+-	return dr7 & (1 << 13);
++	return dr7 & DR7_GD;
+ }
+ 
+ static int check_dr_read(struct x86_emulate_ctxt *ctxt)
 -- 
 2.37.1.359.gd136c6c3e2-goog
 
