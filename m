@@ -2,374 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53486C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 14:28:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E81CC43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 14:29:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237969AbiGWO2h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 10:28:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32782 "EHLO
+        id S235711AbiGWO3s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 10:29:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234657AbiGWO2f (ORCPT
+        with ESMTP id S232659AbiGWO3q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 10:28:35 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77B0D13F9C;
-        Sat, 23 Jul 2022 07:28:31 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id d10so6689916pfd.9;
-        Sat, 23 Jul 2022 07:28:31 -0700 (PDT)
+        Sat, 23 Jul 2022 10:29:46 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB6281707B;
+        Sat, 23 Jul 2022 07:29:45 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id c22so4287769wmr.2;
+        Sat, 23 Jul 2022 07:29:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=sender:date:from:to:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=iXTEGIWZmjgwfsJ/RdqwpvQ7Oe1IR7cF5Wjfs1PckEA=;
-        b=h9PL3fbnsUBo/gnY69vnKa0otkR5ryMB3SgIyfWBCDml8ASbNc4zGdsX9BXKE6Z3Go
-         eDroGnkHR+2lW1V5+7abkPqDIMGThijkEj4lVifGrMlhmucXmx7cA6sKJaLTLwZIO4UP
-         ZFFfMKs/S+EVxTUT0hwc0nPmd/SQm825cTwb+y5nnuQWqm5o893SdsL8IT2MuEd/APiy
-         KmSJ6MaHxwaAix1kX/cyjOnsSwiz+tXLA2jBnsa+9Q6kE1ewTmMKhpAJ2TiRHImCgPpN
-         SXcxNW8bV6Y0ZRXjRjRkcIdTTayHMo4bwt9UknTtThI1o9cUb5+Z2BKj3keeMGorRVDd
-         85JQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hq2Xmgn0Ku0O4P6lR7XqOtoy//jBBsNeMteoMXkSOuo=;
+        b=ZQ0PygAPKX+uCMzBYmJaijuE63twVe6pps9Q7Pt1jSbgr5VpXB3hJbQi33bzn6ffzl
+         uCBxkdqy5GXx2giRXlaulRet2o7+rJsUrOXKjI59svNrCxyjMUuHWY/of3k7zOJED7Pe
+         MNZepcvce+2EOf5GukLYf/8ukEJJVjKC2iQ10OvQzXAIFrS0LlOJUvy9g4HG7UMV9zJX
+         1O2AVBT+25HZEE5B3qtdJWSjJPEUWtk+wVsiaHo0L3podgeWJ2nNZisx4dIvQK6iO1wN
+         uKpxV0Lr/ojI16CSMo5ywKEm0OFpf2jHVu7BOgjpNrDSeJ0qRVvSSr2zV0DzsOaTYeRz
+         2G0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:subject:message-id
-         :references:mime-version:content-disposition
-         :content-transfer-encoding:in-reply-to;
-        bh=iXTEGIWZmjgwfsJ/RdqwpvQ7Oe1IR7cF5Wjfs1PckEA=;
-        b=4U5naBswJRR+1IpuXa20e7g7mkKuypOgxJfnoZ1VItKIGlKmQJtJ/czawauIpnpfZ4
-         4YhYgnlMSCOEXR0QCFPWknhuTwtO+AyL3H21wRdtnCG/hOdc4Ig4ecwhDrCHzCP2icTu
-         j2Dynv3LGTVvjZMSiy+fdC/tXVc98Dqs3zZRIl7mRhZV+Myw77A1T4eXQuk8pCZb4wjT
-         azzl4KTlxFkA/QvncwMbPDpE9c3qc+YWXs9dIClBLiwzTh/0dAfmiWk7bGuCJCbVCnie
-         W4YKRQ54LSB+cUXTMIybgzKYLcVoPCMWutZAW3k3mnsltIJb7xMFSo4psp2BuIUOJz/v
-         jLuw==
-X-Gm-Message-State: AJIora9jeA98Hd8N9MB8uTm3l0B1H4urFXmmlqwv9TtNAhFNEZ/AyWjE
-        su5CPDXiNFbtIqsFRV9+FJJX+1GwQWM=
-X-Google-Smtp-Source: AGRyM1uRGxogbvVk24HhZIl2nQdlX0mV2bFdci76PnpMQuoiUt4lLLBSWcBbvYfwouYz07wo59FeJA==
-X-Received: by 2002:a63:d5:0:b0:41a:58f:929e with SMTP id 204-20020a6300d5000000b0041a058f929emr4077256pga.260.1658586510549;
-        Sat, 23 Jul 2022 07:28:30 -0700 (PDT)
-Received: from localhost ([2620:10d:c090:400::5:d97e])
-        by smtp.gmail.com with ESMTPSA id z1-20020a170902ccc100b0016d42244871sm3357453ple.6.2022.07.23.07.28.29
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hq2Xmgn0Ku0O4P6lR7XqOtoy//jBBsNeMteoMXkSOuo=;
+        b=745CahQhXV+5hwjAH7IRqKct87/3Qo4SCQo7QgHjEsafzTRWxHDshdYNvG4yKTJh5p
+         6DlxatE6c8N4SXut9FuiVaNcOZCDrlbf6+DV6nvD19PulyimLd8013H7T1aUQciOxw6r
+         79fOCBECt0YondZU7WNUI2NnmqsN211U49zh9R0r2qfcXuZwoQnqlyzBoXUC4rcY0zgl
+         DMWFSz3sgkikvbPl9pCs0hh+grAWGKixdxk1Ms24aO6O+tnoYVj4nqpMO+ITJEf0J3Wb
+         oY6ok+VHsX9kp5cLa8dxNys+TWQBB56q7Y4Y0nRs7k7VkLTQsd294r/kj028o6Fitdhe
+         RsWg==
+X-Gm-Message-State: AJIora/QT0mrgRGwTgh+bOGVV7uwa9hwtyJM3qD9LO4u5FvAi+9Khe0o
+        dj+bXPGSuCAF3EF/oiiKDbI=
+X-Google-Smtp-Source: AGRyM1tuX7ru0+QSDMniQaKgrPs1+GeHcWREL15bd1ePhphCSjTo1hPxx8fZqMepm6C4Y99CzIGwGg==
+X-Received: by 2002:a05:600c:1f0a:b0:3a3:15a8:a8e1 with SMTP id bd10-20020a05600c1f0a00b003a315a8a8e1mr3091269wmb.167.1658586584285;
+        Sat, 23 Jul 2022 07:29:44 -0700 (PDT)
+Received: from localhost.localdomain (host-87-7-207-127.retail.telecomitalia.it. [87.7.207.127])
+        by smtp.googlemail.com with ESMTPSA id q6-20020a1cf306000000b0039c5ab7167dsm11689717wmq.48.2022.07.23.07.29.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 Jul 2022 07:28:29 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Sat, 23 Jul 2022 04:28:28 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Christian Brauner <brauner@kernel.org>,
-        Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        John Stultz <john.stultz@linaro.org>,
-        Dmitry Shmidt <dimitrysh@google.com>,
-        Oleg Nesterov <oleg@redhat.com>, linux-kernel@vger.kernel.org,
-        cgroups@vger.kernel.org
-Subject: [PATCH RESEND 3/3 cgroup/for-5.20] cgroup: Make !percpu
- threadgroup_rwsem operations optional
-Message-ID: <YtwFjPnCtw8ySnuv@slm.duckdns.org>
-References: <YtDvN0wJ6CKaEPN8@slm.duckdns.org>
- <YtDvU4jRPSsarcNp@slm.duckdns.org>
- <YtDvl7Qjc5zI3e/b@slm.duckdns.org>
+        Sat, 23 Jul 2022 07:29:43 -0700 (PDT)
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Christian Marangi <ansuelsmth@gmail.com>
+Subject: [net-next PATCH v5 0/5] *Add MTU change with stmmac interface running
+Date:   Sat, 23 Jul 2022 16:29:28 +0200
+Message-Id: <20220723142933.16030-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <YtDvl7Qjc5zI3e/b@slm.duckdns.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-3942a9bd7b58 ("locking, rcu, cgroup: Avoid synchronize_sched() in
-__cgroup_procs_write()") disabled percpu operations on threadgroup_rwsem
-because the impiled synchronize_rcu() on write locking was pushing up the
-latencies too much for android which constantly moves processes between
-cgroups.
+This series is to permit MTU change while the interface is running.
+Major rework are needed to permit to allocate a new dma conf based on
+the new MTU before applying it. This is to make sure there is enough
+space to allocate all the DMA queue before releasing the stmmac driver.
 
-This makes the hotter paths - fork and exit - slower as they're always
-forced into the slow path. There is no reason to force this on everyone
-especially given that more common static usage pattern can now completely
-avoid write-locking the rwsem. Write-locking is elided when turning on and
-off controllers on empty sub-trees and CLONE_INTO_CGROUP enables seeding a
-cgroup without grabbing the rwsem.
+This was tested with a simple way to stress the network while the
+interface is running.
 
-Restore the default percpu operations and introduce the mount option
-"favordynmods" and config option CGROUP_FAVOR_DYNMODS for users who need
-lower latencies for the dynamic operations.
+2 ssh connection to the device:
+- One generating simple traffic with while true; do free; done
+- The other making the mtu change with a delay of 1 second
 
-Signed-off-by: Tejun Heo <tj@kernel.org>
-Cc: Christian Brauner <brauner@kernel.org>
-Cc: Michal Koutný <mkoutny@suse.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: John Stultz <john.stultz@linaro.org>
-Cc: Dmitry Shmidt <dimitrysh@google.com>
-Cc: Oleg Nesterov <oleg@redhat.com>
----
-I messed up patch generation and the patch was missing diffs for a few
-files.
+The connection is correctly stopped and recovered after the MTU is changed.
 
-Thanks.
+The first 2 patch of this series are minor fixup that fix problems
+presented while testing this. One fix a problem when we renable a queue
+while we are generating a new dma conf. The other is a corner case that
+was notice while stressing the driver and turning down the interface while
+there was some traffic.
 
- Documentation/admin-guide/cgroup-v2.rst |    8 +++++
- include/linux/cgroup-defs.h             |   19 +++++++++++---
- init/Kconfig                            |   10 +++++++
- kernel/cgroup/cgroup-internal.h         |    1 
- kernel/cgroup/cgroup-v1.c               |   17 +++++++++++-
- kernel/cgroup/cgroup.c                  |   43 ++++++++++++++++++++++++++------
- 6 files changed, 87 insertions(+), 11 deletions(-)
+(this is a follow-up of a simpler patch that wanted to add the same
+feature. It was suggested to first try to check if it was possible to
+apply the new configuration. Posting as RFC as it does major rework for
+the new concept of DMA conf)
 
---- a/Documentation/admin-guide/cgroup-v2.rst
-+++ b/Documentation/admin-guide/cgroup-v2.rst
-@@ -184,6 +184,14 @@ cgroup v2 currently supports the followi
- 	ignored on non-init namespace mounts.  Please refer to the
- 	Delegation section for details.
- 
-+  [no]favordynmods
-+        Reduce the latencies of dynamic cgroup modifications such as
-+        task migrations and controller on/offs at the cost of making
-+        hot path operations such as forks and exits more expensive.
-+        The static usage pattern of creating a cgroup, enabling
-+        controllers, and then seeding it with CLONE_INTO_CGROUP is
-+        not affected by this option.
-+
-   memory_[no]localevents
-         Only populate memory.events with data for the current cgroup,
-         and not any subtrees. This is legacy behaviour, the default
---- a/include/linux/cgroup-defs.h
-+++ b/include/linux/cgroup-defs.h
-@@ -89,19 +89,32 @@ enum {
- 	CGRP_ROOT_NS_DELEGATE	= (1 << 3),
- 
- 	/*
-+	 * Reduce latencies on dynamic cgroup modifications such as task
-+	 * migrations and controller on/offs by disabling percpu operation on
-+	 * cgroup_threadgroup_rwsem. This makes hot path operations such as
-+	 * forks and exits into the slow path and more expensive.
-+	 *
-+	 * The static usage pattern of creating a cgroup, enabling controllers,
-+	 * and then seeding it with CLONE_INTO_CGROUP doesn't require write
-+	 * locking cgroup_threadgroup_rwsem and thus doesn't benefit from
-+	 * favordynmod.
-+	 */
-+	CGRP_ROOT_FAVOR_DYNMODS = (1 << 4),
-+
-+	/*
- 	 * Enable cpuset controller in v1 cgroup to use v2 behavior.
- 	 */
--	CGRP_ROOT_CPUSET_V2_MODE = (1 << 4),
-+	CGRP_ROOT_CPUSET_V2_MODE = (1 << 16),
- 
- 	/*
- 	 * Enable legacy local memory.events.
- 	 */
--	CGRP_ROOT_MEMORY_LOCAL_EVENTS = (1 << 5),
-+	CGRP_ROOT_MEMORY_LOCAL_EVENTS = (1 << 17),
- 
- 	/*
- 	 * Enable recursive subtree protection
- 	 */
--	CGRP_ROOT_MEMORY_RECURSIVE_PROT = (1 << 6),
-+	CGRP_ROOT_MEMORY_RECURSIVE_PROT = (1 << 18),
- };
- 
- /* cftype->flags */
---- a/init/Kconfig
-+++ b/init/Kconfig
-@@ -936,6 +936,16 @@ if CGROUPS
- config PAGE_COUNTER
- 	bool
- 
-+config CGROUP_FAVOR_DYNMODS
-+        bool "Favor dynamic modification latency reduction by default"
-+        help
-+          This option enables the "favordynmods" mount option by default
-+          which reduces the latencies of dynamic cgroup modifications such
-+          as task migrations and controller on/offs at the cost of making
-+          hot path operations such as forks and exits more expensive.
-+
-+          Say N if unsure.
-+
- config MEMCG
- 	bool "Memory controller"
- 	select PAGE_COUNTER
---- a/kernel/cgroup/cgroup-internal.h
-+++ b/kernel/cgroup/cgroup-internal.h
-@@ -233,6 +233,7 @@ void cgroup_kn_unlock(struct kernfs_node
- int cgroup_path_ns_locked(struct cgroup *cgrp, char *buf, size_t buflen,
- 			  struct cgroup_namespace *ns);
- 
-+void cgroup_favor_dynmods(struct cgroup_root *root, bool favor);
- void cgroup_free_root(struct cgroup_root *root);
- void init_cgroup_root(struct cgroup_fs_context *ctx);
- int cgroup_setup_root(struct cgroup_root *root, u16 ss_mask);
---- a/kernel/cgroup/cgroup-v1.c
-+++ b/kernel/cgroup/cgroup-v1.c
-@@ -875,6 +875,8 @@ static int cgroup1_show_options(struct s
- 		seq_puts(seq, ",xattr");
- 	if (root->flags & CGRP_ROOT_CPUSET_V2_MODE)
- 		seq_puts(seq, ",cpuset_v2_mode");
-+	if (root->flags & CGRP_ROOT_FAVOR_DYNMODS)
-+		seq_puts(seq, ",favordynmods");
- 
- 	spin_lock(&release_agent_path_lock);
- 	if (strlen(root->release_agent_path))
-@@ -898,6 +900,8 @@ enum cgroup1_param {
- 	Opt_noprefix,
- 	Opt_release_agent,
- 	Opt_xattr,
-+	Opt_favordynmods,
-+	Opt_nofavordynmods,
- };
- 
- const struct fs_parameter_spec cgroup1_fs_parameters[] = {
-@@ -909,6 +913,8 @@ const struct fs_parameter_spec cgroup1_f
- 	fsparam_flag  ("noprefix",	Opt_noprefix),
- 	fsparam_string("release_agent",	Opt_release_agent),
- 	fsparam_flag  ("xattr",		Opt_xattr),
-+	fsparam_flag  ("favordynmods",	Opt_favordynmods),
-+	fsparam_flag  ("nofavordynmods", Opt_nofavordynmods),
- 	{}
- };
- 
-@@ -960,6 +966,12 @@ int cgroup1_parse_param(struct fs_contex
- 	case Opt_xattr:
- 		ctx->flags |= CGRP_ROOT_XATTR;
- 		break;
-+	case Opt_favordynmods:
-+		ctx->flags |= CGRP_ROOT_FAVOR_DYNMODS;
-+		break;
-+	case Opt_nofavordynmods:
-+		ctx->flags &= ~CGRP_ROOT_FAVOR_DYNMODS;
-+		break;
- 	case Opt_release_agent:
- 		/* Specifying two release agents is forbidden */
- 		if (ctx->release_agent)
-@@ -1211,8 +1223,11 @@ static int cgroup1_root_to_use(struct fs
- 	init_cgroup_root(ctx);
- 
- 	ret = cgroup_setup_root(root, ctx->subsys_mask);
--	if (ret)
-+	if (!ret)
-+		cgroup_favor_dynmods(root, ctx->flags & CGRP_ROOT_FAVOR_DYNMODS);
-+	else
- 		cgroup_free_root(root);
-+
- 	return ret;
- }
- 
---- a/kernel/cgroup/cgroup.c
-+++ b/kernel/cgroup/cgroup.c
-@@ -1305,6 +1305,20 @@ struct cgroup_root *cgroup_root_from_kf(
- 	return root_cgrp->root;
- }
- 
-+void cgroup_favor_dynmods(struct cgroup_root *root, bool favor)
-+{
-+	bool favoring = root->flags & CGRP_ROOT_FAVOR_DYNMODS;
-+
-+	/* see the comment above CGRP_ROOT_FAVOR_DYNMODS definition */
-+	if (favor && !favoring) {
-+		rcu_sync_enter(&cgroup_threadgroup_rwsem.rss);
-+		root->flags |= CGRP_ROOT_FAVOR_DYNMODS;
-+	} else if (!favor && favoring) {
-+		rcu_sync_exit(&cgroup_threadgroup_rwsem.rss);
-+		root->flags &= ~CGRP_ROOT_FAVOR_DYNMODS;
-+	}
-+}
-+
- static int cgroup_init_root_id(struct cgroup_root *root)
- {
- 	int id;
-@@ -1365,6 +1379,7 @@ static void cgroup_destroy_root(struct c
- 		cgroup_root_count--;
- 	}
- 
-+	cgroup_favor_dynmods(root, false);
- 	cgroup_exit_root_id(root);
- 
- 	mutex_unlock(&cgroup_mutex);
-@@ -1858,6 +1873,7 @@ int cgroup_show_path(struct seq_file *sf
- 
- enum cgroup2_param {
- 	Opt_nsdelegate, Opt_nonsdelegate,
-+	Opt_favordynmods, Opt_nofavordynmods,
- 	Opt_memory_localevents, Opt_memory_nolocalevents,
- 	Opt_memory_recursiveprot, Opt_memory_norecursiveprot,
- 	nr__cgroup2_params
-@@ -1866,6 +1882,8 @@ enum cgroup2_param {
- static const struct fs_parameter_spec cgroup2_fs_parameters[] = {
- 	fsparam_flag("nsdelegate",		Opt_nsdelegate),
- 	fsparam_flag("nonsdelegate",		Opt_nonsdelegate),
-+	fsparam_flag("favordynmods",		Opt_favordynmods),
-+	fsparam_flag("nofavordynmods",		Opt_nofavordynmods),
- 	fsparam_flag("memory_localevents",	Opt_memory_localevents),
- 	fsparam_flag("memory_nolocalevents",	Opt_memory_nolocalevents),
- 	fsparam_flag("memory_recursiveprot",	Opt_memory_recursiveprot),
-@@ -1890,6 +1908,12 @@ static int cgroup2_parse_param(struct fs
- 	case Opt_nonsdelegate:
- 		ctx->flags &= ~CGRP_ROOT_NS_DELEGATE;
- 		return 0;
-+	case Opt_favordynmods:
-+		ctx->flags |= CGRP_ROOT_FAVOR_DYNMODS;
-+		return 0;
-+	case Opt_nofavordynmods:
-+		ctx->flags &= ~CGRP_ROOT_FAVOR_DYNMODS;
-+		return 0;
- 	case Opt_memory_localevents:
- 		ctx->flags |= CGRP_ROOT_MEMORY_LOCAL_EVENTS;
- 		return 0;
-@@ -1914,6 +1938,9 @@ static void apply_cgroup_root_flags(unsi
- 		else
- 			cgrp_dfl_root.flags &= ~CGRP_ROOT_NS_DELEGATE;
- 
-+		cgroup_favor_dynmods(&cgrp_dfl_root,
-+				     root_flags & CGRP_ROOT_FAVOR_DYNMODS);
-+
- 		if (root_flags & CGRP_ROOT_MEMORY_LOCAL_EVENTS)
- 			cgrp_dfl_root.flags |= CGRP_ROOT_MEMORY_LOCAL_EVENTS;
- 		else
-@@ -1930,6 +1957,8 @@ static int cgroup_show_options(struct se
- {
- 	if (cgrp_dfl_root.flags & CGRP_ROOT_NS_DELEGATE)
- 		seq_puts(seq, ",nsdelegate");
-+	if (cgrp_dfl_root.flags & CGRP_ROOT_FAVOR_DYNMODS)
-+		seq_puts(seq, ",favordynmods");
- 	if (cgrp_dfl_root.flags & CGRP_ROOT_MEMORY_LOCAL_EVENTS)
- 		seq_puts(seq, ",memory_localevents");
- 	if (cgrp_dfl_root.flags & CGRP_ROOT_MEMORY_RECURSIVE_PROT)
-@@ -1980,7 +2009,8 @@ void init_cgroup_root(struct cgroup_fs_c
- 	cgrp->root = root;
- 	init_cgroup_housekeeping(cgrp);
- 
--	root->flags = ctx->flags;
-+	/* DYNMODS must be modified through cgroup_favor_dynmods() */
-+	root->flags = ctx->flags & ~CGRP_ROOT_FAVOR_DYNMODS;
- 	if (ctx->release_agent)
- 		strscpy(root->release_agent_path, ctx->release_agent, PATH_MAX);
- 	if (ctx->name)
-@@ -2202,6 +2232,10 @@ static int cgroup_init_fs_context(struct
- 	put_user_ns(fc->user_ns);
- 	fc->user_ns = get_user_ns(ctx->ns->user_ns);
- 	fc->global = true;
-+
-+#ifdef CONFIG_CGROUP_FAVOR_DYNMODS
-+	ctx->flags |= CGRP_ROOT_FAVOR_DYNMODS;
-+#endif
- 	return 0;
- }
- 
-@@ -5854,12 +5888,6 @@ int __init cgroup_init(void)
- 
- 	cgroup_rstat_boot();
- 
--	/*
--	 * The latency of the synchronize_rcu() is too high for cgroups,
--	 * avoid it at the cost of forcing all readers into the slow path.
--	 */
--	rcu_sync_enter_start(&cgroup_threadgroup_rwsem.rss);
--
- 	get_user_ns(init_cgroup_ns.user_ns);
- 
- 	mutex_lock(&cgroup_mutex);
-@@ -6771,6 +6799,7 @@ static ssize_t features_show(struct kobj
- {
- 	return snprintf(buf, PAGE_SIZE,
- 			"nsdelegate\n"
-+			"favordynmods\n"
- 			"memory_localevents\n"
- 			"memory_recursiveprot\n");
- }
+v5:
+- Fix double space for kdoc
+- Fix missing kdoc for dma_conf in __init_dma_tx_desc_rings
+v4:
+- Add additional stmmac_set_rx_mode after stmmac_open
+- Disconnect phylink first on stmmac release
+v3:
+- Fix compilation error reported by kernel test bot
+  (missing dma_confg changes to tc and selftest source)
+v2:
+- Put it out of RFC
+
+Christian Marangi (5):
+  net: ethernet: stmicro: stmmac: move queue reset to dedicated
+    functions
+  net: ethernet: stmicro: stmmac: first disable all queues and
+    disconnect in release
+  net: ethernet: stmicro: stmmac: move dma conf to dedicated struct
+  net: ethernet: stmicro: stmmac: generate stmmac dma conf before open
+  net: ethernet: stmicro: stmmac: permit MTU change with interface up
+
+ .../net/ethernet/stmicro/stmmac/chain_mode.c  |   6 +-
+ .../net/ethernet/stmicro/stmmac/ring_mode.c   |   4 +-
+ drivers/net/ethernet/stmicro/stmmac/stmmac.h  |  21 +-
+ .../ethernet/stmicro/stmmac/stmmac_ethtool.c  |   4 +-
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c | 723 +++++++++++-------
+ .../stmicro/stmmac/stmmac_selftests.c         |   8 +-
+ .../net/ethernet/stmicro/stmmac/stmmac_tc.c   |   6 +-
+ 7 files changed, 459 insertions(+), 313 deletions(-)
+
+-- 
+2.36.1
+
