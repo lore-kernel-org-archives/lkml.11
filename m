@@ -2,88 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57D31C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 03:44:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D520C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 03:57:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236505AbiGWDoe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 23:44:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48982 "EHLO
+        id S236017AbiGWD5R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 23:57:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229513AbiGWDo2 (ORCPT
+        with ESMTP id S229469AbiGWD5P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 23:44:28 -0400
-Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F05A2796A8;
-        Fri, 22 Jul 2022 20:44:27 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 9CA275C0090;
-        Fri, 22 Jul 2022 23:44:24 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Fri, 22 Jul 2022 23:44:24 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        invisiblethingslab.com; h=cc:cc:content-transfer-encoding:date
-        :date:from:from:in-reply-to:message-id:mime-version:reply-to
-        :sender:subject:subject:to:to; s=fm3; t=1658547864; x=
-        1658634264; bh=Q+2bcuYbqNaeJUyXlpoGM3BHR0EjVdzO4fH/v0jEPL4=; b=7
-        t1JRyzTo/cUpqOGjclWdhpSnggdWsoxx/jZXJ8VkWT8hDZgObyUSmHMsJ2rQceMA
-        IbsozmiGBQ3OowrBrhrm/UH+cqJQhlYZ5C+FkbxjvZPEf20El5Ez4DkJ7ASqqrdF
-        Qm5TWOplLbMpM47m7uuTiQpgMa03O4S1wcjQztwPfT/d8pHPWqb0hXKpMkIa4EHa
-        idR00dVzu09I6/vjFlHxpQyCbqbqVSwZn3mmNOZjlYY5MZQHi4wAz11G/2viordE
-        Q4PlxgOK8cnhwgLTgp5Uk7V2r7JyRFp8+IbrU8lTHTEBeT8galyYO+n6QgDuAsPv
-        7srhaCpCFGUTsg3RwIfFA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:message-id
-        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=
-        1658547864; x=1658634264; bh=Q+2bcuYbqNaeJUyXlpoGM3BHR0EjVdzO4fH
-        /v0jEPL4=; b=C/uvxx0mgnbPf8amBWXIyKazG/mgZB/TuRDW8v+FCezAN0hkTf8
-        iTSiozTjbTDY0H23jRMmUi8ztfOEMhcs4QKabgc67MM4cFFlS9yhJZwxQ7WsWz9W
-        XqsrHOSl3eQM0RVG11QRuEKW/XROGXbYbxmm81uJU/R8rPn4MDh2Nj2BBY16sGUz
-        DRg3KyI6+HJ4R1EebfS2jPTUJbTEtkqZWoma1I/AHdGEqO2uEQo0aF7rzQJsqPFu
-        oCDgsH80JdQ01oipnF80Uqx826dMRaIbuPHMLDIUQt6GU52kycspkpQBMOMWZzEj
-        WP/Y4cUcwldoY05nrgdzgiRfikAv3KMGimA==
-X-ME-Sender: <xms:mG7bYp0SSDu1O2epo5qXdYmI4DKLiMHovg0lHbC_BxYy7pIzvQqVtw>
-    <xme:mG7bYgEXG5VedUng4CiJ81W1FWyvtBJn-CQUsTD7gPT1IqA3KVZVaniEU6Sus0EpP
-    -l_3W9c1iRHo5g>
-X-ME-Received: <xmr:mG7bYp4JgN3PkCn81nH5t1U0kJ5B19zFe-zfWjqX9tw1o3mkpBTx-hseiFi1tQxpjGlugumJ5If4>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvddtfedgjeeiucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhephffvvefufffkofgggfestdekredtredttdenucfhrhhomhepffgvmhhiucfo
-    rghrihgvucfqsggvnhhouhhruceouggvmhhisehinhhvihhsihgslhgvthhhihhnghhslh
-    grsgdrtghomheqnecuggftrfgrthhtvghrnhepvdefgeekvdekgfffgeekhfeijedtffek
-    hefhleehfeejueetgfelgefgtdevieelnecuvehluhhsthgvrhfuihiivgeptdenucfrrg
-    hrrghmpehmrghilhhfrhhomhepuggvmhhisehinhhvihhsihgslhgvthhhihhnghhslhgr
-    sgdrtghomh
-X-ME-Proxy: <xmx:mG7bYm14s34XpN5xQtob085psFFMqeXquNUXASotu8SZZtvcQJvN7A>
-    <xmx:mG7bYsH4W_eU5AA4Yo361li6oWJgGkvbgIAwhfzwyIKKHc2DXXXGJA>
-    <xmx:mG7bYn_seCTnEjhtxtPGahg_cuIIWz2M6LHOoWriiQBfAu3WvFegPg>
-    <xmx:mG7bYhMOojthcQuq6c4_QxZxdXgyuzAovJPmAI6Y9AMCf33Pda7JxQ>
-Feedback-ID: iac594737:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 22 Jul 2022 23:44:23 -0400 (EDT)
-From:   Demi Marie Obenour <demi@invisiblethingslab.com>
-To:     Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Juergen Gross <jgross@suse.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Demi Marie Obenour <demi@invisiblethingslab.com>,
-        xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Subject: Backport of 166d38632316 ("xen/gntdev: Ignore failure to unmap INVALID_GRANT_HANDLE")
-Date:   Fri, 22 Jul 2022 23:44:10 -0400
-Message-Id: <20220723034415.1560-1-demi@invisiblethingslab.com>
-X-Mailer: git-send-email 2.37.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Fri, 22 Jul 2022 23:57:15 -0400
+Received: from zg8tmtyylji0my4xnjqunzqa.icoremail.net (zg8tmtyylji0my4xnjqunzqa.icoremail.net [162.243.164.74])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id B43AC74DDA;
+        Fri, 22 Jul 2022 20:57:12 -0700 (PDT)
+Received: from ubuntu.localdomain (unknown [106.117.76.127])
+        by mail-app3 (Coremail) with SMTP id cC_KCgCHbah+cdtiivhQAQ--.2627S2;
+        Sat, 23 Jul 2022 11:56:57 +0800 (CST)
+From:   Duoming Zhou <duoming@zju.edu.cn>
+To:     linux-hams@vger.kernel.org
+Cc:     ralf@linux-mips.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>
+Subject: [PATCH net] netrom: fix sleep in atomic context bugs in timer handlers
+Date:   Sat, 23 Jul 2022 11:56:46 +0800
+Message-Id: <20220723035646.29857-1-duoming@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: cC_KCgCHbah+cdtiivhQAQ--.2627S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7CrW5AFW8AF4kuFWxKw17ZFb_yoW8GrWfpF
+        WxKF9IyF4qqw1UA3ykGw48u34Yvw1rJF4UC34v9r4Fy3s0qryDJFWjkFWjqF4v9rWxWayY
+        qFs0vw1UJF12yFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkq14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
+        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
+        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        2Ix0cI8IcVAFwI0_JrI_JrylYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
+        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6r48
+        MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr
+        0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0E
+        wIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJV
+        W8JwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAI
+        cVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUb2g4DUUUUU==
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgkAAVZdtay7fgACsf
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series backports upstream commit 166d3863231667c4f64dee72b77d1102cdfad11f
-to all supported stable kernel trees.
+There are sleep in atomic context bugs in timer handlers of netrom
+such as nr_t1timer_expiry(), nr_t2timer_expiry(), nr_heartbeat_expiry(),
+nr_idletimer_expiry() and so on.
+
+The root cause is kmemdup() with GFP_KERNEL parameter that may sleep
+could be called by different timer handlers which is in interrupt context.
+
+One of the call paths that could trigger bug is shown below:
+
+      (interrupt context)
+nr_heartbeat_expiry
+  nr_write_internal
+    nr_transmit_buffer
+      nr_route_frame
+        nr_add_node
+          kmemdup(..,GFP_KERNEL) //may sleep
+
+This patch changes gfp_t parameter of kmemdup in nr_add_node()
+from GFP_KERNEL to GFP_ATOMIC in order to prevent sleep in atomic
+context bugs.
+
+Fixes: eafff86d3bd8 ("[NETROM]: Use kmemdup")
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+---
+ net/netrom/nr_route.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/netrom/nr_route.c b/net/netrom/nr_route.c
+index baea3cbd76c..1ddcf13de6a 100644
+--- a/net/netrom/nr_route.c
++++ b/net/netrom/nr_route.c
+@@ -163,7 +163,7 @@ static int __must_check nr_add_node(ax25_address *nr, const char *mnemonic,
+ 		if (ax25_digi != NULL && ax25_digi->ndigi > 0) {
+ 			nr_neigh->digipeat = kmemdup(ax25_digi,
+ 						     sizeof(*ax25_digi),
+-						     GFP_KERNEL);
++						     GFP_ATOMIC);
+ 			if (nr_neigh->digipeat == NULL) {
+ 				kfree(nr_neigh);
+ 				if (nr_node)
 -- 
-Sincerely,
-Demi Marie Obenour (she/her/hers)
-Invisible Things Lab
+2.17.1
+
