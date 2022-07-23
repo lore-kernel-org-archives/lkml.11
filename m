@@ -2,137 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DE7EC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 14:17:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 693C5C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 14:17:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237423AbiGWORA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 10:17:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48484 "EHLO
+        id S237439AbiGWORk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 10:17:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230005AbiGWOQ5 (ORCPT
+        with ESMTP id S230005AbiGWORi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 10:16:57 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2073.outbound.protection.outlook.com [40.107.243.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 706FE2C3
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Jul 2022 07:16:56 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WvfkB+vYkP81NCu++7unMpd8a/aFTlzSp67OveCH6G9OH0ubtCPTAjGuafnKH17cSXCo1XL5qVzhiyV3l4isPZ1tNGpJESG6jG55d9O5/CbY6eqYEUwFZxS+MTju04snqFohYBh9DF0lP3Keg7QvAYejZ3fTbSjAO/BgzhEoiQyuOOzBxRXiOSPnuwtf0SGeul8jtECcx983PPqe/QV4zlzqL850xQLXkq8iNBPXWZE8WOk/k98mVqLvEa1x3KJHwumO/CTTt8XwAfKEIJaPM6xknBJ+DyAqHJHiN65aTjTPoSMTN2QpegGbb4HSqO3OYQt80XEPtiDxa2R+myneCA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=/aU5vwugKqU9RLsGbx2to+ov2ByUySPEepvdQxgh3Ag=;
- b=eVIzwcu1JVbKCbZGAvJi2H4fIxWbbOW2ID/7CEE895Ip6WYgVZoUp32/5LohxF8XPRP2SvVnrQFTwZh2uf1aRVtfsc33zKqURGYMexTp2dFTQM8xVnFr/GBpCpDdqrmEMn1sBPKjJGuML1vKJuw3Dn9J6kRwr13rvWTBWXxvitGUle3+7p9tOdYuJ2bc+vXbJSNgcRBaJkd4lTFEbv2T9ZmMRPox+g9UQcvbBI368Yu7+lhKFPUK/fHdoCNgI3bdJhMSOHqOl0IttL29wphG+61sdsRPm/AiYcmGY6c+ObMYNp47dEWvu0PW0t/Jz9h2q4iIzTkDdYaYkUdsHe6Dnw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/aU5vwugKqU9RLsGbx2to+ov2ByUySPEepvdQxgh3Ag=;
- b=DochGsXG2czTCdy482/d298JnAOGTrkF3MKg0kj0BXA1It8wBNvEeoHQhhqyTyZ92hSnNytwJ25AP/yvLSz7KvQr9+bizIyLJuRKIAJsjJ0RG5g0OuOFZ99MvYgZhjEBHnfX6n6OmylDpP1WjqEd657UX/AIP0xXhMHpj7cGty0ekhstdZ/co+nCF3Y4LKI3CT4V3qQd+8etNL/NCMsn4KP37j5bv0Q/mTVsM8yNNbo9g7SOWeo2GVSLmCQKlqesOESS4IJ+nNVYhsUOnRBz32W+obhGTek7jpGHUGWgxkkPjhY74Jt1/dikhrsUR1UbKSD9jIfFZuUdakf+gAqY2A==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by DM6PR12MB3308.namprd12.prod.outlook.com (2603:10b6:5:182::31) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.18; Sat, 23 Jul
- 2022 14:16:55 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::ac35:7c4b:3282:abfb]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::ac35:7c4b:3282:abfb%3]) with mapi id 15.20.5458.021; Sat, 23 Jul 2022
- 14:16:55 +0000
-Date:   Sat, 23 Jul 2022 11:16:52 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Lu Baolu <baolu.lu@linux.intel.com>
-Cc:     Joerg Roedel <joro@8bytes.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        Zhangfei Gao <zhangfei.gao@linaro.org>,
-        Zhu Tony <tony.zhu@intel.com>, iommu@lists.linux.dev,
+        Sat, 23 Jul 2022 10:17:38 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C04F2C3;
+        Sat, 23 Jul 2022 07:17:37 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id e132so6599313pgc.5;
+        Sat, 23 Jul 2022 07:17:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=iy3Y3lD3PO74W8Het/zkyRyD8CcEacldwVGPN3h0yJs=;
+        b=ZxXKz/F4T1if8NpcwsPo+6cBfgUkiyEfQPafk7ppyjuI3vBmFW4zKf3A8mJct2DDUR
+         u1jeZLxE2TPZPreuFIWaeS+cJ6uNBO0QNecKVzpoWBgTyuiGokCFzguv8+Ye6DoNsqph
+         b7Ca1XkjvIqdm3QM2q851K06D8zhpy4gsVZh9BotXcsUBrWh0V6WTVq/J6Ol9pnI2y39
+         aR5zl7xA9d1+ESyHdIxO5VNQotkvjll38mG1390iXlW0DSgrjVNd16yeXb3+Ot8GRTr3
+         gWtzUpj7halua5Qdj/5uCp+4c2Gn0q0i8GTcVyqHsh8SVBSQNyXju0RU0d2gEmBvEswy
+         CnZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=iy3Y3lD3PO74W8Het/zkyRyD8CcEacldwVGPN3h0yJs=;
+        b=KT0bKt2Ed4a3LqHvYQjXTTB4aTK0bQSQD91AZ7I+CNcE1lylBTTIqy+Ld7VNjynWry
+         I1S4xazhK5rWWpk2MNWiGq4Kwt8rHVR/sWjfa2VA+iPOJXqmzmnlsYIT1WowoXFCwWCP
+         FkXB9MAVSXittneTt7nebPCVDKVjJZZTBAyCK3J2clMcp/U89Z/XJtF4qTRKT5G2/WmP
+         4bvWebTl8LskWcwP7ooVYvm6W3dRGMH1ikC1Lk1Av/WpkcpIRSHKw3L/Sw9Nbnd65IfZ
+         JxyHJXksqg2vJy6nUi/egofFs4VH+B0/az4gMr9PnnMolzXO+rLxJBi1mL5H/tNGuIZl
+         BWoA==
+X-Gm-Message-State: AJIora+dlZTTqyEUduT7jORi1TVOwMUKeHoAEGS/5p6bR6UH1EMoUIx1
+        g6wAhbKgBSlWEqa+5p0rchU=
+X-Google-Smtp-Source: AGRyM1ujYcP1yJgo+rDWSQwkI1xmC664v7RFo3ceP60DbAGIHHuY64vv8Yl0GaJDqLuvD6dm4WA5kg==
+X-Received: by 2002:a05:6a00:1745:b0:52a:f0d3:ae7 with SMTP id j5-20020a056a00174500b0052af0d30ae7mr5066230pfc.72.1658585856394;
+        Sat, 23 Jul 2022 07:17:36 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id j13-20020a170903024d00b0016d1b70872asm5818692plh.134.2022.07.23.07.17.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 23 Jul 2022 07:17:35 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Sat, 23 Jul 2022 07:17:34 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Armin Wolf <W_Armin@gmx.de>
+Cc:     jdelvare@suse.com, linux-hwmon@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v10 06/12] iommu/vt-d: Add SVA domain support
-Message-ID: <20220723141652.GF79279@nvidia.com>
-References: <20220705050710.2887204-1-baolu.lu@linux.intel.com>
- <20220705050710.2887204-7-baolu.lu@linux.intel.com>
+Subject: Re: [PATCH 1/2] hwmon: Add pwmX_fan_channel attribute
+Message-ID: <20220723141734.GC2979894@roeck-us.net>
+References: <20220723033820.22612-1-W_Armin@gmx.de>
+ <20220723033820.22612-2-W_Armin@gmx.de>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220705050710.2887204-7-baolu.lu@linux.intel.com>
-X-ClientProxiedBy: MW4PR04CA0068.namprd04.prod.outlook.com
- (2603:10b6:303:6b::13) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8660f42f-430f-44c8-1407-08da6cb5feef
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3308:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ChDc5WcLPg+//BJmhBly66Tsz+gSEs8Kb4dYMfZTD7aTStbGIoku/lY4+hoSCPj1Y10Ur+erU4rwctM5whrFuT3Gyk1f6+M+o2R/tfvrWPCmpUJAvbpUYgm3M7MfuHNu2BMJKmIBz6O1PRQTmKJzUPpaK1yRjXOIH0JMXlBqBbILAkLFRmUzRMSlz/pHYj8e6F9K4U/e/nTBKO72Jb+NyQVSjmJD3BQg59ejfI7ZzRWPDjn+h2BdePgCeZ3XpoRLpUGi5kZwMEXT961+TK9Tcv89p+gDNBFA29vEGFN/miS8xQJN/A9RxYisySPepa8C2i4UOzbLSExyQRgoRQLO7P2bNKnL1hefTsvVutGdoRuzB0DjtP9nYOxFRDwzpjV/f6gFjPakTCWz9s/a9FIMUBwpYYN00r9rFeVjav0+9ghFU/OD9xCq04E+KOqbTS6Mn/jvGGVffOTka4xcfcUyJ+KHYA7NTAod1vogU18X4UPmyM1ISfQUco5yabUB4sDPzB0Zk3xEa97SYO+d1mKIxT0sBPcJ3kyDu54gMIkbmLCju3/6JGeqKEN4K11+RNcqPqP6IRYI/g4ZL90FvgL2/h0+uCwOubv84MInXtjcMQL/fl6FKV4CS0IxuYid4UYFUZJSOHDk93IsS4FVFhyDEDsrFks9g+D6IAiCGlQJMEc9a922IZqcvWrE9mphsCYPA+VvCS9Vn1EcD06OuGFQAs+FzbBzqMjJLAgo/SZzbE0nC07oRBOA1HTsefNkXT1h
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(366004)(376002)(346002)(136003)(396003)(39860400002)(316002)(36756003)(38100700002)(4326008)(5660300002)(66476007)(8676002)(66556008)(54906003)(33656002)(6916009)(66946007)(2906002)(6486002)(26005)(478600001)(41300700001)(6512007)(6506007)(4744005)(7416002)(1076003)(86362001)(6666004)(2616005)(186003)(8936002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?PHgEOhoN8PRYXqeS2hip3mxlBcGxBvE46+639HnBPGrK0b+JyNengCCThQO+?=
- =?us-ascii?Q?6uk4Iop/AbZb51oNegncxwBoRE7yCYNgJ/nehSfHUOxTmtD0DtGaQdVlvBkE?=
- =?us-ascii?Q?yWsOYRSJ781yLx7dEYmYwSzkXKe66BZh2lP/NNlnqfxYUYfcLHh0L62OzUKV?=
- =?us-ascii?Q?gEexs2aK1lD2MmOa/LABSIFndMurgqOl6A7mJ2Kcj0VlF6yb8AaUkkO02pIn?=
- =?us-ascii?Q?Sdq/UMib2pnezlU2eiWtx3XvDg22hLcOnnE9zhLWFaTb0TP9JhX66OHZnfhx?=
- =?us-ascii?Q?vmXAW27crhh6Zv3edm4n1nu1LNpk/TuhRXLEg8temFzDNwW8rUS7bIpX9kQQ?=
- =?us-ascii?Q?8fVJ9E5zXvORVYPKrqQhvU1bTkNOaGjnRpgLeZomIy8w2QZpi4BjMBChtW52?=
- =?us-ascii?Q?VzFOfztcjoXejhxgS2Cuc5e9WYQIqkdiYfKbwfDb5d8iIxC8VmXovQy9SImj?=
- =?us-ascii?Q?rA+uVGzHDTr0Z+grIWDoK7gyDVUic1dsOSnjwau3IH/0yWUKMA/cMiuSAgJr?=
- =?us-ascii?Q?KAuGj6jeSlCUep0Z+MAo9xa062nLynY4z8HBjPqKhG8mxnN2O6uoUroRtODq?=
- =?us-ascii?Q?NIMpMGI1pVnomjcWgBQFyN+R4OophdTpJ3dXeDM2DKaG4NyR9xEFHPZoarPl?=
- =?us-ascii?Q?EpdWNlgkGlEYQJLVu6MBT5vocKsJt7xHuOaH/E5TFg49GHT0kLmi1PFwqXpV?=
- =?us-ascii?Q?VsYqwL6DD5mWSr1gnPUTBrfJIZAN7yUGpqfsH5NGceBx0tTa47vlETRfTpLh?=
- =?us-ascii?Q?7RkAPmdQ8vNQg6+l0yMtfv5i+dXRET1AGeIUR0a0B0DVCuhURzAn82XcoHBK?=
- =?us-ascii?Q?qIUCLutf74PXNBURkfjIAhjUmLhlHq2Sqz09gDKosK7z99dQYOSnjxgOUwsr?=
- =?us-ascii?Q?yUzwEQ6WDaiol1weOLqHofFcrQfhsmiYf80evSRdeYs3+j2BJDHmap6IX/e/?=
- =?us-ascii?Q?AofI3p/yHBm/TkZZ7nRHdAFNJw1m1oMMjYeU+I8/bHeZWGKwK1BsxZuZTnpt?=
- =?us-ascii?Q?v+sLbKUWK16/6CC1BpDbc466YnHNEWBaUAcsQYHAyre0c/FUreF+aBQPGg4O?=
- =?us-ascii?Q?iRva+vLxl0JGfkwN4oyC1NB5d39V/XATSeYNtiFOYWFAyRWRHSFI1kc1iohs?=
- =?us-ascii?Q?Sm7M/jm8dInXX6gWKHfsFCk5UjJii6NS+4Z/zhs59sZ0Rd/RqVg2lhgGaSUi?=
- =?us-ascii?Q?+cHatqjxdjW8XuyGzciGptUXxWsPBpMX2LCxVWJLg7MYbA/8nvvo/KQBKIbU?=
- =?us-ascii?Q?UHrIqQ0PTJGxy+BPy7BZSPVKfcZZ+I5O1qFBZGLdW/A31S9nmAB7XGX6HKcK?=
- =?us-ascii?Q?vo//z4fRAmmEiAiqMsj/+jZxFNXAyNiG6uQyEnq1ZRzukOoGwUhYrGxsD54j?=
- =?us-ascii?Q?6OPGbpcw4kVmef/RNp8ZkAfdMpHyRNo8jX894yXkG4zvTxbPA4GQuj9PJjJT?=
- =?us-ascii?Q?WO2fsVkEU7Reecs1HWO8Pa8tmpfh2rQDr/8WPJFPEzfbr6azZ3n30dd4rF+K?=
- =?us-ascii?Q?P8EMpSAiJhYR+KwOfSRu8Vl0i0y8YsSqzs26ij31fQJvc70ZlrGdU6nnhe6w?=
- =?us-ascii?Q?El1+IPfGc5St3G4vjoOHp0Roh5piO75eIQwOx+y/?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8660f42f-430f-44c8-1407-08da6cb5feef
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jul 2022 14:16:54.9258
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 9Ir+bpAuK0wnhPnnjvU4l7C0z+Xq/URK+r5DNtU2FOUSL/lLovoixcamMJ2Rkr9o
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3308
+In-Reply-To: <20220723033820.22612-2-W_Armin@gmx.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 05, 2022 at 01:07:04PM +0800, Lu Baolu wrote:
-> Add support for SVA domain allocation and provide an SVA-specific
-> iommu_domain_ops.
+On Sat, Jul 23, 2022 at 05:38:19AM +0200, Armin Wolf wrote:
+> Until now, userspace software needs to guess which
+> PWM channel is associated with which fan channel by
+> probing each PWM output and watch for fan speed changes.
+> This proccess is error-prone and unreliable.
 > 
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> Reviewed-by: Kevin Tian <kevin.tian@intel.com>
-> Tested-by: Tony Zhu <tony.zhu@intel.com>
+> Some hwmon chips, especially firmware-based ones, already
+> know which PWM output is associated with which fan channel.
+> 
+> Allow such chips to export this knowledge to userspace.
+> 
+> Signed-off-by: Armin Wolf <W_Armin@gmx.de>
+
+All of the chips I am aware of have a fixed association from pwm channel
+output to fan input. None I am aware of make this association configurable.
+I do not see the value of this attribute.
+
+Guenter
+
 > ---
->  include/linux/intel-iommu.h |  5 ++++
->  drivers/iommu/intel/iommu.c |  2 ++
->  drivers/iommu/intel/svm.c   | 49 +++++++++++++++++++++++++++++++++++++
->  3 files changed, 56 insertions(+)
-
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-
-Jason
+>  Documentation/ABI/testing/sysfs-class-hwmon | 8 ++++++++
+>  Documentation/hwmon/sysfs-interface.rst     | 3 +++
+>  drivers/hwmon/hwmon.c                       | 1 +
+>  include/linux/hwmon.h                       | 2 ++
+>  4 files changed, 14 insertions(+)
+> 
+> diff --git a/Documentation/ABI/testing/sysfs-class-hwmon b/Documentation/ABI/testing/sysfs-class-hwmon
+> index 7271781a23b2..f3d653bcf736 100644
+> --- a/Documentation/ABI/testing/sysfs-class-hwmon
+> +++ b/Documentation/ABI/testing/sysfs-class-hwmon
+> @@ -315,6 +315,14 @@ Description:
+> 
+>  		RW
+> 
+> +What:		/sys/class/hwmon/hwmonX/pwmY_fan_channel
+> +Description:
+> +		Select which fan channel is controlled by this PWM output.
+> +
+> +		Valid fan channel/PWM output combinations are chip-dependent.
+> +
+> +		RW
+> +
+>  What:		/sys/class/hwmon/hwmonX/pwmY_auto_channels_temp
+>  Description:
+>  		Select which temperature channels affect this PWM output in
+> diff --git a/Documentation/hwmon/sysfs-interface.rst b/Documentation/hwmon/sysfs-interface.rst
+> index 209626fb2405..17fcec03d3c5 100644
+> --- a/Documentation/hwmon/sysfs-interface.rst
+> +++ b/Documentation/hwmon/sysfs-interface.rst
+> @@ -209,6 +209,9 @@ PWM
+>  `pwm[1-*]_freq`
+>  		Base PWM frequency in Hz.
+> 
+> +`pwm[1-*]_fan_channel`
+> +                Select which fan channel is controlled by this PWM output.
+> +
+>  `pwm[1-*]_auto_channels_temp`
+>  		Select which temperature channels affect this PWM output in
+>  		auto mode.
+> diff --git a/drivers/hwmon/hwmon.c b/drivers/hwmon/hwmon.c
+> index 2e2cd79d89eb..8c2d7574c461 100644
+> --- a/drivers/hwmon/hwmon.c
+> +++ b/drivers/hwmon/hwmon.c
+> @@ -604,6 +604,7 @@ static const char * const hwmon_pwm_attr_templates[] = {
+>  	[hwmon_pwm_enable] = "pwm%d_enable",
+>  	[hwmon_pwm_mode] = "pwm%d_mode",
+>  	[hwmon_pwm_freq] = "pwm%d_freq",
+> +	[hwmon_pwm_fan_channel] = "pwm%d_fan_channel",
+>  	[hwmon_pwm_auto_channels_temp] = "pwm%d_auto_channels_temp",
+>  };
+> 
+> diff --git a/include/linux/hwmon.h b/include/linux/hwmon.h
+> index 14325f93c6b2..9d40cc1e520f 100644
+> --- a/include/linux/hwmon.h
+> +++ b/include/linux/hwmon.h
+> @@ -332,6 +332,7 @@ enum hwmon_pwm_attributes {
+>  	hwmon_pwm_enable,
+>  	hwmon_pwm_mode,
+>  	hwmon_pwm_freq,
+> +	hwmon_pwm_fan_channel,
+>  	hwmon_pwm_auto_channels_temp,
+>  };
+> 
+> @@ -339,6 +340,7 @@ enum hwmon_pwm_attributes {
+>  #define HWMON_PWM_ENABLE		BIT(hwmon_pwm_enable)
+>  #define HWMON_PWM_MODE			BIT(hwmon_pwm_mode)
+>  #define HWMON_PWM_FREQ			BIT(hwmon_pwm_freq)
+> +#define HWMON_PWM_FAN_CHANNEL		BIT(hwmon_pwm_fan_channel)
+>  #define HWMON_PWM_AUTO_CHANNELS_TEMP	BIT(hwmon_pwm_auto_channels_temp)
+> 
+>  enum hwmon_intrusion_attributes {
+> --
+> 2.30.2
+> 
