@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 683E9C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:03:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62290C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:03:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238165AbiGWKDJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 06:03:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57742 "EHLO
+        id S238092AbiGWKDT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 06:03:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237801AbiGWKCi (ORCPT
+        with ESMTP id S237746AbiGWKCk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 06:02:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3653A6717F;
-        Sat, 23 Jul 2022 02:59:09 -0700 (PDT)
+        Sat, 23 Jul 2022 06:02:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA83B3C8D7;
+        Sat, 23 Jul 2022 02:59:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E7010611D4;
-        Sat, 23 Jul 2022 09:58:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01EB6C36AE7;
-        Sat, 23 Jul 2022 09:58:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 31275611BD;
+        Sat, 23 Jul 2022 09:59:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D495C341C0;
+        Sat, 23 Jul 2022 09:59:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658570338;
-        bh=QLUaL63/ytWAUClgmAMMnqPtqDpfAEvNGe4wTT9p+hI=;
+        s=korg; t=1658570352;
+        bh=OqfwUX60UBlfoRQ1m3NNXPSM4sIy5u0tsQRZI9rcZ6c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g3NGkrIrSDrJW+OdygsPvqbLkrkIO3jOcCwOMfF3FCRWQwPiDWZiafFDLkKLwjV/1
-         9SEwq5gVtH8wnprfgFsIMqibHNDquqez8Y9S9cB1PayV7HjTjKxXcNgMzyQdjlwCIL
-         BzlBnRj9OECxAJPDC2vDiwBtOLo4BrkE3MnTInzw=
+        b=raggF41zeXAY5aBCegC/3QrHiBfZflCpT6bVEWWEPu9r9f6ZO2WUW1dZayABIJ9iT
+         tO/E+d1+W4Wo+odK755rTW4tz+37i/SZRyDk3HGNaRg/h+XN7exVK29FvxcJoiqYVN
+         KlskujkLvr5K8JfqpXKA7ARVBmtiaUYp0Btp25pc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -39,9 +39,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 052/148] x86/asm: Fixup odd GEN-for-each-reg.h usage
-Date:   Sat, 23 Jul 2022 11:54:24 +0200
-Message-Id: <20220723095238.874709180@linuxfoundation.org>
+Subject: [PATCH 5.10 057/148] x86/alternative: Try inline spectre_v2=retpoline,amd
+Date:   Sat, 23 Jul 2022 11:54:29 +0200
+Message-Id: <20220723095240.221456201@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220723095224.302504400@linuxfoundation.org>
 References: <20220723095224.302504400@linuxfoundation.org>
@@ -55,51 +55,95 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peter Zijlstra <peterz@infradead.org>
 
-commit b6d3d9944bd7c9e8c06994ead3c9952f673f2a66 upstream.
+commit bbe2df3f6b6da7848398d55b1311d58a16ec21e4 upstream.
 
-Currently GEN-for-each-reg.h usage leaves GEN defined, relying on any
-subsequent usage to start with #undef, which is rude.
+Try and replace retpoline thunk calls with:
+
+  LFENCE
+  CALL    *%\reg
+
+for spectre_v2=retpoline,amd.
+
+Specifically, the sequence above is 5 bytes for the low 8 registers,
+but 6 bytes for the high 8 registers. This means that unless the
+compilers prefix stuff the call with higher registers this replacement
+will fail.
+
+Luckily GCC strongly favours RAX for the indirect calls and most (95%+
+for defconfig-x86_64) will be converted. OTOH clang strongly favours
+R11 and almost nothing gets converted.
+
+Note: it will also generate a correct replacement for the Jcc.d32
+case, except unless the compilers start to prefix stuff that, it'll
+never fit. Specifically:
+
+  Jncc.d8 1f
+  LFENCE
+  JMP     *%\reg
+1:
+
+is 7-8 bytes long, where the original instruction in unpadded form is
+only 6 bytes.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Reviewed-by: Borislav Petkov <bp@suse.de>
 Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
 Tested-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/r/20211026120310.041792350@infradead.org
+Link: https://lore.kernel.org/r/20211026120310.359986601@infradead.org
+[cascardo: RETPOLINE_AMD was renamed to RETPOLINE_LFENCE]
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/asm-prototypes.h |    2 +-
- arch/x86/lib/retpoline.S              |    4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ arch/x86/kernel/alternative.c |   16 ++++++++++++++--
+ 1 file changed, 14 insertions(+), 2 deletions(-)
 
---- a/arch/x86/include/asm/asm-prototypes.h
-+++ b/arch/x86/include/asm/asm-prototypes.h
-@@ -19,9 +19,9 @@ extern void cmpxchg8b_emu(void);
+--- a/arch/x86/kernel/alternative.c
++++ b/arch/x86/kernel/alternative.c
+@@ -544,6 +544,7 @@ static int emit_indirect(int op, int reg
+  *
+  *   CALL *%\reg
+  *
++ * It also tries to inline spectre_v2=retpoline,amd when size permits.
+  */
+ static int patch_retpoline(void *addr, struct insn *insn, u8 *bytes)
+ {
+@@ -560,7 +561,8 @@ static int patch_retpoline(void *addr, s
+ 	/* If anyone ever does: CALL/JMP *%rsp, we're in deep trouble. */
+ 	BUG_ON(reg == 4);
  
- #ifdef CONFIG_RETPOLINE
+-	if (cpu_feature_enabled(X86_FEATURE_RETPOLINE))
++	if (cpu_feature_enabled(X86_FEATURE_RETPOLINE) &&
++	    !cpu_feature_enabled(X86_FEATURE_RETPOLINE_LFENCE))
+ 		return -1;
  
--#undef GEN
- #define GEN(reg) \
- 	extern asmlinkage void __x86_indirect_thunk_ ## reg (void);
- #include <asm/GEN-for-each-reg.h>
-+#undef GEN
+ 	op = insn->opcode.bytes[0];
+@@ -573,8 +575,9 @@ static int patch_retpoline(void *addr, s
+ 	 * into:
+ 	 *
+ 	 *   Jncc.d8 1f
++	 *   [ LFENCE ]
+ 	 *   JMP *%\reg
+-	 *   NOP
++	 *   [ NOP ]
+ 	 * 1:
+ 	 */
+ 	/* Jcc.d32 second opcode byte is in the range: 0x80-0x8f */
+@@ -589,6 +592,15 @@ static int patch_retpoline(void *addr, s
+ 		op = JMP32_INSN_OPCODE;
+ 	}
  
- #endif /* CONFIG_RETPOLINE */
---- a/arch/x86/lib/retpoline.S
-+++ b/arch/x86/lib/retpoline.S
-@@ -55,10 +55,10 @@ SYM_FUNC_END(__x86_indirect_thunk_\reg)
- #define __EXPORT_THUNK(sym)	_ASM_NOKPROBE(sym); EXPORT_SYMBOL(sym)
- #define EXPORT_THUNK(reg)	__EXPORT_THUNK(__x86_indirect_thunk_ ## reg)
- 
--#undef GEN
- #define GEN(reg) THUNK reg
- #include <asm/GEN-for-each-reg.h>
--
- #undef GEN
++	/*
++	 * For RETPOLINE_AMD: prepend the indirect CALL/JMP with an LFENCE.
++	 */
++	if (cpu_feature_enabled(X86_FEATURE_RETPOLINE_LFENCE)) {
++		bytes[i++] = 0x0f;
++		bytes[i++] = 0xae;
++		bytes[i++] = 0xe8; /* LFENCE */
++	}
 +
- #define GEN(reg) EXPORT_THUNK(reg)
- #include <asm/GEN-for-each-reg.h>
-+#undef GEN
+ 	ret = emit_indirect(op, reg, bytes + i);
+ 	if (ret < 0)
+ 		return ret;
 
 
