@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC9C8C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:12:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3685C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:12:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238656AbiGWKMa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 06:12:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43202 "EHLO
+        id S238936AbiGWKMf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 06:12:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239373AbiGWKJf (ORCPT
+        with ESMTP id S238965AbiGWKKA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 06:09:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 954C58149C;
-        Sat, 23 Jul 2022 03:02:43 -0700 (PDT)
+        Sat, 23 Jul 2022 06:10:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E0C6CFE7E;
+        Sat, 23 Jul 2022 03:03:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B0BE2B82C1A;
-        Sat, 23 Jul 2022 10:02:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23109C341C7;
-        Sat, 23 Jul 2022 10:02:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 69FA4611BD;
+        Sat, 23 Jul 2022 10:03:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74FAEC341C0;
+        Sat, 23 Jul 2022 10:03:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658570559;
-        bh=6ZJiZorj7WVCzB1nyaRhoBZ6f67OnAAunAmOUTsjtKA=;
+        s=korg; t=1658570590;
+        bh=kqPY9MUO21vFnYIoOXN8BlGKOrZjLsXuoEhrjvrRTEc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EFNio/uUjUMiCyS+KCVhcEHeYEoE84p7CMbRtl7qkYkwWS60lHpcwLsOlMNb+PmQ5
-         8VH3ADEUXtI7Zq96YvDPYGe4pqlbQJ0nbPN+e/Dd5eCfI2nuNaim4RA3nMSIUPkKYC
-         1C9d7fL5GsXhUEYxpbVN6D1Q+sBDRK14FuDg35x8=
+        b=SM/CnCCV7dCzHO7qk9gEQtGQfy9A4Gp5K98S5CcYfFW240mq1hgIjoY2gcQaKX+I1
+         NjZ5/zTzzsXZDCGghLY9oxqd4KasxvINru9+umAFylFJsSKobNxnDdi76DqrK4cikL
+         F7g11qBwmoywmoTvA4GEursJaa+qczroWeT2oUL4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Edward Tran <edward.tran@oracle.com>,
-        Awais Tanveer <awais.tanveer@oracle.com>,
-        Ankur Arora <ankur.a.arora@oracle.com>,
-        Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-        Alexandre Chartre <alexandre.chartre@oracle.com>,
-        Borislav Petkov <bp@suse.de>,
-        Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 128/148] x86/kexec: Disable RET on kexec
-Date:   Sat, 23 Jul 2022 11:55:40 +0200
-Message-Id: <20220723095300.164230742@linuxfoundation.org>
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        Borislav Petkov <bp@suse.de>, Ian Rogers <irogers@google.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.10 140/148] tools arch x86: Sync the msr-index.h copy with the kernel sources
+Date:   Sat, 23 Jul 2022 11:55:52 +0200
+Message-Id: <20220723095303.601411287@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220723095224.302504400@linuxfoundation.org>
 References: <20220723095224.302504400@linuxfoundation.org>
@@ -53,173 +53,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+From: Arnaldo Carvalho de Melo <acme@redhat.com>
 
-commit 697977d8415d61f3acbc4ee6d564c9dcf0309507 upstream.
+commit 91d248c3b903b46a58cbc7e8d38d684d3e4007c2 upstream.
 
-All the invocations unroll to __x86_return_thunk and this file
-must be PIC independent.
+To pick up the changes from these csets:
 
-This fixes kexec on 64-bit AMD boxes.
+  4ad3278df6fe2b08 ("x86/speculation: Disable RRSBA behavior")
+  d7caac991feeef1b ("x86/cpu/amd: Add Spectral Chicken")
 
-  [ bp: Fix 32-bit build. ]
+That cause no changes to tooling:
 
-Reported-by: Edward Tran <edward.tran@oracle.com>
-Reported-by: Awais Tanveer <awais.tanveer@oracle.com>
-Suggested-by: Ankur Arora <ankur.a.arora@oracle.com>
-Signed-off-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Signed-off-by: Alexandre Chartre <alexandre.chartre@oracle.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
+  $ tools/perf/trace/beauty/tracepoints/x86_msr.sh > before
+  $ cp arch/x86/include/asm/msr-index.h tools/arch/x86/include/asm/msr-index.h
+  $ tools/perf/trace/beauty/tracepoints/x86_msr.sh > after
+  $ diff -u before after
+  $
+
+Just silences this perf build warning:
+
+  Warning: Kernel ABI header at 'tools/arch/x86/include/asm/msr-index.h' differs from latest version at 'arch/x86/include/asm/msr-index.h'
+  diff -u tools/arch/x86/include/asm/msr-index.h arch/x86/include/asm/msr-index.h
+
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Borislav Petkov <bp@suse.de>
+Cc: Ian Rogers <irogers@google.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Link: https://lore.kernel.org/lkml/YtQTm9wsB3hxQWvy@kernel.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/relocate_kernel_32.S |   25 +++++++++++++++++++------
- arch/x86/kernel/relocate_kernel_64.S |   23 +++++++++++++++++------
- 2 files changed, 36 insertions(+), 12 deletions(-)
+ tools/arch/x86/include/asm/msr-index.h |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/arch/x86/kernel/relocate_kernel_32.S
-+++ b/arch/x86/kernel/relocate_kernel_32.S
-@@ -7,10 +7,12 @@
- #include <linux/linkage.h>
- #include <asm/page_types.h>
- #include <asm/kexec.h>
-+#include <asm/nospec-branch.h>
- #include <asm/processor-flags.h>
+--- a/tools/arch/x86/include/asm/msr-index.h
++++ b/tools/arch/x86/include/asm/msr-index.h
+@@ -93,6 +93,7 @@
+ #define MSR_IA32_ARCH_CAPABILITIES	0x0000010a
+ #define ARCH_CAP_RDCL_NO		BIT(0)	/* Not susceptible to Meltdown */
+ #define ARCH_CAP_IBRS_ALL		BIT(1)	/* Enhanced IBRS support */
++#define ARCH_CAP_RSBA			BIT(2)	/* RET may use alternative branch predictors */
+ #define ARCH_CAP_SKIP_VMENTRY_L1DFLUSH	BIT(3)	/* Skip L1D flush on vmentry */
+ #define ARCH_CAP_SSB_NO			BIT(4)	/*
+ 						 * Not susceptible to Speculative Store Bypass
+@@ -516,6 +517,9 @@
+ /* Fam 17h MSRs */
+ #define MSR_F17H_IRPERF			0xc00000e9
  
- /*
-- * Must be relocatable PIC code callable as a C function
-+ * Must be relocatable PIC code callable as a C function, in particular
-+ * there must be a plain RET and not jump to return thunk.
-  */
- 
- #define PTR(x) (x << 2)
-@@ -91,7 +93,9 @@ SYM_CODE_START_NOALIGN(relocate_kernel)
- 	movl    %edi, %eax
- 	addl    $(identity_mapped - relocate_kernel), %eax
- 	pushl   %eax
--	RET
-+	ANNOTATE_UNRET_SAFE
-+	ret
-+	int3
- SYM_CODE_END(relocate_kernel)
- 
- SYM_CODE_START_LOCAL_NOALIGN(identity_mapped)
-@@ -159,12 +163,15 @@ SYM_CODE_START_LOCAL_NOALIGN(identity_ma
- 	xorl    %edx, %edx
- 	xorl    %esi, %esi
- 	xorl    %ebp, %ebp
--	RET
-+	ANNOTATE_UNRET_SAFE
-+	ret
-+	int3
- 1:
- 	popl	%edx
- 	movl	CP_PA_SWAP_PAGE(%edi), %esp
- 	addl	$PAGE_SIZE, %esp
- 2:
-+	ANNOTATE_RETPOLINE_SAFE
- 	call	*%edx
- 
- 	/* get the re-entry point of the peer system */
-@@ -190,7 +197,9 @@ SYM_CODE_START_LOCAL_NOALIGN(identity_ma
- 	movl	%edi, %eax
- 	addl	$(virtual_mapped - relocate_kernel), %eax
- 	pushl	%eax
--	RET
-+	ANNOTATE_UNRET_SAFE
-+	ret
-+	int3
- SYM_CODE_END(identity_mapped)
- 
- SYM_CODE_START_LOCAL_NOALIGN(virtual_mapped)
-@@ -208,7 +217,9 @@ SYM_CODE_START_LOCAL_NOALIGN(virtual_map
- 	popl	%edi
- 	popl	%esi
- 	popl	%ebx
--	RET
-+	ANNOTATE_UNRET_SAFE
-+	ret
-+	int3
- SYM_CODE_END(virtual_mapped)
- 
- 	/* Do the copies */
-@@ -271,7 +282,9 @@ SYM_CODE_START_LOCAL_NOALIGN(swap_pages)
- 	popl	%edi
- 	popl	%ebx
- 	popl	%ebp
--	RET
-+	ANNOTATE_UNRET_SAFE
-+	ret
-+	int3
- SYM_CODE_END(swap_pages)
- 
- 	.globl kexec_control_code_size
---- a/arch/x86/kernel/relocate_kernel_64.S
-+++ b/arch/x86/kernel/relocate_kernel_64.S
-@@ -13,7 +13,8 @@
- #include <asm/unwind_hints.h>
- 
- /*
-- * Must be relocatable PIC code callable as a C function
-+ * Must be relocatable PIC code callable as a C function, in particular
-+ * there must be a plain RET and not jump to return thunk.
-  */
- 
- #define PTR(x) (x << 3)
-@@ -104,7 +105,9 @@ SYM_CODE_START_NOALIGN(relocate_kernel)
- 	/* jump to identity mapped page */
- 	addq	$(identity_mapped - relocate_kernel), %r8
- 	pushq	%r8
--	RET
-+	ANNOTATE_UNRET_SAFE
-+	ret
-+	int3
- SYM_CODE_END(relocate_kernel)
- 
- SYM_CODE_START_LOCAL_NOALIGN(identity_mapped)
-@@ -191,7 +194,9 @@ SYM_CODE_START_LOCAL_NOALIGN(identity_ma
- 	xorl	%r14d, %r14d
- 	xorl	%r15d, %r15d
- 
--	RET
-+	ANNOTATE_UNRET_SAFE
-+	ret
-+	int3
- 
- 1:
- 	popq	%rdx
-@@ -210,7 +215,9 @@ SYM_CODE_START_LOCAL_NOALIGN(identity_ma
- 	call	swap_pages
- 	movq	$virtual_mapped, %rax
- 	pushq	%rax
--	RET
-+	ANNOTATE_UNRET_SAFE
-+	ret
-+	int3
- SYM_CODE_END(identity_mapped)
- 
- SYM_CODE_START_LOCAL_NOALIGN(virtual_mapped)
-@@ -231,7 +238,9 @@ SYM_CODE_START_LOCAL_NOALIGN(virtual_map
- 	popq	%r12
- 	popq	%rbp
- 	popq	%rbx
--	RET
-+	ANNOTATE_UNRET_SAFE
-+	ret
-+	int3
- SYM_CODE_END(virtual_mapped)
- 
- 	/* Do the copies */
-@@ -288,7 +297,9 @@ SYM_CODE_START_LOCAL_NOALIGN(swap_pages)
- 	lea	PAGE_SIZE(%rax), %rsi
- 	jmp	0b
- 3:
--	RET
-+	ANNOTATE_UNRET_SAFE
-+	ret
-+	int3
- SYM_CODE_END(swap_pages)
- 
- 	.globl kexec_control_code_size
++#define MSR_ZEN2_SPECTRAL_CHICKEN	0xc00110e3
++#define MSR_ZEN2_SPECTRAL_CHICKEN_BIT	BIT_ULL(1)
++
+ /* Fam 16h MSRs */
+ #define MSR_F16H_L2I_PERF_CTL		0xc0010230
+ #define MSR_F16H_L2I_PERF_CTR		0xc0010231
 
 
