@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CA22C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:06:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB674C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:07:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238592AbiGWKG6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 06:06:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57048 "EHLO
+        id S238103AbiGWKHA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 06:07:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238572AbiGWKGf (ORCPT
+        with ESMTP id S238430AbiGWKGg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 06:06:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FF62A0256;
-        Sat, 23 Jul 2022 03:00:56 -0700 (PDT)
+        Sat, 23 Jul 2022 06:06:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A496BE9CC;
+        Sat, 23 Jul 2022 03:01:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8A31DB82C1D;
-        Sat, 23 Jul 2022 10:00:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01F5DC341C0;
-        Sat, 23 Jul 2022 10:00:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8DCB9611BF;
+        Sat, 23 Jul 2022 10:00:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 982B2C341C0;
+        Sat, 23 Jul 2022 10:00:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658570453;
-        bh=ufygdNxYvRwqap/gxVvpqhpvRh4OFs5NCTipEhRPTSI=;
+        s=korg; t=1658570459;
+        bh=oAN6Q4dQiIIJu3yvwAyYImnSQUKBxZrz7e4pEBocnjg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UspT52ihYLQx7uLfrpuOePuXgRbiDwDCdf8e4a+wFSyV8PLD4dOZ2rpcsNJlfQvs7
-         AhHZQzoLpNHoMwi5JN3gRfqBJtcbikU9E3dLuuM+Uw3DXavuX6cu75MzxKwVLC3eYk
-         I8jDUpJjb0aMIGf/hQYNzpoTXBovooKWXteAC9Jc=
+        b=1vv5QUkoDaMtURlGC8rSwUr9mlNQd2F4RcpkDJVee6gohyzjZtF4iHg9cmeTASUfH
+         e7N7bUjxQPxp/8wuYXYUf3gRUiEHMnucK4kb9PrZLSTz/msJKaOKazfcDp9rm9DQis
+         F1cRLg9vSMIXPWXxLUMSE13ilCSGH4ps53YOhiHc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kim Phillips <kim.phillips@amd.com>,
+        stable@vger.kernel.org,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Borislav Petkov <bp@suse.de>,
         Josh Poimboeuf <jpoimboe@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 092/148] x86/sev: Avoid using __x86_return_thunk
-Date:   Sat, 23 Jul 2022 11:55:04 +0200
-Message-Id: <20220723095250.164785084@linuxfoundation.org>
+Subject: [PATCH 5.10 094/148] objtool: Treat .text.__x86.* as noinstr
+Date:   Sat, 23 Jul 2022 11:55:06 +0200
+Message-Id: <20220723095250.747563428@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220723095224.302504400@linuxfoundation.org>
 References: <20220723095224.302504400@linuxfoundation.org>
@@ -52,15 +52,15 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kim Phillips <kim.phillips@amd.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-commit 0ee9073000e8791f8b134a8ded31bcc767f7f232 upstream.
+commit 951ddecf435659553ed15a9214e153a3af43a9a1 upstream.
 
-Specifically, it's because __enc_copy() encrypts the kernel after
-being relocated outside the kernel in sme_encrypt_execute(), and the
-RET macro's jmp offset isn't amended prior to execution.
+Needed because zen_untrain_ret() will be called from noinstr code.
 
-Signed-off-by: Kim Phillips <kim.phillips@amd.com>
+Also makes sense since the thunks MUST NOT contain instrumentation nor
+be poked with dynamic instrumentation.
+
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
 Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
@@ -69,31 +69,20 @@ Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/mm/mem_encrypt_boot.S |    8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ tools/objtool/check.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/arch/x86/mm/mem_encrypt_boot.S
-+++ b/arch/x86/mm/mem_encrypt_boot.S
-@@ -65,7 +65,9 @@ SYM_FUNC_START(sme_encrypt_execute)
- 	movq	%rbp, %rsp		/* Restore original stack pointer */
- 	pop	%rbp
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -366,7 +366,8 @@ static int decode_instructions(struct ob
+ 			sec->text = true;
  
--	RET
-+	/* Offset to __x86_return_thunk would be wrong here */
-+	ret
-+	int3
- SYM_FUNC_END(sme_encrypt_execute)
+ 		if (!strcmp(sec->name, ".noinstr.text") ||
+-		    !strcmp(sec->name, ".entry.text"))
++		    !strcmp(sec->name, ".entry.text") ||
++		    !strncmp(sec->name, ".text.__x86.", 12))
+ 			sec->noinstr = true;
  
- SYM_FUNC_START(__enc_copy)
-@@ -151,6 +153,8 @@ SYM_FUNC_START(__enc_copy)
- 	pop	%r12
- 	pop	%r15
- 
--	RET
-+	/* Offset to __x86_return_thunk would be wrong here */
-+	ret
-+	int3
- .L__enc_copy_end:
- SYM_FUNC_END(__enc_copy)
+ 		for (offset = 0; offset < sec->len; offset += insn->len) {
 
 
