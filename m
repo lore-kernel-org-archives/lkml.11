@@ -2,40 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C718CCA483
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:10:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4734EC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:11:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239224AbiGWKKy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 06:10:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40818 "EHLO
+        id S238642AbiGWKK7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 06:10:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239052AbiGWKJO (ORCPT
+        with ESMTP id S239051AbiGWKJO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 23 Jul 2022 06:09:14 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEE6BCB744;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEE2E7C1B5;
         Sat, 23 Jul 2022 03:02:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A69476125F;
-        Sat, 23 Jul 2022 10:02:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4257C341C7;
-        Sat, 23 Jul 2022 10:02:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A92361212;
+        Sat, 23 Jul 2022 10:01:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56433C341C0;
+        Sat, 23 Jul 2022 10:01:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658570542;
-        bh=ogXzme9Nd+4tRHQ/niqYL5axx8kpl4DBKD2E0Na7Ndo=;
+        s=korg; t=1658570515;
+        bh=wNMpLzoGPFxhjiSNYi0HVZ8hNKaw3idO+yUyf00eJdQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pKRghvFw8iBx8dE2MMGfD5wlnyqcJ+UnhBKQX3i0NTDuxBVqYFGdBIXPYaq7YZqdN
-         28RPNcLJiG0uCYGUtPCdtE/M8UoESaFCBF0DEpjMuziEaJ37nUOZWAFFw4GzMM6LVl
-         vJx7ZrYw4qlE+E5Oou8ijY48T3rtGZ4Ilfhh7Ye0=
+        b=Dmp8QKo3aabOsXf54FH1TrjeiuJP5vWZUWzluV8MCwqS169nz1c2auMiB3P9xlPBK
+         2ucp9CaYIUW+VZnYYSeFPYZxF6bX/se52iqeaX70WcmfaPyeHnTZp43t3oyBi5eS8y
+         fhulXngVzHQTzKu8VqkgeOhUMF77Zvp778dc1Cmc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 133/148] x86/xen: Fix initialisation in hypercall_page after rethunk
-Date:   Sat, 23 Jul 2022 11:55:45 +0200
-Message-Id: <20220723095301.607582870@linuxfoundation.org>
+        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Borislav Petkov <bp@suse.de>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
+        Ben Hutchings <ben@decadent.org.uk>
+Subject: [PATCH 5.10 113/148] x86/speculation: Fix firmware entry SPEC_CTRL handling
+Date:   Sat, 23 Jul 2022 11:55:25 +0200
+Message-Id: <20220723095256.025267059@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220723095224.302504400@linuxfoundation.org>
 References: <20220723095224.302504400@linuxfoundation.org>
@@ -47,32 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ben Hutchings <ben@decadent.org.uk>
+From: Josh Poimboeuf <jpoimboe@kernel.org>
 
-The hypercall_page is special and the RETs there should not be changed
-into rethunk calls (but can have SLS mitigation).  Change the initial
-instructions to ret + int3 padding, as was done in upstream commit
-5b2fc51576ef "x86/ibt,xen: Sprinkle the ENDBR".
+commit e6aa13622ea8283cc699cac5d018cc40a2ba2010 upstream.
 
+The firmware entry code may accidentally clear STIBP or SSBD. Fix that.
+
+Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/xen/xen-head.S |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/x86/include/asm/nospec-branch.h |   10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
---- a/arch/x86/xen/xen-head.S
-+++ b/arch/x86/xen/xen-head.S
-@@ -69,9 +69,9 @@ SYM_CODE_END(asm_cpu_bringup_and_idle)
- SYM_CODE_START(hypercall_page)
- 	.rept (PAGE_SIZE / 32)
- 		UNWIND_HINT_FUNC
--		.skip 31, 0x90
- 		ANNOTATE_UNRET_SAFE
--		RET
-+		ret
-+		.skip 31, 0xcc
- 	.endr
+--- a/arch/x86/include/asm/nospec-branch.h
++++ b/arch/x86/include/asm/nospec-branch.h
+@@ -286,18 +286,16 @@ extern u64 spec_ctrl_current(void);
+  */
+ #define firmware_restrict_branch_speculation_start()			\
+ do {									\
+-	u64 val = x86_spec_ctrl_base | SPEC_CTRL_IBRS;			\
+-									\
+ 	preempt_disable();						\
+-	alternative_msr_write(MSR_IA32_SPEC_CTRL, val,			\
++	alternative_msr_write(MSR_IA32_SPEC_CTRL,			\
++			      spec_ctrl_current() | SPEC_CTRL_IBRS,	\
+ 			      X86_FEATURE_USE_IBRS_FW);			\
+ } while (0)
  
- #define HYPERCALL(n) \
+ #define firmware_restrict_branch_speculation_end()			\
+ do {									\
+-	u64 val = x86_spec_ctrl_base;					\
+-									\
+-	alternative_msr_write(MSR_IA32_SPEC_CTRL, val,			\
++	alternative_msr_write(MSR_IA32_SPEC_CTRL,			\
++			      spec_ctrl_current(),			\
+ 			      X86_FEATURE_USE_IBRS_FW);			\
+ 	preempt_enable();						\
+ } while (0)
 
 
