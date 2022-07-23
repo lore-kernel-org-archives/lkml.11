@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB823C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:04:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AE58C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:04:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238250AbiGWKEp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 06:04:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57892 "EHLO
+        id S238266AbiGWKEs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 06:04:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238263AbiGWKD5 (ORCPT
+        with ESMTP id S238400AbiGWKEV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 06:03:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE3FB90DA6;
-        Sat, 23 Jul 2022 02:59:46 -0700 (PDT)
+        Sat, 23 Jul 2022 06:04:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C318798226;
+        Sat, 23 Jul 2022 02:59:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EC9F56116A;
-        Sat, 23 Jul 2022 09:59:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0547DC341C0;
-        Sat, 23 Jul 2022 09:59:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 21102B82C23;
+        Sat, 23 Jul 2022 09:59:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CB43C341C0;
+        Sat, 23 Jul 2022 09:59:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658570384;
-        bh=eyipu8EB/64Q0rbW76zZlxYKVV59IRLRSGQ+HpDrRTQ=;
+        s=korg; t=1658570375;
+        bh=jXkipwUJuN5Bshbw5oq+n7KCie4OGQQnZ71o0LvNP0o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u1VvcImO06aIjOLhtfvi7oR2M4KlHN5Oa5Yj7yPiwyqeXxHvcfQw891m3+v4wpfxf
-         rxaDttjjxSVu0H4p66VASAoGXLWHRG6lxaRRYr8uUuxtH5srru4EYbYi0WalUllJeI
-         YAdPyBU3s7cqytMmcEMnpa9OjYpcEJoMmFX698DE=
+        b=QidTTwuaWvFVwebTQ+XjKGywWd3WhpF3bYKdI98lzHFHd4eYL16j8Qln6Fw1Hkxjz
+         lNaG5GUBOPtr+8nDW1xKfmp2DgptCZfjfhI8oLi7KL2gpXuZfGQm8MbCRT5dkEqiCi
+         KPdIMkbDE930ROoN9H002f3SZscfD/ZeV32nPhLA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Sasha Levin <sashal@kernel.org>,
+        stable@vger.kernel.org,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 067/148] tools arch: Update arch/x86/lib/mem{cpy,set}_64.S copies used in perf bench mem memcpy
-Date:   Sat, 23 Jul 2022 11:54:39 +0200
-Message-Id: <20220723095243.011444614@linuxfoundation.org>
+Subject: [PATCH 5.10 064/148] x86/alternative: Relax text_poke_bp() constraint
+Date:   Sat, 23 Jul 2022 11:54:36 +0200
+Message-Id: <20220723095242.224281086@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220723095224.302504400@linuxfoundation.org>
 References: <20220723095224.302504400@linuxfoundation.org>
@@ -51,120 +50,172 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnaldo Carvalho de Melo <acme@redhat.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-commit 35cb8c713a496e8c114eed5e2a5a30b359876df2 upstream.
+commit 26c44b776dba4ac692a0bf5a3836feb8a63fea6b upstream.
 
-To bring in the change made in this cset:
+Currently, text_poke_bp() is very strict to only allow patching a
+single instruction; however with straight-line-speculation it will be
+required to patch: ret; int3, which is two instructions.
 
-  f94909ceb1ed4bfd ("x86: Prepare asm files for straight-line-speculation")
+As such, relax the constraints a little to allow int3 padding for all
+instructions that do not imply the execution of the next instruction,
+ie: RET, JMP.d8 and JMP.d32.
 
-It silences these perf tools build warnings, no change in the tools:
+While there, rename the text_poke_loc::rel32 field to ::disp.
 
-  Warning: Kernel ABI header at 'tools/arch/x86/lib/memcpy_64.S' differs from latest version at 'arch/x86/lib/memcpy_64.S'
-  diff -u tools/arch/x86/lib/memcpy_64.S arch/x86/lib/memcpy_64.S
-  Warning: Kernel ABI header at 'tools/arch/x86/lib/memset_64.S' differs from latest version at 'arch/x86/lib/memset_64.S'
-  diff -u tools/arch/x86/lib/memset_64.S arch/x86/lib/memset_64.S
+Note: this fills up the text_poke_loc structure which is now a round
+  16 bytes big.
 
-The code generated was checked before and after using 'objdump -d /tmp/build/perf/bench/mem-memcpy-x86-64-asm.o',
-no changes.
+  [ bp: Put comments ontop instead of on the side. ]
 
-Cc: Borislav Petkov <bp@suse.de>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20211204134908.082342723@infradead.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/arch/x86/lib/memcpy_64.S |   12 ++++++------
- tools/arch/x86/lib/memset_64.S |    6 +++---
- 2 files changed, 9 insertions(+), 9 deletions(-)
+ arch/x86/kernel/alternative.c |   49 +++++++++++++++++++++++++++++-------------
+ 1 file changed, 34 insertions(+), 15 deletions(-)
 
---- a/tools/arch/x86/lib/memcpy_64.S
-+++ b/tools/arch/x86/lib/memcpy_64.S
-@@ -39,7 +39,7 @@ SYM_FUNC_START_WEAK(memcpy)
- 	rep movsq
- 	movl %edx, %ecx
- 	rep movsb
--	ret
-+	RET
- SYM_FUNC_END(memcpy)
- SYM_FUNC_END_ALIAS(__memcpy)
- EXPORT_SYMBOL(memcpy)
-@@ -53,7 +53,7 @@ SYM_FUNC_START_LOCAL(memcpy_erms)
- 	movq %rdi, %rax
- 	movq %rdx, %rcx
- 	rep movsb
--	ret
-+	RET
- SYM_FUNC_END(memcpy_erms)
+--- a/arch/x86/kernel/alternative.c
++++ b/arch/x86/kernel/alternative.c
+@@ -1243,10 +1243,13 @@ void text_poke_sync(void)
+ }
  
- SYM_FUNC_START_LOCAL(memcpy_orig)
-@@ -137,7 +137,7 @@ SYM_FUNC_START_LOCAL(memcpy_orig)
- 	movq %r9,	1*8(%rdi)
- 	movq %r10,	-2*8(%rdi, %rdx)
- 	movq %r11,	-1*8(%rdi, %rdx)
--	retq
-+	RET
- 	.p2align 4
- .Lless_16bytes:
- 	cmpl $8,	%edx
-@@ -149,7 +149,7 @@ SYM_FUNC_START_LOCAL(memcpy_orig)
- 	movq -1*8(%rsi, %rdx),	%r9
- 	movq %r8,	0*8(%rdi)
- 	movq %r9,	-1*8(%rdi, %rdx)
--	retq
-+	RET
- 	.p2align 4
- .Lless_8bytes:
- 	cmpl $4,	%edx
-@@ -162,7 +162,7 @@ SYM_FUNC_START_LOCAL(memcpy_orig)
- 	movl -4(%rsi, %rdx), %r8d
- 	movl %ecx, (%rdi)
- 	movl %r8d, -4(%rdi, %rdx)
--	retq
-+	RET
- 	.p2align 4
- .Lless_3bytes:
- 	subl $1, %edx
-@@ -180,7 +180,7 @@ SYM_FUNC_START_LOCAL(memcpy_orig)
- 	movb %cl, (%rdi)
+ struct text_poke_loc {
+-	s32 rel_addr; /* addr := _stext + rel_addr */
+-	s32 rel32;
++	/* addr := _stext + rel_addr */
++	s32 rel_addr;
++	s32 disp;
++	u8 len;
+ 	u8 opcode;
+ 	const u8 text[POKE_MAX_OPCODE_SIZE];
++	/* see text_poke_bp_batch() */
+ 	u8 old;
+ };
  
- .Lend:
--	retq
-+	RET
- SYM_FUNC_END(memcpy_orig)
+@@ -1261,7 +1264,8 @@ static struct bp_patching_desc *bp_desc;
+ static __always_inline
+ struct bp_patching_desc *try_get_desc(struct bp_patching_desc **descp)
+ {
+-	struct bp_patching_desc *desc = __READ_ONCE(*descp); /* rcu_dereference */
++	/* rcu_dereference */
++	struct bp_patching_desc *desc = __READ_ONCE(*descp);
  
- .popsection
---- a/tools/arch/x86/lib/memset_64.S
-+++ b/tools/arch/x86/lib/memset_64.S
-@@ -40,7 +40,7 @@ SYM_FUNC_START(__memset)
- 	movl %edx,%ecx
- 	rep stosb
- 	movq %r9,%rax
--	ret
-+	RET
- SYM_FUNC_END(__memset)
- SYM_FUNC_END_ALIAS(memset)
- EXPORT_SYMBOL(memset)
-@@ -63,7 +63,7 @@ SYM_FUNC_START_LOCAL(memset_erms)
- 	movq %rdx,%rcx
- 	rep stosb
- 	movq %r9,%rax
--	ret
-+	RET
- SYM_FUNC_END(memset_erms)
+ 	if (!desc || !arch_atomic_inc_not_zero(&desc->refs))
+ 		return NULL;
+@@ -1295,7 +1299,7 @@ noinstr int poke_int3_handler(struct pt_
+ {
+ 	struct bp_patching_desc *desc;
+ 	struct text_poke_loc *tp;
+-	int len, ret = 0;
++	int ret = 0;
+ 	void *ip;
  
- SYM_FUNC_START_LOCAL(memset_orig)
-@@ -125,7 +125,7 @@ SYM_FUNC_START_LOCAL(memset_orig)
+ 	if (user_mode(regs))
+@@ -1335,8 +1339,7 @@ noinstr int poke_int3_handler(struct pt_
+ 			goto out_put;
+ 	}
  
- .Lende:
- 	movq	%r10,%rax
--	ret
-+	RET
+-	len = text_opcode_size(tp->opcode);
+-	ip += len;
++	ip += tp->len;
  
- .Lbad_alignment:
- 	cmpq $7,%rdx
+ 	switch (tp->opcode) {
+ 	case INT3_INSN_OPCODE:
+@@ -1351,12 +1354,12 @@ noinstr int poke_int3_handler(struct pt_
+ 		break;
+ 
+ 	case CALL_INSN_OPCODE:
+-		int3_emulate_call(regs, (long)ip + tp->rel32);
++		int3_emulate_call(regs, (long)ip + tp->disp);
+ 		break;
+ 
+ 	case JMP32_INSN_OPCODE:
+ 	case JMP8_INSN_OPCODE:
+-		int3_emulate_jmp(regs, (long)ip + tp->rel32);
++		int3_emulate_jmp(regs, (long)ip + tp->disp);
+ 		break;
+ 
+ 	default:
+@@ -1431,7 +1434,7 @@ static void text_poke_bp_batch(struct te
+ 	 */
+ 	for (do_sync = 0, i = 0; i < nr_entries; i++) {
+ 		u8 old[POKE_MAX_OPCODE_SIZE] = { tp[i].old, };
+-		int len = text_opcode_size(tp[i].opcode);
++		int len = tp[i].len;
+ 
+ 		if (len - INT3_INSN_SIZE > 0) {
+ 			memcpy(old + INT3_INSN_SIZE,
+@@ -1508,21 +1511,37 @@ static void text_poke_loc_init(struct te
+ 			       const void *opcode, size_t len, const void *emulate)
+ {
+ 	struct insn insn;
+-	int ret;
++	int ret, i;
+ 
+ 	memcpy((void *)tp->text, opcode, len);
+ 	if (!emulate)
+ 		emulate = opcode;
+ 
+ 	ret = insn_decode_kernel(&insn, emulate);
+-
+ 	BUG_ON(ret < 0);
+-	BUG_ON(len != insn.length);
+ 
+ 	tp->rel_addr = addr - (void *)_stext;
++	tp->len = len;
+ 	tp->opcode = insn.opcode.bytes[0];
+ 
+ 	switch (tp->opcode) {
++	case RET_INSN_OPCODE:
++	case JMP32_INSN_OPCODE:
++	case JMP8_INSN_OPCODE:
++		/*
++		 * Control flow instructions without implied execution of the
++		 * next instruction can be padded with INT3.
++		 */
++		for (i = insn.length; i < len; i++)
++			BUG_ON(tp->text[i] != INT3_INSN_OPCODE);
++		break;
++
++	default:
++		BUG_ON(len != insn.length);
++	};
++
++
++	switch (tp->opcode) {
+ 	case INT3_INSN_OPCODE:
+ 	case RET_INSN_OPCODE:
+ 		break;
+@@ -1530,7 +1549,7 @@ static void text_poke_loc_init(struct te
+ 	case CALL_INSN_OPCODE:
+ 	case JMP32_INSN_OPCODE:
+ 	case JMP8_INSN_OPCODE:
+-		tp->rel32 = insn.immediate.value;
++		tp->disp = insn.immediate.value;
+ 		break;
+ 
+ 	default: /* assume NOP */
+@@ -1538,13 +1557,13 @@ static void text_poke_loc_init(struct te
+ 		case 2: /* NOP2 -- emulate as JMP8+0 */
+ 			BUG_ON(memcmp(emulate, ideal_nops[len], len));
+ 			tp->opcode = JMP8_INSN_OPCODE;
+-			tp->rel32 = 0;
++			tp->disp = 0;
+ 			break;
+ 
+ 		case 5: /* NOP5 -- emulate as JMP32+0 */
+ 			BUG_ON(memcmp(emulate, ideal_nops[NOP_ATOMIC5], len));
+ 			tp->opcode = JMP32_INSN_OPCODE;
+-			tp->rel32 = 0;
++			tp->disp = 0;
+ 			break;
+ 
+ 		default: /* unknown instruction */
 
 
