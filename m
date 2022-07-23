@@ -2,355 +2,583 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7402FC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:10:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B57BC43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:10:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239202AbiGWKKg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 06:10:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43052 "EHLO
+        id S238953AbiGWKKk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 06:10:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238939AbiGWKJG (ORCPT
+        with ESMTP id S238960AbiGWKJJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 06:09:06 -0400
-Received: from relay04.th.seeweb.it (relay04.th.seeweb.it [5.144.164.165])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A6207F526;
-        Sat, 23 Jul 2022 03:02:13 -0700 (PDT)
-Received: from localhost.localdomain (abxj77.neoplus.adsl.tpnet.pl [83.9.3.77])
-        by m-r1.th.seeweb.it (Postfix) with ESMTPA id E4EFB20682;
-        Sat, 23 Jul 2022 12:01:41 +0200 (CEST)
-From:   Konrad Dybcio <konrad.dybcio@somainline.org>
-To:     ~postmarketos/upstreaming@lists.sr.ht
-Cc:     martin.botka@somainline.org,
-        angelogioacchino.delregno@somainline.org,
-        marijn.suijten@somainline.org, jamipkettunen@somainline.org,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 2/3] dt-bindings: clock: add SM6375 QCOM global clock bindings
-Date:   Sat, 23 Jul 2022 12:01:34 +0200
-Message-Id: <20220723100135.91784-2-konrad.dybcio@somainline.org>
+        Sat, 23 Jul 2022 06:09:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C6963F329;
+        Sat, 23 Jul 2022 03:02:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D41FF61263;
+        Sat, 23 Jul 2022 10:02:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC755C341C0;
+        Sat, 23 Jul 2022 10:02:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658570536;
+        bh=PR4qSsLfCebVv1MQRnxZGaYukimLYC4djFlgxVu5qwg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ExkolcrzIGz7JZfOwLsRe4FrnuWxd38XyZKuRPS3LfQYcoRBCZbUKZ3Pa/UhTaJCq
+         RrfxTLspYrZjtmupCpiQjFerHyAipw4EPztQmRtSqlzj2oPRZukznW9LyQgeVs+vbR
+         XxJVZXLI/rsGlh5RVL1C/DbdnE5PgDSsQgwfPutE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Borislav Petkov <bp@suse.de>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
+        Ben Hutchings <ben@decadent.org.uk>
+Subject: [PATCH 5.10 110/148] objtool: Add entry UNRET validation
+Date:   Sat, 23 Jul 2022 11:55:22 +0200
+Message-Id: <20220723095255.234133949@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220723100135.91784-1-konrad.dybcio@somainline.org>
-References: <20220723100135.91784-1-konrad.dybcio@somainline.org>
+In-Reply-To: <20220723095224.302504400@linuxfoundation.org>
+References: <20220723095224.302504400@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add device tree bindings for global clock controller for SM6375 SoCs.
+From: Peter Zijlstra <peterz@infradead.org>
 
-Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+commit a09a6e2399ba0595c3042b3164f3ca68a3cff33e upstream.
+
+Since entry asm is tricky, add a validation pass that ensures the
+retbleed mitigation has been done before the first actual RET
+instruction.
+
+Entry points are those that either have UNWIND_HINT_ENTRY, which acts
+as UNWIND_HINT_EMPTY but marks the instruction as an entry point, or
+those that have UWIND_HINT_IRET_REGS at +0.
+
+This is basically a variant of validate_branch() that is
+intra-function and it will simply follow all branches from marked
+entry points and ensures that all paths lead to ANNOTATE_UNRET_END.
+
+If a path hits RET or an indirection the path is a fail and will be
+reported.
+
+There are 3 ANNOTATE_UNRET_END instances:
+
+ - UNTRAIN_RET itself
+ - exception from-kernel; this path doesn't need UNTRAIN_RET
+ - all early exceptions; these also don't need UNTRAIN_RET
+
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+[cascardo: arch/x86/entry/entry_64.S no pt_regs return at .Lerror_entry_done_lfence]
+[cascardo: tools/objtool/builtin-check.c no link option validation]
+[cascardo: tools/objtool/check.c opts.ibt is ibt]
+[cascardo: tools/objtool/include/objtool/builtin.h leave unret option as bool, no struct opts]
+[cascardo: objtool is still called from scripts/link-vmlinux.sh]
+[cascardo: no IBT support]
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+[bwh: Backported to 5.10:
+ - In scripts/link-vmlinux.sh, use "test -n" instead of is_enabled
+ - Adjust context]
+Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
-Changes since v2:
-- reference qcom,gcc.yaml
+ arch/x86/entry/entry_64.S            |    3 
+ arch/x86/entry/entry_64_compat.S     |    6 -
+ arch/x86/include/asm/nospec-branch.h |   12 ++
+ arch/x86/include/asm/unwind_hints.h  |    4 
+ arch/x86/kernel/head_64.S            |    5 +
+ arch/x86/xen/xen-asm.S               |   10 +-
+ include/linux/objtool.h              |    3 
+ scripts/link-vmlinux.sh              |    3 
+ tools/include/linux/objtool.h        |    3 
+ tools/objtool/builtin-check.c        |    3 
+ tools/objtool/builtin.h              |    2 
+ tools/objtool/check.c                |  172 ++++++++++++++++++++++++++++++++++-
+ tools/objtool/check.h                |    6 +
+ 13 files changed, 217 insertions(+), 15 deletions(-)
 
- .../bindings/clock/qcom,sm6375-gcc.yaml       |  48 ++++
- include/dt-bindings/clock/qcom,sm6375-gcc.h   | 234 ++++++++++++++++++
- 2 files changed, 282 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/clock/qcom,sm6375-gcc.yaml
- create mode 100644 include/dt-bindings/clock/qcom,sm6375-gcc.h
-
-diff --git a/Documentation/devicetree/bindings/clock/qcom,sm6375-gcc.yaml b/Documentation/devicetree/bindings/clock/qcom,sm6375-gcc.yaml
-new file mode 100644
-index 000000000000..fb1c36888d18
---- /dev/null
-+++ b/Documentation/devicetree/bindings/clock/qcom,sm6375-gcc.yaml
-@@ -0,0 +1,48 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/clock/qcom,sm6375-gcc.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Qualcomm Global Clock & Reset Controller Binding for SM6375
-+
-+maintainers:
-+  - Konrad Dybcio <konrad.dybcio@somainline.org>
-+
-+description: |
-+  Qualcomm global clock control module which supports the clocks, resets and
-+  power domains on SM6375
-+
-+  See also:
-+  - dt-bindings/clock/qcom,sm6375-gcc.h
-+
-+allOf:
-+  - $ref: qcom,gcc.yaml#
-+
-+properties:
-+  compatible:
-+    const: qcom,sm6375-gcc
-+
-+  clocks:
-+    items:
-+      - description: Board XO source
-+      - description: Board XO Active-Only source
-+      - description: Sleep clock source
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/qcom,rpmcc.h>
-+    clock-controller@1400000 {
-+      compatible = "qcom,sm6375-gcc";
-+      reg = <0x01400000 0x1f0000>;
-+      clocks = <&rpmcc RPM_SMD_XO_CLK_SRC>,
-+               <&rpmcc RPM_SMD_XO_A_CLK_SRC>,
-+               <&sleep_clk>;
-+      #clock-cells = <1>;
-+      #reset-cells = <1>;
-+      #power-domain-cells = <1>;
-+    };
-+
-+...
-diff --git a/include/dt-bindings/clock/qcom,sm6375-gcc.h b/include/dt-bindings/clock/qcom,sm6375-gcc.h
-new file mode 100644
-index 000000000000..1e9801e1cedf
---- /dev/null
-+++ b/include/dt-bindings/clock/qcom,sm6375-gcc.h
-@@ -0,0 +1,234 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * Copyright (c) 2021, The Linux Foundation. All rights reserved.
-+ * Copyright (c) 2022, Konrad Dybcio <konrad.dybcio@somainline.org>
+--- a/arch/x86/entry/entry_64.S
++++ b/arch/x86/entry/entry_64.S
+@@ -93,7 +93,7 @@ SYM_CODE_END(native_usergs_sysret64)
+  */
+ 
+ SYM_CODE_START(entry_SYSCALL_64)
+-	UNWIND_HINT_EMPTY
++	UNWIND_HINT_ENTRY
+ 
+ 	swapgs
+ 	/* tss.sp2 is scratch space. */
+@@ -1094,6 +1094,7 @@ SYM_CODE_START_LOCAL(error_entry)
+ 	 */
+ .Lerror_entry_done_lfence:
+ 	FENCE_SWAPGS_KERNEL_ENTRY
++	ANNOTATE_UNRET_END
+ 	RET
+ 
+ .Lbstep_iret:
+--- a/arch/x86/entry/entry_64_compat.S
++++ b/arch/x86/entry/entry_64_compat.S
+@@ -49,7 +49,7 @@
+  * 0(%ebp) arg6
+  */
+ SYM_CODE_START(entry_SYSENTER_compat)
+-	UNWIND_HINT_EMPTY
++	UNWIND_HINT_ENTRY
+ 	/* Interrupts are off on entry. */
+ 	SWAPGS
+ 
+@@ -202,7 +202,7 @@ SYM_CODE_END(entry_SYSENTER_compat)
+  * 0(%esp) arg6
+  */
+ SYM_CODE_START(entry_SYSCALL_compat)
+-	UNWIND_HINT_EMPTY
++	UNWIND_HINT_ENTRY
+ 	/* Interrupts are off on entry. */
+ 	swapgs
+ 
+@@ -349,7 +349,7 @@ SYM_CODE_END(entry_SYSCALL_compat)
+  * ebp  arg6
+  */
+ SYM_CODE_START(entry_INT80_compat)
+-	UNWIND_HINT_EMPTY
++	UNWIND_HINT_ENTRY
+ 	/*
+ 	 * Interrupts are off on entry.
+ 	 */
+--- a/arch/x86/include/asm/nospec-branch.h
++++ b/arch/x86/include/asm/nospec-branch.h
+@@ -82,6 +82,17 @@
+ #define ANNOTATE_UNRET_SAFE ANNOTATE_RETPOLINE_SAFE
+ 
+ /*
++ * Abuse ANNOTATE_RETPOLINE_SAFE on a NOP to indicate UNRET_END, should
++ * eventually turn into it's own annotation.
 + */
-+
-+#ifndef _DT_BINDINGS_CLK_QCOM_GCC_SM6375_H
-+#define _DT_BINDINGS_CLK_QCOM_GCC_SM6375_H
-+
-+/* Clocks */
-+#define GPLL0						0
-+#define GPLL0_OUT_EVEN					1
-+#define GPLL0_OUT_ODD					2
-+#define GPLL1						3
-+#define GPLL10						4
-+#define GPLL11						5
-+#define GPLL3						6
-+#define GPLL3_OUT_EVEN					7
-+#define GPLL4						8
-+#define GPLL5						9
-+#define GPLL6						10
-+#define GPLL6_OUT_EVEN					11
-+#define GPLL7						12
-+#define GPLL8						13
-+#define GPLL8_OUT_EVEN					14
-+#define GPLL9						15
-+#define GPLL9_OUT_MAIN					16
-+#define GCC_AHB2PHY_CSI_CLK				17
-+#define GCC_AHB2PHY_USB_CLK				18
-+#define GCC_BIMC_GPU_AXI_CLK				19
-+#define GCC_BOOT_ROM_AHB_CLK				20
-+#define GCC_CAM_THROTTLE_NRT_CLK			21
-+#define GCC_CAM_THROTTLE_RT_CLK				22
-+#define GCC_CAMERA_AHB_CLK				23
-+#define GCC_CAMERA_XO_CLK				24
-+#define GCC_CAMSS_AXI_CLK				25
-+#define GCC_CAMSS_AXI_CLK_SRC				26
-+#define GCC_CAMSS_CAMNOC_ATB_CLK			27
-+#define GCC_CAMSS_CAMNOC_NTS_XO_CLK			28
-+#define GCC_CAMSS_CCI_0_CLK				29
-+#define GCC_CAMSS_CCI_0_CLK_SRC				30
-+#define GCC_CAMSS_CCI_1_CLK				31
-+#define GCC_CAMSS_CCI_1_CLK_SRC				32
-+#define GCC_CAMSS_CPHY_0_CLK				33
-+#define GCC_CAMSS_CPHY_1_CLK				34
-+#define GCC_CAMSS_CPHY_2_CLK				35
-+#define GCC_CAMSS_CPHY_3_CLK				36
-+#define GCC_CAMSS_CSI0PHYTIMER_CLK			37
-+#define GCC_CAMSS_CSI0PHYTIMER_CLK_SRC			38
-+#define GCC_CAMSS_CSI1PHYTIMER_CLK			39
-+#define GCC_CAMSS_CSI1PHYTIMER_CLK_SRC			40
-+#define GCC_CAMSS_CSI2PHYTIMER_CLK			41
-+#define GCC_CAMSS_CSI2PHYTIMER_CLK_SRC			42
-+#define GCC_CAMSS_CSI3PHYTIMER_CLK			43
-+#define GCC_CAMSS_CSI3PHYTIMER_CLK_SRC			44
-+#define GCC_CAMSS_MCLK0_CLK				45
-+#define GCC_CAMSS_MCLK0_CLK_SRC				46
-+#define GCC_CAMSS_MCLK1_CLK				47
-+#define GCC_CAMSS_MCLK1_CLK_SRC				48
-+#define GCC_CAMSS_MCLK2_CLK				49
-+#define GCC_CAMSS_MCLK2_CLK_SRC				50
-+#define GCC_CAMSS_MCLK3_CLK				51
-+#define GCC_CAMSS_MCLK3_CLK_SRC				52
-+#define GCC_CAMSS_MCLK4_CLK				53
-+#define GCC_CAMSS_MCLK4_CLK_SRC				54
-+#define GCC_CAMSS_NRT_AXI_CLK				55
-+#define GCC_CAMSS_OPE_AHB_CLK				56
-+#define GCC_CAMSS_OPE_AHB_CLK_SRC			57
-+#define GCC_CAMSS_OPE_CLK				58
-+#define GCC_CAMSS_OPE_CLK_SRC				59
-+#define GCC_CAMSS_RT_AXI_CLK				60
-+#define GCC_CAMSS_TFE_0_CLK				61
-+#define GCC_CAMSS_TFE_0_CLK_SRC				62
-+#define GCC_CAMSS_TFE_0_CPHY_RX_CLK			63
-+#define GCC_CAMSS_TFE_0_CSID_CLK			64
-+#define GCC_CAMSS_TFE_0_CSID_CLK_SRC			65
-+#define GCC_CAMSS_TFE_1_CLK				66
-+#define GCC_CAMSS_TFE_1_CLK_SRC				67
-+#define GCC_CAMSS_TFE_1_CPHY_RX_CLK			68
-+#define GCC_CAMSS_TFE_1_CSID_CLK			69
-+#define GCC_CAMSS_TFE_1_CSID_CLK_SRC			70
-+#define GCC_CAMSS_TFE_2_CLK				71
-+#define GCC_CAMSS_TFE_2_CLK_SRC				72
-+#define GCC_CAMSS_TFE_2_CPHY_RX_CLK			73
-+#define GCC_CAMSS_TFE_2_CSID_CLK			74
-+#define GCC_CAMSS_TFE_2_CSID_CLK_SRC			75
-+#define GCC_CAMSS_TFE_CPHY_RX_CLK_SRC			76
-+#define GCC_CAMSS_TOP_AHB_CLK				77
-+#define GCC_CAMSS_TOP_AHB_CLK_SRC			78
-+#define GCC_CFG_NOC_USB3_PRIM_AXI_CLK			79
-+#define GCC_CPUSS_AHB_CLK_SRC				80
-+#define GCC_CPUSS_AHB_POSTDIV_CLK_SRC			81
-+#define GCC_CPUSS_GNOC_CLK				82
-+#define GCC_DISP_AHB_CLK				83
-+#define GCC_DISP_GPLL0_CLK_SRC				84
-+#define GCC_DISP_GPLL0_DIV_CLK_SRC			85
-+#define GCC_DISP_HF_AXI_CLK				86
-+#define GCC_DISP_SLEEP_CLK				87
-+#define GCC_DISP_THROTTLE_CORE_CLK			88
-+#define GCC_DISP_XO_CLK					89
-+#define GCC_GP1_CLK					90
-+#define GCC_GP1_CLK_SRC					91
-+#define GCC_GP2_CLK					92
-+#define GCC_GP2_CLK_SRC					93
-+#define GCC_GP3_CLK					94
-+#define GCC_GP3_CLK_SRC					95
-+#define GCC_GPU_CFG_AHB_CLK				96
-+#define GCC_GPU_GPLL0_CLK_SRC				97
-+#define GCC_GPU_GPLL0_DIV_CLK_SRC			98
-+#define GCC_GPU_MEMNOC_GFX_CLK				99
-+#define GCC_GPU_SNOC_DVM_GFX_CLK			100
-+#define GCC_GPU_THROTTLE_CORE_CLK			101
-+#define GCC_PDM2_CLK					102
-+#define GCC_PDM2_CLK_SRC				103
-+#define GCC_PDM_AHB_CLK					104
-+#define GCC_PDM_XO4_CLK					105
-+#define GCC_PRNG_AHB_CLK				106
-+#define GCC_QMIP_CAMERA_NRT_AHB_CLK			107
-+#define GCC_QMIP_CAMERA_RT_AHB_CLK			108
-+#define GCC_QMIP_DISP_AHB_CLK				109
-+#define GCC_QMIP_GPU_CFG_AHB_CLK			110
-+#define GCC_QMIP_VIDEO_VCODEC_AHB_CLK			111
-+#define GCC_QUPV3_WRAP0_CORE_2X_CLK			112
-+#define GCC_QUPV3_WRAP0_CORE_CLK			113
-+#define GCC_QUPV3_WRAP0_S0_CLK				114
-+#define GCC_QUPV3_WRAP0_S0_CLK_SRC			115
-+#define GCC_QUPV3_WRAP0_S1_CLK				116
-+#define GCC_QUPV3_WRAP0_S1_CLK_SRC			117
-+#define GCC_QUPV3_WRAP0_S2_CLK				118
-+#define GCC_QUPV3_WRAP0_S2_CLK_SRC			119
-+#define GCC_QUPV3_WRAP0_S3_CLK				120
-+#define GCC_QUPV3_WRAP0_S3_CLK_SRC			121
-+#define GCC_QUPV3_WRAP0_S4_CLK				122
-+#define GCC_QUPV3_WRAP0_S4_CLK_SRC			123
-+#define GCC_QUPV3_WRAP0_S5_CLK				124
-+#define GCC_QUPV3_WRAP0_S5_CLK_SRC			125
-+#define GCC_QUPV3_WRAP1_CORE_2X_CLK			126
-+#define GCC_QUPV3_WRAP1_CORE_CLK			127
-+#define GCC_QUPV3_WRAP1_S0_CLK				128
-+#define GCC_QUPV3_WRAP1_S0_CLK_SRC			129
-+#define GCC_QUPV3_WRAP1_S1_CLK				130
-+#define GCC_QUPV3_WRAP1_S1_CLK_SRC			131
-+#define GCC_QUPV3_WRAP1_S2_CLK				132
-+#define GCC_QUPV3_WRAP1_S2_CLK_SRC			133
-+#define GCC_QUPV3_WRAP1_S3_CLK				134
-+#define GCC_QUPV3_WRAP1_S3_CLK_SRC			135
-+#define GCC_QUPV3_WRAP1_S4_CLK				136
-+#define GCC_QUPV3_WRAP1_S4_CLK_SRC			137
-+#define GCC_QUPV3_WRAP1_S5_CLK				138
-+#define GCC_QUPV3_WRAP1_S5_CLK_SRC			139
-+#define GCC_QUPV3_WRAP_0_M_AHB_CLK			140
-+#define GCC_QUPV3_WRAP_0_S_AHB_CLK			141
-+#define GCC_QUPV3_WRAP_1_M_AHB_CLK			142
-+#define GCC_QUPV3_WRAP_1_S_AHB_CLK			143
-+#define GCC_RX5_PCIE_CLKREF_EN_CLK			144
-+#define GCC_SDCC1_AHB_CLK				145
-+#define GCC_SDCC1_APPS_CLK				146
-+#define GCC_SDCC1_APPS_CLK_SRC				147
-+#define GCC_SDCC1_ICE_CORE_CLK				148
-+#define GCC_SDCC1_ICE_CORE_CLK_SRC			149
-+#define GCC_SDCC2_AHB_CLK				150
-+#define GCC_SDCC2_APPS_CLK				151
-+#define GCC_SDCC2_APPS_CLK_SRC				152
-+#define GCC_SYS_NOC_CPUSS_AHB_CLK			153
-+#define GCC_SYS_NOC_UFS_PHY_AXI_CLK			154
-+#define GCC_SYS_NOC_USB3_PRIM_AXI_CLK			155
-+#define GCC_UFS_MEM_CLKREF_CLK				156
-+#define GCC_UFS_PHY_AHB_CLK				157
-+#define GCC_UFS_PHY_AXI_CLK				158
-+#define GCC_UFS_PHY_AXI_CLK_SRC				159
-+#define GCC_UFS_PHY_ICE_CORE_CLK			160
-+#define GCC_UFS_PHY_ICE_CORE_CLK_SRC			161
-+#define GCC_UFS_PHY_PHY_AUX_CLK				162
-+#define GCC_UFS_PHY_PHY_AUX_CLK_SRC			163
-+#define GCC_UFS_PHY_RX_SYMBOL_0_CLK			164
-+#define GCC_UFS_PHY_TX_SYMBOL_0_CLK			165
-+#define GCC_UFS_PHY_UNIPRO_CORE_CLK			166
-+#define GCC_UFS_PHY_UNIPRO_CORE_CLK_SRC			167
-+#define GCC_USB30_PRIM_MASTER_CLK			168
-+#define GCC_USB30_PRIM_MASTER_CLK_SRC			169
-+#define GCC_USB30_PRIM_MOCK_UTMI_CLK			170
-+#define GCC_USB30_PRIM_MOCK_UTMI_CLK_SRC		171
-+#define GCC_USB30_PRIM_MOCK_UTMI_POSTDIV_CLK_SRC	172
-+#define GCC_USB30_PRIM_SLEEP_CLK			173
-+#define GCC_USB3_PRIM_CLKREF_CLK			174
-+#define GCC_USB3_PRIM_PHY_AUX_CLK_SRC			175
-+#define GCC_USB3_PRIM_PHY_COM_AUX_CLK			176
-+#define GCC_USB3_PRIM_PHY_PIPE_CLK			177
-+#define GCC_VCODEC0_AXI_CLK				178
-+#define GCC_VENUS_AHB_CLK				179
-+#define GCC_VENUS_CTL_AXI_CLK				180
-+#define GCC_VIDEO_AHB_CLK				181
-+#define GCC_VIDEO_AXI0_CLK				182
-+#define GCC_VIDEO_THROTTLE_CORE_CLK			183
-+#define GCC_VIDEO_VCODEC0_SYS_CLK			184
-+#define GCC_VIDEO_VENUS_CLK_SRC				185
-+#define GCC_VIDEO_VENUS_CTL_CLK				186
-+#define GCC_VIDEO_XO_CLK				187
-+
-+/* Resets */
-+#define GCC_CAMSS_OPE_BCR				0
-+#define GCC_CAMSS_TFE_BCR				1
-+#define GCC_CAMSS_TOP_BCR				2
-+#define GCC_GPU_BCR					3
-+#define GCC_MMSS_BCR					4
-+#define GCC_PDM_BCR					5
-+#define GCC_PRNG_BCR					6
-+#define GCC_QUPV3_WRAPPER_0_BCR				7
-+#define GCC_QUPV3_WRAPPER_1_BCR				8
-+#define GCC_QUSB2PHY_PRIM_BCR				9
-+#define GCC_QUSB2PHY_SEC_BCR				10
-+#define GCC_SDCC1_BCR					11
-+#define GCC_SDCC2_BCR					12
-+#define GCC_UFS_PHY_BCR					13
-+#define GCC_USB30_PRIM_BCR				14
-+#define GCC_USB_PHY_CFG_AHB2PHY_BCR			15
-+#define GCC_VCODEC0_BCR					16
-+#define GCC_VENUS_BCR					17
-+#define GCC_VIDEO_INTERFACE_BCR				18
-+#define GCC_USB3_DP_PHY_PRIM_BCR			19
-+#define GCC_USB3_PHY_PRIM_SP0_BCR			20
-+
-+/* GDSCs */
-+#define USB30_PRIM_GDSC					0
-+#define UFS_PHY_GDSC					1
-+#define CAMSS_TOP_GDSC					2
-+#define VENUS_GDSC					3
-+#define VCODEC0_GDSC					4
-+#define HLOS1_VOTE_MM_SNOC_MMU_TBU_NRT_GDSC		5
-+#define HLOS1_VOTE_MM_SNOC_MMU_TBU_RT_GDSC		6
-+#define HLOS1_VOTE_TURING_MMU_TBU0_GDSC			7
-+#define HLOS1_VOTE_TURING_MMU_TBU1_GDSC			8
-+
++.macro ANNOTATE_UNRET_END
++#ifdef CONFIG_DEBUG_ENTRY
++	ANNOTATE_RETPOLINE_SAFE
++	nop
 +#endif
--- 
-2.37.1
++.endm
++
++/*
+  * JMP_NOSPEC and CALL_NOSPEC macros can be used instead of a simple
+  * indirect jmp/call which may be susceptible to the Spectre variant 2
+  * attack.
+@@ -131,6 +142,7 @@
+  */
+ .macro UNTRAIN_RET
+ #ifdef CONFIG_RETPOLINE
++	ANNOTATE_UNRET_END
+ 	ALTERNATIVE_2 "",						\
+ 	              "call zen_untrain_ret", X86_FEATURE_UNRET,	\
+ 		      "call entry_ibpb", X86_FEATURE_ENTRY_IBPB
+--- a/arch/x86/include/asm/unwind_hints.h
++++ b/arch/x86/include/asm/unwind_hints.h
+@@ -11,6 +11,10 @@
+ 	UNWIND_HINT sp_reg=ORC_REG_UNDEFINED type=UNWIND_HINT_TYPE_CALL end=1
+ .endm
+ 
++.macro UNWIND_HINT_ENTRY
++	UNWIND_HINT sp_reg=ORC_REG_UNDEFINED type=UNWIND_HINT_TYPE_ENTRY end=1
++.endm
++
+ .macro UNWIND_HINT_REGS base=%rsp offset=0 indirect=0 extra=1 partial=0
+ 	.if \base == %rsp
+ 		.if \indirect
+--- a/arch/x86/kernel/head_64.S
++++ b/arch/x86/kernel/head_64.S
+@@ -321,6 +321,8 @@ SYM_CODE_END(start_cpu0)
+ SYM_CODE_START_NOALIGN(vc_boot_ghcb)
+ 	UNWIND_HINT_IRET_REGS offset=8
+ 
++	ANNOTATE_UNRET_END
++
+ 	/* Build pt_regs */
+ 	PUSH_AND_CLEAR_REGS
+ 
+@@ -378,6 +380,7 @@ SYM_CODE_START(early_idt_handler_array)
+ SYM_CODE_END(early_idt_handler_array)
+ 
+ SYM_CODE_START_LOCAL(early_idt_handler_common)
++	ANNOTATE_UNRET_END
+ 	/*
+ 	 * The stack is the hardware frame, an error code or zero, and the
+ 	 * vector number.
+@@ -424,6 +427,8 @@ SYM_CODE_END(early_idt_handler_common)
+ SYM_CODE_START_NOALIGN(vc_no_ghcb)
+ 	UNWIND_HINT_IRET_REGS offset=8
+ 
++	ANNOTATE_UNRET_END
++
+ 	/* Build pt_regs */
+ 	PUSH_AND_CLEAR_REGS
+ 
+--- a/arch/x86/xen/xen-asm.S
++++ b/arch/x86/xen/xen-asm.S
+@@ -148,7 +148,7 @@ SYM_FUNC_END(xen_read_cr2_direct);
+ 
+ .macro xen_pv_trap name
+ SYM_CODE_START(xen_\name)
+-	UNWIND_HINT_EMPTY
++	UNWIND_HINT_ENTRY
+ 	pop %rcx
+ 	pop %r11
+ 	jmp  \name
+@@ -277,7 +277,7 @@ SYM_CODE_END(xenpv_restore_regs_and_retu
+ 
+ /* Normal 64-bit system call target */
+ SYM_CODE_START(xen_entry_SYSCALL_64)
+-	UNWIND_HINT_EMPTY
++	UNWIND_HINT_ENTRY
+ 	popq %rcx
+ 	popq %r11
+ 
+@@ -296,7 +296,7 @@ SYM_CODE_END(xen_entry_SYSCALL_64)
+ 
+ /* 32-bit compat syscall target */
+ SYM_CODE_START(xen_entry_SYSCALL_compat)
+-	UNWIND_HINT_EMPTY
++	UNWIND_HINT_ENTRY
+ 	popq %rcx
+ 	popq %r11
+ 
+@@ -313,7 +313,7 @@ SYM_CODE_END(xen_entry_SYSCALL_compat)
+ 
+ /* 32-bit compat sysenter target */
+ SYM_CODE_START(xen_entry_SYSENTER_compat)
+-	UNWIND_HINT_EMPTY
++	UNWIND_HINT_ENTRY
+ 	/*
+ 	 * NB: Xen is polite and clears TF from EFLAGS for us.  This means
+ 	 * that we don't need to guard against single step exceptions here.
+@@ -336,7 +336,7 @@ SYM_CODE_END(xen_entry_SYSENTER_compat)
+ 
+ SYM_CODE_START(xen_entry_SYSCALL_compat)
+ SYM_CODE_START(xen_entry_SYSENTER_compat)
+-	UNWIND_HINT_EMPTY
++	UNWIND_HINT_ENTRY
+ 	lea 16(%rsp), %rsp	/* strip %rcx, %r11 */
+ 	mov $-ENOSYS, %rax
+ 	pushq $0
+--- a/include/linux/objtool.h
++++ b/include/linux/objtool.h
+@@ -32,11 +32,14 @@ struct unwind_hint {
+  *
+  * UNWIND_HINT_FUNC: Generate the unwind metadata of a callable function.
+  * Useful for code which doesn't have an ELF function annotation.
++ *
++ * UNWIND_HINT_ENTRY: machine entry without stack, SYSCALL/SYSENTER etc.
+  */
+ #define UNWIND_HINT_TYPE_CALL		0
+ #define UNWIND_HINT_TYPE_REGS		1
+ #define UNWIND_HINT_TYPE_REGS_PARTIAL	2
+ #define UNWIND_HINT_TYPE_FUNC		3
++#define UNWIND_HINT_TYPE_ENTRY		4
+ 
+ #ifdef CONFIG_STACK_VALIDATION
+ 
+--- a/scripts/link-vmlinux.sh
++++ b/scripts/link-vmlinux.sh
+@@ -65,6 +65,9 @@ objtool_link()
+ 
+ 	if [ -n "${CONFIG_VMLINUX_VALIDATION}" ]; then
+ 		objtoolopt="check"
++		if [ -n "${CONFIG_RETPOLINE}" ]; then
++			objtoolopt="${objtoolopt} --unret"
++		fi
+ 		if [ -z "${CONFIG_FRAME_POINTER}" ]; then
+ 			objtoolopt="${objtoolopt} --no-fp"
+ 		fi
+--- a/tools/include/linux/objtool.h
++++ b/tools/include/linux/objtool.h
+@@ -32,11 +32,14 @@ struct unwind_hint {
+  *
+  * UNWIND_HINT_FUNC: Generate the unwind metadata of a callable function.
+  * Useful for code which doesn't have an ELF function annotation.
++ *
++ * UNWIND_HINT_ENTRY: machine entry without stack, SYSCALL/SYSENTER etc.
+  */
+ #define UNWIND_HINT_TYPE_CALL		0
+ #define UNWIND_HINT_TYPE_REGS		1
+ #define UNWIND_HINT_TYPE_REGS_PARTIAL	2
+ #define UNWIND_HINT_TYPE_FUNC		3
++#define UNWIND_HINT_TYPE_ENTRY		4
+ 
+ #ifdef CONFIG_STACK_VALIDATION
+ 
+--- a/tools/objtool/builtin-check.c
++++ b/tools/objtool/builtin-check.c
+@@ -19,7 +19,7 @@
+ #include "objtool.h"
+ 
+ bool no_fp, no_unreachable, retpoline, module, backtrace, uaccess, stats,
+-     validate_dup, vmlinux, sls;
++     validate_dup, vmlinux, sls, unret;
+ 
+ static const char * const check_usage[] = {
+ 	"objtool check [<options>] file.o",
+@@ -30,6 +30,7 @@ const struct option check_options[] = {
+ 	OPT_BOOLEAN('f', "no-fp", &no_fp, "Skip frame pointer validation"),
+ 	OPT_BOOLEAN('u', "no-unreachable", &no_unreachable, "Skip 'unreachable instruction' warnings"),
+ 	OPT_BOOLEAN('r', "retpoline", &retpoline, "Validate retpoline assumptions"),
++	OPT_BOOLEAN(0,   "unret", &unret, "validate entry unret placement"),
+ 	OPT_BOOLEAN('m', "module", &module, "Indicates the object will be part of a kernel module"),
+ 	OPT_BOOLEAN('b', "backtrace", &backtrace, "unwind on error"),
+ 	OPT_BOOLEAN('a', "uaccess", &uaccess, "enable uaccess checking"),
+--- a/tools/objtool/builtin.h
++++ b/tools/objtool/builtin.h
+@@ -9,7 +9,7 @@
+ 
+ extern const struct option check_options[];
+ extern bool no_fp, no_unreachable, retpoline, module, backtrace, uaccess, stats,
+-            validate_dup, vmlinux, sls;
++            validate_dup, vmlinux, sls, unret;
+ 
+ extern int cmd_check(int argc, const char **argv);
+ extern int cmd_orc(int argc, const char **argv);
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -1752,6 +1752,19 @@ static int read_unwind_hints(struct objt
+ 
+ 		insn->hint = true;
+ 
++		if (hint->type == UNWIND_HINT_TYPE_REGS_PARTIAL) {
++			struct symbol *sym = find_symbol_by_offset(insn->sec, insn->offset);
++
++			if (sym && sym->bind == STB_GLOBAL) {
++				insn->entry = 1;
++			}
++		}
++
++		if (hint->type == UNWIND_HINT_TYPE_ENTRY) {
++			hint->type = UNWIND_HINT_TYPE_CALL;
++			insn->entry = 1;
++		}
++
+ 		if (hint->type == UNWIND_HINT_TYPE_FUNC) {
+ 			insn->cfi = &func_cfi;
+ 			continue;
+@@ -1800,8 +1813,9 @@ static int read_retpoline_hints(struct o
+ 
+ 		if (insn->type != INSN_JUMP_DYNAMIC &&
+ 		    insn->type != INSN_CALL_DYNAMIC &&
+-		    insn->type != INSN_RETURN) {
+-			WARN_FUNC("retpoline_safe hint not an indirect jump/call/ret",
++		    insn->type != INSN_RETURN &&
++		    insn->type != INSN_NOP) {
++			WARN_FUNC("retpoline_safe hint not an indirect jump/call/ret/nop",
+ 				  insn->sec, insn->offset);
+ 			return -1;
+ 		}
+@@ -2818,8 +2832,8 @@ static int validate_branch(struct objtoo
+ 			return 1;
+ 		}
+ 
+-		visited = 1 << state.uaccess;
+-		if (insn->visited) {
++		visited = VISITED_BRANCH << state.uaccess;
++		if (insn->visited & VISITED_BRANCH_MASK) {
+ 			if (!insn->hint && !insn_cfi_match(insn, &state.cfi))
+ 				return 1;
+ 
+@@ -3045,6 +3059,145 @@ static int validate_unwind_hints(struct
+ 	return warnings;
+ }
+ 
++/*
++ * Validate rethunk entry constraint: must untrain RET before the first RET.
++ *
++ * Follow every branch (intra-function) and ensure ANNOTATE_UNRET_END comes
++ * before an actual RET instruction.
++ */
++static int validate_entry(struct objtool_file *file, struct instruction *insn)
++{
++	struct instruction *next, *dest;
++	int ret, warnings = 0;
++
++	for (;;) {
++		next = next_insn_to_validate(file, insn);
++
++		if (insn->visited & VISITED_ENTRY)
++			return 0;
++
++		insn->visited |= VISITED_ENTRY;
++
++		if (!insn->ignore_alts && !list_empty(&insn->alts)) {
++			struct alternative *alt;
++			bool skip_orig = false;
++
++			list_for_each_entry(alt, &insn->alts, list) {
++				if (alt->skip_orig)
++					skip_orig = true;
++
++				ret = validate_entry(file, alt->insn);
++				if (ret) {
++				        if (backtrace)
++						BT_FUNC("(alt)", insn);
++					return ret;
++				}
++			}
++
++			if (skip_orig)
++				return 0;
++		}
++
++		switch (insn->type) {
++
++		case INSN_CALL_DYNAMIC:
++		case INSN_JUMP_DYNAMIC:
++		case INSN_JUMP_DYNAMIC_CONDITIONAL:
++			WARN_FUNC("early indirect call", insn->sec, insn->offset);
++			return 1;
++
++		case INSN_JUMP_UNCONDITIONAL:
++		case INSN_JUMP_CONDITIONAL:
++			if (!is_sibling_call(insn)) {
++				if (!insn->jump_dest) {
++					WARN_FUNC("unresolved jump target after linking?!?",
++						  insn->sec, insn->offset);
++					return -1;
++				}
++				ret = validate_entry(file, insn->jump_dest);
++				if (ret) {
++					if (backtrace) {
++						BT_FUNC("(branch%s)", insn,
++							insn->type == INSN_JUMP_CONDITIONAL ? "-cond" : "");
++					}
++					return ret;
++				}
++
++				if (insn->type == INSN_JUMP_UNCONDITIONAL)
++					return 0;
++
++				break;
++			}
++
++			/* fallthrough */
++		case INSN_CALL:
++			dest = find_insn(file, insn->call_dest->sec,
++					 insn->call_dest->offset);
++			if (!dest) {
++				WARN("Unresolved function after linking!?: %s",
++				     insn->call_dest->name);
++				return -1;
++			}
++
++			ret = validate_entry(file, dest);
++			if (ret) {
++				if (backtrace)
++					BT_FUNC("(call)", insn);
++				return ret;
++			}
++			/*
++			 * If a call returns without error, it must have seen UNTRAIN_RET.
++			 * Therefore any non-error return is a success.
++			 */
++			return 0;
++
++		case INSN_RETURN:
++			WARN_FUNC("RET before UNTRAIN", insn->sec, insn->offset);
++			return 1;
++
++		case INSN_NOP:
++			if (insn->retpoline_safe)
++				return 0;
++			break;
++
++		default:
++			break;
++		}
++
++		if (!next) {
++			WARN_FUNC("teh end!", insn->sec, insn->offset);
++			return -1;
++		}
++		insn = next;
++	}
++
++	return warnings;
++}
++
++/*
++ * Validate that all branches starting at 'insn->entry' encounter UNRET_END
++ * before RET.
++ */
++static int validate_unret(struct objtool_file *file)
++{
++	struct instruction *insn;
++	int ret, warnings = 0;
++
++	for_each_insn(file, insn) {
++		if (!insn->entry)
++			continue;
++
++		ret = validate_entry(file, insn);
++		if (ret < 0) {
++			WARN_FUNC("Failed UNRET validation", insn->sec, insn->offset);
++			return ret;
++		}
++		warnings += ret;
++	}
++
++	return warnings;
++}
++
+ static int validate_retpoline(struct objtool_file *file)
+ {
+ 	struct instruction *insn;
+@@ -3312,6 +3465,17 @@ int check(struct objtool_file *file)
+ 		goto out;
+ 	warnings += ret;
+ 
++	if (unret) {
++		/*
++		 * Must be after validate_branch() and friends, it plays
++		 * further games with insn->visited.
++		 */
++		ret = validate_unret(file);
++		if (ret < 0)
++			return ret;
++		warnings += ret;
++	}
++
+ 	if (!warnings) {
+ 		ret = validate_reachable_instructions(file);
+ 		if (ret < 0)
+--- a/tools/objtool/check.h
++++ b/tools/objtool/check.h
+@@ -48,6 +48,7 @@ struct instruction {
+ 	bool dead_end, ignore, ignore_alts;
+ 	bool hint;
+ 	bool retpoline_safe;
++	bool entry;
+ 	s8 instr;
+ 	u8 visited;
+ 	struct alt_group *alt_group;
+@@ -62,6 +63,11 @@ struct instruction {
+ 	struct cfi_state *cfi;
+ };
+ 
++#define VISITED_BRANCH		0x01
++#define VISITED_BRANCH_UACCESS	0x02
++#define VISITED_BRANCH_MASK	0x03
++#define VISITED_ENTRY		0x04
++
+ static inline bool is_static_jump(struct instruction *insn)
+ {
+ 	return insn->type == INSN_JUMP_CONDITIONAL ||
+
 
