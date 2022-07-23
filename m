@@ -2,79 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 676B7C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:13:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FCAAC43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:13:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239352AbiGWKND (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 06:13:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43168 "EHLO
+        id S239529AbiGWKNH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 06:13:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239039AbiGWKMn (ORCPT
+        with ESMTP id S239386AbiGWKMq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 06:12:43 -0400
-Received: from m12-18.163.com (m12-18.163.com [220.181.12.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0DF3AD2C31;
-        Sat, 23 Jul 2022 03:03:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=wM/Zg
-        eEXEMc6sruVtkovWHuCByrjUkw3xuMCX7v3yss=; b=jkZjnVugzhSTujONx6O3N
-        HnOg1JCy6HNrRztipMFB5cUHCDJpOspJut8zeGWoqcOOAUEgtXW8mAQcLYOd6WWZ
-        DZOEbuDwDcnSMRNRPkcE9GrIQT8YyZ96OquD0wT+75ukSj5UWZHhib1CYTFvvxSt
-        uOiX/ZAJoxT12UkSSrvOn0=
-Received: from localhost.localdomain (unknown [123.58.221.99])
-        by smtp14 (Coremail) with SMTP id EsCowADHB9T8xttiEWurOg--.13020S2;
-        Sat, 23 Jul 2022 18:01:35 +0800 (CST)
-From:   williamsukatube@163.com
-To:     tglx@linutronix.de, maz@kernel.org, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     tsbogend@alpha.franken.de, fancer.lancer@gmail.com,
-        William Dean <williamsukatube@163.com>,
-        Hacash Robot <hacashRobot@santino.com>
-Subject: [PATCH v2] irqchip: mips-gic: check the return value of ioremap() in gic_of_init()
-Date:   Sat, 23 Jul 2022 18:01:28 +0800
-Message-Id: <20220723100128.2964304-1-williamsukatube@163.com>
-X-Mailer: git-send-email 2.25.1
+        Sat, 23 Jul 2022 06:12:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1738D2C36;
+        Sat, 23 Jul 2022 03:03:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D6B55B82B92;
+        Sat, 23 Jul 2022 10:03:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2413BC341CA;
+        Sat, 23 Jul 2022 10:03:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658570599;
+        bh=GiZoy1kPgadu41SsnSu581+QtHXEg34TCVQwA8lX2S8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=RwTPoO/scAItgQ7GgkCZH3OHnnKC/0RDhbbzra/16q3WThGHUKr1rJULSCsiQijT2
+         vERV47y0ZF5NnCrhoAqyKzxMQWgq+iQRkvDw4mHXco1Z9GYYLXwSWrAjP2lk1AGjSE
+         RytcJJiKFyDVMAR5VZ5Gixld61GQu64dkJFOAsmE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Borislav Petkov <bp@suse.de>
+Subject: [PATCH 5.10 143/148] um: Add missing apply_returns()
+Date:   Sat, 23 Jul 2022 11:55:55 +0200
+Message-Id: <20220723095304.427523891@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220723095224.302504400@linuxfoundation.org>
+References: <20220723095224.302504400@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: EsCowADHB9T8xttiEWurOg--.13020S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrtry5tr13GF1rZrWruFy3Arb_yoWfuFbE93
-        WqgFZ3AFW0vF18GFW7WFW7XFyUJwn7uFn5urWkta4fXrWfuw4xGr9xuwn8Xa4rXF1Iyr98
-        CFZ5ZryIyF17AjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU8Jrc3UUUUU==
-X-Originating-IP: [123.58.221.99]
-X-CM-SenderInfo: xzlozx5dpv3yxdwxuvi6rwjhhfrp/1tbiUQlHg2DEOr2dEAABsz
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: William Dean <williamsukatube@163.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-The function ioremap() in gic_of_init() can fail, so
-its return value should be checked.
+commit 564d998106397394b6aad260f219b882b3347e62 upstream.
 
-Reported-by: Hacash Robot <hacashRobot@santino.com>
-Signed-off-by: William Dean <williamsukatube@163.com>
+Implement apply_returns() stub for UM, just like all the other patching
+routines.
+
+Fixes: 15e67227c49a ("x86: Undo return-thunk damage")
+Reported-by: Randy Dunlap <rdunlap@infradead.org)
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/Ys%2Ft45l%2FgarIrD0u@worktop.programming.kicks-ass.net
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
-v2: delete fixes tag and correct SoB tag
-
- drivers/irqchip/irq-mips-gic.c | 4 ++++
+ arch/um/kernel/um_arch.c |    4 ++++
  1 file changed, 4 insertions(+)
 
-diff --git a/drivers/irqchip/irq-mips-gic.c b/drivers/irqchip/irq-mips-gic.c
-index ff89b36267dd..a1f6d955794a 100644
---- a/drivers/irqchip/irq-mips-gic.c
-+++ b/drivers/irqchip/irq-mips-gic.c
-@@ -734,6 +734,10 @@ static int __init gic_of_init(struct device_node *node,
- 	}
+--- a/arch/um/kernel/um_arch.c
++++ b/arch/um/kernel/um_arch.c
+@@ -362,6 +362,10 @@ void apply_retpolines(s32 *start, s32 *e
+ {
+ }
  
- 	mips_gic_base = ioremap(gic_base, gic_len);
-+	if (!mips_gic_base) {
-+		pr_err("Failed to ioremap gic_base\n");
-+		return -ENOMEM;
-+	}
- 
- 	gicconfig = read_gic_config();
- 	gic_shared_intrs = FIELD_GET(GIC_CONFIG_NUMINTERRUPTS, gicconfig);
--- 
-2.25.1
++void apply_returns(s32 *start, s32 *end)
++{
++}
++
+ void apply_alternatives(struct alt_instr *start, struct alt_instr *end)
+ {
+ }
+
 
