@@ -2,267 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AAFDC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:37:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 897D7CCA483
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:48:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239311AbiGWKhV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 06:37:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50044 "EHLO
+        id S235538AbiGWKs5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 06:48:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237288AbiGWKhS (ORCPT
+        with ESMTP id S230399AbiGWKsz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 06:37:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73ED9A1A4;
-        Sat, 23 Jul 2022 03:37:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E613061435;
-        Sat, 23 Jul 2022 10:37:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48C08C341CB;
-        Sat, 23 Jul 2022 10:37:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658572635;
-        bh=WbCIKYVcxKuYbQgQfFPveeFIBTFwuN+x08magz5RjsI=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Ztbp18ihkdzhzJ+xYH0dRGX6486GbnhgN7+k/R1QTcH5MQ2UFDdvWhBg4Hszwsqdu
-         wJwSKUOW8xpmgRP09LaNZ7U85ADqYetwaN1cwfkfLmS0do5HetjbrJS+WU4sNSaKin
-         lWTqkGU2vuB3R56cWbjW7fPaZYQcydoegbre7PkkmKMNeBFH/HHjtOF5QmtQdeIqCI
-         pv7tYo7slJQr8diVjdZtLWAF649q/irDStid5PhOAx9gdgZCX1YM7yHtHLxAkNxUfu
-         /7Q7RThgul0k/P4J2TXf5+Gl7rgtLOffdN2WFPpUWkhAi8P2xgpM+Vag2gvBE+Sh4V
-         GZWSHBa/CvZIA==
-Received: by mail-oi1-f181.google.com with SMTP id bb16so8119504oib.11;
-        Sat, 23 Jul 2022 03:37:15 -0700 (PDT)
-X-Gm-Message-State: AJIora9x5/hCw2ioGOsOlqDdv47L6rIvnzBEWFBqBJJQnJm89Gx65cg+
-        7jLGzDmtZx/zE8abou+g42oFV+sq2R2QGIzihQU=
-X-Google-Smtp-Source: AGRyM1v2Wox6QsJsB1NBCxAYD6gX86YcnC3X6G3MbG9Q0KmcGdNraUZx+KzLIzPK5hi7N8GGsbEe4sk847QNbkoqD1k=
-X-Received: by 2002:a05:6808:1489:b0:33a:861c:838e with SMTP id
- e9-20020a056808148900b0033a861c838emr8583145oiw.228.1658572634322; Sat, 23
- Jul 2022 03:37:14 -0700 (PDT)
+        Sat, 23 Jul 2022 06:48:55 -0400
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-eopbgr80051.outbound.protection.outlook.com [40.107.8.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABCCE13E0C;
+        Sat, 23 Jul 2022 03:48:53 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cfG8MC9LxO4DiCKIYjlGne3FLRNmV0gKb0g2zKvd6qN2nz1dIvLScq1dXO9xxJKAlyLMc5Az/vdWsa4qvFAxskoBLMXbQKDaVgz9RpLjZXKkst1l5G9XcaP22yBau0wOsL69BbId7cMz46CqTczt3DTiH1FyMFSkaMJ7yirloGvRYPuJryvDN/HwMnSUl206/WWJojM3VihRUywm/utGKd3kuspW9JvAUedMmh2CaLBIaNoUIhE5cFA+QhkyDQrO8iF8pkNsmevXyqxzWQI/V3QLIHezzWA265yTFNp6aYjASw8hEJntu6n6mYCo0Uv8HqQcFDDwCO5jlXRPswyzzg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ibd4i820qxOgB0fNOiwI+CbZGgGoHFg+890daPK2ilE=;
+ b=j0qpNdBh5HVCuIv7ThqEJlMk2nHTTP7VAows9VrcCrZpz0UggI2juee2TuUJrqPNSeZ/GT6istkablEbaT+MZvyDNGlAQop+b7n2MSSyPZ0VVzyoGB5txycK3jmN5boWUixAWUsKh1zjX9jCMWORjFSnIQM/MwZlVGZryVesuPlzRNQoNSWJjklqkzUgfT5Pne9gwZY/g/rP3QvK8JUheITBACk78KzITFg6uxswXQiq8UJSSC+caITlZ9dbPdBTqQVyQgUSVTtHRCuGZWgk2fHfdRRp50L0Sz7/unm9/XIsQ3hd4oQ6U7tmk1Z15DYtg7DfU4Qtbu7ljbvc3tNjqw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
+ dkim=pass header.d=oss.nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com;
+ s=selector2-NXP1-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ibd4i820qxOgB0fNOiwI+CbZGgGoHFg+890daPK2ilE=;
+ b=bWXqLdSQMNi2XDP2TZ18g/JLwakOPK9Y7Rx5ygdRG+8g7i3133nD1YP/YZgK0mMjRGhb9QBSgbL26P72Eo+LXBZZACZL9eGy6oW65rRvVyJ1zGIXC8YDSZW3+7IZ7lkUS3eSK5yPlrYBeVW7HdXiDX4zVjYsaRVAqBKuQuwFnc8=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=oss.nxp.com;
+Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
+ by VI1PR0402MB3709.eurprd04.prod.outlook.com (2603:10a6:803:1e::27) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.23; Sat, 23 Jul
+ 2022 10:48:49 +0000
+Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
+ ([fe80::c0c2:ede7:3b85:1597]) by DU0PR04MB9417.eurprd04.prod.outlook.com
+ ([fe80::c0c2:ede7:3b85:1597%3]) with mapi id 15.20.5458.019; Sat, 23 Jul 2022
+ 10:48:49 +0000
+From:   "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
+To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        shawnguo@kernel.org, s.hauer@pengutronix.de, tharvey@gateworks.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Cc:     kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
+        Peng Fan <peng.fan@nxp.com>
+Subject: [PATCH] arm64: dts: imx8mp-venice-gw74xx: fix sai2 pin settings
+Date:   Sat, 23 Jul 2022 18:50:05 +0800
+Message-Id: <20220723105005.3583860-1-peng.fan@oss.nxp.com>
+X-Mailer: git-send-email 2.25.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SGBP274CA0006.SGPP274.PROD.OUTLOOK.COM (2603:1096:4:b0::18)
+ To DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
 MIME-Version: 1.0
-References: <20220721204709.445216-1-ben-linux@fluff.org>
-In-Reply-To: <20220721204709.445216-1-ben-linux@fluff.org>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Sat, 23 Jul 2022 12:37:03 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXHvf8vWTL=6HzQGcUMK3Qwd9-s5qKAhJzGuk_cEa=cZkQ@mail.gmail.com>
-Message-ID: <CAMj1kXHvf8vWTL=6HzQGcUMK3Qwd9-s5qKAhJzGuk_cEa=cZkQ@mail.gmail.com>
-Subject: Re: [PATCH] crypto: fix warnings from missing .note.GNU-stack
-To:     Ben Dooks <ben-linux@fluff.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c119dcca-0ea1-48f3-e7d5-08da6c98ecb0
+X-MS-TrafficTypeDiagnostic: VI1PR0402MB3709:EE_
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-LD-Processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: L/eD5AWqTVeMbQYwugZX4A1wCXLk6KL1VoF9CE3W7cqwmGsIfGVt9A5dQURxk2rL1ZtgjsmAN9LPE65fOw4F4mADgpE/lePnII/8HcYBJd1kQIA+JdPeKdXMhUHwtZXhrm/V/5RBgRpcs9slL5xNMJEJttsuGosMZBZD0sgG1eUNiDnGhMfQWLTRjzVv8oiAziUnXhYWSyKW8wNkVG7LCjZxTv3xAfQuuAu/E19cimTT2mWtiZJQbYF/u8hnl8o5yMMzGZtaUhsQU85MR+ik8kNW0rFeljIxzy0sH36jn2qgsSER/VZY4gS8GTcnw5wdoGmsMJay39GBRBrgbJifhoX5oij26DtRwdr6eS1Tbd0SBKwAoF12ukFXlHM6sVW7B3Fqgn38I8xnliW/QBpwl5W/Fx7ZESWBDOPojHZB+KgRGB2lDMh7jHBsV6iHrobv3NJYjhgeVaD5x9wMI/pQD9Lqq4GLZ4RA+xc6UH/6IEAXvVh2GkMqB3rm3+nP3LGinghUyU9kOxShTEICH8DULRqL6pCL190H16b2XIaNdz45LLaICbMjHruy4tvGVe9BYPcyXyLMeTd49+tFG5xnAHY40gxknx+BQlJWTD3nGmtIQ5j3BASQgVtL74D/+xnk06y+d5OP17Tdye9mY144h3YCUr2k5xgxsV/b1I/9ViqTlpJgKSkrTG+kwdDW+qa4mdL06PEzFS0KZDJj7lIC4eSmOPb+gmJq443ViZlghY6oNW0warHvq75WjWe62gmH7p7duQIss20vtThHHjaGDytagK6fWs4b6QmaP9TDwsJeljdEIvE3ywWJWfGWWQNf4ZVWP0btkaZDpjSQO+gPsA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(376002)(366004)(346002)(396003)(39860400002)(66556008)(8676002)(66946007)(4326008)(316002)(8936002)(478600001)(6486002)(2616005)(5660300002)(66476007)(186003)(38350700002)(7416002)(6512007)(6506007)(2906002)(1076003)(83380400001)(52116002)(86362001)(38100700002)(6666004)(26005)(41300700001)(32563001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?PKKvlojMjRU0R2mEf7LFzr+Foj74VHOupaEUF40m43rQCCMdcfNV5XispmCi?=
+ =?us-ascii?Q?J1ByI15Qd8Km7LMPxZsqTZJzsdXt/pVhogM2JqwsFnU3//uW0xdfvre/pCwR?=
+ =?us-ascii?Q?HNGm2eDflJujDOmW2S0a0C81PKYptGTZATBhrjKNpyYcdl14NdcBgKJTqwbX?=
+ =?us-ascii?Q?+mkgrYk+rMsnCYoEJu+XHDc9yo0Seu0igDZ+mv3uD7739z/ocvznKeCYNPxu?=
+ =?us-ascii?Q?qIIKpx7CFkdeBJ7qOOZxMImwj3oMcfo93nb+q03QgP7oVTSeA4RVhYUttie+?=
+ =?us-ascii?Q?ogEt3PtQ8HQZe9ZT9RXaBrIFS4odaBbMoc/IvbLNpcAchYPZHG2uUFj0+a7k?=
+ =?us-ascii?Q?LxOpx1og/asUzjFPFhDe22lmvocYlEXr90sxkVQqc6mMvicwNplixNA+R799?=
+ =?us-ascii?Q?r0efJaNLT4eAJmSTf6cPssyLGKqLiE9i7cu31MXdzsJ6dq+SGnah0dJca/pV?=
+ =?us-ascii?Q?0wKKqKafwRuEH+BW9upZ2LI0ApaW63LfgMOWvDby1G3LGGc7pSTn08Gazqig?=
+ =?us-ascii?Q?wL2F2x1fYZEn4aeKD/z1d3a8UR2iYu/hBuInTZ4ZLzR+Jw9q2rrhGGMPcarG?=
+ =?us-ascii?Q?F6Fin7Ibvm7c/pRp19n9I273g8LzbRkQyPhnQ2CqLmiPPz337rmP5VGFW1WI?=
+ =?us-ascii?Q?4hhXUXVvueScQdjMKF5K86OSHQznlk8zfhK40D2vKf6RDPmfuO3zmBG5pR6X?=
+ =?us-ascii?Q?M8YgJDKlL5xwRgSPvcfER/P0GA/QF24n7LsLlEvAN4WBgrLmTQZqfkWLpnDL?=
+ =?us-ascii?Q?ZXQmlUPtMRrZT2I40h2UM4BWnhWnUBctd59xewzngjxAoEKCt2yPL84fxL5Q?=
+ =?us-ascii?Q?8fFuunote3arVCKLuA+L2v3rcinlz+cuTK/areEh0IYjifQNJD8wXlXu5bou?=
+ =?us-ascii?Q?kl6kZPvYa8Ittwfp+DnjYIlus+FjByfCo0cpVtBLqPZo+jHZvx81OSkzQCCo?=
+ =?us-ascii?Q?H8UHibZ+zIzJAltkxwO5vn8y9YDHnJ5I6x7QCLW5tf4l25lfx3oWoakftpzW?=
+ =?us-ascii?Q?4ItbtBPu3wB6QmuoWoKQ9aPgoKEVyOdtHUKSSsED9A1tNRCnpLKeULRl0LGU?=
+ =?us-ascii?Q?RMThHSDKVyKgh3ripnxVjNNPJ5RP2Zk4amed1K5mF/TAp/jETpSNOMv2KDW1?=
+ =?us-ascii?Q?tEUhjPfjJmJHRs3VPZQYzvme/oWb2UX9nTsFoaz+rjLnZuJa/T4gn5gEkNSk?=
+ =?us-ascii?Q?r5iDo6gg+Y9J1LnOGnRLmp5x2immn8bwcIBdnxZtLF2xHilU6H6Gls6ytRLi?=
+ =?us-ascii?Q?/1XODJFprMz/dKiXka8rSrm1mWecgvGZxnJIr6hELxJhR08xTErD3tee06ET?=
+ =?us-ascii?Q?vo1iGiXruXA0uYQhy0KjD+jXj2dyJIZVFKb0FT9wj+4wrTFoYMMqbBgOwkQT?=
+ =?us-ascii?Q?YuD+gPd0J2RDsF6TMQRhSU7QiQr3Ru9z6m4r+5WefeM17iUDFzSwBN+y06Xj?=
+ =?us-ascii?Q?1Hy8hw65VdKlknbWQBUn59mAEs5kP63aSk3psfyDbs/WjrSKlI+i3G3WbiA9?=
+ =?us-ascii?Q?6f2QtUoAtJsQO5LLwcQktcm5dosXI9fXwybh/5y16vKW8xPF4of237nR/dR/?=
+ =?us-ascii?Q?A5yyWrzGdUz7EFEMErFXNYLqU7LBNCAxvfjJFF9U?=
+X-OriginatorOrg: oss.nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c119dcca-0ea1-48f3-e7d5-08da6c98ecb0
+X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jul 2022 10:48:49.2399
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: t4Q87IlwDQOb+Vc4prEMjsURSeEH2lrXgakHWyU8vOXLgAu5RIQXJmck0BWSYAT3f9JBwob11mN9y54CoBRriQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3709
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 21 Jul 2022 at 22:48, Ben Dooks <ben-linux@fluff.org> wrote:
->
-> A lot of the assembly code in arch/arm/crypto is missing
-> a .note.GNU-stack section which is making a numbe of warnings
-> about implicit executable stack. This code does not look like
-> it does not need an executable stack, so silence the warnings
-> by adding a .section .note.GNU-stack to all these.
->
-> Since this is an empty section, it should be backwards compatible
-> with older linkers.
->
-> Fixes the following warnings:
->
-> arm-linux-gnueabihf-ld: warning: arch/arm/crypto/aes-cipher-core.o: missing .note.GNU-stack section implies executable stack
-> arm-linux-gnueabihf-ld: NOTE: This behaviour is deprecated and will be removed in a future version of the linker
-> arm-linux-gnueabihf-ld: warning: arch/arm/crypto/aes-neonbs-core.o: missing .note.GNU-stack section implies executable stack
-> arm-linux-gnueabihf-ld: NOTE: This behaviour is deprecated and will be removed in a future version of the linker
-> arm-linux-gnueabihf-ld: warning: arch/arm/crypto/sha1-armv4-large.o: missing .note.GNU-stack section implies executable stack
-> arm-linux-gnueabihf-ld: NOTE: This behaviour is deprecated and will be removed in a future version of the linker
-> arm-linux-gnueabihf-ld: warning: arch/arm/crypto/sha1-armv7-neon.o: missing .note.GNU-stack section implies executable stack
-> arm-linux-gnueabihf-ld: NOTE: This behaviour is deprecated and will be removed in a future version of the linker
-> arm-linux-gnueabihf-ld: warning: arch/arm/crypto/sha256-core.o: missing .note.GNU-stack section implies executable stack
-> arm-linux-gnueabihf-ld: NOTE: This behaviour is deprecated and will be removed in a future version of the linker
-> arm-linux-gnueabihf-ld: warning: arch/arm/crypto/sha512-core.o: missing .note.GNU-stack section implies executable stack
-> arm-linux-gnueabihf-ld: NOTE: This behaviour is deprecated and will be removed in a future version of the linker
-> arm-linux-gnueabihf-ld: warning: arch/arm/crypto/chacha-neon-core.o: missing .note.GNU-stack section implies executable stack
-> arm-linux-gnueabihf-ld: NOTE: This behaviour is deprecated and will be removed in a future version of the linker
-> arm-linux-gnueabihf-ld: warning: arch/arm/crypto/aes-ce-core.o: missing .note.GNU-stack section implies executable stack
-> arm-linux-gnueabihf-ld: NOTE: This behaviour is deprecated and will be removed in a future version of the linker
-> arm-linux-gnueabihf-ld: warning: arch/arm/crypto/sha1-ce-core.o: missing .note.GNU-stack section implies executable stack
-> arm-linux-gnueabihf-ld: NOTE: This behaviour is deprecated and will be removed in a future version of the linker
-> arm-linux-gnueabihf-ld: warning: arch/arm/crypto/sha2-ce-core.o: missing .note.GNU-stack section implies executable stack
-> arm-linux-gnueabihf-ld: NOTE: This behaviour is deprecated and will be removed in a future version of the linker
-> arm-linux-gnueabihf-ld: warning: arch/arm/crypto/ghash-ce-core.o: missing .note.GNU-stack section implies executable stack
-> arm-linux-gnueabihf-ld: NOTE: This behaviour is deprecated and will be removed in a future version of the linker
-> arm-linux-gnueabihf-ld: warning: arch/arm/crypto/crc32-ce-core.o: missing .note.GNU-stack section implies executable stack
-> arm-linux-gnueabihf-ld: NOTE: This behaviour is deprecated and will be removed in a future version of the linker
->
-> Signed-off-by: Ben Dooks <ben-linux@fluff.org>
+From: Peng Fan <peng.fan@nxp.com>
 
-Hello Ben,
+The pad settings are missed, add them
 
-This annotation is pointless in the kernel, as we never load any code
-as ELF executables. We only load raw binaries or partially linked
-objects, which don't carry this annotation, and we never use an
-executable stack anyway.
+Fixes: 7899eb6cb15d ("arm64: dts: imx: Add i.MX8M Plus Gateworks gw7400 dts support")
+Signed-off-by: Peng Fan <peng.fan@nxp.com>
+---
+ arch/arm64/boot/dts/freescale/imx8mp-venice-gw74xx.dts | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-So instead of adding these annotations, can we please just find a way
-to shut up the linker?
+diff --git a/arch/arm64/boot/dts/freescale/imx8mp-venice-gw74xx.dts b/arch/arm64/boot/dts/freescale/imx8mp-venice-gw74xx.dts
+index 521215520a0f..6630ec561dc2 100644
+--- a/arch/arm64/boot/dts/freescale/imx8mp-venice-gw74xx.dts
++++ b/arch/arm64/boot/dts/freescale/imx8mp-venice-gw74xx.dts
+@@ -770,10 +770,10 @@ MX8MP_IOMUXC_NAND_DATA03__GPIO3_IO09	0x110
+ 
+ 	pinctrl_sai2: sai2grp {
+ 		fsl,pins = <
+-			MX8MP_IOMUXC_SAI2_TXFS__AUDIOMIX_SAI2_TX_SYNC
+-			MX8MP_IOMUXC_SAI2_TXD0__AUDIOMIX_SAI2_TX_DATA00
+-			MX8MP_IOMUXC_SAI2_TXC__AUDIOMIX_SAI2_TX_BCLK
+-			MX8MP_IOMUXC_SAI2_MCLK__AUDIOMIX_SAI2_MCLK
++			MX8MP_IOMUXC_SAI2_TXFS__AUDIOMIX_SAI2_TX_SYNC	0xd6
++			MX8MP_IOMUXC_SAI2_TXD0__AUDIOMIX_SAI2_TX_DATA00	0xd6
++			MX8MP_IOMUXC_SAI2_TXC__AUDIOMIX_SAI2_TX_BCLK	0xd6
++			MX8MP_IOMUXC_SAI2_MCLK__AUDIOMIX_SAI2_MCLK	0xd6
+ 		>;
+ 	};
+ 
+-- 
+2.25.1
 
-
-> ---
->  arch/arm/crypto/aes-ce-core.S        | 2 ++
->  arch/arm/crypto/aes-cipher-core.S    | 2 ++
->  arch/arm/crypto/aes-neonbs-core.S    | 3 +++
->  arch/arm/crypto/chacha-neon-core.S   | 2 ++
->  arch/arm/crypto/chacha-scalar-core.S | 2 ++
->  arch/arm/crypto/crc32-ce-core.S      | 2 ++
->  arch/arm/crypto/ghash-ce-core.S      | 2 ++
->  arch/arm/crypto/sha1-armv4-large.S   | 1 +
->  arch/arm/crypto/sha1-armv7-neon.S    | 2 ++
->  arch/arm/crypto/sha1-ce-core.S       | 2 ++
->  arch/arm/crypto/sha2-ce-core.S       | 2 ++
->  arch/arm/crypto/sha256-armv4.pl      | 1 +
->  arch/arm/crypto/sha512-armv4.pl      | 1 +
->  13 files changed, 24 insertions(+)
->
-> diff --git a/arch/arm/crypto/aes-ce-core.S b/arch/arm/crypto/aes-ce-core.S
-> index 312428d83eed..4e570c6df9bb 100644
-> --- a/arch/arm/crypto/aes-ce-core.S
-> +++ b/arch/arm/crypto/aes-ce-core.S
-> @@ -711,3 +711,5 @@ ENDPROC(ce_aes_invert)
->         .byte            0x8,  0x9,  0xa,  0xb,  0xc,  0xd,  0xe,  0xf
->         .byte           0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff
->         .byte           0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff
-> +
-> +.section .note.GNU-stack,"",%progbits
-> diff --git a/arch/arm/crypto/aes-cipher-core.S b/arch/arm/crypto/aes-cipher-core.S
-> index 1da3f41359aa..11f10ee35487 100644
-> --- a/arch/arm/crypto/aes-cipher-core.S
-> +++ b/arch/arm/crypto/aes-cipher-core.S
-> @@ -199,3 +199,5 @@ ENDPROC(__aes_arm_encrypt)
->  ENTRY(__aes_arm_decrypt)
->         do_crypt        iround, crypto_it_tab, crypto_aes_inv_sbox, 0
->  ENDPROC(__aes_arm_decrypt)
-> +
-> +.section .note.GNU-stack,"",%progbits
-> diff --git a/arch/arm/crypto/aes-neonbs-core.S b/arch/arm/crypto/aes-neonbs-core.S
-> index 7b61032f29fa..19197c0d635c 100644
-> --- a/arch/arm/crypto/aes-neonbs-core.S
-> +++ b/arch/arm/crypto/aes-neonbs-core.S
-> @@ -1041,3 +1041,6 @@ ENTRY(aesbs_xts_decrypt)
->         ldr             ip, [sp, #8]            // reorder final tweak?
->         __xts_crypt     aesbs_decrypt8, q0, q1, q6, q4, q2, q7, q3, q5
->  ENDPROC(aesbs_xts_decrypt)
-> +
-> +.section .note.GNU-stack,"",%progbits
-> +
-> diff --git a/arch/arm/crypto/chacha-neon-core.S b/arch/arm/crypto/chacha-neon-core.S
-> index 13d12f672656..a90690d32ad8 100644
-> --- a/arch/arm/crypto/chacha-neon-core.S
-> +++ b/arch/arm/crypto/chacha-neon-core.S
-> @@ -641,3 +641,5 @@ ENDPROC(chacha_4block_xor_neon)
->         .byte           0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
->         .byte           0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17
->         .byte           0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f
-> +
-> +.section .note.GNU-stack,"",%progbits
-> diff --git a/arch/arm/crypto/chacha-scalar-core.S b/arch/arm/crypto/chacha-scalar-core.S
-> index 083fe1ab96d0..81f94876f418 100644
-> --- a/arch/arm/crypto/chacha-scalar-core.S
-> +++ b/arch/arm/crypto/chacha-scalar-core.S
-> @@ -441,3 +441,5 @@ ENTRY(hchacha_block_arm)
->  1:     _chacha_permute 12
->         b               0b
->  ENDPROC(hchacha_block_arm)
-> +
-> +.section .note.GNU-stack,"",%progbits
-> diff --git a/arch/arm/crypto/crc32-ce-core.S b/arch/arm/crypto/crc32-ce-core.S
-> index 3f13a76b9066..990c756c7487 100644
-> --- a/arch/arm/crypto/crc32-ce-core.S
-> +++ b/arch/arm/crypto/crc32-ce-core.S
-> @@ -304,3 +304,5 @@ ENDPROC(crc32_armv8_le)
->  ENTRY(crc32c_armv8_le)
->         __crc32         c
->  ENDPROC(crc32c_armv8_le)
-> +
-> +.section .note.GNU-stack,"",%progbits
-> diff --git a/arch/arm/crypto/ghash-ce-core.S b/arch/arm/crypto/ghash-ce-core.S
-> index 9f51e3fa4526..2f712b9d8b2b 100644
-> --- a/arch/arm/crypto/ghash-ce-core.S
-> +++ b/arch/arm/crypto/ghash-ce-core.S
-> @@ -337,3 +337,5 @@ ENTRY(pmull_ghash_update_p8)
->
->         ghash_update    p8
->  ENDPROC(pmull_ghash_update_p8)
-> +
-> +.section .note.GNU-stack,"",%progbits
-> diff --git a/arch/arm/crypto/sha1-armv4-large.S b/arch/arm/crypto/sha1-armv4-large.S
-> index 1c8b685149f2..4e40132382b5 100644
-> --- a/arch/arm/crypto/sha1-armv4-large.S
-> +++ b/arch/arm/crypto/sha1-armv4-large.S
-> @@ -505,3 +505,4 @@ ENTRY(sha1_block_data_order)
->  ENDPROC(sha1_block_data_order)
->  .asciz "SHA1 block transform for ARMv4, CRYPTOGAMS by <appro@openssl.org>"
->  .align 2
-> +.section .note.GNU-stack,"",%progbits
-> diff --git a/arch/arm/crypto/sha1-armv7-neon.S b/arch/arm/crypto/sha1-armv7-neon.S
-> index 28d816a6a530..a554b1bb4ceb 100644
-> --- a/arch/arm/crypto/sha1-armv7-neon.S
-> +++ b/arch/arm/crypto/sha1-armv7-neon.S
-> @@ -632,3 +632,5 @@ ENTRY(sha1_transform_neon)
->  .Ldo_nothing:
->    bx lr
->  ENDPROC(sha1_transform_neon)
-> +
-> +.section .note.GNU-stack,"",%progbits
-> diff --git a/arch/arm/crypto/sha1-ce-core.S b/arch/arm/crypto/sha1-ce-core.S
-> index 8a702e051738..73353804c33f 100644
-> --- a/arch/arm/crypto/sha1-ce-core.S
-> +++ b/arch/arm/crypto/sha1-ce-core.S
-> @@ -121,3 +121,5 @@ ENTRY(sha1_ce_transform)
->         vstr            dgbs, [r0, #16]
->         bx              lr
->  ENDPROC(sha1_ce_transform)
-> +
-> +.section .note.GNU-stack,"",%progbits
-> diff --git a/arch/arm/crypto/sha2-ce-core.S b/arch/arm/crypto/sha2-ce-core.S
-> index b6369d2440a1..b5f20ab96690 100644
-> --- a/arch/arm/crypto/sha2-ce-core.S
-> +++ b/arch/arm/crypto/sha2-ce-core.S
-> @@ -121,3 +121,5 @@ ENTRY(sha2_ce_transform)
->         vst1.32         {dga-dgb}, [r0]
->         bx              lr
->  ENDPROC(sha2_ce_transform)
-> +
-> +.section .note.GNU-stack,"",%progbits
-> diff --git a/arch/arm/crypto/sha256-armv4.pl b/arch/arm/crypto/sha256-armv4.pl
-> index f3a2b54efd4e..c12edbd99531 100644
-> --- a/arch/arm/crypto/sha256-armv4.pl
-> +++ b/arch/arm/crypto/sha256-armv4.pl
-> @@ -677,6 +677,7 @@ $code.=<<___;
->  #if __ARM_MAX_ARCH__>=7 && !defined(__KERNEL__)
->  .comm   OPENSSL_armcap_P,4,4
->  #endif
-> +.section .note.GNU-stack,"",%progbits
->  ___
->
->  open SELF,$0;
-> diff --git a/arch/arm/crypto/sha512-armv4.pl b/arch/arm/crypto/sha512-armv4.pl
-> index 2fc3516912fa..6411799b4d1d 100644
-> --- a/arch/arm/crypto/sha512-armv4.pl
-> +++ b/arch/arm/crypto/sha512-armv4.pl
-> @@ -639,6 +639,7 @@ $code.=<<___;
->  #if __ARM_MAX_ARCH__>=7 && !defined(__KERNEL__)
->  .comm  OPENSSL_armcap_P,4,4
->  #endif
-> +.section .note.GNU-stack,"",%progbits
->  ___
->
->  $code =~ s/\`([^\`]*)\`/eval $1/gem;
-> --
-> 2.35.1
->
->
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
