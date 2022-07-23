@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8ED8C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:04:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EE39C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:04:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238032AbiGWKEg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 06:04:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57864 "EHLO
+        id S238194AbiGWKEl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 06:04:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238161AbiGWKD4 (ORCPT
+        with ESMTP id S238240AbiGWKEB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 06:03:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 323608F530;
-        Sat, 23 Jul 2022 02:59:44 -0700 (PDT)
+        Sat, 23 Jul 2022 06:04:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 350709368D;
+        Sat, 23 Jul 2022 02:59:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3459DB82C1F;
-        Sat, 23 Jul 2022 09:59:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95ACBC341C0;
-        Sat, 23 Jul 2022 09:59:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A7B65B82C1B;
+        Sat, 23 Jul 2022 09:59:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBB24C341C0;
+        Sat, 23 Jul 2022 09:59:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658570367;
-        bh=efQhmefNJjZgawAawcRoXoGa/B0C/xqSoQnQCU4vV4I=;
+        s=korg; t=1658570387;
+        bh=NTrzfJvQ19VyAP61TafzQNav55FmjRegdN7rwksTswA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E0o8ov/u46RcHQ2U2htLBO3nEpXSonJxxS+BdF5PC1rPFePYhEtoJ4niLS+g1LjAZ
-         N1/qSoZXyzWoFZzukKBM31Zdb/IPgaFReUVMpFtZ6xn2F8JXy5kh+Fs8Cpzlj49mR2
-         21rSxoSWv2RUzzMrttSLwHuJ3e3Z8PuhNbr2ElTM=
+        b=U4SJ6ZB7pfTJHLGWUkDWwIVKCb3oz6+r+jzqw2wZvQkpPl7PCBcRvfZWk4+uQNxE7
+         l5aIoQPW8CjWVEyI78X10b/UMj5cn10rP4fzZzpLKoW/SdIIoRHVWSCxPDVkneX06l
+         5C15pTWmo+jU60rYq39RKGe7sr1GA5Dgsyx1K06k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
+        Jamie Heilman <jamie@audible.transient.net>,
+        Borislav Petkov <bp@suse.de>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 072/148] objtool: Fix code relocs vs weak symbols
-Date:   Sat, 23 Jul 2022 11:54:44 +0200
-Message-Id: <20220723095244.360855208@linuxfoundation.org>
+Subject: [PATCH 5.10 068/148] kvm/emulate: Fix SETcc emulation function offsets with SLS
+Date:   Sat, 23 Jul 2022 11:54:40 +0200
+Message-Id: <20220723095243.324774965@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220723095224.302504400@linuxfoundation.org>
 References: <20220723095224.302504400@linuxfoundation.org>
@@ -50,358 +53,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Borislav Petkov <bp@suse.de>
 
-commit 4abff6d48dbcea8200c7ea35ba70c242d128ebf3 upstream.
+commit fe83f5eae432ccc8e90082d6ed506d5233547473 upstream.
 
-Occasionally objtool driven code patching (think .static_call_sites
-.retpoline_sites etc..) goes sideways and it tries to patch an
-instruction that doesn't match.
+The commit in Fixes started adding INT3 after RETs as a mitigation
+against straight-line speculation.
 
-Much head-scatching and cursing later the problem is as outlined below
-and affects every section that objtool generates for us, very much
-including the ORC data. The below uses .static_call_sites because it's
-convenient for demonstration purposes, but as mentioned the ORC
-sections, .retpoline_sites and __mount_loc are all similarly affected.
+The fastop SETcc implementation in kvm's insn emulator uses macro magic
+to generate all possible SETcc functions and to jump to them when
+emulating the respective instruction.
 
-Consider:
+However, it hardcodes the size and alignment of those functions to 4: a
+three-byte SETcc insn and a single-byte RET. BUT, with SLS, there's an
+INT3 that gets slapped after the RET, which brings the whole scheme out
+of alignment:
 
-foo-weak.c:
+  15:   0f 90 c0                seto   %al
+  18:   c3                      ret
+  19:   cc                      int3
+  1a:   0f 1f 00                nopl   (%rax)
+  1d:   0f 91 c0                setno  %al
+  20:   c3                      ret
+  21:   cc                      int3
+  22:   0f 1f 00                nopl   (%rax)
+  25:   0f 92 c0                setb   %al
+  28:   c3                      ret
+  29:   cc                      int3
 
-  extern void __SCT__foo(void);
+and this explodes like this:
 
-  __attribute__((weak)) void foo(void)
-  {
-	  return __SCT__foo();
-  }
+  int3: 0000 [#1] PREEMPT SMP PTI
+  CPU: 0 PID: 2435 Comm: qemu-system-x86 Not tainted 5.17.0-rc8-sls #1
+  Hardware name: Dell Inc. Precision WorkStation T3400  /0TP412, BIOS A14 04/30/2012
+  RIP: 0010:setc+0x5/0x8 [kvm]
+  Code: 00 00 0f 1f 00 0f b6 05 43 24 06 00 c3 cc 0f 1f 80 00 00 00 00 0f 90 c0 c3 cc 0f \
+	  1f 00 0f 91 c0 c3 cc 0f 1f 00 0f 92 c0 c3 cc <0f> 1f 00 0f 93 c0 c3 cc 0f 1f 00 \
+	  0f 94 c0 c3 cc 0f 1f 00 0f 95 c0
+  Call Trace:
+   <TASK>
+   ? x86_emulate_insn [kvm]
+   ? x86_emulate_instruction [kvm]
+   ? vmx_handle_exit [kvm_intel]
+   ? kvm_arch_vcpu_ioctl_run [kvm]
+   ? kvm_vcpu_ioctl [kvm]
+   ? __x64_sys_ioctl
+   ? do_syscall_64
+   ? entry_SYSCALL_64_after_hwframe
+   </TASK>
 
-foo.c:
+Raise the alignment value when SLS is enabled and use a macro for that
+instead of hard-coding naked numbers.
 
-  extern void __SCT__foo(void);
-  extern void my_foo(void);
-
-  void foo(void)
-  {
-	  my_foo();
-	  return __SCT__foo();
-  }
-
-These generate the obvious code
-(gcc -O2 -fcf-protection=none -fno-asynchronous-unwind-tables -c foo*.c):
-
-foo-weak.o:
-0000000000000000 <foo>:
-   0:   e9 00 00 00 00          jmpq   5 <foo+0x5>      1: R_X86_64_PLT32       __SCT__foo-0x4
-
-foo.o:
-0000000000000000 <foo>:
-   0:   48 83 ec 08             sub    $0x8,%rsp
-   4:   e8 00 00 00 00          callq  9 <foo+0x9>      5: R_X86_64_PLT32       my_foo-0x4
-   9:   48 83 c4 08             add    $0x8,%rsp
-   d:   e9 00 00 00 00          jmpq   12 <foo+0x12>    e: R_X86_64_PLT32       __SCT__foo-0x4
-
-Now, when we link these two files together, you get something like
-(ld -r -o foos.o foo-weak.o foo.o):
-
-foos.o:
-0000000000000000 <foo-0x10>:
-   0:   e9 00 00 00 00          jmpq   5 <foo-0xb>      1: R_X86_64_PLT32       __SCT__foo-0x4
-   5:   66 2e 0f 1f 84 00 00 00 00 00   nopw   %cs:0x0(%rax,%rax,1)
-   f:   90                      nop
-
-0000000000000010 <foo>:
-  10:   48 83 ec 08             sub    $0x8,%rsp
-  14:   e8 00 00 00 00          callq  19 <foo+0x9>     15: R_X86_64_PLT32      my_foo-0x4
-  19:   48 83 c4 08             add    $0x8,%rsp
-  1d:   e9 00 00 00 00          jmpq   22 <foo+0x12>    1e: R_X86_64_PLT32      __SCT__foo-0x4
-
-Noting that ld preserves the weak function text, but strips the symbol
-off of it (hence objdump doing that funny negative offset thing). This
-does lead to 'interesting' unused code issues with objtool when ran on
-linked objects, but that seems to be working (fingers crossed).
-
-So far so good.. Now lets consider the objtool static_call output
-section (readelf output, old binutils):
-
-foo-weak.o:
-
-Relocation section '.rela.static_call_sites' at offset 0x2c8 contains 1 entry:
-    Offset             Info             Type               Symbol's Value  Symbol's Name + Addend
-0000000000000000  0000000200000002 R_X86_64_PC32          0000000000000000 .text + 0
-0000000000000004  0000000d00000002 R_X86_64_PC32          0000000000000000 __SCT__foo + 1
-
-foo.o:
-
-Relocation section '.rela.static_call_sites' at offset 0x310 contains 2 entries:
-    Offset             Info             Type               Symbol's Value  Symbol's Name + Addend
-0000000000000000  0000000200000002 R_X86_64_PC32          0000000000000000 .text + d
-0000000000000004  0000000d00000002 R_X86_64_PC32          0000000000000000 __SCT__foo + 1
-
-foos.o:
-
-Relocation section '.rela.static_call_sites' at offset 0x430 contains 4 entries:
-    Offset             Info             Type               Symbol's Value  Symbol's Name + Addend
-0000000000000000  0000000100000002 R_X86_64_PC32          0000000000000000 .text + 0
-0000000000000004  0000000d00000002 R_X86_64_PC32          0000000000000000 __SCT__foo + 1
-0000000000000008  0000000100000002 R_X86_64_PC32          0000000000000000 .text + 1d
-000000000000000c  0000000d00000002 R_X86_64_PC32          0000000000000000 __SCT__foo + 1
-
-So we have two patch sites, one in the dead code of the weak foo and one
-in the real foo. All is well.
-
-*HOWEVER*, when the toolchain strips unused section symbols it
-generates things like this (using new enough binutils):
-
-foo-weak.o:
-
-Relocation section '.rela.static_call_sites' at offset 0x2c8 contains 1 entry:
-    Offset             Info             Type               Symbol's Value  Symbol's Name + Addend
-0000000000000000  0000000200000002 R_X86_64_PC32          0000000000000000 foo + 0
-0000000000000004  0000000d00000002 R_X86_64_PC32          0000000000000000 __SCT__foo + 1
-
-foo.o:
-
-Relocation section '.rela.static_call_sites' at offset 0x310 contains 2 entries:
-    Offset             Info             Type               Symbol's Value  Symbol's Name + Addend
-0000000000000000  0000000200000002 R_X86_64_PC32          0000000000000000 foo + d
-0000000000000004  0000000d00000002 R_X86_64_PC32          0000000000000000 __SCT__foo + 1
-
-foos.o:
-
-Relocation section '.rela.static_call_sites' at offset 0x430 contains 4 entries:
-    Offset             Info             Type               Symbol's Value  Symbol's Name + Addend
-0000000000000000  0000000100000002 R_X86_64_PC32          0000000000000000 foo + 0
-0000000000000004  0000000d00000002 R_X86_64_PC32          0000000000000000 __SCT__foo + 1
-0000000000000008  0000000100000002 R_X86_64_PC32          0000000000000000 foo + d
-000000000000000c  0000000d00000002 R_X86_64_PC32          0000000000000000 __SCT__foo + 1
-
-And now we can see how that foos.o .static_call_sites goes side-ways, we
-now have _two_ patch sites in foo. One for the weak symbol at foo+0
-(which is no longer a static_call site!) and one at foo+d which is in
-fact the right location.
-
-This seems to happen when objtool cannot find a section symbol, in which
-case it falls back to any other symbol to key off of, however in this
-case that goes terribly wrong!
-
-As such, teach objtool to create a section symbol when there isn't
-one.
-
-Fixes: 44f6a7c0755d ("objtool: Fix seg fault with Clang non-section symbols")
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lkml.kernel.org/r/20220419203807.655552918@infradead.org
+Fixes: e463a09af2f0 ("x86: Add straight-line-speculation mitigation")
+Reported-by: Jamie Heilman <jamie@audible.transient.net>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Tested-by: Jamie Heilman <jamie@audible.transient.net>
+Link: https://lore.kernel.org/r/YjGzJwjrvxg5YZ0Z@audible.transient.net
+[Add a comment and a bit of safety checking, since this is going to be changed
+ again for IBT support. - Paolo]
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/objtool/elf.c |  187 +++++++++++++++++++++++++++++++++++++++++++++-------
- 1 file changed, 165 insertions(+), 22 deletions(-)
+ arch/x86/kvm/emulate.c |   19 +++++++++++++++++--
+ 1 file changed, 17 insertions(+), 2 deletions(-)
 
---- a/tools/objtool/elf.c
-+++ b/tools/objtool/elf.c
-@@ -537,37 +537,180 @@ int elf_add_reloc(struct elf *elf, struc
- 	return 0;
- }
+--- a/arch/x86/kvm/emulate.c
++++ b/arch/x86/kvm/emulate.c
+@@ -428,8 +428,23 @@ static int fastop(struct x86_emulate_ctx
+ 	FOP_END
  
--int elf_add_reloc_to_insn(struct elf *elf, struct section *sec,
--			  unsigned long offset, unsigned int type,
--			  struct section *insn_sec, unsigned long insn_off)
-+/*
-+ * Ensure that any reloc section containing references to @sym is marked
-+ * changed such that it will get re-generated in elf_rebuild_reloc_sections()
-+ * with the new symbol index.
-+ */
-+static void elf_dirty_reloc_sym(struct elf *elf, struct symbol *sym)
-+{
-+	struct section *sec;
-+
-+	list_for_each_entry(sec, &elf->sections, list) {
-+		struct reloc *reloc;
-+
-+		if (sec->changed)
-+			continue;
-+
-+		list_for_each_entry(reloc, &sec->reloc_list, list) {
-+			if (reloc->sym == sym) {
-+				sec->changed = true;
-+				break;
-+			}
-+		}
-+	}
-+}
+ /* Special case for SETcc - 1 instruction per cc */
 +
 +/*
-+ * Move the first global symbol, as per sh_info, into a new, higher symbol
-+ * index. This fees up the shndx for a new local symbol.
++ * Depending on .config the SETcc functions look like:
++ *
++ * SETcc %al   [3 bytes]
++ * RET         [1 byte]
++ * INT3        [1 byte; CONFIG_SLS]
++ *
++ * Which gives possible sizes 4 or 5.  When rounded up to the
++ * next power-of-two alignment they become 4 or 8.
 + */
-+static int elf_move_global_symbol(struct elf *elf, struct section *symtab,
-+				  struct section *symtab_shndx)
++#define SETCC_LENGTH	(4 + IS_ENABLED(CONFIG_SLS))
++#define SETCC_ALIGN	(4 << IS_ENABLED(CONFIG_SLS))
++static_assert(SETCC_LENGTH <= SETCC_ALIGN);
++
+ #define FOP_SETCC(op) \
+-	".align 4 \n\t" \
++	".align " __stringify(SETCC_ALIGN) " \n\t" \
+ 	".type " #op ", @function \n\t" \
+ 	#op ": \n\t" \
+ 	#op " %al \n\t" \
+@@ -1055,7 +1070,7 @@ static int em_bsr_c(struct x86_emulate_c
+ static __always_inline u8 test_cc(unsigned int condition, unsigned long flags)
  {
-+	Elf_Data *data, *shndx_data = NULL;
-+	Elf32_Word first_non_local;
- 	struct symbol *sym;
--	int addend;
-+	Elf_Scn *s;
+ 	u8 rc;
+-	void (*fop)(void) = (void *)em_setcc + 4 * (condition & 0xf);
++	void (*fop)(void) = (void *)em_setcc + SETCC_ALIGN * (condition & 0xf);
  
--	if (insn_sec->sym) {
--		sym = insn_sec->sym;
--		addend = insn_off;
-+	first_non_local = symtab->sh.sh_info;
- 
--	} else {
--		/*
--		 * The Clang assembler strips section symbols, so we have to
--		 * reference the function symbol instead:
--		 */
--		sym = find_symbol_containing(insn_sec, insn_off);
--		if (!sym) {
--			/*
--			 * Hack alert.  This happens when we need to reference
--			 * the NOP pad insn immediately after the function.
--			 */
--			sym = find_symbol_containing(insn_sec, insn_off - 1);
-+	sym = find_symbol_by_index(elf, first_non_local);
-+	if (!sym) {
-+		WARN("no non-local symbols !?");
-+		return first_non_local;
-+	}
-+
-+	s = elf_getscn(elf->elf, symtab->idx);
-+	if (!s) {
-+		WARN_ELF("elf_getscn");
-+		return -1;
-+	}
-+
-+	data = elf_newdata(s);
-+	if (!data) {
-+		WARN_ELF("elf_newdata");
-+		return -1;
-+	}
-+
-+	data->d_buf = &sym->sym;
-+	data->d_size = sizeof(sym->sym);
-+	data->d_align = 1;
-+	data->d_type = ELF_T_SYM;
-+
-+	sym->idx = symtab->sh.sh_size / sizeof(sym->sym);
-+	elf_dirty_reloc_sym(elf, sym);
-+
-+	symtab->sh.sh_info += 1;
-+	symtab->sh.sh_size += data->d_size;
-+	symtab->changed = true;
-+
-+	if (symtab_shndx) {
-+		s = elf_getscn(elf->elf, symtab_shndx->idx);
-+		if (!s) {
-+			WARN_ELF("elf_getscn");
-+			return -1;
- 		}
- 
--		if (!sym) {
--			WARN("can't find symbol containing %s+0x%lx", insn_sec->name, insn_off);
-+		shndx_data = elf_newdata(s);
-+		if (!shndx_data) {
-+			WARN_ELF("elf_newshndx_data");
- 			return -1;
- 		}
- 
--		addend = insn_off - sym->offset;
-+		shndx_data->d_buf = &sym->sec->idx;
-+		shndx_data->d_size = sizeof(Elf32_Word);
-+		shndx_data->d_align = 4;
-+		shndx_data->d_type = ELF_T_WORD;
-+
-+		symtab_shndx->sh.sh_size += 4;
-+		symtab_shndx->changed = true;
-+	}
-+
-+	return first_non_local;
-+}
-+
-+static struct symbol *
-+elf_create_section_symbol(struct elf *elf, struct section *sec)
-+{
-+	struct section *symtab, *symtab_shndx;
-+	Elf_Data *shndx_data = NULL;
-+	struct symbol *sym;
-+	Elf32_Word shndx;
-+
-+	symtab = find_section_by_name(elf, ".symtab");
-+	if (symtab) {
-+		symtab_shndx = find_section_by_name(elf, ".symtab_shndx");
-+		if (symtab_shndx)
-+			shndx_data = symtab_shndx->data;
-+	} else {
-+		WARN("no .symtab");
-+		return NULL;
-+	}
-+
-+	sym = malloc(sizeof(*sym));
-+	if (!sym) {
-+		perror("malloc");
-+		return NULL;
-+	}
-+	memset(sym, 0, sizeof(*sym));
-+
-+	sym->idx = elf_move_global_symbol(elf, symtab, symtab_shndx);
-+	if (sym->idx < 0) {
-+		WARN("elf_move_global_symbol");
-+		return NULL;
-+	}
-+
-+	sym->name = sec->name;
-+	sym->sec = sec;
-+
-+	// st_name 0
-+	sym->sym.st_info = GELF_ST_INFO(STB_LOCAL, STT_SECTION);
-+	// st_other 0
-+	// st_value 0
-+	// st_size 0
-+	shndx = sec->idx;
-+	if (shndx >= SHN_UNDEF && shndx < SHN_LORESERVE) {
-+		sym->sym.st_shndx = shndx;
-+		if (!shndx_data)
-+			shndx = 0;
-+	} else {
-+		sym->sym.st_shndx = SHN_XINDEX;
-+		if (!shndx_data) {
-+			WARN("no .symtab_shndx");
-+			return NULL;
-+		}
-+	}
-+
-+	if (!gelf_update_symshndx(symtab->data, shndx_data, sym->idx, &sym->sym, shndx)) {
-+		WARN_ELF("gelf_update_symshndx");
-+		return NULL;
-+	}
-+
-+	elf_add_symbol(elf, sym);
-+
-+	return sym;
-+}
-+
-+int elf_add_reloc_to_insn(struct elf *elf, struct section *sec,
-+			  unsigned long offset, unsigned int type,
-+			  struct section *insn_sec, unsigned long insn_off)
-+{
-+	struct symbol *sym = insn_sec->sym;
-+	int addend = insn_off;
-+
-+	if (!sym) {
-+		/*
-+		 * Due to how weak functions work, we must use section based
-+		 * relocations. Symbol based relocations would result in the
-+		 * weak and non-weak function annotations being overlaid on the
-+		 * non-weak function after linking.
-+		 */
-+		sym = elf_create_section_symbol(elf, insn_sec);
-+		if (!sym)
-+			return -1;
-+
-+		insn_sec->sym = sym;
- 	}
- 
- 	return elf_add_reloc(elf, sec, offset, type, sym, addend);
+ 	flags = (flags & EFLAGS_MASK) | X86_EFLAGS_IF;
+ 	asm("push %[flags]; popf; " CALL_NOSPEC
 
 
