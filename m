@@ -2,410 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87A92C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 00:54:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56DDBC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 00:56:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236771AbiGWAyc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 20:54:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59368 "EHLO
+        id S237048AbiGWA4k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 20:56:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236696AbiGWAxX (ORCPT
+        with ESMTP id S237087AbiGWA40 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 20:53:23 -0400
-Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 653E1C1DCA
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 17:52:33 -0700 (PDT)
-Received: by mail-pl1-x64a.google.com with SMTP id x11-20020a170902ec8b00b0016d4f05eb53so307618plg.10
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 17:52:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=reply-to:date:in-reply-to:message-id:mime-version:references
-         :subject:from:to:cc;
-        bh=x3fBv6Xpvt2tm3X/TNtbKJCdyAgtgJOraCquwezjnks=;
-        b=ONjI9x7VKOP8kXmSUDc/IyOMjoGexjQNg4aWwbsi0iyFELRJC0p4TOb7E9d6LmR8MC
-         Z0oKBLeSdTc1+9bRKkEEt7GPKNfpcGxHP0jYM2yKz65b93IcxEcUVW66pRNsqhnSnqXZ
-         ucKxPxdFhSJpnLJ8oLwngRlRO9Snp4jeKuR3d9lULeTQywGfPBG9E3mdQgzcS5KnMeZk
-         2NdlawuWHikXAf7z/OSlENg6eNPilaWQni1fc1LNZd/TQ147uhF0VsQxjx444FQoIA4e
-         XgUK4Uk9gUC+8G1xi6R1S/Diuln0apB5tvCF5EpP5ysXiMZGQaDEBVwR6atlDSH3TbLU
-         vq7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:reply-to:date:in-reply-to:message-id
-         :mime-version:references:subject:from:to:cc;
-        bh=x3fBv6Xpvt2tm3X/TNtbKJCdyAgtgJOraCquwezjnks=;
-        b=BwG2azxcJHx1wJVXQ7/fD521UX7yV25vCpVHt/XzciTtkDQZVZVCuA7aeNrAh6BM9P
-         SDlPQHb6FP0zvWaeZblkLBUKUKdcawUDEKzZJV8RbCoQhg+LDMDhvl1YTmkpcoeqz7oq
-         piDTpA+qCEDUDZEfY1RYpPkz/s3W/dUlmClOs9PTVQ8IrGfCSaD6PGD5VxU4ktNzMdFg
-         5Mu5F+V7eM7WhnJBIy6Fwrp8bbHEPGunHmpc569jhNwuxrYvOnHqouRFrgNjM3Jh7e7u
-         a/1PMXdFS7mi1TDHpOyl8RKmtrRFz/VOv2Rn3i+8os8Z3caZjBHqXJ9xeM31jdLL2W3m
-         xicQ==
-X-Gm-Message-State: AJIora8vVxw/Ffh+wCfOn6BW0YmAQDnyX+/XiAmjHK0FGu++OZfBq8UK
-        IceFx4Ykwy75ParxhiVZsKAhmcSWnOo=
-X-Google-Smtp-Source: AGRyM1vm6sJKemTkEiYntMmW56V201SmpeKkIXMPMlgXZHTl1ZEUAKKWqA6+biYHZcoPnKZGHoyFOIQj7Yo=
-X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a05:6a00:26f1:b0:52b:d0aa:4178 with SMTP id
- p49-20020a056a0026f100b0052bd0aa4178mr2530729pfw.86.1658537540338; Fri, 22
- Jul 2022 17:52:20 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Sat, 23 Jul 2022 00:51:37 +0000
-In-Reply-To: <20220723005137.1649592-1-seanjc@google.com>
-Message-Id: <20220723005137.1649592-25-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220723005137.1649592-1-seanjc@google.com>
-X-Mailer: git-send-email 2.37.1.359.gd136c6c3e2-goog
-Subject: [PATCH v4 24/24] KVM: selftests: Add an x86-only test to verify
- nested exception queueing
-From:   Sean Christopherson <seanjc@google.com>
-To:     Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jim Mattson <jmattson@google.com>,
-        Maxim Levitsky <mlevitsk@redhat.com>,
-        Oliver Upton <oupton@google.com>,
-        Peter Shier <pshier@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Fri, 22 Jul 2022 20:56:26 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D691CB76C
+        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 17:54:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658537661; x=1690073661;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=UmhGtKJFMMjflf8JYn+tkERQD/1DxXTK6pIJaSBKdwk=;
+  b=ZfFOHVb6CKfrdD+t+LA1h2cX3Hu9dWLS6Ve5WE9E6BOkTk3O7B7GIBZQ
+   aJZTMhaXDq0DYS5FVBcuZB4WdZb1cyrE8PbRevlLtAFwFKmdUVU+PyBuH
+   MX5IkwQ7/smQuSMq9WLYjhrQLpO/HIGgYPVHIu2XTLCJ4dy1vBgGS5wuR
+   EKAEBvLBgXkYy+rU+Camg4ypkrzGAu/NjAckP7pvpIl5XlYXpurczfcJK
+   gGkg7kW1RtHDURsHwCbwgiQ4z3ZVyI9dRbVSuVwNUr6IYEFugwawqngNV
+   O+RRlZUZLx+lw65d2P6Xu7jPwi4n55aJ4w/AC/G7fp9/+4YGbKX6/gBIl
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10416"; a="267826340"
+X-IronPort-AV: E=Sophos;i="5.93,186,1654585200"; 
+   d="scan'208";a="267826340"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jul 2022 17:53:49 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,186,1654585200"; 
+   d="scan'208";a="549356158"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 22 Jul 2022 17:53:48 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oF3Ot-0001yl-1V;
+        Sat, 23 Jul 2022 00:53:47 +0000
+Date:   Sat, 23 Jul 2022 08:52:50 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jianglei Nie <niejianglei2021@163.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, 0day robot <lkp@intel.com>
+Subject: security/keys/trusted-keys/trusted_tpm2.c:42:6: warning: mixing
+ declarations and code is incompatible with standards before C99
+Message-ID: <202207230823.zcrjNiOI-lkp@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a test to verify that KVM_{G,S}ET_EVENTS play nice with pending vs.
-injected exceptions when an exception is being queued for L2, and that
-KVM correctly handles L1's exception intercept wants.
+tree:   https://github.com/intel-lab-lkp/linux/commits/UPDATE-20220722-162642/Jianglei-Nie/KEYS-trusted-Fix-memory-leak-in-tpm2_key_encode/20220608-211954
+head:   7112e578934830db95743922ab0d46d2f4b7dff4
+commit: 7112e578934830db95743922ab0d46d2f4b7dff4 KEYS: trusted: Fix memory leak in tpm2_key_encode()
+date:   16 hours ago
+config: hexagon-randconfig-r023-20220721 (https://download.01.org/0day-ci/archive/20220723/202207230823.zcrjNiOI-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 72686d68c137551cce816416190a18d45b4d4e2a)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/7112e578934830db95743922ab0d46d2f4b7dff4
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review UPDATE-20220722-162642/Jianglei-Nie/KEYS-trusted-Fix-memory-leak-in-tpm2_key_encode/20220608-211954
+        git checkout 7112e578934830db95743922ab0d46d2f4b7dff4
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash security/keys/trusted-keys/
 
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Reviewed-by: Maxim Levitsky <mlevitsk@redhat.com>
----
- tools/testing/selftests/kvm/.gitignore        |   1 +
- tools/testing/selftests/kvm/Makefile          |   1 +
- .../kvm/x86_64/nested_exceptions_test.c       | 295 ++++++++++++++++++
- 3 files changed, 297 insertions(+)
- create mode 100644 tools/testing/selftests/kvm/x86_64/nested_exceptions_test.c
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-diff --git a/tools/testing/selftests/kvm/.gitignore b/tools/testing/selftests/kvm/.gitignore
-index d625a3f83780..45d9aee1c0d8 100644
---- a/tools/testing/selftests/kvm/.gitignore
-+++ b/tools/testing/selftests/kvm/.gitignore
-@@ -28,6 +28,7 @@
- /x86_64/max_vcpuid_cap_test
- /x86_64/mmio_warning_test
- /x86_64/monitor_mwait_test
-+/x86_64/nested_exceptions_test
- /x86_64/nx_huge_pages_test
- /x86_64/platform_info_test
- /x86_64/pmu_event_filter_test
-diff --git a/tools/testing/selftests/kvm/Makefile b/tools/testing/selftests/kvm/Makefile
-index 690b499c3471..05a34b6be26b 100644
---- a/tools/testing/selftests/kvm/Makefile
-+++ b/tools/testing/selftests/kvm/Makefile
-@@ -88,6 +88,7 @@ TEST_GEN_PROGS_x86_64 += x86_64/kvm_clock_test
- TEST_GEN_PROGS_x86_64 += x86_64/kvm_pv_test
- TEST_GEN_PROGS_x86_64 += x86_64/mmio_warning_test
- TEST_GEN_PROGS_x86_64 += x86_64/monitor_mwait_test
-+TEST_GEN_PROGS_x86_64 += x86_64/nested_exceptions_test
- TEST_GEN_PROGS_x86_64 += x86_64/platform_info_test
- TEST_GEN_PROGS_x86_64 += x86_64/pmu_event_filter_test
- TEST_GEN_PROGS_x86_64 += x86_64/set_boot_cpu_id
-diff --git a/tools/testing/selftests/kvm/x86_64/nested_exceptions_test.c b/tools/testing/selftests/kvm/x86_64/nested_exceptions_test.c
-new file mode 100644
-index 000000000000..ac33835f78f4
---- /dev/null
-+++ b/tools/testing/selftests/kvm/x86_64/nested_exceptions_test.c
-@@ -0,0 +1,295 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+#define _GNU_SOURCE /* for program_invocation_short_name */
-+
-+#include "test_util.h"
-+#include "kvm_util.h"
-+#include "processor.h"
-+#include "vmx.h"
-+#include "svm_util.h"
-+
-+#define L2_GUEST_STACK_SIZE 256
-+
-+/*
-+ * Arbitrary, never shoved into KVM/hardware, just need to avoid conflict with
-+ * the "real" exceptions used, #SS/#GP/#DF (12/13/8).
-+ */
-+#define FAKE_TRIPLE_FAULT_VECTOR	0xaa
-+
-+/* Arbitrary 32-bit error code injected by this test. */
-+#define SS_ERROR_CODE 0xdeadbeef
-+
-+/*
-+ * Bit '0' is set on Intel if the exception occurs while delivering a previous
-+ * event/exception.  AMD's wording is ambiguous, but presumably the bit is set
-+ * if the exception occurs while delivering an external event, e.g. NMI or INTR,
-+ * but not for exceptions that occur when delivering other exceptions or
-+ * software interrupts.
-+ *
-+ * Note, Intel's name for it, "External event", is misleading and much more
-+ * aligned with AMD's behavior, but the SDM is quite clear on its behavior.
-+ */
-+#define ERROR_CODE_EXT_FLAG	BIT(0)
-+
-+/*
-+ * Bit '1' is set if the fault occurred when looking up a descriptor in the
-+ * IDT, which is the case here as the IDT is empty/NULL.
-+ */
-+#define ERROR_CODE_IDT_FLAG	BIT(1)
-+
-+/*
-+ * The #GP that occurs when vectoring #SS should show the index into the IDT
-+ * for #SS, plus have the "IDT flag" set.
-+ */
-+#define GP_ERROR_CODE_AMD ((SS_VECTOR * 8) | ERROR_CODE_IDT_FLAG)
-+#define GP_ERROR_CODE_INTEL ((SS_VECTOR * 8) | ERROR_CODE_IDT_FLAG | ERROR_CODE_EXT_FLAG)
-+
-+/*
-+ * Intel and AMD both shove '0' into the error code on #DF, regardless of what
-+ * led to the double fault.
-+ */
-+#define DF_ERROR_CODE 0
-+
-+#define INTERCEPT_SS		(BIT_ULL(SS_VECTOR))
-+#define INTERCEPT_SS_DF		(INTERCEPT_SS | BIT_ULL(DF_VECTOR))
-+#define INTERCEPT_SS_GP_DF	(INTERCEPT_SS_DF | BIT_ULL(GP_VECTOR))
-+
-+static void l2_ss_pending_test(void)
-+{
-+	GUEST_SYNC(SS_VECTOR);
-+}
-+
-+static void l2_ss_injected_gp_test(void)
-+{
-+	GUEST_SYNC(GP_VECTOR);
-+}
-+
-+static void l2_ss_injected_df_test(void)
-+{
-+	GUEST_SYNC(DF_VECTOR);
-+}
-+
-+static void l2_ss_injected_tf_test(void)
-+{
-+	GUEST_SYNC(FAKE_TRIPLE_FAULT_VECTOR);
-+}
-+
-+static void svm_run_l2(struct svm_test_data *svm, void *l2_code, int vector,
-+		       uint32_t error_code)
-+{
-+	struct vmcb *vmcb = svm->vmcb;
-+	struct vmcb_control_area *ctrl = &vmcb->control;
-+
-+	vmcb->save.rip = (u64)l2_code;
-+	run_guest(vmcb, svm->vmcb_gpa);
-+
-+	if (vector == FAKE_TRIPLE_FAULT_VECTOR)
-+		return;
-+
-+	GUEST_ASSERT_EQ(ctrl->exit_code, (SVM_EXIT_EXCP_BASE + vector));
-+	GUEST_ASSERT_EQ(ctrl->exit_info_1, error_code);
-+}
-+
-+static void l1_svm_code(struct svm_test_data *svm)
-+{
-+	struct vmcb_control_area *ctrl = &svm->vmcb->control;
-+	unsigned long l2_guest_stack[L2_GUEST_STACK_SIZE];
-+
-+	generic_svm_setup(svm, NULL, &l2_guest_stack[L2_GUEST_STACK_SIZE]);
-+	svm->vmcb->save.idtr.limit = 0;
-+	ctrl->intercept |= BIT_ULL(INTERCEPT_SHUTDOWN);
-+
-+	ctrl->intercept_exceptions = INTERCEPT_SS_GP_DF;
-+	svm_run_l2(svm, l2_ss_pending_test, SS_VECTOR, SS_ERROR_CODE);
-+	svm_run_l2(svm, l2_ss_injected_gp_test, GP_VECTOR, GP_ERROR_CODE_AMD);
-+
-+	ctrl->intercept_exceptions = INTERCEPT_SS_DF;
-+	svm_run_l2(svm, l2_ss_injected_df_test, DF_VECTOR, DF_ERROR_CODE);
-+
-+	ctrl->intercept_exceptions = INTERCEPT_SS;
-+	svm_run_l2(svm, l2_ss_injected_tf_test, FAKE_TRIPLE_FAULT_VECTOR, 0);
-+	GUEST_ASSERT_EQ(ctrl->exit_code, SVM_EXIT_SHUTDOWN);
-+
-+	GUEST_DONE();
-+}
-+
-+static void vmx_run_l2(void *l2_code, int vector, uint32_t error_code)
-+{
-+	GUEST_ASSERT(!vmwrite(GUEST_RIP, (u64)l2_code));
-+
-+	GUEST_ASSERT_EQ(vector == SS_VECTOR ? vmlaunch() : vmresume(), 0);
-+
-+	if (vector == FAKE_TRIPLE_FAULT_VECTOR)
-+		return;
-+
-+	GUEST_ASSERT_EQ(vmreadz(VM_EXIT_REASON), EXIT_REASON_EXCEPTION_NMI);
-+	GUEST_ASSERT_EQ((vmreadz(VM_EXIT_INTR_INFO) & 0xff), vector);
-+	GUEST_ASSERT_EQ(vmreadz(VM_EXIT_INTR_ERROR_CODE), error_code);
-+}
-+
-+static void l1_vmx_code(struct vmx_pages *vmx)
-+{
-+	unsigned long l2_guest_stack[L2_GUEST_STACK_SIZE];
-+
-+	GUEST_ASSERT_EQ(prepare_for_vmx_operation(vmx), true);
-+
-+	GUEST_ASSERT_EQ(load_vmcs(vmx), true);
-+
-+	prepare_vmcs(vmx, NULL, &l2_guest_stack[L2_GUEST_STACK_SIZE]);
-+	GUEST_ASSERT_EQ(vmwrite(GUEST_IDTR_LIMIT, 0), 0);
-+
-+	/*
-+	 * VMX disallows injecting an exception with error_code[31:16] != 0,
-+	 * and hardware will never generate a VM-Exit with bits 31:16 set.
-+	 * KVM should likewise truncate the "bad" userspace value.
-+	 */
-+	GUEST_ASSERT_EQ(vmwrite(EXCEPTION_BITMAP, INTERCEPT_SS_GP_DF), 0);
-+	vmx_run_l2(l2_ss_pending_test, SS_VECTOR, (u16)SS_ERROR_CODE);
-+	vmx_run_l2(l2_ss_injected_gp_test, GP_VECTOR, GP_ERROR_CODE_INTEL);
-+
-+	GUEST_ASSERT_EQ(vmwrite(EXCEPTION_BITMAP, INTERCEPT_SS_DF), 0);
-+	vmx_run_l2(l2_ss_injected_df_test, DF_VECTOR, DF_ERROR_CODE);
-+
-+	GUEST_ASSERT_EQ(vmwrite(EXCEPTION_BITMAP, INTERCEPT_SS), 0);
-+	vmx_run_l2(l2_ss_injected_tf_test, FAKE_TRIPLE_FAULT_VECTOR, 0);
-+	GUEST_ASSERT_EQ(vmreadz(VM_EXIT_REASON), EXIT_REASON_TRIPLE_FAULT);
-+
-+	GUEST_DONE();
-+}
-+
-+static void __attribute__((__flatten__)) l1_guest_code(void *test_data)
-+{
-+	if (this_cpu_has(X86_FEATURE_SVM))
-+		l1_svm_code(test_data);
-+	else
-+		l1_vmx_code(test_data);
-+}
-+
-+static void assert_ucall_vector(struct kvm_vcpu *vcpu, int vector)
-+{
-+	struct kvm_run *run = vcpu->run;
-+	struct ucall uc;
-+
-+	TEST_ASSERT(run->exit_reason == KVM_EXIT_IO,
-+		    "Unexpected exit reason: %u (%s),\n",
-+		    run->exit_reason, exit_reason_str(run->exit_reason));
-+
-+	switch (get_ucall(vcpu, &uc)) {
-+	case UCALL_SYNC:
-+		TEST_ASSERT(vector == uc.args[1],
-+			    "Expected L2 to ask for %d, got %ld", vector, uc.args[1]);
-+		break;
-+	case UCALL_DONE:
-+		TEST_ASSERT(vector == -1,
-+			    "Expected L2 to ask for %d, L2 says it's done", vector);
-+		break;
-+	case UCALL_ABORT:
-+		TEST_FAIL("%s at %s:%ld (0x%lx != 0x%lx)",
-+			  (const char *)uc.args[0], __FILE__, uc.args[1],
-+			  uc.args[2], uc.args[3]);
-+		break;
-+	default:
-+		TEST_FAIL("Expected L2 to ask for %d, got unexpected ucall %lu", vector, uc.cmd);
-+	}
-+}
-+
-+static void queue_ss_exception(struct kvm_vcpu *vcpu, bool inject)
-+{
-+	struct kvm_vcpu_events events;
-+
-+	vcpu_events_get(vcpu, &events);
-+
-+	TEST_ASSERT(!events.exception.pending,
-+		    "Vector %d unexpectedlt pending", events.exception.nr);
-+	TEST_ASSERT(!events.exception.injected,
-+		    "Vector %d unexpectedly injected", events.exception.nr);
-+
-+	events.flags = KVM_VCPUEVENT_VALID_PAYLOAD;
-+	events.exception.pending = !inject;
-+	events.exception.injected = inject;
-+	events.exception.nr = SS_VECTOR;
-+	events.exception.has_error_code = true;
-+	events.exception.error_code = SS_ERROR_CODE;
-+	vcpu_events_set(vcpu, &events);
-+}
-+
-+/*
-+ * Verify KVM_{G,S}ET_EVENTS play nice with pending vs. injected exceptions
-+ * when an exception is being queued for L2.  Specifically, verify that KVM
-+ * honors L1 exception intercept controls when a #SS is pending/injected,
-+ * triggers a #GP on vectoring the #SS, morphs to #DF if #GP isn't intercepted
-+ * by L1, and finally causes (nested) SHUTDOWN if #DF isn't intercepted by L1.
-+ */
-+int main(int argc, char *argv[])
-+{
-+	vm_vaddr_t nested_test_data_gva;
-+	struct kvm_vcpu_events events;
-+	struct kvm_vcpu *vcpu;
-+	struct kvm_vm *vm;
-+
-+	TEST_REQUIRE(kvm_has_cap(KVM_CAP_EXCEPTION_PAYLOAD));
-+	TEST_REQUIRE(kvm_cpu_has(X86_FEATURE_SVM) || kvm_cpu_has(X86_FEATURE_VMX));
-+
-+	vm = vm_create_with_one_vcpu(&vcpu, l1_guest_code);
-+	vm_enable_cap(vm, KVM_CAP_EXCEPTION_PAYLOAD, -2ul);
-+
-+	if (kvm_cpu_has(X86_FEATURE_SVM))
-+		vcpu_alloc_svm(vm, &nested_test_data_gva);
-+	else
-+		vcpu_alloc_vmx(vm, &nested_test_data_gva);
-+
-+	vcpu_args_set(vcpu, 1, nested_test_data_gva);
-+
-+	/* Run L1 => L2.  L2 should sync and request #SS. */
-+	vcpu_run(vcpu);
-+	assert_ucall_vector(vcpu, SS_VECTOR);
-+
-+	/* Pend #SS and request immediate exit.  #SS should still be pending. */
-+	queue_ss_exception(vcpu, false);
-+	vcpu->run->immediate_exit = true;
-+	vcpu_run_complete_io(vcpu);
-+
-+	/* Verify the pending events comes back out the same as it went in. */
-+	vcpu_events_get(vcpu, &events);
-+	ASSERT_EQ(events.flags & KVM_VCPUEVENT_VALID_PAYLOAD,
-+		  KVM_VCPUEVENT_VALID_PAYLOAD);
-+	ASSERT_EQ(events.exception.pending, true);
-+	ASSERT_EQ(events.exception.nr, SS_VECTOR);
-+	ASSERT_EQ(events.exception.has_error_code, true);
-+	ASSERT_EQ(events.exception.error_code, SS_ERROR_CODE);
-+
-+	/*
-+	 * Run for real with the pending #SS, L1 should get a VM-Exit due to
-+	 * #SS interception and re-enter L2 to request #GP (via injected #SS).
-+	 */
-+	vcpu->run->immediate_exit = false;
-+	vcpu_run(vcpu);
-+	assert_ucall_vector(vcpu, GP_VECTOR);
-+
-+	/*
-+	 * Inject #SS, the #SS should bypass interception and cause #GP, which
-+	 * L1 should intercept before KVM morphs it to #DF.  L1 should then
-+	 * disable #GP interception and run L2 to request #DF (via #SS => #GP).
-+	 */
-+	queue_ss_exception(vcpu, true);
-+	vcpu_run(vcpu);
-+	assert_ucall_vector(vcpu, DF_VECTOR);
-+
-+	/*
-+	 * Inject #SS, the #SS should bypass interception and cause #GP, which
-+	 * L1 is no longer interception, and so should see a #DF VM-Exit.  L1
-+	 * should then signal that is done.
-+	 */
-+	queue_ss_exception(vcpu, true);
-+	vcpu_run(vcpu);
-+	assert_ucall_vector(vcpu, FAKE_TRIPLE_FAULT_VECTOR);
-+
-+	/*
-+	 * Inject #SS yet again.  L1 is not intercepting #GP or #DF, and so
-+	 * should see nested TRIPLE_FAULT / SHUTDOWN.
-+	 */
-+	queue_ss_exception(vcpu, true);
-+	vcpu_run(vcpu);
-+	assert_ucall_vector(vcpu, -1);
-+
-+	kvm_vm_free(vm);
-+}
+All warnings (new ones prefixed by >>):
+
+>> security/keys/trusted-keys/trusted_tpm2.c:42:6: warning: mixing declarations and code is incompatible with standards before C99 [-Wdeclaration-after-statement]
+           u8 *work = scratch, *work1;
+               ^
+   1 warning generated.
+
+
+vim +42 security/keys/trusted-keys/trusted_tpm2.c
+
+f2219745250f38 James Bottomley 2021-01-27   30  
+f2219745250f38 James Bottomley 2021-01-27   31  static int tpm2_key_encode(struct trusted_key_payload *payload,
+f2219745250f38 James Bottomley 2021-01-27   32  			   struct trusted_key_options *options,
+f2219745250f38 James Bottomley 2021-01-27   33  			   u8 *src, u32 len)
+f2219745250f38 James Bottomley 2021-01-27   34  {
+7112e578934830 Jianglei Nie    2022-07-22   35  	int ret;
+f2219745250f38 James Bottomley 2021-01-27   36  	const int SCRATCH_SIZE = PAGE_SIZE;
+7112e578934830 Jianglei Nie    2022-07-22   37  	u8 *scratch;
+7112e578934830 Jianglei Nie    2022-07-22   38  
+7112e578934830 Jianglei Nie    2022-07-22   39  	scratch = kmalloc(SCRATCH_SIZE, GFP_KERNEL);
+7112e578934830 Jianglei Nie    2022-07-22   40  	if (!scratch)
+7112e578934830 Jianglei Nie    2022-07-22   41  		return -ENOMEM;
+f2219745250f38 James Bottomley 2021-01-27  @42  	u8 *work = scratch, *work1;
+f2219745250f38 James Bottomley 2021-01-27   43  	u8 *end_work = scratch + SCRATCH_SIZE;
+f2219745250f38 James Bottomley 2021-01-27   44  	u8 *priv, *pub;
+f2219745250f38 James Bottomley 2021-01-27   45  	u16 priv_len, pub_len;
+f2219745250f38 James Bottomley 2021-01-27   46  
+f2219745250f38 James Bottomley 2021-01-27   47  	priv_len = get_unaligned_be16(src) + 2;
+f2219745250f38 James Bottomley 2021-01-27   48  	priv = src;
+f2219745250f38 James Bottomley 2021-01-27   49  
+f2219745250f38 James Bottomley 2021-01-27   50  	src += priv_len;
+f2219745250f38 James Bottomley 2021-01-27   51  
+f2219745250f38 James Bottomley 2021-01-27   52  	pub_len = get_unaligned_be16(src) + 2;
+f2219745250f38 James Bottomley 2021-01-27   53  	pub = src;
+f2219745250f38 James Bottomley 2021-01-27   54  
+f2219745250f38 James Bottomley 2021-01-27   55  	work = asn1_encode_oid(work, end_work, tpm2key_oid,
+f2219745250f38 James Bottomley 2021-01-27   56  			       asn1_oid_len(tpm2key_oid));
+f2219745250f38 James Bottomley 2021-01-27   57  
+f2219745250f38 James Bottomley 2021-01-27   58  	if (options->blobauth_len == 0) {
+f2219745250f38 James Bottomley 2021-01-27   59  		unsigned char bool[3], *w = bool;
+f2219745250f38 James Bottomley 2021-01-27   60  		/* tag 0 is emptyAuth */
+f2219745250f38 James Bottomley 2021-01-27   61  		w = asn1_encode_boolean(w, w + sizeof(bool), true);
+7112e578934830 Jianglei Nie    2022-07-22   62  		if (WARN(IS_ERR(w), "BUG: Boolean failed to encode")) {
+7112e578934830 Jianglei Nie    2022-07-22   63  			ret = PTR_ERR(w);
+7112e578934830 Jianglei Nie    2022-07-22   64  			goto err;
+7112e578934830 Jianglei Nie    2022-07-22   65  		}
+f2219745250f38 James Bottomley 2021-01-27   66  		work = asn1_encode_tag(work, end_work, 0, bool, w - bool);
+f2219745250f38 James Bottomley 2021-01-27   67  	}
+f2219745250f38 James Bottomley 2021-01-27   68  
+f2219745250f38 James Bottomley 2021-01-27   69  	/*
+f2219745250f38 James Bottomley 2021-01-27   70  	 * Assume both octet strings will encode to a 2 byte definite length
+f2219745250f38 James Bottomley 2021-01-27   71  	 *
+f2219745250f38 James Bottomley 2021-01-27   72  	 * Note: For a well behaved TPM, this warning should never
+f2219745250f38 James Bottomley 2021-01-27   73  	 * trigger, so if it does there's something nefarious going on
+f2219745250f38 James Bottomley 2021-01-27   74  	 */
+f2219745250f38 James Bottomley 2021-01-27   75  	if (WARN(work - scratch + pub_len + priv_len + 14 > SCRATCH_SIZE,
+7112e578934830 Jianglei Nie    2022-07-22   76  		 "BUG: scratch buffer is too small")) {
+7112e578934830 Jianglei Nie    2022-07-22   77  		ret = -EINVAL;
+7112e578934830 Jianglei Nie    2022-07-22   78  		goto err;
+7112e578934830 Jianglei Nie    2022-07-22   79  	}
+f2219745250f38 James Bottomley 2021-01-27   80  
+f2219745250f38 James Bottomley 2021-01-27   81  	work = asn1_encode_integer(work, end_work, options->keyhandle);
+f2219745250f38 James Bottomley 2021-01-27   82  	work = asn1_encode_octet_string(work, end_work, pub, pub_len);
+f2219745250f38 James Bottomley 2021-01-27   83  	work = asn1_encode_octet_string(work, end_work, priv, priv_len);
+f2219745250f38 James Bottomley 2021-01-27   84  
+f2219745250f38 James Bottomley 2021-01-27   85  	work1 = payload->blob;
+f2219745250f38 James Bottomley 2021-01-27   86  	work1 = asn1_encode_sequence(work1, work1 + sizeof(payload->blob),
+f2219745250f38 James Bottomley 2021-01-27   87  				     scratch, work - scratch);
+7112e578934830 Jianglei Nie    2022-07-22   88  	if (WARN(IS_ERR(work1), "BUG: ASN.1 encoder failed")) {
+7112e578934830 Jianglei Nie    2022-07-22   89  		ret = PTR_ERR(work1);
+7112e578934830 Jianglei Nie    2022-07-22   90  		goto err;
+7112e578934830 Jianglei Nie    2022-07-22   91  	}
+f2219745250f38 James Bottomley 2021-01-27   92  
+7112e578934830 Jianglei Nie    2022-07-22   93  	kfree(scratch);
+f2219745250f38 James Bottomley 2021-01-27   94  	return work1 - payload->blob;
+7112e578934830 Jianglei Nie    2022-07-22   95  
+7112e578934830 Jianglei Nie    2022-07-22   96  err:
+7112e578934830 Jianglei Nie    2022-07-22   97  	kfree(scratch);
+7112e578934830 Jianglei Nie    2022-07-22   98  	return ret;
+f2219745250f38 James Bottomley 2021-01-27   99  }
+f2219745250f38 James Bottomley 2021-01-27  100  
+
 -- 
-2.37.1.359.gd136c6c3e2-goog
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
