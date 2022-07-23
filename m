@@ -2,144 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7BA0CCA483
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 14:17:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB4F1CCA483
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 14:19:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237449AbiGWORy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 10:17:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49126 "EHLO
+        id S237498AbiGWOTY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 10:19:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237385AbiGWORw (ORCPT
+        with ESMTP id S237479AbiGWOTW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 10:17:52 -0400
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7FF1183BC
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Jul 2022 07:17:50 -0700 (PDT)
-Received: by mail-yb1-xb2c.google.com with SMTP id b143so11252834yba.11
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Jul 2022 07:17:50 -0700 (PDT)
+        Sat, 23 Jul 2022 10:19:22 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8103183BC;
+        Sat, 23 Jul 2022 07:19:21 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id v13so2219314wru.12;
+        Sat, 23 Jul 2022 07:19:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mEoPEbeOyWxlrBYzTjx3/LLOWXpb1CcPOZICGC0v96M=;
-        b=jr/xvpvbVmNf+xIG0dbLCrMyluMNU3l3gZeFwLtkhnYy/4UleXz2aomwnjH+3TbMKl
-         11dBUhnttUE/J/yKFXfQN03yrN4WFewxF/+VJ/kcL6pFsFUOYhgePHT7kQM1GWHE4cnj
-         J0HF2vx93jhldzsXpN3975BnFyYHwrHhHDTW6S28Y1Bp+thJmDbF88XkOqYjLcRbtVMz
-         EymXnwDWc6excfS/Vg36Y6KXmCjFyN9Fy9ta6W1R+MsF1Y9qT+ckV60hFtIARmjwjo36
-         hhkKLiL31tekMRZqBQY+Ta4faait4JFH08LLjUBAqpKD/CnXK6iHsPwk/7J98gJf2WT9
-         7zEg==
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aYMXugLjT0vmNOXEeLojAK5w6cmZ7Tah5JaZ/yMlBCI=;
+        b=j0qBVYVwvRXkHMCXLVlTTYZsQUz8XfCvkJ3uIs2rJ2rr8NCyDc2lvBRJcZ/GAwwANq
+         M7Sj5V+5zLTF5TlUwAeOrkBrQ35Js3gUK2vXBhjgSMzF0hZwnDAXVb6gWBj3UmFml7OG
+         dclEJgoP1FXgQHeqpxYG0DdvT+D+BbVOyb6fQHjmokxeSoOMXaahTh9l62fZc1MEDYAJ
+         TPyvFwA0OrIuGbZ3/I1TlVtf3dEPk8mzJdlDm428Nc2ew7Tgng/ekgMdzEbFdRUvGk0H
+         5O3t4V+Qr4IuHQotyeCkgh9Yi+tUvMan2+N4KJbr2+jTES6Kefb/YPY12pF4N8QnkMS6
+         m50w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mEoPEbeOyWxlrBYzTjx3/LLOWXpb1CcPOZICGC0v96M=;
-        b=Y6OBpZ+J05NXTDmag+an012cmT+7blgaYg3WIDIdwmuwWFM7Vg0+7KYMJ5wWZRrLFG
-         WoOGMARA+dSES+CgGW65WrgHcep/JugAjQwAn6LsrPDg8+VSQdpLr2sumubNiN8dveFJ
-         uZV8Cm6CXSUAWjcsJYW6wQgHBfVbPtDRM4aEeWN5/+hkcH6kNupjgW4d2aaghZeva/if
-         PngxMe0diwz/1505Q2ZnO5oNviWDM9qyJ0mKh7PxD/xkRmFlQCilFgJrML8sJQhdZIfC
-         q2lOh8HSk97f8SkGGlkmV6ldz48ariM0uLuOjNBMnbTqt1a9SUqKGj8U6G7COStqSdRG
-         R+Zw==
-X-Gm-Message-State: AJIora9jpPxOUog66b+EMSmJaTgMWyKmvy/pbC7S6VmstQsT7ILnO6/V
-        wg7Ud0C7QWyKVgQGQrdvMQEwC+bmLDL6y8OsBVEJWA==
-X-Google-Smtp-Source: AGRyM1vMVZvJKOP7aWWuKyr1n74NN+gmMGpp4/ODkk6r1z+KdpVQo9OtmmE4byGdqk74TpSHifmeukWE0kzdATNgfP0=
-X-Received: by 2002:a25:2f4a:0:b0:670:ea89:72b2 with SMTP id
- v71-20020a252f4a000000b00670ea8972b2mr3546504ybv.427.1658585869576; Sat, 23
- Jul 2022 07:17:49 -0700 (PDT)
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aYMXugLjT0vmNOXEeLojAK5w6cmZ7Tah5JaZ/yMlBCI=;
+        b=Yxlkzk9nm9YQdqreVmWBWRM044bP9OJLEcHno/IDlMjKYKJ17boToVDWiIbniewd+P
+         GAFTSF3sV/iM/RYQLBIchaWqt5EGmAnDT0NA1Uu6lzY1+BIpJKLJ74h0MJdQ950BOigs
+         rlckla7cd4DTgFh9fcn2GyaovLxuNAeWYTabAsbO+Mp5B0XQ9wiql+/c5jDjTSFTCkrr
+         TzoOdYELMe6KUN2tfDxdIvuuDY5U8B1hjTffEI4NVl8jLxsg94JZYchZ9pBce/iMcye0
+         1qu5At0VVxPKMPPncU8dD0mIIOQUQgafkKrpHBvgZjtCKPoUBYwGaJIWFK/IA1se1jxT
+         RM9Q==
+X-Gm-Message-State: AJIora/DUauyaZ8Xglnr4C53I48RRwIr3fCt3nV+QbkLHEUkcZ+D+BqZ
+        QzPk4gmJTmwhvPeddxevW54=
+X-Google-Smtp-Source: AGRyM1tafSBERDDiC7xk72RGPmBW1LaiMW5F+J5OLFIGabVLT7Ud7KMl0dnp+hX6v8XpDdJPEQ+QvQ==
+X-Received: by 2002:a05:6000:1548:b0:21d:acfc:29f5 with SMTP id 8-20020a056000154800b0021dacfc29f5mr2817360wry.520.1658585959679;
+        Sat, 23 Jul 2022 07:19:19 -0700 (PDT)
+Received: from localhost.localdomain (host-87-7-207-127.retail.telecomitalia.it. [87.7.207.127])
+        by smtp.googlemail.com with ESMTPSA id l18-20020a05600c1d1200b003a04d19dab3sm21011960wms.3.2022.07.23.07.19.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 23 Jul 2022 07:19:19 -0700 (PDT)
+From:   Christian Marangi <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Christian Marangi <ansuelsmth@gmail.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [net-next PATCH v3 00/14] net: dsa: qca8k: code split for qca8k
+Date:   Sat, 23 Jul 2022 16:18:31 +0200
+Message-Id: <20220723141845.10570-1-ansuelsmth@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-References: <20220722162934.1888835-1-mcgrof@kernel.org> <20220722162934.1888835-3-mcgrof@kernel.org>
-In-Reply-To: <20220722162934.1888835-3-mcgrof@kernel.org>
-From:   Muchun Song <songmuchun@bytedance.com>
-Date:   Sat, 23 Jul 2022 22:17:12 +0800
-Message-ID: <CAMZfGtV4wC-8uT47v-nYhEi82cqNVNf1CFMM8qRU7Nd3SMyv5w@mail.gmail.com>
-Subject: Re: [PATCH 2/2] Documentation/filesystems/proc.rst: document procfs
- inode timestamps
-To:     Luis Chamberlain <mcgrof@kernel.org>
-Cc:     "Eric W. Biederman" <ebiederm@xmission.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Kees Cook <keescook@chromium.org>,
-        Iurii Zaikin <yzaikin@google.com>,
-        Zhang Yuchen <zhangyuchen.lcr@bytedance.com>,
-        David Howells <dhowells@redhat.com>,
-        Deepa Dinamani <deepa.kernel@gmail.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        linux-api@vger.kernel.org,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jul 23, 2022 at 12:29 AM Luis Chamberlain <mcgrof@kernel.org> wrote:
->
-> The timestamps for procfs files are not well understood and can
-> confuse users and developers [0] in particular for the timestamp
-> for the start time or a process. Clarify what they mean and that
-> they are a reflection of the ephemeral nature of the filesystem
-> inodes.
->
-> The procfs inodes are created when you first read them and then
-> stuffed in the page cache. If the page cache and indodes are
-> reclaimed they can be removed, and re-created with a new timestamp
-> after read again. Document this little bit of tribal knowledge.
->
-> [0] https://lkml.kernel.org/r/20220721081617.36103-1-zhangyuchen.lcr@bytedance.com
-> Reported-by: Zhang Yuchen <zhangyuchen.lcr@bytedance.com>
-> Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
-> ---
->  Documentation/filesystems/proc.rst | 16 ++++++++++++++++
->  1 file changed, 16 insertions(+)
->
-> diff --git a/Documentation/filesystems/proc.rst b/Documentation/filesystems/proc.rst
-> index 9fd5249f1a5f..9defe9af683a 100644
-> --- a/Documentation/filesystems/proc.rst
-> +++ b/Documentation/filesystems/proc.rst
-> @@ -59,6 +59,15 @@ The proc  file  system acts as an interface to internal data structures in the
->  kernel. It  can  be  used to obtain information about the system and to change
->  certain kernel parameters at runtime (sysctl).
->
-> +The proc files are dynamic in nature and allow for developers to make the
-> +content to be changed each time a file is read. The proc files and directories
-> +inodes are created when someone first reads a respective proc file or directory,
-> +as such the timestamps of the proc files reflect this time. As with other
-> +filesystems, these proc inodes can be removed through reclaim under memory
-> +pressure and so the timestamps of the proc files can change if the proc files
-> +are destroyed and re-created (echo 3 > /proc/sys/vm/drop_caches forces and
-> +illustrate the reclaim of inodes and page cache).
+This is needed ad ipq4019 SoC have an internal switch that is
+based on qca8k with very minor changes. The general function is equal.
 
-Thanks for fixing this.
+Because of this we split the driver to common and specific code.
 
-> +
->  First, we'll  take  a  look  at the read-only parts of /proc. In Chapter 2, we
->  show you how you can use /proc/sys to change settings.
->
-> @@ -328,6 +337,13 @@ It's slow but very precise.
->                 system call
->    ============= ===============================================================
->
-> +Note that the start_time inside the stat file is different than the timestamp
-> +of the stat file itself. The timestamp of the stat file simply reflects the
-> +first time the stat file was read. The proc inode for this file can be reclaimed
-> +under memory pressure and be recreated after this and so the timestamp can
-> +change. Userspace should rely on the start_time entry in the the stat file to
-> +get a process start time.
-> +
+As the common function needs to be moved to a different file to be
+reused, we had to convert every remaining user of qca8k_read/write/rmw
+to regmap variant.
+We had also to generilized the special handling for the ethtool_stats
+function that makes use of the autocast mib. (ipq4019 will have a
+different tagger and use mmio so it could be quicker to use mmio instead
+of automib feature)
+And we had to convert the regmap read/write to bulk implementation to
+drop the special function that makes use of it. This will be compatible
+with ipq4019 and at the same time permits normal switch to use the eth
+mgmt way to send the entire ATU table read/write in one go.
 
-I'm not sure the value of those comments since the above description
-is already enough to tell people the timestamp of /proc files or directories
-can be changed in some cases, which already includes the case of
-/proc/PID/stat.
+v3:
+- Squash more patch to skip even more "migration patch"
+- Add new patch to cache match data in priv struct
+- Fix extra space
+- Drop unnecessary cast to qca8k_priv from void pointers
+v2:
+- Rework patch to drop dependency with bulk regmap (will be
+  converted later)
+- Split the split patch to additional patch
+- Rework autocast_mib function and move it to match data
 
-If we really want to take /proc/PID/stat as an example to show the
-timestamp is unstable, I think it is better to move those comments to the
-above section where you explain why the timestamp can be changed .
+Christian Marangi (14):
+  net: dsa: qca8k: cache match data to speed up access
+  net: dsa: qca8k: make mib autocast feature optional
+  net: dsa: qca8k: move mib struct to common code
+  net: dsa: qca8k: move qca8k read/write/rmw and reg table to common
+    code
+  net: dsa: qca8k: move qca8k bulk read/write helper to common code
+  net: dsa: qca8k: move mib init function to common code
+  net: dsa: qca8k: move port set status/eee/ethtool stats function to
+    common code
+  net: dsa: qca8k: move bridge functions to common code
+  net: dsa: qca8k: move set age/MTU/port enable/disable functions to
+    common code
+  net: dsa: qca8k: move port FDB/MDB function to common code
+  net: dsa: qca8k: move port mirror functions to common code
+  net: dsa: qca8k: move port VLAN functions to common code
+  net: dsa: qca8k: move port LAG functions to common code
+  net: dsa: qca8k: move read_switch_id function to common code
 
-Thanks.
+ drivers/net/dsa/qca/Makefile                  |    1 +
+ drivers/net/dsa/qca/{qca8k.c => qca8k-8xxx.c} | 1716 +++--------------
+ drivers/net/dsa/qca/qca8k-common.c            | 1240 ++++++++++++
+ drivers/net/dsa/qca/qca8k.h                   |  100 +
+ 4 files changed, 1584 insertions(+), 1473 deletions(-)
+ rename drivers/net/dsa/qca/{qca8k.c => qca8k-8xxx.c} (63%)
+ create mode 100644 drivers/net/dsa/qca/qca8k-common.c
 
->  The /proc/PID/maps file contains the currently mapped memory regions and
->  their access permissions.
->
-> --
-> 2.35.1
->
+-- 
+2.36.1
+
