@@ -2,104 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBE52CCA489
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 23:02:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BBC9C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 23:08:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236567AbiGWXCG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 19:02:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48678 "EHLO
+        id S239021AbiGWXIz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 19:08:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51762 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231493AbiGWXB7 (ORCPT
+        with ESMTP id S231551AbiGWXIw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 19:01:59 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2391E1A064;
-        Sat, 23 Jul 2022 16:01:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658617318; x=1690153318;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=uO14P5Z/HSC5LGiKTRp+TtPiWLCoSqv3tZewvl7+QkU=;
-  b=a2vsvUh5jwgMxvrfYFWzD+ohCgiwyy4rYBhMxe64eC2YfiN5ZMYEGY02
-   HiDuRd1Db68UPkqTOYZ1BnwjSpmC0pytstPZId2fJl3igAMa8AYcXlaKE
-   FPzpCblCQ8QkwWiDPiPihmGzV7RLbhJjes3zetaDmKdIqZCG2uRxke/6Y
-   WkLLnhrzvVavfTkRKM2OIxXz+AvTRA/Gtk05EqvoI7n6AaoMQ5Q99Qm/O
-   mB1a8PYpsSFoktVjxL7p7iqn01AK6C6z9X303fvJslcOar4pEtqu4DFkh
-   cR2AW6HO582DZQk4wZr/KrCVLtQFRIGQLfJOgmA4ALm24dbLK6USpAqXz
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10417"; a="286259030"
-X-IronPort-AV: E=Sophos;i="5.93,189,1654585200"; 
-   d="scan'208";a="286259030"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jul 2022 16:01:57 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,189,1654585200"; 
-   d="scan'208";a="775571802"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 23 Jul 2022 16:01:55 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oFO8B-0003CX-09;
-        Sat, 23 Jul 2022 23:01:55 +0000
-Date:   Sun, 24 Jul 2022 07:01:23 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Eugen Hristev <eugen.hristev@microchip.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        linux-media@vger.kernel.org, Hans Verkuil <hverkuil@xs4all.nl>
-Subject: drivers/media/platform/atmel/atmel-sama7g5-isc.c:610:34: warning:
- unused variable 'microchip_xisc_of_match'
-Message-ID: <202207240637.I0U48Kcd-lkp@intel.com>
+        Sat, 23 Jul 2022 19:08:52 -0400
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [213.167.242.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22A6D1AF3B;
+        Sat, 23 Jul 2022 16:08:52 -0700 (PDT)
+Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 068E7835;
+        Sun, 24 Jul 2022 01:08:49 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1658617730;
+        bh=oMPjA2BvNp/YCMxb7BqldubcYPaRTw9LHXiZCdAXXrQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Y8DpnlNE2Q9vSYbEM/zJ7nk8zLyVk87cDTNYspcFPZ8bEmhE/2gRS35yqRfXLiH3q
+         tBi6nTglDYRHfaGBOlfFoYf6PNKnxCMVjdqOBgsXCR5ifVojq4giiWDGkOWLIDBf/y
+         XfYlKfjWc0xrV8ibEnUtAqiCbNOdphKKhCcx1xqE=
+Date:   Sun, 24 Jul 2022 02:08:46 +0300
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     Marcel Ziswiler <marcel@ziswiler.com>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Philippe Schenker <philippe.schenker@toradex.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 10/12] arm64: dts: imx8mp-verdin: don't use multiple
+ blank lines
+Message-ID: <Ytx/fhvTMz9gmJgb@pendragon.ideasonboard.com>
+References: <20220722215445.3548530-1-marcel@ziswiler.com>
+ <20220722215445.3548530-11-marcel@ziswiler.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
+In-Reply-To: <20220722215445.3548530-11-marcel@ziswiler.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Eugen,
+Hi Marcel,
 
-FYI, the error/warning still remains.
+Thank you for the patch.
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   515f71412bb73ebd7f41f90e1684fc80b8730789
-commit: c9aa973884a163ecb6d5d4d3be9137058adcaf8c media: atmel: atmel-isc: add microchip-xisc driver
-date:   1 year, 1 month ago
-config: hexagon-randconfig-r035-20220724 (https://download.01.org/0day-ci/archive/20220724/202207240637.I0U48Kcd-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 12fbd2d377e396ad61bce56d71c98a1eb1bebfa9)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=c9aa973884a163ecb6d5d4d3be9137058adcaf8c
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout c9aa973884a163ecb6d5d4d3be9137058adcaf8c
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/media/platform/atmel/
+On Fri, Jul 22, 2022 at 11:54:43PM +0200, Marcel Ziswiler wrote:
+> From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
+> 
+> Avoid the following checkpatch warning:
+> 
+> arch/arm/boot/dts/imx8mp-verdin.dtsi:281: check: Please don't use
+>  multiple blank lines
+> 
+> Signed-off-by: Marcel Ziswiler <marcel.ziswiler@toradex.com>
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 
-All warnings (new ones prefixed by >>):
-
->> drivers/media/platform/atmel/atmel-sama7g5-isc.c:610:34: warning: unused variable 'microchip_xisc_of_match' [-Wunused-const-variable]
-   static const struct of_device_id microchip_xisc_of_match[] = {
-                                    ^
-   1 warning generated.
-
-
-vim +/microchip_xisc_of_match +610 drivers/media/platform/atmel/atmel-sama7g5-isc.c
-
-   609	
- > 610	static const struct of_device_id microchip_xisc_of_match[] = {
-   611		{ .compatible = "microchip,sama7g5-isc" },
-   612		{ }
-   613	};
-   614	MODULE_DEVICE_TABLE(of, microchip_xisc_of_match);
-   615	
+> ---
+> 
+> (no changes since v1)
+> 
+>  arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi | 1 -
+>  1 file changed, 1 deletion(-)
+> 
+> diff --git a/arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi b/arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi
+> index c5987bdbb383..f062fdbb2719 100644
+> --- a/arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi
+> +++ b/arch/arm64/boot/dts/freescale/imx8mp-verdin.dtsi
+> @@ -286,7 +286,6 @@ &flexcan1 {
+>  	status = "disabled";
+>  };
+>  
+> -
+>  /* Verdin CAN_2 */
+>  &flexcan2 {
+>  	pinctrl-names = "default";
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Regards,
+
+Laurent Pinchart
