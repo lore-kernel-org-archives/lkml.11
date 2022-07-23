@@ -2,183 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19862CCA48A
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 16:36:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1774C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 16:51:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236429AbiGWQg1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 12:36:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45790 "EHLO
+        id S237644AbiGWQvW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 12:51:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233151AbiGWQgY (ORCPT
+        with ESMTP id S230005AbiGWQvU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 12:36:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C3EB13E3E;
-        Sat, 23 Jul 2022 09:36:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C3B15B80D0F;
-        Sat, 23 Jul 2022 16:36:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68EACC341C0;
-        Sat, 23 Jul 2022 16:36:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658594180;
-        bh=6XE73k7c7WN3uNXJTeqkHt28iWk/7jcyQroIQuT2Iu0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=GokwfrX4KlLAcreXhGZM0nPPcuqMEnNKJk0Pa1Ju5JECxL51lXnw2MPVN0Z3xhUM7
-         6RMx6ub7dvU//l/k2MQ4SzKCG15c6AakHHhHtU+kg0+EZOXotMY5GYmyB+msW0NSEx
-         PI/FQ6tL1h/1UFbNiD+c/gLDAEDBjU91Q/svDy26nYBzSgR2ukWq5h42N6MuYSoomq
-         sfBrTGz2lztUqgh1nolgBZGP3Cg7Jqi+2wdLWu7V2aKrz3zzHGfie2MBFH3hMM9DyX
-         xVhZVmk7Bu/GFbQh4sdxrDhLtmGmygdXDFX3L/w3Lh5xV1Uxx23x76/JGI1dMCbs6y
-         g4bvDv20JPIrA==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1oFI77-0002RK-Vc; Sat, 23 Jul 2022 18:36:26 +0200
-Date:   Sat, 23 Jul 2022 18:36:25 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Reinhard Speyerer <rspmn@arcor.de>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        sdlyyxy <sdlyyxy@bupt.edu.cn>, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] USB: usb-serial-simple: add new device id for OPPO R11
-Message-ID: <YtwjiWG5ZFBvCZ1M@hovoldconsulting.com>
-References: <20220715142444.4173681-1-gregkh@linuxfoundation.org>
- <119D7B0F-7809-464A-AFF1-DF72FFF9E63F@bupt.edu.cn>
- <YtKrbucYNulPEKUp@arcor.de>
- <YtRtswctFMLxeglu@kroah.com>
- <YtXG3EVrRKAG7WVx@arcor.de>
+        Sat, 23 Jul 2022 12:51:20 -0400
+Received: from out28-75.mail.aliyun.com (out28-75.mail.aliyun.com [115.124.28.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD7251CB04;
+        Sat, 23 Jul 2022 09:51:08 -0700 (PDT)
+X-Alimail-AntiSpam: AC=CONTINUE;BC=0.07959742|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_social|0.0621329-0.00156306-0.936304;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047203;MF=zhouyanjie@wanyeetech.com;NM=1;PH=DS;RN=24;RT=24;SR=0;TI=SMTPD_---.Obla2Lb_1658595040;
+Received: from 192.168.10.152(mailfrom:zhouyanjie@wanyeetech.com fp:SMTPD_---.Obla2Lb_1658595040)
+          by smtp.aliyun-inc.com;
+          Sun, 24 Jul 2022 00:50:42 +0800
+Subject: Re: [PATCH 2/3] dt-bindings: SPI: Add Ingenic SFC bindings.
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        tudor.ambarus@microchip.com, p.yadav@ti.com, michael@walle.cc,
+        miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com,
+        broonie@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org
+Cc:     linux-mtd@lists.infradead.org, linux-spi@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, aidanmacdonald.0x0@gmail.com,
+        tmn505@gmail.com, paul@crapouillou.net, dongsheng.qiu@ingenic.com,
+        aric.pzqi@ingenic.com, rick.tyliu@ingenic.com,
+        jinghui.liu@ingenic.com, sernia.zhou@foxmail.com,
+        reimu@sudomaker.com
+References: <1658508510-15400-1-git-send-email-zhouyanjie@wanyeetech.com>
+ <1658508510-15400-3-git-send-email-zhouyanjie@wanyeetech.com>
+ <487a93c4-3301-aefd-abba-aabf4cb8ec90@linaro.org>
+From:   Zhou Yanjie <zhouyanjie@wanyeetech.com>
+Message-ID: <37062a5d-9da3-fbaf-89bd-776f32be36d9@wanyeetech.com>
+Date:   Sun, 24 Jul 2022 00:50:40 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YtXG3EVrRKAG7WVx@arcor.de>
+In-Reply-To: <487a93c4-3301-aefd-abba-aabf4cb8ec90@linaro.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 18, 2022 at 10:47:24PM +0200, Reinhard Speyerer wrote:
-> Hi Greg,
-> 
-> On Sun, Jul 17, 2022 at 10:14:43PM +0200, Greg Kroah-Hartman wrote:
-> > On Sat, Jul 16, 2022 at 02:13:34PM +0200, Reinhard Speyerer wrote:
-> > > On Fri, Jul 15, 2022 at 10:59:13PM +0800, sdlyyxy wrote:
-> > > > 
-> > > > > On Jul 15, 2022, at 22:24, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
-> > > > > 
-> > > > > The Oppo R11 diagnostic USB connection needs to be bound to the
-> > > > > usb-serial-simple driver as it just wants to use a dumb pipe to
-> > > > > communicate to the host.
-> > > > > 
-> > > > > usb-devices output:
-> > > > > T: Bus=03 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#= 10 Spd=480 MxCh= 0
-> > > > > D: Ver= 2.00 Cls=00(>ifc ) Sub=00 Prot=00 MxPS=64 #Cfgs= 1
-> > > > > P: Vendor=22d9 ProdID=276c Rev=04.04
-> > > > > S: Manufacturer=OPPO
-> > > > > S: Product=SDM660-MTP _SN:09C6BCA7
-> > > > > S: SerialNumber=beb2c403
-> > > > > C: #Ifs= 2 Cfg#= 1 Atr=80 MxPwr=500mA
-> > > > > I: If#=0x0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=30
-> > > > > 
-> > > > > Reported-by: Yan Xinyu <sdlyyxy@bupt.edu.cn>
-> > > > > Cc: Johan Hovold <johan@kernel.org>
-> > > > > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > > > > ---
-> > > > > drivers/usb/serial/usb-serial-simple.c | 4 +++-
-> > > > > 1 file changed, 3 insertions(+), 1 deletion(-)
-> > > > > 
-> > > > > diff --git a/drivers/usb/serial/usb-serial-simple.c b/drivers/usb/serial/usb-serial-simple.c
-> > > > > index 4c6747889a19..eb832b94aa3a 100644
-> > > > > --- a/drivers/usb/serial/usb-serial-simple.c
-> > > > > +++ b/drivers/usb/serial/usb-serial-simple.c
-> > > > > @@ -60,7 +60,9 @@ DEVICE(flashloader, FLASHLOADER_IDS);
-> > > > > 	{ USB_VENDOR_AND_INTERFACE_INFO(0x18d1,			\
-> > > > > 					USB_CLASS_VENDOR_SPEC,	\
-> > > > > 					0x50,			\
-> > > > > -					0x01) }
-> > > > > +					0x01) },		\
-> > > > > +	{ USB_DEVICE_AND_INTERFACE_INFO(0x22d9, 0x276c,		\
-> > > > > +					0xff, 0xff, 0x30) }
-> > > > > DEVICE(google, GOOGLE_IDS);
-> > > > > 
-> > > > > /* Libtransistor USB console */
-> > > > > -- 
-> > > > > 2.37.1
-> > > > Tested-by: Yan Xinyu <sdlyyxy@bupt.edu.cn>
-> > > 
-> > > While this may work sufficiently well for real low-volume diag traffic I'd
-> > > expect a significant percentage of diag messages to be lost in practice
-> > > with the usb-serial-simple driver.
-> > > 
-> > > According to the usb-devices output this looks like the Qualcomm USB gadget
-> > > in the DIAG + ADB composition to me.
-> > > 
-> > > Since the option driver uses the usb-wwan framework my suggestion would be
-> > > for the original patch to be applied instead similar to what has been done
-> > > e.g. for the Quectel RM500Q diag port.
-> > 
-> > But this is not using the option chip, nor using the option flow control
-> > protocol at all, so it should not be showing up as a device controlled
-> > by the option driver.  It just will not work properly, the simple driver
-> > should be doing the exact same thing here.
-> > 
-> 
-> you seem to have the misconception that devices handled by the option driver
-> would use a USB to serial converter chip from Option similar to e.g. the
-> ftdi_sio driver which is not the case.
-> 
-> Quoting from option.c:
->   ===
->   This driver exists because the "normal" serial driver doesn't work too well
->   with GSM modems. Issues:
->   - data loss -- one single Receive URB is not nearly enough
+Hi Krzysztof,
 
-This was written on 2006 and the single-receive URB statement hasn't
-been true for the last decade or so.
+On 2022/7/23 上午1:46, Krzysztof Kozlowski wrote:
+> On 22/07/2022 18:48, 周琰杰 (Zhou Yanjie) wrote:
+>> Add the SFC bindings for the X1000 SoC, the X1600 SoC, the X1830 SoC,
+>> and the X2000 SoC from Ingenic.
+>>
+>> Signed-off-by: 周琰杰 (Zhou Yanjie) <zhouyanjie@wanyeetech.com>
+>> ---
+>>   .../devicetree/bindings/spi/ingenic,sfc.yaml       | 64 ++++++++++++++++++++++
+>>   1 file changed, 64 insertions(+)
+>>   create mode 100644 Documentation/devicetree/bindings/spi/ingenic,sfc.yaml
+>>
+>> diff --git a/Documentation/devicetree/bindings/spi/ingenic,sfc.yaml b/Documentation/devicetree/bindings/spi/ingenic,sfc.yaml
+>> new file mode 100644
+>> index 00000000..b7c4cf4
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/spi/ingenic,sfc.yaml
+>> @@ -0,0 +1,64 @@
+>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+>> +%YAML 1.2
+>> +---
+>> +$id: http://devicetree.org/schemas/spi/ingenic,sfc.yaml#
+> File name should be rather based on first compatible, so
+> ingenic,x1000-sfc.yaml
 
->   - nonstandard flow (Option devices) control
->   - controlling the baud rate doesn't make sense
-> 
->   This driver is named "option" because the most common device it's
->   used for is a PC-Card (with an internal OHCI-USB interface, behind
->   which the GSM interface sits), made by Option Inc.
->   ===
-> 
-> The GSM/UMTS interface in the Option card actually contains a Qualcomm chip
-> which exports its serial ports via USB. The data loss mentioned by Matthias
-> above also applies to the diag port.
 
-Not necessarily true anymore even if the buffer sizes may need to be
-increased somewhat to support dumping modem traffic.
+No offense, does it really need to be named that way?
+I can't seem to find documentation with instructions on this :(
 
-And note that qcaux has always used the generic implementation (also
-when it only used a single URB).
- 
-> As can be seen from the sendsetup code in the qcserial driver the
-> "nonstandard flow (Option devices) control" mentioned above is actually
-> a Qualcomm "feature" required for some of their USB serial implementations
-> on tne device to work properly.
+The use of "ingenic,sfc.yaml" indicates that this is the documentation
+for the SFC module for all Ingenic SoCs, without misleading people into
+thinking it's only for a specific model of SoC. And there seem to be many
+other yaml documents that use similar names (eg. fsl,spi-fsl-qspi.yaml,
+spi-rockchip.yaml, spi-nxp-fspi.yaml, ingenic,spi.yaml, spi-sifive.yaml,
+omap-spi.yaml), maybe these yaml files that are not named with first
+compatible are also for the same consideration. :)
 
-It's actually only used by some Sierra modems managed by that driver,
-but yeah, those should be Qualcomm based.
 
-> In case you suspect potential problems with the sendsetup code and the OPPO
-> R11 diag port Yan's option.c patch could be extended like this:
-> 	{ USB_DEVICE_AND_INTERFACE_INFO(OPPO_VENDOR_ID, OPPO_PRODUCT_R11, 0xff, 0xff, 0x30),
-> 	  .driver_info = NCTRL(0) },
-> 
-> With a few more lines of code you could also add a new layout to the qcserial
-> driver if you prefer for the OPPO R11 to be handled by it for some reason.
+>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>> +
+>> +title: Bindings for SFC in Ingenic SoCs
+>> +
+>> +maintainers:
+>> +  - 周琰杰 (Zhou Yanjie) <zhouyanjie@wanyeetech.com>
+>> +
+>> +description:
+>> +  The SPI Flash Controller in Ingenic SoCs.
+>> +
+> You miss here allOf referencing spi-controller.
 
-I think we decided not to use qcserial unless it matches one of the
-fixed GOBI port layouts.
 
-> Either one would be fine with me.
-> 
-> Please don't give the OPPO R11 diag port on Linux a bad name by letting
-> the usb-serial-simple driver handle it.
+Sure, will add it in the next version.
 
-So while I'm not sure bandwidth is really a problem, I still tend to
-agree that we should add this one to the option driver for now as that
-is how we handle (non-GOBI) Qualcomm modems and their QCDM ports.
 
-Johan
+>> +properties:
+>> +  compatible:
+>> +    oneOf:
+>> +      - enum:
+>> +          - ingenic,x1000-sfc
+>> +          - ingenic,x1600-sfc
+>> +          - ingenic,x2000-sfc
+>> +      - items:
+>> +          - enum:
+>> +              - ingenic,x1830-sfc
+>> +          - const: ingenic,x1000-sfc
+>> +
+>> +  reg:
+>> +    maxItems: 1
+>> +
+>> +  interrupts:
+>> +    maxItems: 1
+>> +
+>> +  clocks:
+>> +    maxItems: 1
+>> +
+>> +  clock-names:
+>> +    const: sfc
+> Remove the clock-names entirely, no benefits.
+
+
+Sure.
+
+
+>> +
+>> +required:
+>> +  - compatible
+>> +  - reg
+>> +  - interrupts
+>> +  - clocks
+>> +  - clock-names
+>> +
+>> +additionalProperties: false
+>> +
+>> +examples:
+>> +  - |
+>> +    #include <dt-bindings/clock/ingenic,x1000-cgu.h>
+>> +
+>> +	sfc: spi@13440000 {
+>> +		compatible = "ingenic,x1000-sfc";
+>
+> Use 4 spaces for example indentation.
+
+
+My fault, will fix it in the next version.
+
+
+>> +		reg = <0x13440000 0x1000>;
+>> +
+>> +		interrupt-parent = <&intc>;
+>> +		interrupts = <7>;
+>> +
+>> +		clocks = <&cgu X1000_CLK_SFC>;
+>> +		clock-names = "sfc";
+>> +
+>> +		status = "disabled";
+> No status in example.
+
+
+Sure, will remove it in the next version.
+
+
+Thanks and beset regards!
+
+
+>
+>> +	};
+>> +...
+>
+> Best regards,
+> Krzysztof
