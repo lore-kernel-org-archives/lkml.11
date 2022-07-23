@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0136C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:07:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22FDDC43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:07:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238703AbiGWKHT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 06:07:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57770 "EHLO
+        id S238709AbiGWKHW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 06:07:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238468AbiGWKGx (ORCPT
+        with ESMTP id S238475AbiGWKGy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 06:06:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 752B4C1DF8;
+        Sat, 23 Jul 2022 06:06:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFED377546;
         Sat, 23 Jul 2022 03:01:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2994B611CD;
-        Sat, 23 Jul 2022 10:01:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38962C341C0;
-        Sat, 23 Jul 2022 10:01:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 027F4B82C21;
+        Sat, 23 Jul 2022 10:00:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B7B9C341C0;
+        Sat, 23 Jul 2022 10:00:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658570464;
-        bh=r1KYi8CpJ9PMhlMf7z/gAKIbGBUAcbhymfilRfURaEo=;
+        s=korg; t=1658570444;
+        bh=QtnsdZLxc5e//iy3s2gLvf5/wn1Pnwcij+P+Wg6G5ag=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XJoNDOcLEL/l7cqg3wVpN+kDbmHAGLrBBHXyA/pat/dqvG/E87ZloIcm8A0DW4EB/
-         69d9rNl1CMVErdpidJ206Y40eOfwxXldc+hCQJneDDai8HEp4Hw0+/WKZqoi9T63OO
-         W+vRAq/nuUOV2MPGqC2hDSz4yzbtw6eZdKxrDKoI=
+        b=1ZYzrpfZRDLnwLz4epgHmUuqyEgbtu4ecHLrb4yrSdUKT47jOnJwwKmKgQYKNNV5M
+         wjXujk19fAEiaQo8C5T5fMh2YD+mRLEaeTnUpjmFf9yVRLaqg4xfzimMq5DGWQxe/I
+         3+rSyFapyoYVHUB+sPKzz2yKjJYZmz9aB4VzJQcE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
-        Kim Phillips <kim.phillips@amd.com>,
+        stable@vger.kernel.org,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Borislav Petkov <bp@suse.de>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 098/148] x86/bugs: Enable STIBP for JMP2RET
-Date:   Sat, 23 Jul 2022 11:55:10 +0200
-Message-Id: <20220723095251.864209452@linuxfoundation.org>
+Subject: [PATCH 5.10 089/148] x86/bpf: Use alternative RET encoding
+Date:   Sat, 23 Jul 2022 11:55:01 +0200
+Message-Id: <20220723095249.358079262@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220723095224.302504400@linuxfoundation.org>
 References: <20220723095224.302504400@linuxfoundation.org>
@@ -52,143 +52,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kim Phillips <kim.phillips@amd.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-commit e8ec1b6e08a2102d8755ccb06fa26d540f26a2fa upstream.
+commit d77cfe594ad50e0bf95d457e02ccd578791b2a15 upstream.
 
-For untrained return thunks to be fully effective, STIBP must be enabled
-or SMT disabled.
+Use the return thunk in eBPF generated code, if needed.
 
-Co-developed-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Signed-off-by: Kim Phillips <kim.phillips@amd.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+[bwh: Backported to 5.10: add the necessary cnt variable to emit_return()]
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/admin-guide/kernel-parameters.txt |   16 ++++--
- arch/x86/kernel/cpu/bugs.c                      |   58 +++++++++++++++++++-----
- 2 files changed, 57 insertions(+), 17 deletions(-)
+ arch/x86/net/bpf_jit_comp.c |   20 ++++++++++++++++++--
+ 1 file changed, 18 insertions(+), 2 deletions(-)
 
---- a/Documentation/admin-guide/kernel-parameters.txt
-+++ b/Documentation/admin-guide/kernel-parameters.txt
-@@ -4660,11 +4660,17 @@
- 			Speculative Code Execution with Return Instructions)
- 			vulnerability.
- 
--			off         - unconditionally disable
--			auto        - automatically select a migitation
--			unret       - force enable untrained return thunks,
--				      only effective on AMD Zen {1,2}
--				      based systems.
-+			off          - no mitigation
-+			auto         - automatically select a migitation
-+			auto,nosmt   - automatically select a mitigation,
-+				       disabling SMT if necessary for
-+				       the full mitigation (only on Zen1
-+				       and older without STIBP).
-+			unret        - force enable untrained return thunks,
-+				       only effective on AMD f15h-f17h
-+				       based systems.
-+			unret,nosmt  - like unret, will disable SMT when STIBP
-+			               is not available.
- 
- 			Selecting 'auto' will choose a mitigation method at run
- 			time according to the CPU.
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -739,19 +739,34 @@ static enum retbleed_mitigation retbleed
- static enum retbleed_mitigation_cmd retbleed_cmd __ro_after_init =
- 	RETBLEED_CMD_AUTO;
- 
-+static int __ro_after_init retbleed_nosmt = false;
-+
- static int __init retbleed_parse_cmdline(char *str)
- {
- 	if (!str)
- 		return -EINVAL;
- 
--	if (!strcmp(str, "off"))
--		retbleed_cmd = RETBLEED_CMD_OFF;
--	else if (!strcmp(str, "auto"))
--		retbleed_cmd = RETBLEED_CMD_AUTO;
--	else if (!strcmp(str, "unret"))
--		retbleed_cmd = RETBLEED_CMD_UNRET;
--	else
--		pr_err("Unknown retbleed option (%s). Defaulting to 'auto'\n", str);
-+	while (str) {
-+		char *next = strchr(str, ',');
-+		if (next) {
-+			*next = 0;
-+			next++;
-+		}
-+
-+		if (!strcmp(str, "off")) {
-+			retbleed_cmd = RETBLEED_CMD_OFF;
-+		} else if (!strcmp(str, "auto")) {
-+			retbleed_cmd = RETBLEED_CMD_AUTO;
-+		} else if (!strcmp(str, "unret")) {
-+			retbleed_cmd = RETBLEED_CMD_UNRET;
-+		} else if (!strcmp(str, "nosmt")) {
-+			retbleed_nosmt = true;
-+		} else {
-+			pr_err("Ignoring unknown retbleed option (%s).", str);
-+		}
-+
-+		str = next;
-+	}
- 
- 	return 0;
+--- a/arch/x86/net/bpf_jit_comp.c
++++ b/arch/x86/net/bpf_jit_comp.c
+@@ -399,6 +399,22 @@ static void emit_indirect_jump(u8 **ppro
+ 	*pprog = prog;
  }
-@@ -797,6 +812,10 @@ static void __init retbleed_select_mitig
- 		setup_force_cpu_cap(X86_FEATURE_RETHUNK);
- 		setup_force_cpu_cap(X86_FEATURE_UNRET);
  
-+		if (!boot_cpu_has(X86_FEATURE_STIBP) &&
-+		    (retbleed_nosmt || cpu_mitigations_auto_nosmt()))
-+			cpu_smt_disable(false);
++static void emit_return(u8 **pprog, u8 *ip)
++{
++	u8 *prog = *pprog;
++	int cnt = 0;
 +
- 		if (boot_cpu_data.x86_vendor != X86_VENDOR_AMD &&
- 		    boot_cpu_data.x86_vendor != X86_VENDOR_HYGON)
- 			pr_err(RETBLEED_UNTRAIN_MSG);
-@@ -1043,6 +1062,13 @@ spectre_v2_user_select_mitigation(enum s
- 	    boot_cpu_has(X86_FEATURE_AMD_STIBP_ALWAYS_ON))
- 		mode = SPECTRE_V2_USER_STRICT_PREFERRED;
- 
-+	if (retbleed_mitigation == RETBLEED_MITIGATION_UNRET) {
-+		if (mode != SPECTRE_V2_USER_STRICT &&
-+		    mode != SPECTRE_V2_USER_STRICT_PREFERRED)
-+			pr_info("Selecting STIBP always-on mode to complement retbleed mitigation'\n");
-+		mode = SPECTRE_V2_USER_STRICT_PREFERRED;
++	if (cpu_feature_enabled(X86_FEATURE_RETHUNK)) {
++		emit_jump(&prog, &__x86_return_thunk, ip);
++	} else {
++		EMIT1(0xC3);		/* ret */
++		if (IS_ENABLED(CONFIG_SLS))
++			EMIT1(0xCC);	/* int3 */
 +	}
 +
- 	spectre_v2_user_stibp = mode;
- 
- set_mode:
-@@ -2020,10 +2046,18 @@ static ssize_t srbds_show_state(char *bu
- 
- static ssize_t retbleed_show_state(char *buf)
- {
--	if (retbleed_mitigation == RETBLEED_MITIGATION_UNRET &&
--	    (boot_cpu_data.x86_vendor != X86_VENDOR_AMD &&
--	     boot_cpu_data.x86_vendor != X86_VENDOR_HYGON))
--		return sprintf(buf, "Vulnerable: untrained return thunk on non-Zen uarch\n");
-+	if (retbleed_mitigation == RETBLEED_MITIGATION_UNRET) {
-+	    if (boot_cpu_data.x86_vendor != X86_VENDOR_AMD &&
-+		boot_cpu_data.x86_vendor != X86_VENDOR_HYGON)
-+		    return sprintf(buf, "Vulnerable: untrained return thunk on non-Zen uarch\n");
++	*pprog = prog;
++}
 +
-+	    return sprintf(buf, "%s; SMT %s\n",
-+			   retbleed_strings[retbleed_mitigation],
-+			   !sched_smt_active() ? "disabled" :
-+			   spectre_v2_user_stibp == SPECTRE_V2_USER_STRICT ||
-+			   spectre_v2_user_stibp == SPECTRE_V2_USER_STRICT_PREFERRED ?
-+			   "enabled with STIBP protection" : "vulnerable");
-+	}
+ /*
+  * Generate the following code:
+  *
+@@ -1443,7 +1459,7 @@ emit_jmp:
+ 			ctx->cleanup_addr = proglen;
+ 			pop_callee_regs(&prog, callee_regs_used);
+ 			EMIT1(0xC9);         /* leave */
+-			EMIT1(0xC3);         /* ret */
++			emit_return(&prog, image + addrs[i - 1] + (prog - temp));
+ 			break;
  
- 	return sprintf(buf, "%s\n", retbleed_strings[retbleed_mitigation]);
- }
+ 		default:
+@@ -1884,7 +1900,7 @@ int arch_prepare_bpf_trampoline(struct b
+ 	if (flags & BPF_TRAMP_F_SKIP_FRAME)
+ 		/* skip our return address and return to parent */
+ 		EMIT4(0x48, 0x83, 0xC4, 8); /* add rsp, 8 */
+-	EMIT1(0xC3); /* ret */
++	emit_return(&prog, prog);
+ 	/* Make sure the trampoline generation logic doesn't overflow */
+ 	if (WARN_ON_ONCE(prog > (u8 *)image_end - BPF_INSN_SAFETY)) {
+ 		ret = -EFAULT;
 
 
