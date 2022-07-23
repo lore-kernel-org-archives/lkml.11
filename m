@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A9DDC43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:03:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6953CC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:03:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238212AbiGWKDc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 06:03:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58710 "EHLO
+        id S238217AbiGWKDg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 06:03:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237872AbiGWKDC (ORCPT
+        with ESMTP id S237736AbiGWKDQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 06:03:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54A1868DC8;
-        Sat, 23 Jul 2022 02:59:21 -0700 (PDT)
+        Sat, 23 Jul 2022 06:03:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9728687205;
+        Sat, 23 Jul 2022 02:59:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0F5B7B82C1A;
-        Sat, 23 Jul 2022 09:59:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 688F3C341C0;
-        Sat, 23 Jul 2022 09:59:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 827A2B82C24;
+        Sat, 23 Jul 2022 09:59:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6994C341C0;
+        Sat, 23 Jul 2022 09:59:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658570349;
-        bh=7U7iZoqe4+dtDPPJp4LSzYXjPFIQ+BxwPO0m8HF420E=;
+        s=korg; t=1658570358;
+        bh=l9Rc68ra/4bHVh2wqbrdbsWHOSZSdMEmpI128/zN7Yg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E+IoxH5m5EwraZAcSHtxAIAdOkGMuO1M04bacNnNAA1b6QzEaqZP1tJ3uj6l9JTuS
-         El9JPhBrQXE3kX/fKnJj23wcdPnnvifediS9UOKmBxKZ98mtHOAkLrUj+CZoxsCEYd
-         2ybrtZ+lIt6h9dwQ83OrRXWvDv8wMLdikYGzrY7M=
+        b=coLRuZAqJy2PquUev9j3WJJhRozDDh/+FoJ6HLZNV/zJzRWlPKBgPauVvfq24XBXf
+         ZqZTRU4TRuqb+6CUTGuiCifzytOQQ+LvcCD6pEBXifx9trZtjqwBTUrNvbJscLzNKa
+         J3A02C/ezAfeG4uN9g29a1Va3vn1rDThmGNq+ItA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
+        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 056/148] x86/alternative: Handle Jcc __x86_indirect_thunk_\reg
-Date:   Sat, 23 Jul 2022 11:54:28 +0200
-Message-Id: <20220723095239.974816312@linuxfoundation.org>
+Subject: [PATCH 5.10 061/148] x86/lib/atomic64_386_32: Rename things
+Date:   Sat, 23 Jul 2022 11:54:33 +0200
+Message-Id: <20220723095241.371425867@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220723095224.302504400@linuxfoundation.org>
 References: <20220723095224.302504400@linuxfoundation.org>
@@ -55,95 +52,246 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peter Zijlstra <peterz@infradead.org>
 
-commit 2f0cbb2a8e5bbf101e9de118fc0eb168111a5e1e upstream.
+commit 22da5a07c75e1104caf6a42f189c97b83d070073 upstream.
 
-Handle the rare cases where the compiler (clang) does an indirect
-conditional tail-call using:
+Principally, in order to get rid of #define RET in this code to make
+place for a new RET, but also to clarify the code, rename a bunch of
+things:
 
-  Jcc __x86_indirect_thunk_\reg
+  s/UNLOCK/IRQ_RESTORE/
+  s/LOCK/IRQ_SAVE/
+  s/BEGIN/BEGIN_IRQ_SAVE/
+  s/\<RET\>/RET_IRQ_RESTORE/
+  s/RET_ENDP/\tRET_IRQ_RESTORE\rENDP/
 
-For the !RETPOLINE case this can be rewritten to fit the original (6
-byte) instruction like:
-
-  Jncc.d8	1f
-  JMP		*%\reg
-  NOP
-1:
+which then leaves RET unused so it can be removed.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Borislav Petkov <bp@suse.de>
-Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Tested-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/r/20211026120310.296470217@infradead.org
-Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20211204134907.841623970@infradead.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/alternative.c |   40 ++++++++++++++++++++++++++++++++++++----
- 1 file changed, 36 insertions(+), 4 deletions(-)
+ arch/x86/lib/atomic64_386_32.S |   84 ++++++++++++++++++++++-------------------
+ 1 file changed, 46 insertions(+), 38 deletions(-)
 
---- a/arch/x86/kernel/alternative.c
-+++ b/arch/x86/kernel/alternative.c
-@@ -548,7 +548,8 @@ static int emit_indirect(int op, int reg
- static int patch_retpoline(void *addr, struct insn *insn, u8 *bytes)
- {
- 	retpoline_thunk_t *target;
--	int reg, i = 0;
-+	int reg, ret, i = 0;
-+	u8 op, cc;
+--- a/arch/x86/lib/atomic64_386_32.S
++++ b/arch/x86/lib/atomic64_386_32.S
+@@ -9,81 +9,83 @@
+ #include <asm/alternative.h>
  
- 	target = addr + insn->length + insn->immediate.value;
- 	reg = target - __x86_indirect_thunk_array;
-@@ -562,9 +563,36 @@ static int patch_retpoline(void *addr, s
- 	if (cpu_feature_enabled(X86_FEATURE_RETPOLINE))
- 		return -1;
+ /* if you want SMP support, implement these with real spinlocks */
+-.macro LOCK reg
++.macro IRQ_SAVE reg
+ 	pushfl
+ 	cli
+ .endm
  
--	i = emit_indirect(insn->opcode.bytes[0], reg, bytes);
--	if (i < 0)
--		return i;
-+	op = insn->opcode.bytes[0];
-+
-+	/*
-+	 * Convert:
-+	 *
-+	 *   Jcc.d32 __x86_indirect_thunk_\reg
-+	 *
-+	 * into:
-+	 *
-+	 *   Jncc.d8 1f
-+	 *   JMP *%\reg
-+	 *   NOP
-+	 * 1:
-+	 */
-+	/* Jcc.d32 second opcode byte is in the range: 0x80-0x8f */
-+	if (op == 0x0f && (insn->opcode.bytes[1] & 0xf0) == 0x80) {
-+		cc = insn->opcode.bytes[1] & 0xf;
-+		cc ^= 1; /* invert condition */
-+
-+		bytes[i++] = 0x70 + cc;        /* Jcc.d8 */
-+		bytes[i++] = insn->length - 2; /* sizeof(Jcc.d8) == 2 */
-+
-+		/* Continue as if: JMP.d32 __x86_indirect_thunk_\reg */
-+		op = JMP32_INSN_OPCODE;
-+	}
-+
-+	ret = emit_indirect(op, reg, bytes + i);
-+	if (ret < 0)
-+		return ret;
-+	i += ret;
+-.macro UNLOCK reg
++.macro IRQ_RESTORE reg
+ 	popfl
+ .endm
  
- 	for (; i < insn->length;)
- 		bytes[i++] = 0x90;
-@@ -598,6 +626,10 @@ void __init_or_module noinline apply_ret
- 		case JMP32_INSN_OPCODE:
- 			break;
+-#define BEGIN(op) \
++#define BEGIN_IRQ_SAVE(op) \
+ .macro endp; \
+ SYM_FUNC_END(atomic64_##op##_386); \
+ .purgem endp; \
+ .endm; \
+ SYM_FUNC_START(atomic64_##op##_386); \
+-	LOCK v;
++	IRQ_SAVE v;
  
-+		case 0x0f: /* escape */
-+			if (op2 >= 0x80 && op2 <= 0x8f)
-+				break;
-+			fallthrough;
- 		default:
- 			WARN_ON_ONCE(1);
- 			continue;
+ #define ENDP endp
+ 
+-#define RET \
+-	UNLOCK v; \
++#define RET_IRQ_RESTORE \
++	IRQ_RESTORE v; \
+ 	ret
+ 
+-#define RET_ENDP \
+-	RET; \
+-	ENDP
+-
+ #define v %ecx
+-BEGIN(read)
++BEGIN_IRQ_SAVE(read)
+ 	movl  (v), %eax
+ 	movl 4(v), %edx
+-RET_ENDP
++	RET_IRQ_RESTORE
++ENDP
+ #undef v
+ 
+ #define v %esi
+-BEGIN(set)
++BEGIN_IRQ_SAVE(set)
+ 	movl %ebx,  (v)
+ 	movl %ecx, 4(v)
+-RET_ENDP
++	RET_IRQ_RESTORE
++ENDP
+ #undef v
+ 
+ #define v  %esi
+-BEGIN(xchg)
++BEGIN_IRQ_SAVE(xchg)
+ 	movl  (v), %eax
+ 	movl 4(v), %edx
+ 	movl %ebx,  (v)
+ 	movl %ecx, 4(v)
+-RET_ENDP
++	RET_IRQ_RESTORE
++ENDP
+ #undef v
+ 
+ #define v %ecx
+-BEGIN(add)
++BEGIN_IRQ_SAVE(add)
+ 	addl %eax,  (v)
+ 	adcl %edx, 4(v)
+-RET_ENDP
++	RET_IRQ_RESTORE
++ENDP
+ #undef v
+ 
+ #define v %ecx
+-BEGIN(add_return)
++BEGIN_IRQ_SAVE(add_return)
+ 	addl  (v), %eax
+ 	adcl 4(v), %edx
+ 	movl %eax,  (v)
+ 	movl %edx, 4(v)
+-RET_ENDP
++	RET_IRQ_RESTORE
++ENDP
+ #undef v
+ 
+ #define v %ecx
+-BEGIN(sub)
++BEGIN_IRQ_SAVE(sub)
+ 	subl %eax,  (v)
+ 	sbbl %edx, 4(v)
+-RET_ENDP
++	RET_IRQ_RESTORE
++ENDP
+ #undef v
+ 
+ #define v %ecx
+-BEGIN(sub_return)
++BEGIN_IRQ_SAVE(sub_return)
+ 	negl %edx
+ 	negl %eax
+ 	sbbl $0, %edx
+@@ -91,47 +93,52 @@ BEGIN(sub_return)
+ 	adcl 4(v), %edx
+ 	movl %eax,  (v)
+ 	movl %edx, 4(v)
+-RET_ENDP
++	RET_IRQ_RESTORE
++ENDP
+ #undef v
+ 
+ #define v %esi
+-BEGIN(inc)
++BEGIN_IRQ_SAVE(inc)
+ 	addl $1,  (v)
+ 	adcl $0, 4(v)
+-RET_ENDP
++	RET_IRQ_RESTORE
++ENDP
+ #undef v
+ 
+ #define v %esi
+-BEGIN(inc_return)
++BEGIN_IRQ_SAVE(inc_return)
+ 	movl  (v), %eax
+ 	movl 4(v), %edx
+ 	addl $1, %eax
+ 	adcl $0, %edx
+ 	movl %eax,  (v)
+ 	movl %edx, 4(v)
+-RET_ENDP
++	RET_IRQ_RESTORE
++ENDP
+ #undef v
+ 
+ #define v %esi
+-BEGIN(dec)
++BEGIN_IRQ_SAVE(dec)
+ 	subl $1,  (v)
+ 	sbbl $0, 4(v)
+-RET_ENDP
++	RET_IRQ_RESTORE
++ENDP
+ #undef v
+ 
+ #define v %esi
+-BEGIN(dec_return)
++BEGIN_IRQ_SAVE(dec_return)
+ 	movl  (v), %eax
+ 	movl 4(v), %edx
+ 	subl $1, %eax
+ 	sbbl $0, %edx
+ 	movl %eax,  (v)
+ 	movl %edx, 4(v)
+-RET_ENDP
++	RET_IRQ_RESTORE
++ENDP
+ #undef v
+ 
+ #define v %esi
+-BEGIN(add_unless)
++BEGIN_IRQ_SAVE(add_unless)
+ 	addl %eax, %ecx
+ 	adcl %edx, %edi
+ 	addl  (v), %eax
+@@ -143,7 +150,7 @@ BEGIN(add_unless)
+ 	movl %edx, 4(v)
+ 	movl $1, %eax
+ 2:
+-	RET
++	RET_IRQ_RESTORE
+ 3:
+ 	cmpl %edx, %edi
+ 	jne 1b
+@@ -153,7 +160,7 @@ ENDP
+ #undef v
+ 
+ #define v %esi
+-BEGIN(inc_not_zero)
++BEGIN_IRQ_SAVE(inc_not_zero)
+ 	movl  (v), %eax
+ 	movl 4(v), %edx
+ 	testl %eax, %eax
+@@ -165,7 +172,7 @@ BEGIN(inc_not_zero)
+ 	movl %edx, 4(v)
+ 	movl $1, %eax
+ 2:
+-	RET
++	RET_IRQ_RESTORE
+ 3:
+ 	testl %edx, %edx
+ 	jne 1b
+@@ -174,7 +181,7 @@ ENDP
+ #undef v
+ 
+ #define v %esi
+-BEGIN(dec_if_positive)
++BEGIN_IRQ_SAVE(dec_if_positive)
+ 	movl  (v), %eax
+ 	movl 4(v), %edx
+ 	subl $1, %eax
+@@ -183,5 +190,6 @@ BEGIN(dec_if_positive)
+ 	movl %eax,  (v)
+ 	movl %edx, 4(v)
+ 1:
+-RET_ENDP
++	RET_IRQ_RESTORE
++ENDP
+ #undef v
 
 
