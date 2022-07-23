@@ -2,69 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D40DC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 07:38:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66C28C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 07:42:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236849AbiGWHiX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 03:38:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51302 "EHLO
+        id S236482AbiGWHmJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 03:42:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229708AbiGWHiU (ORCPT
+        with ESMTP id S229708AbiGWHmG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 03:38:20 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E937165A9
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Jul 2022 00:38:19 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.53])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LqdRq25n1zGp8s;
-        Sat, 23 Jul 2022 15:37:11 +0800 (CST)
-Received: from huawei.com (10.175.124.27) by canpemm500002.china.huawei.com
- (7.192.104.244) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 23 Jul
- 2022 15:38:16 +0800
-From:   Miaohe Lin <linmiaohe@huawei.com>
-To:     <akpm@linux-foundation.org>
-CC:     <keescook@chromium.org>, <mike.kravetz@oracle.com>,
-        <almasrymina@google.com>, <shakeelb@google.com>,
-        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        <linmiaohe@huawei.com>
-Subject: [PATCH] hugetlb_cgroup: fix wrong hugetlb cgroup numa stat
-Date:   Sat, 23 Jul 2022 15:38:04 +0800
-Message-ID: <20220723073804.53035-1-linmiaohe@huawei.com>
-X-Mailer: git-send-email 2.23.0
+        Sat, 23 Jul 2022 03:42:06 -0400
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7836F491ED;
+        Sat, 23 Jul 2022 00:42:04 -0700 (PDT)
+Received: by mail-wm1-x32a.google.com with SMTP id r9-20020a1c4409000000b003a34ac64bdfso442186wma.1;
+        Sat, 23 Jul 2022 00:42:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YwmE8iWxtiJIxHdfEka47hXmPR+fBzQvfjsFdeTq40k=;
+        b=dIJNifz9/KyE/gCfpdTeA0jWzmSCHwKo5Fgd6aqTzeWnYxm8KSX8JaXU9ccjTtq9Yc
+         KsDkE5kACZz0wcGBKWpXx+QaU7mX7mxkAL2hi2JqYtbcQJ5YoLYnM3fJybwAgMjjgGbq
+         h04iPNGQvhvvxq+cvpWCaHTZp5iTQP21wGaLsPL2GQ1k9S2DDWYJon/fevd8ZRo8nGp6
+         V9I03uWDF4X3FGyVvTw37leIhDeeAh26jTZgf8wfKgcLOSuF5wQBrF0Ro0a29nnym8Qq
+         OqKbkJG+eV52bG/MI8krNz+5GJOC3bYqRmMHlOAjeBhf2TUOaa2wuc4Lf2uAbvoDLMQQ
+         zrIA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YwmE8iWxtiJIxHdfEka47hXmPR+fBzQvfjsFdeTq40k=;
+        b=epL8FPaR+Gv/wmfE9+p6x4hvOPKOs17Iy8vr6UKa2PyX2cGU6w10qrvKHcGoLLoPpN
+         kViGrcAKGPiVwIxhfuBW4d74ta6bMJMzLwyJD9LFL2k6wUwrmbQ179KCu40AN6og8rFY
+         JmOzcOfYyDFxSFlJq39/h+AzKT9OGOHrWowF0XaBfBA0d4M6018ZwEz/fZ8drJHCsjh2
+         HaFDwu3pHOVr1PNduShb6XCuJ3yuxmaKR2AUx3Tg1Ezj6Qm2hKd29QN65CDMoSeH0bKs
+         CRPjgGBkzjDWswwXL3OQKWG3wQlDoquYSFq/IYnRpz/vnWBvTTJjPwd/OcupOmieWBnv
+         q2YA==
+X-Gm-Message-State: AJIora/6csqMDPEYhwcid8Bpa2qxBaBBwpaSVOdbvdxuJxLZFnE9suHj
+        ChZaO3Gucuy1tAk0fRTuaLGPBVsG0QkyyA==
+X-Google-Smtp-Source: AGRyM1tOGdhlSenDO0GdElEkAg8sTjaOGRyHGp/hjm0kiK9Iz8vT2m6yZxFjl0XF/oBxPW7pxT88MA==
+X-Received: by 2002:a05:600c:224c:b0:3a3:17b7:a229 with SMTP id a12-20020a05600c224c00b003a317b7a229mr15098728wmm.1.1658562122620;
+        Sat, 23 Jul 2022 00:42:02 -0700 (PDT)
+Received: from localhost.localdomain (62-44-238.netrun.cytanet.com.cy. [62.228.44.238])
+        by smtp.gmail.com with ESMTPSA id n6-20020adfe346000000b0021d7ad6b9fdsm6322786wrj.57.2022.07.23.00.42.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 23 Jul 2022 00:42:02 -0700 (PDT)
+From:   Maxim Devaev <mdevaev@gmail.com>
+To:     linux-doc@vger.kernel.org
+Cc:     linux-next@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mdevaev@gmail.com,
+        gregkh@linuxfoundation.org, stern@rowland.harvard.edu,
+        sfr@canb.auug.org.au
+Subject: [PATCH v2] docs: fixed table margin in configfs-usb-gadget-mass-storage
+Date:   Sat, 23 Jul 2022 10:40:54 +0300
+Message-Id: <20220723074054.54995-1-mdevaev@gmail.com>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- canpemm500002.china.huawei.com (7.192.104.244)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We forget to set cft->private for numa stat file. As a result, numa stat
-of hstates[0] is always showed for all hstates. Encode the hstates index
-into cft->private to fix this issue.
-
-Fixes: f47761999052 ("hugetlb: add hugetlb.*.numa_stat file")
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Fixes: 421c8d9a20da ("usb: gadget: f_mass_storage: forced_eject attribute")
+Signed-off-by: Maxim Devaev <mdevaev@gmail.com>
 ---
- mm/hugetlb_cgroup.c | 1 +
- 1 file changed, 1 insertion(+)
+ v1 -> v2: Added Greg KH to CC so that he can accept this into his branch
 
-diff --git a/mm/hugetlb_cgroup.c b/mm/hugetlb_cgroup.c
-index f9942841df18..c86691c431fd 100644
---- a/mm/hugetlb_cgroup.c
-+++ b/mm/hugetlb_cgroup.c
-@@ -772,6 +772,7 @@ static void __init __hugetlb_cgroup_file_dfl_init(int idx)
- 	/* Add the numa stat file */
- 	cft = &h->cgroup_files_dfl[6];
- 	snprintf(cft->name, MAX_CFTYPE_NAME, "%s.numa_stat", buf);
-+	cft->private = MEMFILE_PRIVATE(idx, 0);
- 	cft->seq_show = hugetlb_cgroup_read_numa_stat;
- 	cft->flags = CFTYPE_NOT_ON_ROOT;
+ Documentation/ABI/testing/configfs-usb-gadget-mass-storage | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/Documentation/ABI/testing/configfs-usb-gadget-mass-storage b/Documentation/ABI/testing/configfs-usb-gadget-mass-storage
+index d899adb57e81..fc0328069267 100644
+--- a/Documentation/ABI/testing/configfs-usb-gadget-mass-storage
++++ b/Documentation/ABI/testing/configfs-usb-gadget-mass-storage
+@@ -19,7 +19,7 @@ KernelVersion:	3.13
+ Description:
+ 		The attributes:
  
+-		===========	==============================================
++		============	==============================================
+ 		file		The path to the backing file for the LUN.
+ 				Required if LUN is not marked as removable.
+ 		ro		Flag specifying access to the LUN shall be
+@@ -38,4 +38,4 @@ Description:
+ 				regardless of whether the host has allowed it.
+ 				Any non-zero number of bytes written will
+ 				result in ejection.
+-		===========	==============================================
++		============	==============================================
 -- 
-2.23.0
+2.37.1
 
