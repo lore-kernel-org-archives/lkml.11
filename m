@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12B57CCA483
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:02:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86503C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:02:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238031AbiGWKCE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 06:02:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46928 "EHLO
+        id S237529AbiGWKCV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 06:02:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237850AbiGWKBF (ORCPT
+        with ESMTP id S238016AbiGWKBy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 06:01:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A9BC7969C;
-        Sat, 23 Jul 2022 02:58:37 -0700 (PDT)
+        Sat, 23 Jul 2022 06:01:54 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 781E661101;
+        Sat, 23 Jul 2022 02:58:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7F1ADB82B92;
-        Sat, 23 Jul 2022 09:58:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE17DC341C7;
-        Sat, 23 Jul 2022 09:58:34 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B95D2CE0DC2;
+        Sat, 23 Jul 2022 09:58:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FD22C341C0;
+        Sat, 23 Jul 2022 09:58:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658570315;
-        bh=Z0Ife+YnzVRgmcIv2ueknAX3OEj7I9mFJI5lNXufmyA=;
+        s=korg; t=1658570321;
+        bh=yEjzjL/duoq1Md+YLkmgI3lo63MssRrpZ/IVKlR4NWg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hKNtpT5iN2pBTr9/NWVfBbwMooEQOs1dpHhE9myPA5GDcgAs4o737JX983j2697pv
-         5DMzO5RmONqlil3N8Oi9NL0gxp1RGY2MiVElfhmPIkoJa5lh4bYKYsKcjmOW4q3nSO
-         j+f6TGTOxDrUxi0tKM21lWbPO5vqHG/ykYm33QTw=
+        b=R0qp9kZV7RsdyzWlN2drKT7LT3LJ3KpbLIcJyPSvoo5bdKydsWGqddBavLKSBG8A5
+         6oClmzZqISaADhaUfoKeMkFC5KyuvqXqlR6rJCfG6ttQpuMZ4ETL/1m9yOC2pkEct3
+         KthF0dJgAVcLMYOnO2NBUfgCILZWwJRmeK9OrCag=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
-        Miroslav Benes <mbenes@suse.cz>,
+        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@redhat.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 043/148] objtool: Remove reloc symbol type checks in get_alt_entry()
-Date:   Sat, 23 Jul 2022 11:54:15 +0200
-Message-Id: <20220723095236.390915078@linuxfoundation.org>
+Subject: [PATCH 5.10 035/148] objtool: Support asm jump tables
+Date:   Sat, 23 Jul 2022 11:54:07 +0200
+Message-Id: <20220723095234.140361076@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220723095224.302504400@linuxfoundation.org>
 References: <20220723095224.302504400@linuxfoundation.org>
@@ -54,89 +54,57 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Josh Poimboeuf <jpoimboe@redhat.com>
 
-commit 4d8b35968bbf9e42b6b202eedb510e2c82ad8b38 upstream.
+commit 99033461e685b48549ec77608b4bda75ddf772ce upstream.
 
-Converting a special section's relocation reference to a symbol is
-straightforward.  No need for objtool to complain that it doesn't know
-how to handle it.  Just handle it.
+Objtool detection of asm jump tables would normally just work, except
+for the fact that asm retpolines use alternatives.  Objtool thinks the
+alternative code path (a jump to the retpoline) is a sibling call.
 
-This fixes the following warning:
+Don't treat alternative indirect branches as sibling calls when the
+original instruction has a jump table.
 
-  arch/x86/kvm/emulate.o: warning: objtool: __ex_table+0x4: don't know how to handle reloc symbol type: kvm_fastop_exception
-
-Fixes: 24ff65257375 ("objtool: Teach get_alt_entry() about more relocation types")
-Reported-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lore.kernel.org/r/feadbc3dfb3440d973580fad8d3db873cbfe1694.1633367242.git.jpoimboe@redhat.com
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: x86@kernel.org
-Cc: Miroslav Benes <mbenes@suse.cz>
-Cc: linux-kernel@vger.kernel.org
+Tested-by: Ard Biesheuvel <ardb@kernel.org>
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Tested-by: Sami Tolvanen <samitolvanen@google.com>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Acked-by: Herbert Xu <herbert@gondor.apana.org.au>
+Link: https://lore.kernel.org/r/460cf4dc675d64e1124146562cabd2c05aa322e8.1614182415.git.jpoimboe@redhat.com
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/objtool/special.c |   36 +++++++-----------------------------
- 1 file changed, 7 insertions(+), 29 deletions(-)
+ tools/objtool/check.c |   14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
 
---- a/tools/objtool/special.c
-+++ b/tools/objtool/special.c
-@@ -55,22 +55,11 @@ void __weak arch_handle_alternative(unsi
- {
- }
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -107,6 +107,18 @@ static struct instruction *prev_insn_sam
+ 	for (insn = next_insn_same_sec(file, insn); insn;		\
+ 	     insn = next_insn_same_sec(file, insn))
  
--static bool reloc2sec_off(struct reloc *reloc, struct section **sec, unsigned long *off)
-+static void reloc_to_sec_off(struct reloc *reloc, struct section **sec,
-+			     unsigned long *off)
- {
--	switch (reloc->sym->type) {
--	case STT_FUNC:
--		*sec = reloc->sym->sec;
--		*off = reloc->sym->offset + reloc->addend;
--		return true;
--
--	case STT_SECTION:
--		*sec = reloc->sym->sec;
--		*off = reloc->addend;
--		return true;
--
--	default:
--		return false;
--	}
-+	*sec = reloc->sym->sec;
-+	*off = reloc->sym->offset + reloc->addend;
- }
- 
- static int get_alt_entry(struct elf *elf, struct special_entry *entry,
-@@ -105,13 +94,8 @@ static int get_alt_entry(struct elf *elf
- 		WARN_FUNC("can't find orig reloc", sec, offset + entry->orig);
- 		return -1;
- 	}
--	if (!reloc2sec_off(orig_reloc, &alt->orig_sec, &alt->orig_off)) {
--		WARN_FUNC("don't know how to handle reloc symbol type %d: %s",
--			   sec, offset + entry->orig,
--			   orig_reloc->sym->type,
--			   orig_reloc->sym->name);
--		return -1;
--	}
++static bool is_jump_table_jump(struct instruction *insn)
++{
++	struct alt_group *alt_group = insn->alt_group;
 +
-+	reloc_to_sec_off(orig_reloc, &alt->orig_sec, &alt->orig_off);
++	if (insn->jump_table)
++		return true;
++
++	/* Retpoline alternative for a jump table? */
++	return alt_group && alt_group->orig_group &&
++	       alt_group->orig_group->first_insn->jump_table;
++}
++
+ static bool is_sibling_call(struct instruction *insn)
+ {
+ 	/*
+@@ -119,7 +131,7 @@ static bool is_sibling_call(struct instr
  
- 	if (!entry->group || alt->new_len) {
- 		new_reloc = find_reloc_by_dest(elf, sec, offset + entry->new);
-@@ -129,13 +113,7 @@ static int get_alt_entry(struct elf *elf
- 		if (arch_is_retpoline(new_reloc->sym))
- 			return 1;
+ 	/* An indirect jump is either a sibling call or a jump to a table. */
+ 	if (insn->type == INSN_JUMP_DYNAMIC)
+-		return list_empty(&insn->alts);
++		return !is_jump_table_jump(insn);
  
--		if (!reloc2sec_off(new_reloc, &alt->new_sec, &alt->new_off)) {
--			WARN_FUNC("don't know how to handle reloc symbol type %d: %s",
--				  sec, offset + entry->new,
--				  new_reloc->sym->type,
--				  new_reloc->sym->name);
--			return -1;
--		}
-+		reloc_to_sec_off(new_reloc, &alt->new_sec, &alt->new_off);
- 
- 		/* _ASM_EXTABLE_EX hack */
- 		if (alt->new_off >= 0x7ffffff0)
+ 	/* add_jump_destinations() sets insn->call_dest for sibling calls. */
+ 	return (is_static_jump(insn) && insn->call_dest);
 
 
