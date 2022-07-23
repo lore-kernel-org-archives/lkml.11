@@ -2,122 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 259A8C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 11:43:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2642FC43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 12:43:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235201AbiGWLn0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 07:43:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60104 "EHLO
+        id S233422AbiGWMnt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 08:43:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230010AbiGWLnX (ORCPT
+        with ESMTP id S229462AbiGWMnq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 07:43:23 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1AD71BE8E
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Jul 2022 04:43:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658576602; x=1690112602;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=nfnCHYoMY2tDPyXHKF0xWuuQt4+rPKGgT4kXodGeX08=;
-  b=N0ZDzDqOoFhEwVMsUPDagbDLQNC+Lvt6cNHd6Pd7lT8XgdfpxbSaIK+9
-   +cdpPUnxNzKF8gSfkrG2jUA7+hk9W+xZ5oOdHB9HnENLBhrLxP0rJ2IQD
-   JirTglfF6B4jDYBMWBvVCb2t1jhotjBy8vbHyG1rFD3D7k8PZKcpj4zrm
-   GPM0Yt1OuLDCP0T7LWdjGAD2K7l/B+jan9YRKgrzRp/YIfH+oKfhuq5Ss
-   e27hMCLxqQ5A4DroKPN3J/FNeCF8OADkvUkogC8Zw8S67TOt0oURgKU7M
-   1Tzis8cKinQuRmlU2acgr7lGnqhF8zkCpjdUj9groypSWztP4O4721WK0
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10416"; a="351459202"
-X-IronPort-AV: E=Sophos;i="5.93,188,1654585200"; 
-   d="scan'208";a="351459202"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jul 2022 04:43:22 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,188,1654585200"; 
-   d="scan'208";a="574461537"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 23 Jul 2022 04:43:20 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oFDXT-0002Y5-15;
-        Sat, 23 Jul 2022 11:43:19 +0000
-Date:   Sat, 23 Jul 2022 19:42:32 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Atish Patra <atishp@rivosinc.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Atish Patra <Atish.Patra@wdc.com>,
-        linux-kernel@vger.kernel.org, Anup Patel <anup@brainfault.org>
-Subject: [atishp04:sstc_v6 5/5] arch/riscv/kvm/vcpu_timer.c:302:23: warning:
- variable 'csr' set but not used
-Message-ID: <202207231936.SWNvXLnK-lkp@intel.com>
+        Sat, 23 Jul 2022 08:43:46 -0400
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F08491CFF2
+        for <linux-kernel@vger.kernel.org>; Sat, 23 Jul 2022 05:43:41 -0700 (PDT)
+Received: by mail-pf1-x434.google.com with SMTP id y9so6538593pff.12
+        for <linux-kernel@vger.kernel.org>; Sat, 23 Jul 2022 05:43:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=ReiBAAOfgFnloPVte6r4tHNGKHUp1kRjmGGIHVuKdbw=;
+        b=i8BJrGCsQ3WZJI2TVFnQ4ARVI0OUYZP08MKFayK4E9aTiMUhTJG6Q5267xqRbOEREW
+         /4peAhKCXe+N850DtC30mW66r8swYQIvluw9f2pPBcruZYi+ITTWkUQVMqq/h1lzcJ86
+         qg13L2cJsNfWgITLKH8IvKmjL+Ox1LuJ665Zez0O4iWN+zNuO3ezbhPANXPPJ7PYnjJi
+         maVSmZoQY3Ns3BDsK+yCJ2ZNOQJUCSbHMgmfUsCfQ6iZuFzuZYEBvVobMPBQvRcUA3Mj
+         EqYuF92WcVd1MfbTNI4gcGzD/gfOJHShDPBlvFzsVOwQKVX/y4WrqUM0TLszUypwQJeG
+         s8pQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ReiBAAOfgFnloPVte6r4tHNGKHUp1kRjmGGIHVuKdbw=;
+        b=jZo6q6Hkw9r02vFmKW0xeJrjw0ZQpovu7Mi++7B/jctbLoG3oCw31UFt52LRxyCySX
+         mT5fNHOyDn9FHRrRm10MMfANwUoI4ZW11GATkT8byUAhO8q4eeT1OEqBY7JkbFn9G0LT
+         Eef6Dw45dnp9/eRmGwlAbj2lgskWlKVKL4pB1yLcKpyjbXhrTvLnRQ3kOmPNlQOL7RPQ
+         2115z1ernvSmJf/bWwRmDmS4Zl/3Ccqx1nstMr0rdlvdi9YzYC+fd6wIqrbSV12kRPM/
+         yzK4env/BPVYOTBtmliaZ6DPz335TODqJPN3l32HLYpjdfJSiVv4t43e0WkXxa5dbrc6
+         qPcQ==
+X-Gm-Message-State: AJIora8qPuS65SP6GFJ1xR3632+XamhSBQosqwkEdkNjLm5rvFtbVZ2K
+        wakXAEzIqfiussQ5+gUvw1/jEGBFJqoS9w==
+X-Google-Smtp-Source: AGRyM1vbJUPTuqJWkVG+0vq/JWI6qv3IpJUOS3swpO2q2RR4mE/fGoX6PyPd10s4p5N3a3OjoeGogA==
+X-Received: by 2002:a62:ea18:0:b0:52a:c12b:9313 with SMTP id t24-20020a62ea18000000b0052ac12b9313mr4504191pfh.49.1658580221399;
+        Sat, 23 Jul 2022 05:43:41 -0700 (PDT)
+Received: from ?IPV6:2602:ae:1549:801:2d4f:84b3:76fd:8a95? ([2602:ae:1549:801:2d4f:84b3:76fd:8a95])
+        by smtp.gmail.com with ESMTPSA id d2-20020a170902654200b0016cf8f0bdd5sm5578609pln.108.2022.07.23.05.43.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 23 Jul 2022 05:43:40 -0700 (PDT)
+Message-ID: <8c0ad12a-6101-8ba7-f3bf-0be6a9e6054e@linaro.org>
+Date:   Sat, 23 Jul 2022 05:43:38 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] MAINTAINERS: Update Richard Henderson's address
+Content-Language: en-US
+To:     Stafford Horne <shorne@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20220722211854.802252-1-shorne@gmail.com>
+From:   Richard Henderson <richard.henderson@linaro.org>
+In-Reply-To: <20220722211854.802252-1-shorne@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/atishp04/linux sstc_v6
-head:   c20c842325eb8261b2a0a034aad746505475fef7
-commit: c20c842325eb8261b2a0a034aad746505475fef7 [5/5] RISC-V: KVM: Support sstc extension
-config: riscv-randconfig-c006-20220721 (https://download.01.org/0day-ci/archive/20220723/202207231936.SWNvXLnK-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 12fbd2d377e396ad61bce56d71c98a1eb1bebfa9)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install riscv cross compiling tool for clang build
-        # apt-get install binutils-riscv64-linux-gnu
-        # https://github.com/atishp04/linux/commit/c20c842325eb8261b2a0a034aad746505475fef7
-        git remote add atishp04 https://github.com/atishp04/linux
-        git fetch --no-tags atishp04 sstc_v6
-        git checkout c20c842325eb8261b2a0a034aad746505475fef7
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash arch/riscv/kvm/
+On 7/23/22 02:48, Stafford Horne wrote:
+> Richards address at twiddle.net no longer works and we are getting
+> bounces.
+> 
+> This patch updates to his Linaro address.
+> 
+> Cc: Richard Henderson <richard.henderson@linaro.org>
+> Signed-off-by: Stafford Horne <shorne@gmail.com>
+> ---
+>   MAINTAINERS | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index f679152bdbad..e64ca0ac6db7 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -797,7 +797,7 @@ S:	Maintained
+>   F:	drivers/staging/media/sunxi/cedrus/
+>   
+>   ALPHA PORT
+> -M:	Richard Henderson <rth@twiddle.net>
+> +M:	Richard Henderson <richard.henderson@linaro.org>
+>   M:	Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+>   M:	Matt Turner <mattst88@gmail.com>
+>   L:	linux-alpha@vger.kernel.org
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Reviewed-by: Richard Henderson <richard.henderson@linaro.org>
 
-All warnings (new ones prefixed by >>):
-
->> arch/riscv/kvm/vcpu_timer.c:302:23: warning: variable 'csr' set but not used [-Wunused-but-set-variable]
-           struct kvm_vcpu_csr *csr;
-                                ^
-   arch/riscv/kvm/vcpu_timer.c:327:23: warning: variable 'csr' set but not used [-Wunused-but-set-variable]
-           struct kvm_vcpu_csr *csr;
-                                ^
-   2 warnings generated.
-
-
-vim +/csr +302 arch/riscv/kvm/vcpu_timer.c
-
-   299	
-   300	void kvm_riscv_vcpu_timer_restore(struct kvm_vcpu *vcpu)
-   301	{
- > 302		struct kvm_vcpu_csr *csr;
-   303		struct kvm_vcpu_timer *t = &vcpu->arch.timer;
-   304	
-   305		kvm_riscv_vcpu_update_timedelta(vcpu);
-   306	
-   307		if (!t->sstc_enabled)
-   308			return;
-   309	
-   310		csr = &vcpu->arch.guest_csr;
-   311	#if defined(CONFIG_32BIT)
-   312		csr_write(CSR_VSTIMECMP, (u32)t->next_cycles);
-   313		csr_write(CSR_VSTIMECMPH, (u32)(t->next_cycles >> 32));
-   314	#else
-   315		csr_write(CSR_VSTIMECMP, t->next_cycles);
-   316	#endif
-   317	
-   318		/* timer should be enabled for the remaining operations */
-   319		if (unlikely(!t->init_done))
-   320			return;
-   321	
-   322		kvm_riscv_vcpu_timer_unblocking(vcpu);
-   323	}
-   324	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+r~
