@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F31A8CCA483
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:05:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA835C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:05:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238485AbiGWKFl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 06:05:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58046 "EHLO
+        id S238354AbiGWKFn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 06:05:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238195AbiGWKEl (ORCPT
+        with ESMTP id S238222AbiGWKEn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 06:04:41 -0400
+        Sat, 23 Jul 2022 06:04:43 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BDC314D00;
-        Sat, 23 Jul 2022 03:00:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37F83165A9;
+        Sat, 23 Jul 2022 03:00:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A0D4CB82C1A;
-        Sat, 23 Jul 2022 10:00:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7899C341C0;
-        Sat, 23 Jul 2022 10:00:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C20F7B82B92;
+        Sat, 23 Jul 2022 10:00:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36FDDC341C0;
+        Sat, 23 Jul 2022 10:00:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658570413;
-        bh=arvzEwfuEM6okV3AKGV59B3YaE0j1+/tS4TEz+YQBDc=;
+        s=korg; t=1658570404;
+        bh=LqAXempH+uBg7nKHHZs2ygdeOzpx6l017Z5ZBhQO7y4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kOT/1AoqmW3d5wgJ+FbC1ii9JK5hDjLu+ArkKOvU66PbAV5U2GX+ZIt4A8I39NnnJ
-         eSbl/oD111LdrWK7keRUq7QVDApzEpJzAC+iLeomJPx9gqRCUmU9dM3cHUP6DbTUe3
-         92W96uZN+pnnNxfQo3ZkAlcyKEIgXxbx1gcsBF5o=
+        b=zxfntsBvAfJo8Or85f+KyghrZSFIZRM3lOGrfQLM65TkjpaWuYq9u/JVVgaAaS4iO
+         aIMP0EKK2p1mfQwdtBVXTw4+QAuu1SD2qCgc2iYYEwEOQKZarB1+EjgPBEUwbUIcOw
+         a6Cebh2embH0BEtpzpkCU43NuWkGUQt3dMqib3C0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Borislav Petkov <bp@suse.de>,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 078/148] x86/kvm/vmx: Make noinstr clean
-Date:   Sat, 23 Jul 2022 11:54:50 +0200
-Message-Id: <20220723095246.085386556@linuxfoundation.org>
+Subject: [PATCH 5.10 075/148] x86/entry: Remove skip_r11rcx
+Date:   Sat, 23 Jul 2022 11:54:47 +0200
+Message-Id: <20220723095245.198907767@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220723095224.302504400@linuxfoundation.org>
 References: <20220723095224.302504400@linuxfoundation.org>
@@ -53,73 +52,67 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peter Zijlstra <peterz@infradead.org>
 
-commit 742ab6df974ae8384a2dd213db1a3a06cf6d8936 upstream.
+commit 1b331eeea7b8676fc5dbdf80d0a07e41be226177 upstream.
 
-The recent mmio_stale_data fixes broke the noinstr constraints:
+Yes, r11 and rcx have been restored previously, but since they're being
+popped anyway (into rsi) might as well pop them into their own regs --
+setting them to the value they already are.
 
-  vmlinux.o: warning: objtool: vmx_vcpu_enter_exit+0x15b: call to wrmsrl.constprop.0() leaves .noinstr.text section
-  vmlinux.o: warning: objtool: vmx_vcpu_enter_exit+0x1bf: call to kvm_arch_has_assigned_device() leaves .noinstr.text section
-
-make it all happy again.
+Less magical code.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
-Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Link: https://lore.kernel.org/r/20220506121631.365070674@infradead.org
+[bwh: Backported to 5.10: adjust context]
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/vmx/vmx.c   |    6 +++---
- arch/x86/kvm/x86.c       |    4 ++--
- include/linux/kvm_host.h |    2 +-
- 3 files changed, 6 insertions(+), 6 deletions(-)
+ arch/x86/entry/calling.h  |   10 +---------
+ arch/x86/entry/entry_64.S |    3 +--
+ 2 files changed, 2 insertions(+), 11 deletions(-)
 
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -380,9 +380,9 @@ static __always_inline void vmx_disable_
- 	if (!vmx->disable_fb_clear)
- 		return;
+--- a/arch/x86/entry/calling.h
++++ b/arch/x86/entry/calling.h
+@@ -146,27 +146,19 @@ For 32-bit we have the following convent
  
--	rdmsrl(MSR_IA32_MCU_OPT_CTRL, msr);
-+	msr = __rdmsr(MSR_IA32_MCU_OPT_CTRL);
- 	msr |= FB_CLEAR_DIS;
--	wrmsrl(MSR_IA32_MCU_OPT_CTRL, msr);
-+	native_wrmsrl(MSR_IA32_MCU_OPT_CTRL, msr);
- 	/* Cache the MSR value to avoid reading it later */
- 	vmx->msr_ia32_mcu_opt_ctrl = msr;
- }
-@@ -393,7 +393,7 @@ static __always_inline void vmx_enable_f
- 		return;
+ .endm
  
- 	vmx->msr_ia32_mcu_opt_ctrl &= ~FB_CLEAR_DIS;
--	wrmsrl(MSR_IA32_MCU_OPT_CTRL, vmx->msr_ia32_mcu_opt_ctrl);
-+	native_wrmsrl(MSR_IA32_MCU_OPT_CTRL, vmx->msr_ia32_mcu_opt_ctrl);
- }
+-.macro POP_REGS pop_rdi=1 skip_r11rcx=0
++.macro POP_REGS pop_rdi=1
+ 	popq %r15
+ 	popq %r14
+ 	popq %r13
+ 	popq %r12
+ 	popq %rbp
+ 	popq %rbx
+-	.if \skip_r11rcx
+-	popq %rsi
+-	.else
+ 	popq %r11
+-	.endif
+ 	popq %r10
+ 	popq %r9
+ 	popq %r8
+ 	popq %rax
+-	.if \skip_r11rcx
+-	popq %rsi
+-	.else
+ 	popq %rcx
+-	.endif
+ 	popq %rdx
+ 	popq %rsi
+ 	.if \pop_rdi
+--- a/arch/x86/entry/entry_64.S
++++ b/arch/x86/entry/entry_64.S
+@@ -191,8 +191,7 @@ SYM_INNER_LABEL(entry_SYSCALL_64_after_h
+ 	 * perf profiles. Nothing jumps here.
+ 	 */
+ syscall_return_via_sysret:
+-	/* rcx and r11 are already restored (see code above) */
+-	POP_REGS pop_rdi=0 skip_r11rcx=1
++	POP_REGS pop_rdi=0
  
- static void vmx_update_fb_clear_dis(struct kvm_vcpu *vcpu, struct vcpu_vmx *vmx)
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -11173,9 +11173,9 @@ void kvm_arch_end_assignment(struct kvm
- }
- EXPORT_SYMBOL_GPL(kvm_arch_end_assignment);
- 
--bool kvm_arch_has_assigned_device(struct kvm *kvm)
-+bool noinstr kvm_arch_has_assigned_device(struct kvm *kvm)
- {
--	return atomic_read(&kvm->arch.assigned_device_count);
-+	return arch_atomic_read(&kvm->arch.assigned_device_count);
- }
- EXPORT_SYMBOL_GPL(kvm_arch_has_assigned_device);
- 
---- a/include/linux/kvm_host.h
-+++ b/include/linux/kvm_host.h
-@@ -988,7 +988,7 @@ static inline void kvm_arch_end_assignme
- {
- }
- 
--static inline bool kvm_arch_has_assigned_device(struct kvm *kvm)
-+static __always_inline bool kvm_arch_has_assigned_device(struct kvm *kvm)
- {
- 	return false;
- }
+ 	/*
+ 	 * Now all regs are restored except RSP and RDI.
 
 
