@@ -2,131 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E68D4C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 02:11:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DDBBC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 02:14:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236913AbiGWCLF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 22:11:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58756 "EHLO
+        id S236783AbiGWCO0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 22:14:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229871AbiGWCLD (ORCPT
+        with ESMTP id S237078AbiGWCOT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 22:11:03 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2085.outbound.protection.outlook.com [40.107.244.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FC7F12625;
-        Fri, 22 Jul 2022 19:11:02 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jmOM9rhu89OCTAj9iwXnaed1XvgTBZbLKOgJoLtWpxlvQyqBEe1b8z8XXbaH4N+OuCWwTDeCF8xUm/1MQ2C1X1AjJpWFDttE0ZFozZYxhA68OvOditqBzPH+nBM/LhDhCywDpPuOHh2WwDsA7YOd+AhVBNvbCf9RLc2AtHIaF5tlY6v0AtBftv620Ak/GUH/B+95t+lsHaC9NjJ/9+o4pZwGfc/0nSMolSNXiWaUyMtht+tip8mD11ebiAAeE9enW0b3CznQyMLXVm5DxNsp2I6AIzOQUSFuYtVc6x56rPkdLxHM6iC9WlZ+yMs+tXWkyl7MUcGOEem4xbxPIhV/Ew==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=TY575vzFQFXTMHwI7BldBhG4flA4mttfKtr6gENEj7Q=;
- b=jPpnql7ODmhL6bLeF+xyW8FxYCbp+cFTvKBKIFKOUqAQ/A0i8QuNApcZEC771PGl4g85MmkjhsadAGnL3nS1si8T4qVOJfPUHI2K2odVh8iy7C37ArSrGQMv27trsprqYqOMZZW3tozEjLFf0MrGXPU+CIhhdKkUWd/FPGqZflSZcz1qYn3Jn9PdiltH/xcUJjlnP01e1O88j3FXmQCvki0zU5P/xqDhgOTnW8KAqxbVstKvqj+e0UlLWynlaGChI5jPpkeFWOVLNGa56FP97cWp2smzqlhf/3FECqumOH+6QOqi2sqrlp+wppBJLY4AXx8425E0a6Hc/k9hqqwKcw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.236) smtp.rcpttodomain=linux.ibm.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TY575vzFQFXTMHwI7BldBhG4flA4mttfKtr6gENEj7Q=;
- b=MRZ5fD7lH9k1+CTokdu7Y0GYfP9vVHLY7cuHWBoeEvia4rcOyTViZP2E+OXUX2ZHwLAfhm0ncDeUoc7F0vJpcevzn0qAA6DJvdg9XEKZrPTpH6GJgheMSmcYobktGgfqYWsm8ReH9vGppPijvpPUFYQqUUYmyBkhlmHj4D3Q9sn3T8s2giKQMTTpZw1sroeYEP/yzPZJKgA3Qvskgc7K+/7xIRki7Wqhxzf2bXTuwuBWIiUtEWDSX9UD8aWC75+fKExxVsZ0A7xHvcTiQt9Pto/8nsu0KiZmNiPeoZ19exl9os5QJkXE1UfSMzhqbp+lgwDnBwD9Y8gL8ov/XmPGlA==
-Received: from DM6PR13CA0071.namprd13.prod.outlook.com (2603:10b6:5:134::48)
- by MN2PR12MB3133.namprd12.prod.outlook.com (2603:10b6:208:c7::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5438.20; Sat, 23 Jul
- 2022 02:11:00 +0000
-Received: from DM6NAM11FT023.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:134:cafe::8c) by DM6PR13CA0071.outlook.office365.com
- (2603:10b6:5:134::48) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.2 via Frontend
- Transport; Sat, 23 Jul 2022 02:11:00 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.236; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.236) by
- DM6NAM11FT023.mail.protection.outlook.com (10.13.173.96) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5458.17 via Frontend Transport; Sat, 23 Jul 2022 02:10:59 +0000
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- DRHQMAIL109.nvidia.com (10.27.9.19) with Microsoft SMTP Server (TLS) id
- 15.0.1497.32; Sat, 23 Jul 2022 02:10:59 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.26; Fri, 22 Jul 2022 19:10:58 -0700
-Received: from Asurada-Nvidia (10.127.8.10) by mail.nvidia.com
- (10.126.190.181) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.26 via Frontend
- Transport; Fri, 22 Jul 2022 19:10:57 -0700
-Date:   Fri, 22 Jul 2022 19:10:56 -0700
-From:   Nicolin Chen <nicolinc@nvidia.com>
-To:     Alex Williamson <alex.williamson@redhat.com>
-CC:     <kwankhede@nvidia.com>, <corbet@lwn.net>, <hca@linux.ibm.com>,
-        <gor@linux.ibm.com>, <agordeev@linux.ibm.com>,
-        <borntraeger@linux.ibm.com>, <svens@linux.ibm.com>,
-        <zhenyuw@linux.intel.com>, <zhi.a.wang@intel.com>,
-        <jani.nikula@linux.intel.com>, <joonas.lahtinen@linux.intel.com>,
-        <rodrigo.vivi@intel.com>, <tvrtko.ursulin@linux.intel.com>,
-        <airlied@linux.ie>, <daniel@ffwll.ch>, <farman@linux.ibm.com>,
-        <mjrosato@linux.ibm.com>, <pasic@linux.ibm.com>,
-        <vneethv@linux.ibm.com>, <oberpar@linux.ibm.com>,
-        <freude@linux.ibm.com>, <akrowiak@linux.ibm.com>,
-        <jjherne@linux.ibm.com>, <cohuck@redhat.com>, <jgg@nvidia.com>,
-        <kevin.tian@intel.com>, <hch@infradead.org>,
-        <jchrist@linux.ibm.com>, <kvm@vger.kernel.org>,
-        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-s390@vger.kernel.org>,
-        <intel-gvt-dev@lists.freedesktop.org>,
-        <intel-gfx@lists.freedesktop.org>,
-        <dri-devel@lists.freedesktop.org>, <terrence.xu@intel.com>
-Subject: Re: [PATCH v3 00/10] Update vfio_pin/unpin_pages API
-Message-ID: <YttYsIS34sSrYC2T@Asurada-Nvidia>
-References: <20220708224427.1245-1-nicolinc@nvidia.com>
- <20220722161129.21059262.alex.williamson@redhat.com>
- <Ytsu07eGHS9B7HY8@Asurada-Nvidia>
- <20220722181800.56093444.alex.williamson@redhat.com>
- <YttDAfDEnrlhcZix@Asurada-Nvidia>
- <20220722190901.262a1978.alex.williamson@redhat.com>
+        Fri, 22 Jul 2022 22:14:19 -0400
+Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61634550DE;
+        Fri, 22 Jul 2022 19:14:18 -0700 (PDT)
+Received: by mail-qt1-x836.google.com with SMTP id h22so4755360qta.3;
+        Fri, 22 Jul 2022 19:14:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:from:subject:to
+         :content-language:cc:content-transfer-encoding;
+        bh=ovEPdVNPYrXXh2A+ZkbYsEioSDa7kIUraIugB/1objM=;
+        b=gNJcnF6MTFZiZJSBTgHyZ0TjUz/zgncrpKZvc15a2Kc+eqUNLYcox32Lu/c1lfjePy
+         fYZNngswlg4O/piLK+E0CQutPIfCCk2P4o4uxP+pb8G7WL3/zag9FeD2SPJ5Tamv8YWa
+         6zlHE7iqcF8flTU3E96hlX8iEzoCLz31bukHahMA4Pp1JSjlvMxnKNtGqzdFhGp7VuhC
+         sVasWEvik0ziGBLJfEUv8Ku+Cd+WAQhH7S3xTVLRsl3JY9zWYVhckNu5jAShxDMUYcM1
+         mpdJDghol3EcjvM0HLZ0xGeytSU7LJq071rZIS0RE277PVzwe6Gn/ANbD3lw6yqDHbvR
+         UPnw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
+         :subject:to:content-language:cc:content-transfer-encoding;
+        bh=ovEPdVNPYrXXh2A+ZkbYsEioSDa7kIUraIugB/1objM=;
+        b=Nu3RmTFRsAbY4++Pm82FQCsgGAZba50R0WaKxxdMSv7Lbjns695veCEA2KEHOd8wHy
+         ayRklUWQaVjj6b/PEww70Xa/m0Ni3MFy9kjiiWrmpWRB6vaXFiOt8gMkbjw+B9eiDbfN
+         XI5+9m2WUXFJx3KC7iO6is8Epo4SrWOkArFF7hr4+tjxCWJrOQcEjgg7fSsg7pp6SlgC
+         M1SDZ8B0K9Xu2kw9ap4l/e2tKQpqCpyhv0Ikj1uxcD7pGD+RxUUxxrhoGflk5ajW5Vyn
+         Iue3gqKflXcFZtgFwfTz2LSM8oL8beD2ry/sy0OOiJ4jWXjcgn53yIJhNOe0ahhh5gJV
+         W+9Q==
+X-Gm-Message-State: AJIora88ml+cZg78Hw4QvlsckijsHY6pi/pKcrJVSmakmxN/DRBv8D12
+        sT0uuDWZHnRrvA6LtRrluAvE9D7/y7Q=
+X-Google-Smtp-Source: AGRyM1uQ6h/6Yr0Y7bGOvdSnNXZp/qko37yNcpsbVYpjNYBbp3KQ9VcFbib4Ru9TVS4Z+c+ft3dP1Q==
+X-Received: by 2002:ac8:5f89:0:b0:31f:1fc4:d3e6 with SMTP id j9-20020ac85f89000000b0031f1fc4d3e6mr2628871qta.504.1658542457534;
+        Fri, 22 Jul 2022 19:14:17 -0700 (PDT)
+Received: from [192.168.0.9] ([198.179.6.194])
+        by smtp.gmail.com with ESMTPSA id o7-20020a05620a2a0700b006b5683ee311sm4946999qkp.100.2022.07.22.19.14.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 22 Jul 2022 19:14:17 -0700 (PDT)
+Message-ID: <9e16d503-2203-57ed-d6af-61fea0c3e10b@gmail.com>
+Date:   Fri, 22 Jul 2022 22:14:13 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220722190901.262a1978.alex.williamson@redhat.com>
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 683b32bb-f04d-4164-c7bf-08da6c50963e
-X-MS-TrafficTypeDiagnostic: MN2PR12MB3133:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: skcMmkHis/56Vvc11wM70RZP8aaykckCteE8rW6HKrvXs9sCA7Jm0H2c0/OtusJuHiT0zalLu8Z1zdAeCVZmrhqWb7LsDGDFX5AEP9S8QZwkfqN6TrG8cjyPWbyW6HiwfI7Q4TUcIQ3CiS9Xmb4iuXmavFkUknpBKViY+wGeo5ZdTXqtT+rktePIOL5rpAG4M8Cb9Rij8iA45E0tS4M2e2gYB5IhkFVU1Fz8s1z61eyAQnRzjO6htKP+AvgCUhWFiVPSijYXo65CIq79nPdqVFT5Ie+4HpnpfBqdtMRe4Z6T5AAfVzmn8++uWVsr3HvJJmlLMpIeGtjwXp7EyJ5yWL4V5EL+jdD8XfKYed/sMe45b+pqACa8UdDp6+HSS5TDQV6974tHt16geHrG97BcsOLZwfRwQjXWRRQbxa+W4/PAvxKRqb8aVUKnGTUa687Z9DjaNe5c737VDTVYp3p3S/WZLpEora+TNRAz0oIrZ73qDW/vPed0jNVmBiB7st/xAoRpB851Mfgqu6MzTrLExJPZqkjjZf/9706+fbIv3ak5p2zXtHmvCfzlnsNI8eKCYKehKB8npzbT5saLwtK3aZdb7Fl0egaz4z0d+pptW7D3Y3K6bHC5FuMKDZNmT58dQwLavOHkb2QHxfc2qku71wc1y5W/MgDe0jFRF3TyyC+gA8lhlCtJS9ewPZlBX6/L8uul34RrGp07TJ54bONxKyXLb0/mm9dDpe27tXqMA1/z2xhaXYEQT28pUWyTAp8tltpZPuX9nPHwKRaqNFAPxdNxVv69vvQaEUZW8/6z0I9G0pC+jtCU1OATjkkjYqJ4ggmzkV/HeRfpJvaLB31cS+V/u5Buh8sjXVN7IHDa8yg04Dv7cJVLFuCrvLIQLkluyGyfetevElzk3erf1ezVqvDX9IECe75NQ1P8gQgDykY=
-X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(396003)(376002)(136003)(39860400002)(346002)(36840700001)(46966006)(40470700004)(186003)(5660300002)(7406005)(966005)(6916009)(54906003)(478600001)(81166007)(8936002)(82740400003)(356005)(7416002)(70586007)(8676002)(316002)(86362001)(40460700003)(70206006)(47076005)(426003)(4326008)(336012)(36860700001)(9686003)(26005)(33716001)(41300700001)(2906002)(4744005)(82310400005)(55016003)(40480700001)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jul 2022 02:10:59.8976
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 683b32bb-f04d-4164-c7bf-08da6c50963e
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT023.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3133
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+From:   Stefan Hansson <newbie13xd@gmail.com>
+Subject: PROBLEM: Regression likely in hid_uclogic driver breaks Huion
+ Inspiroy H640 drawing tablet
+To:     jikos@kernel.org, benjamin.tissoires@redhat.com,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Language: en-GB
+Cc:     newbie13xd@gmail.com
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 22, 2022 at 07:09:01PM -0600, Alex Williamson wrote:
+Hi!
 
-> > So, I think that I should send a v4, given that the patches aren't
-> > officially applied?
-> 
-> Yep, please rebase on current vfio next branch.  Thanks,
+Somewhere between Linux 5.17.6 and 5.18.11 the Huion tablet I have 
+stopped working properly. In GNOME Control Center it is identified as 
+Huion New 1060 Plus, however that's a different tablet than the one I 
+have. Mine is a Huion Inspiroy H640, and it uses the hid_uclogic driver.
 
-Sent. And they are on Github, basing on linux-vfio next too:
-https://github.com/nicolinc/iommufd/commits/vfio_pin_pages-v4
+With Linux 5.17.6, the tablet works as expected with all the buttons 
+being detected and the stylus being usable. With 5.18.11, the buttons 
+work fine but the stylus does not work correctly. The first time I 
+approach the tablet with the stylus it works properly, i.e., the cursor 
+on my screen moves around and follows the stylus around the tablet as 
+expected. It continues working like this until I remove the stylus from 
+the tablet. After I remove it from the tablet, the cursor never gets 
+controlled by the stylus again. I can see that the tablet detects the 
+stylus (it has a small indicator light), but the cursor doesn't move 
+when I approach the tablet again. To clarify, with Linux 5.17.6, the 
+cursor moves around just fine when I remove and then put it back to the 
+tablet, just as you would expected.
 
-Thanks!
-Nic
+It may also be worth noting that it worked fine when I previously used 
+it around six months ago, although I'm not sure what version of Linux I 
+was using at that time (whatever Fedora shipped back then). I also tried 
+reproducing it with yesterday's linux-next and Linux 5.19.0-RC7, and the 
+behaviour was the same as 5.18.11. I am currently trying to bisect this, 
+but it's not going very fast as I currently only have access to a dual 
+core laptop from 2014, so building Linux takes a good while.
+
+Regards,
+Stefan Hansson
