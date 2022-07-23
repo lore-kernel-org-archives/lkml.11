@@ -2,175 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F9FBC43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 02:14:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59658C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 02:15:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236951AbiGWCO5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 22:14:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60554 "EHLO
+        id S236966AbiGWCPs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 22:15:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236232AbiGWCOz (ORCPT
+        with ESMTP id S235769AbiGWCPp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 22:14:55 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63620550DE
-        for <linux-kernel@vger.kernel.org>; Fri, 22 Jul 2022 19:14:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658542494; x=1690078494;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=EWBnpyQ5vvpv4RH5JNb39sXUSCGSaq3sr26h68Er0G8=;
-  b=NVROl13asz0T3gDt459wWNTLjFNdJ1XCdJ3PvLo1CnRc+wQPtRpY3ee1
-   EpuRd3dl3vRMWCGUeqxp7vzMjWHJ5i/yE7DxWxKUaIFwPz+HTE4p36oHD
-   uhUm7lRYoGVVH0EQpTeK4Ceq7ejG4OHGelnVNY8nLaSC04/ibL6rK4KWd
-   of/0nDrQ0JQzXoPvXl/fvaTExeIC0q6kQWfHRSKL9nDS9MZ7agg9/vgNt
-   89ylm5bXVvrVvNFCHEE1fCl7R6+42zwYLM4nwHVCoFlYUqJ6wopOXZ97C
-   oiRTnC5B2tVWbmB0tHrI093lVx3QENmVMy/YZiHrZuH2i76/11/oBTYpK
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10416"; a="288195251"
-X-IronPort-AV: E=Sophos;i="5.93,187,1654585200"; 
-   d="scan'208";a="288195251"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jul 2022 19:14:54 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,187,1654585200"; 
-   d="scan'208";a="725604996"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 22 Jul 2022 19:14:52 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oF4fL-00024C-2p;
-        Sat, 23 Jul 2022 02:14:51 +0000
-Date:   Sat, 23 Jul 2022 10:13:55 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Chris Redpath <chris.redpath@arm.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Guenter Roeck <groeck@chromium.org>
-Subject: [jsarha:topic/cros-sof-v4.14-rebase 1457/9999]
- kernel/sched/fair.c:7171 find_energy_efficient_cpu() warn: inconsistent
- indenting
-Message-ID: <202207231015.TQ62MYh3-lkp@intel.com>
+        Fri, 22 Jul 2022 22:15:45 -0400
+Received: from dggsgout11.his.huawei.com (dggsgout11.his.huawei.com [45.249.212.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC39F820EE;
+        Fri, 22 Jul 2022 19:15:44 -0700 (PDT)
+Received: from mail02.huawei.com (unknown [172.30.67.153])
+        by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4LqVHZ15GWzKH7q;
+        Sat, 23 Jul 2022 10:14:34 +0800 (CST)
+Received: from [10.174.176.73] (unknown [10.174.176.73])
+        by APP3 (Coremail) with SMTP id _Ch0CgAXemnMWdtiwj1WBA--.40945S3;
+        Sat, 23 Jul 2022 10:15:41 +0800 (CST)
+Subject: Re: [PATCH] nbd: add missing definition of pr_fmt
+To:     Yu Kuai <yukuai3@huawei.com>, Joe Perches <joe@perches.com>,
+        josef@toxicpanda.com, axboe@kernel.dk, houtao1@huawei.com
+Cc:     linux-block@vger.kernel.org, nbd@other.debian.org,
+        linux-kernel@vger.kernel.org, yi.zhang@huawei.com
+References: <20220706093320.1962871-1-yukuai1@huaweicloud.com>
+ <853a5164-78cf-1ccb-8e18-cff5b5bce4ff@huaweicloud.com>
+ <49a8099eb7dd01e9d2d190056171341d87cd442b.camel@perches.com>
+ <0dba2f0c-ba02-853e-60e7-873eabedcd80@huaweicloud.com>
+From:   Yu Kuai <yukuai1@huaweicloud.com>
+Message-ID: <ec031ff1-3936-92ce-b66b-59e3e6a289ab@huaweicloud.com>
+Date:   Sat, 23 Jul 2022 10:15:39 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+In-Reply-To: <0dba2f0c-ba02-853e-60e7-873eabedcd80@huaweicloud.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: _Ch0CgAXemnMWdtiwj1WBA--.40945S3
+X-Coremail-Antispam: 1UD129KBjvJXoW7XF17XryDCFyrCw4rCF43Awb_yoW8JrWDpF
+        4qya4kCr4vyr45G3WIyw1Skry3t3Z7Jr1ag34UZ3y09a9xCas3Ar17AFnYqrWvvr4kKw12
+        9F4Dt3y8AF1rWrJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUyKb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k2
+        6cxKx2IYs7xG6r1S6rWUM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4
+        vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Ar0_tr1l84ACjcxK6xIIjxv20xvEc7Cj
+        xVAFwI0_Cr0_Gr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I
+        0E14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40E
+        x7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x
+        0Yz7v_Jr0_Gr1lF7xvr2IY64vIr41lc7I2V7IY0VAS07AlzVAYIcxG8wCF04k20xvY0x0E
+        wIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E74
+        80Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0
+        I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04
+        k26cxKx2IYs7xG6rW3Jr0E3s1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY
+        1x0267AKxVWUJVW8JbIYCTnIWIevJa73UjIFyTuYvjxUrR6zUUUUU
+X-CM-SenderInfo: 51xn3trlr6x35dzhxuhorxvhhfrp/
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/jsarha/linux topic/cros-sof-v4.14-rebase
-head:   18a233f3f676a98dde00947535d99ab1a54da340
-commit: e56a97123c10e6d5ca2ce9a0f1329f02f79f2319 [1457/9999] ANDROID: Add find_best_target to minimise energy calculation overhead
-config: i386-randconfig-m021 (https://download.01.org/0day-ci/archive/20220723/202207231015.TQ62MYh3-lkp@intel.com/config)
-compiler: gcc-7 (Ubuntu 7.5.0-6ubuntu2) 7.5.0
+Hi!
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+在 2022/07/20 19:46, Yu Kuai 写道:
+> Hi !
+> 
+> 在 2022/07/18 22:32, Joe Perches 写道:
+>> On Mon, 2022-07-18 at 21:52 +0800, Yu Kuai wrote:
+>>> 在 2022/07/06 17:33, Yu Kuai 写道:
+>>>> From: Yu Kuai <yukuai3@huawei.com>
+>>>>
+>>>> commit 1243172d5894 ("nbd: use pr_err to output error message") tries
+>>>> to define pr_fmt and use short pr_err() to output error message,
+>>>> however, the definition is missed.
+>>> friendly ping ...
+>> []
+>>>> diff --git a/drivers/block/nbd.c b/drivers/block/nbd.c
+>> []
+>>>> @@ -44,6 +44,9 @@
+>>>>    #include <linux/nbd-netlink.h>
+>>>>    #include <net/genetlink.h>
+>>>> +#undef pr_fmt
+>>>> +#define pr_fmt(fmt) "nbd: " fmt
+>>>> +
+>> Typically, this #define is place before all #include lines
+>> so there is no need for an #undef
 
-smatch warnings:
-kernel/sched/fair.c:7171 find_energy_efficient_cpu() warn: inconsistent indenting
+I tried to remove the #undef:
 
-vim +7171 kernel/sched/fair.c
+--- a/drivers/block/nbd.c
++++ b/drivers/block/nbd.c
+@@ -44,7 +44,6 @@
+  #include <linux/nbd-netlink.h>
+  #include <net/genetlink.h>
 
-  7092	
-  7093	/*
-  7094	 * Needs to be called inside rcu_read_lock critical section.
-  7095	 * sd is a pointer to the sched domain we wish to use for an
-  7096	 * energy-aware placement option.
-  7097	 */
-  7098	static int find_energy_efficient_cpu(struct sched_domain *sd,
-  7099					     struct task_struct *p,
-  7100					     int cpu, int prev_cpu,
-  7101					     int sync)
-  7102	{
-  7103		int use_fbt = sched_feat(FIND_BEST_TARGET);
-  7104		int cpu_iter, eas_cpu_idx = EAS_CPU_NXT;
-  7105		int energy_cpu = prev_cpu;
-  7106		struct energy_env *eenv;
-  7107	
-  7108		if (sysctl_sched_sync_hint_enable && sync) {
-  7109			if (cpumask_test_cpu(cpu, &p->cpus_allowed)) {
-  7110				return cpu;
-  7111			}
-  7112		}
-  7113	
-  7114		/* take ownership of our per-cpu data structure */
-  7115		eenv = get_eenv(p, prev_cpu);
-  7116		if (eenv->max_cpu_count < 2)
-  7117			return energy_cpu;
-  7118	
-  7119		if(!use_fbt) {
-  7120			/*
-  7121			 * using this function outside wakeup balance will not supply
-  7122			 * an sd ptr. Instead, fetch the highest level with energy data.
-  7123			 */
-  7124			if (!sd)
-  7125				sd = rcu_dereference(per_cpu(sd_ea, prev_cpu));
-  7126	
-  7127			for_each_cpu_and(cpu_iter, &p->cpus_allowed, sched_domain_span(sd)) {
-  7128				unsigned long spare;
-  7129	
-  7130				/* prev_cpu already in list */
-  7131				if (cpu_iter == prev_cpu)
-  7132					continue;
-  7133	
-  7134				spare = capacity_spare_wake(cpu_iter, p);
-  7135	
-  7136				if (spare * 1024 < capacity_margin * task_util(p))
-  7137					continue;
-  7138	
-  7139				/* Add CPU candidate */
-  7140				eenv->cpu[eas_cpu_idx++].cpu_id = cpu_iter;
-  7141				eenv->max_cpu_count = eas_cpu_idx;
-  7142	
-  7143				/* stop adding CPUs if we have no space left */
-  7144				if (eas_cpu_idx >= eenv->eenv_cpu_count)
-  7145					break;
-  7146			}
-  7147		} else {
-  7148			int boosted = (schedtune_task_boost(p) > 0);
-  7149			int prefer_idle;
-  7150	
-  7151			/*
-  7152			 * give compiler a hint that if sched_features
-  7153			 * cannot be changed, it is safe to optimise out
-  7154			 * all if(prefer_idle) blocks.
-  7155			 */
-  7156			prefer_idle = sched_feat(EAS_PREFER_IDLE) ?
-  7157					(schedtune_prefer_idle(p) > 0) : 0;
-  7158	
-  7159			eenv->max_cpu_count = EAS_CPU_BKP+1;
-  7160	
-  7161			/* Find a cpu with sufficient capacity */
-  7162			eenv->cpu[EAS_CPU_NXT].cpu_id = find_best_target(p,
-  7163					&eenv->cpu[EAS_CPU_BKP].cpu_id,
-  7164					boosted, prefer_idle);
-  7165	
-  7166			/* take note if no backup was found */
-  7167			if (eenv->cpu[EAS_CPU_BKP].cpu_id < 0)
-  7168				eenv->max_cpu_count = EAS_CPU_BKP;
-  7169	
-  7170			/* take note if no target was found */
-> 7171			 if (eenv->cpu[EAS_CPU_NXT].cpu_id < 0)
-  7172				 eenv->max_cpu_count = EAS_CPU_NXT;
-  7173		}
-  7174	
-  7175		if (eenv->max_cpu_count == EAS_CPU_NXT) {
-  7176			/*
-  7177			 * we did not find any energy-awareness
-  7178			 * candidates beyond prev_cpu, so we will
-  7179			 * fall-back to the regular slow-path.
-  7180			 */
-  7181			return energy_cpu;
-  7182		}
-  7183	
-  7184		/* find most energy-efficient CPU */
-  7185		eas_cpu_idx = select_energy_cpu_idx(eenv);
-  7186		energy_cpu = eenv->cpu[eas_cpu_idx].cpu_id;
-  7187	
-  7188		return energy_cpu;
-  7189	}
-  7190	
+  #define pr_fmt(fmt) "nbd: " fmt
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+And then following warning is triggered:
+
+drivers/block/nbd.c:47: warning: "pr_fmt" redefined
+    47 | #define pr_fmt(fmt) "nbd: " fmt
+
+It semms that keeping that #undef is the right thing to do.
+
+Thanks,
+Kuai
+> 
+> Thanks for you advice, I'll do that in v2.
+> 
+> Kuai
+> 
+> .
+> 
+
