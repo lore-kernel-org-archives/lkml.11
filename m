@@ -2,110 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB286C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 09:17:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1365AC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 09:22:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237161AbiGWJRw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 05:17:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49430 "EHLO
+        id S237176AbiGWJWw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 05:22:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232785AbiGWJRv (ORCPT
+        with ESMTP id S232785AbiGWJWt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 05:17:51 -0400
-Received: from lahtoruutu.iki.fi (lahtoruutu.iki.fi [IPv6:2a0b:5c81:1c1::37])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F4582229A;
-        Sat, 23 Jul 2022 02:17:50 -0700 (PDT)
-Received: from hillosipuli.retiisi.eu (dkwl20tj04snw15cjtflt-3.rev.dnainternet.fi [IPv6:2001:14ba:4493:6f40:fec3:d72a:e447:8113])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: sailus)
-        by lahtoruutu.iki.fi (Postfix) with ESMTPSA id DD2801B00027;
-        Sat, 23 Jul 2022 12:17:45 +0300 (EEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi; s=lahtoruutu;
-        t=1658567866;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=N2qEYdxHYoqM2Wy3hrA5pd7ObUPMS76FKSQJ593cqE0=;
-        b=eqxUETZsOWgzVFZeJ/P5TwPGKf9wIaHDdTvyEjpBKltDqGq+2+Q5HhvkihMssGyLn1gC1M
-        0jbxsepf+on0ld8AX88IeLrqSo9NsoqEHdfZTWOuxMQLuvrIJV721xpBptPHalvEXuPX42
-        yhf+7eLIwT6tko8Pjs4g45XNO07TzhHdkRiqWQaTARcjGQQfdMhAxl2daYr3sIzJIpV8NZ
-        Vbi0apSGOJBRw0AJkeAb659hQx5eZBFFUvb5srXLEaq0PmMWJ1idYIdSpf3VIYUvjOhgIf
-        tisSdhwvfW5DnpBbwGttfhb14Xpc2lGDP5Oi2KMO+NROLlw6JjvinDJiSQDMKg==
-Received: from valkosipuli.retiisi.eu (valkosipuli.localdomain [192.168.4.2])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by hillosipuli.retiisi.eu (Postfix) with ESMTPS id 7A523634C95;
-        Sat, 23 Jul 2022 12:17:45 +0300 (EEST)
-Date:   Sat, 23 Jul 2022 12:17:45 +0300
-From:   Sakari Ailus <sakari.ailus@iki.fi>
-To:     Lin Ma <linma@zju.edu.cn>
-Cc:     dongchun.zhu@mediatek.com, zhengsq@rock-chips.com,
-        mchehab@kernel.org, matthias.bgg@gmail.com,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: Re: [PATCH v0] media: i2c: fix the erroneous pointer initializer
-Message-ID: <Ytu8uSFlWir2YDu+@valkosipuli.retiisi.eu>
-References: <20220722022459.5030-1-linma@zju.edu.cn>
- <693a3b3e.519a0.18223e0575b.Coremail.linma@zju.edu.cn>
+        Sat, 23 Jul 2022 05:22:49 -0400
+Received: from smtpbg.qq.com (unknown [43.155.67.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 315C7101E7;
+        Sat, 23 Jul 2022 02:22:43 -0700 (PDT)
+X-QQ-mid: bizesmtp89t1658568153ta68gvag
+Received: from localhost.localdomain ( [125.70.163.183])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Sat, 23 Jul 2022 17:22:32 +0800 (CST)
+X-QQ-SSF: 01000000002000F0U000B00A0000020
+X-QQ-FEAT: XBN7tc9DADJ43OkaAz2JfV5ErFMn90b2HStIVW8LIUKuOgnydgnI6Krvii5q0
+        X2A4YgUOftGzv+FxcU6Y6JqPFh0yxWVFXTgfwI7vbQJu29RWzLiyrOYn/xlv6kuucwhCHkq
+        RTZW/C2S+d8vuvdFAxR2tNEAVXezZ5zZZ6Xub7nkG+0Wiyzv6wZYdKVXBpnpvIbKLyq4i4j
+        gdDaYqweMeGIPTocPiN3TNpvpvIw5l7eRzDrdQMHFCXK2pQO+a0NPMVd65GXGR0YRxj7nGE
+        YCWaWLVJrgZt30b1Bavsu6u4aKTHD3Gw+ij9cyaBI7eMIOpR0+OXIu2ijkhafl2E1eSRGvF
+        M58mwVZ3jJXIv9iGPcCzK1f48fZunmIJaiOxezn9rVgXJaT762LHE/8LYpFZJlqi/iMulqf
+X-QQ-GoodBg: 0
+From:   Jason Wang <wangborong@cdjrlc.com>
+To:     ink@jurassic.park.msu.ru
+Cc:     rth@twiddle.net, mattst88@gmail.com, linux-alpha@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jason Wang <wangborong@cdjrlc.com>
+Subject: [PATCH] alpha: Remove the static variable initialisations to 0
+Date:   Sat, 23 Jul 2022 17:22:00 +0800
+Message-Id: <20220723092200.6659-1-wangborong@cdjrlc.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <693a3b3e.519a0.18223e0575b.Coremail.linma@zju.edu.cn>
-ARC-Seal: i=1; s=lahtoruutu; d=iki.fi; t=1658567866; a=rsa-sha256;
-        cv=none;
-        b=Blnu2BnHkt9iPdrAtsbjIWXaquxiAFbzIE5ZKij7DhhLnMvsUlvrpE1c26QQC8wLDQHnRY
-        HjtpA8X9YjsLyxsWrJt3mtbuT5++cEYUEyMspWx8D4DcVs+Ys15MoNoI3Gwjc4ZE3GAXex
-        2PQBjl8GHylwribcmE3GCDz53OC9Py1PgaYhj/y/hUrFz/k1SQOfaJVghwgS6iZZjHMGuz
-        Og0Hh3ck16MCNjEeytHrSG4mLhze5q1cnf7GY6B6j5UdCuUMpNFiLmVG9ZNPNLX5DhfLXI
-        EwiAWnqJt73dcCX6iRKXZs1ocbvCTH0xJ7PlGh1F5X5aEKYYa8fBV4eynZyX5A==
-ARC-Authentication-Results: i=1;
-        ORIGINATING;
-        auth=pass smtp.auth=sailus smtp.mailfrom=sakari.ailus@iki.fi
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi;
-        s=lahtoruutu; t=1658567866;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=N2qEYdxHYoqM2Wy3hrA5pd7ObUPMS76FKSQJ593cqE0=;
-        b=WvTQz2hJgsW1fNEi8YkWal12ypXIxs3xknBZ1PXIXJdKJgymPXQVi5DOUG4Ws00Mbc3Uq7
-        ZGNywyOJEsbLGBnJPJG3QedT7uuTYl43KY72fh8lxKio/dCDfqNFdCaEWo47lrXdBfKyGW
-        8pi1VmJXPe14jW4Ugv3LQ5KM1kH8ZEF14AOjnVdK2aFXjHnXv8ODf47E0c7BkDFX1yiIVU
-        RDLAlwFasWqJs2Y8j769x6HYszvi2Ez91XEkfUNg2EdOnbhTJJCR9YBzCfVKlEvN1j9jEc
-        L3yE+qdR8hMbOfsVPrvo+NqDxa8tcBAyquDXMlosMe6gu0bU4Wwp86IWnPvlLg==
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Lin,
+Initialise global and static variable to 0 is always unnecessary.
+Remove the unnecessary initialisations.
 
-On Fri, Jul 22, 2022 at 11:08:01AM +0800, Lin Ma wrote:
-> Hello there,
-> 
-> 
-> > 
-> > There are obvious errors for the initializer of ov02a10_i2c_driver,
-> > ov2682_i2c_driver, and ov5695_i2c_driver as the code intended to assign
-> > "address of function pointer" to function pointer. This patch fixes them
-> > by removing redundant & operators.
-> > 
-> > Signed-off-by: Lin Ma <linma@zju.edu.cn>
-> 
-> Sorry as this is a false alarm :(
-> I just get confused by the function pointers and function addresses and
-> the original code works fine.
+Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+---
+ arch/alpha/kernel/pci.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks for the patch.
-
-The original code works fine but functions are always by reference, the
-preference is without &.
-
-First patch version is typically 1 and there's no need to denote that.
-
+diff --git a/arch/alpha/kernel/pci.c b/arch/alpha/kernel/pci.c
+index 64fbfb0763b2..bce5f07c1d79 100644
+--- a/arch/alpha/kernel/pci.c
++++ b/arch/alpha/kernel/pci.c
+@@ -210,7 +210,7 @@ static struct pdev_srm_saved_conf *srm_saved_configs;
+ static void pdev_save_srm_config(struct pci_dev *dev)
+ {
+ 	struct pdev_srm_saved_conf *tmp;
+-	static int printed = 0;
++	static int printed;
+ 
+ 	if (!alpha_using_srm || pci_has_flag(PCI_PROBE_ONLY))
+ 		return;
 -- 
-Regards,
+2.35.1
 
-Sakari Ailus
