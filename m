@@ -2,145 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0719C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 14:30:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00BD3C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 14:30:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238424AbiGWOaa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 10:30:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33942 "EHLO
+        id S238448AbiGWOae (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 10:30:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238104AbiGWOaG (ORCPT
+        with ESMTP id S238130AbiGWOaG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 23 Jul 2022 10:30:06 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41FEB1CB3A;
+Received: from sender-of-o53.zoho.in (sender-of-o53.zoho.in [103.117.158.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C83D1C138;
         Sat, 23 Jul 2022 07:30:02 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id v5so4302916wmj.0;
-        Sat, 23 Jul 2022 07:30:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=GX0e7m5ZrkPjpxkJdIBL+iV+EyM6eAVNIs5WQVoDC5I=;
-        b=GuUs35D+Od53ehyBq7jSWrPuxnPg2k3rYm9X0U1icEB1hrTVCqlqQBL8TjQJp8E9Fu
-         UyD0jy55G4vAFxREf4ZMZVOKBCT5oCkzuLx9FMnVNRjKfN3h6OQ2eYIzl0RItI+9XMJr
-         vNZ1uImREQXKLyZO9AvoWamfOWSQhYgUSQh1ZxrlAOxZLgYdU3dpew+Cbc+4tvsBPULQ
-         8MtbxGJe+v2wSYdspSqQPa8PFQYd685D1/Vwj3nmTOCHo7JlCqSmJ9qL9s2NoxmC+5G0
-         5Ho7csQZ/+WVE5zDHwe1NoeSCbh2Wkn43qweWXZNJgS01xQuE7cpYZ74F6srqK4GThyi
-         aWFQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=GX0e7m5ZrkPjpxkJdIBL+iV+EyM6eAVNIs5WQVoDC5I=;
-        b=IAe/TPuHUs+JGLieZHTl+1Nu2u7W1G+1JZ96e2DH5EsG1NpEiw8NH8QBGYRA7NMNvS
-         LHCJS05QNGd4vATbQvcPPieTM2+82sk2+K5qqL/+ed1sYhV7aLklsEjjtMRAsVvM++Vj
-         uCd93lNPuoIBCtWepSzNI5RT5PU8DANkect6aCRTYq27wGKtaQ2RhkVPnaGeDapVMj/i
-         qP9TtPPAi3mZhL5Jxfmqx32JzOr1cBc881TsTFHWgHe/5qrCfvXekli6JZw7KexQnzLx
-         lh4W8Cbv8oB+JKnVUaHueiL/4Ttvv1sYQ12iC15XBkgQoeNaMKdOAzWO70Ou4Z4NZRNo
-         v1gQ==
-X-Gm-Message-State: AJIora8gn5BsautO1vJG3+Yb05dXAZm/YEb/YDVIsBNC6rFp8FjJMvKD
-        YkogtgJ98pFcNvksIldeupWZzcQYX1U=
-X-Google-Smtp-Source: AGRyM1vyEESD+gOYudb18RYonLwuCA9ecgk+Boyi9uzgAedUAyeJVXmG9G/HRzwQjgJRpYQqd/XNAQ==
-X-Received: by 2002:a05:600c:3ba3:b0:3a3:5dd:f10f with SMTP id n35-20020a05600c3ba300b003a305ddf10fmr3105539wms.185.1658586601145;
-        Sat, 23 Jul 2022 07:30:01 -0700 (PDT)
-Received: from localhost.localdomain (host-87-7-207-127.retail.telecomitalia.it. [87.7.207.127])
-        by smtp.googlemail.com with ESMTPSA id q6-20020a1cf306000000b0039c5ab7167dsm11689717wmq.48.2022.07.23.07.29.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 Jul 2022 07:30:00 -0700 (PDT)
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Christian Marangi <ansuelsmth@gmail.com>
-Subject: [net-next PATCH v5 5/5] net: ethernet: stmicro: stmmac: permit MTU change with interface up
-Date:   Sat, 23 Jul 2022 16:29:33 +0200
-Message-Id: <20220723142933.16030-6-ansuelsmth@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220723142933.16030-1-ansuelsmth@gmail.com>
-References: <20220723142933.16030-1-ansuelsmth@gmail.com>
+ARC-Seal: i=1; a=rsa-sha256; t=1658586572; cv=none; 
+        d=zohomail.in; s=zohoarc; 
+        b=OYq163lvA2Bqz3Yn4jatz3mbts9pw8Mo0ri4o5+iknE4WgtpLwGFwRrk138GGR29SrCrRgPY29+sl6+YRWivTJUNquN/MoLZpPSQllxdqLyeX0QK2zNOY4v3iOrrI3CHD7q6+PIpiHHVhOagmanPWMq2DfOk33ZgmiG/0+WMPlw=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
+        t=1658586572; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=a/9usRWIfKTQJmjOCrdt/xVzLad7G/lItwk6BnowcDE=; 
+        b=bb/Kj22EZ5tXuuv0BNBthqeUKbZsM3AFivbJlFn7yUkiHvxVMqM7unOFZgPAEfHJTt3VD/t0nnj4/1AebnYEqteIaXMRmgBf3sMk98FJSldaWHRsl5aOckmNUUkCR1y9YMquLH+r7oul9T49mAghXodRj9UBojPMgabbRekEdhk=
+ARC-Authentication-Results: i=1; mx.zohomail.in;
+        dkim=pass  header.i=siddh.me;
+        spf=pass  smtp.mailfrom=code@siddh.me;
+        dmarc=pass header.from=<code@siddh.me>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1658586572;
+        s=zmail; d=siddh.me; i=code@siddh.me;
+        h=Date:Date:From:From:To:To:Cc:Cc:Message-ID:In-Reply-To:References:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=a/9usRWIfKTQJmjOCrdt/xVzLad7G/lItwk6BnowcDE=;
+        b=tDBA1sdg8MTEoxUTL9NLDKsUFJjHvaYYFZOKCPtKEMZ6jE4SDp5StnQnIPF6h5Cr
+        qu4ZsClhibfg3Q+LpT0awGh8WffR6wu4WznGGvnmccX+oIM1XdAIL8ihFpVqTjHz/Zv
+        XVfwg38ljifrVetqLVHN90zDhBri5l/VnqfuyHM8=
+Received: from mail.zoho.in by mx.zoho.in
+        with SMTP id 1658586560433935.6815882019292; Sat, 23 Jul 2022 19:59:20 +0530 (IST)
+Date:   Sat, 23 Jul 2022 19:59:20 +0530
+From:   Siddh Raman Pant <code@siddh.me>
+To:     "Greg KH" <gregkh@linuxfoundation.org>
+Cc:     "David Howells" <dhowells@redhat.com>,
+        "Christophe JAILLET" <christophe.jaillet@wanadoo.fr>,
+        "Eric Dumazet" <edumazet@google.com>,
+        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        "linux-security-modules" <linux-security-module@vger.kernel.org>,
+        "linux-kernel-mentees" 
+        <linux-kernel-mentees@lists.linuxfoundation.org>,
+        "linux-kernel" <linux-kernel@vger.kernel.org>,
+        "syzbot+c70d87ac1d001f29a058" 
+        <syzbot+c70d87ac1d001f29a058@syzkaller.appspotmail.com>
+Message-ID: <1822b76775c.69c52873236056.4849193904753307696@siddh.me>
+In-Reply-To: <Ytv/tUrdK1ZTn4Uk@kroah.com>
+References: <20220723135447.199557-1-code@siddh.me> <Ytv/tUrdK1ZTn4Uk@kroah.com>
+Subject: Re: [PATCH] kernel/watch_queue: Make pipe NULL while clearing
+ watch_queue
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Importance: Medium
+User-Agent: Zoho Mail
+X-Mailer: Zoho Mail
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Remove the limitation where the interface needs to be down to change
-MTU by releasing and opening the stmmac driver to set the new MTU.
-Also call the set_filter function to correctly init the port.
-This permits to remove the EBUSY error while the ethernet port is
-running permitting a correct MTU change if for example a DSA request
-a MTU change for a switch CPU port.
+On Sat, 23 Jul 2022 19:33:33 +0530  Greg KH <gregkh@linuxfoundation.org> wrote:
+> You should not use #ifdef in .c files, it's unmaintainable over time.
+> 
+> thanks,
+> 
+> greg k-h
+> 
 
-Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
----
- .../net/ethernet/stmicro/stmmac/stmmac_main.c | 30 +++++++++++++++----
- 1 file changed, 24 insertions(+), 6 deletions(-)
+I used it because it is used in the same way in fs/pipe.c too (please check the
+stated line number).
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 9a927ce17941..083d08b5ab0e 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -5552,18 +5552,15 @@ static int stmmac_change_mtu(struct net_device *dev, int new_mtu)
- {
- 	struct stmmac_priv *priv = netdev_priv(dev);
- 	int txfifosz = priv->plat->tx_fifo_size;
-+	struct stmmac_dma_conf *dma_conf;
- 	const int mtu = new_mtu;
-+	int ret;
- 
- 	if (txfifosz == 0)
- 		txfifosz = priv->dma_cap.tx_fifo_size;
- 
- 	txfifosz /= priv->plat->tx_queues_to_use;
- 
--	if (netif_running(dev)) {
--		netdev_err(priv->dev, "must be stopped to change its MTU\n");
--		return -EBUSY;
--	}
--
- 	if (stmmac_xdp_is_enabled(priv) && new_mtu > ETH_DATA_LEN) {
- 		netdev_dbg(priv->dev, "Jumbo frames not supported for XDP\n");
- 		return -EINVAL;
-@@ -5575,8 +5572,29 @@ static int stmmac_change_mtu(struct net_device *dev, int new_mtu)
- 	if ((txfifosz < new_mtu) || (new_mtu > BUF_SIZE_16KiB))
- 		return -EINVAL;
- 
--	dev->mtu = mtu;
-+	if (netif_running(dev)) {
-+		netdev_dbg(priv->dev, "restarting interface to change its MTU\n");
-+		/* Try to allocate the new DMA conf with the new mtu */
-+		dma_conf = stmmac_setup_dma_desc(priv, mtu);
-+		if (IS_ERR(dma_conf)) {
-+			netdev_err(priv->dev, "failed allocating new dma conf for new MTU %d\n",
-+				   mtu);
-+			return PTR_ERR(dma_conf);
-+		}
- 
-+		stmmac_release(dev);
-+
-+		ret = __stmmac_open(dev, dma_conf);
-+		kfree(dma_conf);
-+		if (ret) {
-+			netdev_err(priv->dev, "failed reopening the interface after MTU change\n");
-+			return ret;
-+		}
-+
-+		stmmac_set_rx_mode(dev);
-+	}
-+
-+	dev->mtu = mtu;
- 	netdev_update_features(dev);
- 
- 	return 0;
--- 
-2.36.1
+That, in turn, is because `watch_queue` member in the `pipe_inode_info` struct
+is defined that way (see line 80 of include/linux/pipe_fs_i.h), so I am forced
+to use the ifdef guard.
 
+Thanks,
+Siddh
