@@ -2,74 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24EACCCA48A
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 18:44:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECD3BC43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 18:44:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238083AbiGWSfl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 14:35:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46688 "EHLO
+        id S236744AbiGWSoP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 14:44:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234991AbiGWSfi (ORCPT
+        with ESMTP id S231370AbiGWSoO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 14:35:38 -0400
-X-Greylist: delayed 400 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 23 Jul 2022 11:35:37 PDT
-Received: from mail.sf-mail.de (mail.sf-mail.de [IPv6:2a01:4f8:1c17:6fae:616d:6c69:616d:6c69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37CEF11C21
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Jul 2022 11:35:37 -0700 (PDT)
-Received: (qmail 5608 invoked from network); 23 Jul 2022 18:28:33 -0000
-Received: from dyn.ipv6.net-htp.de ([2a02:560:57e5:9000:d178:e8e0:1215:6c2]:54918 HELO daneel.sf-tec.de) (auth=eike@sf-mail.de)
-        by mail.sf-mail.de (Qsmtpd 0.38dev) with (TLS_AES_256_GCM_SHA384 encrypted) ESMTPSA
-        for <shorne@gmail.com>; Sat, 23 Jul 2022 20:28:33 +0200
-From:   Rolf Eike Beer <eike-kernel@sf-tec.de>
-To:     Stafford Horne <shorne@gmail.com>
-Cc:     Bjorn Helgaas <helgaas@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v6 1/4] PCI: Remove pci_get_legacy_ide_irq and asm-generic/pci.h
-Date:   Sat, 23 Jul 2022 20:28:53 +0200
-Message-ID: <2212080.iZASKD2KPV@daneel.sf-tec.de>
-In-Reply-To: <20220722214944.831438-2-shorne@gmail.com>
-References: <20220722214944.831438-1-shorne@gmail.com> <20220722214944.831438-2-shorne@gmail.com>
+        Sat, 23 Jul 2022 14:44:14 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E6D86398
+        for <linux-kernel@vger.kernel.org>; Sat, 23 Jul 2022 11:44:12 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id d17so10248499lfa.12
+        for <linux-kernel@vger.kernel.org>; Sat, 23 Jul 2022 11:44:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :references:from:in-reply-to:content-transfer-encoding;
+        bh=V4R0Y439OoJgCAwcGbvYV3ziDx/L2sIb2nb3jHALUdM=;
+        b=YyTi79ofxoCYOriHGl62kjHsFVlAsTcp0JLq/dATlF85cV4Et2+7LcOtulLHy5gqmD
+         It8CcAqDE6Xvr92R15OI46AfB/u0Uf9aPA0GAbxMZU4GGNT2HKpsCgEEeRJ8ET3IC7mM
+         QsZYk/F8HOc0eMJLVBFLtrcixy6zqz/lB42jQl+nwopPd3VvSE+95bxZFZQratpAjyj6
+         tKgScs1BIQTDR1labYyK3RSubGss6s86uVMIyGD/8MxSpll5pJ4/aNBukOEes7LIXLqE
+         xwPwsUFC3hCzn5yfAzwrzI+pwslkZvq3kicFKhs8B+B0BDAYMpGoajyka2UvWb/bCY8S
+         5U3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=V4R0Y439OoJgCAwcGbvYV3ziDx/L2sIb2nb3jHALUdM=;
+        b=i+jWUv8FmeEvBQsR3lMzJnEaKYc28R/Xo6k9IMXyAdRyh2mkIFa4is8ypojj3wMd1o
+         yxTJQRrfbXaxOYysicmijjzNI3TkVNa3J9dpf+NayAqK988xh4y41xV7FDMMnSygYOOh
+         nBwZ4V9F5vaRaINcc5ItBiBIKEgEeD68DzSrWxs347YQilxE76ZZBGSNhW5nk3mkcI+S
+         3AQm6Pa+ouWaYMD9hRCUH/iNfj2zDdA0BKMABdsEUeBXgHEhIyChhvehR7bVbPdpEwIW
+         wRDrZtG17pOac1Lnqiy51hU9lePpBM07lpre0EL4lOTxDlq/T46pPWl7ZvMLMMhSjzzn
+         i/TA==
+X-Gm-Message-State: AJIora9FqNsOeeLuMcInth7QvLBQpYkeU8SD6+/FkJ/JLOHj3IVLeDpY
+        kYDZdnwyZQjwK/IvbvTQWzL8JNg2W9ojIuR4
+X-Google-Smtp-Source: AGRyM1vJJ64kmkl6SDxmGKuAeX+VvdZSx4UWmgd9iBWxqgfMMxWnagE8cpNfZH4qpAXYjvUWgnpLVw==
+X-Received: by 2002:a19:e005:0:b0:48a:736e:153d with SMTP id x5-20020a19e005000000b0048a736e153dmr2232970lfg.458.1658601850679;
+        Sat, 23 Jul 2022 11:44:10 -0700 (PDT)
+Received: from [192.168.10.173] (93.81-167-86.customer.lyse.net. [81.167.86.93])
+        by smtp.gmail.com with ESMTPSA id t4-20020ac25484000000b0047f8cb9401fsm1782012lfk.89.2022.07.23.11.44.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 23 Jul 2022 11:44:10 -0700 (PDT)
+Message-ID: <c5150e83-0e50-3be6-b6bd-bf30fe5e94d1@linaro.org>
+Date:   Sat, 23 Jul 2022 20:44:08 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart1921665.PYKUYFuaPT"; micalg="pgp-sha1"; protocol="application/pgp-signature"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2 3/3] ARM: qcom_defconfig: order items with
+ savedefconfig
+Content-Language: en-US
+To:     Luca Weiss <luca@z3ntu.xyz>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+References: <20220721155356.248319-1-krzysztof.kozlowski@linaro.org>
+ <12020386.O9o76ZdvQC@g550jk>
+ <2a865367-47b2-ccde-869e-942252a08c5c@linaro.org> <2246145.ElGaqSPkdT@g550jk>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <2246145.ElGaqSPkdT@g550jk>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---nextPart1921665.PYKUYFuaPT
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"; protected-headers="v1"
-From: Rolf Eike Beer <eike-kernel@sf-tec.de>
-To: Stafford Horne <shorne@gmail.com>
-Date: Sat, 23 Jul 2022 20:28:53 +0200
-Message-ID: <2212080.iZASKD2KPV@daneel.sf-tec.de>
-In-Reply-To: <20220722214944.831438-2-shorne@gmail.com>
+On 23/07/2022 20:17, Luca Weiss wrote:
+> On Samstag, 23. Juli 2022 19:36:17 CEST Krzysztof Kozlowski wrote:
+>> On 23/07/2022 11:58, Luca Weiss wrote:
+>>> See also
+>>> https://lore.kernel.org/linux-arm-msm/20191104210943.101393-1-luca@z3ntu.x
+>>> yz/ (never applied for some reason)
+>>
+>> Mentioned patch is incorrect so should not be applied - it removes at
+>> least TMPFS which is not desired. I did not check other removed symbols.
+> 
+> For this example: TMPFS is still enabled after this, it's selected by other 
+> options, like DRM or COMMON_CLK.
 
-Am Freitag, 22. Juli 2022, 23:49:41 CEST schrieben Sie:
-> The definition of the pci header function pci_get_legacy_ide_irq is only
-> used in platforms that support PNP.  So many of the architecutres where
-                                                              ^^
-> it is defined do not use it.  This also means we can remove
-> asm-generic/pci.h as all it provides is a definition of
-> pci_get_legacy_ide_irq.
+I know, it does not matter. We had this case (with DEBUGFS and probably
+others) and the decision was - user visible symbols must no be removed
+by savedefconfig.
 
-HTH
+> 
+> Imo not doing this just hides the brokeness as options wouldn't get selected 
+> anyways when you do "make qcom_defconfig". Savedefconfig afterwards just puts 
+> reality into the defconfig file. And yes, if some option gets lost then some 
+> dependency for it probably needs to get enabled as well and this should get 
+> fixed.
 
-Eike
-
-P.S.: recipient list trimmed because of unrelated KMail bug.
---nextPart1921665.PYKUYFuaPT
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
-
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQSaYVDeqwKa3fTXNeNcpIk+abn8TgUCYtw95QAKCRBcpIk+abn8
-ToSJAJ4zgKghB8MWnJBGKc6gkbY4S34LggCdGRqsBaz89xgbeKDkbqt9jTSnbBU=
-=onFn
------END PGP SIGNATURE-----
-
---nextPart1921665.PYKUYFuaPT--
+But dependencies are no being enabled, because expectation is that all
+user-visible options are selected by defconfig.
 
 
-
+Best regards,
+Krzysztof
