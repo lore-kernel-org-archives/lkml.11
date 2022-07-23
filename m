@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D0EEC43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:10:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B204BC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:10:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239096AbiGWKKQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 06:10:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42462 "EHLO
+        id S239123AbiGWKKV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 06:10:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238903AbiGWKI7 (ORCPT
+        with ESMTP id S234789AbiGWKI5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 06:08:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22106CA750;
-        Sat, 23 Jul 2022 03:02:07 -0700 (PDT)
+        Sat, 23 Jul 2022 06:08:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C78AC7AE1;
+        Sat, 23 Jul 2022 03:02:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C357D60C81;
-        Sat, 23 Jul 2022 10:02:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2868C341C0;
-        Sat, 23 Jul 2022 10:02:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5A90EB82C23;
+        Sat, 23 Jul 2022 10:01:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9BE6C341C0;
+        Sat, 23 Jul 2022 10:01:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658570527;
-        bh=TxC15aCWJTESKfDiZYzcZB3KhHflPWx08diIkyKVH6A=;
+        s=korg; t=1658570490;
+        bh=e/qiPrngS/1Wu1+7y5cBa/qZBIs933QZx4qBbSZgxJs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XYr/jmT7mpmed0gzfDvGHX3cYayCQmUe33mG6nTf7N2SeEXhiJYM78/iXzunyeoyZ
-         3KmaPNEYscPBGiS6OgIQgPQziWl67HPb0GlUSR9xdnu/3RcjG3XJ9ZTI1txutzcK1d
-         w+jXwE1i3oTi3K8RosY1VwnJftisj4Xn/Vjsqrf4=
+        b=WbiBB4cpafbOtEGEpJh2ZKBElpYLQ1JqWdKeUhS64hPAcGYAo+3yJrgAeedu3YzAr
+         2m0ovrxvWXw5T9ouHeuz04nHEEOlHLhRHGPrC63v6RNU51Cr1BHwj5Hw32kVgA92yy
+         JoyyL++CWckHkUIbdrFtzh8nmrGBQp3L2/OTxVro=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josh Poimboeuf <jpoimboe@kernel.org>,
+        stable@vger.kernel.org,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Borislav Petkov <bp@suse.de>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 117/148] objtool: Re-add UNWIND_HINT_{SAVE_RESTORE}
-Date:   Sat, 23 Jul 2022 11:55:29 +0200
-Message-Id: <20220723095257.114909578@linuxfoundation.org>
+Subject: [PATCH 5.10 104/148] x86/bugs: Report Intel retbleed vulnerability
+Date:   Sat, 23 Jul 2022 11:55:16 +0200
+Message-Id: <20220723095253.478179422@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220723095224.302504400@linuxfoundation.org>
 References: <20220723095224.302504400@linuxfoundation.org>
@@ -51,185 +52,175 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josh Poimboeuf <jpoimboe@kernel.org>
+From: Peter Zijlstra <peterz@infradead.org>
 
-commit 8faea26e611189e933ea2281975ff4dc7c1106b6 upstream.
+commit 6ad0ad2bf8a67e27d1f9d006a1dabb0e1c360cc3 upstream.
 
-Commit
+Skylake suffers from RSB underflow speculation issues; report this
+vulnerability and it's mitigation (spectre_v2=ibrs).
 
-  c536ed2fffd5 ("objtool: Remove SAVE/RESTORE hints")
+  [jpoimboe: cleanups, eibrs]
 
-removed the save/restore unwind hints because they were no longer
-needed. Now they're going to be needed again so re-add them.
-
-Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
 Signed-off-by: Borislav Petkov <bp@suse.de>
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/unwind_hints.h |   12 +++++++++-
- include/linux/objtool.h             |    6 +++--
- tools/include/linux/objtool.h       |    6 +++--
- tools/objtool/check.c               |   40 ++++++++++++++++++++++++++++++++++++
- tools/objtool/check.h               |    1 
- 5 files changed, 59 insertions(+), 6 deletions(-)
+ arch/x86/include/asm/msr-index.h |    1 +
+ arch/x86/kernel/cpu/bugs.c       |   39 +++++++++++++++++++++++++++++++++------
+ arch/x86/kernel/cpu/common.c     |   24 ++++++++++++------------
+ 3 files changed, 46 insertions(+), 18 deletions(-)
 
---- a/arch/x86/include/asm/unwind_hints.h
-+++ b/arch/x86/include/asm/unwind_hints.h
-@@ -8,11 +8,11 @@
- #ifdef __ASSEMBLY__
+--- a/arch/x86/include/asm/msr-index.h
++++ b/arch/x86/include/asm/msr-index.h
+@@ -91,6 +91,7 @@
+ #define MSR_IA32_ARCH_CAPABILITIES	0x0000010a
+ #define ARCH_CAP_RDCL_NO		BIT(0)	/* Not susceptible to Meltdown */
+ #define ARCH_CAP_IBRS_ALL		BIT(1)	/* Enhanced IBRS support */
++#define ARCH_CAP_RSBA			BIT(2)	/* RET may use alternative branch predictors */
+ #define ARCH_CAP_SKIP_VMENTRY_L1DFLUSH	BIT(3)	/* Skip L1D flush on vmentry */
+ #define ARCH_CAP_SSB_NO			BIT(4)	/*
+ 						 * Not susceptible to Speculative Store Bypass
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -746,12 +746,17 @@ static int __init nospectre_v1_cmdline(c
+ }
+ early_param("nospectre_v1", nospectre_v1_cmdline);
  
- .macro UNWIND_HINT_EMPTY
--	UNWIND_HINT sp_reg=ORC_REG_UNDEFINED type=UNWIND_HINT_TYPE_CALL end=1
-+	UNWIND_HINT type=UNWIND_HINT_TYPE_CALL end=1
- .endm
- 
- .macro UNWIND_HINT_ENTRY
--	UNWIND_HINT sp_reg=ORC_REG_UNDEFINED type=UNWIND_HINT_TYPE_ENTRY end=1
-+	UNWIND_HINT type=UNWIND_HINT_TYPE_ENTRY end=1
- .endm
- 
- .macro UNWIND_HINT_REGS base=%rsp offset=0 indirect=0 extra=1 partial=0
-@@ -56,6 +56,14 @@
- 	UNWIND_HINT sp_reg=ORC_REG_SP sp_offset=8 type=UNWIND_HINT_TYPE_FUNC
- .endm
- 
-+.macro UNWIND_HINT_SAVE
-+	UNWIND_HINT type=UNWIND_HINT_TYPE_SAVE
-+.endm
++static enum spectre_v2_mitigation spectre_v2_enabled __ro_after_init =
++	SPECTRE_V2_NONE;
 +
-+.macro UNWIND_HINT_RESTORE
-+	UNWIND_HINT type=UNWIND_HINT_TYPE_RESTORE
-+.endm
+ #undef pr_fmt
+ #define pr_fmt(fmt)     "RETBleed: " fmt
+ 
+ enum retbleed_mitigation {
+ 	RETBLEED_MITIGATION_NONE,
+ 	RETBLEED_MITIGATION_UNRET,
++	RETBLEED_MITIGATION_IBRS,
++	RETBLEED_MITIGATION_EIBRS,
+ };
+ 
+ enum retbleed_mitigation_cmd {
+@@ -763,6 +768,8 @@ enum retbleed_mitigation_cmd {
+ const char * const retbleed_strings[] = {
+ 	[RETBLEED_MITIGATION_NONE]	= "Vulnerable",
+ 	[RETBLEED_MITIGATION_UNRET]	= "Mitigation: untrained return thunk",
++	[RETBLEED_MITIGATION_IBRS]	= "Mitigation: IBRS",
++	[RETBLEED_MITIGATION_EIBRS]	= "Mitigation: Enhanced IBRS",
+ };
+ 
+ static enum retbleed_mitigation retbleed_mitigation __ro_after_init =
+@@ -805,6 +812,7 @@ early_param("retbleed", retbleed_parse_c
+ 
+ #define RETBLEED_UNTRAIN_MSG "WARNING: BTB untrained return thunk mitigation is only effective on AMD/Hygon!\n"
+ #define RETBLEED_COMPILER_MSG "WARNING: kernel not compiled with RETPOLINE or -mfunction-return capable compiler!\n"
++#define RETBLEED_INTEL_MSG "WARNING: Spectre v2 mitigation leaves CPU vulnerable to RETBleed attacks, data leaks possible!\n"
+ 
+ static void __init retbleed_select_mitigation(void)
+ {
+@@ -821,12 +829,15 @@ static void __init retbleed_select_mitig
+ 
+ 	case RETBLEED_CMD_AUTO:
+ 	default:
+-		if (!boot_cpu_has_bug(X86_BUG_RETBLEED))
+-			break;
+-
+ 		if (boot_cpu_data.x86_vendor == X86_VENDOR_AMD ||
+ 		    boot_cpu_data.x86_vendor == X86_VENDOR_HYGON)
+ 			retbleed_mitigation = RETBLEED_MITIGATION_UNRET;
 +
- #endif /* __ASSEMBLY__ */
++		/*
++		 * The Intel mitigation (IBRS) was already selected in
++		 * spectre_v2_select_mitigation().
++		 */
++
+ 		break;
+ 	}
  
- #endif /* _ASM_X86_UNWIND_HINTS_H */
---- a/include/linux/objtool.h
-+++ b/include/linux/objtool.h
-@@ -40,6 +40,8 @@ struct unwind_hint {
- #define UNWIND_HINT_TYPE_REGS_PARTIAL	2
- #define UNWIND_HINT_TYPE_FUNC		3
- #define UNWIND_HINT_TYPE_ENTRY		4
-+#define UNWIND_HINT_TYPE_SAVE		5
-+#define UNWIND_HINT_TYPE_RESTORE	6
+@@ -856,15 +867,31 @@ static void __init retbleed_select_mitig
+ 		break;
+ 	}
  
- #ifdef CONFIG_STACK_VALIDATION
- 
-@@ -102,7 +104,7 @@ struct unwind_hint {
-  * the debuginfo as necessary.  It will also warn if it sees any
-  * inconsistencies.
-  */
--.macro UNWIND_HINT sp_reg:req sp_offset=0 type:req end=0
-+.macro UNWIND_HINT type:req sp_reg=0 sp_offset=0 end=0
- .Lunwind_hint_ip_\@:
- 	.pushsection .discard.unwind_hints
- 		/* struct unwind_hint */
-@@ -126,7 +128,7 @@ struct unwind_hint {
- #define STACK_FRAME_NON_STANDARD(func)
- #else
- #define ANNOTATE_INTRA_FUNCTION_CALL
--.macro UNWIND_HINT sp_reg:req sp_offset=0 type:req end=0
-+.macro UNWIND_HINT type:req sp_reg=0 sp_offset=0 end=0
- .endm
- #endif
- 
---- a/tools/include/linux/objtool.h
-+++ b/tools/include/linux/objtool.h
-@@ -40,6 +40,8 @@ struct unwind_hint {
- #define UNWIND_HINT_TYPE_REGS_PARTIAL	2
- #define UNWIND_HINT_TYPE_FUNC		3
- #define UNWIND_HINT_TYPE_ENTRY		4
-+#define UNWIND_HINT_TYPE_SAVE		5
-+#define UNWIND_HINT_TYPE_RESTORE	6
- 
- #ifdef CONFIG_STACK_VALIDATION
- 
-@@ -102,7 +104,7 @@ struct unwind_hint {
-  * the debuginfo as necessary.  It will also warn if it sees any
-  * inconsistencies.
-  */
--.macro UNWIND_HINT sp_reg:req sp_offset=0 type:req end=0
-+.macro UNWIND_HINT type:req sp_reg=0 sp_offset=0 end=0
- .Lunwind_hint_ip_\@:
- 	.pushsection .discard.unwind_hints
- 		/* struct unwind_hint */
-@@ -126,7 +128,7 @@ struct unwind_hint {
- #define STACK_FRAME_NON_STANDARD(func)
- #else
- #define ANNOTATE_INTRA_FUNCTION_CALL
--.macro UNWIND_HINT sp_reg:req sp_offset=0 type:req end=0
-+.macro UNWIND_HINT type:req sp_reg=0 sp_offset=0 end=0
- .endm
- #endif
- 
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -1752,6 +1752,17 @@ static int read_unwind_hints(struct objt
- 
- 		insn->hint = true;
- 
-+		if (hint->type == UNWIND_HINT_TYPE_SAVE) {
-+			insn->hint = false;
-+			insn->save = true;
-+			continue;
++	/*
++	 * Let IBRS trump all on Intel without affecting the effects of the
++	 * retbleed= cmdline option.
++	 */
++	if (boot_cpu_data.x86_vendor == X86_VENDOR_INTEL) {
++		switch (spectre_v2_enabled) {
++		case SPECTRE_V2_IBRS:
++			retbleed_mitigation = RETBLEED_MITIGATION_IBRS;
++			break;
++		case SPECTRE_V2_EIBRS:
++		case SPECTRE_V2_EIBRS_RETPOLINE:
++		case SPECTRE_V2_EIBRS_LFENCE:
++			retbleed_mitigation = RETBLEED_MITIGATION_EIBRS;
++			break;
++		default:
++			pr_err(RETBLEED_INTEL_MSG);
 +		}
++	}
 +
-+		if (hint->type == UNWIND_HINT_TYPE_RESTORE) {
-+			insn->restore = true;
-+			continue;
-+		}
-+
- 		if (hint->type == UNWIND_HINT_TYPE_REGS_PARTIAL) {
- 			struct symbol *sym = find_symbol_by_offset(insn->sec, insn->offset);
+ 	pr_info("%s\n", retbleed_strings[retbleed_mitigation]);
+ }
  
-@@ -2847,6 +2858,35 @@ static int validate_branch(struct objtoo
- 			state.instr += insn->instr;
+ #undef pr_fmt
+ #define pr_fmt(fmt)     "Spectre V2 : " fmt
  
- 		if (insn->hint) {
-+			if (insn->restore) {
-+				struct instruction *save_insn, *i;
-+
-+				i = insn;
-+				save_insn = NULL;
-+
-+				sym_for_each_insn_continue_reverse(file, func, i) {
-+					if (i->save) {
-+						save_insn = i;
-+						break;
-+					}
-+				}
-+
-+				if (!save_insn) {
-+					WARN_FUNC("no corresponding CFI save for CFI restore",
-+						  sec, insn->offset);
-+					return 1;
-+				}
-+
-+				if (!save_insn->visited) {
-+					WARN_FUNC("objtool isn't smart enough to handle this CFI save/restore combo",
-+						  sec, insn->offset);
-+					return 1;
-+				}
-+
-+				insn->cfi = save_insn->cfi;
-+				nr_cfi_reused++;
-+			}
-+
- 			state.cfi = *insn->cfi;
- 		} else {
- 			/* XXX track if we actually changed state.cfi */
---- a/tools/objtool/check.h
-+++ b/tools/objtool/check.h
-@@ -47,6 +47,7 @@ struct instruction {
- 	unsigned long immediate;
- 	bool dead_end, ignore, ignore_alts;
- 	bool hint;
-+	bool save, restore;
- 	bool retpoline_safe;
- 	bool entry;
- 	s8 instr;
+-static enum spectre_v2_mitigation spectre_v2_enabled __ro_after_init =
+-	SPECTRE_V2_NONE;
+-
+ static enum spectre_v2_user_mitigation spectre_v2_user_stibp __ro_after_init =
+ 	SPECTRE_V2_USER_NONE;
+ static enum spectre_v2_user_mitigation spectre_v2_user_ibpb __ro_after_init =
+--- a/arch/x86/kernel/cpu/common.c
++++ b/arch/x86/kernel/cpu/common.c
+@@ -1124,24 +1124,24 @@ static const struct x86_cpu_id cpu_vuln_
+ 	VULNBL_INTEL_STEPPINGS(BROADWELL_G,	X86_STEPPING_ANY,		SRBDS),
+ 	VULNBL_INTEL_STEPPINGS(BROADWELL_X,	X86_STEPPING_ANY,		MMIO),
+ 	VULNBL_INTEL_STEPPINGS(BROADWELL,	X86_STEPPING_ANY,		SRBDS),
+-	VULNBL_INTEL_STEPPINGS(SKYLAKE_L,	X86_STEPPINGS(0x3, 0x3),	SRBDS | MMIO),
++	VULNBL_INTEL_STEPPINGS(SKYLAKE_L,	X86_STEPPINGS(0x3, 0x3),	SRBDS | MMIO | RETBLEED),
+ 	VULNBL_INTEL_STEPPINGS(SKYLAKE_L,	X86_STEPPING_ANY,		SRBDS),
+ 	VULNBL_INTEL_STEPPINGS(SKYLAKE_X,	BIT(3) | BIT(4) | BIT(6) |
+-						BIT(7) | BIT(0xB),              MMIO),
+-	VULNBL_INTEL_STEPPINGS(SKYLAKE,		X86_STEPPINGS(0x3, 0x3),	SRBDS | MMIO),
++						BIT(7) | BIT(0xB),              MMIO | RETBLEED),
++	VULNBL_INTEL_STEPPINGS(SKYLAKE,		X86_STEPPINGS(0x3, 0x3),	SRBDS | MMIO | RETBLEED),
+ 	VULNBL_INTEL_STEPPINGS(SKYLAKE,		X86_STEPPING_ANY,		SRBDS),
+-	VULNBL_INTEL_STEPPINGS(KABYLAKE_L,	X86_STEPPINGS(0x9, 0xC),	SRBDS | MMIO),
++	VULNBL_INTEL_STEPPINGS(KABYLAKE_L,	X86_STEPPINGS(0x9, 0xC),	SRBDS | MMIO | RETBLEED),
+ 	VULNBL_INTEL_STEPPINGS(KABYLAKE_L,	X86_STEPPINGS(0x0, 0x8),	SRBDS),
+-	VULNBL_INTEL_STEPPINGS(KABYLAKE,	X86_STEPPINGS(0x9, 0xD),	SRBDS | MMIO),
++	VULNBL_INTEL_STEPPINGS(KABYLAKE,	X86_STEPPINGS(0x9, 0xD),	SRBDS | MMIO | RETBLEED),
+ 	VULNBL_INTEL_STEPPINGS(KABYLAKE,	X86_STEPPINGS(0x0, 0x8),	SRBDS),
+-	VULNBL_INTEL_STEPPINGS(ICELAKE_L,	X86_STEPPINGS(0x5, 0x5),	MMIO | MMIO_SBDS),
++	VULNBL_INTEL_STEPPINGS(ICELAKE_L,	X86_STEPPINGS(0x5, 0x5),	MMIO | MMIO_SBDS | RETBLEED),
+ 	VULNBL_INTEL_STEPPINGS(ICELAKE_D,	X86_STEPPINGS(0x1, 0x1),	MMIO),
+ 	VULNBL_INTEL_STEPPINGS(ICELAKE_X,	X86_STEPPINGS(0x4, 0x6),	MMIO),
+-	VULNBL_INTEL_STEPPINGS(COMETLAKE,	BIT(2) | BIT(3) | BIT(5),	MMIO | MMIO_SBDS),
+-	VULNBL_INTEL_STEPPINGS(COMETLAKE_L,	X86_STEPPINGS(0x1, 0x1),	MMIO | MMIO_SBDS),
+-	VULNBL_INTEL_STEPPINGS(COMETLAKE_L,	X86_STEPPINGS(0x0, 0x0),	MMIO),
+-	VULNBL_INTEL_STEPPINGS(LAKEFIELD,	X86_STEPPINGS(0x1, 0x1),	MMIO | MMIO_SBDS),
+-	VULNBL_INTEL_STEPPINGS(ROCKETLAKE,	X86_STEPPINGS(0x1, 0x1),	MMIO),
++	VULNBL_INTEL_STEPPINGS(COMETLAKE,	BIT(2) | BIT(3) | BIT(5),	MMIO | MMIO_SBDS | RETBLEED),
++	VULNBL_INTEL_STEPPINGS(COMETLAKE_L,	X86_STEPPINGS(0x1, 0x1),	MMIO | MMIO_SBDS | RETBLEED),
++	VULNBL_INTEL_STEPPINGS(COMETLAKE_L,	X86_STEPPINGS(0x0, 0x0),	MMIO | RETBLEED),
++	VULNBL_INTEL_STEPPINGS(LAKEFIELD,	X86_STEPPINGS(0x1, 0x1),	MMIO | MMIO_SBDS | RETBLEED),
++	VULNBL_INTEL_STEPPINGS(ROCKETLAKE,	X86_STEPPINGS(0x1, 0x1),	MMIO | RETBLEED),
+ 	VULNBL_INTEL_STEPPINGS(ATOM_TREMONT,	X86_STEPPINGS(0x1, 0x1),	MMIO | MMIO_SBDS),
+ 	VULNBL_INTEL_STEPPINGS(ATOM_TREMONT_D,	X86_STEPPING_ANY,		MMIO),
+ 	VULNBL_INTEL_STEPPINGS(ATOM_TREMONT_L,	X86_STEPPINGS(0x0, 0x0),	MMIO | MMIO_SBDS),
+@@ -1251,7 +1251,7 @@ static void __init cpu_set_bug_bits(stru
+ 	    !arch_cap_mmio_immune(ia32_cap))
+ 		setup_force_cpu_bug(X86_BUG_MMIO_STALE_DATA);
+ 
+-	if (cpu_matches(cpu_vuln_blacklist, RETBLEED))
++	if ((cpu_matches(cpu_vuln_blacklist, RETBLEED) || (ia32_cap & ARCH_CAP_RSBA)))
+ 		setup_force_cpu_bug(X86_BUG_RETBLEED);
+ 
+ 	if (cpu_matches(cpu_vuln_whitelist, NO_MELTDOWN))
 
 
