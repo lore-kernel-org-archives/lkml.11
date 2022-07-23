@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49317C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:06:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CA22C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:06:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238596AbiGWKGn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 06:06:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57318 "EHLO
+        id S238592AbiGWKG6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 06:06:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238438AbiGWKGX (ORCPT
+        with ESMTP id S238572AbiGWKGf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 06:06:23 -0400
+        Sat, 23 Jul 2022 06:06:35 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6320EBE9D5;
-        Sat, 23 Jul 2022 03:00:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FF62A0256;
+        Sat, 23 Jul 2022 03:00:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3153CB82B92;
-        Sat, 23 Jul 2022 10:00:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28A6CC341CB;
-        Sat, 23 Jul 2022 10:00:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8A31DB82C1D;
+        Sat, 23 Jul 2022 10:00:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01F5DC341C0;
+        Sat, 23 Jul 2022 10:00:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658570427;
-        bh=mhfFvQtBEybVbqarS8ueWbYRtpojy7GFRiJPB7rBpNU=;
+        s=korg; t=1658570453;
+        bh=ufygdNxYvRwqap/gxVvpqhpvRh4OFs5NCTipEhRPTSI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=17k6NY21qXSisx3yneCWsyd3Ws7rvFYUsy05vRCRq0ZrqaLtY8vroGo/GD7e3WIFz
-         1miaWNV5meExgozjiqhzwI8hNimh3HTYTAdjgkXbWfHyzAy70DngEGU2bsn22rcPV7
-         8YlIZ8a705n/l9n26h3ROYT3pRjLjOUtbh0CqpbE=
+        b=UspT52ihYLQx7uLfrpuOePuXgRbiDwDCdf8e4a+wFSyV8PLD4dOZ2rpcsNJlfQvs7
+         AhHZQzoLpNHoMwi5JN3gRfqBJtcbikU9E3dLuuM+Uw3DXavuX6cu75MzxKwVLC3eYk
+         I8jDUpJjb0aMIGf/hQYNzpoTXBovooKWXteAC9Jc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
+        stable@vger.kernel.org, Kim Phillips <kim.phillips@amd.com>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Borislav Petkov <bp@suse.de>,
+        Josh Poimboeuf <jpoimboe@kernel.org>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 073/148] objtool: Fix type of reloc::addend
-Date:   Sat, 23 Jul 2022 11:54:45 +0200
-Message-Id: <20220723095244.628537805@linuxfoundation.org>
+Subject: [PATCH 5.10 092/148] x86/sev: Avoid using __x86_return_thunk
+Date:   Sat, 23 Jul 2022 11:55:04 +0200
+Message-Id: <20220723095250.164785084@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220723095224.302504400@linuxfoundation.org>
 References: <20220723095224.302504400@linuxfoundation.org>
@@ -50,92 +52,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Kim Phillips <kim.phillips@amd.com>
 
-commit c087c6e7b551b7f208c0b852304f044954cf2bb3 upstream.
+commit 0ee9073000e8791f8b134a8ded31bcc767f7f232 upstream.
 
-Elf{32,64}_Rela::r_addend is of type: Elf{32,64}_Sword, that means
-that our reloc::addend needs to be long or face tuncation issues when
-we do elf_rebuild_reloc_section():
+Specifically, it's because __enc_copy() encrypts the kernel after
+being relocated outside the kernel in sme_encrypt_execute(), and the
+RET macro's jmp offset isn't amended prior to execution.
 
-  - 107:  48 b8 00 00 00 00 00 00 00 00   movabs $0x0,%rax        109: R_X86_64_64        level4_kernel_pgt+0x80000067
-  + 107:  48 b8 00 00 00 00 00 00 00 00   movabs $0x0,%rax        109: R_X86_64_64        level4_kernel_pgt-0x7fffff99
-
-Fixes: 627fce14809b ("objtool: Add ORC unwind table generation")
+Signed-off-by: Kim Phillips <kim.phillips@amd.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lkml.kernel.org/r/20220419203807.596871927@infradead.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Josh Poimboeuf <jpoimboe@kernel.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/objtool/check.c |    8 ++++----
- tools/objtool/elf.c   |    2 +-
- tools/objtool/elf.h   |    4 ++--
- 3 files changed, 7 insertions(+), 7 deletions(-)
+ arch/x86/mm/mem_encrypt_boot.S |    8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/tools/objtool/check.c
-+++ b/tools/objtool/check.c
-@@ -467,12 +467,12 @@ static int add_dead_ends(struct objtool_
- 		else if (reloc->addend == reloc->sym->sec->len) {
- 			insn = find_last_insn(file, reloc->sym->sec);
- 			if (!insn) {
--				WARN("can't find unreachable insn at %s+0x%x",
-+				WARN("can't find unreachable insn at %s+0x%lx",
- 				     reloc->sym->sec->name, reloc->addend);
- 				return -1;
- 			}
- 		} else {
--			WARN("can't find unreachable insn at %s+0x%x",
-+			WARN("can't find unreachable insn at %s+0x%lx",
- 			     reloc->sym->sec->name, reloc->addend);
- 			return -1;
- 		}
-@@ -502,12 +502,12 @@ reachable:
- 		else if (reloc->addend == reloc->sym->sec->len) {
- 			insn = find_last_insn(file, reloc->sym->sec);
- 			if (!insn) {
--				WARN("can't find reachable insn at %s+0x%x",
-+				WARN("can't find reachable insn at %s+0x%lx",
- 				     reloc->sym->sec->name, reloc->addend);
- 				return -1;
- 			}
- 		} else {
--			WARN("can't find reachable insn at %s+0x%x",
-+			WARN("can't find reachable insn at %s+0x%lx",
- 			     reloc->sym->sec->name, reloc->addend);
- 			return -1;
- 		}
---- a/tools/objtool/elf.c
-+++ b/tools/objtool/elf.c
-@@ -509,7 +509,7 @@ static struct section *elf_create_reloc_
- 						int reltype);
+--- a/arch/x86/mm/mem_encrypt_boot.S
++++ b/arch/x86/mm/mem_encrypt_boot.S
+@@ -65,7 +65,9 @@ SYM_FUNC_START(sme_encrypt_execute)
+ 	movq	%rbp, %rsp		/* Restore original stack pointer */
+ 	pop	%rbp
  
- int elf_add_reloc(struct elf *elf, struct section *sec, unsigned long offset,
--		  unsigned int type, struct symbol *sym, int addend)
-+		  unsigned int type, struct symbol *sym, long addend)
- {
- 	struct reloc *reloc;
+-	RET
++	/* Offset to __x86_return_thunk would be wrong here */
++	ret
++	int3
+ SYM_FUNC_END(sme_encrypt_execute)
  
---- a/tools/objtool/elf.h
-+++ b/tools/objtool/elf.h
-@@ -73,7 +73,7 @@ struct reloc {
- 	struct symbol *sym;
- 	unsigned long offset;
- 	unsigned int type;
--	int addend;
-+	long addend;
- 	int idx;
- 	bool jump_table_start;
- };
-@@ -127,7 +127,7 @@ struct elf *elf_open_read(const char *na
- struct section *elf_create_section(struct elf *elf, const char *name, unsigned int sh_flags, size_t entsize, int nr);
+ SYM_FUNC_START(__enc_copy)
+@@ -151,6 +153,8 @@ SYM_FUNC_START(__enc_copy)
+ 	pop	%r12
+ 	pop	%r15
  
- int elf_add_reloc(struct elf *elf, struct section *sec, unsigned long offset,
--		  unsigned int type, struct symbol *sym, int addend);
-+		  unsigned int type, struct symbol *sym, long addend);
- int elf_add_reloc_to_insn(struct elf *elf, struct section *sec,
- 			  unsigned long offset, unsigned int type,
- 			  struct section *insn_sec, unsigned long insn_off);
+-	RET
++	/* Offset to __x86_return_thunk would be wrong here */
++	ret
++	int3
+ .L__enc_copy_end:
+ SYM_FUNC_END(__enc_copy)
 
 
