@@ -2,83 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8458EC43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:50:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F699C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:54:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237241AbiGWKuA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 06:50:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57136 "EHLO
+        id S237411AbiGWKyT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 06:54:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230399AbiGWKt7 (ORCPT
+        with ESMTP id S230399AbiGWKyQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 06:49:59 -0400
-Received: from smtp.smtpout.orange.fr (smtp05.smtpout.orange.fr [80.12.242.127])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8637D13E0C
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Jul 2022 03:49:58 -0700 (PDT)
-Received: from [192.168.1.18] ([90.11.190.129])
-        by smtp.orange.fr with ESMTPA
-        id FChnonNinxaQ2FChnov53j; Sat, 23 Jul 2022 12:49:57 +0200
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Sat, 23 Jul 2022 12:49:57 +0200
-X-ME-IP: 90.11.190.129
-Message-ID: <53b307a3-67e0-2acd-5d4a-0970f717afa7@wanadoo.fr>
-Date:   Sat, 23 Jul 2022 12:49:55 +0200
+        Sat, 23 Jul 2022 06:54:16 -0400
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCB5D11441;
+        Sat, 23 Jul 2022 03:54:14 -0700 (PDT)
+Received: by mail-io1-xd2e.google.com with SMTP id n7so5293533ioo.7;
+        Sat, 23 Jul 2022 03:54:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YL9wCFcJM1S8aQnJbcoxTMo6SNRCJK/vq4C87hsQwpU=;
+        b=icTe+7uDRr7EXvhDnSXmpnK61DUvZdhBUV1EG52pxLeRH5b4Fp++sDQy0J4X6UI8Eh
+         uGZ7po3LSPCe4MqV6mvQgXp1tKpRTebwdxMFJqJnbVMiOOXYa56IKetWOYEVjupA+mbG
+         twO9t0rDvPLv/LnZwpC1PRjDAm98sUoNPLu5bilwe8uwhUF/REZaKCxGvUR+DG4GwupY
+         96lp4Ne9iS5xiYgOuBNA8rdG3KGBiukHG3Dv1+RXor7fuWoy4onvrQzoGHG68D12evdN
+         qopZqWfKVBQL30UA+lFKUymH1m/li+cOtP1l6Nh3OB+i2U+cnnDaysukc+2hdfwqKlvW
+         HKMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YL9wCFcJM1S8aQnJbcoxTMo6SNRCJK/vq4C87hsQwpU=;
+        b=fet/zYR/MdL65rLypuuwdS1sVnKizFS5itMVT6eLBp3mJD2ioFOkRfXJuKSSZizSrS
+         N1918QxgOWSsRXE/Y2J077OsTQ8OHi82NuW8PxJmyKbMXH25xmB+QSBCZml41tEkFpWL
+         meQ4MoAO2p02fVLqVw83TgewTIQdxGajPG5HSJ6t4ID1P6cNXZA/8nEtXczDe//OXOeQ
+         qWlV3lWXfbe9rRq6gM/W1Sc+bNyRJV47d6uvIRAvNs4HDYfMrAOpn36hQJxSlDsjxtLJ
+         CfQulUJoOilyChWeguQ5i63jQ4Y24qv/L/LNrK9KBDlTbSxml2gDqJCHIPMWP/wbrAOc
+         0Jkw==
+X-Gm-Message-State: AJIora/tK2fYHnenzpMrE5fhRXgPxpm95H2HTranHVHZB7MwFuhESIMy
+        5aVGUDfcWpTqdm4z20vsofcC+NHORPIDQfj0reE=
+X-Google-Smtp-Source: AGRyM1szkUECVWGAESedupd4SaLkQ477HkV5GtL8kMwaKob8JG7T9RM44BdYJtK/AyD8uGaMcylKdTpDzbiO3Mi3N/w=
+X-Received: by 2002:a05:6638:1602:b0:341:3e1f:d862 with SMTP id
+ x2-20020a056638160200b003413e1fd862mr1696518jas.24.1658573654111; Sat, 23 Jul
+ 2022 03:54:14 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH 4/7] spi: a3700: support BE for AC5 SPI driver
-Content-Language: en-US
-To:     vadym.kochan@plvision.eu
-Cc:     broonie@kernel.org, enachman@marvell.com,
-        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
-        lnoam@marvell.com
-References: <20220723102237.10281-1-vadym.kochan@plvision.eu>
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-In-Reply-To: <20220723102237.10281-1-vadym.kochan@plvision.eu>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20220717133759.8479-1-khalid.masum.92@gmail.com>
+ <3ea0ea90-48bf-ce19-e014-9443d732e831@gmail.com> <CAABMjtHiet1_SRvLBhoNxeEh865rwtZCkb510JmFPkHFMd5chQ@mail.gmail.com>
+ <CABBYNZJVv=pJv60P6fYZh65JU+BV5agGfXEh4VenxELEXqtDsA@mail.gmail.com>
+In-Reply-To: <CABBYNZJVv=pJv60P6fYZh65JU+BV5agGfXEh4VenxELEXqtDsA@mail.gmail.com>
+From:   Khalid Masum <khalid.masum.92@gmail.com>
+Date:   Sat, 23 Jul 2022 16:54:03 +0600
+Message-ID: <CAABMjtEDHLRGVHrjPaCyuTX0SBODVcS+U+G+xS+YQH=23zk=hg@mail.gmail.com>
+Subject: Re: [PATCH] Bluetooth: hci_core: Use ERR_PTR instead of NULL
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     Pavel Skripkin <paskripkin@gmail.com>,
+        linux-kernel-mentees@lists.linuxfoundation.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le 23/07/2022 à 12:22, Vadym Kochan a écrit :
-> From: Noam <lnoam-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>
-> 
-> Tested-by: Raz Adashi <raza-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>
-> Reviewed-by: Raz Adashi <raza-eYqpPyKDWXRBDgjK7y7TUQ@public.gmane.org>
-> Signed-off-by: Vadym Kochan <vadym.kochan-Nq3fbkz6jlnsq35pWSNszA@public.gmane.org>
-> ---
->   drivers/spi/spi-armada-3700.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/spi/spi-armada-3700.c b/drivers/spi/spi-armada-3700.c
-> index d8cc4b270644..386c7959ea93 100644
-> --- a/drivers/spi/spi-armada-3700.c
-> +++ b/drivers/spi/spi-armada-3700.c
-> @@ -497,7 +497,7 @@ static int a3700_spi_fifo_write(struct a3700_spi *a3700_spi)
->   
->   	while (!a3700_is_wfifo_full(a3700_spi) && a3700_spi->buf_len) {
->   		val = *(u32 *)a3700_spi->tx_buf;
-> -		spireg_write(a3700_spi, A3700_SPI_DATA_OUT_REG, val);
-> +		spireg_write(a3700_spi, A3700_SPI_DATA_OUT_REG, cpu_to_le32(val));
->   		a3700_spi->buf_len -= 4;
->   		a3700_spi->tx_buf += 4;
->   	}
-> @@ -519,7 +519,7 @@ static int a3700_spi_fifo_read(struct a3700_spi *a3700_spi)
->   	while (!a3700_is_rfifo_empty(a3700_spi) && a3700_spi->buf_len) {
->   		val = spireg_read(a3700_spi, A3700_SPI_DATA_IN_REG);
->   		if (a3700_spi->buf_len >= 4) {
-> -
-> +			val = cpu_to_le32(val);
+On Tue, Jul 19, 2022 at 5:04 AM Luiz Augusto von Dentz
+<luiz.dentz@gmail.com> wrote:
+>
+> Hi Khalid,
+>
+> On Sun, Jul 17, 2022 at 11:34 AM Khalid Masum <khalid.masum.92@gmail.com> wrote:
+> >
+> > On Sun, Jul 17, 2022 at 10:17 PM Pavel Skripkin <paskripkin@gmail.com> wrote:
+> > >
+> > > Hi Khalid,
+> > >
+> > > Khalid Masum <khalid.masum.92@gmail.com> says:
+> > > > Failure of kzalloc to allocate memory is not reported. Return Error
+> > > > pointer to ENOMEM if memory allocation fails. This will increase
+> > > > readability and will make the function easier to use in future.
+> > > >
+> > > > Signed-off-by: Khalid Masum <khalid.masum.92@gmail.com>
+> > > > ---
+> > >
+> > > [snip]
+> > >
+> > > > index a0f99baafd35..ea50767e02bf 100644
+> > > > --- a/net/bluetooth/hci_core.c
+> > > > +++ b/net/bluetooth/hci_core.c
+> > > > @@ -2419,7 +2419,7 @@ struct hci_dev *hci_alloc_dev_priv(int sizeof_priv)
+> > > >
+> > > >       hdev = kzalloc(alloc_size, GFP_KERNEL);
+> > > >       if (!hdev)
+> > > > -             return NULL;
+> > > > +             return ERR_PTR(-ENOMEM);
+> > > >
+> > >
+> > > This will break all callers of hci_alloc_dev(). All callers expect NULL
+> > > in case of an error, so you will leave them with wrong pointer.
+> >
+> > You are right. All callers of hci_alloc_dev() need to be able to handle
+> > the error pointer. I shall send a V2 with all the callers of hci_alloc_dev
+> > handling the ERR_PTR.
+> >
+> > > Also, allocation functionS return an error only in case of ENOMEM, so
+> > > initial code is fine, IMO
+> > >
+>
+> If there just a single error like ENOMEM then Id say this is fine,
+> just as it is fine for kzalloc.
+>
+> > I think it makes the memory allocation error handling look to be a bit
+> > different from what we usually do while allocating memory which is,
+> > returning an error or an error pointer. Here we are returning a NULL
+> > without any context, making it a bit unreadable. So I think returning
+> > an error pointer is better. If I am not mistaken, this also complies with
+> > the return convention:
+> > https://www.kernel.org/doc/htmldocs/kernel-hacking/convention-returns.html
+>
+> Not sure if that would apply to code that is basically a wrapper of kzalloc.
 
-Hi,
+I got you.
+> > > Thanks,
+> > > --Pavel Skripkin
+> >
+> >
+> > Thanks,
+> >   -- Khalid Masum
+>
+>
+>
+> --
+> Luiz Augusto von Dentz
 
-even if both should generate the same code, should'nt this be le32_to_cpu()?
-
-CJ
-
->   			memcpy(a3700_spi->rx_buf, &val, 4);
->   
->   			a3700_spi->buf_len -= 4;
-
+Thanks,
+  -- Khalid Masum
