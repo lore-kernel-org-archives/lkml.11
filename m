@@ -2,77 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F355C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 03:42:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F22CACCA483
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 03:44:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231540AbiGWDmi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 22 Jul 2022 23:42:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48242 "EHLO
+        id S232956AbiGWDoa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 22 Jul 2022 23:44:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229513AbiGWDmg (ORCPT
+        with ESMTP id S229469AbiGWDo2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 22 Jul 2022 23:42:36 -0400
-Received: from mail-m972.mail.163.com (mail-m972.mail.163.com [123.126.97.2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2EE6B71BD0;
-        Fri, 22 Jul 2022 20:42:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=E5bSd
-        3wPwM3u95WU8fODTOt0SYOO2PuBYzObYqAQDrI=; b=iRv+6pW8Hr3VHiGikm4HG
-        R+lmJR6UlD6EMcerIkQENZMupg+rll2pmRbQfTP6sjOlPGaAVMn7DeuBgoSiSh4s
-        SZT9E0WQnB2POkS2luRvVTbFtgJWD3spN3dNCoTgGw3XQ7W/6HGRTucBaEpUV+Ol
-        s3u8lmdK/WvELVbGrOan7Q=
-Received: from localhost.localdomain (unknown [123.58.221.99])
-        by smtp2 (Coremail) with SMTP id GtxpCgD3sQvrbdtiiq_7Qg--.36884S2;
-        Sat, 23 Jul 2022 11:41:33 +0800 (CST)
-From:   williamsukatube@163.com
-To:     linux-phy@lists.infradead.org, linux-tegra@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     jckuo@nvidia.com, kishon@ti.com, vkoul@kernel.org,
-        thierry.reding@gmail.com, jonathanh@nvidia.com,
-        William Dean <williamsukatube@gmail.com>,
-        Hacash Robot <hacashRobot@santino.com>
-Subject: [PATCH] phy: tegra: xusb: check the return value of devm_kzalloc() in tegra_xusb_setup_usb_role_switch()
-Date:   Sat, 23 Jul 2022 11:41:30 +0800
-Message-Id: <20220723034130.2952016-1-williamsukatube@163.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 22 Jul 2022 23:44:28 -0400
+Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE2F977A7C;
+        Fri, 22 Jul 2022 20:44:27 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id DE2435C00A8;
+        Fri, 22 Jul 2022 23:44:26 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute2.internal (MEProxy); Fri, 22 Jul 2022 23:44:26 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        invisiblethingslab.com; h=cc:cc:content-transfer-encoding:date
+        :date:from:from:in-reply-to:in-reply-to:message-id:mime-version
+        :references:reply-to:sender:subject:subject:to:to; s=fm3; t=
+        1658547866; x=1658634266; bh=9EVYFQs3TfjexPazUkgkLFWSM4eN+61vSya
+        zDvU3JXY=; b=RcBEtNP8oYQgdE7PhROvqMVJnmJebGH9Dxpv/SnrKBJk1fDlr1v
+        fZgw30SFvmeZbNGJCV3k5YwBly3Ik0M5cDx8Si33qIyKNg3uaG3xPQ27/+JLvfwS
+        VvDy4Lenhc8igbigKtRiQmg+ojnjnyDBG70Ueo8OZZhsXioKaMQgnZYR3erfwXKZ
+        rqUOS2AAMVbPvQ2pxBxKdtercd7sXCV2I/gxt+dlI92XaawMv+aIsENFQX8/sRNT
+        3f9mHVsKt/XthsHhiCjnjdaQBK0uOHYF/v1pC48hzRv+YRYgCI149TP8GmugOypp
+        r/DzRapvNBkF7KsXTlR6Ni+4re4tD7/ytQQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm3; t=1658547866; x=1658634266; bh=9EVYFQs3Tfjex
+        PazUkgkLFWSM4eN+61vSyazDvU3JXY=; b=Y/A0P4Tc/sW0dbP6uJYXE3eVZJQ1E
+        rtbAL/RtaQhhliRjoxxYyHKVGpxcAmDpAf8n4bT73/d3kbJuRaBKPrxMh9K38E35
+        1OB+14RaUsVux01fx9FB7JNlmUh2JAsxuTuDRxrG03ALZr5TDJJpcu7lxoZAhDKU
+        dDX90LldNTeBcW3qttqZTPZ+FKDP4dtQiLqPw5p8pqshnMw9f4Yy6XZ18B+iwLYT
+        2Z+LjCQabPi4MftzQmGj4x5lOGsGpnCJR/KbCVp06fgumYWD9CLvqakJN1VRt1+N
+        kw7HhV5ZSM1h/nLn3PCbXt6hz4gGaPD9swFyB155/cA8q1QfBpGBjwo9w==
+X-ME-Sender: <xms:mm7bYlifrfwiqP6Eofstz2tcMXFdkTOkxhITL8mHS9UcKjaFmy57hg>
+    <xme:mm7bYqAELBC_seMCrcWT8S8O8keJhKCneeFAybJbTFbOH_yQR38J3CvtJKljGdz7_
+    jQLLT9wG6M-5kQ>
+X-ME-Received: <xmr:mm7bYlEQxmkJOAc7QR7nP_jXVY3f4lE8BTfs4G-3uOlT3RXMVm4ELAF2YSgrJwzPvBrycRtOtZ5s>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvddtfedgjeejucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhephffvvefufffkofgjfhgggfestdekredtredttdenucfhrhhomhepffgvmhhi
+    ucforghrihgvucfqsggvnhhouhhruceouggvmhhisehinhhvihhsihgslhgvthhhihhngh
+    hslhgrsgdrtghomheqnecuggftrfgrthhtvghrnhepjeffjefggfeugeduvedvjeekgfeh
+    gffhhfffjeetkeelueefffetfffhtdduheetnecuvehluhhsthgvrhfuihiivgeptdenuc
+    frrghrrghmpehmrghilhhfrhhomhepuggvmhhisehinhhvihhsihgslhgvthhhihhnghhs
+    lhgrsgdrtghomh
+X-ME-Proxy: <xmx:mm7bYqQkjYnHgxLSmK1-Qd4BoLcndVGukJH4M1hB-NMEiHzvkp5cZw>
+    <xmx:mm7bYiy2d5v7Wz8YC3woQOpp0ZjG0XaUBTSnAd3rf3nBm2zazrUsfg>
+    <xmx:mm7bYg61GlnDmWZrIuw5t9cmmRguh4_ET4UkGLaFcHu4pHoCbbbDpw>
+    <xmx:mm7bYpq0QN_InW8uGxoBnzhUmlI6S7nf-JBWwIoEaSvSVGmXzXakXg>
+Feedback-ID: iac594737:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 22 Jul 2022 23:44:26 -0400 (EDT)
+From:   Demi Marie Obenour <demi@invisiblethingslab.com>
+To:     Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Juergen Gross <jgross@suse.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Demi Marie Obenour <demi@invisiblethingslab.com>,
+        xen-devel@lists.xenproject.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: [PATCH 4.9] Ignore failure to unmap -1
+Date:   Fri, 22 Jul 2022 23:44:11 -0400
+Message-Id: <20220723034415.1560-2-demi@invisiblethingslab.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220723034415.1560-1-demi@invisiblethingslab.com>
+References: <20220723034415.1560-1-demi@invisiblethingslab.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: GtxpCgD3sQvrbdtiiq_7Qg--.36884S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrtFWrZrWftw17Cw1kKw1ftFb_yoWDXrg_uw
-        s5Zr97Xw4qgFy7Cw1jyrsxZrWSyrW0qF1IgFsYqFy3CrW09F40yrWDZFy3u3yxC3Z5GFZr
-        G34kZF1Fvr13GjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU5tsqJUUUUU==
-X-Originating-IP: [123.58.221.99]
-X-CM-SenderInfo: xzlozx5dpv3yxdwxuvi6rwjhhfrp/xtbBew1Hg2AZAZahXgAAsj
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: William Dean <williamsukatube@gmail.com>
+[ Upstream commit 166d3863231667c4f64dee72b77d1102cdfad11f ]
 
-The function devm_kzalloc() in tegra_xusb_setup_usb_role_switch()
-can fail, so its return value should be checked.
+The error paths of gntdev_mmap() can call unmap_grant_pages() even
+though not all of the pages have been successfully mapped.  This will
+trigger the WARN_ON()s in __unmap_grant_pages_done().  The number of
+warnings can be very large; I have observed thousands of lines of
+warnings in the systemd journal.
 
-Fixes: f67213cee2b35 ("phy: tegra: xusb: Add usb-role-switch support")
-Reported-by: Hacash Robot <hacashRobot@santino.com>
-Signed-off-by: William Dean <williamsukatube@gmail.com>
+Avoid this problem by only warning on unmapping failure if the handle
+being unmapped is not -1.  The handle field of any page that was not
+successfully mapped will be -1, so this catches all cases where
+unmapping can legitimately fail.
+
+Suggested-by: Juergen Gross <jgross@suse.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Demi Marie Obenour <demi@invisiblethingslab.com>
+Fixes: 36cd49b071fc ("xen/gntdev: Avoid blocking in unmap_grant_pages()")
 ---
- drivers/phy/tegra/xusb.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/xen/gntdev.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/phy/tegra/xusb.c b/drivers/phy/tegra/xusb.c
-index aa5237eacd29..e3611fb4c779 100644
---- a/drivers/phy/tegra/xusb.c
-+++ b/drivers/phy/tegra/xusb.c
-@@ -668,6 +668,8 @@ static int tegra_xusb_setup_usb_role_switch(struct tegra_xusb_port *port)
- 	port->dev.driver = devm_kzalloc(&port->dev,
- 					sizeof(struct device_driver),
- 					GFP_KERNEL);
-+	if (!port->dev.driver)
-+		return -ENOMEM;
- 	port->dev.driver->owner	 = THIS_MODULE;
+diff --git a/drivers/xen/gntdev.c b/drivers/xen/gntdev.c
+index 2c3248e71e9c1a3e032b847d177b02855cdda1a1..a6585854a85fc6fffc16c3498ba73fbee84ad6ca 100644
+--- a/drivers/xen/gntdev.c
++++ b/drivers/xen/gntdev.c
+@@ -390,7 +390,8 @@ static void __unmap_grant_pages_done(int result,
+ 	unsigned int offset = data->unmap_ops - map->unmap_ops;
  
- 	port->usb_role_sw = usb_role_switch_register(&port->dev,
+ 	for (i = 0; i < data->count; i++) {
+-		WARN_ON(map->unmap_ops[offset+i].status);
++		WARN_ON(map->unmap_ops[offset+i].status &&
++			map->unmap_ops[offset+i].handle != -1);
+ 		pr_debug("unmap handle=%d st=%d\n",
+ 			map->unmap_ops[offset+i].handle,
+ 			map->unmap_ops[offset+i].status);
 -- 
-2.25.1
-
+Sincerely,
+Demi Marie Obenour (she/her/hers)
+Invisible Things Lab
