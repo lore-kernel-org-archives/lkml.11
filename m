@@ -2,88 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCDA8CCA489
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 08:27:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5B0FC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 08:30:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237092AbiGWI1w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 04:27:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50846 "EHLO
+        id S237119AbiGWIaT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 04:30:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229708AbiGWI1v (ORCPT
+        with ESMTP id S229708AbiGWIaQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 04:27:51 -0400
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1312F2A732
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Jul 2022 01:27:50 -0700 (PDT)
-Received: by mail-lf1-x12d.google.com with SMTP id p11so6134408lfu.5
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Jul 2022 01:27:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=2n2UJ/+3iJaUYMgrHfASASdjwSo9Al6kqw/c32WAOhk=;
-        b=gggpmFdg2nW17a0F0lgCxdcV/m0aNWCH/44I1cZQ4tBjdIHa15wT6MEaG5CFTle8L+
-         lXOMPyFJK5YXen51QZiezL+tWgOsHfIVtIoBIycw3MDx2cGu7q4y3tyhi6CdkCkyUMeA
-         a6QHSt1pyjlXZxNlXBUlxAfY4DH4Xh2gC2QnhZEbdEKwxjHG3DfMMd8AiyCjF88/RmOI
-         LfOlMj1sMzwjD1OhmlrFycKGjrgBa56BcVCfdVojy1yZebKyskUUBhwldaMhZoikkeBX
-         wS2jPIojNtKnTz9h4qGv1Yr3sY6IMzAHaA0W91RfSqdUObIfwBwssHwEcVlUxbqS6hD4
-         yksg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=2n2UJ/+3iJaUYMgrHfASASdjwSo9Al6kqw/c32WAOhk=;
-        b=QfPkm+oZYcRKTfPMZvYlpijX3d/id5eHOn+So+puuw5s29ww/2MighYoOBD50oSGJb
-         OT3R4BB3vLx3AhlUk0E0pE7aURrMhUzKm/LEdcBVCDbgYFTbQRJes9HPkJpk5KoWx7Re
-         LUxMIFyWTmA62ytt2W5fNB/UHYGtDNXhSwLnvVNyYmN2CH9Jn7ENiawes1EL/0oeiKkS
-         0itsEJQa71b6bhbaNO5R9GLET95JRRzplC+eowdzskrAgCWepekg69njUIE6566thY6J
-         3g2Y98Mn2J3FeT/v+cBYBBSpaW4epdTBKYthcTdGenQ6TpT6buA7zMV352hoMNioz19f
-         jzcg==
-X-Gm-Message-State: AJIora8ITI9JtteOy1zACN1PnvfEP/37+il/7TRQ7X+B3+gahXZdtor1
-        HEJK4QCypYvH6PckMNnv1iwxGJ/whuJbi9Oa
-X-Google-Smtp-Source: AGRyM1vWWS9caJHUIUqf6CAjbWuVstmpc/HF70UbNoGAQZ14kTKxjW7UUNcvdsq2OZy6dhKnfxp4Hg==
-X-Received: by 2002:a05:6512:3342:b0:489:e36b:4149 with SMTP id y2-20020a056512334200b00489e36b4149mr1388490lfd.588.1658564868434;
-        Sat, 23 Jul 2022 01:27:48 -0700 (PDT)
-Received: from [192.168.10.173] (93.81-167-86.customer.lyse.net. [81.167.86.93])
-        by smtp.gmail.com with ESMTPSA id 8-20020ac25f08000000b0047f65b60323sm837988lfq.3.2022.07.23.01.27.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 23 Jul 2022 01:27:47 -0700 (PDT)
-Message-ID: <3b5bf57d-632f-7b6e-7c7d-9a4cd39b317b@linaro.org>
-Date:   Sat, 23 Jul 2022 10:27:46 +0200
+        Sat, 23 Jul 2022 04:30:16 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 125C52BD1
+        for <linux-kernel@vger.kernel.org>; Sat, 23 Jul 2022 01:30:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658565014; x=1690101014;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=cziFy39fUr4V1VRg3gQ9DbiMy3GHXPtMtcavZ2x65VE=;
+  b=QUB1AdeprOsFErhqVrdTSTvMyUs7MidhPwwf8IyQ+EmLnn1n9rM6RDIB
+   PB0+PvKgJHH30EBc/9UdA++9OSmkauhHnsQy7A3WjwjWl6yfnic/ZQ9Si
+   RuqEMcofs4j8cizWu/dfZlv7KpFLFEpVLGcuEsFiE+DbYRi22rd+wl1iK
+   GqGHwSZK6tEemGHi+JO5IFT8NgFP9933ZGdnlscPpT+kuvqv5HkRwxC8Y
+   LyH4KyYOiU2HjapkW6gIrDm7FLtzzlt7pIefHkzQ+p3CClPLSOqfPC7KL
+   30xrNMdeDCqJb7noMLicWljYclTA7GzuIYDfp8g6WIYmRqudyK1Qf05/8
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10416"; a="287467611"
+X-IronPort-AV: E=Sophos;i="5.93,187,1654585200"; 
+   d="scan'208";a="287467611"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jul 2022 01:30:13 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,187,1654585200"; 
+   d="scan'208";a="741294446"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 23 Jul 2022 01:30:12 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oFAWZ-0002Qq-1B;
+        Sat, 23 Jul 2022 08:30:11 +0000
+Date:   Sat, 23 Jul 2022 16:29:54 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jens Axboe <axboe@kernel.dk>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Jason A. Donenfeld" <zx2c4@kernel.org>
+Subject: [linux-stable-rc:linux-4.19.y 3113/3346] drivers/char/random.c:1336:
+ Error: unrecognized opcode `csrs sstatus,s7'
+Message-ID: <202207231617.45IdglVZ-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 1/2] dt-bindings: soc: qcom: smd: reference SMD edge
- schema
-Content-Language: en-US
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220723082358.39544-1-krzysztof.kozlowski@linaro.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220723082358.39544-1-krzysztof.kozlowski@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 23/07/2022 10:23, Krzysztof Kozlowski wrote:
-> The child node of smd is an SMD edge representing remote subsystem.
-> Bring back missing reference from previously sent patch (disappeared
-> when applying).
-> 
-> Link: https://lore.kernel.org/r/20220517070113.18023-9-krzysztof.kozlowski@linaro.org
-> Fixes: 385fad1303af ("dt-bindings: remoteproc: qcom,smd-edge: define re-usable schema for smd-edge")
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
+head:   175b775c36289cb206f50956f0056174bb335312
+commit: 1923d9a8a08684c063da049fa9d5d8139edbbcbb [3113/3346] random: convert to using fops->write_iter()
+config: riscv-randconfig-c041-20220722 (https://download.01.org/0day-ci/archive/20220723/202207231617.45IdglVZ-lkp@intel.com/config)
+compiler: riscv64-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/commit/?id=1923d9a8a08684c063da049fa9d5d8139edbbcbb
+        git remote add linux-stable-rc https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+        git fetch --no-tags linux-stable-rc linux-4.19.y
+        git checkout 1923d9a8a08684c063da049fa9d5d8139edbbcbb
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash drivers/char/
 
-To be clear:
-This is a fix for above commit (which got changed after applying, maybe
-because of merge conflict), so should go via the same tree - remoteproc.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Best regards,
-Krzysztof
+All errors (new ones prefixed by >>):
+
+   arch/riscv/include/asm/irqflags.h: Assembler messages:
+   arch/riscv/include/asm/irqflags.h:36: Error: unrecognized opcode `csrc sstatus,2'
+   arch/riscv/include/asm/irqflags.h:30: Error: unrecognized opcode `csrs sstatus,2'
+   arch/riscv/include/asm/irqflags.h:30: Error: unrecognized opcode `csrs sstatus,2'
+   arch/riscv/include/asm/irqflags.h:42: Error: unrecognized opcode `csrrc s7,sstatus,2'
+   arch/riscv/include/asm/irqflags.h:60: Error: unrecognized opcode `csrs sstatus,0'
+   arch/riscv/include/asm/irqflags.h:60: Error: unrecognized opcode `csrs sstatus,s7'
+   drivers/char/random.c:1316: Error: unrecognized opcode `csrs sstatus,a3'
+   drivers/char/random.c:1316: Error: unrecognized opcode `csrc sstatus,a3'
+   drivers/char/random.c:1322: Error: unrecognized opcode `csrs sstatus,a4'
+   drivers/char/random.c:1322: Error: unrecognized opcode `csrc sstatus,a4'
+>> drivers/char/random.c:1336: Error: unrecognized opcode `csrs sstatus,s7'
+>> drivers/char/random.c:1336: Error: unrecognized opcode `csrc sstatus,s7'
+   drivers/char/random.c:1340: Error: unrecognized opcode `csrs sstatus,s7'
+   drivers/char/random.c:1340: Error: unrecognized opcode `csrc sstatus,s7'
+   arch/riscv/include/asm/irqflags.h:42: Error: unrecognized opcode `csrrc s2,sstatus,2'
+   arch/riscv/include/asm/irqflags.h:60: Error: unrecognized opcode `csrs sstatus,0'
+   arch/riscv/include/asm/irqflags.h:60: Error: unrecognized opcode `csrs sstatus,s2'
+   arch/riscv/include/asm/irqflags.h:42: Error: unrecognized opcode `csrrc s2,sstatus,2'
+   arch/riscv/include/asm/irqflags.h:60: Error: unrecognized opcode `csrs sstatus,0'
+   arch/riscv/include/asm/irqflags.h:60: Error: unrecognized opcode `csrs sstatus,s2'
+
+
+vim +1336 drivers/char/random.c
+
+0d35cc7b3fec62 Jason A. Donenfeld 2022-02-11  1307  
+43ae4860ff4a35 Matt Mackall       2008-04-29  1308  static long random_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
+^1da177e4c3f41 Linus Torvalds     2005-04-16  1309  {
+^1da177e4c3f41 Linus Torvalds     2005-04-16  1310  	int __user *p = (int __user *)arg;
+1923d9a8a08684 Jens Axboe         2022-05-19  1311  	int ent_count;
+^1da177e4c3f41 Linus Torvalds     2005-04-16  1312  
+^1da177e4c3f41 Linus Torvalds     2005-04-16  1313  	switch (cmd) {
+^1da177e4c3f41 Linus Torvalds     2005-04-16  1314  	case RNDGETENTCNT:
+0d35cc7b3fec62 Jason A. Donenfeld 2022-02-11  1315  		/* Inherently racy, no point locking. */
+85b46e0c80a637 Jason A. Donenfeld 2022-04-30  1316  		if (put_user(input_pool.init_bits, p))
+^1da177e4c3f41 Linus Torvalds     2005-04-16  1317  			return -EFAULT;
+^1da177e4c3f41 Linus Torvalds     2005-04-16  1318  		return 0;
+^1da177e4c3f41 Linus Torvalds     2005-04-16  1319  	case RNDADDTOENTCNT:
+^1da177e4c3f41 Linus Torvalds     2005-04-16  1320  		if (!capable(CAP_SYS_ADMIN))
+^1da177e4c3f41 Linus Torvalds     2005-04-16  1321  			return -EPERM;
+^1da177e4c3f41 Linus Torvalds     2005-04-16  1322  		if (get_user(ent_count, p))
+^1da177e4c3f41 Linus Torvalds     2005-04-16  1323  			return -EFAULT;
+cead215ea9fdb5 Jason A. Donenfeld 2022-02-04  1324  		if (ent_count < 0)
+cead215ea9fdb5 Jason A. Donenfeld 2022-02-04  1325  			return -EINVAL;
+85b46e0c80a637 Jason A. Donenfeld 2022-04-30  1326  		credit_init_bits(ent_count);
+cead215ea9fdb5 Jason A. Donenfeld 2022-02-04  1327  		return 0;
+1923d9a8a08684 Jens Axboe         2022-05-19  1328  	case RNDADDENTROPY: {
+1923d9a8a08684 Jens Axboe         2022-05-19  1329  		struct iov_iter iter;
+1923d9a8a08684 Jens Axboe         2022-05-19  1330  		struct iovec iov;
+1923d9a8a08684 Jens Axboe         2022-05-19  1331  		ssize_t ret;
+1923d9a8a08684 Jens Axboe         2022-05-19  1332  		int len;
+1923d9a8a08684 Jens Axboe         2022-05-19  1333  
+^1da177e4c3f41 Linus Torvalds     2005-04-16  1334  		if (!capable(CAP_SYS_ADMIN))
+^1da177e4c3f41 Linus Torvalds     2005-04-16  1335  			return -EPERM;
+^1da177e4c3f41 Linus Torvalds     2005-04-16 @1336  		if (get_user(ent_count, p++))
+^1da177e4c3f41 Linus Torvalds     2005-04-16  1337  			return -EFAULT;
+^1da177e4c3f41 Linus Torvalds     2005-04-16  1338  		if (ent_count < 0)
+^1da177e4c3f41 Linus Torvalds     2005-04-16  1339  			return -EINVAL;
+1923d9a8a08684 Jens Axboe         2022-05-19  1340  		if (get_user(len, p++))
+1923d9a8a08684 Jens Axboe         2022-05-19  1341  			return -EFAULT;
+1923d9a8a08684 Jens Axboe         2022-05-19  1342  		ret = import_single_range(WRITE, p, len, &iov, &iter);
+1923d9a8a08684 Jens Axboe         2022-05-19  1343  		if (unlikely(ret))
+1923d9a8a08684 Jens Axboe         2022-05-19  1344  			return ret;
+1923d9a8a08684 Jens Axboe         2022-05-19  1345  		ret = write_pool(&iter);
+1923d9a8a08684 Jens Axboe         2022-05-19  1346  		if (unlikely(ret < 0))
+1923d9a8a08684 Jens Axboe         2022-05-19  1347  			return ret;
+1923d9a8a08684 Jens Axboe         2022-05-19  1348  		/* Since we're crediting, enforce that it was all written into the pool. */
+1923d9a8a08684 Jens Axboe         2022-05-19  1349  		if (unlikely(ret != len))
+^1da177e4c3f41 Linus Torvalds     2005-04-16  1350  			return -EFAULT;
+85b46e0c80a637 Jason A. Donenfeld 2022-04-30  1351  		credit_init_bits(ent_count);
+cead215ea9fdb5 Jason A. Donenfeld 2022-02-04  1352  		return 0;
+1923d9a8a08684 Jens Axboe         2022-05-19  1353  	}
+^1da177e4c3f41 Linus Torvalds     2005-04-16  1354  	case RNDZAPENTCNT:
+^1da177e4c3f41 Linus Torvalds     2005-04-16  1355  	case RNDCLEARPOOL:
+85b46e0c80a637 Jason A. Donenfeld 2022-04-30  1356  		/* No longer has any effect. */
+^1da177e4c3f41 Linus Torvalds     2005-04-16  1357  		if (!capable(CAP_SYS_ADMIN))
+^1da177e4c3f41 Linus Torvalds     2005-04-16  1358  			return -EPERM;
+^1da177e4c3f41 Linus Torvalds     2005-04-16  1359  		return 0;
+d848e5f8e1ebdb Theodore Ts'o      2018-04-11  1360  	case RNDRESEEDCRNG:
+d848e5f8e1ebdb Theodore Ts'o      2018-04-11  1361  		if (!capable(CAP_SYS_ADMIN))
+d848e5f8e1ebdb Theodore Ts'o      2018-04-11  1362  			return -EPERM;
+13ffd431ae1032 Jason A. Donenfeld 2022-03-08  1363  		if (!crng_ready())
+d848e5f8e1ebdb Theodore Ts'o      2018-04-11  1364  			return -ENODATA;
+e2fc165d51e9e3 Jason A. Donenfeld 2022-02-08  1365  		crng_reseed();
+d848e5f8e1ebdb Theodore Ts'o      2018-04-11  1366  		return 0;
+^1da177e4c3f41 Linus Torvalds     2005-04-16  1367  	default:
+^1da177e4c3f41 Linus Torvalds     2005-04-16  1368  		return -EINVAL;
+^1da177e4c3f41 Linus Torvalds     2005-04-16  1369  	}
+^1da177e4c3f41 Linus Torvalds     2005-04-16  1370  }
+^1da177e4c3f41 Linus Torvalds     2005-04-16  1371  
+
+:::::: The code at line 1336 was first introduced by commit
+:::::: 1da177e4c3f41524e886b7f1b8a0c1fc7321cac2 Linux-2.6.12-rc2
+
+:::::: TO: Linus Torvalds <torvalds@ppc970.osdl.org>
+:::::: CC: Linus Torvalds <torvalds@ppc970.osdl.org>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
