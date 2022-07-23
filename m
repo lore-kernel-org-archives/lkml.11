@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6884C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:02:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B669C43334
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:02:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237997AbiGWKCm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 06:02:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56796 "EHLO
+        id S237830AbiGWKCp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 06:02:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237723AbiGWKCP (ORCPT
+        with ESMTP id S237994AbiGWKCQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 06:02:15 -0400
+        Sat, 23 Jul 2022 06:02:16 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7288A66AE5;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1829804B4;
         Sat, 23 Jul 2022 02:58:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 65737611BD;
-        Sat, 23 Jul 2022 09:58:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A2E6C341C0;
-        Sat, 23 Jul 2022 09:58:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 24B32611D2;
+        Sat, 23 Jul 2022 09:58:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F6AEC341C0;
+        Sat, 23 Jul 2022 09:58:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658570326;
-        bh=Z9v+W6Ypo/TtsuKDyVQ7GeOlltbq63xMAp1hYKg1CZM=;
+        s=korg; t=1658570332;
+        bh=nHVd6Mwvbhq8aggXi24Iyi/JP3pj3Tu3p2pzPUSotaM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B13Slh3MIH/hbHJG/7JBDCPR8FKD1HhpfF1Z0JaNOl3/t3LDXfvqioPcwOjbQvoPc
-         nfbHoiivnlcuo+l+p3YcNkYICY5JhxgFgzH/z8DhmAAXhMgip0j3gp7MUiUBFRr/Gb
-         1oh3gdkT+OcdG8M4dRxxNLti4jHqcWbsRDjio1XA=
+        b=OCQ43XIXUSmwzBlyHD/Sb+zFlHi/Y3l2kxYRPChqOX/1ydMMvmdUY6PrTtPsNwF/d
+         DzQnQ9IxdGGaTf14i5WsSD0ZkGoFSWxyHw+qKmOeHBkuzoCFK59xEfUr8ki1ABNueH
+         Uu98jYqeVF+htNh+Ac/6Kmk+wSiSo85C+rt9KkD8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -39,9 +39,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.10 058/148] x86/alternative: Add debug prints to apply_retpolines()
-Date:   Sat, 23 Jul 2022 11:54:30 +0200
-Message-Id: <20220723095240.500142143@linuxfoundation.org>
+Subject: [PATCH 5.10 050/148] x86/retpoline: Remove unused replacement symbols
+Date:   Sat, 23 Jul 2022 11:54:22 +0200
+Message-Id: <20220723095238.332171280@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220723095224.302504400@linuxfoundation.org>
 References: <20220723095224.302504400@linuxfoundation.org>
@@ -55,47 +55,95 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peter Zijlstra <peterz@infradead.org>
 
-commit d4b5a5c993009ffeb5febe3b701da3faab6adb96 upstream.
+commit 4fe79e710d9574a14993f8b4e16b7252da72d5e8 upstream.
 
-Make sure we can see the text changes when booting with
-'debug-alternative'.
-
-Example output:
-
- [ ] SMP alternatives: retpoline at: __traceiter_initcall_level+0x1f/0x30 (ffffffff8100066f) len: 5 to: __x86_indirect_thunk_rax+0x0/0x20
- [ ] SMP alternatives: ffffffff82603e58: [2:5) optimized NOPs: ff d0 0f 1f 00
- [ ] SMP alternatives: ffffffff8100066f: orig: e8 cc 30 00 01
- [ ] SMP alternatives: ffffffff8100066f: repl: ff d0 0f 1f 00
+Now that objtool no longer creates alternatives, these replacement
+symbols are no longer needed, remove them.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Reviewed-by: Borislav Petkov <bp@suse.de>
 Acked-by: Josh Poimboeuf <jpoimboe@redhat.com>
 Tested-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/r/20211026120310.422273830@infradead.org
+Link: https://lore.kernel.org/r/20211026120309.915051744@infradead.org
 Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kernel/alternative.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/x86/include/asm/asm-prototypes.h |   10 --------
+ arch/x86/lib/retpoline.S              |   42 ----------------------------------
+ 2 files changed, 52 deletions(-)
 
---- a/arch/x86/kernel/alternative.c
-+++ b/arch/x86/kernel/alternative.c
-@@ -647,9 +647,15 @@ void __init_or_module noinline apply_ret
- 			continue;
- 		}
+--- a/arch/x86/include/asm/asm-prototypes.h
++++ b/arch/x86/include/asm/asm-prototypes.h
+@@ -24,14 +24,4 @@ extern void cmpxchg8b_emu(void);
+ 	extern asmlinkage void __x86_indirect_thunk_ ## reg (void);
+ #include <asm/GEN-for-each-reg.h>
  
-+		DPRINTK("retpoline at: %pS (%px) len: %d to: %pS",
-+			addr, addr, insn.length,
-+			addr + insn.length + insn.immediate.value);
-+
- 		len = patch_retpoline(addr, &insn, bytes);
- 		if (len == insn.length) {
- 			optimize_nops(bytes, len);
-+			DUMP_BYTES(((u8*)addr),  len, "%px: orig: ", addr);
-+			DUMP_BYTES(((u8*)bytes), len, "%px: repl: ", addr);
- 			text_poke_early(addr, bytes, len);
- 		}
- 	}
+-#undef GEN
+-#define GEN(reg) \
+-	extern asmlinkage void __x86_indirect_alt_call_ ## reg (void);
+-#include <asm/GEN-for-each-reg.h>
+-
+-#undef GEN
+-#define GEN(reg) \
+-	extern asmlinkage void __x86_indirect_alt_jmp_ ## reg (void);
+-#include <asm/GEN-for-each-reg.h>
+-
+ #endif /* CONFIG_RETPOLINE */
+--- a/arch/x86/lib/retpoline.S
++++ b/arch/x86/lib/retpoline.S
+@@ -41,36 +41,6 @@ SYM_FUNC_END(__x86_indirect_thunk_\reg)
+ .endm
+ 
+ /*
+- * This generates .altinstr_replacement symbols for use by objtool. They,
+- * however, must not actually live in .altinstr_replacement since that will be
+- * discarded after init, but module alternatives will also reference these
+- * symbols.
+- *
+- * Their names matches the "__x86_indirect_" prefix to mark them as retpolines.
+- */
+-.macro ALT_THUNK reg
+-
+-	.align 1
+-
+-SYM_FUNC_START_NOALIGN(__x86_indirect_alt_call_\reg)
+-	ANNOTATE_RETPOLINE_SAFE
+-1:	call	*%\reg
+-2:	.skip	5-(2b-1b), 0x90
+-SYM_FUNC_END(__x86_indirect_alt_call_\reg)
+-
+-STACK_FRAME_NON_STANDARD(__x86_indirect_alt_call_\reg)
+-
+-SYM_FUNC_START_NOALIGN(__x86_indirect_alt_jmp_\reg)
+-	ANNOTATE_RETPOLINE_SAFE
+-1:	jmp	*%\reg
+-2:	.skip	5-(2b-1b), 0x90
+-SYM_FUNC_END(__x86_indirect_alt_jmp_\reg)
+-
+-STACK_FRAME_NON_STANDARD(__x86_indirect_alt_jmp_\reg)
+-
+-.endm
+-
+-/*
+  * Despite being an assembler file we can't just use .irp here
+  * because __KSYM_DEPS__ only uses the C preprocessor and would
+  * only see one instance of "__x86_indirect_thunk_\reg" rather
+@@ -92,15 +62,3 @@ STACK_FRAME_NON_STANDARD(__x86_indirect_
+ #undef GEN
+ #define GEN(reg) EXPORT_THUNK(reg)
+ #include <asm/GEN-for-each-reg.h>
+-
+-#undef GEN
+-#define GEN(reg) ALT_THUNK reg
+-#include <asm/GEN-for-each-reg.h>
+-
+-#undef GEN
+-#define GEN(reg) __EXPORT_THUNK(__x86_indirect_alt_call_ ## reg)
+-#include <asm/GEN-for-each-reg.h>
+-
+-#undef GEN
+-#define GEN(reg) __EXPORT_THUNK(__x86_indirect_alt_jmp_ ## reg)
+-#include <asm/GEN-for-each-reg.h>
 
 
