@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12EA4C43334
-	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:13:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B97D5C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 23 Jul 2022 10:13:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239318AbiGWKNm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 06:13:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54736 "EHLO
+        id S239095AbiGWKNq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 06:13:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239252AbiGWKNR (ORCPT
+        with ESMTP id S239265AbiGWKNS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 06:13:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 974DE8AB3D;
-        Sat, 23 Jul 2022 03:03:57 -0700 (PDT)
+        Sat, 23 Jul 2022 06:13:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4C118C59A;
+        Sat, 23 Jul 2022 03:03:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B912BB82C1A;
-        Sat, 23 Jul 2022 10:03:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10494C341C0;
-        Sat, 23 Jul 2022 10:03:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C94C5611CD;
+        Sat, 23 Jul 2022 10:03:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5669C341C0;
+        Sat, 23 Jul 2022 10:03:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658570608;
-        bh=iGIXm+MJ2pyHxJsG/SZdynCWcn2aikgM28KIxvJ1Ohg=;
+        s=korg; t=1658570611;
+        bh=Q1TD7F9ns2LiP9OwYh3h/gmbzL6OmOLlOkUZovjoCiI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CklgUZSWx3AKnrGehuhHcwRT+ZpPQtyBhaAKD4cn2zWku5wNIPMlJIeVhCaMrisHz
-         vAGrLcCuBGnqDY9VmrfSXGRFvS7PHRWKswWlxbujIMpZ5eOaBximjk60iIh1yYIx0X
-         8bCYzU3Cfuksrfih4DBpfNeO+XzobhoI999GdHHQ=
+        b=xFpX/iLmmynZhwDeReVxBl3gVtlrYK8rAYt6x81vW8zQUj0aLG+HT84aS/lzSeOcD
+         NlmPVp6HRsFduQnmsBzqtFxUAzs+kXemxig9GreHgPNf8txPaLItb9XXZ8kJ7WWfuO
+         w4ztiFZyd/BOiwuNBtTZO/LuXssnWkJBqM9b8f9Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.10 136/148] x86/speculation: Use DECLARE_PER_CPU for x86_spec_ctrl_current
-Date:   Sat, 23 Jul 2022 11:55:48 +0200
-Message-Id: <20220723095302.474417251@linuxfoundation.org>
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        Borislav Petkov <bp@suse.de>, Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.10 148/148] tools headers: Remove broken definition of __LITTLE_ENDIAN
+Date:   Sat, 23 Jul 2022 11:56:00 +0200
+Message-Id: <20220723095305.747384732@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220723095224.302504400@linuxfoundation.org>
 References: <20220723095224.302504400@linuxfoundation.org>
@@ -49,51 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Chancellor <nathan@kernel.org>
+From: Arnaldo Carvalho de Melo <acme@redhat.com>
 
-commit db886979683a8360ced9b24ab1125ad0c4d2cf76 upstream.
+commit fa2c02e5798c17c89cbb3135940086ebe07e5c9f upstream.
 
-Clang warns:
+The linux/kconfig.h file was copied from the kernel but the line where
+with the generated/autoconf.h include from where the CONFIG_ entries
+would come from was deleted, as tools/ build system don't create that
+file, so we ended up always defining just __LITTLE_ENDIAN as
+CONFIG_CPU_BIG_ENDIAN was nowhere to be found.
 
-  arch/x86/kernel/cpu/bugs.c:58:21: error: section attribute is specified on redeclared variable [-Werror,-Wsection]
-  DEFINE_PER_CPU(u64, x86_spec_ctrl_current);
-                      ^
-  arch/x86/include/asm/nospec-branch.h:283:12: note: previous declaration is here
-  extern u64 x86_spec_ctrl_current;
-             ^
-  1 error generated.
+This in turn ended up breaking the build in some systems where
+__LITTLE_ENDIAN was already defined, such as the androind NDK.
 
-The declaration should be using DECLARE_PER_CPU instead so all
-attributes stay in sync.
+So just ditch that block that depends on the CONFIG_CPU_BIG_ENDIAN
+define.
 
-Cc: stable@vger.kernel.org
-Fixes: fc02735b14ff ("KVM: VMX: Prevent guest RSB poisoning attacks with eIBRS")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+The kconfig.h file was copied just to get IS_ENABLED() and a
+'make -C tools/all' doesn't breaks with this removal.
+
+Fixes: 93281c4a96572a34 ("x86/insn: Add an insn_decode() API")
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Borislav Petkov <bp@suse.de>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Link: http://lore.kernel.org/lkml/YO8hK7lqJcIWuBzx@kernel.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/nospec-branch.h |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ tools/include/linux/kconfig.h |    6 ------
+ 1 file changed, 6 deletions(-)
 
---- a/arch/x86/include/asm/nospec-branch.h
-+++ b/arch/x86/include/asm/nospec-branch.h
-@@ -11,6 +11,7 @@
- #include <asm/cpufeatures.h>
- #include <asm/msr-index.h>
- #include <asm/unwind_hints.h>
-+#include <asm/percpu.h>
+--- a/tools/include/linux/kconfig.h
++++ b/tools/include/linux/kconfig.h
+@@ -4,12 +4,6 @@
  
- #define RETPOLINE_THUNK_SIZE	32
+ /* CONFIG_CC_VERSION_TEXT (Do not delete this comment. See help in Kconfig) */
  
-@@ -281,7 +282,7 @@ static inline void indirect_branch_predi
- 
- /* The Intel SPEC CTRL MSR base value cache */
- extern u64 x86_spec_ctrl_base;
--extern u64 x86_spec_ctrl_current;
-+DECLARE_PER_CPU(u64, x86_spec_ctrl_current);
- extern void write_spec_ctrl_current(u64 val, bool force);
- extern u64 spec_ctrl_current(void);
+-#ifdef CONFIG_CPU_BIG_ENDIAN
+-#define __BIG_ENDIAN 4321
+-#else
+-#define __LITTLE_ENDIAN 1234
+-#endif
+-
+ #define __ARG_PLACEHOLDER_1 0,
+ #define __take_second_arg(__ignored, val, ...) val
  
 
 
