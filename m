@@ -2,101 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 667DEC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 05:23:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04222C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 05:40:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229445AbiGXFXj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 01:23:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47768 "EHLO
+        id S235694AbiGXFk1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 01:40:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233273AbiGXFXg (ORCPT
+        with ESMTP id S229663AbiGXFkY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 01:23:36 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F50518E28
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Jul 2022 22:23:35 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id y15so7712230plp.10
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Jul 2022 22:23:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=DVcGMUg63ZuyRPGB+ax8hjQYbRon/AMmT/KHY/uYZvM=;
-        b=N44XlBThF9hr0YdMwSqE/Y8pqxRR0qN7YJASl4rflgM929JO2OHiZZC3Tt9eG//5Mr
-         bksL1BeskWKeL5+tl9ML0hAeD7Let4DHvVZSj7JFppsP/flZNhp6Da/GQWkoLVAXSh8s
-         82e7TBIoe4GdJG6yXOEIHcpmNUlm7f/fn9WNB3cKy4tk+dM61JaL7pv9BDmkhR3Hg+4d
-         t7kXbus2/xDk2L+LnvvVhOq8HahOafa68USNdYtJbENOlK4n63nPvYYam3OSv1utrz74
-         p/zGFwbWqP/wO/YM7ylhCE6XkzL3+7D5gDaAhDM83sP/Q4tSMfEOZittVPXU3zMjOyfg
-         wRTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=DVcGMUg63ZuyRPGB+ax8hjQYbRon/AMmT/KHY/uYZvM=;
-        b=k3wXXlC8SaOHnlnjkMGwN8qCeVp2LLaCGqNrOxWdQZ6ncuIxIkC+RHCZ315jX9EBvH
-         s5EFJ4+BEb1cGe5sGDntVianjt39fWnVwjXv/y2KJmoieelsB3gys9rQk081arNP69AY
-         qroa/tfKj+mbcc7o2GCSlr6sSi6YKTMlJTcrTPAx4xmOHD4IzvoXRdUEUewUq33ur7++
-         wJP3AMmJy1eoOC4+8LiDyeZXVTkzX2iBelPXZVVyYnxLHdmSnFt5jnWhDM5sCN9n77SU
-         a13bHtgW32f/9LWqbQCDdvvJh4hhn499CXKAaLUHVdw3lGQwTnx95rKSzqxQVaVqhNnq
-         yrlw==
-X-Gm-Message-State: AJIora8WvkXFbomeAn6jEqc2VI/RkFP7jPzrinRTWRa8XzMIbXRYekfN
-        b//CGxoLS+IGa6Q+4HKmPNkB5w==
-X-Google-Smtp-Source: AGRyM1t3x6rRtN3QukoCbgl9JRd33Dij9jGSlDj01WFH5DH93wV4aRi8wtun5sMyW9geJeJSJAFQSw==
-X-Received: by 2002:a17:90a:17e1:b0:1f2:2ff2:6cae with SMTP id q88-20020a17090a17e100b001f22ff26caemr17913677pja.196.1658640214217;
-        Sat, 23 Jul 2022 22:23:34 -0700 (PDT)
-Received: from leoy-ThinkPad-X240s (ec2-18-144-7-244.us-west-1.compute.amazonaws.com. [18.144.7.244])
-        by smtp.gmail.com with ESMTPSA id p64-20020a622943000000b0052b9351737fsm7036475pfp.92.2022.07.23.22.23.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 Jul 2022 22:23:33 -0700 (PDT)
-Date:   Sun, 24 Jul 2022 13:23:27 +0800
-From:   Leo Yan <leo.yan@linaro.org>
-To:     Fangrui Song <maskray@google.com>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Ian Rogers <irogers@google.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] perf symbol: Skip recording symbols in
- '.gnu.warning.*' sections
-Message-ID: <20220724052327.GB82137@leoy-ThinkPad-X240s>
-References: <20220724022857.2621520-1-leo.yan@linaro.org>
- <20220724022857.2621520-3-leo.yan@linaro.org>
- <CAFP8O3LJq1rt6i0_rAW5pShUiA=FJ38ceb4Ps0KmLdCNzC9xbQ@mail.gmail.com>
+        Sun, 24 Jul 2022 01:40:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A689A65FA;
+        Sat, 23 Jul 2022 22:40:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B8F460EE0;
+        Sun, 24 Jul 2022 05:40:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1C0DC3411E;
+        Sun, 24 Jul 2022 05:40:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658641221;
+        bh=t4FWUrXdqefs3/+bLfHCQYXgPYvCB3PaAlPZKcdTHtM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=rtzEvI4lxxTlq2MRIXPXSI3cHN4NmLwqJ8/XM7JC5Nk2uDrzJUK53CpUXT6ILwuQr
+         DMrGxeIJumgc00Tf7x1J40CwV3zCQZ/szA2ZX7HYuiko751GjFzlcwljEhbMyhetx5
+         hZRIIZj6j9V0+bXBH2QsYm1vmv14lcTyf4y7c/ZF2/MiTKDb5Am87/bPv3b3eYt7BS
+         qBpEF0oGCUJE1ursGkMWOwTwMRxgcDCOmuroLQj6GHWk6xq6k+6yf3ZH9nE4EhgU8b
+         hYd8WA724bWSAOXJHlXbkPlD4mx5QoT1vA2++oPNJf06XzSjc2rC2McVWw5n0FZXmk
+         EF1WULp8Qib8A==
+Date:   Sun, 24 Jul 2022 07:40:17 +0200
+From:   Wolfram Sang <wsa@kernel.org>
+To:     XU pengfei <xupengfei@nfschina.com>
+Cc:     linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/1] drivers: remove unnecessary (void*) conversions.
+Message-ID: <YtzbQZKJk+qS9PMs@shikoro>
+Mail-Followup-To: Wolfram Sang <wsa@kernel.org>,
+        XU pengfei <xupengfei@nfschina.com>, linux-i2c@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220629060952.4749-1-xupengfei@nfschina.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="2GERJrjg9Ux05BCE"
 Content-Disposition: inline
-In-Reply-To: <CAFP8O3LJq1rt6i0_rAW5pShUiA=FJ38ceb4Ps0KmLdCNzC9xbQ@mail.gmail.com>
+In-Reply-To: <20220629060952.4749-1-xupengfei@nfschina.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jul 23, 2022 at 08:42:20PM -0700, Fangrui Song wrote:
-> On Sat, Jul 23, 2022 at 7:29 PM Leo Yan <leo.yan@linaro.org> wrote:
-> >
-> > Some symbols are observed their 'st_value' field are zeros.  E.g.
-> > libc.so.6 in Ubuntu contains a symbol '__evoke_link_warning_getwd' which
-> > resides in the '.gnu.warning.getwd' section, unlike normal symbols, this
-> > kind of symbols are only used for linker warning.
-> >
-> > This patch skips to record symbols from '.gnu.warning.*' sections by
-> > detecting the sub string '.gnu.warning' is contained in section name.
-> >
-> > Signed-off-by: Leo Yan <leo.yan@linaro.org>
-> 
-> Presumably __evoke_link_warning_getwd is due to `clang -fuse-ld=lld
-> -static ...` on a file calling the deprecated getwd.
-> GNU ld and gold implement a .gnu.warning.* feature which removes the
-> section. ld.lld just ignores this section as the usefulness of the
-> functionality is unclear.
-> 
-> The section .gnu.warning.getwd does not have the SHF_ALLOC flag. Such
-> sections are not part of memory images and I think it is more generic
-> ignoring all symbols residing in a non-SHF_ALLOC section.
 
-Good point!  Will refine the patch for this and send out soon.
+--2GERJrjg9Ux05BCE
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Thanks a lot, Fangrui.
+On Wed, Jun 29, 2022 at 02:09:52PM +0800, XU pengfei wrote:
+> remove unnecessary void* type casting.
+>=20
+> Signed-off-by: XU pengfei <xupengfei@nfschina.com>
+
+Correct, but $subject really needs to contain the subsystem and the
+driver. "drivers:" is way too generic. Check 'git log' to see how
+subsystems prefer their $subjects.
+
+
+--2GERJrjg9Ux05BCE
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmLc2z0ACgkQFA3kzBSg
+KbaG+Q/+L4PLUQNV+YZlES9fc5aEuXMVNvXi7+5/+H54JyxN5brEVNTt3QAKdUWv
+ohyPWep5SYx3q/9zCRy1MwDbIroMwc5/faa17CqN1QFXRHniXgZlXpOKDiKAWof/
+2UANBQvgvTTzQeDFOOoKDGrXv9khYTM+13a13X20b1CXLhf8zTPEcRW4W0sLqbXc
+xb/et4C4n6K/LbAt9al5n4dodMPI3+CjkVTeR7y18D8rOd957IbvSUeP3ZvcTN4G
+nsiP73hrPamSU14W0wwlUjiX2jh2l1eVXAOVYICs3eggDSi/jSjcnzkHg4JI71RK
+qvPHRFtsJvQHJqvyL4NNZVMfFmqLS5pVnli6RH28sKrrccjSpKKeBFdxrFv76t1Y
+zXfYsh0ZV/zjpdJJgplnrfJHJDAibRYR7lb9l/YXNJY2dYuBtkz40p61gwpwjQrM
+yq7DxE+znsc7iF2THpMWUFlP/Q67uzmhcA9Rve+Si2WWwETDJsj/pqYE14197jC2
+BlQUrs5jS6WFe18EKoGoFtTBQGPkWdH2AQLkWDCtGA2Tww7ga6s80ZptPak2Op/6
+MI1dRrD5ZICboEsdR2dhPygzTvwPCE/+ixgUJVDFAjZruTWaw37xamU75WTvN3G/
+vXpx/MfwVB6KBnu4EZ2NTn2KfU10dbOFAUpJcF3wz1ZU31Vps8E=
+=iKpK
+-----END PGP SIGNATURE-----
+
+--2GERJrjg9Ux05BCE--
