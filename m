@@ -2,105 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4035FCCA48E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E371CCA47C
 	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 10:40:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232387AbiGXKiG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 06:38:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55114 "EHLO
+        id S231394AbiGXKVL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 06:21:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229513AbiGXKiE (ORCPT
+        with ESMTP id S229912AbiGXKVJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 06:38:04 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A70613E09;
-        Sun, 24 Jul 2022 03:38:03 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id b11so15566144eju.10;
-        Sun, 24 Jul 2022 03:38:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=81oGHfHrB8lVkJ+g/NkBs7PcuO85NR++hBmreY15mW0=;
-        b=HNzHYLFzUNIUu96TX16ua+bwzbCrvXIOBws5aBsFkpbOLhs78gTGuMis1qPeIWbkVW
-         hy/poLueGjdxtTsfkT9QrjOhVBp0muY5FjUmaO/RSgwGYj2cys7RzBWlPdpNwkpeW/PV
-         D9G9Y23pCS7r34/VL9OpC2YetCIXTg9Ytu1Cwfh3+ROYzdMx7DVZDnTBC6Tvap8AlCZU
-         9PG2TQFVaaETssA+PKHGoraqubitvGNeSX6OU+sbmQsUCwDeMNEEa9g1ogdqJ9ghuX1O
-         J0WTqVqaKTIteUmKMrOi6OWuvBEcKgd52DoqJHgTGrln4A0+1D588DZr1hLLua3q88PG
-         Cg2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=81oGHfHrB8lVkJ+g/NkBs7PcuO85NR++hBmreY15mW0=;
-        b=4fhnOfLQ7dge053tjCoklx1EgVMvrsiVPRIqof6OY1r7X7Pgaw/c7uQXlx/HLJReDG
-         QvHkNW3Zzx350IHhDwksWBgrQUY7OWR45Wd+zQ1gf5uZ5hlGsq2Jhvzb6uAc4NPou7Mi
-         ByujqxWquCZuQcGt+FYCOE6jOwy0xUQzXCrGbNCC8WwW6LR8bzcitmv0Y9fhEsii/cUc
-         5iREa1AO6YhrorOkeqOrOPVGMYrkPyI1wtDujn6tNy2jAxQOm7INbzTkz8sGuIYI5hOm
-         TQEtxfvGX5N3urh+JlbamnYoHnR0PrXMkTkNf8ohUwXFJncnMfI0n4yDS7Ob8nHoUco0
-         0apQ==
-X-Gm-Message-State: AJIora/lz8kp8nbFYllGg7i15ckYp4jsA2uRuGqbZxp8a0Js7v1utNSy
-        hMI/rvuDl7LvlWizzTR2lgnaaMtZdjI=
-X-Google-Smtp-Source: AGRyM1sRIuekT8/CJ1p3muFe2N56rnMeuPaMUH3VsN2lLc/+E9hYTdn1AF+ZxoTjkgX26GykJXas/A==
-X-Received: by 2002:a17:906:2ed7:b0:72f:d080:411 with SMTP id s23-20020a1709062ed700b0072fd0800411mr1522299eji.203.1658659081960;
-        Sun, 24 Jul 2022 03:38:01 -0700 (PDT)
-Received: from erthalion.local (dslb-094-222-027-106.094.222.pools.vodafone-ip.de. [94.222.27.106])
-        by smtp.gmail.com with ESMTPSA id g1-20020a17090604c100b006fe9f9d0938sm4094843eja.175.2022.07.24.03.38.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 24 Jul 2022 03:38:01 -0700 (PDT)
-Date:   Sun, 24 Jul 2022 12:36:51 +0200
-From:   Dmitry Dolgov <9erthalion6@gmail.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        songliubraving@fb.com, rostedt@goodmis.org, mingo@redhat.com,
-        mhiramat@kernel.org, alexei.starovoitov@gmail.com
-Subject: Re: [PATCH v4 1/1] perf/kprobe: maxactive for fd-based kprobe
-Message-ID: <20220724103651.qhtqgzhfx2ftrpcx@erthalion.local>
-References: <20220714193403.13211-1-9erthalion6@gmail.com>
- <YtB1PK+NUF5RL9Er@worktop.programming.kicks-ass.net>
- <20220715095236.ywv37a556ktl5oif@ddolgov.remote.csb>
- <YtgMKDgNLnMIkHLI@worktop.programming.kicks-ass.net>
+        Sun, 24 Jul 2022 06:21:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DDFB13E12
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 03:21:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B692E61029
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 10:21:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B791CC3411E;
+        Sun, 24 Jul 2022 10:21:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658658062;
+        bh=N/BRF6ybrbTj/8aBJzvPdT6j6K1TWBKn2MYdG1LcXhs=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=nkPCu9vSElkTL6Yk01gNIGAoF1F23y9wHIbO5pL5VkjftLiXMZOsSdRarudGN+djJ
+         6kHeWUJJRc6erQuqoFDn8bZebY6MFRY9Y9mZqACC/bK2H4U1GFCP+Y5VykanijGbH/
+         ZKLdAZjwP1jACgFJuomG5PiAwS/roRqnQgat0wHgNKlRWjH1cHbFq5yAivm616u/NP
+         kw/HxBEcm2ef7rfb2h2QDVVQ8w0Glgh9GEBYeLAHIRV8n0Zx7qzQhfIMOVzgf0HlbX
+         b3n+vbw0vOOK+D11Ayystysy/vlKcUnAEFrdjVEbPdu/7BFa0Ouosm2fTPfpx1jDRC
+         HKOn5abbj7Ovg==
+Message-ID: <e82f0d90-7fda-c944-149f-d18491008f3f@kernel.org>
+Date:   Sun, 24 Jul 2022 18:20:58 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YtgMKDgNLnMIkHLI@worktop.programming.kicks-ass.net>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH -next RFC] f2fs: fix null-ptr-deref in
+ f2fs_get_dnode_of_data
+Content-Language: en-US
+To:     Ye Bin <yebin10@huawei.com>, jaegeuk@kernel.org,
+        Daeho Jeong <daeho43@gmail.com>
+Cc:     linux-f2fs-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org
+References: <20220718113609.154371-1-yebin10@huawei.com>
+From:   Chao Yu <chao@kernel.org>
+In-Reply-To: <20220718113609.154371-1-yebin10@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> On Wed, Jul 20, 2022 at 04:07:36PM +0200, Peter Zijlstra wrote:
-> > > > Enable specifying maxactive for fd based kretprobe. This will be useful
-> > > > for tracing tools like bcc and bpftrace (see for example discussion [1]).
-> > > > Use highest 4 bit (bit 59-63) to allow specifying maxactive by log2.
-> > >
-> > > What's maxactive? This doesn't really tell me much.
-> >
-> > Maxactive allows specifying how many instances of the specified function
-> > can be probed simultaneously, it would indeed make sense to mention this
-> > in the commit message.
->
-> But why would we need per-fd configurability? Isn't a global sysctrl
-> good enough?
+On 2022/7/18 19:36, Ye Bin wrote:
+> There is issue as follows when test f2fs atomic write:
+> F2FS-fs (loop0): Can't find valid F2FS filesystem in 2th superblock
+> F2FS-fs (loop0): invalid crc_offset: 0
+> F2FS-fs (loop0): f2fs_check_nid_range: out-of-range nid=1, run fsck to fix.
+> F2FS-fs (loop0): f2fs_check_nid_range: out-of-range nid=2, run fsck to fix.
+> ==================================================================
+> BUG: KASAN: null-ptr-deref in f2fs_get_dnode_of_data+0xac/0x16d0
+> Read of size 8 at addr 0000000000000028 by task rep/1990
+> 
+> CPU: 4 PID: 1990 Comm: rep Not tainted 5.19.0-rc6-next-20220715 #266
+> Call Trace:
+>   <TASK>
+>   dump_stack_lvl+0x6e/0x91
+>   print_report.cold+0x49a/0x6bb
+>   kasan_report+0xa8/0x130
+>   f2fs_get_dnode_of_data+0xac/0x16d0
+>   f2fs_do_write_data_page+0x2a5/0x1030
+>   move_data_page+0x3c5/0xdf0
+>   do_garbage_collect+0x2015/0x36c0
+>   f2fs_gc+0x554/0x1d30
+>   f2fs_balance_fs+0x7f5/0xda0
+>   f2fs_write_single_data_page+0xb66/0xdc0
+>   f2fs_write_cache_pages+0x716/0x1420
+>   f2fs_write_data_pages+0x84f/0x9a0
+>   do_writepages+0x130/0x3a0
+>   filemap_fdatawrite_wbc+0x87/0xa0
+>   file_write_and_wait_range+0x157/0x1c0
+>   f2fs_do_sync_file+0x206/0x12d0
+>   f2fs_sync_file+0x99/0xc0
+>   vfs_fsync_range+0x75/0x140
+>   f2fs_file_write_iter+0xd7b/0x1850
+>   vfs_write+0x645/0x780
+>   ksys_write+0xf1/0x1e0
+>   do_syscall_64+0x3b/0x90
+>   entry_SYSCALL_64_after_hwframe+0x63/0xcd
+> 
+> As 3db1de0e582c commit changed atomic write way which new a cow_inode for
+> atomic write file, and also mark cow_inode as FI_ATOMIC_FILE.
+> When f2fs_do_write_data_page write cow_inode will use cow_inode's cow_inode
+> which is NULL. Then will trigger null-ptr-deref.
+> To solve above issue, don't mark cow_inode as FI_ATOMIC_FILE.
+> 
+> Fiexes: 3db1de0e582c("f2fs: change the current atomic write way")
+> Signed-off-by: Ye Bin <yebin10@huawei.com>
+> ---
+>   fs/f2fs/file.c | 1 -
+>   1 file changed, 1 deletion(-)
+> 
+> diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
+> index 466eb00aa516..735802b6b754 100644
+> --- a/fs/f2fs/file.c
+> +++ b/fs/f2fs/file.c
+> @@ -2062,7 +2062,6 @@ static int f2fs_ioc_start_atomic_write(struct file *filp)
+>   	spin_unlock(&sbi->inode_lock[ATOMIC_FILE]);
+>   
+>   	set_inode_flag(inode, FI_ATOMIC_FILE);
+> -	set_inode_flag(fi->cow_inode, FI_ATOMIC_FILE);
 
-Do you mean there is an existing sysctl option for maxactive, or propose
-to introduce one? A global option indeed could be fine for my use case I
-guess, although there will be a bit of awkward asymmetry -- one can
-specify maxactive via text-based API, but not via perf API.
+It needs to remove clear_inode_flag(fi->cow_inode, FI_ATOMIC_FILE) in
+f2fs_abort_atomic_write()?
 
-> > > Why are the top 4 bits the best to use?
-> >
-> > This format exists mostly on proposal rights. Per previous discussions,
-> > 4 bits seem to be enough to cover reasonable range of maxactive values.
-> > Top bits seems like a natural place to me following perf_probe_config
-> > enum, but I would love to hear if there are any alternative suggestions?
->
-> I think the precedent you're referring to is UPROBE_REF_CTR, which is a
-> full 32bit. That lives in the upper half of the word because bit0 is
-> already taken and using the upper half makes the thing naturally
-> aligned.
->
-> If we only need 4 bits it's must simpler to simply stick it at the
-> bottom or so.
+To Daeho, could you please review this patch? IIUC, cow_inode doesn't
+need to be set as atomic file?
 
-Yes, you're right, I was referring to UPROBE_REF_CTR. Makes sense to me,
-will change the location.
+Thanks,
+
+>   	clear_inode_flag(fi->cow_inode, FI_INLINE_DATA);
+>   	f2fs_up_write(&fi->i_gc_rwsem[WRITE]);
+>   
