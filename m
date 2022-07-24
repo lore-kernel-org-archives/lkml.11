@@ -2,96 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1353AC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 22:48:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0A7CCCA47C
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 22:51:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231891AbiGXWsJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 18:48:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36692 "EHLO
+        id S231948AbiGXWvD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 18:51:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229618AbiGXWsG (ORCPT
+        with ESMTP id S229640AbiGXWvB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 18:48:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C16ACE30
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 15:48:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Sun, 24 Jul 2022 18:51:01 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0E3A5593;
+        Sun, 24 Jul 2022 15:51:00 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A0534611FB
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 22:48:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE0ACC341C0
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 22:48:04 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="qAFp1JIM"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1658702882;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=lzuSl3dxwIYIDZF4lZFJvzhnSJM1/WXSFLmwNOT9hlg=;
-        b=qAFp1JIM3bp4ZJkRcPUc1I6MXyLO5U1Gv9D6VbfkESug8oc+KDEMA27wRiFlnRBDQSNxs/
-        azjK9yP5Lv8sI+y3vcBU80QDDUgIMfhvQTzrH1VJNUJXSRGzc0rSsG5d6LBrrzkHClEn1w
-        KactQS76DeFVyIxbJId4zp7JWXzATxk=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 219336fc (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO)
-        for <linux-kernel@vger.kernel.org>;
-        Sun, 24 Jul 2022 22:48:02 +0000 (UTC)
-Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-31e7ca45091so93192547b3.3
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 15:48:02 -0700 (PDT)
-X-Gm-Message-State: AJIora+zmgvGOxF/rnRqbSoBg8zxepsmWisoV/rcGgwnIUqm6i6+MwPZ
-        8R1PCqOYq48vmEyCUIjY4XjkkooQRoB+0WyVd/0=
-X-Google-Smtp-Source: AGRyM1uBMjFY1+oZ0uGP/skNRN1JUeazAmEPygDqL4fRgAqZIS2VP+LTcFy+qvQmEzIgotp6FwKOvCHwhE+IX7ritXs=
-X-Received: by 2002:a0d:cc05:0:b0:31e:6ee8:2fdd with SMTP id
- o5-20020a0dcc05000000b0031e6ee82fddmr7833707ywd.414.1658702880868; Sun, 24
- Jul 2022 15:48:00 -0700 (PDT)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Lrdgj419Wz4xD0;
+        Mon, 25 Jul 2022 08:50:57 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1658703059;
+        bh=BJ06tJ3A5sxZAH44mcCHE4iMQK2ONFJMQaaQd6Q5xE8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=YQhx2EpVTJaq9J19A3lTAvxC0kcYGj7+iu5LaWBGoep2iZCdBi4dHzHt6bPRyAqM5
+         zIhLsVVkicEzu4LZdCyTm67rFr7MzFSjkd/z5Y92QtUX3xcSURflp9dx3AHTpZgy0S
+         o/zhxFVnPx0Z2mju4rJGgW/pm0a5uRQhrXkHsqdmJh3tDm5nZPd2yBvlkiZ28P2KJU
+         GNjoCebS+uYsFF8ZJh4EgIx7ZXM+d1lrWRlVlIESofzLqUMErpo3nR++IDhOfQpofw
+         v6KSsy1AWU1A/kJW+mbsC+hd1qY910Ml4t5TyLgtpoz6rCQ5CzeCJuCiuc9lgyodZY
+         gTxOfqmkTThFw==
+Date:   Mon, 25 Jul 2022 08:17:41 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Subject: Re: linux-next: Signed-off-by missing for commit in the bluetooth
+ tree
+Message-ID: <20220725081741.19174e59@canb.auug.org.au>
+In-Reply-To: <20220725075728.499066c9@canb.auug.org.au>
+References: <20220725075728.499066c9@canb.auug.org.au>
 MIME-Version: 1.0
-References: <CAHmME9qTA90=GEr6h1GZh0CjS+6tpe5uuqkYoJVv79h0zd0w1w@mail.gmail.com>
- <20220719130207.147536-1-Jason@zx2c4.com>
-In-Reply-To: <20220719130207.147536-1-Jason@zx2c4.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Mon, 25 Jul 2022 00:47:50 +0200
-X-Gmail-Original-Message-ID: <CAHmME9o7cNRPxy+WuM6-13ak9RNo1UH8-4qMArSACLs8LYAt8g@mail.gmail.com>
-Message-ID: <CAHmME9o7cNRPxy+WuM6-13ak9RNo1UH8-4qMArSACLs8LYAt8g@mail.gmail.com>
-Subject: Re: [PATCH v3] random: handle archrandom with multiple longs
-To:     Borislav Petkov <bp@suse.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>, X86 ML <x86@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="Sig_/3ezbk4uwBmnvBCoWCEq8/kg";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey Borislav (or other x86ers),
+--Sig_/3ezbk4uwBmnvBCoWCEq8/kg
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jul 19, 2022 at 3:02 PM Jason A. Donenfeld <Jason@zx2c4.com> wrote:
->
-> The archrandom interface was originally designed for x86, which supplies
-> RDRAND/RDSEED for receiving random words into registers, resulting in
-> one function to generate an int and another to generate a long. However,
-> other architectures don't follow this.
->
-> On arm64, the SMCCC TRNG interface can return between 1 and 3 longs. On
-> s390, the CPACF TRNG interface can return arbitrary amounts, with 32
-> longs having the same cost as one. On UML, the os_getrandom() interface
-> can return arbitrary amounts.
->
-> So change the api signature to take a "max_longs" parameter designating
-> the maximum number of longs requested, and then return the number of
-> longs generated.
->
-> Since callers need to check this return value and loop anyway, each arch
-> implementation does not bother implementing its own loop to try again to
-> fill the maximum number of longs. Additionally, all existing callers
-> pass in a constant max_longs parameter. Taken together, these two things
-> mean that the codegen doesn't really change much for one-word-at-a-time
-> platforms, while performance is greatly improved on platforms such as
-> s390.
+Hi all,
 
-This patch now has acks from Heiko, Catalin, Mark, and Michael,
-covering the arm, ppc, and s390 changes. The changes to s390 and arm
-were non-trivial so those acks were quite meaningful. On x86 and ppc,
-the code compiles down to basically the same assembly and the change
-really doesn't matter at all. Nonetheless, I thought I should give you
-a final poke in case you want to ack or nack this, lest I step on the
-tip.git of your shoes.
+[Resent with corrected mail address]
 
-Jason
+On Mon, 25 Jul 2022 07:57:28 +1000 Stephen Rothwell <sfr@canb.auug.org.au> =
+wrote:
+>
+> Hi all,
+>=20
+> Commits
+>=20
+>   a5133fe87ed8 ("Bluetooth: use memset avoid memory leaks")
+>   9111786492f1 ("Bluetooth: fix an error code in hci_register_dev()")
+>   4f17c2b6694d ("Bluetooth: hci_bcm: Add BCM4349B1 variant")
+>   88b65887aa1b ("dt-bindings: bluetooth: broadcom: Add BCM4349B1 DT bindi=
+ng")
+>   359ee4f834f5 ("Bluetooth: Unregister suspend with userchannel")
+>   0acef50ba3b5 ("Bluetooth: Fix index added after unregister")
+>   877afadad2dc ("Bluetooth: When HCI work queue is drained, only queue ch=
+ained work")
+>   ab2d2a982ff7 ("Bluetooth: hci_intel: Add check for platform_driver_regi=
+ster")
+>   629f66aaca81 ("Bluetooth: clear the temporary linkkey in hci_conn_clean=
+up")
+>   af35e28f0fea ("Bluetooth: hci_bcm: Add support for FW loading in autoba=
+ud mode")
+>   0b4de2523f28 ("dt-bindings: net: broadcom-bluetooth: Add property for a=
+utobaud mode")
+>   bde63e9effd3 ("Bluetooth: hci_qca: Return wakeup for qca_wakeup")
+>   c69ecb0ea4c9 ("Bluetooth: btusb: Add support of IMC Networks PID 0x3568=
+")
+>=20
+> are missing a Signed-off-by from their committer.
+
+These are now in the net-next tree.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/3ezbk4uwBmnvBCoWCEq8/kg
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLdxQUACgkQAVBC80lX
+0GzuWQf+NoZvlWF9A5nKk8XPwyuljLoPxjT9PWVyqXcP4l8UVEQviFpT7r9jEu4q
+byihzmao17IFEUW+3+TmKCxNOevSf7WXGdB6nhiF4uGHbJsE0juD8g+wcS1rBnYN
+lsPgXh2udF9xaz97F7ZZQAxzSoxZyAoy6xRJdP1KfKXJ//kPSrJEwvuqtyXE5o9e
+0ZyVVzcdghpAbKBikCxIjZNb0aPeBJSoZTP2gVZqTKo03lRQWmpmKS6V13HxSZdT
+EvQF5A4VTon7lDDv7Cj2Gtv4pP+XEhxDZXjPisxZkNxXJ2iQGXK3KfX+n0u3c7Es
++2sZfgGNbCR3YVkk9oVONIxxOOrSVA==
+=SeWK
+-----END PGP SIGNATURE-----
+
+--Sig_/3ezbk4uwBmnvBCoWCEq8/kg--
