@@ -2,138 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1373C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 19:44:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94944C43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 19:48:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230084AbiGXTo0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 15:44:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53444 "EHLO
+        id S230316AbiGXTst (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 15:48:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229640AbiGXToY (ORCPT
+        with ESMTP id S229617AbiGXTsr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 15:44:24 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49006DF7D
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 12:44:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658691863; x=1690227863;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=tQKpN6ikynGTSGkv/G/Uuuz7oZm68bMYo/lj8l6Ddc4=;
-  b=Hf7sXlJn+gTLy8ic1QHURiXbW/GlDbH9ZFXlMnHbr3P84MrZ6whBSysW
-   Zr74Q60jxCTES6tgR0XREWK6fbZ8Mgq9ou63x4/305zDWWY5d1M3QZOZ8
-   W4F3JFYWV1PrEEGXsOhxF6jIfS/qSFqJuWSjE0QZ1myyo4UOpCjm5KCqq
-   /VCpP5TcRqR1OwGCT5br7oscVFl2gPiVOsEI/1EUyEFi8fFEUkXia+L8J
-   1czRZTe0GcnF9qZ2yiIxQGNDO/7ImJVwivns7pxpkJ60FA0ZRimW3OxYX
-   OTU0FM8XptS//R2NZ3sl7KMXwNzOo/HQC3Ex1bsp4HiIORxEsSdoy5WoB
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10418"; a="288751388"
-X-IronPort-AV: E=Sophos;i="5.93,191,1654585200"; 
-   d="scan'208";a="288751388"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2022 12:44:22 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,191,1654585200"; 
-   d="scan'208";a="845292578"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 24 Jul 2022 12:44:20 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oFhWV-0004CX-2M;
-        Sun, 24 Jul 2022 19:44:19 +0000
-Date:   Mon, 25 Jul 2022 03:44:00 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Dan Carpenter <error27@gmail.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Ammar Faizi <ammarfaizi2@gnuweeb.org>,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org, Kalle Valo <quic_kvalo@quicinc.com>
-Subject: [ammarfaizi2-block:kvalo/ath/pending 3/9]
- drivers/net/wireless/ath/wil6210/debugfs.c:1030:9: warning: variable 'rc' is
- uninitialized when used here
-Message-ID: <202207250332.5ud26AGE-lkp@intel.com>
+        Sun, 24 Jul 2022 15:48:47 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC6C4EE1F
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 12:48:45 -0700 (PDT)
+Received: from [2a02:8108:963f:de38:5054:ff:feb3:8f48] (helo=regzbot.fritz.box); authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        id 1oFhak-0007Uy-Ps; Sun, 24 Jul 2022 21:48:42 +0200
+From:   "Regzbot (on behalf of Thorsten Leemhuis)" 
+        <regressions@leemhuis.info>
+To:     LKML <linux-kernel@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Linux regressions mailing list <regressions@lists.linux.dev>
+Subject: Linux regressions report  for mainline [2022-07-24]
+Date:   Sun, 24 Jul 2022 19:48:41 +0000
+Message-Id: <165869171256.283493.2326902986633030609@leemhuis.info>
+X-Mailer: git-send-email 2.37.1
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1658692125;db11c0c6;
+X-HE-SMSGID: 1oFhak-0007Uy-Ps
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block kvalo/ath/pending
-head:   086f67ba21ede199307e78476353bda9ffef982c
-commit: 7a4836560a6198d245d5732e26f94898b12eb760 [3/9] wifi: wil6210: debugfs: fix info leak in wil_write_file_wmi()
-config: powerpc-randconfig-r002-20220718 (https://download.01.org/0day-ci/archive/20220725/202207250332.5ud26AGE-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d74b88c69dc2644bd0dc5d64e2d7413a0d4040e5)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install powerpc cross compiling tool for clang build
-        # apt-get install binutils-powerpc-linux-gnu
-        # https://github.com/ammarfaizi2/linux-block/commit/7a4836560a6198d245d5732e26f94898b12eb760
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block kvalo/ath/pending
-        git checkout 7a4836560a6198d245d5732e26f94898b12eb760
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash drivers/net/wireless/ath/wil6210/
+Hi Linus! Below is the report from regzbot listing all regression from
+this cycle that the bot and I are aware of. Let me please highlight two
+things:
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+* The following patch fixing a build bug reported three times now, that
+didn't get any reaction from the maintainer since it was posted six days
+ago:
+https://lore.kernel.org/lkml/20220717231105.33005-1-kilobyte@angband.pl/
 
-All warnings (new ones prefixed by >>):
+* The virtio regression is kinda fixed by c346dae4f3fb already, but
+there is a patch in the branch Michael usually uses to sent patches to
+you that he for one reason or another hasn't sent your way yet:
+https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git/commit/?h=vhost&idj9720576cd00d30722c5f755bd17d4cfa9df636
+I asked what's up here a few days ago, but sadly got no reply.
 
->> drivers/net/wireless/ath/wil6210/debugfs.c:1030:9: warning: variable 'rc' is uninitialized when used here [-Wuninitialized]
-           return rc;
-                  ^~
-   drivers/net/wireless/ath/wil6210/debugfs.c:1013:8: note: initialize the variable 'rc' to silence this warning
-           int rc, rc1;
-                 ^
-                  = 0
-   1 warning generated.
+HTH, Ciao, Thorsten
+
+---
+Hi, this is regzbot, the Linux kernel regression tracking bot.
+
+Currently I'm aware of 23 regressions in linux-mainline. Find the
+current status below and the latest on the web:
+
+https://linux-regtracking.leemhuis.info/regzbot/mainline/
+
+Bye bye, hope to see you soon for the next report.
+   Regzbot (on behalf of Thorsten Leemhuis)
 
 
-vim +/rc +1030 drivers/net/wireless/ath/wil6210/debugfs.c
+========================================================
+current cycle (v5.18.. aka v5.19-rc), culprit identified
+========================================================
 
-2be7d22f062535 Vladimir Kondratiev 2012-12-20  1000  
-ff974e40833413 Vladimir Kondratiev 2014-06-16  1001  /* Write WMI command (w/o mbox header) to this file to send it
-ff974e40833413 Vladimir Kondratiev 2014-06-16  1002   * WMI starts from wil6210_mbox_hdr_wmi header
-ff974e40833413 Vladimir Kondratiev 2014-06-16  1003   */
-ff974e40833413 Vladimir Kondratiev 2014-06-16  1004  static ssize_t wil_write_file_wmi(struct file *file, const char __user *buf,
-ff974e40833413 Vladimir Kondratiev 2014-06-16  1005  				  size_t len, loff_t *ppos)
-ff974e40833413 Vladimir Kondratiev 2014-06-16  1006  {
-ff974e40833413 Vladimir Kondratiev 2014-06-16  1007  	struct wil6210_priv *wil = file->private_data;
-e00243fab84b4e Lior David          2018-02-26  1008  	struct wil6210_vif *vif = ndev_to_vif(wil->main_ndev);
-b874ddecae0a08 Lior David          2016-03-01  1009  	struct wmi_cmd_hdr *wmi;
-ff974e40833413 Vladimir Kondratiev 2014-06-16  1010  	void *cmd;
-b874ddecae0a08 Lior David          2016-03-01  1011  	int cmdlen = len - sizeof(struct wmi_cmd_hdr);
-ff974e40833413 Vladimir Kondratiev 2014-06-16  1012  	u16 cmdid;
-ff974e40833413 Vladimir Kondratiev 2014-06-16  1013  	int rc, rc1;
-ff974e40833413 Vladimir Kondratiev 2014-06-16  1014  
-7a4836560a6198 Dan Carpenter       2022-07-15  1015  	if (cmdlen < 0 || *ppos != 0)
-ff974e40833413 Vladimir Kondratiev 2014-06-16  1016  		return -EINVAL;
-ff974e40833413 Vladimir Kondratiev 2014-06-16  1017  
-7a4836560a6198 Dan Carpenter       2022-07-15  1018  	wmi = memdup_user(buf, len);
-7a4836560a6198 Dan Carpenter       2022-07-15  1019  	if (IS_ERR(wmi))
-7a4836560a6198 Dan Carpenter       2022-07-15  1020  		return PTR_ERR(wmi);
-ff974e40833413 Vladimir Kondratiev 2014-06-16  1021  
-69218a48005d0c Lior David          2016-03-21  1022  	cmd = (cmdlen > 0) ? &wmi[1] : NULL;
-b874ddecae0a08 Lior David          2016-03-01  1023  	cmdid = le16_to_cpu(wmi->command_id);
-ff974e40833413 Vladimir Kondratiev 2014-06-16  1024  
-e00243fab84b4e Lior David          2018-02-26  1025  	rc1 = wmi_send(wil, cmdid, vif->mid, cmd, cmdlen);
-ff974e40833413 Vladimir Kondratiev 2014-06-16  1026  	kfree(wmi);
-ff974e40833413 Vladimir Kondratiev 2014-06-16  1027  
-af3db60a30331d Lazar Alexei        2017-01-20  1028  	wil_info(wil, "0x%04x[%d] -> %d\n", cmdid, cmdlen, rc1);
-ff974e40833413 Vladimir Kondratiev 2014-06-16  1029  
-ff974e40833413 Vladimir Kondratiev 2014-06-16 @1030  	return rc;
-ff974e40833413 Vladimir Kondratiev 2014-06-16  1031  }
-ff974e40833413 Vladimir Kondratiev 2014-06-16  1032  
 
-:::::: The code at line 1030 was first introduced by commit
-:::::: ff974e4083341383d3dd4079e52ed30f57f376f0 wil6210: debugfs interface to send raw WMI command
+[BUILD BUG] regression from certs: Move load_certificate_list() to be with the asymmetric keys code
+---------------------------------------------------------------------------------------------------
+https://linux-regtracking.leemhuis.info/regzbot/regression/20220712104554.408dbf42@gandalf.local.home/
+https://lore.kernel.org/lkml/20220712104554.408dbf42@gandalf.local.home/
 
-:::::: TO: Vladimir Kondratiev <qca_vkondrat@qca.qualcomm.com>
-:::::: CC: John W. Linville <linville@tuxdriver.com>
+By Steven Rostedt; 12 days ago; 3 activities, latest 6 days ago.
+Introduced in 60050ffe3d77 (v5.19-rc4)
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Recent activities from: Adam Borowski (2)
+
+One patch associated with this regression:
+* [PATCH] certs: make system keyring depend on x509 parser
+  https://lore.kernel.org/lkml/20220718135034.51457-1-kilobyte@angband.pl/
+  6 days ago, by Adam Borowski
+
+Noteworthy links:
+* [PATCH] certs: make system keyring depend on x509 parser
+  https://lore.kernel.org/lkml/20220717231105.33005-1-kilobyte@angband.pl/
+  6 days ago, by Adam Borowski; thread monitored.
+
+
+[ *NEW* ] fs: recent changes to copy_file_range behavior breakage
+-----------------------------------------------------------------
+https://linux-regtracking.leemhuis.info/regzbot/regression/YtTM8GYn0/HkSoet@squish.home.loc/
+https://lore.kernel.org/regressions/YtTM8GYn0%2FHkSoet@squish.home.loc/
+
+By Paul Thompson; 6 days ago; 2 activities, latest 6 days ago.
+Introduced in 868f9f2f8e00 (v5.19-rc5)
+
+Recent activities from: Amir Goldstein (1), Paul Thompson (1)
+
+
+virtio_balloon regression in 5.19-rc3
+-------------------------------------
+https://linux-regtracking.leemhuis.info/regzbot/regression/64c567bc77c4fbe7bfe37467cc1c89d24a45c37a.camel@decadent.org.uk/
+https://lore.kernel.org/virtualization/64c567bc77c4fbe7bfe37467cc1c89d24a45c37a.camel@decadent.org.uk/
+
+By Ben Hutchings; 34 days ago; 22 activities, latest 14 days ago.
+Introduced in 8b4ec69d7e09 (v5.19-rc1)
+
+Fix incoming:
+* virtio: VIRTIO_HARDEN_NOTIFICATION is broken
+  https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?h=master&id=6a9720576cd00d30722c5f755bd17d4cfa9df636
+
+
+====================================================
+current cycle (v5.18.. aka v5.19-rc), unkown culprit
+====================================================
+
+
+PM: hibernate: Sound Distortion on boot
+---------------------------------------
+https://linux-regtracking.leemhuis.info/regzbot/regression/46fd7a73-06fd-a8a0-8530-0ecf9b18c08d@dragonslave.de/
+https://lore.kernel.org/lkml/46fd7a73-06fd-a8a0-8530-0ecf9b18c08d@dragonslave.de/
+
+By Daniel Exner; 12 days ago; 5 activities, latest 10 days ago.
+Introduced in v5.19-rc1..v5.19-rc4
+
+=============
+End of report
+=============
+
+All regressions marked '[ *NEW* ]' were added since the previous report,
+which can be found here:
+https://lore.kernel.org/r/165808300299.1270116.2805091955648892933@leemhuis.info
+
+Thanks for your attention, have a nice day!
+
+  Regzbot, your hard working Linux kernel regression tracking robot
+
+
+P.S.: Wanna know more about regzbot or how to use it to track regressions
+for your subsystem? Then check out the getting started guide or the
+reference documentation:
+
+https://gitlab.com/knurd42/regzbot/-/blob/main/docs/getting_started.md
+https://gitlab.com/knurd42/regzbot/-/blob/main/docs/reference.md
+
+The short version: if you see a regression report you want to see
+tracked, just send a reply to the report where you Cc
+regressions@lists.linux.dev with a line like this:
+
+#regzbot introduced: v5.13..v5.14-rc1
+
+If you want to fix a tracked regression, just do what is expected
+anyway: add a 'Link:' tag with the url to the report, e.g.:
+
+Link: https://lore.kernel.org/all/30th.anniversary.repost@klaava.Helsinki.FI/
