@@ -2,90 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 718D1CCA48B
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 15:23:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A52CC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 15:26:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234120AbiGXPXe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 11:23:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34440 "EHLO
+        id S233792AbiGXP0P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 11:26:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233971AbiGXPX0 (ORCPT
+        with ESMTP id S230501AbiGXP0M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 11:23:26 -0400
-Received: from out30-57.freemail.mail.aliyun.com (out30-57.freemail.mail.aliyun.com [115.124.30.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FE6111C23
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 08:23:24 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=xianting.tian@linux.alibaba.com;NM=1;PH=DS;RN=16;SR=0;TI=SMTPD_---0VKDjFUF_1658676193;
-Received: from localhost(mailfrom:xianting.tian@linux.alibaba.com fp:SMTPD_---0VKDjFUF_1658676193)
-          by smtp.aliyun-inc.com;
-          Sun, 24 Jul 2022 23:23:14 +0800
-From:   Xianting Tian <xianting.tian@linux.alibaba.com>
-To:     paul.walmsley@sifive.com, palmer@dabbelt.com,
-        aou@eecs.berkeley.edu, anup@brainfault.org, heiko@sntech.de,
-        guoren@kernel.org, mick@ics.forth.gr, alexandre.ghiti@canonical.com
-Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        crash-utility@redhat.com, huanyi.xj@alibaba-inc.com,
-        heinrich.schuchardt@canonical.com, k-hagio-ab@nec.com,
-        hschauhan@nulltrace.org,
-        Xianting Tian <xianting.tian@linux.alibaba.com>
-Subject: [PATCH V2 5/5] riscv64: crash_core: Export kernel vm layout, phys_ram_base
-Date:   Sun, 24 Jul 2022 23:23:05 +0800
-Message-Id: <20220724152305.1037212-6-xianting.tian@linux.alibaba.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220724152305.1037212-1-xianting.tian@linux.alibaba.com>
-References: <20220724152305.1037212-1-xianting.tian@linux.alibaba.com>
+        Sun, 24 Jul 2022 11:26:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1BFA2620
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 08:26:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5F514B80D85
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 15:26:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE021C3411E;
+        Sun, 24 Jul 2022 15:26:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658676369;
+        bh=XawCLPtmZ4fqG7HmHG8DgJxtknVXOhtaMBHOKKVA+a4=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=TDphJYBgBVXs11PiEkP7SR+Eg8zcMq7InckjTEKmMzSLYPAp3El/IssQZyFeBDrX4
+         NpCdJR6xquDs9+vRBQ0W6xo/MaBgSu6m/B7F1LRJCgMVLhqIV+X8Ta52Rtss5dB7Yt
+         jeR97CMISQVZF4BkYl0fWZ8+B4PpM/6AmFpyD5It62fklcrTdeiL3y74Mpv+QudklR
+         HWzdfaSgl/8sFcANuprXTZBYiX56Jxp5NjjzBmAAAHwoy2YDqCYkyrVZcFtEq3otOy
+         Pa9aE8DL/hI6FakHLFPOgb1EVh9lwyJPucxYmKLEZNjSwU69J4lSSBHZv5g1Cpwzi+
+         9gfXIYBisGy8g==
+Message-ID: <8eaad9d0-1d59-3ecb-bab4-904ed22385f4@kernel.org>
+Date:   Sun, 24 Jul 2022 23:26:04 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] f2fs: modify task name prefix
+Content-Language: en-US
+To:     Jaegeuk Kim <jaegeuk@kernel.org>, Guowei Du <duguoweisz@gmail.com>
+Cc:     linux-f2fs-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, duguowei <duguowei@xiaomi.com>
+References: <20220718081038.2279-1-duguoweisz@gmail.com>
+ <YtoOxTyWPFUpw/Y0@google.com>
+From:   Chao Yu <chao@kernel.org>
+In-Reply-To: <YtoOxTyWPFUpw/Y0@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-These infos are needed by the kdump crash tool. Since these values change
-from time to time, it is preferable to export them via vmcoreinfo than to
-change the crash's code frequently.
+On 2022/7/22 10:43, Jaegeuk Kim wrote:
+> On 07/18, Guowei Du wrote:
+>> From: duguowei <duguowei@xiaomi.com>
+>>
+>> If there are more than one f2fs sbi, there will be more
+>> discard threads. But the comm is too long to show dev
+>> minor. So, change the default prefix of thread from
+>> "f2fs_discard" to "f2fs_dcd".
+> 
+> That looks quite unreadable. What about unmap?
 
-Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
----
- .../admin-guide/kdump/vmcoreinfo.rst          | 31 +++++++++++++++++++
- 1 file changed, 31 insertions(+)
+FYI,
 
-diff --git a/Documentation/admin-guide/kdump/vmcoreinfo.rst b/Documentation/admin-guide/kdump/vmcoreinfo.rst
-index 8419019b6a88..7d89a9d041c4 100644
---- a/Documentation/admin-guide/kdump/vmcoreinfo.rst
-+++ b/Documentation/admin-guide/kdump/vmcoreinfo.rst
-@@ -595,3 +595,34 @@ X2TLB
- -----
- 
- Indicates whether the crashed kernel enabled SH extended mode.
-+
-+RISCV64
-+=====
-+
-+VA_BITS
-+-------
-+
-+The maximum number of bits for virtual addresses. Used to compute the
-+virtual memory ranges.
-+
-+PAGE_OFFSET
-+-----------
-+
-+Indicates the virtual kernel start address of direct-mapped RAM region.
-+
-+phys_ram_base
-+------------
-+
-+Indicates the start physical RAM address.
-+
-+MODULES_VADDR|MODULES_END|VMALLOC_START|VMALLOC_END|VMEMMAP_START|VMEMMAP_END
-+-----------------------------------------------------------------------------
-+KASAN_SHADOW_START|KASAN_SHADOW_END|KERNEL_LINK_ADDR|ADDRESS_SPACE_END
-+----------------------------------------------------------------------
-+
-+Used to get the correct ranges:
-+	MODULES_VADDR ~ MODULES_END : Kernel module space.
-+	VMALLOC_START ~ VMALLOC_END : vmalloc() / ioremap() space.
-+	VMEMMAP_START ~ VMEMMAP_END : vmemmap region, used for struct page array.
-+	KASAN_SHADOW_START ~ KASAN_SHADOW_END : kasan shadow space.
-+	KERNEL_LINK_ADDR ~ ADDRESS_SPACE_END : Kernel link and BPF space.
--- 
-2.17.1
+With commit d6986ce24fc0 ("kthread: dynamically allocate memory to store
+kthread's full name"), it has chance to show full name of kthread when
+it's not in low memory scenario.
 
+Thanks,
+
+> 
+>>
+>> Before:
+>> $ ps -e | grep f2fs
+>> 1628 ?        00:00:00 f2fs_ckpt-7:10
+>> 1629 ?        00:00:00 f2fs_flush-7:10
+>> 1630 ?        00:00:00 f2fs_discard-7:
+>> 1631 ?        00:00:00 f2fs_gc-7:10
+>> 2030 ?        00:00:00 f2fs_ckpt-7:27
+>> 2031 ?        00:00:00 f2fs_flush-7:27
+>> 2032 ?        00:00:00 f2fs_discard-7:
+>> 2033 ?        00:00:00 f2fs_gc-7:27
+>>
+>> After:
+>> $ ps -e | grep f2fs
+>> 1628 ?        00:00:00 f2fs_ckpt-7:10
+>> 1629 ?        00:00:00 f2fs_flush-7:10
+>> 1630 ?        00:00:00 f2fs_dcd-7:10
+>> 1631 ?        00:00:00 f2fs_gc-7:10
+>> 2030 ?        00:00:00 f2fs_ckpt-7:27
+>> 2031 ?        00:00:00 f2fs_flush-7:27
+>> 2032 ?        00:00:00 f2fs_dcd-7:27
+>> 2033 ?        00:00:00 f2fs_gc-7:27
+>>
+>> Signed-off-by: duguowei <duguowei@xiaomi.com>
+>> ---
+>>   fs/f2fs/segment.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
+>> index 874c1b9c41a2..2eeefcbe62db 100644
+>> --- a/fs/f2fs/segment.c
+>> +++ b/fs/f2fs/segment.c
+>> @@ -2018,7 +2018,7 @@ int f2fs_start_discard_thread(struct f2fs_sb_info *sbi)
+>>   		return 0;
+>>   
+>>   	dcc->f2fs_issue_discard = kthread_run(issue_discard_thread, sbi,
+>> -				"f2fs_discard-%u:%u", MAJOR(dev), MINOR(dev));
+>> +				"f2fs_dcd-%u:%u", MAJOR(dev), MINOR(dev));
+>>   	if (IS_ERR(dcc->f2fs_issue_discard))
+>>   		err = PTR_ERR(dcc->f2fs_issue_discard);
+>>   
+>> -- 
+>> 2.36.1
