@@ -2,189 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D851CCA47C
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 14:00:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4BF4C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 14:05:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229959AbiGXOAp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 10:00:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55704 "EHLO
+        id S231475AbiGXOE7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 10:04:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229494AbiGXOAo (ORCPT
+        with ESMTP id S229450AbiGXOE5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 10:00:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2421610549;
-        Sun, 24 Jul 2022 07:00:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A81B4610E7;
-        Sun, 24 Jul 2022 14:00:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7216BC3411E;
-        Sun, 24 Jul 2022 14:00:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658671240;
-        bh=p2OXS0+I2d9ssG5uD/dcRyECIAj06rZN/T390w9Kl8g=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=SW7s+ioE+1PjJZ/UxDyCb5RWHCZZFGjcCdoDU4Msrr1BL+F9CVGUdYQjxw1bg9jrB
-         oOd+aJnscNrkDfGUwAuhHQpwYWQ2ODlrdyS/jmb4JOjSm/No3xv51zIOo+Bmn1VoFl
-         FNHVWMJvdjT3nyjMIMTbEZX3Y2FfD3fEVZsmw2BY=
-Date:   Sun, 24 Jul 2022 16:00:36 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Johan Hovold <johan@kernel.org>
-Cc:     Reinhard Speyerer <rspmn@arcor.de>, sdlyyxy <sdlyyxy@bupt.edu.cn>,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] USB: usb-serial-simple: add new device id for OPPO R11
-Message-ID: <Yt1QhCIiUf97Dl3D@kroah.com>
-References: <20220715142444.4173681-1-gregkh@linuxfoundation.org>
- <119D7B0F-7809-464A-AFF1-DF72FFF9E63F@bupt.edu.cn>
- <YtKrbucYNulPEKUp@arcor.de>
- <YtRtswctFMLxeglu@kroah.com>
- <YtXG3EVrRKAG7WVx@arcor.de>
- <YtwjiWG5ZFBvCZ1M@hovoldconsulting.com>
+        Sun, 24 Jul 2022 10:04:57 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E372112621
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 07:04:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658671496; x=1690207496;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=4SB7MknA24m1jUG2lvk0lBvwcZyqcGj7Lokl0Nv3fhk=;
+  b=CxlLKRZl99+3Tk8lXzRN8gTj9VR0K4IV5HGgc2MH4tUHuB6JVWYTb+iO
+   pApM9ph5uDQYs4/gTw9+B0V0aVjbcRDc/arlmAGHYR7SYOSZE3FRb9FVL
+   G6pH/h9Pb70oef5rtJZGJN/+DXGBLHvtR4CpIjSRBCGfW+JwuQ/INiZxf
+   2yqcuhxPETTIyiOHYdvEjtlx57GUwFXMfzr3wxpj6Jcp9mAVhELUVTi3r
+   j7qL15YlfjuHs5zyVSInps/yHFDsCyxXJmiU6gEu3OQpik1lgko8H4PVM
+   gCKPebPN+sEZnfxTdAPlDHMu3tiJViZnn+EmDVhvuHREc8vSesy5iGIAs
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10417"; a="267320782"
+X-IronPort-AV: E=Sophos;i="5.93,190,1654585200"; 
+   d="scan'208";a="267320782"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2022 07:04:56 -0700
+X-IronPort-AV: E=Sophos;i="5.93,190,1654585200"; 
+   d="scan'208";a="657820532"
+Received: from zjiang1-mobl.ccr.corp.intel.com (HELO [10.249.170.155]) ([10.249.170.155])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2022 07:04:52 -0700
+Message-ID: <487b533a-b289-eee7-0bd8-3be36c6e00e3@linux.intel.com>
+Date:   Sun, 24 Jul 2022 22:04:50 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YtwjiWG5ZFBvCZ1M@hovoldconsulting.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        Zhangfei Gao <zhangfei.gao@linaro.org>,
+        Zhu Tony <tony.zhu@intel.com>, iommu@lists.linux.dev,
+        linux-kernel@vger.kernel.org,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: Re: [PATCH v10 10/12] iommu: Prepare IOMMU domain for IOPF
+Content-Language: en-US
+To:     Jason Gunthorpe <jgg@nvidia.com>
+References: <20220705050710.2887204-1-baolu.lu@linux.intel.com>
+ <20220705050710.2887204-11-baolu.lu@linux.intel.com>
+ <20220723143334.GJ79279@nvidia.com>
+From:   Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20220723143334.GJ79279@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jul 23, 2022 at 06:36:25PM +0200, Johan Hovold wrote:
-> On Mon, Jul 18, 2022 at 10:47:24PM +0200, Reinhard Speyerer wrote:
-> > Hi Greg,
-> > 
-> > On Sun, Jul 17, 2022 at 10:14:43PM +0200, Greg Kroah-Hartman wrote:
-> > > On Sat, Jul 16, 2022 at 02:13:34PM +0200, Reinhard Speyerer wrote:
-> > > > On Fri, Jul 15, 2022 at 10:59:13PM +0800, sdlyyxy wrote:
-> > > > > 
-> > > > > > On Jul 15, 2022, at 22:24, Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
-> > > > > > 
-> > > > > > The Oppo R11 diagnostic USB connection needs to be bound to the
-> > > > > > usb-serial-simple driver as it just wants to use a dumb pipe to
-> > > > > > communicate to the host.
-> > > > > > 
-> > > > > > usb-devices output:
-> > > > > > T: Bus=03 Lev=01 Prnt=01 Port=01 Cnt=01 Dev#= 10 Spd=480 MxCh= 0
-> > > > > > D: Ver= 2.00 Cls=00(>ifc ) Sub=00 Prot=00 MxPS=64 #Cfgs= 1
-> > > > > > P: Vendor=22d9 ProdID=276c Rev=04.04
-> > > > > > S: Manufacturer=OPPO
-> > > > > > S: Product=SDM660-MTP _SN:09C6BCA7
-> > > > > > S: SerialNumber=beb2c403
-> > > > > > C: #Ifs= 2 Cfg#= 1 Atr=80 MxPwr=500mA
-> > > > > > I: If#=0x0 Alt= 0 #EPs= 2 Cls=ff(vend.) Sub=ff Prot=30
-> > > > > > 
-> > > > > > Reported-by: Yan Xinyu <sdlyyxy@bupt.edu.cn>
-> > > > > > Cc: Johan Hovold <johan@kernel.org>
-> > > > > > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > > > > > ---
-> > > > > > drivers/usb/serial/usb-serial-simple.c | 4 +++-
-> > > > > > 1 file changed, 3 insertions(+), 1 deletion(-)
-> > > > > > 
-> > > > > > diff --git a/drivers/usb/serial/usb-serial-simple.c b/drivers/usb/serial/usb-serial-simple.c
-> > > > > > index 4c6747889a19..eb832b94aa3a 100644
-> > > > > > --- a/drivers/usb/serial/usb-serial-simple.c
-> > > > > > +++ b/drivers/usb/serial/usb-serial-simple.c
-> > > > > > @@ -60,7 +60,9 @@ DEVICE(flashloader, FLASHLOADER_IDS);
-> > > > > > 	{ USB_VENDOR_AND_INTERFACE_INFO(0x18d1,			\
-> > > > > > 					USB_CLASS_VENDOR_SPEC,	\
-> > > > > > 					0x50,			\
-> > > > > > -					0x01) }
-> > > > > > +					0x01) },		\
-> > > > > > +	{ USB_DEVICE_AND_INTERFACE_INFO(0x22d9, 0x276c,		\
-> > > > > > +					0xff, 0xff, 0x30) }
-> > > > > > DEVICE(google, GOOGLE_IDS);
-> > > > > > 
-> > > > > > /* Libtransistor USB console */
-> > > > > > -- 
-> > > > > > 2.37.1
-> > > > > Tested-by: Yan Xinyu <sdlyyxy@bupt.edu.cn>
-> > > > 
-> > > > While this may work sufficiently well for real low-volume diag traffic I'd
-> > > > expect a significant percentage of diag messages to be lost in practice
-> > > > with the usb-serial-simple driver.
-> > > > 
-> > > > According to the usb-devices output this looks like the Qualcomm USB gadget
-> > > > in the DIAG + ADB composition to me.
-> > > > 
-> > > > Since the option driver uses the usb-wwan framework my suggestion would be
-> > > > for the original patch to be applied instead similar to what has been done
-> > > > e.g. for the Quectel RM500Q diag port.
-> > > 
-> > > But this is not using the option chip, nor using the option flow control
-> > > protocol at all, so it should not be showing up as a device controlled
-> > > by the option driver.  It just will not work properly, the simple driver
-> > > should be doing the exact same thing here.
-> > > 
-> > 
-> > you seem to have the misconception that devices handled by the option driver
-> > would use a USB to serial converter chip from Option similar to e.g. the
-> > ftdi_sio driver which is not the case.
-> > 
-> > Quoting from option.c:
-> >   ===
-> >   This driver exists because the "normal" serial driver doesn't work too well
-> >   with GSM modems. Issues:
-> >   - data loss -- one single Receive URB is not nearly enough
+On 2022/7/23 22:33, Jason Gunthorpe wrote:
+> On Tue, Jul 05, 2022 at 01:07:08PM +0800, Lu Baolu wrote:
+>> This adds some mechanisms around the iommu_domain so that the I/O page
+>> fault handling framework could route a page fault to the domain and
+>> call the fault handler from it.
+>>
+>> Add pointers to the page fault handler and its private data in struct
+>> iommu_domain. The fault handler will be called with the private data
+>> as a parameter once a page fault is routed to the domain. Any kernel
+>> component which owns an iommu domain could install handler and its
+>> private parameter so that the page fault could be further routed and
+>> handled.
+>>
+>> This also prepares the SVA implementation to be the first consumer of
+>> the per-domain page fault handling model. The I/O page fault handler
+>> for SVA is copied to the SVA file with mmget_not_zero() added before
+>> mmap_read_lock().
+>>
+>> Suggested-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+>> Tested-by: Zhangfei Gao <zhangfei.gao@linaro.org>
+>> Tested-by: Tony Zhu <tony.zhu@intel.com>
+>> ---
+>>   include/linux/iommu.h         |  3 ++
+>>   drivers/iommu/iommu-sva-lib.h |  8 +++++
+>>   drivers/iommu/io-pgfault.c    |  7 +++++
+>>   drivers/iommu/iommu-sva-lib.c | 58 +++++++++++++++++++++++++++++++++++
+>>   drivers/iommu/iommu.c         |  4 +++
+>>   5 files changed, 80 insertions(+)
+>>
+>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+>> index ae0cfca064e6..47610f21d451 100644
+>> --- a/include/linux/iommu.h
+>> +++ b/include/linux/iommu.h
+>> @@ -105,6 +105,9 @@ struct iommu_domain {
+>>   	unsigned long pgsize_bitmap;	/* Bitmap of page sizes in use */
+>>   	struct iommu_domain_geometry geometry;
+>>   	struct iommu_dma_cookie *iova_cookie;
+>> +	enum iommu_page_response_code (*iopf_handler)(struct iommu_fault *fault,
+>> +						      void *data);
+>> +	void *fault_data;
+>>   	union {
+>>   		struct {
+>>   			iommu_fault_handler_t handler;
 > 
-> This was written on 2006 and the single-receive URB statement hasn't
-> been true for the last decade or so.
+> Why do we need two falut callbacks? The only difference is that one is
+> recoverable and the other is not, right?
 > 
-> >   - nonstandard flow (Option devices) control
-> >   - controlling the baud rate doesn't make sense
-> > 
-> >   This driver is named "option" because the most common device it's
-> >   used for is a PC-Card (with an internal OHCI-USB interface, behind
-> >   which the GSM interface sits), made by Option Inc.
-> >   ===
-> > 
-> > The GSM/UMTS interface in the Option card actually contains a Qualcomm chip
-> > which exports its serial ports via USB. The data loss mentioned by Matthias
-> > above also applies to the diag port.
-> 
-> Not necessarily true anymore even if the buffer sizes may need to be
-> increased somewhat to support dumping modem traffic.
-> 
-> And note that qcaux has always used the generic implementation (also
-> when it only used a single URB).
->  
-> > As can be seen from the sendsetup code in the qcserial driver the
-> > "nonstandard flow (Option devices) control" mentioned above is actually
-> > a Qualcomm "feature" required for some of their USB serial implementations
-> > on tne device to work properly.
-> 
-> It's actually only used by some Sierra modems managed by that driver,
-> but yeah, those should be Qualcomm based.
-> 
-> > In case you suspect potential problems with the sendsetup code and the OPPO
-> > R11 diag port Yan's option.c patch could be extended like this:
-> > 	{ USB_DEVICE_AND_INTERFACE_INFO(OPPO_VENDOR_ID, OPPO_PRODUCT_R11, 0xff, 0xff, 0x30),
-> > 	  .driver_info = NCTRL(0) },
-> > 
-> > With a few more lines of code you could also add a new layout to the qcserial
-> > driver if you prefer for the OPPO R11 to be handled by it for some reason.
-> 
-> I think we decided not to use qcserial unless it matches one of the
-> fixed GOBI port layouts.
-> 
-> > Either one would be fine with me.
-> > 
-> > Please don't give the OPPO R11 diag port on Linux a bad name by letting
-> > the usb-serial-simple driver handle it.
-> 
-> So while I'm not sure bandwidth is really a problem, I still tend to
-> agree that we should add this one to the option driver for now as that
-> is how we handle (non-GOBI) Qualcomm modems and their QCDM ports.
+> Can we run both down the same op?
 
-If you want it to stay on the option driver, that's fine, but I still
-think it feels odd as it obviously does not follow the vendor-specific
-protocol that the option driver supports.
+The iommu_fault_handler_t is for report_iommu_fault() which could be
+replaced with the newer iommu_report_device_fault().
 
-To be fair, loads of the ids in that driver could move to the simple
-driver as they probably do not also support the line setting protocol
-that this driver was originally written for, so what's a few more ids
-added :)
+https://lore.kernel.org/linux-iommu/Yo4Nw9QyllT1RZbd@myrica/
 
-thanks,
+> 
+>> +/*
+>> + * I/O page fault handler for SVA
+>> + */
+>> +enum iommu_page_response_code
+>> +iommu_sva_handle_iopf(struct iommu_fault *fault, void *data)
+>> +{
+>> +	vm_fault_t ret;
+>> +	struct vm_area_struct *vma;
+>> +	struct mm_struct *mm = data;
+>> +	unsigned int access_flags = 0;
+>> +	unsigned int fault_flags = FAULT_FLAG_REMOTE;
+>> +	struct iommu_fault_page_request *prm = &fault->prm;
+>> +	enum iommu_page_response_code status = IOMMU_PAGE_RESP_INVALID;
+>> +
+>> +	if (!(prm->flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID))
+>> +		return status;
+>> +
+>> +	if (IS_ERR_OR_NULL(mm) || !mmget_not_zero(mm))
+> 
+> Do not use IS_ERR_ON_NULL. mm should never be null here since the
+> fault handler should have been removed from the domain before the
+> fault_data is changed.
 
-greg k-h
+Yes. Updated.
+
+Best regards,
+baolu
+
