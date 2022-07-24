@@ -2,95 +2,249 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADE53C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 10:16:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E041BC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 10:40:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231650AbiGXKQL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 06:16:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46178 "EHLO
+        id S231218AbiGXKb0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 06:31:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230321AbiGXKQJ (ORCPT
+        with ESMTP id S229513AbiGXKbZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 06:16:09 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE991F5A2;
-        Sun, 24 Jul 2022 03:16:07 -0700 (PDT)
-Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LrJsr6BWnzkWR3;
-        Sun, 24 Jul 2022 18:13:36 +0800 (CST)
-Received: from dggpeml500008.china.huawei.com (7.185.36.147) by
- dggpeml500022.china.huawei.com (7.185.36.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sun, 24 Jul 2022 18:16:05 +0800
-Received: from huawei.com (10.67.175.34) by dggpeml500008.china.huawei.com
- (7.185.36.147) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sun, 24 Jul
- 2022 18:16:04 +0800
-From:   Ren Zhijie <renzhijie2@huawei.com>
-To:     <hongxing.zhu@nxp.com>, <l.stach@pengutronix.de>,
-        <lpieralisi@kernel.org>, <robh@kernel.org>, <kw@linux.com>,
-        <bhelgaas@google.com>
-CC:     <linux-pci@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, Ren Zhijie <renzhijie2@huawei.com>
-Subject: [PATCH -next] PCI: imx6: Fix build error unused-function
-Date:   Sun, 24 Jul 2022 18:13:53 +0800
-Message-ID: <20220724101353.127875-1-renzhijie2@huawei.com>
-X-Mailer: git-send-email 2.17.1
-MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.175.34]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpeml500008.china.huawei.com (7.185.36.147)
-X-CFilter-Loop: Reflected
+        Sun, 24 Jul 2022 06:31:25 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94C0815720
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 03:31:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E23C3B80D3F
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 10:31:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D09DC3411E;
+        Sun, 24 Jul 2022 10:31:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658658680;
+        bh=Wn3JIP8jLlSewLhGI7VhvO2klsr9IKr4l5DF4GHNwTs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Yj5CFV0HzTx0yN4+ZlUicubHbruWtCzJQsuPGB857cIY7WAh7Dki4NUGYRkBsXvGh
+         UVVbcIiXBVt4BEL6IKSjZj6w8AsseJzceFdWBk8+PiMm0G8ge/y5nxHXhoHJ1EXohr
+         M0AG4ZegiUrkzPtWog1OrNgaaX3qMOgAq1XO2iouanj/sno7YQujw/7BjZCuUNBbRQ
+         8rckFYPW3/zUwfXchmxjTXh/UifPA2BT3wpBlSZrgv21gRXu9Itn3BGV6Nj0JpWh3l
+         E4HKgO+AS1pk5TjyzlC6fR3LoSwtFr3o9/Ss9yHH0vbBbcOXyUYZWZjGxfWEhsh/N2
+         qJJ1UykfKKoiA==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=wait-a-minute.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <maz@kernel.org>)
+        id 1oFYtK-009fYt-0z;
+        Sun, 24 Jul 2022 11:31:18 +0100
+Date:   Sun, 24 Jul 2022 11:31:17 +0100
+Message-ID: <874jz6dcp6.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     linux-kernel@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Hou Zhiqiang <Zhiqiang.Hou@nxp.com>,
+        Biwen Li <biwen.li@nxp.com>,
+        Sean Anderson <sean.anderson@seco.com>
+Subject: Re: [PATCH v2] irqchip/ls-extirq: use raw spinlocks for regmap to avoid invalid wait context
+In-Reply-To: <20220722204019.969272-1-vladimir.oltean@nxp.com>
+References: <20220722204019.969272-1-vladimir.oltean@nxp.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: vladimir.oltean@nxp.com, linux-kernel@vger.kernel.org, lee.jones@linaro.org, tglx@linutronix.de, linux@rasmusvillemoes.dk, arnd@arndb.de, Zhiqiang.Hou@nxp.com, biwen.li@nxp.com, sean.anderson@seco.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If CONFIG_PM_SLEEP is not set,
-make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu-, will be failed, like this:
+On Fri, 22 Jul 2022 21:40:19 +0100,
+Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
+> 
+> The irqchip->irq_set_type method is called by __irq_set_trigger() under
+> the desc->lock raw spinlock.
+> 
+> The ls-extirq implementation, ls_extirq_irq_set_type(), uses an MMIO
+> regmap created by of_syscon_register(), which uses plain spinlocks
+> (the kind that are sleepable on RT).
+> 
+> Therefore, this is an invalid locking scheme for which we get a kernel
+> splat stating just that ("[ BUG: Invalid wait context ]"), because the
+> context in which the plain spinlock may sleep is atomic due to the raw
+> spinlock. We need to go raw spinlocks all the way.
+> 
+> Make this driver create its own MMIO regmap, with use_raw_spinlock=true,
+> and stop relying on syscon to provide it. Since the regmap we got from
+> syscon belonged to the parent and this one belongs to us, the offset to
+> the INTPCR register is now 0, because of the address translation that
+> takes place through the device tree.
+> 
+> Another complication that we need to deal with is the fact that we need
+> to parse the 'little-endian'/'big-endian' specifiers that exist in
+> device trees for the parent ourselves now, since we no longer involve
+> syscon.
+> 
+> And yet one final complication, due to the fact that this driver uses
+> IRQCHIP_DECLARE rather than traditional platform devices with probe and
+> remove methods, is that we cannot use devres, so we need to implement a
+> full-blown cleanup procedure on the error path.
+> 
+> This patch depends on commit 67021f25d952 ("regmap: teach regmap to use
+> raw spinlocks if requested in the config").
 
-drivers/pci/controller/dwc/pci-imx6.c:973:13: error: ‘imx6_pcie_host_exit’ defined but not used [-Werror=unused-function]
- static void imx6_pcie_host_exit(struct dw_pcie_rp *pp)
-             ^~~~~~~~~~~~~~~~~~~
-drivers/pci/controller/dwc/pci-imx6.c:904:13: error: ‘imx6_pcie_stop_link’ defined but not used [-Werror=unused-function]
- static void imx6_pcie_stop_link(struct dw_pcie *pci)
-             ^~~~~~~~~~~~~~~~~~~
-cc1: all warnings being treated as errors
-make[4]: *** [drivers/pci/controller/dwc/pci-imx6.o] Error 1
+This information doesn't belong to the commit message (and please read
+the documentation about the use of "This patch").
 
-These two functions imx6_pcie_host_exit() and imx6_pcie_stop_link() only be called by imx6_pcie_suspend_noirq(), which was warpped by CONFIG_PM_SLEEP.
-To fix build error unused-function, use __maybe_unused to attach them.
+> 
+> Fixes: 0dcd9f872769 ("irqchip: Add support for Layerscape external interrupt lines")
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
+> v1->v2: create a separate regmap for the ls-extirq driver rather than
+>         relying on the one provided by syscon or modifying that.
+> 
+> For reference, v1 is at:
+> https://lore.kernel.org/lkml/20210825205041.927788-3-vladimir.oltean@nxp.com/
+> 
+> For extra reviewer convenience, the ls-extirq appears in the following
+> SoC device trees:
+> https://elixir.bootlin.com/linux/v5.18.13/source/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi#L289
+> https://elixir.bootlin.com/linux/v5.18.13/source/arch/arm64/boot/dts/freescale/fsl-ls1088a.dtsi#L249
+> https://elixir.bootlin.com/linux/v5.18.13/source/arch/arm64/boot/dts/freescale/fsl-ls1043a.dtsi#L319
+> https://elixir.bootlin.com/linux/v5.18.13/source/arch/arm64/boot/dts/freescale/fsl-ls1046a.dtsi#L325
+> https://elixir.bootlin.com/linux/v5.18.13/source/arch/arm64/boot/dts/freescale/fsl-lx2160a.dtsi#L682
+> https://elixir.bootlin.com/linux/v5.18.13/source/arch/arm/boot/dts/ls1021a.dtsi#L182
+> 
+> Patch tested on LX2160A and LS1021A.
+> 
+>  drivers/irqchip/irq-ls-extirq.c | 81 +++++++++++++++++++++++----------
+>  1 file changed, 58 insertions(+), 23 deletions(-)
+> 
+> diff --git a/drivers/irqchip/irq-ls-extirq.c b/drivers/irqchip/irq-ls-extirq.c
+> index 853b3972dbe7..94a22642b3f2 100644
+> --- a/drivers/irqchip/irq-ls-extirq.c
+> +++ b/drivers/irqchip/irq-ls-extirq.c
+> @@ -6,7 +6,7 @@
+>  #include <linux/irqchip.h>
+>  #include <linux/irqdomain.h>
+>  #include <linux/of.h>
+> -#include <linux/mfd/syscon.h>
+> +#include <linux/of_address.h>
+>  #include <linux/regmap.h>
+>  #include <linux/slab.h>
+>  
+> @@ -16,8 +16,7 @@
+>  #define LS1021A_SCFGREVCR 0x200
+>  
+>  struct ls_extirq_data {
+> -	struct regmap		*syscon;
+> -	u32			intpcr;
+> +	struct regmap		*regmap;
+>  	bool			is_ls1021a_or_ls1043a;
+>  	u32			nirq;
+>  	struct irq_fwspec	map[MAXIRQ];
+> @@ -51,7 +50,10 @@ ls_extirq_set_type(struct irq_data *data, unsigned int type)
+>  	default:
+>  		return -EINVAL;
+>  	}
+> -	regmap_update_bits(priv->syscon, priv->intpcr, mask, value);
+> +	/* INTPCR is the only register of our regmap,
+> +	 * therefore its offset is 0
+> +	 */
 
-Fixes: 25ae5434c3de ("PCI: imx6: Reformat suspend callback to keep symmetric with resume")
-Signed-off-by: Ren Zhijie <renzhijie2@huawei.com>
----
- drivers/pci/controller/dwc/pci-imx6.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+For multi-line comments, please use the normal kernel comment style,
+not the one that is mandated for net.
 
-diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
-index 55e109d1ab27..533f5ef68e94 100644
---- a/drivers/pci/controller/dwc/pci-imx6.c
-+++ b/drivers/pci/controller/dwc/pci-imx6.c
-@@ -901,7 +901,7 @@ static int imx6_pcie_start_link(struct dw_pcie *pci)
- 	return 0;
- }
- 
--static void imx6_pcie_stop_link(struct dw_pcie *pci)
-+static void __maybe_unused imx6_pcie_stop_link(struct dw_pcie *pci)
- {
- 	struct device *dev = pci->dev;
- 
-@@ -970,7 +970,7 @@ static int imx6_pcie_host_init(struct dw_pcie_rp *pp)
- 	return ret;
- }
- 
--static void imx6_pcie_host_exit(struct dw_pcie_rp *pp)
-+static void __maybe_unused imx6_pcie_host_exit(struct dw_pcie_rp *pp)
- {
- 	struct dw_pcie *pci = to_dw_pcie_from_pp(pp);
- 	struct imx6_pcie *imx6_pcie = to_imx6_pcie(pci);
+> +	regmap_update_bits(priv->regmap, 0, mask, value);
+>  
+>  	return irq_chip_set_type_parent(data, type);
+>  }
+> @@ -143,48 +145,81 @@ ls_extirq_parse_map(struct ls_extirq_data *priv, struct device_node *node)
+>  static int __init
+>  ls_extirq_of_init(struct device_node *node, struct device_node *parent)
+>  {
+> -
+> +	struct regmap_config extirq_regmap_config = {
+> +		.name = "intpcr",
+> +		.reg_bits = 32,
+> +		.val_bits = 32,
+> +		.reg_stride = 4,
+> +		.use_raw_spinlock = true,
+> +	};
+>  	struct irq_domain *domain, *parent_domain;
+>  	struct ls_extirq_data *priv;
+> +	void __iomem *base;
+>  	int ret;
+>  
+>  	parent_domain = irq_find_host(parent);
+>  	if (!parent_domain) {
+>  		pr_err("Cannot find parent domain\n");
+> -		return -ENODEV;
+> +		ret = -ENODEV;
+> +		goto err_irq_find_host;
+>  	}
+>  
+>  	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
+> -	if (!priv)
+> -		return -ENOMEM;
+> -
+> -	priv->syscon = syscon_node_to_regmap(node->parent);
+> -	if (IS_ERR(priv->syscon)) {
+> -		ret = PTR_ERR(priv->syscon);
+> -		pr_err("Failed to lookup parent regmap\n");
+> -		goto out;
+> +	if (!priv) {
+> +		ret = -ENOMEM;
+> +		goto err_alloc_priv;
+> +	}
+> +
+> +	/* All extirq OF nodes are under a scfg/syscon node with
+> +	 * the 'ranges' property
+> +	 */
+> +	base = of_iomap(node, 0);
+> +	if (!base) {
+> +		pr_err("Cannot ioremap OF node %pOF\n", node);
+> +		ret = -ENOMEM;
+> +		goto err_iomap;
+>  	}
+> -	ret = of_property_read_u32(node, "reg", &priv->intpcr);
+> -	if (ret) {
+> -		pr_err("Missing INTPCR offset value\n");
+> -		goto out;
+> +
+> +	/* Parse the parent device's DT node for an endianness specification */
+> +	if (of_property_read_bool(parent, "big-endian"))
+> +		extirq_regmap_config.val_format_endian = REGMAP_ENDIAN_BIG;
+> +	else if (of_property_read_bool(parent, "little-endian"))
+> +		extirq_regmap_config.val_format_endian = REGMAP_ENDIAN_LITTLE;
+> +	else if (of_property_read_bool(parent, "native-endian"))
+> +		extirq_regmap_config.val_format_endian = REGMAP_ENDIAN_NATIVE;
+
+All of this should be rewritten to use of_device_is_big_endian(), and
+reduce the whole thing to two cases (I don't think native endian makes
+much sense anyway). I also wonder what the result is if none of these
+properties is present...
+
+> +
+> +	priv->regmap = regmap_init_mmio(NULL, base, &extirq_regmap_config);
+> +	if (IS_ERR(priv->regmap)) {
+> +		pr_err("Cannot create MMIO regmap: %pe\n", priv->regmap);
+> +		ret = PTR_ERR(priv->regmap);
+> +		goto err_regmap_init;
+
+Finally, what is the actual benefit of using a regmap here? It seems
+like a very roundabout way of performing a RMW on a register whilst
+holding a lock... Passing NULL for a device to regmap_init_mmio() also
+seems to be an extremely rare idiom (only 5 cases in the tree), and
+this doesn't seem completely right to me.
+
+	M.
+
 -- 
-2.17.1
-
+Without deviation from the norm, progress is not possible.
