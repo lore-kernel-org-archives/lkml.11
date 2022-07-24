@@ -2,88 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37848C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 00:48:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21B9AC43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 00:52:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236497AbiGXAs0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 20:48:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34908 "EHLO
+        id S237274AbiGXAwk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 20:52:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229772AbiGXAsY (ORCPT
+        with ESMTP id S229772AbiGXAwi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 20:48:24 -0400
-Received: from mx07-0057a101.pphosted.com (mx07-0057a101.pphosted.com [205.220.184.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86C6A646C
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Jul 2022 17:48:23 -0700 (PDT)
-Received: from pps.filterd (m0214197.ppops.net [127.0.0.1])
-        by mx07-0057a101.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26O0c8EC019842;
-        Sun, 24 Jul 2022 02:38:08 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=westermo.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=12052020;
- bh=j83F4qCiNDaplHCmmwDEVPID1jxIjxR0J0xDijvNBm4=;
- b=Eh+3oSdCTBRQKIefX12C+nXLpnGq5H8XEN+UR0Y56nDfBJggfyAU4QHtQw1s5veHJVBk
- hnYJhJKmKS9WA2vawZ1VO89WsQMGFhfkeb1Z4wTIw1mt/8swC5BkvTnnN6EHuGh/EJav
- P6X9VBQ1hMtFwFTBqAoXe1jmp+aToc5axFGHjjTDW4dGN5sZfDCW3/GDkYNSw1PDtE8x
- blC4/t0gMtO65BQYbXGgzPJ0SUVVKqM0cBrEgFL3XUigRykIOaJM7JK3rjIRsswnxxn6
- Jtgqjk1t/1HSBCFTNFPvxJRM6hJStrT/iZFZGr3di7at+ad6FpcPUaH7mHDJ9AQvA8p3 GQ== 
-Received: from mail.beijerelectronics.com ([195.67.87.131])
-        by mx07-0057a101.pphosted.com (PPS) with ESMTPS id 3hg5bbgrm0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Sun, 24 Jul 2022 02:38:08 +0200
-Received: from Orpheus.nch.westermo.com (172.29.100.2) by
- EX01GLOBAL.beijerelectronics.com (10.101.10.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
- 15.1.2375.17; Sun, 24 Jul 2022 02:38:07 +0200
-From:   Matthias May <matthias.may@westermo.com>
-To:     <netdev@vger.kernel.org>
-CC:     <davem@davemloft.net>, <yoshfuji@linux-ipv6.org>,
-        <dsahern@kernel.org>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <nicolas.dichtel@6wind.com>,
-        <eyal.birger@gmail.com>, <linux-kernel@vger.kernel.org>,
-        Matthias May <matthias.may@westermo.com>
-Subject: [PATCH 2/2 net-next] geneve: fix TOS inheriting for ipv6
-Date:   Sun, 24 Jul 2022 02:37:41 +0200
-Message-ID: <20220724003741.57816-3-matthias.may@westermo.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220724003741.57816-1-matthias.may@westermo.com>
-References: <20220724003741.57816-1-matthias.may@westermo.com>
+        Sat, 23 Jul 2022 20:52:38 -0400
+Received: from box.fidei.email (box.fidei.email [71.19.144.250])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CE8C14D10;
+        Sat, 23 Jul 2022 17:52:37 -0700 (PDT)
+Received: from authenticated-user (box.fidei.email [71.19.144.250])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by box.fidei.email (Postfix) with ESMTPSA id F0D6780794;
+        Sat, 23 Jul 2022 20:52:36 -0400 (EDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=dorminy.me; s=mail;
+        t=1658623957; bh=RAQNqSLQnPCNoIiEhDvY+4M3GbpUGvsojzAKy+lc6/Q=;
+        h=From:To:Cc:Subject:Date:From;
+        b=SdCm/HZTzCERxBrSYy57Lv5VWfRalppRdv/RcLrb5LvH/4SvbnoLOQTa6tsbtZTzA
+         +i0XYqbfWhLa6nv9RuHreGac2jT2kk+KuXfHxS9GDD7GTOeSlxxDt4DMd1HO/mXJlo
+         kvrGJLi8cZBbnEyr9eq3qBp+CDv+oQ3x5BtlyXhUDDCAmZKwSBUnCAkzAJvhfhsn2r
+         hZCyRq/kDhZexVvlxRFGdwuu/PFznInLCtPlI0vxZA3eolC2va8NY2MHJD2kVufbMm
+         Mhx54KAz6/KKNc0m7t+0T6hyyUjF5dq2g3+doB+DxrJcH7yvsBFyvfyVY/uLoE0ABJ
+         wshdUrn6QaeQQ==
+From:   Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
+To:     "Theodore Y . Ts'o " <tytso@mit.edu>,
+        Jaegeuk Kim <jaegeuk@kernel.org>,
+        Eric Biggers <ebiggers@kernel.org>,
+        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-btrfs@vger.kernel.org, osandov@osandov.com,
+        kernel-team@fb.com
+Cc:     Sweet Tea Dorminy <sweettea-kernel@dorminy.me>
+Subject: [PATCH RFC 0/4] fscrypt changes for btrfs encryption
+Date:   Sat, 23 Jul 2022 20:52:24 -0400
+Message-Id: <cover.1658623235.git.sweettea-kernel@dorminy.me>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [172.29.100.2]
-X-ClientProxiedBy: wsevst-s0023.westermo.com (192.168.130.120) To
- EX01GLOBAL.beijerelectronics.com (10.101.10.25)
-X-Proofpoint-GUID: q6bX-TEiNttAZoqHP0Ap_M1dyzqYwg5M
-X-Proofpoint-ORIG-GUID: q6bX-TEiNttAZoqHP0Ap_M1dyzqYwg5M
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The current code uses the RT_TOS macro to cut off the 6 DSCP
-bits, down to the original 3 TOS bits.
+This is the fscrypt section of my draft patch series [1] to add
+encryption support to btrfs.
 
-Do not use this macro to get the prio for inheriting purposes.
+Last October, Omar Sandoval sent out a design proposal for using fscrypt
+with btrfs [2]. To tersely summarize the challenges laid out in the
+document, btrfs supports sharing the same physical storage between
+multiple files (reflinks); moving the physical location of file data
+without access to the file inodes; and creating writable snapshots of
+some directories (subvolumes). To allow encryption to coexist with these
+features, the proposal was for btrfs to create and preserve an IV per
+data block, no matter its physical location or owning inode(s), and for
+btrfs to allow partially-encrypted writable snapshots of unencrypted
+subvolumes.
 
-Signed-off-by: Matthias May <matthias.may@westermo.com>
----
- drivers/net/geneve.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+To deal with these issues, a few changes to fscrypt are proposed:
+- To enable snapshotting and then encrypting new writes to that
+  subvolume, a flag to allow partially encrypted directories;
+- To allow filesystems to supply an IV in cases where the logical block
+  number and owning inode for data may change, a new policy and
+  interface to convey IVs from filesystem to fscrypt.
 
-diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
-index 4c380c06f178..e1a4480e6f17 100644
---- a/drivers/net/geneve.c
-+++ b/drivers/net/geneve.c
-@@ -877,8 +877,7 @@ static struct dst_entry *geneve_get_v6_dst(struct sk_buff *skb,
- 		use_cache = false;
- 	}
- 
--	fl6->flowlabel = ip6_make_flowinfo(RT_TOS(prio),
--					   info->key.label);
-+	fl6->flowlabel = ip6_make_flowinfo(prio, info->key.label);
- 	dst_cache = (struct dst_cache *)&info->dst_cache;
- 	if (use_cache) {
- 		dst = dst_cache_get_ip6(dst_cache, &fl6->saddr);
+Comments, especially on the new policy and interface, appreciated!
+
+[1] https://lore.kernel.org/linux-btrfs/cover.1658623319.git.sweettea-kernel@dorminy.me
+[2] https://lore.kernel.org/linux-btrfs/YXGyq+buM79A1S0L@relinquished.localdomain/
+
+Omar Sandoval (3):
+  fscrypt: expose fscrypt_nokey_name
+  fscrypt: add flag allowing partially-encrypted directories
+  fscrypt: add fscrypt_have_same_policy() to check inode's compatibility
+
+Sweet Tea Dorminy (1):
+  fscrypt: Add new encryption policy for btrfs.
+
+ fs/crypto/crypto.c           | 28 +++++++++++++++--
+ fs/crypto/fname.c            | 56 ++++++++++-----------------------
+ fs/crypto/fscrypt_private.h  |  4 +--
+ fs/crypto/inline_crypt.c     | 20 ++++++++----
+ fs/crypto/keysetup.c         |  5 +++
+ fs/crypto/policy.c           | 42 ++++++++++++++++++++++++-
+ include/linux/fscrypt.h      | 61 +++++++++++++++++++++++++++++++++++-
+ include/uapi/linux/fscrypt.h |  1 +
+ 8 files changed, 166 insertions(+), 51 deletions(-)
+
 -- 
 2.35.1
 
