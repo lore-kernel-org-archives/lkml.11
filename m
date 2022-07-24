@@ -2,196 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D5DEC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 18:24:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7DAEC43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 18:25:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231149AbiGXSYy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 14:24:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49852 "EHLO
+        id S231488AbiGXSZr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 14:25:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229546AbiGXSYo (ORCPT
+        with ESMTP id S229546AbiGXSZp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 14:24:44 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48F5F101FA
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 11:24:43 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id E8A12201A5;
-        Sun, 24 Jul 2022 18:24:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1658687081; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=qZg4O0zSXDNk/Ab3duwIptAuaTz2a3wJBWoDlN7lMOA=;
-        b=WK2z31eAB+HZgmtlRzmjojawu+749PwZq6Nq2S7NHVjFg/qptaex/vn7Uk0qvWast29UkA
-        yGV6shZU10raUNTnD4BRTDFLX3xL9cRLn6YIYQX3aE5ZKo7BSWU0W9f/lF8xsUDJ70UoNi
-        +6yma9KN6UqdlqtkXr+QZdnqvvgq42s=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1658687081;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=qZg4O0zSXDNk/Ab3duwIptAuaTz2a3wJBWoDlN7lMOA=;
-        b=TmTHwHbYkMUECuv4g6pxudqU9cXyp1/vq65s1U6yTpkiPkH/URLELvCnrPnCvGhq7L8eFb
-        XV8TYFeN2BpzEhAg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id C602413A91;
-        Sun, 24 Jul 2022 18:24:41 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id cJRDL2mO3WKgaAAAMHmgww
-        (envelope-from <tzimmermann@suse.de>); Sun, 24 Jul 2022 18:24:41 +0000
-Message-ID: <e6ed25b0-49d2-7e3b-91e5-72e431310610@suse.de>
-Date:   Sun, 24 Jul 2022 20:24:41 +0200
+        Sun, 24 Jul 2022 14:25:45 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AF6F10557
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 11:25:44 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id sz17so16820536ejc.9
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 11:25:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Mc8TRcMxDtFgQPktrRYxaiC84c9xSC4w48WZBhDyELI=;
+        b=oCa1EnIGhj2fSSmj29Q1sdTyfzuWOOqeNHEPnZvDIZLbdBnKn7tqWEj5H02S5YN8Hj
+         8PEtlPX+XhzBIoYeVq2KG0Vu4PSu/jCQCTfWNuy965gZ/DPDpGg2kvhmj7Id7XwHAPA8
+         1Lr7nRIj0VhGvFM956rn7q6KF7RhywN7DhFakrtwPP0nOuQBRH0oI+ah6ETcCABh2Dgm
+         aNBZosGaGOkhp3zkYkcldZ4nf++YMymGLbv3vd4q4xnqw6Ds+bLhv9Pyc2qSiZYgNdDK
+         TGBpXQzVoboNfn8xkMUWZnUFUcEQqXLq15G+7zqz7vLbLoTxYnpb5zzF3fulBXm85SN+
+         clHw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Mc8TRcMxDtFgQPktrRYxaiC84c9xSC4w48WZBhDyELI=;
+        b=THDJDTPARGuR7EhXaNaHD4n8ovv0kOYt8DG+BaPvhYwrul0cQR3QKGSr9N9RpA8Ftp
+         aAcpmHxnF1yPUCiBxDicuIloLWe8PWM3tcw0CDReKp/REX0L28Rvb6gHqYKd0Yf/mdnK
+         nShM7L9KKoIaWkX/9hjW05jBh3b/FfE0J93j/n5TSMtkgTYLIvWTDls0AHAyWEsQmbT7
+         WH6BTUv8Jt0WyZq+NCvsjVMu7kt0/dqh1sfi0Dng51dZItHRhYspTQtClK9pUL1wYZzU
+         AXWWEcytiWnWsuJ2xCM10gjoknNnUNuAUyHanwPGzvLIo/R3iz6RabsSf3wGr9rmXVVh
+         hwYw==
+X-Gm-Message-State: AJIora9trKVLpLUM2r2XaQpegEWYJBKcqaDE+zet86BPIftAPTyT1fW8
+        RNksQyA79MjmRQIxTOMzCOI=
+X-Google-Smtp-Source: AGRyM1tnh2sZ3SyAw6PmlacimcW8Fpy9h94p1H4tYt/5uTnGQM/5ePImjhHqdDkrb63u+aY7/FyInw==
+X-Received: by 2002:a17:907:87b0:b0:72f:8d3d:2010 with SMTP id qv48-20020a17090787b000b0072f8d3d2010mr7355936ejc.743.1658687142570;
+        Sun, 24 Jul 2022 11:25:42 -0700 (PDT)
+Received: from localhost.localdomain (ip5f5abb56.dynamic.kabel-deutschland.de. [95.90.187.86])
+        by smtp.gmail.com with ESMTPSA id cb8-20020a0564020b6800b0043bb7c11a59sm5943505edb.93.2022.07.24.11.25.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 Jul 2022 11:25:41 -0700 (PDT)
+From:   Michael Straube <straube.linux@gmail.com>
+To:     gregkh@linuxfoundation.org
+Cc:     Larry.Finger@lwfinger.net, phil@philpotter.co.uk,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        Michael Straube <straube.linux@gmail.com>
+Subject: [PATCH] staging: r8188eu: make dump_chip_info() static
+Date:   Sun, 24 Jul 2022 20:25:20 +0200
+Message-Id: <20220724182520.7794-1-straube.linux@gmail.com>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] drm: Prevent modeset helpers to access an uninitialized
- drm_mode_config
-Content-Language: en-US
-To:     Javier Martinez Canillas <javierm@redhat.com>,
-        linux-kernel@vger.kernel.org
-Cc:     David Airlie <airlied@linux.ie>, dri-devel@lists.freedesktop.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-References: <20220724123741.1268536-1-javierm@redhat.com>
-From:   Thomas Zimmermann <tzimmermann@suse.de>
-In-Reply-To: <20220724123741.1268536-1-javierm@redhat.com>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="------------D77JiePcBSv49U8zqVMSt374"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------D77JiePcBSv49U8zqVMSt374
-Content-Type: multipart/mixed; boundary="------------9lpK2U77BUAvJqpPkkLLD0fD";
- protected-headers="v1"
-From: Thomas Zimmermann <tzimmermann@suse.de>
-To: Javier Martinez Canillas <javierm@redhat.com>,
- linux-kernel@vger.kernel.org
-Cc: David Airlie <airlied@linux.ie>, dri-devel@lists.freedesktop.org,
- Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Message-ID: <e6ed25b0-49d2-7e3b-91e5-72e431310610@suse.de>
-Subject: Re: [PATCH] drm: Prevent modeset helpers to access an uninitialized
- drm_mode_config
-References: <20220724123741.1268536-1-javierm@redhat.com>
-In-Reply-To: <20220724123741.1268536-1-javierm@redhat.com>
+The function dump_chip_info() is only used in rtl8188e_hal_init.c.
+Make it static to reduce the driver object file size by 281 bytes.
 
---------------9lpK2U77BUAvJqpPkkLLD0fD
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: base64
+before:
+  text    data     bss     dec     hex filename
+530606   43897    7072  581575   8dfc7 drivers/staging/r8188eu/r8188eu.o
 
-SGkgSmF2aWVyDQoNCkFtIDI0LjA3LjIyIHVtIDE0OjM3IHNjaHJpZWIgSmF2aWVyIE1hcnRp
-bmV6IENhbmlsbGFzOg0KPiBEUk0gZHJpdmVycyBpbml0aWFsaXplIHRoZSBtb2RlIGNvbmZp
-Z3VyYXRpb24gd2l0aCBkcm1tX21vZGVfY29uZmlnX2luaXQoKQ0KPiBhbmQgdGhhdCBmdW5j
-dGlvbiAoYW1vbmcgb3RoZXIgdGhpbmdzKSBpbml0aWFsaXplcyBtdXRleGVzIHRoYXQgYXJl
-IGxhdGVyDQo+IHVzZWQgYnkgbW9kZXNldCBoZWxwZXJzLg0KPiANCj4gQnV0IHRoZSBoZWxw
-ZXJzIHNob3VsZCBvbmx5IGF0dGVtcHQgdG8gZ3JhYiB0aG9zZSBsb2NrcyBpZiB0aGUgbW9k
-ZSBjb25maWcNCj4gd2FzIHByb3Blcmx5IGluaXRpYWxpemVkLiBPdGhlcndpc2UgaXQgY2Fu
-IGxlYWQgdG8ga2VybmVsIG9vcHMuIEFuIGV4YW1wbGUNCj4gaXMgd2hlbiBhIERSTSBkcml2
-ZXIgdXNpbmcgdGhlIGNvbXBvbmVudCBmcmFtZXdvcmsgZG9lcyBub3QgaW5pdGlhbGl6ZSB0
-aGUNCj4gZHJtX21vZGVfY29uZmlnLCBiZWNhdXNlIGl0cyAuYmluZCBjYWxsYmFjayB3YXMg
-bm90IGJlaW5nIGV4ZWN1dGVkIGR1ZSBvbmUNCj4gb2YgaXRzIGV4cGVjdGVkIHN1Yi1kZXZp
-Y2VzJyBkcml2ZXIgZmFpbGluZyB0byBwcm9iZS4NCj4gDQo+IFNvbWUgZHJpdmVycyBjaGVj
-ayB0aGUgc3RydWN0IGRybV9kcml2ZXIucmVnaXN0ZXJlZCBmaWVsZCBhcyBhbiBpbmRpY2F0
-aW9uDQo+IG9uIHdoZXRoZXIgdGhlaXIgLnNodXRkb3duIGNhbGxiYWNrIHNob3VsZCBjYWxs
-IGhlbHBlcnMgdG8gdGVhcm4gZG93biB0aGUNCj4gbW9kZSBjb25maWd1cmF0aW9uIG9yIG5v
-dCwgYnV0IG1vc3QgZHJpdmVycyBqdXN0IGFzc3VtZSB0aGF0IGl0IGlzIGFsd2F5cw0KPiBz
-YWZlIHRvIGNhbGwgaGVscGVycyBzdWNoIGFzIGRybV9hdG9taWNfaGVscGVyX3NodXRkb3du
-KCkgZHVyaW5nIHNodXRkb3duLg0KPiANCj4gTGV0IG1ha2UgdGhlIERSTSBjb3JlIG1vcmUg
-cm9idXN0IGFuZCBwcmV2ZW50IHRoaXMgdG8gaGFwcGVuLCBieSBtYXJraW5nIGENCj4gc3Ry
-dWN0IGRybV9tb2RlX2NvbmZpZyBhcyBpbml0aWFsaXplZCBkdXJpbmcgZHJtbV9tb2RlX2Nv
-bmZpZ19pbml0KCkuIHRoYXQNCj4gd2F5IGhlbHBlcnMgY2FuIGNoZWNrIGZvciBpdCBhbmQg
-bm90IGF0dGVtcHQgdG8gZ3JhYiB1bmluaXRpYWxpemVkIG11dGV4ZXMuDQoNCkkgZGlzYWdy
-ZWUuIFRoaXMgcGF0Y2ggbG9va3MgbGlrZSBjYXJnby1jdWx0IHByb2dyYW1taW5nIGFuZCBl
-bnRpcmVseSANCmFyYml0cmFyeS4gIFRoZSBzb2x1dGlvbiBoZXJlIGlzIHRvIGZpeCBkcml2
-ZXJzLiAgVGhlIGFjdHVhbCB0ZXN0IHRvIA0KcGVyZm9ybSBpcyB0byBpbnN0cnVtZW50IHRo
-ZSBtdXRleCBpbXBsZW1lbnRhdGlvbiB0byBkZXRlY3QgDQp1bmluaXRpYWxpemVkIG11dGV4
-ZXMuDQoNCkJlc3QgcmVnYXJkcw0KVGhvbWFzDQoNCj4gDQo+IFNpZ25lZC1vZmYtYnk6IEph
-dmllciBNYXJ0aW5leiBDYW5pbGxhcyA8amF2aWVybUByZWRoYXQuY29tPg0KPiAtLS0NCj4g
-DQo+ICAgZHJpdmVycy9ncHUvZHJtL2RybV9tb2RlX2NvbmZpZy5jICB8IDQgKysrKw0KPiAg
-IGRyaXZlcnMvZ3B1L2RybS9kcm1fbW9kZXNldF9sb2NrLmMgfCA2ICsrKysrKw0KPiAgIGlu
-Y2x1ZGUvZHJtL2RybV9tb2RlX2NvbmZpZy5oICAgICAgfCA4ICsrKysrKysrDQo+ICAgMyBm
-aWxlcyBjaGFuZ2VkLCAxOCBpbnNlcnRpb25zKCspDQo+IA0KPiBkaWZmIC0tZ2l0IGEvZHJp
-dmVycy9ncHUvZHJtL2RybV9tb2RlX2NvbmZpZy5jIGIvZHJpdmVycy9ncHUvZHJtL2RybV9t
-b2RlX2NvbmZpZy5jDQo+IGluZGV4IDU5YjM0ZjA3Y2ZjZS4uZGI2NDlmOTcxMjBiIDEwMDY0
-NA0KPiAtLS0gYS9kcml2ZXJzL2dwdS9kcm0vZHJtX21vZGVfY29uZmlnLmMNCj4gKysrIGIv
-ZHJpdmVycy9ncHUvZHJtL2RybV9tb2RlX2NvbmZpZy5jDQo+IEBAIC00NTYsNiArNDU2LDgg
-QEAgaW50IGRybW1fbW9kZV9jb25maWdfaW5pdChzdHJ1Y3QgZHJtX2RldmljZSAqZGV2KQ0K
-PiAgIAkJZG1hX3Jlc3ZfZmluaSgmcmVzdik7DQo+ICAgCX0NCj4gICANCj4gKwlkZXYtPm1v
-ZGVfY29uZmlnLmluaXRpYWxpemVkID0gdHJ1ZTsNCj4gKw0KPiAgIAlyZXR1cm4gZHJtbV9h
-ZGRfYWN0aW9uX29yX3Jlc2V0KGRldiwgZHJtX21vZGVfY29uZmlnX2luaXRfcmVsZWFzZSwN
-Cj4gICAJCQkJCU5VTEwpOw0KPiAgIH0NCj4gQEAgLTU0OSw2ICs1NTEsOCBAQCB2b2lkIGRy
-bV9tb2RlX2NvbmZpZ19jbGVhbnVwKHN0cnVjdCBkcm1fZGV2aWNlICpkZXYpDQo+ICAgCWlk
-cl9kZXN0cm95KCZkZXYtPm1vZGVfY29uZmlnLnRpbGVfaWRyKTsNCj4gICAJaWRyX2Rlc3Ry
-b3koJmRldi0+bW9kZV9jb25maWcub2JqZWN0X2lkcik7DQo+ICAgCWRybV9tb2Rlc2V0X2xv
-Y2tfZmluaSgmZGV2LT5tb2RlX2NvbmZpZy5jb25uZWN0aW9uX211dGV4KTsNCj4gKw0KPiAr
-CWRldi0+bW9kZV9jb25maWcuaW5pdGlhbGl6ZWQgPSBmYWxzZTsNCj4gICB9DQo+ICAgRVhQ
-T1JUX1NZTUJPTChkcm1fbW9kZV9jb25maWdfY2xlYW51cCk7DQo+ICAgDQo+IGRpZmYgLS1n
-aXQgYS9kcml2ZXJzL2dwdS9kcm0vZHJtX21vZGVzZXRfbG9jay5jIGIvZHJpdmVycy9ncHUv
-ZHJtL2RybV9tb2Rlc2V0X2xvY2suYw0KPiBpbmRleCA5MTgwNjU5ODJkYjQuLmQ2YTgxY2I4
-ODEyMyAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9ncHUvZHJtL2RybV9tb2Rlc2V0X2xvY2su
-Yw0KPiArKysgYi9kcml2ZXJzL2dwdS9kcm0vZHJtX21vZGVzZXRfbG9jay5jDQo+IEBAIC00
-NDQsNiArNDQ0LDkgQEAgRVhQT1JUX1NZTUJPTChkcm1fbW9kZXNldF91bmxvY2spOw0KPiAg
-ICAqDQo+ICAgICogU2VlIGFsc286IERSTV9NT0RFU0VUX0xPQ0tfQUxMX0JFR0lOKCkgYW5k
-IERSTV9NT0RFU0VUX0xPQ0tfQUxMX0VORCgpDQo+ICAgICoNCj4gKyAqIFRoaXMgZnVuY3Rp
-b24gbXVzdCBvbmx5IGJlIGNhbGxlZCBhZnRlciBkcm1tX21vZGVfY29uZmlnX2luaXQoKSwg
-c2luY2UgaXQNCj4gKyAqIHRha2VzIGxvY2tzIHRoYXQgYXJlIGluaXRpYWxpemVkIGFzIHBh
-cnQgb2YgdGhlIGluaXRpYWwgbW9kZSBjb25maWd1cmF0aW9uLg0KPiArICoNCj4gICAgKiBS
-ZXR1cm5zOiAwIG9uIHN1Y2Nlc3Mgb3IgYSBuZWdhdGl2ZSBlcnJvci1jb2RlIG9uIGZhaWx1
-cmUuDQo+ICAgICovDQo+ICAgaW50IGRybV9tb2Rlc2V0X2xvY2tfYWxsX2N0eChzdHJ1Y3Qg
-ZHJtX2RldmljZSAqZGV2LA0KPiBAQCAtNDU0LDYgKzQ1Nyw5IEBAIGludCBkcm1fbW9kZXNl
-dF9sb2NrX2FsbF9jdHgoc3RydWN0IGRybV9kZXZpY2UgKmRldiwNCj4gICAJc3RydWN0IGRy
-bV9wbGFuZSAqcGxhbmU7DQo+ICAgCWludCByZXQ7DQo+ICAgDQo+ICsJaWYgKFdBUk5fT04o
-IWRldi0+bW9kZV9jb25maWcuaW5pdGlhbGl6ZWQpKQ0KPiArCQlyZXR1cm4gLUVJTlZBTDsN
-Cj4gKw0KPiAgIAlyZXQgPSBkcm1fbW9kZXNldF9sb2NrKCZkZXYtPm1vZGVfY29uZmlnLmNv
-bm5lY3Rpb25fbXV0ZXgsIGN0eCk7DQo+ICAgCWlmIChyZXQpDQo+ICAgCQlyZXR1cm4gcmV0
-Ow0KPiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9kcm0vZHJtX21vZGVfY29uZmlnLmggYi9pbmNs
-dWRlL2RybS9kcm1fbW9kZV9jb25maWcuaA0KPiBpbmRleCA2YjVlMDEyOTUzNDguLmQyZTFh
-NmQ3ZGNjMiAxMDA2NDQNCj4gLS0tIGEvaW5jbHVkZS9kcm0vZHJtX21vZGVfY29uZmlnLmgN
-Cj4gKysrIGIvaW5jbHVkZS9kcm0vZHJtX21vZGVfY29uZmlnLmgNCj4gQEAgLTk1NCw2ICs5
-NTQsMTQgQEAgc3RydWN0IGRybV9tb2RlX2NvbmZpZyB7DQo+ICAgCXN0cnVjdCBkcm1fYXRv
-bWljX3N0YXRlICpzdXNwZW5kX3N0YXRlOw0KPiAgIA0KPiAgIAljb25zdCBzdHJ1Y3QgZHJt
-X21vZGVfY29uZmlnX2hlbHBlcl9mdW5jcyAqaGVscGVyX3ByaXZhdGU7DQo+ICsNCj4gKwkv
-KioNCj4gKwkgKiBAaW5pdGlhbGl6ZWQ6DQo+ICsJICoNCj4gKwkgKiBJbnRlcm5hbGx5IHVz
-ZWQgYnkgbW9kZXNldCBoZWxwZXJzIHN1Y2ggYXMgZHJtX21vZGVzZXRfbG9ja19hbGxfY3R4
-KCkNCj4gKwkgKiB0byBkZXRlcm1pbmUgaWYgdGhlIG1vZGUgY29uZmlndXJhdGlvbiBoYXMg
-YmVlbiBwcm9wZXJseSBpbml0aWFsaXplZC4NCj4gKwkgKi8NCj4gKwlib29sIGluaXRpYWxp
-emVkOw0KPiAgIH07DQo+ICAgDQo+ICAgaW50IF9fbXVzdF9jaGVjayBkcm1tX21vZGVfY29u
-ZmlnX2luaXQoc3RydWN0IGRybV9kZXZpY2UgKmRldik7DQoNCi0tIA0KVGhvbWFzIFppbW1l
-cm1hbm4NCkdyYXBoaWNzIERyaXZlciBEZXZlbG9wZXINClNVU0UgU29mdHdhcmUgU29sdXRp
-b25zIEdlcm1hbnkgR21iSA0KTWF4ZmVsZHN0ci4gNSwgOTA0MDkgTsO8cm5iZXJnLCBHZXJt
-YW55DQooSFJCIDM2ODA5LCBBRyBOw7xybmJlcmcpDQpHZXNjaMOkZnRzZsO8aHJlcjogSXZv
-IFRvdGV2DQo=
+after:
+  text    data     bss     dec     hex filename
+530405   43817    7072  581294   8deae drivers/staging/r8188eu/r8188eu.o
 
---------------9lpK2U77BUAvJqpPkkLLD0fD--
+Signed-off-by: Michael Straube <straube.linux@gmail.com>
+---
+ drivers/staging/r8188eu/hal/hal_com.c         | 39 -------------------
+ .../staging/r8188eu/hal/rtl8188e_hal_init.c   | 39 +++++++++++++++++++
+ drivers/staging/r8188eu/include/hal_com.h     |  3 --
+ 3 files changed, 39 insertions(+), 42 deletions(-)
 
---------------D77JiePcBSv49U8zqVMSt374
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
+diff --git a/drivers/staging/r8188eu/hal/hal_com.c b/drivers/staging/r8188eu/hal/hal_com.c
+index e9a32dd84a8e..6a1cdc67335b 100644
+--- a/drivers/staging/r8188eu/hal/hal_com.c
++++ b/drivers/staging/r8188eu/hal/hal_com.c
+@@ -10,45 +10,6 @@
+ 
+ #define _HAL_INIT_C_
+ 
+-void dump_chip_info(struct HAL_VERSION	chip_vers)
+-{
+-	uint cnt = 0;
+-	char buf[128];
+-
+-	cnt += sprintf((buf + cnt), "Chip Version Info: CHIP_8188E_");
+-	cnt += sprintf((buf + cnt), "%s_", IS_NORMAL_CHIP(chip_vers) ?
+-		       "Normal_Chip" : "Test_Chip");
+-	cnt += sprintf((buf + cnt), "%s_", IS_CHIP_VENDOR_TSMC(chip_vers) ?
+-		       "TSMC" : "UMC");
+-
+-	switch (chip_vers.CUTVersion) {
+-	case A_CUT_VERSION:
+-		cnt += sprintf((buf + cnt), "A_CUT_");
+-		break;
+-	case B_CUT_VERSION:
+-		cnt += sprintf((buf + cnt), "B_CUT_");
+-		break;
+-	case C_CUT_VERSION:
+-		cnt += sprintf((buf + cnt), "C_CUT_");
+-		break;
+-	case D_CUT_VERSION:
+-		cnt += sprintf((buf + cnt), "D_CUT_");
+-		break;
+-	case E_CUT_VERSION:
+-		cnt += sprintf((buf + cnt), "E_CUT_");
+-		break;
+-	default:
+-		cnt += sprintf((buf + cnt), "UNKNOWN_CUT(%d)_", chip_vers.CUTVersion);
+-		break;
+-	}
+-
+-	cnt += sprintf((buf + cnt), "1T1R_");
+-
+-	cnt += sprintf((buf + cnt), "RomVer(%d)\n", 0);
+-
+-	pr_info("%s", buf);
+-}
+-
+ #define	CHAN_PLAN_HW	0x80
+ 
+ u8 /* return the final channel plan decision */
+diff --git a/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c b/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
+index fe477438899e..5b8f1a912bbb 100644
+--- a/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
++++ b/drivers/staging/r8188eu/hal/rtl8188e_hal_init.c
+@@ -526,6 +526,45 @@ void rtl8188e_ReadEFuse(struct adapter *Adapter, u16 _size_byte, u8 *pbuf)
+ 	Hal_EfuseReadEFuse88E(Adapter, 0, _size_byte, pbuf);
+ }
+ 
++static void dump_chip_info(struct HAL_VERSION chip_vers)
++{
++	uint cnt = 0;
++	char buf[128];
++
++	cnt += sprintf((buf + cnt), "Chip Version Info: CHIP_8188E_");
++	cnt += sprintf((buf + cnt), "%s_", IS_NORMAL_CHIP(chip_vers) ?
++		       "Normal_Chip" : "Test_Chip");
++	cnt += sprintf((buf + cnt), "%s_", IS_CHIP_VENDOR_TSMC(chip_vers) ?
++		       "TSMC" : "UMC");
++
++	switch (chip_vers.CUTVersion) {
++	case A_CUT_VERSION:
++		cnt += sprintf((buf + cnt), "A_CUT_");
++		break;
++	case B_CUT_VERSION:
++		cnt += sprintf((buf + cnt), "B_CUT_");
++		break;
++	case C_CUT_VERSION:
++		cnt += sprintf((buf + cnt), "C_CUT_");
++		break;
++	case D_CUT_VERSION:
++		cnt += sprintf((buf + cnt), "D_CUT_");
++		break;
++	case E_CUT_VERSION:
++		cnt += sprintf((buf + cnt), "E_CUT_");
++		break;
++	default:
++		cnt += sprintf((buf + cnt), "UNKNOWN_CUT(%d)_", chip_vers.CUTVersion);
++		break;
++	}
++
++	cnt += sprintf((buf + cnt), "1T1R_");
++
++	cnt += sprintf((buf + cnt), "RomVer(%d)\n", 0);
++
++	pr_info("%s", buf);
++}
++
+ void rtl8188e_read_chip_version(struct adapter *padapter)
+ {
+ 	u32				value32;
+diff --git a/drivers/staging/r8188eu/include/hal_com.h b/drivers/staging/r8188eu/include/hal_com.h
+index 56ba356b5371..d7e333f6ce39 100644
+--- a/drivers/staging/r8188eu/include/hal_com.h
++++ b/drivers/staging/r8188eu/include/hal_com.h
+@@ -131,9 +131,6 @@
+ #define REG_NOA_DESC_START			0x05E8
+ #define REG_NOA_DESC_COUNT			0x05EC
+ 
+-#include "HalVerDef.h"
+-void dump_chip_info(struct HAL_VERSION	ChipVersion);
+-
+ /* return the final channel plan decision */
+ u8 hal_com_get_channel_plan(struct adapter *padapter,
+ 			    u8 hw_channel_plan,
+-- 
+2.37.1
 
------BEGIN PGP SIGNATURE-----
-
-wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmLdjmkFAwAAAAAACgkQlh/E3EQov+CQ
-Rg/+Nl1yvZOhSU5TvkOZIW6QYboadZl3uL5V4uO+nLfX1tGe1OpXAuzHoheCbO585VezcM1lt9AK
-Z7MWGdTLkXcbHGtGI8NEVTsvslUHW+zuOA2Xzzf7R/PoXJZ8fHgwNbeTTHrzg92H28MrVmONe6HF
-53LlTJjdy3d1SIi5A4dDrVTjzES5vr2G4zfN6FxV3GaBYi37epkccOCCWY46+VejsjT9v9PYmOvk
-n/4mXdO2BsmvGRTzuGCuXKTllL7ej0JUb8eUTXZg+TIF6HQyQeGq5Y4LAq1dfEbqVq/yDgtX7JWb
-RkLSZ8+sUS9mETiPHPW9X3TNtqlwzPLHBucUWquN60qJMrBJLyjC5O5jqkeaLlYXzP8G9oi5RMCa
-Ek7mbjVK64k8uzKn4s/tlPEca4Skhu3C6z45ERcADdzYi3tFfrkYuHgaDOmE5Hu9ec4W5cffWYVD
-N1VejvK3sQjq9k423tdGCOpNsuaoFnwKzu0WIDIgaeYM+Z4VbeydB6YaQlaS64FR8vAr0rc59T7p
-cvpNzcJf3G0IG3PonUNS8BKID63dfocj7yik0+3WjXAk3qjX46yoDYG4KAqZETmxBdxqvopohdAc
-/PKWpXX3pig2f8x6x3XSQqgcHy6CRoUxW6RgrY9s9fPfBFz+A15B1fbjTZF7Y4OA/p0NqAkekloK
-hiI=
-=Tj2v
------END PGP SIGNATURE-----
-
---------------D77JiePcBSv49U8zqVMSt374--
