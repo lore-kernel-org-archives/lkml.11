@@ -2,68 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A8F5C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 17:01:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3941C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 17:24:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230396AbiGXRBS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 13:01:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48596 "EHLO
+        id S229765AbiGXRYq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 13:24:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233555AbiGXRBH (ORCPT
+        with ESMTP id S229492AbiGXRYp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 13:01:07 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACEF4FD20
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 10:01:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 1EABACE0FDC
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 17:01:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5A307C341DE;
-        Sun, 24 Jul 2022 17:01:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658682062;
-        bh=EIURqzu53Epz1Ek+04ymRTvZxBOAHWbGaDyrVvcj2RQ=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=oBpFQn8P8K0eJC+r0p5s0kniPFiKBmPA3W99T4bk1WE6nDnvgU5KOfDQXtym6X5/7
-         JKRQU7k6+oVTQxnn42+heLbj+BiWYcVCz0FO6Zlf9i3XOceETPOPAv+QZ9gEfVQEGr
-         SnhsmWOpwPIwXEEA5SxPNk9u2z/qJyXtmYBcPPLlbZ9Q5qGxTpr2MLYssByexh7+6E
-         rNQ0mkrgr5kYKlOXyXIGKLujTke4auXNpFWNO/rMiFcdDXbrR4Vxdrin3wiQnKR1eD
-         x5bx+z7iVPRbnfpnCCgaFMCbWrHZC8+tdZ5HRUjcbk2omJ9vcoYFHZsgO6OHkXoQWg
-         HCd8WC+tWAzjQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3202FE451BA;
-        Sun, 24 Jul 2022 17:01:02 +0000 (UTC)
-Subject: Re: [GIT PULL] perf/urgent for v5.19-rc8
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <Yt0QkASKgozBD253@zn.tnic>
-References: <Yt0QkASKgozBD253@zn.tnic>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <Yt0QkASKgozBD253@zn.tnic>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/perf_urgent_for_v5.19_rc8
-X-PR-Tracked-Commit-Id: b0380e13502adf7dd8be4c47d622c3522aae6c63
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: af2c9ac24019ece9281e606662e5c78fa67f5930
-Message-Id: <165868206220.25283.8010031676742068896.pr-tracker-bot@kernel.org>
-Date:   Sun, 24 Jul 2022 17:01:02 +0000
-To:     Borislav Petkov <bp@suse.de>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>
+        Sun, 24 Jul 2022 13:24:45 -0400
+Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19009E00A
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 10:24:44 -0700 (PDT)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 666715C00C4;
+        Sun, 24 Jul 2022 13:24:41 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Sun, 24 Jul 2022 13:24:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
+        cc:cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm1; t=1658683481; x=
+        1658769881; bh=EeV+NW65LBch6mNGDCLaD34T6kF11Zy8g4cFp+FfFpE=; b=m
+        hcSLTA/X5S34jIznRsDMB58z1ovfW7VrGARmMvEhIrUs1o6DMHxEqiW3HLnvHNfU
+        Ura+VB8voaJQ/yjEEY9tj2ojbd93aILI8N7qnUgwpStwG2TOhnGOrsoMAjNSxR87
+        1ZPZDnmxiBPwlLAIp/hkUP/P3dN4OYwPVW6mg5IHZS7njbb8qI0UUlTx9Wns62Sd
+        2EpcqNBdtisir4/3WwVk635fvnZOeVbylHBWROXfMUIRFKQlZ68zogIT7LhUZfZJ
+        tFwcKbKZXsoz9SXFXMMP/wl4+L2S/5PHcs1VT5yhGs990BTMqqCOMdUe/EPhNFcK
+        YiBuBa7AYJXZIbjCTcpdw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1658683481; x=
+        1658769881; bh=EeV+NW65LBch6mNGDCLaD34T6kF11Zy8g4cFp+FfFpE=; b=c
+        nJWRDAYNaKT4xPxchZ0Xi4zjs2FbLYgfLW6Whbw4hy4E/UUKF9ucormtJlZrmlxX
+        AjjTRn8sSBcYh+0o33N8zgUkDnh5X0EFUiaRYsr/Gs/PZGoSxKjXiSYRELrJLoAC
+        8utw7pR61PaC78tFNHzFtijGYNZVxP6r6oGHeGgr/F1CLYNKLD5/x74Yusksnqg3
+        F1RZN0E1UQ8A0pQTLVN1JTjtRCDEmqkOvrxwEme1JY1KMnkmzrnL/Ve2fuk9Fkqb
+        66szOc3MRQQoMF4qgK6ZNWUP1kBnXm9/NZH4W+BqeEKith338x8uxKJKntFDPfqN
+        J+3ODcg2U2Ztbp8slieTA==
+X-ME-Sender: <xms:WIDdYpf1RNRqXIHwvyLFh0NTvgwRpt2a5dmqlvjilIYfoeW-s23zQg>
+    <xme:WIDdYnNXLPdyyDjVNhNE5jB-qZ6qYQFbjGkEUfVU7q6acl0d7vmFiuigV_b7sYEDW
+    52BEgZozYH5OtJiWA>
+X-ME-Received: <xmr:WIDdYijm1mMUEDj9HckjAhtAlgeF5kIZ09gGWyvGf5t7xgXmhV-7wNd8xibHW6dTOGXmSmmwRrr6yOcZgfxMHuW-SUq6UcHPDjeYPIMQGmiS0sAa4b8wSPtVAQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvddtiedguddufecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpefuvfevfhfhkffffgggjggtgfesthekredttdefjeenucfhrhhomhepufgr
+    mhhuvghlucfjohhllhgrnhguuceoshgrmhhuvghlsehshhholhhlrghnugdrohhrgheqne
+    cuggftrfgrthhtvghrnheptdevhfehhefgvdekteffleduueduheduuedvtdevleelkeev
+    vdeuvdeihfekueehnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilh
+    hfrhhomhepshgrmhhuvghlsehshhholhhlrghnugdrohhrgh
+X-ME-Proxy: <xmx:WYDdYi9bC7ej5a8z5_P5LSGugFEfQegcAqHhGKvLZh4Ymy15wt6ULg>
+    <xmx:WYDdYlvRWTGxxavkNUOWxjx4HpexuiepRTFa5MCIE7FdlIN8OZya6Q>
+    <xmx:WYDdYhGCICBWtHj9wioMiBHwVl9bN3P62nn9axM3ccqRj4N77gDWnw>
+    <xmx:WYDdYtK4FpZnBRyjneEv-dfhu9sRCXk2ocidw2oreqp1nPp580pYmQ>
+Feedback-ID: i0ad843c9:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
+ 24 Jul 2022 13:24:40 -0400 (EDT)
+Subject: Re: [PATCH 0/2] riscv: Add macro for multiple nop instructions
+To:     Palmer Dabbelt <palmer@dabbelt.com>
+Cc:     heiko@sntech.de, Paul Walmsley <paul.walmsley@sifive.com>,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <mhng-24b00ffb-dcaa-40b3-8da3-2c2fe26ea3aa@palmer-mbp2014>
+From:   Samuel Holland <samuel@sholland.org>
+Message-ID: <d684ed27-2530-4470-a320-80baadbb6197@sholland.org>
+Date:   Sun, 24 Jul 2022 12:24:40 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
+MIME-Version: 1.0
+In-Reply-To: <mhng-24b00ffb-dcaa-40b3-8da3-2c2fe26ea3aa@palmer-mbp2014>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Sun, 24 Jul 2022 11:27:44 +0200:
+Hi Palmer,
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/perf_urgent_for_v5.19_rc8
+On 7/21/22 9:16 PM, Palmer Dabbelt wrote:
+> On Tue, 07 Jun 2022 07:30:57 PDT (-0700), heiko@sntech.de wrote:
+>> Some cases need multiple nop instructions and arm64 already has a
+>> nice helper for not needing to write all of them out but instead
+>> use a helper to add n nops.
+>>
+>> So add a similar thing to riscv and convert the T-Head PMA
+>> alternative to use it.
+>>
+>>
+>> Heiko Stuebner (2):
+>>   riscv: introduce nops and __nops macros for NOP sequences
+>>   riscv: convert the t-head pbmt errata to use the __nops macro
+>>
+>>  arch/riscv/include/asm/asm.h         | 15 +++++++++++++++
+>>  arch/riscv/include/asm/barrier.h     |  2 ++
+>>  arch/riscv/include/asm/errata_list.h |  8 +-------
+>>  3 files changed, 18 insertions(+), 7 deletions(-)
+> 
+> Thanks, these are on for-next.  I had to fix up some minor conflicts, but
+> hopefuly nothing went wrong.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/af2c9ac24019ece9281e606662e5c78fa67f5930
+The conflicts are because the patch was sent on top of fixes, specifically
+e83031564137 ("riscv: Fix ALT_THEAD_PMA's asm parameters"). Since you applied
+this patch without pulling fixes in to for-next, now for-next conflicts with master.
 
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Regards,
+Samuel
