@@ -2,132 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A74CC43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 18:27:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04D68CCA48B
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 18:28:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231605AbiGXS1L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 14:27:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52062 "EHLO
+        id S231817AbiGXS2B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 14:28:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231817AbiGXS01 (ORCPT
+        with ESMTP id S229977AbiGXS17 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 14:26:27 -0400
-Received: from mail-oa1-x31.google.com (mail-oa1-x31.google.com [IPv6:2001:4860:4864:20::31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E38310557;
-        Sun, 24 Jul 2022 11:26:26 -0700 (PDT)
-Received: by mail-oa1-x31.google.com with SMTP id 586e51a60fabf-10d845dcf92so12180192fac.12;
-        Sun, 24 Jul 2022 11:26:26 -0700 (PDT)
+        Sun, 24 Jul 2022 14:27:59 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D3C010557
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 11:27:58 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id x23-20020a05600c179700b003a30e3e7989so5196293wmo.0
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 11:27:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=DM/R9yX4is3BPPJw3zDaUfeCw8Cx4pI3OKbOnVDlwts=;
-        b=BiBXPfXyKhzenr8F/qPCACHhjj/SZtE6dXYzI228H7pn/llrP8Z1JNeUYUq30Ljrs1
-         ekjuprt2/aY8IYYil/a8jnHxSQuJmwUoj3SuLhOp8N81MyuDuw+hVMbWFUhZd9jOY7BQ
-         8pYLLIQ1Re7PMBdIgAfZHbZa2A8NBsHGSPyl4NDM8stO6TrKKDyRT4bpdO6srDu1iLEs
-         lJbB6/UctREGnhc8Cc69KhnRyflh0KfeSfNRwFogDwq3bb2KikalIbqnyinrmWxv9+Bw
-         ht5ztXQ9vFd1Gxbaftk2HQx6L0bWUFSL3wjEtdzZxxBBYFC64rGszv4dG+M4IrCEknmv
-         TOQw==
+        d=linexp-org.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:content-language:to:cc
+         :references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=qt1aI68JPk+yFMgieLmwwFbYBpyY4LDiXmO9WB/LvSU=;
+        b=tzrGLmAQ89B4gqHZfsNPAiZ3PRHVJftO8zQt//3j9sGVDEI9Bh1rbSa6dw6cJ6ipkg
+         iKLzn9lHpOgrPLU8rjHVn3DG3Tdf7DXyTHjoIV3LqToc7dBKiyyCHS8yLFsYuJ1UDVnV
+         9JzChKeXmrlrPmHc2RZ5aD1/ZOo54nhZFg70wj2g2HF4VKZcllgS3gWDZye3AjI28aWo
+         p2CkSGy82Wg2ovRrlYEpt9Nj5QZ88G+7OajBkN2YAnFWLg4f81Zqk0mpIc7RTsbzPI/y
+         CM7jIq3X2DF0s9TyiK8BEPKKtCQQiKZT1guBLz13QgJJJXDmhTvx6+tWodcv2mFMGaHO
+         OUkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=DM/R9yX4is3BPPJw3zDaUfeCw8Cx4pI3OKbOnVDlwts=;
-        b=6VQ7sqDBxhfCKGEzDqoevhH1cXf82zL+5330jdCRbDDEQfUjhIWmQl+atK19muLT/Y
-         +KgKHwB3aoPmCHwnE73iC+NUl8kV9GznxsEHcDydOz7NEq/Cn4N+eLdfVSJZTza+lIiI
-         UuCc26HXHktwrBFSJSwQPVGhgwYBruhXY9UxFlyu4m4yADh23cIcYp8as2vKQgMOkf15
-         CGdFizn9bjphhzLCtqzw1N/ppcZjcqnusLQwAZe+qjy4qaVRwmhpT0N4ies5PviZ31er
-         pp8pXPzhmcuASLlW9i2rVtg6Prclei/fgFEJDcxO2I54CAklC+EmZR8TOk5dzjP0GTfd
-         JjJQ==
-X-Gm-Message-State: AJIora8PrLbSV1QrkIubvvHvDUL1jExlt6F8qOrpBTSEIShCd77AMIHa
-        wkoY9AAAJjZI8WHBKIhEZsvvyyLoO1i6dw==
-X-Google-Smtp-Source: AGRyM1ugRYgGQDd1ACR7/1j8CIdHPh1IYyva+yyHCxOts+Hcn9RaVqqQ/lpSf194/C5xt5Orp8RsHg==
-X-Received: by 2002:a05:6871:54b:b0:10d:80e6:eada with SMTP id t11-20020a056871054b00b0010d80e6eadamr4732911oal.102.1658687185443;
-        Sun, 24 Jul 2022 11:26:25 -0700 (PDT)
-Received: from localhost ([2600:1700:7130:4fa0::c])
-        by smtp.gmail.com with ESMTPSA id y31-20020a056870b49f00b0010be134ac60sm4865492oap.19.2022.07.24.11.26.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 24 Jul 2022 11:26:24 -0700 (PDT)
-From:   Fae <faenkhauser@gmail.com>
-To:     faenkhauser@gmail.com
-Cc:     johan.hedberg@gmail.com, linux-bluetooth@vger.kernel.org,
-        linux-kernel@vger.kernel.org, luiz.dentz@gmail.com,
-        marcel@holtmann.org
-Subject: [PATCH] Bluetooth: Add VID/PID 0489/e0e0 for MediaTek MT7921
-Date:   Sun, 24 Jul 2022 13:25:02 -0500
-Message-Id: <20220724182501.5351-1-faenkhauser@gmail.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220722020100.11221-1-faenkhauser@gmail.com>
-References: <20220722020100.11221-1-faenkhauser@gmail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=qt1aI68JPk+yFMgieLmwwFbYBpyY4LDiXmO9WB/LvSU=;
+        b=PTa99WEhbaujle/OrnPoK5c7RrgAqz0Y4HsyQ3CcV5V45o1o8fJtnwgWrfF7vu0oyt
+         HZe2k4+6UIKtzPBpj1O4IvZdLywB17WVeJyGvJ5Fh9Ly84hRVxBCOXJLjkuqK5lxlB2o
+         XQH9rVBJak8OqP3DkKT7G7Ib+LOEkVdjwbaexTK9ri1k3VM1WqhtgIbQH1jibd/biBlx
+         72dDJ00Gl6WsG/Q3CnArPmE1q9R/CoshW3JKxL8siQhbxk5PimkNPj8dO3rvjr98fJRe
+         S6pZjZ7aSSucuIDnGFAfuTjYuOMegeHa1Nt6U9uAw3pZD3laVJJYznEYJ/yiB5P+sQ0A
+         95sQ==
+X-Gm-Message-State: AJIora+ilQvdkx4n6BS46SfKcgO2jVogc/H/KwIQHbx9OfLrT/4YWk5D
+        r6+5MnOE61xtpZ41P0UUOGos07oWTws96A==
+X-Google-Smtp-Source: AGRyM1sjq6r4lCCXcIRAD2gAykcxk/ihD6ntTZG2GPA59qR4zIAwbQZPeCh4DrsvPKk2AM7HiNYswQ==
+X-Received: by 2002:a05:600c:a47:b0:39e:f953:84e2 with SMTP id c7-20020a05600c0a4700b0039ef95384e2mr18497105wmq.202.1658687276763;
+        Sun, 24 Jul 2022 11:27:56 -0700 (PDT)
+Received: from ?IPV6:2a05:6e02:1041:c10:feb7:6a58:3e0f:a58f? ([2a05:6e02:1041:c10:feb7:6a58:3e0f:a58f])
+        by smtp.gmail.com with ESMTPSA id s2-20020adff802000000b0021e4edba1e5sm10102085wrp.111.2022.07.24.11.27.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 24 Jul 2022 11:27:56 -0700 (PDT)
+Message-ID: <18ade2d0-ebda-0526-71f3-65a0b2685068@linexp.org>
+Date:   Sun, 24 Jul 2022 20:27:54 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Content-Language: en-US
+To:     =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund@ragnatech.se>
+Cc:     daniel.lezcano@linaro.org, rafael@kernel.org, rui.zhang@intel.com,
+        khilman@baylibre.com, abailon@baylibre.com, amitk@kernel.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        "open list:RENESAS R-CAR THERMAL DRIVERS" 
+        <linux-renesas-soc@vger.kernel.org>
+References: <20220710212423.681301-1-daniel.lezcano@linexp.org>
+ <20220710212423.681301-18-daniel.lezcano@linexp.org>
+ <YtZ1IExNlsYaJkC9@oden.dyn.berto.se>
+From:   Daniel Lezcano <daniel.lezcano@linexp.org>
+Subject: Re: [PATCH v1 17/33] thermal/drivers/rcar: Switch to new of API
+In-Reply-To: <YtZ1IExNlsYaJkC9@oden.dyn.berto.se>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Tested on HP Envy ey0xxx
 
-output from /sys/kernel/debug/usb/devices:
+Hi Niklas,
 
-T:  Bus=01 Lev=01 Prnt=01 Port=02 Cnt=01 Dev#=  2 Spd=480  MxCh= 0
-D:  Ver= 2.10 Cls=ef(misc ) Sub=02 Prot=01 MxPS=64 #Cfgs=  1
-P:  Vendor=0489 ProdID=e0e0 Rev= 1.00
-S:  Manufacturer=MediaTek Inc.
-S:  Product=Wireless_Device
-S:  SerialNumber=000000000
-C:* #Ifs= 3 Cfg#= 1 Atr=e0 MxPwr=100mA
-A:  FirstIf#= 0 IfCount= 3 Cls=e0(wlcon) Sub=01 Prot=01
-I:* If#= 0 Alt= 0 #EPs= 3 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=81(I) Atr=03(Int.) MxPS=  16 Ivl=125us
-E:  Ad=82(I) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-E:  Ad=02(O) Atr=02(Bulk) MxPS= 512 Ivl=0ms
-I:* If#= 1 Alt= 0 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=83(I) Atr=01(Isoc) MxPS=   0 Ivl=1ms
-E:  Ad=03(O) Atr=01(Isoc) MxPS=   0 Ivl=1ms
-I:  If#= 1 Alt= 1 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=83(I) Atr=01(Isoc) MxPS=   9 Ivl=1ms
-E:  Ad=03(O) Atr=01(Isoc) MxPS=   9 Ivl=1ms
-I:  If#= 1 Alt= 2 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  17 Ivl=1ms
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  17 Ivl=1ms
-I:  If#= 1 Alt= 3 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  25 Ivl=1ms
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  25 Ivl=1ms
-I:  If#= 1 Alt= 4 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  33 Ivl=1ms
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  33 Ivl=1ms
-I:  If#= 1 Alt= 5 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  49 Ivl=1ms
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  49 Ivl=1ms
-I:  If#= 1 Alt= 6 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=btusb
-E:  Ad=83(I) Atr=01(Isoc) MxPS=  63 Ivl=1ms
-E:  Ad=03(O) Atr=01(Isoc) MxPS=  63 Ivl=1ms
-I:* If#= 2 Alt= 0 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=(none)
-E:  Ad=8a(I) Atr=03(Int.) MxPS=  64 Ivl=125us
-E:  Ad=0a(O) Atr=03(Int.) MxPS=  64 Ivl=125us
-I:  If#= 2 Alt= 1 #EPs= 2 Cls=e0(wlcon) Sub=01 Prot=01 Driver=(none)
-E:  Ad=8a(I) Atr=03(Int.) MxPS= 512 Ivl=125us
-E:  Ad=0a(O) Atr=03(Int.) MxPS= 512 Ivl=125us
+I tried to reproduce the issue but without success.
 
-Signed-off-by: Fae <faenkhauser@gmail.com>
----
- drivers/bluetooth/btusb.c | 3 +++
- 1 file changed, 3 insertions(+)
+What sensor are you using ?
 
-diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
-index e25fcd49db70..973d122c738f 100644
---- a/drivers/bluetooth/btusb.c
-+++ b/drivers/bluetooth/btusb.c
-@@ -454,6 +454,9 @@ static const struct usb_device_id blacklist_table[] = {
- 	{ USB_DEVICE(0x0489, 0xe0c8), .driver_info = BTUSB_MEDIATEK |
- 						     BTUSB_WIDEBAND_SPEECH |
- 						     BTUSB_VALID_LE_STATES },
-+	{ USB_DEVICE(0x0489, 0xe0e0), .driver_info = BTUSB_MEDIATEK |
-+						     BTUSB_WIDEBAND_SPEECH |
-+						     BTUSB_VALID_LE_STATES },
- 	{ USB_DEVICE(0x04ca, 0x3802), .driver_info = BTUSB_MEDIATEK |
- 						     BTUSB_WIDEBAND_SPEECH |
- 						     BTUSB_VALID_LE_STATES },
--- 
-2.37.1
+
+On 19/07/2022 11:10, Niklas Söderlund wrote:
+> Hi Daniel,
+>
+> Thanks for your work.
+>
+> On 2022-07-10 23:24:07 +0200, Daniel Lezcano wrote:
+>> The thermal OF code has a new API allowing to migrate the OF
+>> initialization to a simpler approach.
+>>
+>> Use this new API.
+> I tested this together with the series it depends on and while
+> temperature monitoring seems to work fine it breaks the emul_temp
+> interface (/sys/class/thermal/thermal_zone2/emul_temp).
+>
+> Before this change I can write a temperature to this file and have it
+> trigger actions, in my test-case changing the cooling state, which I
+> observe in /sys/class/thermal/cooling_device0/cur_state.
+>
+> Likewise before this change I could trip the critical trip-point that
+> would power off the board using the emul_temp interface, this too no
+> longer works,
+>
+>      echo 120000 > /sys/class/thermal/thermal_zone2/emul_temp
+>
+> Is this an intention change of the new API?
+
+
+
 
