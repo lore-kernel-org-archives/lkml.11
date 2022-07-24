@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83B9EC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 17:48:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A46C8C43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 17:48:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229985AbiGXRsr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 13:48:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37512 "EHLO
+        id S230062AbiGXRst (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 13:48:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbiGXRsp (ORCPT
+        with ESMTP id S229469AbiGXRsp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 24 Jul 2022 13:48:45 -0400
 Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 212001117C;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1153311441;
         Sun, 24 Jul 2022 10:48:44 -0700 (PDT)
 Received: from dslb-178-004-201-227.178.004.pools.vodafone-ip.de ([178.4.201.227] helo=martin-debian-2.paytec.ch)
         by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.89)
         (envelope-from <martin@kaiser.cx>)
-        id 1oFfiV-0005LM-0m; Sun, 24 Jul 2022 19:48:35 +0200
+        id 1oFfiR-0005LM-QJ; Sun, 24 Jul 2022 19:48:31 +0200
 From:   Martin Kaiser <martin@kaiser.cx>
 To:     Abel Vesa <abelvesa@kernel.org>, Stephen Boyd <sboyd@kernel.org>
 Cc:     Shawn Guo <shawnguo@kernel.org>,
@@ -27,55 +27,40 @@ Cc:     Shawn Guo <shawnguo@kernel.org>,
         Fabio Estevam <festevam@gmail.com>,
         linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
         linux-kernel@vger.kernel.org, Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH v3 2/2] clk: imx25: make __mx25_clocks_init return void
-Date:   Sun, 24 Jul 2022 19:47:37 +0200
-Message-Id: <20220724174737.212028-3-martin@kaiser.cx>
+Subject: [PATCH v3 0/2] ARM: imx25: print silicon revision at startup
+Date:   Sun, 24 Jul 2022 19:47:35 +0200
+Message-Id: <20220724174737.212028-1-martin@kaiser.cx>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220724174737.212028-1-martin@kaiser.cx>
+In-Reply-To: <20220602080344.208702-1-martin@kaiser.cx>
 References: <20220602080344.208702-1-martin@kaiser.cx>
- <20220724174737.212028-1-martin@kaiser.cx>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The __mx25_clocks_init function always returns 0 and its only
-caller does not check the return value. Let's remove it.
+Resurrect the unused function to print the imx25 silicon revision at
+startup.
 
-Signed-off-by: Martin Kaiser <martin@kaiser.cx>
----
+It's been a month since I sent v2. I'm resending the series, hoping to
+get a response this time. Thanks in advance.
+
 changes in v3:
 - rebase against today's linux-next
 
 changes in v2:
-- send the patch to the clk maintainers
+- drop the patch about silicon revision 1.2. It has already been merged
+  by Shawn Guo.
+- send the changeset to the clk maintainers
 
- drivers/clk/imx/clk-imx25.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+Martin Kaiser (2):
+  clk: imx25: print silicon revision during init
+  clk: imx25: make __mx25_clocks_init return void
 
-diff --git a/drivers/clk/imx/clk-imx25.c b/drivers/clk/imx/clk-imx25.c
-index 263409fca1eb..72b30dd7f05f 100644
---- a/drivers/clk/imx/clk-imx25.c
-+++ b/drivers/clk/imx/clk-imx25.c
-@@ -74,7 +74,7 @@ enum mx25_clks {
- 
- static struct clk *clk[clk_max];
- 
--static int __init __mx25_clocks_init(void __iomem *ccm_base)
-+static void __init __mx25_clocks_init(void __iomem *ccm_base)
- {
- 	BUG_ON(!ccm_base);
- 
-@@ -222,8 +222,6 @@ static int __init __mx25_clocks_init(void __iomem *ccm_base)
- 	imx_register_uart_clocks(6);
- 
- 	imx_print_silicon_rev("i.MX25", mx25_revision());
--
--	return 0;
- }
- 
- static void __init mx25_clocks_init_dt(struct device_node *np)
+ drivers/clk/imx/clk-imx25.c | 5 +++--
+ include/soc/imx/revision.h  | 1 +
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
 -- 
 2.30.2
 
