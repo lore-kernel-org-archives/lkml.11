@@ -2,71 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19A14C43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 13:27:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9585CC43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 13:30:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232786AbiGXN1Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 09:27:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41476 "EHLO
+        id S231158AbiGXNaj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 09:30:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229578AbiGXN1N (ORCPT
+        with ESMTP id S229462AbiGXNag (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 09:27:13 -0400
-Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2F0B11C0F
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 06:27:12 -0700 (PDT)
-Received: by mail-il1-f200.google.com with SMTP id l17-20020a056e02067100b002dc8a10b55eso5694412ilt.1
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 06:27:12 -0700 (PDT)
+        Sun, 24 Jul 2022 09:30:36 -0400
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CC6EDF7E;
+        Sun, 24 Jul 2022 06:30:33 -0700 (PDT)
+Received: by mail-pj1-x102f.google.com with SMTP id o5-20020a17090a3d4500b001ef76490983so7977189pjf.2;
+        Sun, 24 Jul 2022 06:30:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=hJTWsmGHbh86Ca8Ccu63Ml/CUjCqMMCMq8qVbi37eTA=;
+        b=oaQ+hEfjnwIKZKpERyXea3T4r8DEyS/NZDvcKN5Mn8Mx4DBA7jLrar9pxxzJYkLj71
+         p0flG63Suq5DKaWEcXj87eX5LKBNkRFQUCCCe/IiFWMCKDJD7BxgemV5KrLj7OKRkkwl
+         ieuBfA3JG3LmA3rMMsVp4oagiHhKb97VxG0ctJ39hhlAEpENIpSwsdTlqkUx8iXAvOGW
+         J32Tl4VMvydRxA8RvIfe19pBzw/8FLhtF1dGw7Bu5MeEtGeela3fkTyS7m2rWfSw0+bq
+         WBgtOvwDbXhydlzrUi/EFqs9SymLfWcTlUxHqFvjlVfynRQs93lAcc3M6C3TaEKSWAmu
+         53Xw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=1OtCs4tBRDhs9/PfenuS07eTKFYGPd02xNCaqa46XUQ=;
-        b=d5FVfojfmlLMfwHA8iqVAKUEwU14dUYi9l0gYR53RQRxZoGv+CE0J3a2Hs3LVuQNK2
-         eL0CNTAUNTYxznB6lyRYruEEcqWu2GNaLm7eoHLl46HBVQKPdNt5PLoUdG+q70OAjJW4
-         qRpu0cHtMkbxwZqNZWxQh9RmGC6/lR1rRc8c/CM3koYZ+ANjFUeogy/9x3fn+zHTQHAA
-         9zJR3bQo66zP/EscpIj2uMeU9dCsqA+fcrzebMBnXef+lwh2NyuGzZMvrcr7z5gPOOMA
-         BZW8zXCuDXA+TjX9Q/Qm4iKRPl39n5/SU1q5B/Z9uRVMtlzmXK0QZjn4GeI05AamiQS0
-         Il/A==
-X-Gm-Message-State: AJIora+1F74M9+WwARUtEf2Zd/S5y4b29FvfICI9zhVCLDsfmWjFblPu
-        0Q0SJfQ4Caw1ahQBPchfjZIW6Tn7eI0Dc+G26qL87ku2wYcm
-X-Google-Smtp-Source: AGRyM1urrbP6vE+R8yGNoQznJkjyIBCM2GKV7Zhd+I8se5caWMw67cvKcc0cSWgPBT5HcL4UPDWOl8SOWAdNB+FviTOmEX1/SX5Z
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=hJTWsmGHbh86Ca8Ccu63Ml/CUjCqMMCMq8qVbi37eTA=;
+        b=vG1s6sLi9u6cFxaPwQW0O6dLF63Ak/0Z8UscdFP+WL3GylCSrp3whfoFInul5UPmtt
+         BRYyNexUOVXuFB0665zMbsgxT2/+O/bJjnaxz4oz4uYd9ssSZJXKwKoJQS4LSc4v240N
+         ZEt7uinU6CuY78hQ3vss0/CJ8B/JgjCO7+ficAyivuUyWnxKwXkxwgegvXnR+Y75Z5ot
+         yEI7vftyIBiUTNzvKlJAIYzBRT3K0QaGAhiIrd5RL9I0bxxKJ3aTw4pSQLlSJfAaKAse
+         m6ucUNnPz0ZqDsYgWKbBgYxvddNvH70myV8NksI8AprkR6gwN0q1kJeWj4rWTxAPQuOU
+         /qfQ==
+X-Gm-Message-State: AJIora9ONIoBoo0urV4SI3KreJc1ZqyxFS+azo1F+SpDCfGhLa3a+0uG
+        MmeJ3IWT9N/Qg8igELGz8EAxIfYO9gIEtw==
+X-Google-Smtp-Source: AGRyM1s4sjal3zMdndzOlqX2N100d0xr+fvpyFBFsxfTMYlSzPYIIxgaYuogmZ7unvQS1lswI4RXJQ==
+X-Received: by 2002:a17:90a:2b89:b0:1f2:5860:f9aa with SMTP id u9-20020a17090a2b8900b001f25860f9aamr9958615pjd.40.1658669433248;
+        Sun, 24 Jul 2022 06:30:33 -0700 (PDT)
+Received: from ?IPV6:2404:f801:0:6:8000::a31c? ([2404:f801:9000:18:efed::a31c])
+        by smtp.gmail.com with ESMTPSA id m5-20020a170902bb8500b0016d3d907146sm5386677pls.191.2022.07.24.06.30.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 24 Jul 2022 06:30:32 -0700 (PDT)
+Message-ID: <6f9b2b0f-f893-8135-f49b-9b6b44ef408f@gmail.com>
+Date:   Sun, 24 Jul 2022 21:30:29 +0800
 MIME-Version: 1.0
-X-Received: by 2002:a6b:6911:0:b0:67b:f03b:74c1 with SMTP id
- e17-20020a6b6911000000b0067bf03b74c1mr2699546ioc.58.1658669232183; Sun, 24
- Jul 2022 06:27:12 -0700 (PDT)
-Date:   Sun, 24 Jul 2022 06:27:12 -0700
-In-Reply-To: <20220724125520.2680-1-hdanton@sina.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000625ed505e48d067f@google.com>
-Subject: Re: [syzbot] WARNING in p9_client_destroy
-From:   syzbot <syzbot+5e28cdb7ebd0f2389ca4@syzkaller.appspotmail.com>
-To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] swiotlb: Clean up some coding style and minor issues
+Content-Language: en-US
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     m.szyprowski@samsung.com, robin.murphy@arm.com,
+        michael.h.kelley@microsoft.com, Tianyu Lan <tiala@microsoft.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+        linux-hyperv@vger.kernel.org
+References: <20220722033846.950237-1-ltykernel@gmail.com>
+ <YtrAsjp0Fs0ThBa7@infradead.org>
+From:   Tianyu Lan <ltykernel@gmail.com>
+In-Reply-To: <YtrAsjp0Fs0ThBa7@infradead.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On 7/22/2022 11:22 PM, Christoph Hellwig wrote:
+> I've applied this, but then dropped the debugfs changes.  I can't find
+> any good reason why we'd use the _unsafe variant here.  Can you resend
+> that bit and write a commit log clearly documenting the considerations
+> for it?
 
-syzbot tried to test the proposed patch but the build/boot failed:
-
-./include/net/9p/client.h:128:13: error: duplicate member 'reqs'
-net/9p/client.c:288:19: error: passing argument 1 of 'idr_alloc' from incompatible pointer type [-Werror=incompatible-pointer-types]
-net/9p/client.c:291:19: error: passing argument 1 of 'idr_alloc' from incompatible pointer type [-Werror=incompatible-pointer-types]
-net/9p/client.c:336:17: error: passing argument 1 of 'idr_find' from incompatible pointer type [-Werror=incompatible-pointer-types]
-net/9p/client.c:370:13: error: passing argument 1 of 'idr_remove' from incompatible pointer type [-Werror=incompatible-pointer-types]
-net/9p/client.c:407:21: error: passing argument 1 of 'idr_get_next' from incompatible pointer type [-Werror=incompatible-pointer-types]
-net/9p/client.c:1024:11: error: passing argument 1 of 'idr_init' from incompatible pointer type [-Werror=incompatible-pointer-types]
-
-
-Tested on:
-
-commit:         cb71b93c Add linux-next specific files for 20220628
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
-dashboard link: https://syzkaller.appspot.com/bug?extid=5e28cdb7ebd0f2389ca4
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=10707be6080000
-
+Sure. I will do that.
