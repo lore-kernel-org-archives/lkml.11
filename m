@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBD57C43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 16:49:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6E3DC43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 16:50:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230453AbiGXQts (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 12:49:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43542 "EHLO
+        id S233281AbiGXQtx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 12:49:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229469AbiGXQtq (ORCPT
+        with ESMTP id S232095AbiGXQtu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 12:49:46 -0400
+        Sun, 24 Jul 2022 12:49:50 -0400
 Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FDAF1057C
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 09:49:45 -0700 (PDT)
-Received: from fraeml701-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LrTZg4dxWz67Mxp;
-        Mon, 25 Jul 2022 00:46:03 +0800 (CST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CF1D10FD9
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 09:49:49 -0700 (PDT)
+Received: from fraeml744-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LrTYd0ZvQz67Kvx;
+        Mon, 25 Jul 2022 00:45:09 +0800 (CST)
 Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml701-chm.china.huawei.com (10.206.15.50) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.24; Sun, 24 Jul 2022 18:49:42 +0200
+ fraeml744-chm.china.huawei.com (10.206.15.225) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Sun, 24 Jul 2022 18:49:47 +0200
 Received: from localhost.localdomain (10.69.192.58) by
  lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Sun, 24 Jul 2022 17:49:39 +0100
+ 15.1.2375.24; Sun, 24 Jul 2022 17:49:44 +0100
 From:   John Garry <john.garry@huawei.com>
 To:     <will@kernel.org>, <catalin.marinas@arm.com>,
         <linux-arm-kernel@lists.infradead.org>, <arnd@arndb.de>,
         <olof@lixom.net>, <soc@kernel.org>
 CC:     <jpoimboe@kernel.org>, <linux-kernel@vger.kernel.org>,
         John Garry <john.garry@huawei.com>
-Subject: [PATCH 0/2] arm64 defconfig: Get faddr2line working
-Date:   Mon, 25 Jul 2022 00:43:22 +0800
-Message-ID: <1658681004-132191-1-git-send-email-john.garry@huawei.com>
+Subject: [PATCH 2/2] arm64: defconfig: Enable DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT
+Date:   Mon, 25 Jul 2022 00:43:24 +0800
+Message-ID: <1658681004-132191-3-git-send-email-john.garry@huawei.com>
 X-Mailer: git-send-email 2.8.1
+In-Reply-To: <1658681004-132191-1-git-send-email-john.garry@huawei.com>
+References: <1658681004-132191-1-git-send-email-john.garry@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.69.192.58]
@@ -46,40 +48,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-scripts/faddr2line has not worked by default for arm64 since 5.17
+Since commit f9b3cd245784 ("Kconfig.debug: make DEBUG_INFO selectable
+from a choice") faddr2line has stopped working by default as it relies
+on CONFIG_DEBUG_INFO.
 
-Firstly, since commit f9b3cd245784 ("Kconfig.debug: make DEBUG_INFO
-selectable from a choice"), CONFIG_DEBUG_INFO was not getting enabled by
-default (and this is required for faddr2line to work).
+Enable CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT to get it working again,
+which seems the sensible config option to use.
 
-Secondly, commit dcea997beed6 ("faddr2line: Fix overlapping text section
-failures, the sequel") caused a breakage for arm64, as reported at the
-following:
-https://lore.kernel.org/lkml/3bd9817d-1959-c081-e5d0-8b0e70b3f41e@huawei.com/
+Signed-off-by: John Garry <john.garry@huawei.com>
+---
+ arch/arm64/configs/defconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-Josh has sent fixes/improvements for faddr2line at the following:
-https://lore.kernel.org/lkml/cover.1658426357.git.jpoimboe@kernel.org/
-
-In this series I enable CONFIG_DEBUG_INFO by enabling
-CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT, which seems the sensible
-option.
-
-As for merging this, I am not sure who would pick it up - any takers
-welcome.
-
-Note: this is based on next-20220722 and it may be wiser to sync the
-defconfig manually (instead of using 1/2). Indeed I am not sure what is
-the policy is of sync'ing this anyway.
-
-Thanks! 
-
-John Garry (2):
-  arm64: defconfig: Sync with savedefconfig
-  arm64: defconfig: Enable DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT
-
- arch/arm64/configs/defconfig | 85 ++++++++++++++++--------------------
- 1 file changed, 37 insertions(+), 48 deletions(-)
-
+diff --git a/arch/arm64/configs/defconfig b/arch/arm64/configs/defconfig
+index de662de0bb4d..43e3550afa45 100644
+--- a/arch/arm64/configs/defconfig
++++ b/arch/arm64/configs/defconfig
+@@ -1311,6 +1311,7 @@ CONFIG_CRYPTO_DEV_HISI_TRNG=m
+ CONFIG_CMA_SIZE_MBYTES=32
+ CONFIG_PRINTK_TIME=y
+ CONFIG_DEBUG_KERNEL=y
++CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT=y
+ CONFIG_MAGIC_SYSRQ=y
+ CONFIG_DEBUG_FS=y
+ # CONFIG_SCHED_DEBUG is not set
 -- 
 2.35.3
 
