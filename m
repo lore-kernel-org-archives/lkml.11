@@ -2,161 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB60FC43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 22:33:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02274C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 22:34:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231562AbiGXWdz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 18:33:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58514 "EHLO
+        id S231753AbiGXWeZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 18:34:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229451AbiGXWdx (ORCPT
+        with ESMTP id S231805AbiGXWeS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 18:33:53 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9357B6176;
-        Sun, 24 Jul 2022 15:33:52 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id ss3so17389815ejc.11;
-        Sun, 24 Jul 2022 15:33:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=b3VSvKp8fXTk4ug7ffkxMisEEs2oxQK6593xJQY9zGo=;
-        b=IV+Q4zWxZP4cRCbJYRRl5nEpcWQZFN7c1UO+OmjXNrEf4Uvq1z4Hy5TWx/TT3ki7tR
-         AoOnC5eKwmIqrNuYEgaIpZB+PMBnE97AG9rCQZPecXPX0GznxF48TXtVWEIYzip5eyhU
-         gMWLZNc+n7S/+hPAp+ekGffDymN1TMLyf7DxywmPTKWWEkiv0JeUsMFk2C3lVIsk+RVd
-         lIT6VG7hvOCKuZylH4iefPBSFLb3cQAFl0p5r1tTOS5L/SBzeZLax37/GVgl4LNDL3yz
-         6oRlfLHNgRgRIbU2w80BU4Ajb4Lu8+AZzWHeeO3UoRCoLU2pXs3Vwy56YFT4esTjTMoW
-         sYzQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=b3VSvKp8fXTk4ug7ffkxMisEEs2oxQK6593xJQY9zGo=;
-        b=MvmsckTaNsl9RnxGpxv8R2s31+iW+1ox8IT2RMMez0TDCm8XKBuASTg0gE3jMMlbUQ
-         r3BWHdDejVNkbWUbIiNwNN3SGjrtyKsyxrC6uo/H8BPZWIWD6Rcj5xj13kpcLpAVQ3f0
-         1Nm39ghP8ajQ34xJwIgI6s+0KjbRYAUVFkZIfeVXqS2+iYlp6XaH2uXTmqEudGD6VPFr
-         Rahq5Kmsij2VAhOXLgb1MeRo+ctDvLBLK31oBDIwI0tBUfEJa/9sf09znNXzEgLt7+3h
-         +Znn+4hxeCKDF+6pNmnLg6GRwPPWDKElKGA+VFDHkvZ+GW+WvehXrIK7ZLDWAIAEnsKH
-         tD7g==
-X-Gm-Message-State: AJIora8t0eu4uW/aetH++aZn2z5Lm543eLgc/zWHryBJCvf8qxfkuPiK
-        PH6zXX/n0TjnJBq8JwDMgOU=
-X-Google-Smtp-Source: AGRyM1s3dMFTJnj1CooXfK/OlqcUurVIDIX86DDLAnNGzOb3zqck4jrnK/IjG/S2kYm3DeCv+ldSYQ==
-X-Received: by 2002:a17:907:6d07:b0:72f:18bf:505 with SMTP id sa7-20020a1709076d0700b0072f18bf0505mr7646941ejc.406.1658702031008;
-        Sun, 24 Jul 2022 15:33:51 -0700 (PDT)
-Received: from skbuf ([188.25.231.115])
-        by smtp.gmail.com with ESMTPSA id m5-20020a17090672c500b0072b56098fc6sm4616175ejl.127.2022.07.24.15.33.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 24 Jul 2022 15:33:50 -0700 (PDT)
-Date:   Mon, 25 Jul 2022 01:33:48 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Christian Marangi <ansuelsmth@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [net-next PATCH v3 02/14] net: dsa: qca8k: make mib autocast
- feature optional
-Message-ID: <20220724223348.tqh45ygbuyw7jp5s@skbuf>
-References: <20220723141845.10570-1-ansuelsmth@gmail.com>
- <20220723141845.10570-1-ansuelsmth@gmail.com>
- <20220723141845.10570-3-ansuelsmth@gmail.com>
- <20220723141845.10570-3-ansuelsmth@gmail.com>
+        Sun, 24 Jul 2022 18:34:18 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BC7F10FD9;
+        Sun, 24 Jul 2022 15:34:17 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LrdJR0tgZz4xCy;
+        Mon, 25 Jul 2022 08:34:14 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1658702056;
+        bh=qnf0MrBahT2hsNdMKM4srx4DyvMmAByL2qQBSDmtfl8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=K8keaT2MUsEw82vfiQzGYtLhZEtJMBGDrHt9myQtwDJXeo/VlU2D0NqyImuDdRIb9
+         qIFhKfzJIkDMic19LoViM7DkQpknY0Brei2dmJCyS4ZohlY9wsqLWb6zrIK3L0TkF/
+         Ge90fW+or1/jQ8vj6G6iBmQwVB8woKaaw4tpRCVx98B+GS0pTnKl3BjS+etyDJdt9+
+         ty8BdQ1+oRceuPUS893pPJduTTO18DaMf7wH2A5OpustwKKAU1o1VYC4Y8vG3U35ad
+         ywwU4xdUg1pxYJJUA28ciKht1DVmysCZbdqVOPUfcoOGRL82vRWWImJAeE57ihrSuX
+         S3025TaYyWp3w==
+Date:   Mon, 25 Jul 2022 07:59:35 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Zhengping Jiang <jiangzp@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Subject: Re: linux-next: Fixes tag needs some work in the bluetooth tree
+Message-ID: <20220725075935.68ef1c10@canb.auug.org.au>
+In-Reply-To: <20220725075350.64662d13@canb.auug.org.au>
+References: <20220725075350.64662d13@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220723141845.10570-3-ansuelsmth@gmail.com>
- <20220723141845.10570-3-ansuelsmth@gmail.com>
+Content-Type: multipart/signed; boundary="Sig_/qfZ4R+jqDqgV3=13KOuU0ys";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jul 23, 2022 at 04:18:33PM +0200, Christian Marangi wrote:
-> Some switch may not support mib autocast feature and require the legacy
-> way of reading the regs directly.
-> Make the mib autocast feature optional and permit to declare support for
-> it using match_data struct in a dedicated qca8k_info_ops struct.
-> 
-> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> ---
->  drivers/net/dsa/qca/qca8k.c | 11 +++++++++--
->  drivers/net/dsa/qca/qca8k.h |  5 +++++
->  2 files changed, 14 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/qca/qca8k.c b/drivers/net/dsa/qca/qca8k.c
-> index 212b284f9f73..9820c5942d2a 100644
-> --- a/drivers/net/dsa/qca/qca8k.c
-> +++ b/drivers/net/dsa/qca/qca8k.c
-> @@ -2104,8 +2104,8 @@ qca8k_get_ethtool_stats(struct dsa_switch *ds, int port,
->  	u32 hi = 0;
->  	int ret;
->  
-> -	if (priv->mgmt_master &&
-> -	    qca8k_get_ethtool_stats_eth(ds, port, data) > 0)
-> +	if (priv->mgmt_master && priv->info->ops.autocast_mib &&
-> +	    priv->info->ops.autocast_mib(ds, port, data) > 0)
->  		return;
->  
->  	for (i = 0; i < priv->info->mib_count; i++) {
-> @@ -3248,20 +3248,27 @@ static int qca8k_resume(struct device *dev)
->  static SIMPLE_DEV_PM_OPS(qca8k_pm_ops,
->  			 qca8k_suspend, qca8k_resume);
->  
-> +static const struct qca8k_info_ops qca8xxx_ops = {
-> +	.autocast_mib = qca8k_get_ethtool_stats_eth,
-> +};
-> +
->  static const struct qca8k_match_data qca8327 = {
->  	.id = QCA8K_ID_QCA8327,
->  	.reduced_package = true,
->  	.mib_count = QCA8K_QCA832X_MIB_COUNT,
-> +	.ops = qca8xxx_ops,
->  };
->  
->  static const struct qca8k_match_data qca8328 = {
->  	.id = QCA8K_ID_QCA8327,
->  	.mib_count = QCA8K_QCA832X_MIB_COUNT,
-> +	.ops = qca8xxx_ops,
->  };
->  
->  static const struct qca8k_match_data qca833x = {
->  	.id = QCA8K_ID_QCA8337,
->  	.mib_count = QCA8K_QCA833X_MIB_COUNT,
-> +	.ops = qca8xxx_ops,
->  };
->  
->  static const struct of_device_id qca8k_of_match[] = {
-> diff --git a/drivers/net/dsa/qca/qca8k.h b/drivers/net/dsa/qca/qca8k.h
-> index 0b990b46890a..7b4a698f092a 100644
-> --- a/drivers/net/dsa/qca/qca8k.h
-> +++ b/drivers/net/dsa/qca/qca8k.h
-> @@ -324,10 +324,15 @@ enum qca8k_mid_cmd {
->  	QCA8K_MIB_CAST = 3,
->  };
->  
-> +struct qca8k_info_ops {
-> +	int (*autocast_mib)(struct dsa_switch *ds, int port, u64 *data);
-> +};
-> +
->  struct qca8k_match_data {
->  	u8 id;
->  	bool reduced_package;
->  	u8 mib_count;
-> +	struct qca8k_info_ops ops;
+--Sig_/qfZ4R+jqDqgV3=13KOuU0ys
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-This creates a copy of the structure for each of qca8327, qca8328, etc etc,
-which in turn will consume 3 times more space than necessary when new
-ops are added. Could you make this "const struct qca8k_ops *ops"?
+Hi all,
 
->  };
->  
->  enum {
-> -- 
-> 2.36.1
-> 
+On Mon, 25 Jul 2022 07:53:50 +1000 Stephen Rothwell <sfr@canb.auug.org.au> =
+wrote:
+>
+> In commit
+>=20
+>   68253f3cd715 ("Bluetooth: hci_sync: Fix resuming scan after suspend res=
+ume")
+>=20
+> Fixes tag
+>=20
+>   Fixes: 3b42055388c30 (Bluetooth: hci_sync: Fix attempting to suspend wi=
+th
+>=20
+> has these problem(s):
+>=20
+>   - Subject has leading but no trailing parentheses
+>=20
+> Please do not split Fixes tags over more than one line, just use:
+>=20
+>   git log -1 --format=3D'Fixes: %h ("%s")' <commit>
+>=20
+> Also, please keep all the commit message tags together at the end of
+> the commit message.
 
+This is now on the net-next tree.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/qfZ4R+jqDqgV3=13KOuU0ys
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLdwMcACgkQAVBC80lX
+0Gw+tAf7BWb9D3zYHxNd+Jd9yC1LAGv2gj5awCaSTzHlGtZu5JDGp1+G2ELgxRVa
+BBRf0gt9x0VCXLZCr0hWklss4nyKXhT3fbwdif1zuOG/sygDAxdP7u56ID1q0eI7
+sRneNc7HdgSQR5CUrEK099shA9u1B40atwTop1ldEFsvzTs+GOM1IpucnkYNgdz1
+udB0tXR/CsTo+WBwBOiPpdHtyaWe92fNehArduSt4sa4gtzPSsODBf1KFbua27FB
+A9NEn9V9AfIAFtIMd4YPF7cdX1VjsJB79tKBBaMvTF3bE//BtONyd/sw6tMdGxkI
+PoNpo+BQj2MK1YcEahMu/Yg9bz6GWg==
+=mABc
+-----END PGP SIGNATURE-----
+
+--Sig_/qfZ4R+jqDqgV3=13KOuU0ys--
