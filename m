@@ -2,24 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 826F8C43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 15:35:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEA70C43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 15:40:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233493AbiGXPe7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 11:34:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40792 "EHLO
+        id S230163AbiGXPkU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 11:40:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234303AbiGXPew (ORCPT
+        with ESMTP id S229793AbiGXPkS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 11:34:52 -0400
+        Sun, 24 Jul 2022 11:40:18 -0400
 Received: from viti.kaiser.cx (viti.kaiser.cx [IPv6:2a01:238:43fe:e600:cd0c:bd4a:7a3:8e9f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B73911C2E
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 08:34:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D05702AF2
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 08:40:16 -0700 (PDT)
 Received: from dslb-178-004-201-227.178.004.pools.vodafone-ip.de ([178.4.201.227] helo=martin-debian-2.paytec.ch)
         by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.89)
         (envelope-from <martin@kaiser.cx>)
-        id 1oFdd0-0004Lf-2s; Sun, 24 Jul 2022 17:34:46 +0200
+        id 1oFdiE-0004Qh-Mo; Sun, 24 Jul 2022 17:40:10 +0200
 From:   Martin Kaiser <martin@kaiser.cx>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
@@ -28,40 +28,29 @@ Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
         Pavel Skripkin <paskripkin@gmail.com>,
         linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
         Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH 2/2] staging: r8188eu: remove DoReserved prototype
-Date:   Sun, 24 Jul 2022 17:33:49 +0200
-Message-Id: <20220724153349.138741-3-martin@kaiser.cx>
+Subject: [PATCH 0/5] staging: r8188eu: use struct ieee80211_mgmt in OnAssocRsp
+Date:   Sun, 24 Jul 2022 17:39:12 +0200
+Message-Id: <20220724153917.138848-1-martin@kaiser.cx>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220724153349.138741-1-martin@kaiser.cx>
-References: <20220724153349.138741-1-martin@kaiser.cx>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The DoReserved function was removed in commit 869ddbfccdea ("staging:
-r8188eu: remove dummy entries from OnAction_tbl"). Remove the prototype
-as well.
+Use a struct ieee80211_mgmt in OnAssocRsp to read elements of the
+association response message.
 
-Signed-off-by: Martin Kaiser <martin@kaiser.cx>
----
- drivers/staging/r8188eu/include/rtw_mlme_ext.h | 2 --
- 1 file changed, 2 deletions(-)
+Martin Kaiser (5):
+  staging: r8188eu: get da from ieee80211_mgmt
+  staging: r8188eu: read status_code from struct ieee80211_mgmt
+  staging: r8188eu: read capability info from struct ieee80211_mgmt
+  staging: r8188eu: read aid from struct ieee80211_mgmt
+  staging: r8188eu: use offsetof for ie start offset
 
-diff --git a/drivers/staging/r8188eu/include/rtw_mlme_ext.h b/drivers/staging/r8188eu/include/rtw_mlme_ext.h
-index 83d0980b5bf6..2d7856c74542 100644
---- a/drivers/staging/r8188eu/include/rtw_mlme_ext.h
-+++ b/drivers/staging/r8188eu/include/rtw_mlme_ext.h
-@@ -546,8 +546,6 @@ unsigned int OnProbeReq(struct adapter *padapter,
- 			struct recv_frame *precv_frame);
- unsigned int OnProbeRsp(struct adapter *padapter,
- 			struct recv_frame *precv_frame);
--unsigned int DoReserved(struct adapter *padapter,
--			struct recv_frame *precv_frame);
- unsigned int OnBeacon(struct adapter *padapter,
- 		      struct recv_frame *precv_frame);
- unsigned int OnDisassoc(struct adapter *padapter,
+ drivers/staging/r8188eu/core/rtw_mlme_ext.c | 16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
+
 -- 
 2.30.2
 
