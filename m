@@ -2,181 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02C98C43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 15:09:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F18C6C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 15:12:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230063AbiGXPJK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 11:09:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55266 "EHLO
+        id S230034AbiGXPM4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 11:12:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229494AbiGXPJG (ORCPT
+        with ESMTP id S229640AbiGXPMy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 11:09:06 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4F67FD28
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 08:09:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658675345; x=1690211345;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=CMvdx3zpuFz4GNoAm+6N6QS5WVy0bWDsr8QtuQunqSU=;
-  b=jkDQeXgKzMkHqrIPLNhlmYpGDd59CPh+JpD2Uu5hzU2NbHQ47qxFwmUs
-   W8v4jRxbgdt5CWJzSitfRRVbMbxTKe7qVHhMd6+YVapCi/XJMg1IBL+/K
-   l7QsNvF9s6ex1bB0l8thRsI+aZ/z2LKiKLmwU+sNgkaDBC3k0lp9t2Bsf
-   bzS2CwlvEf87g+3kSTokRj89Au6dYm7jy8DdNxbZs55+vJou3CMvyZ5mf
-   Wbos+iLJoWKqX8lPoTJf0y4W4TenGd9hKxk3Q4gBI+kBO4XD7uYiKbL8S
-   u2tHfhEBjKm24J21hsTc0suMAztQJjlZMFWpM1VpS3Rv3MSzDhhc4U8HO
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10418"; a="288735016"
-X-IronPort-AV: E=Sophos;i="5.93,190,1654585200"; 
-   d="scan'208";a="288735016"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2022 08:09:05 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,190,1654585200"; 
-   d="scan'208";a="926602096"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 24 Jul 2022 08:09:03 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oFdE7-0003wb-1B;
-        Sun, 24 Jul 2022 15:09:03 +0000
-Date:   Sun, 24 Jul 2022 23:08:26 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Anup Patel <apatel@ventanamicro.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [avpatel:riscv_sbi_dbcn_v1 20/44]
- drivers/clocksource/timer-clint.c:250:31: error: too few arguments to
- function call, expected 2, have 1
-Message-ID: <202207242327.0xOXKUOG-lkp@intel.com>
+        Sun, 24 Jul 2022 11:12:54 -0400
+Received: from conssluserg-06.nifty.com (conssluserg-06.nifty.com [210.131.2.91])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97C4C10FC4
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 08:12:52 -0700 (PDT)
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43]) (authenticated)
+        by conssluserg-06.nifty.com with ESMTP id 26OFCTLe022149
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 00:12:30 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-06.nifty.com 26OFCTLe022149
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1658675550;
+        bh=HGsWCFN3BHe6uNlHDIT4Yctp2cqY3p09Pa/AjDwfL2Y=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=eeHTr87m0iPkx+9cA2VY98qO6+uK3vaBAXolWOKry/MroKxBtpcVgU0SG7Ngsf+ra
+         JWyj5ztW8R75NxVZJ4xxB8q+T7pqE2dWCCEpPQi+jHKtRh1gK0JwrTGp/aoyHc4Avu
+         UNAgJbyEGuAoLvdp/R2HkNfObUpuaDYcT5YkOSpbcAzVjl0E3CEzkeHEXhF1fobcTx
+         +J+yLDJOceZOrCU1y6fcNbrjKCiVoFjDmUYphszQSeil6NmgKFeCwmY5ct5guiTxhW
+         yHHP0UKOUiCNlCW3UCOXPeefA2ieZGX9Ldpjte4WuffBbaryxbGGfOGzmUcT/bb2za
+         UldyeaUgNuX7A==
+X-Nifty-SrcIP: [209.85.128.43]
+Received: by mail-wm1-f43.google.com with SMTP id id17so5392005wmb.1
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 08:12:30 -0700 (PDT)
+X-Gm-Message-State: AJIora/FSMeV8PGiMDUEbVqxy8WKackzu9ftR/BbvZBGrne7ebs+XMJX
+        l8L/8zOcnksbgPsob32GhamPAyW4e4vIOHrcwCk=
+X-Google-Smtp-Source: AGRyM1s4czIVF2XXqbr6X1iQkpb6hXmbEEbVLET9J+VXOIV/P8hvwm8QayTCLt5SbBuomZYULtP6eQBayx0w+BgLP7s=
+X-Received: by 2002:a05:600c:a18e:b0:3a3:10ef:672a with SMTP id
+ id14-20020a05600ca18e00b003a310ef672amr17859821wmb.14.1658675548437; Sun, 24
+ Jul 2022 08:12:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20220616072407.2317131-1-masahiroy@kernel.org>
+In-Reply-To: <20220616072407.2317131-1-masahiroy@kernel.org>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Mon, 25 Jul 2022 00:11:29 +0900
+X-Gmail-Original-Message-ID: <CAK7LNATU5ynS+Rikrd=ikfYWvBEuO+uQZ3mj-=sTLY9zHoHjMw@mail.gmail.com>
+Message-ID: <CAK7LNATU5ynS+Rikrd=ikfYWvBEuO+uQZ3mj-=sTLY9zHoHjMw@mail.gmail.com>
+Subject: Re: [PATCH 1/2] x86/purgatory: hard-code obj-y in Makefile
+To:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        X86 ML <x86@kernel.org>, "H . Peter Anvin" <hpa@zytor.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/avpatel/linux.git riscv_sbi_dbcn_v1
-head:   1b3aaa127f01dc1a35b6595c628a38b92832488d
-commit: 5cbf32460e4d1f3876930e54e0b4599310c84ea4 [20/44] RISC-V: Treat IPIs as normal Linux IRQs
-config: riscv-nommu_virt_defconfig (https://download.01.org/0day-ci/archive/20220724/202207242327.0xOXKUOG-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 12fbd2d377e396ad61bce56d71c98a1eb1bebfa9)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install riscv cross compiling tool for clang build
-        # apt-get install binutils-riscv64-linux-gnu
-        # https://github.com/avpatel/linux/commit/5cbf32460e4d1f3876930e54e0b4599310c84ea4
-        git remote add avpatel https://github.com/avpatel/linux.git
-        git fetch --no-tags avpatel riscv_sbi_dbcn_v1
-        git checkout 5cbf32460e4d1f3876930e54e0b4599310c84ea4
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash drivers/clocksource/
+On Thu, Jun 16, 2022 at 4:25 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
+>
+> arch/x86/Kbuild guards the entire purgatory/ directory, and
+> CONFIG_KEXEC_FILE is bool type.
+>
+> $(CONFIG_KEXEC_FILE) is always 'y' when this directory is being built.
+>
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> ---
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   In file included from drivers/clocksource/timer-clint.c:11:
-   In file included from include/linux/clocksource.h:22:
-   In file included from arch/riscv/include/asm/io.h:136:
-   include/asm-generic/io.h:464:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __raw_readb(PCI_IOBASE + addr);
-                             ~~~~~~~~~~ ^
-   include/asm-generic/io.h:477:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/little_endian.h:37:51: note: expanded from macro '__le16_to_cpu'
-   #define __le16_to_cpu(x) ((__force __u16)(__le16)(x))
-                                                     ^
-   In file included from drivers/clocksource/timer-clint.c:11:
-   In file included from include/linux/clocksource.h:22:
-   In file included from arch/riscv/include/asm/io.h:136:
-   include/asm-generic/io.h:490:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/little_endian.h:35:51: note: expanded from macro '__le32_to_cpu'
-   #define __le32_to_cpu(x) ((__force __u32)(__le32)(x))
-                                                     ^
-   In file included from drivers/clocksource/timer-clint.c:11:
-   In file included from include/linux/clocksource.h:22:
-   In file included from arch/riscv/include/asm/io.h:136:
-   include/asm-generic/io.h:501:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writeb(value, PCI_IOBASE + addr);
-                               ~~~~~~~~~~ ^
-   include/asm-generic/io.h:511:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
-                                                         ~~~~~~~~~~ ^
-   include/asm-generic/io.h:521:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
-                                                         ~~~~~~~~~~ ^
-   include/asm-generic/io.h:1024:55: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           return (port > MMIO_UPPER_LIMIT) ? NULL : PCI_IOBASE + port;
-                                                     ~~~~~~~~~~ ^
->> drivers/clocksource/timer-clint.c:250:31: error: too few arguments to function call, expected 2, have 1
-           clint_clear_ipi(clint_ipi_irq);
-           ~~~~~~~~~~~~~~~              ^
-   drivers/clocksource/timer-clint.c:56:13: note: 'clint_clear_ipi' declared here
-   static void clint_clear_ipi(unsigned int parent_virq, void *data)
-               ^
-   7 warnings and 1 error generated.
+Ping?
 
 
-vim +250 drivers/clocksource/timer-clint.c
+>
+>  arch/x86/purgatory/Makefile | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/arch/x86/purgatory/Makefile b/arch/x86/purgatory/Makefile
+> index ae53d54d7959..248b009c4061 100644
+> --- a/arch/x86/purgatory/Makefile
+> +++ b/arch/x86/purgatory/Makefile
+> @@ -81,4 +81,4 @@ quiet_cmd_bin2c = BIN2C   $@
+>  $(obj)/kexec-purgatory.c: $(obj)/purgatory.ro $(obj)/purgatory.chk FORCE
+>         $(call if_changed,bin2c)
+>
+> -obj-$(CONFIG_KEXEC_FILE)       += kexec-purgatory.o
+> +obj-y += kexec-purgatory.o
+> --
+> 2.32.0
+>
 
-   214	
-   215		pr_info("%pOFP: timer running at %ld Hz\n", np, clint_timer_freq);
-   216	
-   217		rc = clocksource_register_hz(&clint_clocksource, clint_timer_freq);
-   218		if (rc) {
-   219			pr_err("%pOFP: clocksource register failed [%d]\n", np, rc);
-   220			goto fail_iounmap;
-   221		}
-   222	
-   223		sched_clock_register(clint_get_cycles64, 64, clint_timer_freq);
-   224	
-   225		rc = request_percpu_irq(clint_timer_irq, clint_timer_interrupt,
-   226					 "clint-timer", &clint_clock_event);
-   227		if (rc) {
-   228			pr_err("registering percpu irq failed [%d]\n", rc);
-   229			goto fail_iounmap;
-   230		}
-   231	
-   232		rc = cpuhp_setup_state(CPUHP_AP_CLINT_TIMER_STARTING,
-   233					"clockevents/clint/timer:starting",
-   234					clint_timer_starting_cpu,
-   235					clint_timer_dying_cpu);
-   236		if (rc) {
-   237			pr_err("%pOFP: cpuhp setup state failed [%d]\n", np, rc);
-   238			goto fail_free_irq;
-   239		}
-   240	
-   241		virq = ipi_mux_create(clint_ipi_irq, BITS_PER_BYTE,
-   242				      &clint_ipi_ops, NULL);
-   243		if (virq <= 0) {
-   244			pr_err("unable to create muxed IPIs\n");
-   245			rc = (virq < 0) ? virq : -ENODEV;
-   246			goto fail_remove_cpuhp;
-   247		}
-   248	
-   249		riscv_ipi_set_virq_range(virq, BITS_PER_BYTE);
- > 250		clint_clear_ipi(clint_ipi_irq);
-   251	
-   252		return 0;
-   253	
-   254	fail_remove_cpuhp:
-   255		cpuhp_remove_state(CPUHP_AP_CLINT_TIMER_STARTING);
-   256	fail_free_irq:
-   257		free_irq(clint_timer_irq, &clint_clock_event);
-   258	fail_iounmap:
-   259		iounmap(base);
-   260		return rc;
-   261	}
-   262	
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Best Regards
+Masahiro Yamada
