@@ -2,192 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A3A3C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 23:13:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07805C43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 23:15:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232041AbiGXXNn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 19:13:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52302 "EHLO
+        id S232277AbiGXXPJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 19:15:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229645AbiGXXNl (ORCPT
+        with ESMTP id S232090AbiGXXPG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 19:13:41 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8031EE31;
-        Sun, 24 Jul 2022 16:13:39 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id os14so17608878ejb.4;
-        Sun, 24 Jul 2022 16:13:39 -0700 (PDT)
+        Sun, 24 Jul 2022 19:15:06 -0400
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FFAC10FEF
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 16:15:05 -0700 (PDT)
+Received: by mail-pg1-x529.google.com with SMTP id r186so8870401pgr.2
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 16:15:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=5CzS61d44y8hwJlcpSSNnrZFIig91RQUy49SDxGyax0=;
-        b=CPRERtdyBhx3F1cuPji9vC7GURO381M5Ga5y6mn5EfJyDcN/atyDh+23L4Tz+5IfQn
-         qf3xGHsz3RVd6/ukBmqBVlzUeaOd4QbQJj3qzemkg99gLCByKwU/0a4cA8+uhJq3D/V0
-         BLm6ezXNAnsIlWtdEHXWPOMg0ot6oh9UrCaGEA5WpIRGQ39CXUIII9hKgnJ9J2aUnV02
-         VALcGz9+sm3toImQNvsXWdtVBRAvEcK2Hn/vI0F9MQp2JDrQJfBR4sxw2HQkbv+KgGPT
-         VwU1+d1ZCe7NcUZYDR24ORQmcyoqQl+hBKCYJzot+YNiWVZQwk8idMYj161hkIl1bNK5
-         6pAA==
+        d=broadcom.com; s=google;
+        h=from:to:subject:date:message-id:mime-version;
+        bh=R1Y5TPuyG9sKnSuk/kYWJ9jFBdgZT82SCIgDjQWdtbo=;
+        b=Ja/Vx33K1vXkZSVxNUTpvgJ1FFFz4XKwq3tj6vfNXSM1ap/Q2HU42LmjvP76MAxgbJ
+         iaLcR0yp0Q1N6nwDjUsgdJK4x+fFlMeWoQAQYWaldKcx52Hoslx1tkVz9+aHJ8R7whBY
+         tohHWyvoy49wjiDUGW86ZtFg06YtK7JPC/0Zs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=5CzS61d44y8hwJlcpSSNnrZFIig91RQUy49SDxGyax0=;
-        b=a+dEVk8TuMnnHMT/m6mTBxKI990wo28JyzEKWBGSFQM/5g9qafK7y0JwzCUQJvtJeB
-         PVo+qkfoO3PiY5xtwUEcJqfOdLOyFVAwjdoisRpGseHAo4onhQTnxQKJCUR4LjZ3sJGG
-         szQCoulT4qkkkjd5cc41mONNBd9Rotf6hceKAEe5QYDdlmBlcTctgpqVlELgT39z2N8t
-         RftZj3vKSM8CRmmCBOIGkGvqYLky+OmbY+K9bAFFW/Zx12U8VKo+X24dpHq/pA8zg24m
-         p0/kfkyia9hGN4w0EXgffp2k/vYhKSwOsC+t8utdDaKLzZxpWFUpZfTXW9DNHH0JdaIt
-         3u1g==
-X-Gm-Message-State: AJIora8AvKNVcUb5VmUd5dqMmIzouWfNWTbcP/NP8oPKW84+bhFqRYar
-        wLNSNWmSoVKwQvwlSrPANgw=
-X-Google-Smtp-Source: AGRyM1uO+0QozYhA6X54V/O6AnS3arqm7vrdXs+r6HSGzzHnx2gya1By4rzY+YCKOKeJTfA262nWfQ==
-X-Received: by 2002:a17:906:478c:b0:72f:3240:f632 with SMTP id cw12-20020a170906478c00b0072f3240f632mr7861697ejc.336.1658704418370;
-        Sun, 24 Jul 2022 16:13:38 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-69-122.ip85.fastwebnet.it. [93.42.69.122])
-        by smtp.gmail.com with ESMTPSA id q22-20020a170906941600b00722e603c39asm4693953ejx.31.2022.07.24.16.13.37
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version;
+        bh=R1Y5TPuyG9sKnSuk/kYWJ9jFBdgZT82SCIgDjQWdtbo=;
+        b=kNLz62nTzi9+ENin0hrrZEYgLht7T9a+Ia12sqZdOdx19ruXQFxCRyuKIGkGDnUtFj
+         aJXQxVzqHpFOCG+cOZIS1dentpZNY94IQTb5Mm+LWSGULAU1NuHXyAsZd1OiLFB3FdU0
+         IgXemzc7l6d8ClbqMae0N6Yx4XG3vvtkxmdhctLOjYTDse/rrkFP5NXZKFLWG59CRe0y
+         plMaczLhAT7ouMLDkcSTc2lnhMxMC/Zv7KDhQVFynOl+8p9Ak3xxV6zF2L7HE5nS34RQ
+         DSL+h4EikQ6ik5nEQpucj0b1DKQhO8yoKfGPNdsLuSWY1Ofsw6xsGCOoxnd6J12NKgNp
+         PmVg==
+X-Gm-Message-State: AJIora92znKXzC3sSst6NbyrMQoSy+DKxIWaIxQXAlmmDIMEFPaKi3sK
+        0cgJYwQGSqhxCu7xcrWzw8lRbA==
+X-Google-Smtp-Source: AGRyM1uMJLDU39gQzGt6eANPLxTuT8Gqct1PY35tMNr0owb8XzNEm25ZPPBNI2F3y0m7lakZFzg6Gw==
+X-Received: by 2002:a63:8b4a:0:b0:41a:64fa:400e with SMTP id j71-20020a638b4a000000b0041a64fa400emr8725634pge.397.1658704504851;
+        Sun, 24 Jul 2022 16:15:04 -0700 (PDT)
+Received: from localhost.localdomain ([136.52.99.246])
+        by smtp.gmail.com with ESMTPSA id g11-20020a170902d5cb00b0016a6cd546d6sm7661395plh.251.2022.07.24.16.15.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 24 Jul 2022 16:13:37 -0700 (PDT)
-Message-ID: <62ddd221.1c69fb81.95457.a4ee@mx.google.com>
-X-Google-Original-Message-ID: <Yt2urJI0eWQ6+5ty@Ansuel-xps.>
-Date:   Sun, 24 Jul 2022 22:42:20 +0200
-From:   Christian Marangi <ansuelsmth@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [net-next PATCH v3 01/14] net: dsa: qca8k: cache match data to
- speed up access
-References: <20220723141845.10570-1-ansuelsmth@gmail.com>
- <20220723141845.10570-1-ansuelsmth@gmail.com>
- <20220723141845.10570-2-ansuelsmth@gmail.com>
- <20220723141845.10570-2-ansuelsmth@gmail.com>
- <20220724223031.2ceczkbov6bcgrtq@skbuf>
- <62ddce96.1c69fb81.fdc52.a203@mx.google.com>
- <20220724230626.rzynvd2pxdcd2z3r@skbuf>
+        Sun, 24 Jul 2022 16:15:04 -0700 (PDT)
+From:   Ajit Khaparde <ajit.khaparde@broadcom.com>
+To:     michael.chan@broadcom.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org, jgg@ziepe.ca,
+        selvin.xavier@broadcom.com, leon@kernel.org,
+        linux-rdma@vger.kernel.org, andrew.gospodarek@broadcom.com
+Subject: [PATCH 0/2] Add Auxiliary driver support
+Date:   Sun, 24 Jul 2022 16:14:56 -0700
+Message-Id: <20220724231458.93830-1-ajit.khaparde@broadcom.com>
+X-Mailer: git-send-email 2.32.1 (Apple Git-133)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220724230626.rzynvd2pxdcd2z3r@skbuf>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="000000000000d2168605e4953c28"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 25, 2022 at 02:06:26AM +0300, Vladimir Oltean wrote:
-> On Sun, Jul 24, 2022 at 10:27:13PM +0200, Christian Marangi wrote:
-> > > > diff --git a/drivers/net/dsa/qca/qca8k.c b/drivers/net/dsa/qca/qca8k.c
-> > > > index 1cbb05b0323f..212b284f9f73 100644
-> > > > --- a/drivers/net/dsa/qca/qca8k.c
-> > > > +++ b/drivers/net/dsa/qca/qca8k.c
-> > > > @@ -3168,6 +3155,11 @@ qca8k_sw_probe(struct mdio_device *mdiodev)
-> > > >  	if (ret)
-> > > >  		return ret;
-> > > >  
-> > > > +	/* Cache match data in priv struct.
-> > > > +	 * Match data is already checked in read_switch_id.
-> > > > +	 */
-> > > > +	priv->info = of_device_get_match_data(priv->dev);
-> > > > +
-> > > 
-> > > So why don't you set priv->info right before calling qca8k_read_switch_id(),
-> > > then?
-> > > 
-> > 
-> > The idea was to make the read_switch_id a function to check if the
-> > switch is compatible... But yhea now that i think about it doesn't
-> > really make sense.
-> 
-> I am not saying qca8k_read_switch_id() should do anything more than
-> reading the switch id. I am saying why can't qca8k_read_switch_id()
-> already find priv->info be pre-populated, just like any other function.
-> Why don't you set priv->info a lot earlier, see below.
->
+--000000000000d2168605e4953c28
+Content-Transfer-Encoding: 8bit
 
-Sure, it was just a stupid idea to set everything not strictly neeeded
-only after verifying that we have a correct switch... But it doesn't
-make sense as qca8k_priv is freed anyway if that's the case.
+Add auxiliary device driver for Broadcom devices.
+The bnxt_en driver will register and initialize an aux device
+if RDMA is enabled in the underlying device.
+The bnxt_re driver will then probe and initialize the
+RoCE interfaces with the infiniband stack.
 
-Will do the change in v5.
+Please apply.
 
-> diff --git a/drivers/net/dsa/qca/qca8k-8xxx.c b/drivers/net/dsa/qca/qca8k-8xxx.c
-> index fa91517e930b..590ff810c95e 100644
-> --- a/drivers/net/dsa/qca/qca8k-8xxx.c
-> +++ b/drivers/net/dsa/qca/qca8k-8xxx.c
-> @@ -1892,6 +1892,7 @@ qca8k_sw_probe(struct mdio_device *mdiodev)
->  
->  	priv->bus = mdiodev->bus;
->  	priv->dev = &mdiodev->dev;
-> +	priv->info = of_device_get_match_data(priv->dev);
->  
->  	priv->reset_gpio = devm_gpiod_get_optional(priv->dev, "reset",
->  						   GPIOD_ASIS);
-> @@ -1924,11 +1925,6 @@ qca8k_sw_probe(struct mdio_device *mdiodev)
->  	if (ret)
->  		return ret;
->  
-> -	/* Cache match data in priv struct.
-> -	 * Match data is already checked in read_switch_id.
-> -	 */
-> -	priv->info = of_device_get_match_data(priv->dev);
-> -
->  	priv->ds = devm_kzalloc(&mdiodev->dev, sizeof(*priv->ds), GFP_KERNEL);
->  	if (!priv->ds)
->  		return -ENOMEM;
-> diff --git a/drivers/net/dsa/qca/qca8k-common.c b/drivers/net/dsa/qca/qca8k-common.c
-> index e6294d6a7b8f..8f634edc52c2 100644
-> --- a/drivers/net/dsa/qca/qca8k-common.c
-> +++ b/drivers/net/dsa/qca/qca8k-common.c
-> @@ -1211,23 +1211,19 @@ qca8k_port_lag_leave(struct dsa_switch *ds, int port,
->  
->  int qca8k_read_switch_id(struct qca8k_priv *priv)
->  {
-> -	const struct qca8k_match_data *data;
->  	u32 val;
->  	u8 id;
->  	int ret;
->  
-> -	/* get the switches ID from the compatible */
-> -	data = of_device_get_match_data(priv->dev);
-> -	if (!data)
-> -		return -ENODEV;
-> -
->  	ret = qca8k_read(priv, QCA8K_REG_MASK_CTRL, &val);
->  	if (ret < 0)
->  		return -ENODEV;
->  
->  	id = QCA8K_MASK_CTRL_DEVICE_ID(val);
-> -	if (id != data->id) {
-> -		dev_err(priv->dev, "Switch id detected %x but expected %x", id, data->id);
-> +	if (id != priv->info->id) {
-> +		dev_err(priv->dev,
-> +			"Switch id detected %x but expected %x",
-> +			id, priv->info->id);
->  		return -ENODEV;
->  	}
->  
-> 
-> Also note how the "Switch id detected ... but expected ..." message
-> lacks a trailing \n.
-> 
+Ajit Khaparde (2):
+  net/bnxt: Add auxiliary driver support
+  RDMA/bnxt_re: Use auxiliary driver interface
 
-Will fix this when the read_switch_id function is moved to common file.
-
-> > (Just for reference I just sent v4 as I got a report from kernel test
-> > bot... it's really just this series with a change in 0002 patch that set
-> > the struct for ops as a pointer... didn't encounter this with gcc but it
-> > seems kernel test bot use some special config...)
-> 
-> Yea, I was still kinda reviewing v3... Anyway, now you'll have to wait
-> for me to finish my v3 feedback on the v4, and then send the v5 after at
-> least 24 more hours.
-
-Sure and sorry for the mess.
+ drivers/infiniband/hw/bnxt_re/bnxt_re.h       |   9 +-
+ drivers/infiniband/hw/bnxt_re/main.c          | 405 +++++++-----------
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     |   8 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h     |   8 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c | 200 +++++++--
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h |   8 +-
+ 6 files changed, 339 insertions(+), 299 deletions(-)
 
 -- 
-	Ansuel
+2.32.1 (Apple Git-133)
+
+
+--000000000000d2168605e4953c28
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+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
+RIaCW0xx+14NTQe17dkH6CEEpmCjejneq/FU0gmbuorwHoP9mOiqeh23/ZKVpmFO/eiDtvMNAMDW
+6LzhOk/pMklUPTHu/gQNW3OQebyhyFUHiBSp8rDkfWZT57Asd0PtdQIDAQABo4IB2zCCAdcwDgYD
+VR0PAQH/BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3Vy
+ZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEG
+CCsGAQUFBzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWdu
+MmNhMjAyMDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93
+d3cuZ2xvYmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6
+hjhodHRwOi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNy
+bDAlBgNVHREEHjAcgRphaml0LmtoYXBhcmRlQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEF
+BQcDBDAfBgNVHSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUPHif0ihgndR0
+h7r3sANaOIu2yM8wDQYJKoZIhvcNAQELBQADggEBAAEuLXDnP0Xd2zAMpQobXLUyqbpqGMO6ycQc
+Xq4H2YYlSNKVwPA+ZAVdUOzbSimBKlx8mzAEHkI3Ll1yXlYeT4UwkfWV9fioyGuQelLN1sGzi5bm
+WEpaSIbR1eiJMtzxUPwpRTn19gHZVueIot2Gw0fEYgHiMJpUr6xBWv2QNXULu/E8qvbXIRh2iycq
+5rWFggX/JHglO8nVqzb1ImzqzVMFnDN15h3j8ryy2MIvZ8VDQRP7l81IXaTvVwaKpWMgV6rfQOi6
+aOQZuOKkad7qoCkS5N2oSsvxi+rZtDaJJNsDjs05y5JZZQtBlfAmdYS+mmvkPjZ1iaLTzk59o/Yo
+fNkxggJtMIICaQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNh
+MTEwLwYDVQQDEyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQphPQ
+U+7K4aDRwxAwDQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIJ/08UpAeQ9Ui3d1VI33
+hoPo/znJAf3kUiOle4UbRlK+MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkF
+MQ8XDTIyMDcyNDIzMTUwNVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUD
+BAEWMAsGCWCGSAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsG
+CWCGSAFlAwQCATANBgkqhkiG9w0BAQEFAASCAQByj4Ps8CwhLg0LSYg7v1dNm9FBgBybFr5FR9VD
+40DcxpuQXfuaz9GStPHxsX+FM0ejFHt/w4lfhxqgy/oL+pS3ziaIqdq4DfqvvsnweS/qCFYZKK6j
+3kR5vfJ3ItuZc32ZxrlmSMquyV5jRUOHePKZK8koTuYY0AImOBsWRxmKtbj/YnPewqTdDOlQ//js
+bFoQX/vezee2aJf9UmcZt34b75c7l4kfrXyIrMtyt2cNexCVo2Vja4eVZ++uxX+KwGetcBJkxVu/
+vGqaUw8L/NxeDSAx/7vuKP4kuhsSNtlhK6qI8ZthCMCUAIOxk28EfgHe9sOzpWICBWWw4mA/9xwH
+--000000000000d2168605e4953c28--
