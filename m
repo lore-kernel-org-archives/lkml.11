@@ -2,244 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56645C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 09:11:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC6D8C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 09:13:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230506AbiGXJL2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 05:11:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40800 "EHLO
+        id S231414AbiGXJNq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 05:13:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229825AbiGXJL0 (ORCPT
+        with ESMTP id S229453AbiGXJNn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 05:11:26 -0400
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AB3CFD35
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 02:11:25 -0700 (PDT)
-Received: by mail-io1-xd2a.google.com with SMTP id u20so6634789iob.8
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 02:11:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FdJ8HLgLOawQBY3awKQe11Y4pVbDXzDsy+R7rFyi4ug=;
-        b=nNTTv+RH+0n0r+i95dcBFvNyE3dg1axAtfbLLVvQ3JTGSepHC8Oq8eEzb4PwNDgqUR
-         UQ8EJo3Ip9DeC+kV0RfCX0xzjSpxMYmR/0jKhcJT69YWb2iSx0c7wp2aTZJ4Vp3WR5ww
-         /v+qJxSf3PQ+OkBUfbfOFwrfIBGLjC0cicjGlyyROC/mvNYwsqkr7X9pPFeb5sieVqDJ
-         sIaqGXbwCtYEGS0AzJsyU4nbR/veWChKZhdlv+J/v/gbdgi6kqEJ2QBg6dK5KXQAswNL
-         4c99clGM4RlvOH0+Iirr/c2CZtAjcV+fp6wF204HrDYUCbl3tDoHTkJ+LnROfC3lSAiN
-         TWDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FdJ8HLgLOawQBY3awKQe11Y4pVbDXzDsy+R7rFyi4ug=;
-        b=asFNaxM3Ncs8GObB/Cm3G9FmsjfCbbFHGIn2vX9xlX2zKcplGDiHfpZFAPsyaf4mZc
-         XJekTaeQvaIP9TepwTldXVt3CVTgBYFBkyy7YcgQd6PtuNHbbrHrfeDZv5oY5awUIDjm
-         se3GBaZA04a8BcKsfLFgXz/B7LFTboIdvWya10DBMG64iFl3A5xk5expgb+oUxhauKHW
-         wEx0n2WklQKyEePig8To57wbYEvmdyXOgKMINAlfG0nBlB8a24lTbQ95NZTnUtYK1T8E
-         63Y0u0Pncz1jzL5Mk6gnhu9BNF0lxoKACk5RJ+Wjib3H68/jZHLH7z4TMO5P5yhhbh6I
-         DAbA==
-X-Gm-Message-State: AJIora90N+v+z5vuTRM3ev6FQtjuh2ADC5GnHr80Mh/9yZ5QXQtLI1ob
-        ntcc9vKo8YuBWIj9JNUUZCs=
-X-Google-Smtp-Source: AGRyM1vtYV7Nfmch7QwNGPUbBk9+raxrcT402pJOlG3z+ZLzZlx7E/C2EG+eyztKLb/0MPvO5dt1Vw==
-X-Received: by 2002:a05:6638:52b:b0:33f:5019:8e6 with SMTP id j11-20020a056638052b00b0033f501908e6mr3128213jar.184.1658653884403;
-        Sun, 24 Jul 2022 02:11:24 -0700 (PDT)
-Received: from ip-172-31-23-7.us-east-2.compute.internal (ec2-3-145-129-179.us-east-2.compute.amazonaws.com. [3.145.129.179])
-        by smtp.googlemail.com with ESMTPSA id m13-20020a026a4d000000b0034161ed8fadsm4092988jaf.150.2022.07.24.02.11.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 24 Jul 2022 02:11:24 -0700 (PDT)
-From:   Jianlin Lv <iecedge@gmail.com>
-To:     rostedt@goodmis.org, mingo@redhat.com
-Cc:     iecedge@gmail.com, jianlv@ebay.com, linux-kernel@vger.kernel.org
-Subject: [PATCH] tracing/kprobe: Add tracefs to show private kprobe
-Date:   Sun, 24 Jul 2022 09:10:50 +0000
-Message-Id: <20220724091050.12711-1-iecedge@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Sun, 24 Jul 2022 05:13:43 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4816814034
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 02:13:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658654022; x=1690190022;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=AzxZtybqvJM0/ZZ2jKJszUtZP/9aLY29CH9nP0hU6Gc=;
+  b=WpCocqoy6hO5jonLZ8Du0ed3+sgygYlMXuFo55TGeyuwpWqu9Euo1df7
+   uMZAFo6JMZg+xsuP22UnLADWIY8gzFmKq+iJX26jHInAQwN2oJmDzsdUr
+   FGBeYKju/XfBimujQTPohT5IXJUIqrijVi2EZiBtB0tXiSS9wd7A5l59e
+   H0Cwt1ijQw4jYE2Ar+ZE3f4RmYXU/Wy49l1UUM/p+493fD74v4kUXnsqh
+   BUJ9TE0KqNJbtMldNJgK/g09ljg/HuKH6wjnkPlF0BN3gFZDGPhXkETSw
+   t1wPpyyCrqI4WeDndYh+ELWAxFdeXgBRxU+pCBmalNB+fIYI8P/Bcge9l
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10417"; a="313270940"
+X-IronPort-AV: E=Sophos;i="5.93,190,1654585200"; 
+   d="scan'208";a="313270940"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2022 02:13:41 -0700
+X-IronPort-AV: E=Sophos;i="5.93,190,1654585200"; 
+   d="scan'208";a="657763568"
+Received: from zjiang1-mobl.ccr.corp.intel.com (HELO [10.249.170.155]) ([10.249.170.155])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2022 02:13:37 -0700
+Message-ID: <5d353fe4-b642-992e-ef42-7d7f8b2edf7e@linux.intel.com>
+Date:   Sun, 24 Jul 2022 17:13:35 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        Zhangfei Gao <zhangfei.gao@linaro.org>,
+        Zhu Tony <tony.zhu@intel.com>, iommu@lists.linux.dev,
+        linux-kernel@vger.kernel.org,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: Re: [PATCH v10 04/12] iommu: Add attach/detach_dev_pasid iommu
+ interface
+Content-Language: en-US
+To:     Jason Gunthorpe <jgg@nvidia.com>
+References: <20220705050710.2887204-1-baolu.lu@linux.intel.com>
+ <20220705050710.2887204-5-baolu.lu@linux.intel.com>
+ <20220723141118.GD79279@nvidia.com>
+From:   Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <20220723141118.GD79279@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-List private kprobe event to new created local_event_list;
-Add tracefs file kprobe_local_profile to show events which
-in local_event_list.
+On 2022/7/23 22:11, Jason Gunthorpe wrote:
+>> +void iommu_detach_device_pasid(struct iommu_domain *domain, struct device *dev,
+>> +			       ioasid_t pasid)
+>> +{
+>> +	struct iommu_group *group = iommu_group_get(dev);
+>> +
+>> +	mutex_lock(&group->mutex);
+>> +	domain->ops->block_dev_pasid(domain, dev, pasid);
+> I still really this OP, it is nonsense to invoke 'block_dev_pasid' on
+> a domain, it should be on the iommu ops and it should not take in a
+> domain parameter. This is why I prefer we write it as
+> 
+> domain->ops->set_dev_pasid(group->blocking_domain, dev, pasid);
+> 
 
-Signed-off-by: Jianlin Lv <iecedge@gmail.com>
----
- kernel/trace/trace_dynevent.c | 18 +++++++++++++
- kernel/trace/trace_dynevent.h | 33 +++++++++++++++++++++++
- kernel/trace/trace_kprobe.c   | 50 +++++++++++++++++++++++++++++++++++
- 3 files changed, 101 insertions(+)
+I originally plan to refactor this after both Intel and ARM SMMUv3
+drivers have real blocking domain supports. After revisiting this, it
+seems that the only difficulty is how to check whether a domain is a
+blocking domain. I am going to use below checking code:
 
-diff --git a/kernel/trace/trace_dynevent.c b/kernel/trace/trace_dynevent.c
-index 076b447a1b88..8411104ad6d8 100644
---- a/kernel/trace/trace_dynevent.c
-+++ b/kernel/trace/trace_dynevent.c
-@@ -181,6 +181,24 @@ static const struct seq_operations dyn_event_seq_op = {
- 	.show	= dyn_event_seq_show
- };
- 
-+LIST_HEAD(local_event_list);
-+
-+void *local_event_seq_start(struct seq_file *m, loff_t *pos)
-+{
-+	mutex_lock(&event_mutex);
-+	return seq_list_start(&local_event_list, *pos);
-+}
-+
-+void *local_event_seq_next(struct seq_file *m, void *v, loff_t *pos)
-+{
-+	return seq_list_next(v, &local_event_list, pos);
-+}
-+
-+void local_event_seq_stop(struct seq_file *m, void *v)
-+{
-+	mutex_unlock(&event_mutex);
-+}
-+
- /*
-  * dyn_events_release_all - Release all specific events
-  * @type:	the dyn_event_operations * which filters releasing events
-diff --git a/kernel/trace/trace_dynevent.h b/kernel/trace/trace_dynevent.h
-index 936477a111d3..e6413969f9ed 100644
---- a/kernel/trace/trace_dynevent.h
-+++ b/kernel/trace/trace_dynevent.h
-@@ -64,6 +64,7 @@ struct dyn_event {
- };
- 
- extern struct list_head dyn_event_list;
-+extern struct list_head local_event_list;
- 
- static inline
- int dyn_event_init(struct dyn_event *ev, struct dyn_event_operations *ops)
-@@ -95,12 +96,44 @@ static inline void dyn_event_remove(struct dyn_event *ev)
- 	list_del_init(&ev->list);
- }
- 
-+static inline
-+int local_event_init(struct dyn_event *ev, struct dyn_event_operations *ops)
-+{
-+	if (!ev || !ops)
-+		return -EINVAL;
-+
-+	INIT_LIST_HEAD(&ev->list);
-+	ev->ops = ops;
-+	return 0;
-+}
-+
-+static inline int local_event_add(struct dyn_event *ev)
-+{
-+	lockdep_assert_held(&event_mutex);
-+
-+	if (!ev || !ev->ops)
-+		return -EINVAL;
-+
-+	list_add_tail(&ev->list, &local_event_list);
-+	return 0;
-+}
-+
-+static inline void local_event_remove(struct dyn_event *ev)
-+{
-+	lockdep_assert_held(&event_mutex);
-+	list_del_init(&ev->list);
-+}
-+
- void *dyn_event_seq_start(struct seq_file *m, loff_t *pos);
- void *dyn_event_seq_next(struct seq_file *m, void *v, loff_t *pos);
- void dyn_event_seq_stop(struct seq_file *m, void *v);
- int dyn_events_release_all(struct dyn_event_operations *type);
- int dyn_event_release(const char *raw_command, struct dyn_event_operations *type);
- 
-+void *local_event_seq_start(struct seq_file *m, loff_t *pos);
-+void *local_event_seq_next(struct seq_file *m, void *v, loff_t *pos);
-+void local_event_seq_stop(struct seq_file *m, void *v);
-+
- /*
-  * for_each_dyn_event	-	iterate over the dyn_event list
-  * @pos:	the struct dyn_event * to use as a loop cursor
-diff --git a/kernel/trace/trace_kprobe.c b/kernel/trace/trace_kprobe.c
-index a245ea673715..8fd39033d2ba 100644
---- a/kernel/trace/trace_kprobe.c
-+++ b/kernel/trace/trace_kprobe.c
-@@ -1213,6 +1213,50 @@ static const struct file_operations kprobe_profile_ops = {
- 	.release        = seq_release,
- };
- 
-+/* kprobe Local profile  */
-+static int local_probes_profile_seq_show(struct seq_file *m, void *v)
-+{
-+	struct dyn_event *ev = v;
-+	struct trace_kprobe *tk;
-+
-+	if (!is_trace_kprobe(ev))
-+		return 0;
-+
-+	tk = to_trace_kprobe(ev);
-+	seq_printf(m, "  %-44s %15lu %15lu\n",
-+		trace_probe_name(&tk->tp),
-+		trace_kprobe_nhit(tk),
-+		tk->rp.kp.nmissed);
-+
-+	return 0;
-+}
-+
-+static const struct seq_operations local_profile_seq_op = {
-+	.start  = local_event_seq_start,
-+	.next   = local_event_seq_next,
-+	.stop   = local_event_seq_stop,
-+	.show   = local_probes_profile_seq_show
-+};
-+
-+static int local_profile_open(struct inode *inode, struct file *file)
-+{
-+	int ret;
-+
-+	ret = security_locked_down(LOCKDOWN_TRACEFS);
-+	if (ret)
-+		return ret;
-+
-+	return seq_open(file, &local_profile_seq_op);
-+}
-+
-+static const struct file_operations kprobe_local_profile_ops = {
-+	.owner          = THIS_MODULE,
-+	.open           = local_profile_open,
-+	.read           = seq_read,
-+	.llseek         = seq_lseek,
-+	.release        = seq_release,
-+};
-+
- /* Kprobe specific fetch functions */
- 
- /* Return the length of string -- including null terminal byte */
-@@ -1830,6 +1874,7 @@ create_local_trace_kprobe(char *func, void *addr, unsigned long offs,
- 	if (ret < 0)
- 		goto error;
- 
-+	local_event_add(&tk->devent);
- 	return trace_probe_event_call(&tk->tp);
- error:
- 	free_trace_kprobe(tk);
-@@ -1849,6 +1894,7 @@ void destroy_local_trace_kprobe(struct trace_event_call *event_call)
- 		return;
- 	}
- 
-+	local_event_remove(&tk->devent);
- 	__unregister_trace_kprobe(tk);
- 
- 	free_trace_kprobe(tk);
-@@ -1929,6 +1975,10 @@ static __init int init_kprobe_trace(void)
- 	trace_create_file("kprobe_profile", TRACE_MODE_READ,
- 			  NULL, NULL, &kprobe_profile_ops);
- 
-+	/* kprobe Local profile */
-+	tracefs_create_file("kprobe_local_profile", TRACE_MODE_READ,
-+			  NULL, NULL, &kprobe_local_profile_ops);
-+
- 	setup_boot_kprobe_events();
- 
- 	return 0;
--- 
-2.25.1
++	/*
++	 * Detach the domain if a blocking domain is set. Check the
++	 * right domain type once the IOMMU driver supports a real
++	 * blocking domain.
++	 */
++	if (!domain || domain->type == IOMMU_DOMAIN_UNMANAGED) {
 
+Does this work for you?
+
+The incremental changes look like below:
+
+diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+index 6633c7b040b8..9f8748b51630 100644
+--- a/drivers/iommu/intel/svm.c
++++ b/drivers/iommu/intel/svm.c
+@@ -890,22 +890,23 @@ static int intel_svm_set_dev_pasid(struct 
+iommu_domain *domain,
+  	int ret = 0;
+
+  	mutex_lock(&pasid_mutex);
+-	sva = intel_svm_bind_mm(iommu, dev, mm);
+-	if (IS_ERR(sva))
+-		ret = PTR_ERR(sva);
++	/*
++	 * Detach the domain if a blocking domain is set. Check the
++	 * right domain type once the IOMMU driver supports a real
++	 * blocking domain.
++	 */
++	if (!domain || domain->type == IOMMU_DOMAIN_UNMANAGED) {
++		intel_svm_unbind_mm(dev, pasid);
++	} else {
++		sva = intel_svm_bind_mm(iommu, dev, mm);
++		if (IS_ERR(sva))
++			ret = PTR_ERR(sva);
++	}
+  	mutex_unlock(&pasid_mutex);
+
+  	return ret;
+  }
+
+-static void intel_svm_block_dev_pasid(struct iommu_domain *domain,
+-				      struct device *dev, ioasid_t pasid)
+-{
+-	mutex_lock(&pasid_mutex);
+-	intel_svm_unbind_mm(dev, pasid);
+-	mutex_unlock(&pasid_mutex);
+-}
+-
+  static void intel_svm_domain_free(struct iommu_domain *domain)
+  {
+  	kfree(to_dmar_domain(domain));
+@@ -913,7 +914,6 @@ static void intel_svm_domain_free(struct 
+iommu_domain *domain)
+
+  static const struct iommu_domain_ops intel_svm_domain_ops = {
+  	.set_dev_pasid		= intel_svm_set_dev_pasid,
+-	.block_dev_pasid	= intel_svm_block_dev_pasid,
+  	.free			= intel_svm_domain_free,
+  };
+
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index efe6a58eee48..a7f7a611fcce 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -3262,7 +3262,7 @@ void iommu_detach_device_pasid(struct iommu_domain 
+*domain, struct device *dev,
+  	struct iommu_group *group = iommu_group_get(dev);
+
+  	mutex_lock(&group->mutex);
+-	domain->ops->block_dev_pasid(domain, dev, pasid);
++	domain->ops->set_dev_pasid(group->blocking_domain, dev, pasid);
+  	WARN_ON(xa_erase(&group->pasid_array, pasid) != domain);
+  	mutex_unlock(&group->mutex);
+
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index ba6543f4c6a2..c52dccb86460 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -283,7 +283,6 @@ struct iommu_ops {
+   * @attach_dev: attach an iommu domain to a device
+   * @detach_dev: detach an iommu domain from a device
+   * @set_dev_pasid: set an iommu domain to a pasid of device
+- * @block_dev_pasid: block pasid of device from using iommu domain
+   * @map: map a physically contiguous memory region to an iommu domain
+   * @map_pages: map a physically contiguous set of pages of the same 
+size to
+   *             an iommu domain.
+@@ -306,8 +305,6 @@ struct iommu_domain_ops {
+  	void (*detach_dev)(struct iommu_domain *domain, struct device *dev);
+  	int (*set_dev_pasid)(struct iommu_domain *domain, struct device *dev,
+  			     ioasid_t pasid);
+-	void (*block_dev_pasid)(struct iommu_domain *domain, struct device *dev,
+-				ioasid_t pasid);
+
+  	int (*map)(struct iommu_domain *domain, unsigned long iova,
+  		   phys_addr_t paddr, size_t size, int prot, gfp_t gfp);
+
+Best regards,
+baolu
