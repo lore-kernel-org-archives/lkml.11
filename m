@@ -2,72 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A0A9C43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 12:55:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ADD9C43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 13:13:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233968AbiGXMzE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 08:55:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55646 "EHLO
+        id S233652AbiGXNNZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 09:13:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235033AbiGXMyA (ORCPT
+        with ESMTP id S229772AbiGXNNY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 08:54:00 -0400
-Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E115412AD5;
-        Sun, 24 Jul 2022 05:53:54 -0700 (PDT)
-X-QQ-mid: bizesmtp86t1658667219tiqqdwip
-Received: from localhost.localdomain ( [171.223.97.251])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Sun, 24 Jul 2022 20:53:37 +0800 (CST)
-X-QQ-SSF: 01000000002000F0U000B00A0000000
-X-QQ-FEAT: RrZlkntZBflKcuY8rrgOtE6VDI+adS2tmGpOUI5TaU9rC6YaVQCXtBpTxBiDD
-        w/Tu1RgqOoKHEX2qqZGRqWAw0LKbxyzhsG9oW+KkLDWgYINr33l572bzy+wU7mdQdzHeY8U
-        qQe4xOhQ9A8iGRjzbufEFp01vo8aCb9pXyyviQfM79ZfpyvxGyNG+9w96D8SLtu6wicASts
-        phknQuDRPu5AyKs7BrJvKlKvpasIkXiyYpo0b3Ve+SqxJ3/upzksCZkAb+moGdJIRti4aLD
-        ROfi2F5VcHDiz71+BpqVkQwjZI/vzDr/JypXAVwQ9MWNE8+bRNSU2j/dYzTtXsVYOPMZhpH
-        f5bGHj8orl0TIOEMOxBGANgMBDw8X5vsd6fwzkJmzFOHEpZs216OoB9gFI17Gy/vDtl7AOi
-X-QQ-GoodBg: 0
-From:   Jason Wang <wangborong@cdjrlc.com>
-To:     quic_abhinavk@quicinc.com
-Cc:     robdclark@gmail.com, dmitry.baryshkov@linaro.org, sean@poorly.run,
-        airlied@linux.ie, daniel@ffwll.ch, bjorn.andersson@linaro.org,
-        quic_kalyant@quicinc.com, quic_vpolimer@quicinc.com,
-        vkoul@kernel.org, linux-arm-msm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH] drm/msm/dpu: Fix comment typo
-Date:   Mon, 25 Jul 2022 04:42:42 +0800
-Message-Id: <20220724204242.4107-1-wangborong@cdjrlc.com>
-X-Mailer: git-send-email 2.35.1
+        Sun, 24 Jul 2022 09:13:24 -0400
+Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29631D10C;
+        Sun, 24 Jul 2022 06:13:23 -0700 (PDT)
+Received: by mail-ot1-x334.google.com with SMTP id a14-20020a0568300b8e00b0061c4e3eb52aso6743181otv.3;
+        Sun, 24 Jul 2022 06:13:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=CoQ0KoviDbRVpj+LdP1eKJqa/kfzAhSHBZf5JTD1W18=;
+        b=XSAWLZsyiD75hw2bgYvivcGJkwP7cyaQ3Z6k5ssfX+4cFHjYtRYRYoFMdtNUcHmDWd
+         daa8zaNhkVI2mHr+hvMFw1GXPMI8fz4qsHDi2dgAg9gnDglKxgVCxNcfCyHReqz2ZjAV
+         zbPmdujF1xwiZOe/quYsfwnfmbpivn8r+X+xyyIpqPPPTmQzn9IRdoG/BwxMvja6I4Rc
+         H9VT/8RrLzl0vG57pvuu+Ikq6XpbYRaPpSlggLVGsIYy4b0I2LD+B7Op+Tun8WecDNRI
+         shZBH0AI+l5cS3KfzGCZZN8iGRVFJinWJUedDMxjib/cPLBgKJmHCXvXgoz8CNauDf5B
+         OVkg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=CoQ0KoviDbRVpj+LdP1eKJqa/kfzAhSHBZf5JTD1W18=;
+        b=DRCyEFEJ12SKLzHRBrYbL1WpvpsYMAMyNVe5qamex/4oNkrk55mO8xslHG2uo3t8hf
+         y2BscdWfKoNTgKXXfvzX/hTwtEbuua4h5nBrYCMwfTDcguTxj3q/QGYupkhAda/6ulC1
+         4OnidHXvbj2lWGrJnQS6hPSz9PGOlOqT6S6+01xWE6TUUHTGxTnQuoDQFowGphGoQd45
+         myJELEp89fkcwCBL+B8/VSvvK/VRSRg9g5rLtd3OXz6hatBgbisLOyUDtDpnVPb0mgCM
+         sMUhXOpO5OTgtFynob12tSOLQDuUKockgYZ6e0LDlyqV7z0JE4YpBOQZTFQZZNAVvwdv
+         /ofQ==
+X-Gm-Message-State: AJIora/NqSUjJEIxw8j/IFxwC1EP6zYUMn4/nvYSwCDxcLen40SXkVh2
+        dRrJFYzCOmpvr3dRal5X/FE=
+X-Google-Smtp-Source: AGRyM1shTLufFVF7QwpnPzwIswJroi70ssc5QXRWwjSkGCz6E0tki2f0n4m8l6jG/7Iwut/W7PYgxQ==
+X-Received: by 2002:a9d:58cc:0:b0:61c:efc0:5c75 with SMTP id s12-20020a9d58cc000000b0061cefc05c75mr2031012oth.167.1658668402451;
+        Sun, 24 Jul 2022 06:13:22 -0700 (PDT)
+Received: from t14s.localdomain (201-24-138-64.user3p.brasiltelecom.net.br. [201.24.138.64])
+        by smtp.gmail.com with ESMTPSA id r2-20020a4aa2c2000000b004359da266b4sm3869152ool.14.2022.07.24.06.13.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 Jul 2022 06:13:22 -0700 (PDT)
+Received: by t14s.localdomain (Postfix, from userid 1000)
+        id DD0EA35B3B1; Sun, 24 Jul 2022 10:13:18 -0300 (-03)
+Date:   Sun, 24 Jul 2022 10:13:18 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Duoming Zhou <duoming@zju.edu.cn>
+Cc:     linux-sctp@vger.kernel.org, vyasevich@gmail.com,
+        nhorman@tuxdriver.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] sctp: fix sleep in atomic context bug in timer
+ handlers
+Message-ID: <Yt1Fbv9t/BBeYe1Z@t14s.localdomain>
+References: <20220723015809.11553-1-duoming@zju.edu.cn>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220723015809.11553-1-duoming@zju.edu.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The double `be' is duplicated in the comment, remove one.
+Hi,
 
-Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
----
- drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Sat, Jul 23, 2022 at 09:58:09AM +0800, Duoming Zhou wrote:
+> There are sleep in atomic context bugs in timer handlers of sctp
+> such as sctp_generate_t3_rtx_event(), sctp_generate_probe_event(),
+> sctp_generate_t1_init_event(), sctp_generate_timeout_event(),
+> sctp_generate_t3_rtx_event() and so on.
+> 
+> The root cause is sctp_sched_prio_init_sid() with GFP_KERNEL parameter
+> that may sleep could be called by different timer handlers which is in
+> interrupt context.
+> 
+> One of the call paths that could trigger bug is shown below:
+> 
+>       (interrupt context)
+> sctp_generate_probe_event
+>   sctp_do_sm
+>     sctp_side_effects
+>       sctp_cmd_interpreter
+>         sctp_outq_teardown
+>           sctp_outq_init
 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
-index 71fe4c505f5b..38aa38ab1568 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.h
-@@ -76,7 +76,7 @@ enum {
- 
- /**
-  * MDP TOP BLOCK features
-- * @DPU_MDP_PANIC_PER_PIPE Panic configuration needs to be be done per pipe
-+ * @DPU_MDP_PANIC_PER_PIPE Panic configuration needs to be done per pipe
-  * @DPU_MDP_10BIT_SUPPORT, Chipset supports 10 bit pixel formats
-  * @DPU_MDP_BWC,           MDSS HW supports Bandwidth compression.
-  * @DPU_MDP_UBWC_1_0,      This chipsets supports Universal Bandwidth
--- 
-2.35.1
+This sequence is odd but it is used when handling dup cookies. It
+tears down whatever was in there and re-inits it. With that,
 
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 
+>             sctp_sched_set_sched
+>               n->init_sid(..,GFP_KERNEL)
+>                 sctp_sched_prio_init_sid //may sleep
