@@ -2,118 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A5B3C43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 20:18:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBB2FC43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 20:32:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231400AbiGXUP1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 16:15:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36556 "EHLO
+        id S230089AbiGXU0f (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 16:26:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230114AbiGXUPZ (ORCPT
+        with ESMTP id S229446AbiGXU0d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 16:15:25 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3544FF05
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 13:15:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658693724; x=1690229724;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=/XKglUVOJEyHIJU/H7Lc4uf6RHd+Ys8toBysJ7PENuc=;
-  b=mFREogcfJAYzqYuq1R6CT36+kvIe7wojfUTxumFpK+nQM8HZZmNGyqNa
-   xfhc3F98DkwRHC8BJ6H7d9VfUHVBqb5RDDezWzirq3crDQk3AKbKVh/ne
-   swwQEP17CkFBE631LPd30ihTsglpwywfdHS3DAHTmw81lAl2p3TXAJDEp
-   IfSYeRxfi2uQyHxuLlBH3ekZ/Ha1LMdDD8Sew0pwUx4/reLusxzFTXyrF
-   dp7aPYnAhpbSNCySSRpjKx+YvGaPruUN46LKA7tGjZqdTP3PIAfWSIQK0
-   U3ZRY85fNB/oxBLIyqRgPHq3Hwcuwu84PELCg2mRbqfSJqIf6zLkW6eE9
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10418"; a="373872305"
-X-IronPort-AV: E=Sophos;i="5.93,191,1654585200"; 
-   d="scan'208";a="373872305"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2022 13:15:23 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,191,1654585200"; 
-   d="scan'208";a="926656655"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 24 Jul 2022 13:15:22 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oFi0X-0004EZ-1C;
-        Sun, 24 Jul 2022 20:15:21 +0000
-Date:   Mon, 25 Jul 2022 04:14:48 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Justin M. Forbes" <jforbes@fedoraproject.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Jason A. Donenfeld" <zx2c4@kernel.org>
-Subject: [linux-stable-rc:linux-5.15.y 6874/8723]
- arch/arm/lib/xor-neon.c:30:2: warning: This code requires at least version
- 4.6 of GCC
-Message-ID: <202207250449.BYMZbIA2-lkp@intel.com>
+        Sun, 24 Jul 2022 16:26:33 -0400
+Received: from gnuweeb.org (gnuweeb.org [51.81.211.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 918FCD12C;
+        Sun, 24 Jul 2022 13:26:32 -0700 (PDT)
+Received: from integral2.. (unknown [125.160.99.33])
+        by gnuweeb.org (Postfix) with ESMTPSA id D28FB7E328;
+        Sun, 24 Jul 2022 20:26:27 +0000 (UTC)
+X-GW-Data: lPqxHiMPbJw1wb7CM9QUryAGzr0yq5atzVDdxTR0iA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gnuweeb.org;
+        s=default; t=1658694391;
+        bh=upcwVnPzO07Kr5AImxs3CXXPqhTn+Mt/d3N1UpRAOdM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ffMt7dFWpB+2sQge4Rtn4oz/pSB/Ue+lmfVYtRnZWQUtjsW/TTBu/Tyv1cXf1YKvC
+         E/u6GY3AhXkV0BZxLJMacwkS4MMjj1cXedFqv/QzoKU/nPR3X+TRmWZPgWNuchgyii
+         at7SxYGtU8WxPgCDlH/KTY74dWvdv7lmzuOWO0ro5yinJivn/A8xlpDegiP17coYxk
+         vL8NHuAxj7Ov9rLB4fEV85Cdz2hdGkDbMqumWo7OIInbYkkylqfSIE1PN5q6AotxS4
+         Zi5ScdOBGJq0iiQbT8It5tCgHjgvhviwVUD+SZ38Dz/lXxsbfdUyUa1fcAxrvxvzLm
+         B3uPOrhqXI5tQ==
+From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
+To:     Kalle Valo <kvalo@kernel.org>
+Cc:     Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Linux Wireless Mailing List <linux-wireless@vger.kernel.org>,
+        netdev Mailing List <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
+        llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH] wifi: wil6210: debugfs: fix uninitialized variable use in `wil_write_file_wmi()`
+Date:   Mon, 25 Jul 2022 03:26:18 +0700
+Message-Id: <20220724202452.61846-1-ammar.faizi@intel.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <202207250332.5ud26AGE-lkp@intel.com>
+References: <202207250332.5ud26AGE-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
-head:   a9e2d8e52e1c0d87c0fa4f9d2d38e210aabed515
-commit: e16cc79b0f916069de223bdb567fa0bc2ccd18a5 [6874/8723] lib/crypto: add prompts back to crypto libraries
-config: arm-buildonly-randconfig-r006-20220724 (https://download.01.org/0day-ci/archive/20220725/202207250449.BYMZbIA2-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 12fbd2d377e396ad61bce56d71c98a1eb1bebfa9)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/commit/?id=e16cc79b0f916069de223bdb567fa0bc2ccd18a5
-        git remote add linux-stable-rc https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-        git fetch --no-tags linux-stable-rc linux-5.15.y
-        git checkout e16cc79b0f916069de223bdb567fa0bc2ccd18a5
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
+Commit 7a4836560a61 changes simple_write_to_buffer() with memdup_user()
+but it forgets to change the value to be returned that came from
+simple_write_to_buffer() call. It results in the following warning:
 
-If you fix the issue, kindly add following tag where applicable
+  warning: variable 'rc' is uninitialized when used here [-Wuninitialized]
+           return rc;
+                  ^~
+
+Remove rc variable and just return the passed in length if the
+memdup_user() succeeds.
+
+Cc: Dan Carpenter <dan.carpenter@oracle.com>
 Reported-by: kernel test robot <lkp@intel.com>
+Fixes: 7a4836560a6198d245d5732e26f94898b12eb760 ("wifi: wil6210: debugfs: fix info leak in wil_write_file_wmi()")
+Fixes: ff974e4083341383d3dd4079e52ed30f57f376f0 ("wil6210: debugfs interface to send raw WMI command")
+Signed-off-by: Ammar Faizi <ammarfaizi2@gnuweeb.org>
+---
+ drivers/net/wireless/ath/wil6210/debugfs.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-All warnings (new ones prefixed by >>):
+diff --git a/drivers/net/wireless/ath/wil6210/debugfs.c b/drivers/net/wireless/ath/wil6210/debugfs.c
+index fe84362718de..04d1aa0e2d35 100644
+--- a/drivers/net/wireless/ath/wil6210/debugfs.c
++++ b/drivers/net/wireless/ath/wil6210/debugfs.c
+@@ -1010,7 +1010,7 @@ static ssize_t wil_write_file_wmi(struct file *file, const char __user *buf,
+ 	void *cmd;
+ 	int cmdlen = len - sizeof(struct wmi_cmd_hdr);
+ 	u16 cmdid;
+-	int rc, rc1;
++	int rc1;
+ 
+ 	if (cmdlen < 0 || *ppos != 0)
+ 		return -EINVAL;
+@@ -1027,7 +1027,7 @@ static ssize_t wil_write_file_wmi(struct file *file, const char __user *buf,
+ 
+ 	wil_info(wil, "0x%04x[%d] -> %d\n", cmdid, cmdlen, rc1);
+ 
+-	return rc;
++	return len;
+ }
+ 
+ static const struct file_operations fops_wmi = {
 
->> arch/arm/lib/xor-neon.c:30:2: warning: This code requires at least version 4.6 of GCC [-W#warnings]
-   #warning This code requires at least version 4.6 of GCC
-    ^
-   1 warning generated.
-
-
-vim +30 arch/arm/lib/xor-neon.c
-
-01956597cbc46d Ard Biesheuvel 2013-05-17  16  
-01956597cbc46d Ard Biesheuvel 2013-05-17  17  /*
-01956597cbc46d Ard Biesheuvel 2013-05-17  18   * Pull in the reference implementations while instructing GCC (through
-01956597cbc46d Ard Biesheuvel 2013-05-17  19   * -ftree-vectorize) to attempt to exploit implicit parallelism and emit
-01956597cbc46d Ard Biesheuvel 2013-05-17  20   * NEON instructions.
-01956597cbc46d Ard Biesheuvel 2013-05-17  21   */
-01956597cbc46d Ard Biesheuvel 2013-05-17  22  #if __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6)
-01956597cbc46d Ard Biesheuvel 2013-05-17  23  #pragma GCC optimize "tree-vectorize"
-01956597cbc46d Ard Biesheuvel 2013-05-17  24  #else
-01956597cbc46d Ard Biesheuvel 2013-05-17  25  /*
-01956597cbc46d Ard Biesheuvel 2013-05-17  26   * While older versions of GCC do not generate incorrect code, they fail to
-01956597cbc46d Ard Biesheuvel 2013-05-17  27   * recognize the parallel nature of these functions, and emit plain ARM code,
-01956597cbc46d Ard Biesheuvel 2013-05-17  28   * which is known to be slower than the optimized ARM code in asm-arm/xor.h.
-01956597cbc46d Ard Biesheuvel 2013-05-17  29   */
-01956597cbc46d Ard Biesheuvel 2013-05-17 @30  #warning This code requires at least version 4.6 of GCC
-01956597cbc46d Ard Biesheuvel 2013-05-17  31  #endif
-01956597cbc46d Ard Biesheuvel 2013-05-17  32  
-
-:::::: The code at line 30 was first introduced by commit
-:::::: 01956597cbc46df072f20f90a40eebe356200c38 ARM: crypto: add NEON accelerated XOR implementation
-
-:::::: TO: Ard Biesheuvel <ard.biesheuvel@linaro.org>
-:::::: CC: Ard Biesheuvel <ard.biesheuvel@linaro.org>
-
+base-commit: 086f67ba21ede199307e78476353bda9ffef982c
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Ammar Faizi
+
