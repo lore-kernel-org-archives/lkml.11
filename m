@@ -2,111 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39561C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 03:16:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8D85CCA47C
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 03:41:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235834AbiGXDQB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 23 Jul 2022 23:16:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45032 "EHLO
+        id S236823AbiGXDlo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 23 Jul 2022 23:41:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229453AbiGXDP5 (ORCPT
+        with ESMTP id S236969AbiGXDll (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 23 Jul 2022 23:15:57 -0400
-Received: from mail-pf1-f180.google.com (mail-pf1-f180.google.com [209.85.210.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E325218E39;
-        Sat, 23 Jul 2022 20:15:56 -0700 (PDT)
-Received: by mail-pf1-f180.google.com with SMTP id o12so7576500pfp.5;
-        Sat, 23 Jul 2022 20:15:56 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=nKGwcrelsEZupWACxvdUNfP/QKldPa0SZqbW/2eTGi0=;
-        b=mdp3hndAm50IKluNO0up14/JDjWVHCJgck4tflwzawrrxR9s57L6+VA5TPpsQJRaiU
-         B0WbMChW92dGGsK7S1IoGRued2bEoOaI25qD/w06XJPct3Of+/QTcKGSCNrPpbY5T21k
-         1CUd0S5DJvaUyJy1L4uCkBpyzU6k/ka9/vAjqOORaTRz3MO0VOVtQPdoeIp5fwa0d4lh
-         xgqzTQydioxkZ5nsTjO30C8VfXSaShB0wU43FkTtmxb8WDgoSYhUl21oBuLhdoBcNNMh
-         Yji8vCueYo7EwkUDjIzdXAbfwJvwFj2waTch1eU1bCjP8F7HlowpW0LlRu2KQf3PMQbU
-         b4Mw==
-X-Gm-Message-State: AJIora/nXbCdfaJisNuptQhhutFebpzlLq0RZRzWlXJtjoQ8LUhm1jU4
-        UVXrR9U1+5E07l9YoiMD+G0=
-X-Google-Smtp-Source: AGRyM1v8GS3NAEbMfA7oYo8GhA6nHNjOtt6ODR8BwC94CSF+uANeItCgqHFh6Z1q52+Whk0noZffEA==
-X-Received: by 2002:a63:4a12:0:b0:419:9ede:b7a0 with SMTP id x18-20020a634a12000000b004199edeb7a0mr5839786pga.167.1658632556159;
-        Sat, 23 Jul 2022 20:15:56 -0700 (PDT)
-Received: from [192.168.3.217] ([98.51.102.78])
-        by smtp.gmail.com with ESMTPSA id 202-20020a6302d3000000b003db7de758besm5916981pgc.5.2022.07.23.20.15.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 23 Jul 2022 20:15:55 -0700 (PDT)
-Message-ID: <c57c04f9-f3d6-05cb-15f7-772efb355cb0@acm.org>
-Date:   Sat, 23 Jul 2022 20:15:53 -0700
+        Sat, 23 Jul 2022 23:41:41 -0400
+Received: from sender-of-o51.zoho.in (sender-of-o51.zoho.in [103.117.158.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84FDD17E2D
+        for <linux-kernel@vger.kernel.org>; Sat, 23 Jul 2022 20:41:39 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1658634083; cv=none; 
+        d=zohomail.in; s=zohoarc; 
+        b=bKS/evCdW2aJIs8pkEolA36ARa3dvrkcuD4cOeZ+3e3dmrwX/EV0L5VPlDNp5lx3SOScOFguyJBXKp4IXK9Ad+ljtd8TIJL6+XRnnKT32nyso6LVBWdTD37oDrIS+c7qzJoHtXfjng+M3b+glAiMFHo9IbF8t4tAcWAtxUfpHZE=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
+        t=1658634083; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=DolUpRiughPORTgVS7n95UsCu0htJgsF8Zk4DvggZ/k=; 
+        b=aQHxTskoW7a8pwTZvQWr1u/yHP9hhnIQn59pSure+lhRECNqqXkFZIdOnP58EC53iaYBw8ytvSRbnagmQFI68DG8ooEduN2RYzsPmhaA0fXYhSwgLbw/1tS+G70wMf6JHcE+nLXcknYNfKX/dCIMX6tOaLim25ehmrP9Ae41ahk=
+ARC-Authentication-Results: i=1; mx.zohomail.in;
+        dkim=pass  header.i=siddh.me;
+        spf=pass  smtp.mailfrom=code@siddh.me;
+        dmarc=pass header.from=<code@siddh.me>
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1658634083;
+        s=zmail; d=siddh.me; i=code@siddh.me;
+        h=Date:Date:From:From:To:To:Cc:Cc:Message-ID:In-Reply-To:References:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
+        bh=DolUpRiughPORTgVS7n95UsCu0htJgsF8Zk4DvggZ/k=;
+        b=X3GOFkqxAF75MzI2yyZm8ryjoOm8BgKLlzNbHdX+H6jsxnxPbI1VkETIqbNzQyH4
+        dtkSjY+jNFpdCPnBl2PL+AByVZzjz7y/kA1XqYtw3L+wp2stt7biqp1P4xgiIgvPSCf
+        BXgrphB4Jp8VCDaNv5avuumH/vss4tIOKl4gfiLc=
+Received: from mail.zoho.in by mx.zoho.in
+        with SMTP id 1658634071609624.0482927657043; Sun, 24 Jul 2022 09:11:11 +0530 (IST)
+Date:   Sun, 24 Jul 2022 09:11:11 +0530
+From:   Siddh Raman Pant <code@siddh.me>
+To:     "syzbot" <syzbot+c70d87ac1d001f29a058@syzkaller.appspotmail.com>
+Cc:     "christophe.jaillet" <christophe.jaillet@wanadoo.fr>,
+        "dhowells" <dhowells@redhat.com>,
+        "linux-kernel" <linux-kernel@vger.kernel.org>,
+        "syzkaller-bugs" <syzkaller-bugs@googlegroups.com>
+Message-ID: <1822e4b6e21.562f3a5d626157.1197655428248513205@siddh.me>
+In-Reply-To: <1822b3971d7.6eb03239234291.5206322384521184060@siddh.me>
+References: <000000000000e8a18905e478d258@google.com> <1822b3971d7.6eb03239234291.5206322384521184060@siddh.me>
+Subject: Re: [syzbot] KASAN: use-after-free Read in post_one_notification
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 1/2] scsi: ufs: Add Multi-Circular Queue support
-Content-Language: en-US
-To:     Avri Altman <Avri.Altman@wdc.com>, Can Guo <quic_cang@quicinc.com>,
-        "stanley.chu@mediatek.com" <stanley.chu@mediatek.com>,
-        "adrian.hunter@intel.com" <adrian.hunter@intel.com>,
-        "alim.akhtar@samsung.com" <alim.akhtar@samsung.com>,
-        "beanhuo@micron.com" <beanhuo@micron.com>,
-        "quic_asutoshd@quicinc.com" <quic_asutoshd@quicinc.com>,
-        "quic_nguyenb@quicinc.com" <quic_nguyenb@quicinc.com>,
-        "quic_ziqichen@quicinc.com" <quic_ziqichen@quicinc.com>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-        "kernel-team@android.com" <kernel-team@android.com>
-Cc:     "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Daejun Park <daejun7.park@samsung.com>,
-        Jinyoung Choi <j-young.choi@samsung.com>,
-        Kiwoong Kim <kwmad.kim@samsung.com>,
-        open list <linux-kernel@vger.kernel.org>
-References: <1658214120-22772-1-git-send-email-quic_cang@quicinc.com>
- <1658214120-22772-2-git-send-email-quic_cang@quicinc.com>
- <DM6PR04MB65756C5A6C5F674B19091F7DFC939@DM6PR04MB6575.namprd04.prod.outlook.com>
-From:   Bart Van Assche <bvanassche@acm.org>
-In-Reply-To: <DM6PR04MB65756C5A6C5F674B19091F7DFC939@DM6PR04MB6575.namprd04.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
+Importance: Medium
+User-Agent: Zoho Mail
+X-Mailer: Zoho Mail
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/23/22 14:23, Avri Altman wrote:
->>   static inline
->> -void ufshcd_send_command(struct ufs_hba *hba, unsigned int task_tag)
->> +void ufshcd_send_command(struct ufs_hba *hba, struct ufshcd_lrb *lrbp,
->> +                        struct ufs_hw_queue *hwq)
->>   {
->> -       struct ufshcd_lrb *lrbp = &hba->lrb[task_tag];
->>          unsigned long flags;
->>
->>          lrbp->issue_time_stamp = ktime_get();
->>          lrbp->compl_time_stamp = ktime_set(0, 0);
->> -       ufshcd_add_command_trace(hba, task_tag, UFS_CMD_SEND);
->> +       ufshcd_add_command_trace(hba, lrbp, UFS_CMD_SEND);
->>          ufshcd_clk_scaling_start_busy(hba);
->>          if (unlikely(ufshcd_should_inform_monitor(hba, lrbp)))
->>                  ufshcd_start_monitor(hba, lrbp);
->>
->> -       spin_lock_irqsave(&hba->outstanding_lock, flags);
->> -       if (hba->vops && hba->vops->setup_xfer_req)
->> -               hba->vops->setup_xfer_req(hba, task_tag, !!lrbp->cmd);
->> -       __set_bit(task_tag, &hba->outstanding_reqs);
->> -       ufshcd_writel(hba, 1 << task_tag,
->> REG_UTP_TRANSFER_REQ_DOOR_BELL);
->> -       spin_unlock_irqrestore(&hba->outstanding_lock, flags);
->> +       if (is_mcq_enabled(hba)) {
->> +               int utrd_size = sizeof(struct utp_transfer_req_desc);
- >
-> Maybe we can map some designated ops, so all those if (is_mcq) can be avoided in the data-path.
-> Also maybe we can constify sizeof(struct utp_transfer_req_desc) which is used now few times.
-
-Hi Avri,
-
-Since conditional branches are significantly faster than indirect 
-function calls I'm fine with keeping the if (is_mcq) conditionals.
-
-Thanks,
-
-Bart.
+#syz test: https://github.com/siddhpant/linux.git post_one_notification
