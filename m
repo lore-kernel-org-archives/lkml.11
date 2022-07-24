@@ -2,116 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A52CC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 15:26:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C0E1C43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 15:26:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233792AbiGXP0P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 11:26:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36938 "EHLO
+        id S234006AbiGXP05 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 11:26:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230501AbiGXP0M (ORCPT
+        with ESMTP id S230501AbiGXP0z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 11:26:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1BFA2620
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 08:26:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5F514B80D85
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 15:26:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE021C3411E;
-        Sun, 24 Jul 2022 15:26:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658676369;
-        bh=XawCLPtmZ4fqG7HmHG8DgJxtknVXOhtaMBHOKKVA+a4=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=TDphJYBgBVXs11PiEkP7SR+Eg8zcMq7InckjTEKmMzSLYPAp3El/IssQZyFeBDrX4
-         NpCdJR6xquDs9+vRBQ0W6xo/MaBgSu6m/B7F1LRJCgMVLhqIV+X8Ta52Rtss5dB7Yt
-         jeR97CMISQVZF4BkYl0fWZ8+B4PpM/6AmFpyD5It62fklcrTdeiL3y74Mpv+QudklR
-         HWzdfaSgl/8sFcANuprXTZBYiX56Jxp5NjjzBmAAAHwoy2YDqCYkyrVZcFtEq3otOy
-         Pa9aE8DL/hI6FakHLFPOgb1EVh9lwyJPucxYmKLEZNjSwU69J4lSSBHZv5g1Cpwzi+
-         9gfXIYBisGy8g==
-Message-ID: <8eaad9d0-1d59-3ecb-bab4-904ed22385f4@kernel.org>
-Date:   Sun, 24 Jul 2022 23:26:04 +0800
+        Sun, 24 Jul 2022 11:26:55 -0400
+Received: from smtpbguseast3.qq.com (smtpbguseast3.qq.com [54.243.244.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9191E2620
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 08:26:50 -0700 (PDT)
+X-QQ-mid: bizesmtp66t1658676396t1qsw34p
+Received: from localhost.localdomain ( [218.17.40.236])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Sun, 24 Jul 2022 23:26:21 +0800 (CST)
+X-QQ-SSF: 01400000002000B0E000000A0000000
+X-QQ-FEAT: B4Sc/jD84f6PXBhR4tnsAGZtkTllm7tFUcI0J/sU/bqKRBLXPEkcJXN1TiBSN
+        SU6IYrmHgbkG3RymtuU/GmYwXg8MZ626/r2Mk/8Cu4flSh9XYNIBWv4AmNG78bK1n3evay2
+        hRs7D13QV1IRXRjc9bYKA6cOeeYlcV9eWFIXJXqWM+1Tpp8l+UDudYHmYMUjroO198pL7At
+        nn8phpyhjNbvFkfsVobYa3eO7H0wh1Kl0lBPcl5AFsBTcLrz3KQESJoafdLqHueO9cBEQo0
+        lnCsg8S4e+/KP2j2gFqLvIhOrZpEVzTpGlzOv6KLT5OskVxqNPDQ6LgJZL71yfflKD9FHNK
+        9nKyusuTP4FR8dOq+C4uQBceLthm2TB21cqfBXTKRpanDxRYTDndn42ZK1h8jJmS9pfl6NI
+        nT/DtcvL3Ys=
+X-QQ-GoodBg: 2
+From:   Shenghong Han <hanshenghong2019@email.szu.edu.cn>
+To:     akpm@linux-foundation.org
+Cc:     linux-kernel@vger.kernel.org, yuhongf@szu.edu.cn,
+        caoyixuan2019@email.szu.edu.cn,
+        Shenghong Han <hanshenghong2019@email.szu.edu.cn>,
+        Jiajian Ye <yejiajian2018@email.szu.edu.cn>
+Subject: [PATCH 1/2] fix three trivival places
+Date:   Sun, 24 Jul 2022 23:25:33 +0800
+Message-Id: <20220724152534.9239-1-hanshenghong2019@email.szu.edu.cn>
+X-Mailer: git-send-email 2.30.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] f2fs: modify task name prefix
-Content-Language: en-US
-To:     Jaegeuk Kim <jaegeuk@kernel.org>, Guowei Du <duguoweisz@gmail.com>
-Cc:     linux-f2fs-devel@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, duguowei <duguowei@xiaomi.com>
-References: <20220718081038.2279-1-duguoweisz@gmail.com>
- <YtoOxTyWPFUpw/Y0@google.com>
-From:   Chao Yu <chao@kernel.org>
-In-Reply-To: <YtoOxTyWPFUpw/Y0@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:email.szu.edu.cn:qybgforeign:qybgforeign4
+X-QQ-Bgrelay: 1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/7/22 10:43, Jaegeuk Kim wrote:
-> On 07/18, Guowei Du wrote:
->> From: duguowei <duguowei@xiaomi.com>
->>
->> If there are more than one f2fs sbi, there will be more
->> discard threads. But the comm is too long to show dev
->> minor. So, change the default prefix of thread from
->> "f2fs_discard" to "f2fs_dcd".
-> 
-> That looks quite unreadable. What about unmap?
+Some dirty work:
+1.Rename some Variables.
+2.Some if-statement was missed at Commit ebbeae36387c,so make up them.
 
-FYI,
+Signed-off-by: Shenghong Han <hanshenghong2019@email.szu.edu.cn>
+Signed-off-by: Jiajian Ye <yejiajian2018@email.szu.edu.cn>
+---
+ tools/vm/page_owner_sort.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
-With commit d6986ce24fc0 ("kthread: dynamically allocate memory to store
-kthread's full name"), it has chance to show full name of kthread when
-it's not in low memory scenario.
+diff --git a/tools/vm/page_owner_sort.c b/tools/vm/page_owner_sort.c
+index ec2e67c85..fb103aaf4 100644
+--- a/tools/vm/page_owner_sort.c
++++ b/tools/vm/page_owner_sort.c
+@@ -63,7 +63,7 @@ enum ALLOCATOR_BIT {
+ };
+ enum ARG_TYPE {
+ 	ARG_TXT, ARG_COMM, ARG_STACKTRACE, ARG_ALLOC_TS, ARG_FREE_TS,
+-	ARG_CULL_TIME, ARG_PAGE_NUM, ARG_PID, ARG_TGID, ARG_UNKNOWN, ARG_FREE,
++	ARG_TIMES, ARG_TOTAL_MEM, ARG_PID, ARG_TGID, ARG_UNKNOWN, ARG_FREE,
+ 	ARG_ALLOCATOR
+ };
+ enum SORT_ORDER {
+@@ -402,7 +402,11 @@ static char *get_comm(char *buf)
+ 
+ static int get_arg_type(const char *arg)
+ {
+-	if (!strcmp(arg, "pid") || !strcmp(arg, "p"))
++	if (!strcmp(arg, "times") || !strcmp(arg, "t"))
++		return ARG_TIMES;
++	else if (!strcmp(arg, "memory") || !strcmp(arg, "m"))
++		return ARG_TOTAL_MEM;
++	else if (!strcmp(arg, "pid") || !strcmp(arg, "p"))
+ 		return ARG_PID;
+ 	else if (!strcmp(arg, "tgid") || !strcmp(arg, "tg"))
+ 		return ARG_TGID;
+@@ -599,7 +603,11 @@ static bool parse_sort_args(const char *arg_str)
+ 
+ 		int arg_type = get_arg_type(args[i]+offset);
+ 
+-		if (arg_type == ARG_PID)
++		if (arg_type == ARG_TIMES)
++			sc.cmps[i] = compare_num;
++		else if (arg_type == ARG_TOTAL_MEM)
++			sc.cmps[i] = compare_page_num;
++		else if (arg_type == ARG_PID)
+ 			sc.cmps[i] = compare_pid;
+ 		else if (arg_type == ARG_TGID)
+ 			sc.cmps[i] = compare_tgid;
+-- 
+2.30.1
 
-Thanks,
 
-> 
->>
->> Before:
->> $ ps -e | grep f2fs
->> 1628 ?        00:00:00 f2fs_ckpt-7:10
->> 1629 ?        00:00:00 f2fs_flush-7:10
->> 1630 ?        00:00:00 f2fs_discard-7:
->> 1631 ?        00:00:00 f2fs_gc-7:10
->> 2030 ?        00:00:00 f2fs_ckpt-7:27
->> 2031 ?        00:00:00 f2fs_flush-7:27
->> 2032 ?        00:00:00 f2fs_discard-7:
->> 2033 ?        00:00:00 f2fs_gc-7:27
->>
->> After:
->> $ ps -e | grep f2fs
->> 1628 ?        00:00:00 f2fs_ckpt-7:10
->> 1629 ?        00:00:00 f2fs_flush-7:10
->> 1630 ?        00:00:00 f2fs_dcd-7:10
->> 1631 ?        00:00:00 f2fs_gc-7:10
->> 2030 ?        00:00:00 f2fs_ckpt-7:27
->> 2031 ?        00:00:00 f2fs_flush-7:27
->> 2032 ?        00:00:00 f2fs_dcd-7:27
->> 2033 ?        00:00:00 f2fs_gc-7:27
->>
->> Signed-off-by: duguowei <duguowei@xiaomi.com>
->> ---
->>   fs/f2fs/segment.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
->> index 874c1b9c41a2..2eeefcbe62db 100644
->> --- a/fs/f2fs/segment.c
->> +++ b/fs/f2fs/segment.c
->> @@ -2018,7 +2018,7 @@ int f2fs_start_discard_thread(struct f2fs_sb_info *sbi)
->>   		return 0;
->>   
->>   	dcc->f2fs_issue_discard = kthread_run(issue_discard_thread, sbi,
->> -				"f2fs_discard-%u:%u", MAJOR(dev), MINOR(dev));
->> +				"f2fs_dcd-%u:%u", MAJOR(dev), MINOR(dev));
->>   	if (IS_ERR(dcc->f2fs_issue_discard))
->>   		err = PTR_ERR(dcc->f2fs_issue_discard);
->>   
->> -- 
->> 2.36.1
+
