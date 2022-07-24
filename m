@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 792B3C43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 19:13:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32097C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 19:13:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233429AbiGXTNX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 15:13:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43854 "EHLO
+        id S233498AbiGXTN1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 15:13:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229615AbiGXTNV (ORCPT
+        with ESMTP id S229564AbiGXTNV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 24 Jul 2022 15:13:21 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44DF1DFFC
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72EE3E0A3
         for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 12:13:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1658690000; x=1690226000;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=/APqt5Mi98G4cmT3Lgm2ScN+tpJjK5pjgrurXgiAjEw=;
-  b=fEpqnab6m80pLYnLBEAylRm4Zox5GJSTSw5MVxP5gw3gMSwlbzQkbYob
-   eCx4KaoEIfkFrhfTng0f8HhpEjKyvrjn0221HcfwOTwM2OLY6Ml4FxIiv
-   p7GjuvWXc+duyqAF0SWbxkE+lIfuGpyy+4AFSTykm6KoTyd3k6skWBWXK
-   E0rT8VibwVYqA/me70t7qffiEPqgHlcuy7DPj2mNPo0JqzpVGY6W8Sl4S
-   5sqJbPerHDu+Gq5OGhhkxEw4o47okIHtZyIkn/lbGxUsDwyh/+fYCZmdf
-   fWIBV5+E14BanlM7UiD2KVBJ/sAPLIb3PmtPAJbwFLGBnFRPdw5VoioYB
+  bh=D3Dv9jQkAht//ruEGJBfhvdfrzSIApoUrfZM3s/yt9o=;
+  b=V3hkV+YfMjxp0AB85NcMtQ+JSQLcUSJkkOOawFWuYqpAXSZaJUBE9tf+
+   rBd4lWo0NyvcJYnVYwXXlG+oZFqaBXP08xSagGhpWn8z+OFwQZcgphpP7
+   Rzv8bE3522z5ujHuZdy7BraYZDW9O5mjcfsuKJrQgaK/btRO/+66g5/78
+   ZaI0p5gx8XC6gBpM9KRH28brD0wmx5fEwKNDeKQYobW2CTafZwnAzsufG
+   swlZ49vtHc7THrcwV0uLuC865xCQ+BW64SNHOFR/73kO1ps6FLMt+3YV3
+   Fo6isKT+LDdg3ReAGw7ATY2ylHc1pElFVQ+GF0DwXI8iJPU8BHmKQ2cUR
    g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10418"; a="288324154"
-X-IronPort-AV: E=Sophos;i="5.93,190,1654585200"; 
-   d="scan'208";a="288324154"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2022 12:13:19 -0700
+X-IronPort-AV: E=McAfee;i="6400,9594,10418"; a="373869076"
+X-IronPort-AV: E=Sophos;i="5.93,191,1654585200"; 
+   d="scan'208";a="373869076"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2022 12:13:20 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,190,1654585200"; 
-   d="scan'208";a="596469455"
+   d="scan'208";a="574787489"
 Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 24 Jul 2022 12:13:18 -0700
+  by orsmga006.jf.intel.com with ESMTP; 24 Jul 2022 12:13:18 -0700
 Received: from kbuild by e0eace57cfef with local (Exim 4.96)
         (envelope-from <lkp@intel.com>)
-        id 1oFh2T-0004A5-27;
+        id 1oFh2T-0004A7-2D;
         Sun, 24 Jul 2022 19:13:17 +0000
-Date:   Mon, 25 Jul 2022 03:13:15 +0800
+Date:   Mon, 25 Jul 2022 03:13:13 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     Jianglei Nie <niejianglei2021@163.com>
 Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
         0day robot <lkp@intel.com>
 Subject: security/keys/trusted-keys/trusted_tpm2.c:42:9: warning: ISO C90
  forbids mixed declarations and code
-Message-ID: <202207250316.ZEbQokZd-lkp@intel.com>
+Message-ID: <202207250357.XCaCDvpe-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -60,16 +60,18 @@ tree:   https://github.com/intel-lab-lkp/linux/commits/UPDATE-20220722-162642/Ji
 head:   7112e578934830db95743922ab0d46d2f4b7dff4
 commit: 7112e578934830db95743922ab0d46d2f4b7dff4 KEYS: trusted: Fix memory leak in tpm2_key_encode()
 date:   2 days ago
-config: i386-randconfig-a001 (https://download.01.org/0day-ci/archive/20220725/202207250316.ZEbQokZd-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+config: alpha-randconfig-r026-20220721 (https://download.01.org/0day-ci/archive/20220725/202207250357.XCaCDvpe-lkp@intel.com/config)
+compiler: alpha-linux-gcc (GCC) 12.1.0
 reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
         # https://github.com/intel-lab-lkp/linux/commit/7112e578934830db95743922ab0d46d2f4b7dff4
         git remote add linux-review https://github.com/intel-lab-lkp/linux
         git fetch --no-tags linux-review UPDATE-20220722-162642/Jianglei-Nie/KEYS-trusted-Fix-memory-leak-in-tpm2_key_encode/20220608-211954
         git checkout 7112e578934830db95743922ab0d46d2f4b7dff4
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash security/keys/trusted-keys/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=alpha SHELL=/bin/bash security/keys/trusted-keys/
 
 If you fix the issue, kindly add following tag where applicable
 Reported-by: kernel test robot <lkp@intel.com>
