@@ -2,99 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24E72C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 22:32:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB60FC43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 22:33:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231602AbiGXWcW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 18:32:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57868 "EHLO
+        id S231562AbiGXWdz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 18:33:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229451AbiGXWcV (ORCPT
+        with ESMTP id S229451AbiGXWdx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 18:32:21 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76BD96176;
-        Sun, 24 Jul 2022 15:32:20 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LrdG93mP9z4xCy;
-        Mon, 25 Jul 2022 08:32:17 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1658701937;
-        bh=I5e4aBxRs5TMjZ/ACc3C4ic9n5kgHpVQS1/Ropn6vWA=;
-        h=Date:From:To:Cc:Subject:From;
-        b=T/VAJSez0hsUFvi2AbdlTH1IFLqr3mSdvh6PDKYRPAT8TzJARGyX3v3WILJ5hs+tp
-         zfZiibugx+Jm9ob/I/2uYFI6K8dj+hP2bI1C+lK+m3njeQN+7HTYtr+m1ULurjCg3v
-         E5TeSfSS8M5zbtZA63o/rd+3Hh5/MSl/ongGpkQp4225WJW3ahvJN3I1DXsKyAUJM7
-         9XePrOyllHLfRNt2/ZW2Q4bTS/wS8uGNjrxI4W+XG1syq8n23+B43+xCzpPH7e6Wg4
-         uM5NcbABoESYSznwJdN5g9fHddQvqL2lo+v96aDEUwhljxZvFvuMOOy3QlwbPlcpld
-         TA/pMP76w6ZVQ==
-Date:   Mon, 25 Jul 2022 07:57:28 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>
-Cc:     Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: Signed-off-by missing for commit in the bluetooth tree
-Message-ID: <20220725075728.499066c9@canb.auug.org.au>
+        Sun, 24 Jul 2022 18:33:53 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9357B6176;
+        Sun, 24 Jul 2022 15:33:52 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id ss3so17389815ejc.11;
+        Sun, 24 Jul 2022 15:33:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=b3VSvKp8fXTk4ug7ffkxMisEEs2oxQK6593xJQY9zGo=;
+        b=IV+Q4zWxZP4cRCbJYRRl5nEpcWQZFN7c1UO+OmjXNrEf4Uvq1z4Hy5TWx/TT3ki7tR
+         AoOnC5eKwmIqrNuYEgaIpZB+PMBnE97AG9rCQZPecXPX0GznxF48TXtVWEIYzip5eyhU
+         gMWLZNc+n7S/+hPAp+ekGffDymN1TMLyf7DxywmPTKWWEkiv0JeUsMFk2C3lVIsk+RVd
+         lIT6VG7hvOCKuZylH4iefPBSFLb3cQAFl0p5r1tTOS5L/SBzeZLax37/GVgl4LNDL3yz
+         6oRlfLHNgRgRIbU2w80BU4Ajb4Lu8+AZzWHeeO3UoRCoLU2pXs3Vwy56YFT4esTjTMoW
+         sYzQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=b3VSvKp8fXTk4ug7ffkxMisEEs2oxQK6593xJQY9zGo=;
+        b=MvmsckTaNsl9RnxGpxv8R2s31+iW+1ox8IT2RMMez0TDCm8XKBuASTg0gE3jMMlbUQ
+         r3BWHdDejVNkbWUbIiNwNN3SGjrtyKsyxrC6uo/H8BPZWIWD6Rcj5xj13kpcLpAVQ3f0
+         1Nm39ghP8ajQ34xJwIgI6s+0KjbRYAUVFkZIfeVXqS2+iYlp6XaH2uXTmqEudGD6VPFr
+         Rahq5Kmsij2VAhOXLgb1MeRo+ctDvLBLK31oBDIwI0tBUfEJa/9sf09znNXzEgLt7+3h
+         +Znn+4hxeCKDF+6pNmnLg6GRwPPWDKElKGA+VFDHkvZ+GW+WvehXrIK7ZLDWAIAEnsKH
+         tD7g==
+X-Gm-Message-State: AJIora8t0eu4uW/aetH++aZn2z5Lm543eLgc/zWHryBJCvf8qxfkuPiK
+        PH6zXX/n0TjnJBq8JwDMgOU=
+X-Google-Smtp-Source: AGRyM1s3dMFTJnj1CooXfK/OlqcUurVIDIX86DDLAnNGzOb3zqck4jrnK/IjG/S2kYm3DeCv+ldSYQ==
+X-Received: by 2002:a17:907:6d07:b0:72f:18bf:505 with SMTP id sa7-20020a1709076d0700b0072f18bf0505mr7646941ejc.406.1658702031008;
+        Sun, 24 Jul 2022 15:33:51 -0700 (PDT)
+Received: from skbuf ([188.25.231.115])
+        by smtp.gmail.com with ESMTPSA id m5-20020a17090672c500b0072b56098fc6sm4616175ejl.127.2022.07.24.15.33.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 Jul 2022 15:33:50 -0700 (PDT)
+Date:   Mon, 25 Jul 2022 01:33:48 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Christian Marangi <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [net-next PATCH v3 02/14] net: dsa: qca8k: make mib autocast
+ feature optional
+Message-ID: <20220724223348.tqh45ygbuyw7jp5s@skbuf>
+References: <20220723141845.10570-1-ansuelsmth@gmail.com>
+ <20220723141845.10570-1-ansuelsmth@gmail.com>
+ <20220723141845.10570-3-ansuelsmth@gmail.com>
+ <20220723141845.10570-3-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/7HtodeEoraReSeU8=7BfyxS";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220723141845.10570-3-ansuelsmth@gmail.com>
+ <20220723141845.10570-3-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/7HtodeEoraReSeU8=7BfyxS
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Sat, Jul 23, 2022 at 04:18:33PM +0200, Christian Marangi wrote:
+> Some switch may not support mib autocast feature and require the legacy
+> way of reading the regs directly.
+> Make the mib autocast feature optional and permit to declare support for
+> it using match_data struct in a dedicated qca8k_info_ops struct.
+> 
+> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+> ---
+>  drivers/net/dsa/qca/qca8k.c | 11 +++++++++--
+>  drivers/net/dsa/qca/qca8k.h |  5 +++++
+>  2 files changed, 14 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/qca/qca8k.c b/drivers/net/dsa/qca/qca8k.c
+> index 212b284f9f73..9820c5942d2a 100644
+> --- a/drivers/net/dsa/qca/qca8k.c
+> +++ b/drivers/net/dsa/qca/qca8k.c
+> @@ -2104,8 +2104,8 @@ qca8k_get_ethtool_stats(struct dsa_switch *ds, int port,
+>  	u32 hi = 0;
+>  	int ret;
+>  
+> -	if (priv->mgmt_master &&
+> -	    qca8k_get_ethtool_stats_eth(ds, port, data) > 0)
+> +	if (priv->mgmt_master && priv->info->ops.autocast_mib &&
+> +	    priv->info->ops.autocast_mib(ds, port, data) > 0)
+>  		return;
+>  
+>  	for (i = 0; i < priv->info->mib_count; i++) {
+> @@ -3248,20 +3248,27 @@ static int qca8k_resume(struct device *dev)
+>  static SIMPLE_DEV_PM_OPS(qca8k_pm_ops,
+>  			 qca8k_suspend, qca8k_resume);
+>  
+> +static const struct qca8k_info_ops qca8xxx_ops = {
+> +	.autocast_mib = qca8k_get_ethtool_stats_eth,
+> +};
+> +
+>  static const struct qca8k_match_data qca8327 = {
+>  	.id = QCA8K_ID_QCA8327,
+>  	.reduced_package = true,
+>  	.mib_count = QCA8K_QCA832X_MIB_COUNT,
+> +	.ops = qca8xxx_ops,
+>  };
+>  
+>  static const struct qca8k_match_data qca8328 = {
+>  	.id = QCA8K_ID_QCA8327,
+>  	.mib_count = QCA8K_QCA832X_MIB_COUNT,
+> +	.ops = qca8xxx_ops,
+>  };
+>  
+>  static const struct qca8k_match_data qca833x = {
+>  	.id = QCA8K_ID_QCA8337,
+>  	.mib_count = QCA8K_QCA833X_MIB_COUNT,
+> +	.ops = qca8xxx_ops,
+>  };
+>  
+>  static const struct of_device_id qca8k_of_match[] = {
+> diff --git a/drivers/net/dsa/qca/qca8k.h b/drivers/net/dsa/qca/qca8k.h
+> index 0b990b46890a..7b4a698f092a 100644
+> --- a/drivers/net/dsa/qca/qca8k.h
+> +++ b/drivers/net/dsa/qca/qca8k.h
+> @@ -324,10 +324,15 @@ enum qca8k_mid_cmd {
+>  	QCA8K_MIB_CAST = 3,
+>  };
+>  
+> +struct qca8k_info_ops {
+> +	int (*autocast_mib)(struct dsa_switch *ds, int port, u64 *data);
+> +};
+> +
+>  struct qca8k_match_data {
+>  	u8 id;
+>  	bool reduced_package;
+>  	u8 mib_count;
+> +	struct qca8k_info_ops ops;
 
-Hi all,
+This creates a copy of the structure for each of qca8327, qca8328, etc etc,
+which in turn will consume 3 times more space than necessary when new
+ops are added. Could you make this "const struct qca8k_ops *ops"?
 
-Commits
+>  };
+>  
+>  enum {
+> -- 
+> 2.36.1
+> 
 
-  a5133fe87ed8 ("Bluetooth: use memset avoid memory leaks")
-  9111786492f1 ("Bluetooth: fix an error code in hci_register_dev()")
-  4f17c2b6694d ("Bluetooth: hci_bcm: Add BCM4349B1 variant")
-  88b65887aa1b ("dt-bindings: bluetooth: broadcom: Add BCM4349B1 DT binding=
-")
-  359ee4f834f5 ("Bluetooth: Unregister suspend with userchannel")
-  0acef50ba3b5 ("Bluetooth: Fix index added after unregister")
-  877afadad2dc ("Bluetooth: When HCI work queue is drained, only queue chai=
-ned work")
-  ab2d2a982ff7 ("Bluetooth: hci_intel: Add check for platform_driver_regist=
-er")
-  629f66aaca81 ("Bluetooth: clear the temporary linkkey in hci_conn_cleanup=
-")
-  af35e28f0fea ("Bluetooth: hci_bcm: Add support for FW loading in autobaud=
- mode")
-  0b4de2523f28 ("dt-bindings: net: broadcom-bluetooth: Add property for aut=
-obaud mode")
-  bde63e9effd3 ("Bluetooth: hci_qca: Return wakeup for qca_wakeup")
-  c69ecb0ea4c9 ("Bluetooth: btusb: Add support of IMC Networks PID 0x3568")
-
-are missing a Signed-off-by from their committer.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/7HtodeEoraReSeU8=7BfyxS
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLdwEgACgkQAVBC80lX
-0Gw37ggAlO2okb2BD10+8PpN4kA7qplqt5kYuVarJRphpz1PxYbvEDuFc/Bl7nl7
-u6C5SyQU1jX35wKSzqJy6GUS3ccLCSK/Ym/ziSqU5eY3pUF+vb1tl2XgqhVtzVPC
-97D9bA1XyPjJKhLJ5yiXmPXIwzK0ODY1wDk46WhiOD3D7010mdcDXO4A7RY8GxN+
-UFGM7eRZWmyqTEKftgmFsze9I/mQ1zlYMGWKOmKIV0kxxazLebNGXAiKB2BOuH/u
-BjMr+IFr4Ei9o3eJFzTnzThNHcYRJpJ555KVGLNxKEngduepeJYFVxBnV3z+yc6x
-URuDacePofYqKDmNt3uV0y8UXb9AHw==
-=vQWZ
------END PGP SIGNATURE-----
-
---Sig_/7HtodeEoraReSeU8=7BfyxS--
