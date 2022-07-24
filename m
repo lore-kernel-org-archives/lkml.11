@@ -2,103 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81281C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 12:09:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 990A2C43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 12:20:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231768AbiGXMJU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 08:09:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34272 "EHLO
+        id S232296AbiGXMUG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 08:20:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbiGXMJR (ORCPT
+        with ESMTP id S229450AbiGXMUD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 08:09:17 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 360AC175B1;
-        Sun, 24 Jul 2022 05:09:16 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id u14-20020a05600c00ce00b003a323062569so4825085wmm.4;
-        Sun, 24 Jul 2022 05:09:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=TuaZlSjI8Gr3uFZtjKix4F/O72z/L1CxsKBvamkDb9g=;
-        b=CIczQQVHcpEMDUwb1mJxLsQHu5bxF1+/HtkEgx98+M5WdLQDNxUccwaY44QO0VZHkl
-         oDe8+ugM9HUAdQ8vdSgfMAijNDqKQScCoQMGJb+UYylC8v482tzvLHlm421BeqTdREeu
-         ViDLkDKh0fNpEqQDDjBMR4tHyvWVC5Q5YCVSnAx+fNki/tvMmxU8tut0vvWAwpfHiesi
-         vx/p4IUwPN0dwiuOcI4n3NCzCqnJzra+JAM9EPAcwmxT7gHZF9mzfYu8rpssZQIYr9pF
-         3QnNMCnG3qap0FvpW7MgniWsUrzAS7T3JMOqkMesuv+fK5l1cZBPNf5TCKVQ6TiayHJU
-         BEWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=TuaZlSjI8Gr3uFZtjKix4F/O72z/L1CxsKBvamkDb9g=;
-        b=sdAMGrFmkDUzYJy5t22xJB51HB/mdSxtkE6PB/BudMsvSQwLPf9UTBhMWndBQCOwdI
-         6fq/MzcUJBjX+p2kFjWP77FnCdRGBjTd20Wz1uat9Iq/Usta8TfDShISgN54xgCEjojJ
-         HgFIDNRvs3g8SmnKRfD8sEXH9R26+jfKSmPrEYwN6Wd1fg0hmzz3u7FHiit6frkKcZ25
-         D8SMXheUOPPuQqSTneN30ol8K/bq1gMB/6wLiwZuTUNGi3apiSLKtGWPGXPUPw/um8Iz
-         Zv6UyF7iq1KB/3o7Vxlxv+Xxe8vIcJmRG6lWPs3S53S8JIdcj+AWGTk8qdlCAN+j6Hlr
-         lL2A==
-X-Gm-Message-State: AJIora/FSsfzrseKr9pW1heZCBrVggcaEhvPvIKbu5AN7zdPqo/5jvh6
-        LH4l06moNpuep8hevGLkmXM=
-X-Google-Smtp-Source: AGRyM1sABbJX/NfOxdyBYbEO9fabdBu0ikYoMRVKH4vkAHdYfEBZkk6/Dk9c48z/ijU8ylWsRa4FgA==
-X-Received: by 2002:a05:600c:3582:b0:3a3:3b00:cb25 with SMTP id p2-20020a05600c358200b003a33b00cb25mr5374622wmq.170.1658664554661;
-        Sun, 24 Jul 2022 05:09:14 -0700 (PDT)
-Received: from [192.168.0.104] ([77.126.166.31])
-        by smtp.gmail.com with ESMTPSA id n186-20020a1ca4c3000000b003a32438c518sm14509967wme.6.2022.07.24.05.09.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 24 Jul 2022 05:09:14 -0700 (PDT)
-Message-ID: <09038324-65ed-8529-2f6c-671a15a8fb84@gmail.com>
-Date:   Sun, 24 Jul 2022 15:09:11 +0300
+        Sun, 24 Jul 2022 08:20:03 -0400
+Received: from smtpbg.qq.com (unknown [43.155.67.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CCE012ABB;
+        Sun, 24 Jul 2022 05:19:55 -0700 (PDT)
+X-QQ-mid: bizesmtp84t1658665190thxciqmk
+Received: from localhost.localdomain ( [171.223.97.251])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Sun, 24 Jul 2022 20:19:48 +0800 (CST)
+X-QQ-SSF: 01000000002000F0U000B00A0000020
+X-QQ-FEAT: cbck7jzG4wbbtuthirBaXPVLfg+gpwTLWy1jH/yCDaAkqZ0ZMegFdCCJ1VCBi
+        fgNoElUAWi2M/T9xWYrilrApykYb6OIsP+uiZc/XWe5fEqYqymPGWbuvjbXG8Ye2D05Z+dK
+        syuVtFwBGcieqUQ3rNQdVnvxWMIbWvNl4ZFMQaVNRYH7sBU76CJb35t27JRBQqa6AymiqHC
+        uw++O1DnTSZ8PSUOPMfPWQnrcXhGGlqnuUevwnLI982SFpl6/kz0y+zDLtpv+oda2Id/2NA
+        64cd0MH4W36sM4UnhR3RiEm3ZTpP/jwV4eErQoS5ydOyVFeZCWaCflcsveptP3pnWLGPIqx
+        2ksE4UYTugAkK4c1z63WucbVlPUUXUby7QNmsyC/9m8QPbYyPsNrpQrSS/9+w==
+X-QQ-GoodBg: 0
+From:   Jason Wang <wangborong@cdjrlc.com>
+To:     edumazet@google.com
+Cc:     idryomov@gmail.com, xiubli@redhat.com, jlayton@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        ceph-devel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Jason Wang <wangborong@cdjrlc.com>
+Subject: [PATCH] libceph: Fix comment typo
+Date:   Mon, 25 Jul 2022 04:11:31 +0800
+Message-Id: <20220724201131.3381-1-wangborong@cdjrlc.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH net-next V3 0/3] Introduce and use NUMA distance metrics
-Content-Language: en-US
-To:     Tariq Toukan <tariqt@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Gal Pressman <gal@nvidia.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        linux-kernel@vger.kernel.org
-References: <20220719162339.23865-1-tariqt@nvidia.com>
-From:   Tariq Toukan <ttoukan.linux@gmail.com>
-In-Reply-To: <20220719162339.23865-1-tariqt@nvidia.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+The double `without' is duplicated in the comment, remove one.
 
+Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+---
+ net/ceph/pagelist.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-On 7/19/2022 7:23 PM, Tariq Toukan wrote:
-> Hi,
-> 
-> Implement and expose CPU spread API based on the scheduler's
-> sched_numa_find_closest().  Use it in mlx5 and enic device drivers.  This
-> replaces the binary NUMA preference (local / remote) with an improved one
-> that minds the actual distances, so that remote NUMAs with short distance
-> are preferred over farther ones.
-> 
-> This has significant performance implications when using NUMA-aware
-> memory allocations, improving the throughput and CPU utilization.
-> 
-> Regards,
-> Tariq
-> 
-> v3:
-> - Introduce the logic as a common API instead of being mlx5 specific.
-> - Add implementation to enic device driver.
-> - Use non-atomic version of __cpumask_clear_cpu.
-> 
+diff --git a/net/ceph/pagelist.c b/net/ceph/pagelist.c
+index 65e34f78b05d..74622b278d57 100644
+--- a/net/ceph/pagelist.c
++++ b/net/ceph/pagelist.c
+@@ -96,7 +96,7 @@ int ceph_pagelist_append(struct ceph_pagelist *pl, const void *buf, size_t len)
+ EXPORT_SYMBOL(ceph_pagelist_append);
+ 
+ /* Allocate enough pages for a pagelist to append the given amount
+- * of data without without allocating.
++ * of data without allocating.
+  * Returns: 0 on success, -ENOMEM on error.
+  */
+ int ceph_pagelist_reserve(struct ceph_pagelist *pl, size_t space)
+-- 
+2.35.1
 
-Comments on V2 were addressed.
-Please let me now of any other comments on this V3.
