@@ -2,58 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93C3DC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 20:10:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFE97C43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 20:15:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230499AbiGXUKj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 16:10:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34808 "EHLO
+        id S231407AbiGXUPT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 16:15:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229446AbiGXUKg (ORCPT
+        with ESMTP id S230342AbiGXUPP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 16:10:36 -0400
-Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 012D8B489
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 13:10:33 -0700 (PDT)
-Received: by mail-qv1-xf31.google.com with SMTP id i4so7108424qvv.7
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 13:10:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9NQyh2bs88XAyOOdXIMOFXmDnOwmGl1o/0rUMi4/QHQ=;
-        b=PTRW02txEXSRXk8Xo1Q2TayCDLjbCuulOWRBmQ5t7Qi4FjCMoPit1qMWO0hbUeK56c
-         E64UPS1q/n68EwFHdAiCJyjc0At5jFUT4KhA6iRj6vQXkW6SGSGmU6wqFlcjqppswMx6
-         D5L1diBp31p8SEVf5tD7KLA2sOMQBmlTkWpj+3xA1MEySDiFWsc1koRhLM18/EQn5dk6
-         DYdZUug9O7n5Kso9Uxz6878taL42QEbsQxBW36fflVmEqBfd5rmLTTmqWGUyyiMR93vd
-         rYsZus7SMgWJsypemqb6MYdM/EW9zEt4PzrK41q4LXNfXv2cqF9PhI/PiSFw2i+H9bv1
-         I/xA==
+        Sun, 24 Jul 2022 16:15:15 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 063A625F2
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 13:15:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658693711;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=kZz4b5LoajqAvsUTBnBgNSgY5TJeL+gVGY7SLqZJsYs=;
+        b=hquihfS/37wY+Dek6VkgEtddJHF9p1GGFoOfMKSTmRyEVKYqxN8OznUi+HlO9NuSElTTbE
+        PZw/HfV+xM8jGrTjveWXiJxixqGrPIHijuXU0uywIi7Hno6wX54QGgceSgO1tX3nyZn0WT
+        NDm3C7zi9wEP23EbnpPX5UfyqlqK900=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-280-O6FkCqEuOl61U3soYR6ZTQ-1; Sun, 24 Jul 2022 16:15:07 -0400
+X-MC-Unique: O6FkCqEuOl61U3soYR6ZTQ-1
+Received: by mail-wm1-f69.google.com with SMTP id h65-20020a1c2144000000b003a30cae106cso7562797wmh.8
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 13:15:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9NQyh2bs88XAyOOdXIMOFXmDnOwmGl1o/0rUMi4/QHQ=;
-        b=lH9T2dzVv+pxVXjFcWCw1Xd/isgRwn4D5g7e/0Fq1BGnGzj7O6pZdkWfZ4/Vn23+Ns
-         0w4akrRa7IWruAPFzr6zGLTl5qxfh6N9fd6FxQNjLbuGvJ3HcgD5d0mwfUKLSWoq/RLG
-         +0SIy+8qRV0jA+86JB6koaOfm5mbOSJ3bO1DIvt1hybTSq8qNG/OREV/DTKdXwpsh0eK
-         HNsYM7mg69MMWonPe4DXDEA2RKFSAF6/A+JP+UouyyvY4xJeAONUCdOlt1QSHcfbJxbt
-         zllLih41HyxaP+pcnt6/2Q/c5An4TcJ+GnDqJ08hIedVuGcSXSWygkvWdOLkKHEUuEWY
-         3r7A==
-X-Gm-Message-State: AJIora9G4+AlgYU4WCmjlon6TvcAakQFoQclO67W58cwqJkRNPHOQLDt
-        fIeunInXVtONmGFN+HTyza1s4b1Yv0M88Wo71x5e/GKg5YI=
-X-Google-Smtp-Source: AGRyM1v7WhO0L7GbCrccVmyoYUn068LyDJDUELP+QZpK71QGYLNkxFlkoRfB9mBp1JKXkq9msK6IFtm0la5TZjy7Rus=
-X-Received: by 2002:a0c:8ecc:0:b0:473:2fa4:df7c with SMTP id
- y12-20020a0c8ecc000000b004732fa4df7cmr7835949qvb.55.1658693433038; Sun, 24
- Jul 2022 13:10:33 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=kZz4b5LoajqAvsUTBnBgNSgY5TJeL+gVGY7SLqZJsYs=;
+        b=EJs01S0llEoXKgDoDUiw3wzujRWgqQ7SOXcKk6M+SmjVCZ+uEUC0J/gSovEUEJnPpl
+         1fiUvFfapJLv0zNV6SYTcT54BXmsqeN1kIdItwcRqVfFDJCP0mCFpMU9x657OHTAKIEi
+         H5/1D4L2EXzS8gx86FOctsT+X0Vzkkt2C8jNcqaqcQKGsAhGnmtyh5RJfy9loYZ81VOZ
+         bmml3yahcqCNiPpU0RCX09amkG+VDp5vMNrwyRxRxWd7lDmUxj/eWaMLN1/kAkfOOh7B
+         ZDJU79V8GowHd/zt//L1n8ifoTfoO2COg1uS1XPO9i864uWAP0sIJ/Vx7BR7vK8+FHX5
+         GKQQ==
+X-Gm-Message-State: AJIora/6ue0uCP0V6y8GOFaUpkTs5P7nSNOLp2sOiew2BnyBBVpYmjo1
+        SAr3NN0HA2uN8Ar35mp5fOVaD9oEavFNuiaXw7BtVzOs5y0azQEvkdKBCc7rq1buuxnDrL+A87D
+        cTvBvJ/4cVXbK9w9NwH4hNZx8
+X-Received: by 2002:a05:600c:4e94:b0:3a3:4448:62cc with SMTP id f20-20020a05600c4e9400b003a3444862ccmr6292854wmq.108.1658693705161;
+        Sun, 24 Jul 2022 13:15:05 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1uuRx/wU5NQqtwBn5eDMRUu4h4Xzgsm5XmvnoiDQbrqTXU/ISSTDKN57eKI3H4AHbrm5rUtyw==
+X-Received: by 2002:a05:600c:4e94:b0:3a3:4448:62cc with SMTP id f20-20020a05600c4e9400b003a3444862ccmr6292836wmq.108.1658693704845;
+        Sun, 24 Jul 2022 13:15:04 -0700 (PDT)
+Received: from [192.168.1.130] (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id b12-20020a05600c4e0c00b003a2fde6ef62sm12180954wmq.7.2022.07.24.13.15.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 24 Jul 2022 13:15:04 -0700 (PDT)
+Message-ID: <efcccedb-58e0-13a8-5c21-2e519e9fc335@redhat.com>
+Date:   Sun, 24 Jul 2022 22:15:03 +0200
 MIME-Version: 1.0
-References: <20220724111327.1195693-1-javierm@redhat.com> <CAA8EJppEpPe4nfZ_kvNen6shSvgyUoL3adSQfhhCGCS2VmVZhQ@mail.gmail.com>
- <6b3f98db-83bf-41cd-b23d-79b455a06ebd@redhat.com> <630a6654-0305-f3a8-e062-f13a0074d35a@redhat.com>
-In-Reply-To: <630a6654-0305-f3a8-e062-f13a0074d35a@redhat.com>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date:   Sun, 24 Jul 2022 23:10:21 +0300
-Message-ID: <CAA8EJpr1xf9mkfT-FhK9M58syMnWCFXozWHH9L_gxtXOqgh0yw@mail.gmail.com>
-Subject: Re: [PATCH v2] drm/msm: Make .remove and .shutdown HW shutdown consistent
-To:     Javier Martinez Canillas <javierm@redhat.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2] drm/msm: Make .remove and .shutdown HW shutdown
+ consistent
+Content-Language: en-US
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 Cc:     linux-kernel@vger.kernel.org,
         Abhinav Kumar <quic_abhinavk@quicinc.com>,
         Daniel Vetter <daniel@ffwll.ch>,
@@ -62,40 +73,56 @@ Cc:     linux-kernel@vger.kernel.org,
         Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
         dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
         linux-arm-msm@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+References: <20220724111327.1195693-1-javierm@redhat.com>
+ <CAA8EJppEpPe4nfZ_kvNen6shSvgyUoL3adSQfhhCGCS2VmVZhQ@mail.gmail.com>
+ <6b3f98db-83bf-41cd-b23d-79b455a06ebd@redhat.com>
+ <630a6654-0305-f3a8-e062-f13a0074d35a@redhat.com>
+ <CAA8EJpr1xf9mkfT-FhK9M58syMnWCFXozWHH9L_gxtXOqgh0yw@mail.gmail.com>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+In-Reply-To: <CAA8EJpr1xf9mkfT-FhK9M58syMnWCFXozWHH9L_gxtXOqgh0yw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 24 Jul 2022 at 22:51, Javier Martinez Canillas
-<javierm@redhat.com> wrote:
->
-> On 7/24/22 20:47, Javier Martinez Canillas wrote:
-> > Hello Dmitry,
->
-> [...]
->
-> >> Now there is no point in having this as a separate function. Could you
-> >
-> > The only reason why I kept this was to avoid duplicating the same comment
-> > in two places. I thought that an inline function would be better than that.
-> >
-> >> please inline it?
-> >>
->
-> Or do you mean inline it as dropping the wrapper helper and just call to
-> drm_atomic_helper_shutdown() in both callbacks ? I'm OK with that but as
-> mentioned then we should probably have to duplicate the comment.
->
-> Since is marked as inline anyways, the resulting code should be the same.
+On 7/24/22 22:10, Dmitry Baryshkov wrote:
+> On Sun, 24 Jul 2022 at 22:51, Javier Martinez Canillas
+> <javierm@redhat.com> wrote:
+>>
+>> On 7/24/22 20:47, Javier Martinez Canillas wrote:
+>>> Hello Dmitry,
+>>
+>> [...]
+>>
+>>>> Now there is no point in having this as a separate function. Could you
+>>>
+>>> The only reason why I kept this was to avoid duplicating the same comment
+>>> in two places. I thought that an inline function would be better than that.
+>>>
+>>>> please inline it?
+>>>>
+>>
+>> Or do you mean inline it as dropping the wrapper helper and just call to
+>> drm_atomic_helper_shutdown() in both callbacks ? I'm OK with that but as
+>> mentioned then we should probably have to duplicate the comment.
+>>
+>> Since is marked as inline anyways, the resulting code should be the same.
+> 
+> Yes, I'd like for you to drop the wrapper. I'm fine with duplicating
+> the comment, since it will be in place where it matters (before
+> checking ddev->registered) rather than just stating the contract for
+> the wrapper (which can be easily ignored).
+> 
+> (And yes, I do read patches and commit messages before commenting.)
+> 
 
-Yes, I'd like for you to drop the wrapper. I'm fine with duplicating
-the comment, since it will be in place where it matters (before
-checking ddev->registered) rather than just stating the contract for
-the wrapper (which can be easily ignored).
-
-(And yes, I do read patches and commit messages before commenting.)
+OK. I'll post a v3 tomorrow doing that then. Sorry for the misunderstanding.
 
 -- 
-With best wishes
-Dmitry
+Best regards,
+
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
+
