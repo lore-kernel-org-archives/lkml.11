@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81533C43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 22:51:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C1BACCA48A
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 22:51:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232496AbiGXWv1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 18:51:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38386 "EHLO
+        id S232132AbiGXWvh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 18:51:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232138AbiGXWvL (ORCPT
+        with ESMTP id S232250AbiGXWvS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 18:51:11 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FF016473;
-        Sun, 24 Jul 2022 15:51:09 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id ez10so17396216ejc.13;
-        Sun, 24 Jul 2022 15:51:09 -0700 (PDT)
+        Sun, 24 Jul 2022 18:51:18 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D995DDEE8;
+        Sun, 24 Jul 2022 15:51:11 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id mf4so17570772ejc.3;
+        Sun, 24 Jul 2022 15:51:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=gxU3BS6GkTCyLLOUas1uwXiwf5EwOtzJt1gDp7h7aUo=;
-        b=PuJAj/9oLgdFgaWv1ExiMMsKOcffGqGYeCC61tZ6ZZ8zBDKm/20LbxxAmxvCvhoBbW
-         sIKSQIL4KLoE1nO/tMWmZgeEGMbGmTe79AGPPPUn1uOmj5+Hb1aIpLFKwH3CL5490w9m
-         +e224Eok7PxeH/KFfYMRl7aGxXFgq+oLQhP2iXdUh4Qfi3VxfGI/6li9uSIvGZK58C1n
-         qYr+mdaZelTcLEp8J/U8dkKb9wDscqG2whzJmfVJffIwAhw0tWI/WwquWjXinjYjagne
-         WcPEkAqsp6Rq84JR7SelbbiczjPknwaFuxf9ws7iQVncfTNUeG1IADplbS5sgMTWW73l
-         /T5w==
+        bh=gnyNvEtHjjxIBgqLo0nybyWglPigyDh/LC8Trnw7VUg=;
+        b=b9rdVYOc87rqsRhY6jsdTJPGqEIWoM0Yp4wxxcTqrZzi6sCulwMVN3WvMe2EQHG/l+
+         KyS6PXmYDvesGglJnumJVDhvm35SXYN52sKBsRoXwqQbI9H3AiuElHk2ubVV6iZe9RNV
+         VljMJKkGXtANkIru7F/s1wk9/73RbsIsvKKYJLoJm2mvjT7LWt8oXDMuVroZOgQOJEIN
+         LfOMtVRRCA8gRMKvcZH5ipdU123yyp/AMvhnKYV2XhbTkxLfkbBRCgsk2MrxukzI1VbA
+         8b+n4CLi+1y7pr01x/5K5QMPXogRTMzYl9zmNUSZ7G8cPhZqb/Dz1V3sUN5tTUazZ0Av
+         dG/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=gxU3BS6GkTCyLLOUas1uwXiwf5EwOtzJt1gDp7h7aUo=;
-        b=hJeJt638as8aVCuEYf5wpe8tznnPBmHbbSJelxFKmRuQKKNugkNHtEzFI6kzbImLeU
-         yh7TJImjjMRj+xwEz+4bVIzo29y7erF0JJtTls0tsgwgHOdb9GwxPUUbCHnKvn7osUra
-         hsjuWdetFY1W33tjLGj69cMV7IflHsaL6yiq0M8h02Oh6W/Qp5HH3pvQ9RGJIlGOsN81
-         k3qi0yTJT/TMc8GHFHrEOtCBp3W4hAfj4o5UA3zz/hbcckBfvB4BcySMiM+E0BwpCJCT
-         D1cYuSP3hQ8YPblm//87yp/17nCfGzgcXbrisbxOrvbdYhfTgh8jNLGfBNzS6w3BB0QG
-         FnZg==
-X-Gm-Message-State: AJIora8boFrmGHlSMQhcteeTHpFLdkE/EbQS7xO+BtUT7BrAGXDNTfiB
-        shG0IeSJDeicpt4IrJ8tPK4=
-X-Google-Smtp-Source: AGRyM1vxp7Yxl/zOU5Xpr72vDNEDFU6MKTctt3EJSFyRefGH4Jpa4qgsCXn4JdjC01flMHvn/D0vhw==
-X-Received: by 2002:a17:907:97c2:b0:72b:9ec4:9a60 with SMTP id js2-20020a17090797c200b0072b9ec49a60mr7980879ejc.154.1658703068019;
-        Sun, 24 Jul 2022 15:51:08 -0700 (PDT)
+        bh=gnyNvEtHjjxIBgqLo0nybyWglPigyDh/LC8Trnw7VUg=;
+        b=NsD21WfRK+3sUNtHAosvDIRlGyd4ci7qbLdHy5vmNgtSuwmdijfLtLkretMG9JZqVW
+         dz6WuDEwYvuhDGsDUKK2Mb6lfUOaNZF/ZE3rs3xHkgIU+fmafX2QJi7tdUmzWx5sCHw7
+         lQhI9eSQGIImrs4efNJpeWdB0+RbJUpheu70nssN8Fn1s0gLJw3/6oOHvTnc3W9+5qad
+         70CnJhhd4YBbfjg/u5jdWbZltwLZkgNHRuB1CTx0nDr0wNrLuOWfJkOzPtJwKYyEbjR1
+         oGhhC7A6r0Sfh3gRoAXm4EokGVLZrLzb6mjy9un0bwjPKhysT12pQue/XAm/72qxfGKU
+         sLdw==
+X-Gm-Message-State: AJIora8VFnP6sQMrHtWBWzxWsek8fCPa45t5XrdTlz+a7boBYhgQyPQa
+        JshetW2iYoEbMTaSftyAWhg=
+X-Google-Smtp-Source: AGRyM1uRjlt4pKrn6f2qWSLTXC8pVpznwkSuo1T/qZ8ZnKoCZmieOohzk3u40AzTLBIpuJn674GZdA==
+X-Received: by 2002:a17:907:6089:b0:72f:56db:ccb6 with SMTP id ht9-20020a170907608900b0072f56dbccb6mr7731860ejc.318.1658703070316;
+        Sun, 24 Jul 2022 15:51:10 -0700 (PDT)
 Received: from localhost.localdomain (93-42-69-122.ip85.fastwebnet.it. [93.42.69.122])
-        by smtp.googlemail.com with ESMTPSA id nc19-20020a1709071c1300b00722d5b26ecesm4645238ejc.205.2022.07.24.15.51.06
+        by smtp.googlemail.com with ESMTPSA id nc19-20020a1709071c1300b00722d5b26ecesm4645238ejc.205.2022.07.24.15.51.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 24 Jul 2022 15:51:07 -0700 (PDT)
+        Sun, 24 Jul 2022 15:51:09 -0700 (PDT)
 From:   Christian Marangi <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -64,9 +64,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Christian Marangi <ansuelsmth@gmail.com>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         llvm@lists.linux.dev
-Subject: [net-next PATCH v4 03/14] net: dsa: qca8k: move mib struct to common code
-Date:   Sun, 24 Jul 2022 22:19:27 +0200
-Message-Id: <20220724201938.17387-4-ansuelsmth@gmail.com>
+Subject: [net-next PATCH v4 05/14] net: dsa: qca8k: move qca8k bulk read/write helper to common code
+Date:   Sun, 24 Jul 2022 22:19:29 +0200
+Message-Id: <20220724201938.17387-6-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220724201938.17387-1-ansuelsmth@gmail.com>
 References: <20220724201938.17387-1-ansuelsmth@gmail.com>
@@ -76,173 +76,147 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The same MIB struct is used by drivers based on qca8k family switch. Move
-it to common code to make it accessible also by other drivers.
+The same ATU function are used by drivers based on qca8k family switch.
+Move the bulk read/write helper to common code to declare these shared
+ATU functions in common code.
+These helper will be dropped when regmap correctly support bulk
+read/write.
 
 Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 ---
- drivers/net/dsa/qca/Makefile                  |  1 +
- drivers/net/dsa/qca/{qca8k.c => qca8k-8xxx.c} | 51 ---------------
- drivers/net/dsa/qca/qca8k-common.c            | 63 +++++++++++++++++++
- drivers/net/dsa/qca/qca8k.h                   |  3 +
- 4 files changed, 67 insertions(+), 51 deletions(-)
- rename drivers/net/dsa/qca/{qca8k.c => qca8k-8xxx.c} (98%)
- create mode 100644 drivers/net/dsa/qca/qca8k-common.c
+ drivers/net/dsa/qca/qca8k-8xxx.c   | 39 ++----------------------------
+ drivers/net/dsa/qca/qca8k-common.c | 39 ++++++++++++++++++++++++++++++
+ drivers/net/dsa/qca/qca8k.h        |  8 ++++++
+ 3 files changed, 49 insertions(+), 37 deletions(-)
 
-diff --git a/drivers/net/dsa/qca/Makefile b/drivers/net/dsa/qca/Makefile
-index 40bb7c27285b..701f1d199e93 100644
---- a/drivers/net/dsa/qca/Makefile
-+++ b/drivers/net/dsa/qca/Makefile
-@@ -1,3 +1,4 @@
- # SPDX-License-Identifier: GPL-2.0-only
- obj-$(CONFIG_NET_DSA_AR9331)	+= ar9331.o
- obj-$(CONFIG_NET_DSA_QCA8K)	+= qca8k.o
-+qca8k-y 			+= qca8k-common.o qca8k-8xxx.o
-diff --git a/drivers/net/dsa/qca/qca8k.c b/drivers/net/dsa/qca/qca8k-8xxx.c
-similarity index 98%
-rename from drivers/net/dsa/qca/qca8k.c
-rename to drivers/net/dsa/qca/qca8k-8xxx.c
-index 5d3c3c95ef88..bf2e2345cf57 100644
---- a/drivers/net/dsa/qca/qca8k.c
+diff --git a/drivers/net/dsa/qca/qca8k-8xxx.c b/drivers/net/dsa/qca/qca8k-8xxx.c
+index bc9b490f8073..3dd63d64d7ae 100644
+--- a/drivers/net/dsa/qca/qca8k-8xxx.c
 +++ b/drivers/net/dsa/qca/qca8k-8xxx.c
-@@ -24,57 +24,6 @@
+@@ -342,43 +342,6 @@ qca8k_regmap_update_bits_eth(struct qca8k_priv *priv, u32 reg, u32 mask, u32 wri
+ 	return qca8k_write_eth(priv, reg, &val, sizeof(val));
+ }
  
- #include "qca8k.h"
- 
--#define MIB_DESC(_s, _o, _n)	\
--	{			\
--		.size = (_s),	\
--		.offset = (_o),	\
--		.name = (_n),	\
+-static int
+-qca8k_bulk_read(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
+-{
+-	int i, count = len / sizeof(u32), ret;
+-
+-	if (priv->mgmt_master && !qca8k_read_eth(priv, reg, val, len))
+-		return 0;
+-
+-	for (i = 0; i < count; i++) {
+-		ret = regmap_read(priv->regmap, reg + (i * 4), val + i);
+-		if (ret < 0)
+-			return ret;
 -	}
 -
--static const struct qca8k_mib_desc ar8327_mib[] = {
--	MIB_DESC(1, 0x00, "RxBroad"),
--	MIB_DESC(1, 0x04, "RxPause"),
--	MIB_DESC(1, 0x08, "RxMulti"),
--	MIB_DESC(1, 0x0c, "RxFcsErr"),
--	MIB_DESC(1, 0x10, "RxAlignErr"),
--	MIB_DESC(1, 0x14, "RxRunt"),
--	MIB_DESC(1, 0x18, "RxFragment"),
--	MIB_DESC(1, 0x1c, "Rx64Byte"),
--	MIB_DESC(1, 0x20, "Rx128Byte"),
--	MIB_DESC(1, 0x24, "Rx256Byte"),
--	MIB_DESC(1, 0x28, "Rx512Byte"),
--	MIB_DESC(1, 0x2c, "Rx1024Byte"),
--	MIB_DESC(1, 0x30, "Rx1518Byte"),
--	MIB_DESC(1, 0x34, "RxMaxByte"),
--	MIB_DESC(1, 0x38, "RxTooLong"),
--	MIB_DESC(2, 0x3c, "RxGoodByte"),
--	MIB_DESC(2, 0x44, "RxBadByte"),
--	MIB_DESC(1, 0x4c, "RxOverFlow"),
--	MIB_DESC(1, 0x50, "Filtered"),
--	MIB_DESC(1, 0x54, "TxBroad"),
--	MIB_DESC(1, 0x58, "TxPause"),
--	MIB_DESC(1, 0x5c, "TxMulti"),
--	MIB_DESC(1, 0x60, "TxUnderRun"),
--	MIB_DESC(1, 0x64, "Tx64Byte"),
--	MIB_DESC(1, 0x68, "Tx128Byte"),
--	MIB_DESC(1, 0x6c, "Tx256Byte"),
--	MIB_DESC(1, 0x70, "Tx512Byte"),
--	MIB_DESC(1, 0x74, "Tx1024Byte"),
--	MIB_DESC(1, 0x78, "Tx1518Byte"),
--	MIB_DESC(1, 0x7c, "TxMaxByte"),
--	MIB_DESC(1, 0x80, "TxOverSize"),
--	MIB_DESC(2, 0x84, "TxByte"),
--	MIB_DESC(1, 0x8c, "TxCollision"),
--	MIB_DESC(1, 0x90, "TxAbortCol"),
--	MIB_DESC(1, 0x94, "TxMultiCol"),
--	MIB_DESC(1, 0x98, "TxSingleCol"),
--	MIB_DESC(1, 0x9c, "TxExcDefer"),
--	MIB_DESC(1, 0xa0, "TxDefer"),
--	MIB_DESC(1, 0xa4, "TxLateCol"),
--	MIB_DESC(1, 0xa8, "RXUnicast"),
--	MIB_DESC(1, 0xac, "TXUnicast"),
--};
+-	return 0;
+-}
 -
- static void
- qca8k_split_addr(u32 regaddr, u16 *r1, u16 *r2, u16 *page)
+-static int
+-qca8k_bulk_write(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
+-{
+-	int i, count = len / sizeof(u32), ret;
+-	u32 tmp;
+-
+-	if (priv->mgmt_master && !qca8k_write_eth(priv, reg, val, len))
+-		return 0;
+-
+-	for (i = 0; i < count; i++) {
+-		tmp = val[i];
+-
+-		ret = regmap_write(priv->regmap, reg + (i * 4), tmp);
+-		if (ret < 0)
+-			return ret;
+-	}
+-
+-	return 0;
+-}
+-
+ static int
+ qca8k_regmap_read(void *ctx, uint32_t reg, uint32_t *val)
  {
-diff --git a/drivers/net/dsa/qca/qca8k-common.c b/drivers/net/dsa/qca/qca8k-common.c
-new file mode 100644
-index 000000000000..7a63e96c8c08
---- /dev/null
-+++ b/drivers/net/dsa/qca/qca8k-common.c
-@@ -0,0 +1,63 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (C) 2009 Felix Fietkau <nbd@nbd.name>
-+ * Copyright (C) 2011-2012 Gabor Juhos <juhosg@openwrt.org>
-+ * Copyright (c) 2015, 2019, The Linux Foundation. All rights reserved.
-+ * Copyright (c) 2016 John Crispin <john@phrozen.org>
-+ */
-+
-+#include <linux/netdevice.h>
-+#include <net/dsa.h>
-+
-+#include "qca8k.h"
-+
-+#define MIB_DESC(_s, _o, _n)	\
-+	{			\
-+		.size = (_s),	\
-+		.offset = (_o),	\
-+		.name = (_n),	\
-+	}
-+
-+const struct qca8k_mib_desc ar8327_mib[] = {
-+	MIB_DESC(1, 0x00, "RxBroad"),
-+	MIB_DESC(1, 0x04, "RxPause"),
-+	MIB_DESC(1, 0x08, "RxMulti"),
-+	MIB_DESC(1, 0x0c, "RxFcsErr"),
-+	MIB_DESC(1, 0x10, "RxAlignErr"),
-+	MIB_DESC(1, 0x14, "RxRunt"),
-+	MIB_DESC(1, 0x18, "RxFragment"),
-+	MIB_DESC(1, 0x1c, "Rx64Byte"),
-+	MIB_DESC(1, 0x20, "Rx128Byte"),
-+	MIB_DESC(1, 0x24, "Rx256Byte"),
-+	MIB_DESC(1, 0x28, "Rx512Byte"),
-+	MIB_DESC(1, 0x2c, "Rx1024Byte"),
-+	MIB_DESC(1, 0x30, "Rx1518Byte"),
-+	MIB_DESC(1, 0x34, "RxMaxByte"),
-+	MIB_DESC(1, 0x38, "RxTooLong"),
-+	MIB_DESC(2, 0x3c, "RxGoodByte"),
-+	MIB_DESC(2, 0x44, "RxBadByte"),
-+	MIB_DESC(1, 0x4c, "RxOverFlow"),
-+	MIB_DESC(1, 0x50, "Filtered"),
-+	MIB_DESC(1, 0x54, "TxBroad"),
-+	MIB_DESC(1, 0x58, "TxPause"),
-+	MIB_DESC(1, 0x5c, "TxMulti"),
-+	MIB_DESC(1, 0x60, "TxUnderRun"),
-+	MIB_DESC(1, 0x64, "Tx64Byte"),
-+	MIB_DESC(1, 0x68, "Tx128Byte"),
-+	MIB_DESC(1, 0x6c, "Tx256Byte"),
-+	MIB_DESC(1, 0x70, "Tx512Byte"),
-+	MIB_DESC(1, 0x74, "Tx1024Byte"),
-+	MIB_DESC(1, 0x78, "Tx1518Byte"),
-+	MIB_DESC(1, 0x7c, "TxMaxByte"),
-+	MIB_DESC(1, 0x80, "TxOverSize"),
-+	MIB_DESC(2, 0x84, "TxByte"),
-+	MIB_DESC(1, 0x8c, "TxCollision"),
-+	MIB_DESC(1, 0x90, "TxAbortCol"),
-+	MIB_DESC(1, 0x94, "TxMultiCol"),
-+	MIB_DESC(1, 0x98, "TxSingleCol"),
-+	MIB_DESC(1, 0x9c, "TxExcDefer"),
-+	MIB_DESC(1, 0xa0, "TxDefer"),
-+	MIB_DESC(1, 0xa4, "TxLateCol"),
-+	MIB_DESC(1, 0xa8, "RXUnicast"),
-+	MIB_DESC(1, 0xac, "TXUnicast"),
-+};
-diff --git a/drivers/net/dsa/qca/qca8k.h b/drivers/net/dsa/qca/qca8k.h
-index 377ce8c72914..0f274bb350f8 100644
---- a/drivers/net/dsa/qca/qca8k.h
-+++ b/drivers/net/dsa/qca/qca8k.h
-@@ -422,4 +422,7 @@ struct qca8k_fdb {
- 	u8 mac[6];
+@@ -3157,6 +3120,8 @@ static SIMPLE_DEV_PM_OPS(qca8k_pm_ops,
+ 
+ static const struct qca8k_info_ops qca8xxx_ops = {
+ 	.autocast_mib = qca8k_get_ethtool_stats_eth,
++	.read_eth = qca8k_read_eth,
++	.write_eth = qca8k_write_eth,
  };
  
-+/* Common setup function */
-+extern const struct qca8k_mib_desc ar8327_mib[];
+ static const struct qca8k_match_data qca8327 = {
+diff --git a/drivers/net/dsa/qca/qca8k-common.c b/drivers/net/dsa/qca/qca8k-common.c
+index 880a49de22b1..a47f876033ba 100644
+--- a/drivers/net/dsa/qca/qca8k-common.c
++++ b/drivers/net/dsa/qca/qca8k-common.c
+@@ -99,3 +99,42 @@ const struct regmap_access_table qca8k_readable_table = {
+ 	.yes_ranges = qca8k_readable_ranges,
+ 	.n_yes_ranges = ARRAY_SIZE(qca8k_readable_ranges),
+ };
++
++/* TODO: remove these extra ops when we can support regmap bulk read/write */
++int qca8k_bulk_read(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
++{
++	int i, count = len / sizeof(u32), ret;
++
++	if (priv->mgmt_master && priv->info->ops->read_eth &&
++	    !priv->info->ops->read_eth(priv, reg, val, len))
++		return 0;
++
++	for (i = 0; i < count; i++) {
++		ret = regmap_read(priv->regmap, reg + (i * 4), val + i);
++		if (ret < 0)
++			return ret;
++	}
++
++	return 0;
++}
++
++/* TODO: remove these extra ops when we can support regmap bulk read/write */
++int qca8k_bulk_write(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
++{
++	int i, count = len / sizeof(u32), ret;
++	u32 tmp;
++
++	if (priv->mgmt_master && priv->info->ops->write_eth &&
++	    !priv->info->ops->write_eth(priv, reg, val, len))
++		return 0;
++
++	for (i = 0; i < count; i++) {
++		tmp = val[i];
++
++		ret = regmap_write(priv->regmap, reg + (i * 4), tmp);
++		if (ret < 0)
++			return ret;
++	}
++
++	return 0;
++}
+diff --git a/drivers/net/dsa/qca/qca8k.h b/drivers/net/dsa/qca/qca8k.h
+index c9b753743dfd..df32c1e3a797 100644
+--- a/drivers/net/dsa/qca/qca8k.h
++++ b/drivers/net/dsa/qca/qca8k.h
+@@ -324,8 +324,13 @@ enum qca8k_mid_cmd {
+ 	QCA8K_MIB_CAST = 3,
+ };
+ 
++struct qca8k_priv;
++
+ struct qca8k_info_ops {
+ 	int (*autocast_mib)(struct dsa_switch *ds, int port, u64 *data);
++	/* TODO: remove these extra ops when we can support regmap bulk read/write */
++	int (*read_eth)(struct qca8k_priv *priv, u32 reg, u32 *val, int len);
++	int (*write_eth)(struct qca8k_priv *priv, u32 reg, u32 *val, int len);
+ };
+ 
+ struct qca8k_match_data {
+@@ -431,4 +436,7 @@ int qca8k_read(struct qca8k_priv *priv, u32 reg, u32 *val);
+ int qca8k_write(struct qca8k_priv *priv, u32 reg, u32 val);
+ int qca8k_rmw(struct qca8k_priv *priv, u32 reg, u32 mask, u32 write_val);
+ 
++int qca8k_bulk_read(struct qca8k_priv *priv, u32 reg, u32 *val, int len);
++int qca8k_bulk_write(struct qca8k_priv *priv, u32 reg, u32 *val, int len);
 +
  #endif /* __QCA8K_H */
 -- 
