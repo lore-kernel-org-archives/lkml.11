@@ -2,95 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3601C43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 10:00:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 751F4C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 10:00:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229993AbiGXKAJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 06:00:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39142 "EHLO
+        id S231370AbiGXKAr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 06:00:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbiGXKAH (ORCPT
+        with ESMTP id S229462AbiGXKAo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 06:00:07 -0400
-Received: from zg8tmtyylji0my4xnjqunzqa.icoremail.net (zg8tmtyylji0my4xnjqunzqa.icoremail.net [162.243.164.74])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 165A96545;
-        Sun, 24 Jul 2022 03:00:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fudan.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
-        Message-Id:MIME-Version:Content-Transfer-Encoding; bh=XNmwLBbu7C
-        n4RBsBpxbvsfvUtnfDMErEAESnr4Ll0p8=; b=o8u4oguqWqUODT50NEjHpmvR0C
-        2bBiId0gTT3ZwdYzd6FY5vM6nr2RY1BfeBHZHj2DyDzQpGG6r1A21tRe2vfG0DpO
-        SiSYMYBCSXxh46Cpx87ILuPS6Am8peP+vLG/B3yJNnnlZGGJiUPlX5Thm7Lvu1mV
-        KORNJaZ07TMC6K1kQ=
-Received: from localhost.localdomain (unknown [111.192.161.139])
-        by app2 (Coremail) with SMTP id XQUFCgDnWBjQF91ic2uzAA--.33588S4;
-        Sun, 24 Jul 2022 17:58:49 +0800 (CST)
-From:   Xin Xiong <xiongx18@fudan.edu.cn>
-To:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        =?UTF-8?q?=E2=80=9CDavid=20S=20=2E=20Miller=20?= 
-        <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        James Morris <jmorris@namei.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     yuanxzhang@fudan.edu.cn, Xin Xiong <xiongx18@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>
-Subject: [PATCH] xfrm: fix refcount leak in __xfrm_policy_check()
-Date:   Sun, 24 Jul 2022 17:55:58 +0800
-Message-Id: <20220724095557.4350-1-xiongx18@fudan.edu.cn>
-X-Mailer: git-send-email 2.25.1
+        Sun, 24 Jul 2022 06:00:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4834111834
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 03:00:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01E3FB80D5B
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 10:00:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5F93C3411E;
+        Sun, 24 Jul 2022 10:00:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658656839;
+        bh=A4FHc+P9y/UxGoatQYWWeSdTQMu+VX8oS36oBmrynAo=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=mGqwt1OzRK2G0vTIgC026+s1UGmIMTpZtc++EhtzGRx5FUPu9VvBJ4xDxeiRiiSJN
+         j+umsZvRUBYCHTIqaGqnkgVuYT2p/hLDhTIP3FQIwewSDXC+mZzfH9k2w5CFkpcIhh
+         1xOyqBpOF14wtB4hGlcfWGJKWXZquHYWE9KsKzzNGv375W5p+d9C/CtO48YmGA34+y
+         0AHA2HzBX9TLGOFKqoiWrBTs1QstMJBnihEx1rFoDojOzfVOjExZEJ0nQ+6Pe94XFu
+         q/7/RPBARxrhD64DrLdv2gwpAcXxOzBMHEhPnGavegGndXLl6r/VB4EfZFpat6U3lm
+         w1B/BPPKW/vJg==
+Message-ID: <ebd98d0a-09c2-311f-0e82-ed87b3b7d66b@kernel.org>
+Date:   Sun, 24 Jul 2022 18:00:36 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: XQUFCgDnWBjQF91ic2uzAA--.33588S4
-X-Coremail-Antispam: 1UD129KBjvdXoW7Jw13Cr1fuw18KF4kAw1DJrb_yoWkCFb_C3
-        4xX3WxWwn3tF1xWF40vw4kAr9ag3s293WkW3yxtas2q340qrWSgFy8Xr9xWF4xWr4qgF15
-        tas5WrykAw15ZjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbf8FF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_Ar0_tr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_
-        Gr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s
-        0DM2vYz4IE04k24VAvwVAKI4IrM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI
-        64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8Jw
-        Am72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAG
-        YxC7M4IIrI8v6xkF7I0E8cxan2IY04v7MxkIecxEwVAFwVW8uwCF04k20xvY0x0EwIxGrw
-        CFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE
-        14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2
-        IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxK
-        x2IYs7xG6rW3Jr0E3s1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267
-        AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUjAsqPUUUUU==
-X-CM-SenderInfo: arytiiqsuqiimz6i3vldqovvfxof0/1tbiARAREFKp5C7+owAAs8
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] f2fs: don't bother wait_ms by foreground gc
+Content-Language: en-US
+To:     Jaegeuk Kim <jaegeuk@kernel.org>, qixiaoyu1 <qxy65535@gmail.com>
+Cc:     linux-f2fs-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, qixiaoyu1 <qixiaoyu1@xiaomi.com>
+References: <20220718032840.9653-1-qixiaoyu1@xiaomi.com>
+ <YtoOGu/wyqKBJd1v@google.com>
+From:   Chao Yu <chao@kernel.org>
+In-Reply-To: <YtoOGu/wyqKBJd1v@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The issue happens on an error path in __xfrm_policy_check(). When the
-fetching process of the object `pols[1]` fails, the function simply
-returns 0, forgetting to decrement the reference count of `pols[0]`,
-which is incremented earlier by either xfrm_sk_policy_lookup() or
-xfrm_policy_lookup(). This may result in memory leaks.
+On 2022/7/22 10:40, Jaegeuk Kim wrote:
+> On 07/18, qixiaoyu1 wrote:
+>> f2fs_gc returns -EINVAL via f2fs_balance_fs when there is enough free
+>> secs after write checkpoint, but with gc_merge enabled, it will cause
+>> the sleep time of gc thread to be set to no_gc_sleep_time even if there
+>> are many dirty segments can be selected.
+>>
+>> Signed-off-by: qixiaoyu1 <qixiaoyu1@xiaomi.com>
 
-Fix it by decreasing the reference count of `pols[0]` in that path.
+> 
+> I applied without {} to match the coding style.
 
-Fixes: 134b0fc544ba ("IPsec: propagate security module errors up from flow_cache_lookup")
-Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
-Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
----
- net/xfrm/xfrm_policy.c | 1 +
- 1 file changed, 1 insertion(+)
+Reviewed-by: Chao Yu <chao@kernel.org>
 
-diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-index f1a0bab920a5..4f8bbb825abc 100644
---- a/net/xfrm/xfrm_policy.c
-+++ b/net/xfrm/xfrm_policy.c
-@@ -3599,6 +3599,7 @@ int __xfrm_policy_check(struct sock *sk, int dir, struct sk_buff *skb,
- 		if (pols[1]) {
- 			if (IS_ERR(pols[1])) {
- 				XFRM_INC_STATS(net, LINUX_MIB_XFRMINPOLERROR);
-+				xfrm_pol_put(pols[0]);
- 				return 0;
- 			}
- 			pols[1]->curlft.use_time = ktime_get_real_seconds();
--- 
-2.25.1
-
+Thanks,
