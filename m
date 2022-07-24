@@ -2,124 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E371CCA47C
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 10:40:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D095EC43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 10:41:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231394AbiGXKVL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 06:21:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48472 "EHLO
+        id S232723AbiGXKla (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 06:41:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229912AbiGXKVJ (ORCPT
+        with ESMTP id S229462AbiGXKl2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 06:21:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DDFB13E12
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 03:21:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B692E61029
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 10:21:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B791CC3411E;
-        Sun, 24 Jul 2022 10:21:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658658062;
-        bh=N/BRF6ybrbTj/8aBJzvPdT6j6K1TWBKn2MYdG1LcXhs=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=nkPCu9vSElkTL6Yk01gNIGAoF1F23y9wHIbO5pL5VkjftLiXMZOsSdRarudGN+djJ
-         6kHeWUJJRc6erQuqoFDn8bZebY6MFRY9Y9mZqACC/bK2H4U1GFCP+Y5VykanijGbH/
-         ZKLdAZjwP1jACgFJuomG5PiAwS/roRqnQgat0wHgNKlRWjH1cHbFq5yAivm616u/NP
-         kw/HxBEcm2ef7rfb2h2QDVVQ8w0Glgh9GEBYeLAHIRV8n0Zx7qzQhfIMOVzgf0HlbX
-         b3n+vbw0vOOK+D11Ayystysy/vlKcUnAEFrdjVEbPdu/7BFa0Ouosm2fTPfpx1jDRC
-         HKOn5abbj7Ovg==
-Message-ID: <e82f0d90-7fda-c944-149f-d18491008f3f@kernel.org>
-Date:   Sun, 24 Jul 2022 18:20:58 +0800
+        Sun, 24 Jul 2022 06:41:28 -0400
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C02A269
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 03:41:27 -0700 (PDT)
+Received: by mail-il1-f200.google.com with SMTP id d6-20020a056e020be600b002dcc7977592so5500357ilu.17
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 03:41:27 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=gkvQ37tFI06glUdd4oh7VQpcud1L0XJ8uToS1d1FP2Q=;
+        b=4h99dRb6UqvWAUBkX3u+TANbQQ7kiJL3Yo/Z+1HKagZyxw7VfYpm+OMgFxnpBPmiJs
+         5GWOc3cjLx3djCMPgQR+3CdY+UqADGNrm5+VdSuOGQTCV6PifQQZUufxb46hYC3ox6pS
+         J4H5tbDsPBonyoaqLMogXD+Didhxicxh/IZXko3IE/b87AI0SvJN4VABGWHnPunX2owa
+         TvThc+u8LI2jgUDLu5adQvHBnCOuch2KDZmvzQ3vyfFjOpnS32hZDvHC73CxDu6saupe
+         1Fx/PiTATIBEgG3qZDJhL0ASEmpoG6ux+9Kd9Fw7MEQ442SOn4SFDhtV+FRa5+RdYQq0
+         qRbQ==
+X-Gm-Message-State: AJIora+uIdVKqmatAUrmFsMKQZPXq5GflzYqJA1WtOt8rgcv8wuBbS5P
+        MAi3VkbV6bwI5YlljAYIvD0a1ZmU5/5udo0g3xL3iE6OkQxC
+X-Google-Smtp-Source: AGRyM1sfHZzIglP/EV115Y3kwYJS/9VcS8QLbIHZ/8DyOKaduZEmpZywwTF1uIHt4p+3BrLJ/MHJF2ZTNcH9PNzylXPqGvrt4v+O
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH -next RFC] f2fs: fix null-ptr-deref in
- f2fs_get_dnode_of_data
-Content-Language: en-US
-To:     Ye Bin <yebin10@huawei.com>, jaegeuk@kernel.org,
-        Daeho Jeong <daeho43@gmail.com>
-Cc:     linux-f2fs-devel@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org
-References: <20220718113609.154371-1-yebin10@huawei.com>
-From:   Chao Yu <chao@kernel.org>
-In-Reply-To: <20220718113609.154371-1-yebin10@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a05:6e02:1c45:b0:2dc:dc24:c103 with SMTP id
+ d5-20020a056e021c4500b002dcdc24c103mr3031769ilg.132.1658659286662; Sun, 24
+ Jul 2022 03:41:26 -0700 (PDT)
+Date:   Sun, 24 Jul 2022 03:41:26 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000095c6a005e48ab50f@google.com>
+Subject: [syzbot] WARNING in nsim_map_alloc_elem
+From:   syzbot <syzbot+ad24705d3fd6463b18c6@syzkaller.appspotmail.com>
+To:     akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/7/18 19:36, Ye Bin wrote:
-> There is issue as follows when test f2fs atomic write:
-> F2FS-fs (loop0): Can't find valid F2FS filesystem in 2th superblock
-> F2FS-fs (loop0): invalid crc_offset: 0
-> F2FS-fs (loop0): f2fs_check_nid_range: out-of-range nid=1, run fsck to fix.
-> F2FS-fs (loop0): f2fs_check_nid_range: out-of-range nid=2, run fsck to fix.
-> ==================================================================
-> BUG: KASAN: null-ptr-deref in f2fs_get_dnode_of_data+0xac/0x16d0
-> Read of size 8 at addr 0000000000000028 by task rep/1990
-> 
-> CPU: 4 PID: 1990 Comm: rep Not tainted 5.19.0-rc6-next-20220715 #266
-> Call Trace:
->   <TASK>
->   dump_stack_lvl+0x6e/0x91
->   print_report.cold+0x49a/0x6bb
->   kasan_report+0xa8/0x130
->   f2fs_get_dnode_of_data+0xac/0x16d0
->   f2fs_do_write_data_page+0x2a5/0x1030
->   move_data_page+0x3c5/0xdf0
->   do_garbage_collect+0x2015/0x36c0
->   f2fs_gc+0x554/0x1d30
->   f2fs_balance_fs+0x7f5/0xda0
->   f2fs_write_single_data_page+0xb66/0xdc0
->   f2fs_write_cache_pages+0x716/0x1420
->   f2fs_write_data_pages+0x84f/0x9a0
->   do_writepages+0x130/0x3a0
->   filemap_fdatawrite_wbc+0x87/0xa0
->   file_write_and_wait_range+0x157/0x1c0
->   f2fs_do_sync_file+0x206/0x12d0
->   f2fs_sync_file+0x99/0xc0
->   vfs_fsync_range+0x75/0x140
->   f2fs_file_write_iter+0xd7b/0x1850
->   vfs_write+0x645/0x780
->   ksys_write+0xf1/0x1e0
->   do_syscall_64+0x3b/0x90
->   entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> 
-> As 3db1de0e582c commit changed atomic write way which new a cow_inode for
-> atomic write file, and also mark cow_inode as FI_ATOMIC_FILE.
-> When f2fs_do_write_data_page write cow_inode will use cow_inode's cow_inode
-> which is NULL. Then will trigger null-ptr-deref.
-> To solve above issue, don't mark cow_inode as FI_ATOMIC_FILE.
-> 
-> Fiexes: 3db1de0e582c("f2fs: change the current atomic write way")
-> Signed-off-by: Ye Bin <yebin10@huawei.com>
-> ---
->   fs/f2fs/file.c | 1 -
->   1 file changed, 1 deletion(-)
-> 
-> diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
-> index 466eb00aa516..735802b6b754 100644
-> --- a/fs/f2fs/file.c
-> +++ b/fs/f2fs/file.c
-> @@ -2062,7 +2062,6 @@ static int f2fs_ioc_start_atomic_write(struct file *filp)
->   	spin_unlock(&sbi->inode_lock[ATOMIC_FILE]);
->   
->   	set_inode_flag(inode, FI_ATOMIC_FILE);
-> -	set_inode_flag(fi->cow_inode, FI_ATOMIC_FILE);
+Hello,
 
-It needs to remove clear_inode_flag(fi->cow_inode, FI_ATOMIC_FILE) in
-f2fs_abort_atomic_write()?
+syzbot found the following issue on:
 
-To Daeho, could you please review this patch? IIUC, cow_inode doesn't
-need to be set as atomic file?
+HEAD commit:    b77ffb30cfc5 libbpf: fix an snprintf() overflow check
+git tree:       bpf-next
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=16a7f652080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=386b986585586629
+dashboard link: https://syzkaller.appspot.com/bug?extid=ad24705d3fd6463b18c6
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=102ad7c6080000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16d71a9c080000
 
-Thanks,
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+ad24705d3fd6463b18c6@syzkaller.appspotmail.com
 
->   	clear_inode_flag(fi->cow_inode, FI_INLINE_DATA);
->   	f2fs_up_write(&fi->i_gc_rwsem[WRITE]);
->   
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 3609 at mm/page_alloc.c:5402 __alloc_pages+0x39e/0x510 mm/page_alloc.c:5402
+Modules linked in:
+CPU: 0 PID: 3609 Comm: syz-executor427 Not tainted 5.19.0-rc5-syzkaller-01146-gb77ffb30cfc5 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 06/29/2022
+RIP: 0010:__alloc_pages+0x39e/0x510 mm/page_alloc.c:5402
+Code: ff ff 00 0f 84 33 fe ff ff 80 ce 01 e9 2b fe ff ff 83 fe 0a 0f 86 3e fd ff ff 80 3d d2 70 e9 0b 00 75 09 c6 05 c9 70 e9 0b 01 <0f> 0b 45 31 f6 e9 8d fe ff ff 65 ff 05 21 55 45 7e 48 c7 c0 a0 16
+RSP: 0018:ffffc900030cf9c0 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: 1ffff92000619f39 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: 000000000000000b RDI: 0000000000000000
+RBP: 0000000000140cc0 R08: 0000000000000007 R09: 0000000000000000
+R10: 0000000000000001 R11: 0000000000000001 R12: 000000000000000b
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000400002
+FS:  0000555556dfc300(0000) GS:ffff8880b9a00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000000000000 CR3: 000000001b8ef000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ alloc_pages+0x1aa/0x310 mm/mempolicy.c:2272
+ kmalloc_order+0x34/0xf0 mm/slab_common.c:945
+ kmalloc_order_trace+0x14/0x120 mm/slab_common.c:961
+ kmalloc include/linux/slab.h:605 [inline]
+ nsim_map_alloc_elem+0x119/0x2e0 drivers/net/netdevsim/bpf.c:357
+ nsim_bpf_map_alloc drivers/net/netdevsim/bpf.c:512 [inline]
+ nsim_bpf+0x8b3/0x1050 drivers/net/netdevsim/bpf.c:573
+ bpf_map_offload_ndo+0x132/0x1e0 kernel/bpf/offload.c:359
+ bpf_map_offload_map_alloc+0x243/0x450 kernel/bpf/offload.c:394
+ find_and_alloc_map kernel/bpf/syscall.c:131 [inline]
+ map_create kernel/bpf/syscall.c:1102 [inline]
+ __sys_bpf+0x8b8/0x5750 kernel/bpf/syscall.c:4936
+ __do_sys_bpf kernel/bpf/syscall.c:5058 [inline]
+ __se_sys_bpf kernel/bpf/syscall.c:5056 [inline]
+ __x64_sys_bpf+0x75/0xb0 kernel/bpf/syscall.c:5056
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x46/0xb0
+RIP: 0033:0x7f1f9a4a1ba9
+Code: 28 c3 e8 4a 15 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007fffebe3a1e8 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
+RAX: ffffffffffffffda RBX: 00007fffebe3a1f8 RCX: 00007f1f9a4a1ba9
+RDX: 0000000000000048 RSI: 0000000020000100 RDI: 0000000000000000
+RBP: 0000000000000003 R08: bb1414ac00000000 R09: bb1414ac00000000
+R10: bb1414ac00000000 R11: 0000000000000246 R12: 00007fffebe3a200
+R13: 00007fffebe3a1f4 R14: 0000000000000003 R15: 0000000000000000
+ </TASK>
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
