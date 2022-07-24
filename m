@@ -2,106 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7D1FCCA48D
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 15:22:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 323BDC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 15:23:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233285AbiGXPWJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 11:22:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33424 "EHLO
+        id S233406AbiGXPXS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 11:23:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229640AbiGXPWH (ORCPT
+        with ESMTP id S229640AbiGXPXR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 11:22:07 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEAA811C07;
-        Sun, 24 Jul 2022 08:22:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
-        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=RG/BJ3Nv9HakG4zVWqCXWL3uZp6IBIbE/vdVZRgFNzw=;
-        t=1658676126; x=1659885726; b=hyxJq9tjqYBSUs+yl2lXhjEasadf4QDDhUQtDVBgBTsOCXy
-        dXAS1NdbzZAH8t2GUlNLJhRhD49LM6qQYr6ikt7VEwb372PnhXfEw2eIErL3/1g/NmcQS7A1MmBoj
-        M7sI/c7TKKmGWAVMuqOX0QISRHvCSzFTYdLMvn4EDRAsr7qLMVn4yGnhfPIrpN9AlVZXuznPdF7KL
-        MRGo6/1aZIACWmI+uYVqBv6MGHPydotxxqBIszWJT+2aLy/cMHaEc5ZyPntvis9Hxxu9S7XG2Yi0g
-        ypD4kw1ai5Re/1SorP2ClE+MC/OBt+Q4GXVXOTKFomMo1MmltlwK5AiDCvwoP4Gg==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.96)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1oFdQP-006zmj-2a;
-        Sun, 24 Jul 2022 17:21:45 +0200
-Message-ID: <4f8ab262d98ba2a4d0e106e127c171e75b52ad47.camel@sipsolutions.net>
-Subject: Re: [PATCH] docs: driver-api: firmware: add driver firmware
- guidelines. (v3)
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Dave Airlie <airlied@gmail.com>, torvalds@linux-foundation.org,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        gregkh@linuxfoundation.org, Daniel Vetter <daniel@ffwll.ch>,
-        mcgrof@kernel.org
-Cc:     linux-kernel@vger.kernel.org, dri-devel@lists.sf.net,
-        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-media@vger.kernel.org,
-        linux-block@vger.kernel.org, Dave Airlie <airlied@redhat.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Harry Wentland <harry.wentland@amd.com>
-Date:   Sun, 24 Jul 2022 17:21:43 +0200
-In-Reply-To: <20220721044352.3110507-1-airlied@gmail.com>
-References: <20220721044352.3110507-1-airlied@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.3 (3.44.3-1.fc36) 
-MIME-Version: 1.0
-X-malware-bazaar: not-scanned
+        Sun, 24 Jul 2022 11:23:17 -0400
+Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B13BB11C0A
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 08:23:14 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R141e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045168;MF=xianting.tian@linux.alibaba.com;NM=1;PH=DS;RN=16;SR=0;TI=SMTPD_---0VKDjFSO_1658676189;
+Received: from localhost(mailfrom:xianting.tian@linux.alibaba.com fp:SMTPD_---0VKDjFSO_1658676189)
+          by smtp.aliyun-inc.com;
+          Sun, 24 Jul 2022 23:23:09 +0800
+From:   Xianting Tian <xianting.tian@linux.alibaba.com>
+To:     paul.walmsley@sifive.com, palmer@dabbelt.com,
+        aou@eecs.berkeley.edu, anup@brainfault.org, heiko@sntech.de,
+        guoren@kernel.org, mick@ics.forth.gr, alexandre.ghiti@canonical.com
+Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        crash-utility@redhat.com, huanyi.xj@alibaba-inc.com,
+        heinrich.schuchardt@canonical.com, k-hagio-ab@nec.com,
+        hschauhan@nulltrace.org,
+        Xianting Tian <xianting.tian@linux.alibaba.com>
+Subject: [PATCH V2 1/5] RISC-V: use __smp_processor_id() instead of smp_processor_id()
+Date:   Sun, 24 Jul 2022 23:23:01 +0800
+Message-Id: <20220724152305.1037212-2-xianting.tian@linux.alibaba.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220724152305.1037212-1-xianting.tian@linux.alibaba.com>
+References: <20220724152305.1037212-1-xianting.tian@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 2022-07-21 at 14:43 +1000, Dave Airlie wrote:
->=20
-> +Users switching to a newer kernel should *not* have to install newer
-> +firmware files to keep their hardware working. At the same time updated
-> +firmware files must not cause any regressions for users of older kernel
-> +releases.
+Use __smp_processor_id() to avoid check the preemption context when
+CONFIG_DEBUG_PREEMPT enabled, as we will enter crash kernel and no
+return.
 
-That seems sane, and certainly something we've done in wireless in the
-past.
+Without the patch,
+[  103.781044] sysrq: Trigger a crash
+[  103.784625] Kernel panic - not syncing: sysrq triggered crash
+[  103.837634] CPU1: off
+[  103.889668] CPU2: off
+[  103.933479] CPU3: off
+[  103.939424] Starting crashdump kernel...
+[  103.943442] BUG: using smp_processor_id() in preemptible [00000000] code: sh/346
+[  103.950884] caller is debug_smp_processor_id+0x1c/0x26
+[  103.956051] CPU: 0 PID: 346 Comm: sh Kdump: loaded Not tainted 5.10.113-00002-gce03f03bf4ec-dirty #149
+[  103.965355] Call Trace:
+[  103.967805] [<ffffffe00020372a>] walk_stackframe+0x0/0xa2
+[  103.973206] [<ffffffe000bcf1f4>] show_stack+0x32/0x3e
+[  103.978258] [<ffffffe000bd382a>] dump_stack_lvl+0x72/0x8e
+[  103.983655] [<ffffffe000bd385a>] dump_stack+0x14/0x1c
+[  103.988705] [<ffffffe000bdc8fe>] check_preemption_disabled+0x9e/0xaa
+[  103.995057] [<ffffffe000bdc926>] debug_smp_processor_id+0x1c/0x26
+[  104.001150] [<ffffffe000206c64>] machine_kexec+0x22/0xd0
+[  104.006463] [<ffffffe000291a7e>] __crash_kexec+0x6a/0xa4
+[  104.011774] [<ffffffe000bcf3fa>] panic+0xfc/0x2b0
+[  104.016480] [<ffffffe000656ca4>] sysrq_reset_seq_param_set+0x0/0x70
+[  104.022745] [<ffffffe000657310>] __handle_sysrq+0x8c/0x154
+[  104.028229] [<ffffffe0006577e8>] write_sysrq_trigger+0x5a/0x6a
+[  104.034061] [<ffffffe0003d90e0>] proc_reg_write+0x58/0xd4
+[  104.039459] [<ffffffe00036cff4>] vfs_write+0x7e/0x254
+[  104.044509] [<ffffffe00036d2f6>] ksys_write+0x58/0xbe
+[  104.049558] [<ffffffe00036d36a>] sys_write+0xe/0x16
+[  104.054434] [<ffffffe000201b9a>] ret_from_syscall+0x0/0x2
+[  104.067863] Will call new kernel at ecc00000 from hart id 0
+[  104.074939] FDT image at fc5ee000
+[  104.079523] Bye...
 
-> +* Firmware files shall be designed in a way that it allows checking for
-> +  firmware ABI version changes. It is recommended that firmware files be
-> +  versioned with at least a major/minor version. It is suggested that
-> +  the firmware files in linux-firmware be named with some device
-> +  specific name, and just the major version. The firmware version should
-> +  be stored in the firmware header, or as an exception, as part of the
-> +  firmware file name,
+With the patch we can got clear output,
+[   67.740553] sysrq: Trigger a crash
+[   67.744166] Kernel panic - not syncing: sysrq triggered crash
+[   67.809123] CPU1: off
+[   67.865210] CPU2: off
+[   67.909075] CPU3: off
+[   67.919123] Starting crashdump kernel...
+[   67.924900] Will call new kernel at ecc00000 from hart id 0
+[   67.932045] FDT image at fc5ee000
+[   67.935560] Bye...
 
-Eh, I went to write a whole paragraph here and then read it again ...
-Maybe this should say "[t]he _full_ firmware version", to contrast with
-the previous sentence mentioning the "major version".
+Fixes: 0e105f1d0037 ("riscv: use hart id instead of cpu id on machine_kexec")
+Reviewed-by: Guo Ren <guoren@kernel.org>
+Reviewed-by: Heiko Stuebner <heiko@sntech.de>
+Reviewed-by: Atish Patra <atishp@rivosinc.com>
+Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
+---
+ arch/riscv/kernel/machine_kexec.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
->  in order to let the driver detact any non-ABI
+diff --git a/arch/riscv/kernel/machine_kexec.c b/arch/riscv/kernel/machine_kexec.c
+index df8e24559035..86d1b5f9dfb5 100644
+--- a/arch/riscv/kernel/machine_kexec.c
++++ b/arch/riscv/kernel/machine_kexec.c
+@@ -171,7 +171,7 @@ machine_kexec(struct kimage *image)
+ 	struct kimage_arch *internal = &image->arch;
+ 	unsigned long jump_addr = (unsigned long) image->start;
+ 	unsigned long first_ind_entry = (unsigned long) &image->head;
+-	unsigned long this_cpu_id = smp_processor_id();
++	unsigned long this_cpu_id = __smp_processor_id();
+ 	unsigned long this_hart_id = cpuid_to_hartid_map(this_cpu_id);
+ 	unsigned long fdt_addr = internal->fdt_addr;
+ 	void *control_code_buffer = page_address(image->control_code_page);
+-- 
+2.17.1
 
-typo - 'detect'
-
-> +  fixes/changes. The firmware files in linux-firmware should be
-> +  overwritten with the newest compatible major version.
->=20
-
-That's also a bit confusing IMHO - did that mean "minor version"? Or
-something? I mean ... if you overwrite a file that has the major version
-in the filename then by definition it is the same major version?
-
-> +  This means no major version bumps without the kernel retaining
-> +  backwards compatibility for the older major versions.
-
-Strictly reading this might require aeons of support for firmware
-version, if you have a release cadence of them like every 6 weeks for a
-new _major_ version (yes, because APIs change), then that's rather
-harsh. In practice we've often done this, but I think some reasonable
-cut-off could/should be there, such as dropping support after a
-reasonably long time frame (say a year?)
-
-Often though that's less a question of "does it still work" and rather
-one of "do I still support that" and the answer for the latter is
-obviously "no" much quicker than the former.
-
-johannes
