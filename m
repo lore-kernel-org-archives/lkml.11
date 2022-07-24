@@ -2,118 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1CC6C43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 05:41:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E86A4C43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 05:42:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235712AbiGXFkr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 01:40:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54290 "EHLO
+        id S235793AbiGXFmF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 01:42:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233285AbiGXFko (ORCPT
+        with ESMTP id S229618AbiGXFmD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 01:40:44 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A849D140AC
-        for <linux-kernel@vger.kernel.org>; Sat, 23 Jul 2022 22:40:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658641243; x=1690177243;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=3nI5X01Dh6IyD7hFrhUwCh3/XGjZuDdxbiFmhDVbdQI=;
-  b=EMnmc1ncUjGBqXJeNgIAYrXiUCDE0dnjNzLe4MF6Rf9IPmMUDIG7+hmZ
-   MbjY4DiC23iEZSYKfl1uGdQ8b71S/Ke4lr/+u7XRam9TwOGYUNp+RNrQp
-   TizqRoSNEgkmnNsC/Fgwxi65Qa844h5oPFtQC50p2oYWUcq/G2irYOQkn
-   jdY8blDLQ9ab/XJ05B5bOzdO36yrdXdXMHFR4FUPThIcFCBqpKyzJwIs2
-   kYt+ySkTbLZ+dAiPDd01fPRp5s/AxJjumI4waDYjiDVojeTDPR3/lFhR5
-   4Ci++dNJBFf3U6u4XRYEUqy6uZZxD7+pvfv0oZ3EQiC2yqa9ImPWHII80
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10417"; a="286276459"
-X-IronPort-AV: E=Sophos;i="5.93,189,1654585200"; 
-   d="scan'208";a="286276459"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jul 2022 22:40:43 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,189,1654585200"; 
-   d="scan'208";a="667104768"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 23 Jul 2022 22:40:41 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oFUM4-0003bV-2K;
-        Sun, 24 Jul 2022 05:40:40 +0000
-Date:   Sun, 24 Jul 2022 13:39:50 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Daniel Rosenberg <drosen@google.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Dennis Cagle <d-cagle@codeaurora.org>,
-        Lee Jones <lee.jones@linaro.org>
-Subject: [linux-stable-rc:linux-4.9.y 967/2229]
- drivers/staging/android/ion/ion-ioctl.c:71:6: warning: variable 'ret' is
- used uninitialized whenever 'if' condition is false
-Message-ID: <202207241311.Dv86CbAo-lkp@intel.com>
+        Sun, 24 Jul 2022 01:42:03 -0400
+Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D170120AB
+        for <linux-kernel@vger.kernel.org>; Sat, 23 Jul 2022 22:41:55 -0700 (PDT)
+X-QQ-mid: bizesmtp81t1658641306twz9vf55
+Received: from localhost.localdomain ( [125.70.163.183])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Sun, 24 Jul 2022 13:41:44 +0800 (CST)
+X-QQ-SSF: 01000000002000007000B00A0000000
+X-QQ-FEAT: cHidGA2rQwyAyU3ofjyHh1llcWAxjWPyQbM9Hva8mIGipCcfclJB8jIqu/Hc+
+        VBmhw+ioVNQ2yKrwvJsNXFj7lD9A13xTP/vX48qYF+pb6SL3cW2N+faGhPXPzG2FpYTweMm
+        1yrRR2cPiTJdYyv5P7ar/NuaA7JctpI/NumVana7EwQu98raXnzezDP7foQquvECaIfROde
+        7+SegYhfZ8k1oj2e0WDF0teDJjT2NzpeoFydb1rQFmrtZkcCzQotEZyLHzszco6QWF0WvHI
+        sf9S65yxxMWLGWbGhHgxxMY++Wq/k4vXf9DMg8sMOaa88Xo+5JqAct5cxzZaVnp/rLfR4Cy
+        qdZVxoAmXkL1CDKiRw=
+X-QQ-GoodBg: 0
+From:   wangjianli <wangjianli@cdjrlc.com>
+To:     mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org
+Cc:     linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        Jianli Wang <wangjianli@cdjrlc.com>
+Subject: [PATCH] KVM: PPC: Book3S HV:fix repeated words in comments
+Date:   Sun, 24 Jul 2022 13:41:37 +0800
+Message-Id: <20220724054137.58504-1-wangjianli@cdjrlc.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.9.y
-head:   65be5f5665a580424a7b1102f1a04c4259c559b5
-commit: a8200613c8c9fbaf7b55d4d438376ebaf0c4ce7e [967/2229] ion: Protect kref from userspace manipulation
-config: mips-randconfig-r034-20220719 (https://download.01.org/0day-ci/archive/20220724/202207241311.Dv86CbAo-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project fa0c7639e91fa1cd0cf2ff0445a1634a90fe850a)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install mips cross compiling tool for clang build
-        # apt-get install binutils-mipsel-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git/commit/?id=a8200613c8c9fbaf7b55d4d438376ebaf0c4ce7e
-        git remote add linux-stable-rc https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-        git fetch --no-tags linux-stable-rc linux-4.9.y
-        git checkout a8200613c8c9fbaf7b55d4d438376ebaf0c4ce7e
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash drivers/staging/android/ion/
+From: Jianli Wang <wangjianli@cdjrlc.com>
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Delete the redundant word 'do'.
 
-All warnings (new ones prefixed by >>):
+Signed-off-by: Jianli Wang <wangjianli@cdjrlc.com>
+---
+ arch/powerpc/kvm/book3s_hv.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
->> drivers/staging/android/ion/ion-ioctl.c:71:6: warning: variable 'ret' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
-           if (--handle->user_ref_count == 0)
-               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/staging/android/ion/ion-ioctl.c:74:9: note: uninitialized use occurs here
-           return ret;
-                  ^~~
-   drivers/staging/android/ion/ion-ioctl.c:71:2: note: remove the 'if' if its condition is always true
-           if (--handle->user_ref_count == 0)
-           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/staging/android/ion/ion-ioctl.c:69:9: note: initialize the variable 'ret' to silence this warning
-           int ret;
-                  ^
-                   = 0
-   1 warning generated.
-
-
-vim +71 drivers/staging/android/ion/ion-ioctl.c
-
-    65	
-    66	/* Must hold the client lock */
-    67	static int user_ion_handle_put_nolock(struct ion_handle *handle)
-    68	{
-    69		int ret;
-    70	
-  > 71		if (--handle->user_ref_count == 0)
-    72			ret = ion_handle_put_nolock(handle);
-    73	
-    74		return ret;
-    75	}
-    76	
-
+diff --git a/arch/powerpc/kvm/book3s_hv.c b/arch/powerpc/kvm/book3s_hv.c
+index e08fb3124dca..17d79be6077d 100644
+--- a/arch/powerpc/kvm/book3s_hv.c
++++ b/arch/powerpc/kvm/book3s_hv.c
+@@ -5643,7 +5643,7 @@ static int kvmppc_clr_passthru_irq(struct kvm *kvm, int host_irq, int guest_gsi)
+ 	else
+ 		kvmppc_xics_clr_mapped(kvm, guest_gsi, pimap->mapped[i].r_hwirq);
+ 
+-	/* invalidate the entry (what do do on error from the above ?) */
++	/* invalidate the entry (what do on error from the above ?) */
+ 	pimap->mapped[i].r_hwirq = 0;
+ 
+ 	/*
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.25.1
+
