@@ -2,132 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 432B8C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 13:31:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CC4EC43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 13:43:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233738AbiGXNbQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 09:31:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43206 "EHLO
+        id S229723AbiGXNnM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 09:43:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbiGXNbP (ORCPT
+        with ESMTP id S229570AbiGXNnE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 09:31:15 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69632BF4B;
-        Sun, 24 Jul 2022 06:31:06 -0700 (PDT)
-Received: from leknes.fjasle.eu ([46.142.48.234]) by mrelayeu.kundenserver.de
- (mreue012 [212.227.15.167]) with ESMTPSA (Nemesis) id
- 1N1M4p-1nVmS50YI7-012qlY; Sun, 24 Jul 2022 15:30:22 +0200
-Received: by leknes.fjasle.eu (Postfix, from userid 1000)
-        id C24B13C0C7; Sun, 24 Jul 2022 15:30:18 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=fjasle.eu; s=mail;
-        t=1658669418; bh=NxfacbS/vhBHPqYb8uO1w1qDGketwG5gsFpiG+2IG2M=;
+        Sun, 24 Jul 2022 09:43:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51A30E0AA;
+        Sun, 24 Jul 2022 06:43:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CC27DB80D32;
+        Sun, 24 Jul 2022 13:43:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9279CC3411E;
+        Sun, 24 Jul 2022 13:42:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658670180;
+        bh=maUBUTNvw0Eg0uVI0eTfJ37pCQzM3v+3MOLAjM/O4Dw=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=xgsEdEBc2oET/75yHWkBDUpDiCsviWleCn7bTtEwSLJx9bkSqvRqxJy7fwNfwJi40
-         K32uYdTFiBjl/i4dvLjJaQzkKLrtVmPNHbkXnS7ozpeV32CuWK0Wat+yiyGIcHrav0
-         9MCDmWiGVCy8SDSc9Y6VArKMX74Vgv+bU5QK1MXo=
-Date:   Sun, 24 Jul 2022 15:30:18 +0200
-From:   Nicolas Schier <nicolas@fjasle.eu>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     linux-kbuild@vger.kernel.org,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] kbuild: add dtbs_prepare target
-Message-ID: <Yt1JavRlr5XStp0+@fjasle.eu>
-References: <20220724095919.436126-1-masahiroy@kernel.org>
+        b=uhOxHNmuPO8N7ia5ENwOhWBb/UJwNbxm70SQCqg55A0iLJEuDHw86etfiTDFaGh0b
+         RR4SiAf/Df2jO6UR7KI8Jwi6qYyVuDP7c073nCU4zPffAQiuNiIYwDm05Qy4cetjL6
+         GAWflP+r3wDg1WrpfYq0NcYN4tPtSRLI60ZFfwfk=
+Date:   Sun, 24 Jul 2022 15:42:55 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Dipanjan Das <mail.dipanjan.das@gmail.com>
+Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com, andriin@fb.com,
+        sashal@kernel.org, edumazet@google.com,
+        steffen.klassert@secunet.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        syzkaller@googlegroups.com, fleischermarius@googlemail.com,
+        its.priyanka.bose@gmail.com
+Subject: Re: general protection fault in sock_def_error_report
+Message-ID: <Yt1MX1Z6z0y82i1I@kroah.com>
+References: <CANX2M5Yphi3JcCsMf3HgPPkk9XCfOKO85gyMdxQf3_O74yc1Hg@mail.gmail.com>
+ <Ytzy9IjGXziLaVV0@kroah.com>
+ <CANX2M5bxA5FF2Z8PFFc2p-OxkhOJQ8y=8PGF1kdLsJo+C92_gQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220724095919.436126-1-masahiroy@kernel.org>
-X-Provags-ID: V03:K1:7aZuP66KtFFHI7mmNnclqkg4ZGeICy49EYom7chv0x1Sd1qp1XI
- TTL9sWofH5rg9g6fXTMZZ3tq0x0Bc8TrzhI+k5ALwBIp3udeAGOSi84sU4nGlMN+9CBPbJY
- xT9OR9eV3s523UNzi+/JglR1TQecBK+vlq3at3Gn7Xtt0AMvOq6dqvLhjxfAMKbGPqeE/bk
- d2cGG4LtyZplM/XOaCtUw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:nCI0pjo1QU8=:4QpIYaY8pygI/C7Cawq0KW
- c2vEU3FwwWOFKTdauKBXX3ZPBW6oXV8vYtfyHa7SPdMNXR4oBf5in5yQvt5nb7eRInlYGCwgu
- ao9p5p395bQUyVY0hgcx013h7IQbY+lNvX0E8izzKBCeZgThfKyQycbbyv9ggZVnecCN6FeRT
- pqYl3kSKyLNFqMNZkFA+N9o491/dj2LvhThooyNTnI3bIckIV8MA3F2dHtZrpYd646i7UX9jk
- nSvz0ozx/Wjvwth73Tna/KnWzMAU1N1naXaSxFUGs6r9uGjiLN0BYe2CxzCEsEvsmwSvYP0Rw
- g+L8vsQkLuZJoZY+l05rMquHezcZ1fOHF1CWs2BY/1ALr8NJQjP/E+mhr9dje+p0uCyt6KsxK
- OvbtUuZ55718wm7ZhAaq8NkDyrz4tA9XLAf+vTBpNRptYpi/8Xgvsy6REW3g4y5lVWosVoMIN
- d6Op8DsYq0JQwV9YAN3ZCd9B7/KAOinNeRXWZnhT6OElTuaa0snf+qbRlg54Gqvu4UDGyARWV
- UfMWm0UHdDZJQ1pCTb5JyO/E+XGHBbnUZfcTzan30+RBPP9wyyeIQKmmYfHtD7m8JoGdUPwBa
- N+M9ZmyBpTqhYjtPiDXHZheyHBxv8GVdFjqUjSpLbxHkUd+MlteaG7IW6CYw6eB5pCsD95dYH
- Q8sLWcbtq1abhRTC4+GAyc5AV4S0VpeJO/b82Sef+aolUSQMtSIoyLBZZbvHBKP40v3r7W98B
- AxZj+aKqNVgnsmINk8F/Su/t3F23Vummc1xV6Q==
+In-Reply-To: <CANX2M5bxA5FF2Z8PFFc2p-OxkhOJQ8y=8PGF1kdLsJo+C92_gQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jul 24, 2022 at 06:59:19PM +0900, Masahiro Yamada wrote:
-> Date:   Sun, 24 Jul 2022 18:59:19 +0900
-> From: Masahiro Yamada <masahiroy@kernel.org>
-> To: linux-kbuild@vger.kernel.org
-> Cc: Nicolas Schier <nicolas@fjasle.eu>, Masahiro Yamada
->  <masahiroy@kernel.org>, Michal Marek <michal.lkml@markovi.net>, Nick
->  Desaulniers <ndesaulniers@google.com>, linux-kernel@vger.kernel.org
-> Subject: [PATCH v2] kbuild: add dtbs_prepare target
-> Message-Id: <20220724095919.436126-1-masahiroy@kernel.org>
-> X-Mailer: git-send-email 2.34.1
-> List-ID: <linux-kbuild.vger.kernel.org>
-> X-Mailing-List: linux-kbuild@vger.kernel.org
+On Sun, Jul 24, 2022 at 12:40:09AM -0700, Dipanjan Das wrote:
+> On Sun, Jul 24, 2022 at 12:26 AM Greg KH <gregkh@linuxfoundation.org> wrote:
+> >
+> > On Sat, Jul 23, 2022 at 03:07:09PM -0700, Dipanjan Das wrote:
+> > > Hi,
+> > >
+> > > We would like to report the following bug which has been found by our
+> > > modified version of syzkaller.
+> >
+> > Do you have a fix for this issue?  Without that, it's a bit harder as:
 > 
-> Factor out the common prerequisites for DT compilation into the new
-> target, dtbs_prepare.
+> We will try to root cause the issue and provide a fix, if possible.
 > 
-> Add comments to explain why include/config/kernel.release is the
-> prerequisite. Our policy is that installation targets must not rebuild
-> anything in the tree. If 'make modules_install' is executed as root,
-> include/config/kernel.release may be owned by root.
+> >
+> > > ======================================================
+> > > description: general protection fault in sock_def_error_report
+> > > affected file: net/core/sock.c
+> > > kernel version: 5.4.206
+> >
+> > You are using a very old kernel version, and we have loads of other
+> > syzbot-reported issues to resolve that trigger on newer kernels.
 > 
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> ---
+> Since 5.4.206 is a longterm release kernel, we were under the
+> impression that the community is still accepting fixes and patches for
+> the same. I understand that adding another bug to the already pending
+> queue of syzbot reported issues is not going to help the developers
+> much. Therefore, we will definitely try our best to analyze the issue
+> and provide a fix in the coming days. Can you please confirm that it
+> is worth the effort for the longterm release kernels?
 
-Reviewed-by: Nicolas Schier <nicolas@fjasle.eu>
+It is worth the effort if the problem is still in the latest kernel
+release as that is the only place that new development happens.  If the
+issue is not reproducible on Linus's current releases, then finding the
+change that solved the problem is also good so that we can then backport
+it to the stable/long term kernel release for everyone to benefit from.
 
-> 
-> Changes for v2:
->  - rephase the comment more concise
-> 
->  Makefile | 13 +++++++++----
->  1 file changed, 9 insertions(+), 4 deletions(-)
-> 
-> diff --git a/Makefile b/Makefile
-> index dee707c98bbe..a2a030f41e65 100644
-> --- a/Makefile
-> +++ b/Makefile
-> @@ -1370,16 +1370,21 @@ endif
->  
->  ifneq ($(dtstree),)
->  
-> -%.dtb: include/config/kernel.release scripts_dtc
-> +%.dtb: dtbs_prepare
->  	$(Q)$(MAKE) $(build)=$(dtstree) $(dtstree)/$@
->  
-> -%.dtbo: include/config/kernel.release scripts_dtc
-> +%.dtbo: dtbs_prepare
->  	$(Q)$(MAKE) $(build)=$(dtstree) $(dtstree)/$@
->  
-> -PHONY += dtbs dtbs_install dtbs_check
-> -dtbs: include/config/kernel.release scripts_dtc
-> +PHONY += dtbs dtbs_prepare dtbs_install dtbs_check
-> +dtbs: dtbs_prepare
->  	$(Q)$(MAKE) $(build)=$(dtstree)
->  
-> +# include/config/kernel.release is actually needed when installing DTBs because
-> +# INSTALL_DTBS_PATH contains $(KERNELRELEASE). However, we do not want to make
-> +# dtbs_install depend on it as dtbs_install may run as root.
-> +dtbs_prepare: include/config/kernel.release scripts_dtc
-> +
->  ifneq ($(filter dtbs_check, $(MAKECMDGOALS)),)
->  export CHECK_DTBS=y
->  dtbs: dt_binding_check
-> -- 
-> 2.34.1
+So does your reproducer still work on the latest 5.19-rc7 release?
 
--- 
-epost|xmpp: nicolas@fjasle.eu          irc://oftc.net/nsc
-↳ gpg: 18ed 52db e34f 860e e9fb  c82b 7d97 0932 55a0 ce7f
-     -- frykten for herren er opphav til kunnskap --
+thanks,
+
+greg k-h
