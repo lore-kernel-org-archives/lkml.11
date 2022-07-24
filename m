@@ -2,66 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B9C9CCA48A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4035FCCA48E
 	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 10:40:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231830AbiGXKYg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 06:24:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49556 "EHLO
+        id S232387AbiGXKiG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 06:38:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229513AbiGXKYe (ORCPT
+        with ESMTP id S229513AbiGXKiE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 06:24:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6178C13F20
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 03:24:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1114AB80D49
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 10:24:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3B23C3411E;
-        Sun, 24 Jul 2022 10:24:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658658270;
-        bh=5DOYKUlvLL6Z7uuzGBjXxGmpXeL6qIJ3XVc6PX9tsnk=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=Raxrsc+7mEDMv1BPbOuxpY1ikf40AGeqxzLOhCWKvMRfAeMNYYjCWwom7iCE6HYge
-         yCeIuerQeACmZThQiy8QO7C1Uc1K6S1DQnJKcHbcCRfNAsmQWl2ItUMj692FYX0JEa
-         WidPt1v+r9lgWif+qvaLagiOUmI67i6js3d11NsoSGo2qeEB6PSWCrmKM4zVORhs89
-         41YKv+IxoTnpyWgX1YQkewyqyudCpDdhCboRL2JouQs8evZzWrGQQ3Dyvhnr7Saovm
-         m5QmSUKHSmWhWrFnoSYKPFxtjO/Ii4pwW5p58p1lMcnR46IJH6LeHUFUjC1TXtadei
-         Ntz/HYtxJ0PWQ==
-Message-ID: <722deaed-6595-f6e8-b7d3-348a94719620@kernel.org>
-Date:   Sun, 24 Jul 2022 18:24:27 +0800
+        Sun, 24 Jul 2022 06:38:04 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A70613E09;
+        Sun, 24 Jul 2022 03:38:03 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id b11so15566144eju.10;
+        Sun, 24 Jul 2022 03:38:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=81oGHfHrB8lVkJ+g/NkBs7PcuO85NR++hBmreY15mW0=;
+        b=HNzHYLFzUNIUu96TX16ua+bwzbCrvXIOBws5aBsFkpbOLhs78gTGuMis1qPeIWbkVW
+         hy/poLueGjdxtTsfkT9QrjOhVBp0muY5FjUmaO/RSgwGYj2cys7RzBWlPdpNwkpeW/PV
+         D9G9Y23pCS7r34/VL9OpC2YetCIXTg9Ytu1Cwfh3+ROYzdMx7DVZDnTBC6Tvap8AlCZU
+         9PG2TQFVaaETssA+PKHGoraqubitvGNeSX6OU+sbmQsUCwDeMNEEa9g1ogdqJ9ghuX1O
+         J0WTqVqaKTIteUmKMrOi6OWuvBEcKgd52DoqJHgTGrln4A0+1D588DZr1hLLua3q88PG
+         Cg2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=81oGHfHrB8lVkJ+g/NkBs7PcuO85NR++hBmreY15mW0=;
+        b=4fhnOfLQ7dge053tjCoklx1EgVMvrsiVPRIqof6OY1r7X7Pgaw/c7uQXlx/HLJReDG
+         QvHkNW3Zzx350IHhDwksWBgrQUY7OWR45Wd+zQ1gf5uZ5hlGsq2Jhvzb6uAc4NPou7Mi
+         ByujqxWquCZuQcGt+FYCOE6jOwy0xUQzXCrGbNCC8WwW6LR8bzcitmv0Y9fhEsii/cUc
+         5iREa1AO6YhrorOkeqOrOPVGMYrkPyI1wtDujn6tNy2jAxQOm7INbzTkz8sGuIYI5hOm
+         TQEtxfvGX5N3urh+JlbamnYoHnR0PrXMkTkNf8ohUwXFJncnMfI0n4yDS7Ob8nHoUco0
+         0apQ==
+X-Gm-Message-State: AJIora/lz8kp8nbFYllGg7i15ckYp4jsA2uRuGqbZxp8a0Js7v1utNSy
+        hMI/rvuDl7LvlWizzTR2lgnaaMtZdjI=
+X-Google-Smtp-Source: AGRyM1sRIuekT8/CJ1p3muFe2N56rnMeuPaMUH3VsN2lLc/+E9hYTdn1AF+ZxoTjkgX26GykJXas/A==
+X-Received: by 2002:a17:906:2ed7:b0:72f:d080:411 with SMTP id s23-20020a1709062ed700b0072fd0800411mr1522299eji.203.1658659081960;
+        Sun, 24 Jul 2022 03:38:01 -0700 (PDT)
+Received: from erthalion.local (dslb-094-222-027-106.094.222.pools.vodafone-ip.de. [94.222.27.106])
+        by smtp.gmail.com with ESMTPSA id g1-20020a17090604c100b006fe9f9d0938sm4094843eja.175.2022.07.24.03.38.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 Jul 2022 03:38:01 -0700 (PDT)
+Date:   Sun, 24 Jul 2022 12:36:51 +0200
+From:   Dmitry Dolgov <9erthalion6@gmail.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        songliubraving@fb.com, rostedt@goodmis.org, mingo@redhat.com,
+        mhiramat@kernel.org, alexei.starovoitov@gmail.com
+Subject: Re: [PATCH v4 1/1] perf/kprobe: maxactive for fd-based kprobe
+Message-ID: <20220724103651.qhtqgzhfx2ftrpcx@erthalion.local>
+References: <20220714193403.13211-1-9erthalion6@gmail.com>
+ <YtB1PK+NUF5RL9Er@worktop.programming.kicks-ass.net>
+ <20220715095236.ywv37a556ktl5oif@ddolgov.remote.csb>
+ <YtgMKDgNLnMIkHLI@worktop.programming.kicks-ass.net>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [f2fs-dev] [PATCH 1/2] f2fs: introduce memory mode
-Content-Language: en-US
-To:     Daeho Jeong <daeho43@gmail.com>, linux-kernel@vger.kernel.org,
-        linux-f2fs-devel@lists.sourceforge.net, kernel-team@android.com
-Cc:     Daeho Jeong <daehojeong@google.com>
-References: <20220620173843.1462198-1-daeho43@gmail.com>
-From:   Chao Yu <chao@kernel.org>
-In-Reply-To: <20220620173843.1462198-1-daeho43@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YtgMKDgNLnMIkHLI@worktop.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/6/21 1:38, Daeho Jeong wrote:
-> From: Daeho Jeong <daehojeong@google.com>
-> 
-> Introduce memory mode to supports "normal" and "low" memory modes.
-> "low" mode is to support low memory devices. Because of the nature of
-> low memory devices, in this mode, f2fs will try to save memory sometimes
-> by sacrificing performance. "normal" mode is the default mode and same
-> as before.
-> 
-> Signed-off-by: Daeho Jeong <daehojeong@google.com>
+> On Wed, Jul 20, 2022 at 04:07:36PM +0200, Peter Zijlstra wrote:
+> > > > Enable specifying maxactive for fd based kretprobe. This will be useful
+> > > > for tracing tools like bcc and bpftrace (see for example discussion [1]).
+> > > > Use highest 4 bit (bit 59-63) to allow specifying maxactive by log2.
+> > >
+> > > What's maxactive? This doesn't really tell me much.
+> >
+> > Maxactive allows specifying how many instances of the specified function
+> > can be probed simultaneously, it would indeed make sense to mention this
+> > in the commit message.
+>
+> But why would we need per-fd configurability? Isn't a global sysctrl
+> good enough?
 
-Reviewed-by: Chao Yu <chao@kernel.org>
+Do you mean there is an existing sysctl option for maxactive, or propose
+to introduce one? A global option indeed could be fine for my use case I
+guess, although there will be a bit of awkward asymmetry -- one can
+specify maxactive via text-based API, but not via perf API.
 
-Thanks,
+> > > Why are the top 4 bits the best to use?
+> >
+> > This format exists mostly on proposal rights. Per previous discussions,
+> > 4 bits seem to be enough to cover reasonable range of maxactive values.
+> > Top bits seems like a natural place to me following perf_probe_config
+> > enum, but I would love to hear if there are any alternative suggestions?
+>
+> I think the precedent you're referring to is UPROBE_REF_CTR, which is a
+> full 32bit. That lives in the upper half of the word because bit0 is
+> already taken and using the upper half makes the thing naturally
+> aligned.
+>
+> If we only need 4 bits it's must simpler to simply stick it at the
+> bottom or so.
+
+Yes, you're right, I was referring to UPROBE_REF_CTR. Makes sense to me,
+will change the location.
