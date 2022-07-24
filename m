@@ -2,154 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A493C43334
-	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 18:28:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C963C43334
+	for <linux-kernel@archiver.kernel.org>; Sun, 24 Jul 2022 18:32:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232338AbiGXS2z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 14:28:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53302 "EHLO
+        id S232395AbiGXScW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 14:32:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232138AbiGXS2w (ORCPT
+        with ESMTP id S229640AbiGXScU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 14:28:52 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E07210559;
-        Sun, 24 Jul 2022 11:28:51 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 67E4E374FA;
-        Sun, 24 Jul 2022 18:28:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1658687329; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=vXU3mfPGPs/j/ew1KRBJ1KboWBt6ZAfsknPUbfGyXTo=;
-        b=p9uITAdf/l42HNco51Oc9uxKbXrOd4wkuzyNgELwOMJeAex6ZNoeaLLdDrS7EXM0K9z+wN
-        8Q1o/CE3xdfknINAthlWWm7TeyTLp4y+yGPSs7eNpSEJYD3QqmKGWQ0bi8dTeH3kGb4ISs
-        YkTNGfrwr8A5geQ68/fdTwM4kqjhMpc=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1658687329;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=vXU3mfPGPs/j/ew1KRBJ1KboWBt6ZAfsknPUbfGyXTo=;
-        b=CXBmskjvWsPSdQvzBdcdh17pBv4/cFdsRrRP6P+RXqT8oQ/LXCHZJtZu1Dh3sKModVXLa/
-        EFHMTminnj865FCQ==
-Received: from kitsune.suse.cz (kitsune.suse.cz [10.100.12.127])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id A72A02C177;
-        Sun, 24 Jul 2022 18:28:48 +0000 (UTC)
-Date:   Sun, 24 Jul 2022 20:28:47 +0200
-From:   Michal =?iso-8859-1?Q?Such=E1nek?= <msuchanek@suse.de>
-To:     Andre Przywara <andre.przywara@arm.com>
-Cc:     Samuel Holland <samuel@sholland.org>,
-        Michael Walle <michael@walle.cc>, linux-sunxi@lists.linux.dev,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org
-Subject: Re: [PATCH 1/2] mtd: spi-nor: When a flash memory is missing do not
- report an error
-Message-ID: <20220724182847.GJ17705@kitsune.suse.cz>
-References: <701967b0c418db333c66b48d225df60aa9d03ead.1657826188.git.msuchanek@suse.de>
- <d8de86aa0331be697fbef33d5ab2c57a@walle.cc>
- <20220714205529.GE17705@kitsune.suse.cz>
- <33abf7b84860049c4a22605578303ff2@walle.cc>
- <20220714220744.GF17705@kitsune.suse.cz>
- <20220715132006.077c90f8@donnerap.cambridge.arm.com>
- <2d4f200c-1ce3-19c6-179f-8d8e0545adfe@sholland.org>
- <20220716115849.75a27753@slackpad.lan>
+        Sun, 24 Jul 2022 14:32:20 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5964CDF72
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 11:32:19 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id mf4so16873723ejc.3
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 11:32:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=kHwnjAd0klMJ7kiJVlb73ix9dRQwry5Ws8qHCsAzQEA=;
+        b=AJCcai+xAj8I+OdNokcMBzxTPjfTL5NUi0E2fpfQpDrzLwBp1Rm9baBuWZ67TboZjI
+         sO+lq3VLI0Nnxg/5lt9EliJnSxdANZO+mu1UQFSnjgUz2Ck4T9pXZ6WBOTO994/ASQi9
+         eldHV1Su1xg1GkM8pRr0za3TMiWaC6Ikg3f49urXnxqs+D0Pm+hmaO7OeLX+QftEwwVl
+         ynYcmPNnKuCDfEArApN9fbhpzrzhp4YZ//2Xl7pGKQ0bkt64JV5Ez7fML9y4U5uCwQAl
+         sxkOiFSuWFr5HY7NHMzcBsLoErxYePAUlxA2/Q216IkXFZBOHFcmmjQfqXbrtqvq7mw1
+         LASQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=kHwnjAd0klMJ7kiJVlb73ix9dRQwry5Ws8qHCsAzQEA=;
+        b=XPfYYM6569rFZfscNionsv3jMYz4bnNL1CFoB7ifCt/SPMW01NSWJk5aEt1Xg6lrRz
+         epfzFtr3O0pEA5BLdSFsXRwMZ2mH+I53N71kBqUCfOmu235PhcgRPnZ1sTD5x8gaoUEm
+         GgssF7mjZpSrTLC3vCFR4dZHzRTuYxriEsRaraREASKvZ/JKlE+15wAT4fel64/k2BkJ
+         eJCnpnXzMmLVOylJqnhciNmxmS0fw6xpFhVNJIWAqFDsko9ELBv2voOFqshVa1EgAEaq
+         xfcejN/CkaBDPdnEQbdC/l9pKOBI2w0lORit7Dn2RNePxo+5fsAUuB5wxHmk407/4ORj
+         F9BA==
+X-Gm-Message-State: AJIora9r51Giv8tHN5KmH6pRyBMr08+y7fwgfdCAZeObi1FkFYDyZVBe
+        iU5J1dVD5QsKFOGVychIDSQ=
+X-Google-Smtp-Source: AGRyM1szw1eNn1oiMpE8989ROVwM/cDN8FXihbTs0Dxtdn6xg8Md1+CVEVCNfrCe2L1d2glx/up2Bw==
+X-Received: by 2002:a17:906:cc11:b0:72b:458e:5d45 with SMTP id ml17-20020a170906cc1100b0072b458e5d45mr7210187ejb.589.1658687537956;
+        Sun, 24 Jul 2022 11:32:17 -0700 (PDT)
+Received: from [192.168.1.100] (p54a07b82.dip0.t-ipconnect.de. [84.160.123.130])
+        by smtp.gmail.com with ESMTPSA id lb5-20020a170907784500b0072f2e409575sm4400145ejc.98.2022.07.24.11.32.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 24 Jul 2022 11:32:17 -0700 (PDT)
+Message-ID: <5972ceac-5f68-85af-bbe0-e640a6a64149@gmail.com>
+Date:   Sun, 24 Jul 2022 20:32:15 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220716115849.75a27753@slackpad.lan>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 0/5] staging: r8188eu: use struct ieee80211_mgmt in
+ OnAssocRsp
+Content-Language: en-US
+To:     Martin Kaiser <martin@kaiser.cx>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Larry Finger <Larry.Finger@lwfinger.net>,
+        Phillip Potter <phil@philpotter.co.uk>,
+        Michael Straube <straube.linux@gmail.com>,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <20220724153917.138848-1-martin@kaiser.cx>
+From:   Philipp Hortmann <philipp.g.hortmann@gmail.com>
+In-Reply-To: <20220724153917.138848-1-martin@kaiser.cx>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jul 16, 2022 at 11:58:49AM +0100, Andre Przywara wrote:
-> On Fri, 15 Jul 2022 21:28:57 -0500
-> Samuel Holland <samuel@sholland.org> wrote:
+On 7/24/22 17:39, Martin Kaiser wrote:
+> Use a struct ieee80211_mgmt in OnAssocRsp to read elements of the
+> association response message.
 > 
-> Hi,
+> Martin Kaiser (5):
+>    staging: r8188eu: get da from ieee80211_mgmt
+>    staging: r8188eu: read status_code from struct ieee80211_mgmt
+>    staging: r8188eu: read capability info from struct ieee80211_mgmt
+>    staging: r8188eu: read aid from struct ieee80211_mgmt
+>    staging: r8188eu: use offsetof for ie start offset
 > 
-> > On 7/15/22 7:20 AM, Andre Przywara wrote:
-> > >>>> However, when the board is designed for a specific kind of device which
-> > >>>> is not always present, and the kernel can detect the device, it is
-> > >>>> perfectly fine to describe it.
-> > >>>>
-> > >>>> The alternative is to not use the device at all, even when present,
-> > >>>> which is kind of useless.    
-> > >>>
-> > >>> Or let the bootloader update your device tree and disable the device
-> > >>> if it's not there?    
-> > > 
-> > > Yes, this is what I was suggesting already: U-Boot can do the job, because
-> > > a U-Boot build is device specific, and we can take certain risks that the
-> > > generic and single-image kernel wants to avoid.
-> > > In this case we know that there is a SPI flash footprint, and it does no
-> > > harm in trying to check on CS0. So I was thinking about introducing a
-> > > U-Boot Kconfig variable to probe for and potentially disable the SPI flash
-> > > DT node. We would set this variable in defconfigs of boards with optional
-> > > SPI flash.  
-> > 
-> > To support the "does no harm" assertion: the Allwinner Boot ROM will probe for
-> > NOR flash (and possibly SPI NAND) on SPI0 + CS0 if no bootable MMC device is
-> > found. So the board designer must already assume that JEDEC Read ID commands
-> > will be sent over that bus.
-> > 
-> > >> But then it must be in the device tree?  
-> > > 
-> > > However this indeed means that the SPI flash DT node must be in and enabled
-> > > in the DT, because we (try hard to) only use original Linux DT files, and
-> > > DTs must have been reviewed through the kernel ML first. The U-Boot driver
-> > > relies on the DT as well, so the official kernel DT copy would need to come
-> > > with that node enabled. Ideally U-Boot would disable it, if needed, and
-> > > the kernel error message would never appear.  
-> > 
-> > I don't think this works for newer SoCs where the Boot ROM supports both NOR and
-> > SPI NAND. If the board is sold with the flash chip unpopulated, the user could
-> > install either kind of chip. So we cannot statically assume which binding will
-> > be used. We would need to add a node with the right compatible string after
-> > probing for both in the bootloader.
+>   drivers/staging/r8188eu/core/rtw_mlme_ext.c | 16 ++++++----------
+>   1 file changed, 6 insertions(+), 10 deletions(-)
 > 
-> If a *user* decides to *change* the board, it's up to the user
-> to make sure the DT matches. Overlays are the typical answer, or people
-> change the DT before they build U-Boot. If someone decides to hack
-> their board, they have to take care of the respective DT description
-> hack as well.
-> 
-> This case here is about the *vendor* shipping different versions of the
-> board, which I think is a different case. Technically we now would need
-> two DTs: one with, one without the SPI flash node, and let the user
-> decide which one to include in U-Boot at build time, depending on which
-> version they have.
 
-Technically we don't. The DT is supposed to describe hardware properties
-that cannot be probed. Probing presence of the SPI NOR is perfectly
-possible so it suffices to record that the SPI CS is reserved for a SPI
-NOR, and as much as we don't describe the size we don't need to describe
-or assume the presence either.
-
-> What I was suggesting is a U-Boot config switch, which would only be
-> enabled on those boards where we have this situation (OPi Zero):
-> That avoids dangerous situations (because we know it's safe *on this
-> particular board*), and avoids the hassle of shipping two firmware
-> versions.
-
-Also if we really want to make u-boot probe the device (such as in cases
-when there is choice of mutiple devices) DT also supports "reserved"
-state which may be useful for makring the devices to probe when the DT
-is loaded together with u-boot before passing it to Linux.
-
-Thanks
-
-Michal
+Tested-by: Philipp Hortmann <philipp.g.hortmann@gmail.com> # Edimax N150
