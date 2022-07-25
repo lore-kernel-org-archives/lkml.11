@@ -2,177 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81150CCA48A
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 21:28:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 580C9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 21:28:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237250AbiGYV2w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 17:28:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48950 "EHLO
+        id S236885AbiGYV26 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 17:28:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237299AbiGYV2P (ORCPT
+        with ESMTP id S237307AbiGYV2Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 17:28:15 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 965FF24948
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 14:27:38 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id d8so17621743wrp.6
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 14:27:38 -0700 (PDT)
+        Mon, 25 Jul 2022 17:28:16 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55FCD24950
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 14:27:40 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id k11so17261539wrx.5
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 14:27:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linexp-org.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=lgLe7sgvzaU3jF4XA+SfoE2vippSYThYf8kMVph3yKg=;
-        b=zjdR9E4eOlA7485Udy+F2VuliqkiFtNIb1Iy4w6TDM2S/95oYjkeZp+tds9IdXlTrN
-         UKK8Gw6ragqY1xMt8eZfQHNwDqD68UnFmmUfzoLdJbUp4lMGXcN12f163r33Qk4Xd8Z8
-         XGs1McLdMgndqRB1i008YqqhJf92BvX8OwHMyVonsqJGKCK32FzXeAcmuD9HJmgs4Bqo
-         /Ggn2UVy0G9Md/0qfkM/zSxb3AWAB2dZM75b+/EvLSCkCzLIJJ+ITFofgMgg9OEpQ5F5
-         cBe9uqk66HuS8yIjHXcNQKACIt97G6V6qWVcBBQnW47liQ/c5Hti0OYKiUNRxC0GYfOW
-         UeGQ==
+        d=sifive.com; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=LC1MButyAjgvhVwdTxySQfcTsI905HcQoSgMguQbeJE=;
+        b=XIuER+QEkXsz5IY+kHqI2bwpSJoq2OQb3wKfqZ+BK5c7jPlBbRxlnq8nlkhnCbbYr7
+         GnGARLlnY71J07XrmeQ0i0J2rmmeTLMs72YlQ6lgmd3IIulDnr/vBnjIrD+U0JRBIHxs
+         zMY0C01JwXyk7ZRgo06AtAS9x9y0BAQ6zuDsCorpBiNWnLuqJfRLrKkYFwaElNMulpjS
+         EG1BOqq9BIYRA0VRAJ1HjUjZCjws1JdY1aA3WCaNq3pCJJyPyiKVBvWBd2wpIz7bCwTB
+         u33/Vm7cN9g8DiKlRpfkVYhe2EIjV6e8Kmm2LyHFV2up/PzCUl4tskP84B1W9bCYDlFn
+         pZzA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=lgLe7sgvzaU3jF4XA+SfoE2vippSYThYf8kMVph3yKg=;
-        b=b4/DibQP6Gd0ztahtDygjklvGWXTALZmWmOJzuH5TXZNXjeA/ondfoDa4GcF2Q2Hch
-         JmcnHhSYen1bVP3zFKsRyucuQ2fNuLgRwHdr8HiNeX+VyqHmAXnBll0AyKY3gqtKdX6U
-         lNIyAm6+TCSRZuqjL4ZuI48aeJeSgPlbBMJgdzkcNNSBmB3GdE1ePxDIFDKMo+mm9Bqf
-         pj6kCpQkoWEPlb014VrKuiStap6LBCBGMlH1dGm1qKzpviM0Gb2JCXPhhxxSq3ervwu7
-         c/EA83KgSDu5FQc1+W8vhsNOkbx/4F6HYH19ijicOX5JFSuxDzZfW4ji015BcVI5Luuy
-         mucg==
-X-Gm-Message-State: AJIora8Idoq9ZsQ8CLIazxtA/hIev6tI8w55Uo8x7+J4mbOto5jUYrIa
-        TtX5aaNcgEiYLCJlouO3XfX2cQ==
-X-Google-Smtp-Source: AGRyM1us+9EShmMg2IdStuWqW6GotveB0ReZJ6CFToeHn6HBdpQ5syMyeuCIZtxuWywyLn/TlD8REg==
-X-Received: by 2002:a5d:59a4:0:b0:21e:8704:ea35 with SMTP id p4-20020a5d59a4000000b0021e8704ea35mr4646344wrr.442.1658784455921;
-        Mon, 25 Jul 2022 14:27:35 -0700 (PDT)
-Received: from mai.box.freepro.com ([2a05:6e02:1041:c10:1780:8e54:dd38:6668])
-        by smtp.gmail.com with ESMTPSA id r17-20020a5d52d1000000b0021d68a504cbsm12668772wrv.94.2022.07.25.14.27.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Jul 2022 14:27:35 -0700 (PDT)
-From:   Daniel Lezcano <daniel.lezcano@linexp.org>
-To:     daniel.lezcano@linaro.org, rafael@kernel.org
-Cc:     rui.zhang@intel.com, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, khilman@baylibre.com,
-        abailon@baylibre.com, lukasz.luba@arm.com, broonie@kernel.org,
-        damien.lemoal@opensource.wdc.com, heiko@sntech.de,
-        hayashi.kunihiko@socionext.com, mhiramat@kernel.org,
-        talel@amazon.com, thierry.reding@gmail.com, digetx@gmail.com,
-        jonathanh@nvidia.com, anarsoul@gmail.com, tiny.windzz@gmail.com,
-        baolin.wang7@gmail.com, f.fainelli@gmail.com,
-        bjorn.andersson@linaro.org, mcoquelin.stm32@gmail.com,
-        glaroque@baylibre.com, miquel.raynal@bootlin.com,
-        shawnguo@kernel.org, niklas.soderlund@ragnatech.se,
-        matthias.bgg@gmail.com, j-keerthy@ti.com,
-        Amit Kucheria <amitk@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-arm-kernel@lists.infradead.org (moderated list:ARM/FREESCALE IMX
-        / MXC ARM ARCHITECTURE)
-Subject: [PATCH v2 16/32] thermal/drivers/imx: Switch to new of API
-Date:   Mon, 25 Jul 2022 23:26:21 +0200
-Message-Id: <20220725212637.2818207-17-daniel.lezcano@linexp.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220725212637.2818207-1-daniel.lezcano@linexp.org>
-References: <20220725212637.2818207-1-daniel.lezcano@linexp.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=LC1MButyAjgvhVwdTxySQfcTsI905HcQoSgMguQbeJE=;
+        b=doWxmQNc1vWOJPZOZ90thqm+0H0bIlucB2EUEP9uPhGzx1s5wp2L7uDjqbhyeOIwOr
+         4x7fhHRXJ6TYTCMuC+TI0bbXRA3k/aL514oTKaPa7uVRzw3xVGLIuruu8ksj2BMLsCQg
+         M88MhVPVGkJpAShTC3MJsrPL80n/CMsrMCgbFAOrTutWtRkWd30TIFPA+sbw/PmKzaiq
+         dwLUkkLS+eGYCJqHd6Kqp0tXTzdrRdJ3yFfQkRWBOlluv94QLdWnmjhXjlfbXy6nCVCR
+         NzIltl0+75VQCjkz50C3c9EpMh9Y6xKNQHmv9qg71jC67+qlZ3Qci/126X+i+aoLLQuI
+         UuOA==
+X-Gm-Message-State: AJIora9dA1KLJXPSfXUdOtkdC4f7oEhjAS4FCkvxXC7OVy6m4fRNBxQd
+        Qt2CmBtrwdvdjnDgC9va6QPsCvHMdh8OWA==
+X-Google-Smtp-Source: AGRyM1uhCs8VsFP2JwWvB8LbQsi/wD2WmCWt2Rv2KajohyBY0rFeGaFvWA4ssIOieb9jtBGlLP6edA==
+X-Received: by 2002:a5d:5847:0:b0:21d:b75e:12d0 with SMTP id i7-20020a5d5847000000b0021db75e12d0mr8496954wrf.208.1658784457841;
+        Mon, 25 Jul 2022 14:27:37 -0700 (PDT)
+Received: from [192.168.0.17] (cpc152649-stkp13-2-0-cust121.10-2.cable.virginm.net. [86.15.83.122])
+        by smtp.gmail.com with ESMTPSA id b18-20020adff912000000b0021d65675583sm12624688wrr.52.2022.07.25.14.27.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 25 Jul 2022 14:27:37 -0700 (PDT)
+Message-ID: <0ad68731-1891-ced8-2a2e-682b50cc6488@sifive.com>
+Date:   Mon, 25 Jul 2022 22:27:36 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [[PATCH v2] 1/9] dt-bindings: pwm: Document Synopsys DesignWare
+ snps,pwm
+Content-Language: en-GB
+To:     linux-pwm@vger.kernel.org
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lee Jones <lee.jones@linaro.org>,
+        u.kleine-koenig@pengutronix.de,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Greentime Hu <greentime.hu@sifive.com>
+References: <20220725212140.741644-1-ben.dooks@sifive.com>
+From:   Ben Dooks <ben.dooks@sifive.com>
+In-Reply-To: <20220725212140.741644-1-ben.dooks@sifive.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The thermal OF code has a new API allowing to migrate the OF
-initialization to a simpler approach. The ops are no longer device
-tree specific and are the generic ones provided by the core code.
+On 25/07/2022 22:21, Ben Dooks wrote:
 
-Convert the ops to the thermal_zone_device_ops format and use the new
-API to register the thermal zone with these generic ops.
+Argh, forgot the cover note on this:
 
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linexp.org>
----
- drivers/thermal/imx8mm_thermal.c | 14 +++++++-------
- drivers/thermal/imx_sc_thermal.c | 14 +++++++-------
- 2 files changed, 14 insertions(+), 14 deletions(-)
+Second version of updates for the DesignWare PWM driver to move it
+from PCI only to both PCI and OF.
 
-diff --git a/drivers/thermal/imx8mm_thermal.c b/drivers/thermal/imx8mm_thermal.c
-index af666bd9e8d4..e2c2673025a7 100644
---- a/drivers/thermal/imx8mm_thermal.c
-+++ b/drivers/thermal/imx8mm_thermal.c
-@@ -96,15 +96,15 @@ static int imx8mp_tmu_get_temp(void *data, int *temp)
- 	return 0;
- }
- 
--static int tmu_get_temp(void *data, int *temp)
-+static int tmu_get_temp(struct thermal_zone_device *tz, int *temp)
- {
--	struct tmu_sensor *sensor = data;
-+	struct tmu_sensor *sensor = tz->devdata;
- 	struct imx8mm_tmu *tmu = sensor->priv;
- 
--	return tmu->socdata->get_temp(data, temp);
-+	return tmu->socdata->get_temp(sensor, temp);
- }
- 
--static struct thermal_zone_of_device_ops tmu_tz_ops = {
-+static const struct thermal_zone_device_ops tmu_tz_ops = {
- 	.get_temp = tmu_get_temp,
- };
- 
-@@ -165,9 +165,9 @@ static int imx8mm_tmu_probe(struct platform_device *pdev)
- 	for (i = 0; i < data->num_sensors; i++) {
- 		tmu->sensors[i].priv = tmu;
- 		tmu->sensors[i].tzd =
--			devm_thermal_zone_of_sensor_register(&pdev->dev, i,
--							     &tmu->sensors[i],
--							     &tmu_tz_ops);
-+			devm_thermal_of_zone_register(&pdev->dev, i,
-+						      &tmu->sensors[i],
-+						      &tmu_tz_ops);
- 		if (IS_ERR(tmu->sensors[i].tzd)) {
- 			ret = PTR_ERR(tmu->sensors[i].tzd);
- 			dev_err(&pdev->dev,
-diff --git a/drivers/thermal/imx_sc_thermal.c b/drivers/thermal/imx_sc_thermal.c
-index 331a241eb0ef..10bfa6507eb4 100644
---- a/drivers/thermal/imx_sc_thermal.c
-+++ b/drivers/thermal/imx_sc_thermal.c
-@@ -43,11 +43,11 @@ struct imx_sc_msg_misc_get_temp {
- 	} data;
- } __packed __aligned(4);
- 
--static int imx_sc_thermal_get_temp(void *data, int *temp)
-+static int imx_sc_thermal_get_temp(struct thermal_zone_device *tz, int *temp)
- {
- 	struct imx_sc_msg_misc_get_temp msg;
- 	struct imx_sc_rpc_msg *hdr = &msg.hdr;
--	struct imx_sc_sensor *sensor = data;
-+	struct imx_sc_sensor *sensor = tz->devdata;
- 	int ret;
- 
- 	msg.data.req.resource_id = sensor->resource_id;
-@@ -70,7 +70,7 @@ static int imx_sc_thermal_get_temp(void *data, int *temp)
- 	return 0;
- }
- 
--static const struct thermal_zone_of_device_ops imx_sc_thermal_ops = {
-+static const struct thermal_zone_device_ops imx_sc_thermal_ops = {
- 	.get_temp = imx_sc_thermal_get_temp,
- };
- 
-@@ -109,10 +109,10 @@ static int imx_sc_thermal_probe(struct platform_device *pdev)
- 			break;
- 		}
- 
--		sensor->tzd = devm_thermal_zone_of_sensor_register(&pdev->dev,
--								   sensor->resource_id,
--								   sensor,
--								   &imx_sc_thermal_ops);
-+		sensor->tzd = devm_thermal_of_zone_register(&pdev->dev,
-+							    sensor->resource_id,
-+							    sensor,
-+							    &imx_sc_thermal_ops);
- 		if (IS_ERR(sensor->tzd)) {
- 			dev_err(&pdev->dev, "failed to register thermal zone\n");
- 			ret = PTR_ERR(sensor->tzd);
--- 
-2.25.1
+Fixes:
 
+v2:
+- fix #pwm-cells count to be 3
+- fix indetation
+- merge the two clock patches
+- add HAS_IOMEM as a config dependency
