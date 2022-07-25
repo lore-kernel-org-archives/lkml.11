@@ -2,99 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 713CDC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 13:06:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6E9DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 13:07:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234808AbiGYNF6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 09:05:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37378 "EHLO
+        id S235408AbiGYNHJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 09:07:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230495AbiGYNF5 (ORCPT
+        with ESMTP id S230495AbiGYNHH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 09:05:57 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14C5918D;
-        Mon, 25 Jul 2022 06:05:56 -0700 (PDT)
-Received: from zn.tnic (p200300ea972976f8329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9729:76f8:329c:23ff:fea6:a903])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 875791EC0676;
-        Mon, 25 Jul 2022 15:05:50 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1658754350;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=52Qsfzz/eK6LL+bUeQnS882u4becLcvnVA9HncA22sc=;
-        b=LD8LsHoPHH/NL3lqbbPiC+sLdVADfY6h4+j9KI1QvSpaGuAiXBemvCuUiGfRkFkhRk2Hs1
-        OtqFWry/URmUcMVPQQ50FnkfmEBvp/gW8ace4cIgK2IPfAH+Ybjuvvl3GCfbrlICpDH09M
-        TkF7z8DGAOYH3LmJHyCMc+nhnw2KGEY=
-Date:   Mon, 25 Jul 2022 15:05:50 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Mike Rapoport <rppt@kernel.org>
-Cc:     Dave Hansen <dave.hansen@intel.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joerg Roedel <jroedel@suse.de>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Varad Gautam <varad.gautam@suse.com>,
-        Dario Faggioli <dfaggioli@suse.com>,
-        David Hildenbrand <david@redhat.com>,
-        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
-        khalid.elmously@canonical.com, philip.cox@canonical.com,
-        x86@kernel.org, linux-mm@kvack.org, linux-coco@lists.linux.dev,
-        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Mike Rapoport <rppt@linux.ibm.com>
-Subject: Re: [PATCHv7 02/14] mm: Add support for unaccepted memory
-Message-ID: <Yt6VLnsqedRnxb1g@zn.tnic>
-References: <20220614120231.48165-1-kirill.shutemov@linux.intel.com>
- <20220614120231.48165-3-kirill.shutemov@linux.intel.com>
- <YtltYRuL+2uQkYUK@zn.tnic>
- <ebcf2979-45fc-8d41-cc28-ac8da0d24245@intel.com>
- <Ytr4FCV2xPGUBLqs@zn.tnic>
- <707ca113-c2a2-8fe2-a22c-5be13adc7bb4@intel.com>
- <Yt6LOD9Ae2NqyG1N@zn.tnic>
- <Yt6T3vlbTZ5z0nZ/@kernel.org>
+        Mon, 25 Jul 2022 09:07:07 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AFB1B8
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 06:07:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1658754424; x=1690290424;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=4MVD07uVz8TokT7Qhzd/sDyjjIjUsb7epkzs9go0QoM=;
+  b=EYet1Z7/QTwjqIJcsD1qZusCdtqxE8TGXc9ICJDtz9sLJ8lpFSw8xbXz
+   DcRWEr7L9fkMH+vzaBH4sxQwK5/sqLfGwaO9BztBN8Q8Bxbr+Ksn1IMiB
+   T3Wy1xX3FakCakvq7UydIhtxy0I5LiWZ/zPfYrx3FJ1h8ra/xdMr24Occ
+   yi3vxzAS0DDvqVK70mqOXnkYRAQYGogSvaqCzGXEUl5r97FyosB7/g6/q
+   l0Pp/Yl5rBmfio9O68JLMqjV6343ijULOFAaVyTCZI0XyeGAL8GH31xR+
+   6X6Y9ZhC0jd9k4y/SkjSXdM4yA823ZtEfQeVXZr9vBkxwE+UHnJKQJtKO
+   w==;
+X-IronPort-AV: E=Sophos;i="5.93,192,1654585200"; 
+   d="scan'208";a="106005848"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 25 Jul 2022 06:07:03 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 25 Jul 2022 06:07:02 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Mon, 25 Jul 2022 06:07:00 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <lgirdwood@gmail.com>, <broonie@kernel.org>, <perex@perex.cz>,
+        <tiwai@suse.com>, <nicolas.ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>
+CC:     <alsa-devel@alsa-project.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [PATCH v2 0/5] ASoC: atmel: one fix and few cleanups
+Date:   Mon, 25 Jul 2022 16:09:20 +0300
+Message-ID: <20220725130925.1781791-1-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <Yt6T3vlbTZ5z0nZ/@kernel.org>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 25, 2022 at 04:00:14PM +0300, Mike Rapoport wrote:
-> An application in the VM can do mlock() or mmap(..., MAP_POPULATE, ...) and
-> this will essentially force acceptance of that memory.
+Hi,
 
-Ah, cool, that's what I meant.
+The series adds one fix for mchp-spdifrx and few cleanups for
+mchp-spdifrx and mchp-spdifrx drivers.
 
-> But there's no sysctl or something for that.
+Thank you,
+Claudiu Beznea
 
-Yeah, no need.
+Changes in v2:
+- s/tag/tab in the title of patch 2/5
 
-I was simply wondering whether one can relocate the acceptance work to
-the moment prior to starting the process so that it can run smoothly
-once started and doesn't cause spikes due to on-demand acceptance.
+Claudiu Beznea (5):
+  ASoC: mchp-spdifrx: disable end of block interrupt on failures
+  ASoC: mchp-spdifrx: use single tag indent for structure
+  ASoC: mchp-spdiftx: remove references to mchp_i2s_caps
+  ASoC: mchp-spdiftx: return directly ret
+  ASoC: mchp-spdiftx: add and remove black line around
+    MODULE_DEVICE_TABLE()
 
-At least not too many.
-
-Thx.
+ sound/soc/atmel/mchp-spdifrx.c | 19 +++++++++++--------
+ sound/soc/atmel/mchp-spdiftx.c | 21 +++++----------------
+ 2 files changed, 16 insertions(+), 24 deletions(-)
 
 -- 
-Regards/Gruss,
-    Boris.
+2.34.1
 
-https://people.kernel.org/tglx/notes-about-netiquette
