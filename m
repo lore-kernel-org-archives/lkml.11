@@ -2,113 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F818C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 17:05:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D989AC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 17:08:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236478AbiGYRF3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 13:05:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57198 "EHLO
+        id S236619AbiGYRId (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 13:08:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230172AbiGYRF1 (ORCPT
+        with ESMTP id S235991AbiGYRIc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 13:05:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 377E91AE
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 10:05:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658768725;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=a3wUurCyqKCMfKdr4U9KFGd2QMH7GRY0ExQn3XqfuW8=;
-        b=VZlPKnUZJUKnoonX12GuZB4EwcCNJ06py6m5HaMReanFQmlMwkNbfmk/t+VIVavJt8j+10
-        w7nEeszlXxwtuX4TxiuLhEENmwjy9uRQp+BBKtGBCluthOgg1QNFs2TuIx+P2BD5slXAwE
-        pO3o8PzvdsQ80XQo9a/P2iAhfCzK4B0=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-259-y3ncKzm5Myy3Roxjqtj7nw-1; Mon, 25 Jul 2022 13:05:24 -0400
-X-MC-Unique: y3ncKzm5Myy3Roxjqtj7nw-1
-Received: by mail-wr1-f71.google.com with SMTP id h6-20020adfaa86000000b0021e47bcbc6dso1720329wrc.16
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 10:05:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=a3wUurCyqKCMfKdr4U9KFGd2QMH7GRY0ExQn3XqfuW8=;
-        b=V8/mjZObgTz4H5cq1/sWB208n0q7JVmW/aHyLAVA06hIj76LoR5c+v5iZ74+X2cnQ4
-         YRjtfGzLYqyzvh4FhErYVvkpanCPTHaXLiXtTV4I9Mumys+vR3xp9a4cN5j1xYKsTpAl
-         roi5eGzMoG9SEqIwBN631iFciaC5zTgO/QaKiNNVWdumbl+vEXR3UlTrIwbBX15e7kDj
-         b2zVcCh5tsWrMTYjOuczn3ayDwCmBerx19eW2JT8voZrENsxyiBmvP/c14QKKCiAsemI
-         vOIfo2kUpT742jj1tQCcFWnVzdm48Fp7d+PR9UHPkqZAOw3ExoWpAzoj/m0GpCkH03Qk
-         W68w==
-X-Gm-Message-State: AJIora8U5IlIVV2H2Fw5I0NfjzGrWgymiZegDhaZ1pnxfqw1yAIiuaFU
-        BEGVlfcqXO+qZ8wC1ReCYxfkWZ/SP5D2PxrtCCqKR/sEEAmr/wr8B4gcaLw877dcg8WczByFGqt
-        n/CSifMKNXM7EG1PXGU5CE8GK
-X-Received: by 2002:a1c:2184:0:b0:3a3:30d7:7314 with SMTP id h126-20020a1c2184000000b003a330d77314mr8754218wmh.19.1658768722839;
-        Mon, 25 Jul 2022 10:05:22 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1unsAlNhV9LUXlYCEzqZs7stqV1rAI2oMdWuUAHWtmFJPB7rYq8qd9v6QobCn8rwQ1jAkhw7Q==
-X-Received: by 2002:a1c:2184:0:b0:3a3:30d7:7314 with SMTP id h126-20020a1c2184000000b003a330d77314mr8754192wmh.19.1658768722393;
-        Mon, 25 Jul 2022 10:05:22 -0700 (PDT)
-Received: from pc-4.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
-        by smtp.gmail.com with ESMTPSA id q15-20020a5d658f000000b0021e48faed68sm12054630wru.97.2022.07.25.10.05.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Jul 2022 10:05:21 -0700 (PDT)
-Date:   Mon, 25 Jul 2022 19:05:19 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Matthias May <matthias.may@westermo.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, nicolas.dichtel@6wind.com,
-        eyal.birger@gmail.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2 net-next] geneve: fix TOS inheriting for ipv6
-Message-ID: <20220725170519.GD18808@pc-4.home>
-References: <20220724003741.57816-1-matthias.may@westermo.com>
- <20220724003741.57816-3-matthias.may@westermo.com>
+        Mon, 25 Jul 2022 13:08:32 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56F2917A8C
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 10:08:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658768911; x=1690304911;
+  h=message-id:date:mime-version:subject:to:references:from:
+   in-reply-to:content-transfer-encoding;
+  bh=gaRQ8OrgasXoKsBE8DAQZEaK2QlXpbZjuu5pCy7Jz7A=;
+  b=liuffyM1W+OXR1xZOoLDaUXD0/7j8jbhCKp7Y69chKlSQtbP6vWkqB4I
+   5dQVqKmeJszgbYk4j6Q9wu4ubWPNKEnm7ICmdaWf7mtxPiwvw4YP2tzny
+   /V0a6hR2WgEL3fXTclBDa4qRSpfl65rYmOUvElO0Dso27xdJD84RKXpPe
+   rhWXhTt84yjbAgHWYTE2Wp9qXkXUCoWTV0qBBsN1QZ/E+6TBBB225D83Y
+   3GlEJW5LRz6Y/WUbeNcEBmsTQ6doa6uCiteWqMBjlhuIQQKW4uQoYEabZ
+   /HaMGk1P9qT5sRaFy4urjgpE85VQz7LdX6NgSKzKzTm4kseJyS45/iEfG
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10419"; a="287760213"
+X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
+   d="scan'208";a="287760213"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2022 10:08:31 -0700
+X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
+   d="scan'208";a="550062688"
+Received: from jxzhao-mobl.amr.corp.intel.com (HELO [10.212.0.178]) ([10.212.0.178])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2022 10:08:30 -0700
+Message-ID: <bdaec1b0-1385-b376-7640-61d363c9b009@linux.intel.com>
+Date:   Mon, 25 Jul 2022 10:03:23 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220724003741.57816-3-matthias.may@westermo.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.11.0
+Subject: Re: [PATCH] ASoC: max98373: Removing 0x203E from the volatile reg
+Content-Language: en-US
+To:     Ryan Lee <ryan.lee.analog@gmail.com>, lgirdwood@gmail.com,
+        broonie@kernel.org, perex@perex.cz, tiwai@suse.com, steve@sk2.org,
+        ryans.lee@analog.com, alsa-devel@alsa-project.org,
+        linux-kernel@vger.kernel.org
+References: <20220723015220.4169-1-ryans.lee@analog.com>
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+In-Reply-To: <20220723015220.4169-1-ryans.lee@analog.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jul 24, 2022 at 02:37:41AM +0200, Matthias May wrote:
-> The current code uses the RT_TOS macro to cut off the 6 DSCP
-> bits, down to the original 3 TOS bits.
+
+
+On 7/22/22 20:52, Ryan Lee wrote:
+> The 0x203E speaker gain register should be non-volatile.
+> This register value was not able to be synced because it was marked as
+> volatile.
 > 
-> Do not use this macro to get the prio for inheriting purposes.
-
-Honestly, this patch is a bug fix and is suitable for the net tree
-(with appropriate 'Fixes' tag).
-
-Ideally, we'd also fix ip6_dst_lookup_tunnel() (used by bareudp
-tunnels) and vxlan6_get_route().
-
-Also, mlx5e_tc_tun_update_header_ipv6() and
-mlx5e_tc_tun_create_header_ipv6() both call RT_TOS() inside
-ip6_make_flowinfo() and certainly need to be fixed too.
-
-> Signed-off-by: Matthias May <matthias.may@westermo.com>
+> Signed-off-by: Ryan Lee <ryans.lee@analog.com>
 > ---
->  drivers/net/geneve.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
+>  sound/soc/codecs/max98373-i2c.c | 1 -
+>  1 file changed, 1 deletion(-)
 > 
-> diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
-> index 4c380c06f178..e1a4480e6f17 100644
-> --- a/drivers/net/geneve.c
-> +++ b/drivers/net/geneve.c
-> @@ -877,8 +877,7 @@ static struct dst_entry *geneve_get_v6_dst(struct sk_buff *skb,
->  		use_cache = false;
->  	}
->  
-> -	fl6->flowlabel = ip6_make_flowinfo(RT_TOS(prio),
-> -					   info->key.label);
-> +	fl6->flowlabel = ip6_make_flowinfo(prio, info->key.label);
->  	dst_cache = (struct dst_cache *)&info->dst_cache;
->  	if (use_cache) {
->  		dst = dst_cache_get_ip6(dst_cache, &fl6->saddr);
-> -- 
-> 2.35.1
-> 
+> diff --git a/sound/soc/codecs/max98373-i2c.c b/sound/soc/codecs/max98373-i2c.c
+> index 4fe065ece17c..3e04c7f0cce4 100644
+> --- a/sound/soc/codecs/max98373-i2c.c
+> +++ b/sound/soc/codecs/max98373-i2c.c
+> @@ -442,7 +442,6 @@ static bool max98373_volatile_reg(struct device *dev, unsigned int reg)
+>  {
+>  	switch (reg) {
+>  	case MAX98373_R2000_SW_RESET ... MAX98373_R2009_INT_FLAG3:
+> -	case MAX98373_R203E_AMP_PATH_GAIN:
 
+That register isn't declared as volatile for the SoundWire case so that
+sounds like a good fix
+
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+
+>  	case MAX98373_R2054_MEAS_ADC_PVDD_CH_READBACK:
+>  	case MAX98373_R2055_MEAS_ADC_THERM_CH_READBACK:
+>  	case MAX98373_R20B6_BDE_CUR_STATE_READBACK:
