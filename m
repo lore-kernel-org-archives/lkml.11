@@ -2,91 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFE1ECCA48A
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 16:56:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6291C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 16:57:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236606AbiGYQ4c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 12:56:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50488 "EHLO
+        id S236605AbiGYQ5x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 12:57:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236595AbiGYQ4a (ORCPT
+        with ESMTP id S235121AbiGYQ5w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 12:56:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 728EC63EF;
-        Mon, 25 Jul 2022 09:56:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F1CC6133A;
-        Mon, 25 Jul 2022 16:56:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DE71C341C6;
-        Mon, 25 Jul 2022 16:56:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658768189;
-        bh=tA7ufvftUZ4Si6vln+XGsiLl02n/Q0rUD3gC+QeQ6/g=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=gHg1tyKc/Cx/ozxH37SOsT7MaLsHimHxPGrgEFZIMTI1JRhygETidNKyH97IKsoVG
-         as9wPqUsK2P0LkDLB5FRSDFkMMrk0USMDiwV/uoS8dKgTj5qwP1Si2bYfwRJNg09Yd
-         JGSI5Ym/vlc9zX50BCgqT2X17Pe6M3YoZWDXC1O7EwpILWlQMraoS64v9k3dR0O7as
-         ik+ttkEehtbl6fBi0MQJZLY9C95XhXdW38GlmtTY7lMvOeyWowN6eFoZFq2SD5wNi0
-         Reo1x1ncF4+74ag+P0Mb+vAxfSoxoSetxBrVL5S2Asp88BuQZhzbpnN22PMS0CEySb
-         rSoLpXzRkTp6w==
-Received: by mail-vs1-f53.google.com with SMTP id b67so3525414vsc.1;
-        Mon, 25 Jul 2022 09:56:29 -0700 (PDT)
-X-Gm-Message-State: AJIora90/n5qBaBUgG/0OKlRoi4Px0esew/SoSEYtK1yDMcrRHN35CYv
-        duYu1UAn4rGjG1UDycQNgLifDDs1XH3tCUxsOQ==
-X-Google-Smtp-Source: AGRyM1s+RbKXY0yZYZSQLq13nI/L92i26QjHoCKT82M1PO/ve6CZT1LCzTjXhEKgoXZlXqcpFZee2SPd9TEoYycEyK4=
-X-Received: by 2002:a67:c18d:0:b0:358:5bb6:2135 with SMTP id
- h13-20020a67c18d000000b003585bb62135mr1654050vsj.53.1658768188442; Mon, 25
- Jul 2022 09:56:28 -0700 (PDT)
+        Mon, 25 Jul 2022 12:57:52 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4FEEFDEB9
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 09:57:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658768270;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=zUTQcsRLeLjivibUTZmQzNSPdRIp0K6U7bQi13E1Qj8=;
+        b=Fuv1MDgui55xaEk1+IKmHxvIVrs2WZw3fbxlI140G3FxByiFqbPcuy7Y+kxkgOb2L1nkHp
+        6jh6X5FP8cIHE74jcMHxfRQwxubEZNyUB/zyimbVkVdSbtikuK4kw5SqSfnCAUazSzKHq3
+        xTZcHzE8X5mei2ycCwpn67lYRvkuHOU=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-421-vvzqA9c5NwKGtlQgC_DWNw-1; Mon, 25 Jul 2022 12:57:49 -0400
+X-MC-Unique: vvzqA9c5NwKGtlQgC_DWNw-1
+Received: by mail-wm1-f69.google.com with SMTP id z11-20020a05600c0a0b00b003a043991610so4294917wmp.8
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 09:57:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=zUTQcsRLeLjivibUTZmQzNSPdRIp0K6U7bQi13E1Qj8=;
+        b=NTSWbn9GSufEkWYBAfHXlFmE6p3CaFXq/YsrCMHDlrWKlB40bCRIZy8iMvglUL/ck4
+         1CfbA2JBy8mLPUyh5sBVWAnNxuDWohgMpvI5qDSYczfTToYR7T4ter4GD2p2vSfwOj1U
+         Lj9xJrtGr36LQ17EjhIyyvAkKfEICiaGF2OoEVtUZNvCBDg2kESWjE+xfPWBJLbq3MGx
+         MFQg05EujFGVdKLwX5imYy5ev3X5FurHE1jnkvNpOEKRkeDxm+JFlk9pw0n9mry4sMW3
+         YE5hxxCtlbqEmvlIeNEwOBJAHKTcgG2xlbj3Q3WL0HhdIu/uRJ1G64C+n2z68htJ9OJA
+         3Wxg==
+X-Gm-Message-State: AJIora/mKy15S12PqYBiCpxfvdhzW4ipI1mXrdBsl3w0XejEKA/x4I0d
+        l6EkZIC3zi4HFjCXBh7bShv0pwUw4c3n/T19I/R0UCFNbjIHxRtQH8stRmNSWIOqDq7HnngDy2M
+        FXAUWZjt27UeA0K/XWMq3x547
+X-Received: by 2002:a5d:52c4:0:b0:21e:428a:912b with SMTP id r4-20020a5d52c4000000b0021e428a912bmr8284281wrv.395.1658768268029;
+        Mon, 25 Jul 2022 09:57:48 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vRXdoRgIcwEQFMM1Bbckaj4HHI9azZqFwkj6SGqynNPbemdAV9RYTJlHMOrSfp468++8vnzA==
+X-Received: by 2002:a5d:52c4:0:b0:21e:428a:912b with SMTP id r4-20020a5d52c4000000b0021e428a912bmr8284265wrv.395.1658768267774;
+        Mon, 25 Jul 2022 09:57:47 -0700 (PDT)
+Received: from pc-4.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
+        by smtp.gmail.com with ESMTPSA id p12-20020a05600c358c00b0039c96b97359sm16080728wmq.37.2022.07.25.09.57.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Jul 2022 09:57:47 -0700 (PDT)
+Date:   Mon, 25 Jul 2022 18:57:45 +0200
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Matthias May <matthias.may@westermo.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, nicolas.dichtel@6wind.com,
+        eyal.birger@gmail.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/2 net-next] geneve: fix TOS inheriting
+Message-ID: <20220725165745.GC18808@pc-4.home>
+References: <20220724003741.57816-1-matthias.may@westermo.com>
 MIME-Version: 1.0
-References: <20220725155955.46439-1-goriainov@ispras.ru>
-In-Reply-To: <20220725155955.46439-1-goriainov@ispras.ru>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Mon, 25 Jul 2022 10:56:17 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqLGMAx=C8hm+MD5mOfQD31Nhz=DrtBg3230q6qBMzyRog@mail.gmail.com>
-Message-ID: <CAL_JsqLGMAx=C8hm+MD5mOfQD31Nhz=DrtBg3230q6qBMzyRog@mail.gmail.com>
-Subject: Re: [PATCH] scripts/dtc: Fix memory leak in check_msg()
-To:     Stanislav Goriainov <goriainov@ispras.ru>
-Cc:     Frank Rowand <frowand.list@gmail.com>, devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        ldv-project@linuxtesting.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220724003741.57816-1-matthias.may@westermo.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 25, 2022 at 10:00 AM Stanislav Goriainov
-<goriainov@ispras.ru> wrote:
->
-> When the function check_msg() is called, memory for str is allocated
-> via xasprintf() and xasprintf_append() (as well as for file_str),
-> but is not freed anywhere later (although file_str is).
->
-> Found by Linux Verification Center (linuxtesting.org) with SVACE.
->
-> Fixes: c2e7075ca830 ("scripts/dtc: Update to upstream version v1.4.7-57-gf267e674d145")
+On Sun, Jul 24, 2022 at 02:37:39AM +0200, Matthias May wrote:
+> Is there any reason why the flowlabel should be restricted to these
+> 3 bits?
 
-scripts/dtc/ is sync'ed periodically with upstream dtc. We don't take
-patches against it. You must submit this to upstream dtc.
+It's a bug, likely a copy/paste mistake.
 
-> Signed-off-by: Stanislav Goriainov <goriainov@ispras.ru>
-> ---
->  scripts/dtc/checks.c | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/scripts/dtc/checks.c b/scripts/dtc/checks.c
-> index 781ba1129a8e..92ffc8de6a52 100644
-> --- a/scripts/dtc/checks.c
-> +++ b/scripts/dtc/checks.c
-> @@ -114,6 +114,7 @@ static inline void  PRINTF(5, 6) check_msg(struct check *c, struct dt_info *dti,
->         }
->
->         fputs(str, stderr);
-> +       free(str);
->  }
->
->  #define FAIL(c, dti, node, ...)                                                \
-> -- 2.34.1
->
+> The patch simply removes the usage of this macro, but i don't
+> know if there was a specific intention behind that.
+
+RT_TOS() is an old macro used to interprete IPv4 TOS as described in
+the obsolete RFC 1349. It's conceptually wrong to use it even in IPv4
+code, although, given the current state of the code, most of the
+existing calls have no consequence.
+
+But using RT_TOS() in IPv6 code is always a bug: IPv6 never had a "TOS"
+field to be interpreted the RFC 1349 way. There's no historical
+compatibility to worry about.
+
