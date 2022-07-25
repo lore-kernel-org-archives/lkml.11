@@ -2,102 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BC5CC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 19:42:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0E1DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 19:43:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236099AbiGYTms (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 15:42:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54560 "EHLO
+        id S234451AbiGYTnc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 15:43:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232013AbiGYTmr (ORCPT
+        with ESMTP id S232013AbiGYTnb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 15:42:47 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFEB7140DC
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 12:42:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=fB8xfMvgHCM7t/ObN6FhkrJI21/VktO8GPsKtazK7EU=; b=dbJzEm9oou0SafxUIgduHewGCM
-        aiDDJ940JHEO8P0qh5z3xWEDuBc9qqRUqKvs/63xFcJ0gZidlP7rrUyAkt+O0tMLXDToGeHZfwWjU
-        4a5IcRhO+zSvIKIzWmhPrWqM0aVU2aBlcf0iC3SJfmznzSDdzP8piptTe3zK4if8DO/njj7xiPjIP
-        d9c1ptNjEXbFjR6IkU4DjvLZz00E+2KM9LpSCQeIOaV5U8XQULWMIT9gjNo0wdo+gAod1paN8ticg
-        YXLx2nAetOQ4xnOOUoCIgX6Bjxwgn4mMfmbMNf6h+QzXu1iTfB0k5XM777+ejeKdUKp9ES66UR8gE
-        91hEb1GA==;
-Received: from 201-13-50-220.dsl.telesp.net.br ([201.13.50.220] helo=[192.168.15.109])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1oG3yP-006KdW-3E; Mon, 25 Jul 2022 21:42:37 +0200
-Message-ID: <a7589316-2a55-85f2-b665-5fe4bebf7a69@igalia.com>
-Date:   Mon, 25 Jul 2022 16:42:17 -0300
+        Mon, 25 Jul 2022 15:43:31 -0400
+X-Greylist: delayed 558 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 25 Jul 2022 12:43:30 PDT
+Received: from raptorengineering.com (mail.raptorengineering.com [23.155.224.58])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 463FA140E1
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 12:43:30 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.rptsys.com (Postfix) with ESMTP id E1E9237CDA30A2;
+        Mon, 25 Jul 2022 14:34:11 -0500 (CDT)
+Received: from mail.rptsys.com ([127.0.0.1])
+        by localhost (vali.starlink.edu [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id VnwW3Pumlutw; Mon, 25 Jul 2022 14:34:10 -0500 (CDT)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.rptsys.com (Postfix) with ESMTP id 657C637CDA309F;
+        Mon, 25 Jul 2022 14:34:10 -0500 (CDT)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.rptsys.com 657C637CDA309F
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=raptorengineering.com; s=B8E824E6-0BE2-11E6-931D-288C65937AAD;
+        t=1658777650; bh=C6eQ56WoqflhVshYvw4eSCbTOWmWQugcnRK1KwC4InQ=;
+        h=Date:From:To:Message-ID:MIME-Version;
+        b=HUXCmnoHrk+82zDVSN5TwrZtJv5I32HBsm1W/0ygtdInl+yif0P4tia7Sd5JAJRPU
+         yulkymOoGGK7dA9UI8YmyA5VSuDRN1JJjoR3zzEIZDjsweTlVG5bWsddAOn3MbNmWo
+         OfLJgjUHcP5wIl4ettt6QsLNsTiDjIz4SB4rD9wA=
+X-Virus-Scanned: amavisd-new at rptsys.com
+Received: from mail.rptsys.com ([127.0.0.1])
+        by localhost (vali.starlink.edu [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id DNoUORfc-qsk; Mon, 25 Jul 2022 14:34:10 -0500 (CDT)
+Received: from vali.starlink.edu (localhost [127.0.0.1])
+        by mail.rptsys.com (Postfix) with ESMTP id 3BA9737CDA309C;
+        Mon, 25 Jul 2022 14:34:10 -0500 (CDT)
+Date:   Mon, 25 Jul 2022 14:34:08 -0500 (CDT)
+From:   Timothy Pearson <tpearson@raptorengineering.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Michael Ellerman <mpe@ellerman.id.au>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        Alex Deucher <alexdeucher@gmail.com>,
+        amd-gfx <amd-gfx@lists.freedesktop.org>, linux@roeck-us.net,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Dan =?utf-8?Q?Hor=C3=A1k?= <dan@danny.cz>
+Message-ID: <1446417444.13111032.1658777648586.JavaMail.zimbra@raptorengineeringinc.com>
+In-Reply-To: <CAHk-=wihON4Ytte5zLHWNQtTapUvCpkToxY06OjX-_2B+Gq6Gg@mail.gmail.com>
+References: <20220725123918.1903255-1-mpe@ellerman.id.au> <CAHk-=wihON4Ytte5zLHWNQtTapUvCpkToxY06OjX-_2B+Gq6Gg@mail.gmail.com>
+Subject: Re: [PATCH] drm/amdgpu: Re-enable DCN for 64-bit powerpc
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 1/2] drm/amd/display: change variables type
-Content-Language: en-US
-To:     Magali Lemes <magalilemes00@gmail.com>
-Cc:     siqueirajordao@riseup.net, harry.wentland@amd.com,
-        Xinhui.Pan@amd.com, christian.koenig@amd.com,
-        alexander.deucher@amd.com, Rodrigo.Siqueira@amd.com,
-        tales.aparecida@gmail.com, linux-kernel@vger.kernel.org,
-        amd-gfx@lists.freedesktop.org, mwen@igalia.com,
-        mairacanal@riseup.net, dri-devel@lists.freedesktop.org,
-        isabbasso@riseup.net, andrealmeid@riseup.net, sunpeng.li@amd.com,
-        airlied@linux.ie, daniel@ffwll.ch
-References: <20220725181559.250030-1-magalilemes00@gmail.com>
-From:   =?UTF-8?Q?Andr=c3=a9_Almeida?= <andrealmeid@igalia.com>
-In-Reply-To: <20220725181559.250030-1-magalilemes00@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Mailer: Zimbra 8.5.0_GA_3042 (ZimbraWebClient - GC103 (Linux)/8.5.0_GA_3042)
+Thread-Topic: drm/amdgpu: Re-enable DCN for 64-bit powerpc
+Thread-Index: bYJinp50nUzyW/1gBugq0G+Et27Ikw==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Magali,
 
-Às 15:15 de 25/07/22, Magali Lemes escreveu:
-> As "dcn3_15_soc" and "dcn3_16_soc" are of type "struct
-> _vcs_dpi_soc_bounding_box_st", change their types accordingly.
-> 
 
-I can see that indeed this type change sense for those variables, but
-isn't a bit strange that the type was wrong in the first place? I wonder
-if this variable is even used, given that it would very likely throw a
-compiler error when using the wrong type and trying to access struct
-members that aren't defined.
+----- Original Message -----
+> From: "Linus Torvalds" <torvalds@linux-foundation.org>
+> To: "Michael Ellerman" <mpe@ellerman.id.au>
+> Cc: "linuxppc-dev" <linuxppc-dev@lists.ozlabs.org>, "Alex Deucher" <alexd=
+eucher@gmail.com>, "amd-gfx"
+> <amd-gfx@lists.freedesktop.org>, linux@roeck-us.net, "linux-kernel" <linu=
+x-kernel@vger.kernel.org>, "Dan Hor=C3=A1k"
+> <dan@danny.cz>, "Timothy Pearson" <tpearson@raptorengineering.com>
+> Sent: Monday, July 25, 2022 2:19:57 PM
+> Subject: Re: [PATCH] drm/amdgpu: Re-enable DCN for 64-bit powerpc
 
-> Signed-off-by: Magali Lemes <magalilemes00@gmail.com>
-> ---
->  drivers/gpu/drm/amd/display/dc/dcn315/dcn315_resource.h | 2 +-
->  drivers/gpu/drm/amd/display/dc/dcn316/dcn316_resource.h | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/amd/display/dc/dcn315/dcn315_resource.h b/drivers/gpu/drm/amd/display/dc/dcn315/dcn315_resource.h
-> index 39929fa67a51..45276317c057 100644
-> --- a/drivers/gpu/drm/amd/display/dc/dcn315/dcn315_resource.h
-> +++ b/drivers/gpu/drm/amd/display/dc/dcn315/dcn315_resource.h
-> @@ -32,7 +32,7 @@
->  	container_of(pool, struct dcn315_resource_pool, base)
->  
->  extern struct _vcs_dpi_ip_params_st dcn3_15_ip;
-> -extern struct _vcs_dpi_ip_params_st dcn3_15_soc;
-> +extern struct _vcs_dpi_soc_bounding_box_st dcn3_15_soc;
->  
->  struct dcn315_resource_pool {
->  	struct resource_pool base;
-> diff --git a/drivers/gpu/drm/amd/display/dc/dcn316/dcn316_resource.h b/drivers/gpu/drm/amd/display/dc/dcn316/dcn316_resource.h
-> index 0dc5a6c13ae7..d2234aac5449 100644
-> --- a/drivers/gpu/drm/amd/display/dc/dcn316/dcn316_resource.h
-> +++ b/drivers/gpu/drm/amd/display/dc/dcn316/dcn316_resource.h
-> @@ -32,7 +32,7 @@
->  	container_of(pool, struct dcn316_resource_pool, base)
->  
->  extern struct _vcs_dpi_ip_params_st dcn3_16_ip;
-> -extern struct _vcs_dpi_ip_params_st dcn3_16_soc;
-> +extern struct _vcs_dpi_soc_bounding_box_st dcn3_16_soc;
->  
->  struct dcn316_resource_pool {
->  	struct resource_pool base;
+> On Mon, Jul 25, 2022 at 5:39 AM Michael Ellerman <mpe@ellerman.id.au> wro=
+te:
+>>
+>> Further digging shows that the build failures only occur with compilers
+>> that default to 64-bit long double.
+>=20
+> Where the heck do we have 'long double' things anywhere in the kernel?
+>=20
+> I tried to grep for it, and failed miserably. I found some constants
+> that would qualify, but they were in the v4l colorspaces-details.rst
+> doc file.
+>=20
+> Strange.
+
+We don't, at least not that I can see.  The affected code uses standard dou=
+bles.
+
+What I'm wondering is if the compiler is getting confused between standard =
+and long doubles when they are both the same bit length...
