@@ -2,104 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C002DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 23:11:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55BAAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 23:14:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231622AbiGYXLT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 19:11:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43240 "EHLO
+        id S231181AbiGYXOP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 19:14:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229800AbiGYXLR (ORCPT
+        with ESMTP id S231604AbiGYXOJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 19:11:17 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8B0BBF68;
-        Mon, 25 Jul 2022 16:11:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658790676; x=1690326676;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=sOZHgtI0Aszjfo0V/PNPgA+M8VlOJa/SdqFbd4pmrWs=;
-  b=X0p7t2nhD3NYn/p3oLSh7vzt5DXUzS94VBXfvp1ZLbY91QCWu+3bNO6H
-   snGkD9+CEweolomAGIR76hYJ05pAHWksP3Ah/oTRW/YAE3/OCMjccilDg
-   PuhMV++mszSR+9NJ6z0LfT6pjis0OuzwEQIzx1SowYZOsMhJq1oG7/nPW
-   twuntO8J0sbtOP7hU5hOsX+GarrpaCRbNspZlT5Urnh8e+ChwedcZ37vR
-   4X8cM1n17c1WLgw5bOo8ZuANo1KDJKxoPPV/aVrRkhaZmZ1qfWQJINndT
-   kGGIhWKrHnQOuwPopxrNvgMgduoZgukQlaI05SWOSAquK/RxBYUt97Xus
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10419"; a="313570583"
-X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
-   d="scan'208";a="313570583"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2022 16:11:16 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
-   d="scan'208";a="927092344"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 25 Jul 2022 16:11:13 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oG7EH-0005eH-0v;
-        Mon, 25 Jul 2022 23:11:13 +0000
-Date:   Tue, 26 Jul 2022 07:10:20 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Bhupesh Sharma <bhupesh.sharma@linaro.org>,
-        linux-pm@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, bhupesh.sharma@linaro.org,
-        bhupesh.linux@gmail.com, linux-kernel@vger.kernel.org,
-        bjorn.andersson@linaro.org, konrad.dybcio@somainline.org,
-        linux-arm-msm@vger.kernel.org, daniel.lezcano@linaro.org,
-        robh+dt@kernel.org, rafael@kernel.org,
-        Amit Kucheria <amitk@kernel.org>,
-        Thara Gopinath <thara.gopinath@gmail.com>
-Subject: Re: [PATCH v2 3/5] thermal: qcom: tsens: Add driver support for
- re-initialization quirk
-Message-ID: <202207260755.tUajnfB4-lkp@intel.com>
-References: <20220724122424.2509021-4-bhupesh.sharma@linaro.org>
+        Mon, 25 Jul 2022 19:14:09 -0400
+Received: from mail-oa1-f47.google.com (mail-oa1-f47.google.com [209.85.160.47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 834FB12ADC;
+        Mon, 25 Jul 2022 16:14:08 -0700 (PDT)
+Received: by mail-oa1-f47.google.com with SMTP id 586e51a60fabf-10cf9f5b500so16719214fac.2;
+        Mon, 25 Jul 2022 16:14:08 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=IT9a0wSsGnU4XfNa0zlbA+WkW9Dbub1UMbz6KfLI6MY=;
+        b=pj9o3XWsClJo3/4Wppy2MdfichiXBaaaTyk2IebGc+8yQjxtS9pu47MRr0Hp/d9kDt
+         mAl9WyvUnD/jfqDFHEj6uOskHHjXGNm1rbKUdtHi0DY9Rp2q6g6LHbRqzNh6PYwY81mS
+         4+rVG7ZUIgpRJeVeXHwpCrA0Y6tD3rGJ0jIJ+prVHCym53emCzT08JXSvfoMfa89LFhs
+         Asy/Kt1xJfFiwYSwESc4nKH1jHGrnlQHlEX5XPzn4BhVhZvg8zwJ/ZIytfk4Dk3etv7W
+         f/3ylCCmcM64bJgC6vvQV+LGqe6ha6v0m+mGidxtTw3EtdffVanvTNVaaSsk/4MM+ME4
+         5jRQ==
+X-Gm-Message-State: AJIora9eDKyMIR3rZrAljGzTUmNdKUtI8RrD+WtrRmCX9v5/mAS2IUz+
+        DbHxv55Tlavg1aMxkKxwNg==
+X-Google-Smtp-Source: AGRyM1sOEaENPiaKZi6zm2YQdCZcWqFgTUzFmo56Scl3zxQjWiAN/UML1fly4p3EtWEnkVWhfcKP5g==
+X-Received: by 2002:a05:6870:9a1d:b0:10d:c9c5:e16a with SMTP id fo29-20020a0568709a1d00b0010dc9c5e16amr7700750oab.135.1658790847779;
+        Mon, 25 Jul 2022 16:14:07 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id 62-20020a4a1541000000b0041b49c19a00sm5359166oon.18.2022.07.25.16.14.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Jul 2022 16:14:07 -0700 (PDT)
+Received: (nullmailer pid 2932291 invoked by uid 1000);
+        Mon, 25 Jul 2022 23:14:05 -0000
+Date:   Mon, 25 Jul 2022 17:14:05 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Marek Belisko <marek@goldelico.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Pratyush Yadav <p.yadav@ti.com>, devicetree@vger.kernel.org,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        linux-spi@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
+        David Airlie <airlied@linux.ie>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Tomi Valkeinen <tomi.valkeinen@ti.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Mark Brown <broonie@kernel.org>,
+        dri-devel@lists.freedesktop.org,
+        "H. Nikolaus Schaller" <hns@goldelico.com>
+Subject: Re: [PATCH v2 1/1] spi/panel: dt-bindings: drop CPHA and CPOL from
+ common properties
+Message-ID: <20220725231405.GA2931469-robh@kernel.org>
+References: <20220722191539.90641-1-krzysztof.kozlowski@linaro.org>
+ <20220722191539.90641-2-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220724122424.2509021-4-bhupesh.sharma@linaro.org>
+In-Reply-To: <20220722191539.90641-2-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Bhupesh,
+On Fri, 22 Jul 2022 21:15:39 +0200, Krzysztof Kozlowski wrote:
+> The spi-cpha and spi-cpol properties are device specific and should be
+> accepted only if device really needs them.  Drop them from common
+> spi-peripheral-props.yaml schema, mention in few panel drivers which use
+> them and include instead in the SPI controller bindings.  The controller
+> bindings will provide CPHA/CPOL type validation and one place for
+> description.  Each device schema must list the properties if they are
+> applicable.
+> 
+> Suggested-by: Jonathan Cameron <jic23@kernel.org>
+> Suggested-by: Rob Herring <robh@kernel.org>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>  .../bindings/display/panel/lgphilips,lb035q02.yaml    |  3 +++
+>  .../bindings/display/panel/samsung,ld9040.yaml        |  3 +++
+>  .../bindings/display/panel/sitronix,st7789v.yaml      |  3 +++
+>  .../devicetree/bindings/display/panel/tpo,td.yaml     |  3 +++
+>  .../devicetree/bindings/spi/spi-controller.yaml       | 11 +++++++++++
+>  .../devicetree/bindings/spi/spi-peripheral-props.yaml | 10 ----------
+>  6 files changed, 23 insertions(+), 10 deletions(-)
+> 
 
-Thank you for the patch! Yet something to improve:
+Reviewed-by: Rob Herring <robh@kernel.org>
 
-[auto build test ERROR on rafael-pm/thermal]
-[also build test ERROR on linus/master v5.19-rc8 next-20220725]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Bhupesh-Sharma/Add-support-for-tsens-controller-reinit-via-trustzone/20220724-202546
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git thermal
-config: ia64-randconfig-r005-20220724 (https://download.01.org/0day-ci/archive/20220726/202207260755.tUajnfB4-lkp@intel.com/config)
-compiler: ia64-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/2356630fadc0a622264bf292b6930f8c728b0709
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Bhupesh-Sharma/Add-support-for-tsens-controller-reinit-via-trustzone/20220724-202546
-        git checkout 2356630fadc0a622264bf292b6930f8c728b0709
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=ia64 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   ia64-linux-ld: drivers/thermal/qcom/tsens.o: in function `tsens_probe':
->> tsens.c:(.text+0x6d2): undefined reference to `qcom_scm_is_available'
-   ia64-linux-ld: drivers/thermal/qcom/tsens.o: in function `tsens_health_check_and_reinit.constprop.0':
->> tsens.c:(.text+0x10c2): undefined reference to `qcom_scm_tsens_reinit'
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Unless Mark doesn't want to pick this up.
