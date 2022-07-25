@@ -2,98 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D25CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 01:03:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73A35C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 01:06:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231172AbiGYBC7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 21:02:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34406 "EHLO
+        id S230117AbiGYBGj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 21:06:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbiGYBC6 (ORCPT
+        with ESMTP id S229437AbiGYBGh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 21:02:58 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94D1E9FCF;
-        Sun, 24 Jul 2022 18:02:54 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Lrhbw1tl0z4xD0;
-        Mon, 25 Jul 2022 11:02:52 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1658710972;
-        bh=xfEOERNDo1y78gzbb41CwS+nnW2OQPeiP9gx+SiTJl8=;
-        h=Date:From:To:Cc:Subject:From;
-        b=HbipA9aN4LsE1W4mLHLwSoDoZ93S9qulibjTtuHb/tg0pUhBKdvhyLqpgryJxYKYL
-         kHob/liqzNMMQzEWc26FRl71jA30YBL/IGu2IxPdwJHLwzfHpc0nOj2nQwkV8BonHD
-         h8VAWK4o6XZZLPKAoa1OZkHSCpRYgqKSA2OkB/Ify1TrCC3Z4ow7JeNCFnbo+WPn/E
-         n0uXaUMdEROcmZLvRyYKX0Lhhige/EGpFnqnV5d+rALvbJlSam5PpSXz5Ug88Fmvq3
-         eeQ+AQnd+NKZH3Xyx3rLjMfRsmXYSeD5ptgChKSBLpNVY4l33se8HTbCzeXByMUaXd
-         YSMlFy7aVggBQ==
-Date:   Mon, 25 Jul 2022 10:40:35 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Jiri Kosina <jikos@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Cc:     Aashish Sharma <shraash@google.com>,
-        "Daniel J. Ogorchock" <djogorchock@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build failure after merge of the hid tree
-Message-ID: <20220725104035.15c2e506@canb.auug.org.au>
-MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/7aL2RUTZ9Y_UU8Kn98AtOq7";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+        Sun, 24 Jul 2022 21:06:37 -0400
+Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com [209.85.210.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0CB89FD6;
+        Sun, 24 Jul 2022 18:06:36 -0700 (PDT)
+Received: by mail-ot1-f42.google.com with SMTP id g20-20020a9d6a14000000b0061c84e679f5so7670254otn.2;
+        Sun, 24 Jul 2022 18:06:36 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=QNCEP/Jd9p9U+kHeTNbZg9vzuQ68V1YM3OnqLNp9aiY=;
+        b=ESlvsy5UyFcNEZ/mdB/h29qdxZNvN5FPQ08G0mOwYmlycN6b9ZFFd97Ewud5LdNYzy
+         Y8hiFpKTj5/KzojzmLCh2RtTIdXXt5pZaflVFt0cgsxu2sskoCBwaXXO9IlQlNC1qv4i
+         z2hi5cvpBNm4DnqZaxqXDiOWMoL0QfQdWQ6Urjhe9CiVqSt+Kw2q3tySPbGDdssROL10
+         kW10MdgaoY35liZUB8rvG1PqV886d5XzusIIhmU9F9cKgNhnsRejUatsXkfu7JP4arSH
+         QB2QSnX3KI15//FX1MNxzs4UninsTqUTQhnjDP2O0NdHoQG8sPEfU9o1mjfud45G5HvW
+         /a4w==
+X-Gm-Message-State: AJIora/RLb+3SsUJPkXxDfiTcvi/v7rdmLqMj/HNqPct/MBkfMXElJ9B
+        uRqwcDujQbvIyOcCVw5Xog==
+X-Google-Smtp-Source: AGRyM1s5XKEnlQ5my1VSNVGytH3TBZejI+JtkvAk9JTSOphfdgVAoaZgqQddJRx6BCAc/nkzgm5u6g==
+X-Received: by 2002:a05:6830:d0b:b0:61c:1bc2:fbc0 with SMTP id bu11-20020a0568300d0b00b0061c1bc2fbc0mr3760368otb.348.1658711195791;
+        Sun, 24 Jul 2022 18:06:35 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id t21-20020a056870f21500b0010dc461410bsm3389440oao.38.2022.07.24.18.06.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 Jul 2022 18:06:35 -0700 (PDT)
+Received: (nullmailer pid 678621 invoked by uid 1000);
+        Mon, 25 Jul 2022 01:06:32 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Maximilian Luz <luzmaximilian@gmail.com>
+Cc:     Steev Klimaszewski <steev@kali.org>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        linux-arm-msm@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Shawn Guo <shawn.guo@linaro.org>, linux-efi@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+In-Reply-To: <20220723224949.1089973-5-luzmaximilian@gmail.com>
+References: <20220723224949.1089973-1-luzmaximilian@gmail.com> <20220723224949.1089973-5-luzmaximilian@gmail.com>
+Subject: Re: [PATCH 4/4] dt-bindings: firmware: Add Qualcomm UEFI Secure Application client
+Date:   Sun, 24 Jul 2022 19:06:32 -0600
+Message-Id: <1658711192.682597.678620.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/7aL2RUTZ9Y_UU8Kn98AtOq7
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Sun, 24 Jul 2022 00:49:49 +0200, Maximilian Luz wrote:
+> Add bindings for the Qualcomm Trusted Execution Environment (TrEE) UEFI
+> Secure application (uefisecapp) client.
+> 
+> Signed-off-by: Maximilian Luz <luzmaximilian@gmail.com>
+> ---
+>  .../firmware/qcom,tee-uefisecapp.yaml         | 38 +++++++++++++++++++
+>  MAINTAINERS                                   |  1 +
+>  2 files changed, 39 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/firmware/qcom,tee-uefisecapp.yaml
+> 
 
-Hi all,
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-After merging the hid tree, today's linux-next build (x86_64 allmodconfig)
-failed like this:
+yamllint warnings/errors:
 
-drivers/hid/hid-nintendo.c:1514:29: error: redefinition of 'JC_RUMBLE_ZERO_=
-AMP_PKT_CNT'
- 1514 | static const unsigned short JC_RUMBLE_ZERO_AMP_PKT_CNT =3D 5;
-      |                             ^~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/hid/hid-nintendo.c:295:29: note: previous definition of 'JC_RUMBLE_=
-ZERO_AMP_PKT_CNT' with type 'short unsigned int'
-  295 | static const unsigned short JC_RUMBLE_ZERO_AMP_PKT_CNT =3D 5;
-      |                             ^~~~~~~~~~~~~~~~~~~~~~~~~~
+dtschema/dtc warnings/errors:
+./Documentation/devicetree/bindings/firmware/qcom,tee-uefisecapp.yaml: $id: relative path/filename doesn't match actual path or filename
+	expected: http://devicetree.org/schemas/firmware/qcom,tee-uefisecapp.yaml#
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/soc/qcom/qcom,rpmh-rsc.yaml: duplicate '$id' value 'http://devicetree.org/schemas/soc/qcom/qcom,rpmh-rsc.yaml#'
+Documentation/devicetree/bindings/firmware/qcom,tee-uefisecapp.example.dtb:0:0: /example-0/firmware/scm: failed to match any schema with compatible: ['qcom,scm-sc8180x', 'qcom,scm']
+Documentation/devicetree/bindings/firmware/qcom,tee-uefisecapp.example.dtb:0:0: /example-0/firmware/scm: failed to match any schema with compatible: ['qcom,scm-sc8180x', 'qcom,scm']
+Documentation/devicetree/bindings/soc/qcom/qcom,rpmh-rsc.example.dtb:0:0: /example-0/rsc@179c0000: failed to match any schema with compatible: ['qcom,rpmh-rsc']
+Documentation/devicetree/bindings/soc/qcom/qcom,rpmh-rsc.example.dtb:0:0: /example-1/rsc@af20000: failed to match any schema with compatible: ['qcom,rpmh-rsc']
+Documentation/devicetree/bindings/soc/qcom/qcom,rpmh-rsc.example.dtb:0:0: /example-2/rsc@18200000: failed to match any schema with compatible: ['qcom,rpmh-rsc']
 
-Caused by commit
+doc reference errors (make refcheckdocs):
 
-  669abca7b767 ("HID: nintendo: Fix unused-const-variable compiler warning")
+See https://patchwork.ozlabs.org/patch/
 
-interacting with commit
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
 
-  92cdfba40155 ("HID: nintendo: fix unused const warning")
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
 
-I have used the hid tree from next-20220722 for today.
+pip3 install dtschema --upgrade
 
---=20
-Cheers,
-Stephen Rothwell
+Please check and re-submit.
 
---Sig_/7aL2RUTZ9Y_UU8Kn98AtOq7
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLd5oMACgkQAVBC80lX
-0GxLMQf/W31AAm/LuLpBtJpF7vvmp9HNYBiyY3JqfdOoLbPgKyZDlN8dR6teMqiU
-Rl5z5CmQCQ3WLtGo2DcQqyvN5MlOoXNjfjnDVHzqEb4vZR2eiNLcEywJKWkw11xG
-e43YY/gHtjrTfg8Ci/JJM5vpCMtiXMA8gdU+PUqUhpnPcmKnrRYb00rEFyP8UmVJ
-EfaKfG6MwS/6UX4DYUrcQQiWjeC4OAkW/Y3NPGkuEUSl0aNDLqa6/2IQAnbBYu9R
-34kND5ud6WVLLWXdJuQPL5P1fwuQx+h3nZM7Xalb+dhsal0uSzbU2kbe4+m5Jg93
-9fjhtRrsafELRmEupolKeZjgMJKdlw==
-=KS1z
------END PGP SIGNATURE-----
-
---Sig_/7aL2RUTZ9Y_UU8Kn98AtOq7--
