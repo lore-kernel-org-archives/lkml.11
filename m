@@ -2,96 +2,198 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B20FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 22:37:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7093DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 22:37:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237372AbiGYWhu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 18:37:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44164 "EHLO
+        id S237383AbiGYWhx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 18:37:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237357AbiGYWh2 (ORCPT
+        with ESMTP id S237345AbiGYWho (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 18:37:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C27AC25E96
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 15:37:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 523AAB81135
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 22:36:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 554D1C341CD;
-        Mon, 25 Jul 2022 22:36:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658788618;
-        bh=WTLwrkIPsf8FEgIVjgSmfxrI9GvpGImfD1cmaawndOQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=m3kOtIK4uopUXtPH2SH/KNXRpbsTQ/RF0B5SBznEhsqZllj3MxlsP+CMJwho7O0Wl
-         TxL3mZdV8Qw+rCJIhQMShP7OmuYbUs1Ee6u78VoVOy0Mw9tkm18xhnKl60zv4IsuZ2
-         xYj/kLCZy/i9vhtyTD2AxHuiEYGpmj9QE8quUeUWoiGjOvquoHpKKOdGggvxLdDaxG
-         rfDAMhX1pmlijmzdpVr8Tk9hlPnOAD3TEKNpfRqjlObqqUNuT21rNmfOv5LrQDHLLe
-         L5IvHruk+TuXgHk1TbspN/z5o64r62N8wOSS0xJCLaM9U6fLBcOiBzepiq33DZjW4a
-         +UEfmPazMo1LQ==
-Date:   Mon, 25 Jul 2022 15:36:55 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     kernel test robot <lkp@intel.com>
-Cc:     Simon Trimmer <simont@opensource.cirrus.com>, llvm@lists.linux.dev,
-        kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Mark Brown <broonie@kernel.org>
-Subject: Re: sound/soc/codecs/wm_adsp.c:1490:32: warning: taking address of
- packed member 'name' of class or structure 'wm_adsp_host_buf_coeff_v1' may
- result in an unaligned pointer value
-Message-ID: <Yt8bB+lAoGM2Jmq0@dev-arch.thelio-3990X>
-References: <202207260648.ERQjXCRB-lkp@intel.com>
- <Yt8aZ3OZ7lJBgf1V@dev-arch.thelio-3990X>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yt8aZ3OZ7lJBgf1V@dev-arch.thelio-3990X>
+        Mon, 25 Jul 2022 18:37:44 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0D4325E9F
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 15:37:01 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id f85-20020a253858000000b00670a44473e2so9493968yba.9
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 15:37:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=Uhp7YkSNg1cF2I0XyjzHixlgwvVrFKwEv/GHhnbsJYI=;
+        b=mhMaZ/XOd6PMRNLW2vXmz1bJkZ58LjS+rUdyFpIIoFNpSKOcMB/o+QSRnCGX2NV0+H
+         pF1q8n0Tien036n/Kdgnhh4+7jvEH1tM4IHA9n6OXUoPb9kU89wGmWmdb/zOG8TVC1Px
+         /UACgQC6WYaTKT+cwNyJyLHqHK0o6QMJ55h0X2pJSZsthPq+Hv6fhe+824b9sVLoDRr3
+         kVoRg/npXu358qPw7cdSX3dgZ5g2y9upTwKv+WzrOacJXfyl7vbCBYMNdvoDlUX8HuFl
+         ipqABHhM8Xg0tXYs0OIkmAgmT+MCobzV7LwDN3CBZgIzg+IHPengHy/kCjmkUvGI8pl2
+         iQSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=Uhp7YkSNg1cF2I0XyjzHixlgwvVrFKwEv/GHhnbsJYI=;
+        b=GZYdCe+fEVc8wO8gMH0rnAc6UZEVVGlkZ1kolSpulPrIdYYPIECSIEOqFX6/9RVm65
+         UTct0wjmUbgK9g6jpsJIC0xXgifdTWN6dhKe6D4Aptq/9a8cVf8+VPUjVYHyBztzddZw
+         1UxaoNSSJGjoSA5JPlvrxT+8SgOT3sMHMn8gwzs4XDPVXfABeHrs8oqo65oGgXr6uS8S
+         NXr1wjL+48IuQve3aC0o3ZOCMB1hHNE+HNyA111KC9isXNdIIUk8L0vL8OcOTRk+Mcuk
+         1DaoZlOgLSlQScCMDYit4L5N53ri1tKLjmQBhzhEzw4baTEcJGtgvo9hTDrl4reCwC8Y
+         X8jg==
+X-Gm-Message-State: AJIora+P1QqSY5KTh8gbudCHLyxUg0tgc3LkXT5fApHGNu6sxbtZLFcD
+        UJ0L7WPSSTG505EekrIGmUDVAp/9A5gp
+X-Google-Smtp-Source: AGRyM1sTqk2hgjaj8+V1Yqkwwud4HrMqg4XhTqPTeSmPiKMNzccHK2jhP/jSii+HLMXRJkymZ6nI/6WeifKg
+X-Received: from irogers.svl.corp.google.com ([2620:15c:2d4:203:7fbf:ee64:7f7:3631])
+ (user=irogers job=sendgmr) by 2002:a25:514:0:b0:671:6bc3:49c5 with SMTP id
+ 20-20020a250514000000b006716bc349c5mr1545372ybf.176.1658788621037; Mon, 25
+ Jul 2022 15:37:01 -0700 (PDT)
+Date:   Mon, 25 Jul 2022 15:36:07 -0700
+In-Reply-To: <20220725223633.2301737-1-irogers@google.com>
+Message-Id: <20220725223633.2301737-7-irogers@google.com>
+Mime-Version: 1.0
+References: <20220725223633.2301737-1-irogers@google.com>
+X-Mailer: git-send-email 2.37.1.359.gd136c6c3e2-goog
+Subject: [PATCH v2 06/32] perf vendor events: Update bonnell mapfile.csv
+From:   Ian Rogers <irogers@google.com>
+To:     perry.taylor@intel.com, caleb.biggers@intel.com,
+        kshipra.bopardikar@intel.com,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        James Clark <james.clark@arm.com>,
+        John Garry <john.garry@huawei.com>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        Sedat Dilek <sedat.dilek@gmail.com>
+Cc:     Stephane Eranian <eranian@google.com>,
+        Ian Rogers <irogers@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 25, 2022 at 03:34:15PM -0700, Nathan Chancellor wrote:
-> On Tue, Jul 26, 2022 at 06:29:46AM +0800, kernel test robot wrote:
-> > tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-> > head:   e0dccc3b76fb35bb257b4118367a883073d7390e
-> > commit: 353bb6a5f2ac495f289b7c7a528c7d134c9a8ec4 ASoC: wm_adsp: Compressed stream DSP memory structs should be __packed
-> > date:   5 months ago
-> > config: arm-randconfig-r013-20220724 (https://download.01.org/0day-ci/archive/20220726/202207260648.ERQjXCRB-lkp@intel.com/config)
-> > compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 9e88cbcc403bdf82f29259ad60ff60a8fc4434a1)
-> > reproduce (this is a W=1 build):
-> >         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-> >         chmod +x ~/bin/make.cross
-> >         # install arm cross compiling tool for clang build
-> >         # apt-get install binutils-arm-linux-gnueabi
-> >         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=353bb6a5f2ac495f289b7c7a528c7d134c9a8ec4
-> >         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-> >         git fetch --no-tags linus master
-> >         git checkout 353bb6a5f2ac495f289b7c7a528c7d134c9a8ec4
-> >         # save the config file
-> >         mkdir build_dir && cp config build_dir/.config
-> >         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash sound/soc/codecs/
-> > 
-> > If you fix the issue, kindly add following tag where applicable
-> > Reported-by: kernel test robot <lkp@intel.com>
-> > 
-> > All warnings (new ones prefixed by >>):
-> > 
-> > >> sound/soc/codecs/wm_adsp.c:1490:32: warning: taking address of packed member 'name' of class or structure 'wm_adsp_host_buf_coeff_v1' may result in an unaligned pointer value [-Waddress-of-packed-member]
-> >            cs_dsp_remove_padding((u32 *)&coeff_v1.name, ARRAY_SIZE(coeff_v1.name));
-> >                                          ^~~~~~~~~~~~~
-> >    1 warning generated.
-> 
-> This warning is disabled in the main Makefile but a recent change in
-> LLVM has caused that check to fail, sorry for the noise :(
-> 
-> https://github.com/ClangBuiltLinux/linux/issues/1674
+Align end of file whitespace with what is generated by:
+https://github.com/intel/event-converter-for-linux-perf/blob/master/download_and_gen.py
 
-Ah nevermind, looks like Fangrui already worked around this, it should
-be resolved on the next LLVM uprev:
+Fold the mapfile.csv entries together with a more complex regular
+expression. This will reduce the pmu-events.c table size.
+The files following this change are still at v4.
 
-https://github.com/llvm/llvm-project/commit/1d23f6c5a4f6ebb101c282f8f506588fe4d9e92f
+Signed-off-by: Ian Rogers <irogers@google.com>
+---
+ tools/perf/pmu-events/arch/x86/bonnell/cache.json          | 2 +-
+ tools/perf/pmu-events/arch/x86/bonnell/floating-point.json | 2 +-
+ tools/perf/pmu-events/arch/x86/bonnell/frontend.json       | 2 +-
+ tools/perf/pmu-events/arch/x86/bonnell/memory.json         | 2 +-
+ tools/perf/pmu-events/arch/x86/bonnell/other.json          | 2 +-
+ tools/perf/pmu-events/arch/x86/bonnell/pipeline.json       | 2 +-
+ tools/perf/pmu-events/arch/x86/bonnell/virtual-memory.json | 2 +-
+ tools/perf/pmu-events/arch/x86/mapfile.csv                 | 6 +-----
+ 8 files changed, 8 insertions(+), 12 deletions(-)
 
-Cheers,
-Nathan
+diff --git a/tools/perf/pmu-events/arch/x86/bonnell/cache.json b/tools/perf/pmu-events/arch/x86/bonnell/cache.json
+index 71653bfe7093..86582bb8aa39 100644
+--- a/tools/perf/pmu-events/arch/x86/bonnell/cache.json
++++ b/tools/perf/pmu-events/arch/x86/bonnell/cache.json
+@@ -743,4 +743,4 @@
+         "SampleAfterValue": "10000",
+         "UMask": "0x2"
+     }
+-]
+\ No newline at end of file
++]
+diff --git a/tools/perf/pmu-events/arch/x86/bonnell/floating-point.json b/tools/perf/pmu-events/arch/x86/bonnell/floating-point.json
+index f8055ff47f19..1fa347d07c98 100644
+--- a/tools/perf/pmu-events/arch/x86/bonnell/floating-point.json
++++ b/tools/perf/pmu-events/arch/x86/bonnell/floating-point.json
+@@ -258,4 +258,4 @@
+         "SampleAfterValue": "2000000",
+         "UMask": "0x2"
+     }
+-]
+\ No newline at end of file
++]
+diff --git a/tools/perf/pmu-events/arch/x86/bonnell/frontend.json b/tools/perf/pmu-events/arch/x86/bonnell/frontend.json
+index e852eb2cc878..21fe5fe229aa 100644
+--- a/tools/perf/pmu-events/arch/x86/bonnell/frontend.json
++++ b/tools/perf/pmu-events/arch/x86/bonnell/frontend.json
+@@ -88,4 +88,4 @@
+         "SampleAfterValue": "2000000",
+         "UMask": "0x1"
+     }
+-]
+\ No newline at end of file
++]
+diff --git a/tools/perf/pmu-events/arch/x86/bonnell/memory.json b/tools/perf/pmu-events/arch/x86/bonnell/memory.json
+index 2aa4c41f528e..f8b45b6fb4d3 100644
+--- a/tools/perf/pmu-events/arch/x86/bonnell/memory.json
++++ b/tools/perf/pmu-events/arch/x86/bonnell/memory.json
+@@ -151,4 +151,4 @@
+         "SampleAfterValue": "200000",
+         "UMask": "0x86"
+     }
+-]
+\ No newline at end of file
++]
+diff --git a/tools/perf/pmu-events/arch/x86/bonnell/other.json b/tools/perf/pmu-events/arch/x86/bonnell/other.json
+index 114c062e7e96..e0bdcfbfa9dc 100644
+--- a/tools/perf/pmu-events/arch/x86/bonnell/other.json
++++ b/tools/perf/pmu-events/arch/x86/bonnell/other.json
+@@ -447,4 +447,4 @@
+         "SampleAfterValue": "200000",
+         "UMask": "0xc0"
+     }
+-]
+\ No newline at end of file
++]
+diff --git a/tools/perf/pmu-events/arch/x86/bonnell/pipeline.json b/tools/perf/pmu-events/arch/x86/bonnell/pipeline.json
+index 896b738e59b6..f5123c99a7ba 100644
+--- a/tools/perf/pmu-events/arch/x86/bonnell/pipeline.json
++++ b/tools/perf/pmu-events/arch/x86/bonnell/pipeline.json
+@@ -353,4 +353,4 @@
+         "SampleAfterValue": "2000000",
+         "UMask": "0x10"
+     }
+-]
+\ No newline at end of file
++]
+diff --git a/tools/perf/pmu-events/arch/x86/bonnell/virtual-memory.json b/tools/perf/pmu-events/arch/x86/bonnell/virtual-memory.json
+index c2363b8e61b4..e8512c585572 100644
+--- a/tools/perf/pmu-events/arch/x86/bonnell/virtual-memory.json
++++ b/tools/perf/pmu-events/arch/x86/bonnell/virtual-memory.json
+@@ -121,4 +121,4 @@
+         "SampleAfterValue": "200000",
+         "UMask": "0x3"
+     }
+-]
+\ No newline at end of file
++]
+diff --git a/tools/perf/pmu-events/arch/x86/mapfile.csv b/tools/perf/pmu-events/arch/x86/mapfile.csv
+index 1fe376b3624d..d3c0cc6eff8c 100644
+--- a/tools/perf/pmu-events/arch/x86/mapfile.csv
++++ b/tools/perf/pmu-events/arch/x86/mapfile.csv
+@@ -1,13 +1,9 @@
+ Family-model,Version,Filename,EventType
+ GenuineIntel-6-9[7A],v1.13,alderlake,core
++GenuineIntel-6-(1C|26|27|35|36),v4,bonnell,core
+ GenuineIntel-6-(3D|47),v26,broadwell,core
+ GenuineIntel-6-56,v23,broadwellde,core
+ GenuineIntel-6-4F,v19,broadwellx,core
+-GenuineIntel-6-1C,v4,bonnell,core
+-GenuineIntel-6-26,v4,bonnell,core
+-GenuineIntel-6-27,v4,bonnell,core
+-GenuineIntel-6-36,v4,bonnell,core
+-GenuineIntel-6-35,v4,bonnell,core
+ GenuineIntel-6-5C,v8,goldmont,core
+ GenuineIntel-6-7A,v1,goldmontplus,core
+ GenuineIntel-6-3C,v24,haswell,core
+-- 
+2.37.1.359.gd136c6c3e2-goog
+
