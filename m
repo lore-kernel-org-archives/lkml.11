@@ -2,76 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 095E9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 23:32:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B5B9C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 23:33:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233840AbiGYXct (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 19:32:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56998 "EHLO
+        id S237256AbiGYXdJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 19:33:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237014AbiGYXco (ORCPT
+        with ESMTP id S236745AbiGYXdF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 19:32:44 -0400
-Received: from mail-oi1-f171.google.com (mail-oi1-f171.google.com [209.85.167.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EAC326AF2;
-        Mon, 25 Jul 2022 16:32:41 -0700 (PDT)
-Received: by mail-oi1-f171.google.com with SMTP id j70so15319020oih.10;
-        Mon, 25 Jul 2022 16:32:41 -0700 (PDT)
+        Mon, 25 Jul 2022 19:33:05 -0400
+Received: from mail-oi1-f172.google.com (mail-oi1-f172.google.com [209.85.167.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03CEE26AE6;
+        Mon, 25 Jul 2022 16:33:05 -0700 (PDT)
+Received: by mail-oi1-f172.google.com with SMTP id s204so15298256oif.5;
+        Mon, 25 Jul 2022 16:33:04 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:content-transfer-encoding
          :in-reply-to;
-        bh=m42VKEi6vfilBIhiiPuyGWZwKs1BezZsmmSu0W28oqo=;
-        b=obiYHIE2goA84LRuK/3Y3ESj/uZpImnMZdxosUpzG2OiQSMKXbixHsN7gUdg0ZiHhQ
-         fSNdA3A5vAY+FD25OoGDorXD+XzAKhv1roAhM0QQkEYN4pl66j5c9IXnnfat+NoePGw9
-         yg8OZqyEuyQgPs8r2QqbYYEDEYxSz1eO4GwnYXqjMQ02gUebMBBOkdrdsPtW3Gmu/BG9
-         6bLIM+fncAqGHEAeHOvvnllsoOqTpqIsUfiz5FY1zjLs/h80cKJkh4ynjd24b+bI96d/
-         orUUQdMODZ0brI9vlDdorjV6mQlCXkGrArDvYM79Wsq9V14QFFsv+a8B0TK+f0yQ5Q/g
-         nT0Q==
-X-Gm-Message-State: AJIora+lthPnvVDb7V3vi+9xviZpVCgDfS/BvVnmEqEI+KeLQNDsaNmG
-        YE39gyMQG4dBvmoR9aF4LQ==
-X-Google-Smtp-Source: AGRyM1ssvfUPu9EZBI8aiA6OYavAGGieTHFnlufnRd235wdBKsS0sLYzFpiF3aBtFwfz3jO8ZbFnnw==
-X-Received: by 2002:aca:de42:0:b0:33a:4c62:8de1 with SMTP id v63-20020acade42000000b0033a4c628de1mr13290637oig.211.1658791960344;
-        Mon, 25 Jul 2022 16:32:40 -0700 (PDT)
+        bh=35be8RwrHUGDdl8k/ntz3JQSksF3mPF6MXbq1qdhuHU=;
+        b=4c0bPz+499WN8/wvOsb+37H3yIQZNV6aPWYFF8HNvW3PiZtiP3x5K56udw2h2k2V7Y
+         NEB3yyQqPKmwTFl1+KLbvf/NBoK23yfv0m/CHYxEj0YAPODgR5CI03TRjiEG1dC3ny1w
+         /0LVVJGEibwe+9oy/mKB61pfDgK8bR8OyXrOmZvBNp/ohK9+Do7m+xi7vxUfavT6A4E4
+         Og68FuxnYgUmBM2Ge25OqMLDVBbe5yZoDOVHhnIatp59m5NvHZGgaARYO8J/QZ04uVfA
+         sWNhnVd0mcYoQLNk/bd/AwHn3exfU22WvZmGKdrV/x0y32T18YcqtCdiZ2WA4Fji4+ef
+         LqNg==
+X-Gm-Message-State: AJIora+frBJzlU68OxJqlGHPkjRF3h+wam29PF7fzQ/0+AometbGrElJ
+        y2OZOWxlN+cKZfzvEgADGg==
+X-Google-Smtp-Source: AGRyM1tNQzJxjy2xupFgtOlnhIeZ+EZdU/HB0Xxsyad8N1nbdVc3UgpG6moPKBDToAkVZkHNcoXaaA==
+X-Received: by 2002:aca:1a17:0:b0:33a:c75f:8020 with SMTP id a23-20020aca1a17000000b0033ac75f8020mr3599344oia.179.1658791984251;
+        Mon, 25 Jul 2022 16:33:04 -0700 (PDT)
 Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id e22-20020a056870239600b0010c2d339ea6sm6596152oap.23.2022.07.25.16.32.39
+        by smtp.gmail.com with ESMTPSA id i22-20020a056870221600b000f325409614sm6729181oaf.13.2022.07.25.16.33.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Jul 2022 16:32:40 -0700 (PDT)
-Received: (nullmailer pid 2963489 invoked by uid 1000);
-        Mon, 25 Jul 2022 23:32:38 -0000
-Date:   Mon, 25 Jul 2022 17:32:38 -0600
+        Mon, 25 Jul 2022 16:33:03 -0700 (PDT)
+Received: (nullmailer pid 2964216 invoked by uid 1000);
+        Mon, 25 Jul 2022 23:33:01 -0000
+Date:   Mon, 25 Jul 2022 17:33:01 -0600
 From:   Rob Herring <robh@kernel.org>
 To:     William Zhang <william.zhang@broadcom.com>
-Cc:     Linux ARM List <linux-arm-kernel@lists.infradead.org>,
-        joel.peshkin@broadcom.com, f.fainelli@gmail.com,
+Cc:     Rob Herring <robh+dt@kernel.org>, rafal@milecki.pl,
         Broadcom Kernel List <bcm-kernel-feedback-list@broadcom.com>,
-        dan.beygelman@broadcom.com, anand.gore@broadcom.com,
-        kursad.oney@broadcom.com, rafal@milecki.pl,
-        krzysztof.kozlowski@linaro.org,
+        linux-kernel@vger.kernel.org, anand.gore@broadcom.com,
+        Linux ARM List <linux-arm-kernel@lists.infradead.org>,
+        f.fainelli@gmail.com, kursad.oney@broadcom.com,
+        krzysztof.kozlowski@linaro.org, joel.peshkin@broadcom.com,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/9] arm64: dts: bcmbca: update BCM4908 board dts files
-Message-ID: <20220725233238.GA2960972-robh@kernel.org>
+        dan.beygelman@broadcom.com, devicetree@vger.kernel.org
+Subject: Re: [PATCH v2 2/9] dt-bindings: arm64: bcmbca: Update BCM4908
+ description
+Message-ID: <20220725233301.GA2964152-robh@kernel.org>
 References: <20220725055402.6013-1-william.zhang@broadcom.com>
- <20220725055402.6013-4-william.zhang@broadcom.com>
+ <20220725055402.6013-3-william.zhang@broadcom.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220725055402.6013-4-william.zhang@broadcom.com>
+In-Reply-To: <20220725055402.6013-3-william.zhang@broadcom.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jul 24, 2022 at 10:53:56PM -0700, William Zhang wrote:
-> Append "brcm,bcmbca" to compatible strings based on the new bcmbca
-> binding rule for BCM4908 family based boards. This will break drivers
-> that use the old compatible string for binding. Fortunately there is no
-> such usage in linux and u-boot.
-
-How does adding an additional compatible break things?
-
+On Sun, 24 Jul 2022 22:53:55 -0700, William Zhang wrote:
+> Append "brcm,bcmbca" to BCM4908 chip family compatible strings to
+> follow the convention of BCMBCA chip and help identifying chip family.
+> 
+> Also add a bare bone generic 4908 board compatbile string to support any
+> 4908 based board. This is useful for board bring-up test and kernel test
+> with CPU and memory related change.
 > 
 > Signed-off-by: William Zhang <william.zhang@broadcom.com>
 > Acked-by: Rafał Miłecki <rafal@milecki.pl>
@@ -80,67 +80,11 @@ How does adding an additional compatible break things?
 > 
 > Changes in v2:
 > - Add Acked-by tag
+> - Insert the 4908 generic compatible string in alphabetical order
+> - Update commit message with more details of 4908 generic board dts
 > 
->  arch/arm64/boot/dts/broadcom/bcm4908/bcm4906-netgear-r8000p.dts | 2 +-
->  .../dts/broadcom/bcm4908/bcm4906-tplink-archer-c2300-v1.dts     | 2 +-
->  arch/arm64/boot/dts/broadcom/bcm4908/bcm4908-asus-gt-ac5300.dts | 2 +-
->  .../arm64/boot/dts/broadcom/bcm4908/bcm4908-netgear-raxe500.dts | 2 +-
->  4 files changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/arch/arm64/boot/dts/broadcom/bcm4908/bcm4906-netgear-r8000p.dts b/arch/arm64/boot/dts/broadcom/bcm4908/bcm4906-netgear-r8000p.dts
-> index 2dd028438c22..d8b60575eb4f 100644
-> --- a/arch/arm64/boot/dts/broadcom/bcm4908/bcm4906-netgear-r8000p.dts
-> +++ b/arch/arm64/boot/dts/broadcom/bcm4908/bcm4906-netgear-r8000p.dts
-> @@ -7,7 +7,7 @@
->  #include "bcm4906.dtsi"
->  
->  / {
-> -	compatible = "netgear,r8000p", "brcm,bcm4906", "brcm,bcm4908";
-> +	compatible = "netgear,r8000p", "brcm,bcm4906", "brcm,bcm4908", "brcm,bcmbca";
->  	model = "Netgear R8000P";
->  
->  	memory@0 {
-> diff --git a/arch/arm64/boot/dts/broadcom/bcm4908/bcm4906-tplink-archer-c2300-v1.dts b/arch/arm64/boot/dts/broadcom/bcm4908/bcm4906-tplink-archer-c2300-v1.dts
-> index 064f7f549665..296393d4aaab 100644
-> --- a/arch/arm64/boot/dts/broadcom/bcm4908/bcm4906-tplink-archer-c2300-v1.dts
-> +++ b/arch/arm64/boot/dts/broadcom/bcm4908/bcm4906-tplink-archer-c2300-v1.dts
-> @@ -7,7 +7,7 @@
->  #include "bcm4906.dtsi"
->  
->  / {
-> -	compatible = "tplink,archer-c2300-v1", "brcm,bcm4906", "brcm,bcm4908";
-> +	compatible = "tplink,archer-c2300-v1", "brcm,bcm4906", "brcm,bcm4908", "brcm,bcmbca";
->  	model = "TP-Link Archer C2300 V1";
->  
->  	memory@0 {
-> diff --git a/arch/arm64/boot/dts/broadcom/bcm4908/bcm4908-asus-gt-ac5300.dts b/arch/arm64/boot/dts/broadcom/bcm4908/bcm4908-asus-gt-ac5300.dts
-> index 04f8524b5335..787c7ddf9102 100644
-> --- a/arch/arm64/boot/dts/broadcom/bcm4908/bcm4908-asus-gt-ac5300.dts
-> +++ b/arch/arm64/boot/dts/broadcom/bcm4908/bcm4908-asus-gt-ac5300.dts
-> @@ -6,7 +6,7 @@
->  #include "bcm4908.dtsi"
->  
->  / {
-> -	compatible = "asus,gt-ac5300", "brcm,bcm4908";
-> +	compatible = "asus,gt-ac5300", "brcm,bcm4908", "brcm,bcmbca";
->  	model = "Asus GT-AC5300";
->  
->  	memory@0 {
-> diff --git a/arch/arm64/boot/dts/broadcom/bcm4908/bcm4908-netgear-raxe500.dts b/arch/arm64/boot/dts/broadcom/bcm4908/bcm4908-netgear-raxe500.dts
-> index 3c2cf2d238b6..23b96c663239 100644
-> --- a/arch/arm64/boot/dts/broadcom/bcm4908/bcm4908-netgear-raxe500.dts
-> +++ b/arch/arm64/boot/dts/broadcom/bcm4908/bcm4908-netgear-raxe500.dts
-> @@ -3,7 +3,7 @@
->  #include "bcm4908.dtsi"
->  
->  / {
-> -	compatible = "netgear,raxe500", "brcm,bcm4908";
-> +	compatible = "netgear,raxe500", "brcm,bcm4908", "brcm,bcmbca";
->  	model = "Netgear RAXE500";
->  
->  	memory@0 {
-> -- 
-> 2.34.1
+>  Documentation/devicetree/bindings/arm/bcm/brcm,bcmbca.yaml | 4 ++++
+>  1 file changed, 4 insertions(+)
 > 
 
-
+Acked-by: Rob Herring <robh@kernel.org>
