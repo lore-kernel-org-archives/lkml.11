@@ -2,149 +2,237 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E8D4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 18:19:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9361C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 18:26:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236316AbiGYSTQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 14:19:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38086 "EHLO
+        id S230003AbiGYS0J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 14:26:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236428AbiGYSTE (ORCPT
+        with ESMTP id S230468AbiGYS0H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 14:19:04 -0400
-Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26C551F2E7
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 11:19:02 -0700 (PDT)
-Received: by mail-oi1-x22d.google.com with SMTP id w188so10268769oiw.8
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 11:19:02 -0700 (PDT)
+        Mon, 25 Jul 2022 14:26:07 -0400
+Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01CBA2734
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 11:26:05 -0700 (PDT)
+Received: by mail-qk1-x733.google.com with SMTP id n2so9331063qkk.8
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 11:26:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=eTeP+TldfgkfAXSzy1V8ncfEUb4W/6ytY8GzN1ilhyI=;
-        b=cFq5dak1CUNX5t6urCDWxM7ZYCWavLOdxJeq/nwiGtJlBWECHijpixPUXS9ponYGfv
-         nQc4cR+dW7CSGXGzFUTykxBexz5pc71MGThj6SrtttalFwxIYw1gb07pQKiG/0xK99Rr
-         UlIP9vpl7WN5po+O/Ff0fHeNoX1OY3heU8/LXKqNIz5IcgREE+zHMpt5qQfEDV0WrVQa
-         cLY7Gm3WxfCW2EvZVckkeXwZtmaFpk6Ks2yGNLelBEXeYXHfQDRvUlIOj1+c5vC8vJOL
-         Jl/zjSKp8hNB3Xat4dFSdGl+0pzkDq5CvNDqrOXgXut2vaSF86FTpvbNspETgaovvb/I
-         3iJQ==
+        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=SJ5ATteDCNi/4BY4PNgsMgCW15cD92wrz0tkARQ7vKY=;
+        b=5Il4a5zJ8mZ7Jsn+zAu4/T22MYYX/u7qfLg1Hhhzz0CR+QXMWP33kGSYR882OgzOpj
+         OVKFcnRluW7I3M2Boby0n7KYmrHRJY9hbe2IthGoVb8QE8dqPRn0yL2jlgwpnww/JzAi
+         9ZCF4+UJ4cKy5QQNJTPy8INVEWIGwPK9fti7YVVatWk2z38K0SHkYiN6o8odYEpivsuC
+         46zLsxTLQaeMxELrYNDQviXs4I482h4Abw+SPw4NfqjinXzzGFF49XmksFoLrWWwfJqz
+         GPIouRxslZ70CAnHJKQRcyU5sQztNc/x4Uc3Ji0+iaFoOXtPdUwJO6PVQ43mUJ1f+Qgu
+         Dc4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=eTeP+TldfgkfAXSzy1V8ncfEUb4W/6ytY8GzN1ilhyI=;
-        b=IrsTBclq4O12RNJYkoTt0u2Eq3n39cR+OvO6KhqgSB2DxRoDqsACOdVbpO8ua5Vcwx
-         R5AZT6ha0o8+SM00PfUXxZroR0ontKmdYSAbUECg9dGZJ3Zu/jJTqg7/r3tYToXzXIij
-         V2h5EjTqwAfSXrL6Q0xx2qHqVXk+siFzf2COE28u6Q/a8XWDQ9sATJzWR44k46EgcB42
-         e6A56maLpYjk4hQWkjU9foXMjLiBokqJq+1sNOLEY8RQ3s3QOQeoThdvT4EJziagIKVs
-         juuPqwPELfkn9zlvqFBGseXhHqimeRtGH3HRT2pquRAc/RFyjNptLmxob1SjbtyoElCu
-         cDwg==
-X-Gm-Message-State: AJIora+Rc+O/oZY3oxiyZGYX20gXevWNTD54HEZe95KYddYg55eMrpKS
-        tpy5YQN5fdfk0BOknT9K7Hw=
-X-Google-Smtp-Source: AGRyM1t/R0EJYk9zFPCsOAS7hFXsgzPJVaM9IdvIdDgvmoW/OXd6orEkxB+GNirUuPEQJSTVYncXqA==
-X-Received: by 2002:a05:6808:120a:b0:333:54f1:351 with SMTP id a10-20020a056808120a00b0033354f10351mr6192878oil.70.1658773142222;
-        Mon, 25 Jul 2022 11:19:02 -0700 (PDT)
-Received: from fedora.. ([2804:14c:bbe3:4370:95da:f07f:e927:6958])
-        by smtp.gmail.com with ESMTPSA id m42-20020a056870562a00b0010db1a8d931sm5358484oao.28.2022.07.25.11.18.57
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=SJ5ATteDCNi/4BY4PNgsMgCW15cD92wrz0tkARQ7vKY=;
+        b=0KkfsjW3Mw2cvuWs42T6/LpbZjeQFjpmvR1xHjG+mmhgoP+GsigxiYnO52f4L0qzku
+         YqmPaEZ1GXtknewxlu13R19rS/wOT52eFjYJF8mTZZS7MyeLuIh3D5tmFMvQfdA6PVW7
+         VMbEaWfjVRGQkd7d5EmwrmkMhbEitnecwu38x6BBmIArHEUGuNPTQjxBwoeIgMAqW/P+
+         Iv+Ru85zLmpiZGiOSZNLSape9xrIUM74ZjIPgLrUV+aL5f87mGBmVEVo0wv3JGKuango
+         CvmAZyc4DqXN1ODwvBv4tkn0LlNg/eOpPWprc9nwO6jotREeQ84y32KIUgscf/r4rrJ9
+         0M+Q==
+X-Gm-Message-State: AJIora/IKikH+efO0LbYu0sBEVAKpbdlgyrlk+vltDLJxysG2XHFtv6B
+        jWq4M5mAF7v86Fma/uCdO57ucA==
+X-Google-Smtp-Source: AGRyM1uTbBMqG1BBBhxK8bht1t4dDpel1BDmUmM/Bbft6w+1tQQNObfPJpb1/O+P5QI/qbOpdjwsMw==
+X-Received: by 2002:a05:620a:1478:b0:6b5:e085:9c03 with SMTP id j24-20020a05620a147800b006b5e0859c03mr10127245qkl.550.1658773564133;
+        Mon, 25 Jul 2022 11:26:04 -0700 (PDT)
+Received: from localhost ([2620:10d:c091:480::1:994f])
+        by smtp.gmail.com with ESMTPSA id c7-20020a05622a058700b0031f0cfc5645sm8255859qtb.28.2022.07.25.11.26.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Jul 2022 11:19:01 -0700 (PDT)
-From:   Magali Lemes <magalilemes00@gmail.com>
-To:     harry.wentland@amd.com, sunpeng.li@amd.com,
-        Rodrigo.Siqueira@amd.com, alexander.deucher@amd.com,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch
-Cc:     mwen@igalia.com, mairacanal@riseup.net, isabbasso@riseup.net,
-        siqueirajordao@riseup.net, andrealmeid@riseup.net,
-        tales.aparecida@gmail.com, Magali Lemes <magalilemes00@gmail.com>,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] drm/amd/display: include missing headers
-Date:   Mon, 25 Jul 2022 15:15:59 -0300
-Message-Id: <20220725181559.250030-2-magalilemes00@gmail.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220725181559.250030-1-magalilemes00@gmail.com>
-References: <20220725181559.250030-1-magalilemes00@gmail.com>
+        Mon, 25 Jul 2022 11:26:03 -0700 (PDT)
+Date:   Mon, 25 Jul 2022 14:26:02 -0400
+From:   Johannes Weiner <hannes@cmpxchg.org>
+To:     Chengming Zhou <zhouchengming@bytedance.com>
+Cc:     surenb@google.com, mingo@redhat.com, peterz@infradead.org,
+        tj@kernel.org, corbet@lwn.net, akpm@linux-foundation.org,
+        rdunlap@infradead.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, songmuchun@bytedance.com,
+        cgroups@vger.kernel.org
+Subject: Re: [PATCH 9/9] sched/psi: add PSI_IRQ to track IRQ/SOFTIRQ pressure
+Message-ID: <Yt7gOhbqYzIKyhfv@cmpxchg.org>
+References: <20220721040439.2651-1-zhouchengming@bytedance.com>
+ <20220721040439.2651-10-zhouchengming@bytedance.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220721040439.2651-10-zhouchengming@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add missing headers to solve the following warnings from sparse:
+On Thu, Jul 21, 2022 at 12:04:39PM +0800, Chengming Zhou wrote:
+> Now PSI already tracked workload pressure stall information for
+> CPU, memory and IO. Apart from these, IRQ/SOFTIRQ could have
+> obvious impact on some workload productivity, such as web service
+> workload.
+> 
+> When CONFIG_IRQ_TIME_ACCOUNTING, we can get IRQ/SOFTIRQ delta time
+> from update_rq_clock_task(), in which we can record that delta
+> to CPU curr task's cgroups as PSI_IRQ_FULL status.
+>
+> Note we don't use PSI_IRQ_SOME since IRQ/SOFTIRQ always happen in
+> the current task on the CPU, make nothing productive could run
+> even if it were runnable, so we only use PSI_IRQ_FULL.
 
-drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn20/dcn20_fpu.c:656:17: warning: symbol 'ddr4_wm_table_gs' was not declared. Should it be static?
-drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn20/dcn20_fpu.c:693:17: warning: symbol 'lpddr4_wm_table_gs' was not declared. Should it be static?
-drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn20/dcn20_fpu.c:730:17: warning: symbol 'lpddr4_wm_table_with_disabled_ppt' was not declared. Should it be static?
-drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn20/dcn20_fpu.c:767:17: warning: symbol 'ddr4_wm_table_rn' was not declared. Should it be static?
-drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn20/dcn20_fpu.c:804:17: warning: symbol 'ddr4_1R_wm_table_rn' was not declared. Should it be static?
-drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn20/dcn20_fpu.c:841:17: warning: symbol 'lpddr4_wm_table_rn' was not declared. Should it be static?
-drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn301/dcn301_fpu.c:217:17: warning: symbol 'ddr4_wm_table' was not declared. Should it be static?
-drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn301/dcn301_fpu.c:254:17: warning: symbol 'lpddr5_wm_table' was not declared. Should it be static?
-drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn31/dcn31_fpu.c:53:30: warning: symbol 'dcn3_1_ip' was not declared. Should it be static?
-drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn31/dcn31_fpu.c:117:37: warning: symbol 'dcn3_1_soc' was not declared. Should it be static?
-drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn31/dcn31_fpu.c:197:30: warning: symbol 'dcn3_15_ip' was not declared. Should it be static?
-drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn31/dcn31_fpu.c:262:37: warning: symbol 'dcn3_15_soc' was not declared. Should it be static?
-drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn31/dcn31_fpu.c:293:30: warning: symbol 'dcn3_16_ip' was not declared. Should it be static?
-drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn31/dcn31_fpu.c:358:37: warning: symbol 'dcn3_16_soc' was not declared. Should it be static?
+That sounds reasonable.
 
-Signed-off-by: Magali Lemes <magalilemes00@gmail.com>
----
- drivers/gpu/drm/amd/display/dc/clk_mgr/dcn21/rn_clk_mgr.h | 1 +
- drivers/gpu/drm/amd/display/dc/dml/dcn20/dcn20_fpu.c      | 1 +
- drivers/gpu/drm/amd/display/dc/dml/dcn301/dcn301_fpu.c    | 1 +
- drivers/gpu/drm/amd/display/dc/dml/dcn31/dcn31_fpu.c      | 3 +++
- 4 files changed, 6 insertions(+)
+> For performance impact consideration, this is enabled by default when
+> CONFIG_IRQ_TIME_ACCOUNTING, but can be disabled by kernel cmdline
+> parameter "psi_irq=".
 
-diff --git a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn21/rn_clk_mgr.h b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn21/rn_clk_mgr.h
-index 2e088c5171b2..f1319957e400 100644
---- a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn21/rn_clk_mgr.h
-+++ b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn21/rn_clk_mgr.h
-@@ -28,6 +28,7 @@
- 
- #include "clk_mgr.h"
- #include "dm_pp_smu.h"
-+#include "clk_mgr_internal.h"
- 
- extern struct wm_table ddr4_wm_table_gs;
- extern struct wm_table lpddr4_wm_table_gs;
-diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn20/dcn20_fpu.c b/drivers/gpu/drm/amd/display/dc/dml/dcn20/dcn20_fpu.c
-index eeeae52fe6fc..45e9f4663abe 100644
---- a/drivers/gpu/drm/amd/display/dc/dml/dcn20/dcn20_fpu.c
-+++ b/drivers/gpu/drm/amd/display/dc/dml/dcn20/dcn20_fpu.c
-@@ -30,6 +30,7 @@
- #include "dchubbub.h"
- #include "dcn20/dcn20_resource.h"
- #include "dcn21/dcn21_resource.h"
-+#include "clk_mgr/dcn21/rn_clk_mgr.h"
- 
- #include "dcn20_fpu.h"
- 
-diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn301/dcn301_fpu.c b/drivers/gpu/drm/amd/display/dc/dml/dcn301/dcn301_fpu.c
-index 7ef66e511ec8..d211cf6d234c 100644
---- a/drivers/gpu/drm/amd/display/dc/dml/dcn301/dcn301_fpu.c
-+++ b/drivers/gpu/drm/amd/display/dc/dml/dcn301/dcn301_fpu.c
-@@ -26,6 +26,7 @@
- #include "clk_mgr.h"
- #include "dcn20/dcn20_resource.h"
- #include "dcn301/dcn301_resource.h"
-+#include "clk_mgr/dcn301/vg_clk_mgr.h"
- 
- #include "dml/dcn20/dcn20_fpu.h"
- #include "dcn301_fpu.h"
-diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn31/dcn31_fpu.c b/drivers/gpu/drm/amd/display/dc/dml/dcn31/dcn31_fpu.c
-index e36cfa5985ea..2d11a2c13345 100644
---- a/drivers/gpu/drm/amd/display/dc/dml/dcn31/dcn31_fpu.c
-+++ b/drivers/gpu/drm/amd/display/dc/dml/dcn31/dcn31_fpu.c
-@@ -25,6 +25,9 @@
- 
- #include "resource.h"
- #include "clk_mgr.h"
-+#include "dcn31/dcn31_resource.h"
-+#include "dcn315/dcn315_resource.h"
-+#include "dcn316/dcn316_resource.h"
- 
- #include "dml/dcn20/dcn20_fpu.h"
- #include "dcn31_fpu.h"
--- 
-2.37.1
+If there isn't a concrete usecase already, let's not add another
+commandline parameter for now.
 
+> @@ -63,9 +64,11 @@ enum psi_states {
+>  	PSI_MEM_FULL,
+>  	PSI_CPU_SOME,
+>  	PSI_CPU_FULL,
+> +	PSI_IRQ_SOME,
+> +	PSI_IRQ_FULL,
+>  	/* Only per-CPU, to weigh the CPU in the global average: */
+>  	PSI_NONIDLE,
+> -	NR_PSI_STATES = 7,
+> +	NR_PSI_STATES = 9,
+>  };
+
+Unfortunately, this grows the psi state touched by the scheduler into
+a second cacheline. :( Please reclaim space first.
+
+I think we can remove the NR_CPU task count, which frees up one
+u32. Something like the below diff should work (untested!)
+
+And you should be able to remove PSI_IRQ_SOME, since it's not used
+anyway. Then we'd be good to go.
+
+diff --git a/include/linux/psi_types.h b/include/linux/psi_types.h
+index c7fe7c089718..31dc76e2d8ea 100644
+--- a/include/linux/psi_types.h
++++ b/include/linux/psi_types.h
+@@ -15,13 +15,6 @@ enum psi_task_count {
+ 	NR_IOWAIT,
+ 	NR_MEMSTALL,
+ 	NR_RUNNING,
+-	/*
+-	 * This can't have values other than 0 or 1 and could be
+-	 * implemented as a bit flag. But for now we still have room
+-	 * in the first cacheline of psi_group_cpu, and this way we
+-	 * don't have to special case any state tracking for it.
+-	 */
+-	NR_ONCPU,
+ 	/*
+ 	 * For IO and CPU stalls the presence of running/oncpu tasks
+ 	 * in the domain means a partial rather than a full stall.
+@@ -39,9 +32,11 @@ enum psi_task_count {
+ #define TSK_IOWAIT	(1 << NR_IOWAIT)
+ #define TSK_MEMSTALL	(1 << NR_MEMSTALL)
+ #define TSK_RUNNING	(1 << NR_RUNNING)
+-#define TSK_ONCPU	(1 << NR_ONCPU)
+ #define TSK_MEMSTALL_RUNNING	(1 << NR_MEMSTALL_RUNNING)
+ 
++/* Only one task can be scheduled, no corresponding task count */
++#define TSK_ONCPU	(1 << NR_PSI_TASK_COUNTS)
++
+ /* Resources that workloads could be stalled on */
+ enum psi_res {
+ 	PSI_IO,
+diff --git a/kernel/sched/psi.c b/kernel/sched/psi.c
+index a4fa3aadfcba..232e1dbfad46 100644
+--- a/kernel/sched/psi.c
++++ b/kernel/sched/psi.c
+@@ -215,7 +215,7 @@ void __init psi_init(void)
+ 	group_init(&psi_system);
+ }
+ 
+-static bool test_state(unsigned int *tasks, enum psi_states state)
++static bool test_state(unsigned int *tasks, enum psi_states state, bool oncpu)
+ {
+ 	switch (state) {
+ 	case PSI_IO_SOME:
+@@ -228,9 +228,9 @@ static bool test_state(unsigned int *tasks, enum psi_states state)
+ 		return unlikely(tasks[NR_MEMSTALL] &&
+ 			tasks[NR_RUNNING] == tasks[NR_MEMSTALL_RUNNING]);
+ 	case PSI_CPU_SOME:
+-		return unlikely(tasks[NR_RUNNING] > tasks[NR_ONCPU]);
++		return unlikely(tasks[NR_RUNNING] > oncpu);
+ 	case PSI_CPU_FULL:
+-		return unlikely(tasks[NR_RUNNING] && !tasks[NR_ONCPU]);
++		return unlikely(tasks[NR_RUNNING] && !oncpu);
+ 	case PSI_NONIDLE:
+ 		return tasks[NR_IOWAIT] || tasks[NR_MEMSTALL] ||
+ 			tasks[NR_RUNNING];
+@@ -692,9 +692,9 @@ static void psi_group_change(struct psi_group *group, int cpu,
+ 			     bool wake_clock)
+ {
+ 	struct psi_group_cpu *groupc;
+-	u32 state_mask = 0;
+ 	unsigned int t, m;
+ 	enum psi_states s;
++	u32 state_mask;
+ 
+ 	groupc = per_cpu_ptr(group->pcpu, cpu);
+ 
+@@ -710,6 +710,26 @@ static void psi_group_change(struct psi_group *group, int cpu,
+ 
+ 	record_times(groupc, now);
+ 
++	/*
++	 * Start with TSK_ONCPU, which doesn't have a corresponding
++	 * task count - it's just a boolean flag directly encoded in
++	 * the state mask. Clear, set, or carry the current state if
++	 * no changes are requested.
++	 */
++	if (clear & TSK_ONCPU) {
++		state_mask = 0;
++		clear &= ~TSK_ONCPU;
++	} else if (set & TSK_ONCPU) {
++		state_mask = TSK_ONCPU;
++		set &= ~TSK_ONCPU;
++	} else {
++		state_mask = groupc->state_mask & TSK_ONCPU;
++	}
++
++	/*
++	 * The rest of the state mask is calculated based on the task
++	 * counts. Update those first, then construct the mask.
++	 */
+ 	for (t = 0, m = clear; m; m &= ~(1 << t), t++) {
+ 		if (!(m & (1 << t)))
+ 			continue;
+@@ -729,9 +749,8 @@ static void psi_group_change(struct psi_group *group, int cpu,
+ 		if (set & (1 << t))
+ 			groupc->tasks[t]++;
+ 
+-	/* Calculate state mask representing active states */
+ 	for (s = 0; s < NR_PSI_STATES; s++) {
+-		if (test_state(groupc->tasks, s))
++		if (test_state(groupc->tasks, s, state_mask & TSK_ONCPU))
+ 			state_mask |= (1 << s);
+ 	}
+ 
+@@ -743,7 +762,7 @@ static void psi_group_change(struct psi_group *group, int cpu,
+ 	 * task in a cgroup is in_memstall, the corresponding groupc
+ 	 * on that cpu is in PSI_MEM_FULL state.
+ 	 */
+-	if (unlikely(groupc->tasks[NR_ONCPU] && cpu_curr(cpu)->in_memstall))
++	if (unlikely((state_mask & TSK_ONCPU) && cpu_curr(cpu)->in_memstall))
+ 		state_mask |= (1 << PSI_MEM_FULL);
+ 
+ 	groupc->state_mask = state_mask;
+@@ -847,7 +866,8 @@ void psi_task_switch(struct task_struct *prev, struct task_struct *next,
+ 		iter = NULL;
+ 		while ((group = iterate_groups(next, &iter))) {
+ 			if (identical_state &&
+-			    per_cpu_ptr(group->pcpu, cpu)->tasks[NR_ONCPU]) {
++			    (per_cpu_ptr(group->pcpu, cpu)->state_mask &
++			     TSK_ONCPU)) {
+ 				common = group;
+ 				break;
+ 			}
