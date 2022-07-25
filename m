@@ -2,130 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0E8DC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 12:25:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B64EBC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 12:30:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234967AbiGYMZr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 08:25:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36804 "EHLO
+        id S233992AbiGYMaQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 08:30:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231722AbiGYMZp (ORCPT
+        with ESMTP id S234113AbiGYMaM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 08:25:45 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 346FAE089;
-        Mon, 25 Jul 2022 05:25:44 -0700 (PDT)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26PCEp16024163;
-        Mon, 25 Jul 2022 12:25:13 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=+7hMN0q9bSC1Ax80dNPgUH6uvz9nFDik+dDQ/moFeyI=;
- b=pXoNXmj6ASPxcc2MUMkLCeOmtnC/wUQXinKKGQi4VSEHQlDeY16Aeu1dTYz5L8juWAPd
- dNiOq4fZ9m/rw7UAkoQGufY3wD8d47zO2s+CnIF7jjhzS5Xvc8oGQmxcHkMgddhSuIom
- xO2hGddaCD+Eg183ogh0fCxCTNp9zuyfIvW9HQmfcp7sq2t7Tr3Czp70C8nOi2EukZcZ
- xHKEQU88RILejBcui7SR/U/CecwadJD8RaaUIaaMaD22/+fNXl/2j4MTDjTwQsDOWDv+
- +Ke23KWOLnZuZnW5ymGRd3HvagLjwOvAULfMejJ8wiUUnGrfzPUgN2YdAIujIMX4LKKC UQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hhu0m8bjj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 25 Jul 2022 12:25:13 +0000
-Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26PCFl7W027830;
-        Mon, 25 Jul 2022 12:25:13 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hhu0m8bhf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 25 Jul 2022 12:25:12 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26PCL3cF017397;
-        Mon, 25 Jul 2022 12:25:11 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma06ams.nl.ibm.com with ESMTP id 3hg97tadw1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 25 Jul 2022 12:25:10 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26PCNB4A23200028
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 25 Jul 2022 12:23:12 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 83B7011C050;
-        Mon, 25 Jul 2022 12:25:08 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 0DA8811C04C;
-        Mon, 25 Jul 2022 12:25:08 +0000 (GMT)
-Received: from [9.101.4.33] (unknown [9.101.4.33])
-        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon, 25 Jul 2022 12:25:07 +0000 (GMT)
-Message-ID: <4e366d73-fb9f-bd83-abd0-c624a737a0cd@linux.ibm.com>
-Date:   Mon, 25 Jul 2022 14:25:07 +0200
+        Mon, 25 Jul 2022 08:30:12 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE37CFE2
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 05:30:09 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 07C7620124;
+        Mon, 25 Jul 2022 12:30:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1658752208; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=5Djhp/kj6T5Dlta/dAFi83yMTsDZOdx2mCFb0oJGeuo=;
+        b=smASnO5nClMmRn44SKR3UHMcTznlkTTqxrwiYBmd8y6eN8EvZ90gaONNA1SigZ3AZToDVj
+        jBDFQFGrZLE9uXYSlDZx1XnZRhmApdiq/dzdv3aD4m3L2il/HY7IOsAXRmE8zdCm85D1ku
+        eMTvbzhjlrDsLA7UZvK4O4eWZbG1rY8=
+Received: from suse.cz (unknown [10.100.208.146])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id AE54C2C152;
+        Mon, 25 Jul 2022 12:30:07 +0000 (UTC)
+Date:   Mon, 25 Jul 2022 14:30:04 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     John Ogness <john.ogness@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH v2] printk: Skip console drivers on PREEMPT_RT.
+Message-ID: <Yt6MzEEFfpyTBIIj@alley>
+References: <YtgjtfjYVMQrzFTK@linutronix.de>
+ <87y1wn3g3g.fsf@jogness.linutronix.de>
+ <Ytgu17hATM8iqdGC@linutronix.de>
+ <87ilnrn06u.fsf@jogness.linutronix.de>
+ <Ytj3PisFjOfS9L0Y@linutronix.de>
+ <YtqakGJAQzw/IPul@alley>
+ <YtrYdXWGb0NQLKNA@linutronix.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
- Gecko/20100101 Thunderbird/102.0.3
-Subject: Re: [PATCH v5 4/4] pseries/mobility: set NMI watchdog factor during
- an LPM
-To:     Randy Dunlap <rdunlap@infradead.org>, mpe@ellerman.id.au,
-        npiggin@gmail.com, christophe.leroy@csgroup.eu,
-        wim@linux-watchdog.org, linux@roeck-us.net, nathanl@linux.ibm.com
-Cc:     haren@linux.vnet.ibm.com, hch@infradead.org,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-watchdog@vger.kernel.org
-References: <20220713154729.80789-1-ldufour@linux.ibm.com>
- <20220713154729.80789-5-ldufour@linux.ibm.com>
- <e6232bb4-a8e5-8f33-e80e-06b1356565b7@infradead.org>
-Content-Language: fr
-From:   Laurent Dufour <ldufour@linux.ibm.com>
-In-Reply-To: <e6232bb4-a8e5-8f33-e80e-06b1356565b7@infradead.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: oaoX5aaD2obYHUM1BDYUNJcpyVzDgQkz
-X-Proofpoint-GUID: 1K3Wa8DBSonxvU57zc15TRRFAuGltn2H
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-25_09,2022-07-25_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 impostorscore=0
- lowpriorityscore=0 mlxscore=0 phishscore=0 bulkscore=0 suspectscore=0
- adultscore=0 spamscore=0 malwarescore=0 priorityscore=1501 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
- definitions=main-2207250051
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YtrYdXWGb0NQLKNA@linutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le 13/07/2022 à 22:17, Randy Dunlap a écrit :
-> Hi Laurent,
+On Fri 2022-07-22 19:03:49, Sebastian Andrzej Siewior wrote:
+> On 2022-07-22 14:39:44 [+0200], Petr Mladek wrote:
+> > On Thu 2022-07-21 08:50:38, Sebastian Andrzej Siewior wrote:
+> > > printk might be invoked in a context with disabled interrupts and or
+> > > preemption and additionally disables interrupts before it invokes the
+> > > console drivers. This is behaviour is not compatible with PREEMPT_RT.
+> > 
+> > Maybe I do not understand it correctly.
 > 
-> On 7/13/22 08:47, Laurent Dufour wrote:
->> diff --git a/Documentation/admin-guide/sysctl/kernel.rst b/Documentation/admin-guide/sysctl/kernel.rst
->> index ddccd1077462..d73faa619c15 100644
->> --- a/Documentation/admin-guide/sysctl/kernel.rst
->> +++ b/Documentation/admin-guide/sysctl/kernel.rst
->> @@ -592,6 +592,18 @@ to the guest kernel command line (see
->>  Documentation/admin-guide/kernel-parameters.rst).
->>  
->>  
->> +nmi_wd_lpm_factor (PPC only)
->> +============================
->> +
->> +Factor apply to the NMI watchdog timeout (only when ``nmi_watchdog`` is
+> > Or is is somehow specific to the console drivers called from printk()
+> > directly?
 > 
->    Factor to apply to
+> You can't acquire a sleeping lock with disabled interrupts and or
 
-Thanks, Randy.
+This is what I have missed. It might be obvious for people living by RT
+kernel. But spinlocks do not sleep in normal kernel. So I did not get
+that the spinlocks are the culprit. Please, make it more obvious
+in the commit message, for example:
 
-Michael, could you fix that when applying the series?
+--- cut ---
+Console drivers use spinlocks that might sleep in PREEMPT_RT. As a
+result they must not be called with interrupts enabled...
+--- cut ---
 
-Cheers,
-Laurent
-
+> > > Disable console printing until the return of atomic consoles and the
+> > > printing thread. This allows to retrieve the log buffer from user space
+> > > which is not possible by disable printk.
+> > 
+> > I guess that this is for RT tree because the kthreads and the atomic
+> > consoles are still not in the mainline.
 > 
->> +set to 1). This factor represents the percentage added to
->> +``watchdog_thresh`` when calculating the NMI watchdog timeout during an
->> +LPM. The soft lockup timeout is not impacted.
->> +
->> +A value of 0 means no change. The default value is 200 meaning the NMI
->> +watchdog is set to 30s (based on ``watchdog_thresh`` equal to 10).
-> 
+> I would like to have this applied to the v5.20 upstream tree and then
+> revoked once the missing bits have been  merged. Based on what I see,
+> there shouldn't be any road blocks.
 
+Huh, I do not think that it is a good idea. There are neither atomic
+consoles nor printk kthreads in upstream. The patch effectively
+completely disables the consoles in PREEMPT_RT. All consoles
+will be _empty all the time_.
+
+Also the consoles were never tested with interrupts enabled. I am
+pretty sure that interrupts has to be disabled in some locations,
+for example, when sending some data sequences on the ports. Are we
+sure that they are always explicitly disabled inside the drivers?
+This is one reason why we reverted the console kthreads in 5.19-rc4.
+AFAIK, John is doing some inspection of all drivers.
+
+That said, I am going to leave the decision on John. I am not sure
+what are the expectations of RT users in mainline.
+
+From my point, this patch does not make much sense. IMHO, it will
+not make mainline usable with PREEMPT_RT. Any serious RT user will
+need to revert it and apply a better printk solution from
+the out-of-tree RT patchset.
+
+Best Regards,
+Petr
