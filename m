@@ -2,128 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB291C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 11:19:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17B1CC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 11:20:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234565AbiGYLTc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 07:19:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54434 "EHLO
+        id S234676AbiGYLUY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 07:20:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229614AbiGYLTa (ORCPT
+        with ESMTP id S229694AbiGYLUV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 07:19:30 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FE3C15802;
-        Mon, 25 Jul 2022 04:19:29 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id C9DD237784;
-        Mon, 25 Jul 2022 11:19:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1658747967; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fsGXEvpXgpa8MJd9I5kGhBSqRiO/o6Xz4MHAqkV7RDk=;
-        b=Gz71EENsDg6dNC88X0BdB9GDBrjspBCS9qbzDEOQ/iWz0SiagzJivwYHMaMeD41PQ+dlI+
-        VHsHpr0zFlH6d8P8n6f1sU2dUl9yslL+1EaJe+/Sh+n1ohih6dj7woa2MyYq86/ACCNjDA
-        5KAODZQYHvrt8J14qJDocRHImGDT9do=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1658747967;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fsGXEvpXgpa8MJd9I5kGhBSqRiO/o6Xz4MHAqkV7RDk=;
-        b=6rKjRPkY2Y/kcUjOc6t9q/asPWGv1DEJ7cIAFX4WwWDU5cWaY9XiR/3aYOhnWbAtwNH/Rk
-        /FythNPbFou+dkBQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5997D13ABB;
-        Mon, 25 Jul 2022 11:19:27 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id t8RXFT983mLUQgAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Mon, 25 Jul 2022 11:19:27 +0000
-Message-ID: <a0774cc5-17f8-94ca-a490-1a06a5dec1fd@suse.cz>
-Date:   Mon, 25 Jul 2022 13:19:27 +0200
+        Mon, 25 Jul 2022 07:20:21 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 485CD2AD7;
+        Mon, 25 Jul 2022 04:20:20 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id b16so5075083lfb.7;
+        Mon, 25 Jul 2022 04:20:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=1nXWYVScGrrgl5QUSeVrq++Y1dz2v1W+VupFYq9G2nU=;
+        b=l+gbL0eBM5wqoNTL6mU+nrtKXkIJ2wCFGRnv0j164oXGtbbjLxTdUex4a4H08B+Xxb
+         pWszEQ8HLZHD6CygmWDRj3ZS9EAwE7DMvRFUCh/ZjT8CPDMZ5wLwh47lzBlUDG7MRJDZ
+         UHTwX0+ReDGIDTrnfkvWE8ysZNmMN3N7Ci6wpAqqj1mp3f6QF4mUcpd9WzfCZQCk7Dg4
+         nf/BKpk5AfpOPfLNvaUDuOejJO2NXlEHuRz+7VzAHiABwXy2JsX91ROkusG7mKWzH7SL
+         qqa5A5jnA/DXLrZmuLftop7niajI1zbxKxykG4wxNk6AvgqlBbhO4E0hCBt0odwLKh3a
+         3D3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=1nXWYVScGrrgl5QUSeVrq++Y1dz2v1W+VupFYq9G2nU=;
+        b=EB725B654ix+dyOaSVJC4G/tIH/IECLvzOuwozVU6+EiyN8O4CuXrxQiGMPLag9aXt
+         LHI+ytWVvElMzFxPDwGuG4XQTo2xgnD+NZSRaaMrprRBtyfGTOwxWZ6eenXeIBqKeuwW
+         MeZ3FBSOYEaFg9aeLhuflRh6NNrxWSdGinJLoMzJ9el8oPM4TPzW1Mi1TlG6qSsb7BQ+
+         Lg8NIh7323790t/lVwxf6UzSZBht5LKn/nUNVavGtinpqlAMU6ISirAdhuRyZtt7YvBk
+         +rAPwHUyjW+ub4yu8DY2b2JVclljB6Rmm8+cbantezJLOYvClcv4tc5vxZnHJNT9CSkI
+         nyNw==
+X-Gm-Message-State: AJIora/Zgyj9O39kx+3Al7K8ZHsVPlYl7xHQJiRmWKH1iNKvc4oW8Kaf
+        53WukFYYa2CLu8IhEjLiXSxzmjZH9gvMOQ==
+X-Google-Smtp-Source: AGRyM1v6nkCkmmz3xiWYb1U+IEgV4y7BsBHxkT+qPwT/VDX3hlxyeTxLPogLvIsyiimxmX8OVi4/2Q==
+X-Received: by 2002:a05:6512:39d3:b0:48a:7ce3:512e with SMTP id k19-20020a05651239d300b0048a7ce3512emr4581238lfu.112.1658748018372;
+        Mon, 25 Jul 2022 04:20:18 -0700 (PDT)
+Received: from gmail.com (82-209-154-112.cust.bredband2.com. [82.209.154.112])
+        by smtp.gmail.com with ESMTPSA id g24-20020a2eb5d8000000b0025e0e9d2f1asm135093ljn.29.2022.07.25.04.20.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Jul 2022 04:20:17 -0700 (PDT)
+Date:   Mon, 25 Jul 2022 13:24:13 +0200
+From:   Marcus Folkesson <marcus.folkesson@gmail.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/2] gpio: gpio-74x164: add support for CDx4HC4094
+Message-ID: <Yt59XSTaJUvThJli@gmail.com>
+References: <20220721093422.2173982-1-marcus.folkesson@gmail.com>
+ <CAHp75VddBhc9peHXfNfTyTNni246kC8CyLqCrMFadn67LGDarQ@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH Part2 v6 33/49] KVM: x86: Update page-fault trace to log
- full 64-bit error code
-Content-Language: en-US
-To:     Ashish Kalra <Ashish.Kalra@amd.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        linux-coco@lists.linux.dev, linux-mm@kvack.org,
-        linux-crypto@vger.kernel.org
-Cc:     tglx@linutronix.de, mingo@redhat.com, jroedel@suse.de,
-        thomas.lendacky@amd.com, hpa@zytor.com, ardb@kernel.org,
-        pbonzini@redhat.com, seanjc@google.com, vkuznets@redhat.com,
-        jmattson@google.com, luto@kernel.org, dave.hansen@linux.intel.com,
-        slp@redhat.com, pgonda@google.com, peterz@infradead.org,
-        srinivas.pandruvada@linux.intel.com, rientjes@google.com,
-        dovmurik@linux.ibm.com, tobin@ibm.com, bp@alien8.de,
-        michael.roth@amd.com, kirill@shutemov.name, ak@linux.intel.com,
-        tony.luck@intel.com, marcorr@google.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com, alpergun@google.com,
-        dgilbert@redhat.com, jarkko@kernel.org
-References: <cover.1655761627.git.ashish.kalra@amd.com>
- <a937386611dc7d38981c8a08255c4a71f1295d9a.1655761627.git.ashish.kalra@amd.com>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <a937386611dc7d38981c8a08255c4a71f1295d9a.1655761627.git.ashish.kalra@amd.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="TLJ8iEYt1e9qWIkZ"
+Content-Disposition: inline
+In-Reply-To: <CAHp75VddBhc9peHXfNfTyTNni246kC8CyLqCrMFadn67LGDarQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 6/21/22 01:10, Ashish Kalra wrote:
-> From: Brijesh Singh <brijesh.singh@amd.com>
-> 
-> The #NPT error code is a 64-bit value but the trace prints only the
-> lower 32-bits. Some of the fault error code (e.g PFERR_GUEST_FINAL_MASK)
-> are available in the upper 32-bits.
-> 
-> Cc: <stable@kernel.org>
 
-Why stable?
+--TLJ8iEYt1e9qWIkZ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> Signed-off-by: Brijesh Singh <brijesh.singh@amd.com>
-> ---
->  arch/x86/kvm/trace.h | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/arch/x86/kvm/trace.h b/arch/x86/kvm/trace.h
-> index e3a24b8f04be..9b9bc5468103 100644
-> --- a/arch/x86/kvm/trace.h
-> +++ b/arch/x86/kvm/trace.h
-> @@ -383,12 +383,12 @@ TRACE_EVENT(kvm_inj_exception,
->   * Tracepoint for page fault.
->   */
->  TRACE_EVENT(kvm_page_fault,
-> -	TP_PROTO(unsigned long fault_address, unsigned int error_code),
-> +	TP_PROTO(unsigned long fault_address, u64 error_code),
->  	TP_ARGS(fault_address, error_code),
->  
->  	TP_STRUCT__entry(
->  		__field(	unsigned long,	fault_address	)
-> -		__field(	unsigned int,	error_code	)
-> +		__field(	u64,		error_code	)
->  	),
->  
->  	TP_fast_assign(
-> @@ -396,7 +396,7 @@ TRACE_EVENT(kvm_page_fault,
->  		__entry->error_code	= error_code;
->  	),
->  
-> -	TP_printk("address %lx error_code %x",
-> +	TP_printk("address %lx error_code %llx",
->  		  __entry->fault_address, __entry->error_code)
->  );
->  
+On Mon, Jul 25, 2022 at 11:32:16AM +0200, Andy Shevchenko wrote:
+> On Thu, Jul 21, 2022 at 11:32 AM Marcus Folkesson
+> <marcus.folkesson@gmail.com> wrote:
+> >
+> > 74hc4094 and 75hc4094 works similar to 74x164 but has an additional
+> > storage latch associated with each stage for strobing data from the
+> > serial input to parallell buffer tri-state output.
+>=20
+> parallel
+>=20
+> > Add support for an optional strobe pin.
+>=20
+> Sorry for my absence of understanding, but why?
+> SPI has MOSI, CLK, CS, where the last one is exactly for that. No?
 
+You're right, I didn't think of that CS could be used for this.
+The additional compatible strings is then superfluous, so I will skip those.
+
+>=20
+>=20
+> --=20
+> With Best Regards,
+> Andy Shevchenko
+
+Best regards
+Marcus Folkesson
+
+--TLJ8iEYt1e9qWIkZ
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEBVGi6LZstU1kwSxliIBOb1ldUjIFAmLefVkACgkQiIBOb1ld
+UjJImBAAq42Hldd+6vNfeKVKIBCQSyENS7qZdpjBM6KLFHnao8Blgtp/SwCNS1WY
+0tXK2+FvZUYppLgswbg7Y9ZpdTWg71ch3Ej5d+Qv+mq4GcRkPGcdUgsQlc17h6nm
+2Dgzj2jbNgvIDH1OtX1JPnyBXN7q32lZ5sryJCOFJO15HwkRZ7OCn0H8FtrHtlqe
+v2X3TTCPErCmfru4wMnoovzJdjshOZDPWnh3UiO4eyyREHhb5MUdXPCE+v3lteG1
+Guvsqv6gsVIApCa1MlB2voTpXUwOt1k7W+fgDCKgDVeG5W49OIbIGusaqSXQ/qrq
+MgTFvcEni/Iu8fEk0dX7pzYmZbxcLXDvQZVp86/F6Uiw2YYeTC1KL4ElT6Ts/qQt
+iFwY9efkjNocI5xQQKijMVvvOmDjnDO95Cwfit1xVejVa2u2maMaEcSTLFkIz575
+cpFuHd+LGD8GCbWDBTWYkPAb5MAT/TPcmWbAelrxRjEGwXTjDeiIU6/jbOJSbqE3
+yikHSMC/6jvAgC9+ir1rqAlwfA87ZZ8V3ScROHBdJ9cQVhx7UJmBrZqVocxpTnNE
+YIndne1pmxMuzWPwRQqdhjTkQEpS4Puxd/vsLWtK6lKy1ZZm6qVbK+UXqEirDbo5
+fsn5x/AcYBP/J/sWSq/pKmamB4Ln9GICzf73jp6VHRZPFEznLF8=
+=8pgl
+-----END PGP SIGNATURE-----
+
+--TLJ8iEYt1e9qWIkZ--
