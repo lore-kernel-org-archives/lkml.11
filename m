@@ -2,138 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41AEBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 21:31:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65651CCA48A
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 21:31:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237455AbiGYVbQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 17:31:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48958 "EHLO
+        id S237410AbiGYVbv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 17:31:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235512AbiGYV2s (ORCPT
+        with ESMTP id S237510AbiGYVbe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 17:28:48 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3569C25296
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 14:27:51 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id g2so9659817wru.3
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 14:27:51 -0700 (PDT)
+        Mon, 25 Jul 2022 17:31:34 -0400
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4B7124974
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 14:29:11 -0700 (PDT)
+Received: by mail-pg1-x532.google.com with SMTP id q16so11485125pgq.6
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 14:29:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linexp-org.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=dtIC8RNPtrIhefVP3qkzn/ojto5ZENqxzOLIoU7Obsk=;
-        b=fpGNc8n1xXJ0imA/RGA543TJhgsAaJo9AZK6Lbnx9rKmV/f4ipl9YuG4iyqU1Pn+HK
-         DWc6xfs4lcvmwoejpmcgy2XzCrnJHfp6HwZ8Jiky/3RVh1f1l59Hd/amLfHg2Y9SfiTG
-         4x8uBz8cwG/3nLpf9sXeO+ZJmOBET2cLqsaRGNPOelXNBEQizf5w6T7qX8+skV1dvZQA
-         sICPw4uNgIU0Nul5Pz25KafqkTB2Ta3xShV6Og2pH2/NK63YTo9ichfn6UBguYYRa5a5
-         5p3ujwgdzN0+e3NFNffrZxxCHrThrJCeLd6yOUGVsaZwsL0qtwaxwg6Gii+lwqemHQOk
-         ib+A==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=hjH/x15kF4vievgUYxvBLMSjt7KRqmoWwdq7tek7XBI=;
+        b=YYelzTNHADuDdMqEj6hXPvqeLqog9iZchp4/aKMc+rsdN+Yrf70fJsu4CiUKIyWg9P
+         NesFwROVwrRmyUi+fW1m7HsG7z7UOiq+mjgFZfUTtAkE9j7DJfmKZ5RT20RJJlgK9lEG
+         GEob/BbOSxdL9t00UmE2BXB7qLim3eixq3dV6QaaKgYxPzPw3pPjdCy0Pz8aJL1Rxs6P
+         2WOi+ukByWxZlnJUY4SGPwXt2z91oPxmRWLLv4M290azGbZfUdE9o0+FyeR/eSYmXDtY
+         GHbuvJBKWqBtFTFxO6AMF5mB1fbXf5H/ECrqI0XpdStwIA5dZLPg/X023iPP14iLLcqs
+         H4NA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=dtIC8RNPtrIhefVP3qkzn/ojto5ZENqxzOLIoU7Obsk=;
-        b=iYKnynXRhJ/aAZJMgVQJv1sGi62FelnMHFUmQnCxqV1C7AlRvDpAPqlKR9KBek9W5s
-         mu00SD8ETrnGaqV7+Aq7peZvgbCfiwlpTfNswRA5ZEK3ILuxtlMTJsMJEDoOnvoF9L5A
-         nbaXTPEReTdEwSevi8oaqyi1rEj88Y9ZNRIHV44RKAgR44zUBDhlxyoVX6Ic3eTY0IIG
-         x8CIszqJLeZ/r2bW8zlYRZ5DiI8kmEphgpk3xcRF2xTaKYf3LItLlivd9dk5OubYi/ez
-         F3wkreG+e5nN9wE8Yvk6WBl6zouFlRsv4yuTANh5mwAcUHf2Ic6AAlPRE9fUb5Srq6ca
-         fj1g==
-X-Gm-Message-State: AJIora9ligT9uanmyahx4udg9G/qdIWPYstkRVfSm7ncxT0RgCNCmCVi
-        DvlBHHLoBhILWUMXn2hF8NHLDQ==
-X-Google-Smtp-Source: AGRyM1uPbLXiSnUUCqzUagWvav4f7h6KELyLpVVBzYURiv4OmSHpWYSoTI1UWdB3mM3+TprKDaKLPA==
-X-Received: by 2002:adf:f245:0:b0:21d:a39a:bed5 with SMTP id b5-20020adff245000000b0021da39abed5mr8266370wrp.508.1658784470723;
-        Mon, 25 Jul 2022 14:27:50 -0700 (PDT)
-Received: from mai.box.freepro.com ([2a05:6e02:1041:c10:1780:8e54:dd38:6668])
-        by smtp.gmail.com with ESMTPSA id r17-20020a5d52d1000000b0021d68a504cbsm12668772wrv.94.2022.07.25.14.27.48
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=hjH/x15kF4vievgUYxvBLMSjt7KRqmoWwdq7tek7XBI=;
+        b=7J/MCiZH0kiGFKTFTjOEdLg42at4HEbvS207Cwoi/4a6dbE+s6b5n9dB7o0k/sytnq
+         hx4DaVW9XWMSE2Mva0SgYgo1gQEXJ5bM10O0HLIKiwIHOXFewuh2uZjpxY6hHhY2CtoZ
+         2hKIzw7Rjs+aCmwhG21cilh+7oA3Ik01yKu5nUZbi0rFdsXAETS2uMBj+KEGjYDqEgmp
+         OC0Km4IHIT/DijisZvfz7S60aRAfWFfvWSqc1EIQPoNm/b7dkAKABVEm7rDBlP3zR1e7
+         MhPmcWdBochnx471yM/DPfWWqiyplM/M0hbfs+KvWtyv/StshSY64gp20NQlqDNaUfIo
+         BsJQ==
+X-Gm-Message-State: AJIora80bUSbPqII0jbsPasykGjmTva+eypIegM5EzcaUdvxfE2lCqnt
+        h3awiw2MeboekDJHpe4L6xM=
+X-Google-Smtp-Source: AGRyM1t9wJSixY9rq6ip84lBJ8+/PcZ4uPRWlDd4fHc2aEynQWeHyDwhD6AIRiUqwxRslvGMjQzxOQ==
+X-Received: by 2002:a63:4e24:0:b0:41a:4117:5fee with SMTP id c36-20020a634e24000000b0041a41175feemr12658004pgb.414.1658784551276;
+        Mon, 25 Jul 2022 14:29:11 -0700 (PDT)
+Received: from localhost ([2409:10:24a0:4700:e8ad:216a:2a9d:6d0c])
+        by smtp.gmail.com with ESMTPSA id z15-20020aa79f8f000000b0052c02d8c65asm1440806pfr.123.2022.07.25.14.29.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Jul 2022 14:27:50 -0700 (PDT)
-From:   Daniel Lezcano <daniel.lezcano@linexp.org>
-To:     daniel.lezcano@linaro.org, rafael@kernel.org
-Cc:     rui.zhang@intel.com, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, khilman@baylibre.com,
-        abailon@baylibre.com, lukasz.luba@arm.com, broonie@kernel.org,
-        damien.lemoal@opensource.wdc.com, heiko@sntech.de,
-        hayashi.kunihiko@socionext.com, mhiramat@kernel.org,
-        talel@amazon.com, thierry.reding@gmail.com, digetx@gmail.com,
-        jonathanh@nvidia.com, anarsoul@gmail.com, tiny.windzz@gmail.com,
-        baolin.wang7@gmail.com, f.fainelli@gmail.com,
-        bjorn.andersson@linaro.org, mcoquelin.stm32@gmail.com,
-        glaroque@baylibre.com, miquel.raynal@bootlin.com,
-        shawnguo@kernel.org, niklas.soderlund@ragnatech.se,
-        matthias.bgg@gmail.com, j-keerthy@ti.com,
-        Amit Kucheria <amitk@kernel.org>
-Subject: [PATCH v2 23/32] thermal/drivers/hisilicon: Switch to new of API
-Date:   Mon, 25 Jul 2022 23:26:28 +0200
-Message-Id: <20220725212637.2818207-24-daniel.lezcano@linexp.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220725212637.2818207-1-daniel.lezcano@linexp.org>
-References: <20220725212637.2818207-1-daniel.lezcano@linexp.org>
+        Mon, 25 Jul 2022 14:29:10 -0700 (PDT)
+Date:   Tue, 26 Jul 2022 06:29:08 +0900
+From:   Stafford Horne <shorne@gmail.com>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     linux-kernel@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org
+Subject: Re: [PATCH -next] x86/cyrix: include header linux/isa-dma.h
+Message-ID: <Yt8LJMR8WBSZ+4pd@antec>
+References: <20220725202224.29269-1-rdunlap@infradead.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220725202224.29269-1-rdunlap@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The thermal OF code has a new API allowing to migrate the OF
-initialization to a simpler approach. The ops are no longer device
-tree specific and are the generic ones provided by the core code.
+On Mon, Jul 25, 2022 at 01:22:24PM -0700, Randy Dunlap wrote:
+> x86/kernel/cpu/cyrix.c now needs to include <linux/isa-dma.h>
+> since the 'isa_dma_bridge_buggy' variable was moved to it.
+> 
+> Fixes this build error:
+> 
+> ../arch/x86/kernel/cpu/cyrix.c: In function ‘init_cyrix’:
+> ../arch/x86/kernel/cpu/cyrix.c:277:17: error: ‘isa_dma_bridge_buggy’ undeclared (first use in this function)
+>   277 |                 isa_dma_bridge_buggy = 2;
+> 
+> Fixes: abb4970ac335 ("PCI: Move isa_dma_bridge_buggy out of asm/dma.h")
+> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+> Cc: Stafford Horne <shorne@gmail.com>
+> Cc: Bjorn Helgaas <bhelgaas@google.com>
+> Cc: Borislav Petkov <bp@alien8.de>
+> Cc: Dave Hansen <dave.hansen@linux.intel.com>
+> Cc: x86@kernel.org
 
-Convert the ops to the thermal_zone_device_ops format and use the new
-API to register the thermal zone with these generic ops.
+Acked-by: Stafford Horne <shorne@gmail.com>
 
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linexp.org>
----
- drivers/thermal/hisi_thermal.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+> ---
+>  arch/x86/kernel/cpu/cyrix.c |    1 +
+>  1 file changed, 1 insertion(+)
+> 
+> --- a/arch/x86/kernel/cpu/cyrix.c
+> +++ b/arch/x86/kernel/cpu/cyrix.c
+> @@ -1,6 +1,7 @@
+>  // SPDX-License-Identifier: GPL-2.0
+>  #include <linux/bitops.h>
+>  #include <linux/delay.h>
+> +#include <linux/isa-dma.h>
+>  #include <linux/pci.h>
+>  #include <asm/dma.h>
+>  #include <linux/io.h>
 
-diff --git a/drivers/thermal/hisi_thermal.c b/drivers/thermal/hisi_thermal.c
-index b29ab09040d5..cc5da71b6f55 100644
---- a/drivers/thermal/hisi_thermal.c
-+++ b/drivers/thermal/hisi_thermal.c
-@@ -442,9 +442,9 @@ static int hi3660_thermal_probe(struct hisi_thermal_data *data)
- 	return 0;
- }
- 
--static int hisi_thermal_get_temp(void *__data, int *temp)
-+static int hisi_thermal_get_temp(struct thermal_zone_device *tz, int *temp)
- {
--	struct hisi_thermal_sensor *sensor = __data;
-+	struct hisi_thermal_sensor *sensor = tz->devdata;
- 	struct hisi_thermal_data *data = sensor->data;
- 
- 	*temp = data->ops->get_temp(sensor);
-@@ -455,7 +455,7 @@ static int hisi_thermal_get_temp(void *__data, int *temp)
- 	return 0;
- }
- 
--static const struct thermal_zone_of_device_ops hisi_of_thermal_ops = {
-+static const struct thermal_zone_device_ops hisi_of_thermal_ops = {
- 	.get_temp = hisi_thermal_get_temp,
- };
- 
-@@ -467,7 +467,7 @@ static irqreturn_t hisi_thermal_alarm_irq_thread(int irq, void *dev)
- 
- 	data->ops->irq_handler(sensor);
- 
--	hisi_thermal_get_temp(sensor, &temp);
-+	temp = data->ops->get_temp(sensor);
- 
- 	if (temp >= sensor->thres_temp) {
- 		dev_crit(&data->pdev->dev,
-@@ -492,9 +492,9 @@ static int hisi_thermal_register_sensor(struct platform_device *pdev,
- 	int ret, i;
- 	const struct thermal_trip *trip;
- 
--	sensor->tzd = devm_thermal_zone_of_sensor_register(&pdev->dev,
--							   sensor->id, sensor,
--							   &hisi_of_thermal_ops);
-+	sensor->tzd = devm_thermal_of_zone_register(&pdev->dev,
-+						    sensor->id, sensor,
-+						    &hisi_of_thermal_ops);
- 	if (IS_ERR(sensor->tzd)) {
- 		ret = PTR_ERR(sensor->tzd);
- 		sensor->tzd = NULL;
--- 
-2.25.1
+Sorry, I missed this, I did test several x86 configs, but I guess the cyrix.c
+compilation was not picked up in my tests.
 
+FWIW, I think this should go through Bjorn's pci tree.
+
+-Stafford
