@@ -2,155 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CD90C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 15:07:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88879C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 15:07:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232125AbiGYPHS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 11:07:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51998 "EHLO
+        id S233500AbiGYPHw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 11:07:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbiGYPHO (ORCPT
+        with ESMTP id S229460AbiGYPHt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 11:07:14 -0400
-Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD41B10FCD
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 08:07:13 -0700 (PDT)
-Received: by mail-oi1-x22d.google.com with SMTP id p132so13777307oif.9
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 08:07:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sartura-hr.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lLYdNu88rwK9RKi0Hdu8L2qjedcRHOnzO3eSS99Jj+4=;
-        b=uSX66gaqfINSKgXXJRgV9sqXY+qx32zQLxcNjZ6CWsyfWP6uWpYcmvETA9qCT8azEH
-         wyrpJBz+8s3IJvKOu8sbcmIchg37H79YpU9DkLH3SQCGSjT7zsV3DO7zu6tlXN1PPB/i
-         KlvTM7bzjKlqmrmFj9E6PafmJ8mI+33KkvwBqCCTu02zeu86uE2OarY3Yknu7tznn8pj
-         KC+ppdyG3FAfrsbP7kt/xCUNNRXAs09PQhm3yXRxiQt5BHeXJlcNKcBm7S3gFxABYeBF
-         Nq7K0X67Tp2umeeRku8MeZClQRl/W4tzXGoJwFNQZvEQ/Bmxe8Z7pGjdyajott0pYUcg
-         E/LQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lLYdNu88rwK9RKi0Hdu8L2qjedcRHOnzO3eSS99Jj+4=;
-        b=FCNj6mZy462Okt8oCH06O38hkgkytzrP8k9zamPbvJzwfhOWKvjoGzIaSY0BXSvSsB
-         S8tyH93RPDmwGtX69KEDctjkubhBvuJecI+Gp0LFF6daVMGDyDoWJ8vx/N04aFZSDmm8
-         dmGSznKS7A7obt1eioRSt/roQPv2f1+SZFvgwvu5z5cmkTW4OE46WvDcDvDFYITd5C+9
-         InnI/Y0jFFj0qpg5C00xgWbNvmIpmt3rrHrdNvYUMetpzaMhayzfq2YwR356qQGwC4aX
-         tsVhDUlA4PD0k+YQpqpukw8RuFMnTzSRavMevQIkA3nPFMbVQsuDvgPzcmGceYCxooPh
-         9iCA==
-X-Gm-Message-State: AJIora97NuVjCdiYX0svWMjgWze3kQrfyCFVl0h8IYhltkAhOFHDl0+T
-        0bZ7Tj1bENndGTNvlGSQNVf0HDSPZEczX05hit4nSg==
-X-Google-Smtp-Source: AGRyM1v7J6NrpM5+VYdxmL1VK1k+qwfa9rxkPwG/5wkAIEBb1fYGvBYNHVcpI2jpl2oYPKyinajp9kZ1GoG3d3VJEzo=
-X-Received: by 2002:a05:6808:1b20:b0:33a:b9ab:30d8 with SMTP id
- bx32-20020a0568081b2000b0033ab9ab30d8mr7623167oib.8.1658761633157; Mon, 25
- Jul 2022 08:07:13 -0700 (PDT)
+        Mon, 25 Jul 2022 11:07:49 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DAA9112D0A
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 08:07:47 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3F9EF2B;
+        Mon, 25 Jul 2022 08:07:48 -0700 (PDT)
+Received: from [10.1.30.135] (e127744.cambridge.arm.com [10.1.30.135])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 65BC43F73D;
+        Mon, 25 Jul 2022 08:07:46 -0700 (PDT)
+Subject: Re: [PATCH v1 1/4] coresight: Remove unused function parameter
+To:     James Clark <james.clark@arm.com>, coresight@lists.linaro.org,
+        suzuki.poulose@arm.com
+Cc:     mathieu.poirier@linaro.org, mike.leach@linaro.org,
+        linux-kernel@vger.kernel.org
+References: <20220725145221.517776-1-james.clark@arm.com>
+ <20220725145221.517776-2-james.clark@arm.com>
+From:   German Gomez <german.gomez@arm.com>
+Message-ID: <9292b1c9-25ab-1137-1a34-3783f3835f2b@arm.com>
+Date:   Mon, 25 Jul 2022 16:07:40 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-References: <20220725131521.607904-1-robert.marko@sartura.hr>
- <20220725131521.607904-2-robert.marko@sartura.hr> <CAK8P3a1mL7Pm5+0Ce89LTrup476WaxSQKpTgn=o98_uFuOdfyQ@mail.gmail.com>
-In-Reply-To: <CAK8P3a1mL7Pm5+0Ce89LTrup476WaxSQKpTgn=o98_uFuOdfyQ@mail.gmail.com>
-From:   Robert Marko <robert.marko@sartura.hr>
-Date:   Mon, 25 Jul 2022 17:07:02 +0200
-Message-ID: <CA+HBbNEjYcZ1yU+h3ZR_g=6+18JBQ2U=v3VesRxR21Rc9N4LbA@mail.gmail.com>
-Subject: Re: [PATCH 2/2] arm64: dts: microchip: sparx5: dont use PSCI for core bringup
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20220725145221.517776-2-james.clark@arm.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 25, 2022 at 3:33 PM Arnd Bergmann <arnd@arndb.de> wrote:
+
+On 25/07/2022 15:52, James Clark wrote:
+> The ability to use a custom function in this sysfs show function isn't
+> used so remove it.
 >
-> On Mon, Jul 25, 2022 at 3:15 PM Robert Marko <robert.marko@sartura.hr> wrote:
-> >
-> > As described in previous commit, PSCI is not implemented on this SoC at
-> > all, so use spin-tables to bringup the cores.
-> >
-> > Tested on PCB134 with eMMC (VSC5640EV).
-> >
-> > Fixes: 6694aee00a4b ("arm64: dts: sparx5: Add basic cpu support")
-> > Signed-off-by: Robert Marko <robert.marko@sartura.hr>
-> > ---
+> No functional changes.
 >
-> Surely this is only a machine specific bug in the boot loader, not something
-> the SoC is incapable of supporting, right?
-
-
-PSCI itself could be implemented on this SoC, you can even implement
-it just by using U-boot.
-I have been looking into adding basic reset and core bring up PSCI
-support to the BSP U-boot for start.
-
+> Signed-off-by: James Clark <james.clark@arm.com>
+> ---
+>  drivers/hwtracing/coresight/coresight-priv.h | 16 ++++------------
+>  1 file changed, 4 insertions(+), 12 deletions(-)
 >
->
-> >  arch/arm64/boot/dts/microchip/sparx5.dtsi | 6 ++++--
-> >  1 file changed, 4 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/arch/arm64/boot/dts/microchip/sparx5.dtsi b/arch/arm64/boot/dts/microchip/sparx5.dtsi
-> > index 38da24c1796c..ea2b07ca2887 100644
-> > --- a/arch/arm64/boot/dts/microchip/sparx5.dtsi
-> > +++ b/arch/arm64/boot/dts/microchip/sparx5.dtsi
-> > @@ -40,14 +40,16 @@ cpu0: cpu@0 {
-> >                         compatible = "arm,cortex-a53";
-> >                         device_type = "cpu";
-> >                         reg = <0x0 0x0>;
-> > -                       enable-method = "psci";
-> > +                       enable-method = "spin-table";
-> > +                       cpu-release-addr = <0x0 0x0000fff8>;
-> >                         next-level-cache = <&L2_0>;
-> >                 };
->
-> I think the psci method should be kept in the dtsi file here, since actual
-> product boards would have to support it to be useful, you can just add
-> the spin-table as an override in the broken reference boards, with a
-> comment about which u-boot version is broken, in case this gets fixed
-> in the future.
+> diff --git a/drivers/hwtracing/coresight/coresight-priv.h b/drivers/hwtracing/coresight/coresight-priv.h
+> index ff1dd2092ac5..f2458b794ef3 100644
+> --- a/drivers/hwtracing/coresight/coresight-priv.h
+> +++ b/drivers/hwtracing/coresight/coresight-priv.h
+> @@ -40,31 +40,23 @@
+>  #define ETM_MODE_EXCL_KERN	BIT(30)
+>  #define ETM_MODE_EXCL_USER	BIT(31)
+>  
+> -typedef u32 (*coresight_read_fn)(const struct device *, u32 offset);
+> -#define __coresight_simple_func(type, func, name, lo_off, hi_off)	\
+> +#define __coresight_simple_show(type, name, lo_off, hi_off)		\
+>  static ssize_t name##_show(struct device *_dev,				\
+>  			   struct device_attribute *attr, char *buf)	\
+>  {									\
+>  	type *drvdata = dev_get_drvdata(_dev->parent);			\
+> -	coresight_read_fn fn = func;					\
+>  	u64 val;							\
+>  	pm_runtime_get_sync(_dev->parent);				\
+> -	if (fn)								\
+> -		val = (u64)fn(_dev->parent, lo_off);			\
+> -	else								\
+> -		val = coresight_read_reg_pair(drvdata->base,		\
+> -						 lo_off, hi_off);	\
+> +	val = coresight_read_reg_pair(drvdata->base, lo_off, hi_off);	\
+>  	pm_runtime_put_sync(_dev->parent);				\
+>  	return scnprintf(buf, PAGE_SIZE, "0x%llx\n", val);		\
 
+Sorry for the slightly out-of-scope reply, but I think you could also 
+take the opportunity to replace scnprintf() calls with sysfs_emit()   
+calls, if you think it is worth it.
 
-Well, that's the thing, Microchip-s BSP is not utilizing PSCI at all,
-they reverted
-to using spin-tables in both Linux and U-boot, and they dont implement
-PSCI at all.
-I highly doubt that any of the vendors are gonna implement it themselves.
+Thanks,
+German
 
-I have contacted Microchip and they confirmed that there is no PSCI
-support, they stated
-that they started working on PSCI but that images were larger and took
-longer to boot
-and they dont see any advantage so they removed that.
-
-So I doubt that we are gonna be seeing any boards that implement PSCI
-by default.
-I can tell you that it's annoying me as we are back to 2013 and using
-a GPIO for restart.
-
-U-boot version that I tested is the last one from their 2022.06 BSP,
-its based off U-boot 2019.10.
-
-Maybe somebody from Microchip can chime in on this?
-
-Regards,
-Robert
->
->
->        Arnd
-
-
-
--- 
-Robert Marko
-Staff Embedded Linux Engineer
-Sartura Ltd.
-Lendavska ulica 16a
-10000 Zagreb, Croatia
-Email: robert.marko@sartura.hr
-Web: www.sartura.hr
+>  }									\
+>  static DEVICE_ATTR_RO(name)
+>  
+> -#define coresight_simple_func(type, func, name, offset)			\
+> -	__coresight_simple_func(type, func, name, offset, -1)
+>  #define coresight_simple_reg32(type, name, offset)			\
+> -	__coresight_simple_func(type, NULL, name, offset, -1)
+> +	__coresight_simple_show(type, name, offset, -1)
+>  #define coresight_simple_reg64(type, name, lo_off, hi_off)		\
+> -	__coresight_simple_func(type, NULL, name, lo_off, hi_off)
+> +	__coresight_simple_show(type, name, lo_off, hi_off)
+>  
+>  extern const u32 coresight_barrier_pkt[4];
+>  #define CORESIGHT_BARRIER_PKT_SIZE (sizeof(coresight_barrier_pkt))
