@@ -2,189 +2,276 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCCE8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 20:14:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD74CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 20:14:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236982AbiGYUOB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 16:14:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45578 "EHLO
+        id S237113AbiGYUOE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 16:14:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236904AbiGYUNI (ORCPT
+        with ESMTP id S230079AbiGYUNP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 16:13:08 -0400
-Received: from mx0b-002e3701.pphosted.com (mx0b-002e3701.pphosted.com [148.163.143.35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B886220CD;
-        Mon, 25 Jul 2022 13:12:49 -0700 (PDT)
-Received: from pps.filterd (m0148664.ppops.net [127.0.0.1])
-        by mx0b-002e3701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26PHfnNG016472;
-        Mon, 25 Jul 2022 20:12:23 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references; s=pps0720;
- bh=5Nqtewat4vMxrcQ6TY7HcJu0xAbODflxKUiru2oT7xg=;
- b=l//Y4Wz/KohfMHbM0b5m4GgyRg0qLYQQls3rL1xYdphv60A47HG3CK9OGwUFk6OpoE3L
- fC8RgCEL4mQurztR27YzLzKZj/06pKjoH396cnx5ACbrDJrsPSniq3+E1IzvCRdztBlc
- hzSdg77OmTvDFdljTLGtShtg0e0paNYy71BGrnPtc9CgXXQ/CLEmyPdBYTW6RVQK6oAr
- tDXDYJYdCr4zdIo+MTXx1tLYrkChNMkVJnExy2Pm4/GQb3KaoQpwG6x73vxYM44p/PFJ
- M9SCtE/PbjVNqYf6GqT9YPbO9BxzR6+zUaCD7gxIQwAsaGgHqbdgXgkWaiMTDaYCPDkd uA== 
-Received: from p1lg14879.it.hpe.com (p1lg14879.it.hpe.com [16.230.97.200])
-        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3hhs7uw51h-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 25 Jul 2022 20:12:22 +0000
-Received: from p1lg14885.dc01.its.hpecorp.net (unknown [10.119.18.236])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Mon, 25 Jul 2022 16:13:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5407F22298;
+        Mon, 25 Jul 2022 13:12:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by p1lg14879.it.hpe.com (Postfix) with ESMTPS id AECC214790;
-        Mon, 25 Jul 2022 20:12:21 +0000 (UTC)
-Received: from hpe.com (unknown [16.231.227.36])
-        by p1lg14885.dc01.its.hpecorp.net (Postfix) with ESMTP id E35F58052E2;
-        Mon, 25 Jul 2022 20:12:20 +0000 (UTC)
-From:   nick.hawkins@hpe.com
-To:     nick.hawkins@hpe.com
-Cc:     broonie@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, verdun@hpe.com,
-        linux@armlinux.org.uk, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, arnd@arndb.de, joel@jms.id.au
-Subject: [PATCH v4 3/5] ARM: dts: hpe: Add spi driver node
-Date:   Mon, 25 Jul 2022 15:13:20 -0500
-Message-Id: <20220725201322.41810-4-nick.hawkins@hpe.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220725201322.41810-1-nick.hawkins@hpe.com>
-References: <20220725201322.41810-1-nick.hawkins@hpe.com>
-X-Proofpoint-GUID: PQyT4ZPdFI-1V6IOa1KhQ0H0OgWTtI59
-X-Proofpoint-ORIG-GUID: PQyT4ZPdFI-1V6IOa1KhQ0H0OgWTtI59
-X-HPE-SCL: -1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-25_12,2022-07-25_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 impostorscore=0
- mlxscore=0 phishscore=0 spamscore=0 clxscore=1015 lowpriorityscore=0
- adultscore=0 priorityscore=1501 malwarescore=0 mlxlogscore=452
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2207250082
+        by ams.source.kernel.org (Postfix) with ESMTPS id E967DB80E01;
+        Mon, 25 Jul 2022 20:12:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26606C341CD;
+        Mon, 25 Jul 2022 20:12:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658779970;
+        bh=GB41tQKICNtDkQFxA/QWse4BCeG2/JC8OIwADKGp+BU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=UlWvygg/aFBfab8a86NKNLXQ+CiZtg6hhFurO32VoLeflbw4zMJs5fw14O3RTBVPM
+         lrU7/WbkrCE4nFUEEC6yPxmZNOTxCPZtrheTKH60FuFgbX0jISneC7yM33H4G6Wm8e
+         fjJBxnWfjEYFTF25kyqZrXkcnweOlCWFpAMhQ/lNwwViRLKaX70vB2u2zcQaz6wBOu
+         6lksot0myAzIx+Tmw9ruON2/dBrUIWcAGFq7ZcICJHcPWVLnQVXhRD7Rt7/1noATuP
+         U5XzzK8VORS9+fxRuRehKIIrnZn3qtVEVaorY+4yvLOj2OWcENVwij2uIuPheVlCiW
+         FzZmj77m6+YXg==
+From:   Daniel Bristot de Oliveira <bristot@kernel.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Marco Elver <elver@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Gabriele Paoloni <gpaoloni@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Clark Williams <williams@redhat.com>,
+        Tao Zhou <tao.zhou@linux.dev>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-trace-devel@vger.kernel.org
+Subject: [PATCH V7 12/16] rv/monitor: Add the wip monitor skeleton created by dot2k
+Date:   Mon, 25 Jul 2022 22:11:24 +0200
+Message-Id: <2e7636700cfce9d167521a167d3c3b552ec22680.1658778484.git.bristot@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <cover.1658778484.git.bristot@kernel.org>
+References: <cover.1658778484.git.bristot@kernel.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nick Hawkins <nick.hawkins@hpe.com>
+THIS CODE IS NOT LINKED TO THE MAKEFILE.
 
-Add support for the SPI flash interface on the GXP SoC.
+This model does not compile because it lacks the instrumentation
+part, which will be added next. In the typical case, there will be
+only one patch, but it was split into two patches for educational
+purposes.
 
-Signed-off-by: Nick Hawkins <nick.hawkins@hpe.com>
+This is the direct output this command line:
+  $ dot2k -d tools/verification/models/wip.dot -t per_cpu
 
+Cc: Wim Van Sebroeck <wim@linux-watchdog.org>
+Cc: Guenter Roeck <linux@roeck-us.net>
+Cc: Jonathan Corbet <corbet@lwn.net>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Will Deacon <will@kernel.org>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Marco Elver <elver@google.com>
+Cc: Dmitry Vyukov <dvyukov@google.com>
+Cc: "Paul E. McKenney" <paulmck@kernel.org>
+Cc: Shuah Khan <skhan@linuxfoundation.org>
+Cc: Gabriele Paoloni <gpaoloni@redhat.com>
+Cc: Juri Lelli <juri.lelli@redhat.com>
+Cc: Clark Williams <williams@redhat.com>
+Cc: Tao Zhou <tao.zhou@linux.dev>
+Cc: Randy Dunlap <rdunlap@infradead.org>
+Cc: linux-doc@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-trace-devel@vger.kernel.org
+Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
 ---
-v4:
- *No change
-v3:
- *No change
-v2:
- *No change
----
- arch/arm/boot/dts/hpe-bmc-dl360gen10.dts | 58 ++++++++++++++++++++++++
- arch/arm/boot/dts/hpe-gxp.dtsi           | 21 ++++++++-
- 2 files changed, 78 insertions(+), 1 deletion(-)
+ kernel/trace/rv/monitors/wip/wip.c | 109 +++++++++++++++++++++++++++++
+ kernel/trace/rv/monitors/wip/wip.h |  46 ++++++++++++
+ 2 files changed, 155 insertions(+)
+ create mode 100644 kernel/trace/rv/monitors/wip/wip.c
+ create mode 100644 kernel/trace/rv/monitors/wip/wip.h
 
-diff --git a/arch/arm/boot/dts/hpe-bmc-dl360gen10.dts b/arch/arm/boot/dts/hpe-bmc-dl360gen10.dts
-index 3a7382ce40ef..d49dcef95c5c 100644
---- a/arch/arm/boot/dts/hpe-bmc-dl360gen10.dts
-+++ b/arch/arm/boot/dts/hpe-bmc-dl360gen10.dts
-@@ -24,3 +24,61 @@
- 		reg = <0x40000000 0x20000000>;
- 	};
- };
+diff --git a/kernel/trace/rv/monitors/wip/wip.c b/kernel/trace/rv/monitors/wip/wip.c
+new file mode 100644
+index 000000000000..79a054ca0cde
+--- /dev/null
++++ b/kernel/trace/rv/monitors/wip/wip.c
+@@ -0,0 +1,109 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <linux/ftrace.h>
++#include <linux/tracepoint.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/init.h>
++#include <linux/rv.h>
++#include <rv/instrumentation.h>
++#include <rv/da_monitor.h>
 +
-+&spifi {
-+	status = "okay";
-+	flash@0 {
-+		partitions {
-+			compatible = "fixed-partitions";
-+			#address-cells = <1>;
-+			#size-cells = <1>;
++#define MODULE_NAME "wip"
 +
-+			u-boot@0 {
-+				label = "u-boot";
-+				reg = <0x0 0x60000>;
-+			};
++/*
++ * XXX: include required tracepoint headers, e.g.,
++ * #include <linux/trace/events/sched.h>
++ */
++#include <trace/events/rv.h>
 +
-+			u-boot-env@60000 {
-+				label = "u-boot-env";
-+				reg = <0x60000 0x20000>;
-+			};
++/*
++ * This is the self-generated part of the monitor. Generally, there is no need
++ * to touch this section.
++ */
++#include "wip.h"
 +
-+			kernel@80000 {
-+				label = "kernel";
-+				reg = <0x80000 0x4c0000>;
-+			};
++/*
++ * Declare the deterministic automata monitor.
++ *
++ * The rv monitor reference is needed for the monitor declaration.
++ */
++struct rv_monitor rv_wip;
++DECLARE_DA_MON_PER_CPU(wip, unsigned char);
 +
-+			rofs@540000 {
-+				label = "rofs";
-+				reg = <0x540000 0x1740000>;
-+			};
++/*
++ * This is the instrumentation part of the monitor.
++ *
++ * This is the section where manual work is required. Here the kernel events
++ * are translated into model's event.
++ *
++ */
++static void handle_preempt_disable(void *data, /* XXX: fill header */)
++{
++	da_handle_event_wip(preempt_disable_wip);
++}
 +
-+			rwfs@1c80000 {
-+				label = "rwfs";
-+				reg = <0x1c80000 0x250000>;
-+			};
++static void handle_preempt_enable(void *data, /* XXX: fill header */)
++{
++	da_handle_event_wip(preempt_enable_wip);
++}
 +
-+			section@1ed0000{
-+				label = "section";
-+				reg = <0x1ed0000 0x130000>;
-+			};
-+		};
-+	};
-+	flash@1 {
-+		partitions {
-+			compatible = "fixed-partitions";
-+			#address-cells = <1>;
-+			#size-cells = <1>;
++static void handle_sched_waking(void *data, /* XXX: fill header */)
++{
++	da_handle_event_wip(sched_waking_wip);
++}
 +
-+			host-prime@0 {
-+				label = "host-prime";
-+				reg = <0x0 0x02000000>;
-+			};
++static int enable_wip(void)
++{
++	int retval;
 +
-+			host-second@2000000 {
-+				label = "host-second";
-+				reg = <0x02000000 0x02000000>;
-+			};
-+		};
-+	};
++	retval = da_monitor_init_wip();
++	if (retval)
++		return retval;
++
++	rv_attach_trace_probe("wip", /* XXX: tracepoint */, handle_preempt_disable);
++	rv_attach_trace_probe("wip", /* XXX: tracepoint */, handle_preempt_enable);
++	rv_attach_trace_probe("wip", /* XXX: tracepoint */, handle_sched_waking);
++
++	return 0;
++}
++
++static void disable_wip(void)
++{
++	rv_wip.enabled = 0;
++
++	rv_detach_trace_probe("wip", /* XXX: tracepoint */, handle_preempt_disable);
++	rv_detach_trace_probe("wip", /* XXX: tracepoint */, handle_preempt_enable);
++	rv_detach_trace_probe("wip", /* XXX: tracepoint */, handle_sched_waking);
++
++	da_monitor_destroy_wip();
++}
++
++/*
++ * This is the monitor register section.
++ */
++struct rv_monitor rv_wip = {
++	.name = "wip",
++	.description = "auto-generated wip",
++	.enable = enable_wip,
++	.disable = disable_wip,
++	.reset = da_monitor_reset_all_wip,
++	.enabled = 0,
 +};
-diff --git a/arch/arm/boot/dts/hpe-gxp.dtsi b/arch/arm/boot/dts/hpe-gxp.dtsi
-index cf735b3c4f35..f28349bdeee1 100644
---- a/arch/arm/boot/dts/hpe-gxp.dtsi
-+++ b/arch/arm/boot/dts/hpe-gxp.dtsi
-@@ -56,9 +56,28 @@
- 			compatible = "simple-bus";
- 			#address-cells = <1>;
- 			#size-cells = <1>;
--			ranges = <0x0 0xc0000000 0x30000000>;
-+			ranges = <0x0 0xc0000000 0x40000000>;
- 			dma-ranges;
- 
-+			spifi: spi@200 {
-+				compatible = "hpe,gxp-spifi";
-+				reg = <0x200 0x80>, <0xc000 0x100>, <0x38000000 0x8000000>;
-+				interrupts = <20>;
-+				interrupt-parent = <&vic0>;
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+				status = "disabled";
-+				flash@0 {
-+					reg = <0>;
-+					compatible = "jedec,spi-nor";
-+				};
 +
-+				flash@1 {
-+					reg = <1>;
-+					compatible = "jedec,spi-nor";
-+				};
-+			};
++static int register_wip(void)
++{
++	rv_register_monitor(&rv_wip);
++	return 0;
++}
 +
- 			vic0: interrupt-controller@eff0000 {
- 				compatible = "arm,pl192-vic";
- 				reg = <0xeff0000 0x1000>;
++static void unregister_wip(void)
++{
++	rv_unregister_monitor(&rv_wip);
++}
++
++module_init(register_wip);
++module_exit(unregister_wip);
++
++MODULE_LICENSE("GPL");
++MODULE_AUTHOR("dot2k: auto-generated");
++MODULE_DESCRIPTION("wip");
+diff --git a/kernel/trace/rv/monitors/wip/wip.h b/kernel/trace/rv/monitors/wip/wip.h
+new file mode 100644
+index 000000000000..c1c47e2305ef
+--- /dev/null
++++ b/kernel/trace/rv/monitors/wip/wip.h
+@@ -0,0 +1,46 @@
++/*
++ * Automatically generated C representation of wip automaton
++ * For further information about this format, see kernel documentation:
++ *   Documentation/trace/rv/deterministic_automata.rst
++ */
++
++enum states_wip {
++	preemptive_wip = 0,
++	non_preemptive_wip,
++	state_max_wip
++};
++
++#define INVALID_STATE state_max_wip
++
++enum events_wip {
++	preempt_disable_wip = 0,
++	preempt_enable_wip,
++	sched_waking_wip,
++	event_max_wip
++};
++
++struct automaton_wip {
++	char *state_names[state_max_wip];
++	char *event_names[event_max_wip];
++	unsigned char function[state_max_wip][event_max_wip];
++	unsigned char initial_state;
++	bool final_states[state_max_wip];
++};
++
++struct automaton_wip automaton_wip = {
++	.state_names = {
++		"preemptive",
++		"non_preemptive"
++	},
++	.event_names = {
++		"preempt_disable",
++		"preempt_enable",
++		"sched_waking"
++	},
++	.function = {
++		{ non_preemptive_wip,      INVALID_STATE,      INVALID_STATE },
++		{      INVALID_STATE,     preemptive_wip, non_preemptive_wip },
++	},
++	.initial_state = preemptive_wip,
++	.final_states = { 1, 0 },
++};
 -- 
-2.17.1
+2.35.1
 
