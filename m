@@ -2,81 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C8D4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 16:40:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E3B6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 16:40:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236419AbiGYQkG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 12:40:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36970 "EHLO
+        id S236513AbiGYQkO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 12:40:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236517AbiGYQjz (ORCPT
+        with ESMTP id S236366AbiGYQkD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 12:39:55 -0400
-Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8753E1DA56
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 09:39:51 -0700 (PDT)
-Received: by mail-qt1-x829.google.com with SMTP id x11so8606403qts.13
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 09:39:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=7xVgMqmN/86GQHcqXO1yw7VSBDbzPsFu44uQMKjUJeE=;
-        b=G1BoE6F8flgmzsQzfW3nkF7mptQonm328gZXYogDGG2IBIo/98/hfHLbhV7UAJkXQI
-         X8ynxusv76jgdnblo7OxdqtfwPoXk/rNSeoDm2clKMjo+cyP+MkOivoz3cjRpyBfFOMl
-         SIlEVNpakmxkbmqt4+XxLQLJ4QQ5PCkIi8fjAenSwWjxlcnBfytss8LLn3ERV7YvDbZa
-         +VH8K1yK0xvi9ijH2dX3DZyfC4rI5TE1UjZr8z9tc/TucWdSj8cQGKObuYxB1bKQ6CbK
-         2/AGAfXA0e/T+pDGaivYnTvUT5YBiUB+stnvoGNHnjm/BVx/LCqP/LJmcqT6Q4OGgHau
-         mRpg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=7xVgMqmN/86GQHcqXO1yw7VSBDbzPsFu44uQMKjUJeE=;
-        b=5NX/b9S5RYFHDaTfdmlp+y9UrOL/q5l/yTL00/F2cFrax8wYOLcAibLNnRCUU0hDtM
-         yxFMYTQWM1aoYDl/8CY3yBxNPiTjM7SBxvEfTTcfwQU3SY3spK15YaALkoB4mq+0BVE9
-         LOzIWEhPBgHPLC7Vx/ZMNnnqE0+0RfAfLRfqLXhh1Fn5d7eQ80W1RidU/dl7/O1hz3X0
-         e2j3jA+beKsG8p5oBhSC10SmjT7jJhY6Zf/UA87YajYfY0hEOI/PSr7h5uPQ/RfGMe+X
-         +W9uunSp9c7BONb9Ga0VrZpwzbiGlcOvu59gGgim6IUE/FEhtGbbmZj2XrtBXUp2ln8x
-         Lw4A==
-X-Gm-Message-State: AJIora/vapC/dBSFoaa6A46GpAnTOTEOVlFUuMCw/xt6nwh0oZE9CwHJ
-        A/etW6brizeKGk4fVCsNAoHaX7yZ/eE9Kw==
-X-Google-Smtp-Source: AGRyM1uKPvbHdE7zEZLQVfC2qN7mSkhxt10ohJq0YaOc0s83Re06cnlkFoQmtVFqPXBDnTfsAuzhwA==
-X-Received: by 2002:a05:622a:1710:b0:31f:340:41dc with SMTP id h16-20020a05622a171000b0031f034041dcmr11262377qtk.311.1658767190695;
-        Mon, 25 Jul 2022 09:39:50 -0700 (PDT)
-Received: from localhost ([2620:10d:c091:480::1:994f])
-        by smtp.gmail.com with ESMTPSA id r19-20020a37a813000000b006a6d7c3a82esm9041344qke.15.2022.07.25.09.39.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Jul 2022 09:39:50 -0700 (PDT)
-Date:   Mon, 25 Jul 2022 12:39:49 -0400
-From:   Johannes Weiner <hannes@cmpxchg.org>
-To:     Chengming Zhou <zhouchengming@bytedance.com>
-Cc:     surenb@google.com, mingo@redhat.com, peterz@infradead.org,
-        tj@kernel.org, corbet@lwn.net, akpm@linux-foundation.org,
-        rdunlap@infradead.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, songmuchun@bytedance.com,
-        cgroups@vger.kernel.org
-Subject: Re: [PATCH 3/9] sched/psi: move private helpers to sched/stats.h
-Message-ID: <Yt7HVcdXMYeNn6uS@cmpxchg.org>
-References: <20220721040439.2651-1-zhouchengming@bytedance.com>
- <20220721040439.2651-4-zhouchengming@bytedance.com>
+        Mon, 25 Jul 2022 12:40:03 -0400
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3030F1D0FC;
+        Mon, 25 Jul 2022 09:40:03 -0700 (PDT)
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26PEsjw2017948;
+        Mon, 25 Jul 2022 12:39:44 -0400
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3hgau76c5t-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 25 Jul 2022 12:39:44 -0400
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 26PGdhuT013500
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 25 Jul 2022 12:39:43 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Mon, 25 Jul
+ 2022 12:39:42 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Mon, 25 Jul 2022 12:39:42 -0400
+Received: from localhost.localdomain ([10.48.65.12])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 26PGd7uL014141;
+        Mon, 25 Jul 2022 12:39:37 -0400
+From:   <alexandru.tachici@analog.com>
+To:     <netdev@vger.kernel.org>
+CC:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <devicetree@vger.kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <gerhard@engleder-embedded.com>, <geert+renesas@glider.be>,
+        <joel@jms.id.au>, <stefan.wahren@i2se.com>, <wellslutw@gmail.com>,
+        <geert@linux-m68k.org>, <robh+dt@kernel.org>,
+        <d.michailidis@fungible.com>, <stephen@networkplumber.org>,
+        <l.stelmach@samsung.com>, <linux-kernel@vger.kernel.org>
+Subject: [net-next v2 3/3] dt-bindings: net: adin1110: Add docs
+Date:   Mon, 25 Jul 2022 19:53:12 +0300
+Message-ID: <20220725165312.59471-4-alexandru.tachici@analog.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220725165312.59471-1-alexandru.tachici@analog.com>
+References: <20220725165312.59471-1-alexandru.tachici@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220721040439.2651-4-zhouchengming@bytedance.com>
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: CjdHl1LzH5GQoLKv50SA1JQck2MJ3Q0r
+X-Proofpoint-ORIG-GUID: CjdHl1LzH5GQoLKv50SA1JQck2MJ3Q0r
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-25_12,2022-07-25_03,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 adultscore=0
+ bulkscore=0 spamscore=0 priorityscore=1501 lowpriorityscore=0
+ suspectscore=0 mlxscore=0 clxscore=1015 malwarescore=0 impostorscore=0
+ mlxlogscore=981 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2207250066
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 12:04:33PM +0800, Chengming Zhou wrote:
-> This patch move psi_task_change/psi_task_switch declarations out of
-> PSI public header, since they are only needed for implementing the
-> PSI stats tracking in sched/stats.h
-> 
-> psi_task_switch is obvious, psi_task_change can't be public helper
-> since it doesn't check psi_disabled static key. And there is no
-> any user now, so put it in sched/stats.h too.
-> 
-> Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+From: Alexandru Tachici <alexandru.tachici@analog.com>
 
-Acked-by: Johannes Weiner <hannes@cmpxchg.org>
+Add bindings for the ADIN1110/2111 MAC-PHY/SWITCH.
+
+Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
+---
+ .../devicetree/bindings/net/adi,adin1110.yaml | 81 +++++++++++++++++++
+ 1 file changed, 81 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/adi,adin1110.yaml
+
+diff --git a/Documentation/devicetree/bindings/net/adi,adin1110.yaml b/Documentation/devicetree/bindings/net/adi,adin1110.yaml
+new file mode 100644
+index 000000000000..cc83f08c0a55
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/adi,adin1110.yaml
+@@ -0,0 +1,81 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/adi,adin1110.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: ADI ADIN1110 MAC-PHY
++
++maintainers:
++  - Alexandru Tachici <alexandru.tachici@analog.com>
++
++description: |
++  The ADIN1110 is a low power single port 10BASE-T1L MAC-
++  PHY designed for industrial Ethernet applications. It integrates
++  an Ethernet PHY core with a MAC and all the associated analog
++  circuitry, input and output clock buffering.
++
++  The ADIN2111 is a low power, low complexity, two-Ethernet ports
++  switch with integrated 10BASE-T1L PHYs and one serial peripheral
++  interface (SPI) port. The device is designed for industrial Ethernet
++  applications using low power constrained nodes and is compliant
++  with the IEEE 802.3cg-2019 Ethernet standard for long reach
++  10 Mbps single pair Ethernet (SPE).
++
++  The device has a 4-wire SPI interface for communication
++  between the MAC and host processor.
++
++allOf:
++  - $ref: ethernet-controller.yaml#
++
++properties:
++  compatible:
++    enum:
++      - adi,adin1110
++      - adi,adin2111
++
++  '#address-cells':
++    const: 1
++
++  '#size-cells':
++    const: 0
++
++  reg:
++    maxItems: 1
++
++  adi,spi-crc:
++    description: |
++      Enable CRC8 checks on SPI read/writes.
++    type: boolean
++
++  interrupts:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - interrupts
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    spi {
++        ethernet@0 {
++            compatible = "adi,adin2111";
++            reg = <0>;
++            spi-max-frequency = <24500000>;
++
++            adi,spi-crc;
++
++            #address-cells = <1>;
++            #size-cells = <0>;
++
++            interrupt-parent = <&gpio>;
++            interrupts = <25 IRQ_TYPE_LEVEL_LOW>;
++
++            local-mac-address = [ 00 11 22 33 44 55 ];
++        };
++    };
+-- 
+2.25.1
+
