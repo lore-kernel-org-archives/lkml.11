@@ -2,174 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE4A1C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 18:37:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03019C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 18:37:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232727AbiGYShA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 14:37:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48576 "EHLO
+        id S236540AbiGYSh0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 14:37:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236084AbiGYSgx (ORCPT
+        with ESMTP id S236433AbiGYShR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 14:36:53 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80CCF1275A;
-        Mon, 25 Jul 2022 11:36:52 -0700 (PDT)
+        Mon, 25 Jul 2022 14:37:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E6361F61D
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 11:37:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D2785CE13B5;
-        Mon, 25 Jul 2022 18:36:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05C24C341C8;
-        Mon, 25 Jul 2022 18:36:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658774209;
-        bh=woYVIEWGYvf6j+v2IaoCj1jL+lqsBN5fv0iS4lSB0KU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=khGlJfutfJp8pfvEYcDLhlTXTvS5KYRX4sfXCDd2llmGB+Wv1fjUicwQPWac2Je5l
-         nN3gOQ2pU8h3pPOw2lgwf1PdGWQgS6R5ngkrF5C6/vlXH2CFP1SzFNdIc62NDnNolc
-         rRjmJvK0FbA/1OJpbjVTG4LAQGAlXVfuvmr46l6wzlNqUwBkp5X9RTHKJRNMix4EU7
-         AMHHn7t3iwF/jTlfl8iRQtK80/npJmGU3Yk/lz4ysKJxgriWZY3znI7Bv4YP7/64il
-         wMfUG8TIAGl09HWxG9RPIxt9z4+y0STSvmvSE90CpeWoeX8JufVm9e8rc1B09LI7CQ
-         9Vjwr8YsuJfVg==
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     linux-crypto@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        "Jason A . Donenfeld " <Jason@zx2c4.com>
-Subject: [PATCH v3 1/3] crypto: lib - create utils module and move __crypto_memneq into it
-Date:   Mon, 25 Jul 2022 11:36:34 -0700
-Message-Id: <20220725183636.97326-2-ebiggers@kernel.org>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220725183636.97326-1-ebiggers@kernel.org>
-References: <20220725183636.97326-1-ebiggers@kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7408360B8D
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 18:37:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BED5C341C8;
+        Mon, 25 Jul 2022 18:37:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linux-foundation.org;
+        s=korg; t=1658774228;
+        bh=4Wiq9Lnn7t8N7Hq87zFN59DfW7ymVLg6HgcOtVLTQfQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=U29+o6jrPUXpJQUGJlHNswJaua64HHPjufTlSYWyAG42fPxw2nOflcBBCR88GILr3
+         0YK0c/4s6lGn+KW7LjJO/8bED+WRioxjF5k3Hby1NGwjg1Pw9F+usDwdQEYd6pe4Fm
+         5w0xxZZhcoizKDOreVP9a0tEW+2Vb2OjGtj5R+rM=
+Date:   Mon, 25 Jul 2022 11:37:07 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Jaewon Kim <jaewon31.kim@samsung.com>
+Cc:     minchan@kernel.org, bhe@redhat.com, vbabka@suse.cz,
+        mgorman@techsingularity.net, hannes@cmpxchg.org, mhocko@kernel.org,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        gh21.hong@samsung.com, ytk.lee@samsung.com, jaewon31.kim@gmail.com
+Subject: Re: [PATCH v2] page_alloc: fix invalid watemark check on a negative
+ value
+Message-Id: <20220725113707.e03007d0761423f642c15749@linux-foundation.org>
+In-Reply-To: <20220725095212.25388-1-jaewon31.kim@samsung.com>
+References: <CGME20220725095214epcas1p1cc2019c792560da07d673809a3fc7ef3@epcas1p1.samsung.com>
+        <20220725095212.25388-1-jaewon31.kim@samsung.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+On Mon, 25 Jul 2022 18:52:12 +0900 Jaewon Kim <jaewon31.kim@samsung.com> wrote:
 
-As requested at
-https://lore.kernel.org/r/YtEgzHuuMts0YBCz@gondor.apana.org.au, move
-__crypto_memneq into lib/crypto/ and put it under a new tristate.  The
-tristate is CRYPTO_LIB_UTILS, and it builds a module libcryptoutils.  As
-more crypto library utilities are being added, this creates a single
-place for them to go without cluttering up the main lib directory.
+> There was a report that a task is waiting at the
+> throttle_direct_reclaim. The pgscan_direct_throttle in vmstat was
+> increasing.
+> 
+> This is a bug where zone_watermark_fast returns true even when the free
+> is very low. The commit f27ce0e14088 ("page_alloc: consider highatomic
+> reserve in watermark fast") changed the watermark fast to consider
+> highatomic reserve. But it did not handle a negative value case which
+> can be happened when reserved_highatomic pageblock is bigger than the
+> actual free.
+> 
+> If watermark is considered as ok for the negative value, allocating
+> contexts for order-0 will consume all free pages without direct reclaim,
+> and finally free page may become depleted except highatomic free.
+> 
+> Then allocating contexts may fall into throttle_direct_reclaim. This
+> symptom may easily happen in a system where wmark min is low and other
+> reclaimers like kswapd does not make free pages quickly.
+> 
+> Handle the negative case by using MIN.
+> 
 
-The module's main file will be lib/crypto/utils.c.  However, leave
-memneq.c as its own file because of its nonstandard license.
-
-Signed-off-by: Eric Biggers <ebiggers@google.com>
----
- crypto/Kconfig            | 2 +-
- lib/Kconfig               | 3 ---
- lib/Makefile              | 1 -
- lib/crypto/Kconfig        | 5 ++++-
- lib/crypto/Makefile       | 3 +++
- lib/{ => crypto}/memneq.c | 5 ++++-
- 6 files changed, 12 insertions(+), 7 deletions(-)
- rename lib/{ => crypto}/memneq.c (99%)
-
-diff --git a/crypto/Kconfig b/crypto/Kconfig
-index e72bf3fc298cc5..7a10441998209d 100644
---- a/crypto/Kconfig
-+++ b/crypto/Kconfig
-@@ -15,7 +15,7 @@ source "crypto/async_tx/Kconfig"
- #
- menuconfig CRYPTO
- 	tristate "Cryptographic API"
--	select LIB_MEMNEQ
-+	select CRYPTO_LIB_UTILS
- 	help
- 	  This option provides the core Cryptographic API.
- 
-diff --git a/lib/Kconfig b/lib/Kconfig
-index eaaad4d85bf24b..6a843639814fbf 100644
---- a/lib/Kconfig
-+++ b/lib/Kconfig
-@@ -120,9 +120,6 @@ config INDIRECT_IOMEM_FALLBACK
- 
- source "lib/crypto/Kconfig"
- 
--config LIB_MEMNEQ
--	bool
--
- config CRC_CCITT
- 	tristate "CRC-CCITT functions"
- 	help
-diff --git a/lib/Makefile b/lib/Makefile
-index 67482f5ec0e899..0557be76c2565f 100644
---- a/lib/Makefile
-+++ b/lib/Makefile
-@@ -251,7 +251,6 @@ obj-$(CONFIG_DIMLIB) += dim/
- obj-$(CONFIG_SIGNATURE) += digsig.o
- 
- lib-$(CONFIG_CLZ_TAB) += clz_tab.o
--lib-$(CONFIG_LIB_MEMNEQ) += memneq.o
- 
- obj-$(CONFIG_GENERIC_STRNCPY_FROM_USER) += strncpy_from_user.o
- obj-$(CONFIG_GENERIC_STRNLEN_USER) += strnlen_user.o
-diff --git a/lib/crypto/Kconfig b/lib/crypto/Kconfig
-index 9ff549f63540fa..b09d9d6546cbc3 100644
---- a/lib/crypto/Kconfig
-+++ b/lib/crypto/Kconfig
-@@ -2,6 +2,9 @@
- 
- menu "Crypto library routines"
- 
-+config CRYPTO_LIB_UTILS
-+	tristate
-+
- config CRYPTO_LIB_AES
- 	tristate
- 
-@@ -71,7 +74,7 @@ config CRYPTO_LIB_CURVE25519
- 	tristate "Curve25519 scalar multiplication library"
- 	depends on CRYPTO_ARCH_HAVE_LIB_CURVE25519 || !CRYPTO_ARCH_HAVE_LIB_CURVE25519
- 	select CRYPTO_LIB_CURVE25519_GENERIC if CRYPTO_ARCH_HAVE_LIB_CURVE25519=n
--	select LIB_MEMNEQ
-+	select CRYPTO_LIB_UTILS
- 	help
- 	  Enable the Curve25519 library interface. This interface may be
- 	  fulfilled by either the generic implementation or an arch-specific
-diff --git a/lib/crypto/Makefile b/lib/crypto/Makefile
-index 919cbb2c220d61..b956b3bae26aaf 100644
---- a/lib/crypto/Makefile
-+++ b/lib/crypto/Makefile
-@@ -1,5 +1,8 @@
- # SPDX-License-Identifier: GPL-2.0
- 
-+obj-$(CONFIG_CRYPTO_LIB_UTILS)			+= libcryptoutils.o
-+libcryptoutils-y				:= memneq.o
-+
- # chacha is used by the /dev/random driver which is always builtin
- obj-y						+= chacha.o
- obj-$(CONFIG_CRYPTO_LIB_CHACHA_GENERIC)		+= libchacha.o
-diff --git a/lib/memneq.c b/lib/crypto/memneq.c
-similarity index 99%
-rename from lib/memneq.c
-rename to lib/crypto/memneq.c
-index fb11608b1ec1dd..f2098318428478 100644
---- a/lib/memneq.c
-+++ b/lib/crypto/memneq.c
-@@ -59,8 +59,9 @@
-  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-  */
- 
--#include <crypto/algapi.h>
- #include <asm/unaligned.h>
-+#include <crypto/algapi.h>
-+#include <linux/module.h>
- 
- #ifndef __HAVE_ARCH_CRYPTO_MEMNEQ
- 
-@@ -174,3 +175,5 @@ noinline unsigned long __crypto_memneq(const void *a, const void *b,
- EXPORT_SYMBOL(__crypto_memneq);
- 
- #endif /* __HAVE_ARCH_CRYPTO_MEMNEQ */
-+
-+MODULE_LICENSE("GPL");
--- 
-2.37.0
-
+Thanks, I added cc:stable to this.
