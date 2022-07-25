@@ -2,150 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87387C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 13:59:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5BD9C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 13:59:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235221AbiGYN7U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 09:59:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41066 "EHLO
+        id S235248AbiGYN73 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 09:59:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232800AbiGYN7S (ORCPT
+        with ESMTP id S234910AbiGYN7Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 09:59:18 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 462DA12D32;
-        Mon, 25 Jul 2022 06:59:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658757557; x=1690293557;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   mime-version:in-reply-to;
-  bh=SebOtSYgmnmuVPxznPkmfUK1/G0u2P5tlySsXcB/PUU=;
-  b=bGcXY2/4z6O36tgR4Qp4AkcncqVM9WjWWKP13Jtdprf3Rv04RZr6IG27
-   908goCVErrot272ELiKmXSprrPGadPOPb9RZnBkO74LNVHsN+LDPPsjnw
-   Ep496qkywxaXVhCPIg2rV5asi+cLp+QC0kCEvEZnAdvqw5T3/dkVF3qt/
-   TNQ227GbNqoK8+GZqheBQmxDQYnCwwd+vygVXqEA30dtbdHXgnX4s/qDk
-   aVpWiDgVyj2Lo2OOhCZ9OhJb4sv4uQAYEd5C7b+YWtza6UoQ+ThWZdD4C
-   U6w9Hd3WmrfMezHSdFXXc0BRg6nk+6m0E4AEvyT36UF9D6WC3CEVkPmmG
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10418"; a="274567920"
-X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
-   d="scan'208";a="274567920"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2022 06:59:16 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
-   d="scan'208";a="627460234"
-Received: from chaop.bj.intel.com (HELO localhost) ([10.240.193.75])
-  by orsmga008.jf.intel.com with ESMTP; 25 Jul 2022 06:59:04 -0700
-Date:   Mon, 25 Jul 2022 21:54:16 +0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     "Gupta, Pankaj" <pankaj.gupta@amd.com>
-Cc:     David Hildenbrand <david@redhat.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org,
-        linux-doc@vger.kernel.org, qemu-devel@nongnu.org,
-        linux-kselftest@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
+        Mon, 25 Jul 2022 09:59:25 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ECBF315FEA
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 06:59:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658757564;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=sz4oM0IDHGPEgWtKcSAebAo6SpMhyBqLIAp4XwN/Ogo=;
+        b=OGpqYNAtTQwbh6aOo6Cgborjd6Vis1qHYf87CW3PiaRrsemNmkgtvyN+iQ2xmlpMeTx/Hl
+        7sbltBOER/SgJIfEUJI7k8wN32wGzbw1ycBM3BpZEnbF9vAyIkNzikaTi8yJUHbgiW0Ifp
+        0qfuXZ3jBDpUiqngzF/94oU+YULB9Lc=
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
+ [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-411-uU6C609SNmisyAQWZ-nuvQ-1; Mon, 25 Jul 2022 09:59:22 -0400
+X-MC-Unique: uU6C609SNmisyAQWZ-nuvQ-1
+Received: by mail-qt1-f199.google.com with SMTP id fz9-20020a05622a5a8900b0031eef501518so5592297qtb.9
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 06:59:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=sz4oM0IDHGPEgWtKcSAebAo6SpMhyBqLIAp4XwN/Ogo=;
+        b=QfaL8FEVQ14t7bexzDCNB0pe1B1GeuM42XmuIyJXNDAMDqdxCcdBn5bDkSugXUqRd5
+         kVUSRInYv9xz0jww2umMfWhMKSEz7UoHNBdPbYud3+sS0JLEHPkMCieEL+g4X+LYYWUW
+         5mDuItH990QXvNc7yk/27oywrl15QV1+5DnpwCelzmRL/I/FYTM6yTcjLzM7qXvfBV8M
+         DXgbYff5+P3F7UukjvQZDB1JgH/4dA05tYZf4HB15IH7Gh4PSPjjcm0G6EcNroWA+ysW
+         iUh4a+lZZyZ1h4bs3Zt44A3HGr24n9hTrLkji12dAVE9TxzO/hqd/42SLKbrGe9Dz4nT
+         pZYw==
+X-Gm-Message-State: AJIora9qpicvSDrHeUSPBWkjR5PZTCs9SHRAaNJitscjEtNZXJeLuAP9
+        MOs75sOr7UzEeMmeavaDkdYqjXWOMuEu9JgaY7VhM0wso2C/fh1x8aG6bkkz7cInZIs9l90+xLr
+        4722Glbuz/2i7g3Pt/WUpMGvi
+X-Received: by 2002:ac8:7e88:0:b0:31f:a54:c7c5 with SMTP id w8-20020ac87e88000000b0031f0a54c7c5mr10329558qtj.369.1658757561170;
+        Mon, 25 Jul 2022 06:59:21 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1sqSk4wFBDTtDsDvBWgWV1uumgTmnmG9ZtHQFKK8dfX4AsbLrchd50lM/ykeGmiZTJ7tb/P0w==
+X-Received: by 2002:ac8:7e88:0:b0:31f:a54:c7c5 with SMTP id w8-20020ac87e88000000b0031f0a54c7c5mr10329531qtj.369.1658757560726;
+        Mon, 25 Jul 2022 06:59:20 -0700 (PDT)
+Received: from xz-m1.local (bras-base-aurron9127w-grc-35-70-27-3-10.dsl.bell.ca. [70.27.3.10])
+        by smtp.gmail.com with ESMTPSA id h22-20020ac87156000000b0031ef622a6a2sm7282097qtp.17.2022.07.25.06.59.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Jul 2022 06:59:19 -0700 (PDT)
+Date:   Mon, 25 Jul 2022 09:59:18 -0400
+From:   Peter Xu <peterx@redhat.com>
+To:     Nadav Amit <nadav.amit@gmail.com>
+Cc:     David Hildenbrand <david@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Linux MM <linux-mm@kvack.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, aarcange@redhat.com, ddutile@redhat.com,
-        dhildenb@redhat.com, Quentin Perret <qperret@google.com>,
-        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: Re: [PATCH v7 01/14] mm: Add F_SEAL_AUTO_ALLOCATE seal to memfd
-Message-ID: <20220725135416.GD304216@chaop.bj.intel.com>
-Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
-References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
- <20220706082016.2603916-2-chao.p.peng@linux.intel.com>
- <f39c4f63-a511-4beb-b3a4-66589ddb5475@redhat.com>
- <c59fca89-cd0c-1724-210e-d9b01b375103@amd.com>
+        Andrea Arcangeli <aarcange@redhat.com>
+Subject: Re: [PATCH v3 1/3] mm/mprotect: Fix soft-dirty check in
+ can_change_pte_writable()
+Message-ID: <Yt6htg03lqj7FFU2@xz-m1.local>
+References: <20220721183338.27871-1-peterx@redhat.com>
+ <20220721183338.27871-2-peterx@redhat.com>
+ <e35e42ce-e942-141d-09e7-a3a7868f4abb@redhat.com>
+ <C2910936-FDCF-4ECF-B014-D985284B225A@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <c59fca89-cd0c-1724-210e-d9b01b375103@amd.com>
+In-Reply-To: <C2910936-FDCF-4ECF-B014-D985284B225A@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 12:27:03PM +0200, Gupta, Pankaj wrote:
+On Fri, Jul 22, 2022 at 10:21:00AM -0700, Nadav Amit wrote:
+> On Jul 22, 2022, at 12:08 AM, David Hildenbrand <david@redhat.com> wrote:
 > 
-> > > Normally, a write to unallocated space of a file or the hole of a sparse
-> > > file automatically causes space allocation, for memfd, this equals to
-> > > memory allocation. This new seal prevents such automatically allocating,
-> > > either this is from a direct write() or a write on the previously
-> > > mmap-ed area. The seal does not prevent fallocate() so an explicit
-> > > fallocate() can still cause allocating and can be used to reserve
-> > > memory.
-> > > 
-> > > This is used to prevent unintentional allocation from userspace on a
-> > > stray or careless write and any intentional allocation should use an
-> > > explicit fallocate(). One of the main usecases is to avoid memory double
-> > > allocation for confidential computing usage where we use two memfds to
-> > > back guest memory and at a single point only one memfd is alive and we
-> > > want to prevent memory allocation for the other memfd which may have
-> > > been mmap-ed previously. More discussion can be found at:
-> > > 
-> > >    https://lkml.org/lkml/2022/6/14/1255
-> > > 
-> > > Suggested-by: Sean Christopherson <seanjc@google.com>
-> > > Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
-> > > ---
-> > >   include/uapi/linux/fcntl.h |  1 +
-> > >   mm/memfd.c                 |  3 ++-
-> > >   mm/shmem.c                 | 16 ++++++++++++++--
-> > >   3 files changed, 17 insertions(+), 3 deletions(-)
-> > > 
-> > > diff --git a/include/uapi/linux/fcntl.h b/include/uapi/linux/fcntl.h
-> > > index 2f86b2ad6d7e..98bdabc8e309 100644
-> > > --- a/include/uapi/linux/fcntl.h
-> > > +++ b/include/uapi/linux/fcntl.h
-> > > @@ -43,6 +43,7 @@
-> > >   #define F_SEAL_GROW	0x0004	/* prevent file from growing */
-> > >   #define F_SEAL_WRITE	0x0008	/* prevent writes */
-> > >   #define F_SEAL_FUTURE_WRITE	0x0010  /* prevent future writes while mapped */
-> > > +#define F_SEAL_AUTO_ALLOCATE	0x0020  /* prevent allocation for writes */
+> >> +static inline bool vma_soft_dirty_enabled(struct vm_area_struct *vma)
+> >> +{
+> >> +	/*
+> >> +	 * NOTE: we must check this before VM_SOFTDIRTY on soft-dirty
+> >> +	 * enablements, because when without soft-dirty being compiled in,
+> >> +	 * VM_SOFTDIRTY is defined as 0x0, then !(vm_flags & VM_SOFTDIRTY)
+> >> +	 * will be constantly true.
+> >> +	 */
+> >> +	if (!IS_ENABLED(CONFIG_MEM_SOFT_DIRTY))
+> >> +		return false;
+> >> +
+> >> +	/*
+> >> +	 * Soft-dirty is kind of special: its tracking is enabled when the
+> >> +	 * vma flags not set.
+> >> +	 */
+> >> +	return !(vma->vm_flags & VM_SOFTDIRTY);
+> >> +}
 > > 
-> > Why only "on writes" and not "on reads". IIRC, shmem doesn't support the
-> > shared zeropage, so you'll simply allocate a new page via read() or on
-> > read faults.
-> > 
-> > 
-> > Also, I *think* you can place pages via userfaultfd into shmem. Not sure
-> > if that would count "auto alloc", but it would certainly bypass fallocate().
+> > That will come in handy in other patches I'm cooking.
 > 
-> I was also thinking this at the same time, but for different reason:
-> 
-> "Want to populate private preboot memory with firmware payload", so was
-> thinking userfaulftd could be an option as direct writes are restricted?
+> clear_refs_write() also comes to mind as well (for consistency; I see no
+> correctness or performance issue).
 
-If that can be a side effect, I definitely glad to see it, though I'm
-still not clear how userfaultfd can be particularly helpful for that.
+I explicitly didn't touch that because current code is better..
 
-Chao
-> 
-> Thanks,
-> Pankaj
-> 
-> 
-> 
-> 
+        mas_for_each(&mas, vma, ULONG_MAX) {
+                if (!(vma->vm_flags & VM_SOFTDIRTY))
+                        continue;
+                vma->vm_flags &= ~VM_SOFTDIRTY;
+                vma_set_page_prot(vma);
+        }
+
+It means when !CONFIG_MEM_SOFT_DIRTY the "if" will always be true and all
+vma will be jumped.
+
+If replaced with vma_soft_dirty_enabled() it'll be instead constantly false
+returned.  We'll redo vma_set_page_prot() even if unnecessary.
+
+Here if we want to add the "CONFIG_MEM_SOFT_DIRTY" into equation it can be:
+
+diff --git a/fs/proc/task_mmu.c b/fs/proc/task_mmu.c
+index f8cd58846a28..ab6f2913b5a5 100644
+--- a/fs/proc/task_mmu.c
++++ b/fs/proc/task_mmu.c
+@@ -1290,6 +1290,8 @@ static ssize_t clear_refs_write(struct file *file, const char __user *buf,
+                }
+ 
+                if (type == CLEAR_REFS_SOFT_DIRTY) {
++                       if (!IS_ENABLED(CONFIG_MEM_SOFT_DIRTY))
++                               goto out_unlock;
+                        mas_for_each(&mas, vma, ULONG_MAX) {
+                                if (!(vma->vm_flags & VM_SOFTDIRTY))
+                                        continue;
+
+Or even at the entrance to not take the mm sem.  But it's not anything
+important IMHO, so if no one asking for that I'll just leave it be.
+
+Thanks,
+
+-- 
+Peter Xu
+
