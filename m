@@ -2,86 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8304C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 10:09:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1389C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 10:10:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232201AbiGYKJi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 06:09:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36886 "EHLO
+        id S234567AbiGYKKZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 06:10:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234626AbiGYKJX (ORCPT
+        with ESMTP id S234793AbiGYKKC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 06:09:23 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47C2017E10
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 03:09:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1658743761; x=1690279761;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=zVQNjZCZbrx7YBoEsGRPaUn9ETcmC+pt2UNxfnvHVEk=;
-  b=y4F9VJKMSEFZn8z5GJVgHJb20dVwlxvj3kBXtY3mnxtqlH2fJzIwHEjk
-   2Mca3Z6ROpjbt5MFFiAqZTvYT4KSQ0v9DzDMSVFK4iZcJNLIDX32sbx0i
-   ooDS02HSaNTkFOPpW4jnHQiXxX2pImo8CMNZIVT3l2YiAcLParH1zkEEL
-   0zYnXem2rzqSvRgzewdZdF+6OK7Xn3opgGLIgNyzKmLXGD7drOMiosZWy
-   lrmyVyaLCLwI4PNqiUnHPHgFTtRgtW7l310IGCRoC0AUR1eT0c4b8h7Ki
-   24RljkgwrFNjjxZJt3diHneT7t7uVNor7Sgt7iyawrnLhvsKhSvjJb73+
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.93,192,1654585200"; 
-   d="scan'208";a="173496326"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 25 Jul 2022 03:09:20 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 25 Jul 2022 03:09:19 -0700
-Received: from localhost.localdomain (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 25 Jul 2022 03:09:17 -0700
-From:   Claudiu Beznea <claudiu.beznea@microchip.com>
-To:     <lgirdwood@gmail.com>, <broonie@kernel.org>, <perex@perex.cz>,
-        <tiwai@suse.com>, <nicolas.ferre@microchip.com>,
-        <alexandre.belloni@bootlin.com>
-CC:     <alsa-devel@alsa-project.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH 5/5] ASoC: mchp-spdiftx: add and remove black line around MODULE_DEVICE_TABLE()
-Date:   Mon, 25 Jul 2022 13:11:30 +0300
-Message-ID: <20220725101130.1780393-6-claudiu.beznea@microchip.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220725101130.1780393-1-claudiu.beznea@microchip.com>
-References: <20220725101130.1780393-1-claudiu.beznea@microchip.com>
+        Mon, 25 Jul 2022 06:10:02 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58C3C1836D
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 03:09:58 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id bp15so19649430ejb.6
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 03:09:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sLw8Yfzm3c8kou871/a66dUzbZwPUL/eRicOlobjC40=;
+        b=rNPx12rA0JA1rhlipxU/3mPh+AskwJ44Bks9qWvCObOesppBf4cnHDrZ2h29VEONx7
+         MLC0UOa95uzVUTQu5eiflxrNjY7d4YVXKIvwT2IsnJo+6PrBHyak9XmDpC0Cvm/R/4o/
+         HCpIN5cvN+7uTri6ksW3XMcrgjLUmGFJjza/WPrMCSh8PTKJA8RotvW5rraIRFpUoDL2
+         +SKrKL1Hczv056hEIAgkBAB+BoCi9BnHvuxtecN8JAPYVzdnBdgKLEC3+rwPZnEMViMW
+         8qXn6rIkOTtiYzl1qUmIpX+wxAJCiwOjLwpfj1VlVFetFd/0dgA9oyFTiFm7HeAmlhM3
+         W76w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sLw8Yfzm3c8kou871/a66dUzbZwPUL/eRicOlobjC40=;
+        b=6EFnzzE2nIfVN8/OhSXlGmGV2zPtFfp//XgHvAjQAYkis2FBUL8H98K7m77Jl9IwWs
+         Kp7Ysc1vXOYUPj3Aw+nhWBVZ5sf1AsBaAMtphy4+lHp51q1MVrmU4xWhNqoYIuNDACxI
+         KJ82Fei+FMusQ5UXKd4f9ngyRukxS82HTg5wA0mchmbgKDLB3u7oPXvtSTbGz2UQP6oi
+         Ucgs0Hvv+42G2R2t7n+mohcILjTfFjjjqs2we8JJt+FX4+xY0Zva0giLAc7/hMGAhvTU
+         TH1PMSqf+qX6Og80EtxqRe5uOVxriW2Tv586OGMiAuDTPXz8R0MyHM8ufKeTohk5MH8k
+         52fA==
+X-Gm-Message-State: AJIora80EuiE6LAi2JdAUMtd64yfEN7JJTTaDewpZDSKIXcNKI0LFY0C
+        +h5PYYjBl2SlYM+uvChBwnQwu1/VR1CffEBKWDaBIw==
+X-Google-Smtp-Source: AGRyM1v/DspXr7LSCx0zgVSUMOuoILyjQqe7u4bZntAclyVf6lbwv8tujUS1qi3NrDamF82/VHxr1m4z2orqDMaAHsY=
+X-Received: by 2002:a17:907:9606:b0:72f:826d:21b4 with SMTP id
+ gb6-20020a170907960600b0072f826d21b4mr9600818ejc.510.1658743796375; Mon, 25
+ Jul 2022 03:09:56 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+References: <20220722182248.1.I20e96c839200bb75cd6af80384f16c8c01498f57@changeid>
+ <CABBYNZ+k+ZOVNi+GYgdiK+B+tqKQXTWYp1QG4JSE_7EwZHNBMw@mail.gmail.com>
+In-Reply-To: <CABBYNZ+k+ZOVNi+GYgdiK+B+tqKQXTWYp1QG4JSE_7EwZHNBMw@mail.gmail.com>
+From:   Archie Pusaka <apusaka@google.com>
+Date:   Mon, 25 Jul 2022 18:09:44 +0800
+Message-ID: <CAJQfnxFdnjHdPTdfgE+v=ero01H0dE6LsJ9z3K5LCZ28gogYtw@mail.gmail.com>
+Subject: Re: [PATCH] Bluetooth: hci_sync: Use safe loop when adding accept list
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
+        Archie Pusaka <apusaka@chromium.org>,
+        Zhengping Jiang <jiangzp@google.com>,
+        Michael Sun <michaelfsun@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add blank line after MODULE_DEVICE_TABLE() and remove the one
-before it.
+Hi Eric and Luiz,
 
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
----
- sound/soc/atmel/mchp-spdiftx.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+>  "the userspace can still remove devices" is a bit vague.
+I mean removing devices via MGMT command.
 
-diff --git a/sound/soc/atmel/mchp-spdiftx.c b/sound/soc/atmel/mchp-spdiftx.c
-index 74729ec8423b..e8f4ff1b7c7c 100644
---- a/sound/soc/atmel/mchp-spdiftx.c
-+++ b/sound/soc/atmel/mchp-spdiftx.c
-@@ -760,8 +760,8 @@ static const struct of_device_id mchp_spdiftx_dt_ids[] = {
- 	},
- 	{ /* sentinel */ }
- };
--
- MODULE_DEVICE_TABLE(of, mchp_spdiftx_dt_ids);
-+
- static int mchp_spdiftx_probe(struct platform_device *pdev)
- {
- 	struct device_node *np = pdev->dev.of_node;
--- 
-2.34.1
+> It seems that the issue at hand is that hci_le_add_accept_list_sync() can
+> move the current item from  pend_le_conns / pend_le_reports lists ?
+The issue is, hci_le_add_accept_list_sync() is iterating the lists
+when the content is being removed elsewhere.
 
+> Hopefully these lists can not be changed by other threads while
+> hci_update_accept_list_sync() is running ?
+Probably. Looks like Luiz also thinks the same way.
+
+> Please add a Fixes: tag
+Unfortunately I don't know when this is introduced.
+
+> Hmm if this happens it means other threads are actually interfering
+> with cmd_sync queue which is something that is probably a bug since
+> the whole point of cmd_sync is to serialize the commands making it
+> easier to do more complex state updates (such accept+resolve list
+> updates)
+Thanks, I haven't fully grasped the intention of having hci_sync and
+how to properly use it.
+
+> we could perhaps still apply this change as a workaround but
+> ultimately I think it would be better to add a mgmt-tester reproducing
+> the issue and have a proper fix of the code updating the list from a
+> different thread.
+Agree. Having said that, I don't think currently I have the time to
+invest in writing a test and a proper fix, so my apologies on this.
+
+Best,
+Archie
