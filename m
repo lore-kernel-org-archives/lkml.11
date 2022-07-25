@@ -2,159 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3B39C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 08:53:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01A41C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 08:53:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234267AbiGYIxV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 04:53:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36932 "EHLO
+        id S234276AbiGYIxu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 04:53:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233186AbiGYIxR (ORCPT
+        with ESMTP id S233186AbiGYIxt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 04:53:17 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C902140EC
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 01:53:16 -0700 (PDT)
-Date:   Mon, 25 Jul 2022 08:53:13 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1658739194;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=h07meF+OpyOGWFqSjatb90Ng9PCZSeyT/td6Yf8xpu4=;
-        b=LhjIsMtP8ti/X3KNzzyVHB68ebEkzGA133oBXDRDqIwerJUbybuyPNDzze8b4XB/51Gnjm
-        EUbQqtkmU8RIWzMr+UIb81ItDINOI1AdqKAkXkVizCwNot1hSZVR7Yd4gmTCy6VNc6fLJa
-        6iO0KEwNSWkKiBXVqQqPPW+1kt9utrThj3zBT60yF1LUjUVL8hf4ORzUKe3Llj4FP/+NZJ
-        NfXX/lZOq5DoieTyxtU+STkgrIEWqyJs9ptix0wwiLhIEW0VGGdGf1jzGkHKSnn1D9ZWsX
-        JPHoKvIQ47/gnStXcO8u9VdPk8WO3oo4rtOuyVTPQVq8NqomviBSNM29rT6Tnw==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1658739194;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=h07meF+OpyOGWFqSjatb90Ng9PCZSeyT/td6Yf8xpu4=;
-        b=6srZl7bD8xAWxb9HR3yLAIewreVjWLeMK2Qxt9gZSMw8Dsw3tcs45H919AJebxL1ubclQ5
-        sqPSKqBm/wwRLwAA==
-From:   "irqchip-bot for Ben Dooks" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-kernel@vger.kernel.org
-Subject: [irqchip: irq/irqchip-next] irqchip/mmp: Declare init functions in
- common header file
-Cc:     Ben Dooks <ben-linux@fluff.org>, Marc Zyngier <maz@kernel.org>,
-        tglx@linutronix.de
-In-Reply-To: <20220724222152.551850-1-ben-linux@fluff.org>
-References: <20220724222152.551850-1-ben-linux@fluff.org>
+        Mon, 25 Jul 2022 04:53:49 -0400
+Received: from ZXSHCAS2.zhaoxin.com (ZXSHCAS2.zhaoxin.com [210.0.225.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1883B14D07;
+        Mon, 25 Jul 2022 01:53:47 -0700 (PDT)
+Received: from zxbjmbx1.zhaoxin.com (10.29.252.163) by ZXSHCAS2.zhaoxin.com
+ (10.28.252.162) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.27; Mon, 25 Jul
+ 2022 16:52:20 +0800
+Received: from [10.29.8.21] (10.29.8.21) by zxbjmbx1.zhaoxin.com
+ (10.29.252.163) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.27; Mon, 25 Jul
+ 2022 16:52:18 +0800
+Message-ID: <0db4dc76-68cf-dc84-1a1b-ebe5abbbff8e@zhaoxin.com>
+Date:   Mon, 25 Jul 2022 16:52:17 +0800
 MIME-Version: 1.0
-Message-ID: <165873919320.15455.15230987291054613592.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2] USB: HCD: Fix URB giveback issue in tasklet function
+Content-Language: en-US
+To:     Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        <stern@rowland.harvard.edu>, <gregkh@linuxfoundation.org>,
+        <kishon@ti.com>, <dianders@chromium.org>, <s.shtylyov@omp.ru>,
+        <mka@chromium.org>, <ming.lei@canonical.com>,
+        <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <tonywwang@zhaoxin.com>, <weitaowang@zhaoxin.com>
+References: <20220725065251.832087-1-WeitaoWang-oc@zhaoxin.com>
+ <3b9a3fec-7716-3e9d-1e91-cfdac46845f7@gmail.com>
+From:   "WeitaoWang-oc@zhaoxin.com" <WeitaoWang-oc@zhaoxin.com>
+In-Reply-To: <3b9a3fec-7716-3e9d-1e91-cfdac46845f7@gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.29.8.21]
+X-ClientProxiedBy: ZXSHCAS1.zhaoxin.com (10.28.252.161) To
+ zxbjmbx1.zhaoxin.com (10.29.252.163)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the irq/irqchip-next branch of irqchip:
+On 2022/7/25 16:29, Sergei Shtylyov wrote:
+> Hello!
+> 
+> On 7/25/22 9:52 AM, Weitao Wang wrote:
+> 
+>> Usb core introduce the mechanism of giveback of URB in tasklet context to
+>> reduce hardware interrupt handling time. On some test situation(such as
+>> FIO with 4KB block size), when tasklet callback function called to
+>> giveback URB, interrupt handler add URB node to the bh->head list also.
+>> If check bh->head list again after finish all URB giveback of local_list,
+>> then it may introduce a "dynamic balance" between giveback URB and add URB
+>> to bh->head list. This tasklet callback function may not exit for a long
+>> time, which will cause other tasklet function calls to be delayed. Some
+>> real-time applications(such as KB and Mouse) will see noticeable lag.
+>>
+>> Fix this issue by taking new URBs giveback in next tasklet function call.
+>> Add a member high_prio for structure giveback_urb_bh and replace the local
+>> high_prio_bh variable with this structure member in usb_hcd_giveback_urb.
+>>
+>> Fixes: 94dfd7edfd5c ("USB: HCD: support giveback of URB in tasklet context")
+>> Signed-off-by: Weitao Wang <WeitaoWang-oc@zhaoxin.com>
+>> ---
+>> v1->v2:
+>>   - Fix compile warning by remove label "restart".
+>>   - Modify the patch description info.
+>>   - Change structure member from hi_priority to high_prio.
+>>
+>>   drivers/usb/core/hcd.c  | 25 ++++++++++++++-----------
+>>   include/linux/usb/hcd.h |  1 +
+>>   2 files changed, 15 insertions(+), 11 deletions(-)
+>>
+>> diff --git a/drivers/usb/core/hcd.c b/drivers/usb/core/hcd.c
+>> index 06eea8848ccc..1feb9a604380 100644
+>> --- a/drivers/usb/core/hcd.c
+>> +++ b/drivers/usb/core/hcd.c
+> [...]
+>> @@ -2959,6 +2961,7 @@ int usb_add_hcd(struct usb_hcd *hcd,
+>>   
+>>   	/* initialize tasklets */
+>>   	init_giveback_urb_bh(&hcd->high_prio_bh);
+>> +	hcd->high_prio_bh.high_prio = 1;
+> 
+>     s/1/true/?
+Okay,this Boolean variable should be initialized to ture.
+Thanks for your suggestion.
 
-Commit-ID:     9d9b010f12cc4e254bbba32d79c965b564a8957f
-Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/9d9b010f12cc4e254bbba32d79c965b564a8957f
-Author:        Ben Dooks <ben-linux@fluff.org>
-AuthorDate:    Sun, 24 Jul 2022 23:21:52 +01:00
-Committer:     Marc Zyngier <maz@kernel.org>
-CommitterDate: Mon, 25 Jul 2022 09:42:24 +01:00
-
-irqchip/mmp: Declare init functions in common header file
-
-The functions icu_init_irq and mmp2_init_icu are exported
-from this code, so declare them in the header file to avoid
-the following sparse warnings:
-
-drivers/irqchip/irq-mmp.c:248:13: warning: symbol 'icu_init_irq' was not declared. Should it be static?
-drivers/irqchip/irq-mmp.c:271:13: warning: symbol 'mmp2_init_icu' was not declared. Should it be static?
-
-Signed-off-by: Ben Dooks <ben-linux@fluff.org>
-[maz: fixup commit message]
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20220724222152.551850-1-ben-linux@fluff.org
----
- arch/arm/mach-mmp/mmp2.h    | 2 +-
- arch/arm/mach-mmp/pxa168.h  | 2 +-
- arch/arm/mach-mmp/pxa910.h  | 2 +-
- include/linux/irqchip/mmp.h | 3 +++
- 4 files changed, 6 insertions(+), 3 deletions(-)
-
-diff --git a/arch/arm/mach-mmp/mmp2.h b/arch/arm/mach-mmp/mmp2.h
-index 3ebc1bb..7f80b90 100644
---- a/arch/arm/mach-mmp/mmp2.h
-+++ b/arch/arm/mach-mmp/mmp2.h
-@@ -5,13 +5,13 @@
- #include <linux/platform_data/pxa_sdhci.h>
- 
- extern void mmp2_timer_init(void);
--extern void __init mmp2_init_icu(void);
- extern void __init mmp2_init_irq(void);
- extern void mmp2_clear_pmic_int(void);
- 
- #include <linux/i2c.h>
- #include <linux/platform_data/i2c-pxa.h>
- #include <linux/platform_data/dma-mmp_tdma.h>
-+#include <linux/irqchip/mmp.h>
- 
- #include "devices.h"
- 
-diff --git a/arch/arm/mach-mmp/pxa168.h b/arch/arm/mach-mmp/pxa168.h
-index 34f907c..c1547e0 100644
---- a/arch/arm/mach-mmp/pxa168.h
-+++ b/arch/arm/mach-mmp/pxa168.h
-@@ -5,7 +5,6 @@
- #include <linux/reboot.h>
- 
- extern void pxa168_timer_init(void);
--extern void __init icu_init_irq(void);
- extern void __init pxa168_init_irq(void);
- extern void pxa168_restart(enum reboot_mode, const char *);
- extern void pxa168_clear_keypad_wakeup(void);
-@@ -18,6 +17,7 @@ extern void pxa168_clear_keypad_wakeup(void);
- #include <linux/pxa168_eth.h>
- #include <linux/platform_data/mv_usb.h>
- #include <linux/soc/mmp/cputype.h>
-+#include <linux/irqchip/mmp.h>
- 
- #include "devices.h"
- 
-diff --git a/arch/arm/mach-mmp/pxa910.h b/arch/arm/mach-mmp/pxa910.h
-index 6ace5a8..7d22921 100644
---- a/arch/arm/mach-mmp/pxa910.h
-+++ b/arch/arm/mach-mmp/pxa910.h
-@@ -3,13 +3,13 @@
- #define __ASM_MACH_PXA910_H
- 
- extern void pxa910_timer_init(void);
--extern void __init icu_init_irq(void);
- extern void __init pxa910_init_irq(void);
- 
- #include <linux/i2c.h>
- #include <linux/platform_data/i2c-pxa.h>
- #include <linux/platform_data/mtd-nand-pxa3xx.h>
- #include <video/mmp_disp.h>
-+#include <linux/irqchip/mmp.h>
- 
- #include "devices.h"
- 
-diff --git a/include/linux/irqchip/mmp.h b/include/linux/irqchip/mmp.h
-index cb8455c..aa18137 100644
---- a/include/linux/irqchip/mmp.h
-+++ b/include/linux/irqchip/mmp.h
-@@ -4,4 +4,7 @@
- 
- extern struct irq_chip icu_irq_chip;
- 
-+extern void icu_init_irq(void);
-+extern void mmp2_init_icu(void);
-+
- #endif	/* __IRQCHIP_MMP_H */
+weitao
+>>   	init_giveback_urb_bh(&k->low_prio_bh);
+>>   
+>>   	/* enable irqs just before we start the controller,
+>> diff --git a/include/linux/usb/hcd.h b/include/linux/usb/hcd.h
+>> index 2c1fc9212cf2..98d1921f02b1 100644
+>> --- a/include/linux/usb/hcd.h
+>> +++ b/include/linux/usb/hcd.h
+>> @@ -66,6 +66,7 @@
+>>   
+>>   struct giveback_urb_bh {
+>>   	bool running;
+>> +	bool high_prio;
+>>   	spinlock_t lock;
+>>   	struct list_head  head;
+>>   	struct tasklet_struct bh;
+> 
+> MBR, Sergey
+> .
