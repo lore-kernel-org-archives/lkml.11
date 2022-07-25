@@ -2,84 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FC22C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 11:07:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A630C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 11:09:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234810AbiGYLHd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 07:07:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47344 "EHLO
+        id S233871AbiGYLJY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 07:09:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49224 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234847AbiGYLHT (ORCPT
+        with ESMTP id S229561AbiGYLJV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 07:07:19 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18FD11A043;
-        Mon, 25 Jul 2022 04:07:12 -0700 (PDT)
-X-UUID: 715f399c6a8541359826b97472a9d49b-20220725
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:d682d56f-4774-4e47-b078-4f1a6a69f0a7,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:-5
-X-CID-META: VersionHash:0f94e32,CLOUDID:2b986eb3-06d2-48ef-b2dd-540836705165,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-        ,QS:nil,BEC:nil,COL:0
-X-UUID: 715f399c6a8541359826b97472a9d49b-20220725
-Received: from mtkmbs11n1.mediatek.inc [(172.21.101.185)] by mailgw01.mediatek.com
-        (envelope-from <allen-kh.cheng@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1709852671; Mon, 25 Jul 2022 19:07:06 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Mon, 25 Jul 2022 19:07:04 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
- mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.15 via Frontend Transport; Mon, 25 Jul 2022 19:07:04 +0800
-From:   Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-CC:     <angelogioacchino.delregno@collabora.com>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Subject: [PATCH v2 0/2] MT8186 pinctrl properties adjustments
-Date:   Mon, 25 Jul 2022 19:07:00 +0800
-Message-ID: <20220725110702.11362-1-allen-kh.cheng@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+        Mon, 25 Jul 2022 07:09:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3979E1208C;
+        Mon, 25 Jul 2022 04:09:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DC6CFB80D94;
+        Mon, 25 Jul 2022 11:09:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E78AC341C6;
+        Mon, 25 Jul 2022 11:09:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658747357;
+        bh=7s8wumHi7uCMnB5Lfg2/f4FNxAw+WQi+UNCXFTORKmI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=X5HW/OumUS2GR5HxkR84tIUnt8t6ElnWNHP/sdYrpmK0Wl0mNrHtt7gCjUIw0kN0i
+         VbjfGzLg3dw7Y3QtGhgj1tToo/belxF6WRPii2diHisgKlL43xL2aUV+Z4xZN6k0jH
+         U6FBEYmDJGLxJJVURlaq+6MyDT+0SB8n8s2nFu+r4E7EqThHZxJode0lJKmzDhtdqq
+         ATI4HxVPH9RgYOTPZpP1XuYZ8ctXrWl2HluiFepcc8Cj7pl0dzav47GXGw20m5iFxT
+         MIq/UNz+o8Qjkfr6tZY3mBRe6FSIpuccqEHauNOpszD2L8gEQbWK0hiZjdJqtymh0N
+         DsmB4S0At0O5A==
+Date:   Mon, 25 Jul 2022 13:09:11 +0200
+From:   Robert Richter <rric@kernel.org>
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     Toshi Kani <toshi.kani@hpe.com>, mchehab@kernel.org,
+        elliott@hpe.com, linux-edac@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] EDAC/ghes: Fix buffer overflow in ghes_edac_register()
+Message-ID: <Yt5510+uLKzv+Qvt@rric.localdomain>
+References: <20220721180503.896050-1-toshi.kani@hpe.com>
+ <YtqkMicKdZdPdUWB@zn.tnic>
+ <Yt5oAjbZ5Koy9v5i@rric.localdomain>
+ <Yt5s/f/jyRcFY1Md@zn.tnic>
+ <Yt50Pp3kQRCtSqw6@rric.localdomain>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yt50Pp3kQRCtSqw6@rric.localdomain>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Based on tag: next-20220720, linux-next/master.
+On 25.07.22 12:45:24, Robert Richter wrote:
+> On 25.07.22 12:14:21, Borislav Petkov wrote:
+> > On Mon, Jul 25, 2022 at 11:53:06AM +0200, Robert Richter wrote:
+> > > The dimm->label buffer must be pre-initialized zero. This broke with:
+> > > 
+> > >  b9cae27728d1 EDAC/ghes: Scan the system once on driver init
+> > > 
+> > > since krealloc/krealloc_array() does not zero out the new allocated
+> > > buffer for struct dimm_info in enumerate_dimms(). This uninitialized
+> > > broken struct is then copied in ghes_edac_register() to the final
+> > > dimm_info destination. Originally, before b9cae27728d1, the struct was
+> > > zero initialized with kzalloc'ed by edac_mc_alloc() and directly used.
+> > > Now, that a copy is created first, this copy must be also zero
+> > > initialized.
+> > > 
+> > > IMO this is the proper fix:
+> > 
+> > Maybe, but this needs fixing too:
+> > 
+> > 	/* both strings must be non-zero */
+> > 	if (bank && *bank && device && *device)
+> > 
+> > Obviously one of those strings are zero coming from that BIOS...
 
-In commit e5fabbe43f3f ("pinctrl: mediatek: paris: Support generic
-PIN_CONFIG_DRIVE_STRENGTH_UA"), added support for using
-drive-strength-microamp instead of mediatek,drive-strength-adv.
+I see now, what you mean here, may be change this:
 
-We replace the custom mediatek,drive-strength-adv property with
-'drive-strength-microamp' in the mt8186 pinctrl dt-binding which
-have a clearer meaning and is more standardized, also add
-gpio-line-names property used in devicetrees to describe pin names.
+	snprintf(dimm->label, sizeof(dimm->label), "%s %s",
+		 (bank && *bank) ? bank : "N/A",
+		 (device && *device) ? device : "N/A");
 
-changes since v1:
- - fix the fixes tag
+to:
 
-Allen-KH Cheng (2):
-  dt-bindings: pinctrl: mt8186: Add gpio-line-names property
-  dt-bindings: pinctrl: mt8186: Add and use drive-strength-microamp
+	snprintf(dimm->label, sizeof(dimm->label), "%s%s%s",
+		 (bank && *bank) ? bank : "",
+		 (bank && device) ? " " : "",
+		 (device && *device) ? device : "");
 
- .../bindings/pinctrl/pinctrl-mt8186.yaml      | 31 +++----------------
- 1 file changed, 5 insertions(+), 26 deletions(-)
+It keeps the default assignment from edac_mc_alloc_dimms() but changes
+we label if one of bank or device is given.
 
--- 
-2.18.0
+-Robert
 
+> 
+> But the label is pre-initialized in edac_mc_alloc_dimms():
+> 
+> 	p = dimm->label;
+> 	n = snprintf(p, len, "mc#%u", mci->mc_idx);
+> 
+> You check if the label is emtpy when copying it in
+> ghes_edac_register():
+> 
+> 	if (strlen(src->label))
+> 		memcpy(dst->label, src->label, sizeof(src->label));
+> 
+> So if there is nothing that comes from the bios, this default label
+> string from edac_mc_alloc_dimms() will be used.
+> 
+> If you write "N/A" to the label instead, the sysfs dimm_label values
+> wont be unique any longer between dimms, which might break existing
+> applications.
+> 
+> -Robert
+> 
+> > 
+> > -- 
+> > Regards/Gruss,
+> >     Boris.
+> > 
+> > https://people.kernel.org/tglx/notes-about-netiquette
