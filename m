@@ -2,113 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05CB2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 12:40:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCAB1C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 12:41:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235330AbiGYMkv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 08:40:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44528 "EHLO
+        id S234800AbiGYMlv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 08:41:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235304AbiGYMkM (ORCPT
+        with ESMTP id S232467AbiGYMls (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 08:40:12 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B28421C90E
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 05:39:55 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        Mon, 25 Jul 2022 08:41:48 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3D74D3
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 05:41:47 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1oFxP0-000534-0D; Mon, 25 Jul 2022 14:41:38 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4Ls0490wGkz4xFw;
-        Mon, 25 Jul 2022 22:39:53 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
-        s=201909; t=1658752794;
-        bh=eSOLGSxxYNa3xROdrcKx9ie20r/UPvDadRCttEkmp6M=;
-        h=From:To:Cc:Subject:Date:From;
-        b=cckJ3ie61VXTZuA+PJMocDjxpnWF/WYCTpYuoWoOZeNNZaoeifq0LXqGf7YfGv8KV
-         0TDZTeNx2uzQaJ0HAGCc1XIsbOf0FbumYT/OqzSWsOvTgaJaS3wQCNgt+3o++wbozi
-         0FNLgy7uWSdbgZjGtjtOcccfDNzNjcMDbm8eQ4jjWYeTWUMVT4G8YPIfoEKhu0NoEv
-         VJPEv55b50XmApiJGBght5zqEYINJ2rMkGXGpkVicV/bxOBAzEgfxjbAZba/b1/tTZ
-         hJddKbV/AOcUWV9sOIDm64SauKpGxUAMKlHViu1zvBLGdfHbK+G3eT6u+02vkWEWMW
-         ZwPIaX3/+pRkA==
-From:   Michael Ellerman <mpe@ellerman.id.au>
-To:     <linuxppc-dev@lists.ozlabs.org>
-Cc:     alexdeucher@gmail.com, amd-gfx@lists.freedesktop.org,
-        linux@roeck-us.net, <torvalds@linux-foundation.org>,
-        <linux-kernel@vger.kernel.org>, dan@danny.cz,
-        tpearson@raptorengineering.com
-Subject: [PATCH] drm/amdgpu: Re-enable DCN for 64-bit powerpc
-Date:   Mon, 25 Jul 2022 22:39:18 +1000
-Message-Id: <20220725123918.1903255-1-mpe@ellerman.id.au>
-X-Mailer: git-send-email 2.35.3
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 5A7BFB98CE;
+        Mon, 25 Jul 2022 12:41:35 +0000 (UTC)
+Date:   Mon, 25 Jul 2022 14:41:34 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Cc:     linux-kernel@vger.kernel.org, michael@amarulasolutions.com,
+        Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        Jeroen Hofstee <jhofstee@victronenergy.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v2 6/6] MAINTAINERS: Add maintainer for the slcan driver
+Message-ID: <20220725124134.2dhqfjqhv6wmzqb6@pengutronix.de>
+References: <20220725065419.3005015-1-dario.binacchi@amarulasolutions.com>
+ <20220725065419.3005015-7-dario.binacchi@amarulasolutions.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="zyj3ee4vghl7eput"
+Content-Disposition: inline
+In-Reply-To: <20220725065419.3005015-7-dario.binacchi@amarulasolutions.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit d11219ad53dc ("amdgpu: disable powerpc support for the newer
-display engine") disabled the DCN driver for all of powerpc due to
-unresolved build failures with some compilers.
 
-Further digging shows that the build failures only occur with compilers
-that default to 64-bit long double.
+--zyj3ee4vghl7eput
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Both the ppc64 and ppc64le ABIs define long double to be 128-bits, but
-there are compilers in the wild that default to 64-bits. The compilers
-provided by the major distros (Fedora, Ubuntu) default to 128-bits and
-are not affected by the build failure.
+On 25.07.2022 08:54:19, Dario Binacchi wrote:
+> At the suggestion of its author Oliver Hartkopp ([1]), I take over the
+> maintainer-ship and add myself to the authors of the driver.
+>=20
+> [1] https://marc.info/?l=3Dlinux-can&m=3D165806705927851&w=3D2
 
-There is a compiler flag to force 128-bit long double, which may be the
-correct long term fix, but as an interim fix only allow building the DCN
-driver if long double is 128-bits by default.
+Please use the lore.k.o link:
+https://lore.kernel.org/all/507b5973-d673-4755-3b64-b41cb9a13b6f@hartkopp.n=
+et
 
-The bisection in commit d11219ad53dc must have gone off the rails at
-some point, the build failure occurs all the way back to the original
-commit that enabled DCN support on powerpc, at least with some
-toolchains.
+Suggested-by: Oliver Hartkopp <socketcan@hartkopp.net>
+> Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
 
-Depends-on: d11219ad53dc ("amdgpu: disable powerpc support for the newer display engine")
-Fixes: 16a9dea110a6 ("amdgpu: Enable initial DCN support on POWER")
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://gitlab.freedesktop.org/drm/amd/-/issues/2100
----
- arch/powerpc/Kconfig                | 4 ++++
- drivers/gpu/drm/amd/display/Kconfig | 2 +-
- 2 files changed, 5 insertions(+), 1 deletion(-)
+Marc
 
-Alex, are you OK if I take this via the powerpc tree for v5.19?
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
-cheers
+--zyj3ee4vghl7eput
+Content-Type: application/pgp-signature; name="signature.asc"
 
-diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
-index 7aa12e88c580..287cc2d4a4b3 100644
---- a/arch/powerpc/Kconfig
-+++ b/arch/powerpc/Kconfig
-@@ -281,6 +281,10 @@ config PPC
- 	# Please keep this list sorted alphabetically.
- 	#
- 
-+config PPC_LONG_DOUBLE_128
-+	depends on PPC64
-+	def_bool $(success,test "$(shell,echo __LONG_DOUBLE_128__ | $(CC) -E -P -)" = 1)
-+
- config PPC_BARRIER_NOSPEC
- 	bool
- 	default y
-diff --git a/drivers/gpu/drm/amd/display/Kconfig b/drivers/gpu/drm/amd/display/Kconfig
-index 0ba0598eba20..ec6771e87e73 100644
---- a/drivers/gpu/drm/amd/display/Kconfig
-+++ b/drivers/gpu/drm/amd/display/Kconfig
-@@ -6,7 +6,7 @@ config DRM_AMD_DC
- 	bool "AMD DC - Enable new display engine"
- 	default y
- 	select SND_HDA_COMPONENT if SND_HDA_CORE
--	select DRM_AMD_DC_DCN if X86 && !(KCOV_INSTRUMENT_ALL && KCOV_ENABLE_COMPARISONS)
-+	select DRM_AMD_DC_DCN if (X86 || PPC_LONG_DOUBLE_128) && !(KCOV_INSTRUMENT_ALL && KCOV_ENABLE_COMPARISONS)
- 	help
- 	  Choose this option if you want to use the new display engine
- 	  support for AMDGPU. This adds required support for Vega and
--- 
-2.35.3
+-----BEGIN PGP SIGNATURE-----
 
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmLej3wACgkQrX5LkNig
+012koggAnd8VfgVZ76OHV68XceKS7x9Jp/zuXfZK3cxaNywBBRhncO8Q8abTz7JN
+Tl4rDmsgwNkRn1hhCVfw9NHggLpzBb1YCkpAUfhyP3zB9p02w4ym+16mVXLFYN8P
+NhquMssGyfm/3SrE8kQoOTZ3FHC7F28UYimmttbfIv0k6h/MBHsbLfxCxonvZ14E
+5DFoEuKhK+/P+pUhaYesUYIq/Aay0lMZAnudU3JkPIOt4+Ts+XvE74wn9TEi4YQ5
+Ev+6SgZhGfq2xz7C0y8w20j02f1Kh9jp8IVPDrQKHPeqszKFxnz+yT06YQhvHS6C
+Tf4hTBmyg4degdlE3iywmTlGJYljFw==
+=/pKJ
+-----END PGP SIGNATURE-----
+
+--zyj3ee4vghl7eput--
