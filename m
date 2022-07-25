@@ -2,79 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4B03C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 21:52:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1F39C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 21:56:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231256AbiGYVwk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 17:52:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41824 "EHLO
+        id S236701AbiGYV4c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 17:56:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229536AbiGYVwi (ORCPT
+        with ESMTP id S229586AbiGYV43 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 17:52:38 -0400
-X-Greylist: delayed 1788 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 25 Jul 2022 14:52:36 PDT
-Received: from imap5.colo.codethink.co.uk (imap5.colo.codethink.co.uk [78.40.148.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3596185;
-        Mon, 25 Jul 2022 14:52:36 -0700 (PDT)
-Received: from cpc152649-stkp13-2-0-cust121.10-2.cable.virginm.net ([86.15.83.122] helo=[192.168.0.17])
-        by imap5.colo.codethink.co.uk with esmtpsa  (Exim 4.94.2 #2 (Debian))
-        id 1oG508-006V3d-JH; Mon, 25 Jul 2022 21:48:29 +0100
-Message-ID: <a5b079bb-64ab-092d-27d4-d32d0d35afcb@codethink.co.uk>
-Date:   Mon, 25 Jul 2022 21:48:28 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH] profile: setup_profiling_timer() is moslty not
- implemented
-Content-Language: en-GB
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        Ben Dooks <ben-linux@fluff.org>
-Cc:     linux-kernel@vger.kernel.org, sparclinux@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linuxppc-dev@lists.ozlabs.org,
-        linux-parisc@vger.kernel.org, openrisc@lists.librecores.org,
-        linux-ia64@vger.kernel.org, linux-hexagon@vger.kernel.org,
-        linux-csky@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-snps-arc@lists.infradead.org, linux-alpha@vger.kernel.org
-References: <20220721195509.418205-1-ben-linux@fluff.org>
- <20220725123948.f16674b10022404814161d4a@linux-foundation.org>
-From:   Ben Dooks <ben.dooks@codethink.co.uk>
-Organization: Codethink Limited.
-In-Reply-To: <20220725123948.f16674b10022404814161d4a@linux-foundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Mon, 25 Jul 2022 17:56:29 -0400
+Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0632DDF20
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 14:56:28 -0700 (PDT)
+Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
+        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 26PLsH2x002031;
+        Mon, 25 Jul 2022 16:54:17 -0500
+Received: (from segher@localhost)
+        by gate.crashing.org (8.14.1/8.14.1/Submit) id 26PLsGqG002027;
+        Mon, 25 Jul 2022 16:54:16 -0500
+X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
+Date:   Mon, 25 Jul 2022 16:54:16 -0500
+From:   Segher Boessenkool <segher@kernel.crashing.org>
+To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: Regression: Linux v5.15+ does not boot on Freescale P2020
+Message-ID: <20220725215416.GV25951@gate.crashing.org>
+References: <20220722090929.mwhmxxdd7yioxqpz@pali> <6b227478-73b8-2a97-1c78-89570d928739@csgroup.eu> <20220723150702.jecerkhxhy65dgww@pali> <875yjld2oe.fsf@mpe.ellerman.id.au> <20220725125256.cg6su4d2ageylvp6@pali> <e2487668-b6d9-9ddb-1bb4-9f4d37fae1a7@csgroup.eu> <20220725201009.gwuchzswcqaxntrk@pali>
+Mime-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220725201009.gwuchzswcqaxntrk@pali>
+User-Agent: Mutt/1.4.2.3i
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25/07/2022 20:39, Andrew Morton wrote:
-> On Thu, 21 Jul 2022 20:55:09 +0100 Ben Dooks <ben-linux@fluff.org> wrote:
+On Mon, Jul 25, 2022 at 10:10:09PM +0200, Pali Rohár wrote:
+> On Monday 25 July 2022 16:20:49 Christophe Leroy wrote:
+> Now I did again clean test with same Debian 10 cross compiler.
 > 
->> The setup_profiling_timer() is mostly un-implemented by many
->> architectures. In many places it isn't guarded by CONFIG_PROFILE
->> which is needed for it to be used. Make it a weak symbol in
->> kernel/profile.c and remove the 'return -EINVAL' implementations
->> from the kenrel.
->>
->> There are a couple of architectures which do return 0 from
->> the setup_profiling_timer() function but they don't seem to
->> do anything else with it. To keep the /proc compatibility for
->> now, leave these for a future update or removal.
->>
->> On ARM, this fixes the following sparse warning:
->> arch/arm/kernel/smp.c:793:5: warning: symbol 'setup_profiling_timer' was not declared. Should it be static?
+> $ git clone https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git && cd linux
+> $ git checkout v5.15
+> $ make mpc85xx_smp_defconfig ARCH=powerpc CROSS_COMPILE=powerpc-linux-gnuspe-
+> $ make vmlinux ARCH=powerpc CROSS_COMPILE=powerpc-linux-gnuspe-
+> $ cp -a vmlinux vmlinux.v5.15
+> $ git revert 9401f4e46cf6965e23738f70e149172344a01eef
+> $ make vmlinux ARCH=powerpc CROSS_COMPILE=powerpc-linux-gnuspe-
+> $ cp -a vmlinux vmlinux.revert
+> $ powerpc-linux-gnuspe-objdump -d vmlinux.revert > vmlinux.revert.dump
+> $ powerpc-linux-gnuspe-objdump -d vmlinux.v5.15 > vmlinux.v5.15.dump
+> $ diff -Naurp vmlinux.v5.15.dump vmlinux.revert.dump
 > 
-> I'll grab this.
+> And there are:
 > 
-> We have had some problems with weak functions lately.  See
+> -c000c304:      7d 20 f8 29     lwarx   r9,0,r31,1
+> +c000c304:      7d 20 f8 28     lwarx   r9,0,r31
 > 
-> https://lore.kernel.org/all/87ee0q7b92.fsf@email.froward.int.ebiederm.org/T/#u
-> 
-> Hopefully that was a rare corner case.
+> I guess it must be reproducible this issue as I'm using regular
+> toolchain from distribution.
 
-Great, thanks.
+The kernel had
 
--- 
-Ben Dooks				http://www.codethink.co.uk/
-Senior Engineer				Codethink - Providing Genius
+#define PPC_RAW_LWARX(t, a, b, eh)       (0x7c000028 | ___PPC_RT(t) | ___PPC_RA(a) | ___PPC_RB(b) | __PPC_EH(eh))
 
-https://www.codethink.co.uk/privacy.html
+and
+
+#define PPC_LWARX(t, a, b, eh) stringify_in_c(.long PPC_RAW_LWARX(t, a, b, eh))
+
+and
+
+#ifdef CONFIG_PPC64
+#define __PPC_EH(eh)    (((eh) & 0x1) << 0)
+#else
+#define __PPC_EH(eh)    0
+#endif
+
+but Christophe's 9401f4e46cf6 changed
+
+-"1:    " PPC_LWARX(%0,0,%2,1) "\n\
++"1:    lwarx           %0,0,%2,1\n\
+
+no longer checking CONFIG_PPC64.  That appears to be the bug.
+
+The EH field in larx insns is new since ISA 2.05, and some ISA 1.x cpu
+implementations actually raise an illegal insn exception on EH=1.  It
+appears P2020 is one of those.
+
+
+Segher
