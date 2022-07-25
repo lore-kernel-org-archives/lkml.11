@@ -2,117 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83E5CC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 07:53:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53C2EC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 07:53:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231460AbiGYHx3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 03:53:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43472 "EHLO
+        id S230039AbiGYHxi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 03:53:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229553AbiGYHx0 (ORCPT
+        with ESMTP id S229553AbiGYHxa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 03:53:26 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80D1812A96
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 00:53:24 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id va17so19125803ejb.0
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 00:53:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=jQHpcE4C1nH2GCEZXh7ETSpGDaBL6cwEwh9j7gNMWo8=;
-        b=OM55UTg0wu+CluQkSUuA01YFDEdR/y4F20whcdzU1hU38os/ei31zozZ3nG+vpyapL
-         C4sqPhvVwG2PGmrj2cqmelAHQZjlR2xb+0rcheIVoEhxmBIqe+DaXqmCPnws0bttvYDM
-         D89CQaUgpv7QHiWFeRnMIGfTUhLaA+sSrNNlQ2lGk5vBhH85BV8zYTEEb6f7J6x954Ik
-         ghxFRwdsElN3pAwFnlfnGAiygd7hZ7un3sZnwbSXymco13wqi4JHyXtohzFegCUej9vR
-         IzoaoYzpzs/Y6OsEkHqDtgppAfiM4auffmbGS9I8nRLK4ITgHl+kV21CjuinMnBydi0u
-         n2gA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=jQHpcE4C1nH2GCEZXh7ETSpGDaBL6cwEwh9j7gNMWo8=;
-        b=T/4smMw0SC1lpclLW6t4yagADT2o6f4eUz5XlDV8USgVnaJ+u6bvCtZdsdcVZvR3Ru
-         Oxj9agZ4UoyMrin90KhI9vV02ZRK5AwWbMtAmu9vhrqoJeX6m8p2RIy1UP4BBmfHuEa+
-         by2J3Bh1nUKEYEUgA1TqGg84luDAtSj4LUgAMtIWl30sigrp540OGgTz5luZsK/gzP4e
-         kCpWGVxWtw/imTLyaGzUbc61sx81YFOXeewJH5jQHBPVq/ScTLhQdpZFUYM6Fd4FN4PO
-         F7iEmdyEghV/rzRxyHTxM3oUh3rV5F1Eb23T+xDvq5SOjuB0oixHzZUHgalzEqVUmcS5
-         MBZw==
-X-Gm-Message-State: AJIora/mt6H/mlZ03HBYHcSQrOX9cYmO99XyDkGF2oaJdBrD+Zh1rTR3
-        zXgZ+J9n5GqqNfAtMxofrhGhDg==
-X-Google-Smtp-Source: AGRyM1vwhwdAD1fhToosegZ6HJzjjm2A8TIJxILfbOsGmaHcNrwR3F9IeMC7GUh0LFKO8elVo9fdoA==
-X-Received: by 2002:a17:906:c781:b0:726:c967:8d1b with SMTP id cw1-20020a170906c78100b00726c9678d1bmr9205707ejb.54.1658735602996;
-        Mon, 25 Jul 2022 00:53:22 -0700 (PDT)
-Received: from localhost ([85.163.43.78])
-        by smtp.gmail.com with ESMTPSA id ot11-20020a170906cccb00b0072af4af2f46sm5008824ejb.74.2022.07.25.00.53.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Jul 2022 00:53:22 -0700 (PDT)
-Date:   Mon, 25 Jul 2022 09:53:21 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Vikas Gupta <vikas.gupta@broadcom.com>, jiri@nvidia.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        davem@davemloft.net, dsahern@kernel.org,
-        stephen@networkplumber.org, edumazet@google.com, pabeni@redhat.com,
-        ast@kernel.org, leon@kernel.org, linux-doc@vger.kernel.org,
-        corbet@lwn.net, michael.chan@broadcom.com,
-        andrew.gospodarek@broadcom.com
-Subject: Re: [PATCH net-next v6 1/2] devlink: introduce framework for
- selftests
-Message-ID: <Yt5L8TbzTwthnrl7@nanopsycho>
-References: <20220723042206.8104-1-vikas.gupta@broadcom.com>
- <20220723042206.8104-2-vikas.gupta@broadcom.com>
- <20220723091600.1277e903@kernel.org>
+        Mon, 25 Jul 2022 03:53:30 -0400
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E49BB12A96;
+        Mon, 25 Jul 2022 00:53:28 -0700 (PDT)
+Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26P7F7Ua006897;
+        Mon, 25 Jul 2022 09:53:19 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=selector1;
+ bh=/c2SOaFDssMPCp7DtxoyF6Nnd04FfjVIa2AavwMvoS4=;
+ b=mSuuRGMTt+KiljIA6hxz8GIqxmsBMwCLU98dLkRL5SlQorffUR1JvT5XphCDTlMhQb5c
+ ORKbmxeVu5XBINqI4Z5sr5kWNfGWEl+Hp5Ebq22Ljhdk5yK1+QT2jSwUp2hD2WTmszVa
+ G0o5K25b22Mh/S2nfEytfLeTpjUjq1X11KR5D6QNwluKFbKTfgxwR8GKv8U+zHXKR5uy
+ UppWE/tKVagW5eNE75oXlmcgy5VTHwl2cMkfvAVMbwaIO6p1727npd55T71vYvsM3sEf
+ o1Nyht1zgZkFcAsHf9RoZM905jlG31HJsG+bm1Pyal3Z/DnEq7nB/aZcAXqOeCYh1i20 gg== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3hg6dkg5e4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 25 Jul 2022 09:53:19 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id B5EFE10002A;
+        Mon, 25 Jul 2022 09:53:18 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id AEF952122FA;
+        Mon, 25 Jul 2022 09:53:18 +0200 (CEST)
+Received: from localhost (10.75.127.49) by SHFDAG1NODE1.st.com (10.75.129.69)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Mon, 25 Jul
+ 2022 09:53:18 +0200
+From:   Alain Volmat <alain.volmat@foss.st.com>
+To:     <alexandre.torgue@foss.st.com>
+CC:     <robh+dt@kernel.org>, <mcoquelin.stm32@gmail.com>,
+        <krzysztof.kozlowski+dt@linaro.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <amelie.delaunay@foss.st.com>
+Subject: [PATCH v2 0/2] ARM: dts: stm32: add SPI on STM32MP13 platform
+Date:   Mon, 25 Jul 2022 09:52:53 +0200
+Message-ID: <20220725075255.429869-1-alain.volmat@foss.st.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220723091600.1277e903@kernel.org>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.49]
+X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-23_02,2022-07-21_02,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sat, Jul 23, 2022 at 06:16:00PM CEST, kuba@kernel.org wrote:
->On Sat, 23 Jul 2022 09:52:05 +0530 Vikas Gupta wrote:
->> +enum devlink_attr_selftest_test_id {
->> +	DEVLINK_ATTR_SELFTEST_TEST_ID_UNSPEC,
->> +	DEVLINK_ATTR_SELFTEST_TEST_ID_FLASH,	/* flag */
->> +
->> +	__DEVLINK_ATTR_SELFTEST_TEST_ID_MAX,
->> +	DEVLINK_ATTR_SELFTEST_TEST_ID_MAX = __DEVLINK_ATTR_SELFTEST_TEST_ID_MAX - 1
->> +};
->> +
->> +enum devlink_selftest_test_status {
->> +	DEVLINK_SELFTEST_TEST_STATUS_SKIP,
->> +	DEVLINK_SELFTEST_TEST_STATUS_PASS,
->> +	DEVLINK_SELFTEST_TEST_STATUS_FAIL
->> +};
->> +
->> +enum devlink_attr_selftest_result {
->> +	DEVLINK_ATTR_SELFTEST_RESULT_UNSPEC,
->> +	DEVLINK_ATTR_SELFTEST_RESULT,			/* nested */
->> +	DEVLINK_ATTR_SELFTEST_RESULT_TEST_ID,		/* u32,
->> +							 * enum devlink_attr_selftest_test_id
->> +							 */
->> +	DEVLINK_ATTR_SELFTEST_RESULT_TEST_STATUS,	/* u8,
->> +							 * enum devlink_selftest_test_status
->> +							 */
->> +
->> +	__DEVLINK_ATTR_SELFTEST_RESULT_MAX,
->> +	DEVLINK_ATTR_SELFTEST_RESULT_MAX = __DEVLINK_ATTR_SELFTEST_RESULT_MAX - 1
->
->Any thoughts on running:
->
->	sed -i '/_SELFTEST/ {s/_TEST_/_/g}' $patch
+This series adds DT entries related to all spi nodes for the
+STM32MP13 platform.
 
-Sure, why not. But please make sure you keep all other related things
-(variables, cmdline opts) consistent.
+v2: reorder all node properties, starting with compatible and reg
 
-Thanks!
+Alain Volmat (2):
+  ARM: dts: stm32: add spi nodes into stm32mp131.dtsi
+  ARM: dts: stm32: add pinctrl and disabled spi5 node in stm32mp135f-dk
 
+ arch/arm/boot/dts/stm32mp13-pinctrl.dtsi | 23 ++++++++
+ arch/arm/boot/dts/stm32mp131.dtsi        | 70 ++++++++++++++++++++++++
+ arch/arm/boot/dts/stm32mp135f-dk.dts     |  7 +++
+ 3 files changed, 100 insertions(+)
 
->
->on this patch? For example DEVLINK_ATTR_SELFTEST_RESULT_TEST_STATUS
->is 40 characters long, ain't nobody typing that, and _TEST is repeated..
->
->Otherwise LGTM!
+-- 
+2.25.1
+
