@@ -2,152 +2,272 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6120BC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 03:17:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 007CCC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 03:24:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230304AbiGYDRC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 23:17:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35788 "EHLO
+        id S231556AbiGYDYB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 23:24:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229571AbiGYDQy (ORCPT
+        with ESMTP id S229571AbiGYDX6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 23:16:54 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DCDCCDF3B
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 20:16:49 -0700 (PDT)
-Received: from [10.20.42.170] (unknown [10.20.42.170])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9AxKeEWC95iDaw1AA--.30605S3;
-        Mon, 25 Jul 2022 11:16:39 +0800 (CST)
-Message-ID: <d98399c3-738c-e514-85e1-b278dc813cb9@loongson.cn>
-Date:   Mon, 25 Jul 2022 11:16:38 +0800
+        Sun, 24 Jul 2022 23:23:58 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F09CB627A
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 20:23:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658719437; x=1690255437;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=vqQwHzbiCYPL0Wf0z1e8ilzYQ5Okx5rpAh8zovTkGe4=;
+  b=SF92cesaHThErppCviYIIGaOPGFjB0IqVIRto12OtJwN3coK3616yHGT
+   gyG5/x7lz/tLQZ1CkZxJGMUOL+e4gy2Y5irAQbS/4OPIl3DLzYBdQZ2Nz
+   ubvIuy3L62o9GqoGIe4P5nLnQV8akpf13JXu4iOqj3jHV4t9a30qCIF+f
+   NYV7vJqHF+nJx0Zv6t65nMG+k2cx2hk0QJC22ZPrFpRUFqWRI6gl1s5dW
+   dkmhL8r6FgPmwVV0UIC3vmFillO1Ndz1IxMFbC6axXE4+/fI9O5gfB3ZS
+   J+yYR6tYzb/2f055INK2MkOEPxPFrHoZrL3J+E50L3EVd6nmrVZ6i37Cb
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10418"; a="274462528"
+X-IronPort-AV: E=Sophos;i="5.93,191,1654585200"; 
+   d="scan'208";a="274462528"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2022 20:23:56 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,191,1654585200"; 
+   d="scan'208";a="926729694"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by fmsmga005.fm.intel.com with ESMTP; 24 Jul 2022 20:23:55 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oFohG-0004fp-1V;
+        Mon, 25 Jul 2022 03:23:54 +0000
+Date:   Mon, 25 Jul 2022 11:23:27 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Bart Van Assche <bvanassche@acm.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [bvanassche:f2fs 2/4] include/linux/build_bug.h:78:41: error: static
+ assertion failed: ""
+Message-ID: <202207251111.i3B7nJVK-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH 1/2] LoongArch: Remove clock setting during cpu hotplug
- stage
-Content-Language: en-US
-To:     WANG Xuerui <kernel@xen0n.name>,
-        Huacai Chen <chenhuacai@kernel.org>
-Cc:     Jiaxun Yang <jiaxun.yang@flygoat.com>, loongarch@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-References: <20220720072152.3894559-1-maobibo@loongson.cn>
- <3324feed-e158-8c51-9915-85b0498f1888@xen0n.name>
-From:   maobibo <maobibo@loongson.cn>
-In-Reply-To: <3324feed-e158-8c51-9915-85b0498f1888@xen0n.name>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: AQAAf9AxKeEWC95iDaw1AA--.30605S3
-X-Coremail-Antispam: 1UD129KBjvJXoWxCw1kKr48Zw15AFyxXryrZwb_yoWrGF1fpF
-        n3Can3KrW8Kwn7uw1ktr1UAry5Gw4DJw47ZF17J3W8AFyDAF1jgFyDXryvgFW7JrZ7Xa1F
-        qr1UXrsruFyUX3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUv2b7Iv0xC_Kw4lb4IE77IF4wAFF20E14v26r1j6r4UM7CY07I2
-        0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
-        A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xII
-        jxv20xvEc7CjxVAFwI0_Cr0_Gr1UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4
-        vEx4A2jsIEc7CjxVAFwI0_Cr1j6rxdM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVAC
-        Y4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJV
-        W8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IY64vIr41lc7I2V7IY0VAS07AlzVAYIcxG
-        8wCY02Avz4vE-syl42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxV
-        Aqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r12
-        6r1DMIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6x
-        kF7I0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE
-        14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa
-        7IU5PpnJUUUUU==
-X-CM-SenderInfo: xpdruxter6z05rqj20fqof0/
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+tree:   https://github.com/bvanassche/linux f2fs
+head:   60251142bb6f7bdec515d53e4667eb893fca4454
+commit: e3ea6c10e5f69ea3ac4f2312737d7228fb663a8f [2/4] f2fs: Verify the size of on-disk structures at compile time
+config: arm-randconfig-c023-20220724 (https://download.01.org/0day-ci/archive/20220725/202207251111.i3B7nJVK-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/bvanassche/linux/commit/e3ea6c10e5f69ea3ac4f2312737d7228fb663a8f
+        git remote add bvanassche https://github.com/bvanassche/linux
+        git fetch --no-tags bvanassche f2fs
+        git checkout e3ea6c10e5f69ea3ac4f2312737d7228fb663a8f
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash fs/f2fs/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   In file included from include/linux/container_of.h:5,
+                    from include/linux/list.h:5,
+                    from include/linux/wait.h:7,
+                    from include/linux/wait_bit.h:8,
+                    from include/linux/fs.h:6,
+                    from fs/f2fs/dir.c:9:
+>> include/linux/build_bug.h:78:41: error: static assertion failed: ""
+      78 | #define __static_assert(expr, msg, ...) _Static_assert(expr, msg)
+         |                                         ^~~~~~~~~~~~~~
+   include/linux/build_bug.h:77:34: note: in expansion of macro '__static_assert'
+      77 | #define static_assert(expr, ...) __static_assert(expr, ##__VA_ARGS__, #expr)
+         |                                  ^~~~~~~~~~~~~~~
+   include/linux/f2fs_fs.h:441:1: note: in expansion of macro 'static_assert'
+     441 | static_assert(sizeof(struct f2fs_summary) == 7, "");
+         | ^~~~~~~~~~~~~
+>> include/linux/build_bug.h:78:41: error: static assertion failed: ""
+      78 | #define __static_assert(expr, msg, ...) _Static_assert(expr, msg)
+         |                                         ^~~~~~~~~~~~~~
+   include/linux/build_bug.h:77:34: note: in expansion of macro '__static_assert'
+      77 | #define static_assert(expr, ...) __static_assert(expr, ##__VA_ARGS__, #expr)
+         |                                  ^~~~~~~~~~~~~~~
+   include/linux/f2fs_fs.h:527:1: note: in expansion of macro 'static_assert'
+     527 | static_assert(sizeof(struct f2fs_journal) == 507, "");
+         | ^~~~~~~~~~~~~
+>> include/linux/build_bug.h:78:41: error: static assertion failed: ""
+      78 | #define __static_assert(expr, msg, ...) _Static_assert(expr, msg)
+         |                                         ^~~~~~~~~~~~~~
+   include/linux/build_bug.h:77:34: note: in expansion of macro '__static_assert'
+      77 | #define static_assert(expr, ...) __static_assert(expr, ##__VA_ARGS__, #expr)
+         |                                  ^~~~~~~~~~~~~~~
+   include/linux/f2fs_fs.h:536:1: note: in expansion of macro 'static_assert'
+     536 | static_assert(sizeof(struct f2fs_summary_block) == 4096, "");
+         | ^~~~~~~~~~~~~
+--
+   In file included from include/linux/container_of.h:5,
+                    from include/linux/list.h:5,
+                    from include/linux/wait.h:7,
+                    from include/linux/wait_bit.h:8,
+                    from include/linux/fs.h:6,
+                    from fs/f2fs/file.c:8:
+>> include/linux/build_bug.h:78:41: error: static assertion failed: ""
+      78 | #define __static_assert(expr, msg, ...) _Static_assert(expr, msg)
+         |                                         ^~~~~~~~~~~~~~
+   include/linux/build_bug.h:77:34: note: in expansion of macro '__static_assert'
+      77 | #define static_assert(expr, ...) __static_assert(expr, ##__VA_ARGS__, #expr)
+         |                                  ^~~~~~~~~~~~~~~
+   include/linux/f2fs_fs.h:441:1: note: in expansion of macro 'static_assert'
+     441 | static_assert(sizeof(struct f2fs_summary) == 7, "");
+         | ^~~~~~~~~~~~~
+>> include/linux/build_bug.h:78:41: error: static assertion failed: ""
+      78 | #define __static_assert(expr, msg, ...) _Static_assert(expr, msg)
+         |                                         ^~~~~~~~~~~~~~
+   include/linux/build_bug.h:77:34: note: in expansion of macro '__static_assert'
+      77 | #define static_assert(expr, ...) __static_assert(expr, ##__VA_ARGS__, #expr)
+         |                                  ^~~~~~~~~~~~~~~
+   include/linux/f2fs_fs.h:527:1: note: in expansion of macro 'static_assert'
+     527 | static_assert(sizeof(struct f2fs_journal) == 507, "");
+         | ^~~~~~~~~~~~~
+>> include/linux/build_bug.h:78:41: error: static assertion failed: ""
+      78 | #define __static_assert(expr, msg, ...) _Static_assert(expr, msg)
+         |                                         ^~~~~~~~~~~~~~
+   include/linux/build_bug.h:77:34: note: in expansion of macro '__static_assert'
+      77 | #define static_assert(expr, ...) __static_assert(expr, ##__VA_ARGS__, #expr)
+         |                                  ^~~~~~~~~~~~~~~
+   include/linux/f2fs_fs.h:536:1: note: in expansion of macro 'static_assert'
+     536 | static_assert(sizeof(struct f2fs_summary_block) == 4096, "");
+         | ^~~~~~~~~~~~~
+   In file included from include/linux/kernel.h:26,
+                    from include/linux/cpumask.h:10,
+                    from include/linux/smp.h:13,
+                    from include/linux/lockdep.h:14,
+                    from include/linux/spinlock.h:62,
+                    from include/linux/wait.h:9:
+   fs/f2fs/segment.h: In function 'seg_info_to_sit_page':
+   include/linux/minmax.h:20:35: warning: comparison of distinct pointer types lacks a cast
+      20 |         (!!(sizeof((typeof(x) *)1 == (typeof(y) *)1)))
+         |                                   ^~
+   include/linux/minmax.h:26:18: note: in expansion of macro '__typecheck'
+      26 |                 (__typecheck(x, y) && __no_side_effects(x, y))
+         |                  ^~~~~~~~~~~
+   include/linux/minmax.h:36:31: note: in expansion of macro '__safe_cmp'
+      36 |         __builtin_choose_expr(__safe_cmp(x, y), \
+         |                               ^~~~~~~~~~
+   include/linux/minmax.h:45:25: note: in expansion of macro '__careful_cmp'
+      45 | #define min(x, y)       __careful_cmp(x, y, <)
+         |                         ^~~~~~~~~~~~~
+   fs/f2fs/segment.h:417:28: note: in expansion of macro 'min'
+     417 |         unsigned int end = min(start + SIT_ENTRY_PER_BLOCK,
+         |                            ^~~
+--
+   In file included from include/linux/container_of.h:5,
+                    from include/linux/list.h:5,
+                    from include/linux/wait.h:7,
+                    from include/linux/wait_bit.h:8,
+                    from include/linux/fs.h:6,
+                    from fs/f2fs/segment.c:8:
+>> include/linux/build_bug.h:78:41: error: static assertion failed: ""
+      78 | #define __static_assert(expr, msg, ...) _Static_assert(expr, msg)
+         |                                         ^~~~~~~~~~~~~~
+   include/linux/build_bug.h:77:34: note: in expansion of macro '__static_assert'
+      77 | #define static_assert(expr, ...) __static_assert(expr, ##__VA_ARGS__, #expr)
+         |                                  ^~~~~~~~~~~~~~~
+   include/linux/f2fs_fs.h:441:1: note: in expansion of macro 'static_assert'
+     441 | static_assert(sizeof(struct f2fs_summary) == 7, "");
+         | ^~~~~~~~~~~~~
+>> include/linux/build_bug.h:78:41: error: static assertion failed: ""
+      78 | #define __static_assert(expr, msg, ...) _Static_assert(expr, msg)
+         |                                         ^~~~~~~~~~~~~~
+   include/linux/build_bug.h:77:34: note: in expansion of macro '__static_assert'
+      77 | #define static_assert(expr, ...) __static_assert(expr, ##__VA_ARGS__, #expr)
+         |                                  ^~~~~~~~~~~~~~~
+   include/linux/f2fs_fs.h:527:1: note: in expansion of macro 'static_assert'
+     527 | static_assert(sizeof(struct f2fs_journal) == 507, "");
+         | ^~~~~~~~~~~~~
+>> include/linux/build_bug.h:78:41: error: static assertion failed: ""
+      78 | #define __static_assert(expr, msg, ...) _Static_assert(expr, msg)
+         |                                         ^~~~~~~~~~~~~~
+   include/linux/build_bug.h:77:34: note: in expansion of macro '__static_assert'
+      77 | #define static_assert(expr, ...) __static_assert(expr, ##__VA_ARGS__, #expr)
+         |                                  ^~~~~~~~~~~~~~~
+   include/linux/f2fs_fs.h:536:1: note: in expansion of macro 'static_assert'
+     536 | static_assert(sizeof(struct f2fs_summary_block) == 4096, "");
+         | ^~~~~~~~~~~~~
+   In file included from include/linux/kernel.h:26,
+                    from include/linux/cpumask.h:10,
+                    from include/linux/smp.h:13,
+                    from include/linux/lockdep.h:14,
+                    from include/linux/spinlock.h:62,
+                    from include/linux/wait.h:9:
+   fs/f2fs/segment.h: In function 'seg_info_to_sit_page':
+   include/linux/minmax.h:20:35: warning: comparison of distinct pointer types lacks a cast
+      20 |         (!!(sizeof((typeof(x) *)1 == (typeof(y) *)1)))
+         |                                   ^~
+   include/linux/minmax.h:26:18: note: in expansion of macro '__typecheck'
+      26 |                 (__typecheck(x, y) && __no_side_effects(x, y))
+         |                  ^~~~~~~~~~~
+   include/linux/minmax.h:36:31: note: in expansion of macro '__safe_cmp'
+      36 |         __builtin_choose_expr(__safe_cmp(x, y), \
+         |                               ^~~~~~~~~~
+   include/linux/minmax.h:45:25: note: in expansion of macro '__careful_cmp'
+      45 | #define min(x, y)       __careful_cmp(x, y, <)
+         |                         ^~~~~~~~~~~~~
+   fs/f2fs/segment.h:417:28: note: in expansion of macro 'min'
+     417 |         unsigned int end = min(start + SIT_ENTRY_PER_BLOCK,
+         |                            ^~~
+   fs/f2fs/segment.c: In function 'f2fs_flush_sit_entries':
+   include/linux/minmax.h:20:35: warning: comparison of distinct pointer types lacks a cast
+      20 |         (!!(sizeof((typeof(x) *)1 == (typeof(y) *)1)))
+         |                                   ^~
+   include/linux/minmax.h:26:18: note: in expansion of macro '__typecheck'
+      26 |                 (__typecheck(x, y) && __no_side_effects(x, y))
+         |                  ^~~~~~~~~~~
+   include/linux/minmax.h:36:31: note: in expansion of macro '__safe_cmp'
+      36 |         __builtin_choose_expr(__safe_cmp(x, y), \
+         |                               ^~~~~~~~~~
+   include/linux/minmax.h:45:25: note: in expansion of macro '__careful_cmp'
+      45 | #define min(x, y)       __careful_cmp(x, y, <)
+         |                         ^~~~~~~~~~~~~
+   fs/f2fs/segment.c:4070:36: note: in expansion of macro 'min'
+    4070 |                 unsigned int end = min(start_segno + SIT_ENTRY_PER_BLOCK,
+         |                                    ^~~
 
 
-在 2022/7/22 16:10, WANG Xuerui 写道:
-> On 2022/7/20 15:21, Bibo Mao wrote:
->> On physical machine we can save power by disabling clock of hot removed cpu.
->> However there will be problem, since different platforms have different clock
->> setting methods, the code is platform relative. Also it can be in firmware/pmu
->> compoments or cpu regulator driver, rather than general loongarch cpu booting
->> flow.
->>
->> Also on qemu virt machine, device clock/freq setting is not
->> emulated, there is no such registers.
->>
->> This patch removes hard-coded register accessing in generic
->> loongarch cpu boot flow.
-> 
-> Improving a little on the wording (mostly fixing eyesore Chinglish):
-> 
-> "On physical machine we can save power by disabling clock of hot removed cpu. However as different platforms require different methods to configure clocks, the code is platform-specific, and probably belongs to firmware/pmu or cpu regulator, rather than generic arch/loongarch code.
-> 
-> Also, there is no such register on QEMU virt machine since the clock/frequency regulation is not emulated.
-> 
-> This patch removes the hard-coded clock register accesses in generic loongarch cpu hotplug flow."
-> 
-Xuerui,
+vim +78 include/linux/build_bug.h
 
-Thanks for reviewing my patch, I will modify the issue in next patch.
+bc6245e5efd70c Ian Abbott       2017-07-10  60  
+6bab69c65013be Rasmus Villemoes 2019-03-07  61  /**
+6bab69c65013be Rasmus Villemoes 2019-03-07  62   * static_assert - check integer constant expression at build time
+6bab69c65013be Rasmus Villemoes 2019-03-07  63   *
+6bab69c65013be Rasmus Villemoes 2019-03-07  64   * static_assert() is a wrapper for the C11 _Static_assert, with a
+6bab69c65013be Rasmus Villemoes 2019-03-07  65   * little macro magic to make the message optional (defaulting to the
+6bab69c65013be Rasmus Villemoes 2019-03-07  66   * stringification of the tested expression).
+6bab69c65013be Rasmus Villemoes 2019-03-07  67   *
+6bab69c65013be Rasmus Villemoes 2019-03-07  68   * Contrary to BUILD_BUG_ON(), static_assert() can be used at global
+6bab69c65013be Rasmus Villemoes 2019-03-07  69   * scope, but requires the expression to be an integer constant
+6bab69c65013be Rasmus Villemoes 2019-03-07  70   * expression (i.e., it is not enough that __builtin_constant_p() is
+6bab69c65013be Rasmus Villemoes 2019-03-07  71   * true for expr).
+6bab69c65013be Rasmus Villemoes 2019-03-07  72   *
+6bab69c65013be Rasmus Villemoes 2019-03-07  73   * Also note that BUILD_BUG_ON() fails the build if the condition is
+6bab69c65013be Rasmus Villemoes 2019-03-07  74   * true, while static_assert() fails the build if the expression is
+6bab69c65013be Rasmus Villemoes 2019-03-07  75   * false.
+6bab69c65013be Rasmus Villemoes 2019-03-07  76   */
+6bab69c65013be Rasmus Villemoes 2019-03-07  77  #define static_assert(expr, ...) __static_assert(expr, ##__VA_ARGS__, #expr)
+6bab69c65013be Rasmus Villemoes 2019-03-07 @78  #define __static_assert(expr, msg, ...) _Static_assert(expr, msg)
+6bab69c65013be Rasmus Villemoes 2019-03-07  79  
 
-regards
-bibo, mao
+:::::: The code at line 78 was first introduced by commit
+:::::: 6bab69c65013bed5fce9f101a64a84d0385b3946 build_bug.h: add wrapper for _Static_assert
 
->>
->> Signed-off-by: Bibo Mao <maobibo@loongson.cn>
->> ---
->>   arch/loongarch/kernel/smp.c | 29 -----------------------------
->>   include/linux/cpuhotplug.h  |  1 -
->>   2 files changed, 30 deletions(-)
->>
->> diff --git a/arch/loongarch/kernel/smp.c b/arch/loongarch/kernel/smp.c
->> index 73cec62504fb..98b3e059d344 100644
->> --- a/arch/loongarch/kernel/smp.c
->> +++ b/arch/loongarch/kernel/smp.c
->> @@ -359,35 +359,6 @@ void play_dead(void)
->>       play_dead_uncached(state_addr);
->>   }
->>   -static int loongson3_enable_clock(unsigned int cpu)
->> -{
->> -    uint64_t core_id = cpu_data[cpu].core;
->> -    uint64_t package_id = cpu_data[cpu].package;
->> -
->> -    LOONGSON_FREQCTRL(package_id) |= 1 << (core_id * 4 + 3);
->> -
->> -    return 0;
->> -}
->> -
->> -static int loongson3_disable_clock(unsigned int cpu)
->> -{
->> -    uint64_t core_id = cpu_data[cpu].core;
->> -    uint64_t package_id = cpu_data[cpu].package;
->> -
->> -    LOONGSON_FREQCTRL(package_id) &= ~(1 << (core_id * 4 + 3));
->> -
->> -    return 0;
->> -}
->> -
->> -static int register_loongson3_notifier(void)
->> -{
->> -    return cpuhp_setup_state_nocalls(CPUHP_LOONGARCH_SOC_PREPARE,
->> -                     "loongarch/loongson:prepare",
->> -                     loongson3_enable_clock,
->> -                     loongson3_disable_clock);
->> -}
->> -early_initcall(register_loongson3_notifier);
->> -
->>   #endif
->>     /*
->> diff --git a/include/linux/cpuhotplug.h b/include/linux/cpuhotplug.h
->> index 19f0dbfdd7fe..b66c5f389159 100644
->> --- a/include/linux/cpuhotplug.h
->> +++ b/include/linux/cpuhotplug.h
->> @@ -130,7 +130,6 @@ enum cpuhp_state {
->>       CPUHP_ZCOMP_PREPARE,
->>       CPUHP_TIMERS_PREPARE,
->>       CPUHP_MIPS_SOC_PREPARE,
->> -    CPUHP_LOONGARCH_SOC_PREPARE,
->>       CPUHP_BP_PREPARE_DYN,
->>       CPUHP_BP_PREPARE_DYN_END        = CPUHP_BP_PREPARE_DYN + 20,
->>       CPUHP_BRINGUP_CPU,
-> 
-> Seems good. I should have noticed earlier the fact the clock control registers are, in every regard, model-specific, thus not appropriate for arch/loongarch. Proper drivers should be added afterwards, though I assume you must internally have something like that already.
-> 
-> Reviewed-by: WANG Xuerui <git@xen0n.name>
+:::::: TO: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+:::::: CC: Linus Torvalds <torvalds@linux-foundation.org>
 
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
