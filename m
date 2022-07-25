@@ -2,99 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F3ECC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 07:59:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 778E6C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 07:59:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232637AbiGYH72 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 03:59:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48470 "EHLO
+        id S232667AbiGYH7l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 03:59:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229632AbiGYH7Z (ORCPT
+        with ESMTP id S229922AbiGYH7j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 03:59:25 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44368D135;
-        Mon, 25 Jul 2022 00:59:24 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id A53335FD0B;
-        Mon, 25 Jul 2022 10:59:22 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1658735962;
-        bh=Ktbbd9hXNDd86/yoPDR8TGlX/txvLJI7Vez6o0MPzn4=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=gFDyn5lzlgkq+1RPQOn85zVANkvBlwyYpykkMIJY6UypfMMHCTtgI3V261SMRQmoM
-         OEaiMZRkJBeIgBP0TBhaVDfXr2rgbxXJup8k5IHzw0e+Z1sOLk/O9hTkW/R/vdSeJw
-         Cm+EUAhhdUkv/BBELOryaT+XCGy2TJvvUEbwh6ON79jddLMI9oWAvTuqk0s0kuNFoO
-         TV5r+6XUM12EO+/dPIZdQ9wqEDpIwHU0IZs2viw5e2+HtibjdgElKHPiyWEDDzShwp
-         4GSt4btMauaGAt0WgK1BQeoIxmbNrScyFihaaEzKtDtnz/1XQjiWCbwDY1rwAntkUR
-         wiAWTT4GD/e/g==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Mon, 25 Jul 2022 10:59:21 +0300 (MSK)
-From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-To:     Stefano Garzarella <sgarzare@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "kys@microsoft.com" <kys@microsoft.com>,
-        "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
-        "sthemmin@microsoft.com" <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Arseniy Krasnov <AVKrasnov@sberdevices.ru>,
-        Krasnov Arseniy <oxffffaa@gmail.com>
-CC:     "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>
-Subject: [RFC PATCH v2 2/9] virtio/vsock: use 'target' in notify_poll_in,
- callback
-Thread-Topic: [RFC PATCH v2 2/9] virtio/vsock: use 'target' in notify_poll_in,
- callback
-Thread-Index: AQHYn/xnBQBRPJKwbEuxzxqKhyN7Rw==
-Date:   Mon, 25 Jul 2022 07:59:02 +0000
-Message-ID: <c708aae5-b8fe-bc66-7942-8be4e2ccfed5@sberdevices.ru>
-In-Reply-To: <19e25833-5f5c-f9b9-ac0f-1945ea17638d@sberdevices.ru>
-Accept-Language: en-US, ru-RU
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <D7273D71A27B7C4392A2E0610B9A95A5@sberdevices.ru>
-Content-Transfer-Encoding: base64
+        Mon, 25 Jul 2022 03:59:39 -0400
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D2EB13D3F
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 00:59:36 -0700 (PDT)
+Received: by mail-yb1-xb2d.google.com with SMTP id b143so17435384yba.11
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 00:59:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=7LVjJZ3vZnsHBYWH91XFfNQq4hkSx4/m7XWPR5zW2rM=;
+        b=A4yPo/waVaMIqiTi1D3gcMPCRhfFyDMubfV4Ye7jWo15S5jIz6uB9pGlDRNwR+UEkD
+         GkoQ3T2bTCUVib5nqdJFiKC8TuGcSIUhW73cMzUYc15erc9PJ3bJNVk1tZAsuMvah8/F
+         WAuTrmKmpbQ9GW7vd23p41ImSbU8YL34psKJQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=7LVjJZ3vZnsHBYWH91XFfNQq4hkSx4/m7XWPR5zW2rM=;
+        b=E4HSLJlMRvQu4Mx5RvEGmToOjiNo7BVPAE6uoxtwszPZkQvGIk6DFwmnLL+3bR9R9+
+         hGFkeD9xQ++/ZKJ7PbjcbisTdK9p6kDaMQVze6HEsDX22gcjaidRn06dYnGN0ZCdW+dR
+         84L19q3MVh1Ssvj4ARV+pdgW2bK929/Gz4y4xbM+nHlqza/TgfmJePd64610mSkMKTeQ
+         8QacpnpATNZRchziVjKaRTp9fg8fcrvEmA11xqopzYLW+Vb6pvZd9rGfX1aLbfd1JvD1
+         YBEzZLOt1scxaV8s9hvW8slw+Hq5RMzlHer36pEmb5V2ndlh7rXFZZbejtcUpnxIGSfH
+         VXGw==
+X-Gm-Message-State: AJIora8cQaccSHYJ48B/H9vX7M8LPCXHfzpjcyxqnd2Yv1wSecQJFdnV
+        rpeqXOrUxDMHd23tC0gJd6dJwee+DSd+AkEmpdeMUw==
+X-Google-Smtp-Source: AGRyM1v0HxzW8vtags5zI75LJuEW/+tx6Jwb+I4b5Af0gdhsPwG/G07wonpdlzb5E5ap46RBTKqTtHsQt/XnayBqYFE=
+X-Received: by 2002:a25:d852:0:b0:66f:259c:17b6 with SMTP id
+ p79-20020a25d852000000b0066f259c17b6mr8769449ybg.438.1658735975662; Mon, 25
+ Jul 2022 00:59:35 -0700 (PDT)
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/07/25 03:52:00 #19956163
-X-KSMG-AntiVirus-Status: Clean, skipped
+References: <20220721145017.918102-1-angelogioacchino.delregno@collabora.com> <20220721145017.918102-4-angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220721145017.918102-4-angelogioacchino.delregno@collabora.com>
+From:   Chen-Yu Tsai <wenst@chromium.org>
+Date:   Mon, 25 Jul 2022 15:59:24 +0800
+Message-ID: <CAGXv+5E_Q6Z9RA6VQDHyn6E9xb-C0AmEx7JR8Lc65ofT1YE0sw@mail.gmail.com>
+Subject: Re: [PATCH v2 3/8] arm64: dts: mediatek: cherry: Add keyboard mapping
+ for the top row
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     matthias.bgg@gmail.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-VGhpcyBjYWxsYmFjayBjb250cm9scyBzZXR0aW5nIG9mIFBPTExJTixQT0xMUkROT1JNIG91dHB1
-dCBiaXRzIG9mIHBvbGwoKQ0Kc3lzY2FsbCxidXQgaW4gc29tZSBjYXNlcyxpdCBpcyBpbmNvcnJl
-Y3RseSB0byBzZXQgaXQsIHdoZW4gc29ja2V0IGhhcw0KYXQgbGVhc3QgMSBieXRlcyBvZiBhdmFp
-bGFibGUgZGF0YS4gVXNlICd0YXJnZXQnIHdoaWNoIGlzIGFscmVhZHkgZXhpc3RzDQphbmQgZXF1
-YWwgdG8gc2tfcmN2bG93YXQgaW4gdGhpcyBjYXNlLg0KDQpTaWduZWQtb2ZmLWJ5OiBBcnNlbml5
-IEtyYXNub3YgPEFWS3Jhc25vdkBzYmVyZGV2aWNlcy5ydT4NCi0tLQ0KIG5ldC92bXdfdnNvY2sv
-dmlydGlvX3RyYW5zcG9ydF9jb21tb24uYyB8IDUgKy0tLS0NCiAxIGZpbGUgY2hhbmdlZCwgMSBp
-bnNlcnRpb24oKyksIDQgZGVsZXRpb25zKC0pDQoNCmRpZmYgLS1naXQgYS9uZXQvdm13X3Zzb2Nr
-L3ZpcnRpb190cmFuc3BvcnRfY29tbW9uLmMgYi9uZXQvdm13X3Zzb2NrL3ZpcnRpb190cmFuc3Bv
-cnRfY29tbW9uLmMNCmluZGV4IGVjMmMyYWZiZjBkMC4uOGY2MzU2ZWJjZGQxIDEwMDY0NA0KLS0t
-IGEvbmV0L3Ztd192c29jay92aXJ0aW9fdHJhbnNwb3J0X2NvbW1vbi5jDQorKysgYi9uZXQvdm13
-X3Zzb2NrL3ZpcnRpb190cmFuc3BvcnRfY29tbW9uLmMNCkBAIC02MzQsMTAgKzYzNCw3IEBAIHZp
-cnRpb190cmFuc3BvcnRfbm90aWZ5X3BvbGxfaW4oc3RydWN0IHZzb2NrX3NvY2sgKnZzaywNCiAJ
-CQkJc2l6ZV90IHRhcmdldCwNCiAJCQkJYm9vbCAqZGF0YV9yZWFkeV9ub3cpDQogew0KLQlpZiAo
-dnNvY2tfc3RyZWFtX2hhc19kYXRhKHZzaykpDQotCQkqZGF0YV9yZWFkeV9ub3cgPSB0cnVlOw0K
-LQllbHNlDQotCQkqZGF0YV9yZWFkeV9ub3cgPSBmYWxzZTsNCisJKmRhdGFfcmVhZHlfbm93ID0g
-dnNvY2tfc3RyZWFtX2hhc19kYXRhKHZzaykgPj0gdGFyZ2V0Ow0KIA0KIAlyZXR1cm4gMDsNCiB9
-DQotLSANCjIuMjUuMQ0K
+On Thu, Jul 21, 2022 at 10:52 PM AngeloGioacchino Del Regno
+<angelogioacchino.delregno@collabora.com> wrote:
+>
+> Chromebooks' embedded keyboards differ from standard layouts for the
+> top row, as this one doesn't have the standard function keys but
+> shortcuts instead: map these keys to achieve the functionality that
+> is pictured on the printouts.
+>
+> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+
+Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
+Tested-by: Chen-Yu Tsai <wenst@chromium.org>
+
+> ---
+>  .../boot/dts/mediatek/mt8195-cherry.dtsi      | 30 +++++++++++++++++++
+>  1 file changed, 30 insertions(+)
+>
+> diff --git a/arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi b/arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi
+> index 87ac2b4f9814..2853f7f76c90 100644
+> --- a/arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi
+> +++ b/arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi
+> @@ -821,3 +821,33 @@ &xhci3 {
+>
+>  #include <arm/cros-ec-keyboard.dtsi>
+>  #include <arm/cros-ec-sbs.dtsi>
+> +
+> +&keyboard_controller {
+> +       function-row-physmap = <
+> +               MATRIX_KEY(0x00, 0x02, 0)       /* T1 */
+> +               MATRIX_KEY(0x03, 0x02, 0)       /* T2 */
+> +               MATRIX_KEY(0x02, 0x02, 0)       /* T3 */
+> +               MATRIX_KEY(0x01, 0x02, 0)       /* T4 */
+> +               MATRIX_KEY(0x03, 0x04, 0)       /* T5 */
+> +               MATRIX_KEY(0x02, 0x04, 0)       /* T6 */
+> +               MATRIX_KEY(0x01, 0x04, 0)       /* T7 */
+> +               MATRIX_KEY(0x02, 0x09, 0)       /* T8 */
+> +               MATRIX_KEY(0x01, 0x09, 0)       /* T9 */
+> +               MATRIX_KEY(0x00, 0x04, 0)       /* T10 */
+
+I wonder if we want to add the sleep button to this list, since it is
+technically part of the first row.
+
+ChenYu
