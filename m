@@ -2,79 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64888C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 23:16:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5937C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 23:18:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236967AbiGYXQR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 19:16:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45840 "EHLO
+        id S236414AbiGYXSh convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 19:18:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231693AbiGYXQN (ORCPT
+        with ESMTP id S229801AbiGYXSf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 19:16:13 -0400
-Received: from mail-oi1-f171.google.com (mail-oi1-f171.google.com [209.85.167.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7BE810FE4;
-        Mon, 25 Jul 2022 16:16:12 -0700 (PDT)
-Received: by mail-oi1-f171.google.com with SMTP id i4so5231197oif.2;
-        Mon, 25 Jul 2022 16:16:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=g49NRMyXpF3Ukz1Chp1eaP/CKtK/FAlLJyk9rQSO96k=;
-        b=nAp8GR+7+cjm/z8Yl5C7lDpc4CNIxsxr/ZYyhzdzFHGvNiQVr9QX4JQyKQMmUPsIRB
-         xUEowTkuoDEQTOCDMDkosPtVtRK6Eu/7YggSwD7ZYa3QWq14Scr9kaQcZzr/4UfbrZPi
-         bcUHHEWdGwo6PHz4Hl84Fcl1R5AN4CkYAYo5sx3oAWHPG47dMRPhYJ0k6hgtcqDnapov
-         5C3NGsLgE0i3+2xU8rMmQI9t4UfGofnl7n5bd4/bRVISCXcke0oeoDL6MvtSyoMWaY5G
-         bb3U3fqBKRJJ4LL+t7MQ2j0rUPLx+cOoJ21OWiBxtMNpQnjhyXg22CK5j2nww5r0Mhb1
-         O+fQ==
-X-Gm-Message-State: AJIora+y4h9SHgLGYedZpvWOQ4wCTUiiyM6AtzHKI0q2eBg321Amq4L1
-        ji2OKskILW4Shjj/pdU24Swh4xFtNw==
-X-Google-Smtp-Source: AGRyM1u56k9Wer1FDd+BkIDjfxwPl929B5pswvCBQlRHjQCxoxz9IHoo6rqZWSCrgWwgYITubxRwow==
-X-Received: by 2002:aca:90c:0:b0:33a:768b:50d5 with SMTP id 12-20020aca090c000000b0033a768b50d5mr13493374oij.294.1658790971099;
-        Mon, 25 Jul 2022 16:16:11 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id d18-20020a0568301b7200b0061c9bbac1f9sm5583106ote.16.2022.07.25.16.16.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Jul 2022 16:16:10 -0700 (PDT)
-Received: (nullmailer pid 2935442 invoked by uid 1000);
-        Mon, 25 Jul 2022 23:16:09 -0000
-Date:   Mon, 25 Jul 2022 17:16:09 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/3] dt-bindings: memory-controller: Document Broadcom
- STB MEMC
-Message-ID: <20220725231609.GA2935380-robh@kernel.org>
-References: <20220722201043.2731570-1-f.fainelli@gmail.com>
- <20220722201043.2731570-2-f.fainelli@gmail.com>
+        Mon, 25 Jul 2022 19:18:35 -0400
+X-Greylist: delayed 330 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 25 Jul 2022 16:18:34 PDT
+Received: from relay.hostedemail.com (smtprelay0012.hostedemail.com [216.40.44.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 629BA2613E;
+        Mon, 25 Jul 2022 16:18:34 -0700 (PDT)
+Received: from omf17.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay10.hostedemail.com (Postfix) with ESMTP id C2E71C071E;
+        Mon, 25 Jul 2022 23:13:00 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf17.hostedemail.com (Postfix) with ESMTPA id 697EA1E;
+        Mon, 25 Jul 2022 23:12:52 +0000 (UTC)
+Message-ID: <c9340a12783beccac426d75f1df5b004c807ceb6.camel@perches.com>
+Subject: Re: [PATCH v2] docs: Fix typo in comment
+From:   Joe Perches <joe@perches.com>
+To:     William Breathitt Gray <william.gray@linaro.org>
+Cc:     Baoquan He <bhe@redhat.com>, Randy Dunlap <rdunlap@infradead.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Slark Xiao <slark_xiao@163.com>, kafai <kafai@fb.com>,
+        vgoyal <vgoyal@redhat.com>, dyoung <dyoung@redhat.com>,
+        ast <ast@kernel.org>, daniel <daniel@iogearbox.net>,
+        andrii <andrii@kernel.org>, "martin.lau" <martin.lau@linux.dev>,
+        song <song@kernel.org>, yhs <yhs@fb.com>,
+        "john.fastabend" <john.fastabend@gmail.com>,
+        kpsingh <kpsingh@kernel.org>, sdf <sdf@google.com>,
+        haoluo <haoluo@google.com>, jolsa <jolsa@kernel.org>,
+        dhowells <dhowells@redhat.com>, peterz <peterz@infradead.org>,
+        mingo <mingo@redhat.com>, will <will@kernel.org>,
+        longman <longman@redhat.com>,
+        "boqun.feng" <boqun.feng@gmail.com>, tglx <tglx@linutronix.de>,
+        bigeasy <bigeasy@linutronix.de>,
+        kexec <kexec@lists.infradead.org>,
+        linux-doc <linux-doc@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        linux-cachefs <linux-cachefs@redhat.com>
+Date:   Mon, 25 Jul 2022 16:12:51 -0700
+In-Reply-To: <Yt6hMD+HIaERgrqg@fedora>
+References: <20220721015605.20651-1-slark_xiao@163.com>
+         <20220721154110.fqp7n6f7ij22vayp@kafai-mbp.dhcp.thefacebook.com>
+         <21cac0ea.18f.182218041f7.Coremail.slark_xiao@163.com>
+         <874jzamhxe.fsf@meer.lwn.net>
+         <6ca59494-cc64-d85c-98e8-e9bef2a04c15@infradead.org>
+         <YtnlAg6Qhf7fwXXW@MiWiFi-R3L-srv>
+         <5bd85a7241e6ccac7fe5647cb9cf7ef22b228943.camel@perches.com>
+         <Yt6hMD+HIaERgrqg@fedora>
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.44.1-0ubuntu1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220722201043.2731570-2-f.fainelli@gmail.com>
+X-Stat-Signature: scxpfj6ognbxy16i47zhaoc7nn8mhr7p
+X-Rspamd-Server: rspamout04
+X-Rspamd-Queue-Id: 697EA1E
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX18oibnQ1mEZciO6tvJNDDYSZCjv6uxPeLM=
+X-HE-Tag: 1658790772-439912
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 22 Jul 2022 13:10:41 -0700, Florian Fainelli wrote:
-> Document the Broadcom STB memory controller which is a trivial binding
-> for now with a set of compatible strings and single register.
+On Mon, 2022-07-25 at 09:57 -0400, William Breathitt Gray wrote:
+> On Mon, Jul 25, 2022 at 06:52:15AM -0700, Joe Perches wrote:
+> > On Fri, 2022-07-22 at 07:45 +0800, Baoquan He wrote:
+> > > The fix is done with below command:
+> > > sed -i "s/the the /the /g" `git grep -l "the the " Documentation`
+> > 
+> > This command misses entries at EOL:
+> > 
+> > Documentation/trace/histogram.rst:  Here's an example where we use a compound key composed of the the
+> > 
+> > Perhaps a better conversion would be 's/\bthe the\b/the/g'
 > 
-> Since we introduce this binding, the section in
-> Documentation/devicetree/bindings/arm/bcm/brcm,brcmstb.txt is removed
-> and this binding is referenced instead.
-> 
-> Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-> ---
->  .../bindings/arm/bcm/brcm,brcmstb.txt         | 11 +---
->  .../brcm,brcmstb-memc-ddr.yaml                | 53 +++++++++++++++++++
->  2 files changed, 55 insertions(+), 9 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/memory-controllers/brcm,brcmstb-memc-ddr.yaml
-> 
+> It would be good to check for instances that cross newlines as well;
+> i.e. "the" at the end of a line followed by "the" at the start of the
+> next line. However, this would require some thought to properly account
+> for comment blocks ("*") and other similar prefixes that should be
+> ignored.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+checkpatch already attempts that duplicated word across a newline test.
+
