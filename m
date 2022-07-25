@@ -2,127 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CFE5C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 18:53:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0B96C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 19:02:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230337AbiGYSxb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 14:53:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57932 "EHLO
+        id S234107AbiGYTCl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 15:02:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229594AbiGYSx3 (ORCPT
+        with ESMTP id S236214AbiGYTCi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 14:53:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 279EE13F71;
-        Mon, 25 Jul 2022 11:53:28 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C65F9B810A4;
-        Mon, 25 Jul 2022 18:53:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C525C341C6;
-        Mon, 25 Jul 2022 18:53:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658775205;
-        bh=NdlvHAPlRtboP1PVhuZybJuRI8HwULVktfJH3uEL+RQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=HrjzKrpC6swMvYZZTsSIb7DGKVxnhLhK5VQ3z/F/3/QYGLe2MJvxOJVDXooPWEQrs
-         OnyRXoSbWzG6UrmF3DXsnt2wp+iJRr8BOQMqraVo+vtR/0bt2DXYhkPmhb/RgIPzfg
-         ott/Tap8TsyZ+vwcMG+8vLw1hONObABY1Nr5qvsfjyFVfifwg23xPu/Bjg7Wlqw1Mh
-         RSl5bUIq443QkZ4Qx8O/KYXasXXrVZj3pA8/EQeMmAyg8PHYg539jYd6UPSOJ5H5Mt
-         yKv2rkYsV49mKTImrKgTWhH1RDjTt79m2LEN3n7HmLHxqhsrgP3i09bR/10YEv23qE
-         cLpoyCtgnmSYQ==
-Date:   Mon, 25 Jul 2022 11:53:24 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 0/4] netlink: add 'bitmap' attribute type and
- API
-Message-ID: <20220725115324.7a1ad2d6@kernel.org>
-In-Reply-To: <20220725130255.3943438-1-alexandr.lobakin@intel.com>
-References: <20220721155950.747251-1-alexandr.lobakin@intel.com>
-        <20220721111318.1b180762@kernel.org>
-        <20220722145514.767592-1-alexandr.lobakin@intel.com>
-        <20220722111951.6a2fd39c@kernel.org>
-        <20220725130255.3943438-1-alexandr.lobakin@intel.com>
+        Mon, 25 Jul 2022 15:02:38 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7AB91DA61
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 12:02:37 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id va17so22356272ejb.0
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 12:02:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MUM1CP+2ZUXhXNaHHKSpsTwJwtJWDDOSw2yAzcWT8HA=;
+        b=Ypv/i1muEan0Jrz4RW1JiLlZsx7zfu0ARaCP6zqgK8Dlpn80HGGhrRt8UE6mn9DmkJ
+         vxHb3S355f1kNXk55/F9pYtnWV4f+Ey56rYjhEXyAG3cFqxlQA47EZo8qxAaIPcmnY6v
+         YGxToS3ajc5GxWQqtUZd+BlwV30mYDfKwTico=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MUM1CP+2ZUXhXNaHHKSpsTwJwtJWDDOSw2yAzcWT8HA=;
+        b=1pbuskeg7OliQcKdwiDIbQKkG0jmebXkcDIjf+T9HxhGurkMaa+n81VvqSQupwi8/E
+         9MW470CzEEL38QH0fWqq2Jo4A0nEzHO6UVNCcN7tDeFzco+NIrYuFsubZqrfDM5rubYr
+         QgE3Z2Z3Ql6fpSYV5RIDhnQFO5N/gCEhWmgkhcKtpB0xy0FoiHnNq7dv8Q4+7DGmiJAr
+         DzIojgq45g2CdAtMx8aaDv+1Wbv+fsLc7CyS0IplvJtfqPw1WlbG0RxyWwyk8lH1YChk
+         N8w1d8B4MI3U8UaB9GlSq5+vL0Db8H4+rntjNTpCLTLVbAKPu/9inu4N67o8d1Y2fiEO
+         i4ig==
+X-Gm-Message-State: AJIora8r0Uhi4BrtTCQ2weHJWrDVvqdbUdqy6s/xysF0xWPVe+bjmwoe
+        oxui6+BJdGJCL0IGWojTRQE8qhhZ+inE0gyt
+X-Google-Smtp-Source: AGRyM1voGLC8ZucUNvDoTF/GorlYGuUSDd0BoE/Em2btgNIVS2NWs8GjFS7lagRCMinw7PIUOH9PaQ==
+X-Received: by 2002:a17:907:2c44:b0:72b:6160:c64c with SMTP id hf4-20020a1709072c4400b0072b6160c64cmr11482665ejc.55.1658775754922;
+        Mon, 25 Jul 2022 12:02:34 -0700 (PDT)
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com. [209.85.128.54])
+        by smtp.gmail.com with ESMTPSA id dk20-20020a0564021d9400b0043a71775903sm7524255edb.39.2022.07.25.12.02.33
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 25 Jul 2022 12:02:33 -0700 (PDT)
+Received: by mail-wm1-f54.google.com with SMTP id 8-20020a05600c024800b003a2fe343db1so6929168wmj.1
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 12:02:33 -0700 (PDT)
+X-Received: by 2002:a05:600c:3553:b0:3a3:2b65:299e with SMTP id
+ i19-20020a05600c355300b003a32b65299emr19647350wmq.145.1658775753078; Mon, 25
+ Jul 2022 12:02:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <YtR8tPTkL/L1kFkY@yury-laptop> <Yt7jfiSlNOeeookP@yury-laptop>
+In-Reply-To: <Yt7jfiSlNOeeookP@yury-laptop>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Mon, 25 Jul 2022 12:02:16 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wjroqb0Hr9-1BCATjSuBdfdkWS6qqFaLXrwFCsHvgGH_g@mail.gmail.com>
+Message-ID: <CAHk-=wjroqb0Hr9-1BCATjSuBdfdkWS6qqFaLXrwFCsHvgGH_g@mail.gmail.com>
+Subject: Re: x86_64/kvm: kernel hangs on poweroff
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 25 Jul 2022 15:02:55 +0200 Alexander Lobakin wrote:
-> > Actually once a field crosses the biggest natural int size I was
-> > thinking that the user would go to a bitmap.
-> > 
-> > So at the netlink level the field is bigint (LE, don't care about BE).
-> > Kernel side API is:
-> > 
-> > 	nla_get_b8, nla_get_b16, nla_get_b32, nla_get_b64,
-> > 	nla_get_bitmap
-> > 	nla_put_b8, nla_put_b16 etc.
-> > 
-> > 	u16 my_flags_are_so_toight;
-> > 
-> > 	my_flags_are_so_toight = nla_get_b16(attr[BLAA_BLA_BLA_FLAGS]);
-> > 
-> > The point is - the representation can be more compact than u64 and will
-> > therefore encourage anyone who doesn't have a strong reason to use
-> > fixed size fields to switch to the bigint.  
-> 
-> Ahh looks like I got it! So you mean that at Netlink level we should
-> exchange with bigint/u64arrs, but there should be an option to
-> get/set only 16/32/64 bits from them to simplify (or keep simple)
-> users?
+On Mon, Jul 25, 2022 at 11:40 AM Yury Norov <yury.norov@gmail.com> wrote:
+>
+> I didn't investigate on it and I think I'll have no chance to look
+> closer at next week or two.
 
-Not exactly. I'd prefer if the netlink level was in u32 increments.
-u64 requires padding (so the nla_put..() calls will have more args).
-Netlink requires platform alignment and rounds up to 4B, so u32 is much
-more convenient than u64. Similarly - it doesn't make sense to represent
-sizes smaller than 4B because of the rounding up, so nla_put_b8() can
-be a define to nla_put_b32(). Ethool's choice of u32 is not without
-merit.
+I suspect you will have to bisect it, but it may not even be kernel-specific.
 
-> Like, if we have `u16 uuid`, to not do
-> 
-> 	unsigned long uuid_bitmap;
-> 
-> 	nla_get_bitmap(attr[FLAGS], &uuid_bitmap, BITS_PER_TYPE(u16));
-> 	uuid = (u16)uuid_bitmap;
-> 
-> but instead
-> 
-> 	uuid = nla_get_b16(attr[FLAGS]);
-> 
-> ?
+> Just reproduced on v5.19-rc8.
 
-Yes.
+Well, it apparently also reproduces with 5.18, so it's not a regression.
 
-> > about being flexible when it comes to size, I guess, more than
-> > bitmap in particular.  
-> 
-> Probably, but you also said above that for anything bigger than
-> longs you'd go for bitmaps, didn't you? So I guess that series
-> goes in the right direction, just needs a couple more inlines
-> to be able to get/put u{32, 64; 8, 16 -- not sure about these two
-> after reading your follow-up mail} as easy as nla_{get,put}<size>()
-> and probably dropping Endianness stuff? Hope I got it right ._.
+> > [   22.162259] Kernel panic - not syncing: Attempted to kill init! exitcode=0x00000000
+> > [   22.163539] CPU: 0 PID: 1 Comm: systemd-shutdow Not tainted 5.19.0-rc6 #198
+> > [   22.164327] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.15.0-1 04/01/2014
+> > [   22.164327] Call Trace:
+> > [   22.164327]  <TASK>
+> > [   22.164327]  dump_stack_lvl+0x34/0x44
+> > [   22.164327]  panic+0x107/0x28a
+> > [   22.164327]  do_exit.cold+0x15/0x15
+> > [   22.164327]  ? sys_off_notify+0x3e/0x60
+> > [   22.164327]  __do_sys_reboot+0x1df/0x220
+> > [   22.164327]  ? vfs_writev+0xc7/0x190
+> > [   22.164327]  ? virtio_crypto_ctrl_vq_request+0xd0/0xd0
+> > [   22.164327]  ? fpregs_assert_state_consistent+0x1e/0x40
+> > [   22.164327]  do_syscall_64+0x3b/0x90
+> > [   22.164327]  entry_SYSCALL_64_after_hwframe+0x46/0xb0
+> > [   22.164327] RIP: 0033:0x7f42b4118443
+> > [   22.164327] Code: 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 89 fa be 69 19 12 28 bf ad de e1 fe b8 a9 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 05 c3 0f 1f 40 00 48 8b 15 f9 c9 0d 00 f7 d8
 
-Modulo the fact that I do still want to pack to u32. Especially a
-single u32 - perhaps once we cross 8B we can switch to requiring 8B
-increments.
+That's literally the "exit()" system call.
 
-The nla_len is 16bit, which means that attrs nested inside other attrs
-are quite tight for space (see the sad story of VF attrs in
-RTM_GETLINK). If we don't represent u8/u16/u32 in a netlink-level
-efficient manner we're back to people arguing for raw u32s rather than
-using the new type.
+So the only reason the kernel is complaining is that your user mode
+'init' is calling 'exit()'. Thaty will just make the kernel go "Sorry,
+I can't continue, I need init as the child reaper". IOW, it's not a
+"kernel bug" kind of panic, it's literally the kernel just going "I'm
+done".
+
+The fact that I don't think I've seen anybody else reporting this
+makes me think it's something you do.
+
+Without any other reports I can find, and thus no pattern to it, I
+think it's on you to figure out when this started happening and what
+it is that triggers it, since you're the only one that sees it.
+
+It smells like it's your KVM setup that doesn't recognize the
+power-off sequence, so the IO operation that is *supposed* to power
+off the machine (and in the case of KVM, make it exit), doesn't do so,
+and then that poweroff() thing returns to user space, and then user
+space says "I tried to power off, it didn't work, so I'm just going to
+exit", and that is what makes the kernel then say "init exited, I
+can't continue either"
+
+              Linus
