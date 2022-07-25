@@ -2,71 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C043C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 15:21:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4344EC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 15:21:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236241AbiGYPV0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 11:21:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39202 "EHLO
+        id S236388AbiGYPV2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 11:21:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236153AbiGYPVK (ORCPT
+        with ESMTP id S236193AbiGYPVM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 11:21:10 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D5976159;
-        Mon, 25 Jul 2022 08:18:34 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 28CD33447C;
-        Mon, 25 Jul 2022 15:18:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1658762313; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=yMSuGIGKLpHAzMbpgLiAFszp/HqZve7TTrNtIxOn6TY=;
-        b=ivTJWNrJiBymPEB/Qa+jyPhEXDIlra0zBkWR3N3l43YJd3uPzwZ8TGq+0S2PFQO6nCLbEy
-        P6VEqskZFSaOg60MBtz7av+C/aI4xiPvffmLz5F/ZtnsisxVsoXikHjyEP6w0eGDoQXOD7
-        Ah6UUh5Wvsey9xKzpEXeHa6yHX41C3U=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1658762313;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=yMSuGIGKLpHAzMbpgLiAFszp/HqZve7TTrNtIxOn6TY=;
-        b=1uH8/AQVCYHhY4LAHMSnZ9e6Uki809Yd24q6eVVPUUXVXH0AbbG0qnaO7Mx2YW+LyuFN3E
-        TuM9WQZF9vaeO/AQ==
-Received: from hawking.suse.de (unknown [10.168.4.11])
-        by relay2.suse.de (Postfix) with ESMTP id 1F0FF2C171;
-        Mon, 25 Jul 2022 15:18:33 +0000 (UTC)
-Received: by hawking.suse.de (Postfix, from userid 17005)
-        id 08D89444B2F; Mon, 25 Jul 2022 17:18:32 +0200 (CEST)
-From:   Andreas Schwab <schwab@suse.de>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
-        linux-trace-devel@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] rtla: Fix double free
-References: <mvmzggxl4n1.fsf@suse.de>
-        <fd0888a4-099c-95fe-7e20-82be1489061f@kernel.org>
-        <mvmv8rll2yn.fsf@suse.de> <20220725105639.295a7d7d@gandalf.local.home>
-        <mvmilnlkyzx.fsf_-_@suse.de>
-X-Yow:  Yow!  Is my fallout shelter termite proof?
-Date:   Mon, 25 Jul 2022 17:18:32 +0200
-In-Reply-To: <mvmilnlkyzx.fsf_-_@suse.de> (Andreas Schwab's message of "Mon,
-        25 Jul 2022 17:12:18 +0200")
-Message-ID: <mvmedy9kypj.fsf@suse.de>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.1.90 (gnu/linux)
+        Mon, 25 Jul 2022 11:21:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBC976167;
+        Mon, 25 Jul 2022 08:18:40 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 48A8661284;
+        Mon, 25 Jul 2022 15:18:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F3B7C341C8;
+        Mon, 25 Jul 2022 15:18:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658762319;
+        bh=9nUkscWr6F41nc6e9ioJgyDs4jP8GMh1w//u9IckWOA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=togkg6dzHsqFJNhh2OMC+RUpofF2Ut8DKGR/s7JbC1NxYk+eaySs9IUspg6SkixDC
+         +P3g/3CjBISitRaQ6IokxpMUcRBdu4KtFH9i5OcU9HhqN3zOrkeVyLbOqHJlJUkAvF
+         mSVqApIroZEc77KjLvHCcpJlI+/hoUulDkxsarq/qhvbXrYk6XxXCFr7U/xblMxcV0
+         uP7jQ4mdHKp+niT3l0qwKf1nSnWQFwiAVdHEuaNbPDcTPJRyqkusS1Z+NTt2khGTyb
+         T2LiVKORgQsaGXc7lhQYhzCbKwWk8FbewyWFIbVA6ema+ZmAbBWn2TA6LVuFJTrhFm
+         RnlTiw7Q+M2mg==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1oFzr6-0001RI-6H; Mon, 25 Jul 2022 17:18:48 +0200
+Date:   Mon, 25 Jul 2022 17:18:48 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     Bjorn Helgaas <helgaas@kernel.org>,
+        Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>,
+        Johan Hovold <johan+linaro@kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Xiaowei Song <songxiaowei@hisilicon.com>,
+        Binghui Wang <wangbinghui@hisilicon.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Jianjun Wang <jianjun.wang@mediatek.com>,
+        linux-pci@vger.kernel.org,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Ley Foon Tan <ley.foon.tan@intel.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: Why set .suppress_bind_attrs even though .remove() implemented?
+Message-ID: <Yt60WNVNEVHgzSuN@hovoldconsulting.com>
+References: <YtqllIHY/R/BbR3V@hovoldconsulting.com>
+ <20220722143858.GA1818206@bhelgaas>
+ <Yt6Z3cBrVy1lVTp1@hovoldconsulting.com>
+ <87czdtxnfn.wl-maz@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87czdtxnfn.wl-maz@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Jul 25 2022, Andreas Schwab wrote:
+On Mon, Jul 25, 2022 at 03:43:40PM +0100, Marc Zyngier wrote:
+> On Mon, 25 Jul 2022 14:25:49 +0100,
+> Johan Hovold <johan@kernel.org> wrote:
+> > 
+> > [ +CC: maz ]
+> > 
+> > On Fri, Jul 22, 2022 at 09:38:58AM -0500, Bjorn Helgaas wrote:
+> > > On Fri, Jul 22, 2022 at 03:26:44PM +0200, Johan Hovold wrote:
+> > > > On Thu, Jul 21, 2022 at 05:21:22PM -0500, Bjorn Helgaas wrote:
+> > > 
+> > > > > qcom is a DWC driver, so all the IRQ stuff happens in
+> > > > > dw_pcie_host_init().  qcom_pcie_remove() does call
+> > > > > dw_pcie_host_deinit(), which calls irq_domain_remove(), but nobody
+> > > > > calls irq_dispose_mapping().
+> > > > > 
+> > > > > I'm thoroughly confused by all this.  But I suspect that maybe I
+> > > > > should drop the "make qcom modular" patch because it seems susceptible
+> > > > > to this problem:
+> > > > > 
+> > > > >   https://git.kernel.org/pub/scm/linux/kernel/git/helgaas/pci.git/commit/?h=pci/ctrl/qcom&id=41b68c2d097e
+> > > > 
+> > > > That should not be necessary.
+> > > > 
+> > > > As you note above, interrupt handling is implemented in dwc core so if
+> > > > there are any issue here at all, which I doubt, then all of the dwc
+> > > > drivers that currently can be built as modules would all be broken and
+> > > > this would need to be fixed in core.
+> > > 
+> > > I don't know yet whether there's an issue.  We need a clear argument
+> > > for why there is or is not.  The fact that others might be broken is
+> > > not an argument for breaking another one ;)
+> > 
+> > It's not breaking anything that is currently working, and if there's
+> > some corner case during module unload, that's not the end of the world
+> > either.
+> 
+> It may not be the end of the world for you, but you have absolutely no
+> idea of what dangling pointers to kernel memory will do on a user
+> machine, nor how this can be further exploited. Unloading a module
+> should never result in an unsafe kernel.
 
-> Avoid double free by making trace_instance_destroy indempotent.  When
+Since when is unloading modules something that is expected to work
+perfectly? I keep hearing "well, don't do that then" when someone
+complains about unloading this module while doing this or that broke
+something. (And it's only root that can unload modules in the first
+place.)
 
-s/indempotent/idempotent/
+If this was the general understanding, then it seems the only option
+would be to disable module unloading completely as module remove code
+almost by definition gets less testing and is subject to bit rot.
 
--- 
-Andreas Schwab, SUSE Labs, schwab@suse.de
-GPG Key fingerprint = 0196 BAD8 1CE9 1970 F4BE  1748 E4D4 88E3 0EEA B9D7
-"And now for something completely different."
+It's useful for developers, but use it at your own risk.
+
+That said, I agree that if something is next to impossible to get right,
+as may be the case with interrupt controllers generally, then fine,
+let's disable module unloading for that class of drivers.
+
+And this would mean disabling driver unbind for the 20+ driver PCI
+drivers that currently implement it to some degree.
+
+Also note that we only appear to have some 60 drivers in the tree that
+can be built as modules but cannot be unloaded (if my grep patterns
+were correct).
+
+> > > > I've been using the modular pcie-qcom patch for months now, unloading
+> > > > and reloading the driver repeatedly to test power sequencing, without
+> > > > noticing any problems whatsoever.
+> > > 
+> > > Pali's commit log suggests that unloading the module is not, by
+> > > itself, enough to trigger the problem:
+> > > 
+> > >   https://lore.kernel.org/linux-pci/20220709161858.15031-1-pali@kernel.org/
+> > > 
+> > > Can you test the scenario he mentions?
+> > 
+> > Turns out the pcie-qcom driver does not support legacy interrupts so
+> > there's no risk of there being any lingering mappings if I understand
+> > things correctly.
+> 
+> It still does MSIs, thanks to dw_pcie_host_init(). If you can remove
+> the driver while devices are up and running with MSIs allocated,
+> things may get ugly if things align the wrong way (if a driver still
+> has a reference to an irq_desc or irq_data, for example).
+
+That is precisely the way I've been testing it and everything appears
+to be tore down as it should.
+
+And a PCI driver that has been unbound should have released its
+resources, or that's a driver bug. Right?
+
+And for the OF INTx case you mentioned earlier, aren't those mapped by
+PCI core and could in theory be released by core as well?
+
+Johan
