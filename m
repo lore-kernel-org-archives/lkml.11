@@ -2,142 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F293C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 22:28:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6027C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 22:30:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230000AbiGYW2t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 18:28:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37016 "EHLO
+        id S236843AbiGYWaS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 18:30:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237021AbiGYW2p (ORCPT
+        with ESMTP id S230320AbiGYWaQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 18:28:45 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36C2D255AD;
-        Mon, 25 Jul 2022 15:28:44 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id c12so8345512ede.3;
-        Mon, 25 Jul 2022 15:28:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=s5F5bTPmIWsgz/PHUFTiPwn7ArH62vLQlD0Ro1hOzT8=;
-        b=EYVKVy9GR8tIisHmLoKIAUDGdhGTgA+V+O8Z1DMo3OCm/8lIX+f2pBj5Fg2PBSooVF
-         VzXhmo5+5SRh+gS/j/TCjZm9g3wuPPfIJR/lHwPjJL/VEagtHu4Dj8nzh2Yo4SFJGt3q
-         zAUrZThxpZhnqya/xFcQ4ZsSQixW2/qBTznI3inG+qxqjP1qimuGWnkE5ilwBjyN3+/y
-         raASv3WxXlCYKvPPX5tYi45XmgelBIcFRlQ0HkBw+VCjLX907GaOeSAK/FU3cnRM4b9W
-         MPdErn+DQYwABxF4eRq6GZgzE3ovur6veftazbNX8N0e8zULCGOPcg3f8KMdCnw0nJuq
-         TVHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=s5F5bTPmIWsgz/PHUFTiPwn7ArH62vLQlD0Ro1hOzT8=;
-        b=sP+54nMD81yYcOMQuGpRqWintABlzDRcMesavl3I5iFmQMlSdzYeadGPvN5mIQqygq
-         aa+2d8s4VD700HGOk5ckr+ulKjj5JbExyeBnGuiPJ0UUNKmDNLMwqHN/I8d3Ui7kWOmL
-         e6KR6t45hI7U6JqErsi5+nuGw4CZAAJHXMoNgRnWfnSZmvNpIvjy4uMYBY1Kd95u3s97
-         lA8BPU6viHRrt22jCAgz1RvPu1T9IFAVy8zk0ABzXaMfjq3XxalAfN2FKwHQoyYBTmZr
-         wBdtwfskFhvd8DB1MaA+Y57rFbZ6zQ77eVVaBFUzZZ1dzpNO8lwmZ82T5cBaGqPV3Wro
-         xdpA==
-X-Gm-Message-State: AJIora/VUpFaMZVQvlXAwXoTTOvhT2csd25Z1943Q4Lz+mW5qAFP7FgZ
-        LBgzfIrrttKIAiEHKskuYvYL1gNuHGSuyH8huP4=
-X-Google-Smtp-Source: AGRyM1tyT5tOI9pZi4I45uufPdEI2vvTki7s66xiQ+IU6rwz2Xy9oHm51p5RXCfq5CLrCpa0+X/RHhv6nZlPcKRiYtg=
-X-Received: by 2002:a05:6402:5412:b0:435:5997:ccb5 with SMTP id
- ev18-20020a056402541200b004355997ccb5mr14756047edb.167.1658788122613; Mon, 25
- Jul 2022 15:28:42 -0700 (PDT)
+        Mon, 25 Jul 2022 18:30:16 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97EB6B26
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 15:30:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658788214; x=1690324214;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=rEibPX4A+3q/UO4dudDLBb6xgStJG1WiFr0ZClH+s98=;
+  b=OWjwRG5+J3iTwTwOuNWaDWoo40ZZlzfMVYosjYZ1JLh/ZpZ87ZJB3JyL
+   h0H1+K9ihJ8LlDs7eLTU46PObIIJzzUzci1SztykHCbw6vyPr1etg66rR
+   88Q+87WyFGeIYFoQ3nxKLYOJv5mhJ2SwnXekODhIR/K9+kCVXg6Uuqdh6
+   9Bi9eBJJy/gIIHiWNIcXDjeKxm0S6qo90z1+xxqwD+IE9bjH9RCKH8q1q
+   mML6QLagqxg7nY6s36Lnu8Z2mEWg+qHUNXCz4mk4XVb94XqW8pJWLQp3l
+   09ZQcR4HHsp/MxEDjHlR01WABeYi30ptvhV3UlcXXuedrqy6GG3WnZ26p
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10419"; a="267579093"
+X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
+   d="scan'208";a="267579093"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2022 15:30:14 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
+   d="scan'208";a="667653405"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 25 Jul 2022 15:30:12 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oG6aa-0005cW-0u;
+        Mon, 25 Jul 2022 22:30:12 +0000
+Date:   Tue, 26 Jul 2022 06:29:46 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Simon Trimmer <simont@opensource.cirrus.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>
+Subject: sound/soc/codecs/wm_adsp.c:1490:32: warning: taking address of
+ packed member 'name' of class or structure 'wm_adsp_host_buf_coeff_v1' may
+ result in an unaligned pointer value
+Message-ID: <202207260648.ERQjXCRB-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220725135026.1.Ia18502557c4ba9ba7cd2d1da2bae3aeb71b37e4e@changeid>
-In-Reply-To: <20220725135026.1.Ia18502557c4ba9ba7cd2d1da2bae3aeb71b37e4e@changeid>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Mon, 25 Jul 2022 15:28:31 -0700
-Message-ID: <CABBYNZLWUM4JJjm5H=f7szt_7bgSFcAknk4AcVUmO5iPJzQVcQ@mail.gmail.com>
-Subject: Re: [PATCH] Bluetooth: Always set event mask on suspend
-To:     Abhishek Pandit-Subedi <abhishekpandit@google.com>
-Cc:     "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Abhishek,
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   e0dccc3b76fb35bb257b4118367a883073d7390e
+commit: 353bb6a5f2ac495f289b7c7a528c7d134c9a8ec4 ASoC: wm_adsp: Compressed stream DSP memory structs should be __packed
+date:   5 months ago
+config: arm-randconfig-r013-20220724 (https://download.01.org/0day-ci/archive/20220726/202207260648.ERQjXCRB-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 9e88cbcc403bdf82f29259ad60ff60a8fc4434a1)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm cross compiling tool for clang build
+        # apt-get install binutils-arm-linux-gnueabi
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=353bb6a5f2ac495f289b7c7a528c7d134c9a8ec4
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 353bb6a5f2ac495f289b7c7a528c7d134c9a8ec4
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash sound/soc/codecs/
 
-On Mon, Jul 25, 2022 at 1:50 PM Abhishek Pandit-Subedi
-<abhishekpandit@google.com> wrote:
->
-> From: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
->
-> When suspending, always set the event mask once disconnects are
-> successful. Otherwise, if wakeup is disallowed, the event mask is not
-> set before suspend continues and can result in an early wakeup.
->
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Please include the commit hash it fixes, also it may be a good idea to
-tag it for stable as well.
+All warnings (new ones prefixed by >>):
 
-> Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-> ---
-> Observed on ChromeOS as follows:
->
-> < HCI Command: Disconnect (0x01|0x0006) plen 3
->         Handle: 256
->         Reason: Remote Device Terminated due to Power Off (0x15)
-> > HCI Event: Command Status (0x0f) plen 4
->       Disconnect (0x01|0x0006) ncmd 1
->         Status: Success (0x00)
-> @ MGMT Event: Device Disconnected (0x000c) plen 8
->         BR/EDR Address: 04:52:C7:C3:65:B5 (Bose Corporation)
->         Reason: Connection terminated by local host for suspend (0x05)
-> @ MGMT Event: Controller Suspended (0x002d) plen 1
->         Suspend state: Disconnected and not scanning (1)
-> > HCI Event: Disconnect Complete (0x05) plen 4
->         Status: Success (0x00)
->         Handle: 256
->         Reason: Connection Terminated By Local Host (0x16)
->
-> The expectation is that we should see Set Event Mask before completing
-> the suspend so that the `Disconnect Complete` doesn't wake us up.
->
->
->  net/bluetooth/hci_sync.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-> index 148ce629a59f..e6d804b82b67 100644
-> --- a/net/bluetooth/hci_sync.c
-> +++ b/net/bluetooth/hci_sync.c
-> @@ -5297,6 +5297,9 @@ int hci_suspend_sync(struct hci_dev *hdev)
->                 return err;
->         }
->
-> +       /* Update event mask so only the allowed event can wakeup the host */
-> +       hci_set_event_mask_sync(hdev);
-> +
->         /* Only configure accept list if disconnect succeeded and wake
->          * isn't being prevented.
->          */
-> @@ -5308,9 +5311,6 @@ int hci_suspend_sync(struct hci_dev *hdev)
->         /* Unpause to take care of updating scanning params */
->         hdev->scanning_paused = false;
->
-> -       /* Update event mask so only the allowed event can wakeup the host */
-> -       hci_set_event_mask_sync(hdev);
-> -
->         /* Enable event filter for paired devices */
->         hci_update_event_filter_sync(hdev);
->
-> --
-> 2.37.1.359.gd136c6c3e2-goog
->
+>> sound/soc/codecs/wm_adsp.c:1490:32: warning: taking address of packed member 'name' of class or structure 'wm_adsp_host_buf_coeff_v1' may result in an unaligned pointer value [-Waddress-of-packed-member]
+           cs_dsp_remove_padding((u32 *)&coeff_v1.name, ARRAY_SIZE(coeff_v1.name));
+                                         ^~~~~~~~~~~~~
+   1 warning generated.
 
+
+vim +1490 sound/soc/codecs/wm_adsp.c
+
+d52ed4b0bc73c1 Richard Fitzgerald 2018-07-19  1434  
+0700bc2fb94c28 Simon Trimmer      2021-09-13  1435  static int wm_adsp_buffer_parse_coeff(struct cs_dsp_coeff_ctl *cs_ctl)
+d52ed4b0bc73c1 Richard Fitzgerald 2018-07-19  1436  {
+4f2d4eabf57718 Stuart Henderson   2019-02-22  1437  	struct wm_adsp_host_buf_coeff_v1 coeff_v1;
+a792af69b08fd7 Charles Keepax     2019-02-22  1438  	struct wm_adsp_compr_buf *buf;
+e146820215910d Simon Trimmer      2021-09-13  1439  	struct wm_adsp *dsp = container_of(cs_ctl->dsp, struct wm_adsp, cs_dsp);
+04ae08596737c4 Charles Keepax     2021-09-13  1440  	unsigned int version;
+a792af69b08fd7 Charles Keepax     2019-02-22  1441  	int ret, i;
+d52ed4b0bc73c1 Richard Fitzgerald 2018-07-19  1442  
+d52ed4b0bc73c1 Richard Fitzgerald 2018-07-19  1443  	for (i = 0; i < 5; ++i) {
+a887f9c7a4d37a Charles Keepax     2022-02-10  1444  		ret = cs_dsp_coeff_read_ctrl(cs_ctl, 0, &coeff_v1,
+a887f9c7a4d37a Charles Keepax     2022-02-10  1445  					     min(cs_ctl->len, sizeof(coeff_v1)));
+d52ed4b0bc73c1 Richard Fitzgerald 2018-07-19  1446  		if (ret < 0)
+d52ed4b0bc73c1 Richard Fitzgerald 2018-07-19  1447  			return ret;
+d52ed4b0bc73c1 Richard Fitzgerald 2018-07-19  1448  
+04ae08596737c4 Charles Keepax     2021-09-13  1449  		if (coeff_v1.host_buf_ptr)
+d52ed4b0bc73c1 Richard Fitzgerald 2018-07-19  1450  			break;
+d52ed4b0bc73c1 Richard Fitzgerald 2018-07-19  1451  
+d52ed4b0bc73c1 Richard Fitzgerald 2018-07-19  1452  		usleep_range(1000, 2000);
+d52ed4b0bc73c1 Richard Fitzgerald 2018-07-19  1453  	}
+d52ed4b0bc73c1 Richard Fitzgerald 2018-07-19  1454  
+04ae08596737c4 Charles Keepax     2021-09-13  1455  	if (!coeff_v1.host_buf_ptr) {
+0700bc2fb94c28 Simon Trimmer      2021-09-13  1456  		adsp_err(dsp, "Failed to acquire host buffer\n");
+d52ed4b0bc73c1 Richard Fitzgerald 2018-07-19  1457  		return -EIO;
+a792af69b08fd7 Charles Keepax     2019-02-22  1458  	}
+d52ed4b0bc73c1 Richard Fitzgerald 2018-07-19  1459  
+0700bc2fb94c28 Simon Trimmer      2021-09-13  1460  	buf = wm_adsp_buffer_alloc(dsp);
+a792af69b08fd7 Charles Keepax     2019-02-22  1461  	if (!buf)
+a792af69b08fd7 Charles Keepax     2019-02-22  1462  		return -ENOMEM;
+a792af69b08fd7 Charles Keepax     2019-02-22  1463  
+0700bc2fb94c28 Simon Trimmer      2021-09-13  1464  	buf->host_buf_mem_type = cs_ctl->alg_region.type;
+04ae08596737c4 Charles Keepax     2021-09-13  1465  	buf->host_buf_ptr = be32_to_cpu(coeff_v1.host_buf_ptr);
+a792af69b08fd7 Charles Keepax     2019-02-22  1466  
+a792af69b08fd7 Charles Keepax     2019-02-22  1467  	ret = wm_adsp_buffer_populate(buf);
+a792af69b08fd7 Charles Keepax     2019-02-22  1468  	if (ret < 0)
+a792af69b08fd7 Charles Keepax     2019-02-22  1469  		return ret;
+a792af69b08fd7 Charles Keepax     2019-02-22  1470  
+4f2d4eabf57718 Stuart Henderson   2019-02-22  1471  	/*
+4f2d4eabf57718 Stuart Henderson   2019-02-22  1472  	 * v0 host_buffer coefficients didn't have versioning, so if the
+4f2d4eabf57718 Stuart Henderson   2019-02-22  1473  	 * control is one word, assume version 0.
+4f2d4eabf57718 Stuart Henderson   2019-02-22  1474  	 */
+0700bc2fb94c28 Simon Trimmer      2021-09-13  1475  	if (cs_ctl->len == 4) {
+0d3fba3e7a5669 Charles Keepax     2019-02-22  1476  		compr_dbg(buf, "host_buf_ptr=%x\n", buf->host_buf_ptr);
+d52ed4b0bc73c1 Richard Fitzgerald 2018-07-19  1477  		return 0;
+d52ed4b0bc73c1 Richard Fitzgerald 2018-07-19  1478  	}
+d52ed4b0bc73c1 Richard Fitzgerald 2018-07-19  1479  
+a0b653e89a3afd Richard Fitzgerald 2020-12-30  1480  	version = be32_to_cpu(coeff_v1.versions) & HOST_BUF_COEFF_COMPAT_VER_MASK;
+a0b653e89a3afd Richard Fitzgerald 2020-12-30  1481  	version >>= HOST_BUF_COEFF_COMPAT_VER_SHIFT;
+4f2d4eabf57718 Stuart Henderson   2019-02-22  1482  
+a0b653e89a3afd Richard Fitzgerald 2020-12-30  1483  	if (version > HOST_BUF_COEFF_SUPPORTED_COMPAT_VER) {
+0700bc2fb94c28 Simon Trimmer      2021-09-13  1484  		adsp_err(dsp,
+4f2d4eabf57718 Stuart Henderson   2019-02-22  1485  			 "Host buffer coeff ver %u > supported version %u\n",
+a0b653e89a3afd Richard Fitzgerald 2020-12-30  1486  			 version, HOST_BUF_COEFF_SUPPORTED_COMPAT_VER);
+4f2d4eabf57718 Stuart Henderson   2019-02-22  1487  		return -EINVAL;
+4f2d4eabf57718 Stuart Henderson   2019-02-22  1488  	}
+4f2d4eabf57718 Stuart Henderson   2019-02-22  1489  
+5beb8eeade2c03 Simon Trimmer      2021-09-13 @1490  	cs_dsp_remove_padding((u32 *)&coeff_v1.name, ARRAY_SIZE(coeff_v1.name));
+4f2d4eabf57718 Stuart Henderson   2019-02-22  1491  
+0700bc2fb94c28 Simon Trimmer      2021-09-13  1492  	buf->name = kasprintf(GFP_KERNEL, "%s-dsp-%s", dsp->part,
+4f2d4eabf57718 Stuart Henderson   2019-02-22  1493  			      (char *)&coeff_v1.name);
+4f2d4eabf57718 Stuart Henderson   2019-02-22  1494  
+0d3fba3e7a5669 Charles Keepax     2019-02-22  1495  	compr_dbg(buf, "host_buf_ptr=%x coeff version %u\n",
+a0b653e89a3afd Richard Fitzgerald 2020-12-30  1496  		  buf->host_buf_ptr, version);
+4f2d4eabf57718 Stuart Henderson   2019-02-22  1497  
+a0b653e89a3afd Richard Fitzgerald 2020-12-30  1498  	return version;
+4f2d4eabf57718 Stuart Henderson   2019-02-22  1499  }
+4f2d4eabf57718 Stuart Henderson   2019-02-22  1500  
+
+:::::: The code at line 1490 was first introduced by commit
+:::::: 5beb8eeade2c03b55ae729c05bb9fa245633fe74 ASoC: wm_adsp: Rename generic DSP support
+
+:::::: TO: Simon Trimmer <simont@opensource.cirrus.com>
+:::::: CC: Mark Brown <broonie@kernel.org>
 
 -- 
-Luiz Augusto von Dentz
+0-DAY CI Kernel Test Service
+https://01.org/lkp
