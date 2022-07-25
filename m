@@ -2,76 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E249BC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 01:46:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A774C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 01:48:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231843AbiGYBq6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 21:46:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51988 "EHLO
+        id S232192AbiGYBsw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 21:48:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230306AbiGYBqt (ORCPT
+        with ESMTP id S229821AbiGYBsu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 21:46:49 -0400
-Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2D09B2673
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 18:46:48 -0700 (PDT)
-Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 26P1f2gP023146;
-        Sun, 24 Jul 2022 20:41:02 -0500
-Received: (from segher@localhost)
-        by gate.crashing.org (8.14.1/8.14.1/Submit) id 26P1f1YV023145;
-        Sun, 24 Jul 2022 20:41:01 -0500
-X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
-Date:   Sun, 24 Jul 2022 20:41:01 -0500
-From:   Segher Boessenkool <segher@kernel.crashing.org>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] powerpc/purgatory: Omit use of bin2c
-Message-ID: <20220725014100.GQ25951@gate.crashing.org>
-References: <20220625224037.836581-1-masahiroy@kernel.org>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220625224037.836581-1-masahiroy@kernel.org>
-User-Agent: Mutt/1.4.2.3i
+        Sun, 24 Jul 2022 21:48:50 -0400
+Received: from mail-pj1-f48.google.com (mail-pj1-f48.google.com [209.85.216.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8189ED62;
+        Sun, 24 Jul 2022 18:48:47 -0700 (PDT)
+Received: by mail-pj1-f48.google.com with SMTP id t2-20020a17090a4e4200b001f21572f3a4so8927875pjl.0;
+        Sun, 24 Jul 2022 18:48:47 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=HT09dBY8vUpXT4pAwp9hU5IYkpA64eMFd2Hf4rtewRU=;
+        b=Mm90oEayZG+T3cwxeBYyH+MVmHKkb/cUBKaLRzfnQ+jTnJ/4SVK23muAKkqteOmH1Q
+         dJcx4yWdTziLMA6gBTPI1pxS49cCkP4pEfgaO79Y+JsVkDujHYOljhTdd3LlK1K3b9af
+         +0g9iWBR8+Zc+3f+dphUjQ7+Iv9sRv8TYi4kt8GqV7E2QQX1Wlasf37HTRZ3VVt/5V2M
+         u3nw5wOSLp5Sph9joKwVp+etsU7mA4rjbUrKVzbQwhJ0vANDxx+ka84Jc4AAzSpC8Rib
+         42MFnN7jRwOGKIJpLTkof5g/yl2yEmPzbk4ICaZKx7+NA6If8z6Lha6oCsGTrUeDgOIU
+         TkZQ==
+X-Gm-Message-State: AJIora+7SbW+Jv1MH+ud6vM4zXZ7+M2yhtABbJXLRbizvVRksDhRmgzl
+        smd22rY9X89gGGsVZopDUZI=
+X-Google-Smtp-Source: AGRyM1uPN9pHcsZNA+/K1raafpFnBCZGJCaCSs0N23TarH3QJ1hL9Ma/JcNJv/aZrIv+78hDd3zv4w==
+X-Received: by 2002:a17:902:d48a:b0:16b:f0be:4e15 with SMTP id c10-20020a170902d48a00b0016bf0be4e15mr10344383plg.155.1658713726367;
+        Sun, 24 Jul 2022 18:48:46 -0700 (PDT)
+Received: from [192.168.3.217] ([98.51.102.78])
+        by smtp.gmail.com with ESMTPSA id d10-20020a170902654a00b0016d1e514ec5sm7772608pln.139.2022.07.24.18.48.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 24 Jul 2022 18:48:45 -0700 (PDT)
+Message-ID: <57accb2a-828d-c532-d964-130a63faebe5@acm.org>
+Date:   Sun, 24 Jul 2022 18:48:44 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2 2/2] block/mq-deadline: Prioritize first request
+Content-Language: en-US
+To:     Wang You <wangyoua@uniontech.com>
+Cc:     axboe@kernel.dk, fio@vger.kernel.org, hch@lst.de,
+        jaegeuk@kernel.org, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ming.lei@redhat.com,
+        wangxiaohua@uniontech.com
+References: <f798c875-0bb9-add7-d7a3-4ac2a76e85d9@acm.org>
+ <20220723105909.440050-1-wangyoua@uniontech.com>
+From:   Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <20220723105909.440050-1-wangyoua@uniontech.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jun 26, 2022 at 07:40:37AM +0900, Masahiro Yamada wrote:
-> The .incbin assembler directive is much faster than bin2c + $(CC).
+On 7/23/22 03:59, Wang You wrote:
+> Also, can I ask? If using fio or other tools, how should testing be done to get
+> more accurate and convincing data? Such as the perfectly sequential and random I/O
+> performance you mentioned above (fio's multi-threaded test does result in neither
+> perfectly sequential nor perfectly random, but single thread dispatch is too slow,
+> and cannot play the merge and sorting ability of elv).
 
-And perhaps more importantly it is simpler and less clumsy.
+I'm not sure that there is agreement about for which data patterns to 
+measure performance to conclude that certain code changes improve 
+performance of an I/O scheduler.
 
-> --- /dev/null
-> +++ b/arch/powerpc/purgatory/kexec-purgatory.S
-> @@ -0,0 +1,14 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +
-> +	.section .rodata, "a"
-> +
-> +	.align	8
-> +kexec_purgatory:
-> +	.globl	kexec_purgatory
-> +	.incbin	"arch/powerpc/purgatory/purgatory.ro"
-> +.Lkexec_purgatroy_end:
+Thanks,
 
-Typo here (s/ro/or/)
-
-> +
-> +	.align	8
-> +kexec_purgatory_size:
-> +	.globl	kexec_purgatory_size
-> +	.quad	.Lkexec_purgatroy_end - kexec_purgatory
-
-And here again ofc.
-
-Looks good to me otherwise, nice cleanup :-)
-
-Reviewed-by: Segher Boessenkool <segher@kernel.crashing.org>
-
-
-Segher
+Bart.
