@@ -2,172 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A423C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 09:08:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6F9BC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 09:08:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234521AbiGYJIR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 05:08:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49136 "EHLO
+        id S234533AbiGYJI0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 05:08:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234169AbiGYJIP (ORCPT
+        with ESMTP id S234531AbiGYJIY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 05:08:15 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FAB310555;
-        Mon, 25 Jul 2022 02:08:14 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id z22so13034036edd.6;
-        Mon, 25 Jul 2022 02:08:14 -0700 (PDT)
+        Mon, 25 Jul 2022 05:08:24 -0400
+Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C95D15A21
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 02:08:22 -0700 (PDT)
+Received: by mail-yb1-xb2d.google.com with SMTP id c131so18922581ybf.9
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 02:08:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=chromium.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=SKEZcZKyJPxnUIHg9vM+IkXxZdZ8ejobr3a6ltkwgqg=;
-        b=SF+aqs+EVnbsbKQkA/8xNH4ehlnunss9fmN5U1pnRWAD2EMIQ+vnoZbzG36K5peZlX
-         CXhER1ViMJa80xFPZtY843nWQs5F1BNT454kUiXwBosjz4IYFjnLaJailn/bPKEmOYYj
-         OQZu//AWglB0ze0HUO1SQYsIXOFhVkCy9Y+HPByleJg8LXsl2myXUq38a43P555UG4Bx
-         W4w40So2uuPYw5I5cWqSTLAX8vR149Ik4ff+qJQus9SdkPcCLkZ3D5xoOpeLQVKUQZ8Y
-         zppNE2E5jRpSRhv5vq/EJEOVqtSyTp9xfxGx+C2GzeLpQ8Hqwv5+/dQLpC89uzdBr14a
-         kbDg==
+        bh=oSUen1zy2XKJLnLvpszCdjqmfTvZUFc64MJFQlVfVi0=;
+        b=R69nZ9mZ0SdKoqNGRzCSjAak9yI9nBoYofz+j4xzGtlDFdv5pbDtadC57GP+GWd+9P
+         jvhCpenqkQwVB3tTaOYKcydqfj+9lsXbXoAbyBEh70T1CIj21JlmchUawTfSerpP9itW
+         GeoYN8ndVMhL6TBnSNlRrODo44no0yVdPH1l4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=SKEZcZKyJPxnUIHg9vM+IkXxZdZ8ejobr3a6ltkwgqg=;
-        b=WMP0r+Teh2HRAGcBZqzf9+ZXiWOTXBwm4NQZLWVE/qZNeqLyBOMCWslXcLHqQgjG7/
-         UYvUr5X0LE+IYvOlM74OSmJiPwCqzJiEUEybDBZlRCmJm8pN1uvWyzZABrYrRxq72GJd
-         nqyifhDDvTZJA/aBy4bAVnLS4/GzviEh5ImuG6oOh7Rl25vZm9c76T9h6juw9CqE74Fl
-         s6Ze30Wwgwp0Bwr30LaA/wTAy9JkgtChBqEY04VJMxupeb+DDOQkikZimfho2d0giW4N
-         wzEYPG3KWCFrREVI/4QSH9Jv6hYQ9jiP+Wat2B7DesHKKdoDSfqGxR/Mx7W3H27LHQJr
-         8SVg==
-X-Gm-Message-State: AJIora/LO3rc3m1iZ8cuNX07+tV846xIITdFMWo11PwhtbavJrStdhUL
-        RVnzydnp8AC0eBmvnAN8/hg3bX8HS0G9Iei7Hag=
-X-Google-Smtp-Source: AGRyM1v5JqoLA7zG3OW50lchaZUo0NzhFJOo3SiC7x0i5Bb09pqP2OvkrfyBcnIJEGb6N4UIi+1F3CYnjToz5WfvfBA=
-X-Received: by 2002:a05:6402:50c9:b0:43c:163a:4d5f with SMTP id
- h9-20020a05640250c900b0043c163a4d5fmr1821081edb.386.1658740092120; Mon, 25
- Jul 2022 02:08:12 -0700 (PDT)
+        bh=oSUen1zy2XKJLnLvpszCdjqmfTvZUFc64MJFQlVfVi0=;
+        b=oRCORMBwa5iwj1zYpjHoJiXdscyVWhfGQ+8Jl4peTASmAtYmDSW9tKiIQxWwQhq7fW
+         RNtZcjZxhILwKDezyBH7+5vmcTWNmPkwlkJmFIuIcNX8K3YHtBFNr9D0uy7i414cH6yc
+         kMVKanI/7dWsti2pSjQEAaU1Hxh5KoxJbZLEpUGjacjLWFlvU+qNz6WfvXy3zRDdBYa8
+         L3roHMNOiMYE8QNUui9dSKpKbYAyl0QKGXdiWPop2i/dRlP8CJ5UmCLGtlmmkAthcwnD
+         OYbVz+5u5sk88NWZM9q5CA+riy5p08WD0d+jr1ILFLmo2blhLNS1YlQto/m5QZHHGDey
+         EsKA==
+X-Gm-Message-State: AJIora9v/7DEMnrb8rYS/z4QtX7k0S8WpAGwKHR4yxDAnSxFrNziZtPn
+        IgvTT4L+qGUAAS8jKy2RgrT2bS8eq4UrnCxSu40JbQ==
+X-Google-Smtp-Source: AGRyM1vV+DR9ya4OmfTlnujVAxn1Io5/3EeD5LRkPcGkkRMbp4gKM1lvDg7+uo4ATywMehanYHIO8iDairtqInRllbM=
+X-Received: by 2002:a25:6a43:0:b0:66f:d259:7918 with SMTP id
+ f64-20020a256a43000000b0066fd2597918mr8618720ybc.486.1658740101673; Mon, 25
+ Jul 2022 02:08:21 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220722102407.2205-1-peterwu.pub@gmail.com> <20220722102407.2205-14-peterwu.pub@gmail.com>
-In-Reply-To: <20220722102407.2205-14-peterwu.pub@gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 25 Jul 2022 11:07:35 +0200
-Message-ID: <CAHp75VfxeRR7BzOWwfNSo+x3JZcH37ogR+ZbapTAWrCYkr+FUg@mail.gmail.com>
-Subject: Re: [PATCH v6 13/13] video: backlight: mt6370: Add MediaTek MT6370 support
-To:     ChiaEn Wu <peterwu.pub@gmail.com>
-Cc:     Lee Jones <lee.jones@linaro.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@ucw.cz>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        "Krogerus, Heikki" <heikki.krogerus@linux.intel.com>,
-        Helge Deller <deller@gmx.de>,
-        ChiaEn Wu <chiaen_wu@richtek.com>,
-        Alice Chen <alice_chen@richtek.com>,
-        cy_huang <cy_huang@richtek.com>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Linux LED Subsystem <linux-leds@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        USB <linux-usb@vger.kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        "open list:FRAMEBUFFER LAYER" <linux-fbdev@vger.kernel.org>,
-        szuni chen <szunichen@gmail.com>
+References: <20220721145017.918102-1-angelogioacchino.delregno@collabora.com> <20220721145017.918102-9-angelogioacchino.delregno@collabora.com>
+In-Reply-To: <20220721145017.918102-9-angelogioacchino.delregno@collabora.com>
+From:   Chen-Yu Tsai <wenst@chromium.org>
+Date:   Mon, 25 Jul 2022 17:08:10 +0800
+Message-ID: <CAGXv+5Gn4CP=iJ2M8vfstdHLb6JRsgYGXQiV5WtHzv3cFWSjqA@mail.gmail.com>
+Subject: Re: [PATCH v2 8/8] arm64: dts: mediatek: cherry: Enable MT6315
+ regulators on SPMI bus
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     matthias.bgg@gmail.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Tinghan Shen <tinghan.shen@mediatek.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 22, 2022 at 12:25 PM ChiaEn Wu <peterwu.pub@gmail.com> wrote:
+On Thu, Jul 21, 2022 at 10:54 PM AngeloGioacchino Del Regno
+<angelogioacchino.delregno@collabora.com> wrote:
 >
-> From: ChiaEn Wu <chiaen_wu@richtek.com>
+> All machines in the Cherry platform use MT6315 over SPMI: add the
+> two instances, providing Vbcpu and Vgpu regulators.
 >
-> MediaTek MT6370 is a SubPMIC consisting of a single cell battery charger
-> with ADC monitoring, RGB LEDs, dual channel flashlight, WLED backlight
-> driver, display bias voltage supply, one general purpose LDO, and the
-> USB Type-C & PD controller complies with the latest USB Type-C and PD
-> standards.
+> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+
+Tested-by: Chen-Yu Tsai <wenst@chromium.org>
+
+> ---
+>  .../boot/dts/mediatek/mt8195-cherry.dtsi      | 42 +++++++++++++++++++
+>  1 file changed, 42 insertions(+)
 >
-> This adds support for MediaTek MT6370 Backlight driver. It's commonly used
+> diff --git a/arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi b/arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi
+> index 9086a440a995..6219544e9912 100644
+> --- a/arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi
+> +++ b/arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi
+> @@ -5,6 +5,7 @@
+>
+>  #include <dt-bindings/gpio/gpio.h>
+>  #include <dt-bindings/leds/common.h>
+> +#include <dt-bindings/spmi/spmi.h>
+>  #include "mt8195.dtsi"
+>  #include "mt6359.dtsi"
+>
+> @@ -979,6 +980,47 @@ usb_c1: connector@1 {
+>         };
+>  };
+>
+> +&spmi {
+> +       #address-cells = <2>;
+> +       #size-cells = <0>;
+> +
+> +       mt6315@6 {
+> +               compatible = "mediatek,mt6315-regulator";
+> +               reg = <0x6 SPMI_USID>;
+> +
+> +               regulators {
+> +                       mt6315_6_vbuck1: vbuck1 {
+> +                               regulator-compatible = "vbuck1";
+> +                               regulator-name = "Vbcpu";
+> +                               regulator-min-microvolt = <300000>;
+> +                               regulator-max-microvolt = <1193750>;
 
-Read Submitting Patches, please!
+Tinghan,
 
-(In this case, find "This patch" in the above mentioned document, read
-and act accordingly)
+Could you help confirm these numbers? They must be valid for the
+big cluster supply, not the PMIC.
 
-> to drive the display WLED. There are 4 channels inside, and each channel
-> supports up to 30mA of current capability with 2048 current steps in
-> exponential or linear mapping curves.
+> +                               regulator-enable-ramp-delay = <256>;
+> +                               regulator-ramp-delay = <6250>;
+> +                               regulator-allowed-modes = <0 1 2>;
+> +                               regulator-always-on;
+> +                       };
+> +               };
+> +       };
+> +
+> +       mt6315@7 {
+> +               compatible = "mediatek,mt6315-regulator";
+> +               reg = <0x7 SPMI_USID>;
+> +
+> +               regulators {
+> +                       mt6315_7_vbuck1: vbuck1 {
+> +                               regulator-compatible = "vbuck1";
+> +                               regulator-name = "Vgpu";
+> +                               regulator-min-microvolt = <625000>;
+> +                               regulator-max-microvolt = <1193750>;
 
-...
-
-> +               brightness_val[1] = (brightness - 1) >> fls(MT6370_BL_DIM2_MASK);
+Same here for the GPU.
 
 
-(see below)
+Thanks
+ChenYu
 
-...
 
-> +               /*
-> +                * To make MT6372 using 14 bits to control the brightness
-> +                * backward compatible with 11 bits brightness control
-> +                * (like MT6370 and MT6371 do), we left shift the value
-> +                * and pad with 1 to remaining bits. Hence, the MT6372's
-
-to the remaining
-
-> +                * backlight brightness will be almost the same as MT6370's
-> +                * and MT6371's.
-> +                */
-> +               if (priv->vid_type == MT6370_VID_6372) {
-> +                       brightness_val[0] <<= MT6370_BL_DIM2_6372_SHIFT;
-> +                       brightness_val[0] |= MT6370_BL_DUMMY_6372_MASK;
-> +               }
-
-Nice! Why not...
-
-...
-
-> +       gpiod_set_value(priv->enable_gpio, brightness ? 1 : 0);
-
-!!brightness will do as well.
-
-...
-
-> +       brightness = brightness_val[1] << fls(MT6370_BL_DIM2_MASK);
-
-> +               val |= prop_val << (ffs(MT6370_BL_PWM_HYS_SEL_MASK) - 1);
-
-> +               val |= ovp_uV << (ffs(MT6370_BL_OVP_SEL_MASK) - 1);
-
-> +               val |= ocp_uA << (ffs(MT6370_BL_OC_SEL_MASK) - 1);
-
-> +       val = prop_val << (ffs(MT6370_BL_CH_MASK) - 1);
-
-...to use respective _SHIFTs in all these?
-
-...
-
-> +       priv->enable_gpio = devm_gpiod_get_optional(dev, "enable",
-> +                                                   GPIOD_OUT_HIGH);
-> +       if (IS_ERR(priv->enable_gpio))
-> +               dev_err(dev, "Failed to get 'enable' gpio\n");
-
-What does this mean? Shouldn't be
-
-  return dev_err_probe()?
-
--- 
-With Best Regards,
-Andy Shevchenko
+> +                               regulator-enable-ramp-delay = <256>;
+> +                               regulator-ramp-delay = <6250>;
+> +                               regulator-allowed-modes = <0 1 2>;
+> +                               regulator-always-on;
+> +                       };
+> +               };
+> +       };
+> +};
+> +
+>  &u3phy0 {
+>         status = "okay";
+>  };
+> --
+> 2.35.1
+>
+>
