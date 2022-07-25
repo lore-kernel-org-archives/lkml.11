@@ -2,129 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FF91C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 00:00:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76580C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 00:19:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231133AbiGYAAv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 20:00:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42580 "EHLO
+        id S231356AbiGYAS6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 20:18:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbiGYAAt (ORCPT
+        with ESMTP id S229437AbiGYAS4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 20:00:49 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B94342AD9;
-        Sun, 24 Jul 2022 17:00:47 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LrgDC6q68z4xD9;
-        Mon, 25 Jul 2022 10:00:43 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1658707245;
-        bh=Mzb3S0zhZB5099fE67pDAVxb56KP80OzxcaKW0EISm4=;
-        h=Date:From:To:Cc:Subject:From;
-        b=DgUMjRBwp9f/zH6r0ab6rLwj5/GA4Lc3D6JLjBb3X4Gq8REVy2zglhLlDF/Bs10jy
-         qJkfVoqNmEKV2Ykxy7j2u8ofUcDtyuaXzXMHyYydg9U+j+X1M50SMtpU9jPP3NqDWK
-         rBSEU/6HaaZMue3gSdbfFdK7derfSu/PDsc5Qx8D+EhARekrSFWY+AKUPE42pJfhSn
-         yLeo8oAgqiuHLFkvPRe0skf92NbjJH7ER2yDUK4QMCpDNeWlQY/IEIPgPfuDRUf+VM
-         GOvChjTIRJrgpvGfp43ZTJyUGwTP1kfO8nygsMUO1/jHxKvya/sNYlfDgfX1WZsD5v
-         Iz/i/E75FUZ+g==
-Date:   Mon, 25 Jul 2022 09:33:16 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Palmer Dabbelt <palmer@dabbelt.com>, Paul Walmsley <paul@pwsan.com>
-Cc:     Heiko Stuebner <heiko@sntech.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: linux-next: manual merge of the risc-v tree with Linus' tree
-Message-ID: <20220725093316.2a3a7b05@canb.auug.org.au>
+        Sun, 24 Jul 2022 20:18:56 -0400
+Received: from mail-oa1-x2e.google.com (mail-oa1-x2e.google.com [IPv6:2001:4860:4864:20::2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D8A4624A
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 17:18:55 -0700 (PDT)
+Received: by mail-oa1-x2e.google.com with SMTP id 586e51a60fabf-10dc6e9f500so7009528fac.4
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 17:18:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=XUFbA8ZzNjRypzHIphcDJBi2xFieRAvCdVsFOKHTtA4=;
+        b=Iz9lg6T6MBldhUpTNQDKF+csaXmAD/aAy3P8U9WNQ/jz7mCg7DBKMQBtpio1HE8OAk
+         7kIDZl1tXrQoZ68180drRYgJ+1NqYR7oOp8c1DIFGINMm9QBnkXQal4mczFOvTc2MUL4
+         nOxCP4nWiOAjzlyhO78y+Fcu1vNfZwuPUv4Oz79N0sEbk2y3nSAkMrcNIh46lGdA4xgL
+         kFS9mnn310/ZUXOVL3WWXOPuwHNiRiK5oPPT8FaunbhkDhQlt6pa7PHwIwanwK8wi/Qi
+         0GclGsRa+HHODAhacl9aojZCAwSkQ7todas5Lne3/BuRkdeeosBVYJ20gzX4NnCrZcMm
+         VEgg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=XUFbA8ZzNjRypzHIphcDJBi2xFieRAvCdVsFOKHTtA4=;
+        b=dDvUUNUbhYSPNvf78y0eDTwjcKWE3wMaHR67rhzuUWTVyU92M0+t3u6xH0OKE07odD
+         6rxAJ5raLI2LBJODOCSzNQkf8vuQV3vwjb8u+PsUqSO8B+L9qYRFQX8lLmkebNiBleHr
+         MStShgZHSeUw8UAwvhFpMg14qba/Jd5cO8VVwfnQjuAOwNK565MkpW1jdi1+76V/Si+1
+         uUng+FoKYDtQEIPEEmnGWzdtiKpbDhmf8hM/y+7S4zqWPcS9RiLnR7vs5PF99UaLGQ6W
+         i8KxqmOMFLRHyxGi8pX3bbT9R1c3kzO9lr3ZMAyG4Rp59OeFs2CVODk5cV1bPGGJ8nHu
+         HMKg==
+X-Gm-Message-State: AJIora+cpe5waKw1xpgR/on60Kan/lQ/mt5uswtJD5Wl95zKGUfTxmya
+        V1EwAIwmuN2Q7Ya1JvX9u2/99u0Vulq3qaIvRi/4UQ==
+X-Google-Smtp-Source: AGRyM1tTErJi5mxhQAwOyvNwGehPBz3JImoZzTV0dzz/oO6LGH/ro7TFiVIk4OSZJCUc7unmJEQ3ayVi+6sGDaRPpwE=
+X-Received: by 2002:a05:6870:a182:b0:10b:efbe:e65d with SMTP id
+ a2-20020a056870a18200b0010befbee65dmr12811238oaf.5.1658708334500; Sun, 24 Jul
+ 2022 17:18:54 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/y.lNQ2AI/mgks3NtZRsevPe";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+References: <20220714010021.1786616-1-mw@semihalf.com> <20220724233807.bthah6ctjadl35by@skbuf>
+In-Reply-To: <20220724233807.bthah6ctjadl35by@skbuf>
+From:   Marcin Wojtas <mw@semihalf.com>
+Date:   Mon, 25 Jul 2022 02:18:45 +0200
+Message-ID: <CAPv3WKdFNOPRg45TiJuAVuxM0LjEnB0qZH70J1rMenJs7eBJzw@mail.gmail.com>
+Subject: Re: [net-next: PATCH] net: dsa: mv88e6xxx: fix speed setting for
+ CPU/DSA ports
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>,
+        Tomasz Nowicki <tn@semihalf.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/y.lNQ2AI/mgks3NtZRsevPe
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
-
-Hi all,
-
-Today's linux-next merge of the risc-v tree got a conflict in:
-
-  arch/riscv/include/asm/errata_list.h
-
-between commit:
-
-  e83031564137 ("riscv: Fix ALT_THEAD_PMA's asm parameters")
-
-from Linus' tree and commit:
-
-  9c2ea4a36364 ("riscv: convert the t-head pbmt errata to use the __nops ma=
-cro")
-
-from the risc-v tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc arch/riscv/include/asm/errata_list.h
-index 416ead0f9a65,e4ee53551343..000000000000
---- a/arch/riscv/include/asm/errata_list.h
-+++ b/arch/riscv/include/asm/errata_list.h
-@@@ -68,19 -68,13 +68,13 @@@ asm(ALTERNATIVE_2("li %0, 0\t\nnop"
-   */
-  #define ALT_THEAD_PMA(_val)						\
-  asm volatile(ALTERNATIVE(						\
-- 	"nop\n\t"							\
-- 	"nop\n\t"							\
-- 	"nop\n\t"							\
-- 	"nop\n\t"							\
-- 	"nop\n\t"							\
-- 	"nop\n\t"							\
-- 	"nop",								\
-+ 	__nops(7),							\
- -	"li      t3, %2\n\t"						\
- -	"slli    t3, t3, %4\n\t"					\
- +	"li      t3, %1\n\t"						\
- +	"slli    t3, t3, %3\n\t"					\
-  	"and     t3, %0, t3\n\t"					\
-  	"bne     t3, zero, 2f\n\t"					\
- -	"li      t3, %3\n\t"						\
- -	"slli    t3, t3, %4\n\t"					\
- +	"li      t3, %2\n\t"						\
- +	"slli    t3, t3, %3\n\t"					\
-  	"or      %0, %0, t3\n\t"					\
-  	"2:",  THEAD_VENDOR_ID,						\
-  		ERRATA_THEAD_PBMT, CONFIG_ERRATA_THEAD_PBMT)		\
+Hi Vladimir,
 
 
---Sig_/y.lNQ2AI/mgks3NtZRsevPe
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+pon., 25 lip 2022 o 01:38 Vladimir Oltean <olteanv@gmail.com> napisa=C5=82(=
+a):
+>
+> Hi Marcin,
+>
+> On Thu, Jul 14, 2022 at 03:00:21AM +0200, Marcin Wojtas wrote:
+> > Commit 3c783b83bd0f ("net: dsa: mv88e6xxx: get rid of SPEED_MAX setting=
+")
+> > stopped relying on SPEED_MAX constant and hardcoded speed settings
+> > for the switch ports and rely on phylink configuration.
+> >
+> > It turned out, however, that when the relevant code is called,
+> > the mac_capabilites of CPU/DSA port remain unset.
+> > mv88e6xxx_setup_port() is called via mv88e6xxx_setup() in
+> > dsa_tree_setup_switches(), which precedes setting the caps in
+> > phylink_get_caps down in the chain of dsa_tree_setup_ports().
+> >
+> > As a result the mac_capabilites are 0 and the default speed for CPU/DSA
+> > port is 10M at the start. To fix that execute phylink_get_caps() callba=
+ck
+> > which fills port's mac_capabilities before they are processed.
+> >
+> > Fixes: 3c783b83bd0f ("net: dsa: mv88e6xxx: get rid of SPEED_MAX setting=
+")
+> > Signed-off-by: Marcin Wojtas <mw@semihalf.com>
+> > ---
+> >  drivers/net/dsa/mv88e6xxx/chip.c | 7 ++++++-
+> >  1 file changed, 6 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6x=
+xx/chip.c
+> > index 37b649501500..9fab76f256bb 100644
+> > --- a/drivers/net/dsa/mv88e6xxx/chip.c
+> > +++ b/drivers/net/dsa/mv88e6xxx/chip.c
+> > @@ -3293,7 +3293,12 @@ static int mv88e6xxx_setup_port(struct mv88e6xxx=
+_chip *chip, int port)
+> >        * port and all DSA ports to their maximum bandwidth and full dup=
+lex.
+> >        */
+> >       if (dsa_is_cpu_port(ds, port) || dsa_is_dsa_port(ds, port)) {
+> > -             unsigned long caps =3D dp->pl_config.mac_capabilities;
+> > +             unsigned long caps;
+> > +
+> > +             if (ds->ops->phylink_get_caps)
+> > +                     ds->ops->phylink_get_caps(ds, port, &dp->pl_confi=
+g);
+> > +
+> > +             caps =3D dp->pl_config.mac_capabilities;
+>
+> We'll need this bug fixed in net-next one way or another.
+> If you resend this patch, please change the following:
+>
+> (1) it's silly to (a) check for the presence of ds->ops->phylink_get_caps=
+ and
+>     (b) do an indirect function call when you know that the implementatio=
+n is
+>     mv88e6xxx_get_caps(). So just call that.
+>
+> (2) please don't touch &dp->pl_config, just create an on-stack
+>     struct phylink_config pl_config, and let DSA do its thing with
+>     &dp->pl_config whenever the timing of dsa_port_phylink_create() is.
+>
 
------BEGIN PGP SIGNATURE-----
+I can of course apply both suggestions, however, I am wondering if I
+should resend them at all, as Russell's series is still being
+discussed. IMO it may be worth waiting whether it makes it before the
+merge window - if not, I can resend this patch after v5.20-rc1,
+targetting the net branch. What do you think?
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLd1rwACgkQAVBC80lX
-0Gx8Mgf/aJaFoirExIuQx9TeAihT0lfk6p6S53tS8abnEduHH1L2JXsaQZKQdhZ0
-Wm95CjbJ9xehMu6DLXkMZmIDAWV8O0Hrj1z8rNntNhDUxxW09irV70vQmnF0phAP
-L6C8tOsSvJTe53s7w6si11G+e0irVgAF/f9/wN8NuAgaB9YRuUiqIqqfCInFep5D
-qbE90iYiZaw2W8HN8mruRLFe+x8p86T6A+FhtsYTaFeLtx4BNz86QvJNHxsQZPXj
-/kb86DDubHH49RIixs3/3oPKwMm4n2o6hInykSsCzx8brZ1qCy4wc1z+uXZiO5jj
-jnGCp4odBs2qg7tTsYJOUwWVAZcVIw==
-=X1Xr
------END PGP SIGNATURE-----
+Thanks,
+Marcin
 
---Sig_/y.lNQ2AI/mgks3NtZRsevPe--
+> >
+> >               if (chip->info->ops->port_max_speed_mode)
+> >                       mode =3D chip->info->ops->port_max_speed_mode(por=
+t);
+> > --
+> > 2.29.0
+> >
