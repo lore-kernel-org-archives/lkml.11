@@ -2,101 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BCD2C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 21:19:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6326DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 21:19:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236225AbiGYVTI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 17:19:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39706 "EHLO
+        id S236760AbiGYVTy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 17:19:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229536AbiGYVTG (ORCPT
+        with ESMTP id S229535AbiGYVTu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 17:19:06 -0400
-Received: from mx1.riseup.net (mx1.riseup.net [198.252.153.129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0422223BF4
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 14:19:05 -0700 (PDT)
-Received: from fews1.riseup.net (fews1-pn.riseup.net [10.0.1.83])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256
-         client-signature RSA-PSS (2048 bits) client-digest SHA256)
-        (Client CN "mail.riseup.net", Issuer "R3" (not verified))
-        by mx1.riseup.net (Postfix) with ESMTPS id 4LsCbF11XMzDv8s;
-        Mon, 25 Jul 2022 21:19:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=riseup.net; s=squak;
-        t=1658783945; bh=n8KC9Drv4LKMFsBlQF+V/6Us88hfUAPAucCxIVuKi0o=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=Ff/7NQNayLHZj2xi3k3jPw9YWd5yay3T3dsFLkYjl/ezUP7Oo1hhmKI33GIwZD2bf
-         4U0r/WDXv5oXmu7x9+fDBd5Hgj5K/WHeMRCuWzN4YxJPTlie5pvWK694H45xmXKyVA
-         Ha+HomJT0L2T9pNUwliOcrV+5dHIQ2wfkL42Y/GE=
-X-Riseup-User-ID: 6F9E402A612CAA97A7CF1A67268526495D3C6D9BDB0ED2759DF8CFF0AE335770
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-         by fews1.riseup.net (Postfix) with ESMTPSA id 4LsCb72N42z5vTk;
-        Mon, 25 Jul 2022 21:18:59 +0000 (UTC)
-Message-ID: <c6ef24e5-b090-fab7-a749-e259ad711012@riseup.net>
-Date:   Mon, 25 Jul 2022 18:18:56 -0300
+        Mon, 25 Jul 2022 17:19:50 -0400
+X-Greylist: delayed 1800 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 25 Jul 2022 14:19:49 PDT
+Received: from wp175.webpack.hosteurope.de (wp175.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:84b6::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7412F23BCD
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 14:19:49 -0700 (PDT)
+Received: from p54bc6cd6.dip0.t-ipconnect.de ([84.188.108.214] helo=[192.168.1.245]); authenticated
+        by wp175.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1oG4YN-0007hQ-Nw; Mon, 25 Jul 2022 22:19:47 +0200
+Message-ID: <be60acab-7dfe-6841-b176-4bd1e875d52e@birger-koblitz.de>
+Date:   Mon, 25 Jul 2022 22:19:46 +0200
 MIME-Version: 1.0
-Subject: Re: [PATCH 1/2] drm/amd/display: change variables type
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH RFC v1] spi: realtek-rtl: Fix clearing some register bits
 Content-Language: en-US
-To:     Magali Lemes <magalilemes00@gmail.com>, harry.wentland@amd.com,
-        sunpeng.li@amd.com, Rodrigo.Siqueira@amd.com,
-        alexander.deucher@amd.com, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch
-Cc:     mwen@igalia.com, isabbasso@riseup.net, siqueirajordao@riseup.net,
-        andrealmeid@riseup.net, tales.aparecida@gmail.com,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-References: <20220725181559.250030-1-magalilemes00@gmail.com>
-From:   =?UTF-8?Q?Ma=c3=adra_Canal?= <mairacanal@riseup.net>
-In-Reply-To: <20220725181559.250030-1-magalilemes00@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        linux-spi@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, bert@biot.com, sander@svanheule.net
+References: <20220725193547.1038414-1-martin.blumenstingl@googlemail.com>
+From:   Birger Koblitz <mail@birger-koblitz.de>
+In-Reply-To: <20220725193547.1038414-1-martin.blumenstingl@googlemail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-bounce-key: webpack.hosteurope.de;mail@birger-koblitz.de;1658783989;bbd56df9;
+X-HE-SMSGID: 1oG4YN-0007hQ-Nw
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Magali
+Hi Martin,
 
-On 7/25/22 15:15, Magali Lemes wrote:
-> As "dcn3_15_soc" and "dcn3_16_soc" are of type "struct
-> _vcs_dpi_soc_bounding_box_st", change their types accordingly.
+On 25/07/2022 21:35, Martin Blumenstingl wrote:
+> The code seemingly tries to clear RTL_SPI_SFCSR_LEN_MASK (before then
+> setting either RTL_SPI_SFCSR_LEN1 or RTL_SPI_SFCSR_LEN4) and
+> RTL_SPI_SFCSR_CS. What it actually does is only keeping these bits and
+> clearing all other bits, even the ones which were just set before. Fix
+> the operation to clear the bits in the selected mask and keep all other
+> ones.
 > 
-> Signed-off-by: Magali Lemes <magalilemes00@gmail.com>
+> Fixes: a8af5cc2ff1e80 ("spi: realtek-rtl: Add support for Realtek RTL838x/RTL839x SPI controllers")
+> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 > ---
+> I stumbled across this while reading the driver. This patch is untested
+> because I don't have any hardware with this controller.
+I believe your fix is correct. In the meantime, more information has been
+learned about this hardware, in particular, newer SoC versions and the possibility
+to have parallel IO and hardware which uses different chip selects.
+I came up with the following patch for supporting this, and it achieves
+what you also propose:
+https://github.com/bkobl/openwrt/blob/rtl8214qf_merge/target/linux/realtek/patches-5.10/317-spi-cs-support-for-spi-realtek-rtl.patch
+It is still is a bit rough, reading it I immediately saw 2 things that
+would need to be fixed, but it also improves e.g. that RTL_SPI_SFCSR
+is now configured independently of what u-boot did to it.
 
-Great catch! To the whole series:
-
-Reviewed-by: Maíra Canal <mairacanal@riseup.net>
-
-Best Regards,
-- Maíra Canal
-
->  drivers/gpu/drm/amd/display/dc/dcn315/dcn315_resource.h | 2 +-
->  drivers/gpu/drm/amd/display/dc/dcn316/dcn316_resource.h | 2 +-
->  2 files changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/amd/display/dc/dcn315/dcn315_resource.h b/drivers/gpu/drm/amd/display/dc/dcn315/dcn315_resource.h
-> index 39929fa67a51..45276317c057 100644
-> --- a/drivers/gpu/drm/amd/display/dc/dcn315/dcn315_resource.h
-> +++ b/drivers/gpu/drm/amd/display/dc/dcn315/dcn315_resource.h
-> @@ -32,7 +32,7 @@
->  	container_of(pool, struct dcn315_resource_pool, base)
->  
->  extern struct _vcs_dpi_ip_params_st dcn3_15_ip;
-> -extern struct _vcs_dpi_ip_params_st dcn3_15_soc;
-> +extern struct _vcs_dpi_soc_bounding_box_st dcn3_15_soc;
->  
->  struct dcn315_resource_pool {
->  	struct resource_pool base;
-> diff --git a/drivers/gpu/drm/amd/display/dc/dcn316/dcn316_resource.h b/drivers/gpu/drm/amd/display/dc/dcn316/dcn316_resource.h
-> index 0dc5a6c13ae7..d2234aac5449 100644
-> --- a/drivers/gpu/drm/amd/display/dc/dcn316/dcn316_resource.h
-> +++ b/drivers/gpu/drm/amd/display/dc/dcn316/dcn316_resource.h
-> @@ -32,7 +32,7 @@
->  	container_of(pool, struct dcn316_resource_pool, base)
->  
->  extern struct _vcs_dpi_ip_params_st dcn3_16_ip;
-> -extern struct _vcs_dpi_ip_params_st dcn3_16_soc;
-> +extern struct _vcs_dpi_soc_bounding_box_st dcn3_16_soc;
->  
->  struct dcn316_resource_pool {
->  	struct resource_pool base;
+Cheers,
+   Birger
