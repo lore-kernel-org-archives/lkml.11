@@ -2,147 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1883DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 09:33:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 749DDC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 09:35:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233795AbiGYJdQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 05:33:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39470 "EHLO
+        id S233274AbiGYJfT convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 05:35:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233722AbiGYJdM (ORCPT
+        with ESMTP id S232235AbiGYJfQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 05:33:12 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30B8A165A7
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 02:33:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658741591; x=1690277591;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=LG94wmYcqwulOfN8bOk9Um30V8TQnDcAdYhfJN1cJTQ=;
-  b=IUr7EOuQFqfT1yewFrhzvymbnZ8L1wi5STR60PYljZNVPlK4F+BKlBfv
-   l7kNp50DnIesWPgiaCLp/OaS0synwWleDHti7He19Uvtm69TdT39RxPE/
-   bfdMCLpkMBGXpYotXF6gbz0BTVCP+mRgYM6Y8+Dwgj/Dyi0kDMbLCcGpZ
-   Huzk37ipcdHcsk1NVVhyevsH9NZmgWLTqATLQBQQ9LGdTv/AoNOuh9IbJ
-   8XUfDZeK2PnPYjE9Ul/Nb8JUgy4QNF+Zbbt2HnCBOQoNLIBZvHskvtu3v
-   P1aqDB8LhkvwHsfe5kl5UmOeyHytyUsjjkoVGHwR8QWvMif07s1/z4F1n
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10418"; a="288414901"
-X-IronPort-AV: E=Sophos;i="5.93,192,1654585200"; 
-   d="scan'208";a="288414901"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2022 02:33:10 -0700
-X-IronPort-AV: E=Sophos;i="5.93,192,1654585200"; 
-   d="scan'208";a="658110042"
-Received: from liangk-mobl.ccr.corp.intel.com (HELO [10.255.30.67]) ([10.255.30.67])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2022 02:33:05 -0700
-Message-ID: <7862ed6f-b834-5dc7-8677-31ff52fec76d@linux.intel.com>
-Date:   Mon, 25 Jul 2022 17:33:05 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Cc:     baolu.lu@linux.intel.com, Jason Gunthorpe <jgg@nvidia.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        Zhangfei Gao <zhangfei.gao@linaro.org>,
-        Zhu Tony <tony.zhu@intel.com>, iommu@lists.linux.dev,
+        Mon, 25 Jul 2022 05:35:16 -0400
+Received: from de-smtp-delivery-113.mimecast.com (de-smtp-delivery-113.mimecast.com [194.104.111.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1ECF863CE
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 02:35:13 -0700 (PDT)
+Received: from CHE01-GV0-obe.outbound.protection.outlook.com
+ (mail-gv0che01lp2041.outbound.protection.outlook.com [104.47.22.41]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ de-mta-22-VU_KPirEN-y7CV25nVlp2Q-2; Mon, 25 Jul 2022 11:35:10 +0200
+X-MC-Unique: VU_KPirEN-y7CV25nVlp2Q-2
+Received: from ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:2e::8) by
+ GVAP278MB0373.CHEP278.PROD.OUTLOOK.COM (2603:10a6:710:3f::7) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5458.19; Mon, 25 Jul 2022 09:35:08 +0000
+Received: from ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::3510:6f55:f14a:380f]) by ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::3510:6f55:f14a:380f%6]) with mapi id 15.20.5458.024; Mon, 25 Jul 2022
+ 09:35:08 +0000
+Date:   Mon, 25 Jul 2022 11:35:08 +0200
+From:   Francesco Dolcini <francesco.dolcini@toradex.com>
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc:     Francesco Dolcini <francesco.dolcini@toradex.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-input@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v10 08/12] iommu/sva: Refactoring
- iommu_sva_bind/unbind_device()
-Content-Language: en-US
-To:     Jean-Philippe Brucker <jean-philippe@linaro.org>
-References: <20220705050710.2887204-1-baolu.lu@linux.intel.com>
- <20220705050710.2887204-9-baolu.lu@linux.intel.com>
- <20220723142650.GH79279@nvidia.com>
- <bffb6e2d-d310-49b9-0725-37ab4263c22d@linux.intel.com>
- <Yt5IqyZw/Sa6Ck5t@myrica>
-From:   Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <Yt5IqyZw/Sa6Ck5t@myrica>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH v1 0/2] Input: touchscreen: Minor colibri-vf50-ts cleanups
+Message-ID: <20220725093508.GA8620@francesco-nb.int.toradex.com>
+References: <20220712101619.326120-1-francesco.dolcini@toradex.com>
+In-Reply-To: <20220712101619.326120-1-francesco.dolcini@toradex.com>
+X-ClientProxiedBy: ZR0P278CA0078.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:22::11) To ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:2e::8)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: a838bbd8-1917-4d96-ebd0-08da6e20f6ec
+X-MS-TrafficTypeDiagnostic: GVAP278MB0373:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0
+X-Microsoft-Antispam-Message-Info: XP/SEAJ2WZTwKr0cgUR4Rk8bqwskzU1jlat5YPhzFcj3uhAjVT60BdQgQwfs1UrJzBqxWgDbQW/UWPA9trHhpw/GflWu9rGQ1LHKNfvj6lmxrXJLYtwBHt9+6qOP0KvReizFDLzur9794yhjIzdLZBRqA6wNh0oCIBg5zynK1KS8qx8/MsTzyHwbu7SS1+HX8p9jsx4cmtq8qBNvc23ke1iBMD/06S0t2SlYu7EOnui3ZrPhKn+bajB2NU5YfiY+F2oF1Ox9W1WwDpCbf8Jv0dySQ8ESP4bWJDgSAtHm5Lfxe4eNQsZtdHqmsMybuiXoINMOop+rudL1hBohpncm4EqEgjJZfPE288nWITku0heZU5OpB2UGsvpPTEkwAv8R73SM/HAI8gJoztpV1Yh+oIPFMG6ask4J0Q7Cfv/SWn/2DNnC8rIcaBYE449yIv/jZqkBfx9/DCA2hjk3x1GTMlhtXgrVIeU2kJjAylPMS0vNFa+LpFzxL4wEfOThh3MJisQM3OE/ejQmlwCGy0rqou9NNQXnhbhPH0yNc6uZXEXcBB9umH/tUBeE/gjHX30n9viq7IIcAs/QkhLxhBTx99x6GKM76PIzvmA70PBmPlSIvq7OGk0y3azIi0D7Kls2vc8kMXt0NSideon/1wBblMVm41ENRRHYSkofHhUIDCJ37cWVwdtdDvxxxvZy531fOhBW1IcSSvgLfu+YQslMGTnOOyRjb5C1UDS4tHl1XfZAHDcBwtYM3/VPjKO9sGB14r7/tu3aF1do85eyMyDfMLlQu6vZtAQfZ/bcGj6z6tU=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39840400004)(376002)(366004)(396003)(346002)(136003)(54906003)(6916009)(41300700001)(316002)(6506007)(478600001)(26005)(6486002)(52116002)(2906002)(6512007)(66556008)(44832011)(66946007)(4326008)(66476007)(8676002)(5660300002)(4744005)(8936002)(38100700002)(33656002)(38350700002)(86362001)(186003)(1076003)(83380400001);DIR:OUT;SFP:1102
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?KBMW+ehO0FQAqoSWdnsvvsZRabgNR5BTyJhxgu4je2ecxKg5zfoTsj6DdhnY?=
+ =?us-ascii?Q?t6b0BdPgrd6ImkU4eOFgyKQcR+dTJUrxq4ZYFU9HBSijhSeaMYDi3TzndgsJ?=
+ =?us-ascii?Q?2Kvs7DCbqdw508atxCp7q/rF/8rvNII8SKN68VtaFo/q2jGrFIiPYdHZeFb1?=
+ =?us-ascii?Q?WDuRqfH10Bi+Yt/wvtGBvaJ4LbDtBWlBCNw4VYwt7MlIh3ZWvRugW9u97KFI?=
+ =?us-ascii?Q?VR//hCENFQFi6BfE9odC0W1Zv8jB0v01WIXcUYOXORvQ7CkcI+Kv/rr13UOI?=
+ =?us-ascii?Q?AQWCwF/QI/O9M9RVYs8MNekaMvxZQs0x4Mh6dbEnvBguZr2Xnsd+MnfpDnRr?=
+ =?us-ascii?Q?1bkorkwGGGwn30Xh61TrG4p7sf5aYCJgoTWP/5jwAqBEUUSup7mCOjB/Ply4?=
+ =?us-ascii?Q?v+oX6D2K84m7CUeq2V2AfUCjsN+OtkR3uMbZ7xFX/WzUCkoCx1Tx0y527HJE?=
+ =?us-ascii?Q?X0LVHwSEn8qDvCqYDYT4e4FjFS7hWV0rmt865AP15OxFRHiOp/ypTxDkxITN?=
+ =?us-ascii?Q?/i9W0FXT0M50/gNZiTYZDcs9pkup/ybX5blE6t2OFW52/39t8Zco28woCBYi?=
+ =?us-ascii?Q?u5uFNZMnwGsrevMNE80YiA5WiWXrXR8UD2pOiTsGNx++5KM6Pi8+7QxIk4ma?=
+ =?us-ascii?Q?6DLlclBYclkGbMtPFYLKMoycEr6myW1PzU7ZA/y+AEtB/HHJubVpS3b7F55a?=
+ =?us-ascii?Q?lfyCRGErvBlWjUpEqKS3WPUXUsb/YGO758MuQMQRTSWBSFbGNQw8egbNvyxK?=
+ =?us-ascii?Q?4kB0OX+TkX/vg8STg77hhClxOQEZUb6gf46EgurCLD+nmD6lIdn6xyw0mqrt?=
+ =?us-ascii?Q?gPlDDzn88wv/grhTYQ8oZSJ5bkTwoZQSR0gaBb6hTC/+MSAJwzC4JARgLaLZ?=
+ =?us-ascii?Q?zNp3AdGtLHagzsVekL3KuuUyfkuDD6DGD5TyOz+Ux7G1c2I4oOQjqoy20XdZ?=
+ =?us-ascii?Q?imNMgH+s0jrr87+KiKt+Jaxnvjr171srXDqPlJw6NS50VThCgV12dtGtwky1?=
+ =?us-ascii?Q?/QXDEbmfvSCT2jxkU6ulbrSDlhRLwjIMxX7kTPu4YWfmEcRc2Mvp1kRvMGCc?=
+ =?us-ascii?Q?tsjAaEv+9XtB75f0yGSBN9slFTWDSn/Mw1zzLqlRFA0/QhOuz2mWoeyocNYS?=
+ =?us-ascii?Q?bcZ6lXXdctQoXtXAxQ96Hvk7XhpW4r3q/g8QcrBuZBDAnJboVI1Lq7lrbyFe?=
+ =?us-ascii?Q?xcg9re6/VNEDBfJsSyk9dg9aylK814UcmaSdU2M/l5vel/4p1qqgJkXbxnGN?=
+ =?us-ascii?Q?b0h0s6g0x3p9bkft7PBXz2YugKEICWODVqCYXW7HQJxXthY+2xnxk1Ghjzo0?=
+ =?us-ascii?Q?jg6Yv+a+ti29L/55ngf4F2LuMTSBu0GHHL/L78F9Te+tQSN312xI/8WTX9MS?=
+ =?us-ascii?Q?UsAgQmIr35lIm2iV+TIpmPA1qMALHhmpNu3LO1qlE3HCsn74huLAH0R0PXxT?=
+ =?us-ascii?Q?31MdjEM4c3ahKDW8RBto1YfMSxkzkTMxBgS38VqgSwMDNP+kIAyXv3NP/9IF?=
+ =?us-ascii?Q?0D5Wpwq6HpgxWG/KeWZfiKEuZ+BnVGRm/hmZaXpvJsum+W8fTceBAnJyoy96?=
+ =?us-ascii?Q?qbjuY5LQaWpb4EQcLkAMSYYm8zwTFxOqOw9ceGUCstsVwzK0jhyXyosBHUF0?=
+ =?us-ascii?Q?3A=3D=3D?=
+X-OriginatorOrg: toradex.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a838bbd8-1917-4d96-ebd0-08da6e20f6ec
+X-MS-Exchange-CrossTenant-AuthSource: ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jul 2022 09:35:08.8014
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: d9995866-0d9b-4251-8315-093f062abab4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: R/hAhVBx78VY1KNrLSJJF9b/7JBWQbuC92Up3m9yCRA0//dIFv36VhHn/Q6A07nG/0FS+00rizPczeTI1bTK4XuE0tszUwa0rK2YX/j4fY4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: GVAP278MB0373
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CDE13A77 smtp.mailfrom=francesco.dolcini@toradex.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: toradex.com
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Disposition: inline
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jean,
+Hello Dmitry,
+just a gently ping.
 
-On 2022/7/25 15:39, Jean-Philippe Brucker wrote:
-> On Sun, Jul 24, 2022 at 09:48:15PM +0800, Baolu Lu wrote:
->> /*
->>   * iommu_detach_device_pasid() - Detach the domain from pasid of device
->>   * @domain: the iommu domain.
->>   * @dev: the attached device.
->>   * @pasid: the pasid of the device.
->>   *
->>   * The @domain must have been attached to @pasid of the @dev with
->>   * iommu_detach_device_pasid().
->>   */
->> void iommu_detach_device_pasid(struct iommu_domain *domain, struct device
->> *dev,
->> 			       ioasid_t pasid)
->> {
->> 	struct iommu_group *group = iommu_group_get(dev);
->> 	struct group_pasid *param;
->>
->> 	mutex_lock(&group->mutex);
->> 	domain->ops->set_dev_pasid(group->blocking_domain, dev, pasid);
-> Please also pass the old domain to this detach() function, so that the
-> IOMMU driver doesn't have to keep track of them internally.
+Let me know if I should change anything or you could just pick this
+small series.
 
-The iommu core provides the interface to retrieve attached domain with a
-{device, pasid} pair. Therefore in the smmuv3 driver, the set_dev_pasid
-could do like this:
+Francesco
 
-+static int arm_smmu_sva_set_dev_pasid(struct iommu_domain *domain,
-+                                     struct device *dev, ioasid_t id)
-+{
-+       int ret = 0;
-+       struct mm_struct *mm;
-+       struct iommu_sva *handle;
-+
-+       /*
-+        * Detach the domain if a blocking domain is set. Check the
-+        * right domain type once the IOMMU driver supports a real
-+        * blocking domain.
-+        */
-+       if (!domain || domain->type == IOMMU_DOMAIN_UNMANAGED) {
-+               struct pasid_iommu *param;
-+
-+               param = iommu_device_pasid_param(dev, id);
-+               if (!param || !param->domain)
-+                       return -EINVAL;
-+               arm_smmu_sva_block_dev_pasid(param->domain, dev, id);
-+
-+               return 0;
-+       }
-+
-+       mm = domain->mm;
-+       mutex_lock(&sva_lock);
-+       handle = __arm_smmu_sva_bind(dev, mm);
-+       if (IS_ERR(handle))
-+               ret = PTR_ERR(handle);
-+       mutex_unlock(&sva_lock);
-+
-+       return ret;
-+}
+On Tue, Jul 12, 2022 at 12:16:17PM +0200, Francesco Dolcini wrote:
+> Hi all,
+> This series introduce some minor cleanups on colibri-vf50-ts, allow using it
+> with any IIO ADC input and fix a couple of mistakes in the dt-bindings
+> documentation.
+> 
+> Francesco
+> 
+> Max Krummenacher (2):
+>   Input: touchscreen: colibri-vf50-ts: don't depend on VF610_ADC
+>   dt-bindings: input: colibri-vf50-ts: Improve documentation
+> 
+>  .../input/touchscreen/colibri-vf50-ts.txt        | 16 ++++++++--------
+>  drivers/input/touchscreen/Kconfig                |  2 +-
+>  2 files changed, 9 insertions(+), 9 deletions(-)
+> 
+> -- 
+> 2.25.1
+> 
 
-The check of "(!domain || domain->type == IOMMU_DOMAIN_UNMANAGED)" looks
-odd, but could get cleaned up after a real blocking domain is added.
-Then, we can simply check "domain->type == IOMMU_DOMAIN_BLOCKING".
-
-> In addition to clearing contexts, detach() also needs to invalidate TLBs,
-> and for that the SMMU driver needs to know the old ASID (!= PASID) that
-> was used by the context descriptor.
-
-Best regards,
-baolu
