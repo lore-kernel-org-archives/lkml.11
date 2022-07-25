@@ -2,78 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ACACC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 20:45:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59386C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 20:47:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232624AbiGYUpS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 16:45:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47922 "EHLO
+        id S231211AbiGYUrK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 16:47:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229490AbiGYUpQ (ORCPT
+        with ESMTP id S229587AbiGYUrJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 16:45:16 -0400
-X-Greylist: delayed 474 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 25 Jul 2022 13:45:14 PDT
-Received: from forward104j.mail.yandex.net (forward104j.mail.yandex.net [5.45.198.247])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D86E810B5
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 13:45:14 -0700 (PDT)
-Received: from sas1-1f4a002bb12a.qloud-c.yandex.net (sas1-1f4a002bb12a.qloud-c.yandex.net [IPv6:2a02:6b8:c14:3908:0:640:1f4a:2b])
-        by forward104j.mail.yandex.net (Yandex) with ESMTP id EC7CB2F9856A;
-        Mon, 25 Jul 2022 23:37:16 +0300 (MSK)
-Received: by sas1-1f4a002bb12a.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id DUGn5l3VrV-bFhqUQZb;
-        Mon, 25 Jul 2022 23:37:16 +0300
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (Client certificate not present)
-X-Yandex-Fwd: 1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ya.ru; s=mail; t=1658781436;
-        bh=jr647taVI1hG2t/ADBqRiMRSZSUJxUTshbW3JOsqCqA=;
-        h=Date:Message-ID:Cc:To:Subject:From;
-        b=r9zenRA2TdFI06wlX3732IV5+6vEHs7PGw12YIbW0UhzsH1rMpejM+dPmDqyRl+0/
-         yfPU3DEfV/J52dXmUwQZa16OsTpGnt2op71tLJl6VMAdHsqhDfULHKcZPfk+6GiIPf
-         In2uc7RbarPH2s/MOwp9SDRLsaROXFndy6WqC9U4=
-Authentication-Results: sas1-1f4a002bb12a.qloud-c.yandex.net; dkim=pass header.i=@ya.ru
-From:   Kirill Tkhai <tkhai@ya.ru>
-Subject: [PATCH] mailmap: Update Kirill's email
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Cc:     kirill.tkhai@openvz.org, Kirill Tkhai <ktkhai@virtuozzo.com>
-Message-ID: <14ca895b-e745-6ba2-8be8-652feacbc907@ya.ru>
-Date:   Mon, 25 Jul 2022 23:37:15 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Mon, 25 Jul 2022 16:47:09 -0400
+Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BB556420
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 13:47:08 -0700 (PDT)
+Received: by mail-ot1-x331.google.com with SMTP id g20-20020a9d6a14000000b0061c84e679f5so9565339otn.2
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 13:47:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Cg/l5r1DnfHeQDhJMEUy4F+4PmlxIavAirIL0/cpxLY=;
+        b=hQb7YnD6H74svuohwJ5MGhCu6hJIzuKgaz1De63644kZ3X7lWS7VjWdR5dC4VjT4nc
+         74C49l30iD3MnjL3i6fgY6dKK9DC6cW5jUKNzdehgfOxLpcJWuBwZ0JN15ymAyBpl0f3
+         wIWbdBwq4vghDxbSls5/cOkQLAVCd4IqybBy3wOkW8Cw8PEcNgHvWXaVzds71Fn0cz7r
+         Kh7pgoX8pDsXQHQL93NlbPjVp2FHhNfcBwIpPxXsHIGmjVhN7vbVjZxXZKwb4NSRIZMI
+         v/+Nk8NfkaHYcE4QPQYgk7U6djHRtVtXHRsrmTDBi8UzaJNWKMHbqGEtsR57/U0d5+pU
+         jnPQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Cg/l5r1DnfHeQDhJMEUy4F+4PmlxIavAirIL0/cpxLY=;
+        b=KYmdeRosGuDmNMfQMijuebE8hJLw92/fREpB1BNS37dX4s0ZAGqBUP1Gd8RQKTUel0
+         gq5QDlzwrXyE6bGMCS6LkKqeBI1ljwLh0Q3FCZhR9+x9hEzC6F7q6h0JkT9a/evmySq4
+         EBBuLgUrEuYsJQY35Pa5A5KTRlYnG4T8BYsp6HeoJGjWsdcu6Clw78ho/4kzZX+d7OL9
+         SoGxJq5HoiU9BI5XxY4Kh0ZrqAMT5SyFetsiF/dPwGTupTKFSbTxxbpdfZLQMAEXoZ86
+         XCZNS+crlD1uGHWO4PPn+ki1ee+aYOyhgxVQhOxzzYnsqjCpbJ7dYbGPdRjbAFTfyuGp
+         2qsQ==
+X-Gm-Message-State: AJIora/CyxGkZu+oRyY5rUlwe6lJgf2Kdd+vUrhTqT1D8HW6yXZUtNEw
+        R71+cr4asZfX6KwNxiRxj3M=
+X-Google-Smtp-Source: AGRyM1v+7jRm6tpyJZxahGhRMsz454sYm8Q2qSd6NB5xA0Uv/skaQtKPfgvnbBzJvoF6ucOVc6dpfA==
+X-Received: by 2002:a9d:2083:0:b0:61c:dbc8:3d8b with SMTP id x3-20020a9d2083000000b0061cdbc83d8bmr5369503ota.192.1658782027639;
+        Mon, 25 Jul 2022 13:47:07 -0700 (PDT)
+Received: from ?IPV6:2804:14c:bbe3:4370:95da:f07f:e927:6958? ([2804:14c:bbe3:4370:95da:f07f:e927:6958])
+        by smtp.gmail.com with ESMTPSA id j5-20020aca6545000000b0033ad9f035a5sm1967963oiw.34.2022.07.25.13.47.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 25 Jul 2022 13:47:07 -0700 (PDT)
+Message-ID: <4f359e30-90f8-c8bf-4e07-6856fcfd3506@gmail.com>
+Date:   Mon, 25 Jul 2022 17:47:01 -0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0.2
+Subject: Re: [PATCH 1/2] drm/amd/display: change variables type
 Content-Language: en-US
+To:     =?UTF-8?Q?Andr=c3=a9_Almeida?= <andrealmeid@igalia.com>
+Cc:     siqueirajordao@riseup.net, harry.wentland@amd.com,
+        Xinhui.Pan@amd.com, christian.koenig@amd.com,
+        alexander.deucher@amd.com, Rodrigo.Siqueira@amd.com,
+        tales.aparecida@gmail.com, linux-kernel@vger.kernel.org,
+        amd-gfx@lists.freedesktop.org, mwen@igalia.com,
+        mairacanal@riseup.net, dri-devel@lists.freedesktop.org,
+        isabbasso@riseup.net, andrealmeid@riseup.net, sunpeng.li@amd.com,
+        airlied@linux.ie, daniel@ffwll.ch
+References: <20220725181559.250030-1-magalilemes00@gmail.com>
+ <a7589316-2a55-85f2-b665-5fe4bebf7a69@igalia.com>
+From:   Magali Lemes <magalilemes00@gmail.com>
+In-Reply-To: <a7589316-2a55-85f2-b665-5fe4bebf7a69@igalia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kirill Tkhai <tkhai@ya.ru>
 
-I disconnected from both Virtuozzo and OpenVZ,
-so this updates my email to point to my own.
-I haven't used @openvz address for patches, so
-let's rewrite the line instead of to add a new
-one. CC all previous addresses.
-
-Signed-off-by: Kirill Tkhai <tkhai@ya.ru>
----
-.mailmap | 2 +-
-1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/.mailmap b/.mailmap
-index 71577c396252..876f926b6d82 100644
---- a/.mailmap
-+++ b/.mailmap
-@@ -230,7 +230,7 @@ Kees Cook <keescook@chromium.org> <kees@ubuntu.com>
-Keith Busch <kbusch@kernel.org> <keith.busch@intel.com>
-Keith Busch <kbusch@kernel.org> <keith.busch@linux.intel.com>
-Kenneth W Chen <kenneth.w.chen@intel.com>
--Kirill Tkhai <kirill.tkhai@openvz.org> <ktkhai@virtuozzo.com>
-+Kirill Tkhai <tkhai@ya.ru> <ktkhai@virtuozzo.com>
-Konstantin Khlebnikov <koct9i@gmail.com> <khlebnikov@yandex-team.ru>
-Konstantin Khlebnikov <koct9i@gmail.com> <k.khlebnikov@samsung.com>
-Koushik <raghavendra.koushik@neterion.com>
+On 7/25/22 16:42, André Almeida wrote:
+> Hi Magali,
+>
+> Às 15:15 de 25/07/22, Magali Lemes escreveu:
+>> As "dcn3_15_soc" and "dcn3_16_soc" are of type "struct
+>> _vcs_dpi_soc_bounding_box_st", change their types accordingly.
+>>
+> I can see that indeed this type change sense for those variables, but
+> isn't a bit strange that the type was wrong in the first place? I wonder
+> if this variable is even used, given that it would very likely throw a
+> compiler error when using the wrong type and trying to access struct
+> members that aren't defined.
 
 
+A compilation error would be thrown if either 
+"dc/dcn315/dcn315_resource.h" or "dc/dcn316/dcn316_resource.h" were 
+included in the files where "dcn3_15_soc" and "dcn3_16_soc" are 
+initialized. Since they are not included, the wrong variable type error 
+is not shown.
+To solve the sparse warning in the second patch of this series, those 
+variables need to be declared first, but they are already declared, 
+we're only missing the headers. If I only add the headers, then those 
+variables will be seen, and I get the expected incompatible variables 
+types error. So, fixing the types here is a preliminary work for the 
+next patch.
 
+
+Magali
+
+
+>
+>> Signed-off-by: Magali Lemes <magalilemes00@gmail.com>
+>> ---
+>>   drivers/gpu/drm/amd/display/dc/dcn315/dcn315_resource.h | 2 +-
+>>   drivers/gpu/drm/amd/display/dc/dcn316/dcn316_resource.h | 2 +-
+>>   2 files changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/gpu/drm/amd/display/dc/dcn315/dcn315_resource.h b/drivers/gpu/drm/amd/display/dc/dcn315/dcn315_resource.h
+>> index 39929fa67a51..45276317c057 100644
+>> --- a/drivers/gpu/drm/amd/display/dc/dcn315/dcn315_resource.h
+>> +++ b/drivers/gpu/drm/amd/display/dc/dcn315/dcn315_resource.h
+>> @@ -32,7 +32,7 @@
+>>   	container_of(pool, struct dcn315_resource_pool, base)
+>>   
+>>   extern struct _vcs_dpi_ip_params_st dcn3_15_ip;
+>> -extern struct _vcs_dpi_ip_params_st dcn3_15_soc;
+>> +extern struct _vcs_dpi_soc_bounding_box_st dcn3_15_soc;
+>>   
+>>   struct dcn315_resource_pool {
+>>   	struct resource_pool base;
+>> diff --git a/drivers/gpu/drm/amd/display/dc/dcn316/dcn316_resource.h b/drivers/gpu/drm/amd/display/dc/dcn316/dcn316_resource.h
+>> index 0dc5a6c13ae7..d2234aac5449 100644
+>> --- a/drivers/gpu/drm/amd/display/dc/dcn316/dcn316_resource.h
+>> +++ b/drivers/gpu/drm/amd/display/dc/dcn316/dcn316_resource.h
+>> @@ -32,7 +32,7 @@
+>>   	container_of(pool, struct dcn316_resource_pool, base)
+>>   
+>>   extern struct _vcs_dpi_ip_params_st dcn3_16_ip;
+>> -extern struct _vcs_dpi_ip_params_st dcn3_16_soc;
+>> +extern struct _vcs_dpi_soc_bounding_box_st dcn3_16_soc;
+>>   
+>>   struct dcn316_resource_pool {
+>>   	struct resource_pool base;
