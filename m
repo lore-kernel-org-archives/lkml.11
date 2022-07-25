@@ -2,123 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3EF4CCA48D
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 20:29:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5574ECCA48A
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 20:29:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237045AbiGYU3b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 16:29:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34240 "EHLO
+        id S232013AbiGYU3t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 16:29:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232013AbiGYU33 (ORCPT
+        with ESMTP id S236635AbiGYU3q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 16:29:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04519BC9B;
-        Mon, 25 Jul 2022 13:29:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A9C57B810FE;
-        Mon, 25 Jul 2022 20:29:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63D78C341CD;
-        Mon, 25 Jul 2022 20:29:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658780965;
-        bh=iX8wr1hPKTneg9a+eBJXq4+wGlRNsgbD59/7wwnN1xA=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=BDA+ZjuwJ6YdcVR2XPmFe4pShoa4H+Zcpn7U6V/Ix1dgzNGEloHb5vdd8/wO70L+x
-         dmoAklJ3de20NXW8/c1SvEqWtNPSZmTxNVok6Vx0s/+Zw0jpYkx3XGenQLgosEryb4
-         b7FmR+giTmLriHFGB32w/DJlloD/yVi4+PyBNpwXGpojoEs1OjFhNa7zGiDazeLjNb
-         KwXm8hORhBKdXbnAl9JjndzW06JMOGMwYmhrjmfeisJa/LVYJKDlPavdh4T9PJ9091
-         KinrbzXh2VjhmJ96M1uUsh94oYzYhhN9MbQ6mwQEnoB03ZiDfkNYdOW6Tf/1ztj7jC
-         kmc/MV6KkW/8A==
-Received: by mail-vs1-f44.google.com with SMTP id 129so4221098vsq.8;
-        Mon, 25 Jul 2022 13:29:25 -0700 (PDT)
-X-Gm-Message-State: AJIora82RbxpP4yubCHsY22wS6mr092cAojQ03S1COJT0oMYZAsWk5hD
-        NGYvwCz/j+mOJRuVHb7/b/MoWrDka30UFiU/Cw==
-X-Google-Smtp-Source: AGRyM1vzsYMyTaGYF4X1r/77zbG7V68gqLcEpGiz0JYOkMPOFCFcjdJ4Vx5gxnBVP+8Ji/5BOwHBtGdQcDtcAk0fGGI=
-X-Received: by 2002:a05:6102:162b:b0:358:418a:4e57 with SMTP id
- cu43-20020a056102162b00b00358418a4e57mr4344243vsb.26.1658780964277; Mon, 25
- Jul 2022 13:29:24 -0700 (PDT)
+        Mon, 25 Jul 2022 16:29:46 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CC61220FA
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 13:29:45 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id t22so13388429lfg.1
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 13:29:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=b4+zrHydncSnGE8NzMR4jfY6BqFnB6mPYhQPBEGmp+4=;
+        b=vuV4gzEXUyKzE3RrbAcYXdJpyb6GtSn899V1rBjnjTjVzITMoIyUWVTF3eeKsx1gAm
+         teVs3DU+iJyaaIJoWl6G2cSz4mTJtxS2bpAQxAAbyH6W9EBNLc2YKp1NYMsSvfEvl1Nw
+         VA9u6s81AhaHWD7kLv3cPMbWRTuBeyB58FHUHJUf9twXDgsfIamkEXautM33e0uhtJDm
+         GX1VtaMoTfZf+D7ZE35Rj5cWAfNRCth0dazBmDK8vZn33mkc3jkUWLtHpVCoWt1eBxYo
+         BVyovkHQNxsbuSRHiNAlKdX9DWvd7+oB39aBNM9cWGdj0eWlzOgK/6iBs1UUx477jiPG
+         tvWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=b4+zrHydncSnGE8NzMR4jfY6BqFnB6mPYhQPBEGmp+4=;
+        b=Ts7d1c9KeJ9JkThmVHWIXRuKGTdt2er48425szzesk38TUi7aV3MiRIb/iq9APOHON
+         toKF4N0PWFS807UGej4RWlkJ/rQ1RoAj8OFSIZxU4QT7ZDaz82sGx01pMBiwc/Df2AMl
+         mYrsyoEQ2umACTnUaXn+HSV5YuWPjq/p2+h2zPUVxb2vhOVdTTOcFx8DFYBC0gM5nrQw
+         W4jBfxxX5iUUdqxzDsDg1cY7ezgnbAJ3sGHELZpaxRD9kuzoF3BfJa61x9anPuXrwoOQ
+         5Lwx8N2mQC0HBWR6nj9atTmK1M/tr16NVl7EkWoRcV60KYlvFWdvDHKKKPBWpjZKodC2
+         rw+w==
+X-Gm-Message-State: AJIora/6HYELYVpT2DL8uVnmUoQ4Xegun5xNRCnNhTWEFjxmvPqpcaFr
+        VuFJAKr2qbri5fht/uovQTb1CQ==
+X-Google-Smtp-Source: AGRyM1t7ckEhCnEiqOR0EzJEDxOVbbtd5X+MdkJqJwBraQR7j+TWjzxErv7tMQ71wjc4uX91+CX2ZA==
+X-Received: by 2002:a05:6512:218c:b0:48a:1e1e:7b59 with SMTP id b12-20020a056512218c00b0048a1e1e7b59mr5044957lft.580.1658780983896;
+        Mon, 25 Jul 2022 13:29:43 -0700 (PDT)
+Received: from [192.168.3.197] (78-26-46-173.network.trollfjord.no. [78.26.46.173])
+        by smtp.gmail.com with ESMTPSA id v7-20020a2ea447000000b0025d715bc088sm2907615ljn.0.2022.07.25.13.29.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 25 Jul 2022 13:29:43 -0700 (PDT)
+Message-ID: <ad56dc32-e696-3c16-17cc-28e8d24c36dc@linaro.org>
+Date:   Mon, 25 Jul 2022 22:29:42 +0200
 MIME-Version: 1.0
-References: <20220725180916.2850228-1-bhupesh.sharma@linaro.org>
-In-Reply-To: <20220725180916.2850228-1-bhupesh.sharma@linaro.org>
-From:   Rob Herring <robh@kernel.org>
-Date:   Mon, 25 Jul 2022 14:29:13 -0600
-X-Gmail-Original-Message-ID: <CAL_Jsq+UaXgCFH5azZoHDSSqagEcRf9f6-ZucWAHuYZi0HaHgA@mail.gmail.com>
-Message-ID: <CAL_Jsq+UaXgCFH5azZoHDSSqagEcRf9f6-ZucWAHuYZi0HaHgA@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: mmc: Set maximum documented operating
- frequency as 384MHz
-To:     Bhupesh Sharma <bhupesh.sharma@linaro.org>
-Cc:     linux-mmc <linux-mmc@vger.kernel.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Bhupesh Sharma <bhupesh.linux@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v4 2/5] spi: dt-bindings: add documentation for
+ hpe,gxp-spifi
+Content-Language: en-US
+To:     nick.hawkins@hpe.com
+Cc:     broonie@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, verdun@hpe.com,
+        linux@armlinux.org.uk, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, arnd@arndb.de, joel@jms.id.au
+References: <20220725201322.41810-1-nick.hawkins@hpe.com>
+ <20220725201322.41810-3-nick.hawkins@hpe.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220725201322.41810-3-nick.hawkins@hpe.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 25, 2022 at 12:09 PM Bhupesh Sharma
-<bhupesh.sharma@linaro.org> wrote:
->
-> As Ulf noted in [1], the maximum operating frequency
-> documented in the mmc-controller device-tree bindings
-> should be updated to the maximum frequency supported
-> by the mmc controller(s).
-
-Please send DT patches to the DT list so checks run and they are in
-the review queue.
-
-> Without this fix in place, the 'make dtbs_check' reports
-> issues with 'max-frequency' value for ipq8074 sdhci node:
->
->   arch/arm64/boot/dts/qcom/ipq8074-hk01.dtb: mmc@7824900:
->    max-frequency:0:0: 384000000 is greater than the maximum of 200000000
->
-> [1]. https://www.spinics.net/lists/kernel/msg4442049.html
->
-> Cc: Ulf Hansson <ulf.hansson@linaro.org>
-> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Cc: Rob Herring <robh@kernel.org>
-> Signed-off-by: Bhupesh Sharma <bhupesh.sharma@linaro.org>
-> ---
-> - Rebased on linux-next/master
->
->  .../devicetree/bindings/mmc/mmc-controller.yaml          | 9 ++++++++-
->  1 file changed, 8 insertions(+), 1 deletion(-)
->
-> diff --git a/Documentation/devicetree/bindings/mmc/mmc-controller.yaml b/Documentation/devicetree/bindings/mmc/mmc-controller.yaml
-> index ff5ce89e5111..c49f3060c24a 100644
-> --- a/Documentation/devicetree/bindings/mmc/mmc-controller.yaml
-> +++ b/Documentation/devicetree/bindings/mmc/mmc-controller.yaml
-> @@ -87,12 +87,19 @@ properties:
->      enum: [1, 4, 8]
->      default: 1
->
-> +  # Maximum operating frequency:
-> +  # - for eMMC, the maximum supported frequency is 200MHz,
-> +  # - for SD/SDIO cards the SDR104 mode has a max supported
-> +  #   frequency of 208MHz,
-> +  # - some mmc host controllers do support a max frequency
-> +  #   upto 384MHz,
-> +  # so lets keep the maximum supported value here.
-
-Add to the description instead of a comment.
+On 25/07/2022 22:13, nick.hawkins@hpe.com wrote:
+> From: Nick Hawkins <nick.hawkins@hpe.com>
+> 
+> Create documentation for the hpe,gxp-spifi binding to support access to
+> the SPI parts
+> 
+> Signed-off-by: Nick Hawkins <nick.hawkins@hpe.com>
+> 
 
 
->    max-frequency:
->      description:
->        Maximum operating frequency of the bus.
->      $ref: /schemas/types.yaml#/definitions/uint32
->      minimum: 400000
-> -    maximum: 200000000
-> +    maximum: 384000000
->
->    disable-wp:
->      $ref: /schemas/types.yaml#/definitions/flag
-> --
-> 2.35.3
->
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
+
+Best regards,
+Krzysztof
