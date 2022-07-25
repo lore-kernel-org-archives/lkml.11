@@ -2,130 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACF5ACCA48B
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 22:34:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F8F6CCA48B
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 22:36:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237201AbiGYWe2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 18:34:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40978 "EHLO
+        id S237200AbiGYWgU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 18:36:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237200AbiGYWeZ (ORCPT
+        with ESMTP id S229784AbiGYWgR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 18:34:25 -0400
-Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8313A25C62
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 15:34:24 -0700 (PDT)
-Received: by mail-pj1-x1049.google.com with SMTP id c9-20020a17090a674900b001f25399c053so4563331pjm.1
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 15:34:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=oSpcjGYkcXcod89ksW5flXGeS3wxnAvOkS8CIPgpDQU=;
-        b=Gis5dLtYV581itcud3CuHdoEL5SoJJAr2ZN+c7OaJkHgxIY1MxuyCp/WcQlDJPKeX4
-         RTj26kDWYUT3UDbFlBJJjcSesg7V6cE2gKtifdaQs5yb1Eslcj7+ulsmpLnluT1rm+Vd
-         7F7FS71MQUWsgrMHXLX4tnBsDuCB+EocRFDFBzXUSIFGwv5OSuqYtyjNPSbkEUmkgmka
-         ut2jrk2qf32nT+Ink98zM5sHTYt0VvJgWm11f5Qv18c9RRgXnDNfXyCF1yF0SlFAlGix
-         AlsAMI2zaasnBFJS5XIzC0n+VebT3KGUKkNgImCdPnrTVwYmYOe67RVREbXrZn4FVzJ5
-         H91Q==
+        Mon, 25 Jul 2022 18:36:17 -0400
+Received: from mail-ot1-f44.google.com (mail-ot1-f44.google.com [209.85.210.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3728D22BDD;
+        Mon, 25 Jul 2022 15:36:17 -0700 (PDT)
+Received: by mail-ot1-f44.google.com with SMTP id y10-20020a9d634a000000b006167f7ce0c5so9740990otk.0;
+        Mon, 25 Jul 2022 15:36:17 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=oSpcjGYkcXcod89ksW5flXGeS3wxnAvOkS8CIPgpDQU=;
-        b=x4160exLpDAb6HToCE4ZmIGxurthdcMcZsot+emKJ/Xyfw7WqBUYplUlCKTxLglQ8B
-         ybVvm6xmframrDKjtoGM4flU09fkkPdMv0aNik1JGl9zYq/PueVR3kuVfW8pmoQd8SLg
-         KuqSvF5jNqPRZR5pGA5rrpqYdVyavA0zR5KQ8rCAQVYlVcmAZY3FFHxhxIJzLc0GjZLi
-         vETiT7LjnNqzvsIynVWZPySoCokNBJjY2mY1VZBCyuuC8Ojrsd9Y2xWo6GJRLXlhqVgG
-         LOwFnoGJfU1ru+yGLfMHRRN5P5QVrQKdDnwc3t/KAt9YBoLIgwO/E2Sa7oSbIcq7jUvz
-         4vuA==
-X-Gm-Message-State: AJIora8K3lZlncN8Xn0C/4BZnWY13jW5DZD35z9QI8TsHymZTfiSZOmM
-        WyJGJw5Ex5UXhFcSaWofXxba2FBKrcn8ulB2RhNdRw==
-X-Google-Smtp-Source: AGRyM1vaCq/FkY5ExJrkEYFhAl6BGKDqJIZqy11HorsmSvgSz23CfntiiixB1F93QFwP5fvvzR6Q5ErIeQcrUVT2ObVbKw==
-X-Received: from abps.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:9b4])
- (user=abhishekpandit job=sendgmr) by 2002:a17:902:ebcb:b0:168:e3ba:4b5a with
- SMTP id p11-20020a170902ebcb00b00168e3ba4b5amr13929563plg.11.1658788464025;
- Mon, 25 Jul 2022 15:34:24 -0700 (PDT)
-Date:   Mon, 25 Jul 2022 15:34:21 -0700
-Message-Id: <20220725153415.v2.1.Ia18502557c4ba9ba7cd2d1da2bae3aeb71b37e4e@changeid>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.37.1.359.gd136c6c3e2-goog
-Subject: [PATCH v2] Bluetooth: Always set event mask on suspend
-From:   Abhishek Pandit-Subedi <abhishekpandit@google.com>
-To:     luiz.dentz@gmail.com, linux-bluetooth@vger.kernel.org
-Cc:     Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
-        stable@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Eyu1crtWTSJ/wKktKn2bCD4mtqeJsq4ok+GmCcS2Uj8=;
+        b=ZqNS4FeTfJCGeDjFyWEkfhBvXfKsiyxMOxekUrwpDIW6AtZGwRo2OwGpGARqjdCZ64
+         mTAJZBbK/7Ezjlb2XPQmRiak1f/aN3g4uCEzO2PQvCw0mIeFlPOZAGGMt79T6bbqa+I+
+         nQo5KA1N5GbIKV923HLPJd1V79lR/VrrlnQ5w9OOXOmYZ5hf/nbzbRZskztv/xHidWkg
+         Wyjc2Od4UNKfLC6lHFaIV7EJCgn4Kaydm2yEfEpbwjRo9BoyWcfvjxlYbMgsswGWn0K3
+         tVKDqFMxdMirFjk5DZCIcSN5dri7XBMh4HHeHbZMFWgmLU5gKTOfTOiy3bO6I7dMINHo
+         U0AA==
+X-Gm-Message-State: AJIora/h7/jFBxZh32RPHf0FxGJ8bxAqUsxpydWgc6HyyfP/4nTMSHvw
+        /fFm4kDfY3lvnhYacg84EYFoSPVe8g==
+X-Google-Smtp-Source: AGRyM1u0StGZDbuF9HoXEonCaBjVakg5NTUPPyrimmOjlELkzV3g/A4DSewECV8OF0DROTxFxF9t7Q==
+X-Received: by 2002:a05:6830:1e77:b0:61c:80d2:1a66 with SMTP id m23-20020a0568301e7700b0061c80d21a66mr5456908otr.214.1658788576431;
+        Mon, 25 Jul 2022 15:36:16 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id n8-20020a056870240800b0010d7242b623sm6597056oap.21.2022.07.25.15.36.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Jul 2022 15:36:16 -0700 (PDT)
+Received: (nullmailer pid 2871903 invoked by uid 1000);
+        Mon, 25 Jul 2022 22:36:14 -0000
+Date:   Mon, 25 Jul 2022 16:36:14 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Gene Chen <gene.chen.richtek@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, cy_huang@richtek.com,
+        linux-usb@vger.kernel.org, gene_chen@richtek.com,
+        heikki.krogerus@linux.intel.com, krzysztof.kozlowski+dt@linaro.org,
+        gregkh@linuxfoundation.org, devicetree@vger.kernel.org,
+        linux@roeck-us.net, robh+dt@kernel.org
+Subject: Re: [PATCH v2 1/6] dt-bindings usb: typec: rt1711h: Add binding for
+ Richtek RT1711H
+Message-ID: <20220725223614.GA2871870-robh@kernel.org>
+References: <20220721061144.35139-1-gene.chen.richtek@gmail.com>
+ <20220721061144.35139-2-gene.chen.richtek@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220721061144.35139-2-gene.chen.richtek@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
+On Thu, 21 Jul 2022 14:11:39 +0800, Gene Chen wrote:
+> From: Gene Chen <gene_chen@richtek.com>
+> 
+> Add binding for Richtek RT1711H
+> 
+> Signed-off-by: Gene Chen <gene_chen@richtek.com>
+> ---
+>  .../bindings/usb/richtek,rt1711h.yaml         | 100 ++++++++++++++++++
+>  1 file changed, 100 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/usb/richtek,rt1711h.yaml
+> 
 
-When suspending, always set the event mask once disconnects are
-successful. Otherwise, if wakeup is disallowed, the event mask is not
-set before suspend continues and can result in an early wakeup.
-
-Fixes: 182ee45da083 ("Bluetooth: hci_sync: Rework hci_suspend_notifier")
-Cc: stable@vger.kernel.org
-Signed-off-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
----
-Observed on ChromeOS as follows:
-
-< HCI Command: Disconnect (0x01|0x0006) plen 3
-        Handle: 256
-        Reason: Remote Device Terminated due to Power Off (0x15)
-> HCI Event: Command Status (0x0f) plen 4
-      Disconnect (0x01|0x0006) ncmd 1
-        Status: Success (0x00)
-@ MGMT Event: Device Disconnected (0x000c) plen 8
-        BR/EDR Address: 04:52:C7:C3:65:B5 (Bose Corporation)
-        Reason: Connection terminated by local host for suspend (0x05)
-@ MGMT Event: Controller Suspended (0x002d) plen 1
-        Suspend state: Disconnected and not scanning (1)
-> HCI Event: Disconnect Complete (0x05) plen 4
-        Status: Success (0x00)
-        Handle: 256
-        Reason: Connection Terminated By Local Host (0x16)
-
-The expectation is that we should see Set Event Mask before completing
-the suspend so that the `Disconnect Complete` doesn't wake us up.
-
-
-Changes in v2:
-- Added fixes tag and cc stable
-
- net/bluetooth/hci_sync.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/net/bluetooth/hci_sync.c b/net/bluetooth/hci_sync.c
-index 148ce629a59f..e6d804b82b67 100644
---- a/net/bluetooth/hci_sync.c
-+++ b/net/bluetooth/hci_sync.c
-@@ -5297,6 +5297,9 @@ int hci_suspend_sync(struct hci_dev *hdev)
- 		return err;
- 	}
- 
-+	/* Update event mask so only the allowed event can wakeup the host */
-+	hci_set_event_mask_sync(hdev);
-+
- 	/* Only configure accept list if disconnect succeeded and wake
- 	 * isn't being prevented.
- 	 */
-@@ -5308,9 +5311,6 @@ int hci_suspend_sync(struct hci_dev *hdev)
- 	/* Unpause to take care of updating scanning params */
- 	hdev->scanning_paused = false;
- 
--	/* Update event mask so only the allowed event can wakeup the host */
--	hci_set_event_mask_sync(hdev);
--
- 	/* Enable event filter for paired devices */
- 	hci_update_event_filter_sync(hdev);
- 
--- 
-2.37.1.359.gd136c6c3e2-goog
-
+Reviewed-by: Rob Herring <robh@kernel.org>
