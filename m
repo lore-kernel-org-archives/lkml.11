@@ -2,61 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B851C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 16:00:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BF30C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 16:02:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235523AbiGYQAG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 12:00:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40320 "EHLO
+        id S235784AbiGYQCX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 12:02:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231165AbiGYQAF (ORCPT
+        with ESMTP id S235509AbiGYQCW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 12:00:05 -0400
-Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF0C913D6F;
-        Mon, 25 Jul 2022 09:00:02 -0700 (PDT)
-Received: from stanislav-HLY-WX9XX.intra.ispras.ru (unknown [46.172.12.24])
-        by mail.ispras.ru (Postfix) with ESMTPSA id 2488840737DC;
-        Mon, 25 Jul 2022 15:59:59 +0000 (UTC)
-From:   Stanislav Goriainov <goriainov@ispras.ru>
-To:     Rob Herring <robh+dt@kernel.org>
-Cc:     Stanislav Goriainov <goriainov@ispras.ru>,
-        Frank Rowand <frowand.list@gmail.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ldv-project@linuxtesting.org
-Subject: [PATCH] scripts/dtc: Fix memory leak in check_msg()
-Date:   Mon, 25 Jul 2022 18:59:55 +0300
-Message-Id: <20220725155955.46439-1-goriainov@ispras.ru>
-X-Mailer: git-send-email 2.34.1
+        Mon, 25 Jul 2022 12:02:22 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32B8E12745
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 09:02:21 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id r8so2443754plh.8
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 09:02:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JKqeLialV+6vbEP9iLh1rw+b+hmjByPHU1zMv6k/ebc=;
+        b=3zsZRztKOEhwhcwxTyuAJc8jmK7Yd5DM5WDlQ8uNoCD0B0JdzO0Zr6i0fvzBbIeHGL
+         K1J9803VZkOtPHjBJjT4QvcPcrBqPmlyBibQFNfoLnJL2nH/8cmJZUl6jIbQx7NGbPNN
+         08+Ll+QxTbHmmBtibJ4KKjfXAbYDVI3PjoT0djdSDPSnUr00wKWUXUem3GEA9s+0sqso
+         vpZFIY0eOy38/uhvApzUMyDSDhHH3jPQ1VTXer2Cyum9Ff5GijNMSLUXAyVfmk/nlRqL
+         c0WLgAt1NLkoXArDAkcdqPEZWBzIV/RYls6whvzrjgsVYeCHBq/VtW9q21vfsycSgx3Y
+         CQZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JKqeLialV+6vbEP9iLh1rw+b+hmjByPHU1zMv6k/ebc=;
+        b=XEPNXrirSWRsfqYdTGapnPlZ5+z8EWdIR2JIE0daA5qRRM21S4WQ4IwGpPOh3uQnqM
+         TrVKRylJ6F+60QMrWrn6cYJY0JIQgluYbr+qMSIJCCHKYeYR5sOK0CG/Afay2FbeeaPW
+         hEBLh6IM6JHPi4vf8MXEhuWo08ejzX2dw/+dWD1A7SEfZHz8WsFA2XrnlwdW5LPha8py
+         C+OoNwKft0U80pJvfpKiNvkc5+oriJECvZlJOaR9OEY8kpcjHyxkS7gM6xEVDuKhPPsO
+         +wE9Q4wsBDCJhYTcmy64UG0bqmq8aOIITDyA+NbNzQfrAftFLKBmRgEosdkLCxuEeSc6
+         ijmQ==
+X-Gm-Message-State: AJIora/1CXIJQSw8NAhNcGgxl56mfLrshtuKIvLN2x/0HqbzH6JQ2tU5
+        REc3yjKqRnCNDOtXxQRjqAuUeQ==
+X-Google-Smtp-Source: AGRyM1tqvaWk/DDOXJIx1or0Y+22nYb/JgOeC2l2098PgfKLfLZkKZF0XasYDv3WsyNFz03m/6wFVA==
+X-Received: by 2002:a17:90b:3ec5:b0:1f0:3986:4502 with SMTP id rm5-20020a17090b3ec500b001f039864502mr15647381pjb.6.1658764940683;
+        Mon, 25 Jul 2022 09:02:20 -0700 (PDT)
+Received: from C02F63J9MD6R.bytedance.net ([61.120.150.78])
+        by smtp.gmail.com with ESMTPSA id o6-20020a1709026b0600b0015e8d4eb2easm9273441plk.308.2022.07.25.09.02.15
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 25 Jul 2022 09:02:19 -0700 (PDT)
+From:   Zhuo Chen <chenzhuo.1@bytedance.com>
+To:     ruscur@russell.cc, oohall@gmail.com, bhelgaas@google.com
+Cc:     chenzhuo.1@bytedance.com, lukas@wunner.de, jan.kiszka@siemens.com,
+        stuart.w.hayes@gmail.com, linuxppc-dev@lists.ozlabs.org,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] PCI/ERR: Use pcie_aer_is_native() to judge whether OS owns AER
+Date:   Tue, 26 Jul 2022 00:01:31 +0800
+Message-Id: <20220725160131.83687-1-chenzhuo.1@bytedance.com>
+X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When the function check_msg() is called, memory for str is allocated
-via xasprintf() and xasprintf_append() (as well as for file_str),
-but is not freed anywhere later (although file_str is).
+After commit 7d7cbeaba5b7 ("PCI/ERR: Clear status of the reporting
+device"), the AER status of the device that reported the error
+rather than the first downstream port is cleared. So the problem
+in commit aa344bc8b727 ("PCI/ERR: Clear AER status only when we
+control AER") is no longer existent, and we change to use
+pcie_aer_is_native() here.
 
-Found by Linux Verification Center (linuxtesting.org) with SVACE.
+pci_aer_clear_nonfatal_status() already has pcie_aer_is_native(),
+so we move pci_aer_clear_nonfatal_status() out of
+pcie_aer_is_native().
 
-Fixes: c2e7075ca830 ("scripts/dtc: Update to upstream version v1.4.7-57-gf267e674d145")
-Signed-off-by: Stanislav Goriainov <goriainov@ispras.ru>
+Replace statements that judge whether OS owns AER in
+get_port_device_capability() with pcie_aer_is_native().
+
+Signed-off-by: Zhuo Chen <chenzhuo.1@bytedance.com>
 ---
- scripts/dtc/checks.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/pci/pcie/err.c          | 12 ++----------
+ drivers/pci/pcie/portdrv_core.c |  3 +--
+ 2 files changed, 3 insertions(+), 12 deletions(-)
 
-diff --git a/scripts/dtc/checks.c b/scripts/dtc/checks.c
-index 781ba1129a8e..92ffc8de6a52 100644
---- a/scripts/dtc/checks.c
-+++ b/scripts/dtc/checks.c
-@@ -114,6 +114,7 @@ static inline void  PRINTF(5, 6) check_msg(struct check *c, struct dt_info *dti,
+diff --git a/drivers/pci/pcie/err.c b/drivers/pci/pcie/err.c
+index 0c5a143025af..28339c741555 100644
+--- a/drivers/pci/pcie/err.c
++++ b/drivers/pci/pcie/err.c
+@@ -184,7 +184,6 @@ pci_ers_result_t pcie_do_recovery(struct pci_dev *dev,
+ 	int type = pci_pcie_type(dev);
+ 	struct pci_dev *bridge;
+ 	pci_ers_result_t status = PCI_ERS_RESULT_CAN_RECOVER;
+-	struct pci_host_bridge *host = pci_find_host_bridge(dev->bus);
+ 
+ 	/*
+ 	 * If the error was detected by a Root Port, Downstream Port, RCEC,
+@@ -237,16 +236,9 @@ pci_ers_result_t pcie_do_recovery(struct pci_dev *dev,
+ 	pci_dbg(bridge, "broadcast resume message\n");
+ 	pci_walk_bridge(bridge, report_resume, &status);
+ 
+-	/*
+-	 * If we have native control of AER, clear error status in the device
+-	 * that detected the error.  If the platform retained control of AER,
+-	 * it is responsible for clearing this status.  In that case, the
+-	 * signaling device may not even be visible to the OS.
+-	 */
+-	if (host->native_aer || pcie_ports_native) {
++	if (pcie_aer_is_native(dev))
+ 		pcie_clear_device_status(dev);
+-		pci_aer_clear_nonfatal_status(dev);
+-	}
++	pci_aer_clear_nonfatal_status(dev);
+ 	pci_info(bridge, "device recovery successful\n");
+ 	return status;
+ 
+diff --git a/drivers/pci/pcie/portdrv_core.c b/drivers/pci/pcie/portdrv_core.c
+index 604feeb84ee4..98c18f4a01b2 100644
+--- a/drivers/pci/pcie/portdrv_core.c
++++ b/drivers/pci/pcie/portdrv_core.c
+@@ -221,8 +221,7 @@ static int get_port_device_capability(struct pci_dev *dev)
  	}
  
- 	fputs(str, stderr);
-+	free(str);
- }
+ #ifdef CONFIG_PCIEAER
+-	if (dev->aer_cap && pci_aer_available() &&
+-	    (pcie_ports_native || host->native_aer)) {
++	if (pcie_aer_is_native(dev) && pci_aer_available()) {
+ 		services |= PCIE_PORT_SERVICE_AER;
  
- #define FAIL(c, dti, node, ...)						\
--- 2.34.1
+ 		/*
+-- 
+2.30.1 (Apple Git-130)
 
