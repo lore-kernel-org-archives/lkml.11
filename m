@@ -2,74 +2,446 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F8F6CCA48B
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 22:36:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B92B3C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 22:36:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237200AbiGYWgU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 18:36:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42780 "EHLO
+        id S237280AbiGYWgt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 18:36:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229784AbiGYWgR (ORCPT
+        with ESMTP id S230320AbiGYWgr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 18:36:17 -0400
-Received: from mail-ot1-f44.google.com (mail-ot1-f44.google.com [209.85.210.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3728D22BDD;
-        Mon, 25 Jul 2022 15:36:17 -0700 (PDT)
-Received: by mail-ot1-f44.google.com with SMTP id y10-20020a9d634a000000b006167f7ce0c5so9740990otk.0;
-        Mon, 25 Jul 2022 15:36:17 -0700 (PDT)
+        Mon, 25 Jul 2022 18:36:47 -0400
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 917C125C76
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 15:36:45 -0700 (PDT)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-31e60b8bb07so96899417b3.1
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 15:36:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=biQHeyO+nnWtiHRNR4nDisLKiNKnTd0Uu5B4bnq1dVE=;
+        b=tFz8IraUKduUSwY57D6vbCjFtl1N/2SKgeWGJIyDoynBZsgjmbGLyEIo9Bl1DVzKIk
+         ZHdvxBXQ9Ts8vLmWJa+Dpf6s5nXVF9xy6MtvReAsFeP8S/hqt/d+vCwZTfY5GqPibj8x
+         +UEhRUcu/uued3XmGDKYtWCkDx779kLGC9papcKKJsUZTuIrMlT2DIV29ZEJIs3WxSxz
+         2CGlMmthIUbbFfEw34DbCwvEwGQxh5tAv0Kk89i0HNSPojH9My5Si5y4NNSbxB2D3LFg
+         h9v3v3j82PeB0qetkQPSQPMS/sIVQ1mbXlfUJJeGYdvCi1wXwkAQF46yzXDH1uaC//dz
+         3wkw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Eyu1crtWTSJ/wKktKn2bCD4mtqeJsq4ok+GmCcS2Uj8=;
-        b=ZqNS4FeTfJCGeDjFyWEkfhBvXfKsiyxMOxekUrwpDIW6AtZGwRo2OwGpGARqjdCZ64
-         mTAJZBbK/7Ezjlb2XPQmRiak1f/aN3g4uCEzO2PQvCw0mIeFlPOZAGGMt79T6bbqa+I+
-         nQo5KA1N5GbIKV923HLPJd1V79lR/VrrlnQ5w9OOXOmYZ5hf/nbzbRZskztv/xHidWkg
-         Wyjc2Od4UNKfLC6lHFaIV7EJCgn4Kaydm2yEfEpbwjRo9BoyWcfvjxlYbMgsswGWn0K3
-         tVKDqFMxdMirFjk5DZCIcSN5dri7XBMh4HHeHbZMFWgmLU5gKTOfTOiy3bO6I7dMINHo
-         U0AA==
-X-Gm-Message-State: AJIora/h7/jFBxZh32RPHf0FxGJ8bxAqUsxpydWgc6HyyfP/4nTMSHvw
-        /fFm4kDfY3lvnhYacg84EYFoSPVe8g==
-X-Google-Smtp-Source: AGRyM1u0StGZDbuF9HoXEonCaBjVakg5NTUPPyrimmOjlELkzV3g/A4DSewECV8OF0DROTxFxF9t7Q==
-X-Received: by 2002:a05:6830:1e77:b0:61c:80d2:1a66 with SMTP id m23-20020a0568301e7700b0061c80d21a66mr5456908otr.214.1658788576431;
-        Mon, 25 Jul 2022 15:36:16 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id n8-20020a056870240800b0010d7242b623sm6597056oap.21.2022.07.25.15.36.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Jul 2022 15:36:16 -0700 (PDT)
-Received: (nullmailer pid 2871903 invoked by uid 1000);
-        Mon, 25 Jul 2022 22:36:14 -0000
-Date:   Mon, 25 Jul 2022 16:36:14 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Gene Chen <gene.chen.richtek@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, cy_huang@richtek.com,
-        linux-usb@vger.kernel.org, gene_chen@richtek.com,
-        heikki.krogerus@linux.intel.com, krzysztof.kozlowski+dt@linaro.org,
-        gregkh@linuxfoundation.org, devicetree@vger.kernel.org,
-        linux@roeck-us.net, robh+dt@kernel.org
-Subject: Re: [PATCH v2 1/6] dt-bindings usb: typec: rt1711h: Add binding for
- Richtek RT1711H
-Message-ID: <20220725223614.GA2871870-robh@kernel.org>
-References: <20220721061144.35139-1-gene.chen.richtek@gmail.com>
- <20220721061144.35139-2-gene.chen.richtek@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220721061144.35139-2-gene.chen.richtek@gmail.com>
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=biQHeyO+nnWtiHRNR4nDisLKiNKnTd0Uu5B4bnq1dVE=;
+        b=xdImTO40k2SNUH6wh1UNCQVF7IJlAclLSaFt2yH/qG5RqMNCzo/PJfVKVmUND/N9Om
+         8YcurSWyDST9GuiHHM+byL/FHdZ//OLfIJbACyVofptqyWCtWBFLIZgkLuRNpIeoZhKx
+         CJgEhiMxolidce9SnezFqTtVVXQpZPH2TrgXgVlZjJcWIuUSbRWAmOyzYSi+k01/8Dnd
+         Re7bHmOKXgUyzt24RmFCZARNIXC/UKINja0F8pFAnwzvVe2DXWiMiKbNi3qeyixS8Otm
+         PxHD456W8gG5AjUE75Sr0aNcrijh+WEKqs8ig6dij7dfTY8I7Vplq2v7WvEFUZDTY9Wm
+         xrAg==
+X-Gm-Message-State: AJIora/TSqeVQEcn1+1ycqki6KAFUFZGKsGnEHvAQjRwBgbjNUzx75tp
+        MFsnrm8RLlseoBWUDrJVGgTuUlQRRVIt
+X-Google-Smtp-Source: AGRyM1tzWutoPDro3EGHXl76hNvluueJ4POIm1AWkMaYpH6jicKSs0Y6ueyJ70003S+Zwym4XA2nsZYnpZ9o
+X-Received: from irogers.svl.corp.google.com ([2620:15c:2d4:203:7fbf:ee64:7f7:3631])
+ (user=irogers job=sendgmr) by 2002:a25:55c5:0:b0:670:96cb:a295 with SMTP id
+ j188-20020a2555c5000000b0067096cba295mr10373436ybb.449.1658788604842; Mon, 25
+ Jul 2022 15:36:44 -0700 (PDT)
+Date:   Mon, 25 Jul 2022 15:36:01 -0700
+Message-Id: <20220725223633.2301737-1-irogers@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.1.359.gd136c6c3e2-goog
+Subject: [PATCH v2 00/32] Add generated latest Intel events and metrics
+From:   Ian Rogers <irogers@google.com>
+To:     perry.taylor@intel.com, caleb.biggers@intel.com,
+        kshipra.bopardikar@intel.com,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        James Clark <james.clark@arm.com>,
+        John Garry <john.garry@huawei.com>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        Sedat Dilek <sedat.dilek@gmail.com>
+Cc:     Stephane Eranian <eranian@google.com>,
+        Ian Rogers <irogers@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 21 Jul 2022 14:11:39 +0800, Gene Chen wrote:
-> From: Gene Chen <gene_chen@richtek.com>
-> 
-> Add binding for Richtek RT1711H
-> 
-> Signed-off-by: Gene Chen <gene_chen@richtek.com>
-> ---
->  .../bindings/usb/richtek,rt1711h.yaml         | 100 ++++++++++++++++++
->  1 file changed, 100 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/usb/richtek,rt1711h.yaml
-> 
+The goal of this patch series is to align the json events for Intel
+platforms with those generated by:
+https://github.com/intel/event-converter-for-linux-perf/blob/master/download_and_gen.py
+This script takes the latest event json and TMA metrics from:
+https://download.01.org/perfmon/ and adds to these metrics, in
+particular uncore ones, from: https://github.com/intel/perfmon-metrics
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Some fixes were needed to the script for generating the json and are
+contained in this pull request:
+https://github.com/intel/event-converter-for-linux-perf/pull/15
+
+The json files were first downloaded before being used to generate the
+perf json files. This fixes non-ascii characters for (R) and (TM) in
+the source json files. This can be reproduced with:
+$ download_and_gen.py --hermetic-download --outdir data
+$ download_and_gen.py --url=file://`pwd`/data/01 --metrics-url=file://`pwd`/data/github
+
+A minor correction is made in the generated json of:
+tools/perf/pmu-events/arch/x86/ivytown/uncore-other.json
+changing "\\Inbound\\" to just "Inbound" to avoid compilation errors
+caused by \I.
+
+The elkhartlake metrics file is basic and not generated by scripts. It
+is retained here although it causes a difference from the generated
+files.
+
+The mapfile.csv is the third and final difference from the generated
+version due to a bug in 01.org's models for icelake. The existing
+models are preferred and retained.
+
+A test change is added here fixing an issue with fake PMU testing
+exposed in the new/updated metrics.
+
+Compared to the previous json, additional changes are the inclusion of
+basic meteorlake events and the renaming of tremontx to snowridgex
+(patch taken from Zhengjun Xing). The new metrics contribute to the
+size, but a large contribution is the inclusion of previously
+ungenerated and experimental uncore events.
+
+v2. Remove reference to #system_tsc_freq patches that are now
+    merged. Add json version numbers to commit messages. Break the
+    tremontx rename to snowridgex into its own patch. Rebase.
+
+Ian Rogers (31):
+  perf test: Avoid sysfs state affecting fake events
+  perf vendor events: Update Intel broadwellx
+  perf vendor events: Update Intel broadwell
+  perf vendor events: Update Intel broadwellde
+  perf vendor events: Update Intel alderlake
+  perf vendor events: Update bonnell mapfile.csv
+  perf vendor events: Update Intel cascadelakex
+  perf vendor events: Update Intel elkhartlake
+  perf vendor events: Update goldmont mapfile.csv
+  perf vendor events: Update goldmontplus mapfile.csv
+  perf vendor events: Update Intel haswell
+  perf vendor events: Update Intel haswellx
+  perf vendor events: Update Intel icelake
+  perf vendor events: Update Intel icelakex
+  perf vendor events: Update Intel ivybridge
+  perf vendor events: Update Intel ivytown
+  perf vendor events: Update Intel jaketown
+  perf vendor events: Update Intel knightslanding
+  perf vendor events: Add Intel meteorlake
+  perf vendor events: Update Intel nehalemep
+  perf vendor events: Update Intel nehalemex
+  perf vendor events: Update Intel sandybridge
+  perf vendor events: Update Intel sapphirerapids
+  perf vendor events: Update Intel silvermont
+  perf vendor events: Update Intel skylake
+  perf vendor events: Update Intel skylakex
+  perf vendor events: Update Intel tigerlake
+  perf vendor events: Update Intel westmereep-dp
+  perf vendor events: Update Intel westmereep-sp
+  perf vendor events: Update Intel westmereex
+  perf vendor events: Update Intel snowridgex
+
+Zhengjun Xing (1):
+  perf vendor events intel: Rename tremontx to snowridgex
+
+ .../arch/x86/alderlake/adl-metrics.json       |     4 +-
+ .../pmu-events/arch/x86/alderlake/cache.json  |   178 +-
+ .../arch/x86/alderlake/floating-point.json    |    19 +-
+ .../arch/x86/alderlake/frontend.json          |    38 +-
+ .../pmu-events/arch/x86/alderlake/memory.json |    40 +-
+ .../pmu-events/arch/x86/alderlake/other.json  |    97 +-
+ .../arch/x86/alderlake/pipeline.json          |   507 +-
+ .../arch/x86/alderlake/uncore-other.json      |     2 +-
+ .../arch/x86/alderlake/virtual-memory.json    |    63 +-
+ .../pmu-events/arch/x86/bonnell/cache.json    |     2 +-
+ .../arch/x86/bonnell/floating-point.json      |     2 +-
+ .../pmu-events/arch/x86/bonnell/frontend.json |     2 +-
+ .../pmu-events/arch/x86/bonnell/memory.json   |     2 +-
+ .../pmu-events/arch/x86/bonnell/other.json    |     2 +-
+ .../pmu-events/arch/x86/bonnell/pipeline.json |     2 +-
+ .../arch/x86/bonnell/virtual-memory.json      |     2 +-
+ .../arch/x86/broadwell/bdw-metrics.json       |   130 +-
+ .../pmu-events/arch/x86/broadwell/cache.json  |     2 +-
+ .../arch/x86/broadwell/floating-point.json    |     2 +-
+ .../arch/x86/broadwell/frontend.json          |     2 +-
+ .../pmu-events/arch/x86/broadwell/memory.json |     2 +-
+ .../pmu-events/arch/x86/broadwell/other.json  |     2 +-
+ .../arch/x86/broadwell/pipeline.json          |     2 +-
+ .../arch/x86/broadwell/uncore-cache.json      |   152 +
+ .../arch/x86/broadwell/uncore-other.json      |    82 +
+ .../pmu-events/arch/x86/broadwell/uncore.json |   278 -
+ .../arch/x86/broadwell/virtual-memory.json    |     2 +-
+ .../arch/x86/broadwellde/bdwde-metrics.json   |   136 +-
+ .../arch/x86/broadwellde/cache.json           |     2 +-
+ .../arch/x86/broadwellde/floating-point.json  |     2 +-
+ .../arch/x86/broadwellde/frontend.json        |     2 +-
+ .../arch/x86/broadwellde/memory.json          |     2 +-
+ .../arch/x86/broadwellde/other.json           |     2 +-
+ .../arch/x86/broadwellde/pipeline.json        |     2 +-
+ .../arch/x86/broadwellde/uncore-cache.json    |  3818 ++-
+ .../arch/x86/broadwellde/uncore-memory.json   |  2867 +-
+ .../arch/x86/broadwellde/uncore-other.json    |  1246 +
+ .../arch/x86/broadwellde/uncore-power.json    |   492 +-
+ .../arch/x86/broadwellde/virtual-memory.json  |     2 +-
+ .../arch/x86/broadwellx/bdx-metrics.json      |   570 +-
+ .../pmu-events/arch/x86/broadwellx/cache.json |    22 +-
+ .../arch/x86/broadwellx/floating-point.json   |     9 +-
+ .../arch/x86/broadwellx/frontend.json         |     2 +-
+ .../arch/x86/broadwellx/memory.json           |    39 +-
+ .../pmu-events/arch/x86/broadwellx/other.json |     2 +-
+ .../arch/x86/broadwellx/pipeline.json         |     4 +-
+ .../arch/x86/broadwellx/uncore-cache.json     |  3788 ++-
+ .../x86/broadwellx/uncore-interconnect.json   |  1438 +-
+ .../arch/x86/broadwellx/uncore-memory.json    |  2849 +-
+ .../arch/x86/broadwellx/uncore-other.json     |  3252 ++
+ .../arch/x86/broadwellx/uncore-power.json     |   437 +-
+ .../arch/x86/broadwellx/virtual-memory.json   |     2 +-
+ .../arch/x86/cascadelakex/cache.json          |     8 +-
+ .../arch/x86/cascadelakex/clx-metrics.json    |   724 +-
+ .../arch/x86/cascadelakex/floating-point.json |     2 +-
+ .../arch/x86/cascadelakex/frontend.json       |     2 +-
+ .../arch/x86/cascadelakex/other.json          |    63 +
+ .../arch/x86/cascadelakex/pipeline.json       |    11 +
+ .../arch/x86/cascadelakex/uncore-memory.json  |     9 +
+ .../arch/x86/cascadelakex/uncore-other.json   |   697 +-
+ .../arch/x86/cascadelakex/virtual-memory.json |     2 +-
+ .../arch/x86/elkhartlake/cache.json           |   956 +-
+ .../arch/x86/elkhartlake/floating-point.json  |    19 +-
+ .../arch/x86/elkhartlake/frontend.json        |    34 +-
+ .../arch/x86/elkhartlake/memory.json          |   388 +-
+ .../arch/x86/elkhartlake/other.json           |   527 +-
+ .../arch/x86/elkhartlake/pipeline.json        |   203 +-
+ .../arch/x86/elkhartlake/virtual-memory.json  |   151 +-
+ .../pmu-events/arch/x86/goldmont/cache.json   |     2 +-
+ .../arch/x86/goldmont/floating-point.json     |     2 +-
+ .../arch/x86/goldmont/frontend.json           |     2 +-
+ .../pmu-events/arch/x86/goldmont/memory.json  |     2 +-
+ .../arch/x86/goldmont/pipeline.json           |     2 +-
+ .../arch/x86/goldmont/virtual-memory.json     |     2 +-
+ .../arch/x86/goldmontplus/cache.json          |     2 +-
+ .../arch/x86/goldmontplus/floating-point.json |     2 +-
+ .../arch/x86/goldmontplus/frontend.json       |     2 +-
+ .../arch/x86/goldmontplus/memory.json         |     2 +-
+ .../arch/x86/goldmontplus/pipeline.json       |     2 +-
+ .../arch/x86/goldmontplus/virtual-memory.json |     2 +-
+ .../pmu-events/arch/x86/haswell/cache.json    |    78 +-
+ .../arch/x86/haswell/floating-point.json      |     2 +-
+ .../pmu-events/arch/x86/haswell/frontend.json |     2 +-
+ .../arch/x86/haswell/hsw-metrics.json         |    85 +-
+ .../pmu-events/arch/x86/haswell/memory.json   |    75 +-
+ .../pmu-events/arch/x86/haswell/other.json    |     2 +-
+ .../pmu-events/arch/x86/haswell/pipeline.json |     9 +-
+ .../arch/x86/haswell/uncore-other.json        |     7 +-
+ .../arch/x86/haswell/virtual-memory.json      |     2 +-
+ .../pmu-events/arch/x86/haswellx/cache.json   |    44 +-
+ .../arch/x86/haswellx/floating-point.json     |     2 +-
+ .../arch/x86/haswellx/frontend.json           |     2 +-
+ .../arch/x86/haswellx/hsx-metrics.json        |    85 +-
+ .../pmu-events/arch/x86/haswellx/memory.json  |    52 +-
+ .../pmu-events/arch/x86/haswellx/other.json   |     2 +-
+ .../arch/x86/haswellx/pipeline.json           |     9 +-
+ .../arch/x86/haswellx/uncore-cache.json       |  3779 ++-
+ .../x86/haswellx/uncore-interconnect.json     |  1430 +-
+ .../arch/x86/haswellx/uncore-memory.json      |  2839 +-
+ .../arch/x86/haswellx/uncore-other.json       |  3170 ++
+ .../arch/x86/haswellx/uncore-power.json       |   477 +-
+ .../arch/x86/haswellx/virtual-memory.json     |     2 +-
+ .../pmu-events/arch/x86/icelake/cache.json    |     8 +-
+ .../arch/x86/icelake/floating-point.json      |     2 +-
+ .../pmu-events/arch/x86/icelake/frontend.json |     2 +-
+ .../arch/x86/icelake/icl-metrics.json         |   126 +-
+ .../arch/x86/icelake/uncore-other.json        |    31 +
+ .../arch/x86/icelake/virtual-memory.json      |     2 +-
+ .../pmu-events/arch/x86/icelakex/cache.json   |    28 +-
+ .../arch/x86/icelakex/floating-point.json     |     2 +-
+ .../arch/x86/icelakex/frontend.json           |     2 +-
+ .../arch/x86/icelakex/icx-metrics.json        |   691 +-
+ .../pmu-events/arch/x86/icelakex/memory.json  |     6 +-
+ .../pmu-events/arch/x86/icelakex/other.json   |    51 +-
+ .../arch/x86/icelakex/pipeline.json           |    12 +
+ .../arch/x86/icelakex/virtual-memory.json     |     2 +-
+ .../pmu-events/arch/x86/ivybridge/cache.json  |     2 +-
+ .../arch/x86/ivybridge/floating-point.json    |     2 +-
+ .../arch/x86/ivybridge/frontend.json          |     2 +-
+ .../arch/x86/ivybridge/ivb-metrics.json       |    94 +-
+ .../pmu-events/arch/x86/ivybridge/memory.json |     2 +-
+ .../pmu-events/arch/x86/ivybridge/other.json  |     2 +-
+ .../arch/x86/ivybridge/pipeline.json          |     4 +-
+ .../arch/x86/ivybridge/uncore-other.json      |     2 +-
+ .../arch/x86/ivybridge/virtual-memory.json    |     2 +-
+ .../pmu-events/arch/x86/ivytown/cache.json    |     2 +-
+ .../arch/x86/ivytown/floating-point.json      |     2 +-
+ .../pmu-events/arch/x86/ivytown/frontend.json |     2 +-
+ .../arch/x86/ivytown/ivt-metrics.json         |    94 +-
+ .../pmu-events/arch/x86/ivytown/memory.json   |     2 +-
+ .../pmu-events/arch/x86/ivytown/other.json    |     2 +-
+ .../arch/x86/ivytown/uncore-cache.json        |  3495 ++-
+ .../arch/x86/ivytown/uncore-interconnect.json |  1750 +-
+ .../arch/x86/ivytown/uncore-memory.json       |  1775 +-
+ .../arch/x86/ivytown/uncore-other.json        |  2411 ++
+ .../arch/x86/ivytown/uncore-power.json        |   696 +-
+ .../arch/x86/ivytown/virtual-memory.json      |     2 +-
+ .../pmu-events/arch/x86/jaketown/cache.json   |     2 +-
+ .../arch/x86/jaketown/floating-point.json     |     2 +-
+ .../arch/x86/jaketown/frontend.json           |     2 +-
+ .../arch/x86/jaketown/jkt-metrics.json        |    11 +-
+ .../pmu-events/arch/x86/jaketown/memory.json  |     2 +-
+ .../pmu-events/arch/x86/jaketown/other.json   |     2 +-
+ .../arch/x86/jaketown/pipeline.json           |    16 +-
+ .../arch/x86/jaketown/uncore-cache.json       |  1960 +-
+ .../x86/jaketown/uncore-interconnect.json     |   824 +-
+ .../arch/x86/jaketown/uncore-memory.json      |   445 +-
+ .../arch/x86/jaketown/uncore-other.json       |  1551 +
+ .../arch/x86/jaketown/uncore-power.json       |   362 +-
+ .../arch/x86/jaketown/virtual-memory.json     |     2 +-
+ .../arch/x86/knightslanding/cache.json        |     2 +-
+ .../x86/knightslanding/floating-point.json    |     2 +-
+ .../arch/x86/knightslanding/frontend.json     |     2 +-
+ .../arch/x86/knightslanding/memory.json       |     2 +-
+ .../arch/x86/knightslanding/pipeline.json     |     2 +-
+ .../x86/knightslanding/uncore-memory.json     |    42 -
+ .../arch/x86/knightslanding/uncore-other.json |  3890 +++
+ .../x86/knightslanding/virtual-memory.json    |     2 +-
+ tools/perf/pmu-events/arch/x86/mapfile.csv    |    74 +-
+ .../pmu-events/arch/x86/meteorlake/cache.json |   262 +
+ .../arch/x86/meteorlake/frontend.json         |    24 +
+ .../arch/x86/meteorlake/memory.json           |   185 +
+ .../pmu-events/arch/x86/meteorlake/other.json |    46 +
+ .../arch/x86/meteorlake/pipeline.json         |   254 +
+ .../arch/x86/meteorlake/virtual-memory.json   |    46 +
+ .../pmu-events/arch/x86/nehalemep/cache.json  |    14 +-
+ .../arch/x86/nehalemep/floating-point.json    |     2 +-
+ .../arch/x86/nehalemep/frontend.json          |     2 +-
+ .../pmu-events/arch/x86/nehalemep/memory.json |     6 +-
+ .../arch/x86/nehalemep/virtual-memory.json    |     2 +-
+ .../pmu-events/arch/x86/nehalemex/cache.json  |  2974 +-
+ .../arch/x86/nehalemex/floating-point.json    |   182 +-
+ .../arch/x86/nehalemex/frontend.json          |    20 +-
+ .../pmu-events/arch/x86/nehalemex/memory.json |   672 +-
+ .../pmu-events/arch/x86/nehalemex/other.json  |   170 +-
+ .../arch/x86/nehalemex/pipeline.json          |   830 +-
+ .../arch/x86/nehalemex/virtual-memory.json    |    92 +-
+ .../arch/x86/sandybridge/cache.json           |     2 +-
+ .../arch/x86/sandybridge/floating-point.json  |     2 +-
+ .../arch/x86/sandybridge/frontend.json        |     4 +-
+ .../arch/x86/sandybridge/memory.json          |     2 +-
+ .../arch/x86/sandybridge/other.json           |     2 +-
+ .../arch/x86/sandybridge/pipeline.json        |    10 +-
+ .../arch/x86/sandybridge/snb-metrics.json     |    11 +-
+ .../arch/x86/sandybridge/uncore-other.json    |     2 +-
+ .../arch/x86/sandybridge/virtual-memory.json  |     2 +-
+ .../arch/x86/sapphirerapids/cache.json        |   135 +-
+ .../x86/sapphirerapids/floating-point.json    |     6 +
+ .../arch/x86/sapphirerapids/frontend.json     |    16 +
+ .../arch/x86/sapphirerapids/memory.json       |    23 +-
+ .../arch/x86/sapphirerapids/other.json        |    68 +-
+ .../arch/x86/sapphirerapids/pipeline.json     |    99 +-
+ .../arch/x86/sapphirerapids/spr-metrics.json  |   566 +-
+ .../arch/x86/sapphirerapids/uncore-other.json |     9 -
+ .../x86/sapphirerapids/virtual-memory.json    |    20 +
+ .../pmu-events/arch/x86/silvermont/cache.json |     2 +-
+ .../arch/x86/silvermont/floating-point.json   |     2 +-
+ .../arch/x86/silvermont/frontend.json         |     2 +-
+ .../arch/x86/silvermont/memory.json           |     2 +-
+ .../pmu-events/arch/x86/silvermont/other.json |     2 +-
+ .../arch/x86/silvermont/pipeline.json         |     2 +-
+ .../arch/x86/silvermont/virtual-memory.json   |     2 +-
+ .../arch/x86/skylake/floating-point.json      |     2 +-
+ .../pmu-events/arch/x86/skylake/frontend.json |     2 +-
+ .../pmu-events/arch/x86/skylake/other.json    |     2 +-
+ .../arch/x86/skylake/skl-metrics.json         |   178 +-
+ .../arch/x86/skylake/uncore-cache.json        |   142 +
+ .../arch/x86/skylake/uncore-other.json        |    79 +
+ .../pmu-events/arch/x86/skylake/uncore.json   |   254 -
+ .../arch/x86/skylake/virtual-memory.json      |     2 +-
+ .../arch/x86/skylakex/floating-point.json     |     2 +-
+ .../arch/x86/skylakex/frontend.json           |     2 +-
+ .../pmu-events/arch/x86/skylakex/other.json   |    66 +-
+ .../arch/x86/skylakex/pipeline.json           |    11 +
+ .../arch/x86/skylakex/skx-metrics.json        |   667 +-
+ .../arch/x86/skylakex/uncore-memory.json      |     9 +
+ .../arch/x86/skylakex/uncore-other.json       |   730 +-
+ .../arch/x86/skylakex/virtual-memory.json     |     2 +-
+ .../x86/{tremontx => snowridgex}/cache.json   |    60 +-
+ .../floating-point.json                       |     9 +-
+ .../{tremontx => snowridgex}/frontend.json    |    20 +-
+ .../x86/{tremontx => snowridgex}/memory.json  |     4 +-
+ .../x86/{tremontx => snowridgex}/other.json   |    18 +-
+ .../{tremontx => snowridgex}/pipeline.json    |    98 +-
+ .../arch/x86/snowridgex/uncore-memory.json    |   619 +
+ .../arch/x86/snowridgex/uncore-other.json     | 25249 ++++++++++++++++
+ .../arch/x86/snowridgex/uncore-power.json     |   235 +
+ .../virtual-memory.json                       |    69 +-
+ .../pmu-events/arch/x86/tigerlake/cache.json  |    48 +-
+ .../arch/x86/tigerlake/floating-point.json    |     2 +-
+ .../arch/x86/tigerlake/frontend.json          |     2 +-
+ .../pmu-events/arch/x86/tigerlake/memory.json |     2 +-
+ .../pmu-events/arch/x86/tigerlake/other.json  |     1 -
+ .../arch/x86/tigerlake/pipeline.json          |     4 +-
+ .../arch/x86/tigerlake/tgl-metrics.json       |   378 +-
+ .../arch/x86/tigerlake/uncore-other.json      |    65 +
+ .../arch/x86/tigerlake/virtual-memory.json    |     2 +-
+ .../arch/x86/tremontx/uncore-memory.json      |   245 -
+ .../arch/x86/tremontx/uncore-other.json       |  2395 --
+ .../arch/x86/tremontx/uncore-power.json       |    11 -
+ .../arch/x86/westmereep-dp/cache.json         |     2 +-
+ .../x86/westmereep-dp/floating-point.json     |     2 +-
+ .../arch/x86/westmereep-dp/frontend.json      |     2 +-
+ .../arch/x86/westmereep-dp/memory.json        |     2 +-
+ .../x86/westmereep-dp/virtual-memory.json     |     2 +-
+ .../x86/westmereep-sp/floating-point.json     |     2 +-
+ .../arch/x86/westmereep-sp/frontend.json      |     2 +-
+ .../x86/westmereep-sp/virtual-memory.json     |     2 +-
+ .../arch/x86/westmereex/floating-point.json   |     2 +-
+ .../arch/x86/westmereex/frontend.json         |     2 +-
+ .../arch/x86/westmereex/virtual-memory.json   |     2 +-
+ tools/perf/tests/pmu-events.c                 |     9 +
+ 252 files changed, 89144 insertions(+), 8438 deletions(-)
+ create mode 100644 tools/perf/pmu-events/arch/x86/broadwell/uncore-cache.json
+ create mode 100644 tools/perf/pmu-events/arch/x86/broadwell/uncore-other.json
+ delete mode 100644 tools/perf/pmu-events/arch/x86/broadwell/uncore.json
+ create mode 100644 tools/perf/pmu-events/arch/x86/broadwellde/uncore-other.json
+ create mode 100644 tools/perf/pmu-events/arch/x86/broadwellx/uncore-other.json
+ create mode 100644 tools/perf/pmu-events/arch/x86/haswellx/uncore-other.json
+ create mode 100644 tools/perf/pmu-events/arch/x86/icelake/uncore-other.json
+ create mode 100644 tools/perf/pmu-events/arch/x86/ivytown/uncore-other.json
+ create mode 100644 tools/perf/pmu-events/arch/x86/jaketown/uncore-other.json
+ delete mode 100644 tools/perf/pmu-events/arch/x86/knightslanding/uncore-memory.json
+ create mode 100644 tools/perf/pmu-events/arch/x86/knightslanding/uncore-other.json
+ create mode 100644 tools/perf/pmu-events/arch/x86/meteorlake/cache.json
+ create mode 100644 tools/perf/pmu-events/arch/x86/meteorlake/frontend.json
+ create mode 100644 tools/perf/pmu-events/arch/x86/meteorlake/memory.json
+ create mode 100644 tools/perf/pmu-events/arch/x86/meteorlake/other.json
+ create mode 100644 tools/perf/pmu-events/arch/x86/meteorlake/pipeline.json
+ create mode 100644 tools/perf/pmu-events/arch/x86/meteorlake/virtual-memory.json
+ create mode 100644 tools/perf/pmu-events/arch/x86/skylake/uncore-cache.json
+ create mode 100644 tools/perf/pmu-events/arch/x86/skylake/uncore-other.json
+ delete mode 100644 tools/perf/pmu-events/arch/x86/skylake/uncore.json
+ rename tools/perf/pmu-events/arch/x86/{tremontx => snowridgex}/cache.json (95%)
+ rename tools/perf/pmu-events/arch/x86/{tremontx => snowridgex}/floating-point.json (84%)
+ rename tools/perf/pmu-events/arch/x86/{tremontx => snowridgex}/frontend.json (94%)
+ rename tools/perf/pmu-events/arch/x86/{tremontx => snowridgex}/memory.json (99%)
+ rename tools/perf/pmu-events/arch/x86/{tremontx => snowridgex}/other.json (98%)
+ rename tools/perf/pmu-events/arch/x86/{tremontx => snowridgex}/pipeline.json (89%)
+ create mode 100644 tools/perf/pmu-events/arch/x86/snowridgex/uncore-memory.json
+ create mode 100644 tools/perf/pmu-events/arch/x86/snowridgex/uncore-other.json
+ create mode 100644 tools/perf/pmu-events/arch/x86/snowridgex/uncore-power.json
+ rename tools/perf/pmu-events/arch/x86/{tremontx => snowridgex}/virtual-memory.json (91%)
+ create mode 100644 tools/perf/pmu-events/arch/x86/tigerlake/uncore-other.json
+ delete mode 100644 tools/perf/pmu-events/arch/x86/tremontx/uncore-memory.json
+ delete mode 100644 tools/perf/pmu-events/arch/x86/tremontx/uncore-other.json
+ delete mode 100644 tools/perf/pmu-events/arch/x86/tremontx/uncore-power.json
+
+-- 
+2.37.1.359.gd136c6c3e2-goog
+
