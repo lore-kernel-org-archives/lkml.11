@@ -2,132 +2,308 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BF30C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 16:02:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 305CEC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 16:05:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235784AbiGYQCX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 12:02:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41950 "EHLO
+        id S235448AbiGYQFr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 12:05:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235509AbiGYQCW (ORCPT
+        with ESMTP id S229685AbiGYQFn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 12:02:22 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32B8E12745
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 09:02:21 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id r8so2443754plh.8
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 09:02:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JKqeLialV+6vbEP9iLh1rw+b+hmjByPHU1zMv6k/ebc=;
-        b=3zsZRztKOEhwhcwxTyuAJc8jmK7Yd5DM5WDlQ8uNoCD0B0JdzO0Zr6i0fvzBbIeHGL
-         K1J9803VZkOtPHjBJjT4QvcPcrBqPmlyBibQFNfoLnJL2nH/8cmJZUl6jIbQx7NGbPNN
-         08+Ll+QxTbHmmBtibJ4KKjfXAbYDVI3PjoT0djdSDPSnUr00wKWUXUem3GEA9s+0sqso
-         vpZFIY0eOy38/uhvApzUMyDSDhHH3jPQ1VTXer2Cyum9Ff5GijNMSLUXAyVfmk/nlRqL
-         c0WLgAt1NLkoXArDAkcdqPEZWBzIV/RYls6whvzrjgsVYeCHBq/VtW9q21vfsycSgx3Y
-         CQZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JKqeLialV+6vbEP9iLh1rw+b+hmjByPHU1zMv6k/ebc=;
-        b=XEPNXrirSWRsfqYdTGapnPlZ5+z8EWdIR2JIE0daA5qRRM21S4WQ4IwGpPOh3uQnqM
-         TrVKRylJ6F+60QMrWrn6cYJY0JIQgluYbr+qMSIJCCHKYeYR5sOK0CG/Afay2FbeeaPW
-         hEBLh6IM6JHPi4vf8MXEhuWo08ejzX2dw/+dWD1A7SEfZHz8WsFA2XrnlwdW5LPha8py
-         C+OoNwKft0U80pJvfpKiNvkc5+oriJECvZlJOaR9OEY8kpcjHyxkS7gM6xEVDuKhPPsO
-         +wE9Q4wsBDCJhYTcmy64UG0bqmq8aOIITDyA+NbNzQfrAftFLKBmRgEosdkLCxuEeSc6
-         ijmQ==
-X-Gm-Message-State: AJIora/1CXIJQSw8NAhNcGgxl56mfLrshtuKIvLN2x/0HqbzH6JQ2tU5
-        REc3yjKqRnCNDOtXxQRjqAuUeQ==
-X-Google-Smtp-Source: AGRyM1tqvaWk/DDOXJIx1or0Y+22nYb/JgOeC2l2098PgfKLfLZkKZF0XasYDv3WsyNFz03m/6wFVA==
-X-Received: by 2002:a17:90b:3ec5:b0:1f0:3986:4502 with SMTP id rm5-20020a17090b3ec500b001f039864502mr15647381pjb.6.1658764940683;
-        Mon, 25 Jul 2022 09:02:20 -0700 (PDT)
-Received: from C02F63J9MD6R.bytedance.net ([61.120.150.78])
-        by smtp.gmail.com with ESMTPSA id o6-20020a1709026b0600b0015e8d4eb2easm9273441plk.308.2022.07.25.09.02.15
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 25 Jul 2022 09:02:19 -0700 (PDT)
-From:   Zhuo Chen <chenzhuo.1@bytedance.com>
-To:     ruscur@russell.cc, oohall@gmail.com, bhelgaas@google.com
-Cc:     chenzhuo.1@bytedance.com, lukas@wunner.de, jan.kiszka@siemens.com,
-        stuart.w.hayes@gmail.com, linuxppc-dev@lists.ozlabs.org,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] PCI/ERR: Use pcie_aer_is_native() to judge whether OS owns AER
-Date:   Tue, 26 Jul 2022 00:01:31 +0800
-Message-Id: <20220725160131.83687-1-chenzhuo.1@bytedance.com>
-X-Mailer: git-send-email 2.30.1 (Apple Git-130)
+        Mon, 25 Jul 2022 12:05:43 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D4A06315
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 09:05:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658765142; x=1690301142;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=WQQV9NpOEpwHsTQjnoCHgvN5PUSd3KSsWHxW8jC8EC4=;
+  b=bE+FrX/g5WeONBOpzTprf1fI/71h/SVaGmYVa4P6QZVzs6kkPoiXquLO
+   K45SDQmxcWLZlxaepdu0bZGIXwKeP8erP5JJ/fHO6LbPvmJdgVpRLrJMs
+   vEqHsubKYQ3Yhd9m1F+UCTnYEBu2EMUXVLnjmcZ8vp5dr5s7ERpIN+5rp
+   AuRjccIsL4nfnWg56sb9uRvcBC5pYA5wjqhnM1Qru4ZznnNuDCf+RdSzX
+   XCFpkJY/Kie3aPtAXd/TwaqReXB0pqHMhoNChqTsM/aGJWOeOi5YQammS
+   /vkVdicJU7+P3w/TbcG/yPRX8vdfVVBkljhUC8Gn1d4UnrOOkjlAb0n6J
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10419"; a="313486429"
+X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
+   d="scan'208";a="313486429"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2022 09:05:41 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
+   d="scan'208";a="632407362"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 25 Jul 2022 09:05:39 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oG0aR-0005H6-0K;
+        Mon, 25 Jul 2022 16:05:39 +0000
+Date:   Tue, 26 Jul 2022 00:04:45 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: drivers/iio/dac/ltc2688.c:84:8: warning: Excessive padding in
+ 'struct ltc2688_state' (35 padding bytes, where 3 is optimal). Optimal
+ fields order: tx_data, rx_data, spi, regmap, iio_chan, vref, lock,
+ regulators, channels, consider reordering the fields or...
+Message-ID: <202207260027.9tiGgEqR-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-After commit 7d7cbeaba5b7 ("PCI/ERR: Clear status of the reporting
-device"), the AER status of the device that reported the error
-rather than the first downstream port is cleared. So the problem
-in commit aa344bc8b727 ("PCI/ERR: Clear AER status only when we
-control AER") is no longer existent, and we change to use
-pcie_aer_is_native() here.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   e0dccc3b76fb35bb257b4118367a883073d7390e
+commit: 832cb9eeb9312dd2e14133681d3920b773ef1eac iio: dac: add support for ltc2688
+date:   5 months ago
+config: arm-randconfig-c002-20220718 (https://download.01.org/0day-ci/archive/20220726/202207260027.9tiGgEqR-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d74b88c69dc2644bd0dc5d64e2d7413a0d4040e5)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm cross compiling tool for clang build
+        # apt-get install binutils-arm-linux-gnueabi
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=832cb9eeb9312dd2e14133681d3920b773ef1eac
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 832cb9eeb9312dd2e14133681d3920b773ef1eac
+        # save the config file
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross ARCH=arm clang-analyzer 
 
-pci_aer_clear_nonfatal_status() already has pcie_aer_is_native(),
-so we move pci_aer_clear_nonfatal_status() out of
-pcie_aer_is_native().
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Replace statements that judge whether OS owns AER in
-get_port_device_capability() with pcie_aer_is_native().
+clang-analyzer warnings: (new ones prefixed by >>)
+   drivers/media/usb/em28xx/em28xx-core.c:636:6: note: Assuming field 'chip_id' is not equal to CHIP_ID_EM2874
+           if (dev->chip_id == CHIP_ID_EM2874 ||
+               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/media/usb/em28xx/em28xx-core.c:636:6: note: Left side of '||' is false
+   drivers/media/usb/em28xx/em28xx-core.c:637:6: note: Assuming field 'chip_id' is not equal to CHIP_ID_EM2884
+               dev->chip_id == CHIP_ID_EM2884 ||
+               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/media/usb/em28xx/em28xx-core.c:636:6: note: Left side of '||' is false
+           if (dev->chip_id == CHIP_ID_EM2874 ||
+               ^
+   drivers/media/usb/em28xx/em28xx-core.c:638:6: note: Assuming field 'chip_id' is not equal to CHIP_ID_EM28174
+               dev->chip_id == CHIP_ID_EM28174 ||
+               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/media/usb/em28xx/em28xx-core.c:636:6: note: Left side of '||' is false
+           if (dev->chip_id == CHIP_ID_EM2874 ||
+               ^
+   drivers/media/usb/em28xx/em28xx-core.c:639:6: note: Assuming field 'chip_id' is not equal to CHIP_ID_EM28178
+               dev->chip_id == CHIP_ID_EM28178) {
+               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/media/usb/em28xx/em28xx-core.c:636:2: note: Taking false branch
+           if (dev->chip_id == CHIP_ID_EM2874 ||
+           ^
+   drivers/media/usb/em28xx/em28xx-core.c:668:9: note: 'start' is 1
+                                              start ? 0x10 : 0x00, 0x10);
+                                              ^~~~~
+   drivers/media/usb/em28xx/em28xx-core.c:668:9: note: '?' condition is true
+   drivers/media/usb/em28xx/em28xx-core.c:667:8: note: Calling 'em28xx_write_reg_bits'
+                   rc = em28xx_write_reg_bits(dev, EM28XX_R0C_USBSUSP,
+                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/media/usb/em28xx/em28xx-core.c:211:11: note: Calling 'em28xx_read_reg'
+           oldval = em28xx_read_reg(dev, reg);
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/media/usb/em28xx/em28xx-core.c:136:9: note: Calling 'em28xx_read_reg_req'
+           return em28xx_read_reg_req(dev, USB_REQ_GET_STATUS, reg);
+                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/media/usb/em28xx/em28xx-core.c:125:2: note: 'val' declared without an initial value
+           u8 val;
+           ^~~~~~
+   drivers/media/usb/em28xx/em28xx-core.c:127:8: note: Calling 'em28xx_read_reg_req_len'
+           ret = em28xx_read_reg_req_len(dev, req, reg, &val, 1);
+                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/media/usb/em28xx/em28xx-core.c:83:6: note: Assuming field 'disconnected' is 0
+           if (dev->disconnected)
+               ^~~~~~~~~~~~~~~~~
+   drivers/media/usb/em28xx/em28xx-core.c:83:2: note: Taking false branch
+           if (dev->disconnected)
+           ^
+   drivers/media/usb/em28xx/em28xx-core.c:86:6: note: 'len' is <= URB_MAX_CTRL_SIZE
+           if (len > URB_MAX_CTRL_SIZE)
+               ^~~
+   drivers/media/usb/em28xx/em28xx-core.c:86:2: note: Taking false branch
+           if (len > URB_MAX_CTRL_SIZE)
+           ^
+   drivers/media/usb/em28xx/em28xx-core.c:93:6: note: Assuming 'ret' is < 0
+           if (ret < 0) {
+               ^~~~~~~
+   drivers/media/usb/em28xx/em28xx-core.c:93:2: note: Taking true branch
+           if (ret < 0) {
+           ^
+   drivers/media/usb/em28xx/em28xx-core.c:94:3: note: Assuming 'reg_debug' is 0
+                   em28xx_regdbg("(pipe 0x%08x): IN:  %02x %02x %02x %02x %02x %02x %02x %02x  failed with error %i\n",
+                   ^
+   drivers/media/usb/em28xx/em28xx-core.c:60:6: note: expanded from macro 'em28xx_regdbg'
+           if (reg_debug)                                                  \
+               ^~~~~~~~~
+   drivers/media/usb/em28xx/em28xx-core.c:94:3: note: Taking false branch
+                   em28xx_regdbg("(pipe 0x%08x): IN:  %02x %02x %02x %02x %02x %02x %02x %02x  failed with error %i\n",
+                   ^
+   drivers/media/usb/em28xx/em28xx-core.c:60:2: note: expanded from macro 'em28xx_regdbg'
+           if (reg_debug)                                                  \
+           ^
+   drivers/media/usb/em28xx/em28xx-core.c:94:3: note: Loop condition is false.  Exiting loop
+                   em28xx_regdbg("(pipe 0x%08x): IN:  %02x %02x %02x %02x %02x %02x %02x %02x  failed with error %i\n",
+                   ^
+   drivers/media/usb/em28xx/em28xx-core.c:59:36: note: expanded from macro 'em28xx_regdbg'
+   #define em28xx_regdbg(fmt, arg...) do {                         \
+                                      ^
+   drivers/media/usb/em28xx/em28xx-core.c:127:8: note: Returning from 'em28xx_read_reg_req_len'
+           ret = em28xx_read_reg_req_len(dev, req, reg, &val, 1);
+                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/media/usb/em28xx/em28xx-core.c:128:6: note: Assuming 'ret' is >= 0
+           if (ret < 0)
+               ^~~~~~~
+   drivers/media/usb/em28xx/em28xx-core.c:128:2: note: Taking false branch
+           if (ret < 0)
+           ^
+   drivers/media/usb/em28xx/em28xx-core.c:131:2: note: Undefined or garbage value returned to caller
+           return val;
+           ^      ~~~
+   drivers/media/usb/em28xx/em28xx-core.c:674:5: warning: Value stored to 'rc' is never read [clang-analyzer-deadcode.DeadStores]
+                                   rc = em28xx_write_reg(dev, 0x13, 0x0c);
+                                   ^    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/media/usb/em28xx/em28xx-core.c:674:5: note: Value stored to 'rc' is never read
+                                   rc = em28xx_write_reg(dev, 0x13, 0x0c);
+                                   ^    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   Suppressed 2 warnings (2 with check filters).
+   1 warning generated.
+   Suppressed 1 warnings (1 in non-user code).
+   Use -header-filter=.* to display errors from all non-system headers. Use -system-headers to display errors from system headers as well.
+   2 warnings generated.
+>> drivers/iio/dac/ltc2688.c:84:8: warning: Excessive padding in 'struct ltc2688_state' (35 padding bytes, where 3 is optimal). Optimal fields order: tx_data, rx_data, spi, regmap, iio_chan, vref, lock, regulators, channels, consider reordering the fields or adding explicit padding members [clang-analyzer-optin.performance.Padding]
+   struct ltc2688_state {
+   ~~~~~~~^~~~~~~~~~~~~~~
+   drivers/iio/dac/ltc2688.c:84:8: note: Excessive padding in 'struct ltc2688_state' (35 padding bytes, where 3 is optimal). Optimal fields order: tx_data, rx_data, spi, regmap, iio_chan, vref, lock, regulators, channels, consider reordering the fields or adding explicit padding members
+   struct ltc2688_state {
+   ~~~~~~~^~~~~~~~~~~~~~~
+   drivers/iio/dac/ltc2688.c:253:11: warning: The left operand of '&' is a garbage value [clang-analyzer-core.UndefinedBinaryOperatorResult]
+                   *code = FIELD_GET(LTC2688_DITHER_RAW_MASK, *code);
+                           ^
+   include/linux/bitfield.h:126:27: note: expanded from macro 'FIELD_GET'
+                   (typeof(_mask))(((_reg) & (_mask)) >> __bf_shf(_mask)); \
+                                           ^
+   drivers/iio/dac/ltc2688.c:498:2: note: 'val' declared without an initial value
+           u32 val;
+           ^~~~~~~
+   drivers/iio/dac/ltc2688.c:500:6: note: Assuming 'private' is not equal to LTC2688_INPUT_B_AVAIL
+           if (private == LTC2688_INPUT_B_AVAIL)
+               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/iio/dac/ltc2688.c:500:2: note: Taking false branch
+           if (private == LTC2688_INPUT_B_AVAIL)
+           ^
+   drivers/iio/dac/ltc2688.c:505:6: note: Assuming 'private' is not equal to LTC2688_DITHER_OFF
+           if (private == LTC2688_DITHER_OFF)
+               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/iio/dac/ltc2688.c:505:2: note: Taking false branch
+           if (private == LTC2688_DITHER_OFF)
+           ^
+   drivers/iio/dac/ltc2688.c:508:8: note: Calling 'ltc2688_dac_code_read'
+           ret = ltc2688_dac_code_read(st, chan->channel, private, &val);
+                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/iio/dac/ltc2688.c:245:6: note: Assuming 'ret' is not equal to 0
+           if (ret)
+               ^~~
+   drivers/iio/dac/ltc2688.c:245:2: note: Taking true branch
+           if (ret)
+           ^
+   drivers/iio/dac/ltc2688.c:246:3: note: Control jumps to line 250
+                   goto out_unlock;
+                   ^
+   drivers/iio/dac/ltc2688.c:252:6: note: Assuming field 'toggle_chan' is false
+           if (!c->toggle_chan && input == LTC2688_INPUT_B)
+               ^~~~~~~~~~~~~~~
+   drivers/iio/dac/ltc2688.c:252:6: note: Left side of '&&' is true
+   drivers/iio/dac/ltc2688.c:252:25: note: Assuming 'input' is equal to LTC2688_INPUT_B
+           if (!c->toggle_chan && input == LTC2688_INPUT_B)
+                                  ^~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/iio/dac/ltc2688.c:252:2: note: Taking true branch
+           if (!c->toggle_chan && input == LTC2688_INPUT_B)
+           ^
+   drivers/iio/dac/ltc2688.c:253:11: note: Taking false branch
+                   *code = FIELD_GET(LTC2688_DITHER_RAW_MASK, *code);
+                           ^
+   include/linux/bitfield.h:125:3: note: expanded from macro 'FIELD_GET'
+                   __BF_FIELD_CHECK(_mask, _reg, 0U, "FIELD_GET: ");       \
+                   ^
+   include/linux/bitfield.h:62:3: note: expanded from macro '__BF_FIELD_CHECK'
+                   BUILD_BUG_ON_MSG(!__builtin_constant_p(_mask),          \
+                   ^
+   include/linux/build_bug.h:39:37: note: expanded from macro 'BUILD_BUG_ON_MSG'
+   #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
+                                       ^
+   include/linux/compiler_types.h:346:2: note: expanded from macro 'compiletime_assert'
+           _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+           ^
+   include/linux/compiler_types.h:334:2: note: expanded from macro '_compiletime_assert'
+           __compiletime_assert(condition, msg, prefix, suffix)
+           ^
+   include/linux/compiler_types.h:326:3: note: expanded from macro '__compiletime_assert'
+                   if (!(condition))                                       \
+                   ^
+   drivers/iio/dac/ltc2688.c:253:11: note: Loop condition is false.  Exiting loop
+                   *code = FIELD_GET(LTC2688_DITHER_RAW_MASK, *code);
+                           ^
+   include/linux/bitfield.h:125:3: note: expanded from macro 'FIELD_GET'
+                   __BF_FIELD_CHECK(_mask, _reg, 0U, "FIELD_GET: ");       \
+                   ^
+   include/linux/bitfield.h:62:3: note: expanded from macro '__BF_FIELD_CHECK'
+                   BUILD_BUG_ON_MSG(!__builtin_constant_p(_mask),          \
+                   ^
+   include/linux/build_bug.h:39:37: note: expanded from macro 'BUILD_BUG_ON_MSG'
+   #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
+                                       ^
+   include/linux/compiler_types.h:346:2: note: expanded from macro 'compiletime_assert'
+           _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+           ^
+   include/linux/compiler_types.h:334:2: note: expanded from macro '_compiletime_assert'
+           __compiletime_assert(condition, msg, prefix, suffix)
+           ^
+   include/linux/compiler_types.h:318:2: note: expanded from macro '__compiletime_assert'
+           do {                                                            \
+           ^
+   drivers/iio/dac/ltc2688.c:253:11: note: Taking false branch
+                   *code = FIELD_GET(LTC2688_DITHER_RAW_MASK, *code);
+                           ^
+   include/linux/bitfield.h:125:3: note: expanded from macro 'FIELD_GET'
+                   __BF_FIELD_CHECK(_mask, _reg, 0U, "FIELD_GET: ");       \
+                   ^
+   include/linux/bitfield.h:64:3: note: expanded from macro '__BF_FIELD_CHECK'
+                   BUILD_BUG_ON_MSG((_mask) == 0, _pfx "mask is zero");    \
+                   ^
+   include/linux/build_bug.h:39:37: note: expanded from macro 'BUILD_BUG_ON_MSG'
 
-Signed-off-by: Zhuo Chen <chenzhuo.1@bytedance.com>
----
- drivers/pci/pcie/err.c          | 12 ++----------
- drivers/pci/pcie/portdrv_core.c |  3 +--
- 2 files changed, 3 insertions(+), 12 deletions(-)
+vim +84 drivers/iio/dac/ltc2688.c
 
-diff --git a/drivers/pci/pcie/err.c b/drivers/pci/pcie/err.c
-index 0c5a143025af..28339c741555 100644
---- a/drivers/pci/pcie/err.c
-+++ b/drivers/pci/pcie/err.c
-@@ -184,7 +184,6 @@ pci_ers_result_t pcie_do_recovery(struct pci_dev *dev,
- 	int type = pci_pcie_type(dev);
- 	struct pci_dev *bridge;
- 	pci_ers_result_t status = PCI_ERS_RESULT_CAN_RECOVER;
--	struct pci_host_bridge *host = pci_find_host_bridge(dev->bus);
- 
- 	/*
- 	 * If the error was detected by a Root Port, Downstream Port, RCEC,
-@@ -237,16 +236,9 @@ pci_ers_result_t pcie_do_recovery(struct pci_dev *dev,
- 	pci_dbg(bridge, "broadcast resume message\n");
- 	pci_walk_bridge(bridge, report_resume, &status);
- 
--	/*
--	 * If we have native control of AER, clear error status in the device
--	 * that detected the error.  If the platform retained control of AER,
--	 * it is responsible for clearing this status.  In that case, the
--	 * signaling device may not even be visible to the OS.
--	 */
--	if (host->native_aer || pcie_ports_native) {
-+	if (pcie_aer_is_native(dev))
- 		pcie_clear_device_status(dev);
--		pci_aer_clear_nonfatal_status(dev);
--	}
-+	pci_aer_clear_nonfatal_status(dev);
- 	pci_info(bridge, "device recovery successful\n");
- 	return status;
- 
-diff --git a/drivers/pci/pcie/portdrv_core.c b/drivers/pci/pcie/portdrv_core.c
-index 604feeb84ee4..98c18f4a01b2 100644
---- a/drivers/pci/pcie/portdrv_core.c
-+++ b/drivers/pci/pcie/portdrv_core.c
-@@ -221,8 +221,7 @@ static int get_port_device_capability(struct pci_dev *dev)
- 	}
- 
- #ifdef CONFIG_PCIEAER
--	if (dev->aer_cap && pci_aer_available() &&
--	    (pcie_ports_native || host->native_aer)) {
-+	if (pcie_aer_is_native(dev) && pci_aer_available()) {
- 		services |= PCIE_PORT_SERVICE_AER;
- 
- 		/*
+    83	
+  > 84	struct ltc2688_state {
+    85		struct spi_device *spi;
+    86		struct regmap *regmap;
+    87		struct regulator_bulk_data regulators[2];
+    88		struct ltc2688_chan channels[LTC2688_DAC_CHANNELS];
+    89		struct iio_chan_spec *iio_chan;
+    90		/* lock to protect against multiple access to the device and shared data */
+    91		struct mutex lock;
+    92		int vref;
+    93		/*
+    94		 * DMA (thus cache coherency maintenance) requires the
+    95		 * transfer buffers to live in their own cache lines.
+    96		 */
+    97		u8 tx_data[6] ____cacheline_aligned;
+    98		u8 rx_data[3];
+    99	};
+   100	
+
 -- 
-2.30.1 (Apple Git-130)
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
