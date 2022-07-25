@@ -2,107 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23A6DC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 13:05:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 713CDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 13:06:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235393AbiGYNFF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 09:05:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36030 "EHLO
+        id S234808AbiGYNF6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 09:05:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235377AbiGYNEx (ORCPT
+        with ESMTP id S230495AbiGYNF5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 09:04:53 -0400
-X-Greylist: delayed 964 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 25 Jul 2022 06:04:49 PDT
-Received: from smtp28.bhosted.nl (smtp28.bhosted.nl [IPv6:2a02:9e0:8000::40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D96A413E0E
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 06:04:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=protonic.nl; s=202111;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc:to:from:
-         from;
-        bh=u+Sc1KDzF9RshIeaZARqCUt1rPYR93miba1YFSCpnzo=;
-        b=mOofaVbNfZC1bIz73JDpcREMfcB1SIwA5oBroiFip7vmY+8gc/+h0kHj6VrxKwsd4gXSlIwO6Z0Wr
-         l0dgcYg96h+TPYjLZgAzk4yMEcmNickJUiHufElW65B6AnYiZfh92+0hgvTnGXaMaW4z5fYh6wM3HN
-         dYNrbAfrqEIeoYyGeq1CSEjhn0QO24+Q38dEfoeeM+kcRwpInQXoaYCdBYeb6Lp4MqXCkc3CFM+KpH
-         HXAddP7wV3va2tqEkMwcOG/GSuqaBkSeaUQGhveTBMyAzzC/JN3tykwZyTv4wTW9Wmyz6VE/4TJuer
-         x1ZA3wmhmYKT3RpPZocDDXEWzlQBbug==
-X-MSG-ID: 1cb116df-0c18-11ed-8a45-0050569d11ae
-From:   David Jander <david@protonic.nl>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, David Jander <david@protonic.nl>
-Subject: [PATCH] arm: dts: imx6qdl-vicut1.dtsi: Add backlight-isb node
-Date:   Mon, 25 Jul 2022 14:48:13 +0200
-Message-Id: <20220725124813.1001032-1-david@protonic.nl>
-X-Mailer: git-send-email 2.32.0
+        Mon, 25 Jul 2022 09:05:57 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14C5918D;
+        Mon, 25 Jul 2022 06:05:56 -0700 (PDT)
+Received: from zn.tnic (p200300ea972976f8329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9729:76f8:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 875791EC0676;
+        Mon, 25 Jul 2022 15:05:50 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1658754350;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=52Qsfzz/eK6LL+bUeQnS882u4becLcvnVA9HncA22sc=;
+        b=LD8LsHoPHH/NL3lqbbPiC+sLdVADfY6h4+j9KI1QvSpaGuAiXBemvCuUiGfRkFkhRk2Hs1
+        OtqFWry/URmUcMVPQQ50FnkfmEBvp/gW8ace4cIgK2IPfAH+Ybjuvvl3GCfbrlICpDH09M
+        TkF7z8DGAOYH3LmJHyCMc+nhnw2KGEY=
+Date:   Mon, 25 Jul 2022 15:05:50 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Mike Rapoport <rppt@kernel.org>
+Cc:     Dave Hansen <dave.hansen@intel.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Joerg Roedel <jroedel@suse.de>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Kuppuswamy Sathyanarayanan 
+        <sathyanarayanan.kuppuswamy@linux.intel.com>,
+        David Rientjes <rientjes@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Varad Gautam <varad.gautam@suse.com>,
+        Dario Faggioli <dfaggioli@suse.com>,
+        David Hildenbrand <david@redhat.com>,
+        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
+        khalid.elmously@canonical.com, philip.cox@canonical.com,
+        x86@kernel.org, linux-mm@kvack.org, linux-coco@lists.linux.dev,
+        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Mike Rapoport <rppt@linux.ibm.com>
+Subject: Re: [PATCHv7 02/14] mm: Add support for unaccepted memory
+Message-ID: <Yt6VLnsqedRnxb1g@zn.tnic>
+References: <20220614120231.48165-1-kirill.shutemov@linux.intel.com>
+ <20220614120231.48165-3-kirill.shutemov@linux.intel.com>
+ <YtltYRuL+2uQkYUK@zn.tnic>
+ <ebcf2979-45fc-8d41-cc28-ac8da0d24245@intel.com>
+ <Ytr4FCV2xPGUBLqs@zn.tnic>
+ <707ca113-c2a2-8fe2-a22c-5be13adc7bb4@intel.com>
+ <Yt6LOD9Ae2NqyG1N@zn.tnic>
+ <Yt6T3vlbTZ5z0nZ/@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <Yt6T3vlbTZ5z0nZ/@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On some older hardware models this is needed. It will do no harm if used
-with newer models though.
+On Mon, Jul 25, 2022 at 04:00:14PM +0300, Mike Rapoport wrote:
+> An application in the VM can do mlock() or mmap(..., MAP_POPULATE, ...) and
+> this will essentially force acceptance of that memory.
 
-Signed-off-by: David Jander <david@protonic.nl>
----
- arch/arm/boot/dts/imx6qdl-vicut1.dtsi | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+Ah, cool, that's what I meant.
 
-diff --git a/arch/arm/boot/dts/imx6qdl-vicut1.dtsi b/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
-index a1676b5d2980..08d425020088 100644
---- a/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
-@@ -37,6 +37,16 @@ backlight_led: backlight_led {
- 		power-supply = <&reg_3v3>;
- 	};
- 
-+	/* only for backwards compatibility with old HW */
-+	backlight_isb: backlight_isb {
-+		compatible = "pwm-backlight";
-+		pwms = <&pwm2 0 5000000 0>;
-+		brightness-levels = <0 8 48 255>;
-+		num-interpolated-steps = <5>;
-+		default-brightness-level = <0>;
-+		power-supply = <&reg_3v3>;
-+	};
-+
- 	connector {
- 		compatible = "composite-video-connector";
- 		label = "Composite0";
-@@ -370,6 +380,12 @@ &pwm1 {
- 	status = "okay";
- };
- 
-+&pwm2 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_pwm2>;
-+	status = "okay";
-+};
-+
- &pwm3 {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&pinctrl_pwm3>;
-@@ -601,6 +617,12 @@ MX6QDL_PAD_DISP0_DAT8__PWM1_OUT			0x1b0b0
- 		>;
- 	};
- 
-+	pinctrl_pwm2: pwm2grp {
-+		fsl,pins = <
-+			MX6QDL_PAD_DISP0_DAT9__PWM2_OUT			0x1b0b0
-+		>;
-+	};
-+
- 	pinctrl_pwm3: pwm3grp {
- 		fsl,pins = <
- 			MX6QDL_PAD_SD4_DAT1__PWM3_OUT			0x1b0b0
+> But there's no sysctl or something for that.
+
+Yeah, no need.
+
+I was simply wondering whether one can relocate the acceptance work to
+the moment prior to starting the process so that it can run smoothly
+once started and doesn't cause spikes due to on-demand acceptance.
+
+At least not too many.
+
+Thx.
+
 -- 
-2.32.0
+Regards/Gruss,
+    Boris.
 
+https://people.kernel.org/tglx/notes-about-netiquette
