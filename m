@@ -2,113 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBE1AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 23:35:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A0DFC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 23:35:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231899AbiGYXfN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 19:35:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57692 "EHLO
+        id S237299AbiGYXfQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 19:35:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237424AbiGYXdT (ORCPT
+        with ESMTP id S231397AbiGYXfN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 19:33:19 -0400
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7943926AF9
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 16:33:17 -0700 (PDT)
-Received: by mail-pg1-x52e.google.com with SMTP id 6so11662663pgb.13
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 16:33:17 -0700 (PDT)
+        Mon, 25 Jul 2022 19:35:13 -0400
+Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E6FC5F41
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 16:35:12 -0700 (PDT)
+Received: by mail-ot1-x32c.google.com with SMTP id l9-20020a056830268900b006054381dd35so9806346otu.4
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 16:35:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=ZQyRxqGM1W/LS0ssRps7WJXXzo4kRUKS7bNZtUe51CI=;
-        b=nD1BmdVcHA3I/t+9230v3W5nFsOePTrhYHGv1QgVncGS6DjjdzdUlg0mB28F2w17he
-         wLIwFt2t1dozuJkNbrYtPWRQKfBx2GA6EQRPMLVO5IBGIyYkvHpjqIa6DwjXaLl15cks
-         o1vVz7YidMp46YVb/IJoMUHFevN7f18woJ3vqb1msw37nMZ1WMQDEUfiCZekJKT2B3g+
-         /V4sFLBnFXPB7bJpDxO1U8rWzwNquDh13PZXl2rPZVcUBUgi5Vp7svlCGze6dANvD2Ow
-         eZI6QTIWPbeTOhqOGkng55MBfyQiuvBtWJwJA4h6yEK8FAfmGad8EtpVPzP9xiMtjFmc
-         JcSQ==
+        bh=DeZ0i71m7lXsgqJ3r02BqYK+cq3KZTMlnLHmvKXbYxU=;
+        b=CuxM3sWsBSTPgEOjZsRT4+4fjCKRp1DD+h+q+tZsJRmUqGgttEcydVnl3HwtZDIHer
+         zxXhs/Vjw76o3wJC5EHOUZ6QyEMyToO4FSwgjULATEJOuaKcPo2Yu3N0q/uewVDZD369
+         YIKPwTVKdqvc2Sz8CbHeesLVfi4Ka1YUdHmIi8XTW8plTbruiqXKUMqM+8De8VVnVWJ+
+         0/X1uPuvJcI8rqqJlVL9KSYPTSEyEyipCPPXvfCwwXgUwUdpMfTig+A4aZQy5s3XpeEa
+         X7lgFDZHvvnS/yLDdjjKsdMVMzeeDMdKDA2q5aIH6LiG9807L2flrLQ32a1Gc5SSkaIf
+         NFoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=ZQyRxqGM1W/LS0ssRps7WJXXzo4kRUKS7bNZtUe51CI=;
-        b=Ph2DzjlOQ1PNdJpAQkcTUIm7+gfrYm1/4RXGL492qU+SnY6kSf1cLFNboyobXREdqW
-         kA/6LLtisYCDI7agh6qRwD4nuz0JSm92PqeN8352q9SLm61AD4DtMakdTEznDN0GIjRe
-         vS0Ghl8bbgQa9R8EoSYhRV/JY/CF1Y8ARc30xZRNuR6Cr4TeKU6HzQWuN+OUwngq3I49
-         JVZn5y1JwHLyfrTjopZFdNorE1jR71znLdCNdh6xI/fUDKiZ1DgKcQ2dLe08266fv3uq
-         PE3YrzEGMpPEcOXYZE2MHf+mtOHAfDF5U3nbX25FR0CCNHFPCyoSIdZsGG53MEQIE4p1
-         PUYw==
-X-Gm-Message-State: AJIora+xLsH0jaakgKE3KuAwalFNRoG9BC6frk5MYCWQHRtYROmY2wsn
-        sDo52+UmMq/qDGAj07ZFveUQHA==
-X-Google-Smtp-Source: AGRyM1sMXhCPTxflahi4xB99ucQ9r1TYGMPJzX8LIjoubSDlVEHm0UejmNXeAe5WrFC09nN3obvhWQ==
-X-Received: by 2002:a05:6a00:134e:b0:52a:d5b4:19bb with SMTP id k14-20020a056a00134e00b0052ad5b419bbmr14826941pfu.45.1658791996740;
-        Mon, 25 Jul 2022 16:33:16 -0700 (PDT)
-Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
-        by smtp.gmail.com with ESMTPSA id a8-20020a17090a6d8800b001f24c08c3fesm7573683pjk.1.2022.07.25.16.33.16
+        bh=DeZ0i71m7lXsgqJ3r02BqYK+cq3KZTMlnLHmvKXbYxU=;
+        b=MwT9EVj8nlO5FKimiXP6itTZzyiujPonQDIS/E1Y/P41Aa0JoJT+2UYzuAGqgZBq7g
+         JJDxvxlvau/cuX7n7EDi2V92bOdxFBiZB5ySiv+JUT/YuGPQAm0M1Yvs90A0JYFYW4//
+         Nlouo1DUDi0NxapI7jIfZGH5cVAYRpvIvDnPzIaKHLmrMwQ0dZ51y70UkkVZyfoGvnub
+         vWV8LOFJ7lpZ/GxxiuEhN0Ni2oEMOxQ9fXu5X2iU5U/qt9PxJkNuq5rIJ39gIKK+Dz7M
+         RNXdSyxj4M9mfWLkL68m2CciP4LDEyfcsHYh5ixoO8r2+341ypk4YzcyA4rHYy+xZAz9
+         tyUA==
+X-Gm-Message-State: AJIora/vHgoJ2ryEyZPixmy0xjsTjlf/OGMUA2+e+TJRaEz3qe/FcQft
+        ehVC4eh0miu88n0w50ItU40=
+X-Google-Smtp-Source: AGRyM1vy8C5iqLabeXFffOkfvK810psuEvspeFasjH3OSccwMohmjm9n6GHknf3IO6BpuRysXhKSzQ==
+X-Received: by 2002:a05:6830:1f3b:b0:61c:8421:6dbb with SMTP id e27-20020a0568301f3b00b0061c84216dbbmr5437090oth.263.1658792111438;
+        Mon, 25 Jul 2022 16:35:11 -0700 (PDT)
+Received: from localhost ([12.97.180.36])
+        by smtp.gmail.com with ESMTPSA id l11-20020a9d550b000000b0061ca92ae442sm5450341oth.72.2022.07.25.16.35.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Jul 2022 16:33:16 -0700 (PDT)
-Date:   Mon, 25 Jul 2022 23:33:12 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     David Matlack <dmatlack@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Yosry Ahmed <yosryahmed@google.com>,
-        Mingwei Zhang <mizhang@google.com>,
-        Ben Gardon <bgardon@google.com>
-Subject: Re: [PATCH v2 5/6] KVM: x86/mmu: Add helper to convert SPTE value to
- its shadow page
-Message-ID: <Yt8oOHvNO2nnBQwM@google.com>
-References: <20220723012325.1715714-1-seanjc@google.com>
- <20220723012325.1715714-6-seanjc@google.com>
- <Yt8mCI7MFhZbT+5R@google.com>
+        Mon, 25 Jul 2022 16:35:11 -0700 (PDT)
+Date:   Mon, 25 Jul 2022 16:32:59 -0700
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        "open list:LINUX FOR POWERPC PA SEMI PWRFICIENT" 
+        <linuxppc-dev@lists.ozlabs.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+Subject: Re: [PATCH 1/2] powerpc: drop dependency on <asm/machdep.h> in
+ archrandom.h
+Message-ID: <Yt8oK1gUojEbO0WI@yury-laptop>
+References: <20220723214537.2054208-1-yury.norov@gmail.com>
+ <20220723214537.2054208-2-yury.norov@gmail.com>
+ <CAHp75VfOmN=cTEs7gbwxZ7W3hXjBo67N4AmHHiDfcVfFzHkMLA@mail.gmail.com>
+ <Yt7CJj8r3eo05pKd@yury-laptop>
+ <CAHp75VcGPQkY9ApsX2fi6sK5=3U=0vKbrHZZ3x___wUtgrFRSA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <Yt8mCI7MFhZbT+5R@google.com>
+In-Reply-To: <CAHp75VcGPQkY9ApsX2fi6sK5=3U=0vKbrHZZ3x___wUtgrFRSA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 25, 2022, David Matlack wrote:
-> On Sat, Jul 23, 2022 at 01:23:24AM +0000, Sean Christopherson wrote:
-> > Add a helper to convert a SPTE to its shadow page to deduplicate a
-> > variety of flows and hopefully avoid future bugs, e.g. if KVM attempts to
-> > get the shadow page for a SPTE without dropping high bits.
-> > 
-> > Opportunistically add a comment in mmu_free_root_page() documenting why
-> > it treats the root HPA as a SPTE.
-> > 
-> > No functional change intended.
-> > 
-> > Signed-off-by: Sean Christopherson <seanjc@google.com>
-> > ---
-> [...]
-> > --- a/arch/x86/kvm/mmu/spte.h
-> > +++ b/arch/x86/kvm/mmu/spte.h
-> > @@ -207,6 +207,23 @@ static inline int spte_index(u64 *sptep)
-> >   */
-> >  extern u64 __read_mostly shadow_nonpresent_or_rsvd_lower_gfn_mask;
-> >  
-> > +static inline struct kvm_mmu_page *to_shadow_page(hpa_t shadow_page)
-> > +{
-> > +	struct page *page = pfn_to_page((shadow_page) >> PAGE_SHIFT);
-> > +
-> > +	return (struct kvm_mmu_page *)page_private(page);
-> > +}
-> > +
-> > +static inline struct kvm_mmu_page *spte_to_sp(u64 spte)
-> > +{
-> > +	return to_shadow_page(spte & SPTE_BASE_ADDR_MASK);
-> > +}
+On Mon, Jul 25, 2022 at 11:39:39PM +0200, Andy Shevchenko wrote:
+> On Mon, Jul 25, 2022 at 6:19 PM Yury Norov <yury.norov@gmail.com> wrote:
+> > On Mon, Jul 25, 2022 at 09:28:12AM +0200, Andy Shevchenko wrote:
+> > > On Sun, Jul 24, 2022 at 12:19 AM Yury Norov <yury.norov@gmail.com> wrote:
 > 
-> spte_to_sp() and sptep_to_sp() are a bit hard to differentiate visually.
+> ...
+> 
+> > > >  EXPORT_SYMBOL_GPL(pm_power_off);
+> > >
+> > > ^^^ (Note this and read below)
+> > >
+> > > ...
+> > >
+> > > > +EXPORT_SYMBOL(arch_get_random_seed_long);
+> > >
+> > > It can't be like this. Brief browsing of the callees shows that.
+> >
+> > Is my understanding correct that you're suggesting to make it GPL?
+> >
+> > ppc_md is exported with EXPORT_SYMBOL(), and the function is in header,
+> > so it's available for non-GPL code now. I don't want to change it.
+> 
+> The symbols your function calls are GPL. As far as I understand (not a
+> lawyer!) it logically one may not call GPL and pretend to be non-GPL.
 
-Yeah, I balked a bit when making the change, but couldn't come up with a better
-alternative.
+Can you explain what you mean in details?
 
-> Maybe spte_to_child_sp() or to_child_sp()?
+The function is:
+        static inline bool __must_check arch_get_random_seed_long(unsigned long *v)
+        {
+               if (ppc_md.get_random_seed)
+                       return ppc_md.get_random_seed(v);
 
-I like to_child_sp().  Apparently I have a mental block when it comes to parent
-vs. child pages and never realized that sptep_to_sp() gets the "parent" but
-spte_to_sp() gets the "child".  That indeed makes spte_to_sp() a bad name.
+               return false;
+        }
 
+ppc_md is non-GPL:
+ 77 /* The main machine-dep calls structure
+ 78  */
+ 79 struct machdep_calls ppc_md;
+ 80 EXPORT_SYMBOL(ppc_md);
+
+And get_random_seed is initialized in in arch/powerpc/platforms/powernv/rng.c
+with different functions that are static and not exported at all. 
+
+I don't understand where arch_get_random_seed_long calls GPL...
