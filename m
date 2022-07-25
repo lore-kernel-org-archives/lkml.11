@@ -2,106 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5C38CCA473
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 13:09:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 509ACC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 13:10:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235502AbiGYNJf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 09:09:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40432 "EHLO
+        id S235459AbiGYNKh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 09:10:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235481AbiGYNJc (ORCPT
+        with ESMTP id S232380AbiGYNKf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 09:09:32 -0400
-Received: from mail.enpas.org (zhong.enpas.org [46.38.239.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 22AF013D76;
-        Mon, 25 Jul 2022 06:09:28 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        by mail.enpas.org (Postfix) with ESMTPSA id 430C0FF9C3;
-        Mon, 25 Jul 2022 13:09:26 +0000 (UTC)
-Date:   Mon, 25 Jul 2022 15:09:20 +0200
-From:   Max Staudt <max@enpas.org>
-To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Jeroen Hofstee <jhofstee@victronenergy.com>,
-        michael@amarulasolutions.com,
-        Amarula patchwork <linux-amarula@amarulasolutions.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [RFC PATCH 2/5] can: slcan: remove legacy infrastructure
-Message-ID: <20220725150920.63ac3a77.max@enpas.org>
-In-Reply-To: <CABGWkvrgX+9J-rOb-EO1wXVAZQ5phwKKpbc-iD491rD9zn5UpQ@mail.gmail.com>
-References: <20220716170007.2020037-1-dario.binacchi@amarulasolutions.com>
-        <20220716170007.2020037-3-dario.binacchi@amarulasolutions.com>
-        <20220717233842.1451e349.max@enpas.org>
-        <CABGWkvrgX+9J-rOb-EO1wXVAZQ5phwKKpbc-iD491rD9zn5UpQ@mail.gmail.com>
+        Mon, 25 Jul 2022 09:10:35 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4919665E4;
+        Mon, 25 Jul 2022 06:10:28 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id D98B11FADC;
+        Mon, 25 Jul 2022 13:10:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1658754626; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type;
+        bh=KX1pX+qxhjtmIbz/mv+FEb+97nfiqNjUtPVXNgyC9+k=;
+        b=rUKxaZX0CHPTS50VFaCO+mGOMhsdNEtgp1vg5BxHKnKW2AOa+lz9H2pdCywO1hbdmx6a12
+        RXcx0svD2XQLxceow51BjMeBWKi+WsEe7m4J14Omy/LBa3f6UCgztWlY7Wd0zsrhg3DYKt
+        spMKmHdGfEXrJoj06P+/vb6fleLOEaw=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1658754626;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type;
+        bh=KX1pX+qxhjtmIbz/mv+FEb+97nfiqNjUtPVXNgyC9+k=;
+        b=8kOgZbPTQT3vpyhm8I40dvouQa6bVFortCiKzh6Qdk7sYywtd8pQZXxpDgniuZklq2fxu/
+        Qypc2YvD108uEVCw==
+Received: from hawking.suse.de (unknown [10.168.4.11])
+        by relay2.suse.de (Postfix) with ESMTP id D24E82C152;
+        Mon, 25 Jul 2022 13:10:26 +0000 (UTC)
+Received: by hawking.suse.de (Postfix, from userid 17005)
+        id 56840444B2F; Mon, 25 Jul 2022 15:10:26 +0200 (CEST)
+From:   Andreas Schwab <schwab@suse.de>
+To:     Daniel Bristot de Oliveira <bristot@kernel.org>
+Subject: [PATCH] rtla: fix double free
+CC:     Steven Rostedt <rostedt@goodmis.org>,
+        linux-trace-devel@vger.kernel.org, linux-kernel@vger.kernel.org
+X-Yow:  Should I do my BOBBIE VINTON medley?
+Date:   Mon, 25 Jul 2022 15:10:26 +0200
+Message-ID: <mvmzggxl4n1.fsf@suse.de>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.1.90 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 25 Jul 2022 08:40:24 +0200
-Dario Binacchi <dario.binacchi@amarulasolutions.com> wrote:
+Don't call trace_instance_destroy in trace_instance_init when it fails,
+this is done by the caller.
 
-> > > @@ -883,72 +786,50 @@ static int slcan_open(struct tty_struct *tty)
-> > >       if (!tty->ops->write)
-> > >               return -EOPNOTSUPP;
-> > >
-> > > -     /* RTnetlink lock is misused here to serialize concurrent
-> > > -      * opens of slcan channels. There are better ways, but it is
-> > > -      * the simplest one.
-> > > -      */
-> > > -     rtnl_lock();
-> > > +     dev = alloc_candev(sizeof(*sl), 1);
-> > > +     if (!dev)
-> > > +             return -ENFILE;
-> > >
-> > > -     /* Collect hanged up channels. */
-> > > -     slc_sync();
-> > > +     sl = netdev_priv(dev);
-> > >
-> > > -     sl = tty->disc_data;
-> > > +     /* Configure TTY interface */
-> > > +     tty->receive_room = 65536; /* We don't flow control */
-> > > +     sl->rcount   = 0;
-> > > +     sl->xleft    = 0;  
-> >
-> > I suggest moving the zeroing to slc_open() - i.e. to the netdev open
-> > function. As a bonus, you can then remove the same two assignments from
-> > slc_close() (see above). They are only used when netif_running(), with
-> > appropiate guards already in place as far as I can see.  
-> 
-> I think it is better to keep the code as it is, since at the entry of
-> the netdev
-> open function, netif_running already returns true (it is set to true by the
-> calling function) and therefore it would be less safe to reset the
-> rcount and xleft
-> fields.
+Signed-off-by: Andreas Schwab <schwab@suse.de>
+---
+ tools/tracing/rtla/src/trace.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-Wow, great catch!
-
-I wonder why __LINK_STATE_START is set before ->ndo_open() is called...?
+diff --git a/tools/tracing/rtla/src/trace.c b/tools/tracing/rtla/src/trace.c
+index 5784c9f9e570..7c27fc2a52cb 100644
+--- a/tools/tracing/rtla/src/trace.c
++++ b/tools/tracing/rtla/src/trace.c
+@@ -179,7 +179,6 @@ int trace_instance_init(struct trace_instance *trace, char *tool_name)
+ 	return 0;
+ 
+ out_err:
+-	trace_instance_destroy(trace);
+ 	return 1;
+ }
+ 
+-- 
+2.37.1
 
 
-Since the drivers are similar, I've checked can327. It is unaffected,
-because the counters are additionally guarded by a spinlock. Same in
-slcan, where netdev_close() takes the spinlock to reset the counters.
-
-So you *could* move them to netdev_open() *if* they are always guarded
-by the slcan lock.
-
-Or, leave it as it is, as it seems to be correct. Your choice :)
-
-
-Thank you!
-
-Max
+-- 
+Andreas Schwab, SUSE Labs, schwab@suse.de
+GPG Key fingerprint = 0196 BAD8 1CE9 1970 F4BE  1748 E4D4 88E3 0EEA B9D7
+"And now for something completely different."
