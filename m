@@ -2,106 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EB5BC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 02:02:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8974DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 02:04:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232894AbiGYCCe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 22:02:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60454 "EHLO
+        id S232926AbiGYCEB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 22:04:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229745AbiGYCCc (ORCPT
+        with ESMTP id S229745AbiGYCD6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 22:02:32 -0400
-Received: from conssluserg-06.nifty.com (conssluserg-06.nifty.com [210.131.2.91])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75C1F55AC
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 19:02:31 -0700 (PDT)
-Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47]) (authenticated)
-        by conssluserg-06.nifty.com with ESMTP id 26P22HFd008916
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 11:02:18 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-06.nifty.com 26P22HFd008916
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1658714538;
-        bh=mjrDu3JhNAosJ7ziREvCXUAWyc4kFyj0qGkKTNy97CM=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Rc0s6HPy0cVo5C9bSbM2xPt0X0ZhFo2Xn1eF0gJNL+GRqhYoD3yUwD/5pqIB3nbXi
-         qYXGLTkBMLFOOcawTUdh3gcEqY6qVXccS3QTNHrKSHxvaNv+okzV5rC9v3uX4D+7nV
-         r+JmuL7hMyVIUknXT4jDwVzgJzmPE3FE5cQFrJgD246OgYqQAHNQe3lDHx9NweagZP
-         jlLXKGSsJlf/AuwMrrRb6CHR/RYyTmAshA6dzyCJgD8Ssy0FqXjoDGB6lhlEky/1vh
-         Qs3fTZO7B+Fr9UhkkudWXG0ZOQmPjhbSXOZgE7gA2fkZKKzhT7EJYEVntweVqnqX/I
-         H1wuEidZr/FuQ==
-X-Nifty-SrcIP: [209.85.221.47]
-Received: by mail-wr1-f47.google.com with SMTP id b26so14022251wrc.2
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 19:02:18 -0700 (PDT)
-X-Gm-Message-State: AJIora/YaX2U2qLaQjVRpiwkE/n9s+S3gjMHUTUcOUdYnSnpsSMsVmd1
-        bSDHESqWdG/mbq9+NoMYGYsQTt4A85K1f3lpjv0=
-X-Google-Smtp-Source: AGRyM1ueXYt0pCM+FSlEmorcbAm6TYU7xX+wvbfIIiV0C0V+aUZwvpNdo4dd32IcH8ysSZRa12oJzwoIWdp+69xQyiQ=
-X-Received: by 2002:adf:d1e2:0:b0:21d:d40b:d816 with SMTP id
- g2-20020adfd1e2000000b0021dd40bd816mr6048091wrd.682.1658714536781; Sun, 24
- Jul 2022 19:02:16 -0700 (PDT)
+        Sun, 24 Jul 2022 22:03:58 -0400
+X-Greylist: delayed 614 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sun, 24 Jul 2022 19:03:53 PDT
+Received: from m13114.mail.163.com (m13114.mail.163.com [220.181.13.114])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 69C1655AE;
+        Sun, 24 Jul 2022 19:03:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=hVWFC
+        12o7gBcl52Q0cY8D8npn8wKH4MrJil30NXenNI=; b=OiLyIYeB9CAoxx6svBm6J
+        wqJ0ci/Eg/a7FnmcILjIHshP8YoH7STOzJI+IVuY609O6HIMyKxM39ztOT+mu/3k
+        82clGeUAU1HFMvepKUAwhFIH6NefbFrNdfHp+XsUU23+ibjhy9z6ftHpRIJF86N5
+        1rzrdTO9apSozzuykoJrI0=
+Received: from slark_xiao$163.com ( [112.97.48.126] ) by
+ ajax-webmail-wmsvr114 (Coremail) ; Mon, 25 Jul 2022 10:02:34 +0800 (CST)
+X-Originating-IP: [112.97.48.126]
+Date:   Mon, 25 Jul 2022 10:02:34 +0800 (CST)
+From:   "Slark Xiao" <slark_xiao@163.com>
+To:     "Jakub Kicinski" <kuba@kernel.org>
+Cc:     tglx@linutronix.de, mingo@redhat.com, shuah@kernel.org,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        peterz@infradead.org, dvhart@infradead.org, dave@stgolabs.net,
+        andrealmeid@igalia.com, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re:Re: [PATCH] selftests: Fix typo 'the the' in comment
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
+ Copyright (c) 2002-2022 www.mailtech.cn 163com
+In-Reply-To: <20220722115227.624aa650@kernel.org>
+References: <20220722104259.83599-1-slark_xiao@163.com>
+ <20220722115227.624aa650@kernel.org>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=GBK
 MIME-Version: 1.0
-References: <20220616072407.2317131-1-masahiroy@kernel.org> <CAK7LNATU5ynS+Rikrd=ikfYWvBEuO+uQZ3mj-=sTLY9zHoHjMw@mail.gmail.com>
-In-Reply-To: <CAK7LNATU5ynS+Rikrd=ikfYWvBEuO+uQZ3mj-=sTLY9zHoHjMw@mail.gmail.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Mon, 25 Jul 2022 11:01:17 +0900
-X-Gmail-Original-Message-ID: <CAK7LNATuLq7Qgnr7oVUETriUv_HqCk0WGwffhyNL3UH_MEyVDQ@mail.gmail.com>
-Message-ID: <CAK7LNATuLq7Qgnr7oVUETriUv_HqCk0WGwffhyNL3UH_MEyVDQ@mail.gmail.com>
-Subject: Re: [PATCH 1/2] x86/purgatory: hard-code obj-y in Makefile
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        X86 ML <x86@kernel.org>, "H . Peter Anvin" <hpa@zytor.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <2b780c4f.be2.18233177ffa.Coremail.slark_xiao@163.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: csGowAD3L9O6+d1iwhElAA--.65124W
+X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/xtbBAwhJZGB0LqTJ+wABsL
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 25, 2022 at 12:11 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> On Thu, Jun 16, 2022 at 4:25 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
-> >
-> > arch/x86/Kbuild guards the entire purgatory/ directory, and
-> > CONFIG_KEXEC_FILE is bool type.
-> >
-> > $(CONFIG_KEXEC_FILE) is always 'y' when this directory is being built.
-> >
-> > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> > ---
->
-> Ping?
-
-There is a typo.
-I will send v2.
-
-
-
->
->
-> >
-> >  arch/x86/purgatory/Makefile | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/arch/x86/purgatory/Makefile b/arch/x86/purgatory/Makefile
-> > index ae53d54d7959..248b009c4061 100644
-> > --- a/arch/x86/purgatory/Makefile
-> > +++ b/arch/x86/purgatory/Makefile
-> > @@ -81,4 +81,4 @@ quiet_cmd_bin2c = BIN2C   $@
-> >  $(obj)/kexec-purgatory.c: $(obj)/purgatory.ro $(obj)/purgatory.chk FORCE
-> >         $(call if_changed,bin2c)
-> >
-> > -obj-$(CONFIG_KEXEC_FILE)       += kexec-purgatory.o
-> > +obj-y += kexec-purgatory.o
-> > --
-> > 2.32.0
-> >
->
->
-> --
-> Best Regards
-> Masahiro Yamada
-
-
-
--- 
-Best Regards
-Masahiro Yamada
+CgoKCgoKCgoKCgoKCgoKCkF0IDIwMjItMDctMjMgMDI6NTI6MjcsICJKYWt1YiBLaWNpbnNraSIg
+PGt1YmFAa2VybmVsLm9yZz4gd3JvdGU6Cj5PbiBGcmksIDIyIEp1bCAyMDIyIDE4OjQyOjU5ICsw
+ODAwIFNsYXJrIFhpYW8gd3JvdGU6Cj4+IFJlcGxhY2UgJ3RoZSB0aGUnIHdpdGggJ3RoZScgaW4g
+dGhlIGNvbW1lbnQuCj4+IAo+PiBTaWduZWQtb2ZmLWJ5OiBTbGFyayBYaWFvIDxzbGFya194aWFv
+QDE2My5jb20+Cj4+IC0tLQo+PiAgLi4uL2Z1dGV4L2Z1bmN0aW9uYWwvZnV0ZXhfcmVxdWV1ZV9w
+aV9zaWduYWxfcmVzdGFydC5jICAgICAgICAgIHwgMiArLQo+PiAgdG9vbHMvdGVzdGluZy9zZWxm
+dGVzdHMvbmV0L2ZvcndhcmRpbmcvdnhsYW5fYXN5bW1ldHJpYy5zaCAgICAgIHwgMiArLQo+Cj5Z
+b3UgbmVlZCB0byBzcGxpdCB0aGlzIGJ5IHRoZSBzdWJzeXN0ZW0uCkhpICwKICBBbHJlYWR5IHNw
+bGl0dGluZyAgaXQgdG8gMiBwYXJ0cy4gUGxlYXNlIGNoZWNrIHRoZSBuZXcgcGF0Y2guCgpUaGFu
+a3MK
