@@ -2,112 +2,166 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5FC8C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 07:39:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B09DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 07:40:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231143AbiGYHjz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 03:39:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36040 "EHLO
+        id S230229AbiGYHkt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 03:40:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229571AbiGYHjx (ORCPT
+        with ESMTP id S229694AbiGYHkr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 03:39:53 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4247212091
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 00:39:52 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id n185so6238879wmn.4
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 00:39:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=e1aZ+o8kUOGYYPE2I8Uql3rIMOoNeVnZ6eovO9V2SYI=;
-        b=e0kcc9cMVIDcngDRSTaZnB9OpBUCxX3qmlG7Rf8UF8KxVdSSsYTKRRoayVBXIw3Sng
-         wu03r67IdDvHjuKRBxBG/MxS7zaI0Fo1WODf40DlybOy4RWF2zFeZBXFfeKyNY0k3tY0
-         9acd2YlEjpByWP6lqxFmT8VFC6fWMD8ow89/760tUyLKH0o9qeiprvAj+2sNGlgZhJZI
-         P/HxJLpuRxogFWVWPIjIQAFfo0PO7Gp9AJcrqgFGB0IZOyTnjDFWfH0tafCnnyRMGVx7
-         qdcnwKIosMyB5F+UvM7GWAw6I/korbMgwAcezOoI6zLqC6A5RcxfoKxbs4WKBmEsKJwO
-         BYPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=e1aZ+o8kUOGYYPE2I8Uql3rIMOoNeVnZ6eovO9V2SYI=;
-        b=Bccz2s2pLLYS6ZovlsWDK6q6rB4Wx9BQEcRMY8jmXGnHEc10/crHz94KKUJkixAEmP
-         YNyVuP7JXlQJ8sF07LDswiXbUyUcFhmq3/lp4HAfdyNPIuiKdYCkr1FyEc3GNkGyJ3F9
-         US0ABZ2WC162vuJ0xtMo1OvDztyfdVuZGs6vgvWhVimgb5ZEEyZFt+Joo7CfblXzPivW
-         PpAHIeAwwYLcoXSHzhStjWpZiiW6xzvqrqoqauLcgBw/83aSsXr5ICKujfR4wG3WVP1O
-         JFrRl/Ty+RzMjySBJLhHikBClkS7E08XscCM7xvfo/R6LXYc0913x7/X9SqR5QZszgSS
-         mkvg==
-X-Gm-Message-State: AJIora/G13Va8EukTjAVpHFRLjKi/lypk3+ewi/mSMySbVbpXxDnfAwn
-        kAxWMZpUGrIdCMXqSb+TSLhz6A==
-X-Google-Smtp-Source: AGRyM1v6drvIQaPtLI2eyqwiXdbwRxbi3X7EtVh03o9xVmLSg1+t1aTiJIzZGSIA3tAvrAovwl/Odw==
-X-Received: by 2002:a05:600c:17c7:b0:3a3:f1:148c with SMTP id y7-20020a05600c17c700b003a300f1148cmr20833043wmo.32.1658734790751;
-        Mon, 25 Jul 2022 00:39:50 -0700 (PDT)
-Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net. [82.27.106.168])
-        by smtp.gmail.com with ESMTPSA id f9-20020adfb609000000b0021e519eba9bsm11085090wre.42.2022.07.25.00.39.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Jul 2022 00:39:50 -0700 (PDT)
-Date:   Mon, 25 Jul 2022 08:39:23 +0100
-From:   Jean-Philippe Brucker <jean-philippe@linaro.org>
-To:     Baolu Lu <baolu.lu@linux.intel.com>
-Cc:     Jason Gunthorpe <jgg@nvidia.com>, Joerg Roedel <joro@8bytes.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        Zhangfei Gao <zhangfei.gao@linaro.org>,
-        Zhu Tony <tony.zhu@intel.com>, iommu@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v10 08/12] iommu/sva: Refactoring
- iommu_sva_bind/unbind_device()
-Message-ID: <Yt5IqyZw/Sa6Ck5t@myrica>
-References: <20220705050710.2887204-1-baolu.lu@linux.intel.com>
- <20220705050710.2887204-9-baolu.lu@linux.intel.com>
- <20220723142650.GH79279@nvidia.com>
- <bffb6e2d-d310-49b9-0725-37ab4263c22d@linux.intel.com>
+        Mon, 25 Jul 2022 03:40:47 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2065.outbound.protection.outlook.com [40.107.244.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B92701274D;
+        Mon, 25 Jul 2022 00:40:45 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hZ0uogXiIV7YcEHBkOsrZLhEiSivzDy6Q3q/bjwLzyQsMqFDA6jRH2CWNH1OB1lAD9ZfU64KjpiJwds1oiwMm/XFDLk6nZcnQ4c0X11TZUNPWQ1gSA+AvrJvilIlxQykaDIa8Gji4Tjm0PAwXgdBjtNP85M5XJE1fa6kiU0Z3hQaRjna8g4UZA87xMaMK7lf1ZPsmNm4DFB4O+iofc71SpGrO+O0hiNgTrUdDljd5RH089day/sk+ak7R+mw99ojvcvzZ+yka0jK6rvG/9qpo+rsyoRYSO5Ton36WCZVcPjHR4ph05zpt9F1XFPSSzGsiZ//qG8QtV5HD8o1tDG7nw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=IAqVjdSq5qkK622t5vMXyU6MNRe3UDCnxcxsmDkZr+Q=;
+ b=K8iZqwqTn7Qrfw1D/HF11ni7em2CovxfsDOkVSuBrwHAfvsmRBhq4YDj+o86g79T9s5hIqgUw1qu2IPmPGOrz4eTwrOy/4dd/3K357M3dro4KKV7zMSR0QdY+BLzZh3mlaJlyZ3M9CoHPLiiAh+qgVyHPboLCoKs/3jgI4RM1zXNSSGyNdNB07gvGsJnUEzQeYI0hNZNMzb3bdPIy1EknHF3ziQ1TrUMMEl4TcSVcKSUi8Ls+n/MnnTftASMHG8jDHmVQkjwnXMCq2HSzPb4Fh64We8PsC4Mx5XawIIPBYv5HJP05R435D6veU/boc+ydNrcIF5rpZGfv2HZGXH4XA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IAqVjdSq5qkK622t5vMXyU6MNRe3UDCnxcxsmDkZr+Q=;
+ b=A6KnqSLrseeGjEMyqcym85B8FJQMtM9AsC08sRlvAYCr5W/IO0gSazYvphDx6NxRBxcl3qS9kdDCjDNz4q7WHu3sPK1Y/Kh9l9bz+cUy4C16lw6yPWm+mwOZozK3gMHb8XGt+4aX1DXFxBNmIpfNSvy1Lj6KLTENi0Kvaex8p6I=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from CH0PR12MB5346.namprd12.prod.outlook.com (2603:10b6:610:d5::24)
+ by BN6PR12MB1890.namprd12.prod.outlook.com (2603:10b6:404:106::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.18; Mon, 25 Jul
+ 2022 07:40:44 +0000
+Received: from CH0PR12MB5346.namprd12.prod.outlook.com
+ ([fe80::1d6c:b7e8:bc5e:191a]) by CH0PR12MB5346.namprd12.prod.outlook.com
+ ([fe80::1d6c:b7e8:bc5e:191a%7]) with mapi id 15.20.5458.024; Mon, 25 Jul 2022
+ 07:40:43 +0000
+Subject: Re: [PATCH] crypto: ccp - Add support for new CCP/PSP device ID
+To:     Tom Lendacky <thomas.lendacky@amd.com>,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        John Allen <john.allen@amd.com>
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220719161328.7907-1-mario.limonciello@amd.com>
+ <188ecbc9-8624-2b74-7963-5f1b909ddf2f@amd.com>
+From:   Rijo Thomas <Rijo-john.Thomas@amd.com>
+Message-ID: <edd96cb6-aa74-bc21-9275-ca9e1f80c100@amd.com>
+Date:   Mon, 25 Jul 2022 13:10:30 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
+In-Reply-To: <188ecbc9-8624-2b74-7963-5f1b909ddf2f@amd.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: PN2PR01CA0210.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:e9::19) To CH0PR12MB5346.namprd12.prod.outlook.com
+ (2603:10b6:610:d5::24)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bffb6e2d-d310-49b9-0725-37ab4263c22d@linux.intel.com>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4b07d977-6076-498d-389f-08da6e10faef
+X-MS-TrafficTypeDiagnostic: BN6PR12MB1890:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: LpYIzff3MJrjIHXa6TxhusktoSpN4cfA1CdRV3TmxknrTN6sC7wdz5lUmOYX1GQbi9hEsqPvn3GkbZqFz+s6qsMAvMi9QndMMB5za6WD9miiVjQ3kdhSMTX9LzlSsY75mb6Wt1avSwTRc8S3yUCSWf6hM7FlIuZphJb0FEs7Rs6coLIUGhnrtSfNgnG1YgCGKodAlC/lOccdW/bCpV+y+WMN+3hq4PJT8cXZZ8dEeTVrNSxlk4asfk2UQ4xWoX04vX0OyNZNB7L+hEU2pdawrILbpszxOEIdsFTmIgW0QrBrAfIajfwiBFqvesEkIHal+5jp2rqu4oCsteCN8IR9oYM3SsjzteHB70Ub9UC7UrMNpOERB5mt91FtRiKU3BFXihAd0tomjDBd2RmmUm/NmFyfz2A4NqQEojuCiIN01Pd4WKE4txUy6ct+E52dTwH2gxRHUi+QW73PjUQkF8blwLXeO5RBpFD6m1H5Zhr2qbwsD8V4JTTiDjm2mqXz6OUS7R46ToQ3P1moGLXoSxm1l8maWo+DZybz2uJvS3Ze7NvaKlfWTB4seUuxiLab38QzTRa5q2ji7EOl1lbiMCDmwTV1+/LKUd6Ma5oyFXVssI+0d+t5XfM0TAdcdZ9HSO18iuBa5jRo4nXlgeU6zCfIeqxyu6eNVZoHzyFDbEorMQxYGC4ny2xUmHAj8SXKCkvTLNQB/vC6owxDnBD0Zmy7i7UmNUXB4LaZlA1TdhShsitm+aLgErsNVvs8vpNru3+TiwRAepv+iHpGOXaZ1Up5oxwrf3LoDMRxekVlSgJvrXsqa1Cu7n5/7mAW9wfkRoBkn6agHOJtih73509cqId68A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH0PR12MB5346.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(366004)(396003)(376002)(346002)(136003)(186003)(4326008)(66946007)(66476007)(66556008)(8676002)(2616005)(110136005)(6636002)(6512007)(31686004)(54906003)(36756003)(6506007)(41300700001)(55236004)(53546011)(26005)(2906002)(86362001)(31696002)(38100700002)(6666004)(5660300002)(316002)(8936002)(6486002)(478600001)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?SjZ6eWJyaVpRVlYxYVMvbWNnTkhMYjM1Yy80TnV5akE1dzdpa0hXc1hoUGto?=
+ =?utf-8?B?N3YrVVpUZUhFaGoyQlVubmlkTEo0MFQ1VXNOQnF5ZWcrNUJsZGZTOFZvMmNU?=
+ =?utf-8?B?aXlNRCttempBUzlGZUJvbytOcy9mTmxQUUlmdmhNRFlpSGZ0TnZrWDQ0NHht?=
+ =?utf-8?B?dVdSMS9tblZXZzhqOHMrSld0emNWL0s1bE5XMkVnZlpIbkZVMDVtT3IxVXlR?=
+ =?utf-8?B?NkN6dzdIZEZNaGdTYXBZaVdYOWc4R25nZnhlaFJiRkVaOE9XYmdsQUt1QWVG?=
+ =?utf-8?B?TWs3UXdSMDBiYXR2UnhWcWZDcUU4YWc3dWJoM2QraklhT2xGUzJVcjY4REpk?=
+ =?utf-8?B?dW9yR0lOQ1VqbnNYa0I4T0RCcExvN0pFTXJ1T0F0U0lIcThXejBzS1Z3MGww?=
+ =?utf-8?B?SFRNUm4yQlZVL2ZFNFhxT0VJcG5WWktYVWJreEkxZ3BERUJoNTR0dm1RcU9T?=
+ =?utf-8?B?NEovanVueU4yQUYxUDB1OGlKWUF0am1JWWtBUHRobG1WTmdtKzFhTjFBSUpu?=
+ =?utf-8?B?UXA3ZWFjRmdldTE0a2VSTnNHdzlTUVZUd1Q3ZDdyLzVNTWVobFc0ZlU0RERt?=
+ =?utf-8?B?dTBDWE1qS3NQRXVhRG15am1BVnZxa2RSQnAyZTJmbDBiMTh5TjJ2SXVjNjRF?=
+ =?utf-8?B?eWd5QmJyZktZczh5U1p6aWNxVktCZENnU2FkS1JGQlNuY1FBMUFrNUlOdWpS?=
+ =?utf-8?B?WmNLY002MUVaWm5oOURTV014V2JNbjd0eUkrOWNmZUNwZjlBTVBtUUl1QXk1?=
+ =?utf-8?B?SmEycklCRHRXQzc0SG0xRFdTdFdVMFMvUTR5aEh0K1RZZFdldjBHdjRUTzls?=
+ =?utf-8?B?MjJkWnQ3Z1NIMWJUVEJjVDlMeXI2OXEwMlVFVFRMUUlrcDd6QndWLzNqdWpP?=
+ =?utf-8?B?eTRCK3BhVlJ1ZFI3S2xiYUkrZTUzSTU1TUIzUlFzdkd1dTVPK3Zjb3p1T1Iy?=
+ =?utf-8?B?REpBSFluRGVyZ3lwZXN3TzM3aHlpUXJPaFh3Mnh2ZXM2eDd5bEZSckpTaXhu?=
+ =?utf-8?B?UzRLTlRqV09MZytXZ0kxQUZIME5WWXFzdURKV3lkVEYwZS8rblZFRDdiWktG?=
+ =?utf-8?B?YktPREI3d09rYkJIZkMwYlFTOW03YXVTVzFQOEpMbHJDVEpqVTJNSUlYTktV?=
+ =?utf-8?B?QmNSbUZFR3JsV1YrS3Qyc3N6MzlmeWZDb0FWOHdqZ2xQZHc4YU1NejdEY0xs?=
+ =?utf-8?B?aDhJYk8yU0U2dU9yQ2lON2hwaHlZaDJmSW1tWGo4bU5pQzVzTyttcHhDUHU1?=
+ =?utf-8?B?NFlMYnI1Z1ZhNFpUdUJ5TkhNd01nemNRYkxib2ZkaXVHSnlTWXQ4V3o2UGNa?=
+ =?utf-8?B?VkRjYXpPMEVYYTVBSk5Zalk3VEFvUFNKa3dtQ3o2S3lDdnJvMHJ0UWtXZ2RS?=
+ =?utf-8?B?VVQvY25PWXgzZWp3M3ZNamhveEVZdHc3RTMzaEpXNVRoNFVUQndFM0tDenI0?=
+ =?utf-8?B?L0UwWkVhSmF1bkdwNmE3VzZSYTBmcURySnIydU9hSXJXYS9yTGhrVFNqcERp?=
+ =?utf-8?B?RWN1bXErbkRoc2l6cnNIYXovT1FZNmFlTVF5QU1VV2xGOUxhZHBsNWlBNWVX?=
+ =?utf-8?B?SDJ6REJVQmJHSlZWWEVjdnJwSmdJSEpPK1J5KzRNakg2RWtNQ1c2MmtxOWtQ?=
+ =?utf-8?B?T1UxZEk3djN3MlZrZmtFSkhQREY0bUdOZDgxNklNNXFIZlV3aFViY0IxVkVO?=
+ =?utf-8?B?b3JzUVdpUnJrclFRUnoxYlZWcEJ5QlA3YnRscXpHUmJLcVU0WldsNmQxa2E4?=
+ =?utf-8?B?Zjd5UklwL3VYVmVIb2tOcE5oZGpQdTFHSjQvTUxieEFFMGlKZW00SDBWUVJZ?=
+ =?utf-8?B?M1Job3I4NjdPcTNmMUwrcCtmUzI3cTB3RFh4bDdRNk5jRmVhdmpmNGQzc0xF?=
+ =?utf-8?B?dnFDSlhkaHE0QTFIcHhlTGpjTnZCZi85bkx3THVmb3VYWEV1T0pkNDg5M1hz?=
+ =?utf-8?B?bzZCMGphd1pqL0l5dVZSdTZvby9jQzdDc1BIMzZxR28wdUhUZm1FQ2JndFUw?=
+ =?utf-8?B?SFJUbXR1ZEZoekd0NHQyMU0wZVZ2R1c5bll0ejMzaFR5cFdPNEVIK3lScTUx?=
+ =?utf-8?B?T3IzK1NDMDZhdWMvcWsyalcwMnNKZzVhYUNkSDdWUnduMVZkQjQwN2xPMG9w?=
+ =?utf-8?Q?UPPXOVYKvbHD2XRB9XBchZewB?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4b07d977-6076-498d-389f-08da6e10faef
+X-MS-Exchange-CrossTenant-AuthSource: CH0PR12MB5346.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jul 2022 07:40:43.9078
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: M0oMtt0ndCrYQKFmqZ3gJBRcGcCvPyLqDPNl6nrxn2iPE7yHeXzk0ZHlFxWR31E5QhgtWFyyIDli6JpFWUvJhw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR12MB1890
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jul 24, 2022 at 09:48:15PM +0800, Baolu Lu wrote:
-> /*
->  * iommu_detach_device_pasid() - Detach the domain from pasid of device
->  * @domain: the iommu domain.
->  * @dev: the attached device.
->  * @pasid: the pasid of the device.
->  *
->  * The @domain must have been attached to @pasid of the @dev with
->  * iommu_detach_device_pasid().
->  */
-> void iommu_detach_device_pasid(struct iommu_domain *domain, struct device
-> *dev,
-> 			       ioasid_t pasid)
-> {
-> 	struct iommu_group *group = iommu_group_get(dev);
-> 	struct group_pasid *param;
+
+
+On 7/20/2022 6:28 PM, Tom Lendacky wrote:
+> On 7/19/22 11:13, Mario Limonciello wrote:
+>> Add a new CCP/PSP PCI device ID.  This uses same register offsets
+>> as the previously supported structure.
+>>
+>> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
 > 
-> 	mutex_lock(&group->mutex);
-> 	domain->ops->set_dev_pasid(group->blocking_domain, dev, pasid);
+> Acked-by: Tom Lendacky <thomas.lendacky@amd.com>
+> 
 
-Please also pass the old domain to this detach() function, so that the
-IOMMU driver doesn't have to keep track of them internally.
+Acked-by: Rijo Thomas <Rijo-john.Thomas@amd.com>
 
-In addition to clearing contexts, detach() also needs to invalidate TLBs,
-and for that the SMMU driver needs to know the old ASID (!= PASID) that
-was used by the context descriptor.
-
-Thanks,
-Jean
-
-
+>> ---
+>>   drivers/crypto/ccp/sp-pci.c | 7 +++++++
+>>   1 file changed, 7 insertions(+)
+>>
+>> diff --git a/drivers/crypto/ccp/sp-pci.c b/drivers/crypto/ccp/sp-pci.c
+>> index b5970ae54d0e..792d6da7f0c0 100644
+>> --- a/drivers/crypto/ccp/sp-pci.c
+>> +++ b/drivers/crypto/ccp/sp-pci.c
+>> @@ -427,6 +427,12 @@ static const struct sp_dev_vdata dev_vdata[] = {
+>>           .bar = 2,
+>>   #ifdef CONFIG_CRYPTO_DEV_SP_PSP
+>>           .psp_vdata = &pspv2,
+>> +#endif
+>> +    },
+>> +    {    /* 6 */
+>> +        .bar = 2,
+>> +#ifdef CONFIG_CRYPTO_DEV_SP_PSP
+>> +        .psp_vdata = &pspv3,
+>>   #endif
+>>       },
+>>   };
+>> @@ -438,6 +444,7 @@ static const struct pci_device_id sp_pci_table[] = {
+>>       { PCI_VDEVICE(AMD, 0x15DF), (kernel_ulong_t)&dev_vdata[4] },
+>>       { PCI_VDEVICE(AMD, 0x1649), (kernel_ulong_t)&dev_vdata[4] },
+>>       { PCI_VDEVICE(AMD, 0x14CA), (kernel_ulong_t)&dev_vdata[5] },
+>> +    { PCI_VDEVICE(AMD, 0x15C7), (kernel_ulong_t)&dev_vdata[6] },
+>>       /* Last entry must be zero */
+>>       { 0, }
+>>   };
