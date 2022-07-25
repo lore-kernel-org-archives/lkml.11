@@ -2,56 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1B90C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 12:55:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F7A7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 12:55:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235304AbiGYMzU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 08:55:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57580 "EHLO
+        id S235336AbiGYMzk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 08:55:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235148AbiGYMzO (ORCPT
+        with ESMTP id S235148AbiGYMzb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 08:55:14 -0400
-Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8576D1E6
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 05:55:10 -0700 (PDT)
-Received: by mail-il1-x12f.google.com with SMTP id h16so5633510ila.2
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 05:55:10 -0700 (PDT)
+        Mon, 25 Jul 2022 08:55:31 -0400
+Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56784B48C
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 05:55:30 -0700 (PDT)
+Received: by mail-io1-xd31.google.com with SMTP id y197so7836157iof.12
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 05:55:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bytedance-com.20210112.gappssmtp.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :content-transfer-encoding;
-        bh=3b1v6Mgf7ucnDr/oMrJlG8tjEQ/ANlrgzIFnlkN8kLM=;
-        b=doWIbhSFyCtiiI4N1Cx8+iT6a//VvEss4vVJnKiTZr9DnqaVLlfT5qWvONZl/zvlqq
-         ySpANVja0ZFf0zreJzIPc4ln00o5uQCZ1bfGznHa09MiTxbf/++U4ox+I4xcHEg242cc
-         WRTr+3qyNQyMyWI53IEKJeX18qJ5+jUpc9ZkKugENjfDajNh2MIgMBPspBwILb/hLr3p
-         keKtO56m3njzgfdhbif7EZm1v7Uia69yQOr6uMa1nrDouxrse5sUGlghAu+ROYRmSuFR
-         UQUXDU995xGTSTVa+tpjuBlKgHzUA7z1RBSIgO1eZAXt2nagUZ1z3QbWRrCWNADZbdnn
-         AZ2Q==
+        bh=PfNbdom0DB4m2QIENdfTeF60j7cydsj3toNrOxaNArE=;
+        b=Pwj3KTL9++ZDByxhe6A8L7sjOy0OInAZTR0X/ICWzSYHhGfQTjYg6FEOo04NzP35Qr
+         kk4WkVfjiQwKwpfq+S5n3mJjMNTkb807v0YE5sKPSzwACxUuSy2lP/8O5pZ9DrkqGxTA
+         dA9g0pEBOj2h06z27DEfViBhRxHw6Lc9VQwDWso7TnlSU7TAhRa2AffpJ3xwP0gDxoYm
+         0IF5R4z9WPR/xn8ZCYAqjaYdfN81zL+dKk4KLZS7plqqpYSrz0Mov3+Md32TW9S6Gvzv
+         3gBDZCspWKnO0sRwAPnTz8+j0zVjwa+ep2TxloTLk0/VAFbYDgO2RV2Kopb+3SSIDx+e
+         lL2w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:content-transfer-encoding;
-        bh=3b1v6Mgf7ucnDr/oMrJlG8tjEQ/ANlrgzIFnlkN8kLM=;
-        b=pNwLE/rfUfqA0+/pbRsc0I9MoZLJuFsRRm1QXx63utDlFs+f7En5/xXTJUAmJTHiE2
-         hx5EogfRrEnwJSi3ru2aEPSJLVf6NJRzUdaSTYpz8h1A68LcZ1P3LvVcJ2vH6AMfr41o
-         DboAsDISjLPKCLETKgxHNs9OuRFVjImVhB9bb5wHaJVsF779TIbVo8zsoLwPs+al6+tB
-         r2sAN93wP6KZM7MF1w4t6p9UMZMvcpvWeXI/jJvJr9Dx4d9xgTnbY5w6AEqDDe7+w8JL
-         M2c9XN3BIURCqyJ4VrCeSnLPrm5AVy7B/fy2hiZeJOuR5VjE6hLVVgbhr19wKtX7CKTo
-         ElGg==
-X-Gm-Message-State: AJIora+5/3H2mT2NYUJNrJNUn6uBGPjaEHjcbIyuVMsaxV2MAYT/GFuf
-        e8SGTfChJ0zrrzzlM6WeW1qT3k1gAVKd8vc49ELAkoUVgGo=
-X-Google-Smtp-Source: AGRyM1s10l/jKpsn+lcbyVLm+gjD09xoefAFTRJFRlEbwpxxW0zs6idof08n5XjVNpLnGIJcCNM/LNbo43I88zCn6Vw=
-X-Received: by 2002:a05:6e02:1e04:b0:2dd:46f6:87ae with SMTP id
- g4-20020a056e021e0400b002dd46f687aemr2397357ila.36.1658753709680; Mon, 25 Jul
- 2022 05:55:09 -0700 (PDT)
+        bh=PfNbdom0DB4m2QIENdfTeF60j7cydsj3toNrOxaNArE=;
+        b=VQLiDSIQkynIMxLsJVnCvFJATe6bHpYF9d/3ln4YXxJlKDnBFCqybXMnEd44v4kM+C
+         ujsIErD9mY96VpwoF3x7GE6maKG6SlkKYS3i/IuyqDfyj1g5mf7Dil9ltPDY+AJQL4c8
+         G9fN5AqXl18O4TtG+MhHFyOJS3QJE5dkJGDZYOubCJgXF7A6DF/4SJJKERrSRYR3D5lV
+         IY+DO0mDpLRUqf4B/c48KnY7H/cOrXfiy9zGXa53RafbgUvehgrVsEJUS5wpB1ieJYlL
+         MC+2xWmhNSEzCsQ2HbQuTupjRT8nL32dbqH3CLZYbSN+WmkVo3j2m3qC6wwEtJhnO21W
+         cKwA==
+X-Gm-Message-State: AJIora/2bcUBipVwBcS+21gaUzDoSZ7uCm9QQnnogtEYWGmgRD3tqTLT
+        dBwAsRZE0hVVe0jqdbEzULQPdDp37nez47uPk7O+M73GAuM=
+X-Google-Smtp-Source: AGRyM1ser6jq9raL4EvRVV0XP3C7YUUhI4C0SMWJcV+tTuakx6tGMifHAoqGaIWPscf8uGaP3y0oyHhprI87a8MF2DY=
+X-Received: by 2002:a05:6638:14cd:b0:341:46ad:f3da with SMTP id
+ l13-20020a05663814cd00b0034146adf3damr5112612jak.36.1658753729457; Mon, 25
+ Jul 2022 05:55:29 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220725083904.56552-1-huangjie.albert@bytedance.com>
-In-Reply-To: <20220725083904.56552-1-huangjie.albert@bytedance.com>
+References: <20220725083904.56552-1-huangjie.albert@bytedance.com> <20220725083904.56552-4-huangjie.albert@bytedance.com>
+In-Reply-To: <20220725083904.56552-4-huangjie.albert@bytedance.com>
 From:   =?UTF-8?B?6buE5p2w?= <huangjie.albert@bytedance.com>
-Date:   Mon, 25 Jul 2022 20:54:58 +0800
-Message-ID: <CABKxMyOMY9sqh8yqiRs0s3-RPf3caLPJvJeFWDqDZTqy6QJKAA@mail.gmail.com>
-Subject: Fwd: [PATCH 0/4] faster kexec reboot
+Date:   Mon, 25 Jul 2022 20:55:18 +0800
+Message-ID: <CABKxMyM89vRT3wbKSPcoH+zZ7Lx+rpTaxfTi98xakGRhsYBv0g@mail.gmail.com>
+Subject: Fwd: [PATCH 3/4] x86: Support the uncompressed kernel to speed up booting
 To:     linux-kernel <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
@@ -62,8 +62,9 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 ---------- Forwarded message ---------
 =E5=8F=91=E4=BB=B6=E4=BA=BA=EF=BC=9A Albert Huang <huangjie.albert@bytedanc=
 e.com>
-Date: 2022=E5=B9=B47=E6=9C=8825=E6=97=A5=E5=91=A8=E4=B8=80 16:39
-Subject: [PATCH 0/4] faster kexec reboot
+Date: 2022=E5=B9=B47=E6=9C=8825=E6=97=A5=E5=91=A8=E4=B8=80 16:40
+Subject: [PATCH 3/4] x86: Support the uncompressed kernel to speed up booti=
+ng
 To:
 Cc: huangjie.albert <huangjie.albert@bytedance.com>, Thomas Gleixner
 <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>, Borislav Petkov
@@ -72,64 +73,128 @@ Cc: huangjie.albert <huangjie.albert@bytedance.com>, Thomas Gleixner
 <ebiederm@xmission.com>, Masahiro Yamada <masahiroy@kernel.org>,
 Michal Marek <michal.lkml@markovi.net>, Nick Desaulniers
 <ndesaulniers@google.com>, Kirill A. Shutemov
-<kirill.shutemov@linux.intel.com>, Michael Roth
-<michael.roth@amd.com>, Kuppuswamy Sathyanarayanan
-<sathyanarayanan.kuppuswamy@linux.intel.com>, Nathan Chancellor
-<nathan@kernel.org>, Peter Zijlstra <peterz@infradead.org>, Sean
-Christopherson <seanjc@google.com>, Joerg Roedel <jroedel@suse.de>,
-Mark Rutland <mark.rutland@arm.com>, Kees Cook
-<keescook@chromium.org>, <linux-kernel@vger.kernel.org>,
-<kexec@lists.infradead.org>, <linux-kbuild@vger.kernel.org>
+<kirill.shutemov@linux.intel.com>, Kuppuswamy Sathyanarayanan
+<sathyanarayanan.kuppuswamy@linux.intel.com>, Tony Luck
+<tony.luck@intel.com>, Michael Roth <michael.roth@amd.com>, Nathan
+Chancellor <nathan@kernel.org>, Ard Biesheuvel <ardb@kernel.org>, Mark
+Rutland <mark.rutland@arm.com>, Joerg Roedel <jroedel@suse.de>, Sean
+Christopherson <seanjc@google.com>, Peter Zijlstra
+<peterz@infradead.org>, Kees Cook <keescook@chromium.org>,
+<linux-kernel@vger.kernel.org>, <kexec@lists.infradead.org>,
+<linux-kbuild@vger.kernel.org>
 
 
 From: "huangjie.albert" <huangjie.albert@bytedance.com>
 
-In many time-sensitive scenarios, we need a shorter time to restart
-the kernel. However, in the current kexec fast restart code, there
-are many places in the memory copy operation, verification operation
-and decompression operation, which take more time than 500ms. Through
-the following patch series. machine_kexec-->start_kernel only takes 15ms
+Although the compressed kernel can save the time of loading the
+kernel into the memory and save the disk space for storing the kernel,
+but in some time-sensitive scenarios, the time for decompressing the
+kernel is intolerable. Therefore, it is necessary to support uncompressed
+kernel images, so that the time of kernel decompression can be saved when
+the kernel is started.
 
-How to measure time:
+This part of the time on my machine is approximately:
+image type      image  size      times
+compressed(gzip) 8.5M            159ms
+uncompressed     53M             8.5ms
 
-c code:
-uint64_t current_cycles(void)
-{
-    uint32_t low, high;
-    asm volatile("rdtsc" : "=3Da"(low), "=3Dd"(high));
-    return ((uint64_t)low) | ((uint64_t)high << 32);
-}
-assembly code:
-       pushq %rax
-       pushq %rdx
-       rdtsc
-       mov   %eax,%eax
-       shl   $0x20,%rdx
-       or    %rax,%rdx
-       movq  %rdx,0x840(%r14)
-       popq  %rdx
-       popq  %rax
-the timestamp may store in boot_params or kexec control page, so we can
-get the all timestamp after kernel boot up.
+Signed-off-by: huangjie.albert <huangjie.albert@bytedance.com>
+---
+ arch/x86/Kconfig                  |  1 +
+ arch/x86/boot/compressed/Makefile |  5 ++++-
+ arch/x86/boot/compressed/misc.c   | 13 +++++++++++++
+ scripts/Makefile.lib              |  5 +++++
+ 4 files changed, 23 insertions(+), 1 deletion(-)
 
-huangjie.albert (4):
-  kexec: reuse crash kernel reserved memory for normal kexec
-  kexec: add CONFING_KEXEC_PURGATORY_SKIP_SIG
-  x86: Support the uncompressed kernel to speed up booting
-  x86: boot: avoid memory copy if kernel is uncompressed
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index adbd3a2bd60f..231187624c68 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -221,6 +221,7 @@ config X86
+        select HAVE_KERNEL_LZO
+        select HAVE_KERNEL_XZ
+        select HAVE_KERNEL_ZSTD
++       select HAVE_KERNEL_UNCOMPRESSED
+        select HAVE_KPROBES
+        select HAVE_KPROBES_ON_FTRACE
+        select HAVE_FUNCTION_ERROR_INJECTION
+diff --git a/arch/x86/boot/compressed/Makefile
+b/arch/x86/boot/compressed/Makefile
+index 19e1905dcbf6..0c8417a2f792 100644
+--- a/arch/x86/boot/compressed/Makefile
++++ b/arch/x86/boot/compressed/Makefile
+@@ -26,7 +26,7 @@ OBJECT_FILES_NON_STANDARD     :=3D y
+ KCOV_INSTRUMENT                :=3D n
 
- arch/x86/Kconfig                   | 10 +++++++++
- arch/x86/boot/compressed/Makefile  |  5 ++++-
- arch/x86/boot/compressed/head_64.S |  8 +++++--
- arch/x86/boot/compressed/misc.c    | 35 +++++++++++++++++++++++++-----
- arch/x86/purgatory/purgatory.c     |  7 ++++++
- include/linux/kexec.h              |  9 ++++----
- include/uapi/linux/kexec.h         |  2 ++
- kernel/kexec.c                     | 19 +++++++++++++++-
- kernel/kexec_core.c                | 16 ++++++++------
- kernel/kexec_file.c                | 20 +++++++++++++++--
- scripts/Makefile.lib               |  5 +++++
- 11 files changed, 114 insertions(+), 22 deletions(-)
+ targets :=3D vmlinux vmlinux.bin vmlinux.bin.gz vmlinux.bin.bz2
+vmlinux.bin.lzma \
+-       vmlinux.bin.xz vmlinux.bin.lzo vmlinux.bin.lz4 vmlinux.bin.zst
++       vmlinux.bin.xz vmlinux.bin.lzo vmlinux.bin.lz4 vmlinux.bin.zst
+vmlinux.bin.none
 
+ # CLANG_FLAGS must come before any cc-disable-warning or cc-option calls i=
+n
+ # case of cross compiling, as it has the '--target=3D' flag, which is need=
+ed to
+@@ -139,6 +139,8 @@ $(obj)/vmlinux.bin.lz4: $(vmlinux.bin.all-y) FORCE
+        $(call if_changed,lz4_with_size)
+ $(obj)/vmlinux.bin.zst: $(vmlinux.bin.all-y) FORCE
+        $(call if_changed,zstd22_with_size)
++$(obj)/vmlinux.bin.none: $(vmlinux.bin.all-y) FORCE
++       $(call if_changed,none)
+
+ suffix-$(CONFIG_KERNEL_GZIP)   :=3D gz
+ suffix-$(CONFIG_KERNEL_BZIP2)  :=3D bz2
+@@ -147,6 +149,7 @@ suffix-$(CONFIG_KERNEL_XZ)  :=3D xz
+ suffix-$(CONFIG_KERNEL_LZO)    :=3D lzo
+ suffix-$(CONFIG_KERNEL_LZ4)    :=3D lz4
+ suffix-$(CONFIG_KERNEL_ZSTD)   :=3D zst
++suffix-$(CONFIG_KERNEL_UNCOMPRESSED)   :=3D none
+
+ quiet_cmd_mkpiggy =3D MKPIGGY $@
+       cmd_mkpiggy =3D $(obj)/mkpiggy $< > $@
+diff --git a/arch/x86/boot/compressed/misc.c b/arch/x86/boot/compressed/mis=
+c.c
+index cf690d8712f4..c23c0f525d93 100644
+--- a/arch/x86/boot/compressed/misc.c
++++ b/arch/x86/boot/compressed/misc.c
+@@ -181,6 +181,19 @@ void __puthex(unsigned long value)
+        }
+ }
+
++#ifdef CONFIG_KERNEL_UNCOMPRESSED
++#include <linux/decompress/mm.h>
++static int __decompress(unsigned char *buf, long len,
++                               long (*fill)(void*, unsigned long),
++                               long (*flush)(void*, unsigned long),
++                               unsigned char *outbuf, long olen,
++                               long *pos, void (*error)(char *x))
++{
++       memcpy(outbuf, buf, olen);
++       return 0;
++}
++#endif
++
+ #ifdef CONFIG_X86_NEED_RELOCS
+ static void handle_relocations(void *output, unsigned long output_len,
+                               unsigned long virt_addr)
+diff --git a/scripts/Makefile.lib b/scripts/Makefile.lib
+index 3fb6a99e78c4..c89d5466c617 100644
+--- a/scripts/Makefile.lib
++++ b/scripts/Makefile.lib
+@@ -438,6 +438,11 @@ quiet_cmd_lz4 =3D LZ4     $@
+ quiet_cmd_lz4_with_size =3D LZ4     $@
+       cmd_lz4_with_size =3D { cat $(real-prereqs) | $(LZ4) -l -c1 stdin st=
+dout; \
+                   $(size_append); } > $@
++# none
++quiet_cmd_none =3D NONE     $@
++      cmd_none =3D (cat $(filter-out FORCE,$^) && \
++      $(call size_append, $(filter-out FORCE,$^))) > $@ || \
++      (rm -f $@ ; false)
+
+ # U-Boot mkimage
+ # ------------------------------------------------------------------------=
+---
 --
 2.31.1
