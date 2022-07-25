@@ -2,151 +2,253 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EBFAC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 02:11:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 137A5C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 02:12:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233097AbiGYCL1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 22:11:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37308 "EHLO
+        id S233243AbiGYCM5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 22:12:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233167AbiGYCLV (ORCPT
+        with ESMTP id S230006AbiGYCMz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 22:11:21 -0400
-Received: from conuserg-12.nifty.com (conuserg-12.nifty.com [210.131.2.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E56C9E0C3
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 19:11:19 -0700 (PDT)
-Received: from grover.sesame (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-12.nifty.com with ESMTP id 26P28hG0024554;
-        Mon, 25 Jul 2022 11:08:44 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-12.nifty.com 26P28hG0024554
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1658714924;
-        bh=fBshU7A7Rde9m6PAxG1uCGgXJuFDSJp0LWPguc3FMLg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bYn3kYIHBv3BbtTm/AOpEJ4+M4l/+DfG+TMkXA+NI4dPD5qNgJhiyY2ZJAd7DiSaR
-         71HF/bcO3Ov6yvDm7/wKC8z4DbRrYEP37CU7zkzHyA3+SOy8rJgOhBLR7VpNXCHGoU
-         TuNs58fbO4V+Hsb2S7MLwd18KtRGEwPrXnt/bJiGGgui2KBgbMgM27Y8x9YsiGk6m4
-         vgRK9Me2hZncA9/ikylNvBTlb5E1wmxVWCSF6gXgrsubVADQ/kV4873xoxroINfDvb
-         9JkYZeUQKWyOpKvdlqU9SvM2wmy/WnDRewOwT1s5IQcvznfPYsNIgFAFdtrotObdPt
-         qENjrqKBe50Bg==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>
-Cc:     "H . Peter Anvin" <hpa@zytor.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Helge Deller <deller@gmx.de>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sun, 24 Jul 2022 22:12:55 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 533D3F59D
+        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 19:12:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658715174; x=1690251174;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=J/0nExjUwS+y/8SNBhXGqNjhjg5I/y73xdQHb03ycIw=;
+  b=gJq7pb3N+xAyivxh264Yb/aaT2jTExWAvrKgxqTXqhVPQjyi+1ahgGyX
+   P/v/JZ0WTaPsSZ25H6XhAbBx/08lTa1CVVEu3S+SXDJw8Klq0r+fmbHx+
+   Fk4+x/69RsyMTOL9TKKDZs6c4emzBNBQkU3jfJc2jnwvM2eFX6BReVBgP
+   i3uWiMak+KHap4y1onK8mYLBsnkK+9BDmnF3RglWLnSyDRrHRx/K8UrQb
+   JKbtzXnAe2kgBmr/NBecVPHoqji6dzdDPlFWdeE/SXxImuzVEvrFB95oR
+   a6sA3+ZzYJAZ3lTKCqGlRU1tyzgjgy1MWch2KgSB3P9KxzUJIZiR5Py3R
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10418"; a="267984988"
+X-IronPort-AV: E=Sophos;i="5.93,191,1654585200"; 
+   d="scan'208";a="267984988"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jul 2022 19:12:54 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,191,1654585200"; 
+   d="scan'208";a="657971723"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 24 Jul 2022 19:12:52 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oFnaW-0004dB-00;
+        Mon, 25 Jul 2022 02:12:52 +0000
+Date:   Mon, 25 Jul 2022 10:12:01 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 2/2] x86/purgatory: Omit use of bin2c
-Date:   Mon, 25 Jul 2022 11:08:12 +0900
-Message-Id: <20220725020812.622255-2-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220725020812.622255-1-masahiroy@kernel.org>
-References: <20220725020812.622255-1-masahiroy@kernel.org>
+Subject: net/ipv4/ip_sockglue.c:838:7: warning: taking address of packed
+ member 'gf_group' of class or structure 'compat_group_filter::(anonymous
+ union)::(anonymous)' may result in an unaligned pointer value
+Message-ID: <202207251043.l8Cq3k4Z-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The .incbin assembler directive is much faster than bin2c + $(CC).
+Hi Gustavo,
 
-Do similar refactoring as in commit 4c0f032d4963 ("s390/purgatory:
-Omit use of bin2c").
+FYI, the error/warning still remains.
 
-Please note the .quad directive matches to size_t in C (both 8 byte)
-because the purgatory is compiled only for the 64-bit kernel.
-(KEXEC_FILE depends on X86_64).
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   e0dccc3b76fb35bb257b4118367a883073d7390e
+commit: db243b796439c0caba47865564d8acd18a301d18 net/ipv4/ipv6: Replace one-element arraya with flexible-array members
+date:   12 months ago
+config: arm-colibri_pxa300_defconfig (https://download.01.org/0day-ci/archive/20220725/202207251043.l8Cq3k4Z-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 12fbd2d377e396ad61bce56d71c98a1eb1bebfa9)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm cross compiling tool for clang build
+        # apt-get install binutils-arm-linux-gnueabi
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=db243b796439c0caba47865564d8acd18a301d18
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout db243b796439c0caba47865564d8acd18a301d18
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash net/ipv4/ net/ipv6/
 
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
----
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Changes in v2:
-  - Fix a typo (kexec_purgatroy_end -> kexec_purgatory_end)
+All warnings (new ones prefixed by >>):
 
- arch/x86/.gitignore                  |  2 --
- arch/x86/Kconfig                     |  1 -
- arch/x86/purgatory/Makefile          |  8 +-------
- arch/x86/purgatory/kexec-purgatory.S | 14 ++++++++++++++
- scripts/remove-stale-files           |  2 ++
- 5 files changed, 17 insertions(+), 10 deletions(-)
- create mode 100644 arch/x86/purgatory/kexec-purgatory.S
+>> net/ipv4/ip_sockglue.c:838:7: warning: taking address of packed member 'gf_group' of class or structure 'compat_group_filter::(anonymous union)::(anonymous)' may result in an unaligned pointer value [-Waddress-of-packed-member]
+                                    &gf32->gf_group, gf32->gf_slist_flex);
+                                     ^~~~~~~~~~~~~~
+>> net/ipv4/ip_sockglue.c:1509:29: warning: taking address of packed member 'gf_fmode' of class or structure 'compat_group_filter::(anonymous union)::(anonymous)' may result in an unaligned pointer value [-Waddress-of-packed-member]
+               put_user(gf.gf_fmode, &p->gf_fmode) ||
+                                      ^~~~~~~~~~~
+   arch/arm/include/asm/uaccess.h:406:26: note: expanded from macro 'put_user'
+           __put_user_switch((x), (ptr), __pu_err, __put_user_check);      \
+                                   ^~~
+   arch/arm/include/asm/uaccess.h:388:22: note: expanded from macro '__put_user_switch'
+                   const __typeof__(*(ptr)) __user *__pu_ptr = (ptr);      \
+                                      ^~~
+>> net/ipv4/ip_sockglue.c:1509:29: warning: taking address of packed member 'gf_fmode' of class or structure 'compat_group_filter::(anonymous union)::(anonymous)' may result in an unaligned pointer value [-Waddress-of-packed-member]
+               put_user(gf.gf_fmode, &p->gf_fmode) ||
+                                      ^~~~~~~~~~~
+   arch/arm/include/asm/uaccess.h:406:26: note: expanded from macro 'put_user'
+           __put_user_switch((x), (ptr), __pu_err, __put_user_check);      \
+                                   ^~~
+   arch/arm/include/asm/uaccess.h:389:16: note: expanded from macro '__put_user_switch'
+                   __typeof__(*(ptr)) __pu_val = (x);                      \
+                                ^~~
+>> net/ipv4/ip_sockglue.c:1509:29: warning: taking address of packed member 'gf_fmode' of class or structure 'compat_group_filter::(anonymous union)::(anonymous)' may result in an unaligned pointer value [-Waddress-of-packed-member]
+               put_user(gf.gf_fmode, &p->gf_fmode) ||
+                                      ^~~~~~~~~~~
+   arch/arm/include/asm/uaccess.h:406:26: note: expanded from macro 'put_user'
+           __put_user_switch((x), (ptr), __pu_err, __put_user_check);      \
+                                   ^~~
+   arch/arm/include/asm/uaccess.h:393:20: note: expanded from macro '__put_user_switch'
+                   switch (sizeof(*(ptr))) {                               \
+                                    ^~~
+>> net/ipv4/ip_sockglue.c:1510:30: warning: taking address of packed member 'gf_numsrc' of class or structure 'compat_group_filter::(anonymous union)::(anonymous)' may result in an unaligned pointer value [-Waddress-of-packed-member]
+               put_user(gf.gf_numsrc, &p->gf_numsrc))
+                                       ^~~~~~~~~~~~
+   arch/arm/include/asm/uaccess.h:406:26: note: expanded from macro 'put_user'
+           __put_user_switch((x), (ptr), __pu_err, __put_user_check);      \
+                                   ^~~
+   arch/arm/include/asm/uaccess.h:388:22: note: expanded from macro '__put_user_switch'
+                   const __typeof__(*(ptr)) __user *__pu_ptr = (ptr);      \
+                                      ^~~
+>> net/ipv4/ip_sockglue.c:1510:30: warning: taking address of packed member 'gf_numsrc' of class or structure 'compat_group_filter::(anonymous union)::(anonymous)' may result in an unaligned pointer value [-Waddress-of-packed-member]
+               put_user(gf.gf_numsrc, &p->gf_numsrc))
+                                       ^~~~~~~~~~~~
+   arch/arm/include/asm/uaccess.h:406:26: note: expanded from macro 'put_user'
+           __put_user_switch((x), (ptr), __pu_err, __put_user_check);      \
+                                   ^~~
+   arch/arm/include/asm/uaccess.h:389:16: note: expanded from macro '__put_user_switch'
+                   __typeof__(*(ptr)) __pu_val = (x);                      \
+                                ^~~
+>> net/ipv4/ip_sockglue.c:1510:30: warning: taking address of packed member 'gf_numsrc' of class or structure 'compat_group_filter::(anonymous union)::(anonymous)' may result in an unaligned pointer value [-Waddress-of-packed-member]
+               put_user(gf.gf_numsrc, &p->gf_numsrc))
+                                       ^~~~~~~~~~~~
+   arch/arm/include/asm/uaccess.h:406:26: note: expanded from macro 'put_user'
+           __put_user_switch((x), (ptr), __pu_err, __put_user_check);      \
+                                   ^~~
+   arch/arm/include/asm/uaccess.h:393:20: note: expanded from macro '__put_user_switch'
+                   switch (sizeof(*(ptr))) {                               \
+                                    ^~~
+   7 warnings generated.
+--
+>> net/ipv6/ipv6_sockglue.c:1111:29: warning: taking address of packed member 'gf_fmode' of class or structure 'compat_group_filter::(anonymous union)::(anonymous)' may result in an unaligned pointer value [-Waddress-of-packed-member]
+               put_user(gf.gf_fmode, &p->gf_fmode) ||
+                                      ^~~~~~~~~~~
+   arch/arm/include/asm/uaccess.h:406:26: note: expanded from macro 'put_user'
+           __put_user_switch((x), (ptr), __pu_err, __put_user_check);      \
+                                   ^~~
+   arch/arm/include/asm/uaccess.h:388:22: note: expanded from macro '__put_user_switch'
+                   const __typeof__(*(ptr)) __user *__pu_ptr = (ptr);      \
+                                      ^~~
+>> net/ipv6/ipv6_sockglue.c:1111:29: warning: taking address of packed member 'gf_fmode' of class or structure 'compat_group_filter::(anonymous union)::(anonymous)' may result in an unaligned pointer value [-Waddress-of-packed-member]
+               put_user(gf.gf_fmode, &p->gf_fmode) ||
+                                      ^~~~~~~~~~~
+   arch/arm/include/asm/uaccess.h:406:26: note: expanded from macro 'put_user'
+           __put_user_switch((x), (ptr), __pu_err, __put_user_check);      \
+                                   ^~~
+   arch/arm/include/asm/uaccess.h:389:16: note: expanded from macro '__put_user_switch'
+                   __typeof__(*(ptr)) __pu_val = (x);                      \
+                                ^~~
+>> net/ipv6/ipv6_sockglue.c:1111:29: warning: taking address of packed member 'gf_fmode' of class or structure 'compat_group_filter::(anonymous union)::(anonymous)' may result in an unaligned pointer value [-Waddress-of-packed-member]
+               put_user(gf.gf_fmode, &p->gf_fmode) ||
+                                      ^~~~~~~~~~~
+   arch/arm/include/asm/uaccess.h:406:26: note: expanded from macro 'put_user'
+           __put_user_switch((x), (ptr), __pu_err, __put_user_check);      \
+                                   ^~~
+   arch/arm/include/asm/uaccess.h:393:20: note: expanded from macro '__put_user_switch'
+                   switch (sizeof(*(ptr))) {                               \
+                                    ^~~
+>> net/ipv6/ipv6_sockglue.c:1112:30: warning: taking address of packed member 'gf_numsrc' of class or structure 'compat_group_filter::(anonymous union)::(anonymous)' may result in an unaligned pointer value [-Waddress-of-packed-member]
+               put_user(gf.gf_numsrc, &p->gf_numsrc))
+                                       ^~~~~~~~~~~~
+   arch/arm/include/asm/uaccess.h:406:26: note: expanded from macro 'put_user'
+           __put_user_switch((x), (ptr), __pu_err, __put_user_check);      \
+                                   ^~~
+   arch/arm/include/asm/uaccess.h:388:22: note: expanded from macro '__put_user_switch'
+                   const __typeof__(*(ptr)) __user *__pu_ptr = (ptr);      \
+                                      ^~~
+>> net/ipv6/ipv6_sockglue.c:1112:30: warning: taking address of packed member 'gf_numsrc' of class or structure 'compat_group_filter::(anonymous union)::(anonymous)' may result in an unaligned pointer value [-Waddress-of-packed-member]
+               put_user(gf.gf_numsrc, &p->gf_numsrc))
+                                       ^~~~~~~~~~~~
+   arch/arm/include/asm/uaccess.h:406:26: note: expanded from macro 'put_user'
+           __put_user_switch((x), (ptr), __pu_err, __put_user_check);      \
+                                   ^~~
+   arch/arm/include/asm/uaccess.h:389:16: note: expanded from macro '__put_user_switch'
+                   __typeof__(*(ptr)) __pu_val = (x);                      \
+                                ^~~
+>> net/ipv6/ipv6_sockglue.c:1112:30: warning: taking address of packed member 'gf_numsrc' of class or structure 'compat_group_filter::(anonymous union)::(anonymous)' may result in an unaligned pointer value [-Waddress-of-packed-member]
+               put_user(gf.gf_numsrc, &p->gf_numsrc))
+                                       ^~~~~~~~~~~~
+   arch/arm/include/asm/uaccess.h:406:26: note: expanded from macro 'put_user'
+           __put_user_switch((x), (ptr), __pu_err, __put_user_check);      \
+                                   ^~~
+   arch/arm/include/asm/uaccess.h:393:20: note: expanded from macro '__put_user_switch'
+                   switch (sizeof(*(ptr))) {                               \
+                                    ^~~
+   6 warnings generated.
 
-diff --git a/arch/x86/.gitignore b/arch/x86/.gitignore
-index 677111acbaa3..f2e1d6c347fb 100644
---- a/arch/x86/.gitignore
-+++ b/arch/x86/.gitignore
-@@ -3,6 +3,4 @@ boot/compressed/vmlinux
- tools/test_get_len
- tools/insn_sanity
- tools/insn_decoder_test
--purgatory/kexec-purgatory.c
- purgatory/purgatory.ro
--
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index be0b95e51df6..2c1d37cd479f 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -2032,7 +2032,6 @@ config KEXEC
- config KEXEC_FILE
- 	bool "kexec file based system call"
- 	select KEXEC_CORE
--	select BUILD_BIN2C
- 	depends on X86_64
- 	depends on CRYPTO=y
- 	depends on CRYPTO_SHA256=y
-diff --git a/arch/x86/purgatory/Makefile b/arch/x86/purgatory/Makefile
-index 248b009c4061..31c634a22818 100644
---- a/arch/x86/purgatory/Makefile
-+++ b/arch/x86/purgatory/Makefile
-@@ -73,12 +73,6 @@ $(obj)/purgatory.ro: $(PURGATORY_OBJS) FORCE
- $(obj)/purgatory.chk: $(obj)/purgatory.ro FORCE
- 		$(call if_changed,ld)
- 
--targets += kexec-purgatory.c
--
--quiet_cmd_bin2c = BIN2C   $@
--      cmd_bin2c = $(objtree)/scripts/bin2c kexec_purgatory < $< > $@
--
--$(obj)/kexec-purgatory.c: $(obj)/purgatory.ro $(obj)/purgatory.chk FORCE
--	$(call if_changed,bin2c)
-+$(obj)/kexec-purgatory.o: $(obj)/purgatory.ro $(obj)/purgatory.chk
- 
- obj-y += kexec-purgatory.o
-diff --git a/arch/x86/purgatory/kexec-purgatory.S b/arch/x86/purgatory/kexec-purgatory.S
-new file mode 100644
-index 000000000000..8530fe93b718
---- /dev/null
-+++ b/arch/x86/purgatory/kexec-purgatory.S
-@@ -0,0 +1,14 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+
-+	.section .rodata, "a"
-+
-+	.align	8
-+kexec_purgatory:
-+	.globl	kexec_purgatory
-+	.incbin	"arch/x86/purgatory/purgatory.ro"
-+.Lkexec_purgatory_end:
-+
-+	.align	8
-+kexec_purgatory_size:
-+	.globl	kexec_purgatory_size
-+	.quad	.Lkexec_purgatory_end - kexec_purgatory
-diff --git a/scripts/remove-stale-files b/scripts/remove-stale-files
-index 7adab4618035..379e86c71bed 100755
---- a/scripts/remove-stale-files
-+++ b/scripts/remove-stale-files
-@@ -41,3 +41,5 @@ if [ -n "${building_out_of_srctree}" ]; then
- fi
- 
- rm -f scripts/extract-cert
-+
-+rm -f arch/x86/purgatory/kexec-purgatory.c
+
+vim +838 net/ipv4/ip_sockglue.c
+
+   799	
+   800	static int compat_ip_set_mcast_msfilter(struct sock *sk, sockptr_t optval,
+   801			int optlen)
+   802	{
+   803		const int size0 = offsetof(struct compat_group_filter, gf_slist_flex);
+   804		struct compat_group_filter *gf32;
+   805		unsigned int n;
+   806		void *p;
+   807		int err;
+   808	
+   809		if (optlen < size0)
+   810			return -EINVAL;
+   811		if (optlen > sysctl_optmem_max - 4)
+   812			return -ENOBUFS;
+   813	
+   814		p = kmalloc(optlen + 4, GFP_KERNEL);
+   815		if (!p)
+   816			return -ENOMEM;
+   817		gf32 = p + 4; /* we want ->gf_group and ->gf_slist_flex aligned */
+   818	
+   819		err = -EFAULT;
+   820		if (copy_from_sockptr(gf32, optval, optlen))
+   821			goto out_free_gsf;
+   822	
+   823		/* numsrc >= (4G-140)/128 overflow in 32 bits */
+   824		n = gf32->gf_numsrc;
+   825		err = -ENOBUFS;
+   826		if (n >= 0x1ffffff)
+   827			goto out_free_gsf;
+   828	
+   829		err = -EINVAL;
+   830		if (offsetof(struct compat_group_filter, gf_slist_flex[n]) > optlen)
+   831			goto out_free_gsf;
+   832	
+   833		/* numsrc >= (4G-140)/128 overflow in 32 bits */
+   834		err = -ENOBUFS;
+   835		if (n > sock_net(sk)->ipv4.sysctl_igmp_max_msf)
+   836			goto out_free_gsf;
+   837		err = set_mcast_msfilter(sk, gf32->gf_interface, n, gf32->gf_fmode,
+ > 838					 &gf32->gf_group, gf32->gf_slist_flex);
+   839	out_free_gsf:
+   840		kfree(p);
+   841		return err;
+   842	}
+   843	
+
 -- 
-2.34.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
