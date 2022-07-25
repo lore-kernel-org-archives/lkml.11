@@ -2,108 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 773B2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 08:00:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 567F1C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 08:01:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233453AbiGYIAg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 04:00:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49508 "EHLO
+        id S231946AbiGYIBx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 04:01:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232935AbiGYIAI (ORCPT
+        with ESMTP id S233278AbiGYIBa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 04:00:08 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D966613CE5;
-        Mon, 25 Jul 2022 01:00:05 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 25 Jul 2022 04:01:30 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BAC113E95
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 01:01:01 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 55B21CE10D4;
-        Mon, 25 Jul 2022 08:00:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 311B7C341D2;
-        Mon, 25 Jul 2022 08:00:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658736001;
-        bh=7HPL7TSph7xHTwSwFr2eiOHKgS3Uzq/+C4Qi1l0Xe+o=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o7liZPuaHI1qRg0PKIiLRfQuTCCno8X5u0oznAEQuftElgWtko5jHR38a2nm5A5pL
-         IDvruIlHGBrHtS4Qocx4CLEo7Bxg6qwmJWabYB+GDZJCCYQceMy4gP30ao6AMYyvke
-         23U7AIHk8Rm3FgSdzAB7c9NSgHcNDYOemUxkV8OkrQ2kNagPE8snG/jJwU/OCVgqW5
-         AsOwHkdYlz09iv9jcb0OhiHXobP5rYASQq2R+u9E8fyLyZumIeoMIjy1ycfUfAq1f+
-         SyP8se2dngo6744xj8uc2bsBw6Tg2r2NChBwGJ1PXs3BKTPfpC7Ssaq7/DQFXDdNmz
-         RJ9lnQ0jqIqzA==
-Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan@kernel.org>)
-        id 1oFt0e-0000KG-Ec; Mon, 25 Jul 2022 10:00:12 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Oliver Neukum <oneukum@suse.com>,
-        Felipe Balbi <balbi@kernel.org>
-Cc:     Yan Xinyu <sdlyyxy@bupt.edu.cn>, linux-staging@lists.linux.dev,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 7/7] USB: serial: usb_wwan: replace DTR/RTS magic numbers with macros
-Date:   Mon, 25 Jul 2022 09:58:41 +0200
-Message-Id: <20220725075841.1187-8-johan@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220725075841.1187-1-johan@kernel.org>
-References: <20220725075841.1187-1-johan@kernel.org>
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 94E6E1F981;
+        Mon, 25 Jul 2022 08:00:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1658736059; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=H1PBuC0jiBRBBGEqLJntJLX3lel38SgGPHuPFxxLQJU=;
+        b=iiTMYPIi1XY2dDcgRWqys67t7KySPokkua6IRB4IL8oPHviB1gn1yfnnlwZoro4FDmDb3b
+        9AM5ZjhvwVrNFZxuleggsP5e+fhkEqxA+Bw2gszdwby2OJ6YDd6gw0EwD4KU9e6cLr4zzh
+        z/y/aC9tyCDRBDTh7McDopwefp4rKVc=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1658736059;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=H1PBuC0jiBRBBGEqLJntJLX3lel38SgGPHuPFxxLQJU=;
+        b=xtzrA6QtIIw6hLwAq4ZuOV/amKGSsW2Xepn/4LZNAZe0ADzyqZzh88UVB163k3PJBhWSRG
+        srMpj+EdLWvTaoBw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5B1A113A8D;
+        Mon, 25 Jul 2022 08:00:59 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id QAaQFLtN3mJyYwAAMHmgww
+        (envelope-from <jdelvare@suse.de>); Mon, 25 Jul 2022 08:00:59 +0000
+Date:   Mon, 25 Jul 2022 10:00:56 +0200
+From:   Jean Delvare <jdelvare@suse.de>
+To:     kernel test robot <lkp@intel.com>
+Cc:     Sean Wang <sean.wang@mediatek.com>, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Subject: Re: drivers/regulator/mt6380-regulator.c:333:34: warning:
+ 'mt6380_of_match' defined but not used
+Message-ID: <20220725100056.0063b193@endymion.delvare>
+In-Reply-To: <202207240252.ZY5hSCNB-lkp@intel.com>
+References: <202207240252.ZY5hSCNB-lkp@intel.com>
+Organization: SUSE Linux
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.32; x86_64-suse-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yan Xinyu <sdlyyxy@bupt.edu.cn>
+On Sun, 24 Jul 2022 02:37:15 +0800, kernel test robot wrote:
+> All warnings (new ones prefixed by >>):
+> 
+> >> drivers/regulator/mt6380-regulator.c:333:34: warning: 'mt6380_of_match' defined but not used [-Wunused-const-variable=]  
+>      333 | static const struct of_device_id mt6380_of_match[] = {
+>          |                                  ^~~~~~~~~~~~~~~
+> --
+> >> drivers/soc/mediatek/mtk-pmic-wrap.c:1436:34: warning: 'of_pwrap_match_tbl' defined but not used [-Wunused-const-variable=]  
+>     1436 | static const struct of_device_id of_pwrap_match_tbl[] = {
+>          |                                  ^~~~~~~~~~~~~~~~~~
+> >> drivers/soc/mediatek/mtk-pmic-wrap.c:1370:34: warning: 'of_slave_match_tbl' defined but not used [-Wunused-const-variable=]  
+>     1370 | static const struct of_device_id of_slave_match_tbl[] = {
+>          |                                  ^~~~~~~~~~~~~~~~~~
 
-The usb_wwan_send_setup function generates DTR/RTS signals in compliance
-with CDC ACM standard. This patch changes magic numbers in this function
-to equivalent macros.
+Not sure what do to with this one. These warnings can be silenced with
+__maybe_unused. But does it actually make sense to build these drivers
+with CONFIG_OF disabled?
 
-Signed-off-by: Yan Xinyu <sdlyyxy@bupt.edu.cn>
-Link: https://lore.kernel.org/r/20220722085040.704885-1-sdlyyxy@bupt.edu.cn
-[ johan: use the new CDC control-line defines ]
-Signed-off-by: Johan Hovold <johan@kernel.org>
----
- drivers/usb/serial/usb_wwan.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+As I understand it, that's the condition which makes the warnings
+appear, and from a quick look at the code, it seems to me that the
+drivers are useless then. It might make more sense to make both drivers
+depend on OF. What do you think?
 
-diff --git a/drivers/usb/serial/usb_wwan.c b/drivers/usb/serial/usb_wwan.c
-index dab38b63eaf7..6129a6e26f2c 100644
---- a/drivers/usb/serial/usb_wwan.c
-+++ b/drivers/usb/serial/usb_wwan.c
-@@ -29,6 +29,7 @@
- #include <linux/bitops.h>
- #include <linux/uaccess.h>
- #include <linux/usb.h>
-+#include <linux/usb/cdc.h>
- #include <linux/usb/serial.h>
- #include <linux/serial.h>
- #include "usb-wwan.h"
-@@ -48,9 +49,9 @@ static int usb_wwan_send_setup(struct usb_serial_port *port)
- 	portdata = usb_get_serial_port_data(port);
- 
- 	if (portdata->dtr_state)
--		val |= 0x01;
-+		val |= USB_CDC_CTRL_DTR;
- 	if (portdata->rts_state)
--		val |= 0x02;
-+		val |= USB_CDC_CTRL_RTS;
- 
- 	ifnum = serial->interface->cur_altsetting->desc.bInterfaceNumber;
- 
-@@ -59,8 +60,9 @@ static int usb_wwan_send_setup(struct usb_serial_port *port)
- 		return res;
- 
- 	res = usb_control_msg(serial->dev, usb_sndctrlpipe(serial->dev, 0),
--				0x22, 0x21, val, ifnum, NULL, 0,
--				USB_CTRL_SET_TIMEOUT);
-+				USB_CDC_REQ_SET_CONTROL_LINE_STATE,
-+				USB_DIR_OUT | USB_TYPE_CLASS | USB_RECIP_INTERFACE,
-+				val, ifnum, NULL, 0, USB_CTRL_SET_TIMEOUT);
- 
- 	usb_autopm_put_interface(port->serial->interface);
- 
 -- 
-2.35.1
-
+Jean Delvare
+SUSE L3 Support
