@@ -2,93 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC293C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 02:39:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 233C3C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 02:44:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233064AbiGYCjJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 22:39:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48842 "EHLO
+        id S231419AbiGYCoe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 22:44:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230006AbiGYCjG (ORCPT
+        with ESMTP id S229436AbiGYCoc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 22:39:06 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16159DF87;
-        Sun, 24 Jul 2022 19:39:06 -0700 (PDT)
-Received: from canpemm500008.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Lrkh30rRszkXD4;
-        Mon, 25 Jul 2022 10:36:35 +0800 (CST)
-Received: from localhost.huawei.com (10.175.124.27) by
- canpemm500008.china.huawei.com (7.192.105.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 25 Jul 2022 10:39:04 +0800
-From:   Li Jinlin <lijinlin3@huawei.com>
-To:     <viro@zeniv.linux.org.uk>, <dan.j.williams@intel.com>,
-        <willy@infradead.org>, <jack@suse.cz>, <djwong@kernel.org>
-CC:     <linux-fsdevel@vger.kernel.org>, <nvdimm@lists.linux.dev>,
-        <linux-kernel@vger.kernel.org>, <linfeilong@huawei.com>,
-        <liuzhiqiang26@huawei.com>
-Subject: [PATCH] fsdax: Fix infinite loop in dax_iomap_rw()
-Date:   Mon, 25 Jul 2022 11:20:50 +0800
-Message-ID: <20220725032050.3873372-1-lijinlin3@huawei.com>
-X-Mailer: git-send-email 2.27.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.124.27]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- canpemm500008.china.huawei.com (7.192.105.151)
-X-CFilter-Loop: Reflected
+        Sun, 24 Jul 2022 22:44:32 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4139CBC1F;
+        Sun, 24 Jul 2022 19:44:30 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id e132so9138482pgc.5;
+        Sun, 24 Jul 2022 19:44:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=a4smhlXQRPY08uZFYWaREPplMOTenvaPYfLKafzeLgY=;
+        b=g8KdayopTfm0rTuvVjbGJF0Fqri1hOHJ/P7xPCvZngTKUJJRFvxIFwtm4xvy66lOY/
+         rN9J+SMwCFGJsTl3BVGUMeV73vqf31Re/WlsTKu379ZcSCC9Y1h4jOW3ncRNByVqmkez
+         MdxlJCeeaJdco+5DGtXkME913JgG2SsLalxAjvJmNy8Tbd43s/YDGpjZIA3nveVzPKzz
+         rmsdtGb7EEnaIs8ao+apTqcERdbSXcb0TiWX10+r0lsApqogIaYgoDOEoI6Vf8TMJlk3
+         4jYCWywSmwZFHEXeChB2wtKaBxuStT7APFTcQu7zVWr/tjFFHsOmMi625vu1VcmnVRnm
+         /JdQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=a4smhlXQRPY08uZFYWaREPplMOTenvaPYfLKafzeLgY=;
+        b=AwwVzd3FoXjuAqZfj3RTyRmjVr8PQaMyuMA2/RE4o1ndEgfgIeGimKMMjiwAvcu5iu
+         AArYPguBMs4QHX/ejSDmLu6KumROgiaFeASw5jEqm157n8qW8YEI4bOzRHua8B05ZcM3
+         kVCOHeESbwiogpVhcbGdbG2+LzzaIWWtUlDnhJMgZXbbDxSl3m/QXneswAgeoXreaszw
+         /MTmKJldtUwqQKPTWPbKGqSumVOnVSHPPuERvA6TRADgFqiKuwO9lxfa8+luX2Uls+fW
+         m8ARnh8aZzEmhFn1JlPKG1KwW+WhKJVHR/UU/E4Wl0bpBExDwa6doxFga1oC25hSEPhA
+         I1wA==
+X-Gm-Message-State: AJIora/AJt3m4qu24b0K8+8uG3nDBRjYGrQGpTaA9eWwb9yaCmmk6L2e
+        jUCbEDYIMI6biqsL70dTcrg=
+X-Google-Smtp-Source: AGRyM1skOhwsZ2B83o1MkEB/dH4BEcN0rbxltYzHhPOlyRIyTD6z+FBB9Pa0FkSEUY0x65BA++W/rA==
+X-Received: by 2002:a62:1508:0:b0:528:be70:2f69 with SMTP id 8-20020a621508000000b00528be702f69mr10846563pfv.42.1658717070380;
+        Sun, 24 Jul 2022 19:44:30 -0700 (PDT)
+Received: from scdiu3.sunplus.com ([113.196.136.192])
+        by smtp.googlemail.com with ESMTPSA id u13-20020a170903124d00b0016d1b197914sm7983304plh.90.2022.07.24.19.44.28
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 24 Jul 2022 19:44:30 -0700 (PDT)
+From:   Vincent Shih <vincent.sunplus@gmail.com>
+To:     kishon@ti.com, vkoul@kernel.org, p.zabel@pengutronix.de,
+        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-usb@vger.kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, devicetree@vger.kernel.org,
+        wells.lu@sunplus.com
+Cc:     Vincent Shih <vincent.sunplus@gmail.com>
+Subject: [PATCH v5 0/2] Add USB2.0 phy driver for Sunplus SP7021
+Date:   Mon, 25 Jul 2022 10:44:10 +0800
+Message-Id: <1658717052-26142-1-git-send-email-vincent.sunplus@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I got an infinite loop and a WARNING report when executing a tail command
-in virtiofs.
+This is a patch series for USB2.0 phy driver for Sunplus SP7021 SoC.
 
-  WARNING: CPU: 10 PID: 964 at fs/iomap/iter.c:34 iomap_iter+0x3a2/0x3d0
-  Modules linked in:
-  CPU: 10 PID: 964 Comm: tail Not tainted 5.19.0-rc7
-  Call Trace:
-  <TASK>
-  dax_iomap_rw+0xea/0x620
-  ? __this_cpu_preempt_check+0x13/0x20
-  fuse_dax_read_iter+0x47/0x80
-  fuse_file_read_iter+0xae/0xd0
-  new_sync_read+0xfe/0x180
-  ? 0xffffffff81000000
-  vfs_read+0x14d/0x1a0
-  ksys_read+0x6d/0xf0
-  __x64_sys_read+0x1a/0x20
-  do_syscall_64+0x3b/0x90
-  entry_SYSCALL_64_after_hwframe+0x63/0xcd
+Sunplus SP7021 is an ARM Coretex A7 (4 cores) based SoC. It integrates
+many peripherals (ex: UART, I2C, SPI, SDIO, eMMC, USB, SD Card and
+etc.) into a single chip. It is designed for industrial control.
 
-The tail command will call read() with a count of 0. In this case,
-iomap_iter() will report this WARNING, and always return 1 which casuing
-the infinite loop in dax_iomap_rw().
+Refer to:
+https://sunplus-tibbo.atlassian.net/wiki/spaces/doc/overview
+https://tibbo.com/store/plus1.html
 
-Fixing by checking count whether is 0 in dax_iomap_rw().
+Vincent Shih (2):
+  phy: usb: Add USB2.0 phy driver for Sunplus SP7021
+  dt-bindings: phy: Add bindings doc for Sunplus USB2
 
-Fixes: ca289e0b95af ("fsdax: switch dax_iomap_rw to use iomap_iter")
-Signed-off-by: Li Jinlin <lijinlin3@huawei.com>
----
- fs/dax.c | 3 +++
- 1 file changed, 3 insertions(+)
+ .../bindings/phy/sunplus,sp7021-usb2-phy.yaml      |  73 +++++
+ MAINTAINERS                                        |   9 +
+ drivers/phy/Kconfig                                |   1 +
+ drivers/phy/Makefile                               |   1 +
+ drivers/phy/sunplus/Kconfig                        |  12 +
+ drivers/phy/sunplus/Makefile                       |   2 +
+ drivers/phy/sunplus/phy-sunplus-usb2.c             | 297 +++++++++++++++++++++
+ 7 files changed, 395 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/phy/sunplus,sp7021-usb2-phy.yaml
+ create mode 100644 drivers/phy/sunplus/Kconfig
+ create mode 100644 drivers/phy/sunplus/Makefile
+ create mode 100644 drivers/phy/sunplus/phy-sunplus-usb2.c
 
-diff --git a/fs/dax.c b/fs/dax.c
-index 4155a6107fa1..7ab248ed21aa 100644
---- a/fs/dax.c
-+++ b/fs/dax.c
-@@ -1241,6 +1241,9 @@ dax_iomap_rw(struct kiocb *iocb, struct iov_iter *iter,
- 	loff_t done = 0;
- 	int ret;
- 
-+	if (!iomi.len)
-+		return 0;
-+
- 	if (iov_iter_rw(iter) == WRITE) {
- 		lockdep_assert_held_write(&iomi.inode->i_rwsem);
- 		iomi.flags |= IOMAP_WRITE;
 -- 
-2.30.2
+2.7.4
 
