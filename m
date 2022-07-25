@@ -2,87 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0936C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 02:38:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC293C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 02:39:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232770AbiGYCie (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 22:38:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48424 "EHLO
+        id S233064AbiGYCjJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 22:39:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229821AbiGYCib (ORCPT
+        with ESMTP id S230006AbiGYCjG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 22:38:31 -0400
+        Sun, 24 Jul 2022 22:39:06 -0400
 Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4F98DF87
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 19:38:29 -0700 (PDT)
-Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Lrkdf58wgz923g;
-        Mon, 25 Jul 2022 10:34:30 +0800 (CST)
-Received: from dggpeml500008.china.huawei.com (7.185.36.147) by
- dggpeml500024.china.huawei.com (7.185.36.10) with Microsoft SMTP Server
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16159DF87;
+        Sun, 24 Jul 2022 19:39:06 -0700 (PDT)
+Received: from canpemm500008.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Lrkh30rRszkXD4;
+        Mon, 25 Jul 2022 10:36:35 +0800 (CST)
+Received: from localhost.huawei.com (10.175.124.27) by
+ canpemm500008.china.huawei.com (7.192.105.151) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 25 Jul 2022 10:38:17 +0800
-Received: from huawei.com (10.67.175.34) by dggpeml500008.china.huawei.com
- (7.185.36.147) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 25 Jul
- 2022 10:38:16 +0800
-From:   Ren Zhijie <renzhijie2@huawei.com>
-To:     <james.schulman@cirrus.com>, <david.rhodes@cirrus.com>,
-        <tanureal@opensource.cirrus.com>, <rf@opensource.cirrus.com>,
-        <perex@perex.cz>, <tiwai@suse.com>,
-        <sbinding@opensource.cirrus.com>, <vitalyr@opensource.cirrus.com>
-CC:     <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
-        <linux-kernel@vger.kernel.org>, <arnd@arndb.de>,
-        Ren Zhijie <renzhijie2@huawei.com>
-Subject: [PATCH -next] ALSA: hda: cs35l41: Fix build error unused-function
-Date:   Mon, 25 Jul 2022 10:36:11 +0800
-Message-ID: <20220725023611.57055-1-renzhijie2@huawei.com>
-X-Mailer: git-send-email 2.17.1
+ 15.1.2375.24; Mon, 25 Jul 2022 10:39:04 +0800
+From:   Li Jinlin <lijinlin3@huawei.com>
+To:     <viro@zeniv.linux.org.uk>, <dan.j.williams@intel.com>,
+        <willy@infradead.org>, <jack@suse.cz>, <djwong@kernel.org>
+CC:     <linux-fsdevel@vger.kernel.org>, <nvdimm@lists.linux.dev>,
+        <linux-kernel@vger.kernel.org>, <linfeilong@huawei.com>,
+        <liuzhiqiang26@huawei.com>
+Subject: [PATCH] fsdax: Fix infinite loop in dax_iomap_rw()
+Date:   Mon, 25 Jul 2022 11:20:50 +0800
+Message-ID: <20220725032050.3873372-1-lijinlin3@huawei.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.175.34]
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.124.27]
 X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpeml500008.china.huawei.com (7.185.36.147)
+ canpemm500008.china.huawei.com (7.192.105.151)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If CONFIG_PM_SLEEP is not set,
-make ARCH=x86_64 CROSS_COMPILE=x86_64-linux-gnu-, will be failed, like this:
+I got an infinite loop and a WARNING report when executing a tail command
+in virtiofs.
 
-sound/pci/hda/cs35l41_hda.c:583:12: error: ‘cs35l41_runtime_resume’ defined but not used [-Werror=unused-function]
- static int cs35l41_runtime_resume(struct device *dev)
-            ^~~~~~~~~~~~~~~~~~~~~~
-sound/pci/hda/cs35l41_hda.c:565:12: error: ‘cs35l41_runtime_suspend’ defined but not used [-Werror=unused-function]
- static int cs35l41_runtime_suspend(struct device *dev)
-            ^~~~~~~~~~~~~~~~~~~~~~~
-cc1: all warnings being treated as errors
-make[3]: *** [sound/pci/hda/cs35l41_hda.o] Error 1
+  WARNING: CPU: 10 PID: 964 at fs/iomap/iter.c:34 iomap_iter+0x3a2/0x3d0
+  Modules linked in:
+  CPU: 10 PID: 964 Comm: tail Not tainted 5.19.0-rc7
+  Call Trace:
+  <TASK>
+  dax_iomap_rw+0xea/0x620
+  ? __this_cpu_preempt_check+0x13/0x20
+  fuse_dax_read_iter+0x47/0x80
+  fuse_file_read_iter+0xae/0xd0
+  new_sync_read+0xfe/0x180
+  ? 0xffffffff81000000
+  vfs_read+0x14d/0x1a0
+  ksys_read+0x6d/0xf0
+  __x64_sys_read+0x1a/0x20
+  do_syscall_64+0x3b/0x90
+  entry_SYSCALL_64_after_hwframe+0x63/0xcd
 
-commit 1a3c7bb08826 ("PM: core: Add new *_PM_OPS macros,
-deprecate old ones"), add new marco RUNTIME_PM_OPS to fix this unused-function problem.
+The tail command will call read() with a count of 0. In this case,
+iomap_iter() will report this WARNING, and always return 1 which casuing
+the infinite loop in dax_iomap_rw().
 
-Fixes: 1873ebd30cc8 ("ALSA: hda: cs35l41: Support Hibernation during Suspend")
-Signed-off-by: Ren Zhijie <renzhijie2@huawei.com>
+Fixing by checking count whether is 0 in dax_iomap_rw().
+
+Fixes: ca289e0b95af ("fsdax: switch dax_iomap_rw to use iomap_iter")
+Signed-off-by: Li Jinlin <lijinlin3@huawei.com>
 ---
- sound/pci/hda/cs35l41_hda.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/dax.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/sound/pci/hda/cs35l41_hda.c b/sound/pci/hda/cs35l41_hda.c
-index 28798d5c1cf1..93cf039abb02 100644
---- a/sound/pci/hda/cs35l41_hda.c
-+++ b/sound/pci/hda/cs35l41_hda.c
-@@ -1439,7 +1439,7 @@ void cs35l41_hda_remove(struct device *dev)
- EXPORT_SYMBOL_NS_GPL(cs35l41_hda_remove, SND_HDA_SCODEC_CS35L41);
+diff --git a/fs/dax.c b/fs/dax.c
+index 4155a6107fa1..7ab248ed21aa 100644
+--- a/fs/dax.c
++++ b/fs/dax.c
+@@ -1241,6 +1241,9 @@ dax_iomap_rw(struct kiocb *iocb, struct iov_iter *iter,
+ 	loff_t done = 0;
+ 	int ret;
  
- const struct dev_pm_ops cs35l41_hda_pm_ops = {
--	SET_RUNTIME_PM_OPS(cs35l41_runtime_suspend, cs35l41_runtime_resume, NULL)
-+	RUNTIME_PM_OPS(cs35l41_runtime_suspend, cs35l41_runtime_resume, NULL)
- };
- EXPORT_SYMBOL_NS_GPL(cs35l41_hda_pm_ops, SND_HDA_SCODEC_CS35L41);
- 
++	if (!iomi.len)
++		return 0;
++
+ 	if (iov_iter_rw(iter) == WRITE) {
+ 		lockdep_assert_held_write(&iomi.inode->i_rwsem);
+ 		iomi.flags |= IOMAP_WRITE;
 -- 
-2.17.1
+2.30.2
 
