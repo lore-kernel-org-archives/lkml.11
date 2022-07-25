@@ -2,72 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54FFCC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 07:00:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA278C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 07:00:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230209AbiGYHAQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 03:00:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44194 "EHLO
+        id S230190AbiGYHAp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 03:00:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229676AbiGYHAM (ORCPT
+        with ESMTP id S230237AbiGYHAm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 03:00:12 -0400
-X-Greylist: delayed 401 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 25 Jul 2022 00:00:10 PDT
-Received: from giacobini.uberspace.de (giacobini.uberspace.de [185.26.156.129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7166C10DE
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 00:00:09 -0700 (PDT)
-Received: (qmail 23557 invoked by uid 990); 25 Jul 2022 06:53:27 -0000
-Authentication-Results: giacobini.uberspace.de;
-        auth=pass (plain)
-From:   Soenke Huster <soenke.huster@eknoes.de>
-To:     Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc:     Soenke Huster <soenke.huster@eknoes.de>,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH Resend] Bluetooth: virtio_bt: Use skb_put to set length
-Date:   Mon, 25 Jul 2022 08:53:15 +0200
-Message-Id: <20220725065316.6942-1-soenke.huster@eknoes.de>
-X-Mailer: git-send-email 2.37.1
+        Mon, 25 Jul 2022 03:00:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8CD6A46A;
+        Mon, 25 Jul 2022 00:00:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 61584610A7;
+        Mon, 25 Jul 2022 07:00:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49DF1C341C6;
+        Mon, 25 Jul 2022 07:00:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658732440;
+        bh=PU/uIPIuT+1JDGrwewxldEjg0C1KjctDuSqs0gZtTDk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kw4hbPrz2g6Htu4tGQOtrQGNyXTYbvOkPF4UaqNJiQZuAXWBmrm6MQEKNq6Ty5z5U
+         oU3uJPO3An296oEQqQHv8W1aRSfCm9WHsX7R1TtThhOcgOn6bcBVrSYjHcSC/+knBA
+         8U2IjXrZa61LhxyYIW+lovvpex2nKICIEhX1o34c=
+Date:   Mon, 25 Jul 2022 09:00:37 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Jiri Slaby <jirislaby@kernel.org>
+Cc:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, Max Staudt <max@enpas.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: Re: [PATCH AUTOSEL 5.18 28/54] tty: Add N_CAN327 line discipline ID
+ for ELM327 based CAN driver
+Message-ID: <Yt4/lVCvm/GHuGWj@kroah.com>
+References: <20220720011031.1023305-1-sashal@kernel.org>
+ <20220720011031.1023305-28-sashal@kernel.org>
+ <544401cc-97ad-c9b6-16e0-ea74d2695fd4@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Rspamd-Bar: /
-X-Rspamd-Report: BAYES_HAM(-2.923892) R_MISSING_CHARSET(0.5) MIME_GOOD(-0.1) MID_CONTAINS_FROM(1) SUSPICIOUS_RECIPS(1.5)
-X-Rspamd-Score: -0.023892
-Received: from unknown (HELO unkown) (::1)
-        by giacobini.uberspace.de (Haraka/2.8.28) with ESMTPSA; Mon, 25 Jul 2022 08:53:26 +0200
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <544401cc-97ad-c9b6-16e0-ea74d2695fd4@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-By using skb_put we ensure that skb->tail is set
-correctly. Currently, skb->tail is always zero, which
-leads to errors, such as the following page fault in
-rfcomm_recv_frame:
+On Mon, Jul 25, 2022 at 07:35:13AM +0200, Jiri Slaby wrote:
+> On 20. 07. 22, 3:10, Sasha Levin wrote:
+> > From: Max Staudt <max@enpas.org>
+> > 
+> > [ Upstream commit ec5ad331680c96ef3dd30dc297b206988023b9e1 ]
+> > 
+> > The actual driver will be added via the CAN tree.
+> 
+> Hmm, it's a new driver (ldisc). Should it really go to stable?
 
-    BUG: unable to handle page fault for address: ffffed1021de29ff
-    #PF: supervisor read access in kernel mode
-    #PF: error_code(0x0000) - not-present page
-    RIP: 0010:rfcomm_run+0x831/0x4040 (net/bluetooth/rfcomm/core.c:1751)
+You are right, no, this shouldn't go to stable kernels, it doesn't
+affect them at all.
 
-Signed-off-by: Soenke Huster <soenke.huster@eknoes.de>
----
- drivers/bluetooth/virtio_bt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Sasha, can you drop this from all autosel queues?
 
-diff --git a/drivers/bluetooth/virtio_bt.c b/drivers/bluetooth/virtio_bt.c
-index 67c21263f9e0..fd281d439505 100644
---- a/drivers/bluetooth/virtio_bt.c
-+++ b/drivers/bluetooth/virtio_bt.c
-@@ -219,7 +219,7 @@ static void virtbt_rx_work(struct work_struct *work)
- 	if (!skb)
- 		return;
- 
--	skb->len = len;
-+	skb_put(skb, len);
- 	virtbt_rx_handle(vbt, skb);
- 
- 	if (virtbt_add_inbuf(vbt) < 0)
--- 
-2.36.1
+thanks,
 
+greg k-h
