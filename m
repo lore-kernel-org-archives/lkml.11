@@ -2,94 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBCDBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 10:55:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DE9AC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 11:00:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234837AbiGYKzy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 06:55:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41356 "EHLO
+        id S234596AbiGYLAT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 07:00:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234196AbiGYKzx (ORCPT
+        with ESMTP id S232406AbiGYLAQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 06:55:53 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BD6618E3A;
-        Mon, 25 Jul 2022 03:55:52 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id x24-20020a17090ab01800b001f21556cf48so14011409pjq.4;
-        Mon, 25 Jul 2022 03:55:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Jizxdn4AeaM9vGiU9lrvZv7w74oicIoCysUCYbSOl84=;
-        b=kRkhrwK3DPW2t7fYXHm1e0ms1G76elOQhzsIn6/FQlpI88C1Kxp88jVAEDg6SkG089
-         hB4feSsHEliEyiZDMhv9sCvTaKG1U6NjuOYJaYzcXn7ECDiyui3kpazIQ42jcGb96OrY
-         9r9GkrVa9lqtOuuoS4coIfJF1iqGjp9dBfthZGIqHxQZYPTKnjkFRj15rwRqkzOnseOz
-         w6BCpaBe/1vvPafvoczJAk0xvVTLFmpUUg4+XeEV7T18UKbnWRDgARjMXTmf1uqum50l
-         eO36vwt1hrvXU/QwVMWPGJFK9i6dDHNpE8vuOeDV0jJY43SSP4SEffLyaHeDT6sMSdNO
-         tM7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Jizxdn4AeaM9vGiU9lrvZv7w74oicIoCysUCYbSOl84=;
-        b=YXFg52RUfr2oSoZN4R8oKL+EkaynABbt1QKjImYfJZ1oX7YFtcUg6vjCJO5m9bboQs
-         V9ujW0419vRA5hVeNxa2GHrScW4mCSt3KntAgBolOxJQi1NLZ03CaP+Fjg3OhPAEplzg
-         Y5ZyqDT0r1IqidmiiCeTpAjGwH95tXWvSPb1YXqyMT0imoqSTXWL/exa/z3mQR1yOJJN
-         /J/yN6F4XUb6oP4I/qa2WWKDakbmMGF/RnPDKoC9a+mO6DbhYM2HbJcdnOmbRbbyjZDQ
-         lpAIux6qFGIfLsfJkja+Zi/8BDXwgf24ReJjY5BPPHQJRtMLc6L6VIWBRhKsnwre5SVQ
-         JATw==
-X-Gm-Message-State: AJIora9YQhFVmLJ1itTPc1VGdoD8tUp4QqUP3mzd8HPOkDnl2uy/CqiT
-        hHV3igRf/Q9aAoENta8//0eUhG/zQEc3cN4e2uk=
-X-Google-Smtp-Source: AGRyM1sJEIM//oT8Ms9EiN859p9vVGAsLNN9o+I83rqP2ZI9QAkpUq7tYiNLOs9YwSKBPn1HocP+qZEWe4/SmofzD7w=
-X-Received: by 2002:a17:902:d582:b0:16d:612c:2d6a with SMTP id
- k2-20020a170902d58200b0016d612c2d6amr8263669plh.168.1658746551759; Mon, 25
- Jul 2022 03:55:51 -0700 (PDT)
+        Mon, 25 Jul 2022 07:00:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CF01FEB;
+        Mon, 25 Jul 2022 04:00:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 39D3B60EF2;
+        Mon, 25 Jul 2022 11:00:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 49350C341CD;
+        Mon, 25 Jul 2022 11:00:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658746814;
+        bh=GesNSSeiqm0otPKf0yDytjcXixR2TGA5PrEK8Cvxth0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=kd94w//poMFFkjAn1K8lTrjrMyx8H3uqnUsC2QYB2+IM6xyu7LOjC3MtgEu9O08BA
+         0p/lbfDyBXD0yBUooVgK0x+I1PhTbPawP0j4k6ePEhWq4KEb06t0H5tF47CJ2ONCAL
+         UwXZb5dKL65JqnEP0DogKtMBveSE0K7+U3mUgy8nk++8fQRBD0bKzHeFY+gbJtZsD/
+         yEKr4DzN+nfcmf0dXvucUXl35SENGWVmbMUIzwuPHM7XVIGLgEqBLVeJ4nQVx8Qyi4
+         IgjQZfj70Df+aJtLvYPp8N/b4nslgYtoJTXdMTohbaS7msNGRs0KOJ0YHA7zwxjLzJ
+         X60+5K7Su4sYQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2AE1EE450B5;
+        Mon, 25 Jul 2022 11:00:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220722215445.3548530-1-marcel@ziswiler.com>
-In-Reply-To: <20220722215445.3548530-1-marcel@ziswiler.com>
-From:   Fabio Estevam <festevam@gmail.com>
-Date:   Mon, 25 Jul 2022 07:55:39 -0300
-Message-ID: <CAOMZO5CY5hg=AFdFTFdd4fC0XgEmkmKUPWcA_vCdP6MUHFmbdw@mail.gmail.com>
-Subject: Re: [PATCH v2 00/12] ARM: arm64: dts/clk: imx8mm: indentation
- whitespace cleanup
-To:     Marcel Ziswiler <marcel@ziswiler.com>
-Cc:     "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
-        Abel Vesa <abel.vesa@nxp.com>,
-        Arnaud Ferraris <arnaud.ferraris@collabora.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Lucas Stach <dev@lynxeye.de>,
-        Markus Niebel <Markus.Niebel@ew.tq-group.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Philippe Schenker <philippe.schenker@toradex.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Stefan Agner <stefan@agner.ch>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: macsec: fix potential resource leak in macsec_add_rxsa()
+ and macsec_add_txsa()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165874681416.5766.17149669926226309133.git-patchwork-notify@kernel.org>
+Date:   Mon, 25 Jul 2022 11:00:14 +0000
+References: <20220722092902.2528745-1-niejianglei2021@163.com>
+In-Reply-To: <20220722092902.2528745-1-niejianglei2021@163.com>
+To:     Jianglei Nie <niejianglei2021@163.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, atenart@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Marcel,
+Hello:
 
-On Fri, Jul 22, 2022 at 6:55 PM Marcel Ziswiler <marcel@ziswiler.com> wrote:
->
-> From: Marcel Ziswiler <marcel.ziswiler@toradex.com>
->
->
-> While synchronising them imx device trees with U-Boot I stumbled over
-> various checkpatch warnings. This series addresses those trivial
-> indentation and/or whitespace cleanups.
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Thanks for doing this cleanup:
+On Fri, 22 Jul 2022 17:29:02 +0800 you wrote:
+> init_rx_sa() allocates relevant resource for rx_sa->stats and rx_sa->
+> key.tfm with alloc_percpu() and macsec_alloc_tfm(). When some error
+> occurs after init_rx_sa() is called in macsec_add_rxsa(), the function
+> released rx_sa with kfree() without releasing rx_sa->stats and rx_sa->
+> key.tfm, which will lead to a resource leak.
+> 
+> We should call macsec_rxsa_put() instead of kfree() to decrease the ref
+> count of rx_sa and release the relevant resource if the refcount is 0.
+> The same bug exists in macsec_add_txsa() for tx_sa as well. This patch
+> fixes the above two bugs.
+> 
+> [...]
 
-Reviewed-by: Fabio Estevam <festevam@gmail.com>
+Here is the summary with links:
+  - net: macsec: fix potential resource leak in macsec_add_rxsa() and macsec_add_txsa()
+    https://git.kernel.org/netdev/net/c/c7b205fbbf3c
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
