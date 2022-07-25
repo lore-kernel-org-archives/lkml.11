@@ -2,91 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5937C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 23:18:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7680FC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 23:19:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236414AbiGYXSh convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 19:18:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47126 "EHLO
+        id S237097AbiGYXTI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 19:19:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229801AbiGYXSf (ORCPT
+        with ESMTP id S237150AbiGYXTH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 19:18:35 -0400
-X-Greylist: delayed 330 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 25 Jul 2022 16:18:34 PDT
-Received: from relay.hostedemail.com (smtprelay0012.hostedemail.com [216.40.44.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 629BA2613E;
-        Mon, 25 Jul 2022 16:18:34 -0700 (PDT)
-Received: from omf17.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay10.hostedemail.com (Postfix) with ESMTP id C2E71C071E;
-        Mon, 25 Jul 2022 23:13:00 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf17.hostedemail.com (Postfix) with ESMTPA id 697EA1E;
-        Mon, 25 Jul 2022 23:12:52 +0000 (UTC)
-Message-ID: <c9340a12783beccac426d75f1df5b004c807ceb6.camel@perches.com>
-Subject: Re: [PATCH v2] docs: Fix typo in comment
-From:   Joe Perches <joe@perches.com>
-To:     William Breathitt Gray <william.gray@linaro.org>
-Cc:     Baoquan He <bhe@redhat.com>, Randy Dunlap <rdunlap@infradead.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Slark Xiao <slark_xiao@163.com>, kafai <kafai@fb.com>,
-        vgoyal <vgoyal@redhat.com>, dyoung <dyoung@redhat.com>,
-        ast <ast@kernel.org>, daniel <daniel@iogearbox.net>,
-        andrii <andrii@kernel.org>, "martin.lau" <martin.lau@linux.dev>,
-        song <song@kernel.org>, yhs <yhs@fb.com>,
-        "john.fastabend" <john.fastabend@gmail.com>,
-        kpsingh <kpsingh@kernel.org>, sdf <sdf@google.com>,
-        haoluo <haoluo@google.com>, jolsa <jolsa@kernel.org>,
-        dhowells <dhowells@redhat.com>, peterz <peterz@infradead.org>,
-        mingo <mingo@redhat.com>, will <will@kernel.org>,
-        longman <longman@redhat.com>,
-        "boqun.feng" <boqun.feng@gmail.com>, tglx <tglx@linutronix.de>,
-        bigeasy <bigeasy@linutronix.de>,
-        kexec <kexec@lists.infradead.org>,
-        linux-doc <linux-doc@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        linux-cachefs <linux-cachefs@redhat.com>
-Date:   Mon, 25 Jul 2022 16:12:51 -0700
-In-Reply-To: <Yt6hMD+HIaERgrqg@fedora>
-References: <20220721015605.20651-1-slark_xiao@163.com>
-         <20220721154110.fqp7n6f7ij22vayp@kafai-mbp.dhcp.thefacebook.com>
-         <21cac0ea.18f.182218041f7.Coremail.slark_xiao@163.com>
-         <874jzamhxe.fsf@meer.lwn.net>
-         <6ca59494-cc64-d85c-98e8-e9bef2a04c15@infradead.org>
-         <YtnlAg6Qhf7fwXXW@MiWiFi-R3L-srv>
-         <5bd85a7241e6ccac7fe5647cb9cf7ef22b228943.camel@perches.com>
-         <Yt6hMD+HIaERgrqg@fedora>
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.44.1-0ubuntu1 
+        Mon, 25 Jul 2022 19:19:07 -0400
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 74C2826541;
+        Mon, 25 Jul 2022 16:19:06 -0700 (PDT)
+Received: from kbox (unknown [76.135.27.191])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 0DA0020FE2F5;
+        Mon, 25 Jul 2022 16:19:06 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 0DA0020FE2F5
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1658791146;
+        bh=50UCpKOQPGTdS25dXIntvXoh2LEaS/tcG43pWXcm5W8=;
+        h=Date:From:To:Cc:Subject:From;
+        b=LF927PYThBgiN2hZSCi8yIABcvTjV2khn7vwGSLdsp8ERlwWypUKMVb+i8j5PDrqC
+         6sLXtx3pdcJYajn5LiLHuqi+xrXjlZ87fzbZP8zejl2QkbpFtb7sQC5fL5fgJ74lm1
+         gU1aHy14XHJJn3yeVgeByTg4OzW948MZWnvzVZnk=
+Date:   Mon, 25 Jul 2022 16:19:00 -0700
+From:   Beau Belgrave <beaub@linux.microsoft.com>
+To:     rostedt@goodmis.org, mhiramat@kernel.org,
+        mathieu.desnoyers@efficios.com
+Cc:     linux-trace-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        beaub@linux.microsoft.com
+Subject: tracing/user_events: Tracking broken status and feedback
+Message-ID: <20220725231900.GA2389@kbox>
 MIME-Version: 1.0
-X-Stat-Signature: scxpfj6ognbxy16i47zhaoc7nn8mhr7p
-X-Rspamd-Server: rspamout04
-X-Rspamd-Queue-Id: 697EA1E
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX18oibnQ1mEZciO6tvJNDDYSZCjv6uxPeLM=
-X-HE-Tag: 1658790772-439912
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-07-25 at 09:57 -0400, William Breathitt Gray wrote:
-> On Mon, Jul 25, 2022 at 06:52:15AM -0700, Joe Perches wrote:
-> > On Fri, 2022-07-22 at 07:45 +0800, Baoquan He wrote:
-> > > The fix is done with below command:
-> > > sed -i "s/the the /the /g" `git grep -l "the the " Documentation`
-> > 
-> > This command misses entries at EOL:
-> > 
-> > Documentation/trace/histogram.rst:  Here's an example where we use a compound key composed of the the
-> > 
-> > Perhaps a better conversion would be 's/\bthe the\b/the/g'
-> 
-> It would be good to check for instances that cross newlines as well;
-> i.e. "the" at the end of a line followed by "the" at the start of the
-> next line. However, this would require some thought to properly account
-> for comment blocks ("*") and other similar prefixes that should be
-> ignored.
+To help keep track of what is required to remove the broken status from
+user_events I am starting this thread. I would like to use this thread
+to provide status on the work that has been done so far and to have a
+discussion about when the broken status can be removed.
 
-checkpatch already attempts that duplicated word across a newline test.
+Feedback threads from 5.18 version of user_events:
+1. https://lore.kernel.org/all/2059213643.196683.1648499088753.JavaMail.zimbra@efficios.com/
+2. https://lore.kernel.org/all/1651771383.54437.1652370439159.JavaMail.zimbra@efficios.com/
 
+All the feedback has been addressed in the patchsets 1 and 2 (see below).
+Here are the details: 
+
+1. Use bits vs bytes in event enabled memory mappings.
+Fixed in patchset 1.
+
+2. Pack ABI structures where size is used.
+Fixed in patchset 1.
+
+3. Don't trust user strings for string formatting.
+Fixed in patchset 1.
+
+4. Move to refcount APIs vs atomic for tracking references.
+Fixed in patchset 1.
+
+5. Ensure event_mutex is held during registration.
+Fixed in patchset 2.
+
+With these, I believe I have addressed all issues to remove the
+"broken status".
+
+Here is the list of additional feedback (and status) that I don't believe
+should have a bearing on removing the "broken status":
+
+1. Kernel vs user tracers in ABI.
+This is not done, the plan is to build a libtracepoint library that allows
+working with both kernel and user tracers in user programs. Steven is
+working on this at the moment. I don't believe this is required to remove
+the broken status, but it will help prove the ABI by having it.
+
+No patchset yet.
+
+2. Container/namespace isolation of events.
+user_events utilizes tracefs for user facing files in the ABI. I've created
+an RFC patchset showing how if tracefs offered an isolated directory
+structure per-namespace the user_events ABI is unaffected. This is true for
+other ABIs that tracefs hosts, if they would like to integrate. I don't
+believe this is required to remove the broken status, however, it's useful
+to have to see how the ABI is unaffected while we work toward enabling
+isolation within tracing.
+
+See patchset 3.
+
+Patchsets:
+1. https://lore.kernel.org/all/20220425184631.2068-1-beaub@linux.microsoft.com/
+2. https://lore.kernel.org/all/20220328223225.1992-1-beaub@linux.microsoft.com/
+3. https://lore.kernel.org/all/20220707215828.2021-1-beaub@linux.microsoft.com/
+
+Thanks,
+-Beau
