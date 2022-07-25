@@ -2,115 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01A41C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 08:53:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B02A9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 08:54:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234276AbiGYIxu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 04:53:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37550 "EHLO
+        id S234290AbiGYIyD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 04:54:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233186AbiGYIxt (ORCPT
+        with ESMTP id S234285AbiGYIyB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 04:53:49 -0400
-Received: from ZXSHCAS2.zhaoxin.com (ZXSHCAS2.zhaoxin.com [210.0.225.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1883B14D07;
-        Mon, 25 Jul 2022 01:53:47 -0700 (PDT)
-Received: from zxbjmbx1.zhaoxin.com (10.29.252.163) by ZXSHCAS2.zhaoxin.com
- (10.28.252.162) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.27; Mon, 25 Jul
- 2022 16:52:20 +0800
-Received: from [10.29.8.21] (10.29.8.21) by zxbjmbx1.zhaoxin.com
- (10.29.252.163) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.27; Mon, 25 Jul
- 2022 16:52:18 +0800
-Message-ID: <0db4dc76-68cf-dc84-1a1b-ebe5abbbff8e@zhaoxin.com>
-Date:   Mon, 25 Jul 2022 16:52:17 +0800
+        Mon, 25 Jul 2022 04:54:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DA6814D2D;
+        Mon, 25 Jul 2022 01:54:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E1D406120C;
+        Mon, 25 Jul 2022 08:53:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 513D6C341C7;
+        Mon, 25 Jul 2022 08:53:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658739239;
+        bh=27gvfS9RG9a5z0+nFk0qGSBheVBUDJc370UKyXlr5xA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=UjIrW/mHVmWz8V0e8D+Io/5M9O3TYRAWiBz0BeVDcuyhOKAj1mtYv4JIZTRAQW9mE
+         ikYrgXH0g3gZ/wAN8xui9tQkl/rprJCjtEcfVU7uyIvGyMPo8o14xLooGSvxe/xamD
+         qm8A5Glm9XGLNTMEEeSfXBSnrGw8AIbvmaC3cad4=
+Date:   Mon, 25 Jul 2022 10:53:54 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Johan Hovold <johan@kernel.org>
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] USB: serial: fix tty-port initialized comments
+Message-ID: <Yt5aIiA8mvU905eB@kroah.com>
+References: <20220725084457.3010-1-johan@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2] USB: HCD: Fix URB giveback issue in tasklet function
-Content-Language: en-US
-To:     Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        <stern@rowland.harvard.edu>, <gregkh@linuxfoundation.org>,
-        <kishon@ti.com>, <dianders@chromium.org>, <s.shtylyov@omp.ru>,
-        <mka@chromium.org>, <ming.lei@canonical.com>,
-        <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <tonywwang@zhaoxin.com>, <weitaowang@zhaoxin.com>
-References: <20220725065251.832087-1-WeitaoWang-oc@zhaoxin.com>
- <3b9a3fec-7716-3e9d-1e91-cfdac46845f7@gmail.com>
-From:   "WeitaoWang-oc@zhaoxin.com" <WeitaoWang-oc@zhaoxin.com>
-In-Reply-To: <3b9a3fec-7716-3e9d-1e91-cfdac46845f7@gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.29.8.21]
-X-ClientProxiedBy: ZXSHCAS1.zhaoxin.com (10.28.252.161) To
- zxbjmbx1.zhaoxin.com (10.29.252.163)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220725084457.3010-1-johan@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/7/25 16:29, Sergei Shtylyov wrote:
-> Hello!
+On Mon, Jul 25, 2022 at 10:44:57AM +0200, Johan Hovold wrote:
+> Fix up the tty-port initialized comments which got truncated and
+> obfuscated when replacing the old ASYNCB_INITIALIZED flag.
 > 
-> On 7/25/22 9:52 AM, Weitao Wang wrote:
-> 
->> Usb core introduce the mechanism of giveback of URB in tasklet context to
->> reduce hardware interrupt handling time. On some test situation(such as
->> FIO with 4KB block size), when tasklet callback function called to
->> giveback URB, interrupt handler add URB node to the bh->head list also.
->> If check bh->head list again after finish all URB giveback of local_list,
->> then it may introduce a "dynamic balance" between giveback URB and add URB
->> to bh->head list. This tasklet callback function may not exit for a long
->> time, which will cause other tasklet function calls to be delayed. Some
->> real-time applications(such as KB and Mouse) will see noticeable lag.
->>
->> Fix this issue by taking new URBs giveback in next tasklet function call.
->> Add a member high_prio for structure giveback_urb_bh and replace the local
->> high_prio_bh variable with this structure member in usb_hcd_giveback_urb.
->>
->> Fixes: 94dfd7edfd5c ("USB: HCD: support giveback of URB in tasklet context")
->> Signed-off-by: Weitao Wang <WeitaoWang-oc@zhaoxin.com>
->> ---
->> v1->v2:
->>   - Fix compile warning by remove label "restart".
->>   - Modify the patch description info.
->>   - Change structure member from hi_priority to high_prio.
->>
->>   drivers/usb/core/hcd.c  | 25 ++++++++++++++-----------
->>   include/linux/usb/hcd.h |  1 +
->>   2 files changed, 15 insertions(+), 11 deletions(-)
->>
->> diff --git a/drivers/usb/core/hcd.c b/drivers/usb/core/hcd.c
->> index 06eea8848ccc..1feb9a604380 100644
->> --- a/drivers/usb/core/hcd.c
->> +++ b/drivers/usb/core/hcd.c
-> [...]
->> @@ -2959,6 +2961,7 @@ int usb_add_hcd(struct usb_hcd *hcd,
->>   
->>   	/* initialize tasklets */
->>   	init_giveback_urb_bh(&hcd->high_prio_bh);
->> +	hcd->high_prio_bh.high_prio = 1;
-> 
->     s/1/true/?
-Okay,this Boolean variable should be initialized to ture.
-Thanks for your suggestion.
+> Fixes: d41861ca19c9 ("tty: Replace ASYNC_INITIALIZED bit and update atomically")
+> Signed-off-by: Johan Hovold <johan@kernel.org>
 
-weitao
->>   	init_giveback_urb_bh(&k->low_prio_bh);
->>   
->>   	/* enable irqs just before we start the controller,
->> diff --git a/include/linux/usb/hcd.h b/include/linux/usb/hcd.h
->> index 2c1fc9212cf2..98d1921f02b1 100644
->> --- a/include/linux/usb/hcd.h
->> +++ b/include/linux/usb/hcd.h
->> @@ -66,6 +66,7 @@
->>   
->>   struct giveback_urb_bh {
->>   	bool running;
->> +	bool high_prio;
->>   	spinlock_t lock;
->>   	struct list_head  head;
->>   	struct tasklet_struct bh;
-> 
-> MBR, Sergey
-> .
+Looks good, want me to take this now as my tree should be "closed" for
+5.20-rc1 now, but stuff like this can sneak in.
+
+If not, and you want to send it to me later, feel free to add:
+
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
