@@ -2,111 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31105C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 05:44:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78C34C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 05:51:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231984AbiGYFoN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 01:44:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59944 "EHLO
+        id S229992AbiGYFvI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 01:51:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232137AbiGYFoM (ORCPT
+        with ESMTP id S229496AbiGYFvG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 01:44:12 -0400
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B8597658;
-        Sun, 24 Jul 2022 22:44:11 -0700 (PDT)
-Received: by mail-wm1-f51.google.com with SMTP id b6so6102780wmq.5;
-        Sun, 24 Jul 2022 22:44:11 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=j+TMKKTWkt93wyAShA8GcS53wvc9Ih1A4htlfT9K7Ho=;
-        b=T1T3RCRB8Vx9gQ7AY60KabJX4o1QLZMuP5BHO/3jX0yP9BGyal48GaaVf9woBoP6Yo
-         9AKx/1tbR3dOYXoiLyxAlvLsqDmpkve/m/DH7HAj7xyS6PCWBC0e9mNDtH4o+aQmpfwN
-         gEIpCMSjgvOvwRjcjbjWJLl+baoab86UwJLAJuAgRcAcl93LmaRNcUpAXEg9R2/wixnj
-         +LEAw3zku6EQI7aUe931lps4nDfOQwjjSjRhq8+0k50O6YDtMjWD8dvFWVDFeDxvc3I3
-         zwQ8YOvUWy8ojKN/MAGz8/bNZXaOR6qHF6PHc1qylll4eYLbtYSuKyZFr+6VWeKkPhp2
-         UBDw==
-X-Gm-Message-State: AJIora9eScE6B818S86mCwQxVgIycPjewVWoFFkUPx2XfCwTMIVr0USR
-        V23+0VJfGVO2HSfIBV1bINk=
-X-Google-Smtp-Source: AGRyM1tz29eyW8eFBsIukZelOZJBNJP+xtrRGyJ5rpmY5s1vLLoXX/JRWg29hpOVLhxGJKYUmPJDFQ==
-X-Received: by 2002:a05:600c:2651:b0:3a3:1b8d:d9c8 with SMTP id 17-20020a05600c265100b003a31b8dd9c8mr20308470wmy.160.1658727849689;
-        Sun, 24 Jul 2022 22:44:09 -0700 (PDT)
-Received: from ?IPV6:2a0b:e7c0:0:107::70f? ([2a0b:e7c0:0:107::70f])
-        by smtp.gmail.com with ESMTPSA id t11-20020a5d460b000000b0021b970a68f9sm10736171wrq.26.2022.07.24.22.44.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 24 Jul 2022 22:44:09 -0700 (PDT)
-Message-ID: <8a4f10b1-70b3-25fe-9ffc-4f24a1531139@kernel.org>
-Date:   Mon, 25 Jul 2022 07:44:08 +0200
+        Mon, 25 Jul 2022 01:51:06 -0400
+Received: from out5-smtp.messagingengine.com (out5-smtp.messagingengine.com [66.111.4.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E35332DC1;
+        Sun, 24 Jul 2022 22:51:02 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id 4F6275C0092;
+        Mon, 25 Jul 2022 01:51:02 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Mon, 25 Jul 2022 01:51:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
+        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
+        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
+         s=fm1; t=1658728262; x=1658814662; bh=69zKIkJkrsurUh1tsYk3dVN3W
+        f+GthColtIIHhnoVFs=; b=Jd2BhkQLuYEXV0dbJW09eooHfpL/3DTknKNft6aW8
+        /UoH9TF5FwzdRxntrJ4eq0jBybQMro1Xp7xYFDwExhKaF2eVIVv2Y5dh9W9A4/rD
+        CGphoewDJ+mSpz0S+TqOH6ptObLPHKp4OSplOaZOLmyi47Tw+WUiYAp5w6ZPxT9u
+        3Uj2+ahuPhV+O3kyDvpXQFy1r/deso4M78Wls+4A3KcfbNE1LCQTKto96/mYcIT9
+        Dm/qFp5mWYLDbuIef456VixJaVU0cvODaJa/ppYvrarJ+Z5wntJAvElEcCQd+QZZ
+        7akM3ZzkFITI7iTdFMUwyu+DWnBnWtQT769J13+iMOEUA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:message-id
+        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=
+        1658728262; x=1658814662; bh=69zKIkJkrsurUh1tsYk3dVN3Wf+GthColtI
+        IHhnoVFs=; b=Wk6sJDgBtmqRlExCsXsgznTMJCsHD0VBzH5mvl79QIaCmcj2dUu
+        nOZleopxLVZkCq8qRELUYGbbmULaxPGtAUiIkTWOkUp93Kn0M1DJCXWiZ4pG/wmN
+        nFH7Og/uH0O3C8TR8Jd49/IurERzBKh39x5HdInqsoA6PDEWxY4tj34dWp3gbm1l
+        g3gkwtOWZQi6OrxEUFr1x9goZ3KNbTEa5PcvkkbD+Xv3zOkeewkQ+vySqjz51WSw
+        gSqAr61cFihUQNsvoV7Dh0gYJQQLD/DhNz7WfUzPUDaStiUnvd3l5sqIOIyVzS8g
+        1viZB9ocREVN18cnmKvmdHJVKxyXvFpTQmw==
+X-ME-Sender: <xms:RS_eYoVkzjUt_GHFdQPdAyZtrcMUrAahpX2A47MKXGH6eG3fPwLLVw>
+    <xme:RS_eYslmwp9AzAA5CPirsSltbtRgVD3XoILvYpBWHpAMcyX_rSJUL_aSIfIG2QJun
+    cu93oAFCLeo2gePFA>
+X-ME-Received: <xmr:RS_eYsaxyrRMHdr3H-uLrqlnrAZhP4c9pRK_T2GYgiJ7HwdIhOtUudiJ6RGaEg61ja0Eg-rJkKdXu_rXjlN4yVM13GlmH_x_c8cbQAY3wB73N_sU5ARL4T6yLhzXIvqmlYgm1A>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvddtjedguddtvdcutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpefhvfevufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefurghmuhgv
+    lhcujfholhhlrghnugcuoehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhgqeenucggtf
+    frrghtthgvrhhnpeekveelhfejueelleetvdejvdeffeetgeelheeujeffhefgffefkeeh
+    hffhkeekgeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
+    hmpehsrghmuhgvlhesshhhohhllhgrnhgurdhorhhg
+X-ME-Proxy: <xmx:RS_eYnUBcfFBXn3abAB6imnMMuNEMlR3Sc97t95_A0IaQZ0diWsSYw>
+    <xmx:RS_eYimBjF5mM9jnGzLODa5MSGQa3Ls4c54CP5NmN6fEz-F6YZGxrw>
+    <xmx:RS_eYsdwkJ47XWrnCSWmZqbbXaQqvpiVmqBuF87DW5GnpS5Sf9OvQw>
+    <xmx:Ri_eYn83IMOQALPn13Oluk9lAzyQVS0YfVOWgMeRmF71ZxTTcOzcGQ>
+Feedback-ID: i0ad843c9:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 25 Jul 2022 01:51:00 -0400 (EDT)
+From:   Samuel Holland <samuel@sholland.org>
+To:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     linux-bluetooth@vger.kernel.org,
+        Samuel Holland <samuel@sholland.org>,
+        Alistair Francis <alistair@alistair23.me>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Vasily Khoruzhick <anarsoul@gmail.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH] dt-bindings: net: bluetooth: realtek: Add RTL8723DS
+Date:   Mon, 25 Jul 2022 00:50:59 -0500
+Message-Id: <20220725055059.57498-1-samuel@sholland.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 5.18 13/70] objtool: skip non-text sections when adding
- return-thunk sites
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Borislav Petkov <bpetkov@suse.de>
-References: <20220722090650.665513668@linuxfoundation.org>
- <20220722090651.464856922@linuxfoundation.org>
-From:   Jiri Slaby <jirislaby@kernel.org>
-In-Reply-To: <20220722090651.464856922@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+RTL8723DS is another version of the RTL8723 WiFi + Bluetooth chip. It is
+already supported by the hci_uart/btrtl driver. Document the compatible.
 
-I wonder, why this is needed in stable and not mainline?
+Signed-off-by: Samuel Holland <samuel@sholland.org>
+---
 
-Isn't this a different (non-upstream) dup of
-951ddecf4356 objtool: Treat .text.__x86.* as noinstr
-? (That is included in this release too.)
+ Documentation/devicetree/bindings/net/realtek-bluetooth.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-On 22. 07. 22, 11:07, Greg Kroah-Hartman wrote:
-> From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-> 
-> The .discard.text section is added in order to reserve BRK, with a
-> temporary function just so it can give it a size. This adds a relocation to
-> the return thunk, which objtool will add to the .return_sites section.
-> Linking will then fail as there are references to the .discard.text
-> section.
-> 
-> Do not add instructions from non-text sections to the list of return thunk
-> calls, avoiding the reference to .discard.text.
-> 
-> Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-> Acked-by: Josh Poimboeuf <jpoimboe@kernel.org>
-> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> ---
->   tools/objtool/check.c |    4 +++-
->   1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> --- a/tools/objtool/check.c
-> +++ b/tools/objtool/check.c
-> @@ -1308,7 +1308,9 @@ static void add_return_call(struct objto
->   	insn->type = INSN_RETURN;
->   	insn->retpoline_safe = true;
->   
-> -	list_add_tail(&insn->call_node, &file->return_thunk_list);
-> +	/* Skip the non-text sections, specially .discard ones */
-> +	if (insn->sec->text)
-> +		list_add_tail(&insn->call_node, &file->return_thunk_list);
->   }
->   
->   static bool same_function(struct instruction *insn1, struct instruction *insn2)
-> 
-> 
-
-thanks,
+diff --git a/Documentation/devicetree/bindings/net/realtek-bluetooth.yaml b/Documentation/devicetree/bindings/net/realtek-bluetooth.yaml
+index 157d606bf9cb..8ac633b7e917 100644
+--- a/Documentation/devicetree/bindings/net/realtek-bluetooth.yaml
++++ b/Documentation/devicetree/bindings/net/realtek-bluetooth.yaml
+@@ -20,6 +20,7 @@ properties:
+     enum:
+       - realtek,rtl8723bs-bt
+       - realtek,rtl8723cs-bt
++      - realtek,rtl8723ds-bt
+       - realtek,rtl8822cs-bt
+ 
+   device-wake-gpios:
 -- 
-js
-suse labs
+2.35.1
+
