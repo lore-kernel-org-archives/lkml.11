@@ -2,89 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B5B9C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 23:33:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CF4EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 23:33:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237256AbiGYXdJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 19:33:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57558 "EHLO
+        id S237268AbiGYXdh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 19:33:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236745AbiGYXdF (ORCPT
+        with ESMTP id S231426AbiGYXde (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 19:33:05 -0400
-Received: from mail-oi1-f172.google.com (mail-oi1-f172.google.com [209.85.167.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03CEE26AE6;
-        Mon, 25 Jul 2022 16:33:05 -0700 (PDT)
-Received: by mail-oi1-f172.google.com with SMTP id s204so15298256oif.5;
-        Mon, 25 Jul 2022 16:33:04 -0700 (PDT)
+        Mon, 25 Jul 2022 19:33:34 -0400
+Received: from mail-oo1-f46.google.com (mail-oo1-f46.google.com [209.85.161.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36BD92714C;
+        Mon, 25 Jul 2022 16:33:33 -0700 (PDT)
+Received: by mail-oo1-f46.google.com with SMTP id j8-20020a4ac548000000b00435a8dd31a2so2438534ooq.5;
+        Mon, 25 Jul 2022 16:33:33 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=35be8RwrHUGDdl8k/ntz3JQSksF3mPF6MXbq1qdhuHU=;
-        b=4c0bPz+499WN8/wvOsb+37H3yIQZNV6aPWYFF8HNvW3PiZtiP3x5K56udw2h2k2V7Y
-         NEB3yyQqPKmwTFl1+KLbvf/NBoK23yfv0m/CHYxEj0YAPODgR5CI03TRjiEG1dC3ny1w
-         /0LVVJGEibwe+9oy/mKB61pfDgK8bR8OyXrOmZvBNp/ohK9+Do7m+xi7vxUfavT6A4E4
-         Og68FuxnYgUmBM2Ge25OqMLDVBbe5yZoDOVHhnIatp59m5NvHZGgaARYO8J/QZ04uVfA
-         sWNhnVd0mcYoQLNk/bd/AwHn3exfU22WvZmGKdrV/x0y32T18YcqtCdiZ2WA4Fji4+ef
-         LqNg==
-X-Gm-Message-State: AJIora+frBJzlU68OxJqlGHPkjRF3h+wam29PF7fzQ/0+AometbGrElJ
-        y2OZOWxlN+cKZfzvEgADGg==
-X-Google-Smtp-Source: AGRyM1tNQzJxjy2xupFgtOlnhIeZ+EZdU/HB0Xxsyad8N1nbdVc3UgpG6moPKBDToAkVZkHNcoXaaA==
-X-Received: by 2002:aca:1a17:0:b0:33a:c75f:8020 with SMTP id a23-20020aca1a17000000b0033ac75f8020mr3599344oia.179.1658791984251;
-        Mon, 25 Jul 2022 16:33:04 -0700 (PDT)
+         :mime-version:content-disposition:in-reply-to;
+        bh=M5TkeqV3G9zxvCFod0/RzZU83U1D+6jWZKyK1kWRRpo=;
+        b=Kr81rmASOUNRAp1zwCZ1DdmSr98yPJZ4P0t+gDq21nxtdONS75M2CYgRugNOiVsJLk
+         xxhZEiUzK6QcK2FXMsLhgCvwT7aMq4ERBBvu42M2J81XqVQWvfTlT4caYBvgSnw5UVNf
+         LX2llic2mjoE9O05xfPU4qkRzEFoGlgY+RAKtG3NqrXBcuqHCrt0bAS42pyvIsbr1RKH
+         bzVByVFURg0nZA3QIeShgpp434y/wTEafFMaECIxRkaSIyI4m78hSc81LSnWJsn7Firw
+         YC2BWeXCdvd3yVIphLoP2Ent7nYjKlVSnT6NaQZwZF9IHnVAGkKAmTchuj5glTg2MLYf
+         f0JQ==
+X-Gm-Message-State: AJIora9DK1EWbhs9IM4PTFrMLaHT6+t2tA8SG4Ar/FgbBlJIGJJsRq/K
+        eVcgZBColLoIZ9M2QYFRYQ3IOnH4UA==
+X-Google-Smtp-Source: AGRyM1t3ptpQtY/C56bEyrQAR2wlVNxqnBKvjmVyYxyOIFNZBDbO8RwPFSdn+bPGwqwRBfxS2l7GGQ==
+X-Received: by 2002:a4a:d621:0:b0:435:d6cc:b2e1 with SMTP id n1-20020a4ad621000000b00435d6ccb2e1mr4989526oon.88.1658792012486;
+        Mon, 25 Jul 2022 16:33:32 -0700 (PDT)
 Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id i22-20020a056870221600b000f325409614sm6729181oaf.13.2022.07.25.16.33.02
+        by smtp.gmail.com with ESMTPSA id k23-20020a4ad117000000b004359b581401sm5375799oor.25.2022.07.25.16.33.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Jul 2022 16:33:03 -0700 (PDT)
-Received: (nullmailer pid 2964216 invoked by uid 1000);
-        Mon, 25 Jul 2022 23:33:01 -0000
-Date:   Mon, 25 Jul 2022 17:33:01 -0600
+        Mon, 25 Jul 2022 16:33:32 -0700 (PDT)
+Received: (nullmailer pid 2965235 invoked by uid 1000);
+        Mon, 25 Jul 2022 23:33:30 -0000
+Date:   Mon, 25 Jul 2022 17:33:30 -0600
 From:   Rob Herring <robh@kernel.org>
-To:     William Zhang <william.zhang@broadcom.com>
-Cc:     Rob Herring <robh+dt@kernel.org>, rafal@milecki.pl,
-        Broadcom Kernel List <bcm-kernel-feedback-list@broadcom.com>,
-        linux-kernel@vger.kernel.org, anand.gore@broadcom.com,
-        Linux ARM List <linux-arm-kernel@lists.infradead.org>,
-        f.fainelli@gmail.com, kursad.oney@broadcom.com,
-        krzysztof.kozlowski@linaro.org, joel.peshkin@broadcom.com,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        dan.beygelman@broadcom.com, devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 2/9] dt-bindings: arm64: bcmbca: Update BCM4908
- description
-Message-ID: <20220725233301.GA2964152-robh@kernel.org>
-References: <20220725055402.6013-1-william.zhang@broadcom.com>
- <20220725055402.6013-3-william.zhang@broadcom.com>
+To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        angelogioacchino.delregno@collabora.com,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: Re: [PATCH v2 1/2] dt-bindings: pinctrl: mt8186: Add gpio-line-names
+ property
+Message-ID: <20220725233330.GA2965207-robh@kernel.org>
+References: <20220725110702.11362-1-allen-kh.cheng@mediatek.com>
+ <20220725110702.11362-2-allen-kh.cheng@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220725055402.6013-3-william.zhang@broadcom.com>
+In-Reply-To: <20220725110702.11362-2-allen-kh.cheng@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 24 Jul 2022 22:53:55 -0700, William Zhang wrote:
-> Append "brcm,bcmbca" to BCM4908 chip family compatible strings to
-> follow the convention of BCMBCA chip and help identifying chip family.
+On Mon, 25 Jul 2022 19:07:01 +0800, Allen-KH Cheng wrote:
+> Add the 'gpio-line-names' property to mt8186-pinctrl, as this will be
+> used in devicetrees to describe pin names.
 > 
-> Also add a bare bone generic 4908 board compatbile string to support any
-> 4908 based board. This is useful for board bring-up test and kernel test
-> with CPU and memory related change.
-> 
-> Signed-off-by: William Zhang <william.zhang@broadcom.com>
-> Acked-by: Rafał Miłecki <rafal@milecki.pl>
-> 
+> Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 > ---
-> 
-> Changes in v2:
-> - Add Acked-by tag
-> - Insert the 4908 generic compatible string in alphabetical order
-> - Update commit message with more details of 4908 generic board dts
-> 
->  Documentation/devicetree/bindings/arm/bcm/brcm,bcmbca.yaml | 4 ++++
->  1 file changed, 4 insertions(+)
+>  Documentation/devicetree/bindings/pinctrl/pinctrl-mt8186.yaml | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
 
 Acked-by: Rob Herring <robh@kernel.org>
