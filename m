@@ -2,75 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A5AEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 20:48:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73259CCA48E
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 20:49:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236675AbiGYUsv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 16:48:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49982 "EHLO
+        id S237242AbiGYUtH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 16:49:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233251AbiGYUst (ORCPT
+        with ESMTP id S237213AbiGYUtD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 16:48:49 -0400
-Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CF18065D2
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 13:48:48 -0700 (PDT)
-Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 26PKgJnT031642;
-        Mon, 25 Jul 2022 15:42:19 -0500
-Received: (from segher@localhost)
-        by gate.crashing.org (8.14.1/8.14.1/Submit) id 26PKgHLw031641;
-        Mon, 25 Jul 2022 15:42:17 -0500
-X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
-Date:   Mon, 25 Jul 2022 15:42:17 -0500
-From:   Segher Boessenkool <segher@kernel.crashing.org>
-To:     Timothy Pearson <tpearson@raptorengineering.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Dan =?iso-8859-1?Q?Hor=E1k?= <dan@danny.cz>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        amd-gfx <amd-gfx@lists.freedesktop.org>,
-        Alex Deucher <alexdeucher@gmail.com>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, linux@roeck-us.net
-Subject: Re: [PATCH] drm/amdgpu: Re-enable DCN for 64-bit powerpc
-Message-ID: <20220725204217.GU25951@gate.crashing.org>
-References: <20220725123918.1903255-1-mpe@ellerman.id.au> <CAHk-=wihON4Ytte5zLHWNQtTapUvCpkToxY06OjX-_2B+Gq6Gg@mail.gmail.com> <1446417444.13111032.1658777648586.JavaMail.zimbra@raptorengineeringinc.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1446417444.13111032.1658777648586.JavaMail.zimbra@raptorengineeringinc.com>
-User-Agent: Mutt/1.4.2.3i
+        Mon, 25 Jul 2022 16:49:03 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95C191EEDB;
+        Mon, 25 Jul 2022 13:49:01 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id z23so22483513eju.8;
+        Mon, 25 Jul 2022 13:49:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=H1sQSHwWsz6Sfwn/nw5m5qGb/V8KmFsQdNiXy1s2J4A=;
+        b=W6LQBYpYc9r0gZTP+KjajSNtzgYjp0/W2wVeAlBo5qX18C2YIIAN+mkPZ2k25X0vQH
+         D5oLTPfisi9KkMr8vadRjvyneg4i1dl+sz7DXPqL0XaCuJk30rxo0H2aSea12gZy/4NR
+         IOJDxxSOzPwbkNiiCyLrjbHPhdhxQDq5E4kYKJLWVsd0aeAazrt0fOtbC4jQmTtdp3Qm
+         PYqpSLmGcz6URRVp1+olPkUVxFc4CtH47lxnyL6bUnnvBdD5M21q+kZI+2GEmZIC4Z59
+         4SicQIcK9zBuo6xVm/SHK9rNDeKI2Y7aiKF6PD38NwOEBeujYYYXEU72gHfrhP0UvkkA
+         yK+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=H1sQSHwWsz6Sfwn/nw5m5qGb/V8KmFsQdNiXy1s2J4A=;
+        b=QXXGQTe/LXvHnK7ykNcvJfASj7iZz1jZh2m49Z06JXS3zojB3+fUYVXL7RN+k2GMe8
+         ZGnCwlz8lRxJ0OdLUatWRNk0AUvFgMBEYs0Nj/dT4AdjQmnRXWFRnx7/oYMDpcJGcxZH
+         WX+7y/8Qsbg0zmdeom/DkAtr8GUeHQ5oGzR5wmxUbv3k0s55L5BVM9dcDLvf/WpOzQYF
+         N7LIXFVDlVIlnl+qZy0NNkmqHtEK+UU5Z0sD5seslMugRSufiw18mbAPuu58lRaocLFz
+         sz4prN/DAroxpDvP3xlje515OXQr3HYDeJoZ0W1MkgUHC06XdzYCzzIBXB1PElc0DzRK
+         1VvQ==
+X-Gm-Message-State: AJIora/Ha4Pph7LpX9DoOKUWAQVAfA6149NONXY27GRTLvA1UV8M0/Cz
+        vPUOgTKAOunzkQ/zeXQYIplxutMYfoR5b7CLWH0CSLs2dcU=
+X-Google-Smtp-Source: AGRyM1v8uNsvvjdJ96eRk3dnw3sMBVwfFmLN8sslNZ3kPcNgk3WfNeienkmUBExxzF5QOMHyQ0VLaHIXE+p+WboqWSw=
+X-Received: by 2002:a17:906:9b09:b0:72b:9612:d373 with SMTP id
+ eo9-20020a1709069b0900b0072b9612d373mr11208248ejc.606.1658782139887; Mon, 25
+ Jul 2022 13:48:59 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220721093422.2173982-1-marcus.folkesson@gmail.com>
+ <CAHp75VddBhc9peHXfNfTyTNni246kC8CyLqCrMFadn67LGDarQ@mail.gmail.com> <CACRpkdaczrU1tM5Yt7P-Q2h+ge8STOi6HvvYeTM-g+JwS8_gZw@mail.gmail.com>
+In-Reply-To: <CACRpkdaczrU1tM5Yt7P-Q2h+ge8STOi6HvvYeTM-g+JwS8_gZw@mail.gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 25 Jul 2022 22:48:23 +0200
+Message-ID: <CAHp75VfaExrFYto7LWa5Vnbm6JbiAqtutKmk0HzfeHmmi3PwOg@mail.gmail.com>
+Subject: Re: [PATCH 1/2] gpio: gpio-74x164: add support for CDx4HC4094
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     Marcus Folkesson <marcus.folkesson@gmail.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 25, 2022 at 02:34:08PM -0500, Timothy Pearson wrote:
-> >> Further digging shows that the build failures only occur with compilers
-> >> that default to 64-bit long double.
-> > 
-> > Where the heck do we have 'long double' things anywhere in the kernel?
-> > 
-> > I tried to grep for it, and failed miserably. I found some constants
-> > that would qualify, but they were in the v4l colorspaces-details.rst
-> > doc file.
-> > 
-> > Strange.
-> 
-> We don't, at least not that I can see.  The affected code uses standard doubles.
-> 
-> What I'm wondering is if the compiler is getting confused between standard and long doubles when they are both the same bit length...
+On Mon, Jul 25, 2022 at 3:54 PM Linus Walleij <linus.walleij@linaro.org> wrote:
+> On Mon, Jul 25, 2022 at 11:32 AM Andy Shevchenko
+> <andy.shevchenko@gmail.com> wrote:
+> > On Thu, Jul 21, 2022 at 11:32 AM Marcus Folkesson
+> > <marcus.folkesson@gmail.com> wrote:
 
-The compiler emits the same code (DFmode things, double precision float)
-in both cases, and it itself does not see any difference anymore fairly
-early in the pipeline.  Compare to int and long on most 32-bit targets,
-both are SImode, the compiler will not see different types anymore:
-there *are* no types, except in the compiler frontend.
+...
 
-It only happens for powerpc64le things, and not for powerpc64 builds.
+> > Sorry for my absence of understanding, but why?
+> > SPI has MOSI, CLK, CS, where the last one is exactly for that. No?
+>
+> Forgive me if I misunderstand, but if you use CS that
+> way, the way that the SPI framework works is to assert
+> CS then transfer a few chunks over SPI (MOSI/CLK)
+> then de-assert CS.
 
-It is probably a GCC problem.  I don't see what forces the GCC build
-here to use 64-bit long double either btw?  Compilers build via buildall
-have all kinds of unnecessary things disabled, but not that, not
-directly at least.
+No, CS here is used exactly for what it is designed for ("tell that
+this message is *for me*"). Yes, hardware implementation here is a
+latch register. Because otherwise ALL messages are "for me" which is
+wrong. Is it wrong interpretation of the hardware and SPI?
+
+> If CS is used for strobe, it is constantly asserted
+> during transfer and the sequence will be latched
+> out immediately as you write the SPI transfers and
+> the data is clocked through the register, making the
+> whole train of zeroes and ones flash across the
+> output pins before they stabilize after the SPI
+> transfer is finished.
+
+I'm not sure I understand the stabilization issue here. It's how SPI
+normally works and we have a lot of delays here and there related to
+the phase of the CS in comparison to clock and data. We have a lot of
+time to stabilize the outputs of the shift register before latching
+it. Did I miss anything?
 
 
-Segher
+> If you first do the SPI transfer, then strobe after
+> finished, this will not happen.
+
+I have hardware, I have tested it and I understand what you mean by
+"stabilizing", but finishing transfer _is_ CS toggling for _this_
+chip. No?
+
+> Then it should be a separate pin, so this doesn't
+> happen, right?
+
+I think no, you don't need it. I.o.w. either I'm missing something
+very interesting about both this kind of chips and SPI basics (shame
+on me in this case) or...?
+
+
+-- 
+With Best Regards,
+Andy Shevchenko
