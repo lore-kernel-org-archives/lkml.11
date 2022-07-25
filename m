@@ -2,126 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C0EAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 16:16:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94488C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 16:20:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235929AbiGYQQp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 12:16:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49790 "EHLO
+        id S235928AbiGYQT7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 12:19:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234946AbiGYQQm (ORCPT
+        with ESMTP id S232954AbiGYQT5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 12:16:42 -0400
-Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B52513FBB
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 09:16:42 -0700 (PDT)
-Received: from in01.mta.xmission.com ([166.70.13.51]:38100)
-        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1oG0l6-003w3H-H7; Mon, 25 Jul 2022 10:16:40 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:58050 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1oG0l5-006JxI-Hs; Mon, 25 Jul 2022 10:16:40 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Alexey Gladkov <legion@kernel.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Linux Containers <containers@lists.linux.dev>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Christian Brauner <brauner@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Manfred Spraul <manfred@colorfullife.com>
-References: <54e6b6b1b430537748a7136e854923498443f78a.1657642613.git.legion@kernel.org>
-Date:   Mon, 25 Jul 2022 11:16:07 -0500
-In-Reply-To: <54e6b6b1b430537748a7136e854923498443f78a.1657642613.git.legion@kernel.org>
-        (Alexey Gladkov's message of "Tue, 12 Jul 2022 18:17:38 +0200")
-Message-ID: <87wnc1i2wo.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Mon, 25 Jul 2022 12:19:57 -0400
+Received: from mail-oa1-x34.google.com (mail-oa1-x34.google.com [IPv6:2001:4860:4864:20::34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F84D1571E
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 09:19:56 -0700 (PDT)
+Received: by mail-oa1-x34.google.com with SMTP id 586e51a60fabf-10d6ddda695so15446270fac.0
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 09:19:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=hQLvXyUca7YvppsQ/RG7x1mMXVBl9JH0uYVjO129EoI=;
+        b=OAhRwqf49aOSneQbfVf4I4qLvceeO8M/evD/LZwSLYqvW7B8dQbWJuIW0uN1KnpNSv
+         YI65tmA6muuzZBc1yyFTBAEBnQEmgV8HPXaBQLJENARqrkKEB2MwVDXOpSb1TLlK0dxt
+         Sd5wV95AtNOPyeaWSD/x/gI+KkdHGSwUJo6fJ1b5D758/4ImHz0V/2q2ABuMnVxvLbSB
+         3jIJcflF6sHkNRLCJ4RkITNR2Nmlq7edFEgMTDx0ho6wFQiEYNXdKOtdkmFw8R6wjF6N
+         Q1ZrEO+0WXjfYTfs0iy8D607f994GEMYE6iPUrKJV8Nr6ije8cWuNBAFDk/ZF8Gq2fiH
+         GTtw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=hQLvXyUca7YvppsQ/RG7x1mMXVBl9JH0uYVjO129EoI=;
+        b=Egs+LxYslazqmJtnAI264ECnG7eiTeJvjJY2Lc0xtSmTECEUsq+9juvvtivzJVEtSy
+         JSaCvT3oGiKhXXWDS82osw/zpILe6tREC8MFXJxosPPYjTmCrHWfon82taaejTt0fgue
+         iQeI5WWR592Q7s/lo8l/J1d++TaM9Ye+CG5+eUespDCZSG4mnAkeLF1PFmxhXBubWYJK
+         GYS8xIdnxUuGp2l161cbYo1RE6Npd7tzIeRmldJH9qZImKj1jMDq9WkzdffHxa4ZZqAy
+         //Lo8oi51ajb0ViyYKIqrlrRZj0QfM4QOQyv3r65WQHg/h4AV8dzy8LdnRfjXJtmolfS
+         za/Q==
+X-Gm-Message-State: AJIora+Mos54I0BNiogD4QY2Sv1eRfScgEZbo2f731L4WXqYRwyaPVBQ
+        sGTQB/Whdxj431VqazvQMQ74ifqig+4=
+X-Google-Smtp-Source: AGRyM1tGqTo6breYBO+En54ubKvhgYAREFdPuBVzxVyJ2WucLxqD42sP2P5+1LvQ0LVDquW+hG+ccQ==
+X-Received: by 2002:a05:6870:5aa:b0:10d:7d87:25b5 with SMTP id m42-20020a05687005aa00b0010d7d8725b5mr6679486oap.268.1658765994625;
+        Mon, 25 Jul 2022 09:19:54 -0700 (PDT)
+Received: from localhost ([12.97.180.36])
+        by smtp.gmail.com with ESMTPSA id b20-20020a056870471400b001048f70e03dsm6264385oaq.15.2022.07.25.09.19.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Jul 2022 09:19:54 -0700 (PDT)
+Date:   Mon, 25 Jul 2022 09:17:42 -0700
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        "open list:LINUX FOR POWERPC PA SEMI PWRFICIENT" 
+        <linuxppc-dev@lists.ozlabs.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
+Subject: Re: [PATCH 1/2] powerpc: drop dependency on <asm/machdep.h> in
+ archrandom.h
+Message-ID: <Yt7CJj8r3eo05pKd@yury-laptop>
+References: <20220723214537.2054208-1-yury.norov@gmail.com>
+ <20220723214537.2054208-2-yury.norov@gmail.com>
+ <CAHp75VfOmN=cTEs7gbwxZ7W3hXjBo67N4AmHHiDfcVfFzHkMLA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1oG0l5-006JxI-Hs;;;mid=<87wnc1i2wo.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX1+7xsvv3hql2OPojijov5d5m6fwK6evo0A=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH v1] sysctl: Allow change system v ipc sysctls inside ipc
- namespace
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHp75VfOmN=cTEs7gbwxZ7W3hXjBo67N4AmHHiDfcVfFzHkMLA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Alexey Gladkov <legion@kernel.org> writes:
+On Mon, Jul 25, 2022 at 09:28:12AM +0200, Andy Shevchenko wrote:
+> On Sun, Jul 24, 2022 at 12:19 AM Yury Norov <yury.norov@gmail.com> wrote:
+> >
+> > archrandom.h includes <asm/machdep.h> to refer ppc_md. This causes
+> > circular header dependency, if generic nodemask.h  includes random.h:
+> >
+> > In file included from include/linux/cred.h:16,
+> >                  from include/linux/seq_file.h:13,
+> >                  from arch/powerpc/include/asm/machdep.h:6,
+> >                  from arch/powerpc/include/asm/archrandom.h:5,
+> >                  from include/linux/random.h:109,
+> >                  from include/linux/nodemask.h:97,
+> >                  from include/linux/list_lru.h:12,
+> >                  from include/linux/fs.h:13,
+> >                  from include/linux/compat.h:17,
+> >                  from arch/powerpc/kernel/asm-offsets.c:12:
+> > include/linux/sched.h:1203:9: error: unknown type name 'nodemask_t'
+> >  1203 |         nodemask_t                      mems_allowed;
+> >       |         ^~~~~~~~~~
+> >
+> > Fix it by removing <asm/machdep.h> dependency from archrandom.h
+> 
+> ...
+> 
+> >  EXPORT_SYMBOL_GPL(pm_power_off);
+> 
+> ^^^ (Note this and read below)
+> 
+> ...
+> 
+> > +EXPORT_SYMBOL(arch_get_random_seed_long);
+> 
+> It can't be like this. Brief browsing of the callees shows that.
 
-> Rootless containers are not allowed to modify kernel IPC parameters such
-> as kernel.msgmnb.
->
-> It seems to me that we can allow customization of these parameters if
-> the user has CAP_SYS_RESOURCE in that ipc namespace.
->
-> CAP_SYS_RESOURCE is already needed in order to overcome mqueue limits
-> (msg_max and msgsize_max).
+Is my understanding correct that you're suggesting to make it GPL?
 
-
-For changing the permissions on who can modify the SysV limits, I don't
-think this change is safe.  I don't see anything that will prevent abuse
-if anyone can modify these limits.  Replacing the ordinary unix DAC
-permission check with ns_capable will allow anyone to modify the limits.
-
-
-That said there is RLIMIT_MSGQUEUE that limits the posix messages queues
-so those should be safe to allow anyone to modify their limits.
-
-The code in mqueue_get_inode is where that limiting happens.
-
-For the posix message queues all that should be needed is to change the
-owner of the sysctl files from the global root to the user namespace
-root.  There are also two capable calls in ipc/mqueue.c that can
-probably be changed to ns_capable calls.
-
-
-The only posix message queue limit that I don't immediately see
-something that will prevent abuse of is /proc/sys/fs/mqueue/queus_max.
-That probably still runs into RLIMIT_MSGQUEUE somewhere but it was
-not immediately obvious at first glance.
-
-Eric
-
-
-
-
-
-
->
-> Signed-off-by: Alexey Gladkov <legion@kernel.org>
-> ---
->  ipc/ipc_sysctl.c | 7 +++++--
->  1 file changed, 5 insertions(+), 2 deletions(-)
->
-> diff --git a/ipc/ipc_sysctl.c b/ipc/ipc_sysctl.c
-> index ef313ecfb53a..e79452867720 100644
-> --- a/ipc/ipc_sysctl.c
-> +++ b/ipc/ipc_sysctl.c
-> @@ -193,16 +193,19 @@ static int set_is_seen(struct ctl_table_set *set)
->  static int ipc_permissions(struct ctl_table_header *head, struct ctl_table *table)
->  {
->  	int mode = table->mode;
-> -
-> -#ifdef CONFIG_CHECKPOINT_RESTORE
->  	struct ipc_namespace *ns = current->nsproxy->ipc_ns;
->  
-> +#ifdef CONFIG_CHECKPOINT_RESTORE
->  	if (((table->data == &ns->ids[IPC_SEM_IDS].next_id) ||
->  	     (table->data == &ns->ids[IPC_MSG_IDS].next_id) ||
->  	     (table->data == &ns->ids[IPC_SHM_IDS].next_id)) &&
->  	    checkpoint_restore_ns_capable(ns->user_ns))
->  		mode = 0666;
-> +	else
->  #endif
-> +	if (ns_capable(ns->user_ns, CAP_SYS_RESOURCE))
-> +		mode = 0666;
-> +
->  	return mode;
->  }
+ppc_md is exported with EXPORT_SYMBOL(), and the function is in header,
+so it's available for non-GPL code now. I don't want to change it.
