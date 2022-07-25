@@ -2,70 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D123C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 08:56:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 755BDC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 08:57:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234384AbiGYI4h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 04:56:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41066 "EHLO
+        id S234390AbiGYI54 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 04:57:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234191AbiGYI4f (ORCPT
+        with ESMTP id S230177AbiGYI5y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 04:56:35 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D9B4FDB;
-        Mon, 25 Jul 2022 01:56:33 -0700 (PDT)
-Date:   Mon, 25 Jul 2022 10:56:30 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1658739391;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=pYo6KQq36FrGZdwkWqrhspBPqngXkT1wqCgCUDDtpPo=;
-        b=N22faoZcSr7Bf3uxmEZt5Wx6ZGXSpkTzThaQAVBBO47KhyYH56bPq0VVIgWgYd0zVW7yDT
-        bOPPhBhM6PH3aqHtorU8v6E0jhfOCicSoXNttBiWJRI+TMDoq/s1uE2Kmx+u3ZrvJ03E9x
-        QQl0uyBVIbRD8Rlbe9qHZFXvMsrmLr/ebd9sUDBmCtYJhrgYq0YWVm60g4asWLM3ecn9eS
-        X9DFDJ/J6kG2un7J7hKoS6pJIxhzSCtsMbTh4cbAMhsEvy5Z1fAA9TyDH8taC3jyai6pIe
-        ROzYMvaTzy24EOEazDSQAAAngfFNq8JSPakGWVd+nALfounTA9U2uF9reX7R5g==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1658739391;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=pYo6KQq36FrGZdwkWqrhspBPqngXkT1wqCgCUDDtpPo=;
-        b=g3YlO+AjCf+WhxcLnAVBL9RJ9ef07sdsZaXvNdzUnWbIkOJNMu25NI0f6Ys0jzPjUetaJL
-        GGvZ/LWYzQU1ufCw==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     John Keeping <john@metanate.com>
-Cc:     linux-kernel@vger.kernel.org, linux-rt-users@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Valentin Schneider <vschneid@redhat.com>
-Subject: Re: [PATCH v3] sched/core: Always flush pending blk_plug
-Message-ID: <Yt5avpfSnen+NWUb@linutronix.de>
-References: <20220708162702.1758865-1-john@metanate.com>
+        Mon, 25 Jul 2022 04:57:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEC54B4C;
+        Mon, 25 Jul 2022 01:57:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7011E611B1;
+        Mon, 25 Jul 2022 08:57:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8D1BC341C6;
+        Mon, 25 Jul 2022 08:57:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658739472;
+        bh=rf5Z7s4elvO8Fri1LRLNFT3ks76MVvfWrJ0qPBTBAy4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=PonU/TDFHeItS7Ovx0MlyVxR2SVV8y5KBjkqGTCzaZsArCVQ6W1FQvYGomjMd40it
+         JjaAbK84k0mVZjbA+eIfsszF7l+i9rkOCEya43rPCDMZx2r0Zfn84LiPhffcVv/svD
+         kJKUBS48tm9t6RzRwkhWxlImYCOiD5kcraZQRRxgMJiRWkSnUiXOLIjcbJRiqvqbDo
+         bU7D6uB6Cz94qzfLl9PEjKuQMfwsUc6Klk4z7oyI3cMAEYolrJyPQjdWvFgjrbO00c
+         dKS4A6vC6vUCgTucT+Nhqy/kgHwxPq2J0Mlo4ig+BBOglY8ErKCTXr+/SSAalZW2Kt
+         cpS0WKYd9nheg==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1oFtud-0000yS-Rq; Mon, 25 Jul 2022 10:58:03 +0200
+Date:   Mon, 25 Jul 2022 10:58:03 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] USB: serial: fix tty-port initialized comments
+Message-ID: <Yt5bGx79ymjsrK2A@hovoldconsulting.com>
+References: <20220725084457.3010-1-johan@kernel.org>
+ <Yt5aIiA8mvU905eB@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220708162702.1758865-1-john@metanate.com>
+In-Reply-To: <Yt5aIiA8mvU905eB@kroah.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-07-08 17:27:02 [+0100], John Keeping wrote:
-> Looking at the history of the -rt patchset, in fact this change was
-> present from v5.9.1-rt20 until being dropped in v5.13-rt1 as it was part
-> of a larger patch [1] most of which was replaced by commit b4bfa3fcfe3b
-> ("sched/core: Rework the __schedule() preempt argument").
+On Mon, Jul 25, 2022 at 10:53:54AM +0200, Greg Kroah-Hartman wrote:
+> On Mon, Jul 25, 2022 at 10:44:57AM +0200, Johan Hovold wrote:
+> > Fix up the tty-port initialized comments which got truncated and
+> > obfuscated when replacing the old ASYNCB_INITIALIZED flag.
+> > 
+> > Fixes: d41861ca19c9 ("tty: Replace ASYNC_INITIALIZED bit and update atomically")
+> > Signed-off-by: Johan Hovold <johan@kernel.org>
+> 
+> Looks good, want me to take this now as my tree should be "closed" for
+> 5.20-rc1 now, but stuff like this can sneak in.
 
-Thanks for spotting that. The plan was to get rid of this with the
-introduction of schedule_rtlock() but it somehow remained resilient.
+I was hoping to be able to use that extra week that -rc8 bought us.
 
-Sebastian
+I have a three trivial cleanups in my -next branch. Mind if I add this
+one on top and send it to you straight away?
+
+> If not, and you want to send it to me later, feel free to add:
+> 
+> Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+Johan
