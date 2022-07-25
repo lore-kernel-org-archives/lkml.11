@@ -2,172 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72EAAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 12:12:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24498C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 12:15:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235067AbiGYMMS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 08:12:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56280 "EHLO
+        id S234975AbiGYMPU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 08:15:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232143AbiGYMMQ (ORCPT
+        with ESMTP id S232143AbiGYMPR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 08:12:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3B27119291
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 05:12:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658751134;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=uoeyod5zDB0ZJ1Q5JYhvmo5sNmJuhZfqcU+zHvGMHKo=;
-        b=Nm9vqG6ljZFhyyrF4H4YRTdIVewd4hbLlIuXFi5IH39WTTR1pANzHjZPN1OSvLkEb3R1Ir
-        le3sno7y7t0JrAGLUKs99evjRCKJY9zlwEzGtfUMxlWlZ8DM1jsmSLNpwty+4VFosrECSf
-        YsdjJ2SkfeNjJCH0Oqafb9V9npDVVbw=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-481-YkpEWxRtP9WiiqGsQoCGlg-1; Mon, 25 Jul 2022 08:12:12 -0400
-X-MC-Unique: YkpEWxRtP9WiiqGsQoCGlg-1
-Received: by mail-wm1-f71.google.com with SMTP id h65-20020a1c2144000000b003a30cae106cso8593578wmh.8
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 05:12:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=uoeyod5zDB0ZJ1Q5JYhvmo5sNmJuhZfqcU+zHvGMHKo=;
-        b=sx9PJMzGhv/ya7BO2cRWs/PiNoTJtyvQuJdCZipidkGt3GbT9WBWChIOJp/e4/60rI
-         8AWJBGiR7khzckanbDKZBe5tox9nvwbWywae/og63rizlFYYzRLnY1tyTq8ItPKGGhah
-         YzBAdTwe7bVGolAgrvN5VGK1sUyIgx3wpPJSU8ZuNk8Zn1IOO4hITFkemXttf1HCGPEi
-         fhtcQEW5YIRxJpJfFwq0kCmhqxoP5Y9LPO91lZD5Hrbnkeyq/RDchoNYIs2pcndjoT3w
-         xljTUOCVYsrkafwJAGoUHHUZNxJvf6IK4NV2jcH+OLH/yzBHCjF9neB6ShHkouO8y9Oi
-         6t+g==
-X-Gm-Message-State: AJIora/fHdNQvLtop131hlop1eca/8DstlhREI1XIp/uy8LtzaLJxWdR
-        AXHeOxX3ccVsyVnXx2FBz/RTS75Uuyogz8VyCBPizzfGUqIuUFco14ObFFKPZAj2GYRV6H5bnMn
-        MXWw3PtVms7L7Ile3lUy6akdY
-X-Received: by 2002:a1c:1985:0:b0:3a3:2cf8:ebe with SMTP id 127-20020a1c1985000000b003a32cf80ebemr19085544wmz.7.1658751131464;
-        Mon, 25 Jul 2022 05:12:11 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1sg1p/W87M857aANgGZlbkEF29CiOsW6o+B6ylQbKFe160LnKOhoSTAhncXk2EVVeWXUtUgcQ==
-X-Received: by 2002:a1c:1985:0:b0:3a3:2cf8:ebe with SMTP id 127-20020a1c1985000000b003a32cf80ebemr19085498wmz.7.1658751130996;
-        Mon, 25 Jul 2022 05:12:10 -0700 (PDT)
-Received: from redhat.com ([83.148.38.84])
-        by smtp.gmail.com with ESMTPSA id a7-20020adffac7000000b0021e3e73dec6sm14109460wrs.72.2022.07.25.05.12.10
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 25 Jul 2022 05:12:10 -0700 (PDT)
-From:   Oleg Nesterov <onestero@redhat.com>
-X-Google-Original-From: Oleg Nesterov <oleg@redhat.com>
-Date:   Mon, 25 Jul 2022 14:12:09 +0200
-To:     Tejun Heo <tj@kernel.org>
-Cc:     Christian Brauner <brauner@kernel.org>,
-        Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        John Stultz <john.stultz@linaro.org>,
-        Dmitry Shmidt <dimitrysh@google.com>,
-        linux-kernel@vger.kernel.org, cgroups@vger.kernel.org
-Subject: Re: [PATCH RESEND 3/3 cgroup/for-5.20] cgroup: Make !percpu
- threadgroup_rwsem operations optional
-Message-ID: <20220725121208.GB28662@redhat.com>
-References: <YtDvN0wJ6CKaEPN8@slm.duckdns.org>
- <YtDvU4jRPSsarcNp@slm.duckdns.org>
- <YtDvl7Qjc5zI3e/b@slm.duckdns.org>
- <YtwFjPnCtw8ySnuv@slm.duckdns.org>
+        Mon, 25 Jul 2022 08:15:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25179AE62;
+        Mon, 25 Jul 2022 05:15:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AFF47B80E8C;
+        Mon, 25 Jul 2022 12:15:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C897C341C6;
+        Mon, 25 Jul 2022 12:15:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658751313;
+        bh=ND6sJqpmi/ZIFCyzo6WuKYHiyg2EE+4CRPxEUCsFK3s=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=QHMLAVVLDYRp1oaAJv87qeUzZKi963pn9yJ4TdIiLgyUPXJ7maR0JSYzRCsz5bCA3
+         SIOtEFw/sCupJThINvfy+WST8Uc1ViiP37DrbnMBvOsIJzzNH+7JxvsQFPN211iR8J
+         n0x8H0/5Z9Eig7SjFQbnQC2V5g5zH/+gLClyJbX55c5TpDu3i5p3hgRpMYEewn8fwh
+         bnorhXsU/j3PhW04nzy082yFIt1nxIvdpEcwFhufodneJKMRQ8bOkgTSTh1P7yLu3V
+         CtlftF9xzaq+9tGqYAfV+xMCVhlzeFAGmMY6uti4aCaHRtYlCH5RH+3wbf9LvT1INZ
+         ZzrGzsumXOl4A==
+Date:   Mon, 25 Jul 2022 13:15:06 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Tomer Maimon <tmaimon77@gmail.com>
+Cc:     Avi Fishman <avifishman70@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        linux-spi@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>
+Subject: Re: [PATCH v1 1/2] spi: npcm-pspi: add full duplex support
+Message-ID: <Yt6JSm3vrkdkvSpo@sirena.org.uk>
+References: <20220721101556.118568-1-tmaimon77@gmail.com>
+ <20220721101556.118568-2-tmaimon77@gmail.com>
+ <YtlYt/5VKIblUHBP@sirena.org.uk>
+ <CAP6Zq1hu4GtFrLa5O_7gyszXwpfijJF=XU0hdw8FBbvj3Bk8Hg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="xAtPP1KaYCL3Kz0X"
 Content-Disposition: inline
-In-Reply-To: <YtwFjPnCtw8ySnuv@slm.duckdns.org>
-User-Agent: Mutt/1.5.24 (2015-08-30)
+In-Reply-To: <CAP6Zq1hu4GtFrLa5O_7gyszXwpfijJF=XU0hdw8FBbvj3Bk8Hg@mail.gmail.com>
+X-Cookie: Replace with same type.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 07/23, Tejun Heo wrote:
->
-> +void cgroup_favor_dynmods(struct cgroup_root *root, bool favor)
-> +{
-> +	bool favoring = root->flags & CGRP_ROOT_FAVOR_DYNMODS;
-> +
-> +	/* see the comment above CGRP_ROOT_FAVOR_DYNMODS definition */
-> +	if (favor && !favoring) {
-> +		rcu_sync_enter(&cgroup_threadgroup_rwsem.rss);
-> +		root->flags |= CGRP_ROOT_FAVOR_DYNMODS;
-> +	} else if (!favor && favoring) {
-> +		rcu_sync_exit(&cgroup_threadgroup_rwsem.rss);
-> +		root->flags &= ~CGRP_ROOT_FAVOR_DYNMODS;
-> +	}
-> +}
 
-I see no problems in this patch. But just for record, we do not need
-synchronize_rcu() in the "favor && !favoring" case, so we cab probably
-do something like
+--xAtPP1KaYCL3Kz0X
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-	--- a/kernel/rcu/sync.c
-	+++ b/kernel/rcu/sync.c
-	@@ -118,7 +118,7 @@ static void rcu_sync_func(struct rcu_head *rhp)
-	  * optimize away the grace-period wait via a state machine implemented
-	  * by rcu_sync_enter(), rcu_sync_exit(), and rcu_sync_func().
-	  */
-	-void rcu_sync_enter(struct rcu_sync *rsp)
-	+void __rcu_sync_enter(struct rcu_sync *rsp, bool wait)
-	 {
-		int gp_state;
-	 
-	@@ -146,13 +146,20 @@ void rcu_sync_enter(struct rcu_sync *rsp)
-			 * See the comment above, this simply does the "synchronous"
-			 * call_rcu(rcu_sync_func) which does GP_ENTER -> GP_PASSED.
-			 */
-	-		synchronize_rcu();
-	-		rcu_sync_func(&rsp->cb_head);
-	-		/* Not really needed, wait_event() would see GP_PASSED. */
-	-		return;
-	+		if (wait) {
-	+			synchronize_rcu();
-	+			rcu_sync_func(&rsp->cb_head);
-	+		} else {
-	+			rcu_sync_call(rsp);
-	+		}
-	+	} else if (wait) {
-	+		wait_event(rsp->gp_wait, READ_ONCE(rsp->gp_state) >= GP_PASSED);
-		}
-	+}
-	 
-	-	wait_event(rsp->gp_wait, READ_ONCE(rsp->gp_state) >= GP_PASSED);
-	+void rcu_sync_enter(struct rcu_sync *rsp)
-	+{
-	+	__rcu_sync_enter(rsp, true);
-	 }
-	 
-	 /**
+On Sun, Jul 24, 2022 at 12:35:37PM +0300, Tomer Maimon wrote:
+> On Thu, 21 Jul 2022 at 16:46, Mark Brown <broonie@kernel.org> wrote:
+> > On Thu, Jul 21, 2022 at 01:15:55PM +0300, Tomer Maimon wrote:
 
-later.
+> > > This patch adds full duplex support for NPCM PSPI driver by storing all
+> > > rx-data when the Rx-buffer is defined also for TX-buffer handling.
 
-__rcu_sync_enter(rsp, false) works just like rcu_sync_enter_start() but it can
-be safely called at any moment.
+> > This doesn't seem to entirely correspond to what the patch does, nor to
+> > what the driver currently does?  I can't see any dummy read code in the
+> > current driver.
 
-And can't resist, off-topic question... Say, cgroup_attach_task_all() does
+> In the current handler file, in the handler function.
+> static irqreturn_t npcm_pspi_handler(int irq, void *dev_id)
 
-	mutex_lock(&cgroup_mutex);
-	percpu_down_write(&cgroup_threadgroup_rwsem);
+> -       if (priv->tx_buf) {
+> -               if (stat & NPCM_PSPI_STAT_RBF) {
+> -                       ioread8(NPCM_PSPI_DATA + priv->base);
 
-and this means that synchronize_rcu() can be called with cgroup_mutex held.
-Perhaps it makes sense to change this code to do
+> the read above doing a dummy read
 
-	rcu_sync_enter(&cgroup_threadgroup_rwsem.rss);
-	mutex_lock(&cgroup_mutex);
-	percpu_down_write(&cgroup_threadgroup_rwsem);
-	...
-	percpu_up_write(&cgroup_threadgroup_rwsem);
-	mutex_unlock(&cgroup_mutex);
-	rcu_sync_exit(&cgroup_threadgroup_rwsem.rss);
+That's reading a single byte, not an entire buffer, and from a quick
+glance looks more like an ack.  Though perhaps you just end up with a
+lot of interrupts and do that anyway.
 
-? Just curious.
+--xAtPP1KaYCL3Kz0X
+Content-Type: application/pgp-signature; name="signature.asc"
 
-> -	/*
-> -	 * The latency of the synchronize_rcu() is too high for cgroups,
-> -	 * avoid it at the cost of forcing all readers into the slow path.
-> -	 */
-> -	rcu_sync_enter_start(&cgroup_threadgroup_rwsem.rss);
+-----BEGIN PGP SIGNATURE-----
 
-Note that it doesn't have other users, probably you can kill it.
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLeiUkACgkQJNaLcl1U
+h9BdCQf/QdlNiAcmCougz2zZbczwVhrOeD9z3yH0yaWm4vI2eCWPVZ8A8YdC/oYC
+hyo8qoU5Aa4cSorcJ0cTQf+P5mbi18i67ZMCTkSIhMGMpo1ozHNMX5RvD7ykhUNQ
+hMZUpNohI+yjLHhGaGzZhROgKbmuvwnacC7fBUmcOKDnwpoy7z346AgP0usZkt8w
+6tz5ffXZvBfOTBZ9iOXo7xtv+YvMekDS0DEyZCo1O92gcWlJgV/xanBOTBR+ba2E
+tDeIxu1gForYMOKwGHeHKpFG8uIy/qeNRx2gOV9YW5yV9iFtax+zdJBcjrPmFGKI
+wsXb4i/iIfSCpPAftoTR8IjOjzUGng==
+=GWj5
+-----END PGP SIGNATURE-----
 
-Oleg.
-
+--xAtPP1KaYCL3Kz0X--
