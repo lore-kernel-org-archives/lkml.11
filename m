@@ -2,123 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A0DFC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 23:35:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A927C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 23:37:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237299AbiGYXfQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 19:35:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59632 "EHLO
+        id S237334AbiGYXhs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 19:37:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231397AbiGYXfN (ORCPT
+        with ESMTP id S229963AbiGYXhq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 19:35:13 -0400
-Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E6FC5F41
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 16:35:12 -0700 (PDT)
-Received: by mail-ot1-x32c.google.com with SMTP id l9-20020a056830268900b006054381dd35so9806346otu.4
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 16:35:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=DeZ0i71m7lXsgqJ3r02BqYK+cq3KZTMlnLHmvKXbYxU=;
-        b=CuxM3sWsBSTPgEOjZsRT4+4fjCKRp1DD+h+q+tZsJRmUqGgttEcydVnl3HwtZDIHer
-         zxXhs/Vjw76o3wJC5EHOUZ6QyEMyToO4FSwgjULATEJOuaKcPo2Yu3N0q/uewVDZD369
-         YIKPwTVKdqvc2Sz8CbHeesLVfi4Ka1YUdHmIi8XTW8plTbruiqXKUMqM+8De8VVnVWJ+
-         0/X1uPuvJcI8rqqJlVL9KSYPTSEyEyipCPPXvfCwwXgUwUdpMfTig+A4aZQy5s3XpeEa
-         X7lgFDZHvvnS/yLDdjjKsdMVMzeeDMdKDA2q5aIH6LiG9807L2flrLQ32a1Gc5SSkaIf
-         NFoA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=DeZ0i71m7lXsgqJ3r02BqYK+cq3KZTMlnLHmvKXbYxU=;
-        b=MwT9EVj8nlO5FKimiXP6itTZzyiujPonQDIS/E1Y/P41Aa0JoJT+2UYzuAGqgZBq7g
-         JJDxvxlvau/cuX7n7EDi2V92bOdxFBiZB5ySiv+JUT/YuGPQAm0M1Yvs90A0JYFYW4//
-         Nlouo1DUDi0NxapI7jIfZGH5cVAYRpvIvDnPzIaKHLmrMwQ0dZ51y70UkkVZyfoGvnub
-         vWV8LOFJ7lpZ/GxxiuEhN0Ni2oEMOxQ9fXu5X2iU5U/qt9PxJkNuq5rIJ39gIKK+Dz7M
-         RNXdSyxj4M9mfWLkL68m2CciP4LDEyfcsHYh5ixoO8r2+341ypk4YzcyA4rHYy+xZAz9
-         tyUA==
-X-Gm-Message-State: AJIora/vHgoJ2ryEyZPixmy0xjsTjlf/OGMUA2+e+TJRaEz3qe/FcQft
-        ehVC4eh0miu88n0w50ItU40=
-X-Google-Smtp-Source: AGRyM1vy8C5iqLabeXFffOkfvK810psuEvspeFasjH3OSccwMohmjm9n6GHknf3IO6BpuRysXhKSzQ==
-X-Received: by 2002:a05:6830:1f3b:b0:61c:8421:6dbb with SMTP id e27-20020a0568301f3b00b0061c84216dbbmr5437090oth.263.1658792111438;
-        Mon, 25 Jul 2022 16:35:11 -0700 (PDT)
-Received: from localhost ([12.97.180.36])
-        by smtp.gmail.com with ESMTPSA id l11-20020a9d550b000000b0061ca92ae442sm5450341oth.72.2022.07.25.16.35.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Jul 2022 16:35:11 -0700 (PDT)
-Date:   Mon, 25 Jul 2022 16:32:59 -0700
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        "open list:LINUX FOR POWERPC PA SEMI PWRFICIENT" 
-        <linuxppc-dev@lists.ozlabs.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-Subject: Re: [PATCH 1/2] powerpc: drop dependency on <asm/machdep.h> in
- archrandom.h
-Message-ID: <Yt8oK1gUojEbO0WI@yury-laptop>
-References: <20220723214537.2054208-1-yury.norov@gmail.com>
- <20220723214537.2054208-2-yury.norov@gmail.com>
- <CAHp75VfOmN=cTEs7gbwxZ7W3hXjBo67N4AmHHiDfcVfFzHkMLA@mail.gmail.com>
- <Yt7CJj8r3eo05pKd@yury-laptop>
- <CAHp75VcGPQkY9ApsX2fi6sK5=3U=0vKbrHZZ3x___wUtgrFRSA@mail.gmail.com>
+        Mon, 25 Jul 2022 19:37:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 649EB6345;
+        Mon, 25 Jul 2022 16:37:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 019EC61463;
+        Mon, 25 Jul 2022 23:37:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C32BBC341C6;
+        Mon, 25 Jul 2022 23:37:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658792264;
+        bh=+T4z1E56ig294fgsdgVrPcM/eeCX5DkWMlE7eJwNtKk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=AhahugvCsBz3fF3YLZE79oj2+uJabN3WHicYdsOOBSlv2zTtwbdNfZomepBfH7lM0
+         fTlx4UA7fylq4fh4wDt3Hu0pIY7YJ2Zy4AlGYpB0CQweSNUbERbuepTBagiFSMLc7R
+         TopTgnt57STx9vSPlwXcx50pIzWv5cEKG6n9Tc3jk1gI5LPJuGsZ7YKblw1NIdR/zb
+         RAyGEJ4mcVXLUX28FyvYsV+eWX/gby1kZvzSIHtBktMww4wchqwVZyYWqrTlpGbKAM
+         k1acG0nQlL46SBNJljCUk2M+pGn5FS98XiTeciTLwg+sjqvLWlfRgAsXcDD3LDi4Ha
+         xRMXAWuSqfSdA==
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Thomas Zimmermann <tzimmermann@suse.de>,
+        Javier Martinez Canillas <javierm@redhat.com>
+Cc:     Sami Tolvanen <samitolvanen@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev, Nathan Chancellor <nathan@kernel.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Tomasz=20Pawe=C5=82=20Gajc?= <tpgxyz@gmail.com>
+Subject: [PATCH] drm/simpledrm: Fix return type of simpledrm_simple_display_pipe_mode_valid()
+Date:   Mon, 25 Jul 2022 16:36:29 -0700
+Message-Id: <20220725233629.223223-1-nathan@kernel.org>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHp75VcGPQkY9ApsX2fi6sK5=3U=0vKbrHZZ3x___wUtgrFRSA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 25, 2022 at 11:39:39PM +0200, Andy Shevchenko wrote:
-> On Mon, Jul 25, 2022 at 6:19 PM Yury Norov <yury.norov@gmail.com> wrote:
-> > On Mon, Jul 25, 2022 at 09:28:12AM +0200, Andy Shevchenko wrote:
-> > > On Sun, Jul 24, 2022 at 12:19 AM Yury Norov <yury.norov@gmail.com> wrote:
-> 
-> ...
-> 
-> > > >  EXPORT_SYMBOL_GPL(pm_power_off);
-> > >
-> > > ^^^ (Note this and read below)
-> > >
-> > > ...
-> > >
-> > > > +EXPORT_SYMBOL(arch_get_random_seed_long);
-> > >
-> > > It can't be like this. Brief browsing of the callees shows that.
-> >
-> > Is my understanding correct that you're suggesting to make it GPL?
-> >
-> > ppc_md is exported with EXPORT_SYMBOL(), and the function is in header,
-> > so it's available for non-GPL code now. I don't want to change it.
-> 
-> The symbols your function calls are GPL. As far as I understand (not a
-> lawyer!) it logically one may not call GPL and pretend to be non-GPL.
+When booting a kernel compiled with clang's CFI protection
+(CONFIG_CFI_CLANG), there is a CFI failure in
+drm_simple_kms_crtc_mode_valid() when trying to call
+simpledrm_simple_display_pipe_mode_valid() through ->mode_valid():
 
-Can you explain what you mean in details?
+[    0.322802] CFI failure (target: simpledrm_simple_display_pipe_mode_valid+0x0/0x8):
+...
+[    0.324928] Call trace:
+[    0.324969]  __ubsan_handle_cfi_check_fail+0x58/0x60
+[    0.325053]  __cfi_check_fail+0x3c/0x44
+[    0.325120]  __cfi_slowpath_diag+0x178/0x200
+[    0.325192]  drm_simple_kms_crtc_mode_valid+0x58/0x80
+[    0.325279]  __drm_helper_update_and_validate+0x31c/0x464
+...
 
-The function is:
-        static inline bool __must_check arch_get_random_seed_long(unsigned long *v)
-        {
-               if (ppc_md.get_random_seed)
-                       return ppc_md.get_random_seed(v);
+The ->mode_valid() member in 'struct drm_simple_display_pipe_funcs'
+expects a return type of 'enum drm_mode_status', not 'int'. Correct it
+to fix the CFI failure.
 
-               return false;
-        }
+Cc: stable@vger.kernel.org
+Fixes: 11e8f5fd223b ("drm: Add simpledrm driver")
+Link: https://github.com/ClangBuiltLinux/linux/issues/1647
+Reported-by: Tomasz Paweł Gajc <tpgxyz@gmail.com>
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+---
+ drivers/gpu/drm/tiny/simpledrm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-ppc_md is non-GPL:
- 77 /* The main machine-dep calls structure
- 78  */
- 79 struct machdep_calls ppc_md;
- 80 EXPORT_SYMBOL(ppc_md);
+diff --git a/drivers/gpu/drm/tiny/simpledrm.c b/drivers/gpu/drm/tiny/simpledrm.c
+index 768242a78e2b..5422363690e7 100644
+--- a/drivers/gpu/drm/tiny/simpledrm.c
++++ b/drivers/gpu/drm/tiny/simpledrm.c
+@@ -627,7 +627,7 @@ static const struct drm_connector_funcs simpledrm_connector_funcs = {
+ 	.atomic_destroy_state = drm_atomic_helper_connector_destroy_state,
+ };
+ 
+-static int
++static enum drm_mode_status
+ simpledrm_simple_display_pipe_mode_valid(struct drm_simple_display_pipe *pipe,
+ 				    const struct drm_display_mode *mode)
+ {
 
-And get_random_seed is initialized in in arch/powerpc/platforms/powernv/rng.c
-with different functions that are static and not exported at all. 
+base-commit: e0dccc3b76fb35bb257b4118367a883073d7390e
+-- 
+2.37.1
 
-I don't understand where arch_get_random_seed_long calls GPL...
