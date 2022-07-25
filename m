@@ -2,155 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F22EC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 15:22:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0E29C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 15:22:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236518AbiGYPWW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 11:22:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41722 "EHLO
+        id S236533AbiGYPWZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 11:22:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236310AbiGYPVo (ORCPT
+        with ESMTP id S236329AbiGYPVo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 25 Jul 2022 11:21:44 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B21CB617B;
-        Mon, 25 Jul 2022 08:21:03 -0700 (PDT)
-Received: from dimapc.. (109-252-119-232.nat.spd-mgts.ru [109.252.119.232])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        (Authenticated sender: dmitry.osipenko)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 2E5EC6601B0E;
-        Mon, 25 Jul 2022 16:21:00 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1658762462;
-        bh=va+2N1U6jZR9UG67k72ODpvUReFCq9AoJW3EC29fAyY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hF7ZR01ny2d7o7bYE+Z5dQKruldBmtrcJcYzRtqjWpjWhPHejJuJ8SbR06SZM2aPy
-         PtNrndiN/nQSiU3QbPd3ctnZp4AsfylceLBLgZg1oSvV4c3Zv419RY/B4awMy5ey1W
-         JdPdffAe80sYcNuJxp42Aie3X8uYUumDehJZnxPU9KVd3D21F8VXhUQFK+8ZkB1DWc
-         KmrEP/xKl94kuJKiRYwnCEIPYClTew820OvW7bvO7YKu8UcodMFHHx5wzl7sk4al/K
-         i0Wxa4jPFMqEzxfcD4BoG6SAy54UxKHYee5eOgxPvwHkUvoNdjeuL8fEHON/BKLhvt
-         80xKjVSm5X6kA==
-From:   Dmitry Osipenko <dmitry.osipenko@collabora.com>
-To:     David Airlie <airlied@linux.ie>, Gerd Hoffmann <kraxel@redhat.com>,
-        Gurchetan Singh <gurchetansingh@chromium.org>,
-        Chia-I Wu <olvaffe@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
-        Daniel Almeida <daniel.almeida@collabora.com>,
-        Gert Wollny <gert.wollny@collabora.com>,
-        Gustavo Padovan <gustavo.padovan@collabora.com>,
-        Daniel Stone <daniel@fooishbar.org>,
-        Tomeu Vizoso <tomeu.vizoso@collabora.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Rob Clark <robdclark@gmail.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Tomasz Figa <tfiga@chromium.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= <thomas_os@shipmail.org>
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Dmitry Osipenko <digetx@gmail.com>,
-        linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
-        amd-gfx@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        kernel@collabora.com, virtualization@lists.linux-foundation.org,
-        spice-devel@lists.freedesktop.org, linux-rdma@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org
-Subject: [PATCH v2 5/5] dma-buf: Remove internal lock
-Date:   Mon, 25 Jul 2022 18:18:39 +0300
-Message-Id: <20220725151839.31622-6-dmitry.osipenko@collabora.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220725151839.31622-1-dmitry.osipenko@collabora.com>
-References: <20220725151839.31622-1-dmitry.osipenko@collabora.com>
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3143EC12
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 08:21:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=23s7JvNMsvF2AHH6z4dTYojuhFk5VWrqF+qCO533ufA=; b=W93GVpt2rUDlsdSMVN2WEF1b1L
+        92Q01zwXWnid6eWuVyRdi9ZCfnSJo5uxeqjPUcnJFtexKzHFcGPAQ5cbW1y5MSMsZh1I5Wv8L92yS
+        K2I794tOgXYlEmbsaE9+zvqHuK/k7VGgB+Z/MjCJ9+hXCVeOclQ4ExRSi2LiGSq0su206Iu+uMzuX
+        5G8SuXckL4PQbem6QS/Je8gPoF+z5hSd/8MzfPrwISD/NBNBKbNMIt0FshZSJVEBzPTdwyiycU1+t
+        A/iI7WaxWY7AXC0sLGW3tXXkAIkBBzpGNstPLEN4ZtOAogqqqbgkpqofPWXc5r5Pk/j6dTQ72Cl5n
+        0nR3VqUg==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oFztP-001Cg9-BV; Mon, 25 Jul 2022 15:21:11 +0000
+Date:   Mon, 25 Jul 2022 16:21:11 +0100
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     Jagdish Gediya <jvgediya@linux.ibm.com>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        ying.huang@intel.com, dave.hansen@intel.com,
+        Jonathan.Cameron@huawei.com, adobriyan@gmail.com,
+        akpm@linux-foundation.org, andriy.shevchenko@linux.intel.com,
+        rf@opensource.cirrus.com, pmladek@suse.com, will@kernel.org
+Subject: Re: [PATCH v3 1/2] lib/kstrtox.c: Add "false"/"true" support to
+ kstrtobool()
+Message-ID: <Yt605xj898VSAsA3@casper.infradead.org>
+References: <20220426180203.70782-1-jvgediya@linux.ibm.com>
+ <Yt6u34sigPEkeZ0Y@FVFF77S0Q05N.cambridge.arm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yt6u34sigPEkeZ0Y@FVFF77S0Q05N.cambridge.arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The internal dma-buf lock isn't needed anymore because the updated
-locking specification claims that dma-buf reservation must be locked
-by importers, and thus, the internal data is already protected by the
-reservation lock. Remove the obsoleted internal lock.
+On Mon, Jul 25, 2022 at 03:55:27PM +0100, Mark Rutland wrote:
+> On Tue, Apr 26, 2022 at 11:32:02PM +0530, Jagdish Gediya wrote:
+> > At many places in kernel, It is necessary to convert sysfs input
+> > to corrosponding bool value e.g. "false" or "0" need to be converted
+> > to bool false, "true" or "1" need to be converted to bool true,
+> > places where such conversion is needed currently check the input
+> > string manually, kstrtobool() can be utilized at such places but
+> > currently it doesn't have support to accept "false"/"true".
+> > 
+> > Add support to accept "false"/"true" as valid string in kstrtobool().
+> > 
+> > Signed-off-by: Jagdish Gediya <jvgediya@linux.ibm.com>
+> > Reviewed-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+> 
+> I've just spotted that this broke arm64's "rodata=full" command line option,
 
-Acked-by: Tomasz Figa <tfiga@chromium.org>
-Signed-off-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
----
- drivers/dma-buf/dma-buf.c | 5 -----
- include/linux/dma-buf.h   | 9 ---------
- 2 files changed, 14 deletions(-)
+That isn't a documented option.
 
-diff --git a/drivers/dma-buf/dma-buf.c b/drivers/dma-buf/dma-buf.c
-index bfdd551c7571..1d211ab400a1 100644
---- a/drivers/dma-buf/dma-buf.c
-+++ b/drivers/dma-buf/dma-buf.c
-@@ -656,7 +656,6 @@ struct dma_buf *dma_buf_export(const struct dma_buf_export_info *exp_info)
- 
- 	dmabuf->file = file;
- 
--	mutex_init(&dmabuf->lock);
- 	INIT_LIST_HEAD(&dmabuf->attachments);
- 
- 	mutex_lock(&db_list.lock);
-@@ -1508,7 +1507,6 @@ int dma_buf_vmap_unlocked(struct dma_buf *dmabuf, struct iosys_map *map)
- 		return -EINVAL;
- 
- 	dma_resv_lock(dmabuf->resv, NULL);
--	mutex_lock(&dmabuf->lock);
- 	if (dmabuf->vmapping_counter) {
- 		dmabuf->vmapping_counter++;
- 		BUG_ON(iosys_map_is_null(&dmabuf->vmap_ptr));
-@@ -1528,7 +1526,6 @@ int dma_buf_vmap_unlocked(struct dma_buf *dmabuf, struct iosys_map *map)
- 	*map = dmabuf->vmap_ptr;
- 
- out_unlock:
--	mutex_unlock(&dmabuf->lock);
- 	dma_resv_unlock(dmabuf->resv);
- 	return ret;
- }
-@@ -1549,13 +1546,11 @@ void dma_buf_vunmap_unlocked(struct dma_buf *dmabuf, struct iosys_map *map)
- 	BUG_ON(!iosys_map_is_equal(&dmabuf->vmap_ptr, map));
- 
- 	dma_resv_lock(dmabuf->resv, NULL);
--	mutex_lock(&dmabuf->lock);
- 	if (--dmabuf->vmapping_counter == 0) {
- 		if (dmabuf->ops->vunmap)
- 			dmabuf->ops->vunmap(dmabuf, map);
- 		iosys_map_clear(&dmabuf->vmap_ptr);
- 	}
--	mutex_unlock(&dmabuf->lock);
- 	dma_resv_unlock(dmabuf->resv);
- }
- EXPORT_SYMBOL_NS_GPL(dma_buf_vunmap_unlocked, DMA_BUF);
-diff --git a/include/linux/dma-buf.h b/include/linux/dma-buf.h
-index e7a6a8d28862..2f9fb7f3c835 100644
---- a/include/linux/dma-buf.h
-+++ b/include/linux/dma-buf.h
-@@ -326,15 +326,6 @@ struct dma_buf {
- 	/** @ops: dma_buf_ops associated with this buffer object. */
- 	const struct dma_buf_ops *ops;
- 
--	/**
--	 * @lock:
--	 *
--	 * Used internally to serialize list manipulation, attach/detach and
--	 * vmap/unmap. Note that in many cases this is superseeded by
--	 * dma_resv_lock() on @resv.
--	 */
--	struct mutex lock;
--
- 	/**
- 	 * @vmapping_counter:
- 	 *
--- 
-2.36.1
+        rodata=         [KNL]
+                on      Mark read-only kernel memory as read-only (default).
+                off     Leave read-only kernel memory writable for debugging.
 
+Hopefully this is an object lesson in why you need to update the
+documentation when you extend a feature.
+
+> since "full" gets parsed as 'f' = FALSE, when previously that would have been
+> rejected. So anyone passing "rodata=full" on the command line will have rodata
+> disabled, which is not what they wanted.
+> 
+> The current state of things is a bit messy (we prase the option twice because
+> arch code needs it early), and we can probably fix that with some refactoring,
+> but I do wonder if we actually want to open up the sysfs parsing to accept
+> anything *beginning* with [tTfF] rather than the full "true" and "false"
+> strings as previously, or whether it's worth reverting this for now in case
+> anything else is affected.
+
+Well, that's going to break people who've started using the new option.
+As a quick fix, how about only allowing either "f\0" or "fa"?
