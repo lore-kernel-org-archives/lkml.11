@@ -2,99 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFD36CCA473
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 13:58:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87387C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 13:59:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235180AbiGYN6M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 09:58:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40418 "EHLO
+        id S235221AbiGYN7U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 09:59:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234594AbiGYN6I (ORCPT
+        with ESMTP id S232800AbiGYN7S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 09:58:08 -0400
-Received: from netrider.rowland.org (netrider.rowland.org [192.131.102.5])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id EB83312D32
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 06:58:02 -0700 (PDT)
-Received: (qmail 351518 invoked by uid 1000); 25 Jul 2022 09:58:01 -0400
-Date:   Mon, 25 Jul 2022 09:58:01 -0400
-From:   Alan Stern <stern@rowland.harvard.edu>
-To:     Weitao Wang <WeitaoWang-oc@zhaoxin.com>
-Cc:     gregkh@linuxfoundation.org, kishon@ti.com, dianders@chromium.org,
-        s.shtylyov@omp.ru, mka@chromium.org, ming.lei@canonical.com,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        tonywwang@zhaoxin.com, weitaowang@zhaoxin.com
-Subject: Re: [PATCH v2] USB: HCD: Fix URB giveback issue in tasklet function
-Message-ID: <Yt6haeQBseJOEx1r@rowland.harvard.edu>
-References: <20220725065251.832087-1-WeitaoWang-oc@zhaoxin.com>
+        Mon, 25 Jul 2022 09:59:18 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 462DA12D32;
+        Mon, 25 Jul 2022 06:59:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658757557; x=1690293557;
+  h=date:from:to:cc:subject:message-id:reply-to:references:
+   mime-version:in-reply-to;
+  bh=SebOtSYgmnmuVPxznPkmfUK1/G0u2P5tlySsXcB/PUU=;
+  b=bGcXY2/4z6O36tgR4Qp4AkcncqVM9WjWWKP13Jtdprf3Rv04RZr6IG27
+   908goCVErrot272ELiKmXSprrPGadPOPb9RZnBkO74LNVHsN+LDPPsjnw
+   Ep496qkywxaXVhCPIg2rV5asi+cLp+QC0kCEvEZnAdvqw5T3/dkVF3qt/
+   TNQ227GbNqoK8+GZqheBQmxDQYnCwwd+vygVXqEA30dtbdHXgnX4s/qDk
+   aVpWiDgVyj2Lo2OOhCZ9OhJb4sv4uQAYEd5C7b+YWtza6UoQ+ThWZdD4C
+   U6w9Hd3WmrfMezHSdFXXc0BRg6nk+6m0E4AEvyT36UF9D6WC3CEVkPmmG
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10418"; a="274567920"
+X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
+   d="scan'208";a="274567920"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2022 06:59:16 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
+   d="scan'208";a="627460234"
+Received: from chaop.bj.intel.com (HELO localhost) ([10.240.193.75])
+  by orsmga008.jf.intel.com with ESMTP; 25 Jul 2022 06:59:04 -0700
+Date:   Mon, 25 Jul 2022 21:54:16 +0800
+From:   Chao Peng <chao.p.peng@linux.intel.com>
+To:     "Gupta, Pankaj" <pankaj.gupta@amd.com>
+Cc:     David Hildenbrand <david@redhat.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org, linux-api@vger.kernel.org,
+        linux-doc@vger.kernel.org, qemu-devel@nongnu.org,
+        linux-kselftest@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
+        ak@linux.intel.com, aarcange@redhat.com, ddutile@redhat.com,
+        dhildenb@redhat.com, Quentin Perret <qperret@google.com>,
+        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: Re: [PATCH v7 01/14] mm: Add F_SEAL_AUTO_ALLOCATE seal to memfd
+Message-ID: <20220725135416.GD304216@chaop.bj.intel.com>
+Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
+References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
+ <20220706082016.2603916-2-chao.p.peng@linux.intel.com>
+ <f39c4f63-a511-4beb-b3a4-66589ddb5475@redhat.com>
+ <c59fca89-cd0c-1724-210e-d9b01b375103@amd.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220725065251.832087-1-WeitaoWang-oc@zhaoxin.com>
+In-Reply-To: <c59fca89-cd0c-1724-210e-d9b01b375103@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 25, 2022 at 02:52:51PM +0800, Weitao Wang wrote:
-
-This is basically okay.  Just a couple of small comments...
-
-> Usb core introduce the mechanism of giveback of URB in tasklet context to
-> reduce hardware interrupt handling time. On some test situation(such as
-> FIO with 4KB block size), when tasklet callback function called to
-> giveback URB, interrupt handler add URB node to the bh->head list also.
-> If check bh->head list again after finish all URB giveback of local_list,
-> then it may introduce a "dynamic balance" between giveback URB and add URB
-> to bh->head list. This tasklet callback function may not exit for a long
-> time, which will cause other tasklet function calls to be delayed. Some
-> real-time applications(such as KB and Mouse) will see noticeable lag.
+On Thu, Jul 21, 2022 at 12:27:03PM +0200, Gupta, Pankaj wrote:
 > 
-> Fix this issue by taking new URBs giveback in next tasklet function call.
-> Add a member high_prio for structure giveback_urb_bh and replace the local
-> high_prio_bh variable with this structure member in usb_hcd_giveback_urb.
-
-The patch description should do more than say what the new code _is_ -- 
-we can see that easily enough by reading the patch.  The description 
-should explain _why_ the code was changed.
-
-> Fixes: 94dfd7edfd5c ("USB: HCD: support giveback of URB in tasklet context")
-> Signed-off-by: Weitao Wang <WeitaoWang-oc@zhaoxin.com>
-> ---
-> v1->v2:
->  - Fix compile warning by remove label "restart".
->  - Modify the patch description info.
->  - Change structure member from hi_priority to high_prio.
+> > > Normally, a write to unallocated space of a file or the hole of a sparse
+> > > file automatically causes space allocation, for memfd, this equals to
+> > > memory allocation. This new seal prevents such automatically allocating,
+> > > either this is from a direct write() or a write on the previously
+> > > mmap-ed area. The seal does not prevent fallocate() so an explicit
+> > > fallocate() can still cause allocating and can be used to reserve
+> > > memory.
+> > > 
+> > > This is used to prevent unintentional allocation from userspace on a
+> > > stray or careless write and any intentional allocation should use an
+> > > explicit fallocate(). One of the main usecases is to avoid memory double
+> > > allocation for confidential computing usage where we use two memfds to
+> > > back guest memory and at a single point only one memfd is alive and we
+> > > want to prevent memory allocation for the other memfd which may have
+> > > been mmap-ed previously. More discussion can be found at:
+> > > 
+> > >    https://lkml.org/lkml/2022/6/14/1255
+> > > 
+> > > Suggested-by: Sean Christopherson <seanjc@google.com>
+> > > Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
+> > > ---
+> > >   include/uapi/linux/fcntl.h |  1 +
+> > >   mm/memfd.c                 |  3 ++-
+> > >   mm/shmem.c                 | 16 ++++++++++++++--
+> > >   3 files changed, 17 insertions(+), 3 deletions(-)
+> > > 
+> > > diff --git a/include/uapi/linux/fcntl.h b/include/uapi/linux/fcntl.h
+> > > index 2f86b2ad6d7e..98bdabc8e309 100644
+> > > --- a/include/uapi/linux/fcntl.h
+> > > +++ b/include/uapi/linux/fcntl.h
+> > > @@ -43,6 +43,7 @@
+> > >   #define F_SEAL_GROW	0x0004	/* prevent file from growing */
+> > >   #define F_SEAL_WRITE	0x0008	/* prevent writes */
+> > >   #define F_SEAL_FUTURE_WRITE	0x0010  /* prevent future writes while mapped */
+> > > +#define F_SEAL_AUTO_ALLOCATE	0x0020  /* prevent allocation for writes */
+> > 
+> > Why only "on writes" and not "on reads". IIRC, shmem doesn't support the
+> > shared zeropage, so you'll simply allocate a new page via read() or on
+> > read faults.
+> > 
+> > 
+> > Also, I *think* you can place pages via userfaultfd into shmem. Not sure
+> > if that would count "auto alloc", but it would certainly bypass fallocate().
 > 
->  drivers/usb/core/hcd.c  | 25 ++++++++++++++-----------
->  include/linux/usb/hcd.h |  1 +
->  2 files changed, 15 insertions(+), 11 deletions(-)
+> I was also thinking this at the same time, but for different reason:
 > 
-> diff --git a/drivers/usb/core/hcd.c b/drivers/usb/core/hcd.c
-> index 06eea8848ccc..1feb9a604380 100644
-> --- a/drivers/usb/core/hcd.c
-> +++ b/drivers/usb/core/hcd.c
-> @@ -1691,7 +1691,6 @@ static void usb_giveback_urb_bh(struct tasklet_struct *t)
->  
->  	spin_lock_irq(&bh->lock);
->  	bh->running = true;
-> - restart:
->  	list_replace_init(&bh->head, &local_list);
->  	spin_unlock_irq(&bh->lock);
->  
-> @@ -1705,10 +1704,16 @@ static void usb_giveback_urb_bh(struct tasklet_struct *t)
->  		bh->completing_ep = NULL;
->  	}
->  
-> -	/* check if there are new URBs to giveback */
-> +	/* giveback new URBs next time to prevent this function from
-> +	 * not exiting for a long time.
-> +	 */
+> "Want to populate private preboot memory with firmware payload", so was
+> thinking userfaulftd could be an option as direct writes are restricted?
 
-Minor stylistic issue: The currently accepted format for multi-line 
-comments is like this:
+If that can be a side effect, I definitely glad to see it, though I'm
+still not clear how userfaultfd can be particularly helpful for that.
 
-	/*
-	 * Blah blah blah
-	 * Blah blah blah
-	 */
-
-Alan Stern
+Chao
+> 
+> Thanks,
+> Pankaj
+> 
+> 
+> 
+> 
