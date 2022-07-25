@@ -2,103 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 872EEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 12:03:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCBA2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 12:08:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231806AbiGYMDi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 08:03:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51576 "EHLO
+        id S234766AbiGYMI3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 08:08:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234415AbiGYMDg (ORCPT
+        with ESMTP id S232413AbiGYMI1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 08:03:36 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA342186C5;
-        Mon, 25 Jul 2022 05:03:35 -0700 (PDT)
-X-UUID: 56201015ffa34e81bfc7c1236bbeebb2-20220725
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:3b198551-7a35-4a20-adb4-6a1bd8852cb8,OB:0,LO
-        B:10,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,A
-        CTION:release,TS:90
-X-CID-INFO: VERSION:1.1.8,REQID:3b198551-7a35-4a20-adb4-6a1bd8852cb8,OB:0,LOB:
-        10,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,A
-        CTION:quarantine,TS:90
-X-CID-META: VersionHash:0f94e32,CLOUDID:1991e1d3-912a-458b-a623-74f605a77e93,C
-        OID:bafac9dde7aa,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:0,File:nil,QS:nil,BEC:nil,COL:0
-X-UUID: 56201015ffa34e81bfc7c1236bbeebb2-20220725
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
-        (envelope-from <xiangsheng.hou@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 617418347; Mon, 25 Jul 2022 20:03:32 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Mon, 25 Jul 2022 20:03:30 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkmbs11n2.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
- Transport; Mon, 25 Jul 2022 20:03:30 +0800
-From:   Xiangsheng Hou <xiangsheng.hou@mediatek.com>
-To:     <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
-        <broonie@kernel.org>
-CC:     <matthias.bgg@gmail.com>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <bin.zhang@mediatek.com>,
-        <benliang.zhao@mediatek.com>, <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Xiangsheng Hou <xiangsheng.hou@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH V5] dt-bindings: mediatek: Add axi clock in mt8173 dts example
-Date:   Mon, 25 Jul 2022 20:02:05 +0800
-Message-ID: <20220725120204.10834-1-xiangsheng.hou@mediatek.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 25 Jul 2022 08:08:27 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74A95DF61;
+        Mon, 25 Jul 2022 05:08:24 -0700 (PDT)
+Date:   Mon, 25 Jul 2022 12:08:20 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1658750902;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7oMdJNO8Q18/poUtr1F/51rn98EPl62mt6vQplKcYNc=;
+        b=3RXlDyDtnV8NAaN7O69ictD0qukaCxX3pfwivsy/u3Qf/ANTqfPJw28fyA/WaGmWySSMDM
+        cpTculevD7z8sj/rH5TVlKqHGVBnagIhE5IN5DF+Ipq71CTf9sBWf63+/4w7/Qp6DpZzFI
+        rvKAyPAOBtb1REvypRxe1dpb9v8Sx2pjVVN57zVcZC08rf0VwGmxp4V+DiVmqDOQ13H63H
+        LIQYrvIN9NkBxPNRTKCED4ijB8Rs1SlmeQwf+2yMsKX5QhgxLKMc5MMHJsCZFK74V4t45i
+        705GQA2Cr+5WTjbRKcAnkL4dybpHZYsHlaChzKJmNoD837p2L5Rqq1qBZ6FwEg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1658750902;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7oMdJNO8Q18/poUtr1F/51rn98EPl62mt6vQplKcYNc=;
+        b=ibxmdoLpL7AqOBmSdTS4Eo0CYO49WoPDpBUvkKXrWY/FkajgZ/1U9/s/M//Fbz2r7uL15y
+        oBKGnlAb0hjiVJDQ==
+From:   "tip-bot2 for Masahiro Yamada" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/build] x86/purgatory: Omit use of bin2c
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        Borislav Petkov <bp@suse.de>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220725020812.622255-2-masahiroy@kernel.org>
+References: <20220725020812.622255-2-masahiroy@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Message-ID: <165875090068.15455.6422328179935086784.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For mt8173, it is needed to add the axi clock for dma mode.
+The following commit has been merged into the x86/build branch of tip:
 
-Signed-off-by: Xiangsheng Hou <xiangsheng.hou@mediatek.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Acked-by: Rob Herring <robh@kernel.org>
- ---
- Changes from v4:
- - none
- 
- Changes from v3:
- - fix number of column characters
+Commit-ID:     2d17bd24b0169d3fdbf003dfd55af600e9a30553
+Gitweb:        https://git.kernel.org/tip/2d17bd24b0169d3fdbf003dfd55af600e9a30553
+Author:        Masahiro Yamada <masahiroy@kernel.org>
+AuthorDate:    Mon, 25 Jul 2022 11:08:12 +09:00
+Committer:     Borislav Petkov <bp@suse.de>
+CommitterDate: Mon, 25 Jul 2022 10:32:32 +02:00
 
- Changes from v2:
- - remove assigned clocks and parents in dt-binding
+x86/purgatory: Omit use of bin2c
 
- Changes from v1:
- - none
+The .incbin assembler directive is much faster than bin2c + $(CC).
+
+Do similar refactoring as in
+
+  4c0f032d4963 ("s390/purgatory: Omit use of bin2c").
+
+Please note the .quad directive matches to size_t in C (both 8
+byte) because the purgatory is compiled only for the 64-bit kernel.
+(KEXEC_FILE depends on X86_64).
+
+Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20220725020812.622255-2-masahiroy@kernel.org
 ---
- .../devicetree/bindings/spi/mediatek,spi-mtk-nor.yaml        | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ arch/x86/.gitignore                  |  2 --
+ arch/x86/Kconfig                     |  1 -
+ arch/x86/purgatory/Makefile          |  8 +-------
+ arch/x86/purgatory/kexec-purgatory.S | 14 ++++++++++++++
+ scripts/remove-stale-files           |  2 ++
+ 5 files changed, 17 insertions(+), 10 deletions(-)
+ create mode 100644 arch/x86/purgatory/kexec-purgatory.S
 
-diff --git a/Documentation/devicetree/bindings/spi/mediatek,spi-mtk-nor.yaml b/Documentation/devicetree/bindings/spi/mediatek,spi-mtk-nor.yaml
-index 41e60fe4b09f..d3d7ed4b497b 100644
---- a/Documentation/devicetree/bindings/spi/mediatek,spi-mtk-nor.yaml
-+++ b/Documentation/devicetree/bindings/spi/mediatek,spi-mtk-nor.yaml
-@@ -82,8 +82,9 @@ examples:
-         compatible = "mediatek,mt8173-nor";
-         reg = <0 0x1100d000 0 0xe0>;
-         interrupts = <1>;
--        clocks = <&pericfg CLK_PERI_SPI>, <&topckgen CLK_TOP_SPINFI_IFR_SEL>;
--        clock-names = "spi", "sf";
-+        clocks = <&pericfg CLK_PERI_SPI>, <&topckgen CLK_TOP_SPINFI_IFR_SEL>,
-+                 <&pericfg CLK_PERI_NFI>;
-+        clock-names = "spi", "sf", "axi";
-         #address-cells = <1>;
-         #size-cells = <0>;
+diff --git a/arch/x86/.gitignore b/arch/x86/.gitignore
+index 677111a..f2e1d6c 100644
+--- a/arch/x86/.gitignore
++++ b/arch/x86/.gitignore
+@@ -3,6 +3,4 @@ boot/compressed/vmlinux
+ tools/test_get_len
+ tools/insn_sanity
+ tools/insn_decoder_test
+-purgatory/kexec-purgatory.c
+ purgatory/purgatory.ro
+-
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 076adde..901cb59 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -2032,7 +2032,6 @@ config KEXEC
+ config KEXEC_FILE
+ 	bool "kexec file based system call"
+ 	select KEXEC_CORE
+-	select BUILD_BIN2C
+ 	depends on X86_64
+ 	depends on CRYPTO=y
+ 	depends on CRYPTO_SHA256=y
+diff --git a/arch/x86/purgatory/Makefile b/arch/x86/purgatory/Makefile
+index 248b009..31c634a 100644
+--- a/arch/x86/purgatory/Makefile
++++ b/arch/x86/purgatory/Makefile
+@@ -73,12 +73,6 @@ $(obj)/purgatory.ro: $(PURGATORY_OBJS) FORCE
+ $(obj)/purgatory.chk: $(obj)/purgatory.ro FORCE
+ 		$(call if_changed,ld)
  
--- 
-2.25.1
-
+-targets += kexec-purgatory.c
+-
+-quiet_cmd_bin2c = BIN2C   $@
+-      cmd_bin2c = $(objtree)/scripts/bin2c kexec_purgatory < $< > $@
+-
+-$(obj)/kexec-purgatory.c: $(obj)/purgatory.ro $(obj)/purgatory.chk FORCE
+-	$(call if_changed,bin2c)
++$(obj)/kexec-purgatory.o: $(obj)/purgatory.ro $(obj)/purgatory.chk
+ 
+ obj-y += kexec-purgatory.o
+diff --git a/arch/x86/purgatory/kexec-purgatory.S b/arch/x86/purgatory/kexec-purgatory.S
+new file mode 100644
+index 0000000..8530fe9
+--- /dev/null
++++ b/arch/x86/purgatory/kexec-purgatory.S
+@@ -0,0 +1,14 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++	.section .rodata, "a"
++
++	.align	8
++kexec_purgatory:
++	.globl	kexec_purgatory
++	.incbin	"arch/x86/purgatory/purgatory.ro"
++.Lkexec_purgatory_end:
++
++	.align	8
++kexec_purgatory_size:
++	.globl	kexec_purgatory_size
++	.quad	.Lkexec_purgatory_end - kexec_purgatory
+diff --git a/scripts/remove-stale-files b/scripts/remove-stale-files
+index 7adab46..379e86c 100755
+--- a/scripts/remove-stale-files
++++ b/scripts/remove-stale-files
+@@ -41,3 +41,5 @@ if [ -n "${building_out_of_srctree}" ]; then
+ fi
+ 
+ rm -f scripts/extract-cert
++
++rm -f arch/x86/purgatory/kexec-purgatory.c
