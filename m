@@ -2,287 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72F98C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 15:15:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15CDACCA473
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 15:16:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236221AbiGYPP0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 11:15:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55384 "EHLO
+        id S233197AbiGYPQL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 11:16:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236204AbiGYPOt (ORCPT
+        with ESMTP id S235880AbiGYPPn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 11:14:49 -0400
-Received: from EUR01-HE1-obe.outbound.protection.outlook.com (mail-eopbgr130075.outbound.protection.outlook.com [40.107.13.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA3301D332;
-        Mon, 25 Jul 2022 08:12:45 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jC8Eb9Ndy4VIVc0ciooPylvhL5xlcESmW2r1YJ0C6VH1feZm5ZIXjLuZ3cOL4bBCCAJK1jrVKBFSUzKu7Nij8ETNxYAO7U7p4X3oFNvf8AhCBF7YGQOswBf8oCVbw25aexB5yZAlxIjfg/7LdBvx6iwAxQv4OySGkplZ331klkC7YnP3uaBY5GHsz3/XYBNCWawSUAuf91Eay0bROcgriCtiEBr9TuY58yuSOo96sTxVN1TZyCFOtu98DZ0VGCOChJ/mGbbcj+db6Kep5U+dYEwRpnG+PqOvrwUpXNR/iZ3bhTEAPnfzx/PMH9yXaW4skejPQhvasRdzlkd4uMA8dA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=m2icLyPw92tchujC7meQbydBWVzlYIdCZDbwzZflRR0=;
- b=W3vp97dXS2dDWAjQp6qGCk48FbXl+VSCdypdMEq22+YcSgakDHNrD6oe9qBuO6LUtvwRqm2ipnSqIs9TzckcF74Gi6xKbnRyE7miZTKz11qjWn1lMKncZF3Atb48g6I8VYzr899QMPfBB8S9V0Tb2gMWAfNtYU8lS6Gp7Rdsn5Lzv1/Wyb0KIYgkCNePUMGopjwkwfUB8HI2GG78RYKY96OgMXWqqy83/rIp+gn3nPg9H6gGeVbPDaPF8M5cYw/9rTeyG8RWdQDsM2V/Cyi+R5RAElbdFyb0X0b5VkjZ9Xc1Z7Ngm0iOAoJA/WTrzFEDtzvk3gcn7piZs4dIpul82w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
- dkim=pass header.d=seco.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=m2icLyPw92tchujC7meQbydBWVzlYIdCZDbwzZflRR0=;
- b=GXvUeNlPiT1ApW95/G+OoAUdCzuwqBa5e5yVniYi6H+qdbS2MtJl1EyugFF709ZVYGk90sXnCSjRzTqdZ2v1E/3LpMesf51eSTdxitf7AI+PQ2HDBj3uIsmmDUAOL1+pmiNxUFDxGMni5ErPei7ldWlSfmRDmeK4St48aiht4F2ZmuKdJBcnlZYz0+Xj+Qh3AFldqDY//FO3FLzpqjRC9t0yoyNN/mnLfrSpw3/fZnUsZcC1+upH1Squu+ezqzgGsKolWHkca915ay34O272SXT3wnilG7gfh/FjLDwZCX/SW6tYO+Xc0LXj1hpO1M8e2kXgivWumNwO72lIYsiJrg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=seco.com;
-Received: from DB7PR03MB4972.eurprd03.prod.outlook.com (2603:10a6:10:7d::22)
- by DB7PR03MB3723.eurprd03.prod.outlook.com (2603:10a6:5:6::24) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5458.18; Mon, 25 Jul 2022 15:11:44 +0000
-Received: from DB7PR03MB4972.eurprd03.prod.outlook.com
- ([fe80::59ef:35d2:2f27:e98b]) by DB7PR03MB4972.eurprd03.prod.outlook.com
- ([fe80::59ef:35d2:2f27:e98b%4]) with mapi id 15.20.5458.018; Mon, 25 Jul 2022
- 15:11:44 +0000
-From:   Sean Anderson <sean.anderson@seco.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Cc:     linuxppc-dev@lists.ozlabs.org,
-        Camelia Groza <camelia.groza@nxp.com>,
+        Mon, 25 Jul 2022 11:15:43 -0400
+Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A45419293;
+        Mon, 25 Jul 2022 08:13:22 -0700 (PDT)
+Received: by mail-pf1-x42b.google.com with SMTP id c3so10678440pfb.13;
+        Mon, 25 Jul 2022 08:13:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=vClZEDHW/p/nRPc4T2OtKWpsEU80qB0nIfVJ1m6OHYg=;
+        b=PiD+kKPGc4Pm9OcZQZJwoMV3H+yXJCQjYhEzcQJJYC2lKA2LyX9CNLTurlguPmz/BD
+         N6jJGH0qORg74v0B7iaS52QPlrLohHdqbARsv1KrPjuEX575/HlU3fgBxP9rFn1JbFOs
+         8LfPqUSH7qL0BbkY5LU6M3Sn/vOCsV6x+GZVbLdEMSTeBtcTAnhTskxx7QraJKs8x/1M
+         uvD6mEzN6OF4vfBD64EOdKSwRoyUuB+o/uvthi8MgGPBX/Iq31tZlASDKPHnb5rh8SWo
+         WgFLYdUvp127aYedetMr5vIlqH5JjOrCpCIwlHHitnTIYGE1ijc2cLnR5hTuaV2POFBr
+         2auA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=vClZEDHW/p/nRPc4T2OtKWpsEU80qB0nIfVJ1m6OHYg=;
+        b=kAktalVQBkQtaSJCSgIsMxK7DfujsAZ8s+gYN7It+9Z2UWobHDbU9An6xMGfycd3Sg
+         XywOwRxaDOCxtypI/Li9agmnhUlX1W509uJ65p9bqDp6E0iQyiYebCpjfAieItHvCmyJ
+         QpficXOdN2iJvhUb27M9ZTz9TpztXH5djJjMzD0ZDLAz6DiZPKoNoPk6VVvUEXJGxFy2
+         plWMOYHHnOEM5nPFuxPnGyJt9lyVuintEU+VE+nHFTmVj4Ay/i3WiVhlap2QFyDtnnrL
+         y/UO3LhjlfaepX9kvXWsQPwW50feQjdo/b+RxOh72Xy+jsC3PsTL11Y+K9EXkWvxiz+s
+         UAUw==
+X-Gm-Message-State: AJIora8jHgcHVtmU51+t4u7h8UsxvKXg630XRNrJOldYmr6I9Mx/p40I
+        TnEk7m04BskUgZpNms5of582AUjEsT8=
+X-Google-Smtp-Source: AGRyM1sODvWco/wy/JwP4+nnbMCuyaPj/uRKlViVYr6xlq2RO9aNdFighhUzr9JC6hRduAn8/tZWMA==
+X-Received: by 2002:a63:4e09:0:b0:412:1ba3:672a with SMTP id c9-20020a634e09000000b004121ba3672amr11728676pgb.597.1658762000782;
+        Mon, 25 Jul 2022 08:13:20 -0700 (PDT)
+Received: from stbsrv-and-01.and.broadcom.net ([192.19.144.250])
+        by smtp.gmail.com with ESMTPSA id a9-20020a170902ecc900b001641b2d61d4sm6649667plh.30.2022.07.25.08.13.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Jul 2022 08:13:19 -0700 (PDT)
+From:   Jim Quinlan <jim2101024@gmail.com>
+To:     linux-pci@vger.kernel.org,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Cyril Brulebois <kibi@debian.org>,
+        bcm-kernel-feedback-list@broadcom.com, jim2101024@gmail.com,
+        james.quinlan@broadcom.com
+Cc:     =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+        linux-arm-kernel@lists.infradead.org (moderated list:BROADCOM
+        BCM2711/BCM2835 ARM ARCHITECTURE),
         linux-kernel@vger.kernel.org (open list),
-        Madalin Bucur <madalin.bucur@nxp.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Sean Anderson <sean.anderson@seco.com>,
-        Li Yang <leoyang.li@nxp.com>
-Subject: [PATCH v4 25/25] net: dpaa: Adjust queue depth on rate change
-Date:   Mon, 25 Jul 2022 11:10:39 -0400
-Message-Id: <20220725151039.2581576-26-sean.anderson@seco.com>
-X-Mailer: git-send-email 2.35.1.1320.gc452695387.dirty
-In-Reply-To: <20220725151039.2581576-1-sean.anderson@seco.com>
-References: <20220725151039.2581576-1-sean.anderson@seco.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: CH0PR03CA0229.namprd03.prod.outlook.com
- (2603:10b6:610:e7::24) To DB7PR03MB4972.eurprd03.prod.outlook.com
- (2603:10a6:10:7d::22)
-MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0dbc1cbb-3144-475b-50e5-08da6e4ffc61
-X-MS-TrafficTypeDiagnostic: DB7PR03MB3723:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /kkuuYPOJRqNFrMqtROQOLaW7oQIhr74uA4q6JbysnLmkgIGf0i/Z2A2WZhfihPM67PYQ+r0c/IUJ+DzmE2eU6a6MkYTLR6coeT+0kWk0Luflgj3MC4CGj0z76/Gc9V8qySmqLqZEBrtrgOMykg7pEJmICmxeSMhbqOeNYW+wCG7YgR4TLohsDRRgabbjgibI80JA2UwX0wkwaFdUO2Z21NKKcQTnmB1y8BCCqcAm2Pdnoa6V2WAv2zMEaarq6tMopVmj7kB4Qr7XAisw33tIxsLMZQceZH7Lz+QRWIDgE2D8eZHS2zXtWZBN7e25ri1+PGBMvhwZq/meBVoHjsEhL3Uuss6YUwdlZ2EJGrms38x6HCorOUSkqf739wtlVmEa4Z/5Os/VsJpjPAOlZhA976spUnjOaPiTVYgU7h6BYsuiuc8g8pQ4s8+U/9g66UodD2xPtYK4isH7WiFY046PCBx+jUKM9OgKt3a2qTo+7UPqn8l64rPQDpPB3biPN08JkpKtaY+jlnxmZXEOX/fVCjw6y5KnVoFOmr3KYBGkwr3bgFmxgSXn5fisIIlAE/xpyGOoDL07jQgvYY57Jm8QZQI9qjXr5IuASBw/k9Tf3LBlWnSDXG6yb6rkAs5F8z5ima0OcahxCc87gr7HKBxpRO7yZuirgHumxM1IdsO9vcXpQOjDPbCGJE5tYn06Qst4NCDB4U9Uzu0NJANV4rI23w//bJwBLwmLfMKxxpVEuFPmM063BxSOLsFPTHkJF0u3xz+ScWaZ1mEB7K42DEKvDEOJVIxdHnKlBoycKsa0QU=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4972.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(396003)(346002)(39850400004)(376002)(366004)(186003)(6512007)(2616005)(66946007)(1076003)(316002)(5660300002)(44832011)(66556008)(4326008)(66476007)(8936002)(6506007)(7416002)(52116002)(54906003)(110136005)(6666004)(26005)(8676002)(6486002)(2906002)(38350700002)(86362001)(83380400001)(38100700002)(36756003)(478600001)(41300700001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?CA1vibEQi+6AZaDHV9k+yure4wk+N+3uR9DS0MghHP9jZdoiwhAqQZF69I42?=
- =?us-ascii?Q?BSIvbq0oDnF9O4qoW6c1ZlQU32yI57fQ8emc/6oeGXDJhDTOL5TmPerTBLNJ?=
- =?us-ascii?Q?WfsPwIrqrF10i15tTXOTJ1Gmkn+vBKi5MOBBOUS76Cc8Lceo7N0YAr5AWnOC?=
- =?us-ascii?Q?sT+Qsq3LnDyWIzj2jRs0Bt9IHSR36Xuqe6v7/0Lgn8Dcqb/PKKeQUKaEEEle?=
- =?us-ascii?Q?Jk73MRcg/rv+Pvv4Y7EKjdOqdiGQNMEz92Dy+FVDRDMUpG9cFy0p3wRH/vDd?=
- =?us-ascii?Q?hmwiNNnNU4vr9zX0kBC4m/+npctIddif2yf2cceQK7OReX84JeiTHoa5Gd3l?=
- =?us-ascii?Q?mFwnFvgvheoaJkguD3gbS9ps1UeeZfh27chrTP3gzTJX/zFx6nfdkdLVleci?=
- =?us-ascii?Q?CDhV3LsUoGLn/rN7+mkyVVN4WBVI+iwLgVyV/1nnqaYLOC0cnBgb2pP+if0y?=
- =?us-ascii?Q?iVr8760IFiKu7AAkOWySc5PbumWYXQwAV1shFg3sIUcMsWL1w522TyMoyL4a?=
- =?us-ascii?Q?wA46HdrldgYiNxiZq4FRhVcMJChvgyJkYIoqL/LiFSxXAeyRaZqnsE9FHWB6?=
- =?us-ascii?Q?NkmEInnoHFrDRrCx8Eqpc7vEd0ejmdY30W/hZ/YWANBd0kctMiQzEkx8RtZL?=
- =?us-ascii?Q?5kWvGBw/LbsUEL44tDmMCpgCNF+RPi7zk1gwnvNBs48tgmXQddECJU2ZEJ+f?=
- =?us-ascii?Q?6GIyPVJM/Uwm8wiYnb5Q51/PG15x40RMbQvD86MvmDpAMk+zIW/3/NJLRwNH?=
- =?us-ascii?Q?hauAAEUFyKLgl/CKwJT7aoy76ODwz5syvCSLDZscHxO8/syy8wnvcQ6CUJqV?=
- =?us-ascii?Q?9VV6AWwRp0mGhxtdBc7Hc8c5heTR9+8VwPcK7816XJyz1yAbcKT8ongYNK6r?=
- =?us-ascii?Q?8sSA334vdwh9ra7xoLNk8K+dTWpoQNobHB1xSepW5kYc6Fd4TvA99ycHM1aN?=
- =?us-ascii?Q?tfaEyX2/1bK66hm3vlexP0dAB2PLe+oTXO03wHIsPwl3J3Fwe8VaUx4hODjt?=
- =?us-ascii?Q?YEEn1FOltrm2sfjuxSzJY5RmydQG9HbrWg3kXTmp3jFNgPlpG4uLOjRhzMhq?=
- =?us-ascii?Q?7RQnmiZy/yU65WM+CcZ+FnQydt2TZj6y2fkqVYRK31aY/bMHZnNnmaUGAIuC?=
- =?us-ascii?Q?02oHFTXNE/cwlzHqbI/GN7fNYq28bLAjKoA+TGIGnd8G7xkO4cZyYWTWAk8d?=
- =?us-ascii?Q?bLSaQE5iorL1TmN1g5qnDkGHKPMzXP5+rSyn1i+yQzX61/l92/PZtuL2tjkM?=
- =?us-ascii?Q?UFc653QtJrX6fCAEAkxQC9KTFWUg/HJAd9HjioVxo6XbcvZ6ousf8AW5E6CU?=
- =?us-ascii?Q?YO2eV5KIWCilw5Dg3PtQyMOwFNe5euN1zHNEA79JDFACOU3rgF5wsR8Jfd7w?=
- =?us-ascii?Q?FIl8Y10Odc3b5xzETLHZJhhFm6akz7NjGMIhvszdIl5ZbZcQNXKPLFaCclz7?=
- =?us-ascii?Q?+Khwpr4DtrQr1SmUMaOKaZzlWbxxB9/T6Bkp9dFF/c69+o2qRB4P0leNmqE+?=
- =?us-ascii?Q?YLZ3bOR7nCnytk8PqhNBj8jrfhFL/rYzScF9vqyH7F8Z2gwpJ1Z7z+gZS19v?=
- =?us-ascii?Q?UvVm0X+jqc7ILigxIEaYuGBFOsk+3dwty+/YhI0p4gxjjv7SPvS7I1ypsLge?=
- =?us-ascii?Q?PA=3D=3D?=
-X-OriginatorOrg: seco.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0dbc1cbb-3144-475b-50e5-08da6e4ffc61
-X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4972.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jul 2022 15:11:44.3929
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 0W5sY49ioRFsnqNzEEgF35m0wrVCPBsetM/pxOW+JhN58TByk2B3XgqUB9qwQdsR4+1TwaJND/pYH2MZDW7okw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR03MB3723
+        linux-rpi-kernel@lists.infradead.org (moderated list:BROADCOM
+        BCM2711/BCM2835 ARM ARCHITECTURE), Rob Herring <robh@kernel.org>
+Subject: [PATCH v3 0/7] PCI: brcmstb: Re-submit reverted patchset
+Date:   Mon, 25 Jul 2022 11:12:49 -0400
+Message-Id: <20220725151258.42574-1-jim2101024@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of setting the queue depth once during probe, adjust it on the
-fly whenever we configure the link. This is a bit unusal, since usually
-the DPAA driver calls into the FMAN driver, but here we do the opposite.
-We need to add a netdev to struct mac_device for this, but it will soon
-live in the phylink config.
+v3 -- Replaced "refusal mode" commit with one that gates config
+      space accesses based on link status (Bjorn)
+   -- Restrict the brcm_pcie_start_link() code to only those things
+      related to link-up and put the rest in brcm_pcie_setup()
+   -- Added commit to change map functions to end with 'map_bus' (Bjorn)
+   -- s/0x060400/PCI_CLASS_BRIDGE_PCI_NORMAL/ (Pali)
+   -- Limit config space accesess to 4k window.
+   -- Remove wording in a commit message that said the regulators
+      could be endpoint power supplies
 
-I haven't tested this extensively, but it doesn't seem to break
-anything. We could possibly optimize this a bit by keeping track of the
-last rate, but for now we just update every time. 10GEC probably doesn't
-need to call into this at all, but I've added it for consistency.
+V2  -- As v1 included the minimal code to fix a regression.  v2 does
+       the same but adds some improvements suggested by Bjorn.
+    -- In the unlikely but possible case that some other driver
+       starts using the port driver's dev_data field, do not overwrite
+       it but issue an error and return.
+    -- Functions probe() and resume() do similar operations but
+       did them in a different order; make this order consistent
+       for both.
+    -- New commit to remove forward declarations.
+    -- New commit for only the PCIe config-space access "refusal mode".
+    -- brcm_pcie_linkup renamed to brcm_pcie_start_link
+    -- Add '_noirq' to the brcm_pcie_{suspend,resume} function names
+       to match the dev_pm_ops names.
+    -- Changes to commit messages:
+           o Explain why we are splitting a function in two parts.
+           o s/RB/Root Port/
 
-Signed-off-by: Sean Anderson <sean.anderson@seco.com>
-Acked-by: Camelia Groza <camelia.groza@nxp.com>
----
+    NOTE for Bjorn: The two commits "add mechanism .." and "add control ..."
+        would probably be more clear if they were squashed.  They are kept
+        separate as the first one's code may someday be moved under the Port
+        driver.  As such, there's some churn.
 
-(no changes since v2)
+    NOTE for Bjorn: There is no hurry on Broadcom's side wrt which
+        release cycle/phase this patchset is applied.  It goes in
+        when you think it is ready.
 
-Changes in v2:
-- New
+V1 -- Resubmission of patchset after original was reverted for a
+    regression.
 
- .../net/ethernet/freescale/dpaa/dpaa_eth.c    | 38 +++++++++++++++++--
- .../net/ethernet/freescale/fman/fman_dtsec.c  |  1 +
- .../net/ethernet/freescale/fman/fman_memac.c  |  1 +
- .../net/ethernet/freescale/fman/fman_tgec.c   |  7 +++-
- drivers/net/ethernet/freescale/fman/mac.h     |  3 ++
- 5 files changed, 44 insertions(+), 6 deletions(-)
+    A submission [1] was made to enable a PCIe root port to turn on
+    regulators for downstream devices.  It was accepted.  Months later, a
+    regression was discovered on an RPi CM4 [2].  The patchset was reverted
+    [3] as the fix came too late in the release cycle.  The regression in
+    question is triggered only when the PCIe RC DT node has no root port
+    subnode, which is a perfectly reasonsable configuration.
 
-diff --git a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-index b0ebf2ff0d00..f643009cac5f 100644
---- a/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-+++ b/drivers/net/ethernet/freescale/dpaa/dpaa_eth.c
-@@ -197,6 +197,8 @@ static int dpaa_rx_extra_headroom;
- #define dpaa_get_max_mtu()	\
- 	(dpaa_max_frm - (VLAN_ETH_HLEN + ETH_FCS_LEN))
- 
-+static void dpaa_eth_cgr_set_speed(struct mac_device *mac_dev, int speed);
-+
- static int dpaa_netdev_init(struct net_device *net_dev,
- 			    const struct net_device_ops *dpaa_ops,
- 			    u16 tx_timeout)
-@@ -262,6 +264,9 @@ static int dpaa_netdev_init(struct net_device *net_dev,
- 	net_dev->needed_headroom = priv->tx_headroom;
- 	net_dev->watchdog_timeo = msecs_to_jiffies(tx_timeout);
- 
-+	mac_dev->net_dev = net_dev;
-+	mac_dev->update_speed = dpaa_eth_cgr_set_speed;
-+
- 	/* start without the RUNNING flag, phylib controls it later */
- 	netif_carrier_off(net_dev);
- 
-@@ -826,10 +831,10 @@ static int dpaa_eth_cgr_init(struct dpaa_priv *priv)
- 	initcgr.we_mask = cpu_to_be16(QM_CGR_WE_CSCN_EN | QM_CGR_WE_CS_THRES);
- 	initcgr.cgr.cscn_en = QM_CGR_EN;
- 
--	/* Set different thresholds based on the MAC speed.
--	 * This may turn suboptimal if the MAC is reconfigured at a speed
--	 * lower than its max, e.g. if a dTSEC later negotiates a 100Mbps link.
--	 * In such cases, we ought to reconfigure the threshold, too.
-+	/* Set different thresholds based on the configured MAC speed.
-+	 * This may turn suboptimal if the MAC is reconfigured at another
-+	 * speed, so MACs must call dpaa_eth_cgr_set_speed in their adjust_link
-+	 * callback.
- 	 */
- 	if (priv->mac_dev->if_support & SUPPORTED_10000baseT_Full)
- 		cs_th = DPAA_CS_THRESHOLD_10G;
-@@ -858,6 +863,31 @@ static int dpaa_eth_cgr_init(struct dpaa_priv *priv)
- 	return err;
- }
- 
-+static void dpaa_eth_cgr_set_speed(struct mac_device *mac_dev, int speed)
-+{
-+	struct net_device *net_dev = mac_dev->net_dev;
-+	struct dpaa_priv *priv = netdev_priv(net_dev);
-+	struct qm_mcc_initcgr opts = { };
-+	u32 cs_th;
-+	int err;
-+
-+	opts.we_mask = cpu_to_be16(QM_CGR_WE_CS_THRES);
-+	switch (speed) {
-+	case SPEED_10000:
-+		cs_th = DPAA_CS_THRESHOLD_10G;
-+		break;
-+	case SPEED_1000:
-+	default:
-+		cs_th = DPAA_CS_THRESHOLD_1G;
-+		break;
-+	}
-+	qm_cgr_cs_thres_set64(&opts.cgr.cs_thres, cs_th, 1);
-+
-+	err = qman_update_cgr_safe(&priv->cgr_data.cgr, &opts);
-+	if (err)
-+		netdev_err(net_dev, "could not update speed: %d\n", err);
-+}
-+
- static inline void dpaa_setup_ingress(const struct dpaa_priv *priv,
- 				      struct dpaa_fq *fq,
- 				      const struct qman_fq *template)
-diff --git a/drivers/net/ethernet/freescale/fman/fman_dtsec.c b/drivers/net/ethernet/freescale/fman/fman_dtsec.c
-index f2dd07b714ea..6617932fd3fd 100644
---- a/drivers/net/ethernet/freescale/fman/fman_dtsec.c
-+++ b/drivers/net/ethernet/freescale/fman/fman_dtsec.c
-@@ -1244,6 +1244,7 @@ static void adjust_link_dtsec(struct mac_device *mac_dev)
- 	}
- 
- 	dtsec_adjust_link(fman_mac, phy_dev->speed);
-+	mac_dev->update_speed(mac_dev, phy_dev->speed);
- 	fman_get_pause_cfg(mac_dev, &rx_pause, &tx_pause);
- 	err = fman_set_mac_active_pause(mac_dev, rx_pause, tx_pause);
- 	if (err < 0)
-diff --git a/drivers/net/ethernet/freescale/fman/fman_memac.c b/drivers/net/ethernet/freescale/fman/fman_memac.c
-index 8ad93a4c0c21..02b3a0a2d5d1 100644
---- a/drivers/net/ethernet/freescale/fman/fman_memac.c
-+++ b/drivers/net/ethernet/freescale/fman/fman_memac.c
-@@ -782,6 +782,7 @@ static void adjust_link_memac(struct mac_device *mac_dev)
- 
- 	fman_mac = mac_dev->fman_mac;
- 	memac_adjust_link(fman_mac, phy_dev->speed);
-+	mac_dev->update_speed(mac_dev, phy_dev->speed);
- 
- 	fman_get_pause_cfg(mac_dev, &rx_pause, &tx_pause);
- 	err = fman_set_mac_active_pause(mac_dev, rx_pause, tx_pause);
-diff --git a/drivers/net/ethernet/freescale/fman/fman_tgec.c b/drivers/net/ethernet/freescale/fman/fman_tgec.c
-index f4cdf0cf7c32..33f3b1cc2cfe 100644
---- a/drivers/net/ethernet/freescale/fman/fman_tgec.c
-+++ b/drivers/net/ethernet/freescale/fman/fman_tgec.c
-@@ -601,8 +601,11 @@ static int tgec_del_hash_mac_address(struct fman_mac *tgec,
- 	return 0;
- }
- 
--static void adjust_link_void(struct mac_device *mac_dev)
-+static void tgec_adjust_link(struct mac_device *mac_dev)
- {
-+	struct phy_device *phy_dev = mac_dev->phy_dev;
-+
-+	mac_dev->update_speed(mac_dev, phy_dev->speed);
- }
- 
- static int tgec_set_exception(struct fman_mac *tgec,
-@@ -794,7 +797,7 @@ int tgec_initialization(struct mac_device *mac_dev,
- 	mac_dev->set_allmulti		= tgec_set_allmulti;
- 	mac_dev->set_tstamp		= tgec_set_tstamp;
- 	mac_dev->set_multi		= fman_set_multi;
--	mac_dev->adjust_link            = adjust_link_void;
-+	mac_dev->adjust_link            = tgec_adjust_link;
- 	mac_dev->enable			= tgec_enable;
- 	mac_dev->disable		= tgec_disable;
- 
-diff --git a/drivers/net/ethernet/freescale/fman/mac.h b/drivers/net/ethernet/freescale/fman/mac.h
-index a55efcb7998c..b95d384271bd 100644
---- a/drivers/net/ethernet/freescale/fman/mac.h
-+++ b/drivers/net/ethernet/freescale/fman/mac.h
-@@ -28,6 +28,7 @@ struct mac_device {
- 	struct phy_device	*phy_dev;
- 	phy_interface_t		phy_if;
- 	struct device_node	*phy_node;
-+	struct net_device	*net_dev;
- 
- 	bool autoneg_pause;
- 	bool rx_pause_req;
-@@ -56,6 +57,8 @@ struct mac_device {
- 	int (*remove_hash_mac_addr)(struct fman_mac *mac_dev,
- 				    enet_addr_t *eth_addr);
- 
-+	void (*update_speed)(struct mac_device *mac_dev, int speed);
-+
- 	struct fman_mac		*fman_mac;
- 	struct mac_priv_s	*priv;
- };
+    The original commits are now being resubmitted with some modifications
+    to fix the regression.  The modifcations on the original commits are
+    described below (the SHA is that of the original commit):
+
+    [830aa6f29f07  PCI: brcmstb: Split brcm_pcie_setup() into two funcs]
+        NOTE: In the originally submitted patchset, this commit introduced a
+        regression that was corrected by a subsequent commit in the same
+        patchset.  Let's not do this again.
+
+        @@ -1411,6 +1411,10 @@ static int brcm_pcie_probe(struct platform_device *pdev)
+            if (ret)
+                    goto fail;
+
+        +       ret = brcm_pcie_linkup(pcie);
+        +       if (ret)
+        +               goto fail;
+
+
+    [67211aadcb4b  PCI: brcmstb: Add mechanism to turn on subdev regulators]
+        NOTE: Not related to the regression, the regulators must be freed whenever
+        the PCIe tree is dismantled:
+
+        @@ -507,6 +507,7 @@ static void pci_subdev_regulators_remove_bus(struct pci_bus *bus)
+
+        if (regulator_bulk_disable(sr->num_supplies, sr->supplies))
+                    dev_err(dev, "failed to disable regulators for downstream device\n");
+        +       regulator_bulk_free(sr->num_supplies, sr->supplies);
+            dev->driver_data = NULL;
+
+
+    [93e41f3fca3d  PCI: brcmstb: Add control of subdevice voltage regulators]
+        NOTE: If the PCIe RC DT node was missing a Root Port subnode, the PCIe
+        link-up was skipped.  This is the regression.  Fix it by attempting
+        link-up even if the Root Port DT subnode is missing.
+
+        @@ -503,11 +503,10 @@ static int pci_subdev_regulators_add_bus(struct pci_bus *bus)
+
+         static int brcm_pcie_add_bus(struct pci_bus *bus)
+         {
+        -       struct device *dev = &bus->dev;
+            struct brcm_pcie *pcie = (struct brcm_pcie *) bus->sysdata;
+            int ret;
+
+        -       if (!dev->of_node || !bus->parent || !pci_is_root_bus(bus->parent))
+        +       if (!bus->parent || !pci_is_root_bus(bus->parent))
+                    return 0;
+
+            ret = pci_subdev_regulators_add_bus(bus);
+
+    [1] https://lore.kernel.org/r/20220106160332.2143-1-jim2101024@gmail.com
+    [2] https://bugzilla.kernel.org/show_bug.cgi?id=215925
+    [3] https://lore.kernel.org/linux-pci/20220511201856.808690-1-helgaas@kernel.org/
+
+
+Jim Quinlan (7):
+  PCI: brcmstb: Remove unnecessary forward declarations
+  PCI: brcmstb: Split brcm_pcie_setup() into two funcs
+  PCI: brcmstb: Gate config space access on link status
+  PCI: brcmstb: Add mechanism to turn on subdev regulators
+  PCI: brcmstb: Add control of subdevice voltage regulators
+  PCI: brcmstb: Do not turn off WOL regulators on suspend
+  PCI: brcmstb: Have .map_bus function names end with 'map_bus'
+
+ drivers/pci/controller/pcie-brcmstb.c | 476 ++++++++++++++++++--------
+ 1 file changed, 341 insertions(+), 135 deletions(-)
+
+
+base-commit: e0dccc3b76fb35bb257b4118367a883073d7390e
 -- 
-2.35.1.1320.gc452695387.dirty
+2.17.1
 
