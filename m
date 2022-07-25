@@ -2,174 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29952C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 07:53:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBB0BC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 07:54:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231601AbiGYHxp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 03:53:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43728 "EHLO
+        id S229553AbiGYHyZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 03:54:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232201AbiGYHxg (ORCPT
+        with ESMTP id S233084AbiGYHyO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 03:53:36 -0400
-Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62A8512AE5;
-        Mon, 25 Jul 2022 00:53:31 -0700 (PDT)
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26P7FAfq006153;
-        Mon, 25 Jul 2022 09:53:19 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=selector1;
- bh=Vb8EkYSSUZFwx6sbEAsT+sFdunEBMDnEHPfyas+LZGs=;
- b=h6ym6qS4kdym6XlOdMjSJCHKxUSFZW38xEVIKBSf+nejDRvPBtzrEDRk4vCc0MAJDzi5
- ne6UN8z2rWPMjCRrqzyuiLl0Sjw0hnKP69TQsTeu5+qxQLNyHMjXn/IxWw0OvZ9dyT0Y
- 8b+vTBn6lTmNagNWTKMFn/lqsypbZ56yifbJwqC55cfXWrQWc8oNwaBiuZPebabwummA
- +/Ryt0kDB2sriruDh1VooNtLx36FsTp77JkmRtxqT2N6ooAfKxiCu4pE492xts9RWhuv
- AECrz8pIVOe/rBiSv2q+Besiv4D+FFa13K2h6M7kaekmPJlTypf00tsyOwqoxKyada3J ig== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3hg8b0qu3e-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 25 Jul 2022 09:53:19 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 1DB1F100038;
-        Mon, 25 Jul 2022 09:53:19 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 17A152122FA;
-        Mon, 25 Jul 2022 09:53:19 +0200 (CEST)
-Received: from localhost (10.75.127.51) by SHFDAG1NODE1.st.com (10.75.129.69)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Mon, 25 Jul
- 2022 09:53:18 +0200
-From:   Alain Volmat <alain.volmat@foss.st.com>
-To:     <alexandre.torgue@foss.st.com>
-CC:     <robh+dt@kernel.org>, <mcoquelin.stm32@gmail.com>,
-        <krzysztof.kozlowski+dt@linaro.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <amelie.delaunay@foss.st.com>
-Subject: [PATCH v2 1/2] ARM: dts: stm32: add spi nodes into stm32mp131.dtsi
-Date:   Mon, 25 Jul 2022 09:52:54 +0200
-Message-ID: <20220725075255.429869-2-alain.volmat@foss.st.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220725075255.429869-1-alain.volmat@foss.st.com>
-References: <20220725075255.429869-1-alain.volmat@foss.st.com>
+        Mon, 25 Jul 2022 03:54:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C2FEE12AC7
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 00:54:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658735647;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=gjSp1VwYgFdF3r/pc3Q0KhJt/Ooi2/fe36LMyPMHMA0=;
+        b=a3XE06xs+EBvZ6tOJljPn1vAbJ6DQgjR9xJkpmfWQD6h3jtDgviKbTox7NxQCH2gXjAQE2
+        nlWjNQK/asszIrIAG1jAFOVF9GTQNm+O8ABpwywJAcpKY2i1h8mOeiKF3HaWvH/ut1fDkZ
+        44UyWajOfcoE3HSwEszoz2MUvgFMQMA=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-618-uOZZE0adO0Kx6TkcGcAw2w-1; Mon, 25 Jul 2022 03:54:06 -0400
+X-MC-Unique: uOZZE0adO0Kx6TkcGcAw2w-1
+Received: by mail-wm1-f70.google.com with SMTP id bg6-20020a05600c3c8600b003a03d5d19e4so3718383wmb.1
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 00:54:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gjSp1VwYgFdF3r/pc3Q0KhJt/Ooi2/fe36LMyPMHMA0=;
+        b=q7XuVktEpG3w/A8VMgr8x6l7Nmxxvlp6B8yFwGOFQ8aHlvTGEIINP95eo4K8Ybqz/G
+         MsGJX0TKS24fO2XCqi++2uKLgkWk1E5rFHsTBrUU45lmCw+pZvCDtYjo+8ZIi2c7LU8O
+         bLxqztX0W1arqFBBwwwmjPaP9R2XIyyUWOjdLyNAmCvlJcS2fzaZhEfUmTd8Swp5ixbP
+         ZMU/T+bVTb0vIoowm1Pg3jZgrwttrKNjDL200pCQ/OoxfshIaJi2DB3E2ThCTSo4zfnm
+         GY/mtaWRqBG41kvwwpNmGwXVoQPAy6ruAq/RV9i0ISzSIXz022qq4Cm0AP+whG6Zke9i
+         e+jQ==
+X-Gm-Message-State: AJIora8+BKMaSya4OnlJpPNqorTYHeMYInkd4BajeS40y/zj6gmfq6XO
+        WcQh4kP7fg4dadNawBZ1whbqD4NctZla505uAW8kJGAZYknwegLxugf6mYEywRttAc2MyVs9m5v
+        xl6gay7styE9PGqUQzSEdQkq0WoCKAg5j9TcHyuarGyzRqVdS6xLen9/dqzO1pHnb6y0D8zkGZH
+        0=
+X-Received: by 2002:a5d:4448:0:b0:21e:640d:337c with SMTP id x8-20020a5d4448000000b0021e640d337cmr6960394wrr.572.1658735645265;
+        Mon, 25 Jul 2022 00:54:05 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1suU5FTfkKK40ECam9k1/4kpNk1ekZHVHPUssTBMkFcGkvOyZlSDPJGMC7bA8bJaSq6TebPUA==
+X-Received: by 2002:a5d:4448:0:b0:21e:640d:337c with SMTP id x8-20020a5d4448000000b0021e640d337cmr6960371wrr.572.1658735645053;
+        Mon, 25 Jul 2022 00:54:05 -0700 (PDT)
+Received: from minerva.home (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id l37-20020a05600c1d2500b003a33227e49bsm13439251wms.4.2022.07.25.00.54.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Jul 2022 00:54:04 -0700 (PDT)
+From:   Javier Martinez Canillas <javierm@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     linux-staging@lists.linux.dev,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        dri-devel@lists.freedesktop.org,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Daniel Vetter <daniel@ffwll.ch>, Helge Deller <deller@gmx.de>,
+        Sam Ravnborg <sam@ravnborg.org>, linux-fbdev@vger.kernel.org
+Subject: [PATCH] fbdev: Make registered_fb[] private to fbmem.c
+Date:   Mon, 25 Jul 2022 09:54:00 +0200
+Message-Id: <20220725075400.68478-1-javierm@redhat.com>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.51]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE1.st.com
- (10.75.129.69)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-23_02,2022-07-21_02,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the 5 instances of spi busses supported by the stm32mp131.
+From: Daniel Vetter <daniel.vetter@ffwll.ch>
 
-Signed-off-by: Alain Volmat <alain.volmat@foss.st.com>
+No driver access this anymore, except for the olpc dcon fbdev driver but
+that has been marked as broken anyways by commit de0952f267ff ("staging:
+olpc_dcon: mark driver as broken").
+
+Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
+Signed-off-by: Daniel Vetter <daniel.vetter@ffwll.ch>
+Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
 ---
- arch/arm/boot/dts/stm32mp131.dtsi | 70 +++++++++++++++++++++++++++++++
- 1 file changed, 70 insertions(+)
 
-diff --git a/arch/arm/boot/dts/stm32mp131.dtsi b/arch/arm/boot/dts/stm32mp131.dtsi
-index da9e8a6ca663..dd35a607073d 100644
---- a/arch/arm/boot/dts/stm32mp131.dtsi
-+++ b/arch/arm/boot/dts/stm32mp131.dtsi
-@@ -97,6 +97,34 @@ scmi_shm: scmi-sram@0 {
- 			};
- 		};
+ drivers/video/fbdev/core/fbmem.c | 6 +++---
+ include/linux/fb.h               | 6 ------
+ 2 files changed, 3 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/video/fbdev/core/fbmem.c b/drivers/video/fbdev/core/fbmem.c
+index 6ae1c5fa19f9..1e70d8c67653 100644
+--- a/drivers/video/fbdev/core/fbmem.c
++++ b/drivers/video/fbdev/core/fbmem.c
+@@ -51,10 +51,10 @@
+ static DEFINE_MUTEX(registration_lock);
  
-+		spi2: spi@4000b000 {
-+			compatible = "st,stm32h7-spi";
-+			reg = <0x4000b000 0x400>;
-+			interrupts = <GIC_SPI 37 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&rcc SPI2_K>;
-+			resets = <&rcc SPI2_R>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			dmas = <&dmamux1 39 0x400 0x01>,
-+			       <&dmamux1 40 0x400 0x01>;
-+			dma-names = "rx", "tx";
-+			status = "disabled";
-+		};
-+
-+		spi3: spi@4000c000 {
-+			compatible = "st,stm32h7-spi";
-+			reg = <0x4000c000 0x400>;
-+			interrupts = <GIC_SPI 52 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&rcc SPI3_K>;
-+			resets = <&rcc SPI3_R>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			dmas = <&dmamux1 61 0x400 0x01>,
-+			       <&dmamux1 62 0x400 0x01>;
-+			dma-names = "rx", "tx";
-+			status = "disabled";
-+		};
-+
- 		uart4: serial@40010000 {
- 			compatible = "st,stm32h7-uart";
- 			reg = <0x40010000 0x400>;
-@@ -142,6 +170,20 @@ i2c2: i2c@40013000 {
- 			status = "disabled";
- 		};
+ struct fb_info *registered_fb[FB_MAX] __read_mostly;
+-EXPORT_SYMBOL(registered_fb);
+-
+ int num_registered_fb __read_mostly;
+-EXPORT_SYMBOL(num_registered_fb);
++#define for_each_registered_fb(i)		\
++	for (i = 0; i < FB_MAX; i++)		\
++		if (!registered_fb[i]) {} else
  
-+		spi1: spi@44004000 {
-+			compatible = "st,stm32h7-spi";
-+			reg = <0x44004000 0x400>;
-+			interrupts = <GIC_SPI 36 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&rcc SPI1_K>;
-+			resets = <&rcc SPI1_R>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			dmas = <&dmamux1 37 0x400 0x01>,
-+			       <&dmamux1 38 0x400 0x01>;
-+			dma-names = "rx", "tx";
-+			status = "disabled";
-+		};
-+
- 		dma1: dma-controller@48000000 {
- 			compatible = "st,stm32-dma";
- 			reg = <0x48000000 0x400>;
-@@ -189,6 +231,34 @@ dmamux1: dma-router@48002000 {
- 			dma-channels = <16>;
- 		};
+ bool fb_center_logo __read_mostly;
  
-+		spi4: spi@4c002000 {
-+			compatible = "st,stm32h7-spi";
-+			reg = <0x4c002000 0x400>;
-+			interrupts = <GIC_SPI 85 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&rcc SPI4_K>;
-+			resets = <&rcc SPI4_R>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			dmas = <&dmamux1 83 0x400 0x01>,
-+			       <&dmamux1 84 0x400 0x01>;
-+			dma-names = "rx", "tx";
-+			status = "disabled";
-+		};
-+
-+		spi5: spi@4c003000 {
-+			compatible = "st,stm32h7-spi";
-+			reg = <0x4c003000 0x400>;
-+			interrupts = <GIC_SPI 86 IRQ_TYPE_LEVEL_HIGH>;
-+			clocks = <&rcc SPI5_K>;
-+			resets = <&rcc SPI5_R>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			dmas = <&dmamux1 85 0x400 0x01>,
-+			       <&dmamux1 86 0x400 0x01>;
-+			dma-names = "rx", "tx";
-+			status = "disabled";
-+		};
-+
- 		i2c3: i2c@4c004000 {
- 			compatible = "st,stm32mp13-i2c";
- 			reg = <0x4c004000 0x400>;
+diff --git a/include/linux/fb.h b/include/linux/fb.h
+index 453c3b2b6b8e..0aff76bcbb00 100644
+--- a/include/linux/fb.h
++++ b/include/linux/fb.h
+@@ -627,16 +627,10 @@ extern int fb_get_color_depth(struct fb_var_screeninfo *var,
+ extern int fb_get_options(const char *name, char **option);
+ extern int fb_new_modelist(struct fb_info *info);
+ 
+-extern struct fb_info *registered_fb[FB_MAX];
+-extern int num_registered_fb;
+ extern bool fb_center_logo;
+ extern int fb_logo_count;
+ extern struct class *fb_class;
+ 
+-#define for_each_registered_fb(i)		\
+-	for (i = 0; i < FB_MAX; i++)		\
+-		if (!registered_fb[i]) {} else
+-
+ static inline void lock_fb_info(struct fb_info *info)
+ {
+ 	mutex_lock(&info->lock);
 -- 
-2.25.1
+2.37.1
 
