@@ -2,115 +2,287 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECAB8C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 20:13:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEDADC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 20:13:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237059AbiGYUNi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 16:13:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46516 "EHLO
+        id S237066AbiGYUNl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 16:13:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236936AbiGYUMv (ORCPT
+        with ESMTP id S236968AbiGYUM7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 16:12:51 -0400
-Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86DFA220D1;
-        Mon, 25 Jul 2022 13:12:40 -0700 (PDT)
-Received: from pps.filterd (m0150241.ppops.net [127.0.0.1])
-        by mx0a-002e3701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26PJ227L024284;
-        Mon, 25 Jul 2022 20:12:20 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
- : date : message-id; s=pps0720;
- bh=b8nDNy/MlViLEuNpBEpRnqKp5eyKzSKaaZRfltlXsLs=;
- b=ZvCs8bBHLUbrOQuH/oGaKCeD2lF4L3rVxT/wEzySl7MsWQ4pM0VY1kiEtnZ8Jh76jAiT
- yNFvApVPT2iRluFJItEORRC+dF1oAxOpWK8nq68L0W4jK4j4z6N6+pxiF94ulY7+K6zS
- +U/jy3Z6wW4FF3O2HUCpDNFglH31/k0G6ov07ideWTr6H4IkhSOCKq/qCsnknqqGnYnC
- BL9Z7DMunO82arNr/DlC6/NQctoBjUKI40KqoMMWBc3fEQfxFLnbG0RoLVxuSykqnleL
- q18/vxN1IL7h8zPmbWV6RECy80d49B/n21hsjfgRa5DuXqOef1vvDxzydKT/EiDPZC/O Gg== 
-Received: from p1lg14880.it.hpe.com (p1lg14880.it.hpe.com [16.230.97.201])
-        by mx0a-002e3701.pphosted.com (PPS) with ESMTPS id 3hhy8dsekm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 25 Jul 2022 20:12:20 +0000
-Received: from p1lg14885.dc01.its.hpecorp.net (unknown [10.119.18.236])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Mon, 25 Jul 2022 16:12:59 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABA1C220FD;
+        Mon, 25 Jul 2022 13:12:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by p1lg14880.it.hpe.com (Postfix) with ESMTPS id 0AF358001AE;
-        Mon, 25 Jul 2022 20:12:19 +0000 (UTC)
-Received: from hpe.com (unknown [16.231.227.36])
-        by p1lg14885.dc01.its.hpecorp.net (Postfix) with ESMTP id 786F58041EF;
-        Mon, 25 Jul 2022 20:12:18 +0000 (UTC)
-From:   nick.hawkins@hpe.com
-To:     nick.hawkins@hpe.com
-Cc:     broonie@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, verdun@hpe.com,
-        linux@armlinux.org.uk, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, arnd@arndb.de, joel@jms.id.au
-Subject: [PATCH v4 0/5] Add SPI Driver to HPE GXP Architecture
-Date:   Mon, 25 Jul 2022 15:13:17 -0500
-Message-Id: <20220725201322.41810-1-nick.hawkins@hpe.com>
-X-Mailer: git-send-email 2.17.1
-X-Proofpoint-ORIG-GUID: 7lf9Va_UEhUEAjP8PhwcGOvi74VEoL24
-X-Proofpoint-GUID: 7lf9Va_UEhUEAjP8PhwcGOvi74VEoL24
-X-HPE-SCL: -1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-25_12,2022-07-25_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- priorityscore=1501 bulkscore=0 phishscore=0 mlxscore=0 adultscore=0
- spamscore=0 impostorscore=0 clxscore=1015 suspectscore=0 malwarescore=0
- mlxlogscore=425 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2207250082
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 450F16115E;
+        Mon, 25 Jul 2022 20:12:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A442C341C8;
+        Mon, 25 Jul 2022 20:12:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658779965;
+        bh=SXGfn12NhejKFw7zdZ4+R8/Du5TrpP94KUqCZXwTzPM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=qWcjsTUra3UNU9l2N7dQmAYLjt014sYqx60L6Rje6+Sev8wlr3iyQ0okL/gnYEba+
+         JylYBomfNGymTMvd2jEXTqF3GUAAP04oE+gy8QVrcMZq5grxkeTgrVl0WwWYUAwTsg
+         K4twwNHMCdY2uBU3KrZC9gb1T96L/DRCIcKClP/JYVIFb2d1QPi7KbS2e397UVw/jP
+         tIwFa9OCqjbfkt6/pHA3fDZU2o/rVlhphVDuTQkDKINpkPAPo3ncl3QHdocp08Ksx7
+         i2rzEueb3oMRx2DhVVNPTts0Zo7ecIK+N0RPk8LueYj9+tap9mDgBFNyW7b7pPnMuz
+         Rbm3ziKn+UyTQ==
+From:   Daniel Bristot de Oliveira <bristot@kernel.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Marco Elver <elver@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Gabriele Paoloni <gpaoloni@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Clark Williams <williams@redhat.com>,
+        Tao Zhou <tao.zhou@linux.dev>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-trace-devel@vger.kernel.org
+Subject: [PATCH V7 11/16] Documentation/rv: Add deterministic automata instrumentation documentation
+Date:   Mon, 25 Jul 2022 22:11:23 +0200
+Message-Id: <9ed16a6d24b9d993e09755d6e18ff5e7d5434636.1658778484.git.bristot@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <cover.1658778484.git.bristot@kernel.org>
+References: <cover.1658778484.git.bristot@kernel.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nick Hawkins <nick.hawkins@hpe.com>
+Add the da_monitor_instrumentation.rst. It describes the basics
+of RV monitor instrumentation.
 
-Changes since v4:
- *Removed unnecessary quotes in hpe,gxp-spifi.yaml
+Cc: Wim Van Sebroeck <wim@linux-watchdog.org>
+Cc: Guenter Roeck <linux@roeck-us.net>
+Cc: Jonathan Corbet <corbet@lwn.net>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Will Deacon <will@kernel.org>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Marco Elver <elver@google.com>
+Cc: Dmitry Vyukov <dvyukov@google.com>
+Cc: "Paul E. McKenney" <paulmck@kernel.org>
+Cc: Shuah Khan <skhan@linuxfoundation.org>
+Cc: Gabriele Paoloni <gpaoloni@redhat.com>
+Cc: Juri Lelli <juri.lelli@redhat.com>
+Cc: Clark Williams <williams@redhat.com>
+Cc: Tao Zhou <tao.zhou@linux.dev>
+Cc: Randy Dunlap <rdunlap@infradead.org>
+Cc: linux-doc@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: linux-trace-devel@vger.kernel.org
+Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+---
+ .../trace/rv/da_monitor_instrumentation.rst   | 171 ++++++++++++++++++
+ Documentation/trace/rv/index.rst              |   1 +
+ 2 files changed, 172 insertions(+)
+ create mode 100644 Documentation/trace/rv/da_monitor_instrumentation.rst
 
-Changes since v3:
- *Fixed indentations in hpe,gxp-spifi.yaml
-
-Changes since v2:
- *Changed the CONFIG_SPI_GXP from y to m in defconfig
- *Removed extra space around < > for reg in hpe,gxp-spifi.yaml
- *Changed interrupt-parrent to interrupt-parent in hpe,gxp-spifi.yaml
- *Removed repeated include file in spi-gxp.c
- *Removed unnecessary initialization of ret variable in spi-gxp.c
- *Removed conditional variable checks where failure is not possible in
-  spi-gxp.c
- *Removed unnecessary variable cs in spi-gxp.c
- *Removed blank gxp-spifi-remove function in spi-gxp.c
- *Fixed error messages so they are not repetitive
-
-The GXP supports 3 separate SPI interfaces to accommodate the system
-flash, core flash, and other functions. The SPI engine supports variable
-clock frequency, selectable 3-byte or 4-byte addressing and a
-configurable x1, x2, and x4 command/address/data modes. The memory
-buffer for reading and writing ranges between 256 bytes and 8KB. This
-driver supports access to the core flash and bios part.
-
-Nick Hawkins (5):
-  spi: spi-gxp: Add support for HPE GXP SoCs
-  spi: dt-bindings: add documentation for hpe,gxp-spifi
-  ARM: dts: hpe: Add spi driver node
-  ARM: configs: multi_v7_defconfig: Enable HPE GXP SPI driver
-  MAINTAINERS: add spi support to GXP
-
- .../bindings/spi/hpe,gxp-spifi.yaml           |  56 +++
- MAINTAINERS                                   |   2 +
- arch/arm/boot/dts/hpe-bmc-dl360gen10.dts      |  58 ++++
- arch/arm/boot/dts/hpe-gxp.dtsi                |  21 +-
- arch/arm/configs/multi_v7_defconfig           |   1 +
- drivers/spi/Kconfig                           |   7 +
- drivers/spi/Makefile                          |   1 +
- drivers/spi/spi-gxp.c                         | 325 ++++++++++++++++++
- 8 files changed, 470 insertions(+), 1 deletion(-)
- create mode 100644 Documentation/devicetree/bindings/spi/hpe,gxp-spifi.yaml
- create mode 100644 drivers/spi/spi-gxp.c
-
+diff --git a/Documentation/trace/rv/da_monitor_instrumentation.rst b/Documentation/trace/rv/da_monitor_instrumentation.rst
+new file mode 100644
+index 000000000000..d02d14eff5ed
+--- /dev/null
++++ b/Documentation/trace/rv/da_monitor_instrumentation.rst
+@@ -0,0 +1,171 @@
++Deterministic Automata Instrumentation
++========================================
++
++The RV monitor file created by dot2k, with the name "$MODEL_NAME.c"
++includes a section dedicated to instrumentation.
++
++In the example of the wip.dot monitor created on [1], it will look like::
++
++  /*
++   * This is the instrumentation part of the monitor.
++   *
++   * This is the section where manual work is required. Here the kernel events
++   * are translated into model's event.
++   *
++   */
++  static void handle_preempt_disable(void *data, /* XXX: fill header */)
++  {
++	da_handle_event_wip(preempt_disable_wip);
++  }
++
++  static void handle_preempt_enable(void *data, /* XXX: fill header */)
++  {
++	da_handle_event_wip(preempt_enable_wip);
++  }
++
++  static void handle_sched_waking(void *data, /* XXX: fill header */)
++  {
++	da_handle_event_wip(sched_waking_wip);
++  }
++
++  static int enable_wip(void)
++  {
++	int retval;
++
++	retval = da_monitor_init_wip();
++	if (retval)
++		return retval;
++
++	rv_attach_trace_probe("wip", /* XXX: tracepoint */, handle_preempt_disable);
++	rv_attach_trace_probe("wip", /* XXX: tracepoint */, handle_preempt_enable);
++	rv_attach_trace_probe("wip", /* XXX: tracepoint */, handle_sched_waking);
++
++	return 0;
++  }
++
++The comment at the top of the section explains the general idea: the
++instrumentation section translates *kernel events* into the *model's
++event*.
++
++Tracing callback functions
++-----------------------------
++
++The first three functions are the starting point of the callback *handler
++functions* for each of the three events from the wip model. The developer
++does not necessarily need to use them: they are just starting points.
++
++Using the example of::
++
++ void handle_preempt_disable(void *data, /* XXX: fill header */)
++ {
++        da_handle_event_wip(preempt_disable_wip);
++ }
++
++The preempt_disable event from the model connects directly to the
++preemptirq:preempt_disable. The preemptirq:preempt_disable event
++has the following signature, from include/trace/events/preemptirq.h::
++
++  TP_PROTO(unsigned long ip, unsigned long parent_ip)
++
++Hence, the handle_preempt_disable() function will look like::
++
++  void handle_preempt_disable(void *data, unsigned long ip, unsigned long parent_ip)
++
++In this case, the kernel event translates one to one with the automata
++event, and indeed, no other change is required for this function.
++
++The next handler function, handle_preempt_enable() has the same argument
++list from the handle_preempt_disable(). The difference is that the
++preempt_enable event will be used to synchronize the system to the model.
++
++Initially, the *model* is placed in the initial state. However, the *system*
++might or might not be in the initial state. The monitor cannot start
++processing events until it knows that the system has reached the initial state.
++Otherwise, the monitor and the system could be out-of-sync.
++
++Looking at the automata definition, it is possible to see that the system
++and the model are expected to return to the initial state after the
++preempt_enable execution. Hence, it can be used to synchronize the
++system and the model at the initialization of the monitoring section.
++
++The start is informed via a special handle function, the
++"da_handle_start_event_$(MONITOR_NAME)(event)", in this case::
++
++  da_handle_start_event_wip(preempt_disable_wip);
++
++So, the callback function will look like::
++
++  void handle_preempt_enable(void *data, unsigned long ip, unsigned long parent_ip)
++  {
++        da_handle_start_event_wip(preempt_enable_wip);
++  }
++
++Finally, the "handle_sched_waking()" will look like::
++
++  void handle_sched_waking(void *data, struct task_struct *task)
++  {
++        da_handle_event_wip(sched_waking_wip);
++  }
++
++And the explanation is left for the reader as an exercise.
++
++enable and disable functions
++------------------------
++
++dot2k automatically creates two special functions::
++
++  enable_$(MONITOR_NAME)()
++  disable_$(MONITOR_NAME)()
++
++These functions are called when the monitor is enabled and disabled,
++respectively.
++
++They should be used to *attach* and *detach* the instrumentation to the running
++system. The developer must add to the relative function all that is needed to
++*attach* and *detach* its monitor to the system.
++
++For the wip case, these functions were named::
++
++ enable_wip()
++ disable_wip()
++
++But no change was required because: by default, these functions *attach* and
++*detach* the tracepoints_to_attach, which was enough for this case.
++
++Instrumentation helpers
++--------------------------
++
++To complete the instrumentation, the *handler functions* need to be attached to a
++kernel event, at the monitoring enable phase.
++
++The RV interface also facilitates this step. For example, the macro "rv_attach_trace_probe()"
++is used to connect the wip model events to the relative kernel event. dot2k automatically
++adds "rv_attach_trace_probe()" function call for each model event in the enable phase, as
++a suggestion.
++
++For example, from the wip sample model::
++
++  static int enable_wip(void)
++  {
++        int retval;
++
++        retval = da_monitor_init_wip();
++        if (retval)
++                return retval;
++
++        rv_attach_trace_probe("wip", /* XXX: tracepoint */, handle_preempt_enable);
++        rv_attach_trace_probe("wip", /* XXX: tracepoint */, handle_sched_waking);
++        rv_attach_trace_probe("wip", /* XXX: tracepoint */, handle_preempt_disable);
++
++        return 0;
++  }
++
++The probes then need to be detached at the disable phase.
++
++[1] The wip model is presented in::
++
++  Documentation/trace/rv/deterministic_automata.rst
++
++The wip monitor is presented in::
++
++  Documentation/trace/rv/da_monitor_synthesis.rst
+diff --git a/Documentation/trace/rv/index.rst b/Documentation/trace/rv/index.rst
+index 46d47f33052c..db2ae3f90b90 100644
+--- a/Documentation/trace/rv/index.rst
++++ b/Documentation/trace/rv/index.rst
+@@ -9,3 +9,4 @@ Runtime Verification
+    runtime-verification.rst
+    deterministic_automata.rst
+    da_monitor_synthesis.rst
++   da_monitor_instrumentation.rst
 -- 
-2.17.1
+2.35.1
 
