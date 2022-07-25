@@ -2,156 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 153A7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 12:42:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AF7FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 12:42:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234951AbiGYMmB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 08:42:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47314 "EHLO
+        id S235165AbiGYMmP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 08:42:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235108AbiGYMl6 (ORCPT
+        with ESMTP id S234926AbiGYMmM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 08:41:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADAF2BF7
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 05:41:56 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EB4786103F
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 12:41:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 505D7C341CE
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 12:41:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658752915;
-        bh=7DDTMdWn3WP4svQtD7OQOkfSMIfIORyHCjYX5wDTKps=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=mPLBmCJsvY0ZzcKKmEBxdDpkFZuaAGIflnNNG+GyZFrWHetkMF6rk5l78m3Nbeda4
-         0R/qVLqf4ODrbzH/DfcpmiXp0/Nhzl0+MqMRiyQZruHNKUHT4oD0qkgEVvLztW4zlG
-         3e4a6z6Hzm4IAHa0KMd1xtl1q/OlZLYaWs7IlA1g0r94E9Fu5bQu92x/MuBUtnzBZ5
-         pJth2PkHRu6C2XmJAefkzgk7SOEEqovYhfUb4Dha29lAh2IENy9+HK36gdLqUVCdPV
-         O3yFmdG2OLxg0nPNZ9SzwrCe3bpgi7BGg3c1lDb77m+1OKmiYtP66xD1aLi5byFN4p
-         8ST/SKYM80a+g==
-Received: by mail-oi1-f175.google.com with SMTP id l188so1669493oia.4
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 05:41:55 -0700 (PDT)
-X-Gm-Message-State: AJIora8BQ8AEvWMx9w4hvOhai5GJpfPTiNgWvrxP4DJmceEroj327sPt
-        R9mlm8tvlNmcLtuKN1MKJb0703iZIPHGAKJ6HDA=
-X-Google-Smtp-Source: AGRyM1sHU/jyPzyi8t9IH89ICfexqJhDeXevU21NJ8I3gspBuNZS4S6/3nKMdrbGHFlIsb0EFHyyAp3D5+vbWutaVpw=
-X-Received: by 2002:a05:6808:300b:b0:337:b697:b077 with SMTP id
- ay11-20020a056808300b00b00337b697b077mr5465443oib.126.1658752914321; Mon, 25
- Jul 2022 05:41:54 -0700 (PDT)
+        Mon, 25 Jul 2022 08:42:12 -0400
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E17D51035;
+        Mon, 25 Jul 2022 05:42:11 -0700 (PDT)
+Received: from pwmachine.numericable.fr (82.65.121.78.rev.sfr.net [78.121.65.82])
+        by linux.microsoft.com (Postfix) with ESMTPSA id A9D4720C356E;
+        Mon, 25 Jul 2022 05:42:09 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com A9D4720C356E
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1658752931;
+        bh=UFCSt3k5DxLVighG073IK/AEsI1NTLXv9nmpTeeRKuQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=EM0pJiyhAFIZzLOcCLTT6gmiYDQgA9TulmvnqrY5Tq2uF21dKdQtCYaPl+dxhmmoC
+         JDBaCjGEAUF9oGYpux1+xrs9om2RUcZm02y7FZwmedptXX4Y24ZCx6PkXFQQozMSkB
+         xUtn/Dknl+sF7VJ4elFKhqQMl/izO4hHftcB2CcM=
+From:   Francis Laniel <flaniel@linux.microsoft.com>
+To:     linux-security-module@vger.kernel.org
+Cc:     Casey Schaufler <casey@schaufler-ca.com>,
+        Eric Biederman <ebiederm@xmission.com>,
+        Francis Laniel <flaniel@linux.microsoft.com>,
+        Serge Hallyn <serge@hallyn.com>,
+        James Morris <jmorris@namei.org>,
+        linux-kernel@vger.kernel.org (open list),
+        bpf@vger.kernel.org (open list:BPF [MISC])
+Subject: [RFC PATCH v4 0/2] Add capabilities file to securityfs
+Date:   Mon, 25 Jul 2022 14:41:21 +0200
+Message-Id: <20220725124123.12975-1-flaniel@linux.microsoft.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <202207250449.BYMZbIA2-lkp@intel.com> <Yt3KObFVIUI2mFGt@zx2c4.com>
- <CAMj1kXHTf4f+onREnWhYk-vYXkPaQtPpZz+SqFCP+Ey7+bOXkQ@mail.gmail.com> <Yt5Y/cIKIDlyFWMQ@kroah.com>
-In-Reply-To: <Yt5Y/cIKIDlyFWMQ@kroah.com>
-From:   Ard Biesheuvel <ardb@kernel.org>
-Date:   Mon, 25 Jul 2022 14:41:42 +0200
-X-Gmail-Original-Message-ID: <CAMj1kXGPjFAY0y-SPZv64CRhpo9s1+__z4bya86aMcTs9=f8pw@mail.gmail.com>
-Message-ID: <CAMj1kXGPjFAY0y-SPZv64CRhpo9s1+__z4bya86aMcTs9=f8pw@mail.gmail.com>
-Subject: Re: [linux-stable-rc:linux-5.15.y 6874/8723] arch/arm/lib/xor-neon.c:30:2:
- warning: This code requires at least version 4.6 of GCC
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        kernel test robot <lkp@intel.com>,
-        "Justin M. Forbes" <jforbes@fedoraproject.org>,
-        llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "Jason A. Donenfeld" <zx2c4@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 25 Jul 2022 at 10:49, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> On Mon, Jul 25, 2022 at 07:42:07AM +0200, Ard Biesheuvel wrote:
-> > On Mon, 25 Jul 2022 at 00:40, Jason A. Donenfeld <Jason@zx2c4.com> wrot=
-e:
-> > >
-> > > Hi Ard,
-> > >
-> > > On Mon, Jul 25, 2022 at 04:14:48AM +0800, kernel test robot wrote:
-> > > > All warnings (new ones prefixed by >>):
-> > > >
-> > > > >> arch/arm/lib/xor-neon.c:30:2: warning: This code requires at lea=
-st version 4.6 of GCC [-W#warnings]
-> > > >    #warning This code requires at least version 4.6 of GCC
-> > > >     ^
-> > > >    1 warning generated.
-> > > >
-> > > >
-> > > > vim +30 arch/arm/lib/xor-neon.c
-> > > >
-> > > > 01956597cbc46d Ard Biesheuvel 2013-05-17  16
-> > > > 01956597cbc46d Ard Biesheuvel 2013-05-17  17  /*
-> > > > 01956597cbc46d Ard Biesheuvel 2013-05-17  18   * Pull in the refere=
-nce implementations while instructing GCC (through
-> > > > 01956597cbc46d Ard Biesheuvel 2013-05-17  19   * -ftree-vectorize) =
-to attempt to exploit implicit parallelism and emit
-> > > > 01956597cbc46d Ard Biesheuvel 2013-05-17  20   * NEON instructions.
-> > > > 01956597cbc46d Ard Biesheuvel 2013-05-17  21   */
-> > > > 01956597cbc46d Ard Biesheuvel 2013-05-17  22  #if __GNUC__ > 4 || (=
-__GNUC__ =3D=3D 4 && __GNUC_MINOR__ >=3D 6)
-> > > > 01956597cbc46d Ard Biesheuvel 2013-05-17  23  #pragma GCC optimize =
-"tree-vectorize"
-> > > > 01956597cbc46d Ard Biesheuvel 2013-05-17  24  #else
-> > > > 01956597cbc46d Ard Biesheuvel 2013-05-17  25  /*
-> > > > 01956597cbc46d Ard Biesheuvel 2013-05-17  26   * While older versio=
-ns of GCC do not generate incorrect code, they fail to
-> > > > 01956597cbc46d Ard Biesheuvel 2013-05-17  27   * recognize the para=
-llel nature of these functions, and emit plain ARM code,
-> > > > 01956597cbc46d Ard Biesheuvel 2013-05-17  28   * which is known to =
-be slower than the optimized ARM code in asm-arm/xor.h.
-> > > > 01956597cbc46d Ard Biesheuvel 2013-05-17  29   */
-> > > > 01956597cbc46d Ard Biesheuvel 2013-05-17 @30  #warning This code re=
-quires at least version 4.6 of GCC
-> > > > 01956597cbc46d Ard Biesheuvel 2013-05-17  31  #endif
-> > > > 01956597cbc46d Ard Biesheuvel 2013-05-17  32
-> > >
-> > > Does this file need a depends on =E2=89=A54.6 thing in Kconfig? Or is=
- something
-> > > else happening here since 4.6 isn't even supported by the kernel thes=
-e
-> > > days?
-> > >
-> >
-> > Hi Jason,
-> >
-> > This is explained/fixed in
-> >
-> > commit a69cb445f7d129abf7c50d48c8a8eca7c8d5df15
-> > Author: Ard Biesheuvel <ardb@kernel.org>
-> > Date:   Sat Feb 5 16:23:46 2022 +0100
-> >
-> >     crypto: arm/xor - make vectorized C code Clang-friendly
-> >
-> >     The ARM version of the accelerated XOR routines are simply the 8-wa=
-y C
-> >     routines passed through the auto-vectorizer with SIMD codegen enabl=
-ed.
-> >     This used to require GCC version 4.6 at least, but given that 5.1 i=
-s now
-> >     the baseline, this check is no longer necessary, and actually
-> >     misidentifies Clang as GCC < 4.6 as Clang defines the GCC major/min=
-or as
-> >     well, but makes no attempt at doing this in a way that conveys feat=
-ure
-> >     parity with a certain version of GCC (which would not be a great id=
-ea in
-> >     the first place).
-> >
-> > which landed in v5.18. Note that the patch depends on its parent,
-> > which touches many different architectures, so it may not be
-> > backportable cleanly.
->
-> I would love to backport this as it bugs me to no end on some various
-> gerrit systems all the time.  I'll look into it later this week unless
-> someone beats me to it :)
->
+Hi.
 
-If backporting is an issue, we could just drop this warning - GCC
-before 4.6 hasn't been supported for a while anyway, and Clang never
-had the SIMD accelerated XOR to begin with (it needs the __restrict
-annotations that the parent patch introduces)
+
+First, I hope you are fine and the same for your relatives.
+
+Capabilities are used to check if a thread can perform a given action [1].
+For example, a thread with CAP_BPF set can use the bpf() syscall.
+
+Capabilities are used in the container world.
+In terms of code, several projects related to container maintain code where the
+capabilities are written alike include/uapi/linux/capability.h [2][3][4][5].
+For these projects, their codebase should be updated when a new capability is
+added to the kernel.
+Some other projects rely on <sys/capability.h> [6].
+In this case, this header file should reflect the capabilities offered by the
+kernel.
+
+The delay between adding a new capability to the kernel and this
+capability being used by "container stack" software users can be long.
+Indeed, CAP_BPF was added in a17b53c4a4b5 which was part of v5.8 released in
+August 2020.
+Almost 2 years later, none of the "container stack" software authorize using
+this capability in their last stable release.
+The only way to use CAP_BPF with moby is to use v22.06.0-beta.0 release which
+contains a commit enabling CAP_BPF, CAP_PERFMON and CAP_CHECKPOINT_RESTORE [7].
+This situation can be easily explained by the following:
+1. moby depends on containerd which in turns depends on runc.
+2. runc depends on github.com/syndtr/gocapability which is golang package to
+deal with capabilities.
+This high number of dependencies explain the delay and the big amount of human
+work to add support in the "container stack" software for a new capability.
+
+A solution to this problem could be to add a way for the userspace to ask the
+kernel about the capabilities it offers.
+So, in this series, I added a new file to securityfs:
+/sys/kernel/security/capabilities.
+The goal of this file is to be used by "container world" software to know kernel
+capabilities at run time instead of compile time.
+
+The "file" is read-only and its content is the capability number associated with
+the capability name:
+root@vm-amd64:~# cat /sys/kernel/security/capabilities
+0       CAP_CHOWN
+1       CAP_DAC_OVERRIDE
+...
+40      CAP_CHECKPOINT_RESTORE
+root@vm-amd64:~# wc -c /sys/kernel/security/capabilities
+698 /sys/kernel/security/capabilities
+So, the "container stack" software just have to read this file to know if they
+can use the capabilities the user asked for.
+For example, if user asks for CAP_BPF on kernel 5.8, then this capability will
+be present in the file and so it can be used.
+Nonetheless, if the underlying kernel is 5.4, this capability will not be
+present and so it cannot be used.
+
+The kernel already exposes the last capability number under:
+/proc/sys/kernel/cap_last_cap
+So, I think there should not be any issue exposing all the capabilities it
+offers.
+If there is any, please share it as I do not want to introduce issue with this
+series.
+Also, the data exchanged with userspace are less than 700 bytes long which
+represent 17% of PAGE_SIZE.
+
+Note that I am open to any better way for the userspace to ask the kernel for
+known capabilities.
+And if you see any way to improve this series please share it as it would
+increase this contribution quality.
+
+Change since:
+ v3:
+  * Use securityfs_create_file() to create securityfs file.
+ v2:
+  * Use a char * for cap_string instead of an array, each line of this char *
+  contains the capability number and its name.
+  * Move the file under /sys/kernel/security instead of /sys/kernel.
+
+Francis Laniel (2):
+  capability: Add cap_string.
+  security/inode.c: Add capabilities file.
+
+ include/uapi/linux/capability.h |  1 +
+ kernel/capability.c             | 45 +++++++++++++++++++++++++++++++++
+ security/inode.c                | 16 ++++++++++++
+ 3 files changed, 62 insertions(+)
+
+
+Best regards and thank you in advance for your reviews.
+---
+[1] man capabilities
+[2] https://github.com/containerd/containerd/blob/1a078e6893d07fec10a4940a5664fab21d6f7d1e/pkg/cap/cap_linux.go#L135
+[3] https://github.com/moby/moby/commit/485cf38d48e7111b3d1f584d5e9eab46a902aabc#diff-2e04625b209932e74c617de96682ed72fbd1bb0d0cb9fb7c709cf47a86b6f9c1
+moby relies on containerd code.
+[4] https://github.com/syndtr/gocapability/blob/42c35b4376354fd554efc7ad35e0b7f94e3a0ffb/capability/enum.go#L47
+[5] https://github.com/opencontainers/runc/blob/00f56786bb220b55b41748231880ba0e6380519a/libcontainer/capabilities/capabilities.go#L12
+runc relies on syndtr package.
+[6] https://github.com/containers/crun/blob/fafb556f09e6ffd4690c452ff51856b880c089f1/src/libcrun/linux.c#L35
+[7] https://github.com/moby/moby/commit/c1c973e81b0ff36c697fbeabeb5ea7d09566ddc0
+--
+2.25.1
