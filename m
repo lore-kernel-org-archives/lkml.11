@@ -2,104 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFDFAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 10:15:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08288C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 10:19:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234494AbiGYKPc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 06:15:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43142 "EHLO
+        id S234131AbiGYKT0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 06:19:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233381AbiGYKP1 (ORCPT
+        with ESMTP id S232734AbiGYKTX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 06:15:27 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 572E138BD;
-        Mon, 25 Jul 2022 03:15:26 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 11B61352BB;
-        Mon, 25 Jul 2022 10:15:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1658744125; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NfwO3eQzRbJ+P4zZizMEALzAzJGxDQ9gk1SkR5gMIlM=;
-        b=AY53X++4aTD0nCr7lpNAfNGku2A2xh+4RUvLQry8G+cwTvbN/TW8yz8jzBaPvw69qO4sR3
-        uRm+OM9i7waiCQl0qEmegSIgjfOJYyeVX/t6GvX1ffqvPYAx2t8U4yoL37Jq1BzfJYfFcE
-        eAadBhkgMLQ2jk3/LGwQxN0zkUFGeiU=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1658744125;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NfwO3eQzRbJ+P4zZizMEALzAzJGxDQ9gk1SkR5gMIlM=;
-        b=o0XTcvJA/lPufEvUAQ6IX3VMnLv7FiZ6/eiyqhrbyhoy8ikkByCnqhVs4n35v/RU4zydSD
-        oSY2J+jb8Cnc1fBQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id BD79313A8D;
-        Mon, 25 Jul 2022 10:15:24 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id IgmBLTxt3mKPJgAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Mon, 25 Jul 2022 10:15:24 +0000
-Message-ID: <fb9febe5-00a6-61e9-a2d0-40982f9721a3@suse.cz>
-Date:   Mon, 25 Jul 2022 12:15:24 +0200
+        Mon, 25 Jul 2022 06:19:23 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E739BC25
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 03:19:22 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id d8so15207062wrp.6
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 03:19:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4qKGmWMqZhEmESnw4XiD+O0THResKBg5Q3wlwtvAW/k=;
+        b=hv2GEF4dtTTSztB0obRjKRpHxTon1gEYyRohRuamIcDUPyt/tP2SXOQBZFsD7zpGE+
+         bTEK8t5WDE+622xIsSiGf/Fs4gOdTrZhWaglwuctUCChX3HcB07SyaIQwElXb2W6RHRG
+         iGA/Nxx3TL9R4Kd/V57KX6EiRH99aBno+/RAg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4qKGmWMqZhEmESnw4XiD+O0THResKBg5Q3wlwtvAW/k=;
+        b=T3jjTF3L1HKZMSXIU4hCdwlafZA1PvSiO2s92BvzSs0EzbyzEzCYDpp3KjkN0yfy0n
+         FtfPaZeCbpWUVp2LfnFJxDHqfZK1LDnp7pWTug9L2grV9tIAXeSfWnluf2lqlupqmzg3
+         NCfrDiYB7Yx2kE0tyZujufm+SjJn2+XoRd+nw/HrgVLBnJP0L+nSygKgO4iQshbuC+tr
+         zaNJb2zefZKvT4fx4Gb+eQBlcI3+stX5NaAL1/4XROR5M3BRHhQSBEPKnMON+YWSxBwk
+         hQ0XOiTLPAS3uvG2um7k6vXbmPxCIfPyZ/V1KCSYKaafsjyf3wOFSapiJZYFeEBrMjc3
+         +iMQ==
+X-Gm-Message-State: AJIora+z6UoBmyFLrRnKd+IF2qZjEvkw/v/6u6GQw8EsV+gMbmPU0bK7
+        RVZ+SeL6ZJtgd4DAPyRwKQzvxg8l4fm1GxyqeDmeaw==
+X-Google-Smtp-Source: AGRyM1uN9zadKS6Nx4rG97C6xaz+jKp9LVcuSfRCaJh2ZAajRxqI38cP8WAfn6ByjTht9F2p1SRciCiBlVqAEVGzDmc=
+X-Received: by 2002:a5d:59a9:0:b0:21e:5e6a:6a8e with SMTP id
+ p9-20020a5d59a9000000b0021e5e6a6a8emr7812606wrr.190.1658744360514; Mon, 25
+ Jul 2022 03:19:20 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [syzbot] WARNING in p9_client_destroy
-Content-Language: en-US
-To:     syzbot <syzbot+5e28cdb7ebd0f2389ca4@syzkaller.appspotmail.com>,
-        akpm@linux-foundation.org, asmadeus@codewreck.org,
-        davem@davemloft.net, edumazet@google.com, elver@google.com,
-        ericvh@gmail.com, hdanton@sina.com, k.kahurani@gmail.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux_oss@crudebyte.com, lucho@ionkov.net, netdev@vger.kernel.org,
-        pabeni@redhat.com, rientjes@google.com,
-        syzkaller-bugs@googlegroups.com, torvalds@linux-foundation.org,
-        v9fs-developer@lists.sourceforge.net
-References: <000000000000e6917605e48ce2bf@google.com>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <000000000000e6917605e48ce2bf@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220725082447.2613231-1-treapking@chromium.org> <5856610d-510f-46dc-63b2-79e571956a7c@collabora.com>
+In-Reply-To: <5856610d-510f-46dc-63b2-79e571956a7c@collabora.com>
+From:   Pin-yen Lin <treapking@chromium.org>
+Date:   Mon, 25 Jul 2022 18:19:09 +0800
+Message-ID: <CAEXTbpeHy6-WjLOyWFkncoHzBPM+6qq4w-kUoZj7=05gf8YBjw@mail.gmail.com>
+Subject: Re: [PATCH] arm64: dts: mt8173-oak: Switch to SMC watchdog
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Eizan Miyamoto <eizan@chromium.org>,
+        Evan Benn <evanbenn@chromium.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/24/22 15:17, syzbot wrote:
-> syzbot has bisected this issue to:
-> 
-> commit 7302e91f39a81a9c2efcf4bc5749d18128366945
-> Author: Marco Elver <elver@google.com>
-> Date:   Fri Jan 14 22:03:58 2022 +0000
-> 
->     mm/slab_common: use WARN() if cache still has objects on destroy
+On Mon, Jul 25, 2022 at 4:39 PM AngeloGioacchino Del Regno
+<angelogioacchino.delregno@collabora.com> wrote:
+>
+> Il 25/07/22 10:24, Pin-yen Lin ha scritto:
+> > Switch to SMC watchdog because we need direct control of HW watchdog
+> > registers from kernel. The corresponding firmware was uploaded in
+> > https://review.trustedfirmware.org/c/TF-A/trusted-firmware-a/+/3405.
+> >
+>
+> There's a fundamental issue with this change, I think.
+>
+> What happens if we run this devicetree on a device that does *not* have
+> the new(er) firmware?
 
-Just to state the obvious, bisection pointed to a commit that added the
-warning, but the reason for the warning would be that p9 is destroying a
-kmem_cache without freeing all the objects there first, and that would be
-true even before the commit.
+I haven't tried this patch with an older firmware. I'll manage to
+build one for this.
+>
+> The kernel *shall not* get broken when running on devices that are running
+> on older firmware, especially because that's what was initially supported
+> and what is working right now.
 
-> 
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=142882ce080000
-> start commit:   cb71b93c2dc3 Add linux-next specific files for 20220628
-> git tree:       linux-next
-> final oops:     https://syzkaller.appspot.com/x/report.txt?x=162882ce080000
-> console output: https://syzkaller.appspot.com/x/log.txt?x=122882ce080000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=badbc1adb2d582eb
-> dashboard link: https://syzkaller.appspot.com/bug?extid=5e28cdb7ebd0f2389ca4
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=156f74ee080000
-> 
-> Reported-by: syzbot+5e28cdb7ebd0f2389ca4@syzkaller.appspotmail.com
-> Fixes: 7302e91f39a8 ("mm/slab_common: use WARN() if cache still has objects on destroy")
-> 
-> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+Actually the current approach does not work *right*. The device boots,
+but the watchdog does not work properly.
 
+Also, all MT8173 ChromeOS devices have this firmware updated, and we
+don't have other upstream users apart from mt8173-evb. Do we want to
+support the developers that are running upstream linux with their
+MT8173 boards?
+
+>
+> For this reason, I think that we should get some code around that checks
+> if the SMC watchdog is supported and, if not, resort to MMIO wdog.
+
+What is the expected way to support this backward compatibility? Do we
+put the old compatible strings ("mediatek,mt8173-wdt" and
+"mediatek,mt6589-wdt") after "arm,smc-wdt" and reject it in the
+drivers if the firmware does not support it?
+>
+> Regards,
+> Angelo
+>
+>
+> > Signed-off-by: Pin-yen Lin <treapking@chromium.org>
+> > ---
+> >
+> >   arch/arm64/boot/dts/mediatek/mt8173.dtsi | 6 ++----
+> >   1 file changed, 2 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/arch/arm64/boot/dts/mediatek/mt8173.dtsi b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
+> > index a2aef5aa67c1..2d1c776740a5 100644
+> > --- a/arch/arm64/boot/dts/mediatek/mt8173.dtsi
+> > +++ b/arch/arm64/boot/dts/mediatek/mt8173.dtsi
+> > @@ -528,10 +528,8 @@ power-domain@MT8173_POWER_DOMAIN_MFG {
+> >                       };
+> >               };
+> >
+> > -             watchdog: watchdog@10007000 {
+> > -                     compatible = "mediatek,mt8173-wdt",
+> > -                                  "mediatek,mt6589-wdt";
+> > -                     reg = <0 0x10007000 0 0x100>;
+> > +             watchdog {
+> > +                     compatible = "arm,smc-wdt";
+> >               };
+> >
+> >               timer: timer@10008000 {
+> >
+>
+>
