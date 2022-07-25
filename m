@@ -2,119 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E885AC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 08:00:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 745EFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 08:00:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232875AbiGYIAH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 04:00:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49298 "EHLO
+        id S232950AbiGYIAJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 04:00:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232440AbiGYIAC (ORCPT
+        with ESMTP id S232622AbiGYIAE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 04:00:02 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61B8A13CE5;
-        Mon, 25 Jul 2022 01:00:01 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id b11so19028327eju.10;
-        Mon, 25 Jul 2022 01:00:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/cFBmHW3aWYSVzhv+dCF1Vjg7vV6HTDbULFzKNdh7eA=;
-        b=D59brI8ncH+WCdwU0Nfnk9ctLnRDZ3UUdc+xeXG2BjO1rrMZJ0I+JhW0C2WVRsU6I7
-         ahgas2HVf3s+Q1M1+toqG4BgdFjA14FX2WipfWZqqPlpU/p57MdP2KZYLh9lAwA5I3P2
-         78VXDrlkxZllvMa8g5WSechgcttVRJFweVlLmJ6o0bSzPej2NwYO4DbX/BcfTjOk0y/T
-         XpvbkQ4bjio6MMumjuisV+WVTBnLQJzUwpW1vfpHFzzVndm/NE5Ss1d3hZjedpOJXc7m
-         LuSKiZVCLZQUmdrfrVkrncRSqXCACm1BmRyqtDh1etSR8scG0DGif8X1+PGv78ob7tYR
-         qx5g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/cFBmHW3aWYSVzhv+dCF1Vjg7vV6HTDbULFzKNdh7eA=;
-        b=Hjh5zul4oRbNWzqIzxAErdO3BqwqTfX34vdWQs3YlOo7b4Q94WDl5e1KsSjPXuCIxB
-         Erlww9mGep7LmlS2hS2VIy2HY7bRsWPTOWJehw9pTO2MJawzhRM4sYQcA98q6vppLqd5
-         GfWy46N5YErNcnYf300N5/67ayuZzrl510Oxau4x+bFtn2UL1ctUlu5arPBbj2xgcKLY
-         CPPj/RMnk6Cz0/A0nBdAZt6T9yCn3yNttKP2kLg/4pIaIf1OOT40noQjBPf1YgmfGy4h
-         Uun4c7ulHdRUxFbTMw/ppNWJcY5cZblw4UtfPIfptdAbr5D+pch7P+ZQcfV7ZtmSKrSB
-         e/pA==
-X-Gm-Message-State: AJIora+0LwDGmFynA3TgdUbOyp3bOhBAJV/UfsWCwi8L6PpVpyUYyQDO
-        M8bU7saQSzIyfef2wQrSzpUHuQV7hp24J7qw2RI=
-X-Google-Smtp-Source: AGRyM1unetnhWIzb3en09GsAOIg0xuhKBXgSQV7z/NkK9g6NHIamuCgYKepx6i2vYNKCBrnrnWiAXWzNdcPwAolpJPg=
-X-Received: by 2002:a17:907:75da:b0:72b:3ce0:2524 with SMTP id
- jl26-20020a17090775da00b0072b3ce02524mr9140700ejc.394.1658735999558; Mon, 25
- Jul 2022 00:59:59 -0700 (PDT)
+        Mon, 25 Jul 2022 04:00:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 735A413CD2;
+        Mon, 25 Jul 2022 01:00:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 04409611A8;
+        Mon, 25 Jul 2022 08:00:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3164CC341D4;
+        Mon, 25 Jul 2022 08:00:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658736001;
+        bh=htGIi81EhWUDNiQ/aByjFq9q+tZ8eQTA0UOuG8tIDtE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=exP5EuW8jNwWGnNiR4WGtBGzStxIKSZJbIoTDBI3PTzOl6t3QUsed9F1MZiZTJbiY
+         VOzc5hFJrbinc+WUIGBEH2Da2ltE57J100ZWee+U6Tft/33lfxsnAx1zO95UjCCMrs
+         ZHCKPc0UgxQ+1to3Lr6z7aEia/4PPkoYQYx9Oq5lz7L3cyWF7y+sWyu0/XdtPPTVOE
+         6p2Bzk/obbsUtsEw3zhAmZsRaeXA3nHluw7Qn8IxNtBS3N1eplOkWbJxyo9qCUBy2F
+         qRkHxmPxRBgttk0u+T3Msivq3tGFfsH+qQvu6OiPwKKCvMFvYUGxj3W8tsLGPhfDuQ
+         lKw4HZXzKyzAQ==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1oFt0e-0000KB-8o; Mon, 25 Jul 2022 10:00:12 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Oliver Neukum <oneukum@suse.com>,
+        Felipe Balbi <balbi@kernel.org>
+Cc:     Yan Xinyu <sdlyyxy@bupt.edu.cn>, linux-staging@lists.linux.dev,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 5/7] staging: gdm724x: drop unused CDC defines
+Date:   Mon, 25 Jul 2022 09:58:39 +0200
+Message-Id: <20220725075841.1187-6-johan@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220725075841.1187-1-johan@kernel.org>
+References: <20220725075841.1187-1-johan@kernel.org>
 MIME-Version: 1.0
-References: <20220722102407.2205-1-peterwu.pub@gmail.com> <20220722102407.2205-8-peterwu.pub@gmail.com>
-In-Reply-To: <20220722102407.2205-8-peterwu.pub@gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 25 Jul 2022 09:59:23 +0200
-Message-ID: <CAHp75VfiKMROzxeEaCH6qCthK9qanJPqbjADLMVH-V0upKf+9Q@mail.gmail.com>
-Subject: Re: [PATCH v6 07/13] mfd: mt6370: Add MediaTek MT6370 support
-To:     ChiaEn Wu <peterwu.pub@gmail.com>
-Cc:     Lee Jones <lee.jones@linaro.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@ucw.cz>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        "Krogerus, Heikki" <heikki.krogerus@linux.intel.com>,
-        Helge Deller <deller@gmx.de>,
-        ChiaEn Wu <chiaen_wu@richtek.com>,
-        Alice Chen <alice_chen@richtek.com>,
-        cy_huang <cy_huang@richtek.com>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Linux LED Subsystem <linux-leds@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        USB <linux-usb@vger.kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        "open list:FRAMEBUFFER LAYER" <linux-fbdev@vger.kernel.org>,
-        szuni chen <szunichen@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 22, 2022 at 12:25 PM ChiaEn Wu <peterwu.pub@gmail.com> wrote:
->
-> From: ChiYuan Huang <cy_huang@richtek.com>
->
-> This adds support for the MediaTek MT6370 SubPMIC. MediaTek MT6370 is a
-> SubPMIC consisting of a single cell battery charger with ADC monitoring,
-> RGB LEDs, dual channel flashlight, WLED backlight driver, display bias
-> voltage supply, one general purpose LDO, and the USB Type-C & PD controller
-> complies with the latest USB Type-C and PD standards.
+This driver has a copy of some of the CDC defines but which are
+currently unused.
 
-...
+Signed-off-by: Johan Hovold <johan@kernel.org>
+---
+ drivers/staging/gdm724x/gdm_tty.c | 6 ------
+ 1 file changed, 6 deletions(-)
 
-> +#define MT6370_REG_DEV_INFO    0x100
-> +#define MT6370_REG_CHG_IRQ1    0x1C0
-> +#define MT6370_REG_CHG_MASK1   0x1E0
-> +
-> +#define MT6370_VENID_MASK      GENMASK(7, 4)
-> +
-> +#define MT6370_NUM_IRQREGS     16
-> +#define MT6370_USBC_I2CADDR    0x4E
-
-> +#define MT6370_REG_ADDRLEN     2
-> +#define MT6370_REG_MAXADDR     0x1FF
-
-These two more logically to have near to other _REG_* definitions above.
-
+diff --git a/drivers/staging/gdm724x/gdm_tty.c b/drivers/staging/gdm724x/gdm_tty.c
+index 04df6f9f5403..cc6d80554c98 100644
+--- a/drivers/staging/gdm724x/gdm_tty.c
++++ b/drivers/staging/gdm724x/gdm_tty.c
+@@ -17,12 +17,6 @@
+ #define GDM_TTY_MAJOR 0
+ #define GDM_TTY_MINOR 32
+ 
+-#define ACM_CTRL_DTR 0x01
+-#define ACM_CTRL_RTS 0x02
+-#define ACM_CTRL_DSR 0x02
+-#define ACM_CTRL_RI  0x08
+-#define ACM_CTRL_DCD 0x01
+-
+ #define WRITE_SIZE 2048
+ 
+ #define MUX_TX_MAX_SIZE 2048
 -- 
-With Best Regards,
-Andy Shevchenko
+2.35.1
+
