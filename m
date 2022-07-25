@@ -2,104 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BF24C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 13:54:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9BC2C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 13:55:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233312AbiGYNyW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 09:54:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38154 "EHLO
+        id S235170AbiGYNz0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 09:55:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233642AbiGYNyT (ORCPT
+        with ESMTP id S229514AbiGYNzZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 09:54:19 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08C8715FF1
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 06:54:18 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id b11so20648319eju.10
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 06:54:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nWnoriasKTjPDfSijueg14IXB7HkYS+jR5E7GrNcJoI=;
-        b=sIWJ/HEQO30M3WPFW+JwQi3sVhMIjYWZvm2ynC0ydkv3Fm4i9CCcXUmpM/5RUs1NMM
-         rJf0blQtU0mTVq4nYQY04mNi5Q9cYbD7FjeeUcOcypBZcGSkVf1fxeYTLB7xtagvFGNW
-         CHCyFWL85qyeDPAHaBO57XVbRGPzAEPpBxjLbpIVCK4VaPnkv4xao6SYhqdrd4VM17tU
-         BsJCHqVrmWW1KRWgXaM4UaEAs4tZ668fTGNynCo0adlFURisOHFygMV7gmM98A+TUcCg
-         fjFHaKh/Xp3lHBEcU5vn9sjoq8JKFFWMnGa7FCrl7WocP450ChVH/GfDt9D/nx2kngxG
-         e9qQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nWnoriasKTjPDfSijueg14IXB7HkYS+jR5E7GrNcJoI=;
-        b=e+VBQr4ByqWL7j3GaNas4pFmBtzDjMDLth2m+0rNDmwZ365Xc601HSYf+uNscYqCZ4
-         Ji2eOdmeNBUIJ56TD9kgOGhlXabVJUFLIydwjihytnOoAyeYeQmo33ChB0gvEOHbsXSc
-         XW3WLa4lNGp7FWjLR8nK2E+NmwTHU0YCYfL92nkSWlpqteXF3XiHgBvV7d3oZbE5dzQG
-         UllPXKTDlM/cpwNGms6Ie8gpexOEe7URbkWEFlgcxyHm5j/Lvm2S2MbLn6YbLQ6k/9HJ
-         rrmDC1iraZiF2zz+Pv/8QH3lVQuOLz/eAWE035Nx/ADs9XiF4AdOUFQtjSK43VzFXH1i
-         PqbA==
-X-Gm-Message-State: AJIora/ILqdtQzb9sG6yp/5k6JKqAOwuVAwc3VXcWiF7foMVCAW5sVRK
-        vs1pcyJrmvjN+fqC46BgDg5f0Z7R2iqQtZTFRmvHYg==
-X-Google-Smtp-Source: AGRyM1uv4XSrJORFWnyeqF1yUEUIC5JQ8KMU9r/spIy2/+5/ZuMjdCNJ2JcZQ6+Dx3O4ygaEViARUdXqxxALaG+iBgU=
-X-Received: by 2002:a17:907:9612:b0:72e:56bd:2b9a with SMTP id
- gb18-20020a170907961200b0072e56bd2b9amr10311393ejc.526.1658757256304; Mon, 25
- Jul 2022 06:54:16 -0700 (PDT)
+        Mon, 25 Jul 2022 09:55:25 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 381139583
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 06:55:23 -0700 (PDT)
+Date:   Mon, 25 Jul 2022 15:55:19 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1658757321;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=IUnC4wIOdfPRZ/lPTRoy99qEexu5zzUe3TeYAREMMks=;
+        b=3nmCFGO/ohpNVKHsyw2Bm+XssmtkytXOEdQ42VKo8qBaSxFcmSZQ6/5zBJ/zKzzker9Z1b
+        ehRrTYtzeroOGKRoZVGMWN9HXYpRsV8cz1FULZDZajQrku/2ngRhRbjfPvdlZn8cuouOuu
+        kkdTpzGRPxI4J1pN3zOpgzIFhL+GGWXEWk8qrkj7VK5QXZr2A9OkEM1vHKmbJtCrNsnxaa
+        XrBSDSa0Ar+MjgsqBNREuSyFgEZba0BnrIXZ8dpCax5JaKPo71WrjZQ7FDHgdNbUB/Ki7e
+        E+468jDOanLaKqhHdxWGGgiEk06Q2dXg5vsn6gjcYEqDngkiS1h4NSKKO3c1Qw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1658757321;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=IUnC4wIOdfPRZ/lPTRoy99qEexu5zzUe3TeYAREMMks=;
+        b=BL0zBAAr6s7fgqxckylGJHf+4tMmkEkli9zXFvcSh6SuMxCa48+49r/65HlMrbgoozvFcu
+        WEAttLhib1q9TiCg==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     John Ogness <john.ogness@linutronix.de>,
+        linux-kernel@vger.kernel.org,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH v2] printk: Skip console drivers on PREEMPT_RT.
+Message-ID: <Yt6gxxRxDZ/wFHrA@linutronix.de>
+References: <YtgjtfjYVMQrzFTK@linutronix.de>
+ <87y1wn3g3g.fsf@jogness.linutronix.de>
+ <Ytgu17hATM8iqdGC@linutronix.de>
+ <87ilnrn06u.fsf@jogness.linutronix.de>
+ <Ytj3PisFjOfS9L0Y@linutronix.de>
+ <YtqakGJAQzw/IPul@alley>
+ <YtrYdXWGb0NQLKNA@linutronix.de>
+ <Yt6MzEEFfpyTBIIj@alley>
 MIME-Version: 1.0
-References: <20220721093422.2173982-1-marcus.folkesson@gmail.com> <CAHp75VddBhc9peHXfNfTyTNni246kC8CyLqCrMFadn67LGDarQ@mail.gmail.com>
-In-Reply-To: <CAHp75VddBhc9peHXfNfTyTNni246kC8CyLqCrMFadn67LGDarQ@mail.gmail.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Mon, 25 Jul 2022 15:54:04 +0200
-Message-ID: <CACRpkdaczrU1tM5Yt7P-Q2h+ge8STOi6HvvYeTM-g+JwS8_gZw@mail.gmail.com>
-Subject: Re: [PATCH 1/2] gpio: gpio-74x164: add support for CDx4HC4094
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Marcus Folkesson <marcus.folkesson@gmail.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <Yt6MzEEFfpyTBIIj@alley>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 25, 2022 at 11:32 AM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
-> On Thu, Jul 21, 2022 at 11:32 AM Marcus Folkesson
-> <marcus.folkesson@gmail.com> wrote:
-> >
-> > 74hc4094 and 75hc4094 works similar to 74x164 but has an additional
-> > storage latch associated with each stage for strobing data from the
-> > serial input to parallell buffer tri-state output.
+On 2022-07-25 14:30:04 [+0200], Petr Mladek wrote:
+> This is what I have missed. It might be obvious for people living by RT
+> kernel. But spinlocks do not sleep in normal kernel. So I did not get
+> that the spinlocks are the culprit. Please, make it more obvious
+> in the commit message, for example:
+>=20
+> --- cut ---
+> Console drivers use spinlocks that might sleep in PREEMPT_RT. As a
+> result they must not be called with interrupts enabled...
+> --- cut ---
+
+It is not only the sleeping lock by itself but also the fact that
+polling on 115200 or 9600 to print a line is simply takes too much time.
+Even if the line consists of four letters.
+
+> > > > Disable console printing until the return of atomic consoles and the
+> > > > printing thread. This allows to retrieve the log buffer from user s=
+pace
+> > > > which is not possible by disable printk.
+> > >=20
+> > > I guess that this is for RT tree because the kthreads and the atomic
+> > > consoles are still not in the mainline.
+> >=20
+> > I would like to have this applied to the v5.20 upstream tree and then
+> > revoked once the missing bits have been  merged. Based on what I see,
+> > there shouldn't be any road blocks.
+>=20
+> Huh, I do not think that it is a good idea. There are neither atomic
+> consoles nor printk kthreads in upstream. The patch effectively
+> completely disables the consoles in PREEMPT_RT. All consoles
+> will be _empty all the time_.
+
+I am aware of that, I tested that patch (as in I didn't just send it).
+This is what I see on bare metal's UART:
+
+|  Booting `Debian GNU/Linux'
+|
+| Loading Linux RT ...
+| Loading initial ramdisk ...
+| No EFI environment detected.
+| early console in extract_kernel
+| input_data: 0x00000000031d12e0
+| input_len: 0x0000000000c283e1
+| output: 0x0000000001000000
+| output_len: 0x00000000025f49f8
+| kernel_total_size: 0x0000000002e26000
+| needed_size: 0x0000000003000000
+| trampoline_32bit: 0x0000000000099000
+|=20
+| Decompressing Linux... Parsing ELF... done.
+| Booting the kernel.
+| Loading, please wait...
+| Starting version 251.3-1
+| Begin: Loading essential drivers ... done.
+=E2=80=A6
+
+and this is okay for me at this point. This means that v5.20 could have
+RT enabled for x86 and people can start test it without additional
+patches. They can enable it and if it boots they can check dmesg's
+output for anything odd. If it doesn't boot they can either wait for the
+next release or grab the patchset with the missing bits for debugging.
+This is way better than letting printk depend on !RT which would provide
+no insight at all. The RT option is still hidden behind EXPERT.
+
+> Also the consoles were never tested with interrupts enabled. I am
+> pretty sure that interrupts has to be disabled in some locations,
+> for example, when sending some data sequences on the ports. Are we
+> sure that they are always explicitly disabled inside the drivers?
+
+The 8250 did disable interrupts via local_irq_disable() and this is not
+desired on RT since it *really* disables interrupts. This was long ago
+addressed in commit
+   ebade5e833eda ("serial: 8250: Clean up the locking for -rt")
+
+The interrupts are enabled in general on RT and they have to. I did not
+remove this pattern (local_irq_disable() + try_lock()) from all console
+drivers because five years ago we were talking about explicit entry
+points for magic-sysrq and oops_in_progress and I didn't want to patch
+around until it is done. I don't know what John's plans here are but I
+did mention this to him a while ago.
+A few other (ARM related drivers) are patched as part of the RT queue.
+
+> This is one reason why we reverted the console kthreads in 5.19-rc4.
+> AFAIK, John is doing some inspection of all drivers.
+
+The console drivers (or drivers in general) never *really* disable
+interrupts on RT via spin_lock_irq*() and this is intended.=20
+
+> That said, I am going to leave the decision on John. I am not sure
+> what are the expectations of RT users in mainline.
 >
-> parallel
->
-> > Add support for an optional strobe pin.
->
-> Sorry for my absence of understanding, but why?
-> SPI has MOSI, CLK, CS, where the last one is exactly for that. No?
+> From my point, this patch does not make much sense. IMHO, it will
+> not make mainline usable with PREEMPT_RT. Any serious RT user will
+> need to revert it and apply a better printk solution from
+> the out-of-tree RT patchset.
 
-Forgive me if I misunderstand, but if you use CS that
-way, the way that the SPI framework works is to assert
-CS then transfer a few chunks over SPI (MOSI/CLK)
-then de-assert CS.
+The lack of the console probably makes RT not production ready as of
+v5.20 but I was debugging systems without a UART so.
+It might not be production ready without a console. Also ARM and PowerPC
+can not be enabled so there will be a queue for a while unless people
+device that they don't care about what is left. However it will
+hopefully will attract x86 people to give it a spin. Then we may receive
+bug reports and or patches which we did not before and so get better.
 
-If CS is used for strobe, it is constantly asserted
-during transfer and the sequence will be latched
-out immediately as you write the SPI transfers and
-the data is clocked through the register, making the
-whole train of zeroes and ones flash across the
-output pins before they stabilize after the SPI
-transfer is finished.
+> Best Regards,
+> Petr
 
-If you first do the SPI transfer, then strobe after
-finished, this will not happen.
-
-Then it should be a separate pin, so this doesn't
-happen, right?
-
-Yours,
-Linus Walleij
+Sebastian
