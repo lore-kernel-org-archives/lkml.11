@@ -2,111 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1D2BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 11:50:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10ED2C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 11:51:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234568AbiGYLuH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 07:50:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44440 "EHLO
+        id S234929AbiGYLvK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 07:51:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230032AbiGYLuF (ORCPT
+        with ESMTP id S230246AbiGYLvI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 07:50:05 -0400
-Received: from smtp-relay-canonical-0.canonical.com (smtp-relay-canonical-0.canonical.com [185.125.188.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0FF3DF4A;
-        Mon, 25 Jul 2022 04:50:04 -0700 (PDT)
-Received: from quatroqueijos (1.general.cascardo.us.vpn [10.172.70.58])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 0C31D3F11C;
-        Mon, 25 Jul 2022 11:49:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1658749802;
-        bh=azjCJStYinlUJkGMIRNeZrFjUm/sCt/hfpBDbAEn+tQ=;
-        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-         Content-Type:In-Reply-To;
-        b=eKDHv04jEAYFHhgugB5OGbPXzYU8hXVTUZzwQUZMuKH6Ik4JJPlj6pBYSCu3CcZGC
-         NKTSpjgl+g8qKa9ir3t0/lG7GikRSRYc/F9arW61g6ZCSBRhFPEOg9c6BtrzlGx+pV
-         W5xzFEPouViUrJNdd5eyjovPVb9e/jUr4LxtsKMeTS37P1bzO73OUlNtX9wznzKVDf
-         G+pR9HJ9uQIBUU4YC23NPGBpqEExLezNTPiss4PqRMiRQmJVV9nG5ndSCoSsf3rz7n
-         ae8Ohbpj8yyFcbXeh1JfO2yBb33u3Q8vDThsa0755EIwtv2nWYRrU+1Z2LqkOSs3xo
-         DDp+8ARn5CehQ==
-Date:   Mon, 25 Jul 2022 08:49:56 -0300
-From:   Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-To:     Jiri Slaby <jirislaby@kernel.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Josh Poimboeuf <jpoimboe@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Borislav Petkov <bpetkov@suse.de>
-Subject: Re: [PATCH 5.18 13/70] objtool: skip non-text sections when adding
- return-thunk sites
-Message-ID: <Yt6DZB7Cmp6xYU/H@quatroqueijos>
-References: <20220722090650.665513668@linuxfoundation.org>
- <20220722090651.464856922@linuxfoundation.org>
- <8a4f10b1-70b3-25fe-9ffc-4f24a1531139@kernel.org>
+        Mon, 25 Jul 2022 07:51:08 -0400
+Received: from nautica.notk.org (ipv6.notk.org [IPv6:2001:41d0:1:7a93::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1554B6397;
+        Mon, 25 Jul 2022 04:51:06 -0700 (PDT)
+Received: by nautica.notk.org (Postfix, from userid 108)
+        id C658EC025; Mon, 25 Jul 2022 13:51:04 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1658749864; bh=2NwYAYhbN3OZMacClbvfMK5THoNrkzTnbrqS2W8AjRM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=F1EkmJq7oYZxD1SPqVkTKFxKzaoBVjIcqhtmGe7FxqT1OeYVmlJu6UDKFhAS8++oo
+         IL7dbF8QVzmCJQI0J1KP3n4xb78VDtmGMVtY5tOlagsjYAqKwo+Yd5/XDaXUU+ABUe
+         LV0ci89kTM3tZchfBw01mF6oopK+1N9G0oq6eUdPlfuP/h7PPoJw4GLCwzr5gI3S7P
+         qUH9jfcWNedEP/hWS80owdax9dsGJNTlpdsvll6kHdiUTdyDUHtSH79ZemOTU22F7p
+         UWLUG4j5cLc81MuR5rYRe6ST3nCVulBLICrmrZaqwtezUUB5Qq4bzEF3DXJcFzCcr2
+         aoVgcgLg3ZjMQ==
+Received: from odin.codewreck.org (localhost [127.0.0.1])
+        by nautica.notk.org (Postfix) with ESMTPS id 2E204C009;
+        Mon, 25 Jul 2022 13:50:57 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
+        t=1658749863; bh=2NwYAYhbN3OZMacClbvfMK5THoNrkzTnbrqS2W8AjRM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=riikSf24Vi05i2t4TF/OsIT9+NyLICgFe3t+4yLNy64GtLjskwd9PET5eKskZCBzq
+         t3BVRH68lt0s79gqe0qhoEjbSwd7Z58pZLikgA12Q8hJopHtHmb3DpvK+m5fxyZsKr
+         dzY8o7EPr8/Sdg0KhyTKVpB0pvp/3Q3bUwhLnX9kwyO3d4Ge64xox68paqN+d3XwEU
+         aDU0TVVHafhILld1a32Huhxs0GGtdYJ8FqS42cq4PeMEHa5CQ+yvNGQIC+AMGOsWIM
+         fw/h/MJpcu4sV5kmE7xIPNdUOz+AzcsXe6TGlag+CeVr8i6xeHyblOTCxW2mZ3TBVH
+         usjc4I1NdOrfg==
+Received: from localhost (odin.codewreck.org [local])
+        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 69b53e8f;
+        Mon, 25 Jul 2022 11:50:53 +0000 (UTC)
+Date:   Mon, 25 Jul 2022 20:50:38 +0900
+From:   asmadeus@codewreck.org
+To:     Vlastimil Babka <vbabka@suse.cz>
+Cc:     syzbot <syzbot+5e28cdb7ebd0f2389ca4@syzkaller.appspotmail.com>,
+        akpm@linux-foundation.org, davem@davemloft.net,
+        edumazet@google.com, elver@google.com, ericvh@gmail.com,
+        hdanton@sina.com, k.kahurani@gmail.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux_oss@crudebyte.com,
+        lucho@ionkov.net, netdev@vger.kernel.org, pabeni@redhat.com,
+        rientjes@google.com, syzkaller-bugs@googlegroups.com,
+        torvalds@linux-foundation.org, v9fs-developer@lists.sourceforge.net
+Subject: Re: [syzbot] WARNING in p9_client_destroy
+Message-ID: <Yt6DjrMdIhpQmm7V@codewreck.org>
+References: <000000000000e6917605e48ce2bf@google.com>
+ <fb9febe5-00a6-61e9-a2d0-40982f9721a3@suse.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <8a4f10b1-70b3-25fe-9ffc-4f24a1531139@kernel.org>
+In-Reply-To: <fb9febe5-00a6-61e9-a2d0-40982f9721a3@suse.cz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 25, 2022 at 07:44:08AM +0200, Jiri Slaby wrote:
-> Hi,
+Vlastimil Babka wrote on Mon, Jul 25, 2022 at 12:15:24PM +0200:
+> On 7/24/22 15:17, syzbot wrote:
+> > syzbot has bisected this issue to:
+> > 
+> > commit 7302e91f39a81a9c2efcf4bc5749d18128366945
+> > Author: Marco Elver <elver@google.com>
+> > Date:   Fri Jan 14 22:03:58 2022 +0000
+> > 
+> >     mm/slab_common: use WARN() if cache still has objects on destroy
 > 
-> I wonder, why this is needed in stable and not mainline?
-> 
-> Isn't this a different (non-upstream) dup of
-> 951ddecf4356 objtool: Treat .text.__x86.* as noinstr
-> ? (That is included in this release too.)
-> 
+> Just to state the obvious, bisection pointed to a commit that added the
+> warning, but the reason for the warning would be that p9 is destroying a
+> kmem_cache without freeing all the objects there first, and that would be
+> true even before the commit.
 
-That's because RESERVE_BRK adds a function to .discard.text before upstream
-commit a1e2c031ec3949b8c039b739c0b5bf9c30007b00 ("x86/mm: Simplify
-RESERVE_BRK()").
+Probably true from the moment that cache/idr was introduced... I've got
+a couple of fixes in next but given syzcaller claims that's the tree it
+was produced on I guess there can be more such leaks.
+(well, the lines it sent in the backtrace yesterday don't match next,
+but I wouldn't count on it)
 
-Picking up that commit alone was frowned upon because it caused some
-problems that were still under investigation.
+If someone wants to have a look please feel free, I would bet the
+problem is just that p9_fd_close() doesn't call or does something
+equivalent to p9_conn_cancel() and there just are some requests that
+haven't been sent yet when the mount is closed..
+But I don't have/can/want to take the time to check right now as I
+consider such a leak harmless enough, someone has to be root or
+equivalent to do 9p mounts in most cases.
 
-Cascardo.
-
-> On 22. 07. 22, 11:07, Greg Kroah-Hartman wrote:
-> > From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-> > 
-> > The .discard.text section is added in order to reserve BRK, with a
-> > temporary function just so it can give it a size. This adds a relocation to
-> > the return thunk, which objtool will add to the .return_sites section.
-> > Linking will then fail as there are references to the .discard.text
-> > section.
-> > 
-> > Do not add instructions from non-text sections to the list of return thunk
-> > calls, avoiding the reference to .discard.text.
-> > 
-> > Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-> > Acked-by: Josh Poimboeuf <jpoimboe@kernel.org>
-> > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > ---
-> >   tools/objtool/check.c |    4 +++-
-> >   1 file changed, 3 insertions(+), 1 deletion(-)
-> > 
-> > --- a/tools/objtool/check.c
-> > +++ b/tools/objtool/check.c
-> > @@ -1308,7 +1308,9 @@ static void add_return_call(struct objto
-> >   	insn->type = INSN_RETURN;
-> >   	insn->retpoline_safe = true;
-> > -	list_add_tail(&insn->call_node, &file->return_thunk_list);
-> > +	/* Skip the non-text sections, specially .discard ones */
-> > +	if (insn->sec->text)
-> > +		list_add_tail(&insn->call_node, &file->return_thunk_list);
-> >   }
-> >   static bool same_function(struct instruction *insn1, struct instruction *insn2)
-> > 
-> > 
-> 
-> thanks,
-> -- 
-> js
-> suse labs
+-- 
+Dominique
