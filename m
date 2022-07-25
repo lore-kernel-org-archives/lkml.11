@@ -2,93 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDEF5C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 09:38:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C81CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 09:39:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234175AbiGYJiM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 05:38:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43446 "EHLO
+        id S234045AbiGYJjP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 05:39:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234054AbiGYJiJ (ORCPT
+        with ESMTP id S234262AbiGYJjN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 05:38:09 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 283FBB7C9;
-        Mon, 25 Jul 2022 02:38:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1658741889; x=1690277889;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=TthBya58gH7epvLwOH5Jw8gF6/uSQB1tBx4AWRwJht8=;
-  b=b0LnYgOC3A8u2n/thxdOwXnrety+oNchpSiHnjzoUKd9pVu0CqwSRSDH
-   xsuh3sz052aJeInVVgI9I1lHrGGkGl1zz05q3586yuxS80lyEVlgFkApV
-   sXhuLKswtKEeyCrsH2JSKMthZlitXS0QXZKb4jnjQBVbp12OqANF3xD0/
-   c=;
-Received: from ironmsg09-lv.qualcomm.com ([10.47.202.153])
-  by alexa-out.qualcomm.com with ESMTP; 25 Jul 2022 02:38:08 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg09-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2022 02:38:08 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 25 Jul 2022 02:37:36 -0700
-Received: from hu-ppareek-blr.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 25 Jul 2022 02:37:33 -0700
-Date:   Mon, 25 Jul 2022 15:07:29 +0530
-From:   Parikshit Pareek <quic_ppareek@quicinc.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-CC:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        <linux-arm-msm@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 1/3] dt-bindings: arm: qcom: Document additional
- sa8540p device
-Message-ID: <20220725093729.GA19730@hu-ppareek-blr.qualcomm.com>
-References: <20220722142515.18592-1-quic_ppareek@quicinc.com>
- <de7fc091-ed12-c585-d39d-2bcf2bda37fe@linaro.org>
+        Mon, 25 Jul 2022 05:39:13 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B124BC15
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 02:39:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658741953; x=1690277953;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=FeSuo0JJdNSjMoYJ09VPheK/a4W0VdfiJn8DvjdV9n0=;
+  b=JJ6jNQM6dt1Tvy6ap5ILbAKcqLwLdj9su1uyimaQZV9vLguncdRlNLZ6
+   EWUA6ro5AnI99P0v98tN52odtiXKXuUafbxkMuywmm1W27M4X1+d/JGnS
+   M71xqUoX6iMUHXhPxja4sIJBsvH8fsJQWKQEvk8rOlImi5F6KGKVCbFbl
+   vhlsTrUosNGIFEUblxpgUMzmtB4Xcptl2PEUxXXRH3MwqSPovInu2hgAt
+   yk37QA9t/tnUTLmaBl7EOJYcbW8GKCycwRT/MLYiJuVWrtjAEv6DWV4Bz
+   WXVRRBfihufmhOki4e+Y0o0Kpg0QXai0dXrdofpgwaDvJDQv5Wn6z0VoL
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10418"; a="287668956"
+X-IronPort-AV: E=Sophos;i="5.93,192,1654585200"; 
+   d="scan'208";a="287668956"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2022 02:39:13 -0700
+X-IronPort-AV: E=Sophos;i="5.93,192,1654585200"; 
+   d="scan'208";a="658112475"
+Received: from liangk-mobl.ccr.corp.intel.com (HELO [10.255.30.67]) ([10.255.30.67])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2022 02:39:11 -0700
+Message-ID: <c24bd222-9356-0564-414d-d54ca1e2b79b@linux.intel.com>
+Date:   Mon, 25 Jul 2022 17:39:11 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <de7fc091-ed12-c585-d39d-2bcf2bda37fe@linaro.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+        Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/1] iommu/vt-d: Fix possible recursive locking in
+ intel_iommu_init()
+Content-Language: en-US
+To:     "Tian, Kevin" <kevin.tian@intel.com>,
+        "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+References: <20220718235325.3952426-1-baolu.lu@linux.intel.com>
+ <BN9PR11MB5276287E75395A59865812978C919@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <8e970367-746e-0e74-ba39-e941fdbfdab7@linux.intel.com>
+ <BN9PR11MB52765FEEC0ED0EAB5D691FA38C959@BN9PR11MB5276.namprd11.prod.outlook.com>
+From:   Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB52765FEEC0ED0EAB5D691FA38C959@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 22, 2022 at 08:27:39PM +0200, Krzysztof Kozlowski wrote:
-> On 22/07/2022 16:25, Parikshit Pareek wrote:
-> > Add the ADP ride device to the valid device compatibles found on the
-> > sa8540p platform.
-> > 
-> > Signed-off-by: Parikshit Pareek <quic_ppareek@quicinc.com>
+On 2022/7/25 15:40, Tian, Kevin wrote:
+>> From: Baolu Lu <baolu.lu@linux.intel.com>
+>> Sent: Sunday, July 24, 2022 11:00 AM
+>>
+>> Hi Kevin,
+>>
+>> On 2022/7/21 15:39, Tian, Kevin wrote:
+>>>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>>>> Sent: Tuesday, July 19, 2022 7:53 AM
+>>>>
+>>>> @@ -88,7 +89,8 @@ extern struct list_head dmar_drhd_units;
+>>>>    static inline bool dmar_rcu_check(void)
+>>>>    {
+>>>>    	return rwsem_is_locked(&dmar_global_lock) ||
+>>>> -	       system_state == SYSTEM_BOOTING;
+>>>> +	       system_state == SYSTEM_BOOTING ||
+>>>> +	       (IS_ENABLED(CONFIG_INTEL_IOMMU)
+>>>> && !intel_iommu_enabled);
+>>>>    }
+>>>
+>>> intel_iommu_enabled is 0 if CONFIG_INTEL_IOMMU is not set.
+>>>
+>>> same for other similar checks.
+>>
+>> Sorry that I didn't get your point. If CONFIG_INTEL_IOMMU is not set,
+>> IS_ENABLED(CONFIG_INTEL_IOMMU) is 0. The adding check has no effect.
+>> Did
+>> I miss anything?
+>>
 > 
-> Please add Acked-by/Reviewed-by tags when posting new versions. However,
-> there's no need to repost patches *only* to add the tags. The upstream
-> maintainer will do that for acks received on the version they apply.
-> 
-> https://elixir.bootlin.com/linux/v5.17/source/Documentation/process/submitting-patches.rst#L540
-> 
-> If a tag was not added on purpose, please state why and what changed.
-My mistake, I missed the tags.
-> 
-> 
-> Additionally - please thread your patchset. Git send-email does it by
-> default. If you use other tools - be sure the effect is threaded.
-Used git send-email. May be happened due to the change in one of the commit headers in one of the patches.
-> Otherwise it is not possible to find the patches from you.
-> 
-> 
-> Best regards,
-> Krzysztof
-Regards,
-Parikshit Pareek
+> My point was that the check on CONFIG_INTEL_IOMMU is unnecessary.
+
+Oh, if INTEL_IOMMU is not configured, the interrupt remapping could also
+be supported, so we still need the rcu protection. We only relax the rcu
+check when INTEL_IOMMU is configured, but not enabled yet.
+
+Best regards,
+baolu
+
