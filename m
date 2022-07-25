@@ -2,2179 +2,1769 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 810CCC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 06:53:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B982DC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 06:54:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230525AbiGYGxy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 02:53:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36410 "EHLO
+        id S232490AbiGYGyA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 02:54:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231825AbiGYGxW (ORCPT
+        with ESMTP id S232055AbiGYGxX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 02:53:22 -0400
+        Mon, 25 Jul 2022 02:53:23 -0400
 Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3307F10FEC
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33C2111144
         for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 23:53:16 -0700 (PDT)
-Received: from epcas1p2.samsung.com (unknown [182.195.41.46])
-        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220725065310epoutp04e213d966b9b38651c623d5a734702299~E--UNu23A0752107521epoutp04T
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 06:53:10 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220725065310epoutp04e213d966b9b38651c623d5a734702299~E--UNu23A0752107521epoutp04T
+Received: from epcas1p4.samsung.com (unknown [182.195.41.48])
+        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220725065312epoutp04d368d39e18fe6234d7e3929d47323a73~E--WESeDb0752507525epoutp04W
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 06:53:12 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220725065312epoutp04d368d39e18fe6234d7e3929d47323a73~E--WESeDb0752507525epoutp04W
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1658731990;
-        bh=92vZd14mWNQBSVpCSr+dbW29qVQDE2voBDNJi61y03A=;
+        s=mail20170921; t=1658731992;
+        bh=2fxJHc+vxaO6CM41DOkUvqHgCYSieTOaQX16nc3gbQM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KW/igOVoPKC6f17LE/wDtEO/iNfqEjJZMhYFLlNmlWt4MboIgqcvB/v4gz6S+EnkH
-         fsImcdbRuPc8Ql13gPHndotuYsIJhW+JNqxZBIpaKvXgHztOZdOQo13F9XNQmsqWuf
-         7jALndjHtFeAcvKCndv7rG5rclNR/MVE7k234c1Q=
+        b=I33Y57/iaDSC0Bk2d5yyl1zp5JVo8mMqffyVl6HQpOw3zMbksd09dcU9lezXnTjmd
+         fOYXlTSzjNse4iZbx27K7ZtUM2FFMwNBf3WdEK3pMR0v9NsZqEdFyX0QITR+Yq/4RH
+         tlAR83Qze4o1hu8t675/Ur3nsRChnAOEJu28C7u8=
 Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
-        epcas1p1.samsung.com (KnoxPortal) with ESMTP id
-        20220725065310epcas1p1a721d6ca6781239ba4edb1a25f78e978~E--T70TeA1456714567epcas1p1x;
-        Mon, 25 Jul 2022 06:53:10 +0000 (GMT)
-Received: from epsmges1p2.samsung.com (unknown [182.195.36.133]) by
-        epsnrtp4.localdomain (Postfix) with ESMTP id 4LrrN53xWCz4x9Q8; Mon, 25 Jul
-        2022 06:53:09 +0000 (GMT)
+        epcas1p3.samsung.com (KnoxPortal) with ESMTP id
+        20220725065312epcas1p360b42644b0e5ec8e0f76fc4765b0964e~E--VyfstG1952219522epcas1p3Y;
+        Mon, 25 Jul 2022 06:53:12 +0000 (GMT)
+Received: from epsmges1p1.samsung.com (unknown [182.195.36.145]) by
+        epsnrtp4.localdomain (Postfix) with ESMTP id 4LrrN723Tcz4x9Pv; Mon, 25 Jul
+        2022 06:53:11 +0000 (GMT)
 Received: from epcas1p3.samsung.com ( [182.195.41.47]) by
-        epsmges1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        60.91.09633.5DD3ED26; Mon, 25 Jul 2022 15:53:09 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas1p4.samsung.com (KnoxPortal) with ESMTPA id
-        20220725065309epcas1p4565e7bb0fea1aaf3e5e300de00774c2a~E--SwTrNp0810408104epcas1p45;
-        Mon, 25 Jul 2022 06:53:09 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220725065309epsmtrp12e6bf6f7aff9dfe329ece5da8c2d4e3c~E--SvnkZ-0382103821epsmtrp1r;
-        Mon, 25 Jul 2022 06:53:09 +0000 (GMT)
-X-AuditID: b6c32a36-05fff700000025a1-90-62de3dd5feed
+        epsmges1p1.samsung.com (Symantec Messaging Gateway) with SMTP id
+        CA.29.09657.6DD3ED26; Mon, 25 Jul 2022 15:53:10 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas1p3.samsung.com (KnoxPortal) with ESMTPA id
+        20220725065310epcas1p3688f336bfd5c732145575524f3365a0f~E--TkcegO2790327903epcas1p3d;
+        Mon, 25 Jul 2022 06:53:10 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20220725065310epsmtrp298dd2333368529c406f390f02e37110d~E--TjuIpB0769507695epsmtrp2t;
+        Mon, 25 Jul 2022 06:53:10 +0000 (GMT)
+X-AuditID: b6c32a35-733ff700000025b9-c9-62de3dd6d7af
 Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        53.B6.08802.5DD3ED26; Mon, 25 Jul 2022 15:53:09 +0900 (KST)
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        06.C2.08905.5DD3ED26; Mon, 25 Jul 2022 15:53:09 +0900 (KST)
 Received: from localhost.localdomain (unknown [10.113.113.58]) by
         epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20220725065308epsmtip220f935e05af0a18c7d28f0ac69c68181~E--SeEACD2484924849epsmtip2k;
-        Mon, 25 Jul 2022 06:53:08 +0000 (GMT)
+        20220725065309epsmtip2096dcc7d59217af5167b3ccbe020cba6~E--TOFB7y2484924849epsmtip2l;
+        Mon, 25 Jul 2022 06:53:09 +0000 (GMT)
 From:   Jiho Chu <jiho.chu@samsung.com>
 To:     gregkh@linuxfoundation.org, arnd@arndb.de,
         linux-kernel@vger.kernel.org
 Cc:     yelini.jeong@samsung.com, myungjoo.ham@samsung.com,
         Jiho Chu <jiho.chu@samsung.com>
-Subject: [PATCH 1/9] trinity: Add base driver
-Date:   Mon, 25 Jul 2022 15:53:00 +0900
-Message-Id: <20220725065308.2457024-2-jiho.chu@samsung.com>
+Subject: [PATCH 6/9] trinity: Add pm and ioctl feature
+Date:   Mon, 25 Jul 2022 15:53:05 +0900
+Message-Id: <20220725065308.2457024-7-jiho.chu@samsung.com>
 In-Reply-To: <20220725065308.2457024-1-jiho.chu@samsung.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrCKsWRmVeSWpSXmKPExsWy7bCmvu5V23tJBu3npS3+TjrGbtG8eD2b
-        xfvu3cwWl3fNYbO43biCzeL5tOssDmwev39NYvTYP3cNu0ffllWMHp83yQWwRGXbZKQmpqQW
-        KaTmJeenZOal2yp5B8c7x5uaGRjqGlpamCsp5CXmptoqufgE6Lpl5gAtV1IoS8wpBQoFJBYX
-        K+nb2RTll5akKmTkF5fYKqUWpOQUmBboFSfmFpfmpevlpZZYGRoYGJkCFSZkZ3xv+c5e8OYf
-        c8WFb5+YGhjnL2XuYuTgkBAwkVh/Rq6LkYtDSGAHo0T72rnMEM4nRonjB2exQDifGSX2b5nH
-        BtNx+0IARHwXo8SK16/Y4Iqe9HSydjFycrAJqErMnLGGHcQWEfCWmN/axQTSzCwQKXFtRRVI
-        WFhAV2LT2Q3MIDYLUPm+KU1grbwC1hLnH/9iArE5BWwkFvzYzQwRF5Q4OfMJC4jNLCAv0bx1
-        NlhcQuASu8S7h7UQtovE49WrWSBsYYlXx7ewQ9hSEi/726DsbIkpHYugagokzj3fCg0JY4mL
-        K1IgrtSUWL9LH6JCUWLn77mMEFv5JN597WGFqOaV6GgTgihRkljy5zDUcAmJqTO+MUHYHhJT
-        p1xlhwROP6PEnWUXGScwys9C8swsJM/MQti8gJF5FaNYakFxbnpqsWGBETxOk/NzNzGCk5+W
-        2Q7GSW8/6B1iZOJgPMQowcGsJMLblXY7SYg3JbGyKrUoP76oNCe1+BCjKTB4JzJLiSbnA9Nv
-        Xkm8oYmlgYmZkbGJhaGZoZI476pppxOFBNITS1KzU1MLUotg+pg4OKUamGJFN87KfLOu8oeJ
-        pcfX2YJOHtNsDN/sesx4qMu0+pT2p/60fMvVLc37p08z5+1aYW5x+/DBNUfWJftEVszkr7Pe
-        IdL6RLnWcUmuxbXPMq0bGc37gr/PihDLLLIwy5n3sdFG89is9q9/K9dl/HqnV/tV2LanYSLH
-        pCTf48FB1zc3KmXU7n27faNXhclRrWkRd1SDL+00PNRmcH3zbr6b+2+yb5179HmdCJubz8xJ
-        R8Sueobbd5/35Ir/4cMaLbT42+apbZv/bfhXqy9ofIff0qOpmsk8wWrNlShuG7NVgd8CivZs
-        mdPX+t2vYO4VS7MCo0fzFvAorFops/rP2WBGXdcqyZuvdRfZ2wkrmkr/UGIpzkg01GIuKk4E
-        AMuW0JEHBAAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrILMWRmVeSWpSXmKPExsWy7bCSvO5V23tJBse2sVr8nXSM3aJ58Xo2
-        i/fdu5ktLu+aw2Zxu3EFm8XzaddZHNg8fv+axOixf+4ado++LasYPT5vkgtgieKySUnNySxL
-        LdK3S+DK+N7ynb3gzT/migvfPjE1MM5fytzFyMEhIWAicftCQBcjF4eQwA5GiefrLrB0MXIC
-        xSUkNt1bDlUjLHH4cDFEzUdGiY1LN4LVsAmoSsycsYYdxBYR8Jf4++kYK4jNLBAtsXrbfbAa
-        YQFdiU1nNzCD2CxA9fumNIHV8ApYS5x//IsJxOYUsJFY8GM3WI0QULy/6wRUjaDEyZlPWCBm
-        yks0b53NPIGRfxaS1CwkqQWMTKsYJVMLinPTc4sNC4zyUsv1ihNzi0vz0vWS83M3MYJDVUtr
-        B+OeVR/0DjEycTAeYpTgYFYS4e1Ku50kxJuSWFmVWpQfX1Sak1p8iFGag0VJnPdC18l4IYH0
-        xJLU7NTUgtQimCwTB6dUA5OFu+H7Ax/NDxufU/xx5c+71Q9af4kZT1zV+fQr/zN5qfNrzk3c
-        1W5+9OfT+8JzTtxMXHRdMuzRy8VHOb7+PiH/QnvTnhuxn2ZduHhlzo1+R4+6vQeU0qanWZwR
-        XvhMoscgsi78+dUtS84+1NUMTvGq+eq8X9rx8aUPZz57cbfybXN7w7LrAadP54e532q38s2c
-        EX7WuJr15PqanVtqtRmWGf2u/7bdktfxbeWM/7mN03Z9npN93e1WbfylQwYGDtqM7R80012W
-        X1FV85jXdjanXY6j/qNyU69wSN2h7wuU82+UVp6zeN+elB8qrr/r15L0+865Uk8jZ2/L/+20
-        ebHJymXb7t1ZnHN99dNZCnO23VJiKc5INNRiLipOBAA3iUgsxAIAAA==
-X-CMS-MailID: 20220725065309epcas1p4565e7bb0fea1aaf3e5e300de00774c2a
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrOKsWRmVeSWpSXmKPExsWy7bCmvu4123tJBrf3iVv8nXSM3aJ58Xo2
+        i/fdu5ktLu+aw2Zxu3EFm8XzaddZHNg8fv+axOixf+4ado++LasYPT5vkgtgicq2yUhNTEkt
+        UkjNS85PycxLt1XyDo53jjc1MzDUNbS0MFdSyEvMTbVVcvEJ0HXLzAFarqRQlphTChQKSCwu
+        VtK3synKLy1JVcjILy6xVUotSMkpMC3QK07MLS7NS9fLSy2xMjQwMDIFKkzIzrjQtoatYMFb
+        poq2EytZGhi/rmDqYuTkkBAwkXgz9Sh7FyMXh5DADkaJbWsOMUI4nxglFk/6zAbhfGOUuNq8
+        lQWmZfnGAywQib2MErcurmKCcD4zSsyYOJsdpIpNQFVi5ow1YLaIgLfE/NYuoCIODmaBSIlr
+        K6pAwsICZhKTv5xhBbFZgMqPzFjCCGLzClhLNM/YygZicwrYSCz4sZsZIi4ocXLmE7AjmAXk
+        JZq3zmYG2SshcI5d4vXVLkaI61wkTl1phbpUWOLV8S3sELaUxOd3e9kg7GyJKR2LoGoKJM49
+        38oMcpuEgLHExRUpEGdqSqzfpQ9RoSix8/dcRoi1fBLvvvawQlTzSnS0CUGUKEks+XMYapGE
+        xNQZ36Ch6yGxvHkaNHT6GSWONZxin8AoPwvJN7OQfDMLYfMCRuZVjGKpBcW56anFhgWG8GhN
+        zs/dxAhOgVqmOxgnvv2gd4iRiYPxEKMEB7OSCG9X2u0kId6UxMqq1KL8+KLSnNTiQ4ymwPCd
+        yCwlmpwPTMJ5JfGGJpYGJmZGxiYWhmaGSuK8q6adThQSSE8sSc1OTS1ILYLpY+LglGpgWv5g
+        Nadr0PNXk4/+mc3/pEHJVOt42RVj52X/VU9PdDrJUzjzNMvjMw8i/P+cfBocmhmZqCUrzbWr
+        ZH5vr4nSMa3WxDv+E35U/1ZZdy47z0blnZyvwbnjRWcunPdVrAmzUhA22KmzNvx12/cLoX+7
+        Wlck11Tuu7FV08hdfsc/P+ls97+P3+5VmhAkqfg0P/mS486ncde2xrTP+5p6989vzt8/3G4L
+        vrHQyi67mpPTuLZcB2hNp4CFQ3NIHK/C30Wshuf3ZU60XuSjPSFtbY/F2ZcfTgvm3957VURC
+        8tudl3Mb8/lCHGbO+H+lseOiWekKuVAG4Q3vuJ9zLTrb9D1/m8OPl1WM0/5sK70ccXS3Ektx
+        RqKhFnNRcSIApucsKAoEAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrELMWRmVeSWpSXmKPExsWy7bCSvO5V23tJBh03zCz+TjrGbtG8eD2b
+        xfvu3cwWl3fNYbO43biCzeL5tOssDmwev39NYvTYP3cNu0ffllWMHp83yQWwRHHZpKTmZJal
+        FunbJXBlXGhbw1aw4C1TRduJlSwNjF9XMHUxcnJICJhILN94gKWLkYtDSGA3o8Sba5sYIRIS
+        EpvuLWfuYuQAsoUlDh8uhqj5yCixZNNxsBo2AVWJmTPWsIPYIgL+En8/HWMFsZkFoiVWb7vP
+        AmILC5hJTP5yBizOAlR/ZMYSsF5eAWuJ5hlb2UBsTgEbiQU/djOD2EJA8f6uE6wQNYISJ2c+
+        YYGYKS/RvHU28wRG/llIUrOQpBYwMq1ilEwtKM5Nzy02LDDMSy3XK07MLS7NS9dLzs/dxAgO
+        Vi3NHYzbV33QO8TIxMF4iFGCg1lJhLcr7XaSEG9KYmVValF+fFFpTmrxIUZpDhYlcd4LXSfj
+        hQTSE0tSs1NTC1KLYLJMHJxSDUyy9gtPB6kZlP6eZ6DiHMWoYdOlXPj9aqDLt/V/S6TLxQyd
+        8i1V1BZnJ138JrLd/uezFWx3GyN/cEZxzOlekOq0Yqrn7ryyev+5EhFH1d5sYjafz9hn78Sx
+        oXLqpmxTJtHst1PeTosqm6e5/Mbr5PQLxVI+O2Uf5AVZTBNTXx2fL/F828t/HS7Ceb53jv16
+        p/HiTqSxlA2r39T3psmuE18duHpWf2Za2/79vPx7s2ay8B9oTLX/nuKyjqGEJ+B3dfxuBs/D
+        wSYPXxUnWKmub7313Dgta1fpzW9HbNOleSe+/7NfoDnkQ8Vl0xnP3n9bXWHdOX1pPX/wAoFM
+        pl5u6ce7A2OYzljKC/VfZrKoV2Ipzkg01GIuKk4EAEkNdAvFAgAA
+X-CMS-MailID: 20220725065310epcas1p3688f336bfd5c732145575524f3365a0f
 X-Msg-Generator: CA
 Content-Type: text/plain; charset="utf-8"
 X-Sendblock-Type: SVC_REQ_APPROVE
 CMS-TYPE: 101P
 DLP-Filter: Pass
 X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220725065309epcas1p4565e7bb0fea1aaf3e5e300de00774c2a
+X-CMS-RootMailID: 20220725065310epcas1p3688f336bfd5c732145575524f3365a0f
 References: <20220725065308.2457024-1-jiho.chu@samsung.com>
-        <CGME20220725065309epcas1p4565e7bb0fea1aaf3e5e300de00774c2a@epcas1p4.samsung.com>
+        <CGME20220725065310epcas1p3688f336bfd5c732145575524f3365a0f@epcas1p3.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It contains the base codes for trinity driver. Minimal codes to load and
-probe device is provided. The Trinity Family is controlled by the
-Memory-Mapped Registers, the register addresses and offsets are
-described. And user api interfaces are presented to control device under
-ioctl manner.
+This patch implements power management and ioctl behaviors.
+
+Currently, power management operations check it can change to
+suspend mode using pm_runtime_allow and pm_runtime_forbid.
+
+The ioctl routines are also added to give controls to the user
+library. TRINITY_IOCTL_HWMEM_ALLOC/DEALLOC is for memory
+allocation for the model load, RUN/STOP operations are
+provided to control NPU works. And several STAT controls can
+provide statistics of the NPU, it gives an inspection
+feature to the user space.
 
 Signed-off-by: Jiho Chu <jiho.chu@samsung.com>
-Signed-off-by: yelini-jeong <yelini.jeong@samsung.com>
+Signed-off-by: Yelin Jeong <yelini.jeong@samsung.com>
 Signed-off-by: Dongju Chae <dongju.chae@samsung.com>
-Signed-off-by: Parichay Kapoor <pk.kapoor@samsung.com>
-Signed-off-by: Wook Song <wook16.song@samsung.com>
 Signed-off-by: MyungJoo Ham <myungjoo.ham@samsung.com>
 ---
- drivers/misc/Kconfig                        |   1 +
- drivers/misc/Makefile                       |   1 +
- drivers/misc/trinity/Kconfig                |  27 ++
- drivers/misc/trinity/Makefile               |   7 +
- drivers/misc/trinity/trinity.c              | 369 ++++++++++++++
- drivers/misc/trinity/trinity_common.h       | 392 +++++++++++++++
- drivers/misc/trinity/trinity_vision2_drv.c  | 512 ++++++++++++++++++++
- drivers/misc/trinity/trinity_vision2_regs.h | 210 ++++++++
- include/uapi/misc/trinity.h                 | 458 +++++++++++++++++
- 9 files changed, 1977 insertions(+)
- create mode 100644 drivers/misc/trinity/Kconfig
- create mode 100644 drivers/misc/trinity/Makefile
- create mode 100644 drivers/misc/trinity/trinity.c
- create mode 100644 drivers/misc/trinity/trinity_common.h
- create mode 100644 drivers/misc/trinity/trinity_vision2_drv.c
- create mode 100644 drivers/misc/trinity/trinity_vision2_regs.h
- create mode 100644 include/uapi/misc/trinity.h
+ drivers/misc/trinity/Makefile              |   1 +
+ drivers/misc/trinity/trinity.c             | 690 ++++++++++++++++++++-
+ drivers/misc/trinity/trinity_common.h      |  23 +-
+ drivers/misc/trinity/trinity_pm.c          |  76 +++
+ drivers/misc/trinity/trinity_vision2_drv.c | 563 ++++++++++++++++-
+ 5 files changed, 1344 insertions(+), 9 deletions(-)
+ create mode 100644 drivers/misc/trinity/trinity_pm.c
 
-diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
-index 41d2bb0ae23a..ad0d5f6af291 100644
---- a/drivers/misc/Kconfig
-+++ b/drivers/misc/Kconfig
-@@ -500,4 +500,5 @@ source "drivers/misc/cardreader/Kconfig"
- source "drivers/misc/habanalabs/Kconfig"
- source "drivers/misc/uacce/Kconfig"
- source "drivers/misc/pvpanic/Kconfig"
-+source "drivers/misc/trinity/Kconfig"
- endmenu
-diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
-index 70e800e9127f..c63f3fc89780 100644
---- a/drivers/misc/Makefile
-+++ b/drivers/misc/Makefile
-@@ -60,3 +60,4 @@ obj-$(CONFIG_XILINX_SDFEC)	+= xilinx_sdfec.o
- obj-$(CONFIG_HISI_HIKEY_USB)	+= hisi_hikey_usb.o
- obj-$(CONFIG_HI6421V600_IRQ)	+= hi6421v600-irq.o
- obj-$(CONFIG_OPEN_DICE)		+= open-dice.o
-+obj-$(CONFIG_TRINITY)		+= trinity/
-diff --git a/drivers/misc/trinity/Kconfig b/drivers/misc/trinity/Kconfig
-new file mode 100644
-index 000000000000..ad4bab78f7c6
---- /dev/null
-+++ b/drivers/misc/trinity/Kconfig
-@@ -0,0 +1,27 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+
-+config TRINITY
-+	bool "Samsung Neural Processing Unit"
-+	depends on HAS_IOMEM
-+	depends on HAS_DMA
-+	default n
-+	help
-+	  Select this option to enable driver support for Samsung
-+	  Neural Processing Unit (NPU).
-+
-+	  This driver works as a base driver of the other drivers
-+	  for Trinity device family.
-+
-+	  This option should be enabled to support Trinity
-+	  Vision 2 (TRIV2), and Trinity Audio (TRIA).
-+
-+config TRINITY_VISION2
-+	tristate "Samsung NPU Trinity Vision 2"
-+	depends on TRINITY
-+	default n
-+	help
-+	  Select this option to enable driver support for a Samsung
-+	  Neural Processing Unit (NPU), Tinity Vision 2.
-+
-+	  This driver enables userspace system library to access the
-+	  device via /dev/triv2-N.
 diff --git a/drivers/misc/trinity/Makefile b/drivers/misc/trinity/Makefile
-new file mode 100644
-index 000000000000..a8e5697d6d85
---- /dev/null
+index ce3539affbf2..22141e2233e8 100644
+--- a/drivers/misc/trinity/Makefile
 +++ b/drivers/misc/trinity/Makefile
-@@ -0,0 +1,7 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+
-+obj-$(CONFIG_TRINITY_VISION2) += trinity_vision2.o
-+
-+trinity-y := trinity.o
-+
-+trinity_vision2-objs := $(trinity-y) trinity_vision2_drv.o
+@@ -5,6 +5,7 @@ obj-$(CONFIG_TRINITY_VISION2) += trinity_vision2.o
+ trinity-y := trinity.o
+ trinity-y += trinity_resv_mem.o trinity_hwmem.o
+ trinity-y += sched/core.o sched/priority.o
++trinity-y += trinity_pm.o
+ trinity-y += trinity_debug.o
+ trinity-y += trinity_sysfs.o trinity_stat.o
+ 
 diff --git a/drivers/misc/trinity/trinity.c b/drivers/misc/trinity/trinity.c
-new file mode 100644
-index 000000000000..a85904c17f2e
---- /dev/null
+index 8f8ade0aff89..08d15f08da39 100644
+--- a/drivers/misc/trinity/trinity.c
 +++ b/drivers/misc/trinity/trinity.c
-@@ -0,0 +1,369 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Base device driver for Samsung NPU Trinity device family
-+ *
-+ * Copyright (C) 2020-2022 Samsung Electronics
-+ * Copyright (C) 2020 Dongju Chae <dongju.chae@samsung.com>
-+ * Copyright (C) 2020 Wook Song <wook16.song@samsung.com>
-+ * Copyright (C) 2022 MyungJoo Ham <myungjoo.ham@samsung.com>
-+ * Copyright (C) 2022 Yelin Jeong <yelini.jeong@samsung.com>
-+ * Copyright (C) 2022 Jiho Chu <jiho.chu@samsung.com>
-+ */
+@@ -34,6 +34,7 @@
+ 
+ #include "trinity_common.h"
+ #include "trinity_resv_mem.h"
++#include "trinity_stat.h"
+ 
+ #define BASE_DEV_NAME "trinity"
+ 
+@@ -50,6 +51,9 @@ static DEFINE_SPINLOCK(trinity_lock);
+ /* A bitmap to keep track of active Trinity devices */
+ static unsigned long dev_bitmap[TRINITY_DEV_END];
+ 
++static void trinity_model_get(struct trinity_model *model);
++static void trinity_model_put(struct trinity_model *model);
 +
-+#include <linux/cacheflush.h>
-+#include <linux/bitmap.h>
-+#include <linux/device.h>
-+#include <linux/dma-buf.h>
-+#include <linux/errno.h>
-+#include <linux/fs.h>
-+#include <linux/init.h>
-+#include <linux/iommu.h>
-+#include <linux/kernel.h>
-+#include <linux/kobject.h>
-+#include <linux/module.h>
-+#include <linux/mutex.h>
-+#include <linux/of.h>
-+#include <linux/of_address.h>
-+#include <linux/of_device.h>
-+#include <linux/of_iommu.h>
-+#include <linux/of_irq.h>
-+#include <linux/platform_device.h>
-+#include <linux/slab.h>
-+#include <linux/stddef.h>
-+#include <linux/uaccess.h>
+ phys_addr_t trinity_get_paddr(struct iommu_domain *domain, dma_addr_t daddr)
+ {
+ 	if (domain)
+@@ -58,6 +62,16 @@ phys_addr_t trinity_get_paddr(struct iommu_domain *domain, dma_addr_t daddr)
+ 	return TRINITY_PADDR_BASE + daddr;
+ }
+ 
++void trinity_finish_req(struct trinity_driver *drv, struct trinity_req *req)
++{
++	if (drv->desc->check_profile(drv, req) < 0)
++		dev_warn(drv_to_dev_ptr(drv),
++			 "Unable to get profile data from NPU\n");
++	trinity_hwmem_import_dmabuf_end(&req->input.import_info);
++	trinity_stat_finish_req(drv, req);
++	trinity_model_put(req->model);
++}
 +
-+#include "trinity_common.h"
+ static uint64_t trinity_gen_model_id(int32_t dbuf_fd)
+ {
+ 	static uint32_t id;
+@@ -101,6 +115,630 @@ void trinity_init_model_htable(const struct trinity_driver *drv,
+ 	ht->hash_bits = TRINITY_MODEL_HASH_BITS;
+ }
+ 
++static struct trinity_model *
++trinity_get_model_by_id(const struct trinity_driver *drv, const uint64_t id)
++{
++	struct trinity_model_htable ht;
++	struct hlist_bl_node *hn;
++	struct trinity_model *hm;
++	unsigned long key;
++	int32_t dbuf_fd;
++	bool found = false;
 +
-+#define BASE_DEV_NAME "trinity"
++	trinity_init_model_htable(drv, &ht);
 +
-+/* A global lock for shared static variables such as dev_bitmap */
-+static DEFINE_SPINLOCK(trinity_lock);
++	dbuf_fd = trinity_model_id_to_dbuf_fd(id);
++	key = hash_long(dbuf_fd, ht.hash_bits);
++	hm = NULL;
 +
-+/* A bitmap to keep track of active Trinity devices */
-+static unsigned long dev_bitmap[TRINITY_DEV_END];
++	hlist_bl_lock(&(ht.ht_heads[key]));
++	hlist_bl_for_each_entry(hm, hn, &(ht.ht_heads[key]), hnode) {
++		if (hm->config.id == id) {
++			found = true;
++			break;
++		}
++	}
++	hlist_bl_unlock(&(ht.ht_heads[key]));
++
++	return found ? hm : NULL;
++}
 +
 +/**
-+ * trinity_release() - A common callback for close() in file_operations for a
-+ *		Trinity	device node. If there are device-specific data to be
-+ *		cleaned-up, it is required to clean them up before invoke this
-+ *		callback.
++ * trinity_register_model() - Registers a model to the internal hashtable. Note
++ *		that the device is responsible for the hashtable maintenance.
 + *
-+ * @inode: Inode to be closed
-+ * @file: File to be closed
++ * @drv: An instance of the trinity driver
++ * @model: Model information to be registered
 + *
-+ * Returns 0 on success. Otherwise, returns negative error.
++ * Returns 0 and sets model->id with a valid value, which is unique system-wide,
++ * on success. Otherwise, returns negative error.
 + */
-+int trinity_release(struct inode *inode, struct file *file)
++int32_t trinity_register_model(struct trinity_driver *drv,
++			       struct trinity_model *model)
 +{
-+	struct trinity_driver *drv;
++	struct trinity_model_htable ht;
++	unsigned long key;
++	int32_t ret;
 +
-+	drv = file->private_data;
++	ret = trinity_hwmem_import_dmabuf_begin(drv_to_dev_ptr(drv),
++						model->config.dbuf_fd,
++						&model->import_info);
++	if (ret)
++		return ret;
 +
-+	if (drv->verbose)
-+		dev_info(drv_to_dev_ptr(drv), "%s\n", "Device closed");
++#ifdef ARM
++	/* sync model program data */
++	__cpuc_flush_dcache_area(model->import_info.addr,
++				 model->import_info.buf->size);
++#endif
 +
-+	mutex_lock(&drv->lock);
-+	drv->opened = drv->opened - 1;
-+	if (drv->opened == 0) {
-+		/* wait already submitted requests */
-+		if (drv->desc->drain_reqs)
-+			drv->desc->drain_reqs(drv);
++	model->config.id = trinity_gen_model_id(model->config.dbuf_fd);
++	model->owner_id = trinity_get_app_id();
 +
-+		drv->desc->set_state(drv, TRINITY_STATE_PAUSE);
-+	}
-+	mutex_unlock(&drv->lock);
++	INIT_HLIST_BL_NODE(&model->hnode);
++
++	trinity_init_model_htable(drv, &ht);
++
++	key = hash_long(model->config.dbuf_fd, ht.hash_bits);
++
++	hlist_bl_lock(&(ht.ht_heads[key]));
++	hlist_bl_add_head(&model->hnode, &ht.ht_heads[key]);
++	hlist_bl_unlock(&(ht.ht_heads[key]));
++
++	kref_init(&model->refcnt);
 +
 +	return 0;
 +}
 +
-+static bool trinity_is_empty(void)
++static void trinity_destroy_model(struct kref *refcnt)
 +{
-+	enum trinity_dev_type type;
-+	bool empty = true;
++	struct trinity_model *model =
++		container_of(refcnt, struct trinity_model, refcnt);
 +
-+	spin_lock(&trinity_lock);
-+	for (type = TRINITY_DEV_UNKNOWN, type++; type < TRINITY_DEV_END;
-+	     type++) {
-+		if (find_first_bit(&dev_bitmap[type], TRINITY_DEV_EACH_MAX) !=
-+		    TRINITY_DEV_EACH_MAX) {
-+			empty = false;
-+			break;
-+		}
-+	}
-+	spin_unlock(&trinity_lock);
++	trinity_hwmem_import_dmabuf_end(&model->import_info);
++	kfree(model);
++}
 +
-+	return empty;
++static void trinity_model_get(struct trinity_model *model)
++{
++	if (!model)
++		return;
++
++	kref_get(&model->refcnt);
++}
++
++static void trinity_model_put(struct trinity_model *model)
++{
++	if (!model)
++		return;
++
++	kref_put(&model->refcnt, trinity_destroy_model);
 +}
 +
 +/**
-+ * trinity_wait_ready() - Wait until trinity is ready state
++ * trinity_deregister_model() - Deregisters the model with a given id from the
++ *		table
 + *
-+ * @drv: an instance of trinity driver
++ * @drv: An instance of the trinity driver
++ * @id: An id of the model to be deregistered
 + *
 + * Returns 0 on success. Otherwise, returns negative error.
 + */
-+int trinity_wait_ready(struct trinity_driver *drv)
++int32_t trinity_deregister_model(const struct trinity_driver *drv,
++				 const uint64_t id)
 +{
-+	const unsigned long time_out = HZ / 100UL; /* 1/100 seconds*/
-+	const unsigned int max_retry = 10;
-+	unsigned int retry = 0;
++	int32_t dbuf_fd = trinity_model_id_to_dbuf_fd(id);
++	struct trinity_model_htable ht;
++	unsigned long key;
++	struct hlist_bl_node *hn;
++	struct trinity_model *hm = NULL;
++
++	trinity_init_model_htable(drv, &ht);
++
++	key = hash_long(dbuf_fd, ht.hash_bits);
++	hlist_bl_lock(&(ht.ht_heads[key]));
++	hlist_bl_for_each_entry(hm, hn, &(ht.ht_heads[key]), hnode) {
++		if (hm->config.id == id) {
++			hlist_bl_del_init(&hm->hnode);
++			break;
++		}
++	}
++	hlist_bl_unlock(&(ht.ht_heads[key]));
++
++	if (!hm)
++		return -ENOENT;
++
++	trinity_model_put(hm);
++
++	return 0;
++}
++
++/**
++ * trinity_deregister_models_owned() - Deregisters models owned
++ *
++ * @drv: An instance of the trinity driver
++ */
++void trinity_deregister_models_owned(struct trinity_driver *drv)
++{
++	struct trinity_model_htable ht;
++	struct trinity_model *hm;
++	struct hlist_bl_node *hn;
++	int i = 0, app_id = trinity_get_app_id();
++
++	trinity_init_model_htable(drv, &ht);
++
++retry:
++	for (; i < TRINITY_MODEL_HASH_SIZE; i++) {
++		hlist_bl_lock(&(ht.ht_heads[i]));
++		hlist_bl_for_each_entry(hm, hn, &(ht.ht_heads[i]), hnode) {
++			if (hm->owner_id == app_id) {
++				hlist_bl_del_init(&hm->hnode);
++				hlist_bl_unlock(&(ht.ht_heads[i]));
++
++				trinity_model_put(hm);
++
++				goto retry;
++			}
++		}
++		hlist_bl_unlock(&(ht.ht_heads[i]));
++	}
++}
++
++/**
++ * get_trinity_sched() - Get scheduler for the request
++ *
++ * @drv: An instance of the trinity driver
++ */
++struct trinity_sched_desc *get_trinity_sched(struct trinity_req *req)
++{
++	return trinity_sched_find(SCHED_PRI);
++}
++
++static int32_t trinity_submit_req(struct trinity_driver *drv,
++				  struct trinity_req *req)
++{
++	struct trinity_sched_desc *sched;
++	struct device *dev;
 +	wait_queue_head_t wq;
++	unsigned long timeout, timeout_ms;
++	unsigned long retry, max_retry = 10;
++	int ret = 0;
 +
-+	drv->desc->set_state(drv, TRINITY_STATE_READY);
++	dev = drv_to_dev_ptr(drv);
++	sched = get_trinity_sched(req);
++	if (!sched) {
++		dev_err(dev, "Unable to find the target scheduler");
++		return -EINVAL;
++	}
 +
++	/* optional req setup before submission */
++	if (drv->desc->prepare_req) {
++		ret = drv->desc->prepare_req(drv, req);
++		if (ret < 0) {
++			dev_err(dev, "Unable to prepare req submission: %d",
++				ret);
++			return ret;
++		}
++	}
++
++	req->submit_retry = 0;
++	timeout_ms = req->input.config.timeout_ms;
++	/* use the default timeout if a user didn't set */
++	if (timeout_ms == 0)
++		timeout_ms = TRINITY_RUN_TIMEOUT_MSEC;
++
++	retry = 0;
 +	init_waitqueue_head(&wq);
-+	/* try to ensure that NPU is in the ready state */
-+	while (wait_event_timeout(
-+		       wq, drv->desc->get_state(drv) == TRINITY_STATE_READY,
-+		       time_out) == 0) {
-+		/* regarded as failure */
-+		if (retry == max_retry)
-+			return -ETIMEDOUT;
++	init_completion(&req->complete);
++
++	timeout = msecs_to_jiffies(timeout_ms);
++	while (wait_event_interruptible_timeout(wq, sched->ready(),
++						timeout / 10) == 0) {
++		if (retry == max_retry) {
++			ret = -ETIMEDOUT;
++			break;
++		}
 +		retry++;
 +	}
 +
-+	return 0;
-+}
++	if (ret == 0) {
++		ret = trinity_stat_append_req(drv, req);
++		if (ret < 0) {
++			dev_err(dev, "Unable to append request stat: %d", ret);
++			return ret;
++		}
 +
-+/**
-+ * trinity_open() - A common callback for open() in file_operations for a Trinity
-+ *		device node. If device-specific open() is required, this
-+ *		callback should be invoked by that open().
-+ *
-+ * @inode: inode to be opened
-+ * @f: file to be opened
-+ *
-+ * Returns 0 on success. Otherwise, returns negative error.
-+ */
-+int trinity_open(struct inode *inode, struct file *f)
-+{
-+	struct miscdevice *miscdev;
-+	struct trinity_driver *drv;
-+	int ret = 0;
-+
-+	miscdev = (struct miscdevice *)f->private_data;
-+	drv = container_of(miscdev, struct trinity_driver, mdev);
-+	f->private_data = drv;
-+
-+	mutex_lock(&drv->lock);
-+	/** remove PAUSE set on the CP of the NPU */
-+	if (drv->opened == 0) {
-+		ret = trinity_wait_ready(drv);
-+		if (ret != 0)
-+			goto out;
-+	}
-+	drv->opened = drv->opened + 1;
-+
-+	if (drv->verbose)
-+		dev_info(drv_to_dev_ptr(drv), "%s\n", "Device opened");
-+
-+out:
-+	mutex_unlock(&drv->lock);
-+
-+	return 0;
-+}
-+
-+static void trinity_common_init(struct device *dev)
-+{
-+	if (!trinity_is_empty())
-+		return;
-+
-+	/* Common init codes */
-+}
-+
-+static void trinity_common_exit(void)
-+{
-+	if (!trinity_is_empty())
-+		return;
-+
-+	/* Common deinit codes */
-+}
-+
-+static int trinity_set_device_id(struct trinity_driver *drv)
-+{
-+	const struct trinity_desc *desc = drv->desc;
-+	struct device *dev = drv_to_dev_ptr(drv);
-+	int err = -EEXIST;
-+
-+	spin_lock(&trinity_lock);
-+	drv->dev_id =
-+		find_first_zero_bit(&dev_bitmap[dev->id], TRINITY_DEV_EACH_MAX);
-+	if (drv->dev_id < TRINITY_DEV_EACH_MAX) {
-+		set_bit(drv->dev_id, &dev_bitmap[dev->id]);
-+		err = 0;
-+	}
-+	spin_unlock(&trinity_lock);
-+
-+	if (err == 0) {
-+		drv->name = devm_kasprintf(dev, GFP_KERNEL, "%s-%u", desc->type,
-+					   drv->dev_id);
-+		err = IS_ERR_OR_NULL(drv->name) ? -ENOMEM : 0;
++		ret = sched->submit(req);
++		if (ret < 0)
++			trinity_stat_remove_req(drv, req, true);
 +	}
 +
-+	return err;
-+}
++	if (ret < 0) {
++		dev_err(dev, "Unable to submit req to scheduler: %d", ret);
++		return ret;
++	}
 +
-+int trinity_create_node(struct trinity_driver *drv)
-+{
-+	struct device *dev = drv_to_dev_ptr(drv);
-+	int err;
++	if (req->input.config.output_mode != TRINITY_OUTPUT_HW) {
++		timeout = wait_for_completion_timeout(&req->complete, timeout);
++		/* Check and handle the timeout if its handler exists */
++		if (timeout == 0) {
++			bool canceled = false;
 +
-+	/** register as a misc device */
-+	drv->mdev.minor = MISC_DYNAMIC_MINOR;
-+	drv->mdev.parent = NULL;
-+	drv->mdev.name = drv->name;
++			dev_warn(dev, "The request timeout reached: %lu ms",
++				 timeout_ms);
 +
-+	err = misc_register(&drv->mdev);
-+	if (err < 0)
-+		dev_err(dev, "failed to register as a misc device");
-+	else
-+		dev_info(dev, "misc device created!");
-+
-+	return err;
-+}
-+
-+void trinity_destroy_node(struct trinity_driver *drv)
-+{
-+	misc_deregister(&drv->mdev);
-+}
-+
-+/**
-+ * trinity_probe() - Probes a new Trinity device. This is a standard interface to
-+ * probe a Trinity family device.
-+ *
-+ * @pdev: Platform device structure to probe
-+ * @desc: Device description to probe
-+ *
-+ * Returns 0 on success. Otherwise, returns negative error.
-+ */
-+int trinity_probe(struct platform_device *pdev, const struct trinity_desc *desc)
-+{
-+	struct device_node *np;
-+	struct device *dev;
-+	struct trinity_driver *drv;
-+	int irq_out;
-+	int i, err;
-+
-+	dev = &pdev->dev;
-+	dev->id = ((desc->ver & TRINITY_MASK_DEV) >> TRINITY_SHIFT_DEV);
-+
-+	/* set private data */
-+	drv = devm_kzalloc(dev, sizeof(*drv), GFP_KERNEL);
-+	if (drv == NULL)
-+		return -ENOMEM;
-+
-+	platform_set_drvdata(pdev, drv);
-+	dev_set_drvdata(dev, drv);
-+
-+	drv->dev = dev;
-+	drv->desc = desc;
-+
-+	np = dev->of_node;
-+	if (of_property_match_string(np, "samsung,trinity-type", desc->type))
-+		return -EPROBE_DEFER;
-+
-+	/* get reg info for MMREG_BASE */
-+	for (i = 0; i < TRINITY_MAX_MMREGS; i++) {
-+		struct resource mmreg;
-+
-+		err = of_address_to_resource(np, i, &mmreg);
-+		if (err < 0) {
-+			if (i == 0) {
-+				dev_err(dev, "failed to get %d-th mmreg info",
-+					i);
-+				return -EINVAL;
++			if (sched->cancel) {
++				canceled = sched->cancel(req);
++				if (!canceled)
++					dev_warn(dev, "Unable to cancel req");
 +			}
++
++			if (!canceled)
++				drv->desc->handle_timeout(drv, req);
++
++			req->stat->status = TRINITY_REQ_STATUS_ERROR;
++			ret = -ECANCELED;
++		} else if (req->stat->status == TRINITY_REQ_STATUS_ERROR) {
++			ret = -ECANCELED;
++		} else if (drv->verbose) {
++			dev_info(dev,
++				 "Execution Cycles: %u, Elapsed Time (us): %u",
++				 req->stat->prev_cycles, req->stat->prev_time);
++		}
++		trinity_finish_req(drv, req);
++	}
++
++	return ret;
++}
++
++static int32_t trinity_run_input(struct trinity_driver *drv,
++				 struct trinity_input *input,
++				 struct trinity_req *req)
++{
++	struct trinity_model *model;
++	int32_t err;
++
++	model = trinity_get_model_by_id(drv, input->config.model_id);
++	if (!model) {
++		dev_info(drv_to_dev_ptr(drv), "Unable to find the model");
++		return -EINVAL;
++	}
++
++	/* skip to submit this req */
++	if (model->config.program_size == 0 &&
++	    input->config.output_mode != TRINITY_OUTPUT_HW)
++		return 0;
++
++	trinity_model_get(model);
++
++	err = trinity_hwmem_import_dmabuf_begin(drv_to_dev_ptr(drv),
++						input->config.dbuf_fd,
++						&input->import_info);
++	if (err < 0)
++		return err;
++
++	req->model = model;
++	err = trinity_submit_req(drv, req);
++	if (err == 0)
++		return 0;
++
++	if (err != -ECANCELED)
++		trinity_hwmem_import_dmabuf_end(&input->import_info);
++	return err;
++}
++
++/**
++ * trinity_ioctl() - A common callback for unlocked_ioctl() in file_operations for
++ *		a Trinity device node.
++ *
++ * @f: A file instance of the opened device node
++ * @cmd: The target IOCTL command to be handled
++ * @arg: A user argument
++ *
++ * Returns 0 on success. Otherwise, returns negative error.
++ */
++long trinity_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
++{
++	struct trinity_driver *drv = f->private_data;
++	const struct trinity_desc *desc = drv->desc;
++	ssize_t err = 0L;
++
++	switch (cmd) {
++	case TRINITY_IOCTL_GET_VERSION: {
++		if (copy_to_user((uint32_t __user *)arg, &(desc->ver),
++				 sizeof((desc->ver))))
++			return -EFAULT;
++		break;
++	}
++	case TRINITY_IOCTL_GET_API_LEVEL: {
++		uint32_t api_level = TRINITY_API_LEVEL;
++
++		if (copy_to_user((uint32_t __user *)arg, &api_level,
++				 sizeof(api_level)))
++			return -EFAULT;
++		break;
++	}
++	case TRINITY_IOCTL_GET_STATE: {
++		enum trinity_state ready;
++
++		ready = drv->desc->get_state(drv);
++		if (copy_to_user((enum trinity_state __user *)arg, &ready,
++				 sizeof(ready)))
++			return -EFAULT;
++		break;
++	}
++	case TRINITY_IOCTL_GET_TOPS: {
++		if (copy_to_user((uint32_t __user *)arg, &(drv->tops),
++				 sizeof((drv->tops))))
++			return -EFAULT;
++		break;
++	}
++	case TRINITY_IOCTL_GET_DSPM: {
++		if (copy_to_user((uint32_t __user *)arg, &(drv->dspm),
++				 sizeof((drv->dspm))))
++			return -EFAULT;
++		break;
++	}
++	case TRINITY_IOCTL_GET_NEXT_REQUEST: {
++		int32_t req_id = atomic_inc_return(&drv->global_req_id);
++
++		if (copy_to_user((int32_t __user *)arg, &req_id,
++				 sizeof(req_id)))
++			return -EFAULT;
++		break;
++	}
++	case TRINITY_IOCTL_HWMEM_ALLOC: {
++		struct trinity_ioctl_hwmem hwmem;
++
++		if (copy_from_user(&hwmem, (size_t __user *)arg, sizeof(hwmem)))
++			return -EFAULT;
++
++		err = trinity_hwmem_alloc(drv_to_dev_ptr(drv), hwmem.size,
++					  hwmem.type);
++		if (err >= 0)
++			trinity_stat_app_total_alloc(drv, hwmem.size);
++		break;
++	}
++	case TRINITY_IOCTL_HWMEM_DEALLOC: {
++		struct trinity_ioctl_hwmem hwmem;
++		struct dma_buf *dbuf;
++
++		if (copy_from_user(&hwmem, (size_t __user *)arg, sizeof(hwmem)))
++			return -EFAULT;
++
++		dbuf = dma_buf_get(hwmem.dbuf_fd);
++		if (IS_ERR(dbuf))
++			return PTR_ERR(dbuf);
++
++		err = trinity_hwmem_free(drv_to_dev_ptr(drv), hwmem.dbuf_fd);
++		if (err == 0)
++			trinity_stat_app_total_freed(drv, dbuf->size);
++		break;
++	}
++	case TRINITY_IOCTL_REGISTER_MODEL: {
++		struct trinity_model *model =
++			kzalloc(sizeof(struct trinity_model), GFP_KERNEL);
++
++		if (IS_ERR_OR_NULL(model))
++			return -ENOMEM;
++
++		if (copy_from_user(&model->config,
++				   (struct trinity_model __user *)arg,
++				   sizeof(model->config))) {
++			kfree(model);
++			return -EFAULT;
++		}
++
++		err = trinity_register_model(drv, model);
++		if (err < 0)
 +			break;
++
++		if (copy_to_user((struct trinity_model __user *)arg,
++				 &model->config, sizeof(model->config)))
++			return -EFAULT;
++		break;
++	}
++	case TRINITY_IOCTL_DEREGISTER_MODEL: {
++		uint64_t id;
++
++		if (copy_from_user(&id, (uint64_t __user *)arg, sizeof(id)))
++			return -EFAULT;
++
++		err = trinity_deregister_model(drv, id);
++		break;
++	}
++	case TRINITY_IOCTL_RUN_INPUT: {
++		struct trinity_req *req;
++		struct trinity_input *input;
++
++		req = drv->desc->alloc_req(drv);
++		if (!req)
++			return -ENOMEM;
++		req->drv = drv;
++		req->time_started = ktime_get();
++
++		input = &(req->input);
++		/** run input based on config received from the user */
++		if (copy_from_user(&input->config,
++				   (struct trinity_input __user *)arg,
++				   sizeof(input->config))) {
++			drv->desc->dealloc_req(drv, req);
++			return -EACCES;
 +		}
 +
-+		drv->mmreg_vaddr[i] = devm_ioremap_resource(dev, &mmreg);
-+		if (IS_ERR(drv->mmreg_vaddr[i])) {
-+			dev_err(dev,
-+				"failed to remap %d-th mmreg resource info", i);
-+			return PTR_ERR(drv->mmreg_vaddr[i]);
++		err = trinity_run_input(drv, input, req);
++		if (err < 0) {
++			drv->desc->dealloc_req(drv, req);
++			return err;
 +		}
-+		drv->mmreg_paddr[i] = mmreg.start;
++
++		if (copy_to_user((struct trinity_input __user *)arg,
++				 &input->config, sizeof(input->config))) {
++			drv->desc->dealloc_req(drv, req);
++			return -EACCES;
++		}
++
++		/* this will be freed when stop request is called */
++		if (!req->is_kernel)
++			drv->desc->dealloc_req(drv, req);
++
++		break;
++	}
++	case TRINITY_IOCTL_STOP_REQUESTS: {
++		if (drv->desc->stop_reqs)
++			schedule_work(&drv->work_stop);
++		break;
++	}
++	case TRINITY_IOCTL_STAT_CURRENT_APP: {
++		struct trinity_ioctl_stat_app ioctl_stat_app;
++
++		if (copy_from_user(&ioctl_stat_app,
++				   (struct trinity_ioctl_stat_app __user *)arg,
++				   sizeof(ioctl_stat_app)))
++			return -EACCES;
++
++		trinity_stat_app_copy_ioctl(drv, &ioctl_stat_app);
++
++		if (copy_to_user((struct trinity_ioctl_stat_app __user *)arg,
++				 &ioctl_stat_app, sizeof(ioctl_stat_app)))
++			return -EACCES;
++		break;
++	}
++	case TRINITY_IOCTL_STAT_APPS: {
++		struct trinity_ioctl_stat_apps ioctl_stat_apps;
++
++		if (copy_from_user(&ioctl_stat_apps,
++				   (struct trinity_ioctl_stat_apps __user *)arg,
++				   sizeof(ioctl_stat_apps)))
++			return -EACCES;
++
++		trinity_stat_apps_copy_ioctl(drv, &ioctl_stat_apps);
++
++		if (copy_to_user((struct trinity_ioctl_stat_apps __user *)arg,
++				 &ioctl_stat_apps, sizeof(ioctl_stat_apps)))
++			return -EACCES;
++		break;
++	}
++	case TRINITY_IOCTL_STAT_REQS: {
++		struct trinity_ioctl_stat_reqs ioctl_stat_reqs;
++
++		if (copy_from_user(&ioctl_stat_reqs,
++				   (struct trinity_ioctl_stat_reqs __user *)arg,
++				   sizeof(ioctl_stat_reqs)))
++			return -EACCES;
++
++		if (ioctl_stat_reqs.app_id == 0)
++			ioctl_stat_reqs.app_id = trinity_get_app_id();
++
++		trinity_stat_reqs_copy_ioctl(drv, &ioctl_stat_reqs);
++
++		if (copy_to_user((struct trinity_ioctl_stat_reqs __user *)arg,
++				 &ioctl_stat_reqs, sizeof(ioctl_stat_reqs)))
++			return -EACCES;
++		break;
++	}
++	case TRINITY_IOCTL_GET_PROFILE_META: {
++		struct trinity_ioctl_profile_meta profile;
++
++		if (copy_from_user(
++			    &profile,
++			    (struct trinity_ioctl_profile_meta __user *)arg,
++			    sizeof(profile)))
++			return -EACCES;
++
++		if (drv->desc->get_profile_meta) {
++			err = drv->desc->get_profile_meta(drv, &profile);
++		} else {
++			profile.total_cycles = -1;
++			profile.total_ops = 0;
++			profile.profile_size = 0;
++			profile.input_footprint = -1;
++			profile.output_footprint = -1;
++		}
++
++		if (copy_to_user((struct trinity_ioctl_profile_meta __user *)arg,
++				 &profile, sizeof(profile)))
++			return -EACCES;
++		break;
++	}
++	case TRINITY_IOCTL_GET_PROFILE_BUFF: {
++		struct trinity_ioctl_profile_buff profile;
++
++		if (copy_from_user(
++			    &profile,
++			    (struct trinity_ioctl_profile_buff __user *)arg,
++			    sizeof(profile)))
++			return -EACCES;
++
++		if (drv->desc->get_profile_buff)
++			err = drv->desc->get_profile_buff(drv, &profile);
++
++		if (copy_to_user((struct trinity_ioctl_profile_buff __user *)arg,
++				 &profile, sizeof(profile)))
++			return -EACCES;
++
++		break;
++	}
++	case TRINITY_IOCTL_FPGA_MEMCPY: {
++		struct trinity_ioctl_fpga_memcpy fpga;
++		struct trinity_hwmem_import import_info;
++		struct iommu_domain *domain;
++		phys_addr_t paddr;
++		void __iomem *vaddr;
++		uint32_t val;
++		uint64_t i;
++
++		if (copy_from_user(
++			    &fpga,
++			    (struct trinity_ioctl_fpga_memcpy __user *)arg,
++			    sizeof(fpga)))
++			return -EFAULT;
++
++		/* make sure that dbuf_off is PAGE_SIZE aligned */
++		if (!IS_ALIGNED(fpga.dbuf_off, PAGE_SIZE)) {
++			dev_err(drv->dev, "Unaligned dmabuf offset: 0x%x\n",
++				fpga.dbuf_off);
++			return -EINVAL;
++		}
++
++		err = trinity_hwmem_import_dmabuf_begin(
++			drv_to_dev_ptr(drv), fpga.dbuf_fd, &import_info);
++		if (err)
++			return err;
++
++		domain = iommu_get_domain_for_dev(drv->dev);
++		paddr = trinity_get_paddr(domain, import_info.dma_addr);
++
++		trinity_hwmem_import_dmabuf_end(&import_info);
++
++		vaddr = ioremap(paddr + fpga.dbuf_off,
++				PAGE_ALIGN(fpga.user_size));
++		if (vaddr == NULL) {
++			dev_err(drv->dev, "Unable to ioremap %lx",
++				(unsigned long)paddr);
++			return -EINVAL;
++		}
++
++		for (i = 0; i < fpga.user_size; i += sizeof(uint32_t)) {
++			val = ioread32((char *)vaddr + i);
++			if (copy_to_user(((char __user *)fpga.user_addr) + i,
++					 &val, sizeof(uint32_t))) {
++				err = -EFAULT;
++				break;
++			}
++		}
++
++		iounmap(vaddr);
++
++		break;
++	}
++	default:
++		return -ENOTTY;
 +	}
 +
-+	/** get a TOPS property */
-+	err = of_property_read_u32(np, "samsung,tops", &drv->tops);
++	return err;
++}
++
+ /**
+  * trinity_release() - A common callback for close() in file_operations for a
+  *		Trinity	device node. If there are device-specific data to be
+@@ -121,14 +759,24 @@ int trinity_release(struct inode *inode, struct file *file)
+ 	if (drv->verbose)
+ 		dev_info(drv_to_dev_ptr(drv), "%s\n", "Device closed");
+ 
++	trinity_stat_app_set_status(drv, TRINITY_APP_STATUS_TERMINATED);
++
+ 	mutex_lock(&drv->lock);
+ 	drv->opened = drv->opened - 1;
+ 	if (drv->opened == 0) {
++		/* block newly incoming requests */
++		trinity_sched_suspend();
++
+ 		/* wait already submitted requests */
+ 		if (drv->desc->drain_reqs)
+ 			drv->desc->drain_reqs(drv);
+ 
++		/* deregister models owned by this device handle */
++		trinity_deregister_models_owned(drv);
++
+ 		drv->desc->set_state(drv, TRINITY_STATE_PAUSE);
++
++		trinity_sched_resume();
+ 	}
+ 	mutex_unlock(&drv->lock);
+ 
+@@ -216,6 +864,8 @@ int trinity_open(struct inode *inode, struct file *f)
+ 	if (drv->verbose)
+ 		dev_info(drv_to_dev_ptr(drv), "%s\n", "Device opened");
+ 
++	trinity_stat_app_set_status(drv, TRINITY_APP_STATUS_STARTED);
++
+ out:
+ 	mutex_unlock(&drv->lock);
+ 
+@@ -301,10 +951,20 @@ static void trinity_common_init(struct device *dev)
+ 	if (!trinity_is_empty())
+ 		return;
+ 
++	trinity_reset_device(dev, true);
++	trinity_model_htable_init();
++
++	if (trinity_pm_runtime_init(dev) < 0)
++		dev_warn(dev, "Unable to initialize runtime pm\n");
++
++	if (trinity_debug_init() < 0)
++		dev_warn(dev, "Unable to initialize debugfs\n");
++
++	if (trinity_sched_init(dev) < 0)
++		dev_warn(dev, "Unable to initialize scheduler\n");
++
+ 	if (trinity_declare_dma_memory(dev) < 0)
+ 		dev_warn(dev, "Failed to declare DMA memory\n");
+-
+-	/* Common init codes */
+ }
+ 
+ static void trinity_common_exit(void)
+@@ -313,7 +973,8 @@ static void trinity_common_exit(void)
+ 		return;
+ 
+ 	trinity_release_dma_memory();
+-	/* Common deinit codes */
++	trinity_debug_exit();
++	trinity_sched_exit();
+ }
+ 
+ static int trinity_set_device_id(struct trinity_driver *drv)
+@@ -454,6 +1115,7 @@ int trinity_probe(struct platform_device *pdev, const struct trinity_desc *desc)
+ 		dev_err(dev, "IRQ is not supported");
+ 		return irq_out;
+ 	}
++	trinity_set_irq_affinity(irq_out);
+ 
+ 	/* get the IRQ number from DT and set handlers for it */
+ 	err = devm_request_irq(dev, irq_out, desc->handle_irq,
+@@ -478,8 +1140,26 @@ int trinity_probe(struct platform_device *pdev, const struct trinity_desc *desc)
+ 		goto err_cleanup;
+ 	}
+ 
++	err = trinity_sysfs_init(drv);
 +	if (err < 0) {
-+		dev_err(dev, "failed to read 'tops' property: %d\n", err);
-+		return err;
-+	}
-+
-+	/** get a DSPM property */
-+	err = of_property_read_u32(np, "samsung,dspm", &drv->dspm);
-+	if (err < 0) {
-+		dev_info(dev, "Setting the size of DPSM to 0\n");
-+		drv->dspm = 0;
-+	}
-+
-+	/* Set IRQ handlers */
-+	irq_out = platform_get_irq(pdev, 0);
-+	if (irq_out < 0) {
-+		dev_err(dev, "IRQ is not supported");
-+		return irq_out;
-+	}
-+
-+	/* get the IRQ number from DT and set handlers for it */
-+	err = devm_request_irq(dev, irq_out, desc->handle_irq,
-+			       IRQF_TRIGGER_HIGH, desc->type, &drv->mdev);
-+	if (err < 0) {
-+		dev_err(dev, "failed to register handlers for IRQ %d", irq_out);
-+		return err;
-+	}
-+
-+	/** Initialize device-specific variables */
-+	init_completion(&drv->complete);
-+	mutex_init(&drv->lock);
-+	INIT_WORK(&drv->work_stop, desc->stop_reqs);
-+	drv->mdev.fops = desc->fops;
-+
-+	trinity_common_init(dev);
-+
-+	err = trinity_set_device_id(drv);
-+	if (err < 0) {
-+		dev_err(dev, "Please unload old devices first (max: %d)\n",
-+			TRINITY_DEV_EACH_MAX);
++		dev_err(dev, "failed to initialize sysfs for a trinity device");
 +		goto err_cleanup;
 +	}
 +
-+	return 0;
++	err = trinity_debug_add(drv);
++	if (err < 0) {
++		dev_err(dev,
++			"failed to add a debugging feature to the trinity device");
++		goto err_cleanup_sysfs;
++	}
 +
-+err_cleanup:
-+	spin_lock(&trinity_lock);
-+	clear_bit(drv->dev_id, &dev_bitmap[dev->id]);
-+	spin_unlock(&trinity_lock);
++	trinity_stat_init(drv);
 +
-+	trinity_common_exit();
+ 	return 0;
+ 
++err_cleanup_sysfs:
++	trinity_sysfs_cleanup(drv);
 +
-+	return err;
-+}
+ err_cleanup:
+ 	spin_lock(&trinity_lock);
+ 	clear_bit(drv->dev_id, &dev_bitmap[dev->id]);
+@@ -508,6 +1188,10 @@ int trinity_remove(struct platform_device *pdev,
+ 	drv = (struct trinity_driver *)platform_get_drvdata(pdev);
+ 	dev = drv_to_dev_ptr(drv);
+ 
++	trinity_stat_fini(drv);
++	trinity_debug_remove(drv);
++	trinity_sysfs_cleanup(drv);
 +
-+/**
-+ * trinity_remove() - Cleans up the device driver. This is a standard interface to
-+ * remove a Trinity family device.
-+ *
-+ * @pdev: Platform device structure to probe
-+ * @desc: Device description to probe
-+ *
-+ * Always returns 0.
-+ */
-+int trinity_remove(struct platform_device *pdev,
-+		   const struct trinity_desc *desc)
-+{
-+	struct trinity_driver *drv;
-+	struct device *dev;
-+
-+	drv = (struct trinity_driver *)platform_get_drvdata(pdev);
-+	dev = drv_to_dev_ptr(drv);
-+
-+	spin_lock(&trinity_lock);
-+	clear_bit(drv->dev_id, &dev_bitmap[dev->id]);
-+	spin_unlock(&trinity_lock);
-+
-+	trinity_common_exit();
-+
-+	return 0;
-+}
+ 	spin_lock(&trinity_lock);
+ 	clear_bit(drv->dev_id, &dev_bitmap[dev->id]);
+ 	spin_unlock(&trinity_lock);
 diff --git a/drivers/misc/trinity/trinity_common.h b/drivers/misc/trinity/trinity_common.h
-new file mode 100644
-index 000000000000..37aba34ef9bc
---- /dev/null
+index c70f66722391..461abca88c96 100644
+--- a/drivers/misc/trinity/trinity_common.h
 +++ b/drivers/misc/trinity/trinity_common.h
-@@ -0,0 +1,392 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/**
-+ * Common header for trinity devices
-+ *
-+ * Copyright (C) 2020-2022 Samsung Electronics
-+ * Copyright (C) 2020 Wook Song <wook16.song@samsung.com>
-+ * Copyright (C) 2020 Parichay Kapoor <pk.kapoor@samsung.com>
-+ * Copyright (C) 2020 Dongju Chae <dongju.chae@samsung.com>
-+ * Copyright (C) 2022 MyungJoo Ham <myungjoo.ham@samsung.com>
-+ * Copyright (C) 2022 Yelin Jeong <yelini.jeong@samsung.com>
-+ * Copyright (C) 2022 Jiho Chu <jiho.chu@samsung.com>
-+ */
+@@ -27,6 +27,9 @@
+ #include <linux/types.h>
+ #include <uapi/misc/trinity.h>
+ 
++#include "sched/sched.h"
++#include "trinity_hwmem.h"
 +
-+#ifndef __TRINITY_COMMON_H__
-+#define __TRINITY_COMMON_H__
-+
-+#include <linux/idr.h>
-+#include <linux/interrupt.h>
-+#include <linux/io.h>
-+#include <linux/iommu.h>
-+#include <linux/irqreturn.h>
-+#include <linux/kernel.h>
-+#include <linux/list_bl.h>
-+#include <linux/miscdevice.h>
-+#include <linux/platform_device.h>
-+#include <linux/slab.h>
-+#include <linux/types.h>
-+
-+#include <uapi/misc/trinity.h>
-+
-+/** Default timeout to wait for opening device in jiffies */
-+#define TRINITY_DEV_TIMEOUT_MSEC (3000)
-+#define TRINITY_DEV_TIMEOUT (msecs_to_jiffies(TRINITY_DEV_TIMEOUT_MSEC))
-+
-+/** Default timeout to wait for running input in jiffies */
-+#define TRINITY_RUN_TIMEOUT_MSEC (4000)
-+#define TRINITY_RUN_TIMEOUT (msecs_to_jiffies(TRINITY_RUN_TIMEOUT_MSEC))
-+
-+#define TRINITY_DEV_TYPE_LEN (16)
-+#define TRINITY_DEV_EACH_MAX (2)
-+#define TRINITY_MAX_MMREGS (3)
-+
-+/** A helper function to generate the version code of the device driver */
-+#define GENVER(dev, mj, mn, ex)                                         \
-+	((dev << TRINITY_SHIFT_DEV) | (mj << TRINITY_SHIFT_MAJOR_VER) | \
-+	 (mn << TRINITY_SHIFT_MINOR_VER) | (ex << TRINITY_SHIFT_EXTRA_VER))
-+
-+#define trinity_get_iomem_addr(base, offset) (base + offset)
-+#define drv_to_dev_ptr(d) (d->dev)
-+#define drv_to_priv(drv) (drv->desc->pdata)
-+
-+#define TRINITY_STAT_HASH_BITS (10)
-+#define TRINITY_STAT_HASH_SIZE (1 << TRINITY_STAT_HASH_BITS)
-+
-+#define TIME_DIFF(t1, t2) ktime_to_ms(ktime_sub(t1, t2))
-+#define TIME_DIFF_US(t1, t2) ktime_to_us(ktime_sub(t1, t2))
-+
-+struct trinity_desc;
-+struct trinity_driver;
-+struct trinity_req;
-+struct trinity_stat;
-+struct trinity_stat_app;
-+struct trinity_stat_req;
-+struct trinity_model_htable;
-+
-+/**
-+ * struct trinity_desc - a structure for device description
-+ * @type: A string that indicates the type of this device.
-+ * @ver: Coded version information generated via GENVER().
-+ * @fops: Device-specific file_operations.
-+ *
-+ * @reset: reset trinity function
-+ * @prepare_req: request configuration function before invoking
-+ *    trinity_submit_req() (if any). This requires a registered model
-+ *    to the driver.
-+ * @handle_timeout: This function is invoked when the request is time-out
-+ * @stop_reqs: stops current working request
-+ * @drain_reqs: waits currently working requests finishes.
-+ * @init_profile: initialize profile configuration
-+ * @check_profile: check current profile data
-+ * @get_profile_meta: get profile metadata for the target request
-+ * @get_profile_buff: get profile data buffer for the target request
-+ * @show_profile: write out profile data
-+ * @destroy_profile: destroy profile resources
-+ *
-+ * @idu_load: load IDU binary to the target path
-+ * @idu_version: get IDU version info
-+ * @get_state: get current state of IDU
-+ * @set_state: set IDU state
-+ * @alloc_req: allocate request new trinity request
-+ * @dealloc_req: release request resource
-+ * @invoke_req: prepare to run request and sent it to scheduler
-+ *
-+ * @handle_irq: Device-specific IRQ handler.
-+ */
-+struct trinity_desc {
-+	char *type;
-+	uint32_t ver;
-+
-+	const struct file_operations *fops;
-+
-+	/* Optional */
-+	void (*reset)(struct trinity_driver *drv);
-+	int32_t (*prepare_req)(struct trinity_driver *drv,
-+			       struct trinity_req *req);
-+	void (*handle_timeout)(struct trinity_driver *drv,
-+			       struct trinity_req *req);
-+	void (*stop_reqs)(struct work_struct *work);
-+	void (*drain_reqs)(struct trinity_driver *drv);
-+	void (*init_profile)(struct trinity_driver *drv,
-+			     unsigned long profile_size);
-+	int32_t (*check_profile)(struct trinity_driver *drv,
-+				 struct trinity_req *req);
-+	int32_t (*get_profile_meta)(const struct trinity_driver *drv,
-+				    struct trinity_ioctl_profile_meta *meta);
-+	int32_t (*get_profile_buff)(const struct trinity_driver *drv,
-+				    struct trinity_ioctl_profile_buff *buff);
-+	void (*show_profile)(const struct trinity_driver *drv, int req_id);
-+	void (*destroy_profile)(const struct trinity_driver *drv, void *data);
-+
-+	/* Mandatory */
-+	int32_t (*idu_load)(struct trinity_driver *drv, const char *dirpath,
-+			    bool load_files);
-+	int32_t (*idu_version)(struct trinity_driver *drv, uint32_t *major,
-+			       uint32_t *minor, uint32_t *extra);
-+	int32_t (*get_state)(const struct trinity_driver *drv);
-+	void (*set_state)(const struct trinity_driver *drv,
-+			  enum trinity_state state);
-+	struct trinity_req *(*alloc_req)(struct trinity_driver *drv);
-+	void (*dealloc_req)(struct trinity_driver *drv,
-+			    struct trinity_req *req);
-+	int32_t (*invoke_req)(struct trinity_driver *drv,
-+			      struct trinity_req *req, void *sched_data);
-+	irq_handler_t handle_irq;
-+};
-+
-+/**
-+ * struct trinity_stat - A structure for representing a device's statistics.
-+ */
-+struct trinity_stat {
-+	spinlock_t lock;
-+
-+	struct hlist_bl_head hlist[TRINITY_STAT_HASH_SIZE];
-+	struct list_head list;
-+
-+	void *pdata;
-+};
-+
-+/**
-+ * struct trinity_stat_app - a structure for representing statistics for each app
-+ * @app_id: identifier for each app
-+ * @name: name of stat
-+ * @status: app status
-+ * @parent: parent node
-+ * @total_alloc_mem: total allocated memory size
-+ * @total_free_mem: total freed memory size
-+ * @list_head reqs: list of request
-+ * @num_total_reqs: a number of total requests
-+ * @num_kept_reqs: a number of kept requests
-+ * @num_active_reqs: a number of active requests
-+ * @hnode: hash node
-+ * @lnode: list node
-+ */
-+struct trinity_stat_app {
-+	int32_t app_id; /* app identifier */
-+	char name[TASK_COMM_LEN];
-+	enum trinity_app_status status;
-+
-+	struct trinity_stat *parent;
-+
-+	uint64_t total_alloc_mem; /* total allocated memory */
-+	uint64_t total_freed_mem; /* total freed memory */
-+
-+	struct list_head reqs;
-+	uint32_t num_total_reqs;
-+	uint32_t num_kept_reqs;
-+	uint32_t num_active_reqs;
-+
-+	struct hlist_bl_node hnode; /* hash node */
-+	struct list_head lnode; /* list node */
-+
-+	unsigned long slot;
-+};
-+
-+/**
-+ * struct trinity_stat_req - A structure for representing statistics for each request
-+ * @status: request status
-+ * @priority: priority of request
-+ * @parent: parent node
-+ * @req_id: app identifier
-+ * @req_id: request identifier
-+ * @model_id: model identifier
-+ * @is_kernel: requested from other kernel module
-+ * @submitted: submitted time (i.e., when request is submitted to global queue)
-+ * @scheduled: scheduled time (i.e., when request is scheduled to device)
-+ * @completed: completed time (i.e., when output notification arrives)
-+ * @num_runs: total number of runs
-+ * @total_time: total execute time
-+ * @prev_time: previous execute time
-+ * @prev_cycles: previous execute cycles
-+ * @list: list node managed by trinity_stat_app
-+ * @profile: profile data
-+ * @slot: request slot
-+ */
-+struct trinity_stat_req {
-+	enum trinity_req_status status; /* status of submit result */
-+	enum trinity_req_priority priority;
-+
-+	struct trinity_stat_app *parent;
-+
-+	int32_t app_id;
-+	int32_t req_id;
-+	uint64_t model_id;
-+
-+	bool is_kernel;
-+
-+	ktime_t submitted;
-+	ktime_t scheduled;
-+	ktime_t completed;
-+
-+	uint32_t num_runs;
-+	uint32_t total_time;
-+
-+	uint32_t prev_time;
-+	uint32_t prev_cycles;
-+
-+	struct list_head list;
-+	void *profile;
-+
-+	unsigned long slot;
-+};
-+
-+/**
-+ * struct trinity_driver - A private data structure for Trinity device driver
-+ * @desc: A pointer to the device description
-+ * @name: The id-annotated name of the device
-+ * @pdata: private data
-+ * #dev_id: device id
-+ * @mdev: A copy of &struct misc device to which the device is registered.
-+ * @dev: A pointer to &struct device of the device.
-+ * @complete: A &struct completion variable to maintain events from the device.
-+ * @lock: A lock for access control to driver-level static variables
-+ * @glboal_req_id: a request id to generate id for each request
-+ * @mmreg_vaddr: The iomapped base address of memory-mapped registers
-+ * @mmreg_paddr: The physical base address of memory-mapped registers
-+ * @opened: The number of clients which open the device
-+ * @verbose: show detailed information
-+ * @work_stop: handle stop request
-+ * @tops: Tera Operations Per Second (TOPS) of this device
-+ * @dspm: The size of Data Scratch-Pad Memory (DSPM) in the DSP
-+ * @stat: statistics information
-+ * @debugfs_pdata: debugfs private data
-+ */
-+struct trinity_driver {
-+	const struct trinity_desc *desc;
-+	const char *name;
-+	void *pdata;
-+
-+	uint32_t dev_id;
-+	struct miscdevice mdev;
-+	struct device *dev;
-+	struct completion complete;
-+	struct mutex lock;
-+
-+	atomic_t global_req_id;
-+
-+	void __iomem *mmreg_vaddr[TRINITY_MAX_MMREGS];
-+	phys_addr_t mmreg_paddr[TRINITY_MAX_MMREGS];
-+
-+	int32_t opened;
-+	unsigned long verbose;
-+
-+	struct work_struct work_stop;
-+
-+	uint32_t tops;
-+	uint32_t dspm;
-+
-+	struct trinity_stat stat;
-+	void *debugfs_pdata;
-+};
-+
-+/**
-+ * struct trinity_model - A structure for representing model data
-+ * @config: model configuration
-+ * @import_info: Cached hwmem import info.
-+ * @hnode: hash node for indexing
-+ * @owner_id: Identifier for owner app
-+ * @refcnt: reference count
-+ */
-+struct trinity_model {
-+	struct trinity_ioctl_model config;
-+	struct hlist_bl_node hnode;
-+	int32_t owner_id;
-+	struct kref refcnt;
-+} __packed;
-+
-+/**
-+ * struct trinity_input - A structure for representing input data
-+ * @config: input configuration
-+ * @import_info: Cached hwmem import info.
-+ */
-+struct trinity_input {
-+	struct trinity_ioctl_input config;
-+} __packed;
-+
-+/**
-+ * struct trinity_req - A structure for representing a request
-+ * @drv: An instance of the driver.
-+ * @input: Information of the input configuration to be run by this request
-+ * @model: model information to be used for this request
-+ * @status: Status of the submitted request
-+ * @submit_retry: retry count of submit request
-+ * @complete: completion information
-+ * @llist: llist node for request queue
-+ * @time_started: started time
-+ * @is_kernel: requested from kernel module
-+ * @scheduled: scheduled flag
-+ * @priv: A handle of private data
-+ * @note: The allocated 'trinity_req' is shared with ioctl, scheduler
-+ *        and interrupt handler routines. After invoking an NPU request,
-+ *        the irq handler can make complete the request at anytime, and it
-+ *        causes deallocation of the struct.
-+ */
-+struct trinity_req {
-+	/** context where the req belongs */
-+	struct trinity_driver *drv;
-+
-+	struct trinity_input input; /* the req's input argument */
-+	struct trinity_model *model;
-+
-+	struct trinity_stat_req *stat;
-+
-+	uint64_t submit_retry;
-+	struct completion complete;
-+	struct llist_node llist;
-+
-+	ktime_t time_started;
-+	bool is_kernel;
-+
-+	bool scheduled;
-+
-+	void *priv;
-+};
-+
-+/**
-+ * struct trinity_model_htable - A common hashtable to maintain models
-+ * @ht_heads: A pointer to heads of this hashtable
-+ * @hash_bits: The number of bits to use in hashing.
-+ * @hash_size: The number of hash buckets.
-+ */
-+struct trinity_model_htable {
-+	struct hlist_bl_head *ht_heads;
-+	int hash_bits;
-+	int hash_size;
-+};
-+
-+static inline void trinity_set_bit(uint32_t bit, void __iomem *addr)
-+{
-+	uint32_t reg = 0;
-+
-+	reg |= bit;
-+	iowrite32(reg, addr);
-+}
-+
-+/**
-+ * trinity_get_app_id() - Get a app_id for the current opened device
-+ *
-+ * Returns app_id (just returns its tgid for now).
-+ */
-+static inline int32_t trinity_get_app_id(void)
-+{
-+	return task_tgid_vnr(current);
-+}
-+
-+/*
-+ * Trinity common functions
-+ */
-+int trinity_create_node(struct trinity_driver *drv);
-+void trinity_destroy_node(struct trinity_driver *drv);
+ /** Default timeout to wait for opening device in jiffies */
+ #define TRINITY_DEV_TIMEOUT_MSEC (3000)
+ #define TRINITY_DEV_TIMEOUT (msecs_to_jiffies(TRINITY_DEV_TIMEOUT_MSEC))
+@@ -289,6 +292,7 @@ struct trinity_driver {
+  */
+ struct trinity_model {
+ 	struct trinity_ioctl_model config;
++	struct trinity_hwmem_import import_info;
+ 	struct hlist_bl_node hnode;
+ 	int32_t owner_id;
+ 	struct kref refcnt;
+@@ -301,6 +305,7 @@ struct trinity_model {
+  */
+ struct trinity_input {
+ 	struct trinity_ioctl_input config;
++	struct trinity_hwmem_import import_info;
+ } __packed;
+ 
+ /**
+@@ -377,14 +382,19 @@ static inline int32_t trinity_get_app_id(void)
+  */
+ int trinity_create_node(struct trinity_driver *drv);
+ void trinity_destroy_node(struct trinity_driver *drv);
+-int trinity_wait_ready(struct trinity_driver *drv);
++int trinity_idu_load(struct trinity_driver *drv, const char *dirpath);
+ void trinity_init_model_htable(const struct trinity_driver *drv,
+ 			       struct trinity_model_htable *ht);
++int32_t trinity_get_app_id(void);
++void trinity_finish_req(struct trinity_driver *drv, struct trinity_req *req);
+ phys_addr_t trinity_get_paddr(struct iommu_domain *domain, dma_addr_t daddr);
++struct trinity_sched_desc *get_trinity_sched(struct trinity_req *req);
 +int trinity_wait_ready(struct trinity_driver *drv);
+ 
+ /* File operations */
+ int trinity_open(struct inode *inode, struct file *f);
+ int trinity_release(struct inode *inode, struct file *f);
++long trinity_ioctl(struct file *f, unsigned int cmd, unsigned long arg);
+ 
+ /* Device probing and removing */
+ int trinity_probe(struct platform_device *pdev,
+@@ -399,7 +409,6 @@ int trinity_sysfs_cleanup(struct trinity_driver *drv);
+ /* debugfs operations */
+ int trinity_debug_init(void);
+ void trinity_debug_exit(void);
+-
+ int trinity_debug_add(struct trinity_driver *drv);
+ void trinity_debug_remove(struct trinity_driver *drv);
+ void trinity_debug_clear(struct trinity_driver *drv, unsigned long msg_max);
+@@ -412,4 +421,14 @@ void trinity_debug_dump_input(struct trinity_driver *drv,
+ 			      const struct trinity_input *input,
+ 			      const char *fmt, ...);
+ 
++/* pm operations */
++int trinity_pm_runtime_init(struct device *dev);
++int trinity_pm_runtime_forbid(struct device *dev);
++void trinity_pm_runtime_allow(struct device *dev);
++void trinity_pm_runtime_attach(struct device *dev);
 +
-+/* File operations */
-+int trinity_open(struct inode *inode, struct file *f);
-+int trinity_release(struct inode *inode, struct file *f);
++void trinity_reset_device(struct device *dev, bool do_test);
++void trinity_set_irq_affinity(int irq);
++void trinity_monitor_invalid_access(void);
 +
-+/* Device probing and removing */
-+int trinity_probe(struct platform_device *pdev,
-+		  const struct trinity_desc *desc);
-+int trinity_remove(struct platform_device *pdev,
-+		   const struct trinity_desc *desc);
-+
-+#endif /* __TRINITY_COMMON_H__ */
-diff --git a/drivers/misc/trinity/trinity_vision2_drv.c b/drivers/misc/trinity/trinity_vision2_drv.c
+ #endif /* __TRINITY_COMMON_H__ */
+diff --git a/drivers/misc/trinity/trinity_pm.c b/drivers/misc/trinity/trinity_pm.c
 new file mode 100644
-index 000000000000..a24eb0f6ac6d
+index 000000000000..bf292e168422
 --- /dev/null
-+++ b/drivers/misc/trinity/trinity_vision2_drv.c
-@@ -0,0 +1,512 @@
++++ b/drivers/misc/trinity/trinity_pm.c
+@@ -0,0 +1,76 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/**
-+ * Samsung NPU Trinity Vision 2 driver
++ * Power Management Controls
 + *
-+ * Copyright (C) 2020-2022 Samsung Electronics
-+ * Copyright (C) 2020 Wook Song <wook16.song@samsung.com>
-+ * Copyright (C) 2020 Dongju Chae <dongju.chae@samsung.com>
++ * Copyright (C) 2022 Samsung Electronics
 + * Copyright (C) 2022 MyungJoo Ham <myungjoo.ham@samsung.com>
 + * Copyright (C) 2022 Yelin Jeong <yelini.jeong@samsung.com>
 + * Copyright (C) 2022 Jiho Chu <jiho.chu@samsung.com>
 + */
 +
-+#include <linux/bitmap.h>
-+#include <linux/dma-buf.h>
-+#include <linux/fs.h>
-+#include <linux/hashtable.h>
-+#include <linux/highmem.h>
-+#include <linux/init.h>
-+#include <linux/io.h>
-+#include <linux/kthread.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
-+#include <linux/platform_device.h>
-+#include <linux/slab.h>
-+#include <linux/uaccess.h>
-+#include <linux/utsname.h>
-+#include <linux/version.h>
++#include <linux/of_address.h>
++#include <linux/pm_runtime.h>
 +
-+#include <linux/delay.h>
-+
-+#include "trinity_common.h"
-+#include "trinity_resv_mem.h"
-+#include "trinity_trace.h"
-+#include "trinity_vision2_profile.h"
-+#include "trinity_vision2_regs.h"
-+
-+#define TRIV2_DRV_GET_PDATA(drv) ((struct triv2_pdata *)(drv->pdata))
-+#define TRIV2_DRV_GET_CMD_INFO(drv) (&(TRIV2_DRV_GET_PDATA(drv)->cmd_info))
-+#define TRIV2_DRV_GET_CMD_BUF(drv) (&(TRIV2_DRV_GET_CMD_INFO(drv)->buf))
-+#define TRIV2_DRV_GET_PROF_BUF(drv) (&(TRIV2_DRV_GET_PDATA(drv)->prof_buf))
-+#define TRIV2_DRV_GET_BACK_BUF(drv) (&(TRIV2_DRV_GET_PDATA(drv)->back_buf))
-+
-+#define TRIV2_GET_CMD_FROM_SLOT(info, slot)     \
-+	((struct triv2_cmd *)(info->buf.vaddr + \
-+			      slot * sizeof(struct triv2_cmd)))
-+
-+#define TRIV2_GET_REQ(req) (container_of(req, struct triv2_req, req))
-+
-+#define HALF_PAGE_SIZE (PAGE_SIZE >> 1)
-+
-+enum triv2_cmd_status {
-+	STATUS_CMD_NONE = 0,
-+	STATUS_CMD_READY = 1,
-+	STATUS_CMD_DONE = 2,
-+};
-+
-+/** req command for triv2 */
-+struct triv2_cmd {
-+	union {
-+		struct {
-+			uint32_t slot;
-+			uint32_t prog_addr;
-+			uint32_t prog_size;
-+			uint32_t segt_addr;
-+			uint32_t num_visa;
-+
-+			uint32_t priority;
-+			uint32_t status;
-+			uint32_t input_mode;
-+			uint32_t output_mode;
-+
-+			/** for profiling */
-+			uint32_t profile_offset;
-+
-+			/** for preemptive scheduling */
-+			uint32_t program_position;
-+
-+			/** for batch processing */
-+			uint32_t batch_size;
-+			uint32_t curr_cnt;
-+			uint32_t in_addr[TRIV2_MAX_BATCH_SIZE];
-+			uint32_t out_addr[TRIV2_MAX_BATCH_SIZE];
-+			uint32_t poll_addr;
-+			uint32_t poll_magic;
-+			/* deprecated but keep for backward compatibiltiy */
-+			uint32_t in_seg_idx;
-+			uint32_t out_seg_idx;
-+
-+			uint32_t total_cycles;
-+
-+			/* kernel requests */
-+			uint32_t in_extern_seg_num;
-+			uint32_t out_extern_seg_num;
-+			uint32_t in_extern_seg_idx[TRIV2_MAX_TENSORS];
-+			uint32_t out_extern_seg_idx[TRIV2_MAX_TENSORS];
-+		};
-+		uint8_t reserved[TRIV2_MAX_CMD_SIZE];
-+	};
-+} __packed;
-+
-+struct triv2_cmd_info {
-+	DECLARE_BITMAP(bitmap, TRIV2_MAX_CMDSLOTS);
-+	spinlock_t lock;
-+
-+	struct triv2_req *reqs[TRIV2_MAX_CMDSLOTS];
-+	struct triv2_cmd cur_cmd;
-+};
-+
-+struct triv2_hashed_cmd_info {
-+	struct trinity_driver *drv;
-+	struct hlist_bl_node hnode;
-+	struct triv2_req *req;
-+	struct triv2_cmd *cmd;
-+};
-+
-+struct triv2_kernel_req {
-+	uint32_t in_seg_idx[TRIV2_MAX_TENSORS];
-+	uint32_t in_seg_size[TRIV2_MAX_TENSORS];
-+	uint32_t out_seg_idx[TRIV2_MAX_TENSORS];
-+	uint32_t out_seg_size[TRIV2_MAX_TENSORS];
-+};
-+
-+struct triv2_req {
-+	struct trinity_req req;
-+
-+	int cmd_slot;
-+
-+	/** kernel requets */
-+	struct triv2_kernel_req *kernel;
-+
-+	/** profiling */
-+	uint32_t profile_offset;
-+	uint32_t total_cycles;
-+
-+	/** misc */
-+	uint32_t total_segment_size;
-+};
-+
-+struct triv2_idu {
-+	phys_addr_t *addrs;
-+	size_t addr_num;
-+};
-+
-+struct triv2_pdata {
-+	struct trinity_driver *drv;
-+	struct list_head list;
-+
-+	/* idu info */
-+	struct triv2_idu idu_cp;
-+	struct triv2_idu idu_dsp;
-+	uint32_t idu_version;
-+
-+	/* command info */
-+	struct triv2_cmd_info cmd_info;
-+};
-+
-+static void triv2_setup_buffers(struct trinity_driver *drv);
-+static int triv2_idu_load(struct trinity_driver *drv, const char *dirpath,
-+			  bool load_files);
-+
-+static LIST_HEAD(triv2_driver_list);
-+
-+static void triv2_cancel_reqs(struct trinity_driver *drv)
++/**
++ * trinity_pm_runtime_init() - Initialize runtime power management
++ *
++ *
++ * Return: 0 on success. Otherwise, returns negative error.
++ */
++int trinity_pm_runtime_init(struct device *dev)
 +{
-+	struct triv2_cmd_info *info;
-+	unsigned long flags;
++	return 0;
++}
 +
-+	info = TRIV2_DRV_GET_CMD_INFO(drv);
-+	spin_lock_irqsave(&info->lock, flags);
++/**
++ * trinity_pm_runtime_forbid() - Block runtime power management
++ *
++ * @dev: device structure
++ *
++ * Return: 0 on success. Otherwise, returns negative error.
++ */
++int trinity_pm_runtime_forbid(struct device *dev)
++{
++	pm_runtime_forbid(dev);
++	return 0;
++}
 +
-+	/* set command done */
++/**
++ * trinity_pm_runtime_allow() - Allow runtime power management
++ *
++ * @dev: device structure
++ *
++ * Return: 0 on success. Otherwise, returns negative error.
++ */
++void trinity_pm_runtime_allow(struct device *dev)
++{
++	pm_runtime_allow(dev);
++}
++
++/**
++ * trinity_pm_runtime_allow() - Attach runtime power management
++ *
++ * @drv: An instance of the trinity driver
++ */
++void trinity_pm_runtime_attach(struct device *drv)
++{
++}
++
++/**
++ * trinity_mmap_from_resv_mem() - Reset device
++ *
++ * @dev: device structure
++ * @do_test: test reset
++ */
++void trinity_reset_device(struct device *dev, bool do_test)
++{
++}
++
++/**
++ * trinity_set_irq_affinity() - Set affinity for the IRQ
++ *
++ * @irq: IRQ number
++ */
++void trinity_set_irq_affinity(int irq)
++{
++}
+diff --git a/drivers/misc/trinity/trinity_vision2_drv.c b/drivers/misc/trinity/trinity_vision2_drv.c
+index 9e616466c57b..ddc1739afdd8 100644
+--- a/drivers/misc/trinity/trinity_vision2_drv.c
++++ b/drivers/misc/trinity/trinity_vision2_drv.c
+@@ -162,13 +162,48 @@ struct triv2_pdata {
+ 
+ 	/* back buffer for context switching */
+ 	struct trinity_resv_mem back_buf;
++
++	/* profiling */
++	struct trinity_resv_mem prof_buf;
++	struct mutex prof_lock;
++	DECLARE_HASHTABLE(prof_htable, TRIV2_PROFILE_HASH_BITS);
+ };
+ 
++static void triv2_handle_cmd_done(struct trinity_driver *drv,
++				  struct triv2_cmd *cmd, bool timeout);
+ static void triv2_setup_buffers(struct trinity_driver *drv);
+ static int triv2_idu_load(struct trinity_driver *drv, const char *dirpath,
+ 			  bool load_files);
+ 
+ static LIST_HEAD(triv2_driver_list);
++static struct hlist_bl_head triv2_model_node_hlist[TRIV2_MODEL_HASH_SIZE];
++
++static struct triv2_profile *
++triv2_find_profile(const struct trinity_driver *drv, int req_id)
++{
++	/* find profile */
++
++	return NULL;
++}
++
++static void triv2_fini_profile(struct trinity_resv_mem *prof_buf)
++{
++	/* finish profile */
++}
++
++static void triv2_init_profile(struct trinity_driver *drv,
++			       unsigned long profile_size)
++{
++	/* init profile */
++}
++
++static int32_t triv2_check_profile(struct trinity_driver *drv,
++				   struct trinity_req *req)
++{
++	/* check profile */
++
++	return 0;
++}
+ 
+ /**
+  * triv2_get_state() - Get state (TRINITY_STATE_READY/TRINITY_STATE_PAUSE) of the device.
+@@ -230,6 +265,31 @@ static void triv2_set_state(const struct trinity_driver *drv,
+ 	}
+ }
+ 
++/**
++ * triv2_sync_segt_entries() - synchronize the segment table entries
++ */
++static int triv2_sync_segt_entries(const struct trinity_driver *drv,
++				   struct triv2_req *req)
++{
++#ifdef ARM
++	struct trinity_input *input = &(req->req.input);
++	int i;
++
++	/* flush all caches for heavy models */
++	if (req->total_segment_size > TRIV2_CACHE_FLUSH_THRESHOLD ||
++	    /* cannot handle external segments for kernel requests */
++	    req->kernel != NULL) {
++		flush_cache_all();
++		return 0;
++	}
++
++	for (i = 0; i < input->config.num_segments; ++i)
++		__cpuc_flush_dcache_area(req->seg_import[i].addr,
++					 req->seg_import[i].buf->size);
++#endif
++	return 0;
++}
++
+ static void triv2_wakeup_cp(const struct trinity_driver *drv)
+ {
+ 	void *addr =
+@@ -241,18 +301,55 @@ static void triv2_wakeup_cp(const struct trinity_driver *drv)
+ static void triv2_cancel_reqs(struct trinity_driver *drv)
+ {
+ 	struct triv2_cmd_info *info;
++	struct triv2_cmd *cmd;
+ 	unsigned long flags;
++	int slot;
+ 
+ 	info = TRIV2_DRV_GET_CMD_INFO(drv);
+ 	spin_lock_irqsave(&info->lock, flags);
+ 
+-	/* set command done */
++	slot = find_first_bit(info->bitmap, TRIV2_MAX_CMDSLOTS);
++	while (slot < TRIV2_MAX_CMDSLOTS) {
++		cmd = TRIV2_GET_CMD_FROM_SLOT(info, slot);
++		triv2_handle_cmd_done(drv, cmd, true);
++		slot = find_next_bit(info->bitmap, TRIV2_MAX_CMDSLOTS,
++				     slot + 1);
++	}
 +
 +	spin_unlock_irqrestore(&info->lock, flags);
 +}
 +
-+static void triv2_reset_devices(struct trinity_driver *drv, bool do_test)
++static void triv2_drain_reqs(struct trinity_driver *drv)
 +{
-+	triv2_setup_buffers(drv);
-+	triv2_idu_load(drv, NULL, false);
++	struct triv2_cmd_info *info;
++	unsigned long flags;
++	int cur_retries, max_retries = 1000; /* 1-sec */
++	int slot;
++
++	cur_retries = 0;
++	info = TRIV2_DRV_GET_CMD_INFO(drv);
++retry:
++	spin_lock_irqsave(&info->lock, flags);
++
++	/* wait until all bits are unset */
++	slot = find_first_bit(info->bitmap, TRIV2_MAX_CMDSLOTS);
++	if (slot < TRIV2_MAX_CMDSLOTS) {
++		spin_unlock_irqrestore(&info->lock, flags);
++
++		usleep_range(900, 1100);
++		if (cur_retries++ < max_retries)
++			goto retry;
++
++		spin_lock_irqsave(&info->lock, flags);
++	}
+ 
+ 	spin_unlock_irqrestore(&info->lock, flags);
+ }
+ 
+ static void triv2_reset_devices(struct trinity_driver *drv, bool do_test)
+ {
++	trinity_reset_device(drv_to_dev_ptr(drv), do_test);
++
+ 	triv2_setup_buffers(drv);
+ 	triv2_idu_load(drv, NULL, false);
+ }
+@@ -270,6 +367,12 @@ static void triv2_reset(struct trinity_driver *drv)
+ 
+ 	dev_err(dev, "NPU HW reset started");
+ 
++	/* block runtime pm suspend */
++	trinity_pm_runtime_forbid(dev);
++
++	/* block new incoming requests first */
++	trinity_sched_suspend();
++
+ 	/* cancel all requests by force */
+ 	list_for_each_entry(pdata, &triv2_driver_list, list)
+ 		triv2_cancel_reqs(pdata->drv);
+@@ -286,22 +389,331 @@ static void triv2_reset(struct trinity_driver *drv)
+ 		do_test = false;
+ 	}
+ 
++	/* resume scheduler */
++	trinity_sched_resume();
++
++	trinity_pm_runtime_allow(dev);
++
+ 	dev_err(dev, "NPU HW reset completed");
+ 
+ 	list_for_each_entry(pdata, &triv2_driver_list, list)
+ 		mutex_unlock(&pdata->drv->lock);
+ }
+ 
+-static long triv2_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
++static void triv2_clear_cmd(struct trinity_driver *drv, struct triv2_req *req,
++			    struct triv2_cmd *cmd)
++{
++	struct triv2_cmd_info *cmd_info = TRIV2_DRV_GET_CMD_INFO(drv);
++
++	cmd_info->reqs[req->cmd_slot] = NULL;
++	clear_bit(req->cmd_slot, cmd_info->bitmap);
++	req->cmd_slot = -1;
++
++	memset_io(cmd, '\x00', sizeof(struct triv2_cmd));
 +}
 +
-+static void triv2_reset(struct trinity_driver *drv)
++static void triv2_handle_cmd_done(struct trinity_driver *drv,
++				  struct triv2_cmd *cmd, bool timeout)
 +{
 +	struct device *dev = drv_to_dev_ptr(drv);
-+	struct triv2_pdata *pdata;
-+	bool do_test;
++	struct triv2_cmd_info *cmd_info = TRIV2_DRV_GET_CMD_INFO(drv);
++	struct triv2_req *t_req;
++	struct trinity_req *req;
++	struct trinity_sched_desc *sched;
++	uint32_t slot = cmd->slot;
++	int64_t time_diff;
 +
-+	/* FIXME: The HW reset should handle all the devices simultaneously */
-+
-+	list_for_each_entry(pdata, &triv2_driver_list, list)
-+		mutex_lock(&pdata->drv->lock);
-+
-+	dev_err(dev, "NPU HW reset started");
-+
-+	/* cancel all requests by force */
-+	list_for_each_entry(pdata, &triv2_driver_list, list)
-+		triv2_cancel_reqs(pdata->drv);
-+
-+	/* wait some pending requests in NPU */
-+	msleep(100);
-+
-+	/* reset all devices */
-+	do_test = true;
-+	list_for_each_entry(pdata, &triv2_driver_list, list) {
-+		triv2_reset_devices(pdata->drv, do_test);
-+		do_test = false;
++	t_req = cmd_info->reqs[slot];
++	if (!t_req) {
++		dev_err(dev, "Failed to find the req\n");
++		return;
 +	}
 +
-+	dev_err(dev, "NPU HW reset completed");
++	req = &(t_req->req);
++	req->stat->completed = ktime_get();
++	req->stat->status = TRINITY_REQ_STATUS_FINISHED;
 +
-+	list_for_each_entry(pdata, &triv2_driver_list, list)
-+		mutex_unlock(&pdata->drv->lock);
++	time_diff = TIME_DIFF_US(req->stat->completed, req->stat->scheduled);
++	if (time_diff < 0) {
++		dev_warn(dev, "Detected invalid inference time of request\n");
++	} else {
++		req->stat->prev_time = (uint32_t)time_diff;
++		req->stat->prev_cycles = cmd->total_cycles;
++		req->stat->num_runs++;
++		req->stat->total_time += req->stat->prev_time;
++	}
++
++	t_req->total_cycles = cmd->total_cycles;
++	t_req->profile_offset = cmd->profile_offset;
++
++	triv2_clear_cmd(drv, t_req, cmd);
++
++	/* notify to the scheduler */
++	sched = get_trinity_sched(req);
++	if (sched && sched->notify)
++		sched->notify(req, timeout);
++
++	/* notify to the caller */
++	if (!req->is_kernel)
++		complete_all(&req->complete);
++}
++
++static void triv2_handle_timeout(struct trinity_driver *drv,
++				 struct trinity_req *req)
++{
++	struct triv2_cmd_info *cmd_info = TRIV2_DRV_GET_CMD_INFO(drv);
++	struct triv2_cmd *cmd;
++	struct triv2_req *t;
++	unsigned long flags;
++
++	t = TRIV2_GET_REQ(req);
++
++	spin_lock_irqsave(&cmd_info->lock, flags);
++	if (t->cmd_slot >= 0) {
++		/* Timeout! check whether it's not handled in irq handler */
++		cmd = TRIV2_GET_CMD_FROM_SLOT(cmd_info, t->cmd_slot);
++		triv2_handle_cmd_done(drv, cmd, true);
++	}
++	spin_unlock_irqrestore(&cmd_info->lock, flags);
++}
++
++/**
++ * triv2_stop_reqs() - stop the submitted reqs to the driver
++ *
++ * In case of already-executed req, each device needs to determine the policy
++ * depending its capability to terminate the running one.
++ */
++static void triv2_stop_reqs(struct work_struct *work)
++{
++	struct trinity_driver *drv;
++
++	drv = container_of(work, struct trinity_driver, work_stop);
++	if (drv == NULL)
++		return;
++
++	triv2_cancel_reqs(drv);
++}
++
++static void triv2_handle_irq_cmds(struct trinity_driver *drv)
++{
++	struct triv2_cmd_info *info;
++	struct triv2_cmd *cmd;
++	unsigned long flags;
++	int slot;
++
++	info = TRIV2_DRV_GET_CMD_INFO(drv);
++	spin_lock_irqsave(&info->lock, flags);
++
++	/** Search the bitmap to find the completed CMDs */
++	slot = find_first_bit(info->bitmap, TRIV2_MAX_CMDSLOTS);
++	while (slot < TRIV2_MAX_CMDSLOTS) {
++		cmd = TRIV2_GET_CMD_FROM_SLOT(info, slot);
++		if (cmd->status == STATUS_CMD_DONE)
++			triv2_handle_cmd_done(drv, cmd, false);
++		slot = find_next_bit(info->bitmap, TRIV2_MAX_CMDSLOTS,
++				     slot + 1);
++	}
++
++	spin_unlock_irqrestore(&info->lock, flags);
++}
++
++/**
++ * triv2_handle_irq() - An IRQ handler to be called when a registered IRQ (IRQ_OUT) occurs.
++ */
++static irqreturn_t triv2_handle_irq(int irq_no, void *dev_id)
++{
++	struct miscdevice *_mdev;
++	struct trinity_driver *drv;
++	void __iomem *addr;
++	uint32_t interrupt;
++	uint32_t reg;
++
++	_mdev = (struct miscdevice *)dev_id;
++	drv = container_of(_mdev, struct trinity_driver, mdev);
++
++	/**
++	 * Verify that the IRQ is actually from the NPU
++	 * This is required as IRQ_SHARED is used when setting up IRQ
++	 */
++	addr = trinity_get_iomem_addr(drv->mmreg_vaddr[2],
++				      OFFSET_CBOX_EXT_IRQ_STA);
++	reg = ioread32(addr);
++
++	interrupt = reg & MASK_CP_SWI_STA;
++	if (interrupt == 0)
++		return IRQ_NONE;
++
++	/** Clear the interrupt first */
++	addr = trinity_get_iomem_addr(drv->mmreg_vaddr[2],
++				      OFFSET_CBOX_CP_SWI_CLR);
++	iowrite32(1, addr);
++
++	triv2_handle_irq_cmds(drv);
++	return IRQ_HANDLED;
++}
++
++/**
++ * triv2_prepare_req() - evaluate the physical address of entries in the segment table
++ */
++static int32_t triv2_prepare_req(struct trinity_driver *drv,
++				 struct trinity_req *req)
+ {
+-	/* handle ioctl */
++	struct triv2_req *t = TRIV2_GET_REQ(req);
++	struct trinity_input *input = &(req->input);
++	struct trinity_hwmem_import *segt_import = &(input->import_info);
++	int32_t *segtable_dbuffd_base;
++	uint32_t *segtable_extra_base;
++	int ret, i;
++
++	if (input->config.num_segments == 0)
++		return -EINVAL;
++
++	if (input->config.num_segments > TRIV2_MAX_SEGMENTS)
++		return -ERANGE;
++
++	t->seg_import = kcalloc(input->config.num_segments,
++				sizeof(struct trinity_hwmem_import),
++				GFP_KERNEL);
++	if (!t->seg_import)
++		return -ENOMEM;
++
++	/* dmabuf fd to be resolved */
++	segtable_dbuffd_base = segt_import->addr;
++	/* extra value (e.g., offset or size) */
++	segtable_extra_base = segt_import->addr + HALF_PAGE_SIZE;
++
++#ifdef ARM
++	/* sync segment table */
++	__cpuc_flush_dcache_area(input->import_info.addr,
++				 input->import_info.buf->size);
++#endif
++
++	for (i = 0; i < input->config.num_segments; ++i) {
++		struct trinity_hwmem_import *import;
++		int32_t fd = segtable_dbuffd_base[i];
++		dma_addr_t daddr;
++
++		if (fd < 0) {
++			uint32_t idx = (uint32_t)((fd + 1) * -1);
++			struct triv2_kernel_req *kreq;
++
++			/* it's for kernel input/output */
++			if (!req->is_kernel) {
++				req->is_kernel = true;
++				kreq = kzalloc(sizeof(*kreq), GFP_KERNEL);
++				if (!kreq) {
++					ret = -ENOMEM;
++					goto err;
++				}
++				t->kernel = kreq;
++			}
++
++			kreq = t->kernel;
++			if (idx < TRIV2_MAX_TENSORS) {
++				kreq->in_seg_idx[idx] = i;
++				kreq->in_seg_size[idx] = segtable_extra_base[i];
++				t->total_segment_size += kreq->in_seg_size[idx];
++			} else if (idx < TRIV2_MAX_TENSORS * 2) {
++				idx -= TRIV2_MAX_TENSORS;
++				kreq->out_seg_idx[idx] = i;
++				kreq->out_seg_size[idx] =
++					segtable_extra_base[i];
++				t->total_segment_size +=
++					kreq->out_seg_size[idx];
++			} else {
++				dev_err(drv_to_dev_ptr(drv),
++					"Invalid external segment (idx: %u)",
++					idx);
++				ret = -EINVAL;
++				goto err;
++			}
++			continue;
++		}
++
++		import = &(t->seg_import[i]);
++		ret = trinity_hwmem_import_dmabuf_begin(drv_to_dev_ptr(drv), fd,
++							import);
++		if (ret) {
++			dev_err(drv_to_dev_ptr(drv),
++				"%d-th segment with fd (%d) seems invalid: %d",
++				i, fd, ret);
++			goto err;
++		}
++
++		t->total_segment_size += import->buf->size;
++
++		/** @todo Use a local ptr variable */
++		daddr = import->dma_addr;
++		daddr += segtable_extra_base[i];
++
++		iowrite32(TRIV2_IDU_ADDR(daddr),
++			  segt_import->addr + i * sizeof(u32));
++	}
++
++	/* set the dma address of DSPM (reserved index: TRIV2_MAX_SEGMENTS - 1) */
++	if (drv->dspm > 0) {
++		struct triv2_pdata *pdata = TRIV2_DRV_GET_PDATA(drv);
++
++		iowrite32(TRIV2_IDU_ADDR(pdata->idu_dsp.dspm),
++			  segt_import->addr +
++				  (TRIV2_MAX_SEGMENTS - 1) * sizeof(u32));
++	}
+ 
+ 	return 0;
++
++err:
++	kfree(t->seg_import);
++	t->seg_import = NULL;
++	return ret;
++}
++
++/**
++ * triv2_invoke_req() - Invoke a req on the device. Note that all configurations
++ * required by running should be done before invocation of this function.
++ */
++static int32_t triv2_invoke_req(struct trinity_driver *drv,
++				struct trinity_req *req, void *sched_data)
++{
++	/* invoke request */
++
++	return 0;
 +}
 +
 +static long triv2_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
 +{
-+	/* handle ioctl */
-+
-+	return 0;
-+}
-+
-+static int triv2_open(struct inode *inode, struct file *f)
-+{
-+	return trinity_open(inode, f);
-+}
-+
-+static const struct file_operations triv2_fops = {
-+	.owner = THIS_MODULE,
-+	.unlocked_ioctl = triv2_ioctl,
-+	.open = triv2_open,
-+	.release = trinity_release,
-+	.llseek = noop_llseek,
-+};
-+
-+static void triv2_init_common(void)
-+{
-+	static bool done;
-+
-+	if (done)
-+		return;
-+
-+	/* init hlists */
-+	done = true;
-+}
-+
-+static int triv2_idu_version(struct trinity_driver *drv, uint32_t *major,
-+			     uint32_t *minor, uint32_t *extra)
-+{
-+	struct triv2_pdata *pdata;
-+	uint32_t val;
-+
-+	if (!drv || !major || !minor || !extra)
-+		return -EINVAL;
-+
-+	pdata = TRIV2_DRV_GET_PDATA(drv);
-+	val = pdata->idu_version;
-+	if (val != 0) {
-+		*major = (val & TRIV2_IDU_MASK_MAJOR) >> TRIV2_IDU_SHIFT_MAJOR;
-+		*minor = (val & TRIV2_IDU_MASK_MINOR) >> TRIV2_IDU_SHIFT_MINOR;
-+		*extra = val & TRIV2_IDU_MASK_EXTRA;
-+	} else {
-+		return -ENOENT;
-+	}
-+
-+	return 0;
-+}
-+
-+static void triv2_idu_check(struct trinity_driver *drv)
-+{
-+	struct triv2_pdata *pdata = TRIV2_DRV_GET_PDATA(drv);
++	struct trinity_driver *drv = f->private_data;
 +	struct device *dev = drv_to_dev_ptr(drv);
-+	uint32_t major, minor, extra;
++	long ret;
 +
-+	pdata->idu_version =
-+		ioread32(drv->mmreg_vaddr[0] + OFFSET_NPU_IDU_VERSION);
-+	if (triv2_idu_version(drv, &major, &minor, &extra) == 0)
-+		dev_info(dev,
-+			 "Instruction Decoder Unit (IDU) v%u.%u.%u detected",
-+			 major, minor, extra);
-+}
++	if (trinity_pm_runtime_forbid(dev) != 0)
++		return -EBUSY;
 +
-+static int triv2_idu_load(struct trinity_driver *drv, const char *dirpath,
-+			  bool load_files)
-+{
-+	/* load idu data */
++	ret = trinity_ioctl(f, cmd, arg);
 +
-+	return 0;
-+}
++	trinity_pm_runtime_allow(dev);
 +
-+static void triv2_idu_unload(struct trinity_driver *drv)
-+{
-+	/* unload idu data */
-+}
++	return ret;
+ }
+ 
+ static int triv2_open(struct inode *inode, struct file *f)
+ {
+-	return trinity_open(inode, f);
++	struct miscdevice *miscdev;
++	struct trinity_driver *drv;
++	struct device *dev;
++	int ret;
 +
-+static void triv2_setup_buffers(struct trinity_driver *drv)
-+{
-+	/* setup buffer */
-+}
++	miscdev = (struct miscdevice *)f->private_data;
++	drv = container_of(miscdev, struct trinity_driver, mdev);
++	dev = drv_to_dev_ptr(drv);
 +
-+static int32_t triv2_init_pdata(struct trinity_driver *drv)
-+{
-+	struct triv2_pdata *pdata;
-+	struct triv2_cmd_info *cmd_info;
++	if (trinity_pm_runtime_forbid(dev) != 0)
++		return -EBUSY;
 +
-+	/* alloc triv2 pdata */
-+	drv->pdata = kzalloc(sizeof(struct triv2_pdata), GFP_KERNEL);
-+	if (!drv->pdata)
-+		return -ENOMEM;
++	ret = trinity_open(inode, f);
 +
-+	pdata = drv->pdata;
-+	pdata->drv = drv;
++	trinity_pm_runtime_allow(dev);
 +
-+	cmd_info = TRIV2_DRV_GET_CMD_INFO(drv);
++	return ret;
+ }
+ 
+ static const struct file_operations triv2_fops = {
+@@ -624,11 +1036,13 @@ static void triv2_setup_buffers(struct trinity_driver *drv)
+ 	struct iommu_domain *domain;
+ 	struct trinity_resv_mem *cmd_buf;
+ 	struct trinity_resv_mem *back_buf;
++	struct trinity_resv_mem *prof_buf;
+ 	phys_addr_t paddr;
+ 
+ 	domain = iommu_get_domain_for_dev(dev);
+ 	cmd_buf = TRIV2_DRV_GET_CMD_BUF(drv);
+ 	back_buf = TRIV2_DRV_GET_BACK_BUF(drv);
++	prof_buf = TRIV2_DRV_GET_PROF_BUF(drv);
+ 
+ 	/* command */
+ 	paddr = trinity_get_paddr(domain, cmd_buf->daddr);
+@@ -641,14 +1055,34 @@ static void triv2_setup_buffers(struct trinity_driver *drv)
+ 					 OFFSET_NPU_BACK_ADDR));
+ 	iowrite32(back_buf->size, trinity_get_iomem_addr(drv->mmreg_vaddr[0],
+ 							 OFFSET_NPU_BACK_SIZE));
 +
-+	spin_lock_init(&cmd_info->lock);
-+	/* init cmd bitmap */
-+	bitmap_zero(cmd_info->bitmap, TRIV2_MAX_CMDSLOTS);
-+
-+	list_add_tail(&pdata->list, &triv2_driver_list);
-+
-+	return 0;
-+}
-+
-+static int32_t parse_idu_property(struct device *dev,
-+				  const struct device_node *np,
-+				  const char *prop_name, struct triv2_idu *idu)
-+{
-+	struct property *prop;
-+	u64 values[TRIV2_IDU_MAX_SECTORS];
-+	size_t size;
-+	int i, err;
-+
-+	memset(idu, '\x00', sizeof(*idu));
-+
-+	prop = of_find_property(np, prop_name, NULL);
-+	if (!prop)
-+		return -EINVAL;
-+
-+	size = prop->length / sizeof(u64);
-+	if (size != TRIV2_IDU_MAX_SECTORS) {
-+		dev_err(dev, "idu requires %d values", TRIV2_IDU_MAX_SECTORS);
-+		return -EINVAL;
-+	}
-+
-+	idu->addr_num = size;
-+	idu->addrs = devm_kcalloc(dev, size, sizeof(*idu->addrs), GFP_KERNEL);
-+	if (!idu->addrs) {
-+		dev_err(dev, "failed to allocate memory for idu values");
-+		return -ENOMEM;
-+	}
-+
-+	err = of_property_read_u64_array(np, prop_name, values, size);
-+	if (err < 0) {
-+		dev_err(dev, "failed to read property u64 array: %d", err);
-+		return err;
-+	}
-+
-+	for (i = 0; i < TRIV2_IDU_MAX_SECTORS; i++)
-+		idu->addrs[i] = (unsigned long)values[i];
-+
-+	return 0;
-+}
-+
-+/**
-+ * triv2_setup_idu() - Setup IDU (e.g., CP, DSP) sections for this device
-+ */
-+static int triv2_setup_idu(struct trinity_driver *drv)
-+{
-+	struct triv2_pdata *pdata = TRIV2_DRV_GET_PDATA(drv);
-+	struct device *dev = drv_to_dev_ptr(drv);
-+	struct device_node *np = dev->of_node;
-+	int err;
-+
-+	/* get Instruction Decode Unit (IDU) property */
-+	err = parse_idu_property(dev, np, "samsung,idu_cp", &pdata->idu_cp);
-+	if (err < 0) {
-+		dev_err(dev, "Failed to parse idu property: samsung,idu_cp");
-+		return err;
-+	}
-+
-+	err = parse_idu_property(dev, np, "samsung,idu_dsp", &pdata->idu_dsp);
-+	if (err < 0) {
-+		dev_info(dev, "DSP is not supported");
-+		pdata->idu_dsp.addrs = NULL;
-+	}
-+
-+	/* try to find the IDU files (default) */
-+	if (triv2_idu_load(drv, NULL, true) < 0) {
-+		dev_warn(dev, "Failed to load IDU in the default path\n");
-+		dev_warn(dev, "Should load IDU using sysfs later\n");
++	/* profile */
++	if (prof_buf->size > 0) {
++		paddr = trinity_get_paddr(domain, prof_buf->daddr);
++		iowrite32(TRIV2_IDU_ADDR(paddr),
++			  trinity_get_iomem_addr(drv->mmreg_vaddr[0],
++						 OFFSET_NPU_PROF_ADDR));
++		iowrite32(prof_buf->size,
++			  trinity_get_iomem_addr(drv->mmreg_vaddr[0],
++						 OFFSET_NPU_PROF_SIZE));
 +	} else {
-+		triv2_idu_check(drv);
++		iowrite32(0, trinity_get_iomem_addr(drv->mmreg_vaddr[0],
++						    OFFSET_NPU_PROF_ADDR));
++		iowrite32(0, trinity_get_iomem_addr(drv->mmreg_vaddr[0],
++						    OFFSET_NPU_PROF_SIZE));
++	}
+ }
+ 
+ static int32_t triv2_init_pdata(struct trinity_driver *drv)
+ {
++	struct device *dev = drv_to_dev_ptr(drv);
+ 	struct triv2_pdata *pdata;
+ 	struct triv2_cmd_info *cmd_info;
+ 	struct trinity_resv_mem *cmd_buf;
+ 	struct trinity_resv_mem *back_buf;
++	int status;
++
++	trinity_pm_runtime_attach(dev);
+ 
+ 	/* alloc triv2 pdata */
+ 	drv->pdata = kzalloc(sizeof(struct triv2_pdata), GFP_KERNEL);
+@@ -662,13 +1096,42 @@ static int32_t triv2_init_pdata(struct trinity_driver *drv)
+ 	cmd_buf = TRIV2_DRV_GET_CMD_BUF(drv);
+ 	back_buf = TRIV2_DRV_GET_BACK_BUF(drv);
+ 
++	mutex_init(&pdata->prof_lock);
+ 	spin_lock_init(&cmd_info->lock);
+ 	/* init cmd bitmap */
+ 	bitmap_zero(cmd_info->bitmap, TRIV2_MAX_CMDSLOTS);
+ 
++	/* alloc command buffer */
++	status = trinity_alloc_from_resv_mem(PAGE_SIZE, cmd_buf, false);
++	if (status < 0) {
++		dev_err(dev, "Couldn't allocate memory for cmd slots");
++		goto free_pdata;
++	}
++	/* ensure cmd buffer is null-initialized, which is visible in NPU as well */
++	memset_io(cmd_buf->vaddr, '\x00', PAGE_SIZE);
++
++	/* alloc backup buffer for preemption (GBUF + DSPM) */
++	status = trinity_alloc_from_resv_mem(TRIV2_DLA_GBUFFER_SIZE + drv->dspm,
++					     back_buf, false);
++	if (status < 0) {
++		dev_err(dev,
++			"Couldn't allocate memory for context backup buffer");
++		goto free_cmd_info;
 +	}
 +
-+	/* setup dma info */
++	triv2_setup_buffers(drv);
+ 	list_add_tail(&pdata->list, &triv2_driver_list);
+ 
+ 	return 0;
 +
-+	return 0;
-+}
-+
-+/**
-+ * triv2_init() - Initialize necessary variables in TRIV2
-+ */
-+static int32_t triv2_init(struct trinity_driver *drv)
-+{
-+	triv2_init_common();
-+	return triv2_init_pdata(drv);
-+}
-+
-+/**
-+ * triv2_cleanup() - Clean up initialized variables in TRIV2
-+ */
-+static void triv2_cleanup(struct trinity_driver *drv)
-+{
-+	if (!drv->pdata)
-+		return;
-+
-+	triv2_idu_unload(drv);
-+
-+	list_del(&(TRIV2_DRV_GET_PDATA(drv)->list));
++free_cmd_info:
++	dma_free_wc(drv_to_dev_ptr(drv), PAGE_SIZE, cmd_buf->vaddr,
++		    cmd_buf->daddr);
++free_pdata:
 +	kfree(drv->pdata);
 +	drv->pdata = NULL;
++
++	return status;
+ }
+ 
+ static int32_t parse_idu_property(struct device *dev,
+@@ -812,6 +1275,98 @@ static struct trinity_desc triv2_desc = {
+ 	.dealloc_req = triv2_dealloc_req,
+ 	.prepare_req = triv2_prepare_req,
+ 	.invoke_req = triv2_invoke_req,
++	/* profile */
++	.init_profile = triv2_init_profile,
++	.check_profile = triv2_check_profile,
++	.get_profile_meta = triv2_get_profile_meta,
++	.get_profile_buff = triv2_get_profile_buff,
++	.show_profile = triv2_show_profile,
++	.destroy_profile = triv2_destroy_profile,
++	/* etc. */
++	.handle_timeout = triv2_handle_timeout,
++	.stop_reqs = triv2_stop_reqs,
++	.drain_reqs = triv2_drain_reqs,
++	.handle_irq = triv2_handle_irq,
++};
++
++static int triv2_suspend(struct device *dev)
++{
++	return 0;
 +}
 +
-+static struct trinity_desc triv2_desc = {
-+	.type = "triv2",
-+	.ver = GENVER(TRINITY_DEV_VISION2, VER_MAJOR, VER_MINOR, VER_EXTRA),
-+	.fops = &triv2_fops,
-+	/* device management */
-+	.reset = triv2_reset,
-+	.idu_load = triv2_idu_load,
-+	.idu_version = triv2_idu_version,
-+	/* req management */
-+	.alloc_req = triv2_alloc_req,
-+	.dealloc_req = triv2_dealloc_req,
-+	.prepare_req = triv2_prepare_req,
-+	.invoke_req = triv2_invoke_req,
-+};
++static int triv2_resume(struct device *dev)
++{
++	return 0;
++}
 +
-+static const struct of_device_id trinity_match[] = {
-+	{
-+		.compatible = "samsung,trinity",
-+	},
-+	{ /** sentinel */ },
-+};
++static int triv2_runtime_suspended;
++static int triv2_runtime_resumed;
 +
-+/**
-+ * trinity_triv2_probe() - Probes for Trinity vision devices, inits them if found
-+ */
-+static int trinity_triv2_probe(struct platform_device *pdev)
++static int triv2_runtime_suspend(struct device *dev)
 +{
 +	struct trinity_driver *drv;
-+	int err;
 +
-+	err = trinity_probe(pdev, &triv2_desc);
-+	if (err < 0)
-+		return err;
-+
-+	err = triv2_init(drv);
-+	if (err < 0)
-+		goto out_remove;
-+
-+	err = triv2_setup_idu(drv);
-+	if (err < 0) {
-+		triv2_cleanup(drv);
-+		goto out_remove;
++	drv = (struct trinity_driver *)dev_get_drvdata(dev);
++	if (!drv) {
++		dev_warn(dev, "Cannot find driver data");
++		return 0;
 +	}
 +
-+	err = trinity_create_node(drv);
-+	if (err < 0) {
-+		triv2_cleanup(drv);
-+		goto out_remove;
-+	}
++	mutex_lock(&drv->lock);
 +
-+	dev_info(drv_to_dev_ptr(drv), "Trinity Vision2 (TRIV2) probed");
++	/* 1) Ensure that the scheduler was suspended */
++	trinity_sched_suspend();
++
++	/* 2) Set pause state if it's in ready state */
++	if (triv2_get_state(drv) == TRINITY_STATE_READY)
++		triv2_set_state(drv, TRINITY_STATE_PAUSE);
++
++	mutex_unlock(&drv->lock);
++
++	triv2_runtime_suspended++;
 +
 +	return 0;
-+
-+out_remove:
-+	trinity_remove(pdev, &triv2_desc);
-+	return err;
 +}
 +
-+/**
-+ * trinity_triv2_remove() - Removes an instance of a Trinity vision device
-+ */
-+static int trinity_triv2_remove(struct platform_device *pdev)
++static int triv2_runtime_resume(struct device *dev)
 +{
 +	struct trinity_driver *drv;
 +
-+	drv = (struct trinity_driver *)platform_get_drvdata(pdev);
-+
-+	trinity_destroy_node(drv);
-+	triv2_cleanup(drv);
-+	return trinity_remove(pdev, &triv2_desc);
-+}
-+
-+static struct platform_driver trinity_triv2 = {
-+	.probe = trinity_triv2_probe,
-+	.remove = trinity_triv2_remove,
-+	.driver = {
-+			.name = "triv2",
-+			.owner = THIS_MODULE,
-+			.of_match_table = of_match_ptr(trinity_match),
-+		},
-+};
-+
-+module_platform_driver(trinity_triv2);
-+
-+MODULE_LICENSE("GPL");
-+MODULE_AUTHOR("Samsung Electronics");
-+MODULE_DESCRIPTION("Samsung NPU device driver for trinity vision 2");
-diff --git a/drivers/misc/trinity/trinity_vision2_regs.h b/drivers/misc/trinity/trinity_vision2_regs.h
-new file mode 100644
-index 000000000000..d934db04b2b0
---- /dev/null
-+++ b/drivers/misc/trinity/trinity_vision2_regs.h
-@@ -0,0 +1,210 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/**
-+ * An abstraction layer to handle DMA memory buffers for Trinity device driver
-+ *
-+ * Copyright (C) 2020-2022 Samsung Electronics
-+ * Copyright (C) 2022 MyungJoo Ham <myungjoo.ham@samsung.com>
-+ * Copyright (C) 2022 Yelin Jeong <yelini.jeong@samsung.com>
-+ * Copyright (C) 2022 Jiho Chu <jiho.chu@samsung.com>
-+ */
-+
-+#ifndef __REGS_TRINITY_VISION2_H__
-+#define __REGS_TRINITY_VISION2_H__
-+
-+/* Register offsets for NPU CP (Config) */
-+#define OFFSET_CP_INFO (0x000) /* Processor Information */
-+#define OFFSET_CP_PROC_STAT (0x010) /* Processor Status */
-+#define OFFSET_CP_PROC_SET (0x014) /* Processor Control (Set) */
-+#define OFFSET_CP_PROC_CLR (0x018) /* Processor Control (Clear) */
-+#define OFFSET_CP_IMIF_BASE (0x024) /* Instruction Base Address (DRAM) */
-+#define OFFSET_CP_CNT_CFG (0x200) /* CP Performance Counter */
-+
-+/* Register offsets for NPU CP (IDU Setup) */
-+#define OFFSET_NPU_PROG_BASE (0x100) /* GPR00: Instruction Base Address */
-+#define OFFSET_NPU_PROG_SIZE (0x104) /* GPR01: Program Size */
-+#define OFFSET_NPU_SEGT_ADDR (0x108) /* GPR02: Segment Table Address */
-+#define OFFSET_NPU_PROF_ADDR (0x10C) /* GPR03: NPU Profiling Address */
-+#define OFFSET_NPU_PROF_SIZE (0x110) /* GPR04: NPU Profiling Size */
-+#define OFFSET_NPU_BACK_ADDR (0x114) /* GPR05: NPU Context Backup Address */
-+#define OFFSET_NPU_BACK_SIZE (0x118) /* GPR06: NPU Context Backup Size */
-+#define OFFSET_NPU_PC (0x11C) /* GPR07: NPU Program Counter */
-+
-+/* Register offsets for NPU CP (Commands) */
-+#define OFFSET_NPU_CMD_READY (0x124) /* GPR09: Command Ready Status */
-+#define OFFSET_NPU_CMD_BASE (0x128) /* GPR10: Command Base Address */
-+#define OFFSET_NPU_CMD_REQ (0x12C) /* GPR11: Command Request Slots (not used) */
-+#define OFFSET_NPU_CMD_FREE (0x130) /* GPR12: Command Free Slots */
-+
-+/* Register offsets for NPU CP (Cbox Setup) */
-+#define OFFSET_NPU_CBOX_BASE (0x134) /* GPR13: NPU CBOX BASE */
-+
-+/* Register offsets for Debugging */
-+#define OFFSET_NPU_IDU_VERSION (0x138) /* GPR14: NPU IDU VERSION */
-+#define OFFSET_NPU_IDU_STAGE (0x13C) /* GPR15: NPU IDU STAGE */
-+
-+#define OFFSET_NPU_CP_DMAI_EADDR (0x300) /* CP DMA Source Address */
-+#define OFFSET_NPU_CP_DMAI_IADDR (0x304) /* CP DMA Dest Address */
-+#define OFFSET_NPU_CP_DMAI_TSIZE (0x308) /* CP DMA Transfer Size */
-+#define OFFSET_NPU_CP_DMAI_CONTR (0x310) /* CP DMA Status */
-+#define OFFSET_NPU_CP_DMAI_CMDID (0x314) /* CP DMA Command ID */
-+#define OFFSET_NPU_CP_DMAI_LSTID \
-+	(0x318) /* CP DMA Command ID of the last transfer */
-+
-+#define OFFSET_NPU_DLA_DMAI_EADDR (0x1000) /* DLA Input External Address */
-+#define OFFSET_NPU_DLA_DMAI_EYMOD \
-+	(0x1004) /* DLA Input External Address Y Modifier */
-+#define OFFSET_NPU_DLA_DMAI_EZMOD \
-+	(0x1008) /* DLA Input External Address Z Modifier */
-+#define OFFSET_NPU_DLA_DMAI_IADDR (0x100C) /* DLA Input Internal Address */
-+#define OFFSET_NPU_DLA_DMAI_IYMOD \
-+	(0x1010) /* DLA Input Internal Address Y Modifier */
-+#define OFFSET_NPU_DLA_DMAI_IZMOD \
-+	(0x1014) /* DLA Input Internal Address Z Modifier */
-+#define OFFSET_NPU_DLA_DMAI_SIZE0 (0x1018) /* DLA Input Data Size 0 */
-+#define OFFSET_NPU_DLA_DMAI_SIZE1 (0x101C) /* DLA Input Data Size 1 */
-+#define OFFSET_NPU_DLA_DMAI_CTRL (0x1020) /* DLA Input Channel Status */
-+
-+#define OFFSET_NPU_DLA_DMAO_EADDR (0x1080) /* DLA Output External Address */
-+#define OFFSET_NPU_DLA_DMAO_EYMOD \
-+	(0x1084) /* DLA Output External Address Y Modifier */
-+#define OFFSET_NPU_DLA_DMAO_EZMOD \
-+	(0x1088) /* DLA Output External Address Z Modifier */
-+#define OFFSET_NPU_DLA_DMAO_IADDR (0x108C) /* DLA Output Internal Address */
-+#define OFFSET_NPU_DLA_DMAO_IYMOD \
-+	(0x1090) /* DLA Output Internal Address Y Modifier */
-+#define OFFSET_NPU_DLA_DMAO_IZMOD \
-+	(0x1094) /* DLA Output Internal Address Z Modifier */
-+#define OFFSET_NPU_DLA_DMAO_SIZE0 (0x1098) /* DLA Output Data Size 0 */
-+#define OFFSET_NPU_DLA_DMAO_SIZE1 (0x109C) /* DLA Output Data Size 1 */
-+#define OFFSET_NPU_DLA_DMAO_CTRL (0x10A0) /* DLA Output Channel Status */
-+
-+#define OFFSET_NPU_DLA_CORE_OPC (0x1100) /* DLA Operation Code */
-+#define OFFSET_NPU_DLA_CORE_WIND_CFG (0x1104)
-+#define OFFSET_NPU_DLA_CORE_SIZE0 (0x1108)
-+#define OFFSET_NPU_DLA_CORE_SIZE1 (0x110C)
-+#define OFFSET_NPU_DLA_CORE_ZP (0x1110)
-+#define OFFSET_NPU_DLA_CORE_OUT_MULT (0x1114)
-+#define OFFSET_NPU_DLA_CORE_IN0_MULT (0x1118)
-+#define OFFSET_NPU_DLA_CORE_IN1_MULT (0x111C)
-+#define OFFSET_NPU_DLA_CORE_OUT_CFG (0x1120)
-+#define OFFSET_NPU_DLA_CORE_OUT_MOD (0x1124)
-+#define OFFSET_NPU_DLA_CORE_IN0_CFG (0x1128)
-+#define OFFSET_NPU_DLA_CORE_IN0_MOD (0x112C)
-+#define OFFSET_NPU_DLA_CORE_IN1_CFG (0x1130)
-+#define OFFSET_NPU_DLA_CORE_IN1_MOD (0x1134)
-+#define OFFSET_NPU_DLA_CORE_PARAM_ADDR (0x1138)
-+#define OFFSET_NPU_DLA_CORE_PSUM_ADDR (0x113C)
-+#define OFFSET_NPU_DLA_CORE_CWGT_ADDR (0x1140)
-+#define OFFSET_NPU_DLA_CORE_CTR (0x1144) /* DLA Core Status */
-+
-+#define OFFSET_NPU_DSP_DMAI_EADDR (0x2000) /* DSP Input External Address */
-+#define OFFSET_NPU_DSP_DMAI_EYMOD \
-+	(0x2004) /* DSP Input External Address Y Modifier */
-+#define OFFSET_NPU_DSP_DMAI_EZMOD \
-+	(0x2008) /* DSP Input External Address Z Modifier */
-+#define OFFSET_NPU_DSP_DMAI_IADDR (0x200C) /* DSP Input Internal Address */
-+#define OFFSET_NPU_DSP_DMAI_IYMOD \
-+	(0x2010) /* DSP Input Internal Address Y Modifier */
-+#define OFFSET_NPU_DSP_DMAI_IZMOD \
-+	(0x2014) /* DSP Input Internal Address Z Modifier */
-+#define OFFSET_NPU_DSP_DMAI_SIZE0 (0x2018) /* DSP Input Data Size 0 */
-+#define OFFSET_NPU_DSP_DMAI_SIZE1 (0x201C) /* DSP Input Data Size 1 */
-+#define OFFSET_NPU_DSP_DMAI_CTRL (0x2020) /* DSP Input Channel Status */
-+
-+#define OFFSET_NPU_DSP_DMAO_EADDR (0x2080) /* DSP Output External Address */
-+#define OFFSET_NPU_DSP_DMAO_EYMOD \
-+	(0x2084) /* DSP Output External Address Y Modifier */
-+#define OFFSET_NPU_DSP_DMAO_EZMOD \
-+	(0x2088) /* DSP Output External Address Z Modifier */
-+#define OFFSET_NPU_DSP_DMAO_IADDR (0x208C) /* DSP Output Internal Address */
-+#define OFFSET_NPU_DSP_DMAO_IYMOD \
-+	(0x2090) /* DSP Output Internal Address Y Modifier */
-+#define OFFSET_NPU_DSP_DMAO_IZMOD \
-+	(0x2094) /* DSP Output Internal Address Z Modifier */
-+#define OFFSET_NPU_DSP_DMAO_SIZE0 (0x2098) /* DSP Output Data Size 0 */
-+#define OFFSET_NPU_DSP_DMAO_SIZE1 (0x209C) /* DSP Output Data Size 1 */
-+#define OFFSET_NPU_DSP_DMAO_CTRL (0x20A0) /* DSP Output Channel Status */
-+#define OFFSET_NPU_DSP_CORE_CTRL (0x2140) /* DSP Core Status */
-+
-+/* Register offsets for NPU DSP */
-+#define OFFSET_DSP_INFO (0x000) /* Processor Information */
-+#define OFFSET_DSP_PROC_STAT (0x010) /* Processor Status */
-+#define OFFSET_DSP_PROC_SET (0x014) /* Processor Control (Set) */
-+#define OFFSET_DSP_PROC_CLR (0x018) /* Processor Control (Clear) */
-+#define OFFSET_DSP_IMIF_BASE (0x024) /* Instruction Base Address (DRAM) */
-+
-+/* Register offsets for NPU ComBox (IRQ) */
-+#define OFFSET_CBOX_EXT_IRQ_MSK (0x100) /* External IRQ Output Mask */
-+#define OFFSET_CBOX_EXT_IRQ_STA (0x104) /* External IRQ Output Status */
-+#define OFFSET_CBOX_CP_SWI_CLR (0x134) /* CP IRQ output Clear */
-+#define OFFSET_CBOX_DSP_SWI_CLR (0x154) /* DSP IRQ output Clear */
-+
-+/* Location of bits inside corresponding registers */
-+#define BIT_CLR_IRQ_OUT BIT(24)
-+#define BIT_CLR_PAUSE BIT(0)
-+#define BIT_SET_SEND_EVT1 BIT(18)
-+#define BIT_SET_PAUSE BIT(0)
-+#define BIT_STAT_PAUSED BIT(1)
-+
-+/* Performance counter configurations */
-+#define BIT_CNT_DST_EN BIT(6)
-+#define BIT_CNT_IST_EN BIT(5)
-+#define BIT_CNT_ST_EN BIT(4)
-+#define BIT_CNT_FR_EN BIT(0)
-+
-+/* Bit masks */
-+#define MASK_DSP_SWI_STA BIT_MASK(1)
-+#define MASK_CP_SWI_STA BIT_MASK(0)
-+
-+#define MASK_STAT_WFE_PARAM GENMASK(14, 6)
-+#define MASK_STAT_WFE_PARAM_EVT1 BIT_MASK(8)
-+#define MASK_STAT_WFE BIT_MASK(5)
-+#define MASK_STAT_PAUSED BIT_MASK(1)
-+#define MASK_STAT_PAUSE BIT_MASK(0)
-+
-+#define VER_MAJOR (2)
-+#define VER_MINOR (0)
-+#define VER_EXTRA (0)
-+
-+#define read_idu_file(file, pos, addr, size) kernel_read(filp, addr, size, &pos)
-+
-+/** Macros for Instruction Decode Unit (IDU) */
-+#define TRIV2_IDU_DIRPATH_FMT "/lib/modules/%s/kernel/soc/idu"
-+#define TRIV2_IDU_MAX_SECTORS (3)
-+#define TRIV2_IDU_ZEROIDX (0)
-+#define TRIV2_IDU_DATAIDX (1)
-+#define TRIV2_IDU_CODEIDX (2)
-+#define TRIV2_IDU_ADDR(addr) ((uint32_t)(addr))
-+#define TRIV2_IDU_MAXSIZE (1 << 20) /* 1 MiB */
-+
-+#define TRIV2_IDU_CP_DSPM_SIZE (0x10000)
-+
-+#define TRIV2_IDU_MASK_MAJOR (0xFF000000)
-+#define TRIV2_IDU_MASK_MINOR (0x00FFF000)
-+#define TRIV2_IDU_MASK_EXTRA (0x00000FFF)
-+
-+#define TRIV2_IDU_SHIFT_MAJOR (24)
-+#define TRIV2_IDU_SHIFT_MINOR (12)
-+
-+#define TRIV2_MODEL_HASH_BITS (8)
-+#define TRIV2_MODEL_HASH_SIZE (1 << TRIV2_MODEL_HASH_BITS)
-+#define TRIV2_PROFILE_HASH_BITS (6)
-+#define TRIV2_PROFILE_HASH_SIZE (1 << TRINITY_PROFILE_HASH_BITS)
-+#define TRIV2_PROFILE_HASH_KEY(id) (hash_long((id), TRIV2_PROFILE_HASH_BITS))
-+
-+#define TRIV2_MAX_SEGMENTS (256)
-+/** Fits in a single 4K Page */
-+#define TRIV2_MAX_CMDSLOTS (PAGE_SIZE / sizeof(struct triv2_cmd))
-+
-+#define TRIV2_MAX_TENSORS (16)
-+#define TRIV2_MAX_CMD_SIZE (512)
-+#define TRIV2_MAX_BATCH_SIZE (32)
-+
-+#define TRIV2_DLA_GBUFFER_SIZE (0x80000)
-+#define TRIV2_DSP_DSPM_OFFSET (0x10000)
-+
-+/* 4MiB (~300ns to flush all caches) */
-+#define TRIV2_CACHE_FLUSH_THRESHOLD (0x400000)
-+#define TRIV2_KERN_TIMEOUT_RESET (1000)
-+
-+#endif /* __REGS_TRINITY_VISION2_H__ */
-diff --git a/include/uapi/misc/trinity.h b/include/uapi/misc/trinity.h
-new file mode 100644
-index 000000000000..50946cd0005a
---- /dev/null
-+++ b/include/uapi/misc/trinity.h
-@@ -0,0 +1,458 @@
-+/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-+/**
-+ * User-level header for trinity devices.
-+ *
-+ * Copyright (C) 2020-2022 Samsung Electronics
-+ * Copyright (C) 2020 Wook Song <wook16.song@samsung.com>
-+ * Copyright (C) 2020 Dongju Chae <dongju.chae@samsung.com>
-+ * Copyright (C) 2020 Parichay Kapoor <pk.kapoor@samsung.com>
-+ * Copyright (C) 2022 MyungJoo Ham <myungjoo.ham@samsung.com>
-+ * Copyright (C) 2022 Yelin Jeong <yelini.jeong@samsung.com>
-+ * Copyright (C) 2022 Jiho Chu <jiho.chu@samsung.com>
-+ */
-+
-+#ifndef __TRINITY_H__
-+#define __TRINITY_H__
-+
-+#include <linux/types.h>
-+
-+#define TRINITY_API_LEVEL 12
-+
-+/**
-+ * enum trinity_state - Enum that describes a trinity device state
-+ * @TRINITY_STATE_UNKNOWN: A device has unknown state
-+ * @TRINITY_STATE_PAUSE: A device is paused
-+ * @TRINITY_STATE_READY: A device is ready
-+ * @TRINITY_STATE_END: End of trinity_state
-+ */
-+enum trinity_state {
-+	TRINITY_STATE_UNKNOWN = -1,
-+	TRINITY_STATE_PAUSE = 0,
-+	TRINITY_STATE_READY,
-+	TRINITY_STATE_END,
-+};
-+
-+/**
-+ * enum trinity_input_mode - Enum that describes an input source
-+ * @TRINITY_INPUT_UNKNOWN: Unknown input mode
-+ * @TRINITY_INPUT_CPU: Input feed by CPU
-+ * @TRINITY_INPUT_HW: Input feed by third-party HW
-+ * @TRINITY_INPUT_END: End of trinity_input_mode
-+ */
-+enum trinity_input_mode {
-+	TRINITY_INPUT_UNKNOWN = -1,
-+	TRINITY_INPUT_CPU = 0,
-+	TRINITY_INPUT_HW,
-+	TRINITY_INPUT_END,
-+};
-+
-+/**
-+ * enum trinity_output_mode - Enum that describes an output source
-+ * @TRINITY_OUTPUT_UNKNOWN: Unknown output mode
-+ * @TRINITY_OUTPUT_CPU_INTR: Output completion handling by interrupt
-+ * @TRINITY_OUTPUT_CPU_POLL: Output completion handling by polling
-+ * @TRINITY_OUTPUT_HW: Output completion handling by third-party HW
-+ * @TRINITY_OUTPUT_END: End of trinity_output_mode
-+ */
-+enum trinity_output_mode {
-+	TRINITY_OUTPUT_UNKNOWN = -1,
-+	TRINITY_OUTPUT_CPU_INTR = 0,
-+	TRINITY_OUTPUT_CPU_POLL,
-+	TRINITY_OUTPUT_HW,
-+	TRINITY_OUTPUT_END,
-+};
-+
-+/**
-+ * enum trinity_app_status - Enum that describes an app status
-+ * @TRINITY_APP_STATUS_UNKNOWN: Unknown app status
-+ * @TRINITY_APP_STATUS_ERROR: App has got some errors
-+ * @TRINITY_APP_STATUS_PENDING: App is currently pending
-+ * @TRINITY_APP_STATUS_STARTED: App was started
-+ * @TRINITY_APP_STATUS_TERMINATED: App was terminated
-+ */
-+enum trinity_app_status {
-+	TRINITY_APP_STATUS_UNKNOWN = 0,
-+	TRINITY_APP_STATUS_ERROR = 1,
-+	TRINITY_APP_STATUS_PENDING = 2,
-+	TRINITY_APP_STATUS_STARTED = 3,
-+	TRINITY_APP_STATUS_TERMINATED = 4
-+};
-+
-+/**
-+ * enum trinity_req_status - Enum that describes a request status
-+ * @TRINITY_REQ_STATUS_UNKNOWN: Unknown request status
-+ * @TRINITY_REQ_STATUS_ERROR: Request has got some errors
-+ * @TRINITY_REQ_STATUS_PENDING: Request is currently pending
-+ * @TRINITY_REQ_STATUS_RUNING: Request is currently running
-+ * @TRINITY_REQ_STATUS_FINISHED: Request was finished
-+ */
-+enum trinity_req_status {
-+	TRINITY_REQ_STATUS_UNKNOWN = 0,
-+	TRINITY_REQ_STATUS_ERROR = 1,
-+	TRINITY_REQ_STATUS_PENDING = 2, /* A request is submitted */
-+	TRINITY_REQ_STATUS_RUNNING = 3, /* A request is running on NPU */
-+	TRINITY_REQ_STATUS_FINISHED = 4 /* A request is just finished */
-+};
-+
-+/**
-+ * enum trinity_req_priority - Enum that describes a request priority
-+ * @TRINITY_REQ_PRIORITY_LOW: Low priority
-+ * @TRINITY_REQ_PRIORITY_MID: Mid priority scheduled with a higher chance than low one
-+ * @TRINITY_REQ_PRIORITY_HIGH: High priority preempting lower priority requests
-+ */
-+enum trinity_req_priority {
-+	TRINITY_REQ_PRIORITY_LOW = 0,
-+	TRINITY_REQ_PRIORITY_MID = 1,
-+	TRINITY_REQ_PRIORITY_HIGH = 2,
-+};
-+
-+/**
-+ * enum trinity_hwmem_type - A type of DMA buffer allocation method.
-+ * @TRINITY_HWMEM_DMA_CONT: Use CMA to allocate backing stroage of DMA buffers.
-+ * @TRINITY_HWMEM_DMA_IOMMU: Use IOMMU to allocate backing stroage of DMA buffers.
-+ * @HWMEM_END: Sentinel.
-+ */
-+enum trinity_hwmem_type {
-+	TRINITY_HWMEM_DMA_CONT = 0,
-+	TRINITY_HWMEM_DMA_IOMMU,
-+	TRINITY_HWMEM_END,
-+};
-+
-+#ifndef TASK_COMM_LEN
-+#define TASK_COMM_LEN 16
-+#endif
-+
-+#define TRINITY_APP_NAME_MAX TASK_COMM_LEN
-+#define TRINITY_APP_STAT_MAX 10
-+#define TRINITY_REQ_STAT_MAX 10
-+
-+/**
-+ * struct trinity_ioctl_stat_app - Describes stat of the target app
-+ * @app_id: Trinity app id (currently, equal to pid)
-+ * @name: Trinity app name
-+ * @status: Trinity app status
-+ * @num_total_reqs: Number of total requests in app (including finished ones)
-+ * @num_active_reqs: Number of active (running or pending) requests in app
-+ * @total_alloc_mem: Total size of allocated memory in the device
-+ * @total_freed_mem: Total size of freed memory in the device
-+ */
-+struct trinity_ioctl_stat_app {
-+	__s32 app_id;
-+
-+	char name[TRINITY_APP_NAME_MAX];
-+	enum trinity_app_status status;
-+
-+	__u32 num_total_reqs;
-+	__u32 num_active_reqs;
-+
-+	__u64 total_alloc_mem;
-+	__u64 total_freed_mem;
-+} __packed;
-+
-+/**
-+ * struct trinity_ioctl_stat_apps - Describes stats of the latest apps
-+ * @num_apps: Number of apps for the stat list
-+ * @stat: Stat of the latest apps
-+ */
-+struct trinity_ioctl_stat_apps {
-+	__u32 num_apps;
-+	struct trinity_ioctl_stat_app stat[TRINITY_APP_STAT_MAX];
-+} __packed;
-+
-+/**
-+ * struct trinity_ioctl_stat_req - Describes stat of the target request
-+ * @req_id: Trinity req id
-+ * @model_id: Trinity model id
-+ * @priority: Request priority (low, mid, or high)
-+ * @status: Request status
-+ * @sched_time: scheduling time in ms
-+ * @infer_time: inference time in ms
-+ */
-+struct trinity_ioctl_stat_req {
-+	__s32 req_id;
-+	__u64 model_id;
-+
-+	enum trinity_req_priority priority;
-+	enum trinity_req_status status;
-+
-+	__u32 sched_time;
-+	__u32 infer_time;
-+} __packed;
-+
-+/**
-+ * struct trinity_ioctl_stat_reqs - Describes stats of the latest reqs
-+ * @app_id: Trinity app id (0 means 'current')
-+ * @num_reqs: Number of reqs for stat list
-+ * @stat: Stat of the latest reqs
-+ */
-+struct trinity_ioctl_stat_reqs {
-+	__s32 app_id;
-+	__u32 num_reqs;
-+	struct trinity_ioctl_stat_req stat[TRINITY_REQ_STAT_MAX];
-+} __packed;
-+
-+/**
-+ * struct trinity_ioctl_hwmem - A structure that Describes hardware memory (hwmem)
-+ * @type: The type of hwmem type
-+ * @size: The size of hwmem
-+ * @dbuf_fd: File descriptor for dmabuf representing hwmem
-+ */
-+struct trinity_ioctl_hwmem {
-+	enum trinity_hwmem_type type;
-+	__u64 size;
-+	__s32 dbuf_fd;
-+} __packed;
-+
-+/**
-+ * struct trinity_ioctl_profile_meta - Describes profiling meta info.
-+ * @req_id: The target req id for profiling
-+ * @total_cycles: The total number of cycles of the given req
-+ * @total_ops: The total number of operations of the given req
-+ * @input_footprint: The DRAM footprint of input data
-+ * @output_footprint: The DRAM footprint of output data
-+ * @profile_size: The size of profiling data
-+ */
-+struct trinity_ioctl_profile_meta {
-+	__s32 req_id;
-+	__s64 total_cycles;
-+	__u32 total_ops;
-+	__s64 input_footprint;
-+	__s64 output_footprint;
-+	__u32 profile_size;
-+} __packed;
-+
-+/**
-+ * struct trinity_ioctl_profile_buff - Describes profiling buff info.
-+ * @req_id: The target req id for profiling
-+ * @profile_pos: The start position to extract profiling data
-+ * @profile_size: The size of user-allocated profiling buffer
-+ * @profile_buf: The profiling buffer which user allocated
-+ */
-+struct trinity_ioctl_profile_buff {
-+	__s32 req_id;
-+	__u32 profile_pos;
-+	__u32 profile_size;
-+	void __user *profile_buf;
-+} __packed;
-+
-+/**
-+ * struct trinity_ioctl_model - A structure that configure a model registered on NPU
-+ * @id: Id for NPU model to extract the base phys addr
-+ * @dbuf_fd: File descriptor for dmabuf representing the model
-+ * @program_offset_addr: Offset address for the instructions (NPU_PROG_BASE)
-+ * @program_size: Size of the program instructions (NPU_PROG_SIZE)
-+ * @version: The version of npubinfmt
-+ * @endp_trnt_model_common: Indicator for the end of common model parameters
-+ * @weight_offset_addr: Offset address for storing weights (NPU_WGT_BASE)
-+ * @metadata_dbuf_fd: File descriptor for dmabuf representing the metadata
-+ * @metadata_extra_addr: Offset address for the metadata extra
-+ * @metadata_extra_size: Size of the metadata extra
-+ * @num_visa_insts: Number of virtual ISA instructions
-+ */
-+struct trinity_ioctl_model {
-+	__u64 id;
-+	__s32 dbuf_fd;
-+	__u64 program_offset_addr;
-+	__u64 program_size;
-+	__u32 version;
-+	union {
-+		__u8 endp_trnt_model_common[0];
-+		struct {
-+			__u64 weight_offset_addr;
-+		} __packed;
-+		struct {
-+			__s32 metadata_dbuf_fd;
-+			__s32 metadata_ext_dbuf_fd;
-+			__u64 metadata_ext_size;
-+			__u32 num_visa_insts;
-+		} __packed;
-+	};
-+} __packed;
-+
-+/**
-+ * struct trinity_ioctl_input - A structure that configure an input passed to NPU
-+ * @dbuf_fd: File descriptor for dmabuf of I/O buffer (or segment table)
-+ * @model_id: Model id received when setting the model in the NPU
-+ * @req_id: Request id to distinguish each run_input
-+ * @timeout_ms: Timeout in ms, zero is regarded as preemption
-+ * @priority: Priority (LOW: 0, MID: 1, HIGH: 2)
-+ * @endp_trnt_input_common: Indicator for the end of common input parameters
-+ * @activation_offset_addr0: Offset address for storing weights (NPU_ACT_BASE0)
-+ * @activation_offset_addr1: Offset address for storing weights (NPU_ACT_BASE1)
-+ * @num_segments: Number of segments
-+ * @input_mode: Input mode (who is supposed to feed input)
-+ * @output_mode: Output mode (who is supposed to retrieve output)
-+ * @hw_input_seg: Third-party HW's input segment idx
-+ * @hw_output_seg: Third-party HW's output segment idx
-+ * @task_handle: user requested task handle
-+ * @subtask_idx: user requested subtask idx
-+ * @task_id: kernel module requested task id
-+ */
-+struct trinity_ioctl_input {
-+	__s32 dbuf_fd;
-+	__u64 model_id;
-+	__s32 req_id;
-+	__s64 timeout_ms;
-+	__u32 priority;
-+	union {
-+		__u8 endp_trnt_input_common[0];
-+		struct {
-+			/* added for TRIV-1 */
-+			__u64 activation_offset_addr0;
-+			__u64 activation_offset_addr1;
-+		} __packed;
-+		struct {
-+			/* added for TRIV-2 */
-+			__u32 num_segments;
-+			enum trinity_input_mode input_mode;
-+			enum trinity_output_mode output_mode;
-+			__s32 hw_input_seg;
-+			__s32 hw_output_seg;
-+			/* [optional] vd scheduler info */
-+			union {
-+				struct { /* user request */
-+					__u32 task_handle;
-+					__u32 subtask_idx;
-+				} __packed;
-+				struct { /* kernel request */
-+					__u32 task_id;
-+				} __packed;
-+			};
-+		} __packed;
-+	};
-+} __packed;
-+
-+#define TRINITY_MASK_DEV (0xFF000000)
-+#define TRINITY_MASK_MAJOR_VER (0x00FF0000)
-+#define TRINITY_MASK_MINOR_VER (0x0000FF00)
-+#define TRINITY_MASK_EXTRA_VER (0x000000FF)
-+
-+/**
-+ * struct trinity_ioctl_fpga_memcpy - A structure that contains driver-assisted memcpy
-+ * @dbuf_fd: File descriptor for dmabuf of the target buffer
-+ * @dbuf_off: Offset from the dmabuf base address
-+ * @user_addr: Address of user-level buffer
-+ * @user_size: Size of user-level buffer
-+ *
-+ * @note: It's workaround structure for FPGA envionment
-+ */
-+struct trinity_ioctl_fpga_memcpy {
-+	__s32 dbuf_fd;
-+	__u32 dbuf_off;
-+	void __user *user_addr;
-+	__u64 user_size;
-+} __packed;
-+
-+#define TRINITY_SHIFT_DEV (24)
-+#define TRINITY_SHIFT_MAJOR_VER (16)
-+#define TRINITY_SHIFT_MINOR_VER (8)
-+#define TRINITY_SHIFT_EXTRA_VER (0)
-+#define TRINITY_SHIFT_MODEL_ID (16)
-+
-+#define trinity_gen_ver(dev, mj, mn, ex)                                       \
-+	{                                                                      \
-+		(dev << TRINITY_SHIFT_DEV) | (mj << TRINITY_SHIFT_MAJOR_VER) | \
-+			(mn << TRINITY_SHIFT_MINOR_VER) |                      \
-+			(ex << TRINITY_SHIFT_EXTRA_VER)                        \
++	drv = (struct trinity_driver *)dev_get_drvdata(dev);
++	if (!drv) {
++		dev_warn(dev, "Cannot find driver data");
++		return 0;
 +	}
 +
-+/**
-+ * enum trinity_dev_type - Enum that describes a trinity device type
-+ * @TRINITY_DEV_UNKNOWN: Unknown device type
-+ * @TRINITY_DEV_VISION: Trinity Vision (TRIV)
-+ * @TRINITY_DEV_AUDIO: Trinity Asr (TRIA)
-+ * @TRINITY_DEV_VISION2: Trinity Vision2 (TRIV2)
-+ * @TRINITY_DEV_VISION2_CUSE: Trinity Vision2 (TRIV2), CUSE-based impl.
-+ * @TRINITY_DEV_END: End of trinity_dev_type
-+ */
-+enum trinity_dev_type {
-+	TRINITY_DEV_UNKNOWN = 0,
-+	TRINITY_DEV_VISION,
-+	TRINITY_DEV_AUDIO,
-+	TRINITY_DEV_VISION2,
-+	TRINITY_DEV_VISION2_CUSE, /* CUSE-based impl. for triv2 */
-+	TRINITY_DEV_END /* sentinel */
-+};
++	/* 0) Reset NPU devices (only once) */
++	trinity_reset_device(dev, triv2_runtime_resumed == 0);
 +
-+/**
-+ * Major number can not be dynamic as ioctls need it,
-+ */
-+#define TRINITY_DRIVER_MAGIC 0x88
++	mutex_lock(&drv->lock);
 +
-+#define TRINITY_IO(no) _IO(TRINITY_DRIVER_MAGIC, no)
-+#define TRINITY_IOR(no, data_type) _IOR(TRINITY_DRIVER_MAGIC, no, data_type)
-+#define TRINITY_IOW(no, data_type) _IOW(TRINITY_DRIVER_MAGIC, no, data_type)
-+#define TRINITY_IOWR(no, data_type) _IOWR(TRINITY_DRIVER_MAGIC, no, data_type)
++	/* 1) Restore IDU setup */
++	triv2_setup_buffers(drv);
++	triv2_idu_load(drv, NULL, false);
 +
-+/** Device Information */
++	/* 2) Set ready state if it was in ready state before */
++	if (drv->opened > 0)
++		triv2_set_state(drv, TRINITY_STATE_READY);
 +
-+/** Get the device version information from the driver */
-+#define TRINITY_IOCTL_GET_VERSION TRINITY_IOR(1, __u32)
-+/** Get the device API level from the driver */
-+#define TRINITY_IOCTL_GET_API_LEVEL TRINITY_IOR(2, __u32)
-+/** Get the device state from the driver */
-+#define TRINITY_IOCTL_GET_STATE TRINITY_IOR(3, __s32)
-+/** Get the device tops information from the driver */
-+#define TRINITY_IOCTL_GET_TOPS TRINITY_IOR(4, __u32)
-+/** Get the device dspm information from the driver */
-+#define TRINITY_IOCTL_GET_DSPM TRINITY_IOR(5, __u32)
-+/** Get the next request ID from the driver */
-+#define TRINITY_IOCTL_GET_NEXT_REQUEST TRINITY_IOR(6, __s32)
++	/* 3) Resume the req scheduler */
++	trinity_sched_resume();
 +
-+/** Device Control */
++	mutex_unlock(&drv->lock);
 +
-+/** Allocate driver-managed memory */
-+#define TRINITY_IOCTL_HWMEM_ALLOC TRINITY_IOW(21, struct trinity_ioctl_hwmem)
++	if (++triv2_runtime_resumed == triv2_runtime_suspended)
++		triv2_runtime_resumed = triv2_runtime_suspended = 0;
 +
-+/** De-allocate driver-managed memory */
-+#define TRINITY_IOCTL_HWMEM_DEALLOC TRINITY_IOW(22, struct trinity_ioctl_hwmem)
++	return 0;
++}
 +
-+/** Register the given model config in the device and return model id */
-+#define TRINITY_IOCTL_REGISTER_MODEL \
-+	TRINITY_IOWR(23, struct trinity_ioctl_model)
-+
-+/** Unregister the model config associated with the given model_id */
-+#define TRINITY_IOCTL_DEREGISTER_MODEL TRINITY_IOW(24, __u64)
-+
-+/** Run the device with the given input */
-+#define TRINITY_IOCTL_RUN_INPUT TRINITY_IOWR(25, struct trinity_ioctl_input)
-+
-+/** Stop all requests submitted to the device */
-+#define TRINITY_IOCTL_STOP_REQUESTS TRINITY_IO(26)
-+
-+/** Stop the target request with id returned by run_input */
-+#define TRINITY_IOCTL_STOP_REQUEST TRINITY_IOW(27, __s32)
-+
-+/** Device Statistics/Profile */
-+
-+/** Get the current app stat in the opened device */
-+#define TRINITY_IOCTL_STAT_CURRENT_APP \
-+	TRINITY_IOR(51, struct trinity_ioctl_stat_app)
-+
-+/** Get latest apps' stat of the opened device */
-+#define TRINITY_IOCTL_STAT_APPS TRINITY_IOR(52, struct trinity_ioctl_stat_apps)
-+
-+/** Get latest reqs' stat in the target app */
-+#define TRINITY_IOCTL_STAT_REQS TRINITY_IOR(53, struct trinity_ioctl_stat_reqs)
-+
-+/** Get profiling metadata of the request */
-+#define TRINITY_IOCTL_GET_PROFILE_META \
-+	TRINITY_IOWR(54, struct trinity_ioctl_profile_meta)
-+
-+/** Get profiling per-op data of the request */
-+#define TRINITY_IOCTL_GET_PROFILE_BUFF \
-+	TRINITY_IOWR(55, struct trinity_ioctl_profile_buff)
-+
-+/** Device Testing/Workaround */
-+
-+/** Driver-assisted memory copy for FPGA env. */
-+#define TRINITY_IOCTL_FPGA_MEMCPY \
-+	TRINITY_IOWR(91, struct trinity_ioctl_fpga_memcpy)
-+
-+/** A wrapper of trinity_run_internal_req() */
-+#define TRINITY_IOCTL_RUN_INTERNAL_REQ TRINITY_IOW(92, dev_t)
-+
-+#ifdef __KERNEL__
-+__s32 trinity_run_internal_req(dev_t);
-+#endif
-+#endif /* __TRINITY_H__ */
++static const struct dev_pm_ops triv2_dev_pm_ops = {
++	// clang-format off
++	SET_SYSTEM_SLEEP_PM_OPS(triv2_suspend, triv2_resume)
++	SET_RUNTIME_PM_OPS(triv2_runtime_suspend, triv2_runtime_resume, NULL)
++	// clang-format on
+ };
+ 
+ static const struct of_device_id trinity_match[] = {
 -- 
 2.25.1
 
