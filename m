@@ -2,120 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FC20C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 10:22:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12A96C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 10:26:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233419AbiGYKWR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 06:22:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47344 "EHLO
+        id S233919AbiGYK0R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 06:26:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230283AbiGYKWL (ORCPT
+        with ESMTP id S233140AbiGYK0M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 06:22:11 -0400
+        Mon, 25 Jul 2022 06:26:12 -0400
 Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55F7CB84C
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 03:22:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C2961582B;
+        Mon, 25 Jul 2022 03:26:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658744530; x=1690280530;
-  h=message-id:date:mime-version:cc:subject:to:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=wAXUudd2bYpf3nYYKav//ZqBy0T3UuLekipqsksLhYI=;
-  b=C1BomNv+A8WJyUXri5zr5E7MpLWib0orDjp+PFkq63wcjeQB3TyC9q8j
-   QWKlww5+iC1r0v02jTqk3Y/0TRIh/lKOjcv6mophdpH+cqVhDwGRTV9v9
-   eTRapJHZOhQlTA6/6o70r3a2gHl15GsvIyVU83pulURzPrdCEwb81nQK/
-   rY/0CM5gHsJ3/u2NZ5o3GQM7hYcTJx260Pof+Bh25vJ6pxJVl03zNnylJ
-   /GVm4LXKcpyQDGT2Q+BVvYvy0NU4Mu40E+eWh/GOW01BZOs2zWqreYeua
-   Ciwkf9njScFy1xGoimYqbRDtjPW/sllvldryKBTXxHSdSeZswYA/LTOap
+  t=1658744771; x=1690280771;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=Vb0TKNah0PY8LMc10juOYXDzyQajaqVinXtVknS6mSU=;
+  b=AiMM6QmYA+OUHAvK/CmBoTXg1el/ZQvLyvo2KGX+HYGxZ8p/HrUI0pD+
+   5bPJb+99gjdPf4qMnA+xEr0QxyL5ztwfWtlsA6nRELmmDUCaWGCmcYboE
+   RCHjlygqRWZekBLueOukIoXdeft1pMYm3fFML4O4S+AAJCae+SMaFIARA
+   BzbmahBDIe3pOFO56nSq91DyHxG8KsSRP7B0DaZ34XKRXH214RdqNuaqf
+   fNqsXUQTFnPf4zc58db/6MpUeREe7kACcuyG9w/5iP04FsJTnFXmdMb+Y
+   ShHHgE5RRfDillvH8KY/QmU4TaSLG9h5NDrbolEZ8CzL/ilKGiv82IAV9
    A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10418"; a="349362690"
+X-IronPort-AV: E=McAfee;i="6400,9594,10418"; a="349363359"
 X-IronPort-AV: E=Sophos;i="5.93,192,1654585200"; 
-   d="scan'208";a="349362690"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2022 03:22:09 -0700
+   d="scan'208";a="349363359"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2022 03:26:01 -0700
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,192,1654585200"; 
-   d="scan'208";a="658130002"
-Received: from liangk-mobl.ccr.corp.intel.com (HELO [10.255.30.67]) ([10.255.30.67])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2022 03:22:06 -0700
-Message-ID: <b868cd13-4902-7d60-048a-31bb92b94cda@linux.intel.com>
-Date:   Mon, 25 Jul 2022 18:22:06 +0800
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        "Jiang, Dave" <dave.jiang@intel.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Eric Auger <eric.auger@redhat.com>,
-        "Liu, Yi L" <yi.l.liu@intel.com>,
-        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
-        Zhangfei Gao <zhangfei.gao@linaro.org>,
-        "Zhu, Tony" <tony.zhu@intel.com>,
-        "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+   d="scan'208";a="632309302"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga001.jf.intel.com with ESMTP; 25 Jul 2022 03:25:58 -0700
+Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 26PAPvQ6031778;
+        Mon, 25 Jul 2022 11:25:57 +0100
+From:   Alexander Lobakin <alexandr.lobakin@intel.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v10 08/12] iommu/sva: Refactoring
- iommu_sva_bind/unbind_device()
-Content-Language: en-US
-To:     "Tian, Kevin" <kevin.tian@intel.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-References: <20220705050710.2887204-1-baolu.lu@linux.intel.com>
- <20220705050710.2887204-9-baolu.lu@linux.intel.com>
- <20220723142650.GH79279@nvidia.com>
- <bffb6e2d-d310-49b9-0725-37ab4263c22d@linux.intel.com>
- <BN9PR11MB52764D3E07E6755EF52DDC138C959@BN9PR11MB5276.namprd11.prod.outlook.com>
-From:   Baolu Lu <baolu.lu@linux.intel.com>
-In-Reply-To: <BN9PR11MB52764D3E07E6755EF52DDC138C959@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH net-next 0/4] netlink: add 'bitmap' attribute type and API
+Date:   Mon, 25 Jul 2022 12:24:18 +0200
+Message-Id: <20220725102418.2083779-1-alexandr.lobakin@intel.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <CAHp75Ve7oXjNyc0GD5x9ZW=DVgCqmLOBfCP4O2cDi2DG=4SiwQ@mail.gmail.com>
+References: <20220721155950.747251-1-alexandr.lobakin@intel.com> <20220721111318.1b180762@kernel.org> <20220722145514.767592-1-alexandr.lobakin@intel.com> <CAHp75Ve7oXjNyc0GD5x9ZW=DVgCqmLOBfCP4O2cDi2DG=4SiwQ@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/7/25 15:50, Tian, Kevin wrote:
->> From: Baolu Lu <baolu.lu@linux.intel.com>
->> Sent: Sunday, July 24, 2022 9:48 PM
->>>
->>> The API is really refcounting the PASID:
->>>
->>>> +struct iommu_sva *iommu_sva_bind_device(struct device *dev,
->>>> +					struct mm_struct *mm);
->>>> +void iommu_sva_unbind_device(struct iommu_sva *handle);
->>>
->>> So what you need to do is store that 'iommu_sva' in the group's PASID
->>> xarray.
->>>
->>> The bind logic would be
->>>
->>>     sva = xa_load(group->pasid, mm->pasid)
->>>     if (sva)
->>>        refcount_inc(sva->users)
->>>        return sva
->>>     sva = kalloc
->>>     sva->domain = domain
->>>     xa_store(group->pasid, sva);
->>
->> Thanks for the suggestion. It makes a lot of sense to me.
->>
->> Furthermore, I'd like to separate the generic data from the caller-
->> specific things because the group->pasid_array should also be able to
->> serve other usages. Hence, the attach/detach_device_pasid interfaces
->> might be changed like below:
->>
->> /* Collection of per-pasid IOMMU data */
->> struct group_pasid {
->> 	struct iommu_domain *domain;
->> 	void *priv;
->> };
->>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Fri, 22 Jul 2022 19:02:35 +0200
+
+> On Friday, July 22, 2022, Alexander Lobakin <alexandr.lobakin@intel.com>
+> wrote:
 > 
-> Is there any reason why pasid refcnt is sva specific and needs to be
-> in a priv field?
+> > From: Jakub Kicinski <kuba@kernel.org>
+> > Date: Thu, 21 Jul 2022 11:13:18 -0700
+> >
+> > > On Thu, 21 Jul 2022 17:59:46 +0200 Alexander Lobakin wrote:
+> > > > BTW, Ethtool bitsets provide similar functionality, but it operates
+> > > > with u32s (u64 is more convenient and optimal on most platforms) and
+> > > > Netlink bitmaps is a generic interface providing policies and data
+> > > > verification (Ethtool bitsets are declared simply as %NLA_BINARY),
+> > > > generic getters/setters etc.
+> > >
+> > > Are you saying we don't need the other two features ethtool bitmaps
+> > > provide? Masking and compact vs named representations?
+> >
+> > Nah I didn't say that. I'm not too familiar with Ethtool bitsets,
+> > just know that they're represented as arrays of u32s.
+> >
+> > >
+> > > I think that straight up bitmap with a fixed word is awkward and leads
+> > > to too much boilerplate code. People will avoid using it. What about
+> > > implementing a bigint type instead? Needing more than 64b is extremely
+> > > rare, so in 99% of the cases the code outside of parsing can keep using
+> > > its u8/u16/u32.
+> >
+> > In-kernel code can still use single unsigned long for some flags if
+> > it wouldn't need more than 64 bits in a couple decades and not
+> > bother with the bitmap API. Same with userspace -- a single 64 is
+> > fine for that API, just pass a pointer to it to send it as a bitmap
+> > to the kernel.
+> >
+> > Re 64b vs extremely rare -- I would say so 5 years go, but now more
+> > and more bitfields run out of 64 bits. Link modes, netdev features,
+> > ...
+> >
+> > Re bigint -- do you mean implementing u128 as a union, like
+> >
+> > typedef union __u128 {
+> >         struct {
+> >                 u32 b127_96;
+> >                 u32 b95_64;
+> >                 u32 b63_32;
+> >                 u32 b31_0;
+> >         };
+> >         struct {
+> >                 u64 b127_64;
+> >                 u64 b63_0;
+> >         };
+> > #ifdef __HAVE_INT128
+> >         __int128 b127_0;
+> > #endif
+> > } u128;
+> >
+> > ?
+> 
+> 
+> This looks not good (besides union aliasing, have you thought about BE64?).
 
-I am going to store the iommu_sva data which represents the bind
-relationship between device and domain.
+It was just an example to vizualize the thought.
 
-Best regards,
-baolu
+> 
+> 
+> 
+> >
+> >
+> > We have similar feature in one of our internal trees and planning
+> > to present generic u128 soon, but this doesn't work well for flags
+> > I think.
+> > bitmap API and bitops are widely used and familiar to tons of folks,
+> > most platforms define their own machine-optimized bitops
+> > implementation, arrays of unsigned longs are native...
+> >
+> > Re awkward -- all u64 <-> bitmap conversion is implemented in the
+> > core code in 4/4 and users won't need doing anything besides one
+> > get/set. And still use bitmap/bitops API. Userspace, as I said,
+> > can use a single __u64 as long as it fits into 64 bits.
+> >
+> > Summarizing, I feel like bigints would lead to much more boilerplate
+> > in both kernel and user spaces and need to implement a whole new API
+> > instead of using the already existing and well-used bitmap one.
+> > Continuation of using single objects with fixed size like %NLA_U* or
+> > %NLA_BITFIELD_U32 will lead to introducing a new Netlink attr every
+> > 32/64 bits (or even 16 like with IP tunnels, that was the initial
+> > reason why I started working on those 3 series). As Jake wrote me
+> > in PM earlier,
+> >
+> > "I like the concept of an NLA_BITMAP. I could have used this for
+> > some of the devlink interfaces we've done, and it definitely feels
+> > a bit more natural than being forced to a single u32 bitfield."
+> 
+> 
+> Netlink is an ABI, how would you naturally convert unsigned long from
+> 64-bit kernel to the unsigned long on 32-bit user space, esp. on BE
+> architectures?
+
+Uhm, that's what this patchset does. Cover letter says: we can't
+transfer longs between userspace and the kernel, so in Netlink
+messages they're represented as arrays of u64s, then Netlink core
+in the kernel code takes care of converting them to longs when you
+call getter (and vice versa for setter)...
+On LE and 64-bit BE architectures this conversion is a noop (see
+bitmap_{from,to}_arr64()), that's why u64s were chosen, not u32s
+like in Ethtool for example.
+
+> 
+> 
+> >
+> > Thanks,
+> > Olek
+> >
+> 
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
+
+Thanks,
+Olek
