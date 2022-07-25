@@ -2,97 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98CE1C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 19:34:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF81BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 19:36:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233996AbiGYTeB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 15:34:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49132 "EHLO
+        id S236190AbiGYTg0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 15:36:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229878AbiGYTeA (ORCPT
+        with ESMTP id S229878AbiGYTgY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 15:34:00 -0400
-Received: from mail-oo1-f51.google.com (mail-oo1-f51.google.com [209.85.161.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88CDA1FCD3;
-        Mon, 25 Jul 2022 12:33:59 -0700 (PDT)
-Received: by mail-oo1-f51.google.com with SMTP id j8-20020a4ac548000000b00435a8dd31a2so2348210ooq.5;
-        Mon, 25 Jul 2022 12:33:59 -0700 (PDT)
+        Mon, 25 Jul 2022 15:36:24 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C27A51F2C3;
+        Mon, 25 Jul 2022 12:36:23 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id sz17so22444974ejc.9;
+        Mon, 25 Jul 2022 12:36:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+uGxyBOj8uy9/NOJeYkAeNRty35auyq9QTyL2vbKIqs=;
+        b=aWBpxnn9sn41kMtCQ2/UguJehnh4aNWK34ndCiRANpD781prisqPqWZCnfCezDxegX
+         s6ryz28pxVg6ESxPFX80xxA9DvybUChS08+UihxC2YS4dupc2pRcGPeaeECyoyXUig/H
+         dt1lhQeexIJaGPulZ+6ZsoEwTBKGV7nAL2YbotEcdDGiM0I8jwR5Y5Ub00r9xYxalhMP
+         h8annn3GiOUJ1PL84vn9aApsRQuCxbpu1nULWy3NEjs5Mk7L6YQuh3ahiauj6VL/KDA7
+         PYJk9QLiPkqzI3c/EOuKWceWUSuLB3sDn97ZVJpseghUsAP39zL7meAPQo9Ks98EEIWn
+         bIow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=KIw937KfRgtYEPX35WUaBoez2BdnKkRvpNFrhrEEgaE=;
-        b=dD9MtLsulX2LksDLMQXrlNUHP7yLsa1OZH126qGyyVnR8DBpZX0PpSeRFtv/RLtfrG
-         CnnyktGByUfD02WnXVSLMbXsDioPP6p06DDsdf9a8lpM2Hpol935iHw1PUh+gfH4UyOM
-         qb5eEg5bIks0lakJvpg+emYsY4HlBJ+3NNdNqtzwbm89OmkFZM6dZ/Ye+jLhAwTybApK
-         HNdAsOGa9Med45ssbbKx7kBItIDK0/i64Y7TXkoI5Kam8emFmtkrT9N5hplMi3ORVfcm
-         TPXaBmR21I4ALj5zvdFawTkO69bhSxNtTyDlIoR3WDOc7YzsoxM71tI/5lBARm9zT/t1
-         owIg==
-X-Gm-Message-State: AJIora8viUvccAQkAupiFMUrYq0zAVPdCuYP/f6fke4t5dJPrjdqKfGl
-        DVDeW4POdBe4jQnRt7z1QA==
-X-Google-Smtp-Source: AGRyM1uTtx/J+WMQ8qtwru58sRJQF2353um12dhZAF81rpKXXTgUH9cVEJf0C4kEVleDBRmC7HIkdA==
-X-Received: by 2002:a4a:d621:0:b0:435:d6cc:b2e1 with SMTP id n1-20020a4ad621000000b00435d6ccb2e1mr4704597oon.88.1658777638776;
-        Mon, 25 Jul 2022 12:33:58 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id y3-20020a544d83000000b0032f7605d1a3sm5208627oix.31.2022.07.25.12.33.57
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+uGxyBOj8uy9/NOJeYkAeNRty35auyq9QTyL2vbKIqs=;
+        b=FmxAIJlr+VKYzMQv1F58Nu2bKBeaK9o44/mWwylWJ5ix7j902aeimsCtW+To7OAJlS
+         8mtWv0dQYZjenVi4PduWyRtvMhGAec3W34IhkvuBMr/DoIEYsdaPBJpDHSS1tbDRpEvs
+         0Kgw1cuXZGKWvlYoa1RuoIXp1pcvF32kxjvTHDZB1iqvLHovL6JAc9VkPzLT3n/A15BB
+         H9FhslKKzAsK/S+lxKeflRcPWD7e/oo7nwAcrPJv380jPJOTXUrIYbqm60He2axEFCpw
+         W5aVYQXHTEYU5n5cYR1K3KWmKUXIXmaBocLUjxxPmZ+sMJM9tawKWmo1m1IapMJX86T4
+         FU6Q==
+X-Gm-Message-State: AJIora9+Nl3vJFbkxw2p4+I+cVBSTk6PVe1QuJ21x+beiiNOpQ0Qb2NF
+        40BKMBbZYRi8SqvXwK20NoS+KxXusjs=
+X-Google-Smtp-Source: AGRyM1vYaSolC/1IbcKL/tdF8eKMind/3he4Dge0drIwIiFgbLYBeHdnz4tJkJdybuLB41IEfF5c1g==
+X-Received: by 2002:a17:907:6e8a:b0:72b:1496:7161 with SMTP id sh10-20020a1709076e8a00b0072b14967161mr11612393ejc.519.1658777781976;
+        Mon, 25 Jul 2022 12:36:21 -0700 (PDT)
+Received: from localhost.localdomain (dynamic-2a01-0c23-c1ab-4100-0000-0000-0000-0e63.c23.pool.telefonica.de. [2a01:c23:c1ab:4100::e63])
+        by smtp.googlemail.com with ESMTPSA id k14-20020aa7d8ce000000b0043a6e807febsm7571001eds.46.2022.07.25.12.36.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Jul 2022 12:33:58 -0700 (PDT)
-Received: (nullmailer pid 2565486 invoked by uid 1000);
-        Mon, 25 Jul 2022 19:33:56 -0000
-Date:   Mon, 25 Jul 2022 13:33:56 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Harini Katakam <harini.katakam@xilinx.com>
-Cc:     nicolas.ferre@microchip.com, davem@davemloft.net,
-        claudiu.beznea@microchip.com, kuba@kernel.org, edumazet@google.com,
-        pabeni@redhat.com, krzysztof.kozlowski+dt@linaro.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        michal.simek@xilinx.com, harinikatakamlinux@gmail.com,
-        harini.katakam@amd.com, devicetree@vger.kernel.org,
-        radhey.shyam.pandey@xilinx.com
-Subject: Re: [PATCH v2 1/3] dt-bindings: net: cdns,macb: Add versal
- compatible string
-Message-ID: <20220725193356.GA2561062-robh@kernel.org>
-References: <20220722110330.13257-1-harini.katakam@xilinx.com>
- <20220722110330.13257-2-harini.katakam@xilinx.com>
+        Mon, 25 Jul 2022 12:36:21 -0700 (PDT)
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+To:     linux-spi@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, bert@biot.com, sander@svanheule.net,
+        mail@birger-koblitz.de,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: [PATCH RFC v1] spi: realtek-rtl: Fix clearing some register bits
+Date:   Mon, 25 Jul 2022 21:35:47 +0200
+Message-Id: <20220725193547.1038414-1-martin.blumenstingl@googlemail.com>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220722110330.13257-2-harini.katakam@xilinx.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 22, 2022 at 04:33:28PM +0530, Harini Katakam wrote:
-> From: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-> 
-> Add versal compatible string.
-> 
-> Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-> Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
-> ---
-> v2:
-> Sort compatible string alphabetically.
-> 
->  Documentation/devicetree/bindings/net/cdns,macb.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/cdns,macb.yaml b/Documentation/devicetree/bindings/net/cdns,macb.yaml
-> index 9c92156869b2..762deccd3640 100644
-> --- a/Documentation/devicetree/bindings/net/cdns,macb.yaml
-> +++ b/Documentation/devicetree/bindings/net/cdns,macb.yaml
-> @@ -20,6 +20,7 @@ properties:
->  
->        - items:
->            - enum:
-> +              - cdns,versal-gem       # Xilinx Versal
->                - cdns,zynq-gem         # Xilinx Zynq-7xxx SoC
->                - cdns,zynqmp-gem       # Xilinx Zynq Ultrascale+ MPSoC
+The code seemingly tries to clear RTL_SPI_SFCSR_LEN_MASK (before then
+setting either RTL_SPI_SFCSR_LEN1 or RTL_SPI_SFCSR_LEN4) and
+RTL_SPI_SFCSR_CS. What it actually does is only keeping these bits and
+clearing all other bits, even the ones which were just set before. Fix
+the operation to clear the bits in the selected mask and keep all other
+ones.
 
-Uh, how did we start this pattern? The vendor here is Xilinx, not 
-Cadence. It should be xlnx,versal-gem instead.
+Fixes: a8af5cc2ff1e80 ("spi: realtek-rtl: Add support for Realtek RTL838x/RTL839x SPI controllers")
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+I stumbled across this while reading the driver. This patch is untested
+because I don't have any hardware with this controller.
 
->            - const: cdns,gem           # Generic
-> -- 
-> 2.17.1
-> 
-> 
+
+ drivers/spi/spi-realtek-rtl.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/spi/spi-realtek-rtl.c b/drivers/spi/spi-realtek-rtl.c
+index 866b0477dbd7..e5ad0f11996f 100644
+--- a/drivers/spi/spi-realtek-rtl.c
++++ b/drivers/spi/spi-realtek-rtl.c
+@@ -49,7 +49,7 @@ static void set_size(struct rtspi *rtspi, int size)
+ 	u32 value;
+ 
+ 	value = readl(REG(RTL_SPI_SFCSR));
+-	value &= RTL_SPI_SFCSR_LEN_MASK;
++	value &= ~RTL_SPI_SFCSR_LEN_MASK;
+ 	if (size == 4)
+ 		value |= RTL_SPI_SFCSR_LEN4;
+ 	else if (size == 1)
+@@ -143,7 +143,7 @@ static void init_hw(struct rtspi *rtspi)
+ 	/* Permanently disable CS1, since it's never used */
+ 	value |= RTL_SPI_SFCSR_CSB1;
+ 	/* Select CS0 for use */
+-	value &= RTL_SPI_SFCSR_CS;
++	value &= ~RTL_SPI_SFCSR_CS;
+ 	writel(value, REG(RTL_SPI_SFCSR));
+ }
+ 
+-- 
+2.37.1
+
