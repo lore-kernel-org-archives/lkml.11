@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52CC8C3F2D4
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 08:00:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE10BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 08:00:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233020AbiGYIAS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 04:00:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49340 "EHLO
+        id S233287AbiGYIAV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 04:00:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232689AbiGYIAE (ORCPT
+        with ESMTP id S232679AbiGYIAE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 25 Jul 2022 04:00:04 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C09F713D19;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1AC713D11;
         Mon, 25 Jul 2022 01:00:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 66CC5B80E07;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 53DC8B80E06;
         Mon, 25 Jul 2022 08:00:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0545C341CF;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE027C341C7;
         Mon, 25 Jul 2022 08:00:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1658736001;
-        bh=bEsGf8Dsd9YtmoSRkVmOvqodgZEJC62LZm2jA6Q/xow=;
-        h=From:To:Cc:Subject:Date:From;
-        b=FzftwkCl7SnTTxs7ziR8+GlhmXhTYRLjw8MG60JFbSOxSVYHKIEWmTL1Lrd7pEVx6
-         XY+rK5/IeU205W1/X+iFgdtlk0RjVUBM7O48vKhHJadogtic+UfXMJGVeC1aeXJ9Fn
-         5gshOdM2T/aW59n0FNbiNgVW5CysuMguTsjvlZuleVwdKE1l7ZuDD581tK5LP4kM7c
-         x7d/rqxMnGTObudVKOIksXZcXt9MOFUTyX0KAAMrB4MsppFC/pVFtlNR00W+2VNkHJ
-         hnxsFETOEEtYqJI10xl5MVfkt9z/6jFkIvA4im9KMYNSIOnTk8Ezkd7e2T3XPUp3Ir
-         NO1k9Brx/p6bw==
+        bh=Mcc6YivlY7VsK7Pilttr0NsQ6d26btY/8h5TMOw2PWM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=fTcdmQFFSblHtu/LzHjNKm3rcRHiKWRdZihdddxw9oTwwnBlupuck1iDCKWs4d5g0
+         YGM6uJvZHBJWHJeZHCmdd6K0NcKtPFAw1iCLo9gLnR/U2dv5Vh/y7qBP7lS3weLxWy
+         5Clbf5T0EzJLSPjt4OzU6Jn8dj4AHcU4MngcOSPrnt7O6qjt52OFW9yfVw3noHbMBu
+         /J4w4GPSACf7GgaWXCd0zTzPo+j4u8ZqrGsBwY2cRrA6T4Yr9nrB6pbW7RdhL/qFnQ
+         TaVjZr6n8nnPhv/CwMH8S3g9ghdQei0JpKGMtGFa3HqmYj53NA4gs3baPl4hbAyLCl
+         2ilRyADzegWDA==
 Received: from johan by xi.lan with local (Exim 4.94.2)
         (envelope-from <johan@kernel.org>)
-        id 1oFt0d-0000Jz-4J; Mon, 25 Jul 2022 10:00:11 +0200
+        id 1oFt0e-0000K3-09; Mon, 25 Jul 2022 10:00:12 +0200
 From:   Johan Hovold <johan@kernel.org>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Oliver Neukum <oneukum@suse.com>,
@@ -42,56 +42,49 @@ To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 Cc:     Yan Xinyu <sdlyyxy@bupt.edu.cn>, linux-staging@lists.linux.dev,
         linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
         Johan Hovold <johan@kernel.org>
-Subject: [PATCH 0/7] USB: cdc: add control and state defines
-Date:   Mon, 25 Jul 2022 09:58:34 +0200
-Message-Id: <20220725075841.1187-1-johan@kernel.org>
+Subject: [PATCH 2/7] USB: cdc: add serial-state defines
+Date:   Mon, 25 Jul 2022 09:58:36 +0200
+Message-Id: <20220725075841.1187-3-johan@kernel.org>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220725075841.1187-1-johan@kernel.org>
+References: <20220725075841.1187-1-johan@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Several drivers use the control-line and serial-state bitmap values from
-the CDC spec, but there were no matching defines in the global CDC
-(UAPI) header.
+Add defines for the serial-state bitmap values from section 6.3.5
+SerialState of the CDC specification version 1.1.
 
-This series adds the missing defines and converts cdc-acm and f_acm to
-use them.
+Note that the bTxCarrier and bRxCarrier bits have been named after their
+RS-232 signal equivalents DSR and DCD.
 
-One staging driver also had an unused set of CDC defines which are
-removed.
+Signed-off-by: Johan Hovold <johan@kernel.org>
+---
+ include/uapi/linux/usb/cdc.h | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-The final patch by Yan Xinyu, which triggered this work, converts the
-usb_wwan driver to use CDC defines instead of hardcoded values in its
-line-control handling.
-
-Greg, are you ok with me taking these through USB serial (where there
-are a few more drivers that could potentially use them) or do you want
-to take the lot through your tree directly?
-
-Johan
-
-
-Johan Hovold (6):
-  USB: cdc: add control-signal defines
-  USB: cdc: add serial-state defines
-  USB: cdc-acm: use CDC control-line defines
-  USB: cdc-acm: use CDC serial-state defines
-  staging: gdm724x: drop unused CDC defines
-  USB: gadget: f_acm: use CDC defines
-
-Yan Xinyu (1):
-  USB: serial: usb_wwan: replace DTR/RTS magic numbers with macros
-
- drivers/staging/gdm724x/gdm_tty.c   |  6 -----
- drivers/usb/class/cdc-acm.c         | 42 ++++++++++++++---------------
- drivers/usb/class/cdc-acm.h         | 20 --------------
- drivers/usb/gadget/function/f_acm.c | 20 ++++----------
- drivers/usb/serial/usb_wwan.c       | 10 ++++---
- include/uapi/linux/usb/cdc.h        | 13 +++++++++
- 6 files changed, 45 insertions(+), 66 deletions(-)
-
+diff --git a/include/uapi/linux/usb/cdc.h b/include/uapi/linux/usb/cdc.h
+index 372c81425cae..78caa9bdc4ae 100644
+--- a/include/uapi/linux/usb/cdc.h
++++ b/include/uapi/linux/usb/cdc.h
+@@ -306,6 +306,15 @@ struct usb_cdc_notification {
+ 	__le16	wLength;
+ } __attribute__ ((packed));
+ 
++/* UART State Bitmap Values from 6.3.5 SerialState */
++#define USB_CDC_SERIAL_STATE_DCD		(1 << 0)
++#define USB_CDC_SERIAL_STATE_DSR		(1 << 1)
++#define USB_CDC_SERIAL_STATE_BREAK		(1 << 2)
++#define USB_CDC_SERIAL_STATE_RING_SIGNAL	(1 << 3)
++#define USB_CDC_SERIAL_STATE_FRAMING		(1 << 4)
++#define USB_CDC_SERIAL_STATE_PARITY		(1 << 5)
++#define USB_CDC_SERIAL_STATE_OVERRUN		(1 << 6)
++
+ struct usb_cdc_speed_change {
+ 	__le32	DLBitRRate;	/* contains the downlink bit rate (IN pipe) */
+ 	__le32	ULBitRate;	/* contains the uplink bit rate (OUT pipe) */
 -- 
 2.35.1
 
