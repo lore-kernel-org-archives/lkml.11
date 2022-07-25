@@ -2,68 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6326DC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 21:19:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C723CCA48D
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 21:20:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236760AbiGYVTy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 17:19:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40202 "EHLO
+        id S236786AbiGYVUI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 17:20:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229535AbiGYVTu (ORCPT
+        with ESMTP id S234791AbiGYVUF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 17:19:50 -0400
-X-Greylist: delayed 1800 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 25 Jul 2022 14:19:49 PDT
-Received: from wp175.webpack.hosteurope.de (wp175.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:84b6::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7412F23BCD
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 14:19:49 -0700 (PDT)
-Received: from p54bc6cd6.dip0.t-ipconnect.de ([84.188.108.214] helo=[192.168.1.245]); authenticated
-        by wp175.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1oG4YN-0007hQ-Nw; Mon, 25 Jul 2022 22:19:47 +0200
-Message-ID: <be60acab-7dfe-6841-b176-4bd1e875d52e@birger-koblitz.de>
-Date:   Mon, 25 Jul 2022 22:19:46 +0200
+        Mon, 25 Jul 2022 17:20:05 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1637323BFF;
+        Mon, 25 Jul 2022 14:20:05 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id ss3so22727728ejc.11;
+        Mon, 25 Jul 2022 14:20:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cDE3NwBwTuDpjLuPQ61t5UcNlhjZmXhZy7wVD92KeX8=;
+        b=cu4WEAq7h2e1+ldcFCGnBTJ+mfSuTH2VJNmhtt3PQIkX72AflLf5U4kNMqpw1v4qPT
+         cqtZyd9hCZfbPwm95nB2S4Q8FzMfNof5i8u7LO3CygpwhXGm7rqdopYDzTb6ANsodHNz
+         GuJQ/zvYEajd/p4Cup9t9kpXE37+iAl2BIA5HnrOdwpHulERUxz5/rF2H446vmnKGMwL
+         lX/gjDcUlVK7WJ7a7qH2YH4c1npXvnTXAALx6nOwowSMH/Jp5GVbBx1mWwAlppt5sgAP
+         Sr3N3stGUBkNrRgFM1hN0TysM5LJiCu0h60o2kWfBjnrb3rhkSurkgt08BiQuY4082bP
+         R9qw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cDE3NwBwTuDpjLuPQ61t5UcNlhjZmXhZy7wVD92KeX8=;
+        b=tqfDQ3/9Av6qP/BLWfXO4JpuwTph/y8TGG5x1rBW1EaQWZ232F87uvTgUeLO8Q9kGU
+         hKxp9VvdoKqduzGuzcSbe/LE6A8OCMqUhAkBFvsNjoERMoRfSdGaMdWu3e7LI+U7TG8c
+         RfsU5AaytqH1Uard1g4Sqb+7FzHXmR3hd8xxA72hIL6HZdP083o+3RIWt6RmJoJpVjYk
+         ThJ5jt/HoLGiN1SAJIJVRaqjl9tqFGuNVe9iVsuH9glgKMuqKmRTCX/sFlc0GboDJTjV
+         CDOYqByR1iEFCFgIdyubzbIn693rBsJNxbwBvwr6T4OWDRZ8CdRLC3OJIRqFYBul4bLp
+         v5NA==
+X-Gm-Message-State: AJIora/MBY8NIFceqZr1x5ulDMC9AKlPpXjsQQInmmLq74aEpW/e75Mv
+        getbg5/PZGbhsxus92dGsf/VZeirWB3z0+6uVN4=
+X-Google-Smtp-Source: AGRyM1vPOOCrOy3oEP6mcBL2JOZtLqFofph1a2RNAjbdxo04+kZfaOc5cXbNNwTcKf5CrgJxfcvCvV/K7wE6ay3k1uU=
+X-Received: by 2002:a17:907:6297:b0:72f:9aad:fcb with SMTP id
+ nd23-20020a170907629700b0072f9aad0fcbmr11289338ejc.161.1658784003634; Mon, 25
+ Jul 2022 14:20:03 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH RFC v1] spi: realtek-rtl: Fix clearing some register bits
-Content-Language: en-US
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        linux-spi@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, bert@biot.com, sander@svanheule.net
-References: <20220725193547.1038414-1-martin.blumenstingl@googlemail.com>
-From:   Birger Koblitz <mail@birger-koblitz.de>
-In-Reply-To: <20220725193547.1038414-1-martin.blumenstingl@googlemail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;mail@birger-koblitz.de;1658783989;bbd56df9;
-X-HE-SMSGID: 1oG4YN-0007hQ-Nw
+References: <cover.1658597501.git.ang.iglesiasg@gmail.com> <0a99be89263c5e747d541360feede21b0f77e0a5.1658597501.git.ang.iglesiasg@gmail.com>
+In-Reply-To: <0a99be89263c5e747d541360feede21b0f77e0a5.1658597501.git.ang.iglesiasg@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 25 Jul 2022 23:19:27 +0200
+Message-ID: <CAHp75Vc+VzfTMJBv-eyYTENKuMGw=m4mpDvCXmKmVwcnnnz5Ag@mail.gmail.com>
+Subject: Re: [PATCH v4 5/5] iio: pressure: bmp280: Add more tunable config
+ parameters for BMP380
+To:     Angel Iglesias <ang.iglesiasg@gmail.com>
+Cc:     linux-iio <linux-iio@vger.kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Martin,
+On Sat, Jul 23, 2022 at 7:40 PM Angel Iglesias <ang.iglesiasg@gmail.com> wrote:
+>
+> Allows sampling frequency and IIR filter coefficients configuration
+> using sysfs ABI.
+>
+> The IIR filter coefficient is configurable using the sysfs attribute
+> "filter_low_pass_3db_frequency".
+>
+> Signed-off-by: Angel Iglesias <ang.iglesiasg@gmail.com>
 
-On 25/07/2022 21:35, Martin Blumenstingl wrote:
-> The code seemingly tries to clear RTL_SPI_SFCSR_LEN_MASK (before then
-> setting either RTL_SPI_SFCSR_LEN1 or RTL_SPI_SFCSR_LEN4) and
-> RTL_SPI_SFCSR_CS. What it actually does is only keeping these bits and
-> clearing all other bits, even the ones which were just set before. Fix
-> the operation to clear the bits in the selected mask and keep all other
-> ones.
-> 
-> Fixes: a8af5cc2ff1e80 ("spi: realtek-rtl: Add support for Realtek RTL838x/RTL839x SPI controllers")
-> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-> ---
-> I stumbled across this while reading the driver. This patch is untested
-> because I don't have any hardware with this controller.
-I believe your fix is correct. In the meantime, more information has been
-learned about this hardware, in particular, newer SoC versions and the possibility
-to have parallel IO and hardware which uses different chip selects.
-I came up with the following patch for supporting this, and it achieves
-what you also propose:
-https://github.com/bkobl/openwrt/blob/rtl8214qf_merge/target/linux/realtek/patches-5.10/317-spi-cs-support-for-spi-realtek-rtl.patch
-It is still is a bit rough, reading it I immediately saw 2 things that
-would need to be fixed, but it also improves e.g. that RTL_SPI_SFCSR
-is now configured independently of what u-boot did to it.
+> Reported-by: Andy Shevchenko <andy.shevchenko@gmail.com> # uninit var
 
-Cheers,
-   Birger
+Bugs in new features can't have Reported-by tag.
+
+If you wish to give credit, use a cover letter / changelog.
+
+...
+
+> +               /*
+> +                * Configuration errors are detected on the fly during a measurement
+
+The configurations
+
+> +                * cycle. If the sampling frequency is too low, it's faster to reset
+> +                * measurement loop than wait until next measurement is due.
+
+the measurement
+the next
+
+> +                * Resets sensor measurement loop toggling between sleep and normal
+> +                * operating modes.
+> +                */
+
+-- 
+With Best Regards,
+Andy Shevchenko
