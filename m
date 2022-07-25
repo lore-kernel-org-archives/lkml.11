@@ -2,96 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0E1DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 19:43:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBA50C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 19:44:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234451AbiGYTnc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 15:43:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55052 "EHLO
+        id S234965AbiGYTo0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 15:44:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232013AbiGYTnb (ORCPT
+        with ESMTP id S234254AbiGYToX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 15:43:31 -0400
-X-Greylist: delayed 558 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 25 Jul 2022 12:43:30 PDT
-Received: from raptorengineering.com (mail.raptorengineering.com [23.155.224.58])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 463FA140E1
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 12:43:30 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.rptsys.com (Postfix) with ESMTP id E1E9237CDA30A2;
-        Mon, 25 Jul 2022 14:34:11 -0500 (CDT)
-Received: from mail.rptsys.com ([127.0.0.1])
-        by localhost (vali.starlink.edu [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id VnwW3Pumlutw; Mon, 25 Jul 2022 14:34:10 -0500 (CDT)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.rptsys.com (Postfix) with ESMTP id 657C637CDA309F;
-        Mon, 25 Jul 2022 14:34:10 -0500 (CDT)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.rptsys.com 657C637CDA309F
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=raptorengineering.com; s=B8E824E6-0BE2-11E6-931D-288C65937AAD;
-        t=1658777650; bh=C6eQ56WoqflhVshYvw4eSCbTOWmWQugcnRK1KwC4InQ=;
-        h=Date:From:To:Message-ID:MIME-Version;
-        b=HUXCmnoHrk+82zDVSN5TwrZtJv5I32HBsm1W/0ygtdInl+yif0P4tia7Sd5JAJRPU
-         yulkymOoGGK7dA9UI8YmyA5VSuDRN1JJjoR3zzEIZDjsweTlVG5bWsddAOn3MbNmWo
-         OfLJgjUHcP5wIl4ettt6QsLNsTiDjIz4SB4rD9wA=
-X-Virus-Scanned: amavisd-new at rptsys.com
-Received: from mail.rptsys.com ([127.0.0.1])
-        by localhost (vali.starlink.edu [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id DNoUORfc-qsk; Mon, 25 Jul 2022 14:34:10 -0500 (CDT)
-Received: from vali.starlink.edu (localhost [127.0.0.1])
-        by mail.rptsys.com (Postfix) with ESMTP id 3BA9737CDA309C;
-        Mon, 25 Jul 2022 14:34:10 -0500 (CDT)
-Date:   Mon, 25 Jul 2022 14:34:08 -0500 (CDT)
-From:   Timothy Pearson <tpearson@raptorengineering.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        Alex Deucher <alexdeucher@gmail.com>,
-        amd-gfx <amd-gfx@lists.freedesktop.org>, linux@roeck-us.net,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Dan =?utf-8?Q?Hor=C3=A1k?= <dan@danny.cz>
-Message-ID: <1446417444.13111032.1658777648586.JavaMail.zimbra@raptorengineeringinc.com>
-In-Reply-To: <CAHk-=wihON4Ytte5zLHWNQtTapUvCpkToxY06OjX-_2B+Gq6Gg@mail.gmail.com>
-References: <20220725123918.1903255-1-mpe@ellerman.id.au> <CAHk-=wihON4Ytte5zLHWNQtTapUvCpkToxY06OjX-_2B+Gq6Gg@mail.gmail.com>
-Subject: Re: [PATCH] drm/amdgpu: Re-enable DCN for 64-bit powerpc
+        Mon, 25 Jul 2022 15:44:23 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1575E205D5
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 12:44:23 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oG401-0004xW-Dt; Mon, 25 Jul 2022 21:44:17 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oG3zz-003Ayb-RY; Mon, 25 Jul 2022 21:44:15 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1oG3zz-007Tts-5o; Mon, 25 Jul 2022 21:44:15 +0200
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>
+Cc:     linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: [PATCH] hwmon: sht15: Fix wrong assumptions in device remove callback
+Date:   Mon, 25 Jul 2022 21:43:44 +0200
+Message-Id: <20220725194344.150098-1-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Mailer: Zimbra 8.5.0_GA_3042 (ZimbraWebClient - GC103 (Linux)/8.5.0_GA_3042)
-Thread-Topic: drm/amdgpu: Re-enable DCN for 64-bit powerpc
-Thread-Index: bYJinp50nUzyW/1gBugq0G+Et27Ikw==
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2541; h=from:subject; bh=03In0uPqCNWfcwxxoZFMnMxqu/a77O3w3D+UFn5GWVY=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBi3vJnd05J5PSmrIgIMEHncs2fOep+tDiVPPxmUcDo duzXRNmJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCYt7yZwAKCRDB/BR4rcrsCYAXB/ 9YcVEOSqTOjKAG8JIc/nT01muBVxJ/knc1znnCtd8vxrzmMl/8IFx42A2ISV/lPPb8qi7rc9u1ibMh EgP5b0iGTiM+JSiM0QwnMNtuCOIHr9X+JRkz8DINWRkNUkpfDeXYADWTzIjop2thu9xaVyin9I5SQ4 qGOud3dA+r/rCEw5NgZdhdZImxW/hKh+YcRgeCf6xbMMpzZmfC9HPz9qg4XGMjr8dfmnpPVnBWhz1m 0j1V+prIVCCqjdeIYN/pI1WYxSn3RPis8c35/e/rxAWHddNv1qXoxIVSTUHf8fqTpwQOJ4lZP0Y+3D SIq0LU0kr6vehbQBfZ8emVFHsG75yQ
+X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Taking a lock at the beginning of .remove() doesn't prevent new readers.
+With the existing approach it can happen, that a read occurs just when
+the lock was taken blocking the reader until the lock is released at the
+end of the remove callback which then accessed *data that is already
+freed then.
 
+To actually fix this problem the hwmon core needs some adaption. Until
+this is implemented take the optimistic approach of assuming that all
+readers are gone after hwmon_device_unregister() and
+sysfs_remove_group() as most other drivers do. (And once the core
+implements that, taking the lock would deadlock.)
 
------ Original Message -----
-> From: "Linus Torvalds" <torvalds@linux-foundation.org>
-> To: "Michael Ellerman" <mpe@ellerman.id.au>
-> Cc: "linuxppc-dev" <linuxppc-dev@lists.ozlabs.org>, "Alex Deucher" <alexd=
-eucher@gmail.com>, "amd-gfx"
-> <amd-gfx@lists.freedesktop.org>, linux@roeck-us.net, "linux-kernel" <linu=
-x-kernel@vger.kernel.org>, "Dan Hor=C3=A1k"
-> <dan@danny.cz>, "Timothy Pearson" <tpearson@raptorengineering.com>
-> Sent: Monday, July 25, 2022 2:19:57 PM
-> Subject: Re: [PATCH] drm/amdgpu: Re-enable DCN for 64-bit powerpc
+So drop the lock, move the reset to after device unregistration to keep
+the device in a workable state until it's deregistered. Also add a error
+message in case the reset fails and return 0 anyhow. (Returning an error
+code, doesn't stop the platform device unregistration and only results
+in a little helpful error message before the devm cleanup handlers are
+called.)
 
-> On Mon, Jul 25, 2022 at 5:39 AM Michael Ellerman <mpe@ellerman.id.au> wro=
-te:
->>
->> Further digging shows that the build failures only occur with compilers
->> that default to 64-bit long double.
->=20
-> Where the heck do we have 'long double' things anywhere in the kernel?
->=20
-> I tried to grep for it, and failed miserably. I found some constants
-> that would qualify, but they were in the v4l colorspaces-details.rst
-> doc file.
->=20
-> Strange.
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+Hello,
 
-We don't, at least not that I can see.  The affected code uses standard dou=
-bles.
+the motivation for this patch is to fix the driver to not return an
+error code in .remove(). The long term goal is to make remove callbacks
+return void as returning an error is nearly always wrong and doesn't
+have the effect that driver authors think it has. This patch is a
+preparation for this conversion.
 
-What I'm wondering is if the compiler is getting confused between standard =
-and long doubles when they are both the same bit length...
+Best regards
+Uwe
+
+ drivers/hwmon/sht15.c | 17 ++++++-----------
+ 1 file changed, 6 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/hwmon/sht15.c b/drivers/hwmon/sht15.c
+index 7f4a63959730..ae4d14257a11 100644
+--- a/drivers/hwmon/sht15.c
++++ b/drivers/hwmon/sht15.c
+@@ -1020,25 +1020,20 @@ static int sht15_probe(struct platform_device *pdev)
+ static int sht15_remove(struct platform_device *pdev)
+ {
+ 	struct sht15_data *data = platform_get_drvdata(pdev);
++	int ret;
+ 
+-	/*
+-	 * Make sure any reads from the device are done and
+-	 * prevent new ones beginning
+-	 */
+-	mutex_lock(&data->read_lock);
+-	if (sht15_soft_reset(data)) {
+-		mutex_unlock(&data->read_lock);
+-		return -EFAULT;
+-	}
+ 	hwmon_device_unregister(data->hwmon_dev);
+ 	sysfs_remove_group(&pdev->dev.kobj, &sht15_attr_group);
++
++	ret = sht15_soft_reset(data);
++	if (ret)
++		dev_err(&pdev->dev, "Failed to reset device (%pe)\n", ERR_PTR(ret));
++
+ 	if (!IS_ERR(data->reg)) {
+ 		regulator_unregister_notifier(data->reg, &data->nb);
+ 		regulator_disable(data->reg);
+ 	}
+ 
+-	mutex_unlock(&data->read_lock);
+-
+ 	return 0;
+ }
+ 
+-- 
+2.36.1
+
