@@ -2,117 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DD04C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 21:14:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2917C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 21:16:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236000AbiGYVOs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 17:14:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37064 "EHLO
+        id S236422AbiGYVQk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 17:16:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229636AbiGYVOr (ORCPT
+        with ESMTP id S229636AbiGYVQi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 17:14:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C7802251F;
-        Mon, 25 Jul 2022 14:14:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5883EB80189;
-        Mon, 25 Jul 2022 21:14:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 047CAC341C6;
-        Mon, 25 Jul 2022 21:14:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658783684;
-        bh=+wQ2Az6oPzLkVRx28aSMoR3J3b58/GSALTbxCWbip/A=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=naEymMmXfJJgKJ3ABSMtgg9U/zPhepmDYQpAMN/6Y5UZFnvJAYmQoH+y+4Ejru14U
-         MbsSgxfWE5frcgz9yEapDpxx78YOKpgNaSJsCuKp5mNid2wQpkv7dldLbR9beaB5Rl
-         xRtxxO+oLI2Fm9abqREZTY2MpUFf2ohf6pewrdGJzruLHNbDBLO3usNxrbFGh52eGw
-         nnkWtnTAzVjgmw4sFCoErulwH/XkCiObo81JEsa6JUJG1+YOkdkFvofyqOqKNkQM7x
-         b6Fr+0hF8FUgxRmG3xOhg4gLCMu2TCf6XdCPTN+Kv6Dg5999v47zHAQMbhl8R2a/vl
-         ck9tcz25eta+Q==
-Date:   Mon, 25 Jul 2022 14:14:43 -0700
-From:   "Darrick J. Wong" <djwong@kernel.org>
-To:     Li Jinlin <lijinlin3@huawei.com>
-Cc:     viro@zeniv.linux.org.uk, dan.j.williams@intel.com,
-        willy@infradead.org, jack@suse.cz, linux-fsdevel@vger.kernel.org,
-        nvdimm@lists.linux.dev, linux-kernel@vger.kernel.org,
-        linfeilong@huawei.com, liuzhiqiang26@huawei.com
-Subject: Re: [PATCH] fsdax: Fix infinite loop in dax_iomap_rw()
-Message-ID: <Yt8Hw2cXPz1ScQ1y@magnolia>
-References: <20220725032050.3873372-1-lijinlin3@huawei.com>
+        Mon, 25 Jul 2022 17:16:38 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6762A470;
+        Mon, 25 Jul 2022 14:16:37 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id oy13so22837002ejb.1;
+        Mon, 25 Jul 2022 14:16:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Dzqsg7+JuF3LAlSgaMlMSRRgs1ArxUnpTbqt1d3exVk=;
+        b=RPTlyU9TAfxY8p9GFNcVs1x8JBjotrjfPA+6plXrFf2F0FtvaQXkLjqMe5yz3IQwzu
+         YBeSoiNRwYzPuAYDuq3f9kkevLkcaZ8gnLjLOXee0itUZbypwIgU1qWdMUJvwZtvfC6s
+         KATyQmonoplSF0j0cjC205hw44M/4LQZPb+dCEQwnETCmiX1FzfepoECkzo5vtHmRCuA
+         lOVtTNc29YuBpyzAoXVi2QipLFwZMfcUeVeVPHQKtvaGA4K1QEeQ3O8OmYPAltpcHtMV
+         BUtP7ZXSSzxt5nnZNbcY7slWqITlrGghYCFdoexIH8e20KPNcUC98aYL5LgMlGU8bBGO
+         u48w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Dzqsg7+JuF3LAlSgaMlMSRRgs1ArxUnpTbqt1d3exVk=;
+        b=cizARIbzOLJzoOFZdxCR95t13otZwpfT/r/RLwHLjhUoSOSTzHBxhFY84TpIlgfM5o
+         s9pEBNW7kXID2lxrQyH0F7CB9hyrxK5/clhh/UdjSB+KvqfF3MM2xpg2x8HOLnofUVeH
+         EhUQQXMd3bIGsGMaVJ8dWXAdI0y6vcp9mLeEJRlcI1jUhnZ+UQMpCG10bOemtH1RgvQL
+         kBy9LKwpQrV6+9Za1P0F5riJkcx5MD/ZsOyKqHUiq+JJ0pJdpIffOrDPr6+KRcvwWpHf
+         GnJzJBc4xMUmCM8XKBAEZKQ8MQJXOmJuhLfvAKrIC5gFs7k5mfXqUSZEgnzkLsIgshha
+         F7yg==
+X-Gm-Message-State: AJIora+nJRz/7MGw3tB+NmIcL/A40fMv7wRABuh4y79+tzzBHxzsktJy
+        Pax2gSdcRrp7TrDDdgB89nvqar7sTs3g23bynSk=
+X-Google-Smtp-Source: AGRyM1u36HPoDbas77V1ajAhCR5VMkr0JYySvUpJ4RZ1BHrCutGJHJbfTtpLPr3JozXmwGSF5q5kDBsG+U7hZPXzReM=
+X-Received: by 2002:a17:906:8a4a:b0:72b:5b23:3065 with SMTP id
+ gx10-20020a1709068a4a00b0072b5b233065mr11834533ejc.557.1658783796007; Mon, 25
+ Jul 2022 14:16:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220725032050.3873372-1-lijinlin3@huawei.com>
+References: <cover.1658597501.git.ang.iglesiasg@gmail.com> <50841287411a4e459487cc94a05bc6de66be4acf.1658597501.git.ang.iglesiasg@gmail.com>
+In-Reply-To: <50841287411a4e459487cc94a05bc6de66be4acf.1658597501.git.ang.iglesiasg@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 25 Jul 2022 23:15:59 +0200
+Message-ID: <CAHp75VdQ_oCjyXsXxTEWfKJK=T+OOP=AEXz8KQq5b2Hu8VHy9w@mail.gmail.com>
+Subject: Re: [PATCH v4 4/5] iio: pressure: bmp280: Add support for BMP380
+ sensor family
+To:     Angel Iglesias <ang.iglesiasg@gmail.com>
+Cc:     linux-iio <linux-iio@vger.kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Nikita Yushchenko <nikita.yoush@cogentembedded.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 25, 2022 at 11:20:50AM +0800, Li Jinlin wrote:
-> I got an infinite loop and a WARNING report when executing a tail command
-> in virtiofs.
-> 
->   WARNING: CPU: 10 PID: 964 at fs/iomap/iter.c:34 iomap_iter+0x3a2/0x3d0
->   Modules linked in:
->   CPU: 10 PID: 964 Comm: tail Not tainted 5.19.0-rc7
->   Call Trace:
->   <TASK>
->   dax_iomap_rw+0xea/0x620
->   ? __this_cpu_preempt_check+0x13/0x20
->   fuse_dax_read_iter+0x47/0x80
->   fuse_file_read_iter+0xae/0xd0
->   new_sync_read+0xfe/0x180
->   ? 0xffffffff81000000
->   vfs_read+0x14d/0x1a0
->   ksys_read+0x6d/0xf0
->   __x64_sys_read+0x1a/0x20
->   do_syscall_64+0x3b/0x90
->   entry_SYSCALL_64_after_hwframe+0x63/0xcd
-> 
-> The tail command will call read() with a count of 0. In this case,
-> iomap_iter() will report this WARNING, and always return 1 which casuing
-> the infinite loop in dax_iomap_rw().
-> 
-> Fixing by checking count whether is 0 in dax_iomap_rw().
-> 
-> Fixes: ca289e0b95af ("fsdax: switch dax_iomap_rw to use iomap_iter")
-> Signed-off-by: Li Jinlin <lijinlin3@huawei.com>
+On Sat, Jul 23, 2022 at 7:40 PM Angel Iglesias <ang.iglesiasg@gmail.com> wrote:
+>
+> Adds compatibility with the new generation of this sensor, the BMP380
+>
+> Includes basic sensor initialization to do pressure and temp
+> measurements and allows tuning oversampling settings for each channel.
+>
+> The compensation algorithms are adapted from the device datasheet and
+> the repository https://github.com/BoschSensortec/BMP3-Sensor-API
 
-Huh, I didn't know FUSE supports DAX and iomap now...
+...
 
-> ---
->  fs/dax.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/fs/dax.c b/fs/dax.c
-> index 4155a6107fa1..7ab248ed21aa 100644
-> --- a/fs/dax.c
-> +++ b/fs/dax.c
-> @@ -1241,6 +1241,9 @@ dax_iomap_rw(struct kiocb *iocb, struct iov_iter *iter,
->  	loff_t done = 0;
->  	int ret;
->  
-> +	if (!iomi.len)
-> +		return 0;
+> +       /* wait for 2ms for command to be proccessed */
 
-Hmm, most of the callers of dax_iomap_rw skip the whole call if
-iov_iter_count(to)==0, so I wonder if fuse_dax_read_iter should do the
-same?
+processed
 
-That said, iomap_dio_rw bails early if you pass it iomi.len, so I don't
-have any real objections to this.
+> +       dev_dbg(data->dev, "Command 0x%X proccessed successfully\n", cmd);
 
-Reviewed-by: Darrick J. Wong <djwong@kernel.org>
-
---D
-
+Ditto. Can you run a spell checker? Kernel has a little one called codespell.
 
 > +
->  	if (iov_iter_rw(iter) == WRITE) {
->  		lockdep_assert_held_write(&iomi.inode->i_rwsem);
->  		iomi.flags |= IOMAP_WRITE;
-> -- 
-> 2.30.2
-> 
+> +       return 0;
+> +}
+
+...
+
+> +static s32 bmp380_compensate_temp(struct bmp280_data *data, u32 adc_temp)
+> +{
+> +       s64 var1, var2, var3, var4, var5, var6, comp_temp;
+> +       struct bmp380_calib *calib = &data->calib.bmp380;
+> +
+> +       var1 = ((s64) adc_temp) - (((s64) calib->T1) << 8);
+> +       var2 = var1 * ((s64) calib->T2);
+> +       var3 = var1 * var1;
+> +       var4 = var3 * ((s64) calib->T3);
+> +       var5 = (var2 << 18) + var4;
+> +       var6 = var5 >> 32;
+> +       data->t_fine = (s32) var6;
+> +       comp_temp = (var6 * 25) >> 14;
+> +
+> +       comp_temp = clamp_val(comp_temp, BMP380_MIN_TEMP, BMP380_MAX_TEMP);
+> +       return (s32) comp_temp;
+> +}
+
+...
+
+> +       s64 var1, var2, var3, var4, var5, var6, offset, sensitivity;
+> +       u64 comp_press;
+> +       struct bmp380_calib *calib = &data->calib.bmp380;
+> +
+> +       var1 = ((s64)data->t_fine) * ((s64)data->t_fine);
+> +       var2 = var1 >> 6;
+> +       var3 = (var2 * ((s64) data->t_fine)) >> 8;
+> +       var4 = (((s64)calib->P8) * var3) >> 5;
+> +       var5 = (((s64) calib->P7) * var1) << 4;
+> +       var6 = (((s64) calib->P6) * ((s64)data->t_fine)) << 22;
+> +       offset = (((s64)calib->P5) << 47) + var4 + var5 + var6;
+> +       var2 = (((s64)calib->P4) * var3) >> 5;
+> +       var4 = (((s64) calib->P3) * var1) << 2;
+> +       var5 = (((s64) calib->P2) - ((s64) 1<<14)) *
+> +               (((s64)data->t_fine) << 21);
+> +       sensitivity = ((((s64) calib->P1) - ((s64) 1 << 14)) << 46) +
+> +                       var2 + var4 + var5;
+> +       var1 = (sensitivity >> 24) * ((s64)adc_press);
+> +       var2 = ((s64)calib->P10) * ((s64) data->t_fine);
+> +       var3 = var2 + (((s64) calib->P9) << 16);
+> +       var4 = (var3 * ((s64)adc_press)) >> 13;
+> +
+> +       /*
+> +        * Dividing by 10 followed by multiplying by 10 to avoid
+> +        * possible overflow caused by (uncomp_data->pressure * partial_data4)
+> +        */
+> +       var5 = (((s64)adc_press) * (var4 / 10)) >> 9;
+> +       var5 *= 10;
+> +       var6 = ((s64)adc_press) * ((s64)adc_press);
+> +       var2 = (((s64)calib->P11) * var6) >> 16;
+> +       var3 = (var2 * ((s64)adc_press)) >> 7;
+> +       var4 = (offset >> 2) + var1 + var5 + var3;
+> +       comp_press = ((u64)var4 * 25) >> 40;
+
+
+Kbuild bot is right, you forgot to (compile-)test for a 32-bit machine.
+
+...
+
+> +       ret = regmap_bulk_read(data->regmap, BMP380_REG_TEMP_XLSB, data->buf, 3);
+
+sizeof() ?
+
+...
+
+> +       /* Read and compensate temperature so we get a reading of t_fine. */
+
+for temperature
+
+...
+
+> +       ret = regmap_bulk_read(data->regmap, BMP380_REG_PRESS_XLSB, data->buf, 3);
+
+sizeof() ?
+
+...
+
+> +       .oversampling_temp_default = ilog2(1),
+
+> +       .oversampling_press_default = ilog2(4),
+
+BIT()
+
+...
+
+> +#define BMP380_REG_CMD                 0x7E
+> +#define BMP380_REG_CONFIG              0x1F
+> +#define BMP380_REG_ODR                 0X1D
+> +#define BMP380_REG_OSR                 0X1C
+> +#define BMP380_REG_POWER_CONTROL       0X1B
+> +#define BMP380_REG_IF_CONFIG           0X1A
+> +#define BMP380_REG_INT_CONTROL         0X19
+> +#define BMP380_REG_INT_STATUS          0X11
+> +#define BMP380_REG_EVENT               0X10
+> +#define BMP380_REG_STATUS              0X03
+> +#define BMP380_REG_ERROR               0X02
+> +#define BMP380_REG_ID                  0X00
+> +
+> +#define BMP380_REG_FIFO_CONFIG_1       0X18
+> +#define BMP380_REG_FIFO_CONFIG_2       0X17
+> +#define BMP380_REG_FIFO_WATERMARK_MSB  0X16
+> +#define BMP380_REG_FIFO_WATERMARK_LSB  0X15
+> +#define BMP380_REG_FIFO_DATA           0X14
+> +#define BMP380_REG_FIFO_LENGTH_MSB     0X13
+> +#define BMP380_REG_FIFO_LENGTH_LSB     0X12
+> +
+> +#define BMP380_REG_SENSOR_TIME_MSB     0X0E
+> +#define BMP380_REG_SENSOR_TIME_LSB     0X0D
+> +#define BMP380_REG_SENSOR_TIME_XLSB    0X0C
+> +
+> +#define BMP380_REG_TEMP_MSB            0X09
+> +#define BMP380_REG_TEMP_LSB            0X08
+> +#define BMP380_REG_TEMP_XLSB           0X07
+> +
+> +#define BMP380_REG_PRESS_MSB           0X06
+> +#define BMP380_REG_PRESS_LSB           0X05
+> +#define BMP380_REG_PRESS_XLSB          0X04
+> +
+> +#define BMP380_REG_CALIB_TEMP_START    0x31
+
+Be consistent x vs X (we prefer x).
+
+-- 
+With Best Regards,
+Andy Shevchenko
