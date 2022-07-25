@@ -2,83 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C328C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 22:27:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0841CCA48A
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 22:28:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236681AbiGYW1t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 18:27:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36096 "EHLO
+        id S236922AbiGYW2h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 18:28:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbiGYW1q (ORCPT
+        with ESMTP id S229491AbiGYW2g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 18:27:46 -0400
-Received: from mail-oa1-f45.google.com (mail-oa1-f45.google.com [209.85.160.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA23825594;
-        Mon, 25 Jul 2022 15:27:45 -0700 (PDT)
-Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-10d867a8358so16575328fac.10;
-        Mon, 25 Jul 2022 15:27:45 -0700 (PDT)
+        Mon, 25 Jul 2022 18:28:36 -0400
+Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com [209.85.167.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A783B252AA;
+        Mon, 25 Jul 2022 15:28:35 -0700 (PDT)
+Received: by mail-oi1-f170.google.com with SMTP id u9so15148645oiv.12;
+        Mon, 25 Jul 2022 15:28:35 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=QsZxY3x/h1CKG5QnfFuRHQidpNEdsOaAbN7HUlphdhs=;
-        b=OpLra2rjwctfQYOR3WD4goDH48NU6kVJm4/bvpTb+6Gxu7kk7VOYVwFKqtq8flTN9W
-         vqOBNyz7GJQ4naY8IINKIg8rTFg1UP/ax75tg4a0vONRcnJz6SWZUL1zewP+RSE+323C
-         kkqOREd8oDYt3f4MfUTKV0mwDtoeY+BCPJvYmSo/c+b9dCj+PA/fZD9nClsymQH2QMAO
-         ikM2Puui+uhyyztPdi8+mtP58Gkvp311/1HEzTwtR34k2CdNA7Ge04Q2mJQG0/9mZVQa
-         gnEptGI0UmN8ngZWQXUX2tTJTwHuc3XCE+VbbtpuL+4UczuvY7Vj6t/3Q9HlqMIRkt63
-         eT5w==
-X-Gm-Message-State: AJIora8gVF4QrNmgO4O8KO+CmlGdEaJJ9/fWEodpVz2FR+FnyBhJ6PBK
-        /7h+Iw0CKPIDFwmArzqkwzd56W/SDQ==
-X-Google-Smtp-Source: AGRyM1v4h7huPKooJcptUd4mgfbYV6YVP5u+QrfqMD0TJGGQYRQ6gM2Hy7kwEq6HK0U37c9/yjzedw==
-X-Received: by 2002:a05:6870:d79d:b0:10d:ab03:b59 with SMTP id bd29-20020a056870d79d00b0010dab030b59mr6935961oab.39.1658788065042;
-        Mon, 25 Jul 2022 15:27:45 -0700 (PDT)
+        bh=ydROe5Yeqe7LKLvisIFiWDBcUFI7G/LxHrwDl1ZPZes=;
+        b=UI4ZK7Mss07ztjlb0lt2hn3LtbNEPeXCcAiSyjh+USavG4RGiDy0rSy82QStGHC1wv
+         H/TEnM0skLfpItvl37sxna57Wi224DnCTJKVMqgVVv8qt4b5owPsIBDdOnmklUX79zj1
+         cBUjaX1yNUxUlS4Pg6WYwOhsblWL4CYgOlGaTBPJZuSCbVgp/ULUb4my0ybYVvCZPh7Q
+         pjN51b78F1kImacrxUx7WlkjzVnvQ35FFidSjna8c64p0+ndwiNyZVslcZnKeD7CW/tv
+         +XoL100FlzUjRIsL1Q1bG+Wv+/x7KMIKMQuAy1H/LT3L65uXXRJj8T5OSL+3n3dYPPlJ
+         mbUg==
+X-Gm-Message-State: AJIora8/CH8HS1oFfOGqn++Fs7Gw+uSNaqe43CRw0LXXMOViAUBjSGNH
+        WFxG0TezDZeFhyxSCZnzvw==
+X-Google-Smtp-Source: AGRyM1s71mYHjgRvajARzt6yUDLac3slJauP/Yk6irLnti0u1tVfqTcvRz9lQPTSlzY1oaeDkp/SWA==
+X-Received: by 2002:a05:6808:bce:b0:33a:c6c8:9d6f with SMTP id o14-20020a0568080bce00b0033ac6c89d6fmr6219832oik.135.1658788114842;
+        Mon, 25 Jul 2022 15:28:34 -0700 (PDT)
 Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id p28-20020a056870831c00b0010c727a3c79sm6607396oae.26.2022.07.25.15.27.43
+        by smtp.gmail.com with ESMTPSA id b17-20020a056808011100b0033a9f4c13cesm5322861oie.13.2022.07.25.15.28.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Jul 2022 15:27:44 -0700 (PDT)
-Received: (nullmailer pid 2857915 invoked by uid 1000);
-        Mon, 25 Jul 2022 22:27:42 -0000
-Date:   Mon, 25 Jul 2022 16:27:42 -0600
+        Mon, 25 Jul 2022 15:28:34 -0700 (PDT)
+Received: (nullmailer pid 2859320 invoked by uid 1000);
+        Mon, 25 Jul 2022 22:28:32 -0000
+Date:   Mon, 25 Jul 2022 16:28:32 -0600
 From:   Rob Herring <robh@kernel.org>
 To:     Allen-KH Cheng <allen-kh.cheng@mediatek.com>
-Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        angelogioacchino.delregno@collabora.com,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        nfraprado@collabora.com,
+Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        Jitao shi <jitao.shi@mediatek.com>,
         Project_Global_Chrome_Upstream_Group@mediatek.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Guenter Roeck <linux@roeck-us.net>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/4] dt-binding: mediatek: watchdog: Fix compatible
- fallbacks and example
-Message-ID: <20220725222742.GA2857882-robh@kernel.org>
-References: <20220720125015.13797-1-allen-kh.cheng@mediatek.com>
- <20220720125015.13797-2-allen-kh.cheng@mediatek.com>
+        Rob Herring <robh+dt@kernel.org>,
+        dri-devel@lists.freedesktop.org,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        linux-arm-kernel@lists.infradead.org, hsinyi@chromium.org,
+        linux-mediatek@lists.infradead.org, fparent@baylibre.com,
+        CK Hu <ck.hu@mediatek.com>
+Subject: Re: [PATCH v2 1/1] dt-bindings: display: mediatek: dpi: add
+ power-domains property
+Message-ID: <20220725222832.GA2859262-robh@kernel.org>
+References: <20220720130604.14113-1-allen-kh.cheng@mediatek.com>
+ <20220720130604.14113-2-allen-kh.cheng@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220720125015.13797-2-allen-kh.cheng@mediatek.com>
+In-Reply-To: <20220720130604.14113-2-allen-kh.cheng@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 20 Jul 2022 20:50:12 +0800, Allen-KH Cheng wrote:
-> The watchdog timer of mt8186. mt8195 and mt7986 have their DT data.
-> We should not use 'mediatek,mt6589-wdt' as fallback.
+On Wed, 20 Jul 2022 21:06:04 +0800, Allen-KH Cheng wrote:
+> DPI is part of the display / multimedia block in MediaTek SoCs
+> and is managed using power controller in some platforms. We add
+> the power-domains property to the binding documentation.
 > 
-> For mediatek,wdt example of mt8183, We remove mediatek,mt6589-wdt fallback.
+> Fixes:9273cf7d3942("dt-bindings: display: mediatek: convert the dpi bindings to yaml")
 > 
-> Fixes:a45b408a020b("dt-bindings: watchdog: Add compatible for MediaTek MT8186")
-> Fixes:b326f2c85f3d("dt-bindings: watchdog: Add compatible for Mediatek MT8195")
-> Fixes:41e73feb1024("dt-bindings: watchdog: Add compatible for Mediatek MT7986")
-> Fixes:f43f97a0fc0e("dt-bindings: mediatek: mt8183: Add #reset-cells")
 > Signed-off-by: Allen-KH Cheng <allen-kh.cheng@mediatek.com>
+> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 > ---
->  Documentation/devicetree/bindings/watchdog/mtk-wdt.txt | 9 ++++-----
->  1 file changed, 4 insertions(+), 5 deletions(-)
+>  .../devicetree/bindings/display/mediatek/mediatek,dpi.yaml   | 5 +++++
+>  1 file changed, 5 insertions(+)
 > 
 
 Acked-by: Rob Herring <robh@kernel.org>
