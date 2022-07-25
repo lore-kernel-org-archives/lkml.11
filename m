@@ -2,171 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA117C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 22:41:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1747EC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 22:43:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237729AbiGYWla (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 18:41:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44612 "EHLO
+        id S237654AbiGYWn1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 18:43:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237640AbiGYWjr (ORCPT
+        with ESMTP id S237598AbiGYWnG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 18:39:47 -0400
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D66E62611E
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 15:38:19 -0700 (PDT)
-Received: by mail-yb1-xb4a.google.com with SMTP id m123-20020a253f81000000b0066ff6484995so9618446yba.22
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 15:38:19 -0700 (PDT)
+        Mon, 25 Jul 2022 18:43:06 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85E5C29CA5
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 15:41:08 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id w10so137606plq.0
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 15:41:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=XYXEQIuy7h924sIm++0QL8msX4qZC4lZX28byHCoX+w=;
-        b=QMV/ybTkfw1e72GPBPoLbYsd+XjiKEz2oJd9Jbb1qSS3aJDSoBQjQkeMl/iJtrRbMW
-         hl57AbCsWZd0JsToqbvl5EbufBA6lcTFioj6KFLoi8zNJUqcgJaHvmg9lmfyToCn7dXB
-         zJecYAhwiyRBOilNnIPQ16hArq9H2ftH2Ij+Rdl8Cuo5T1VXwL4h1m/6jLYlV9S1bEP8
-         DWxOocTITe1H28dxaFXraGAacXctHf7tjcE/RM58EtqFo/xrf/jxkGOwxthO5CnQwSzS
-         lqTITJl1H60UriBmHLtz3ZGcA3m7SpJiyyWqpYoMAS2dng8QHg/TR87ocCUU7qKHzTgv
-         lgWw==
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:content-language:to
+         :cc:references:from:subject:in-reply-to:content-transfer-encoding;
+        bh=+gsloq9DrRj40wgtL1Bj5I/zKXAptLmoCHjL2BnUObw=;
+        b=qUtmtma6HAQJVGOAzv8j1zpuhY/PD+n2lLtrvXqfLjDEbW/92oJFBSdQSqvu0vrBl1
+         6wA5y5aBh4XKOitO+OtYvo6eIpaT54/UGk0fdpdZZrk5dWPezSTLL1T1dX5bNd6Fejmy
+         wLZQ58Uh9DVm4Q9Vwasenaz16K7iKmeICk5jmwSYudByNWr4HffVTxdC0gZv5NSfXM7d
+         h38haZ1YMo7ToVhCDJr7KtgZ+MhXyr2vZFb8eeHqZk9oqtrUHMJN2887ZizkRpG4a9Xq
+         a/V6LSSiy7mRYJSLoWW67r75jEdfwxX8h22LSYiYxrZqvGTo1UdtTggGJHe6S4fqi1gM
+         pIkw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=XYXEQIuy7h924sIm++0QL8msX4qZC4lZX28byHCoX+w=;
-        b=M6Uv38pn1W807DZ8v/Lhd/PICqfQWnw+r7A3uy23u9C1v1V0/AOWtk0jeJjStQIAhi
-         o3Kw2E4thWWXGdTxQ6QDmVOWv5MvDOk+f05b+FWKQW1Ty0+Ae+eoaYGk4eImfnOL3NKD
-         YJCVAIyJAnbejQAxYIpxBp9ibqaDc7OIcy5u8mi8VttABpNeFc1KWMDXjHr6ync5gFVX
-         rq6664JY47lhgIN7hQCM9QDeTDGJlLD2JEZbOC/l9N+a7bTZ7XmkbaD2tAAXab1yua8W
-         IPuKbEWd/t4op50UxGaX6psbDb6/Z/3uA64j6R6uKkcRkxPwvRRHgKqjBVNh9tLMdde0
-         p9lw==
-X-Gm-Message-State: AJIora9jXqNbGjY1SlhHSO7JCE2XwldTJjrLl+3QC4yn9NiMXIv1Hqef
-        T2R+ODM0mIxkSdfBT+Dq4PAHCyksm6Ve
-X-Google-Smtp-Source: AGRyM1s409YKheeodSYji9f5l2Bq3f11WDdbB2wYwHte+vCkagU3vpfmA0LfENcSF+OVWxU/OGHGG9+50L3H
-X-Received: from irogers.svl.corp.google.com ([2620:15c:2d4:203:7fbf:ee64:7f7:3631])
- (user=irogers job=sendgmr) by 2002:a25:b9ce:0:b0:670:8423:eacb with SMTP id
- y14-20020a25b9ce000000b006708423eacbmr11191785ybj.324.1658788686381; Mon, 25
- Jul 2022 15:38:06 -0700 (PDT)
-Date:   Mon, 25 Jul 2022 15:36:32 -0700
-In-Reply-To: <20220725223633.2301737-1-irogers@google.com>
-Message-Id: <20220725223633.2301737-32-irogers@google.com>
-Mime-Version: 1.0
-References: <20220725223633.2301737-1-irogers@google.com>
-X-Mailer: git-send-email 2.37.1.359.gd136c6c3e2-goog
-Subject: [PATCH v2 31/32] perf vendor events intel: Rename tremontx to snowridgex
-From:   Ian Rogers <irogers@google.com>
-To:     perry.taylor@intel.com, caleb.biggers@intel.com,
-        kshipra.bopardikar@intel.com,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        James Clark <james.clark@arm.com>,
-        John Garry <john.garry@huawei.com>,
-        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        Sedat Dilek <sedat.dilek@gmail.com>
-Cc:     Stephane Eranian <eranian@google.com>,
-        Ian Rogers <irogers@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :content-language:to:cc:references:from:subject:in-reply-to
+         :content-transfer-encoding;
+        bh=+gsloq9DrRj40wgtL1Bj5I/zKXAptLmoCHjL2BnUObw=;
+        b=5j4fq4+vXt9+4T8PaZaCDSC0aqmeE0Z7IOhSm/+z/w2b7s4wlsutGXkwvh0ey8VE4B
+         E6K/Jn5K1RBnNUQRYtBf975qsjqKmhEW9A+xRM0RuXaOTRnZJl+K68rJIRBRgpbtFx6W
+         oBt06Paa6HMSmi0c3XGXx+s2lcZ4cBzp0aoGUY7Na+/n4m7ZTmcdShjng25/mq+/yCGe
+         vm9lIYJrLh09u1ztbSpUN0NdGQupcewMbt568oum+S+rbm+1Q7GOQP0tG6ONqUnRWvJK
+         Vczsaq4f6qjlFf0kRaVY5qKlOTRV9BYdOcTIFBNrWU1o4Uu0ct/nWihZqn2TJsvkhwcm
+         +VOQ==
+X-Gm-Message-State: AJIora93iHGiKOqrxmZ4bPDq/JFvLMj+/IzgCnehmnMgXlDbu2TgtWDe
+        M1dmDi0inTFiUvBJ+8mUB8E=
+X-Google-Smtp-Source: AGRyM1sY6xs2vLFIRjWV2bnzc91l1WGwCvv+DJXVUNptBy7iZlV1vdS9ruecuC6uACy/vvyxKuwSiQ==
+X-Received: by 2002:a17:902:ba91:b0:16c:6b8e:cd06 with SMTP id k17-20020a170902ba9100b0016c6b8ecd06mr13859080pls.33.1658788842670;
+        Mon, 25 Jul 2022 15:40:42 -0700 (PDT)
+Received: from ?IPV6:2600:1700:e321:62f0:329c:23ff:fee3:9d7c? ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id z14-20020aa7958e000000b0052a75004c51sm10440383pfj.146.2022.07.25.15.40.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 25 Jul 2022 15:40:41 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Message-ID: <5ef016a9-c1bb-91dd-454d-504d26074477@roeck-us.net>
+Date:   Mon, 25 Jul 2022 15:40:40 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Content-Language: en-US
+To:     Segher Boessenkool <segher@kernel.crashing.org>,
+        Timothy Pearson <tpearson@raptorengineering.com>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        =?UTF-8?Q?Dan_Hor=c3=a1k?= <dan@danny.cz>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        amd-gfx <amd-gfx@lists.freedesktop.org>,
+        Alex Deucher <alexdeucher@gmail.com>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>
+References: <20220725123918.1903255-1-mpe@ellerman.id.au>
+ <CAHk-=wihON4Ytte5zLHWNQtTapUvCpkToxY06OjX-_2B+Gq6Gg@mail.gmail.com>
+ <1446417444.13111032.1658777648586.JavaMail.zimbra@raptorengineeringinc.com>
+ <20220725204217.GU25951@gate.crashing.org>
+From:   Guenter Roeck <linux@roeck-us.net>
+Subject: Re: [PATCH] drm/amdgpu: Re-enable DCN for 64-bit powerpc
+In-Reply-To: <20220725204217.GU25951@gate.crashing.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhengjun Xing <zhengjun.xing@linux.intel.com>
+On 7/25/22 13:42, Segher Boessenkool wrote:
+> On Mon, Jul 25, 2022 at 02:34:08PM -0500, Timothy Pearson wrote:
+>>>> Further digging shows that the build failures only occur with compilers
+>>>> that default to 64-bit long double.
+>>>
+>>> Where the heck do we have 'long double' things anywhere in the kernel?
+>>>
+>>> I tried to grep for it, and failed miserably. I found some constants
+>>> that would qualify, but they were in the v4l colorspaces-details.rst
+>>> doc file.
+>>>
+>>> Strange.
+>>
+>> We don't, at least not that I can see.  The affected code uses standard doubles.
+>>
+>> What I'm wondering is if the compiler is getting confused between standard and long doubles when they are both the same bit length...
+> 
+> The compiler emits the same code (DFmode things, double precision float)
+> in both cases, and it itself does not see any difference anymore fairly
+> early in the pipeline.  Compare to int and long on most 32-bit targets,
+> both are SImode, the compiler will not see different types anymore:
+> there *are* no types, except in the compiler frontend.
+> 
+> It only happens for powerpc64le things, and not for powerpc64 builds.
+> 
+> It is probably a GCC problem.  I don't see what forces the GCC build
+> here to use 64-bit long double either btw?  Compilers build via buildall
+> have all kinds of unnecessary things disabled, but not that, not
+> directly at least.
+> 
 
-Tremontx was an old name for Snowridgex, so rename Tremontx to Snowridgex.
+ From what little documentation I can find, there appears to be
+"--with-long-double-128" and "--with-long-double-format=ieee".
+That looks like something that would need to be enabled, not disabled.
 
-Signed-off-by: Zhengjun Xing <zhengjun.xing@linux.intel.com>
-Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
-Signed-off-by: Ian Rogers <irogers@google.com>
----
- tools/perf/pmu-events/arch/x86/mapfile.csv                      | 2 +-
- .../pmu-events/arch/x86/{tremontx => snowridgex}/cache.json     | 0
- .../arch/x86/{tremontx => snowridgex}/floating-point.json       | 0
- .../pmu-events/arch/x86/{tremontx => snowridgex}/frontend.json  | 0
- .../pmu-events/arch/x86/{tremontx => snowridgex}/memory.json    | 0
- .../pmu-events/arch/x86/{tremontx => snowridgex}/other.json     | 0
- .../pmu-events/arch/x86/{tremontx => snowridgex}/pipeline.json  | 0
- .../arch/x86/{tremontx => snowridgex}/uncore-memory.json        | 0
- .../arch/x86/{tremontx => snowridgex}/uncore-other.json         | 0
- .../arch/x86/{tremontx => snowridgex}/uncore-power.json         | 0
- .../arch/x86/{tremontx => snowridgex}/virtual-memory.json       | 0
- 11 files changed, 1 insertion(+), 1 deletion(-)
- rename tools/perf/pmu-events/arch/x86/{tremontx => snowridgex}/cache.json (100%)
- rename tools/perf/pmu-events/arch/x86/{tremontx => snowridgex}/floating-point.json (100%)
- rename tools/perf/pmu-events/arch/x86/{tremontx => snowridgex}/frontend.json (100%)
- rename tools/perf/pmu-events/arch/x86/{tremontx => snowridgex}/memory.json (100%)
- rename tools/perf/pmu-events/arch/x86/{tremontx => snowridgex}/other.json (100%)
- rename tools/perf/pmu-events/arch/x86/{tremontx => snowridgex}/pipeline.json (100%)
- rename tools/perf/pmu-events/arch/x86/{tremontx => snowridgex}/uncore-memory.json (100%)
- rename tools/perf/pmu-events/arch/x86/{tremontx => snowridgex}/uncore-other.json (100%)
- rename tools/perf/pmu-events/arch/x86/{tremontx => snowridgex}/uncore-power.json (100%)
- rename tools/perf/pmu-events/arch/x86/{tremontx => snowridgex}/virtual-memory.json (100%)
+FWIW, depending on compiler build options such as the above for kernel
+builds seems to be a little odd to me, and I am not sure I'd want to
+blame gcc if the kernel wants to be built with 128-bit floating point
+as default. At the very least, that should be documented somewhere,
+and if possible the kernel should refuse to build if the compiler build
+options don't meet the requirements.
 
-diff --git a/tools/perf/pmu-events/arch/x86/mapfile.csv b/tools/perf/pmu-events/arch/x86/mapfile.csv
-index 4cf708477680..7ae035d4cc42 100644
---- a/tools/perf/pmu-events/arch/x86/mapfile.csv
-+++ b/tools/perf/pmu-events/arch/x86/mapfile.csv
-@@ -24,11 +24,11 @@ GenuineIntel-6-8F,v1.04,sapphirerapids,core
- GenuineIntel-6-(37|4C|4D),v14,silvermont,core
- GenuineIntel-6-(4E|5E|8E|9E|A5|A6),v53,skylake,core
- GenuineIntel-6-55-[01234],v1.28,skylakex,core
-+GenuineIntel-6-86,v1,snowridgex,core
- GenuineIntel-6-8[CD],v1.07,tigerlake,core
- GenuineIntel-6-2C,v2,westmereep-dp,core
- GenuineIntel-6-25,v3,westmereep-sp,core
- GenuineIntel-6-2F,v3,westmereex,core
--GenuineIntel-6-86,v1,tremontx,core
- AuthenticAMD-23-([12][0-9A-F]|[0-9A-F]),v2,amdzen1,core
- AuthenticAMD-23-[[:xdigit:]]+,v1,amdzen2,core
- AuthenticAMD-25-[[:xdigit:]]+,v1,amdzen3,core
-diff --git a/tools/perf/pmu-events/arch/x86/tremontx/cache.json b/tools/perf/pmu-events/arch/x86/snowridgex/cache.json
-similarity index 100%
-rename from tools/perf/pmu-events/arch/x86/tremontx/cache.json
-rename to tools/perf/pmu-events/arch/x86/snowridgex/cache.json
-diff --git a/tools/perf/pmu-events/arch/x86/tremontx/floating-point.json b/tools/perf/pmu-events/arch/x86/snowridgex/floating-point.json
-similarity index 100%
-rename from tools/perf/pmu-events/arch/x86/tremontx/floating-point.json
-rename to tools/perf/pmu-events/arch/x86/snowridgex/floating-point.json
-diff --git a/tools/perf/pmu-events/arch/x86/tremontx/frontend.json b/tools/perf/pmu-events/arch/x86/snowridgex/frontend.json
-similarity index 100%
-rename from tools/perf/pmu-events/arch/x86/tremontx/frontend.json
-rename to tools/perf/pmu-events/arch/x86/snowridgex/frontend.json
-diff --git a/tools/perf/pmu-events/arch/x86/tremontx/memory.json b/tools/perf/pmu-events/arch/x86/snowridgex/memory.json
-similarity index 100%
-rename from tools/perf/pmu-events/arch/x86/tremontx/memory.json
-rename to tools/perf/pmu-events/arch/x86/snowridgex/memory.json
-diff --git a/tools/perf/pmu-events/arch/x86/tremontx/other.json b/tools/perf/pmu-events/arch/x86/snowridgex/other.json
-similarity index 100%
-rename from tools/perf/pmu-events/arch/x86/tremontx/other.json
-rename to tools/perf/pmu-events/arch/x86/snowridgex/other.json
-diff --git a/tools/perf/pmu-events/arch/x86/tremontx/pipeline.json b/tools/perf/pmu-events/arch/x86/snowridgex/pipeline.json
-similarity index 100%
-rename from tools/perf/pmu-events/arch/x86/tremontx/pipeline.json
-rename to tools/perf/pmu-events/arch/x86/snowridgex/pipeline.json
-diff --git a/tools/perf/pmu-events/arch/x86/tremontx/uncore-memory.json b/tools/perf/pmu-events/arch/x86/snowridgex/uncore-memory.json
-similarity index 100%
-rename from tools/perf/pmu-events/arch/x86/tremontx/uncore-memory.json
-rename to tools/perf/pmu-events/arch/x86/snowridgex/uncore-memory.json
-diff --git a/tools/perf/pmu-events/arch/x86/tremontx/uncore-other.json b/tools/perf/pmu-events/arch/x86/snowridgex/uncore-other.json
-similarity index 100%
-rename from tools/perf/pmu-events/arch/x86/tremontx/uncore-other.json
-rename to tools/perf/pmu-events/arch/x86/snowridgex/uncore-other.json
-diff --git a/tools/perf/pmu-events/arch/x86/tremontx/uncore-power.json b/tools/perf/pmu-events/arch/x86/snowridgex/uncore-power.json
-similarity index 100%
-rename from tools/perf/pmu-events/arch/x86/tremontx/uncore-power.json
-rename to tools/perf/pmu-events/arch/x86/snowridgex/uncore-power.json
-diff --git a/tools/perf/pmu-events/arch/x86/tremontx/virtual-memory.json b/tools/perf/pmu-events/arch/x86/snowridgex/virtual-memory.json
-similarity index 100%
-rename from tools/perf/pmu-events/arch/x86/tremontx/virtual-memory.json
-rename to tools/perf/pmu-events/arch/x86/snowridgex/virtual-memory.json
--- 
-2.37.1.359.gd136c6c3e2-goog
-
+Guenter
