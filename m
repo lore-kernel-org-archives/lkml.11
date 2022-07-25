@@ -2,84 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 124D2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 01:43:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7BEDCCA48A
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 01:45:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231567AbiGYBnA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 24 Jul 2022 21:43:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49724 "EHLO
+        id S232073AbiGYBpx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 24 Jul 2022 21:45:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229694AbiGYBm7 (ORCPT
+        with ESMTP id S229694AbiGYBpt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 24 Jul 2022 21:42:59 -0400
-Received: from m13114.mail.163.com (m13114.mail.163.com [220.181.13.114])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CDC9DB7E5
-        for <linux-kernel@vger.kernel.org>; Sun, 24 Jul 2022 18:42:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=BFPOB
-        qLpPNPkadBte7xqz0J8AvMFiPRP5JeF1+PIexU=; b=Ek5lD/emKD0t0lyThNiCr
-        kiibw5bk82WPE8KYFl+qNF4ZTxCByRSPOOCYSwhXWH4nxpgQcQqMXJPD1PF1kk4W
-        aNQ2RRfvtpcs/RtIodZFyQD1O4+H30f7E3oy2TMyqMzwyG9nACuTOHNLWtcVUjJt
-        yPjcWT3srxrx/jS5T3di78=
-Received: from slark_xiao$163.com ( [112.97.48.126] ) by
- ajax-webmail-wmsvr114 (Coremail) ; Mon, 25 Jul 2022 09:42:44 +0800 (CST)
-X-Originating-IP: [112.97.48.126]
-Date:   Mon, 25 Jul 2022 09:42:44 +0800 (CST)
-From:   "Slark Xiao" <slark_xiao@163.com>
-To:     "Darrick J. Wong" <djwong@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, linux-xfs@vger.kernel.org
-Subject: Re:Re: [PATCH] xfs: Fix typo 'the the' in comment
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
- Copyright (c) 2002-2022 www.mailtech.cn 163com
-In-Reply-To: <YtrkbL4m6f99omFJ@magnolia>
-References: <20220722100654.80002-1-slark_xiao@163.com>
- <YtrkbL4m6f99omFJ@magnolia>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=GBK
-MIME-Version: 1.0
-Message-ID: <a6be149.924.18233055819.Coremail.slark_xiao@163.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: csGowACHv9IU9d1iSQ0lAA--.61776W
-X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/xtbCdQtIZGBbEdc1CAADsR
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+        Sun, 24 Jul 2022 21:45:49 -0400
+Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5181130;
+        Sun, 24 Jul 2022 18:45:47 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018045170;MF=xianting.tian@linux.alibaba.com;NM=1;PH=DS;RN=22;SR=0;TI=SMTPD_---0VKFpxuy_1658713541;
+Received: from localhost(mailfrom:xianting.tian@linux.alibaba.com fp:SMTPD_---0VKFpxuy_1658713541)
+          by smtp.aliyun-inc.com;
+          Mon, 25 Jul 2022 09:45:42 +0800
+From:   Xianting Tian <xianting.tian@linux.alibaba.com>
+To:     paul.walmsley@sifive.com, palmer@dabbelt.com,
+        aou@eecs.berkeley.edu, anup@brainfault.org, heiko@sntech.de,
+        guoren@kernel.org, mick@ics.forth.gr,
+        alexandre.ghiti@canonical.com, bhe@redhat.com, vgoyal@redhat.com,
+        dyoung@redhat.com, corbet@lwn.net
+Cc:     kexec@lists.infradead.org, linux-doc@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        crash-utility@redhat.com, huanyi.xj@alibaba-inc.com,
+        heinrich.schuchardt@canonical.com, k-hagio-ab@nec.com,
+        hschauhan@nulltrace.org,
+        Xianting Tian <xianting.tian@linux.alibaba.com>
+Subject: [RESEND PATCH V2 0/5] Fixups to work with crash tool
+Date:   Mon, 25 Jul 2022 09:45:34 +0800
+Message-Id: <20220725014539.1037627-1-xianting.tian@linux.alibaba.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CgoKCgoKCgoKCgoKCgoKCkF0IDIwMjItMDctMjMgMDE6NTQ6NTIsICJEYXJyaWNrIEouIFdvbmci
-IDxkandvbmdAa2VybmVsLm9yZz4gd3JvdGU6Cj5PbiBGcmksIEp1bCAyMiwgMjAyMiBhdCAwNjow
-Njo1NFBNICswODAwLCBTbGFyayBYaWFvIHdyb3RlOgo+PiBSZXBsYWNlICd0aGUgdGhlJyB3aXRo
-ICd0aGUnIGluIHRoZSBjb21tZW50Lgo+PiAKPj4gU2lnbmVkLW9mZi1ieTogU2xhcmsgWGlhbyA8
-c2xhcmtfeGlhb0AxNjMuY29tPgo+Cj5BcHBsaWVkLCB0aG91Z2ggc29tZW9uZSBlbHNlIGFscmVh
-ZHkgYmVhdCB5b3UgdG8gdGhlIHNlY29uZCBjaHVuay4KPlJldmlld2VkLWJ5OiBEYXJyaWNrIEou
-IFdvbmcgPGRqd29uZ0BrZXJuZWwub3JnPgo+Cj4tLUQKVGhhbmtzIQo+Cj4+IC0tLQo+PiAgZnMv
-eGZzL2xpYnhmcy94ZnNfYWxsb2MuYyB8IDIgKy0KPj4gIGZzL3hmcy94ZnNfZHF1b3QuYyAgICAg
-ICAgfCAyICstCj4+ICAyIGZpbGVzIGNoYW5nZWQsIDIgaW5zZXJ0aW9ucygrKSwgMiBkZWxldGlv
-bnMoLSkKPj4gCj4+IGRpZmYgLS1naXQgYS9mcy94ZnMvbGlieGZzL3hmc19hbGxvYy5jIGIvZnMv
-eGZzL2xpYnhmcy94ZnNfYWxsb2MuYwo+PiBpbmRleCA0MTU1N2M0MzBjYjYuLmUyYmRmMDg5YzBh
-MyAxMDA2NDQKPj4gLS0tIGEvZnMveGZzL2xpYnhmcy94ZnNfYWxsb2MuYwo+PiArKysgYi9mcy94
-ZnMvbGlieGZzL3hmc19hbGxvYy5jCj4+IEBAIC04NCw3ICs4NCw3IEBAIHhmc19wcmVhbGxvY19i
-bG9ja3MoCj4+ICAvKgo+PiAgICogVGhlIG51bWJlciBvZiBibG9ja3MgcGVyIEFHIHRoYXQgd2Ug
-d2l0aGhvbGQgZnJvbSB4ZnNfbW9kX2ZkYmxvY2tzIHRvCj4+ICAgKiBndWFyYW50ZWUgdGhhdCB3
-ZSBjYW4gcmVmaWxsIHRoZSBBR0ZMIHByaW9yIHRvIGFsbG9jYXRpbmcgc3BhY2UgaW4gYSBuZWFy
-bHkKPj4gLSAqIGZ1bGwgQUcuICBBbHRob3VnaCB0aGUgdGhlIHNwYWNlIGRlc2NyaWJlZCBieSB0
-aGUgZnJlZSBzcGFjZSBidHJlZXMsIHRoZQo+PiArICogZnVsbCBBRy4gIEFsdGhvdWdoIHRoZSBz
-cGFjZSBkZXNjcmliZWQgYnkgdGhlIGZyZWUgc3BhY2UgYnRyZWVzLCB0aGUKPj4gICAqIGJsb2Nr
-cyB1c2VkIGJ5IHRoZSBmcmVlc3AgYnRyZWVzIHRoZW1zZWx2ZXMsIGFuZCB0aGUgYmxvY2tzIG93
-bmVkIGJ5IHRoZQo+PiAgICogQUdGTCBhcmUgY291bnRlZCBpbiB0aGUgb25kaXNrIGZkYmxvY2tz
-LCBpdCdzIGEgbWlzdGFrZSB0byBsZXQgdGhlIG9uZGlzawo+PiAgICogZnJlZSBzcGFjZSBpbiB0
-aGUgQUcgZHJvcCBzbyBsb3cgdGhhdCB0aGUgZnJlZSBzcGFjZSBidHJlZXMgY2Fubm90IHJlZmls
-bCBhbgo+PiBkaWZmIC0tZ2l0IGEvZnMveGZzL3hmc19kcXVvdC5jIGIvZnMveGZzL3hmc19kcXVv
-dC5jCj4+IGluZGV4IDVhNmMzYzNjNGRlMi4uOGZiOTBkYTg5Nzg3IDEwMDY0NAo+PiAtLS0gYS9m
-cy94ZnMveGZzX2RxdW90LmMKPj4gKysrIGIvZnMveGZzL3hmc19kcXVvdC5jCj4+IEBAIC01NDks
-NyArNTQ5LDcgQEAgeGZzX2RxdW90X2NoZWNrX3R5cGUoCj4+ICAJICogYXQgdGhlIHNhbWUgdGlt
-ZS4gIFRoZSBub24tdXNlciBxdW90YSBmaWxlIGNhbiBiZSBzd2l0Y2hlZCBiZXR3ZWVuCj4+ICAJ
-ICogZ3JvdXAgYW5kIHByb2plY3QgcXVvdGEgdXNlcyBkZXBlbmRpbmcgb24gdGhlIG1vdW50IG9w
-dGlvbnMsIHdoaWNoCj4+ICAJICogbWVhbnMgdGhhdCB3ZSBjYW4gZW5jb3VudGVyIHRoZSBvdGhl
-ciB0eXBlIHdoZW4gd2UgdHJ5IHRvIGxvYWQgcXVvdGEKPj4gLQkgKiBkZWZhdWx0cy4gIFF1b3Rh
-Y2hlY2sgd2lsbCBzb29uIHJlc2V0IHRoZSB0aGUgZW50aXJlIHF1b3RhIGZpbGUKPj4gKwkgKiBk
-ZWZhdWx0cy4gIFF1b3RhY2hlY2sgd2lsbCBzb29uIHJlc2V0IHRoZSBlbnRpcmUgcXVvdGEgZmls
-ZQo+PiAgCSAqIChpbmNsdWRpbmcgdGhlIHJvb3QgZHF1b3QpIGFueXdheSwgYnV0IGRvbid0IGxv
-ZyBzY2FyeSBjb3JydXB0aW9uCj4+ICAJICogcmVwb3J0cyB0byBkbWVzZy4KPj4gIAkgKi8KPj4g
-LS0gCj4+IDIuMjUuMQo+PiAK
+I ever sent the patch 1 in the link:
+https://patchwork.kernel.org/project/linux-riscv/patch/20220708073150.352830-3-xianting.tian@linux.alibaba.com/
+And patch 2,3 in the link:
+https://patchwork.kernel.org/project/linux-riscv/patch/20220714113300.367854-2-xianting.tian@linux.alibaba.com/
+https://patchwork.kernel.org/project/linux-riscv/patch/20220714113300.367854-3-xianting.tian@linux.alibaba.com/
+
+This patch series just put these patches together, and with two new patch 4, 5.
+these five patches are the fixups for machine_kexec, kernel mode PC for vmcore
+and improvements for vmcoreinfo and memory layout dump.
+
+The main changes in the five patchs as below,
+Patch 1: use __smp_processor_id() instead of smp_processor_id() to cleanup
+	 the console prints.
+Patch 2: Add VM layout, va bits, ram base to vmcoreinfo, which can simplify
+	 the development of crash tool as ARM64 already did
+	 (arch/arm64/kernel/crash_core.c).
+Patch 3: Add modules to virtual kernel memory layout dump.
+Patch 4: Fixup to get correct kernel mode PC for vmcore.
+Patch 5: Updates vmcoreinfo.rst.
+
+With these 5 patches(patch 2 is must), crash tool can work well to analyze
+a vmcore. The patches for crash tool for RISCV64 is in the link:
+https://lore.kernel.org/linux-riscv/20220718025346.411758-1-xianting.tian@linux.alibaba.com/
+
+Changes v1 -> v2:
+ 1, remove the patch "Add a fast call path of crash_kexec()" from this series
+ of patches, as it already applied to riscv git.
+ https://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git/commit/?h=for-next&id=3f1901110a89b0e2e13adb2ac8d1a7102879ea98
+ 2, add 'Reviewed-by' based on the comments of v1.  
+
+Xianting Tian (5):
+  RISC-V: use __smp_processor_id() instead of smp_processor_id()
+  RISC-V: Add arch_crash_save_vmcoreinfo support
+  riscv: Add modules to virtual kernel memory layout dump
+  RISC-V: Fixup getting correct current pc
+  riscv64: crash_core: Export kernel vm layout, phys_ram_base
+
+ .../admin-guide/kdump/vmcoreinfo.rst          | 31 +++++++++++++++++++
+ arch/riscv/kernel/Makefile                    |  1 +
+ arch/riscv/kernel/crash_core.c                | 29 +++++++++++++++++
+ arch/riscv/kernel/crash_save_regs.S           |  2 +-
+ arch/riscv/kernel/machine_kexec.c             |  2 +-
+ arch/riscv/mm/init.c                          |  4 +++
+ 6 files changed, 67 insertions(+), 2 deletions(-)
+ create mode 100644 arch/riscv/kernel/crash_core.c
+
+-- 
+2.17.1
+
