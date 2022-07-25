@@ -2,140 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3E6EC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 18:13:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ADBBCCA48E
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 18:18:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235644AbiGYSNi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 14:13:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34350 "EHLO
+        id S235189AbiGYSSx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 14:18:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229470AbiGYSNg (ORCPT
+        with ESMTP id S235580AbiGYSSu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 14:13:36 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EA15DF4B;
-        Mon, 25 Jul 2022 11:13:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658772815; x=1690308815;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=W1W3K6HtndLxG/12lj9ntiMcXN03GrPr2INAm/PqZW0=;
-  b=I8mvqZZnQb6BLS4RNVokv6c6Ho5GkbL9Julcnws03sVD/l4znFW0oJO8
-   701hKDQbkDAEg8zDDmCK/OrefLnb5tmAOV0tP0FbS1zqaIijzvxQu8tub
-   78dz13qfXfI5lcqnncKpY3cArKR4/vgUsJto6+L0mPDpZ0gpSY6yyBV+K
-   tUYp3COea2JJQsZ+clabqadtWLwFSOYhDECdK9WCGnL2Pk6ShM90CHYS/
-   ING5vUsrXSKxb6dNUdDNafTTMMM4OsBKBR4KUMdhtaEPG90mGtqwyMTwv
-   axvJY6cVGiG73D5vW9swyLQhxp0KZad2oToimUn5IHv6wXDfY8YY7L/jU
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10419"; a="288521824"
-X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
-   d="scan'208";a="288521824"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2022 11:13:35 -0700
-X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
-   d="scan'208";a="575153907"
-Received: from mgarner-mobl.amr.corp.intel.com (HELO [10.209.39.177]) ([10.209.39.177])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2022 11:13:35 -0700
-Message-ID: <dcb634c3-7671-9073-555f-e861088cfcd0@linux.intel.com>
-Date:   Mon, 25 Jul 2022 11:13:34 -0700
+        Mon, 25 Jul 2022 14:18:50 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60A6D1EEF5
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 11:18:49 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id z3so11176205plb.1
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 11:18:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=e+T1nQOK8xq7qgx+g5Uf2BJLYM3ox7zT+AoQWOo8zKM=;
+        b=roorjMRJcc5+f3RG1zAdpZktDXEFjruRroEJC7Bti/beYh8gUR9IgK5Z+QkSoxJLWy
+         GiNKkpLdsBrnbOJC31l2b0NhDGagcqlbVfedN+odp4+q589Q8ZLQDYZ59uGR+n0qux0G
+         OcKGINwRLYy6d1q2+fwH7DT/+vAcujv2PL6Iq5mpTBFTTBvcazKFR45OXkJzuBDZVK8R
+         JKjcRb6tWiYvi++YbMSVsygdSK9ZH/aZ0ZEPaZYAU9q40VZ/64Jj5fX+GV5EbDVn+wnn
+         Ysa41VaiVRW0w7S93MU7LE0azM+moMrY9TAibuSROq8IUiztksRM/sBspoVCWKm9t43n
+         q3aA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=e+T1nQOK8xq7qgx+g5Uf2BJLYM3ox7zT+AoQWOo8zKM=;
+        b=y/NLBSaPYakVWi5CvJSsCJJEn16bu9zqeegVodiG9T4MMDLqPahS7sF/oPg98Ce6qa
+         ir3vSEH6vsQHLZfHRB+5iNxwJKW4ceKYGUbN/pNwvO9Vpa238zvkTdkfAWJUm5rKdigs
+         CoPLTB9p1x7LlSmJhA9jchhVIkes/1UXd0nep3DOrrecF65oxl1Z96x5KgQTlE+H+QE5
+         oLdY9ETVJApfGvx7EzR6JY5PXmruTDsD9ao9QPgwHay597wjPcesujRyyP+r8j4l81rX
+         0RjtMcK4FXiJ9G5FPM0PCLGzwyUR/VnyCiU7AvJa51KbA662RavTEBI3CRzsagzRkK+s
+         oIrw==
+X-Gm-Message-State: AJIora8acw9oD7HGFhJ5dXUzOz9pier50/dVAAa5zfpM7Wo/bv/BZb6/
+        e4ywOu8EM4SavwvQBTWiIaSTeA==
+X-Google-Smtp-Source: AGRyM1vwKOJmrBpdWNxBVJU/qSP2DuiVWi8Ii8m8oRkZzGVQVi9SCMhxcykFwcuuP+1BLUpYNNB8xg==
+X-Received: by 2002:a17:90b:1e4f:b0:1f2:b482:bab9 with SMTP id pi15-20020a17090b1e4f00b001f2b482bab9mr7068771pjb.9.1658773128732;
+        Mon, 25 Jul 2022 11:18:48 -0700 (PDT)
+Received: from google.com (123.65.230.35.bc.googleusercontent.com. [35.230.65.123])
+        by smtp.gmail.com with ESMTPSA id f14-20020a170902684e00b0016ce31d1d97sm9527604pln.114.2022.07.25.11.18.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Jul 2022 11:18:48 -0700 (PDT)
+Date:   Mon, 25 Jul 2022 18:18:44 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org,
+        Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 09/25] KVM: VMX: nVMX: Support TSC scaling and
+ PERF_GLOBAL_CTRL with enlightened VMCS
+Message-ID: <Yt7ehL0HfR3b97FQ@google.com>
+References: <20220714091327.1085353-1-vkuznets@redhat.com>
+ <20220714091327.1085353-10-vkuznets@redhat.com>
+ <YtnMIkFI469Ub9vB@google.com>
+ <48de7ea7-fc1a-6a83-3d6f-e04d26ea2f05@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.11.0
-Subject: Re: [PATCH] PCI/ERR: Use pcie_aer_is_native() to judge whether OS
- owns AER
-Content-Language: en-US
-To:     Zhuo Chen <chenzhuo.1@bytedance.com>, ruscur@russell.cc,
-        oohall@gmail.com, bhelgaas@google.com
-Cc:     lukas@wunner.de, jan.kiszka@siemens.com, stuart.w.hayes@gmail.com,
-        linuxppc-dev@lists.ozlabs.org, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220725160131.83687-1-chenzhuo.1@bytedance.com>
-From:   Sathyanarayanan Kuppuswamy 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>
-In-Reply-To: <20220725160131.83687-1-chenzhuo.1@bytedance.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <48de7ea7-fc1a-6a83-3d6f-e04d26ea2f05@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 7/25/22 9:01 AM, Zhuo Chen wrote:
-> After commit 7d7cbeaba5b7 ("PCI/ERR: Clear status of the reporting
-> device"), the AER status of the device that reported the error
-> rather than the first downstream port is cleared. So the problem
-> in commit aa344bc8b727 ("PCI/ERR: Clear AER status only when we
-> control AER") is no longer existent, and we change to use
-> pcie_aer_is_native() here.
-Can you add the details of the problem you are referring to? Also
-include details about how this problem relates to your commit.
-
-IIUC, your commit replaces "host->native_aer || pcie_ports_native"
-with pcie_aer_is_native(dev, correct? If so, add a note in commit
-log that it has no functional changes.
-
+On Mon, Jul 25, 2022, Paolo Bonzini wrote:
+> On 7/21/22 23:58, Sean Christopherson wrote:
+> > 
+> > diff --git a/arch/x86/kvm/vmx/evmcs.c b/arch/x86/kvm/vmx/evmcs.c
+> > index b5cfbf7d487b..7b348a03e096 100644
+> > --- a/arch/x86/kvm/vmx/evmcs.c
+> > +++ b/arch/x86/kvm/vmx/evmcs.c
+> > @@ -355,11 +355,6 @@ uint16_t nested_get_evmcs_version(struct kvm_vcpu *vcpu)
+> >          return 0;
+> >   }
+> > 
+> > -enum evmcs_v1_revision {
+> > -       EVMCSv1_2016,
+> > -       EVMCSv1_2022,
+> > -};
+> > -
+> >   enum evmcs_unsupported_ctrl_type {
+> >          EVMCS_EXIT_CTLS,
+> >          EVMCS_ENTRY_CTLS,
+> > @@ -372,29 +367,29 @@ static u32 evmcs_get_unsupported_ctls(struct kvm_vcpu *vcpu,
+> >                                        enum evmcs_unsupported_ctrl_type ctrl_type)
+> >   {
+> >          struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
+> > -       enum evmcs_v1_revision evmcs_rev = EVMCSv1_2016;
+> > +       bool has_evmcs_2022_features;
+> > 
+> >          if (!hv_vcpu)
+> >                  return 0;
+> > 
+> > -       if (hv_vcpu->cpuid_cache.nested_ebx & HV_X64_NESTED_EVMCS1_2022_UPDATE)
+> > -               evmcs_rev = EVMCSv1_2022;
+> > +       has_evmcs_2022_features = hv_vcpu->cpuid_cache.nested_ebx &
+> > +                                 HV_X64_NESTED_EVMCS1_2022_UPDATE;
+> > 
+> >          switch (ctrl_type) {
+> >          case EVMCS_EXIT_CTLS:
+> > -               if (evmcs_rev == EVMCSv1_2016)
+> > +               if (!has_evmcs_2022_features)
+> >                          return EVMCS1_UNSUPPORTED_VMEXIT_CTRL |
+> >                                  VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL;
+> >                  else
+> >                          return EVMCS1_UNSUPPORTED_VMEXIT_CTRL;
+> >          case EVMCS_ENTRY_CTLS:
+> > -               if (evmcs_rev == EVMCSv1_2016)
+> > +               if (!has_evmcs_2022_features)
+> >                          return EVMCS1_UNSUPPORTED_VMENTRY_CTRL |
+> >                                  VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL;
+> >                  else
+> >                          return EVMCS1_UNSUPPORTED_VMENTRY_CTRL;
+> >          case EVMCS_2NDEXEC:
+> > -               if (evmcs_rev == EVMCSv1_2016)
+> > +               if (!has_evmcs_2022_features)
+> >                          return EVMCS1_UNSUPPORTED_2NDEXEC |
+> >                                  SECONDARY_EXEC_TSC_SCALING;
+> >                  else
+> > 
 > 
-> pci_aer_clear_nonfatal_status() already has pcie_aer_is_native(),
-> so we move pci_aer_clear_nonfatal_status() out of
-> pcie_aer_is_native().
-> 
-> Replace statements that judge whether OS owns AER in
-> get_port_device_capability() with pcie_aer_is_native().
-> 
-> Signed-off-by: Zhuo Chen <chenzhuo.1@bytedance.com>
-> ---
->  drivers/pci/pcie/err.c          | 12 ++----------
->  drivers/pci/pcie/portdrv_core.c |  3 +--
->  2 files changed, 3 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/pci/pcie/err.c b/drivers/pci/pcie/err.c
-> index 0c5a143025af..28339c741555 100644
-> --- a/drivers/pci/pcie/err.c
-> +++ b/drivers/pci/pcie/err.c
-> @@ -184,7 +184,6 @@ pci_ers_result_t pcie_do_recovery(struct pci_dev *dev,
->  	int type = pci_pcie_type(dev);
->  	struct pci_dev *bridge;
->  	pci_ers_result_t status = PCI_ERS_RESULT_CAN_RECOVER;
-> -	struct pci_host_bridge *host = pci_find_host_bridge(dev->bus);
->  
->  	/*
->  	 * If the error was detected by a Root Port, Downstream Port, RCEC,
-> @@ -237,16 +236,9 @@ pci_ers_result_t pcie_do_recovery(struct pci_dev *dev,
->  	pci_dbg(bridge, "broadcast resume message\n");
->  	pci_walk_bridge(bridge, report_resume, &status);
->  
-> -	/*
-> -	 * If we have native control of AER, clear error status in the device
-> -	 * that detected the error.  If the platform retained control of AER,
-> -	 * it is responsible for clearing this status.  In that case, the
-> -	 * signaling device may not even be visible to the OS.
-> -	 */
-> -	if (host->native_aer || pcie_ports_native) {
-> +	if (pcie_aer_is_native(dev))
->  		pcie_clear_device_status(dev);
-> -		pci_aer_clear_nonfatal_status(dev);
-> -	}
-> +	pci_aer_clear_nonfatal_status(dev);
->  	pci_info(bridge, "device recovery successful\n");
->  	return status;
->  
-> diff --git a/drivers/pci/pcie/portdrv_core.c b/drivers/pci/pcie/portdrv_core.c
-> index 604feeb84ee4..98c18f4a01b2 100644
-> --- a/drivers/pci/pcie/portdrv_core.c
-> +++ b/drivers/pci/pcie/portdrv_core.c
-> @@ -221,8 +221,7 @@ static int get_port_device_capability(struct pci_dev *dev)
->  	}
->  
->  #ifdef CONFIG_PCIEAER
-> -	if (dev->aer_cap && pci_aer_available() &&
-> -	    (pcie_ports_native || host->native_aer)) {
-> +	if (pcie_aer_is_native(dev) && pci_aer_available()) {
->  		services |= PCIE_PORT_SERVICE_AER;
->  
->  		/*
+> I kind of like the idea of having a two-dimensional array based on the enums
+> instead of switch statements, so for now I'll keep Vitaly's enums.
 
--- 
-Sathyanarayanan Kuppuswamy
-Linux Kernel Developer
+I don't have a strong opinion on using a 2d array, but unless I'm missing something,
+that's nowhere to be found in this patch.  IMO, having the enums without them
+providing any unique value is silly and obfuscates the code.
