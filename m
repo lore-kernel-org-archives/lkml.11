@@ -2,112 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80650C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 08:13:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7779C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 08:14:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233771AbiGYIN6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 04:13:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34208 "EHLO
+        id S233796AbiGYIOT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 04:14:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233764AbiGYINw (ORCPT
+        with ESMTP id S233853AbiGYIOJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 04:13:52 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A530C13DD2;
-        Mon, 25 Jul 2022 01:13:45 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id 190835FD0B;
-        Mon, 25 Jul 2022 11:13:44 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1658736824;
-        bh=0VolYYzByKFenHk7cNZW+B/GD/dVG5AI5iMaU934WLI=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=pl/k/J4dr5/K2zhWjDqsI3QB4a9FNrML10R9GEmttN+XJjuttiEBF7ZMyhqPbFTP7
-         T3wvE53MGKHiFk8A8n+VdPOdRT+HH8hkJKz1cJGNxM1xgEZkgA2N18fqkT0lhJJa6R
-         5ofF5p6KrQxgDMabyrgHjD+AUDQRY4b7kWuw7G9NhObGiXkW/HZ/mnLJEhwZOT1NJA
-         u789hjNHVfSntbLj7RIAOI5RyP5F2psxIpA2HUY5ylq0cPMPdo0WMwC1ytffQH0YVJ
-         Mv/tAicXkZ813BF655eNtgdGCFn9Cq/xBdDWB5PFxZgk3F9f3aWyPhFRQ8GYMsmk3X
-         k3OxeFJPcx5ug==
-Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Mon, 25 Jul 2022 11:13:42 +0300 (MSK)
-From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-To:     Stefano Garzarella <sgarzare@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "kys@microsoft.com" <kys@microsoft.com>,
-        "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
-        "sthemmin@microsoft.com" <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Arseniy Krasnov <AVKrasnov@sberdevices.ru>,
-        Krasnov Arseniy <oxffffaa@gmail.com>
-CC:     "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>
-Subject: [RFC PATCH v2 9/9] vmci/vsock: check SO_RCVLOWAT before wake up
- reader
-Thread-Topic: [RFC PATCH v2 9/9] vmci/vsock: check SO_RCVLOWAT before wake up
- reader
-Thread-Index: AQHYn/5oY29w5nBisUCpLo7sMc0FdQ==
-Date:   Mon, 25 Jul 2022 08:13:23 +0000
-Message-ID: <664ce269-ba46-926e-9c34-070079a7ae3e@sberdevices.ru>
-In-Reply-To: <19e25833-5f5c-f9b9-ac0f-1945ea17638d@sberdevices.ru>
-Accept-Language: en-US, ru-RU
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <1F5A3AF0531B954A9BA3E54B91976C95@sberdevices.ru>
-Content-Transfer-Encoding: base64
+        Mon, 25 Jul 2022 04:14:09 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4079013EA5;
+        Mon, 25 Jul 2022 01:14:04 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 6B1B066015BF;
+        Mon, 25 Jul 2022 09:14:01 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1658736842;
+        bh=PpK61lKZbKQpFNRPAxrKTr/Fd+0s6I0u9aP/BeZ2hl4=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=aa4Lg2jdBb+mlYqsi3WUQi05qZ5Cl2mEGYIREWjW1FxdXvG8viLlXax10wz8RJbBG
+         +qOPiWFFYAiXS1/AAFgLjgwMqNlNnczTbRfqN8YzLBvc36mwHB4mLM8qvWYPR51GnO
+         4Bvg+rR1wUyVDNC3Y4iDtv8SecdX5Y5OvRIiFiYRur/FGcoYLrm4+FUNrA59qRmXQt
+         QYV16K9yheqLG39HyHdXTW9jsSriDEJkglprwQdqtp1yZi9kIBVU/ybGwT27Atz9G+
+         l2iB90RbrlL1ICh6x75vtltK1hbEJvizevzOU0om5uD1xQczrKPWcXmoj8DS5n1Hbg
+         bMUMI9zE8cQIQ==
+Message-ID: <6d6d05cf-9c56-a29a-64cd-1de62c530167@collabora.com>
+Date:   Mon, 25 Jul 2022 10:13:58 +0200
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/07/25 03:52:00 #19956163
-X-KSMG-AntiVirus-Status: Clean, skipped
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v6 4/8] dt-bindings: clock: mediatek: Add clock driver
+ bindings for MT6795
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        sboyd@kernel.org
+Cc:     mturquette@baylibre.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
+        p.zabel@pengutronix.de, y.oudjana@protonmail.com,
+        jason-jh.lin@mediatek.com, ck.hu@mediatek.com,
+        fparent@baylibre.com, rex-bc.chen@mediatek.com,
+        tinghan.shen@mediatek.com, ikjn@chromium.org,
+        miles.chen@mediatek.com, sam.shih@mediatek.com, wenst@chromium.org,
+        bgolaszewski@baylibre.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-clk@vger.kernel.org,
+        konrad.dybcio@somainline.org, marijn.suijten@somainline.org,
+        martin.botka@somainline.org, ~postmarketos/upstreaming@lists.sr.ht,
+        phone-devel@vger.kernel.org, paul.bouchara@somainline.org,
+        kernel@collabora.com
+References: <20220722090609.52364-1-angelogioacchino.delregno@collabora.com>
+ <20220722090609.52364-5-angelogioacchino.delregno@collabora.com>
+ <8d656940-567f-d8ea-8cb1-4ca37dde3e0c@linaro.org>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <8d656940-567f-d8ea-8cb1-4ca37dde3e0c@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-VGhpcyBhZGRzIGV4dHJhIGNvbmRpdGlvbiB0byB3YWtlIHVwIGRhdGEgcmVhZGVyOiBkbyBpdCBv
-bmx5IHdoZW4gbnVtYmVyDQpvZiByZWFkYWJsZSBieXRlcyA+PSBTT19SQ1ZMT1dBVC4gT3RoZXJ3
-aXNlLCB0aGVyZSBpcyBubyBzZW5zZSB0byBraWNrDQp1c2VyLGJlY2F1c2UgaXQgd2lsbCB3YWl0
-IHVudGlsIFNPX1JDVkxPV0FUIGJ5dGVzIHdpbGwgYmUgZGVxdWV1ZWQuDQoNClNpZ25lZC1vZmYt
-Ynk6IEFyc2VuaXkgS3Jhc25vdiA8QVZLcmFzbm92QHNiZXJkZXZpY2VzLnJ1Pg0KLS0tDQogbmV0
-L3Ztd192c29jay92bWNpX3RyYW5zcG9ydF9ub3RpZnkuYyAgICAgICAgfCAyICstDQogbmV0L3Zt
-d192c29jay92bWNpX3RyYW5zcG9ydF9ub3RpZnlfcXN0YXRlLmMgfCA0ICsrLS0NCiAyIGZpbGVz
-IGNoYW5nZWQsIDMgaW5zZXJ0aW9ucygrKSwgMyBkZWxldGlvbnMoLSkNCg0KZGlmZiAtLWdpdCBh
-L25ldC92bXdfdnNvY2svdm1jaV90cmFuc3BvcnRfbm90aWZ5LmMgYi9uZXQvdm13X3Zzb2NrL3Zt
-Y2lfdHJhbnNwb3J0X25vdGlmeS5jDQppbmRleCAxNjg0Yjg1YjA2NjAuLmFiNDJkNzNhYjNkYSAx
-MDA2NDQNCi0tLSBhL25ldC92bXdfdnNvY2svdm1jaV90cmFuc3BvcnRfbm90aWZ5LmMNCisrKyBi
-L25ldC92bXdfdnNvY2svdm1jaV90cmFuc3BvcnRfbm90aWZ5LmMNCkBAIC0zMDcsNyArMzA3LDcg
-QEAgdm1jaV90cmFuc3BvcnRfaGFuZGxlX3dyb3RlKHN0cnVjdCBzb2NrICpzaywNCiAJc3RydWN0
-IHZzb2NrX3NvY2sgKnZzayA9IHZzb2NrX3NrKHNrKTsNCiAJUEtUX0ZJRUxEKHZzaywgc2VudF93
-YWl0aW5nX3JlYWQpID0gZmFsc2U7DQogI2VuZGlmDQotCXNrLT5za19kYXRhX3JlYWR5KHNrKTsN
-CisJdnNvY2tfZGF0YV9yZWFkeShzayk7DQogfQ0KIA0KIHN0YXRpYyB2b2lkIHZtY2lfdHJhbnNw
-b3J0X25vdGlmeV9wa3Rfc29ja2V0X2luaXQoc3RydWN0IHNvY2sgKnNrKQ0KZGlmZiAtLWdpdCBh
-L25ldC92bXdfdnNvY2svdm1jaV90cmFuc3BvcnRfbm90aWZ5X3FzdGF0ZS5jIGIvbmV0L3Ztd192
-c29jay92bWNpX3RyYW5zcG9ydF9ub3RpZnlfcXN0YXRlLmMNCmluZGV4IGE0MDQwNzg3MmI1My4u
-NDFkY2E1ZmJlYTVlIDEwMDY0NA0KLS0tIGEvbmV0L3Ztd192c29jay92bWNpX3RyYW5zcG9ydF9u
-b3RpZnlfcXN0YXRlLmMNCisrKyBiL25ldC92bXdfdnNvY2svdm1jaV90cmFuc3BvcnRfbm90aWZ5
-X3FzdGF0ZS5jDQpAQCAtODQsNyArODQsNyBAQCB2bWNpX3RyYW5zcG9ydF9oYW5kbGVfd3JvdGUo
-c3RydWN0IHNvY2sgKnNrLA0KIAkJCSAgICBib29sIGJvdHRvbV9oYWxmLA0KIAkJCSAgICBzdHJ1
-Y3Qgc29ja2FkZHJfdm0gKmRzdCwgc3RydWN0IHNvY2thZGRyX3ZtICpzcmMpDQogew0KLQlzay0+
-c2tfZGF0YV9yZWFkeShzayk7DQorCXZzb2NrX2RhdGFfcmVhZHkoc2spOw0KIH0NCiANCiBzdGF0
-aWMgdm9pZCB2c29ja19ibG9ja191cGRhdGVfd3JpdGVfd2luZG93KHN0cnVjdCBzb2NrICpzaykN
-CkBAIC0yODIsNyArMjgyLDcgQEAgdm1jaV90cmFuc3BvcnRfbm90aWZ5X3BrdF9yZWN2X3Bvc3Rf
-ZGVxdWV1ZSgNCiAJCS8qIFNlZSB0aGUgY29tbWVudCBpbg0KIAkJICogdm1jaV90cmFuc3BvcnRf
-bm90aWZ5X3BrdF9zZW5kX3Bvc3RfZW5xdWV1ZSgpLg0KIAkJICovDQotCQlzay0+c2tfZGF0YV9y
-ZWFkeShzayk7DQorCQl2c29ja19kYXRhX3JlYWR5KHNrKTsNCiAJfQ0KIA0KIAlyZXR1cm4gZXJy
-Ow0KLS0gDQoyLjI1LjENCg==
+Il 23/07/22 22:45, Krzysztof Kozlowski ha scritto:
+> On 22/07/2022 11:06, AngeloGioacchino Del Regno wrote:
+>> Add the bindings for the clock drivers of the MediaTek Helio X10
+>> MT6795 SoC.
+>>
+>> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+>> ---
+>>   .../bindings/clock/mediatek,mt6795-clock.yaml | 66 +++++++++++++++++++
+>>   .../clock/mediatek,mt6795-sys-clock.yaml      | 54 +++++++++++++++
+>>   2 files changed, 120 insertions(+)
+>>   create mode 100644 Documentation/devicetree/bindings/clock/mediatek,mt6795-clock.yaml
+>>   create mode 100644 Documentation/devicetree/bindings/clock/mediatek,mt6795-sys-clock.yaml
+> 
+> You already got a review tag, didn't you? In v5?
+> 
+> 
+
+I'm sorry, yes I got Rob's review tag in v5 and I somehow forgot to add
+it to v6 :-(
+
+Should I send a v7 for adding back the tag?
+
+Angelo
