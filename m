@@ -2,76 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D4B7CCA48B
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 11:23:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FB4EC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 11:25:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234933AbiGYLXj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 07:23:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57922 "EHLO
+        id S235027AbiGYLZP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 07:25:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234784AbiGYLXh (ORCPT
+        with ESMTP id S235013AbiGYLZN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 07:23:37 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8C2114D08;
-        Mon, 25 Jul 2022 04:23:36 -0700 (PDT)
-Received: from zn.tnic (p200300ea972976f8329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:9729:76f8:329c:23ff:fea6:a903])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 25 Jul 2022 07:25:13 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0A41389D
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 04:25:11 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 1AAB41EC008F;
-        Mon, 25 Jul 2022 13:23:31 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1658748211;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=PHiPrUGWkb2npOiWZGq9krYN7DofBXhS5cj0KqGkGSk=;
-        b=BlhWLzvhOlgajCM5WhLq8PNPQGAPVrWfL0yRL2tWVdKXyvXO2IYm9Kx+fjwMbh5gJRiqgh
-        4rZ8hcZvgDXXIjcFBdWLHOwB4slPkgxWvbLjYN0Bzbm908iyWGgE1tm8DKLa0B42WuGscJ
-        +UPJoQJzxctexQEzfBLgDY1mQE26UmU=
-Date:   Mon, 25 Jul 2022 13:23:26 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     Robert Richter <rric@kernel.org>, Toshi Kani <toshi.kani@hpe.com>
-Cc:     mchehab@kernel.org, elliott@hpe.com, linux-edac@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] EDAC/ghes: Fix buffer overflow in ghes_edac_register()
-Message-ID: <Yt59LiHs3gWNpNW1@zn.tnic>
-References: <20220721180503.896050-1-toshi.kani@hpe.com>
- <YtqkMicKdZdPdUWB@zn.tnic>
- <Yt5oAjbZ5Koy9v5i@rric.localdomain>
- <Yt5s/f/jyRcFY1Md@zn.tnic>
- <Yt50Pp3kQRCtSqw6@rric.localdomain>
- <Yt5510+uLKzv+Qvt@rric.localdomain>
+        by smtp-out2.suse.de (Postfix) with ESMTPS id D0A912005D;
+        Mon, 25 Jul 2022 11:25:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1658748309; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=FkbOTZeXbuGPcsmYrhwC6BftW6Xv7bUNRGWwxI1HptQ=;
+        b=mAaVDSEjTAgRb+gypaAUY7R+Pb805t175yu3Cdz95hXurwuqX3KDRCjm0B1kDzi96v493n
+        mGz+FITge4/ENFcD2NG9EZ3uGfbh/8t2+NL/t6sOKL3V6bczTWBFOgv3ikO+vJgP326SU7
+        Kgb0fKx1aeVgBckpUN5tPO9TMa1QgBs=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1658748309;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=FkbOTZeXbuGPcsmYrhwC6BftW6Xv7bUNRGWwxI1HptQ=;
+        b=13YM1ib7x3gMUZU6tQ+yZPfkyW0tRMGcgwWdvgvK//NobdON+l4ZJBZPkqIC04Ycx7emCW
+        Yt5gkbw3nyZ1tHDQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id C3C6A13ABB;
+        Mon, 25 Jul 2022 11:25:09 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id R5/BL5V93mKERQAAMHmgww
+        (envelope-from <bp@suse.de>); Mon, 25 Jul 2022 11:25:09 +0000
+Date:   Mon, 25 Jul 2022 13:25:09 +0200
+From:   Borislav Petkov <bp@suse.de>
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
+Cc:     linux-kernel@vger.kernel.org, Heiko Carstens <hca@linux.ibm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Johannes Berg <johannes@sipsolutions.net>
+Subject: Re: [PATCH] random: discourage use of archrandom outside of rng
+Message-ID: <Yt59lUGcUdgU1VDZ@zn.tnic>
+References: <Yt5hwxC1xgvA8Asw@zx2c4.com>
+ <20220725111038.720624-1-Jason@zx2c4.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <Yt5510+uLKzv+Qvt@rric.localdomain>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220725111038.720624-1-Jason@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 25, 2022 at 01:09:11PM +0200, Robert Richter wrote:
-> I see now, what you mean here, may be change this:
+On Mon, Jul 25, 2022 at 01:10:38PM +0200, Jason A. Donenfeld wrote:
+> Borislav pointed out during the review of "random: handle archrandom
+> with multiple longs" that people might actually use this function, which
+> might not be good because the function has surprising semantics. This of
+> course was also the case before that patch, and indeed RDSEED-like
+> functions across architectures often behave surprisingly, failing often.
+> While random.c has been written specifically to work with that behavior,
+> not much else is well equipped for that.
 > 
-> 	snprintf(dimm->label, sizeof(dimm->label), "%s %s",
-> 		 (bank && *bank) ? bank : "N/A",
-> 		 (device && *device) ? device : "N/A");
+> So add a comment suggesting that this is not for general consumption.
+> Fortunately, nobody uses this for general consumption anyway, and people
+> who try quickly find themselves in trouble. But adding this comment out
+> of an abundance of caution was nonetheless suggested, and it at least
+> means there will be easier justification for cleaning up potential
+> misuses of the function later.
 > 
-> to:
-> 
-> 	snprintf(dimm->label, sizeof(dimm->label), "%s%s%s",
-> 		 (bank && *bank) ? bank : "",
-> 		 (bank && device) ? " " : "",
-> 		 (device && *device) ? device : "");
-> 
-> It keeps the default assignment from edac_mc_alloc_dimms() but changes
-> we label if one of bank or device is given.
+> Cc: Borislav Petkov <bp@suse.de>
+> Cc: Heiko Carstens <hca@linux.ibm.com>
+> Cc: Catalin Marinas <catalin.marinas@arm.com>
+> Cc: Mark Rutland <mark.rutland@arm.com>
+> Cc: Michael Ellerman <mpe@ellerman.id.au>
+> Cc: Johannes Berg <johannes@sipsolutions.net>
+> Suggested-by: Borislav Petkov <bp@suse.de>
+> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+> ---
+>  arch/arm64/include/asm/archrandom.h   | 13 +++++++++++++
+>  arch/powerpc/include/asm/archrandom.h |  8 ++++++++
+>  arch/s390/include/asm/archrandom.h    |  8 ++++++++
+>  arch/um/include/asm/archrandom.h      |  8 ++++++++
+>  arch/x86/include/asm/archrandom.h     |  9 ++++++---
+>  include/asm-generic/archrandom.h      |  8 ++++++++
+>  6 files changed, 51 insertions(+), 3 deletions(-)
 
-Yap, that should take care of all possible "configurations" BIOS throws
-at us.
-
-Toshi, could you pls add this to the fix and test it on your machine to
-make sure it still works as expected?
+Acked-by: Borislav Petkov <bp@suse.de>
 
 Thx.
 
@@ -79,4 +111,6 @@ Thx.
 Regards/Gruss,
     Boris.
 
-https://people.kernel.org/tglx/notes-about-netiquette
+SUSE Software Solutions Germany GmbH
+GF: Ivo Totev, Andrew Myers, Andrew McDonald, Martje Boudien Moerman
+(HRB 36809, AG Nürnberg)
