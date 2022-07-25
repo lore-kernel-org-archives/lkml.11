@@ -2,77 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B83A1C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 13:35:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D868C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 13:44:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234448AbiGYNfH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 09:35:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56160 "EHLO
+        id S232799AbiGYNny (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 09:43:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232799AbiGYNfD (ORCPT
+        with ESMTP id S232049AbiGYNnw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 09:35:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33A6CDE96;
-        Mon, 25 Jul 2022 06:35:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DB6AAB80EBD;
-        Mon, 25 Jul 2022 13:35:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BD7BC341C6;
-        Mon, 25 Jul 2022 13:34:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658756100;
-        bh=iXTZl82xPnL3ZeeWoL4R6ZJJPzGA7rJ5dFSLoDqRxaA=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=m/BXU7/ah1mbdoD00sd98wt4MogVXpkWjBxjPram94CyhbmReezVEuoezT5+b3GPw
-         S8RLQNeq06/sZAiSEHO7397zearvu5SqUpzNYj/KiUfUWIwX3Z69vXNSCCFTL1baga
-         6Myvcq0uoqM440cJqcc+Fd5TwF2OaLrbXe7srqoyEIizIrPQwhKzIvH1h1VuIq9hGE
-         PSnc98wIsf03Ciw2/t1EN5wP71ZH/QT8pQcE54wAiFqvDiFC+fvNeSk3LNZiFmq4KR
-         VL4AVC61BT9TWNlh6gYjYEDGGnSY4Y9QNohz0odYc5OHgr4lMkPpTDJ2hCMdWbpcE5
-         MRFhbqK935F6A==
-Message-ID: <fd0888a4-099c-95fe-7e20-82be1489061f@kernel.org>
-Date:   Mon, 25 Jul 2022 15:34:56 +0200
+        Mon, 25 Jul 2022 09:43:52 -0400
+Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF60014083
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 06:43:50 -0700 (PDT)
+Received: by mail-oi1-x232.google.com with SMTP id bb16so13465733oib.11
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 06:43:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=iyzaoWHc8KWQLTES8JxPtVNX05fcfDKMpVveMPJGYvo=;
+        b=ENQpnru/jvUA3RaavgEgezAQoTz2Yc4xoMn8vkvS/cGyuZI1TFqeX3Vy3M3IwZjFdw
+         YjVuTS73GB/RHojIFn0xSPRAhAjNHMcsPkJYpdEA76RCliIXrkoBDX9dQmYLkrGxB2Fn
+         pQnxAy2x6DvKLZISgrUeD2In8wg2Ywyxp1yu4338QV2dMp0eJj7EJAUsX3RgBDtYCKsn
+         yAUaXG1Cd52IbY2Kb9W+cT4e71/ZJjB56zhRrWn0DzrGu4BdXT+MrKjpGPdgNOXSbKf0
+         TjnGq5mheGXahuoWepzXFPPHR0pelatTAl8GbOHHfZN4gT1PAtENJFjZ2/X/Q6ozimWB
+         kyng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=iyzaoWHc8KWQLTES8JxPtVNX05fcfDKMpVveMPJGYvo=;
+        b=6Ksl6SyjsvxXtEIpC5ztbYd77U7jcV1Q9lKoEFdKQenD0pqoIMNrCf9/uRYFNqysI7
+         WgUW02c6nDnZmzz5OOkj9p6zIY5Aq5hbGO2VdxW+fhWYgTaowsRJ+IeIq84GGiRpqygM
+         HccLAYxyGAoFW906AfgWPrb39No1oNs7+DmoN4Hxm1Rp+T6NGs7BHtrM/iiw8MsjeEX5
+         fbUEz/ZRPyqGkKs0cVmDMRSizqF/TrBgPe1RlDMs6dcBQRu9OlvYSf+9W4UHBODlxS75
+         Cw2Yt6+vo5Rqr/iJNU3SMskeC/WyvyJDsZB/LwQzfZHjK932PTCarAfIlo+Qq2ZIp4yb
+         lwlA==
+X-Gm-Message-State: AJIora9NnQ6A2NzN1YUJV/bdTLQytaIbkhpuXi2h+WBSTdJUXpG9IVVN
+        WcUQkXZDoxbf21bggPH2u4nCm7/vez4JqaoLXuIVVTNNb+k=
+X-Google-Smtp-Source: AGRyM1v51xKgyMMgL8ANE/+9VT2rP0/i1wDYjlc8L4QYIQzYQt4U56TRiIfdbPWLd7Q2INnCmQYplWWVz2FxkhxNlNk=
+X-Received: by 2002:a05:6808:4d7:b0:33a:9437:32d with SMTP id
+ a23-20020a05680804d700b0033a9437032dmr5648691oie.97.1658756630079; Mon, 25
+ Jul 2022 06:43:50 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] rtla: fix double free
-Content-Language: en-US
-To:     Andreas Schwab <schwab@suse.de>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        linux-trace-devel@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <mvmzggxl4n1.fsf@suse.de>
-From:   Daniel Bristot de Oliveira <bristot@kernel.org>
-In-Reply-To: <mvmzggxl4n1.fsf@suse.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220714010021.1786616-1-mw@semihalf.com> <20220724233807.bthah6ctjadl35by@skbuf>
+ <CAPv3WKdFNOPRg45TiJuAVuxM0LjEnB0qZH70J1rMenJs7eBJzw@mail.gmail.com>
+ <20220725122144.bdiup756mgquae3n@skbuf> <Yt6bcnnMr7UAUFPk@shell.armlinux.org.uk>
+In-Reply-To: <Yt6bcnnMr7UAUFPk@shell.armlinux.org.uk>
+From:   Marcin Wojtas <mw@semihalf.com>
+Date:   Mon, 25 Jul 2022 15:43:39 +0200
+Message-ID: <CAPv3WKfXi8eLsdnuix=gHWivfMigzaKDJMcD==1RjNOXPkwyqA@mail.gmail.com>
+Subject: Re: [net-next: PATCH] net: dsa: mv88e6xxx: fix speed setting for
+ CPU/DSA ports
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>,
+        Tomasz Nowicki <tn@semihalf.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Andreas
+pon., 25 lip 2022 o 15:32 Russell King (Oracle)
+<linux@armlinux.org.uk> napisa=C5=82(a):
+>
+> On Mon, Jul 25, 2022 at 03:21:44PM +0300, Vladimir Oltean wrote:
+> > On Mon, Jul 25, 2022 at 02:18:45AM +0200, Marcin Wojtas wrote:
+> > > I can of course apply both suggestions, however, I am wondering if I
+> > > should resend them at all, as Russell's series is still being
+> > > discussed. IMO it may be worth waiting whether it makes it before the
+> > > merge window - if not, I can resend this patch after v5.20-rc1,
+> > > targetting the net branch. What do you think?
+> >
+> > I just don't want a fix for a known regression to slip through the crac=
+ks.
+> > You can resend whenever you consider, but I believe that if you do so n=
+ow
+> > (today or in the following few days), you won't conflict with anybody's=
+ work,
+> > considering that this has been said:
+> >
+> > On Fri, Jul 15, 2022 at 11:57:20PM +0100, Russell King (Oracle) wrote:
+> > > Well, at this point, I'm just going to give up with this kernel cycle=
+.
+> > > It seems impossible to get this sorted. It seems impossible to move
+> > > forward with the conversion of Marvell DSA to phylink_pcs.
+>
+> That is correct - I'm not intending to submit it, because there's not
+> enough time to sort out the mess that has been created by comments
+> on the approach coming way too late.
+>
+> And in fact, I'm now _scared_ to submit a revision of it. I don't want
+> to get into writing lots more replies that take hours to compose only
+> to have responses that require yet more multi-hour sessions to reply
+> to, which only then lead to the cycle repeating with no sign of an end
+> to it. Something is very wrong with email as a communication tool when
+> things get to that point.
+>
+> So, I won't be working on this. Someone else can sort the problem.
+>
 
-On 7/25/22 15:10, Andreas Schwab wrote:
-> Don't call trace_instance_destroy in trace_instance_init when it fails,
-> this is done by the caller.
+Thank you for the heads-up, I understand your concerns. I'll resubmit
+this patch then and rebase my 'fwnode_' v3 onto it.
 
-Regarding the Subject, are you seeing a double-free error, or it is just an
-optimization?
-
-AFAICS, trace_instance_destroy() checks the pointers before calling free().
-
-Why am I asking? because if it is a double-free bug, we need to add the "Fixes:"
-tag, otherwise, we can think about a Subject that better describes the patch,  like:
-
-"rtla: Do not call trace_instance_destroy() twice on error"
-
-Also, after the "subsystem:," i.e., "rlta:" we need to use capital: e.g.,
-
-"rtla: Fix double free"
-
-Anyways, I see that the code makes sense. I am just trying to improve the
-description.
-
-Thanks!
--- Daniel
+Best regards,
+Marcin
