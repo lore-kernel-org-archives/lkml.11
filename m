@@ -2,239 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0042C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 07:43:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C59DCC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 07:47:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230523AbiGYHn1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 03:43:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38616 "EHLO
+        id S231465AbiGYHrA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 03:47:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229803AbiGYHnZ (ORCPT
+        with ESMTP id S229762AbiGYHqy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 03:43:25 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3B82E12A9C
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 00:43:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658735003;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=eq4OL1zxJF2+2fp+Q22O19ixxH9CotH/xfhS3oI2/ds=;
-        b=d8STTu4sqUed/DVgPxhwQ/VzA0hgIfNph1s1+PCBVMZbdCIqrxQ12P6aaeYwFS9mCu069o
-        QcUUxLVJJ0JJA8LoD2wY0LEla/HIDV1ckTsKShwibYguj5KteZfTsnHn+Y8wMdtFQP1vaO
-        mo3dIbcf043ov26ABmpArsrMuaRa1vQ=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-670-R6c5YhgpM46FGHcKbbeB_A-1; Mon, 25 Jul 2022 03:43:21 -0400
-X-MC-Unique: R6c5YhgpM46FGHcKbbeB_A-1
-Received: by mail-wm1-f70.google.com with SMTP id h189-20020a1c21c6000000b003a2fdf9bd2aso5790954wmh.8
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 00:43:21 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=eq4OL1zxJF2+2fp+Q22O19ixxH9CotH/xfhS3oI2/ds=;
-        b=S/O9WOJd4VLZScqaqECcfFH22f/5sqq3Ho62FhxO8QSmlV+4aNPy+Tu3Oz3Di8nwRf
-         WNzZnPY0jL9RAxdoWxtJjkF668iY5iEwx8C6tuIRkqjh18XHSYRYTAqVFK6tqKyL5Hug
-         fVH/7VPwL0OE+QbB1d/IDDd3/KKyU0ibkTwD3dydiqechE8npzJkBK+ij++VCWwWqxsO
-         FEH4CbpDupfmbp1nNepY7FnmC0q86Wwe8G7EuFR/swLl4RG0XEwmz2PG3iYZjZxit01f
-         h+H5+rdMHL293ZW8DMujuwJdqbY4Ztn314jWPaI8udkCvinGv8vPYwCkZuzYodFzH251
-         A3RQ==
-X-Gm-Message-State: AJIora+yRCy91sdwJL2QaBIPAOqh0mxSGFuWcLlrXPN/q4iLDj7iaTQI
-        L4Cu7uhb1SUV19leeyJxI2vLyTV79voarSNaJbFdamOhoRKOP3YJKJm5Bo6rIXgaBwrkVS6PpJ4
-        XsXnTgbC/IxsXvP90jsa55vxxSKP03OLJ4miWOVzLu+RwH21FqmL9al1/bn5TVLXE9mQORisuLz
-        U=
-X-Received: by 2002:a05:6000:144d:b0:21d:8109:701d with SMTP id v13-20020a056000144d00b0021d8109701dmr6564245wrx.443.1658734998373;
-        Mon, 25 Jul 2022 00:43:18 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tBKBzTRxo9vQI/80qLdj5OZrt+z9DMgSEy+3bbSO1SZWvbh7cisads/gEd5kCIpmRjt1OStw==
-X-Received: by 2002:a05:6000:144d:b0:21d:8109:701d with SMTP id v13-20020a056000144d00b0021d8109701dmr6564214wrx.443.1658734997943;
-        Mon, 25 Jul 2022 00:43:17 -0700 (PDT)
-Received: from minerva.home (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id ay35-20020a05600c1e2300b003a2e42ae9a4sm16069031wmb.14.2022.07.25.00.43.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Jul 2022 00:43:17 -0700 (PDT)
-From:   Javier Martinez Canillas <javierm@redhat.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Javier Martinez Canillas <javierm@redhat.com>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Krishna Manikandan <quic_mkrishn@quicinc.com>,
-        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org,
-        linux-arm-msm@vger.kernel.org
-Subject: [PATCH v3] drm/msm: Make .remove and .shutdown HW shutdown consistent
-Date:   Mon, 25 Jul 2022 09:43:13 +0200
-Message-Id: <20220725074313.42172-1-javierm@redhat.com>
-X-Mailer: git-send-email 2.37.1
+        Mon, 25 Jul 2022 03:46:54 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C03610547
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 00:46:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658735210; x=1690271210;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=j0PRbgzx1w574uJAAqkcai0JK1TAldiijG6taBv4yqI=;
+  b=Dps8SFLKnGnaDeaqtD8CTxibsyPTVGVLKDbze7QybdfSSwPCI6elkr62
+   YxRgXoHmwtotuei/FHbi9n4rw56w3CpxNH3UP/3BPNyHqAmzB7aOjaKNO
+   UwfS6m0y9SsRhg/2LQAl00JdTGZDo0pMKagit0sm2y+IlzX3KJa7AFYJJ
+   qdWLbZJM14z6XJ40uuFlX6cy5RzObkBvWNWqDjfKpMOuJ30VzX+NirQZF
+   vCqon9EzEHjMAlTYMzOf5+mvl4lUQvqwtwvfiVlpqVkfJgO9Kh4jVT3sb
+   cl0M2lFVBIp64kRMl8D4DTV1Ea/LIZt/r0embDJR9U+8sZwllbZfQgsaA
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10418"; a="373941127"
+X-IronPort-AV: E=Sophos;i="5.93,192,1654585200"; 
+   d="scan'208";a="373941127"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2022 00:46:50 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,192,1654585200"; 
+   d="scan'208";a="658072445"
+Received: from fmsmsx604.amr.corp.intel.com ([10.18.126.84])
+  by fmsmga008.fm.intel.com with ESMTP; 25 Jul 2022 00:46:47 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Mon, 25 Jul 2022 00:46:46 -0700
+Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Mon, 25 Jul 2022 00:46:45 -0700
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28 via Frontend Transport; Mon, 25 Jul 2022 00:46:45 -0700
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.47) by
+ edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2375.28; Mon, 25 Jul 2022 00:46:45 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OBMtb0GA2cWEqHMCHKm9GeDsCU1RX+GpDgeBPN28B4lbSI0UjwX65xzslgDYwqy6Dqxg+GdKige5zV2dJWFKmJ/bXtRV2+B+YuMwQfCfgPf4/iCWSts0q5ePcJLE8OU2mLigPAJhCUpQ0o43P84zL6YPttZtpNovGXDysBrzPXsRcYxg0CEVovyKfN2YduMLwVFF1YX7E2itIqrjGfCObCHPMVifmq5Gfe19APkOdErRB+/YOnoKB0dVzRyC4+00RUAksgXS77y//pYtJA1yxI6cgkxYEkZIVJHg+rMB9+Jf7dyiVJBU6Vg7MeYojS69N/Y/FwRufYFEupprlHppMA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=j0PRbgzx1w574uJAAqkcai0JK1TAldiijG6taBv4yqI=;
+ b=kpi9cMMjXQlEu0RbFmElszF084rZ7BUb2QdTflMR8AUxmLUqN4RN/WJcWT5amX/tYVYmKmuoYLnSrfnpSffTbtWj+UybRneWZKHDcu7tG+xGVX3irDUOUZqrLDcjCsUJLkgW2M6iR1sOmzWpiPZkW3F0UghJZ8VSfws5VYMkObGGSFDF49G2gWacIVOojKlSKtnSBGscxz0MqHnKSA2KnSUZ4zBXeyKYUQHOIt6lxrSDpvIIc3nOpzNXZVOE6Sba+figZsOscXBctaHR04nv2KQM2SfZQNU4W/JfdX4+rRWQiwR8yf6XN5xq8dZ9wwX817KKPMlLFNc9YIKa8ggyUg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
+ by BN6PR11MB1459.namprd11.prod.outlook.com (2603:10b6:405:a::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.18; Mon, 25 Jul
+ 2022 07:46:44 +0000
+Received: from BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::8435:5a99:1e28:b38c]) by BN9PR11MB5276.namprd11.prod.outlook.com
+ ([fe80::8435:5a99:1e28:b38c%2]) with mapi id 15.20.5458.024; Mon, 25 Jul 2022
+ 07:46:44 +0000
+From:   "Tian, Kevin" <kevin.tian@intel.com>
+To:     Baolu Lu <baolu.lu@linux.intel.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+CC:     Joerg Roedel <joro@8bytes.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        "Robin Murphy" <robin.murphy@arm.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        "Jiang, Dave" <dave.jiang@intel.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Eric Auger <eric.auger@redhat.com>,
+        "Liu, Yi L" <yi.l.liu@intel.com>,
+        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
+        "Zhangfei Gao" <zhangfei.gao@linaro.org>,
+        "Zhu, Tony" <tony.zhu@intel.com>,
+        "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Jean-Philippe Brucker" <jean-philippe@linaro.org>
+Subject: RE: [PATCH v10 04/12] iommu: Add attach/detach_dev_pasid iommu
+ interface
+Thread-Topic: [PATCH v10 04/12] iommu: Add attach/detach_dev_pasid iommu
+ interface
+Thread-Index: AQHYkC3GvF//WyZOvUaTLdl04LC2Cq2MG8sAgAE/J4CAAXmUoA==
+Date:   Mon, 25 Jul 2022 07:46:43 +0000
+Message-ID: <BN9PR11MB527627410352E6DE921755898C959@BN9PR11MB5276.namprd11.prod.outlook.com>
+References: <20220705050710.2887204-1-baolu.lu@linux.intel.com>
+ <20220705050710.2887204-5-baolu.lu@linux.intel.com>
+ <20220723141118.GD79279@nvidia.com>
+ <5d353fe4-b642-992e-ef42-7d7f8b2edf7e@linux.intel.com>
+In-Reply-To: <5d353fe4-b642-992e-ef42-7d7f8b2edf7e@linux.intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 783b5848-1ce5-476c-ccfb-08da6e11d1c7
+x-ms-traffictypediagnostic: BN6PR11MB1459:EE_
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Pi9FOHKmeVbWSdcVbrRM5iOnEcj1pJIVsnLUWAkpzOtKEQbGvLw1gpXvLqJy83+mNB9P0PxMuG1zx2y/qGOzqhkSdi+bxEPd5+7XYy8aut264loYchO5AwSq105VrsZYuKxIBNWe/sd6rhV5q6SLudE86gZl9bvxmoNIfgQD6RoaOZd6FaGlVagkyZ9gwE16vyMLlzWvSmE0AiYJYm8D02HBw99X7Jr0yf/4Y5iAICCF/P1DJWJUmFoKCY+yKmfWrdcDNVwsxOCKL6Fg1Gq3zUpS/OXEJP31FGMYqgtYC55sYB7mfpKjmm/ZVAeMUYbPy4BhYryBBn3skftBGWxsJQTOZ4fRvZ90FK+P5sXm4qyxJWl0eAnrr89VylKwy7evUH/FIA8G4+xx8LdhXU5QzO9rpxFiqX/wXiTFaC4w2hpLlFf4STJedX4K3yf6CtcxvxMOp7ySEMN9Su63nQZHPRBkxwJCFJS4mivIDnA0MVcUvTWqwz4STYBt7eOScPRKIIJnWMAybTXGTlCZ4+skk40Jq2IvM7pvCFrBSXamtPhUzjwbaDiDURRwCAxIUxQYV6FkT6atMnEpVhc/cg2S2VORGIKe0jmAki5/YwwMQNUDS0r1EtS/KYDDqlC2Y87neWrpiRoKi2ukXwrjDFOrJV7y0QfYx+axWfaqMOoM9KLbR1b8phvAnXE0kL2yyhU9B0LsrWKnKJSs+LbkulJaFgSjMm1DvWWQVeOVK4xJcGBO/m1Y/uDS8f+qa5g+eoyxCEU6ZpAG8lvAPWRqrFN6DZO+qI7qbN0BdgwdI9oBIM1Zw0Upu9llwWKgKZeawmjI
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(346002)(39860400002)(396003)(366004)(136003)(376002)(186003)(83380400001)(55016003)(71200400001)(4326008)(66946007)(76116006)(66476007)(66556008)(110136005)(8676002)(66446008)(54906003)(9686003)(7696005)(6506007)(64756008)(41300700001)(53546011)(26005)(2906002)(33656002)(38070700005)(86362001)(38100700002)(122000001)(8936002)(5660300002)(316002)(82960400001)(7416002)(52536014)(478600001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?VzJrb3RaWGpPLzA4ZVAzZmFxa1B5b21EcDBzaW12Rm44NkM3d0N2bElFcHc2?=
+ =?utf-8?B?SG8rbndaZXd6WTFrQmd1RGJHMXhFN1pwWXBFTGpRN0tWQWZEVm5tQk9MSTRQ?=
+ =?utf-8?B?dVdCSzMxb3NKcm52ZUFTbzIvOTNWbTQrKzF4alhiMXMyaDc1OEVlK1hLVEdJ?=
+ =?utf-8?B?ckx5NmJ0SnowYzd0enV6M3J2ek5MRmlKemljdHdNajNON0VEbEFaYW55OVNM?=
+ =?utf-8?B?MzVaWFU0cUpiMkZEYm1RZGJRMGx1bWJpbjFoTUt4TWlCK3dITHl6YlVSb0k5?=
+ =?utf-8?B?ME9KNXl1KzNwRnNCRmN5MitJUTNvMTF3WEhNR0ZCc01kUGRQNVJ4NG5Ec2xH?=
+ =?utf-8?B?Snd4SmJJbzJodUlsS0xQMmxGSVNpQjVTNU51bGVXOUR6NWhjVGdOQVgrNkRl?=
+ =?utf-8?B?eTl0eDFoSEt6NE40a0Jmb0xHOHllQzFzYmNZNWVoaHV4QkYrRHIyUzdsZzE2?=
+ =?utf-8?B?STRPcTYyNWNaVGRjZXlweXJiaWRzdTd0L1psN2JRRDNrSWszRUFLSlRwdDdY?=
+ =?utf-8?B?bmZtdTZzV0ZLMmNQdUZ2NThxdVY3aXY3OWNTNmEvdXd6YXZhc2JJbDc4eEtV?=
+ =?utf-8?B?TnlBc09qK0N5V1NDMlR4SEE5UWMrZEJaU3VIa1RyOGRTekg1SkZ4SXNtWWVj?=
+ =?utf-8?B?MmZ1T3pYYUlNRjlzaVlRa2NadjFsbTdqR3lwY2h6RTNuYko2SlZMTSsvUnpL?=
+ =?utf-8?B?MDgwSUtBV2U0QytCTnlYdXMvbTZyS2kvWFlnY3I2cjlDSkt3Uyt2ckhPelFk?=
+ =?utf-8?B?dE5Wam12VENPL2poU3F0RFNYSERTUnpENW83dUQvSUtQQklOYkpsbFBXSmNI?=
+ =?utf-8?B?V2t1L3h3MEFSN0d2RFJiUC8ya25vdWlvcEQ3RSttQTJaV3VndSt0NFpTYzlX?=
+ =?utf-8?B?RDZGK2gyYUhCNHhaY3RHUWMvMUNYZXBVeE9tcWlJc3I1TE5vZXZ0WjN6RTE3?=
+ =?utf-8?B?TnhYYXk0aXk0aGFYb254MmVETkY4ZXBnNDJmZEQ4OUJEMUd4SlhjMnk3bkNu?=
+ =?utf-8?B?by82VmorUmZ0bUdqb29PM01vNVc0R2l1TktJN244VXFDbXA2WDg2cTBQeHBJ?=
+ =?utf-8?B?ZVNudFpKOWtTZGdFVC9RUThuSWdvT3hRU05ROXRLWHJ3OHEyZER6SUcwRkpB?=
+ =?utf-8?B?eDF1dlhRZ0N2VWVJYjg4QTB4RUxYQWhyTWFqRnlQbFhvSXV2OEZwQW1tbnBX?=
+ =?utf-8?B?Vm5QbHc4SGorVnZoem9Ma1k4V1V5eXdTQWRNU255YS9mWUtVQ2ZCYWxZZkJF?=
+ =?utf-8?B?ejU3WERyQ2tNSEJadzB4amlsTWFON0Nrd0h1WGwzK2k2ZHdTYUFYdTJpbk4w?=
+ =?utf-8?B?UzFZcFA2aE5FREhRM0VEeGtZUkRINkJjVGdQd1UwaEJ0WUpSOFVzQ09IOXVZ?=
+ =?utf-8?B?a0JTbzBTRDV2VjRjQVZneVNHODJ6dGc0RnlLcGU3NHJEZ0xwOTA4V2syWkJi?=
+ =?utf-8?B?NU9rY0xSS0xObWNBUHBoL0gzK0J0REY4NDJMd0UvTk1xQVhKVXl1RUJwdExj?=
+ =?utf-8?B?aUNkaHJ3ZHhoakc2SXZuQ3pFMFh5MEFZWndTTjFSV1JrYjUxSWpCa1U5aHB0?=
+ =?utf-8?B?TDY5YmIyZVlEa1RsZXFHdEhzMlBoK3YwV3prNnVMK2E1VkR2MkxlQ1VMVWw1?=
+ =?utf-8?B?WExsR05pQXcrVmUycE9mS2o2N1IxN2dQcU9HVC9OenpDSEduWkVTYzkxSUVh?=
+ =?utf-8?B?ZW42MXBYK1NTUU0rZjFBbEFHcXNvZitpZVN5M2dvNW1BSi83Qy8rcjBDUElK?=
+ =?utf-8?B?ZEtiblFBeTlGRFJDeDdrQ0hhQlVYNURKbFpqeXk1S1hFL3pWZlpNZ243bzYy?=
+ =?utf-8?B?OVBBQlh6bEpOY0xTQVc3dmQvT2cwN1RLRkV5QjlyeDgyMzFJNkRsOGNnN25W?=
+ =?utf-8?B?VkdzZk5UN1pwT2F3OGZGK3g0OUhuL05FZjlNdkIvQ1VBbHgzZmRFQm56WUNz?=
+ =?utf-8?B?WUp6R3h1cEg3a0pzQlBKUjY1dkJoTjc5YjRVV2UxTGphSFBpR1NkUW9hTG5a?=
+ =?utf-8?B?WWlheGQ1YUlpVmJ2N2wrMmNHamxncXZNbzZUR29JR1EvWmtYcUlGSjdpcGI3?=
+ =?utf-8?B?T09ELzdDMFZJVzgwbS95UjZ4QWhlSlpoL1V6eUlPMThVVldJOXh5V2VRZ1d4?=
+ =?utf-8?Q?b1U4neSImlK5BQ99Z3jtSPgM2?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 783b5848-1ce5-476c-ccfb-08da6e11d1c7
+X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Jul 2022 07:46:43.9066
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 3KkCPchgd/2JOSOvD4l6kIXcry+qFuBOW++pQAOBSTgIak/evyPuSwM//nakUHXJZXO/mn7qUjgMlFa0xuEjfw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR11MB1459
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Drivers' .remove and .shutdown callbacks are executed on different code
-paths. The former is called when a device is removed from the bus, while
-the latter is called at system shutdown time to quiesce the device.
-
-This means that some overlap exists between the two, because both have to
-take care of properly shutting down the hardware. But currently the logic
-used in these two callbacks isn't consistent in msm drivers, which could
-lead to kernel panic.
-
-For example, on .remove the component is deleted and its .unbind callback
-leads to the hardware being shutdown but only if the DRM device has been
-marked as registered.
-
-That check doesn't exist in the .shutdown logic and this can lead to the
-driver calling drm_atomic_helper_shutdown() for a DRM device that hasn't
-been properly initialized.
-
-A situation like this can happen if drivers for expected sub-devices fail
-to probe, since the .bind callback will never be executed. If that is the
-case, drm_atomic_helper_shutdown() will attempt to take mutexes that are
-only initialized if drm_mode_config_init() is called during a device bind.
-
-This bug was attempted to be fixed in commit 623f279c7781 ("drm/msm: fix
-shutdown hook in case GPU components failed to bind"), but unfortunately
-it still happens in some cases as the one mentioned above, i.e:
-
-[  169.495897] systemd-shutdown[1]: Powering off.
-[  169.500466] kvm: exiting hardware virtualization
-[  169.554787] platform wifi-firmware.0: Removing from iommu group 12
-[  169.610238] platform video-firmware.0: Removing from iommu group 10
-[  169.682164] ------------[ cut here ]------------
-[  169.686909] WARNING: CPU: 6 PID: 1 at drivers/gpu/drm/drm_modeset_lock.c:317 drm_modeset_lock_all_ctx+0x3c4/0x3d0
-...
-[  169.775691] Hardware name: Google CoachZ (rev3+) (DT)
-[  169.780874] pstate: a0400009 (NzCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-[  169.788021] pc : drm_modeset_lock_all_ctx+0x3c4/0x3d0
-[  169.793205] lr : drm_modeset_lock_all_ctx+0x48/0x3d0
-[  169.798299] sp : ffff80000805bb80
-[  169.801701] x29: ffff80000805bb80 x28: ffff327c00128000 x27: 0000000000000000
-[  169.809025] x26: 0000000000000000 x25: 0000000000000001 x24: ffffc95d820ec030
-[  169.816349] x23: ffff327c00bbd090 x22: ffffc95d8215eca0 x21: ffff327c039c5800
-[  169.823674] x20: ffff327c039c5988 x19: ffff80000805bbe8 x18: 0000000000000034
-[  169.830998] x17: 000000040044ffff x16: ffffc95d80cac920 x15: 0000000000000000
-[  169.838322] x14: 0000000000000315 x13: 0000000000000315 x12: 0000000000000000
-[  169.845646] x11: 0000000000000000 x10: 0000000000000000 x9 : 0000000000000000
-[  169.852971] x8 : ffff80000805bc28 x7 : 0000000000000000 x6 : 0000000000000000
-[  169.860295] x5 : 0000000000000000 x4 : 0000000000000000 x3 : 0000000000000000
-[  169.867619] x2 : ffff327c00128000 x1 : 0000000000000000 x0 : ffff327c039c59b0
-[  169.874944] Call trace:
-[  169.877467]  drm_modeset_lock_all_ctx+0x3c4/0x3d0
-[  169.882297]  drm_atomic_helper_shutdown+0x70/0x134
-[  169.887217]  msm_drv_shutdown+0x30/0x40
-[  169.891159]  platform_shutdown+0x28/0x40
-[  169.895191]  device_shutdown+0x148/0x350
-[  169.899221]  kernel_power_off+0x38/0x80
-[  169.903163]  __do_sys_reboot+0x288/0x2c0
-[  169.907192]  __arm64_sys_reboot+0x28/0x34
-[  169.911309]  invoke_syscall+0x48/0x114
-[  169.915162]  el0_svc_common.constprop.0+0x44/0xec
-[  169.919992]  do_el0_svc+0x2c/0xc0
-[  169.923394]  el0_svc+0x2c/0x84
-[  169.926535]  el0t_64_sync_handler+0x11c/0x150
-[  169.931013]  el0t_64_sync+0x18c/0x190
-[  169.934777] ---[ end trace 0000000000000000 ]---
-[  169.939557] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000018
-[  169.948574] Mem abort info:
-[  169.951452]   ESR = 0x0000000096000004
-[  169.955307]   EC = 0x25: DABT (current EL), IL = 32 bits
-[  169.960765]   SET = 0, FnV = 0
-[  169.963901]   EA = 0, S1PTW = 0
-[  169.967127]   FSC = 0x04: level 0 translation fault
-[  169.972136] Data abort info:
-[  169.975093]   ISV = 0, ISS = 0x00000004
-[  169.979037]   CM = 0, WnR = 0
-[  169.982083] user pgtable: 4k pages, 48-bit VAs, pgdp=000000010eab1000
-[  169.988697] [0000000000000018] pgd=0000000000000000, p4d=0000000000000000
-[  169.995669] Internal error: Oops: 96000004 [#1] PREEMPT SMP
-...
-[  170.079614] Hardware name: Google CoachZ (rev3+) (DT)
-[  170.084801] pstate: a0400009 (NzCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-[  170.091941] pc : ww_mutex_lock+0x28/0x32c
-[  170.096064] lr : drm_modeset_lock_all_ctx+0x1b0/0x3d0
-[  170.101254] sp : ffff80000805bb50
-[  170.104658] x29: ffff80000805bb50 x28: ffff327c00128000 x27: 0000000000000000
-[  170.111977] x26: 0000000000000000 x25: 0000000000000001 x24: 0000000000000018
-[  170.119296] x23: ffff80000805bc10 x22: ffff327c039c5ad8 x21: ffff327c039c5800
-[  170.126615] x20: ffff80000805bbe8 x19: 0000000000000018 x18: 0000000000000034
-[  170.133933] x17: 000000040044ffff x16: ffffc95d80cac920 x15: 0000000000000000
-[  170.141252] x14: 0000000000000315 x13: 0000000000000315 x12: 0000000000000000
-[  170.148571] x11: 0000000000000000 x10: 0000000000000000 x9 : 0000000000000000
-[  170.155890] x8 : ffff80000805bc28 x7 : 0000000000000000 x6 : 0000000000000000
-[  170.163209] x5 : 0000000000000000 x4 : 0000000000000000 x3 : 0000000000000000
-[  170.170528] x2 : ffff327c00128000 x1 : 0000000000000000 x0 : 0000000000000018
-[  170.177847] Call trace:
-[  170.180364]  ww_mutex_lock+0x28/0x32c
-[  170.184127]  drm_modeset_lock_all_ctx+0x1b0/0x3d0
-[  170.188957]  drm_atomic_helper_shutdown+0x70/0x134
-[  170.193876]  msm_drv_shutdown+0x30/0x40
-[  170.197820]  platform_shutdown+0x28/0x40
-[  170.201854]  device_shutdown+0x148/0x350
-[  170.205888]  kernel_power_off+0x38/0x80
-[  170.209832]  __do_sys_reboot+0x288/0x2c0
-[  170.213866]  __arm64_sys_reboot+0x28/0x34
-[  170.217990]  invoke_syscall+0x48/0x114
-[  170.221843]  el0_svc_common.constprop.0+0x44/0xec
-[  170.226672]  do_el0_svc+0x2c/0xc0
-[  170.230079]  el0_svc+0x2c/0x84
-[  170.233215]  el0t_64_sync_handler+0x11c/0x150
-[  170.237686]  el0t_64_sync+0x18c/0x190
-[  170.241451] Code: aa0103f4 d503201f d2800001 aa0103e3 (c8e37c02)
-[  170.247704] ---[ end trace 0000000000000000 ]---
-[  170.252457] Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b
-[  170.260654] Kernel Offset: 0x495d77c00000 from 0xffff800008000000
-[  170.266910] PHYS_OFFSET: 0xffffcd8500000000
-[  170.271212] CPU features: 0x800,00c2a015,19801c82
-[  170.276042] Memory Limit: none
-[  170.279183] ---[ end Kernel panic - not syncing: Attempted to kill init! exitcode=0x0000000b ]---
-
-Fixes: 9d5cbf5fe46e ("drm/msm: add shutdown support for display platform_driver")
-Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
----
-
-Changes in v3:
-- Drop the msm_shutdown_hw() wrapper and just call drm_atomic_helper_shutdown()
-  in both callbacks (Dmitry Baryshkov).
-- Copy the comment in msm_drm_uninit() to msm_drv_shutdown() (Dmitry Baryshkov).
-
-Changes in v2:
-- Take the registered check out of the msm_shutdown_hw() and make callers to check instead.
-- Make msm_shutdown_hw() an inline function.
-- Add a Fixes: tag.
-
- drivers/gpu/drm/msm/msm_drv.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/gpu/drm/msm/msm_drv.c b/drivers/gpu/drm/msm/msm_drv.c
-index 1ed4cd09dbf8..1333fea57713 100644
---- a/drivers/gpu/drm/msm/msm_drv.c
-+++ b/drivers/gpu/drm/msm/msm_drv.c
-@@ -1242,10 +1242,15 @@ void msm_drv_shutdown(struct platform_device *pdev)
- 	struct msm_drm_private *priv = platform_get_drvdata(pdev);
- 	struct drm_device *drm = priv ? priv->dev : NULL;
- 
--	if (!priv || !priv->kms)
--		return;
--
--	drm_atomic_helper_shutdown(drm);
-+	/*
-+	 * Shutdown the hw if we're far enough along where things might be on.
-+	 * If we run this too early, we'll end up panicking in any variety of
-+	 * places. Since we don't register the drm device until late in
-+	 * msm_drm_init, drm_dev->registered is used as an indicator that the
-+	 * shutdown will be successful.
-+	 */
-+	if (drm && drm->registered)
-+		drm_atomic_helper_shutdown(drm);
- }
- 
- static struct platform_driver msm_platform_driver = {
--- 
-2.37.1
-
+PiBGcm9tOiBCYW9sdSBMdSA8YmFvbHUubHVAbGludXguaW50ZWwuY29tPg0KPiBTZW50OiBTdW5k
+YXksIEp1bHkgMjQsIDIwMjIgNToxNCBQTQ0KPiANCj4gT24gMjAyMi83LzIzIDIyOjExLCBKYXNv
+biBHdW50aG9ycGUgd3JvdGU6DQo+ID4+ICt2b2lkIGlvbW11X2RldGFjaF9kZXZpY2VfcGFzaWQo
+c3RydWN0IGlvbW11X2RvbWFpbiAqZG9tYWluLA0KPiBzdHJ1Y3QgZGV2aWNlICpkZXYsDQo+ID4+
+ICsJCQkgICAgICAgaW9hc2lkX3QgcGFzaWQpDQo+ID4+ICt7DQo+ID4+ICsJc3RydWN0IGlvbW11
+X2dyb3VwICpncm91cCA9IGlvbW11X2dyb3VwX2dldChkZXYpOw0KPiA+PiArDQo+ID4+ICsJbXV0
+ZXhfbG9jaygmZ3JvdXAtPm11dGV4KTsNCj4gPj4gKwlkb21haW4tPm9wcy0+YmxvY2tfZGV2X3Bh
+c2lkKGRvbWFpbiwgZGV2LCBwYXNpZCk7DQo+ID4gSSBzdGlsbCByZWFsbHkgdGhpcyBPUCwgaXQg
+aXMgbm9uc2Vuc2UgdG8gaW52b2tlICdibG9ja19kZXZfcGFzaWQnIG9uDQo+ID4gYSBkb21haW4s
+IGl0IHNob3VsZCBiZSBvbiB0aGUgaW9tbXUgb3BzIGFuZCBpdCBzaG91bGQgbm90IHRha2UgaW4g
+YQ0KPiA+IGRvbWFpbiBwYXJhbWV0ZXIuIFRoaXMgaXMgd2h5IEkgcHJlZmVyIHdlIHdyaXRlIGl0
+IGFzDQo+ID4NCj4gPiBkb21haW4tPm9wcy0+c2V0X2Rldl9wYXNpZChncm91cC0+YmxvY2tpbmdf
+ZG9tYWluLCBkZXYsIHBhc2lkKTsNCj4gPg0KPiANCj4gSSBvcmlnaW5hbGx5IHBsYW4gdG8gcmVm
+YWN0b3IgdGhpcyBhZnRlciBib3RoIEludGVsIGFuZCBBUk0gU01NVXYzDQo+IGRyaXZlcnMgaGF2
+ZSByZWFsIGJsb2NraW5nIGRvbWFpbiBzdXBwb3J0cy4gQWZ0ZXIgcmV2aXNpdGluZyB0aGlzLCBp
+dA0KPiBzZWVtcyB0aGF0IHRoZSBvbmx5IGRpZmZpY3VsdHkgaXMgaG93IHRvIGNoZWNrIHdoZXRo
+ZXIgYSBkb21haW4gaXMgYQ0KPiBibG9ja2luZyBkb21haW4uIEkgYW0gZ29pbmcgdG8gdXNlIGJl
+bG93IGNoZWNraW5nIGNvZGU6DQo+IA0KPiArCS8qDQo+ICsJICogRGV0YWNoIHRoZSBkb21haW4g
+aWYgYSBibG9ja2luZyBkb21haW4gaXMgc2V0LiBDaGVjayB0aGUNCj4gKwkgKiByaWdodCBkb21h
+aW4gdHlwZSBvbmNlIHRoZSBJT01NVSBkcml2ZXIgc3VwcG9ydHMgYSByZWFsDQo+ICsJICogYmxv
+Y2tpbmcgZG9tYWluLg0KPiArCSAqLw0KPiArCWlmICghZG9tYWluIHx8IGRvbWFpbi0+dHlwZSA9
+PSBJT01NVV9ET01BSU5fVU5NQU5BR0VEKSB7DQo+IA0KPiBEb2VzIHRoaXMgd29yayBmb3IgeW91
+Pw0KPiANCg0KT3IgeW91IGNhbiBjYWxsIF9faW9tbXVfZ3JvdXBfYWxsb2NfYmxvY2tpbmdfZG9t
+YWluKCkgaW4gdGhlIHN2YQ0KcGF0aCBhbmQgdGhlbiBqdXN0IGNoZWNrIHdoZXRoZXIgdGhlIGRv
+bWFpbiBpcyBlcXVhbCB0bw0KZ3JvdXAtPmJsb2NraW5nX2RvbWFpbiBoZXJlLg0K
