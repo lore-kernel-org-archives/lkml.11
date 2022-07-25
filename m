@@ -2,147 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06DFDC43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 13:47:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 146F1C43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 13:49:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234415AbiGYNrQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 09:47:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33364 "EHLO
+        id S234801AbiGYNtc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 09:49:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234519AbiGYNrM (ORCPT
+        with ESMTP id S232047AbiGYNta (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 09:47:12 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B84E2F5B2;
-        Mon, 25 Jul 2022 06:47:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658756831; x=1690292831;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   mime-version:in-reply-to;
-  bh=Bdlz/iQMAncTEc31gSNH4MyviKpdF4xPNxVdJTjrNtE=;
-  b=jyN/Qt8oZ61OMT0b0U0mnnEakPBTAWBW9ROL5Qj4YTDFH9l2EgzmUoMx
-   mGz71MPcXmWxojD/4KFgXIHqNaHAGQQIW853CVEODOPb5H4XpIZEHdmky
-   IgwzodsJs56ayZ2MsLBwA7+sMyJOUqdbBuvL/Qw6w93f9xf8BsRljj6VO
-   ZIbAOn/trWBfhFNNEtOx+fbL3VOy575YHIrxesI8VaSfjssT2VgMO1Ly7
-   ga6j91+pIudRPtfWG/fduvEjc+h2qsKf623E6LemlrK6s5g0QbAQoaE05
-   pczw7liTC4e5nXyS9lKvncmenfCWYrZjd3gYDKkjH3rySv97QF4hxR4Vd
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10418"; a="274565644"
-X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
-   d="scan'208";a="274565644"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2022 06:47:11 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
-   d="scan'208";a="627457285"
-Received: from chaop.bj.intel.com (HELO localhost) ([10.240.193.75])
-  by orsmga008.jf.intel.com with ESMTP; 25 Jul 2022 06:47:01 -0700
-Date:   Mon, 25 Jul 2022 21:42:12 +0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        linux-api@vger.kernel.org, linux-doc@vger.kernel.org,
-        qemu-devel@nongnu.org, linux-kselftest@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
-        Steven Price <steven.price@arm.com>,
-        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Vishal Annapurve <vannapurve@google.com>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, aarcange@redhat.com, ddutile@redhat.com,
-        dhildenb@redhat.com, Quentin Perret <qperret@google.com>,
-        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: Re: [PATCH v7 01/14] mm: Add F_SEAL_AUTO_ALLOCATE seal to memfd
-Message-ID: <20220725134212.GB304216@chaop.bj.intel.com>
-Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
-References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
- <20220706082016.2603916-2-chao.p.peng@linux.intel.com>
- <f39c4f63-a511-4beb-b3a4-66589ddb5475@redhat.com>
+        Mon, 25 Jul 2022 09:49:30 -0400
+Received: from shelob.surriel.com (shelob.surriel.com [96.67.55.147])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DDE5EE3F;
+        Mon, 25 Jul 2022 06:49:29 -0700 (PDT)
+Received: from [2603:3005:d05:2b00:6e0b:84ff:fee2:98bb] (helo=imladris.surriel.com)
+        by shelob.surriel.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <riel@shelob.surriel.com>)
+        id 1oFySW-00085J-5z;
+        Mon, 25 Jul 2022 09:49:20 -0400
+Date:   Mon, 25 Jul 2022 09:49:19 -0400
+From:   Rik van Riel <riel@surriel.com>
+To:     Petr Mladek <pmladek@suse.com>
+Cc:     linux-kernel@vger.kernel.org, live-patching@vger.kernel.org,
+        kernel-team@fb.com, Josh Poimboeuf <jpoimboe@kernel.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Breno Leitao <leitao@debian.org>
+Subject: [PATCH v3] livepatch: fix race between fork and
+ klp_reverse_transition
+Message-ID: <20220725094919.52bcde19@imladris.surriel.com>
+In-Reply-To: <Yt6bZo5ztnVSjLLC@alley>
+References: <20220720121023.043738bb@imladris.surriel.com>
+        <YtrCqMLUqJlcoqIo@alley>
+        <20220722150106.683f3704@imladris.surriel.com>
+        <Yt6bZo5ztnVSjLLC@alley>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f39c4f63-a511-4beb-b3a4-66589ddb5475@redhat.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+Sender: riel@shelob.surriel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 11:44:11AM +0200, David Hildenbrand wrote:
-> On 06.07.22 10:20, Chao Peng wrote:
-> > Normally, a write to unallocated space of a file or the hole of a sparse
-> > file automatically causes space allocation, for memfd, this equals to
-> > memory allocation. This new seal prevents such automatically allocating,
-> > either this is from a direct write() or a write on the previously
-> > mmap-ed area. The seal does not prevent fallocate() so an explicit
-> > fallocate() can still cause allocating and can be used to reserve
-> > memory.
-> > 
-> > This is used to prevent unintentional allocation from userspace on a
-> > stray or careless write and any intentional allocation should use an
-> > explicit fallocate(). One of the main usecases is to avoid memory double
-> > allocation for confidential computing usage where we use two memfds to
-> > back guest memory and at a single point only one memfd is alive and we
-> > want to prevent memory allocation for the other memfd which may have
-> > been mmap-ed previously. More discussion can be found at:
-> > 
-> >   https://lkml.org/lkml/2022/6/14/1255
-> > 
-> > Suggested-by: Sean Christopherson <seanjc@google.com>
-> > Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
-> > ---
-> >  include/uapi/linux/fcntl.h |  1 +
-> >  mm/memfd.c                 |  3 ++-
-> >  mm/shmem.c                 | 16 ++++++++++++++--
-> >  3 files changed, 17 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/include/uapi/linux/fcntl.h b/include/uapi/linux/fcntl.h
-> > index 2f86b2ad6d7e..98bdabc8e309 100644
-> > --- a/include/uapi/linux/fcntl.h
-> > +++ b/include/uapi/linux/fcntl.h
-> > @@ -43,6 +43,7 @@
-> >  #define F_SEAL_GROW	0x0004	/* prevent file from growing */
-> >  #define F_SEAL_WRITE	0x0008	/* prevent writes */
-> >  #define F_SEAL_FUTURE_WRITE	0x0010  /* prevent future writes while mapped */
-> > +#define F_SEAL_AUTO_ALLOCATE	0x0020  /* prevent allocation for writes */
-> 
-> Why only "on writes" and not "on reads". IIRC, shmem doesn't support the
-> shared zeropage, so you'll simply allocate a new page via read() or on
-> read faults.
+On Mon, 25 Jul 2022 15:32:22 +0200
+Petr Mladek <pmladek@suse.com> wrote:
 
-Right, it also prevents read faults.
+> We should update the commit message and mention also the other
+> two locations where the state is manipulated without tasklist_lock.
+> I am sorry that I did not mention it on Friday.
 
-> 
-> 
-> Also, I *think* you can place pages via userfaultfd into shmem. Not sure
-> if that would count "auto alloc", but it would certainly bypass fallocate().
+Done. Thank you for reviewing this patch so carefully!
+I had looked at those other places in the code as well, but
+do not have as complete a picture of the KLP code as you.
 
-Userfaultfd sounds interesting, will further investigate it. But a rough
-look sounds it only faults to usrspace for write/read fault, not
-write()? Also sounds it operates on vma and userfaultfd_register() takes
-mmap_lock which is what we want to avoid for frequent
-register/unregister during private/shared memory conversion.
+v2: a better approach, suggested by Petr (thank you)
+v3: update changelog (thank you Petr)
+---8<---
+When a KLP fails to apply, klp_reverse_transition will clear the
+TIF_PATCH_PENDING flag on all tasks, except for newly created tasks
+which are not on the task list yet.
 
-Chao
-> 
-> -- 
-> Thanks,
-> 
-> David / dhildenb
+Meanwhile, fork will copy over the TIF_PATCH_PENDING flag from the
+parent to the child early on, in dup_task_struct -> setup_thread_stack.
+
+Much later, klp_copy_process will set child->patch_state to match
+that of the parent.
+
+However, the parent's patch_state may have been changed by KLP loading
+or unloading since it was initially copied over into the child.
+
+This results in the KLP code occasionally hitting this warning in
+klp_complete_transition:
+
+        for_each_process_thread(g, task) {
+                WARN_ON_ONCE(test_tsk_thread_flag(task, TIF_PATCH_PENDING));
+                task->patch_state = KLP_UNDEFINED;
+        }
+
+This patch will set, or clear, the TIF_PATCH_PENDING flag in the child
+process depending on whether or not it is needed at the time
+klp_copy_process is called, at a point in copy_process where the
+tasklist_lock is held exclusively, preventing races with the KLP
+code.
+
+The KLP code does have a few places where the state is changed
+without the tasklist_lock held, but those should not cause
+problems because klp_update_patch_state(current) cannot be
+called while the current task is in the middle of fork,
+klp_check_and_switch_task() which is called under the pi_lock,
+which prevents rescheduling, and manipulation of the patch
+state of idle tasks, which do not fork.
+
+This should prevent this warning from triggering again in the
+future.
+
+Signed-off-by: Rik van Riel <riel@surriel.com>
+Reported-by: Breno Leitao <leitao@debian.org>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+---
+ kernel/livepatch/transition.c | 18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
+index 5d03a2ad1066..30187b1d8275 100644
+--- a/kernel/livepatch/transition.c
++++ b/kernel/livepatch/transition.c
+@@ -610,9 +610,23 @@ void klp_reverse_transition(void)
+ /* Called from copy_process() during fork */
+ void klp_copy_process(struct task_struct *child)
+ {
+-	child->patch_state = current->patch_state;
+ 
+-	/* TIF_PATCH_PENDING gets copied in setup_thread_stack() */
++	/*
++	 * The parent process may have gone through a KLP transition since
++	 * the thread flag was copied in setup_thread_stack earlier. Bring
++	 * the task flag up to date with the parent here.
++	 *
++	 * The operation is serialized against all klp_*_transition()
++	 * operations by the tasklist_lock. The only exception is
++	 * klp_update_patch_state(current), but we cannot race with
++	 * that because we are current.
++	 */
++	if (test_tsk_thread_flag(current, TIF_PATCH_PENDING))
++		set_tsk_thread_flag(child, TIF_PATCH_PENDING);
++	else
++		clear_tsk_thread_flag(child, TIF_PATCH_PENDING);
++
++	child->patch_state = current->patch_state;
+ }
+ 
+ /*
+-- 
+2.35.1
+
