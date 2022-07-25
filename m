@@ -2,92 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B218FCCA473
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 16:07:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9302DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 16:07:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235769AbiGYQHH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 12:07:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44244 "EHLO
+        id S235817AbiGYQHL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 12:07:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235595AbiGYQHF (ORCPT
+        with ESMTP id S235742AbiGYQHG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 12:07:05 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A9F4266D;
-        Mon, 25 Jul 2022 09:07:04 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Mon, 25 Jul 2022 12:07:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 496B9BE22;
+        Mon, 25 Jul 2022 09:07:05 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id DB01C1FE30;
-        Mon, 25 Jul 2022 16:07:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1658765222;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=j2rdihiE/N0eDGx4EBeUKYn5OpjSdkVwi6MAi9vthxo=;
-        b=S1q/IZUGtir2dybfQ/018iuJ3eJmRvGVTWt+5U/6qT/eTtbN8iyGDPPBv20U1ypXFT2NYp
-        Z17V4LbBLdoY1um/Jxjyw3XGnfVUdOmc0QU9YPfK4ENDBtKH3zp/5sL4cHms1XjDJhi5v2
-        ZeUZm436zFJdEPvXE151w7TO0MqUPXk=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1658765222;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=j2rdihiE/N0eDGx4EBeUKYn5OpjSdkVwi6MAi9vthxo=;
-        b=PW+kC87BBah3uorpW2Cir7Zu6Nw0eqk9HzkM/KX3MTbAwlmaT6WnVX3Tq2EhNhmRLCwhF4
-        UNnJ7F1RGc+hjIAg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id AC5AA13ABB;
-        Mon, 25 Jul 2022 16:07:02 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id sQAQKaa/3mL5QwAAMHmgww
-        (envelope-from <dsterba@suse.cz>); Mon, 25 Jul 2022 16:07:02 +0000
-Date:   Mon, 25 Jul 2022 18:02:05 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Ioannis Angelakopoulos <iangelak@fb.com>,
-        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] btrfs: Fix unused variable in load_free_space_cache()
-Message-ID: <20220725160205.GA13489@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, Nathan Chancellor <nathan@kernel.org>,
-        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Ioannis Angelakopoulos <iangelak@fb.com>,
-        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220722163854.1189931-1-nathan@kernel.org>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 00283B81011;
+        Mon, 25 Jul 2022 16:07:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 859CCC341C6;
+        Mon, 25 Jul 2022 16:07:01 +0000 (UTC)
+Date:   Mon, 25 Jul 2022 12:06:59 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     Chuck Lever III <chuck.lever@oracle.com>,
+        Trond Myklebust <trondmy@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>, Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-perf-users@vger.kernel.org
+Subject: Re: [PATCH 3/4] SUNRPC: Replace dprintk() call site in
+ xs_data_ready
+Message-ID: <20220725120659.1a00a3e2@gandalf.local.home>
+In-Reply-To: <Yt67gCcZfOEJizay@kernel.org>
+References: <165851065336.361126.17865870911497306083.stgit@morisot.1015granger.net>
+        <165851074247.361126.17205394769981595871.stgit@morisot.1015granger.net>
+        <66371b9db4210fe853e98a8ec68b0f780ba886af.camel@hammerspace.com>
+        <9FDA46D8-4D6E-49B0-A583-D0FF739111BF@oracle.com>
+        <20220722162212.3d080c23@gandalf.local.home>
+        <Yt67gCcZfOEJizay@kernel.org>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220722163854.1189931-1-nathan@kernel.org>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 22, 2022 at 09:38:54AM -0700, Nathan Chancellor wrote:
-> When CONFIG_LOCKDEP is unset, there is a warning about the mapping
-> variable being unused:
-> 
->   fs/btrfs/free-space-cache.c:929:24: warning: variable 'mapping' set but not used [-Wunused-but-set-variable]
->           struct address_space *mapping;
->                                 ^
->   1 warning generated.
-> 
-> lockdep_set_class() does not do anything with the first parameter to the
-> macro when CONFIG_LOCKDEP is not set so just eliminate the mapping
-> variable and use inode instead, which is always used in the function.
-> 
-> Fixes: 22d85ab1af7d ("btrfs: Change the lockdep class of struct inode's invalidate_lock")
-> Link: https://github.com/ClangBuiltLinux/linux/issues/1672
-> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+On Mon, 25 Jul 2022 12:49:20 -0300
+Arnaldo Carvalho de Melo <acme@kernel.org> wrote:
 
-Folded to the patch, thanks.
+> Perhaps it'd be better to check if libtracevent-devel is installed and
+> use it, falling back to tools/lib/traceevent/ and then adding a warning
+> that the in-tree codebase is being used?
+
+Yeah, this is the way trace-cmd went. For a few releases, it would just
+warn that it couldn't find the system libraries, and then fall back to the
+internals, and then it finally just removed the internals and failed with a
+message stating where to get the necessary libraries.
+
+-- Steve
