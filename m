@@ -2,78 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6C43C43334
-	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 10:10:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5A7FC43334
+	for <linux-kernel@archiver.kernel.org>; Mon, 25 Jul 2022 10:11:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234691AbiGYKKj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 06:10:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36828 "EHLO
+        id S232280AbiGYKLi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 06:11:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234615AbiGYKKP (ORCPT
+        with ESMTP id S234690AbiGYKLZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 06:10:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEFBD2DCE;
-        Mon, 25 Jul 2022 03:10:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F773612BB;
-        Mon, 25 Jul 2022 10:10:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A4FE7C341D2;
-        Mon, 25 Jul 2022 10:10:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658743813;
-        bh=yfParoQXMrEGU8dG++5USAtAYMV91fpxtQezxCWY2Fw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=F0rPl6iCfLqHYI2nx9Ncbb27eEuGQgq65GDSq57477YG8ygUwWMa7j5Lpo/WRvvOE
-         y5Hb217u6RIxr/AFie+8bDxJdxppcU6mNZCMgfmEQD6THUSmHZnWE+hQ2CCLFuF661
-         N8aVtTctpapW1YS16KuSBnfXPsYQqwvmRlnRbwDMJDMvN6QU1gWJI5m4YFDDjISp88
-         Qpm5WEg75yF2Kd3XQKjYGO36euRsHNpsehIKujFDFwk0q+VrtkTlXy+BDmGw4qEUKl
-         AOrEAGE6dIRsTFSiZgRTHciXxr2CvAFtkvgRxB8l1k0xFAFc0kTessGP4gd6NR5j+o
-         CX3mgRYCt/83Q==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 8B9E8E450B5;
-        Mon, 25 Jul 2022 10:10:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Mon, 25 Jul 2022 06:11:25 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BC92FD13
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 03:11:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658743878; x=1690279878;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=1kqxjz8pEwN4Kot1Jt27wFtLc1vilZcf22t+QeswRi8=;
+  b=FdkodQZeh7U5pdupHIqVQe5t8N9ewFZaMYNst55Wu2RlsTIsW1DS7pfv
+   FQhHrCqt6hqA6CgcSKRvWDuAAlBhiLKczxXhRvsc+Tq4FnaJ3KjLe1KRu
+   BSHvkk2M0Pc3Y1FM6CvB8+aXrPcxVweNlm5gPMdOIpKoOPh2ODs+l2Mqs
+   6v8ouN5tKy7e4moNMhb4zsOrUNvINtn5JE08hkMzVtinj70eet63soKRT
+   VTio+GODf4f2rgvr+idl6HFf0JnFOSrHHHrAl0GDPDX38Ii/1eGcT+m1i
+   jTavvA/mk892TsrsDBWF9Fb+rscLty0XsZyMkWqUJN0rP/6sVMmUJXkPr
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10418"; a="351656941"
+X-IronPort-AV: E=Sophos;i="5.93,192,1654585200"; 
+   d="scan'208";a="351656941"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2022 03:11:17 -0700
+X-IronPort-AV: E=Sophos;i="5.93,192,1654585200"; 
+   d="scan'208";a="658125872"
+Received: from liangk-mobl.ccr.corp.intel.com (HELO [10.255.30.67]) ([10.255.30.67])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2022 03:11:13 -0700
+Message-ID: <441f6537-dde0-885a-3cc2-089b3ed4f4df@linux.intel.com>
+Date:   Mon, 25 Jul 2022 18:11:13 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] s390/qeth: Fix typo 'the the' in comment
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165874381356.12821.2746281291182999684.git-patchwork-notify@kernel.org>
-Date:   Mon, 25 Jul 2022 10:10:13 +0000
-References: <20220722093834.77864-1-slark_xiao@163.com>
-In-Reply-To: <20220722093834.77864-1-slark_xiao@163.com>
-To:     Slark Xiao <slark_xiao@163.com>
-Cc:     borntraeger@linux.ibm.com, svens@linux.ibm.com,
-        wintera@linux.ibm.com, wenjia@linux.ibm.com, hca@linux.ibm.com,
-        gor@linux.ibm.com, agordeev@linux.ibm.com,
-        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        "Jiang, Dave" <dave.jiang@intel.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Eric Auger <eric.auger@redhat.com>,
+        "Liu, Yi L" <yi.l.liu@intel.com>,
+        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
+        Zhangfei Gao <zhangfei.gao@linaro.org>,
+        "Zhu, Tony" <tony.zhu@intel.com>,
+        "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: Re: [PATCH v10 04/12] iommu: Add attach/detach_dev_pasid iommu
+ interface
+Content-Language: en-US
+To:     "Tian, Kevin" <kevin.tian@intel.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+References: <20220705050710.2887204-1-baolu.lu@linux.intel.com>
+ <20220705050710.2887204-5-baolu.lu@linux.intel.com>
+ <20220723141118.GD79279@nvidia.com>
+ <5d353fe4-b642-992e-ef42-7d7f8b2edf7e@linux.intel.com>
+ <BN9PR11MB527627410352E6DE921755898C959@BN9PR11MB5276.namprd11.prod.outlook.com>
+From:   Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB527627410352E6DE921755898C959@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Fri, 22 Jul 2022 17:38:34 +0800 you wrote:
-> Replace 'the the' with 'the' in the comment.
+On 2022/7/25 15:46, Tian, Kevin wrote:
+>> From: Baolu Lu <baolu.lu@linux.intel.com>
+>> Sent: Sunday, July 24, 2022 5:14 PM
+>>
+>> On 2022/7/23 22:11, Jason Gunthorpe wrote:
+>>>> +void iommu_detach_device_pasid(struct iommu_domain *domain,
+>> struct device *dev,
+>>>> +			       ioasid_t pasid)
+>>>> +{
+>>>> +	struct iommu_group *group = iommu_group_get(dev);
+>>>> +
+>>>> +	mutex_lock(&group->mutex);
+>>>> +	domain->ops->block_dev_pasid(domain, dev, pasid);
+>>> I still really this OP, it is nonsense to invoke 'block_dev_pasid' on
+>>> a domain, it should be on the iommu ops and it should not take in a
+>>> domain parameter. This is why I prefer we write it as
+>>>
+>>> domain->ops->set_dev_pasid(group->blocking_domain, dev, pasid);
+>>>
+>>
+>> I originally plan to refactor this after both Intel and ARM SMMUv3
+>> drivers have real blocking domain supports. After revisiting this, it
+>> seems that the only difficulty is how to check whether a domain is a
+>> blocking domain. I am going to use below checking code:
+>>
+>> +	/*
+>> +	 * Detach the domain if a blocking domain is set. Check the
+>> +	 * right domain type once the IOMMU driver supports a real
+>> +	 * blocking domain.
+>> +	 */
+>> +	if (!domain || domain->type == IOMMU_DOMAIN_UNMANAGED) {
+>>
+>> Does this work for you?
+>>
 > 
-> Signed-off-by: Slark Xiao <slark_xiao@163.com>
-> ---
->  drivers/s390/net/qeth_core_main.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Or you can call __iommu_group_alloc_blocking_domain() in the sva
+> path and then just check whether the domain is equal to
+> group->blocking_domain here.
 
-Here is the summary with links:
-  - s390/qeth: Fix typo 'the the' in comment
-    https://git.kernel.org/netdev/net/c/1aaa62c4838a
+Above check is in the IOMMU driver where group->blocking_domain is not
+viable. I ever thought about have something like
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+struct iommu_domain *iommu_group_blocking_domain(struct iommu_group
+*group)
 
+to return group->blocking_domain. But it looks redundant.
 
+Best regards,
+baolu
