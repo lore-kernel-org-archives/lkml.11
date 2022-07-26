@@ -2,23 +2,23 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75564C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 07:33:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EF65C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 07:33:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231638AbiGZHdC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 03:33:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40476 "EHLO
+        id S230512AbiGZHdG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 03:33:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238382AbiGZHbx (ORCPT
+        with ESMTP id S238406AbiGZHb5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 03:31:53 -0400
+        Tue, 26 Jul 2022 03:31:57 -0400
 Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DE2B28737
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DD7628726
         for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 00:27:57 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0VKUN944_1658820450;
-Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0VKUN944_1658820450)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046060;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0VKUOHEZ_1658820454;
+Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0VKUOHEZ_1658820454)
           by smtp.aliyun-inc.com;
-          Tue, 26 Jul 2022 15:27:33 +0800
+          Tue, 26 Jul 2022 15:27:36 +0800
 From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 To:     alexander.deucher@amd.com
 Cc:     christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
@@ -26,9 +26,9 @@ Cc:     christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
         dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
         Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
         Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH 17/20] drm/amd/display: Clean up some inconsistent indenting
-Date:   Tue, 26 Jul 2022 15:25:52 +0800
-Message-Id: <20220726072555.91323-17-jiapeng.chong@linux.alibaba.com>
+Subject: [PATCH 18/20] drm/amd/display: Clean up some inconsistent indenting
+Date:   Tue, 26 Jul 2022 15:25:53 +0800
+Message-Id: <20220726072555.91323-18-jiapeng.chong@linux.alibaba.com>
 X-Mailer: git-send-email 2.20.1.7.g153144c
 In-Reply-To: <20220726072555.91323-1-jiapeng.chong@linux.alibaba.com>
 References: <20220726072555.91323-1-jiapeng.chong@linux.alibaba.com>
@@ -40,35 +40,50 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 No functional modification involved.
 
-smatch warning:
+smatch warnings:
 
-drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn32/display_mode_vba_util_32.c:713 dml32_CalculateSwathWidth() warn: inconsistent indenting.
+drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn303/dcn303_fpu.c:205 dcn303_fpu_update_bw_bounding_box() warn: inconsistent indenting.
+drivers/gpu/drm/amd/amdgpu/../display/dc/dml/dcn303/dcn303_fpu.c:355 dcn303_fpu_init_soc_bounding_box() warn: inconsistent indenting.
 
 Reported-by: Abaci Robot <abaci@linux.alibaba.com>
 Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 ---
- .../amd/display/dc/dml/dcn32/display_mode_vba_util_32.c   | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ .../drm/amd/display/dc/dml/dcn303/dcn303_fpu.c    | 15 ++++++---------
+ 1 file changed, 6 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn32/display_mode_vba_util_32.c b/drivers/gpu/drm/amd/display/dc/dml/dcn32/display_mode_vba_util_32.c
-index 4b010b1b8aed..07f8f3b8626b 100644
---- a/drivers/gpu/drm/amd/display/dc/dml/dcn32/display_mode_vba_util_32.c
-+++ b/drivers/gpu/drm/amd/display/dc/dml/dcn32/display_mode_vba_util_32.c
-@@ -710,10 +710,10 @@ void dml32_CalculateSwathWidth(
- 	unsigned int k, j;
- 	enum odm_combine_mode MainSurfaceODMMode;
+diff --git a/drivers/gpu/drm/amd/display/dc/dml/dcn303/dcn303_fpu.c b/drivers/gpu/drm/amd/display/dc/dml/dcn303/dcn303_fpu.c
+index 8fb14baed208..3eb3a021ab7d 100644
+--- a/drivers/gpu/drm/amd/display/dc/dml/dcn303/dcn303_fpu.c
++++ b/drivers/gpu/drm/amd/display/dc/dml/dcn303/dcn303_fpu.c
+@@ -202,7 +202,7 @@ void dcn303_fpu_update_bw_bounding_box(struct dc *dc, struct clk_bw_params *bw_p
+ 	unsigned int num_dcfclk_sta_targets = 4;
+ 	unsigned int num_uclk_states;
  
--    unsigned int surface_width_ub_l;
--    unsigned int surface_height_ub_l;
--    unsigned int surface_width_ub_c;
--    unsigned int surface_height_ub_c;
-+	unsigned int surface_width_ub_l;
-+	unsigned int surface_height_ub_l;
-+	unsigned int surface_width_ub_c;
-+	unsigned int surface_height_ub_c;
+-    dc_assert_fp_enabled();
++	dc_assert_fp_enabled();
  
- #ifdef __DML_VBA_DEBUG__
- 	dml_print("DML::%s: ForceSingleDPP = %d\n", __func__, ForceSingleDPP);
+ 	if (dc->ctx->dc_bios->vram_info.num_chans)
+ 		dcn3_03_soc.num_chans = dc->ctx->dc_bios->vram_info.num_chans;
+@@ -349,14 +349,11 @@ void dcn303_fpu_init_soc_bounding_box(struct bp_soc_bb_info bb_info)
+ 	dc_assert_fp_enabled();
+ 
+ 	if (bb_info.dram_clock_change_latency_100ns > 0)
+-				dcn3_03_soc.dram_clock_change_latency_us =
+-					bb_info.dram_clock_change_latency_100ns * 10;
++		dcn3_03_soc.dram_clock_change_latency_us = bb_info.dram_clock_change_latency_100ns * 10;
+ 
+-			if (bb_info.dram_sr_enter_exit_latency_100ns > 0)
+-				dcn3_03_soc.sr_enter_plus_exit_time_us =
+-					bb_info.dram_sr_enter_exit_latency_100ns * 10;
++	if (bb_info.dram_sr_enter_exit_latency_100ns > 0)
++		dcn3_03_soc.sr_enter_plus_exit_time_us = bb_info.dram_sr_enter_exit_latency_100ns * 10;
+ 
+-			if (bb_info.dram_sr_exit_latency_100ns > 0)
+-				dcn3_03_soc.sr_exit_time_us =
+-					bb_info.dram_sr_exit_latency_100ns * 10;
++	if (bb_info.dram_sr_exit_latency_100ns > 0)
++		dcn3_03_soc.sr_exit_time_us = bb_info.dram_sr_exit_latency_100ns * 10;
+ }
 -- 
 2.20.1.7.g153144c
 
