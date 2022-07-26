@@ -2,105 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36E7BC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 13:53:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BE32C04A68
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 13:54:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229639AbiGZNxu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 09:53:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36024 "EHLO
+        id S239126AbiGZNyG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 09:54:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230024AbiGZNxq (ORCPT
+        with ESMTP id S230024AbiGZNyC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 09:53:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB1772529C
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 06:53:44 -0700 (PDT)
+        Tue, 26 Jul 2022 09:54:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0274B24F1C;
+        Tue, 26 Jul 2022 06:54:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 965B0B81649
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 13:53:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60604C433C1;
-        Tue, 26 Jul 2022 13:53:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 92B73615A2;
+        Tue, 26 Jul 2022 13:54:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC453C433D6;
+        Tue, 26 Jul 2022 13:54:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658843622;
-        bh=Q8EDUoUoIfZ8TB6aJhkSBmIUfxX4ZXZBCvhBlkyNBC0=;
+        s=k20201202; t=1658843641;
+        bh=NsZa52p2ynEaIvhICGHrQMtOVXRG9E3jN1QnbN5WGeM=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=lrmPROKxwKLYn+8T+AWGXjuFFwZuJlVmYnEMm5/H9JXJVhicdtk4NjdTPeNoV0v5W
-         qx42zzf60YxTytQx+FjH7haQ1TP1ImunoAiRFWfH8+yIeeNW+GVW4rMUVdVvmJUehb
-         CSiOGSwGg9c6PfTJzbhZTfNqPx7yEXJn1g0rLrkxHpcFzK4SKxa5gzPXS9egjdm0gr
-         LjI+h6LmFHSeQsYRZq3Zwc7QymIii47mwS70b8VUagFJfibaNXM79J1Cgyg91KATlH
-         NeTxpOSKhH52iyMi1cpSAQgjsQpew0+Dm8ZNXzBFMBLgN5xYb+v5ce9KIAHUc0TbZe
-         H1yVRQazZUJMQ==
-Date:   Tue, 26 Jul 2022 21:44:40 +0800
-From:   Jisheng Zhang <jszhang@kernel.org>
-To:     Will Deacon <will@kernel.org>
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] arm64: save movk instructions in mov_q when the lower
- 16|32 bits are all zero
-Message-ID: <Yt/vyClCGr5XRPoO@xhacker>
-References: <20220709084830.3124-1-jszhang@kernel.org>
- <20220719181340.GC14526@willie-the-truck>
+        b=bGjlQ3qmvOSu3K8NQVFD8i6oRXVjgTD8ZBNhM/OAvqwz/jyzJ2RvUK7vl0BtnV38z
+         hFA/aiJQtfUk+6wSAJrJZp0bJJj3tZxVI1KDT49xwYO9sPylo7C3oJ0GIukz/DPDZz
+         LACyFvjQFPqB6MlVQuchaytvpk83fciEOVGUrJCaeWr878vxr5qKg6Jp/YRLkV+n1f
+         cJOMM743SRV1bHcxoIu2DLrlievl2vSluyPmMxWDmbi1KU5HqcJclE+t4wm5fNKmj8
+         SfvgPzWLI8rz54MN4vDL9EwJV1Csx9xb+5DMElRcLa+aeGmqD3RcJ+elOSOB8BDyAj
+         q+su/JQrz9VAQ==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1oGL0n-0001xy-Fr; Tue, 26 Jul 2022 15:54:13 +0200
+Date:   Tue, 26 Jul 2022 15:54:13 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Parikshit Pareek <quic_ppareek@quicinc.com>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 3/3] arm64: dts: qcom: introduce sa8540p-ride dts
+Message-ID: <Yt/yBbIvav1+TE5s@hovoldconsulting.com>
+References: <20220722143711.17563-1-quic_ppareek@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220719181340.GC14526@willie-the-truck>
+In-Reply-To: <20220722143711.17563-1-quic_ppareek@quicinc.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 07:13:41PM +0100, Will Deacon wrote:
-> On Sat, Jul 09, 2022 at 04:48:30PM +0800, Jisheng Zhang wrote:
-> > Currently mov_q is used to move a constant into a 64-bit register,
-> > when the lower 16 or 32bits of the constant are all zero, the mov_q
-> > emits one or two useless movk instructions. If the mov_q macro is used
-> > in hot code path, we want to save the movk instructions as much as
-> > possible. For example, when CONFIG_ARM64_MTE is 'Y' and
-> > CONFIG_KASAN_HW_TAGS is 'N', the following code in __cpu_setup()
-> > routine is the pontential optimization target:
-> > 
-> >         /* set the TCR_EL1 bits */
-> >         mov_q   x10, TCR_MTE_FLAGS
-> > 
-> > Before the patch:
-> > 	mov	x10, #0x10000000000000
-> > 	movk	x10, #0x40, lsl #32
-> > 	movk	x10, #0x0, lsl #16
-> > 	movk	x10, #0x0
-> > 
-> > After the patch:
-> > 	mov	x10, #0x10000000000000
-> > 	movk	x10, #0x40, lsl #32
-> > 
-> > Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
-> > ---
-> >  arch/arm64/include/asm/assembler.h | 4 ++++
-> >  1 file changed, 4 insertions(+)
-> > 
-> > diff --git a/arch/arm64/include/asm/assembler.h b/arch/arm64/include/asm/assembler.h
-> > index 8c5a61aeaf8e..09f408424cae 100644
-> > --- a/arch/arm64/include/asm/assembler.h
-> > +++ b/arch/arm64/include/asm/assembler.h
-> > @@ -568,9 +568,13 @@ alternative_endif
-> >  	movz	\reg, :abs_g3:\val
-> >  	movk	\reg, :abs_g2_nc:\val
-> >  	.endif
-> > +	.if ((((\val) >> 16) & 0xffff) != 0)
-> >  	movk	\reg, :abs_g1_nc:\val
-> >  	.endif
-> > +	.endif
-> > +	.if (((\val) & 0xffff) != 0)
-> >  	movk	\reg, :abs_g0_nc:\val
-> > +	.endif
+On Fri, Jul 22, 2022 at 08:07:11PM +0530, Parikshit Pareek wrote:
+> Create new dts file specific for Qdrive board based on sa8540p chipset.
+> Introduce common dtsi file sa8295p-adp.dtsi, to be included for adp and
+> Qdrive board.
 > 
-> Please provide some numbers showing that this is worthwhile.
+> Signed-off-by: Parikshit Pareek <quic_ppareek@quicinc.com>
+> ---
 > 
+> Changes since v1:
+> - Add , after year 2022, in the license header
+> - Rename the dtsi which is suitable for common to many ADP boards
+> - Correct the allignment in the Makefile
+> - Split the patch in introducing common dtsi file, and adding new board
+>   file
 
-No, I have no performance numbers, but here are my opnion
-about this patch: the two checks doesn't add maintaince effort, its
-readability is good, if the two checks can save two movk instructions,
-it's worthwhile to add the checks.
+This changelog would probably make more sense in a cover letter. Also
+your patches are not threaded (e.g. don't show up as a series in out
+mail clients or on lore).
 
+Please consider using git-format-patch (which has a --cover-letter
+switch) for generating the series and git-send-email for sending, which
+should help with both issues.
 
-Thanks
+Johan
