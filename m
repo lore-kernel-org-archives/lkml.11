@@ -2,156 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41507C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 14:37:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA81BC19F21
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 14:38:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239073AbiGZOhy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 10:37:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47172 "EHLO
+        id S229530AbiGZOi2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 10:38:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229530AbiGZOhv (ORCPT
+        with ESMTP id S239277AbiGZOiZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 10:37:51 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 975A21166;
-        Tue, 26 Jul 2022 07:37:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658846270; x=1690382270;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   mime-version:in-reply-to;
-  bh=R3oRo4zkn7MbH8aoe6XdFaSA5NI0RZoxoAoMOkLwIII=;
-  b=FYZNBJ9CLI1zOgxwxAuG0P99TGus0+Uh7H+41+TN9KTX+tEk8KOkbE9f
-   4IYXt2lrRXSQzPNY87y16pIMqo1FKmQb0fRcBSPhXF6YdgDEWWe1Qb8CS
-   w4oLc/PVT4cEWUWLOCHQIm2+B+hJkZyHsntADPY0Mqpl7Af60FK2pep/D
-   lZ2p/yQraYpOjpQa7e6n5wkzzM96ZFZq+2LTT0itvl90xFez60kpKolX/
-   fwkahmSncKa1r4v324rSozS+fdEskvBBFXHSBiddgVWJWqYtaWPCG3tB6
-   5gdRPcQ3rs1aWNn0RN/bCDGJZtpICoiDtyfog4AKSOPPeQT2duIkY1f5q
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10420"; a="313735726"
-X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
-   d="scan'208";a="313735726"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2022 07:37:50 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
-   d="scan'208";a="597044850"
-Received: from chaop.bj.intel.com (HELO localhost) ([10.240.193.75])
-  by orsmga007.jf.intel.com with ESMTP; 26 Jul 2022 07:37:47 -0700
-Date:   Tue, 26 Jul 2022 22:32:59 +0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     "Nikunj A. Dadhania" <nikunj@amd.com>
-Cc:     Sean Christopherson <seanjc@google.com>, isaku.yamahata@intel.com,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        isaku.yamahata@gmail.com, Paolo Bonzini <pbonzini@redhat.com>
-Subject: Re: [PATCH v7 000/102] KVM TDX basic feature support
-Message-ID: <20220726143259.GA323308@chaop.bj.intel.com>
-Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
-References: <cover.1656366337.git.isaku.yamahata@intel.com>
- <Ys9rcnyIZlUc76iG@google.com>
- <20220720145927.GA124133@chaop.bj.intel.com>
- <d0e82407-91fa-cfa4-ff86-262075d23761@amd.com>
+        Tue, 26 Jul 2022 10:38:25 -0400
+Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F223F13F85;
+        Tue, 26 Jul 2022 07:38:24 -0700 (PDT)
+Received: by mail-wr1-f54.google.com with SMTP id h8so20436272wrw.1;
+        Tue, 26 Jul 2022 07:38:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=WpHEQnE8K/vPoI4Otp4u/E57Oasf5iTB9YBte/yldMI=;
+        b=iIIIkgkOQm601uXCbHpjR1m1Av3K/zVUGlLholiDwsQCsIaF7my7plncavf4mj7wff
+         T2AHRm8a9M+gii4wU3TKPVbsaB3X/fuUPT+pJmn9TXAuKpe9iZSGRURuTc2I42xGdZgz
+         PbWtlqmDfniShtTmDbdOXOCavLbNHcHYB5tAX7EarxtWHCzAhRY+eIWylVXjQ8mD5gzg
+         /2Ha81kiqQ2VG4JwOyi1iyVk/XG22QzrwwD6NIaxE3rmVgkrxvyQEYFHnum8JN8+FqFL
+         OXAwsnIurum2zsqI/VU2eaLHhOhfl1u6Xx+wwK4UowMqlBM+A6AOBHjMzuvWlJIhDMcD
+         ZWtQ==
+X-Gm-Message-State: AJIora8oyyH22K8YCNu7kZUfjr9GJExEg7qaEcEEyG/PO8UYG43bc2Cn
+        usH0VYM8eTI+5JJFOzhI3WGqNnq6Og8=
+X-Google-Smtp-Source: AGRyM1uNrqBOWOIEvwQhVpPiHZP6UanlaaWN/rdWs5pVkMRmu7BOIZXnafEasMFfzIq/SAfWo73ZKA==
+X-Received: by 2002:adf:db8e:0:b0:21e:4536:a934 with SMTP id u14-20020adfdb8e000000b0021e4536a934mr11377937wri.331.1658846303394;
+        Tue, 26 Jul 2022 07:38:23 -0700 (PDT)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+        by smtp.gmail.com with ESMTPSA id r11-20020a5d498b000000b0021e42e7c7dbsm15037988wrq.83.2022.07.26.07.38.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Jul 2022 07:38:22 -0700 (PDT)
+Date:   Tue, 26 Jul 2022 14:38:21 +0000
+From:   Wei Liu <wei.liu@kernel.org>
+To:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>
+Cc:     Wei Liu <wei.liu@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Dexuan Cui <decui@microsoft.com>,
+        "will@kernel.org" <will@kernel.org>,
+        "robin.murphy@arm.com" <robin.murphy@arm.com>,
+        "samuel@sholland.org" <samuel@sholland.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "iommu@lists.linux.dev" <iommu@lists.linux.dev>
+Subject: Re: [PATCH 1/1] iommu/hyper-v: Use helper instead of directly
+ accessing affinity
+Message-ID: <20220726143821.ezgm5quwcdsagpwf@liuwe-devbox-debian-v2>
+References: <1658796820-2261-1-git-send-email-mikelley@microsoft.com>
+ <Yt+Uro8y219/MNFE@8bytes.org>
+ <20220726130909.jnj5etogffm4b2c5@liuwe-devbox-debian-v2>
+ <PH0PR21MB30257E59393883842CDE0992D7949@PH0PR21MB3025.namprd21.prod.outlook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <d0e82407-91fa-cfa4-ff86-262075d23761@amd.com>
+In-Reply-To: <PH0PR21MB30257E59393883842CDE0992D7949@PH0PR21MB3025.namprd21.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 25, 2022 at 07:16:24PM +0530, Nikunj A. Dadhania wrote:
-> On 7/20/2022 8:29 PM, Chao Peng wrote:
-> > On Thu, Jul 14, 2022 at 01:03:46AM +0000, Sean Christopherson wrote:
-> > ...
-> >>
-> >> Option D). track shared regions in an Xarray, update kvm_arch_memory_slot.lpage_info
-> >> on insertion/removal to (dis)allow hugepages as needed.
-> >>
-> >>   + efficient on KVM page fault (no new lookups)
-> >>   + zero memory overhead (assuming KVM has to eat the cost of the Xarray anyways)
-> >>   + straightforward to implement
-> >>   + can (and should) be merged as part of the UPM series
-> >>
-> >> I believe xa_for_each_range() can be used to see if a given 2mb/1gb range is
-> >> completely covered (fully shared) or not covered at all (fully private), but I'm
-> >> not 100% certain that xa_for_each_range() works the way I think it does.
+On Tue, Jul 26, 2022 at 01:48:35PM +0000, Michael Kelley (LINUX) wrote:
+> From: Wei Liu <wei.liu@kernel.org> Sent: Tuesday, July 26, 2022 6:09 AM
 > > 
-> > Hi Sean,
+> > On Tue, Jul 26, 2022 at 09:15:58AM +0200, Joerg Roedel wrote:
+> > > Hi Michael,
+> > >
+> > > On Mon, Jul 25, 2022 at 05:53:40PM -0700, Michael Kelley wrote:
+> > > > Recent changes to solve inconsistencies in handling IRQ masks #ifdef
+> > > > out the affinity field in irq_common_data for non-SMP configurations.
+> > > > The current code in hyperv_irq_remapping_alloc() gets a compiler error
+> > > > in that case.
+> > > >
+> > > > Fix this by using the new irq_data_update_affinity() helper, which
+> > > > handles the non-SMP case correctly.
+> > > >
+> > > > Signed-off-by: Michael Kelley <mikelley@microsoft.com>
+> > >
+> > > Please add a fixes tag.
+> > >
+> > > Where is the change which breaks this currently, in some subsystem tree
+> > > or already upstream?
+> > >
 > > 
-> > Below is the implementation to support 2M as you mentioned as option D.
-> > It's based on UPM v7 xarray code: https://lkml.org/lkml/2022/7/6/259
+> > The offending patch aa081358 is in linux-next.
 > > 
-> > Everything sounds good, the only trick bit is inc/dec disallow_lpage. If
-> > we still treat it as a count, it will be a challenge to make the inc/dec
-> > balanced. So in this patch I stole a bit for the purpose, looks ugly.
+> > > In case it is still in a maintainers tree, this patch should be applied
+> > > there. Here is my
+> > >
+> > > Acked-by: Joerg Roedel <jroedel@suse.de>
 > > 
-> > Any feedback is welcome.
-> > 
-> > Thanks,
-> > Chao
-> > 
-> > -----------------------------------------------------------------------
-> > From: Chao Peng <chao.p.peng@linux.intel.com>
-> > Date: Wed, 20 Jul 2022 11:37:18 +0800
-> > Subject: [PATCH] KVM: Add large page support for private memory
-> > 
-> > Update lpage_info when handling KVM_MEMORY_ENCRYPT_{UN,}REG_REGION.
-> > 
-> > Reserve a bit in disallow_lpage to indicate a large page has
-> > private/share pages mixed.
-> > 
-> > Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
-> > ---
+> > I can take this patch via hyperv-next. This is a good improvement
+> > anyway.
 > 
-> 
-> > +static void update_mem_lpage_info(struct kvm *kvm,
-> > +				  struct kvm_memory_slot *slot,
-> > +				  unsigned int attr,
-> > +				  gfn_t start, gfn_t end)
-> > +{
-> > +	unsigned long lpage_start, lpage_end;
-> > +	unsigned long gfn, pages, mask;
-> > +	int level;
-> > +
-> > +	for (level = PG_LEVEL_2M; level <= KVM_MAX_HUGEPAGE_LEVEL; level++) {
-> > +		pages = KVM_PAGES_PER_HPAGE(level);
-> > +		mask = ~(pages - 1);
-> > +		lpage_start = start & mask;
-> > +		lpage_end = end & mask;
-> > +
-> > +		/*
-> > +		 * We only need to scan the head and tail page, for middle pages
-> > +		 * we know they are not mixed.
-> > +		 */
-> > +		update_mixed(lpage_info_slot(lpage_start, slot, level),
-> > +			     mem_attr_is_mixed(kvm, attr, lpage_start,
-> > +							  lpage_start + pages));
-> > +
-> > +		if (lpage_start == lpage_end)
-> > +			return;
-> > +
-> > +		for (gfn = lpage_start + pages; gfn < lpage_end; gfn += pages) {
-> > +			update_mixed(lpage_info_slot(gfn, slot, level), false);
-> > +		}
-> 
-> Boundary check missing here for the case when gfn reaches lpage_end.
-> 
-> 		if (gfn == lpage_end)
-> 			return;
+> I don't think this patch should go via hyperv-next.  The helper
+> function is introduced in the linux-next patch in the irq/irqchip-next tree,
+> so this patch should go through irq/irqchip-next to avoid creating an
+> interdependency.
 
-In this case, it's actually the tail page that I want to scan for with
-below code.
+This is fine too.
 
-It's also possible I misunderstand something here.
-
-Chao
-> 
-> > +
-> > +		update_mixed(lpage_info_slot(lpage_end, slot, level),
-> > +			     mem_attr_is_mixed(kvm, attr, lpage_end,
-> > +							  lpage_end + pages));
-> > +	}
-> > +}
-> 
-> Regards
-> Nikunj
+Wei.
