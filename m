@@ -2,95 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE749C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 03:24:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9453C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 03:30:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237544AbiGZDYs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 23:24:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35690 "EHLO
+        id S237158AbiGZDax (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 23:30:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237524AbiGZDYn (ORCPT
+        with ESMTP id S231236AbiGZDar (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 23:24:43 -0400
-Received: from zg8tmja5ljk3lje4ms43mwaa.icoremail.net (zg8tmja5ljk3lje4ms43mwaa.icoremail.net [209.97.181.73])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id D08EA2A703;
-        Mon, 25 Jul 2022 20:24:40 -0700 (PDT)
-Received: from ubuntu.localdomain (unknown [218.12.17.60])
-        by mail-app2 (Coremail) with SMTP id by_KCgAnLfVlXt9iqVNnAQ--.12653S2;
-        Tue, 26 Jul 2022 11:24:30 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
-To:     linux-hams@vger.kernel.org
-Cc:     ralf@linux-mips.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH net v2] netrom: fix sleep in atomic context bugs in timer handlers
-Date:   Tue, 26 Jul 2022 11:24:20 +0800
-Message-Id: <20220726032420.5516-1-duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: by_KCgAnLfVlXt9iqVNnAQ--.12653S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7CrW5AFW8AF4kuFWxKw17ZFb_yoW8GFyDpF
-        Z7KF9IyF4qqw1UAay8Jw4ku34Y9wn5JF43G340vw4Fy3s0qrWUJFWjkFWjqF4v9rWxWFWY
-        vFs0v3WUJ3W2yFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkq14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
-        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
-        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-        2Ix0cI8IcVAFwI0_JrI_JrylYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
-        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lc2xSY4AK67AK6r48
-        MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr
-        0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0E
-        wIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JV
-        WxJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAI
-        cVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUb2g4DUUUUU==
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAggDAVZdta05PAABsf
+        Mon, 25 Jul 2022 23:30:47 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E673E1EAD7;
+        Mon, 25 Jul 2022 20:30:39 -0700 (PDT)
+X-UUID: e6da1e1c67f84d369b94ba63bf962b6d-20220726
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.8,REQID:53ff23a7-94be-4595-848e-ff4b1c03f1a5,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:0f94e32,CLOUDID:758b04ee-db04-4499-9fdf-04ef44b9468c,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+        ,QS:nil,BEC:nil,COL:0
+X-UUID: e6da1e1c67f84d369b94ba63bf962b6d-20220726
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
+        (envelope-from <rex-bc.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1573937601; Tue, 26 Jul 2022 11:30:31 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
+ Tue, 26 Jul 2022 11:30:30 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n1.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
+ Transport; Tue, 26 Jul 2022 11:30:30 +0800
+Message-ID: <ae6da1f0c9a27f97b4e9dd76071d03f21dcfcd3b.camel@mediatek.com>
+Subject: Re: [PATCH v14 05/10] drm/mediatek: Add MT8195 Embedded DisplayPort
+ driver
+From:   Rex-BC Chen <rex-bc.chen@mediatek.com>
+To:     CK Hu <ck.hu@mediatek.com>,
+        "chunkuang.hu@kernel.org" <chunkuang.hu@kernel.org>,
+        "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
+        "daniel@ffwll.ch" <daniel@ffwll.ch>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        "mripard@kernel.org" <mripard@kernel.org>,
+        "tzimmermann@suse.de" <tzimmermann@suse.de>,
+        "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
+        "deller@gmx.de" <deller@gmx.de>,
+        "airlied@linux.ie" <airlied@linux.ie>
+CC:     "msp@baylibre.com" <msp@baylibre.com>,
+        "granquet@baylibre.com" <granquet@baylibre.com>,
+        Jitao Shi =?UTF-8?Q?=28=E7=9F=B3=E8=AE=B0=E6=B6=9B=29?= 
+        <jitao.shi@mediatek.com>,
+        "wenst@chromium.org" <wenst@chromium.org>,
+        "angelogioacchino.delregno@collabora.com" 
+        <angelogioacchino.delregno@collabora.com>,
+        LiangXu Xu =?UTF-8?Q?=28=E5=BE=90=E4=BA=AE=29?= 
+        <LiangXu.Xu@mediatek.com>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>,
+        Project_Global_Chrome_Upstream_Group 
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Date:   Tue, 26 Jul 2022 11:30:28 +0800
+In-Reply-To: <6232f0fc15bc1057aab68523e5eb63e10b3a2802.camel@mediatek.com>
+References: <20220712111223.13080-1-rex-bc.chen@mediatek.com>
+         <20220712111223.13080-6-rex-bc.chen@mediatek.com>
+         <6232f0fc15bc1057aab68523e5eb63e10b3a2802.camel@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There are sleep in atomic context bugs in timer handlers of netrom
-such as nr_t1timer_expiry(), nr_t2timer_expiry(), nr_heartbeat_expiry(),
-nr_idletimer_expiry() and so on.
+On Mon, 2022-07-25 at 17:23 +0800, CK Hu wrote:
+> Hi, Bo-Chen:
+> 
+> On Tue, 2022-07-12 at 19:12 +0800, Bo-Chen Chen wrote:
+> > From: Markus Schneider-Pargmann <msp@baylibre.com>
+> > 
+> > This patch adds a embedded displayport driver for the MediaTek
+> > mt8195
+> > SoC.
+> > 
+> > It supports the MT8195, the embedded DisplayPort units. It offers
+> > DisplayPort 1.4 with up to 4 lanes.
+> > 
+> > The driver creates a child device for the phy. The child device
+> > will
+> > never exist without the parent being active. As they are sharing a
+> > register range, the parent passes a regmap pointer to the child so
+> > that
+> > both can work with the same register range. The phy driver sets
+> > device
+> > data that is read by the parent to get the phy device that can be
+> > used
+> > to control the phy properties.
+> > 
+> > This driver is based on an initial version by
+> > Jitao shi <jitao.shi@mediatek.com>
+> > 
+> > Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+> > Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+> > Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+> > ---
+> 
+> [snip]
+> 
+> > +
+> > +/*
+> > + * We need to handle HPD signal in eDP even though eDP is a always
+> > connected
+> > + * device. Besides connected status, there is another feature for
+> > HPD signal -
+> > + * HPD pulse: it presents an IRQ from sink devices to source
+> > devices
+> > (Refer to
+> > + * 5.1.4 of DP1.4 spec).
+> > + */
+> > +static irqreturn_t mtk_dp_hpd_isr_handler(struct mtk_dp *mtk_dp)
+> > +{
+> > +	bool hpd_change = false;
+> > +	u32 irq_status = mtk_dp_swirq_get_clear(mtk_dp) |
+> > +			 mtk_dp_hwirq_get_clear(mtk_dp);
+> > +	struct mtk_dp_train_info *train_info = &mtk_dp->train_info;
+> > +
+> > +	if (!irq_status)
+> > +		return IRQ_HANDLED;
+> > +
+> > +	if (irq_status & MTK_DP_HPD_INTERRUPT)
+> > +		train_info->irq_sta.hpd_inerrupt = true;
+> > +	if (irq_status & MTK_DP_HPD_CONNECT ||
+> > +	    irq_status & MTK_DP_HPD_DISCONNECT)
+> > +		hpd_change = true;
+> > +
+> > +	if (!(hpd_change))
+> > +		return IRQ_WAKE_THREAD;
+> > +
+> > +	if (mtk_dp_plug_state(mtk_dp))
+> 
+> mtk_dp_plug_state() is called only here, and prevent function call in
+> isr handler, so squash mtk_dp_plug_state() into this function.
+> 
 
-The root cause is kmemdup() with GFP_KERNEL parameter that may sleep
-could be called by different timer handlers which is in interrupt context.
+Hello CK,
 
-One of the call paths that could trigger bug is shown below:
+Thanks for review.
 
-      (interrupt context)
-nr_heartbeat_expiry
-  nr_write_internal
-    nr_transmit_buffer
-      nr_route_frame
-        nr_add_node
-          kmemdup(..,GFP_KERNEL) //may sleep
+I would like to keep this because we will use this function for
+mtk_dp_plug_state_avoid_pulse() in dp patch.
 
-This patch changes gfp_t parameter of kmemdup in nr_add_node()
-from GFP_KERNEL to GFP_ATOMIC in order to prevent sleep in atomic
-context bugs.
+> > +		train_info->cable_plugged_in = true;
+> > +	else
+> > +		train_info->cable_plugged_in = false;
+> > +
+> > +	train_info->cable_state_change = true;
+> > +
+> > +	return IRQ_WAKE_THREAD;
+> > +}
+> > +
+> > +static irqreturn_t mtk_dp_hpd_event(int hpd, void *dev)
+> > +{
+> > +	struct mtk_dp *mtk_dp = dev;
+> > +	u32 irq_status;
+> > +
+> > +	irq_status = mtk_dp_read(mtk_dp, MTK_DP_TOP_IRQ_STATUS);
+> > +
+> > +	if (!irq_status)
+> > +		return IRQ_HANDLED;
+> > +
+> > +	if (irq_status & RGS_IRQ_STATUS_TRANSMITTER)
+> > +		return mtk_dp_hpd_isr_handler(mtk_dp);
+> 
+> Prevent function call in isr handler, squash mtk_dp_hpd_isr_handler()
+> into this function.
+> 
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
----
-Changes in v2:
-  - Correct the "Fixes" tag.
+Is this really necessary? We also modify this function in following
+patches. I think it's not a good idea to expand this.
 
- net/netrom/nr_route.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+BRs,
+Bo-Chen
 
-diff --git a/net/netrom/nr_route.c b/net/netrom/nr_route.c
-index baea3cbd76c..1ddcf13de6a 100644
---- a/net/netrom/nr_route.c
-+++ b/net/netrom/nr_route.c
-@@ -163,7 +163,7 @@ static int __must_check nr_add_node(ax25_address *nr, const char *mnemonic,
- 		if (ax25_digi != NULL && ax25_digi->ndigi > 0) {
- 			nr_neigh->digipeat = kmemdup(ax25_digi,
- 						     sizeof(*ax25_digi),
--						     GFP_KERNEL);
-+						     GFP_ATOMIC);
- 			if (nr_neigh->digipeat == NULL) {
- 				kfree(nr_neigh);
- 				if (nr_node)
--- 
-2.17.1
+> Regards,
+> CK
+> 
+> > +
+> > +	return IRQ_HANDLED;
+> > +}
+> > +
+> 
+> 
 
