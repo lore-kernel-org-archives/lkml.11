@@ -2,116 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B15EFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 09:41:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFA35C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 09:42:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238104AbiGZJlU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 05:41:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43140 "EHLO
+        id S238141AbiGZJl7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 05:41:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232075AbiGZJlC (ORCPT
+        with ESMTP id S231812AbiGZJl6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 05:41:02 -0400
-Received: from loongson.cn (mail.loongson.cn [114.242.206.163])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B4C152B1A3
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 02:41:00 -0700 (PDT)
-Received: from localhost.localdomain (unknown [10.2.5.185])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Dxv9Ghtt9i7Wk5AA--.17387S3;
-        Tue, 26 Jul 2022 17:40:49 +0800 (CST)
-From:   Bibo Mao <maobibo@loongson.cn>
-To:     Huacai Chen <chenhuacai@kernel.org>
-Cc:     WANG Xuerui <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        loongarch@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 1/2] LoongArch: Remove clock setting during cpu hotplug stage
-Date:   Tue, 26 Jul 2022 17:40:48 +0800
-Message-Id: <20220726094049.7200-2-maobibo@loongson.cn>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220726094049.7200-1-maobibo@loongson.cn>
-References: <20220726094049.7200-1-maobibo@loongson.cn>
+        Tue, 26 Jul 2022 05:41:58 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 645DC2B1BA;
+        Tue, 26 Jul 2022 02:41:56 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LsX4J0bfgz4x1Y;
+        Tue, 26 Jul 2022 19:41:52 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1658828512;
+        bh=ygRCt1IcR9dgCBW8HqFsp65TP2lPDKejFwY2ek3UuD8=;
+        h=Date:From:To:Cc:Subject:From;
+        b=gB2ugTuBA+zAYZ/5PIX98Y8JipGaubNUPvB1U7cXQzjHTdKgpGhoOQse7k900Io7A
+         kOY087Xw4pE/0hBm5RAqYLXM/71tIjubZbHXPwVT70uuJWchG7FeWmrB3viyKY+lBm
+         ruaa+vNyFd33FzZpAvw0GMd2QL/S1/8qm7SnYhlxzrQGr66xS4RLUgLKVHK3G3+tzJ
+         pfOYB4iXWShQBPVDhif0StgJ7s2Wa/moVDKZACkVSc6qwu6TVrPKeceBkQlCDhntnH
+         FsXCSQDIPGik+h8ICkNBqiCM+sYjIy6RdWc26OxryLksgSiVw+UQPJ0eGPnHL1lkEQ
+         BxtIvWz4BeqXw==
+Date:   Tue, 26 Jul 2022 19:41:51 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Yury Norov <yury.norov@gmail.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Sander Vanheule <sander@svanheule.net>
+Subject: linux-next: manual merge of the mm-nonmm-stable tree with the
+ bitmap tree
+Message-ID: <20220726194151.71e511e7@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: AQAAf9Dxv9Ghtt9i7Wk5AA--.17387S3
-X-Coremail-Antispam: 1UD129KBjvJXoW7Kry5Jry8uryDGw1rurWDtwb_yoW8tFy5pr
-        nxu3Z7Kr4kKwn7uw1ktryDCr15Cwn7Gw17ZFy7G34rAa4qyr1UuFyktFZ7XFWft3sFva1F
-        gr1kurWjka4DWrJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnUUvcSsGvfC2KfnxnUUI43ZEXa7xR_UUUUUUUUU==
-X-CM-SenderInfo: xpdruxter6z05rqj20fqof0/
+Content-Type: multipart/signed; boundary="Sig_/PiSrXluymVVHYF30g8.HKEm";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On physical machine we can save power by disabling clock of hot
-removed cpu. However as different platforms require different
-methods to configure clocks, the code is platform-specific, and
-probably belongs to firmware/pmu or cpu regulator, rather than
-generic arch/loongarch code.
+--Sig_/PiSrXluymVVHYF30g8.HKEm
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Also there is no such register on QEMU virt machine since the
-clock/frequency regulation is not emulated.
+Hi all,
 
-This patch removes the hard-coded clock register accessing in
-generic loongarch cpu hotplug flow.
+Today's linux-next merge of the mm-nonmm-stable tree got a conflict in:
 
-Signed-off-by: Bibo Mao <maobibo@loongson.cn>
-Reviewed-by:   WANG Xuerui <git@xen0n.name>
----
- arch/loongarch/kernel/smp.c | 29 -----------------------------
- include/linux/cpuhotplug.h  |  1 -
- 2 files changed, 30 deletions(-)
+  lib/Makefile
 
-diff --git a/arch/loongarch/kernel/smp.c b/arch/loongarch/kernel/smp.c
-index 73cec62504fb..98b3e059d344 100644
---- a/arch/loongarch/kernel/smp.c
-+++ b/arch/loongarch/kernel/smp.c
-@@ -359,35 +359,6 @@ void play_dead(void)
- 	play_dead_uncached(state_addr);
- }
- 
--static int loongson3_enable_clock(unsigned int cpu)
--{
--	uint64_t core_id = cpu_data[cpu].core;
--	uint64_t package_id = cpu_data[cpu].package;
--
--	LOONGSON_FREQCTRL(package_id) |= 1 << (core_id * 4 + 3);
--
--	return 0;
--}
--
--static int loongson3_disable_clock(unsigned int cpu)
--{
--	uint64_t core_id = cpu_data[cpu].core;
--	uint64_t package_id = cpu_data[cpu].package;
--
--	LOONGSON_FREQCTRL(package_id) &= ~(1 << (core_id * 4 + 3));
--
--	return 0;
--}
--
--static int register_loongson3_notifier(void)
--{
--	return cpuhp_setup_state_nocalls(CPUHP_LOONGARCH_SOC_PREPARE,
--					 "loongarch/loongson:prepare",
--					 loongson3_enable_clock,
--					 loongson3_disable_clock);
--}
--early_initcall(register_loongson3_notifier);
--
- #endif
- 
- /*
-diff --git a/include/linux/cpuhotplug.h b/include/linux/cpuhotplug.h
-index 19f0dbfdd7fe..b66c5f389159 100644
---- a/include/linux/cpuhotplug.h
-+++ b/include/linux/cpuhotplug.h
-@@ -130,7 +130,6 @@ enum cpuhp_state {
- 	CPUHP_ZCOMP_PREPARE,
- 	CPUHP_TIMERS_PREPARE,
- 	CPUHP_MIPS_SOC_PREPARE,
--	CPUHP_LOONGARCH_SOC_PREPARE,
- 	CPUHP_BP_PREPARE_DYN,
- 	CPUHP_BP_PREPARE_DYN_END		= CPUHP_BP_PREPARE_DYN + 20,
- 	CPUHP_BRINGUP_CPU,
--- 
-2.31.1
+between commit:
 
+  e0281efe11c9 ("lib/nodemask: inline next_node_in() and node_random()")
+
+from the bitmap tree and commit:
+
+  b81dce77cedc ("cpumask: Fix invalid uniprocessor mask assumption")
+
+from the mm-nonmm-stable tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc lib/Makefile
+index 90d02a0986e9,de3e47453fe8..000000000000
+--- a/lib/Makefile
++++ b/lib/Makefile
+@@@ -33,11 -33,10 +33,10 @@@ lib-y :=3D ctype.o string.o vsprintf.o cm
+  	 flex_proportions.o ratelimit.o show_mem.o \
+  	 is_single_threaded.o plist.o decompress.o kobject_uevent.o \
+  	 earlycpio.o seq_buf.o siphash.o dec_and_lock.o \
+ -	 nmi_backtrace.o nodemask.o win_minmax.o memcat_p.o \
+ +	 nmi_backtrace.o win_minmax.o memcat_p.o \
+- 	 buildid.o
++ 	 buildid.o cpumask.o
+ =20
+  lib-$(CONFIG_PRINTK) +=3D dump_stack.o
+- lib-$(CONFIG_SMP) +=3D cpumask.o
+ =20
+  lib-y	+=3D kobject.o klist.o
+  obj-y	+=3D lockref.o
+
+--Sig_/PiSrXluymVVHYF30g8.HKEm
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLftt8ACgkQAVBC80lX
+0GyiLgf/UTGQVDjVG5pL3te+G7bkYx0qM3da+lxhFURfY4N9Fdsmu5adCLfwsM/K
+7Jj1TqDJx8KFkW/BUBaHyar7jBrHvhtG/lKVNNUx/ANkhzYhVCxLg5Z7dr3U6UUP
++xrbkIeVFRrzp9Ufn/oQBjUXwG1CJ2YKfZKqcchtQkH7sjQBtd8Dcq08g+/VTGCI
+QLJJ1ebMseEJV7eJPZkB2hKGk/DfvQH0spRfI0doVK9uDp0ADtOeegHn4FkoiLJD
+NkI0MBMAqBu3DlPaqRPpf7nE8aJLcYUaomBViKVxVHyItLidjQOqHG+nUCZuZLmH
+1jpNgNgRs2JhbHZUN6Mvtb5lhL1rHw==
+=BnVo
+-----END PGP SIGNATURE-----
+
+--Sig_/PiSrXluymVVHYF30g8.HKEm--
