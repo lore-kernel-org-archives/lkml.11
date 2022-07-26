@@ -2,113 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 675C6C04A68
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 17:28:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95BFBC00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 17:28:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239159AbiGZR2H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 13:28:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54492 "EHLO
+        id S239277AbiGZR2l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 13:28:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239239AbiGZR2F (ORCPT
+        with ESMTP id S230030AbiGZR2j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 13:28:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 326022B61F;
-        Tue, 26 Jul 2022 10:28:04 -0700 (PDT)
+        Tue, 26 Jul 2022 13:28:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43C592B270
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 10:28:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D5029B818CD;
-        Tue, 26 Jul 2022 17:28:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68AA4C433C1;
-        Tue, 26 Jul 2022 17:28:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658856481;
-        bh=OeeqVHYRFCRbXXvIvZzsym2JbtgrWaLKkYhMqGRpjJE=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D4FCD60EFE
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 17:28:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD6B4C433D6;
+        Tue, 26 Jul 2022 17:28:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658856517;
+        bh=DsScutZIz1MNvNNB0Ko1mzB8/LACNL/bmE2DKVLrRSg=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=k9eddGvQJFqGOuIQ2REO2OYJRFgIOT9X+E58uAQEPkzOPfXfWJtpazo6h1dt9AxAC
-         THF+oCj0DmzdZyS6Pq4N/r1h+fb/rmiVmzxWGzAHoRiohbfoMZh3nfi88fvktNwcHW
-         UnZrnLpUSNFY1lzZVe+LITZnDwlWH4mOkxc5EzI+Q8g6mZnrT9IjedMKqGRumt5pnW
-         chJIuHnhAcIr1uT60UPDidE9BTur9y9N8ejqQmn2o25IGXoxZyzeafPv+g7ZowXM+t
-         AhK1KyACXAQhnciLvjbfeHUnroqXQ6yQHYwj2xjmcgsUl2eLxV/uvCZ/SwMD7+bm4y
-         MWDHPzzDpwGqA==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 2FF7140374; Tue, 26 Jul 2022 14:27:58 -0300 (-03)
-Date:   Tue, 26 Jul 2022 14:27:58 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Yang Jihong <yangjihong1@huawei.com>
-Cc:     peterz@infradead.org, mingo@redhat.com, mark.rutland@arm.com,
-        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
-        namhyung@kernel.org, pc@us.ibm.com, linux-kernel@vger.kernel.org,
-        linux-perf-users@vger.kernel.org
-Subject: Re: [RFC v3 01/17] perf kwork: New tool
-Message-ID: <YuAkHkxgYyvdHKOO@kernel.org>
-References: <20220709015033.38326-1-yangjihong1@huawei.com>
- <20220709015033.38326-2-yangjihong1@huawei.com>
+        b=IdVXFsR2CIQsANBRRHFcX/QANHnj71RMk7Y/7SZlrGDxDPJ+pOFL17/9NDp5idEZs
+         lgihZVog4u7ar39ouw/Tz8eYl5gOGtBZwVsV0y2EbmGdWR16rqQwVlYps00X8jO0fX
+         Jdyg0hEiJjTzE0jcx3VSJjV4W47Ojcd/qnOpM+TU=
+Date:   Tue, 26 Jul 2022 19:28:34 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Richard Fitzgerald <rf@opensource.cirrus.com>
+Cc:     rafael@kernel.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, patches@opensource.cirrus.com
+Subject: Re: [PATCH] component: try_module_get() to prevent unloading while
+ in use
+Message-ID: <YuAkQtik4ud6xw8L@kroah.com>
+References: <20220725160859.1274472-1-rf@opensource.cirrus.com>
+ <Yt7cT66p0Bn+aXn5@kroah.com>
+ <4165774b-2b96-83d1-67eb-f7c49dd8041e@opensource.cirrus.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220709015033.38326-2-yangjihong1@huawei.com>
-X-Url:  http://acmel.wordpress.com
+In-Reply-To: <4165774b-2b96-83d1-67eb-f7c49dd8041e@opensource.cirrus.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Sat, Jul 09, 2022 at 09:50:17AM +0800, Yang Jihong escreveu:
-> The perf-kwork tool is used to trace time properties of kernel work
-> (such as irq, softirq, and workqueue), including runtime, latency,
-> and timehist, using the infrastructure in the perf tools to allow
-> tracing extra targets.
+On Tue, Jul 26, 2022 at 11:32:28AM +0100, Richard Fitzgerald wrote:
+> On 25/07/2022 19:09, Greg KH wrote:
+> > On Mon, Jul 25, 2022 at 05:08:59PM +0100, Richard Fitzgerald wrote:
+> > > Call try_module_get() on a component before attempting to call its
+> > > bind() function, to ensure that a loadable module cannot be
+> > > unloaded while we are executing its bind().
+> > 
+> > How can bind be called while the module is unloaded?
+> > 
 > 
-> This is the first commit to reuse perf_record framework code to
-> implement a simple record function, kwork is not supported currently.
+> I didn't say it could. What I said is "unloaded while we are executing
+> its bind()". Maybe that's already guaranteed to be safe somehow. It's
+> actually the problem below that I was trying to fix but placing the
+> try_module_get() before the bind() rather than after bind() seemed a
+> trivial extra safety.
 
-So, since I have to fix some issues I'm adding small stylistic changes,
-starting with this:
+It should be safe, bind() can't race with module remove as the driver
+core locks will handle this.
 
+> > > If the bind is successful the module_put() is called only after it
+> > > has been unbound. This ensures that the module cannot be unloaded
+> > > while it is in use as an aggregate device.
+> > 
+> > That's almost never the correct thing to do, what problem is this
+> > solving?
+> > 
+> 
+> What I see is that when a loadable module has been made part of an
+> aggregate it is still possible to rmmod'd it.
+> 
+> An alternative workaround would be for the parent to softdep to every
+> driver that _might_ provide the aggregated components. Softdeps aren't
+> unusual (we use it in some drivers that are directly related but don't
+> directly link into each other). But to me this feels like a hack when
+> used with the component framework - isn't the idea that the parent
+> doesn't know (or doesn't need to know) which drivers will be aggregated?
+> Wouldn't it be better that when a component driver is bound into an
+> aggregate its module is automatically marked in-use?
+> 
+> If there's a better way to mark the module in-use while is it bound
+> into an aggregate, let me know and I'll look at implementing it.
 
-- multiline if/for blocks need {}
+No module references should be incremented if a device is bound to a
+driver, that's the old (1990's) way of thinking.  If a module wants to
+be unloaded, let it, and clean up everything that it was
+controlling/talking to before the module remove is finished.
 
-- remove needless spaces between variable declaration + initialization.
+That's the way all busses should be working, you don't increment a
+module count when a driver binds to a device, otherwise how would you
+unload a module that was being used at all?
 
-- Arnaldo
+So just remove the components controlled by the module properly when it
+is removed and all should be good.
 
-diff --git a/tools/perf/builtin-kwork.c b/tools/perf/builtin-kwork.c
-index f3552c56ede3c501..bfa5c53f1273c631 100644
---- a/tools/perf/builtin-kwork.c
-+++ b/tools/perf/builtin-kwork.c
-@@ -49,9 +49,10 @@ static void setup_event_list(struct perf_kwork *kwork,
- 				break;
- 			}
- 		}
--		if (i == KWORK_CLASS_MAX)
-+		if (i == KWORK_CLASS_MAX) {
- 			usage_with_options_msg(usage_msg, options,
- 					       "Unknown --event key: `%s'", tok);
-+		}
- 	}
- 	free(str);
- 
-@@ -59,10 +60,12 @@ static void setup_event_list(struct perf_kwork *kwork,
- 	/*
- 	 * config all kwork events if not specified
- 	 */
--	if (list_empty(&kwork->class_list))
--		for (i = 0; i < KWORK_CLASS_MAX; i++)
-+	if (list_empty(&kwork->class_list)) {
-+		for (i = 0; i < KWORK_CLASS_MAX; i++) {
- 			list_add_tail(&kwork_class_supported_list[i]->list,
- 				      &kwork->class_list);
-+		}
-+	}
- 
- 	pr_debug("Config event list:");
- 	list_for_each_entry(class, &kwork->class_list, list)
-@@ -125,7 +128,6 @@ int cmd_kwork(int argc, const char **argv)
- 		.force               = false,
- 		.event_list_str      = NULL,
- 	};
--
- 	const struct option kwork_options[] = {
- 	OPT_INCR('v', "verbose", &verbose,
- 		 "be more verbose (show symbol address, etc)"),
+Do you have example code in the kernel tree today that does not properly
+do this?  Why not just fix that instead?
+
+thanks,
+
+greg k-h
