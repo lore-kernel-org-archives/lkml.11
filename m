@@ -2,156 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35724C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 09:57:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A65EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 09:58:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237991AbiGZJ5w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 05:57:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58054 "EHLO
+        id S238706AbiGZJ6F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 05:58:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238652AbiGZJ5p (ORCPT
+        with ESMTP id S238332AbiGZJ54 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 05:57:45 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8031231DE5
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 02:57:15 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id b26so19432370wrc.2
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 02:57:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=iUicZLyBaZmjv2lqx7fW4HMBGqk7G7eOOVk/ONJ/4PI=;
-        b=a9jshOAIwiw5ztp0+n80iX49X5uP9g1fIPLWAKA0Oebli99rLSK1JSwbKX/TWSIEKD
-         O8RAu6x1EuYGsc6oXUYHrmfMJXvk5iAAbsgDFp3wtW13E5HsTmbU8dXiDaDJtMrBEKfo
-         BtLocFdB4gelyGOYkHzTosErUmhiDP8/zjswgy3RH2fFxA6Xdh3CA/yI5iTiW9jbWJ9K
-         oN+oMjKZdsMTijOKOP2BcUYtUHprOqVqAeK+KFkaDem1o5Ff7dUDZtyl1X5TpjYEAD8P
-         dBkE0hdxwnSaGXsfATXn6MSzu2tBqE1Ie2s0Wxg+NyX5ban32/phra4XzX8bj2k4iDT4
-         H/tA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=iUicZLyBaZmjv2lqx7fW4HMBGqk7G7eOOVk/ONJ/4PI=;
-        b=Rhusy85p9qs8oU/92LAZkl9kfttEVUYWCMGUE5CXDh7mCwRHNhUXFu1jxhwm7eAdm0
-         PVmBPBVMBNM5s7FnB24hybVqamDYqHcXPAK28AnFb3f/oMdMLFRYV0EbHX+PLu1F7Ns4
-         qBdYF5gL4z/otxr02JgCAvR4Kt/nHgC0ik12WqHxAW04RGcQdHjPjNuLxXnCNj4yWKRk
-         zXHfiRIo6IGNl0QDzob6soZiDYr0p96DMFpP8Qbql+/6IzImhpWK4c2w3AxXcXxJLY6U
-         /irhiMX/Epedi0XVnMdOOM6d/O4o4M4IjeU4BRFEgtSgqVLdrK5aEcdjQG9/IJJyZ1Of
-         8Feg==
-X-Gm-Message-State: AJIora/W7c7vdutL5Wgv7+0tZep83bnOKE9ekUKImc4PVeXtePVxeKSn
-        OR0ClqNzktEuw1NzinRyXNAkQg==
-X-Google-Smtp-Source: AGRyM1vaVzTyQ5b+nn+RlJ42faxYO14TpuNlzllTL+nY6z4bb/G0nOBbFTz5DJTxQxp7SwpuN92A3g==
-X-Received: by 2002:adf:e84b:0:b0:21e:61cd:647e with SMTP id d11-20020adfe84b000000b0021e61cd647emr10370152wrn.715.1658829433726;
-        Tue, 26 Jul 2022 02:57:13 -0700 (PDT)
-Received: from localhost.localdomain (210.145.15.109.rev.sfr.net. [109.15.145.210])
-        by smtp.googlemail.com with ESMTPSA id t3-20020a1c4603000000b003a2d87aea57sm21170873wma.10.2022.07.26.02.57.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Jul 2022 02:57:12 -0700 (PDT)
-From:   Amjad Ouled-Ameur <aouledameur@baylibre.com>
-To:     fparent@baylibre.com
-Cc:     broonie@kernel.org, chaotian.jing@mediatek.com,
-        chunfeng.yun@mediatek.com, devicetree@vger.kernel.org,
-        dmaengine@vger.kernel.org, jic23@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org,
-        linux-arm-kernel@lists.infradead.org, linux-i2c@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-mmc@vger.kernel.org,
-        linux-phy@lists.infradead.org, linux-serial@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-watchdog@vger.kernel.org, linux@roeck-us.net,
-        matthias.bgg@gmail.com, qii.wang@mediatek.com, robh+dt@kernel.org,
-        srinivas.kandagatla@linaro.org, ulf.hansson@linaro.org,
-        vkoul@kernel.org, wim@linux-watchdog.org
-Subject: Re: [PATCH 16/17] arm64: dts: mediatek: add mt8365 device-tree
-Date:   Tue, 26 Jul 2022 11:57:11 +0200
-Message-Id: <20220726095711.708310-1-aouledameur@baylibre.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220531135026.238475-17-fparent@baylibre.com>
-References: <20220531135026.238475-17-fparent@baylibre.com>
+        Tue, 26 Jul 2022 05:57:56 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6BEC32452;
+        Tue, 26 Jul 2022 02:57:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1658829450; x=1690365450;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=i8ZzEPCPV1l7drUm54+sPDrEsQsrRaUXcWuEJ9BPPeU=;
+  b=bCPSdz8e20vtMJuufwEG9jNNQB8GPPPgHqb+GbAZwqs0t3wc3IpM/a/d
+   pF0cs4duU4GBOrI5n7mVW8R1ctbqsP+n3kVwjmseQABqo/agcI0gLSBP9
+   WkLRGceG7JB5F158APczj+tV9LdtFeQg5bR3jPsA1oolp5NHqhLvN3Yn5
+   ck3Yxo+cC4aEfxwOJ7QvGMG7ZrSHwSQ9O0lMxHzOWZvXJIQ1nw3Akmuyk
+   W05g7KwGzGye7D+BzW4qLkjR+iXklXXJ3hlDflfch/jTeNEzmjWAf8wnP
+   5brDBPeeZzXwGhN44zP0sAwsp3BoyxYzM5MFbm9zhdp+kxL+nvDnLHKe0
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
+   d="scan'208";a="173652709"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Jul 2022 02:57:29 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 26 Jul 2022 02:57:28 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2375.28 via Frontend Transport; Tue, 26 Jul 2022 02:57:25 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <balbi@kernel.org>, <gregkh@linuxfoundation.org>,
+        <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
+        <cristian.birsan@microchip.com>
+CC:     <linux-usb@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [PATCH 1/2] usb: gadget: at91_udc: stop using legacy pm ops
+Date:   Tue, 26 Jul 2022 12:59:47 +0300
+Message-ID: <20220726095948.1809038-1-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Fabien,
+Stop using legacy PM ops and switch using dev_pm_ops.
 
-Could you please add CPUIDLE support:
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+---
+ drivers/usb/gadget/udc/at91_udc.c | 22 ++++++++++------------
+ 1 file changed, 10 insertions(+), 12 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8365.dtsi b/arch/arm64/boot/dts/mediatek/mt8365.dtsi
-index 323c814c10cc..1df4075db58f 100644
---- a/arch/arm64/boot/dts/mediatek/mt8365.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8365.dtsi
-@@ -59,6 +59,7 @@ cpu0: cpu@0 {
- 			clocks = <&mcucfg CLK_MCU_BUS_SEL>,
- 				 <&apmixedsys CLK_APMIXED_MAINPLL>;
- 			clock-names = "cpu", "intermediate";
-+			cpu-idle-states = <&MCDI_CPU &MCDI_CLUSTER &DPIDLE>;
- 			operating-points-v2 = <&cluster0_opp>;
- 			#cooling-cells = <2>;
- 			enable-method = "psci";
-@@ -72,6 +73,7 @@ cpu1: cpu@1 {
- 			clocks = <&mcucfg CLK_MCU_BUS_SEL>,
- 				 <&apmixedsys CLK_APMIXED_MAINPLL>;
- 			clock-names = "cpu", "intermediate", "armpll";
-+			cpu-idle-states = <&MCDI_CPU &MCDI_CLUSTER &DPIDLE>;
- 			operating-points-v2 = <&cluster0_opp>;
- 			#cooling-cells = <2>;
- 			enable-method = "psci";
-@@ -85,6 +87,7 @@ cpu2: cpu@2 {
- 			clocks = <&mcucfg CLK_MCU_BUS_SEL>,
- 				 <&apmixedsys CLK_APMIXED_MAINPLL>;
- 			clock-names = "cpu", "intermediate", "armpll";
-+			cpu-idle-states = <&MCDI_CPU &MCDI_CLUSTER &DPIDLE>;
- 			operating-points-v2 = <&cluster0_opp>;
- 			#cooling-cells = <2>;
- 			enable-method = "psci";
-@@ -98,10 +101,42 @@ cpu3: cpu@3 {
- 			clocks = <&mcucfg CLK_MCU_BUS_SEL>,
- 				 <&apmixedsys CLK_APMIXED_MAINPLL>;
- 			clock-names = "cpu", "intermediate", "armpll";
-+			cpu-idle-states = <&MCDI_CPU &MCDI_CLUSTER &DPIDLE>;
- 			operating-points-v2 = <&cluster0_opp>;
- 			#cooling-cells = <2>;
- 			enable-method = "psci";
- 		};
-+
-+		idle-states {
-+			entry-method = "psci";
-+
-+			MCDI_CPU: mcdi-cpu {
-+				compatible = "arm,idle-state";
-+				local-timer-stop;
-+				arm,psci-suspend-param = <0x00010001>;
-+				entry-latency-us = <300>;
-+				exit-latency-us = <200>;
-+				min-residency-us = <1000>;
-+			};
-+
-+			MCDI_CLUSTER: mcdi-cluster {
-+				compatible = "arm,idle-state";
-+				local-timer-stop;
-+				arm,psci-suspend-param = <0x01010001>;
-+				entry-latency-us = <350>;
-+				exit-latency-us = <250>;
-+				min-residency-us = <1200>;
-+			};
-+
-+			DPIDLE: dpidle {
-+				compatible = "arm,idle-state";
-+				local-timer-stop;
-+				arm,psci-suspend-param = <0x01010004>;
-+				entry-latency-us = <300>;
-+				exit-latency-us = <800>;
-+				min-residency-us = <3300>;
-+			};
-+		};
- 	};
+diff --git a/drivers/usb/gadget/udc/at91_udc.c b/drivers/usb/gadget/udc/at91_udc.c
+index 728987280373..2f522f77c553 100644
+--- a/drivers/usb/gadget/udc/at91_udc.c
++++ b/drivers/usb/gadget/udc/at91_udc.c
+@@ -27,6 +27,7 @@
+ #include <linux/of.h>
+ #include <linux/gpio/consumer.h>
+ #include <linux/platform_data/atmel.h>
++#include <linux/pm.h>
+ #include <linux/regmap.h>
+ #include <linux/mfd/syscon.h>
+ #include <linux/mfd/syscon/atmel-matrix.h>
+@@ -1948,11 +1949,10 @@ static int at91udc_remove(struct platform_device *pdev)
+ 	return 0;
+ }
  
- 	cluster0_opp: opp-table-0 {
+-#ifdef CONFIG_PM
+-static int at91udc_suspend(struct platform_device *pdev, pm_message_t mesg)
++static int at91udc_suspend(struct device *dev)
+ {
+-	struct at91_udc *udc = platform_get_drvdata(pdev);
+-	int		wake = udc->driver && device_may_wakeup(&pdev->dev);
++	struct at91_udc *udc = dev_get_drvdata(dev);
++	int		wake = udc->driver && device_may_wakeup(dev);
+ 	unsigned long	flags;
+ 
+ 	/* Unless we can act normally to the host (letting it wake us up
+@@ -1976,9 +1976,9 @@ static int at91udc_suspend(struct platform_device *pdev, pm_message_t mesg)
+ 	return 0;
+ }
+ 
+-static int at91udc_resume(struct platform_device *pdev)
++static int at91udc_resume(struct device *dev)
+ {
+-	struct at91_udc *udc = platform_get_drvdata(pdev);
++	struct at91_udc *udc = dev_get_drvdata(dev);
+ 	unsigned long	flags;
+ 
+ 	if (udc->board.vbus_pin && !udc->board.vbus_polled &&
+@@ -1995,19 +1995,17 @@ static int at91udc_resume(struct platform_device *pdev)
+ 	}
+ 	return 0;
+ }
+-#else
+-#define	at91udc_suspend	NULL
+-#define	at91udc_resume	NULL
+-#endif
++
++static DEFINE_SIMPLE_DEV_PM_OPS(at91_udc_pm_ops, at91udc_suspend,
++				at91udc_resume);
+ 
+ static struct platform_driver at91_udc_driver = {
+ 	.remove		= at91udc_remove,
+ 	.shutdown	= at91udc_shutdown,
+-	.suspend	= at91udc_suspend,
+-	.resume		= at91udc_resume,
+ 	.driver		= {
+ 		.name	= driver_name,
+ 		.of_match_table	= at91_udc_dt_ids,
++		.pm = pm_ptr(&at91_udc_pm_ops),
+ 	},
+ };
+ 
+-- 
+2.34.1
 
-I have tested it on i350 evk and each idle state is used properly.
-
-Regards,
-Amjad
