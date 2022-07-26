@@ -2,115 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2F3CC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 16:16:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 585D1C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 16:18:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238972AbiGZQQs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 12:16:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33026 "EHLO
+        id S239215AbiGZQSX convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 12:18:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229768AbiGZQQp (ORCPT
+        with ESMTP id S229815AbiGZQSV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 12:16:45 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4059D24095
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 09:16:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658852203; x=1690388203;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=5hyLSrL4KSUdoWk6zNVtWxQQtR09URwlBAviONiENXs=;
-  b=V/R8d6QLAqQiCvqhhL9N5umv4/8gEa8QoTOqwV6iGsmmjJmKVnQzuaSY
-   8e5ro+82YTuH/mak1idEoHqvNooPrE6wQDI87QSq5UsyHVhATA20oTQSw
-   zefujjYCdj+JzhkkS7rG5LpfvA80J5VXH50+yTLlDBcOd79FJI+iclzwI
-   RHz17/kjP7aRvhrR0XquTSkvU69fTmaTJWfd0HJx15FF4g0hfmG/Nbp+3
-   zaZhZU147t44SnTYTkuXB34jI1uoFc3q9BDNzB6r0zcJJfcEjJD+J9zir
-   vOjlpo64IaYjqSuBkUNirhBmg8P6hFrlDvnMFJJlpyM9V5fTMa3vbsouv
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10420"; a="274865885"
-X-IronPort-AV: E=Sophos;i="5.93,194,1654585200"; 
-   d="scan'208";a="274865885"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2022 09:16:42 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,194,1654585200"; 
-   d="scan'208";a="658755433"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 26 Jul 2022 09:16:41 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oGNEe-0007CU-1J;
-        Tue, 26 Jul 2022 16:16:40 +0000
-Date:   Wed, 27 Jul 2022 00:16:28 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Keith Busch <kbusch@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [kbusch:dma-prereg-v5 5/6] include/linux/uaccess.h:124: undefined
- reference to `io_dma_unmap'
-Message-ID: <202207270041.8fQ9kcrB-lkp@intel.com>
+        Tue, 26 Jul 2022 12:18:21 -0400
+Received: from relay.hostedemail.com (smtprelay0014.hostedemail.com [216.40.44.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A012255A5
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 09:18:20 -0700 (PDT)
+Received: from omf09.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay01.hostedemail.com (Postfix) with ESMTP id B17811C63C5;
+        Tue, 26 Jul 2022 16:18:18 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf09.hostedemail.com (Postfix) with ESMTPA id 3D0AA20024;
+        Tue, 26 Jul 2022 16:18:16 +0000 (UTC)
+Message-ID: <1c536f8e9666725ce9f3eb97acc34d08f38d2095.camel@perches.com>
+Subject: Re: [PATCH] VMCI: Update maintainers for VMCI
+From:   Joe Perches <joe@perches.com>
+To:     Vishnu Dasa <vdasa@vmware.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        "rajeshjalisatgi@gmail.com" <rajeshjalisatgi@gmail.com>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        Pv-drivers <Pv-drivers@vmware.com>,
+        Bryan Tan <bryantan@vmware.com>
+Date:   Tue, 26 Jul 2022 09:18:15 -0700
+In-Reply-To: <47D07B41-C327-4908-A383-683FC6C67040@vmware.com>
+References: <20220725163246.38486-1-vdasa@vmware.com>
+         <Yt7bfyANrfdPxdS8@kroah.com>
+         <FD326388-D2BB-42B4-B217-89DB9C134866@vmware.com>
+         <YuAD90UfLnf1Ojso@kroah.com>
+         <47D07B41-C327-4908-A383-683FC6C67040@vmware.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.44.1-0ubuntu1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+X-Stat-Signature: 4ogh8f9z7ycintqz6pitj7rkzrkyccbw
+X-Rspamd-Server: rspamout01
+X-Rspamd-Queue-Id: 3D0AA20024
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX19NAXR081PqcA4zDQC4b0ZscieEdEbqVDI=
+X-HE-Tag: 1658852296-201436
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/kbusch/linux.git dma-prereg-v5
-head:   4f4a93bf02dcf20e9a4a3ac0c9cd39d79e9e540e
-commit: 1b0c9acb050749ce7ad964cc66eef72779835832 [5/6] io_uring: add support for dma pre-mapping
-config: xtensa-randconfig-r001-20220724 (https://download.01.org/0day-ci/archive/20220727/202207270041.8fQ9kcrB-lkp@intel.com/config)
-compiler: xtensa-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/kbusch/linux.git/commit/?id=1b0c9acb050749ce7ad964cc66eef72779835832
-        git remote add kbusch https://git.kernel.org/pub/scm/linux/kernel/git/kbusch/linux.git
-        git fetch --no-tags kbusch dma-prereg-v5
-        git checkout 1b0c9acb050749ce7ad964cc66eef72779835832
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=xtensa SHELL=/bin/bash
+On Tue, 2022-07-26 at 15:55 +0000, Vishnu Dasa wrote:
+> > On Jul 26, 2022, at 8:10 AM, Greg KH <gregkh@linuxfoundation.org wrote:
+> > On Mon, Jul 25, 2022 at 06:29:25PM +0000, Vishnu Dasa wrote:
+> > > > On Jul 25, 2022, at 11:05 AM, Greg KH <gregkh@linuxfoundation.org> wrote:
+> > > > On Mon, Jul 25, 2022 at 09:32:46AM -0700, vdasa@vmware.com wrote:
+> > > > > From: Vishnu Dasa <vdasa@vmware.com>
+> > > > > Remove Rajesh as a maintainer for the VMCI driver.
+> > > > Why?
+> > > Rajesh is no longer with VMware and won't be working on VMCI.
+> > 
+> > But employment does not matter for maintainership and has nothing to do
+> > with it.  Maintainership follows the person, not the company, you all
+> > know this.
+> > 
+> > So for obvious reasons, I can't take this type of change without
+> > Rajesh acking it.
+> 
+> I understand.  After getting in touch with Rajesh, cc'ing him via his
+> personal email ID.
+> 
+> Rajesh, could you please provide your ack if you agree with this patch to
+> remove you as the maintainer for VMCI?
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+If being an employee of a company is a criteria for maintainership
+of this subsystem, likely the subsystem entry should be:
 
-All errors (new ones prefixed by >>):
+"S:	Supported" not "S:	Maintained"
 
-   xtensa-linux-ld: io_uring/rsrc.o: in function `_copy_from_user':
->> include/linux/uaccess.h:124: undefined reference to `io_dma_unmap'
-   xtensa-linux-ld: io_uring/rsrc.o: in function `io_buffer_unmap':
-   io_uring/rsrc.c:151: undefined reference to `io_dma_unmap'
+MAINTAINERS:VMWARE VMCI DRIVER
+MAINTAINERS-M:  Bryan Tan <bryantan@vmware.com>
+MAINTAINERS-M:  Rajesh Jalisatgi <rjalisatgi@vmware.com>
+MAINTAINERS-M:  Vishnu Dasa <vdasa@vmware.com>
+MAINTAINERS-R:  VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
+MAINTAINERS-L:  linux-kernel@vger.kernel.org
+MAINTAINERS-S:  Maintained
 
+Likely that's true for every VMware entry.
 
-vim +124 include/linux/uaccess.h
+MAINTAINERS:VMWARE BALLOON DRIVER
+MAINTAINERS-M:  Nadav Amit <namit@vmware.com>
+MAINTAINERS-R:  VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
+MAINTAINERS-L:  linux-kernel@vger.kernel.org
+MAINTAINERS-S:  Maintained
+MAINTAINERS-F:  drivers/misc/vmw_balloon.c
+MAINTAINERS-
+MAINTAINERS:VMWARE PVRDMA DRIVER
+MAINTAINERS-M:  Bryan Tan <bryantan@vmware.com>
+MAINTAINERS-M:  Vishnu Dasa <vdasa@vmware.com>
+MAINTAINERS-R:  VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
+MAINTAINERS-L:  linux-rdma@vger.kernel.org
+MAINTAINERS-S:  Maintained
+MAINTAINERS-F:  drivers/infiniband/hw/vmw_pvrdma/
+MAINTAINERS-
+MAINTAINERS-VMware PVSCSI driver
+MAINTAINERS-M:  Vishal Bhakta <vbhakta@vmware.com>
+MAINTAINERS-R:  VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
+MAINTAINERS-L:  linux-scsi@vger.kernel.org
+MAINTAINERS-S:  Maintained
+MAINTAINERS-F:  drivers/scsi/vmw_pvscsi.c
+MAINTAINERS-F:  drivers/scsi/vmw_pvscsi.h
+MAINTAINERS-
+MAINTAINERS:VMWARE VMMOUSE SUBDRIVER
+MAINTAINERS-M:  Zack Rusin <zackr@vmware.com>
+MAINTAINERS-R:  VMware Graphics Reviewers <linux-graphics-maintainer@vmware.com>
+MAINTAINERS-R:  VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
+MAINTAINERS-L:  linux-input@vger.kernel.org
+MAINTAINERS-S:  Maintained
+MAINTAINERS-F:  drivers/input/mouse/vmmouse.c
+MAINTAINERS-F:  drivers/input/mouse/vmmouse.h
+MAINTAINERS-
+MAINTAINERS:VMWARE VMXNET3 ETHERNET DRIVER
+MAINTAINERS-M:  Ronak Doshi <doshir@vmware.com>
+MAINTAINERS-R:  VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
+MAINTAINERS-L:  netdev@vger.kernel.org
+MAINTAINERS-S:  Maintained
+MAINTAINERS-F:  drivers/net/vmxnet3/
+MAINTAINERS-
 
-d597580d373774 Al Viro              2017-03-20  110  
-d597580d373774 Al Viro              2017-03-20  111  #ifdef INLINE_COPY_FROM_USER
-9dd819a15162f8 Kees Cook            2019-09-25  112  static inline __must_check unsigned long
-d597580d373774 Al Viro              2017-03-20  113  _copy_from_user(void *to, const void __user *from, unsigned long n)
-d597580d373774 Al Viro              2017-03-20  114  {
-d597580d373774 Al Viro              2017-03-20  115  	unsigned long res = n;
-9c5f6908de03a4 Al Viro              2017-06-29  116  	might_fault();
-4d0e9df5e43dba Albert van der Linde 2020-10-15  117  	if (!should_fail_usercopy() && likely(access_ok(from, n))) {
-76d6f06c36a3b5 Marco Elver          2020-01-21  118  		instrument_copy_from_user(to, from, n);
-d597580d373774 Al Viro              2017-03-20  119  		res = raw_copy_from_user(to, from, n);
-9c5f6908de03a4 Al Viro              2017-06-29  120  	}
-d597580d373774 Al Viro              2017-03-20  121  	if (unlikely(res))
-d597580d373774 Al Viro              2017-03-20  122  		memset(to + (n - res), 0, res);
-d597580d373774 Al Viro              2017-03-20  123  	return res;
-d597580d373774 Al Viro              2017-03-20 @124  }
-d597580d373774 Al Viro              2017-03-20  125  #else
-9dd819a15162f8 Kees Cook            2019-09-25  126  extern __must_check unsigned long
-d597580d373774 Al Viro              2017-03-20  127  _copy_from_user(void *, const void __user *, unsigned long);
-d597580d373774 Al Viro              2017-03-20  128  #endif
-d597580d373774 Al Viro              2017-03-20  129  
-
-:::::: The code at line 124 was first introduced by commit
-:::::: d597580d373774b1bdab84b3d26ff0b55162b916 generic ...copy_..._user primitives
-
-:::::: TO: Al Viro <viro@zeniv.linux.org.uk>
-:::::: CC: Al Viro <viro@zeniv.linux.org.uk>
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
