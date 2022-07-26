@@ -2,176 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB599C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 14:51:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19FFDC00144
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 14:54:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239457AbiGZOve (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 10:51:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57252 "EHLO
+        id S239430AbiGZOyh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 10:54:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233523AbiGZOvc (ORCPT
+        with ESMTP id S229738AbiGZOyg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 10:51:32 -0400
-Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23C3B15802;
-        Tue, 26 Jul 2022 07:51:30 -0700 (PDT)
-Received: from zn.tnic (p200300ea970f4ff2329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:970f:4ff2:329c:23ff:fea6:a903])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 9EC801EC0622;
-        Tue, 26 Jul 2022 16:51:24 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1658847084;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=NGpnmZ5jm4nrbHTpdSQDfmfUGgLHgWESSBLxxIVaizU=;
-        b=dHkIi2g4b9g7z5bsQlPX2NowyqkPzJCGlMi4Ufh5hsv5Tfj5YHiwctLroQfN+dGTx85G+h
-        Y92PR06Yd9CQXG5YcmHOCRurUVgl9eoGkpiaLVvTWuZzeuhHEeBgIFSgFWv/jh0Uw+Amz0
-        0zRyMO9OBx+eb+9HGQ3kDZx/AIN1LPA=
-Date:   Tue, 26 Jul 2022 16:51:16 +0200
-From:   Borislav Petkov <bp@alien8.de>
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Cc:     Andy Lutomirski <luto@kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joerg Roedel <jroedel@suse.de>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Kuppuswamy Sathyanarayanan 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>,
-        David Rientjes <rientjes@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Varad Gautam <varad.gautam@suse.com>,
-        Dario Faggioli <dfaggioli@suse.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Mike Rapoport <rppt@kernel.org>,
-        David Hildenbrand <david@redhat.com>,
-        marcelo.cerri@canonical.com, tim.gardner@canonical.com,
-        khalid.elmously@canonical.com, philip.cox@canonical.com,
-        x86@kernel.org, linux-mm@kvack.org, linux-coco@lists.linux.dev,
-        linux-efi@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCHv7 14/14] x86/tdx: Add unaccepted memory support
-Message-ID: <Yt//ZMrxtTwtKBqu@zn.tnic>
-References: <20220614120231.48165-1-kirill.shutemov@linux.intel.com>
- <20220614120231.48165-15-kirill.shutemov@linux.intel.com>
+        Tue, 26 Jul 2022 10:54:36 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 35451183A5;
+        Tue, 26 Jul 2022 07:54:34 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4F9241FB;
+        Tue, 26 Jul 2022 07:54:34 -0700 (PDT)
+Received: from bogus (e103737-lin.cambridge.arm.com [10.1.197.49])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CCBB33F73B;
+        Tue, 26 Jul 2022 07:54:32 -0700 (PDT)
+Date:   Tue, 26 Jul 2022 15:54:30 +0100
+From:   Sudeep Holla <sudeep.holla@arm.com>
+To:     Mark Rutland <mark.rutland@arm.com>
+Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [-next] Lockdep warnings
+Message-ID: <20220726145430.bfwidmw6xmeppbfb@bogus>
+References: <20220726104134.3b3awfphvafljdgp@bogus>
+ <Yt/9z1+X3hDfXkbL@FVFF77S0Q05N>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220614120231.48165-15-kirill.shutemov@linux.intel.com>
+In-Reply-To: <Yt/9z1+X3hDfXkbL@FVFF77S0Q05N>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 14, 2022 at 03:02:31PM +0300, Kirill A. Shutemov wrote:
-> +static bool is_tdx_guest(void)
-> +{
-> +	static bool once;
-> +	static bool is_tdx;
-> +
-> +	if (!IS_ENABLED(CONFIG_INTEL_TDX_GUEST))
-> +		return false;
-> +
-> +	if (!once) {
-> +		u32 eax, sig[3];
-> +
-> +		cpuid_count(TDX_CPUID_LEAF_ID, 0, &eax,
-> +			    &sig[0], &sig[2],  &sig[1]);
-> +		is_tdx = !memcmp(TDX_IDENT, sig, sizeof(sig));
-> +		once = true;
-> +	}
-> +
-> +	return is_tdx;
-> +}
+On Tue, Jul 26, 2022 at 03:44:31PM +0100, Mark Rutland wrote:
+> On Tue, Jul 26, 2022 at 11:41:34AM +0100, Sudeep Holla wrote:
+> > I was seeing the below lockdep warnings on my arm64 Juno development
+> > platform almost 2 weeks back with -next. I wanted to check for similar
+> > reports before post and forgot.
+> 
+> [...]
+> 
+> > However I don't see the above warning with the latest -next. When I tried
+> > yesterday's -next now, I see a different warning. Not sure if they are
+> > related. I haven't tried to bisect.
+> > 
+> > --->8
+> > =============================
+> > [ BUG: Invalid wait context ]
+> > 5.19.0-rc8-next-20220725 #38 Not tainted
+> > -----------------------------
+> > swapper/0/0 is trying to lock:
+> > (&drvdata->spinlock){....}-{3:3}, at: cti_cpu_pm_notify+0x54/0x114
+> 
+> Hmmm... do you have CONFIG_PROVE_RAW_LOCK_NESTING enabled?
+>
 
-early_tdx_detect() already calls this CPUID function. It assigns
-function pointers too.
+Yes.
 
-So why can't you assign an accept_memory() function pointer there and
-get rid of this sprinkled if (tdx) everywhere?
+> IIUC that should be {2:2} otherwise...
+> 
+> > other info that might help us debug this:
+> > context-{5:5}
+> > 1 lock held by swapper/0/0:
+> >  #0: (cpu_pm_notifier.lock){....}-{2:2}, at: cpu_pm_enter+0x2c/0x80
+> 
+> ... and this is telling us that we're trying to take a regular spinlock under a
+> raw spinlock, which is not as intended.
+> 
+> The Kconfig text notes:
+> 
+>          NOTE: There are known nesting problems. So if you enable this 
+>          option expect lockdep splats until these problems have been fully
+>          addressed which is work in progress. This config switch allows to
+>          identify and analyze these problems. It will be removed and the
+>          check permanently enabled once the main issues have been fixed.
+> 
 
-> diff --git a/arch/x86/boot/compressed/tdx.c b/arch/x86/boot/compressed/tdx.c
-> index 918a7606f53c..8518a75e5dd5 100644
-> --- a/arch/x86/boot/compressed/tdx.c
-> +++ b/arch/x86/boot/compressed/tdx.c
-> @@ -3,12 +3,15 @@
->  #include "../cpuflags.h"
->  #include "../string.h"
->  #include "../io.h"
-> +#include "align.h"
->  #include "error.h"
-> +#include "pgtable_types.h"
->  
->  #include <vdso/limits.h>
->  #include <uapi/asm/vmx.h>
->  
->  #include <asm/shared/tdx.h>
-> +#include <asm/page_types.h>
->  
->  /* Called from __tdx_hypercall() for unrecoverable failure */
->  void __tdx_hypercall_failed(void)
-> @@ -75,3 +78,78 @@ void early_tdx_detect(void)
->  	pio_ops.f_outb = tdx_outb;
->  	pio_ops.f_outw = tdx_outw;
->  }
-> +
-> +static unsigned long try_accept_one(phys_addr_t start, unsigned long len,
-> +				    enum pg_level level)
+Ah, I hadn't seen or read this. Thanks for digging this and sharing.
+Sorry for the noise. Good I got to know this limitation, will try to
+remember this.
 
-That's pretty much a copy of the same function in arch/x86/coco/tdx/tdx.c.
-
-Yeah, you need a tdx-shared.c which you include in both places just like
-it is done with sev-shared.c
-
-...
-
-> +void tdx_accept_memory(phys_addr_t start, phys_addr_t end)
-
-That one too.
-
-> +{
-> +	/*
-> +	 * Notify the VMM about page mapping conversion. More info about ABI
-> +	 * can be found in TDX Guest-Host-Communication Interface (GHCI),
-> +	 * section "TDG.VP.VMCALL<MapGPA>"
-> +	 */
-> +	if (_tdx_hypercall(TDVMCALL_MAP_GPA, start, end - start, 0, 0))
-> +		error("Accepting memory failed\n");
-> +
-> +	/*
-> +	 * For shared->private conversion, accept the page using
-> +	 * TDX_ACCEPT_PAGE TDX module call.
-> +	 */
-> +	while (start < end) {
-> +		unsigned long len = end - start;
-> +		unsigned long accept_size;
-> +
-> +		/*
-> +		 * Try larger accepts first. It gives chance to VMM to keep
-> +		 * 1G/2M Secure EPT entries where possible and speeds up
-> +		 * process by cutting number of hypercalls (if successful).
-> +		 */
-> +
-> +		accept_size = try_accept_one(start, len, PG_LEVEL_1G);
-> +		if (!accept_size)
-> +			accept_size = try_accept_one(start, len, PG_LEVEL_2M);
-> +		if (!accept_size)
-> +			accept_size = try_accept_one(start, len, PG_LEVEL_4K);
-> +		if (!accept_size)
-> +			error("Accepting memory failed\n");
-> +		start += accept_size;
-
-This series of calls to try_accept_one() appear in at least three
-places. Please carve them out into a separate function can put it in
-tdx-shared.c.
+Thanks again for your time Mark.
 
 -- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+Regards,
+Sudeep
