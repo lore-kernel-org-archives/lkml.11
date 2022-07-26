@@ -2,67 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD36EC00144
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 15:41:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01337C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 15:41:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238627AbiGZPlp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 11:41:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36270 "EHLO
+        id S238896AbiGZPlw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 11:41:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229644AbiGZPln (ORCPT
+        with ESMTP id S238661AbiGZPlu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 11:41:43 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C8A232BB1B;
-        Tue, 26 Jul 2022 08:41:42 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 20C6A1FB;
-        Tue, 26 Jul 2022 08:41:43 -0700 (PDT)
-Received: from bogus (e103737-lin.cambridge.arm.com [10.1.197.49])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8B2E03F73B;
-        Tue, 26 Jul 2022 08:41:40 -0700 (PDT)
-Date:   Tue, 26 Jul 2022 16:41:38 +0100
-From:   Sudeep Holla <sudeep.holla@arm.com>
-To:     Maximilian Luz <luzmaximilian@gmail.com>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Steev Klimaszewski <steev@kali.org>,
-        Shawn Guo <shawn.guo@linaro.org>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-arm-msm@vger.kernel.org, linux-efi@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 4/4] dt-bindings: firmware: Add Qualcomm UEFI Secure
- Application client
-Message-ID: <20220726154138.74avqs6iqlzqpzjk@bogus>
-References: <20220723224949.1089973-1-luzmaximilian@gmail.com>
- <20220723224949.1089973-5-luzmaximilian@gmail.com>
- <20220726143005.wt4be7yo7sbd3xut@bogus>
- <829c8fee-cae5-597d-933d-784b4b57bd73@gmail.com>
+        Tue, 26 Jul 2022 11:41:50 -0400
+Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com [209.85.219.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28DF92C118;
+        Tue, 26 Jul 2022 08:41:50 -0700 (PDT)
+Received: by mail-yb1-f169.google.com with SMTP id f73so25934788yba.10;
+        Tue, 26 Jul 2022 08:41:50 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=XZBi7IzCqvfKTanZDhCaN3J6iz5Ywu+mqR8S9am4fhs=;
+        b=QDDQn9lnU62NcpS9soWU772pkL/9HkB1xjc/a5W+bfCduAK+Pa6gcb8xPeulpWJyXJ
+         6/uOyy8QuglLUQwmHmv2MhQue7NY/xz52ILoBSqMLyoG8eObuszPJ5Dv4ekNMfF3OeWN
+         PKVUlku7hNaqs2z6oqQdR0WICfNAR62NHvJA3QLyxJFpnFNvb2hld//6v0fs65mIfmk2
+         Kyu3wv6SmyuC+Vl1hLz7mRKq6Fh4ndYxn/GOz9azS8vQ7jdh9u+WAN02TAz6WtUQaoLa
+         FnFLH8sc8Dxeh6HB54CPK12I1osOWgjWTWR6hSk1iLpEdR7gd85XFkL6etjveuAFmjEN
+         bCSQ==
+X-Gm-Message-State: AJIora/gMiMfvdZe96ZNAsHDKySi2fFeiMe1VUjVS7zGST/t/Uv2IgEp
+        gz99M7Sd0NsSYXSnyDWRoUlPdyrT+dEsAiBppXo=
+X-Google-Smtp-Source: AGRyM1tagkoanXWG4bh0W25Ylp/aPCF89fBrmoKdcJqs7qiNOxQ5gGAdGZLvN0DeMzruyK55onWK4fqRCht4OkOWItU=
+X-Received: by 2002:a05:6902:154f:b0:66e:e2d3:ce1 with SMTP id
+ r15-20020a056902154f00b0066ee2d30ce1mr12936010ybu.365.1658850109317; Tue, 26
+ Jul 2022 08:41:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <829c8fee-cae5-597d-933d-784b4b57bd73@gmail.com>
+References: <20220620144231.GA23345@axis.com> <5caa944f-c841-6f74-8e43-a278b2b93b06@suse.com>
+ <20220708110325.GA5307@axis.com> <4ca77763-53d0-965a-889e-be2eafadfd2f@intel.com>
+ <1937b65c-36c0-5475-c745-d7285d1a6e25@suse.com>
+In-Reply-To: <1937b65c-36c0-5475-c745-d7285d1a6e25@suse.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Tue, 26 Jul 2022 17:41:38 +0200
+Message-ID: <CAJZ5v0j0mgOcfKXRzyx12EX8CYLzowXrM8DGCH9XvQGnRNv0iw@mail.gmail.com>
+Subject: Re: PM runtime_error handling missing in many drivers?
+To:     Oliver Neukum <oneukum@suse.com>
+Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        "jic23@kernel.org" <jic23@kernel.org>,
+        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 26, 2022 at 05:15:41PM +0200, Maximilian Luz wrote:
-> 
-> So ultimately I think it's better to add a DT entry for it.
+On Tue, Jul 26, 2022 at 11:05 AM Oliver Neukum <oneukum@suse.com> wrote:
+>
+>
+>
+> On 08.07.22 22:10, Rafael J. Wysocki wrote:
+> > On 7/8/2022 1:03 PM, Vincent Whitchurch wrote:
+>
+> >> Perhaps Rafael can shed some light on this.
+> >
+> > The driver always knows more than the framework about the device's
+> > actual state.  The framework only knows that something failed, but it
+> > doesn't know what it was and what way it failed.
+>
+> Hi,
+>
+> thinking long and deeply about this I do not think that this seemingly
+> obvious assertion is actually correct.
 
-I disagree for the reason that once you discover more apps running on the
-secure side, you want to add more entries and update DT on the platform
-every time you discover some new firmware entity and you wish to interact
-with it from the non-secure side.
+I guess that depends on what is regarded as "the framework".  I mean
+the PM-runtime code, excluding the bus type or equivalent.
 
-As along as get this application ID can handle any random name, I prefer
-to use that as the discover mechanism and not have this DT.
---
-Regards,
-Sudeep
+> > The idea was that drivers would clear these errors.
+>
+> I am afraid that is a deeply hidden layering violation. Yes, a driver's
+> resume() method may have failed. In that case, if that is the same
+> driver, it will obviously already know about the failure.
+
+So presumably it will do something to recover and avoid returning the
+error in the first place.
+
+From the PM-runtime core code perspective, if an error is returned by
+a suspend callback and it is not -EBUSY or -EAGAIN, the subsequent
+suspend is also likely to fail.
+
+If a resume callback returns an error, any subsequent suspend or
+resume operations are likely to fail.
+
+Storing the error effectively prevents subsequent operations from
+being carried out in both cases and that's why it is done.
+
+> PM operations, however, are operating on a tree. A driver requesting
+> a resume may get an error code. But it has no idea where this error
+> comes from. The generic code knows at least that.
+
+Well, what do you mean by "the generic code"?
+
+> Let's look at at a USB storage device. The request to resume comes
+> from sd.c. sd.c is certainly not equipped to handle a PCI error
+> condition that has prevented a USB host controller from resuming.
+
+Sure, but this doesn't mean that suspending or resuming the device is
+a good idea until the error condition gets resolved.
+
+> I am afraid this part of the API has issues. And they keep growing
+> the more we divorce the device driver from the bus driver, which
+> actually does the PM operation.
+
+Well, in general suspending or resuming a device is a collaborative
+effort and if one of the pieces falls over, making it work again
+involves fixing up the failing piece and notifying the others that it
+is ready again.  However, that part isn't covered and I'm not sure if
+it can be covered in a sufficiently generic way.
