@@ -2,137 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6033C00144
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 21:04:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EC64C04A68
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 21:11:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240013AbiGZVEQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 17:04:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52798 "EHLO
+        id S239239AbiGZVL3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 17:11:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239902AbiGZVDf (ORCPT
+        with ESMTP id S229929AbiGZVL2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 17:03:35 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF1703A48E
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 14:03:34 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id z22so19119942edd.6
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 14:03:34 -0700 (PDT)
+        Tue, 26 Jul 2022 17:11:28 -0400
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 345672A723;
+        Tue, 26 Jul 2022 14:11:27 -0700 (PDT)
+Received: by mail-yb1-xb31.google.com with SMTP id j195so7940049ybj.11;
+        Tue, 26 Jul 2022 14:11:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=qy2wWA6vClyZGhjx9DWjei+yWAv7tqnCtNEo36hW/K4=;
-        b=I6feiYwmbmUoz9RV4PxX4J5rNfVBlvt/FdVVUwAcY8gFd3MFHKy73+QR5pyYmEmlnt
-         1zdPnnkJO+6MPYdENRqkZAicXR23cepCRnnLZbCLz3YXZjqzMZ2u3xd57Oz7KueBlHbQ
-         6MjoTU1WRz4y0fu6I0WB2aTZ5/nnCQ4wL1SKA=
+        d=googlemail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=3t16s+OcKDcEZXENZbwqgCIwk/X+UcCVddI7l2RgCtI=;
+        b=NLlIwrwDW5ocpVXLAcOp1+TDqUcPCxfwIlZYoT416DevuJKD+dUfl9bBi679g2rqK2
+         CIUnAduiKXZV+uuX9vvtefQgXdxUXYyXsEuPfPNgM1dBPFpPcOIBJkPmyIsfPKqSlPvZ
+         cs/NXt5vjastEJs668It7JG7h3U2M1XnFaZoUdfMr98yqbX8+51XzA9qScCCtr/0CPcf
+         UKlseVrk75xrMR4lK0kFjvrou6WhmwoB1FSX4TmmBRPU0s2fcpACCZRIARCrZi4V0YhC
+         R+/cA4lOo/YX9n2B3Mt9qqQ08B8mD20uA8ooW7zBv+hqRY2P5MRhNrqbHt2mKx2geVrI
+         ym4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=qy2wWA6vClyZGhjx9DWjei+yWAv7tqnCtNEo36hW/K4=;
-        b=y8rJz3RPaWIDaoHAak0f9JCJjoLOjfFBe6LjnSfs4bxPTrvInIZcE45m45kbhvwWrn
-         u9HSJM8P9crefy6G5C7DP6f+WAY/e7vANduujc3yAKhisqKiD5EuOMO2Js6FiSg2gBt1
-         dqDMik6gBtzjvhdphxbXRiuQE36yjgp1+nJniHyTpU9f31eedAg9NkWzPTS9kx9abcWW
-         xjTJRqncFY7lJSN7483boSXZvfzMM82vhBuu7B3AAE6sqQDOdNxUI2Vkrjo24zBcXAMh
-         N2aQwkeUQ1h0oSs5XxLE6AwVqnkq/U1YfIXdKz+Ppz/+0cEBaSRkCL+nIMiPnK+gOVTy
-         lDOQ==
-X-Gm-Message-State: AJIora80kt8VrmDag43tJ+SvBwCKkGBlBTPBzEUjGApNl6Kw1AdFMXs+
-        GZmrHpgVdIbKsSw81dZyULTAYnM8iWHehieJ
-X-Google-Smtp-Source: AGRyM1s4FNyDintDCE4biiDE1x37+NYAxAB7vyhNTDmhtysxhBDeSBYBN40gfwIO4LgkL6ul4NTNZw==
-X-Received: by 2002:a05:6402:371a:b0:43a:ece9:ab8e with SMTP id ek26-20020a056402371a00b0043aece9ab8emr19781113edb.126.1658869413951;
-        Tue, 26 Jul 2022 14:03:33 -0700 (PDT)
-Received: from dario-ThinkPad-T14s-Gen-2i.homenet.telecomitalia.it (host-87-14-98-67.retail.telecomitalia.it. [87.14.98.67])
-        by smtp.gmail.com with ESMTPSA id y19-20020aa7d513000000b0043a7293a03dsm9092849edq.7.2022.07.26.14.03.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Jul 2022 14:03:33 -0700 (PDT)
-From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        michael@amarulasolutions.com,
-        Amarula patchwork <linux-amarula@amarulasolutions.com>,
-        Jeroen Hofstee <jhofstee@victronenergy.com>,
-        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
-        Alexandru Tachici <alexandru.tachici@analog.com>,
-        Andrew Lunn <andrew@lunn.ch>, Arnd Bergmann <arnd@arndb.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Hao Chen <chenhao288@hisilicon.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Leon Romanovsky <leon@kernel.org>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sean Anderson <sean.anderson@seco.com>,
-        Tom Rix <trix@redhat.com>, Yufeng Mo <moyufeng@huawei.com>,
-        netdev@vger.kernel.org
-Subject: [RFC PATCH v3 7/9] ethtool: add support to get/set CAN bit time register
-Date:   Tue, 26 Jul 2022 23:02:15 +0200
-Message-Id: <20220726210217.3368497-8-dario.binacchi@amarulasolutions.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220726210217.3368497-1-dario.binacchi@amarulasolutions.com>
-References: <20220726210217.3368497-1-dario.binacchi@amarulasolutions.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=3t16s+OcKDcEZXENZbwqgCIwk/X+UcCVddI7l2RgCtI=;
+        b=QqkqoyZJNoso85P4Gg1rhUTPeliPe2/gNCD/mjXNtL7XeM0pcfD8h/c1bW5TDz5RAC
+         Zv7gCmFOPdYTae2z2KvZLS8fs3rofN88GR6XPHiYOfR/P8vdMqzSjFa9eMBFSsqWE8yk
+         rH3ZrDH5vJt0jhLkfuBiHfJ5QNr5iqaEbeTP/b02ikmzl6tvsjZmfuzErh4NZIVr1TAO
+         h3s6uCwZh4dI3UTBR41y4GzQAlRSdG2K4IBKIN5ObrPevTfDvKBWcXuF/yquh7oaFrOF
+         m45dmjFpuryoHICJkiDSCvez/mTh8zQYgYtPePfyfOvdQiolHmI8Cf2Y88zp3eGDA3JM
+         Dagg==
+X-Gm-Message-State: AJIora8QBJuvouUmuGjvXCTKoBIoyLIx+g3j178GP8FyCuOCiUPg10OB
+        gZHx+/rB9rgxiDtnacK3g+wfaFzo2BbPpa7J7T0=
+X-Google-Smtp-Source: AGRyM1vRom4tJven8LPA373fu9mUzwWFI/x5WXxjSDmq4hHFo5RlkMbpmY16sruCIKeXcaYVkHJkHeLZd0gOeU0DUKc=
+X-Received: by 2002:a25:e682:0:b0:671:79d9:66c7 with SMTP id
+ d124-20020a25e682000000b0067179d966c7mr2977858ybh.5.1658869886200; Tue, 26
+ Jul 2022 14:11:26 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220726115748.101015-1-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220726115748.101015-1-krzysztof.kozlowski@linaro.org>
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date:   Tue, 26 Jul 2022 23:11:15 +0200
+Message-ID: <CAFBinCCOcuHeuXvEe9obBu2qby0bwQLPmaSbginmFh3_gSz4GA@mail.gmail.com>
+Subject: Re: [PATCH 1/3] dt-bindings: power: drop quotes when not needed
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Hector Martin <marcan@marcan.st>,
+        Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Sebastian Reichel <sre@kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        David Lechner <david@lechnology.com>,
+        Iskren Chernev <iskren.chernev@gmail.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Matheus Castello <matheus@castello.eng.br>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sebastian Krzyszkowiak <sebastian.krzyszkowiak@puri.sm>,
+        Purism Kernel Team <kernel@puri.sm>,
+        Orson Zhai <orsonzhai@gmail.com>,
+        Baolin Wang <baolin.wang@linux.alibaba.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jianxin Pan <jianxin.pan@amlogic.com>,
+        =?UTF-8?Q?Fern=C3=A1ndez_Rojas?= <noltari@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Michael Klein <michael@fossekall.de>,
+        Dan Murphy <dmurphy@ti.com>,
+        Ricardo Rivera-Matos <r-rivera-matos@ti.com>,
+        =?UTF-8?Q?Pali_Roh=C3=A1r?= <pali@kernel.org>,
+        "Andrew F. Davis" <afd@ti.com>, Tony Lindgren <tony@atomide.com>,
+        Artur Rojek <contact@artur-rojek.eu>,
+        Mike Looijmans <mike.looijmans@topic.nl>,
+        Stephan Gerhold <stephan@gerhold.net>,
+        David Heidelberg <david@ixit.cz>,
+        Dmitry Osipenko <digetx@gmail.com>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add ethtool support to get/set tunable values from/to the CAN bit time
-register (btr).
+On Tue, Jul 26, 2022 at 1:57 PM Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+>
+> Id and schema fields do not need quotes.
+>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>  .../devicetree/bindings/power/amlogic,meson-ee-pwrc.yaml      | 4 ++--
+>  .../devicetree/bindings/power/amlogic,meson-sec-pwrc.yaml     | 4 ++--
+For the Amlogic ones:
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 
-CC: Marc Kleine-Budde <mkl@pengutronix.de>
-CC: linux-can@vger.kernel.org
-Suggested-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
----
 
-(no changes since v1)
-
- include/uapi/linux/ethtool.h | 1 +
- net/ethtool/common.c         | 1 +
- net/ethtool/ioctl.c          | 1 +
- 3 files changed, 3 insertions(+)
-
-diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
-index e0f0ee9bc89e..a2d24f689124 100644
---- a/include/uapi/linux/ethtool.h
-+++ b/include/uapi/linux/ethtool.h
-@@ -232,6 +232,7 @@ enum tunable_id {
- 	ETHTOOL_TX_COPYBREAK,
- 	ETHTOOL_PFC_PREVENTION_TOUT, /* timeout in msecs */
- 	ETHTOOL_TX_COPYBREAK_BUF_SIZE,
-+	ETHTOOL_CAN_BTR,
- 	/*
- 	 * Add your fresh new tunable attribute above and remember to update
- 	 * tunable_strings[] in net/ethtool/common.c
-diff --git a/net/ethtool/common.c b/net/ethtool/common.c
-index 566adf85e658..78f23b898243 100644
---- a/net/ethtool/common.c
-+++ b/net/ethtool/common.c
-@@ -90,6 +90,7 @@ tunable_strings[__ETHTOOL_TUNABLE_COUNT][ETH_GSTRING_LEN] = {
- 	[ETHTOOL_TX_COPYBREAK]	= "tx-copybreak",
- 	[ETHTOOL_PFC_PREVENTION_TOUT] = "pfc-prevention-tout",
- 	[ETHTOOL_TX_COPYBREAK_BUF_SIZE] = "tx-copybreak-buf-size",
-+	[ETHTOOL_CAN_BTR] = "can-btr",
- };
- 
- const char
-diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
-index 326e14ee05db..17b69d6fcab4 100644
---- a/net/ethtool/ioctl.c
-+++ b/net/ethtool/ioctl.c
-@@ -2403,6 +2403,7 @@ static int ethtool_get_module_eeprom(struct net_device *dev,
- static int ethtool_tunable_valid(const struct ethtool_tunable *tuna)
- {
- 	switch (tuna->id) {
-+	case ETHTOOL_CAN_BTR:
- 	case ETHTOOL_RX_COPYBREAK:
- 	case ETHTOOL_TX_COPYBREAK:
- 	case ETHTOOL_TX_COPYBREAK_BUF_SIZE:
--- 
-2.32.0
-
+Thank you!
+Martin
