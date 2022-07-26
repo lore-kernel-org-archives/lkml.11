@@ -2,66 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 383D5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 07:34:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60FD9CCA48C
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 07:34:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238395AbiGZHd5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 03:33:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48466 "EHLO
+        id S238241AbiGZHeW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 03:34:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238512AbiGZHdh (ORCPT
+        with ESMTP id S238349AbiGZHd5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 03:33:37 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 755652B262
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 00:29:41 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id m8so16664362edd.9
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 00:29:41 -0700 (PDT)
+        Tue, 26 Jul 2022 03:33:57 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D6332D1C6
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 00:31:07 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id sz17so24609201ejc.9
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 00:31:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=ERYnZjAmqURrPxvuGkteRUMsQNSwpIjr2yYOxhN4v2Q=;
-        b=O7TzWpi0xj6bpvrldwDThB5d/gjYTTMTVTUGLybnaeErIiSnX0YbL+nLFA3jwlYw0E
-         5AIA1897C+CZBfFXRL7et9zqCOFs5ucS+OwtB0RLvx2lC7cXunDzdsY5WkECsmbINc4r
-         jKxBTjBR8iNPnoUX+ms5ucm1QP0JDcZy3RJHx2/+hVdK/1f9JW0oOapO1JOJyowAU0C3
-         C1Tec08uGVo4ESKQHqt/qJFV2FiAvLAN70sMRe4J3tr433DFJIPVKal0iZ/pspuOOJ2H
-         Xk7JWRiqk4Tr4gNm3/nDSk+fXnWs3wYHUErkekewEmko8zPFoeH7Hb/BOWzC+ImylG7m
-         8FIw==
+        bh=pbTApP5FjDQingRY/H/GZ1QffrBKNL73g1VJDFx7U7g=;
+        b=kzDyG1w1YeNT+Gs20iGw8yaOZDw46hsTfQVY+xW1dE9SN5RG6o7wcJQ+zoX9z5VmVb
+         fG9uiSIlA8Dr1rXmZR+wk01mrVTGAFafqmafD2YtQ+c2yBMlQ+s922XmXJ07sEXT6JSQ
+         o0xtHQpeICXcDnuz/ugrM26j04Pm6OONOs0nLRKF5XKPHavla4n1bMBwm3Ou2HLle3Gp
+         NqWX+SfELP2mkXhEcwD/cd1wiTCr8s3qhxfHrnLarLAPISyazwBDeKpDJnMi3aOKPzZ9
+         xGdQvqmSgmj6cxP5fGE8KzMz6UFuXQsvRLHXPR7w89xc5Sfgc+KAs840W6OJS4GnHT3v
+         rJ1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ERYnZjAmqURrPxvuGkteRUMsQNSwpIjr2yYOxhN4v2Q=;
-        b=BK29HBovv/Zhcg7p/k+XvKaZWF/63uKDIJae1ZieFpsYD75FpkdYLFKydUJOG6UAoQ
-         M51p4tTZbDCKT263LK1o6nMUdW46dBqpMqhk26SP7WsdYUN5GQuESXdMDrwlwKJ527aI
-         w8ihxYQCcBdUoftHT9doAF55QyNydSELcn8JrbV0uSiMMj4eURUMg/NE+wqH8qc+ajVU
-         rTmn6L2kM8yEOVToJF4jxIY4zTP78Umu0UFmt/MlW0ThCXmqBFTVen0uyQu0Z3cIlkBG
-         4fTZ0pXkZZh8K9Utt568kB4maN4/UQCYIBC3EH4oIR/2Na+aiadp+nTX0RF2hDanBTFS
-         2kUg==
-X-Gm-Message-State: AJIora80coqz7WQG41OliyC5K8INOtFHF+AEAtAamkiX1GZdtSo+X3LX
-        sfqo867NvflD5WKvtVMS2Oor5SJaJtJyZMYy8p3s4Q==
-X-Google-Smtp-Source: AGRyM1vCl0qPyGCMLN1Hg2RlXB0kcD/KLy9QPtNqCBeoiRY0/Db5v7W/iINfCxVqz8rPtKUCoyRf96cvuacwUoXdwZo=
-X-Received: by 2002:aa7:cada:0:b0:43c:4f59:391a with SMTP id
- l26-20020aa7cada000000b0043c4f59391amr2129348edt.172.1658820579738; Tue, 26
- Jul 2022 00:29:39 -0700 (PDT)
+        bh=pbTApP5FjDQingRY/H/GZ1QffrBKNL73g1VJDFx7U7g=;
+        b=6vCwUYqz3VFAWUYgw3K4+9AdG4i0v0esuxryylKX+lUONcmTjOMtMpD1/tltrs3NmS
+         /oomrGgqodNBGEVYF/5Ol81ITu8x6uhT18uDeI6fDLuo12k4wp1HJjXFQWEXw715JzAY
+         58a1DiSkbUhVAP/nmL7rIR61XO24HnYOpovI+47tOXA3WZJx1Iw4l1Zm6D6HASlkjJxw
+         Qw1lMfCFFO4rDM4ndySlFtuYSMrvJtBKQ7TR0w+I/JKXVRJimqCwR0xzOXVKUtupxpyQ
+         N1zry+ueJZiKezACGk4HlTynwo25Y6STO28nKT5tfCJo64hsCmUR1kCOH936iRLvK39B
+         Y7UA==
+X-Gm-Message-State: AJIora++MneuGTatzMlUV6qyZA9nDB33hvTRYO3z7UDZCW5mxiKh7jOA
+        w4A9v/53NZgUz6BWbYknS1+QT2t9a3AGl9V7Otbgig==
+X-Google-Smtp-Source: AGRyM1vZ1J+KCGDQDyAL70SvZC8MFvfMDNaLV76mBPoiaexxQ0HHhneER77kF7q2EcEPaqvNvF+4v1Xbdwpa4VQm6bA=
+X-Received: by 2002:a17:906:2ed7:b0:72f:d080:411 with SMTP id
+ s23-20020a1709062ed700b0072fd0800411mr8344430eji.203.1658820665357; Tue, 26
+ Jul 2022 00:31:05 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220716192900.454653-1-konrad.dybcio@somainline.org>
-In-Reply-To: <20220716192900.454653-1-konrad.dybcio@somainline.org>
+References: <20220716192900.454653-1-konrad.dybcio@somainline.org> <20220716192900.454653-2-konrad.dybcio@somainline.org>
+In-Reply-To: <20220716192900.454653-2-konrad.dybcio@somainline.org>
 From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Tue, 26 Jul 2022 09:29:28 +0200
-Message-ID: <CACRpkdYv4KGDtbQvW6J=RWuvOWg5wGB-L69_cOkjorzZjqSzAA@mail.gmail.com>
-Subject: Re: [PATCH 1/2] dt-bindings: pinctrl: Add DT schema for SM6375 TLMM
+Date:   Tue, 26 Jul 2022 09:30:54 +0200
+Message-ID: <CACRpkdYrJoWBKR0nEa23ObH2md3Bxr47T15zN0WR8vhuLqG-Ng@mail.gmail.com>
+Subject: Re: [PATCH 2/2] pinctrl: qcom: Add SM6375 TLMM driver
 To:     Konrad Dybcio <konrad.dybcio@somainline.org>
 Cc:     ~postmarketos/upstreaming@lists.sr.ht, martin.botka@somainline.org,
         angelogioacchino.delregno@somainline.org,
         marijn.suijten@somainline.org, jamipkettunen@somainline.org,
         Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-gpio@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
@@ -70,11 +68,16 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 On Sat, Jul 16, 2022 at 9:29 PM Konrad Dybcio
 <konrad.dybcio@somainline.org> wrote:
 
-> Document the TLMM driver for SM6375.
+> Add a driver to control the TLMM block on SM6375. This is an adapted
+> version of msm-5.4's pinctrl-blair driver.
 >
 > Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
 
-Patch applied!
+Patch applied, we are getting close to the merge window and this needs
+to sit in linux-next. And it's nice to get it in for v5.20.
+
+If there are further review comments we can patch on top or I can even pull it
+out if necessary.
 
 Yours,
 Linus Walleij
