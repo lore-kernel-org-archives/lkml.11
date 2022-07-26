@@ -2,102 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 738C6C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 12:10:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ACC3C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 12:10:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238707AbiGZMKG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 08:10:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50416 "EHLO
+        id S238752AbiGZMK0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 08:10:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238087AbiGZMKE (ORCPT
+        with ESMTP id S238888AbiGZMKW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 08:10:04 -0400
-Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 624902BB3B;
-        Tue, 26 Jul 2022 05:10:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
-        Content-ID:Content-Description;
-        bh=qE9E//dP4gc/xOOwIwhfrlODHz+ESpUGR+JNi63mXEM=; b=R/anHNFW+YvnZqTxmBZ4X5KCCE
-        w9mmbiT/KxL/PY7AkmL+4J7yoizv4Edtk/DEZSvzHXQ6Xrw54Xo3PNT2HWey4a9NVXeBEgb3gCqI0
-        bRBGX0oVZCNff5b18jAlCh1Ezapg+LK29rRdb+lF/kb8hnyqKrAoCHWlgCjWc4tYEPaU1zFC8PMis
-        MIAlxr03QCdoWtVl20M8VgxXO7WvmzQVE+vuzAldSiXly3gHCWcebF+pNgGlQw+z+sxnHJkkFJ0Z4
-        eXL6sbdmk7bdJJwttajxl0psl5eIbnG/87cwkkk3w0l4tPow6I0pveCpRIeHdYDtyO1+a1wKyt84J
-        KB5E+7Clr61Bib8Hewb4+R83aUVT9y5ErXdGU4kmC4svF1WTM4+qQvwimac6jqdzN/SM+UAbwQe+0
-        nVP8dXFUXIEHRGhxpAds7qb8YJHuwz4zkkP2/+YG6RdcMQhM9KZ6xTb1772rzaLhprYuzqaL9AsJH
-        YY5y0bqnKpmcoRJdTfL+r19avlE6JYcgaSjm6/N21miUWAm1HOc1+ASELHezsUzeGcjj0arm0ba/p
-        RwUBpPsHY1TLzfZvAyjGKCTt0EUEcJ6XCFLNFACSH1N9FxRiS0SKiSGxFaRr1cVr3M9A7pWuZWq8y
-        emuOo1+DxmLee/4PjvDGXexXc4TQFG5YHLOVa1dP8=;
-From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-To:     asmadeus@codewreck.org, Dmitry Vyukov <dvyukov@google.com>
-Cc:     Vlastimil Babka <vbabka@suse.cz>,
-        syzbot <syzbot+5e28cdb7ebd0f2389ca4@syzkaller.appspotmail.com>,
-        akpm@linux-foundation.org, davem@davemloft.net,
-        edumazet@google.com, elver@google.com, ericvh@gmail.com,
-        hdanton@sina.com, k.kahurani@gmail.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, lucho@ionkov.net,
-        netdev@vger.kernel.org, pabeni@redhat.com, rientjes@google.com,
-        syzkaller-bugs@googlegroups.com, torvalds@linux-foundation.org,
-        v9fs-developer@lists.sourceforge.net
-Subject: Re: [syzbot] WARNING in p9_client_destroy
-Date:   Tue, 26 Jul 2022 14:09:37 +0200
-Message-ID: <2916828.W3qMjvkFlE@silver>
-In-Reply-To: <CACT4Y+Yx2MZ9KEX9gfm-LahQE4KaXX=u4RQBuj-1gS57KL0OSw@mail.gmail.com>
-References: <000000000000e6917605e48ce2bf@google.com> <Yt6DjrMdIhpQmm7V@codewreck.org>
- <CACT4Y+Yx2MZ9KEX9gfm-LahQE4KaXX=u4RQBuj-1gS57KL0OSw@mail.gmail.com>
+        Tue, 26 Jul 2022 08:10:22 -0400
+Received: from dggsgout12.his.huawei.com (dggsgout12.his.huawei.com [45.249.212.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D76D5237C0;
+        Tue, 26 Jul 2022 05:10:19 -0700 (PDT)
+Received: from mail02.huawei.com (unknown [172.30.67.153])
+        by dggsgout12.his.huawei.com (SkyGuard) with ESMTP id 4LsbLB4tNvz6PY02;
+        Tue, 26 Jul 2022 20:09:06 +0800 (CST)
+Received: from huaweicloud.com (unknown [10.175.127.227])
+        by APP3 (Coremail) with SMTP id _Ch0CgAXFWin2d9iENLYBA--.43969S4;
+        Tue, 26 Jul 2022 20:10:17 +0800 (CST)
+From:   Yu Kuai <yukuai1@huaweicloud.com>
+To:     axboe@kernel.dk, osandov@fb.com, ming.lei@redhat.com
+Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yukuai3@huawei.com, yukuai1@huaweicloud.com, yi.zhang@huawei.com
+Subject: [PATCH v3] blk-mq: fix io hung due to missing commit_rqs
+Date:   Tue, 26 Jul 2022 20:22:24 +0800
+Message-Id: <20220726122224.1790882-1-yukuai1@huaweicloud.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: _Ch0CgAXFWin2d9iENLYBA--.43969S4
+X-Coremail-Antispam: 1UD129KBjvJXoWxGry3AF1xWw43XFy3Jw13Arb_yoW5Zw1xpF
+        4fGa12kr40qr42vFyxuay7A3WIyws5GrW7WryfKw4aqFW5KrWIqrs3tr17WFyIyFs5uanI
+        gF45XryFqw1UArDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUyG14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWUuVWrJwAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26F1j6w1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
+        6r4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
+        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
+        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCF04k20xvY0x0EwIxG
+        rwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4
+        vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IY
+        x2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26c
+        xKx2IYs7xG6rW3Jr0E3s1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x02
+        67AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUbXdbUUUUUU==
+X-CM-SenderInfo: 51xn3trlr6x35dzhxuhorxvhhfrp/
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Montag, 25. Juli 2022 14:45:08 CEST Dmitry Vyukov wrote:
-> On Mon, 25 Jul 2022 at 13:51, <asmadeus@codewreck.org> wrote:
-> > Vlastimil Babka wrote on Mon, Jul 25, 2022 at 12:15:24PM +0200:
-> > > On 7/24/22 15:17, syzbot wrote:
-> > > > syzbot has bisected this issue to:
-> > > > 
-> > > > commit 7302e91f39a81a9c2efcf4bc5749d18128366945
-> > > > Author: Marco Elver <elver@google.com>
-> > > > Date:   Fri Jan 14 22:03:58 2022 +0000
-> > > > 
-> > > >     mm/slab_common: use WARN() if cache still has objects on destroy
-> > > 
-> > > Just to state the obvious, bisection pointed to a commit that added the
-> > > warning, but the reason for the warning would be that p9 is destroying a
-> > > kmem_cache without freeing all the objects there first, and that would
-> > > be
-> > > true even before the commit.
-> > 
-> > Probably true from the moment that cache/idr was introduced... I've got
-> > a couple of fixes in next but given syzcaller claims that's the tree it
-> > was produced on I guess there can be more such leaks.
-> > (well, the lines it sent in the backtrace yesterday don't match next,
-> > but I wouldn't count on it)
-> > 
-> > If someone wants to have a look please feel free, I would bet the
-> > problem is just that p9_fd_close() doesn't call or does something
-> > equivalent to p9_conn_cancel() and there just are some requests that
-> > haven't been sent yet when the mount is closed..
-> > But I don't have/can/want to take the time to check right now as I
-> > consider such a leak harmless enough, someone has to be root or
-> > equivalent to do 9p mounts in most cases.
-> 
-> FWIW with KASAN we have allocation stacks for each heap object. So
-> when KASAN is enabled that warning could list all live object
-> allocation stacks.
+From: Yu Kuai <yukuai3@huawei.com>
 
-With allocation stack you mean the backtrace/call stack at the point in time 
-when the memory originally was acquired?
+Currently, in virtio_scsi, if 'bd->last' is not set to true while
+dispatching request, such io will stay in driver's queue, and driver
+will wait for block layer to dispatch more rqs. However, if block
+layer failed to dispatch more rq, it should trigger commit_rqs to
+inform driver.
 
-If the answer is yes, then sure, if someone had a chance to post those 
-backtraces, then that would help us to take a closer look at where this leak 
-might happen. Otherwise I fear it will end up among those other "lack of 
-priority" issues.
+There is a problem in blk_mq_try_issue_list_directly() that commit_rqs
+won't be called:
 
-Best regards,
-Christian Schoenebeck
+// assume that queue_depth is set to 1, list contains two rq
+blk_mq_try_issue_list_directly
+ blk_mq_request_issue_directly
+ // dispatch first rq
+ // last is false
+  __blk_mq_try_issue_directly
+   blk_mq_get_dispatch_budget
+   // succeed to get first budget
+   __blk_mq_issue_directly
+    scsi_queue_rq
+     cmd->flags |= SCMD_LAST
+      virtscsi_queuecommand
+       kick = (sc->flags & SCMD_LAST) != 0
+       // kick is false, first rq won't issue to disk
+ queued++
 
+ blk_mq_request_issue_directly
+ // dispatch second rq
+  __blk_mq_try_issue_directly
+   blk_mq_get_dispatch_budget
+   // failed to get second budget
+ ret == BLK_STS_RESOURCE
+  blk_mq_request_bypass_insert
+ // errors is still 0
+
+ if (!list_empty(list) || errors && ...)
+  // won't pass, commit_rqs won't be called
+
+In this situation, first rq relied on second rq to dispatch, while
+second rq relied on first rq to complete, thus they will both hung.
+
+Fix the problem by also treat 'BLK_STS_*RESOURCE' as 'errors' since
+it means that request is not queued successfully.
+
+Same problem exists in blk_mq_dispatch_rq_list(), 'BLK_STS_*RESOURCE'
+can't be treated as 'errors' here, fix the problem by calling
+commit_rqs if queue_rq return 'BLK_STS_*RESOURCE'.
+
+Fixes: d666ba98f849 ("blk-mq: add mq_ops->commit_rqs()")
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+---
+Changes in v3:
+ - as poinited out by Ming, v2 will break return value by treating
+ BLK_STS_*RESOURCE as errors.
+Changes in v2:
+ - suggested by Ming, handle blk_mq_dispatch_rq_list() as well.
+ - change title and modify commit message.
+
+ block/blk-mq.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/block/blk-mq.c b/block/blk-mq.c
+index 70177ee74295..7d26b222cbc9 100644
+--- a/block/blk-mq.c
++++ b/block/blk-mq.c
+@@ -1931,7 +1931,8 @@ bool blk_mq_dispatch_rq_list(struct blk_mq_hw_ctx *hctx, struct list_head *list,
+ 	/* If we didn't flush the entire list, we could have told the driver
+ 	 * there was more coming, but that turned out to be a lie.
+ 	 */
+-	if ((!list_empty(list) || errors) && q->mq_ops->commit_rqs && queued)
++	if ((!list_empty(list) || errors || needs_resource ||
++	     ret == BLK_STS_DEV_RESOURCE) && q->mq_ops->commit_rqs && queued)
+ 		q->mq_ops->commit_rqs(hctx);
+ 	/*
+ 	 * Any items that need requeuing? Stuff them into hctx->dispatch,
+@@ -2680,6 +2681,7 @@ void blk_mq_try_issue_list_directly(struct blk_mq_hw_ctx *hctx,
+ 		list_del_init(&rq->queuelist);
+ 		ret = blk_mq_request_issue_directly(rq, list_empty(list));
+ 		if (ret != BLK_STS_OK) {
++			errors++;
+ 			if (ret == BLK_STS_RESOURCE ||
+ 					ret == BLK_STS_DEV_RESOURCE) {
+ 				blk_mq_request_bypass_insert(rq, false,
+@@ -2687,7 +2689,6 @@ void blk_mq_try_issue_list_directly(struct blk_mq_hw_ctx *hctx,
+ 				break;
+ 			}
+ 			blk_mq_end_request(rq, ret);
+-			errors++;
+ 		} else
+ 			queued++;
+ 	}
+-- 
+2.31.1
 
