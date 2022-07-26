@@ -2,63 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C5F6C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 07:16:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C5EEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 07:18:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237876AbiGZHQE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 03:16:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50988 "EHLO
+        id S237893AbiGZHSk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 03:18:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230339AbiGZHQB (ORCPT
+        with ESMTP id S237687AbiGZHSh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 03:16:01 -0400
-Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F97D6585
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 00:16:01 -0700 (PDT)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
-        id 7133E669; Tue, 26 Jul 2022 09:15:59 +0200 (CEST)
-Date:   Tue, 26 Jul 2022 09:15:58 +0200
-From:   Joerg Roedel <joro@8bytes.org>
-To:     Michael Kelley <mikelley@microsoft.com>
-Cc:     sthemmin@microsoft.com, kys@microsoft.com, haiyangz@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, will@kernel.org,
-        robin.murphy@arm.com, samuel@sholland.org,
-        linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        iommu@lists.linux.dev
-Subject: Re: [PATCH 1/1] iommu/hyper-v: Use helper instead of directly
- accessing affinity
-Message-ID: <Yt+Uro8y219/MNFE@8bytes.org>
-References: <1658796820-2261-1-git-send-email-mikelley@microsoft.com>
+        Tue, 26 Jul 2022 03:18:37 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91A082A97B
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 00:18:36 -0700 (PDT)
+Received: from dggpemm500023.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LsSqf5730zjXVM;
+        Tue, 26 Jul 2022 15:15:42 +0800 (CST)
+Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
+ dggpemm500023.china.huawei.com (7.185.36.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 26 Jul 2022 15:17:55 +0800
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 26 Jul 2022 15:17:54 +0800
+From:   Kefeng Wang <wangkefeng.wang@huawei.com>
+To:     Andrew Morton <akpm@linux-foundation.org>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Yongqiang Liu <liuyongqiang13@huawei.com>
+Subject: [PATCH] mm: add warning if __vm_enough_memory fails
+Date:   Tue, 26 Jul 2022 15:24:51 +0800
+Message-ID: <20220726072451.142427-1-wangkefeng.wang@huawei.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1658796820-2261-1-git-send-email-mikelley@microsoft.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500001.china.huawei.com (7.185.36.107)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Michael,
+If a process has no enough memory to allocate a new virtual mapping, we
+may meet kinds of error, eg, fork cannot allocate memory, SIGBUS error
+in shmem, but it is difficult to confirm them, let's add some debug
+information to easy to check this scenario if __vm_enough_memory fails.
 
-On Mon, Jul 25, 2022 at 05:53:40PM -0700, Michael Kelley wrote:
-> Recent changes to solve inconsistencies in handling IRQ masks #ifdef
-> out the affinity field in irq_common_data for non-SMP configurations.
-> The current code in hyperv_irq_remapping_alloc() gets a compiler error
-> in that case.
-> 
-> Fix this by using the new irq_data_update_affinity() helper, which
-> handles the non-SMP case correctly.
-> 
-> Signed-off-by: Michael Kelley <mikelley@microsoft.com>
+Reported-by: Yongqiang Liu <liuyongqiang13@huawei.com>
+Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+---
+ mm/util.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Please add a fixes tag.
-
-Where is the change which breaks this currently, in some subsystem tree
-or already upstream?
-
-In case it is still in a maintainers tree, this patch should be applied
-there. Here is my
-
-Acked-by: Joerg Roedel <jroedel@suse.de>
-
-for that.
+diff --git a/mm/util.c b/mm/util.c
+index 1266a33a49ea..19bfff8a0ad6 100644
+--- a/mm/util.c
++++ b/mm/util.c
+@@ -1020,6 +1020,8 @@ int __vm_enough_memory(struct mm_struct *mm, long pages, int cap_sys_admin)
+ 	if (percpu_counter_read_positive(&vm_committed_as) < allowed)
+ 		return 0;
+ error:
++	pr_warn("%s: pid: %d, comm: %s, no enough memory for the allocation\n",
++		__func__, current->pid, current->comm);
+ 	vm_unacct_memory(pages);
+ 
+ 	return -ENOMEM;
+-- 
+2.35.3
 
