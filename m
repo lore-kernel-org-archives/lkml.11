@@ -2,91 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19FD4C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 08:29:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A81B8C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 08:29:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238532AbiGZI3H convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 04:29:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45358 "EHLO
+        id S229491AbiGZI3W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 04:29:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238501AbiGZI25 (ORCPT
+        with ESMTP id S238545AbiGZI3J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 04:28:57 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C79153054A
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 01:28:56 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1oGFvQ-0006c7-GN; Tue, 26 Jul 2022 10:28:20 +0200
-Received: from [2a0a:edc0:0:900:1d::4e] (helo=lupine)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1oGFvJ-003HT4-4w; Tue, 26 Jul 2022 10:28:13 +0200
-Received: from pza by lupine with local (Exim 4.94.2)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1oGFvI-0003CM-92; Tue, 26 Jul 2022 10:28:12 +0200
-Message-ID: <55668d62aad8feedb7fa78f410f4f71ecfce8c98.camel@pengutronix.de>
-Subject: Re: [PATCH v2 6/9] arm64: bcmbca: Make BCM4908 drivers depend on
- ARCH_BCMBCA
-From:   Philipp Zabel <p.zabel@pengutronix.de>
-To:     William Zhang <william.zhang@broadcom.com>,
-        Linux ARM List <linux-arm-kernel@lists.infradead.org>
-Cc:     joel.peshkin@broadcom.com, f.fainelli@gmail.com,
-        Broadcom Kernel List <bcm-kernel-feedback-list@broadcom.com>,
-        dan.beygelman@broadcom.com, anand.gore@broadcom.com,
-        kursad.oney@broadcom.com, rafal@milecki.pl,
-        krzysztof.kozlowski@linaro.org, Guenter Roeck <linux@roeck-us.net>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh@kernel.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        "open list:I2C SUBSYSTEM HOST DRIVERS" <linux-i2c@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:MEMORY TECHNOLOGY DEVICES (MTD)" 
-        <linux-mtd@lists.infradead.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        "open list:PCI NATIVE HOST BRIDGE AND ENDPOINT DRIVERS" 
-        <linux-pci@vger.kernel.org>,
-        "open list:GENERIC PHY FRAMEWORK" <linux-phy@lists.infradead.org>,
-        "open list:PIN CONTROL SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "open list:BROADCOM BMIPS MIPS ARCHITECTURE" 
-        <linux-mips@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        "open list:WATCHDOG DEVICE DRIVERS" <linux-watchdog@vger.kernel.org>
-Date:   Tue, 26 Jul 2022 10:28:12 +0200
-In-Reply-To: <20220725055402.6013-7-william.zhang@broadcom.com>
-References: <20220725055402.6013-1-william.zhang@broadcom.com>
-         <20220725055402.6013-7-william.zhang@broadcom.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.38.3-1 
+        Tue, 26 Jul 2022 04:29:09 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0973130574;
+        Tue, 26 Jul 2022 01:29:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658824143; x=1690360143;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=xip+SiKxfrbgvn/EPR0jc0BKZZ5YrIpbvJIba3YLDGc=;
+  b=TyVRnagBRlB+961dxxNXDGsXg4YA57EFxQAU/2yfJ/P8bKVlxY2CC6iU
+   4w+SqstkepsdyBcITd3pLp2Y9WxUwNuZlw4kYzmEHfM1ET+IuvdaLogxD
+   xNEeBBeE8bnpY4BWYVXawDQmdR7T4UxEPOeYllOvFiYYNkRojaSbnPjR4
+   nMJEAOVyEF2NOd02eMcj9AZUqB9dFxiajuMhiZ0iI9mIe1uM1lxWrnq+s
+   jIoiDgl99+LLU2mREpMzZxvNtkY9cowqEOPbg27Jmaf6LgsDxJ7P6b4GF
+   cp2IWVEj7VbOz4vcD9CW9M3d3zZdrGD/kvnfOWDTpfAZ7XCgTXe76GV1r
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10419"; a="351889228"
+X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
+   d="scan'208";a="351889228"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2022 01:29:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
+   d="scan'208";a="627803966"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga008.jf.intel.com with ESMTP; 26 Jul 2022 01:28:59 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 511523ED; Tue, 26 Jul 2022 11:29:09 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Keith Busch <kbusch@kernel.org>, linux-arch@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Arnd Bergmann <arnd@arndb.de>, Jens Axboe <axboe@kernel.dk>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 1/1] asm-generic: Make parameter types consisten in _unaligned_be48()
+Date:   Tue, 26 Jul 2022 11:29:08 +0300
+Message-Id: <20220726082908.71341-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: p.zabel@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On So, 2022-07-24 at 22:53 -0700, William Zhang wrote:
-> With Broadcom Broadband arch ARCH_BCMBCA supported in the kernel, this
-> patch series migrate the ARCH_BCM4908 symbol to ARCH_BCMBCA. Hence
-> replace ARCH_BCM4908 with ARCH_BCMBCA in subsystem Kconfig files.
-> 
-> Signed-off-by: William Zhang <william.zhang@broadcom.com>
-> Acked-by: Guenter Roeck <linux@roeck-us.net> (for watchdog)
-> Acked-by: Bjorn Helgaas <bhelgaas@google.com> (for drivers/pci)
+There is a convention to use internal kernel types, hence replace
+__u8 by u8.
 
-Acked-by: Philipp Zabel <p.zabel@pengutronix.de> (for reset)
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ include/asm-generic/unaligned.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-regards
-Philipp
+diff --git a/include/asm-generic/unaligned.h b/include/asm-generic/unaligned.h
+index df30f11b4a46..699650f81970 100644
+--- a/include/asm-generic/unaligned.h
++++ b/include/asm-generic/unaligned.h
+@@ -126,7 +126,7 @@ static inline void put_unaligned_le24(const u32 val, void *p)
+ 	__put_unaligned_le24(val, p);
+ }
+ 
+-static inline void __put_unaligned_be48(const u64 val, __u8 *p)
++static inline void __put_unaligned_be48(const u64 val, u8 *p)
+ {
+ 	*p++ = val >> 40;
+ 	*p++ = val >> 32;
+-- 
+2.35.1
+
