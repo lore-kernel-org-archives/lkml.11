@@ -2,23 +2,23 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05AF4C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 07:32:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53972C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 07:32:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238401AbiGZHcc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 03:32:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41300 "EHLO
+        id S237724AbiGZHch (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 03:32:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238475AbiGZHbl (ORCPT
+        with ESMTP id S238464AbiGZHbl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Jul 2022 03:31:41 -0400
-Received: from out199-5.us.a.mail.aliyun.com (out199-5.us.a.mail.aliyun.com [47.90.199.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD8B72E9DC
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 00:27:49 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046049;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0VKUIM7m_1658820425;
-Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0VKUIM7m_1658820425)
+Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B20F3192C
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 00:27:50 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=ay29a033018046050;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0VKUIMGu_1658820438;
+Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0VKUIMGu_1658820438)
           by smtp.aliyun-inc.com;
-          Tue, 26 Jul 2022 15:27:07 +0800
+          Tue, 26 Jul 2022 15:27:20 +0800
 From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 To:     alexander.deucher@amd.com
 Cc:     christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
@@ -26,9 +26,9 @@ Cc:     christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
         dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
         Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
         Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH 11/20] drm/amd/display: Clean up some inconsistent indenting
-Date:   Tue, 26 Jul 2022 15:25:46 +0800
-Message-Id: <20220726072555.91323-11-jiapeng.chong@linux.alibaba.com>
+Subject: [PATCH 14/20] drm/amd/display: Clean up some inconsistent indenting
+Date:   Tue, 26 Jul 2022 15:25:49 +0800
+Message-Id: <20220726072555.91323-14-jiapeng.chong@linux.alibaba.com>
 X-Mailer: git-send-email 2.20.1.7.g153144c
 In-Reply-To: <20220726072555.91323-1-jiapeng.chong@linux.alibaba.com>
 References: <20220726072555.91323-1-jiapeng.chong@linux.alibaba.com>
@@ -40,34 +40,105 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 No functional modification involved.
 
-smatch warning:
+smatch warnings:
 
-drivers/gpu/drm/amd/amdgpu/../display/dc/dcn30/dcn30_optc.c:186 optc3_set_dsc_config() warn: inconsistent indenting.
+drivers/gpu/drm/amd/amdgpu/../display/dc/dcn20/dcn20_dpp_cm.c:450 dpp20_get_blndgam_current() warn: inconsistent indenting.
+drivers/gpu/drm/amd/amdgpu/../display/dc/dcn20/dcn20_dpp_cm.c:543 dpp20_get_shaper_current() warn: inconsistent indenting.
 
 Reported-by: Abaci Robot <abaci@linux.alibaba.com>
 Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
 ---
- drivers/gpu/drm/amd/display/dc/dcn30/dcn30_optc.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ .../drm/amd/display/dc/dcn20/dcn20_dpp_cm.c   | 68 +++++++++----------
+ 1 file changed, 34 insertions(+), 34 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_optc.c b/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_optc.c
-index 80136b5d7e48..d072997477dd 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_optc.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn30/dcn30_optc.c
-@@ -180,11 +180,8 @@ void optc3_set_dsc_config(struct timing_generator *optc,
- {
- 	struct optc *optc1 = DCN10TG_FROM_TG(optc);
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_dpp_cm.c b/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_dpp_cm.c
+index 2feb051a2002..598caa508d43 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_dpp_cm.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn20/dcn20_dpp_cm.c
+@@ -444,24 +444,24 @@ static enum dc_lut_mode dpp20_get_blndgam_current(struct dpp *dpp_base)
+ 	uint32_t state_mode;
+ 	struct dcn20_dpp *dpp = TO_DCN20_DPP(dpp_base);
  
--	optc2_set_dsc_config(optc, dsc_mode, dsc_bytes_per_pixel,
--		dsc_slice_width);
--
--		REG_UPDATE(OTG_V_SYNC_A_CNTL, OTG_V_SYNC_MODE, 0);
--
-+	optc2_set_dsc_config(optc, dsc_mode, dsc_bytes_per_pixel, dsc_slice_width);
-+	REG_UPDATE(OTG_V_SYNC_A_CNTL, OTG_V_SYNC_MODE, 0);
+-	REG_GET(CM_BLNDGAM_LUT_WRITE_EN_MASK,
+-					CM_BLNDGAM_CONFIG_STATUS, &state_mode);
++	REG_GET(CM_BLNDGAM_LUT_WRITE_EN_MASK, CM_BLNDGAM_CONFIG_STATUS, &state_mode);
+ 
+-		switch (state_mode) {
+-		case 0:
+-			mode = LUT_BYPASS;
+-			break;
+-		case 1:
+-			mode = LUT_RAM_A;
+-			break;
+-		case 2:
+-			mode = LUT_RAM_B;
+-			break;
+-		default:
+-			mode = LUT_BYPASS;
+-			break;
+-		}
+-		return mode;
++	switch (state_mode) {
++	case 0:
++		mode = LUT_BYPASS;
++		break;
++	case 1:
++		mode = LUT_RAM_A;
++		break;
++	case 2:
++		mode = LUT_RAM_B;
++		break;
++	default:
++		mode = LUT_BYPASS;
++		break;
++	}
++
++	return mode;
  }
  
- void optc3_set_vrr_m_const(struct timing_generator *optc,
+ bool dpp20_program_blnd_lut(
+@@ -537,24 +537,24 @@ static enum dc_lut_mode dpp20_get_shaper_current(struct dpp *dpp_base)
+ 	uint32_t state_mode;
+ 	struct dcn20_dpp *dpp = TO_DCN20_DPP(dpp_base);
+ 
+-	REG_GET(CM_SHAPER_LUT_WRITE_EN_MASK,
+-			CM_SHAPER_CONFIG_STATUS, &state_mode);
++	REG_GET(CM_SHAPER_LUT_WRITE_EN_MASK, CM_SHAPER_CONFIG_STATUS, &state_mode);
+ 
+-		switch (state_mode) {
+-		case 0:
+-			mode = LUT_BYPASS;
+-			break;
+-		case 1:
+-			mode = LUT_RAM_A;
+-			break;
+-		case 2:
+-			mode = LUT_RAM_B;
+-			break;
+-		default:
+-			mode = LUT_BYPASS;
+-			break;
+-		}
+-		return mode;
++	switch (state_mode) {
++	case 0:
++		mode = LUT_BYPASS;
++		break;
++	case 1:
++		mode = LUT_RAM_A;
++		break;
++	case 2:
++		mode = LUT_RAM_B;
++		break;
++	default:
++		mode = LUT_BYPASS;
++		break;
++	}
++
++	return mode;
+ }
+ 
+ static void dpp20_configure_shaper_lut(
 -- 
 2.20.1.7.g153144c
 
