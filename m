@@ -2,122 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76C3EC00144
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 23:30:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9933BC19F29
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 23:33:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232846AbiGZXaq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 19:30:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39700 "EHLO
+        id S233588AbiGZXdJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 19:33:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229493AbiGZXao (ORCPT
+        with ESMTP id S229493AbiGZXdH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 19:30:44 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5FF26554;
-        Tue, 26 Jul 2022 16:30:43 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id y141so14542476pfb.7;
-        Tue, 26 Jul 2022 16:30:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:sender
-         :from:to:cc;
-        bh=IWWxn3X0jnsR94h+cZ81QPmnOmsG3z0u/cykcxbxqQk=;
-        b=mBWyIaZ3887OTEur8s1YPqKZsGf3UyXWCMl0JX9K3rbdQIfEVIfq7cXTx+hHgeTbZh
-         y+BDnqiaRAskVnICRetNJsy1UwxxhRBSXodYVrU0KQfsBRGBgteG70kVZUzn6S3E+I5w
-         Yj1zjv47GCl2+goVzhJOurXm2jzYz0LE0tYMuknKI5Q0YDf4bR0VCvz5pEwIjsewZ9wN
-         5lmV1e+mi/vZKP2Z3Rjdoprfv+pJQYEkwuFPTr/h8jOYv8Dp7v84HHL9z2sAKqdLNXW5
-         sShwmNi+AOPBVMv9CS8oWE/LuMcWJ6Xbl+roqNA369ALlbqRf6BtaTnbAeQHxwK19vAc
-         ZbDg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:sender
-         :x-gm-message-state:from:to:cc;
-        bh=IWWxn3X0jnsR94h+cZ81QPmnOmsG3z0u/cykcxbxqQk=;
-        b=6pNOrQmQccxn1hW5t04iO08UezfNOfxvcxPrUNMpm0Uzq1v7lF53XPMpG/ixCO7p4A
-         Xcy9OmS5j8uEc4/6efkwbHBh7JM2GfQSC6v8A0CLswB/fP8OT9do7Tc77hn77VF6Drng
-         e/gbiIW5kfl+iyBIDYAjWZhGFOpMvaQS9ekVCKES1EoLPgDe03PjMW9BjM6xhzM8fhed
-         kf2OfdSp9r0ogxXpYCOavYt7KVhErXgHzh1PM0IDpXmzCYzgRdKykMs4xab+U5yaK6Ve
-         d7y+RByHdHCf0TwOeiPig9KnyMxU3tKtFJvNuRLRh8QGx25vfy31O5bv9Koa77rNDMYv
-         p83Q==
-X-Gm-Message-State: AJIora+nA1npMjDQQrpcLLNIwV//N58CuaCw8Ej3VKnlvd0cx+XWqDut
-        xz0dg1HxfV/kplSZNlQZ7O0=
-X-Google-Smtp-Source: AGRyM1s3ZPAxH1ynRbYFscu3o8AocBU3BZY+xC/4LJsgHZ2QXpev/iZnZz/68PqpcE8idISPihs45g==
-X-Received: by 2002:a63:e908:0:b0:41b:390a:f60d with SMTP id i8-20020a63e908000000b0041b390af60dmr2298982pgh.147.1658878243053;
-        Tue, 26 Jul 2022 16:30:43 -0700 (PDT)
-Received: from localhost ([2620:10d:c090:400::5:370d])
-        by smtp.gmail.com with ESMTPSA id d11-20020a63d64b000000b00416212f8da7sm10732203pgj.44.2022.07.26.16.30.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Jul 2022 16:30:42 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Tue, 26 Jul 2022 13:30:40 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        John Stultz <john.stultz@linaro.org>,
-        Dmitry Shmidt <dimitrysh@google.com>,
-        Oleg Nesterov <oleg@redhat.com>, linux-kernel@vger.kernel.org,
-        cgroups@vger.kernel.org
-Subject: Re: [PATCH 2/3 cgroup/for-5.20] cgroup: Add "no" prefixed mount
- options
-Message-ID: <YuB5ICv3bXsy5Xuh@slm.duckdns.org>
-References: <YtDvN0wJ6CKaEPN8@slm.duckdns.org>
- <YtDvU4jRPSsarcNp@slm.duckdns.org>
- <20220726143246.GA23794@blackbody.suse.cz>
- <YuBIACfZDk72yjI3@slm.duckdns.org>
+        Tue, 26 Jul 2022 19:33:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38C3E286CB;
+        Tue, 26 Jul 2022 16:33:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CC1A56170E;
+        Tue, 26 Jul 2022 23:33:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCE97C433C1;
+        Tue, 26 Jul 2022 23:33:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658878385;
+        bh=I/rSDH27s22aS09yPNSQ0IWerMS4lsIiHugHoIGthYw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=msdF+gbfhutRiXqSjMj29VZXd6pPQvph7mflQ/fFoxio19nyEhvVFjvAx75z21xys
+         qXdAdKaAnhZiMGXNnM6Tg1oRH6ux/Xzn0k7vFjJInlQ2fPE/bQfGADidF5iB4vrK13
+         lxy1h2TjzrSeOTztNrwJwcutod+07eYLvfDiEsp4cULC3feNwC/D8LSASbsBH4kF4M
+         QT3VRti+eQQITHiogxHUUP7ok/pVaBKQHovewSMl/OlIoMkJpWYdn+QQxzfslphKqQ
+         RetvkjvczXXyZrHhZK8jfQW+AQRp2J8d9fHks8VQKxpPX9slYQGPhTaXl4ZMzAps7s
+         mXatNHGKk69aw==
+Date:   Tue, 26 Jul 2022 16:33:02 -0700
+From:   Josh Poimboeuf <jpoimboe@kernel.org>
+To:     Song Liu <song@kernel.org>
+Cc:     live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jikos@kernel.org, mbenes@suse.cz, pmladek@suse.com,
+        joe.lawrence@redhat.com, x86@kernel.org,
+        Josh Poimboeuf <jpoimboe@redhat.com>
+Subject: Re: [PATCH v3] livepatch: Clear relocation targets on a module
+ removal
+Message-ID: <20220726233302.zwloxsammnu7clu4@treble>
+References: <20220721175147.214642-1-song@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <YuBIACfZDk72yjI3@slm.duckdns.org>
+In-Reply-To: <20220721175147.214642-1-song@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+On Thu, Jul 21, 2022 at 10:51:47AM -0700, Song Liu wrote:
+> From: Miroslav Benes <mbenes@suse.cz>
+> 
+> Josh reported a bug:
+> 
+>   When the object to be patched is a module, and that module is
+>   rmmod'ed and reloaded, it fails to load with:
+> 
+>   module: x86/modules: Skipping invalid relocation target, existing value is nonzero for type 2, loc 00000000ba0302e9, val ffffffffa03e293c
+>   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
+>   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
+> 
+>   The livepatch module has a relocation which references a symbol
+>   in the _previous_ loading of nfsd. When apply_relocate_add()
+>   tries to replace the old relocation with a new one, it sees that
+>   the previous one is nonzero and it errors out.
+> 
+>   On ppc64le, we have a similar issue:
+> 
+>   module_64: livepatch_nfsd: Expected nop after call, got e8410018 at e_show+0x60/0x548 [livepatch_nfsd]
+>   livepatch: failed to initialize patch 'livepatch_nfsd' for module 'nfsd' (-8)
+>   livepatch: patch 'livepatch_nfsd' failed for module 'nfsd', refusing to load module 'nfsd'
+> 
+> He also proposed three different solutions. We could remove the error
+> check in apply_relocate_add() introduced by commit eda9cec4c9a1
+> ("x86/module: Detect and skip invalid relocations"). However the check
+> is useful for detecting corrupted modules.
+> 
+> We could also deny the patched modules to be removed. If it proved to be
+> a major drawback for users, we could still implement a different
+> approach. The solution would also complicate the existing code a lot.
+> 
+> We thus decided to reverse the relocation patching (clear all relocation
+> targets on x86_64). The solution is not
+> universal and is too much arch-specific, but it may prove to be simpler
+> in the end.
+> 
+> Reported-by: Josh Poimboeuf <jpoimboe@redhat.com>
+> Signed-off-by: Miroslav Benes <mbenes@suse.cz>
+> Signed-off-by: Song Liu <song@kernel.org>
+> 
+> ---
+> 
+> Changes from v2:
+> 1. Rewrite x86 changes to match current code style.
+> 2. Remove powerpc changes as there is no test coverage in v3.
+> 3. Only keep 1/3 of v2.
 
-On Tue, Jul 26, 2022 at 10:01:04AM -1000, Tejun Heo wrote:
-> On Tue, Jul 26, 2022 at 04:32:46PM +0200, Michal Koutný wrote:
-> > On Thu, Jul 14, 2022 at 06:38:43PM -1000, Tejun Heo <tj@kernel.org> wrote:
-> > > We allow modifying these mount options via remount. Let's add "no" prefixed
-> > > variants so that they can be turned off too.
-> > 
-> > They can be turned off:
-> > 
-> > > // on v5.19-rc?
-> > > :~ # grep cg /proc/mounts
-> > > cgroup2 /sys/fs/cgroup cgroup2 rw,nosuid,nodev,noexec,relatime,nsdelegate 0 0
-> > > :~ # mount -t cgroup2 cgroup2 /sys/fs/cgroup/ -oremount
-> > > :~ # grep cg /proc/mounts
-> > > cgroup2 /sys/fs/cgroup cgroup2 rw,relatime 0 0
+1) All the copy/paste is ugly and IMO guaranteed to eventually introduce
+   bugs when somebody forgets to update the copy.  Wouldn't it be more
+   robust to reuse the existing apply_relocate_add() code by making it
+   more generic somehow, like with a new 'clear' bool arg which sets
+   'val' to zero?
 
-  root@test ~# grep cgroup /proc/mounts
-  cgroup2 /sys/fs/cgroup cgroup2 rw,nosuid,nodev,noexec,relatime,nsdelegate,memory_recursiveprot 0 0
-  root@test ~# mount -o remount,exec /sys/fs/cgroup
-  root@test ~# grep cgroup /proc/mounts
-  cgroup2 /sys/fs/cgroup cgroup2 rw,nosuid,nodev,relatime,nsdelegate,memory_recursiveprot 0 0
-  root@test ~# mount -o remount /sys/fs/cgroup
-  root@test ~# grep cgroup /proc/mounts
-  cgroup2 /sys/fs/cgroup cgroup2 rw,nosuid,nodev,relatime,nsdelegate,memory_recursiveprot 0 0
-  root@test ~# mount -o remount,nsdelegate,memory_recursiveprot cgroup2 /sys/fs/cgroup
-  root@test ~# grep cgroup /proc/mounts
-  cgroup2 /sys/fs/cgroup cgroup2 rw,relatime,nsdelegate,memory_recursiveprot 0 0
-  root@test ~# mount -o remount,memory_recursiveprot cgroup2 /sys/fs/cgroup
-  root@test ~# grep cgroup /proc/mounts
-  cgroup2 /sys/fs/cgroup cgroup2 rw,relatime,memory_recursiveprot 0 0
-  root@test ~# mount -o remount cgroup2 /sys/fs/cgroup
-  root@test ~# grep cgroup /proc/mounts
-  cgroup2 /sys/fs/cgroup cgroup2 rw,relatime 0 0
+2) We can't only fix x86, powerpc also needs a fix.
 
-Man, I had no idea that `mount -o remount,$OPTS $MOUNT_POINT` and `mount -o
-remount,$OPTS $SRC $MOUNT_POINT` behave completely differently in how they
-handle existing options. I wonder why other filesystems are implementing
-explicit no prefixed options.
-
-Anyways, will soon post a patch to remove the no prefixed options.
-
-Thanks for pointing it out.
+3) A selftest would be a good idea.
 
 -- 
-tejun
+Josh
