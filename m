@@ -2,78 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CBBECCA48B
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 01:06:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAAE7C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 01:06:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234849AbiGZBGR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 21:06:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47878 "EHLO
+        id S237027AbiGZBG0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 21:06:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229609AbiGZBGO (ORCPT
+        with ESMTP id S235069AbiGZBGS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 21:06:14 -0400
-Received: from m1364.mail.163.com (m1364.mail.163.com [220.181.13.64])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C3F8426544;
-        Mon, 25 Jul 2022 18:06:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=tMZKv
-        nr2S+LpKBN6CdOAA5vEXQTONGrH6lqsAQ5uMb0=; b=buoXR/OwW8IiEHFyqxW9O
-        ZeSuFtQOewz4Rcn6AEWCVmuHl8X6xC+5+vOXBw9uy05+AmaJHM0q5lCvl2ZeR8Iy
-        zlEP+Hk3MpUXLUNCTEt/TILpDCKkHT6lb/gVj3r5gQLnEDK2phDYyVBczYdMiZgw
-        MLyQhf4wXZi1010u33ujdY=
-Received: from slark_xiao$163.com ( [223.104.68.106] ) by
- ajax-webmail-wmsvr64 (Coremail) ; Tue, 26 Jul 2022 09:04:41 +0800 (CST)
-X-Originating-IP: [223.104.68.106]
-Date:   Tue, 26 Jul 2022 09:04:41 +0800 (CST)
-From:   "Slark Xiao" <slark_xiao@163.com>
-To:     "Baoquan He" <bhe@redhat.com>
-Cc:     "David Howells" <dhowells@redhat.com>, corbet@lwn.net,
-        vgoyal@redhat.com, dyoung@redhat.com, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, martin.lau@linux.dev,
-        song@kernel.org, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, sdf@google.com, haoluo@google.com,
-        jolsa@kernel.org, william.gray@linaro.org, peterz@infradead.org,
-        mingo@redhat.com, will@kernel.org, longman@redhat.com,
-        boqun.feng@gmail.com, tglx@linutronix.de, bigeasy@linutronix.de,
-        kexec@lists.infradead.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        linux-cachefs@redhat.com
-Subject: Re:Re: [PATCH v2] docs: Fix typo in comment
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
- Copyright (c) 2002-2022 www.mailtech.cn 163com
-In-Reply-To: <Yt6bVIoRa0nIvxei@MiWiFi-R3L-srv>
-References: <YtlyDZEsOZHt6tRs@MiWiFi-R3L-srv>
- <20220721015605.20651-1-slark_xiao@163.com>
- <2778505.1658746506@warthog.procyon.org.uk>
- <Yt6bVIoRa0nIvxei@MiWiFi-R3L-srv>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=GBK
+        Mon, 25 Jul 2022 21:06:18 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C530E27CF9
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 18:06:17 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id u12so10958049edd.5
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 18:06:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=thz9dxDFuSYqJODD5f5c1QcTHNUerc3dCgd6VzMTNUU=;
+        b=oXmTyriMkdqorU5Eg9Tws9vQBtvkCsmHM9/p03uYCH15r+CwIWZhfkIC77YqZsQx9p
+         KnD9kP9K5a6jO8QftVh1WYxOo90r8Lryc9aLE3006UUD3/i+DVhnkscEXIIh17uPl71c
+         CMExZNYmAgwmToTNjecSecTipYfdK1f4W/YOvoi4psaBNbBZQxnLF3DJkYPcRk6fzac5
+         kt8HgCWem2OG8z7U/YVCcN33meN2q3mzUPiP84hs3i1aIiKbWMN5yoJe5wLVs+7a6tfJ
+         JxnvfBNMWU9mPPnYjiSqEWyFH6yEGE7Wef65bnCBAT+30rlpvZiYHBLcsC1BC1uzrN8t
+         OM5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=thz9dxDFuSYqJODD5f5c1QcTHNUerc3dCgd6VzMTNUU=;
+        b=Oezz9MUY/yri9TTPpX3GyvR6mtb14H3qPdcm9D3QYznjUS85+ZkIEn520OT17YUSz9
+         9NzVFC1HmQzPoyftgGtpdOED2ALHdLTYzpbOGUQmFy0dvxXTOqqueboFzfjptjkgVYtJ
+         oesI/4bplJXk+Q9XT9Bb9PfWkjvmPuGgAddZHzF9CaC2Sd/97MFZDQalg3XXlCoS/pwJ
+         2hSxk7Ry1XjbymUFENmUDv+Xcz00XJThhbroelV7PlixEVq6nujVUjq10R2acOh1SYdG
+         W3IpiOKARJ066jF7h4dqmmOzjNVND+JV2XWMY2I9UlKxA+b9HFLFPyo3JJww3tAY9eFd
+         b0Og==
+X-Gm-Message-State: AJIora8VTt0jFDi1A0zDKscDrXj3Zsbb7cSq03ApjrMhqAKFk/ZaNXAU
+        5XfeTLbnaidvji5Xhqvuit1nAw==
+X-Google-Smtp-Source: AGRyM1sirez8JaDsUjTPMqZyKbVbQ6f40aB9QttdiSybXDlwbnLl7Gzunq2EajS8Tj2HL3gStT4/YQ==
+X-Received: by 2002:a05:6402:42cb:b0:43b:e8eb:cbc1 with SMTP id i11-20020a05640242cb00b0043be8ebcbc1mr10583652edc.414.1658797576269;
+        Mon, 25 Jul 2022 18:06:16 -0700 (PDT)
+Received: from leoy-ThinkPad-X240s ([104.245.97.243])
+        by smtp.gmail.com with ESMTPSA id p4-20020a17090653c400b0072fd6e9f707sm1843498ejo.100.2022.07.25.18.06.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Jul 2022 18:06:15 -0700 (PDT)
+Date:   Tue, 26 Jul 2022 09:06:10 +0800
+From:   Leo Yan <leo.yan@linaro.org>
+To:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Ian Rogers <irogers@google.com>,
+        Fangrui Song <maskray@google.com>,
+        Chang Rui <changruinj@gmail.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/2] perf symbol: Correct address for bss symbols
+Message-ID: <20220726010610.GC36862@leoy-ThinkPad-X240s>
+References: <20220724060013.171050-1-leo.yan@linaro.org>
+ <20220724060013.171050-2-leo.yan@linaro.org>
+ <Yt7hGepLBAJJuvII@kernel.org>
+ <20220726005307.GA36862@leoy-ThinkPad-X240s>
+ <2A971E59-21F0-4DD2-9E62-F1E7F481C8AF@gmail.com>
 MIME-Version: 1.0
-Message-ID: <55d366e4.486.1823808de32.Coremail.slark_xiao@163.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: QMGowAD3Ei+pPd9i1g8sAA--.42687W
-X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/xtbCdRZJZGBbEenN+gACs4
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2A971E59-21F0-4DD2-9E62-F1E7F481C8AF@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CgoKCgoKCgoKCgoKCgoKCkF0IDIwMjItMDctMjUgMjE6MzI6MDQsICJCYW9xdWFuIEhlIiA8Ymhl
-QHJlZGhhdC5jb20+IHdyb3RlOgo+T24gMDcvMjUvMjIgYXQgMTE6NTVhbSwgRGF2aWQgSG93ZWxs
-cyB3cm90ZToKPj4gQmFvcXVhbiBIZSA8YmhlQHJlZGhhdC5jb20+IHdyb3RlOgo+PiAKPj4gPiBz
-ZWQgLWkgInMvdGhlIHRoZSAvdGhlIC9nIiBgZ2l0IGdyZXAgLWwgInRoZSB0aGUgImAKPj4gCj4+
-IFlvdSBtaWdodCB3YW50IHRvIGNsYXJpZnkgdGhlIGZpcnN0ICJ0aGUiIHdpdGggYSBwcmVjZWRp
-bmcgYm91bmRhcnkgbWFya2VyLgo+PiBUaGVyZSBhcmUgc29tZSBFbmdsaXNoIHdvcmRzIGVuZGlu
-ZyBpbiAidGhlIiB0aGF0IGNhbiBiZSB1c2VkIGFzIHZlcmJzLCB0aG91Z2gKPj4gSSdtIG5vdCBz
-dXJlIHlvdSdkIGZpbmQgYW55IG9mIHRoZW0gaGVyZSAtIGNsb3RoZSBmb3IgZXhhbXBsZS4KPgo+
-UmlnaHQuIEkgcGxhbiB0byBzcGxpdCB0aGlzIGJpZyBvbmUgaW50byBwYXRjaGVzIGNvcnJlc3Bv
-bmRpbmcgdG8KPmRpZmZlcmVudCBjb21wb25lbnQgYXMgSm9uYXRoYW4gc3VnZ2VzdGVkLCBhbmQg
-d2lsbCBjb25zaWRlciBob3cgdG8gbWFyawo+dGhlIGZpcnN0ICd0aGUnIGFzIHlvdSBzdWdnZXN0
-ZWQsIGFuZCB3cmFwIFNsYXJrJ3MgcGF0aGNlcyB3aGljaAo+aW5jbHVkZXMgdHlwbyBmaXggb2Yg
-InRoZW4gdGhlIi4KPgo+VGhhbmtzCj5CYW9xdWFuCgpBY3R1YWxseSBJIGhhdmUgY29tbWl0dGVk
-IGFsbCBjaGFuZ2VzIHdoaWNoIHdlcmUgbGlzdGVkIGluIHlvdXIgcHJldmlvdXMgbGlzdC4KSSBj
-b21taXR0ZWQgaXQgb25lIGJ5IG9uZSBhbmQgY2hlY2tlZCBpZiBhbnkgb3RoZXIgdHlwbyBpcyBp
-bmNsdWRlZC4KSWYgcG9zc2libGUsIHlvdSBjYW4gdHJ5IG90aGVyIGRvdWJsZSB0eXBvIGlzc3Vl
-IGxpa2UgImFuZCBhbmQgIiBvciAib3Igb3IiIG9yIHNvbWV0aGluZyBlbHNlLgoKClRoYW5rcwo=
+On Mon, Jul 25, 2022 at 10:04:58PM -0300, Arnaldo Carvalho de Melo wrote:
 
+[...]
+
+> >Do want me to proceed for adding test case? 
+> 
+> Yes, go ahead, that will be really nice of you to add it :)
+
+Get it, will do it.
+
+Thanks,
+Leo
