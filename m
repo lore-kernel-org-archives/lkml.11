@@ -2,96 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A652C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 07:48:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D50FCC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 07:48:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238314AbiGZHsF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 03:48:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37454 "EHLO
+        id S238370AbiGZHsS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 03:48:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237783AbiGZHsD (ORCPT
+        with ESMTP id S237783AbiGZHsQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 03:48:03 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1DC91DFDA;
-        Tue, 26 Jul 2022 00:48:02 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4CF721FB;
-        Tue, 26 Jul 2022 00:48:02 -0700 (PDT)
-Received: from [10.57.13.197] (unknown [10.57.13.197])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 48D1F3F73B;
-        Tue, 26 Jul 2022 00:48:00 -0700 (PDT)
-Message-ID: <500c8773-12e0-1e3a-fb11-4d7a5da11b71@arm.com>
-Date:   Tue, 26 Jul 2022 08:47:57 +0100
+        Tue, 26 Jul 2022 03:48:16 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 428AE27FC5
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 00:48:15 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id z22so16735399edd.6
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 00:48:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FH/29theWqCi+bWe4cZkC9kVr9XrvsNj1wv53N0Mxyo=;
+        b=yyUauTSIja1NS2kRSo57hxSmByY69K71T1R02GJNP+Bz+KRkj62kj/6I4QYkyuPnH3
+         19aLTtpfVlfw8hNqrFIeHWqKF+mhZnCMyJepWZVhaIkhI575pijXqqm1wOg2+sJapndR
+         xa6WKQe7GJ3woUuVnjrDJ+TyrFZkxWAQjfkmrIpNRqc3uvi2OGGMhByUW9dsXTHKeMes
+         YpNPNP0XI7SExk9eqs02E2eTIb8yoKSN/RSOIcLaLmlQk3wiQF10yPbXW/x7uqstLbxt
+         AN+h0RtlCnFWRnn2RSSA9NBwhBiHu8h8xVWct83S8KQH54VKwIKHUt+I/XEpxGTq7k7+
+         ITDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FH/29theWqCi+bWe4cZkC9kVr9XrvsNj1wv53N0Mxyo=;
+        b=d29HLGZKmM+i7NQ8u/U/UGrcpAsd+ZQn/4HZeJ+eqdNy2ej2pqnEcx9gvkOPptylGz
+         0G/yBDn5yi0ED0hxy7U2SjH+YqyKhgIAFzU9yCnqgDNbXzGIfKl93Wk60nXymnhEg11E
+         RyiV6KGgv19e7cQTB4fqwx5ddPiIcdQvIWEyxdtk5KjJxF8YVkRn8VxTxNou1UTXfN5d
+         PzFKcNGRhV50gGp77OLnNo0Y0kU9LAHkjHl4n8T9GNgSi4jGIymmOTsbtJ70g7iCUrme
+         8cFlt9w9oercSNiKEhLufiCW68I/ddAQZq5CDebSL8wOr5FNWj/Bhw836RDBEnR/4+q3
+         NbfQ==
+X-Gm-Message-State: AJIora+RNlZfFRllU390cSgrEXrE/5NYXOL/By7V/ydN7ol/Sucqf2NU
+        ckIHR+8NovH5Gnt0+OKL9nyAtSjHeMB2fJlUDravXQ==
+X-Google-Smtp-Source: AGRyM1uZga0NmMKKnrtL7tNwX0yv1AqXO6WwrAuYMFC0JhsER8PGlbr+vexB48sBx+y4/hFXsFUplNR17/2NCvfE8Y0=
+X-Received: by 2002:a05:6402:430b:b0:43b:e639:8b25 with SMTP id
+ m11-20020a056402430b00b0043be6398b25mr13083404edc.205.1658821693599; Tue, 26
+ Jul 2022 00:48:13 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH v6 00/12] thermal OF rework
-Content-Language: en-US
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Daniel Lezcano <daniel.lezcano@linexp.org>
-Cc:     rui.zhang@intel.com, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, khilman@baylibre.com,
-        abailon@baylibre.com, rafael@kernel.org
-References: <20220722200007.1839356-1-daniel.lezcano@linexp.org>
- <1aa3ae56-84ae-8a96-7a52-3181c47dcb07@linaro.org>
-From:   Lukasz Luba <lukasz.luba@arm.com>
-In-Reply-To: <1aa3ae56-84ae-8a96-7a52-3181c47dcb07@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20220721093422.2173982-1-marcus.folkesson@gmail.com> <20220721093422.2173982-2-marcus.folkesson@gmail.com>
+In-Reply-To: <20220721093422.2173982-2-marcus.folkesson@gmail.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Tue, 26 Jul 2022 09:48:02 +0200
+Message-ID: <CACRpkdZJZ6JwGDLdPHqb8WW+fN+tAYNDD-ERwo4h2ftZ0cGEqg@mail.gmail.com>
+Subject: Re: [PATCH 2/2] dt-bindings: gpio: fairchild,74hc595: add
+ strobe-gpios property
+To:     Marcus Folkesson <marcus.folkesson@gmail.com>
+Cc:     Bartosz Golaszewski <brgl@bgdev.pl>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Maxime Ripard <mripard@kernel.org>, linux-gpio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Daniel,
+On Thu, Jul 21, 2022 at 11:30 AM Marcus Folkesson
+<marcus.folkesson@gmail.com> wrote:
 
-On 7/25/22 17:34, Daniel Lezcano wrote:
-> 
-> Hi Rafael,
-> 
-> On 22/07/2022 21:59, Daniel Lezcano wrote:
->> The thermal framework initialization with the device tree appears to
->> be complicated and hard to make it to evolve.
->>
->> It contains duplication of almost the same thermal generic structures
->> and has an assymetric initialization making hard any kind of serious
->> changes for more complex features. One of them is the multiple sensors
->> support per thermal zone.
->>
->> In order to set the scene for the aforementioned feature with generic
->> code, we need to cleanup and rework the device tree initialization.
->>
->> However this rework is not obvious because of the multiple components
->> entering in the composition of a thermal zone and being initialized at
->> different moments. For instance, a cooling device can be initialized
->> before a sensor, so the thermal zones must exist before the cooling
->> device as well as the sensor. This asynchronous initialization forces
->> the thermal zone to be created with fake ops because they are
->> mandotory and build a list of cooling devices which is used to lookup
->> afterwards when the cooling device driver is registering itself.
->>
->> As there could be a large number of changes, this first series provide
->> some steps forward for a simpler device tree initialization.
->>
->> More series for cleanup and code duplication removal will follow.
->>
->> Changelog:
->>
->>   - v6:
->>      - Folded patches 8, 9, 10
->>      - Removed thermal_zone_get_trips() and thermal_zone_get_num_trips()
->>      - Moved tz->ntrips => tz->num_trips changes into patch 11 to fix the
->>        git bisecting
->>
-> 
-> I believe all the comments were addressed, is it fine if I merge this 
-> series ?
-> 
-> 
+> Some shift registers (74hc4094 for example) has a strobe signal to latch
+> data from the serial input to the parallel output.
+>
+> Add an optional strobe-gpios property to support those chips.
+>
+> Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
 
-My apologies for being quiet, I was on holiday last week.
-Please don't wait for me, I'm still catching up with internal stuff.
-Based on your changelog I can see you've addressed my comments.
+As pointed out in discussion with Andy, let's drop this and just
+use cs-gpios as-is.
 
-Regards,
-Lukasz
+Yours,
+Linus Walleij
