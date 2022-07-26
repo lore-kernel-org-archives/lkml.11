@@ -2,107 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 552BDCCA489
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 07:21:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1536C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 07:24:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236994AbiGZHVy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 03:21:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56256 "EHLO
+        id S238362AbiGZHYS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 03:24:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232174AbiGZHVw (ORCPT
+        with ESMTP id S238118AbiGZHXa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 03:21:52 -0400
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 780BBBF7E
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 00:21:49 -0700 (PDT)
-Received: by mail-lj1-x231.google.com with SMTP id z13so15164870ljj.6
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 00:21:49 -0700 (PDT)
+        Tue, 26 Jul 2022 03:23:30 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B2002B621
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 00:23:21 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id j22so24587382ejs.2
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 00:23:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=BaHRyLExwhQJT5LoXWhyAV94oIh55w9luBR+4krs4UE=;
-        b=IvRWCs+QRUbjysWNzcrXSCOLNDiVNIOzFM3qbLPrFROW6ff5JQQ3Y6fh6fWX/9xBAN
-         P9GZnniPLle+tgVY9QCRN6g+97izf7kayF7CVc39++5MqmfER6vl4nkFdCH0Xp1X9A/X
-         Np8igVpHxQGt/AWTPTI6oAoWJS6cBSk/z3WaNOT6cdfzJzC+iiAldLJlTOOrB959O7Vl
-         /7rYfBgOTVGhx+uQi0FBSw6jRRriJYZXl6urd5fKzw8VnKeyYW/PsooBAVMr2C0sjdNu
-         XLoYoQaNTK2HTLcyPqxVm7K0vNynn5I+nBtQ5sbAADgMQc2b+DAdSbQpQSswJZXYkTyJ
-         SLcw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=DD0uadPhkaJ539aapAhTDeVFQH+XGwCWm7G+YfPh7fc=;
+        b=Kba4ZDV1A/AXRgz6iEbxRwn8EqVTv2R9yv+8Q2gRza9+ZIvQtXmDpHMJ+sUhFJFMZ0
+         7FbNc6d3/UoKdDqyTR5suL8w6TJ5Gn4/Kz3AtA2NjJTGAKHlcxyL3aJx4A7+/5TiUfQS
+         NxlzBAykIrKayHvDFOAKgU5Tiinpei2lR44V3d7wEJl+WEyIYRuRvQ9iG/c5gF30k3Zl
+         UFz7H/aJUp9D6Vjh3W9yMy72PrQ2Xxh5RoEOE3cP+U8zGqLPIIyi1AHwfcGI0gIcwimM
+         2dsoyOJLHp+5tVE6zpTC3LAoEK7Uku2f0P0wNfD7NWfh2JBiJ8ColgXgz/u4zr4EIrTZ
+         1Fsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=BaHRyLExwhQJT5LoXWhyAV94oIh55w9luBR+4krs4UE=;
-        b=Yts4KU8/CKAvR+Yf9hO+w2q08o1iC2OanDS3ueGvBtJ3g3PAsR80XA6ck3dm7WpmJy
-         L2P7akjgM2rjDuMSXZ7T1xOh0yhq4hNlS32wkLE5kwS5WNhFLQoCZW6hsJU0tSeW5ilt
-         ap1UAFRXR4jJ3YX6iP4Kyu7VHVgvlMlmloD6ytm/lcvHYQiwqZIiTqjIkg+oTBpPnT2F
-         Rr7IPo8pCRQcOz6M0ASqJJwTQJKED2PnF7D7ag0SZOpx4dITcFhxpL9dKWapiItrb3gr
-         ZesW9Mu1Jhy53H3TxCYvhuBWzU6PUTjVXqoGNV8t/F3Mv88qeoZe/50hHh/2dxvrjSQI
-         1BxA==
-X-Gm-Message-State: AJIora9RLgVplSuSA00F2N9LmFpVjxglioLab1ZPH5+fj7/J43sYB6ym
-        aWeNofe8XF+eI3u9sQLGrhWVTg==
-X-Google-Smtp-Source: AGRyM1uI68NeSyMBV7L10D0hiN3uZqFmqFNUzzXgBA5m7TamyyJaIsHnblRN0NsbOPTnr3qjKjVmXQ==
-X-Received: by 2002:a2e:9797:0:b0:25d:e70d:a63e with SMTP id y23-20020a2e9797000000b0025de70da63emr5689874lji.248.1658820107619;
-        Tue, 26 Jul 2022 00:21:47 -0700 (PDT)
-Received: from [192.168.3.197] (78-26-46-173.network.trollfjord.no. [78.26.46.173])
-        by smtp.gmail.com with ESMTPSA id u16-20020a2eb810000000b0025dff3737afsm1441063ljo.117.2022.07.26.00.21.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 Jul 2022 00:21:47 -0700 (PDT)
-Message-ID: <2329cb6b-7385-c670-1601-b7a3827070df@linaro.org>
-Date:   Tue, 26 Jul 2022 09:21:44 +0200
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DD0uadPhkaJ539aapAhTDeVFQH+XGwCWm7G+YfPh7fc=;
+        b=nxDagiv/d7UqvfZ5qdYyuFCWjEbNXuT6bfp259Dc5Ajway+gA+TH1DshA01Swm6cjq
+         +WUQ0H4dQIqglrnIbfSLoYC+oRF83odWgi7n8BSZztSG/MO77/0ZR7iy5wXjQMZ2TjU1
+         wwf63jchWhuyn1UqAgxZFwR+Czxkv6Y64s4oUPiywgyBiiGYl2hfMtsqjliBoiQf8j3o
+         pqCC8M6Ot64iBNxqJlqqBsuPlCGulXrUfxUIHbVyAKANDD0iOVADH+4wxRlLUrWi6asD
+         0r2mEHkv9krgZ5idYfHHAbXEz1ts730MZE61emfjtzFBVpWjI7ZFPUtPsSuQuEv/2eCK
+         J/9g==
+X-Gm-Message-State: AJIora/MyGE9BKy8QiNZHHskbK+ulh3Db0TMhb1F7TgL1HWveOXQe7jk
+        Ch1IHKCmpU30qg1c8K5xZUM21eaLuXxK1VDVcJaFGA==
+X-Google-Smtp-Source: AGRyM1tNXCKI2buHcvEhsS4ymiRcgoitpKwhQicSRzpI9ca8De/k6MNUhY31qEeF7NOfuZPg6YuHDk4sc/waM5l8O4g=
+X-Received: by 2002:a17:906:58c8:b0:6fe:91d5:18d2 with SMTP id
+ e8-20020a17090658c800b006fe91d518d2mr13217132ejs.190.1658820199862; Tue, 26
+ Jul 2022 00:23:19 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH v2 30/32] thermal/drivers/samsung: Switch to new of
- thermal API
-Content-Language: en-US
-To:     Daniel Lezcano <daniel.lezcano@linexp.org>,
-        daniel.lezcano@linaro.org, rafael@kernel.org
-Cc:     rui.zhang@intel.com, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, khilman@baylibre.com,
-        abailon@baylibre.com, lukasz.luba@arm.com, broonie@kernel.org,
-        damien.lemoal@opensource.wdc.com, heiko@sntech.de,
-        hayashi.kunihiko@socionext.com, mhiramat@kernel.org,
-        talel@amazon.com, thierry.reding@gmail.com, digetx@gmail.com,
-        jonathanh@nvidia.com, anarsoul@gmail.com, tiny.windzz@gmail.com,
-        baolin.wang7@gmail.com, f.fainelli@gmail.com,
-        bjorn.andersson@linaro.org, mcoquelin.stm32@gmail.com,
-        glaroque@baylibre.com, miquel.raynal@bootlin.com,
-        shawnguo@kernel.org, niklas.soderlund@ragnatech.se,
-        matthias.bgg@gmail.com, j-keerthy@ti.com,
-        Bartlomiej Zolnierkiewicz <bzolnier@gmail.com>,
-        Amit Kucheria <amitk@kernel.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        "open list:SAMSUNG THERMAL DRIVER" 
-        <linux-samsung-soc@vger.kernel.org>,
-        "moderated list:ARM/SAMSUNG S3C, S5P AND EXYNOS ARM ARCHITECTURES" 
-        <linux-arm-kernel@lists.infradead.org>
-References: <20220725212637.2818207-1-daniel.lezcano@linexp.org>
- <20220725212637.2818207-31-daniel.lezcano@linexp.org>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220725212637.2818207-31-daniel.lezcano@linexp.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20220721093422.2173982-1-marcus.folkesson@gmail.com>
+ <CAHp75VddBhc9peHXfNfTyTNni246kC8CyLqCrMFadn67LGDarQ@mail.gmail.com>
+ <CACRpkdaczrU1tM5Yt7P-Q2h+ge8STOi6HvvYeTM-g+JwS8_gZw@mail.gmail.com>
+ <CAHp75VfaExrFYto7LWa5Vnbm6JbiAqtutKmk0HzfeHmmi3PwOg@mail.gmail.com>
+ <CACRpkdYHgD-fmt_2PWJrmyGY=AOP0Z+4jTkH=n3wJ+a0aApqcg@mail.gmail.com> <CAHp75Vf_aDSocdB7R6zKFwEOBRwq0w2m6GdCM-5ujKoz4bGiqQ@mail.gmail.com>
+In-Reply-To: <CAHp75Vf_aDSocdB7R6zKFwEOBRwq0w2m6GdCM-5ujKoz4bGiqQ@mail.gmail.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Tue, 26 Jul 2022 09:23:08 +0200
+Message-ID: <CACRpkdbTypeq0M8VNb491GaZdBLyE9_TFpCDn5omnTe8D+BU7w@mail.gmail.com>
+Subject: Re: [PATCH 1/2] gpio: gpio-74x164: add support for CDx4HC4094
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Marcus Folkesson <marcus.folkesson@gmail.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 25/07/2022 23:26, Daniel Lezcano wrote:
-> The thermal OF code has a new API allowing to migrate the OF
-> initialization to a simpler approach. The ops are no longer device
-> tree specific and are the generic ones provided by the core code.
-> 
-> Convert the ops to the thermal_zone_device_ops format and use the new
-> API to register the thermal zone with these generic ops.
-> 
-> Signed-off-by: Daniel Lezcano <daniel.lezcano@linexp.org>
-> ---
->  drivers/thermal/samsung/exynos_tmu.c | 24 ++++++++++--------------
+On Tue, Jul 26, 2022 at 8:55 AM Andy Shevchenko
+<andy.shevchenko@gmail.com> wrote:
+> On Tue, Jul 26, 2022 at 12:22 AM Linus Walleij <linus.walleij@linaro.org> wrote:
 
+> > Well it will work, because all values come out, however *during*
+> > the transfer, not *after* the transfer as intended with the
+> > STR signal.
+>
+> No. I think you missed one little but crucial detail. The strobe is
+> edge, not level, while you consider CS as a level signal (only).
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Aha! Then it works :)
 
+> See Figure 7 and Table 9 in the datasheet you linked to. When STR is
+> low, the data is not changed. Maybe it's not clear in this datasheet,
+> I found somewhere
+> in a more clear table.
+>
+> > At least how I see it ...?
+>
+> If what you are saying is true, the hardware is totally broken and I
+> wouldn't use it. I.o.w. if the strobe passes all data when it's at low
+> level and latches at low-to-high, it's broken by definition in my
+> point of view.
 
-Best regards,
-Krzysztof
+I have seen strobes that are level-active in my life, but if you
+say this one isn't then all is fine!
+
+Yours,
+Linus Walleij
