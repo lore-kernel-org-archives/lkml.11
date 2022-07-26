@@ -2,118 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59D9DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 03:23:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEF25C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 03:23:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231740AbiGZDXK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 23:23:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34564 "EHLO
+        id S237273AbiGZDXV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 23:23:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229930AbiGZDXE (ORCPT
+        with ESMTP id S229930AbiGZDXO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 23:23:04 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40FB02A270;
-        Mon, 25 Jul 2022 20:23:03 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LsMbs31VNzjXSd;
-        Tue, 26 Jul 2022 11:20:09 +0800 (CST)
-Received: from dggpeml500008.china.huawei.com (7.185.36.147) by
- dggpeml500026.china.huawei.com (7.185.36.106) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 26 Jul 2022 11:23:00 +0800
-Received: from [127.0.0.1] (10.67.111.83) by dggpeml500008.china.huawei.com
- (7.185.36.147) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 26 Jul
- 2022 11:23:00 +0800
-Message-ID: <a103b0a3-2137-c7c9-9999-88b28f03c312@huawei.com>
-Date:   Tue, 26 Jul 2022 11:22:59 +0800
+        Mon, 25 Jul 2022 23:23:14 -0400
+Received: from dggsgout11.his.huawei.com (dggsgout11.his.huawei.com [45.249.212.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3FA02A437;
+        Mon, 25 Jul 2022 20:23:12 -0700 (PDT)
+Received: from mail02.huawei.com (unknown [172.30.67.153])
+        by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4LsMfC25lFzlCHt;
+        Tue, 26 Jul 2022 11:22:11 +0800 (CST)
+Received: from huaweicloud.com (unknown [10.175.127.227])
+        by APP3 (Coremail) with SMTP id _Ch0CgAXemkdXt9iTd_KBA--.33716S4;
+        Tue, 26 Jul 2022 11:23:11 +0800 (CST)
+From:   Yu Kuai <yukuai1@huaweicloud.com>
+To:     axboe@kernel.dk, ming.lei@redhat.com, osandov@fb.com
+Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yukuai3@huawei.com, yukuai1@huaweicloud.com, yi.zhang@huawei.com
+Subject: [PATCH v2] blk-mq: fix io hung due to missing commit_rqs
+Date:   Tue, 26 Jul 2022 11:35:19 +0800
+Message-Id: <20220726033519.4002586-1-yukuai1@huaweicloud.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH -next] ACPI/IORT: Fix build error
- implicit-function-declaration
-To:     Hanjun Guo <guohanjun@huawei.com>,
-        Shameerali Kolothum Thodi 
-        <shameerali.kolothum.thodi@huawei.com>,
-        "lpieralisi@kernel.org" <lpieralisi@kernel.org>,
-        "sudeep.holla@arm.com" <sudeep.holla@arm.com>,
-        "rafael@kernel.org" <rafael@kernel.org>,
-        "lenb@kernel.org" <lenb@kernel.org>,
-        "jroedel@suse.de" <jroedel@suse.de>,
-        "robin.murphy@arm.com" <robin.murphy@arm.com>
-CC:     "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "lorenzo.pieralisi@linaro.org" <lorenzo.pieralisi@linaro.org>
-References: <20220724115423.212932-1-renzhijie2@huawei.com>
- <d59bc043788e4dc796a445588d667ab7@huawei.com>
- <078d74b2-151e-4b4a-55fc-9cd8f6fb910c@huawei.com>
-From:   Ren Zhijie <renzhijie2@huawei.com>
-In-Reply-To: <078d74b2-151e-4b4a-55fc-9cd8f6fb910c@huawei.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.111.83]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpeml500008.china.huawei.com (7.185.36.147)
+X-CM-TRANSID: _Ch0CgAXemkdXt9iTd_KBA--.33716S4
+X-Coremail-Antispam: 1UD129KBjvJXoWxGry3AF1xWw43XFy3Jw13Arb_yoW5ArWUpF
+        43Ca12yr4Fqr4jvFyxuay7C3W0vw4DCrW7GrySkw4aqFZ8K3yIqrs3JF17WFyIkrs5AwsI
+        gF45WryYq3W8ZrDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUyC14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWUuVWrJwAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4U
+        JVW0owA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
+        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
+        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCF04k20xvY0x0EwIxG
+        rwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4
+        vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IY
+        x2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26c
+        xKx2IYs7xG6rWUJVWrZr1UMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7Cj
+        xVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUdHUDUUUUU=
+X-CM-SenderInfo: 51xn3trlr6x35dzhxuhorxvhhfrp/
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Yu Kuai <yukuai3@huawei.com>
 
-在 2022/7/26 10:53, Hanjun Guo 写道:
-> On 2022/7/25 21:50, Shameerali Kolothum Thodi wrote:
-> [...]
->>>
->>> If CONFIG_ACPI_IORT=y and CONFIG_IOMMU_API is not set,
->>> make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu-, will be failed, like
->>> this:
->>>
->>> drivers/acpi/arm64/iort.c: In function ‘iort_get_rmr_sids’:
->>> drivers/acpi/arm64/iort.c:1406:2: error: implicit declaration of 
->>> function
->>> ‘iort_iommu_rmr_get_resv_regions’; did you mean
->>> ‘iort_iommu_get_resv_regions’? [-Werror=implicit-function-declaration]
->>>    iort_iommu_rmr_get_resv_regions(iommu_fwnode, NULL, head);
->>>    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->>>    iort_iommu_get_resv_regions
->>> cc1: some warnings being treated as errors
->>> make[3]: *** [drivers/acpi/arm64/iort.o] Error 1
->>
->> Thanks for spotting this.
->>
->>> The function iort_iommu_rmr_get_resv_regions() is declared at #ifdef
->>> CONFIG_IOMMU_API area, and the callers of  iort_get_rmr_sids() and
->>> iort_put_rmr_sids() would select IOMMU_API.
->>> To fix this error, move the definitions to #ifdef CONFIG_IOMMU_API 
->>> area.
->>
->> That makes sense. And the only callers of these are SMMU drivers I 
->> think we
->> don't need stub functions under !CONFIG_IOMMU_API(Lorenzo, could you
->> please double check this).
->
-> I think so, because SMMU drivers will select IOMMU_API,
-> in drivers/iommu/Kconfig, it says:
->
-> # IOMMU_API always gets selected by whoever wants it.
-> config IOMMU_API
-> bool
->
->>
->> Nit: Please wrap the commit description to a max of 75 chars per line.
->
-> Zhijie, would you mind send a updated version?
->
-sure, will send patch v2.
+Currently, in virtio_scsi, if 'bd->last' is not set to true while
+dispatching request, such io will stay in driver's queue, and driver
+will wait for block layer to dispatch more rqs. However, if block
+layer failed to dispatch more rq, it should trigger commit_rqs to
+inform driver.
 
-Thanks,
+There is a problem in blk_mq_try_issue_list_directly() that commit_rqs
+won't be called:
 
-Ren Zhijie
+// assume that queue_depth is set to 1, list contains two rq
+blk_mq_try_issue_list_directly
+ blk_mq_request_issue_directly
+ // dispatch first rq
+ // last is false
+  __blk_mq_try_issue_directly
+   blk_mq_get_dispatch_budget
+   // succeed to get first budget
+   __blk_mq_issue_directly
+    scsi_queue_rq
+     cmd->flags |= SCMD_LAST
+      virtscsi_queuecommand
+       kick = (sc->flags & SCMD_LAST) != 0
+       // kick is false, first rq won't issue to disk
+ queued++
 
-> Thanks
-> Hanjun
-> .
+ blk_mq_request_issue_directly
+ // dispatch second rq
+  __blk_mq_try_issue_directly
+   blk_mq_get_dispatch_budget
+   // failed to get second budget
+ ret == BLK_STS_RESOURCE
+  blk_mq_request_bypass_insert
+ // errors is still 0
+
+ if (!list_empty(list) || errors && ...)
+  // won't pass, commit_rqs won't be called
+
+In this situation, first rq relied on second rq to dispatch, while
+second rq relied on first rq to complete, thus they will both hung.
+And same problem exists in blk_mq_dispatch_rq_list()
+
+Fix the problem by also treat 'BLK_STS_*RESOURCE' as 'errors' since
+it means that request is not queued successfully.
+
+Fixes: d666ba98f849 ("blk-mq: add mq_ops->commit_rqs()")
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+---
+Changes in v2:
+ - suggested by Ming, handle blk_mq_dispatch_rq_list() as well.
+ - change title and modify commit message.
+
+ block/blk-mq.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/block/blk-mq.c b/block/blk-mq.c
+index 70177ee74295..ee1e065fe63f 100644
+--- a/block/blk-mq.c
++++ b/block/blk-mq.c
+@@ -1909,6 +1909,7 @@ bool blk_mq_dispatch_rq_list(struct blk_mq_hw_ctx *hctx, struct list_head *list,
+ 			fallthrough;
+ 		case BLK_STS_DEV_RESOURCE:
+ 			blk_mq_handle_dev_resource(rq, list);
++			errors++;
+ 			goto out;
+ 		case BLK_STS_ZONE_RESOURCE:
+ 			/*
+@@ -1918,6 +1919,7 @@ bool blk_mq_dispatch_rq_list(struct blk_mq_hw_ctx *hctx, struct list_head *list,
+ 			 */
+ 			blk_mq_handle_zone_resource(rq, &zone_list);
+ 			needs_resource = true;
++			errors++;
+ 			break;
+ 		default:
+ 			errors++;
+@@ -2680,6 +2682,7 @@ void blk_mq_try_issue_list_directly(struct blk_mq_hw_ctx *hctx,
+ 		list_del_init(&rq->queuelist);
+ 		ret = blk_mq_request_issue_directly(rq, list_empty(list));
+ 		if (ret != BLK_STS_OK) {
++			errors++;
+ 			if (ret == BLK_STS_RESOURCE ||
+ 					ret == BLK_STS_DEV_RESOURCE) {
+ 				blk_mq_request_bypass_insert(rq, false,
+@@ -2687,7 +2690,6 @@ void blk_mq_try_issue_list_directly(struct blk_mq_hw_ctx *hctx,
+ 				break;
+ 			}
+ 			blk_mq_end_request(rq, ret);
+-			errors++;
+ 		} else
+ 			queued++;
+ 	}
+-- 
+2.31.1
 
