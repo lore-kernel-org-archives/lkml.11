@@ -2,90 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 956D6C00144
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 14:49:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A35F6C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 14:50:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239459AbiGZOtW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 10:49:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55264 "EHLO
+        id S239447AbiGZOub (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 10:50:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239447AbiGZOtQ (ORCPT
+        with ESMTP id S233523AbiGZOu2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 10:49:16 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C3B12D1F7
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 07:49:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Tue, 26 Jul 2022 10:50:28 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00998B846
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 07:50:27 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 544BD1FFA8;
+        Tue, 26 Jul 2022 14:50:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1658847026; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=XMbYNXlYCOado8vk5f0A62nAbjrK4L6WkkolNQZ0YQY=;
+        b=FKHYeJpVfzn72dDFKgB9pbqNXY6fQV69GgXPoCRkan1XIWAADQN5vYZcvVfP+IB6wz1K4a
+        LlYr0b8y9nBmhabYcSdWIcw7kQVspeyGaKASG5+o0ARdx+avsWLy8aFbLPJJMlNAucUVcS
+        HXNk8Mhu8igs2z9ifBxTjKXFygQyZiE=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1658847026;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=XMbYNXlYCOado8vk5f0A62nAbjrK4L6WkkolNQZ0YQY=;
+        b=oynh6E9lXkJHbDanj1kFNi3Vs0jIpOZcMK40FzOrkqDujFs6zvREg2xphDOj7beLPKphzp
+        OCQppNNgu1eue0Aw==
+Received: from quack3.suse.cz (unknown [10.100.200.198])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 46048CE19A1
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 14:49:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58FE2C433D6;
-        Tue, 26 Jul 2022 14:49:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658846950;
-        bh=6qe77S7H9yLJcTguoEah7bWjYEDj8Rr8Be/b5etbPYs=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=FsYX4Uq4Hm49BLpGwC2L0jCbnphx9BSNKb1oJefNVr103LWLNFo2dJEUpOspPNmR8
-         mo0mnGe6xOSqBAP4hmQWMfHjtB+wulW4SvebGSs6OAo5T+OumbOsHNfeWQWI4BngWz
-         LNJNU5gsiAH5WXPvmVH3jxR2SLAaZgk5HfglW3X9nhxCCpPtFMeRX4tWbM+G960/Bx
-         RQnef+RP5z3YY27ojllPVSKfq/zV8p5KuZ9GS8yQGfEYfP9jtzpb+rfkgOM8QiBwAB
-         en/N94oNvsM6VLT9UaARuZwAcxkPMuRoGfgR03fKl2ediKrsArE8/8fziGoG+kFKm5
-         SCOwm9X/qVK2Q==
-Date:   Tue, 26 Jul 2022 15:49:02 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Kalesh Singh <kaleshsingh@google.com>
-Cc:     maz@kernel.org, mark.rutland@arm.com, madvenka@linux.microsoft.com,
-        tabba@google.com, oliver.upton@linux.dev, will@kernel.org,
-        qperret@google.com, james.morse@arm.com, alexandru.elisei@arm.com,
-        suzuki.poulose@arm.com, catalin.marinas@arm.com,
-        andreyknvl@gmail.com, vincenzo.frascino@arm.com,
-        mhiramat@kernel.org, ast@kernel.org, wangkefeng.wang@huawei.com,
-        elver@google.com, keirf@google.com, yuzenghui@huawei.com,
-        ardb@kernel.org, oupton@google.com,
-        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
-        linux-kernel@vger.kernel.org, android-mm@google.com,
-        kernel-team@android.com
-Subject: Re: [PATCH v6 06/17] arm64: stacktrace: Add description of
- stacktrace/common.h
-Message-ID: <Yt/+3qpSqtntXzpY@sirena.org.uk>
-References: <20220726073750.3219117-1-kaleshsingh@google.com>
- <20220726073750.3219117-7-kaleshsingh@google.com>
+        by relay2.suse.de (Postfix) with ESMTPS id 26A3F2C141;
+        Tue, 26 Jul 2022 14:50:25 +0000 (UTC)
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id 8C4B2A0680; Tue, 26 Jul 2022 16:50:24 +0200 (CEST)
+Date:   Tue, 26 Jul 2022 16:50:24 +0200
+From:   Jan Kara <jack@suse.cz>
+To:     "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
+Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Jan Kara <jack@suse.cz>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Muchun Song <songmuchun@bytedance.com>,
+        linux-kernel@vger.kernel.org, Ira Weiny <ira.weiny@intel.com>
+Subject: Re: [RFC PATCH] fs/isofs: Replace kmap() with kmap_local_page()
+Message-ID: <20220726145024.rryvw7ot7j2c6tqv@quack3>
+References: <20220725162331.9825-1-fmdefrancesco@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="VvhY7zJe39DOaRz/"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220726073750.3219117-7-kaleshsingh@google.com>
-X-Cookie: All rights reserved.
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220725162331.9825-1-fmdefrancesco@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon 25-07-22 18:23:31, Fabio M. De Francesco wrote:
+> The use of kmap() is being deprecated in favor of kmap_local_page().
+> 
+> There are two main problems with kmap(): (1) It comes with an overhead as
+> mapping space is restricted and protected by a global lock for
+> synchronization and (2) it also requires global TLB invalidation when the
+> kmap’s pool wraps and it might block when the mapping space is fully
+> utilized until a slot becomes available.
+> 
+> With kmap_local_page() the mappings are per thread, CPU local, can take
+> page faults, and can be called from any context (including interrupts).
+> Tasks can be preempted and, when scheduled to run again, the kernel
+> virtual addresses are restored and still valid. It is faster than kmap()
+> in kernels with HIGHMEM enabled.
+> 
+> Since kmap_local_page() can be safely used in compress.c, it should be
+> called everywhere instead of kmap().
+> 
+> Therefore, replace kmap() with kmap_local_page() in compress.c. Where it
+> is needed, use memzero_page() instead of open coding kmap_local_page()
+> plus memset() to fill the pages with zeros. Delete the redundant
+> flush_dcache_page() in the two call sites of memzero_page().
+> 
+> This is an RFC because these changes have not been tested (tests are
+> welcome!), therefore I'm not entirely sure whether these conversions work
+> properly. I'd like to hear comments from more experienced developers
+> before sending a real patch. Suggestions about how to run tests would
+> also be much appreciated.
+> 
+> Suggested-by: Ira Weiny <ira.weiny@intel.com>
+> Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
 
---VvhY7zJe39DOaRz/
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+What you propose makes sense to me. But the lack of testing is troublesome.
+You can always at least test your patch without highmem on isofs image with
+compression (mkisofs seems to support creating such filesystems). Even that
+would detect a bug in your patch ;) - see below.
 
-On Tue, Jul 26, 2022 at 12:37:39AM -0700, Kalesh Singh wrote:
+> diff --git a/fs/isofs/compress.c b/fs/isofs/compress.c
+> index 95a19f25d61c..a1562124bb91 100644
+> --- a/fs/isofs/compress.c
+> +++ b/fs/isofs/compress.c
+> @@ -120,8 +119,7 @@ static loff_t zisofs_uncompress_block(struct inode *inode, loff_t block_start,
+>  	       zerr != Z_STREAM_END) {
+>  		if (!stream.avail_out) {
+>  			if (pages[curpage]) {
+> -				stream.next_out = page_address(pages[curpage])
+> -						+ poffset;
+> +				stream.next_out = kmap_local_page(pages[curpage] + poffset);
 
-> Add brief description on how to use stacktrace/common.h to implement
-> a stack unwinder.
+This is wrong. Most importantly because you need to add 'poffset' to the
+final address provided by kmap_local_page(), not to the struct page pointer.
 
-Reviewed-by: Mark Brown <broonie@kernel.org>
+Secondly please wrap the line to fit into 80 chars.
 
---VvhY7zJe39DOaRz/
-Content-Type: application/pgp-signature; name="signature.asc"
+>  				stream.avail_out = PAGE_SIZE - poffset;
+>  				poffset = 0;
+>  			} else {
+> @@ -170,6 +168,12 @@ static loff_t zisofs_uncompress_block(struct inode *inode, loff_t block_start,
+>  			}
+>  		}
+>  
+> +		if (stream.next_out)
+> +			if (stream.next_out != (char *)zisofs_sink_page) {
+> +				kunmap_local(stream.next_out);
+> +				stream.next_out = NULL;
+> +			}
+> +
 
------BEGIN PGP SIGNATURE-----
+This looks buggy as well. If we mapped page above, we'll unmap it here even
+if stream.avail_out > 0 and we want to still write to it. I think you
+should unmap the page here only if stream.avail_out == 0 and we are going
+to switch to the next page...
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmLf/t0ACgkQJNaLcl1U
-h9Dq9Qf+M8Vw3uujBFIzWTDAk2o46YySw1X4f/3zirbpelSLiA92qxcFQx6PGkJX
-DEX9sfHtytc3vnSGvG/Xnsp+AKHSq3l6ON9FYvU3wJRTRPRnkuz4UPHydRipyjsm
-eFp3c8+crrbRjcShB8nckslrRtberLCJDMKeVXoN9m0x3dXaBqkaYgiM1NyhCPZa
-3YNRCGE0zGsqVxPW3fRCW0SQY2mrpjBZC/sE4Xg805v8hgXqhNb656/EUhSOUC4P
-YWixP6TJUIf/hqhckzlebKuYc64LpI07KIsv4hmG7S/T8SxqxGATDQ1Rg3y7ySZ7
-Zs/RPpBZPRgr7ZgrOqBKLdMg1QDXLQ==
-=AZ9B
------END PGP SIGNATURE-----
+>  		if (!stream.avail_out) {
+>  			/* This page completed */
+>  			if (pages[curpage]) {
+> @@ -183,6 +187,9 @@ static loff_t zisofs_uncompress_block(struct inode *inode, loff_t block_start,
+>  	}
+>  inflate_out:
+>  	zlib_inflateEnd(&stream);
+> +	if (stream.next_out)
+> +		if (stream.next_out != (char *)zisofs_sink_page)
+> +			kunmap_local(stream.next_out);
 
---VvhY7zJe39DOaRz/--
+This is correct but I'd simplify it to:
+
+	if (stream.next_out && stream.next_out != (char *)zisofs_sink_page)
+		kunmap_local(stream.next_out);
+
+								Honza
+-- 
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
