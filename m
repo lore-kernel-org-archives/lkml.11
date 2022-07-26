@@ -2,96 +2,470 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72EF4C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 14:17:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78754C04A68
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 14:17:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236334AbiGZORU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 10:17:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54564 "EHLO
+        id S231154AbiGZORS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 10:17:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233247AbiGZORP (ORCPT
+        with ESMTP id S230487AbiGZORO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 10:17:15 -0400
-Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B535015FEE
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 07:17:12 -0700 (PDT)
-Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 26QEEwrC003781;
-        Tue, 26 Jul 2022 09:14:59 -0500
-Received: (from segher@localhost)
-        by gate.crashing.org (8.14.1/8.14.1/Submit) id 26QEEwrK003780;
-        Tue, 26 Jul 2022 09:14:58 -0500
-X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
-Date:   Tue, 26 Jul 2022 09:14:58 -0500
-From:   Segher Boessenkool <segher@kernel.crashing.org>
-To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: Regression: Linux v5.15+ does not boot on Freescale P2020
-Message-ID: <20220726141458.GY25951@gate.crashing.org>
-References: <20220723150702.jecerkhxhy65dgww@pali> <875yjld2oe.fsf@mpe.ellerman.id.au> <20220725125256.cg6su4d2ageylvp6@pali> <e2487668-b6d9-9ddb-1bb4-9f4d37fae1a7@csgroup.eu> <20220725201009.gwuchzswcqaxntrk@pali> <20220725215416.GV25951@gate.crashing.org> <20220726083406.tcjvny6d2di6q7ar@pali> <CAK8P3a2iM+RoySWEC2e0==rwBSVrZoRa8c4ADyFNB24JZM=hkw@mail.gmail.com> <20220726134405.GX25951@gate.crashing.org> <20220726140100.cfucgnhhh3yniqni@pali>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220726140100.cfucgnhhh3yniqni@pali>
-User-Agent: Mutt/1.4.2.3i
+        Tue, 26 Jul 2022 10:17:14 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 075842BD6
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 07:17:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658845031;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=DAhZvikrASrN23qyYU3246auG+59bm1upEzCd4n56bQ=;
+        b=UP8n/FJ3j4QjUaOtTKNDqXY6aSvet8A13wS5ClAORxVh/L/QqtQvpkBWAYMmZwwoqV2BD+
+        fP4VjeR40+68rjQXkpe7mgky2E8hYgEuw3ocbnM+wr6lss5lO2qKKPmki87gOoydHiNtzE
+        LJB9PZumzJVZT5SqPy5G6Gle5EJYy7E=
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com
+ [209.85.166.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-282-4ev6UH-HMwmhIh5gBDtPpw-1; Tue, 26 Jul 2022 10:17:09 -0400
+X-MC-Unique: 4ev6UH-HMwmhIh5gBDtPpw-1
+Received: by mail-io1-f69.google.com with SMTP id 130-20020a6b0188000000b0067bd829cf29so5268535iob.17
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 07:17:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=DAhZvikrASrN23qyYU3246auG+59bm1upEzCd4n56bQ=;
+        b=uqboAEs+AXR9GPbLt1TQeIXoPfeyXVIP5cKapsuuxyCb0VGJIyeTsQzb57dUTSPZVr
+         uzgdcNPrxa7DC8T+WnM2scLUrgep/FwH2Wc9LJ03Diq2A0jS69JunY8ZESyGw80hqCrR
+         K83jcwfRuayXYsxxx4VwGgKcEQsXtntzld94AVrUW1GT5pviJaf8u5pgBzX6R35WOZEv
+         Xu825QRiYUuEJR6/V8n3c4m/wHNA1ZFrZHrNqCa7ixFt2VOWVibvIFeEJjLc7FQ9v8R/
+         v7Df5+ql9HiN09pZalVlk1fRUTngXf36KPxpR1Mrl9C5QcMOsD3gk9aksb8OS+UtI19s
+         STCQ==
+X-Gm-Message-State: AJIora/NnoA6HK7o4eXcsgrQclY3EqgaLFghrf1DoaMOJiHClgIzGb++
+        E0EuCT56zME+UFnOgrJReCpRPRqXau+ruZ86xp7he/y5irgj9AWwbn6+D+GduvDBEuPU9Yz2VBD
+        clXrpJ9cWWu1mXD1qwbJwxCYV
+X-Received: by 2002:a05:6e02:1a8c:b0:2dd:9385:11ce with SMTP id k12-20020a056e021a8c00b002dd938511cemr1292036ilv.20.1658845028638;
+        Tue, 26 Jul 2022 07:17:08 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1s5/X9dVPD+dyYCJZFjLew2p0jfBUxNQogk3s+NDuyEK0gMxiEpyLK+TCa10p1IL7w2oqiRUg==
+X-Received: by 2002:a05:6e02:1a8c:b0:2dd:9385:11ce with SMTP id k12-20020a056e021a8c00b002dd938511cemr1292011ilv.20.1658845028190;
+        Tue, 26 Jul 2022 07:17:08 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id o3-20020a02b803000000b0033cc22c261fsm6541669jam.111.2022.07.26.07.17.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Jul 2022 07:17:07 -0700 (PDT)
+Date:   Tue, 26 Jul 2022 08:17:06 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Abhishek Sahu <abhsahu@nvidia.com>
+Cc:     Cornelia Huck <cohuck@redhat.com>,
+        Yishai Hadas <yishaih@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Max Gurtovoy <mgurtovoy@nvidia.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-pci@vger.kernel.org
+Subject: Re: [PATCH v5 1/5] vfio: Add the device features for the low power
+ entry and exit
+Message-ID: <20220726081706.0d3bc6a5.alex.williamson@redhat.com>
+In-Reply-To: <bd7bca18-ae07-c04a-23d3-bf71245da0cc@nvidia.com>
+References: <20220719121523.21396-1-abhsahu@nvidia.com>
+        <20220719121523.21396-2-abhsahu@nvidia.com>
+        <20220721163445.49d15daf.alex.williamson@redhat.com>
+        <aaef2e78-1ed2-fe8b-d167-8ea2dcbe45b6@nvidia.com>
+        <20220725160928.43a17560.alex.williamson@redhat.com>
+        <bd7bca18-ae07-c04a-23d3-bf71245da0cc@nvidia.com>
+Organization: Red Hat
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 26, 2022 at 04:01:00PM +0200, Pali Rohár wrote:
-> On Tuesday 26 July 2022 08:44:05 Segher Boessenkool wrote:
-> > And the architecture says
-> >   Programming Note
-> >   Warning: On some processors that comply with versions of the
-> >   architecture that precede Version 2.00
-> 
-> But e500v2 is 2.03 and not older than 2.00...
+On Tue, 26 Jul 2022 18:17:18 +0530
+Abhishek Sahu <abhsahu@nvidia.com> wrote:
 
-Yes.  And it does not implement reserved fields in instructions (*any*
-reserved fields in instructions, apparently!) correctly at all.
-
-> >   e500v1/v2 based chips will treat any reserved field being set in an
-> >   opcode as illegal.
+> On 7/26/2022 3:39 AM, Alex Williamson wrote:
+> > On Mon, 25 Jul 2022 20:10:44 +0530
+> > Abhishek Sahu <abhsahu@nvidia.com> wrote:
+> >   
+> >> On 7/22/2022 4:04 AM, Alex Williamson wrote:  
+> >>> On Tue, 19 Jul 2022 17:45:19 +0530
+> >>> Abhishek Sahu <abhsahu@nvidia.com> wrote:
+> >>>     
+> >>>> This patch adds the following new device features for the low
+> >>>> power entry and exit in the header file. The implementation for the
+> >>>> same will be added in the subsequent patches.
+> >>>>
+> >>>> - VFIO_DEVICE_FEATURE_LOW_POWER_ENTRY
+> >>>> - VFIO_DEVICE_FEATURE_LOW_POWER_ENTRY_WITH_WAKEUP
+> >>>> - VFIO_DEVICE_FEATURE_LOW_POWER_EXIT
+> >>>>
+> >>>> With the standard registers, all power states cannot be achieved. The    
+> >>>
+> >>> We're talking about standard PCI PM registers here, let's make that
+> >>> clear since we're adding a device agnostic interface here.
+> >>>     
+> >>>> platform-based power management needs to be involved to go into the
+> >>>> lowest power state. For doing low power entry and exit with
+> >>>> platform-based power management, these device features can be used.
+> >>>>
+> >>>> The entry device feature has two variants. These two variants are mainly
+> >>>> to support the different behaviour for the low power entry.
+> >>>> If there is any access for the VFIO device on the host side, then the
+> >>>> device will be moved out of the low power state without the user's
+> >>>> guest driver involvement. Some devices (for example NVIDIA VGA or
+> >>>> 3D controller) require the user's guest driver involvement for
+> >>>> each low-power entry. In the first variant, the host can move the
+> >>>> device into low power without any guest driver involvement while    
+> >>>
+> >>> Perhaps, "In the first variant, the host can return the device to low
+> >>> power automatically.  The device will continue to attempt to reach low
+> >>> power until the low power exit feature is called."
+> >>>     
+> >>>> in the second variant, the host will send a notification to the user
+> >>>> through eventfd and then the users guest driver needs to move
+> >>>> the device into low power.    
+> >>>
+> >>> "In the second variant, if the device exits low power due to an access,
+> >>> the host kernel will signal the user via the provided eventfd and will
+> >>> not return the device to low power without a subsequent call to one of
+> >>> the low power entry features.  A call to the low power exit feature is
+> >>> optional if the user provided eventfd is signaled."
+> >>>      
+> >>>> These device features only support VFIO_DEVICE_FEATURE_SET operation.    
+> >>>
+> >>> And PROBE.
+> >>>     
+> >>
+> >>  Thanks Alex.
+> >>  I will make the above changes in the commit message.
+> >>  
+> >>>> Signed-off-by: Abhishek Sahu <abhsahu@nvidia.com>
+> >>>> ---
+> >>>>  include/uapi/linux/vfio.h | 55 +++++++++++++++++++++++++++++++++++++++
+> >>>>  1 file changed, 55 insertions(+)
+> >>>>
+> >>>> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+> >>>> index 733a1cddde30..08fd3482d22b 100644
+> >>>> --- a/include/uapi/linux/vfio.h
+> >>>> +++ b/include/uapi/linux/vfio.h
+> >>>> @@ -986,6 +986,61 @@ enum vfio_device_mig_state {
+> >>>>  	VFIO_DEVICE_STATE_RUNNING_P2P = 5,
+> >>>>  };
+> >>>>  
+> >>>> +/*
+> >>>> + * Upon VFIO_DEVICE_FEATURE_SET, move the VFIO device into the low power state
+> >>>> + * with the platform-based power management.  This low power state will be    
+> >>>
+> >>> This is really "allow the device to be moved into a low power state"
+> >>> rather than actually "move the device into" such a state though, right?
+> >>>     
+> >>  
+> >>  Yes. It will just allow the device to be moved into a low power state.
+> >>  I have addressed all your suggestions in the uAPI description and
+> >>  added the updated description in the last.
+> >>
+> >>  Can you please check that once and check if it looks okay.
+> >>    
+> >>>> + * internal to the VFIO driver and the user will not come to know which power
+> >>>> + * state is chosen.  If any device access happens (either from the host or
+> >>>> + * the guest) when the device is in the low power state, then the host will
+> >>>> + * move the device out of the low power state first.  Once the access has been
+> >>>> + * finished, then the host will move the device into the low power state again.
+> >>>> + * If the user wants that the device should not go into the low power state
+> >>>> + * again in this case, then the user should use the
+> >>>> + * VFIO_DEVICE_FEATURE_LOW_POWER_ENTRY_WITH_WAKEUP device feature for the    
+> >>>
+> >>> This should probably just read "For single shot low power support with
+> >>> wake-up notification, see
+> >>> VFIO_DEVICE_FEATURE_LOW_POWER_ENTRY_WITH_WAKEUP below."
+> >>>     
+> >>>> + * low power entry.  The mmap'ed region access is not allowed till the low power
+> >>>> + * exit happens through VFIO_DEVICE_FEATURE_LOW_POWER_EXIT and will
+> >>>> + * generate the access fault.
+> >>>> + */
+> >>>> +#define VFIO_DEVICE_FEATURE_LOW_POWER_ENTRY 3    
+> >>>
+> >>> Note that Yishai's DMA logging set is competing for the same feature
+> >>> entries.  We'll need to coordinate.
+> >>>     
+> >>
+> >>  Since this is last week of rc, so will it possible to consider the updated
+> >>  patches for next kernel (I can try to send them after complete testing the
+> >>  by the end of this week). Otherwise, I can wait for next kernel and then
+> >>  I can rebase my patches.  
 > > 
-> > while the architecture says
+> > I think we're close, though I would like to solicit uAPI feedback from
+> > others on the list.  We can certainly sort out feature numbers
+> > conflicts at commit time if Yishai's series becomes ready as well.  I'm
+> > on PTO for the rest of the week starting tomorrow afternoon, but I'd
+> > suggest trying to get this re-posted before the end of the week, asking
+> > for more reviews for the uAPI, and we can evaluate early next week if
+> > this is ready.
+> >   
+> 
+>  Sure. I will re-post the updated patch series after the complete testing.
+>  
+> >>>> +
+> >>>> +/*
+> >>>> + * Upon VFIO_DEVICE_FEATURE_SET, move the VFIO device into the low power state
+> >>>> + * with the platform-based power management and provide support for the wake-up
+> >>>> + * notifications through eventfd.  This low power state will be internal to the
+> >>>> + * VFIO driver and the user will not come to know which power state is chosen.
+> >>>> + * If any device access happens (either from the host or the guest) when the
+> >>>> + * device is in the low power state, then the host will move the device out of
+> >>>> + * the low power state first and a notification will be sent to the guest
+> >>>> + * through eventfd.  Once the access is finished, the host will not move back
+> >>>> + * the device into the low power state.  The guest should move the device into
+> >>>> + * the low power state again upon receiving the wakeup notification.  The
+> >>>> + * notification will be generated only if the device physically went into the
+> >>>> + * low power state.  If the low power entry has been disabled from the host
+> >>>> + * side, then the device will not go into the low power state even after
+> >>>> + * calling this device feature and then the device access does not require
+> >>>> + * wake-up.  The mmap'ed region access is not allowed till the low power exit
+> >>>> + * happens.  The low power exit can happen either through
+> >>>> + * VFIO_DEVICE_FEATURE_LOW_POWER_EXIT or through any other access (where the
+> >>>> + * wake-up notification has been generated).    
+> >>>
+> >>> Seems this could leverage a lot more from the previous, simply stating
+> >>> that this has the same behavior as VFIO_DEVICE_FEATURE_LOW_POWER_ENTRY
+> >>> with the exception that the user provides an eventfd for notification
+> >>> when the device resumes from low power and will not try to re-enter a
+> >>> low power state without a subsequent user call to one of the low power
+> >>> entry feature ioctls.  It might also be worth covering the fact that
+> >>> device accesses by the user, including region and ioctl access, will
+> >>> also trigger the eventfd if that access triggers a resume.
+> >>>
+> >>> As I'm thinking about this, that latter clause is somewhat subtle.
+> >>> AIUI a user can call the low power entry with wakeup feature and
+> >>> proceed to do various ioctl and region (not mmap) accesses that could
+> >>> perpetually keep the device awake, or there may be dependent devices
+> >>> such that the device may never go to low power.  It needs to be very
+> >>> clear that only if the wakeup eventfd has the device entered into and
+> >>> exited a low power state making the low power exit ioctl optional.
+> >>>     
+> >>
+> >>  Yes. In my updated description, I have added more details.
+> >>  Can you please check if that helps.
+> >>  
+> >>>> + */
+> >>>> +struct vfio_device_low_power_entry_with_wakeup {
+> >>>> +	__s32 wakeup_eventfd;
+> >>>> +	__u32 reserved;
+> >>>> +};
+> >>>> +
+> >>>> +#define VFIO_DEVICE_FEATURE_LOW_POWER_ENTRY_WITH_WAKEUP 4
+> >>>> +
+> >>>> +/*
+> >>>> + * Upon VFIO_DEVICE_FEATURE_SET, move the VFIO device out of the low power
+> >>>> + * state.    
+> >>>
+> >>> Any ioctl effectively does that, the key here is that the low power
+> >>> state may not be re-entered after this ioctl.
+> >>>     
+> >>>>  This device feature should be called only if the user has previously
+> >>>> + * put the device into the low power state either with
+> >>>> + * VFIO_DEVICE_FEATURE_LOW_POWER_ENTRY or
+> >>>> + * VFIO_DEVICE_FEATURE_LOW_POWER_ENTRY_WITH_WAKEUP device feature.  If the    
+> >>>
+> >>> Doesn't really seem worth mentioning, we need to protect against misuse
+> >>> regardless.
+> >>>     
+> >>>> + * device is not in the low power state currently, this device feature will
+> >>>> + * return early with the success status.    
+> >>>
+> >>> This is an implementation detail, it doesn't need to be part of the
+> >>> uAPI.  Thanks,
+> >>>
+> >>> Alex
+> >>>     
+> >>>> + */
+> >>>> +#define VFIO_DEVICE_FEATURE_LOW_POWER_EXIT 5
+> >>>> +
+> >>>>  /* -------- API for Type1 VFIO IOMMU -------- */
+> >>>>  
+> >>>>  /**    
+> >>>     
+> >>
+> >>  /*
+> >>   * Upon VFIO_DEVICE_FEATURE_SET, allow the device to be moved into a low power
+> >>   * state with the platform-based power management.  This low power state will
+> >>   * be internal to the VFIO driver and the user will not come to know which
+> >>   * power state is chosen.  If any device access happens (either from the host  
 > > 
-> >   Reserved fields in instructions are ignored by the processor.
+> > Couldn't the user look in sysfs to determine the power state?  There
+> > might also be external hardware monitors of the power state, so this
+> > statement is a bit overreaching.  Maybe something along the lines of...
 > > 
-> > Whoops :-)  We need fixes for processor implementation bugs all the
-> > time of course, but this is a massive *design* bug.
+> > "Device use of lower power states depend on factors managed by the
+> > runtime power management core, including system level support and
+> > coordinating support among dependent devices.  Enabling device low
+> > power entry does not guarantee lower power usage by the device, nor is
+> > a mechanism provided through this feature to know the current power
+> > state of the device."
+> >   
+> >>   * or the guest) when the device is in the low power state, then the host will  
+> > 
+> > Let's not confine ourselves to a VM use case, "...from the host or
+> > through the vfio uAPI".
+> >   
+> >>   * move the device out of the low power state first.  Once the access has been  
+> > 
+> > "move the device out of the low power state as necessary prior to the
+> > access."
+> >   
+> >>   * finished, then the host will move the device into the low power state  
+> > 
+> > "Once the access is completed, the device may re-enter the low power
+> > state."
+> >   
+> >>   * again.  For single shot low power support with wake-up notification, see
+> >>   * VFIO_DEVICE_FEATURE_LOW_POWER_ENTRY_WITH_WAKEUP below.  The mmap'ed region
+> >>   * access is not allowed till the low power exit happens through
+> >>   * VFIO_DEVICE_FEATURE_LOW_POWER_EXIT and will generate the access fault.  
+> > 
+> > "Access to mmap'd device regions is disabled on LOW_POWER_ENTRY and
+> > may only be resumed after calling LOW_POWER_EXIT."
+> >   
+> >>   */
+> >>  #define VFIO_DEVICE_FEATURE_LOW_POWER_ENTRY 3
+> >>
+> >>  /*
+> >>   * This device feature has the same behavior as
+> >>   * VFIO_DEVICE_FEATURE_LOW_POWER_ENTRY with the exception that the user
+> >>   * provides an eventfd for wake-up notification.  When the device moves out of
+> >>   * the low power state for the wake-up, the host will not try to re-enter a  
+> > 
+> > "...will not allow the device to re-enter a low power state..."
+> >   
+> >>   * low power state without a subsequent user call to one of the low power
+> >>   * entry device feature IOCTLs.  The low power exit can happen either through
+> >>   * VFIO_DEVICE_FEATURE_LOW_POWER_EXIT or through any other access (where the
+> >>   * wake-up notification has been generated).
+> >>   *
+> >>   * The notification through eventfd will be generated only if the device has
+> >>   * gone into the low power state after calling this device feature IOCTL.  
+> > 
+> > "The notification through the provided eventfd will be generated only
+> > when the device has entered and is resumed from a low power state after
+> > calling this device feature IOCTL."
+> > 
+> >   
+> >>   * There are various cases where the device will not go into the low power
+> >>   * state after calling this device feature IOCTL (for example, the low power
+> >>   * entry has been disabled from the host side, the user keeps the device busy
+> >>   * after calling this device feature IOCTL, there are dependent devices which
+> >>   * block the device low power entry, etc.) and in such cases, the device access
+> >>   * does not require wake-up.  Also, the low power exit through  
+> > 
+> > "A device that has not entered low power state, as managed through the
+> > runtime power management core, will not generate a notification through
+> > the provided eventfd on access."
+> >   
+> >>   * VFIO_DEVICE_FEATURE_LOW_POWER_EXIT is mandatory for the cases where the
+> >>   * wake-up notification has not been generated.  
+> > 
+> > "Calling the LOW_POWER_EXIT feature is optional in the case where
+> > notification has been signaled on the provided eventfd that a resume
+> > from low power has occurred."
+> > 
+> > We should also reiterate the statement above about mmap access because
+> > it would be reasonable for a user to assume that if any access wakes
+> > the device, that should include mmap faults and therefore a resume
+> > notification should occur for such an event.  We could implement that
+> > for the one-shot mode, but we're choosing not to.
+> >   
+> >>   */
+> >>  struct vfio_device_low_power_entry_with_wakeup {
+> >> 	 __s32 wakeup_eventfd;
+> >> 	 __u32 reserved;
+> >>  };
+> >>
+> >>  #define VFIO_DEVICE_FEATURE_LOW_POWER_ENTRY_WITH_WAKEUP 4
+> >>
+> >>  /*
+> >>   * Upon VFIO_DEVICE_FEATURE_SET, prevent the VFIO device low power state entry
+> >>   * which has been previously allowed with VFIO_DEVICE_FEATURE_LOW_POWER_ENTRY
+> >>   * or VFIO_DEVICE_FEATURE_LOW_POWER_ENTRY_WITH_WAKEUP device features.
+> >>   */  
+> > 
+> > "Upon VFIO_DEVICE_FEATURE_SET, disallow use of device low power states
+> > as previously enabled via VFIO_DEVICE_FEATURE_LOW_POWER_ENTRY or
+> > VFIO_DEVICE_FEATURE_LOW_POWER_ENTRY_WITH_WAKEUP device features.  This
+> > device feature ioctl may itself generate a wakeup eventfd notification
+> > in the latter case if the device has previously entered a low power
+> > state."
+> > 
+> > Thanks,
+> > Alex
+> >   
 > 
-> I looked also in e500v2 and P2020 errata documents there is nothing
-> mentioned about eh flag. But it looks like a bug.
+>  Thanks Alex for your thorough review of uAPI.
+>  I have incorporated all the suggestions.
+>  Following is the updated uAPI.
+>  
+>  /*
+>   * Upon VFIO_DEVICE_FEATURE_SET, allow the device to be moved into a low power
+>   * state with the platform-based power management.  Device use of lower power
+>   * states depends on factors managed by the runtime power management core,
+>   * including system level support and coordinating support among dependent
+>   * devices.  Enabling device low power entry does not guarantee lower power
+>   * usage by the device, nor is a mechanism provided through this feature to
+>   * know the current power state of the device.  If any device access happens
+>   * (either from the host or through the vfio uAPI) when the device is in the
+>   * low power state, then the host will move the device out of the low power
+>   * state as necessary prior to the access.  Once the access is completed, the
+>   * device may re-enter the low power state.  For single shot low power support
+>   * with wake-up notification, see
+>   * VFIO_DEVICE_FEATURE_LOW_POWER_ENTRY_WITH_WAKEUP below.  Access to mmap'd
+>   * device regions is disabled on LOW_POWER_ENTRY and may only be resumed after
+>   * calling LOW_POWER_EXIT.
+>   */
+>  #define VFIO_DEVICE_FEATURE_LOW_POWER_ENTRY 3
+>  
+>  /*
+>   * This device feature has the same behavior as
+>   * VFIO_DEVICE_FEATURE_LOW_POWER_ENTRY with the exception that the user
+>   * provides an eventfd for wake-up notification.  When the device moves out of
+>   * the low power state for the wake-up, the host will not allow the device to
+>   * re-enter a low power state without a subsequent user call to one of the low
+>   * power entry device feature IOCTLs.  Access to mmap'd device regions is
+>   * disabled on LOW_POWER_ENTRY_WITH_WAKEUP and may only be resumed after the
+>   * low power exit.  The low power exit can happen either through LOW_POWER_EXIT
+>   * or through any other access (where the wake-up notification has been
+>   * generated).  The access to mmap'd device regions will not trigger low power
+>   * exit.
+>   *
+>   * The notification through the provided eventfd will be generated only when
+>   * the device has entered and is resumed from a low power state after
+>   * calling this device feature IOCTL.  A device that has not entered low power
+>   * state, as managed through the runtime power management core, will not
+>   * generate a notification through the provided eventfd on access.  Calling the
+>   * LOW_POWER_EXIT feature is optional in the case where notification has been
+>   * signaled on the provided eventfd that a resume from low power has occurred.
+>   */
+>  struct vfio_device_low_power_entry_with_wakeup {
+>  	__s32 wakeup_eventfd;
+>  	__u32 reserved;
+>  };
+>  
+>  #define VFIO_DEVICE_FEATURE_LOW_POWER_ENTRY_WITH_WAKEUP 4
+>  
+>  /*
+>   * Upon VFIO_DEVICE_FEATURE_SET, disallow use of device low power states as
+>   * previously enabled via VFIO_DEVICE_FEATURE_LOW_POWER_ENTRY or
+>   * VFIO_DEVICE_FEATURE_LOW_POWER_ENTRY_WITH_WAKEUP device features.
+>   * This device feature IOCTL may itself generate a wakeup eventfd notification
+>   * in the latter case if the device has previously entered a low power state.
+>   */
+>  #define VFIO_DEVICE_FEATURE_LOW_POWER_EXIT 5
 
-The bug is if it does this for any reserved field (and it apparently
-does it for all even).
+Looks ok to me.  Thanks,
 
-> > Also people using an SMP kernel on older cores should see the problem,
-> > no?
-> 
-> Probably yes.
-> 
-> But most people on these machines are using stable LTS kernels and do
-> not upgrade too often.
+Alex
 
-Yeah.
-
-> So you need to wait longer time to see people starting reporting such
-> bugs. Need to wait at least when v4.14 and v4.19 LTS versions stops
-> receiving updates. v4.19 is used in Debian 10 (oldstable) and v5.4 is
-> used by current OpenWRT. Both distributions are still supported, so
-> users have not migrated to new v5.15 problematic kernel yet.
-
-That's not a reasonable timeline for kernel development of course.
-
-We see the same thing with the compiler...  Although GCC has a much
-slower release cadence (one new major version every year), it often
-takes two or three or more years before we get bug reports that
-something was broken.  If stuff isn't tested, we cannot really support
-it at all.
-
-
-Segher
