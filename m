@@ -2,56 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3EC5C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 02:49:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72588C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 02:50:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230492AbiGZCtg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 22:49:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44090 "EHLO
+        id S237367AbiGZCuT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 22:50:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235723AbiGZCtf (ORCPT
+        with ESMTP id S236897AbiGZCuQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 22:49:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84DC729CA2;
-        Mon, 25 Jul 2022 19:49:34 -0700 (PDT)
+        Mon, 25 Jul 2022 22:50:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A66C5FA5;
+        Mon, 25 Jul 2022 19:50:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2CDB2B811BF;
-        Tue, 26 Jul 2022 02:49:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93398C341C6;
-        Tue, 26 Jul 2022 02:49:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 95658614E1;
+        Tue, 26 Jul 2022 02:50:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 03B01C341C8;
+        Tue, 26 Jul 2022 02:50:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658803771;
-        bh=AbX2QCLey1R/5yUdZnU56V8A2R71L0RrpAubeVRBi90=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=DT38NbwI/RppGtvW8Lp5toPwEKFfMzYiE/0CBpM87K0VjEZIkPtybp5zfYOk1V76B
-         sBNa3NCyy4pRHxAl1wQw79Gb4G1jYRvT8prMGoPIXVVyJTn90XjkdModSmFA/fC34I
-         JvpEHgGQwYqmTX6SXTXQ/+82t0PXefftDlFRP1uGjKitAjCTnCJdf+9V+bC//9dFN8
-         KCy7Aj+PxpGnaLw9LU4KOTitFL4+Wws4jlhancH7i55HOhO+L5bSwAxL9OCRpnMAlt
-         HmdMy0cLPvxZX6RapoYPrsXW+oL+d7+aP3VEn2BJYsCDPW/O/VRq2Yit1qoA28Bdz/
-         qpKWnJQ7xRQnw==
-Date:   Mon, 25 Jul 2022 19:49:30 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Duoming Zhou <duoming@zju.edu.cn>
-Cc:     linux-hams@vger.kernel.org, ralf@linux-mips.org,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] netrom: fix sleep in atomic context bugs in timer
- handlers
-Message-ID: <20220725194930.44ca1518@kernel.org>
-In-Reply-To: <20220723035646.29857-1-duoming@zju.edu.cn>
-References: <20220723035646.29857-1-duoming@zju.edu.cn>
+        s=k20201202; t=1658803815;
+        bh=Vy54MVlfrb3/EozZgqR+L9CfuXU2/kOebhXV8UQNnlc=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=g7skRmagOWuLGAKzonuZNrHXq+El+IMdGkDuekdSva3904YejfZa2Ud+3nZIxHsaU
+         NpzpBoYxr3HcnIWLBpYd55WTyWbiesbe/2HSZXG4y2L9FKrf0x2iqVRYwviyIAC57h
+         eFdNu5MlvGudRvRh3UuU1pad8/RTdReTdJiHxjGqHHZxFPYdKhh3pgRtODfxpr2/Od
+         r1dBXH9Nm23GoXOnB7UP7ncJ2Qcufzq7czg6t683B0lSN1DDUdREjwWqXi+NumMMTB
+         8X5RwI4+UhLWw0JwL76dWpjeeuAhXHUG/6ZhoCnYnjrFHV1YHTbolgY34Q/xB+nyP7
+         Hq2iS51G4e1tw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E3C6AE450B7;
+        Tue, 26 Jul 2022 02:50:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [net-next PATCH v5 0/5] *Add MTU change with stmmac interface running
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165880381492.11874.3864813905774312951.git-patchwork-notify@kernel.org>
+Date:   Tue, 26 Jul 2022 02:50:14 +0000
+References: <20220723142933.16030-1-ansuelsmth@gmail.com>
+In-Reply-To: <20220723142933.16030-1-ansuelsmth@gmail.com>
+To:     Christian Marangi <ansuelsmth@gmail.com>
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@foss.st.com,
+        joabreu@synopsys.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, mcoquelin.stm32@gmail.com,
+        linux@armlinux.org.uk, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 23 Jul 2022 11:56:46 +0800 Duoming Zhou wrote:
-> Fixes: eafff86d3bd8 ("[NETROM]: Use kmemdup")
+Hello:
 
-That's not a correct Fixes tag, acme just swapped kmalloc for kmemdup().
-The allocate flags did not change.
+This series was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Sat, 23 Jul 2022 16:29:28 +0200 you wrote:
+> This series is to permit MTU change while the interface is running.
+> Major rework are needed to permit to allocate a new dma conf based on
+> the new MTU before applying it. This is to make sure there is enough
+> space to allocate all the DMA queue before releasing the stmmac driver.
+> 
+> This was tested with a simple way to stress the network while the
+> interface is running.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,v5,1/5] net: ethernet: stmicro: stmmac: move queue reset to dedicated functions
+    https://git.kernel.org/netdev/net-next/c/f9ec5723c3db
+  - [net-next,v5,2/5] net: ethernet: stmicro: stmmac: first disable all queues and disconnect in release
+    https://git.kernel.org/netdev/net-next/c/7028471edb64
+  - [net-next,v5,3/5] net: ethernet: stmicro: stmmac: move dma conf to dedicated struct
+    https://git.kernel.org/netdev/net-next/c/8531c80800c1
+  - [net-next,v5,4/5] net: ethernet: stmicro: stmmac: generate stmmac dma conf before open
+    https://git.kernel.org/netdev/net-next/c/ba39b344e924
+  - [net-next,v5,5/5] net: ethernet: stmicro: stmmac: permit MTU change with interface up
+    https://git.kernel.org/netdev/net-next/c/347007968744
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
