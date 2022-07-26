@@ -2,228 +2,255 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 068A6C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 13:55:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB692C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 13:56:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239176AbiGZNzt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 09:55:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38058 "EHLO
+        id S239274AbiGZN4w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 09:56:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239131AbiGZNzb (ORCPT
+        with ESMTP id S239271AbiGZN4R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 09:55:31 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7A51CE39
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 06:55:24 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id id17so8803162wmb.1
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 06:55:24 -0700 (PDT)
+        Tue, 26 Jul 2022 09:56:17 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C80222CE17
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 06:56:02 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id 70so13320691pfx.1
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 06:56:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=N02ENN8wREPX4veIj3cGqV28PXqeQzl2/6jGMwhV5k4=;
-        b=vO9zvYPT5F1jd3WhvAXktLAz6qcb8YZgGeLh1fXmtfpqcsBFp8Js3hB+qnqryJRuBl
-         2tV1KtKbEj+iw2CLAXaujRN8QpTGItj84cZdY3YIt8Wqcxrq1Y9Tqqf0XdvmBml1R99U
-         MVrxwDL2oeW8hl/hZs/K4zffKdBlG573cIGBw0SoXvP78XIxAg7fGITYYjJfOFl7NLZj
-         Sv+SuVeq9vsL5XPjan/wzSLX4NWjqAoRiTF4uXqC1huzb6719k+s+RsdiBN7mKdU0vlk
-         AxQnUwdaAbm/Bi5jSow290CBHv1JEdr0DF4WeHltdnDaKon0HvytQGi+Q3w5aqyJ8ZvY
-         4jCw==
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=tIOWG9s1e92ioNrCIhQiWnhjfykkKqEOovZ30+o7rsY=;
+        b=z34578kv4QOUyL7TvZFzZpPA4AYzA6Gu2O5I8HXV4tntB7q/NM4+Bv8UgrT0NoxnCi
+         Wk7E+VLDegKGumqa7x9ETTh7OoqaEcwJIOsnkabVesBS94Z9AqePzXmoiZb/lZt4d8vo
+         lctw/epQkSukMGXL4Qd1pHG5fSyR5/r8OO34EoZPfnRpF9iGCstcJQnnoF3ZrzLrzv8/
+         ytgE508NcxPz4KF8OigDa5QfQtbqDeKPPSxkjw/hw2wvxTERH+6blZaunmuEKHxboZfZ
+         8Gkcu2YvLz2iMglP3GD70i0sS/lAeJ5paWVpcUl7+BDFUZOHJ6ZXs30Dw04tvvyWF1Ik
+         6WUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=N02ENN8wREPX4veIj3cGqV28PXqeQzl2/6jGMwhV5k4=;
-        b=YZW0kQqkDM/aJRKkoXg9myHgTva1laeSOaOUzJIChGpVzMptkEO857ojHu97CN8LeH
-         dRxfvmvmsdukU4x3mP+zyVBVFuIHmx0tR43oBvajzBKPWSnSJuGnXIcD8MhnE/tZvXlb
-         VtpUFWhT+CWrZQXMPfDpWHi+ZhaYVW7uuls6IdLfem8q+vNDjixiCnXR6GDFtKZF/xW8
-         jDD4V7YypnZHSuIeM42kaeq58IEN13YIlo7txdG378UAU1Et+nw4xNsRjFDPAa9r8AsO
-         nmSb9tgcX215wRnzBO1xKls7oJxdjuY8iGohr385JCmaw2g/qEvJVTn9kHnL+0+8SglV
-         Jriw==
-X-Gm-Message-State: AJIora+XUwkShI8Ke6qmAObwo5WiMur+CDH7qNgq/rlpXmUW5eh1bZrx
-        xlWMq3H50r8jg8IY35UleBEXhg==
-X-Google-Smtp-Source: AGRyM1vhX7RgKC8IGy97eICF/591FulDH1b+GwMaL7So30RUVSvED/g4XVgQWTuECYQ6Gn9vbOzMZQ==
-X-Received: by 2002:a1c:2783:0:b0:3a2:fd82:bf46 with SMTP id n125-20020a1c2783000000b003a2fd82bf46mr24814709wmn.29.1658843723039;
-        Tue, 26 Jul 2022 06:55:23 -0700 (PDT)
-Received: from Balsam-ThinkPad-T480.baylibre (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.gmail.com with ESMTPSA id d13-20020adf9c8d000000b0021e4c3b2967sm15244670wre.65.2022.07.26.06.55.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Jul 2022 06:55:22 -0700 (PDT)
-From:   Balsam CHIHI <bchihi@baylibre.com>
-To:     rafael@kernel.org, rui.zhang@intel.com, daniel.lezcano@linaro.org,
-        amitk@kernel.org
-Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        khilman@baylibre.com, mka@chromium.org, robh+dt@kernel.org,
-        krzk+dt@kernel.org, matthias.bgg@gmail.com, p.zabel@pengutronix.de,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, james.lo@mediatek.com,
-        fan.chen@mediatek.com, louis.yu@mediatek.com,
-        rex-bc.chen@mediatek.com, abailon@baylibre.com
-Subject: [PATCH v8 6/6] arm64: dts: mt8195: Add thermal zone
-Date:   Tue, 26 Jul 2022 15:55:06 +0200
-Message-Id: <20220726135506.485108-7-bchihi@baylibre.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220726135506.485108-1-bchihi@baylibre.com>
-References: <20220726135506.485108-1-bchihi@baylibre.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=tIOWG9s1e92ioNrCIhQiWnhjfykkKqEOovZ30+o7rsY=;
+        b=EB2mHyjjZRXppIDgQ2DidiV8UUyz2C/TipVpTU5k0s7FRakv0ksZVTQAuEY+TvIBYL
+         EV5HTg8LyIqRcZ8RIm3h3Ise/vN4L4eGR9iZztbJiSyDbdq6l1/IvczvT8BPlXgbIIuk
+         60heGFsl4ZgxK/lH+FjxdsxROJ8ry584S5jrqRoRC0hNrLjZ89XHpIp00ne44jIWBBrL
+         vCPwJjwicvmSwRrUjsMciZB2Mq1lt3Qj0s2JDsiXWrxeusEclATb7+0cX1ag74TM3WEb
+         IrQbgJNq2sbVfjhR693U7QP4hM3+K6/OBwqjDlC7Kd1YTe0IIEytVHl57xrIafobjIkw
+         tuRQ==
+X-Gm-Message-State: AJIora+ARyPS7UQLl6BPg6t6+Gzqi4zYyc48WfN73uK3C6uChOXhU6dT
+        7BzgvEd4UwmEH0TXEXe1Km16aA==
+X-Google-Smtp-Source: AGRyM1sBXRO7j/x5DpcNw7dXgW8+Gm81Vjs+8Eg5faqajmzonhpy6coS/ETEip6y6NCCPHqYhS6rQw==
+X-Received: by 2002:a63:4e11:0:b0:419:e9dd:a867 with SMTP id c17-20020a634e11000000b00419e9dda867mr14614522pgb.481.1658843761290;
+        Tue, 26 Jul 2022 06:56:01 -0700 (PDT)
+Received: from [10.5.61.95] ([139.177.225.241])
+        by smtp.gmail.com with ESMTPSA id t12-20020aa7946c000000b0052bf678dac6sm4690540pfq.193.2022.07.26.06.55.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 26 Jul 2022 06:56:00 -0700 (PDT)
+Message-ID: <1fa5ebfa-b441-f42c-b721-544458b93cd0@bytedance.com>
+Date:   Tue, 26 Jul 2022 21:55:52 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:102.0)
+ Gecko/20100101 Thunderbird/102.0.3
+Subject: Re: [External] Re: [PATCH 9/9] sched/psi: add PSI_IRQ to track
+ IRQ/SOFTIRQ pressure
+Content-Language: en-US
+To:     Johannes Weiner <hannes@cmpxchg.org>
+Cc:     surenb@google.com, mingo@redhat.com, peterz@infradead.org,
+        tj@kernel.org, corbet@lwn.net, akpm@linux-foundation.org,
+        rdunlap@infradead.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, songmuchun@bytedance.com,
+        cgroups@vger.kernel.org
+References: <20220721040439.2651-1-zhouchengming@bytedance.com>
+ <20220721040439.2651-10-zhouchengming@bytedance.com>
+ <Yt7gOhbqYzIKyhfv@cmpxchg.org>
+From:   Chengming Zhou <zhouchengming@bytedance.com>
+In-Reply-To: <Yt7gOhbqYzIKyhfv@cmpxchg.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This adds the thermal zone for the mt8195.
+On 2022/7/26 02:26, Johannes Weiner wrote:
+> On Thu, Jul 21, 2022 at 12:04:39PM +0800, Chengming Zhou wrote:
+>> Now PSI already tracked workload pressure stall information for
+>> CPU, memory and IO. Apart from these, IRQ/SOFTIRQ could have
+>> obvious impact on some workload productivity, such as web service
+>> workload.
+>>
+>> When CONFIG_IRQ_TIME_ACCOUNTING, we can get IRQ/SOFTIRQ delta time
+>> from update_rq_clock_task(), in which we can record that delta
+>> to CPU curr task's cgroups as PSI_IRQ_FULL status.
+>>
+>> Note we don't use PSI_IRQ_SOME since IRQ/SOFTIRQ always happen in
+>> the current task on the CPU, make nothing productive could run
+>> even if it were runnable, so we only use PSI_IRQ_FULL.
+> 
+> That sounds reasonable.
+> 
+>> For performance impact consideration, this is enabled by default when
+>> CONFIG_IRQ_TIME_ACCOUNTING, but can be disabled by kernel cmdline
+>> parameter "psi_irq=".
+> 
+> If there isn't a concrete usecase already, let's not add another
+> commandline parameter for now.
 
-Signed-off-by: Tinghan Shen <tinghan.shen@mediatek.com>
-Signed-off-by: Ben Tseng <ben.tseng@mediatek.com>
-Signed-off-by: Alexandre Bailon <abailon@baylibre.com>
-Signed-off-by: Balsam CHIHI <bchihi@baylibre.com>
----
- arch/arm64/boot/dts/mediatek/mt8195.dtsi | 115 ++++++++++++++++++++++-
- 1 file changed, 114 insertions(+), 1 deletion(-)
+Ok, will remove it.
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8195.dtsi b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-index 4fbf24b5d202..78017224930c 100644
---- a/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8195.dtsi
-@@ -1,6 +1,6 @@
- // SPDX-License-Identifier: (GPL-2.0 OR MIT)
- /*
-- * Copyright (c) 2021 MediaTek Inc.
-+ * Copyright (c) 2022 MediaTek Inc.
-  * Author: Seiya Wang <seiya.wang@mediatek.com>
-  */
- 
-@@ -11,6 +11,9 @@
- #include <dt-bindings/memory/mt8195-memory-port.h>
- #include <dt-bindings/phy/phy.h>
- #include <dt-bindings/pinctrl/mt8195-pinfunc.h>
-+#include <dt-bindings/power/mt8195-power.h>
-+#include <dt-bindings/reset/mt8195-resets.h>
-+#include <dt-bindings/thermal/thermal.h>
- 
- / {
- 	compatible = "mediatek,mt8195";
-@@ -810,6 +813,28 @@ spi0: spi@1100a000 {
- 			status = "disabled";
- 		};
- 
-+		lvtsap: thermal-sensor@1100b000 {
-+			compatible = "mediatek,mt8195-lvts-ap";
-+			#thermal-sensor-cells = <1>;
-+			reg = <0 0x1100b000 0 0x400>;
-+			interrupts = <GIC_SPI 169 IRQ_TYPE_LEVEL_HIGH 0>;
-+			clocks = <&infracfg_ao CLK_INFRA_AO_THERM>;
-+			resets = <&infracfg_ao MT8195_INFRA_RST0_THERM_CTRL_SWRST>;
-+			nvmem-cells = <&lvts_efuse_data1 &lvts_efuse_data2>;
-+			nvmem-cell-names = "lvts_calib_data1", "lvts_calib_data2";
-+		};
-+
-+		lvtsmcu: thermal-sensor@11278000 {
-+			compatible = "mediatek,mt8195-lvts-mcu";
-+			#thermal-sensor-cells = <1>;
-+			reg = <0 0x11278000 0 0x400>;
-+			interrupts = <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH 0>;
-+			clocks = <&infracfg_ao CLK_INFRA_AO_THERM>;
-+			resets = <&infracfg_ao MT8195_INFRA_RST4_THERM_CTRL_MCU_SWRST>;
-+			nvmem-cells = <&lvts_efuse_data1 &lvts_efuse_data2>;
-+			nvmem-cell-names = "lvts_calib_data1", "lvts_calib_data2";
-+		};
-+
- 		spi1: spi@11010000 {
- 			compatible = "mediatek,mt8195-spi",
- 				     "mediatek,mt6765-spi";
-@@ -1613,4 +1638,92 @@ vencsys_core1: clock-controller@1b000000 {
- 			#clock-cells = <1>;
- 		};
- 	};
-+
-+	thermal_zones: thermal-zones {
-+		cpu-big1-thermal {
-+			polling-delay = <0>; /* milliseconds */
-+			polling-delay-passive = <0>; /* milliseconds */
-+			thermal-sensors = <&lvtsmcu 0>;
-+		};
-+		cpu-big2-thermal {
-+			polling-delay = <0>; /* milliseconds */
-+			polling-delay-passive = <0>; /* milliseconds */
-+			thermal-sensors = <&lvtsmcu 1>;
-+		};
-+		cpu-big3-thermal {
-+			polling-delay = <0>; /* milliseconds */
-+			polling-delay-passive = <0>; /* milliseconds */
-+			thermal-sensors = <&lvtsmcu 2>;
-+		};
-+		cpu-big4-thermal {
-+			polling-delay = <0>; /* milliseconds */
-+			polling-delay-passive = <0>; /* milliseconds */
-+			thermal-sensors = <&lvtsmcu 3>;
-+		};
-+		cpu-little1-thermal {
-+			polling-delay = <0>; /* milliseconds */
-+			polling-delay-passive = <0>; /* milliseconds */
-+			thermal-sensors = <&lvtsmcu 4>;
-+		};
-+		cpu-little2-thermal {
-+			polling-delay = <0>; /* milliseconds */
-+			polling-delay-passive = <0>; /* milliseconds */
-+			thermal-sensors = <&lvtsmcu 5>;
-+		};
-+		cpu-little3-thermal {
-+			polling-delay = <0>; /* milliseconds */
-+			polling-delay-passive = <0>; /* milliseconds */
-+			thermal-sensors = <&lvtsmcu 6>;
-+		};
-+		cpu-little4-thermal {
-+			polling-delay = <0>; /* milliseconds */
-+			polling-delay-passive = <0>; /* milliseconds */
-+			thermal-sensors = <&lvtsmcu 7>;
-+		};
-+		vpu1-thermal {
-+			polling-delay = <0>; /* milliseconds */
-+			polling-delay-passive = <0>; /* milliseconds */
-+			thermal-sensors = <&lvtsap 0>;
-+		};
-+		vpu2-thermal {
-+			polling-delay = <0>; /* milliseconds */
-+			polling-delay-passive = <0>; /* milliseconds */
-+			thermal-sensors = <&lvtsap 1>;
-+		};
-+		gpu1-thermal {
-+			polling-delay = <0>; /* milliseconds */
-+			polling-delay-passive = <0>; /* milliseconds */
-+			thermal-sensors = <&lvtsap 2>;
-+		};
-+		gpu2-thermal {
-+			polling-delay = <0>; /* milliseconds */
-+			polling-delay-passive = <0>; /* milliseconds */
-+			thermal-sensors = <&lvtsap 3>;
-+		};
-+		vdec-thermal {
-+			polling-delay = <0>; /* milliseconds */
-+			polling-delay-passive = <0>; /* milliseconds */
-+			thermal-sensors = <&lvtsap 4>;
-+		};
-+		img-thermal {
-+			polling-delay = <0>; /* milliseconds */
-+			polling-delay-passive = <0>; /* milliseconds */
-+			thermal-sensors = <&lvtsap 5>;
-+		};
-+		infra-thermal {
-+			polling-delay = <0>; /* milliseconds */
-+			polling-delay-passive = <0>; /* milliseconds */
-+			thermal-sensors = <&lvtsap 6>;
-+		};
-+		cam1-thermal {
-+			polling-delay = <0>; /* milliseconds */
-+			polling-delay-passive = <0>; /* milliseconds */
-+			thermal-sensors = <&lvtsap 7>;
-+		};
-+		cam2-thermal {
-+			polling-delay = <0>; /* milliseconds */
-+			polling-delay-passive = <0>; /* milliseconds */
-+			thermal-sensors = <&lvtsap 8>;
-+		};
-+	};
- };
--- 
-2.34.1
+> 
+>> @@ -63,9 +64,11 @@ enum psi_states {
+>>  	PSI_MEM_FULL,
+>>  	PSI_CPU_SOME,
+>>  	PSI_CPU_FULL,
+>> +	PSI_IRQ_SOME,
+>> +	PSI_IRQ_FULL,
+>>  	/* Only per-CPU, to weigh the CPU in the global average: */
+>>  	PSI_NONIDLE,
+>> -	NR_PSI_STATES = 7,
+>> +	NR_PSI_STATES = 9,
+>>  };
+> 
+> Unfortunately, this grows the psi state touched by the scheduler into
+> a second cacheline. :( Please reclaim space first.
 
+Thank you for pointing this out!
+
+> 
+> I think we can remove the NR_CPU task count, which frees up one
+> u32. Something like the below diff should work (untested!)
+> 
+> And you should be able to remove PSI_IRQ_SOME, since it's not used
+> anyway. Then we'd be good to go.
+
+Very good solution for this, I will test it later.
+
+Thanks!
+
+> 
+> diff --git a/include/linux/psi_types.h b/include/linux/psi_types.h
+> index c7fe7c089718..31dc76e2d8ea 100644
+> --- a/include/linux/psi_types.h
+> +++ b/include/linux/psi_types.h
+> @@ -15,13 +15,6 @@ enum psi_task_count {
+>  	NR_IOWAIT,
+>  	NR_MEMSTALL,
+>  	NR_RUNNING,
+> -	/*
+> -	 * This can't have values other than 0 or 1 and could be
+> -	 * implemented as a bit flag. But for now we still have room
+> -	 * in the first cacheline of psi_group_cpu, and this way we
+> -	 * don't have to special case any state tracking for it.
+> -	 */
+> -	NR_ONCPU,
+>  	/*
+>  	 * For IO and CPU stalls the presence of running/oncpu tasks
+>  	 * in the domain means a partial rather than a full stall.
+> @@ -39,9 +32,11 @@ enum psi_task_count {
+>  #define TSK_IOWAIT	(1 << NR_IOWAIT)
+>  #define TSK_MEMSTALL	(1 << NR_MEMSTALL)
+>  #define TSK_RUNNING	(1 << NR_RUNNING)
+> -#define TSK_ONCPU	(1 << NR_ONCPU)
+>  #define TSK_MEMSTALL_RUNNING	(1 << NR_MEMSTALL_RUNNING)
+>  
+> +/* Only one task can be scheduled, no corresponding task count */
+> +#define TSK_ONCPU	(1 << NR_PSI_TASK_COUNTS)
+> +
+>  /* Resources that workloads could be stalled on */
+>  enum psi_res {
+>  	PSI_IO,
+> diff --git a/kernel/sched/psi.c b/kernel/sched/psi.c
+> index a4fa3aadfcba..232e1dbfad46 100644
+> --- a/kernel/sched/psi.c
+> +++ b/kernel/sched/psi.c
+> @@ -215,7 +215,7 @@ void __init psi_init(void)
+>  	group_init(&psi_system);
+>  }
+>  
+> -static bool test_state(unsigned int *tasks, enum psi_states state)
+> +static bool test_state(unsigned int *tasks, enum psi_states state, bool oncpu)
+>  {
+>  	switch (state) {
+>  	case PSI_IO_SOME:
+> @@ -228,9 +228,9 @@ static bool test_state(unsigned int *tasks, enum psi_states state)
+>  		return unlikely(tasks[NR_MEMSTALL] &&
+>  			tasks[NR_RUNNING] == tasks[NR_MEMSTALL_RUNNING]);
+>  	case PSI_CPU_SOME:
+> -		return unlikely(tasks[NR_RUNNING] > tasks[NR_ONCPU]);
+> +		return unlikely(tasks[NR_RUNNING] > oncpu);
+>  	case PSI_CPU_FULL:
+> -		return unlikely(tasks[NR_RUNNING] && !tasks[NR_ONCPU]);
+> +		return unlikely(tasks[NR_RUNNING] && !oncpu);
+>  	case PSI_NONIDLE:
+>  		return tasks[NR_IOWAIT] || tasks[NR_MEMSTALL] ||
+>  			tasks[NR_RUNNING];
+> @@ -692,9 +692,9 @@ static void psi_group_change(struct psi_group *group, int cpu,
+>  			     bool wake_clock)
+>  {
+>  	struct psi_group_cpu *groupc;
+> -	u32 state_mask = 0;
+>  	unsigned int t, m;
+>  	enum psi_states s;
+> +	u32 state_mask;
+>  
+>  	groupc = per_cpu_ptr(group->pcpu, cpu);
+>  
+> @@ -710,6 +710,26 @@ static void psi_group_change(struct psi_group *group, int cpu,
+>  
+>  	record_times(groupc, now);
+>  
+> +	/*
+> +	 * Start with TSK_ONCPU, which doesn't have a corresponding
+> +	 * task count - it's just a boolean flag directly encoded in
+> +	 * the state mask. Clear, set, or carry the current state if
+> +	 * no changes are requested.
+> +	 */
+> +	if (clear & TSK_ONCPU) {
+> +		state_mask = 0;
+> +		clear &= ~TSK_ONCPU;
+> +	} else if (set & TSK_ONCPU) {
+> +		state_mask = TSK_ONCPU;
+> +		set &= ~TSK_ONCPU;
+> +	} else {
+> +		state_mask = groupc->state_mask & TSK_ONCPU;
+> +	}
+> +
+> +	/*
+> +	 * The rest of the state mask is calculated based on the task
+> +	 * counts. Update those first, then construct the mask.
+> +	 */
+>  	for (t = 0, m = clear; m; m &= ~(1 << t), t++) {
+>  		if (!(m & (1 << t)))
+>  			continue;
+> @@ -729,9 +749,8 @@ static void psi_group_change(struct psi_group *group, int cpu,
+>  		if (set & (1 << t))
+>  			groupc->tasks[t]++;
+>  
+> -	/* Calculate state mask representing active states */
+>  	for (s = 0; s < NR_PSI_STATES; s++) {
+> -		if (test_state(groupc->tasks, s))
+> +		if (test_state(groupc->tasks, s, state_mask & TSK_ONCPU))
+>  			state_mask |= (1 << s);
+>  	}
+>  
+> @@ -743,7 +762,7 @@ static void psi_group_change(struct psi_group *group, int cpu,
+>  	 * task in a cgroup is in_memstall, the corresponding groupc
+>  	 * on that cpu is in PSI_MEM_FULL state.
+>  	 */
+> -	if (unlikely(groupc->tasks[NR_ONCPU] && cpu_curr(cpu)->in_memstall))
+> +	if (unlikely((state_mask & TSK_ONCPU) && cpu_curr(cpu)->in_memstall))
+>  		state_mask |= (1 << PSI_MEM_FULL);
+>  
+>  	groupc->state_mask = state_mask;
+> @@ -847,7 +866,8 @@ void psi_task_switch(struct task_struct *prev, struct task_struct *next,
+>  		iter = NULL;
+>  		while ((group = iterate_groups(next, &iter))) {
+>  			if (identical_state &&
+> -			    per_cpu_ptr(group->pcpu, cpu)->tasks[NR_ONCPU]) {
+> +			    (per_cpu_ptr(group->pcpu, cpu)->state_mask &
+> +			     TSK_ONCPU)) {
+>  				common = group;
+>  				break;
+>  			}
