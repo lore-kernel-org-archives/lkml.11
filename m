@@ -2,62 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D46BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 08:39:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C70C5C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 08:39:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238630AbiGZIjm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 04:39:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54828 "EHLO
+        id S238638AbiGZIjp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 04:39:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232342AbiGZIje (ORCPT
+        with ESMTP id S232343AbiGZIje (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Jul 2022 04:39:34 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63F832F65B;
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC0692F66A;
         Tue, 26 Jul 2022 01:39:33 -0700 (PDT)
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 1A09D1FA7D;
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 86602374D1;
         Tue, 26 Jul 2022 08:39:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
         t=1658824772; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=h7anLCQCvfEImdQ3rav9hS9LwqBH1cP+khrPsehktI0=;
-        b=coTDEuxmww/n2W0eQV0iZwOQjiuYXNgrhTMsgSfLeJReyFKhbTyCt/hHyQZYEygPjDMEBi
-        VBrDHmOAr1Md2GxoNjysW8xu57GwfhKW9lQR/PE5jMFIYg9z7rOt2lFGVtRyGrDvGPQhSV
-        WhBrJkgP7pXN4LUpiAz11Xs3i/KaWNA=
+        bh=8sC6TOUOa2fUJaaIzlatUrA9lcMWdgpyfpzmTF7peu8=;
+        b=kvLofho28b2Vz1ZBPuS7xbMPjjy9aw8K0rFniuSSDeIzGJZUZjCKOr7Hc0dWY7b/5TgVrn
+        NUemp69cxP1k1iCOA6oI054bFM4OJ/C3xVL36mpDf5McL1RfnmDlqfD7DJ5IQJIywiBi+j
+        55bfxfqm09p2iKhzozhXuSRm7tXk+iY=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
         s=susede2_ed25519; t=1658824772;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=h7anLCQCvfEImdQ3rav9hS9LwqBH1cP+khrPsehktI0=;
-        b=eD+HSjvtlrQJuxer+rSnBoLdpxDHTxDU1UUnH+j1en/SNmlVzeoF77uwafBj24upQPoeih
-        TVefNtvXW3mqwuAQ==
+        bh=8sC6TOUOa2fUJaaIzlatUrA9lcMWdgpyfpzmTF7peu8=;
+        b=JD5Xzv3RS/x9B1IaYe39DUje+CruqCbi105k03+vARoLzof0XCL8zmCd3xtaCYdDnjDOq4
+        y55bst0pq0+9fWAQ==
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id E3D8F13A7C;
-        Tue, 26 Jul 2022 08:39:31 +0000 (UTC)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 4E34713A7C;
+        Tue, 26 Jul 2022 08:39:32 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([192.168.254.65])
         by imap2.suse-dmz.suse.de with ESMTPSA
-        id qLf1NkOo32LYDQAAMHmgww
-        (envelope-from <tiwai@suse.de>); Tue, 26 Jul 2022 08:39:31 +0000
+        id yJRUEkSo32LYDQAAMHmgww
+        (envelope-from <tiwai@suse.de>); Tue, 26 Jul 2022 08:39:32 +0000
 From:   Takashi Iwai <tiwai@suse.de>
 To:     linux-fsdevel@vger.kernel.org
 Cc:     Namjae Jeon <linkinjeon@kernel.org>,
         Sungjong Seo <sj1557.seo@samsung.com>,
         Petr Vorel <pvorel@suse.cz>, Joe Perches <joe@perches.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 2/5] exfat: Define NLS_NAME_* as bit flags explicitly
-Date:   Tue, 26 Jul 2022 10:39:26 +0200
-Message-Id: <20220726083929.1684-3-tiwai@suse.de>
+Subject: [PATCH v2 4/5] exfat: Downgrade ENAMETOOLONG error message to debug messages
+Date:   Tue, 26 Jul 2022 10:39:28 +0200
+Message-Id: <20220726083929.1684-5-tiwai@suse.de>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220726083929.1684-1-tiwai@suse.de>
 References: <20220726083929.1684-1-tiwai@suse.de>
@@ -67,36 +67,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-NLS_NAME_* are bit flags although they are currently defined as enum;
-it's casually working so far (from 0 to 2), but it's error-prone and
-may bring a problem when we want to add more flag.
+The ENAMETOOLONG error message is printed at each time when user tries
+to operate with a too long name, and this can flood the kernel logs
+easily, as every user can trigger this.  Let's downgrade this error
+message level to a debug message for suppressing the superfluous
+logs.
 
-This patch changes the definitions of NLS_NAME_* explicitly being bit
-flags.
-
+BugLink: https://bugzilla.suse.com/show_bug.cgi?id=1201725
 Reviewed-by: Petr Vorel <pvorel@suse.cz>
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 ---
- fs/exfat/exfat_fs.h | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ fs/exfat/nls.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/exfat/exfat_fs.h b/fs/exfat/exfat_fs.h
-index 4a7a2308eb72..f431327af459 100644
---- a/fs/exfat/exfat_fs.h
-+++ b/fs/exfat/exfat_fs.h
-@@ -27,9 +27,9 @@ enum exfat_error_mode {
-  * exfat nls lossy flag
-  */
- enum {
--	NLS_NAME_NO_LOSSY,	/* no lossy */
--	NLS_NAME_LOSSY,		/* just detected incorrect filename(s) */
--	NLS_NAME_OVERLEN,	/* the length is over than its limit */
-+	NLS_NAME_NO_LOSSY =	0,	/* no lossy */
-+	NLS_NAME_LOSSY =	1 << 0,	/* just detected incorrect filename(s) */
-+	NLS_NAME_OVERLEN =	1 << 1,	/* the length is over than its limit */
- };
+diff --git a/fs/exfat/nls.c b/fs/exfat/nls.c
+index ef115e673406..617aa1272265 100644
+--- a/fs/exfat/nls.c
++++ b/fs/exfat/nls.c
+@@ -509,7 +509,7 @@ static int exfat_utf8_to_utf16(struct super_block *sb,
+ 	}
  
- #define EXFAT_HASH_BITS		8
+ 	if (unilen > MAX_NAME_LENGTH) {
+-		exfat_err(sb, "failed to %s (estr:ENAMETOOLONG) nls len : %d, unilen : %d > %d",
++		exfat_debug(sb, "failed to %s (estr:ENAMETOOLONG) nls len : %d, unilen : %d > %d",
+ 			  __func__, len, unilen, MAX_NAME_LENGTH);
+ 		return -ENAMETOOLONG;
+ 	}
 -- 
 2.35.3
 
