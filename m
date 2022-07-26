@@ -2,158 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA343CCA489
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 10:24:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 412B4C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 10:24:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238549AbiGZKY2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 06:24:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53018 "EHLO
+        id S238653AbiGZKYq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 06:24:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238577AbiGZKYX (ORCPT
+        with ESMTP id S238646AbiGZKYe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 06:24:23 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 870E52FFFC;
-        Tue, 26 Jul 2022 03:24:22 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id d7so12898780plr.9;
-        Tue, 26 Jul 2022 03:24:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=a5n2rQav5Pw8Em71zzLULSb7yyvZg/ST3BqtiUX72ak=;
-        b=DBlM0t360Nn8hZ8HcEji79X8RDW5tVb9bdRBpHJbVG6bkMidQ+cy2kYHaO1sykaq5M
-         JsUkkMuM0zl7vmifQL37tkRyr0yzMiohtHzz18gmGA1eeyEeip+6RBV7uScqI1BCLWlP
-         ogN0SZ96O0JY14Dw4FIx1t6Yw0louWg6ubzR6cSUpchE/poUF3gcmJh5dQGFYB4AICHZ
-         sD5Bg8KLFLvzlnOsFDh6Nn2SyITWujc9a0KS5yhgmS3z93PUrChwwlWaRiOwEE/lFEh0
-         hHNdxDt83BJFXIsHPytW7htVQw2sSv9dl7aeWIGclRlRIWDM9ZG5y6Us1fr8fPhA9bAh
-         Q1FQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=a5n2rQav5Pw8Em71zzLULSb7yyvZg/ST3BqtiUX72ak=;
-        b=k+qfLqYx7wit+Q5vRzl++OSQEKy6z99Aga5WFBhiPb/qG4v2BK3s8M+iFkgpi2QIx2
-         Cr+UXbonHmQKaGWSfHCCmfDjE81txYUSWESmEfMZTInO9l/njlq2vYvgdx8WSmPyBWtt
-         z+cQQJz1eTdny4KVXkcDJgXtweeQ2w//UVCoqLf6jHYkX2wlDIHZPT9GNKMrhPyUctR3
-         4WTWlAqAg4HICTPetG+s0JJrb7hR1bno0kudvOpvnqraPSJ0vKbV23eB3VqJQlO3eZB3
-         Zp2V0hlTD028QsUE27O5EkYJTnzwVl7oIG6oZiyVcbLgIQ3qXnzYR1ow/uflFk3BMRyx
-         PkIA==
-X-Gm-Message-State: AJIora/plYpXRDE4XjZ2PIJyvrM945ptU8LRD+i7duCh5G5J8g2dj8CD
-        tZKOdhDA9giWiXJ6jEM+VV2GKBOTFEM0sA==
-X-Google-Smtp-Source: AGRyM1snqPJunO0+wb0ccw6OAhxDGmtiDDB0TNFOu9gHYUB5mZL0ZcS1WNuvqJoHWTG4ic9eSc7HIA==
-X-Received: by 2002:a17:902:e84e:b0:16b:f773:4692 with SMTP id t14-20020a170902e84e00b0016bf7734692mr16357375plg.19.1658831061807;
-        Tue, 26 Jul 2022 03:24:21 -0700 (PDT)
-Received: from tj10039pcu.spreadtrum.com ([117.18.48.102])
-        by smtp.gmail.com with ESMTPSA id m12-20020a17090ab78c00b001ef3cec7f47sm10421753pjr.52.2022.07.26.03.24.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Jul 2022 03:24:21 -0700 (PDT)
-From:   Cixi Geng <gengcixi@gmail.com>
-To:     lee.jones@linaro.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, orsonzhai@gmail.com,
-        baolin.wang7@gmail.com, zhang.lyra@gmail.com,
-        mturquette@baylibre.com, sboyd@kernel.org
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-clk@vger.kernel.org
-Subject: [PATCH V6 1/2] dt-bindings: mfd: sprd: Add bindings for ums512 global registers
-Date:   Tue, 26 Jul 2022 18:24:03 +0800
-Message-Id: <20220726102404.564498-2-gengcixi@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220726102404.564498-1-gengcixi@gmail.com>
-References: <20220726102404.564498-1-gengcixi@gmail.com>
+        Tue, 26 Jul 2022 06:24:34 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0CCCC32060;
+        Tue, 26 Jul 2022 03:24:29 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DC3621FB;
+        Tue, 26 Jul 2022 03:24:29 -0700 (PDT)
+Received: from e126311.manchester.arm.com (unknown [10.57.72.224])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 23C6C3F70D;
+        Tue, 26 Jul 2022 03:24:26 -0700 (PDT)
+Date:   Tue, 26 Jul 2022 11:24:04 +0100
+From:   Kajetan Puchalski <kajetan.puchalski@arm.com>
+To:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>, lukasz.luba@arm.com,
+        Dietmar.Eggemann@arm.com, kajetan.puchalski@arm.com
+Subject: [PATCH] cpuidle: Add cpu_idle_miss trace event
+Message-ID: <Yt/AxPFi88neW7W5@e126311.manchester.arm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chunyan Zhang <chunyan.zhang@unisoc.com>
+Add a trace event for cpuidle to track missed (too deep or too shallow)
+wakeups.
 
-Add bindings for Unisoc system global register which provide register map
-for clocks.
+After each wakeup, CPUIdle already computes whether the entered state was
+optimal, above or below the desired one and updates the relevant
+counters. This patch makes it possible to trace those events in addition
+to just reading the counters.
 
-Signed-off-by: Chunyan Zhang <chunyan.zhang@unisoc.com>
-Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
+The patterns of types and percentages of misses across different
+workloads appear to be very consistent. This makes the trace event very
+useful for comparing the relative correctness of different CPUIdle
+governors for different types of workloads, or for finding the
+optimal governor for a given device.
+
+Signed-off-by: Kajetan Puchalski <kajetan.puchalski@arm.com>
 ---
- .../bindings/mfd/sprd,ums512-glbreg.yaml      | 68 +++++++++++++++++++
- 1 file changed, 68 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/mfd/sprd,ums512-glbreg.yaml
+ drivers/cpuidle/cpuidle.c    |  6 +++++-
+ include/trace/events/power.h | 22 ++++++++++++++++++++++
+ 2 files changed, 27 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/mfd/sprd,ums512-glbreg.yaml b/Documentation/devicetree/bindings/mfd/sprd,ums512-glbreg.yaml
-new file mode 100644
-index 000000000000..416f94a09c27
---- /dev/null
-+++ b/Documentation/devicetree/bindings/mfd/sprd,ums512-glbreg.yaml
-@@ -0,0 +1,68 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+# Copyright 2022 Unisoc Inc.
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/mfd/sprd,ums512-glbreg.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/drivers/cpuidle/cpuidle.c b/drivers/cpuidle/cpuidle.c
+index ef2ea1b12cd8..bf57cab32456 100644
+--- a/drivers/cpuidle/cpuidle.c
++++ b/drivers/cpuidle/cpuidle.c
+@@ -8,6 +8,7 @@
+  * This code is licenced under the GPL.
+  */
+ 
++#include "linux/percpu-defs.h"
+ #include <linux/clockchips.h>
+ #include <linux/kernel.h>
+ #include <linux/mutex.h>
+@@ -278,6 +279,7 @@ int cpuidle_enter_state(struct cpuidle_device *dev, struct cpuidle_driver *drv,
+ 
+ 				/* Shallower states are enabled, so update. */
+ 				dev->states_usage[entered_state].above++;
++				trace_cpu_idle_miss(dev->cpu, entered_state, false);
+ 				break;
+ 			}
+ 		} else if (diff > delay) {
+@@ -289,8 +291,10 @@ int cpuidle_enter_state(struct cpuidle_device *dev, struct cpuidle_driver *drv,
+ 				 * Update if a deeper state would have been a
+ 				 * better match for the observed idle duration.
+ 				 */
+-				if (diff - delay >= drv->states[i].target_residency_ns)
++				if (diff - delay >= drv->states[i].target_residency_ns) {
+ 					dev->states_usage[entered_state].below++;
++					trace_cpu_idle_miss(dev->cpu, entered_state, true);
++				}
+ 
+ 				break;
+ 			}
+diff --git a/include/trace/events/power.h b/include/trace/events/power.h
+index af5018aa9517..6539f23a5653 100644
+--- a/include/trace/events/power.h
++++ b/include/trace/events/power.h
+@@ -40,6 +40,28 @@ DEFINE_EVENT(cpu, cpu_idle,
+ 	TP_ARGS(state, cpu_id)
+ );
+ 
++TRACE_EVENT(cpu_idle_miss,
 +
-+title: Unisoc System Global Register
++	TP_PROTO(unsigned int cpu_id, unsigned int state, bool below),
 +
-+maintainers:
-+  - Orson Zhai <orsonzhai@gmail.com>
-+  - Baolin Wang <baolin.wang7@gmail.com>
-+  - Chunyan Zhang <zhang.lyra@gmail.com>
++	TP_ARGS(cpu_id, state, below),
 +
-+description:
-+  Unisoc system global registers provide register map
-+  for clocks and some multimedia modules of the SoC.
++	TP_STRUCT__entry(
++		__field(u32,		cpu_id)
++		__field(u32,		state)
++		__field(bool,		below)
++	),
 +
-+properties:
-+  compatible:
-+    items:
-+      - const: sprd,ums512-glbregs
-+      - const: syscon
-+      - const: simple-mfd
++	TP_fast_assign(
++		__entry->cpu_id = cpu_id;
++		__entry->state = state;
++		__entry->below = below;
++	),
 +
-+  "#address-cells": true
-+  "#size-cells": true
++	TP_printk("cpu_id=%lu state=%lu type=%s", (unsigned long)__entry->cpu_id,
++		(unsigned long)__entry->state, (__entry->below)?"below":"above")
++);
 +
-+  ranges:
-+    maxItems: 1
-+
-+  reg:
-+    maxItems: 1
-+
-+patternProperties:
-+  "^clock-controller@[0-9a-f]+$":
-+    type: object
-+    $ref: "../clock/sprd,ums512-clk.yaml"
-+    description:
-+      Clock controller for the SoC clocks.
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    ap_apb_regs: syscon@71000000 {
-+      compatible = "sprd,ums512-glbregs", "syscon", "simple-mfd";
-+      reg = <0x71000000 0x3000>;
-+      #address-cells = <1>;
-+      #size-cells = <1>;
-+      ranges = <0 0x71000000 0x3000>;
-+
-+      clock-controller@0 {
-+        compatible = "sprd,ums512-apahb-gate";
-+        reg = <0x0 0x2000>;
-+        #clock-cells = <1>;
-+      };
-+    };
-+
-+  - |
-+    ap_intc5_regs: syscon@32360000 {
-+      compatible = "sprd,ums512-glbregs", "syscon", "simple-mfd";
-+      reg = <0x32360000 0x1000>;
-+    };
+ TRACE_EVENT(powernv_throttle,
+ 
+  	TP_PROTO(int chip_id, const char *reason, int pmax),
+
+base-commit: e0dccc3b76fb35bb257b4118367a883073d7390e
 -- 
-2.25.1
+2.37.1
 
