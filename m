@@ -2,192 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4115CCA489
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 08:57:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 657A0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 09:03:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232575AbiGZI5D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 04:57:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40150 "EHLO
+        id S231239AbiGZJDH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 05:03:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229746AbiGZI5B (ORCPT
+        with ESMTP id S229749AbiGZJDG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 04:57:01 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D970F25CD;
-        Tue, 26 Jul 2022 01:56:59 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        Tue, 26 Jul 2022 05:03:06 -0400
+Received: from polaris.svanheule.net (polaris.svanheule.net [IPv6:2a00:c98:2060:a004:1::200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F00229C97
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 02:03:04 -0700 (PDT)
+Received: from vanadium.ugent.be (vanadium.ugent.be [157.193.99.61])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LsW4S4lRPz4x1b;
-        Tue, 26 Jul 2022 18:56:56 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1658825817;
-        bh=DS0npURn+YYFDmuMN9rMQueUGCuCQLBY6Ic5BRV10ok=;
-        h=Date:From:To:Cc:Subject:From;
-        b=fVc62ENTOJTCjPs2A0P5eqlaLLPtiylP8IWax6w1FKHNjfb9ziNgctqSWxio9j5ra
-         1lyDyLndghyz2F+e6ncY4HP+2ahSQwdf0xecPPtf8YiT5+maEG1sSb/gz/u1VTZJRj
-         txwfaennhaPh6SCiv4U3QNpKfXmhL/pmnjPhp0TauSPsavCewlejJ75m15E53qgcPc
-         UiGq2Do61x5tJNq99HiAhfevKwnA4/GoSY7kCzvDssAvGSzy3YbmHuddvloSJqkc49
-         GAw8cVSIeZdbqnmOSRbbgbE0qyUWjVjAA9DWqsqFRiUHLOvb/G8UszDz1Y5Tau/ifm
-         yydAreQ+H6DDA==
-Date:   Tue, 26 Jul 2022 18:56:52 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Yury Norov <yury.norov@gmail.com>, Theodore Ts'o <tytso@mit.edu>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: linux-next: manual merge of the bitmap tree with the random tree
-Message-ID: <20220726185652.2e9eda33@canb.auug.org.au>
+        (Authenticated sender: sander@svanheule.net)
+        by polaris.svanheule.net (Postfix) with ESMTPSA id 2663E301247;
+        Tue, 26 Jul 2022 11:03:03 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svanheule.net;
+        s=mail1707; t=1658826183;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=DxRye85q48crwir7NWYtcq+eVvb1dxCVznVhQQ9au+0=;
+        b=kyaf2s9HA9nXwxRPMH9yyVDNpWTf1cJ4DNPWbMZHh25nTIfu4PblPg3ZiHPB6mb82ejGfc
+        xNVQTbm/bHaqFHtQO9ylfeOZAi742vRYys0ZVp0zSPHb5bdPLsYmZQIj23Xr7OmzJBZp2J
+        De7BcJ2qKDMXZu1Mt8f3qpfsDNV5hZ0I0/79CkujFhVaKR3U0zQe36L9q99MTjJ4Emg/Yu
+        f7ArBhxgRTxxAkFpjZbWxbH9CgQMAl8+6fZVstSP8/xfGXCxTN3drI41bS7KDVGytReZXG
+        Rx1j2SVWMNmHwFp4ATxco1f6Hrs2Mz/MUkYIAWV296h/MDvyUUgB3DC+q6BK2g==
+Message-ID: <af067c133aa410370aaa4f11e334bc910b4c21e2.camel@svanheule.net>
+Subject: Re: [PATCH RFC v1] spi: realtek-rtl: Fix clearing some register bits
+From:   Sander Vanheule <sander@svanheule.net>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        linux-spi@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, bert@biot.com, mail@birger-koblitz.de
+Date:   Tue, 26 Jul 2022 11:03:01 +0200
+In-Reply-To: <20220725193547.1038414-1-martin.blumenstingl@googlemail.com>
+References: <20220725193547.1038414-1-martin.blumenstingl@googlemail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.3 (3.44.3-1.fc36) 
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/4=Sr_JJ0.9cX/e=AY=tdkhA";
- protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/4=Sr_JJ0.9cX/e=AY=tdkhA
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Hi Martin,
 
-Hi all,
+On Mon, 2022-07-25 at 21:35 +0200, Martin Blumenstingl wrote:
+> The code seemingly tries to clear RTL_SPI_SFCSR_LEN_MASK (before then
+> setting either RTL_SPI_SFCSR_LEN1 or RTL_SPI_SFCSR_LEN4) and
+> RTL_SPI_SFCSR_CS. What it actually does is only keeping these bits and
+> clearing all other bits, even the ones which were just set before. Fix
+> the operation to clear the bits in the selected mask and keep all other
+> ones.
+>=20
+> Fixes: a8af5cc2ff1e80 ("spi: realtek-rtl: Add support for Realtek
+> RTL838x/RTL839x SPI controllers")
+> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> ---
+> I stumbled across this while reading the driver. This patch is untested
+> because I don't have any hardware with this controller.
+>=20
+>=20
+> =C2=A0drivers/spi/spi-realtek-rtl.c | 4 ++--
+> =C2=A01 file changed, 2 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/spi/spi-realtek-rtl.c b/drivers/spi/spi-realtek-rtl.=
+c
+> index 866b0477dbd7..e5ad0f11996f 100644
+> --- a/drivers/spi/spi-realtek-rtl.c
+> +++ b/drivers/spi/spi-realtek-rtl.c
+> @@ -49,7 +49,7 @@ static void set_size(struct rtspi *rtspi, int size)
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u32 value;
+> =C2=A0
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0value =3D readl(REG(RTL_S=
+PI_SFCSR));
+> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0value &=3D RTL_SPI_SFCSR_LEN_M=
+ASK;
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0value &=3D ~RTL_SPI_SFCSR_LEN_=
+MASK;
 
-Today's linux-next merge of the bitmap tree got a conflict in:
+Although typically a field mask has the only the bits of that field set,
+RTL_SPI_SFCSR_LEN_MASK is already inverted. So LEN_MASK has all bits set,
+*except* for those where LEN is stored.
 
-  arch/powerpc/include/asm/archrandom.h
+This means the code currently is:
+	value &=3D ~(0x3 << 28);
 
-between commits:
+which is correct AFAICT, as it clears the LEN bits, but keeps all the other=
+s.
 
-  9592eef7c16e ("random: remove CONFIG_ARCH_RANDOM")
-  d349ab99eec7 ("random: handle archrandom with multiple longs")
+While this part is currently not wrong, I wouldn't be opposed to a patch to=
+ make
+it less confusing by not inverting the field mask in the definition of
+RTL_SPI_SFCSR_LEN_MASK.
 
-from the random tree and commit:
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (size =3D=3D 4)
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0value |=3D RTL_SPI_SFCSR_LEN4;
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0else if (size =3D=3D 1)
+> @@ -143,7 +143,7 @@ static void init_hw(struct rtspi *rtspi)
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0/* Permanently disable CS=
+1, since it's never used */
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0value |=3D RTL_SPI_SFCSR_=
+CSB1;
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0/* Select CS0 for use */
+> -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0value &=3D RTL_SPI_SFCSR_CS;
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0value &=3D ~RTL_SPI_SFCSR_CS;
 
-  2f9905799751 ("powerpc: drop dependency on <asm/machdep.h> in archrandom.=
-h")
+This macro is not inverted, so it does clear any previously set bits, and
+probably doesn't end up with RTL_SPI_SFCRS_CS set. However, is in an init c=
+all
+and it doesn't appear to cause any issues later on, right? Is this because =
+the
+SFCSR register is (unintentionally) cleared and that is actually required?
 
-from the bitmap tree.
+Best,
+Sander
 
-I fixed it up (see bottom and also applied the following merge fix patch)
-and can carry the fix as necessary. This is now fixed as far as linux-next
-is concerned, but any non trivial conflicts should be mentioned to your
-upstream maintainer when your tree is submitted for merging.  You may
-also want to consider cooperating with the maintainer of the conflicting
-tree to minimise any particularly complex conflicts.
-
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Date: Tue, 26 Jul 2022 18:47:56 +1000
-Subject: [PATCH] fix up for "powerpc: drop dependency on <asm/machdep.h> in=
- archrandom.h"
-
-interacting with "random: handle archrandom with multiple longs" and
-"random: remove CONFIG_ARCH_RANDOM"
-
-Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
----
- arch/powerpc/kernel/setup-common.c | 13 +++++--------
- 1 file changed, 5 insertions(+), 8 deletions(-)
-
-diff --git a/arch/powerpc/kernel/setup-common.c b/arch/powerpc/kernel/setup=
--common.c
-index 194d09461767..409a0a763fe4 100644
---- a/arch/powerpc/kernel/setup-common.c
-+++ b/arch/powerpc/kernel/setup-common.c
-@@ -171,16 +171,13 @@ EXPORT_SYMBOL_GPL(machine_power_off);
- void (*pm_power_off)(void);
- EXPORT_SYMBOL_GPL(pm_power_off);
-=20
--#ifdef CONFIG_ARCH_RANDOM
--bool __must_check arch_get_random_seed_long(unsigned long *v)
-+size_t arch_get_random_seed_longs(unsigned long *v, size_t max_longs)
- {
--	if (ppc_md.get_random_seed)
--		return ppc_md.get_random_seed(v);
--
--	return false;
-+	if (max_longs && ppc_md.get_random_seed && ppc_md.get_random_seed(v))
-+		return 1;
-+	return 0;
- }
--EXPORT_SYMBOL(arch_get_random_seed_long);
--#endif
-+EXPORT_SYMBOL(arch_get_random_seed_longs);
-=20
- void machine_halt(void)
- {
---=20
-2.35.1
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc arch/powerpc/include/asm/archrandom.h
-index 0e365c5b2396,21def59ef1a6..c94c9d782533
---- a/arch/powerpc/include/asm/archrandom.h
-+++ b/arch/powerpc/include/asm/archrandom.h
-@@@ -2,19 -2,33 +2,12 @@@
-  #ifndef _ASM_POWERPC_ARCHRANDOM_H
-  #define _ASM_POWERPC_ARCHRANDOM_H
- =20
-- #include <asm/machdep.h>
- -#ifdef CONFIG_ARCH_RANDOM
- -
- -bool __must_check arch_get_random_seed_long(unsigned long *v);
- -
- -static inline bool __must_check arch_get_random_long(unsigned long *v)
- -{
- -	return false;
- -}
---
- -static inline bool __must_check arch_get_random_int(unsigned int *v)
- +static inline size_t __must_check arch_get_random_longs(unsigned long *v,=
- size_t max_longs)
-  {
- -	return false;
- +	return 0;
-  }
- =20
-- static inline size_t __must_check arch_get_random_seed_longs(unsigned lon=
-g *v, size_t max_longs)
- -
- -static inline bool __must_check arch_get_random_seed_int(unsigned int *v)
---{
-- 	if (max_longs && ppc_md.get_random_seed && ppc_md.get_random_seed(v))
-- 		return 1;
-- 	return 0;
- -	unsigned long val;
- -	bool rc;
- -
- -	rc =3D arch_get_random_seed_long(&val);
- -	if (rc)
- -		*v =3D val;
- -
- -	return rc;
---}
- -#endif /* CONFIG_ARCH_RANDOM */
-++size_t __must_check arch_get_random_seed_longs(unsigned long *v, size_t m=
-ax_longs);
- =20
-  #ifdef CONFIG_PPC_POWERNV
-  int powernv_hwrng_present(void);
-
-
---Sig_/4=Sr_JJ0.9cX/e=AY=tdkhA
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmLfrFUACgkQAVBC80lX
-0Gz5Igf/eKFh2Dr702CM90pdWY1TDogx9VX211NhhFNLQfqWsqUbui7ImBc5qzl4
-BMmlfExIjo95/afPpRD0sPG7jmL2mtvA28kp6mrYno9ZPKrUDjI/J7etPjHTQWGX
-32uG7Zi9/o75XVn43cwS4+7/5UoYzXpJ9JGF6LJJpXsCcpUA2nHjo7pumefLMzjX
-8k3sIGA0gPkFa07g/qnEv8tm/+IEEULDStBQdNxc4E+M3ErAlbFdAjHPWDejfQrh
-hC+MssMB/rtMWKqWSNktmG6l7c4dXXeEYtRWm8hE8xT4wtlMXZyzngS2MyePqt5Z
-p2I5rvVThRVjJPIESxfb4/m2fLuaAA==
-=OKh7
------END PGP SIGNATURE-----
-
---Sig_/4=Sr_JJ0.9cX/e=AY=tdkhA--
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0writel(value, REG(RTL_SPI=
+_SFCSR));
+> =C2=A0}
+> =C2=A0
