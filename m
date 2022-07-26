@@ -2,98 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F28DC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 07:57:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD08CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 08:00:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238058AbiGZH5x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 03:57:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46336 "EHLO
+        id S237883AbiGZIAT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 04:00:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237839AbiGZH5s (ORCPT
+        with ESMTP id S232155AbiGZIAP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 03:57:48 -0400
-Received: from mail-ua1-x92b.google.com (mail-ua1-x92b.google.com [IPv6:2607:f8b0:4864:20::92b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E8552C659;
-        Tue, 26 Jul 2022 00:57:47 -0700 (PDT)
-Received: by mail-ua1-x92b.google.com with SMTP id y12so4317792uad.10;
-        Tue, 26 Jul 2022 00:57:47 -0700 (PDT)
+        Tue, 26 Jul 2022 04:00:15 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1A92DF6C
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 01:00:13 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id j22so24731327ejs.2
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 01:00:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=/Dg6UJcvd66rBSsY0O4X/XZCDYuJxPThGG/8mH4rxkQ=;
-        b=PMM6SQJ7HFwUqcdDCaTU3eg7RdF+Iz2I8gmPHti8FTJGe6d837yQdMo3/B2p3a3on1
-         v0l+u5zo4S3WcHtMBzErp5iyPM93jqMe1g/yNzg5b7WLzkfV640aKw/7Y2b8IYVcDhw/
-         eQ8VgMF0j4b5hTT6xPvuEDh0RZhBWce36kFn4o0r5+Cabo3Rul+YzY3Gy7xs5waf7BOY
-         a/EsdckWK09qr3h1+xvUcGbJPZqmyJQyYrBblhfB4CVtsuLwa7tNokxNoCdmg/ISvJHj
-         Mxu7ZhJlAh0o7FcWfWEdeRf86G26fwaFa2EJZo3LbdQheEkMKkyzpE9ZBUYbPUmJnWJX
-         0law==
+        bh=jvhJ4Fls319vpzmEH9ooehhSgHL0qybM4Gnky//U4Ws=;
+        b=SGGItEkWoRZnogOpdDsWIBP0ikX0WYtqIocRcezh6YFq6LmeKIq2ntQpGOTCbhxQCu
+         eiCsOvaJuy7iOuSG4U0e5o4utyz1qizCrfGMMiJJLgWkw7Jo3ea0MaikRHvG8TEO2/JG
+         VSzT3hUBb3A0Y+D8WTnGuKnJX1VOtcn7kW34T7Qm7GPcKFWeFgRfgyddCDMTmX8h7Bdb
+         QdqFpLvbptV41ltYgS4Q7yiJG0gAt2dQ/cb4gSScsUw8OOMOOm+xHP3iHYtCaG1v1fXJ
+         8OVIavFA9O5V5GogZ8cPr3HRCsn2sKG2oBMdR/Wqke1mrOeh8rXNxizPKygz0qrfL10P
+         ZxPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=/Dg6UJcvd66rBSsY0O4X/XZCDYuJxPThGG/8mH4rxkQ=;
-        b=7iHxUiqqqOioHzDN2UNqhVZqE+kPfLMhsKKg9ZhQmrHDAwj0ijtI4+9t3N1Y2Y4HFH
-         kKPyB3D2Vp1m3YiGb26eHNHCNQIcQ7ZSFY5ZvQMH8n7TrMjWArwRTLsKkf6Ngn10BzBb
-         utRYhMCiiAeNT11iK+gW7OpF+Qy3j72kKnA9GoTCWp7b5dksJ9t+9AHMtw8owERRgpfj
-         lEFiAneZHVp+qdjN0HLVgJeQzF7gQLMJ8o5qTyzZRkE6w8SlUbnGlBDLnT1NcnOFhtCz
-         J62LbhxlzGTIKHVFt+B2pbfOhu343zoboTvueT+padCqQy6gDCrwZiSFYSPSQi6tcsbx
-         dJFg==
-X-Gm-Message-State: AJIora/RPjOfBBwfpUVITv+d0UmUdJkZK2sC7l5SMEOVE+Yk8yl4Wt13
-        /FbfESGSjm6dpCP9D1xGVlHCvvr+mnjHmAs/fNg=
-X-Google-Smtp-Source: AGRyM1sGwxjnpoy6Z5a+80AXE90/uTyqypaSTzvEXBAxSMoC7QnHj7QeQ80IUwoLiT/OheA8xLfIAlIN1Lua4eLwyok=
-X-Received: by 2002:ab0:661a:0:b0:384:d0d7:7383 with SMTP id
- r26-20020ab0661a000000b00384d0d77383mr448uam.24.1658822266663; Tue, 26 Jul
- 2022 00:57:46 -0700 (PDT)
+        bh=jvhJ4Fls319vpzmEH9ooehhSgHL0qybM4Gnky//U4Ws=;
+        b=07rkY5PMDhOfyeXzIXiVqs2oT5g39nd7scTj2MMWSiO9Kdxi6pLWrfbr/IT/3KT5wW
+         2Px8sYjnrqeD7Q9VMQoye/xg4vkNgnpYy0bBB4sPRr8wVHIAftYXtxp1Gg98VnZLXBdf
+         r52Ad1p7o4hJG/d6DVc46sMDLX9pr2Oh/JMo1BkgRRRnejpobLW0uOj3Pp89x7lbxUNg
+         4mPu/l27DAeBr26Mssrlp7T62zEj+fjTyGXjROXwDpmDEMG47G3pDtc3K6Jk3puYx8RK
+         icDGpztQ2HQ18d5wTdYlpAAfg1AmBuhKNg8op1p+QeN2uewMh/k5wQBLEik4WlmH8ezL
+         boOg==
+X-Gm-Message-State: AJIora9ffbqf4J5uZA6EHAd5V+4snVjNGQ/xIQZKYj7Q1hO4i4PyfbQh
+        /TpB+0JvsbIAWGFhVVis9YFi/avdtVdEjwS7LuTGt91Ep4l/cA==
+X-Google-Smtp-Source: AGRyM1ukU/Q2TD/EJ8wkpf2Gk/d0GLunk5GZ39zifsJtfIZGizYCyImsOfB5UsuURoUetWFIYGMWwwi2Sd1yEiuGOIo=
+X-Received: by 2002:a17:907:1ddd:b0:72b:49ff:d39e with SMTP id
+ og29-20020a1709071ddd00b0072b49ffd39emr12990573ejc.500.1658822411958; Tue, 26
+ Jul 2022 01:00:11 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220724201131.3381-1-wangborong@cdjrlc.com>
-In-Reply-To: <20220724201131.3381-1-wangborong@cdjrlc.com>
-From:   Ilya Dryomov <idryomov@gmail.com>
-Date:   Tue, 26 Jul 2022 09:57:18 +0200
-Message-ID: <CAOi1vP_bepwLrWwV3pvigF19_QQp75DejcQsDKDwBtV+svUhbQ@mail.gmail.com>
-Subject: Re: [PATCH] libceph: Fix comment typo
-To:     Jason Wang <wangborong@cdjrlc.com>
-Cc:     Eric Dumazet <edumazet@google.com>, Xiubo Li <xiubli@redhat.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Ceph Development <ceph-devel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
+References: <20220722220810.28894-1-mario.limonciello@amd.com>
+In-Reply-To: <20220722220810.28894-1-mario.limonciello@amd.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Tue, 26 Jul 2022 10:00:01 +0200
+Message-ID: <CACRpkdZcskUNwso+ZN3XbwGCFpurJ6cgKhhrHYF+FMcS2da94w@mail.gmail.com>
+Subject: Re: [PATCH 1/2] pinctrl: amd: Fix newline declaration in debugfs output
+To:     Mario Limonciello <mario.limonciello@amd.com>
+Cc:     Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
+        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jul 24, 2022 at 2:20 PM Jason Wang <wangborong@cdjrlc.com> wrote:
->
-> The double `without' is duplicated in the comment, remove one.
->
-> Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
-> ---
->  net/ceph/pagelist.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/net/ceph/pagelist.c b/net/ceph/pagelist.c
-> index 65e34f78b05d..74622b278d57 100644
-> --- a/net/ceph/pagelist.c
-> +++ b/net/ceph/pagelist.c
-> @@ -96,7 +96,7 @@ int ceph_pagelist_append(struct ceph_pagelist *pl, const void *buf, size_t len)
->  EXPORT_SYMBOL(ceph_pagelist_append);
->
->  /* Allocate enough pages for a pagelist to append the given amount
-> - * of data without without allocating.
-> + * of data without allocating.
->   * Returns: 0 on success, -ENOMEM on error.
->   */
->  int ceph_pagelist_reserve(struct ceph_pagelist *pl, size_t space)
-> --
-> 2.35.1
->
+On Sat, Jul 23, 2022 at 12:08 AM Mario Limonciello
+<mario.limonciello@amd.com> wrote:
 
-Applied.
+> Currently the debugfs output for pinctrl-amd puts the first line
+> combined with "GPIO bank".  This makes it a little harder to process
+> as the file needs to be manually corrected for the mistake.
+>
+> Change this to be a new line character instead.
+>
+> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
 
-Thanks,
+Patch applied as obviously correct.
 
-                Ilya
+Yours,
+Linus Walleij
