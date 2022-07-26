@@ -2,167 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC0D6C04A68
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 18:42:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 912B8C00144
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 18:43:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239539AbiGZSmK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 14:42:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55834 "EHLO
+        id S232693AbiGZSn1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 14:43:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230515AbiGZSmI (ORCPT
+        with ESMTP id S230515AbiGZSnY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 14:42:08 -0400
-Received: from mail-yw1-f177.google.com (mail-yw1-f177.google.com [209.85.128.177])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7422A2D1DC;
-        Tue, 26 Jul 2022 11:42:07 -0700 (PDT)
-Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-31e7055a61dso152177397b3.11;
-        Tue, 26 Jul 2022 11:42:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=3Tjb8+yRHmF5ncvwObM9z3vY00LYdwKMo31sPhGwgxU=;
-        b=ysnLIFR5HFU5ybcv1uTG/RtHy9IfQFoNu/B6j3dzxhcnBEKuJ0zcysaGpaR81JDBo6
-         Ma2EkHSqrVQZg8mYjA7Ad4qgbq7QAWBGP2cLvVvbGdkZALexkJsc8Xc7X4Zr4UI+rVNI
-         O4RDhuSnDzbUtHuykGCjCorLocSKe3+vumGEYpnCXpav+w4Ys5El+amKLhl6zt5GZ2AY
-         W0oyDs0xTelV7Vwc9zGBCS0Lqf0lPGzM7VAhy4KCcX2WGzUhLOT1PpK8V70Gfp1qSjmQ
-         foG+w8LMPecredDj5PydhdqGHPGsxUeOFHiDj8mN91yfGqjFCYBKjesu7XzcWYNgGlyu
-         jceg==
-X-Gm-Message-State: AJIora/X3YwzNgV/B3324uhO7n2AVv+xuPe9MkQuqkW9q/vJmUa/S/Iw
-        mpvXLuiYBMcBn/42HU0G89i1/VRyVyrKPGgsQwE=
-X-Google-Smtp-Source: AGRyM1vq/T8aGKh5BysIsvk3VwI4LkEctMSc6P9Q2W/dyr8+5gt8s9RELvYzu7VGtGuW95qVs9zsjmpsdb3RlXJBvzc=
-X-Received: by 2002:a81:1b97:0:b0:2db:640f:49d8 with SMTP id
- b145-20020a811b97000000b002db640f49d8mr15641987ywb.326.1658860926659; Tue, 26
- Jul 2022 11:42:06 -0700 (PDT)
+        Tue, 26 Jul 2022 14:43:24 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A11752D1DC;
+        Tue, 26 Jul 2022 11:43:23 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 57C721F9F3;
+        Tue, 26 Jul 2022 18:43:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1658861002;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=TTiR4Rj7a7i+4taUmgliJ6Lzey5oIZm0ImPZfCjUCq4=;
+        b=wR2cHz/QKkCnntnFSMrNYmBy3J2tl3rYKVEMnA2Z+NfeSrnRb0wD2x+D/FZldcu3vE0Kkp
+        JU9U+lSxa8pIkJzJen/lJA8J8bdIrHIfqneBD+6GWORKgwOE85wacfWOYVxCO141VBf6gI
+        4+DMmE3O57MLFhB45hqGTN7trd/Wp5E=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1658861002;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=TTiR4Rj7a7i+4taUmgliJ6Lzey5oIZm0ImPZfCjUCq4=;
+        b=IkzZPx64FXtCcAad35qXVAYOVlbcZqWYCaSRVvzEoG+BX7uF5FdA4wpuQ/xMkDGfSpoJWE
+        QvXvjPe75ouPeqDQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 1B9E013322;
+        Tue, 26 Jul 2022 18:43:22 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 1x24Bco14GIkIAAAMHmgww
+        (envelope-from <dsterba@suse.cz>); Tue, 26 Jul 2022 18:43:22 +0000
+Date:   Tue, 26 Jul 2022 20:38:24 +0200
+From:   David Sterba <dsterba@suse.cz>
+To:     hmsjwzb <hmsjwzb@zoho.com>
+Cc:     Nikolay Borisov <nborisov@suse.com>, anand.jain@oracle.com,
+        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH]btrfs: Fix fstest case btrfs/219
+Message-ID: <20220726183824.GL13489@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz, hmsjwzb <hmsjwzb@zoho.com>,
+        Nikolay Borisov <nborisov@suse.com>, anand.jain@oracle.com,
+        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220721083609.5695-1-hmsjwzb@zoho.com>
+ <0c2337c3-2b39-c54c-27e9-dd4f0a99cf71@suse.com>
+ <1aaff0ac-436e-7782-081c-3549ff3d8c8f@zoho.com>
 MIME-Version: 1.0
-References: <04278747-41fe-3a0a-81bf-2935efaafac0@I-love.SAKURA.ne.jp>
-In-Reply-To: <04278747-41fe-3a0a-81bf-2935efaafac0@I-love.SAKURA.ne.jp>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Tue, 26 Jul 2022 20:41:55 +0200
-Message-ID: <CAJZ5v0jzPyTA_Ng_vB1iFR91ThGw9nT2Yzyh6xwTZJajAz+O0g@mail.gmail.com>
-Subject: Re: [PATCH v3] PM: hibernate: defer device probing when resuming from hibernation
-To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Oliver Neukum <oneukum@suse.com>,
-        Wedson Almeida Filho <wedsonaf@google.com>,
-        "Rafael J. Wysocki" <rjw@sisk.pl>,
-        Arjan van de Ven <arjan@linux.intel.com>,
-        Len Brown <len.brown@intel.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <1aaff0ac-436e-7782-081c-3549ff3d8c8f@zoho.com>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 15, 2022 at 7:51 AM Tetsuo Handa
-<penguin-kernel@i-love.sakura.ne.jp> wrote:
->
-> syzbot is reporting hung task at misc_open() [1], for there is a race
-> window of AB-BA deadlock which involves probe_count variable. Currently
-> wait_for_device_probe() from snapshot_open() from misc_open() can sleep
-> forever with misc_mtx held if probe_count cannot become 0.
->
-> When a device is probed by hub_event() work function, probe_count is
-> incremented before the probe function starts, and probe_count is
-> decremented after the probe function completed.
->
-> There are three cases that can prevent probe_count from dropping to 0.
->
->   (a) A device being probed stopped responding (i.e. broken/malicious
->       hardware).
->
->   (b) A process emulating a USB device using /dev/raw-gadget interface
->       stopped responding for some reason.
->
->   (c) New device probe requests keeps coming in before existing device
->       probe requests complete.
->
-> The phenomenon syzbot is reporting is (b). A process which is holding
-> system_transition_mutex and misc_mtx is waiting for probe_count to become
-> 0 inside wait_for_device_probe(), but the probe function which is called
->  from hub_event() work function is waiting for the processes which are
-> blocked at mutex_lock(&misc_mtx) to respond via /dev/raw-gadget interface.
->
-> This patch mitigates (b) by deferring wait_for_device_probe() from
-> snapshot_open() to snapshot_write() and snapshot_ioctl(). Please note that
-> the possibility of (b) remains as long as any thread which is emulating a
-> USB device via /dev/raw-gadget interface can be blocked by uninterruptible
-> blocking operations (e.g. mutex_lock()).
->
-> Please also note that (a) and (c) are not addressed. Regarding (c), we
-> should change the code to wait for only one device which contains the
-> image for resuming from hibernation. I don't know how to address (a), for
-> use of timeout for wait_for_device_probe() might result in loss of user
-> data in the image. Maybe we should require the userland to wait for the
-> image device before opening /dev/snapshot interface.
->
-> Link: https://syzkaller.appspot.com/bug?extid=358c9ab4c93da7b7238c [1]
-> Reported-by: syzbot <syzbot+358c9ab4c93da7b7238c@syzkaller.appspotmail.com>
-> Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-> Tested-by: syzbot <syzbot+358c9ab4c93da7b7238c@syzkaller.appspotmail.com>
-> Cc: Greg KH <gregkh@linuxfoundation.org>
-> Cc: Oliver Neukum <oneukum@suse.com>
-> Cc: Wedson Almeida Filho <wedsonaf@google.com>
-> Cc: Rafael J. Wysocki <rjw@sisk.pl>
-> Cc: Arjan van de Ven <arjan@linux.intel.com>
-> ---
-> Changes in v3:
->   Defer wait_for_device_probe() till first write()/ioctl() request.
->
-> v2 is at https://lkml.kernel.org/r/03096156-3478-db03-c015-28643479116c@I-love.SAKURA.ne.jp .
->
-> v1 is at https://lkml.kernel.org/r/72e74af9-f1b6-e383-a2c3-6ee8a0aea5e0@I-love.SAKURA.ne.jp .
->
->  kernel/power/user.c | 13 ++++++++++++-
->  1 file changed, 12 insertions(+), 1 deletion(-)
->
-> diff --git a/kernel/power/user.c b/kernel/power/user.c
-> index ad241b4ff64c..d43c2aa583b2 100644
-> --- a/kernel/power/user.c
-> +++ b/kernel/power/user.c
-> @@ -26,6 +26,7 @@
->
->  #include "power.h"
->
-> +static bool need_wait;
->
->  static struct snapshot_data {
->         struct snapshot_handle handle;
-> @@ -78,7 +79,7 @@ static int snapshot_open(struct inode *inode, struct file *filp)
->                  * Resuming.  We may need to wait for the image device to
->                  * appear.
->                  */
-> -               wait_for_device_probe();
-> +               need_wait = true;
->
->                 data->swap = -1;
->                 data->mode = O_WRONLY;
-> @@ -168,6 +169,11 @@ static ssize_t snapshot_write(struct file *filp, const char __user *buf,
->         ssize_t res;
->         loff_t pg_offp = *offp & ~PAGE_MASK;
->
-> +       if (need_wait) {
-> +               wait_for_device_probe();
-> +               need_wait = false;
-> +       }
-> +
->         lock_system_sleep();
->
->         data = filp->private_data;
-> @@ -244,6 +250,11 @@ static long snapshot_ioctl(struct file *filp, unsigned int cmd,
->         loff_t size;
->         sector_t offset;
->
-> +       if (need_wait) {
-> +               wait_for_device_probe();
-> +               need_wait = false;
-> +       }
-> +
->         if (_IOC_TYPE(cmd) != SNAPSHOT_IOC_MAGIC)
->                 return -ENOTTY;
->         if (_IOC_NR(cmd) > SNAPSHOT_IOC_MAXNR)
-> --
+On Fri, Jul 22, 2022 at 01:34:11AM -0400, hmsjwzb wrote:
+> On 7/21/22 09:37, Nikolay Borisov wrote:
+> > On 21.07.22 г. 11:36 ч., Flint.Wang wrote:
+> >> Hi,
+> >> fstest btrfs/291 failed.
+> >>
+> >> [How to reproduce]
+> >> mkdir -p /mnt/test/219.mnt
+> >> xfs_io -f -c "truncate 256m" /mnt/test/219.img1
+> >> mkfs.btrfs /mnt/test/219.img1
+> >> cp /mnt/test/219.img1 /mnt/test/219.img2
+> >> mount -o loop /mnt/test/219.img1 /mnt/test/219.mnt
+> >> umount /mnt/test/219.mnt
+> >> losetup -f --show /mnt/test/219.img1 dev
+> >> mount /dev/loop0 /mnt/test/219.mnt
+> >> umount /mnt/test/219.mnt
+> >> mount -o loop /mnt/test/219.img2 /mnt/test/219.mnt
+> >>
+> >> [Root cause]
+> >> if (fs_devices->opened && found_transid < device->generation) {
+> >>     /*
+> >>      * That is if the FS is _not_ mounted and if you
+> >>      * are here, that means there is more than one
+> >>      * disk with same uuid and devid.We keep the one
+> >>      * with larger generation number or the last-in if
+> >>      * generation are equal.
+> >>      */
+> >>     mutex_unlock(&fs_devices->device_list_mutex);
+> >>     return ERR_PTR(-EEXIST);
+> >> }
+> >>
+> >> [Personal opinion]
+> >> User might back up a block device to another. I think it is improper
+> >> to forbid user from mounting it.
+> >>
+> >> Signed-off-by: Flint.Wang <hmsjwzb@zoho.com>
+> > 
+> > 
+> > This lacks any explanation whatsoever so it's not possible to judge whether the fix is correct or not.
+> > 
+> >> ---
+> >>   fs/btrfs/volumes.c | 2 +-
+> >>   1 file changed, 1 insertion(+), 1 deletion(-)
+> >>
+> >> diff --git a/fs/btrfs/volumes.c b/fs/btrfs/volumes.c
+> >> index 6aa6bc769569a..76af32032ac85 100644
+> >> --- a/fs/btrfs/volumes.c
+> >> +++ b/fs/btrfs/volumes.c
+> >> @@ -900,7 +900,7 @@ static noinline struct btrfs_device *device_list_add(const char *path,
+> >>            * tracking a problem where systems fail mount by subvolume id
+> >>            * when we reject replacement on a mounted FS.
+> >>            */
+> >> -        if (!fs_devices->opened && found_transid < device->generation) {
+> >> +        if (fs_devices->opened && found_transid < device->generation) {
+> >>               /*
+> >>                * That is if the FS is _not_ mounted and if you
+> >>                * are here, that means there is more than one
+> 
+> Hi Nikolay,
+> 
+> It seems the failure of btrfs/219 needs some explanation.
+> 
+> Here is the thing.
+>         1. A storage device A with btrfs filesystem is running on a host.
+>         2. For example, we backup the device A to an exactly some device B.
+>         3. The device A continue to run for a while so the device->generation is getting bigger.
+>         4. Then you umount the device A and try to mount device B.
+>         5. Kernel find that device A has the same UUID as device B and has bigger device->generation.
+>            So the mount request of device B will be rejected.
 
-Applied as 5.20 material, thanks!
+That's on purpose, devices are matched by UUIDs and making block copies
+of the same filesystem is known "don't do that" and discouraged.
+
+If you must store the block copies then you can change the UUID by
+btrfstune, there are two ways (fast metadata_uuid, and slow rewriting
+all metadata uuids in all blocks).
+
+> 
+>             if (!fs_devices->opened && found_transid < device->generation) {
+>                  /*
+>                   * That is if the FS is _not_ mounted and if you
+>                   * are here, that means there is more than one
+>                   * disk with same uuid and devid.We keep the one
+>                   * with larger generation number or the last-in if
+>                   * generation are equal.
+>                   */
+>                   mutex_unlock(&fs_devices->device_list_mutex);
+>                   return ERR_PTR(-EEXIST);
+>             }
+> 
+> I think it is improper to reject that request. Because device A is not in open state.
+
+But this would prevent mounting A. There should really be some way to
+distiguish the filesystems, the block device is not a stable identifier,
+the UUID is. Imagine having 10 copies of the same filesystem identified
+by the same UUID and device UUID, but with different generations and
+data. That's asking for problems.
+
+There's not much the filesystem driver can do than to avoid using old
+devices and giving preference to the highest generation device. All
+devices with btrfs signature are registered in memory and this is the
+primary source when mounting the devices, not the block device itself.
