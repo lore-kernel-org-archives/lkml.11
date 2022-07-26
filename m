@@ -2,141 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 206F4C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 15:12:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D07FC00144
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 15:13:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232110AbiGZPMO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 11:12:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45648 "EHLO
+        id S229976AbiGZPND (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 11:13:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231845AbiGZPML (ORCPT
+        with ESMTP id S233293AbiGZPNB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 11:12:11 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37BEC2F00F
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 08:12:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658848331; x=1690384331;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=Etd9mR3RlNpLZNJF6k1X1j8+2T4Syh+GGlJFfNnbx/o=;
-  b=OiQm4wwlzC5YVOC02ecOxOgM+si3Gdw3GcTI6N49i3zpMxC2zDZj94iq
-   UdNMHsNYH30mksxac1FbBzPsaiTlaNDuXQos5EbwWsPR1l4m9r+jREl5S
-   Yhg4LKsQGqtKv6l4H/mtF7gn+n5p+pH0dSHVWIJybUEbpN5jyClFXXJND
-   QIgHJeyaRPEIkyB2q98CISqXJObZbGZUW9VukGZZcgaEQKwLHVUi29eqw
-   F0wtGQcWd8jp/WgBT6fE/tPsdomo4BfHvt+SXBoHllXS1dF03S9GWtw9E
-   +Wx4XzGrjFWbhZnUxUih3qOloGN0zFyPYc6B6UmV6RlpURIaLHnsLcGpt
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10420"; a="271017301"
-X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
-   d="scan'208";a="271017301"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2022 08:12:10 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
-   d="scan'208";a="702929163"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga002.fm.intel.com with ESMTP; 26 Jul 2022 08:12:08 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id AA034F1; Tue, 26 Jul 2022 18:12:18 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Mark Brown <broonie@kernel.org>, linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 1/1] regmap: Make use of get_unaligned_be24(), put_unaligned_be24()
-Date:   Tue, 26 Jul 2022 18:12:13 +0300
-Message-Id: <20220726151213.71712-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 26 Jul 2022 11:13:01 -0400
+X-Greylist: delayed 599 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 26 Jul 2022 08:12:59 PDT
+Received: from proxmox-new.maurer-it.com (proxmox-new.maurer-it.com [94.136.29.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85F532F021
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 08:12:59 -0700 (PDT)
+Received: from proxmox-new.maurer-it.com (localhost.localdomain [127.0.0.1])
+        by proxmox-new.maurer-it.com (Proxmox) with ESMTP id 4B7F442C2F;
+        Tue, 26 Jul 2022 16:57:51 +0200 (CEST)
+Date:   Tue, 26 Jul 2022 16:57:48 +0200
+From:   Stoiko Ivanov <s.ivanov@proxmox.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        bgardon@google.com
+Subject: Re: [PATCH] KVM: x86: enable TDP MMU by default
+Message-ID: <20220726165748.76db5284@rosa.proxmox.com>
+In-Reply-To: <20210726163106.1433600-1-pbonzini@redhat.com>
+References: <20210726163106.1433600-1-pbonzini@redhat.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since we have a proper endianness converters for BE 24-bit data use
-them. While at it, format the code using switch-cases as it's done
-for the rest of the endianness handlers.
+Hi,
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/base/regmap/regmap.c | 37 +++++++++++++++++-------------------
- 1 file changed, 17 insertions(+), 20 deletions(-)
+Proxmox[0] recently switched to the 5.15 kernel series (based on the one
+for Ubuntu 22.04), which includes this commit. 
+While it's working well on most installations, we have a few users who
+reported that some of their guests shutdown with 
+`KVM: entry failed, hardware error 0x80000021` being logged under certain
+conditions and environments[1]:
+* The issue is not deterministically reproducible, and only happens
+  eventually with certain loads (e.g. we have only one system in our
+  office which exhibits the issue - and this only by repeatedly installing
+  Windows 2k22 ~ one out of 10 installs will cause the guest-crash)
+* While most reports are referring to (newer) Windows guests, some users
+  run into the issue with Linux VMs as well
+* The affected systems are from a quite wide range - our affected machine
+  is an old IvyBridge Xeon with outdated BIOS (an equivalent system with
+  the latest available BIOS is not affected), but we have
+  reports of all kind of Intel CPUs (up to an i5-12400). It seems AMD CPUs
+  are not affected.
 
-diff --git a/drivers/base/regmap/regmap.c b/drivers/base/regmap/regmap.c
-index fee221c5008c..e371acea7e0e 100644
---- a/drivers/base/regmap/regmap.c
-+++ b/drivers/base/regmap/regmap.c
-@@ -288,15 +288,9 @@ static void regmap_format_16_native(void *buf, unsigned int val,
- 	memcpy(buf, &v, sizeof(v));
- }
- 
--static void regmap_format_24(void *buf, unsigned int val, unsigned int shift)
-+static void regmap_format_24_be(void *buf, unsigned int val, unsigned int shift)
- {
--	u8 *b = buf;
--
--	val <<= shift;
--
--	b[0] = val >> 16;
--	b[1] = val >> 8;
--	b[2] = val;
-+	put_unaligned_be24(val << shift, buf);
- }
- 
- static void regmap_format_32_be(void *buf, unsigned int val, unsigned int shift)
-@@ -380,14 +374,9 @@ static unsigned int regmap_parse_16_native(const void *buf)
- 	return v;
- }
- 
--static unsigned int regmap_parse_24(const void *buf)
-+static unsigned int regmap_parse_24_be(const void *buf)
- {
--	const u8 *b = buf;
--	unsigned int ret = b[2];
--	ret |= ((unsigned int)b[1]) << 8;
--	ret |= ((unsigned int)b[0]) << 16;
--
--	return ret;
-+	return get_unaligned_be24(buf);
- }
- 
- static unsigned int regmap_parse_32_be(const void *buf)
-@@ -991,9 +980,13 @@ struct regmap *__regmap_init(struct device *dev,
- 		break;
- 
- 	case 24:
--		if (reg_endian != REGMAP_ENDIAN_BIG)
-+		switch (reg_endian) {
-+		case REGMAP_ENDIAN_BIG:
-+			map->format.format_reg = regmap_format_24_be;
-+			break;
-+		default:
- 			goto err_hwlock;
--		map->format.format_reg = regmap_format_24;
-+		}
- 		break;
- 
- 	case 32:
-@@ -1064,10 +1057,14 @@ struct regmap *__regmap_init(struct device *dev,
- 		}
- 		break;
- 	case 24:
--		if (val_endian != REGMAP_ENDIAN_BIG)
-+		switch (val_endian) {
-+		case REGMAP_ENDIAN_BIG:
-+			map->format.format_val = regmap_format_24_be;
-+			map->format.parse_val = regmap_parse_24_be;
-+			break;
-+		default:
- 			goto err_hwlock;
--		map->format.format_val = regmap_format_24;
--		map->format.parse_val = regmap_parse_24;
-+		}
- 		break;
- 	case 32:
- 		switch (val_endian) {
--- 
-2.35.1
+Disabling tdp_mmu seems to mitigate the issue, but I still thought you
+might want to know that in some cases tdp_mmu causes problems, or that you
+even might have an idea of how to fix the issue without explicitly
+disabling tdp_mmu?
+
+While trying to find the cause, we also included a test with a 5.18 kernel
+(still affected).
+
+
+The logs of the hypervisor after a guest crash:
+```
+Jun 24 17:25:51 testhost kernel: VMCS 000000006afb1754, last attempted VM-entry on CPU 12
+Jun 24 17:25:51 testhost kernel: *** Guest State ***
+Jun 24 17:25:51 testhost kernel: CR0: actual=0x0000000000050032, shadow=0x0000000000050032, gh_mask=fffffffffffffff7
+Jun 24 17:25:51 testhost kernel: CR4: actual=0x0000000000002040, shadow=0x0000000000000000, gh_mask=fffffffffffef871
+Jun 24 17:25:51 testhost kernel: CR3 = 0x000000013cbf4002
+Jun 24 17:25:51 testhost kernel: PDPTR0 = 0x0000003300050011  PDPTR1 = 0x0000000000000000
+Jun 24 17:25:51 testhost kernel: PDPTR2 = 0x0000000000000000  PDPTR3 = 0x0000010000000000
+Jun 24 17:25:51 testhost kernel: RSP = 0xffff898cacda2c90  RIP = 0x0000000000008000
+Jun 24 17:25:51 testhost kernel: RFLAGS=0x00000002         DR7 = 0x0000000000000400
+Jun 24 17:25:51 testhost kernel: Sysenter RSP=0000000000000000 CS:RIP=0000:0000000000000000
+Jun 24 17:25:51 testhost kernel: CS:   sel=0xc200, attr=0x08093, limit=0xffffffff, base=0x000000007ffc2000
+Jun 24 17:25:51 testhost kernel: DS:   sel=0x0000, attr=0x08093, limit=0xffffffff, base=0x0000000000000000
+Jun 24 17:25:51 testhost kernel: SS:   sel=0x0000, attr=0x08093, limit=0xffffffff, base=0x0000000000000000
+Jun 24 17:25:51 testhost kernel: ES:   sel=0x0000, attr=0x08093, limit=0xffffffff, base=0x0000000000000000
+Jun 24 17:25:51 testhost kernel: FS:   sel=0x0000, attr=0x08093, limit=0xffffffff, base=0x0000000000000000
+Jun 24 17:25:51 testhost kernel: GS:   sel=0x0000, attr=0x08093, limit=0xffffffff, base=0x0000000000000000
+Jun 24 17:25:51 testhost kernel: GDTR:                           limit=0x00000057, base=0xfffff8024e652fb0
+Jun 24 17:25:51 testhost kernel: LDTR: sel=0x0000, attr=0x10000, limit=0x000fffff, base=0x0000000000000000
+Jun 24 17:25:51 testhost kernel: IDTR:                           limit=0x00000000, base=0x0000000000000000
+Jun 24 17:25:51 testhost kernel: TR:   sel=0x0040, attr=0x0008b, limit=0x00000067, base=0xfffff8024e651000
+Jun 24 17:25:51 testhost kernel: EFER= 0x0000000000000000
+Jun 24 17:25:51 testhost kernel: PAT = 0x0007010600070106
+Jun 24 17:25:51 testhost kernel: DebugCtl = 0x0000000000000000  DebugExceptions = 0x0000000000000000
+Jun 24 17:25:51 testhost kernel: Interruptibility = 00000009  ActivityState = 00000000
+Jun 24 17:25:51 testhost kernel: InterruptStatus = 002f
+Jun 24 17:25:51 testhost kernel: *** Host State ***
+Jun 24 17:25:51 testhost kernel: RIP = 0xffffffffc119a0a0  RSP = 0xffffa6a24a52bc20
+Jun 24 17:25:51 testhost kernel: CS=0010 SS=0018 DS=0000 ES=0000 FS=0000 GS=0000 TR=0040
+Jun 24 17:25:51 testhost kernel: FSBase=00007f1bf7fff700 GSBase=ffff97df5ed80000 TRBase=fffffe00002c7000
+Jun 24 17:25:51 testhost kernel: GDTBase=fffffe00002c5000 IDTBase=fffffe0000000000
+Jun 24 17:25:51 testhost kernel: CR0=0000000080050033 CR3=00000001226c8004 CR4=00000000001726e0
+Jun 24 17:25:51 testhost kernel: Sysenter RSP=fffffe00002c7000 CS:RIP=0010:ffffffffbd201d90
+Jun 24 17:25:51 testhost kernel: EFER= 0x0000000000000d01
+Jun 24 17:25:51 testhost kernel: PAT = 0x0407050600070106
+Jun 24 17:25:51 testhost kernel: *** Control State ***
+Jun 24 17:25:51 testhost kernel: PinBased=000000ff CPUBased=b5a06dfa SecondaryExec=000007eb
+Jun 24 17:25:51 testhost kernel: EntryControls=0000d1ff ExitControls=002befff
+Jun 24 17:25:51 testhost kernel: ExceptionBitmap=00060042 PFECmask=00000000 PFECmatch=00000000
+Jun 24 17:25:51 testhost kernel: VMEntry: intr_info=00000000 errcode=00000004 ilen=00000000
+Jun 24 17:25:51 testhost kernel: VMExit: intr_info=00000000 errcode=00000000 ilen=00000001
+Jun 24 17:25:51 testhost kernel:         reason=80000021 qualification=0000000000000000
+Jun 24 17:25:51 testhost kernel: IDTVectoring: info=00000000 errcode=00000000
+Jun 24 17:25:51 testhost kernel: TSC Offset = 0xff96fad07396b5f8
+Jun 24 17:25:51 testhost kernel: SVI|RVI = 00|2f TPR Threshold = 0x00
+Jun 24 17:25:51 testhost kernel: APIC-access addr = 0x000000014516c000 virt-APIC addr = 0x000000014afe7000
+Jun 24 17:25:51 testhost kernel: PostedIntrVec = 0xf2
+Jun 24 17:25:51 testhost kernel: EPT pointer = 0x000000011aa2d01e
+Jun 24 17:25:51 testhost kernel: PLE Gap=00000080 Window=00020000
+Jun 24 17:25:51 testhost kernel: Virtual processor ID = 0x0003
+Jun 24 17:25:51 testhost QEMU[2997]: KVM: entry failed, hardware error 0x80000021
+Jun 24 17:25:51 testhost QEMU[2997]: If you're running a guest on an Intel machine without unrestricted mode
+Jun 24 17:25:51 testhost QEMU[2997]: support, the failure can be most likely due to the guest entering an invalid
+Jun 24 17:25:51 testhost QEMU[2997]: state for Intel VT. For example, the guest maybe running in big real mode
+Jun 24 17:25:51 testhost QEMU[2997]: which is not supported on less recent Intel processors.
+Jun 24 17:25:51 testhost QEMU[2997]: EAX=00001e30 EBX=4e364180 ECX=00000001 EDX=00000000
+Jun 24 17:25:51 testhost QEMU[2997]: ESI=df291040 EDI=e0d82080 EBP=acda2ea0 ESP=acda2c90
+Jun 24 17:25:51 testhost QEMU[2997]: EIP=00008000 EFL=00000002 [-------] CPL=0 II=0 A20=1 SMM=1 HLT=0
+Jun 24 17:25:51 testhost QEMU[2997]: ES =0000 00000000 ffffffff 00809300
+Jun 24 17:25:51 testhost QEMU[2997]: CS =c200 7ffc2000 ffffffff 00809300
+Jun 24 17:25:51 testhost QEMU[2997]: SS =0000 00000000 ffffffff 00809300
+Jun 24 17:25:51 testhost QEMU[2997]: DS =0000 00000000 ffffffff 00809300
+Jun 24 17:25:51 testhost QEMU[2997]: FS =0000 00000000 ffffffff 00809300
+Jun 24 17:25:51 testhost QEMU[2997]: GS =0000 00000000 ffffffff 00809300
+Jun 24 17:25:51 testhost QEMU[2997]: LDT=0000 00000000 000fffff 00000000
+Jun 24 17:25:51 testhost QEMU[2997]: TR =0040 4e651000 00000067 00008b00
+Jun 24 17:25:51 testhost QEMU[2997]: GDT=     4e652fb0 00000057
+Jun 24 17:25:51 testhost QEMU[2997]: IDT=     00000000 00000000
+Jun 24 17:25:51 testhost QEMU[2997]: CR0=00050032 CR2=826c6000 CR3=3cbf4002 CR4=00000000
+Jun 24 17:25:51 testhost QEMU[2997]: DR0=0000000000000000 DR1=0000000000000000 DR2=0000000000000000 DR3=0000000000000000
+Jun 24 17:25:51 testhost QEMU[2997]: DR6=00000000ffff0ff0 DR7=0000000000000400
+Jun 24 17:25:51 testhost QEMU[2997]: EFER=0000000000000000
+Jun 24 17:25:51 testhost QEMU[2997]: Code=kvm: ../hw/core/cpu-sysemu.c:77: cpu_asidx_from_attrs: Assertion `ret < cpu->num_ases && ret >= 0' failed.
+
+```
+
+Should you need any further information from my side or want me to test
+some potential fix - please don't hesitate to ask!
+
+Kind Regards,
+stoiko
+
+
+[0] https://www.proxmox.com/
+[1] https://forum.proxmox.com/threads/.109410
+
+On Mon, 26 Jul 2021 12:31:06 -0400
+Paolo Bonzini <pbonzini@redhat.com> wrote:
+
+> With the addition of fast page fault support, the TDP-specific MMU has reached
+> feature parity with the original MMU.  All my testing in the last few months
+> has been done with the TDP MMU; switch the default on 64-bit machines.
+
+
+> 
+> Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+> ..snip..
 
