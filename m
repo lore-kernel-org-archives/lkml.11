@@ -2,75 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8FA8C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 10:09:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AD45C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 10:11:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238605AbiGZKI7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 06:08:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41174 "EHLO
+        id S238603AbiGZKLA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 06:11:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232909AbiGZKI4 (ORCPT
+        with ESMTP id S238200AbiGZKK7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 06:08:56 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A0C7BF6C;
-        Tue, 26 Jul 2022 03:08:56 -0700 (PDT)
-Received: from fraeml706-chm.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LsXb95vl7z67sgR;
-        Tue, 26 Jul 2022 18:05:09 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml706-chm.china.huawei.com (10.206.15.55) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.24; Tue, 26 Jul 2022 12:08:54 +0200
-Received: from localhost.localdomain (10.69.192.58) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 26 Jul 2022 11:08:51 +0100
-From:   John Garry <john.garry@huawei.com>
-To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
-        <linus.walleij@linaro.org>
-CC:     <linux-arm-msm@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <olof@lixom.net>, <soc@kernel.org>,
-        <arnd@arndb.de>, John Garry <john.garry@huawei.com>
-Subject: [PATCH] pinctrl: qcom: Make PINCTRL_SM8450 depend on PINCTRL_MSM
-Date:   Tue, 26 Jul 2022 18:02:44 +0800
-Message-ID: <1658829764-124936-1-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
+        Tue, 26 Jul 2022 06:10:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 731221AD9F
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 03:10:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 20B60B81269
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 10:10:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39C61C341C0;
+        Tue, 26 Jul 2022 10:10:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658830255;
+        bh=ogVKEyH2n6wMwdJQk64NIQ0QlsvgWIhFyxyWcaMBLaM=;
+        h=From:To:In-Reply-To:References:Subject:Date:From;
+        b=uPMPk00K6JphqqEuwMR2fgOgr8BEkA20bhMx47J1UOOpD9XX7yhNXbWnds8MaBOAS
+         Bt7wUHkQwZL+/f+NTxv3BPQa1naZ3n1+zPOEeLL6QGnM6pNd1X/6CSPrzk0u/j2P8i
+         EsXASVsHHzQZCbltIe9vG9MfBlO2De0ItFwM2e7O1/IQsNCM8/Ae+IDcqNCHomBDbx
+         VFGpleNa7lKhfc5q3L/uHBusc4kR89fSf7/5W3xHKWHGmVfzxVCDjdylNW676/YCR0
+         1EHHuEvq+fof6pwWnyqPhr8bjH3IrFgQr5vVoDK5rHu0Df7hnnxHDR/TwMifxqBNnF
+         IuYyOjipJ34mw==
+From:   Mark Brown <broonie@kernel.org>
+To:     tiwai@suse.com, linux-kernel@vger.kernel.org, lgirdwood@gmail.com,
+        steve@sk2.org, alsa-devel@alsa-project.org, perex@perex.cz,
+        ryans.lee@analog.com, Ryan Lee <ryan.lee.analog@gmail.com>
+In-Reply-To: <20220723015220.4169-1-ryans.lee@analog.com>
+References: <20220723015220.4169-1-ryans.lee@analog.com>
+Subject: Re: [PATCH] ASoC: max98373: Removing 0x203E from the volatile reg
+Message-Id: <165883025392.54936.4365512627715267394.b4-ty@kernel.org>
+Date:   Tue, 26 Jul 2022 11:10:53 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+X-Mailer: b4 0.10.0-dev-c7731
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-All the many other configs depend on config PINCTRL_MSM, yet for config
-PINCTRL_SM8450 we select config PINCTRL_MSM. Make config PINCTRL_SM8450
-depend on PINCTRL_MSM to be consistent with the rest.
+On Fri, 22 Jul 2022 18:52:20 -0700, Ryan Lee wrote:
+> The 0x203E speaker gain register should be non-volatile.
+> This register value was not able to be synced because it was marked as
+> volatile.
+> 
+> 
 
-Signed-off-by: John Garry <john.garry@huawei.com>
-Suggested-by: Arnd Bergmann <arnd@arndb.de>
----
-Note: .config output is same after this change. We also lose the need to
-      remove CONFIG_PINCTRL_MSM=y when sync'ing with savedefconfig
-      Based on arm/defconfig branch for ARM AND ARM64 SoC
-      SUB-ARCHITECTURES tree
+Applied to
 
-diff --git a/drivers/pinctrl/qcom/Kconfig b/drivers/pinctrl/qcom/Kconfig
-index 3daeb9772391..4ac561667b20 100644
---- a/drivers/pinctrl/qcom/Kconfig
-+++ b/drivers/pinctrl/qcom/Kconfig
-@@ -367,7 +367,7 @@ config PINCTRL_SM8350
- config PINCTRL_SM8450
- 	tristate "Qualcomm Technologies Inc SM8450 pin controller driver"
- 	depends on GPIOLIB && OF
--	select PINCTRL_MSM
-+	depends on PINCTRL_MSM
- 	help
- 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
- 	  Qualcomm Technologies Inc TLMM block found on the Qualcomm
--- 
-2.35.3
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
 
+Thanks!
+
+[1/1] ASoC: max98373: Removing 0x203E from the volatile reg
+      commit: bd1963d837a082e1083cd396803d3d263a9ef68b
+
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
+
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
