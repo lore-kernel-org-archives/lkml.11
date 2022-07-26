@@ -2,111 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ACAAC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 06:27:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5450C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 06:29:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237947AbiGZG1t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 02:27:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45610 "EHLO
+        id S237614AbiGZG26 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 02:28:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237946AbiGZG1b (ORCPT
+        with ESMTP id S230027AbiGZG2z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 02:27:31 -0400
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E9F027B0A
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 23:25:33 -0700 (PDT)
-Received: by mail-pg1-x52f.google.com with SMTP id q22so7184747pgt.9
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 23:25:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=AdOoxODJiumCfXGJPDqlgTRMx1Hwty97pt6JnuBcVOQ=;
-        b=ie3eJ3v2MPmIgwvF18zCl0L7By+ZEHT6fvXB5MfvLLOglu2VNhWaFg0Aqpj4oWyFj/
-         of1Gi+hZUS/Vcz+B0hP6r8GYy5SVUp4JrJ0MxBXtBzTArlpIZCa9xkZ5jxuW97oFB3fr
-         +RtPx5Oj2VyJT2fkx+KuSfmvZb8vBN2+ONNsazQcrLHqXnptWUSZe/Lc9LVzoUOt9qes
-         7wGiFnR0kuFDs5/fh25ZMN4wcE2DH3bwvifDn+sDUUnEvvpjFSk/MjVOaWHh0bdVtJny
-         Z/czCq1xNx12UrAiJT1VP+uTjBZPt3D5o7F70keje9f+ldWFWS0qkXy1iw2IjqGBYANo
-         KMYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=AdOoxODJiumCfXGJPDqlgTRMx1Hwty97pt6JnuBcVOQ=;
-        b=oBtSmuA8QLNHUNnwjcSBSCsTL9uiXtLINjHiZnkxLwDeZINHE+Yy6pv9B3Hr/ar5pg
-         kJ9TlpsDDJlajYLWEXtVYokIdu+0GglTY8iionxKvwW556qLofXRWlBoqUEUrdM0HuJg
-         xlV3GKAk1LAkiZtoH0r9aLkvyhLkl9MWEGQtoJaSQ7J7aa+ep6m2TRvDFSXtWFev201X
-         jWLJo63doeKEiMxns7K8NQE4i4lFvY8SYFMk9ossdSIxkOUbdF7otkrRfxMcwRy8Rcvi
-         8e/D0jjmZWC6jZVq0aoTgpZoxZsOxVIK+96P7AT0dp/v6ntvzU+s99DkobwiVHYC1ioy
-         0IQQ==
-X-Gm-Message-State: AJIora+7h6TnkgVx6gv/rbdh7iO6GR5ulFo07QquB3hoKpU+t9Zg3cFo
-        A0tXp/2wY3QpLby7+T6oy0OLCA==
-X-Google-Smtp-Source: AGRyM1sZOfFtsIQ40Oun6bhHyx/tTS7MSrkbkGcu1ueGFKWLbKHLeFdMMbXYXrv+4hW9JJWIBtlHWg==
-X-Received: by 2002:a63:ce13:0:b0:40d:d291:7710 with SMTP id y19-20020a63ce13000000b0040dd2917710mr13573244pgf.269.1658816732987;
-        Mon, 25 Jul 2022 23:25:32 -0700 (PDT)
-Received: from C02DW0BEMD6R.bytedance.net ([139.177.225.241])
-        by smtp.gmail.com with ESMTPSA id d11-20020a63d64b000000b00416212f8da7sm9423951pgj.44.2022.07.25.23.25.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Jul 2022 23:25:32 -0700 (PDT)
-From:   Qi Zheng <zhengqi.arch@bytedance.com>
-To:     akpm@linux-foundation.org, david@redhat.com
-Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
-        Qi Zheng <zhengqi.arch@bytedance.com>
-Subject: [PATCH] mm: fix NULL pointer dereference in wp_page_reuse()
-Date:   Tue, 26 Jul 2022 14:24:36 +0800
-Message-Id: <20220726062436.90290-1-zhengqi.arch@bytedance.com>
-X-Mailer: git-send-email 2.24.3 (Apple Git-128)
+        Tue, 26 Jul 2022 02:28:55 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0E4ABA;
+        Mon, 25 Jul 2022 23:28:52 -0700 (PDT)
+X-UUID: 5248d6bea70f45e481e40891ab2af8fc-20220726
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.8,REQID:cd3a1308-9178-42cf-9286-fa21fa4a1164,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:0f94e32,CLOUDID:1d12f4d3-912a-458b-a623-74f605a77e93,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+        ,QS:nil,BEC:nil,COL:0
+X-UUID: 5248d6bea70f45e481e40891ab2af8fc-20220726
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by mailgw02.mediatek.com
+        (envelope-from <axe.yang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 792789619; Tue, 26 Jul 2022 14:28:47 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Tue, 26 Jul 2022 14:28:45 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 26 Jul 2022 14:28:44 +0800
+From:   Axe Yang <axe.yang@mediatek.com>
+To:     Ulf Hansson <ulf.hansson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Chaotian Jing <chaotian.jing@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Adrian Hunter <adrian.hunter@intel.com>
+CC:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Satya Tangirala <satyat@google.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Axe Yang <axe.yang@mediatek.com>, Lucas Stach <dev@lynxeye.de>,
+        Eric Biggers <ebiggers@google.com>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Kiwoong Kim <kwmad.kim@samsung.com>,
+        Yue Hu <huyue2@yulong.com>, Tian Tao <tiantao6@hisilicon.com>,
+        <angelogioacchino.delregno@collabora.com>,
+        <linux-mmc@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Subject: [PATCH v14 0/3] mmc: mediatek: add support for SDIO async IRQ
+Date:   Tue, 26 Jul 2022 14:28:39 +0800
+Message-ID: <20220726062842.18846-1-axe.yang@mediatek.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The vmf->page can be NULL when the wp_page_reuse() is invoked
-by wp_pfn_shared(), it will cause the following panic:
+Changes in v14:
+- add sdio_irq_claimed() judgement condition around msdc irq and pinctrl
+  control in suspend|resume callback
 
-[   12.981200] BUG: kernel NULL pointer dereference, address: 000000000000008
-[   12.981954] #PF: supervisor read access in kernel mode
-[   12.982615] #PF: error_code(0x0000) - not-present page
-[   12.983146] PGD 0 P4D 0
-[   12.983417] Oops: 0000 [#1] PREEMPT SMP PTI
-[   12.983846] CPU: 18 PID: 923 Comm: Xorg Not tainted 5.19.0-rc8.bm.1-amd64 #263
-[   12.984606] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.14.0-0-g14
-[   12.985760] RIP: 0010:_compound_head+0x0/0x40
-[...]
-[   12.995932] Call Trace:
-[   12.996199]  <TASK>
-[   12.996424]  wp_page_reuse+0x1c/0xa0
-[   12.996800]  do_wp_page+0x1a5/0x3f0
-[   12.997169]  __handle_mm_fault+0x8cf/0xd20
-[   12.997587]  ? _raw_spin_unlock_irqrestore+0x23/0x35
-[   12.998105]  handle_mm_fault+0xd5/0x2a0
-[   12.998499]  do_user_addr_fault+0x1d0/0x680
-[   12.998930]  exc_page_fault+0x78/0x170
-[   12.999321]  asm_exc_page_fault+0x22/0x30
+Changes in v13:
+- remove state_dat1 related description in mtk-sd.yaml
+- move device_init_wakeup() to probe stage
+- remove redundancy SDC_CFG_SDIOIDE bit control in msdc_runtime_suspend()
+- replace SDC_CFG_SDIOIDE control with __msdc_enable_sdio_irq() function to
+  disable sdio irq when sdio_irq_claimed() return true in msdc_runtime_resume()
+- restore to use pm_runtime_force_resume|suspend(), to avoid go out directly
+  in force resume, bump up runtime PM usage counter before force suspend. 
 
-To fix it, this patch performs a NULL pointer check before
-dereferencing the vmf->page.
+Changes in v12:
+- assign NULL to pins_eint directly instead of using kfree()
 
-Fixes: 6c287605fd56 ("mm: remember exclusively mapped anonymous pages with PG_anon_exclusive")
-Signed-off-by: Qi Zheng <zhengqi.arch@bytedance.com>
----
- mm/memory.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Changes in v11:
+- remove '_irq' suffix in interrupts-names property
+- fix yaml example build error
+- refactor msdc_enable_sdio_irq(), free pins_eint if async irq is not supported
 
-diff --git a/mm/memory.c b/mm/memory.c
-index 4cf7d4b6c950..9174918ce3f7 100644
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -3043,7 +3043,7 @@ static inline void wp_page_reuse(struct vm_fault *vmf)
- 	pte_t entry;
- 
- 	VM_BUG_ON(!(vmf->flags & FAULT_FLAG_WRITE));
--	VM_BUG_ON(PageAnon(page) && !PageAnonExclusive(page));
-+	VM_BUG_ON(page && PageAnon(page) && !PageAnonExclusive(page));
- 
- 	/*
- 	 * Clear the pages cpupid information as the existing
+Changes in v10:
+- add sample node for SDIO host which support wakeup interrupt in yaml
+- skip MMC_PM_WAKE_SDIO_IRQ check before enable SDIO async interrupt
+- add MMC_PM_KEEP_POWER check before SDIO eint pinstate parsing
+- use dev_pm_set_dedicated_wake_irq_reverse() to correct irq control sequence
+- set dedicated irq in msdc_enable_sdio_irq() rather than msdc_drv_probe()
+- remove unnecessary wake irq control, rpm/dpm system shall manage that
+- move wake irq/msdc irq control back to system suspend phase, use rpm_suspend
+  and rpm_resume to ensure irq control sequence:
+     disable msdc irq -> enable wake irq -> disable wake irq -> enable msdc irq
+- simplify variables, check pins_eint to know whether wakeup settings are managed
+
+Changes in v9:
+- remove pinctrl "state_dat1"
+
+Changes in v8:
+- remove maxItems property under pinctrl-names property
+
+Changes in v7:
+- add device_init_wakeup() to register SDIO host as wakeup source
+
+Changes in v6:
+- abandon cap-sdio-async-irq flag, use wakeup-source flag instead
+- extend interrupts and pinctrls in mediatek mmc host controller DT documents
+- add mmc_card_enable_async_irq() to access enable_async_irq flag
+- simplify wakeup irq implementation with dedicate wake up irq related interface
+
+Changes in v5:
+- resort variables to reversed xmas tree order
+- restore old copyright year range and add current year back
+
+Changes in v4:
+- add MMC_CAP2_SDIO_ASYNC_IRQ judge before lookup eint pinctrl
+- replace spin_lock_irqsave() variant with spin_lock() in eint irq handler
+
+Changes in v3:
+- correct abbreviations with capital letters in commit message
+- replace copyright year with 2022 in mtk-sd.c
+- remove unnessary pointer casting
+- adjust variable order to reversed xmas tree
+- remove a redundant blank line
+- refine if statement, following standard pattern
+
+Changes in v2:
+- change flag name from 'cap-sdio-async-int' to 'cap-sdio-async-irq'
+- change corresponding macro names from xxx_INT to xxx_IRQ
+- resort new member in msdc_host structure
+- refine function msdc_request_dat1_eint_irq()
+- rename msdc_{suspend,resume} function names, add suffix '_noirq'
+- add MMC_CAP2_NO_SDIO judgement before parse eint related pin setting
+
+Axe Yang (3):
+  dt-bindings: mmc: mtk-sd: extend interrupts and pinctrls properties
+  mmc: core: Add support for SDIO wakeup interrupt
+  mmc: mediatek: add support for SDIO eint wakup IRQ
+
+ .../devicetree/bindings/mmc/mtk-sd.yaml       | 50 ++++++++++-
+ drivers/mmc/core/sdio.c                       | 14 +++
+ drivers/mmc/host/mtk-sd.c                     | 86 +++++++++++++++++--
+ include/linux/mmc/card.h                      |  8 +-
+ include/linux/mmc/sdio.h                      |  5 ++
+ 5 files changed, 155 insertions(+), 8 deletions(-)
+
 -- 
-2.20.1
+2.25.1
+
 
