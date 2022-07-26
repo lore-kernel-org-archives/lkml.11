@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D047C19F2C
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 21:04:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6033C00144
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 21:04:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240069AbiGZVEK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 17:04:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52746 "EHLO
+        id S240013AbiGZVEQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 17:04:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240011AbiGZVDn (ORCPT
+        with ESMTP id S239902AbiGZVDf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 17:03:43 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7695C3A4AB
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 14:03:37 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id ss3so28167813ejc.11
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 14:03:37 -0700 (PDT)
+        Tue, 26 Jul 2022 17:03:35 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF1703A48E
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 14:03:34 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id z22so19119942edd.6
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 14:03:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=amarulasolutions.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=AiQ0HcOvDIah4fMpuXqHSwjgHcHZ/tpuZ/vuW2o2BXw=;
-        b=evXGwLvcDjU0qDyrkdC6mkUy83vtHbjOvR811LRjxjmNIBxTovzwE71jwghsXDlrVt
-         ZZkOUWCYyeCI1cvvw5/0ArR5ytXQlAGQfs488gE2zq3GJ4YjXplfiNFqoBk2x0FURxF9
-         ndE63J6sd8f7FN9Tm7oy41WSi51bFyGCDXA3w=
+        bh=qy2wWA6vClyZGhjx9DWjei+yWAv7tqnCtNEo36hW/K4=;
+        b=I6feiYwmbmUoz9RV4PxX4J5rNfVBlvt/FdVVUwAcY8gFd3MFHKy73+QR5pyYmEmlnt
+         1zdPnnkJO+6MPYdENRqkZAicXR23cepCRnnLZbCLz3YXZjqzMZ2u3xd57Oz7KueBlHbQ
+         6MjoTU1WRz4y0fu6I0WB2aTZ5/nnCQ4wL1SKA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=AiQ0HcOvDIah4fMpuXqHSwjgHcHZ/tpuZ/vuW2o2BXw=;
-        b=ZlYfNp27CbrBgYkhGD31xTgV7vpJCa73MAYN189xYNOGdlOqdEQRL54HdhZRy4roGb
-         d5rJcvi5pKH5nYTZ/0XEqPzcJqk8Y66bY6td7Xb71aYRs9SBwZxKJoXBWo2blREL4Tik
-         TGARiOJQpcZX//anN6ZqdfFZ9d6zG2PTRUbgTBz+JIAAmvDTSh5IlIJj6xix9Z7KAnTa
-         4OttgHLxlIMXshsmsVUBqC504nCumPSFKZ/+AgJsFKBE+F70PBTxU1pRnK7vwUMfO83w
-         BPPQJKblVvgqgnk0wf3UN3XdxxEKyZRI6knD2FTY2v5Qi3W+wXRP2UaCuIuhaKRwNVo8
-         8eyA==
-X-Gm-Message-State: AJIora+LX2U+fzd9pSkqewlDN/+PbawzecE7NFKqgUOridHAP7vV26oL
-        ftANAsVgTzu+MBEsD6SEVgtDO1IwtsCllw==
-X-Google-Smtp-Source: AGRyM1t4M5JDiuIqo8f049Mkcape1IJDhp/IBDYwWppv3LoaojPZmxWycbkF7PwAdBbxdf61ozHpZQ==
-X-Received: by 2002:a17:906:8a79:b0:72b:871a:57b7 with SMTP id hy25-20020a1709068a7900b0072b871a57b7mr15018909ejc.602.1658869416578;
-        Tue, 26 Jul 2022 14:03:36 -0700 (PDT)
+        bh=qy2wWA6vClyZGhjx9DWjei+yWAv7tqnCtNEo36hW/K4=;
+        b=y8rJz3RPaWIDaoHAak0f9JCJjoLOjfFBe6LjnSfs4bxPTrvInIZcE45m45kbhvwWrn
+         u9HSJM8P9crefy6G5C7DP6f+WAY/e7vANduujc3yAKhisqKiD5EuOMO2Js6FiSg2gBt1
+         dqDMik6gBtzjvhdphxbXRiuQE36yjgp1+nJniHyTpU9f31eedAg9NkWzPTS9kx9abcWW
+         xjTJRqncFY7lJSN7483boSXZvfzMM82vhBuu7B3AAE6sqQDOdNxUI2Vkrjo24zBcXAMh
+         N2aQwkeUQ1h0oSs5XxLE6AwVqnkq/U1YfIXdKz+Ppz/+0cEBaSRkCL+nIMiPnK+gOVTy
+         lDOQ==
+X-Gm-Message-State: AJIora80kt8VrmDag43tJ+SvBwCKkGBlBTPBzEUjGApNl6Kw1AdFMXs+
+        GZmrHpgVdIbKsSw81dZyULTAYnM8iWHehieJ
+X-Google-Smtp-Source: AGRyM1s4FNyDintDCE4biiDE1x37+NYAxAB7vyhNTDmhtysxhBDeSBYBN40gfwIO4LgkL6ul4NTNZw==
+X-Received: by 2002:a05:6402:371a:b0:43a:ece9:ab8e with SMTP id ek26-20020a056402371a00b0043aece9ab8emr19781113edb.126.1658869413951;
+        Tue, 26 Jul 2022 14:03:33 -0700 (PDT)
 Received: from dario-ThinkPad-T14s-Gen-2i.homenet.telecomitalia.it (host-87-14-98-67.retail.telecomitalia.it. [87.14.98.67])
-        by smtp.gmail.com with ESMTPSA id y19-20020aa7d513000000b0043a7293a03dsm9092849edq.7.2022.07.26.14.03.35
+        by smtp.gmail.com with ESMTPSA id y19-20020aa7d513000000b0043a7293a03dsm9092849edq.7.2022.07.26.14.03.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Jul 2022 14:03:36 -0700 (PDT)
+        Tue, 26 Jul 2022 14:03:33 -0700 (PDT)
 From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
@@ -53,14 +53,25 @@ Cc:     linux-can@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
         Amarula patchwork <linux-amarula@amarulasolutions.com>,
         Jeroen Hofstee <jhofstee@victronenergy.com>,
         Dario Binacchi <dario.binacchi@amarulasolutions.com>,
+        Alexandru Tachici <alexandru.tachici@analog.com>,
+        Andrew Lunn <andrew@lunn.ch>, Arnd Bergmann <arnd@arndb.de>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        Hao Chen <chenhao288@hisilicon.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Ido Schimmel <idosch@nvidia.com>,
         Jakub Kicinski <kuba@kernel.org>,
+        Leon Romanovsky <leon@kernel.org>,
+        Oleksij Rempel <linux@rempel-privat.de>,
         Paolo Abeni <pabeni@redhat.com>,
-        Wolfgang Grandegger <wg@grandegger.com>, netdev@vger.kernel.org
-Subject: [RFC PATCH v3 9/9] MAINTAINERS: Add maintainer for the slcan driver
-Date:   Tue, 26 Jul 2022 23:02:17 +0200
-Message-Id: <20220726210217.3368497-10-dario.binacchi@amarulasolutions.com>
+        Sean Anderson <sean.anderson@seco.com>,
+        Tom Rix <trix@redhat.com>, Yufeng Mo <moyufeng@huawei.com>,
+        netdev@vger.kernel.org
+Subject: [RFC PATCH v3 7/9] ethtool: add support to get/set CAN bit time register
+Date:   Tue, 26 Jul 2022 23:02:15 +0200
+Message-Id: <20220726210217.3368497-8-dario.binacchi@amarulasolutions.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220726210217.3368497-1-dario.binacchi@amarulasolutions.com>
 References: <20220726210217.3368497-1-dario.binacchi@amarulasolutions.com>
@@ -70,64 +81,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-At the suggestion of its author Oliver Hartkopp ([1]), I take over the
-maintainer-ship and add myself to the authors of the driver.
+Add ethtool support to get/set tunable values from/to the CAN bit time
+register (btr).
 
-[1] https://lore.kernel.org/all/507b5973-d673-4755-3b64-b41cb9a13b6f@hartkopp.net
-
-Suggested-by: Oliver Hartkopp <socketcan@hartkopp.net>
+CC: Marc Kleine-Budde <mkl@pengutronix.de>
+CC: linux-can@vger.kernel.org
+Suggested-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
-
 ---
 
-Changes in v3:
-- Put the series as RFC again.
-- Pick up the patch "can: slcan: use KBUILD_MODNAME and define pr_fmt to replace hardcoded names".
-- Add the patch "ethtool: add support to get/set CAN bit time register"
-  to the series.
-- Add the patch "can: slcan: add support to set bit time register (btr)"
-  to the series.
-- Replace the link https://marc.info/?l=linux-can&m=165806705927851&w=2 with
-  https://lore.kernel.org/all/507b5973-d673-4755-3b64-b41cb9a13b6f@hartkopp.net.
-- Add the `Suggested-by' tag.
+(no changes since v1)
 
-Changes in v2:
-- Add the patch "MAINTAINERS: Add myself as maintainer of the SLCAN driver"
-  to the series.
+ include/uapi/linux/ethtool.h | 1 +
+ net/ethtool/common.c         | 1 +
+ net/ethtool/ioctl.c          | 1 +
+ 3 files changed, 3 insertions(+)
 
- MAINTAINERS                        | 6 ++++++
- drivers/net/can/slcan/slcan-core.c | 1 +
- 2 files changed, 7 insertions(+)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index fc7d75c5cdb9..74e42f78e7cb 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -18448,6 +18448,12 @@ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/vbabka/slab.git
- F:	include/linux/sl?b*.h
- F:	mm/sl?b*
+diff --git a/include/uapi/linux/ethtool.h b/include/uapi/linux/ethtool.h
+index e0f0ee9bc89e..a2d24f689124 100644
+--- a/include/uapi/linux/ethtool.h
++++ b/include/uapi/linux/ethtool.h
+@@ -232,6 +232,7 @@ enum tunable_id {
+ 	ETHTOOL_TX_COPYBREAK,
+ 	ETHTOOL_PFC_PREVENTION_TOUT, /* timeout in msecs */
+ 	ETHTOOL_TX_COPYBREAK_BUF_SIZE,
++	ETHTOOL_CAN_BTR,
+ 	/*
+ 	 * Add your fresh new tunable attribute above and remember to update
+ 	 * tunable_strings[] in net/ethtool/common.c
+diff --git a/net/ethtool/common.c b/net/ethtool/common.c
+index 566adf85e658..78f23b898243 100644
+--- a/net/ethtool/common.c
++++ b/net/ethtool/common.c
+@@ -90,6 +90,7 @@ tunable_strings[__ETHTOOL_TUNABLE_COUNT][ETH_GSTRING_LEN] = {
+ 	[ETHTOOL_TX_COPYBREAK]	= "tx-copybreak",
+ 	[ETHTOOL_PFC_PREVENTION_TOUT] = "pfc-prevention-tout",
+ 	[ETHTOOL_TX_COPYBREAK_BUF_SIZE] = "tx-copybreak-buf-size",
++	[ETHTOOL_CAN_BTR] = "can-btr",
+ };
  
-+SLCAN CAN NETWORK DRIVER
-+M:	Dario Binacchi <dario.binacchi@amarulasolutions.com>
-+L:	linux-can@vger.kernel.org
-+S:	Maintained
-+F:	drivers/net/can/slcan/
-+
- SLEEPABLE READ-COPY UPDATE (SRCU)
- M:	Lai Jiangshan <jiangshanlai@gmail.com>
- M:	"Paul E. McKenney" <paulmck@kernel.org>
-diff --git a/drivers/net/can/slcan/slcan-core.c b/drivers/net/can/slcan/slcan-core.c
-index 3905f21e7788..6a0f12cfbb4e 100644
---- a/drivers/net/can/slcan/slcan-core.c
-+++ b/drivers/net/can/slcan/slcan-core.c
-@@ -63,6 +63,7 @@ MODULE_ALIAS_LDISC(N_SLCAN);
- MODULE_DESCRIPTION("serial line CAN interface");
- MODULE_LICENSE("GPL");
- MODULE_AUTHOR("Oliver Hartkopp <socketcan@hartkopp.net>");
-+MODULE_AUTHOR("Dario Binacchi <dario.binacchi@amarulasolutions.com>");
- 
- /* maximum rx buffer len: extended CAN frame with timestamp */
- #define SLCAN_MTU (sizeof("T1111222281122334455667788EA5F\r") + 1)
+ const char
+diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+index 326e14ee05db..17b69d6fcab4 100644
+--- a/net/ethtool/ioctl.c
++++ b/net/ethtool/ioctl.c
+@@ -2403,6 +2403,7 @@ static int ethtool_get_module_eeprom(struct net_device *dev,
+ static int ethtool_tunable_valid(const struct ethtool_tunable *tuna)
+ {
+ 	switch (tuna->id) {
++	case ETHTOOL_CAN_BTR:
+ 	case ETHTOOL_RX_COPYBREAK:
+ 	case ETHTOOL_TX_COPYBREAK:
+ 	case ETHTOOL_TX_COPYBREAK_BUF_SIZE:
 -- 
 2.32.0
 
