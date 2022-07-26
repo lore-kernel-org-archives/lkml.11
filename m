@@ -2,247 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B35E4C00144
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 18:38:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 758BAC00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 18:39:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232790AbiGZSiX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 14:38:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53098 "EHLO
+        id S231785AbiGZSjB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 14:39:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239496AbiGZSiU (ORCPT
+        with ESMTP id S239515AbiGZSi5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 14:38:20 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E46F240B1
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 11:38:18 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id v13so13550843wru.12
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 11:38:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=j6N0pmFjTqcYOHHvMWdXLEZrWTcV8zp2h7HHkht5ViE=;
-        b=ywaywuIvS7cTnJS09uyXPae4Azt6+q5qheewgaxEG63GjCPCWxiOSFaVxxgQqqEYfu
-         urv9iD3hLCtsJJFh0pVSLrBYkxq7fNYwyld086b2Nix6h0ovq9TPiW9p3JXjJYwinUZe
-         lknDuVNOG27+uwOIqgrsDK4QQjv+E+2in2w4/W2g7BRYd/UugqIuINSjLIH3KCHvJwsR
-         VqPbuyECorN43RDFaYM48Zyqy6uNMKKunutOgPdTHVMhpgAQAt6NB6zGCsVINiOZpX0z
-         gPMPKzlMcFFiugwWs2sm7ao5q20kY0Vp23vBgOoGAhEELTDU3HCrcrYtqgDVC2r2pqNB
-         gYWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=j6N0pmFjTqcYOHHvMWdXLEZrWTcV8zp2h7HHkht5ViE=;
-        b=T6yuK6uaTX+mjXFxoZmb5z9kdgn3vuDHpKO6NJmQ9U9zRAimjWct9zJMPgJGgun2O9
-         C2liYhu7A5LOmtryEqT18fefcAmUkNIqZY4ScPE6JKapi7v9AJ5cl+fPNxfYUnwEPKFI
-         L2OWbA9oyHaJNC/0DT4ynErtqS95vL41jnAHYUTutR4IgjOgZmkW/S9s43rESaaSJU/R
-         8NkhjGVCLrX/yFLnsNJK8bpAwBSOlBtkC1nzwrczUe6lbPHJAqMIiiyp/JwTKCQXh29t
-         BErUIxJs1SkaH3w9J9mA8IYynZdYMD1/NkPfaEEmMb1D6kZh0cQGS/C9BUKWlkNpipcj
-         +l4Q==
-X-Gm-Message-State: AJIora809e2xn/Lvr4cKVh98/j3rNplxobXiaHzpcXpP4IrnRl5/7Mvu
-        c+ImBXjUJQ61LduKvwskYuVXXw==
-X-Google-Smtp-Source: AGRyM1vZ4aIjBeDsIxo7OnqgPf9xQ+rIuz4ELfoYfGifICmrCLqwNOCq5LZ24NUUVvCdIv0/R1aM5A==
-X-Received: by 2002:adf:f0ce:0:b0:21e:5eeb:f33e with SMTP id x14-20020adff0ce000000b0021e5eebf33emr11456384wro.362.1658860696589;
-        Tue, 26 Jul 2022 11:38:16 -0700 (PDT)
-Received: from linaro.org ([94.52.112.99])
-        by smtp.gmail.com with ESMTPSA id k19-20020a05600c1c9300b003a31fd05e0fsm4520683wms.2.2022.07.26.11.38.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Jul 2022 11:38:15 -0700 (PDT)
-Date:   Tue, 26 Jul 2022 21:38:14 +0300
-From:   Abel Vesa <abel.vesa@linaro.org>
-To:     Ulf Hansson <ulf.hansson@linaro.org>
-Cc:     "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Kevin Hilman <khilman@kernel.org>,
-        Len Brown <len.brown@intel.com>, Pavel Machek <pavel@ucw.cz>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-pm@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arm-msm@vger.kernel.org
-Subject: Re: [RFC] PM: domains: Reverse the order of performance and enabling
- ops
-Message-ID: <YuA0luCtQ1J+ExBi@linaro.org>
-References: <20220720110246.762939-1-abel.vesa@linaro.org>
- <CAPDyKFoh8UV=QC6RhOkc=FSvoeqF_UiWp97h0Qp8dniB=sS+8A@mail.gmail.com>
+        Tue, 26 Jul 2022 14:38:57 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C54432EFD
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 11:38:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658860736; x=1690396736;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=rAUBIElhLyFX0ka939yot8kphikOrZSl4q2s9kNYA6Y=;
+  b=gb2glYDPxJZmOSAvxM8cUxYga2+pi0mvCZ7LLrnB1XdGgWaEhh+wGxg2
+   Kbl6JMfeFRZ2ZlFsQGY8vCf3axnWV6P+jJHuVI4t/F3ZR2CFNXJ0hKniE
+   WGik+rzjVltvHtcj5Wt2lye1/VGNPE+OGDwvWcyFdmNGDwM5q7jOfprkJ
+   nW5597pVjdY1rJr5bQ+clMwt0a1toAbufE+mYabgUQpT2v/NqQ0RCGvHn
+   x8gamjwzSVpYSVYTNAzgBC/eHRincB/oFHwB1Skgu4Z39Z0puF0htgsyh
+   9XOi1Af1u514DBBPr1zHMGMciieOSThBQQPkkoV7zDeuAvNxo+HfKXfrk
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10420"; a="271067627"
+X-IronPort-AV: E=Sophos;i="5.93,194,1654585200"; 
+   d="scan'208";a="271067627"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2022 11:38:55 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,194,1654585200"; 
+   d="scan'208";a="575607883"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 26 Jul 2022 11:38:54 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oGPSI-0007UM-0P;
+        Tue, 26 Jul 2022 18:38:54 +0000
+Date:   Wed, 27 Jul 2022 02:38:50 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Faycal Benmlih <faycal.benmlih@intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: drivers/platform/x86/socwatch/sw_counter_list.c:88:25: sparse:
+ sparse: incorrect type in argument 2 (different base types)
+Message-ID: <202207270208.inU91EGZ-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAPDyKFoh8UV=QC6RhOkc=FSvoeqF_UiWp97h0Qp8dniB=sS+8A@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 22-07-21 18:48:10, Ulf Hansson wrote:
-> On Wed, 20 Jul 2022 at 13:03, Abel Vesa <abel.vesa@linaro.org> wrote:
-> >
-> > Rather than enabling and then setting the performance state, which usually
-> > translates into two different levels (voltages) in order to get to the
-> > one required by the consumer, we could give a chance to the providers to
-> > cache the performance state needed by the consumer and then, when powering
-> > on the power domain, the provider could use the cached level instead.
->
-> I don't think it's really clear what you want to do here. Let's see
-> what the discussion below brings us to, but for the next version
-> please elaborate a bit more in the commit message.
+tree:   https://github.com/mchinth/linux sep_socwatch_linux_5_10
+head:   c55df4a2b60fc7c6c4d00fd9f9fb447087833513
+commit: 80c46c8183c607e70bcb88e9b04febae6c7775a2 SEP/SOCWATCH Update SoCWatch driver after rebasing to linux v5.6
+date:   1 year, 10 months ago
+config: x86_64-randconfig-s022 (https://download.01.org/0day-ci/archive/20220727/202207270208.inU91EGZ-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-39-gce1a6720-dirty
+        # https://github.com/mchinth/linux/commit/80c46c8183c607e70bcb88e9b04febae6c7775a2
+        git remote add mchinth https://github.com/mchinth/linux
+        git fetch --no-tags mchinth sep_socwatch_linux_5_10
+        git checkout 80c46c8183c607e70bcb88e9b04febae6c7775a2
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-Sorry about that. Will give more details in the next version.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
->
-> Although, if I understand correctly (also from our offlist
-> discussions), you want to make it possible to move from two calls,
-> into one call into the FW from the genpd provider. So it's basically
-> an optimization, which to me, certainly sounds worth doing.
->
-> Furthermore, to get the complete picture, in the Qcom case, we set a
-> "default" low performance level from the genpd's ->power_on()
-> callback, which is needed to enable basic functionality for some
-> consumers.
->
-> The second call that I refer to is made when genpd calls the
-> ->set_performance() callback (from genpd_runtime_suspend()), which is
-> done by genpd to potentially set a new value for an aggregated
-> performance state of the PM domain. In case when there actually is a
-> new performance state set in this path, we end up calling the FW twice
-> for the Qcom case, where this first one is unnecessary.
->
-> Did I get that right?
+sparse warnings: (new ones prefixed by >>)
+>> drivers/platform/x86/socwatch/sw_counter_list.c:88:25: sparse: sparse: incorrect type in argument 2 (different base types) @@     expected unsigned int flags @@     got restricted gfp_t @@
+   drivers/platform/x86/socwatch/sw_counter_list.c:88:25: sparse:     expected unsigned int flags
+   drivers/platform/x86/socwatch/sw_counter_list.c:88:25: sparse:     got restricted gfp_t
 
-Actually, for every ->power_on, there is a ->set_performance right after.
+vim +88 drivers/platform/x86/socwatch/sw_counter_list.c
 
-For example, on genpd_runtime_suspend, this is done:
+    74	
+    75		pw_u64_t i = 0, max_msr_value = 0;//, msr_array_size = 0;
+    76		pw_u64_t msr_list_size = sizeof(msr_info_list) / sizeof(msr_info_list[0]);
+    77	
+    78		// TODO: Probably sort msr_info_list rather than assuming it is sorted.
+    79	
+    80		// Since 'msr_info_list' is sorted, the last entry should be the highest MSR
+    81		// address
+    82		max_msr_value = msr_info_list[msr_list_size-1];
+    83		pw_pr_debug("max msr value: %llx\n", max_msr_value);
+    84	
+    85		// TODO: Optimize the memory usage by making msr_search_array a bit vector
+    86		msr_search_array_size = max_msr_value + 1;
+    87		msr_search_array = sw_kmalloc(msr_search_array_size * sizeof(pw_u8_t),
+  > 88				GFP_KERNEL);
+    89	
+    90		if (msr_search_array == NULL) {
+    91			return -PW_ERROR;
+    92		}
+    93	
+    94		memset(msr_search_array, 0, msr_search_array_size);
+    95	
+    96		for (i = 0; i < msr_list_size; ++i) {
+    97			msr_search_array[msr_info_list[i]] = 1;
+    98		}
+    99	
+   100		return PW_SUCCESS;
+   101	}
+   102	
 
-	genpd_lock(genpd);
-	ret = genpd_power_on(genpd, 0);
-	if (!ret)
-        	genpd_restore_performance_state(dev, gpd_data->rpm_pstate);
-	genpd_unlock(genpd);
-
-And same thing on __genpd_dev_pm_attach.
-
-Now, TBH, I can't think of any scenario where a consumer would want its PD powered,
-(which implies a non-zero voltage level) and then changed to a higher performance
-level (higher voltage).
-
-In most scenarios, though, the consumer needs the PD powered on to a specific voltage
-level.
-
-Based on the two statements above, we need ->set_performance to actually act as
-a way to tell the provider to which voltage level to power on the power domain
-when the ->power_on will be called.
-
-So my suggestion with this patch is to reverse the order, do ->set_performance first
-and then ->power_on, this way the provider receives the voltage level required by
-a consumer before the request to power on the PD. Then a provider might use that
-info when powering on/off that PD.
-
->
-> > Also the drop_performance and power_off have to be reversed so that
-> > when the last active consumer suspends, the level doesn't actually drop
-> > until the pd is disabled.
->
-> I don't quite get what this part helps with, is it really needed to
-> improve the behaviour?
-
-Again, why would a consumer need its PD voltage dropped before being powered off?
-
-I think it makes more sense for the ->set_performance in this case to act as a
-way to tell the provider that a specific device has yeilded its voltage level
-request. That way the provider can drop the voltage to the minimum requested by
-the active consumers of that PD.
-
->
-> >
-> > For the power domains that do not provide the set_performance, things
-> > remain unchanged, as does for the power domains that only provide the
-> > set_performance but do not provide the power_on/off.
->
-> Right, good points!
->
-> I get back to review the code soon, just wanted to make sure I have
-> the complete picture first.
->
-> Kind regards
-> Uffe
->
-> >
-> > Signed-off-by: Abel Vesa <abel.vesa@linaro.org>
-> > ---
-> >  drivers/base/power/domain.c | 30 +++++++++++++++---------------
-> >  1 file changed, 15 insertions(+), 15 deletions(-)
-> >
-> > diff --git a/drivers/base/power/domain.c b/drivers/base/power/domain.c
-> > index 5a2e0232862e..38647c304b73 100644
-> > --- a/drivers/base/power/domain.c
-> > +++ b/drivers/base/power/domain.c
-> > @@ -939,8 +939,8 @@ static int genpd_runtime_suspend(struct device *dev)
-> >                 return 0;
-> >
-> >         genpd_lock(genpd);
-> > -       gpd_data->rpm_pstate = genpd_drop_performance_state(dev);
-> >         genpd_power_off(genpd, true, 0);
-> > +       gpd_data->rpm_pstate = genpd_drop_performance_state(dev);
-> >         genpd_unlock(genpd);
-> >
-> >         return 0;
-> > @@ -978,9 +978,8 @@ static int genpd_runtime_resume(struct device *dev)
-> >                 goto out;
-> >
-> >         genpd_lock(genpd);
-> > +       genpd_restore_performance_state(dev, gpd_data->rpm_pstate);
-> >         ret = genpd_power_on(genpd, 0);
-> > -       if (!ret)
-> > -               genpd_restore_performance_state(dev, gpd_data->rpm_pstate);
-> >         genpd_unlock(genpd);
-> >
-> >         if (ret)
-> > @@ -1018,8 +1017,8 @@ static int genpd_runtime_resume(struct device *dev)
-> >  err_poweroff:
-> >         if (!pm_runtime_is_irq_safe(dev) || genpd_is_irq_safe(genpd)) {
-> >                 genpd_lock(genpd);
-> > -               gpd_data->rpm_pstate = genpd_drop_performance_state(dev);
-> >                 genpd_power_off(genpd, true, 0);
-> > +               gpd_data->rpm_pstate = genpd_drop_performance_state(dev);
-> >                 genpd_unlock(genpd);
-> >         }
-> >
-> > @@ -2747,17 +2746,6 @@ static int __genpd_dev_pm_attach(struct device *dev, struct device *base_dev,
-> >         dev->pm_domain->detach = genpd_dev_pm_detach;
-> >         dev->pm_domain->sync = genpd_dev_pm_sync;
-> >
-> > -       if (power_on) {
-> > -               genpd_lock(pd);
-> > -               ret = genpd_power_on(pd, 0);
-> > -               genpd_unlock(pd);
-> > -       }
-> > -
-> > -       if (ret) {
-> > -               genpd_remove_device(pd, dev);
-> > -               return -EPROBE_DEFER;
-> > -       }
-> > -
-> >         /* Set the default performance state */
-> >         pstate = of_get_required_opp_performance_state(dev->of_node, index);
-> >         if (pstate < 0 && pstate != -ENODEV && pstate != -EOPNOTSUPP) {
-> > @@ -2769,6 +2757,18 @@ static int __genpd_dev_pm_attach(struct device *dev, struct device *base_dev,
-> >                         goto err;
-> >                 dev_gpd_data(dev)->default_pstate = pstate;
-> >         }
-> > +
-> > +       if (power_on) {
-> > +               genpd_lock(pd);
-> > +               ret = genpd_power_on(pd, 0);
-> > +               genpd_unlock(pd);
-> > +       }
-> > +
-> > +       if (ret) {
-> > +               genpd_remove_device(pd, dev);
-> > +               return -EPROBE_DEFER;
-> > +       }
-> > +
-> >         return 1;
-> >
-> >  err:
-> > --
-> > 2.34.3
-> >
->
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
