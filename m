@@ -2,122 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 830BDC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 00:12:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F35FC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 00:14:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236893AbiGZAMm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 20:12:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51278 "EHLO
+        id S233889AbiGZAOH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 20:14:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232063AbiGZAMk (ORCPT
+        with ESMTP id S232178AbiGZAOE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 20:12:40 -0400
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ACED27FFC
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 17:12:39 -0700 (PDT)
-Received: by mail-yb1-xb35.google.com with SMTP id 123so3519ybv.7
-        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 17:12:39 -0700 (PDT)
+        Mon, 25 Jul 2022 20:14:04 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4F2927FEE;
+        Mon, 25 Jul 2022 17:14:03 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id mf4so23444239ejc.3;
+        Mon, 25 Jul 2022 17:14:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=9JSe3z9pGkzgL7xUiS8Yr/5UR7RYsGogFav7UDOeLH8=;
-        b=E1wN9qXuZl7RNgnoeAdISeng0a2iXHtFQZCmOLLF1QHOR0tb0+irVqrji81HMAKTR3
-         Rf8ApMLfd8zkYF+aepDEdAv42XMa3vj3isKbVJZqTnehX1P4HkgsVpBv6hKvWZcAEwBm
-         Hl/H3J8Zm5ZW7dzJWQgoJ0S5qJCXEChcqnMyQFG6592BeeXaA1AxEB9dzoqdP3r7L/qa
-         ovddjUVMA0LEMQeWNStbGGJTImVO2Iov35ysqKIjAekEQh3d47Xbg86FEkAIRKnAabQz
-         pFzc7m+e5mhq8CoZJp9ccOTpUOgJ14j4Jpk0nIy9jdgFkK4kRvCLbRnSd/3qywUdGYbA
-         CxhA==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=RjAABNLn2RXdMld/WknyUgPOruiRH8hGVQ9Xhd2XuJM=;
+        b=QBNHbBNGfgaH/jYAq+bJa/tTVZ073zXcthViK62C39y6uEG5jIj/lo+J2PsUKf1Lkq
+         hFKe4/hud5JgC9HzM/KsRpXdRmzK3l/sltso4Js79vtxij2kybwE4qX9kM6Tyv+wvC8H
+         27+tUyZ3Xa4eR7kPx/bkrQ/WXV4aB2l+S24uVuU4tIGPMpINdSrTHwieUkPDaKfA6D7D
+         fYWQPRHcToFU8H3P7OUwwlyHWmDGxXwCvHNbdVa36xcQ0B2uKHYMGWJKkqHvDvrNKCRr
+         4TnJ7GfW1FnGq+ZaDPWvIxAq8vCBHML8lBpDZJgM2+EJZ35sA7Fd1+JFIDcp+8ikll+F
+         cXxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=9JSe3z9pGkzgL7xUiS8Yr/5UR7RYsGogFav7UDOeLH8=;
-        b=VKDm9vRo90mSakslpPrCeSGLkG3dd0w+Rxa5fh73o6h4XtfDY6dgzlYp7gcBt4QoL0
-         tk2h7rVPfnh/3cBpRKwM4q7xaUrviVx5+OtOKkTzPWc7Y/sdyf5LwqA5kbJy1GNupeMp
-         1mSs9qkBBEwuUlVuPY10LgRNwnO3eMjXZ7MtmtbCpD7PmVEWZf2p1+V93qG3J257G/gH
-         UBujVmM78UQvu/G4IR1Vn08w+PvSDdtiBtG8S09FHQDZpKbieLNqCAiqorVN7dJBbWhi
-         SVnf/Q11C0kuB22LZdL4X2UUi42XtRAwI8jHsklOiaFgVubuVCNiCU9be5v+lh6z5tGd
-         Q7sg==
-X-Gm-Message-State: AJIora+OHR0L03c134DkZLF2ecW/PHvKsIVZ12eKo2BKHm6K1ysu4qAz
-        Wu+A3xJzvbnIuub/F5laU2pYxyXMvLYsSEcvZbPg+A==
-X-Google-Smtp-Source: AGRyM1vo0SJOssrzz1Zhq2nhkvNWvbLvRZXEWuEx3ZdKz1ghxpU2Qk4orNgieYmRo5PCLyR7iBSsnqME2JzCqF08st8=
-X-Received: by 2002:a5b:cc6:0:b0:66e:45c6:2a25 with SMTP id
- e6-20020a5b0cc6000000b0066e45c62a25mr11461206ybr.304.1658794358302; Mon, 25
- Jul 2022 17:12:38 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=RjAABNLn2RXdMld/WknyUgPOruiRH8hGVQ9Xhd2XuJM=;
+        b=NvXztdIlQbTsKch1CVfuUDURjahdlBTNp7OjYeJ8gx/6VygkrpeZykDpnFOpSTzvl/
+         mqk+msiEXyoVBt8hYxGIO8jt6YlIj/RYXzEbtxxHg5bIkUkCzumUSOa7cQQAQGhUhFu4
+         7YGjRjNsn9X3VCHjYPv9Q/FeljLHlckV8X6sEVI5DRFYwhDMbhm7M1jC/vKbLFHmvSuV
+         nZ0N75c4ICNltq4kRkgTuGnbnMZBa1goRydfLT5jWx/SJn0kv53lA3YPRPBxcKBfxScU
+         pwkBHMcrRJtfEnTtoV/reP0+Z3YEZPbJ5uu9V5mqJtfa1KTOqVCDZa7RqnPGIPEzzXQy
+         mxKA==
+X-Gm-Message-State: AJIora/GWQ10RTLo6w5+ZaVx2IOJAJwz18zVCwY/HP/RKQRM3HykWoNl
+        T0GwqehuFcAws/jPOP6wnrw=
+X-Google-Smtp-Source: AGRyM1vmgXFPwq9hO1NnwpRu2q5JFTe36azADRT5HWrY7YSkuK5Yl6LwO1jzeVHOKDnGP1b3jNAdRw==
+X-Received: by 2002:a17:907:1c95:b0:72b:4e37:7736 with SMTP id nb21-20020a1709071c9500b0072b4e377736mr11864415ejc.516.1658794442478;
+        Mon, 25 Jul 2022 17:14:02 -0700 (PDT)
+Received: from skbuf ([188.25.231.115])
+        by smtp.gmail.com with ESMTPSA id we10-20020a170907234a00b006fec4ee28d0sm5921431ejb.189.2022.07.25.17.14.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Jul 2022 17:14:02 -0700 (PDT)
+Date:   Tue, 26 Jul 2022 03:13:59 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Christian Marangi <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [net-next PATCH v3 06/14] net: dsa: qca8k: move mib init
+ function to common code
+Message-ID: <20220726001359.m2sfsvyph2rufqly@skbuf>
+References: <20220723141845.10570-1-ansuelsmth@gmail.com>
+ <20220723141845.10570-7-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-References: <20220725233629.223223-1-nathan@kernel.org>
-In-Reply-To: <20220725233629.223223-1-nathan@kernel.org>
-From:   Sami Tolvanen <samitolvanen@google.com>
-Date:   Mon, 25 Jul 2022 17:12:02 -0700
-Message-ID: <CABCJKuf1gYZZb9U-zwjkvvRUUh9GvYsHF=8zub=pr9tG4BqtkA@mail.gmail.com>
-Subject: Re: [PATCH] drm/simpledrm: Fix return type of simpledrm_simple_display_pipe_mode_valid()
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Kees Cook <keescook@chromium.org>,
-        dri-devel@lists.freedesktop.org,
-        LKML <linux-kernel@vger.kernel.org>, llvm@lists.linux.dev,
-        "# 3.4.x" <stable@vger.kernel.org>,
-        =?UTF-8?Q?Tomasz_Pawe=C5=82_Gajc?= <tpgxyz@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220723141845.10570-7-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 25, 2022 at 4:37 PM Nathan Chancellor <nathan@kernel.org> wrote=
-:
->
-> When booting a kernel compiled with clang's CFI protection
-> (CONFIG_CFI_CLANG), there is a CFI failure in
-> drm_simple_kms_crtc_mode_valid() when trying to call
-> simpledrm_simple_display_pipe_mode_valid() through ->mode_valid():
->
-> [    0.322802] CFI failure (target: simpledrm_simple_display_pipe_mode_va=
-lid+0x0/0x8):
-> ...
-> [    0.324928] Call trace:
-> [    0.324969]  __ubsan_handle_cfi_check_fail+0x58/0x60
-> [    0.325053]  __cfi_check_fail+0x3c/0x44
-> [    0.325120]  __cfi_slowpath_diag+0x178/0x200
-> [    0.325192]  drm_simple_kms_crtc_mode_valid+0x58/0x80
-> [    0.325279]  __drm_helper_update_and_validate+0x31c/0x464
-> ...
->
-> The ->mode_valid() member in 'struct drm_simple_display_pipe_funcs'
-> expects a return type of 'enum drm_mode_status', not 'int'. Correct it
-> to fix the CFI failure.
->
-> Cc: stable@vger.kernel.org
-> Fixes: 11e8f5fd223b ("drm: Add simpledrm driver")
-> Link: https://github.com/ClangBuiltLinux/linux/issues/1647
-> Reported-by: Tomasz Pawe=C5=82 Gajc <tpgxyz@gmail.com>
-> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+On Sat, Jul 23, 2022 at 04:18:37PM +0200, Christian Marangi wrote:
+> The same mib function is used by drivers based on qca8k family switch.
+> Move it to common code to make it accessible also by other drivers.
+> 
+> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 > ---
->  drivers/gpu/drm/tiny/simpledrm.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/gpu/drm/tiny/simpledrm.c b/drivers/gpu/drm/tiny/simp=
-ledrm.c
-> index 768242a78e2b..5422363690e7 100644
-> --- a/drivers/gpu/drm/tiny/simpledrm.c
-> +++ b/drivers/gpu/drm/tiny/simpledrm.c
-> @@ -627,7 +627,7 @@ static const struct drm_connector_funcs simpledrm_con=
-nector_funcs =3D {
->         .atomic_destroy_state =3D drm_atomic_helper_connector_destroy_sta=
-te,
->  };
->
-> -static int
-> +static enum drm_mode_status
->  simpledrm_simple_display_pipe_mode_valid(struct drm_simple_display_pipe =
-*pipe,
->                                     const struct drm_display_mode *mode)
->  {
+> diff --git a/drivers/net/dsa/qca/qca8k-common.c b/drivers/net/dsa/qca/qca8k-common.c
+> index 2f96f1d4b921..9e9e3f0b7179 100644
+> --- a/drivers/net/dsa/qca/qca8k-common.c
+> +++ b/drivers/net/dsa/qca/qca8k-common.c
+> @@ -138,3 +138,39 @@ int qca8k_bulk_write(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
+>  
+>  	return 0;
+>  }
+> +
+> +int
+> +qca8k_busy_wait(struct qca8k_priv *priv, u32 reg, u32 mask)
 
-Thanks for fixing this, Nathan! The patch looks correct to me.
+Can take up a single line.
 
-Reviewed-by: Sami Tolvanen <samitolvanen@google.com>
-
-Sami
+> +{
+> +	u32 val;
+> +
+> +	return regmap_read_poll_timeout(priv->regmap, reg, val, !(val & mask), 0,
+> +				       QCA8K_BUSY_WAIT_TIMEOUT * USEC_PER_MSEC);
+> +}
