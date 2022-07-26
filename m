@@ -2,110 +2,290 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04A0CCCA489
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 08:33:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF5E5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 08:33:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238323AbiGZIdi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 04:33:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49142 "EHLO
+        id S238425AbiGZIdp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 04:33:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231345AbiGZIdg (ORCPT
+        with ESMTP id S238048AbiGZIdk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 04:33:36 -0400
-Received: from comms.puri.sm (comms.puri.sm [159.203.221.185])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9ABC72F3A8;
-        Tue, 26 Jul 2022 01:33:35 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by comms.puri.sm (Postfix) with ESMTP id 6CF94DFD95;
-        Tue, 26 Jul 2022 01:33:05 -0700 (PDT)
-Received: from comms.puri.sm ([127.0.0.1])
-        by localhost (comms.puri.sm [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id Q3g532GNHPNk; Tue, 26 Jul 2022 01:33:04 -0700 (PDT)
-From:   Martin Kepplinger <martin.kepplinger@puri.sm>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=puri.sm; s=comms;
-        t=1658824384; bh=0CIJU3zSyImAICa4IB+pz0lnhOh+ryj8sbHTB94JLEM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=F4aSqK5kFT4K11jxNfoPfVmCANO6UV0bER52kMqexn3endu9STsOymIupg7mSDZ1t
-         AlaXX8+mbXZHI8nurHj+OUMTmZ5+jomwnhuUp6vGkEAYFhkLzNJos0z+xA4rQJd90o
-         ONH+cciT1YerEGsjEZABqpjr3zj0WosnQfMWMNzgK7y2JeHVttJ9vfVZzA/lEPcqfw
-         ve+pJUiotnLsJcExPuBngpQS87ffYYFDSR/1vfVrln1uUebG6PBKQSfH8N8Tmm2VK8
-         YnSvu79p2I43Fp0QoP9eVFWhcoFgmf7BCfYVqStIC0rdbkX+rOzPIfIhGugF1Te/Da
-         MKrKg4X4WX1IA==
-To:     rafael@kernel.org, khilman@kernel.org, ulf.hansson@linaro.org,
-        robh@kernel.org, krzysztof.kozlowski@linaro.org,
-        shawnguo@kernel.org, s.hauer@pengutronix.de, festevam@gmail.com,
-        pavel@ucw.cz
-Cc:     kernel@puri.sm, linux-imx@nxp.com, broonie@kernel.org,
-        l.stach@pengutronix.de, aford173@gmail.com,
-        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Martin Kepplinger <martin.kepplinger@puri.sm>
-Subject: [PATCH v6 0/2] power: domain: handle power supplies that need interrupts
-Date:   Tue, 26 Jul 2022 10:32:55 +0200
-Message-Id: <20220726083257.1730630-1-martin.kepplinger@puri.sm>
+        Tue, 26 Jul 2022 04:33:40 -0400
+Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 541C430F4B
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 01:33:39 -0700 (PDT)
+Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-31e623a4ff4so134803477b3.4
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 01:33:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=2Zj6IDscOqGpySURIv3/6OT9Yjl3MfpVD47TFHbtsSY=;
+        b=Cq3woY32gfETWotKVJ0jVvPaZnuXlO78yPMcYGL8XNfszfNG7vyRsamBeGl50H7/DM
+         J4k0t8KmRkm3KkP1t1wOHez6f3tCNBb5ZYCEXlAegZfUA1u1uQ2N4SyDIsmwBF6HImaV
+         A7ct2UFqNDuN9o8jqRbLaVguw6IYnuM4PnMqtw756iGGGcOXvtYVuMCLiPtkWFXIR4QD
+         i/9LXg2E5q5LxtRVbWiRFKxQBEWsHFGOIs0KmhqhLaPeYWCS/OBQdZA/foxm0yZypBzP
+         AUjJqyGrt6YMi7GLRGTUEaTJF7FrAPzyZL37KFUUJjNFMtJ00jt0BgkhbdosUZK2Kvaw
+         QH+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=2Zj6IDscOqGpySURIv3/6OT9Yjl3MfpVD47TFHbtsSY=;
+        b=5Lapd5TIJS3Y62VqMCtZ4LLHwahJVe388G7nMn+QrjfRZJXV6Z8Qm/qYOKa4jYWmTB
+         u/k/XYMA/9UlBoB0gwaKEVGS1IfUXAKo99S7AMmEOo2x+jQuxVWgZuTpCE3nXaz7Y4wz
+         +DOqbkgN4MYk8Vp5/7lYbY7Brnoopx6i1dUMZpOZBS3Ab0ZfwOFplq+wiqpsS7Ll9RxT
+         nZ17IvixvhekFH7kLmseP5rghzluMKq+++KPUHLl4CzjY6akv3w+zqA2bkdXoVUGNGkN
+         l1oM/CkVTdMD1IjrquFxcI50QeKVzzuHBeY1paLMT/yXRlFkuYcu4hT3qDDFRHrSRNJz
+         rVFw==
+X-Gm-Message-State: AJIora8fVj7WKHQUwNGkohZUU/9vhgEZ/948yxSzXldroJFcxjsP1RhF
+        9y6ScpZU0MMZSwIxJKW01i1svCucelIZKljsJWwO4+es199Cetop
+X-Google-Smtp-Source: AGRyM1ua9TSRpV0zIZSYIP6XnTuBYQmdJo06utwGMAgbUoepW/SG6vP4DyIAXqYyoa7tAeOpas2aiWwwh7IAFnd+Z+I=
+X-Received: by 2002:a81:74d:0:b0:31e:c419:fc75 with SMTP id
+ 74-20020a81074d000000b0031ec419fc75mr13398395ywh.364.1658824418308; Tue, 26
+ Jul 2022 01:33:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220722230241.1944655-1-avagin@google.com> <Yts1tUfPxdPH5XGs@google.com>
+In-Reply-To: <Yts1tUfPxdPH5XGs@google.com>
+From:   Andrei Vagin <avagin@google.com>
+Date:   Tue, 26 Jul 2022 01:33:27 -0700
+Message-ID: <CAEWA0a4hrRb5HYLqa1Q47=guY6TLsWSJ_zxNjOXXV2jCjUekUA@mail.gmail.com>
+Subject: Re: [PATCH 0/5] KVM/x86: add a new hypercall to execute host system
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>, linux-kernel@vger.kernel.org,
+        kvm@vger.kernel.org, Wanpeng Li <wanpengli@tencent.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Jianfeng Tan <henry.tjf@antfin.com>,
+        Adin Scannell <ascannell@google.com>,
+        Konstantin Bogomolov <bogomolov@google.com>,
+        Etienne Perot <eperot@google.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-hi Ulf, Lucas and all interested,
+On Fri, Jul 22, 2022 at 4:41 PM Sean Christopherson <seanjc@google.com> wro=
+te:
+>
+> +x86 maintainers, patch 1 most definitely needs acceptance from folks bey=
+ond KVM.
+>
+> On Fri, Jul 22, 2022, Andrei Vagin wrote:
+> > Another option is the KVM platform. In this case, the Sentry (gVisor
+> > kernel) can run in a guest ring0 and create/manage multiple address
+> > spaces. Its performance is much better than the ptrace one, but it is
+> > still not great compared with the native performance. This change
+> > optimizes the most critical part, which is the syscall overhead.
+>
+> What exactly is the source of the syscall overhead,
 
-This makes available a new genpd flag GENPD_FLAG_IRQ_ON in a relatively
-generic way:
-genpd providers can set it when irqs are needed to manage power on/off.
-Since the main goal here has been to fix systemd suspend/resume,
-adjusting these callbacks is all that's being done when this flag gets set.
+Here are perf traces for two cases: when "guest" syscalls are executed via
+hypercalls and when syscalls are executed by the user-space VMM:
+https://gist.github.com/avagin/f50a6d569440c9ae382281448c187f4e
 
-And since I'm working on imx8mq, the 2nd patch makes gpcv2 set this new
-flag when a power domain has a power-supply described in DT.
-For i.MX8M* platforms, this should be ok. For other platforms this might
-be useful too but needs to be tested.
+And here are two tests that I use to collect these traces:
+https://github.com/avagin/linux-task-diag/commit/4e19c7007bec6a15645025c337=
+f2e85689b81f99
+
+If we compare these traces, we can find that in the second case, we spend e=
+xtra
+time in vmx_prepare_switch_to_guest, fpu_swap_kvm_fpstate, vcpu_put,
+syscall_exit_to_user_mode.
+
+> and what alternatives have been explored?  Making arbitrary syscalls from
+> within KVM is mildly terrifying.
+
+"mildly terrifying" is a good sentence in this case:). If I were in your pl=
+ace,
+I would think about it similarly.
+
+I understand these concerns about calling syscalls from the KVM code, and t=
+his
+is why I hide this feature under a separate capability that can be enabled
+explicitly.
+
+We can think about restricting the list of system calls that this hypercall=
+ can
+execute. In the user-space changes for gVisor, we have a list of system cal=
+ls
+that are not executed via this hypercall. For example, sigprocmask is never
+executed by this hypercall, because the kvm vcpu has its signal mask.  Anot=
+her
+example is the ioctl syscall, because it can be one of kvm ioctl-s.
+
+As for alternatives, we explored different ways:
+
+=3D=3D Host Ring3/Guest ring0 mixed mode =3D=3D
+
+This is how the gVisor KVM platform works right now. We don=E2=80=99t have =
+a separate
+hypervisor, and the Sentry does its functions. The Sentry creates a KVM vir=
+tual
+machine instance, sets it up, and handles VMEXITs. As a result, the Sentry =
+runs
+in the host ring3 and the guest ring0 and can transparently switch between
+these two contexts.
+
+When the Sentry starts, it creates a new kernel VM instance and maps its me=
+mory
+to the guest physical. Then it makes a set of page tables for the Sentry th=
+at
+mirrors the host virtual address space. When host and guest address spaces =
+are
+identical, the Sentry can switch between these two contexts.
+
+The bluepill function switches the Sentry into guest ring0. It calls a
+privileged instruction (CLI) that is a no-op in the guest (by design, since=
+ we
+ensure interrupts are disabled for guest ring 0 execution) and triggers a
+signal on the host. The signal is handled by the bluepillHandler that takes=
+ a
+virtual CPU and executes it with the current thread state grabbed from a si=
+gnal
+frame.
+
+As for regular VMs, user processes have their own address spaces (page tabl=
+es)
+and run in guest ring3. So when the Sentry is going to execute a user proce=
+ss,
+it needs to be sure that it is running inside a VM, and it is the exact poi=
+nt
+when it calls bluepill(). Then it executes a user process with its page tab=
+les
+before it triggers an exception or a system call. All such events are trapp=
+ed
+and handled in the Sentry.
+
+The Sentry is a normal Linux process that can trigger a fault and execute
+system calls. To handle these events, the Sentry returns to the host mode. =
+If
+ring0 sysenter or exception entry point detects an event from the Sentry, t=
+hey
+save the current thread state on a per-CPU structure and trigger VMEXIT. Th=
+is
+returns us into bluepillHandler, where we set the thread state on a signal
+frame and exit from the signal handler, so the Sentry resumes from the poin=
+t
+where it has been in the VM.
+
+In this scheme, the sentry syscall time is 3600ns. This is for the case whe=
+n a
+system call is called from gr0.
+
+The benefit of this way is that only a first system call triggers vmexit an=
+d
+all subsequent syscalls are executed on the host natively.
+
+But it has downsides:
+* Each sentry system call trigger the full exit to hr3.
+* Each vmenter/vmexit requires to trigger a signal but it is expensive.
+* It doesn't allow to support Confidential Computing (SEV-ES/SGX). The Sent=
+ry
+  has to be fully enclosed in a VM to be able to support these technologies=
+.
+
+=3D=3D Execute system calls from a user-space VMM =3D=3D
+
+In this case, the Sentry is always running in VM, and a syscall handler in =
+GR0
+triggers vmexit to transfer control to VMM (user process that is running in
+hr3), VMM executes a required system call, and transfers control back to th=
+e
+Sentry. We can say that it implements the suggested hypercall in the
+user-space.
+
+The sentry syscall time is 2100ns in this case.
+
+The new hypercall does the same but without switching to the host ring 3. I=
+t
+reduces the sentry syscall time to 1000ns.
 
 
-revision history
-----------------
-v6: (thank you Ulf and Lucas)
-* drop the cleanup patch to use BIT()
-* use of_property_read_bool() to find the power-supply
-* clean up the callback assignment
-* remove the wrong error printing
-  (flag-check can be added later to *drivers* that have noirq callbacks)
+=3D=3D A new BPF hook to handle vmexit-s  =3D=3D
 
-v5: (thank you Lucas)
-* simplify gpcv2 code: just set GENPD_FLAG_IRQ_ON when a power-supply is present
-https://lore.kernel.org/linux-arm-kernel/20220721043608.1527686-1-martin.kepplinger@puri.sm/
+https://github.com/avagin/linux-task-diag/commits/kvm-bpf
 
-v4: (thank you Ulf and Lucas)
-* split up genpd core and gpcv2 changes
-* set callbacks inside of pm_genpd_init()
-* make flag name and description a bit more generic
-* print an error in __genpd_dev_pm_attach() if there a "mismatch"
-https://lore.kernel.org/linux-arm-kernel/20220720043444.1289952-1-martin.kepplinger@puri.sm/T/#t
+This way allows us to reach the same performance numbers, but it gives less
+control over who and how use this functionality. Second, it requires adding=
+ a
+few questionable BPF helpers like calling syscall from BPF hooks.
 
-v3: (thank you Ulf)
-* move DT parsing to gpcv2 and create a genpd flag that gets set
-https://lore.kernel.org/linux-arm-kernel/20220718210302.674897-1-martin.kepplinger@puri.sm/
+=3D=3D Non-KVM platforms =3D=3D
 
-v2: (thank you Krzysztof)
-* rewrite: find possible regulators' interrupts property in parents
-  instead of inventing a new property.
-https://lore.kernel.org/linux-arm-kernel/20220712121832.3659769-1-martin.kepplinger@puri.sm/
+We are experimenting with non-KVM platforms. We have the ptrace platform, b=
+ut it
+is almost for experiments due to the slowness of the ptrace interface.
 
-v1: (initial idea)
-https://lore.kernel.org/linux-arm-kernel/20220711094549.3445566-1-martin.kepplinger@puri.sm/T/#t
+Another idea was to add the process_vm_exec system call:
+https://lwn.net/Articles/852662/
 
+This system call can significantly increase performance compared with the
+ptrace platform, but it is still slower than the KVM platform in its curren=
+t
+form (without the new hypercall). But this is true only if we run the KVM
+platform on a bare-metal. In the case of nested-virtualization, the KVM
+platform becomes much slower, which is expected.
 
+We have another idea to use the seccomp notify to trap system calls, but it
+requires some kernel change to reach a reasonable performance. I am working=
+ on
+these changes and will present them soon.
 
-Martin Kepplinger (2):
-  power: domain: handle genpd correctly when needing interrupts
-  soc: imx: gpcv2: fix suspend/resume by setting GENPD_FLAG_IRQ_ON
+I want to emphasize that non-KVM platforms don't allow us to implement the
+confidential concept in gVisor, but this is one of our main goals concernin=
+g
+the KVM platform.
 
- drivers/base/power/domain.c | 13 +++++++++++--
- drivers/soc/imx/gpcv2.c     |  3 +++
- include/linux/pm_domain.h   |  5 +++++
- 3 files changed, 19 insertions(+), 2 deletions(-)
+All previous numbers have been getting from the same host (Xeon(R) Gold 626=
+8CL,
+5.19-rc5).
 
--- 
-2.30.2
+>
+> > The idea of using vmcall to execute system calls isn=E2=80=99t new. Two=
+ large users
+> > of gVisor (Google and AntFinacial) have out-of-tree code to implement s=
+uch
+> > hypercalls.
+> >
+> > In the Google kernel, we have a kvm-like subsystem designed especially
+> > for gVisor. This change is the first step of integrating it into the KV=
+M
+> > code base and making it available to all Linux users.
+>
+> Can you please lay out the complete set of changes that you will be propo=
+sing?
+> Doesn't have to be gory details, but at a minimum there needs to be a hig=
+h level
+> description that very clearly defines the scope of what changes you want =
+to make
+> and what the end result will look like.
+>
+> It's practically impossible to review this series without first understan=
+ding the
+> bigger picture, e.g. if KVM_HC_HOST_SYSCALL is ultimately useless without=
+ the other
+> bits you plan to upstream, then merging it without a high level of confid=
+ence that
+> the other bits are acceptable is a bad idea since it commits KVM to suppo=
+rting
+> unused ABI.
 
+I was not precise in my description. This is the only change that we
+need right now.
+The gVisor KVM platform is the real thing that exists today and works
+on the upstream kernels:
+https://cs.opensource.google/gvisor/gvisor/+/master:pkg/sentry/platform/kvm=
+/
+
+This hypercall improves its performance and makes it comparable with
+the google-internal platform.
+
+Thanks,
+Andrei
