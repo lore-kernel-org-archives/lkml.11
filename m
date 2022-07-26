@@ -2,91 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F584CCA48C
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 09:57:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEF91CCA48F
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 09:57:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232812AbiGZJ5H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 05:57:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56388 "EHLO
+        id S232858AbiGZJ5N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 05:57:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238216AbiGZJzT (ORCPT
+        with ESMTP id S237702AbiGZJ5J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 05:55:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48C772CCB0;
-        Tue, 26 Jul 2022 02:55:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CD395B811C6;
-        Tue, 26 Jul 2022 09:55:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83237C341C0;
-        Tue, 26 Jul 2022 09:55:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658829315;
-        bh=Cl1l+U2SKW3B5tix69GFq95FJ/iJ6Bont4e7CRkL1v8=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=lC1xEo0gfzzUVwatQxvbSQu4ZGe6NqindV1IGvEglwjzOSmohPBCB+soJ/fBLcSaJ
-         PjNUVjMbTgBOusciWMHMkigbnm52nMtBhrC1OEnwIMEB1fq7g3AL1Vki3oiBygD9uz
-         AkjOXi8413PMyxk715mnKl945jgdrDpK4ZhqPiQoooeEyP66KusC6kLQZn+p1nRQ93
-         5yAY5j14gaVS5iQmGpK08kplSeCcfdTeAnczK5/aZOBWNUuARpz6VQZvT38nJ9/fCd
-         66F9OH05vk4CBuvu4GMmKzgxLicZotDiDrL+CNJUYuhJv1n5tnWwkd+DDm6dDmKHRv
-         69UUs1C9hfYmg==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Siddh Raman Pant <code@siddh.me>
-Cc:     Johannes Berg <johannes@sipsolutions.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-kernel-mentees 
-        <linux-kernel-mentees@lists.linuxfoundation.org>
-Subject: Re: [PATCH] net: Fix UAF in ieee80211_scan_rx()
-References: <20220701145423.53208-1-code@siddh.me>
-Date:   Tue, 26 Jul 2022 12:55:06 +0300
-In-Reply-To: <20220701145423.53208-1-code@siddh.me> (Siddh Raman Pant's
-        message of "Fri, 1 Jul 2022 20:24:23 +0530")
-Message-ID: <8735eomc5h.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        Tue, 26 Jul 2022 05:57:09 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF5142F039
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 02:57:07 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id p11so17052360lfu.5
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 02:57:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=I73BOjVPhMR1wc1m6D3pt9KtMoseeendX/4GKU5hxhU=;
+        b=uEAVBlqVVpEO4CRjG+b8EQKwATuT7yiqOEkQv2ZTiLFyrJ2jiaeYPaMsuRlf6yjGgI
+         ZJMG1YC33LrAUnOLH0nIZwePRnjLOcyXgb5hUEmvl/VN0qoOyXr476hzGEvNh9WAbOgg
+         HOmiqK27ag6K9Va5mWQyMOG4FYVmDG9FefW5OasSubq2C8mu++pER4+2qanR+JG5faBM
+         F6yTP57/+k08+9lUA2BdtAR4Baq509d11FRvQSade9qtzPtSEB/RRK9P8nD3D174hQAC
+         od5Bui/cx6nCgtoU7ZnLVGaHE73DLFShMwVJLzuV1kxlf+ShM1s8kLlPRbt3OymhUCb3
+         xB9A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=I73BOjVPhMR1wc1m6D3pt9KtMoseeendX/4GKU5hxhU=;
+        b=vNCUeeLzR+D3e1ai0INvk9yT091H3WP4KL/7FF0gEi6/cAM2ln8YesD5o745XqNJet
+         /XCC1dVYi+BkIKs19WpMZHifElPrG9U7Hy2o6xHaIukqfclVNYchJNfYKe3rHWUmvV9e
+         SitpQyp83/hS04BhS3YP5rYxNO7PGHBJnLF0SHPBnx42FvGQm/AhO6KLgKbMR3un3usg
+         4TGtK/IPSFul0sCmTfkdREECrFSXeI4auLNr70/Iwq1w+UsWa9avq1aMKEPon96d+40/
+         qPJ1gaa59yVsCh/id5lKIVKNGPsxMv+QGCE85i1Tr9+Gfi6tNVdXnnszhqWZc/AfEKG4
+         G81A==
+X-Gm-Message-State: AJIora/U0/kfjBGYFIGJCTDeu2W/kLyWJxXj5eHcqeBdBv+gI8Zk2bIO
+        XOfTt8JhFxSmlf1n12cuf4V8OA==
+X-Google-Smtp-Source: AGRyM1sK7VXFeDB7oQjs/mToNuKVBnT8UhRL+0xdhS1pEpYSUMMEDkLwMhuiBIzgXwdUH2Gx8I5lRg==
+X-Received: by 2002:a05:6512:1288:b0:48a:aa31:2838 with SMTP id u8-20020a056512128800b0048aaa312838mr424327lfs.683.1658829426372;
+        Tue, 26 Jul 2022 02:57:06 -0700 (PDT)
+Received: from [192.168.3.197] (78-26-46-173.network.trollfjord.no. [78.26.46.173])
+        by smtp.gmail.com with ESMTPSA id c20-20020a056512325400b0048a98b7bad3sm605377lfr.197.2022.07.26.02.57.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 26 Jul 2022 02:57:05 -0700 (PDT)
+Message-ID: <d34ff61c-d9b9-9f34-a00f-34a0304e47ee@linaro.org>
+Date:   Tue, 26 Jul 2022 11:57:04 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v2 1/2] dt-binding: spi: npcm-pspi: Add npcm845 compatible
+Content-Language: en-US
+To:     Tomer Maimon <tmaimon77@gmail.com>, Rob Herring <robh@kernel.org>
+Cc:     Avi Fishman <avifishman70@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Mark Brown <broonie@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        linux-spi@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>
+References: <20220722114136.251415-1-tmaimon77@gmail.com>
+ <20220722114136.251415-2-tmaimon77@gmail.com>
+ <20220725225650.GA2898332-robh@kernel.org>
+ <CAP6Zq1j0pKHsX20t4ep9-6B_5pTe5MzkU__245F6tW7wFJESiw@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CAP6Zq1j0pKHsX20t4ep9-6B_5pTe5MzkU__245F6tW7wFJESiw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Siddh Raman Pant <code@siddh.me> writes:
+On 26/07/2022 11:30, Tomer Maimon wrote:
 
-> ieee80211_scan_rx() tries to access scan_req->flags after a null check
-> (see line 303 of mac80211/scan.c), but ___cfg80211_scan_done() uses
-> kfree() on the scan_req (see line 991 of wireless/scan.c).
->
-> This results in a UAF.
->
-> ieee80211_scan_rx() is called inside a RCU read-critical section
-> initiated by ieee80211_rx_napi() (see line 5043 of mac80211/rx.c).
->
-> Thus, add an rcu_head to the scan_req struct so as to use kfree_rcu()
-> instead of kfree() so that we don't free during the critical section.
->
-> Bug report (3): https://syzkaller.appspot.com/bug?extid=f9acff9bf08a845f225d
-> Reported-by: syzbot+f9acff9bf08a845f225d@syzkaller.appspotmail.com
-> Reported-by: syzbot+6cb476b7c69916a0caca@syzkaller.appspotmail.com
-> Reported-by: syzbot+9250865a55539d384347@syzkaller.appspotmail.com
->
-> Signed-off-by: Siddh Raman Pant <code@siddh.me>
-> ---
->  include/net/cfg80211.h | 2 ++
->  net/wireless/scan.c    | 2 +-
->  2 files changed, 3 insertions(+), 1 deletion(-)
+>> To answer your question on fallback, just put:
+>>
+>>     "nuvoton,npcm845-pspi", "nuvoton,npcm750-pspi" for NPCM8XX BMC
+> In the document?
+> because I don't remember doing so in other documents that I use fallback.
 
-The title should be:
+If they also you fallbacks, then the other documents have now incorrect
+text.
 
-wifi: cfg80211: Fix UAF in ieee80211_scan_rx()
+> I need to do it in ymal files as well?
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+Depends on what you want to add and what you actually added... Let's be
+specific - point to specific commits or files in linux-next. If they
+were not applied - give lore.kernel.org link.
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
+Best regards,
+Krzysztof
