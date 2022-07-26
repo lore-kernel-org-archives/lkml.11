@@ -2,95 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D82A6C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 14:31:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB47EC00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 14:32:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239333AbiGZOb1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 10:31:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40784 "EHLO
+        id S238790AbiGZOcF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 10:32:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239359AbiGZObT (ORCPT
+        with ESMTP id S232995AbiGZOcC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 10:31:19 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 953C72DA;
-        Tue, 26 Jul 2022 07:31:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658845877; x=1690381877;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=HyJuY4dDj8OhMbbzCipE0Oq++iocGKX3QqwG3vu56BM=;
-  b=M8TxrMtaYoiseamWYQCdT2JziBD5PecfJasRkRtCViNc08X9W9lQJhud
-   ZebtWsHcJo6Xmg7h8mKcRf6CSgJ9IZY0OT8JHSQzObWcc9F/Jo3LoxK1q
-   jXG1etU73OMWgGBD8qIce+0DQBlRqDo5nm1eKo9kRLJysFf8CBiclaPOM
-   hBu59QYynaiR8zTitRWlkmofJhKPdjZ/nYcLglWobzH0YvThgHwFRJDcw
-   fegfNwlvafVcV06qDcD0nE6cf0vOxBVH0jzZnF4BGWcKhoVAbWxVUxg8I
-   I9RwXs2Ca6Q7WLEui5lK5ztxRDFNFm6IJZEPNr1KyszeKA4Wc7OJAzfBc
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10420"; a="349668376"
-X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
-   d="scan'208";a="349668376"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2022 07:31:04 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
-   d="scan'208";a="603776622"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga007.fm.intel.com with ESMTP; 26 Jul 2022 07:31:03 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id E3F07F1; Tue, 26 Jul 2022 17:31:12 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Guenter Roeck <linux@roeck-us.net>,
-        Eddie James <eajames@linux.ibm.com>,
-        linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Jean Delvare <jdelvare@suse.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 1/1] hwmon: (occ) Replace open-coded variant of %*phN specifier
-Date:   Tue, 26 Jul 2022 17:31:10 +0300
-Message-Id: <20220726143110.4809-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
+        Tue, 26 Jul 2022 10:32:02 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABA2C32C;
+        Tue, 26 Jul 2022 07:31:59 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 58AE537809;
+        Tue, 26 Jul 2022 14:31:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1658845918; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=3bsbGkr+ml3ccu5dQDVYwxJTp4j0IzVNFei719oDR5g=;
+        b=STBJKCutDeRpcV4piN3dyy6Q7s+/PZX/QfVLGhYZGPG/3K5mGwgF5D6Qgmr8Lqyp7B9MLp
+        XZnivzHP6JzcJkMqM+lNYANR4ZblsmElZxeIlorLvwjEcq0phL02P+zBf0qtagFOo0NDIA
+        76C370KAMi/SpSKUDQlogfZj6DS5DQ4=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 292A713322;
+        Tue, 26 Jul 2022 14:31:58 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id LPQWCd7632IHPwAAMHmgww
+        (envelope-from <mkoutny@suse.com>); Tue, 26 Jul 2022 14:31:58 +0000
+Date:   Tue, 26 Jul 2022 16:31:56 +0200
+From:   Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
+To:     Tejun Heo <tj@kernel.org>
+Cc:     Christian Brauner <brauner@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        John Stultz <john.stultz@linaro.org>,
+        Dmitry Shmidt <dimitrysh@google.com>,
+        Oleg Nesterov <oleg@redhat.com>, linux-kernel@vger.kernel.org,
+        cgroups@vger.kernel.org
+Subject: Re: [PATCH 1/3 cgroup/for-5.20] cgroup: Elide write-locking
+ threadgroup_rwsem when updating csses on an empty subtree
+Message-ID: <20220726143156.GA14370@blackbody.suse.cz>
+References: <YtDvN0wJ6CKaEPN8@slm.duckdns.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="UugvWAfsgieZRqgk"
+Content-Disposition: inline
+In-Reply-To: <YtDvN0wJ6CKaEPN8@slm.duckdns.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-printf()-like functions in the kernel have extensions, such as
-%*phN to dump small pieces of memory as hex bytes.
 
-Replace custom approach with the direct use of %*phN.
+--UugvWAfsgieZRqgk
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/hwmon/occ/common.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+Hello.
 
-diff --git a/drivers/hwmon/occ/common.c b/drivers/hwmon/occ/common.c
-index 157b73a3da29..45407b12db4b 100644
---- a/drivers/hwmon/occ/common.c
-+++ b/drivers/hwmon/occ/common.c
-@@ -729,18 +729,14 @@ static ssize_t occ_show_extended(struct device *dev,
- 			rc = sysfs_emit(buf, "%u",
- 					get_unaligned_be32(&extn->sensor_id));
- 		} else {
--			rc = sysfs_emit(buf, "%02x%02x%02x%02x\n",
--					extn->name[0], extn->name[1],
--					extn->name[2], extn->name[3]);
-+			rc = sysfs_emit(buf, "%4phN\n", extn->name);
- 		}
- 		break;
- 	case 1:
- 		rc = sysfs_emit(buf, "%02x\n", extn->flags);
- 		break;
- 	case 2:
--		rc = sysfs_emit(buf, "%02x%02x%02x%02x%02x%02x\n",
--				extn->data[0], extn->data[1], extn->data[2],
--				extn->data[3], extn->data[4], extn->data[5]);
-+		rc = sysfs_emit(buf, "%6phN\n", extn->data);
- 		break;
- 	default:
- 		return -EINVAL;
--- 
-2.35.1
+On Thu, Jul 14, 2022 at 06:38:15PM -1000, Tejun Heo <tj@kernel.org> wrote:
+> However, if the subtree doesn't contain any tasks, there aren't gonna
+> be any cgroup migrations.
 
+Nice catch.
+
+> This condition can be trivially detected by testing whether
+> mgctx.preloaded_src_csets is empty. Elide write-locking
+> threadgroup_rwsem if the subtree is empty.
+
+This check is perhaps even more robust than, e.g. cgroup_is_populated()
+due to possible zombie cases.
+
+>  kernel/cgroup/cgroup.c |   16 +++++++++++++---
+>  1 file changed, 13 insertions(+), 3 deletions(-)
+
+Reviewed-by: Michal Koutn=FD <mkoutny@suse.com>
+
+--UugvWAfsgieZRqgk
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEARYIAB0WIQTrXXag4J0QvXXBmkMkDQmsBEOquQUCYt/6twAKCRAkDQmsBEOq
+ubXRAQD90uqCtIlSRrYwhHsL3H1Goqr3zq/aW3zZtjBIDp5HWQD/c2FILXRb5yDW
+GMTSvPlWlLg8Q8IgL0Exn+tuoQwgDwM=
+=yafZ
+-----END PGP SIGNATURE-----
+
+--UugvWAfsgieZRqgk--
