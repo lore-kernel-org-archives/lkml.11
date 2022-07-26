@@ -2,117 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23DF2C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 03:07:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C37ADC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 03:14:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237557AbiGZDHF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 23:07:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54840 "EHLO
+        id S237494AbiGZDOf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 23:14:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231616AbiGZDGy (ORCPT
+        with ESMTP id S230433AbiGZDOc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 23:06:54 -0400
-Received: from mail-m121145.qiye.163.com (mail-m121145.qiye.163.com [115.236.121.145])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67CCD29CBF;
-        Mon, 25 Jul 2022 20:06:52 -0700 (PDT)
-Received: from amadeus-VLT-WX0.lan (unknown [113.118.189.34])
-        by mail-m121145.qiye.163.com (Hmail) with ESMTPA id 77CCD80008D;
-        Tue, 26 Jul 2022 11:06:50 +0800 (CST)
-From:   Chukun Pan <amadeus@jmu.edu.cn>
-To:     Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, Chukun Pan <amadeus@jmu.edu.cn>
-Subject: [PATCH 2/3] soc: mediatek: update power domain data of MT7623A
-Date:   Tue, 26 Jul 2022 11:06:20 +0800
-Message-Id: <20220726030621.7555-2-amadeus@jmu.edu.cn>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220726030621.7555-1-amadeus@jmu.edu.cn>
-References: <20220726030621.7555-1-amadeus@jmu.edu.cn>
+        Mon, 25 Jul 2022 23:14:32 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5400E2A270
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 20:14:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658805271; x=1690341271;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=hyS8F4+I4RY/4rYRz7tUgKWmAGM8MQqI0BySA/jeO9Q=;
+  b=BtSRf2Fftn21Cc8cuE2y2bEfJSGpMcGhSSEk4nxDCpTTgnZnN5tE+CzY
+   aPpl72pxPdjX/aKCCUWQAMgzLiXoC0aHIAjEbZ6tr15j5TifEjkKSqIk3
+   hT3AtQSfh+sZMB0vChkYHa40pMYnYiIPzUDvVcbg8k9ywBB8wnzW77aA4
+   rT/uQkS1wRaMy+OggoyYqFJcM/f9Rdv1IGYHDbbjmL3HuP0Ie2XDxs073
+   Q15+dAYbeHw1jKeK92zIdmC+f1BcyXN/fhxF643Dl6B9rkCn8kxY3ReCd
+   ehbZmSSv01zp7CUcHlPNw79GkV2UqkbXp+Y3R05b/2hT7M2GJ1GtK4R9W
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10419"; a="267617915"
+X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
+   d="scan'208";a="267617915"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jul 2022 20:14:31 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
+   d="scan'208";a="575313106"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 25 Jul 2022 20:14:29 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oGB1h-0005v2-0L;
+        Tue, 26 Jul 2022 03:14:29 +0000
+Date:   Tue, 26 Jul 2022 11:14:08 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: {standard input}:19: Error: unrecognized opcode: `iccci'
+Message-ID: <202207261146.BmW3AhRs-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgPGg8OCBgUHx5ZQUlOS1dZFg8aDwILHllBWSg2Ly
-        tZV1koWUFITzdXWS1ZQUlXWQ8JGhUIEh9ZQVkaGhkZVhpPHxpITh1MHRoZSFUTARMWGhIXJBQOD1
-        lXWRgSC1lBWUpKSFVKSkNVSkNCVUhPWVdZFhoPEhUdFFlBWU9LSFVKSktITUpVS1kG
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6NAw6MDo5LD06ME4SCU84Ny06
-        KCEKFBxVSlVKTU5DQ0tPQ0pKSkpCVTMWGhIXVRoWGh8eDgg7ERYOVR4fDlUYFUVZV1kSC1lBWUpK
-        SFVKSkNVSkNCVUhPWVdZCAFZQUhOTEg3Bg++
-X-HM-Tid: 0a823878b404b03akuuu77ccd80008d
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When running OpenWrt on MT7623A, I receive a kernel
-warning as follows (Device dts using mt7623.dtsi):
+Hi Christophe,
 
-mtk-scpsys 10006000.scpsys: Failed to power on domain mfg
-WARNING: CPU: 0 PID: 1 at drivers/soc/mediatek/mtk-scpsys.c:457 0xc04a4130
+FYI, the error/warning still remains.
 
-When I switch the device dts to using mt7623a.dtsi,
-the system fails to boot:
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   e0dccc3b76fb35bb257b4118367a883073d7390e
+commit: de39b19452e784de5f90ae899851ab29a29bb42c powerpc: Rewrite 4xx flush_cache_instruction() in C
+date:   1 year, 11 months ago
+config: powerpc-klondike_defconfig (https://download.01.org/0day-ci/archive/20220726/202207261146.BmW3AhRs-lkp@intel.com/config)
+compiler: powerpc-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=de39b19452e784de5f90ae899851ab29a29bb42c
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout de39b19452e784de5f90ae899851ab29a29bb42c
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=powerpc SHELL=/bin/bash
 
-rcu: INFO: rcu_preempt detected stalls on CPUs/tasks:
-rcu: 0-...0: (0 ticks this GP) idle=146/1/0x40000000 softirq=53/53 fqs=1051
- (detected by 1, t=2102 jiffies, g=-1111, q=18)
-Sending NMI from CPU 1 to CPUs 0:
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Solved the problem by duplicating the power domain of
-the MT7623 (except MFG) to MT7623A, the system works
-fine without kernel warnings/errors.
+All errors (new ones prefixed by >>):
 
-Signed-off-by: Chukun Pan <amadeus@jmu.edu.cn>
----
- drivers/soc/mediatek/mtk-scpsys.c | 35 +++++++++++++++++++++++++++++++
- 1 file changed, 35 insertions(+)
+   {standard input}: Assembler messages:
+>> {standard input}:19: Error: unrecognized opcode: `iccci'
 
-diff --git a/drivers/soc/mediatek/mtk-scpsys.c b/drivers/soc/mediatek/mtk-scpsys.c
-index ca75b14931ec..8b5713db1ca3 100644
---- a/drivers/soc/mediatek/mtk-scpsys.c
-+++ b/drivers/soc/mediatek/mtk-scpsys.c
-@@ -910,6 +910,41 @@ static const struct scp_domain_data scp_domain_data_mt7623a[] = {
- 		.clk_id = {CLK_NONE},
- 		.caps = MTK_SCPD_ACTIVE_WAKEUP,
- 	},
-+	[MT7623A_POWER_DOMAIN_VDEC] = {
-+		.name = "vdec",
-+		.sta_mask = PWR_STATUS_VDEC,
-+		.ctl_offs = SPM_VDE_PWR_CON,
-+		.sram_pdn_bits = GENMASK(11, 8),
-+		.sram_pdn_ack_bits = GENMASK(12, 12),
-+		.clk_id = {CLK_MM},
-+		.caps = MTK_SCPD_ACTIVE_WAKEUP,
-+	},
-+	[MT7623A_POWER_DOMAIN_DISP] = {
-+		.name = "disp",
-+		.sta_mask = PWR_STATUS_DISP,
-+		.ctl_offs = SPM_DIS_PWR_CON,
-+		.sram_pdn_bits = GENMASK(11, 8),
-+		.clk_id = {CLK_MM},
-+		.bus_prot_mask = MT2701_TOP_AXI_PROT_EN_MM_M0,
-+		.caps = MTK_SCPD_ACTIVE_WAKEUP,
-+	},
-+	[MT7623A_POWER_DOMAIN_ISP] = {
-+		.name = "isp",
-+		.sta_mask = PWR_STATUS_ISP,
-+		.ctl_offs = SPM_ISP_PWR_CON,
-+		.sram_pdn_bits = GENMASK(11, 8),
-+		.sram_pdn_ack_bits = GENMASK(13, 12),
-+		.clk_id = {CLK_MM},
-+		.caps = MTK_SCPD_ACTIVE_WAKEUP,
-+	},
-+	[MT7623A_POWER_DOMAIN_BDP] = {
-+		.name = "bdp",
-+		.sta_mask = PWR_STATUS_BDP,
-+		.ctl_offs = SPM_BDP_PWR_CON,
-+		.sram_pdn_bits = GENMASK(11, 8),
-+		.clk_id = {CLK_NONE},
-+		.caps = MTK_SCPD_ACTIVE_WAKEUP,
-+	},
- };
- 
- /*
 -- 
-2.25.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
