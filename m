@@ -2,111 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5AC3C3276B
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 13:45:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C128C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 13:51:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233496AbiGZNp6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 09:45:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58570 "EHLO
+        id S238847AbiGZNvX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 09:51:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231981AbiGZNpz (ORCPT
+        with ESMTP id S231154AbiGZNvU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 09:45:55 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2E7261CFE7
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 06:45:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658843154;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=U0RbgNeCMWGTLl5NaMw002w/avfS4HhxBQ3/PBLMnCQ=;
-        b=GhS2dtlG1FtdNJ8K8BU2hlzHCxxcdiQN3Eov1nzkCZgN8JeskT6rV9A/SlqWogMiutdqPv
-        7WTViMDVjpYX8UIlEwFi3IN1dzGj5bIfrY5H4WPQsSfFZUKYyl2Et3YPZURmWmDP8qj3yN
-        G/TPFkIuNIZEnUmUiCkWYK4Bj3xM858=
-Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
- [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-649-FMmQk8DeNGGTQp5_HkcRlg-1; Tue, 26 Jul 2022 09:45:53 -0400
-X-MC-Unique: FMmQk8DeNGGTQp5_HkcRlg-1
-Received: by mail-wr1-f69.google.com with SMTP id q17-20020adfab11000000b0021e4c9ca970so2147254wrc.20
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 06:45:52 -0700 (PDT)
+        Tue, 26 Jul 2022 09:51:20 -0400
+Received: from mail-oa1-f48.google.com (mail-oa1-f48.google.com [209.85.160.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4467B248DC;
+        Tue, 26 Jul 2022 06:51:20 -0700 (PDT)
+Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-10d6ddda695so18723631fac.0;
+        Tue, 26 Jul 2022 06:51:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=U0RbgNeCMWGTLl5NaMw002w/avfS4HhxBQ3/PBLMnCQ=;
-        b=PDUUDQOtBFbZRFHWhT1YLNpan5SCSjyPaRez8hQOR/TOA1206A9TVhbyHoD04o7qoy
-         ud8Zh9mw132KTHDrh8OCTXOn6CIk4IPCh5ppNTqlw0kpXIvI8uO+heq1LOe1yQMVo6Xw
-         0U93HoNy71+waDOEfLCWTV/lPuPGXg3/RNOiGty9NcanUuEl9RgcWXz0T/MQuATz29O2
-         xyJ9+8qqVFB8aAH1uE9XBiOrSpks4eMjvcnR2qNmJSb/oyvZ4rfKg5ZfKF7AQaNDfq1d
-         8uoTdhOGpxJw/KuVe4SIWdMaIXNfHMkaHHA2BjMCZA3HO9PxYBS1PZIoP93xB7mYfzMi
-         S0zg==
-X-Gm-Message-State: AJIora9qqHoDFrPigsDBwkC+ZU6i8tpRmhEST5X8rrcTOnLMt4dwxs/s
-        dCSZvmhK8BbOL1jvHRW3xpbqGxKdfITEKXg3cezrPnA/Jk3HDJ6MSm9PjD6t55hi5bHS8M7KCyt
-        60g3wcpd0IEj8T1ELgfB2EVuA
-X-Received: by 2002:a05:600c:6002:b0:3a3:5453:bcbe with SMTP id az2-20020a05600c600200b003a35453bcbemr9010627wmb.190.1658843151694;
-        Tue, 26 Jul 2022 06:45:51 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uEdYS/8GD2rKXrwKi1xsxaGrPurKtjlF+VbooQh/DnQoNo/7sFgoDFG+enrLLNF4k9hzJrTg==
-X-Received: by 2002:a05:600c:6002:b0:3a3:5453:bcbe with SMTP id az2-20020a05600c600200b003a35453bcbemr9010611wmb.190.1658843151474;
-        Tue, 26 Jul 2022 06:45:51 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c708:fe00:8ba4:5871:abc3:8a75? (p200300cbc708fe008ba45871abc38a75.dip0.t-ipconnect.de. [2003:cb:c708:fe00:8ba4:5871:abc3:8a75])
-        by smtp.gmail.com with ESMTPSA id l35-20020a05600c1d2300b003a2fc754313sm19918457wms.10.2022.07.26.06.45.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 Jul 2022 06:45:51 -0700 (PDT)
-Message-ID: <18dc0807-5596-3aad-350d-3673a033bca8@redhat.com>
-Date:   Tue, 26 Jul 2022 15:45:50 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] mm: add warning if __vm_enough_memory fails
-Content-Language: en-US
-To:     Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Cc:     Yongqiang Liu <liuyongqiang13@huawei.com>
-References: <20220726072451.142427-1-wangkefeng.wang@huawei.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <20220726072451.142427-1-wangkefeng.wang@huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=CsJWLbupbPaLIrMNaESke+SXVtIQDiCRc5v86bUOhk0=;
+        b=R4UowwFSlwFpS88lAhJCvBUk8X5hGMfAZiGlH6ErHu/pDLYew/HrshjvtE+1eo1aNk
+         fiWHlDcgqLoeRXTu3GzhzG93gsGM1G0YXVwZpUD0QKc7CqL+AW2lLjxotht0LmpIrOsR
+         mSZ9G9l/ruO3P69OzogHQI2M2MxPNIf2YmTguPSl5EDMjpfQdSFzGFf5o1I31V+NDFWu
+         DLeCPsMLATKZCKQVw3mRgMemaTcD/i//QSVYGXHhUzFzXpB4QOpTsq+wDZ1h9Ocw13C8
+         jMTZbj3vUCKLqhiAhUppfvnyviIKp4EcEs8Z1BtpAtKfKpHDQ/tWH2LVAeC35Ik3Ps1S
+         uX+w==
+X-Gm-Message-State: AJIora/NitMhxFHfQNcuZ8UdCFrtMRHQmKp9uJWIupFhVlQ7h/hw7knz
+        CWoxBDP6meOlYXTmbytcDPc1wVKddg==
+X-Google-Smtp-Source: AGRyM1u8g+tfKK6g98F3726L2+/CnUZHjUgGrnlUMu9639KKM9TG4kiPb6hf9D5BTKRpI8XyP8bNtA==
+X-Received: by 2002:a05:6870:41d3:b0:10d:c25f:9c0d with SMTP id z19-20020a05687041d300b0010dc25f9c0dmr9386508oac.280.1658843479484;
+        Tue, 26 Jul 2022 06:51:19 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id e21-20020a9d63d5000000b0061ca70905absm6332750otl.49.2022.07.26.06.51.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Jul 2022 06:51:18 -0700 (PDT)
+Received: (nullmailer pid 179935 invoked by uid 1000);
+        Tue, 26 Jul 2022 13:51:16 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Julien Panis <jpanis@baylibre.com>
+Cc:     devicetree@vger.kernel.org, jic23@kernel.org, mranostay@ti.com,
+        lars@metafoo.de, linux-kernel@vger.kernel.org, robh+dt@kernel.org,
+        linux-iio@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org
+In-Reply-To: <20220726072553.5136-3-jpanis@baylibre.com>
+References: <20220726072553.5136-1-jpanis@baylibre.com> <20220726072553.5136-3-jpanis@baylibre.com>
+Subject: Re: [PATCH v1 2/2] dt-binding: iio: time: add capture-tiecap.yaml
+Date:   Tue, 26 Jul 2022 07:51:16 -0600
+Message-Id: <1658843476.622431.179934.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 26.07.22 09:24, Kefeng Wang wrote:
-> If a process has no enough memory to allocate a new virtual mapping, we
-> may meet kinds of error, eg, fork cannot allocate memory, SIGBUS error
-> in shmem, but it is difficult to confirm them, let's add some debug
-> information to easy to check this scenario if __vm_enough_memory fails.
+On Tue, 26 Jul 2022 09:25:53 +0200, Julien Panis wrote:
+> This commit adds a YAML binding for TI ECAP used in capture operating mode.
 > 
-> Reported-by: Yongqiang Liu <liuyongqiang13@huawei.com>
-> Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+> Signed-off-by: Julien Panis <jpanis@baylibre.com>
 > ---
->  mm/util.c | 2 ++
->  1 file changed, 2 insertions(+)
+>  .../bindings/iio/time/capture-tiecap.yaml     | 53 +++++++++++++++++++
+>  1 file changed, 53 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/time/capture-tiecap.yaml
 > 
-> diff --git a/mm/util.c b/mm/util.c
-> index 1266a33a49ea..19bfff8a0ad6 100644
-> --- a/mm/util.c
-> +++ b/mm/util.c
-> @@ -1020,6 +1020,8 @@ int __vm_enough_memory(struct mm_struct *mm, long pages, int cap_sys_admin)
->  	if (percpu_counter_read_positive(&vm_committed_as) < allowed)
->  		return 0;
->  error:
-> +	pr_warn("%s: pid: %d, comm: %s, no enough memory for the allocation\n",
-> +		__func__, current->pid, current->comm);
->  	vm_unacct_memory(pages);
->  
->  	return -ENOMEM;
 
-Users can easily spam the kernel log, no? Maybe at least ratelimit.
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
--- 
-Thanks,
+yamllint warnings/errors:
 
-David / dhildenb
+dtschema/dtc warnings/errors:
+./Documentation/devicetree/bindings/iio/time/capture-tiecap.yaml: $id: relative path/filename doesn't match actual path or filename
+	expected: http://devicetree.org/schemas/iio/time/capture-tiecap.yaml#
+Error: Documentation/devicetree/bindings/iio/time/capture-tiecap.example.dts:24.27-28 syntax error
+FATAL ERROR: Unable to parse input tree
+make[1]: *** [scripts/Makefile.lib:383: Documentation/devicetree/bindings/iio/time/capture-tiecap.example.dtb] Error 1
+make[1]: *** Waiting for unfinished jobs....
+make: *** [Makefile:1404: dt_binding_check] Error 2
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
