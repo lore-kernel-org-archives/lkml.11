@@ -2,181 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 912B8C00144
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 18:43:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32E6AC00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 18:43:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232693AbiGZSn1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 14:43:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56438 "EHLO
+        id S239607AbiGZSnd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 14:43:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230515AbiGZSnY (ORCPT
+        with ESMTP id S239592AbiGZSna (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 14:43:24 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A11752D1DC;
-        Tue, 26 Jul 2022 11:43:23 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Tue, 26 Jul 2022 14:43:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFB6E2E9D0
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 11:43:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 57C721F9F3;
-        Tue, 26 Jul 2022 18:43:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1658861002;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=TTiR4Rj7a7i+4taUmgliJ6Lzey5oIZm0ImPZfCjUCq4=;
-        b=wR2cHz/QKkCnntnFSMrNYmBy3J2tl3rYKVEMnA2Z+NfeSrnRb0wD2x+D/FZldcu3vE0Kkp
-        JU9U+lSxa8pIkJzJen/lJA8J8bdIrHIfqneBD+6GWORKgwOE85wacfWOYVxCO141VBf6gI
-        4+DMmE3O57MLFhB45hqGTN7trd/Wp5E=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1658861002;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=TTiR4Rj7a7i+4taUmgliJ6Lzey5oIZm0ImPZfCjUCq4=;
-        b=IkzZPx64FXtCcAad35qXVAYOVlbcZqWYCaSRVvzEoG+BX7uF5FdA4wpuQ/xMkDGfSpoJWE
-        QvXvjPe75ouPeqDQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 1B9E013322;
-        Tue, 26 Jul 2022 18:43:22 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 1x24Bco14GIkIAAAMHmgww
-        (envelope-from <dsterba@suse.cz>); Tue, 26 Jul 2022 18:43:22 +0000
-Date:   Tue, 26 Jul 2022 20:38:24 +0200
-From:   David Sterba <dsterba@suse.cz>
-To:     hmsjwzb <hmsjwzb@zoho.com>
-Cc:     Nikolay Borisov <nborisov@suse.com>, anand.jain@oracle.com,
-        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH]btrfs: Fix fstest case btrfs/219
-Message-ID: <20220726183824.GL13489@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, hmsjwzb <hmsjwzb@zoho.com>,
-        Nikolay Borisov <nborisov@suse.com>, anand.jain@oracle.com,
-        Chris Mason <clm@fb.com>, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220721083609.5695-1-hmsjwzb@zoho.com>
- <0c2337c3-2b39-c54c-27e9-dd4f0a99cf71@suse.com>
- <1aaff0ac-436e-7782-081c-3549ff3d8c8f@zoho.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E79E61479
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 18:43:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B007CC433D6;
+        Tue, 26 Jul 2022 18:43:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658861008;
+        bh=sreUVyE9ppDuXnjP81p7zZ1LfReeWdkHQsPd/epETp0=;
+        h=Date:From:To:Cc:Subject:Reply-To:From;
+        b=BSVUJcLbvu//IIi/zagybNsaeUgOkhbx8l36gqE0z+UyAq5NF7KKax6jlJ3G6EV+5
+         jUVqdc3aq7TFQGo0CENmhTIn+aa5kly9lQF1kaOrd4XDgRLslrT5Bl6n8Q69RpnC9B
+         k6zTAPA0THZay+ugM8eX+SVm22FepTpXNflYAoDob26K/qfqeL/KPwvcq52IrO5zWH
+         kTQFIzRChmVpA/aKTRbkfpzlzxdEuAiy8nzgtU+R7opcVQb33wr/h+CMX2cgdrNjnh
+         O6Pyt65Q+2uNcQynrWdofY9H9X50/IEZzSkZIn9xCFKtckAgGRXVnlbtEl3/UZ0tHF
+         h1alxYCpvQ4Zg==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 58BDE5C0B07; Tue, 26 Jul 2022 11:43:28 -0700 (PDT)
+Date:   Tue, 26 Jul 2022 11:43:28 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Willy Tarreau <w@1wt.eu>, Ammar Faizi <ammarfaizi2@gnuweeb.org>,
+        Alviro Iskandar Setiawan <alviro.iskandar@gnuweeb.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: Tag for upcoming nolibc pull request
+Message-ID: <20220726184328.GA3404553@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <1aaff0ac-436e-7782-081c-3549ff3d8c8f@zoho.com>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 22, 2022 at 01:34:11AM -0400, hmsjwzb wrote:
-> On 7/21/22 09:37, Nikolay Borisov wrote:
-> > On 21.07.22 г. 11:36 ч., Flint.Wang wrote:
-> >> Hi,
-> >> fstest btrfs/291 failed.
-> >>
-> >> [How to reproduce]
-> >> mkdir -p /mnt/test/219.mnt
-> >> xfs_io -f -c "truncate 256m" /mnt/test/219.img1
-> >> mkfs.btrfs /mnt/test/219.img1
-> >> cp /mnt/test/219.img1 /mnt/test/219.img2
-> >> mount -o loop /mnt/test/219.img1 /mnt/test/219.mnt
-> >> umount /mnt/test/219.mnt
-> >> losetup -f --show /mnt/test/219.img1 dev
-> >> mount /dev/loop0 /mnt/test/219.mnt
-> >> umount /mnt/test/219.mnt
-> >> mount -o loop /mnt/test/219.img2 /mnt/test/219.mnt
-> >>
-> >> [Root cause]
-> >> if (fs_devices->opened && found_transid < device->generation) {
-> >>     /*
-> >>      * That is if the FS is _not_ mounted and if you
-> >>      * are here, that means there is more than one
-> >>      * disk with same uuid and devid.We keep the one
-> >>      * with larger generation number or the last-in if
-> >>      * generation are equal.
-> >>      */
-> >>     mutex_unlock(&fs_devices->device_list_mutex);
-> >>     return ERR_PTR(-EEXIST);
-> >> }
-> >>
-> >> [Personal opinion]
-> >> User might back up a block device to another. I think it is improper
-> >> to forbid user from mounting it.
-> >>
-> >> Signed-off-by: Flint.Wang <hmsjwzb@zoho.com>
-> > 
-> > 
-> > This lacks any explanation whatsoever so it's not possible to judge whether the fix is correct or not.
-> > 
-> >> ---
-> >>   fs/btrfs/volumes.c | 2 +-
-> >>   1 file changed, 1 insertion(+), 1 deletion(-)
-> >>
-> >> diff --git a/fs/btrfs/volumes.c b/fs/btrfs/volumes.c
-> >> index 6aa6bc769569a..76af32032ac85 100644
-> >> --- a/fs/btrfs/volumes.c
-> >> +++ b/fs/btrfs/volumes.c
-> >> @@ -900,7 +900,7 @@ static noinline struct btrfs_device *device_list_add(const char *path,
-> >>            * tracking a problem where systems fail mount by subvolume id
-> >>            * when we reject replacement on a mounted FS.
-> >>            */
-> >> -        if (!fs_devices->opened && found_transid < device->generation) {
-> >> +        if (fs_devices->opened && found_transid < device->generation) {
-> >>               /*
-> >>                * That is if the FS is _not_ mounted and if you
-> >>                * are here, that means there is more than one
-> 
-> Hi Nikolay,
-> 
-> It seems the failure of btrfs/219 needs some explanation.
-> 
-> Here is the thing.
->         1. A storage device A with btrfs filesystem is running on a host.
->         2. For example, we backup the device A to an exactly some device B.
->         3. The device A continue to run for a while so the device->generation is getting bigger.
->         4. Then you umount the device A and try to mount device B.
->         5. Kernel find that device A has the same UUID as device B and has bigger device->generation.
->            So the mount request of device B will be rejected.
+Hello!
 
-That's on purpose, devices are matched by UUIDs and making block copies
-of the same filesystem is known "don't do that" and discouraged.
+I have pushed out a signed nolibc pull request tag "nolibc.2022.07.27a"
+on the -rcu tree, as shown below.
 
-If you must store the block copies then you can change the UUID by
-btrfstune, there are two ways (fast metadata_uuid, and slow rewriting
-all metadata uuids in all blocks).
+Please let me know if I should make changes to the tag's title or body.
 
-> 
->             if (!fs_devices->opened && found_transid < device->generation) {
->                  /*
->                   * That is if the FS is _not_ mounted and if you
->                   * are here, that means there is more than one
->                   * disk with same uuid and devid.We keep the one
->                   * with larger generation number or the last-in if
->                   * generation are equal.
->                   */
->                   mutex_unlock(&fs_devices->device_list_mutex);
->                   return ERR_PTR(-EEXIST);
->             }
-> 
-> I think it is improper to reject that request. Because device A is not in open state.
+If I don't hear otherwise by Friday morning (July 29th), Pacific Time,
+I will use this tag for my nolibc pull request to Linus.
 
-But this would prevent mounting A. There should really be some way to
-distiguish the filesystems, the block device is not a stable identifier,
-the UUID is. Imagine having 10 copies of the same filesystem identified
-by the same UUID and device UUID, but with different generations and
-data. That's asking for problems.
+As always, thank you all for your nolibc work!
 
-There's not much the filesystem driver can do than to avoid using old
-devices and giving preference to the highest generation device. All
-devices with btrfs signature are registered in memory and this is the
-primary source when mounting the devices, not the block device itself.
+							Thanx, Paul
+
+------------------------------------------------------------------------
+
+tag nolibc.2022.07.27a
+Tagger: Paul E. McKenney <paulmck@kernel.org>
+Date:   Tue Jul 26 11:26:51 2022 -0700
+
+nolibc pull request for v5.20 (or whatever)
+
+This branch provides nolibc updates, perhaps most notably improved testing
+via the "cd tools/include/nolibc; make headers" command.  This should
+be considered a smoke test.  More thorough testing is in the works.
+-----BEGIN PGP SIGNATURE-----
+
+iQJHBAABCgAxFiEEbK7UrM+RBIrCoViJnr8S83LZ+4wFAmLgM6UTHHBhdWxtY2tA
+a2VybmVsLm9yZwAKCRCevxLzctn7jOrgD/sFQzRgKVS2v3/rb+9IyIqwuCrniSBe
+e7SLfteLNg3e02jMX/eVwx/X6D3C6Weg1ucLG/v0liyPV3ODiX/cSJK48q7wBnOR
+/TNtBEvtBsoY7LNORf53qAm3x//fCTTdw2qlkWM6RXcmeR0NH/PWfcas2hRJYhl8
+hwkQaC9j2CcOLxgN75RcbOsmnV6x+CtLJkH/k2DlfHpnwoO953uyeG0wCAWzNzQn
+yFr3PXjOaJd2qNCPNsdMGpjush9tp+fm2E9gXiDj+vk49MWNgoM/nWQe/p7GB5V9
+YWKEMudpVbkxXvT6EFj+ctGS7RVvYYnhjicZvVEkZEtszx3muQLcuSOE+p9KQ7v+
+mRGyzvhNu7ZyhMSZWA1Qf5pqiu6L3XTp672RMsYcP4keqN5kC/A5hbNt8qGybEPg
+PXaQVZQpV15z7gluEM8FhUPbUL3J9PZsTgwPEzjgt3lyDdmE+KszHQCSD/UyN//8
+WZJ/gwweQeTtLz/U+i2dGiT5tWjQ8sWg32AobzbylkyX7D1qDqUu0GYai8dPfbWO
+y7vbn9IB+uL1c2MFiO3jJkYCY7UoGESNd2j0SFdNPWnZee5FeXht3SIHaqMOhnqF
+Oguigt5SUd3/jh5dzMgQPahAH0tKm1n/+W7jBi2ieV1Lz4dKpS8xjMhmmT+D/SaT
+M7C8+63JeQwY8A==
+=sLEE
+-----END PGP SIGNATURE-----
