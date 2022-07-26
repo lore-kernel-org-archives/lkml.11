@@ -2,286 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D76EBC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 15:06:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C4DFC00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 15:07:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239609AbiGZPGz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 11:06:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39940 "EHLO
+        id S238762AbiGZPHw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 11:07:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239553AbiGZPGn (ORCPT
+        with ESMTP id S239265AbiGZPHo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 11:06:43 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EB2D2ED64
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 08:06:37 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id b16so10568654lfb.7
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 08:06:37 -0700 (PDT)
+        Tue, 26 Jul 2022 11:07:44 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F6682ED74
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 08:07:42 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id w15so15050634lft.11
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 08:07:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=702UKJef+ijroSaHlhvyou4bXF2nWMpJnOXocdF4icA=;
-        b=kg0tY+GccxSTnXoaRLa/eQTKkLL/PiW3qt8H7YVYxK/fygHpMIPveekV6TAHhXpjvs
-         TClL8/7eooF+t1L7vCCDqqWPWFi79ey8GNFBMzFIMyMPwI22M5WJ7U7pVp2PjB9wwuvb
-         0uOAm5ns4OQjq5aCLZaSFoNKhIDLQ9n5aMXwzprtK5Yu7MuzbMkhpAocIsZ7uCzoZadx
-         naEDLhGsuj0HhpWyKG7BxbswjKOn2OWFQpAqOknK80cX2Py2HpqYB5bdsI5chn/yvAjK
-         o7FHPGTgLxlPQ+O9MDm6v3DlpEw3C10L5eUkaf6jHJ1qw/dfTZNgm+cIzrmcTi1hvGS0
-         fQFw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=m4j32k3q5gP2h8DTfwuWxKk5uDdyOFPJ0xQUuz0jfqs=;
+        b=Ks/glCGgvLi4Edpj0iSskb155gEpsPar+bdKbGaHSwcL77DNroIZl+U+NkJH4O/0FH
+         wZ7pWG+cO+CpE7V9QEfkw9xZcMUcYGwF3L1zTIofyrrLKYw4s+bagFEp2KdxdoQ9PAM0
+         mweQ6pju7xdimUZJCzS9e/oofWeZRacIq2751NNugwuHC2jwQDSNaPpL4VYIdtIufQNs
+         AkYmQFAai1OURkqRzPd3EE8qlPuTb6t/ke+DpkNFz2Afzz6S7pfXJ35BiVGd44Ufi89f
+         nph4rm1326o1WNBhwr/9gVu2yc9hCwXIleYhPV3ok0BV1l6u8N1feXB1G8reQVE1f2FQ
+         OrhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=702UKJef+ijroSaHlhvyou4bXF2nWMpJnOXocdF4icA=;
-        b=mDa2aI8EMFoFyRhSwCaZZE6q/m0OrraLvvYx2hHw6na5tSJTua0pNrGkyBXFF9xQLe
-         2IlhtYzuIzHIPrW9VbS9QVVYjlmTGeoAEy5jQKg2lTyELxWCMYS6QWORdXgcDpnRl3Jx
-         PEQwuEj4aE92oKgdurZGRevki6VTZZBYyqHmFbK3u/+P2tbGAg2IAez8vtPDmyznvI1J
-         CL433/pdL33TdyXoKbHlEuKFTU/PGvj5g+rvYmTdi+3SkhzBZ+K2WQKRPryVHxQP+rkl
-         xOTOgd5fAEWEnhaypxC7sXL/0L+C9ayyYrKkBg6/q7NZxVQ6df2ZYiU+a4nWljKsBrLT
-         81nA==
-X-Gm-Message-State: AJIora9ZLBv0f43GktT//uOjBL82l51XhJx5/YJXVRFrS3D+WVK8qtlG
-        fOQgRJ1uo1g1Gc5lSZKt4onPTg==
-X-Google-Smtp-Source: AGRyM1ua0glGJ6cyqvRdljJjPEIF3jN7HAKBS1PJ0Q+S0BW4aD51QH+FNQ7NUWN4OHRFb06gbjwOgg==
-X-Received: by 2002:a05:6512:10d0:b0:48a:6cee:50d0 with SMTP id k16-20020a05651210d000b0048a6cee50d0mr6430652lfg.222.1658847993710;
-        Tue, 26 Jul 2022 08:06:33 -0700 (PDT)
-Received: from krzk-bin.lan (78-26-46-173.network.trollfjord.no. [78.26.46.173])
-        by smtp.gmail.com with ESMTPSA id a26-20020a194f5a000000b0048a95c16849sm836620lfk.282.2022.07.26.08.06.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Jul 2022 08:06:33 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Russell King <linux@armlinux.org.uk>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v3 5/5] ARM: qcom_defconfig: order items with savedefconfig
-Date:   Tue, 26 Jul 2022 17:06:09 +0200
-Message-Id: <20220726150609.140472-6-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220726150609.140472-1-krzysztof.kozlowski@linaro.org>
-References: <20220726150609.140472-1-krzysztof.kozlowski@linaro.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=m4j32k3q5gP2h8DTfwuWxKk5uDdyOFPJ0xQUuz0jfqs=;
+        b=7nOEReicjJ36KVNvZ9sI5rNwDMmKU+90I27aKKv6R70IAp9ws0PiOF9roq8UEbayj6
+         ODvxMYI02hjz+ocdtrvHVydXgrOyAdTvw/rKonWCthlPNA6g6xI3tl35AqbazhSwLev1
+         rNsWMcfEvqSr+5kA7/xvIE7aJuVYyEMDlDGDjwtcQkj9mP2pulf5hIDMKkC/AKLk39aK
+         Nw7kpQRDMPYkJVW5VAyH6gDz6tbUwvPI8kaCvd6iDUsI/IcbgI2wGPEyxi+oWcljDGxd
+         Qrk+Ev5KZe3WwRmBiM6rUvFIkxjU+kwU9paOAM2psrZPgWvpWvmAF0WWW3lDkTigrHTX
+         h5RQ==
+X-Gm-Message-State: AJIora/Vnt7U0X9xeuXTxxSGlYR1/vVEJNffhMtdENaDYlhDTvUv/RKp
+        doFVFSvC+Y1rlpbgnLsBQztbhlGakrrs6GNQSWiZUw==
+X-Google-Smtp-Source: AGRyM1vxrlG2MG8StfxJEsORszfz8eailae1D+NT2ARAYpo79uf40PuRdHcL7xsbO57ERF8LQy3Bb4Z5sz1TwUediAc=
+X-Received: by 2002:ac2:57c1:0:b0:48a:8714:db35 with SMTP id
+ k1-20020ac257c1000000b0048a8714db35mr5192800lfo.233.1658848060668; Tue, 26
+ Jul 2022 08:07:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220726083257.1730630-1-martin.kepplinger@puri.sm> <20220726083257.1730630-2-martin.kepplinger@puri.sm>
+In-Reply-To: <20220726083257.1730630-2-martin.kepplinger@puri.sm>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Tue, 26 Jul 2022 17:07:04 +0200
+Message-ID: <CAPDyKFrLLw=y9+t3f_bOH2mw2NVDGJxKE5=+XHY7C6SUzLzUDg@mail.gmail.com>
+Subject: Re: [PATCH v6 1/2] power: domain: handle genpd correctly when needing interrupts
+To:     Martin Kepplinger <martin.kepplinger@puri.sm>
+Cc:     rafael@kernel.org, khilman@kernel.org, robh@kernel.org,
+        krzysztof.kozlowski@linaro.org, shawnguo@kernel.org,
+        s.hauer@pengutronix.de, festevam@gmail.com, pavel@ucw.cz,
+        kernel@puri.sm, linux-imx@nxp.com, broonie@kernel.org,
+        l.stach@pengutronix.de, aford173@gmail.com,
+        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Run savedefconfig and order the entries, without removing or adding
-anything.  This reduces conflicts, as new entries should not be added to
-the end, and makes it easier to spot differences against actual config.
+On Tue, 26 Jul 2022 at 10:33, Martin Kepplinger
+<martin.kepplinger@puri.sm> wrote:
+>
+> If for example the power-domains' power-supply node (regulator) needs
+> interrupts to work, the current setup with noirq callbacks cannot
+> work; for example a pmic regulator on i2c, when suspending, usually already
+> times out during suspend_noirq:
+>
+> [   41.024193] buck4: failed to disable: -ETIMEDOUT
+>
+> So fix system suspend and resume for these power-domains by using the
+> "outer" suspend/resume callbacks instead. Tested on the imx8mq-librem5 board,
+> but by looking at the dts, this will fix imx8mq-evk and possibly many other
+> boards too.
+>
+> This is designed so that genpd providers just say "this genpd needs
+> interrupts" (by setting the flag) - without implying an implementation.
+>
+> Initially system suspend problems had been discussed at
+> https://lore.kernel.org/linux-arm-kernel/20211002005954.1367653-8-l.stach@pengutronix.de/
+> which led to discussing the pmic that contains the regulators which
+> serve as power-domain power-supplies:
+> https://lore.kernel.org/linux-pm/573166b75e524517782471c2b7f96e03fd93d175.camel@puri.sm/T/
+>
+> Signed-off-by: Martin Kepplinger <martin.kepplinger@puri.sm>
+> ---
+>  drivers/base/power/domain.c | 13 +++++++++++--
+>  include/linux/pm_domain.h   |  5 +++++
+>  2 files changed, 16 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/base/power/domain.c b/drivers/base/power/domain.c
+> index 5a2e0232862e..58376752a4de 100644
+> --- a/drivers/base/power/domain.c
+> +++ b/drivers/base/power/domain.c
+> @@ -130,6 +130,7 @@ static const struct genpd_lock_ops genpd_spin_ops = {
+>  #define genpd_is_active_wakeup(genpd)  (genpd->flags & GENPD_FLAG_ACTIVE_WAKEUP)
+>  #define genpd_is_cpu_domain(genpd)     (genpd->flags & GENPD_FLAG_CPU_DOMAIN)
+>  #define genpd_is_rpm_always_on(genpd)  (genpd->flags & GENPD_FLAG_RPM_ALWAYS_ON)
+> +#define genpd_irq_on(genpd)            (genpd->flags & GENPD_FLAG_IRQ_ON)
+>
+>  static inline bool irq_safe_dev_in_sleep_domain(struct device *dev,
+>                 const struct generic_pm_domain *genpd)
+> @@ -2065,8 +2066,15 @@ int pm_genpd_init(struct generic_pm_domain *genpd,
+>         genpd->domain.ops.runtime_suspend = genpd_runtime_suspend;
+>         genpd->domain.ops.runtime_resume = genpd_runtime_resume;
+>         genpd->domain.ops.prepare = genpd_prepare;
+> -       genpd->domain.ops.suspend_noirq = genpd_suspend_noirq;
+> -       genpd->domain.ops.resume_noirq = genpd_resume_noirq;
+> +
+> +       if (genpd_irq_on(genpd)) {
+> +               genpd->domain.ops.suspend = genpd_suspend_noirq;
+> +               genpd->domain.ops.resume = genpd_resume_noirq;
+> +       } else {
+> +               genpd->domain.ops.suspend_noirq = genpd_suspend_noirq;
+> +               genpd->domain.ops.resume_noirq = genpd_resume_noirq;
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- arch/arm/configs/qcom_defconfig | 56 ++++++++++++++++-----------------
- 1 file changed, 28 insertions(+), 28 deletions(-)
+As we discussed previously, I am thinking that it may be better to
+move to using genpd->domain.ops.suspend_late and
+genpd->domain.ops.resume_early instead.
 
-diff --git a/arch/arm/configs/qcom_defconfig b/arch/arm/configs/qcom_defconfig
-index f02448187eac..1c7c864661fa 100644
---- a/arch/arm/configs/qcom_defconfig
-+++ b/arch/arm/configs/qcom_defconfig
-@@ -1,6 +1,7 @@
- CONFIG_SYSVIPC=y
- CONFIG_NO_HZ=y
- CONFIG_HIGH_RES_TIMERS=y
-+CONFIG_PREEMPT=y
- CONFIG_IKCONFIG=y
- CONFIG_IKCONFIG_PROC=y
- CONFIG_CGROUPS=y
-@@ -10,29 +11,28 @@ CONFIG_EMBEDDED=y
- # CONFIG_SLUB_DEBUG is not set
- # CONFIG_COMPAT_BRK is not set
- CONFIG_PROFILING=y
--CONFIG_KPROBES=y
--CONFIG_MODULES=y
--CONFIG_MODULE_UNLOAD=y
--CONFIG_MODULE_FORCE_UNLOAD=y
--CONFIG_MODVERSIONS=y
--CONFIG_PARTITION_ADVANCED=y
- CONFIG_ARCH_QCOM=y
- CONFIG_ARCH_MSM8X60=y
- CONFIG_ARCH_MSM8960=y
- CONFIG_ARCH_MSM8974=y
- CONFIG_ARCH_MDM9615=y
--CONFIG_PCI=y
--CONFIG_PCI_MSI=y
--CONFIG_PCIE_QCOM=y
- CONFIG_SMP=y
--CONFIG_PREEMPT=y
-+CONFIG_ARM_PSCI=y
- CONFIG_HIGHMEM=y
- CONFIG_ARM_APPENDED_DTB=y
- CONFIG_ARM_ATAG_DTB_COMPAT=y
-+CONFIG_CPU_FREQ=y
-+CONFIG_CPUFREQ_DT=y
- CONFIG_CPU_IDLE=y
- CONFIG_ARM_CPUIDLE=y
- CONFIG_VFP=y
- CONFIG_NEON=y
-+CONFIG_KPROBES=y
-+CONFIG_MODULES=y
-+CONFIG_MODULE_UNLOAD=y
-+CONFIG_MODULE_FORCE_UNLOAD=y
-+CONFIG_MODVERSIONS=y
-+CONFIG_PARTITION_ADVANCED=y
- # CONFIG_CORE_DUMP_DEFAULT_ELF_HEADERS is not set
- CONFIG_CMA=y
- CONFIG_NET=y
-@@ -56,15 +56,18 @@ CONFIG_BT_HCIUART_BCM=y
- CONFIG_CFG80211=m
- CONFIG_MAC80211=m
- CONFIG_RFKILL=y
-+CONFIG_PCI=y
-+CONFIG_PCI_MSI=y
-+CONFIG_PCIE_QCOM=y
- CONFIG_DEVTMPFS=y
- CONFIG_DEVTMPFS_MOUNT=y
- CONFIG_MTD=y
-+CONFIG_MTD_QCOMSMEM_PARTS=y
- CONFIG_MTD_BLOCK=y
- CONFIG_MTD_M25P80=y
- CONFIG_MTD_RAW_NAND=y
- CONFIG_MTD_NAND_QCOM=y
- CONFIG_MTD_SPI_NOR=y
--CONFIG_MTD_QCOMSMEM_PARTS=y
- CONFIG_MTD_UBI=y
- CONFIG_BLK_DEV_LOOP=y
- CONFIG_BLK_DEV_RAM=y
-@@ -133,10 +136,10 @@ CONFIG_PINCTRL_MSM8660=y
- CONFIG_PINCTRL_MSM8960=y
- CONFIG_PINCTRL_MDM9615=y
- CONFIG_PINCTRL_MSM8X74=y
--CONFIG_PINCTRL_SDX55=y
- CONFIG_PINCTRL_QCOM_SPMI_PMIC=y
- CONFIG_PINCTRL_QCOM_SSBI_PMIC=y
- CONFIG_GPIOLIB=y
-+CONFIG_PINCTRL_SDX55=y
- CONFIG_GPIO_SYSFS=y
- CONFIG_POWER_RESET=y
- CONFIG_POWER_RESET_MSM=y
-@@ -144,15 +147,17 @@ CONFIG_CHARGER_QCOM_SMBB=y
- CONFIG_CHARGER_BQ24190=m
- CONFIG_THERMAL=y
- CONFIG_QCOM_TSENS=y
-+CONFIG_WATCHDOG=y
-+CONFIG_QCOM_WDT=y
- CONFIG_MFD_PM8XXX=y
- CONFIG_MFD_QCOM_RPM=y
- CONFIG_MFD_SPMI_PMIC=y
- CONFIG_REGULATOR=y
- CONFIG_REGULATOR_FIXED_VOLTAGE=y
- CONFIG_REGULATOR_QCOM_RPM=y
-+CONFIG_REGULATOR_QCOM_RPMH=y
- CONFIG_REGULATOR_QCOM_SMD_RPM=y
- CONFIG_REGULATOR_QCOM_SPMI=y
--CONFIG_REGULATOR_QCOM_RPMH=y
- CONFIG_MEDIA_SUPPORT=y
- CONFIG_DRM=y
- CONFIG_DRM_MSM=m
-@@ -160,11 +165,11 @@ CONFIG_DRM_PANEL_SIMPLE=y
- CONFIG_DRM_PANEL_EDP=y
- CONFIG_DRM_ANALOGIX_ANX78XX=m
- CONFIG_FB=y
--CONFIG_FRAMEBUFFER_CONSOLE=y
- # CONFIG_LCD_CLASS_DEVICE is not set
- CONFIG_BACKLIGHT_CLASS_DEVICE=y
- CONFIG_BACKLIGHT_LM3630A=y
- CONFIG_BACKLIGHT_LP855X=y
-+CONFIG_FRAMEBUFFER_CONSOLE=y
- CONFIG_SOUND=y
- CONFIG_SND=y
- CONFIG_SND_DYNAMIC_MINORS=y
-@@ -180,6 +185,7 @@ CONFIG_USB_MON=y
- CONFIG_USB_EHCI_HCD=y
- CONFIG_USB_EHCI_MSM=y
- CONFIG_USB_ACM=y
-+CONFIG_USB_DWC3=y
- CONFIG_USB_CHIPIDEA=y
- CONFIG_USB_CHIPIDEA_UDC=y
- CONFIG_USB_CHIPIDEA_HOST=y
-@@ -196,7 +202,6 @@ CONFIG_USB_CONFIGFS_ECM=y
- CONFIG_USB_CONFIGFS_F_FS=y
- CONFIG_USB_ULPI_BUS=y
- CONFIG_USB_ETH=m
--CONFIG_USB_DWC3=y
- CONFIG_MMC=y
- CONFIG_MMC_BLOCK_MINORS=32
- CONFIG_MMC_ARMMMCI=y
-@@ -218,8 +223,8 @@ CONFIG_COMMON_CLK_QCOM=y
- CONFIG_QCOM_A7PLL=y
- CONFIG_QCOM_CLK_APCS_SDX55=y
- CONFIG_QCOM_CLK_RPM=y
--CONFIG_QCOM_CLK_RPMH=y
- CONFIG_QCOM_CLK_SMD_RPM=y
-+CONFIG_QCOM_CLK_RPMH=y
- CONFIG_APQ_MMCC_8084=y
- CONFIG_IPQ_GCC_4019=y
- CONFIG_IPQ_LCC_806X=y
-@@ -229,12 +234,12 @@ CONFIG_MDM_LCC_9615=y
- CONFIG_MSM_MMCC_8960=y
- CONFIG_MSM_MMCC_8974=y
- CONFIG_SDX_GCC_55=y
--CONFIG_MSM_IOMMU=y
--CONFIG_ARM_SMMU=y
- CONFIG_HWSPINLOCK=y
- CONFIG_HWSPINLOCK_QCOM=y
- CONFIG_MAILBOX=y
- CONFIG_QCOM_APCS_IPC=y
-+CONFIG_MSM_IOMMU=y
-+CONFIG_ARM_SMMU=y
- CONFIG_REMOTEPROC=y
- CONFIG_QCOM_ADSP_PIL=y
- CONFIG_QCOM_Q6V5_PAS=y
-@@ -248,13 +253,13 @@ CONFIG_QCOM_GSBI=y
- CONFIG_QCOM_OCMEM=y
- CONFIG_QCOM_PM=y
- CONFIG_QCOM_RMTFS_MEM=y
-+CONFIG_QCOM_RPMH=y
-+CONFIG_QCOM_RPMHPD=y
- CONFIG_QCOM_RPMPD=y
- CONFIG_QCOM_SMEM=y
- CONFIG_QCOM_SMD_RPM=y
- CONFIG_QCOM_SMP2P=y
- CONFIG_QCOM_SMSM=y
--CONFIG_QCOM_RPMH=y
--CONFIG_QCOM_RPMHPD=y
- CONFIG_QCOM_SOCINFO=y
- CONFIG_QCOM_WCNSS_CTRL=y
- CONFIG_EXTCON_QCOM_SPMI_MISC=y
-@@ -273,10 +278,10 @@ CONFIG_BMP280=y
- CONFIG_PWM=y
- CONFIG_PHY_QCOM_APQ8064_SATA=y
- CONFIG_PHY_QCOM_IPQ806X_SATA=y
--CONFIG_PHY_QCOM_USB_HS=y
--CONFIG_PHY_QCOM_USB_HSIC=y
- CONFIG_PHY_QCOM_QMP=y
-+CONFIG_PHY_QCOM_USB_HS=y
- CONFIG_PHY_QCOM_USB_SNPS_FEMTO_V2=y
-+CONFIG_PHY_QCOM_USB_HSIC=y
- CONFIG_QCOM_QFPROM=y
- CONFIG_INTERCONNECT=y
- CONFIG_INTERCONNECT_QCOM=y
-@@ -302,8 +307,8 @@ CONFIG_CRYPTO_USER=m
- CONFIG_CRYPTO_USER_API=m
- CONFIG_CRYPTO_USER_API_HASH=m
- CONFIG_CRYPTO_USER_API_SKCIPHER=m
--CONFIG_CRYPTO_USER_API_AEAD=m
- CONFIG_CRYPTO_USER_API_RNG=m
-+CONFIG_CRYPTO_USER_API_AEAD=m
- CONFIG_CRYPTO_DEV_QCOM_RNG=m
- CONFIG_DMA_CMA=y
- CONFIG_CMA_SIZE_MBYTES=64
-@@ -313,8 +318,3 @@ CONFIG_DEBUG_INFO=y
- CONFIG_MAGIC_SYSRQ=y
- CONFIG_DEBUG_FS=y
- # CONFIG_SCHED_DEBUG is not set
--CONFIG_WATCHDOG=y
--CONFIG_QCOM_WDT=y
--CONFIG_ARM_PSCI=y
--CONFIG_CPU_FREQ=y
--CONFIG_CPUFREQ_DT=y
--- 
-2.34.1
+Beside this, I think the $subject patch looks good to me.
 
+[...]
+
+Kind regards
+Uffe
