@@ -2,170 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F00D3C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 10:48:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C828CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 10:48:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232402AbiGZKsJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 06:48:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43990 "EHLO
+        id S238769AbiGZKst (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 06:48:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233341AbiGZKsE (ORCPT
+        with ESMTP id S232355AbiGZKsr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 06:48:04 -0400
-Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A297240B4
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 03:47:59 -0700 (PDT)
-Received: from epcas2p1.samsung.com (unknown [182.195.41.53])
-        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220726104754epoutp044ffc760078b2e7804f6b4367ec5145f6~FW1immUgg1496914969epoutp04g
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 10:47:54 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220726104754epoutp044ffc760078b2e7804f6b4367ec5145f6~FW1immUgg1496914969epoutp04g
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1658832474;
-        bh=fQ+Y+QmHnh/EDveNBIvr5sL4r2bOolAvTQu/ym0MQ40=;
-        h=From:To:Cc:Subject:Date:References:From;
-        b=QSoSkNSlZ9myZg4vn3DO35QoU/VU+WK4mHamVkqdIYX1IWrdARJ8TSougIzEGJDUp
-         COJFMbamRwwDkvk/SNWv3FUUg/couFDyHa2/h0yoNBMwcuOGL1mR55SA4rN+jo7okl
-         TOem5lY6LBsupe6JpVVguyyUXL2mE4uvdYTEeHVg=
-Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
-        epcas2p1.samsung.com (KnoxPortal) with ESMTP id
-        20220726104753epcas2p1f4f7ed696f18d7e5b34b7729d114cf1e~FW1iKIoha2666126661epcas2p1U;
-        Tue, 26 Jul 2022 10:47:53 +0000 (GMT)
-Received: from epsmges2p1.samsung.com (unknown [182.195.36.99]) by
-        epsnrtp4.localdomain (Postfix) with ESMTP id 4LsYXT28Thz4x9Pq; Tue, 26 Jul
-        2022 10:47:53 +0000 (GMT)
-Received: from epcas2p3.samsung.com ( [182.195.41.55]) by
-        epsmges2p1.samsung.com (Symantec Messaging Gateway) with SMTP id
-        3D.DD.09666.956CFD26; Tue, 26 Jul 2022 19:47:53 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas2p2.samsung.com (KnoxPortal) with ESMTPA id
-        20220726104752epcas2p25991dabdb0acb21e25f21277f3198b09~FW1hQlJM61146411464epcas2p29;
-        Tue, 26 Jul 2022 10:47:52 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220726104752epsmtrp19621ddec4fcba5decef904a14c85faf9~FW1hPwgku2764827648epsmtrp1K;
-        Tue, 26 Jul 2022 10:47:52 +0000 (GMT)
-X-AuditID: b6c32a45-45bff700000025c2-ee-62dfc659025c
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        40.DD.08802.856CFD26; Tue, 26 Jul 2022 19:47:52 +0900 (KST)
-Received: from localhost.localdomain (unknown [10.229.9.55]) by
-        epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20220726104752epsmtip26f3ea21891bc998bbdebccc76ea401a5~FW1hETgl02032620326epsmtip2W;
-        Tue, 26 Jul 2022 10:47:52 +0000 (GMT)
-From:   Gyunghoon Kwon <goodjob.kwon@samsung.com>
-To:     jejb@linux.ibm.com, martin.petersen@oracle.com
-Cc:     alim.akhtar@samsung.com, avri.altman@wdc.com,
-        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Gyunghoon Kwon <goodjob.kwon@samsung.com>
-Subject: [PATCH] scsi: ufs: introduce dev_cmd_notify callback
-Date:   Tue, 26 Jul 2022 19:45:17 +0900
-Message-Id: <20220726104516.127032-1-goodjob.kwon@samsung.com>
-X-Mailer: git-send-email 2.37.1
+        Tue, 26 Jul 2022 06:48:47 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B13BE2409A;
+        Tue, 26 Jul 2022 03:48:45 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 495511FAFF;
+        Tue, 26 Jul 2022 10:48:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1658832524; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ATSO4xMIADm7bjDtI8e+Ds4M2Grb2QzkJbDH1yDDJW8=;
+        b=edVJd26qqohpE4iChbKghKyoWrZk3k9/8Wp0maUDI0P9uT1Eqqdvy8NaX9zjZXmnNJT68a
+        prkeJwDlt6MFM0O+PmpHgQhHc7G0rxu6ZIJz+Xm1HiyMXwFfDp5pe5gt6VHs0B8z4PQbPI
+        YwCfgZx9yb3TfRQXm31xFPZScvmM5Vc=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1658832524;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ATSO4xMIADm7bjDtI8e+Ds4M2Grb2QzkJbDH1yDDJW8=;
+        b=7YBNe/h7dmfFBM1Nrr6+uMAyQaIP0OV27cPw6pwBuosaOlr+89xROxf1D3Jg71BJoc35K8
+        Ulvk2OTxALT09DAg==
+Received: from quack3.suse.cz (unknown [10.100.200.198])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 029892C15D;
+        Tue, 26 Jul 2022 10:48:43 +0000 (UTC)
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id A8B23A0664; Tue, 26 Jul 2022 12:48:42 +0200 (CEST)
+Date:   Tue, 26 Jul 2022 12:48:42 +0200
+From:   Jan Kara <jack@suse.cz>
+To:     zengjx95@gmail.com
+Cc:     reiserfs-devel@vger.kernel.org, willy@infradead.org,
+        jlayton@kernel.org, damien.lemoal@opensource.wdc.com, jack@suse.cz,
+        edward.shishkin@gmail.com, linux-kernel@vger.kernel.org,
+        viro@zeniv.linux.org.uk, kasong@tencent.com,
+        Zeng Jingxiang <linuszeng@tencent.com>
+Subject: Re: [PATCH] fs/reiserfs/inode: remove dead code in
+ _get_block_create_0()
+Message-ID: <20220726104842.flhaivkpbikqlhki@quack3>
+References: <20220720083029.1065578-1-zengjx95@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrLKsWRmVeSWpSXmKPExsWy7bCmuW7ksftJBmvvcFk8mLeNzeLlz6ts
-        Fj07nS0W3djGZHF51xw2i+7rO9gslh//x+TA7jFh0QFGj49Pb7F49G1ZxejxeZOcR/uBbqYA
-        1qhsm4zUxJTUIoXUvOT8lMy8dFsl7+B453hTMwNDXUNLC3MlhbzE3FRbJRefAF23zBygK5QU
-        yhJzSoFCAYnFxUr6djZF+aUlqQoZ+cUltkqpBSk5BeYFesWJucWleel6eaklVoYGBkamQIUJ
-        2RmPvjawFBwQrPj3YiVrA+M5vi5GTg4JAROJ1xvXMncxcnEICexglDjZcJ0ZJCEk8IlRYtps
-        ZQj7M6PE0k5TmIYHc5czQjTsYpToObWVHcL5yChx6UofG0gVm4C+xNTzL4EmcXCICBhJXFvl
-        CVLDLDCTUeLM1WNMIDXCArYSP06fZQGxWQRUJU79+gK2mVfATqLt9k4miG3yEtdvtkHFBSVO
-        znwCVs8MFG/eOhvsbAmBc+wSex88YYVocJHYv2kvM4QtLPHq+BZ2CFtK4mV/G5RdLHHy/wZG
-        iOYWRonO6+egEsYSs561M4JczSygKbF+lz6IKSGgLHHkFtRePomOw3/ZIcK8Eh1tQhCNahJn
-        Zk6D2iojcX9KAwuE7SHRteM0OyQQYyVmr9zKNoFRfhaSb2Yh+WYWwt4FjMyrGMVSC4pz01OL
-        jQoM4XGanJ+7iRGcDrVcdzBOfvtB7xAjEwfjIUYJDmYlEd6E6PtJQrwpiZVVqUX58UWlOanF
-        hxhNgeE7kVlKNDkfmJDzSuINTSwNTMzMDM2NTA3MlcR5vVI2JAoJpCeWpGanphakFsH0MXFw
-        SjUwLVtsvzy7LeXSgqs/V7Ps/vF7oZ023+bef/JqqRP/vFrY8pXzdfSPC9ZHls5tbuOx0eFa
-        nmBV/n2B9o8vzHscRE/++9uV4c79ynSN/GG7TUdj6zlmZ+oyLO/IDH/oe1L9yaSLoiceKrCp
-        yNkHNb//u9txboLOl2WMp/nTnJwZ5T/L2LFITOt50jg1KcnBNDB7A8vzwqU3NpySy8mJqZLg
-        F9Y+mf/15+K6U4bKS6WPF11bJO2maVX2QNd9+RNdxo/xT2U21G5+7HXusN6TNZdWuU8W2r5n
-        9jqxaTNst50+dDi5TCXu8LUFC9bVz1LyWSxqml82lb9M57e9XP9HN4sGbi4GP/OL+zgluiO9
-        VhxYrsRSnJFoqMVcVJwIAINo7CEQBAAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrHLMWRmVeSWpSXmKPExsWy7bCSvG7EsftJBnffyVs8mLeNzeLlz6ts
-        Fj07nS0W3djGZHF51xw2i+7rO9gslh//x+TA7jFh0QFGj49Pb7F49G1ZxejxeZOcR/uBbqYA
-        1igum5TUnMyy1CJ9uwSujEdfG1gKDghW/HuxkrWB8RxfFyMnh4SAicSDucsZuxi5OIQEdjBK
-        zH72mLWLkQMoISNx74gURI2wxP2WI6wQNe8ZJU6vP8UIkmAT0JeYev4lM4gtAjRoxq13YEXM
-        AnMZJSZs/sEEkhAWsJX4cfosC4jNIqAqcerXF7AGXgE7ibbbO5kgNshLXL/ZBhUXlDg58wlY
-        PTNQvHnrbOYJjHyzkKRmIUktYGRaxSiZWlCcm55bbFhglJdarlecmFtcmpeul5yfu4kRHKRa
-        WjsY96z6oHeIkYmD8RCjBAezkghvQvT9JCHelMTKqtSi/Pii0pzU4kOM0hwsSuK8F7pOxgsJ
-        pCeWpGanphakFsFkmTg4pRqY1nnO75v4Nc11EYubKP/c/JSt3eqFOnqnv29jyeRhfVB89/ux
-        eu21d59uW5t69VxVE+8j2UgZ6eQ1cXN7V3nlVxc73Df/qCgZqFzH2cUq0LUx8pl3fo79P7Wv
-        k6sUrgX1nnGpdH6X6Wd1a43wXUNG/UK/1kebBB+ufB072+zWQkWHo2VTjv0r1Fz5Wlro0wNu
-        xh1vKuYoLRIx3iK78YGkWee7gPrLXDl+kWvN1sr9XXxgxsYJxzTVQ58sv3crcIrwCVNBlo4L
-        nk160ysl1xiqO59cfe/grWsLLTavmZFRda7DXc6BpymI64JM1fOglHtrC+duPxC8Jdtt7tFq
-        yS++Jj8N18gIB6YZrlnAU7ROiaU4I9FQi7moOBEAfqyhcMECAAA=
-X-CMS-MailID: 20220726104752epcas2p25991dabdb0acb21e25f21277f3198b09
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-CMS-TYPE: 102P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220726104752epcas2p25991dabdb0acb21e25f21277f3198b09
-References: <CGME20220726104752epcas2p25991dabdb0acb21e25f21277f3198b09@epcas2p2.samsung.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220720083029.1065578-1-zengjx95@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some UFS host controller may need to synchronize dev command among
-UFS host controllers.
+On Wed 20-07-22 16:30:29, zengjx95@gmail.com wrote:
+> From: Zeng Jingxiang <linuszeng@tencent.com>
+> 
+> Since commit 27b3a5c51b50 ("kill-the-bkl/reiserfs: drop the fs race
+> watchdog from _get_block_create_0()"), which removed a label that may
+> have the pointer 'p' touched in its control flow, related if statements
+> now eval to constant value now. Just remove them.
+> 
+> Assigning value NULL to p here
+> 293     char *p = NULL;
+> 
+> In the following conditional expression, the value of p is always NULL,
+> As a result, the kunmap() cannot be executed.
+> 308	if (p)
+> 309		kunmap(bh_result->b_page);
+> 
+> 355	if (p)
+> 356		kunmap(bh_result->b_page);
+> 
+> 366	if (p)
+> 367		kunmap(bh_result->b_page);
+> 
+> Also, the kmap() cannot be executed.
+> 399	if (!p)
+> 400		p = (char *)kmap(bh_result->b_page);
+> 
+> Signed-off-by: Zeng Jingxiang <linuszeng@tencent.com>
+> Signed-off-by: Kairui Song <kasong@tencent.com>
 
-Signed-off-by: Gyunghoon Kwon <goodjob.kwon@samsung.com>
----
- drivers/scsi/ufs/ufshcd.c |  2 ++
- drivers/scsi/ufs/ufshcd.h | 10 ++++++++++
- 2 files changed, 12 insertions(+)
+Thanks! I've added the patch to my tree. I've also removed the unnecessary
+initialization of 'p' to NULL. I'll push the patch to Linus in the coming
+merge window.
 
-diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
-index 823ecd99eb2c..02d0350ee1a2 100644
---- a/drivers/scsi/ufs/ufshcd.c
-+++ b/drivers/scsi/ufs/ufshcd.c
-@@ -2942,8 +2942,10 @@ static int ufshcd_exec_dev_cmd(struct ufs_hba *hba,
- 
- 	ufshcd_add_query_upiu_trace(hba, UFS_QUERY_SEND, lrbp->ucd_req_ptr);
- 
-+	ufshcd_vops_dev_cmd_notify(hba, PRE_CHANGE);
- 	ufshcd_send_command(hba, tag);
- 	err = ufshcd_wait_for_dev_cmd(hba, lrbp, timeout);
-+	ufshcd_vops_dev_cmd_notify(hba, POST_CHANGE);
- 	ufshcd_add_query_upiu_trace(hba, err ? UFS_QUERY_ERR : UFS_QUERY_COMP,
- 				    (struct utp_upiu_req *)lrbp->ucd_rsp_ptr);
- 
-diff --git a/drivers/scsi/ufs/ufshcd.h b/drivers/scsi/ufs/ufshcd.h
-index 34c5db101f14..f13b6cdfbe1d 100644
---- a/drivers/scsi/ufs/ufshcd.h
-+++ b/drivers/scsi/ufs/ufshcd.h
-@@ -320,6 +320,7 @@ struct ufs_pwr_mode_info {
-  * @device_reset: called to issue a reset pulse on the UFS device
-  * @program_key: program or evict an inline encryption key
-  * @event_notify: called to notify important events
-+ * @dev_cmd_notify: called to notify device management request is issued
-  */
- struct ufs_hba_variant_ops {
- 	const char *name;
-@@ -357,6 +358,8 @@ struct ufs_hba_variant_ops {
- 			       const union ufs_crypto_cfg_entry *cfg, int slot);
- 	void	(*event_notify)(struct ufs_hba *hba,
- 				enum ufs_event_type evt, void *data);
-+	void	(*dev_cmd_notify)(struct ufs_hba *hba,
-+			       enum ufs_notify_change_status);
- };
- 
- /* clock gating state  */
-@@ -1354,6 +1357,13 @@ static inline void ufshcd_vops_config_scaling_param(struct ufs_hba *hba,
- 		hba->vops->config_scaling_param(hba, profile, data);
- }
- 
-+static inline void ufshcd_vops_dev_cmd_notify(struct ufs_hba *hba,
-+					enum ufs_notify_change_status status)
-+{
-+	if (hba->vops && hba->vops->dev_cmd_notify)
-+		hba->vops->dev_cmd_notify(hba, status);
-+}
-+
- extern struct ufs_pm_lvl_states ufs_pm_lvl_states[];
- 
- /*
+									Honza
+
+> ---
+>  fs/reiserfs/inode.c | 10 +---------
+>  1 file changed, 1 insertion(+), 9 deletions(-)
+> 
+> diff --git a/fs/reiserfs/inode.c b/fs/reiserfs/inode.c
+> index 0cffe054b78e..fe26e1746af9 100644
+> --- a/fs/reiserfs/inode.c
+> +++ b/fs/reiserfs/inode.c
+> @@ -305,8 +305,6 @@ static int _get_block_create_0(struct inode *inode, sector_t block,
+>  	result = search_for_position_by_key(inode->i_sb, &key, &path);
+>  	if (result != POSITION_FOUND) {
+>  		pathrelse(&path);
+> -		if (p)
+> -			kunmap(bh_result->b_page);
+>  		if (result == IO_ERROR)
+>  			return -EIO;
+>  		/*
+> @@ -352,8 +350,6 @@ static int _get_block_create_0(struct inode *inode, sector_t block,
+>  		}
+>  
+>  		pathrelse(&path);
+> -		if (p)
+> -			kunmap(bh_result->b_page);
+>  		return ret;
+>  	}
+>  	/* requested data are in direct item(s) */
+> @@ -363,8 +359,6 @@ static int _get_block_create_0(struct inode *inode, sector_t block,
+>  		 * when it is stored in direct item(s)
+>  		 */
+>  		pathrelse(&path);
+> -		if (p)
+> -			kunmap(bh_result->b_page);
+>  		return -ENOENT;
+>  	}
+>  
+> @@ -396,9 +390,7 @@ static int _get_block_create_0(struct inode *inode, sector_t block,
+>  	 * sure we need to.  But, this means the item might move if
+>  	 * kmap schedules
+>  	 */
+> -	if (!p)
+> -		p = (char *)kmap(bh_result->b_page);
+> -
+> +	p = (char *)kmap(bh_result->b_page);
+>  	p += offset;
+>  	memset(p, 0, inode->i_sb->s_blocksize);
+>  	do {
+> -- 
+> 2.27.0
+> 
 -- 
-2.37.1
-
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
