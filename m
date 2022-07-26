@@ -2,97 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BB30C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 08:08:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2361CCCA489
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 08:08:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238479AbiGZIIN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 04:08:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56284 "EHLO
+        id S238505AbiGZIIQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 04:08:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238099AbiGZIIB (ORCPT
+        with ESMTP id S238277AbiGZIID (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 04:08:01 -0400
-Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11E3D2B1A8;
-        Tue, 26 Jul 2022 01:07:59 -0700 (PDT)
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26Q6Zgok008998;
-        Tue, 26 Jul 2022 10:07:33 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=selector1;
- bh=HVvobxygxJWw+3L3+H2mjH9wVwihqtM6fjUpIWckSr0=;
- b=0eOSvSD6ZebQSx5nuxxu2Cd4cqj9q4mxGTMdkLuLCclGcNRaBRSUdr43ifPf4PGk/8+d
- +JOtYZzj+J9gwlpDceC8PvPisoPpJBw/RSeb3k8l2Qcc/1N6PFLuMJ9KKgQaLnYG6q/T
- /fc2cxrUZjbUQCFKP3D4+1KPqZj/gRTrz2rL6bhQCGVKpts6Sdg0kB66XCmHApIo6rR/
- PCaDdu/gpUtQIdH9f/ub85PFjrGyYR0kX9wbM79/6EU19mw2heOSA6PNQdTxWVlrYj8R
- q32Rj3r7UfP7NrWkShitdpwASfYEoCkQXeuNVFzLC7PsePsGM0WYuwh4CIRSNlv/vmid 3g== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3hg7vhen7f-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 26 Jul 2022 10:07:33 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 8ED1610002A;
-        Tue, 26 Jul 2022 10:07:30 +0200 (CEST)
-Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id C55412128A3;
-        Tue, 26 Jul 2022 10:07:30 +0200 (CEST)
-Received: from localhost (10.75.127.47) by SHFDAG1NODE2.st.com (10.75.129.70)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Tue, 26 Jul
- 2022 10:07:29 +0200
-From:   Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-To:     <gregkh@linuxfoundation.org>, <robh+dt@kernel.org>,
-        <mka@chromium.org>, <alexandre.torgue@foss.st.com>
-CC:     <krzysztof.kozlowski+dt@linaro.org>, <arnd@arndb.de>,
-        <linux-usb@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <amelie.delaunay@foss.st.com>, <fabrice.gasnier@foss.st.com>
-Subject: [PATCH v2 0/4] usb: misc: adopt onboard hub support on stm32mp1 boards
-Date:   Tue, 26 Jul 2022 10:07:04 +0200
-Message-ID: <20220726080708.162547-1-fabrice.gasnier@foss.st.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 26 Jul 2022 04:08:03 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0540F2E9F3
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 01:08:01 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id i13so7665994edj.11
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 01:08:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=oXh48ITjNIZwRpcTgBzMIm7xvCXasMciNKj2nW0FLMk=;
+        b=mvC8tzmaF29BiVZk1Z4LrSkhZNsRUiAI03IHsZWdBIGq+21sY3DaehmsTJSCQhOcCN
+         IzDXGzhgPtgoo0weSRcw6clQCDiKyzDjc2VJ61GfKnUunLpFcddwo8T6y4Ox+JSjmmlM
+         rRS/zZe7jNcqCaJMZPS2EnSOhBXmrGSZNEX2+6RylN3Eol7x+kLzHOv88BK7KXWQuKhD
+         6Y28+AUAsiduoBIPGNkUmO4q80A4+6NEPpUn789GXETl2vPl2oVffajX1nEwiKEemX/A
+         CFnBBeIN6MVlaE5OyaBVnc/t8xmEv4oY8fLX79lpUZReRbeqET4R87a5u6pdphdVfgZI
+         XK2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=oXh48ITjNIZwRpcTgBzMIm7xvCXasMciNKj2nW0FLMk=;
+        b=CsBA2jvfqt1OdBQmZruyTJagXxHhhRxeeWLMnDly0icRo3SEc+hfgDZo0yHA8PDvpD
+         C+fv3Ac8jC4N7IKp5K+P3l4zLyD57e0Q5SfnPDFOojV/rU52wxBD8THUzD7ZI997/k4Z
+         riKIGqUh2RxYe1LSmdS7aZQRew/5sCcIe2/emmbDUWKQjHQgtSCY8hHBVO1SytFPC9ia
+         IyHk6vYM5gtOI5N+sCrIRnrBuE3OC0oisHuiwE4MsGXg4VZYphVJlJSyyj7EgEszZmCW
+         ef0rQ3mJ/ihcKIqZthRAzR4Ph4JOeO726NTDrcGm4mXrij1Sm5J/3R9BegSMuP+DUmC1
+         GnZg==
+X-Gm-Message-State: AJIora/UN2WLtzenksHOzWcpa+VkPKBPsNRBsOzFZ/aS4fWvTwVCtt4F
+        yKW667GS61rsOW81tWXX8vLWEa38s0/T52zdJ6r55Q==
+X-Google-Smtp-Source: AGRyM1sg7WwfgT30Z5gFgGtBrpzTZYvjI5t68L1TNcWlRC/z4bCNfsLxzmsyxNfNlAgqIwmyyt5i4fpHDXen1zH7g1M=
+X-Received: by 2002:a05:6402:2696:b0:43b:eb8b:d0da with SMTP id
+ w22-20020a056402269600b0043beb8bd0damr10795013edd.158.1658822880522; Tue, 26
+ Jul 2022 01:08:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.47]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE2.st.com
- (10.75.129.70)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-26_02,2022-07-25_03,2022-06-22_01
+References: <20220723160513.271692-1-Mr.Bossman075@gmail.com> <20220723160513.271692-11-Mr.Bossman075@gmail.com>
+In-Reply-To: <20220723160513.271692-11-Mr.Bossman075@gmail.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Tue, 26 Jul 2022 10:07:49 +0200
+Message-ID: <CACRpkdbNbvKySXPziKHkEfbWknXLdV2L4sb2n1MCR=TSOATEPg@mail.gmail.com>
+Subject: Re: [PATCH v5 10/12] ARM: dts: imxrt1170-pinfunc: Add pinctrl binding header
+To:     Jesse Taube <mr.bossman075@gmail.com>
+Cc:     linux-imx@nxp.com, robh+dt@kernel.org, mturquette@baylibre.com,
+        sboyd@kernel.org, shawnguo@kernel.org, s.hauer@pengutronix.de,
+        kernel@pengutronix.de, festevam@gmail.com, aisheng.dong@nxp.com,
+        stefan@agner.ch, daniel.lezcano@linaro.org, tglx@linutronix.de,
+        arnd@arndb.de, olof@lixom.net, soc@kernel.org,
+        linux@armlinux.org.uk, abel.vesa@nxp.com, dev@lynxeye.de,
+        marcel.ziswiler@toradex.com, tharvey@gateworks.com,
+        leoyang.li@nxp.com, sebastian.reichel@collabora.com,
+        cniedermaier@dh-electronics.com, clin@suse.com,
+        giulio.benetti@benettiengineering.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
+        Rob Herring <robh@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for USB2514B HUB found on stm32mp1 boards:
-- Extend the ehci-generic dt-binding to fully use the usb-hcd.yaml, and so
-  the usb-device.yaml.
-- Add usb-device compatible ("usbVID,PID") for the USB2514B USB2.0 HUB to
-  the onboard_usb_hub driver.
-- Add relevant device tree node to stm32mp15 DK boards.
-- Enable the onboard_usb_hub driver on multi_v7 platforms.
+On Sat, Jul 23, 2022 at 6:05 PM Jesse Taube <mr.bossman075@gmail.com> wrote:
 
-Changes in v2:
-- Follow Matthias review comments
-- dt-bindings reviewed by Rob
+> Add binding header for i.MXRT1170 pinctrl device tree.
+>
+> Cc: Giulio Benetti <giulio.benetti@benettiengineering.com>
+> Signed-off-by: Jesse Taube <Mr.Bossman075@gmail.com>
+> Reviewed-by: Rob Herring <robh@kernel.org>
 
-Fabrice Gasnier (4):
-  dt-bindings: usb: generic-ehci: allow usb-hcd schema properties
-  usb: misc: onboard-hub: add support for Microchip USB2514B USB 2.0 hub
-  ARM: dts: stm32: add support for USB2514B onboard hub on
-    stm32mp15xx-dkx
-  ARM: multi_v7_defconfig: enable USB onboard HUB driver
+Assuming the rest of the patch set really isn't getting merged for
+v5.20 I simply applied this patch to the pin control tree so you have
+less stuff to iterate after v5.20-rc1.
 
- Documentation/devicetree/bindings/usb/generic-ehci.yaml | 7 +------
- arch/arm/boot/dts/stm32mp15xx-dkx.dtsi                  | 8 ++++++++
- arch/arm/configs/multi_v7_defconfig                     | 1 +
- drivers/usb/misc/onboard_usb_hub.c                      | 2 ++
- drivers/usb/misc/onboard_usb_hub.h                      | 1 +
- 5 files changed, 13 insertions(+), 6 deletions(-)
-
--- 
-2.25.1
-
+Yours,
+Linus Walleij
