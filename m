@@ -2,202 +2,867 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F46CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 06:15:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97AB3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 06:15:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237445AbiGZGPs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 02:15:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57266 "EHLO
+        id S237633AbiGZGPy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 02:15:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232067AbiGZGPn (ORCPT
+        with ESMTP id S229568AbiGZGPn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Jul 2022 02:15:43 -0400
-Received: from mo-csw.securemx.jp (mo-csw1515.securemx.jp [210.130.202.154])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2188164D3;
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3AE164FB;
+        Mon, 25 Jul 2022 23:15:41 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id z23so24090804eju.8;
+        Mon, 25 Jul 2022 23:15:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=JYkJinCX9SlaPcDcJ3/ApAWTCwNw7mvhtjooCZ+0G6Q=;
+        b=EdifNRxaDg+nne3ypTSqYLE63sUQt1DdVn/F2CZkB/ucinNIsjNukB6FK4cbJFC6GD
+         QYHY4dtekadCTJ+1OKV0iKTlL49RYRhF3yUlw2OYQY6l1UgtFwhAxgcS10f0HHYYI6T3
+         IeG1ErMe1uLJHe7Dojt68FGsfEXl0Zgbz9SCIMNpxkvMhHSFTHDA8PGSU3aoQj6F6Hsd
+         wH/+jYZ5g68fR46EOXbjscvB/dNtvS7ZzNwqtAkWXo+xGgWstKz9zR06XryVqpCcrNPh
+         ayGeAv+8So+gnNaIKXv5udHKluw85C7Jz3fPc7x0bhqDUDigha1NY/ren80vAlONa3ka
+         v9eA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=JYkJinCX9SlaPcDcJ3/ApAWTCwNw7mvhtjooCZ+0G6Q=;
+        b=sFHe7WfOQvdKmr3dWXFBd4pB66WOZqzS/LWn7TAhf2u+9aiB4g4sjJ3ni6xd64SMsO
+         206dPtZ0Meburj9s2yC48M8wzAawXSNdQP3KbrNxkNk3yUftvQIuuenJ3Cp1Jr0DalJe
+         KjWtUbttCZWwwy3ojIbAMR0l7jpZ17sX1XQUUwTyLSCQ7w+P2i5MLS3AXcczURncuSwr
+         9pNr5qAhwcUamSGcpvu5S29IFS+NIQqDGopMiAptQFhvOiaFkkHy2NLnr4MB9F4MefMe
+         YesdPEPUSjT7X5MS9hqXHqycmk1ldtscJz7r3itI85eqnTxh2WifDhi++7zIZrP7t3hy
+         nQ9A==
+X-Gm-Message-State: AJIora/JiMQmypIitZySlcj2NViF2wJRNOqlQ+d5WU7MAH62HI3saCxN
+        iDiyEna1YU7ZTIGgFvZXcKI=
+X-Google-Smtp-Source: AGRyM1vuWn4oYXOFv+gqQUSlJcQChERZr/PfvhBRSGDDUU4Cl0aEZv0Tsw1VSYNIDWgj3D9St4TIOQ==
+X-Received: by 2002:a17:907:a413:b0:72f:1959:f35f with SMTP id sg19-20020a170907a41300b0072f1959f35fmr13010205ejc.112.1658816140027;
         Mon, 25 Jul 2022 23:15:40 -0700 (PDT)
-Received: by mo-csw.securemx.jp (mx-mo-csw1515) id 26Q6F33v022118; Tue, 26 Jul 2022 15:15:03 +0900
-X-Iguazu-Qid: 34trpbd9IC41e4v2kS
-X-Iguazu-QSIG: v=2; s=0; t=1658816103; q=34trpbd9IC41e4v2kS; m=0iGqhylLcSYnE60v/Wl9w6rR54yh9X4VuGxAgciZon8=
-Received: from imx2-a.toshiba.co.jp (imx2-a.toshiba.co.jp [106.186.93.35])
-        by relay.securemx.jp (mx-mr1510) id 26Q6F1E0022213
-        (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 26 Jul 2022 15:15:01 +0900
-X-SA-MID: 42668458
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TP3rTQqATDjYir5SDUUBh4etfAq5aFS9mWvzPNQIUcMwzrItZJlz9+oTs1/YsQ11TmqUKzBT830CNgCvVQVjYp7BGE34nl+mR0J3+r3SiPiRA0bTumvKiSyD93+D2qynKRmdnx12DthOBK4WUm+GDr/f8X5mPeVpZLt56ImBGr7X2yZJ7KXvu546ZI9qD6Cnlh4Pwyy+odHPyCr68eEeelHIBV3oghTI6QG81d470MY3B4ZNSBAGiaPeiW0LWx/BFI8rIapNO+JoWxZShPLf6vdeN/sepnw3VqE2ZCYVVEVzQIdybmEvsv9jGx77r6wz0EBd56JnyUBDL8WhCu272Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=LochckwdzCR+mcS4dn9k+2wdjXt5JVQXDVzqGdWDE5U=;
- b=AKwkm+ix15nUWWqRWf+DtsdZAOvkQKc/ZCL2c/5Z7/OcTaT/5iQBdHWyqkURsiQ5OJ+WX6ZaF2jWir/kAr/V3duVZVC325vZWo3y/z3TpGGpvaHntncJq7Ksy+pMCsU3Bkb3KaM45xK60nh6lzdnkrGoi4W1dIfW+ESXWyLyGntiztg/t3+oYXtvf36fUb2cDETJvq4ky8a3wG64QPflVLyG9DNSM3M2Alkj8vx8mSdwHL0swiFPC5EDHigah7ubZrK4rVSBcQ7ozdNShu5oa0f53+Fa3ThuFUndAQeiU+J4z+t7c1RVQyuzrHLwT1wwYQc5e5cnLJYT5U7HKEQAsQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=toshiba.co.jp; dmarc=pass action=none
- header.from=toshiba.co.jp; dkim=pass header.d=toshiba.co.jp; arc=none
-From:   <yuji2.ishikawa@toshiba.co.jp>
-To:     <gregkh@linuxfoundation.org>
-CC:     <robh+dt@kernel.org>, <hverkuil@xs4all.nl>,
-        <nobuhiro1.iwamatsu@toshiba.co.jp>, <corbet@lwn.net>,
-        <sumit.semwal@linaro.org>, <christian.koenig@amd.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-media@vger.kernel.org>,
-        <dri-devel@lists.freedesktop.org>, <linaro-mm-sig@lists.linaro.org>
-Subject: RE: [PATCH v2 0/5] Add Toshiba Visconti DNN image processing
- accelerator driver
-Thread-Topic: [PATCH v2 0/5] Add Toshiba Visconti DNN image processing
- accelerator driver
-Thread-Index: AQHYnaUi/BiBjs98DUW2eb3g4GGnba2PDfeAgAEL1GA=
-Date:   Tue, 26 Jul 2022 06:09:50 +0000
-X-TSB-HOP2: ON
-Message-ID: <TYAPR01MB62010C6B98C1C197E7E894AF92949@TYAPR01MB6201.jpnprd01.prod.outlook.com>
-References: <20220722082858.17880-1-yuji2.ishikawa@toshiba.co.jp>
- <Yt6Qw/r0FQ0ElYdn@kroah.com>
-In-Reply-To: <Yt6Qw/r0FQ0ElYdn@kroah.com>
-Accept-Language: ja-JP, en-US
-Content-Language: ja-JP
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=toshiba.co.jp;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: e6c59c53-3cf9-458f-206b-08da6ecd7371
-x-ms-traffictypediagnostic: TYAPR01MB3424:EE_
-x-ld-processed: f109924e-fb71-4ba0-b2cc-65dcdf6fbe4f,ExtAddr,ExtFwd
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: KvzD/Gg7PaLcwlAhqqfY8M+3OGS6UM80bN4D0m2VzgF0oxKSQFX6wuWhy3gntwQG30iKJMrfLjjZCV2QwwVVkZegoe4O8FMoRxEqp9XdPwCQu0CCewjytgVUGi9BADAQX2PmQRcxb0o1qJXCGHdq5i3+yVJID340l70+2hws/meOa1x+IZ2tQXSfAjO1sFr8BasbM7ebBeXYwbuVW99MVk2A7JmxgVbGqM27Z8NMOB9n6ARL7fkV4jJKmTt48xZBYjOwitd76ByWxP3krUeLT2OvDw0va7yVoN2Sh/RPc+pbjmVU+D6GDk+mdWRjLFsThz+yMd44VYLg9fsiGyiGxjpjEfdUVF20oU4qhDOsNNKoCxGgTxqCRe7MCBplQ7SKja1Yh6r5/UCUh2/Tq2jMb70fQQulwWfKQiFZQL7EBr07WNai47KEGxZucBc7ePppjk5W7ovtyyHeTo1t08Ij8luFT4zg5jHJ5fH14kY/8ERk5Z7w8jYDOW6yhT31BrvhTkBNmnKnvwkuasnJRQ3HwFHqIUJMknNGGLXVnC+iriGRg+3eDhln10aaCm19rNWAiwSnBLo5BewiCh8/nWy2/sqGnJ3qjnuhysdETJszr0BYpC1ooDgsXwshZVlFfwtDIDL9Q+Bbwdzz/co2qK0F7pQ9HGfHSZ/ulp8UyN0ef4wJcgTCeKYBnXrnTabhaEz5g693GCf7StascjKKpedsN6X9SwfupGilKSDlD+InCk7JkNN7veZqakVAb5XTXuCnUBcjc273gr0y4xpuUZ6qAFxSnntdXORZ5d6MTP9Ya+1xUSe6rF2O+tHKdu+pYBctQ77/JaHs4gtBrSgMtNPMIw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYAPR01MB6201.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(376002)(346002)(396003)(366004)(39860400002)(4326008)(966005)(316002)(55016003)(66556008)(66946007)(66476007)(64756008)(66446008)(8676002)(71200400001)(8936002)(54906003)(478600001)(76116006)(6916009)(52536014)(5660300002)(7416002)(2906002)(41300700001)(6506007)(7696005)(53546011)(86362001)(33656002)(186003)(38070700005)(66574015)(38100700002)(83380400001)(9686003)(26005)(122000001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?Z2NZVXB5REhZenZuRTdEOGxOWEN6K29ZWXN3VE92M0VzRzdOQmtPN3RZUzVD?=
- =?utf-8?B?V0YrYVU2M1A4QklQc1Y5eWhDSTR4ZndHYzlucThDdHpycXQ0RXNFYUpiaHRS?=
- =?utf-8?B?SGdrR0FycDVXZ2oxRjl6aklnbzQwdU84c2M3WXpaRVl5QVhuL2hoVFVxNFhX?=
- =?utf-8?B?N3RzNUt4cm05UDVBSk90b3c5OWVqQmhZZlRiQ05uRjBKTGNFRWFVNWt1K0pD?=
- =?utf-8?B?cUpCd29oajJVeFBVaS9UVmsxTkJldGFjOFI5S05HSnNQazJOaVhaQWtrRW1Z?=
- =?utf-8?B?RzFJb2VtZWtWTFkvZUxxTmk5V25IL09XUnlDVGlIdWZHK2pWRURqdWVYck5q?=
- =?utf-8?B?WjUvSmNhU25tNm1JSzBIQWNxMTd5dERteTc4bUEvOHdsMGlrQng5aktIaXIx?=
- =?utf-8?B?TGc5OS9WQWxVbnlIdXB4MGhRbmxJblpuM1c2OHJKYUYzeDkrSTNLbVh1NHNC?=
- =?utf-8?B?T2NYUHlTTmRyR2RPTnBUQUdjVlNsdlJKejhMZ05rVTNiYVlpM1pGUDhHSXNt?=
- =?utf-8?B?SU50QVppNFFaamZvZ01tc2wzbXdNbTI5d0Nra044OGpOMjJCbGwwZHlxd1Vt?=
- =?utf-8?B?dXVQVjAzUEltdmFDTGdYdGhFZlVrU251MmxxclNKdEJTK1RlZm01V21aY2ZN?=
- =?utf-8?B?L1RRNS9UUHBrT2JwS01vWXN6akp4RlpEOWFSMlJsNDgzdEc0ZExuT241cHUr?=
- =?utf-8?B?aVpBWTNiVDVqbVFaZWxMR0FGL3ZVY05LYzg1RTVxNndTMDJUeGIyR2lZT253?=
- =?utf-8?B?UjJyZVFjM2lnUmEySHBZcHlNT0ZwUlFwL1cvSU9EY2NpelpxZVJDYkdCYTZS?=
- =?utf-8?B?YWp5V2Z3V0tROXpZSWI5MXVTVC9xSEhwUk0vazhKVWN5ZXVqdER4N2R5WHpm?=
- =?utf-8?B?K3F2ZUxtTWRXQzlDQURHMU82VEY0NTJPN1lVTmRwRnFaUVNGMkh3NUtON2xi?=
- =?utf-8?B?MTlTT2I0aml5MHBxcVVlRkx0YVhsbVFMSVNJcGl6ZDlVbUJhMllGSzdZWXBF?=
- =?utf-8?B?dnNLWTNqOG9TRmpHYk4xY3JuYzhlRnNmbUZRcHh2OFVSa3BhamhiZkxKeGti?=
- =?utf-8?B?d3FvTHl2bDk3bFVRbXlBeGEwRkhod242L0NPZHljM200ZDIvclA5bHlhQ082?=
- =?utf-8?B?NXF3MjFVQUM0NmV3Z3dRZi9zYmxJSlV0eWlEZ05BbUxYQVhkOXBRbEZ5dVB1?=
- =?utf-8?B?bVF1N2NBY09ReER5VUg2UFRWOTRnS3cyWC9IdXJ1cjZpR1piSEF2ejNSUWRR?=
- =?utf-8?B?ZUpydWJZV0tLNnBnZTcrSG5Eak05NVVBNzNWS1JjSkRRcFVjcURZY29zN1kz?=
- =?utf-8?B?dmhqTnE1dVZvNDRqNnMvaWZoNkhFRDFBTVBPdWxGdjdFWGxWUDBLc3V2K3du?=
- =?utf-8?B?cE5tYllmQWZ1ZUxjeXhjY2dCdklVNkdQdmoveEYwbWVFamFRUmJFN3d5b1Br?=
- =?utf-8?B?VFczdUFhUkU4blBGamFtaDVjWkRmdVFaNURwbHR6dzNRK2J0d3NvbUg0TXp2?=
- =?utf-8?B?b2dpcTBkQm5FSE5HY2orTGlIYVBGZXY4cHFvb0s2Sm5HeW1wQXZiMDV6TGJN?=
- =?utf-8?B?a0VzOEtES0gvL3o2d2ZsNDVjOWtDN1N5b1ljNW9Jb21EZkJrUFhVSS9jTVM0?=
- =?utf-8?B?ZzVDYUNneTZXZ0w0cHlmZnZOYUd0SXVXTzdTRjV3MTR5YUZtakQ0eXdYZEtm?=
- =?utf-8?B?RzcwMzlxdXp1M2JOT29vdm5RUDd4cUxDVC9KS0NOeXI0ZGJrTEllVDQ3ZnRq?=
- =?utf-8?B?WXdUQ3dGcW9GNzdLanpuaWZ5L1U5elJHcUtWNExOVE9hbk1KUkxpVzJiMVhw?=
- =?utf-8?B?S0pxc0dWQlZKL0Nna0I3QmFjWC9JRmRUaHkwaHJHMmt4TE90c1RqdnFSRkUz?=
- =?utf-8?B?eDRwUEJFZTFrZUJaN0tFVEE0bVV3MUtnaXd1UytHUEhlOUJDazcyRFNUVTM5?=
- =?utf-8?B?UU8rcWMzRW1RTG4yVXMybmdCd01tQ2RtUDliOHV5MTByeW5pSTJVOUtVNEJI?=
- =?utf-8?B?OGdNY0JMVS83anp5TG5FclIrNGN2eWdmbzZteGlFU2lOVkgwSkc2UVQyeW5z?=
- =?utf-8?B?eE5aNDlOVXA0K0RGbFFkeitZOS9SUVo5UW9jdzZiTlh0bkYyVm94OXZITitt?=
- =?utf-8?B?SFIyY3dLL1pFS3U0N0VRTFZMazVHS0hmdWpiNFd4bk9sd0I1M0dRL2oyZVY4?=
- =?utf-8?B?OVE9PQ==?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Received: from localhost.localdomain ([2a04:241e:502:a080:2b68:36a:5a94:4ba1])
+        by smtp.gmail.com with ESMTPSA id l23-20020a056402345700b0043ba7df7a42sm8133067edc.26.2022.07.25.23.15.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Jul 2022 23:15:39 -0700 (PDT)
+From:   Leonard Crestez <cdleonard@gmail.com>
+To:     David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Philip Paeps <philip@trouble.is>
+Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
+        Shuah Khan <shuah@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Yuchung Cheng <ycheng@google.com>,
+        Francesco Ruggeri <fruggeri@arista.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Christoph Paasch <cpaasch@apple.com>,
+        Ivan Delalande <colona@arista.com>,
+        Caowangbao <caowangbao@huawei.com>,
+        Priyaranjan Jha <priyarjha@google.com>, netdev@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v6 01/26] tcp: authopt: Initial support and key management
+Date:   Tue, 26 Jul 2022 09:15:03 +0300
+Message-Id: <9726889112baa0633518aede609b1546c076ae0f.1658815925.git.cdleonard@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1658815925.git.cdleonard@gmail.com>
+References: <cover.1658815925.git.cdleonard@gmail.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TYAPR01MB6201.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e6c59c53-3cf9-458f-206b-08da6ecd7371
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Jul 2022 06:09:50.9866
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: f109924e-fb71-4ba0-b2cc-65dcdf6fbe4f
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: U8r+XcxDJNUVAVmrymBWo0undg9SGOZcMDHF1zjenYzYeKfd0iAcKXRQl/XefYXWy/OIMF6cLtwwKNk4sdMFKmLGAGZKCF+ZtQdZghtuqBk=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYAPR01MB3424
-X-OriginatorOrg: toshiba.co.jp
-MSSCP.TransferMailToMossAgent: 103
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SGkgR3JlZw0KDQpUaGFuayB5b3UgZm9yIHlvdXIgY29tbWVudHMuDQoNCj4gLS0tLS1PcmlnaW5h
-bCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogR3JlZyBLSCA8Z3JlZ2toQGxpbnV4Zm91bmRhdGlvbi5v
-cmc+DQo+IFNlbnQ6IE1vbmRheSwgSnVseSAyNSwgMjAyMiA5OjQ3IFBNDQo+IFRvOiBpc2hpa2F3
-YSB5dWppKOefs+W3nSDmgqDlj7gg4peL77yy77yk77yj4pah77yh77yp77y077yj4peL77yl77yh
-6ZaLKQ0KPiA8eXVqaTIuaXNoaWthd2FAdG9zaGliYS5jby5qcD4NCj4gQ2M6IFJvYiBIZXJyaW5n
-IDxyb2JoK2R0QGtlcm5lbC5vcmc+OyBIYW5zIFZlcmt1aWwgPGh2ZXJrdWlsQHhzNGFsbC5ubD47
-DQo+IGl3YW1hdHN1IG5vYnVoaXJvKOWyqeadviDkv6HmtIsg4pah77yz77y377yj4pev77yh77yj
-77y0KQ0KPiA8bm9idWhpcm8xLml3YW1hdHN1QHRvc2hpYmEuY28uanA+OyBKb25hdGhhbiBDb3Ji
-ZXQgPGNvcmJldEBsd24ubmV0PjsNCj4gU3VtaXQgU2Vtd2FsIDxzdW1pdC5zZW13YWxAbGluYXJv
-Lm9yZz47IENocmlzdGlhbiBLw7ZuaWcNCj4gPGNocmlzdGlhbi5rb2VuaWdAYW1kLmNvbT47IGxp
-bnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZzsNCj4gbGludXgta2VybmVsQHZnZXIu
-a2VybmVsLm9yZzsgbGludXgtbWVkaWFAdmdlci5rZXJuZWwub3JnOw0KPiBkcmktZGV2ZWxAbGlz
-dHMuZnJlZWRlc2t0b3Aub3JnOyBsaW5hcm8tbW0tc2lnQGxpc3RzLmxpbmFyby5vcmcNCj4gU3Vi
-amVjdDogUmU6IFtQQVRDSCB2MiAwLzVdIEFkZCBUb3NoaWJhIFZpc2NvbnRpIEROTiBpbWFnZSBw
-cm9jZXNzaW5nDQo+IGFjY2VsZXJhdG9yIGRyaXZlcg0KPiANCj4gT24gRnJpLCBKdWwgMjIsIDIw
-MjIgYXQgMDU6Mjg6NTNQTSArMDkwMCwgWXVqaSBJc2hpa2F3YSB3cm90ZToNCj4gPiBUaGlzIHNl
-cmllcyBpcyB0aGUgRE5OIGltYWdlIHByb2Nlc3NpbmcgYWNjZWxlcmF0b3IgZHJpdmVyIGZvciBU
-b3NoaWJhJ3MgQVJNDQo+IFNvQywgVmlzY29udGlbMF0uDQo+ID4gVGhpcyBwcm92aWRlcyBEVCBi
-aW5kaW5nIGRvY3VtZW50YXRpb24sIGRldmljZSBkcml2ZXIsIE1BSU5UQUlORVIgZmlsZXMNCj4g
-YW5kIGRvY3VtZW50cy4NCj4gPg0KPiA+IEJlc3QgcmVnYXJkcywNCj4gPiBZdWppDQo+ID4NCj4g
-PiBbMF06DQo+ID4NCj4gaHR0cHM6Ly90b3NoaWJhLnNlbWljb24tc3RvcmFnZS5jb20vYXAtZW4v
-c2VtaWNvbmR1Y3Rvci9wcm9kdWN0L2ltYWdlLQ0KPiA+IHJlY29nbml0aW9uLXByb2Nlc3NvcnMt
-dmlzY29udGkuaHRtbA0KPiA+DQo+ID4gZHQtYmluZGluZ3M6IHNvYzogdmlzY29udGk6IEFkZCBU
-b3NoaWJhIFZpc2NvbnRpIEROTiBpbWFnZSBwcm9jZXNzaW5nDQo+IGFjY2VsZXJhdG9yIGJpbmRp
-bmdzDQo+ID4gICB2MSAtPiB2MjoNCj4gPiAgICAgLSBObyB1cGRhdGUNCj4gPg0KPiA+IHNvYzog
-dmlzY29udGk6IEFkZCBUb3NoaWJhIFZpc2NvbnRpIGltYWdlIHByb2Nlc3NpbmcgYWNjZWxlcmF0
-b3IgY29tbW9uDQo+IHNvdXJjZQ0KPiA+ICAgdjEgLT4gdjI6DQo+ID4gICAgIC0gY2hlY2tlZCB3
-aXRoIGNoZWNrcGF0Y2gucGwgLS1zdHJpY3QNCj4gPg0KPiA+IHNvYzogdmlzY29udGk6IEFkZCBU
-b3NoaWJhIFZpc2NvbnRpIEROTiBpbWFnZSBwcm9jZXNzaW5nIGFjY2VsZXJhdG9yDQo+ID4gICB2
-MSAtPiB2MjoNCj4gPiAgICAgLSBjaGVja2VkIHdpdGggY2hlY2twYXRjaC5wbCAtLXN0cmljdA0K
-PiA+ICAgICAtIHJlbW92ZWQgdW51c2VkIGNvZGUNCj4gPg0KPiA+IE1BSU5UQUlORVJTOiBBZGQg
-ZW50cmllcyBmb3IgVG9zaGliYSBWaXNjb250aSBETk4gaW1hZ2UgcHJvY2Vzc2luZw0KPiA+ICAg
-djEgLT4gdjI6DQo+ID4gICAgIC0gTm8gdXBkYXRlDQo+ID4NCj4gPiBEb2N1bWVudGF0aW9uOiBk
-cml2ZXItYXBpOiB2aXNjb250aTogYWRkIGEgZGVzY3JpcHRpb24gb2YgRE5OIGRyaXZlci4NCj4g
-PiAgIHYxIC0+IHYyOg0KPiA+ICAgICAtIG5ld2x5IGFkZGVkIGRvY3VtZW50cw0KPiA+DQo+ID4g
-WXVqaSBJc2hpa2F3YSAoNSk6DQo+ID4gICBkdC1iaW5kaW5nczogc29jOiB2aXNjb250aTogQWRk
-IFRvc2hpYmEgVmlzY29udGkgRE5OIGltYWdlIHByb2Nlc3NpbmcNCj4gPiAgICAgYWNjZWxlcmF0
-b3IgYmluZGluZ3MNCj4gPiAgIHNvYzogdmlzY29udGk6IEFkZCBUb3NoaWJhIFZpc2NvbnRpIGlt
-YWdlIHByb2Nlc3NpbmcgYWNjZWxlcmF0b3INCj4gPiAgICAgY29tbW9uIHNvdXJjZQ0KPiA+ICAg
-c29jOiB2aXNjb250aTogQWRkIFRvc2hpYmEgVmlzY29udGkgRE5OIGltYWdlIHByb2Nlc3Npbmcg
-YWNjZWxlcmF0b3INCj4gPiAgIE1BSU5UQUlORVJTOiBBZGQgZW50cmllcyBmb3IgVG9zaGliYSBW
-aXNjb250aSBETk4gaW1hZ2UgcHJvY2Vzc2luZw0KPiA+ICAgICBhY2NlbGVyYXRvcg0KPiA+ICAg
-RG9jdW1lbnRhdGlvbjogZHJpdmVyLWFwaTogdmlzY29udGk6IGFkZCBhIGRlc2NyaXB0aW9uIG9m
-IEROTiBkcml2ZXIuDQo+ID4NCj4gPiAgLi4uL3NvYy92aXNjb250aS90b3NoaWJhLHZpc2NvbnRp
-LWRubi55YW1sICAgIHwgIDU0ICsrDQo+ID4gIERvY3VtZW50YXRpb24vZHJpdmVyLWFwaS92aXNj
-b250aS9jb21tb24ucnN0ICB8IDExNSArKysrDQo+ID4gIERvY3VtZW50YXRpb24vZHJpdmVyLWFw
-aS92aXNjb250aS9kbm4ucnN0ICAgICB8IDM5NCArKysrKysrKysrKysrDQo+ID4gIE1BSU5UQUlO
-RVJTICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAgMiArDQo+ID4gIGRyaXZl
-cnMvc29jL0tjb25maWcgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAgMSArDQo+ID4gIGRy
-aXZlcnMvc29jL01ha2VmaWxlICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAgMSArDQo+ID4g
-IGRyaXZlcnMvc29jL3Zpc2NvbnRpL0tjb25maWcgICAgICAgICAgICAgICAgICB8ICAgNyArDQo+
-ID4gIGRyaXZlcnMvc29jL3Zpc2NvbnRpL01ha2VmaWxlICAgICAgICAgICAgICAgICB8ICAgOCAr
-DQo+ID4gIGRyaXZlcnMvc29jL3Zpc2NvbnRpL2Rubi9NYWtlZmlsZSAgICAgICAgICAgICB8ICAg
-NiArDQo+ID4gIGRyaXZlcnMvc29jL3Zpc2NvbnRpL2Rubi9kbm4uYyAgICAgICAgICAgICAgICB8
-IDUyMw0KPiArKysrKysrKysrKysrKysrKysNCj4gPiAgZHJpdmVycy9zb2MvdmlzY29udGkvZG5u
-L2h3ZF9kbm4uYyAgICAgICAgICAgIHwgMTgzICsrKysrKw0KPiA+ICBkcml2ZXJzL3NvYy92aXNj
-b250aS9kbm4vaHdkX2Rubi5oICAgICAgICAgICAgfCAgNjggKysrDQo+ID4gIGRyaXZlcnMvc29j
-L3Zpc2NvbnRpL2Rubi9od2RfZG5uX3JlZy5oICAgICAgICB8IDIyOCArKysrKysrKw0KPiA+ICBk
-cml2ZXJzL3NvYy92aXNjb250aS9pcGFfY29tbW9uLmMgICAgICAgICAgICAgfCAgNTUgKysNCj4g
-PiAgZHJpdmVycy9zb2MvdmlzY29udGkvaXBhX2NvbW1vbi5oICAgICAgICAgICAgIHwgIDE4ICsN
-Cj4gPiAgZHJpdmVycy9zb2MvdmlzY29udGkvdWFwaS9kbm4uaCAgICAgICAgICAgICAgIHwgIDc3
-ICsrKw0KPiA+ICBkcml2ZXJzL3NvYy92aXNjb250aS91YXBpL2lwYS5oICAgICAgICAgICAgICAg
-fCAgOTAgKysrDQo+IA0KPiBXaHkgaXMgdGhpcyBpbiBkcml2ZXJzL3NvYy8/DQoNCkFjdHVhbGx5
-LCBJJ20gbm90IHN1cmUgd2hlcmUgaGlzIG1vZHVsZSBzaG91bGQgbGl2ZSBpbi4NClRoZSBkaXJl
-Y3RvcnkgZHJpdmVycy9zb2Mgd2VyZSBjaG9zZW4ganVzdCBiZWNhdXNlIHRoZSBkcml2ZXIgaXMg
-c3BlY2lmaWMgdG8gVmlzY29udGkgU29DLg0KSXMgaXQgYmV0dGVyIHRvIG1vdmUgdGhlIGRyaXZl
-ciB0byBhbm90aGVyIGRpcmVjdG9yeSBzdWNoIGFzIGRyaXZlcnMvbWlzYyA/DQoNCj4gQW5kIHVh
-cGkgZmlsZXMgYmVsb25nIGluIHRoZSBjb3JyZWN0IGluY2x1ZGUgcGF0aCwgbm90IGJ1cnJpZWQg
-aW4gYSBkcml2ZXINCj4gc3ViZGlyZWN0b3J5IHdoZXJlIHRoZXkgd2lsbCBuZXZlciBiZSBwaWNr
-ZWQgdXAgY29ycmVjdGx5IGJ5IHRoZSBidWlsZCBzeXN0ZW0uDQo+IEhvdyBkaWQgeW91IHRlc3Qg
-dGhlc2U/DQoNCkkgdW5kZXJzdGFuZCBpdCdzIG5vdCBhIGdvb2QgaWRlYSB0byBwbGFjZSB1YXBp
-IGZpbGVzIHVuZGVyIGRyaXZlciBzdWJkaXJlY3RvcnkuDQpBIGJ1aWxkIGNvbW1hbmQgIm1ha2Ug
-aGVhZGVyc19pbnN0YWxsIiBkaWQgbm90IHBpY2sgb3V0IGhlYWRlcnMuDQpJIHVzZWQgYWRkaXRp
-b25hbCBzaGVsbCBzY3JpcHQgdG8gaW5zdGFsbCBoZWFkZXJzIGZvciBWaXNjb250aS4NCkknbGwg
-bW92ZSB1YXBpIGhlYWRlcnMgdG8gaW5jbHVkZS91YXBpL2xpbnV4Lg0KDQo+IHRoYW5rcywNCj4g
-DQo+IGdyZWcgay1oDQoNClJlZ2FyZHMsDQogIFl1amkNCg==
+This commit adds support to add and remove keys but does not use them
+further.
+
+Similar to tcp md5 a single pointer to a struct tcp_authopt_info* struct
+is added to struct tcp_sock, this avoids increasing memory usage. The
+data structures related to tcp_authopt are initialized on setsockopt and
+only freed on socket close.
+
+Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
+---
+ include/linux/tcp.h             |   9 +
+ include/net/net_namespace.h     |   4 +
+ include/net/netns/tcp_authopt.h |  12 ++
+ include/net/tcp.h               |   1 +
+ include/net/tcp_authopt.h       |  74 ++++++++
+ include/uapi/linux/tcp.h        |  81 ++++++++
+ net/ipv4/Kconfig                |  14 ++
+ net/ipv4/Makefile               |   1 +
+ net/ipv4/tcp.c                  |  32 ++++
+ net/ipv4/tcp_authopt.c          | 317 ++++++++++++++++++++++++++++++++
+ net/ipv4/tcp_ipv4.c             |   2 +
+ 11 files changed, 547 insertions(+)
+ create mode 100644 include/net/netns/tcp_authopt.h
+ create mode 100644 include/net/tcp_authopt.h
+ create mode 100644 net/ipv4/tcp_authopt.c
+
+diff --git a/include/linux/tcp.h b/include/linux/tcp.h
+index a9fbe22732c3..551942883f06 100644
+--- a/include/linux/tcp.h
++++ b/include/linux/tcp.h
+@@ -170,10 +170,12 @@ struct tcp_request_sock {
+ static inline struct tcp_request_sock *tcp_rsk(const struct request_sock *req)
+ {
+ 	return (struct tcp_request_sock *)req;
+ }
+ 
++struct tcp_authopt_info;
++
+ struct tcp_sock {
+ 	/* inet_connection_sock has to be the first member of tcp_sock */
+ 	struct inet_connection_sock	inet_conn;
+ 	u16	tcp_header_len;	/* Bytes of tcp header to send		*/
+ 	u16	gso_segs;	/* Max number of segs per GSO packet	*/
+@@ -434,10 +436,14 @@ struct tcp_sock {
+ 
+ /* TCP MD5 Signature Option information */
+ 	struct tcp_md5sig_info	__rcu *md5sig_info;
+ #endif
+ 
++#ifdef CONFIG_TCP_AUTHOPT
++	struct tcp_authopt_info	__rcu *authopt_info;
++#endif
++
+ /* TCP fastopen related information */
+ 	struct tcp_fastopen_request *fastopen_req;
+ 	/* fastopen_rsk points to request_sock that resulted in this big
+ 	 * socket. Used to retransmit SYNACKs etc.
+ 	 */
+@@ -484,10 +490,13 @@ struct tcp_timewait_sock {
+ 	int			  tw_ts_recent_stamp;
+ 	u32			  tw_tx_delay;
+ #ifdef CONFIG_TCP_MD5SIG
+ 	struct tcp_md5sig_key	  *tw_md5_key;
+ #endif
++#ifdef CONFIG_TCP_AUTHOPT
++	struct tcp_authopt_info	  *tw_authopt_info;
++#endif
+ };
+ 
+ static inline struct tcp_timewait_sock *tcp_twsk(const struct sock *sk)
+ {
+ 	return (struct tcp_timewait_sock *)sk;
+diff --git a/include/net/net_namespace.h b/include/net/net_namespace.h
+index 8c3587d5c308..30964366951d 100644
+--- a/include/net/net_namespace.h
++++ b/include/net/net_namespace.h
+@@ -35,10 +35,11 @@
+ #include <net/netns/can.h>
+ #include <net/netns/xdp.h>
+ #include <net/netns/smc.h>
+ #include <net/netns/bpf.h>
+ #include <net/netns/mctp.h>
++#include <net/netns/tcp_authopt.h>
+ #include <net/net_trackers.h>
+ #include <linux/ns_common.h>
+ #include <linux/idr.h>
+ #include <linux/skbuff.h>
+ #include <linux/notifier.h>
+@@ -184,10 +185,13 @@ struct net {
+ #endif
+ 	struct sock		*diag_nlsk;
+ #if IS_ENABLED(CONFIG_SMC)
+ 	struct netns_smc	smc;
+ #endif
++#if IS_ENABLED(CONFIG_TCP_AUTHOPT)
++	struct netns_tcp_authopt	tcp_authopt;
++#endif
+ } __randomize_layout;
+ 
+ #include <linux/seq_file_net.h>
+ 
+ /* Init's network namespace */
+diff --git a/include/net/netns/tcp_authopt.h b/include/net/netns/tcp_authopt.h
+new file mode 100644
+index 000000000000..03b7f4e58448
+--- /dev/null
++++ b/include/net/netns/tcp_authopt.h
+@@ -0,0 +1,12 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef __NETNS_TCP_AUTHOPT_H__
++#define __NETNS_TCP_AUTHOPT_H__
++
++#include <linux/mutex.h>
++
++struct netns_tcp_authopt {
++	struct hlist_head head;
++	struct mutex mutex;
++};
++
++#endif /* __NETNS_TCP_AUTHOPT_H__ */
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index f9e7c85ea829..7d335f96238d 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -184,10 +184,11 @@ void tcp_time_wait(struct sock *sk, int state, int timeo);
+ #define TCPOPT_WINDOW		3	/* Window scaling */
+ #define TCPOPT_SACK_PERM        4       /* SACK Permitted */
+ #define TCPOPT_SACK             5       /* SACK Block */
+ #define TCPOPT_TIMESTAMP	8	/* Better RTT estimations/PAWS */
+ #define TCPOPT_MD5SIG		19	/* MD5 Signature (RFC2385) */
++#define TCPOPT_AUTHOPT		29	/* Auth Option (RFC5925) */
+ #define TCPOPT_MPTCP		30	/* Multipath TCP (RFC6824) */
+ #define TCPOPT_FASTOPEN		34	/* Fast open (RFC7413) */
+ #define TCPOPT_EXP		254	/* Experimental */
+ /* Magic number to be after the option value for sharing TCP
+  * experimental options. See draft-ietf-tcpm-experimental-options-00.txt
+diff --git a/include/net/tcp_authopt.h b/include/net/tcp_authopt.h
+new file mode 100644
+index 000000000000..adf325c260d5
+--- /dev/null
++++ b/include/net/tcp_authopt.h
+@@ -0,0 +1,74 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++#ifndef _LINUX_TCP_AUTHOPT_H
++#define _LINUX_TCP_AUTHOPT_H
++
++#include <uapi/linux/tcp.h>
++#include <net/netns/tcp_authopt.h>
++#include <linux/tcp.h>
++
++/**
++ * struct tcp_authopt_key_info - Representation of a Master Key Tuple as per RFC5925
++ *
++ * Key structure lifetime is protected by RCU so send/recv code needs to hold a
++ * single rcu_read_lock until they're done with the key.
++ *
++ * Global keys can be cached in sockets, this requires increasing kref.
++ */
++struct tcp_authopt_key_info {
++	/** @node: node in &netns_tcp_authopt.head list */
++	struct hlist_node node;
++	/** @rcu: for kfree_rcu */
++	struct rcu_head rcu;
++	/** @ref: for kref_put */
++	struct kref ref;
++	/** @flags: Combination of &enum tcp_authopt_key_flag */
++	u32 flags;
++	/** @send_id: Same as &tcp_authopt_key.send_id */
++	u8 send_id;
++	/** @recv_id: Same as &tcp_authopt_key.recv_id */
++	u8 recv_id;
++	/** @alg_id: Same as &tcp_authopt_key.alg */
++	u8 alg_id;
++	/** @keylen: Same as &tcp_authopt_key.keylen */
++	u8 keylen;
++	/** @key: Same as &tcp_authopt_key.key */
++	u8 key[TCP_AUTHOPT_MAXKEYLEN];
++	/** @addr: Same as &tcp_authopt_key.addr */
++	struct sockaddr_storage addr;
++};
++
++/**
++ * struct tcp_authopt_info - Per-socket information regarding tcp_authopt
++ *
++ * This is lazy-initialized in order to avoid increasing memory usage for
++ * regular TCP sockets. Once created it is only destroyed on socket close.
++ */
++struct tcp_authopt_info {
++	/** @rcu: for kfree_rcu */
++	struct rcu_head rcu;
++	/** @flags: Combination of &enum tcp_authopt_flag */
++	u32 flags;
++	/** @src_isn: Local Initial Sequence Number */
++	u32 src_isn;
++	/** @dst_isn: Remote Initial Sequence Number */
++	u32 dst_isn;
++};
++
++#ifdef CONFIG_TCP_AUTHOPT
++DECLARE_STATIC_KEY_FALSE(tcp_authopt_needed_key);
++#define tcp_authopt_needed (static_branch_unlikely(&tcp_authopt_needed_key))
++void tcp_authopt_clear(struct sock *sk);
++int tcp_set_authopt(struct sock *sk, sockptr_t optval, unsigned int optlen);
++int tcp_get_authopt_val(struct sock *sk, struct tcp_authopt *key);
++int tcp_set_authopt_key(struct sock *sk, sockptr_t optval, unsigned int optlen);
++#else
++static inline int tcp_get_authopt_val(struct sock *sk, struct tcp_authopt *key)
++{
++	return -ENOPROTOOPT;
++}
++static inline void tcp_authopt_clear(struct sock *sk)
++{
++}
++#endif
++
++#endif /* _LINUX_TCP_AUTHOPT_H */
+diff --git a/include/uapi/linux/tcp.h b/include/uapi/linux/tcp.h
+index 8fc09e8638b3..76d7be6b27f4 100644
+--- a/include/uapi/linux/tcp.h
++++ b/include/uapi/linux/tcp.h
+@@ -126,10 +126,12 @@ enum {
+ #define TCP_INQ			36	/* Notify bytes available to read as a cmsg on read */
+ 
+ #define TCP_CM_INQ		TCP_INQ
+ 
+ #define TCP_TX_DELAY		37	/* delay outgoing packets by XX usec */
++#define TCP_AUTHOPT		38	/* TCP Authentication Option (RFC5925) */
++#define TCP_AUTHOPT_KEY		39	/* TCP Authentication Option Key (RFC5925) */
+ 
+ 
+ #define TCP_REPAIR_ON		1
+ #define TCP_REPAIR_OFF		0
+ #define TCP_REPAIR_OFF_NO_WP	-1	/* Turn off without window probes */
+@@ -340,10 +342,89 @@ struct tcp_diag_md5sig {
+ 	__u16	tcpm_keylen;
+ 	__be32	tcpm_addr[4];
+ 	__u8	tcpm_key[TCP_MD5SIG_MAXKEYLEN];
+ };
+ 
++/**
++ * enum tcp_authopt_flag - flags for `tcp_authopt.flags`
++ */
++enum tcp_authopt_flag {
++	/**
++	 * @TCP_AUTHOPT_FLAG_REJECT_UNEXPECTED:
++	 *	Configure behavior of segments with TCP-AO coming from hosts for which no
++	 *	key is configured. The default recommended by RFC is to silently accept
++	 *	such connections.
++	 */
++	TCP_AUTHOPT_FLAG_REJECT_UNEXPECTED = (1 << 2),
++};
++
++/**
++ * struct tcp_authopt - Per-socket options related to TCP Authentication Option
++ */
++struct tcp_authopt {
++	/** @flags: Combination of &enum tcp_authopt_flag */
++	__u32	flags;
++};
++
++/**
++ * enum tcp_authopt_key_flag - flags for `tcp_authopt.flags`
++ *
++ * @TCP_AUTHOPT_KEY_DEL: Delete the key and ignore non-id fields
++ * @TCP_AUTHOPT_KEY_EXCLUDE_OPTS: Exclude TCP options from signature
++ * @TCP_AUTHOPT_KEY_ADDR_BIND: Key only valid for `tcp_authopt.addr`
++ */
++enum tcp_authopt_key_flag {
++	TCP_AUTHOPT_KEY_DEL = (1 << 0),
++	TCP_AUTHOPT_KEY_EXCLUDE_OPTS = (1 << 1),
++	TCP_AUTHOPT_KEY_ADDR_BIND = (1 << 2),
++};
++
++/**
++ * enum tcp_authopt_alg - Algorithms for TCP Authentication Option
++ */
++enum tcp_authopt_alg {
++	/** @TCP_AUTHOPT_ALG_HMAC_SHA_1_96: HMAC-SHA-1-96 as described in RFC5926 */
++	TCP_AUTHOPT_ALG_HMAC_SHA_1_96 = 1,
++	/** @TCP_AUTHOPT_ALG_AES_128_CMAC_96: AES-128-CMAC-96 as described in RFC5926 */
++	TCP_AUTHOPT_ALG_AES_128_CMAC_96 = 2,
++};
++
++/* for TCP_AUTHOPT_KEY socket option */
++#define TCP_AUTHOPT_MAXKEYLEN	80
++
++/**
++ * struct tcp_authopt_key - TCP Authentication KEY
++ *
++ * Key are identified by the combination of:
++ * - send_id
++ * - recv_id
++ * - addr (iff TCP_AUTHOPT_KEY_ADDR_BIND)
++ *
++ * RFC5925 requires that key ids must not overlap for the same TCP connection.
++ * This is not enforced by linux.
++ */
++struct tcp_authopt_key {
++	/** @flags: Combination of &enum tcp_authopt_key_flag */
++	__u32	flags;
++	/** @send_id: keyid value for send */
++	__u8	send_id;
++	/** @recv_id: keyid value for receive */
++	__u8	recv_id;
++	/** @alg: One of &enum tcp_authopt_alg */
++	__u8	alg;
++	/** @keylen: Length of the key buffer */
++	__u8	keylen;
++	/** @key: Secret key */
++	__u8	key[TCP_AUTHOPT_MAXKEYLEN];
++	/**
++	 * @addr: Key is only valid for this address
++	 *
++	 * Ignored unless TCP_AUTHOPT_KEY_ADDR_BIND flag is set
++	 */
++	struct __kernel_sockaddr_storage addr;
++};
++
+ /* setsockopt(fd, IPPROTO_TCP, TCP_ZEROCOPY_RECEIVE, ...) */
+ 
+ #define TCP_RECEIVE_ZEROCOPY_FLAG_TLB_CLEAN_HINT 0x1
+ struct tcp_zerocopy_receive {
+ 	__u64 address;		/* in: address of mapping */
+diff --git a/net/ipv4/Kconfig b/net/ipv4/Kconfig
+index e983bb0c5012..75f7e3c75ea6 100644
+--- a/net/ipv4/Kconfig
++++ b/net/ipv4/Kconfig
+@@ -739,5 +739,19 @@ config TCP_MD5SIG
+ 	  RFC2385 specifies a method of giving MD5 protection to TCP sessions.
+ 	  Its main (only?) use is to protect BGP sessions between core routers
+ 	  on the Internet.
+ 
+ 	  If unsure, say N.
++
++config TCP_AUTHOPT
++	bool "TCP: Authentication Option support (RFC5925)"
++	select CRYPTO
++	select CRYPTO_SHA1
++	select CRYPTO_HMAC
++	select CRYPTO_AES
++	select CRYPTO_CMAC
++	help
++	  RFC5925 specifies a new method of giving protection to TCP sessions.
++	  Its intended use is to protect BGP sessions between core routers
++	  on the Internet. It obsoletes TCP MD5 (RFC2385) but is incompatible.
++
++	  If unsure, say N.
+diff --git a/net/ipv4/Makefile b/net/ipv4/Makefile
+index bbdd9c44f14e..d336f32ce177 100644
+--- a/net/ipv4/Makefile
++++ b/net/ipv4/Makefile
+@@ -59,10 +59,11 @@ obj-$(CONFIG_TCP_CONG_NV) += tcp_nv.o
+ obj-$(CONFIG_TCP_CONG_VENO) += tcp_veno.o
+ obj-$(CONFIG_TCP_CONG_SCALABLE) += tcp_scalable.o
+ obj-$(CONFIG_TCP_CONG_LP) += tcp_lp.o
+ obj-$(CONFIG_TCP_CONG_YEAH) += tcp_yeah.o
+ obj-$(CONFIG_TCP_CONG_ILLINOIS) += tcp_illinois.o
++obj-$(CONFIG_TCP_AUTHOPT) += tcp_authopt.o
+ obj-$(CONFIG_NET_SOCK_MSG) += tcp_bpf.o
+ obj-$(CONFIG_BPF_SYSCALL) += udp_bpf.o
+ obj-$(CONFIG_NETLABEL) += cipso_ipv4.o
+ 
+ obj-$(CONFIG_XFRM) += xfrm4_policy.o xfrm4_state.o xfrm4_input.o \
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index ba2bdc811374..791f218b8c66 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -270,10 +270,11 @@
+ 
+ #include <net/icmp.h>
+ #include <net/inet_common.h>
+ #include <net/tcp.h>
+ #include <net/mptcp.h>
++#include <net/tcp_authopt.h>
+ #include <net/xfrm.h>
+ #include <net/ip.h>
+ #include <net/sock.h>
+ 
+ #include <linux/uaccess.h>
+@@ -3666,10 +3667,18 @@ static int do_tcp_setsockopt(struct sock *sk, int level, int optname,
+ #ifdef CONFIG_TCP_MD5SIG
+ 	case TCP_MD5SIG:
+ 	case TCP_MD5SIG_EXT:
+ 		err = tp->af_specific->md5_parse(sk, optname, optval, optlen);
+ 		break;
++#endif
++#ifdef CONFIG_TCP_AUTHOPT
++	case TCP_AUTHOPT:
++		err = tcp_set_authopt(sk, optval, optlen);
++		break;
++	case TCP_AUTHOPT_KEY:
++		err = tcp_set_authopt_key(sk, optval, optlen);
++		break;
+ #endif
+ 	case TCP_USER_TIMEOUT:
+ 		/* Cap the max time in ms TCP will retry or probe the window
+ 		 * before giving up and aborting (ETIMEDOUT) a connection.
+ 		 */
+@@ -4317,10 +4326,33 @@ static int do_tcp_getsockopt(struct sock *sk, int level,
+ 		if (!err && copy_to_user(optval, &zc, len))
+ 			err = -EFAULT;
+ 		return err;
+ 	}
+ #endif
++#ifdef CONFIG_TCP_AUTHOPT
++	case TCP_AUTHOPT: {
++		struct tcp_authopt info;
++		int err;
++
++		if (get_user(len, optlen))
++			return -EFAULT;
++
++		lock_sock(sk);
++		err = tcp_get_authopt_val(sk, &info);
++		release_sock(sk);
++
++		if (err)
++			return err;
++		len = min_t(unsigned int, len, sizeof(info));
++		if (put_user(len, optlen))
++			return -EFAULT;
++		if (copy_to_user(optval, &info, len))
++			return -EFAULT;
++		return 0;
++	}
++#endif
++
+ 	default:
+ 		return -ENOPROTOOPT;
+ 	}
+ 
+ 	if (put_user(len, optlen))
+diff --git a/net/ipv4/tcp_authopt.c b/net/ipv4/tcp_authopt.c
+new file mode 100644
+index 000000000000..d38e9c89c89d
+--- /dev/null
++++ b/net/ipv4/tcp_authopt.c
+@@ -0,0 +1,317 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++
++#include <net/tcp_authopt.h>
++#include <net/ipv6.h>
++#include <net/tcp.h>
++#include <linux/kref.h>
++
++/* This is enabled when first struct tcp_authopt_info is allocated and never released */
++DEFINE_STATIC_KEY_FALSE(tcp_authopt_needed_key);
++EXPORT_SYMBOL(tcp_authopt_needed_key);
++
++static inline struct netns_tcp_authopt *sock_net_tcp_authopt(const struct sock *sk)
++{
++	return &sock_net(sk)->tcp_authopt;
++}
++
++static void tcp_authopt_key_release_kref(struct kref *ref)
++{
++	struct tcp_authopt_key_info *key = container_of(ref, struct tcp_authopt_key_info, ref);
++
++	kfree_rcu(key, rcu);
++}
++
++static void tcp_authopt_key_put(struct tcp_authopt_key_info *key)
++{
++	if (key)
++		kref_put(&key->ref, tcp_authopt_key_release_kref);
++}
++
++static void tcp_authopt_key_del(struct netns_tcp_authopt *net,
++				struct tcp_authopt_key_info *key)
++{
++	lockdep_assert_held(&net->mutex);
++	hlist_del_rcu(&key->node);
++	key->flags |= TCP_AUTHOPT_KEY_DEL;
++	kref_put(&key->ref, tcp_authopt_key_release_kref);
++}
++
++/* Free info and keys.
++ * Don't touch tp->authopt_info, it might not even be assigned yes.
++ */
++void tcp_authopt_free(struct sock *sk, struct tcp_authopt_info *info)
++{
++	kfree_rcu(info, rcu);
++}
++
++/* Free everything and clear tcp_sock.authopt_info to NULL */
++void tcp_authopt_clear(struct sock *sk)
++{
++	struct tcp_authopt_info *info;
++
++	info = rcu_dereference_protected(tcp_sk(sk)->authopt_info, lockdep_sock_is_held(sk));
++	if (info) {
++		tcp_authopt_free(sk, info);
++		tcp_sk(sk)->authopt_info = NULL;
++	}
++}
++
++/* checks that ipv4 or ipv6 addr matches. */
++static bool ipvx_addr_match(struct sockaddr_storage *a1,
++			    struct sockaddr_storage *a2)
++{
++	if (a1->ss_family != a2->ss_family)
++		return false;
++	if (a1->ss_family == AF_INET &&
++	    (((struct sockaddr_in *)a1)->sin_addr.s_addr !=
++	     ((struct sockaddr_in *)a2)->sin_addr.s_addr))
++		return false;
++	if (a1->ss_family == AF_INET6 &&
++	    !ipv6_addr_equal(&((struct sockaddr_in6 *)a1)->sin6_addr,
++			     &((struct sockaddr_in6 *)a2)->sin6_addr))
++		return false;
++	return true;
++}
++
++static bool tcp_authopt_key_match_exact(struct tcp_authopt_key_info *info,
++					struct tcp_authopt_key *key)
++{
++	if (info->send_id != key->send_id)
++		return false;
++	if (info->recv_id != key->recv_id)
++		return false;
++	if ((info->flags & TCP_AUTHOPT_KEY_ADDR_BIND) != (key->flags & TCP_AUTHOPT_KEY_ADDR_BIND))
++		return false;
++	if (info->flags & TCP_AUTHOPT_KEY_ADDR_BIND)
++		if (!ipvx_addr_match(&info->addr, &key->addr))
++			return false;
++
++	return true;
++}
++
++static struct tcp_authopt_key_info *tcp_authopt_key_lookup_exact(const struct sock *sk,
++								 struct netns_tcp_authopt *net,
++								 struct tcp_authopt_key *ukey)
++{
++	struct tcp_authopt_key_info *key_info;
++
++	hlist_for_each_entry_rcu(key_info, &net->head, node, lockdep_is_held(&net->mutex))
++		if (tcp_authopt_key_match_exact(key_info, ukey))
++			return key_info;
++
++	return NULL;
++}
++
++static struct tcp_authopt_info *__tcp_authopt_info_get_or_create(struct sock *sk)
++{
++	struct tcp_sock *tp = tcp_sk(sk);
++	struct tcp_authopt_info *info;
++
++	info = rcu_dereference_check(tp->authopt_info, lockdep_sock_is_held(sk));
++	if (info)
++		return info;
++
++	info = kzalloc(sizeof(*info), GFP_KERNEL);
++	if (!info)
++		return ERR_PTR(-ENOMEM);
++
++	/* Never released: */
++	static_branch_inc(&tcp_authopt_needed_key);
++	sk_gso_disable(sk);
++	rcu_assign_pointer(tp->authopt_info, info);
++
++	return info;
++}
++
++#define TCP_AUTHOPT_KNOWN_FLAGS ( \
++	TCP_AUTHOPT_FLAG_REJECT_UNEXPECTED)
++
++/* Like copy_from_sockptr except tolerate different optlen for compatibility reasons
++ *
++ * If the src is shorter then it's from an old userspace and the rest of dst is
++ * filled with zeros.
++ *
++ * If the dst is shorter then src is from a newer userspace and we only accept
++ * if the rest of the option is all zeros.
++ *
++ * This allows sockopts to grow as long as for new fields zeros has no effect.
++ */
++static int _copy_from_sockptr_tolerant(u8 *dst,
++				       unsigned int dstlen,
++				       sockptr_t src,
++				       unsigned int srclen)
++{
++	int err;
++
++	/* If userspace optlen is too short fill the rest with zeros */
++	if (srclen > dstlen) {
++		if (sockptr_is_kernel(src))
++			return -EINVAL;
++		err = check_zeroed_user(src.user + dstlen, srclen - dstlen);
++		if (err < 0)
++			return err;
++		if (err == 0)
++			return -EINVAL;
++	}
++	err = copy_from_sockptr(dst, src, min(srclen, dstlen));
++	if (err)
++		return err;
++	if (srclen < dstlen)
++		memset(dst + srclen, 0, dstlen - srclen);
++
++	return err;
++}
++
++int tcp_set_authopt(struct sock *sk, sockptr_t optval, unsigned int optlen)
++{
++	struct tcp_authopt opt;
++	struct tcp_authopt_info *info;
++	int err;
++
++	sock_owned_by_me(sk);
++
++	err = _copy_from_sockptr_tolerant((u8 *)&opt, sizeof(opt), optval, optlen);
++	if (err)
++		return err;
++
++	if (opt.flags & ~TCP_AUTHOPT_KNOWN_FLAGS)
++		return -EINVAL;
++
++	info = __tcp_authopt_info_get_or_create(sk);
++	if (IS_ERR(info))
++		return PTR_ERR(info);
++
++	info->flags = opt.flags & TCP_AUTHOPT_KNOWN_FLAGS;
++
++	return 0;
++}
++
++int tcp_get_authopt_val(struct sock *sk, struct tcp_authopt *opt)
++{
++	struct tcp_sock *tp = tcp_sk(sk);
++	struct tcp_authopt_info *info;
++
++	memset(opt, 0, sizeof(*opt));
++	sock_owned_by_me(sk);
++
++	info = rcu_dereference_check(tp->authopt_info, lockdep_sock_is_held(sk));
++	if (!info)
++		return -ENOENT;
++
++	opt->flags = info->flags & TCP_AUTHOPT_KNOWN_FLAGS;
++
++	return 0;
++}
++
++#define TCP_AUTHOPT_KEY_KNOWN_FLAGS ( \
++	TCP_AUTHOPT_KEY_DEL | \
++	TCP_AUTHOPT_KEY_EXCLUDE_OPTS | \
++	TCP_AUTHOPT_KEY_ADDR_BIND)
++
++int tcp_set_authopt_key(struct sock *sk, sockptr_t optval, unsigned int optlen)
++{
++	struct tcp_authopt_key opt;
++	struct tcp_authopt_info *info;
++	struct tcp_authopt_key_info *key_info, *old_key_info;
++	struct netns_tcp_authopt *net = sock_net_tcp_authopt(sk);
++	int err;
++
++	sock_owned_by_me(sk);
++	if (!ns_capable(sock_net(sk)->user_ns, CAP_NET_ADMIN))
++		return -EPERM;
++
++	err = _copy_from_sockptr_tolerant((u8 *)&opt, sizeof(opt), optval, optlen);
++	if (err)
++		return err;
++
++	if (opt.flags & ~TCP_AUTHOPT_KEY_KNOWN_FLAGS)
++		return -EINVAL;
++
++	if (opt.keylen > TCP_AUTHOPT_MAXKEYLEN)
++		return -EINVAL;
++
++	/* Delete is a special case: */
++	if (opt.flags & TCP_AUTHOPT_KEY_DEL) {
++		mutex_lock(&net->mutex);
++		key_info = tcp_authopt_key_lookup_exact(sk, net, &opt);
++		if (key_info) {
++			tcp_authopt_key_del(net, key_info);
++			err = 0;
++		} else {
++			err = -ENOENT;
++		}
++		mutex_unlock(&net->mutex);
++		return err;
++	}
++
++	/* check key family */
++	if (opt.flags & TCP_AUTHOPT_KEY_ADDR_BIND) {
++		if (sk->sk_family != opt.addr.ss_family)
++			return -EINVAL;
++	}
++
++	/* Initialize tcp_authopt_info if not already set */
++	info = __tcp_authopt_info_get_or_create(sk);
++	if (IS_ERR(info))
++		return PTR_ERR(info);
++
++	key_info = kmalloc(sizeof(*key_info), GFP_KERNEL | __GFP_ZERO);
++	if (!key_info)
++		return -ENOMEM;
++	mutex_lock(&net->mutex);
++	kref_init(&key_info->ref);
++	/* If an old key exists with exact ID then remove and replace.
++	 * RCU-protected readers might observe both and pick any.
++	 */
++	old_key_info = tcp_authopt_key_lookup_exact(sk, net, &opt);
++	if (old_key_info)
++		tcp_authopt_key_del(net, old_key_info);
++	key_info->flags = opt.flags & TCP_AUTHOPT_KEY_KNOWN_FLAGS;
++	key_info->send_id = opt.send_id;
++	key_info->recv_id = opt.recv_id;
++	key_info->alg_id = opt.alg;
++	key_info->keylen = opt.keylen;
++	memcpy(key_info->key, opt.key, opt.keylen);
++	memcpy(&key_info->addr, &opt.addr, sizeof(key_info->addr));
++	hlist_add_head_rcu(&key_info->node, &net->head);
++	mutex_unlock(&net->mutex);
++
++	return 0;
++}
++
++static int tcp_authopt_init_net(struct net *full_net)
++{
++	struct netns_tcp_authopt *net = &full_net->tcp_authopt;
++
++	mutex_init(&net->mutex);
++	INIT_HLIST_HEAD(&net->head);
++
++	return 0;
++}
++
++static void tcp_authopt_exit_net(struct net *full_net)
++{
++	struct netns_tcp_authopt *net = &full_net->tcp_authopt;
++	struct tcp_authopt_key_info *key;
++	struct hlist_node *n;
++
++	mutex_lock(&net->mutex);
++
++	hlist_for_each_entry_safe(key, n, &net->head, node) {
++		hlist_del_rcu(&key->node);
++		tcp_authopt_key_put(key);
++	}
++
++	mutex_unlock(&net->mutex);
++}
++
++static struct pernet_operations net_ops = {
++	.init = tcp_authopt_init_net,
++	.exit = tcp_authopt_exit_net,
++};
++
++static int __init tcp_authopt_init(void)
++{
++	return register_pernet_subsys(&net_ops);
++}
++late_initcall(tcp_authopt_init);
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index c7e7101647dc..d011937b8785 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -60,10 +60,11 @@
+ 
+ #include <net/net_namespace.h>
+ #include <net/icmp.h>
+ #include <net/inet_hashtables.h>
+ #include <net/tcp.h>
++#include <net/tcp_authopt.h>
+ #include <net/transp_v6.h>
+ #include <net/ipv6.h>
+ #include <net/inet_common.h>
+ #include <net/timewait_sock.h>
+ #include <net/xfrm.h>
+@@ -2248,10 +2249,11 @@ void tcp_v4_destroy_sock(struct sock *sk)
+ 		tcp_clear_md5_list(sk);
+ 		kfree_rcu(rcu_dereference_protected(tp->md5sig_info, 1), rcu);
+ 		tp->md5sig_info = NULL;
+ 	}
+ #endif
++	tcp_authopt_clear(sk);
+ 
+ 	/* Clean up a referenced TCP bind bucket. */
+ 	if (inet_csk(sk)->icsk_bind_hash)
+ 		inet_put_port(sk);
+ 
+-- 
+2.25.1
 
