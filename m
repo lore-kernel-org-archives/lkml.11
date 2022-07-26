@@ -2,30 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C2EBC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 12:32:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3358C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 12:32:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238657AbiGZMcf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 08:32:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37362 "EHLO
+        id S238702AbiGZMcj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 08:32:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233051AbiGZMca (ORCPT
+        with ESMTP id S233207AbiGZMca (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 26 Jul 2022 08:32:30 -0400
 Received: from smtp28.bhosted.nl (smtp28.bhosted.nl [IPv6:2a02:9e0:8000::40])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D4BB1A393
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 670EF27151
         for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 05:32:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=protonic.nl; s=202111;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc:to:from:
-         from;
-        bh=KLSWWkj5p/9aNi8xEecUTDY/28fCiwtrJb5KmQYidEI=;
-        b=jbrHO2Ijju3Tn/o8kVFgZT745vpc6iFK6E/zG9xzkZAkyUFMeqlwT7xiBZnzxX3y6or68pbBuUtA3
-         31CfAE8HrnvfW4taV2kvSmcYk/t/R5CFtzakqFVYEkr53djralM2sz8VrDwQNsJqXcwtysIf3nMbCH
-         oIbTe+VvpfqaU8zIng8ZgCGa6DYrm04GZPUSXQ6sgbG08gX9ctTWSGXVCTQB6xqQiJjhhfYMRWeX5R
-         lsMoS7vqbBSc1Uuk3CSmnvxsGLHMSowFWm6L0MXilOfz/3uVl5dRtEqzuVOzK1zhsZcMor1gU5S4n3
-         HBJYl8t/P/CE0zv4LGBvZYSywWs9ezg==
-X-MSG-ID: 00d891f8-0cdf-11ed-8a45-0050569d11ae
+        h=content-transfer-encoding:mime-version:references:in-reply-to:message-id:date:
+         subject:cc:to:from:from;
+        bh=Ev4N4q24UwXqRA9IZ9T6SOhwkJ7AA8kM5UgVGYCXGXQ=;
+        b=d0RrxLX+5rSzrN9QmweysEEObWTyM0ljDKDvGLjfnUjYArMeEzrmxGPwpiq0GviBB3vnrb0Cr2eVk
+         z9DhOhVZ7fcoMQVuu9JkjTETo1xG6n+zyJiutgYuTqMdR7Ifq9325ixMBFb3omrWHUbGnApQcVk5DY
+         7W/zYUeJ1lajGxomtrizHpjXYj98nlLGaJSd5Dh2Xiko7ilqetl3uLy00qOMQGNh2BNDrW/V/2SNeM
+         qf7rXqh+BtCxiEbrZSLaDphY/4RaXYevWJzBG1TZyOIYkRsRlI2Z1LCf123F+5q0BH+NhIIujga/O+
+         C2IanePDUou8CBwYJSTxNbr49CXC6yA==
+X-MSG-ID: 00f680fd-0cdf-11ed-8a45-0050569d11ae
 From:   David Jander <david@protonic.nl>
 To:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
@@ -37,30 +37,43 @@ Cc:     Shawn Guo <shawnguo@kernel.org>,
         NXP Linux Team <linux-imx@nxp.com>,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org, David Jander <david@protonic.nl>
-Subject: [PATCH v2 0/2] arm: dts: imx6qdl-vicut1.dtsi: Add backlight-isb node
-Date:   Tue, 26 Jul 2022 14:32:20 +0200
-Message-Id: <20220726123222.1074876-1-david@protonic.nl>
+Subject: [PATCH v2 2/2] arm: dts: imx6qdl-vicut1.dtsi: Fix node name backlight_led
+Date:   Tue, 26 Jul 2022 14:32:22 +0200
+Message-Id: <20220726123222.1074876-3-david@protonic.nl>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220726123222.1074876-1-david@protonic.nl>
+References: <20220726123222.1074876-1-david@protonic.nl>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series adds the backlight-isb node and fixes existing backlight_led
-node name.
+This naming error slipped through, so now that a new backlight node has
+been added with correct spelling, fix this one also.
 
+Fixes: 98efa526a0c4 ("ARM: dts: imx6qdl-vicut1/vicutgo: Add backlight_led node")
+Signed-off-by: David Jander <david@protonic.nl>
 ---
 v2:
- - Fix node names to use minus character instead of underscore.
+ - new patch in series
+---
+ arch/arm/boot/dts/imx6qdl-vicut1.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-David Jander (2):
-  arm: dts: imx6qdl-vicut1.dtsi: Add backlight-isb node
-  arm: dts: imx6qdl-vicut1.dtsi: Fix node name backlight_led
-
- arch/arm/boot/dts/imx6qdl-vicut1.dtsi | 24 +++++++++++++++++++++++-
- 1 file changed, 23 insertions(+), 1 deletion(-)
-
+diff --git a/arch/arm/boot/dts/imx6qdl-vicut1.dtsi b/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
+index 8a2512f3f378..c4e6cf0527ba 100644
+--- a/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
++++ b/arch/arm/boot/dts/imx6qdl-vicut1.dtsi
+@@ -28,7 +28,7 @@ backlight_lcd: backlight {
+ 		enable-gpios = <&gpio4 28 GPIO_ACTIVE_HIGH>;
+ 	};
+ 
+-	backlight_led: backlight_led {
++	backlight_led: backlight-led {
+ 		compatible = "pwm-backlight";
+ 		pwms = <&pwm3 0 5000000 0>;
+ 		brightness-levels = <0 16 64 255>;
 -- 
 2.32.0
 
