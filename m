@@ -2,140 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A4EDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 07:24:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6E9ACCA489
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 07:30:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238434AbiGZHYn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 03:24:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57808 "EHLO
+        id S238149AbiGZHaa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 03:30:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238074AbiGZHXt (ORCPT
+        with ESMTP id S238913AbiGZHaE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 03:23:49 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E7F82BB0A;
-        Tue, 26 Jul 2022 00:23:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1658820190;
-        bh=87Dwh7067qd7DtPJ/NTAN/t/IaMuPuUKPEZAEiBlBAo=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=kP/NQsiROB70ArzFE552x2oNxBc80FiKCiR+cIXDKc0GMYc2GlKwxTkUPjfVlIQjn
-         buHKK7Ozk1vyq35A+LZ5DvKamw7dsEaX8Nfi2lsJSQv0dfHFrWEb7kKCSEbXrl+cuo
-         BpiYh/auhun04r+Dzsi0e5DpuNwuS2FV923oQ124=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.186.181]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MCbEp-1oOFOn1WZn-009hWr; Tue, 26
- Jul 2022 09:23:10 +0200
-Message-ID: <4b3e4d1b-e219-1ecc-5dd3-d693c69f6124@gmx.de>
-Date:   Tue, 26 Jul 2022 09:22:26 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] fbdev: Make registered_fb[] private to fbmem.c
-Content-Language: en-US
-To:     Javier Martinez Canillas <javierm@redhat.com>,
-        linux-kernel@vger.kernel.org
-Cc:     linux-staging@lists.linux.dev,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        dri-devel@lists.freedesktop.org,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Sam Ravnborg <sam@ravnborg.org>, linux-fbdev@vger.kernel.org
-References: <20220725075400.68478-1-javierm@redhat.com>
-From:   Helge Deller <deller@gmx.de>
-In-Reply-To: <20220725075400.68478-1-javierm@redhat.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:akojF7SaFix7y2EiczH+UV96lavMDM7AZJsP+iaDgbQEG+V+i2q
- AHp5GhXCKXNYNDOCssfMAC/zfYNxRCCJshEriwFrLnGyA1Y6pwwtSwNag0vDCVz4l90tkVW
- DIiFJN86HihlvrTwFG4ohFYO7eklHfRT3PRulwLXOdHR0cKitqTH/XJOidG4mMQ2ZIdaVip
- Qb52HfSj5m1KZaPuL+4Mw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:2epUbeCrlb4=:nJ4/GE1ohg6n44gxvvA1g0
- 9tcYvqxfX29++V5TPhldux6wE+5RdakqeysnSOxwvJtU3QsfOiPWnuBaTfZHFB2e6XDI+62yX
- Nz83sJk6qIPwxUFOPONNz62ypPSCcY0rjf82hjb9Hi2Lwi85RE/Wv8KDJ3LCi9TZKxrOOLM6x
- q+0Fuy3DBSUKYuB0H+alZufFJ4j9+65ZpF4aOYW/hoMPFFTBOIw0Xxr1IeTidvFollcEnQbpF
- +XfC3CGTqdf8bJwlRC6jN+hBcc7B1hgFvn25YROveAwOV/g5GveJS1Z/O4KvGV/iCcoqgsrNM
- fCRA6jQToPDoNE8T4SQV+5vmc5jalrSX83t4zGpWJcZPQPD2KWlGjs1bwLozn0sQuFfvLOKaN
- 1gNdrbYTNgLXnVUAKgvVSCF2xgDAoBsg/lM3MWfDou6DtlNcL9hCY6hS8gHKrlB4Mi1eS5Hqi
- Y2sod2IRPNdEAofC/+7dApmBcSJwAG49Lft5z+At3tVmHld2z3+b2dU9yMk1bOt81R5SmngJ6
- mwH9FdhZ5bpEr+dH3pqPGNEtiPgP6EOh/jFkUB2wCZPiiQuYpjJ6Px9/s32f0mDRLaZBb9zGc
- I6MQdYh6nJL83crGe3gAUjbVPzzGxuqRwhLI7zSXdl+eTi8iDnnYXpH7XEduENG7QxoMOiBcK
- +6R+9C0uYujlTGYfXL1EehIwPQlWmwlj74S8lWa8LysB0fc4qzdA0OT+iJtJwKNST/iI6ua5u
- 5O4GRigAerQA11xXo4LUlVxuJGyKHUwW8YNM+4/TfHCfJ8pV4A3s/znEd2WDuP9ex4mMnV8vw
- EzJWkCF4ZlgOTcdqREApz5ZP1jbgnHPGsQ69+W7P9ur/r5G6PrUmeCRGC+o4vRU61t59jySXd
- U25SRnofD0CgrpZbbw3x8JBb7sDbu5kUTFX9IxjfJ0rh1B0cOuNVBe+oyh8cRAKoBxNN3rVik
- hDwE6VpFYPlsHH3CwY5RHmurfpyIG9SlHBs18HCeIBzkReUl2/KrEt1geR+BgTxUl1QIo5l9P
- Nqi5mil5Kv6r+pYpXO/lxteBQMq4F4PQyPdzB5kBHYyN23nVpXw7P6kWDWranPh6v94XYpcAK
- cH4e6S9KuZae9P7D9d5AkDswbDqf+s2iP0IegQL/JOeQhdkk0zT83Vv8Q==
+        Tue, 26 Jul 2022 03:30:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B624313A9;
+        Tue, 26 Jul 2022 00:26:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EFC9A6140C;
+        Tue, 26 Jul 2022 07:26:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B671C341C0;
+        Tue, 26 Jul 2022 07:26:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658820408;
+        bh=veRkIDCqptkOgNvN8gKZoJ3NMTYgf1l2jaf1qWS1GnQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=tJ98ozpGXZLxxh2hAnUgk7iPv89n7i8DJmPzndfWoo/JJQ4pnmzqCV+qXUZrEJKTX
+         lg8nIMxmyKe/xRi8c3vYl7IFMePgjr9RjVuz8/I6Z4LaBxeXSE6BbfLg5TuPWFLK2P
+         RYm30YO2vWBUyCQCuYuFGfcEqf/advCvJjnfcfY4vVqjBy/vyrOT2SIHTC1+GBRTMt
+         TJ2cBEg/AaAL4EGejBP8GBMR+bKYQj+Tar65QJNMs6JTUtEOOVj/Bpf/Qnak/zgLLU
+         tWOtLAq3TKELEIk3b7P2LP9aSXd1yxqDYVf/RE/SVd49aZT9MV0htZOVh0D+Gm9VST
+         dMKgugyK9VBUA==
+Received: from ip-185-104-136-29.ptr.icomera.net ([185.104.136.29] helo=wait-a-minute.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <maz@kernel.org>)
+        id 1oGExp-00A0re-SJ;
+        Tue, 26 Jul 2022 08:26:46 +0100
+Date:   Tue, 26 Jul 2022 08:26:43 +0100
+Message-ID: <87y1wgbah8.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     <Conor.Dooley@microchip.com>
+Cc:     <helgaas@kernel.org>, <pali@kernel.org>, <johan+linaro@kernel.org>,
+        <kishon@ti.com>, <songxiaowei@hisilicon.com>,
+        <wangbinghui@hisilicon.com>, <thierry.reding@gmail.com>,
+        <ryder.lee@mediatek.com>, <jianjun.wang@mediatek.com>,
+        <linux-pci@vger.kernel.org>, <kw@linux.com>,
+        <ley.foon.tan@intel.com>, <linux-kernel@vger.kernel.org>,
+        <Daire.McNamara@microchip.com>
+Subject: Re: Why set .suppress_bind_attrs even though .remove() implemented?
+In-Reply-To: <e3fb313a-f634-3429-05ea-ebaa98809c71@microchip.com>
+References: <20220721222122.GA1754784@bhelgaas>
+        <20220722143905.GA1818909@bhelgaas>
+        <87k085xekg.wl-maz@kernel.org>
+        <e3fb313a-f634-3429-05ea-ebaa98809c71@microchip.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.104.136.29
+X-SA-Exim-Rcpt-To: Conor.Dooley@microchip.com, helgaas@kernel.org, pali@kernel.org, johan+linaro@kernel.org, kishon@ti.com, songxiaowei@hisilicon.com, wangbinghui@hisilicon.com, thierry.reding@gmail.com, ryder.lee@mediatek.com, jianjun.wang@mediatek.com, linux-pci@vger.kernel.org, kw@linux.com, ley.foon.tan@intel.com, linux-kernel@vger.kernel.org, Daire.McNamara@microchip.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/25/22 09:54, Javier Martinez Canillas wrote:
-> From: Daniel Vetter <daniel.vetter@ffwll.ch>
->
-> No driver access this anymore, except for the olpc dcon fbdev driver but
-> that has been marked as broken anyways by commit de0952f267ff ("staging:
-> olpc_dcon: mark driver as broken").
->
-> Signed-off-by: Daniel Vetter <daniel.vetter@intel.com>
-> Signed-off-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-> Reviewed-by: Javier Martinez Canillas <javierm@redhat.com>
-> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+On Mon, 25 Jul 2022 18:49:05 +0100,
+<Conor.Dooley@microchip.com> wrote:
+> 
+> Sorry to butt back in here - but I am taking this to mean that rather
+> than add a remove callback for the microchip pci controller driver when
+> making it buildable as a module it would instead be better to forgo that
+> entirely and prevent unloading the module (since it does INTX & MSI).
+> 
+> Would that be an accurate assessment?
 
-I've applied it to the fbdev git tree.
+Yes.
 
-Thanks!
-Helge
+	M.
 
-> ---
->
->  drivers/video/fbdev/core/fbmem.c | 6 +++---
->  include/linux/fb.h               | 6 ------
->  2 files changed, 3 insertions(+), 9 deletions(-)
->
-> diff --git a/drivers/video/fbdev/core/fbmem.c b/drivers/video/fbdev/core=
-/fbmem.c
-> index 6ae1c5fa19f9..1e70d8c67653 100644
-> --- a/drivers/video/fbdev/core/fbmem.c
-> +++ b/drivers/video/fbdev/core/fbmem.c
-> @@ -51,10 +51,10 @@
->  static DEFINE_MUTEX(registration_lock);
->
->  struct fb_info *registered_fb[FB_MAX] __read_mostly;
-> -EXPORT_SYMBOL(registered_fb);
-> -
->  int num_registered_fb __read_mostly;
-> -EXPORT_SYMBOL(num_registered_fb);
-> +#define for_each_registered_fb(i)		\
-> +	for (i =3D 0; i < FB_MAX; i++)		\
-> +		if (!registered_fb[i]) {} else
->
->  bool fb_center_logo __read_mostly;
->
-> diff --git a/include/linux/fb.h b/include/linux/fb.h
-> index 453c3b2b6b8e..0aff76bcbb00 100644
-> --- a/include/linux/fb.h
-> +++ b/include/linux/fb.h
-> @@ -627,16 +627,10 @@ extern int fb_get_color_depth(struct fb_var_screen=
-info *var,
->  extern int fb_get_options(const char *name, char **option);
->  extern int fb_new_modelist(struct fb_info *info);
->
-> -extern struct fb_info *registered_fb[FB_MAX];
-> -extern int num_registered_fb;
->  extern bool fb_center_logo;
->  extern int fb_logo_count;
->  extern struct class *fb_class;
->
-> -#define for_each_registered_fb(i)		\
-> -	for (i =3D 0; i < FB_MAX; i++)		\
-> -		if (!registered_fb[i]) {} else
-> -
->  static inline void lock_fb_info(struct fb_info *info)
->  {
->  	mutex_lock(&info->lock);
-
+-- 
+Without deviation from the norm, progress is not possible.
