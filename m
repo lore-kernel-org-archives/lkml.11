@@ -2,130 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ACBCCCA48C
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 08:10:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42D76C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 08:11:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237955AbiGZIKj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 04:10:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60800 "EHLO
+        id S232054AbiGZILw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 04:11:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237981AbiGZIKf (ORCPT
+        with ESMTP id S229604AbiGZILt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 04:10:35 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A52BB1DF;
-        Tue, 26 Jul 2022 01:10:33 -0700 (PDT)
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LsTzZ6Nv9zjWxv;
-        Tue, 26 Jul 2022 16:07:38 +0800 (CST)
-Received: from kwepemm600010.china.huawei.com (7.193.23.86) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 26 Jul 2022 16:10:27 +0800
-Received: from [10.67.110.237] (10.67.110.237) by
- kwepemm600010.china.huawei.com (7.193.23.86) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 26 Jul 2022 16:10:25 +0800
-Subject: Re: [PATCH 1/5] ARM: stacktrace: Skip frame pointer boundary check
- for call_with_stack()
-To:     Linus Walleij <linus.walleij@linaro.org>
-CC:     <linux@armlinux.org.uk>, <rmk+kernel@armlinux.org.uk>,
-        <ardb@kernel.org>, <will@kernel.org>, <mark.rutland@arm.com>,
-        <broonie@kernel.org>, <peterz@infradead.org>, <mingo@redhat.com>,
-        <acme@kernel.org>, <alexander.shishkin@linux.intel.com>,
-        <jolsa@kernel.org>, <namhyung@kernel.org>, <arnd@arndb.de>,
-        <rostedt@goodmis.org>, <nick.hawkins@hpe.com>, <john@phrozen.org>,
-        <mhiramat@kernel.org>, <ast@kernel.org>, <linyujun809@huawei.com>,
-        <ndesaulniers@google.com>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
-        Li Huafei <lihuafei1@huawei.com>
-References: <20220712021527.109921-1-lihuafei1@huawei.com>
- <20220712021527.109921-2-lihuafei1@huawei.com>
- <CACRpkdaXDGHLwqXQsEedRt=CLRUe1hei1vJDGAQ+D4U0OPcv8Q@mail.gmail.com>
-From:   Li Huafei <lihuafei1@huawei.com>
-Message-ID: <ab843b1e-9a4f-7b2c-a9bb-670797f7da34@huawei.com>
-Date:   Tue, 26 Jul 2022 16:10:25 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.0
+        Tue, 26 Jul 2022 04:11:49 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE04727150;
+        Tue, 26 Jul 2022 01:11:47 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id 1CA406601596;
+        Tue, 26 Jul 2022 09:11:46 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1658823106;
+        bh=dAET0aJ9O9CxvAJfCeQORiWmh5LRUFbf9om4jQFdjY4=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=ZjmkO9Cn8oeBIVweESZI6SC07GIY7x7cS4W52UqDgn69x85kP/lIrwfXAYWqiCf5M
+         rn8ZnmU9ODb+8q4TNoSx5fPkPjz7fkiRRFV692mQL9AfTzwdh8bcblyhFUNcCmyOjM
+         WO3jl2RsJxt6ZeNI0ZMHjeYMuRHJCHMrlUI83HkYD07BMwbuGkdaKT3raK1tHdxcH5
+         7PsL7c1ka4DQqoE+d+vQJGK55JiFuVO8HHMFr9qku45vRP1+7rgiKFHnnFcuN5N50x
+         FLN3Tp7ADiAgauA9+kHZlqSqlFP/bA6568qODWXXMtD62+h4c8CzgwrrM6mAzEHLTx
+         jZbOmXia3+ZNw==
+Message-ID: <5d8690e4-a4ec-4ee9-4bed-bc6bf32ae80b@collabora.com>
+Date:   Tue, 26 Jul 2022 10:11:43 +0200
 MIME-Version: 1.0
-In-Reply-To: <CACRpkdaXDGHLwqXQsEedRt=CLRUe1hei1vJDGAQ+D4U0OPcv8Q@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2 4/8] arm64: dts: mediatek: cherry: Enable secondary
+ SD/MMC controller
 Content-Language: en-US
-X-Originating-IP: [10.67.110.237]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemm600010.china.huawei.com (7.193.23.86)
-X-CFilter-Loop: Reflected
+To:     Chen-Yu Tsai <wenst@chromium.org>
+Cc:     matthias.bgg@gmail.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220721145017.918102-1-angelogioacchino.delregno@collabora.com>
+ <20220721145017.918102-5-angelogioacchino.delregno@collabora.com>
+ <CAGXv+5FutJb_MRwSVgjV7tByBvfq3AFsSxs6ETUZaNzrfpywgg@mail.gmail.com>
+ <781f6d3e-412e-1553-c2c2-23c9a897626b@collabora.com>
+ <CAGXv+5Gdwcj1n0q8e8ReoUOZX18pbtbxV7oof06Q2_nJMNY-cw@mail.gmail.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <CAGXv+5Gdwcj1n0q8e8ReoUOZX18pbtbxV7oof06Q2_nJMNY-cw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Linus, sorry for the late reply.
-
-On 2022/7/18 16:57, Linus Walleij wrote:
-> On Tue, Jul 12, 2022 at 4:18 AM Li Huafei <lihuafei1@huawei.com> wrote:
->
->> When using the frame pointer unwinder, it was found that the stack trace
->> output of stack_trace_save() is incomplete if the stack contains
->> call_with_stack():
+Il 26/07/22 06:04, Chen-Yu Tsai ha scritto:
+> On Mon, Jul 25, 2022 at 6:20 PM AngeloGioacchino Del Regno
+> <angelogioacchino.delregno@collabora.com> wrote:
 >>
->>   [0x7f00002c] dump_stack_task+0x2c/0x90 [hrtimer]
->>   [0x7f0000a0] hrtimer_hander+0x10/0x18 [hrtimer]
->>   [0x801a67f0] __hrtimer_run_queues+0x1b0/0x3b4
->>   [0x801a7350] hrtimer_run_queues+0xc4/0xd8
->>   [0x801a597c] update_process_times+0x3c/0x88
->>   [0x801b5a98] tick_periodic+0x50/0xd8
->>   [0x801b5bf4] tick_handle_periodic+0x24/0x84
->>   [0x8010ffc4] twd_handler+0x38/0x48
->>   [0x8017d220] handle_percpu_devid_irq+0xa8/0x244
->>   [0x80176e9c] generic_handle_domain_irq+0x2c/0x3c
->>   [0x8052e3a8] gic_handle_irq+0x7c/0x90
->>   [0x808ab15c] generic_handle_arch_irq+0x60/0x80
->>   [0x8051191c] call_with_stack+0x1c/0x20
+>> Il 25/07/22 10:54, Chen-Yu Tsai ha scritto:
+>>> On Thu, Jul 21, 2022 at 10:51 PM AngeloGioacchino Del Regno
+>>> <angelogioacchino.delregno@collabora.com> wrote:
+>>>>
+>>>> As of now, all of the boards based on the cherry platform have a
+>>>> usable secondary SD/MMC controller, usually for SD cards: enable
+>>>> it to allow both booting from it and generally accessing external
+>>>> storage.
+>>>>
+>>>> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+>>>> ---
+>>>>    .../boot/dts/mediatek/mt8195-cherry.dtsi      | 62 +++++++++++++++++++
+>>>>    1 file changed, 62 insertions(+)
+>>>>
+>>>> diff --git a/arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi b/arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi
+>>>> index 2853f7f76c90..8859957c7b27 100644
+>>>> --- a/arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi
+>>>> +++ b/arch/arm64/boot/dts/mediatek/mt8195-cherry.dtsi
+>>>> @@ -17,6 +17,7 @@ aliases {
+>>>>                   i2c5 = &i2c5;
+>>>>                   i2c7 = &i2c7;
+>>>>                   mmc0 = &mmc0;
+>>>> +               mmc1 = &mmc1;
+>>>>                   serial0 = &uart0;
+>>>>           };
+>>>>
+>>>> @@ -227,6 +228,24 @@ &mmc0 {
+>>>>           vqmmc-supply = <&mt6359_vufs_ldo_reg>;
+>>>>    };
+>>>>
+>>>> +&mmc1 {
+>>>> +       status = "okay";
+>>>> +
+>>>> +       bus-width = <4>;
+>>>> +       cap-sd-highspeed;
+>>>> +       cd-gpios = <&pio 54 GPIO_ACTIVE_LOW>;
+>>>> +       max-frequency = <200000000>;
+>>>> +       no-mmc;
+>>>> +       no-sdio;
+>>>> +       pinctrl-names = "default", "state_uhs";
+>>>> +       pinctrl-0 = <&mmc1_pins_default>;
+>>>> +       pinctrl-1 = <&mmc1_pins_uhs>;
+>>>> +       sd-uhs-sdr50;
+>>>> +       sd-uhs-sdr104;
+>>>> +       vmmc-supply = <&mt_pmic_vmch_ldo_reg>;
+>>>> +       vqmmc-supply = <&mt_pmic_vmc_ldo_reg>;
+>>>> +};
+>>>> +
+>>>>    /* for CPU-L */
+>>>>    &mt6359_vcore_buck_reg {
+>>>>           regulator-always-on;
+>>>> @@ -575,6 +594,49 @@ pins-rst {
+>>>>                   };
+>>>>           };
+>>>>
+>>>> +       mmc1_pins_default: mmc1-default-pins {
+>>>> +               pins-cmd-dat {
+>>>> +                       pinmux = <PINMUX_GPIO110__FUNC_MSDC1_CMD>,
+>>>> +                                <PINMUX_GPIO112__FUNC_MSDC1_DAT0>,
+>>>> +                                <PINMUX_GPIO113__FUNC_MSDC1_DAT1>,
+>>>> +                                <PINMUX_GPIO114__FUNC_MSDC1_DAT2>,
+>>>> +                                <PINMUX_GPIO115__FUNC_MSDC1_DAT3>;
+>>>> +                       input-enable;
+>>>> +                       drive-strength = <8>;
+>>>> +                       bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
+>>>> +               };
+>>>> +
+>>>> +               pins-clk {
+>>>> +                       pinmux = <PINMUX_GPIO111__FUNC_MSDC1_CLK>;
+>>>> +                       drive-strength = <8>;
+>>>> +                       bias-pull-down = <MTK_PUPD_SET_R1R0_10>;
+>>>> +               };
+>>>> +
+>>>> +               pins-insert {
+>>>> +                       pinmux = <PINMUX_GPIO54__FUNC_GPIO54>;
+>>>> +                       bias-pull-up;
+>>>> +               };
+>>>> +       };
+>>>> +
+>>>> +       mmc1_pins_uhs: mmc1-uhs-pins {
+>>>> +               pins-cmd-dat {
+>>>> +                       pinmux = <PINMUX_GPIO110__FUNC_MSDC1_CMD>,
+>>>> +                                <PINMUX_GPIO112__FUNC_MSDC1_DAT0>,
+>>>> +                                <PINMUX_GPIO113__FUNC_MSDC1_DAT1>,
+>>>> +                                <PINMUX_GPIO114__FUNC_MSDC1_DAT2>,
+>>>> +                                <PINMUX_GPIO115__FUNC_MSDC1_DAT3>;
+>>>> +                       input-enable;
+>>>> +                       drive-strength = <8>;
+>>>> +                       bias-pull-up = <MTK_PUPD_SET_R1R0_01>;
+>>>> +               };
+>>>> +
+>>>> +               pins-clk {
+>>>> +                       pinmux = <PINMUX_GPIO111__FUNC_MSDC1_CLK>;
+>>>> +                       drive-strength = <8>;
+>>>> +                       bias-pull-down = <MTK_PUPD_SET_R1R0_10>;
+>>>> +               };
+>>>
+>>> I wonder if pins-insert should be duplicated here. And there's no
+>>> difference between the standard and UHS pinconfigs. One would expect
+>>> higher drive strength on the UHS set, if two sets were required.
+>>> So maybe we should just have one set, and use that one for both
+>>> the default and uhs states.
+>>>
 >>
->> For the frame pointer unwinder, unwind_frame() checks stackframe::fp by
->> stackframe::sp. Since call_with_stack() switches the SP from one stack
->> to another, stackframe::fp and stackframe: :sp will point to different
->> stacks, so we can no longer check stackframe::fp by stackframe::sp. Skip
->> checking stackframe::fp at this point to avoid this problem.
+>> I don't think that it would really make a lot of sense to duplicate the
+>> insertion pin setup in the UHS-specific pinctrl set...
 >>
->> Signed-off-by: Li Huafei <lihuafei1@huawei.com>
-> Very nice catch! Took me some time to realize what was
-> going on here.
+>> Whenever you remove the uSD card, the controller goes back to default,
+>> as the first steps in card initialization are always happening at low
+>> speed and only after that we can switch to UHS speeds... so we do expect
+>> that the first-ever state is always `default` (by spec!), which means
+>> that we are also ensuring that the insertion pin setup is always done.
+> 
+> Right. What I wanted to say was that, besides the insertion pin, there's
+> no difference between the default and uhs states here. So why have two
+> copies instead of one that is referenced twice? (the uhs state is required
+> by the binding).
+> 
 
-Yeah, it took me some time to discover the cause of the problem too.
+OH!!!! Right. Yes I definitely agree with you on that one.
 
->
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Let's split the pins-insert in `mmc1_pins_det: mmc1-detect-pins` and add
+a reference to it in the default pinctrl, that's a sensible option.
 
-Thanks!
+I'll do that for v3!
 
->
-> Nitpick below:
->
->> +       /*
->> +        * call_with_stack() is the only place we allow SP to jump from one
->> +        * stack to another, with FP and SP pointing to different stacks,
->> +        * skipping the FP boundary check at this point.
->> +        */
->> +       if (pc >= (unsigned long)&call_with_stack &&
->> +                       pc < (unsigned long)&call_with_stack_end)
->> +               return 0;
-> Can we create a local helper macro to do this, if it needs to happen
-> some other time?
+> ChenYu
+> 
+>> Cheers,
+>> Angelo
+>>
+>>> Otherwise,
+>>>
+>>> Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
+>>> Tested-by: Chen-Yu Tsai <wenst@chromium.org>
+>>>
+>>>> +       };
+>>>> +
+>>>>           nor_pins_default: nor-default-pins {
+>>>>                   pins-ck-io {
+>>>>                           pinmux = <PINMUX_GPIO142__FUNC_SPINOR_IO0>,
+>>>> --
+>>>> 2.35.1
+>>>>
+>>>>
+>>
 
-Hopefully this won't come up again.:(
 
-Maybe it would be better to define a macro when this happens?
+-- 
+AngeloGioacchino Del Regno
+Software Engineer
 
-
-Thanks,
-
-Huafei
-
->
-> #define ARM_PC_IN_FUNCTION(pc, func) (pc >=. ...)
->
-> Yours,
-> Linus Walleij
-> .
+Collabora Ltd.
+Platinum Building, St John's Innovation Park, Cambridge CB4 0DS, UK
+Registered in England & Wales, no. 5513718
