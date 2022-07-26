@@ -2,142 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38F1CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 07:55:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41EB1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 07:57:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237851AbiGZHzI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 03:55:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44350 "EHLO
+        id S232442AbiGZH5p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 03:57:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229604AbiGZHzG (ORCPT
+        with ESMTP id S229604AbiGZH5m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 03:55:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 882592D1C3;
-        Tue, 26 Jul 2022 00:55:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2BD31B8122C;
-        Tue, 26 Jul 2022 07:55:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC4FEC341C0;
-        Tue, 26 Jul 2022 07:55:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658822101;
-        bh=ac2WrPmEy4oWwjGmJDlp7HjdY4CSvh04Z9eO/4eP5sk=;
-        h=In-Reply-To:References:From:Date:Subject:To:Cc:From;
-        b=YulKCCgdhZCEjOCzOGfiwjUl5q1lSgXWVyFxPXstKsHj3zH7AJVnCbRhklH2WXqHf
-         fdEbJQcAZ48psbNwZHoksJ8LIiVGVVEYLBAFK907X4b0FEksS21M9Scg3wqrC22oBu
-         e1FEjd/0DD8dW+f9qdzZeIFiOAQ3JsscmLEcSUfLbB4SBMelDtMJPd/TlZ9fy+GbZl
-         yWEQtyVq9aWfrPFmrcTe+Y3StVyp7f8FYyzaMmPS77z58hWFlmVQOhPuMvym3vKwWN
-         Bchnl+Ik/52NWoDofhwugmQmGrpztB3BLf7/e/ZRewYsbbp6IR6dvnckbmNEahc6j0
-         F9p97uJyR/gAQ==
-Received: by mail-wr1-f41.google.com with SMTP id d8so18901604wrp.6;
-        Tue, 26 Jul 2022 00:55:01 -0700 (PDT)
-X-Gm-Message-State: AJIora/GVuVuW0fjv0t51g08bVXoO5sueMGxX3nE1tlX0NXKtjcRWmbP
-        T0YPVLsHttvydiEdlJiXZORF6BRfjVOd56jPcLk=
-X-Google-Smtp-Source: AGRyM1tFsabkbMbFAqy5WpNjoJ+eHwS9qaw5ep2ASMUt3FBuvqiRY1Vpeyw0kuUfMQ4YWo4CzXybKNB5+QfTFOhVmhg=
-X-Received: by 2002:adf:de0d:0:b0:21d:66a1:ad4d with SMTP id
- b13-20020adfde0d000000b0021d66a1ad4dmr10024558wrm.17.1658822100006; Tue, 26
- Jul 2022 00:55:00 -0700 (PDT)
+        Tue, 26 Jul 2022 03:57:42 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEE041ADBD
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 00:57:41 -0700 (PDT)
+From:   John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1658822260;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=uUxOHR9ruyvarDL+n99COropQfzZw5hQeHs+l5NpGBA=;
+        b=ICsMZJtBquGqNUAbBt1NkCf4RuWUtK8WKuw+rCOhsAtXtGgDVT+d7Ghnpwe7l6ggssrxKg
+        QpXketqEDg76S7bDm16R54St8NhitP7NhDpBs5v8xjt1+05SCMDgdTQ8a44lw6qTcTeZ13
+        NVwfdz+FvK3vwWcLEkbc4MRlnx42K6hJvmUI4/EFDBzRk0KK2G2WDj7crSy65sOQFDdr6T
+        /AW9VGkYH9lQNNqgRzjJ7FJZImLe521z/KrSYfbaRjzsEPYA79Ou1ddFETZcA2ZMatoedy
+        OzUw3zhsqsLYsMsRyjeMuNgLlC3a6niDwTM7fyWP39on3nAgCohAJeabasR3iQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1658822260;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=uUxOHR9ruyvarDL+n99COropQfzZw5hQeHs+l5NpGBA=;
+        b=Qc0wgGxaT9mjo4CZ1wpwJnnFqbZ6q/m3RiaTniZS67QmsmAo9I6VF3TpC8+x28Me8gbkm+
+        S2M7S7qUFoIVegDw==
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Petr Mladek <pmladek@suse.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH v3] printk: Skip console drivers on PREEMPT_RT.
+In-Reply-To: <Yt6zwP9xSdUhsoQ9@linutronix.de>
+References: <YtgjtfjYVMQrzFTK@linutronix.de>
+ <87y1wn3g3g.fsf@jogness.linutronix.de> <Ytgu17hATM8iqdGC@linutronix.de>
+ <87ilnrn06u.fsf@jogness.linutronix.de> <Ytj3PisFjOfS9L0Y@linutronix.de>
+ <YtqakGJAQzw/IPul@alley> <YtrYdXWGb0NQLKNA@linutronix.de>
+ <Yt6MzEEFfpyTBIIj@alley> <Yt6gxxRxDZ/wFHrA@linutronix.de>
+ <Yt6nlaSrfZ+fn80x@alley> <Yt6zwP9xSdUhsoQ9@linutronix.de>
+Date:   Tue, 26 Jul 2022 10:03:39 +0206
+Message-ID: <871qu8i9vw.fsf@jogness.linutronix.de>
 MIME-Version: 1.0
-Received: by 2002:adf:f7cb:0:0:0:0:0 with HTTP; Tue, 26 Jul 2022 00:54:59
- -0700 (PDT)
-In-Reply-To: <871qu8tiys.wl-tiwai@suse.de>
-References: <20220722142916.29435-1-tiwai@suse.de> <20220722142916.29435-4-tiwai@suse.de>
- <0350c21bcfdc896f2b912363f221958d41ebf1e1.camel@perches.com>
- <87edyc2r2e.wl-tiwai@suse.de> <CAKYAXd_tohLszyrThNLE5tPHt=2Z8Xtt=hzzEQe3iqf0t549EQ@mail.gmail.com>
- <871qu8tiys.wl-tiwai@suse.de>
-From:   Namjae Jeon <linkinjeon@kernel.org>
-Date:   Tue, 26 Jul 2022 16:54:59 +0900
-X-Gmail-Original-Message-ID: <CAKYAXd8OAQ91dude9_-rWJ1tDCb4NM4rgdASKbmz4Tiu46cdzg@mail.gmail.com>
-Message-ID: <CAKYAXd8OAQ91dude9_-rWJ1tDCb4NM4rgdASKbmz4Tiu46cdzg@mail.gmail.com>
-Subject: Re: [PATCH 3/4] exfat: Expand exfat_err() and co directly to pr_*() macro
-To:     Takashi Iwai <tiwai@suse.de>
-Cc:     Joe Perches <joe@perches.com>, linux-fsdevel@vger.kernel.org,
-        Sungjong Seo <sj1557.seo@samsung.com>,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-2022-07-26 16:46 GMT+09:00, Takashi Iwai <tiwai@suse.de>:
-> On Tue, 26 Jul 2022 09:02:40 +0200,
-> Namjae Jeon wrote:
->>
->> 2022-07-23 17:04 GMT+09:00, Takashi Iwai <tiwai@suse.de>:
->> > On Sat, 23 Jul 2022 09:42:12 +0200,
->> > Joe Perches wrote:
->> >>
->> >> On Fri, 2022-07-22 at 16:29 +0200, Takashi Iwai wrote:
->> >> > Currently the error and info messages handled by exfat_err() and co
->> >> > are tossed to exfat_msg() function that does nothing but passes the
->> >> > strings with printk() invocation.  Not only that this is more
->> >> > overhead
->> >> > by the indirect calls, but also this makes harder to extend for the
->> >> > debug print usage; because of the direct printk() call, you cannot
->> >> > make it for dynamic debug or without debug like the standard helpers
->> >> > such as pr_debug() or dev_dbg().
->> >> >
->> >> > For addressing the problem, this patch replaces exfat_msg() function
->> >> > with a macro to expand to pr_*() directly.  This allows us to create
->> >> > exfat_debug() macro that is expanded to pr_debug() (which output can
->> >> > gracefully suppressed via dyndbg).
->> >> []
->> >> > diff --git a/fs/exfat/exfat_fs.h b/fs/exfat/exfat_fs.h
->> >> []
->> >> > @@ -508,14 +508,19 @@ void __exfat_fs_error(struct super_block *sb,
->> >> > int
->> >> > report, const char *fmt, ...)
->> >> >  #define exfat_fs_error_ratelimit(sb, fmt, args...) \
->> >> >  		__exfat_fs_error(sb, __ratelimit(&EXFAT_SB(sb)->ratelimit), \
->> >> >  		fmt, ## args)
->> >> > -void exfat_msg(struct super_block *sb, const char *lv, const char
->> >> > *fmt,
->> >> > ...)
->> >> > -		__printf(3, 4) __cold;
->> >> > +
->> >> > +/* expand to pr_xxx() with prefix */
->> >> > +#define exfat_msg(sb, lv, fmt, ...) \
->> >> > +	pr_##lv("exFAT-fs (%s): " fmt "\n", (sb)->s_id, ##__VA_ARGS__)
->> >> > +
->> >> >  #define exfat_err(sb, fmt, ...)						\
->> >> > -	exfat_msg(sb, KERN_ERR, fmt, ##__VA_ARGS__)
->> >> > +	exfat_msg(sb, err, fmt, ##__VA_ARGS__)
->> >> >  #define exfat_warn(sb, fmt, ...)					\
->> >> > -	exfat_msg(sb, KERN_WARNING, fmt, ##__VA_ARGS__)
->> >> > +	exfat_msg(sb, warn, fmt, ##__VA_ARGS__)
->> >> >  #define exfat_info(sb, fmt, ...)					\
->> >> > -	exfat_msg(sb, KERN_INFO, fmt, ##__VA_ARGS__)
->> >> > +	exfat_msg(sb, info, fmt, ##__VA_ARGS__)
->> >> > +#define exfat_debug(sb, fmt, ...)					\
->> >> > +	exfat_msg(sb, debug, fmt, ##__VA_ARGS__)
->> >>
->> >> I think this would be clearer using pr_<level> directly instead
->> >> of an indirecting macro that uses concatenation of <level> that
->> >> obscures the actual use of pr_<level>
->> >>
->> >> Either: (and this first option would be my preference)
->> >>
->> >> #define exfat_err(sb, fmt, ...) \
->> >> 	pr_err("exFAT-fs (%s): " fmt "\n", (sb)->s_id, ##__VA_ARGS__)
->> >> #define exfat_warn(sb, fmt, ...) \
->> >> 	pr_warn("exFAT-fs (%s): " fmt "\n", (sb)->s_id, ##__VA_ARGS__)
->> >> etc...
->> >
->> > IMO, it's a matter of taste, and I don't mind either way.
->> > Just let me know.
->> Joe has already said that he prefers the first.
+On 2022-07-25, Sebastian Andrzej Siewior <bigeasy@linutronix.de> wrote:
+> printk might be invoked in a context with disabled interrupts and or
+> preemption and additionally disables interrupts before it invokes the
+> console drivers. This behaviour is not desired on PREEMPT_RT:
+> - The console driver are using spinlock_t based locking which become sleeping
+>   locks on PREEMPT_RT and must not be acquired with disabled interrupts (or
+>   preemption).
 >
-> My question was about the preference of the exfat maintainers :)
-I also agree with his opinion.
+> - The locks within the console drivers must remain sleeping locks and they must
+>   not disable interrupts. Printing (and polling for its completion) at 115200
+>   baud on an UART takes too long for PREEMPT_RT in general and so raises the
+>   latency of the IRQ-off time of the system beyond acceptable levels.
 >
->> Will you send v2 patch-set ?
+> Skip printing to the console as temporary workaround until the printing threads
+> and atomic consoles have been introduced or another solution which is
+> compatible with the PREEMPT_RT approach.
+> With this change, the user will not see any kernel message printed to the
+> console but can retrieve the printk buffer from userland (via the dmesg
+> command). This allows enable PREEMPT_RT as a whole without disabling printk and
+> loosing all kernel output.
+
+Note that "the dmesg command" is not the only userspace tool to access
+the kernel logs. Logging daemons (using /proc/kmsg or /dev/kmsg) also
+have full access.
+
+> Disable console printing on PREEMPT_RT.
 >
-> Sure.
-Thanks a lot!
->
->
-> Takashi
->
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+
+Reviewed-by: John Ogness <john.ogness@linutronix.de>
