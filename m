@@ -2,165 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BBF7C282E7
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BE6BC25B0D
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 13:45:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237447AbiGZNo0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 09:44:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55948 "EHLO
+        id S238943AbiGZNoy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 09:44:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239073AbiGZNoR (ORCPT
+        with ESMTP id S239116AbiGZNoq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 09:44:17 -0400
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2071.outbound.protection.outlook.com [40.107.237.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89A251FCD6
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 06:44:16 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Hy0enKK09e5BfSVbAsVk8v8ix++A6Zc7W/1m9NR4wkJ7BtduyOCc1Vw+KsAAyi95P+LkI97KyKG4JltoVtcTAXW4q9aW2uzJWSvnZ++aQzxBBhc4X+AiYabpHMGOKyhGWYoeu4ZNGzJlBSKfoIV1vKQ8nxQyJ4VV4RHeFqUNKbLxdATRO7f8Ayotu5KL/+W8qkrq8LXvwjn/sANP9D/jouj6fR6Z2EvhDhtKtKp/eIvPWQNb6pf7Cvh1Y5FYtSSo4Tv73NenAM+XCFIpC+y/GYh+gdyoebJIOrW+I8j9bEXwSYe4ojZ5tdxV0z7ehLaHFIc+1e7MD4pgo7m7WXhG5Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=JewnuYvYkE+G1d5/s7qzbpzMIipsOKHs8rUG70UpspI=;
- b=IP5dccM+ZtTBiMsT1IzbnGsI/+ySz9BKLY3Jgt0ZAbKQ/j6RX+a6vmQXka/mnSXNLlx/00cLTisprgtkI40Mo6K/eS6hbrqNZT3tLDrvgBfYnVnjHMCtHTbgRQZsNkam7MNR9xt3ATB6oJzxHtDzFNkgTRTu4FeL3g0qywUt0YMGtvIne+mDrNlZat4usO03OoVoMbA+Ug+sjLDR7V3736OXppHiVWv+ur99ouzq7VmhCdUwazapd3yuIdTK0hOjAWEQ6BuNCxKiDDBXqr7qR6E2EKxuNGwkDizA5jWecH7LX+1khq0DAOFVjssvCBEsWbDb19uZAs2C6/wLLWwomw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JewnuYvYkE+G1d5/s7qzbpzMIipsOKHs8rUG70UpspI=;
- b=H5hEtTAthGMNiEnYdsFbwaM1Q7gg/ahFZ3Lwt6NWWSmRMcB3BN7C5TXJkFLaItZ3qsq7dVse6K7KQCyYPIQn7XRGZ2k+hqZfzYrKVO+gfh1pYr6ojHy7adydvQY+e/bmT4etqPXEFEhnJ+TDiXVPxXOshZmRvcdWkU7n3EUu1vM=
-Received: from MW4PR03CA0183.namprd03.prod.outlook.com (2603:10b6:303:b8::8)
- by BY5PR12MB4147.namprd12.prod.outlook.com (2603:10b6:a03:205::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.19; Tue, 26 Jul
- 2022 13:44:14 +0000
-Received: from CO1NAM11FT005.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:b8:cafe::63) by MW4PR03CA0183.outlook.office365.com
- (2603:10b6:303:b8::8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.18 via Frontend
- Transport; Tue, 26 Jul 2022 13:44:14 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT005.mail.protection.outlook.com (10.13.174.147) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5458.17 via Frontend Transport; Tue, 26 Jul 2022 13:44:14 +0000
-Received: from ruby-95f9host.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Tue, 26 Jul
- 2022 08:44:12 -0500
-From:   Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-To:     <linux-kernel@vger.kernel.org>, <iommu@lists.linux.dev>
-CC:     <joro@8bytes.org>, <will@kernel.org>, <jsnitsel@redhat.com>,
-        <vasant.hegde@amd.com>, <jon.grimm@amd.com>,
-        Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Subject: [PATCH 2/2] iommu/amd: Add support for AVIC when SNP is enabled
-Date:   Tue, 26 Jul 2022 08:43:48 -0500
-Message-ID: <20220726134348.6438-3-suravee.suthikulpanit@amd.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220726134348.6438-1-suravee.suthikulpanit@amd.com>
-References: <20220726134348.6438-1-suravee.suthikulpanit@amd.com>
+        Tue, 26 Jul 2022 09:44:46 -0400
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7EED2AC7B
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 06:44:40 -0700 (PDT)
+Received: by mail-yb1-xb2b.google.com with SMTP id d124so7926944ybb.5
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 06:44:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yvftHv5S2CPX+wX4bNXzhRK6/q7KB8A8GqY7VENMb0E=;
+        b=oGu5QEUIDXbi9bXA+bsBGH18wXwdHIldQcXCxwozNvjE0NannU7jy7HUEeHvw8Q7v9
+         vtTDQPNGfZTyjn0R7Y9S5I8vzJ4MgNv/OWWub5/Z10egQ+O51Ps0QfCK+p2wFoklHl5N
+         D0wMDHmLcvTEArg88P26Ex8K1soHGCxu3COv/r6dMlX0/i2OU3VtRjPAU96/5VLXIY2/
+         nckM6oRUnTIgFUOtRn20qp1G3I9vhyiAdPND/plsSwlRHZ8u6NCM47IDNKPsC381iHGe
+         jM1Sts2DknBZm4N238HKeLTsJendspw3nt7fGZhFwcZFsCmRWtqnwTSzyYpyORRYB2gl
+         hgpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yvftHv5S2CPX+wX4bNXzhRK6/q7KB8A8GqY7VENMb0E=;
+        b=6LEKEYTIMmPyDDe5LYDpdh2f7eJslW65xYehGDVLRzfrMxUlJz/w8/gp7PDFhMU7MJ
+         OjElJz9UBXsov25h/OUxzCOpYEgSj6Fx40fkP+fJAmz87zCPRBKMjXvZhOkjeogsrZsD
+         YoEOqpHU4qzexHVHRMFDCsiBRDXd5WDLeZ7jk8sKw6KPt/hN+U/SxXWpVBuyH8Oly17n
+         k5+Y2AMzo+HB9dkbK+Y2Br8csAC3Mcrggfv63SIHmGkH4S3QVgI2KIOopT8bSzz36v/c
+         nxrHzCGsBzWi2Zej57nwEEpP1Zy16KgDTqIvqaRyrjS3vyB/i+31uUpOGWk5voLJA1tK
+         0/NA==
+X-Gm-Message-State: AJIora8FtXmBhcqjWHw32EnDQyfd1Urd+qQ4KsDj3RKHRXE+eCNR66da
+        1g4EwTEriRJCUacceX7Ssj1/bzrBD3YUKlaAecWavA==
+X-Google-Smtp-Source: AGRyM1u3i9qwV0ASbN1lQC0BslXs74W5AdhtZxPELWNuy1R08nhmr2uchgmM0eRBH5ope0qZw/ILdRvpER5SepSCyuU=
+X-Received: by 2002:a25:2603:0:b0:66f:774d:e222 with SMTP id
+ m3-20020a252603000000b0066f774de222mr13167407ybm.407.1658843079545; Tue, 26
+ Jul 2022 06:44:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB04.amd.com (10.181.40.145) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 200eba34-e695-4500-48b4-08da6f0cedcd
-X-MS-TrafficTypeDiagnostic: BY5PR12MB4147:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: gIkYbY5ZkvuHsvToaHe8OETG3WjwQ4gK38HiF7kGBIsb0QcBAYG2yuflA5XCwfzzpZI2HAh5iF4B95SLRAIhEJy4AaQ2ntEoiMcCpDjfGc1hcLTotY1wdrFSpICH8ZFETWRWQAJbMOF+O5oj/muj8k6gpBYARhe3AUFVAmMcpkJut2YCmwymB59xwdcvFK/hKMMl4yAYuUynaOGg1ZQkSbqn2z6oG+TMnHKhN0BDGvQYmXF1eHN3b+h9D2Es59vD9elK5CBR68lSuGsKiYoK/CZj8lUIEuJi/vq7zUiXyIkAC11pyTRomqSbMdSu4P8L8MnjQPkkz2b9mlaAQvp/oOvoR3+hdmcQVUFwYW26cTrng7UX7lc6wmaQtl0AjmAeQB/wlvsUMmATasU6lwV7ByymR+Jru3ARlcWTyRz6GJfd745UcTDE+t0pfaQAkaNqoKN+xByzYG67IiWQXwEi2Oitxvbb24+vHWVIKEoXiIH9TfhNp/iv+WMQ0ELR4qUgdiQ2FNfyt+B/w8Z11J9KZKBTvNxMpGerDuu17GZdUYWj7XKfYLtdY2QOsVMpruvRwLeJkkwrLdy0tny8JFlhKIw5AXeNwWqEqG1BMTgnyZts6Sg5zdnzYnnt+n/Q/qN5M0VsxNyKdumht+LBZN75MN6y2ROYDz3cFWNIT1ACnn3fcmhZRr5uYk+BBiwKEsJbIHyeOgRC7S1NjheTmtXzDtbmZnfo6NQ7Z1EK41z9RTSbGENrQi5/HG6HzH246WTXGMxskl/e+EV9b1ez14r3klAj/mAmM958IiXtpxLec41sO0t4rrjFSz0mBqD9uMFRUL2st9HAQsEfpEyvQensS14mKV2d7bMCJGAHe/CrANSFR720HE9phn9fHD7rene9
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(396003)(346002)(136003)(376002)(39860400002)(36840700001)(40470700004)(46966006)(6666004)(41300700001)(2906002)(7696005)(26005)(336012)(186003)(44832011)(5660300002)(40460700003)(86362001)(47076005)(426003)(16526019)(2616005)(83380400001)(1076003)(478600001)(8936002)(36860700001)(110136005)(36756003)(82310400005)(316002)(54906003)(8676002)(82740400003)(40480700001)(70206006)(70586007)(356005)(4326008)(81166007)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jul 2022 13:44:14.4259
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 200eba34-e695-4500-48b4-08da6f0cedcd
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT005.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4147
+References: <CANn89i+-THx+jTzsLDxaX9diV4hz7z4mYqwn2CjtydFp+U4gow@mail.gmail.com>
+ <de16c149-2d93-c5d5-3eda-6751c593d996@gmail.com>
+In-Reply-To: <de16c149-2d93-c5d5-3eda-6751c593d996@gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 26 Jul 2022 15:44:28 +0200
+Message-ID: <CANn89i+Mvrpryyy_My0s3MXfY=a7bpsQwQX5M64xxxbB0yfFtA@mail.gmail.com>
+Subject: Re: [PATCH] net: rose: fix unregistered netdevice: waiting for rose0
+ to become free
+To:     Bernard F6BVP <bernard.f6bvp@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Duoming Zhou <duoming@zju.edu.cn>,
+        Bernard f6bvp <f6bvp@free.fr>,
+        Jakub Kicinski <kuba@kernel.org>, linux-hams@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        Ralf Baechle <ralf@linux-mips.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In order to support AVIC on SNP-enabled system, The IOMMU driver needs to
-check EFR2[SNPAVICSup] and enables the support by setting SNPAVICEn bit
-in the IOMMU control register (MMIO offset 18h).
+On Sat, Jul 23, 2022 at 1:21 PM Bernard F6BVP <bernard.f6bvp@gmail.com> wrote:
+>
+>
+> I modified .config according to
+> CONFIG_NET_DEV_REFCNT_TRACKER=y
+> then compiled moduled and ran my usual AX25 and ROSE applications.
+>
+> Attached is (I hope) relevant dmesg dump.
 
-For detail, please see section "SEV-SNP Guest Virtual APIC Support" of the
-AMD I/O Virtualization Technology (IOMMU) Specification.
-(https://www.amd.com/system/files/TechDocs/48882_IOMMU.pdf)
+Thanks !
 
-Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
----
- drivers/iommu/amd/amd_iommu_types.h |  7 +++++++
- drivers/iommu/amd/init.c            | 11 ++++++++++-
- 2 files changed, 17 insertions(+), 1 deletion(-)
+There are a lot of problems really...
 
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 3c1205ba636a..5b1019dab328 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -103,6 +103,12 @@
- #define FEATURE_GLXVAL_SHIFT	14
- #define FEATURE_GLXVAL_MASK	(0x03ULL << FEATURE_GLXVAL_SHIFT)
- 
-+/* Extended Feature 2 Bits */
-+#define FEATURE_SNPAVICSUP_SHIFT	5
-+#define FEATURE_SNPAVICSUP_MASK		(0x07ULL << FEATURE_SNPAVICSUP_SHIFT)
-+#define FEATURE_SNPAVICSUP_GAM(x) \
-+	((x & FEATURE_SNPAVICSUP_MASK) >> FEATURE_SNPAVICSUP_SHIFT == 0x1)
-+
- /* Note:
-  * The current driver only support 16-bit PASID.
-  * Currently, hardware only implement upto 16-bit PASID
-@@ -165,6 +171,7 @@
- #define CONTROL_GAINT_EN	29
- #define CONTROL_XT_EN		50
- #define CONTROL_INTCAPXT_EN	51
-+#define CONTROL_SNPAVIC_EN	61
- 
- #define CTRL_INV_TO_MASK	(7 << CONTROL_INV_TIMEOUT)
- #define CTRL_INV_TO_NONE	0
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 4cd94d716122..6bbaf6b971e8 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -2794,13 +2794,22 @@ static void enable_iommus_vapic(void)
- 		return;
- 	}
- 
--	/* Enabling GAM support */
-+	if (amd_iommu_snp_en &&
-+	    !FEATURE_SNPAVICSUP_GAM(amd_iommu_efr2)) {
-+		pr_warn("Force to disable Virtual APIC due to SNP\n");
-+		amd_iommu_guest_ir = AMD_IOMMU_GUEST_IR_LEGACY_GA;
-+		return;
-+	}
-+
-+	/* Enabling GAM and SNPAVIC support */
- 	for_each_iommu(iommu) {
- 		if (iommu_init_ga_log(iommu) ||
- 		    iommu_ga_log_enable(iommu))
- 			return;
- 
- 		iommu_feature_enable(iommu, CONTROL_GAM_EN);
-+		if (amd_iommu_snp_en)
-+			iommu_feature_enable(iommu, CONTROL_SNPAVIC_EN);
- 	}
- 
- 	amd_iommu_irq_ops.capability |= (1 << IRQ_POSTING_CAP);
--- 
-2.34.1
+FIrst one being in ax25:
 
+[  205.798723] reference already released.
+[  205.798732] allocated in:
+[  205.798734]  ax25_bind+0x1a2/0x230 [ax25]
+[  205.798747]  __sys_bind+0xea/0x110
+[  205.798753]  __x64_sys_bind+0x18/0x20
+[  205.798758]  do_syscall_64+0x5c/0x80
+[  205.798763]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[  205.798768] freed in:
+[  205.798770]  ax25_release+0x115/0x370 [ax25]
+[  205.798778]  __sock_release+0x42/0xb0
+[  205.798782]  sock_close+0x15/0x20
+[  205.798785]  __fput+0x9f/0x260
+[  205.798789]  ____fput+0xe/0x10
+[  205.798792]  task_work_run+0x64/0xa0
+[  205.798798]  exit_to_user_mode_prepare+0x18b/0x190
+[  205.798804]  syscall_exit_to_user_mode+0x26/0x40
+[  205.798808]  do_syscall_64+0x69/0x80
+[  205.798812]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[  205.798827] ------------[ cut here ]------------
+[  205.798829] WARNING: CPU: 2 PID: 2605 at lib/ref_tracker.c:136
+ref_tracker_free.cold+0x60/0x81
+[  205.798837] Modules linked in: rose netrom mkiss ax25 rfcomm cmac
+algif_hash algif_skcipher af_alg bnep snd_hda_codec_hdmi nls_iso8859_1
+i915 rtw88_8821ce rtw88_8821c x86_pkg_temp_thermal rtw88_pci
+intel_powerclamp rtw88_core snd_hda_codec_realtek
+snd_hda_codec_generic ledtrig_audio coretemp snd_hda_intel kvm_intel
+snd_intel_dspcfg mac80211 snd_hda_codec kvm i2c_algo_bit drm_buddy
+drm_dp_helper btusb drm_kms_helper snd_hwdep btrtl snd_hda_core btbcm
+joydev crct10dif_pclmul btintel crc32_pclmul ghash_clmulni_intel
+mei_hdcp btmtk intel_rapl_msr aesni_intel bluetooth input_leds snd_pcm
+crypto_simd syscopyarea processor_thermal_device_pci_legacy
+sysfillrect cryptd intel_soc_dts_iosf snd_seq sysimgblt ecdh_generic
+fb_sys_fops rapl libarc4 processor_thermal_device intel_cstate
+processor_thermal_rfim cec snd_timer ecc snd_seq_device cfg80211
+processor_thermal_mbox mei_me processor_thermal_rapl mei rc_core at24
+snd intel_pch_thermal intel_rapl_common ttm soundcore
+int340x_thermal_zone video
+[  205.798948]  mac_hid acpi_pad sch_fq_codel ipmi_devintf
+ipmi_msghandler drm msr parport_pc ppdev lp parport ramoops pstore_blk
+reed_solomon pstore_zone efi_pstore ip_tables x_tables autofs4
+hid_generic usbhid hid i2c_i801 i2c_smbus r8169 xhci_pci ahci libahci
+realtek lpc_ich xhci_pci_renesas [last unloaded: ax25]
+[  205.798992] CPU: 2 PID: 2605 Comm: ax25ipd Not tainted 5.18.11-F6BVP #3
+[  205.798996] Hardware name: To be filled by O.E.M. To be filled by
+O.E.M./CK3, BIOS 5.011 09/16/2020
+[  205.798999] RIP: 0010:ref_tracker_free.cold+0x60/0x81
+[  205.799005] Code: e8 d2 01 9b ff 83 7b 18 00 74 14 48 c7 c7 2f d7
+ff 98 e8 10 6e fc ff 8b 7b 18 e8 b8 01 9b ff 4c 89 ee 4c 89 e7 e8 5d
+fd 07 00 <0f> 0b b8 ea ff ff ff e9 30 05 9b ff 41 0f b6 f7 48 c7 c7 a0
+fa 4e
+[  205.799008] RSP: 0018:ffffaf5281073958 EFLAGS: 00010286
+[  205.799011] RAX: 0000000080000000 RBX: ffff9a0bd687ebe0 RCX: 0000000000000000
+[  205.799014] RDX: 0000000000000001 RSI: 0000000000000282 RDI: 00000000ffffffff
+[  205.799016] RBP: ffffaf5281073a10 R08: 0000000000000003 R09: fffffffffffd5618
+[  205.799019] R10: 0000000000ffff10 R11: 000000000000000f R12: ffff9a0bc53384d0
+[  205.799022] R13: 0000000000000282 R14: 00000000ae000001 R15: 0000000000000001
+[  205.799024] FS:  0000000000000000(0000) GS:ffff9a0d0f300000(0000)
+knlGS:0000000000000000
+[  205.799028] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  205.799031] CR2: 00007ff6b8311554 CR3: 000000001ac10004 CR4: 00000000001706e0
+[  205.799033] Call Trace:
+[  205.799035]  <TASK>
+[  205.799038]  ? ax25_dev_device_down+0xd9/0x1b0 [ax25]
+[  205.799047]  ? ax25_device_event+0x9f/0x270 [ax25]
+[  205.799055]  ? raw_notifier_call_chain+0x49/0x60
+[  205.799060]  ? call_netdevice_notifiers_info+0x52/0xa0
+[  205.799065]  ? dev_close_many+0xc8/0x120
+[  205.799070]  ? unregister_netdevice_many+0x13d/0x890
+[  205.799073]  ? unregister_netdevice_queue+0x90/0xe0
+[  205.799076]  ? unregister_netdev+0x1d/0x30
+[  205.799080]  ? mkiss_close+0x7c/0xc0 [mkiss]
+[  205.799084]  ? tty_ldisc_close+0x2e/0x40
+[  205.799089]  ? tty_ldisc_hangup+0x137/0x210
+[  205.799092]  ? __tty_hangup.part.0+0x208/0x350
+[  205.799098]  ? tty_vhangup+0x15/0x20
+[  205.799103]  ? pty_close+0x127/0x160
+[  205.799108]  ? tty_release+0x139/0x5e0
+[  205.799112]  ? __fput+0x9f/0x260
+[  205.799118]  ax25_dev_device_down+0xd9/0x1b0 [ax25]
+[  205.799126]  ax25_device_event+0x9f/0x270 [ax25]
+[  205.799135]  raw_notifier_call_chain+0x49/0x60
+[  205.799140]  call_netdevice_notifiers_info+0x52/0xa0
+[  205.799146]  dev_close_many+0xc8/0x120
+[  205.799152]  unregister_netdevice_many+0x13d/0x890
+[  205.799157]  unregister_netdevice_queue+0x90/0xe0
+[  205.799161]  unregister_netdev+0x1d/0x30
+[  205.799165]  mkiss_close+0x7c/0xc0 [mkiss]
+[  205.799170]  tty_ldisc_close+0x2e/0x40
+[  205.799173]  tty_ldisc_hangup+0x137/0x210
+[  205.799178]  __tty_hangup.part.0+0x208/0x350
+[  205.799184]  tty_vhangup+0x15/0x20
+[  205.799188]  pty_close+0x127/0x160
+[  205.799193]  tty_release+0x139/0x5e0
+[  205.799199]  __fput+0x9f/0x260
+[  205.799203]  ____fput+0xe/0x10
+[  205.799208]  task_work_run+0x64/0xa0
+[  205.799213]  do_exit+0x33b/0xab0
+[  205.799217]  ? __handle_mm_fault+0xc4f/0x15f0
+[  205.799224]  do_group_exit+0x35/0xa0
+[  205.799228]  __x64_sys_exit_group+0x18/0x20
+[  205.799232]  do_syscall_64+0x5c/0x80
+[  205.799238]  ? handle_mm_fault+0xba/0x290
+[  205.799242]  ? debug_smp_processor_id+0x17/0x20
+[  205.799246]  ? fpregs_assert_state_consistent+0x26/0x50
+[  205.799251]  ? exit_to_user_mode_prepare+0x49/0x190
+[  205.799256]  ? irqentry_exit_to_user_mode+0x9/0x20
+[  205.799260]  ? irqentry_exit+0x33/0x40
+[  205.799263]  ? exc_page_fault+0x87/0x170
+[  205.799268]  ? asm_exc_page_fault+0x8/0x30
+[  205.799273]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[  205.799277] RIP: 0033:0x7ff6b80eaca1
+[  205.799281] Code: Unable to access opcode bytes at RIP 0x7ff6b80eac77.
+[  205.799283] RSP: 002b:00007fff6dfd4738 EFLAGS: 00000246 ORIG_RAX:
+00000000000000e7
+[  205.799287] RAX: ffffffffffffffda RBX: 00007ff6b8215a00 RCX: 00007ff6b80eaca1
+[  205.799290] RDX: 000000000000003c RSI: 00000000000000e7 RDI: 0000000000000001
+[  205.799293] RBP: 0000000000000001 R08: ffffffffffffff80 R09: 0000000000000028
+[  205.799295] R10: 0000000000000000 R11: 0000000000000246 R12: 00007ff6b8215a00
+[  205.799298] R13: 0000000000000000 R14: 00007ff6b821aee8 R15: 00007ff6b821af00
+[  205.799304]  </TASK>
