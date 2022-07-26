@@ -2,110 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D28A1C04A68
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 14:44:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33206C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 14:47:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239442AbiGZOo5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 10:44:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52402 "EHLO
+        id S239414AbiGZOro (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 10:47:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230391AbiGZOoz (ORCPT
+        with ESMTP id S229757AbiGZOrm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 10:44:55 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4AA9E26AD9;
-        Tue, 26 Jul 2022 07:44:54 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A83551FB;
-        Tue, 26 Jul 2022 07:44:54 -0700 (PDT)
-Received: from FVFF77S0Q05N (unknown [10.57.87.135])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 32CA43F70D;
-        Tue, 26 Jul 2022 07:44:53 -0700 (PDT)
-Date:   Tue, 26 Jul 2022 15:44:31 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Sudeep Holla <sudeep.holla@arm.com>
-Cc:     linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [-next] Lockdep warnings
-Message-ID: <Yt/9z1+X3hDfXkbL@FVFF77S0Q05N>
-References: <20220726104134.3b3awfphvafljdgp@bogus>
+        Tue, 26 Jul 2022 10:47:42 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D21BDFD5
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 07:47:40 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Lsfmb5KchzWfWR;
+        Tue, 26 Jul 2022 22:43:43 +0800 (CST)
+Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 26 Jul 2022 22:47:37 +0800
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 26 Jul 2022 22:47:36 +0800
+From:   Kefeng Wang <wangkefeng.wang@huawei.com>
+To:     Andrew Morton <akpm@linux-foundation.org>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     David Hildenbrand <david@redhat.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Yongqiang Liu <liuyongqiang13@huawei.com>
+Subject: [PATCH v2] mm: add warning if __vm_enough_memory fails
+Date:   Tue, 26 Jul 2022 22:54:28 +0800
+Message-ID: <20220726145428.8030-1-wangkefeng.wang@huawei.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220726104134.3b3awfphvafljdgp@bogus>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500001.china.huawei.com (7.185.36.107)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 26, 2022 at 11:41:34AM +0100, Sudeep Holla wrote:
-> I was seeing the below lockdep warnings on my arm64 Juno development
-> platform almost 2 weeks back with -next. I wanted to check for similar
-> reports before post and forgot.
+If a process has no enough memory to allocate a new virtual mapping, we
+may meet kinds of error, eg, fork cannot allocate memory, SIGBUS error
+in shmem, but it is difficult to confirm them, let's add some debug
+information to easy to check this scenario if __vm_enough_memory fails.
 
-[...]
+Reported-by: Yongqiang Liu <liuyongqiang13@huawei.com>
+Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+---
+v2: use pr_warn_ratelimited, suggested by David Hildenbrand
 
-> However I don't see the above warning with the latest -next. When I tried
-> yesterday's -next now, I see a different warning. Not sure if they are
-> related. I haven't tried to bisect.
-> 
-> --->8
-> =============================
-> [ BUG: Invalid wait context ]
-> 5.19.0-rc8-next-20220725 #38 Not tainted
-> -----------------------------
-> swapper/0/0 is trying to lock:
-> (&drvdata->spinlock){....}-{3:3}, at: cti_cpu_pm_notify+0x54/0x114
+ mm/util.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Hmmm... do you have CONFIG_PROVE_RAW_LOCK_NESTING enabled?
+diff --git a/mm/util.c b/mm/util.c
+index 1266a33a49ea..c786e21c6051 100644
+--- a/mm/util.c
++++ b/mm/util.c
+@@ -1020,6 +1020,8 @@ int __vm_enough_memory(struct mm_struct *mm, long pages, int cap_sys_admin)
+ 	if (percpu_counter_read_positive(&vm_committed_as) < allowed)
+ 		return 0;
+ error:
++	pr_warn_ratelimited("%s: pid: %d, comm: %s, no enough memory for the allocation\n",
++			    __func__, current->pid, current->comm);
+ 	vm_unacct_memory(pages);
+ 
+ 	return -ENOMEM;
+-- 
+2.35.3
 
-IIUC that should be {2:2} otherwise...
-
-> other info that might help us debug this:
-> context-{5:5}
-> 1 lock held by swapper/0/0:
->  #0: (cpu_pm_notifier.lock){....}-{2:2}, at: cpu_pm_enter+0x2c/0x80
-
-... and this is telling us that we're trying to take a regular spinlock under a
-raw spinlock, which is not as intended.
-
-The Kconfig text notes:
-
-         NOTE: There are known nesting problems. So if you enable this 
-         option expect lockdep splats until these problems have been fully
-         addressed which is work in progress. This config switch allows to
-         identify and analyze these problems. It will be removed and the
-         check permanently enabled once the main issues have been fixed.
-
-... and I suspect this is one of those latent issues.
-
-Mark.
-
-> stack backtrace:
-> CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.19.0-rc8-next-20220725-00004-g599e6691ed8c #38
-> Call trace:
->  dump_backtrace+0xe8/0x108
->  show_stack+0x18/0x4c
->  dump_stack_lvl+0x90/0xc8
->  dump_stack+0x18/0x54
->  __lock_acquire+0xa70/0x32d0
->  lock_acquire+0x160/0x308
->  _raw_spin_lock+0x60/0xa0
->  cti_cpu_pm_notify+0x54/0x114
->  raw_notifier_call_chain_robust+0x50/0xd4
->  cpu_pm_enter+0x48/0x80
->  psci_enter_idle_state+0x34/0x74
->  cpuidle_enter_state+0x120/0x2a8
->  cpuidle_enter+0x38/0x50
->  do_idle+0x1e8/0x2b8
->  cpu_startup_entry+0x24/0x28
->  kernel_init+0x0/0x1a0
->  start_kernel+0x0/0x470
->  start_kernel+0x34c/0x470
->  __primary_switched+0xbc/0xc4
-> 
-> ----
-> 
-> --
-> Regards,
-> Sudeep
