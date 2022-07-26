@@ -2,151 +2,345 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86BEFC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 09:03:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 445B6C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 09:04:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231730AbiGZJDi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 05:03:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43632 "EHLO
+        id S232424AbiGZJEJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 05:04:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231675AbiGZJDf (ORCPT
+        with ESMTP id S232079AbiGZJEH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 05:03:35 -0400
-Received: from EUR03-VE1-obe.outbound.protection.outlook.com (mail-eopbgr50042.outbound.protection.outlook.com [40.107.5.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1690029C97;
-        Tue, 26 Jul 2022 02:03:35 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UPc1RSMfUWwaXRjsY4/gNs1y4jzzLK8a22OYAu8E2qmdU8o7MvwGHb6BZzrWTKN6UBE93FggOaL7hh07+dyhU1cIcMj7xS95s5bCvu9bNuVkzRcwnT4wzgApZ9+ssx5Gw0Cvlbtw27bXzh1ClIGcnKwnfifY2H6fbaXv4YQ6iHNCBcKk5hwBynS5jb9rb9hGuhrZOR4vb9f9789Q4MnhQzLwjf747ExUEGoOF7AEkKprLsW4YnJ4ky4o3U06cQgWBeqXO/lV9xdxnorZPiXq26UoOthmXan/EOCdVBD61Da0xMYK8uItAPssEq7IgsWtPDsg2ok1UT0aIYbFkg1BOw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wau0w05hbdX+JLGjaxb1elcRmhmSjsxh5th55onSxLo=;
- b=Ny8qGWge2WruwpNzyTXoeKNQXnAMtJDITnimcdZpQaT4TuSgGlgseEBcgZnJ9Wyd5uHoWEfYQzhXHZrsWLB8Juy98dA4rfoWPwcOPHBqQlfsJJ/b8640b1Chs4ul3OdzN3I7mXiXX5kRwmY83Bnzhz9BTwbgBcj2HXW3kODjcB1zlmP2FCJIXeH4JJMiLR+BOZ5AU7JV8X31haeqZWj1K/zWs/NyC2l++GW4kLJO1gxuE7WvAjXNj1G/LI0mVuROdH1cnMhirVdUUXJtY5uAtVcsPPaRfsxLSAweVImtXnux0xlWsfS8jz4DNV50o/5FCVo1FVUuPp1/dY5OVXVXXw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wau0w05hbdX+JLGjaxb1elcRmhmSjsxh5th55onSxLo=;
- b=anzz3W5WMjZpg5tYsdi6o9CReDh5c/kfHhpaf+Uv046uYaM/EnA/86eS30eNwomr2toD0OyRAb26h/i4lMAdQR7Ss4I57zVt1pPDTo6k7mS0tBc7N2vZGgEof0MyFdxBVzY+X+OL8i1s8//IvjaWbAFStN+esY9Ie+647Pr2jt8=
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com (2603:10a6:10:358::11)
- by PAXPR04MB8443.eurprd04.prod.outlook.com (2603:10a6:102:1da::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.25; Tue, 26 Jul
- 2022 09:03:32 +0000
-Received: from DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::c0c2:ede7:3b85:1597]) by DU0PR04MB9417.eurprd04.prod.outlook.com
- ([fe80::c0c2:ede7:3b85:1597%3]) with mapi id 15.20.5458.024; Tue, 26 Jul 2022
- 09:03:32 +0000
-From:   Peng Fan <peng.fan@nxp.com>
-To:     Rob Herring <robh@kernel.org>,
-        "Peng Fan (OSS)" <peng.fan@oss.nxp.com>
-CC:     "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
-        Aisheng Dong <aisheng.dong@nxp.com>,
-        "festevam@gmail.com" <festevam@gmail.com>,
-        Jacky Bai <ping.bai@nxp.com>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 0/9] dt-bindings: pinctrl: imx: use minItems
-Thread-Topic: [PATCH 0/9] dt-bindings: pinctrl: imx: use minItems
-Thread-Index: AQHYnnhx6HQy9b/Z1UqXbelGtR85J62Ph3EAgADX9WA=
-Date:   Tue, 26 Jul 2022 09:03:32 +0000
-Message-ID: <DU0PR04MB94171571EAF51759531AB7E888949@DU0PR04MB9417.eurprd04.prod.outlook.com>
-References: <20220723094335.3577048-1-peng.fan@oss.nxp.com>
- <20220725200740.GA2610621-robh@kernel.org>
-In-Reply-To: <20220725200740.GA2610621-robh@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 9651435b-cce8-4a2a-5324-08da6ee5b70e
-x-ms-traffictypediagnostic: PAXPR04MB8443:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: RfXh7BJYImiUg2fUif5m+31OrJM7KGFoDoxNvQu/mviBHfnx3A6kgTpS5LSTCvo2Yc0ny4thaHwsZS5uxVIEnhhYCNKBBjZGcTsnvkMN9iGUrn5A+V6AN0nJ4KCYqJ/Y4ZqdLnQU2EDtMu0VdtWDVQM0oEmn9oncJyGqdcYzMFpvUmQ6Q4Fg8pDp/gccumbRiUr2dLFHsvqyhEMljvRKFks2Ef4SqkLroioZ/zKZfpZGiZAzH3NdjMr8sENefWz3XT8mGt3YU2bGqzBWiBAsfEOB97OOb22+FJDetOHVpxXsR2UOtbUMVjsx01U4tsP3Gos8lC3PBZXmJSiGmqSsjQ60w7w9RmPmr5twKF6QDwdwKoFr5VQiE02ZTUhJLbvQMvgPLspY9BUpUkwF+BVyeeSob69/6o3lONPq+13JAoj4sxc8yZkb82+G7pzVdt8Ww/XzZx/nVmTcwQt/ypeeuVcKkxxnc0/O77h9FNbOVhasx5YPnEM6bn9hERENLhxi56l2t6A0bFraZnKc9vuwckwFYwJZ4pV5MKkBpQ3Hky0jz1L7+gGuFeFtPck6KKNefWLYgVf7nUcL4u6ROlHT2K5y6kYe5Af//I+Ow+5i9HIMJjamykYQ+btzpUxzW35sB/UT07LPUzgHQSORTcaTGmWU/yfM5F1D6l5lAS9iKdby19D8KPO8+L1hdOahI2d59dS3IQFJaLTPUdOThGVM3rzfrMx6oh77D8xcTkwwCyugyRVkjsxUYKhljvYqPBaDyqlRc6TVmyotvFXcHIuGk/FbpVIYovxyNcnniciMv5X4ewfrG1rXZRBQxHlMT3kb
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DU0PR04MB9417.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(376002)(346002)(39860400002)(396003)(366004)(122000001)(38070700005)(33656002)(86362001)(38100700002)(52536014)(478600001)(8936002)(7416002)(44832011)(4744005)(316002)(5660300002)(54906003)(110136005)(66476007)(66556008)(66946007)(76116006)(71200400001)(8676002)(4326008)(186003)(83380400001)(66446008)(64756008)(6506007)(41300700001)(2906002)(55016003)(26005)(9686003)(7696005);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?XB9fOYvBbVOQNOvvQovJFl7P+SgVgFMAUtnvc/VjvrY2AeBvFv6bfYVwqQvn?=
- =?us-ascii?Q?mj7PjLYENmFTRwtNBMndFVuMFeJRI3zbwBkmGToS1tPQSEeCU42dCgN5Vcqi?=
- =?us-ascii?Q?5N3oeudYCUJysjfLUBiY1FsvJW6L4Hbf8/RiZ6iIuHMb0RZWhY0XnAJVPnwq?=
- =?us-ascii?Q?8kA6KpLO9k7kn1PjKjmk9FQiYsMsVFlpxdjilsemm+FageCnGZGD4ffIRf/y?=
- =?us-ascii?Q?niqiN2dPxHwJt0BpRuochWdAaudUCkBQ4E+Vu85IBAw9tZOJE1wEJYsSAKgn?=
- =?us-ascii?Q?s4/MeCDIFV4NBH6j81F76k5md0DL/5gro0i0XuC+3k96QIOzD5PjIfIicY8x?=
- =?us-ascii?Q?CGQ1x/aBeiaZUqxmv+iihrW37ZNeAVrdzh9rRUiIak0L8oB9jkvheGCWE/wW?=
- =?us-ascii?Q?78TOX1LzK2u7thza9EyT8VfODi6V0k8quUdcMWZq/6QceU/mnQf0fOb0jf6l?=
- =?us-ascii?Q?hxH0KvLV+NH7GEU0usj9aCeG09yiWDKVy00D8adFT77vvm5AqvfSQraNXkx5?=
- =?us-ascii?Q?tJA+Dby7JhkiYmJuEMxd0WNxKAdi9hBrmPQfDKCL0EszTYql7O0QdhxKHoyI?=
- =?us-ascii?Q?N+EdAZ3Gaoyyw5RfQUqe5v2Ax54HIhxnW7PgFhmGot+fyRaz2y1cDUiAbhJX?=
- =?us-ascii?Q?HjpR0+ai7xjmqyq9qc9hG9CIABPbTlM0iCBmW1RMBfoCm84JO30e737Kg3TR?=
- =?us-ascii?Q?ZiA66cefUxOJZ9nBu9u6UmrplexAEa6MV301f5m8xGaaJN7OrnZODs0VYY6a?=
- =?us-ascii?Q?jJWhxXlLvjTtJgHVQ4l3gVI9HoRM0f1Od0Zq6SfndBbXNl1LBH+L+4SeVrps?=
- =?us-ascii?Q?OeTbem5QwrtlRRtkW5gVNI8CjULvvkuYCNfGEIl0owYjKBIyI7Tq7MzmJbtT?=
- =?us-ascii?Q?V0t9wvQYIDYKyUYz1wHagrWbDUMUSrNB56HAxHIXZLxBZCC1gbn0UxUCF5TB?=
- =?us-ascii?Q?58n4d9kOwMcaUOVwFDg5/jW4MrpLVls024a7lrKxx0I3bYjYas8HHKRaZ3I0?=
- =?us-ascii?Q?+/eHtqwo13TTe1+EF6Gph3cpvAR6sklV8qlcEkC93hJF/o81JYFPOFOMwe7E?=
- =?us-ascii?Q?sDb+7QhBFb8xTxe/q6+bNPT1BdauI98QZaSt+luJgTl3IHPfXdFKTnIN8OOJ?=
- =?us-ascii?Q?85N5yGzK/2zq+5Y0vPSsRf++keE/GQBqlE+aaGB3AHKQICa1XsecvkZe4WF+?=
- =?us-ascii?Q?SByPk2V9MiGq/0y+sytqJshxQ0HzKM8GVf59998wZ0NQULVMrNTWrDrkJdRh?=
- =?us-ascii?Q?9fR3AxgrBThJKYwZmArDojTqZhFviklewrfftgktkQthUsAUpMB9oBMf/HT6?=
- =?us-ascii?Q?lnwIKokguzKSbKIZ/KxKZw97Df8puypICzcM0woUgadfrshmcmvqNYfY46Mm?=
- =?us-ascii?Q?2EYV4ROwWWOXTeQmIG7YEfQFbHzG3DMZ4Hk2Kp+PELjYqAC2H5wa8RS51NVK?=
- =?us-ascii?Q?MNqsTISwG80YEIcemUx8w2yiHvb2eE3HrpWTvUsnquw1ylzlrbUerfK9DqOQ?=
- =?us-ascii?Q?EFQFyLLCu04ukBeuqSgccWU8TG/CgGpNbPjjqjTyG/YKBXtFPxfOLDY3phS0?=
- =?us-ascii?Q?zt9gsEMtoWIi6yacyK8=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Tue, 26 Jul 2022 05:04:07 -0400
+Received: from conssluserg-02.nifty.com (conssluserg-02.nifty.com [210.131.2.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94BC12ED50;
+        Tue, 26 Jul 2022 02:04:05 -0700 (PDT)
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52]) (authenticated)
+        by conssluserg-02.nifty.com with ESMTP id 26Q93a2x009320;
+        Tue, 26 Jul 2022 18:03:36 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-02.nifty.com 26Q93a2x009320
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1658826217;
+        bh=4AoSB3h+V1S0Zi2hR9Ffz+aEk8obXbEQALYdUythM8s=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=DNMsI719EsEHWEJB1i0fmsw8dcnEb9Xgi3ZvZPQ7nL4LCs6mEM+irmydqM1XbJO5O
+         sbYBElMFxA8CQw7rhpwHk8+OI+ICwolToeVjuEgIu6cJh7eTfhWC3FvBlXLOwlJVPd
+         Zi9GWYGLvlQOiIkT7dNS33ZSHKwce1XHFGRIHRjHMQBbFX2c1/mqgcsaUR/MxS2FI3
+         jeFJFXbn7MeusLl0FX2/3etDNMmWOuvRuqoCVSTiemp7U7ijrbGddFdZHoHbCjkTxQ
+         vZnmJY8/CXUkzUZpOmikIuMV+7nFitjts8WJARI/8gbTmSOYb69ELH5nB5U7Ef5juY
+         aL9PwlE/bqk8Q==
+X-Nifty-SrcIP: [209.85.128.52]
+Received: by mail-wm1-f52.google.com with SMTP id j29-20020a05600c1c1d00b003a2fdafdefbso7762192wms.2;
+        Tue, 26 Jul 2022 02:03:36 -0700 (PDT)
+X-Gm-Message-State: AJIora/8OBjH+AEY/YSBFSYt3fNwSZak5ASZyTo1khym69B92+ShYc6I
+        34b5iRDWlkeabqSPgrwUg0E/d+kAumjtdt2Z9ao=
+X-Google-Smtp-Source: AGRyM1t5i57cSEMRwg05NPugl/q2APQQrpbyEWMfhb46+2n3Uw000nam92VwO6YtRq/0tgh+LKH+Ih9YNZsIEOnld7A=
+X-Received: by 2002:a05:600c:1da8:b0:3a3:1969:b0d with SMTP id
+ p40-20020a05600c1da800b003a319690b0dmr23582274wms.172.1658826215094; Tue, 26
+ Jul 2022 02:03:35 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DU0PR04MB9417.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9651435b-cce8-4a2a-5324-08da6ee5b70e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Jul 2022 09:03:32.3457
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: kN63893SD1m9r6UMSRrYTj4feMqvg6bFucu4YkU7k/sWiHArZSGe5DGQujyjpkE4Gu85urkJus4CSVtwMO9ORQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR04MB8443
+References: <20220722022416.137548-1-mfo@canonical.com>
+In-Reply-To: <20220722022416.137548-1-mfo@canonical.com>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Tue, 26 Jul 2022 18:02:35 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAR=7zgOiqTD9okXfZXroFH1yagMFsRuq0G-z6OfSUPLQg@mail.gmail.com>
+Message-ID: <CAK7LNAR=7zgOiqTD9okXfZXroFH1yagMFsRuq0G-z6OfSUPLQg@mail.gmail.com>
+Subject: Re: [RFC PATCH 0/6] Introduce "sysctl:" module aliases
+To:     Mauricio Faria de Oliveira <mfo@canonical.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-modules <linux-modules@vger.kernel.org>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux FS-devel Mailing List <linux-fsdevel@vger.kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Luis Chamberlain <mcgrof@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Iurii Zaikin <yzaikin@google.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> Subject: Re: [PATCH 0/9] dt-bindings: pinctrl: imx: use minItems
->=20
-> On Sat, Jul 23, 2022 at 05:43:26PM +0800, Peng Fan (OSS) wrote:
-> > From: Peng Fan <peng.fan@nxp.com>
-> >
-> > There are many warnings when do dtbs_check: fsl,pins are too long, so
-> > add minItems to address that.
->=20
-> A single cell is not valid though, right?
->=20
-> This particular property is problematic because each entry depending on t=
-he
-> platform has different number of cells (5, 6, etc.). A single cell (minIt=
-ems: 1)
-> is not valid though, right?
+On Fri, Jul 22, 2022 at 11:24 AM Mauricio Faria de Oliveira
+<mfo@canonical.com> wrote:
+>
+> This series allows modules to have "sysctl:<procname>" module aliases
+> for sysctl entries, registering sysctl tables with modpost/file2alias.
+> (Similarly to "pci:<IDs>" aliases for PCI ID tables in device drivers.)
+>
+> The issue behind it: if a sysctl value is in /etc/sysctl.{conf,d/*.conf}
+> but does not exist in /proc/sys/ when the userspace tool that applies it
+> runs, it does not get set.
+>
+> It would be nice if the tool could run 'modprobe sysctl:<something>' and
+> get that '/proc/sys/.../something' up (as an administrator configured it)
+> and then set it, as intended. (A bit like PCI ID-based module loading.)
+>
+> ...
+>
+> The series is relatively simple, except for patch 4 (IMHO) due to ELF.
+>
+> - Patches 1-2 simplify ELF code in modpost.c (code moves, not in-depth).
+> - Patches 3-4 implement the feature (patch 4 is more in-depth).
+> - Patches 5-6 consume and expose it.
+>
+> I have tested it on x86_64 with next-20220721, and it looks correct
+> ('modprobe sysctl:nf_conntrack_max' works; other aliases there; see below=
+).
 
-I thought no maxItems means no limitation on maxItems (:
-Then I should add maxItems.
->=20
-> There's a fix in dtschema min branch which should fix the warnings.
-> Unfortunately, it just strips any bounds checking.
 
-ok, let me update dtschema to rerun the dtbs_check.
-Thanks,
-Peng.
->=20
-> Rob
+I did not test this patch set at all, but I am afraid
+you took a good case as an example.
+
+
+
+I see two locations for the "fib_multipath_hash_fields" parameter
+for example.
+
+#  find /proc/sys/ -name fib_multipath_hash_fields
+/proc/sys/net/ipv4/fib_multipath_hash_fields
+/proc/sys/net/ipv6/fib_multipath_hash_fields
+
+
+If I run
+
+   modprobe sysctl:fib_multipath_hash_fields
+
+Which one will be loaded, net/ipv4/sysctl_net_ipv4.c
+or ipv6/sysctl_net_ipv6.c ?
+
+Of course, IPv4 is always built-in, so ipv6.ko will be loaded in this case.
+But, let's think. The basename is not enough to identify
+which code resulted in that sysctl property.
+The PCI vendor/device ID is meant to be unique. That's the difference.
+
+
+You may argue the full path is globally unique, so
+
+  modprobe  sysctl:net/ipv6/fib_multipath_hash_fields
+
+should work, but that may not be so feasible to implement
+because not all file paths are static.
+
+
+On my machine:
+
+# find  /proc/sys  -name  forwarding
+/proc/sys/net/ipv4/conf/all/forwarding
+/proc/sys/net/ipv4/conf/br-22440b7735e7/forwarding
+/proc/sys/net/ipv4/conf/br-3e8284a56053/forwarding
+/proc/sys/net/ipv4/conf/br-9b27f0f9e130/forwarding
+/proc/sys/net/ipv4/conf/br-bc5fbfa838fc/forwarding
+/proc/sys/net/ipv4/conf/br-ca51e25e8af8/forwarding
+/proc/sys/net/ipv4/conf/default/forwarding
+/proc/sys/net/ipv4/conf/docker0/forwarding
+/proc/sys/net/ipv4/conf/lo/forwarding
+/proc/sys/net/ipv4/conf/lxcbr0/forwarding
+/proc/sys/net/ipv4/conf/veth6e3e4b8/forwarding
+/proc/sys/net/ipv4/conf/virbr0/forwarding
+/proc/sys/net/ipv4/conf/vpn0/forwarding
+/proc/sys/net/ipv4/conf/wlp0s20f3/forwarding
+/proc/sys/net/ipv6/conf/all/forwarding
+/proc/sys/net/ipv6/conf/br-22440b7735e7/forwarding
+/proc/sys/net/ipv6/conf/br-3e8284a56053/forwarding
+/proc/sys/net/ipv6/conf/br-9b27f0f9e130/forwarding
+/proc/sys/net/ipv6/conf/br-bc5fbfa838fc/forwarding
+/proc/sys/net/ipv6/conf/br-ca51e25e8af8/forwarding
+/proc/sys/net/ipv6/conf/default/forwarding
+/proc/sys/net/ipv6/conf/docker0/forwarding
+/proc/sys/net/ipv6/conf/lo/forwarding
+/proc/sys/net/ipv6/conf/lxcbr0/forwarding
+/proc/sys/net/ipv6/conf/veth6e3e4b8/forwarding
+/proc/sys/net/ipv6/conf/virbr0/forwarding
+/proc/sys/net/ipv6/conf/vpn0/forwarding
+/proc/sys/net/ipv6/conf/wlp0s20f3/forwarding
+
+
+I do not know how to do it correctly.
+
+
+
+
+>
+> I plan to test other archs by cross-building 'allmodconfig' and checking
+> the .mod.c files and modpost output (eg, warnings) for no changes at all,
+> and nf_conntrack.mod.c for expected sysctl aliases. [based on feedback.]
+> (i.e., changes didn't break modpost, and ELF code works on other archs.)
+>
+> Happy to receive suggestions to improve test coverage and functionality.
+>
+> I didn't look much at auto-registration with modpost using the register
+> functions for sysctl, but it seems it would need plumbing, if possible.
+>
+> Let's see review/feedback on the basics first.
+>
+> thanks,
+> Mauricio
+>
+> ...
+>
+> Some context.
+>
+> Even though that issue might be expected and obvious, its consequences
+> sometimes are not.
+>
+> An example is the nf_conntrack_max value, that in busy gateways/routers
+> /cloud deployments can affect performance and functionality more subtly,
+> or even fill the kernel log non-stop with 'table full, dropping packet',
+> if a value greater than the default value is not used.
+>
+> The current solution (workaround, arguably) for this is to include such
+> modules in /etc/modules (or in /etc/modules-load.d/*.conf with systemd),
+> which loads them before an userspace tool (procps's sysctl or systemd's
+> systemd-sysctl{,.service}) runs, so /proc/sys/... exists when it runs.
+>
+> ...
+>
+> That is simple, indeed, but comes w/ technical debt. (ugly stuff warning!=
+)
+>
+> Now there are many _different_ pieces of code that use the _same_ module
+> doing that (eg, deployment tools/scripts for openstack nova and neutron,
+> firewalls, and maybe more).
+>
+> And sometimes when components are split or deployed to different nodes
+> it turns out that in the next reboot we figure (through an issue) that
+> some component did set /etc/sysctl.conf but not /etc/modules.conf, or
+> relied in the ex-colocated component doing that.
+>
+> This has generated several one-off fixes at this point in some projects.
+> (I have submitted one of those, actually, a while ago.)
+>
+> Also, some of those fixes (or original code) put 'nf_conntrack_ipv{4,6}'
+> in /etc/modules, getting 'nf_conntrack' loaded via module dependencies
+> (maybe it was the right module for them at the time, for some reason).
+>
+> So, that component (or a colocated component) got nf_conntrack.ko too.
+>
+> *BUT* after an upgrade from Ubuntu 18.04 (4.15-based kernel) to 20.04
+> (5.4-based kernel), the nf_conntrack_ipv{4,6}.ko modules do not exist
+> anymore, and now nf_conntrack.ko is no longer loaded, and the sysctl
+> nf_conntrack_max is no longer applied. (Someone had to figure it out.)
+>
+> And now maybe we'd need release/kernel-version checks in scripts that
+> use the workaround of /etc/modules for /etc/sysctl.conf configuration.
+>
+> (Yes, it was ugly stuff.)
+>
+> ...
+>
+> Well, this last point seemed like "ok, that's enough; we can do better."
+>
+> I'm not sure this approach is "better" in all reasons, but hopefully it
+> might help starting something that is. =F0=9F=99=8F
+>
+> cheers,
+> Mauricio
+>
+> ...
+>
+> Tests:
+>
+>     $ cat /proc/sys/kernel/modprobe_sysctl_alias
+>     1
+>
+>     $ cat /proc/sys/net/netfilter/nf_conntrack_max
+>     cat: /proc/sys/net/netfilter/nf_conntrack_max: No such file or direct=
+ory
+>
+>     $ lsmod | grep nf_conntrack
+>     $
+>
+>     $ sudo modprobe sysctl:nf_conntrack_max
+>
+>     $ cat /proc/sys/net/netfilter/nf_conntrack_max
+>     262144
+>
+>     $ lsmod | grep nf_conntrack
+>     nf_conntrack          110592  0
+>     nf_defrag_ipv6         20480  1 nf_conntrack
+>     nf_defrag_ipv4         16384  1 nf_conntrack
+>
+>     $ modinfo nf_conntrack | grep ^alias:
+>     alias:          nf_conntrack-10
+>     alias:          nf_conntrack-2
+>     alias:          ip_conntrack
+>     alias:          sysctl:nf_conntrack_icmpv6_timeout
+>     alias:          sysctl:nf_conntrack_icmp_timeout
+>     alias:          sysctl:nf_conntrack_udp_timeout_stream
+>     alias:          sysctl:nf_conntrack_udp_timeout
+>     alias:          sysctl:nf_conntrack_tcp_max_retrans
+>     alias:          sysctl:nf_conntrack_tcp_ignore_invalid_rst
+>     alias:          sysctl:nf_conntrack_tcp_be_liberal
+>     alias:          sysctl:nf_conntrack_tcp_loose
+>     alias:          sysctl:nf_conntrack_tcp_timeout_unacknowledged
+>     alias:          sysctl:nf_conntrack_tcp_timeout_max_retrans
+>     alias:          sysctl:nf_conntrack_tcp_timeout_close
+>     alias:          sysctl:nf_conntrack_tcp_timeout_time_wait
+>     alias:          sysctl:nf_conntrack_tcp_timeout_last_ack
+>     alias:          sysctl:nf_conntrack_tcp_timeout_close_wait
+>     alias:          sysctl:nf_conntrack_tcp_timeout_fin_wait
+>     alias:          sysctl:nf_conntrack_tcp_timeout_established
+>     alias:          sysctl:nf_conntrack_tcp_timeout_syn_recv
+>     alias:          sysctl:nf_conntrack_tcp_timeout_syn_sent
+>     alias:          sysctl:nf_conntrack_generic_timeout
+>     alias:          sysctl:nf_conntrack_helper
+>     alias:          sysctl:nf_conntrack_acct
+>     alias:          sysctl:nf_conntrack_expect_max
+>     alias:          sysctl:nf_conntrack_log_invalid
+>     alias:          sysctl:nf_conntrack_checksum
+>     alias:          sysctl:nf_conntrack_buckets
+>     alias:          sysctl:nf_conntrack_count
+>     alias:          sysctl:nf_conntrack_max
+>
+>     $ modinfo r8169 | grep ^alias:
+>     alias:          pci:v000010ECd00003000sv*sd*bc*sc*i*
+>     alias:          pci:v000010ECd00008125sv*sd*bc*sc*i*
+>     alias:          pci:v00000001d00008168sv*sd00002410bc*sc*i*
+>     alias:          pci:v00001737d00001032sv*sd00000024bc*sc*i*
+>     alias:          pci:v000016ECd00000116sv*sd*bc*sc*i*
+>     alias:          pci:v00001259d0000C107sv*sd*bc*sc*i*
+>     alias:          pci:v00001186d00004302sv*sd*bc*sc*i*
+>     alias:          pci:v00001186d00004300sv*sd*bc*sc*i*
+>     alias:          pci:v00001186d00004300sv00001186sd00004B10bc*sc*i*
+>     alias:          pci:v000010ECd00008169sv*sd*bc*sc*i*
+>     alias:          pci:v000010FFd00008168sv*sd*bc*sc*i*
+>     alias:          pci:v000010ECd00008168sv*sd*bc*sc*i*
+>     alias:          pci:v000010ECd00008167sv*sd*bc*sc*i*
+>     alias:          pci:v000010ECd00008162sv*sd*bc*sc*i*
+>     alias:          pci:v000010ECd00008161sv*sd*bc*sc*i*
+>     alias:          pci:v000010ECd00008136sv*sd*bc*sc*i*
+>     alias:          pci:v000010ECd00008129sv*sd*bc*sc*i*
+>     alias:          pci:v000010ECd00002600sv*sd*bc*sc*i*
+>     alias:          pci:v000010ECd00002502sv*sd*bc*sc*i*
+>
+> Mauricio Faria de Oliveira (6):
+>   modpost: factor out elf/arch-specific code from section_rel[a]()
+>   modpost: deduplicate section_rel[a]()
+>   sysctl, mod_devicetable: shadow struct ctl_table.procname for
+>     file2alias
+>   module, modpost: introduce support for MODULE_SYSCTL_TABLE
+>   netfilter: conntrack: use MODULE_SYSCTL_TABLE
+>   sysctl: introduce /proc/sys/kernel/modprobe_sysctl_alias
+>
+>  fs/proc/proc_sysctl.c                   |  27 ++++
+>  include/linux/mod_devicetable.h         |  25 ++++
+>  include/linux/module.h                  |   8 ++
+>  include/linux/sysctl.h                  |  11 +-
+>  kernel/sysctl.c                         |  10 ++
+>  net/netfilter/nf_conntrack_standalone.c |   4 +
+>  scripts/mod/devicetable-offsets.c       |   3 +
+>  scripts/mod/file2alias.c                | 111 +++++++++++++++
+>  scripts/mod/modpost.c                   | 178 +++++++++++++-----------
+>  scripts/mod/modpost.h                   |   3 +
+>  10 files changed, 296 insertions(+), 84 deletions(-)
+>
+> --
+> 2.25.1
+>
+
+
+--
+Best Regards
+Masahiro Yamada
