@@ -2,368 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDCC4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 06:15:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F46CC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 06:15:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232076AbiGZGPn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 02:15:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57250 "EHLO
+        id S237445AbiGZGPs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 02:15:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229568AbiGZGPl (ORCPT
+        with ESMTP id S232067AbiGZGPn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 02:15:41 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A529D644C;
-        Mon, 25 Jul 2022 23:15:39 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id w5so4080824edd.13;
-        Mon, 25 Jul 2022 23:15:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=TBHNm+itT6V1xI3RXoopTxPFiKyF8tS1Yze0w6IdsN4=;
-        b=k+AMX00NMCvEsZLU04hfPEilwVL49sA0Fc5RLdObq+S6gwHoqzymc4+u5YDKblzIHi
-         S8XFV7IIVmQXV/lnHuprMiitLidliDZ32wnQpKBC4CQVFeKcw6zxTSOZOGrykykHw43P
-         9/ULGLbKvNAzzf/gs3fm/wGTVlcvaTFe799ju8YGHnOQSefY899zVQYtQrd5vVj5eaZV
-         2aoqPCngiUgG5UjMGHR32Vrxbg1fdfD0JdfOrIFJf2U4Kiqb92KahhYd4lSVN9DTckCQ
-         DuSGldqba7rrdU5lPhH54UseerARf6GxPFtDT/AcitP18GCwn58WyJINqWVV06PLahDC
-         AO8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=TBHNm+itT6V1xI3RXoopTxPFiKyF8tS1Yze0w6IdsN4=;
-        b=oGmFAmNpfDySnvFJCzWqUIpQj0I9ZPFZ5j0jreia1L8i2PXYJ5+Z4MUQSzJvxBAkYE
-         q0aC19dDWjbpRx5EBnQUAq8bVtb7LIcNdltwZxMBJZD4ZxtBISN3/KMPvD2NSstdktXC
-         vg87v63q4VxOibjpwakzV+bs4Jj6ciWrhTKHA4ApzOtzgq4hF+ajIFjjOH3d+dMukg+z
-         DEnokZ+hfXcjvzwEPmWcdAKWFXQVtu0fDhvbtmk373jA/2FnmHDTxhyRDZi+OozVdyl1
-         t6SdBtGLgtkF90dqfgRHsckhyWETkt07OA4Eb8F+totVZ+8vwkinapRN2FAQ03/BfN86
-         L6Jg==
-X-Gm-Message-State: AJIora/lbK40nDBY/YXdV2XaT05N6Ys3x5yn4rtrS1nAJczPBHKinbDh
-        tF0MebMrig0wXoMge0ao1Ns=
-X-Google-Smtp-Source: AGRyM1uYzfz4GaObUBBC1ARrZIlFbTy3jwGu9iuDuqVCAAmJFo038i44N5g34HGXSpU2hI/bgIGU4A==
-X-Received: by 2002:a05:6402:48:b0:43a:caa8:756b with SMTP id f8-20020a056402004800b0043acaa8756bmr16407609edu.112.1658816138021;
-        Mon, 25 Jul 2022 23:15:38 -0700 (PDT)
-Received: from localhost.localdomain ([2a04:241e:502:a080:2b68:36a:5a94:4ba1])
-        by smtp.gmail.com with ESMTPSA id l23-20020a056402345700b0043ba7df7a42sm8133067edc.26.2022.07.25.23.15.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Jul 2022 23:15:37 -0700 (PDT)
-From:   Leonard Crestez <cdleonard@gmail.com>
-To:     David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Philip Paeps <philip@trouble.is>
-Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
-        Shuah Khan <shuah@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Yuchung Cheng <ycheng@google.com>,
-        Francesco Ruggeri <fruggeri@arista.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Christoph Paasch <cpaasch@apple.com>,
-        Ivan Delalande <colona@arista.com>,
-        Caowangbao <caowangbao@huawei.com>,
-        Priyaranjan Jha <priyarjha@google.com>, netdev@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v6 00/26] tcp: Initial support for RFC5925 auth option
-Date:   Tue, 26 Jul 2022 09:15:02 +0300
-Message-Id: <cover.1658815925.git.cdleonard@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 26 Jul 2022 02:15:43 -0400
+Received: from mo-csw.securemx.jp (mo-csw1515.securemx.jp [210.130.202.154])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2188164D3;
+        Mon, 25 Jul 2022 23:15:40 -0700 (PDT)
+Received: by mo-csw.securemx.jp (mx-mo-csw1515) id 26Q6F33v022118; Tue, 26 Jul 2022 15:15:03 +0900
+X-Iguazu-Qid: 34trpbd9IC41e4v2kS
+X-Iguazu-QSIG: v=2; s=0; t=1658816103; q=34trpbd9IC41e4v2kS; m=0iGqhylLcSYnE60v/Wl9w6rR54yh9X4VuGxAgciZon8=
+Received: from imx2-a.toshiba.co.jp (imx2-a.toshiba.co.jp [106.186.93.35])
+        by relay.securemx.jp (mx-mr1510) id 26Q6F1E0022213
+        (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 26 Jul 2022 15:15:01 +0900
+X-SA-MID: 42668458
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TP3rTQqATDjYir5SDUUBh4etfAq5aFS9mWvzPNQIUcMwzrItZJlz9+oTs1/YsQ11TmqUKzBT830CNgCvVQVjYp7BGE34nl+mR0J3+r3SiPiRA0bTumvKiSyD93+D2qynKRmdnx12DthOBK4WUm+GDr/f8X5mPeVpZLt56ImBGr7X2yZJ7KXvu546ZI9qD6Cnlh4Pwyy+odHPyCr68eEeelHIBV3oghTI6QG81d470MY3B4ZNSBAGiaPeiW0LWx/BFI8rIapNO+JoWxZShPLf6vdeN/sepnw3VqE2ZCYVVEVzQIdybmEvsv9jGx77r6wz0EBd56JnyUBDL8WhCu272Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=LochckwdzCR+mcS4dn9k+2wdjXt5JVQXDVzqGdWDE5U=;
+ b=AKwkm+ix15nUWWqRWf+DtsdZAOvkQKc/ZCL2c/5Z7/OcTaT/5iQBdHWyqkURsiQ5OJ+WX6ZaF2jWir/kAr/V3duVZVC325vZWo3y/z3TpGGpvaHntncJq7Ksy+pMCsU3Bkb3KaM45xK60nh6lzdnkrGoi4W1dIfW+ESXWyLyGntiztg/t3+oYXtvf36fUb2cDETJvq4ky8a3wG64QPflVLyG9DNSM3M2Alkj8vx8mSdwHL0swiFPC5EDHigah7ubZrK4rVSBcQ7ozdNShu5oa0f53+Fa3ThuFUndAQeiU+J4z+t7c1RVQyuzrHLwT1wwYQc5e5cnLJYT5U7HKEQAsQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=toshiba.co.jp; dmarc=pass action=none
+ header.from=toshiba.co.jp; dkim=pass header.d=toshiba.co.jp; arc=none
+From:   <yuji2.ishikawa@toshiba.co.jp>
+To:     <gregkh@linuxfoundation.org>
+CC:     <robh+dt@kernel.org>, <hverkuil@xs4all.nl>,
+        <nobuhiro1.iwamatsu@toshiba.co.jp>, <corbet@lwn.net>,
+        <sumit.semwal@linaro.org>, <christian.koenig@amd.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-media@vger.kernel.org>,
+        <dri-devel@lists.freedesktop.org>, <linaro-mm-sig@lists.linaro.org>
+Subject: RE: [PATCH v2 0/5] Add Toshiba Visconti DNN image processing
+ accelerator driver
+Thread-Topic: [PATCH v2 0/5] Add Toshiba Visconti DNN image processing
+ accelerator driver
+Thread-Index: AQHYnaUi/BiBjs98DUW2eb3g4GGnba2PDfeAgAEL1GA=
+Date:   Tue, 26 Jul 2022 06:09:50 +0000
+X-TSB-HOP2: ON
+Message-ID: <TYAPR01MB62010C6B98C1C197E7E894AF92949@TYAPR01MB6201.jpnprd01.prod.outlook.com>
+References: <20220722082858.17880-1-yuji2.ishikawa@toshiba.co.jp>
+ <Yt6Qw/r0FQ0ElYdn@kroah.com>
+In-Reply-To: <Yt6Qw/r0FQ0ElYdn@kroah.com>
+Accept-Language: ja-JP, en-US
+Content-Language: ja-JP
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=toshiba.co.jp;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: e6c59c53-3cf9-458f-206b-08da6ecd7371
+x-ms-traffictypediagnostic: TYAPR01MB3424:EE_
+x-ld-processed: f109924e-fb71-4ba0-b2cc-65dcdf6fbe4f,ExtAddr,ExtFwd
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: KvzD/Gg7PaLcwlAhqqfY8M+3OGS6UM80bN4D0m2VzgF0oxKSQFX6wuWhy3gntwQG30iKJMrfLjjZCV2QwwVVkZegoe4O8FMoRxEqp9XdPwCQu0CCewjytgVUGi9BADAQX2PmQRcxb0o1qJXCGHdq5i3+yVJID340l70+2hws/meOa1x+IZ2tQXSfAjO1sFr8BasbM7ebBeXYwbuVW99MVk2A7JmxgVbGqM27Z8NMOB9n6ARL7fkV4jJKmTt48xZBYjOwitd76ByWxP3krUeLT2OvDw0va7yVoN2Sh/RPc+pbjmVU+D6GDk+mdWRjLFsThz+yMd44VYLg9fsiGyiGxjpjEfdUVF20oU4qhDOsNNKoCxGgTxqCRe7MCBplQ7SKja1Yh6r5/UCUh2/Tq2jMb70fQQulwWfKQiFZQL7EBr07WNai47KEGxZucBc7ePppjk5W7ovtyyHeTo1t08Ij8luFT4zg5jHJ5fH14kY/8ERk5Z7w8jYDOW6yhT31BrvhTkBNmnKnvwkuasnJRQ3HwFHqIUJMknNGGLXVnC+iriGRg+3eDhln10aaCm19rNWAiwSnBLo5BewiCh8/nWy2/sqGnJ3qjnuhysdETJszr0BYpC1ooDgsXwshZVlFfwtDIDL9Q+Bbwdzz/co2qK0F7pQ9HGfHSZ/ulp8UyN0ef4wJcgTCeKYBnXrnTabhaEz5g693GCf7StascjKKpedsN6X9SwfupGilKSDlD+InCk7JkNN7veZqakVAb5XTXuCnUBcjc273gr0y4xpuUZ6qAFxSnntdXORZ5d6MTP9Ya+1xUSe6rF2O+tHKdu+pYBctQ77/JaHs4gtBrSgMtNPMIw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYAPR01MB6201.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(376002)(346002)(396003)(366004)(39860400002)(4326008)(966005)(316002)(55016003)(66556008)(66946007)(66476007)(64756008)(66446008)(8676002)(71200400001)(8936002)(54906003)(478600001)(76116006)(6916009)(52536014)(5660300002)(7416002)(2906002)(41300700001)(6506007)(7696005)(53546011)(86362001)(33656002)(186003)(38070700005)(66574015)(38100700002)(83380400001)(9686003)(26005)(122000001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?Z2NZVXB5REhZenZuRTdEOGxOWEN6K29ZWXN3VE92M0VzRzdOQmtPN3RZUzVD?=
+ =?utf-8?B?V0YrYVU2M1A4QklQc1Y5eWhDSTR4ZndHYzlucThDdHpycXQ0RXNFYUpiaHRS?=
+ =?utf-8?B?SGdrR0FycDVXZ2oxRjl6aklnbzQwdU84c2M3WXpaRVl5QVhuL2hoVFVxNFhX?=
+ =?utf-8?B?N3RzNUt4cm05UDVBSk90b3c5OWVqQmhZZlRiQ05uRjBKTGNFRWFVNWt1K0pD?=
+ =?utf-8?B?cUpCd29oajJVeFBVaS9UVmsxTkJldGFjOFI5S05HSnNQazJOaVhaQWtrRW1Z?=
+ =?utf-8?B?RzFJb2VtZWtWTFkvZUxxTmk5V25IL09XUnlDVGlIdWZHK2pWRURqdWVYck5q?=
+ =?utf-8?B?WjUvSmNhU25tNm1JSzBIQWNxMTd5dERteTc4bUEvOHdsMGlrQng5aktIaXIx?=
+ =?utf-8?B?TGc5OS9WQWxVbnlIdXB4MGhRbmxJblpuM1c2OHJKYUYzeDkrSTNLbVh1NHNC?=
+ =?utf-8?B?T2NYUHlTTmRyR2RPTnBUQUdjVlNsdlJKejhMZ05rVTNiYVlpM1pGUDhHSXNt?=
+ =?utf-8?B?SU50QVppNFFaamZvZ01tc2wzbXdNbTI5d0Nra044OGpOMjJCbGwwZHlxd1Vt?=
+ =?utf-8?B?dXVQVjAzUEltdmFDTGdYdGhFZlVrU251MmxxclNKdEJTK1RlZm01V21aY2ZN?=
+ =?utf-8?B?L1RRNS9UUHBrT2JwS01vWXN6akp4RlpEOWFSMlJsNDgzdEc0ZExuT241cHUr?=
+ =?utf-8?B?aVpBWTNiVDVqbVFaZWxMR0FGL3ZVY05LYzg1RTVxNndTMDJUeGIyR2lZT253?=
+ =?utf-8?B?UjJyZVFjM2lnUmEySHBZcHlNT0ZwUlFwL1cvSU9EY2NpelpxZVJDYkdCYTZS?=
+ =?utf-8?B?YWp5V2Z3V0tROXpZSWI5MXVTVC9xSEhwUk0vazhKVWN5ZXVqdER4N2R5WHpm?=
+ =?utf-8?B?K3F2ZUxtTWRXQzlDQURHMU82VEY0NTJPN1lVTmRwRnFaUVNGMkh3NUtON2xi?=
+ =?utf-8?B?MTlTT2I0aml5MHBxcVVlRkx0YVhsbVFMSVNJcGl6ZDlVbUJhMllGSzdZWXBF?=
+ =?utf-8?B?dnNLWTNqOG9TRmpHYk4xY3JuYzhlRnNmbUZRcHh2OFVSa3BhamhiZkxKeGti?=
+ =?utf-8?B?d3FvTHl2bDk3bFVRbXlBeGEwRkhod242L0NPZHljM200ZDIvclA5bHlhQ082?=
+ =?utf-8?B?NXF3MjFVQUM0NmV3Z3dRZi9zYmxJSlV0eWlEZ05BbUxYQVhkOXBRbEZ5dVB1?=
+ =?utf-8?B?bVF1N2NBY09ReER5VUg2UFRWOTRnS3cyWC9IdXJ1cjZpR1piSEF2ejNSUWRR?=
+ =?utf-8?B?ZUpydWJZV0tLNnBnZTcrSG5Eak05NVVBNzNWS1JjSkRRcFVjcURZY29zN1kz?=
+ =?utf-8?B?dmhqTnE1dVZvNDRqNnMvaWZoNkhFRDFBTVBPdWxGdjdFWGxWUDBLc3V2K3du?=
+ =?utf-8?B?cE5tYllmQWZ1ZUxjeXhjY2dCdklVNkdQdmoveEYwbWVFamFRUmJFN3d5b1Br?=
+ =?utf-8?B?VFczdUFhUkU4blBGamFtaDVjWkRmdVFaNURwbHR6dzNRK2J0d3NvbUg0TXp2?=
+ =?utf-8?B?b2dpcTBkQm5FSE5HY2orTGlIYVBGZXY4cHFvb0s2Sm5HeW1wQXZiMDV6TGJN?=
+ =?utf-8?B?a0VzOEtES0gvL3o2d2ZsNDVjOWtDN1N5b1ljNW9Jb21EZkJrUFhVSS9jTVM0?=
+ =?utf-8?B?ZzVDYUNneTZXZ0w0cHlmZnZOYUd0SXVXTzdTRjV3MTR5YUZtakQ0eXdYZEtm?=
+ =?utf-8?B?RzcwMzlxdXp1M2JOT29vdm5RUDd4cUxDVC9KS0NOeXI0ZGJrTEllVDQ3ZnRq?=
+ =?utf-8?B?WXdUQ3dGcW9GNzdLanpuaWZ5L1U5elJHcUtWNExOVE9hbk1KUkxpVzJiMVhw?=
+ =?utf-8?B?S0pxc0dWQlZKL0Nna0I3QmFjWC9JRmRUaHkwaHJHMmt4TE90c1RqdnFSRkUz?=
+ =?utf-8?B?eDRwUEJFZTFrZUJaN0tFVEE0bVV3MUtnaXd1UytHUEhlOUJDazcyRFNUVTM5?=
+ =?utf-8?B?UU8rcWMzRW1RTG4yVXMybmdCd01tQ2RtUDliOHV5MTByeW5pSTJVOUtVNEJI?=
+ =?utf-8?B?OGdNY0JMVS83anp5TG5FclIrNGN2eWdmbzZteGlFU2lOVkgwSkc2UVQyeW5z?=
+ =?utf-8?B?eE5aNDlOVXA0K0RGbFFkeitZOS9SUVo5UW9jdzZiTlh0bkYyVm94OXZITitt?=
+ =?utf-8?B?SFIyY3dLL1pFS3U0N0VRTFZMazVHS0hmdWpiNFd4bk9sd0I1M0dRL2oyZVY4?=
+ =?utf-8?B?OVE9PQ==?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: TYAPR01MB6201.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e6c59c53-3cf9-458f-206b-08da6ecd7371
+X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Jul 2022 06:09:50.9866
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: f109924e-fb71-4ba0-b2cc-65dcdf6fbe4f
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: U8r+XcxDJNUVAVmrymBWo0undg9SGOZcMDHF1zjenYzYeKfd0iAcKXRQl/XefYXWy/OIMF6cLtwwKNk4sdMFKmLGAGZKCF+ZtQdZghtuqBk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYAPR01MB3424
+X-OriginatorOrg: toshiba.co.jp
+MSSCP.TransferMailToMossAgent: 103
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is similar to TCP-MD5 in functionality but it's sufficiently
-different that packet formats and interfaces are incompatible.
-Compared to TCP-MD5 more algorithms are supported and multiple keys
-can be used on the same connection but there is still no negotiation
-mechanism.
-
-Expected use-case is protecting long-duration BGP/LDP connections
-between routers using pre-shared keys. The goal of this series is to
-allow routers using the Linux TCP stack to interoperate with vendors
-such as Cisco and Juniper.
-
-The current code is largely feature complete and well-tested and
-changes are relatively small compared to previous version. I should
-have reposted this series earlier but was distracted by other things.
-
-I'd welcome any advice for how to push this upstream. Only up to patch
-13 is required for a minimal implementation, the rest are additional
-features and tests. Maybe I could try posting reduced versions?
-
-
-I've recently been talking with Phillip Paeps who is working on an BSD
-implementation of the same standard and he suggested sharing ABI in
-order to make userspace compatibility easier. The current ABI is
-entirely made up by me alone.
-
-One option would be to use PF_KEY because in FreeBSD PF_KEY is also used
-for MD5, in a somewhat convoluted way. I'm not very familiar with PF_KEY
-but perhaps a shim could be implemented inside linux PF_KEY support to
-make some keys be handled in an entirely different way, using tcp_authopt
-instead of xfrm. Does this make sense to anyone else?
-
-A key difference versus MD5 is that keys are global rather than
-per-socket. Older versions had per-socket keys but in practice
-applications want to always use a consistent set of keys for communication
-with a specific peer and keeping those keys in sync from userspace is
-difficult and prone to races.
-
-Other vendors supporting TCP-AO implement a notion of a "key chain"
-roughly similar to what is described in RFC8177. The current ABI is
-sufficient to do the same but it requires a bunch of userspace work
-to add and delete keys at the appropriate time or mark them as "NOSEND"
-and "NORECV". Userspace also has to insert a "dummy" key when all other
-keys are expired in order to prevent unsigned traffic going through. This
-feature might be considerably easier to use from userspace if validity
-times were added in the kernel for each key.
-
-
-Here are some known flaws and limitations:
-
-* Crypto API is used with buffers on the stack and inside struct sock,
-this might not work on all arches. I'm currently only testing x64 VMs
-* Interaction with FASTOPEN not tested and unlikely to work because
-sequence number assumptions for syn/ack.
-* No way to limit keys on a per-port basis (used to be implicit with
-per-socket keys).
-* Not clear if crypto_ahash_setkey might sleep. If some implementation
-do that then maybe they could be excluded through alloc flags.
-* Traffic key is not cached (reducing performance)
-* No caching or hashing for key lookups so this will scale poorly with
-many keys
-* Overlaping MKTs can be configured despite what RFC5925 says
-* Current key can be deleted. RFC says this shouldn't be allowed but
-enforcing this belongs at an admin shell rather than in the kernel.
-* If multiple keys are valid for a destination the kernel picks one
-in an unpredictable manner (this can be overridden).
-
-There is relatively little code sharing with the TCP_MD5SIG feature and
-earlier versions shared even less. Unlike MD5 the AO feature is kept
-separate from the rest of the TCP code and reusing code would require
-many unrelated cleanup changes.
-
-I'm not convinced that "authopt" is particularly good naming convention,
-this name is a personal invention that does not appear anywhere else.
-The RFC calls this "tcp-ao". Perhaps TCP_AOSIG would be a better name
-and it would also make the close connection to TCP_MD5SIG more visible?
-
-Some testing support is included in nettest and fcnal-test.sh, similar
-to the current level of tcp-md5 testing.
-
-A more elaborate test suite using pytest and scapy is available out of
-tree: https://github.com/cdleonard/tcp-authopt-test
-There is an automatic system that runs that test suite in vagrant in
-gitlab-ci: https://gitlab.com/cdleonard/vagrantcpao
-
-Changes for frr (obsolete): https://github.com/FRRouting/frr/pull/9442
-That PR was made early for ABI feedback, it has many issues.
-
-Changes for yabgp (obsolete): https://github.com/cdleonard/yabgp/commits/tcp_authopt
-This was used for interoperability testing with cisco.
-
-Changes since PATCH v5:
-* Rebased on recent net-next, including recent changes refactoring md5
-* Use to skb_drop_reason
-* Fix using sock_kmalloc for key alloc but regular kfree for free. Use kmalloc
-because keys are global
-* Fix mentioning non-existent copy_from_sockopt in doc for _copy_from_sockptr_tolerant
-* If no valid keys are available for a destination then report a socket error
-instead of sending unsigned traffic
-* Remove several noop implementations which are always called from ifdef
-* Fix build issues in all scenarios, including -Werror at every point.
-* Split "tcp: Refactor tcp_inbound_md5_hash into tcp_inbound_sig_hash" into a separate commit.
-* Add TCP_AUTHOPT_FLAG_ACTIVE to distinguish between "keys configured for socket"
-and "connection authenticated". A listen socket with authentication enabled will return
-other sockets with authentication enabled on accept() but if no key is configured for the
-peer then authentication will be inactive.
-* Add support for TCP_REPAIR_AUTHOPT new sockopts which loads/saves the AO-specific
-information.
-Link: https://lore.kernel.org/netdev/cover.1643026076.git.cdleonard@gmail.com/
-
-Changes since PATCH v4:
-* Move the traffic_key context_bytes header to stack. If it's a constant
-string then ahash can fail unexpectedly.
-* Fix allowing unsigned traffic if all keys are marked norecv.
-* Fix crashing in __tcp_authopt_alg_init on failure.
-* Try to respect the rnextkeyid from SYN on SYNACK (new patch)
-* Fix incorrect check for TCP_AUTHOPT_KEY_DEL in __tcp_authopt_select_key
-* Improve docs on __tcp_authopt_select_key
-* Fix build with CONFIG_PROC_FS=n (kernel build robot)
-* Fix build with CONFIG_IPV6=n (kernel build robot)
-Link: https://lore.kernel.org/netdev/cover.1640273966.git.cdleonard@gmail.com/
-
-Changes since PATCH v3:
-* Made keys global (per-netns rather than per-sock).
-* Add /proc/net/tcp_authopt with a table of keys (not sockets).
-* Fix part of the shash/ahash conversion having slipped from patch 3 to patch 5
-* Fix tcp_parse_sig_options assigning NULL incorrectly when both MD5 and AO
-are disabled (kernel build robot)
-* Fix sparse endianness warnings in prefix match (kernel build robot)
-* Fix several incorrect RCU annotations reported by sparse (kernel build robot)
-Link: https://lore.kernel.org/netdev/cover.1638962992.git.cdleonard@gmail.com/
-
-Changes since PATCH v2:
-* Protect tcp_authopt_alg_get/put_tfm with local_bh_disable instead of
-preempt_disable. This caused signature corruption when send path executing
-with BH enabled was interrupted by recv.
-* Fix accepted keyids not configured locally as "unexpected". If any key
-is configured that matches the peer then traffic MUST be signed.
-* Fix issues related to sne rollover during handshake itself. (Francesco)
-* Implement and test prefixlen (David)
-* Replace shash with ahash and reuse some of the MD5 code (Dmitry)
-* Parse md5+ao options only once in the same function (Dmitry)
-* Pass tcp_authopt_info into inbound check path, this avoids second rcu
-dereference for same packet.
-* Pass tcp_request_socket into inbound check path instead of just listen
-socket. This is required for SNE rollover during handshake and clearifies
-ISN handling.
-* Do not allow disabling via sysctl after enabling once, this is difficult
-to support well (David)
-* Verbose check for sysctl_tcp_authopt (Dmitry)
-* Use netif_index_is_l3_master (David)
-* Cleanup ipvx_addr_match (David)
-* Add a #define tcp_authopt_needed to wrap static key usage because it looks
-nicer.
-* Replace rcu_read_lock with rcu_dereference_protected in SNE updates (Eric)
-* Remove test suite
-Link: https://lore.kernel.org/netdev/cover.1635784253.git.cdleonard@gmail.com/
-
-Changes since PATCH v1:
-* Implement Sequence Number Extension
-* Implement l3index for vrf: TCP_AUTHOPT_KEY_IFINDEX as equivalent of
-TCP_MD5SIG_FLAG_IFINDEX
-* Expand TCP-AO tests in fcnal-test.sh to near-parity with md5.
-* Show addr/port on failure similar to md5 
-* Remove tox dependency from test suite (create venv directly)
-* Switch default pytest output format to TAP (kselftest standard)
-* Fix _copy_from_sockptr_tolerant stack corruption on short sockopts.
-This was covered in test but error was invisible without STACKPROTECTOR=y
-* Fix sysctl_tcp_authopt check in tcp_get_authopt_val before memset. This
-was harmless because error code is checked in getsockopt anyway.
-* Fix dropping md5 packets on all sockets with AO enabled
-* Fix checking (key->recv_id & TCP_AUTHOPT_KEY_ADDR_BIND) instead of
-key->flags in tcp_authopt_key_match_exact
-* Fix PATCH 1/19 not compiling due to missing "int err" declaration
-* Add ratelimited message for AO and MD5 both present
-* Export all symbols required by CONFIG_IPV6=m (again)
-* Fix compilation with CONFIG_TCP_AUTHOPT=y CONFIG_TCP_MD5SIG=n
-* Fix checkpatch issues
-* Pass -rrequirements.txt to tox to avoid dependency variation.
-Link: https://lore.kernel.org/netdev/cover.1632240523.git.cdleonard@gmail.com/
-
-Changes since RFCv3:
-* Implement TCP_AUTHOPT handling for timewait and reset replies. Write
-tests to execute these paths by injecting packets with scapy
-* Handle combining md5 and authopt: if both are configured use authopt.
-* Fix locking issues around send_key, introduced in on of the later patches.
-* Handle IPv4-mapped-IPv6 addresses: it used to be that an ipv4 SYN sent
-to an ipv6 socket with TCP-AO triggered WARN
-* Implement un-namespaced sysctl disabled this feature by default
-* Allocate new key before removing any old one in setsockopt (Dmitry)
-* Remove tcp_authopt_key_info.local_id because it's no longer used (Dmitry)
-* Propagate errors from TCP_AUTHOPT getsockopt (Dmitry)
-* Fix no-longer-correct TCP_AUTHOPT_KEY_DEL docs (Dmitry)
-* Simplify crypto allocation (Eric)
-* Use kzmalloc instead of __GFP_ZERO (Eric)
-* Add static_key_false tcp_authopt_needed (Eric)
-* Clear authopt_info copied from oldsk in __tcp_authopt_openreq (Eric)
-* Replace memcmp in ipv4 and ipv6 addr comparisons (Eric)
-* Export symbols for CONFIG_IPV6=m (kernel test robot)
-* Mark more functions static (kernel test robot)
-* Fix build with CONFIG_PROVE_RCU_LIST=y (kernel test robot)
-Link: https://lore.kernel.org/netdev/cover.1629840814.git.cdleonard@gmail.com/
-
-Changes since RFCv2:
-* Removed local_id from ABI and match on send_id/recv_id/addr
-* Add all relevant out-of-tree tests to tools/testing/selftests
-* Return an error instead of ignoring unknown flags, hopefully this makes
-it easier to extend.
-* Check sk_family before __tcp_authopt_info_get_or_create in tcp_set_authopt_key
-* Use sock_owned_by_me instead of WARN_ON(!lockdep_sock_is_held(sk))
-* Fix some intermediate build failures reported by kbuild robot
-* Improve documentation
-Link: https://lore.kernel.org/netdev/cover.1628544649.git.cdleonard@gmail.com/
- 
-Changes since RFC:
-* Split into per-topic commits for ease of review. The intermediate
-commits compile with a few "unused function" warnings and don't do
-anything useful by themselves.
-* Add ABI documention including kernel-doc on uapi
-* Fix lockdep warnings from crypto by creating pools with one shash for
-each cpu
-* Accept short options to setsockopt by padding with zeros; this
-approach allows increasing the size of the structs in the future.
-* Support for aes-128-cmac-96
-* Support for binding addresses to keys in a way similar to old tcp_md5
-* Add support for retrieving received keyid/rnextkeyid and controling
-the keyid/rnextkeyid being sent.
-Link: https://lore.kernel.org/netdev/01383a8751e97ef826ef2adf93bfde3a08195a43.1626693859.git.cdleonard@gmail.com/
-
-Leonard Crestez (26):
-  tcp: authopt: Initial support and key management
-  tcp: authopt: Remove more unused noops
-  docs: Add user documentation for tcp_authopt
-  tcp: authopt: Add crypto initialization
-  tcp: Refactor tcp_sig_hash_skb_data for AO
-  tcp: authopt: Compute packet signatures
-  tcp: Refactor tcp_inbound_md5_hash into tcp_inbound_sig_hash
-  tcp: authopt: Hook into tcp core
-  tcp: authopt: Disable via sysctl by default
-  tcp: authopt: Implement Sequence Number Extension
-  tcp: ipv6: Add AO signing for tcp_v6_send_response
-  tcp: authopt: Add support for signing skb-less replies
-  tcp: ipv4: Add AO signing for skb-less replies
-  tcp: authopt: Add key selection controls
-  tcp: authopt: Add initial l3index support
-  tcp: authopt: Add NOSEND/NORECV flags
-  tcp: authopt: Add prefixlen support
-  tcp: authopt: Add /proc/net/tcp_authopt listing all keys
-  selftests: nettest: Rename md5_prefix to key_addr_prefix
-  selftests: nettest: Initial tcp_authopt support
-  selftests: net/fcnal: Initial tcp_authopt support
-  tcp: authopt: Try to respect rnextkeyid from SYN on SYNACK
-  tcp: authopt: tcp_authopt_lookup_send: Add anykey output param
-  tcp: authopt: Initial support for TCP_AUTHOPT_FLAG_ACTIVE
-  tcp: authopt: If no keys are valid for send report an error
-  tcp: authopt: Initial implementation of TCP_REPAIR_AUTHOPT
-
- Documentation/networking/index.rst        |    1 +
- Documentation/networking/ip-sysctl.rst    |    6 +
- Documentation/networking/tcp_authopt.rst  |   88 +
- include/linux/tcp.h                       |   15 +
- include/net/dropreason.h                  |   16 +
- include/net/net_namespace.h               |    4 +
- include/net/netns/tcp_authopt.h           |   12 +
- include/net/tcp.h                         |   55 +-
- include/net/tcp_authopt.h                 |  264 +++
- include/uapi/linux/snmp.h                 |    1 +
- include/uapi/linux/tcp.h                  |  165 ++
- net/ipv4/Kconfig                          |   14 +
- net/ipv4/Makefile                         |    1 +
- net/ipv4/proc.c                           |    1 +
- net/ipv4/sysctl_net_ipv4.c                |   39 +
- net/ipv4/tcp.c                            |  126 +-
- net/ipv4/tcp_authopt.c                    | 1952 +++++++++++++++++++++
- net/ipv4/tcp_input.c                      |   53 +-
- net/ipv4/tcp_ipv4.c                       |  100 +-
- net/ipv4/tcp_minisocks.c                  |   12 +
- net/ipv4/tcp_output.c                     |  106 +-
- net/ipv6/tcp_ipv6.c                       |   70 +-
- tools/testing/selftests/net/fcnal-test.sh |  329 +++-
- tools/testing/selftests/net/nettest.c     |  204 ++-
- 24 files changed, 3546 insertions(+), 88 deletions(-)
- create mode 100644 Documentation/networking/tcp_authopt.rst
- create mode 100644 include/net/netns/tcp_authopt.h
- create mode 100644 include/net/tcp_authopt.h
- create mode 100644 net/ipv4/tcp_authopt.c
-
--- 
-2.25.1
+SGkgR3JlZw0KDQpUaGFuayB5b3UgZm9yIHlvdXIgY29tbWVudHMuDQoNCj4gLS0tLS1PcmlnaW5h
+bCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogR3JlZyBLSCA8Z3JlZ2toQGxpbnV4Zm91bmRhdGlvbi5v
+cmc+DQo+IFNlbnQ6IE1vbmRheSwgSnVseSAyNSwgMjAyMiA5OjQ3IFBNDQo+IFRvOiBpc2hpa2F3
+YSB5dWppKOefs+W3nSDmgqDlj7gg4peL77yy77yk77yj4pah77yh77yp77y077yj4peL77yl77yh
+6ZaLKQ0KPiA8eXVqaTIuaXNoaWthd2FAdG9zaGliYS5jby5qcD4NCj4gQ2M6IFJvYiBIZXJyaW5n
+IDxyb2JoK2R0QGtlcm5lbC5vcmc+OyBIYW5zIFZlcmt1aWwgPGh2ZXJrdWlsQHhzNGFsbC5ubD47
+DQo+IGl3YW1hdHN1IG5vYnVoaXJvKOWyqeadviDkv6HmtIsg4pah77yz77y377yj4pev77yh77yj
+77y0KQ0KPiA8bm9idWhpcm8xLml3YW1hdHN1QHRvc2hpYmEuY28uanA+OyBKb25hdGhhbiBDb3Ji
+ZXQgPGNvcmJldEBsd24ubmV0PjsNCj4gU3VtaXQgU2Vtd2FsIDxzdW1pdC5zZW13YWxAbGluYXJv
+Lm9yZz47IENocmlzdGlhbiBLw7ZuaWcNCj4gPGNocmlzdGlhbi5rb2VuaWdAYW1kLmNvbT47IGxp
+bnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZzsNCj4gbGludXgta2VybmVsQHZnZXIu
+a2VybmVsLm9yZzsgbGludXgtbWVkaWFAdmdlci5rZXJuZWwub3JnOw0KPiBkcmktZGV2ZWxAbGlz
+dHMuZnJlZWRlc2t0b3Aub3JnOyBsaW5hcm8tbW0tc2lnQGxpc3RzLmxpbmFyby5vcmcNCj4gU3Vi
+amVjdDogUmU6IFtQQVRDSCB2MiAwLzVdIEFkZCBUb3NoaWJhIFZpc2NvbnRpIEROTiBpbWFnZSBw
+cm9jZXNzaW5nDQo+IGFjY2VsZXJhdG9yIGRyaXZlcg0KPiANCj4gT24gRnJpLCBKdWwgMjIsIDIw
+MjIgYXQgMDU6Mjg6NTNQTSArMDkwMCwgWXVqaSBJc2hpa2F3YSB3cm90ZToNCj4gPiBUaGlzIHNl
+cmllcyBpcyB0aGUgRE5OIGltYWdlIHByb2Nlc3NpbmcgYWNjZWxlcmF0b3IgZHJpdmVyIGZvciBU
+b3NoaWJhJ3MgQVJNDQo+IFNvQywgVmlzY29udGlbMF0uDQo+ID4gVGhpcyBwcm92aWRlcyBEVCBi
+aW5kaW5nIGRvY3VtZW50YXRpb24sIGRldmljZSBkcml2ZXIsIE1BSU5UQUlORVIgZmlsZXMNCj4g
+YW5kIGRvY3VtZW50cy4NCj4gPg0KPiA+IEJlc3QgcmVnYXJkcywNCj4gPiBZdWppDQo+ID4NCj4g
+PiBbMF06DQo+ID4NCj4gaHR0cHM6Ly90b3NoaWJhLnNlbWljb24tc3RvcmFnZS5jb20vYXAtZW4v
+c2VtaWNvbmR1Y3Rvci9wcm9kdWN0L2ltYWdlLQ0KPiA+IHJlY29nbml0aW9uLXByb2Nlc3NvcnMt
+dmlzY29udGkuaHRtbA0KPiA+DQo+ID4gZHQtYmluZGluZ3M6IHNvYzogdmlzY29udGk6IEFkZCBU
+b3NoaWJhIFZpc2NvbnRpIEROTiBpbWFnZSBwcm9jZXNzaW5nDQo+IGFjY2VsZXJhdG9yIGJpbmRp
+bmdzDQo+ID4gICB2MSAtPiB2MjoNCj4gPiAgICAgLSBObyB1cGRhdGUNCj4gPg0KPiA+IHNvYzog
+dmlzY29udGk6IEFkZCBUb3NoaWJhIFZpc2NvbnRpIGltYWdlIHByb2Nlc3NpbmcgYWNjZWxlcmF0
+b3IgY29tbW9uDQo+IHNvdXJjZQ0KPiA+ICAgdjEgLT4gdjI6DQo+ID4gICAgIC0gY2hlY2tlZCB3
+aXRoIGNoZWNrcGF0Y2gucGwgLS1zdHJpY3QNCj4gPg0KPiA+IHNvYzogdmlzY29udGk6IEFkZCBU
+b3NoaWJhIFZpc2NvbnRpIEROTiBpbWFnZSBwcm9jZXNzaW5nIGFjY2VsZXJhdG9yDQo+ID4gICB2
+MSAtPiB2MjoNCj4gPiAgICAgLSBjaGVja2VkIHdpdGggY2hlY2twYXRjaC5wbCAtLXN0cmljdA0K
+PiA+ICAgICAtIHJlbW92ZWQgdW51c2VkIGNvZGUNCj4gPg0KPiA+IE1BSU5UQUlORVJTOiBBZGQg
+ZW50cmllcyBmb3IgVG9zaGliYSBWaXNjb250aSBETk4gaW1hZ2UgcHJvY2Vzc2luZw0KPiA+ICAg
+djEgLT4gdjI6DQo+ID4gICAgIC0gTm8gdXBkYXRlDQo+ID4NCj4gPiBEb2N1bWVudGF0aW9uOiBk
+cml2ZXItYXBpOiB2aXNjb250aTogYWRkIGEgZGVzY3JpcHRpb24gb2YgRE5OIGRyaXZlci4NCj4g
+PiAgIHYxIC0+IHYyOg0KPiA+ICAgICAtIG5ld2x5IGFkZGVkIGRvY3VtZW50cw0KPiA+DQo+ID4g
+WXVqaSBJc2hpa2F3YSAoNSk6DQo+ID4gICBkdC1iaW5kaW5nczogc29jOiB2aXNjb250aTogQWRk
+IFRvc2hpYmEgVmlzY29udGkgRE5OIGltYWdlIHByb2Nlc3NpbmcNCj4gPiAgICAgYWNjZWxlcmF0
+b3IgYmluZGluZ3MNCj4gPiAgIHNvYzogdmlzY29udGk6IEFkZCBUb3NoaWJhIFZpc2NvbnRpIGlt
+YWdlIHByb2Nlc3NpbmcgYWNjZWxlcmF0b3INCj4gPiAgICAgY29tbW9uIHNvdXJjZQ0KPiA+ICAg
+c29jOiB2aXNjb250aTogQWRkIFRvc2hpYmEgVmlzY29udGkgRE5OIGltYWdlIHByb2Nlc3Npbmcg
+YWNjZWxlcmF0b3INCj4gPiAgIE1BSU5UQUlORVJTOiBBZGQgZW50cmllcyBmb3IgVG9zaGliYSBW
+aXNjb250aSBETk4gaW1hZ2UgcHJvY2Vzc2luZw0KPiA+ICAgICBhY2NlbGVyYXRvcg0KPiA+ICAg
+RG9jdW1lbnRhdGlvbjogZHJpdmVyLWFwaTogdmlzY29udGk6IGFkZCBhIGRlc2NyaXB0aW9uIG9m
+IEROTiBkcml2ZXIuDQo+ID4NCj4gPiAgLi4uL3NvYy92aXNjb250aS90b3NoaWJhLHZpc2NvbnRp
+LWRubi55YW1sICAgIHwgIDU0ICsrDQo+ID4gIERvY3VtZW50YXRpb24vZHJpdmVyLWFwaS92aXNj
+b250aS9jb21tb24ucnN0ICB8IDExNSArKysrDQo+ID4gIERvY3VtZW50YXRpb24vZHJpdmVyLWFw
+aS92aXNjb250aS9kbm4ucnN0ICAgICB8IDM5NCArKysrKysrKysrKysrDQo+ID4gIE1BSU5UQUlO
+RVJTICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAgMiArDQo+ID4gIGRyaXZl
+cnMvc29jL0tjb25maWcgICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAgMSArDQo+ID4gIGRy
+aXZlcnMvc29jL01ha2VmaWxlICAgICAgICAgICAgICAgICAgICAgICAgICB8ICAgMSArDQo+ID4g
+IGRyaXZlcnMvc29jL3Zpc2NvbnRpL0tjb25maWcgICAgICAgICAgICAgICAgICB8ICAgNyArDQo+
+ID4gIGRyaXZlcnMvc29jL3Zpc2NvbnRpL01ha2VmaWxlICAgICAgICAgICAgICAgICB8ICAgOCAr
+DQo+ID4gIGRyaXZlcnMvc29jL3Zpc2NvbnRpL2Rubi9NYWtlZmlsZSAgICAgICAgICAgICB8ICAg
+NiArDQo+ID4gIGRyaXZlcnMvc29jL3Zpc2NvbnRpL2Rubi9kbm4uYyAgICAgICAgICAgICAgICB8
+IDUyMw0KPiArKysrKysrKysrKysrKysrKysNCj4gPiAgZHJpdmVycy9zb2MvdmlzY29udGkvZG5u
+L2h3ZF9kbm4uYyAgICAgICAgICAgIHwgMTgzICsrKysrKw0KPiA+ICBkcml2ZXJzL3NvYy92aXNj
+b250aS9kbm4vaHdkX2Rubi5oICAgICAgICAgICAgfCAgNjggKysrDQo+ID4gIGRyaXZlcnMvc29j
+L3Zpc2NvbnRpL2Rubi9od2RfZG5uX3JlZy5oICAgICAgICB8IDIyOCArKysrKysrKw0KPiA+ICBk
+cml2ZXJzL3NvYy92aXNjb250aS9pcGFfY29tbW9uLmMgICAgICAgICAgICAgfCAgNTUgKysNCj4g
+PiAgZHJpdmVycy9zb2MvdmlzY29udGkvaXBhX2NvbW1vbi5oICAgICAgICAgICAgIHwgIDE4ICsN
+Cj4gPiAgZHJpdmVycy9zb2MvdmlzY29udGkvdWFwaS9kbm4uaCAgICAgICAgICAgICAgIHwgIDc3
+ICsrKw0KPiA+ICBkcml2ZXJzL3NvYy92aXNjb250aS91YXBpL2lwYS5oICAgICAgICAgICAgICAg
+fCAgOTAgKysrDQo+IA0KPiBXaHkgaXMgdGhpcyBpbiBkcml2ZXJzL3NvYy8/DQoNCkFjdHVhbGx5
+LCBJJ20gbm90IHN1cmUgd2hlcmUgaGlzIG1vZHVsZSBzaG91bGQgbGl2ZSBpbi4NClRoZSBkaXJl
+Y3RvcnkgZHJpdmVycy9zb2Mgd2VyZSBjaG9zZW4ganVzdCBiZWNhdXNlIHRoZSBkcml2ZXIgaXMg
+c3BlY2lmaWMgdG8gVmlzY29udGkgU29DLg0KSXMgaXQgYmV0dGVyIHRvIG1vdmUgdGhlIGRyaXZl
+ciB0byBhbm90aGVyIGRpcmVjdG9yeSBzdWNoIGFzIGRyaXZlcnMvbWlzYyA/DQoNCj4gQW5kIHVh
+cGkgZmlsZXMgYmVsb25nIGluIHRoZSBjb3JyZWN0IGluY2x1ZGUgcGF0aCwgbm90IGJ1cnJpZWQg
+aW4gYSBkcml2ZXINCj4gc3ViZGlyZWN0b3J5IHdoZXJlIHRoZXkgd2lsbCBuZXZlciBiZSBwaWNr
+ZWQgdXAgY29ycmVjdGx5IGJ5IHRoZSBidWlsZCBzeXN0ZW0uDQo+IEhvdyBkaWQgeW91IHRlc3Qg
+dGhlc2U/DQoNCkkgdW5kZXJzdGFuZCBpdCdzIG5vdCBhIGdvb2QgaWRlYSB0byBwbGFjZSB1YXBp
+IGZpbGVzIHVuZGVyIGRyaXZlciBzdWJkaXJlY3RvcnkuDQpBIGJ1aWxkIGNvbW1hbmQgIm1ha2Ug
+aGVhZGVyc19pbnN0YWxsIiBkaWQgbm90IHBpY2sgb3V0IGhlYWRlcnMuDQpJIHVzZWQgYWRkaXRp
+b25hbCBzaGVsbCBzY3JpcHQgdG8gaW5zdGFsbCBoZWFkZXJzIGZvciBWaXNjb250aS4NCkknbGwg
+bW92ZSB1YXBpIGhlYWRlcnMgdG8gaW5jbHVkZS91YXBpL2xpbnV4Lg0KDQo+IHRoYW5rcywNCj4g
+DQo+IGdyZWcgay1oDQoNClJlZ2FyZHMsDQogIFl1amkNCg==
 
