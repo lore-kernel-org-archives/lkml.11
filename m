@@ -2,506 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A55A2CCA48C
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 06:19:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C1E2CCA492
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 06:19:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237895AbiGZGTF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 02:19:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58362 "EHLO
+        id S237802AbiGZGTI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 02:19:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237727AbiGZGSA (ORCPT
+        with ESMTP id S237789AbiGZGSB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 02:18:00 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C2891CFFB;
+        Tue, 26 Jul 2022 02:18:01 -0400
+Received: from mo-csw.securemx.jp (mo-csw1515.securemx.jp [210.130.202.154])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A12DB1EEE4;
         Mon, 25 Jul 2022 23:16:05 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id mf4so24385412ejc.3;
-        Mon, 25 Jul 2022 23:16:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=KxZDYt1hGgQUAd0nelpqpJTBsvuXPYRfB91p7EEsvhI=;
-        b=XtDKb3+4jyrMrR4uVhZNPTfQhIM20mar04gv7dzo9VMgE3P4eS21ANdqd9yzgv/iVm
-         ZRnYa2pCfT/pGAs9n4fXXnkVpMYh8QjYjjhgGG2UYSZUIh3Wpg6mTsKOYiur6CcFGWVE
-         8a9zv6dUd/fUDAw4zwVHX18xMOcDDPZCW14Q3eH9GfV1IPueKcFyCzKGBw5/rio3EoY+
-         SaWJKpbGQBDaKkSxf2s1fo2BVCl2Sa6cPn+G/tnFuv1+3jLJGsa2cCDgXFwpUGPNsePN
-         RnYmG5+HOhXBUfPvmk4xeIz0qVd7UiCkuH3G2HTXBshExMMxmDkORf/vxrnhOFoHGGuf
-         HrPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=KxZDYt1hGgQUAd0nelpqpJTBsvuXPYRfB91p7EEsvhI=;
-        b=nvECzgsL09QH/N4hb+ZN4bTnUO4lKykH0ND6dv14A4LdzgKJOCzU65cw/2+0cSG8uQ
-         1aKvdNJQ/ZHfM4mHqdAl812uCJ0/3tSZ52xSuLnno47m7t+5AOYE4wV+alrYSFpj5R0a
-         485/JytAelve6mIm6bmcZJe4OhDTMtxLd4snEY+Ldv6+LtzygsqYPX4BDXaX4ukVUgLQ
-         +GA8V+Sdo4dCLwLojIpE2A9QLzA8iHt1NAHMDdRWiXm4uVApC6xOOOosldYRH+15KZie
-         XFYChdTz8qViSvzww6QJD+hyCJ+E/44yD5pS6e9LZfTs+LZZO9eJY6KzuBWZmRey6WTW
-         FtVg==
-X-Gm-Message-State: AJIora+bf+8djMovHYugMASyLgiSVtzIue8KWrdl7C689bpNeaWYsptG
-        rYChNVSxaKiXKuX383kHOMQ=
-X-Google-Smtp-Source: AGRyM1s5YH07B5Orh5fptYVWbgeLH9ge7z07D9YYgHaCOHNWlpjxXS7UgeSrDI/pzylPlJFI4JBfSA==
-X-Received: by 2002:a17:906:c781:b0:726:c967:8d1b with SMTP id cw1-20020a170906c78100b00726c9678d1bmr12915583ejb.54.1658816164828;
-        Mon, 25 Jul 2022 23:16:04 -0700 (PDT)
-Received: from localhost.localdomain ([2a04:241e:502:a080:2b68:36a:5a94:4ba1])
-        by smtp.gmail.com with ESMTPSA id l23-20020a056402345700b0043ba7df7a42sm8133067edc.26.2022.07.25.23.16.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Jul 2022 23:16:04 -0700 (PDT)
-From:   Leonard Crestez <cdleonard@gmail.com>
-To:     David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Philip Paeps <philip@trouble.is>
-Cc:     Dmitry Safonov <0x7f454c46@gmail.com>,
-        Shuah Khan <shuah@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Yuchung Cheng <ycheng@google.com>,
-        Francesco Ruggeri <fruggeri@arista.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Christoph Paasch <cpaasch@apple.com>,
-        Ivan Delalande <colona@arista.com>,
-        Caowangbao <caowangbao@huawei.com>,
-        Priyaranjan Jha <priyarjha@google.com>, netdev@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v6 14/26] tcp: authopt: Add key selection controls
-Date:   Tue, 26 Jul 2022 09:15:16 +0300
-Message-Id: <31964bc352cf76efc3b21f3dcd5fa40db2129070.1658815925.git.cdleonard@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1658815925.git.cdleonard@gmail.com>
-References: <cover.1658815925.git.cdleonard@gmail.com>
+Received: by mo-csw.securemx.jp (mx-mo-csw1515) id 26Q6FgSl024093; Tue, 26 Jul 2022 15:15:42 +0900
+X-Iguazu-Qid: 34trLFpplLxaJGK9p3
+X-Iguazu-QSIG: v=2; s=0; t=1658816142; q=34trLFpplLxaJGK9p3; m=7muzPcM58MwlJHeHnpSN2b7IvW3HUVHPyo0H3gJTF9w=
+Received: from imx12-a.toshiba.co.jp ([38.106.60.135])
+        by relay.securemx.jp (mx-mr1511) id 26Q6Feg2016514
+        (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 26 Jul 2022 15:15:40 +0900
+X-SA-MID: 39433831
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cIFNNnMTidxtTae66Yf0AhX5FnpxF6V3D2vHApF5sUt44avOeeLPbmS9n0xloYyaRus9yPXI0eoz18sCiin24e9i2/DiDXiFTXO+QCBxu0pT8CsHr8aPgpvn/s/ti6yeSwuAfPmGsyGuqm7t0iN+VeWc4Qj2mvH+uPih2nC6Gvpx0+edRUdjAKkX/sDlBUUraiS+4X1YTXoayBG4L2jppnFWeA4uiQpQCKZMejFG9Hps4ygK4kjWGZsgsaBiWTaZqkW0ofDI1tOm1A51IVzX8C/iktPS07f8DoCk6Y1AIMVOczv9lOjTTbwDljr7Oi0sM/sW05L9bvX3hjURHvs88g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=sFQ1FmSRxrALbVY7/2nDs5hL9I6OM6wcoRrklWUL8B4=;
+ b=dCfQm5jJlKxiZdhwYykoktRU/bdKNrgk2bbqeW2CcPxAOoNIMNeeqKp/a/Ibagr4ttYa53R6H7Jcs452yCbKH3mE2ciRVICffWMaK4CoB2XA5hwUuuZIXqFpAz494fD8RWqMcJHbcBIFAmmHKskYeX+LNU78f03vKqpoZevKeD6z0l0AM9DxgCLbUqLxSZplYnSSwuFrvbR6ygqe54H0ujJ4EZHRysXFkXWGle8xN2IcJse5znpxJKNXX/uGiqEBmPAbMiFgsp5THdrhHRJBml/4egtOn9B4wdVS+BSq+cjooVwkzO3AOikUEU7ZtKIGWsrbhkYhrvwlH/0fVuy0kA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=toshiba.co.jp; dmarc=pass action=none
+ header.from=toshiba.co.jp; dkim=pass header.d=toshiba.co.jp; arc=none
+From:   <yuji2.ishikawa@toshiba.co.jp>
+To:     <gregkh@linuxfoundation.org>
+CC:     <robh+dt@kernel.org>, <hverkuil@xs4all.nl>,
+        <nobuhiro1.iwamatsu@toshiba.co.jp>, <corbet@lwn.net>,
+        <sumit.semwal@linaro.org>, <christian.koenig@amd.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-media@vger.kernel.org>,
+        <dri-devel@lists.freedesktop.org>, <linaro-mm-sig@lists.linaro.org>
+Subject: RE: [PATCH v2 3/5] soc: visconti: Add Toshiba Visconti DNN image
+ processing accelerator
+Thread-Topic: [PATCH v2 3/5] soc: visconti: Add Toshiba Visconti DNN image
+ processing accelerator
+Thread-Index: AQHYnaUq2USs7z33O02SH8FDO7LUpq2PDlKAgAEOV3A=
+Date:   Tue, 26 Jul 2022 06:10:35 +0000
+X-TSB-HOP2: ON
+Message-ID: <TYAPR01MB620140363E2225BF68803BDF92949@TYAPR01MB6201.jpnprd01.prod.outlook.com>
+References: <20220722082858.17880-1-yuji2.ishikawa@toshiba.co.jp>
+ <20220722082858.17880-4-yuji2.ishikawa@toshiba.co.jp>
+ <Yt6RD2atLwkDrrsu@kroah.com>
+In-Reply-To: <Yt6RD2atLwkDrrsu@kroah.com>
+Accept-Language: ja-JP, en-US
+Content-Language: ja-JP
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=toshiba.co.jp;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: ab49244a-3745-4942-ac47-08da6ecd8dec
+x-ms-traffictypediagnostic: TYAPR01MB3424:EE_
+x-ld-processed: f109924e-fb71-4ba0-b2cc-65dcdf6fbe4f,ExtAddr,ExtFwd
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: G0AsDxed4rL6m1Wy0OgG06QKzF6WzBfexbf/9xWByB7VDlQLY3nvs3bpPBx3HyTblfD8NLe/yIdXljXYMn+h2wV1gRSXGHs2LyNORoG/czxjY10GRM4shW+YOVpyzZYKK8OxkRdnTm1pZ4J0pdzGIWetbs/CJk+KKPRlwxAQVkgtkXXQj5gougCsZUxYQj+ja4uzYw7tsCiSiI5mzsO42jhCr5ai8QUwOyoYYN0jf7nJogMV0jzLljb6PsgNcGoEm8yfkFII5kBdZI1vPD57kxZip+mueRVmbJrqGwXDd+kDjveoctGRV44hcktofmzHYbjIxzSIJh3D4Sg0ENMa/kfmPh9DLyyP6/wI4DxbEx4XrF7otNZek3AHaC9FBOdBCcpry/+5bexjV+UVNCTP3rGBNCzT698J2YPhtP98I5tmjT2BMx8hQyI4JERMfQSscht/9wnjnlLPkmfmNuAAm0qOA+RdlmEt6jpMcQvMXFJCPlku5xGgfcU0whb7XaxTrgrDRjg6Q4AMR8oV3AJnJA/+U2qrrOO6o5+ORVY2RFmaAWgXRwTnxYkVJ7YK5ojOvGTUtq3X4vwCS8kMd2ZzdfduXab+Y9NOZfAgIQW/MA5sgaIh/9X5LgEhf2jDZw9qTBXcYdVwk7/ITU8SH1Gpegi2ghY+quWdorzMgKEdpYFs/JicZ5jZKwkxBLm0ZDVk7cQbiYuJ7ERGfgWxEYz+913wR5pKewX0owR7O3miTH/wHuyjEQzAxIHPeQoD2/1sX9T3QXgdWHhtyjExXLuCc0+ED9c2ddNWDSTj6nIe7jdck5Rfs04PMLn5QEecc68+
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYAPR01MB6201.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(376002)(346002)(396003)(366004)(39860400002)(4326008)(316002)(55016003)(66556008)(66946007)(66476007)(64756008)(66446008)(8676002)(71200400001)(8936002)(54906003)(478600001)(76116006)(6916009)(52536014)(5660300002)(7416002)(2906002)(41300700001)(6506007)(7696005)(53546011)(86362001)(33656002)(186003)(38070700005)(38100700002)(83380400001)(9686003)(26005)(122000001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?NklwdllUcEM3bTJNeGx3U2V3ZEJlcUlZQWFVUHpyZGdzSHdDdFhyc1EyWlF3?=
+ =?utf-8?B?VEphaFIvRmhoT005WUpETG9SaDZ2N1l0YzdCNWU1T3NmdGNBTHB4Yi9RSVFx?=
+ =?utf-8?B?QW16YWFoTWROMzhEZXNPZXNYei9WbitkQUYwSWQ4aUE1OEpTSVR6L2VXZ0xT?=
+ =?utf-8?B?NnFOOCtOUFo2VTk1MlNzc2YwL2R0ZkRXUFFYSG5uaGlxYS9aRnRUSmVxNk1m?=
+ =?utf-8?B?QlpJZ0t3T0JaVWxLdC85cXJHNjlDZ1R1bTJnRGhCRGFkQnJpQzhMOWN5VFZr?=
+ =?utf-8?B?eG14WjcxMjNpNHJZWG45ZmYwaUdlTXUxSENxVGNiVXNaYVhJaTFaSmxvQko5?=
+ =?utf-8?B?K2dNUExDTCtFbG9UbE9aSEJmZEtsMG11S205TGVNN2tCTWgyR3A0M1NhdjE4?=
+ =?utf-8?B?WWFsL0hyY0c0N3ozaWZaeW9LWm1PbWFpU01PRkxMZ2F6MjRCYjYwR0hGSjAv?=
+ =?utf-8?B?Q2lzMjdTK25qOUlFbEFFQy96cFlRd2VlRmFGWVl0K253NE5mcTV0MmpJUHp2?=
+ =?utf-8?B?M1YrdzF1TVJqNm1RT0pPZFNpd3hJZzFRN0JPYWZGa1NjK1FScVdZYVQwMldp?=
+ =?utf-8?B?eWhDTXhzdkpLYkRKcmJ3ZHA0a04rejN0ak5tUXJhZWlmOVYwYmpnbHJHMnVp?=
+ =?utf-8?B?Zm1zQVFRUzRXaDEwWUd6WGdlZE1JNXR3NkVDWTk1QVI4aDhINlRmQW1hQkQ3?=
+ =?utf-8?B?TkJKVFpVcDRTaUE4V1BreE5qcnY1bWU0Z2U2cXUrNmFYOGFnZGp5V09Jb3BI?=
+ =?utf-8?B?WWx1d09rV2Qxd29ZdUFtZ28vN0syUGlkd0FrUzlIWSt3dDhqNmgrQkxwcVRa?=
+ =?utf-8?B?blNteVNmMysxekF4ekdSaGV1dVU1NWNRaUxvRjVXV0pXMjlqVHZ3RmFDNXYx?=
+ =?utf-8?B?UXBGQ1kycUg2YnllWFBVR2pNY0gwVEhWMW14NllWa3pJS1JRME1CQ1hHVnVY?=
+ =?utf-8?B?eDF2RXhSMTZ4VllZSzNFV2Q1QUZlcElqbjdYQmUxREtJSlNwVVVDUlp0Z2Ju?=
+ =?utf-8?B?RTFSa1NxZDNqYTF6dUdaa3dzNW1WTjhGc3VhZE81aTVCd3RWcUpQeWp1UXJ3?=
+ =?utf-8?B?bG1LOVE1N2ZEOWtOMWNiWFpHSThMNEZtZ3AwSGRMdXlEMTJPbkp4V1AyL3NI?=
+ =?utf-8?B?ellpdkIwM3pRNHQ4WUtCeG0rV3JWMjVhK0tBdWdvVjRiUHFvVXd0ZmlIc2JE?=
+ =?utf-8?B?a0NWaHZiNTJhcnFOQXR0SjE5N2dJcm9YYmw1SmlzeVZKSUMvdGRRY1JodmF4?=
+ =?utf-8?B?eHV1M09vWFpaT1lNMzc4bEVYMmVhNTZyWFlXeDJtMzBFUGo0b2xhM05xZk5n?=
+ =?utf-8?B?RnNqLzNQUnc5VEM4ZWV4R0RmcjlKdVZ4SzdIV0htMFplNncxdXpKZXo1bXpG?=
+ =?utf-8?B?YVBKOGZRS1FkQjBFc2xOU1Nmc1RkUG54Z0RLWW9IQmYxK1BMSzBzbHNENWlS?=
+ =?utf-8?B?dGdGY053bTJwUGZkaVNHUTlVd0RCOXF0MDZ5MlZuRERkSUNoQ2doZXpaT0Qy?=
+ =?utf-8?B?WkVxcUZhL282ZnBoa2gyZlp6YlJFZGZlQnJRTjl1Mnh1T25hc0NhVWdOODNm?=
+ =?utf-8?B?VjhHckFrQnFpajIxN3JwaGNuT2VSaTZWdThMVFdvQW5oWDZsVkhUVG9kbHBs?=
+ =?utf-8?B?WEh3Q1Q4SEhYM2ZQa3VKc3AxTk00dnRVbGJwTW9rMTFEU1NrOGg3dThTN0Z2?=
+ =?utf-8?B?SkhQUjQ2R3ppRDBRUEx2U3YwTjBXL0Iwd1dIclZOS1RlcDB1UGxuQWRBK2JK?=
+ =?utf-8?B?MjF6TDhYa1Z1VTBQNk9rdnVDaWlDRWlidndNcjlrazM3OEhFWFVTRXpTSnlj?=
+ =?utf-8?B?VXdVNEdIZUVsWFBJM0Zwam92d3IxVXRhUjU3eUpSN0c3TVBSWEFiSnlNblNs?=
+ =?utf-8?B?TXJYQWlGTEk1bmZiREpFakFoUDNCSktFWEcvbHdyM1FJaWdXUFVQUkVLTWIr?=
+ =?utf-8?B?VS9aeHBpQ0JYZldVR2RQYlZyejZDemRCR2phUUJ2b1dyNHZDQnAxKzlBQ1Zz?=
+ =?utf-8?B?aWMxR1NidW9EL3lkZ1FNQUVVZUhUaDEzQUU4RjltcDB6Tld4RzhvbmMwa1Mx?=
+ =?utf-8?B?SG4xaWw4T2NGdnUxaGJDa2I0blZMaTY5MW5wa0NibjRac2NxZ3NPdmhkMTVx?=
+ =?utf-8?B?TytWYVFLUU5iRkhiRDBLa1lCN1BwUndFTjd5TzRXdC9TNGVubThBemVnM2w5?=
+ =?utf-8?B?amc9PQ==?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: TYAPR01MB6201.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ab49244a-3745-4942-ac47-08da6ecd8dec
+X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Jul 2022 06:10:35.4483
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: f109924e-fb71-4ba0-b2cc-65dcdf6fbe4f
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: xexFvOUa6che4l82M//i3cjY+6i+BVQqbwHa6Dt7YvDR3LGRB6QtBIlQQBfIA3hvdMgL2/DWYSQCHUr7vHMF/++nGC72bV32Km5YA5n/Fcc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYAPR01MB3424
+X-OriginatorOrg: toshiba.co.jp
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The RFC requires that TCP can report the keyid and rnextkeyid values
-being sent or received, implement this via getsockopt values.
-
-The RFC also requires that user can select the sending key and that the
-sending key is automatically switched based on rnextkeyid. These
-requirements can conflict so we implement both and add a flag which
-specifies if user or peer request takes priority.
-
-Also add an option to control rnextkeyid explicitly from userspace.
-
-Signed-off-by: Leonard Crestez <cdleonard@gmail.com>
----
- Documentation/networking/tcp_authopt.rst |  25 ++++++
- include/net/tcp_authopt.h                |  40 ++++++++-
- include/uapi/linux/tcp.h                 |  31 +++++++
- net/ipv4/tcp_authopt.c                   | 107 ++++++++++++++++++++++-
- net/ipv4/tcp_ipv4.c                      |   2 +-
- net/ipv6/tcp_ipv6.c                      |   2 +-
- 6 files changed, 200 insertions(+), 7 deletions(-)
-
-diff --git a/Documentation/networking/tcp_authopt.rst b/Documentation/networking/tcp_authopt.rst
-index 72adb7a891ce..f29fdea7769f 100644
---- a/Documentation/networking/tcp_authopt.rst
-+++ b/Documentation/networking/tcp_authopt.rst
-@@ -42,10 +42,35 @@ new flags.
- 
- RFC5925 requires that key ids do not overlap when tcp identifiers (addr/port)
- overlap. This is not enforced by linux, configuring ambiguous keys will result
- in packet drops and lost connections.
- 
-+Key selection
-+-------------
-+
-+On getsockopt(TCP_AUTHOPT) information is provided about keyid/rnextkeyid in
-+the last send packet and about the keyid/rnextkeyd in the last valid received
-+packet.
-+
-+By default the sending keyid is selected to match the rnextkeyid value sent by
-+the remote side. If that keyid is not available (or for new connections) a
-+random matching key is selected.
-+
-+If the ``TCP_AUTHOPT_LOCK_KEYID`` flag is set then the sending key is selected
-+by the `tcp_authopt.send_local_id` field and recv_rnextkeyid is ignored. If no
-+key with local_id == send_local_id is configured then a random matching key is
-+selected.
-+
-+The current sending key is cached in the socket and will not change unless
-+requested by remote rnextkeyid or by setsockopt.
-+
-+The rnextkeyid value sent on the wire is usually the recv_id of the current
-+key used for sending. If the TCP_AUTHOPT_LOCK_RNEXTKEY flag is set in
-+`tcp_authopt.flags` the value of `tcp_authopt.send_rnextkeyid` is send
-+instead.  This can be used to implement smooth rollover: the peer will switch
-+its keyid to the received rnextkeyid when it is available.
-+
- ABI Reference
- =============
- 
- .. kernel-doc:: include/uapi/linux/tcp.h
-    :identifiers: tcp_authopt tcp_authopt_flag tcp_authopt_key tcp_authopt_key_flag tcp_authopt_alg
-diff --git a/include/net/tcp_authopt.h b/include/net/tcp_authopt.h
-index 9bc0f58a78cb..6b4329a18a1f 100644
---- a/include/net/tcp_authopt.h
-+++ b/include/net/tcp_authopt.h
-@@ -70,10 +70,45 @@ struct tcp_authopt_info {
- 	u32 dst_isn;
- 	/** @rcv_sne: Recv-side Sequence Number Extension tracking tcp_sock.rcv_nxt */
- 	u32 rcv_sne;
- 	/** @snd_sne: Send-side Sequence Number Extension tracking tcp_sock.snd_nxt */
- 	u32 snd_sne;
-+
-+	/**
-+	 * @send_keyid: keyid currently being sent
-+	 *
-+	 * This is controlled by userspace by userspace if
-+	 * TCP_AUTHOPT_FLAG_LOCK_KEYID, otherwise we try to match recv_rnextkeyid
-+	 */
-+	u8 send_keyid;
-+	/**
-+	 * @send_rnextkeyid: rnextkeyid currently being sent
-+	 *
-+	 * This is controlled by userspace if TCP_AUTHOPT_FLAG_LOCK_RNEXTKEYID is set
-+	 */
-+	u8 send_rnextkeyid;
-+	/**
-+	 * @recv_keyid: last keyid received from remote
-+	 *
-+	 * This is reported to userspace but has no other special behavior attached.
-+	 */
-+	u8 recv_keyid;
-+	/**
-+	 * @recv_rnextkeyid: last rnextkeyid received from remote
-+	 *
-+	 * Linux tries to honor this unless TCP_AUTHOPT_FLAG_LOCK_KEYID is set
-+	 */
-+	u8 recv_rnextkeyid;
-+
-+	/**
-+	 * @send_key: Current key used for sending, cached.
-+	 *
-+	 * Once a key is found it only changes by user or remote request.
-+	 *
-+	 * Field is protected by the socket lock and holds a kref to the key.
-+	 */
-+	struct tcp_authopt_key_info __rcu *send_key;
- };
- 
- /* TCP authopt as found in header */
- struct tcphdr_authopt {
- 	u8 num;
-@@ -94,22 +129,23 @@ int tcp_get_authopt_val(struct sock *sk, struct tcp_authopt *key);
- int tcp_set_authopt_key(struct sock *sk, sockptr_t optval, unsigned int optlen);
- struct tcp_authopt_key_info *__tcp_authopt_select_key(
- 		const struct sock *sk,
- 		struct tcp_authopt_info *info,
- 		const struct sock *addr_sk,
--		u8 *rnextkeyid);
-+		u8 *rnextkeyid,
-+		bool locked);
- static inline struct tcp_authopt_key_info *tcp_authopt_select_key(
- 		const struct sock *sk,
- 		const struct sock *addr_sk,
- 		struct tcp_authopt_info **info,
- 		u8 *rnextkeyid)
- {
- 	if (tcp_authopt_needed) {
- 		*info = rcu_dereference(tcp_sk(sk)->authopt_info);
- 
- 		if (*info)
--			return __tcp_authopt_select_key(sk, *info, addr_sk, rnextkeyid);
-+			return __tcp_authopt_select_key(sk, *info, addr_sk, rnextkeyid, true);
- 	}
- 	return NULL;
- }
- int tcp_authopt_hash(
- 		char *hash_location,
-diff --git a/include/uapi/linux/tcp.h b/include/uapi/linux/tcp.h
-index 76d7be6b27f4..e02176390519 100644
---- a/include/uapi/linux/tcp.h
-+++ b/include/uapi/linux/tcp.h
-@@ -346,10 +346,24 @@ struct tcp_diag_md5sig {
- 
- /**
-  * enum tcp_authopt_flag - flags for `tcp_authopt.flags`
-  */
- enum tcp_authopt_flag {
-+	/**
-+	 * @TCP_AUTHOPT_FLAG_LOCK_KEYID: keyid controlled by sockopt
-+	 *
-+	 * If this is set `tcp_authopt.send_keyid` is used to determined sending
-+	 * key. Otherwise a key with send_id == recv_rnextkeyid is preferred.
-+	 */
-+	TCP_AUTHOPT_FLAG_LOCK_KEYID = (1 << 0),
-+	/**
-+	 * @TCP_AUTHOPT_FLAG_LOCK_RNEXTKEYID: Override rnextkeyid from userspace
-+	 *
-+	 * If this is set then `tcp_authopt.send_rnextkeyid` is sent on outbound
-+	 * packets. Other the recv_id of the current sending key is sent.
-+	 */
-+	TCP_AUTHOPT_FLAG_LOCK_RNEXTKEYID = (1 << 1),
- 	/**
- 	 * @TCP_AUTHOPT_FLAG_REJECT_UNEXPECTED:
- 	 *	Configure behavior of segments with TCP-AO coming from hosts for which no
- 	 *	key is configured. The default recommended by RFC is to silently accept
- 	 *	such connections.
-@@ -361,10 +375,27 @@ enum tcp_authopt_flag {
-  * struct tcp_authopt - Per-socket options related to TCP Authentication Option
-  */
- struct tcp_authopt {
- 	/** @flags: Combination of &enum tcp_authopt_flag */
- 	__u32	flags;
-+	/**
-+	 * @send_keyid: `tcp_authopt_key.send_id` of preferred send key
-+	 *
-+	 * This is only used if `TCP_AUTHOPT_FLAG_LOCK_KEYID` is set.
-+	 */
-+	__u8	send_keyid;
-+	/**
-+	 * @send_rnextkeyid: The rnextkeyid to send in packets
-+	 *
-+	 * This is controlled by the user iff TCP_AUTHOPT_FLAG_LOCK_RNEXTKEYID is
-+	 * set. Otherwise rnextkeyid is the recv_id of the current key.
-+	 */
-+	__u8	send_rnextkeyid;
-+	/** @recv_keyid: A recently-received keyid value. Only for getsockopt. */
-+	__u8	recv_keyid;
-+	/** @recv_rnextkeyid: A recently-received rnextkeyid value. Only for getsockopt. */
-+	__u8	recv_rnextkeyid;
- };
- 
- /**
-  * enum tcp_authopt_key_flag - flags for `tcp_authopt.flags`
-  *
-diff --git a/net/ipv4/tcp_authopt.c b/net/ipv4/tcp_authopt.c
-index f7635a37b972..c4c7a9a0057d 100644
---- a/net/ipv4/tcp_authopt.c
-+++ b/net/ipv4/tcp_authopt.c
-@@ -372,22 +372,89 @@ static struct tcp_authopt_key_info *tcp_authopt_lookup_send(struct netns_tcp_aut
-  *
-  * @sk: socket
-  * @info: socket's tcp_authopt_info
-  * @addr_sk: socket used for address lookup. Same as sk except for synack case
-  * @rnextkeyid: value of rnextkeyid caller should write in packet
-+ * @locked: If we're holding the socket lock. This is false for some timewait and reset cases
-  *
-  * Result is protected by RCU and can't be stored, it may only be passed to
-  * tcp_authopt_hash and only under a single rcu_read_lock.
-  */
- struct tcp_authopt_key_info *__tcp_authopt_select_key(const struct sock *sk,
- 						      struct tcp_authopt_info *info,
- 						      const struct sock *addr_sk,
--						      u8 *rnextkeyid)
-+						      u8 *rnextkeyid,
-+						      bool locked)
- {
-+	struct tcp_authopt_key_info *key, *new_key = NULL;
- 	struct netns_tcp_authopt *net = sock_net_tcp_authopt(sk);
- 
--	return tcp_authopt_lookup_send(net, addr_sk, -1);
-+	/* Listen sockets don't refer to any specific connection so we don't try
-+	 * to keep using the same key and ignore any received keyids.
-+	 */
-+	if (sk->sk_state == TCP_LISTEN) {
-+		int send_keyid = -1;
-+
-+		if (info->flags & TCP_AUTHOPT_FLAG_LOCK_KEYID)
-+			send_keyid = info->send_keyid;
-+		key = tcp_authopt_lookup_send(net, addr_sk, send_keyid);
-+		if (key)
-+			*rnextkeyid = key->recv_id;
-+
-+		return key;
-+	}
-+
-+	if (locked) {
-+		sock_owned_by_me(sk);
-+		key = rcu_dereference_protected(info->send_key, lockdep_sock_is_held(sk));
-+		if (key && (key->flags & TCP_AUTHOPT_KEY_DEL) == TCP_AUTHOPT_KEY_DEL) {
-+			info->send_key = NULL;
-+			tcp_authopt_key_put(key);
-+			key = NULL;
-+		}
-+	} else {
-+		key = NULL;
-+	}
-+
-+	/* Try to keep the same sending key unless user or peer requires a different key
-+	 * User request (via TCP_AUTHOPT_FLAG_LOCK_KEYID) always overrides peer request.
-+	 */
-+	if (info->flags & TCP_AUTHOPT_FLAG_LOCK_KEYID) {
-+		int send_keyid = info->send_keyid;
-+
-+		if (!key || key->send_id != send_keyid)
-+			new_key = tcp_authopt_lookup_send(net, addr_sk, send_keyid);
-+	} else {
-+		if (!key || key->send_id != info->recv_rnextkeyid)
-+			new_key = tcp_authopt_lookup_send(net, addr_sk, info->recv_rnextkeyid);
-+	}
-+	/* If no key found with specific send_id try anything else. */
-+	if (!key && !new_key)
-+		new_key = tcp_authopt_lookup_send(net, addr_sk, -1);
-+
-+	/* Update current key only if we hold the socket lock. */
-+	if (new_key && key != new_key) {
-+		if (locked) {
-+			if (kref_get_unless_zero(&new_key->ref)) {
-+				rcu_assign_pointer(info->send_key, new_key);
-+				tcp_authopt_key_put(key);
-+			}
-+			/* If key was deleted it's still valid until the end of
-+			 * the RCU grace period.
-+			 */
-+		}
-+		key = new_key;
-+	}
-+
-+	if (key) {
-+		if (info->flags & TCP_AUTHOPT_FLAG_LOCK_RNEXTKEYID)
-+			*rnextkeyid = info->send_rnextkeyid;
-+		else
-+			*rnextkeyid = info->send_rnextkeyid = key->recv_id;
-+	}
-+
-+	return key;
- }
- EXPORT_SYMBOL(__tcp_authopt_select_key);
- 
- static struct tcp_authopt_info *__tcp_authopt_info_get_or_create(struct sock *sk)
- {
-@@ -409,10 +476,12 @@ static struct tcp_authopt_info *__tcp_authopt_info_get_or_create(struct sock *sk
- 
- 	return info;
- }
- 
- #define TCP_AUTHOPT_KNOWN_FLAGS ( \
-+	TCP_AUTHOPT_FLAG_LOCK_KEYID | \
-+	TCP_AUTHOPT_FLAG_LOCK_RNEXTKEYID | \
- 	TCP_AUTHOPT_FLAG_REJECT_UNEXPECTED)
- 
- /* Like copy_from_sockptr except tolerate different optlen for compatibility reasons
-  *
-  * If the src is shorter then it's from an old userspace and the rest of dst is
-@@ -480,18 +549,23 @@ int tcp_set_authopt(struct sock *sk, sockptr_t optval, unsigned int optlen)
- 	info = __tcp_authopt_info_get_or_create(sk);
- 	if (IS_ERR(info))
- 		return PTR_ERR(info);
- 
- 	info->flags = opt.flags & TCP_AUTHOPT_KNOWN_FLAGS;
-+	if (opt.flags & TCP_AUTHOPT_FLAG_LOCK_KEYID)
-+		info->send_keyid = opt.send_keyid;
-+	if (opt.flags & TCP_AUTHOPT_FLAG_LOCK_RNEXTKEYID)
-+		info->send_rnextkeyid = opt.send_rnextkeyid;
- 
- 	return 0;
- }
- 
- int tcp_get_authopt_val(struct sock *sk, struct tcp_authopt *opt)
- {
- 	struct tcp_sock *tp = tcp_sk(sk);
- 	struct tcp_authopt_info *info;
-+	struct tcp_authopt_key_info *send_key;
- 	int err;
- 
- 	memset(opt, 0, sizeof(*opt));
- 	sock_owned_by_me(sk);
- 	err = check_sysctl_tcp_authopt();
-@@ -501,10 +575,22 @@ int tcp_get_authopt_val(struct sock *sk, struct tcp_authopt *opt)
- 	info = rcu_dereference_check(tp->authopt_info, lockdep_sock_is_held(sk));
- 	if (!info)
- 		return -ENOENT;
- 
- 	opt->flags = info->flags & TCP_AUTHOPT_KNOWN_FLAGS;
-+	/* These keyids might be undefined, for example before connect.
-+	 * Reporting zero is not strictly correct because there are no reserved
-+	 * values.
-+	 */
-+	send_key = rcu_dereference_check(info->send_key, lockdep_sock_is_held(sk));
-+	if (send_key)
-+		opt->send_keyid = send_key->send_id;
-+	else
-+		opt->send_keyid = 0;
-+	opt->send_rnextkeyid = info->send_rnextkeyid;
-+	opt->recv_keyid = info->recv_keyid;
-+	opt->recv_rnextkeyid = info->recv_rnextkeyid;
- 
- 	return 0;
- }
- 
- #define TCP_AUTHOPT_KEY_KNOWN_FLAGS ( \
-@@ -1465,11 +1551,11 @@ int __tcp_authopt_inbound_check(struct sock *sk, struct sk_buff *skb,
- 			NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPAUTHOPTFAILURE);
- 			print_tcpao_notice("TCP Authentication Unexpected: Rejected", skb);
- 			return -SKB_DROP_REASON_TCP_AOUNEXPECTED;
- 		}
- 		print_tcpao_notice("TCP Authentication Unexpected: Accepted", skb);
--		return 0;
-+		goto accept;
- 	}
- 	if (opt && !key) {
- 		/* Keys are configured for peer but with different keyid than packet */
- 		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPAUTHOPTFAILURE);
- 		print_tcpao_notice("TCP Authentication Failed", skb);
-@@ -1488,10 +1574,25 @@ int __tcp_authopt_inbound_check(struct sock *sk, struct sk_buff *skb,
- 		NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPAUTHOPTFAILURE);
- 		print_tcpao_notice("TCP Authentication Failed", skb);
- 		return -SKB_DROP_REASON_TCP_AOFAILURE;
- 	}
- 
-+accept:
-+	/* Doing this for all valid packets will results in keyids temporarily
-+	 * flipping back and forth if packets are reordered or retransmitted
-+	 * but keys should eventually stabilize.
-+	 *
-+	 * This is connection-specific so don't store for listen sockets.
-+	 *
-+	 * We could store rnextkeyid from SYN in a request sock and use it for
-+	 * the SYNACK but we don't.
-+	 */
-+	if (sk->sk_state != TCP_LISTEN) {
-+		info->recv_keyid = opt->keyid;
-+		info->recv_rnextkeyid = opt->rnextkeyid;
-+	}
-+
- 	return 1;
- }
- EXPORT_SYMBOL(__tcp_authopt_inbound_check);
- 
- static int tcp_authopt_init_net(struct net *full_net)
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index 0f76a03c007a..fe244703b91a 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -665,11 +665,11 @@ static int tcp_v4_authopt_handle_reply(const struct sock *sk,
- 		info = tcp_twsk(sk)->tw_authopt_info;
- 	else
- 		info = rcu_dereference_check(tcp_sk(sk)->authopt_info, lockdep_sock_is_held(sk));
- 	if (!info)
- 		return 0;
--	key_info = __tcp_authopt_select_key(sk, info, sk, &rnextkeyid);
-+	key_info = __tcp_authopt_select_key(sk, info, sk, &rnextkeyid, false);
- 	if (!key_info)
- 		return 0;
- 	*optptr = htonl((TCPOPT_AUTHOPT << 24) |
- 			(TCPOLEN_AUTHOPT_OUTPUT << 16) |
- 			(key_info->send_id << 8) |
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 63fdbb181bb8..ebe2aa48b7a9 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -852,11 +852,11 @@ static int tcp_v6_send_response_init_authopt(const struct sock *sk,
- 		*info = tcp_twsk(sk)->tw_authopt_info;
- 	else
- 		*info = rcu_dereference(tcp_sk(sk)->authopt_info);
- 	if (!*info)
- 		return 0;
--	*key = __tcp_authopt_select_key(sk, *info, sk, rnextkeyid);
-+	*key = __tcp_authopt_select_key(sk, *info, sk, rnextkeyid, false);
- 	if (*key)
- 		return TCPOLEN_AUTHOPT_OUTPUT;
- 	return 0;
- }
- 
--- 
-2.25.1
+SGkgR3JlZw0KDQpUaGFua3MgZm9yIHlvdXIgY29tbWVudHMNCg0KPiAtLS0tLU9yaWdpbmFsIE1l
+c3NhZ2UtLS0tLQ0KPiBGcm9tOiBHcmVnIEtIIDxncmVna2hAbGludXhmb3VuZGF0aW9uLm9yZz4N
+Cj4gU2VudDogTW9uZGF5LCBKdWx5IDI1LCAyMDIyIDk6NDggUE0NCj4gVG86IGlzaGlrYXdhIHl1
+amko55+z5bedIOaCoOWPuCDil4vvvLLvvKTvvKPilqHvvKHvvKnvvLTvvKPil4vvvKXvvKHplosp
+DQo+IDx5dWppMi5pc2hpa2F3YUB0b3NoaWJhLmNvLmpwPkhpDQo+IENjOiBSb2IgSGVycmluZyA8
+cm9iaCtkdEBrZXJuZWwub3JnPjsgSGFucyBWZXJrdWlsIDxodmVya3VpbEB4czRhbGwubmw+Ow0K
+PiBpd2FtYXRzdSBub2J1aGlybyjlsqnmnb4g5L+h5rSLIOKWoe+8s++8t++8o+KXr++8oe+8o++8
+tCkNCj4gPG5vYnVoaXJvMS5pd2FtYXRzdUB0b3NoaWJhLmNvLmpwPjsgSm9uYXRoYW4gQ29yYmV0
+IDxjb3JiZXRAbHduLm5ldD47DQo+IFN1bWl0IFNlbXdhbCA8c3VtaXQuc2Vtd2FsQGxpbmFyby5v
+cmc+OyBDaHJpc3RpYW4gS8O2bmlnDQo+IDxjaHJpc3RpYW4ua29lbmlnQGFtZC5jb20+OyBsaW51
+eC1hcm0ta2VybmVsQGxpc3RzLmluZnJhZGVhZC5vcmc7DQo+IGxpbnV4LWtlcm5lbEB2Z2VyLmtl
+cm5lbC5vcmc7IGxpbnV4LW1lZGlhQHZnZXIua2VybmVsLm9yZzsNCj4gZHJpLWRldmVsQGxpc3Rz
+LmZyZWVkZXNrdG9wLm9yZzsgbGluYXJvLW1tLXNpZ0BsaXN0cy5saW5hcm8ub3JnDQo+IFN1Ympl
+Y3Q6IFJlOiBbUEFUQ0ggdjIgMy81XSBzb2M6IHZpc2NvbnRpOiBBZGQgVG9zaGliYSBWaXNjb250
+aSBETk4gaW1hZ2UNCj4gcHJvY2Vzc2luZyBhY2NlbGVyYXRvcg0KPiANCj4gT24gRnJpLCBKdWwg
+MjIsIDIwMjIgYXQgMDU6Mjg6NTZQTSArMDkwMCwgWXVqaSBJc2hpa2F3YSB3cm90ZToNCj4gPiBB
+ZGQgc3VwcG9ydCB0byBETk4gaW1hZ2UgcHJvY2Vzc2luZyBhY2NlbGVyYXRvciBvbiBUb3NoaWJh
+IFZpc2NvbnRpIEFSTQ0KPiBTb0NzLg0KPiA+IFRoZSBhY2NlbGVyYXRvciBpcyBhcHBsaWNhYmxl
+IHRvIEROTiBpbmZlcmVuY2UgdGFza3MuDQo+ID4NCj4gPiBTaWduZWQtb2ZmLWJ5OiBZdWppIElz
+aGlrYXdhIDx5dWppMi5pc2hpa2F3YUB0b3NoaWJhLmNvLmpwPg0KPiA+IFJldmlld2VkLWJ5OiBO
+b2J1aGlybyBJd2FtYXRzdSA8bm9idWhpcm8xLml3YW1hdHN1QHRvc2hpYmEuY28uanA+DQo+ID4g
+LS0tDQo+ID4gdjEgLT4gdjI6DQo+ID4gICAtIGFwcGxpZWQgY2hlY2twYXRjaC5wbCAtLXN0cmlj
+dA0KPiA+ICAgLSByZW1vdmVkIHVudXNlZCBjb2RlDQo+ID4gLS0tDQo+ID4gIGRyaXZlcnMvc29j
+L3Zpc2NvbnRpL0tjb25maWcgICAgICAgICAgIHwgICA2ICsNCj4gPiAgZHJpdmVycy9zb2Mvdmlz
+Y29udGkvTWFrZWZpbGUgICAgICAgICAgfCAgIDIgKw0KPiA+ICBkcml2ZXJzL3NvYy92aXNjb250
+aS9kbm4vTWFrZWZpbGUgICAgICB8ICAgNiArDQo+ID4gIGRyaXZlcnMvc29jL3Zpc2NvbnRpL2Ru
+bi9kbm4uYyAgICAgICAgIHwgNTIzDQo+ICsrKysrKysrKysrKysrKysrKysrKysrKysNCj4gPiAg
+ZHJpdmVycy9zb2MvdmlzY29udGkvZG5uL2h3ZF9kbm4uYyAgICAgfCAxODMgKysrKysrKysrDQo+
+ID4gIGRyaXZlcnMvc29jL3Zpc2NvbnRpL2Rubi9od2RfZG5uLmggICAgIHwgIDY4ICsrKysNCj4g
+PiAgZHJpdmVycy9zb2MvdmlzY29udGkvZG5uL2h3ZF9kbm5fcmVnLmggfCAyMjggKysrKysrKysr
+KysNCj4gPiAgZHJpdmVycy9zb2MvdmlzY29udGkvdWFwaS9kbm4uaCAgICAgICAgfCAgNzcgKysr
+Kw0KPiA+ICA4IGZpbGVzIGNoYW5nZWQsIDEwOTMgaW5zZXJ0aW9ucygrKQ0KPiA+ICBjcmVhdGUg
+bW9kZSAxMDA2NDQgZHJpdmVycy9zb2MvdmlzY29udGkvZG5uL01ha2VmaWxlICBjcmVhdGUgbW9k
+ZQ0KPiA+IDEwMDY0NCBkcml2ZXJzL3NvYy92aXNjb250aS9kbm4vZG5uLmMgIGNyZWF0ZSBtb2Rl
+IDEwMDY0NA0KPiA+IGRyaXZlcnMvc29jL3Zpc2NvbnRpL2Rubi9od2RfZG5uLmMNCj4gPiAgY3Jl
+YXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvc29jL3Zpc2NvbnRpL2Rubi9od2RfZG5uLmgNCj4gPiAg
+Y3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvc29jL3Zpc2NvbnRpL2Rubi9od2RfZG5uX3JlZy5o
+DQo+ID4gIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL3NvYy92aXNjb250aS91YXBpL2Rubi5o
+DQo+ID4NCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9zb2MvdmlzY29udGkvS2NvbmZpZw0KPiA+
+IGIvZHJpdmVycy9zb2MvdmlzY29udGkvS2NvbmZpZyBpbmRleCA4YjEzNzg5MTcuLmEyNTI4N2Qw
+YyAxMDA2NDQNCj4gPiAtLS0gYS9kcml2ZXJzL3NvYy92aXNjb250aS9LY29uZmlnDQo+ID4gKysr
+IGIvZHJpdmVycy9zb2MvdmlzY29udGkvS2NvbmZpZw0KPiA+IEBAIC0xICsxLDcgQEANCj4gPiAr
+aWYgQVJDSF9WSVNDT05USQ0KPiA+ICsNCj4gPiArY29uZmlnIFZJU0NPTlRJX0ROTg0KPiA+ICsg
+ICAgYm9vbCAiVmlzY29udGkgRE5OIGRyaXZlciINCj4gPiArDQo+IA0KPiBXZSBjYW4ndCB0YWtl
+IEtjb25maWcgb3B0aW9ucyB3aXRoIG5vIGhlbHAgdGV4dCBhdCBhbGwsIHBsZWFzZSBwcm92aWRl
+IHRoZQ0KPiBuZWVkZWQgaW5mb3JtYXRpb24gaGVyZS4NCg0KSSdsbCBhZGQgZGV0YWlsZWQgZGVz
+Y3JpcHRpb24gdG8gS2NvbmZpZyBoZWxwIHRleHQuDQoNCj4gDQo+IEFuZCB3aHkgY2FuJ3QgdGhp
+cyBiZSBhIG1vZHVsZT8NCg0KVGhlcmUncmUgbm8gc3BlY2lhbCByZWFzb25zIHRvIGRpc2FibGUg
+bW9kdWxlIGJ1aWxkLg0KSSdsbCB0ZXN0IG1vZHVsZSBidWlsZCBhbmQgYWRkIHRoZSBvcHRpb24u
+DQoNClJlZ2FyZHMsDQogIFl1amkNCg==
 
