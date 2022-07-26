@@ -2,161 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 620C6C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 09:42:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B97EC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 09:42:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238316AbiGZJmK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 05:42:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44334 "EHLO
+        id S238285AbiGZJmt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 05:42:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231812AbiGZJmH (ORCPT
+        with ESMTP id S230152AbiGZJmr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 05:42:07 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 125682FFEE
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 02:42:05 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id v5so8386837wmj.0
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 02:42:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=AS9H2OdepDISuy0zpfcKWjXYlq3ZJwTXdSc84G0PXjk=;
-        b=UEdP/1caBfZR1vGaxbnA+UoIuwScQbKAKcncBmmq4nqTECUaEDLlNYSomjZPQ+3Edv
-         BzESjJPvCJUl85AD2VwJN8EDsWobDLgwRarLAf9iN9uYiqh2tWnfppB9ebJxHN8Rre/G
-         WUzTe1UZ/zak3NhGsZldKPgIddr49EKjV2cny9NT4ZF150B7A43pkFzKDYiWLC9NJSBF
-         CsB7+a0dhOu59G6sNRbWpTSZ+2Kn+DdnM/p8fF7NkpDMQmFYDCht470BoRRxhRZWDhss
-         7d6u1Qac/xLTKYBtSC4KvqEF3OexaIuCsla6XJByBAqTEAbIOECBf9Y9Axwg3yxb5W1Y
-         8yIQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=AS9H2OdepDISuy0zpfcKWjXYlq3ZJwTXdSc84G0PXjk=;
-        b=Y2qpyFNAD70uob9PwQo8WX1z5uh8OLNjGhOUPDBkKYtFfq0pYRyBNer3vkM1EK9via
-         MkuB3Hju4i4V5eKM+JK6SZz2+U80I2wNrvOsTTxTj1csazz/y4G+14J6EniAYcb5E7pA
-         i4mypKHtOdYXwKctwx57jYoP9CaJoJPg7dBG41ALzFdGR4PQB3rKJyksj8pdFqtZVYO2
-         KZbQEAR44Z4OsHpjGhhdVA5F29X3sdCzJTJhdp4oEq2Ya1A38c5OtXchJ8aAmVvujxJJ
-         0eDbMn0idkSle6wX5TWeLczWk1U3E725ig2fTCnyN2Yj8hi+yRMHXNX69XoZ0gj7qiuA
-         /UYw==
-X-Gm-Message-State: AJIora865gFc19XtkzsCnIy6PjAxHT0t0lQeqBwZTQ5lG5M1CVBJ/cQA
-        s91fJKbbsSu9YXH2Hy8+sDxU5w==
-X-Google-Smtp-Source: AGRyM1sGgplIS0v67+5+3a3ZiyzGBSgKA7I0u+VqthrWa6RNVsTG1Lkswi8PKUHIKTJvBoPFdUlMeg==
-X-Received: by 2002:a7b:c7d8:0:b0:3a3:1b8a:97a4 with SMTP id z24-20020a7bc7d8000000b003a31b8a97a4mr11816687wmk.160.1658828523550;
-        Tue, 26 Jul 2022 02:42:03 -0700 (PDT)
-Received: from ?IPV6:2a01:cb1d:77d:8cd7:621a:855b:69ac:c34a? ([2a01:cb1d:77d:8cd7:621a:855b:69ac:c34a])
-        by smtp.gmail.com with ESMTPSA id u16-20020a5d4350000000b0021e4b0aac41sm13834639wrr.24.2022.07.26.02.42.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 Jul 2022 02:42:03 -0700 (PDT)
-Message-ID: <11118ebb-8731-8e4b-e483-7b9b2cc42d13@baylibre.com>
-Date:   Tue, 26 Jul 2022 11:42:02 +0200
+        Tue, 26 Jul 2022 05:42:47 -0400
+Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E040C2F64A;
+        Tue, 26 Jul 2022 02:42:45 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R291e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=xianting.tian@linux.alibaba.com;NM=1;PH=DS;RN=22;SR=0;TI=SMTPD_---0VKUwL8I_1658828559;
+Received: from B-LB6YLVDL-0141.local(mailfrom:xianting.tian@linux.alibaba.com fp:SMTPD_---0VKUwL8I_1658828559)
+          by smtp.aliyun-inc.com;
+          Tue, 26 Jul 2022 17:42:40 +0800
+Subject: Re: [RESEND PATCH V2 0/5] Fixups to work with crash tool
+From:   Xianting Tian <xianting.tian@linux.alibaba.com>
+To:     Conor.Dooley@microchip.com
+Cc:     alexandre.ghiti@canonical.com, heiko@sntech.de, palmer@dabbelt.com,
+        mick@ics.forth.gr, guoren@kernel.org, kexec@lists.infradead.org,
+        bhe@redhat.com, linux-doc@vger.kernel.org, vgoyal@redhat.com,
+        linux-riscv@lists.infradead.org, dyoung@redhat.com,
+        linux-kernel@vger.kernel.org, crash-utility@redhat.com,
+        huanyi.xj@alibaba-inc.com, heinrich.schuchardt@canonical.com,
+        anup@brainfault.org, corbet@lwn.net, k-hagio-ab@nec.com,
+        hschauhan@nulltrace.org, paul.walmsley@sifive.com,
+        aou@eecs.berkeley.edu
+References: <20220725014539.1037627-1-xianting.tian@linux.alibaba.com>
+ <51c97da7-422f-1b5b-03d3-dc36c9132c2a@microchip.com>
+ <7a395f64-8ec7-e07f-e763-afc1f2611c75@linux.alibaba.com>
+ <2301681f-361d-b85b-e255-3bf449ceeaa9@microchip.com>
+ <cf00c1f6-b043-a11e-f7a5-bed1e829cb73@linux.alibaba.com>
+ <6320e6dd-ebd9-3575-a85f-c3a2f92e9f54@linux.alibaba.com>
+Message-ID: <00776b91-6bff-e4b8-f000-5399924cd145@linux.alibaba.com>
+Date:   Tue, 26 Jul 2022 17:42:39 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.14.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.0.2
-Subject: Re: [PATCH v1 2/2] dt-binding: iio: time: add capture-tiecap.yaml
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        jic23@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org
-Cc:     lars@metafoo.de, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mranostay@ti.com
-References: <20220726072553.5136-1-jpanis@baylibre.com>
- <20220726072553.5136-3-jpanis@baylibre.com>
- <c4e8b285-1e77-492e-31d7-8c79328b95dd@linaro.org>
-From:   Julien Panis <jpanis@baylibre.com>
-In-Reply-To: <c4e8b285-1e77-492e-31d7-8c79328b95dd@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <6320e6dd-ebd9-3575-a85f-c3a2f92e9f54@linux.alibaba.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
-On 26/07/2022 11:29, Krzysztof Kozlowski wrote:
-> On 26/07/2022 09:25, Julien Panis wrote:
->> This commit adds a YAML binding for TI ECAP used in capture operating mode.
+在 2022/7/26 下午5:28, Xianting Tian 写道:
+>
+> 在 2022/7/26 下午4:16, Xianting Tian 写道:
 >>
->> Signed-off-by: Julien Panis <jpanis@baylibre.com>
->> ---
->>   .../bindings/iio/time/capture-tiecap.yaml     | 53 +++++++++++++++++++
->>   1 file changed, 53 insertions(+)
->>   create mode 100644 Documentation/devicetree/bindings/iio/time/capture-tiecap.yaml
+>> 在 2022/7/26 下午4:01, Conor.Dooley@microchip.com 写道:
+>>> On 26/07/2022 08:54, tianxianting wrote:
+>>>> 在 2022/7/26 上午1:13, Conor.Dooley@microchip.com 写道:
+>>>>> That said, this does not apply to riscv/for-next:
+>>>>> b4 shazam 20220725014539.1037627-1-xianting.tian@linux.alibaba.com
+>>>>> Grabbing thread from 
+>>>>> lore.kernel.org/all/20220725014539.1037627-1-xianting.tian%40linux.alibaba.com/t.mbox.gz
+>>>>> Checking for newer revisions on https://lore.kernel.org/all/
+>>>>> Analyzing 6 messages in the thread
+>>>>> Checking attestation on all messages, may take a moment...
+>>>>> ---
+>>>>>     [PATCH v2 1/5] RISC-V: use __smp_processor_id() instead of 
+>>>>> smp_processor_id()
+>>>>>     [PATCH v2 2/5] RISC-V: Add arch_crash_save_vmcoreinfo support
+>>>>>     [PATCH v2 3/5] riscv: Add modules to virtual kernel memory 
+>>>>> layout dump
+>>>>>     [PATCH v2 4/5] RISC-V: Fixup getting correct current pc
+>>>>>     [PATCH v2 5/5] riscv: crash_core: Export kernel vm layout, 
+>>>>> phys_ram_base
+>>>>> ---
+>>>>> Total patches: 5
+>>>>> ---
+>>>>> Applying: RISC-V: use __smp_processor_id() instead of 
+>>>>> smp_processor_id()
+>>>>> Applying: RISC-V: Add arch_crash_save_vmcoreinfo support
+>>>>> Patch failed at 0002 RISC-V: Add arch_crash_save_vmcoreinfo support
+>>>> patch 2 apply is OK for me, I don't know why you failed :(
+>>>> Do you have more detals for this?
+>>>>
+>>> What did you apply it to? It does not apply for me to riscv/for-next:
+>>> https://git.kernel.org/pub/scm/linux/kernel/git/riscv/linux.git/log/?h=for-next 
+>>>
 >>
->> diff --git a/Documentation/devicetree/bindings/iio/time/capture-tiecap.yaml b/Documentation/devicetree/bindings/iio/time/capture-tiecap.yaml
->> new file mode 100644
->> index 000000000000..4f08e49a8506
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/iio/time/capture-tiecap.yaml
-> Use filename based on compatible, so:
-> ti,am62-ecap-capture.yaml
+>> This 5 patches are based on the master branch of below git:
+>>
+>> https://kernel.googlesource.com/pub/scm/linux/kernel/git/torvalds/linux.git 
+>>
+>>
+>> "git am 0002-RISC-V-Add-arch_crash_save_vmcoreinfo-support.patch" to 
+>> this git is ok for me.
+>>
+>> All is correct?
 >
->> @@ -0,0 +1,53 @@
->> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/iio/capture-tiecap.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: Texas Instruments Enhanced Capture (eCAP) Module
->> +
->> +maintainers:
->> +  - Julien Panis <jpanis@baylibre.com>
->> +
->> +description: |
->> +  The eCAP module resources can be used to capture timestamps
->> +  on input signal events (falling/rising edges).
->> +
->> +properties:
->> +  compatible:
->> +    const: ti,am62-ecap-capture
->> +
->> +  reg:
->> +    maxItems: 1
->> +
->> +  interrupts:
->> +    maxItems: 1
->> +
->> +  clocks:
->> +    maxItems: 1
->> +
->> +  clock-names:
->> +    const: fck
->> +
->> +  power-domains:
->> +    maxItems: 1
->> +
->> +required:
->> +  - compatible
->> +  - reg
->> +  - interrupts
->> +  - clocks
->> +  - clock-names
->> +
->> +additionalProperties: false
->> +
->> +examples:
->> +  - |
->> +    ecap0: capture@23100000 { /* eCAP in capture mode on am62x */
->> +        compatible = "ti,am62-ecap-capture";
->> +        reg = <0x00 0x23100000 0x00 0x100>;
->> +        interrupts = <GIC_SPI 113 IRQ_TYPE_EDGE_RISING>;
->> +        power-domains = <&k3_pds 51 TI_SCI_PD_EXCLUSIVE>;
-> Does not look like you tested the bindings. Please run `make
-> dt_binding_check` (see
-> Documentation/devicetree/bindings/writing-schema.rst for instructions).
+> I figured out the reason, there is one difference in 
+> arch/riscv/kernel/Makefile between riscv/for-next and torvalds/linux.
+>
+> For riscv/for-next, in line 81 of arch/riscv/kernel/Makefile, it is:
+>
+>     obj-$(CONFIG_KEXEC)        += kexec_relocate.o crash_save_regs.o 
+> machine_kexec.o
+>
+> But for torvalds/linux, in line 81 of arch/riscv/kernel/Makefile, it is:
+>
+>     obj-$(CONFIG_KEXEC_CORE)        += kexec_relocate.o 
+> crash_save_regs.o machine_kexec.o
+>
+> torvalds/linux is newer than riscv/for-next,  commit 3a66a08759 
+> ("RISC-V: kexec: Fix build error without CONFIG_KEXEC") added 
+> "CONFIG_KEXEC_CORE" for torvalds/linux, But riscv/for-next
+>
+> doesn't contain the commit.
 
+Hi Dooley
 
-I did not indeed, sorry. I thought that checkpath also checked binding.
+I think riscv git needs to be updated from linus git, and then I think 
+V4 can be applied normally.
 
-Thank you for your feedback. I'm going to prepare a new version.
-
+V4: https://lkml.org/lkml/2022/7/26/317
 
 >
->> +        clocks = <&k3_clks 51 0>;
->> +        clock-names = "fck";
->> +    };
 >
-> Best regards,
-> Krzysztof
+>>
+>>>
+>>> Thanks,
+>>> Conor.
+>>>
