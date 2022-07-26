@@ -2,166 +2,522 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E908EC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 16:42:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A97DC04A68
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 16:44:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238105AbiGZQmv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 12:42:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52686 "EHLO
+        id S232791AbiGZQoE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 12:44:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229738AbiGZQmr (ORCPT
+        with ESMTP id S229849AbiGZQoC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 12:42:47 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB65EBE;
-        Tue, 26 Jul 2022 09:42:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1658853764; x=1690389764;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-id:content-transfer-encoding:
-   mime-version;
-  bh=4MHFcZ7NNRql69emoAyPLzXczyFxJkru42TqbLt7wLU=;
-  b=P2rwQ4VsB0xfQKgQhQxzvIMehyUYp1j9kkC4gY6aubr6sXyPi9Slqn0A
-   1rhsUXyQVqdG0i//W5fXRn5gqvm8L/WuTvLyVJ66kn7YBdUwCnEmYrxQS
-   e6pGvRDTQXixh7IsBKlIWK9SRHrkK97RJ4E1odnUBqPiIT9W0ZxyoMfuD
-   gVGHHI94reINAmIby5JjIc7wXKNFLPQXI7PdyqcpEb9i30ditO/+qw1/Y
-   OYSmpXTGnMUnrMONF8oyRF0ytZtCKaaM6yuQ9N0iY+5e8aUMonXdBgH6Z
-   7lTZSRUSpzaIR5h4iLVOviatjJEgzCN9/zPRih1Ae05Bbx6tIQhk9pE66
-   g==;
-X-IronPort-AV: E=Sophos;i="5.93,194,1654585200"; 
-   d="scan'208";a="106225894"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Jul 2022 09:42:42 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Tue, 26 Jul 2022 09:42:42 -0700
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.87.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28 via Frontend Transport; Tue, 26 Jul 2022 09:42:42 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=k/omlp1GVhI74bmAFPRGSd93STtzZ+Vo55bk7EHHTFoSo4WC5eFOcSkaiPNrbxDspf/2HOlIWS0hJ7U2F6cUep8JZPbvQloissQgoquOSn6HhMIpQGM9fJdy135ggRgbIPLPJtNi6/jMpUwvpMSR/o3DB003HfB+yDza4aBpLab6OQ+6zcBxU7B8S5wbRbX+0dULVnkTfCqKEX6nLMeBGuo7jZH1lt85LXuTp6iUB8avpCn/snwQVw8/1UCXTIN7kdUdOTxXMaLMbpIvxIQ65yD9JjVUfNpI07XF1e/+r9cN2XtJFO7XtrEH3n7uyWOtJgmNs92zUUK4l4u/mNz3Ww==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4MHFcZ7NNRql69emoAyPLzXczyFxJkru42TqbLt7wLU=;
- b=YrSfNA391060x4m4/xnk0Pxb+XsU21mNHTdtH7bqY6os9ipSQRpr0+VGSf29vAx92CNIv7LjfxpVZR1XanlxEPeryfjfWHE1vuhOIQEN8+FGCweUkUaeUmWDLVEYDVK7ckYFuqstdefYVnPak6OdvBLkMJs2qD+e70IF/fRO/HZUSKVn7CGF9YvbKLdNP4veHHclK8KA1F4GFb81iPRooryJ5CJnhjQDrtcOsMOsTPeqLympLukMPOytNRNn2zMQbJKg72saQiDKh/vIxcrorcc0JoMlp6CC/9b9vinXC1hC4hoiGUIpMpG0WTmUebhrFVWQGnA1YOvj8xTMA4V7vQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+        Tue, 26 Jul 2022 12:44:02 -0400
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD177BFE
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 09:44:00 -0700 (PDT)
+Received: by mail-pl1-x62e.google.com with SMTP id g17so13853800plh.2
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 09:44:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4MHFcZ7NNRql69emoAyPLzXczyFxJkru42TqbLt7wLU=;
- b=AAmyQ6nV/9lCpulhytSnZsgcUmBb+Q2ZsLzH2f7I35NA8LY0oNdP5DU2uq9fKP07z/JlAmGp+xYjYJy8XtehGYTJLZF1CxlFEDY6cDzatkmKWA4a0Qy31T9iRj9EbKzZCJ/bZXanbSFl87tGvU6rm9N7ooOgGZA/rYne11jKEVg=
-Received: from CO1PR11MB5154.namprd11.prod.outlook.com (2603:10b6:303:99::15)
- by DM5PR11MB1338.namprd11.prod.outlook.com (2603:10b6:3:b::23) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5458.19; Tue, 26 Jul 2022 16:42:40 +0000
-Received: from CO1PR11MB5154.namprd11.prod.outlook.com
- ([fe80::ac89:75cd:26e0:51c3]) by CO1PR11MB5154.namprd11.prod.outlook.com
- ([fe80::ac89:75cd:26e0:51c3%7]) with mapi id 15.20.5458.025; Tue, 26 Jul 2022
- 16:42:40 +0000
-From:   <Conor.Dooley@microchip.com>
-To:     <atulkhare@rivosinc.com>
-CC:     <palmer@rivosinc.com>, <linux-i2c@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-mmc@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
-        <robh@kernel.org>
-Subject: Re: [PATCH v2 0/2] dt-bindings: sifive: fix dt-schema errors
-Thread-Topic: [PATCH v2 0/2] dt-bindings: sifive: fix dt-schema errors
-Thread-Index: AQHYe5EWlaN9eJ6DkkaWySyozCpPXK1VKhaAgBTmLgCAAAMkAIAnEuWA
-Date:   Tue, 26 Jul 2022 16:42:40 +0000
-Message-ID: <dd128dec-6092-7aeb-6e66-eb45cea3b0cd@microchip.com>
-References: <CABMhjYp3xUyQ9q6nXHvEA2zuzhYi0ETn6UETeH1apWf2n2eP7A@mail.gmail.com>
- <7ba0c325-bc1f-f6e4-dd8a-b5d13a04ef93@microchip.com>
- <CABMhjYrDyOoDusE4-y4VzM87Vg=NhPbow_dQ+1C4EcX50LrMHw@mail.gmail.com>
- <fb861221-2e9d-7d4a-dd52-b16b3b581fd6@microchip.com>
-In-Reply-To: <fb861221-2e9d-7d4a-dd52-b16b3b581fd6@microchip.com>
-Accept-Language: en-IE, en-US
-Content-Language: en-IE
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microchip.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 71949bb3-e6fd-473a-0c8d-08da6f25dafb
-x-ms-traffictypediagnostic: DM5PR11MB1338:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Iqp7rMCzrq19IQDTp/pe2UR55iy6ttMiW62zawyLIu2G8F2Z4VxqbNMKe8FNiIxM7fEFKn6+gTCsZ48LuXbYBjwDcXDQpTWBhx4pKdqp+KJVWKce39U7MHHk5VugL7XlL6ZBAZ4ZAmofcVOtyBjbDCmtWC00A3B5jcSwHRJsaTWitI5eZLrZyGHat5ujSBtV0boleIHWPsgdR3qIJZ4QIoL8ASJBwjpCALzhPpFkEDWDNpHHIP4u7ns4jZ07Hi0wNZNPIaE6eun7CtyDTALBin88PrK87Ajn08Dtu2fQxsFdk7OtRofXJaetbUHWfm4BZcY5tQi7Abl99+HLDaG1jQL55hy9i1k82V1uH2yjA1V6kUMnc0Oh6I/Kl0hR8kQLmTBLI0UsS8PaCCV1+BLhFt+bj2fJIYys8vAsc0m2S9oeK9hg6vkPL9vKczRECQlGD3yD/wWXcXCJyiG3VeD9i6CE6qkOjt2x0eB0VRgOa0bNKfqFCe82SbPoxmVYJ+pk44housmN3GEiBqepMvC15A210FUN7UB9tNdUQfoP1rv7mLZTV2DQ0g9ATbvvSU3JHHfuVZBfPoTr8ENKvWaeSsLN0FMRgYnb/Yif6tLpIbMwsll2rVqNGZ3WVQvrq5NIOnu7VrPRkda0velZPqcps8DYDlC9DrlWQ+AQm/0pEPY4rK5q3yZYITzdrQre8G+TE9DxGHSjFsSa+hIH+TtIFtEa1GdNIbbA0U/5lRA5aL1NdQA0jTo9YM80J6MMaiuiUDA5gJNDdEi6OtY2SsZT+RlUvGnP2ihBCad8WHvllpKTgt8MMQo26Muatf4w5sfS5gGBmJ3YUGuAV6HrGRedhkJPbVylEY49Lh4VOYH/Pmg=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5154.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(136003)(376002)(39860400002)(346002)(396003)(8676002)(4326008)(76116006)(91956017)(64756008)(66476007)(66446008)(66946007)(66556008)(5660300002)(4744005)(36756003)(122000001)(38070700005)(2906002)(8936002)(6486002)(38100700002)(2616005)(26005)(31696002)(186003)(71200400001)(41300700001)(53546011)(6506007)(6512007)(86362001)(478600001)(6916009)(31686004)(54906003)(316002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?R3lMSjAzYVpLU01TRXZMRy9SelNSbk5VSllEaTJ2MFh4M3JENGpFeko2UUg2?=
- =?utf-8?B?c3h1U0t4TndVRVcwMVRDUUFvZjZVVnRScG1nUHBBcW1SbWZpa3RIRWdZUUlE?=
- =?utf-8?B?S1lOOXhqRkIzcEpTMWRMaktFKzJ1VUdTejM4K2NkNGQvdHBZbWM1TTd6UEE0?=
- =?utf-8?B?VFlpT0FSYnJWbmNQVURJWUtTRXIzMVZLbXgvNnpya2V0bVRtYkpkcTJjd0xT?=
- =?utf-8?B?MmtxdklRYTF1L2lqM1BiZ2NUdm9GUmhFeUV3WGFva0hCSHlRQkQvVTlxd3p5?=
- =?utf-8?B?OUV2VnBsY1llam1JNlpwb1kxNWpDcG10aDVMYTZrbGIrQnFGWHhkTFhjN2VO?=
- =?utf-8?B?a2tvYXNTWWQ5MGRYTmp3UFF1SmpXS3UvQzl0Y0hNMTF4L0hvMW9kWGJQSTM0?=
- =?utf-8?B?SHdrQUZlV2t1MjJ6eUU1eUNnM0FPNzJpZFRyNEtwWlV6UzJuL0h1QkhkRG81?=
- =?utf-8?B?bzJJV0hzZjVNQXcwdVZFVmRUdm4xM2h4TU1EUkR3Qk5WM2piZ0VlN040MGNR?=
- =?utf-8?B?dzVHVzZmZk1DRjU1eTY3eWVYYUhPaCttbVdJQkxVa3EzcHlkcHlqbWdXVFVn?=
- =?utf-8?B?U3l6RG1FSVJiU1V4K003WmNNTkY3b2M4S1dFaStaVGxZU20yRCs3ZFV2bHFu?=
- =?utf-8?B?OGUreTYveWpNYzdDbHJtbGJ5VjZiaFo1L0w4a24yVlN0TEE3emxnZTJkM1NQ?=
- =?utf-8?B?aHpFYmlCU0JVd3ZQaEY2bnQ0T3kxRGx0YU1HYlZibWhHNXUydVE0UnVJdDhI?=
- =?utf-8?B?aHp3Yk9VbDhBTEQzWGh1Y2FES3R0QS9Rd3Y5bCtTUm1MMnI3QmhRK2pveDZZ?=
- =?utf-8?B?QmJncWl2M2d4cUlwRlQvalptbFdoZTlCY0tMNXB0WE81V21ITWJjOWkrMWtT?=
- =?utf-8?B?K1ByTVJrQW5EY1kyWFh5ZGRLNCtpTEFIVDhVR0N4bkluaU0yZEpFd0dyL1Z6?=
- =?utf-8?B?Z2tzUzFoRGM2cDBGUzg1anFleHNrc1drd2RiL1A1V0ViTnF1RVVFamJENUNR?=
- =?utf-8?B?WklvRHgyQVh4eExOdEdvcUhrS2ZYK1Y5SER6SENtMnhOK0hoUmVQTEFibklC?=
- =?utf-8?B?djlsMjVNOFd3cmoyRVo2YVZTTnBDQVpKNHlKTmhIY3dFU2hJUzYyVHliZDVx?=
- =?utf-8?B?dWJTUnl5Y21zYnd5TkxMQzZONER4aGZMZ09lNVBoRXFnMEFQOS9rQ2F4Z3Ev?=
- =?utf-8?B?SGZnVi9heUVNZ3JYK2JOaFQ4SDduaWR2N1JCQ1hvVi9UdlBxazZmY1lVWEN3?=
- =?utf-8?B?cU1qN0hKM3pMQ1E1ZEtTeFVWT21JMkwraFZyTmJyd1JOUUYxSUU0ZkhPRkIy?=
- =?utf-8?B?bERxbUJDOWI3VGtDTDVPOGwwWngrdzJsdTN5akNOZWFybTJIRlJYSWRMMkxx?=
- =?utf-8?B?dVZEdDVqYm5tamNEYmNEWDJrMlY4OXpMNXZ6OXNNYzlyR3VoSHUza1lqUUFk?=
- =?utf-8?B?TzByaXZMbjdxT1dSdFV6WStOa29TeEVwdTN3c3IvelJTY2RoUWhhNzEwYUdq?=
- =?utf-8?B?L3YzSGd2S3RScFhLQnFkN2gvaXFrdWxFZnJkTUM5WnlCWVBIa2hYaDBrWTk3?=
- =?utf-8?B?NU1FYnAvRnJmdC8ybUhFVDVRZVFhTXZDbDg4ZU9LNkpiZVZXUGVnaHVYSS9B?=
- =?utf-8?B?QW1UV2hqNW1zdW8rWmd2ZWU4UGxueDRMT3c0MGtqOE9naFRodFZvRDRjQUNF?=
- =?utf-8?B?VXNGT2ZwdzNOVVJkREVtVXVqS3ZCTXYydEFmNTRLd2p1MVB4N2xVWVFjMlQy?=
- =?utf-8?B?QVZzWXN0TWlGZWNubThicW82T0FTWXZmSmRwTFhqS2dvbEpkSENOQlNkbktC?=
- =?utf-8?B?VWxDSTdUbkVJa2hZOVlldTRZUGs5cWtkbUZMdWcxNHFhREpjZzFRNVVRUVJZ?=
- =?utf-8?B?Z0tmQnVDeTRJRHVzaTRKR1loOVdtNFFhczBzVHg4WFJuVXIzUmZhU1ZQaVMv?=
- =?utf-8?B?WkFHR0F4aVNWMWpKeTc3REVjK2JOR0ZqLzZXajI1ZlcxdWxaSmdQdnlxNm9W?=
- =?utf-8?B?TTZVY0pBUmVOUGQzVklwbkp1VXRBVnZISndDN0wyZWtkZmkrcFp4bGdtV1Ny?=
- =?utf-8?B?YjdnY25hU2NZcHR2UGNEU09nRXFBcExRVy9CQ0F3V1p6RDdyaTVJNG9xeW9u?=
- =?utf-8?B?UWR3RnZKN29WdzQxekpCbGs4UzZYaG04Mk9OdUVscTdHazk4ZHRrS01sRkZO?=
- =?utf-8?B?eEE9PQ==?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <BFF42B842A5AB147ACB5C964F806C2C6@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=4T5ZTIonUjkn01KOQC58BoguB3AM+qpQMLH0uFD+awY=;
+        b=AOjSazEd4QZ1Ht0yOaj1CFTax671UtUdRK4cSzrZHPuoRVdxt81AdMTJLtFaD1UoRF
+         w/TpWSg2ExMw7RYapbffYjtpQILFlU8J0y5SZxM+WYD/v06PwD2ESrKScSJ/yvqi+ads
+         bET1fBWoUjgVtp+ShH38ViaFM1eh4Rn6fI5vbwQzWbrooC/RbsNezTeXv57N0oj8bVtB
+         2jCmLTFkU3ehORbyGJ1mdLJj9RKqS5vV3IkhT7G6vFKdbVdzrSeM6APtGMNp6/fL/O/H
+         u0V1PvQncn0lzZoam0ozHZbIWDUHyYDOlyJQ7+zTzchB5zwd4+9XvavtVVrrc+7PdCMv
+         PnNw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=4T5ZTIonUjkn01KOQC58BoguB3AM+qpQMLH0uFD+awY=;
+        b=VU4/mepT1bnPwYhv//YOhACv5ISyWw0PvbuFiCMmkl/uCeHs8WQ8E4SArO9XcZIbWX
+         HYmy/QbcTfcESbW++qe5Hvgh1IqOBmrQGXL47gOZXjHj2U5itgGQZSafJQiBQWYye06E
+         leYatCvD0daUG5cNzhqyNlXVFq07m6p8ekNK/LDc/Hi7DwBByL0s1c8StAe3ke6NCqEd
+         ArVdPKI+PMVXfPC9LN0uXJ49amiDXstF4tP+Rotw8hYpC1W44s/nmVB/ROjvHQ/pDWmv
+         I3r5Le2eRIFLQra5TcvteNrEu4bm2VeMPQnxZ3NDqYYPL34ETbKi7VZpOLzeOkr36sp/
+         9Zxg==
+X-Gm-Message-State: AJIora9+yr+RElI6r3TGe/s2FIzb7JCHCjIsLJ/AjC8lXAvLCC7JraLK
+        G34mGXNVOYKaiqytEOhtA0I5gA==
+X-Google-Smtp-Source: AGRyM1uSYV+SGMJEeJAnjp/TdC8THYN5t1+kBJGNOb6HVnSp6TRFpHh8rVkIYO6BnkHry4djvI2fKg==
+X-Received: by 2002:a17:902:e551:b0:16d:8469:bd91 with SMTP id n17-20020a170902e55100b0016d8469bd91mr8015491plf.111.1658853840255;
+        Tue, 26 Jul 2022 09:44:00 -0700 (PDT)
+Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
+        by smtp.gmail.com with ESMTPSA id d10-20020a170902654a00b0016a7b9558f7sm11750360pln.136.2022.07.26.09.43.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Jul 2022 09:43:59 -0700 (PDT)
+Date:   Tue, 26 Jul 2022 10:43:57 -0600
+From:   Mathieu Poirier <mathieu.poirier@linaro.org>
+To:     Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Rob Herring <robh@kernel.org>, Christoph Hellwig <hch@lst.de>,
+        Stefano Stabellini <stefanos@xilinx.com>,
+        Bruce Ashfield <bruce.ashfield@xilinx.com>
+Subject: Re: [PATCH v7 3/4] remoteproc: Move rproc_vdev management to
+ remoteproc_virtio.c
+Message-ID: <20220726164357.GB15392@p14s>
+References: <20220713113612.2117279-1-arnaud.pouliquen@foss.st.com>
+ <20220713113612.2117279-4-arnaud.pouliquen@foss.st.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5154.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 71949bb3-e6fd-473a-0c8d-08da6f25dafb
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Jul 2022 16:42:40.4394
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: gTIQLqT/g/PXqTni0fSeCV+fJF8U9YCQNZIjedfVlqKXycovPhZzMqjy0pDN0YoI1e+qRe/zP95TPlQE7X+tmWJBKMttjSw7gaNZ0NJSQRY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR11MB1338
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220713113612.2117279-4-arnaud.pouliquen@foss.st.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T24gMDEvMDcvMjAyMiAyMTowMCwgQ29ub3IgRG9vbGV5IHdyb3RlOg0KPiBPbiAwMS8wNy8yMDIy
-IDIwOjQ5LCBBdHVsIEtoYXJlIHdyb3RlOg0KPj4gRVhURVJOQUwgRU1BSUw6IERvIG5vdCBjbGlj
-ayBsaW5rcyBvciBvcGVuIGF0dGFjaG1lbnRzIHVubGVzcyB5b3Uga25vdyB0aGUgY29udGVudCBp
-cyBzYWZlDQo+Pg0KPj4gQ29ub3IsDQo+Pg0KPj4gQXBvbG9naWVzIGZvciB0aGUgZGVsYXksIGJ1
-dCBteSBsYXB0b3AgZGllZCBhIGNvdXBsZSBvZiB3ZWVrcyBhZ28sIGFuZA0KPj4gSSBoYXZlIGJl
-ZW4gc2NyYW1ibGluZyB0byBnZXQgdGhpbmdzIHVwIGFuZCBydW5uaW5nIG9uIHRoZQ0KPj4gcmVw
-bGFjZW1lbnQuIEkgd2lsbCB0cnkgYW5kIGdldCBiYWNrIHRvIGl0IEFTQVAuDQo+IA0KPiBOb3Ro
-aW5nIHlvdSBjYW4gZG8gYWJvdXQgeW91ciBsYXB0b3AgZHlpbmcgOikNCj4gDQo+IA0KDQpIZXkg
-QXR1bCwNCkJlZW4gYW5vdGhlciBjb3VwbGUgd2Vla3Mgc28gSSBhbSBnb2luZyB0byBzZW5kIGEg
-djMgb2YgdGhlc2UNCnBhdGNoZXMgKGFsdGhvdWdoIHdpdGhvdXQgYW55IGNoYW5nZXMgdG8gdGhl
-IHYyKSBhbmQgd2UgY2FuDQpyZXN1bWUgZGlzY3Vzc2lvbiBhYm91dCB0aGUgY2FjaGUgYmluZGlu
-ZyBjaGFuZ2UgdGhlcmUuDQpUaGFua3MsDQpDb25vci4NCg==
+On Wed, Jul 13, 2022 at 01:36:11PM +0200, Arnaud Pouliquen wrote:
+> Move functions related to the management of the rproc_vdev
+> structure in the remoteproc_virtio.c.
+> The aim is to decorrelate as possible the virtio management from
+> the core part.
+> 
+> Due to the strong correlation between the vrings and the resource table
+> the rproc_alloc/parse/free_vring functions are kept in the remoteproc core.
+> 
+> Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+> 
+> ---
+> Update vs previous revision:
+>  - remove inappropriate rproc_rvdev_remove_device declaration in
+>    remoteproc_internal.h
+> ---
+>  drivers/remoteproc/remoteproc_core.c     | 156 +----------------------
+>  drivers/remoteproc/remoteproc_internal.h |  10 +-
+>  drivers/remoteproc/remoteproc_virtio.c   | 153 +++++++++++++++++++++-
+>  3 files changed, 160 insertions(+), 159 deletions(-)
+>
+
+This patch doesn't apply cleanly on for-next(54a2e6f66586).  
+
+With the above:
+
+Reviewed-by: Mathieu Poirier <mathieu.poirier@linaro.org>
+
+
+> diff --git a/drivers/remoteproc/remoteproc_core.c b/drivers/remoteproc/remoteproc_core.c
+> index 13f0f8ef05a5..d3eca1da8aa1 100644
+> --- a/drivers/remoteproc/remoteproc_core.c
+> +++ b/drivers/remoteproc/remoteproc_core.c
+> @@ -23,9 +23,7 @@
+>  #include <linux/panic_notifier.h>
+>  #include <linux/slab.h>
+>  #include <linux/mutex.h>
+> -#include <linux/dma-map-ops.h>
+>  #include <linux/dma-mapping.h>
+> -#include <linux/dma-direct.h> /* XXX: pokes into bus_dma_range */
+>  #include <linux/firmware.h>
+>  #include <linux/string.h>
+>  #include <linux/debugfs.h>
+> @@ -383,7 +381,7 @@ int rproc_alloc_vring(struct rproc_vdev *rvdev, int i)
+>  	return 0;
+>  }
+>  
+> -static int
+> +int
+>  rproc_parse_vring(struct rproc_vdev *rvdev, struct fw_rsc_vdev *rsc, int i)
+>  {
+>  	struct rproc *rproc = rvdev->rproc;
+> @@ -434,165 +432,17 @@ void rproc_free_vring(struct rproc_vring *rvring)
+>  	}
+>  }
+>  
+> -static int rproc_vdev_do_start(struct rproc_subdev *subdev)
+> -{
+> -	struct rproc_vdev *rvdev = container_of(subdev, struct rproc_vdev, subdev);
+> -
+> -	return rproc_add_virtio_dev(rvdev, rvdev->id);
+> -}
+> -
+> -static void rproc_vdev_do_stop(struct rproc_subdev *subdev, bool crashed)
+> -{
+> -	struct rproc_vdev *rvdev = container_of(subdev, struct rproc_vdev, subdev);
+> -	int ret;
+> -
+> -	ret = device_for_each_child(&rvdev->dev, NULL, rproc_remove_virtio_dev);
+> -	if (ret)
+> -		dev_warn(&rvdev->dev, "can't remove vdev child device: %d\n", ret);
+> -}
+> -
+> -/**
+> - * rproc_rvdev_release() - release the existence of a rvdev
+> - *
+> - * @dev: the subdevice's dev
+> - */
+> -static void rproc_rvdev_release(struct device *dev)
+> -{
+> -	struct rproc_vdev *rvdev = container_of(dev, struct rproc_vdev, dev);
+> -
+> -	of_reserved_mem_device_release(dev);
+> -
+> -	kfree(rvdev);
+> -}
+> -
+> -static int copy_dma_range_map(struct device *to, struct device *from)
+> -{
+> -	const struct bus_dma_region *map = from->dma_range_map, *new_map, *r;
+> -	int num_ranges = 0;
+> -
+> -	if (!map)
+> -		return 0;
+> -
+> -	for (r = map; r->size; r++)
+> -		num_ranges++;
+> -
+> -	new_map = kmemdup(map, array_size(num_ranges + 1, sizeof(*map)),
+> -			  GFP_KERNEL);
+> -	if (!new_map)
+> -		return -ENOMEM;
+> -	to->dma_range_map = new_map;
+> -	return 0;
+> -}
+> -
+> -static void rproc_add_rvdev(struct rproc *rproc, struct rproc_vdev *rvdev)
+> +void rproc_add_rvdev(struct rproc *rproc, struct rproc_vdev *rvdev)
+>  {
+>  	if (rvdev && rproc)
+>  		list_add_tail(&rvdev->node, &rproc->rvdevs);
+>  }
+>  
+> -static void rproc_remove_rvdev(struct rproc_vdev *rvdev)
+> +void rproc_remove_rvdev(struct rproc_vdev *rvdev)
+>  {
+>  	if (rvdev)
+>  		list_del(&rvdev->node);
+>  }
+> -
+> -static struct rproc_vdev *
+> -rproc_rvdev_add_device(struct rproc *rproc, struct rproc_vdev_data *rvdev_data)
+> -{
+> -	struct rproc_vdev *rvdev;
+> -	struct fw_rsc_vdev *rsc = rvdev_data->rsc;
+> -	char name[16];
+> -	int i, ret;
+> -
+> -	rvdev = kzalloc(sizeof(*rvdev), GFP_KERNEL);
+> -	if (!rvdev)
+> -		return ERR_PTR(-ENOMEM);
+> -
+> -	kref_init(&rvdev->refcount);
+> -
+> -	rvdev->id = rvdev_data->id;
+> -	rvdev->rproc = rproc;
+> -	rvdev->index = rvdev_data->index;
+> -
+> -	/* Initialise vdev subdevice */
+> -	snprintf(name, sizeof(name), "vdev%dbuffer", rvdev->index);
+> -	rvdev->dev.parent = &rproc->dev;
+> -	rvdev->dev.release = rproc_rvdev_release;
+> -	dev_set_name(&rvdev->dev, "%s#%s", dev_name(rvdev->dev.parent), name);
+> -	dev_set_drvdata(&rvdev->dev, rvdev);
+> -
+> -	ret = device_register(&rvdev->dev);
+> -	if (ret) {
+> -		put_device(&rvdev->dev);
+> -		return ERR_PTR(ret);
+> -	}
+> -
+> -	ret = copy_dma_range_map(&rvdev->dev, rproc->dev.parent);
+> -	if (ret)
+> -		goto free_rvdev;
+> -
+> -	/* Make device dma capable by inheriting from parent's capabilities */
+> -	set_dma_ops(&rvdev->dev, get_dma_ops(rproc->dev.parent));
+> -
+> -	ret = dma_coerce_mask_and_coherent(&rvdev->dev,
+> -					   dma_get_mask(rproc->dev.parent));
+> -	if (ret) {
+> -		dev_warn(&rvdev->dev,
+> -			 "Failed to set DMA mask %llx. Trying to continue... (%pe)\n",
+> -			 dma_get_mask(rproc->dev.parent), ERR_PTR(ret));
+> -	}
+> -
+> -	/* parse the vrings */
+> -	for (i = 0; i < rsc->num_of_vrings; i++) {
+> -		ret = rproc_parse_vring(rvdev, rsc, i);
+> -		if (ret)
+> -			goto free_rvdev;
+> -	}
+> -
+> -	/* remember the resource offset*/
+> -	rvdev->rsc_offset = rvdev_data->rsc_offset;
+> -
+> -	/* allocate the vring resources */
+> -	for (i = 0; i < rsc->num_of_vrings; i++) {
+> -		ret = rproc_alloc_vring(rvdev, i);
+> -		if (ret)
+> -			goto unwind_vring_allocations;
+> -	}
+> -
+> -	rproc_add_rvdev(rproc, rvdev);
+> -
+> -	rvdev->subdev.start = rproc_vdev_do_start;
+> -	rvdev->subdev.stop = rproc_vdev_do_stop;
+> -
+> -	rproc_add_subdev(rproc, &rvdev->subdev);
+> -
+> -	return rvdev;
+> -
+> -unwind_vring_allocations:
+> -	for (i--; i >= 0; i--)
+> -		rproc_free_vring(&rvdev->vring[i]);
+> -free_rvdev:
+> -	device_unregister(&rvdev->dev);
+> -	return ERR_PTR(ret);
+> -}
+> -
+> -void rproc_vdev_release(struct kref *ref)
+> -{
+> -	struct rproc_vdev *rvdev = container_of(ref, struct rproc_vdev, refcount);
+> -	struct rproc_vring *rvring;
+> -	struct rproc *rproc = rvdev->rproc;
+> -	int id;
+> -
+> -	for (id = 0; id < ARRAY_SIZE(rvdev->vring); id++) {
+> -		rvring = &rvdev->vring[id];
+> -		rproc_free_vring(rvring);
+> -	}
+> -
+> -	rproc_remove_subdev(rproc, &rvdev->subdev);
+> -	rproc_remove_rvdev(rvdev);
+> -	device_unregister(&rvdev->dev);
+> -}
+> -
+>  /**
+>   * rproc_handle_vdev() - handle a vdev fw resource
+>   * @rproc: the remote processor
+> diff --git a/drivers/remoteproc/remoteproc_internal.h b/drivers/remoteproc/remoteproc_internal.h
+> index 07c503de0f95..711b0e1f2118 100644
+> --- a/drivers/remoteproc/remoteproc_internal.h
+> +++ b/drivers/remoteproc/remoteproc_internal.h
+> @@ -41,14 +41,13 @@ struct rproc_vdev_data {
+>  
+>  /* from remoteproc_core.c */
+>  void rproc_release(struct kref *kref);
+> -irqreturn_t rproc_vq_interrupt(struct rproc *rproc, int vq_id);
+> -void rproc_vdev_release(struct kref *ref);
+>  int rproc_of_parse_firmware(struct device *dev, int index,
+>  			    const char **fw_name);
+>  
+>  /* from remoteproc_virtio.c */
+> -int rproc_add_virtio_dev(struct rproc_vdev *rvdev, int id);
+> -int rproc_remove_virtio_dev(struct device *dev, void *data);
+> +struct rproc_vdev *rproc_rvdev_add_device(struct rproc *rproc, struct rproc_vdev_data *rvdev_data);
+> +irqreturn_t rproc_vq_interrupt(struct rproc *rproc, int vq_id);
+> +void rproc_vdev_release(struct kref *ref);
+>  
+>  /* from remoteproc_debugfs.c */
+>  void rproc_remove_trace_file(struct dentry *tfile);
+> @@ -98,6 +97,7 @@ static inline void  rproc_char_device_remove(struct rproc *rproc)
+>  
+>  void rproc_free_vring(struct rproc_vring *rvring);
+>  int rproc_alloc_vring(struct rproc_vdev *rvdev, int i);
+> +int rproc_parse_vring(struct rproc_vdev *rvdev, struct fw_rsc_vdev *rsc, int i);
+>  
+>  phys_addr_t rproc_va_to_pa(void *cpu_addr);
+>  int rproc_trigger_recovery(struct rproc *rproc);
+> @@ -110,6 +110,8 @@ struct resource_table *rproc_elf_find_loaded_rsc_table(struct rproc *rproc,
+>  						       const struct firmware *fw);
+>  struct rproc_mem_entry *
+>  rproc_find_carveout_by_name(struct rproc *rproc, const char *name, ...);
+> +void rproc_add_rvdev(struct rproc *rproc, struct rproc_vdev *rvdev);
+> +void rproc_remove_rvdev(struct rproc_vdev *rvdev);
+>  
+>  static inline int rproc_prepare_device(struct rproc *rproc)
+>  {
+> diff --git a/drivers/remoteproc/remoteproc_virtio.c b/drivers/remoteproc/remoteproc_virtio.c
+> index 70ab496d0431..ccc95d4e42cf 100644
+> --- a/drivers/remoteproc/remoteproc_virtio.c
+> +++ b/drivers/remoteproc/remoteproc_virtio.c
+> @@ -9,7 +9,9 @@
+>   * Brian Swetland <swetland@google.com>
+>   */
+>  
+> +#include <linux/dma-direct.h>
+>  #include <linux/dma-map-ops.h>
+> +#include <linux/dma-mapping.h>
+>  #include <linux/export.h>
+>  #include <linux/of_reserved_mem.h>
+>  #include <linux/remoteproc.h>
+> @@ -23,6 +25,25 @@
+>  
+>  #include "remoteproc_internal.h"
+>  
+> +static int copy_dma_range_map(struct device *to, struct device *from)
+> +{
+> +	const struct bus_dma_region *map = from->dma_range_map, *new_map, *r;
+> +	int num_ranges = 0;
+> +
+> +	if (!map)
+> +		return 0;
+> +
+> +	for (r = map; r->size; r++)
+> +		num_ranges++;
+> +
+> +	new_map = kmemdup(map, array_size(num_ranges + 1, sizeof(*map)),
+> +			  GFP_KERNEL);
+> +	if (!new_map)
+> +		return -ENOMEM;
+> +	to->dma_range_map = new_map;
+> +	return 0;
+> +}
+> +
+>  static struct rproc_vdev *vdev_to_rvdev(struct virtio_device *vdev)
+>  {
+>  	return container_of(vdev->dev.parent, struct rproc_vdev, dev);
+> @@ -339,7 +360,7 @@ static void rproc_virtio_dev_release(struct device *dev)
+>   *
+>   * Return: 0 on success or an appropriate error value otherwise
+>   */
+> -int rproc_add_virtio_dev(struct rproc_vdev *rvdev, int id)
+> +static int rproc_add_virtio_dev(struct rproc_vdev *rvdev, int id)
+>  {
+>  	struct rproc *rproc = rvdev->rproc;
+>  	struct device *dev = &rvdev->dev;
+> @@ -447,10 +468,138 @@ int rproc_add_virtio_dev(struct rproc_vdev *rvdev, int id)
+>   *
+>   * Return: 0
+>   */
+> -int rproc_remove_virtio_dev(struct device *dev, void *data)
+> +static int rproc_remove_virtio_dev(struct device *dev, void *data)
+>  {
+>  	struct virtio_device *vdev = dev_to_virtio(dev);
+>  
+>  	unregister_virtio_device(vdev);
+>  	return 0;
+>  }
+> +
+> +static int rproc_vdev_do_start(struct rproc_subdev *subdev)
+> +{
+> +	struct rproc_vdev *rvdev = container_of(subdev, struct rproc_vdev, subdev);
+> +
+> +	return rproc_add_virtio_dev(rvdev, rvdev->id);
+> +}
+> +
+> +static void rproc_vdev_do_stop(struct rproc_subdev *subdev, bool crashed)
+> +{
+> +	struct rproc_vdev *rvdev = container_of(subdev, struct rproc_vdev, subdev);
+> +	int ret;
+> +
+> +	ret = device_for_each_child(&rvdev->dev, NULL, rproc_remove_virtio_dev);
+> +	if (ret)
+> +		dev_warn(&rvdev->dev, "can't remove vdev child device: %d\n", ret);
+> +}
+> +
+> +/**
+> + * rproc_rvdev_release() - release the existence of a rvdev
+> + *
+> + * @dev: the subdevice's dev
+> + */
+> +static void rproc_rvdev_release(struct device *dev)
+> +{
+> +	struct rproc_vdev *rvdev = container_of(dev, struct rproc_vdev, dev);
+> +
+> +	of_reserved_mem_device_release(dev);
+> +
+> +	kfree(rvdev);
+> +}
+> +
+> +struct rproc_vdev *
+> +rproc_rvdev_add_device(struct rproc *rproc, struct rproc_vdev_data *rvdev_data)
+> +{
+> +	struct rproc_vdev *rvdev;
+> +	struct fw_rsc_vdev *rsc = rvdev_data->rsc;
+> +	char name[16];
+> +	int i, ret;
+> +
+> +	rvdev = kzalloc(sizeof(*rvdev), GFP_KERNEL);
+> +	if (!rvdev)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	kref_init(&rvdev->refcount);
+> +
+> +	rvdev->id = rvdev_data->id;
+> +	rvdev->rproc = rproc;
+> +	rvdev->index = rvdev_data->index;
+> +
+> +	/* Initialise vdev subdevice */
+> +	snprintf(name, sizeof(name), "vdev%dbuffer", rvdev->index);
+> +	rvdev->dev.parent = &rproc->dev;
+> +	rvdev->dev.release = rproc_rvdev_release;
+> +	dev_set_name(&rvdev->dev, "%s#%s", dev_name(rvdev->dev.parent), name);
+> +	dev_set_drvdata(&rvdev->dev, rvdev);
+> +
+> +	ret = device_register(&rvdev->dev);
+> +	if (ret) {
+> +		put_device(&rvdev->dev);
+> +		return ERR_PTR(ret);
+> +	}
+> +
+> +	ret = copy_dma_range_map(&rvdev->dev, rproc->dev.parent);
+> +	if (ret)
+> +		goto free_rvdev;
+> +
+> +	/* Make device dma capable by inheriting from parent's capabilities */
+> +	set_dma_ops(&rvdev->dev, get_dma_ops(rproc->dev.parent));
+> +
+> +	ret = dma_coerce_mask_and_coherent(&rvdev->dev,
+> +					   dma_get_mask(rproc->dev.parent));
+> +	if (ret) {
+> +		dev_warn(&rvdev->dev,
+> +			 "Failed to set DMA mask %llx. Trying to continue... (%pe)\n",
+> +			 dma_get_mask(rproc->dev.parent), ERR_PTR(ret));
+> +	}
+> +
+> +	/* parse the vrings */
+> +	for (i = 0; i < rsc->num_of_vrings; i++) {
+> +		ret = rproc_parse_vring(rvdev, rsc, i);
+> +		if (ret)
+> +			goto free_rvdev;
+> +	}
+> +
+> +	/* remember the resource offset*/
+> +	rvdev->rsc_offset = rvdev_data->rsc_offset;
+> +
+> +	/* allocate the vring resources */
+> +	for (i = 0; i < rsc->num_of_vrings; i++) {
+> +		ret = rproc_alloc_vring(rvdev, i);
+> +		if (ret)
+> +			goto unwind_vring_allocations;
+> +	}
+> +
+> +	rproc_add_rvdev(rproc, rvdev);
+> +
+> +	rvdev->subdev.start = rproc_vdev_do_start;
+> +	rvdev->subdev.stop = rproc_vdev_do_stop;
+> +
+> +	rproc_add_subdev(rproc, &rvdev->subdev);
+> +
+> +	return rvdev;
+> +
+> +unwind_vring_allocations:
+> +	for (i--; i >= 0; i--)
+> +		rproc_free_vring(&rvdev->vring[i]);
+> +free_rvdev:
+> +	device_unregister(&rvdev->dev);
+> +	return ERR_PTR(ret);
+> +}
+> +
+> +void rproc_vdev_release(struct kref *ref)
+> +{
+> +	struct rproc_vdev *rvdev = container_of(ref, struct rproc_vdev, refcount);
+> +	struct rproc_vring *rvring;
+> +	struct rproc *rproc = rvdev->rproc;
+> +	int id;
+> +
+> +	for (id = 0; id < ARRAY_SIZE(rvdev->vring); id++) {
+> +		rvring = &rvdev->vring[id];
+> +		rproc_free_vring(rvring);
+> +	}
+> +
+> +	rproc_remove_subdev(rproc, &rvdev->subdev);
+> +	rproc_remove_rvdev(rvdev);
+> +	device_unregister(&rvdev->dev);
+> +}
+> -- 
+> 2.24.3
+> 
