@@ -2,101 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2836DC2BBC5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95C11C32768
 	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 13:45:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238048AbiGZNqe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 09:46:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59154 "EHLO
+        id S238986AbiGZNnN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 09:43:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233523AbiGZNq2 (ORCPT
+        with ESMTP id S229741AbiGZNnL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 09:46:28 -0400
-Received: from gate.crashing.org (gate.crashing.org [63.228.1.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BBCD02314D
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 06:46:25 -0700 (PDT)
-Received: from gate.crashing.org (localhost.localdomain [127.0.0.1])
-        by gate.crashing.org (8.14.1/8.14.1) with ESMTP id 26QDi6KA001944;
-        Tue, 26 Jul 2022 08:44:06 -0500
-Received: (from segher@localhost)
-        by gate.crashing.org (8.14.1/8.14.1/Submit) id 26QDi53k001943;
-        Tue, 26 Jul 2022 08:44:05 -0500
-X-Authentication-Warning: gate.crashing.org: segher set sender to segher@kernel.crashing.org using -f
-Date:   Tue, 26 Jul 2022 08:44:05 -0500
-From:   Segher Boessenkool <segher@kernel.crashing.org>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: Regression: Linux v5.15+ does not boot on Freescale P2020
-Message-ID: <20220726134405.GX25951@gate.crashing.org>
-References: <20220722090929.mwhmxxdd7yioxqpz@pali> <6b227478-73b8-2a97-1c78-89570d928739@csgroup.eu> <20220723150702.jecerkhxhy65dgww@pali> <875yjld2oe.fsf@mpe.ellerman.id.au> <20220725125256.cg6su4d2ageylvp6@pali> <e2487668-b6d9-9ddb-1bb4-9f4d37fae1a7@csgroup.eu> <20220725201009.gwuchzswcqaxntrk@pali> <20220725215416.GV25951@gate.crashing.org> <20220726083406.tcjvny6d2di6q7ar@pali> <CAK8P3a2iM+RoySWEC2e0==rwBSVrZoRa8c4ADyFNB24JZM=hkw@mail.gmail.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+        Tue, 26 Jul 2022 09:43:11 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8760A1F2EA;
+        Tue, 26 Jul 2022 06:43:10 -0700 (PDT)
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26QDSEe7012478;
+        Tue, 26 Jul 2022 13:43:09 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : content-type : mime-version; s=pp1;
+ bh=KrGdGKXWL5EiS24fDeakBE3paAJ7JseQ0e2+cmPL8Ek=;
+ b=CXGrUNYCGD2LfISUrlybA54C8tmlXnsttZ63NVuaJBF6EVrsGRqHEfKx7gKB/QnF5g2p
+ jfGcU+1kzIleIFrLgGq7C1RUBz5kHhznWaPFa6qJcOAixO8H/Wxh9pAOBFpofQaUaP/8
+ UDSETbL2faMAuLMmeL3mDVQmtdmJluDfFnk/PZeRV4T4faEhRM7vvKtgXGfAoglEPENF
+ l7tUDZ6MISg8lZ/pZrxbB2k6oXaUNt+2o32CTlhQaAzW5ZRiI1AwLICwjid5BSezLkal
+ QRvUOUCj0b/5uCVujTYB7joa7++sAlj/94xLxV6bSHOaCiSTDU1YPTmnkZYRcOEZQm+l fg== 
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hjg662tdu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 26 Jul 2022 13:43:09 +0000
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26QDLKuZ000760;
+        Tue, 26 Jul 2022 13:43:07 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma04fra.de.ibm.com with ESMTP id 3hg945jvjt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 26 Jul 2022 13:43:07 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26QDh4Md23527862
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 26 Jul 2022 13:43:04 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 05BB542041;
+        Tue, 26 Jul 2022 13:43:04 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C40874203F;
+        Tue, 26 Jul 2022 13:43:03 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Tue, 26 Jul 2022 13:43:03 +0000 (GMT)
+Date:   Tue, 26 Jul 2022 15:43:02 +0200
+From:   Alexander Gordeev <agordeev@linux.ibm.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Vasily Gorbik <gor@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [GIT PULL] s390 updates for 5.19
+Message-ID: <Yt/vZo1eY8/C/6DU@tuxmaker.boeblingen.de.ibm.com>
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAK8P3a2iM+RoySWEC2e0==rwBSVrZoRa8c4ADyFNB24JZM=hkw@mail.gmail.com>
-User-Agent: Mutt/1.4.2.3i
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 8WI6ifq59KNLluKgdNSFNTuAVkDWKqqZ
+X-Proofpoint-GUID: 8WI6ifq59KNLluKgdNSFNTuAVkDWKqqZ
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+MIME-Version: 1.0
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-26_04,2022-07-26_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ suspectscore=0 bulkscore=0 phishscore=0 spamscore=0 lowpriorityscore=0
+ malwarescore=0 clxscore=1011 mlxscore=0 mlxlogscore=785 adultscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2207260051
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 26, 2022 at 11:02:59AM +0200, Arnd Bergmann wrote:
-> On Tue, Jul 26, 2022 at 10:34 AM Pali Rohár <pali@kernel.org> wrote:
-> > On Monday 25 July 2022 16:54:16 Segher Boessenkool wrote:
-> > > The EH field in larx insns is new since ISA 2.05, and some ISA 1.x cpu
-> > > implementations actually raise an illegal insn exception on EH=1.  It
-> > > appears P2020 is one of those.
-> >
-> > P2020 has e500 cores. e500 cores uses ISA 2.03. So this may be reason.
-> > But in official Freescale/NXP documentation for e500 is documented that
-> > lwarx supports also eh=1. Maybe it is not really supported.
-> > https://www.nxp.com/files-static/32bit/doc/ref_manual/EREF_RM.pdf (page 562)
+Hello Linus,
 
-(page 6-186)
+please pull s390 changes for 5.19.
 
-> > At least there is NOTE:
-> > Some older processors may treat EH=1 as an illegal instruction.
+Thank you,
+Alexander
 
-And the architecture says
-  Programming Note
-  Warning: On some processors that comply with versions of the
-  architecture that precede Version 2.00, executing a Load And Reserve
-  instruction in which EH = 1 will cause the illegal instruction error
-  handler to be invoked.
+The following changes since commit 2f23256c0ea20627c91ea2d468cda945f68c3395:
 
-> In commit d6ccb1f55ddf ("powerpc/85xx: Make sure lwarx hint isn't set on ppc32")
-> this was clarified to affect (all?) e500v1/v2,
+  s390/ap: fix error handling in __verify_queue_reservations() (2022-07-06 17:43:29 -0400)
 
-  e500v1/v2 based chips will treat any reserved field being set in an
-  opcode as illegal.
+are available in the Git repository at:
 
-while the architecture says
+  git://git.kernel.org/pub/scm/linux/kernel/git/s390/linux.git tags/s390-5.19-7
 
-  Reserved fields in instructions are ignored by the processor.
+for you to fetch changes up to 918e75f77af7d2e049bb70469ec0a2c12782d96a:
 
-Whoops :-)  We need fixes for processor implementation bugs all the
-time of course, but this is a massive *design* bug.  I'm surprised this
-CPU still works as well as it does!
+  s390/archrandom: prevent CPACF trng invocations in interrupt context (2022-07-13 15:17:21 +0200)
 
-Even the venerable PEM (last updated in 1997) shows the EH field as
-reserved, always treated as 0.
+----------------------------------------------------------------
+s390 updates for 5.19
 
-> this one apparently
-> fixed it before,
-> but Christophe's commit effectively reverted that change.
-> 
-> I think only the simple_spinlock.h file actually uses EH=1
+- Prevent relatively slow PRNO TRNG random number operation
+  from being called from interrupt context. That could for
+  example cause some network loads to timeout.
+----------------------------------------------------------------
 
-That's right afaics.
+Harald Freudenberger (1):
+  s390/archrandom: prevent CPACF trng invocations in interrupt context
 
-> and this is not
-> included in non-SMP kernels, so presumably the only affected machines were
-> the rare dual-core e500v2 ones (p2020, MPC8572, bsc9132), which would
-> explain why nobody noticed for the past 9 months.
-
-Also people using an SMP kernel on older cores should see the problem,
-no?  Or is that patched out?  Or does this use case never happen :-)
-
-
-Segher
+ arch/s390/include/asm/archrandom.h | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
