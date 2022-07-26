@@ -2,215 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0513C00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 14:35:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CF64C00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 14:35:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239383AbiGZOf2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 10:35:28 -0400
+        id S239361AbiGZOfd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 10:35:33 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239367AbiGZOfT (ORCPT
+        with ESMTP id S239223AbiGZOfX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 10:35:19 -0400
-Received: from mailout3.samsung.com (mailout3.samsung.com [203.254.224.33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 973BC1165
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 07:35:15 -0700 (PDT)
-Received: from epcas1p1.samsung.com (unknown [182.195.41.45])
-        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220726143513epoutp0320fe103706b4ca13f1da9c22ec80a42e~FZ8BTIy_40421604216epoutp03H
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 14:35:13 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220726143513epoutp0320fe103706b4ca13f1da9c22ec80a42e~FZ8BTIy_40421604216epoutp03H
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1658846113;
-        bh=SjwqhqqT3ykpN2dxVXEX69dy3YaRenSDnkfZTFyWve0=;
-        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
-        b=goBeYbTADudMVXamJDxrfIFNrKxZadcrX1veE52koyEcdi8AZKebdeT76d4A2PPkt
-         VYxSCkS0cyyfgapfT+Dm+AgVxVx0tVaFvmC/MF0Js/Dw0IGU1Ia4qlM4y9AMU35aGU
-         clMfRgaa8NBskeEpolSM9Icy2QuoeP5Ku4XM5++g=
-Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
-        epcas1p3.samsung.com (KnoxPortal) with ESMTP id
-        20220726143513epcas1p319c0f0a3d26ea4d87f6af082f199758b~FZ8A-AjEY2179221792epcas1p3i;
-        Tue, 26 Jul 2022 14:35:13 +0000 (GMT)
-Received: from epsmges1p4.samsung.com (unknown [182.195.36.135]) by
-        epsnrtp3.localdomain (Postfix) with ESMTP id 4LsfZm10sKz4x9Pp; Tue, 26 Jul
-        2022 14:35:12 +0000 (GMT)
-Received: from epcas1p1.samsung.com ( [182.195.41.45]) by
-        epsmges1p4.samsung.com (Symantec Messaging Gateway) with SMTP id
-        63.E7.10203.0ABFFD26; Tue, 26 Jul 2022 23:35:12 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas1p4.samsung.com (KnoxPortal) with ESMTPA id
-        20220726143511epcas1p473a65a52034025b5c1fa7bfaf4a90917~FZ7-muitc2228622286epcas1p42;
-        Tue, 26 Jul 2022 14:35:11 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220726143511epsmtrp1e7322b3205e38c213ae9ba4675e9bc25~FZ7-je9FX0139401394epsmtrp1b;
-        Tue, 26 Jul 2022 14:35:11 +0000 (GMT)
-X-AuditID: b6c32a38-5adff700000027db-f5-62dffb9ffdc4
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        F3.A2.08905.F9BFFD26; Tue, 26 Jul 2022 23:35:11 +0900 (KST)
-Received: from jihochu04 (unknown [10.113.112.236]) by epsmtip2.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20220726143511epsmtip20864010de344b8ab3d82690930259396~FZ7-VH7Mu1992019920epsmtip2c;
-        Tue, 26 Jul 2022 14:35:11 +0000 (GMT)
-From:   =?utf-8?B?7LaU7KeA7Zi4L1JvYm90IEludGVsbGlnZW5jZe2MgChTUikvU3RhZg==?=
-         =?utf-8?B?ZiBFbmdpbmVlci/sgrzshLHsoITsnpA=?= 
-        <jiho.chu@samsung.com>
-To:     <gregkh@linuxfoundation.org>
-Cc:     <arnd@arndb.de>, <linux-kernel@vger.kernel.org>,
-        <yelini.jeong@samsung.com>, <myungjoo.ham@samsung.com>
-In-Reply-To: <20220726050305epcms1p5ef19a54322263c768ea71d59da7e2616@epcms1p5>
-Subject: RE: [PATCH 0/9] Samsung Trinity NPU device driver
-Date:   Tue, 26 Jul 2022 23:35:11 +0900
-Message-ID: <000001d8a0fc$e9569d00$bc03d700$@samsung.com>
+        Tue, 26 Jul 2022 10:35:23 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E262925D0
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 07:35:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658846121; x=1690382121;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Gb+sg8tX6d1M9RdMwRFdLWI+eSIBAf4IGUSsUVC6yQM=;
+  b=P1ViigmvA3HRAt2Nd82Tj6sGM1QfNEvBdpzlHDVYAU6bElEvFkGjUq5C
+   YbTnZXuYAGQlYBhwJb7O1w3wcnzBRKmJl/Te/VsPjatTuPJBuhB5y+YA4
+   qferm9OTZ+pST1lUEdxZ5nIiXW741NJZh5bWd/be7Qu/dGUkoO4bfPHCS
+   hbFr3rwAOOEcUXiuzkwP0wkNjkCXCYeT6ztL8UEl3164AGExJw4/LdQAx
+   jQ1+ZcwMs/j+NOCQM49Nxes+tg81VzXpyrIq/9m4Mm2fpZV3CjrF/g8tj
+   SCy4ws5KZHqn33JYt67CqSR0beJ65RF3CXtOImcuLpGB3BrKCSAOn9qBs
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10420"; a="289157763"
+X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
+   d="scan'208";a="289157763"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2022 07:35:17 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
+   d="scan'208";a="627924138"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by orsmga008.jf.intel.com with ESMTP; 26 Jul 2022 07:35:16 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oGLeV-0006v2-2W;
+        Tue, 26 Jul 2022 14:35:15 +0000
+Date:   Tue, 26 Jul 2022 22:34:54 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Keith Busch <kbusch@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [kbusch:dma-prereg-v5 5/6] arch/riscv/include/asm/atomic.h:75:
+ undefined reference to `io_dma_unmap'
+Message-ID: <202207262203.Z4p6l0Zg-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQEPrTqOGflLLHU6JPh/pV9MqdRbhAINC2WsANjRdhoCtZ+wYK71lW6A
-Content-Language: ko
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFmpjk+LIzCtJLcpLzFFi42LZdlhTV3fB7/tJBl8eMlv8nXSM3aJ58Xo2
-        i8u75rBZ3G5cwWbxfNp1FgdWj9+/JjF67J+7ht2jb8sqRo/Pm+QCWKKybTJSE1NSixRS85Lz
-        UzLz0m2VvIPjneNNzQwMdQ0tLcyVFPISc1NtlVx8AnTdMnOA9ioplCXmlAKFAhKLi5X07WyK
-        8ktLUhUy8otLbJVSC1JyCkwL9IoTc4tL89L18lJLrAwNDIxMgQoTsjM6fq1gLfiuWLHl2FOm
-        BsYZ0l2MHBwSAiYS7ZN5uhi5OIQEdjBKPHx5jA3C+cQocbTnAQuE841RYvqK4+xdjJxgHbvm
-        T2aESOxllLh4dAFUywtGiQNLP4I5bAITGCVevJjNCtIiIqAgcfXnbzYQm1kgV+Ltzb2MIDan
-        gJ9Ew/8zYDXCAlYSn/ecYwaxWQRUJb4tP88OciCvgKXEmZP6IGFeAUGJkzOfsECMkZfY/nYO
-        M8RFChI/ny5jBSkXEXCTOHvPHKJERGJ2ZxszyDkSAp0cEi8PHGCBqHeR+HD6MlSvsMSr41ug
-        PpOSeNnfBmVnS0zpWARVXyBx7vlWZkh4GUtcXJECYjILaEqs36UPUaEosfP3XEaItXwS7772
-        sEJU80p0tAlBlChJLPlzGGq4hMTUGd+YJjAqzULy1ywkf81C8sAshGULGFlWMYqlFhTnpqcW
-        GxaYwKM6OT93EyM4QWpZ7GCc+/aD3iFGJg7GQ4wSHMxKIrwJ0feThHhTEiurUovy44tKc1KL
-        DzGaAgN6IrOUaHI+MEXnlcQbmlgamJgZGZtYGJoZKonz9k49nSgkkJ5YkpqdmlqQWgTTx8TB
-        KdXAJJ2xqMXYWZ3hmUiV8Ku2q8+vra63zHte3uTD08msanDxOsdCs/f6TVJmhp96z56/2dR0
-        7dGbfHfvnOw1m7w0xfdtMjVafLd6h8Pno2Xnk0qM2ZTP9b44aB7NuSrljOK1vFinu0y31U/f
-        /WsQ8FtY4bj84tkd2ScXXX/w6FjrXu+I1bcczqn69s3L0vnUsLfxz8XlJc1aJzoE7v286b3q
-        hItRGlv9BJ7a/NhV8XW/Tb5EzJTXq4rfd1tFbiOXi5T1l8aJezPYSvcpdif/f1h4J7bsvNyF
-        N8sb+kz37hVR5mT9HjR1eciWowsKbDYu27TB+Pzqy4uuWYWb/Jmv93LJq1Dl4xF/o7ZV1M/y
-        WMtup8RSnJFoqMVcVJwIABCwz4UZBAAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrELMWRmVeSWpSXmKPExsWy7bCSvO783/eTDPpfylr8nXSM3aJ58Xo2
-        i8u75rBZ3G5cwWbxfNp1FgdWj9+/JjF67J+7ht2jb8sqRo/Pm+QCWKK4bFJSczLLUov07RK4
-        Mjp+rWAt+K5YseXYU6YGxhnSXYycHBICJhK75k9m7GLk4hAS2M0ocfHoLiaIhITEpnvLmbsY
-        OYBsYYnDh4shap4xSsw6f5sdxGETmMAo8eLFbFaQBhEBBYmrP3+zgTQwCxRKzHqVAdHwgFHi
-        4Y25bCA1nAJ+Eg3/z4DVCwtYSXzec44ZxGYRUJX4tvw8O0gvr4ClxJmT+iBhXgFBiZMzn7CA
-        2MwC2hJPbz6FsuUltr+dwwxxp4LEz6fLWEFaRQTcJM7eM4coEZGY3dnGPIFReBaSSbOQTJqF
-        ZNIsJC0LGFlWMUqmFhTnpucWGxYY5qWW6xUn5haX5qXrJefnbmIER4uW5g7G7as+6B1iZOJg
-        PMQowcGsJMKbEH0/SYg3JbGyKrUoP76oNCe1+BCjNAeLkjjvha6T8UIC6YklqdmpqQWpRTBZ
-        Jg5OqQamI7OZt+3adV3o0uvp5jrb2ILez69YKijj2x27SXd5Yv6Ps0120Yu8Z7j/5indkvB9
-        69o3ykb/Syaxmma58n9qKFonX2JUqfOyZdtXjn1uR46kiYekiITyTvyWWmq+zX6vWsA+leqX
-        At9nze3ezqSY9E9IO3H9KWnm8o7TRwVmz5jdvvve0X+SwX5256dEzfkuMb/h4dRFpbekm26I
-        RyupuwS3KqotF9gozOVg+9JfZE2S0R772bMNy+RubK5J4Zphb3Rtu35R6DJ1P5cJ06v8nrg4
-        cu+2PljxSME+Q0xd5UD751/yRzf1r9ip8FvoDHf0jZ/zEpIf9MeW8UcbJ6h/nGPEfC+aJbNy
-        qoxe3RUlluKMREMt5qLiRAD4/qT+BQMAAA==
-X-CMS-MailID: 20220726143511epcas1p473a65a52034025b5c1fa7bfaf4a90917
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: SVC_REQ_APPROVE
-CMS-TYPE: 101P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220725065308epcas1p2f6de3d74792854bb312cca4b310badac
-References: <Yt5cFBgiTLwGXv17@kroah.com>
-        <20220725065308.2457024-1-jiho.chu@samsung.com>
-        <CGME20220725065308epcas1p2f6de3d74792854bb312cca4b310badac@epcms1p5>
-        <20220726050305epcms1p5ef19a54322263c768ea71d59da7e2616@epcms1p5>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> --------- Original Message ---------
-> Sender : Greg KH <gregkh@linuxfoundation.org> Date : 2022-07-25 18:02
-> (GMT+9) Title : Re: [PATCH 0/9] Samsung Trinity NPU device driver
-> 
-> On Mon, Jul 25, 2022 at 03:52:59PM +0900, Jiho Chu wrote:
-> > Hello,
-> >
-> > My name is Jiho Chu, and working for device driver and system daemon
-> >for
-> > several years at Samsung Electronics.
-> >
-> > Trinity Neural Processing Unit (NPU) series are hardware accelerators
-> > for neural network processing in embedded systems, which are
-> >integrated
-> > into application processors or SoCs. Trinity NPU is compatible with
-> >AMBA
-> > bus architecture and first launched in 2018 with its first version for
-> > vision processing, Trinity Version1 (TRIV1). Its second version,
-> >TRIV2,
-> > is released in Dec, 2021. Another Trinity NPU for audio processing is
-> > referred as TRIA.
-> >
-> > TRIV2 is shipped for many models of 2022 Samsung TVs, providing
-> > acceleration for various AI-based applications, which include image
-> > recognition and picture quality improvements for streaming video,
-> >which
-> > can be accessed via GStreamer and its neural network plugins,
-> > NNStreamer.
-> >
-> > In this patch set, it includes Trinity Vision 2 kernel device driver.
-> > Trinity Vision 2 supports accelerating image inference process for
-> > Convolution Neural Network (CNN). The CNN workload is executed by Deep
-> > Learning Accelerator (DLA), and general Neural Network Layers are
-> > executed by Digital Signal Processor (DSP). And there is a Control
-> > Processor (CP) which can control DLA and DSP. These three IPs (DLA,
-> >DSP,
-> > CP) are composing Trinity Vision 2 NPU, and the device driver mainly
-> > supervise the CP to manage entire NPU.
-> >
-> > Controlling DLA and DSP operations is performed with internal command
-> > instructions. and the instructions for the Trinity is similar with
-> > general processor's ISA, but it is specialized for Neural Processing
-> > operations. The virtual ISA (vISA) is designed for calculating
-> >multiple
-> > data with single operation, like modern SIMD processor. The device
-> > driver loads a program to CP at start up, and the program can decode a
-> > binary which is built with the vISA. We calls this decoding program as
-> >a
-> > Instruction Decoding Unit (IDU) program. While running the NPU, the CP
-> > executes IDU program to fetch and decode instructions which made up of
-> > vISA, by the scheduling policy of the device driver.
-> >
-> > These DLA, DSP and CP are loosely coupled using ARM's AMBA, so the
-> > Trinity can easily communicate with most ARM processors. Each IPs
-> > designed to have memory-mapped registers which can be used to control
-> > the IP, and the CP provides Wait-For-Event (WFE) operation to
-> >subscribe
-> > interrupt signals from the DLA and DSP. Also, embedded Direct Memory
-> > Access Controller (DMAC) manages data communications between internal
-> > SRAM and outer main memory, IOMMU module supports unified memory space.
-> >
-> > A user can control the Trinity NPU with IOCTLs provided by driver.
-> >These
-> > controls includes memory management operations to transfer model data
-> > (HWMEM_ALLOC/HWMEM_DEALLOC), NPU workload control operations to submit
-> > workload (RUN/STOP), and statistics operations to check current NPU
-> > status. (STAT)
-> >
-> > The device driver also implemented features for developers. It
-> >provides
-> > sysfs control attributes like stop, suspend, sched_test, and profile.
-> > Also, it provides status attributes like app status, a number of total
-> > requests, a number of active requests and memory usages. For the
-> >tracing
-> > operations, several ftrace events are defined and embedded for several
-> > important points.
-> 
-> If you have created sysfs files, you need to document them in
-> Documentation/ABI/ which I do not see in your diffstat.  Perhaps add
-> that for your next respin?
-> 
-> Also, please remove the "tracing" logic you have in the code, use
-> ftrace, don't abuse dev_info() everywhere, that's not needed at all.
-> 
-> thanks,
-> 
-> greg k-h
-> 
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/kbusch/linux.git dma-prereg-v5
+head:   4f4a93bf02dcf20e9a4a3ac0c9cd39d79e9e540e
+commit: 1b0c9acb050749ce7ad964cc66eef72779835832 [5/6] io_uring: add support for dma pre-mapping
+config: riscv-randconfig-s052-20220726 (https://download.01.org/0day-ci/archive/20220726/202207262203.Z4p6l0Zg-lkp@intel.com/config)
+compiler: riscv64-linux-gcc (GCC) 12.1.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-39-gce1a6720-dirty
+        # https://git.kernel.org/pub/scm/linux/kernel/git/kbusch/linux.git/commit/?id=1b0c9acb050749ce7ad964cc66eef72779835832
+        git remote add kbusch https://git.kernel.org/pub/scm/linux/kernel/git/kbusch/linux.git
+        git fetch --no-tags kbusch dma-prereg-v5
+        git checkout 1b0c9acb050749ce7ad964cc66eef72779835832
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=riscv SHELL=/bin/bash
 
-Hi, Greg
-Thanks for your review.
-A documentation for ABI/ is added for user interfaces.
-And, most of unnecessary 'dev_info' removed except initialize information.
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-Thanks,
+All errors (new ones prefixed by >>):
 
-Jiho Chu
+   init/main.o: in function `.L0 ':
+   include/linux/list.h:292:(.text+0x22): relocation truncated to fit: R_RISCV_HI20 against `.LANCHOR0'
+   init/main.o: in function `.L0 ':
+   init/main.c:185:(.init.text+0x6): relocation truncated to fit: R_RISCV_HI20 against symbol `reset_devices' defined in .sbss section in init/main.o
+   init/main.c:1419:(.text.unlikely+0x2a): relocation truncated to fit: R_RISCV_HI20 against `.LANCHOR0'
+   init/main.c:685:(.ref.text+0xe): relocation truncated to fit: R_RISCV_HI20 against `kernel_init'
+   init/do_mounts.o: in function `.L0 ':
+   init/do_mounts.c:279:(.text+0x22): relocation truncated to fit: R_RISCV_HI20 against `.LC15'
+   init/do_mounts.c:45:(.init.text+0xa): relocation truncated to fit: R_RISCV_HI20 against `.LC0'
+   init/do_mounts_initrd.o: in function `.L0 ':
+   init/do_mounts_initrd.c:44:(.init.text+0xa): relocation truncated to fit: R_RISCV_HI20 against `.LC0'
+   init/initramfs.o: in function `.L0 ':
+   init/initramfs.c:739:(.text+0x8): relocation truncated to fit: R_RISCV_HI20 against `initramfs_cookie'
+   init/initramfs.c:57:(.init.text+0xa): relocation truncated to fit: R_RISCV_HI20 against `.LC0'
+   init/calibrate.o: in function `.L0 ':
+   arch/riscv/include/asm/timex.h:20:(.text+0x6): relocation truncated to fit: R_RISCV_HI20 against symbol `clint_time_val' defined in .sbss section in drivers/clocksource/timer-clint.o
+   init/calibrate.o: in function `.L0 ':
+   init/calibrate.c:19:(.init.text+0x1c): additional relocation overflows omitted from the output
+   riscv64-linux-ld: io_uring/rsrc.o: in function `.LVL65':
+>> arch/riscv/include/asm/atomic.h:75: undefined reference to `io_dma_unmap'
 
 
+vim +75 arch/riscv/include/asm/atomic.h
+
+fab957c11efe2f Palmer Dabbelt 2017-07-10  73  
+4650d02ad2d9b2 Palmer Dabbelt 2017-11-14  74  ATOMIC_OPS(add, add,  i)
+4650d02ad2d9b2 Palmer Dabbelt 2017-11-14 @75  ATOMIC_OPS(sub, add, -i)
+4650d02ad2d9b2 Palmer Dabbelt 2017-11-14  76  ATOMIC_OPS(and, and,  i)
+4650d02ad2d9b2 Palmer Dabbelt 2017-11-14  77  ATOMIC_OPS( or,  or,  i)
+4650d02ad2d9b2 Palmer Dabbelt 2017-11-14  78  ATOMIC_OPS(xor, xor,  i)
+fab957c11efe2f Palmer Dabbelt 2017-07-10  79  
+
+:::::: The code at line 75 was first introduced by commit
+:::::: 4650d02ad2d9b2c1c7aa36055166db6aee68f72e RISC-V: Remove unused arguments from ATOMIC_OP
+
+:::::: TO: Palmer Dabbelt <palmer@dabbelt.com>
+:::::: CC: Palmer Dabbelt <palmer@sifive.com>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
