@@ -2,121 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B402CCA48B
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 02:39:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18BD3C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 02:39:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237224AbiGZCjL convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 22:39:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38312 "EHLO
+        id S229626AbiGZCjd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 22:39:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229626AbiGZCjK (ORCPT
+        with ESMTP id S231424AbiGZCjb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 22:39:10 -0400
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2ED452982A;
-        Mon, 25 Jul 2022 19:39:08 -0700 (PDT)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.77 with qID 26Q2c1mI5003030, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36504.realtek.com.tw[172.21.6.27])
-        by rtits2.realtek.com.tw (8.15.2/2.81/5.90) with ESMTPS id 26Q2c1mI5003030
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Tue, 26 Jul 2022 10:38:01 +0800
-Received: from RTEXDAG01.realtek.com.tw (172.21.6.100) by
- RTEXH36504.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.7; Tue, 26 Jul 2022 10:38:07 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXDAG01.realtek.com.tw (172.21.6.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.7; Tue, 26 Jul 2022 10:37:10 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::415c:a915:a507:e600]) by
- RTEXMBS04.realtek.com.tw ([fe80::415c:a915:a507:e600%5]) with mapi id
- 15.01.2308.027; Tue, 26 Jul 2022 10:38:06 +0800
-From:   Ping-Ke Shih <pkshih@realtek.com>
-To:     "williamsukatube@163.com" <williamsukatube@163.com>,
-        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
-        "kvalo@kernel.org" <kvalo@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-CC:     William Dean <williamsukatube@gmail.com>,
-        Hacash Robot <hacashRobot@santino.com>
-Subject: RE: [PATCH] rtw88: check the return value of alloc_workqueue()
-Thread-Topic: [PATCH] rtw88: check the return value of alloc_workqueue()
-Thread-Index: AQHYnl76EnGR994/20i9s4ZrF2kwK62P9GPw
-Date:   Tue, 26 Jul 2022 02:38:06 +0000
-Message-ID: <303b6e26a6514b5485a3ca5286ae98c6@realtek.com>
-References: <20220723063756.2956189-1-williamsukatube@163.com>
-In-Reply-To: <20220723063756.2956189-1-williamsukatube@163.com>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.188]
-x-kse-serverinfo: RTEXDAG01.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2022/7/26_=3F=3F_12:18:00?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        Mon, 25 Jul 2022 22:39:31 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:3::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5C8029833;
+        Mon, 25 Jul 2022 19:39:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        Content-Type:In-Reply-To:From:References:To:Subject:MIME-Version:Date:
+        Message-ID:Sender:Reply-To:Cc:Content-ID:Content-Description;
+        bh=BjeoFUfM5uWLnKpTPLeLk03xCXCAqBH4O+lDfmmC4Vw=; b=E3vItekmUsPIFk39AB1/s0y4vU
+        ff7VQ01j/aPmw0/m7EGtHm8u47N8hsPA60jC2YhHK6hXHReJir/uQfzq7xwc8beKkw3k3ydnGGXPH
+        J5q8A0fB5N3O/Yz4jn2dNaHzZe7lHSJfRA5vlsBYLmDVUcvfpPuvs3xd2T0S8Rv1QbewOzhzj0bPB
+        A2UD4z7A3Ov4rqpMV7uetzyTs4yCXzinB9oL02e7O38BQOU7zsmdTjzzZxRF8dGU68ae8YYqCFNox
+        x55nMieaaCY/aEPhltbFQjguV2PT8Z3aQSaxiNRwv3rINlHV7K9vV2bVcWQshjXMCi0oB7q+zZvyV
+        blg1NIdw==;
+Received: from [2601:1c0:6280:3f0::a6b3]
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oGATh-006v7Z-Ub; Tue, 26 Jul 2022 02:39:22 +0000
+Message-ID: <5ea65d3d-745e-0a16-c885-a224a20ee7ce@infradead.org>
+Date:   Mon, 25 Jul 2022 19:39:20 -0700
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36504.realtek.com.tw, 9
-X-KSE-AntiSpam-Interceptor-Info: fallback
-X-KSE-Antivirus-Interceptor-Info: fallback
-X-KSE-AntiSpam-Interceptor-Info: fallback
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 1/1] iommu/hyper-v: Use helper instead of directly
+ accessing affinity
+Content-Language: en-US
+To:     Michael Kelley <mikelley@microsoft.com>, sthemmin@microsoft.com,
+        kys@microsoft.com, haiyangz@microsoft.com, wei.liu@kernel.org,
+        decui@microsoft.com, joro@8bytes.org, will@kernel.org,
+        robin.murphy@arm.com, samuel@sholland.org,
+        linux-kernel@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        iommu@lists.linux.dev
+References: <1658796820-2261-1-git-send-email-mikelley@microsoft.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <1658796820-2261-1-git-send-email-mikelley@microsoft.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
-> -----Original Message-----
-> From: williamsukatube@163.com <williamsukatube@163.com>
-> Sent: Saturday, July 23, 2022 2:38 PM
-> To: tony0620emma@gmail.com; kvalo@kernel.org; davem@davemloft.net; edumazet@google.com; kuba@kernel.org;
-> pabeni@redhat.com; linux-wireless@vger.kernel.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org
-> Cc: William Dean <williamsukatube@gmail.com>; Hacash Robot <hacashRobot@santino.com>
-> Subject: [PATCH] rtw88: check the return value of alloc_workqueue()
-> 
-> From: William Dean <williamsukatube@gmail.com>
-> 
-> The function alloc_workqueue() in rtw_core_init() can fail, but
-> there is no check of its return value. To fix this bug, its return value
-> should be checked with new error handling code.
-> 
-> Fixes: fe101716c7c9d ("rtw88: replace tx tasklet with work queue")
-> Reported-by: Hacash Robot <hacashRobot@santino.com>
-> Signed-off-by: William Dean <williamsukatube@gmail.com>
 
-Reviewed-by: Ping-Ke Shih <pkshih@realtek.com>
+On 7/25/22 17:53, Michael Kelley wrote:
+> Recent changes to solve inconsistencies in handling IRQ masks #ifdef
+> out the affinity field in irq_common_data for non-SMP configurations.
+> The current code in hyperv_irq_remapping_alloc() gets a compiler error
+> in that case.
+> 
+> Fix this by using the new irq_data_update_affinity() helper, which
+> handles the non-SMP case correctly.
+> 
 
-Thank you
+Reported-by: Randy Dunlap <rdunlap@infradead.org>
+> Signed-off-by: Michael Kelley <mikelley@microsoft.com>
+Tested-by: Randy Dunlap <rdunlap@infradead.org>
+Acked-by: Randy Dunlap <rdunlap@infradead.org>
+
+Thanks.
 
 > ---
->  drivers/net/wireless/realtek/rtw88/main.c | 4 ++++
->  1 file changed, 4 insertions(+)
+>  drivers/iommu/hyperv-iommu.c | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
 > 
-> diff --git a/drivers/net/wireless/realtek/rtw88/main.c b/drivers/net/wireless/realtek/rtw88/main.c
-> index efabd5b1bf5b..645ef1d01895 100644
-> --- a/drivers/net/wireless/realtek/rtw88/main.c
-> +++ b/drivers/net/wireless/realtek/rtw88/main.c
-> @@ -1984,6 +1984,10 @@ int rtw_core_init(struct rtw_dev *rtwdev)
->  	timer_setup(&rtwdev->tx_report.purge_timer,
->  		    rtw_tx_report_purge_timer, 0);
->  	rtwdev->tx_wq = alloc_workqueue("rtw_tx_wq", WQ_UNBOUND | WQ_HIGHPRI, 0);
-> +	if (!rtwdev->tx_wq) {
-> +		rtw_warn(rtwdev, "alloc_workqueue rtw_tx_wq failed\n");
-> +		return -ENOMEM;
-> +	}
-> 
->  	INIT_DELAYED_WORK(&rtwdev->watch_dog_work, rtw_watch_dog_work);
->  	INIT_DELAYED_WORK(&coex->bt_relink_work, rtw_coex_bt_relink_work);
-> --
-> 2.25.1
+> diff --git a/drivers/iommu/hyperv-iommu.c b/drivers/iommu/hyperv-iommu.c
+> index 51bd66a..e190bb8 100644
+> --- a/drivers/iommu/hyperv-iommu.c
+> +++ b/drivers/iommu/hyperv-iommu.c
+> @@ -68,7 +68,6 @@ static int hyperv_irq_remapping_alloc(struct irq_domain *domain,
+>  {
+>  	struct irq_alloc_info *info = arg;
+>  	struct irq_data *irq_data;
+> -	struct irq_desc *desc;
+>  	int ret = 0;
+>  
+>  	if (!info || info->type != X86_IRQ_ALLOC_TYPE_IOAPIC || nr_irqs > 1)
+> @@ -90,8 +89,7 @@ static int hyperv_irq_remapping_alloc(struct irq_domain *domain,
+>  	 * Hypver-V IO APIC irq affinity should be in the scope of
+>  	 * ioapic_max_cpumask because no irq remapping support.
+>  	 */
+> -	desc = irq_data_to_desc(irq_data);
+> -	cpumask_copy(desc->irq_common_data.affinity, &ioapic_max_cpumask);
+> +	irq_data_update_affinity(irq_data, &ioapic_max_cpumask);
+>  
+>  	return 0;
+>  }
 
+-- 
+~Randy
