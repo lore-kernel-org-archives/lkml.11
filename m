@@ -2,99 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0230AC00144
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 15:06:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D63C8C04A68
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 15:06:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239436AbiGZPGa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 11:06:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39760 "EHLO
+        id S239520AbiGZPGc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 11:06:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239216AbiGZPG2 (ORCPT
+        with ESMTP id S239410AbiGZPGa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 11:06:28 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95CF095A7
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 08:06:27 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id b26so20592938wrc.2
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 08:06:27 -0700 (PDT)
+        Tue, 26 Jul 2022 11:06:30 -0400
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 247A3657E
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 08:06:29 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id r14so16817544ljp.2
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 08:06:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=GLLH6w9D8wsHcfdHvvpiix3mL8VIdF8TFktJ27/NMUY=;
-        b=Smm9QaZGjpFwQNWcUlfZoLjKFt08N9MuY4yd/90yMpwd895Gpb3JNDFB8z6u7pJ80z
-         JPTBgKAFQQYBNpgL42qQstI1dwE/T/LzEVQ3Ehe3EM3duA5FQCJvEzJjSMKvJVed+8K3
-         eBG37HwXJWkvqgcy17y+CwtSe8V0PPJyKQF6cZmtbXfxe/OmsbkYj1a70d352Fwya8KJ
-         pCj/yQbYlLs+a2u6sQGGAH83JsbIAhWgUCoZDMVNNJs3oSseo+IFSSFyAjx5OICX7fov
-         Am6pQpSKDMKWZcPul1Uktyq4n/ahyITen0FK/27OLxLWqRFsRzzOpmZFLFmmxC4+liZu
-         A2Jg==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=L8Apz9DowpnJmV3tilsKoR+YHpsh9tSUQsZjGo8e1Bs=;
+        b=phL43GnUIEQgfcbYkHvCTsGFzw9Jb9v8o+B6sgRF4rKE9xOYexRoEktZMUsiROzO9n
+         HaTMvp7MND9WnhYHl+LzqnnfjcyLXmXpMzS+mH8kbzHNd2zaemjtXvLKJLYfsVya/wVs
+         WIt1biVOpI7LLX0Uw4QsR9hr98g6E5pcrjL9O9wDdFTdNn8AGwoeVKV/LkFS0LJXnM2W
+         JvmbjpN3Tp1tHVbKK2CUbd9loU8CprtvjR1JVfpy1OfqG4FPk3mh/LiimUglje4Yqh6q
+         Ty/VFW32EnKmzDVfGa2OSbRJO2sYBbBoUbWgBLNHR8jvz26hws1Qfa1sBNj3GgymcvX7
+         xmBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GLLH6w9D8wsHcfdHvvpiix3mL8VIdF8TFktJ27/NMUY=;
-        b=1MlOJcEyu4mfTQuNybFcBHVeGlvd4kR26IqybtdT8k3Kgob7wQkst9U1ccd299JcZk
-         OB8fRx7SW7a50TjlzT099den2mcCrhwtBmIJnj09AoDJGm0Z34zQyZ8RL1wj4AVGHhpZ
-         6TQVqc5NhCREEXvFEdbKjs0b3bc3N5hwpu6T/g+62CJIma4hXepWejq4hZaqcSMD3vW8
-         eXoj0KYroxGo/abHYgWFX6Dp9CRUKfjFm7VE4cl3QrSXmN2m3i7M0i0Y0E8lQajhThNE
-         /053A8WTpihbEroQWn0FdXzwFQYRXCsfN5dpWOZH3FwLhgxwnD2y823UaUIbw/nj1Wun
-         vNPg==
-X-Gm-Message-State: AJIora+j3jJ3ZUS6PDUlO7MNvC2I95vAhXmnPhgCEmRan0cJdBf1jwUj
-        tjEIVTSw2zBfcebehu4eVeThb9k9XjxfqUKYOy9l5w==
-X-Google-Smtp-Source: AGRyM1vmrDRnI3xdenHDvM2KzQr+JHjWzLzR2MnzKSq9cS5fts5wIL9cxMvQpMDK6xWREDr3Bo585Ho+vvLFpvOyFpk=
-X-Received: by 2002:adf:f705:0:b0:21e:a2f6:2fbd with SMTP id
- r5-20020adff705000000b0021ea2f62fbdmr2496376wrp.375.1658847985740; Tue, 26
- Jul 2022 08:06:25 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=L8Apz9DowpnJmV3tilsKoR+YHpsh9tSUQsZjGo8e1Bs=;
+        b=xyVo/YJUcwSiXuYJPO9WCUrZ3o+Jt9+6ViH9YeLFRH+ILg0Pw8oeJaG8EW9d+OT+MF
+         WjCOFSeb6tIWhXCTfm4khfr7BVVPqeh2uM/8Sem1lfWImbLiDhb9XP1zO5lZ+83R6uzw
+         lE0JR0Cf4K2oDM1OHnWypEbGaFDj/PIb0qC1AXESPQrARnu3rKhuU9XWeUL+x0Pmbk2K
+         v3vg29D3CKV+n2MO4a4Wl7TeMJ75f/HkuD6kOeT9Xv/ezjv2xUG4LF1aWlnJKo4i/6Nq
+         XPbTMfzFat/eVHbQpCCIkqE4fCtswPmoMI8wPH124yT9UDLUoHwGyJeqJKqL12hnuIAl
+         rmzw==
+X-Gm-Message-State: AJIora8wbCi/Ag01Mgj3fsRld2lMCuyMmCEdQlzhzkNg1KUmrK29kfFu
+        Q8m3Mpaw2NkxNJvQZDuNpNIRjg==
+X-Google-Smtp-Source: AGRyM1uh8QCZ8tWnKbyBDXlp35q3fIe55T3WaNawh6V0R7a44PxWxGTlV2ZjlSqeayj1X4RxQ2imVQ==
+X-Received: by 2002:a2e:a4c7:0:b0:25d:f06f:35f with SMTP id p7-20020a2ea4c7000000b0025df06f035fmr6215357ljm.399.1658847987141;
+        Tue, 26 Jul 2022 08:06:27 -0700 (PDT)
+Received: from krzk-bin.lan (78-26-46-173.network.trollfjord.no. [78.26.46.173])
+        by smtp.gmail.com with ESMTPSA id a26-20020a194f5a000000b0048a95c16849sm836620lfk.282.2022.07.26.08.06.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Jul 2022 08:06:26 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Russell King <linux@armlinux.org.uk>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v3 0/5] ARM: qcom: defconfig: socinfo + cleanup
+Date:   Tue, 26 Jul 2022 17:06:04 +0200
+Message-Id: <20220726150609.140472-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20220721124528.20997-1-colin.i.king@gmail.com>
-In-Reply-To: <20220721124528.20997-1-colin.i.king@gmail.com>
-From:   Ian Rogers <irogers@google.com>
-Date:   Tue, 26 Jul 2022 08:06:12 -0700
-Message-ID: <CAP-5=fWkw7a_EQj8ZZEjJTS-Fi+27_mLcCziJUZw_GAjBMEc=g@mail.gmail.com>
-Subject: Re: [PATCH][next] perf inject: Fix spelling mistake "theads" -> "threads"
-To:     Colin Ian King <colin.i.king@gmail.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        linux-perf-users@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 5:46 AM Colin Ian King <colin.i.king@gmail.com> wrote:
->
-> There is a spelling mistake in a pr_err message. Fix it.
->
-> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+Hi,
 
-Acked-by: Ian Rogers <irogers@google.com>
+v1 from June [1] was did not hit Qualcomm patchwork due to missing maintainers
+entry.
 
-Thanks,
-Ian
+Changes in v3
+=============
+1. Three new patches for qcom, multi_v7 and arm64 defconfigs.
+2. Add Rb tag.
+3. Patch 5: resending although recently Arnd posted global rework.
 
-> ---
->  tools/perf/builtin-inject.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/tools/perf/builtin-inject.c b/tools/perf/builtin-inject.c
-> index fd4547bb75f7..2a0f992ca0be 100644
-> --- a/tools/perf/builtin-inject.c
-> +++ b/tools/perf/builtin-inject.c
-> @@ -1501,7 +1501,7 @@ static int host__finished_init(struct perf_session *session, union perf_event *e
->                 return ret;
->
->         if (!gs->vcpu_cnt) {
-> -               pr_err("No VCPU theads found for pid %u\n", gs->machine_pid);
-> +               pr_err("No VCPU threads found for pid %u\n", gs->machine_pid);
->                 return -EINVAL;
->         }
->
-> --
-> 2.35.3
->
+Changes in v2
+=============
+Patch 1: no changes
+Patch 2: new patch
+Patch 3: resending although recently Arnd posted global rework.
+
+[1] https://lore.kernel.org/all/20220623110535.177326-1-krzysztof.kozlowski@linaro.org/
+
+Best regards,
+Krzysztof
+
+Krzysztof Kozlowski (5):
+  ARM: qcom_defconfig: enable more Qualcomm drivers
+  ARM: multi_v7_defconfig: enable more Qualcomm drivers
+  arm64: defconfig: enable more Qualcomm drivers
+  ARM: qcom: include defconfig in MAINTAINERS
+  ARM: qcom_defconfig: order items with savedefconfig
+
+ MAINTAINERS                         |  1 +
+ arch/arm/configs/multi_v7_defconfig |  4 ++
+ arch/arm/configs/qcom_defconfig     | 59 +++++++++++++++--------------
+ arch/arm64/configs/defconfig        |  3 ++
+ 4 files changed, 39 insertions(+), 28 deletions(-)
+
+-- 
+2.34.1
+
