@@ -2,129 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 745BEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 02:26:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66E4BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 02:28:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231576AbiGZC0t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 22:26:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60280 "EHLO
+        id S237029AbiGZC2O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 22:28:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229853AbiGZC0s (ORCPT
+        with ESMTP id S229853AbiGZC2M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 22:26:48 -0400
-Received: from dggsgout11.his.huawei.com (dggsgout11.his.huawei.com [45.249.212.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB9F025C71;
-        Mon, 25 Jul 2022 19:26:45 -0700 (PDT)
-Received: from mail02.huawei.com (unknown [172.30.67.153])
-        by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4LsLP41rN5zlC7V;
-        Tue, 26 Jul 2022 10:25:44 +0800 (CST)
-Received: from huaweicloud.com (unknown [10.175.127.227])
-        by APP3 (Coremail) with SMTP id _Ch0CgDn79PiUN9iUHnJBA--.38618S4;
-        Tue, 26 Jul 2022 10:26:43 +0800 (CST)
-From:   Yu Kuai <yukuai1@huaweicloud.com>
-To:     axboe@kernel.dk, osandov@fb.com, ming.lei@redhat.com
-Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        yukuai3@huawei.com, yukuai1@huaweicloud.com, yi.zhang@huawei.com
-Subject: [PATCH] blk-mq: fix io hung due to missing commit_rqs while scheduler is none
-Date:   Tue, 26 Jul 2022 10:38:52 +0800
-Message-Id: <20220726023852.3413784-1-yukuai1@huaweicloud.com>
-X-Mailer: git-send-email 2.31.1
+        Mon, 25 Jul 2022 22:28:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4209A25C71;
+        Mon, 25 Jul 2022 19:28:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EF182B81186;
+        Tue, 26 Jul 2022 02:28:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98CBBC385A2;
+        Tue, 26 Jul 2022 02:28:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658802488;
+        bh=Q4vE2/L+PW7EvHeBn3KHsZUnndqfmIJGspx/KfLm7oE=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=aMVey0+wqvfc0RReuSlkiYElRWuKVcgS80ztv6Rw9tkYcrMtrScXZtgZS/h+bTUgc
+         7uXqvi7XJ+2qDKpIH3LwLOnHQ1a7zb+gakgkbSwQV3aATjBscXJMERhzviKRGfA2HQ
+         DZURiWmkJ9dAkIm10yaJj+TLI5iBudKd3x62l1gtkFBYN1WsrygDXaP0vXppOJIQfa
+         7JtyZ0Cz0Z9BToCjuwEjmWbmpTw3jDOfXsZsaEHki/DDJuYU/TWVRj6ND5H7wl9Wl0
+         vukrbGA7B4kftYPDKycCcKpb0tiTFc51YeN6HA0bQ4MAKYT3EbxzsC33n8lSLdoHO0
+         j7ENIbX0CGpZw==
+Received: by mail-ua1-f41.google.com with SMTP id p8so5005933uam.12;
+        Mon, 25 Jul 2022 19:28:08 -0700 (PDT)
+X-Gm-Message-State: AJIora9jxiqjQyDxk9TIrLn3lqQbTrO5uB8B+5ahx+xKr8gl0evxHhRf
+        JHnEas5P/qOipLFPauDSWIz7qpzecT34p+SgZg==
+X-Google-Smtp-Source: AGRyM1sTz8e2KhV4XgGMG/QS5CH95wq0WVwFKdSl7HgwG8R8zv6wQxSemmba5uAHpLHfoPnK42Qdl3DPmen415U5M1c=
+X-Received: by 2002:ab0:2505:0:b0:384:cc62:9a75 with SMTP id
+ j5-20020ab02505000000b00384cc629a75mr96348uan.36.1658802487588; Mon, 25 Jul
+ 2022 19:28:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: _Ch0CgDn79PiUN9iUHnJBA--.38618S4
-X-Coremail-Antispam: 1UD129KBjvJXoW7KF13GFyxWrWfKw47trWkJFb_yoW8KF13pF
-        4fCa1Iyr4Fqr42vrZ7Way7AF129ws8GrW7GrySkw43XFWYkrWIqrs3Jr43WFyFyFs5Awsx
-        WF45Wr90qw1UA37anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUyG14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWUuVWrJwAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
-        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
-        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
-        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1l42xK82IYc2Ij64vI
-        r41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8Gjc
-        xK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0
-        cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8V
-        AvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7Cj
-        xVAFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7VUbXdbUUUUUU==
-X-CM-SenderInfo: 51xn3trlr6x35dzhxuhorxvhhfrp/
-X-CFilter-Loop: Reflected
+References: <20220725195127.49765-1-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220725195127.49765-1-krzysztof.kozlowski@linaro.org>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Mon, 25 Jul 2022 20:27:55 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqJc7Lagqr=Mkvags1dvua5AEvEzZHcsMqmOGNbp-v_Bxg@mail.gmail.com>
+Message-ID: <CAL_JsqJc7Lagqr=Mkvags1dvua5AEvEzZHcsMqmOGNbp-v_Bxg@mail.gmail.com>
+Subject: Re: [PATCH 1/2] dt-bindings: net: cdns,macb: use correct xlnx prefix
+ for Xilinx
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Harini Katakam <harini.katakam@xilinx.com>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yu Kuai <yukuai3@huawei.com>
+On Mon, Jul 25, 2022 at 1:51 PM Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+>
+> Use correct vendor for Xilinx versions of Cadence MACB/GEM Ethernet
+> controller.  The Versal compatible was not released, so it can be
+> changed.  Zynq-7xxx and Ultrascale+ has to be kept in new and deprecated
+> form.
+>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>
+> ---
+>
+> Cc: Harini Katakam <harini.katakam@xilinx.com>
+> Cc: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+> ---
+>  Documentation/devicetree/bindings/net/cdns,macb.yaml | 11 +++++++++--
+>  1 file changed, 9 insertions(+), 2 deletions(-)
+>
+> diff --git a/Documentation/devicetree/bindings/net/cdns,macb.yaml b/Documentation/devicetree/bindings/net/cdns,macb.yaml
+> index 762deccd3640..77d3b73718e4 100644
+> --- a/Documentation/devicetree/bindings/net/cdns,macb.yaml
+> +++ b/Documentation/devicetree/bindings/net/cdns,macb.yaml
+> @@ -20,10 +20,17 @@ properties:
+>
+>        - items:
+>            - enum:
+> -              - cdns,versal-gem       # Xilinx Versal
+>                - cdns,zynq-gem         # Xilinx Zynq-7xxx SoC
+>                - cdns,zynqmp-gem       # Xilinx Zynq Ultrascale+ MPSoC
+>            - const: cdns,gem           # Generic
+> +        description: deprecated
 
-Currently, in virtio_scsi, if 'bd->last' is not set to true while
-dispatching request, such io will stay in driver's queue, and driver
-will wait for block layer to dispatch more rqs. However, if block
-layer failed to dispatch more rq, it should trigger commit_rqs to
-inform driver.
+You meant 'deprecated: true', right? With that,
 
-There is a problem in blk_mq_try_issue_list_directly() that commit_rqs
-won't be called:
+Reviewed-by: Rob Herring <robh@kernel.org>
 
-// assume that queue_depth is set to 1, list contains two rq
-blk_mq_try_issue_list_directly
- blk_mq_request_issue_directly
- // dispatch first rq
- // last is false
-  __blk_mq_try_issue_directly
-   blk_mq_get_dispatch_budget
-   // succeed to get first budget
-   __blk_mq_issue_directly
-    scsi_queue_rq
-     cmd->flags |= SCMD_LAST
-      virtscsi_queuecommand
-       kick = (sc->flags & SCMD_LAST) != 0
-       // kick is false, first rq won't issue to disk
- queued++
+Thanks for the quick fix.
 
- blk_mq_request_issue_directly
- // dispatch second rq
-  __blk_mq_try_issue_directly
-   blk_mq_get_dispatch_budget
-   // failed to get second budget
- ret == BLK_STS_RESOURCE
-  blk_mq_request_bypass_insert
- // errors is still 0
-
- if (!list_empty(list) || errors && ...)
-  // won't pass, commit_rqs won't be called
-
-In this situation, first rq relied on second rq to dispatch, while
-second rq relied on first rq to complete, thus they will both hung.
-
-Fix the problem by also treat 'BLK_STS_RESOURCE' and
-'BLK_STS_DEV_RESOURCE' as 'errors' in blk_mq_try_issue_list_directly(),
-so that 'commit_rqs' will be called when dispatch of last rq failed.
-
-Fixes: d666ba98f849 ("blk-mq: add mq_ops->commit_rqs()")
-Signed-off-by: Yu Kuai <yukuai3@huawei.com>
----
- block/blk-mq.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/block/blk-mq.c b/block/blk-mq.c
-index 70177ee74295..752b0fe4c128 100644
---- a/block/blk-mq.c
-+++ b/block/blk-mq.c
-@@ -2680,6 +2680,7 @@ void blk_mq_try_issue_list_directly(struct blk_mq_hw_ctx *hctx,
- 		list_del_init(&rq->queuelist);
- 		ret = blk_mq_request_issue_directly(rq, list_empty(list));
- 		if (ret != BLK_STS_OK) {
-+			errors++;
- 			if (ret == BLK_STS_RESOURCE ||
- 					ret == BLK_STS_DEV_RESOURCE) {
- 				blk_mq_request_bypass_insert(rq, false,
-@@ -2687,7 +2688,6 @@ void blk_mq_try_issue_list_directly(struct blk_mq_hw_ctx *hctx,
- 				break;
- 			}
- 			blk_mq_end_request(rq, ret);
--			errors++;
- 		} else
- 			queued++;
- 	}
--- 
-2.31.1
-
+Rob
