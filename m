@@ -2,217 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EC59CCA48C
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 08:08:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69C64CCA48E
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 08:08:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238275AbiGZIID (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 04:08:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56196 "EHLO
+        id S238196AbiGZIII (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 04:08:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238233AbiGZIH7 (ORCPT
+        with ESMTP id S238087AbiGZIIB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 04:07:59 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 102E1DF22
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 01:07:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658822877;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=v2FS+wcLS276CjyoJxXnom+ZC/VQJoGiBzM4C9YEjwQ=;
-        b=P6XvNV0OggGFFfkSr7IsoCZDABR5vDodtvb2vc3uA+//YJ1kWrpyploq3ijuUu6ajZMgh2
-        zoZJ+00tPwe0oJO0XhEy0w4iKDHAQmCWpAcaHTo2kGci+sPut7ymvubHLED3Z1f2ai9p0k
-        4jhxA7HQO0TgWAajy5DY4O46lglRT2s=
-Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com
- [209.85.214.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-19-YtFEC1-TOaO-oR0oxXCfOA-1; Tue, 26 Jul 2022 04:07:53 -0400
-X-MC-Unique: YtFEC1-TOaO-oR0oxXCfOA-1
-Received: by mail-pl1-f197.google.com with SMTP id s6-20020a170902a50600b0016d2e77252eso7999175plq.18
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 01:07:53 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=v2FS+wcLS276CjyoJxXnom+ZC/VQJoGiBzM4C9YEjwQ=;
-        b=LKUv2m2T3gMRJQwP0oWkC18ZJqxGEHwQ5wlGyjvhnGURX58HjOKn8g/AsG4+OnQ4z4
-         GnOpl4NtbqZwQueMtlefHc9FCcCskro4JsRR0d0x0YTSVGPzlm4sZU4IiUwcac7zcgws
-         pxHyq/w+RYcNfbUZwwDRLxS7dRX8uTb5g1Xu9m8F87DIAF8hjy2/CcM0iUHaGmQBGBpg
-         4c5/du39jRaSrjLYxh0jUNk35ii6wy6/D0sbpraHBF68iXwwtJAoVdOPE4Tl1AI3R7Oe
-         ObKj/veoh88SlrZ1xoQHc8OAtWE6ht6mgLRLToqftgMJkD606l2xqYfAZhM2QbtQDPEU
-         bcoA==
-X-Gm-Message-State: AJIora+ZU+QhQvW4YMlLEUHFbNAz+1+0g82ImUdAWGhY+nhsL6tuXd5z
-        4a0Pn1JMNiD+kUOctp5h8aVlWEQY9EzQYHf5kDycKUdFkBjEasZ3bfPbHpzCLxLxe+R8bioqGSj
-        y+IbHt6XOT0Obj7CDPJwH7QkW
-X-Received: by 2002:a17:90b:3ece:b0:1f0:6b2e:6fbf with SMTP id rm14-20020a17090b3ece00b001f06b2e6fbfmr35013949pjb.203.1658822872184;
-        Tue, 26 Jul 2022 01:07:52 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1t6pDFB5xcS97km93rf91OBUoaDmySnwXucaOEG95lnhcHdHOmDqsphKxM28DLJ13n4R8FnIg==
-X-Received: by 2002:a17:90b:3ece:b0:1f0:6b2e:6fbf with SMTP id rm14-20020a17090b3ece00b001f06b2e6fbfmr35013922pjb.203.1658822871777;
-        Tue, 26 Jul 2022 01:07:51 -0700 (PDT)
-Received: from [10.72.12.201] ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id o9-20020a62cd09000000b0052abfc4b4a4sm11290893pfg.12.2022.07.26.01.07.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 Jul 2022 01:07:51 -0700 (PDT)
-Message-ID: <9d4c24de-f2cc-16a0-818a-16695946f3a3@redhat.com>
-Date:   Tue, 26 Jul 2022 16:07:46 +0800
+        Tue, 26 Jul 2022 04:08:01 -0400
+Received: from mx07-00178001.pphosted.com (mx08-00178001.pphosted.com [91.207.212.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11D9FDF22;
+        Tue, 26 Jul 2022 01:07:59 -0700 (PDT)
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26Q6ZL6f009501;
+        Tue, 26 Jul 2022 10:07:34 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=selector1;
+ bh=rLtXOZaBhBJ4Za2tM1rJodMY0MHpDsHiAJ70GxqUcbQ=;
+ b=Wb4JJUJHYSYjqw6b0xWIAeAelATOOeYGasY2WMVOSY6shkMLfn/1H5FGIH6bOC8h1f3+
+ 9C1QS0dLtUcB5+EF1WY2WSeQSMVkP6MCu+4DbSvcdnc+ipwMuTlAIzn0qA1MItQ4ivX1
+ kHoXt3eqwR4J6neJrWTuh4OEusIfUA7DPEGuQkvJjpsGMhgMBRZcu94G98GN09RcvDfQ
+ YoXyJW7Ze1+bTLkShzF4Xf9ZJm9MTJZ9k/pCP3XVUo9ScZYcRlgPtzLYJ7SETmDWvF5k
+ B9F+6ICeiu/xgUDkQrpfg9y5AAcljoJIhQ0nAfdW/nSO+rCpFDKO23mH85rKjbnNCTZZ tg== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3hhp6aq1rd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 26 Jul 2022 10:07:34 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id CF2FA100038;
+        Tue, 26 Jul 2022 10:07:31 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node2.st.com [10.75.129.70])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id C68F62128A4;
+        Tue, 26 Jul 2022 10:07:31 +0200 (CEST)
+Received: from localhost (10.75.127.47) by SHFDAG1NODE2.st.com (10.75.129.70)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Tue, 26 Jul
+ 2022 10:07:31 +0200
+From:   Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+To:     <gregkh@linuxfoundation.org>, <robh+dt@kernel.org>,
+        <mka@chromium.org>, <alexandre.torgue@foss.st.com>
+CC:     <krzysztof.kozlowski+dt@linaro.org>, <arnd@arndb.de>,
+        <linux-usb@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <amelie.delaunay@foss.st.com>, <fabrice.gasnier@foss.st.com>
+Subject: [PATCH v2 3/4] ARM: dts: stm32: add support for USB2514B onboard hub on stm32mp15xx-dkx
+Date:   Tue, 26 Jul 2022 10:07:07 +0200
+Message-ID: <20220726080708.162547-4-fabrice.gasnier@foss.st.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220726080708.162547-1-fabrice.gasnier@foss.st.com>
+References: <20220726080708.162547-1-fabrice.gasnier@foss.st.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.11.0
-Subject: Re: [RFC 4/5] virtio: get desc id in order
-Content-Language: en-US
-To:     Guo Zhi <qtxuning1999@sjtu.edu.cn>, eperezma@redhat.com,
-        sgarzare@redhat.com, mst@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org
-References: <20220721084341.24183-1-qtxuning1999@sjtu.edu.cn>
- <20220721084341.24183-5-qtxuning1999@sjtu.edu.cn>
-From:   Jason Wang <jasowang@redhat.com>
-In-Reply-To: <20220721084341.24183-5-qtxuning1999@sjtu.edu.cn>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.47]
+X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SHFDAG1NODE2.st.com
+ (10.75.129.70)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-26_02,2022-07-25_03,2022-06-22_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Add support for USB2514B onboard hub on stm32mp15 DK boards. The HUB
+is supplied by a 3v3 PMIC regulator.
 
-在 2022/7/21 16:43, Guo Zhi 写道:
-> If in order feature negotiated, we can skip the used ring to get
-> buffer's desc id sequentially.
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+---
+ arch/arm/boot/dts/stm32mp15xx-dkx.dtsi | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-
-Let's rename the patch to something like "in order support for virtio_ring"
-
-
->
-> Signed-off-by: Guo Zhi <qtxuning1999@sjtu.edu.cn>
-> ---
->   drivers/virtio/virtio_ring.c | 37 ++++++++++++++++++++++++++++--------
->   1 file changed, 29 insertions(+), 8 deletions(-)
-
-
-I don't see packed support in this patch, we need to implement that.
-
-
->
-> diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-> index a5ec724c0..4d57a4edc 100644
-> --- a/drivers/virtio/virtio_ring.c
-> +++ b/drivers/virtio/virtio_ring.c
-> @@ -144,6 +144,9 @@ struct vring_virtqueue {
->   			/* DMA address and size information */
->   			dma_addr_t queue_dma_addr;
->   			size_t queue_size_in_bytes;
-> +
-> +			/* In order feature batch begin here */
-> +			u16 next_batch_desc_begin;
->   		} split;
->   
->   		/* Available for packed ring */
-> @@ -700,8 +703,10 @@ static void detach_buf_split(struct vring_virtqueue *vq, unsigned int head,
->   	}
->   
->   	vring_unmap_one_split(vq, i);
-> -	vq->split.desc_extra[i].next = vq->free_head;
-> -	vq->free_head = head;
-> +	if (!virtio_has_feature(vq->vq.vdev, VIRTIO_F_IN_ORDER)) {
-> +		vq->split.desc_extra[i].next = vq->free_head;
-> +		vq->free_head = head;
-> +	}
-
-
-Let's add a comment to explain why we don't need anything if in order is 
-neogitated.
-
-
->   
->   	/* Plus final descriptor */
->   	vq->vq.num_free++;
-> @@ -743,7 +748,8 @@ static void *virtqueue_get_buf_ctx_split(struct virtqueue *_vq,
->   {
->   	struct vring_virtqueue *vq = to_vvq(_vq);
->   	void *ret;
-> -	unsigned int i;
-> +	__virtio16 nextflag = cpu_to_virtio16(vq->vq.vdev, VRING_DESC_F_NEXT);
-> +	unsigned int i, j;
->   	u16 last_used;
->   
->   	START_USE(vq);
-> @@ -762,11 +768,24 @@ static void *virtqueue_get_buf_ctx_split(struct virtqueue *_vq,
->   	/* Only get used array entries after they have been exposed by host. */
->   	virtio_rmb(vq->weak_barriers);
->   
-> -	last_used = (vq->last_used_idx & (vq->split.vring.num - 1));
-> -	i = virtio32_to_cpu(_vq->vdev,
-> -			vq->split.vring.used->ring[last_used].id);
-> -	*len = virtio32_to_cpu(_vq->vdev,
-> -			vq->split.vring.used->ring[last_used].len);
-> +	if (virtio_has_feature(_vq->vdev, VIRTIO_F_IN_ORDER)) {
-> +		/* Skip used ring and get used desc in order*/
-> +		i = vq->split.next_batch_desc_begin;
-> +		j = i;
-> +		while (vq->split.vring.desc[j].flags & nextflag)
-
-
-Let's don't depend on the descriptor ring which is under the control of 
-the malicious hypervisor.
-
-Let's use desc_extra that is not visible by the hypervisor. More can be 
-seen in this commit:
-
-72b5e8958738 ("virtio-ring: store DMA metadata in desc_extra for split 
-virtqueue")
-
-
-> +			j = (j + 1) % vq->split.vring.num;
-> +		/* move to next */
-> +		j = (j + 1) % vq->split.vring.num;
-> +		vq->split.next_batch_desc_begin = j;
-
-
-I'm not sure I get the logic here, basically I think we should check 
-buffer instead of descriptor here.
-
-So if vring.used->ring[last_used].id != last_used, we know all 
-[last_used, vring.used->ring[last_used].id] have been used in a batch?
-
-
-> +
-> +		/* TODO: len of buffer */
-
-
-So spec said:
-
-"
-
-The skipped buffers (for which no used ring entry was written) are 
-assumed to have been used (read or written) by the device completely.
-
-
-"
-
-Thanks
-
-
-> +	} else {
-> +		last_used = (vq->last_used_idx & (vq->split.vring.num - 1));
-> +		i = virtio32_to_cpu(_vq->vdev,
-> +				    vq->split.vring.used->ring[last_used].id);
-> +		*len = virtio32_to_cpu(_vq->vdev,
-> +				       vq->split.vring.used->ring[last_used].len);
-> +	}
->   
->   	if (unlikely(i >= vq->split.vring.num)) {
->   		BAD_RING(vq, "id %u out of range\n", i);
-> @@ -2234,6 +2253,8 @@ struct virtqueue *__vring_new_virtqueue(unsigned int index,
->   	vq->split.avail_flags_shadow = 0;
->   	vq->split.avail_idx_shadow = 0;
->   
-> +	vq->split.next_batch_desc_begin = 0;
-> +
->   	/* No callback?  Tell other side not to bother us. */
->   	if (!callback) {
->   		vq->split.avail_flags_shadow |= VRING_AVAIL_F_NO_INTERRUPT;
+diff --git a/arch/arm/boot/dts/stm32mp15xx-dkx.dtsi b/arch/arm/boot/dts/stm32mp15xx-dkx.dtsi
+index 333c2af97130a..8b48d3c89a047 100644
+--- a/arch/arm/boot/dts/stm32mp15xx-dkx.dtsi
++++ b/arch/arm/boot/dts/stm32mp15xx-dkx.dtsi
+@@ -677,6 +677,14 @@ &usart3 {
+ &usbh_ehci {
+ 	phys = <&usbphyc_port0>;
+ 	status = "okay";
++	#address-cells = <1>;
++	#size-cells = <0>;
++	/* onboard HUB */
++	hub@1 {
++		compatible = "usb424,2514";
++		reg = <1>;
++		vdd-supply = <&v3v3>;
++	};
+ };
+ 
+ &usbotg_hs {
+-- 
+2.25.1
 
