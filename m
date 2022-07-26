@@ -2,140 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41CDAC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 17:37:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08470C19F2B
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 17:39:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230208AbiGZRhw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 13:37:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60724 "EHLO
+        id S239505AbiGZRjM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 13:39:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229677AbiGZRht (ORCPT
+        with ESMTP id S239572AbiGZRix (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 13:37:49 -0400
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C5E52AE18;
-        Tue, 26 Jul 2022 10:37:49 -0700 (PDT)
-Received: by mail-pg1-x52f.google.com with SMTP id q16so13733472pgq.6;
-        Tue, 26 Jul 2022 10:37:49 -0700 (PDT)
+        Tue, 26 Jul 2022 13:38:53 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86CBA3247E
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 10:38:43 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id o5-20020a17090a3d4500b001ef76490983so13943531pjf.2
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 10:38:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=AMZH1Bi4Qy5iLZG3QxNgW8QD2bR06SffT7rLHaWOqfM=;
-        b=pUB6vuPwJAhe15bl2qYv7Xe9gsT4I6NmjqKg30xPjQtUWc4ooZjLa2JJWl4Y7JIF6S
-         EA3DCBgEU/puzXFs6eoPhMIfcTW8PFY8tG+kvdgaDs89e/+V8IdEpGF9BhL81exLirmB
-         7RVdZN4gjHEid05iU3H5JaAjtiCCWvM0RUCSV8fZOb3x3+baVNL1cSKY4/JkBXZ/+bG2
-         aKW+3nXKlUU4CkmL7yGWs3YaSr+IvfdrBzGGTu8VuA5gVlG5vncgKCLz9/Ixeab/+GfG
-         MKrRwysGOF6aOULNabsBAFcjrZw3QDX0CAIbgD+uYCzCbeU5KsfvmGnEcAugvDzanieC
-         2ucQ==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=65z5UblURAWtS2HSo73KtitpLtnM0+IbS2Ko/ylefao=;
+        b=JKQA2DZRhmMHgWDjn9IqsGd1TVfsl2/RxaGpJxPdD+c34DkWDAWNsu9qO/xRlhSFNz
+         jTRpE4I/X989DPF2x2DVjb248ibAsnZJAf3O+WByNYpcxeOcUzjim7Qd2uty5uDE1x73
+         d5LtxHUT2N3mk77hhhR51bamkKwqf1Z9L7fP4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=AMZH1Bi4Qy5iLZG3QxNgW8QD2bR06SffT7rLHaWOqfM=;
-        b=bFQaIRPpE0lK2WLdx83It1JKjiR3UqDp17cPBOVHi28QvBhI9T4hM5EovYhHTqkgqe
-         YTTu/dkfrTn/ImmX8ndFBYp4y5HqGL8yzKdi9/bP8ooCVrtbIhEz2gLsxbg/pb1Xyr64
-         zRup/w6pQ4k5Br9klak66dZc8HMNydrfPDESF3/F8cR0O9WvMu/CD0AShDncWU0st+By
-         WhFlnujamwxelyJ0+8npdXUtirlcebYSc9RoAI1P7SN/cn9mrdhV2I6wIduk80Tqx9V/
-         jnDyb1vpSMVsCbEZulHOSvTASGDozdQ9Bc8AVK70TtLMw8yq1LzhruI4mHt4QPRMQP6U
-         444A==
-X-Gm-Message-State: AJIora/mR4pRyjE3YWroX6y+RUMHC6rWh4JESGqjBIetSbe8XiSGs7xR
-        VVtuOxXaUVe8x9krWW45K1U=
-X-Google-Smtp-Source: AGRyM1tCFuqPdEnD+0ZwYrW/qrprDDsJmyK/Z1ehMdPDBhBhQx75Qv95gifiNh1V1RoRDQbTPAaVlA==
-X-Received: by 2002:a63:d345:0:b0:419:d863:3c8d with SMTP id u5-20020a63d345000000b00419d8633c8dmr15250987pgi.168.1658857068482;
-        Tue, 26 Jul 2022 10:37:48 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id f17-20020a17090ace1100b001f0f132da9fsm11189030pju.5.2022.07.26.10.37.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 Jul 2022 10:37:47 -0700 (PDT)
-Message-ID: <139317dc-15e2-ac63-0e04-295e715a7747@gmail.com>
-Date:   Tue, 26 Jul 2022 10:37:46 -0700
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=65z5UblURAWtS2HSo73KtitpLtnM0+IbS2Ko/ylefao=;
+        b=YgNC+R0qR+N0i0yV6uoc7nu9gwo3mBEucKx9kw1ECjLK2c5jzsUNZ5L63uBe1BEsF9
+         YUQDV3gOnhgrAHAo4pdouf/LmQ3wTtQjqGl6uJGzP3L0LmY48MO6FKXCbtLm/rDoUpLc
+         DJOj/gFYrey9qp9uKDaD37x+tu91Gb8qvk0xtjmULGptmdPGGa8AiM5n4xVvljoVYQzs
+         1eIhqFjkBaCbw1MjnkO7XsINIV5O6sobU1ll4p7EsiZR6OTGBAQmLzSr1VqfoqyCkqWx
+         PFgnzFEAD73cwcpzqH48CBBtZ3gdiVmXH3Rc8opeyxkm8slsPjlxeMZJBJ8ZmuviTPj9
+         EpEA==
+X-Gm-Message-State: AJIora98q7h8yJzVtsGAVw8YwFyo6uScqAwXhhjm5wMfQKwkxdiIZRxv
+        4K1FVUFZQF1dVUkBl/U6URebNQ==
+X-Google-Smtp-Source: AGRyM1vaj4AnRg3w38ziBsA+HO1alVRbJxT5BFBbzuR9W1nR9nbx4to4YrRPWTU9jI9OfC/TAk1BDg==
+X-Received: by 2002:a17:902:f541:b0:16d:46f1:bd17 with SMTP id h1-20020a170902f54100b0016d46f1bd17mr18371237plf.18.1658857122699;
+        Tue, 26 Jul 2022 10:38:42 -0700 (PDT)
+Received: from tictac2.mtv.corp.google.com ([2620:15c:202:201:8693:e9aa:75c0:5134])
+        by smtp.gmail.com with ESMTPSA id ik29-20020a170902ab1d00b0016d9ecd71f4sm245884plb.77.2022.07.26.10.38.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Jul 2022 10:38:42 -0700 (PDT)
+From:   Douglas Anderson <dianders@chromium.org>
+To:     Rob Clark <robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Mark Brown <broonie@kernel.org>
+Cc:     dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        freedreno@lists.freedesktop.org,
+        Douglas Anderson <dianders@chromium.org>,
+        Archit Taneja <architt@codeaurora.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Rajeev Nandan <quic_rajeevny@quicinc.com>,
+        Sean Paul <sean@poorly.run>, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 1/7] drm/msm/dsi: Fix number of regulators for msm8996_dsi_cfg
+Date:   Tue, 26 Jul 2022 10:38:18 -0700
+Message-Id: <20220726103631.v2.1.I1056ee3f77f71287f333279efe4c85f88d403f65@changeid>
+X-Mailer: git-send-email 2.37.1.359.gd136c6c3e2-goog
+In-Reply-To: <20220726173824.1166873-1-dianders@chromium.org>
+References: <20220726173824.1166873-1-dianders@chromium.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] mmc: sdhci-xenon: Fix 2G limitation on AC5 SoC
-Content-Language: en-US
-To:     Vadym Kochan <vadym.kochan@plvision.eu>,
-        Hu Ziji <huziji@marvell.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Elad Nachman <enachman@marvell.com>
-References: <20220726170711.30324-1-vadym.kochan@plvision.eu>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220726170711.30324-1-vadym.kochan@plvision.eu>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/26/22 10:07, Vadym Kochan wrote:
-> From: Elad Nachman <enachman@marvell.com>
-> 
-> There is a limitation on AC5 SoC that mmc controller
-> can't have DMA access over 2G memory.
-> 
-> Signed-off-by: Elad Nachman <enachman@marvell.com>
-> Signed-off-by: Vadym Kochan <vadym.kochan@plvision.eu>
-> ---
->  drivers/mmc/host/sdhci-xenon.c | 13 +++++++++++++
->  1 file changed, 13 insertions(+)
-> 
-> diff --git a/drivers/mmc/host/sdhci-xenon.c b/drivers/mmc/host/sdhci-xenon.c
-> index 08e838400b52..666d06b58564 100644
-> --- a/drivers/mmc/host/sdhci-xenon.c
-> +++ b/drivers/mmc/host/sdhci-xenon.c
-> @@ -18,6 +18,7 @@
->  #include <linux/of.h>
->  #include <linux/pm.h>
->  #include <linux/pm_runtime.h>
-> +#include <linux/mm.h>
->  
->  #include "sdhci-pltfm.h"
->  #include "sdhci-xenon.h"
-> @@ -422,6 +423,8 @@ static int xenon_probe_params(struct platform_device *pdev)
->  	struct xenon_priv *priv = sdhci_pltfm_priv(pltfm_host);
->  	u32 sdhc_id, nr_sdhc;
->  	u32 tuning_count;
-> +	struct device_node *np = pdev->dev.of_node;
-> +	struct sysinfo si;
->  
->  	/* Disable HS200 on Armada AP806 */
->  	if (priv->hw_version == XENON_AP806)
-> @@ -450,6 +453,15 @@ static int xenon_probe_params(struct platform_device *pdev)
->  	}
->  	priv->tuning_count = tuning_count;
->  
-> +	si_meminfo(&si);
-> +
-> +	if (of_device_is_compatible(np, "marvell,ac5-sdhci") &&
-> +	    ((si.totalram * si.mem_unit) > 0x80000000 /*2G*/)) {
+3 regulators are specified listed but the number 2 is specified. Fix
+it.
 
-Why not limit the DMA mask of the device and ensure, that bounce buffers get used so you can still do DMA?
+Fixes: 3a3ff88a0fc1 ("drm/msm/dsi: Add 8x96 info in dsi_cfg")
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+---
 
-Also, you ought to be able to describe that limitation using Device Tree (assuming this is an option) and declaring a dedicated bus node for the SDHCI controller and providing a suitable dma-ranges property, see: arch/arm/boot/dts/bcm2711.dtsi and the 'soc' node for such examples.
+Changes in v2:
+- ("Fix number of regulators for msm8996_dsi_cfg") new for v2.
 
+ drivers/gpu/drm/msm/dsi/dsi_cfg.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-
-> +		host->quirks |= SDHCI_QUIRK_BROKEN_DMA;
-> +		host->quirks |= SDHCI_QUIRK_BROKEN_ADMA;
-> +		dev_info(mmc_dev(mmc), "Disabling DMA because of 2GB DMA access limit.\n");
-> +	}
-> +
->  	return xenon_phy_parse_params(dev, host);
->  }
->  
-> @@ -682,6 +694,7 @@ static const struct of_device_id sdhci_xenon_dt_ids[] = {
->  	{ .compatible = "marvell,armada-ap807-sdhci", .data = (void *)XENON_AP807},
->  	{ .compatible = "marvell,armada-cp110-sdhci", .data =  (void *)XENON_CP110},
->  	{ .compatible = "marvell,armada-3700-sdhci", .data =  (void *)XENON_A3700},
-> +	{ .compatible = "marvell,ac5-sdhci", .data = (void *)XENON_AP806},
->  	{}
->  };
->  MODULE_DEVICE_TABLE(of, sdhci_xenon_dt_ids);
-
-
+diff --git a/drivers/gpu/drm/msm/dsi/dsi_cfg.c b/drivers/gpu/drm/msm/dsi/dsi_cfg.c
+index 2c23324a2296..02000a7b7a18 100644
+--- a/drivers/gpu/drm/msm/dsi/dsi_cfg.c
++++ b/drivers/gpu/drm/msm/dsi/dsi_cfg.c
+@@ -109,7 +109,7 @@ static const char * const dsi_8996_bus_clk_names[] = {
+ static const struct msm_dsi_config msm8996_dsi_cfg = {
+ 	.io_offset = DSI_6G_REG_SHIFT,
+ 	.reg_cfg = {
+-		.num = 2,
++		.num = 3,
+ 		.regs = {
+ 			{"vdda", 18160, 1 },	/* 1.25 V */
+ 			{"vcca", 17000, 32 },	/* 0.925 V */
 -- 
-Florian
+2.37.1.359.gd136c6c3e2-goog
+
