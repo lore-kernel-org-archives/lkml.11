@@ -2,75 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C651FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 03:04:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7ECDC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 03:05:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237436AbiGZDEK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 23:04:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52634 "EHLO
+        id S237456AbiGZDF1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 23:05:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236795AbiGZDEH (ORCPT
+        with ESMTP id S237173AbiGZDFY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 23:04:07 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6208A240AA;
-        Mon, 25 Jul 2022 20:04:06 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LsM8q4Tr4zWf95;
-        Tue, 26 Jul 2022 11:00:11 +0800 (CST)
-Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
- (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 26 Jul
- 2022 11:03:47 +0800
-From:   Zhengchao Shao <shaozhengchao@huawei.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <jhs@mojatatu.com>, <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>
-CC:     <weiyongjun1@huawei.com>, <yuehaibing@huawei.com>,
-        <shaozhengchao@huawei.com>
-Subject: [PATCH net-next] net/sched: sch_cbq: change the type of cbq_set_lss to void
-Date:   Tue, 26 Jul 2022 11:07:48 +0800
-Message-ID: <20220726030748.243505-1-shaozhengchao@huawei.com>
-X-Mailer: git-send-email 2.17.1
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.6]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpeml500026.china.huawei.com (7.185.36.106)
-X-CFilter-Loop: Reflected
+        Mon, 25 Jul 2022 23:05:24 -0400
+Received: from chinatelecom.cn (prt-mail.chinatelecom.cn [42.123.76.223])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4B16165CE
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 20:05:22 -0700 (PDT)
+HMM_SOURCE_IP: 172.18.0.188:56264.33888729
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-10.133.8.199 (unknown [172.18.0.188])
+        by chinatelecom.cn (HERMES) with SMTP id EF4292800DA;
+        Tue, 26 Jul 2022 11:05:17 +0800 (CST)
+X-189-SAVE-TO-SEND: +liuxp11@chinatelecom.cn
+Received: from  ([172.18.0.188])
+        by app0023 with ESMTP id b6cd79630166451ba79e0ecc82deb6c9 for rppt@kernel.org;
+        Tue, 26 Jul 2022 11:05:19 CST
+X-Transaction-ID: b6cd79630166451ba79e0ecc82deb6c9
+X-Real-From: liuxp11@chinatelecom.cn
+X-Receive-IP: 172.18.0.188
+X-MEDUSA-Status: 0
+Sender: liuxp11@chinatelecom.cn
+From:   Liu Xinpeng <liuxp11@chinatelecom.cn>
+To:     rppt@kernel.org, linux-mm@kvack.org, david@redhat.com
+Cc:     linux-kernel@vger.kernel.org, Liu Xinpeng <liuxp11@chinatelecom.cn>
+Subject: [PATCH] memblock tests: compiling error
+Date:   Tue, 26 Jul 2022 11:05:05 +0800
+Message-Id: <1658804705-16996-1-git-send-email-liuxp11@chinatelecom.cn>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Change the type of cbq_set_lss to void.
+memblock.o: In function `memblock_find_in_range.constprop.9':
+memblock.c:(.text+0x4651): undefined reference to `pr_warn_ratelimited'
+memblock.o: In function `memblock_mark_mirror':
+memblock.c:(.text+0x7171): undefined reference to `mirrored_kernelcore'
 
-Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+Fixs: 902c2d91582 ("memblock: Disable mirror feature if kernelcore is not
+specified")
+Fixs: 14d9a675fd0 ("mm: Ratelimited mirrored memory related warning")
+
+Signed-off-by: Liu Xinpeng <liuxp11@chinatelecom.cn>
 ---
- net/sched/sch_cbq.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ tools/testing/memblock/internal.h | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/net/sched/sch_cbq.c b/net/sched/sch_cbq.c
-index 599e26fc2fa8..91a0dc463c48 100644
---- a/net/sched/sch_cbq.c
-+++ b/net/sched/sch_cbq.c
-@@ -979,7 +979,7 @@ cbq_reset(struct Qdisc *sch)
- }
+diff --git a/tools/testing/memblock/internal.h b/tools/testing/memblock/internal.h
+index c2a492c..cf67e6e 100644
+--- a/tools/testing/memblock/internal.h
++++ b/tools/testing/memblock/internal.h
+@@ -9,6 +9,9 @@
+ static int memblock_debug = 1;
+ #endif
  
++#define pr_warn_ratelimited(fmt, ...)    printf(fmt, ##__VA_ARGS__);
++
++bool mirrored_kernelcore = false;
+ struct page {};
  
--static int cbq_set_lss(struct cbq_class *cl, struct tc_cbq_lssopt *lss)
-+static void cbq_set_lss(struct cbq_class *cl, struct tc_cbq_lssopt *lss)
- {
- 	if (lss->change & TCF_CBQ_LSS_FLAGS) {
- 		cl->share = (lss->flags & TCF_CBQ_LSS_ISOLATED) ? NULL : cl->tparent;
-@@ -997,7 +997,6 @@ static int cbq_set_lss(struct cbq_class *cl, struct tc_cbq_lssopt *lss)
- 	}
- 	if (lss->change & TCF_CBQ_LSS_OFFTIME)
- 		cl->offtime = lss->offtime;
--	return 0;
- }
- 
- static void cbq_rmprio(struct cbq_sched_data *q, struct cbq_class *cl)
+ void memblock_free_pages(struct page *page, unsigned long pfn,
 -- 
-2.17.1
+1.8.3.1
 
