@@ -2,89 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2424DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 01:00:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56BEBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 01:05:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231882AbiGZBAU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 21:00:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45168 "EHLO
+        id S231342AbiGZBFI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 21:05:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229755AbiGZBAT (ORCPT
+        with ESMTP id S229755AbiGZBFF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 21:00:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C8C217A92;
-        Mon, 25 Jul 2022 18:00:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 01D95B810A4;
-        Tue, 26 Jul 2022 01:00:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CEFCC341C6;
-        Tue, 26 Jul 2022 01:00:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658797215;
-        bh=2xklpD9zOkDaPX/6lcoq8t9QAqRhI7D956EnkKkQcPk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=PlT//DjOSIFZ94KFBmwxgN/i0oxKfabFQlFwF5CINBZ1C03OWg+ecfUA2FEjHfhPc
-         8ovGhrAq+bq2WU153Ku/jUKaqBDmrRjzsh1H2KsAgL9++JbXDLIuGmn9/RcZLts51q
-         3xQJKDiB1D3yafgHLJeQ+OR5DqE39ujJ8t/RlKk3Ovw2VY02oQnEjK480TpHOtBi2n
-         N4nEECKZN2YHSrInrClTa5HUiC5UnbNgLBUSa61mSee/b2DLB151/jxXMSCndxCIby
-         F1PRUbH1kpIgaGPNXUc5VaF3zyqUEj1YfGtUGPhHeuoPpKEudDb9VNdqEpRDuphWmf
-         x6PwiVroSD/cQ==
-Date:   Mon, 25 Jul 2022 18:00:13 -0700
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ardb@kernel.org
-Subject: Re: [PATCH v3 2/3] crypto: lib - move __crypto_xor into utils
-Message-ID: <Yt88nXvui0Q+5MQu@sol.localdomain>
-References: <20220725183636.97326-1-ebiggers@kernel.org>
- <20220725183636.97326-3-ebiggers@kernel.org>
- <Yt8UnWCvoe8dKihc@zx2c4.com>
+        Mon, 25 Jul 2022 21:05:05 -0400
+Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99F7727CF9;
+        Mon, 25 Jul 2022 18:05:03 -0700 (PDT)
+Received: by mail-oi1-x232.google.com with SMTP id w204so15469458oie.7;
+        Mon, 25 Jul 2022 18:05:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:user-agent:in-reply-to:references
+         :message-id:mime-version:content-transfer-encoding;
+        bh=5fDiK95WVSGHAQWg0sKq28MpBdhlxA9jjHAwB8K8aHs=;
+        b=arsMmeYdNZ2EJuqA0306HWyT5FUDjWgPLQDS/licYhmLdwh0bnRgVYQ+PznMji9+iP
+         7EeyQXc5juYYShrM+8UcwOHSSC6cdXlKeGSXRVRGqTbUhB6gfFfAoC/2xoJZ/jgnQ2jg
+         lI5Y4mYE5N3JdSjB/RMtrae+rgqbM6/VxhjTOwXi/rUIxa9BoUj3Q/r8Vy3oycadF4Qp
+         sA3GOU6ANu9lwsREabxWNtQCIGRlnOlCz6Xsmx8LblujwlCsUuYXSG+996Nf+EpInC4A
+         FVWygwrtVu+a4Nb23kFZZXchv7jIUftceWkOcgkNlT9mm4uOoowlmGnwdo5Sdarza2Tw
+         Lnig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:user-agent:in-reply-to
+         :references:message-id:mime-version:content-transfer-encoding;
+        bh=5fDiK95WVSGHAQWg0sKq28MpBdhlxA9jjHAwB8K8aHs=;
+        b=MqTWHqVRHHxJQ054CTbfwcodMTnfJviAXObQcS9q+A1B/pbJnFUkiTUhKKBrpPH0cr
+         qy2lejgMPdwq7pqDMjhSORZNTXegKz13BoNTn+1KO10ztLLbCKxjNez2QoNdDLHfn2LC
+         kJHps84nwLPZ5D6pX4F3YS2115u71ERDSmFT/Cj7MVYTVqS4GQ73A3cRzeVWbNbhAEIS
+         grCnzvfPLq9x+h9/qgn9Go2NTUipXWDeDXKgkfmFjJS5uleooWjhZ5GdOmYHRAWpS6MI
+         9J6GaZMiAtpwJ4r/Bw5C6HC8bLdZB4PL4xjRZTpiVloiz8EMdDfsEEKwhG0+tn6DTIoB
+         zEyQ==
+X-Gm-Message-State: AJIora8EsMw8C+f0FbaJaNeJ6U+/p3kdyb17KkKxiuQ9bJvLibU1bkdJ
+        dH7PPxt0jViTX90zTxnRC8c=
+X-Google-Smtp-Source: AGRyM1tm8WijvSEGL2/qcESBzvVuU7D87TC4LmpQJXPFgI57bmM9yMWoQG5Z72GJkuFJOIJ90pQu6Q==
+X-Received: by 2002:a05:6808:1885:b0:33a:74ac:8b79 with SMTP id bi5-20020a056808188500b0033a74ac8b79mr14481157oib.237.1658797502755;
+        Mon, 25 Jul 2022 18:05:02 -0700 (PDT)
+Received: from [127.0.0.1] ([187.19.239.32])
+        by smtp.gmail.com with ESMTPSA id l6-20020a05687040c600b0010c5005d427sm6826125oal.33.2022.07.25.18.05.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 25 Jul 2022 18:05:02 -0700 (PDT)
+Date:   Mon, 25 Jul 2022 22:04:58 -0300
+From:   Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+To:     Leo Yan <leo.yan@linaro.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>
+CC:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Ian Rogers <irogers@google.com>,
+        Fangrui Song <maskray@google.com>,
+        Chang Rui <changruinj@gmail.com>,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/2] perf symbol: Correct address for bss symbols
+User-Agent: K-9 Mail for Android
+In-Reply-To: <20220726005307.GA36862@leoy-ThinkPad-X240s>
+References: <20220724060013.171050-1-leo.yan@linaro.org> <20220724060013.171050-2-leo.yan@linaro.org> <Yt7hGepLBAJJuvII@kernel.org> <20220726005307.GA36862@leoy-ThinkPad-X240s>
+Message-ID: <2A971E59-21F0-4DD2-9E62-F1E7F481C8AF@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yt8UnWCvoe8dKihc@zx2c4.com>
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 26, 2022 at 12:09:33AM +0200, Jason A. Donenfeld wrote:
-> On Mon, Jul 25, 2022 at 11:36:35AM -0700, Eric Biggers wrote:
-> > From: Eric Biggers <ebiggers@google.com>
-> > 
-> > CRYPTO_LIB_CHACHA depends on CRYPTO for __crypto_xor, defined in
-> > crypto/algapi.c.  This is a layering violation because the dependencies
-> > should only go in the other direction (crypto/ => lib/crypto/).  Also
-> > the correct dependency would be CRYPTO_ALGAPI, not CRYPTO.  Fix this by
-> > moving __crypto_xor into the utils module in lib/crypto/.
-> > 
-> > Note that CRYPTO_LIB_CHACHA_GENERIC selected XOR_BLOCKS, which is
-> > unrelated and unnecessary.  It was perhaps thought that XOR_BLOCKS was
-> > needed for __crypto_xor, but that's not the case.
-> > 
-> > Signed-off-by: Eric Biggers <ebiggers@google.com>
-> 
-> Reviewed-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> 
-> With one small question:
-> 
-> > --- /dev/null
-> > +++ b/lib/crypto/utils.c
-> > @@ -0,0 +1,88 @@
-> > +// SPDX-License-Identifier: GPL-2.0-or-later
-> > +/*
-> > + * Crypto library utility functions
-> > + *
-> > + * Copyright (c) 2006 Herbert Xu <herbert@gondor.apana.org.au>
-> 
-> Didn't Ard basically write the crypto_xor function in its current form?
-> I seem to remember some pretty hardcore refactoring he did a while back.
-> 
-> Jason
 
-I think that's fair to say, based on git blame.  I just copied the copyright
-statement from the top of crypto/algapi.c.
 
-- Eric
+On July 25, 2022 9:53:07 PM GMT-03:00, Leo Yan <leo=2Eyan@linaro=2Eorg> wr=
+ote:
+>Hi Arnaldo,
+>
+>On Mon, Jul 25, 2022 at 03:29:45PM -0300, Arnaldo Carvalho de Melo wrote:
+>
+>[=2E=2E=2E]
+>
+>> > First we used 'perf mem record' to run the test program and then used
+>> > 'perf --debug verbose=3D4 mem report' to observe what's the symbol in=
+fo
+>> > for 'buf1' and 'buf2' structures=2E
+>> >=20
+>> >   # =2E/perf mem record -e ldlat-loads,ldlat-stores -- false_sharing=
+=2Eexe 8
+>>=20
+>> Can you share the source code for your false sharing proggie? We need t=
+o
+>> have something in 'perf test' exercising these routines :-)
+>
+>Sure, I am using the false sharing test case:
+>https://github=2Ecom/joemario/perf-c2c-usage-files/blob/master/false_shar=
+ing_example=2Ec
+>
+>=2E=2E=2E with build command:
+>
+>$ gcc -g false_sharing_example=2Ec -pthread -lnuma -o false_sharing=2Eexe
+>
+>Do want me to proceed for adding test case?=20
+
+Yes, go ahead, that will be really nice of you to add it :)
+
+- Arnaldo=20
+
+> Otherwise, it's fine if
+>you will work on the enabling test case :)
+>
+>Thanks,
+>Leo
