@@ -2,84 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AD45C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 10:11:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 374CCC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 10:11:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238603AbiGZKLA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 06:11:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43166 "EHLO
+        id S238280AbiGZKLu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 06:11:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238200AbiGZKK7 (ORCPT
+        with ESMTP id S233069AbiGZKLs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 06:10:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 731221AD9F
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 03:10:58 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 20B60B81269
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 10:10:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39C61C341C0;
-        Tue, 26 Jul 2022 10:10:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658830255;
-        bh=ogVKEyH2n6wMwdJQk64NIQ0QlsvgWIhFyxyWcaMBLaM=;
-        h=From:To:In-Reply-To:References:Subject:Date:From;
-        b=uPMPk00K6JphqqEuwMR2fgOgr8BEkA20bhMx47J1UOOpD9XX7yhNXbWnds8MaBOAS
-         Bt7wUHkQwZL+/f+NTxv3BPQa1naZ3n1+zPOEeLL6QGnM6pNd1X/6CSPrzk0u/j2P8i
-         EsXASVsHHzQZCbltIe9vG9MfBlO2De0ItFwM2e7O1/IQsNCM8/Ae+IDcqNCHomBDbx
-         VFGpleNa7lKhfc5q3L/uHBusc4kR89fSf7/5W3xHKWHGmVfzxVCDjdylNW676/YCR0
-         1EHHuEvq+fof6pwWnyqPhr8bjH3IrFgQr5vVoDK5rHu0Df7hnnxHDR/TwMifxqBNnF
-         IuYyOjipJ34mw==
-From:   Mark Brown <broonie@kernel.org>
-To:     tiwai@suse.com, linux-kernel@vger.kernel.org, lgirdwood@gmail.com,
-        steve@sk2.org, alsa-devel@alsa-project.org, perex@perex.cz,
-        ryans.lee@analog.com, Ryan Lee <ryan.lee.analog@gmail.com>
-In-Reply-To: <20220723015220.4169-1-ryans.lee@analog.com>
-References: <20220723015220.4169-1-ryans.lee@analog.com>
-Subject: Re: [PATCH] ASoC: max98373: Removing 0x203E from the volatile reg
-Message-Id: <165883025392.54936.4365512627715267394.b4-ty@kernel.org>
-Date:   Tue, 26 Jul 2022 11:10:53 +0100
+        Tue, 26 Jul 2022 06:11:48 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB6751ADAD
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 03:11:46 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id b16so9423113lfb.7
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 03:11:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amarulasolutions.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=m0G1ouauyWlsMi4tX3T8kDD9m/uUFaFanRq+c7+5U7s=;
+        b=PVvx51OOtlmDQcp+hJ9/QKAgDbD27XSXYiNOQxzShhI3JbRiAGv3AGUfQNpKEX85Ju
+         Y3q+EL6ksrC/5vI4VjNPjznfY5b4hFs+VPQSz22sekFKjTQj3CfuTln588rafXxviWoJ
+         TRamENOpI2kB4vy+4bsL/VIyN8iaKsi+zVLh4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=m0G1ouauyWlsMi4tX3T8kDD9m/uUFaFanRq+c7+5U7s=;
+        b=35IrsUwOJgef1lU3HuGsqKKepGWnm41CZL8B5kb70a9/+Jc1hcFQrXRotNYG8GgXU9
+         4yAn8j24R00ikc7uNZiUmRAUERPXCHKWpqw7bx44UheTvQXkj+3GXhf4beIiOTU3ZHDL
+         dbl4prYIA8mLM+MoA7/UKSeG2LzqKx9uMo2AtqZOqdq1arlbiGbEk1FocCcqqdaEUTU/
+         N0AEtKAb6yMVdb7a4qh7+dZRqHD5MCf3hhcjcQm6unMvcfeqrLCjFZc/AqfAVn2joYGr
+         iVLtHAhAwwUlfS2Ssg8A0pUzmmPiRDVz/NMFAoZ3P54w7rYlO8gEBoiqAFt8NyqeLTtY
+         UNSA==
+X-Gm-Message-State: AJIora+/WfBcbZXr3H6a2aSljb4xhBHQxj9ynSOhRjqVCe/9Td2g6A50
+        H1nWHnYoW2dauwVk6SV/AaPZf7M2jQzNnSyHWvJvtQ==
+X-Google-Smtp-Source: AGRyM1uXX45ideOrulD4FMDsqWEePdjfSSh0Leo4vP9vqFrWpyY+WXm0tecZooqyBc1+OvyrSM6L79ae1yhhCM+LF8g=
+X-Received: by 2002:a05:6512:1389:b0:489:d0bb:241e with SMTP id
+ p9-20020a056512138900b00489d0bb241emr6755687lfa.536.1658830305163; Tue, 26
+ Jul 2022 03:11:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Mailer: b4 0.10.0-dev-c7731
+References: <20220725065419.3005015-1-dario.binacchi@amarulasolutions.com>
+ <20220725065419.3005015-3-dario.binacchi@amarulasolutions.com> <20220725123804.ofqpq4j467qkbtzn@pengutronix.de>
+In-Reply-To: <20220725123804.ofqpq4j467qkbtzn@pengutronix.de>
+From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Date:   Tue, 26 Jul 2022 12:11:33 +0200
+Message-ID: <CABGWkvrBrTqWQPBWKuKzuwQzgvc-iuWJPXt2utb60MOfych09A@mail.gmail.com>
+Subject: Re: [PATCH v2 2/6] can: slcan: remove legacy infrastructure
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     linux-kernel@vger.kernel.org, michael@amarulasolutions.com,
+        Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        Jeroen Hofstee <jhofstee@victronenergy.com>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Max Staudt <max@enpas.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 22 Jul 2022 18:52:20 -0700, Ryan Lee wrote:
-> The 0x203E speaker gain register should be non-volatile.
-> This register value was not able to be synced because it was marked as
-> volatile.
-> 
-> 
+Hello Marc,
 
-Applied to
+On Mon, Jul 25, 2022 at 2:38 PM Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+>
+> On 25.07.2022 08:54:15, Dario Binacchi wrote:
+> > Taking inspiration from the drivers/net/can/can327.c driver and at the
+> > suggestion of its author Max Staudt, I removed legacy stuff like
+> > `SLCAN_MAGIC' and `slcan_devs' resulting in simplification of the code
+> > and its maintainability.
+> >
+> > The use of slcan_devs is derived from a very old kernel, since slip.c
+> > is about 30 years old, so today's kernel allows us to remove it.
+> >
+> > The .hangup() ldisc function, which only called the ldisc .close(), has
+> > been removed since the ldisc layer calls .close() in a good place
+> > anyway.
+> >
+> > The old slcanX name has been dropped in order to use the standard canX
+> > interface naming. It has been assumed that this change does not break
+> > the user space as the slcan driver provides an ioctl to resolve from tty
+> > fd to netdev name.
+>
+> Is there a man page that documents this iotcl? Please add it and/or the
+> IOCTL name.
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
+I have not found documentation of the SIOCGIFNAME ioctl for the line discipline,
+but only for netdev (i. e.
+https://man7.org/linux/man-pages/man7/netdevice.7.html),
 
-Thanks!
+Thanks and regards,
+Dario
 
-[1/1] ASoC: max98373: Removing 0x203E from the volatile reg
-      commit: bd1963d837a082e1083cd396803d3d263a9ef68b
+>
+> > The `maxdev' module parameter has also been removed.
+> >
+> > CC: Max Staudt <max@enpas.org>
+> > Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+> >
+> > ---
+> >
+> > Changes in v2:
+>
+> Nitpick:
+> Changes since RFC: https://lore.kernel.org/all/20220716170007.2020037-1-dario.binacchi@amarulasolutions.com
+>
+> > - Update the commit description.
+> > - Drop the old "slcan" name to use the standard canX interface naming.
+> >
+> >  drivers/net/can/slcan/slcan-core.c | 318 ++++++-----------------------
+> >  1 file changed, 63 insertions(+), 255 deletions(-)
+> >
+> > diff --git a/drivers/net/can/slcan/slcan-core.c b/drivers/net/can/slcan/slcan-core.c
+> > index c3dd7468a066..2c546f4a7981 100644
+> > --- a/drivers/net/can/slcan/slcan-core.c
+> > +++ b/drivers/net/can/slcan/slcan-core.c
+>
+> [...]
+>
+> > @@ -898,72 +799,49 @@ static int slcan_open(struct tty_struct *tty)
+> >       if (!tty->ops->write)
+> >               return -EOPNOTSUPP;
+> >
+> > -     /* RTnetlink lock is misused here to serialize concurrent
+> > -      * opens of slcan channels. There are better ways, but it is
+> > -      * the simplest one.
+> > -      */
+> > -     rtnl_lock();
+> > +     dev = alloc_candev(sizeof(*sl), 1);
+> > +     if (!dev)
+> > +             return -ENFILE;
+> >
+> > -     /* Collect hanged up channels. */
+> > -     slc_sync();
+> > +     sl = netdev_priv(dev);
+> >
+> > -     sl = tty->disc_data;
+> > +     /* Configure TTY interface */
+> > +     tty->receive_room = 65536; /* We don't flow control */
+> > +     sl->rcount   = 0;
+> > +     sl->xleft    = 0;
+>
+> Nitpick: Please use 1 space in front of the =.
+>
+> regards,
+> Marc
+>
+> --
+> Pengutronix e.K.                 | Marc Kleine-Budde           |
+> Embedded Linux                   | https://www.pengutronix.de  |
+> Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+> Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
 
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
 
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
+-- 
 
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
+Dario Binacchi
 
-Thanks,
-Mark
+Embedded Linux Developer
+
+dario.binacchi@amarulasolutions.com
+
+__________________________________
+
+
+Amarula Solutions SRL
+
+Via Le Canevare 30, 31100 Treviso, Veneto, IT
+
+T. +39 042 243 5310
+info@amarulasolutions.com
+
+www.amarulasolutions.com
