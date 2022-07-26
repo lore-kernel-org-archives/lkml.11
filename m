@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9B9BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 01:38:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65319C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 01:39:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237230AbiGZBi4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 21:38:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36474 "EHLO
+        id S237396AbiGZBi7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 21:38:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237396AbiGZBiv (ORCPT
+        with ESMTP id S237387AbiGZBiw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 21:38:51 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32EA428721;
-        Mon, 25 Jul 2022 18:38:50 -0700 (PDT)
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LsKKb2XJkz9sv4;
-        Tue, 26 Jul 2022 09:37:39 +0800 (CST)
+        Mon, 25 Jul 2022 21:38:52 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A55C28736;
+        Mon, 25 Jul 2022 18:38:51 -0700 (PDT)
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.57])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4LsKHf2NCPz1M8MD;
+        Tue, 26 Jul 2022 09:35:58 +0800 (CST)
 Received: from kwepemm600007.china.huawei.com (7.193.23.208) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 26 Jul 2022 09:38:08 +0800
-Received: from localhost.localdomain (10.69.192.56) by
+ 15.1.2375.24; Tue, 26 Jul 2022 09:38:49 +0800
+Received: from [10.67.102.167] (10.67.102.167) by
  kwepemm600007.china.huawei.com (7.193.23.208) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 26 Jul 2022 09:38:08 +0800
-From:   Jie Hai <haijie1@huawei.com>
-To:     <vkoul@kernel.org>, <wangzhou1@hisilicon.com>
-CC:     <haijie1@huawei.com>, <liudongdong3@huawei.com>,
-        <dmaengine@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v3 4/7] dmaengine: hisilicon: Use macros instead of magic number
-Date:   Tue, 26 Jul 2022 09:35:22 +0800
-Message-ID: <20220726013525.13059-5-haijie1@huawei.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220726013525.13059-1-haijie1@huawei.com>
-References: <20220625074422.3479591-1-haijie1@huawei.com>
- <20220726013525.13059-1-haijie1@huawei.com>
+ 15.1.2375.24; Tue, 26 Jul 2022 09:38:49 +0800
+Message-ID: <dfa515b1-2322-25b2-7b90-f7dd11b2ff47@huawei.com>
+Date:   Tue, 26 Jul 2022 09:38:48 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.69.192.56]
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v2 2/7] dmaengine: hisilicon: Fix CQ head update
+To:     Vinod Koul <vkoul@kernel.org>
+CC:     <wangzhou1@hisilicon.com>, <dmaengine@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20220625074422.3479591-1-haijie1@huawei.com>
+ <20220629035549.44181-1-haijie1@huawei.com>
+ <20220629035549.44181-3-haijie1@huawei.com> <YtlULeGbn+z5AVP+@matsya>
+From:   Jie Hai <haijie1@huawei.com>
+In-Reply-To: <YtlULeGbn+z5AVP+@matsya>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.102.167]
 X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
  kwepemm600007.china.huawei.com (7.193.23.208)
 X-CFilter-Loop: Reflected
@@ -48,68 +50,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-readl_relaxed_poll_timeout() uses magic numbers 10 and 1000, which
-indicate maximum time to sleep between reads in us and timeout in us,
-respectively.
-
-Use macros HISI_DMA_POLL_Q_STS_DELAY_US and
-HISI_DMA_POLL_Q_STS_TIME_OUT_US instead of these two numbers.
-
-Signed-off-by: Jie Hai <haijie1@huawei.com>
----
- drivers/dma/hisi_dma.c | 19 +++++++++++++------
- 1 file changed, 13 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/dma/hisi_dma.c b/drivers/dma/hisi_dma.c
-index 0233b42143c7..5d62fe62ba00 100644
---- a/drivers/dma/hisi_dma.c
-+++ b/drivers/dma/hisi_dma.c
-@@ -36,6 +36,9 @@
- 
- #define PCI_BAR_2			2
- 
-+#define HISI_DMA_POLL_Q_STS_DELAY_US	10
-+#define HISI_DMA_POLL_Q_STS_TIME_OUT_US	1000
-+
- enum hisi_dma_mode {
- 	EP = 0,
- 	RC,
-@@ -185,15 +188,19 @@ static void hisi_dma_reset_or_disable_hw_chan(struct hisi_dma_chan *chan,
- {
- 	struct hisi_dma_dev *hdma_dev = chan->hdma_dev;
- 	u32 index = chan->qp_num, tmp;
-+	void __iomem *addr;
- 	int ret;
- 
- 	hisi_dma_pause_dma(hdma_dev, index, true);
- 	hisi_dma_enable_dma(hdma_dev, index, false);
- 	hisi_dma_mask_irq(hdma_dev, index);
- 
--	ret = readl_relaxed_poll_timeout(hdma_dev->base +
--		HISI_DMA_Q_FSM_STS + index * HISI_DMA_OFFSET, tmp,
--		FIELD_GET(HISI_DMA_FSM_STS_MASK, tmp) != RUN, 10, 1000);
-+	addr = hdma_dev->base +
-+	       HISI_DMA_Q_FSM_STS + index * HISI_DMA_OFFSET;
-+
-+	ret = readl_relaxed_poll_timeout(addr, tmp,
-+		FIELD_GET(HISI_DMA_FSM_STS_MASK, tmp) != RUN,
-+		HISI_DMA_POLL_Q_STS_DELAY_US, HISI_DMA_POLL_Q_STS_TIME_OUT_US);
- 	if (ret) {
- 		dev_err(&hdma_dev->pdev->dev, "disable channel timeout!\n");
- 		WARN_ON(1);
-@@ -208,9 +215,9 @@ static void hisi_dma_reset_or_disable_hw_chan(struct hisi_dma_chan *chan,
- 		hisi_dma_unmask_irq(hdma_dev, index);
- 	}
- 
--	ret = readl_relaxed_poll_timeout(hdma_dev->base +
--		HISI_DMA_Q_FSM_STS + index * HISI_DMA_OFFSET, tmp,
--		FIELD_GET(HISI_DMA_FSM_STS_MASK, tmp) == IDLE, 10, 1000);
-+	ret = readl_relaxed_poll_timeout(addr, tmp,
-+		FIELD_GET(HISI_DMA_FSM_STS_MASK, tmp) == IDLE,
-+		HISI_DMA_POLL_Q_STS_DELAY_US, HISI_DMA_POLL_Q_STS_TIME_OUT_US);
- 	if (ret) {
- 		dev_err(&hdma_dev->pdev->dev, "reset channel timeout!\n");
- 		WARN_ON(1);
--- 
-2.33.0
-
+On 2022/7/21 21:27, Vinod Koul wrote:
+> On 29-06-22, 11:55, Jie Hai wrote:
+>> After completion of data transfer of one or multiple descriptors,
+>> the completion status and the current head pointer to submission
+>> queue are written into the CQ and interrupt can be generated to
+>> inform the software. In interrupt process CQ is read and cq_head
+>> is updated.
+>>
+>> hisi_dma_irq updates cq_head only when the completion status is
+>> success. When an abnormal interrupt reports, cq_head will not update
+>> which will cause subsequent interrupt processes read the error CQ
+>> and never report the correct status.
+>>
+>> This patch updates cq_head whenever CQ is accessed.
+>>
+>> Fixes: e9f08b65250d ("dmaengine: hisilicon: Add Kunpeng DMA engine support")
+>> Reported-by: kernel test robot <lkp@intel.com>
+>> Signed-off-by: Jie Hai <haijie1@huawei.com>
+>> ---
+>>   drivers/dma/hisi_dma.c | 10 +++++-----
+>>   1 file changed, 5 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/drivers/dma/hisi_dma.c b/drivers/dma/hisi_dma.c
+>> index 98bc488893cc..7609e6e7eb37 100644
+>> --- a/drivers/dma/hisi_dma.c
+>> +++ b/drivers/dma/hisi_dma.c
+>> @@ -436,12 +436,12 @@ static irqreturn_t hisi_dma_irq(int irq, void *data)
+>>   	desc = chan->desc;
+>>   	cqe = chan->cq + chan->cq_head;
+>>   	if (desc) {
+>> +		chan->cq_head = (chan->cq_head + 1) %
+>> +				hdma_dev->chan_depth;
+> 
+> This can look better with single line
+> 
+Thanks for your reviewing.
+These issues have been fixed in V3.
+>> +		hisi_dma_chan_write(hdma_dev->base,
+>> +				    HISI_DMA_CQ_HEAD_PTR, chan->qp_num,
+>> +				    chan->cq_head);
+> 
+> maybe two lines?
+> 
+>>   		if (FIELD_GET(STATUS_MASK, cqe->w0) == STATUS_SUCC) {
+>> -			chan->cq_head = (chan->cq_head + 1) %
+>> -					hdma_dev->chan_depth;
+>> -			hisi_dma_chan_write(hdma_dev->base,
+>> -					    HISI_DMA_CQ_HEAD_PTR, chan->qp_num,
+>> -					    chan->cq_head);
+>>   			vchan_cookie_complete(&desc->vd);
+>>   		} else {
+>>   			dev_err(&hdma_dev->pdev->dev, "task error!\n");
+>> -- 
+>> 2.33.0
+> 
