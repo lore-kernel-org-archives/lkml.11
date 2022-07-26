@@ -2,58 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A700AC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 07:40:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5156FC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 07:40:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232307AbiGZHkA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 03:40:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54040 "EHLO
+        id S238223AbiGZHkH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 03:40:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238394AbiGZHil (ORCPT
+        with ESMTP id S232421AbiGZHin (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 03:38:41 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10A472B631
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 00:38:06 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id b129-20020a25e487000000b0066e1c52ac55so10471144ybh.11
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 00:38:06 -0700 (PDT)
+        Tue, 26 Jul 2022 03:38:43 -0400
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AD65C2C
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 00:38:18 -0700 (PDT)
+Received: by mail-yb1-xb4a.google.com with SMTP id v19-20020a252f13000000b0067174f085e9so558938ybv.1
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 00:38:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc:content-transfer-encoding;
-        bh=KintJzFkc3fGk0PZThBnEs9+mVIkzS8MGNi7+4hHocM=;
-        b=F99U/GyUMm86I5hhUPAEh3i37Efs41f+NjVsXrba2/WKPQPyfrqe2tZkqcM8WLdn4N
-         tjoyQVaWZBceiGc+IiYE68nlfbCinUJe03/UFDa39xJ3UpbZdD9kbzr1fXgF94y52jEV
-         rS8Lbe7khCJnAGE3uuqPQYZcwfmKGiiahXSgT5hnhAxspgLgUZwx2XcFjsYvNHIlG4TO
-         Kz3pafuhE8xSvKeQKTkBbd6h7vha4xx8mVypWM60J3ynB/E+WPGvUVSThWgp4tikyd+6
-         meIxa9eGPMfqTbQzFurHAAv657oZE/ifKVL3Y5P3LVWtokWYf79sEL7M95vb7JRmvBTK
-         wWkA==
+        bh=9m8IvwBOrk2IG7YkQAmQznPKKCvMCFPD8HJb+zFgtK8=;
+        b=VhKEEavk6g8DUisEYJ5fAHdMTvKq1n+wB7+56Ad5f4Tt+AZAOv7GuRys7Kgb+3+KOG
+         p03FaqATet8gRqAPFppMF9Kfbj/aDmzrkJudV1qME6MnQKWKFtW9pdbRTtwAn+OYEWy9
+         B7NVUpEbguxv4nUZgDaWFKufpopj+7xZULmeUF3mYeIBkoglfz3pXlVJNkApttUvBYbv
+         rf6vSs4cE7BLt6NNMWawOgPLMDkK1hTQ1GT2YS9ZHmApphd+I6th/NhszMgZ5+elz7pb
+         C/8gi3GqQXgiVyNuV4OmLVw58XuRoDb52Hqoazg89l/+gnlHqCoQ8xlq2Oe6EZ9y9f0p
+         VBuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc:content-transfer-encoding;
-        bh=KintJzFkc3fGk0PZThBnEs9+mVIkzS8MGNi7+4hHocM=;
-        b=QULUVCu0PVe0m/uTPYGuDup9Gh8N0s1E66zyiVArJPjJUScIf0+c0AMxOkg3GKEAfE
-         Tik1cOBpmJRu6gIy3KDwswG+nXseoG3V35m29G+ba2lyG8ycNcNmNxRf57lknkB3VK4H
-         SPMA27C6wYmyWeEb+iUPT4aMIR4QP0O76A4ifAiuWTqKzyC453NxpvG81iAmYQf1EPF2
-         pIdpbzXV5hxQoc87Dc0mPyfpcKH2Uua0uZUEDFM0pkHcuFfbndt91aMs7rJt+HBN07Ek
-         ToT1kuSSxjSXxwWkqu8uc8yQZ/IG36602V0s+f9qyQE/pFTG9d4QJbpltkFtz0Mm1uiG
-         NQsA==
-X-Gm-Message-State: AJIora+4uANsdhACRwErLGlB7gt/epZ3EzwEWloXCNiKtCvR8fe0y+uF
-        Hkhyyf3QNBgyCrM4J23ZkPRSv2/YMhfOUPxxZw==
-X-Google-Smtp-Source: AGRyM1tViIgbjsnsd0F2wwzY/mHFi+V+awQaQAAf7taOX+okajo7NRVMTiuzJzRWy3+FHjR02RHuf/ccxOBvmI+klQ==
+        bh=9m8IvwBOrk2IG7YkQAmQznPKKCvMCFPD8HJb+zFgtK8=;
+        b=gd0LQlp4FS4RvpGcFaLfv5eOtn63y93L8YAyBwZjt2zkdpGtY2qSlljlsXiY7TjDLC
+         KT0WvamwlDbikhOQVDat42+5eCNMPouHa8ZcWDrJXkovQdm8fEX+3aAJsNRJxbWUjPTH
+         40Aa4l6gt+SU5Q+fDI8zNHmH2zHym7uhLOG9KE29r7rrCtU+8AgMCY7VMVYACferoiZ3
+         NEQjHnRkzNLJNpIVarlmh897BIhoFoRjoAw/Wp8SZZiAFEfyO7dbIkKqek0NTQISy6h2
+         pQeBjj7ZYq7fS4J8mXIRThm5JTo1YOHcUJB9TIjr0jEvd3xtbigtOo1onoBYTF21ptph
+         8sig==
+X-Gm-Message-State: AJIora+uTgTrdS/KfhRyuxZGxgOoFhoE6Bgg4sus3mmjqsssKXPJLlNM
+        O/BgO8YpG9jWw/t/YEcrabKs6YI0+4jxLva1jA==
+X-Google-Smtp-Source: AGRyM1tZibhQ2sQ3XGV5gsfb456P6K4Ka3kCr7dAdskf5tEREIiKvgCRKyyCGjYAT/M3AHlYk45u/sv5vdP+iu+2/Q==
 X-Received: from kaleshsingh.mtv.corp.google.com ([2620:15c:211:200:4f77:3b64:736a:394e])
- (user=kaleshsingh job=sendgmr) by 2002:a25:d796:0:b0:671:6696:d824 with SMTP
- id o144-20020a25d796000000b006716696d824mr3624037ybg.52.1658821085312; Tue,
- 26 Jul 2022 00:38:05 -0700 (PDT)
-Date:   Tue, 26 Jul 2022 00:37:37 -0700
+ (user=kaleshsingh job=sendgmr) by 2002:a25:d6cc:0:b0:671:6e7e:d5d9 with SMTP
+ id n195-20020a25d6cc000000b006716e7ed5d9mr1909023ybg.14.1658821097301; Tue,
+ 26 Jul 2022 00:38:17 -0700 (PDT)
+Date:   Tue, 26 Jul 2022 00:37:42 -0700
 In-Reply-To: <20220726073750.3219117-1-kaleshsingh@google.com>
-Message-Id: <20220726073750.3219117-5-kaleshsingh@google.com>
+Message-Id: <20220726073750.3219117-10-kaleshsingh@google.com>
 Mime-Version: 1.0
 References: <20220726073750.3219117-1-kaleshsingh@google.com>
 X-Mailer: git-send-email 2.37.1.359.gd136c6c3e2-goog
-Subject: [PATCH v6 04/17] arm64: stacktrace: Handle frame pointer from
- different address spaces
+Subject: [PATCH v6 09/17] KVM: arm64: Prepare non-protected nVHE hypervisor stacktrace
 From:   Kalesh Singh <kaleshsingh@google.com>
 To:     maz@kernel.org, mark.rutland@arm.com, broonie@kernel.org,
         madvenka@linux.microsoft.com, tabba@google.com,
@@ -74,14 +73,15 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The unwinder code is made reusable so that it can be used to
-unwind various types of stacks. One usecase is unwinding the
-nVHE hyp stack from the host (EL1) in non-protected mode. This
-means that the unwinder must be able to translate HYP stack
-addresses to kernel addresses.
+In non-protected nVHE mode (non-pKVM) the host can directly access
+hypervisor memory; and unwinding of the hypervisor stacktrace is
+done from EL1 to save on memory for shared buffers.
 
-Add a callback (stack_trace_translate_fp_fn) to allow specifying
-the translation function.
+To unwind the hypervisor stack from EL1 the host needs to know the
+starting point for the unwind and information that will allow it to
+translate hypervisor stack addresses to the corresponding kernel
+addresses. This patch sets up this book keeping. It is made use of
+later in the series.
 
 Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
 Reviewed-by: Fuad Tabba <tabba@google.com>
@@ -89,96 +89,129 @@ Tested-by: Fuad Tabba <tabba@google.com>
 ---
 
 Changes in v6:
-  - Fix typo in comment, per Fuad
-  - Add Fuad=E2=80=99s Reviewed-by tag and Tested-by tags
+  - Add Fuad=E2=80=99s Reviewed-by and Tested-by tags
 
 Changes in v5:
-  - Fix typo in commit text, per Fuad
-  - Update unwind_next_common() to not have side effects on failure, per Fu=
-ad
-  - Use regular comment instead of doc comments, per Fuad
+  - Use regular comments instead of doc comments, per Fuad
 
- arch/arm64/include/asm/stacktrace/common.h | 29 +++++++++++++++++++---
- arch/arm64/kernel/stacktrace.c             |  2 +-
- 2 files changed, 26 insertions(+), 5 deletions(-)
+ arch/arm64/include/asm/kvm_asm.h     | 16 +++++++++++
+ arch/arm64/kvm/hyp/nvhe/stacktrace.c | 41 ++++++++++++++++++++++++++++
+ arch/arm64/kvm/hyp/nvhe/switch.c     |  6 ++++
+ 3 files changed, 63 insertions(+)
 
-diff --git a/arch/arm64/include/asm/stacktrace/common.h b/arch/arm64/includ=
-e/asm/stacktrace/common.h
-index 0c5cbfdb56b5..b241edba5c76 100644
---- a/arch/arm64/include/asm/stacktrace/common.h
-+++ b/arch/arm64/include/asm/stacktrace/common.h
-@@ -124,11 +124,25 @@ static inline void unwind_init_common(struct unwind_s=
-tate *state,
- 	state->prev_type =3D STACK_TYPE_UNKNOWN;
- }
+diff --git a/arch/arm64/include/asm/kvm_asm.h b/arch/arm64/include/asm/kvm_=
+asm.h
+index 2e277f2ed671..53035763e48e 100644
+--- a/arch/arm64/include/asm/kvm_asm.h
++++ b/arch/arm64/include/asm/kvm_asm.h
+@@ -176,6 +176,22 @@ struct kvm_nvhe_init_params {
+ 	unsigned long vtcr;
+ };
 =20
 +/*
-+ * stack_trace_translate_fp_fn() - Translates a non-kernel frame pointer t=
-o
-+ * a kernel address.
++ * Used by the host in EL1 to dump the nVHE hypervisor backtrace on
++ * hyp_panic() in non-protected mode.
 + *
-+ * @fp:   the frame pointer to be updated to its kernel address.
-+ * @type: the stack type associated with frame pointer @fp
-+ *
-+ * Returns true and success and @fp is updated to the corresponding
-+ * kernel virtual address; otherwise returns false.
++ * @stack_base:                 hyp VA of the hyp_stack base.
++ * @overflow_stack_base:        hyp VA of the hyp_overflow_stack base.
++ * @fp:                         hyp FP where the backtrace begins.
++ * @pc:                         hyp PC where the backtrace begins.
 + */
-+typedef bool (*stack_trace_translate_fp_fn)(unsigned long *fp,
-+					    enum stack_type type);
++struct kvm_nvhe_stacktrace_info {
++	unsigned long stack_base;
++	unsigned long overflow_stack_base;
++	unsigned long fp;
++	unsigned long pc;
++};
 +
- static inline int unwind_next_common(struct unwind_state *state,
--				     struct stack_info *info)
-+				     struct stack_info *info,
-+				     stack_trace_translate_fp_fn translate_fp)
+ /* Translate a kernel address @ptr into its equivalent linear mapping */
+ #define kvm_ksym_ref(ptr)						\
+ 	({								\
+diff --git a/arch/arm64/kvm/hyp/nvhe/stacktrace.c b/arch/arm64/kvm/hyp/nvhe=
+/stacktrace.c
+index a3d5b34e1249..b8a280aa026a 100644
+--- a/arch/arm64/kvm/hyp/nvhe/stacktrace.c
++++ b/arch/arm64/kvm/hyp/nvhe/stacktrace.c
+@@ -4,8 +4,49 @@
+  *
+  * Copyright (C) 2022 Google LLC
+  */
++#include <asm/kvm_asm.h>
++#include <asm/kvm_hyp.h>
+ #include <asm/memory.h>
+ #include <asm/percpu.h>
+=20
+ DEFINE_PER_CPU(unsigned long [OVERFLOW_STACK_SIZE/sizeof(long)], overflow_=
+stack)
+ 	__aligned(16);
++
++DEFINE_PER_CPU(struct kvm_nvhe_stacktrace_info, kvm_stacktrace_info);
++
++/*
++ * hyp_prepare_backtrace - Prepare non-protected nVHE backtrace.
++ *
++ * @fp : frame pointer at which to start the unwinding.
++ * @pc : program counter at which to start the unwinding.
++ *
++ * Save the information needed by the host to unwind the non-protected
++ * nVHE hypervisor stack in EL1.
++ */
++static void hyp_prepare_backtrace(unsigned long fp, unsigned long pc)
++{
++	struct kvm_nvhe_stacktrace_info *stacktrace_info =3D this_cpu_ptr(&kvm_st=
+acktrace_info);
++	struct kvm_nvhe_init_params *params =3D this_cpu_ptr(&kvm_init_params);
++
++	stacktrace_info->stack_base =3D (unsigned long)(params->stack_hyp_va - PA=
+GE_SIZE);
++	stacktrace_info->overflow_stack_base =3D (unsigned long)this_cpu_ptr(over=
+flow_stack);
++	stacktrace_info->fp =3D fp;
++	stacktrace_info->pc =3D pc;
++}
++
++/*
++ * kvm_nvhe_prepare_backtrace - prepare to dump the nVHE backtrace
++ *
++ * @fp : frame pointer at which to start the unwinding.
++ * @pc : program counter at which to start the unwinding.
++ *
++ * Saves the information needed by the host to dump the nVHE hypervisor
++ * backtrace.
++ */
++void kvm_nvhe_prepare_backtrace(unsigned long fp, unsigned long pc)
++{
++	if (is_protected_kvm_enabled())
++		return;
++	else
++		hyp_prepare_backtrace(fp, pc);
++}
+diff --git a/arch/arm64/kvm/hyp/nvhe/switch.c b/arch/arm64/kvm/hyp/nvhe/swi=
+tch.c
+index 6db801db8f27..64e13445d0d9 100644
+--- a/arch/arm64/kvm/hyp/nvhe/switch.c
++++ b/arch/arm64/kvm/hyp/nvhe/switch.c
+@@ -34,6 +34,8 @@ DEFINE_PER_CPU(struct kvm_host_data, kvm_host_data);
+ DEFINE_PER_CPU(struct kvm_cpu_context, kvm_hyp_ctxt);
+ DEFINE_PER_CPU(unsigned long, kvm_hyp_vector);
+=20
++extern void kvm_nvhe_prepare_backtrace(unsigned long fp, unsigned long pc)=
+;
++
+ static void __activate_traps(struct kvm_vcpu *vcpu)
  {
-+	unsigned long fp =3D state->fp, kern_fp =3D fp;
- 	struct task_struct *tsk =3D state->task;
--	unsigned long fp =3D state->fp;
+ 	u64 val;
+@@ -375,6 +377,10 @@ asmlinkage void __noreturn hyp_panic(void)
+ 		__sysreg_restore_state_nvhe(host_ctxt);
+ 	}
 =20
- 	if (fp & 0x7)
- 		return -EINVAL;
-@@ -139,6 +153,13 @@ static inline int unwind_next_common(struct unwind_sta=
-te *state,
- 	if (test_bit(info->type, state->stacks_done))
- 		return -EINVAL;
-=20
-+	/*
-+	 * If fp is not from the current address space perform the necessary
-+	 * translation before dereferencing it to get the next fp.
-+	 */
-+	if (translate_fp && !translate_fp(&kern_fp, info->type))
-+		return -EINVAL;
++	/* Prepare to dump kvm nvhe hyp stacktrace */
++	kvm_nvhe_prepare_backtrace((unsigned long)__builtin_frame_address(0),
++				   _THIS_IP_);
 +
- 	/*
- 	 * As stacks grow downward, any valid record on the same stack must be
- 	 * at a strictly higher address than the prior record.
-@@ -163,8 +184,8 @@ static inline int unwind_next_common(struct unwind_stat=
-e *state,
- 	 * Record this frame record's values and location. The prev_fp and
- 	 * prev_type are only meaningful to the next unwind_next() invocation.
- 	 */
--	state->fp =3D READ_ONCE(*(unsigned long *)(fp));
--	state->pc =3D READ_ONCE(*(unsigned long *)(fp + 8));
-+	state->fp =3D READ_ONCE(*(unsigned long *)(kern_fp));
-+	state->pc =3D READ_ONCE(*(unsigned long *)(kern_fp + 8));
- 	state->prev_fp =3D fp;
- 	state->prev_type =3D info->type;
-=20
-diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.=
-c
-index 834851939364..eef3cf6bf2d7 100644
---- a/arch/arm64/kernel/stacktrace.c
-+++ b/arch/arm64/kernel/stacktrace.c
-@@ -87,7 +87,7 @@ static int notrace unwind_next(struct unwind_state *state=
-)
- 	if (fp =3D=3D (unsigned long)task_pt_regs(tsk)->stackframe)
- 		return -ENOENT;
-=20
--	err =3D unwind_next_common(state, &info);
-+	err =3D unwind_next_common(state, &info, NULL);
- 	if (err)
- 		return err;
-=20
+ 	__hyp_do_panic(host_ctxt, spsr, elr, par);
+ 	unreachable();
+ }
 --=20
 2.37.1.359.gd136c6c3e2-goog
 
