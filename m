@@ -2,218 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67281C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 02:56:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6812EC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 03:02:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231658AbiGZC4Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 22:56:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49222 "EHLO
+        id S237374AbiGZDCv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 23:02:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229853AbiGZC4Y (ORCPT
+        with ESMTP id S231151AbiGZDCs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 22:56:24 -0400
-Received: from mx0b-0031df01.pphosted.com (mx0b-0031df01.pphosted.com [205.220.180.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8142611441;
-        Mon, 25 Jul 2022 19:56:23 -0700 (PDT)
-Received: from pps.filterd (m0279872.ppops.net [127.0.0.1])
-        by mx0a-0031df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26Q0oJGH012131;
-        Tue, 26 Jul 2022 02:55:59 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=quicinc.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=qcppdkim1;
- bh=eh7lwV78QvbkO6UqWgVk7uxqFlg4dBXN/Goh4UfRBYI=;
- b=k/y7wPYT++cECz42lbSsiSPquF0/DEf6rYO00e/son/i/eKtJWLxWWupK+ZDup9Zka9f
- PEe0ec90ec587kStHYInG26q7ixTyolJZZQmCC+FazaB3WRMbJfHBlPYMLOnZOSb8kOH
- gcZ3GqWnUm4vrNNJcmIPOp/jyZxH3hAYtN2bb6h1wq8ecg0v/CUGRyRAflJcVJAZNKw9
- YlqS7qsrZyKHfluJnM8iX2IEcpSVsPilcTtcJn46llfprQHYjiZPFeU/QbpcBwOcY8AM
- ShqyDV+SVRIBsGndl6kuJSR053XQeoyPUeF++ok2/gdneYeNpfMQ9d7nuM2o7+b/WYy7 Ow== 
-Received: from nasanppmta05.qualcomm.com (i-global254.qualcomm.com [199.106.103.254])
-        by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 3hhs84jc3u-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 26 Jul 2022 02:55:59 +0000
-Received: from nasanex01c.na.qualcomm.com (nasanex01c.na.qualcomm.com [10.47.97.222])
-        by NASANPPMTA05.qualcomm.com (8.17.1.5/8.17.1.5) with ESMTPS id 26Q2tw3A019793
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 26 Jul 2022 02:55:58 GMT
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Mon, 25 Jul 2022 19:55:57 -0700
-Received: from [10.253.34.146] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 25 Jul
- 2022 19:55:52 -0700
-Message-ID: <2975315f-f59b-0787-a662-e50766aaf470@quicinc.com>
-Date:   Tue, 26 Jul 2022 10:55:50 +0800
+        Mon, 25 Jul 2022 23:02:48 -0400
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2055.outbound.protection.outlook.com [40.107.20.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AC74237EF;
+        Mon, 25 Jul 2022 20:02:47 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XM+J7fn2ts0z8oHf9qXlnhOgwCi76TZ2QAE1IbO7es/in/la+zwCT8VFxLuyKw3CWqIazfITwrppLrPmyXDmqR1ba15NoPgGhApl3/qrfuxeJJyA6VXX4CbpKZZDOczK32G55d0rxLBoReoSMlGPyEB96t4vaKAYiaywpWs69V4uE85LZDS5Bc/Cx2UeC0WdQCAL48kpNxrp6MQK4U42Kcc+VKiKJyK5o3B3POcp+dvcpvfnFO+zuZTxQXt+GLOhYr9Yms5sfw+W9KVPKHQzYQyu53pTNQ1wdJU2IIXmF9ViKWIu+4dbKx1tUODONb1Z8s8QPS1v024M/8NpFNpvZA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=GuqCN+bO9wqFCnqBStPQZKMFVBt9uNDeRqK1qGw0Yw8=;
+ b=NUjP2EKIsBP7t7JJlviIM4RwpG8AdORSEdhx9ZSme0NyOoraU0neGTwj7ohoX6yRntwcX2svl8gI7f+iYjaqMFLK9RuKF8vHbniX1CzZtCfOsibEe3ceCCE4ddMuIwJF0ogGnkxDfxoZZMtGbO2o0i2vurk1APlzFuQlK1q/98rPtrQ8A7qfqY4keJsQxMaKM53AzRM6lAHMpailVTODRz1DV7j+Rgm80S4Byn2WMjZHPzccNARSUt+uxPqlsSTOT7l1o4wpx2oMGnuEN3mGtuf1/lv4rk2MW9FKu1WrE5hbbShXwcGbtyORwW/ceFRLrRQLpvDdeX2lkdueKQzyEA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GuqCN+bO9wqFCnqBStPQZKMFVBt9uNDeRqK1qGw0Yw8=;
+ b=bNLACiN8O4mhICaA7DXJGkwsf/oCp+DwTAM0r0VGxCMi79musXKlG+tWuQSwBrT48c9wP/bcEjIjPxjvxX+c2JpkUiuWYUY/XVj6i3Ik6iMwt7FmlMEw1QI/HI18UfUX2WG2E8piox3n0V71DXhcU6ovs0s1WTCzGrwRWDFDmKA=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+Received: from AM6PR04MB6341.eurprd04.prod.outlook.com (2603:10a6:20b:d8::14)
+ by DU0PR04MB9370.eurprd04.prod.outlook.com (2603:10a6:10:359::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.24; Tue, 26 Jul
+ 2022 03:02:45 +0000
+Received: from AM6PR04MB6341.eurprd04.prod.outlook.com
+ ([fe80::5db6:3f08:2e04:33c]) by AM6PR04MB6341.eurprd04.prod.outlook.com
+ ([fe80::5db6:3f08:2e04:33c%4]) with mapi id 15.20.5438.023; Tue, 26 Jul 2022
+ 03:02:45 +0000
+From:   Ming Qian <ming.qian@nxp.com>
+To:     mchehab@kernel.org, hverkuil-cisco@xs4all.nl
+Cc:     shawnguo@kernel.org, robh+dt@kernel.org, s.hauer@pengutronix.de,
+        kernel@pengutronix.de, festevam@gmail.com, linux-imx@nxp.com,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH] media: amphion: don't change the colorspace reported by decoder.
+Date:   Tue, 26 Jul 2022 11:02:29 +0800
+Message-Id: <20220726030229.31419-1-ming.qian@nxp.com>
+X-Mailer: git-send-email 2.36.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: SI2PR02CA0039.apcprd02.prod.outlook.com
+ (2603:1096:4:196::9) To AM6PR04MB6341.eurprd04.prod.outlook.com
+ (2603:10a6:20b:d8::14)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH 1/2] scsi: ufs: Add Multi-Circular Queue support
-Content-Language: en-US
-To:     Avri Altman <Avri.Altman@wdc.com>,
-        "bvanassche@acm.org" <bvanassche@acm.org>,
-        "stanley.chu@mediatek.com" <stanley.chu@mediatek.com>,
-        "adrian.hunter@intel.com" <adrian.hunter@intel.com>,
-        "alim.akhtar@samsung.com" <alim.akhtar@samsung.com>,
-        "beanhuo@micron.com" <beanhuo@micron.com>,
-        "quic_asutoshd@quicinc.com" <quic_asutoshd@quicinc.com>,
-        "quic_nguyenb@quicinc.com" <quic_nguyenb@quicinc.com>,
-        "quic_ziqichen@quicinc.com" <quic_ziqichen@quicinc.com>,
-        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
-        "kernel-team@android.com" <kernel-team@android.com>
-CC:     "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Daejun Park <daejun7.park@samsung.com>,
-        Jinyoung Choi <j-young.choi@samsung.com>,
-        Kiwoong Kim <kwmad.kim@samsung.com>,
-        open list <linux-kernel@vger.kernel.org>
-References: <1658214120-22772-1-git-send-email-quic_cang@quicinc.com>
- <1658214120-22772-2-git-send-email-quic_cang@quicinc.com>
- <DM6PR04MB6575048E121B56FDA56DA27DFC939@DM6PR04MB6575.namprd04.prod.outlook.com>
-From:   Can Guo <quic_cang@quicinc.com>
-In-Reply-To: <DM6PR04MB6575048E121B56FDA56DA27DFC939@DM6PR04MB6575.namprd04.prod.outlook.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
-X-QCInternal: smtphost
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=5800 signatures=585085
-X-Proofpoint-ORIG-GUID: 7aVkLI4sa6HQ-IZBTWliXdILxzYlZQwP
-X-Proofpoint-GUID: 7aVkLI4sa6HQ-IZBTWliXdILxzYlZQwP
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-25_13,2022-07-25_03,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- impostorscore=0 mlxlogscore=999 lowpriorityscore=0 bulkscore=0
- clxscore=1011 suspectscore=0 phishscore=0 mlxscore=0 spamscore=0
- adultscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2206140000 definitions=main-2207260010
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c7395e43-a515-4d15-16c0-08da6eb3500c
+X-MS-TrafficTypeDiagnostic: DU0PR04MB9370:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: pDS252xQnColTKLg4MBkgnmupG8wZe2vOn/hivPr+rTxBQ+m3XzOyDYFaXgAwSUmAUCuesg3NWrDINxqu6VguwlUJdQSUE60lcqgMNwvJyxDOA4wWv4gu6wvaBigNKP9WQarj8nFnKCU3wrJY8yuQE8Mdu4Wk4UQjKVuGQFg63L7m7LfuVY8VVVkLzHiuyaNNekHbtQ6e00V1t42xVK2wBJi4YJgR7ZtHQpzgQKFhlXlacA/1OU0zLxus7KZwGm6HAPBkRTPhjRQpIa3iCbIVS75vTE4g1NU2SdeCCzY3Y8ZANQnHwFHS8S9yetBHkkDMHZ25j7WI1iWkhwa7ntZJVPXi6bzOW/zB01FOgUxUTADT9kRpR5u637TXUur1t/lq7tbfytPABM9XA++J7dKmhpAA8zAYtdnG18eL8/axbQ48gMiS0wOUDi0KFGVVRyeGCagUtV57DHHuR/6YBjfdOhSZmWGZ/GOwP8NjzWUawLsxmQpJKs39ilFAP6iuV/LT4dxb69EPq6/+hj3oLDVYzmoxhOJizjqFyhYifkU2qzkVxvoWLDzB7Yk3dIAK/yxRRRBzCWkeYwhIRmChWDk8pi0+cJDesw/KceADrMOIBVbf8TQHG7Vu8jhToxQjq9GeuUmUuJ1vRsD4Lc5ZoB7SC8JLal26oJDpWBMUOBL1DqbRgb7eTgXCeH3wuK6IV5dI3gbVyHbAJl6tcd7HGsI5mzgNm4DBBEi6uRvj7BvfQNPLp4+jb/io4RHV138myS2YJuYYHrTUXpbu86kOUlbjvfHzWwlgZH2c2/At0XM4oo=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR04MB6341.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(396003)(376002)(366004)(346002)(136003)(38100700002)(478600001)(1076003)(38350700002)(186003)(66946007)(4326008)(8676002)(316002)(66556008)(36756003)(66476007)(6486002)(6506007)(2906002)(41300700001)(7416002)(6666004)(86362001)(6512007)(26005)(44832011)(8936002)(2616005)(5660300002)(83380400001)(52116002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?pq3UNeMzJbR6OJKTuLPAodOcZevMix1/sw6qF7yTis+tFImenfN5EOR2cm0U?=
+ =?us-ascii?Q?9gKrcyweCe4AC9dkf7lKFxDAa1KST6SNBQkEJM1a6392TorUlf/a2yF9rlDO?=
+ =?us-ascii?Q?yLLF4gYiJB7iFJdlpGgT0C/rD+PHwnsLt9SHtm3UC+ctknTtT0ZE8X5g749X?=
+ =?us-ascii?Q?EfxhcnI3GaGHG8/iUJDlR9JmNvBjsri8aqiKL7w/nz9EwLZD8IgeaGJDK8OE?=
+ =?us-ascii?Q?OXRhm5QoFa0P6m+p3yAJ2dyQQR0S9VdrqWPLX74F1S5/k1gPDcK1psvK6OtM?=
+ =?us-ascii?Q?0KcHQC4SDDyGaYpfHscbfOs+zvkAZsMLKHwuhXtVg+zVfGJpdTjdpzquz/o3?=
+ =?us-ascii?Q?KCV5+Shb5UbqwQdolK35Vjxlh/G0BEqmBzHBg6k+Ixs1zsNXtAncKUKmdFOg?=
+ =?us-ascii?Q?wDzOeMUtWUB9kB59UmPmTu88DbRzkfitBuOxTUu9WbOSL9qh2zUZPon2nXow?=
+ =?us-ascii?Q?dtweD//BHnIMVxuDaD69lXGELuHdX6zhnrnY0Yn0zqJBgTlpax9aMlWlQRpT?=
+ =?us-ascii?Q?ZuaeidNhwQWLrTVYmzLXZZH0qG/Pcm8QtDbLAgIvpfIeljhJt6GFCU/3pW8P?=
+ =?us-ascii?Q?SYMVggyL1kHb9djx3p1ChCfqPbY0w4/hSc6ixECsS04/Z7NmlAYQ0xWAiFOT?=
+ =?us-ascii?Q?2TQNsg/446Yp2BD0rrh15ejzj3SosdoIgxqxMrH8uYZg0HoagVtXoFsavfO2?=
+ =?us-ascii?Q?01SKo0Ma7/bM3N0XPFLtCfbbVVW7IODltlRzIUhvCtjKlB3ruhy0ParM12IY?=
+ =?us-ascii?Q?y5yIGELbqaQoBfVW/Kr/F9pZveNkfjx85CAnkLeZthkF/GY+IzHDLfz0TT/1?=
+ =?us-ascii?Q?Io0QL8dWE2uJb+ZcwsbzOMQUBcx0LB4F2E/eIT+BV9yfd7f9NCEZeeI2ETxv?=
+ =?us-ascii?Q?bJn3ZpMwHQgymd5AUQTi7yGY5briflgb2/JQNxOaGh1D8JtGUT94V6PkwwxY?=
+ =?us-ascii?Q?bhBk0Z9T73Uqqf2cWsSPypchrIX5Y8rYx1ZODpSmRAvOcfqdopS2LJ8efSA4?=
+ =?us-ascii?Q?YttuFb4BAUepVECe22sr7Vh4X5XGpPDyqoyq3P8utXVfhtB9khOO86/9HD+x?=
+ =?us-ascii?Q?iK1ElAQVNyRqW+nVvseT7QwTCkhpOrbJmFfQt2I1EU0MxE2fswObpJqmmIqM?=
+ =?us-ascii?Q?uyqyY1cQxJHrp5iex9ICy/SNxssl/s8jekshAFTPbspymp4yAqe8KKINqe7d?=
+ =?us-ascii?Q?RB2PsQGxYQL/2pSe0ietG5cb31XQSKtJWvUFqMrps8Tb3cCukCLf/qo/EZvV?=
+ =?us-ascii?Q?dkH/tO4SUyQ8LuL+wdC4dl5aLnpRUIeNL5d1w6gY3l0qsfxUDTjNYy4sGzID?=
+ =?us-ascii?Q?uxAPPbKPaMw4gMVBPWDzpDWcW5VXeKYQ5aMYZASjykCtdehF0L2geG4b5nEK?=
+ =?us-ascii?Q?iLBpt/fSwjmjtJSg/Kd8uWOzE3k18Ul08l1AG5BynaIuGGVIyQm1kpao728A?=
+ =?us-ascii?Q?2+Pp0hKSDAX8g3kbY3D5ShFO5s9NFymHIu3Xc1YG4pUa3CMoMRg/NZnJgNJ6?=
+ =?us-ascii?Q?YNiIbPHcXv0wx2htMo+wNgkzyB8OjhSg80U3KG7dqxnxt0Y22rduSBtnuFca?=
+ =?us-ascii?Q?CoOI02DASOV2epGFQ2LeP9yydKVRYJBPyu/VJa4z?=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c7395e43-a515-4d15-16c0-08da6eb3500c
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB6341.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jul 2022 03:02:45.0329
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: iLavOTnkwDJMIbjJJ3EMC0wQXYGFHWt+DhWJPM+H0GVSGsqqXJ/3eDCQ6jbHCKVBK88YXcTGKJiLbeCxvNZdaQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR04MB9370
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Avri,
+decoder will report the colorspace information
+which is parsed from the sequence header,
+if they are unspecified, just let application to determine it,
+don't change it in driver.
 
-On 7/23/2022 10:59 PM, Avri Altman wrote:
->> +#define MCQ_ROP_OFFSET_n(p, i) \
->> +       hba->mcq_rop[(p)].offset + hba->mcq_rop[(p)].stride * (i)
-> Can you please explain the 0x100 stride thing?
-> Theoretically, each rop set is 48Bytes long, or did I get it wrong?
+Fixes: 6de8d628df6ef ("media: amphion: add v4l2 m2m vpu decoder stateful driver")
+Signed-off-by: Ming Qian <ming.qian@nxp.com>
+---
+ drivers/media/platform/amphion/vdec.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-In the draft, there are 4 sets of MCQ Operation & Runtime Registers, 
-i.e. SQD_n, SQIS_n, CQD_n and CQIS_n.
+diff --git a/drivers/media/platform/amphion/vdec.c b/drivers/media/platform/amphion/vdec.c
+index 9e64041cc1c1..feb75dc204de 100644
+--- a/drivers/media/platform/amphion/vdec.c
++++ b/drivers/media/platform/amphion/vdec.c
+@@ -808,14 +808,6 @@ static void vdec_init_fmt(struct vpu_inst *inst)
+ 		inst->cap_format.field = V4L2_FIELD_NONE;
+ 	else
+ 		inst->cap_format.field = V4L2_FIELD_SEQ_TB;
+-	if (vdec->codec_info.color_primaries == V4L2_COLORSPACE_DEFAULT)
+-		vdec->codec_info.color_primaries = V4L2_COLORSPACE_REC709;
+-	if (vdec->codec_info.transfer_chars == V4L2_XFER_FUNC_DEFAULT)
+-		vdec->codec_info.transfer_chars = V4L2_XFER_FUNC_709;
+-	if (vdec->codec_info.matrix_coeffs == V4L2_YCBCR_ENC_DEFAULT)
+-		vdec->codec_info.matrix_coeffs = V4L2_YCBCR_ENC_709;
+-	if (vdec->codec_info.full_range == V4L2_QUANTIZATION_DEFAULT)
+-		vdec->codec_info.full_range = V4L2_QUANTIZATION_LIM_RANGE;
+ }
+ 
+ static void vdec_init_crop(struct vpu_inst *inst)
+@@ -1555,6 +1547,14 @@ static int vdec_get_debug_info(struct vpu_inst *inst, char *str, u32 size, u32 i
+ 				vdec->codec_info.frame_rate.numerator,
+ 				vdec->codec_info.frame_rate.denominator);
+ 		break;
++	case 9:
++		num = scnprintf(str, size, "colorspace: %d, %d, %d, %d (%d)\n",
++				vdec->codec_info.color_primaries,
++				vdec->codec_info.transfer_chars,
++				vdec->codec_info.matrix_coeffs,
++				vdec->codec_info.full_range,
++				vdec->codec_info.vui_present);
++		break;
+ 	default:
+ 		break;
+ 	}
+-- 
+2.36.1
 
-They may be interleaved or segregated, depends on realistic HW designs.
-
-For example, either #1 or #2 can be the case, and QCOM uses case #1, in 
-which 'stride' means the size (in bytes)
-
-that one register has to hop over to reach the same register on next 
-round (for example, addr of SQHP_n == (addr of SQHP_0) + (stride * n)).
-
-To allow flexibility, SoC vendors, depends on realistic HW designs, (by 
-using vops_config_mcq_rop) can manipulate
-
-the 'offset' and 'stride' of each MCQ Operation & Runtime Register such 
-that SQDAO_n, SQISAO_n, CQDAO_n and
-
-CQISAO_n are programmed with wanted offsets/values.
-
-#1 -
-
-SQHP_0
-SQTP_0
-SQRTC_0
-SQCTI_0
-SQRTS_0
-SQIS_0
-SQIE_0
-CQHP_0
-CQTP_0
-CQIS_0
-CQIE_0
-CQIACR_0
-SQHP_1
-SQTP_1
-SQRTC_1
-SQCTI_1
-SQRTS_1
-SQIS_1
-SQIE_1
-CQHP_1
-CQTP_1
-CQIS_1
-CQIE_1
-CQIACR_1
-...
-SQHP_n
-SQTP_n
-SQRTC_n
-SQCTI_n
-SQRTS_n
-SQIS_n
-SQIE_n
-CQHP_n
-CQTP_n
-CQIS_n
-CQIE_n
-CQIACR_n
-
-
-#2 -
-
-SQHP_0
-SQTP_0
-SQRTC_0
-SQCTI_0
-SQRTS_0
-SQHP_1
-SQTP_1
-SQRTC_1
-SQCTI_1
-SQRTS_1
-...
-SQHP_n
-SQTP_n
-SQRTC_n
-SQCTI_n
-SQRTS_n
-
-
-SQIS_0
-SQIE_0
-SQIS_1
-SQIE_1
-...
-SQIS_n
-SQIE_n
-
-
-CQHP_0
-CQTP_0
-CQHP_1
-CQTP_1
-...
-CQHP_n
-CQTP_n
-
-
-CQIS_0
-CQIE_0
-CQIACR_0
-CQIS_1
-CQIE_1
-CQIACR_1
-...
-CQIS_n
-CQIE_n
-CQIACR_n
-
-
-Thanks,
-
-Can Guo.
-
-> Thanks,
-> Avri
