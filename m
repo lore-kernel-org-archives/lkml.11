@@ -2,206 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DC96C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 07:49:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D81EAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 07:50:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238490AbiGZHtv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 03:49:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38738 "EHLO
+        id S230402AbiGZHuN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 03:50:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238141AbiGZHto (ORCPT
+        with ESMTP id S238384AbiGZHuJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 03:49:44 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AF062A418
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 00:49:42 -0700 (PDT)
-Received: from canpemm500009.china.huawei.com (unknown [172.30.72.55])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LsTYW1G1Xz9svY;
-        Tue, 26 Jul 2022 15:48:31 +0800 (CST)
-Received: from localhost.localdomain (10.67.164.66) by
- canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 26 Jul 2022 15:49:39 +0800
-From:   Yicong Yang <yangyicong@huawei.com>
-To:     <peterz@infradead.org>, <mingo@redhat.com>,
-        <juri.lelli@redhat.com>, <vincent.guittot@linaro.org>,
-        <tim.c.chen@linux.intel.com>, <gautham.shenoy@amd.com>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-CC:     <dietmar.eggemann@arm.com>, <rostedt@goodmis.org>,
-        <bsegall@google.com>, <bristot@redhat.com>,
-        <prime.zeng@huawei.com>, <yangyicong@hisilicon.com>,
-        <jonathan.cameron@huawei.com>, <ego@linux.vnet.ibm.com>,
-        <srikar@linux.vnet.ibm.com>, <linuxarm@huawei.com>,
-        <21cnbao@gmail.com>, <guodong.xu@linaro.org>,
-        <hesham.almatary@huawei.com>, <john.garry@huawei.com>,
-        <shenyang39@huawei.com>, <kprateek.nayak@amd.com>,
-        <yu.c.chen@intel.com>, <wuyun.abel@bytedance.com>
-Subject: [PATCH v6 1/2] sched: Add per_cpu cluster domain info and cpus_share_lowest_cache API
-Date:   Tue, 26 Jul 2022 15:47:57 +0800
-Message-ID: <20220726074758.46686-2-yangyicong@huawei.com>
-X-Mailer: git-send-email 2.31.0
-In-Reply-To: <20220726074758.46686-1-yangyicong@huawei.com>
-References: <20220726074758.46686-1-yangyicong@huawei.com>
+        Tue, 26 Jul 2022 03:50:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32ED1E22;
+        Tue, 26 Jul 2022 00:50:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C7F9361425;
+        Tue, 26 Jul 2022 07:50:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DF63C341C0;
+        Tue, 26 Jul 2022 07:49:59 +0000 (UTC)
+Date:   Tue, 26 Jul 2022 13:19:54 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     Krishna chaitanya chundru <quic_krichai@quicinc.com>
+Cc:     helgaas@kernel.org, linux-pci@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mka@chromium.org, quic_vbadigan@quicinc.com,
+        quic_hemantk@quicinc.com, quic_nitegupt@quicinc.com,
+        quic_skananth@quicinc.com, quic_ramkri@quicinc.com,
+        swboyd@chromium.org, dmitry.baryshkov@linaro.org,
+        Prasad Malisetty <quic_pmaliset@quicinc.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        "Saheed O. Bolarinwa" <refactormyself@gmail.com>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Rajat Jain <rajatja@google.com>
+Subject: Re: [PATCH v6] PCI/ASPM: Update LTR threshold based upon reported
+ max latencies
+Message-ID: <20220726074954.GB5522@workstation>
+References: <1657886421-779-1-git-send-email-quic_krichai@quicinc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.164.66]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- canpemm500009.china.huawei.com (7.192.105.203)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1657886421-779-1-git-send-email-quic_krichai@quicinc.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Barry Song <song.bao.hua@hisilicon.com>
+On Fri, Jul 15, 2022 at 05:30:12PM +0530, Krishna chaitanya chundru wrote:
+> In ASPM driver, LTR threshold scale and value are updated based on
+> tcommon_mode and t_poweron values. In kioxia NVMe L1.2 is failing due to
+> LTR threshold scale and value are greater values than max snoop/non-snoop
+> value.
+> 
+> Based on PCIe r4.1, sec 5.5.1, L1.2 substate must be entered when
+> reported snoop/no-snoop values is greather than or equal to
+> LTR_L1.2_THRESHOLD value.
+> 
+> Signed-off-by: Prasad Malisetty  <quic_pmaliset@quicinc.com>
+> Signed-off-by: Krishna chaitanya chundru <quic_krichai@quicinc.com>
+> Acked-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
-Add per-cpu cluster domain info and cpus_share_lowest_cache() API.
-This is the preparation for the optimization of select_idle_cpu()
-on platforms with cluster scheduler level.
+Bjorn, any update on this patch?
 
-Tested-by: K Prateek Nayak <kprateek.nayak@amd.com>
-Signed-off-by: Barry Song <song.bao.hua@hisilicon.com>
-Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
-Reviewed-by: Gautham R. Shenoy <gautham.shenoy@amd.com>
-Reviewed-by: Tim Chen <tim.c.chen@linux.intel.com>
-Reviewed-by: Vincent Guittot <vincent.guittot@linaro.org>
----
- include/linux/sched/sd_flags.h |  7 +++++++
- include/linux/sched/topology.h |  8 +++++++-
- kernel/sched/core.c            | 12 ++++++++++++
- kernel/sched/sched.h           |  2 ++
- kernel/sched/topology.c        | 15 +++++++++++++++
- 5 files changed, 43 insertions(+), 1 deletion(-)
+Thanks,
+Mani
 
-diff --git a/include/linux/sched/sd_flags.h b/include/linux/sched/sd_flags.h
-index 57bde66d95f7..42ed454e8b18 100644
---- a/include/linux/sched/sd_flags.h
-+++ b/include/linux/sched/sd_flags.h
-@@ -109,6 +109,13 @@ SD_FLAG(SD_ASYM_CPUCAPACITY_FULL, SDF_SHARED_PARENT | SDF_NEEDS_GROUPS)
-  */
- SD_FLAG(SD_SHARE_CPUCAPACITY, SDF_SHARED_CHILD | SDF_NEEDS_GROUPS)
- 
-+/*
-+ * Domain members share CPU cluster (LLC tags or L2 cache)
-+ *
-+ * NEEDS_GROUPS: Clusters are shared between groups.
-+ */
-+SD_FLAG(SD_CLUSTER, SDF_NEEDS_GROUPS)
-+
- /*
-  * Domain members share CPU package resources (i.e. caches)
-  *
-diff --git a/include/linux/sched/topology.h b/include/linux/sched/topology.h
-index 816df6cc444e..c0d21667ddf3 100644
---- a/include/linux/sched/topology.h
-+++ b/include/linux/sched/topology.h
-@@ -45,7 +45,7 @@ static inline int cpu_smt_flags(void)
- #ifdef CONFIG_SCHED_CLUSTER
- static inline int cpu_cluster_flags(void)
- {
--	return SD_SHARE_PKG_RESOURCES;
-+	return SD_CLUSTER | SD_SHARE_PKG_RESOURCES;
- }
- #endif
- 
-@@ -179,6 +179,7 @@ cpumask_var_t *alloc_sched_domains(unsigned int ndoms);
- void free_sched_domains(cpumask_var_t doms[], unsigned int ndoms);
- 
- bool cpus_share_cache(int this_cpu, int that_cpu);
-+bool cpus_share_lowest_cache(int this_cpu, int that_cpu);
- 
- typedef const struct cpumask *(*sched_domain_mask_f)(int cpu);
- typedef int (*sched_domain_flags_f)(void);
-@@ -232,6 +233,11 @@ static inline bool cpus_share_cache(int this_cpu, int that_cpu)
- 	return true;
- }
- 
-+static inline bool cpus_share_lowest_cache(int this_cpu, int that_cpu)
-+{
-+	return true;
-+}
-+
- #endif	/* !CONFIG_SMP */
- 
- #if defined(CONFIG_ENERGY_MODEL) && defined(CONFIG_CPU_FREQ_GOV_SCHEDUTIL)
-diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index a463dbc92fcd..96109ad82694 100644
---- a/kernel/sched/core.c
-+++ b/kernel/sched/core.c
-@@ -3802,6 +3802,18 @@ bool cpus_share_cache(int this_cpu, int that_cpu)
- 	return per_cpu(sd_llc_id, this_cpu) == per_cpu(sd_llc_id, that_cpu);
- }
- 
-+/*
-+ * Whether CPUs are share lowest cache, which means LLC on non-cluster
-+ * machines and LLC tag or L2 on machines with clusters.
-+ */
-+bool cpus_share_lowest_cache(int this_cpu, int that_cpu)
-+{
-+	if (this_cpu == that_cpu)
-+		return true;
-+
-+	return per_cpu(sd_lowest_cache_id, this_cpu) == per_cpu(sd_lowest_cache_id, that_cpu);
-+}
-+
- static inline bool ttwu_queue_cond(int cpu)
- {
- 	/*
-diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-index 73ae32898f25..845cd029d572 100644
---- a/kernel/sched/sched.h
-+++ b/kernel/sched/sched.h
-@@ -1802,7 +1802,9 @@ static inline struct sched_domain *lowest_flag_domain(int cpu, int flag)
- DECLARE_PER_CPU(struct sched_domain __rcu *, sd_llc);
- DECLARE_PER_CPU(int, sd_llc_size);
- DECLARE_PER_CPU(int, sd_llc_id);
-+DECLARE_PER_CPU(int, sd_lowest_cache_id);
- DECLARE_PER_CPU(struct sched_domain_shared __rcu *, sd_llc_shared);
-+DECLARE_PER_CPU(struct sched_domain __rcu *, sd_cluster);
- DECLARE_PER_CPU(struct sched_domain __rcu *, sd_numa);
- DECLARE_PER_CPU(struct sched_domain __rcu *, sd_asym_packing);
- DECLARE_PER_CPU(struct sched_domain __rcu *, sd_asym_cpucapacity);
-diff --git a/kernel/sched/topology.c b/kernel/sched/topology.c
-index 8739c2a5a54e..8ab27c0d6d1f 100644
---- a/kernel/sched/topology.c
-+++ b/kernel/sched/topology.c
-@@ -664,6 +664,8 @@ static void destroy_sched_domains(struct sched_domain *sd)
- DEFINE_PER_CPU(struct sched_domain __rcu *, sd_llc);
- DEFINE_PER_CPU(int, sd_llc_size);
- DEFINE_PER_CPU(int, sd_llc_id);
-+DEFINE_PER_CPU(int, sd_lowest_cache_id);
-+DEFINE_PER_CPU(struct sched_domain __rcu *, sd_cluster);
- DEFINE_PER_CPU(struct sched_domain_shared __rcu *, sd_llc_shared);
- DEFINE_PER_CPU(struct sched_domain __rcu *, sd_numa);
- DEFINE_PER_CPU(struct sched_domain __rcu *, sd_asym_packing);
-@@ -689,6 +691,18 @@ static void update_top_cache_domain(int cpu)
- 	per_cpu(sd_llc_id, cpu) = id;
- 	rcu_assign_pointer(per_cpu(sd_llc_shared, cpu), sds);
- 
-+	sd = lowest_flag_domain(cpu, SD_CLUSTER);
-+	if (sd)
-+		id = cpumask_first(sched_domain_span(sd));
-+	rcu_assign_pointer(per_cpu(sd_cluster, cpu), sd);
-+
-+	/*
-+	 * This assignment should be placed after the sd_llc_id as
-+	 * we want this id equals to cluster id on cluster machines
-+	 * but equals to LLC id on non-Cluster machines.
-+	 */
-+	per_cpu(sd_lowest_cache_id, cpu) = id;
-+
- 	sd = lowest_flag_domain(cpu, SD_NUMA);
- 	rcu_assign_pointer(per_cpu(sd_numa, cpu), sd);
- 
-@@ -1532,6 +1546,7 @@ static struct cpumask		***sched_domains_numa_masks;
-  */
- #define TOPOLOGY_SD_FLAGS		\
- 	(SD_SHARE_CPUCAPACITY	|	\
-+	 SD_CLUSTER		|	\
- 	 SD_SHARE_PKG_RESOURCES |	\
- 	 SD_NUMA		|	\
- 	 SD_ASYM_PACKING)
--- 
-2.24.0
-
+> ---
+> 
+> I am taking this patch forward as prasad is no more working with our org.
+> changes since v5:
+> 	- no changes, just reposting as standalone patch instead of reply to
+> 	  previous patch.
+> Changes since v4:
+> 	- Replaced conditional statements with min and max.
+> changes since v3:
+> 	- Changed the logic to include this condition "snoop/nosnoop
+> 	  latencies are not equal to zero and lower than LTR_L1.2_THRESHOLD"
+> Changes since v2:
+> 	- Replaced LTRME logic with max snoop/no-snoop latencies check.
+> Changes since v1:
+> 	- Added missing variable declaration in v1 patch
+> ---
+>  drivers/pci/pcie/aspm.c | 30 ++++++++++++++++++++++++++++++
+>  1 file changed, 30 insertions(+)
+> 
+> diff --git a/drivers/pci/pcie/aspm.c b/drivers/pci/pcie/aspm.c
+> index a96b742..676c03e 100644
+> --- a/drivers/pci/pcie/aspm.c
+> +++ b/drivers/pci/pcie/aspm.c
+> @@ -461,14 +461,36 @@ static void aspm_calc_l1ss_info(struct pcie_link_state *link,
+>  {
+>  	struct pci_dev *child = link->downstream, *parent = link->pdev;
+>  	u32 val1, val2, scale1, scale2;
+> +	u32 max_val, max_scale, max_snp_scale, max_snp_val, max_nsnp_scale, max_nsnp_val;
+>  	u32 t_common_mode, t_power_on, l1_2_threshold, scale, value;
+>  	u32 ctl1 = 0, ctl2 = 0;
+>  	u32 pctl1, pctl2, cctl1, cctl2;
+>  	u32 pl1_2_enables, cl1_2_enables;
+> +	u16 ltr;
+> +	u16 max_snoop_lat, max_nosnoop_lat;
+>  
+>  	if (!(link->aspm_support & ASPM_STATE_L1_2_MASK))
+>  		return;
+>  
+> +	ltr = pci_find_ext_capability(child, PCI_EXT_CAP_ID_LTR);
+> +	if (!ltr)
+> +		return;
+> +
+> +	pci_read_config_word(child, ltr + PCI_LTR_MAX_SNOOP_LAT, &max_snoop_lat);
+> +	pci_read_config_word(child, ltr + PCI_LTR_MAX_NOSNOOP_LAT, &max_nosnoop_lat);
+> +
+> +	max_snp_scale = (max_snoop_lat & PCI_LTR_SCALE_MASK) >> PCI_LTR_SCALE_SHIFT;
+> +	max_snp_val = max_snoop_lat & PCI_LTR_VALUE_MASK;
+> +
+> +	max_nsnp_scale = (max_nosnoop_lat & PCI_LTR_SCALE_MASK) >> PCI_LTR_SCALE_SHIFT;
+> +	max_nsnp_val = max_nosnoop_lat & PCI_LTR_VALUE_MASK;
+> +
+> +	/* choose the greater max scale value between snoop and no snoop value*/
+> +	max_scale = max(max_snp_scale, max_nsnp_scale);
+> +
+> +	/* choose the greater max value between snoop and no snoop scales */
+> +	max_val = max(max_snp_val, max_nsnp_val);
+> +
+>  	/* Choose the greater of the two Port Common_Mode_Restore_Times */
+>  	val1 = (parent_l1ss_cap & PCI_L1SS_CAP_CM_RESTORE_TIME) >> 8;
+>  	val2 = (child_l1ss_cap & PCI_L1SS_CAP_CM_RESTORE_TIME) >> 8;
+> @@ -501,6 +523,14 @@ static void aspm_calc_l1ss_info(struct pcie_link_state *link,
+>  	 */
+>  	l1_2_threshold = 2 + 4 + t_common_mode + t_power_on;
+>  	encode_l12_threshold(l1_2_threshold, &scale, &value);
+> +
+> +	/*
+> +	 * Based on PCIe r4.1, sec 5.5.1, L1.2 substate must be entered when reported
+> +	 * snoop/no-snoop values are greather than or equal to LTR_L1.2_THRESHOLD value.
+> +	 */
+> +	scale = min(scale, max_scale);
+> +	value = min(value, max_val);
+> +
+>  	ctl1 |= t_common_mode << 8 | scale << 29 | value << 16;
+>  
+>  	/* Some broken devices only support dword access to L1 SS */
+> -- 
+> 2.7.4
+> 
