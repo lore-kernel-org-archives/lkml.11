@@ -2,141 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C11B8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 08:37:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C76ACCA489
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 08:39:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238579AbiGZIh6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 04:37:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53616 "EHLO
+        id S238604AbiGZIjg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 04:39:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238566AbiGZIh4 (ORCPT
+        with ESMTP id S232274AbiGZIje (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 04:37:56 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 491C02A70B;
-        Tue, 26 Jul 2022 01:37:55 -0700 (PDT)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        Tue, 26 Jul 2022 04:39:34 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 431112F652;
+        Tue, 26 Jul 2022 01:39:33 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 4C9B56601B15;
-        Tue, 26 Jul 2022 09:37:53 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1658824673;
-        bh=0hpTpMu1PlsmFVxK/jUIe3xEx9/IlTDGkldyO8mPlWw=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=WE6vLudeCO1T//X5ucDe+PsHvpbMiHR+a7knzIQXw8lisYxk40D3fY1zycQZp2yIP
-         zhqKqDR2/HKQsYJa03BOZ5B5og6aLy7h31ZiMc3vlULLEPWdfL7BmAsB6ype+uc0ZA
-         Clu9OYgisWCgymKoHX1nTUIYtx9288MtXSECy1mJYLfHY+khj3f0dA+U8egZjjCTPh
-         S9FklaS6ju4XZXVIC6dU+91WarMuUD8vL5HLmWXtiAzOc5CDbS2LZ82kZXBFtPqr4B
-         iLe9J+XmOwouJrqI6tS8wDDBP2LBCvKwG5HWC14EJIniikOg2jEGWq453LQpIgYSRE
-         KyhNHChf32Hxw==
-Message-ID: <91613700-3335-7499-1b48-3d88edd9da36@collabora.com>
-Date:   Tue, 26 Jul 2022 10:37:50 +0200
+        by smtp-out2.suse.de (Postfix) with ESMTPS id E20841FA79;
+        Tue, 26 Jul 2022 08:39:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1658824771; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=kL/lM98YkTCIhTGsAnqujPDGu/oeH8wou9/U4d0Lrjo=;
+        b=JPHGtQQKJNy6JYC5Z1mNzcgTIXIMPRxS91bsUof47IRAaXhVSUVonPN8ZaEGCyUhCogQrE
+        1fPcZLsq110rghQaCobmr4Rv/0JiUjEZ75Aog1LcAuQsEg2/CIaQXAGxs33eU/c514Dbex
+        FjVXZIKVZ2t936eglcTmgloZjZs932A=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1658824771;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=kL/lM98YkTCIhTGsAnqujPDGu/oeH8wou9/U4d0Lrjo=;
+        b=hpe/1nHoIhAsqupO88IpZ1mcyr5MhZeFSjIouX/A5qYflgHqWUQBNm2Ci2UjuUTCzEb6H6
+        I1v/tp1Bv9mP7VAA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id B698413ADB;
+        Tue, 26 Jul 2022 08:39:31 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id IMzdK0Oo32LYDQAAMHmgww
+        (envelope-from <tiwai@suse.de>); Tue, 26 Jul 2022 08:39:31 +0000
+From:   Takashi Iwai <tiwai@suse.de>
+To:     linux-fsdevel@vger.kernel.org
+Cc:     Namjae Jeon <linkinjeon@kernel.org>,
+        Sungjong Seo <sj1557.seo@samsung.com>,
+        Petr Vorel <pvorel@suse.cz>, Joe Perches <joe@perches.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 1/5] exfat: Return ENAMETOOLONG consistently for oversized paths
+Date:   Tue, 26 Jul 2022 10:39:25 +0200
+Message-Id: <20220726083929.1684-2-tiwai@suse.de>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220726083929.1684-1-tiwai@suse.de>
+References: <20220726083929.1684-1-tiwai@suse.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] watchdog: mtk_wdt: Move mt6589-wdt fallback compatible to
- end of list
-Content-Language: en-US
-To:     Chen-Yu Tsai <wenst@chromium.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>
-Cc:     linux-watchdog@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220726062057.320342-1-wenst@chromium.org>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220726062057.320342-1-wenst@chromium.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 26/07/22 08:20, Chen-Yu Tsai ha scritto:
-> The watchdog facility in the MediaTek SoCs are all the same, but the
-> hardware block also contains a reset controller, which differs in the
-> number of resets used between different SoCs. This difference is
-> supported with of_device_get_match_data() supplying the number of reset
-> lines for the newer compatible strings. The original mt6589-wdt only
-> covers the watchdog facility.
-> 
-> of_device_is_compatible(), and by extension of_device_get_match_data(),
-> works by going through the given list of compatible strings sequentially,
-> and checks if any of the device node's compatible strings match.
-> 
-> To avoid early matching on the "mediatek,mt6589-wdt" fallback compatible,
-> which only provides watchdog functionality and no reset controller, move
-> the fallback entry to the end of the list, so that other, more specific
-> compatible strings have a chance at getting matched.
-> 
-> Fixes: c254e103082b ("watchdog: mtk_wdt: mt8183: Add reset controller")
-> Fixes: adc318a34066 ("watchdog: mt8192: add wdt support")
-> Fixes: 8c6b5ea6ac68 ("watchdog: mediatek: mt8195: add wdt support")
-> Fixes: 4dbabc4d9e8c ("watchdog: mediatek: mt8186: add wdt support")
-> Fixes: 711a5b25bac9 ("watchdog: mtk_wdt: mt7986: Add toprgu reset controller support")
-> Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+LTP has a test for oversized file path renames and it expects the
+return value to be ENAMETOOLONG.  However, exfat returns EINVAL
+unexpectedly in some cases, hence LTP test fails.  The further
+investigation indicated that the problem happens only when iocharset
+isn't set to utf8.
 
-Uhm, I don't think that this is an issue?
+The difference comes from that, in the case of utf8,
+exfat_utf8_to_utf16() returns the error -ENAMETOOLONG directly and
+it's treated as the final error code.  Meanwhile, on other iocharsets,
+exfat_nls_to_ucs2() returns the max path size but it sets
+NLS_NAME_OVERLEN to lossy flag instead; the caller side checks only
+whether lossy flag is set or not, resulting in always -EINVAL
+unconditionally.
 
-Ordering precedence is given to the list that you specify in devicetree, that's why
-"the second one" is a fallback, meaning: ("impossible" example below)
+This patch aligns the return code for both cases by checking the lossy
+flag bit and returning ENAMETOOLONG when NLS_NAME_OVERLEN bit is set.
 
-compatible = "mediatek,mt8195-wdt", "mediatek,mt8183-wdt", "mediatek,mt6589-wdt";
+BugLink: https://bugzilla.suse.com/show_bug.cgi?id=1201725
+Reviewed-by: Petr Vorel <pvorel@suse.cz>
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+---
+ fs/exfat/namei.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-This gets walked as per the order in which you wrote the compatibles, so:
-* Check match for mt8195-wdt, does not exist?
-  * Check match for mt8183-wdt, exists!
-  * Put everything into dev->of_node (having mediatek,mt8183-wdt only!)
-
-__of_device_is_compatible() gets dev->of_node and compares that to all of the
-possible matches.
-
-struct device_node for this device hence does *not* contain any of the other
-compatibles that we specified in devicetree, so it does *not* contain any of
-"mediatek,mt8195-wdt", or "mediatek,mt6589-wdt", because we have previously
-successfully matches 8183.
-
-I don't think that I've misinterpreted this flow, but if I have, let's pull
-in devicetree people and check with them?
-
-Cheers,
-Angelo
-
-> ---
-> 
-> This change complements the removal of the fallback compatible from the
-> bindings and DTSI files [1].
-> 
-> [1] https://lore.kernel.org/linux-mediatek/20220721014845.19044-1-allen-kh.cheng@mediatek.com/
-> 
->   drivers/watchdog/mtk_wdt.c | 3 ++-
->   1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/watchdog/mtk_wdt.c b/drivers/watchdog/mtk_wdt.c
-> index e97787536792..3d5a239b93ba 100644
-> --- a/drivers/watchdog/mtk_wdt.c
-> +++ b/drivers/watchdog/mtk_wdt.c
-> @@ -425,12 +425,13 @@ static int mtk_wdt_resume(struct device *dev)
->   
->   static const struct of_device_id mtk_wdt_dt_ids[] = {
->   	{ .compatible = "mediatek,mt2712-wdt", .data = &mt2712_data },
-> -	{ .compatible = "mediatek,mt6589-wdt" },
->   	{ .compatible = "mediatek,mt7986-wdt", .data = &mt7986_data },
->   	{ .compatible = "mediatek,mt8183-wdt", .data = &mt8183_data },
->   	{ .compatible = "mediatek,mt8186-wdt", .data = &mt8186_data },
->   	{ .compatible = "mediatek,mt8192-wdt", .data = &mt8192_data },
->   	{ .compatible = "mediatek,mt8195-wdt", .data = &mt8195_data },
-> +	/* Fallback compatible string must be last entry */
-> +	{ .compatible = "mediatek,mt6589-wdt" },
->   	{ /* sentinel */ }
->   };
->   MODULE_DEVICE_TABLE(of, mtk_wdt_dt_ids);
-
-
+diff --git a/fs/exfat/namei.c b/fs/exfat/namei.c
+index c6eaf7e9ea74..bcb6445eb3b3 100644
+--- a/fs/exfat/namei.c
++++ b/fs/exfat/namei.c
+@@ -462,7 +462,7 @@ static int __exfat_resolve_path(struct inode *inode, const unsigned char *path,
+ 		return namelen; /* return error value */
+ 
+ 	if ((lossy && !lookup) || !namelen)
+-		return -EINVAL;
++		return (lossy & NLS_NAME_OVERLEN) ? -ENAMETOOLONG : -EINVAL;
+ 
+ 	exfat_chain_set(p_dir, ei->start_clu,
+ 		EXFAT_B_TO_CLU(i_size_read(inode), sbi), ei->flags);
 -- 
+2.35.3
+
