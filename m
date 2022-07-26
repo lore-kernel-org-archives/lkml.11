@@ -2,171 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92CE6CCA48C
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 11:15:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62793C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 11:18:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238779AbiGZLPc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 07:15:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32990 "EHLO
+        id S238815AbiGZLSo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 07:18:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238707AbiGZLP3 (ORCPT
+        with ESMTP id S232707AbiGZLSm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 07:15:29 -0400
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9657C10B0;
-        Tue, 26 Jul 2022 04:15:28 -0700 (PDT)
-Received: by mail-ed1-x531.google.com with SMTP id z15so5504722edc.7;
-        Tue, 26 Jul 2022 04:15:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Kd0Lf/T064htlQE+DM/jO7XCY3kQGinsE+nPB2n4oVc=;
-        b=iDjd0AiKoxsM2SpAkDwtDdxX/9N7jz/q3sdvnLyicfoo8gOh1EAHZiTiYzWPj1lupZ
-         ezNZmWRP6MUwWF/kvl6oBX+ps/Ixx3pX/C6lGya79lQqa7oqXxO7X751mFpFc5ImCH5V
-         jMXCwYjZKbNMxvgQGb65/Q2RQ6YuQdTRQuLHeZ0QCaqTnSxjIb2HWZjRds1wMXouQYTw
-         AtPDI+3Z7Xgx/T36+cDnSe/UFeniNq8IziNG/npE7xoNTwSxwTALIcZuiKZHOW1dNouK
-         mcjVeUjY8+hovwzqDUworZj0u+u+4AsdImDz4Lr2XQ+nb32iJS3XtR/UliazR2D5lKvX
-         6q8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Kd0Lf/T064htlQE+DM/jO7XCY3kQGinsE+nPB2n4oVc=;
-        b=oJGeDLwsQecsRtntVEIB2IS5irxQePtcOhfmvMtcH74KmVKmIh0zlmyPOczzsLxZhY
-         LcVrMByCxtWuvEYwsnoGr9tQb/gdAapieOuxgJMNn67MHe6i2oDQryc39egv6Ze5G+CD
-         blNhk4gc75QW7U40gUmVYhiZNN1Hsud/CDT/nkKZoVr4A6StnCfbfoUxYD1kyezdElDx
-         b0MoMIWY8iQjH6o0CF5x1r/k24iHtlAWoeJaJwPDI8aYOEkA+EbI8ak6IOKoM0BIQOWS
-         5aSuIXh9XbTihoE0FIUZ4I9maddw1FwVRvKBVrpvsXnubksieF4AH5S5lsgh4lug8RTP
-         Jl0g==
-X-Gm-Message-State: AJIora/VxtDdgi9JoOSF4akIEnYSrJjAaIPJUIY52tXMJ0wNhqq2FCpH
-        RwoKhxg3rkR3n6yT6t45i4NtdrbrY8U=
-X-Google-Smtp-Source: AGRyM1uTAKCthTVSXttHf3qKy4SvMV0X8Q6yyxRv7+vGPYfTzAOnm7gpTJeNrEetbeA/Dcrh17DZcA==
-X-Received: by 2002:a05:6402:268f:b0:43b:e506:a761 with SMTP id w15-20020a056402268f00b0043be506a761mr14142260edd.250.1658834126931;
-        Tue, 26 Jul 2022 04:15:26 -0700 (PDT)
-Received: from [10.29.0.6] ([37.120.217.82])
-        by smtp.gmail.com with ESMTPSA id r2-20020a1709060d4200b00722e57fa051sm6287758ejh.90.2022.07.26.04.15.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 Jul 2022 04:15:26 -0700 (PDT)
-Message-ID: <87c19c5a-d7f4-7183-1322-f62267e01b3b@gmail.com>
-Date:   Tue, 26 Jul 2022 13:15:25 +0200
+        Tue, 26 Jul 2022 07:18:42 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05C7D30F49
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 04:18:41 -0700 (PDT)
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LsZ9t42VDzgYwF;
+        Tue, 26 Jul 2022 19:16:50 +0800 (CST)
+Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 26 Jul 2022 19:18:39 +0800
+Received: from zelda.huawei.com (10.175.103.14) by
+ kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 26 Jul 2022 19:18:38 +0800
+From:   WangJingjin <wangjingjin1@huawei.com>
+To:     <rostedt@goodmis.org>, <mingo@redhat.com>, <daniel@iogearbox.net>,
+        <song@kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <zhengbin13@huawei.com>,
+        <gaochao49@huawei.com>, <wangjingjin1@huawei.com>
+Subject: [PATCH -next] ftrace: Fix build error whithout CONFIG_MODULES
+Date:   Tue, 26 Jul 2022 19:35:38 +0800
+Message-ID: <20220726113538.2992790-1-wangjingjin1@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 4/4] dt-bindings: firmware: Add Qualcomm UEFI Secure
- Application client
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Ard Biesheuvel <ardb@kernel.org>
-Cc:     Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Steev Klimaszewski <steev@kali.org>,
-        Shawn Guo <shawn.guo@linaro.org>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Cristian Marussi <cristian.marussi@arm.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-arm-msm@vger.kernel.org, linux-efi@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220723224949.1089973-1-luzmaximilian@gmail.com>
- <20220723224949.1089973-5-luzmaximilian@gmail.com>
- <e88d1036-dc58-3fc8-c388-edba9b2d62a7@linaro.org>
-From:   Maximilian Luz <luzmaximilian@gmail.com>
-In-Reply-To: <e88d1036-dc58-3fc8-c388-edba9b2d62a7@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.175.103.14]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemm600017.china.huawei.com (7.193.23.234)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Fix build errors on kernel/trace/ftrace.c:
+    ‘ops_references_rec’ defined but not used.
 
-On 7/26/22 12:17, Krzysztof Kozlowski wrote:
-> On 24/07/2022 00:49, Maximilian Luz wrote:
->> Add bindings for the Qualcomm Trusted Execution Environment (TrEE) UEFI
->> Secure application (uefisecapp) client.
->>
->> Signed-off-by: Maximilian Luz <luzmaximilian@gmail.com>
->> ---
->>   .../firmware/qcom,tee-uefisecapp.yaml         | 38 +++++++++++++++++++
->>   MAINTAINERS                                   |  1 +
->>   2 files changed, 39 insertions(+)
->>   create mode 100644 Documentation/devicetree/bindings/firmware/qcom,tee-uefisecapp.yaml
->>
->> diff --git a/Documentation/devicetree/bindings/firmware/qcom,tee-uefisecapp.yaml b/Documentation/devicetree/bindings/firmware/qcom,tee-uefisecapp.yaml
->> new file mode 100644
->> index 000000000000..9e5de1005d5c
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/firmware/qcom,tee-uefisecapp.yaml
->> @@ -0,0 +1,38 @@
->> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/soc/qcom/qcom,rpmh-rsc.yaml#
-> 
-> Does not look like you tested the bindings. Please run `make
-> dt_binding_check` (see
-> Documentation/devicetree/bindings/writing-schema.rst for instructions).
+Fixes: 53cd885bc5c3 ("ftrace: Allow IPMODIFY and DIRECT ops on the same function")
+Signed-off-by: Wang Jingjin <wangjingjin1@huawei.com>
+---
+ kernel/trace/ftrace.c | 30 +++++++++++++++---------------
+ 1 file changed, 15 insertions(+), 15 deletions(-)
 
-Sorry, first time submitting a schema. Already saw the warning of Rob's
-bot and Will fix this in v2.
+diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
+index bc921a3f7ea8..16d3d3884e17 100644
+--- a/kernel/trace/ftrace.c
++++ b/kernel/trace/ftrace.c
+@@ -1861,8 +1861,6 @@ static void ftrace_hash_rec_enable_modify(struct ftrace_ops *ops,
+ 	ftrace_hash_rec_update_modify(ops, filter_hash, 1);
+ }
 
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: Qualcomm Trusted Execution Environment UEFI Secure Application
->> +
->> +maintainers:
->> +  - Maximilian Luz <luzmaximilian@gmail.com>
->> +
->> +description: |
->> +  Various Qualcomm SoCs do not allow direct access to UEFI variables. Instead,
->> +  these need to be accessed via the UEFI Secure Application (uefisecapp),
->> +  residing in the Trusted Execution Environment (TrEE). These bindings mark the
->> +  presence of uefisecapp and allow the respective client driver to load and
->> +  install efivar operations, providing the kernel with access to UEFI
->> +  variables.
->> +
->> +properties:
->> +  compatible:
->> +    const: qcom,tee-uefisecapp
-> 
-> Isn't this SoC-specific device? Generic compatibles are usually not
-> expected.
+-static bool ops_references_ip(struct ftrace_ops *ops, unsigned long ip);
+-
+ /*
+  * Try to update IPMODIFY flag on each ftrace_rec. Return 0 if it is OK
+  * or no-needed to update, -EBUSY if it detects a conflict of the flag
+@@ -3108,6 +3106,7 @@ static inline int ops_traces_mod(struct ftrace_ops *ops)
+ 		ftrace_hash_empty(ops->func_hash->notrace_hash);
+ }
 
-This is essentially software (kernel driver) talking to software (in the
-TrustZone), so I don't expect there to be anything SoC specific about it.
++#if defined(CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS) || defined(CONFIG_MODULES)
+ /*
+  * Check if the current ops references the given ip.
+  *
+@@ -3137,19 +3136,7 @@ ops_references_ip(struct ftrace_ops *ops, unsigned long ip)
 
->> +
->> +required:
->> +  - compatible
->> +
->> +additionalProperties: false
->> +
->> +examples:
->> +  - |
->> +    firmware {
->> +        scm {
->> +            compatible = "qcom,scm-sc8180x", "qcom,scm";
->> +        };
->> +        tee-uefisecapp {
->> +            compatible = "qcom,tee-uefisecapp";
-> 
-> You did not model here any dependency on SCM. This is not full
-> description of the firmware/hardware
+ 	return true;
+ }
+-
+-/*
+- * Check if the current ops references the record.
+- *
+- * If the ops traces all functions, then it was already accounted for.
+- * If the ops does not trace the current record function, skip it.
+- * If the ops ignores the function via notrace filter, skip it.
+- */
+-static bool
+-ops_references_rec(struct ftrace_ops *ops, struct dyn_ftrace *rec)
+-{
+-	return ops_references_ip(ops, rec->ip);
+-}
++#endif
 
-How would I do that? A lot of other stuff also depends on SCM being
-present (e.g. qcom_q6v5_pas for loading mdt files) and I don't see them
-declare this in the device tree. As far as I can tell, SCM is pretty
-much expected to be there at all times (i.e. can't be unloaded) and
-drivers check for it when probing via qcom_scm_is_available(),
-deferring probe if not.
+ static int ftrace_update_code(struct module *mod, struct ftrace_page *new_pgs)
+ {
+@@ -6818,6 +6805,19 @@ static int ftrace_get_trampoline_kallsym(unsigned int symnum,
 
-Don't take this as an excuse as in "I want to leave that out", it's just
-that I don't know how one would declare such a dependency explicitly. If
-you can tell me how to fix it, I'll include that for v2.
+ static LIST_HEAD(ftrace_mod_maps);
 
-Regards,
-Max
++/*
++ * Check if the current ops references the record.
++ *
++ * If the ops traces all functions, then it was already accounted for.
++ * If the ops does not trace the current record function, skip it.
++ * If the ops ignores the function via notrace filter, skip it.
++ */
++static bool
++ops_references_rec(struct ftrace_ops *ops, struct dyn_ftrace *rec)
++{
++	return ops_references_ip(ops, rec->ip);
++}
++
+ static int referenced_filters(struct dyn_ftrace *rec)
+ {
+ 	struct ftrace_ops *ops;
+--
+2.25.1
+
