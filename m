@@ -2,189 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 985E4C19F28
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 16:23:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59BD1C04A68
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 16:24:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239487AbiGZQXD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 12:23:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36234 "EHLO
+        id S239324AbiGZQYZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 12:24:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239395AbiGZQVT (ORCPT
+        with ESMTP id S229804AbiGZQYX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 12:21:19 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 085D127164;
-        Tue, 26 Jul 2022 09:21:18 -0700 (PDT)
-Received: from localhost.localdomain (unknown [203.135.47.243])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Tue, 26 Jul 2022 12:24:23 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB2A226ACB;
+        Tue, 26 Jul 2022 09:24:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: usama.anjum)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 9DE8C6601B11;
-        Tue, 26 Jul 2022 17:21:06 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1658852476;
-        bh=YSZMWQRUF0OddQkVSeNEz2FybOLoLuH7kG5PHiHYpXM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VYdF24VsfkRAH0MPDnmat/nZqLHLpelG6HOTA6a8B5WawqZUKpJ1AMNaRWIIHyWxC
-         Rpd4d5c/YyEuiSHkvnHB+jGyGduuf7tYosM9g0r3heiaOA/0vFDtJ6WmeEEPrfZFe4
-         BRgUFmAUcvLpFCbteXmVMcFdaMrLUipwyMBlWmNoYgR4KMUHdaGdVch7sqWYqS0ilA
-         fr0+D/GjydldqOJLLgD+tlifyqlL2xIhxpeccXU91mfryWIMMVKTNlf1JcvtUTBFNt
-         MrTYqp7FS3hHiPXiutyAfbpuc/PER6JCkJ/TKT24g9Ytlf4fCkEn8lZE/z2iquccSN
-         YZqJN1NxAR2Gg==
-From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
-To:     Jonathan Corbet <corbet@lwn.net>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        x86@kernel.org (maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)),
-        "H. Peter Anvin" <hpa@zytor.com>, Arnd Bergmann <arnd@arndb.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        linux-doc@vger.kernel.org (open list:DOCUMENTATION),
-        linux-kernel@vger.kernel.org (open list),
-        linux-fsdevel@vger.kernel.org (open list:PROC FILESYSTEM),
-        linux-api@vger.kernel.org (open list:ABI/API),
-        linux-arch@vger.kernel.org (open list:GENERIC INCLUDE/ASM HEADER FILES),
-        linux-mm@kvack.org (open list:MEMORY MANAGEMENT),
-        linux-perf-users@vger.kernel.org (open list:PERFORMANCE EVENTS
-        SUBSYSTEM),
-        linux-kselftest@vger.kernel.org (open list:KERNEL SELFTEST FRAMEWORK),
-        krisman@collabora.com
-Cc:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        kernel@collabora.com
-Subject: [PATCH 3/5] mm: wire up process_memwatch syscall for x86
-Date:   Tue, 26 Jul 2022 21:18:52 +0500
-Message-Id: <20220726161854.276359-4-usama.anjum@collabora.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220726161854.276359-1-usama.anjum@collabora.com>
-References: <20220726161854.276359-1-usama.anjum@collabora.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 576C9611F8;
+        Tue, 26 Jul 2022 16:24:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12119C433D6;
+        Tue, 26 Jul 2022 16:24:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658852661;
+        bh=e5WQ82QXiZdaq5B32yptMF6AnsdJVIz/qzufzzfmS/Y=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=lwOg6aQmG22CNWStkrQHr4DLs+p3YhotUzffLeuIsod50WyU9yA5cn4XBvNxtJY7n
+         dibpTmLbOEGA0/TCJfoa/RAQ94BZXDfIMG6kboFjoUITcGKJ7ZpujBMpIkRqvtnIL9
+         G9bxZsZHPnMoqDPk7WQ0t1URIR168BBlzWNyS+Cw3b5XMcjLU4ChlESkFzU7DHwFoV
+         GmYfhqOWIQWSwMH8ST6+f9CiuT+AkvUIwyYIQFl9q0G9Cd4ISXfk2o0ZgIFa0YKlq0
+         Vt+0wOkm8d9WZnwBZySXiiGfopAduw+k2yefTR3/AxnaC1GCyTQxBY0Y61Hr4hzKua
+         BU2hV1NC2DbSA==
+Date:   Tue, 26 Jul 2022 09:24:19 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     =?iso-8859-1?Q?Jos=E9_Exp=F3sito?= <jose.exposito89@gmail.com>
+Cc:     kernel test robot <lkp@intel.com>, jikos@kernel.org,
+        llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        benjamin.tissoires@redhat.com, spbnick@gmail.com,
+        j.witteveen@gmail.com, stefanberzl@gmail.com,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kunit-dev@googlegroups.com
+Subject: Re: [PATCH v2 6/7] HID: uclogic: Add support for UGEE v2 mouse frames
+Message-ID: <YuAVMwTxIo2q6Wgd@dev-arch.thelio-3990X>
+References: <20220717144333.251190-7-jose.exposito89@gmail.com>
+ <202207261047.hUEFf74G-lkp@intel.com>
+ <YuAMzSBcfsyGMjNy@dev-arch.thelio-3990X>
+ <20220726161455.GA3260@elementary>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220726161455.GA3260@elementary>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Wire up syscall entry point for both i386 and x86_64 architectures.
+On Tue, Jul 26, 2022 at 06:14:55PM +0200, José Expósito wrote:
+> On Tue, Jul 26, 2022 at 08:48:29AM -0700, Nathan Chancellor wrote:
+> > On Tue, Jul 26, 2022 at 10:33:25AM +0800, kernel test robot wrote:
+> > > Hi "José,
+> > > 
+> > > Thank you for the patch! Yet something to improve:
+> > > 
+> > > [auto build test ERROR on 0cb1fc0988e32bda84c2b7218e0c761af1430baf]
+> > > 
+> > > url:    https://github.com/intel-lab-lkp/linux/commits/Jos-Exp-sito/XP-PEN-Deco-Pro-S-support-for-5-20-uclogic/20220717-224559
+> > > base:   0cb1fc0988e32bda84c2b7218e0c761af1430baf
+> > > config: x86_64-buildonly-randconfig-r002-20220718 (https://download.01.org/0day-ci/archive/20220726/202207261047.hUEFf74G-lkp@intel.com/config)
+> > > compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project fa0c7639e91fa1cd0cf2ff0445a1634a90fe850a)
+> > > reproduce (this is a W=1 build):
+> > >         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+> > >         chmod +x ~/bin/make.cross
+> > >         # https://github.com/intel-lab-lkp/linux/commit/10fcf5d5cca4657c53477c392b1fb675d72cfda3
+> > >         git remote add linux-review https://github.com/intel-lab-lkp/linux
+> > >         git fetch --no-tags linux-review Jos-Exp-sito/XP-PEN-Deco-Pro-S-support-for-5-20-uclogic/20220717-224559
+> > >         git checkout 10fcf5d5cca4657c53477c392b1fb675d72cfda3
+> > >         # save the config file
+> > >         mkdir build_dir && cp config build_dir/.config
+> > >         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+> > > 
+> > > If you fix the issue, kindly add following tag where applicable
+> > > Reported-by: kernel test robot <lkp@intel.com>
+> > > 
+> > > All errors (new ones prefixed by >>):
+> > > 
+> > > >> ld.lld: error: call to __read_overflow marked "dontcall-error": detected read beyond size of object (1st parameter)
+> > 
+> > Unfortunately, LTO makes this warning kind of cryptic but it seems like
+> > the wrong template size is being used? This appears to resolve the
+> > warning for me.
+> > 
+> > Cheers,
+> > Nathan
+> > 
+> > diff --git a/drivers/hid/hid-uclogic-params.c b/drivers/hid/hid-uclogic-params.c
+> > index 2407e927d1bf..dd4b1ed6fd1e 100644
+> > --- a/drivers/hid/hid-uclogic-params.c
+> > +++ b/drivers/hid/hid-uclogic-params.c
+> > @@ -1205,7 +1205,7 @@ static int uclogic_params_ugee_v2_init_frame_mouse(struct uclogic_params *p)
+> >  
+> >  	rc = uclogic_params_frame_init_with_desc(&p->frame_list[1],
+> >  						 uclogic_rdesc_ugee_v2_frame_mouse_template_arr,
+> > -						 uclogic_rdesc_ugee_v2_frame_dial_template_size,
+> > +						 uclogic_rdesc_ugee_v2_frame_mouse_template_size,
+> >  						 UCLOGIC_RDESC_V1_FRAME_ID);
+> >  	if (rc)
+> >  		return rc;
+> 
+> Hi Nathan,
+> 
+> Yes, I was about to send v3 fixing it. As you mentioned, I copy-pasted
+> the wrong template size.
 
-Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
----
- arch/x86/entry/syscalls/syscall_32.tbl            | 1 +
- arch/x86/entry/syscalls/syscall_64.tbl            | 1 +
- include/linux/syscalls.h                          | 3 ++-
- include/uapi/asm-generic/unistd.h                 | 5 ++++-
- kernel/sys_ni.c                                   | 1 +
- tools/include/uapi/asm-generic/unistd.h           | 5 ++++-
- tools/perf/arch/x86/entry/syscalls/syscall_64.tbl | 1 +
- 7 files changed, 14 insertions(+), 3 deletions(-)
+Good to know! At least we caught it early :)
 
-diff --git a/arch/x86/entry/syscalls/syscall_32.tbl b/arch/x86/entry/syscalls/syscall_32.tbl
-index 320480a8db4f..601d33909880 100644
---- a/arch/x86/entry/syscalls/syscall_32.tbl
-+++ b/arch/x86/entry/syscalls/syscall_32.tbl
-@@ -455,3 +455,4 @@
- 448	i386	process_mrelease	sys_process_mrelease
- 449	i386	futex_waitv		sys_futex_waitv
- 450	i386	set_mempolicy_home_node		sys_set_mempolicy_home_node
-+451	i386	process_memwatch	sys_process_memwatch
-diff --git a/arch/x86/entry/syscalls/syscall_64.tbl b/arch/x86/entry/syscalls/syscall_64.tbl
-index c84d12608cd2..3bddea588ce7 100644
---- a/arch/x86/entry/syscalls/syscall_64.tbl
-+++ b/arch/x86/entry/syscalls/syscall_64.tbl
-@@ -372,6 +372,7 @@
- 448	common	process_mrelease	sys_process_mrelease
- 449	common	futex_waitv		sys_futex_waitv
- 450	common	set_mempolicy_home_node	sys_set_mempolicy_home_node
-+451	common	process_memwatch	sys_process_memwatch
- 
- #
- # Due to a historical design error, certain syscalls are numbered differently
-diff --git a/include/linux/syscalls.h b/include/linux/syscalls.h
-index a34b0f9a9972..efa240510e4c 100644
---- a/include/linux/syscalls.h
-+++ b/include/linux/syscalls.h
-@@ -939,7 +939,6 @@ asmlinkage long sys_move_pages(pid_t pid, unsigned long nr_pages,
- 				const int __user *nodes,
- 				int __user *status,
- 				int flags);
--
- asmlinkage long sys_rt_tgsigqueueinfo(pid_t tgid, pid_t  pid, int sig,
- 		siginfo_t __user *uinfo);
- asmlinkage long sys_perf_event_open(
-@@ -1056,6 +1055,8 @@ asmlinkage long sys_memfd_secret(unsigned int flags);
- asmlinkage long sys_set_mempolicy_home_node(unsigned long start, unsigned long len,
- 					    unsigned long home_node,
- 					    unsigned long flags);
-+asmlinkage long sys_process_memwatch(int pidfd, void __user *addr, int len,
-+				     unsigned int flags, loff_t __user *vec, int vec_len);
- 
- /*
-  * Architecture-specific system calls
-diff --git a/include/uapi/asm-generic/unistd.h b/include/uapi/asm-generic/unistd.h
-index 45fa180cc56a..805a8d5cf0c4 100644
---- a/include/uapi/asm-generic/unistd.h
-+++ b/include/uapi/asm-generic/unistd.h
-@@ -886,8 +886,11 @@ __SYSCALL(__NR_futex_waitv, sys_futex_waitv)
- #define __NR_set_mempolicy_home_node 450
- __SYSCALL(__NR_set_mempolicy_home_node, sys_set_mempolicy_home_node)
- 
-+#define __NR_process_memwatch 451
-+__SC_COMP(__NR_process_memwatch, sys_process_memwatch, compat_sys_process_memwatch)
-+
- #undef __NR_syscalls
--#define __NR_syscalls 451
-+#define __NR_syscalls 452
- 
- /*
-  * 32 bit systems traditionally used different
-diff --git a/kernel/sys_ni.c b/kernel/sys_ni.c
-index a492f159624f..74f31317481a 100644
---- a/kernel/sys_ni.c
-+++ b/kernel/sys_ni.c
-@@ -298,6 +298,7 @@ COND_SYSCALL(set_mempolicy);
- COND_SYSCALL(migrate_pages);
- COND_SYSCALL(move_pages);
- COND_SYSCALL(set_mempolicy_home_node);
-+COND_SYSCALL(process_memwatch);
- 
- COND_SYSCALL(perf_event_open);
- COND_SYSCALL(accept4);
-diff --git a/tools/include/uapi/asm-generic/unistd.h b/tools/include/uapi/asm-generic/unistd.h
-index 45fa180cc56a..805a8d5cf0c4 100644
---- a/tools/include/uapi/asm-generic/unistd.h
-+++ b/tools/include/uapi/asm-generic/unistd.h
-@@ -886,8 +886,11 @@ __SYSCALL(__NR_futex_waitv, sys_futex_waitv)
- #define __NR_set_mempolicy_home_node 450
- __SYSCALL(__NR_set_mempolicy_home_node, sys_set_mempolicy_home_node)
- 
-+#define __NR_process_memwatch 451
-+__SC_COMP(__NR_process_memwatch, sys_process_memwatch, compat_sys_process_memwatch)
-+
- #undef __NR_syscalls
--#define __NR_syscalls 451
-+#define __NR_syscalls 452
- 
- /*
-  * 32 bit systems traditionally used different
-diff --git a/tools/perf/arch/x86/entry/syscalls/syscall_64.tbl b/tools/perf/arch/x86/entry/syscalls/syscall_64.tbl
-index c84d12608cd2..3bddea588ce7 100644
---- a/tools/perf/arch/x86/entry/syscalls/syscall_64.tbl
-+++ b/tools/perf/arch/x86/entry/syscalls/syscall_64.tbl
-@@ -372,6 +372,7 @@
- 448	common	process_mrelease	sys_process_mrelease
- 449	common	futex_waitv		sys_futex_waitv
- 450	common	set_mempolicy_home_node	sys_set_mempolicy_home_node
-+451	common	process_memwatch	sys_process_memwatch
- 
- #
- # Due to a historical design error, certain syscalls are numbered differently
--- 
-2.30.2
+> I really need to learn how to enable those warnings in my dev
+> environment. My toolchain didn't complain about this.
 
+CONFIG_FORTIFY_SOURCE will be the configuration that can catch these
+issues but I did not see a warning from clang without LTO, so it is
+likely the case that LTO helped the compiler see through translation
+units that the size was not correct.
+
+> Thanks for pointing me to LTO. I didn't know about the CONFIG_LTO_*
+> options, I'll play a bit with them.
+
+If you have any questions about it, feel free to reach out to our
+mailing list (llvm@lists.linux.dev), we're always happy to help!
+
+> Thanks a lot for looking into this,
+> Jose
+
+Any time!
+
+Cheers,
+Nathan
