@@ -2,93 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FC58C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 07:40:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01659C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 07:41:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238412AbiGZHkv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 03:40:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54680 "EHLO
+        id S238558AbiGZHlF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 03:41:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232438AbiGZHji (ORCPT
+        with ESMTP id S238548AbiGZHiq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 03:39:38 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4BFEC14
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 00:39:37 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 636431FA15;
-        Tue, 26 Jul 2022 07:39:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1658821176; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=rmbXJGe5s5+edusIb6jmJRsEkx7ZmJqyeOYvqRtA3r0=;
-        b=m+mGuYfkM07cVS8L6C+K7w8NCUFdW71HAXJIFSUNLKGHuBvd01E/xQc+pjzwSCYyBa7z34
-        3MVA2xjHl1tLxY/A1+rNS7lzt8cIuV8tnxnTA8VKPiqq5y78NScqsj3VlGJEisG7/pFkXZ
-        yZ6kXZlt/vjYXOpwoEebsHID1F379Ao=
-Received: from suse.cz (unknown [10.100.208.146])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 1EFD02C16E;
-        Tue, 26 Jul 2022 07:39:36 +0000 (UTC)
-Date:   Tue, 26 Jul 2022 09:39:32 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc:     John Ogness <john.ogness@linutronix.de>,
-        linux-kernel@vger.kernel.org,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH v3] printk: Skip console drivers on PREEMPT_RT.
-Message-ID: <Yt+aNCBNk046viFq@alley>
-References: <87y1wn3g3g.fsf@jogness.linutronix.de>
- <Ytgu17hATM8iqdGC@linutronix.de>
- <87ilnrn06u.fsf@jogness.linutronix.de>
- <Ytj3PisFjOfS9L0Y@linutronix.de>
- <YtqakGJAQzw/IPul@alley>
- <YtrYdXWGb0NQLKNA@linutronix.de>
- <Yt6MzEEFfpyTBIIj@alley>
- <Yt6gxxRxDZ/wFHrA@linutronix.de>
- <Yt6nlaSrfZ+fn80x@alley>
- <Yt6zwP9xSdUhsoQ9@linutronix.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yt6zwP9xSdUhsoQ9@linutronix.de>
+        Tue, 26 Jul 2022 03:38:46 -0400
+Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 409E66447
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 00:38:35 -0700 (PDT)
+Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-31e89d6bea7so101354437b3.10
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 00:38:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc:content-transfer-encoding;
+        bh=4z4Kz5jKP4bI+UOP9DxU3eg2/YP+oU3Smm0rFqPcsng=;
+        b=Z1P1ClfItoh79aQ1b/7uN6+YG8sXdaRGbHmm2Km3lpRCBNERxYfC45wuUnV22xDrKr
+         C7P7sOnzNuqntBLF3F+6jM28iGWBmjuZh/onAiogWA6nkl+pQMh/hkru3m8yOoDZtCiz
+         YUeV/q7yT+eI6gJO0z3Jk1qzCMVZ8PnFyCNSgqN/dWdmju6ronRybvKXvcqMM82Etntz
+         YLHXZQ84XUWvCivtFflxyQq6fJhEpglvw3cFqVdjfvpGM1UsagOmmxxMaKcMmpN6dr59
+         S8axA/CrLXVHIAUBmzb2I9dpWg+mkbpuBU7UpOLEQXfqv2pHnmn4tY3D3DSea9NPICrl
+         o61w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc:content-transfer-encoding;
+        bh=4z4Kz5jKP4bI+UOP9DxU3eg2/YP+oU3Smm0rFqPcsng=;
+        b=P6KaGw1ZWc6LlwHX6Op9KToj/3B+EWm+IXvxlHmkjO6ZnP1boatCzxXMYeDaIQL92R
+         RAYAbLrvrWkex7GiMSOI8u3d92iBNBB1p9QwEQO4wJTuInvNvsgL4n8hMPN1hweBE5HZ
+         JDw6RcWCJHKPtRolm6Ju4ev5Fer7XJqhRwtraF3E4aR0tYKi0QdhHqQ1IBpUV/g3mk5o
+         F80JhvRgC6HC4yR8WHgSKU8EAiPClj04cmsr4k5+bPiZm8KBrbRedWdNokur6a9JxD1X
+         rVok/eiFvEADmaRagrF6vEyjiPWtfEW8WunoKKeiBsh1mTU9iJzD6tzQc6Wkx4NOz4a2
+         RPTw==
+X-Gm-Message-State: AJIora/MKPQSTrzETNV9tE6Ecoy+cwg3r0oaROFGfgol/amvwlH3RePh
+        FKiKPZp/vJAwZHijNTI7QwE8yoxn3YBChmdziQ==
+X-Google-Smtp-Source: AGRyM1s+nZYFqneaUWZhKYAd3zQF7L0Cwai3ur8Rv5PlGmwq+xCSduNXnxJSHkCKOQUTBjw9Sv3BBmCbw3HEDJGUpA==
+X-Received: from kaleshsingh.mtv.corp.google.com ([2620:15c:211:200:4f77:3b64:736a:394e])
+ (user=kaleshsingh job=sendgmr) by 2002:a81:1e49:0:b0:31e:5b13:a187 with SMTP
+ id e70-20020a811e49000000b0031e5b13a187mr13741284ywe.129.1658821114535; Tue,
+ 26 Jul 2022 00:38:34 -0700 (PDT)
+Date:   Tue, 26 Jul 2022 00:37:49 -0700
+In-Reply-To: <20220726073750.3219117-1-kaleshsingh@google.com>
+Message-Id: <20220726073750.3219117-17-kaleshsingh@google.com>
+Mime-Version: 1.0
+References: <20220726073750.3219117-1-kaleshsingh@google.com>
+X-Mailer: git-send-email 2.37.1.359.gd136c6c3e2-goog
+Subject: [PATCH v6 16/17] KVM: arm64: Implement protected nVHE hyp stack unwinder
+From:   Kalesh Singh <kaleshsingh@google.com>
+To:     maz@kernel.org, mark.rutland@arm.com, broonie@kernel.org,
+        madvenka@linux.microsoft.com, tabba@google.com,
+        oliver.upton@linux.dev
+Cc:     will@kernel.org, qperret@google.com, kaleshsingh@google.com,
+        james.morse@arm.com, alexandru.elisei@arm.com,
+        suzuki.poulose@arm.com, catalin.marinas@arm.com,
+        andreyknvl@gmail.com, vincenzo.frascino@arm.com,
+        mhiramat@kernel.org, ast@kernel.org, wangkefeng.wang@huawei.com,
+        elver@google.com, keirf@google.com, yuzenghui@huawei.com,
+        ardb@kernel.org, oupton@google.com,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        linux-kernel@vger.kernel.org, android-mm@google.com,
+        kernel-team@android.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon 2022-07-25 17:16:16, Sebastian Andrzej Siewior wrote:
-> printk might be invoked in a context with disabled interrupts and or
-> preemption and additionally disables interrupts before it invokes the
-> console drivers. This behaviour is not desired on PREEMPT_RT:
-> - The console driver are using spinlock_t based locking which become sleeping
->   locks on PREEMPT_RT and must not be acquired with disabled interrupts (or
->   preemption).
-> 
-> - The locks within the console drivers must remain sleeping locks and they must
->   not disable interrupts. Printing (and polling for its completion) at 115200
->   baud on an UART takes too long for PREEMPT_RT in general and so raises the
->   latency of the IRQ-off time of the system beyond acceptable levels.
-> 
-> Skip printing to the console as temporary workaround until the printing threads
-> and atomic consoles have been introduced or another solution which is
-> compatible with the PREEMPT_RT approach.
-> With this change, the user will not see any kernel message printed to the
-> console but can retrieve the printk buffer from userland (via the dmesg
-> command). This allows enable PREEMPT_RT as a whole without disabling printk and
-> loosing all kernel output.
-> 
-> Disable console printing on PREEMPT_RT.
-> 
-> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Implements the common framework necessary for unwind() to work in
+the protected nVHE context:
+   - on_accessible_stack()
+   - on_overflow_stack()
+   - unwind_next()
 
-Thanks a lot for updating the commit message. It looks good to me now.
+Protected nVHE unwind() is used to unwind and save the hyp stack
+addresses to the shared stacktrace buffer. The host reads the
+entries in this buffer, symbolizes and dumps the stacktrace (later
+patch in the series).
 
-Reviewed-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: Kalesh Singh <kaleshsingh@google.com>
+Reviewed-by: Fuad Tabba <tabba@google.com>
+Tested-by: Fuad Tabba <tabba@google.com>
+---
 
-Best Regards,
-Petr
+Changes in v6:
+  - Add Fuad=E2=80=99s Reviewed-by and Tested-by tags
 
-PS: John, if you ack it then I'll queue it for 5.20.
+ arch/arm64/include/asm/stacktrace/nvhe.h | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
+
+diff --git a/arch/arm64/include/asm/stacktrace/nvhe.h b/arch/arm64/include/=
+asm/stacktrace/nvhe.h
+index 2ce59c058806..600dbc2220b6 100644
+--- a/arch/arm64/include/asm/stacktrace/nvhe.h
++++ b/arch/arm64/include/asm/stacktrace/nvhe.h
+@@ -64,18 +64,27 @@ static inline bool on_accessible_stack(const struct tas=
+k_struct *tsk,
+ static inline bool on_overflow_stack(unsigned long sp, unsigned long size,
+ 				     struct stack_info *info)
+ {
+-	return false;
++	unsigned long low =3D (unsigned long)this_cpu_ptr(overflow_stack);
++	unsigned long high =3D low + OVERFLOW_STACK_SIZE;
++
++	return on_stack(sp, size, low, high, STACK_TYPE_OVERFLOW, info);
+ }
+=20
+ static inline bool on_hyp_stack(unsigned long sp, unsigned long size,
+ 				struct stack_info *info)
+ {
+-	return false;
++	struct kvm_nvhe_init_params *params =3D this_cpu_ptr(&kvm_init_params);
++	unsigned long high =3D params->stack_hyp_va;
++	unsigned long low =3D high - PAGE_SIZE;
++
++	return on_stack(sp, size, low, high, STACK_TYPE_HYP, info);
+ }
+=20
+ static inline int notrace unwind_next(struct unwind_state *state)
+ {
+-	return 0;
++	struct stack_info info;
++
++	return unwind_next_common(state, &info, NULL);
+ }
+ NOKPROBE_SYMBOL(unwind_next);
+ #endif	/* CONFIG_PROTECTED_NVHE_STACKTRACE */
+--=20
+2.37.1.359.gd136c6c3e2-goog
+
