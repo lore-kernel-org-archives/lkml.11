@@ -2,121 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62793C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 11:18:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42577CCA48E
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 11:19:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238815AbiGZLSo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 07:18:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34472 "EHLO
+        id S238830AbiGZLTp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 07:19:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232707AbiGZLSm (ORCPT
+        with ESMTP id S229759AbiGZLTn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 07:18:42 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05C7D30F49
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 04:18:41 -0700 (PDT)
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LsZ9t42VDzgYwF;
-        Tue, 26 Jul 2022 19:16:50 +0800 (CST)
-Received: from kwepemm600017.china.huawei.com (7.193.23.234) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 26 Jul 2022 19:18:39 +0800
-Received: from zelda.huawei.com (10.175.103.14) by
- kwepemm600017.china.huawei.com (7.193.23.234) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 26 Jul 2022 19:18:38 +0800
-From:   WangJingjin <wangjingjin1@huawei.com>
-To:     <rostedt@goodmis.org>, <mingo@redhat.com>, <daniel@iogearbox.net>,
-        <song@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <zhengbin13@huawei.com>,
-        <gaochao49@huawei.com>, <wangjingjin1@huawei.com>
-Subject: [PATCH -next] ftrace: Fix build error whithout CONFIG_MODULES
-Date:   Tue, 26 Jul 2022 19:35:38 +0800
-Message-ID: <20220726113538.2992790-1-wangjingjin1@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        Tue, 26 Jul 2022 07:19:43 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26DD730F49;
+        Tue, 26 Jul 2022 04:19:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1658834383; x=1690370383;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=ABO1vc8TQN3jq3u/kMUZdKq6N7zMTog4CpKlzMZ7bA0=;
+  b=rKJ6uomUAqkKvMtrY3/8B2ormqf7rGiLFJWHd6YV8RNr8zzEvTZAYy2l
+   cS18l0nezxLou8EA2bx1sCSJAlm5NDByM+7hYoSFbpWc0XVEdI3/7f1uH
+   8CnoFS/WNiraf3jHWAouv8u2MRXa9bBgV2+wZ7y8q1mFBtkKVy8751kuO
+   g=;
+Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 26 Jul 2022 04:19:42 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2022 04:19:42 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Tue, 26 Jul 2022 04:19:42 -0700
+Received: from [10.79.43.230] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 26 Jul
+ 2022 04:19:37 -0700
+Subject: Re: [PATCH 01/10] dt-bindings: interconnect: qcom,msm8998-bwmon: add
+ support for SDM845 LLCC BWMON
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        "Konrad Dybcio" <konrad.dybcio@somainline.org>,
+        Georgi Djakov <djakov@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <linux-pm@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     Rajendra Nayak <quic_rjendra@quicinc.com>
+References: <20220720192807.130098-1-krzysztof.kozlowski@linaro.org>
+ <20220720192807.130098-2-krzysztof.kozlowski@linaro.org>
+From:   Sibi Sankar <quic_sibis@quicinc.com>
+Message-ID: <902c7c6c-e2f7-d441-cb6f-a803238c8df9@quicinc.com>
+Date:   Tue, 26 Jul 2022 16:49:33 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.175.103.14]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemm600017.china.huawei.com (7.193.23.234)
-X-CFilter-Loop: Reflected
+In-Reply-To: <20220720192807.130098-2-krzysztof.kozlowski@linaro.org>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fix build errors on kernel/trace/ftrace.c:
-    ‘ops_references_rec’ defined but not used.
 
-Fixes: 53cd885bc5c3 ("ftrace: Allow IPMODIFY and DIRECT ops on the same function")
-Signed-off-by: Wang Jingjin <wangjingjin1@huawei.com>
----
- kernel/trace/ftrace.c | 30 +++++++++++++++---------------
- 1 file changed, 15 insertions(+), 15 deletions(-)
+On 7/21/22 12:57 AM, Krzysztof Kozlowski wrote:
+> Add compatible for SDM845 Bandwidth Monitor instance measuring traffic
+> between LLCC and memory.  It comes with different register layout:
+> called v5.
+> 
+> Cc: Rajendra Nayak <quic_rjendra@quicinc.com>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
-index bc921a3f7ea8..16d3d3884e17 100644
---- a/kernel/trace/ftrace.c
-+++ b/kernel/trace/ftrace.c
-@@ -1861,8 +1861,6 @@ static void ftrace_hash_rec_enable_modify(struct ftrace_ops *ops,
- 	ftrace_hash_rec_update_modify(ops, filter_hash, 1);
- }
+Reviewed-by: Sibi Sankar <quic_sibis@quicinc.com>
 
--static bool ops_references_ip(struct ftrace_ops *ops, unsigned long ip);
--
- /*
-  * Try to update IPMODIFY flag on each ftrace_rec. Return 0 if it is OK
-  * or no-needed to update, -EBUSY if it detects a conflict of the flag
-@@ -3108,6 +3106,7 @@ static inline int ops_traces_mod(struct ftrace_ops *ops)
- 		ftrace_hash_empty(ops->func_hash->notrace_hash);
- }
-
-+#if defined(CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS) || defined(CONFIG_MODULES)
- /*
-  * Check if the current ops references the given ip.
-  *
-@@ -3137,19 +3136,7 @@ ops_references_ip(struct ftrace_ops *ops, unsigned long ip)
-
- 	return true;
- }
--
--/*
-- * Check if the current ops references the record.
-- *
-- * If the ops traces all functions, then it was already accounted for.
-- * If the ops does not trace the current record function, skip it.
-- * If the ops ignores the function via notrace filter, skip it.
-- */
--static bool
--ops_references_rec(struct ftrace_ops *ops, struct dyn_ftrace *rec)
--{
--	return ops_references_ip(ops, rec->ip);
--}
-+#endif
-
- static int ftrace_update_code(struct module *mod, struct ftrace_page *new_pgs)
- {
-@@ -6818,6 +6805,19 @@ static int ftrace_get_trampoline_kallsym(unsigned int symnum,
-
- static LIST_HEAD(ftrace_mod_maps);
-
-+/*
-+ * Check if the current ops references the record.
-+ *
-+ * If the ops traces all functions, then it was already accounted for.
-+ * If the ops does not trace the current record function, skip it.
-+ * If the ops ignores the function via notrace filter, skip it.
-+ */
-+static bool
-+ops_references_rec(struct ftrace_ops *ops, struct dyn_ftrace *rec)
-+{
-+	return ops_references_ip(ops, rec->ip);
-+}
-+
- static int referenced_filters(struct dyn_ftrace *rec)
- {
- 	struct ftrace_ops *ops;
---
-2.25.1
-
+> ---
+>   .../devicetree/bindings/interconnect/qcom,msm8998-bwmon.yaml     | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/interconnect/qcom,msm8998-bwmon.yaml b/Documentation/devicetree/bindings/interconnect/qcom,msm8998-bwmon.yaml
+> index c2e697f6e6cf..32e2892d736b 100644
+> --- a/Documentation/devicetree/bindings/interconnect/qcom,msm8998-bwmon.yaml
+> +++ b/Documentation/devicetree/bindings/interconnect/qcom,msm8998-bwmon.yaml
+> @@ -27,6 +27,7 @@ properties:
+>                 - qcom,sdm845-bwmon
+>             - const: qcom,msm8998-bwmon
+>         - const: qcom,msm8998-bwmon       # BWMON v4
+> +      - const: qcom,sdm845-llcc-bwmon   # BWMON v5
+>   
+>     interconnects:
+>       maxItems: 1
+> 
