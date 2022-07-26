@@ -2,154 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D5D0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 07:02:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DECADCCA489
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 07:03:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232200AbiGZHCr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 03:02:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41454 "EHLO
+        id S237746AbiGZHDB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 03:03:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229796AbiGZHCo (ORCPT
+        with ESMTP id S237582AbiGZHCz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 03:02:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2768411A19;
-        Tue, 26 Jul 2022 00:02:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B127861374;
-        Tue, 26 Jul 2022 07:02:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18445C341CD;
-        Tue, 26 Jul 2022 07:02:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658818963;
-        bh=go+bvXX6X7Grn7l+6nOhjY0anqvIAvVpR0lLJyna+kg=;
-        h=In-Reply-To:References:From:Date:Subject:To:Cc:From;
-        b=IHDEy8v9aVTJuqnkYAFN+DrknKc9EBq0T8+cRJHTDvRkUCpu6fQdx7r3+3TrOhfYw
-         wejFAG/NDLaMV8ztTOt68ZQ62cIj7m5z8F+An+HxQi/ljVpqtEf5AMcxPcXPl+1jza
-         AOoZF+uG8jbwV6qVe5Z++PWhCXBx5JyjuGxu9FCFBEvc1Nbo5Whx6qKh25lNVusxpU
-         HiosIT0B+AvQ12yZ2+DUC9fVJyLStxxG1hJas/BygKpQVp7WZiobSRDx6nUSdUWzvH
-         b4d2Ll+TYs63zyhb/ID+vKxWHCM+Mj/WDfw9lqYVmMX+KZLcEa5QVLap/AiCSxZG7Q
-         8HbJlOoBdnAnQ==
-Received: by mail-wr1-f53.google.com with SMTP id v13so11059665wru.12;
-        Tue, 26 Jul 2022 00:02:42 -0700 (PDT)
-X-Gm-Message-State: AJIora+W/RaviDZd70ooh++WcvPT/GJIyTzU0e49gY503vSQOY3iAC2V
-        2hrtCjRvUVZlZkLnUipQckArjDQCuyE1D7kjxcs=
-X-Google-Smtp-Source: AGRyM1txSeWGlenvhfUKX16pjeQ9aRbuFF0X2fCivMQ2vCukJuqCAUP+YdoLmY5ZhDaWjupT4CTh2qQHkNCVgThTBvI=
-X-Received: by 2002:a5d:6d0b:0:b0:21d:9f26:f84a with SMTP id
- e11-20020a5d6d0b000000b0021d9f26f84amr9862540wrq.155.1658818961280; Tue, 26
- Jul 2022 00:02:41 -0700 (PDT)
+        Tue, 26 Jul 2022 03:02:55 -0400
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21B7627CF8
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 00:02:54 -0700 (PDT)
+Received: by mail-lj1-x22d.google.com with SMTP id u20so7730573ljk.0
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 00:02:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=qs4nlbaptn4SS7lO1ed8i+LgqAJu8EVWyB5i90ueW/E=;
+        b=tlSLHw/IN9bA0kO8udFCAPyEUA4eOJRr1FILlTHUmyTKB5KXMIUjBUmK9mbqWd60kN
+         XLNVC7huPbCSdV6UHqEK1SWlSDdBIM6HRXNcFU/L7y5QgRWm8mS/3x9G0rQKvfkOM51N
+         6NaWIXa/V/71TTh91szc8Bpe9xGlA7GOXXVESEkS3nhzg31QZiJmmVvlPwTzrT99uuwq
+         3U6H5CwEBoAtj7RBdoBsTZKhtdoFl/hxR7fUpmqE50Mz3fbYRM9H8jFkfB4ZCwduwWfA
+         6JnbbWdsUpknt7fFQWx6ZYJtV01A1qVo9Rdi5zjGSlROt6YBw6cIQ4Akt+EClJspXWEf
+         TysQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=qs4nlbaptn4SS7lO1ed8i+LgqAJu8EVWyB5i90ueW/E=;
+        b=wRB4NE/VXOyfxcItj5oopvXMQuOfbjgBC2adzvfxmksBW15A5zqd4hxtG8OlCxF3SS
+         WoKfEuusZLuc8zN2elJbR74Bm0lIwF6swAHYZ27sIWhTdsbfUe05pjcVKuMAqA02/ntE
+         w/AiYQtoRjXd1jwjBTes8xhXni5F6Y97liKSPbJE0ile96sbL7UvzO3CXgvjqoyU+ul3
+         XXVEG8Xb5hax/EdiXhgVjGNKMAssDhFbpB5o7cqeO2kqkUVnbbI1sJqpdHXZRVU4i2GI
+         MLq3rFOwR4yYwNNn+OQaT7C8MQ2qP2IwdJ6nhaiw9aBqiMO7BZKE+0NpkN2Fw2N5/G4f
+         oIPw==
+X-Gm-Message-State: AJIora+Lw/ABbVdMyRVAJEoPkdliHpuBaea1+LeT58OS7uQRsT3dYnPG
+        kZOXEw5ewqLhUaAPjuW714azJw==
+X-Google-Smtp-Source: AGRyM1sJe4uT3uHa3v/TZDf1AKnRAIXlJoSP29UOCXzailKypi0Qi0KUx66LyoJuZ0Q+M/u7y1u/Yg==
+X-Received: by 2002:a2e:9b14:0:b0:25e:62:aad1 with SMTP id u20-20020a2e9b14000000b0025e0062aad1mr3787264lji.77.1658818972408;
+        Tue, 26 Jul 2022 00:02:52 -0700 (PDT)
+Received: from [192.168.3.197] (78-26-46-173.network.trollfjord.no. [78.26.46.173])
+        by smtp.gmail.com with ESMTPSA id a26-20020a2e88da000000b0025e00822532sm1297296ljk.92.2022.07.26.00.02.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 26 Jul 2022 00:02:51 -0700 (PDT)
+Message-ID: <2cc0c987-0509-5305-2c1b-5019785213fd@linaro.org>
+Date:   Tue, 26 Jul 2022 09:02:50 +0200
 MIME-Version: 1.0
-Received: by 2002:adf:f7cb:0:0:0:0:0 with HTTP; Tue, 26 Jul 2022 00:02:40
- -0700 (PDT)
-In-Reply-To: <87edyc2r2e.wl-tiwai@suse.de>
-References: <20220722142916.29435-1-tiwai@suse.de> <20220722142916.29435-4-tiwai@suse.de>
- <0350c21bcfdc896f2b912363f221958d41ebf1e1.camel@perches.com> <87edyc2r2e.wl-tiwai@suse.de>
-From:   Namjae Jeon <linkinjeon@kernel.org>
-Date:   Tue, 26 Jul 2022 16:02:40 +0900
-X-Gmail-Original-Message-ID: <CAKYAXd_tohLszyrThNLE5tPHt=2Z8Xtt=hzzEQe3iqf0t549EQ@mail.gmail.com>
-Message-ID: <CAKYAXd_tohLszyrThNLE5tPHt=2Z8Xtt=hzzEQe3iqf0t549EQ@mail.gmail.com>
-Subject: Re: [PATCH 3/4] exfat: Expand exfat_err() and co directly to pr_*() macro
-To:     Takashi Iwai <tiwai@suse.de>
-Cc:     Joe Perches <joe@perches.com>, linux-fsdevel@vger.kernel.org,
-        Sungjong Seo <sj1557.seo@samsung.com>,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 1/2] dt-bindings: net: cdns,macb: use correct xlnx prefix
+ for Xilinx
+Content-Language: en-US
+To:     Rob Herring <robh+dt@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Harini Katakam <harini.katakam@xilinx.com>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+References: <20220725195127.49765-1-krzysztof.kozlowski@linaro.org>
+ <CAL_JsqJc7Lagqr=Mkvags1dvua5AEvEzZHcsMqmOGNbp-v_Bxg@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CAL_JsqJc7Lagqr=Mkvags1dvua5AEvEzZHcsMqmOGNbp-v_Bxg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-2022-07-23 17:04 GMT+09:00, Takashi Iwai <tiwai@suse.de>:
-> On Sat, 23 Jul 2022 09:42:12 +0200,
-> Joe Perches wrote:
->>
->> On Fri, 2022-07-22 at 16:29 +0200, Takashi Iwai wrote:
->> > Currently the error and info messages handled by exfat_err() and co
->> > are tossed to exfat_msg() function that does nothing but passes the
->> > strings with printk() invocation.  Not only that this is more overhead
->> > by the indirect calls, but also this makes harder to extend for the
->> > debug print usage; because of the direct printk() call, you cannot
->> > make it for dynamic debug or without debug like the standard helpers
->> > such as pr_debug() or dev_dbg().
->> >
->> > For addressing the problem, this patch replaces exfat_msg() function
->> > with a macro to expand to pr_*() directly.  This allows us to create
->> > exfat_debug() macro that is expanded to pr_debug() (which output can
->> > gracefully suppressed via dyndbg).
->> []
->> > diff --git a/fs/exfat/exfat_fs.h b/fs/exfat/exfat_fs.h
->> []
->> > @@ -508,14 +508,19 @@ void __exfat_fs_error(struct super_block *sb, int
->> > report, const char *fmt, ...)
->> >  #define exfat_fs_error_ratelimit(sb, fmt, args...) \
->> >  		__exfat_fs_error(sb, __ratelimit(&EXFAT_SB(sb)->ratelimit), \
->> >  		fmt, ## args)
->> > -void exfat_msg(struct super_block *sb, const char *lv, const char *fmt,
->> > ...)
->> > -		__printf(3, 4) __cold;
->> > +
->> > +/* expand to pr_xxx() with prefix */
->> > +#define exfat_msg(sb, lv, fmt, ...) \
->> > +	pr_##lv("exFAT-fs (%s): " fmt "\n", (sb)->s_id, ##__VA_ARGS__)
->> > +
->> >  #define exfat_err(sb, fmt, ...)						\
->> > -	exfat_msg(sb, KERN_ERR, fmt, ##__VA_ARGS__)
->> > +	exfat_msg(sb, err, fmt, ##__VA_ARGS__)
->> >  #define exfat_warn(sb, fmt, ...)					\
->> > -	exfat_msg(sb, KERN_WARNING, fmt, ##__VA_ARGS__)
->> > +	exfat_msg(sb, warn, fmt, ##__VA_ARGS__)
->> >  #define exfat_info(sb, fmt, ...)					\
->> > -	exfat_msg(sb, KERN_INFO, fmt, ##__VA_ARGS__)
->> > +	exfat_msg(sb, info, fmt, ##__VA_ARGS__)
->> > +#define exfat_debug(sb, fmt, ...)					\
->> > +	exfat_msg(sb, debug, fmt, ##__VA_ARGS__)
->>
->> I think this would be clearer using pr_<level> directly instead
->> of an indirecting macro that uses concatenation of <level> that
->> obscures the actual use of pr_<level>
->>
->> Either: (and this first option would be my preference)
->>
->> #define exfat_err(sb, fmt, ...) \
->> 	pr_err("exFAT-fs (%s): " fmt "\n", (sb)->s_id, ##__VA_ARGS__)
->> #define exfat_warn(sb, fmt, ...) \
->> 	pr_warn("exFAT-fs (%s): " fmt "\n", (sb)->s_id, ##__VA_ARGS__)
->> etc...
->
-> IMO, it's a matter of taste, and I don't mind either way.
-> Just let me know.
-Joe has already said that he prefers the first.
-Will you send v2 patch-set ?
+On 26/07/2022 04:27, Rob Herring wrote:
+>>        - items:
+>>            - enum:
+>> -              - cdns,versal-gem       # Xilinx Versal
+>>                - cdns,zynq-gem         # Xilinx Zynq-7xxx SoC
+>>                - cdns,zynqmp-gem       # Xilinx Zynq Ultrascale+ MPSoC
+>>            - const: cdns,gem           # Generic
+>> +        description: deprecated
+> 
+> You meant 'deprecated: true', right? With that,
 
-Thanks!
->
->> or using an indirecting macro:
->>
->> #define exfat_printk(pr_level, sb, fmt, ...)	\
->> 	pr_level("exFAT-fs (%s): " fmt "\n", (sb)->s_id, ##__VA_ARGS__)
->
-> Is pr_level() defined anywhere...?
->
->>
->> and btw, there are multiple uses of exfat_<level> output with a
->> unnecessary and duplicated '\n' that the macro already adds that
->> should be removed:
->>
->> $ git grep -P -n '\bexfat_(err|warn|info).*\\n' fs/exfat/
->> fs/exfat/fatent.c:334:                  exfat_err(sb, "sbi->clu_srch_ptr
->> is invalid (%u)\n",
->> fs/exfat/nls.c:674:                     exfat_err(sb, "failed to read
->> sector(0x%llx)\n",
->> fs/exfat/super.c:467:           exfat_err(sb, "bogus sector size bits :
->> %u\n",
->> fs/exfat/super.c:476:           exfat_err(sb, "bogus sectors bits per
->> cluster : %u\n",
->
-> Right, that should be addressed in another patch.
->
->
-> thanks,
->
-> Takashi
->
+Yes, I'll send a v2.
+
+> 
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> 
+
+
+Best regards,
+Krzysztof
