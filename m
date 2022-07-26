@@ -2,112 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B31CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 07:34:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60213C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 07:34:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232389AbiGZHe2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 03:34:28 -0400
+        id S238046AbiGZHer (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 03:34:47 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238342AbiGZHeJ (ORCPT
+        with ESMTP id S238196AbiGZHeW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 03:34:09 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9E7B2B634;
-        Tue, 26 Jul 2022 00:31:17 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id m8so16668530edd.9;
-        Tue, 26 Jul 2022 00:31:17 -0700 (PDT)
+        Tue, 26 Jul 2022 03:34:22 -0400
+Received: from mail-ua1-x92c.google.com (mail-ua1-x92c.google.com [IPv6:2607:f8b0:4864:20::92c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EDCD2DA9E;
+        Tue, 26 Jul 2022 00:31:59 -0700 (PDT)
+Received: by mail-ua1-x92c.google.com with SMTP id f3so5330024uaq.2;
+        Tue, 26 Jul 2022 00:31:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=tGKM8TxdBMi0PkUssZOOQckwTpSbR7y+SZZIKa/SWFE=;
-        b=NWLwDpDGpk70FKVxZ6gOMDaO8pthO+KcyrH8OWvzNXp+tmRsrpQIY9x8LSPaU2lQOb
-         kYPum3tYWz7hUhuw9lBBPfcEOjhr+DxWTL7t5sT5RkwRuqaYeVjfdSep+Pn7tWfIQiAP
-         PvOtuTeQQp6myRbeo/IwT3hOdZlgrYow3mcdWB82P5In9I0cZp0TvTTaWZxH4UDtFrVz
-         WkGEUAiJPBBuciCGdhM6hF1naan7wltNU8toT8+dk9F4BNgMweObyAjF7byhLF12zzZo
-         SqSdPp/ZhW3ZhAnFa6+p3ZHiFe60MnEFJqQZG2cWZjYBrvKeK3iEFGhYCCZXrRsCu/qn
-         C7ww==
+        bh=wyyVAdF3KM6mtQMtcMn31iCQDsAAlD2jZ8xWGRIv5PU=;
+        b=IwyEOKsAA76Fy60siGlK0OwG8HyHG8TayGCD0MG+It7DGC/TaW22V0Qg9KLviTx2zm
+         CLfl70Qm0rbWLCrvG3+yb8Znr/oHPjPAihh/6hjyEyRwtHXE3iE+MRjnRwvJhXoc9/zp
+         imGWu08NIOzF0DmKfWYudtUITdDpW0oT8TGlo9O6WXztlzJLZu+H6DXhyraUNQKJkZPF
+         9jFuRYnILPDQ+UzR3khZJuICnZ4fSWHh0dTGaou0m0BeKMoAskD74b6k/lywfZW5epxZ
+         zyUkyR2Fqa75hIHbzcNySLLqSTLSC3+U1AvqOUcr72HuQyg8njUV4iZZE6VUUo5qhxzG
+         7T1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=tGKM8TxdBMi0PkUssZOOQckwTpSbR7y+SZZIKa/SWFE=;
-        b=gz/Nj6B0YBjSrwu8hTvg3pShqxE3UKP+nO1/B1DwnfHOsIT08vvgmHg+ZAo0DQ8j+h
-         ho9U5Q0U1lHQmAQKs+SCpeyKw2INMgfhiNCXly/KAhMWQaGGIaDm64glsKReMhlXGxxP
-         C4M6Jk+yipDyMbElYlnn1qKymRyzrUA2KghyJ0D8hYhC6cytriiWZPuUKKwb6aMulMQT
-         F75LA95232wqzrfcx1ylOKriPa2bN3iznpY38SbF6M8zzE5TRqoUS33QPCNJD4Vkp2n5
-         YJZ2PYeE9JUV0jtfIL4rCwHMUHfrmha/RFWCe3TXVCRB/GeUJvK5vhqutx8B+5UkzKpi
-         aGHw==
-X-Gm-Message-State: AJIora8gd+khSRLz7D4GC79PYyUD6ThTobYY823V7ASY2nX2iV9ZrfnW
-        hVI6GAbsoFAKIzBaO8/RhRDqLfuzV4T44FS0dnydpGXuuT22iA==
-X-Google-Smtp-Source: AGRyM1tRZ+Uehibz/P+j0POwO8fqc9b5rSGx+1hEyYF+upGgOaKaIy+v67KBUr7aro4jOv4v++rVPoI2rKZ0DgfBVTU=
-X-Received: by 2002:a05:6402:5c8:b0:433:545f:a811 with SMTP id
- n8-20020a05640205c800b00433545fa811mr17043040edx.101.1658820676077; Tue, 26
- Jul 2022 00:31:16 -0700 (PDT)
+        bh=wyyVAdF3KM6mtQMtcMn31iCQDsAAlD2jZ8xWGRIv5PU=;
+        b=rLJRSV5TlXy35S8C5n/Mdm2wTFQF4zuTz8eo1YlASbLwvlMyrDpKLdn+ddIDzzlKLr
+         LnDlw2nmNr8RdDfXuzTyKP8IuNBYTLYvFC5l5ez7txBbSxu/ri0peNhLX/pi6vj4areY
+         ZCkbYoboWy0HtseBF681/obN5WK961t+j/B7LR9fIbTl/F6EK5t1dVdyyRXdO9LX7NMc
+         iHofAYoNXip04vMDC7VExvMePDeJ2cGX29hJW2pEuZOmVpycVvZprGyVOSgk5+uA76U3
+         5WGN9/yL5varIMi/oXzNgthwsx39jU4szkxRDzo3hbppOfBy9He8kMDw1hdpHM2/vGey
+         hQ9Q==
+X-Gm-Message-State: AJIora9t17IysK8nAVX2cTCIwBNUXsgMO1Uhf3uAL6tvN1tG030K350m
+        EReqs0vWGe7TOqWfpETI6tbNQsmTLVMjCKL1uOQ=
+X-Google-Smtp-Source: AGRyM1sOUurMoHVkUEPC703t4XC62MULs3Qkjb2anwLDjiHhkS5w/lQ+BLJ6ItS1xeJxPsM/cCJAjsJQv7ByZ6S/6Mk=
+X-Received: by 2002:ab0:2b06:0:b0:384:c4af:107c with SMTP id
+ e6-20020ab02b06000000b00384c4af107cmr1423097uar.77.1658820719003; Tue, 26 Jul
+ 2022 00:31:59 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220721093422.2173982-1-marcus.folkesson@gmail.com>
- <CAHp75VddBhc9peHXfNfTyTNni246kC8CyLqCrMFadn67LGDarQ@mail.gmail.com>
- <CACRpkdaczrU1tM5Yt7P-Q2h+ge8STOi6HvvYeTM-g+JwS8_gZw@mail.gmail.com>
- <CAHp75VfaExrFYto7LWa5Vnbm6JbiAqtutKmk0HzfeHmmi3PwOg@mail.gmail.com>
- <CACRpkdYHgD-fmt_2PWJrmyGY=AOP0Z+4jTkH=n3wJ+a0aApqcg@mail.gmail.com>
- <CAHp75Vf_aDSocdB7R6zKFwEOBRwq0w2m6GdCM-5ujKoz4bGiqQ@mail.gmail.com> <CACRpkdbTypeq0M8VNb491GaZdBLyE9_TFpCDn5omnTe8D+BU7w@mail.gmail.com>
-In-Reply-To: <CACRpkdbTypeq0M8VNb491GaZdBLyE9_TFpCDn5omnTe8D+BU7w@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 26 Jul 2022 09:30:38 +0200
-Message-ID: <CAHp75Vfrgkq+yTtFxjkvUMnVOHCL+VyHGXPn4BN7i6C1cA=Uuw@mail.gmail.com>
-Subject: Re: [PATCH 1/2] gpio: gpio-74x164: add support for CDx4HC4094
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Marcus Folkesson <marcus.folkesson@gmail.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220722084314.17816-1-di.shen@unisoc.com> <CAJZ5v0iKWH2QkztewmJXiqGwnzBxCo5MWni9Q3VODwV+huvuQA@mail.gmail.com>
+In-Reply-To: <CAJZ5v0iKWH2QkztewmJXiqGwnzBxCo5MWni9Q3VODwV+huvuQA@mail.gmail.com>
+From:   Di Shen <cindygm567@gmail.com>
+Date:   Tue, 26 Jul 2022 15:31:48 +0800
+Message-ID: <CAHYJL4qTL8Znw9c1EJGteidh4LWcZe1ei9mOgKtdBfisSKUdmw@mail.gmail.com>
+Subject: Re: [PATCH V2 1/1] thermal/sysfs: Clear cooling_device_stats_attr_group
+ before initialized
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Di Shen <di.shen@unisoc.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        "Zhang, Rui" <rui.zhang@intel.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        jeson.gao@unisoc.com, xuewen.yan@unisoc.com, ke.wang@unisoc.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 26, 2022 at 9:23 AM Linus Walleij <linus.walleij@linaro.org> wrote:
-> On Tue, Jul 26, 2022 at 8:55 AM Andy Shevchenko
-> <andy.shevchenko@gmail.com> wrote:
-> > On Tue, Jul 26, 2022 at 12:22 AM Linus Walleij <linus.walleij@linaro.org> wrote:
+On Sat, Jul 23, 2022 at 1:18 AM Rafael J. Wysocki <rafael@kernel.org> wrote:
 >
-> > > Well it will work, because all values come out, however *during*
-> > > the transfer, not *after* the transfer as intended with the
-> > > STR signal.
+> On Fri, Jul 22, 2022 at 10:44 AM Di Shen <di.shen@unisoc.com> wrote:
 > >
-> > No. I think you missed one little but crucial detail. The strobe is
-> > edge, not level, while you consider CS as a level signal (only).
+> > There's a space allocated for cooling_device_stats_attr_group
+> > within cooling_device_attr_groups. This space is shared by all
+> > cooling devices.
 >
-> Aha! Then it works :)
+> That's correct.
 >
-> > See Figure 7 and Table 9 in the datasheet you linked to. When STR is
-> > low, the data is not changed. Maybe it's not clear in this datasheet,
-> > I found somewhere
-> > in a more clear table.
-> >
-> > > At least how I see it ...?
-> >
-> > If what you are saying is true, the hardware is totally broken and I
-> > wouldn't use it. I.o.w. if the strobe passes all data when it's at low
-> > level and latches at low-to-high, it's broken by definition in my
-> > point of view.
+> > If the stats structure of one cooling device successfully
+> > creates stats sysfs. After that, another cooling device fails
+> > to get max_states in cooling_device_stats_setup(). It can
+> > return directly without initializing the stats structure, but
+> > the cooling_device_stats_attr_group is still the attribute
+> > group of the last cooling device.
 >
-> I have seen strobes that are level-active in my life, but if you
-> say this one isn't then all is fine!
+> I cannot parse the above, sorry.
+>
+> For example, how can a "stats structure of one cooling device" create
+> anything?   As a data structure, it is a passive entity, so it doesn't
+> carry out any actions.
+>
 
-It's rather my common sense, because we have a clock here to shift a
-register. It's kinda obvious *to me* that when we have a latch, that
-latch shouldn't pass data on a level. Yes, there are buffers with
-level strobe, but it's different. So, as I said, the oscilloscope can
-finish our discussion one way or the other, but I believe it will be
-my way ;) I will very (badly) surprised if it becomes your way. It
-will ruin my beliefs in humanity. Not less.
+Sorry, I didn't describe it properly. I mean 'if it has been called back
+cooling_device_stats_setup() successfully for a cooling device'.
 
--- 
-With Best Regards,
-Andy Shevchenko
+> I think (but I am not sure) that you are referring to the error code
+> path in which the ->get_max_state() callback fails for a cooling
+> device after cooling_device_stats_setup() has completed successfully
+> for another one.
+>
+
+That's it. As you say, ->get_max_state() callback fails for a cooling
+device after cooling_device_stats_setup() has completed successfully
+for another one.
+
+> > At this time, read or write stats sysfs nodes can cause kernel
+> > crash. Like the following, kernel crashed when
+> > 'cat time_in_state_ms'.
+> >
+> > [<5baac8d4>] panic+0x1b4/0x3c8
+> > [<9d287b0f>] arm_notify_die+0x0/0x78
+> > [<094fc22c>] __do_kernel_fault+0x94/0xa4
+> > [<3b4b69a4>] do_page_fault+0xd4/0x364
+> > [<23793e7a>] do_translation_fault+0x38/0xc0
+> > [<6e5cc52a>] do_DataAbort+0x4c/0xd0
+> > [<a28c16b8>] __dabt_svc+0x5c/0xa0
+> > [<747516ae>] _raw_spin_lock+0x20/0x60
+> > [<9a9e4cd4>] time_in_state_ms_show+0x28/0x148
+> > [<cb78325e>] dev_attr_show+0x38/0x64
+> > [<aea3e364>] sysfs_kf_seq_show+0x8c/0xf0
+> > [<c0a843ab>] seq_read+0x244/0x620
+> > [<b316b374>] vfs_read+0xd8/0x218
+> > [<3aebf5fa>] sys_read+0x80/0xe4
+> > [<7cf100f5>] ret_fast_syscall+0x0/0x28
+> > [<08cbe22f>] 0xbe8c1198
+> >
+> > stats sysfs:
+> > phone:/sys/class/thermal/cooling_device2/stats # ls
+> > reset  time_in_state_ms  total_trans  trans_table
+> >
+> > The same as cat total_trans, trans_table, and echo reset.
+> >
+> > To avoid kernel crash, this patch set clears the
+> > cooling_device_attr_groups before stats structure is initialized.
+> >
+> > Signed-off-by: Di Shen <di.shen@unisoc.com>
+> > ---
+> >  drivers/thermal/thermal_sysfs.c | 3 +++
+> >  1 file changed, 3 insertions(+)
+> >
+> > diff --git a/drivers/thermal/thermal_sysfs.c b/drivers/thermal/thermal_sysfs.c
+> > index 1c4aac8464a7..e3fae63fa0f7 100644
+> > --- a/drivers/thermal/thermal_sysfs.c
+> > +++ b/drivers/thermal/thermal_sysfs.c
+> > @@ -817,6 +817,9 @@ static void cooling_device_stats_setup(struct thermal_cooling_device *cdev)
+> >         unsigned long states;
+> >         int var;
+> >
+> > +       var = ARRAY_SIZE(cooling_device_attr_groups) - 2;
+> > +       cooling_device_attr_groups[var] = NULL;
+> > +
+> >         if (cdev->ops->get_max_state(cdev, &states))
+> >                 return;
+> >
+> > --
+
+--
+Best regards,
+Di
+
+
+
+Di
