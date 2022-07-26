@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D63C8C04A68
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 15:06:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80E2FC00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 15:06:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239520AbiGZPGc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 11:06:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39778 "EHLO
+        id S239546AbiGZPGk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 11:06:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239410AbiGZPGa (ORCPT
+        with ESMTP id S239522AbiGZPGc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 11:06:30 -0400
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 247A3657E
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 08:06:29 -0700 (PDT)
-Received: by mail-lj1-x230.google.com with SMTP id r14so16817544ljp.2
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 08:06:29 -0700 (PDT)
+        Tue, 26 Jul 2022 11:06:32 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5E142E9DA
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 08:06:31 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id m12so21991552lfj.4
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 08:06:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=L8Apz9DowpnJmV3tilsKoR+YHpsh9tSUQsZjGo8e1Bs=;
-        b=phL43GnUIEQgfcbYkHvCTsGFzw9Jb9v8o+B6sgRF4rKE9xOYexRoEktZMUsiROzO9n
-         HaTMvp7MND9WnhYHl+LzqnnfjcyLXmXpMzS+mH8kbzHNd2zaemjtXvLKJLYfsVya/wVs
-         WIt1biVOpI7LLX0Uw4QsR9hr98g6E5pcrjL9O9wDdFTdNn8AGwoeVKV/LkFS0LJXnM2W
-         JvmbjpN3Tp1tHVbKK2CUbd9loU8CprtvjR1JVfpy1OfqG4FPk3mh/LiimUglje4Yqh6q
-         Ty/VFW32EnKmzDVfGa2OSbRJO2sYBbBoUbWgBLNHR8jvz26hws1Qfa1sBNj3GgymcvX7
-         xmBA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=zf+Atw6W9ce++rwB/xGOClK+4e2ERQWgmlZE86UF1IM=;
+        b=t8jRIVH2Jgs+63JFHB6dXrvZFEi4zlLDp2OJE9G5VlXCyt7niyPHgamL8t76KtfPbw
+         ORV+yASi4K3O4rC98H/5Q8urTjXwJyYMW7U/G1VXcjW6G6y5jIfaFjBwtTGcl41XioMv
+         k0Iu8XmIVDipPe7xNofQ1BwQtDSIRhEeabl573mxEtZwqO/bo8buK/tsr44UPko2cJNa
+         leibi2hTCXEEvnsqZsLDCGwh5hoKjx3F7r+e3gVS2JO6wrNzSJNFEVF99yDsYhoxvb6T
+         sZiatvzgJvtdONXiNGJDDTTLH7yl4eLCDawH06MMHI3Fr2VDvJYHa2pE/7ALL/+5VpSe
+         Tn7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=L8Apz9DowpnJmV3tilsKoR+YHpsh9tSUQsZjGo8e1Bs=;
-        b=xyVo/YJUcwSiXuYJPO9WCUrZ3o+Jt9+6ViH9YeLFRH+ILg0Pw8oeJaG8EW9d+OT+MF
-         WjCOFSeb6tIWhXCTfm4khfr7BVVPqeh2uM/8Sem1lfWImbLiDhb9XP1zO5lZ+83R6uzw
-         lE0JR0Cf4K2oDM1OHnWypEbGaFDj/PIb0qC1AXESPQrARnu3rKhuU9XWeUL+x0Pmbk2K
-         v3vg29D3CKV+n2MO4a4Wl7TeMJ75f/HkuD6kOeT9Xv/ezjv2xUG4LF1aWlnJKo4i/6Nq
-         XPbTMfzFat/eVHbQpCCIkqE4fCtswPmoMI8wPH124yT9UDLUoHwGyJeqJKqL12hnuIAl
-         rmzw==
-X-Gm-Message-State: AJIora8wbCi/Ag01Mgj3fsRld2lMCuyMmCEdQlzhzkNg1KUmrK29kfFu
-        Q8m3Mpaw2NkxNJvQZDuNpNIRjg==
-X-Google-Smtp-Source: AGRyM1uh8QCZ8tWnKbyBDXlp35q3fIe55T3WaNawh6V0R7a44PxWxGTlV2ZjlSqeayj1X4RxQ2imVQ==
-X-Received: by 2002:a2e:a4c7:0:b0:25d:f06f:35f with SMTP id p7-20020a2ea4c7000000b0025df06f035fmr6215357ljm.399.1658847987141;
-        Tue, 26 Jul 2022 08:06:27 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=zf+Atw6W9ce++rwB/xGOClK+4e2ERQWgmlZE86UF1IM=;
+        b=TxYlwee26h4fsQhHPB+BGr26kmWWViwP7804kf+3WZDc1Lp72yYHz0ORDQSAn3kp2z
+         yuxbmJdvIIixoQIyJUg8gDNVbArOOmu+RlAVAZHv40Zt95xuOBfEFmY5+cR0s+6cIdwU
+         gQkdsNSqX/w7itynigtgHwGpWlBiBAcCfzg4bbXSbmDukQvbxr2Q6hBYZsTC5zdZAi5B
+         YPKNITbof+S5XxZtCHXKIqy3Roo6oSGLbbLUdnlTZ5wiPqT8Vob6w+RidJOLnGAr0w8j
+         pbwDFwiVfxMBbuzYE6d4ZNNoLdxj1XQ9xTytiu48SoGeaQona+rHwtXDaVWQS4TiTQjQ
+         wowQ==
+X-Gm-Message-State: AJIora+OjpqXhM1/ygPbjyzZ+X7bwAxXI4Y1vo5xaoVB5mmkP+a1QqbY
+        FjyGoJVktUQfgkelYPqRv5wqcw==
+X-Google-Smtp-Source: AGRyM1taY4mwJsiQlIKI4aO7XHnTqlgPEIVbk1Oxa7W76jDrggoak906bc9JOjlPsftGTvndNx9vOA==
+X-Received: by 2002:a05:6512:ea5:b0:48a:77a6:f9f with SMTP id bi37-20020a0565120ea500b0048a77a60f9fmr6214328lfb.60.1658847989774;
+        Tue, 26 Jul 2022 08:06:29 -0700 (PDT)
 Received: from krzk-bin.lan (78-26-46-173.network.trollfjord.no. [78.26.46.173])
-        by smtp.gmail.com with ESMTPSA id a26-20020a194f5a000000b0048a95c16849sm836620lfk.282.2022.07.26.08.06.25
+        by smtp.gmail.com with ESMTPSA id a26-20020a194f5a000000b0048a95c16849sm836620lfk.282.2022.07.26.08.06.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Jul 2022 08:06:26 -0700 (PDT)
+        Tue, 26 Jul 2022 08:06:29 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Russell King <linux@armlinux.org.uk>,
         Andy Gross <agross@kernel.org>,
@@ -57,51 +57,46 @@ To:     Russell King <linux@armlinux.org.uk>,
         Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v3 0/5] ARM: qcom: defconfig: socinfo + cleanup
-Date:   Tue, 26 Jul 2022 17:06:04 +0200
-Message-Id: <20220726150609.140472-1-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v3 2/5] ARM: multi_v7_defconfig: enable more Qualcomm drivers
+Date:   Tue, 26 Jul 2022 17:06:06 +0200
+Message-Id: <20220726150609.140472-3-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220726150609.140472-1-krzysztof.kozlowski@linaro.org>
+References: <20220726150609.140472-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Enable Qualcomm drivers:
+1. Command DB (used in SDX55 and SDX65).
+2. On Chip Memory - OCMEM (used in MSM8974)
+3. RPMh and RPMh Power domain (used in SDX55 and SDX65).
 
-v1 from June [1] was did not hit Qualcomm patchwork due to missing maintainers
-entry.
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ arch/arm/configs/multi_v7_defconfig | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-Changes in v3
-=============
-1. Three new patches for qcom, multi_v7 and arm64 defconfigs.
-2. Add Rb tag.
-3. Patch 5: resending although recently Arnd posted global rework.
-
-Changes in v2
-=============
-Patch 1: no changes
-Patch 2: new patch
-Patch 3: resending although recently Arnd posted global rework.
-
-[1] https://lore.kernel.org/all/20220623110535.177326-1-krzysztof.kozlowski@linaro.org/
-
-Best regards,
-Krzysztof
-
-Krzysztof Kozlowski (5):
-  ARM: qcom_defconfig: enable more Qualcomm drivers
-  ARM: multi_v7_defconfig: enable more Qualcomm drivers
-  arm64: defconfig: enable more Qualcomm drivers
-  ARM: qcom: include defconfig in MAINTAINERS
-  ARM: qcom_defconfig: order items with savedefconfig
-
- MAINTAINERS                         |  1 +
- arch/arm/configs/multi_v7_defconfig |  4 ++
- arch/arm/configs/qcom_defconfig     | 59 +++++++++++++++--------------
- arch/arm64/configs/defconfig        |  3 ++
- 4 files changed, 39 insertions(+), 28 deletions(-)
-
+diff --git a/arch/arm/configs/multi_v7_defconfig b/arch/arm/configs/multi_v7_defconfig
+index 5a5c772eedab..a23cdd352d23 100644
+--- a/arch/arm/configs/multi_v7_defconfig
++++ b/arch/arm/configs/multi_v7_defconfig
+@@ -1070,9 +1070,13 @@ CONFIG_ASPEED_LPC_CTRL=m
+ CONFIG_ASPEED_LPC_SNOOP=m
+ CONFIG_ASPEED_P2A_CTRL=m
+ CONFIG_RASPBERRYPI_POWER=y
++CONFIG_QCOM_COMMAND_DB=m
+ CONFIG_QCOM_CPR=y
+ CONFIG_QCOM_GSBI=y
++CONFIG_QCOM_OCMEM=m
+ CONFIG_QCOM_RMTFS_MEM=m
++CONFIG_QCOM_RPMH=y
++CONFIG_QCOM_RPMHPD=y
+ CONFIG_QCOM_RPMPD=y
+ CONFIG_QCOM_SMEM=y
+ CONFIG_QCOM_SMD_RPM=y
 -- 
 2.34.1
 
