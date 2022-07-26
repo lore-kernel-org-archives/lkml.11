@@ -2,149 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6853C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 06:11:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96C6DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 06:14:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231800AbiGZGLi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 02:11:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54888 "EHLO
+        id S231949AbiGZGOS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 02:14:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229749AbiGZGLg (ORCPT
+        with ESMTP id S229568AbiGZGOQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 02:11:36 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA7C41EEEE;
-        Mon, 25 Jul 2022 23:11:33 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id e15so16529228edj.2;
-        Mon, 25 Jul 2022 23:11:33 -0700 (PDT)
+        Tue, 26 Jul 2022 02:14:16 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BBCE23154
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 23:14:15 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id m8so16478571edd.9
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 23:14:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=5iTBFaujydfzjNtZ+tuEW42yh94kmq7eTQthHnu+Umc=;
-        b=DFreK31JfLkd3fAd0uB7CR6gjxpG6yBsGmnlSdQdVK9K9Iop3MmbjSc5l5Mqska/9F
-         6zDsLVWtd4iSJbART2yOrMPnU6eocnuJbVN14OsRvUxL4fHsO7Wrgfc2UhIcTUjufoph
-         2DxioqWBkat/Lt1MPd86qgmI4fJ9X5pOYvgIQ3L8XLGI4V6pl/+7xrFDCD36BkcmbO3v
-         msDZGsDArMOOY56AIoIP2Boyoi0IybH+bd3McBS1U0EmQcx61Apt04nGaujtweQDBRAO
-         5Sbq2NspvHrUHv6ggNUA5i+nF0w1W6dwyWvXZUzuukyS0Uo/f8jv4B+Fz7jfoW/fM0P7
-         F9hg==
+        bh=GZbiLt6v06YsvfiDARoxK3cxvf7NmvFXziCgf+/LbTk=;
+        b=RpDIX/K5q/Bl7BEGyBwELYytBgXuUGBOrA4Awf+Oe6r3Yc3oR4VHx26WYehcpeQpDZ
+         t+2QevKmkXHCb/uqf1iXzZLxFWr6k1AirceB4FEsvpmsWbaeDtpbqiyk52R35dKLz2zR
+         qz7UTMmRoCEv57SlBTAc+/5rUGiQGIhrDlBOA1Z+q9QEBoPpPrVAs3Fn04dabwCTLxTC
+         FuNa9brZRbapRlPxWaLrSvwkns9nekcOIKR2ilIAGIDc6ElHZgTgGE2dG4F8KJV/MfEb
+         AWv6mGn2+TBFRMzLQZls2LXxkOeRk3IpFj8bbpPWrc6VSuo/fYapaOOxs6Y8nBIpEqE6
+         2P4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=5iTBFaujydfzjNtZ+tuEW42yh94kmq7eTQthHnu+Umc=;
-        b=BlAlzcA1MUrg7S4dIEucIEGjRfOoqen2XN9v1xrd8WPiwPJelPEvZOR53CSMHOw0bS
-         LGPA/U59ua6BMhoSECfgEy8/EGGiWBNZTPZx6e5vieTMcci3UmYoHtJ1RCf55sWLhBx+
-         rXgNbESeMDWnbdMW+CswYe9gyP+/J7gOdHu2Mg8EI0UOZkeHbMqJhCJnGbcHfXsxNk5g
-         Idy7Qx+FB8B7qOCVeygWdcE0P63QFG01kWmbdxxKyy5YvBsNwpzBUaEY2Opgbe/i2UiH
-         VaZHwzNV2u8wg9zeFKb+oFo6zT5agqi/2ygo5Gb/TgS7wX3D20qqI+/5/i6qMDEX9mL2
-         /CMQ==
-X-Gm-Message-State: AJIora9zbTMUbMaiUEu6d/Zud6rLXqVauQLyybsfYT/7geaGZBcHnKy9
-        UOgRBdN6J1k/CawajG6tSRJH2fjrEtTKswoBluYXHfMBpj7Lyw==
-X-Google-Smtp-Source: AGRyM1sDJR+2SWBXIadraV+/yk5L7Vs9denzeP6s+Yyxwc5C8W1vNP4hRGI/bOS7pUxW1lVGaWNV5mppOqxOjOJF8tE=
-X-Received: by 2002:a05:6402:d05:b0:435:b2a6:94eb with SMTP id
- eb5-20020a0564020d0500b00435b2a694ebmr16409469edb.87.1658815891980; Mon, 25
- Jul 2022 23:11:31 -0700 (PDT)
+        bh=GZbiLt6v06YsvfiDARoxK3cxvf7NmvFXziCgf+/LbTk=;
+        b=o80LUVGTvgnV5/3QbHwLLb04iq7HAwuMZalOC7nb7sN9CFpU8FioUDzBwDab5wI096
+         1sUcSqq1QQxr8zKHmLa49tKc2Uoi6ZmAteJ+Wm1QfOWxse973hcRUfpUkpGSdkqEPvav
+         wka1j/dknVac6oqqKW7K1gpABGR1C6CPk+MOMR7Wtd8Wwvi2WPhgZ2Y0e95v4rV1YCST
+         eRRP/n3WAygW1cg9veILpLhBMwiS4sIRgoWq+oyHUoV/OP20crlETLs+AfvedoL/yAcm
+         eav7HXW5Q1LVt1YvQPLESZa6T59YsjGc0HCiwxweQUoIFFkjk0FXPVvKfQGAGJR/WsIw
+         DelA==
+X-Gm-Message-State: AJIora+wWq8NhqOGuAhHzQFzFduHL6egh6fMTYab+t1TpmWSZAe8yDk5
+        oV27zo7U9hUnGO7jfbD43dqCwE8fRDKdrvXLdWI=
+X-Google-Smtp-Source: AGRyM1ulCzLFsef2K56zhTx/LQiZQ8imQKpRFEj5eB0Ji8EAHbSqFNJJK5gwMJ/Z6zyXqEt1tbNoG2FEKWeeRNKDc4E=
+X-Received: by 2002:a05:6402:d53:b0:43b:a0cf:d970 with SMTP id
+ ec19-20020a0564020d5300b0043ba0cfd970mr16197233edb.277.1658816053464; Mon, 25
+ Jul 2022 23:14:13 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220722102407.2205-1-peterwu.pub@gmail.com> <20220722102407.2205-13-peterwu.pub@gmail.com>
- <CAHp75VfgiK87VwWu2bTJ_mR0=g0sa0LPJ+H16OGcUdARmzFRSA@mail.gmail.com> <CA+hk2fYpDRw+DRRU3m=EDOP6UEQNpJLyNBHe8Zi0qOfUObTb4Q@mail.gmail.com>
-In-Reply-To: <CA+hk2fYpDRw+DRRU3m=EDOP6UEQNpJLyNBHe8Zi0qOfUObTb4Q@mail.gmail.com>
+References: <20220723214537.2054208-1-yury.norov@gmail.com>
+ <20220723214537.2054208-2-yury.norov@gmail.com> <CAHp75VfOmN=cTEs7gbwxZ7W3hXjBo67N4AmHHiDfcVfFzHkMLA@mail.gmail.com>
+ <Yt7CJj8r3eo05pKd@yury-laptop> <CAHp75VcGPQkY9ApsX2fi6sK5=3U=0vKbrHZZ3x___wUtgrFRSA@mail.gmail.com>
+ <Yt8oK1gUojEbO0WI@yury-laptop>
+In-Reply-To: <Yt8oK1gUojEbO0WI@yury-laptop>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 26 Jul 2022 08:10:55 +0200
-Message-ID: <CAHp75VdxWfo0QW=SXc0v+Ue92VO1TbpTqAqHT6mAK=GA606oFg@mail.gmail.com>
-Subject: Re: [PATCH v6 12/13] leds: flash: mt6370: Add MediaTek MT6370
- flashlight support
-To:     szuni chen <szunichen@gmail.com>
-Cc:     ChiaEn Wu <peterwu.pub@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@ucw.cz>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        "Krogerus, Heikki" <heikki.krogerus@linux.intel.com>,
-        Helge Deller <deller@gmx.de>,
-        ChiaEn Wu <chiaen_wu@richtek.com>,
-        Alice Chen <alice_chen@richtek.com>,
-        cy_huang <cy_huang@richtek.com>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Linux LED Subsystem <linux-leds@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        USB <linux-usb@vger.kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        "open list:FRAMEBUFFER LAYER" <linux-fbdev@vger.kernel.org>
+Date:   Tue, 26 Jul 2022 08:13:37 +0200
+Message-ID: <CAHp75VdJ=FVy6TXTEOci0b2kMrG3z8scDwWTjx8M6+8Y35iSXA@mail.gmail.com>
+Subject: Re: [PATCH 1/2] powerpc: drop dependency on <asm/machdep.h> in archrandom.h
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        "open list:LINUX FOR POWERPC PA SEMI PWRFICIENT" 
+        <linuxppc-dev@lists.ozlabs.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 26, 2022 at 6:15 AM szuni chen <szunichen@gmail.com> wrote:
+On Tue, Jul 26, 2022 at 1:35 AM Yury Norov <yury.norov@gmail.com> wrote:
+> On Mon, Jul 25, 2022 at 11:39:39PM +0200, Andy Shevchenko wrote:
+> > On Mon, Jul 25, 2022 at 6:19 PM Yury Norov <yury.norov@gmail.com> wrote:
+> > > On Mon, Jul 25, 2022 at 09:28:12AM +0200, Andy Shevchenko wrote:
+> > > > On Sun, Jul 24, 2022 at 12:19 AM Yury Norov <yury.norov@gmail.com> wrote:
 
 ...
 
-> > > +#define MT6370_ITORCH_MIN_UA           25000
-> > > +#define MT6370_ITORCH_STEP_UA          12500
-> > > +#define MT6370_ITORCH_MAX_UA           400000
-> > > +#define MT6370_ITORCH_DOUBLE_MAX_UA    800000
-> > > +#define MT6370_ISTRB_MIN_UA            50000
-> > > +#define MT6370_ISTRB_STEP_UA           12500
-> > > +#define MT6370_ISTRB_MAX_UA            1500000
-> > > +#define MT6370_ISTRB_DOUBLE_MAX_UA     3000000
+> > > > >  EXPORT_SYMBOL_GPL(pm_power_off);
+> > > >
+> > > > ^^^ (Note this and read below)
+> > > >
+> > > > ...
+> > > >
+> > > > > +EXPORT_SYMBOL(arch_get_random_seed_long);
+> > > >
+> > > > It can't be like this. Brief browsing of the callees shows that.
+> > >
+> > > Is my understanding correct that you're suggesting to make it GPL?
+> > >
+> > > ppc_md is exported with EXPORT_SYMBOL(), and the function is in header,
+> > > so it's available for non-GPL code now. I don't want to change it.
 > >
-> > Perhaps _uA would be better and consistent across your series
-> > regarding current units.
+> > The symbols your function calls are GPL. As far as I understand (not a
+> > lawyer!) it logically one may not call GPL and pretend to be non-GPL.
 >
-> Yes, _uA will be more consistent, but in general, using upper case in
-> the define macro is a convention, doesn't it?
-
-There is general convention, but there are also:
-1) common sense;
-2) usage in practice (e.g. _US, etc for *seconds and _HZ for *frequency).
-
-My common sense tells me that it is convenient to use mA,uA, etc.
-Plus "in practice" it's related to use as in your series and elsewhere.
-
-But of course it's minor to me, decide yourself.
-
-...
-
-> > > +       /*
-> > > +        * For the flash to turn on/off, need to wait for HW ramping up/down time
-> >
-> > we need
-> >
-> > > +        * 5ms/500us to prevent the unexpected problem.
-> > > +        */
-> > > +       if (!prev && curr)
-> > > +               usleep_range(5000, 6000);
-> > > +       else if (prev && !curr)
-> > > +               udelay(500);
-> >
-> > This still remains unanswered, why in the first place we allow
-> > switching, and a busy loop in the other place?
+> Can you explain what you mean in details?
 >
-> If I refine the description to
-> "For the flash to turn on/off, need to wait for 5ms/500us analog settling time.
-> If any flash led is already used, then the analog is settled done, we
-> don't need to wait again."
-> is it answer the question?
+> The function is:
+>         static inline bool __must_check arch_get_random_seed_long(unsigned long *v)
+>         {
+>                if (ppc_md.get_random_seed)
+>                        return ppc_md.get_random_seed(v);
+>
+>                return false;
+>         }
+>
+> ppc_md is non-GPL:
+>  77 /* The main machine-dep calls structure
+>  78  */
+>  79 struct machdep_calls ppc_md;
+>  80 EXPORT_SYMBOL(ppc_md);
 
-No. I'm talking from the Linux APIs perspective. There is a huge
-difference between those branches. Please, conduct research, read
-documentation to understand what my question is about.
+What a mess...
+
+> And get_random_seed is initialized in in arch/powerpc/platforms/powernv/rng.c
+> with different functions that are static and not exported at all.
+>
+> I don't understand where arch_get_random_seed_long calls GPL...
+
+The ->get_random_seed() (aka "callees" in my previous mail) are all
+GPL (maybe I missed one out of five which is non-GPL, but then it's
+even more of a mess).
 
 -- 
 With Best Regards,
