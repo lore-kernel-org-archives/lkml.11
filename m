@@ -2,125 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3C4FC00140
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 17:40:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F41DC00140
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 17:41:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239598AbiGZRkh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 13:40:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35408 "EHLO
+        id S239555AbiGZRjD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 13:39:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239508AbiGZRkU (ORCPT
+        with ESMTP id S239556AbiGZRiw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 13:40:20 -0400
-Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC6382A5
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 10:40:06 -0700 (PDT)
-Received: by mail-pl1-f170.google.com with SMTP id c13so7266483pla.6
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 10:40:06 -0700 (PDT)
+        Tue, 26 Jul 2022 13:38:52 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B5803246F
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 10:38:42 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id o14-20020a17090a4b4e00b001f2f2b61be5so2449320pjl.4
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 10:38:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JCn9/IjaeLQGVh694onzThTpnzvbXceLIXHLyYRvYVY=;
+        b=XNrZs8tWp8PRd21901P8ntMu55q2yctWNlQA1QfQ7KQJbecWjcvUbFuZkRuQq3CZ2h
+         3QBdPPbVnF85OM3V1/QmY633wB99DZSO6VZOR5dFdUXpySbrXxHnud+iPJB+t0n4thbI
+         GFIi2UlTfJ+/Cf7Jl9TYFdopqnbFRa1MNXlBA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=4z3ntyExUg7FqjRZyJOCt/4sIEuonwhPPueXjKH5Olg=;
-        b=Tl3OO80QO8U8hYUex34cIkz13m4XkHO5dZp37neT/dkp1e2ZnO3ILcYrHUnEzi7R1v
-         lY0KNqg5MMo80N3cUMb3lZhjKXx2NNZsw7bUQwMgFo+YZmK3zbgKSgNljGZ7g4Sqjv7q
-         bkH5qknGcpkneAW7pZal5bYK7A1pSlzpZY+imGN0+7Uxggofzkk1nnd/QhV3Co8hHanw
-         l9k+AmSDlTtWfGuzO/8Ml+u+M9dfpD2rqhouphr6orQE07mKWhTIkGPVFRsp30tW9LeZ
-         tc39FII81QpBGOt2O02OpJ6Io76DASBrHW7WKcinyBjKg+Czt44siX/wlcgxmyZQTnBh
-         V3eg==
-X-Gm-Message-State: AJIora9X2Bq13m92V5lVAPED5oMhqGDE4xUCPnIu223Yy4VEij6NL2Cv
-        afG24io9/TIvbWsL3p5rdjOwctPAWNI=
-X-Google-Smtp-Source: AGRyM1s7dfmvGBImEVfAgsX6VyOd6YD7yfdhAVr78N475olUJa3pRBkllDCLaks71DOTcWKdnhiElw==
-X-Received: by 2002:a17:902:ba91:b0:16c:6b8e:cd06 with SMTP id k17-20020a170902ba9100b0016c6b8ecd06mr17476609pls.33.1658857193707;
-        Tue, 26 Jul 2022 10:39:53 -0700 (PDT)
-Received: from fedora (136-24-99-118.cab.webpass.net. [136.24.99.118])
-        by smtp.gmail.com with ESMTPSA id a23-20020a63cd57000000b0041975999455sm10492644pgj.75.2022.07.26.10.39.52
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JCn9/IjaeLQGVh694onzThTpnzvbXceLIXHLyYRvYVY=;
+        b=Z24gV1Po8qn7KQlxkOM0qUUra0ElOw4ssp/96fdpJYrB/7hGepC2NEsbSakg56RRvc
+         +H06JL1CtxTDxWsjQOYjKuSrkt97a5+a3AUZmMLfGSpiMG+m8mQWajogSb3vbgsbM+I4
+         0JrBbpaXjtzwp3luz2mnFOklwPpzOe1qoy2cmQVGEUVDeeTAj+zhHD8eP233nkwg6hnj
+         n8JUrxf8u6E0mZJy4thDRnNjRHozRCXOmydX1+nxlOFgETRXGDQ0NV+C5/uA7qI/UqFX
+         Fg0lkMn2IuEbjupaFIo+FADKanBVECDix5i2b7WebsKE89AlbpydHr1bD3xcRwED9GjQ
+         rM1A==
+X-Gm-Message-State: AJIora98NH81OEdBmz25NRM+e+QlUxeVq/nwPBrhez36zGXMBjTudmpZ
+        EkOf3tQ0JSiqD68Wprn7R/EjcA==
+X-Google-Smtp-Source: AGRyM1vgwZMiQM2WzJWkrdxjc5FVSLy91CuCpFSR+fEUatViRg+5GVgh6OGv5sqlFxiqNmaDne/52A==
+X-Received: by 2002:a17:903:248:b0:168:ce2f:cbd2 with SMTP id j8-20020a170903024800b00168ce2fcbd2mr17627450plh.63.1658857120803;
+        Tue, 26 Jul 2022 10:38:40 -0700 (PDT)
+Received: from tictac2.mtv.corp.google.com ([2620:15c:202:201:8693:e9aa:75c0:5134])
+        by smtp.gmail.com with ESMTPSA id ik29-20020a170902ab1d00b0016d9ecd71f4sm245884plb.77.2022.07.26.10.38.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Jul 2022 10:39:53 -0700 (PDT)
-Date:   Tue, 26 Jul 2022 10:39:50 -0700
-From:   Dennis Zhou <dennis@kernel.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Guenter Roeck <linux@roeck-us.net>,
-        Yury Norov <yury.norov@gmail.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: Linux 5.19-rc8
-Message-ID: <YuAm5h1B6bsrR/9q@fedora>
-References: <CAHk-=wiWwDYxNhnStS0e+p-NTFAQSHvab=2-8LwxunCVuY5-2A@mail.gmail.com>
- <20220725161141.GA1306881@roeck-us.net>
- <CAHk-=whtGUwJwHUSNsXd4g7cok=n0Zwje7nACp8skh1fa2NtJA@mail.gmail.com>
+        Tue, 26 Jul 2022 10:38:40 -0700 (PDT)
+From:   Douglas Anderson <dianders@chromium.org>
+To:     Rob Clark <robdclark@gmail.com>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Mark Brown <broonie@kernel.org>
+Cc:     dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        freedreno@lists.freedesktop.org,
+        Douglas Anderson <dianders@chromium.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Archit Taneja <architt@codeaurora.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Jonathan Marek <jonathan@marek.ca>,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        Rajeev Nandan <quic_rajeevny@quicinc.com>,
+        Sean Paul <sean@poorly.run>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Vladimir Lypak <vladimir.lypak@gmail.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/7] drm/msm/dsi regulator improvements
+Date:   Tue, 26 Jul 2022 10:38:17 -0700
+Message-Id: <20220726173824.1166873-1-dianders@chromium.org>
+X-Mailer: git-send-email 2.37.1.359.gd136c6c3e2-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=whtGUwJwHUSNsXd4g7cok=n0Zwje7nACp8skh1fa2NtJA@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+The main goal of this series is to make a small dent in cleaning up
+the way we deal with regulator loads. The idea is to add some extra
+functionality to the regulator "bulk" API so that consumers can
+specify the load using that. Though I didn't convert everyone over, I
+include patches in this series that show how the Qualcomm DSI driver
+is improved by this.
 
-On Mon, Jul 25, 2022 at 10:55:18AM -0700, Linus Torvalds wrote:
-> On Mon, Jul 25, 2022 at 9:11 AM Guenter Roeck <linux@roeck-us.net> wrote:
-> >
-> > BUG: KFENCE: out-of-bounds read in _find_next_bit_le+0x10/0x48
-> 
-> Ok, I was hoping somebody more ARMy would look at this, particularly
-> since there is no call trace beyond the actual fault.
-> 
-> So it shows that it happens in _find_next_bit_le(), but not who called it.
-> 
-> It does show "who allocated the page", and I can see the message that
-> is printed afterwards, so it comes from that
-> 
->    static void __init test_bitmap_printlist(void)
-> 
-> function, so I guess we know the call chain:
-> 
->   test_bitmap_printlist ->
->     bitmap_print_to_pagebuf ->
->       scnprintf "%*pbl\n" ->
->         pointer ->
->           bitmap_list_string ->
->             for_each_set_bitrange
-> 
-> and I think I see what's wrong in there. That thing does
-> 
->              (b) = find_next_bit((addr), (size), (e) + 1),      \
->              (e) = find_next_zero_bit((addr), (size), (b) + 1))
-> 
-> for the end of the range, and looking at the oops, the instruction
-> that oopses is
-> 
->          ldrb    r3, [r0, r2, lsr #3]
-> 
-> where 'r2' is the bit position, and 'r0' is the start of the bitmap.
-> 
-> And:
-> 
-> > r10: 00000000  r9 : 0000002d  r8 : ef59d000
-> > r7 : c0e55514  r6 : c2215000  r5 : 00008000  r4 : 00008000
-> > r3 : 845cac12  r2 : 00008001  r1 : 00008000  r0 : ef59d000
-> 
-> Lookie here: r1 contains the size, and r2 is past the end of the size.
-> 
-> So pick your poison: either the bug is in
-> 
->  (a) the bitmap region iterators shouldn't even ask for past-the-end results
-> 
->      I've added Dennis Zhou who did that first
-> bitmap_for_each_set_region() in commit e837dfde15a4 ("bitmap:
-> genericize percpu bitmap region iterators"), and Yuri Norov who
-> renamed and moved it to for_each_set_bitrange() in commit ec288a2cf7ca
-> ("bitmap: unify find_bit operations").
-> 
+I'd expect:
+* The first two patches are bugfixes found while converting the DSI
+  driver over. Those could land any time.
+* The third patch ("drm/msm/dsi: Don't set a load before disabling a
+  regulator") is a patch a sent the other day verbatim, included in
+  this series because it's highly related. It could land any
+  time. That's why I called this series "v2".
+* After that I have patches that add to the regulator API and then
+  show a usage of those in the DSI driver. I'd expect that the two
+  regulator patches could land in the regulator tree. The DSI patches
+  would need to wait until the new regulator changes are available.
 
-It seems like this is mostly taken care of by migrating arm to use the
-generic implementations, but I just want to cover our basis here.
+Changes in v2:
+- ("Fix number of regulators for msm8996_dsi_cfg") new for v2.
+- ("Fix number of regulators for SDM660") new for v2.
+- ("Allow specifying an initial load w/ the bulk API") new for v2.
+- ("Use the new regulator bulk feature to specify the load") new for v2.
+- ("Allow drivers to define their init data as const") new for v2.
+- ("Take advantage of devm_regulator_bulk_get_const") new for v2.
 
-Are we okay with adding the contract find_*_bit() operations must handle
-asking for past size properly? FWIW, we'd have to modify most of the
-iterators in find.h.
+Douglas Anderson (7):
+  drm/msm/dsi: Fix number of regulators for msm8996_dsi_cfg
+  drm/msm/dsi: Fix number of regulators for SDM660
+  drm/msm/dsi: Don't set a load before disabling a regulator
+  regulator: core: Allow specifying an initial load w/ the bulk API
+  drm/msm/dsi: Use the new regulator bulk feature to specify the load
+  regulator: core: Allow drivers to define their init data as const
+  drm/msm/dsi: Take advantage of devm_regulator_bulk_get_const()
 
-Thanks,
-Dennis
+ drivers/gpu/drm/msm/dsi/dsi.h                 |   1 -
+ drivers/gpu/drm/msm/dsi/dsi_cfg.c             | 172 +++++++++---------
+ drivers/gpu/drm/msm/dsi/dsi_cfg.h             |   3 +-
+ drivers/gpu/drm/msm/dsi/dsi_host.c            |  61 +------
+ drivers/gpu/drm/msm/dsi/phy/dsi_phy.c         |  41 +----
+ drivers/gpu/drm/msm/dsi/phy/dsi_phy_10nm.c    |   4 +-
+ drivers/gpu/drm/msm/dsi/phy/dsi_phy_14nm.c    |   6 +-
+ drivers/gpu/drm/msm/dsi/phy/dsi_phy_20nm.c    |   4 +-
+ drivers/gpu/drm/msm/dsi/phy/dsi_phy_28nm.c    |   6 +-
+ .../gpu/drm/msm/dsi/phy/dsi_phy_28nm_8960.c   |   2 +-
+ drivers/gpu/drm/msm/dsi/phy/dsi_phy_7nm.c     |   6 +-
+ drivers/regulator/core.c                      |  20 +-
+ drivers/regulator/devres.c                    |  28 +++
+ include/linux/regulator/consumer.h            |  16 +-
+ 14 files changed, 165 insertions(+), 205 deletions(-)
+
+-- 
+2.37.1.359.gd136c6c3e2-goog
+
