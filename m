@@ -2,89 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CED0CCA48C
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 09:15:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 777E9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 09:16:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237744AbiGZJPo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 05:15:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53570 "EHLO
+        id S237799AbiGZJQH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 05:16:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231864AbiGZJPm (ORCPT
+        with ESMTP id S232807AbiGZJQE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 05:15:42 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A5C9237EB;
-        Tue, 26 Jul 2022 02:15:40 -0700 (PDT)
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LsWRx4mlwzgYgW;
-        Tue, 26 Jul 2022 17:13:49 +0800 (CST)
-Received: from kwepemm600010.china.huawei.com (7.193.23.86) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 26 Jul 2022 17:15:04 +0800
-Received: from [10.67.110.237] (10.67.110.237) by
- kwepemm600010.china.huawei.com (7.193.23.86) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 26 Jul 2022 17:15:03 +0800
-Subject: Re: [PATCH 5/5] ARM: stacktrace: Convert stacktrace to generic
- ARCH_STACKWALK
-To:     Linus Walleij <linus.walleij@linaro.org>
-CC:     <linux@armlinux.org.uk>, <rmk+kernel@armlinux.org.uk>,
-        <ardb@kernel.org>, <will@kernel.org>, <mark.rutland@arm.com>,
-        <broonie@kernel.org>, <peterz@infradead.org>, <mingo@redhat.com>,
-        <acme@kernel.org>, <alexander.shishkin@linux.intel.com>,
-        <jolsa@kernel.org>, <namhyung@kernel.org>, <arnd@arndb.de>,
-        <rostedt@goodmis.org>, <nick.hawkins@hpe.com>, <john@phrozen.org>,
-        <mhiramat@kernel.org>, <ast@kernel.org>, <linyujun809@huawei.com>,
-        <ndesaulniers@google.com>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>
-References: <20220712021527.109921-1-lihuafei1@huawei.com>
- <20220712021527.109921-6-lihuafei1@huawei.com>
- <CACRpkdZVxyCsENJQ_-KZBMHjVrYCHzFG2UdCAe=mt_5Ts8_RFw@mail.gmail.com>
-From:   Li Huafei <lihuafei1@huawei.com>
-Message-ID: <1771ac18-8b6a-46ae-c610-afecb28bd21c@huawei.com>
-Date:   Tue, 26 Jul 2022 17:15:03 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.0
+        Tue, 26 Jul 2022 05:16:04 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F060F24F32
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 02:16:03 -0700 (PDT)
+X-UUID: e8ee800c05ff41459e7984d877b1f0f6-20220726
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.8,REQID:55bed568-d55e-4f2d-9247-14b2fc126e32,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACTI
+        ON:release,TS:0
+X-CID-META: VersionHash:0f94e32,CLOUDID:c32787b3-06d2-48ef-b2dd-540836705165,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+        ,QS:nil,BEC:nil,COL:0
+X-UUID: e8ee800c05ff41459e7984d877b1f0f6-20220726
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
+        (envelope-from <jiaxin.yu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 1719183704; Tue, 26 Jul 2022 17:15:56 +0800
+Received: from mtkmbs11n1.mediatek.inc (172.21.101.185) by
+ mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Tue, 26 Jul 2022 17:15:55 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkmbs11n1.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
+ Transport; Tue, 26 Jul 2022 17:15:54 +0800
+Message-ID: <9385f8642e6ad5491a036360c644dc21b9a3f009.camel@mediatek.com>
+Subject: Re: [PATCH] drm/bridge: anx7625: Support HDMI_I2S audio format
+From:   Jiaxin Yu <jiaxin.yu@mediatek.com>
+To:     Xin Ji <xji@analogixsemi.com>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+CC:     <bliang@analogixsemi.com>, <qwen@analogixsemi.com>,
+        <hsinyi@chromium.org>, <dri-devel@lists.freedesktop.org>,
+        <linux-kernel@vger.kernel.org>
+Date:   Tue, 26 Jul 2022 17:15:54 +0800
+In-Reply-To: <20220726033058.403715-1-xji@analogixsemi.com>
+References: <20220726033058.403715-1-xji@analogixsemi.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-In-Reply-To: <CACRpkdZVxyCsENJQ_-KZBMHjVrYCHzFG2UdCAe=mt_5Ts8_RFw@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.110.237]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemm600010.china.huawei.com (7.193.23.86)
-X-CFilter-Loop: Reflected
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 2022/7/18 17:12, Linus Walleij wrote:
-> On Tue, Jul 12, 2022 at 4:19 AM Li Huafei <lihuafei1@huawei.com> wrote:
+On Tue, 2022-07-26 at 11:30 +0800, Xin Ji wrote:
+> 1. Support HDMI_I2S audio format.
+> 2. Return 0 if there is no sink connection in .hw_param callback.
 > 
->> This patch converts ARM stacktrace to the generic ARCH_STACKWALK
->> implemented by commit 214d8ca6ee85 ("stacktrace: Provide common
->> infrastructure").
->>
->> Signed-off-by: Li Huafei <lihuafei1@huawei.com>
+> Signed-off-by: Xin Ji <xji@analogixsemi.com>
+> ---
+>  drivers/gpu/drm/bridge/analogix/anx7625.c | 23 +++++++++++++++++--
+> ----
+>  1 file changed, 17 insertions(+), 6 deletions(-)
 > 
-> Looks good to me:
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-> 
-> What I want to know is if this commit will avoid the problem mentioned
-> in review of commit 3? I.e. the generic stackwalk code will make sure we are
-> not running the task on another CPU, so that is why we could remove
-> that check?
-> 
+Acked-by: Jiaxin Yu<jiaxin.yu@mediatek.com>
+> diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c
+> b/drivers/gpu/drm/bridge/analogix/anx7625.c
+> index 79fc7a50b497..c74b5df4cade 100644
+> --- a/drivers/gpu/drm/bridge/analogix/anx7625.c
+> +++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
+> @@ -1797,8 +1797,13 @@ static int anx7625_audio_hw_params(struct
+> device *dev, void *data,
+>  	int wl, ch, rate;
+>  	int ret = 0;
+>  
+> -	if (fmt->fmt != HDMI_DSP_A) {
+> -		DRM_DEV_ERROR(dev, "only supports DSP_A\n");
+> +	if (anx7625_sink_detect(ctx) == connector_status_disconnected)
+> {
+> +		DRM_DEV_DEBUG_DRIVER(dev, "DP not connected\n");
+> +		return 0;
+> +	}
+> +
+> +	if (fmt->fmt != HDMI_DSP_A && fmt->fmt != HDMI_I2S) {
+> +		DRM_DEV_ERROR(dev, "only supports DSP_A & I2S\n");
+>  		return -EINVAL;
+>  	}
+>  
+> @@ -1806,10 +1811,16 @@ static int anx7625_audio_hw_params(struct
+> device *dev, void *data,
+>  			     params->sample_rate, params->sample_width,
+>  			     params->cea.channels);
+>  
+> -	ret |= anx7625_write_and_or(ctx, ctx->i2c.tx_p2_client,
+> -				    AUDIO_CHANNEL_STATUS_6,
+> -				    ~I2S_SLAVE_MODE,
+> -				    TDM_SLAVE_MODE);
+> +	if (fmt->fmt == HDMI_DSP_A)
+> +		ret = anx7625_write_and_or(ctx, ctx->i2c.tx_p2_client,
+> +					   AUDIO_CHANNEL_STATUS_6,
+> +					   ~I2S_SLAVE_MODE,
+> +					   TDM_SLAVE_MODE);
+> +	else
+> +		ret = anx7625_write_and_or(ctx, ctx->i2c.tx_p2_client,
+> +					   AUDIO_CHANNEL_STATUS_6,
+> +					   ~TDM_SLAVE_MODE,
+> +					   I2S_SLAVE_MODE);
+>  
+>  	/* Word length */
+>  	switch (params->sample_width) {
 
-It was explained in commit 3, thank you very much.
-
-Thanks,
-Huafei
-
-> Yours,
-> Linus Walleij
-> .
-> 
