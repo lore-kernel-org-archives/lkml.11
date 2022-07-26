@@ -2,81 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A78A9C43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 08:01:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC3B8C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 08:02:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238177AbiGZIB0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 04:01:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49684 "EHLO
+        id S238260AbiGZICo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 04:02:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230377AbiGZIBZ (ORCPT
+        with ESMTP id S230377AbiGZICg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 04:01:25 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A55172C137;
-        Tue, 26 Jul 2022 01:01:24 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 4F8FE1FA4D;
-        Tue, 26 Jul 2022 08:01:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1658822483; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type;
-        bh=dkriu3vkrAZS1wyG+iHdOUg7blF/kske8YRN1wSZz4Q=;
-        b=G/TB7gZSJMp3dTlkyX9Ki+p/e4UW389p8OsG2awHmpK2GwdITd8kH6qbhW3bCC3p3nGZj7
-        m4lXBtKAtQ+QEtV54gFl1IuQj6k6qQvt20GD1iFjhGUiK+yiCVbGwZni4CbGQlP1Vkdb5y
-        AudXZOD8kdpxrmd9z6H25G3miMNiRbs=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1658822483;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type;
-        bh=dkriu3vkrAZS1wyG+iHdOUg7blF/kske8YRN1wSZz4Q=;
-        b=Je4a71CxVKPiPCsa7bNGifnvDS+87Nu/eTsiZ6MwHT5+hTJayEBGDjr01+VPME59S5OT0p
-        eATygcgUODSSFHDw==
-Received: from hawking.suse.de (unknown [10.168.4.11])
-        by relay2.suse.de (Postfix) with ESMTP id 45EAE2C16E;
-        Tue, 26 Jul 2022 08:01:23 +0000 (UTC)
-Received: by hawking.suse.de (Postfix, from userid 17005)
-        id B9114444B2F; Tue, 26 Jul 2022 10:01:22 +0200 (CEST)
-From:   Andreas Schwab <schwab@suse.de>
-To:     Daniel Bristot de Oliveira <bristot@kernel.org>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        linux-trace-devel@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] rtla: Define syscall numbers for riscv
-X-Yow:  My uncle Murray conquered Egypt in 53 B.C.  And I can prove it too!!
-Date:   Tue, 26 Jul 2022 10:01:22 +0200
-Message-ID: <mvma68wl2ul.fsf@suse.de>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.1.90 (gnu/linux)
+        Tue, 26 Jul 2022 04:02:36 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E43AE2CC94
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 01:02:34 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id sz17so24733993ejc.9
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 01:02:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=tqRCRe4eX+VkGHjaxOX6NtuRPCa/urbMxkt+QthVPS0=;
+        b=OWITSNRKHM8Fga2M8WOo5srtID0NrtHoyp47A1Ey1jYEfyBzDqOc8NsHA03D/MAFtn
+         iLdackwCJA9q49X5e1VXu0aOlU/R9e6gz1qT+KOIBIVzsr/3j54IwXb18J1BZ12AYy8Q
+         lPzXqW7MVb1oCnw3P6+llwraCJCuSTnYWWrJ61LTjl8Xy3UWoNX/avOpzlTHOFKOjyhr
+         ZjpYxuyuEOu8/LXS4xkxc6FAb732y1h8csYmfbolGsmNnCQmViIZQQ6Sjb3nSZO9oCQL
+         mfKDOXy1kRWb3mxiDXlj0BH2wnyST+SeyltucNcgl4ctzR3Lq+f3qylxWL+4iUaetFcP
+         0cfg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=tqRCRe4eX+VkGHjaxOX6NtuRPCa/urbMxkt+QthVPS0=;
+        b=bv+QVtAulvv0I5GQtsuqy/6izOD+Epz9r0ODBZw5sclhUOYhCc7IVj1+LOoiOaoXoJ
+         cbEIjZJzPVr7SjATFW+S3rx5y/L8wlMZLK1jbdQ+QYkY+LdTLiewLqopMM98mVEEax2x
+         iUHZxJ9cyI3sP75FwinPF2naLWQLXco4k9BMqk4Gxg5MrrDz8uXnfSBXUnyTAOJGVJWl
+         19R5R0MyUmTzt/8ffKDiDIVA42l3jW+Roce5Bo0fLf5U+uIy5WJ35ePrtyhkbvvPYZzH
+         paJkRaXR2tPUPGrsw3H32XWIIW8b306+8a1QtziyKwoI9GSWZyLKfQg8xZX/pNDTuvC4
+         Karg==
+X-Gm-Message-State: AJIora/bpHdbmMGkD5usBZ9HaynucfbM19EBhSikWGv0AQAoYt2PbZC0
+        kCbYHslJTYeXRJSLm+3mqYlpV34oDUr/YCK4yh8d7unWQkKARQ==
+X-Google-Smtp-Source: AGRyM1usXww6QrDgVRlTV20uypXHuu5RtRCNDP8/S0/sCysg10uzzGGC0YEhdHtviVWo89ng+KSkTUQy5BgNPCfu3FE=
+X-Received: by 2002:a17:907:a053:b0:72b:3051:b79b with SMTP id
+ gz19-20020a170907a05300b0072b3051b79bmr12564833ejc.690.1658822553187; Tue, 26
+ Jul 2022 01:02:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20220722220810.28894-1-mario.limonciello@amd.com> <20220722220810.28894-2-mario.limonciello@amd.com>
+In-Reply-To: <20220722220810.28894-2-mario.limonciello@amd.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Tue, 26 Jul 2022 10:02:22 +0200
+Message-ID: <CACRpkdZ+2XCSJo336+=k_fxmPxu=M3KZJofKfY5JqPXGoKmnYw@mail.gmail.com>
+Subject: Re: [PATCH 2/2] pinctrl: amd: Use unicode for debugfs output
+To:     Mario Limonciello <mario.limonciello@amd.com>
+Cc:     Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
+        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
+        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-RISC-V uses the same (generic) syscall numbers as ARM64.
+On Sat, Jul 23, 2022 at 12:08 AM Mario Limonciello
+<mario.limonciello@amd.com> wrote:
 
-Signed-off-by: Andreas Schwab <schwab@suse.de>
----
- tools/tracing/rtla/src/utils.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> The output is currently split across two lines making it more
+> difficult to parse unless the newlines are removed between pins
+> or it's read in by a parser like Libreoffice Calc or Google docs.
+>
+> To make it easier to follow to the naked eye in a terminal window:
+> * drop the newline in the middle of pin definitions
+> * shorten all output using unicode characters
+> * align all pipe delimitters
+> * output the same phrase even for disabled functions
+>   (but with a =E2=88=85 character)
+>
+> Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
 
-diff --git a/tools/tracing/rtla/src/utils.c b/tools/tracing/rtla/src/utils.c
-index 5352167a1e75..147921356e02 100644
---- a/tools/tracing/rtla/src/utils.c
-+++ b/tools/tracing/rtla/src/utils.c
-@@ -224,7 +224,7 @@ long parse_ns_duration(char *val)
- #elif __arm__
- # define __NR_sched_setattr	380
- # define __NR_sched_getattr	381
--#elif __aarch64__
-+#elif __aarch64__ || __riscv
- # define __NR_sched_setattr	274
- # define __NR_sched_getattr	275
- #elif __powerpc__
--- 
-2.37.1
+That's a bit unorthodox, what happens when someone uses their
+old VT100 terminal to look at this file?
 
+BIUT! It is a debugfs file, and you folks at AMD are going to be
+using this and I just assume that you folks have aligned internally
+that this is how you want things so I just applied this.
 
--- 
-Andreas Schwab, SUSE Labs, schwab@suse.de
-GPG Key fingerprint = 0196 BAD8 1CE9 1970 F4BE  1748 E4D4 88E3 0EEA B9D7
-"And now for something completely different."
+We need testing in linux-next for this anyway, the merge window
+is close. If the other AMD people don't like it for some reason
+I can always pull it out.
+
+Yours,
+Linus Walleij
