@@ -2,217 +2,279 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC599C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 08:02:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A483CCA48C
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 08:04:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238349AbiGZICx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 04:02:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50774 "EHLO
+        id S231835AbiGZIEf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 04:04:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238245AbiGZICm (ORCPT
+        with ESMTP id S230370AbiGZIEe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 04:02:42 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D95E2C654
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 01:02:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658822561; x=1690358561;
-  h=from:to:cc:subject:references:date:in-reply-to:
-   message-id:mime-version;
-  bh=CUZxTvCqlorgPopyQrREkP5nuwha/hRCiZS4ejKQGYk=;
-  b=oGqx0ZKQEpNpAVJ966LQ8PmWhm75+fchc6gHzplOtxz1t7jcnIh18wLn
-   YS915w0Qq5MsxWMHBS44G9ggpXBwklH3FI6p3M4kisTJK2iSsK37F+BW0
-   2no+0rIA+7zzXn3fApNr/8HeFJD5CgZ0FYDuuG3jw99U3edx3izJapFgo
-   BENubgpxQH7sZWxq+AqPB9UvfZrIfCOsKKAzvtudSBvFSg8fAEinGbmVD
-   uA0Q8uVxQhftvBURU+Bj5ckj2mDJ6YyiT19GxQOGCZkndNtylW/c0RlwJ
-   8x7sC7HKKFtqPoTMyDMXEUf1UjVAQ0JqaZPeljtzFRQewpaCApLwAKsLw
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10419"; a="274757297"
-X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
-   d="scan'208";a="274757297"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2022 01:02:40 -0700
-X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
-   d="scan'208";a="575389671"
-Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.239.13.94])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2022 01:02:36 -0700
-From:   "Huang, Ying" <ying.huang@intel.com>
-To:     "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
-Cc:     linux-mm@kvack.org, akpm@linux-foundation.org,
-        Wei Xu <weixugc@google.com>, Yang Shi <shy828301@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Tim C Chen <tim.c.chen@intel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hesham Almatary <hesham.almatary@huawei.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Johannes Weiner <hannes@cmpxchg.org>, jvgediya.oss@gmail.com
-Subject: Re: [PATCH v10 6/8] mm/demotion: Add pg_data_t member to track node
- memory tier details
-References: <20220720025920.1373558-1-aneesh.kumar@linux.ibm.com>
-        <20220720025920.1373558-7-aneesh.kumar@linux.ibm.com>
-Date:   Tue, 26 Jul 2022 16:02:33 +0800
-In-Reply-To: <20220720025920.1373558-7-aneesh.kumar@linux.ibm.com> (Aneesh
-        Kumar K. V.'s message of "Wed, 20 Jul 2022 08:29:18 +0530")
-Message-ID: <87wnc0uwrq.fsf@yhuang6-desk2.ccr.corp.intel.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Tue, 26 Jul 2022 04:04:34 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B94E52D1CD
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 01:04:32 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LsTqR5HS7zWfTL;
+        Tue, 26 Jul 2022 16:00:35 +0800 (CST)
+Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 26 Jul 2022 16:03:56 +0800
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 26 Jul 2022 16:03:56 +0800
+From:   Kefeng Wang <wangkefeng.wang@huawei.com>
+To:     Naoya Horiguchi <naoya.horiguchi@nec.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>, <linux-mm@kvack.org>
+CC:     <linux-kernel@vger.kernel.org>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>
+Subject: [PATCH] mm: memory-failure: convert to pr_fmt()
+Date:   Tue, 26 Jul 2022 16:10:46 +0800
+Message-ID: <20220726081046.10742-1-wangkefeng.wang@huawei.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ascii
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500001.china.huawei.com (7.185.36.107)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-"Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com> writes:
+Use pr_fmt to prefix pr_<level> output.
 
-> Also update different helpes to use NODE_DATA()->memtier. Since
-> node specific memtier can change based on the reassignment of
-> NUMA node to a different memory tiers, accessing NODE_DATA()->memtier
-> needs to happen under an rcu read lock or memory_tier_lock.
->
-> Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
-> ---
->  include/linux/mmzone.h |  3 ++
->  mm/memory-tiers.c      | 65 +++++++++++++++++++++++++++++++++++-------
->  2 files changed, 57 insertions(+), 11 deletions(-)
->
-> diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
-> index aab70355d64f..353812495a70 100644
-> --- a/include/linux/mmzone.h
-> +++ b/include/linux/mmzone.h
-> @@ -928,6 +928,9 @@ typedef struct pglist_data {
->  	/* Per-node vmstats */
->  	struct per_cpu_nodestat __percpu *per_cpu_nodestats;
->  	atomic_long_t		vm_stat[NR_VM_NODE_STAT_ITEMS];
-> +#ifdef CONFIG_NUMA
-> +	struct memory_tier __rcu *memtier;
-> +#endif
->  } pg_data_t;
->  
->  #define node_present_pages(nid)	(NODE_DATA(nid)->node_present_pages)
-> diff --git a/mm/memory-tiers.c b/mm/memory-tiers.c
-> index a8cfe2ca3903..4715f9b96a44 100644
-> --- a/mm/memory-tiers.c
-> +++ b/mm/memory-tiers.c
-> @@ -138,13 +138,18 @@ static struct memory_tier *find_create_memory_tier(unsigned int perf_level)
->  
->  static struct memory_tier *__node_get_memory_tier(int node)
->  {
-> -	struct memory_tier *memtier;
-> +	pg_data_t *pgdat;
->  
-> -	list_for_each_entry(memtier, &memory_tiers, list) {
-> -		if (node_isset(node, memtier->nodelist))
-> -			return memtier;
-> -	}
-> -	return NULL;
-> +	pgdat = NODE_DATA(node);
-> +	if (!pgdat)
-> +		return NULL;
-> +	/*
-> +	 * Since we hold memory_tier_lock, we can avoid
-> +	 * RCU read locks when accessing the details. No
-> +	 * parallel updates are possible here.
-> +	 */
-> +	return rcu_dereference_check(pgdat->memtier,
-> +				     lockdep_is_held(&memory_tier_lock));
->  }
->  
->  #ifdef CONFIG_MIGRATION
-> @@ -277,6 +282,29 @@ static inline void disable_all_migrate_targets(void) {}
->  static inline void establish_migration_targets(void) {}
->  #endif /* CONFIG_MIGRATION */
->  
-> +static void memtier_node_set(int node, struct memory_tier *memtier)
-> +{
-> +	pg_data_t *pgdat;
-> +	struct memory_tier *current_memtier;
-> +
-> +	pgdat = NODE_DATA(node);
-> +	if (!pgdat)
-> +		return;
-> +	/*
-> +	 * Make sure we mark the memtier NULL before we assign the new memory tier
-> +	 * to the NUMA node. This make sure that anybody looking at NODE_DATA
-> +	 * finds a NULL memtier or the one which is still valid.
-> +	 */
-> +	current_memtier = rcu_dereference_check(pgdat->memtier,
-> +						lockdep_is_held(&memory_tier_lock));
-> +	rcu_assign_pointer(pgdat->memtier, NULL);
-> +	synchronize_rcu();
-> +	if (current_memtier)
-> +		node_clear(node, current_memtier->nodelist);
+Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+---
+The patch is based on next-20220725.
 
-If pgdat->memtier == NULL, we don't need to set it to NULL and call
-synchronize_rcu().  That is,
+ mm/memory-failure.c | 56 +++++++++++++++++++++------------------------
+ 1 file changed, 26 insertions(+), 30 deletions(-)
 
-+	current_memtier = rcu_dereference_check(pgdat->memtier,
-+						lockdep_is_held(&memory_tier_lock));
-+	if (current_memtier) {
-+               rcu_assign_pointer(pgdat->memtier, NULL);
-+               synchronize_rcu();
-+		node_clear(node, current_memtier->nodelist);
-+       }
+diff --git a/mm/memory-failure.c b/mm/memory-failure.c
+index 2bc1a47c3d46..f0e1961d4482 100644
+--- a/mm/memory-failure.c
++++ b/mm/memory-failure.c
+@@ -33,6 +33,9 @@
+  * are rare we hope to get away with this. This avoids impacting the core 
+  * VM.
+  */
++
++#define pr_fmt(fmt) "Memory failure: " fmt
++
+ #include <linux/kernel.h>
+ #include <linux/mm.h>
+ #include <linux/page-flags.h>
+@@ -258,7 +261,7 @@ static int kill_proc(struct to_kill *tk, unsigned long pfn, int flags)
+ 	short addr_lsb = tk->size_shift;
+ 	int ret = 0;
+ 
+-	pr_err("Memory failure: %#lx: Sending SIGBUS to %s:%d due to hardware memory corruption\n",
++	pr_err("%#lx: Sending SIGBUS to %s:%d due to hardware memory corruption\n",
+ 			pfn, t->comm, t->pid);
+ 
+ 	if ((flags & MF_ACTION_REQUIRED) && (t == current))
+@@ -276,7 +279,7 @@ static int kill_proc(struct to_kill *tk, unsigned long pfn, int flags)
+ 		ret = send_sig_mceerr(BUS_MCEERR_AO, (void __user *)tk->addr,
+ 				      addr_lsb, t);  /* synchronous? */
+ 	if (ret < 0)
+-		pr_info("Memory failure: Error sending signal to %s:%d: %d\n",
++		pr_info("Error sending signal to %s:%d: %d\n",
+ 			t->comm, t->pid, ret);
+ 	return ret;
+ }
+@@ -358,7 +361,7 @@ static void add_to_kill(struct task_struct *tsk, struct page *p,
+ 
+ 	tk = kmalloc(sizeof(struct to_kill), GFP_ATOMIC);
+ 	if (!tk) {
+-		pr_err("Memory failure: Out of memory while machine check handling\n");
++		pr_err("Out of memory while machine check handling\n");
+ 		return;
+ 	}
+ 
+@@ -385,7 +388,7 @@ static void add_to_kill(struct task_struct *tsk, struct page *p,
+ 	 * has a mapping for the page.
+ 	 */
+ 	if (tk->addr == -EFAULT) {
+-		pr_info("Memory failure: Unable to find user space address %lx in %s\n",
++		pr_info("Unable to find user space address %lx in %s\n",
+ 			page_to_pfn(p), tsk->comm);
+ 	} else if (tk->size_shift == 0) {
+ 		kfree(tk);
+@@ -418,7 +421,7 @@ static void kill_procs(struct list_head *to_kill, int forcekill, bool fail,
+ 			 * signal and then access the memory. Just kill it.
+ 			 */
+ 			if (fail || tk->addr == -EFAULT) {
+-				pr_err("Memory failure: %#lx: forcibly killing %s:%d because of failure to unmap corrupted page\n",
++				pr_err("%#lx: forcibly killing %s:%d because of failure to unmap corrupted page\n",
+ 				       pfn, tk->tsk->comm, tk->tsk->pid);
+ 				do_send_sig_info(SIGKILL, SEND_SIG_PRIV,
+ 						 tk->tsk, PIDTYPE_PID);
+@@ -431,7 +434,7 @@ static void kill_procs(struct list_head *to_kill, int forcekill, bool fail,
+ 			 * process anyways.
+ 			 */
+ 			else if (kill_proc(tk, pfn, flags) < 0)
+-				pr_err("Memory failure: %#lx: Cannot send advisory machine check signal to %s:%d\n",
++				pr_err("%#lx: Cannot send advisory machine check signal to %s:%d\n",
+ 				       pfn, tk->tsk->comm, tk->tsk->pid);
+ 		}
+ 		put_task_struct(tk->tsk);
+@@ -821,12 +824,10 @@ static int truncate_error_page(struct page *p, unsigned long pfn,
+ 		int err = mapping->a_ops->error_remove_page(mapping, p);
+ 
+ 		if (err != 0) {
+-			pr_info("Memory failure: %#lx: Failed to punch page: %d\n",
+-				pfn, err);
++			pr_info("%#lx: Failed to punch page: %d\n", pfn, err);
+ 		} else if (page_has_private(p) &&
+ 			   !try_to_release_page(p, GFP_NOIO)) {
+-			pr_info("Memory failure: %#lx: failed to release buffers\n",
+-				pfn);
++			pr_info("%#lx: failed to release buffers\n", pfn);
+ 		} else {
+ 			ret = MF_RECOVERED;
+ 		}
+@@ -838,8 +839,7 @@ static int truncate_error_page(struct page *p, unsigned long pfn,
+ 		if (invalidate_inode_page(p))
+ 			ret = MF_RECOVERED;
+ 		else
+-			pr_info("Memory failure: %#lx: Failed to invalidate\n",
+-				pfn);
++			pr_info("%#lx: Failed to invalidate\n",	pfn);
+ 	}
+ 
+ 	return ret;
+@@ -869,7 +869,7 @@ static bool has_extra_refcount(struct page_state *ps, struct page *p,
+ 		count -= 1;
+ 
+ 	if (count > 0) {
+-		pr_err("Memory failure: %#lx: %s still referenced by %d users\n",
++		pr_err("%#lx: %s still referenced by %d users\n",
+ 		       page_to_pfn(p), action_page_types[ps->type], count);
+ 		return true;
+ 	}
+@@ -893,7 +893,7 @@ static int me_kernel(struct page_state *ps, struct page *p)
+  */
+ static int me_unknown(struct page_state *ps, struct page *p)
+ {
+-	pr_err("Memory failure: %#lx: Unknown page state\n", page_to_pfn(p));
++	pr_err("%#lx: Unknown page state\n", page_to_pfn(p));
+ 	unlock_page(p);
+ 	return MF_FAILED;
+ }
+@@ -1179,7 +1179,7 @@ static void action_result(unsigned long pfn, enum mf_action_page_type type,
+ 	trace_memory_failure_event(pfn, type, result);
+ 
+ 	num_poisoned_pages_inc();
+-	pr_err("Memory failure: %#lx: recovery action for %s: %s\n",
++	pr_err("%#lx: recovery action for %s: %s\n",
+ 		pfn, action_page_types[type], action_name[result]);
+ }
+ 
+@@ -1254,8 +1254,7 @@ static int __get_hwpoison_page(struct page *page, unsigned long flags)
+ 		if (head == compound_head(page))
+ 			return 1;
+ 
+-		pr_info("Memory failure: %#lx cannot catch tail\n",
+-			page_to_pfn(page));
++		pr_info("%#lx cannot catch tail\n", page_to_pfn(page));
+ 		put_page(head);
+ 	}
+ 
+@@ -1318,7 +1317,7 @@ static int get_any_page(struct page *p, unsigned long flags)
+ 	}
+ out:
+ 	if (ret == -EIO)
+-		pr_err("Memory failure: %#lx: unhandlable page.\n", page_to_pfn(p));
++		pr_err("%#lx: unhandlable page.\n", page_to_pfn(p));
+ 
+ 	return ret;
+ }
+@@ -1417,13 +1416,12 @@ static bool hwpoison_user_mappings(struct page *p, unsigned long pfn,
+ 		return true;
+ 
+ 	if (PageKsm(p)) {
+-		pr_err("Memory failure: %#lx: can't handle KSM pages.\n", pfn);
++		pr_err("%#lx: can't handle KSM pages.\n", pfn);
+ 		return false;
+ 	}
+ 
+ 	if (PageSwapCache(p)) {
+-		pr_err("Memory failure: %#lx: keeping poisoned page in swap cache\n",
+-			pfn);
++		pr_err("%#lx: keeping poisoned page in swap cache\n", pfn);
+ 		ttu |= TTU_IGNORE_HWPOISON;
+ 	}
+ 
+@@ -1441,7 +1439,7 @@ static bool hwpoison_user_mappings(struct page *p, unsigned long pfn,
+ 		} else {
+ 			kill = 0;
+ 			ttu |= TTU_IGNORE_HWPOISON;
+-			pr_info("Memory failure: %#lx: corrupted page was clean: dropped without side effects\n",
++			pr_info("%#lx: corrupted page was clean: dropped without side effects\n",
+ 				pfn);
+ 		}
+ 	}
+@@ -1470,14 +1468,14 @@ static bool hwpoison_user_mappings(struct page *p, unsigned long pfn,
+ 			try_to_unmap(folio, ttu|TTU_RMAP_LOCKED);
+ 			i_mmap_unlock_write(mapping);
+ 		} else
+-			pr_info("Memory failure: %#lx: could not lock mapping for mapped huge page\n", pfn);
++			pr_info("%#lx: could not lock mapping for mapped huge page\n", pfn);
+ 	} else {
+ 		try_to_unmap(folio, ttu);
+ 	}
+ 
+ 	unmap_success = !page_mapped(hpage);
+ 	if (!unmap_success)
+-		pr_err("Memory failure: %#lx: failed to unmap page (mapcount=%d)\n",
++		pr_err("%#lx: failed to unmap page (mapcount=%d)\n",
+ 		       pfn, page_mapcount(hpage));
+ 
+ 	/*
+@@ -1844,7 +1842,7 @@ static int try_memory_failure_hugetlb(unsigned long pfn, int flags, int *hugetlb
+ 		*hugetlb = 0;
+ 		return 0;
+ 	} else if (res == -EHWPOISON) {
+-		pr_err("Memory failure: %#lx: already hardware poisoned\n", pfn);
++		pr_err("%#lx: already hardware poisoned\n", pfn);
+ 		if (flags & MF_ACTION_REQUIRED) {
+ 			head = compound_head(p);
+ 			res = kill_accessing_process(current, page_to_pfn(head), flags);
+@@ -2003,8 +2001,7 @@ int memory_failure(unsigned long pfn, int flags)
+ 				goto unlock_mutex;
+ 			}
+ 		}
+-		pr_err("Memory failure: %#lx: memory outside kernel control\n",
+-			pfn);
++		pr_err("%#lx: memory outside kernel control\n", pfn);
+ 		res = -ENXIO;
+ 		goto unlock_mutex;
+ 	}
+@@ -2015,8 +2012,7 @@ int memory_failure(unsigned long pfn, int flags)
+ 		goto unlock_mutex;
+ 
+ 	if (TestSetPageHWPoison(p)) {
+-		pr_err("Memory failure: %#lx: already hardware poisoned\n",
+-			pfn);
++		pr_err("%#lx: already hardware poisoned\n", pfn);
+ 		res = -EHWPOISON;
+ 		if (flags & MF_ACTION_REQUIRED)
+ 			res = kill_accessing_process(current, pfn, flags);
+@@ -2232,7 +2228,7 @@ void memory_failure_queue(unsigned long pfn, int flags)
+ 	if (kfifo_put(&mf_cpu->fifo, entry))
+ 		schedule_work_on(smp_processor_id(), &mf_cpu->work);
+ 	else
+-		pr_err("Memory failure: buffer overflow when queuing memory failure at %#lx\n",
++		pr_err("buffer overflow when queuing memory failure at %#lx\n",
+ 		       pfn);
+ 	spin_unlock_irqrestore(&mf_cpu->lock, proc_flags);
+ 	put_cpu_var(memory_failure_cpu);
+-- 
+2.35.3
 
-Same for clear_node_memory_tier().
-
-Best Regards,
-Huang, Ying
-
-> +	node_set(node, memtier->nodelist);
-> +	rcu_assign_pointer(pgdat->memtier, memtier);
-> +}
-> +
->  static void init_node_memory_tier(int node)
->  {
->  	int perf_level;
-> @@ -295,7 +323,7 @@ static void init_node_memory_tier(int node)
->  	if (!memtier) {
->  		perf_level = node_devices[node]->perf_level;
->  		memtier = find_create_memory_tier(perf_level);
-> -		node_set(node, memtier->nodelist);
-> +		memtier_node_set(node, memtier);
->  	}
->  	establish_migration_targets();
->  	mutex_unlock(&memory_tier_lock);
-> @@ -303,12 +331,25 @@ static void init_node_memory_tier(int node)
->  
->  static void clear_node_memory_tier(int node)
->  {
-> -	struct memory_tier *memtier;
-> +	pg_data_t *pgdat;
-> +	struct memory_tier *current_memtier;
-> +
-> +	pgdat = NODE_DATA(node);
-> +	if (!pgdat)
-> +		return;
->  
->  	mutex_lock(&memory_tier_lock);
-> -	memtier = __node_get_memory_tier(node);
-> -	if (memtier) {
-> -		node_clear(node, memtier->nodelist);
-> +	/*
-> +	 * Make sure we mark the memtier NULL before we assign the new memory tier
-> +	 * to the NUMA node. This make sure that anybody looking at NODE_DATA
-> +	 * finds a NULL memtier or the one which is still valid.
-> +	 */
-> +	current_memtier = rcu_dereference_check(pgdat->memtier,
-> +						lockdep_is_held(&memory_tier_lock));
-> +	rcu_assign_pointer(pgdat->memtier, NULL);
-> +	synchronize_rcu();
-> +	if (current_memtier) {
-> +		node_clear(node, current_memtier->nodelist);
->  		establish_migration_targets();
->  	}
->  	mutex_unlock(&memory_tier_lock);
-> @@ -383,6 +424,8 @@ static int __init memory_tier_init(void)
->  
->  		if (!node_property->perf_level)
->  			node_property->perf_level = default_memtier_perf_level;
-> +
-> +		rcu_assign_pointer(NODE_DATA(node)->memtier, memtier);
->  	}
->  	mutex_unlock(&memory_tier_lock);
