@@ -2,195 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97D6BC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 12:02:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8468C43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 12:02:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239017AbiGZMCe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 08:02:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42086 "EHLO
+        id S239034AbiGZMC4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 08:02:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238983AbiGZMCZ (ORCPT
+        with ESMTP id S239048AbiGZMCq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 08:02:25 -0400
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA1842BB25
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 05:02:23 -0700 (PDT)
-Received: by mail-lj1-x230.google.com with SMTP id u20so8456591ljk.0
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 05:02:23 -0700 (PDT)
+        Tue, 26 Jul 2022 08:02:46 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8375B33A0E;
+        Tue, 26 Jul 2022 05:02:45 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id c12so10074836ede.3;
+        Tue, 26 Jul 2022 05:02:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=cDTwEdu24/gUiDYI5ikSRUFSCHm0lJ9NOTljGODPF9I=;
-        b=YhCuGXoaxj6XopgqvDBVaPEXJAZgT2pVfEwWuuT05I9axW8GWcr8XWrM8TdJxlGLQt
-         Vv7QhcxfBokRnGtmJUzFBCEZdEIrFci7P3GknpnIZkQgLmaQBpvfXyyfPR7eA9J+ydd2
-         EEdVqvBURz1qpSOvBj5tOyO/PPW3CQ7EPWazot/PWCmSath+M6LM7l3CV0YKOT7zfdZt
-         ejUCCRm+zu7ZCbAn1C5zXYpf9ZFJ2yMGTNFB1g8V6sDNxBExm9wAosexUKvuS4AAsd/h
-         +kjeSdlwOXK8KLWUdf4WogFdY81ldE6MgA3QqoN3EKdh2KwhvDjANKuVzGHpCKAmDC/5
-         ThBw==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=K9ycyCy2OtDECwvtyNM0Q2aJyjdiy1SHMSEc5DyB84c=;
+        b=WTBZUz/ViKMVPS5cn1PdBcYeCFLNxCzR6yg31ejFL5iJ6UhucecnhBjSWbmmUR+xw5
+         TvOzIXgEEXfBmVlGam0AqXAqSNkrAlnXowYlXVQyyBqoGyczvccAQmR4KEe3YIcgLhQr
+         I64QlWc9yUz+VC2rV7JuBCVGJvwr/HF8FnT9BukrYaJvCrVzzWA/mG+ZULHi7aPbRBeC
+         jh9MRVVt08V+1UtTRlEqRBFGaLB8Oqu2BgoJ0PbGnnnKD43uqD+J9iwncYSNks9LEWc1
+         nV5jCbsiYvep5fGGVYzDfFHJ80TYNUVYrv8eJHpn5oPoylrJMvUjYrRGXHEHGZmMZ8U1
+         teJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=cDTwEdu24/gUiDYI5ikSRUFSCHm0lJ9NOTljGODPF9I=;
-        b=MAWQbTewIWN3OoKWEyQAVDIdzQGGJ7a5LcgkZGgREm44/BO0N6MaFB0q4nYnvOztEv
-         ECeknD6WTP4rZWuLTsDSyoXrfq0oBduf6k4cOwbtS53i1BQy8maA0AEA6akz0WQ6LVql
-         regG5E9wu4pEihirkq5qDS58C/UHWlCWHfxeTz2b3C7Fb8A1AJ0J6RKg+YoLnZPW5Z0Q
-         hNRZZ/MMyH34gOJxYu45yb7M2BVrvnAdI65ANZh1PJjlXDi6dzdYvXB8+oUhmVZ+n1gj
-         DsxzMIQYoqFNmqtXrKyC9uEo0gG6BEootu4rSl28UP9ugt9NBgNa+emEE0bQJ0VXR9+F
-         sAbw==
-X-Gm-Message-State: AJIora9BTlVHr8BwDMdDP/KmxjJ98Vy/eaFwgaPyyRD1U13njcGjbMhw
-        rmDirCoxTFitK/EIhiybwkK2qw==
-X-Google-Smtp-Source: AGRyM1sJQepMPWvxdDDt7L0oKFQmlKY9LIoZbWgDeEG3eq4A6JiV3VK/8WNv8nzs/PQEyWYrNMsLVg==
-X-Received: by 2002:a2e:bc06:0:b0:25e:19b8:637b with SMTP id b6-20020a2ebc06000000b0025e19b8637bmr687944ljf.356.1658836941744;
-        Tue, 26 Jul 2022 05:02:21 -0700 (PDT)
-Received: from krzk-bin.lan (78-26-46-173.network.trollfjord.no. [78.26.46.173])
-        by smtp.gmail.com with ESMTPSA id p15-20020a2e804f000000b0025ddf9a5b9csm3221865ljg.72.2022.07.26.05.02.20
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=K9ycyCy2OtDECwvtyNM0Q2aJyjdiy1SHMSEc5DyB84c=;
+        b=Q9T3hFrfq19L1dpdghXKWKgw/aZUSzamsp1qOWDezK+j2tqgDVWjs/F1DoRr9ezwl2
+         ykBcO+RwQ+cLcA+/8wqnGYQprsLhYUX1zbHj5xXeFK8SIHQI/G6m2mR6njkMmbzFdk8D
+         qCYj++pNf+ndFgBg3LpxjEtMrIVW9zc8L4yn6O/APsSE40SjNNg+F8rRrIRJm9EN9Gw3
+         h7gtnTnMJYgyBRxRm+27pgSh1lnt7ZheRtRmqoLOpZmMfmtXSSczeD9XlSvbLTQ/6aJI
+         le/l+qq906xTRLvV75XA57lok4R6R65OibqEIrkQ4a1nUrEeUxc7NGjlCmlhfc3Y0rxE
+         NsqA==
+X-Gm-Message-State: AJIora/ape+8wMwdh6of63eXrS3fh8CADhBY5JJ2DY9N3DjSMiLv71cO
+        D2yqxq3pRinE//kaM2o2ppJFUV8lSt4=
+X-Google-Smtp-Source: AGRyM1t/dYZvVeHfjupCVGc1LZSoEYBvD3s21A8iMuZSr6LiNBHHbDZ4d0f1Ys3DczJKlINNXxLOGQ==
+X-Received: by 2002:a05:6402:34c1:b0:43c:e6a:397d with SMTP id w1-20020a05640234c100b0043c0e6a397dmr8170382edc.160.1658836963539;
+        Tue, 26 Jul 2022 05:02:43 -0700 (PDT)
+Received: from DESKTOP-A98GP49.. (cable-178-148-254-8.dynamic.sbb.rs. [178.148.254.8])
+        by smtp.gmail.com with ESMTPSA id cn23-20020a0564020cb700b0043ba0cf5dbasm8505922edb.2.2022.07.26.05.02.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Jul 2022 05:02:21 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Sebastian Reichel <sre@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Tue, 26 Jul 2022 05:02:43 -0700 (PDT)
+From:   Aleksa Savic <savicaleksa83@gmail.com>
+To:     linux-hwmon@vger.kernel.org
+Cc:     Aleksa Savic <savicaleksa83@gmail.com>,
+        Jack Doan <me@jackdoan.com>, Jean Delvare <jdelvare@suse.com>,
         Guenter Roeck <linux@roeck-us.net>,
-        Vinod Koul <vkoul@kernel.org>, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-watchdog@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 2/2] dt-bindings: watchdog: qcom,pm8916-wdt: convert to dtschema
-Date:   Tue, 26 Jul 2022 14:02:15 +0200
-Message-Id: <20220726120215.101868-3-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220726120215.101868-1-krzysztof.kozlowski@linaro.org>
-References: <20220726120215.101868-1-krzysztof.kozlowski@linaro.org>
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] hwmon: (aquacomputer_d5next) Add support for reading the +12V voltage sensor on D5 Next
+Date:   Tue, 26 Jul 2022 14:02:03 +0200
+Message-Id: <20220726120203.33773-1-savicaleksa83@gmail.com>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the Qualcomm PM8916 watchdog timer controller bindings to DT
-schema and include them in parent device schema.
+Add support for reading the +12V voltage that the D5 Next pump receives.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Aleksa Savic <savicaleksa83@gmail.com>
 ---
- .../bindings/power/reset/qcom,pon.yaml        |  4 ++
- .../bindings/watchdog/qcom,pm8916-wdt.txt     | 28 ----------
- .../bindings/watchdog/qcom,pm8916-wdt.yaml    | 51 +++++++++++++++++++
- 3 files changed, 55 insertions(+), 28 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/watchdog/qcom,pm8916-wdt.txt
- create mode 100644 Documentation/devicetree/bindings/watchdog/qcom,pm8916-wdt.yaml
+ drivers/hwmon/aquacomputer_d5next.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/power/reset/qcom,pon.yaml b/Documentation/devicetree/bindings/power/reset/qcom,pon.yaml
-index e8ecb75155db..e7b436d2e757 100644
---- a/Documentation/devicetree/bindings/power/reset/qcom,pon.yaml
-+++ b/Documentation/devicetree/bindings/power/reset/qcom,pon.yaml
-@@ -36,6 +36,10 @@ properties:
-     type: object
-     $ref: /schemas/input/qcom,pm8941-pwrkey.yaml#
+diff --git a/drivers/hwmon/aquacomputer_d5next.c b/drivers/hwmon/aquacomputer_d5next.c
+index 997d72ea6182..738a1df8eae6 100644
+--- a/drivers/hwmon/aquacomputer_d5next.c
++++ b/drivers/hwmon/aquacomputer_d5next.c
+@@ -71,6 +71,7 @@ static u8 secondary_ctrl_report[] = {
+ #define D5NEXT_PUMP_OFFSET		0x6c
+ #define D5NEXT_FAN_OFFSET		0x5f
+ #define D5NEXT_5V_VOLTAGE		0x39
++#define D5NEXT_12V_VOLTAGE		0x37
+ #define D5NEXT_CTRL_REPORT_SIZE		0x329
+ static u8 d5next_sensor_fan_offsets[] = { D5NEXT_PUMP_OFFSET, D5NEXT_FAN_OFFSET };
  
-+  watchdog:
-+    type: object
-+    $ref: /schemas/watchdog/qcom,pm8916-wdt.yaml
-+
- required:
-   - compatible
-   - reg
-diff --git a/Documentation/devicetree/bindings/watchdog/qcom,pm8916-wdt.txt b/Documentation/devicetree/bindings/watchdog/qcom,pm8916-wdt.txt
-deleted file mode 100644
-index 6fb984f31982..000000000000
---- a/Documentation/devicetree/bindings/watchdog/qcom,pm8916-wdt.txt
-+++ /dev/null
-@@ -1,28 +0,0 @@
--QCOM PM8916 watchdog timer controller
--
--This pm8916 watchdog timer controller must be under pm8916-pon node.
--
--Required properties:
--- compatible: should be "qcom,pm8916-wdt"
--
--Optional properties :
--- interrupts : Watchdog pre-timeout (bark) interrupt.
--- timeout-sec : Watchdog timeout value in seconds.
--
--Example:
--
--	pm8916_0: pm8916@0 {
--		compatible = "qcom,pm8916", "qcom,spmi-pmic";
--		reg = <0x0 SPMI_USID>;
--
--		pon@800 {
--			compatible = "qcom,pm8916-pon";
--			reg = <0x800>;
--
--			watchdog {
--				compatible = "qcom,pm8916-wdt";
--				interrupts = <0x0 0x8 6 IRQ_TYPE_EDGE_RISING>;
--				timeout-sec = <10>;
--			};
--		};
--	};
-diff --git a/Documentation/devicetree/bindings/watchdog/qcom,pm8916-wdt.yaml b/Documentation/devicetree/bindings/watchdog/qcom,pm8916-wdt.yaml
-new file mode 100644
-index 000000000000..568eb8480fc3
---- /dev/null
-+++ b/Documentation/devicetree/bindings/watchdog/qcom,pm8916-wdt.yaml
-@@ -0,0 +1,51 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/watchdog/qcom,pm8916-wdt.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Qualcomm PM8916 watchdog timer controller
-+
-+maintainers:
-+  - Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-+
-+allOf:
-+  - $ref: watchdog.yaml#
-+
-+properties:
-+  compatible:
-+    const: qcom,pm8916-wdt
-+
-+  interrupts:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - interrupts
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    #include <dt-bindings/spmi/spmi.h>
-+
-+    pmic@0 {
-+        compatible = "qcom,pm8916", "qcom,spmi-pmic";
-+        reg = <0x0 SPMI_USID>;
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        pon@800 {
-+            compatible = "qcom,pm8916-pon";
-+            reg = <0x800>;
-+            mode-bootloader = <0x2>;
-+            mode-recovery = <0x1>;
-+
-+            watchdog {
-+                compatible = "qcom,pm8916-wdt";
-+                interrupts = <0x0 0x8 6 IRQ_TYPE_EDGE_RISING>;
-+                timeout-sec = <60>;
-+            };
-+        };
-+    };
+@@ -114,7 +115,8 @@ static const char *const label_d5next_power[] = {
+ static const char *const label_d5next_voltages[] = {
+ 	"Pump voltage",
+ 	"Fan voltage",
+-	"+5V voltage"
++	"+5V voltage",
++	"+12V voltage"
+ };
+ 
+ static const char *const label_d5next_current[] = {
+@@ -340,8 +342,8 @@ static umode_t aqc_is_visible(const void *data, enum hwmon_sensor_types type, u3
+ 	case hwmon_in:
+ 		switch (priv->kind) {
+ 		case d5next:
+-			/* Special case to support voltage sensor */
+-			if (channel < priv->num_fans + 1)
++			/* Special case to support +5V and +12V voltage sensors */
++			if (channel < priv->num_fans + 2)
+ 				return 0444;
+ 			break;
+ 		default:
+@@ -574,6 +576,7 @@ static int aqc_raw_event(struct hid_device *hdev, struct hid_report *report, u8
+ 	switch (priv->kind) {
+ 	case d5next:
+ 		priv->voltage_input[2] = get_unaligned_be16(data + D5NEXT_5V_VOLTAGE) * 10;
++		priv->voltage_input[3] = get_unaligned_be16(data + D5NEXT_12V_VOLTAGE) * 10;
+ 		break;
+ 	default:
+ 		break;
 -- 
-2.34.1
+2.37.1
 
