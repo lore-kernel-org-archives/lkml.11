@@ -2,71 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A25AACCA47E
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 13:06:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24DF4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 13:07:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238565AbiGZNGd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 09:06:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59838 "EHLO
+        id S238663AbiGZNHM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 09:07:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232771AbiGZNGa (ORCPT
+        with ESMTP id S238614AbiGZNHJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 09:06:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30D2122B17;
-        Tue, 26 Jul 2022 06:06:26 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CC99561578;
-        Tue, 26 Jul 2022 13:06:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2161C341CE;
-        Tue, 26 Jul 2022 13:06:24 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="eaDqqnQM"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1658840781;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=6VDSyYBTm8e/A4njVgolgd/tpxY8z107rsOjb6Yozu8=;
-        b=eaDqqnQM0f32PSvYMe/rNVFIjn2r6MRAugemHy3wHfIf+c8oXtPX6blgWPxDfPsWBNhbSz
-        LeacXVfzThXQVynB439FepY/nS3x19i4PmMXHyDO+rsz39LVgWMXIAbFsNj3d79b1pXb95
-        8QI7KRsPN6cTVrGAFGMZTP8BfRFIwyA=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id af4794a3 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Tue, 26 Jul 2022 13:06:21 +0000 (UTC)
-Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-2ef5380669cso141589497b3.9;
-        Tue, 26 Jul 2022 06:06:20 -0700 (PDT)
-X-Gm-Message-State: AJIora/Tc5NoZFV+krPP+IbTwe8aivh7Za0v9CZynnxzX+pXnknzAmld
-        PsJtoCMVTD4MVA0sV6brv9LJ/7wO+T6PmFNAj3w=
-X-Google-Smtp-Source: AGRyM1uEw8B5KufJv5EFdrQLtTqR1WusMhc5HzHbfQxBHMUpbPem1siotpHU/Qv/o6DV+E947ypxXXoLQpK5KFB+Y3I=
-X-Received: by 2002:a0d:d597:0:b0:31f:5858:9050 with SMTP id
- x145-20020a0dd597000000b0031f58589050mr244502ywd.341.1658840780279; Tue, 26
- Jul 2022 06:06:20 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220726130058.21833-1-lukas.bulwahn@gmail.com>
-In-Reply-To: <20220726130058.21833-1-lukas.bulwahn@gmail.com>
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-Date:   Tue, 26 Jul 2022 15:06:09 +0200
-X-Gmail-Original-Message-ID: <CAHmME9ogBc_uX_TutV7ZC=nmhhZEtKLA3ezyx4VFwotietNytQ@mail.gmail.com>
-Message-ID: <CAHmME9ogBc_uX_TutV7ZC=nmhhZEtKLA3ezyx4VFwotietNytQ@mail.gmail.com>
-Subject: Re: [PATCH] wireguard: selftests: update config fragments
-To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Cc:     Shuah Khan <shuah@kernel.org>,
-        WireGuard mailing list <wireguard@lists.zx2c4.com>,
-        Netdev <netdev@vger.kernel.org>, linux-kselftest@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 26 Jul 2022 09:07:09 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A648C22BD1;
+        Tue, 26 Jul 2022 06:07:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658840826; x=1690376826;
+  h=from:to:cc:subject:date:message-id;
+  bh=DvIjwdkxO81XtbqcSYVXAUA20zcuNGehRiM//+Z9ywA=;
+  b=hc3Tg36PD3gZZhj66hU5supTNpKYSrW7Aa7E+PJYw5qLpmv1UGYBmcVD
+   QpOpu0fkU4+3Saeei6D43VCRq/6n0df2LE7+i4tGfCJAZfWXRqqR5O3Sk
+   +Dr9ek2+hts91Qs2uYzNJfgdFbJuZR2ZYEGQZA7xkdkeYfjUAEenxufJz
+   iBYl65Bpia3lsvKtwRCrHgKxxGCLIZtKMTf/02THVjiMOpEvUeB4XGiny
+   BrI3LsfL1T3gmmCMiuqyBgBo86JhEFTNGT3eAFefeWlRTZdo1Nzrjiw7a
+   D/tPaHs8TG7yEFbxMV6TdAlewA37ZMB07rw/+l2mC0hOi1ClLc5R+n7y4
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10419"; a="351941433"
+X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
+   d="scan'208";a="351941433"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2022 06:07:06 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,193,1654585200"; 
+   d="scan'208";a="658676908"
+Received: from srpawnik.iind.intel.com ([10.99.123.68])
+  by fmsmga008.fm.intel.com with ESMTP; 26 Jul 2022 06:07:04 -0700
+From:   Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>
+To:     rafael@kernel.org, srinivas.pandruvada@linux.intel.com,
+        andriy.shevchenko@linux.intel.com, linux-pm@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, sumeet.r.pawnikar@intel.com
+Subject: [PATCH v3] powercap: RAPL: Add Power Limit4 support for Alder Lake-N and Raptor Lake-P
+Date:   Tue, 26 Jul 2022 18:32:29 +0530
+Message-Id: <20220726130229.24634-1-sumeet.r.pawnikar@intel.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Lukas,
+Add Alder Lake-N and Raptor Lake-P to the list of processor models
+for which Power Limit4 is supported by the Intel RAPL driver.
 
-Thanks for researching this! I'll apply this to my wireguard tree and
-send it up to netdev during my next push.
+Signed-off-by: Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>
+Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+v2: Sent v2 without v1 i.e. first patch itself sent as v2 by mistake.
+    There was no v1 sent for review.
+v3: Added the backstory of previous versions. No functional changes.
+---
+ drivers/powercap/intel_rapl_msr.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-https://git.zx2c4.com/wireguard-linux/commit/?id=6da997932c4d4cb41c4a35d5541d0e4e1154fdb7
+diff --git a/drivers/powercap/intel_rapl_msr.c b/drivers/powercap/intel_rapl_msr.c
+index 9d23984d8931..bc6adda58883 100644
+--- a/drivers/powercap/intel_rapl_msr.c
++++ b/drivers/powercap/intel_rapl_msr.c
+@@ -140,7 +140,9 @@ static const struct x86_cpu_id pl4_support_ids[] = {
+ 	{ X86_VENDOR_INTEL, 6, INTEL_FAM6_TIGERLAKE_L, X86_FEATURE_ANY },
+ 	{ X86_VENDOR_INTEL, 6, INTEL_FAM6_ALDERLAKE, X86_FEATURE_ANY },
+ 	{ X86_VENDOR_INTEL, 6, INTEL_FAM6_ALDERLAKE_L, X86_FEATURE_ANY },
++	{ X86_VENDOR_INTEL, 6, INTEL_FAM6_ALDERLAKE_N, X86_FEATURE_ANY },
+ 	{ X86_VENDOR_INTEL, 6, INTEL_FAM6_RAPTORLAKE, X86_FEATURE_ANY },
++	{ X86_VENDOR_INTEL, 6, INTEL_FAM6_RAPTORLAKE_P, X86_FEATURE_ANY },
+ 	{}
+ };
+ 
+-- 
+2.17.1
 
-Jason
