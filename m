@@ -2,97 +2,222 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1D6CC43334
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 00:22:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AAE5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 00:32:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237307AbiGZAW1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 20:22:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55824 "EHLO
+        id S230467AbiGZAb6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 20:31:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229970AbiGZAWQ (ORCPT
+        with ESMTP id S229755AbiGZAb4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 20:22:16 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0AAD27FE9;
-        Mon, 25 Jul 2022 17:22:14 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id j22so23430934ejs.2;
-        Mon, 25 Jul 2022 17:22:14 -0700 (PDT)
+        Mon, 25 Jul 2022 20:31:56 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B23C20BCF
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 17:31:54 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id va17so23498170ejb.0
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 17:31:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=6fkE3E+IwWr/jMUVZLcimgZqvTNf8bUrcGGPFWeGqFc=;
-        b=UXiUIlc4jhg/GkpTggAtu/yC1OXku8y/l6jETyO0Y4BEort+Bv2riNeWpduEMGzoh8
-         gwpbWbCm2REVlRSrwhOwC2GpT4LhJCpD+W96w/S9zdBjR4HFK/9+4PZ+AM9Uanio74La
-         d4zsjFmCNYfmx9ynZz8t1XLKYp/9B0Oqfa5AEZTXMlQdegyXszerZJwTPfw0MCbJScTz
-         V5PzSF9VAYVgqtXvBdXKXSFtN7MA90WnN2WAkt2TdCyp10MBMpMmxlgO+DTmuSC9+ub8
-         MBL4QEX76fy7/Bt8A6YfqB8pCP8H7iKOfrx3MSejVybkWp9s/TwopSPAAnW6ZldkobAT
-         emIw==
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Q+Fe1jNL0Up1elTO9eo4OglKDhzz3Q/EuOCnPEmviNM=;
+        b=CCG+3SZFjDRiLIJaBu+Ukuz/Fn/GoeLFavL1YPzQUj7PrONy8kzDJplHBKEi+eL43L
+         Ph2a0QzwikY6w8oY1aaIwOlnZMROr+1Mcd2tDmjlvzSVQsHzjmZJkRVzxK9rwyurLuJU
+         50KzI4IUG5z9yawtUTFnOmnFgdHtXNIMOTV/A=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=6fkE3E+IwWr/jMUVZLcimgZqvTNf8bUrcGGPFWeGqFc=;
-        b=OwiRbCVb0pqy8kcULI7EHJ4v/uDHogFa2ck/E5FGAekroRV0NxiusVwNpU3fYoLY3z
-         hV7HF4qdnpGMWyQec3NnevXUQvJtRN60Hn/vm5Kv/JBigjIcDcZDIfiuQEgLOwLhzdOf
-         BRFE9TUx4TCZc29j4x9kSbizNbMyUNQJ80hnc9pSNhtqmmpq6rfaw76xg+ZqRewqamem
-         7UDLeuSFOr63quH+pclydDLF3Prx9UFmpWgFz4fwKYgZ5jLjKMscuHHJwaNcpdCsh8B8
-         EAE+Cb9B+PvAYdVIjug3M0zuLw2ekuUSCX246RSXF2eG0dOIsZ2Wn5gaivQjzJYuhPEQ
-         RGMQ==
-X-Gm-Message-State: AJIora8pyma8An9B89lf323hJE3tPEWRf5swUL61aM1E8s5TeX/o+WC/
-        fEydjs/WG/VLtbfwL8wgoDU=
-X-Google-Smtp-Source: AGRyM1tGTVY8Y62yWUPM6oQzbeimq9TIf1ic2tZr8yzpO+trzKjRWA956uiZyxbNvxugVfNsdhC7Dg==
-X-Received: by 2002:a17:907:a053:b0:72b:3051:b79b with SMTP id gz19-20020a170907a05300b0072b3051b79bmr11497426ejc.690.1658794933431;
-        Mon, 25 Jul 2022 17:22:13 -0700 (PDT)
-Received: from skbuf ([188.25.231.115])
-        by smtp.gmail.com with ESMTPSA id 10-20020a170906210a00b0072b1bc9b37fsm5855383ejt.22.2022.07.25.17.22.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Jul 2022 17:22:12 -0700 (PDT)
-Date:   Tue, 26 Jul 2022 03:22:10 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Christian Marangi <ansuelsmth@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        llvm@lists.linux.dev
-Subject: Re: [net-next PATCH v4 00/14] net: dsa: qca8k: code split for qca8k
-Message-ID: <20220726002210.vprs4qwgz7bucrjb@skbuf>
-References: <20220724201938.17387-1-ansuelsmth@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Q+Fe1jNL0Up1elTO9eo4OglKDhzz3Q/EuOCnPEmviNM=;
+        b=iI7KfNH0wAZ9GinPI/0ZnjYP91GQ74Y+ltN37Ay//uQ2NwW563naYUWoFa4s1OpElY
+         n58J+NZ7JNk7JDsMQgoHJziFig2uGv2iEHnY9ATcmOgp2h8it3ud6KCfMffV3razU1tM
+         SncJCWRRBruIzfl0V2Aux1WQ+4JcHadjvMyWp4jxs+tjCR3HWqCU/W6XY1i1A8PiOCMJ
+         B9VAZownPLAtTkND6CzE8xA1pra7mk076aJhuXXwD8tGFiCjtcH4Q3y7YwTxgF2q4u33
+         +I71lrZy7wnknyrCEWpsG01jGOWrSabf7zpbBlsK2kwOCo8VB/nkZCO9ASWu1mfwCnAw
+         oZUA==
+X-Gm-Message-State: AJIora9bF1/1xXamCHy9RWp9HAkUdsganCNJbdzO4ojAgi/N4+967AV5
+        7prL7b5NQHM0/hcbFcycrk2IP9fQ0XBj3BFP
+X-Google-Smtp-Source: AGRyM1s9uWG8EaeYtLrFJ1z3CW4yEHGXC/Tffw5GSLP/YgWuD/V/qlNO7oPz+evq7dhhGt3Pp24pVg==
+X-Received: by 2002:a17:907:7f9f:b0:72f:11fc:86bc with SMTP id qk31-20020a1709077f9f00b0072f11fc86bcmr11871347ejc.770.1658795512304;
+        Mon, 25 Jul 2022 17:31:52 -0700 (PDT)
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com. [209.85.221.48])
+        by smtp.gmail.com with ESMTPSA id 5-20020a170906318500b0072b2ffc662esm5733449ejy.156.2022.07.25.17.31.47
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 25 Jul 2022 17:31:48 -0700 (PDT)
+Received: by mail-wr1-f48.google.com with SMTP id h8so18087939wrw.1
+        for <linux-kernel@vger.kernel.org>; Mon, 25 Jul 2022 17:31:47 -0700 (PDT)
+X-Received: by 2002:a5d:5889:0:b0:21d:bccd:38e3 with SMTP id
+ n9-20020a5d5889000000b0021dbccd38e3mr8745119wrf.659.1658795507332; Mon, 25
+ Jul 2022 17:31:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220724201938.17387-1-ansuelsmth@gmail.com>
+References: <20220721182622.RFC.1.I8a64b707169cfd73d9309c5eaf5d43b8bc4db988@changeid>
+ <Ytrq2rVMHqedv4+3@sirena.org.uk> <CAD=FV=U-qZQwRdLA8AVwYdcuj_PQEULTnhm3osFybaFmtvjmHg@mail.gmail.com>
+ <YtxHwUe4W7+u3Lk3@sirena.org.uk>
+In-Reply-To: <YtxHwUe4W7+u3Lk3@sirena.org.uk>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Mon, 25 Jul 2022 17:31:34 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=VhPHFB1T_+r1mmtP=r73ggmcWvwPqw3E-_foVTvtTkyw@mail.gmail.com>
+Message-ID: <CAD=FV=VhPHFB1T_+r1mmtP=r73ggmcWvwPqw3E-_foVTvtTkyw@mail.gmail.com>
+Subject: Re: [RFC PATCH] regulator: core: Allow for a base-load per client to
+ come from dts
+To:     Mark Brown <broonie@kernel.org>
+Cc:     Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Johan Hovold <johan@kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jul 24, 2022 at 10:19:24PM +0200, Christian Marangi wrote:
-> This is needed ad ipq4019 SoC have an internal switch that is
-> based on qca8k with very minor changes. The general function is equal.
-> 
-> Because of this we split the driver to common and specific code.
-> 
-> As the common function needs to be moved to a different file to be
-> reused, we had to convert every remaining user of qca8k_read/write/rmw
-> to regmap variant.
-> We had also to generilized the special handling for the ethtool_stats
-> function that makes use of the autocast mib. (ipq4019 will have a
-> different tagger and use mmio so it could be quicker to use mmio instead
-> of automib feature)
-> And we had to convert the regmap read/write to bulk implementation to
-> drop the special function that makes use of it. This will be compatible
-> with ipq4019 and at the same time permits normal switch to use the eth
-> mgmt way to send the entire ATU table read/write in one go.
+Hi,
 
-I'm done reviewing v4, from my side you can consider addressing the
-style comments as well as the comment on patch 1 from v3 and you can
-resend.
+On Sat, Jul 23, 2022 at 12:11 PM Mark Brown <broonie@kernel.org> wrote:
+>
+> I'm familiar with the broad concept of regulators having the
+> ability to operate in more efficient (but typically lower
+> quality) modes, we do have the whole infrastructure for selecting
+> mode based on load after all.  I'm not sure what you mean by
+> devices having a *need* for it though?
+
+All I meant by *need* was just whether it was practical for a device
+to actively take advantage of the low power mode. A driver that
+"needs" to know about loads is one that purposely puts the device into
+a low power state so that it can re-configure the regulator. I was
+arguing that most drivers don't need to do this.
+
+
+> Does this need actually exist or is this just a we built it so we
+> must use it thing?  There's a lot of power microoptimisation that
+> goes on and sometimes it's hard to tell how much power is saved
+> relative to the power consumed managing the feature.
+
+It has always felt like a microoptimizatoin to me. I would love to see
+evidence to the contrary, though.
+
+Specifically we don't seem to use low power mode (LPM) anywhere on the
+sc7180 trogdor laptops today. Maybe it would be possible to use it in
+some cases, but nobody ever did the analysis. I haven't spent much
+time analyzing downstream Qualcomm solutions, though.
+
+I guess the answer is that if it's a micro-optimization then we should
+be ripping more of this code out. ;-) That would go contrary to
+Dmitry's request that all regulators have a load set on them...
+
+
+> To the extent this is needed it does smell a bit like "these
+> regulators should default to setting their load to 0 when
+> disabled" or something more along those lines TBH, some of your
+> previous comments suggested that the per device loads being
+> specified in a lot of the driver are just random values intended
+> to trigger a specific behaviour in the regulator but forced to be
+> done in terms of a load due to the firmware inteface that's
+> available on these platforms having an interface in those terms.
+
+It's actually _not_ the firmware interface as far as I can tell, at
+least for newer Qualcomm chips (those using RPMH). The firmware
+interface seems to be for modes. See, for instance,
+rpmh_regulator_vrm_set_load() which translates loads into modes before
+passing to the firmware. Ironically, my memory tells me that Qualcomm
+actually said that this turned out to be a problem in the past for
+them, though, since some rails went to both the main apps processor
+(AP) and the modem processor. Each could independently decide that low
+power mode was fine but the total of both usages could bump you into
+needing high power mode...
+
+As far as whether the numbers are random values or mean something: I
+don't know that. I'd personally have a bit of a hard time trusting
+them, though. Mostly ending up at LPM when you need HPM seems like it
+could be really hard to debug.
+
+One point of evidence of these numbers being pointless and just noise
+is code that seems to have made its way upstream to set a "disable
+load". This hasn't done anything since 2018 when we landed commit
+5451781dadf8 ("regulator: core: Only count load for enabled
+consumers") but is still instructive of Qualcomm's thinking. Taking a
+sampling of the loads in the tables in the DSI driver / phy, I see:
+* Many specify 100 uA.
+* Some seem to pick based on throwing a dart at a dartboard. 16 uA, 2
+uA, 4 uA, 32 uA, etc.
+
+I can't imagine any of these numbers having done anything useful even
+prior to the 2018 commit. From `qcom-rpmh-regulator.c` the changeover
+from LPM to HPM is at 10000 uA or 30000 uA, so even a load of 100 uA
+is really just a rounding error. Yet despite their uselessness,
+Engineers at Qualcomm have dutifully filled in all these numbers...
+
+Looking at the loads passed to "active" devices, I see almost nothing
+at all specifying a load that's less than 10mA. That means it's gonna
+be really hard to use any of that class of regulators in LPM.
+
+If we happen to be using an LDO that changes over at 30 mA, though,
+these ones _could_ use LDO. I guess this is where the whole
+"specifying in uA" makes sense? If you've got a regulator that changes
+at 30mA and only one ~20mA consumer is active then it can stay in LPM.
+When two ~20mA consumers are active then it needs to switch to HPM?
+Having lots of consumers on a given rail is really common w/ Qulaocmm
+setups. On trogdor, rail "L4A" is all of these:
+
+vdd_qlink_lv:
+vdd_qlink_lv_ck:
+vdd_qusb_hs0_core:
+vdd_ufs1_core:
+vdda_mipi_csi0_0p9:
+vdda_mipi_csi1_0p9:
+vdda_mipi_csi2_0p9:
+vdda_mipi_csi3_0p9:
+vdda_mipi_dsi0_pll:
+vdda_pll_cc_ebi01:
+vdda_qrefs_0p9:
+vdda_usb_ss_dp_core:
+
+...and that's a regulator that can go up to 30mA in LDO mode... Of
+course "MIPI DSI", by complete chance I'm sure, says its load is
+_just_ over the 30 mA threshold...
+
+
+> It didn't sound like they were actual specified/measured physical
+> values for the on-SoC stuff, some of the panel drivers do look
+> like they have plausuble numbers from datasheets though.
+
+I just don't know. :(
+
+
+> It might even make sense to have the regulator drivers implement
+> the mode interface, that's possibly more useful to work with here
+> even if it's not what the interfaces say, it does feel like
+> practicaly how people are working with this stuff.  There's
+> obviously issues there if anyone *does* work usefully with loads
+> and how that integrates, though I think in this day and age the
+> need for active management outside of super idle states is
+> typically minimal.  As a first pass you could just disable the
+> DRMS stuff if mode setting permission is enabled, I suspect
+> that'd work fine in these cases.  Or just model the modes as a
+> vote for "add X to the load" if they're set.
+
+The current RPMH driver _does_ implement the mode interface. ;-)
+
+
+I guess the above doesn't really give us a lot of good answers. :(
+
+I guess the problem is that, like a lot of Qualcomm stuff, I still
+don't have a good big picture despite having been working on Qualcomm
+SoCs for years now. I do know that code keeps showing up to set
+regulator loads all over the tree and, I presume, most maintainers
+just take the code without questioning the need to set the load at
+all.
+
+Perhaps the low hanging fruit is to just accept that the current API
+of setting the load is here to stay, even if it does seem mostly
+pointless in many cases. I can submit a patch that adds the load to
+the "bulk" API and at least it would clean up a bunch of stuff even if
+it doesn't fundamentally overhaul the system...
+
+
+-Doug
