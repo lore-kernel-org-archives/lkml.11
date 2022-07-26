@@ -2,132 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DB5AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 09:54:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE86BC43334
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 09:56:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231575AbiGZJyf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 05:54:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55328 "EHLO
+        id S232660AbiGZJ4y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 05:56:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237991AbiGZJyb (ORCPT
+        with ESMTP id S231445AbiGZJ4v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 05:54:31 -0400
-Received: from relay04.th.seeweb.it (relay04.th.seeweb.it [IPv6:2001:4b7a:2000:18::165])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D5282CCB9;
-        Tue, 26 Jul 2022 02:54:29 -0700 (PDT)
-Received: from [192.168.1.101] (abxj79.neoplus.adsl.tpnet.pl [83.9.3.79])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Tue, 26 Jul 2022 05:56:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B90BE1A3AA;
+        Tue, 26 Jul 2022 02:56:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by m-r1.th.seeweb.it (Postfix) with ESMTPSA id A4639201DF;
-        Tue, 26 Jul 2022 11:54:25 +0200 (CEST)
-Message-ID: <5b938039-0a73-90e5-47c1-4d976d278273@somainline.org>
-Date:   Tue, 26 Jul 2022 11:54:24 +0200
+        by ams.source.kernel.org (Postfix) with ESMTPS id 65F19B811C9;
+        Tue, 26 Jul 2022 09:56:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25BF3C341C0;
+        Tue, 26 Jul 2022 09:56:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658829408;
+        bh=Mc8eFBIjYIwEhEUBjx7ssWeK9viPjrwFrzaAxDIwyJo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=bZiD48wEsVG0yTLimL1POFy0Qvdvf92mMEh/WlvjU8/bsR78nlgDFcw46e9V78Qnc
+         RI2VKPcCKvTLgopY6WmxwY63oBblN6DrX3AYvXwgXlDPSnPO8P+NN5rUww/7qynnBd
+         nDaGBfxo/iVGtYxQOmNJgsZH5OBi03+2lx4nULGtzflmfML1k+bmPg6ob1a2FO6jbC
+         p5TF7AHF9Jcm8Oo9SZ/q2BoeXqPdS+iAIsYYHjMhz6csDZSILQMWr/sEQdE3Gt0wxY
+         9jCg5zKBDLsLSeUj0HwkhYrLi7Vttb69adaoiqKdsvpYN1RWpfe5w1+oGJ86VoJh49
+         s3VYcKytgXFiw==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1oGHJD-0007iu-2V; Tue, 26 Jul 2022 11:56:59 +0200
+Date:   Tue, 26 Jul 2022 11:56:59 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Marc Zyngier <maz@kernel.org>
+Cc:     Bjorn Helgaas <helgaas@kernel.org>,
+        Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>,
+        Johan Hovold <johan+linaro@kernel.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Xiaowei Song <songxiaowei@hisilicon.com>,
+        Binghui Wang <wangbinghui@hisilicon.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Jianjun Wang <jianjun.wang@mediatek.com>,
+        linux-pci@vger.kernel.org,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Ley Foon Tan <ley.foon.tan@intel.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: Why set .suppress_bind_attrs even though .remove() implemented?
+Message-ID: <Yt+6azfwd/LuMzoG@hovoldconsulting.com>
+References: <YtqllIHY/R/BbR3V@hovoldconsulting.com>
+ <20220722143858.GA1818206@bhelgaas>
+ <Yt6Z3cBrVy1lVTp1@hovoldconsulting.com>
+ <87czdtxnfn.wl-maz@kernel.org>
+ <Yt60WNVNEVHgzSuN@hovoldconsulting.com>
+ <87zggxaye8.wl-maz@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v3 2/3] dt-bindings: clock: add SM6375 QCOM global clock
- bindings
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        ~postmarketos/upstreaming@lists.sr.ht
-Cc:     martin.botka@somainline.org,
-        angelogioacchino.delregno@somainline.org,
-        marijn.suijten@somainline.org, jamipkettunen@somainline.org,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220723100135.91784-1-konrad.dybcio@somainline.org>
- <20220723100135.91784-2-konrad.dybcio@somainline.org>
- <27154a09-d79b-7814-22ec-c84496596abc@linaro.org>
- <6a33d026-9f30-358e-8498-dbe315fccc5b@somainline.org>
- <cdb5ede1-20b3-223c-efd3-21edb8e715a5@linaro.org>
-From:   Konrad Dybcio <konrad.dybcio@somainline.org>
-In-Reply-To: <cdb5ede1-20b3-223c-efd3-21edb8e715a5@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87zggxaye8.wl-maz@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Mon, Jul 25, 2022 at 06:35:27PM +0100, Marc Zyngier wrote:
+> On Mon, 25 Jul 2022 16:18:48 +0100,
+> Johan Hovold <johan@kernel.org> wrote:
 
+> > Since when is unloading modules something that is expected to work
+> > perfectly? I keep hearing "well, don't do that then" when someone
+> > complains about unloading this module while doing this or that broke
+> > something. (And it's only root that can unload modules in the first
+> > place.)
+> 
+> Well, maybe I have higher standards. For the stuff I maintain, I now
+> point-blank refuse to support module unloading if this can result in a
+> crash. Or worse.
 
-On 26.07.2022 11:52, Krzysztof Kozlowski wrote:
-> On 23/07/2022 22:56, Konrad Dybcio wrote:
->>
->>
->> On 23.07.2022 19:46, Krzysztof Kozlowski wrote:
->>> On 23/07/2022 12:01, Konrad Dybcio wrote:
->>>> Add device tree bindings for global clock controller for SM6375 SoCs.
->>>>
->>>> Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
->>>> ---
->>>> Changes since v2:
->>>> - reference qcom,gcc.yaml
->>>>
->>>>  .../bindings/clock/qcom,sm6375-gcc.yaml       |  48 ++++
->>>>  include/dt-bindings/clock/qcom,sm6375-gcc.h   | 234 ++++++++++++++++++
->>>>  2 files changed, 282 insertions(+)
->>>>  create mode 100644 Documentation/devicetree/bindings/clock/qcom,sm6375-gcc.yaml
->>>>  create mode 100644 include/dt-bindings/clock/qcom,sm6375-gcc.h
->>>>
->>>> diff --git a/Documentation/devicetree/bindings/clock/qcom,sm6375-gcc.yaml b/Documentation/devicetree/bindings/clock/qcom,sm6375-gcc.yaml
->>>> new file mode 100644
->>>> index 000000000000..fb1c36888d18
->>>> --- /dev/null
->>>> +++ b/Documentation/devicetree/bindings/clock/qcom,sm6375-gcc.yaml
->>>> @@ -0,0 +1,48 @@
->>>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->>>> +%YAML 1.2
->>>> +---
->>>> +$id: http://devicetree.org/schemas/clock/qcom,sm6375-gcc.yaml#
->>>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->>>> +
->>>> +title: Qualcomm Global Clock & Reset Controller Binding for SM6375
->>>> +
->>>> +maintainers:
->>>> +  - Konrad Dybcio <konrad.dybcio@somainline.org>
->>>> +
->>>> +description: |
->>>> +  Qualcomm global clock control module which supports the clocks, resets and
->>>> +  power domains on SM6375
->>>> +
->>>> +  See also:
->>>> +  - dt-bindings/clock/qcom,sm6375-gcc.h
->>>> +
->>>> +allOf:
->>>> +  - $ref: qcom,gcc.yaml#
->>>> +
->>>> +properties:
->>>> +  compatible:
->>>> +    const: qcom,sm6375-gcc
->>>> +
->>>> +  clocks:
->>>> +    items:
->>>> +      - description: Board XO source
->>>> +      - description: Board XO Active-Only source
->>>> +      - description: Sleep clock source
->>>
->>> What happened to clock-names?
->>>
->>>> +
->>>
->>> I would assume these are required for the clock controller... and they
->>> were before, so what happened?
->> I dropped them in v2, as with switching the .c driver to use the
->> index matching, they are no longer used.
+That makes sense for regular interrupt controllers where its hard to
+tell that all consumers are gone, but I don't think that should limit
+the usefulness of having modular PCI controller drivers where we know
+that the consumers are gone after deregistering the bus (i.e. the
+consumers are descendants of the controller in the device tree).
+ 
+> > If this was the general understanding, then it seems the only option
+> > would be to disable module unloading completely as module remove code
+> > almost by definition gets less testing and is subject to bit rot.
 > 
-> OK, but what about clocks as required? Why aren't these now required?
-Ohhhh right, I had a false impression that they were set in qcom,gcc.yaml.
-Will fix it.
+> My personal preference would be to prevent module unloading by default
+> if the probing has succeeded, and have modules to actually buy into
+> unloading. But that ship has sailed a long time ago.
 
-Konrad
+We obviously agree that modular driver are important (e.g. for
+multi-platform kernels), but being able to unload a module is also a
+useful debugging and development tool. I've fixed several driver bugs in
+paths that are rarely tested (or hard to test) by unloading the
+pcie-qcom driver.
+
+This old quote from Linus seems to agree with my position on this:
+
+	The proper thing to do (and what we _have_ done) is to say
+	"unloading of modules is not supported". It's a debugging
+	feature, and you literally shouldn't do it unless you are
+	actively developing that module.
+
+	https://lore.kernel.org/all/Pine.LNX.4.58.0401251054340.18932@home.osdl.org/
+
+But of course we should fix any issues we find, such as the missing
+unmapping of legacy interrupts pointed out by Pali earlier in this
+thread.
+
+> > It's useful for developers, but use it at your own risk.
+> > 
+> > That said, I agree that if something is next to impossible to get right,
+> > as may be the case with interrupt controllers generally, then fine,
+> > let's disable module unloading for that class of drivers.
+> > 
+> > And this would mean disabling driver unbind for the 20+ driver PCI
+> > drivers that currently implement it to some degree.
 > 
+> That would be Bjorn's and Lorenzo's call.
+
+Sure, but I think it would be the wrong decision here. Especially, since
+the end result will likely just be that more drivers will become always
+compiled-in.
+
+> > Also note that we only appear to have some 60 drivers in the tree that
+> > can be built as modules but cannot be unloaded (if my grep patterns
+> > were correct).
 > 
-> Best regards,
-> Krzysztof
+> I'm not surprised. Preventing module unload requires extra "code", and
+> hardly anyone cares.
+
+And it's primarily a debugging feature.
+
+> > > > Turns out the pcie-qcom driver does not support legacy interrupts so
+> > > > there's no risk of there being any lingering mappings if I understand
+> > > > things correctly.
+> > > 
+> > > It still does MSIs, thanks to dw_pcie_host_init(). If you can remove
+> > > the driver while devices are up and running with MSIs allocated,
+> > > things may get ugly if things align the wrong way (if a driver still
+> > > has a reference to an irq_desc or irq_data, for example).
+> > 
+> > That is precisely the way I've been testing it and everything appears
+> > to be tore down as it should.
+> >
+> > And a PCI driver that has been unbound should have released its
+> > resources, or that's a driver bug. Right?
+> 
+> But that's the thing: you can easily remove part of the infrastructure
+> without the endpoint driver even noticing. It may not happen in your
+> particular case if removing the RC driver will also nuke the endpoints
+> in the process, but I can't see this is an absolute guarantee. The
+> crash pointed to by an earlier email is symptomatic of it.
+
+But that was arguably due to a driver bug, which we know how to fix. For
+MSIs the endpoint driver will free its interrupts and all is good.
+
+The key observation is that the driver model will make sure that any
+endpoint drivers have been unbound before the bus is deregistered.
+
+That means there are no longer any consumers of the interrupts, which
+can be disposed. For MSI this is handled by pci_free_irq_vectors() when
+unbinding the endpoint drivers. For legacy interrupts, which can be
+shared, the PCIe RC driver needs to manage this itself after the
+consumers are gone.
+
+> > And for the OF INTx case you mentioned earlier, aren't those mapped by
+> > PCI core and could in theory be released by core as well?
+> 
+> Potentially, though I haven't tried to follow the life cycle of those.
+> The whole thing is pretty fragile, and this sort of resource is rarely
+> expected to be removed...
+
+The OF mapping is typically done by PCI core when binding the endpoint
+driver, but as the interrupts can be shared, they cannot be disposed at
+unbind.
+
+Instead the host-bridge driver needs to dispose the mappings after
+deregistering the bus and before removing the domain, as in Pali's
+fixes:
+
+	https://lore.kernel.org/linux-pci/20220709161858.15031-1-pali@kernel.org/
+
+at which point the consumers are gone.
+
+Johan
