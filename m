@@ -2,189 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AD8EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 02:20:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 745BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 26 Jul 2022 02:26:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237015AbiGZCUn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 25 Jul 2022 22:20:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57902 "EHLO
+        id S231576AbiGZC0t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 25 Jul 2022 22:26:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230404AbiGZCUk (ORCPT
+        with ESMTP id S229853AbiGZC0s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 25 Jul 2022 22:20:40 -0400
-Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8181719C33;
-        Mon, 25 Jul 2022 19:20:39 -0700 (PDT)
-Received: by mail-qk1-x731.google.com with SMTP id b25so10060091qka.11;
-        Mon, 25 Jul 2022 19:20:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=W0xMOzx9xkEwYcg4IC9rpOdFz/8JFTGOz3GpQHY8CyA=;
-        b=bQNzSCTQTDj5oJAikkEBCR3Q/tLaWKw4sj3Vy9sXwlvn8sYyxYtkIYLMGJHXeTnchw
-         taB+Q9JNgrphDka9FLEaK8Qsw28p9ed1+CizwomW4uNr80I+wP1Lqo9LTTYwNWb3V89V
-         GIklfwwZ1L8oQOXN4gS6QzAtgFIiB62NAp+81WQ1VPf3ZNTslXRqVWiUfEk+RoW/cY8f
-         fDSw5bn9W+8qRxPD/H7Me+Tk8/fC32oiFqKIMjraRmMb5Kapx2uuyolL4AP030DYsD1r
-         9zbtprQkDJeDZWr8JDzg2hRZyzyKu9MOyRP/v2uOlFD2v7biNRKTj8XzA8Co9eYGKCHI
-         FE9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=W0xMOzx9xkEwYcg4IC9rpOdFz/8JFTGOz3GpQHY8CyA=;
-        b=zZxFPvF85NxcUR5aY7nHc5ayUtGnK4+ZeTpK+EdMBydg6k+I+4M9d7LcWpfAQ2/487
-         PrcVkbn2nPm/8g5c0Uj2TI0+AbQloeemzW2GUkaIxorTR6JuEdQiognX4jraRo4tgjYu
-         i1In1BndCnBIj4KsEq0PyKdRYAEmtP5O33a7Gh+h5JNJCey2LR3qYe3rMu3BRd58+iYw
-         CfGjS+fO4MQRnYYp3ypkBr6EyjOoKz9QQPPhUgw+oyIkAtlGi0SOY+Wjk3S/kF0CM382
-         QcIYFYC/vGVkwOiDsEGwAZbQxfSuvLu5hhTtLs6KW0xPVC4DfW7jraDydyQ0SahjKcMM
-         WZCw==
-X-Gm-Message-State: AJIora/9gFK7EfbGxqMtTcbxC9m0ah4uE01h6ijhTm5ddeVRK36taA8U
-        YKvnErN8jl7TngFrh7OQGLfKQRYd8vaSLbyBf9w=
-X-Google-Smtp-Source: AGRyM1tZpCYcrI4GEenV5sl4ffLbB3S1w73dtE0jE5MocjhBVejW7P4d8PE22YJ6HvnYEZBNm5FpvyKW1Z34FzM/KzI=
-X-Received: by 2002:a37:80c2:0:b0:6b5:e9e4:c4c1 with SMTP id
- b185-20020a3780c2000000b006b5e9e4c4c1mr11082627qkd.129.1658802038657; Mon, 25
- Jul 2022 19:20:38 -0700 (PDT)
+        Mon, 25 Jul 2022 22:26:48 -0400
+Received: from dggsgout11.his.huawei.com (dggsgout11.his.huawei.com [45.249.212.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB9F025C71;
+        Mon, 25 Jul 2022 19:26:45 -0700 (PDT)
+Received: from mail02.huawei.com (unknown [172.30.67.153])
+        by dggsgout11.his.huawei.com (SkyGuard) with ESMTP id 4LsLP41rN5zlC7V;
+        Tue, 26 Jul 2022 10:25:44 +0800 (CST)
+Received: from huaweicloud.com (unknown [10.175.127.227])
+        by APP3 (Coremail) with SMTP id _Ch0CgDn79PiUN9iUHnJBA--.38618S4;
+        Tue, 26 Jul 2022 10:26:43 +0800 (CST)
+From:   Yu Kuai <yukuai1@huaweicloud.com>
+To:     axboe@kernel.dk, osandov@fb.com, ming.lei@redhat.com
+Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yukuai3@huawei.com, yukuai1@huaweicloud.com, yi.zhang@huawei.com
+Subject: [PATCH] blk-mq: fix io hung due to missing commit_rqs while scheduler is none
+Date:   Tue, 26 Jul 2022 10:38:52 +0800
+Message-Id: <20220726023852.3413784-1-yukuai1@huaweicloud.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-References: <20220722102407.2205-1-peterwu.pub@gmail.com> <20220722102407.2205-14-peterwu.pub@gmail.com>
- <20220725103128.xtaw2c4y5fobowg7@maple.lan>
-In-Reply-To: <20220725103128.xtaw2c4y5fobowg7@maple.lan>
-From:   ChiaEn Wu <peterwu.pub@gmail.com>
-Date:   Tue, 26 Jul 2022 10:20:02 +0800
-Message-ID: <CABtFH5LUKTZenTktq3v1JZ9xe-yJFsMvCZuwDhmxdT87k0O-zA@mail.gmail.com>
-Subject: Re: [PATCH v6 13/13] video: backlight: mt6370: Add MediaTek MT6370 support
-To:     Daniel Thompson <daniel.thompson@linaro.org>
-Cc:     Lee Jones <lee.jones@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@ucw.cz>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        "Krogerus, Heikki" <heikki.krogerus@linux.intel.com>,
-        Helge Deller <deller@gmx.de>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        ChiaEn Wu <chiaen_wu@richtek.com>,
-        Alice Chen <alice_chen@richtek.com>,
-        ChiYuan Huang <cy_huang@richtek.com>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Linux LED Subsystem <linux-leds@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        USB <linux-usb@vger.kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        "open list:FRAMEBUFFER LAYER" <linux-fbdev@vger.kernel.org>,
-        szuni chen <szunichen@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: _Ch0CgDn79PiUN9iUHnJBA--.38618S4
+X-Coremail-Antispam: 1UD129KBjvJXoW7KF13GFyxWrWfKw47trWkJFb_yoW8KF13pF
+        4fCa1Iyr4Fqr42vrZ7Way7AF129ws8GrW7GrySkw43XFWYkrWIqrs3Jr43WFyFyFs5Awsx
+        WF45Wr90qw1UA37anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUyG14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWUuVWrJwAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
+        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
+        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
+        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1l42xK82IYc2Ij64vI
+        r41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8Gjc
+        xK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0
+        cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8V
+        AvwI8IcIk0rVWrZr1j6s0DMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7Cj
+        xVAFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7VUbXdbUUUUUU==
+X-CM-SenderInfo: 51xn3trlr6x35dzhxuhorxvhhfrp/
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 25, 2022 at 6:31 PM Daniel Thompson
-<daniel.thompson@linaro.org> wrote:
->
-> On Fri, Jul 22, 2022 at 06:24:07PM +0800, ChiaEn Wu wrote:
-> > diff --git a/drivers/video/backlight/Kconfig b/drivers/video/backlight/Kconfig
-> > index a003e02..846dbe7 100644
-> > --- a/drivers/video/backlight/Kconfig
-> > +++ b/drivers/video/backlight/Kconfig
-> > @@ -268,6 +268,18 @@ config BACKLIGHT_MAX8925
-> >         If you have a LCD backlight connected to the WLED output of MAX8925
-> >         WLED output, say Y here to enable this driver.
-> >
-> > +config BACKLIGHT_MT6370
-> > +     tristate "MediaTek MT6370 Backlight Driver"
-> > +     depends on MFD_MT6370
-> > +     help
-> > +       This enables support for Mediatek MT6370 Backlight driver.
-> > +       It's commonly used to drive the display WLED. There are 4 channels
-> > +       inside, and each channel supports up to 30mA of current capability
-> > +       with 2048 current steps in exponential or linear mapping curves.
->
-> Does the MT6372 support more steps than this? In other words does it use
-> a fourteen bit scale or does it use an 11-bit scale at a different
-> register location?
+From: Yu Kuai <yukuai3@huawei.com>
 
-Hi Daniel,
+Currently, in virtio_scsi, if 'bd->last' is not set to true while
+dispatching request, such io will stay in driver's queue, and driver
+will wait for block layer to dispatch more rqs. However, if block
+layer failed to dispatch more rq, it should trigger commit_rqs to
+inform driver.
 
-Thanks for your reply.
-Yes, MT6372 can support 16384 steps and uses a 14-bit scale register
-location. But the maximum current of each
-channel of MT6372 is the same as MT6370 and MT6371, both 30mA.
-The main reason why MT6372 is designed this way is that one of the
-customers asked for a more delicate
-adjustment of the backlight brightness. But other customers actually
-do not have such requirements.
-Therefore, we designed it this way for maximum compatibility in software.
+There is a problem in blk_mq_try_issue_list_directly() that commit_rqs
+won't be called:
 
->
->
-> > +
-> > +       This driver can also be built as a module. If so, the module
-> > +       will be called "mt6370-backlight".
-> > +
-> > [...]
-> > diff --git a/drivers/video/backlight/mt6370-backlight.c b/drivers/video/backlight/mt6370-backlight.c
-> > new file mode 100644
-> > index 0000000..ba00a8f
-> > --- /dev/null
-> > +++ b/drivers/video/backlight/mt6370-backlight.c
-> > [...]
-> > +static int mt6370_bl_update_status(struct backlight_device *bl_dev)
-> > +{
-> > +     struct mt6370_priv *priv = bl_get_data(bl_dev);
-> > +     int brightness = backlight_get_brightness(bl_dev);
-> > +     unsigned int enable_val;
-> > +     u8 brightness_val[2];
-> > +     int ret;
-> > +
-> > +     if (brightness) {
-> > +             brightness_val[0] = (brightness - 1) & MT6370_BL_DIM2_MASK;
-> > +             brightness_val[1] = (brightness - 1) >> fls(MT6370_BL_DIM2_MASK);
-> > +
-> > +             /*
-> > +              * To make MT6372 using 14 bits to control the brightness
-> > +              * backward compatible with 11 bits brightness control
-> > +              * (like MT6370 and MT6371 do), we left shift the value
-> > +              * and pad with 1 to remaining bits. Hence, the MT6372's
-> > +              * backlight brightness will be almost the same as MT6370's
-> > +              * and MT6371's.
-> > +              */
-> > +             if (priv->vid_type == MT6370_VID_6372) {
-> > +                     brightness_val[0] <<= MT6370_BL_DIM2_6372_SHIFT;
-> > +                     brightness_val[0] |= MT6370_BL_DUMMY_6372_MASK;
-> > +             }
->
-> This somewhat depends on the answer to the first question above, but
-> what is the point of this shifting? If the range is 14-bit then the
-> driver should set max_brightness to 16384 and present the full range of
-> the MT6372 to the user.
+// assume that queue_depth is set to 1, list contains two rq
+blk_mq_try_issue_list_directly
+ blk_mq_request_issue_directly
+ // dispatch first rq
+ // last is false
+  __blk_mq_try_issue_directly
+   blk_mq_get_dispatch_budget
+   // succeed to get first budget
+   __blk_mq_issue_directly
+    scsi_queue_rq
+     cmd->flags |= SCMD_LAST
+      virtscsi_queuecommand
+       kick = (sc->flags & SCMD_LAST) != 0
+       // kick is false, first rq won't issue to disk
+ queued++
 
-So should we make all 16384 steps of MT6372 available to users?
-Does that mean the DTS needs to be modified as well?
-Or, for the reasons, I have just explained (just one customer has this
-requirement), then we do not make any changes for compatibility
-reasons?
-Thanks.
+ blk_mq_request_issue_directly
+ // dispatch second rq
+  __blk_mq_try_issue_directly
+   blk_mq_get_dispatch_budget
+   // failed to get second budget
+ ret == BLK_STS_RESOURCE
+  blk_mq_request_bypass_insert
+ // errors is still 0
 
->
-> Especially when using linear mappings (which are a totally pointless
-> scale to use for a backlight) the extra steps are useful for backlight
-> animation.
->
->
-> Daniel.
+ if (!list_empty(list) || errors && ...)
+  // won't pass, commit_rqs won't be called
 
+In this situation, first rq relied on second rq to dispatch, while
+second rq relied on first rq to complete, thus they will both hung.
+
+Fix the problem by also treat 'BLK_STS_RESOURCE' and
+'BLK_STS_DEV_RESOURCE' as 'errors' in blk_mq_try_issue_list_directly(),
+so that 'commit_rqs' will be called when dispatch of last rq failed.
+
+Fixes: d666ba98f849 ("blk-mq: add mq_ops->commit_rqs()")
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+---
+ block/blk-mq.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/block/blk-mq.c b/block/blk-mq.c
+index 70177ee74295..752b0fe4c128 100644
+--- a/block/blk-mq.c
++++ b/block/blk-mq.c
+@@ -2680,6 +2680,7 @@ void blk_mq_try_issue_list_directly(struct blk_mq_hw_ctx *hctx,
+ 		list_del_init(&rq->queuelist);
+ 		ret = blk_mq_request_issue_directly(rq, list_empty(list));
+ 		if (ret != BLK_STS_OK) {
++			errors++;
+ 			if (ret == BLK_STS_RESOURCE ||
+ 					ret == BLK_STS_DEV_RESOURCE) {
+ 				blk_mq_request_bypass_insert(rq, false,
+@@ -2687,7 +2688,6 @@ void blk_mq_try_issue_list_directly(struct blk_mq_hw_ctx *hctx,
+ 				break;
+ 			}
+ 			blk_mq_end_request(rq, ret);
+-			errors++;
+ 		} else
+ 			queued++;
+ 	}
 -- 
-Best Regards,
-ChiaEn Wu
+2.31.1
+
