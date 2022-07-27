@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30498C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:00:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7E91C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:00:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232550AbiG0RAR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:00:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55562 "EHLO
+        id S241051AbiG0RAY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:00:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241260AbiG0Q7V (ORCPT
+        with ESMTP id S241278AbiG0Q7Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:59:21 -0400
+        Wed, 27 Jul 2022 12:59:24 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4552067CAF;
-        Wed, 27 Jul 2022 09:37:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 973AB56BAB;
+        Wed, 27 Jul 2022 09:37:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 25840B821B6;
-        Wed, 27 Jul 2022 16:37:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AA25C433D6;
-        Wed, 27 Jul 2022 16:37:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BBC01B821C6;
+        Wed, 27 Jul 2022 16:37:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29CA4C433C1;
+        Wed, 27 Jul 2022 16:37:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939830;
-        bh=hfbxyf/DUJ3IQqVUNeTv9mC8aZK0OZHI4xKyS0XTpjQ=;
+        s=korg; t=1658939836;
+        bh=b50X13tPwRaIQrRXxckQEC9kAycAWKdZsivSy60YEyc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p7GEPPuyz47XWza4DJ1OjkR870T7yfBGuy/ClwfHjvxNMpe48bIP5wH+2svNcqKN5
-         /qXViuAYXNjwFmO95B/jrDJKgApeqJUoXTfI5kcLLq17RCtkA6NXkUPk5tTQfzmpA5
-         DCN1/eUpMdC+9g/zKWWGs65B19lcErHlJgI0pKNU=
+        b=j5tGmjnwvdYJQQraQGH4ZX8yEFpMlK7EubqV3BRj798qLgcXgl8OsbcWGPdEB4nae
+         yISnU3BPLWZvTjXhyjChao3p6819MXLpr0ou+gOt+R+zOzBWI2D9iS4OOCL2NMimnB
+         WDy/hgs7QEYNH9mKzY37QW0lxKZcNWS3/X3k5qug=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-Subject: [PATCH 5.15 014/201] serial: mvebu-uart: correctly report configured baudrate value
-Date:   Wed, 27 Jul 2022 18:08:38 +0200
-Message-Id: <20220727161027.512869711@linuxfoundation.org>
+        "linux-wireless@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Sean Wang" <sean.wang@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>
+Subject: [PATCH 5.15 016/201] Revert "mt76: mt7921: Fix the error handling path of mt7921_pci_probe()"
+Date:   Wed, 27 Jul 2022 18:08:40 +0200
+Message-Id: <20220727161027.585937125@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -49,89 +49,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Sean Wang <sean.wang@mediatek.com>
 
-commit 4f532c1e25319e42996ec18a1f473fd50c8e575d upstream.
+This reverts commit 663457f421d41e9d2fcb1e84baf43d1433f80c08 that is the
+commit 44c4237cf3436bda2b185ff728123651ad133f69 upstream.
 
-Functions tty_termios_encode_baud_rate() and uart_update_timeout() should
-be called with the baudrate value which was set to hardware. Linux then
-report exact values via ioctl(TCGETS2) to userspace.
+Because there was mistake in
+'649178c0493e ("mt76: mt7921e: fix possible probe failure after reboot")'
+that caused WiFi reset cannot work well as the reported issue
+"PROBLEM: [Stable v5.15.42+] [mt7921] Wake after suspend locks up system
+when mt7921-driver is used on a Lenovo ThinkPad E15 G3" described in
+http://lists.infradead.org/pipermail/linux-mediatek/2022-June/042668.html
+So we need to revert the patch first to avoid the conflict of reverting
+'649178c0493e ("mt76: mt7921e: fix possible probe failure after reboot")'
+and will be applied back later after fixing.
 
-Change mvebu_uart_baud_rate_set() function to return baudrate value which
-was set to hardware and propagate this value to above mentioned functions.
-
-With this change userspace would see precise value in termios c_ospeed
-field.
-
-Fixes: 68a0db1d7da2 ("serial: mvebu-uart: add function to change baudrate")
-Cc: stable <stable@kernel.org>
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Link: https://lore.kernel.org/r/20220628100922.10717-1-pali@kernel.org
+Signed-off-by: Sean Wang <sean.wang@mediatek.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/mvebu-uart.c |   25 +++++++++++++------------
- 1 file changed, 13 insertions(+), 12 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt7921/pci.c |    8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
---- a/drivers/tty/serial/mvebu-uart.c
-+++ b/drivers/tty/serial/mvebu-uart.c
-@@ -442,13 +442,13 @@ static void mvebu_uart_shutdown(struct u
- 	}
- }
- 
--static int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
-+static unsigned int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
- {
- 	unsigned int d_divisor, m_divisor;
- 	u32 brdv, osamp;
- 
- 	if (!port->uartclk)
--		return -EOPNOTSUPP;
-+		return 0;
- 
- 	/*
- 	 * The baudrate is derived from the UART clock thanks to two divisors:
-@@ -472,7 +472,7 @@ static int mvebu_uart_baud_rate_set(stru
- 	osamp &= ~OSAMP_DIVISORS_MASK;
- 	writel(osamp, port->membase + UART_OSAMP);
- 
--	return 0;
-+	return DIV_ROUND_CLOSEST(port->uartclk, d_divisor * m_divisor);
- }
- 
- static void mvebu_uart_set_termios(struct uart_port *port,
-@@ -509,15 +509,11 @@ static void mvebu_uart_set_termios(struc
- 	max_baud = 230400;
- 
- 	baud = uart_get_baud_rate(port, termios, old, min_baud, max_baud);
--	if (mvebu_uart_baud_rate_set(port, baud)) {
--		/* No clock available, baudrate cannot be changed */
--		if (old)
--			baud = uart_get_baud_rate(port, old, NULL,
--						  min_baud, max_baud);
--	} else {
--		tty_termios_encode_baud_rate(termios, baud, baud);
--		uart_update_timeout(port, termios->c_cflag, baud);
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
+@@ -254,10 +254,8 @@ static int mt7921_pci_probe(struct pci_d
+ 	dev->bus_ops = dev->mt76.bus;
+ 	bus_ops = devm_kmemdup(dev->mt76.dev, dev->bus_ops, sizeof(*bus_ops),
+ 			       GFP_KERNEL);
+-	if (!bus_ops) {
+-		ret = -ENOMEM;
+-		goto err_free_dev;
 -	}
-+	baud = mvebu_uart_baud_rate_set(port, baud);
-+
-+	/* In case baudrate cannot be changed, report previous old value */
-+	if (baud == 0 && old)
-+		baud = tty_termios_baud_rate(old);
++	if (!bus_ops)
++		return -ENOMEM;
  
- 	/* Only the following flag changes are supported */
- 	if (old) {
-@@ -528,6 +524,11 @@ static void mvebu_uart_set_termios(struc
- 		termios->c_cflag |= CS8;
- 	}
+ 	bus_ops->rr = mt7921_rr;
+ 	bus_ops->wr = mt7921_wr;
+@@ -266,7 +264,7 @@ static int mt7921_pci_probe(struct pci_d
  
-+	if (baud != 0) {
-+		tty_termios_encode_baud_rate(termios, baud, baud);
-+		uart_update_timeout(port, termios->c_cflag, baud);
-+	}
-+
- 	spin_unlock_irqrestore(&port->lock, flags);
- }
+ 	ret = __mt7921_mcu_drv_pmctrl(dev);
+ 	if (ret)
+-		goto err_free_dev;
++		return ret;
  
+ 	mdev->rev = (mt7921_l1_rr(dev, MT_HW_CHIPID) << 16) |
+ 		    (mt7921_l1_rr(dev, MT_HW_REV) & 0xff);
 
 
