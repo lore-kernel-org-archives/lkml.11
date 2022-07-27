@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B5DAC19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:47:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4DB7C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:47:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243247AbiG0Rrf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:47:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51856 "EHLO
+        id S243223AbiG0Rrm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:47:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243067AbiG0RrE (ORCPT
+        with ESMTP id S243219AbiG0RrG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:47:04 -0400
+        Wed, 27 Jul 2022 13:47:06 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 718268C8F8;
-        Wed, 27 Jul 2022 09:53:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D99328CC8C;
+        Wed, 27 Jul 2022 09:53:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 13CEEB821D7;
-        Wed, 27 Jul 2022 16:53:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6631DC433C1;
-        Wed, 27 Jul 2022 16:53:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3974BB821D8;
+        Wed, 27 Jul 2022 16:53:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B7D9C433D6;
+        Wed, 27 Jul 2022 16:53:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940834;
-        bh=8TAjTG3BVgjt6+mej6insq8utXxrMq0kT2BsFUAqqQA=;
+        s=korg; t=1658940820;
+        bh=BjWDKkSbTVk6HOTJj0Ix1G7Bfz2vtR9DF2xF7kRNZnQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VIAhOq9vzkWI7u/e4YyxkGNSRZrHtobCvUUwU95DWi2JQLiyP5TXANhwI44J/qyNt
-         BHyHm1StdLj+11g6Mii0BWrLeip2+NBYlKVIkMtR56XkvYhvkCGH6kBU7yaD4jc0K9
-         c/SG5EGJrg6GD9NdYs3eZYkqQRPTMHMN+xSrFkEk=
+        b=QoJyM5nlCTUtLV2s0V+evgdnhgCDR9AEP3UXziXuMk4lwNDfr30DbII62SXZs6lxt
+         t7VNSEDT9nJCIKPU2n6X5pD5WAeprYsZfoyifYjKqotuO69s10Bec/WgWT8buXTa3s
+         9xQMCw/nDNkE30JonuHL6EmA2J3A43HbP0OZQ+Rk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
-        Adam Guerin <adam.guerin@intel.com>,
-        Wojciech Ziemba <wojciech.ziemba@intel.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 140/158] crypto: qat - set to zero DH parameters before free
-Date:   Wed, 27 Jul 2022 18:13:24 +0200
-Message-Id: <20220727161026.976342511@linuxfoundation.org>
+        stable@vger.kernel.org, Juri Lelli <juri.lelli@redhat.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>
+Subject: [PATCH 5.18 135/158] sched/deadline: Fix BUG_ON condition for deboosted tasks
+Date:   Wed, 27 Jul 2022 18:13:19 +0200
+Message-Id: <20220727161026.787205695@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -52,51 +48,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
+From: Juri Lelli <juri.lelli@redhat.com>
 
-[ Upstream commit 1731160ff7c7bbb11bb1aacb14dd25e18d522779 ]
+commit ddfc710395cccc61247348df9eb18ea50321cbed upstream.
 
-Set to zero the context buffers containing the DH key before they are
-freed.
-This is a defense in depth measure that avoids keys to be recovered from
-memory in case the system is compromised between the free of the buffer
-and when that area of memory (containing keys) gets overwritten.
+Tasks the are being deboosted from SCHED_DEADLINE might enter
+enqueue_task_dl() one last time and hit an erroneous BUG_ON condition:
+since they are not boosted anymore, the if (is_dl_boosted()) branch is
+not taken, but the else if (!dl_prio) is and inside this one we
+BUG_ON(!is_dl_boosted), which is of course false (BUG_ON triggered)
+otherwise we had entered the if branch above. Long story short, the
+current condition doesn't make sense and always leads to triggering of a
+BUG.
 
+Fix this by only checking enqueue flags, properly: ENQUEUE_REPLENISH has
+to be present, but additional flags are not a problem.
+
+Fixes: 64be6f1f5f71 ("sched/deadline: Don't replenish from a !SCHED_DEADLINE entity")
+Signed-off-by: Juri Lelli <juri.lelli@redhat.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Cc: stable@vger.kernel.org
-Fixes: c9839143ebbf ("crypto: qat - Add DH support")
-Signed-off-by: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
-Reviewed-by: Adam Guerin <adam.guerin@intel.com>
-Reviewed-by: Wojciech Ziemba <wojciech.ziemba@intel.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lkml.kernel.org/r/20220714151908.533052-1-juri.lelli@redhat.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/crypto/qat/qat_common/qat_asym_algs.c | 3 +++
- 1 file changed, 3 insertions(+)
+ kernel/sched/deadline.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/crypto/qat/qat_common/qat_asym_algs.c b/drivers/crypto/qat/qat_common/qat_asym_algs.c
-index b0b78445418b..5633f9df3b6f 100644
---- a/drivers/crypto/qat/qat_common/qat_asym_algs.c
-+++ b/drivers/crypto/qat/qat_common/qat_asym_algs.c
-@@ -420,14 +420,17 @@ static int qat_dh_set_params(struct qat_dh_ctx *ctx, struct dh *params)
- static void qat_dh_clear_ctx(struct device *dev, struct qat_dh_ctx *ctx)
- {
- 	if (ctx->g) {
-+		memset(ctx->g, 0, ctx->p_size);
- 		dma_free_coherent(dev, ctx->p_size, ctx->g, ctx->dma_g);
- 		ctx->g = NULL;
+--- a/kernel/sched/deadline.c
++++ b/kernel/sched/deadline.c
+@@ -1669,7 +1669,10 @@ static void enqueue_task_dl(struct rq *r
+ 		 * the throttle.
+ 		 */
+ 		p->dl.dl_throttled = 0;
+-		BUG_ON(!is_dl_boosted(&p->dl) || flags != ENQUEUE_REPLENISH);
++		if (!(flags & ENQUEUE_REPLENISH))
++			printk_deferred_once("sched: DL de-boosted task PID %d: REPLENISH flag missing\n",
++					     task_pid_nr(p));
++
+ 		return;
  	}
- 	if (ctx->xa) {
-+		memset(ctx->xa, 0, ctx->p_size);
- 		dma_free_coherent(dev, ctx->p_size, ctx->xa, ctx->dma_xa);
- 		ctx->xa = NULL;
- 	}
- 	if (ctx->p) {
-+		memset(ctx->p, 0, ctx->p_size);
- 		dma_free_coherent(dev, ctx->p_size, ctx->p, ctx->dma_p);
- 		ctx->p = NULL;
- 	}
--- 
-2.35.1
-
+ 
 
 
