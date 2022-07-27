@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F9EFC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:40:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6B9EC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:40:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242705AbiG0RkO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:40:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36558 "EHLO
+        id S242729AbiG0RkU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:40:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242840AbiG0RjV (ORCPT
+        with ESMTP id S242861AbiG0RjX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:39:21 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D389B88744;
-        Wed, 27 Jul 2022 09:51:07 -0700 (PDT)
+        Wed, 27 Jul 2022 13:39:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB9A288758;
+        Wed, 27 Jul 2022 09:51:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 104AECE2318;
-        Wed, 27 Jul 2022 16:50:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0027BC433C1;
-        Wed, 27 Jul 2022 16:50:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 58C5EB821C5;
+        Wed, 27 Jul 2022 16:51:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9639C433D6;
+        Wed, 27 Jul 2022 16:51:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940643;
-        bh=eud4DlPytkXEZKbDVsexOqCQ7QIhHImI570wrqSzK54=;
+        s=korg; t=1658940668;
+        bh=/eMDGI/9OToQZPUaNvF2iNvmdwDeVgUaWbAg4meaaP0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ce34G7LNOb6rLKhrEQtVlchvSmxWK6erQI4IyB1eNOliyeihLSQlzLy5cVYfNBiqZ
-         KXxWoIOno/36w6MVyw8vqJfkayR113UbH6YS9KMSleB4Y3KbuSyEKBl1BuWJ+Dkeva
-         ngWqUtjob8weCk28XlJthD8QbnuzojqipmabKGHI=
+        b=jOdIV9hgn5tGTajYaQyR1g8oNsLp+g9Ov+Aa0jsyWGbJ0O8oF446y9rCsLWjve5no
+         2xYpUYngz/Z1GPVYCHI0LnWci3i8PyRg8MEYTLAX6wGr41TJYc9E6FYj9qzjkkDv1d
+         hegrwc8uZwmNB64m5r6wRTuIBMKXyyKUoSL4TZpw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Haibo Chen <haibo.chen@nxp.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
+        stable@vger.kernel.org, Taehee Yoo <ap420073@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 095/158] gpio: pca953x: only use single read/write for No AI mode
-Date:   Wed, 27 Jul 2022 18:12:39 +0200
-Message-Id: <20220727161025.261253948@linuxfoundation.org>
+Subject: [PATCH 5.18 106/158] amt: drop unexpected query message
+Date:   Wed, 27 Jul 2022 18:12:50 +0200
+Message-Id: <20220727161025.717770820@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -50,46 +49,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haibo Chen <haibo.chen@nxp.com>
+From: Taehee Yoo <ap420073@gmail.com>
 
-[ Upstream commit db8edaa09d7461ec08672a92a2eef63d5882bb79 ]
+[ Upstream commit 239d886601e38d948a28f3b2a1c9ce5f01bf75f2 ]
 
-For the device use NO AI mode(not support auto address increment),
-only use the single read/write when config the regmap.
+AMT gateway interface should not receive unexpected query messages.
+In order to drop unexpected query messages, it checks nonce.
+And it also checks ready4 and ready6 variables to drop duplicated messages.
 
-We meet issue on PCA9557PW on i.MX8QXP/DXL evk board, this device
-do not support AI mode, but when do the regmap sync, regmap will
-sync 3 byte data to register 1, logically this means write first
-data to register 1, write second data to register 2, write third data
-to register 3. But this device do not support AI mode, finally, these
-three data write only into register 1 one by one. the reault is the
-value of register 1 alway equal to the latest data, here is the third
-data, no operation happened on register 2 and register 3. This is
-not what we expect.
-
-Fixes: 49427232764d ("gpio: pca953x: Perform basic regmap conversion")
-Signed-off-by: Haibo Chen <haibo.chen@nxp.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+Fixes: cbc21dc1cfe9 ("amt: add data plane of amt interface")
+Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpio/gpio-pca953x.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/amt.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpio/gpio-pca953x.c b/drivers/gpio/gpio-pca953x.c
-index 33683295a0bf..f334c8556a22 100644
---- a/drivers/gpio/gpio-pca953x.c
-+++ b/drivers/gpio/gpio-pca953x.c
-@@ -351,6 +351,9 @@ static const struct regmap_config pca953x_i2c_regmap = {
- 	.reg_bits = 8,
- 	.val_bits = 8,
+diff --git a/drivers/net/amt.c b/drivers/net/amt.c
+index 0811a5211ec4..5c65908abd5a 100644
+--- a/drivers/net/amt.c
++++ b/drivers/net/amt.c
+@@ -967,8 +967,11 @@ static void amt_event_send_request(struct amt_dev *amt)
+ 		goto out;
+ 	}
  
-+	.use_single_read = true,
-+	.use_single_write = true,
+-	if (!amt->req_cnt)
++	if (!amt->req_cnt) {
++		WRITE_ONCE(amt->ready4, false);
++		WRITE_ONCE(amt->ready6, false);
+ 		get_random_bytes(&amt->nonce, sizeof(__be32));
++	}
+ 
+ 	amt_send_request(amt, false);
+ 	amt_send_request(amt, true);
+@@ -2353,6 +2356,9 @@ static bool amt_membership_query_handler(struct amt_dev *amt,
+ 	if (amtmq->reserved || amtmq->version)
+ 		return true;
+ 
++	if (amtmq->nonce != amt->nonce)
++		return true;
 +
- 	.readable_reg = pca953x_readable_register,
- 	.writeable_reg = pca953x_writeable_register,
- 	.volatile_reg = pca953x_volatile_register,
+ 	hdr_size -= sizeof(*eth);
+ 	if (iptunnel_pull_header(skb, hdr_size, htons(ETH_P_TEB), false))
+ 		return true;
+@@ -2367,6 +2373,9 @@ static bool amt_membership_query_handler(struct amt_dev *amt,
+ 
+ 	iph = ip_hdr(skb);
+ 	if (iph->version == 4) {
++		if (READ_ONCE(amt->ready4))
++			return true;
++
+ 		if (!pskb_may_pull(skb, sizeof(*iph) + AMT_IPHDR_OPTS +
+ 				   sizeof(*ihv3)))
+ 			return true;
+@@ -2389,6 +2398,9 @@ static bool amt_membership_query_handler(struct amt_dev *amt,
+ 		struct mld2_query *mld2q;
+ 		struct ipv6hdr *ip6h;
+ 
++		if (READ_ONCE(amt->ready6))
++			return true;
++
+ 		if (!pskb_may_pull(skb, sizeof(*ip6h) + AMT_IP6HDR_OPTS +
+ 				   sizeof(*mld2q)))
+ 			return true;
 -- 
 2.35.1
 
