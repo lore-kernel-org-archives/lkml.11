@@ -2,97 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C654C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:13:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 801D2C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:13:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241610AbiG0RNn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:13:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48636 "EHLO
+        id S241615AbiG0RNs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:13:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241578AbiG0RMz (ORCPT
+        with ESMTP id S230172AbiG0RNJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:12:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 460757644C;
-        Wed, 27 Jul 2022 09:42:06 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2847560D3B;
-        Wed, 27 Jul 2022 16:42:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 367F5C433C1;
-        Wed, 27 Jul 2022 16:42:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940124;
-        bh=4ErHXwOhPcEPwMUnQeYwhJKbusd/k1X5rqkKC/8iioU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CsrXCQwd8PkjBOnihqLPPLaqb8f/Xph2B1P0bcejRdl8legb/No6TKxZeF8ilo3jN
-         54FwqPAGnuMqnC6fVwj2+2M6tgq2m1o2MyMOGKw72dZV8YEJTNXYd3lHsdW10pDjz4
-         IHTQwdL8zRoNkhUUz4l6QtmATcjc0MvSLk5d+zRE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 114/201] net: dsa: vitesse-vsc73xx: silent spi_device_id warnings
-Date:   Wed, 27 Jul 2022 18:10:18 +0200
-Message-Id: <20220727161032.483840946@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
-References: <20220727161026.977588183@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Wed, 27 Jul 2022 13:13:09 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44ACE76467
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:42:08 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id z25so27997035lfr.2
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:42:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eSPaxO046Ze33lKCriyBi8yHHhzQgKxgn//51vCRfws=;
+        b=AbbhqBv9E178tMhwtsG5r7YM5oszCwrW9k1hW7z+DlAQTz6Lt/6jGLCEB0pJXBYqTb
+         qGGCKjH1dHXi+rkpdvlJp4Gf41vcYJ/fDKD9Pb+DupvIZkF6xiEqz2EjjqyjJw5CxCea
+         vcZYtGeykc+4WHvvwczUw+ZTAOJgAGMZxX75x8adytC0aQbpvCJuroAPPWboUeSG2JgP
+         Sb/VvWX624MEMNeEhO7Kz1ZmX1fiEyXIg80rbAHqyvEy4stbPqAD3DjfypWtQb1h92b4
+         nTxen8Y1UzzFj3pHKbdcwyIQiAjeXXsHqxdz4twV6JzQZoQ+J7ag9BannbCD1kKhcJnT
+         idnQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eSPaxO046Ze33lKCriyBi8yHHhzQgKxgn//51vCRfws=;
+        b=aAC9eGBNwoONwArqaFzITdl7XRc1NSW0CkWGlOVrZnuIJ+uC7GYvoVYR0eArcYFHMr
+         Q7cu7c2IIRKK9WyB0BmhzqeaDraBtsqSphjZ6POLzpFyNX81OHTZn5uPuQYEVe++R2BX
+         b8dojwarGo5YLkqi5GLZ3belnlrP5LPiW7fxBUrO9aLhkuN9HRCu5yBZhA6OGyT6nleS
+         UVJInECAZ76fF3Mvf61oy9d560a4e2tK4Khv88aNZFo4FFWkBEfFWyGX1UzagyyoEyCz
+         s5b0Q1t+q71rI82ninQYzp0zdjTQBtZ1eylMAWYyHD5C1FRzB92Ny0y+dFQU8tuqd22H
+         mpfw==
+X-Gm-Message-State: AJIora9SMBYnAi764mk8CJZIc3SgdCCXjCL6g3GTJQrCcRoPYNrN1gjc
+        hOpgNDdPIUABP/oxHPiBJz8SbxXQRERS4R3c
+X-Google-Smtp-Source: AGRyM1uhBH6wuAdgpcLkgYgpaPQs3mxVcKJnj5iurbEFj6ZPkbZ2ibDfKFQvRyZPsqlhyOim+ut2cA==
+X-Received: by 2002:ac2:4f06:0:b0:489:4a1b:ad7f with SMTP id k6-20020ac24f06000000b004894a1bad7fmr9274231lfr.311.1658940125963;
+        Wed, 27 Jul 2022 09:42:05 -0700 (PDT)
+Received: from krzk-bin.lan (78-26-46-173.network.trollfjord.no. [78.26.46.173])
+        by smtp.gmail.com with ESMTPSA id c1-20020a056512238100b0048a706d9fe5sm3509260lfv.294.2022.07.27.09.42.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jul 2022 09:42:05 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Ulf Hansson <ulf.hansson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH] dt-bindings: mmc: mmc-spi-slot: drop unneeded spi-max-frequency
+Date:   Wed, 27 Jul 2022 18:42:02 +0200
+Message-Id: <20220727164202.385531-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oleksij Rempel <o.rempel@pengutronix.de>
+spi-max-frequency comes from spi-peripheral-props.yaml.
 
-[ Upstream commit 1774559f07993e1cac33c2406e99049d4bdea6c8 ]
-
-Add spi_device_id entries to silent SPI warnings.
-
-Fixes: 5fa6863ba692 ("spi: Check we have a spi_device_id for each DT compatible")
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-Link: https://lore.kernel.org/r/20220717135831.2492844-2-o.rempel@pengutronix.de
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- drivers/net/dsa/vitesse-vsc73xx-spi.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ Documentation/devicetree/bindings/mmc/mmc-spi-slot.yaml | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/net/dsa/vitesse-vsc73xx-spi.c b/drivers/net/dsa/vitesse-vsc73xx-spi.c
-index 645398901e05..922ae22fad66 100644
---- a/drivers/net/dsa/vitesse-vsc73xx-spi.c
-+++ b/drivers/net/dsa/vitesse-vsc73xx-spi.c
-@@ -207,10 +207,20 @@ static const struct of_device_id vsc73xx_of_match[] = {
- };
- MODULE_DEVICE_TABLE(of, vsc73xx_of_match);
+diff --git a/Documentation/devicetree/bindings/mmc/mmc-spi-slot.yaml b/Documentation/devicetree/bindings/mmc/mmc-spi-slot.yaml
+index c45b91099325..c0662ce9946d 100644
+--- a/Documentation/devicetree/bindings/mmc/mmc-spi-slot.yaml
++++ b/Documentation/devicetree/bindings/mmc/mmc-spi-slot.yaml
+@@ -23,8 +23,6 @@ properties:
+   reg:
+     maxItems: 1
  
-+static const struct spi_device_id vsc73xx_spi_ids[] = {
-+	{ "vsc7385" },
-+	{ "vsc7388" },
-+	{ "vsc7395" },
-+	{ "vsc7398" },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(spi, vsc73xx_spi_ids);
-+
- static struct spi_driver vsc73xx_spi_driver = {
- 	.probe = vsc73xx_spi_probe,
- 	.remove = vsc73xx_spi_remove,
- 	.shutdown = vsc73xx_spi_shutdown,
-+	.id_table = vsc73xx_spi_ids,
- 	.driver = {
- 		.name = "vsc73xx-spi",
- 		.of_match_table = vsc73xx_of_match,
+-  spi-max-frequency: true
+-
+   interrupts:
+     maxItems: 1
+ 
 -- 
-2.35.1
-
-
+2.34.1
 
