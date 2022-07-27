@@ -2,115 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32C23C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 19:05:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 837CDC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 19:05:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234450AbiG0TDZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 15:03:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44008 "EHLO
+        id S235112AbiG0TFG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 15:05:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232410AbiG0TCn (ORCPT
+        with ESMTP id S234483AbiG0TE1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 15:02:43 -0400
-Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66D7A10D6
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 11:18:10 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 982905C0156;
-        Wed, 27 Jul 2022 14:18:09 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Wed, 27 Jul 2022 14:18:09 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tycho.pizza; h=
-        cc:cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; t=1658945889; x=1659032289; bh=qIWv+ZMtF2
-        lt0YMNEhnDHuA6uaYCrHAWKeY3aG5HYac=; b=bbkvSchrtgoiEmiUyW+gU6LRiA
-        cwth1Swzn5uiGk0d6GYSbxGzJFbonJlgGXYlhfy7RmayejCE2GZ+YuxmiJ6SHpta
-        INE7qCmHLhx7gUWt9RULcYoXNUnRK/mL628UH7g5sZv3I56lVyG9z5Ay2BOLx4GJ
-        b6YSsPABvzgavQLs7FGnqKULr39OLAN66pNjyYIIfw3+8ZMVJhYm3XhaEZifKl7J
-        t9Lic3Jt1xGF8X6gtPEorC2oJjLzAqQJmtYE4wphuhmVDDJM99uaUQ1o8xk3rMmn
-        qynUjB7EQBOft7liFmV5uiT//2sNdA8h/QlHPCk5ACZJUqCqsaiMBqm+I5rQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; t=1658945889; x=1659032289; bh=qIWv+ZMtF2lt0YMNEhnDHuA6uaYC
-        rHAWKeY3aG5HYac=; b=sHaFahFVqjrOvnXYD16N4CO7W2Jjk+pJIgmKRg+tuF+p
-        /lWhDoFM8bQvJ+S024rYP0bAXqa4CS9xNbCphJLvJf2uWjnKA/fg7baehYZqQZoK
-        gzyJidGRPXmzAeeUXMHM4+S/CbFgOe6GUcv8HE2uai2/KSX8/ZizuhFv9LCZFiLZ
-        uqm0Ulk5pc3AHJ6zs6gg1ElGkVWVDxNrc627GiGMcEabxvTTHFKWiVeF6FjaOIUg
-        ca+fiyAu0hhVwNyCMkuNhhbqBKH2AYIQt+fZHqfqEz6hAyyuXs4G6sQrr+9+bsH7
-        HUQLs3QVZlcV/zzuuU7lJm8i7KwzPdmxskCqiciuBg==
-X-ME-Sender: <xms:YIHhYuO3eQEQ3S9If2f44cZL-sUM-DQZUjMb9GuZpFZXQswF6POmdw>
-    <xme:YIHhYs9ZQ6N55PoF7BjMitgrUQGEjtpIPDiEokd1ShdgR4YiLSmLXFm3_l7XifUi4
-    U4E3qvCpA2avhFntjc>
-X-ME-Received: <xmr:YIHhYlSPkUo0rp9wLAbleT2t1zTz3IAi8sJc0Quw4MM55x7JlqyH1cf9eD2fpA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdduvddguddvfecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefvhigt
-    hhhoucetnhguvghrshgvnhcuoehthigthhhosehthigthhhordhpihiiiigrqeenucggtf
-    frrghtthgvrhhnpeelveduteeghfehkeeukefhudfftefhheetfedthfevgfetleevvddu
-    veetueefheenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuih
-    iivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepthihtghhohesthihtghhohdrphhi
-    iiiirg
-X-ME-Proxy: <xmx:YIHhYuvqEsUH3OMS9bPDTPf61bZY5nlXdLUKxM1OG6wvO6yp5I_gKg>
-    <xmx:YIHhYmfsBH_X9patdG0S3g7xcbGlU9IB8GaZiA-xI_BBuU33TcF9gA>
-    <xmx:YIHhYi3OV0O2O2Ch2WKwLLQk8rLjUIYKKRkozH_IIoNrDTsbRTpWNg>
-    <xmx:YYHhYm7siNzULX3n7xYEVm4F-USHQLJZaISwJarwoXu4nVd0TQaJlQ>
-Feedback-ID: i21f147d5:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 27 Jul 2022 14:18:07 -0400 (EDT)
-Date:   Wed, 27 Jul 2022 12:18:06 -0600
-From:   Tycho Andersen <tycho@tycho.pizza>
-To:     Oleg Nesterov <oleg@redhat.com>
-Cc:     "Serge E. Hallyn" <serge@hallyn.com>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] sched: __fatal_signal_pending() should also check
- PF_EXITING
-Message-ID: <YuGBXnqb5rPwAlYk@tycho.pizza>
-References: <Ys2PwTS0qFmGNFqy@netflix>
- <20220713175305.1327649-1-tycho@tycho.pizza>
- <20220720150328.GA30749@mail.hallyn.com>
- <YthsgqAZYnwHZLn+@tycho.pizza>
- <20220721015459.GA4297@mail.hallyn.com>
- <YuFdUj5X4qckC/6g@tycho.pizza>
- <20220727175538.GC18822@redhat.com>
+        Wed, 27 Jul 2022 15:04:27 -0400
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E39265FAC0;
+        Wed, 27 Jul 2022 11:28:41 -0700 (PDT)
+Received: by mail-pf1-x435.google.com with SMTP id y141so16789793pfb.7;
+        Wed, 27 Jul 2022 11:28:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc;
+        bh=Rr2DmdH/Yw7QfWPKMwga2AxXi65vqNRwg8R5+haMBnY=;
+        b=RliP9yXWD5CA9bljnE2oiVxs9BJAxE9TKXJCXAXuaE6qP14dhUHkl97uK3BdsKC6Wu
+         XY5b23DHu/JtYErCI6ZXaU/2hJCMlb0yNyib9sD417uZ3FtLx17W4FRkkUmT/FjLzfSP
+         Ts8R0vQSQcJvBj0Wq11eQqdWGb3fHRbbMnGyninuRlUNg23k7gX49OPL/+O0/g1Iy8Rm
+         yk+FhOE0II5xBWvTIdSNL4V5U8SLo+FmytbcpdiVSjF5NNWJd8Q2e/7n3f/U6BiF1dn3
+         Msf+k/AiaqpGJHf/pBx4q5TxzXLg3TwiGnTfPMlUCua1RExTi0MI4CMUQXGU+lSbjylp
+         aI0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
+        bh=Rr2DmdH/Yw7QfWPKMwga2AxXi65vqNRwg8R5+haMBnY=;
+        b=evWJx1CFQZpz/H6kB3qzPoHRdYcpMqeBLwg9yYLeurGg30TywAR7AHsP7J03b8E9YR
+         wCNSkXW+/nEy5+ZEgzUnc6o8M67mM5xR39AwSR9PL0WTBPY/OB7SCW6aQ2Snr8/HfFMD
+         YsE+6mPeY0Qrc4Xq5ECnu8KMn5ka98tGf7fDV0fqz/j4VD3fOdj5qqr0iv6HXwfq7BXf
+         yPpQ5yKynY5Uaeo+fzvseOFB3NAWtlu+HzXrZhxsoIUGgzsC6nUnG7BNfTtIzpZE4mbm
+         S6vlxmAVEpWhMsOxco9u+myiqFC9nrBeknZ35rdfqdVvIh2Wwv7LOFNxl3yyfkbfmdnc
+         8RRw==
+X-Gm-Message-State: AJIora+VP8ZoA4YJycFoqEpREmYiQjeEgOPF5sw/EONvBkyW4xDvBBhf
+        q9/6mD74ZH6rkYiotJ71dSo=
+X-Google-Smtp-Source: AGRyM1tTr14FJaUQBQ8nWS67O2L/U66szXsIK5MhQcM1+eQAuv01bCGhWYtk4wY1i1lZAzhXSEssJA==
+X-Received: by 2002:a63:fb52:0:b0:419:cb1e:6e2 with SMTP id w18-20020a63fb52000000b00419cb1e06e2mr20185224pgj.356.1658946521270;
+        Wed, 27 Jul 2022 11:28:41 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::5:5a55])
+        by smtp.gmail.com with ESMTPSA id l17-20020a170903245100b0016c454598b5sm1818636pls.167.2022.07.27.11.28.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jul 2022 11:28:40 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Wed, 27 Jul 2022 08:28:38 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Yu Kuai <yukuai1@huaweicloud.com>
+Cc:     mkoutny@suse.com, axboe@kernel.dk, ming.lei@redhat.com,
+        cgroups@vger.kernel.org, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, yukuai3@huawei.com,
+        yi.zhang@huawei.com
+Subject: Re: [PATCH RESEND v6 2/8] blk-throttle: prevent overflow while
+ calculating wait time
+Message-ID: <YuGD1s2TJ9euYpCv@slm.duckdns.org>
+References: <20220701093441.885741-1-yukuai1@huaweicloud.com>
+ <20220701093441.885741-3-yukuai1@huaweicloud.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220727175538.GC18822@redhat.com>
+In-Reply-To: <20220701093441.885741-3-yukuai1@huaweicloud.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 07:55:39PM +0200, Oleg Nesterov wrote:
-> On 07/27, Tycho Andersen wrote:
-> >
-> > Hi all,
-> >
-> > On Wed, Jul 20, 2022 at 08:54:59PM -0500, Serge E. Hallyn wrote:
-> > > Oh - I didn't either - checking the sigkill in shared signals *seems*
-> > > legit if they can be put there - but since you posted the new patch I
-> > > assumed his reasoning was clear to you.  I know Eric's busy, cc:ing Oleg
-> > > for his interpretation too.
-> >
-> > Any thoughts on this?
+On Fri, Jul 01, 2022 at 05:34:35PM +0800, Yu Kuai wrote:
+> From: Yu Kuai <yukuai3@huawei.com>
 > 
-> Cough... I don't know what can I say except I personally dislike this
-> patch no matter what ;)
+> In tg_with_in_bps_limit(), 'bps_limit * jiffy_elapsed_rnd' might
+> overflow. FIx the problem by calling mul_u64_u64_div_u64() instead.
 > 
-> And I do not understand how can this patch help. OK, a single-threaded
-> PF_EXITING task sleeps in TASK_KILLABLE. send_signal_locked() won't
-> wake it up anyway?
-> 
-> I must have missed something.
+> Signed-off-by: Yu Kuai <yukuai3@huawei.com>
 
-What do you think of the patch in
-https://lore.kernel.org/all/YsyHMVLuT5U6mm+I@netflix/ ? Hopefully that
-has an explanation that makes more sense.
+Acked-by: Tejun Heo <tj@kernel.org>
 
-Tycho
+BTW, have you observed this happening or is it from just reviewing the code?
+
+Thanks.
+
+-- 
+tejun
