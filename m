@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04178C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:25:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DEA2C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:26:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233851AbiG0RZz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:25:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55438 "EHLO
+        id S229909AbiG0R0B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:26:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242250AbiG0RYp (ORCPT
+        with ESMTP id S242324AbiG0RYy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:24:45 -0400
+        Wed, 27 Jul 2022 13:24:54 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20E957CB56;
-        Wed, 27 Jul 2022 09:46:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 420077D1DC;
+        Wed, 27 Jul 2022 09:46:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9C46AB821A6;
-        Wed, 27 Jul 2022 16:46:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDB01C433C1;
-        Wed, 27 Jul 2022 16:46:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C28BCB821BE;
+        Wed, 27 Jul 2022 16:46:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E63FC433C1;
+        Wed, 27 Jul 2022 16:46:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940380;
-        bh=5gHN7mv2FgbxJ3XV/9doGF8tQrvMiH029+WBDE84Jso=;
+        s=korg; t=1658940388;
+        bh=8wseduYSB04klnmbB3qO5dWg7kVn28vt/87y7JL97D4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dyQLvU76Ta1Uhk4phHA0dVUAAj7wberuJpxjEqC0+5wksjcUfQ2NZ3RaLLvDMUAw7
-         uBtn7U2j/6NKSy84qc3m2s766OXMlabVj69O8LwDKjpHXHljoEp8lZ3iyOtpR8IQAt
-         Apz8KA6y74WiIG2/YF7Wz77y/5Zpp+9Ywydkrxvg=
+        b=uCM6svHfXDhLOC4Pdi5YxlyIO09BwIK7ubU9Eu6O60yEOUsrvrE7w05hMzIZBd2J7
+         j4uyhHkA/sU8m3yyYSoWvfaCGgz2hzJX3y9eWUVl1Oihvcjow7ebMM+fBs23buw51r
+         lkmxoOM5vJ6fg8NHkE58hYQ532UEIrKXQUg2ljfA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
+        stable@vger.kernel.org, Tedd Ho-Jeong An <tedd.an@intel.com>,
         Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
         Marcel Holtmann <marcel@holtmann.org>,
         Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Subject: [PATCH 5.15 176/201] Bluetooth: SCO: Replace use of memcpy_from_msg with bt_skb_sendmsg
-Date:   Wed, 27 Jul 2022 18:11:20 +0200
-Message-Id: <20220727161035.093748254@linuxfoundation.org>
+Subject: [PATCH 5.15 179/201] Bluetooth: SCO: Fix sco_send_frame returning skb->len
+Date:   Wed, 27 Jul 2022 18:11:23 +0200
+Message-Id: <20220727161035.212051689@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -52,92 +52,53 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 
-commit 0771cbb3b97d3c1d68eecd7f00055f599954c34e upstream.
+commit 037ce005af6b8a3e40ee07c6e9266c8997e6a4d6 upstream.
 
-This makes use of bt_skb_sendmsg instead of allocating a different
-buffer to be used with memcpy_from_msg which cause one extra copy.
+The skb in modified by hci_send_sco which pushes SCO headers thus
+changing skb->len causing sco_sock_sendmsg to fail.
 
+Fixes: 0771cbb3b97d ("Bluetooth: SCO: Replace use of memcpy_from_msg with bt_skb_sendmsg")
+Tested-by: Tedd Ho-Jeong An <tedd.an@intel.com>
 Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Cc: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/bluetooth/sco.c |   34 +++++++++++-----------------------
- 1 file changed, 11 insertions(+), 23 deletions(-)
+ net/bluetooth/sco.c |   10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
 --- a/net/bluetooth/sco.c
 +++ b/net/bluetooth/sco.c
-@@ -280,27 +280,19 @@ static int sco_connect(struct hci_dev *h
- 	return err;
- }
- 
--static int sco_send_frame(struct sock *sk, void *buf, int len,
--			  unsigned int msg_flags)
-+static int sco_send_frame(struct sock *sk, struct sk_buff *skb)
+@@ -283,16 +283,17 @@ static int sco_connect(struct hci_dev *h
+ static int sco_send_frame(struct sock *sk, struct sk_buff *skb)
  {
  	struct sco_conn *conn = sco_pi(sk)->conn;
--	struct sk_buff *skb;
--	int err;
++	int len = skb->len;
  
  	/* Check outgoing MTU */
--	if (len > conn->mtu)
-+	if (skb->len > conn->mtu)
+-	if (skb->len > conn->mtu)
++	if (len > conn->mtu)
  		return -EINVAL;
  
--	BT_DBG("sk %p len %d", sk, len);
-+	BT_DBG("sk %p len %d", sk, skb->len);
+-	BT_DBG("sk %p len %d", sk, skb->len);
++	BT_DBG("sk %p len %d", sk, len);
  
--	skb = bt_skb_send_alloc(sk, len, msg_flags & MSG_DONTWAIT, &err);
--	if (!skb)
--		return err;
--
--	memcpy(skb_put(skb, len), buf, len);
  	hci_send_sco(conn->hcon, skb);
  
--	return len;
-+	return skb->len;
+-	return skb->len;
++	return len;
  }
  
  static void sco_recv_frame(struct sco_conn *conn, struct sk_buff *skb)
-@@ -727,7 +719,7 @@ static int sco_sock_sendmsg(struct socke
- 			    size_t len)
- {
- 	struct sock *sk = sock->sk;
--	void *buf;
-+	struct sk_buff *skb;
- 	int err;
- 
- 	BT_DBG("sock %p, sk %p", sock, sk);
-@@ -739,24 +731,20 @@ static int sco_sock_sendmsg(struct socke
- 	if (msg->msg_flags & MSG_OOB)
- 		return -EOPNOTSUPP;
- 
--	buf = kmalloc(len, GFP_KERNEL);
--	if (!buf)
--		return -ENOMEM;
--
--	if (memcpy_from_msg(buf, msg, len)) {
--		kfree(buf);
--		return -EFAULT;
--	}
-+	skb = bt_skb_sendmsg(sk, msg, len, len, 0, 0);
-+	if (IS_ERR_OR_NULL(skb))
-+		return PTR_ERR(skb);
- 
- 	lock_sock(sk);
- 
- 	if (sk->sk_state == BT_CONNECTED)
--		err = sco_send_frame(sk, buf, len, msg->msg_flags);
-+		err = sco_send_frame(sk, skb);
- 	else
+@@ -743,7 +744,8 @@ static int sco_sock_sendmsg(struct socke
  		err = -ENOTCONN;
  
  	release_sock(sk);
--	kfree(buf);
-+	if (err)
-+		kfree_skb(skb);
+-	if (err)
++
++	if (err < 0)
+ 		kfree_skb(skb);
  	return err;
  }
- 
 
 
