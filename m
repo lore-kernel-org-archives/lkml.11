@@ -2,102 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D0B6C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 13:13:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9573EC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 13:14:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233696AbiG0NNT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 09:13:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52034 "EHLO
+        id S231375AbiG0NOQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 09:14:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229565AbiG0NNR (ORCPT
+        with ESMTP id S229565AbiG0NOO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 09:13:17 -0400
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 089FC22BFC;
-        Wed, 27 Jul 2022 06:13:16 -0700 (PDT)
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26RACOnK013409;
-        Wed, 27 Jul 2022 09:12:46 -0400
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3hgdw6b1f9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 27 Jul 2022 09:12:46 -0400
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 26RDCj63061066
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 27 Jul 2022 09:12:45 -0400
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Wed, 27 Jul 2022 09:12:44 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Wed, 27 Jul 2022 09:12:44 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Wed, 27 Jul 2022 09:12:44 -0400
-Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 26RDCB50024189;
-        Wed, 27 Jul 2022 09:12:17 -0400
-From:   <alexandru.tachici@analog.com>
-To:     <andrew@lunn.ch>
-CC:     <alexandru.tachici@analog.com>, <d.michailidis@fungible.com>,
-        <davem@davemloft.net>, <devicetree@vger.kernel.org>,
-        <edumazet@google.com>, <geert+renesas@glider.be>,
-        <geert@linux-m68k.org>, <gerhard@engleder-embedded.com>,
-        <joel@jms.id.au>, <krzysztof.kozlowski+dt@linaro.org>,
-        <kuba@kernel.org>, <l.stelmach@samsung.com>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <robh+dt@kernel.org>, <stefan.wahren@i2se.com>,
-        <stephen@networkplumber.org>, <wellslutw@gmail.com>
-Subject: [net-next,v2,2/3] net: ethernet: adi: Add ADIN1110 support
-Date:   Wed, 27 Jul 2022 16:26:12 +0300
-Message-ID: <20220727132612.31445-1-alexandru.tachici@analog.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <Yt76W+MbeHucJj0f@lunn.ch>
-References: <Yt76W+MbeHucJj0f@lunn.ch>
+        Wed, 27 Jul 2022 09:14:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1506E2715B
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 06:14:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A4D07616E9
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 13:14:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABF86C433C1;
+        Wed, 27 Jul 2022 13:14:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658927653;
+        bh=UlOJehB2C1dNDPXUGdD1B54/kBcVsgQvnRt2OM153Xw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=d0DYo5D7jLWdFMIOGTd0DjsNocVglW009ELjLZ4/GHv44QeELumQ+XWY+yuDwCw8y
+         ERQ3yuNqnvbhzCfLAGyKFtr7sKH0rGeF6wnpN15kNuZgDAqfTVzJ/NySET9/p6+6Wc
+         b1SpkEw7h2BYJwIhSgfjBznpXAf4hPzMgtocQs/U=
+Date:   Wed, 27 Jul 2022 15:14:10 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Jiho Chu <jiho.chu@samsung.com>
+Cc:     arnd@arndb.de, linux-kernel@vger.kernel.org,
+        yelini.jeong@samsung.com, myungjoo.ham@samsung.com
+Subject: Re: [PATCH 3/9] trinity: Add load/unload IDU files
+Message-ID: <YuE6IrM/8slDjsdL@kroah.com>
+References: <20220725065308.2457024-1-jiho.chu@samsung.com>
+ <CGME20220725065309epcas1p20c847655e7332c818fc0fd2c50fb0e27@epcas1p2.samsung.com>
+ <20220725065308.2457024-4-jiho.chu@samsung.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: u0jf2sfaQPUe4lUCdPtLJvWVr9epQG22
-X-Proofpoint-ORIG-GUID: u0jf2sfaQPUe4lUCdPtLJvWVr9epQG22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-27_03,2022-07-27_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011
- priorityscore=1501 spamscore=0 malwarescore=0 suspectscore=0 bulkscore=0
- phishscore=0 lowpriorityscore=0 mlxlogscore=749 adultscore=0 mlxscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2207270054
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220725065308.2457024-4-jiho.chu@samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> > +static irqreturn_t adin1110_irq(int irq, void *p)
-> > +{
-> > +	struct adin1110_priv *priv = p;
-> > +	u32 status1;
-> > +	u32 val;
-> > +	int ret;
-> > +	int i;
-> > +
-> > +	mutex_lock(&priv->lock);
-> 
-> The MDIO bus operations are using the same lock. MDIO can be quite
-> slow. Do you really need mutual exclusion between MDIO and interrupts?
-> What exactly is this lock protecting?
-> 
->   Andrew
+On Mon, Jul 25, 2022 at 03:53:02PM +0900, Jiho Chu wrote:
+> +static int triv2_idu_load_file(struct trinity_driver *drv, const char *dirpath,
+> +			       const char *file_name,
+> +			       struct trinity_resv_mem *sector)
+> +{
+> +	struct device *dev = drv_to_dev_ptr(drv);
+> +	struct trinity_resv_mem mem;
+> +	char filepath[NAME_MAX];
+> +	struct kstat *stat;
+> +	struct file *filp;
+> +	loff_t pos = 0;
+> +	size_t size;
+> +	int ret;
+> +
+> +	dev = drv_to_dev_ptr(drv);
+> +	stat = vmalloc(sizeof(*stat));
+> +	if (stat == NULL)
+> +		return -ENOMEM;
+> +
+> +	/* if dirpath is null, use the default path */
+> +	if (dirpath)
+> +		snprintf(filepath, NAME_MAX, "%s/%s", dirpath, file_name);
+> +	else
+> +		snprintf(filepath, NAME_MAX, TRIV2_IDU_DIRPATH_FMT "/%s",
+> +			 utsname()->release, file_name);
+> +
+> +	filp = filp_open(filepath, O_RDONLY, 0400);
 
-Hi Andrew,
+That is cute.  And totally not ok.
 
-Thanks for all the help here.
+Please never do this, that is not how to properly load a firmware blob
+in the kernel.  This is racy and broken and probably a huge security
+hole.
 
-With this lock I am mainly protecting SPI read/writes. The hardware doesn't expose the MDIO pins.
-In order to read/write a PHY reg, there has to be a SPI read/write to the device, the same
-line where the MAC is programmed and ethernet frames are sent/received, not very efficient I know.
+Heck, I wrote an article about this very topic, way back in 2005, with
+the title of, "Things you should never do in the kernel" and can be seen
+here:
+	https://www.linuxjournal.com/article/8110
 
-Best regards,
-Alexandru
+This should not be news to anyone, again, never do this.
 
+thanks,
+
+greg k-h
