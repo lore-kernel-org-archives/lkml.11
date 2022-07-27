@@ -2,118 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A713C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 19:00:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 456E8C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 19:03:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233401AbiG0TAk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 15:00:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42398 "EHLO
+        id S233790AbiG0TDA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 15:03:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232849AbiG0TAP (ORCPT
+        with ESMTP id S229946AbiG0TCf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 15:00:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC11374DF5;
-        Wed, 27 Jul 2022 11:11:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5974D61988;
-        Wed, 27 Jul 2022 18:11:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AD6EC433C1;
-        Wed, 27 Jul 2022 18:11:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658945466;
-        bh=Mom6Ph0FsAAZ+C+h67Qnnz+WO0GGSqzSCicWOfVwSFc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=RuKOM3Ol94eIS35+inrZhT7DED0Yq1YgX9yUMQFL7diTl8EruJ3Xk+o8nrTVlyX7a
-         H7msQA5o2kYik/cqyALUfZN9FHx4wehSeGCpNxzqqHZp8RhzOnK1bowgIn8SYa4gfQ
-         3MNzOqVTdOJhOAJVxDb4SdE4zZ+1osqEyrQ7pI4Q=
-Date:   Wed, 27 Jul 2022 20:11:03 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Luis Chamberlain <mcgrof@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Xiaoming Ni <nixiaoming@huawei.com>,
-        Kees Cook <keescook@chromium.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Amir Goldstein <amir73il@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Benjamin LaHaise <bcrl@kvack.org>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Iurii Zaikin <yzaikin@google.com>, Jan Kara <jack@suse.cz>,
-        Paul Turner <pjt@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Petr Mladek <pmladek@suse.com>, Qing Wang <wangqing@vivo.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Stephen Kitt <steve@sk2.org>,
-        Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Antti Palosaari <crope@iki.fi>, Arnd Bergmann <arnd@arndb.de>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Clemens Ladisch <clemens@ladisch.de>,
-        David Airlie <airlied@linux.ie>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joel Becker <jlbec@evilplan.org>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Joseph Qi <joseph.qi@linux.alibaba.com>,
-        Julia Lawall <julia.lawall@inria.fr>,
-        Lukas Middendorf <kernel@tuxforce.de>,
-        Mark Fasheh <mark@fasheh.com>,
-        Phillip Potter <phil@philpotter.co.uk>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Douglas Gilbert <dgilbert@interlog.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        Jani Nikula <jani.nikula@intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Theodore Tso <tytso@mit.edu>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: Re: [PATCH 5.15 040/201] sysctl: move some boundary constants from
- sysctl.c to sysctl_vals
-Message-ID: <YuF/t6/DtsGPLQVc@kroah.com>
-References: <20220727161026.977588183@linuxfoundation.org>
- <20220727161028.534205480@linuxfoundation.org>
- <YuF2eU9SbDDHdqaU@bombadil.infradead.org>
+        Wed, 27 Jul 2022 15:02:35 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F0FB389C;
+        Wed, 27 Jul 2022 11:19:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1658945952;
+        bh=JCDCK9yrw3I1gJGNfUmVRzLTQwGLcyOig7ZAmiVFQGY=;
+        h=X-UI-Sender-Class:Date:From:To:Cc:Subject;
+        b=h+xi5NDw6BeRX97636tfWxlOuXdY1ciIgcgI+CIvMbuH1Ik345FCqoZXvQ76eWDZq
+         TnWGKk54JZqaJsYTKSamMPcInfU3Xp681A+S2VcyDpH1L4c8H1YX1VB5i67yO/8chw
+         ZDu7IEB7rk9cClLuji0Nnp+hSwA5Qiz1As++7Reg=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.100.20] ([46.142.34.120]) by mail.gmx.net (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1N7iCg-1nM6b41GqY-014gZe; Wed, 27
+ Jul 2022 20:19:12 +0200
+Message-ID: <ac440113-6054-a5b4-7a09-76b35fb910ab@gmx.de>
+Date:   Wed, 27 Jul 2022 20:19:11 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YuF2eU9SbDDHdqaU@bombadil.infradead.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+From:   Ronald Warsow <rwarsow@gmx.de>
+To:     linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org
+Content-Language: de-DE
+Subject: Re: [PATCH 5.18 000/158] 5.18.15-rc1 review
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Provags-ID: V03:K1:9j7VYiNGc1TSNXY/NRnL8mhlDGBGua5EM/whEq25ov0NbaFryK3
+ mz2s8VUePXiRgew+MNuMCkB+b+dDrTaEGORP8k1fSaR1nj2zV+oMSSA8H0awMxSGZ8rljMf
+ SHQHtHz2wPEPFScr+iJrnoZF9xnJoAT+LKqoqCam3iYh24alMIEdJuV5FMJdgaQ3hH81nfy
+ 9aSA+bm3Onv/qGy1hcq1Q==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:8DhFGsCZepQ=:IDr8A6vs3cZbTqJVsZtryc
+ tmqf4UV9UPZCIX6iK7ELPfR7hIkxym7L3ZBbt3FSSXotBuxn3NnTLF11H+hp5S4Ui+d/pHAnV
+ PlaICDc5JXyab7ge05nYsmBPXKIqB+KS4+ePHmJ+ktrGPLzVzaLZtfLsm+ivYFNTyo4aILgkZ
+ v+rypnAjDZRqs3zYauixQY8EAh1k/wwkQZGmMjTF2Of1o/vu3w851UF8SDusNslxnRyUS9xZb
+ C6CotH01FkdjR/QgWrmIoGa1/uWgWNE/dBXNFC+btDMO25+ty6bi1CUiTfn92/5A+0SBfIT9Y
+ lq1eatr7oTkuE6WHGDOx6xG3w717uwc3Jfzh0d4ziU7pPXnz6uWXhZ8GT7AQ29mGO3OHnJmft
+ RSMETkfZkbwRYDqexw3qKPRoaLkzuNLEXaV4x+kT33W79ga/XYH3aPxvm9rMxUto5DlP4erqN
+ yeuZHHiETMW2lavtmVq0vyaMpaA0WrVM3yrJG23lQQk9RJfmsVeTDjIiJ29tfHeJRwbOGBfx8
+ N3Q6tq5w5LyKWwaHr8tyzjcrT+y9AmU5Qknoqyu6+KFXqdDfueAOYl3WUSUzQX/+V7RbbxwtY
+ 3aYXBkS+T0l5Sj1AnXO3pnANS9Ssju/ttf2C3ZOUsUQLHq9CqPfDy42AdNhGV5GWInQaDrry3
+ iPTJGq7BH8Q/6kep525Bddb/7cz8bZCN1qkE68+uOI+sbJgsibTAR4S6kzePbjg42HoxMSqNA
+ hIZ1s2cUWaecKSbqw51LwiPD+29TGQBkzt2fvw60XLqCvEgXGEfc4CYXTnp2mMM6Tr23Z1xYN
+ /KCnes5tS/5eNKwUz5QIg6VY0j4CPCm1L2PAecM6S4BdGSje95rJ4Z3oJrjl8NoFW8lPDHvCX
+ CJMfofz1GktZnYvnMN5pOeyo0XxIZ/WiiZs9xufilnxWddj07MyLgEhO4zUf+9qaSZsvyNoyz
+ sNyHGHdvCJxIFm+x9NMFWOpzyC7nNw1BGLkKY8xAGehFsFqBwAqsi2JVGTjB7E/mkhCe6kcBj
+ FiIA7/UzZo79wVhg/TolHA2IcFENFxoU80vo118VSFadCxf51K0iHeMXb/99XRAu+KbwTZD1X
+ +LZOQTmQdc3DVHdi0F7lOo4wJhMy5MRVw7lv4o4xknUuxBPFie5SExEiA==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 10:31:37AM -0700, Luis Chamberlain wrote:
-> On Wed, Jul 27, 2022 at 06:09:04PM +0200, Greg Kroah-Hartman wrote:
-> > From: Xiaoming Ni <nixiaoming@huawei.com>
-> > 
-> > [ Upstream commit 78e36f3b0dae586f623c4a37ec5eb5496f5abbe1 ]
-> > 
-> > sysctl has helpers which let us specify boundary values for a min or max
-> > int value.  Since these are used for a boundary check only they don't
-> > change, so move these variables to sysctl_vals to avoid adding duplicate
-> > variables.  This will help with our cleanup of kernel/sysctl.c.
-> > 
-> > [akpm@linux-foundation.org: update it for "mm/pagealloc: sysctl: change watermark_scale_factor max limit to 30%"]
-> > [mcgrof@kernel.org: major rebase]
-> > 
-> > Link: https://lkml.kernel.org/r/20211123202347.818157-3-mcgrof@kernel.org
-> > Signed-off-by: Xiaoming Ni <nixiaoming@huawei.com>
-> > Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
-> > Reviewed-by: Kees Cook <keescook@chromium.org>
-> > Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-> > Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-> > Signed-off-by: Sasha Levin <sashal@kernel.org>
-> 
-> I'm a bit puzzled. How / why is this a stable fix?
+hallo Greg
 
-I think it's needed by a patch later in the series.  Sasha, can you
-verify?
+5.18.15-rc1
 
-thanks,
+compiles, boots and runs here on x86_64
+(Intel i5-11400, Fedora 36)
 
-greg k-h
+Thanks
+
+Tested-by: Ronald Warsow <rwarsow@gmx.de>
