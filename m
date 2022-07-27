@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AB0EC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:26:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CA3DC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:26:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237871AbiG0R0o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:26:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51784 "EHLO
+        id S242101AbiG0R05 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:26:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242077AbiG0RZu (ORCPT
+        with ESMTP id S242103AbiG0R0C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:25:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B8727D7B3;
-        Wed, 27 Jul 2022 09:46:43 -0700 (PDT)
+        Wed, 27 Jul 2022 13:26:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E42F7E005;
+        Wed, 27 Jul 2022 09:46:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0FF5B60DDB;
-        Wed, 27 Jul 2022 16:46:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C0DDC433D6;
-        Wed, 27 Jul 2022 16:46:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 55981B821AC;
+        Wed, 27 Jul 2022 16:46:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7BF6C433D7;
+        Wed, 27 Jul 2022 16:46:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940402;
-        bh=bBnTDkDz7hQo4y2s7JN6+Uc7JMmsoDTjkSc05ifzYHs=;
+        s=korg; t=1658940383;
+        bh=n3F8lmh2d1J+/JTqlyh1/WfUM4sggvcBvuWMKYpAjF4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ye89JMGW7HMtNdMPjyC7EUBWPBt41jUDbFaBwGFvW+ScZzUrjmmt1QbtWCnBDjjM/
-         p5BhtrfDxakSO5FGswxmh5iD3XWLhyFIcDg+lh1Zz8KAcHCc53mxtZWh4628FY8aBv
-         aljKRivY2pKFE9caOpPkWyMRyg9gAdlq/4TTna6U=
+        b=UpYh/XntK0vuPGRHWVwfaSMpiuvXRrRTKnLey0aUyrHAIIXDIXBBB+vnSnB/J9mKM
+         0YzOXsIxlL3hMCxK0Jiw5k8hb3v/G6h47+MQywh+aCsA9pj0XGm14c6YSkLrE7iv0F
+         bz/VtejntZjRJdlYp2lxwZO3DnqWQ2ixoLWjJrLg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jose Alonso <joalonsof@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.18 011/158] net: usb: ax88179_178a needs FLAG_SEND_ZLP
-Date:   Wed, 27 Jul 2022 18:11:15 +0200
-Message-Id: <20220727161021.894847844@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Subject: [PATCH 5.15 177/201] Bluetooth: RFCOMM: Replace use of memcpy_from_msg with bt_skb_sendmmsg
+Date:   Wed, 27 Jul 2022 18:11:21 +0200
+Message-Id: <20220727161035.125034455@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
-References: <20220727161021.428340041@linuxfoundation.org>
+In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
+References: <20220727161026.977588183@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,166 +50,154 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jose Alonso <joalonsof@gmail.com>
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 
-commit 36a15e1cb134c0395261ba1940762703f778438c upstream.
+commit 81be03e026dc0c16dc1c64e088b2a53b73caa895 upstream.
 
-The extra byte inserted by usbnet.c when
- (length % dev->maxpacket == 0) is causing problems to device.
+This makes use of bt_skb_sendmmsg instead using memcpy_from_msg which
+is not considered safe to be used when lock_sock is held.
 
-This patch sets FLAG_SEND_ZLP to avoid this.
+Also make rfcomm_dlc_send handle skb with fragments and queue them all
+atomically.
 
-Tested with: 0b95:1790 ASIX Electronics Corp. AX88179 Gigabit Ethernet
-
-Problems observed:
-======================================================================
-1) Using ssh/sshfs. The remote sshd daemon can abort with the message:
-   "message authentication code incorrect"
-   This happens because the tcp message sent is corrupted during the
-   USB "Bulk out". The device calculate the tcp checksum and send a
-   valid tcp message to the remote sshd. Then the encryption detects
-   the error and aborts.
-2) NETDEV WATCHDOG: ... (ax88179_178a): transmit queue 0 timed out
-3) Stop normal work without any log message.
-   The "Bulk in" continue receiving packets normally.
-   The host sends "Bulk out" and the device responds with -ECONNRESET.
-   (The netusb.c code tx_complete ignore -ECONNRESET)
-Under normal conditions these errors take days to happen and in
-intense usage take hours.
-
-A test with ping gives packet loss, showing that something is wrong:
-ping -4 -s 462 {destination}	# 462 = 512 - 42 - 8
-Not all packets fail.
-My guess is that the device tries to find another packet starting
-at the extra byte and will fail or not depending on the next
-bytes (old buffer content).
-======================================================================
-
-Signed-off-by: Jose Alonso <joalonsof@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Cc: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/usb/ax88179_178a.c |   26 +++++++++++++-------------
- 1 file changed, 13 insertions(+), 13 deletions(-)
+ net/bluetooth/rfcomm/core.c |   50 +++++++++++++++++++++++++++++++++++++-------
+ net/bluetooth/rfcomm/sock.c |   50 ++++++++++----------------------------------
+ 2 files changed, 55 insertions(+), 45 deletions(-)
 
---- a/drivers/net/usb/ax88179_178a.c
-+++ b/drivers/net/usb/ax88179_178a.c
-@@ -1801,7 +1801,7 @@ static const struct driver_info ax88179_
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1814,7 +1814,7 @@ static const struct driver_info ax88178a
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1827,7 +1827,7 @@ static const struct driver_info cypress_
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1840,7 +1840,7 @@ static const struct driver_info dlink_du
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1853,7 +1853,7 @@ static const struct driver_info sitecom_
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1866,7 +1866,7 @@ static const struct driver_info samsung_
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1879,7 +1879,7 @@ static const struct driver_info lenovo_i
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1892,7 +1892,7 @@ static const struct driver_info belkin_i
- 	.link_reset = ax88179_link_reset,
- 	.reset	= ax88179_reset,
- 	.stop	= ax88179_stop,
--	.flags	= FLAG_ETHER | FLAG_FRAMING_AX,
-+	.flags	= FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1905,7 +1905,7 @@ static const struct driver_info toshiba_
- 	.link_reset = ax88179_link_reset,
- 	.reset	= ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags	= FLAG_ETHER | FLAG_FRAMING_AX,
-+	.flags	= FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1918,7 +1918,7 @@ static const struct driver_info mct_info
- 	.link_reset = ax88179_link_reset,
- 	.reset	= ax88179_reset,
- 	.stop	= ax88179_stop,
--	.flags	= FLAG_ETHER | FLAG_FRAMING_AX,
-+	.flags	= FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1931,7 +1931,7 @@ static const struct driver_info at_umc20
- 	.link_reset = ax88179_link_reset,
- 	.reset  = ax88179_reset,
- 	.stop   = ax88179_stop,
--	.flags  = FLAG_ETHER | FLAG_FRAMING_AX,
-+	.flags  = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1944,7 +1944,7 @@ static const struct driver_info at_umc20
- 	.link_reset = ax88179_link_reset,
- 	.reset  = ax88179_reset,
- 	.stop   = ax88179_stop,
--	.flags  = FLAG_ETHER | FLAG_FRAMING_AX,
-+	.flags  = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1957,7 +1957,7 @@ static const struct driver_info at_umc20
- 	.link_reset = ax88179_link_reset,
- 	.reset  = ax88179_reset,
- 	.stop   = ax88179_stop,
--	.flags  = FLAG_ETHER | FLAG_FRAMING_AX,
-+	.flags  = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
+--- a/net/bluetooth/rfcomm/core.c
++++ b/net/bluetooth/rfcomm/core.c
+@@ -549,22 +549,58 @@ struct rfcomm_dlc *rfcomm_dlc_exists(bda
+ 	return dlc;
+ }
+ 
++static int rfcomm_dlc_send_frag(struct rfcomm_dlc *d, struct sk_buff *frag)
++{
++	int len = frag->len;
++
++	BT_DBG("dlc %p mtu %d len %d", d, d->mtu, len);
++
++	if (len > d->mtu)
++		return -EINVAL;
++
++	rfcomm_make_uih(frag, d->addr);
++	__skb_queue_tail(&d->tx_queue, frag);
++
++	return len;
++}
++
+ int rfcomm_dlc_send(struct rfcomm_dlc *d, struct sk_buff *skb)
+ {
+-	int len = skb->len;
++	unsigned long flags;
++	struct sk_buff *frag, *next;
++	int len;
+ 
+ 	if (d->state != BT_CONNECTED)
+ 		return -ENOTCONN;
+ 
+-	BT_DBG("dlc %p mtu %d len %d", d, d->mtu, len);
++	frag = skb_shinfo(skb)->frag_list;
++	skb_shinfo(skb)->frag_list = NULL;
+ 
+-	if (len > d->mtu)
+-		return -EINVAL;
++	/* Queue all fragments atomically. */
++	spin_lock_irqsave(&d->tx_queue.lock, flags);
++
++	len = rfcomm_dlc_send_frag(d, skb);
++	if (len < 0 || !frag)
++		goto unlock;
++
++	for (; frag; frag = next) {
++		int ret;
++
++		next = frag->next;
++
++		ret = rfcomm_dlc_send_frag(d, frag);
++		if (ret < 0) {
++			kfree_skb(frag);
++			goto unlock;
++		}
++
++		len += ret;
++	}
+ 
+-	rfcomm_make_uih(skb, d->addr);
+-	skb_queue_tail(&d->tx_queue, skb);
++unlock:
++	spin_unlock_irqrestore(&d->tx_queue.lock, flags);
+ 
+-	if (!test_bit(RFCOMM_TX_THROTTLED, &d->flags))
++	if (len > 0 && !test_bit(RFCOMM_TX_THROTTLED, &d->flags))
+ 		rfcomm_schedule();
+ 	return len;
+ }
+--- a/net/bluetooth/rfcomm/sock.c
++++ b/net/bluetooth/rfcomm/sock.c
+@@ -575,47 +575,21 @@ static int rfcomm_sock_sendmsg(struct so
+ 	lock_sock(sk);
+ 
+ 	sent = bt_sock_wait_ready(sk, msg->msg_flags);
+-	if (sent)
+-		goto done;
+-
+-	while (len) {
+-		size_t size = min_t(size_t, len, d->mtu);
+-		int err;
+-
+-		skb = sock_alloc_send_skb(sk, size + RFCOMM_SKB_RESERVE,
+-				msg->msg_flags & MSG_DONTWAIT, &err);
+-		if (!skb) {
+-			if (sent == 0)
+-				sent = err;
+-			break;
+-		}
+-		skb_reserve(skb, RFCOMM_SKB_HEAD_RESERVE);
+-
+-		err = memcpy_from_msg(skb_put(skb, size), msg, size);
+-		if (err) {
+-			kfree_skb(skb);
+-			if (sent == 0)
+-				sent = err;
+-			break;
+-		}
+-
+-		skb->priority = sk->sk_priority;
+-
+-		err = rfcomm_dlc_send(d, skb);
+-		if (err < 0) {
+-			kfree_skb(skb);
+-			if (sent == 0)
+-				sent = err;
+-			break;
+-		}
+-
+-		sent += size;
+-		len  -= size;
+-	}
+ 
+-done:
+ 	release_sock(sk);
+ 
++	if (sent)
++		return sent;
++
++	skb = bt_skb_sendmmsg(sk, msg, len, d->mtu, RFCOMM_SKB_HEAD_RESERVE,
++			      RFCOMM_SKB_TAIL_RESERVE);
++	if (IS_ERR_OR_NULL(skb))
++		return PTR_ERR(skb);
++
++	sent = rfcomm_dlc_send(d, skb);
++	if (sent < 0)
++		kfree_skb(skb);
++
+ 	return sent;
+ }
+ 
 
 
