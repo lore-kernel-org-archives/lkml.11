@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7422BC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:37:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2744FC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:37:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238365AbiG0Qh2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:37:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46382 "EHLO
+        id S239008AbiG0Qhd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:37:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238381AbiG0Qfm (ORCPT
+        with ESMTP id S238568AbiG0Qfz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:35:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42E404F67E;
-        Wed, 27 Jul 2022 09:27:55 -0700 (PDT)
+        Wed, 27 Jul 2022 12:35:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C98184F650;
+        Wed, 27 Jul 2022 09:28:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 98A3FB821B8;
-        Wed, 27 Jul 2022 16:27:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F400EC433C1;
-        Wed, 27 Jul 2022 16:27:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 93F3B619D6;
+        Wed, 27 Jul 2022 16:28:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B635C433C1;
+        Wed, 27 Jul 2022 16:27:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939274;
-        bh=ovd6V4NmZ+Qv5MuBP6kCDQrWTrx06853QQqr7hUwoBw=;
+        s=korg; t=1658939280;
+        bh=siGqG7l3TpcM86MFdFURrDC/jDAk8NLgYG+Xpw4GclI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XILHpY9w2unSD3+XAkJ3++ErUDm7Znxt4/xtxCSr960ap1Av6ZZJDJSr/kVTT6T1b
-         0OJTX29ItEl7dC7C597iFcnvaLB4AOnDJC8cK8Vm+aShKTJi0rv/zlS+5ogsan5qNP
-         LHw8JFF6+d9AvMhMepLuA9YuD7YTeHFZnaq9rVGU=
+        b=bqMWhJfSoPc4X7EkrPg8rvq8F3fyWLWzsJFvyWPRLix4FC5rQ3uayi9uD1YigDnF5
+         DXk11DQ/QSlIUiY9ETmFUdN2idHuK9NtTmnx+b/JxUTYOKqnCRzN6WmTngPH1izdOf
+         hdGK7vCQ+udwMJXo1kUqq9iiUmpKLn8MPswIH6JY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ido Schimmel <idosch@nvidia.com>,
-        Amit Cohen <amcohen@nvidia.com>,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        David Ahern <dsahern@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.4 03/87] mlxsw: spectrum_router: Fix IPv4 nexthop gateway indication
-Date:   Wed, 27 Jul 2022 18:09:56 +0200
-Message-Id: <20220727161009.141332848@linuxfoundation.org>
+        stable@vger.kernel.org, Juergen Gross <jgross@suse.com>,
+        Demi Marie Obenour <demi@invisiblethingslab.com>,
+        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+Subject: [PATCH 5.4 05/87] xen/gntdev: Ignore failure to unmap INVALID_GRANT_HANDLE
+Date:   Wed, 27 Jul 2022 18:09:58 +0200
+Message-Id: <20220727161009.223111489@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161008.993711844@linuxfoundation.org>
 References: <20220727161008.993711844@linuxfoundation.org>
@@ -51,44 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ido Schimmel <idosch@nvidia.com>
+From: Demi Marie Obenour <demi@invisiblethingslab.com>
 
-commit e5ec6a2513383fe2ecc2ee3b5f51d97acbbcd4d8 upstream.
+commit 166d3863231667c4f64dee72b77d1102cdfad11f upstream.
 
-mlxsw needs to distinguish nexthops with a gateway from connected
-nexthops in order to write the former to the adjacency table of the
-device. The check used to rely on the fact that nexthops with a gateway
-have a 'link' scope whereas connected nexthops have a 'host' scope. This
-is no longer correct after commit 747c14307214 ("ip: fix dflt addr
-selection for connected nexthop").
+The error paths of gntdev_mmap() can call unmap_grant_pages() even
+though not all of the pages have been successfully mapped.  This will
+trigger the WARN_ON()s in __unmap_grant_pages_done().  The number of
+warnings can be very large; I have observed thousands of lines of
+warnings in the systemd journal.
 
-Fix that by instead checking the address family of the gateway IP. This
-is a more direct way and also consistent with the IPv6 counterpart in
-mlxsw_sp_rt6_is_gateway().
+Avoid this problem by only warning on unmapping failure if the handle
+being unmapped is not INVALID_GRANT_HANDLE.  The handle field of any
+page that was not successfully mapped will be INVALID_GRANT_HANDLE, so
+this catches all cases where unmapping can legitimately fail.
 
+Fixes: dbe97cff7dd9 ("xen/gntdev: Avoid blocking in unmap_grant_pages()")
 Cc: stable@vger.kernel.org
-Fixes: 747c14307214 ("ip: fix dflt addr selection for connected nexthop")
-Fixes: 597cfe4fc339 ("nexthop: Add support for IPv4 nexthops")
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Reviewed-by: Amit Cohen <amcohen@nvidia.com>
-Reviewed-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Suggested-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Demi Marie Obenour <demi@invisiblethingslab.com>
+Reviewed-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+Reviewed-by: Juergen Gross <jgross@suse.com>
+Link: https://lore.kernel.org/r/20220710230522.1563-1-demi@invisiblethingslab.com
+Signed-off-by: Juergen Gross <jgross@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/xen/gntdev.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-@@ -3871,7 +3871,7 @@ static bool mlxsw_sp_fi_is_gateway(const
- {
- 	const struct fib_nh *nh = fib_info_nh(fi, 0);
+--- a/drivers/xen/gntdev.c
++++ b/drivers/xen/gntdev.c
+@@ -413,7 +413,8 @@ static void __unmap_grant_pages_done(int
+ 	unsigned int offset = data->unmap_ops - map->unmap_ops;
  
--	return nh->fib_nh_scope == RT_SCOPE_LINK ||
-+	return nh->fib_nh_gw_family ||
- 	       mlxsw_sp_nexthop4_ipip_type(mlxsw_sp, nh, NULL);
- }
- 
+ 	for (i = 0; i < data->count; i++) {
+-		WARN_ON(map->unmap_ops[offset+i].status);
++		WARN_ON(map->unmap_ops[offset+i].status &&
++			map->unmap_ops[offset+i].handle != -1);
+ 		pr_debug("unmap handle=%d st=%d\n",
+ 			map->unmap_ops[offset+i].handle,
+ 			map->unmap_ops[offset+i].status);
 
 
