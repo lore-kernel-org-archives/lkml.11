@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB340C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:15:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D77FC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:15:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240269AbiG0RPJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:15:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48608 "EHLO
+        id S241499AbiG0RPP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:15:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239962AbiG0ROD (ORCPT
+        with ESMTP id S241629AbiG0ROH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:14:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 257215B782;
-        Wed, 27 Jul 2022 09:42:26 -0700 (PDT)
+        Wed, 27 Jul 2022 13:14:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30EF076E9E;
+        Wed, 27 Jul 2022 09:42:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B9A70600BE;
-        Wed, 27 Jul 2022 16:37:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A0BDC433D7;
-        Wed, 27 Jul 2022 16:37:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A8F6461494;
+        Wed, 27 Jul 2022 16:42:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5F3CC433D6;
+        Wed, 27 Jul 2022 16:42:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939842;
-        bh=/gnLGNBCQtU5nsVMtZ2c0IAQvO/MXOZbfG3A4EoszBI=;
+        s=korg; t=1658940144;
+        bh=rgp9Sjl5vf3cDHOahT05ecTSCc7mB1HYzcffHKemhxw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K/PQMy43CaO+vyVuzRIrVUmQWcASz8La4k4XFO4fxztGWSvdkw/p67RThx6klvxV2
-         dwfVZTYVNIth9WODzlDEj1uXxLmoxPhFFTvLh3alw7ev3OkqtyHG57Cd9SsREZrv4n
-         Jpk8HU/EA9VwNuxLGq2WQFOSKlaA2AlOTg/fc+fI=
+        b=yzmYc0wr0u6QolNnAtfdfTZsgeLlg6x58m2C/4mIsFThErUo0STBiTzNXExptPLty
+         Am8njM1SL6FtcTh8obJxxA8kNt1oiopz03bvAW8YlDz61o4rGm0rYwgYNRe4tBKPKR
+         H5K4ljMZi9eBzU5dxiEIuEIINkbTuPppMZ+CkRuk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Deren Wu <deren.wu@mediatek.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Felix Fietkau <nbd@nbd.name>
-Subject: [PATCH 5.15 018/201] mt76: mt7921: use physical addr to unify register access
-Date:   Wed, 27 Jul 2022 18:08:42 +0200
-Message-Id: <20220727161027.663437430@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 121/201] tcp: Fix data-races around sysctl knobs related to SYN option.
+Date:   Wed, 27 Jul 2022 18:10:25 +0200
+Message-Id: <20220727161032.775961702@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -50,178 +49,180 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Wang <sean.wang@mediatek.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit f1e2eef111018a4f0d280656be4351c37e9e554b upstream.
+[ Upstream commit 3666f666e99600518ab20982af04a078bbdad277 ]
 
-Use physical address to unify the register access and reorder the
-entries in fixed_map table to accelerate the address lookup for
-MT7921e. Cosmetics the patch with adding an extra space to make all
-entries in the array style consistent.
+While reading these knobs, they can be changed concurrently.
+Thus, we need to add READ_ONCE() to their readers.
 
-Tested-by: Deren Wu <deren.wu@mediatek.com>
-Acked-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Signed-off-by: Sean Wang <sean.wang@mediatek.com>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+  - tcp_sack
+  - tcp_window_scaling
+  - tcp_timestamps
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7921/dma.c  |   27 +++++++++++------------
- drivers/net/wireless/mediatek/mt76/mt7921/regs.h |   22 +++++++++---------
- 2 files changed, 25 insertions(+), 24 deletions(-)
+ .../ethernet/chelsio/inline_crypto/chtls/chtls_cm.c    |  6 +++---
+ net/core/secure_seq.c                                  |  4 ++--
+ net/ipv4/syncookies.c                                  |  6 +++---
+ net/ipv4/tcp_input.c                                   |  6 +++---
+ net/ipv4/tcp_output.c                                  | 10 +++++-----
+ 5 files changed, 16 insertions(+), 16 deletions(-)
 
---- a/drivers/net/wireless/mediatek/mt76/mt7921/dma.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/dma.c
-@@ -125,36 +125,37 @@ static u32 __mt7921_reg_addr(struct mt79
- 		u32 mapped;
- 		u32 size;
- 	} fixed_map[] = {
--		{ 0x00400000, 0x80000, 0x10000}, /* WF_MCU_SYSRAM */
--		{ 0x00410000, 0x90000, 0x10000}, /* WF_MCU_SYSRAM (configure register) */
--		{ 0x40000000, 0x70000, 0x10000}, /* WF_UMAC_SYSRAM */
-+		{ 0x820d0000, 0x30000, 0x10000 }, /* WF_LMAC_TOP (WF_WTBLON) */
-+		{ 0x820ed000, 0x24800, 0x0800 }, /* WF_LMAC_TOP BN0 (WF_MIB) */
-+		{ 0x820e4000, 0x21000, 0x0400 }, /* WF_LMAC_TOP BN0 (WF_TMAC) */
-+		{ 0x820e7000, 0x21e00, 0x0200 }, /* WF_LMAC_TOP BN0 (WF_DMA) */
-+		{ 0x820eb000, 0x24200, 0x0400 }, /* WF_LMAC_TOP BN0 (WF_LPON) */
-+		{ 0x820e2000, 0x20800, 0x0400 }, /* WF_LMAC_TOP BN0 (WF_AGG) */
-+		{ 0x820e3000, 0x20c00, 0x0400 }, /* WF_LMAC_TOP BN0 (WF_ARB) */
-+		{ 0x820e5000, 0x21400, 0x0800 }, /* WF_LMAC_TOP BN0 (WF_RMAC) */
-+		{ 0x00400000, 0x80000, 0x10000 }, /* WF_MCU_SYSRAM */
-+		{ 0x00410000, 0x90000, 0x10000 }, /* WF_MCU_SYSRAM (configure register) */
-+		{ 0x40000000, 0x70000, 0x10000 }, /* WF_UMAC_SYSRAM */
- 		{ 0x54000000, 0x02000, 0x1000 }, /* WFDMA PCIE0 MCU DMA0 */
- 		{ 0x55000000, 0x03000, 0x1000 }, /* WFDMA PCIE0 MCU DMA1 */
- 		{ 0x58000000, 0x06000, 0x1000 }, /* WFDMA PCIE1 MCU DMA0 (MEM_DMA) */
- 		{ 0x59000000, 0x07000, 0x1000 }, /* WFDMA PCIE1 MCU DMA1 */
- 		{ 0x7c000000, 0xf0000, 0x10000 }, /* CONN_INFRA */
- 		{ 0x7c020000, 0xd0000, 0x10000 }, /* CONN_INFRA, WFDMA */
--		{ 0x7c060000, 0xe0000, 0x10000}, /* CONN_INFRA, conn_host_csr_top */
-+		{ 0x7c060000, 0xe0000, 0x10000 }, /* CONN_INFRA, conn_host_csr_top */
- 		{ 0x80020000, 0xb0000, 0x10000 }, /* WF_TOP_MISC_OFF */
- 		{ 0x81020000, 0xc0000, 0x10000 }, /* WF_TOP_MISC_ON */
- 		{ 0x820c0000, 0x08000, 0x4000 }, /* WF_UMAC_TOP (PLE) */
- 		{ 0x820c8000, 0x0c000, 0x2000 }, /* WF_UMAC_TOP (PSE) */
--		{ 0x820cc000, 0x0e000, 0x2000 }, /* WF_UMAC_TOP (PP) */
-+		{ 0x820cc000, 0x0e000, 0x1000 }, /* WF_UMAC_TOP (PP) */
-+		{ 0x820cd000, 0x0f000, 0x1000 }, /* WF_MDP_TOP */
- 		{ 0x820ce000, 0x21c00, 0x0200 }, /* WF_LMAC_TOP (WF_SEC) */
- 		{ 0x820cf000, 0x22000, 0x1000 }, /* WF_LMAC_TOP (WF_PF) */
--		{ 0x820d0000, 0x30000, 0x10000 }, /* WF_LMAC_TOP (WF_WTBLON) */
- 		{ 0x820e0000, 0x20000, 0x0400 }, /* WF_LMAC_TOP BN0 (WF_CFG) */
- 		{ 0x820e1000, 0x20400, 0x0200 }, /* WF_LMAC_TOP BN0 (WF_TRB) */
--		{ 0x820e2000, 0x20800, 0x0400 }, /* WF_LMAC_TOP BN0 (WF_AGG) */
--		{ 0x820e3000, 0x20c00, 0x0400 }, /* WF_LMAC_TOP BN0 (WF_ARB) */
--		{ 0x820e4000, 0x21000, 0x0400 }, /* WF_LMAC_TOP BN0 (WF_TMAC) */
--		{ 0x820e5000, 0x21400, 0x0800 }, /* WF_LMAC_TOP BN0 (WF_RMAC) */
--		{ 0x820e7000, 0x21e00, 0x0200 }, /* WF_LMAC_TOP BN0 (WF_DMA) */
- 		{ 0x820e9000, 0x23400, 0x0200 }, /* WF_LMAC_TOP BN0 (WF_WTBLOFF) */
- 		{ 0x820ea000, 0x24000, 0x0200 }, /* WF_LMAC_TOP BN0 (WF_ETBF) */
--		{ 0x820eb000, 0x24200, 0x0400 }, /* WF_LMAC_TOP BN0 (WF_LPON) */
- 		{ 0x820ec000, 0x24600, 0x0200 }, /* WF_LMAC_TOP BN0 (WF_INT) */
--		{ 0x820ed000, 0x24800, 0x0800 }, /* WF_LMAC_TOP BN0 (WF_MIB) */
- 		{ 0x820f0000, 0xa0000, 0x0400 }, /* WF_LMAC_TOP BN1 (WF_CFG) */
- 		{ 0x820f1000, 0xa0600, 0x0200 }, /* WF_LMAC_TOP BN1 (WF_TRB) */
- 		{ 0x820f2000, 0xa0800, 0x0400 }, /* WF_LMAC_TOP BN1 (WF_AGG) */
---- a/drivers/net/wireless/mediatek/mt76/mt7921/regs.h
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/regs.h
-@@ -14,7 +14,7 @@
- #define MT_MCU_INT_EVENT_SER_TRIGGER	BIT(2)
- #define MT_MCU_INT_EVENT_RESET_DONE	BIT(3)
+diff --git a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
+index 7c760aa65540..ddfe9208529a 100644
+--- a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
++++ b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
+@@ -1236,8 +1236,8 @@ static struct sock *chtls_recv_sock(struct sock *lsk,
+ 	csk->sndbuf = newsk->sk_sndbuf;
+ 	csk->smac_idx = ((struct port_info *)netdev_priv(ndev))->smt_idx;
+ 	RCV_WSCALE(tp) = select_rcv_wscale(tcp_full_space(newsk),
+-					   sock_net(newsk)->
+-						ipv4.sysctl_tcp_window_scaling,
++					   READ_ONCE(sock_net(newsk)->
++						     ipv4.sysctl_tcp_window_scaling),
+ 					   tp->window_clamp);
+ 	neigh_release(n);
+ 	inet_inherit_port(&tcp_hashinfo, lsk, newsk);
+@@ -1384,7 +1384,7 @@ static void chtls_pass_accept_request(struct sock *sk,
+ #endif
+ 	}
+ 	if (req->tcpopt.wsf <= 14 &&
+-	    sock_net(sk)->ipv4.sysctl_tcp_window_scaling) {
++	    READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_window_scaling)) {
+ 		inet_rsk(oreq)->wscale_ok = 1;
+ 		inet_rsk(oreq)->snd_wscale = req->tcpopt.wsf;
+ 	}
+diff --git a/net/core/secure_seq.c b/net/core/secure_seq.c
+index 7131cd1fb2ad..189eea1372d5 100644
+--- a/net/core/secure_seq.c
++++ b/net/core/secure_seq.c
+@@ -64,7 +64,7 @@ u32 secure_tcpv6_ts_off(const struct net *net,
+ 		.daddr = *(struct in6_addr *)daddr,
+ 	};
  
--#define MT_PLE_BASE			0x8000
-+#define MT_PLE_BASE			0x820c0000
- #define MT_PLE(ofs)			(MT_PLE_BASE + (ofs))
+-	if (net->ipv4.sysctl_tcp_timestamps != 1)
++	if (READ_ONCE(net->ipv4.sysctl_tcp_timestamps) != 1)
+ 		return 0;
  
- #define MT_PLE_FL_Q0_CTRL		MT_PLE(0x3e0)
-@@ -25,7 +25,7 @@
- #define MT_PLE_AC_QEMPTY(_n)		MT_PLE(0x500 + 0x40 * (_n))
- #define MT_PLE_AMSDU_PACK_MSDU_CNT(n)	MT_PLE(0x10e0 + ((n) << 2))
+ 	ts_secret_init();
+@@ -120,7 +120,7 @@ EXPORT_SYMBOL(secure_ipv6_port_ephemeral);
+ #ifdef CONFIG_INET
+ u32 secure_tcp_ts_off(const struct net *net, __be32 saddr, __be32 daddr)
+ {
+-	if (net->ipv4.sysctl_tcp_timestamps != 1)
++	if (READ_ONCE(net->ipv4.sysctl_tcp_timestamps) != 1)
+ 		return 0;
  
--#define MT_MDP_BASE			0xf000
-+#define MT_MDP_BASE			0x820cd000
- #define MT_MDP(ofs)			(MT_MDP_BASE + (ofs))
+ 	ts_secret_init();
+diff --git a/net/ipv4/syncookies.c b/net/ipv4/syncookies.c
+index 8eee771d2aca..940839264025 100644
+--- a/net/ipv4/syncookies.c
++++ b/net/ipv4/syncookies.c
+@@ -249,12 +249,12 @@ bool cookie_timestamp_decode(const struct net *net,
+ 		return true;
+ 	}
  
- #define MT_MDP_DCR0			MT_MDP(0x000)
-@@ -48,7 +48,7 @@
- #define MT_MDP_TO_WM			1
+-	if (!net->ipv4.sysctl_tcp_timestamps)
++	if (!READ_ONCE(net->ipv4.sysctl_tcp_timestamps))
+ 		return false;
  
- /* TMAC: band 0(0x21000), band 1(0xa1000) */
--#define MT_WF_TMAC_BASE(_band)		((_band) ? 0xa1000 : 0x21000)
-+#define MT_WF_TMAC_BASE(_band)		((_band) ? 0x820f4000 : 0x820e4000)
- #define MT_WF_TMAC(_band, ofs)		(MT_WF_TMAC_BASE(_band) + (ofs))
+ 	tcp_opt->sack_ok = (options & TS_OPT_SACK) ? TCP_SACK_SEEN : 0;
  
- #define MT_TMAC_TCR0(_band)		MT_WF_TMAC(_band, 0)
-@@ -73,7 +73,7 @@
- #define MT_TMAC_TRCR0(_band)		MT_WF_TMAC(_band, 0x09c)
- #define MT_TMAC_TFCR0(_band)		MT_WF_TMAC(_band, 0x1e0)
+-	if (tcp_opt->sack_ok && !net->ipv4.sysctl_tcp_sack)
++	if (tcp_opt->sack_ok && !READ_ONCE(net->ipv4.sysctl_tcp_sack))
+ 		return false;
  
--#define MT_WF_DMA_BASE(_band)		((_band) ? 0xa1e00 : 0x21e00)
-+#define MT_WF_DMA_BASE(_band)		((_band) ? 0x820f7000 : 0x820e7000)
- #define MT_WF_DMA(_band, ofs)		(MT_WF_DMA_BASE(_band) + (ofs))
+ 	if ((options & TS_OPT_WSCALE_MASK) == TS_OPT_WSCALE_MASK)
+@@ -263,7 +263,7 @@ bool cookie_timestamp_decode(const struct net *net,
+ 	tcp_opt->wscale_ok = 1;
+ 	tcp_opt->snd_wscale = options & TS_OPT_WSCALE_MASK;
  
- #define MT_DMA_DCR0(_band)		MT_WF_DMA(_band, 0x000)
-@@ -81,7 +81,7 @@
- #define MT_DMA_DCR0_RXD_G5_EN		BIT(23)
+-	return net->ipv4.sysctl_tcp_window_scaling != 0;
++	return READ_ONCE(net->ipv4.sysctl_tcp_window_scaling) != 0;
+ }
+ EXPORT_SYMBOL(cookie_timestamp_decode);
  
- /* LPON: band 0(0x24200), band 1(0xa4200) */
--#define MT_WF_LPON_BASE(_band)		((_band) ? 0xa4200 : 0x24200)
-+#define MT_WF_LPON_BASE(_band)		((_band) ? 0x820fb000 : 0x820eb000)
- #define MT_WF_LPON(_band, ofs)		(MT_WF_LPON_BASE(_band) + (ofs))
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index d9e534c6fd0c..dd10a317709f 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -4053,7 +4053,7 @@ void tcp_parse_options(const struct net *net,
+ 				break;
+ 			case TCPOPT_WINDOW:
+ 				if (opsize == TCPOLEN_WINDOW && th->syn &&
+-				    !estab && net->ipv4.sysctl_tcp_window_scaling) {
++				    !estab && READ_ONCE(net->ipv4.sysctl_tcp_window_scaling)) {
+ 					__u8 snd_wscale = *(__u8 *)ptr;
+ 					opt_rx->wscale_ok = 1;
+ 					if (snd_wscale > TCP_MAX_WSCALE) {
+@@ -4069,7 +4069,7 @@ void tcp_parse_options(const struct net *net,
+ 			case TCPOPT_TIMESTAMP:
+ 				if ((opsize == TCPOLEN_TIMESTAMP) &&
+ 				    ((estab && opt_rx->tstamp_ok) ||
+-				     (!estab && net->ipv4.sysctl_tcp_timestamps))) {
++				     (!estab && READ_ONCE(net->ipv4.sysctl_tcp_timestamps)))) {
+ 					opt_rx->saw_tstamp = 1;
+ 					opt_rx->rcv_tsval = get_unaligned_be32(ptr);
+ 					opt_rx->rcv_tsecr = get_unaligned_be32(ptr + 4);
+@@ -4077,7 +4077,7 @@ void tcp_parse_options(const struct net *net,
+ 				break;
+ 			case TCPOPT_SACK_PERM:
+ 				if (opsize == TCPOLEN_SACK_PERM && th->syn &&
+-				    !estab && net->ipv4.sysctl_tcp_sack) {
++				    !estab && READ_ONCE(net->ipv4.sysctl_tcp_sack)) {
+ 					opt_rx->sack_ok = TCP_SACK_SEEN;
+ 					tcp_sack_reset(opt_rx);
+ 				}
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index fcccf56ae9f7..a08fcf15372a 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -790,18 +790,18 @@ static unsigned int tcp_syn_options(struct sock *sk, struct sk_buff *skb,
+ 	opts->mss = tcp_advertise_mss(sk);
+ 	remaining -= TCPOLEN_MSS_ALIGNED;
  
- #define MT_LPON_UTTR0(_band)		MT_WF_LPON(_band, 0x080)
-@@ -92,7 +92,7 @@
- #define MT_LPON_TCR_SW_WRITE		BIT(0)
+-	if (likely(sock_net(sk)->ipv4.sysctl_tcp_timestamps && !*md5)) {
++	if (likely(READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_timestamps) && !*md5)) {
+ 		opts->options |= OPTION_TS;
+ 		opts->tsval = tcp_skb_timestamp(skb) + tp->tsoffset;
+ 		opts->tsecr = tp->rx_opt.ts_recent;
+ 		remaining -= TCPOLEN_TSTAMP_ALIGNED;
+ 	}
+-	if (likely(sock_net(sk)->ipv4.sysctl_tcp_window_scaling)) {
++	if (likely(READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_window_scaling))) {
+ 		opts->ws = tp->rx_opt.rcv_wscale;
+ 		opts->options |= OPTION_WSCALE;
+ 		remaining -= TCPOLEN_WSCALE_ALIGNED;
+ 	}
+-	if (likely(sock_net(sk)->ipv4.sysctl_tcp_sack)) {
++	if (likely(READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_sack))) {
+ 		opts->options |= OPTION_SACK_ADVERTISE;
+ 		if (unlikely(!(OPTION_TS & opts->options)))
+ 			remaining -= TCPOLEN_SACKPERM_ALIGNED;
+@@ -3649,7 +3649,7 @@ static void tcp_connect_init(struct sock *sk)
+ 	 * See tcp_input.c:tcp_rcv_state_process case TCP_SYN_SENT.
+ 	 */
+ 	tp->tcp_header_len = sizeof(struct tcphdr);
+-	if (sock_net(sk)->ipv4.sysctl_tcp_timestamps)
++	if (READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_timestamps))
+ 		tp->tcp_header_len += TCPOLEN_TSTAMP_ALIGNED;
  
- /* MIB: band 0(0x24800), band 1(0xa4800) */
--#define MT_WF_MIB_BASE(_band)		((_band) ? 0xa4800 : 0x24800)
-+#define MT_WF_MIB_BASE(_band)		((_band) ? 0x820fd000 : 0x820ed000)
- #define MT_WF_MIB(_band, ofs)		(MT_WF_MIB_BASE(_band) + (ofs))
+ #ifdef CONFIG_TCP_MD5SIG
+@@ -3685,7 +3685,7 @@ static void tcp_connect_init(struct sock *sk)
+ 				  tp->advmss - (tp->rx_opt.ts_recent_stamp ? tp->tcp_header_len - sizeof(struct tcphdr) : 0),
+ 				  &tp->rcv_wnd,
+ 				  &tp->window_clamp,
+-				  sock_net(sk)->ipv4.sysctl_tcp_window_scaling,
++				  READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_window_scaling),
+ 				  &rcv_wscale,
+ 				  rcv_wnd);
  
- #define MT_MIB_SCR1(_band)		MT_WF_MIB(_band, 0x004)
-@@ -141,7 +141,7 @@
- #define MT_MIB_ARNG(_band, n)		MT_WF_MIB(_band, 0x0b0 + ((n) << 2))
- #define MT_MIB_ARNCR_RANGE(val, n)	(((val) >> ((n) << 3)) & GENMASK(7, 0))
- 
--#define MT_WTBLON_TOP_BASE		0x34000
-+#define MT_WTBLON_TOP_BASE		0x820d4000
- #define MT_WTBLON_TOP(ofs)		(MT_WTBLON_TOP_BASE + (ofs))
- #define MT_WTBLON_TOP_WDUCR		MT_WTBLON_TOP(0x200)
- #define MT_WTBLON_TOP_WDUCR_GROUP	GENMASK(2, 0)
-@@ -151,7 +151,7 @@
- #define MT_WTBL_UPDATE_ADM_COUNT_CLEAR	BIT(12)
- #define MT_WTBL_UPDATE_BUSY		BIT(31)
- 
--#define MT_WTBL_BASE			0x38000
-+#define MT_WTBL_BASE			0x820d8000
- #define MT_WTBL_LMAC_ID			GENMASK(14, 8)
- #define MT_WTBL_LMAC_DW			GENMASK(7, 2)
- #define MT_WTBL_LMAC_OFFS(_id, _dw)	(MT_WTBL_BASE | \
-@@ -159,7 +159,7 @@
- 					FIELD_PREP(MT_WTBL_LMAC_DW, _dw))
- 
- /* AGG: band 0(0x20800), band 1(0xa0800) */
--#define MT_WF_AGG_BASE(_band)		((_band) ? 0xa0800 : 0x20800)
-+#define MT_WF_AGG_BASE(_band)		((_band) ? 0x820f2000 : 0x820e2000)
- #define MT_WF_AGG(_band, ofs)		(MT_WF_AGG_BASE(_band) + (ofs))
- 
- #define MT_AGG_AWSCR0(_band, _n)	MT_WF_AGG(_band, 0x05c + (_n) * 4)
-@@ -190,7 +190,7 @@
- #define MT_AGG_ATCR3(_band)		MT_WF_AGG(_band, 0x0f4)
- 
- /* ARB: band 0(0x20c00), band 1(0xa0c00) */
--#define MT_WF_ARB_BASE(_band)		((_band) ? 0xa0c00 : 0x20c00)
-+#define MT_WF_ARB_BASE(_band)		((_band) ? 0x820f3000 : 0x820e3000)
- #define MT_WF_ARB(_band, ofs)		(MT_WF_ARB_BASE(_band) + (ofs))
- 
- #define MT_ARB_SCR(_band)		MT_WF_ARB(_band, 0x080)
-@@ -200,7 +200,7 @@
- #define MT_ARB_DRNGR0(_band, _n)	MT_WF_ARB(_band, 0x194 + (_n) * 4)
- 
- /* RMAC: band 0(0x21400), band 1(0xa1400) */
--#define MT_WF_RMAC_BASE(_band)		((_band) ? 0xa1400 : 0x21400)
-+#define MT_WF_RMAC_BASE(_band)		((_band) ? 0x820f5000 : 0x820e5000)
- #define MT_WF_RMAC(_band, ofs)		(MT_WF_RMAC_BASE(_band) + (ofs))
- 
- #define MT_WF_RFCR(_band)		MT_WF_RMAC(_band, 0x000)
+-- 
+2.35.1
+
 
 
