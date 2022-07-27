@@ -2,124 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FA07C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 13:37:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80A8AC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 13:38:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229870AbiG0Nhb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 09:37:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44432 "EHLO
+        id S233635AbiG0Niq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 09:38:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231892AbiG0Nh3 (ORCPT
+        with ESMTP id S232591AbiG0Nin (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 09:37:29 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 920BD165A4;
-        Wed, 27 Jul 2022 06:37:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658929048; x=1690465048;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=6h6fbl/fcUw8hVmup+Sa8ghAZqz2tmJ91kwrtvsGaRg=;
-  b=MX+4QzeTBMp8vwC640sWvEFn+lUWdOqb75X+k29Gt5/BSxnppTv/t68X
-   D07a9Ecah2HZ/ClJ3p5RGqoqP86d2TgsOQAhcRnldzryMDEqmAbGpsLbF
-   91zTsFAfTTVu8kqnE7ZrBKsTts7JssRdyrR+61B5dWM4hxBKVSZV9JRla
-   QVUqTfzH9YAgQGgJlC+k0HL8qFy3s7ONovvPsolHRl5ieWywQVWDHYYcb
-   22eetKcFAe/2T0j43+TJKsj1iujoIszH6hv0gvhKkpdnKahPw4Nr1D0Vq
-   odu4KGaqKQ84AvJMaHDgF+dXVCFRRaPKSGGkSWETKOr8vAkPZpSaQOt3R
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10420"; a="374532498"
-X-IronPort-AV: E=Sophos;i="5.93,195,1654585200"; 
-   d="scan'208";a="374532498"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2022 06:37:27 -0700
-X-IronPort-AV: E=Sophos;i="5.93,195,1654585200"; 
-   d="scan'208";a="846270199"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2022 06:37:22 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.96)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1oGhDz-001cc7-0Y;
-        Wed, 27 Jul 2022 16:37:19 +0300
-Date:   Wed, 27 Jul 2022 16:37:18 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Marcin Wojtas <mw@semihalf.com>
-Cc:     linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-        netdev@vger.kernel.org, rafael@kernel.org, sean.wang@mediatek.com,
-        Landen.Chao@mediatek.com, linus.walleij@linaro.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux@armlinux.org.uk, hkallweit1@gmail.com,
-        gjb@semihalf.com, jaz@semihalf.com, tn@semihalf.com,
-        Samer.El-Haj-Mahmoud@arm.com, upstream@semihalf.com
-Subject: Re: [net-next: PATCH v3 8/8] net: dsa: mv88e6xxx: switch to
- device_/fwnode_ APIs
-Message-ID: <YuE/jsHMgDcKKEff@smile.fi.intel.com>
-References: <20220727064321.2953971-1-mw@semihalf.com>
- <20220727064321.2953971-9-mw@semihalf.com>
+        Wed, 27 Jul 2022 09:38:43 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74BAB24BDD
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 06:38:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1658929122; x=1690465122;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=4fzlMdFpCX30nlloAxt/drB1D1zwZCDcg/D581dbx7o=;
+  b=ZAd+1pj8USEapNsiMEvYXvs0ENwKe+ppXW8DCBYn4WB4+WflsIeH39nI
+   LeXsXHEMGsoS1BAzFl+H2qUoSspDwD4kFt/VzV6s2nlk4oOfWikZjOZ9v
+   suVojRJdBf2cYn1kQ23dKCaNu/Ko/QOzcacxyEfuTpXNCfs+E2L2Jg+oP
+   w=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 27 Jul 2022 06:38:42 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2022 06:38:41 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Wed, 27 Jul 2022 06:38:41 -0700
+Received: from [10.216.8.109] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Wed, 27 Jul
+ 2022 06:38:38 -0700
+Message-ID: <08899e74-9d1e-52a6-722a-c802ba429662@quicinc.com>
+Date:   Wed, 27 Jul 2022 19:08:35 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220727064321.2953971-9-mw@semihalf.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] ASoC: codecs: va-macro: use fsgen as clock
+Content-Language: en-US
+To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        <broonie@kernel.org>
+CC:     <alsa-devel@alsa-project.org>, <lgirdwood@gmail.com>,
+        <perex@perex.cz>, <tiwai@suse.com>, <linux-kernel@vger.kernel.org>
+References: <20220727124749.4604-1-srinivas.kandagatla@linaro.org>
+From:   Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Organization: Qualcomm
+In-Reply-To: <20220727124749.4604-1-srinivas.kandagatla@linaro.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 08:43:21AM +0200, Marcin Wojtas wrote:
-> In order to support both DT and ACPI in future, modify the
-> mv88e6xx driver  code to use device_/fwnode_ equivalent routines.
-> No functional change is introduced by this patch.
+Thanks for the Patch Srini!!!
 
-...
+On 7/27/2022 6:17 PM, Srinivas Kandagatla wrote:
+> VA Macro fsgen clock is supplied to other LPASS Macros using proper
+> clock apis, however the internal user uses the registers directly without
+> clk apis. This approch has race condition where in external users of
+> the clock might cut the clock while VA macro is actively using this.
+>
+> Moving the internal usage to clk apis would provide a proper refcounting
+> and avoid such race conditions.
+>
+> This issue was noticed while headset was pulled out while recording is
+> in progress and shifting record patch to DMIC.
+>
+> Reported-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+> Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+> ---
+This is verified on SC7280 based platform.
 
->  static int mv88e6xxx_probe(struct mdio_device *mdiodev)
->  {
->  	struct dsa_mv88e6xxx_pdata *pdata = mdiodev->dev.platform_data;
+Tested-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
 
-> +	struct fwnode_handle *fwnode = dev_fwnode(&mdiodev->dev);
-
-Move this...
-
->  	const struct mv88e6xxx_info *compat_info = NULL;
->  	struct device *dev = &mdiodev->dev;
-> -	struct device_node *np = dev->of_node;
-
-...here as
-
-	struct fwnode_handle *fwnode = dev_fwnode(dev);
-
->  	struct mv88e6xxx_chip *chip;
->  	int port;
->  	int err;
-
-> +	if (fwnode)
-
-Redundant check.
-
-> +		compat_info = device_get_match_data(dev);
-> +	else if (pdata) {
->  		compat_info = pdata_device_get_match_data(dev);
-
-	compat_info - device_get_match_data(dev);
-	if (!compat_info && pdata)
-		compat_info = pdata_device_get_match_data(dev);
-
-...
-
-> +		if (fwnode)
-> +			device_property_read_u32(dev, "eeprom-length",
-> +						 &chip->eeprom_len);
->  		else
->  			chip->eeprom_len = pdata->eeprom_len;
-
-Can be done w/o conditional
-
-		chip->eeprom_len = pdata->eeprom_len;
-		device_property_read_u32(dev, "eeprom-length", &chip->eeprom_len);
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+>   sound/soc/codecs/lpass-va-macro.c | 11 +++++++++--
+>   1 file changed, 9 insertions(+), 2 deletions(-)
+>
+> diff --git a/sound/soc/codecs/lpass-va-macro.c b/sound/soc/codecs/lpass-va-macro.c
+> index d18b56e60433..1ea10dc70748 100644
+> --- a/sound/soc/codecs/lpass-va-macro.c
+> +++ b/sound/soc/codecs/lpass-va-macro.c
+> @@ -199,6 +199,7 @@ struct va_macro {
+>   	struct clk *mclk;
+>   	struct clk *macro;
+>   	struct clk *dcodec;
+> +	struct clk *fsgen;
+>   	struct clk_hw hw;
+>   	struct lpass_macro *pds;
+>   
+> @@ -467,9 +468,9 @@ static int va_macro_mclk_event(struct snd_soc_dapm_widget *w,
+>   
+>   	switch (event) {
+>   	case SND_SOC_DAPM_PRE_PMU:
+> -		return va_macro_mclk_enable(va, true);
+> +		return clk_prepare_enable(va->fsgen);
+>   	case SND_SOC_DAPM_POST_PMD:
+> -		return va_macro_mclk_enable(va, false);
+> +		clk_disable_unprepare(va->fsgen);
+>   	}
+>   
+>   	return 0;
+> @@ -1473,6 +1474,12 @@ static int va_macro_probe(struct platform_device *pdev)
+>   	if (ret)
+>   		goto err_clkout;
+>   
+> +	va->fsgen = clk_hw_get_clk(&va->hw, "fsgen");
+> +	if (IS_ERR(va->fsgen)) {
+> +		ret = PTR_ERR(va->fsgen);
+> +		goto err_clkout;
+> +	}
+> +
+>   	ret = devm_snd_soc_register_component(dev, &va_macro_component_drv,
+>   					      va_macro_dais,
+>   					      ARRAY_SIZE(va_macro_dais));
