@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5874C19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:47:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B5DAC19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:47:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243101AbiG0Rrd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:47:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51350 "EHLO
+        id S243247AbiG0Rrf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:47:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243055AbiG0RrB (ORCPT
+        with ESMTP id S243067AbiG0RrE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:47:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24F7A8C8F4;
-        Wed, 27 Jul 2022 09:53:54 -0700 (PDT)
+        Wed, 27 Jul 2022 13:47:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 718268C8F8;
+        Wed, 27 Jul 2022 09:53:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4D69CB821BE;
-        Wed, 27 Jul 2022 16:53:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD1EBC433B5;
-        Wed, 27 Jul 2022 16:53:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 13CEEB821D7;
+        Wed, 27 Jul 2022 16:53:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6631DC433C1;
+        Wed, 27 Jul 2022 16:53:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940829;
-        bh=zkO/9ryiqC/LNgFhXI//VGH66ltD+m2e3mz8jrIhSMc=;
+        s=korg; t=1658940834;
+        bh=8TAjTG3BVgjt6+mej6insq8utXxrMq0kT2BsFUAqqQA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rpImecHESHFHnv/+v+92Xl9U1KIG3SbeLpnwOZlC0ddfoYqz1stkVJNwlkCX3QIPB
-         7P4Cr3floM+K0JPtwtTUPnJQT38UKtlyrg9+gwAOwm2LOpe4z/UBNdQGzc6b6G34T2
-         +PFgh0L7we79fb/KfeDIAEGgr/RpKa29mgpDVfxI=
+        b=VIAhOq9vzkWI7u/e4YyxkGNSRZrHtobCvUUwU95DWi2JQLiyP5TXANhwI44J/qyNt
+         BHyHm1StdLj+11g6Mii0BWrLeip2+NBYlKVIkMtR56XkvYhvkCGH6kBU7yaD4jc0K9
+         c/SG5EGJrg6GD9NdYs3eZYkqQRPTMHMN+xSrFkEk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Herve Codina <herve.codina@bootlin.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Michael Walle <michael@walle.cc>,
-        Stephen Boyd <sboyd@kernel.org>
-Subject: [PATCH 5.18 138/158] clk: lan966x: Fix the lan966x clock gate register address
-Date:   Wed, 27 Jul 2022 18:13:22 +0200
-Message-Id: <20220727161026.906148348@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+        Adam Guerin <adam.guerin@intel.com>,
+        Wojciech Ziemba <wojciech.ziemba@intel.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 140/158] crypto: qat - set to zero DH parameters before free
+Date:   Wed, 27 Jul 2022 18:13:24 +0200
+Message-Id: <20220727161026.976342511@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -50,38 +52,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Herve Codina <herve.codina@bootlin.com>
+From: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
 
-commit 25c2a075eb6a3031813b6051bd10dfc22c36a2a4 upstream.
+[ Upstream commit 1731160ff7c7bbb11bb1aacb14dd25e18d522779 ]
 
-The register address used for the clock gate register is the base
-register address coming from first reg map (ie. the generic
-clock registers) instead of the second reg map defining the clock
-gate register.
+Set to zero the context buffers containing the DH key before they are
+freed.
+This is a defense in depth measure that avoids keys to be recovered from
+memory in case the system is compromised between the free of the buffer
+and when that area of memory (containing keys) gets overwritten.
 
-Use the correct clock gate register address.
-
-Fixes: 5ad5915dea00 ("clk: lan966x: Extend lan966x clock driver for clock gating support")
-Signed-off-by: Herve Codina <herve.codina@bootlin.com>
-Link: https://lore.kernel.org/r/20220704102845.168438-2-herve.codina@bootlin.com
-Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Tested-by: Michael Walle <michael@walle.cc>
-Signed-off-by: Stephen Boyd <sboyd@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: stable@vger.kernel.org
+Fixes: c9839143ebbf ("crypto: qat - Add DH support")
+Signed-off-by: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
+Reviewed-by: Adam Guerin <adam.guerin@intel.com>
+Reviewed-by: Wojciech Ziemba <wojciech.ziemba@intel.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/clk-lan966x.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/crypto/qat/qat_common/qat_asym_algs.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/clk/clk-lan966x.c
-+++ b/drivers/clk/clk-lan966x.c
-@@ -213,7 +213,7 @@ static int lan966x_gate_clk_register(str
- 
- 		hw_data->hws[i] =
- 			devm_clk_hw_register_gate(dev, clk_gate_desc[idx].name,
--						  "lan966x", 0, base,
-+						  "lan966x", 0, gate_base,
- 						  clk_gate_desc[idx].bit_idx,
- 						  0, &clk_gate_lock);
- 
+diff --git a/drivers/crypto/qat/qat_common/qat_asym_algs.c b/drivers/crypto/qat/qat_common/qat_asym_algs.c
+index b0b78445418b..5633f9df3b6f 100644
+--- a/drivers/crypto/qat/qat_common/qat_asym_algs.c
++++ b/drivers/crypto/qat/qat_common/qat_asym_algs.c
+@@ -420,14 +420,17 @@ static int qat_dh_set_params(struct qat_dh_ctx *ctx, struct dh *params)
+ static void qat_dh_clear_ctx(struct device *dev, struct qat_dh_ctx *ctx)
+ {
+ 	if (ctx->g) {
++		memset(ctx->g, 0, ctx->p_size);
+ 		dma_free_coherent(dev, ctx->p_size, ctx->g, ctx->dma_g);
+ 		ctx->g = NULL;
+ 	}
+ 	if (ctx->xa) {
++		memset(ctx->xa, 0, ctx->p_size);
+ 		dma_free_coherent(dev, ctx->p_size, ctx->xa, ctx->dma_xa);
+ 		ctx->xa = NULL;
+ 	}
+ 	if (ctx->p) {
++		memset(ctx->p, 0, ctx->p_size);
+ 		dma_free_coherent(dev, ctx->p_size, ctx->p, ctx->dma_p);
+ 		ctx->p = NULL;
+ 	}
+-- 
+2.35.1
+
 
 
