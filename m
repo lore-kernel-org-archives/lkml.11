@@ -2,118 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8F0FC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:30:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E81BC19F2D
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:30:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242241AbiG0R3I (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:29:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58264 "EHLO
+        id S238038AbiG0RaP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:30:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229930AbiG0R1h (ORCPT
+        with ESMTP id S238337AbiG0R1k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:27:37 -0400
-Received: from mx0b-002e3701.pphosted.com (mx0b-002e3701.pphosted.com [148.163.143.35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 557C37F514;
-        Wed, 27 Jul 2022 09:47:17 -0700 (PDT)
-Received: from pps.filterd (m0150244.ppops.net [127.0.0.1])
-        by mx0b-002e3701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26RF92ga010128;
-        Wed, 27 Jul 2022 16:46:37 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
- : date : message-id; s=pps0720;
- bh=u6ThZNWif3ROUC2POvusj2QQB7jFaQFFapQejsDNY1s=;
- b=dZSO7xuPAQfH/kS55lTkfXmr9NxQklyu0KYM7Yh2j9L+iHoju6Lr5KHi76wTU0RkxcRr
- YOwlC5uyzOE3c7Z2XgL/FGahoOK+aSb4SeA9sPcN8f4n6zh04FMf1XU5Bf96wtNDflp9
- 1CsoYYP1nnDsZ5VQ0Y5NmdIkY+kZYLm2mP2R5llNznMvs+1s8znKPJb37mU0VqZ1saxN
- WGa+ZW+f+2efe2unmo3vlMq8y5TqPDmHmQGJNOsATSfauAjXRlA7YMWYMItBJ2Jyjeoc
- oRJdrNwuzAqpquBzxLuCBARuAqwXfrH6t//YrPHCxUH3IFoWsWimsm9dtECZZgunMFjr Pg== 
-Received: from p1lg14878.it.hpe.com (p1lg14878.it.hpe.com [16.230.97.204])
-        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3hk60psry5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 27 Jul 2022 16:46:36 +0000
-Received: from p1lg14885.dc01.its.hpecorp.net (unknown [10.119.18.236])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by p1lg14878.it.hpe.com (Postfix) with ESMTPS id F1CB3D2D9;
-        Wed, 27 Jul 2022 16:46:35 +0000 (UTC)
-Received: from hpe.com (unknown [16.231.227.36])
-        by p1lg14885.dc01.its.hpecorp.net (Postfix) with ESMTP id 821768052CB;
-        Wed, 27 Jul 2022 16:46:31 +0000 (UTC)
-From:   nick.hawkins@hpe.com
-To:     nick.hawkins@hpe.com
-Cc:     broonie@kernel.org, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, verdun@hpe.com,
-        linux@armlinux.org.uk, linux-spi@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, arnd@arndb.de, joel@jms.id.au
-Subject: [PATCH v5 0/5] Add SPI Driver to HPE GXP Architecture
-Date:   Wed, 27 Jul 2022 11:47:31 -0500
-Message-Id: <20220727164736.48619-1-nick.hawkins@hpe.com>
-X-Mailer: git-send-email 2.17.1
-X-Proofpoint-ORIG-GUID: PjWRUazOZ606azE2H-N3DO9o2k7a8ky-
-X-Proofpoint-GUID: PjWRUazOZ606azE2H-N3DO9o2k7a8ky-
-X-HPE-SCL: -1
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-27_06,2022-07-27_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0
- lowpriorityscore=0 malwarescore=0 phishscore=0 clxscore=1015
- priorityscore=1501 mlxlogscore=432 impostorscore=0 suspectscore=0
- bulkscore=0 mlxscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2206140000 definitions=main-2207270070
+        Wed, 27 Jul 2022 13:27:40 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B74E47F52B
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:47:19 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id a23so25593085lfm.10
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:47:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=xZf4OdbV43HHtgf1qVIKge/GbJKtAf7d2TC+uXlE1iw=;
+        b=unFrdwkByedm1Cx4IG8Ku7mviSYROrujqG4UjXQkiG0xYgsmJHR0xO4a+bYbYW/PwS
+         +BpCE5BwASL4enlWpSc5ChcanRPNkec78zKAkoqgkfIfM9juO9yFiudCpM2kK2iiVUUN
+         vcX/bOW82bpl3sEJt8lJ4P7UjpNpPGtSmZmxIhjeBtOY/lI5Pyef+zmEyrN7JnZwOT2v
+         5ornAJUjWzhOFUJ2FsEA+6X3NuHvsDNA0boK2iaiU45J721qkxkd0KE7vpsaUxk9VfAE
+         jbFm7EwWypt894KHqZaTBTjDRfbDhf2/nLsKWfjp3UDMIHwCK+Coy4qvG59UqItR52XE
+         A4RA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=xZf4OdbV43HHtgf1qVIKge/GbJKtAf7d2TC+uXlE1iw=;
+        b=bGvE0w6G/qixvxiCn4kOfHku6k0QS8uyvzB9mSUGgH1AeijwNNn8XohKJX8GD79KVo
+         zAnFA95+TLZiQYzUmtrRkLQNTp1AHBElykPYsBggykiFKmF86KAWdhsEJoTkiEys1HBT
+         kQRIHxFNCKS3brg7GMENxLWkiQM0BDg0khq9seaQGtUAA/4KAuDpFScOBOSojJN1ET0r
+         rnD7WrXsLfaFjJqRM8YAX5Ha7PFuAxz8RIf8FKEZroEybzaH6Snr8bypDzIdUM4gS3dG
+         cpL9bQlJZc73x1CL6s8mCJ6aClKW+k5dGGOJ5GGzyBJpPJqWYy2DZFOK0n2LRmW++7FL
+         EXlA==
+X-Gm-Message-State: AJIora/0k7YYy+KPVpCV75xPW4z4YqR5z7wG5OeG9e6Kml6hKZL55Vup
+        yz+UVvgBlDLBMzf023WG/TuzaQ==
+X-Google-Smtp-Source: AGRyM1vk2lUU2rIgm+Qs7fiV5lfej9Y3jJ3qYGukgFmUOo3/tcHiuWVrQUOzvf2yUdGjOtEdYb/yTw==
+X-Received: by 2002:a05:6512:1287:b0:489:e488:950f with SMTP id u7-20020a056512128700b00489e488950fmr8402948lfs.440.1658940436717;
+        Wed, 27 Jul 2022 09:47:16 -0700 (PDT)
+Received: from krzk-bin.lan (78-26-46-173.network.trollfjord.no. [78.26.46.173])
+        by smtp.gmail.com with ESMTPSA id 18-20020ac25f52000000b0048910301774sm3375149lfz.307.2022.07.27.09.47.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jul 2022 09:47:16 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lucas Stankus <lucas.p.stankus@gmail.com>,
+        Puranjay Mohan <puranjay12@gmail.com>,
+        Cosmin Tanislav <cosmin.tanislav@analog.com>,
+        Alexandru Tachici <alexandru.tachici@analog.com>,
+        Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
+        Marcus Folkesson <marcus.folkesson@gmail.com>,
+        Kent Gustavsson <kent@minoris.se>,
+        Tomislav Denis <tomislav.denis@avl.com>,
+        Oleksij Rempel <linux@rempel-privat.de>, kernel@pengutronix.de,
+        Antoniu Miclaus <antoniu.miclaus@analog.com>,
+        Ricardo Ribalda <ribalda@kernel.org>,
+        Dragos Bogdan <dragos.bogdan@analog.com>,
+        Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Stefan Popa <stefan.popa@analog.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Stephan Gerhold <stephan@gerhold.net>,
+        Mike Looijmans <mike.looijmans@topic.nl>,
+        Joachim Eastwood <manabian@gmail.com>,
+        Tomas Melin <tomas.melin@vaisala.com>,
+        Sean Nyekjaer <sean@geanix.com>,
+        Beniamin Bia <beniamin.bia@analog.com>,
+        Patrick Vasseur <patrick.vasseur@c-s.fr>,
+        Charles-Antoine Couret <charles-antoine.couret@essensium.com>,
+        Vladimir Barinov <vladimir.barinov@cogentembedded.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Philippe Reynes <tremyfr@yahoo.fr>,
+        Jacopo Mondi <jacopo@jmondi.org>,
+        Akinobu Mita <akinobu.mita@gmail.com>,
+        Alexandru Lazar <alazar@startmail.com>,
+        Oskar Andero <oskar.andero@gmail.com>,
+        =?UTF-8?q?M=C3=A5rten=20Lindahl?= <martenli@axis.com>,
+        Bogdan Pricop <bogdan.pricop@emutex.com>,
+        Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+        Matt Ranostay <matt.ranostay@konsulko.com>,
+        Dan Murphy <dmurphy@ti.com>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Phil Reid <preid@electromag.com.au>,
+        Michael Welling <mwelling@ieee.org>,
+        Lukas Wunner <lukas@wunner.de>,
+        Robert Jones <rjones@gateworks.com>,
+        Chris Coffey <cmc@babblebit.net>,
+        Slawomir Stepien <sst@poczta.fm>,
+        Sankar Velliangiri <navin@linumiz.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-fbdev@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v2 05/10] dt-bindings: iio: frequency: adf4371: use spi-peripheral-props.yaml
+Date:   Wed, 27 Jul 2022 18:46:41 +0200
+Message-Id: <20220727164646.387541-6-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220727164646.387541-1-krzysztof.kozlowski@linaro.org>
+References: <20220727164646.387541-1-krzysztof.kozlowski@linaro.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nick Hawkins <nick.hawkins@hpe.com>
+Instead of listing directly properties typical for SPI peripherals,
+reference the spi-peripheral-props.yaml schema.  This allows using all
+properties typical for SPI-connected devices, even these which device
+bindings author did not tried yet.
 
-Changes since v5:
- *Fixed indentation in Kconfig file
+Remove the spi-* properties which now come via spi-peripheral-props.yaml
+schema, except for the cases when device schema adds some constraints
+like maximum frequency.
 
-Changes since v4:
- *Removed unnecessary quotes in hpe,gxp-spifi.yaml
+While changing additionalProperties->unevaluatedProperties, put it in
+typical place, just before example DTS.
 
-Changes since v3:
- *Fixed indentations in hpe,gxp-spifi.yaml
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ .../devicetree/bindings/iio/frequency/adf4371.yaml         | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-Changes since v2:
- *Changed the CONFIG_SPI_GXP from y to m in defconfig
- *Removed extra space around < > for reg in hpe,gxp-spifi.yaml
- *Changed interrupt-parrent to interrupt-parent in hpe,gxp-spifi.yaml
- *Removed repeated include file in spi-gxp.c
- *Removed unnecessary initialization of ret variable in spi-gxp.c
- *Removed conditional variable checks where failure is not possible in
-  spi-gxp.c
- *Removed unnecessary variable cs in spi-gxp.c
- *Removed blank gxp-spifi-remove function in spi-gxp.c
- *Fixed error messages so they are not repetitive
-
-The GXP supports 3 separate SPI interfaces to accommodate the system
-flash, core flash, and other functions. The SPI engine supports variable
-clock frequency, selectable 3-byte or 4-byte addressing and a
-configurable x1, x2, and x4 command/address/data modes. The memory
-buffer for reading and writing ranges between 256 bytes and 8KB. This
-driver supports access to the core flash and bios part.
-
-Nick Hawkins (5):
-  spi: spi-gxp: Add support for HPE GXP SoCs
-  spi: dt-bindings: add documentation for hpe,gxp-spifi
-  ARM: dts: hpe: Add spi driver node
-  ARM: configs: multi_v7_defconfig: Enable HPE GXP SPI driver
-  MAINTAINERS: add spi support to GXP
-
- .../bindings/spi/hpe,gxp-spifi.yaml           |  56 +++
- MAINTAINERS                                   |   2 +
- arch/arm/boot/dts/hpe-bmc-dl360gen10.dts      |  58 ++++
- arch/arm/boot/dts/hpe-gxp.dtsi                |  21 +-
- arch/arm/configs/multi_v7_defconfig           |   1 +
- drivers/spi/Kconfig                           |   7 +
- drivers/spi/Makefile                          |   1 +
- drivers/spi/spi-gxp.c                         | 325 ++++++++++++++++++
- 8 files changed, 470 insertions(+), 1 deletion(-)
- create mode 100644 Documentation/devicetree/bindings/spi/hpe,gxp-spifi.yaml
- create mode 100644 drivers/spi/spi-gxp.c
-
+diff --git a/Documentation/devicetree/bindings/iio/frequency/adf4371.yaml b/Documentation/devicetree/bindings/iio/frequency/adf4371.yaml
+index 6b3a611e1cf1..0144f74a4768 100644
+--- a/Documentation/devicetree/bindings/iio/frequency/adf4371.yaml
++++ b/Documentation/devicetree/bindings/iio/frequency/adf4371.yaml
+@@ -40,15 +40,16 @@ properties:
+       output stage will shut down until the ADF4371/ADF4372 achieves lock as
+       measured by the digital lock detect circuitry.
+ 
+-  spi-max-frequency: true
+-
+ required:
+   - compatible
+   - reg
+   - clocks
+   - clock-names
+ 
+-additionalProperties: false
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++
++unevaluatedProperties: false
+ 
+ examples:
+   - |
 -- 
-2.17.1
+2.34.1
 
