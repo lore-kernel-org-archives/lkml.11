@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93FDCC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:50:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4889C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:50:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240693AbiG0Quo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:50:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49326 "EHLO
+        id S240701AbiG0Quq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:50:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240802AbiG0Qtc (ORCPT
+        with ESMTP id S240823AbiG0Qth (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:49:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 922D861B3A;
-        Wed, 27 Jul 2022 09:32:58 -0700 (PDT)
+        Wed, 27 Jul 2022 12:49:37 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EED1261D4E;
+        Wed, 27 Jul 2022 09:33:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 38C3BB8200C;
-        Wed, 27 Jul 2022 16:32:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9830CC433C1;
-        Wed, 27 Jul 2022 16:32:55 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 52FF5CE230F;
+        Wed, 27 Jul 2022 16:33:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62361C433C1;
+        Wed, 27 Jul 2022 16:32:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939576;
-        bh=N0ML1pABLswN1NQFGoqdU3MrpRpK1IRhmHHuJ+pi9Pc=;
+        s=korg; t=1658939578;
+        bh=aZ5lanK2qNNH4KKWPma/nMluCCUeo2xMDfC+QugKt4c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Cf6EqTFu5jbNSbuLYMxTzJUfQT3iKUeTR3z4Ih+JmtbF92zgy3BH1D84ftLgDmhqW
-         /TyaDsZ2plgNmlZ9mXpTfuXxZvCdrk4tPmn/pyiH5/wd8AbDc3D3nDSJ1oUvkIZaqK
-         lxO6tNaOuafwvVHUDC83EvlkNttA1gfcrHc3T4V8=
+        b=DS7Wa7MNVQgTd+TTlvLibcYtyr4bAwxaBRPBajKxhitZwSqsWBhKzuC4sBjMUxsZB
+         7eXc9V4SGnPaJuiRkKi6uGE03QwiZAuW5oyiK67LI34LUqYUKdmO1PYwhST2J+1pL1
+         Lyy/m8KX39RYHFEFsqzX6w/kSc0i7WzkJOs4roaY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 030/105] ip: Fix data-races around sysctl_ip_fwd_update_priority.
-Date:   Wed, 27 Jul 2022 18:10:16 +0200
-Message-Id: <20220727161013.301876371@linuxfoundation.org>
+Subject: [PATCH 5.10 031/105] ip: Fix data-races around sysctl_ip_nonlocal_bind.
+Date:   Wed, 27 Jul 2022 18:10:17 +0200
+Message-Id: <20220727161013.340986804@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161012.056867467@linuxfoundation.org>
 References: <20220727161012.056867467@linuxfoundation.org>
@@ -51,53 +51,46 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 7bf9e18d9a5e99e3c83482973557e9f047b051e7 ]
+[ Upstream commit 289d3b21fb0bfc94c4e98f10635bba1824e5f83c ]
 
-While reading sysctl_ip_fwd_update_priority, it can be changed
-concurrently.  Thus, we need to add READ_ONCE() to its readers.
+While reading sysctl_ip_nonlocal_bind, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its readers.
 
-Fixes: 432e05d32892 ("net: ipv4: Control SKB reprioritization after forwarding")
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c | 3 ++-
- net/ipv4/ip_forward.c                                 | 2 +-
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ include/net/inet_sock.h | 2 +-
+ net/sctp/protocol.c     | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-index 5f143ca16c01..d2887ae508bb 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-@@ -8038,13 +8038,14 @@ static int mlxsw_sp_dscp_init(struct mlxsw_sp *mlxsw_sp)
- static int __mlxsw_sp_router_init(struct mlxsw_sp *mlxsw_sp)
+diff --git a/include/net/inet_sock.h b/include/net/inet_sock.h
+index 89163ef8cf4b..f374946734b9 100644
+--- a/include/net/inet_sock.h
++++ b/include/net/inet_sock.h
+@@ -369,7 +369,7 @@ static inline bool inet_get_convert_csum(struct sock *sk)
+ static inline bool inet_can_nonlocal_bind(struct net *net,
+ 					  struct inet_sock *inet)
  {
- 	struct net *net = mlxsw_sp_net(mlxsw_sp);
--	bool usp = net->ipv4.sysctl_ip_fwd_update_priority;
- 	char rgcr_pl[MLXSW_REG_RGCR_LEN];
- 	u64 max_rifs;
-+	bool usp;
+-	return net->ipv4.sysctl_ip_nonlocal_bind ||
++	return READ_ONCE(net->ipv4.sysctl_ip_nonlocal_bind) ||
+ 		inet->freebind || inet->transparent;
+ }
  
- 	if (!MLXSW_CORE_RES_VALID(mlxsw_sp->core, MAX_RIFS))
- 		return -EIO;
- 	max_rifs = MLXSW_CORE_RES_GET(mlxsw_sp->core, MAX_RIFS);
-+	usp = READ_ONCE(net->ipv4.sysctl_ip_fwd_update_priority);
+diff --git a/net/sctp/protocol.c b/net/sctp/protocol.c
+index 940f1e257a90..6e4ca837e91d 100644
+--- a/net/sctp/protocol.c
++++ b/net/sctp/protocol.c
+@@ -358,7 +358,7 @@ static int sctp_v4_available(union sctp_addr *addr, struct sctp_sock *sp)
+ 	if (addr->v4.sin_addr.s_addr != htonl(INADDR_ANY) &&
+ 	   ret != RTN_LOCAL &&
+ 	   !sp->inet.freebind &&
+-	   !net->ipv4.sysctl_ip_nonlocal_bind)
++	    !READ_ONCE(net->ipv4.sysctl_ip_nonlocal_bind))
+ 		return 0;
  
- 	mlxsw_reg_rgcr_pack(rgcr_pl, true, true);
- 	mlxsw_reg_rgcr_max_router_interfaces_set(rgcr_pl, max_rifs);
-diff --git a/net/ipv4/ip_forward.c b/net/ipv4/ip_forward.c
-index 00ec819f949b..29730edda220 100644
---- a/net/ipv4/ip_forward.c
-+++ b/net/ipv4/ip_forward.c
-@@ -151,7 +151,7 @@ int ip_forward(struct sk_buff *skb)
- 	    !skb_sec_path(skb))
- 		ip_rt_send_redirect(skb);
- 
--	if (net->ipv4.sysctl_ip_fwd_update_priority)
-+	if (READ_ONCE(net->ipv4.sysctl_ip_fwd_update_priority))
- 		skb->priority = rt_tos2priority(iph->tos);
- 
- 	return NF_HOOK(NFPROTO_IPV4, NF_INET_FORWARD,
+ 	if (ipv6_only_sock(sctp_opt2sk(sp)))
 -- 
 2.35.1
 
