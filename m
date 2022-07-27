@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10FEBC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:02:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46973C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:02:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241248AbiG0RCT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:02:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55710 "EHLO
+        id S241258AbiG0RCX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:02:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241235AbiG0RBo (ORCPT
+        with ESMTP id S232795AbiG0RBq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:01:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D29A6BC09;
-        Wed, 27 Jul 2022 09:38:06 -0700 (PDT)
+        Wed, 27 Jul 2022 13:01:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 953CB6BC1C;
+        Wed, 27 Jul 2022 09:38:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6B164B8200C;
-        Wed, 27 Jul 2022 16:38:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3F9AC433C1;
-        Wed, 27 Jul 2022 16:38:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 53190601BE;
+        Wed, 27 Jul 2022 16:38:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F294C433D6;
+        Wed, 27 Jul 2022 16:38:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939881;
-        bh=qXw/I2fUS2IOujk0ZA76gow/5hHBvGsPgEnrGSVqpQg=;
+        s=korg; t=1658939886;
+        bh=T5DNPEG6pVCv0mZuUdiT16dtsq5c62BWvkJUSFQFrys=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pzp1FQipyKLzRX2dBOhu7krkxH0o3zpO89m7WJPFIZXGRF5INJs7fllqMKcNUQBuD
-         qJRvUelN+Vr9q9nyzI5V6nW78NOIwBfEMhvlkTou72cJEwkH5MQyuPuulRYRDY/k1G
-         lDJFCPwPiJaqYHARTfmUKAQRGw+34bxBKLMK9jOs=
+        b=VcfniOkNvxFybIufn7OSF2YR/ykBrUwy5zcb3YzGAHWJr0LycKPvNG/kf05sFSXgV
+         anOBOlqUjq6E+YRcQrSlXGT841ooU6aBqkQkNoq2I5XRmXn08b76bhp7/XOXkUu86b
+         Qpcap6eshuJT45+jFnqOJXSMvalzKZ5q2jrSTrPM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 029/201] xfrm: xfrm_policy: fix a possible double xfrm_pols_put() in xfrm_bundle_lookup()
-Date:   Wed, 27 Jul 2022 18:08:53 +0200
-Message-Id: <20220727161028.109685397@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Snowberg <eric.snowberg@oracle.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        John Haxby <john.haxby@oracle.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.15 004/201] lockdown: Fix kexec lockdown bypass with ima policy
+Date:   Wed, 27 Jul 2022 18:08:28 +0200
+Message-Id: <20220727161027.136489560@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -49,57 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Eric Snowberg <eric.snowberg@oracle.com>
 
-[ Upstream commit f85daf0e725358be78dfd208dea5fd665d8cb901 ]
+commit 543ce63b664e2c2f9533d089a4664b559c3e6b5b upstream.
 
-xfrm_policy_lookup() will call xfrm_pol_hold_rcu() to get a refcount of
-pols[0]. This refcount can be dropped in xfrm_expand_policies() when
-xfrm_expand_policies() return error. pols[0]'s refcount is balanced in
-here. But xfrm_bundle_lookup() will also call xfrm_pols_put() with
-num_pols == 1 to drop this refcount when xfrm_expand_policies() return
-error.
+The lockdown LSM is primarily used in conjunction with UEFI Secure Boot.
+This LSM may also be used on machines without UEFI.  It can also be
+enabled when UEFI Secure Boot is disabled.  One of lockdown's features
+is to prevent kexec from loading untrusted kernels.  Lockdown can be
+enabled through a bootparam or after the kernel has booted through
+securityfs.
 
-This patch also fix an illegal address access. pols[0] will save a error
-point when xfrm_policy_lookup fails. This lead to xfrm_pols_put to resolve
-an illegal address in xfrm_bundle_lookup's error path.
+If IMA appraisal is used with the "ima_appraise=log" boot param,
+lockdown can be defeated with kexec on any machine when Secure Boot is
+disabled or unavailable.  IMA prevents setting "ima_appraise=log" from
+the boot param when Secure Boot is enabled, but this does not cover
+cases where lockdown is used without Secure Boot.
 
-Fix these by setting num_pols = 0 in xfrm_expand_policies()'s error path.
+To defeat lockdown, boot without Secure Boot and add ima_appraise=log to
+the kernel command line; then:
 
-Fixes: 80c802f3073e ("xfrm: cache bundles instead of policies for outgoing flows")
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+  $ echo "integrity" > /sys/kernel/security/lockdown
+  $ echo "appraise func=KEXEC_KERNEL_CHECK appraise_type=imasig" > \
+    /sys/kernel/security/ima/policy
+  $ kexec -ls unsigned-kernel
+
+Add a call to verify ima appraisal is set to "enforce" whenever lockdown
+is enabled.  This fixes CVE-2022-21505.
+
+Cc: stable@vger.kernel.org
+Fixes: 29d3c1c8dfe7 ("kexec: Allow kexec_file() with appropriate IMA policy when locked down")
+Signed-off-by: Eric Snowberg <eric.snowberg@oracle.com>
+Acked-by: Mimi Zohar <zohar@linux.ibm.com>
+Reviewed-by: John Haxby <john.haxby@oracle.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/xfrm/xfrm_policy.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ security/integrity/ima/ima_policy.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-index a6271b955e11..fb198f9490a0 100644
---- a/net/xfrm/xfrm_policy.c
-+++ b/net/xfrm/xfrm_policy.c
-@@ -2678,8 +2678,10 @@ static int xfrm_expand_policies(const struct flowi *fl, u16 family,
- 		*num_xfrms = 0;
- 		return 0;
- 	}
--	if (IS_ERR(pols[0]))
-+	if (IS_ERR(pols[0])) {
-+		*num_pols = 0;
- 		return PTR_ERR(pols[0]);
-+	}
+--- a/security/integrity/ima/ima_policy.c
++++ b/security/integrity/ima/ima_policy.c
+@@ -2034,6 +2034,10 @@ bool ima_appraise_signature(enum kernel_
+ 	if (id >= READING_MAX_ID)
+ 		return false;
  
- 	*num_xfrms = pols[0]->xfrm_nr;
++	if (id == READING_KEXEC_IMAGE && !(ima_appraise & IMA_APPRAISE_ENFORCE)
++	    && security_locked_down(LOCKDOWN_KEXEC))
++		return false;
++
+ 	func = read_idmap[id] ?: FILE_CHECK;
  
-@@ -2694,6 +2696,7 @@ static int xfrm_expand_policies(const struct flowi *fl, u16 family,
- 		if (pols[1]) {
- 			if (IS_ERR(pols[1])) {
- 				xfrm_pols_put(pols, *num_pols);
-+				*num_pols = 0;
- 				return PTR_ERR(pols[1]);
- 			}
- 			(*num_pols)++;
--- 
-2.35.1
-
+ 	rcu_read_lock();
 
 
