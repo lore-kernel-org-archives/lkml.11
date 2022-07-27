@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9001C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:10:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51449C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:10:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241535AbiG0RKX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:10:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38034 "EHLO
+        id S241231AbiG0RK3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:10:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241594AbiG0RJR (ORCPT
+        with ESMTP id S241601AbiG0RJS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:09:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DE7A74350;
-        Wed, 27 Jul 2022 09:40:55 -0700 (PDT)
+        Wed, 27 Jul 2022 13:09:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1D1850044;
+        Wed, 27 Jul 2022 09:40:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4F9DEB8200D;
-        Wed, 27 Jul 2022 16:40:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4AC3C433D6;
-        Wed, 27 Jul 2022 16:40:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7BC7960DDB;
+        Wed, 27 Jul 2022 16:40:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82859C433D6;
+        Wed, 27 Jul 2022 16:40:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940051;
-        bh=LKVDuINe2R8fHUioAcMA427TizSk5+ImKmFLRQAlKzo=;
+        s=korg; t=1658940053;
+        bh=nO9vN98lzG+8FMhdNslgASCIMtubLetqdATFaeG8C6o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vy/Vp7Mzy4yhIbgeLN4GFyeW2pz5/005rMH9tSW7vycHCLPXAbDTucgIhynajarxf
-         5Sf82cmdmBZMPi7RKWFpHWY+TnwW3OsWD35vwQwora1lwH0L0tkxOuyZtWNCOgReB6
-         /ztREc6zTz8N53Qru/hd65GKy/f4UZZw5FA31sXo=
+        b=pxi2Kg1zAOhs45d6rLvGHU12cwiKum404hulsITdtAqewZtItxPwuG4OjhaRGg5rJ
+         WWqRCXal/ZsTOk4HqjreEOqVM4bZ+O0XPVtLjT3uYPBGVpomkC8zAh3QHTH0wMjw0Y
+         t0yFxnFM3PrQjU4aIvXAn0WYBIVG/PDZJ4nAwT6I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org,
+        Michael Trimarchi <michael@amarulasolutions.com>,
+        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 088/201] igmp: Fix a data-race around sysctl_igmp_max_memberships.
-Date:   Wed, 27 Jul 2022 18:09:52 +0200
-Message-Id: <20220727161031.394982405@linuxfoundation.org>
+Subject: [PATCH 5.15 071/201] mtd: rawnand: gpmi: validate controller clock rate
+Date:   Wed, 27 Jul 2022 18:09:35 +0200
+Message-Id: <20220727161029.886728305@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -49,34 +52,119 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Dario Binacchi <dario.binacchi@amarulasolutions.com>
 
-[ Upstream commit 6305d821e3b9b5379d348528e5b5faf316383bc2 ]
+[ Upstream commit 15e27d197a7ea69b4643791ca2f8467fdd998359 ]
 
-While reading sysctl_igmp_max_memberships, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its reader.
+What to do when the real rate of the gpmi clock is not equal to the
+required one? The solutions proposed in [1] did not lead to a conclusion
+on how to validate the clock rate, so, inspired by the document [2], I
+consider the rate correct only if not lower or equal to the rate of the
+previous edo mode. In fact, in chapter 4.16.2 (NV-DDR) of the document [2],
+it is written that "If the host selects timing mode n, then its clock
+period shall be faster than the clock period of timing mode n-1 and
+slower than or equal to the clock period of timing mode n.". I thought
+that it could therefore also be used in this case, without therefore
+having to define the valid rate ranges empirically.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+For example, suppose that gpmi_nfc_compute_timings() is called to set
+edo mode 5 (100MHz) but the rate returned by clk_round_rate() is 80MHz
+(edo mode 4). In this case gpmi_nfc_compute_timings() will return error,
+and will be called again to set edo mode 4, which this time will be
+successful.
+
+[1] https://lore.kernel.org/r/20210702065350.209646-5-ebiggers@kernel.org
+[2] http://www.onfi.org/-/media/client/onfi/specs/onfi_3_0_gold.pdf?la=en
+
+Co-developed-by: Michael Trimarchi <michael@amarulasolutions.com>
+Signed-off-by: Michael Trimarchi <michael@amarulasolutions.com>
+Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Tested-by: Sascha Hauer <s.hauer@pengutronix.de>
+Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20220118095434.35081-4-dario.binacchi@amarulasolutions.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/igmp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c | 22 ++++++++++++++++++----
+ 1 file changed, 18 insertions(+), 4 deletions(-)
 
-diff --git a/net/ipv4/igmp.c b/net/ipv4/igmp.c
-index ccfbc0a8f11c..8920ae3751d1 100644
---- a/net/ipv4/igmp.c
-+++ b/net/ipv4/igmp.c
-@@ -2197,7 +2197,7 @@ static int __ip_mc_join_group(struct sock *sk, struct ip_mreqn *imr,
- 		count++;
+diff --git a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
+index b72b387c08ef..62f4988c2a5f 100644
+--- a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
++++ b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
+@@ -644,8 +644,8 @@ static int bch_set_geometry(struct gpmi_nand_data *this)
+  *         RDN_DELAY = -----------------------     {3}
+  *                           RP
+  */
+-static void gpmi_nfc_compute_timings(struct gpmi_nand_data *this,
+-				     const struct nand_sdr_timings *sdr)
++static int gpmi_nfc_compute_timings(struct gpmi_nand_data *this,
++				    const struct nand_sdr_timings *sdr)
+ {
+ 	struct gpmi_nfc_hardware_timing *hw = &this->hw;
+ 	struct resources *r = &this->resources;
+@@ -657,23 +657,33 @@ static void gpmi_nfc_compute_timings(struct gpmi_nand_data *this,
+ 	int sample_delay_ps, sample_delay_factor;
+ 	u16 busy_timeout_cycles;
+ 	u8 wrn_dly_sel;
++	unsigned long clk_rate, min_rate;
+ 
+ 	if (sdr->tRC_min >= 30000) {
+ 		/* ONFI non-EDO modes [0-3] */
+ 		hw->clk_rate = 22000000;
++		min_rate = 0;
+ 		wrn_dly_sel = BV_GPMI_CTRL1_WRN_DLY_SEL_4_TO_8NS;
+ 	} else if (sdr->tRC_min >= 25000) {
+ 		/* ONFI EDO mode 4 */
+ 		hw->clk_rate = 80000000;
++		min_rate = 22000000;
+ 		wrn_dly_sel = BV_GPMI_CTRL1_WRN_DLY_SEL_NO_DELAY;
+ 	} else {
+ 		/* ONFI EDO mode 5 */
+ 		hw->clk_rate = 100000000;
++		min_rate = 80000000;
+ 		wrn_dly_sel = BV_GPMI_CTRL1_WRN_DLY_SEL_NO_DELAY;
  	}
- 	err = -ENOBUFS;
--	if (count >= net->ipv4.sysctl_igmp_max_memberships)
-+	if (count >= READ_ONCE(net->ipv4.sysctl_igmp_max_memberships))
- 		goto done;
- 	iml = sock_kmalloc(sk, sizeof(*iml), GFP_KERNEL);
- 	if (!iml)
+ 
+-	hw->clk_rate = clk_round_rate(r->clock[0], hw->clk_rate);
++	clk_rate = clk_round_rate(r->clock[0], hw->clk_rate);
++	if (clk_rate <= min_rate) {
++		dev_err(this->dev, "clock setting: expected %ld, got %ld\n",
++			hw->clk_rate, clk_rate);
++		return -ENOTSUPP;
++	}
+ 
++	hw->clk_rate = clk_rate;
+ 	/* SDR core timings are given in picoseconds */
+ 	period_ps = div_u64((u64)NSEC_PER_SEC * 1000, hw->clk_rate);
+ 
+@@ -714,6 +724,7 @@ static void gpmi_nfc_compute_timings(struct gpmi_nand_data *this,
+ 		hw->ctrl1n |= BF_GPMI_CTRL1_RDN_DELAY(sample_delay_factor) |
+ 			      BM_GPMI_CTRL1_DLL_ENABLE |
+ 			      (use_half_period ? BM_GPMI_CTRL1_HALF_PERIOD : 0);
++	return 0;
+ }
+ 
+ static int gpmi_nfc_apply_timings(struct gpmi_nand_data *this)
+@@ -769,6 +780,7 @@ static int gpmi_setup_interface(struct nand_chip *chip, int chipnr,
+ {
+ 	struct gpmi_nand_data *this = nand_get_controller_data(chip);
+ 	const struct nand_sdr_timings *sdr;
++	int ret;
+ 
+ 	/* Retrieve required NAND timings */
+ 	sdr = nand_get_sdr_timings(conf);
+@@ -784,7 +796,9 @@ static int gpmi_setup_interface(struct nand_chip *chip, int chipnr,
+ 		return 0;
+ 
+ 	/* Do the actual derivation of the controller timings */
+-	gpmi_nfc_compute_timings(this, sdr);
++	ret = gpmi_nfc_compute_timings(this, sdr);
++	if (ret)
++		return ret;
+ 
+ 	this->hw.must_apply_timings = true;
+ 
 -- 
 2.35.1
 
