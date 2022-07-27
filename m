@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 398E1C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:46:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44D8EC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:46:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240423AbiG0QqL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:46:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35408 "EHLO
+        id S240440AbiG0QqY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:46:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239849AbiG0Qou (ORCPT
+        with ESMTP id S240176AbiG0QpL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:44:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAC4A5F986;
-        Wed, 27 Jul 2022 09:31:23 -0700 (PDT)
+        Wed, 27 Jul 2022 12:45:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D19195F9B3;
+        Wed, 27 Jul 2022 09:31:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8CB5861A38;
-        Wed, 27 Jul 2022 16:31:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A6BBC433C1;
-        Wed, 27 Jul 2022 16:31:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 23280B821C2;
+        Wed, 27 Jul 2022 16:31:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F2F8C433D6;
+        Wed, 27 Jul 2022 16:31:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939483;
-        bh=5sBIDrAeZCj2hefEhVNQeE//wJyI0ZVlN15c+IC1zaQ=;
+        s=korg; t=1658939485;
+        bh=ljxSfJEmWLh3FCXueOr70/5vy8YC0vANe67kfev0fKs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e2YbXtlCjksN+zW+xwIlKa8pDXTeZe7fg2umwWdzrqgq077JAbrqGwYs3q9SWyIJ9
-         HLZZ8lKDnu4hKNIrF6QX2HHdHt+1vbGAk2mPsmQIYnqxSZsNwfNNIx/GIVaBz1/irA
-         wLi2xl1GQTb/gctOMUf8adYGqUdybC7JxAKQ2D1U=
+        b=XJw8beJ0zSDXepzCZgfineEx8ooG5Nm09TYHUR1PL2YlOgkmP+rgqOirsaj303N0T
+         4TzGwhmfy071AhxNMCryGhxqvFA3weOWEXIvSDT+nJiRQErdF8CakNnKy5Aos/Vls9
+         tlz8pYvTLzSxBah7SG4/Xksr460aI9fAuWZbuErM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 54/87] tcp: Fix data-races around sysctl_tcp_max_reordering.
-Date:   Wed, 27 Jul 2022 18:10:47 +0200
-Message-Id: <20220727161011.260536841@linuxfoundation.org>
+Subject: [PATCH 5.4 45/87] udp: Fix a data-race around sysctl_udp_l3mdev_accept.
+Date:   Wed, 27 Jul 2022 18:10:38 +0200
+Message-Id: <20220727161010.877370593@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161008.993711844@linuxfoundation.org>
 References: <20220727161008.993711844@linuxfoundation.org>
@@ -51,41 +51,32 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit a11e5b3e7a59fde1a90b0eaeaa82320495cf8cae ]
+[ Upstream commit 3d72bb4188c708bb16758c60822fc4dda7a95174 ]
 
-While reading sysctl_tcp_max_reordering, it can be changed
-concurrently.  Thus, we need to add READ_ONCE() to its readers.
+While reading sysctl_udp_l3mdev_accept, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its reader.
 
-Fixes: dca145ffaa8d ("tcp: allow for bigger reordering level")
+Fixes: 63a6fff353d0 ("net: Avoid receiving packets with an l3mdev on unbound UDP sockets")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp_input.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ include/net/udp.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index f9884956aa13..c151c4dd4ae6 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -905,7 +905,7 @@ static void tcp_check_sack_reordering(struct sock *sk, const u32 low_seq,
- 			 tp->undo_marker ? tp->undo_retrans : 0);
- #endif
- 		tp->reordering = min_t(u32, (metric + mss - 1) / mss,
--				       sock_net(sk)->ipv4.sysctl_tcp_max_reordering);
-+				       READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_max_reordering));
- 	}
- 
- 	/* This exciting event is worth to be remembered. 8) */
-@@ -1886,7 +1886,7 @@ static void tcp_check_reno_reordering(struct sock *sk, const int addend)
- 		return;
- 
- 	tp->reordering = min_t(u32, tp->packets_out + addend,
--			       sock_net(sk)->ipv4.sysctl_tcp_max_reordering);
-+			       READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_max_reordering));
- 	tp->reord_seen++;
- 	NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPRENOREORDER);
- }
+diff --git a/include/net/udp.h b/include/net/udp.h
+index 9787a42f7ed3..e66854e767dc 100644
+--- a/include/net/udp.h
++++ b/include/net/udp.h
+@@ -252,7 +252,7 @@ static inline bool udp_sk_bound_dev_eq(struct net *net, int bound_dev_if,
+ 				       int dif, int sdif)
+ {
+ #if IS_ENABLED(CONFIG_NET_L3_MASTER_DEV)
+-	return inet_bound_dev_eq(!!net->ipv4.sysctl_udp_l3mdev_accept,
++	return inet_bound_dev_eq(!!READ_ONCE(net->ipv4.sysctl_udp_l3mdev_accept),
+ 				 bound_dev_if, dif, sdif);
+ #else
+ 	return inet_bound_dev_eq(true, bound_dev_if, dif, sdif);
 -- 
 2.35.1
 
