@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 068AAC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:41:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FFC7C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:41:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242875AbiG0Rlw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:41:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33902 "EHLO
+        id S242881AbiG0Rl4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:41:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242740AbiG0RlO (ORCPT
+        with ESMTP id S242830AbiG0RlT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:41:14 -0400
+        Wed, 27 Jul 2022 13:41:19 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B0F653D3D;
-        Wed, 27 Jul 2022 09:51:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B73B88E1D;
+        Wed, 27 Jul 2022 09:51:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 23EC160DDB;
-        Wed, 27 Jul 2022 16:51:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 080D9C433D7;
-        Wed, 27 Jul 2022 16:51:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E304616BD;
+        Wed, 27 Jul 2022 16:51:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D27AC433D6;
+        Wed, 27 Jul 2022 16:51:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940695;
-        bh=ZAE4Fdr+XHc995+dUbbMNpWrwfG+1pIU5PZ7h19nfZw=;
+        s=korg; t=1658940700;
+        bh=yaO39FCIkog0GdspnVXs1MhPwE03uqdlb4jPCvcewdM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rtUxwRBa1NP+UpP9wejZtQoUHSPFJh8KtrTd2U47MmlWZRhi4loWiGXSsmyanh9XR
-         LNUVbTqZcIrPh/o8dp1SRahMO0Jjaxd8pBEP8mmtb2TzW094vWgSqIyot4P2TIBr2i
-         nMSThrvKKxYnzi+Iy8v3VgSbjvaxQ9y0pAf3hRaI=
+        b=YYUV/6E6gtaIDdBkzybzV8htHNCHIS34I+/aUvOgrPkDtXaLfCqazFQ6H33T4mKi7
+         b/Fg+bTMNxS2tAu+nhHypZ/w3jZYZHGtsR76fb5UmxySqqape0ViMaKz2OetPjlM8F
+         +gLNsW32J2VthPkOvVysS1+uGVziypHmieyjnLjk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hristo Venev <hristo@venev.name>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 098/158] be2net: Fix buffer overflow in be_get_module_eeprom
-Date:   Wed, 27 Jul 2022 18:12:42 +0200
-Message-Id: <20220727161025.375372301@linuxfoundation.org>
+Subject: [PATCH 5.18 117/158] tcp: Fix data-races around sysctl knobs related to SYN option.
+Date:   Wed, 27 Jul 2022 18:13:01 +0200
+Message-Id: <20220727161026.153846951@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -49,142 +49,178 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hristo Venev <hristo@venev.name>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit d7241f679a59cfe27f92cb5c6272cb429fb1f7ec ]
+[ Upstream commit 3666f666e99600518ab20982af04a078bbdad277 ]
 
-be_cmd_read_port_transceiver_data assumes that it is given a buffer that
-is at least PAGE_DATA_LEN long, or twice that if the module supports SFF
-8472. However, this is not always the case.
+While reading these knobs, they can be changed concurrently.
+Thus, we need to add READ_ONCE() to their readers.
 
-Fix this by passing the desired offset and length to
-be_cmd_read_port_transceiver_data so that we only copy the bytes once.
+  - tcp_sack
+  - tcp_window_scaling
+  - tcp_timestamps
 
-Fixes: e36edd9d26cf ("be2net: add ethtool "-m" option support")
-Signed-off-by: Hristo Venev <hristo@venev.name>
-Link: https://lore.kernel.org/r/20220716085134.6095-1-hristo@venev.name
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/emulex/benet/be_cmds.c   | 10 +++---
- drivers/net/ethernet/emulex/benet/be_cmds.h   |  2 +-
- .../net/ethernet/emulex/benet/be_ethtool.c    | 31 ++++++++++++-------
- 3 files changed, 25 insertions(+), 18 deletions(-)
+ .../ethernet/chelsio/inline_crypto/chtls/chtls_cm.c    |  6 +++---
+ net/core/secure_seq.c                                  |  4 ++--
+ net/ipv4/syncookies.c                                  |  6 +++---
+ net/ipv4/tcp_input.c                                   |  6 +++---
+ net/ipv4/tcp_output.c                                  | 10 +++++-----
+ 5 files changed, 16 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/net/ethernet/emulex/benet/be_cmds.c b/drivers/net/ethernet/emulex/benet/be_cmds.c
-index 528eb0f223b1..b4f5e57d0285 100644
---- a/drivers/net/ethernet/emulex/benet/be_cmds.c
-+++ b/drivers/net/ethernet/emulex/benet/be_cmds.c
-@@ -2287,7 +2287,7 @@ int be_cmd_get_beacon_state(struct be_adapter *adapter, u8 port_num, u32 *state)
- 
- /* Uses sync mcc */
- int be_cmd_read_port_transceiver_data(struct be_adapter *adapter,
--				      u8 page_num, u8 *data)
-+				      u8 page_num, u32 off, u32 len, u8 *data)
- {
- 	struct be_dma_mem cmd;
- 	struct be_mcc_wrb *wrb;
-@@ -2321,10 +2321,10 @@ int be_cmd_read_port_transceiver_data(struct be_adapter *adapter,
- 	req->port = cpu_to_le32(adapter->hba_port_num);
- 	req->page_num = cpu_to_le32(page_num);
- 	status = be_mcc_notify_wait(adapter);
--	if (!status) {
-+	if (!status && len > 0) {
- 		struct be_cmd_resp_port_type *resp = cmd.va;
- 
--		memcpy(data, resp->page_data, PAGE_DATA_LEN);
-+		memcpy(data, resp->page_data + off, len);
+diff --git a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
+index 7c760aa65540..ddfe9208529a 100644
+--- a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
++++ b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
+@@ -1236,8 +1236,8 @@ static struct sock *chtls_recv_sock(struct sock *lsk,
+ 	csk->sndbuf = newsk->sk_sndbuf;
+ 	csk->smac_idx = ((struct port_info *)netdev_priv(ndev))->smt_idx;
+ 	RCV_WSCALE(tp) = select_rcv_wscale(tcp_full_space(newsk),
+-					   sock_net(newsk)->
+-						ipv4.sysctl_tcp_window_scaling,
++					   READ_ONCE(sock_net(newsk)->
++						     ipv4.sysctl_tcp_window_scaling),
+ 					   tp->window_clamp);
+ 	neigh_release(n);
+ 	inet_inherit_port(&tcp_hashinfo, lsk, newsk);
+@@ -1384,7 +1384,7 @@ static void chtls_pass_accept_request(struct sock *sk,
+ #endif
  	}
- err:
- 	mutex_unlock(&adapter->mcc_lock);
-@@ -2415,7 +2415,7 @@ int be_cmd_query_cable_type(struct be_adapter *adapter)
- 	int status;
- 
- 	status = be_cmd_read_port_transceiver_data(adapter, TR_PAGE_A0,
--						   page_data);
-+						   0, PAGE_DATA_LEN, page_data);
- 	if (!status) {
- 		switch (adapter->phy.interface_type) {
- 		case PHY_TYPE_QSFP:
-@@ -2440,7 +2440,7 @@ int be_cmd_query_sfp_info(struct be_adapter *adapter)
- 	int status;
- 
- 	status = be_cmd_read_port_transceiver_data(adapter, TR_PAGE_A0,
--						   page_data);
-+						   0, PAGE_DATA_LEN, page_data);
- 	if (!status) {
- 		strlcpy(adapter->phy.vendor_name, page_data +
- 			SFP_VENDOR_NAME_OFFSET, SFP_VENDOR_NAME_LEN - 1);
-diff --git a/drivers/net/ethernet/emulex/benet/be_cmds.h b/drivers/net/ethernet/emulex/benet/be_cmds.h
-index db1f3b908582..e2085c68c0ee 100644
---- a/drivers/net/ethernet/emulex/benet/be_cmds.h
-+++ b/drivers/net/ethernet/emulex/benet/be_cmds.h
-@@ -2427,7 +2427,7 @@ int be_cmd_set_beacon_state(struct be_adapter *adapter, u8 port_num, u8 beacon,
- int be_cmd_get_beacon_state(struct be_adapter *adapter, u8 port_num,
- 			    u32 *state);
- int be_cmd_read_port_transceiver_data(struct be_adapter *adapter,
--				      u8 page_num, u8 *data);
-+				      u8 page_num, u32 off, u32 len, u8 *data);
- int be_cmd_query_cable_type(struct be_adapter *adapter);
- int be_cmd_query_sfp_info(struct be_adapter *adapter);
- int lancer_cmd_read_object(struct be_adapter *adapter, struct be_dma_mem *cmd,
-diff --git a/drivers/net/ethernet/emulex/benet/be_ethtool.c b/drivers/net/ethernet/emulex/benet/be_ethtool.c
-index dfa784339781..bd0df189d871 100644
---- a/drivers/net/ethernet/emulex/benet/be_ethtool.c
-+++ b/drivers/net/ethernet/emulex/benet/be_ethtool.c
-@@ -1344,7 +1344,7 @@ static int be_get_module_info(struct net_device *netdev,
- 		return -EOPNOTSUPP;
- 
- 	status = be_cmd_read_port_transceiver_data(adapter, TR_PAGE_A0,
--						   page_data);
-+						   0, PAGE_DATA_LEN, page_data);
- 	if (!status) {
- 		if (!page_data[SFP_PLUS_SFF_8472_COMP]) {
- 			modinfo->type = ETH_MODULE_SFF_8079;
-@@ -1362,25 +1362,32 @@ static int be_get_module_eeprom(struct net_device *netdev,
- {
- 	struct be_adapter *adapter = netdev_priv(netdev);
- 	int status;
-+	u32 begin, end;
- 
- 	if (!check_privilege(adapter, MAX_PRIVILEGES))
- 		return -EOPNOTSUPP;
- 
--	status = be_cmd_read_port_transceiver_data(adapter, TR_PAGE_A0,
--						   data);
--	if (status)
--		goto err;
-+	begin = eeprom->offset;
-+	end = eeprom->offset + eeprom->len;
-+
-+	if (begin < PAGE_DATA_LEN) {
-+		status = be_cmd_read_port_transceiver_data(adapter, TR_PAGE_A0, begin,
-+							   min_t(u32, end, PAGE_DATA_LEN) - begin,
-+							   data);
-+		if (status)
-+			goto err;
-+
-+		data += PAGE_DATA_LEN - begin;
-+		begin = PAGE_DATA_LEN;
-+	}
- 
--	if (eeprom->offset + eeprom->len > PAGE_DATA_LEN) {
--		status = be_cmd_read_port_transceiver_data(adapter,
--							   TR_PAGE_A2,
--							   data +
--							   PAGE_DATA_LEN);
-+	if (end > PAGE_DATA_LEN) {
-+		status = be_cmd_read_port_transceiver_data(adapter, TR_PAGE_A2,
-+							   begin - PAGE_DATA_LEN,
-+							   end - begin, data);
- 		if (status)
- 			goto err;
+ 	if (req->tcpopt.wsf <= 14 &&
+-	    sock_net(sk)->ipv4.sysctl_tcp_window_scaling) {
++	    READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_window_scaling)) {
+ 		inet_rsk(oreq)->wscale_ok = 1;
+ 		inet_rsk(oreq)->snd_wscale = req->tcpopt.wsf;
  	}
--	if (eeprom->offset)
--		memcpy(data, data + eeprom->offset, eeprom->len);
- err:
- 	return be_cmd_status(status);
+diff --git a/net/core/secure_seq.c b/net/core/secure_seq.c
+index 5f85e01d4093..b0ff6153be62 100644
+--- a/net/core/secure_seq.c
++++ b/net/core/secure_seq.c
+@@ -64,7 +64,7 @@ u32 secure_tcpv6_ts_off(const struct net *net,
+ 		.daddr = *(struct in6_addr *)daddr,
+ 	};
+ 
+-	if (net->ipv4.sysctl_tcp_timestamps != 1)
++	if (READ_ONCE(net->ipv4.sysctl_tcp_timestamps) != 1)
+ 		return 0;
+ 
+ 	ts_secret_init();
+@@ -120,7 +120,7 @@ EXPORT_SYMBOL(secure_ipv6_port_ephemeral);
+ #ifdef CONFIG_INET
+ u32 secure_tcp_ts_off(const struct net *net, __be32 saddr, __be32 daddr)
+ {
+-	if (net->ipv4.sysctl_tcp_timestamps != 1)
++	if (READ_ONCE(net->ipv4.sysctl_tcp_timestamps) != 1)
+ 		return 0;
+ 
+ 	ts_secret_init();
+diff --git a/net/ipv4/syncookies.c b/net/ipv4/syncookies.c
+index 9b234b42021e..942d2dfa1115 100644
+--- a/net/ipv4/syncookies.c
++++ b/net/ipv4/syncookies.c
+@@ -247,12 +247,12 @@ bool cookie_timestamp_decode(const struct net *net,
+ 		return true;
+ 	}
+ 
+-	if (!net->ipv4.sysctl_tcp_timestamps)
++	if (!READ_ONCE(net->ipv4.sysctl_tcp_timestamps))
+ 		return false;
+ 
+ 	tcp_opt->sack_ok = (options & TS_OPT_SACK) ? TCP_SACK_SEEN : 0;
+ 
+-	if (tcp_opt->sack_ok && !net->ipv4.sysctl_tcp_sack)
++	if (tcp_opt->sack_ok && !READ_ONCE(net->ipv4.sysctl_tcp_sack))
+ 		return false;
+ 
+ 	if ((options & TS_OPT_WSCALE_MASK) == TS_OPT_WSCALE_MASK)
+@@ -261,7 +261,7 @@ bool cookie_timestamp_decode(const struct net *net,
+ 	tcp_opt->wscale_ok = 1;
+ 	tcp_opt->snd_wscale = options & TS_OPT_WSCALE_MASK;
+ 
+-	return net->ipv4.sysctl_tcp_window_scaling != 0;
++	return READ_ONCE(net->ipv4.sysctl_tcp_window_scaling) != 0;
  }
+ EXPORT_SYMBOL(cookie_timestamp_decode);
+ 
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index d8d903ef61f7..c2431fe41b09 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -4060,7 +4060,7 @@ void tcp_parse_options(const struct net *net,
+ 				break;
+ 			case TCPOPT_WINDOW:
+ 				if (opsize == TCPOLEN_WINDOW && th->syn &&
+-				    !estab && net->ipv4.sysctl_tcp_window_scaling) {
++				    !estab && READ_ONCE(net->ipv4.sysctl_tcp_window_scaling)) {
+ 					__u8 snd_wscale = *(__u8 *)ptr;
+ 					opt_rx->wscale_ok = 1;
+ 					if (snd_wscale > TCP_MAX_WSCALE) {
+@@ -4076,7 +4076,7 @@ void tcp_parse_options(const struct net *net,
+ 			case TCPOPT_TIMESTAMP:
+ 				if ((opsize == TCPOLEN_TIMESTAMP) &&
+ 				    ((estab && opt_rx->tstamp_ok) ||
+-				     (!estab && net->ipv4.sysctl_tcp_timestamps))) {
++				     (!estab && READ_ONCE(net->ipv4.sysctl_tcp_timestamps)))) {
+ 					opt_rx->saw_tstamp = 1;
+ 					opt_rx->rcv_tsval = get_unaligned_be32(ptr);
+ 					opt_rx->rcv_tsecr = get_unaligned_be32(ptr + 4);
+@@ -4084,7 +4084,7 @@ void tcp_parse_options(const struct net *net,
+ 				break;
+ 			case TCPOPT_SACK_PERM:
+ 				if (opsize == TCPOLEN_SACK_PERM && th->syn &&
+-				    !estab && net->ipv4.sysctl_tcp_sack) {
++				    !estab && READ_ONCE(net->ipv4.sysctl_tcp_sack)) {
+ 					opt_rx->sack_ok = TCP_SACK_SEEN;
+ 					tcp_sack_reset(opt_rx);
+ 				}
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index 3f20642c8171..be3e90b526d8 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -789,18 +789,18 @@ static unsigned int tcp_syn_options(struct sock *sk, struct sk_buff *skb,
+ 	opts->mss = tcp_advertise_mss(sk);
+ 	remaining -= TCPOLEN_MSS_ALIGNED;
+ 
+-	if (likely(sock_net(sk)->ipv4.sysctl_tcp_timestamps && !*md5)) {
++	if (likely(READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_timestamps) && !*md5)) {
+ 		opts->options |= OPTION_TS;
+ 		opts->tsval = tcp_skb_timestamp(skb) + tp->tsoffset;
+ 		opts->tsecr = tp->rx_opt.ts_recent;
+ 		remaining -= TCPOLEN_TSTAMP_ALIGNED;
+ 	}
+-	if (likely(sock_net(sk)->ipv4.sysctl_tcp_window_scaling)) {
++	if (likely(READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_window_scaling))) {
+ 		opts->ws = tp->rx_opt.rcv_wscale;
+ 		opts->options |= OPTION_WSCALE;
+ 		remaining -= TCPOLEN_WSCALE_ALIGNED;
+ 	}
+-	if (likely(sock_net(sk)->ipv4.sysctl_tcp_sack)) {
++	if (likely(READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_sack))) {
+ 		opts->options |= OPTION_SACK_ADVERTISE;
+ 		if (unlikely(!(OPTION_TS & opts->options)))
+ 			remaining -= TCPOLEN_SACKPERM_ALIGNED;
+@@ -3645,7 +3645,7 @@ static void tcp_connect_init(struct sock *sk)
+ 	 * See tcp_input.c:tcp_rcv_state_process case TCP_SYN_SENT.
+ 	 */
+ 	tp->tcp_header_len = sizeof(struct tcphdr);
+-	if (sock_net(sk)->ipv4.sysctl_tcp_timestamps)
++	if (READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_timestamps))
+ 		tp->tcp_header_len += TCPOLEN_TSTAMP_ALIGNED;
+ 
+ #ifdef CONFIG_TCP_MD5SIG
+@@ -3681,7 +3681,7 @@ static void tcp_connect_init(struct sock *sk)
+ 				  tp->advmss - (tp->rx_opt.ts_recent_stamp ? tp->tcp_header_len - sizeof(struct tcphdr) : 0),
+ 				  &tp->rcv_wnd,
+ 				  &tp->window_clamp,
+-				  sock_net(sk)->ipv4.sysctl_tcp_window_scaling,
++				  READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_window_scaling),
+ 				  &rcv_wscale,
+ 				  rcv_wnd);
+ 
 -- 
 2.35.1
 
