@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DC08C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:23:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC408C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:23:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234468AbiG0QXr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:23:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50306 "EHLO
+        id S235762AbiG0QXu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:23:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235274AbiG0QXD (ORCPT
+        with ESMTP id S235738AbiG0QXF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:23:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF7554D4D4;
-        Wed, 27 Jul 2022 09:22:47 -0700 (PDT)
+        Wed, 27 Jul 2022 12:23:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DAEB4D4DB;
+        Wed, 27 Jul 2022 09:22:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5543DB821B9;
-        Wed, 27 Jul 2022 16:22:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4C02C433D6;
-        Wed, 27 Jul 2022 16:22:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 55E52619CF;
+        Wed, 27 Jul 2022 16:22:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62B5CC433D6;
+        Wed, 27 Jul 2022 16:22:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658938965;
-        bh=c/C+6rDGOcAiWqodr+MtJYP73MB91fDH/+G5xugvWGM=;
+        s=korg; t=1658938967;
+        bh=UK1VOdXVVn5+yhhI/M4hguhOG81C+djP+Xywz0Dklko=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Bus0qQ9c3vZn99ai2GCnruMdwORC1KfUtkUhW6FiSelrIK/FWKJUWF1rdo1BbgtQ0
-         4jqvKu79LZhZozswPOzmH5314l60RCxOICLNLvR5j1/r7FpixT3R2BcvrMVwL3Psce
-         OglkFMHkr3oIHlpDZaOLQbOApdNF9dpWUWqZcfLM=
+        b=Ia3Fy2vIBKQ4s0c9p1+N3ANyi3443cGd6MyTlAF3o/yuQPt5/4nAx9camR8KzTz8P
+         jsI4uOiAAE25x1qFrChn6pvcf+gYyBAZY4t9Egw79W8nM/RQWWGdJMMeIG/MzI6zD4
+         8CDy+kz6US+Lrg+VzZ3uXw1v+tS6PiHKcXznuNwA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        stable@vger.kernel.org, Hillf Danton <hdanton@sina.com>,
+        =?UTF-8?q?=E4=B8=80=E5=8F=AA=E7=8B=97?= <chennbnbnb@gmail.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
         Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 4.9 23/26] tty: drop tty_schedule_flip()
-Date:   Wed, 27 Jul 2022 18:10:52 +0200
-Message-Id: <20220727161000.053931509@linuxfoundation.org>
+Subject: [PATCH 4.9 24/26] tty: extract tty_flip_buffer_commit() from tty_flip_buffer_push()
+Date:   Wed, 27 Jul 2022 18:10:53 +0200
+Message-Id: <20220727161000.083152864@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727160959.122591422@linuxfoundation.org>
 References: <20220727160959.122591422@linuxfoundation.org>
@@ -50,80 +52,50 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jiri Slaby <jslaby@suse.cz>
 
-commit 5db96ef23bda6c2a61a51693c85b78b52d03f654 upstream.
+commit 716b10580283fda66f2b88140e3964f8a7f9da89 upstream.
 
-Since commit a9c3f68f3cd8d (tty: Fix low_latency BUG) in 2014,
-tty_flip_buffer_push() is only a wrapper to tty_schedule_flip(). All
-users were converted in the previous patches, so remove
-tty_schedule_flip() completely while inlining its body into
-tty_flip_buffer_push().
+We will need this new helper in the next patch.
 
-One less exported function.
-
-Reviewed-by: Johan Hovold <johan@kernel.org>
+Cc: Hillf Danton <hdanton@sina.com>
+Cc: 一只狗 <chennbnbnb@gmail.com>
+Cc: Dan Carpenter <dan.carpenter@oracle.com>
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Link: https://lore.kernel.org/r/20211122111648.30379-4-jslaby@suse.cz
+Link: https://lore.kernel.org/r/20220707082558.9250-1-jslaby@suse.cz
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/tty_buffer.c |   30 ++++++++----------------------
- include/linux/tty_flip.h |    1 -
- 2 files changed, 8 insertions(+), 23 deletions(-)
+ drivers/tty/tty_buffer.c |   15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
 --- a/drivers/tty/tty_buffer.c
 +++ b/drivers/tty/tty_buffer.c
-@@ -389,27 +389,6 @@ int __tty_insert_flip_char(struct tty_po
- EXPORT_SYMBOL(__tty_insert_flip_char);
+@@ -526,6 +526,15 @@ static void flush_to_ldisc(struct work_s
+ 	tty_ldisc_deref(disc);
+ }
  
- /**
-- *	tty_schedule_flip	-	push characters to ldisc
-- *	@port: tty port to push from
-- *
-- *	Takes any pending buffers and transfers their ownership to the
-- *	ldisc side of the queue. It then schedules those characters for
-- *	processing by the line discipline.
-- */
--
--void tty_schedule_flip(struct tty_port *port)
--{
--	struct tty_bufhead *buf = &port->buf;
--
--	/* paired w/ acquire in flush_to_ldisc(); ensures
--	 * flush_to_ldisc() sees buffer data.
--	 */
--	smp_store_release(&buf->tail->commit, buf->tail->used);
--	queue_work(system_unbound_wq, &buf->work);
--}
--EXPORT_SYMBOL(tty_schedule_flip);
--
--/**
-  *	tty_prepare_flip_string		-	make room for characters
-  *	@port: tty port
-  *	@chars: return pointer for character write area
-@@ -560,7 +539,14 @@ static void flush_to_ldisc(struct work_s
- 
- void tty_flip_buffer_push(struct tty_port *port)
- {
--	tty_schedule_flip(port);
-+	struct tty_bufhead *buf = &port->buf;
-+
++static inline void tty_flip_buffer_commit(struct tty_buffer *tail)
++{
 +	/*
 +	 * Paired w/ acquire in flush_to_ldisc(); ensures flush_to_ldisc() sees
 +	 * buffer data.
 +	 */
-+	smp_store_release(&buf->tail->commit, buf->tail->used);
-+	queue_work(system_unbound_wq, &buf->work);
++	smp_store_release(&tail->commit, tail->used);
++}
++
+ /**
+  *	tty_flip_buffer_push	-	terminal
+  *	@port: tty port to push
+@@ -541,11 +550,7 @@ void tty_flip_buffer_push(struct tty_por
+ {
+ 	struct tty_bufhead *buf = &port->buf;
+ 
+-	/*
+-	 * Paired w/ acquire in flush_to_ldisc(); ensures flush_to_ldisc() sees
+-	 * buffer data.
+-	 */
+-	smp_store_release(&buf->tail->commit, buf->tail->used);
++	tty_flip_buffer_commit(buf->tail);
+ 	queue_work(system_unbound_wq, &buf->work);
  }
  EXPORT_SYMBOL(tty_flip_buffer_push);
- 
---- a/include/linux/tty_flip.h
-+++ b/include/linux/tty_flip.h
-@@ -11,7 +11,6 @@ extern int tty_insert_flip_string_fixed_
- extern int tty_prepare_flip_string(struct tty_port *port,
- 		unsigned char **chars, size_t size);
- extern void tty_flip_buffer_push(struct tty_port *port);
--void tty_schedule_flip(struct tty_port *port);
- int __tty_insert_flip_char(struct tty_port *port, unsigned char ch, char flag);
- 
- static inline int tty_insert_flip_char(struct tty_port *port,
 
 
