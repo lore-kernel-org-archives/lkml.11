@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A286AC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:56:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 214A5C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:56:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240804AbiG0Q4d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:56:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42360 "EHLO
+        id S236864AbiG0Q4h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:56:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241383AbiG0Qy4 (ORCPT
+        with ESMTP id S241430AbiG0QzB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:54:56 -0400
+        Wed, 27 Jul 2022 12:55:01 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 233C863925;
-        Wed, 27 Jul 2022 09:35:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E756565559;
+        Wed, 27 Jul 2022 09:35:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5FC0FB821B9;
-        Wed, 27 Jul 2022 16:35:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6E9AC433D6;
-        Wed, 27 Jul 2022 16:35:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1CC4AB821D0;
+        Wed, 27 Jul 2022 16:35:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BEC1C433D6;
+        Wed, 27 Jul 2022 16:35:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939749;
-        bh=jcHmUKIpsbENuhRrjItq3XN6dbKmx1M5yVCGYCxfTNo=;
+        s=korg; t=1658939754;
+        bh=Cy936C8SVsPPubLYOG/94Waq7eNxNHxkM7MYPpiGHsY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VdAWwWOh1uT/yYZf6P5hWs92Q4iQhPGMxAiFJ2ZhO/IdZTM6nYlQnWLMWtnbPl4W2
-         anjdoHlGz3gTHwIwyfydSfjz627qfcEGX1TSW7a9hwQnTG+OucrjZc8BuEAYU6+FVo
-         BbbbD+SPd4q1xv3TyT0quQzLh7BRJOu95gVD59v4=
+        b=qznnW9jb0cbzRB2qGD7oYcArHuJinS/tHQjG3UpoU49EsD6kM/tE/bB+Syw0MrMuW
+         68qzTfd8/QFVnRkMioVwpOxwN7JQfX6KzNgqIhtGAA5pIvGbh19y4m52GtYUq9l4eL
+         GXmxxR4t+P99vNT3meaEEn2Hy/ADvilbloSef2vA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dawid Lukwinski <dawid.lukwinski@intel.com>,
-        Jan Sokolowski <jan.sokolowski@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Haibo Chen <haibo.chen@nxp.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 058/105] i40e: Fix erroneous adapter reinitialization during recovery process
-Date:   Wed, 27 Jul 2022 18:10:44 +0200
-Message-Id: <20220727161014.411223227@linuxfoundation.org>
+Subject: [PATCH 5.10 060/105] gpio: pca953x: only use single read/write for No AI mode
+Date:   Wed, 27 Jul 2022 18:10:46 +0200
+Message-Id: <20220727161014.492653519@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161012.056867467@linuxfoundation.org>
 References: <20220727161012.056867467@linuxfoundation.org>
@@ -53,81 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dawid Lukwinski <dawid.lukwinski@intel.com>
+From: Haibo Chen <haibo.chen@nxp.com>
 
-[ Upstream commit f838a63369818faadec4ad1736cfbd20ab5da00e ]
+[ Upstream commit db8edaa09d7461ec08672a92a2eef63d5882bb79 ]
 
-Fix an issue when driver incorrectly detects state
-of recovery process and erroneously reinitializes interrupts,
-which results in a kernel error and call trace message.
+For the device use NO AI mode(not support auto address increment),
+only use the single read/write when config the regmap.
 
-The issue was caused by a combination of two factors:
-1. Assuming the EMP reset issued after completing
-firmware recovery means the whole recovery process is complete.
-2. Erroneous reinitialization of interrupt vector after detecting
-the above mentioned EMP reset.
+We meet issue on PCA9557PW on i.MX8QXP/DXL evk board, this device
+do not support AI mode, but when do the regmap sync, regmap will
+sync 3 byte data to register 1, logically this means write first
+data to register 1, write second data to register 2, write third data
+to register 3. But this device do not support AI mode, finally, these
+three data write only into register 1 one by one. the reault is the
+value of register 1 alway equal to the latest data, here is the third
+data, no operation happened on register 2 and register 3. This is
+not what we expect.
 
-Fixes (1) by changing how recovery state change is detected
-and (2) by adjusting the conditional expression to ensure using proper
-interrupt reinitialization method, depending on the situation.
-
-Fixes: 4ff0ee1af016 ("i40e: Introduce recovery mode support")
-Signed-off-by: Dawid Lukwinski <dawid.lukwinski@intel.com>
-Signed-off-by: Jan Sokolowski <jan.sokolowski@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Link: https://lore.kernel.org/r/20220715214542.2968762-1-anthony.l.nguyen@intel.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 49427232764d ("gpio: pca953x: Perform basic regmap conversion")
+Signed-off-by: Haibo Chen <haibo.chen@nxp.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/i40e/i40e_main.c | 13 +++++--------
- 1 file changed, 5 insertions(+), 8 deletions(-)
+ drivers/gpio/gpio-pca953x.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index 58453f7958df..11d4e3ba9af4 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -10187,7 +10187,7 @@ static int i40e_reset(struct i40e_pf *pf)
-  **/
- static void i40e_rebuild(struct i40e_pf *pf, bool reinit, bool lock_acquired)
- {
--	int old_recovery_mode_bit = test_bit(__I40E_RECOVERY_MODE, pf->state);
-+	const bool is_recovery_mode_reported = i40e_check_recovery_mode(pf);
- 	struct i40e_vsi *vsi = pf->vsi[pf->lan_vsi];
- 	struct i40e_hw *hw = &pf->hw;
- 	i40e_status ret;
-@@ -10195,13 +10195,11 @@ static void i40e_rebuild(struct i40e_pf *pf, bool reinit, bool lock_acquired)
- 	int v;
+diff --git a/drivers/gpio/gpio-pca953x.c b/drivers/gpio/gpio-pca953x.c
+index bb4ca064447e..bd7828e0f2f5 100644
+--- a/drivers/gpio/gpio-pca953x.c
++++ b/drivers/gpio/gpio-pca953x.c
+@@ -350,6 +350,9 @@ static const struct regmap_config pca953x_i2c_regmap = {
+ 	.reg_bits = 8,
+ 	.val_bits = 8,
  
- 	if (test_bit(__I40E_EMP_RESET_INTR_RECEIVED, pf->state) &&
--	    i40e_check_recovery_mode(pf)) {
-+	    is_recovery_mode_reported)
- 		i40e_set_ethtool_ops(pf->vsi[pf->lan_vsi]->netdev);
--	}
- 
- 	if (test_bit(__I40E_DOWN, pf->state) &&
--	    !test_bit(__I40E_RECOVERY_MODE, pf->state) &&
--	    !old_recovery_mode_bit)
-+	    !test_bit(__I40E_RECOVERY_MODE, pf->state))
- 		goto clear_recovery;
- 	dev_dbg(&pf->pdev->dev, "Rebuilding internal switch\n");
- 
-@@ -10228,13 +10226,12 @@ static void i40e_rebuild(struct i40e_pf *pf, bool reinit, bool lock_acquired)
- 	 * accordingly with regard to resources initialization
- 	 * and deinitialization
- 	 */
--	if (test_bit(__I40E_RECOVERY_MODE, pf->state) ||
--	    old_recovery_mode_bit) {
-+	if (test_bit(__I40E_RECOVERY_MODE, pf->state)) {
- 		if (i40e_get_capabilities(pf,
- 					  i40e_aqc_opc_list_func_capabilities))
- 			goto end_unlock;
- 
--		if (test_bit(__I40E_RECOVERY_MODE, pf->state)) {
-+		if (is_recovery_mode_reported) {
- 			/* we're staying in recovery mode so we'll reinitialize
- 			 * misc vector here
- 			 */
++	.use_single_read = true,
++	.use_single_write = true,
++
+ 	.readable_reg = pca953x_readable_register,
+ 	.writeable_reg = pca953x_writeable_register,
+ 	.volatile_reg = pca953x_volatile_register,
 -- 
 2.35.1
 
