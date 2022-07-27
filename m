@@ -2,133 +2,216 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ADCBC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:11:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDFF4C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:12:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231434AbiG0RLx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:11:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48684 "EHLO
+        id S241506AbiG0RMK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:12:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229580AbiG0RLT (ORCPT
+        with ESMTP id S241523AbiG0RLi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:11:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3811474DCD;
-        Wed, 27 Jul 2022 09:41:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7803AB821D4;
-        Wed, 27 Jul 2022 16:41:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B199BC433C1;
-        Wed, 27 Jul 2022 16:41:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940088;
-        bh=0kYquqDGhF8Z1zRpTW2BhTWtRXVOwSnNBp010GmvBlM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D1d6s3zmfXxDwQs4GghpmFC214OgxFmxEN0qPc15JEaoYA3JZswzXjoCajywa+H64
-         Ty4tqdygo82ocrYdR5o7DwRUbDM3pw8qn0Whl4ZgtsQbV8W/+9OXwi9EOW3FPL5jJH
-         6zP93/vqa5VDkeo61uFThIpHI5rNUKY2Al7KQ6P8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        Yuchung Cheng <ycheng@google.com>,
+        Wed, 27 Jul 2022 13:11:38 -0400
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FBED74DFC
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:41:40 -0700 (PDT)
+Received: by mail-lj1-x22f.google.com with SMTP id q7so4997629ljp.13
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:41:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EjrmIY6br0JwMML5I5IsH4l21ubS3Zd2UVsxfz0zrWQ=;
+        b=jMMOnDuOyvT5MjTFryYduQK/RY48LBB89wkU1nKr3g22oGREE8Wlw5ovuddGmk1777
+         C5oyCsNSgVwjzgaMVV3lrx/A9RSJXDUlw/6oRB6h95ewv0MRYNZ7JaiAXafHdi/AaMoR
+         gwFiup9G4e394tdCjmRY8aQCKVjQndYSllXn3/tYsHVyAWsURSC+28LRzBtd1L9bG7tW
+         YcSv/hu6PKMNjl/xVP/hN/HMu56kKFibCPKwO7n4NY8kpwTbTHQWwmbX1/BKLClzbw6G
+         yiXqWnuj7YDnyDJ+zjd+XmiqP+SZbgUPMDOKgb7mr1M6reSluGSe2P2BR3fy+KXy9Km8
+         e9bg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EjrmIY6br0JwMML5I5IsH4l21ubS3Zd2UVsxfz0zrWQ=;
+        b=4Gaoib68uGwTSEfiwaHtxtxHlqXJVovRYQ3N/quCmd9Irga45Ujr2uPmiHIQv/AmaT
+         mWF4rtqP1vKwVN1LlybYxYzzQWCBZQv35Wqea0FQftX0PSle/fVxf0XQdzOry2uwfjVH
+         QqVdkhwBaN6TNSIMgescEDPFhBj3egVN+9tRobMdnI3/FzhuwK7I0gmO8GayOIpLUvWM
+         QGi2OpIx4zl+ncH4xw9fdGYx2RojEoZ3XaEorKRDibADromwSmsxkvmkU1ZaN6w7GSF1
+         Ym1h5NA8Uqg0STlsqWlZIiQIe8BexvYum4YfC6Y3GWrlFB0+tWrxvbVFjHlla8gFfcIl
+         UoBA==
+X-Gm-Message-State: AJIora82fLsx3ehyhvYE/LWJZcTUZp0fulz3/nhbRJwrVCPVva+f3aWK
+        3cqKETx88RMN7JGGexTv4WsNNQ==
+X-Google-Smtp-Source: AGRyM1tbxmt+m0wPQaDPBmSI4ZOiMzOv0P2lpYBxlI5htHP/NbFnJvzztwcBcIVithfgzBx/B6J3Aw==
+X-Received: by 2002:a05:651c:1587:b0:25d:7844:5910 with SMTP id h7-20020a05651c158700b0025d78445910mr8508285ljq.325.1658940093266;
+        Wed, 27 Jul 2022 09:41:33 -0700 (PDT)
+Received: from krzk-bin.lan (78-26-46-173.network.trollfjord.no. [78.26.46.173])
+        by smtp.gmail.com with ESMTPSA id i17-20020a2ea231000000b0025a67779931sm3872519ljm.57.2022.07.27.09.41.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jul 2022 09:41:32 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 099/201] tcp: Fix data-races around sysctl_tcp_fastopen.
-Date:   Wed, 27 Jul 2022 18:10:03 +0200
-Message-Id: <20220727161031.855970463@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
-References: <20220727161026.977588183@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Greer <mgreer@animalcreek.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        =?UTF-8?q?J=C3=A9r=C3=B4me=20Pouiller?= 
+        <jerome.pouiller@silabs.com>,
+        Adham Abozaeid <adham.abozaeid@microchip.com>,
+        Ajay Singh <ajay.kathat@microchip.com>,
+        Tony Lindgren <tony@atomide.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-wireless@vger.kernel.org
+Subject: [PATCH 1/2] dt-bindings: nfc: use spi-peripheral-props.yaml
+Date:   Wed, 27 Jul 2022 18:41:29 +0200
+Message-Id: <20220727164130.385411-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+Instead of listing directly properties typical for SPI peripherals,
+reference the spi-peripheral-props.yaml schema.  This allows using all
+properties typical for SPI-connected devices, even these which device
+bindings author did not tried yet.
 
-[ Upstream commit 5a54213318c43f4009ae158347aa6016e3b9b55a ]
+Remove the spi-* properties which now come via spi-peripheral-props.yaml
+schema, except for the cases when device schema adds some constraints
+like maximum frequency.
 
-While reading sysctl_tcp_fastopen, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its readers.
+While changing additionalProperties->unevaluatedProperties, put it in
+typical place, just before example DTS.
 
-Fixes: 2100c8d2d9db ("net-tcp: Fast Open base")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Acked-by: Yuchung Cheng <ycheng@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
 ---
- net/ipv4/af_inet.c      | 2 +-
- net/ipv4/tcp.c          | 6 ++++--
- net/ipv4/tcp_fastopen.c | 4 ++--
- 3 files changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-index 781c595f6880..e4b2ced66261 100644
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -220,7 +220,7 @@ int inet_listen(struct socket *sock, int backlog)
- 		 * because the socket was in TCP_LISTEN state previously but
- 		 * was shutdown() rather than close().
- 		 */
--		tcp_fastopen = sock_net(sk)->ipv4.sysctl_tcp_fastopen;
-+		tcp_fastopen = READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_fastopen);
- 		if ((tcp_fastopen & TFO_SERVER_WO_SOCKOPT1) &&
- 		    (tcp_fastopen & TFO_SERVER_ENABLE) &&
- 		    !inet_csk(sk)->icsk_accept_queue.fastopenq.max_qlen) {
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index f853f34dfb79..1abdb8712655 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -1159,7 +1159,8 @@ static int tcp_sendmsg_fastopen(struct sock *sk, struct msghdr *msg,
- 	struct sockaddr *uaddr = msg->msg_name;
- 	int err, flags;
+Technically, this depends on [1] merged to SPI tree, if we want to
+preserve existing behavior of not allowing SPI CPHA and CPOL in each of
+schemas in this patch.
+
+If this patch comes independently via different tree, the SPI CPHA and
+CPOL will be allowed for brief period of time, before [1] is merged.
+This will not have negative impact, just DT schema checks will be
+loosened for that period.
+
+[1] https://lore.kernel.org/all/20220722191539.90641-2-krzysztof.kozlowski@linaro.org/
+---
+ Documentation/devicetree/bindings/net/nfc/marvell,nci.yaml | 4 ++--
+ Documentation/devicetree/bindings/net/nfc/st,st-nci.yaml   | 5 ++---
+ Documentation/devicetree/bindings/net/nfc/st,st95hf.yaml   | 7 ++++---
+ Documentation/devicetree/bindings/net/nfc/ti,trf7970a.yaml | 7 ++++---
+ 4 files changed, 12 insertions(+), 11 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/net/nfc/marvell,nci.yaml b/Documentation/devicetree/bindings/net/nfc/marvell,nci.yaml
+index 1bcaf6ba822c..a191a04e681c 100644
+--- a/Documentation/devicetree/bindings/net/nfc/marvell,nci.yaml
++++ b/Documentation/devicetree/bindings/net/nfc/marvell,nci.yaml
+@@ -58,7 +58,6 @@ properties:
  
--	if (!(sock_net(sk)->ipv4.sysctl_tcp_fastopen & TFO_CLIENT_ENABLE) ||
-+	if (!(READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_fastopen) &
-+	      TFO_CLIENT_ENABLE) ||
- 	    (uaddr && msg->msg_namelen >= sizeof(uaddr->sa_family) &&
- 	     uaddr->sa_family == AF_UNSPEC))
- 		return -EOPNOTSUPP;
-@@ -3626,7 +3627,8 @@ static int do_tcp_setsockopt(struct sock *sk, int level, int optname,
- 	case TCP_FASTOPEN_CONNECT:
- 		if (val > 1 || val < 0) {
- 			err = -EINVAL;
--		} else if (net->ipv4.sysctl_tcp_fastopen & TFO_CLIENT_ENABLE) {
-+		} else if (READ_ONCE(net->ipv4.sysctl_tcp_fastopen) &
-+			   TFO_CLIENT_ENABLE) {
- 			if (sk->sk_state == TCP_CLOSE)
- 				tp->fastopen_connect = val;
- 			else
-diff --git a/net/ipv4/tcp_fastopen.c b/net/ipv4/tcp_fastopen.c
-index 59412d6354a0..936544a4753e 100644
---- a/net/ipv4/tcp_fastopen.c
-+++ b/net/ipv4/tcp_fastopen.c
-@@ -338,7 +338,7 @@ static bool tcp_fastopen_no_cookie(const struct sock *sk,
- 				   const struct dst_entry *dst,
- 				   int flag)
- {
--	return (sock_net(sk)->ipv4.sysctl_tcp_fastopen & flag) ||
-+	return (READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_fastopen) & flag) ||
- 	       tcp_sk(sk)->fastopen_no_cookie ||
- 	       (dst && dst_metric(dst, RTAX_FASTOPEN_NO_COOKIE));
- }
-@@ -353,7 +353,7 @@ struct sock *tcp_try_fastopen(struct sock *sk, struct sk_buff *skb,
- 			      const struct dst_entry *dst)
- {
- 	bool syn_data = TCP_SKB_CB(skb)->end_seq != TCP_SKB_CB(skb)->seq + 1;
--	int tcp_fastopen = sock_net(sk)->ipv4.sysctl_tcp_fastopen;
-+	int tcp_fastopen = READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_fastopen);
- 	struct tcp_fastopen_cookie valid_foc = { .len = -1 };
- 	struct sock *child;
- 	int ret = 0;
+   spi-cpha: true
+   spi-cpol: true
+-  spi-max-frequency: true
+ 
+ required:
+   - compatible
+@@ -85,6 +84,7 @@ allOf:
+           contains:
+             const: marvell,nfc-spi
+     then:
++      $ref: /schemas/spi/spi-peripheral-props.yaml#
+       properties:
+         break-control: false
+         flow-control: false
+@@ -108,7 +108,7 @@ allOf:
+         spi-max-frequency: false
+         reg: false
+ 
+-additionalProperties: false
++unevaluatedProperties: false
+ 
+ examples:
+   - |
+diff --git a/Documentation/devicetree/bindings/net/nfc/st,st-nci.yaml b/Documentation/devicetree/bindings/net/nfc/st,st-nci.yaml
+index ef1155038a2f..1dcbddbc5a74 100644
+--- a/Documentation/devicetree/bindings/net/nfc/st,st-nci.yaml
++++ b/Documentation/devicetree/bindings/net/nfc/st,st-nci.yaml
+@@ -30,8 +30,6 @@ properties:
+   reg:
+     maxItems: 1
+ 
+-  spi-max-frequency: true
+-
+   uicc-present:
+     type: boolean
+     description: |
+@@ -55,10 +53,11 @@ then:
+   properties:
+     spi-max-frequency: false
+ else:
++  $ref: /schemas/spi/spi-peripheral-props.yaml#
+   required:
+     - spi-max-frequency
+ 
+-additionalProperties: false
++unevaluatedProperties: false
+ 
+ examples:
+   - |
+diff --git a/Documentation/devicetree/bindings/net/nfc/st,st95hf.yaml b/Documentation/devicetree/bindings/net/nfc/st,st95hf.yaml
+index 963d9531a856..647569051ed8 100644
+--- a/Documentation/devicetree/bindings/net/nfc/st,st95hf.yaml
++++ b/Documentation/devicetree/bindings/net/nfc/st,st95hf.yaml
+@@ -25,8 +25,6 @@ properties:
+   st95hfvin-supply:
+     description: ST95HF transceiver's Vin regulator supply
+ 
+-  spi-max-frequency: true
+-
+ required:
+   - compatible
+   - enable-gpio
+@@ -34,7 +32,10 @@ required:
+   - reg
+   - spi-max-frequency
+ 
+-additionalProperties: false
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++
++unevaluatedProperties: false
+ 
+ examples:
+   - |
+diff --git a/Documentation/devicetree/bindings/net/nfc/ti,trf7970a.yaml b/Documentation/devicetree/bindings/net/nfc/ti,trf7970a.yaml
+index 404c8df99364..9cc236ec42f2 100644
+--- a/Documentation/devicetree/bindings/net/nfc/ti,trf7970a.yaml
++++ b/Documentation/devicetree/bindings/net/nfc/ti,trf7970a.yaml
+@@ -40,8 +40,6 @@ properties:
+   reg:
+     maxItems: 1
+ 
+-  spi-max-frequency: true
+-
+   ti,enable-gpios:
+     minItems: 1
+     maxItems: 2
+@@ -65,7 +63,10 @@ required:
+   - ti,enable-gpios
+   - vin-supply
+ 
+-additionalProperties: false
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++
++unevaluatedProperties: false
+ 
+ examples:
+   - |
 -- 
-2.35.1
-
-
+2.34.1
 
