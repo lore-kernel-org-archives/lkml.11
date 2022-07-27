@@ -2,181 +2,266 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AF98C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:21:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75EB7C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:21:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233009AbiG0QVY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:21:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48272 "EHLO
+        id S234403AbiG0QVd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:21:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229763AbiG0QVW (ORCPT
+        with ESMTP id S233758AbiG0QVa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:21:22 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2070.outbound.protection.outlook.com [40.107.220.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5F4D2BB04;
-        Wed, 27 Jul 2022 09:21:20 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YuBh4bfuEK+BLfsmqmIlOzc0VjlAZfjEllYry+KX2m7FeHESiDEWpoKpOmdV+uIMYWv/Oi2hqcm8SdpidbSqWqUuTe1NEXZtCl2xmp4OoXSMpHfP+ICEcq47bREsAnlvvRgASwiJh3/GK4+WWTv6HplPobJl2Xifb9EZXfBIUdNO2Ta9HjA6hNVHbIdM7bmzO+DTfhlJhSB9IbSzUtPI4fQJfACVLqoZXWPiGAR4hkuwpOSjuXpeqZ+sFgWtGpX0VnFDfa0jJ7DtJibmqS6tsbPqXAxXJS3G4HyY2yES5yuV1obE57ppwF+WMyBC7SiGFmJxAdCRPGDYsxnVq4SydQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=F0noXTyBrKreQcV4SKZMRcxe1FkKuaNE+H5WCYFNNdA=;
- b=jHitKlaDvkcEGTZQDU0Di7Cl0/v2gwafu8BlK8nsyOkPWJuYtyEOfFr51ByF01srMdC06GXOq3Wx9gJvT6ZkkVbsjSxLLq/Rjc5Lw62vReGDpCrR5YAe0QVuEbflekEog8GzYg/pEtDu6uo/Yp2MHT4tTlwuAT75dE5sbGOcLcJcZcprWzf0lzd3xCexH/jeBR2YJ2hS8HW6UqeNAPIOyiKqkzpf0JffnLzIQ0iesu2+R6KwZgqvPnfHAVT8dhkfVNV+2tRubGtHVqd+itSvgrLyeXlua9LY3QjeZvbtOa2+56wO5ANMk4yf/icv5qEg6PVI4WuY7PxrTebW1wSclQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=F0noXTyBrKreQcV4SKZMRcxe1FkKuaNE+H5WCYFNNdA=;
- b=yPHh5f1+2agnHItNltVGsNN5y8Mm56Ah4C8sK777KSDRnWP7ogBk/soeYEDXCwnMIS9rH9n2aeVTf42YfTdFMepx3u3PokMxR1G4PQiM8eik7aQgX9fw60AArsLbXsGR0A3Q9ByImpkNumxfFPuce11pE18Y0f+aTwDrO9BZN4o=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from MN2PR12MB2941.namprd12.prod.outlook.com (2603:10b6:208:a9::12)
- by SN7PR12MB6863.namprd12.prod.outlook.com (2603:10b6:806:264::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.19; Wed, 27 Jul
- 2022 16:21:19 +0000
-Received: from MN2PR12MB2941.namprd12.prod.outlook.com
- ([fe80::d122:1dae:8445:2e43]) by MN2PR12MB2941.namprd12.prod.outlook.com
- ([fe80::d122:1dae:8445:2e43%7]) with mapi id 15.20.5458.024; Wed, 27 Jul 2022
- 16:21:19 +0000
-Message-ID: <f10da3c3-f688-b948-c058-28a448bec0d5@amd.com>
-Date:   Wed, 27 Jul 2022 12:21:17 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: linux-next: build failure after merge of the amdgpu tree
-Content-Language: en-US
-To:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Alex Deucher <alexdeucher@gmail.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-References: <20220725211612.7e3331ff@canb.auug.org.au>
-From:   Rodrigo Siqueira Jordao <Rodrigo.Siqueira@amd.com>
-In-Reply-To: <20220725211612.7e3331ff@canb.auug.org.au>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BL1PR13CA0344.namprd13.prod.outlook.com
- (2603:10b6:208:2c6::19) To MN2PR12MB2941.namprd12.prod.outlook.com
- (2603:10b6:208:a9::12)
+        Wed, 27 Jul 2022 12:21:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 844884B0DD;
+        Wed, 27 Jul 2022 09:21:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1EF9CB821B9;
+        Wed, 27 Jul 2022 16:21:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60452C433D6;
+        Wed, 27 Jul 2022 16:21:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658938884;
+        bh=8xn9SkNodxw1bPbX8y0h2pTKciuSRCgCxEkMiLnTFr0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=CKIKe+HuS7rCS/qWGVR1lEIFrzI84fOA20JAUSFJIrF2GJ6lp34X8VHNE+Wby7yHe
+         H9aiFtat3UvdyIVOZGxbxEyVQuaRQTsUHY2ftJxWtYyMyDWV2hcbKlANyskUImMiDE
+         XcE3Lt74j7T0h5R1AhTZRdnyX85dvBOSVWrH0hVA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, yangshukui <yangshukui@huawei.com>,
+        Stephen Smalley <sds@tycho.nsa.gov>,
+        Casey Schaufler <casey@schaufler-ca.com>,
+        Oleg Nesterov <oleg@redhat.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Alexander Grund <theflamefire89@gmail.com>
+Subject: [PATCH 4.9 01/26] security,selinux,smack: kill security_task_wait hook
+Date:   Wed, 27 Jul 2022 18:10:30 +0200
+Message-Id: <20220727160959.177769342@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220727160959.122591422@linuxfoundation.org>
+References: <20220727160959.122591422@linuxfoundation.org>
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c61f9c6d-6309-48de-b7b7-08da6fec0979
-X-MS-TrafficTypeDiagnostic: SN7PR12MB6863:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: aMVYvEIkKGsierZXF6e27xqp9S+dovsZoFIUw88L4B/w28Pd1R1OCu5ObDQ+/g+bGkdlSvn+ZDeoXvzq4W95FbU8BHn6jHdXqRXxzwM9ht3ODvv5KaBIN+Lt3qT8jHDX8vFtfY2x9TCKXbYrecEuSEIzL50C63E+BB4wkT2xu9aQtYn2fA+9DcTA1M+m69OYPmr2NlaVOwBLuxxzGomJpO0zAd/5nuaSJHtDgO9mch09CQAQ7Ne0k5z13tBcVAO4pXZ/jjp/krCFOiCkPlWfnJ2aH71PLUTgAg/I+3ciXhOhfnd9Aag+gA+CaoYWTvCcTwMEKxPWEV2ZtnfpfQxJsC+HBbfjVUI6eXn9jm1WD9Mk8krcr0b1a8E+lKSmFqEQ/ylDw4bUmfYqQHYmxfUnYohHfu7VY0I3ITL2FepWoNkkY9qiH53p+eb1jPIhCaOtkxJ2ORVpdk3afgI/kaLVDs8bh+b/2Hr5kbfJ6CHeZzGGfg4bqL7fIvuE7+PDTo1SZyl6gLSrGBQ95TPUpWyLRvvB2r0hL+aP3K3mF0ZP7mgNZKiOu8p5Jf6501x2B4hc6qZd9HKwx81rCxyV45638txZVMW/bZJhGN1gyU35WnSwRDp8E1n5MrAsLujC3n4wzMaqEjOUhTVIWK7oBLplSZDmZU6jbwiNxI5l9CRSVdUytvfu+bKACjtkY422zfuF6/eiNdzVbH41ua9UPD7f0TiUdJNieiajG+8ISLNaM9t88dhFR0S6wYlR8+UrHnzGaYUdpVykGhfFm+i+TMqJRlBh6oTMEeTO70s8sg7EqzGx2kkuaQYAdDNb2G1J1ZTxA3X2HbUZnBGJ5rUH2toqPQ/25bycdDTbFv0Xg1JGtQV71n+eX7axqn0gCVKWj7Mi
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB2941.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(366004)(346002)(376002)(396003)(39860400002)(4326008)(8676002)(478600001)(66476007)(66556008)(6486002)(36756003)(110136005)(5660300002)(8936002)(66946007)(966005)(31686004)(6506007)(6512007)(53546011)(26005)(41300700001)(186003)(316002)(54906003)(2906002)(83380400001)(2616005)(38100700002)(86362001)(31696002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?YmNnTUtkYTJyR29wblNIOWk0L1ZMb0lWcjhyb055anZjMEpKYm9SR09OTVI5?=
- =?utf-8?B?QWMwcHFIRmxOa2RpZ0NjY0lwUCsvYTdtU2RHYmN3N25ZN1FwcGNOVHgyc3Nl?=
- =?utf-8?B?QzVNMC9wTStmdUVHVDBwSHlZazNqU0R6aDBxdWkzYUhhMnVjNXFtd3o3bGM5?=
- =?utf-8?B?ekkrdmdCbTFWZ0pvVDRRaUV6N0ZWbWVBQ2lVeDBNQWlCYUpZN3hwL0UwKzFH?=
- =?utf-8?B?Q3pkZDYvNnZUY1hFdkYyVnErYWhOSVFYZWgwaGtiTnp6a1EwV2xNRlJNcEZG?=
- =?utf-8?B?SWp3ZE9mRE0xMzY2R29ETkhudDg5SlhRNFlYZGE4bFBBbkJrQWpXTWNaVnF2?=
- =?utf-8?B?R0VFTkNtRCtVRUZ1MllVYm8vb3pVM2dJbDVTZVVtYW5FUk84NmdjZVNPeGV2?=
- =?utf-8?B?MjZwT0Q3OE5mcjhNKzYycWJYVmVZeDYwOWZUMEI4OXdFeE43WTBkOXhjRU03?=
- =?utf-8?B?Y2wrV3M4dWg0YzZaTS9weFpYd1hjOHl6L1M3cktjbDlxQXhMeVFLeGovK3ZU?=
- =?utf-8?B?Q0l0TjdQeWU1MjJ0UjVpbWxuTWxGMktTTHNTeVVWcVgrS05DK2hxMlhFbXZq?=
- =?utf-8?B?NkI0R0dmZSt5dFRNdmlvdVdhdllySGxSZ3RRNDl1OXdCR1pZejFka002b1pn?=
- =?utf-8?B?elJaaU5ZQUlDbHNpd1M3K1gybUs0emkwd3hNRVgrTjlzVGI3VjVuWW9YeUF4?=
- =?utf-8?B?YTJZbnhkZHljcXZZKzIzSjdqTWloaUFGYmVjOGNWQjhpOU8yL1JLblFJNzRG?=
- =?utf-8?B?VDhlNEJXcERRWE5GRGpveXRQQkdONXhSSjVGcS9nNmxERHE1SnNjaXhJNlJo?=
- =?utf-8?B?NDViV1dDdkc5eVBBSG5obnppWkYwdjRJcGd5THY3RzlXdHNXQ1kzZk5zWTZS?=
- =?utf-8?B?N01LR1k5cStINzdsK3VCMkdKU1U4MEtzaktnL2hjekxwTlBMc3lTbzhQZUlS?=
- =?utf-8?B?dmwyMTgwZVpLUFFsUjNvOUdxVjNPZ3RHcUVoSUpUS1VBMnlMSTFwbURFSFgr?=
- =?utf-8?B?aE5keWtMYTBKM2tneVVURkdhY3Z3dVdWZUd0OC9TS0xTVXFnaHlqcmtqeS9q?=
- =?utf-8?B?c01ZTmpRZmI4VXlWYmZQN0UyY1BYakdBM0Z3ZnN4c0xQd1VQWlMwUDNzaVo4?=
- =?utf-8?B?VmNvM0RyQmhTOFRYQUtsa081MG1WbU9UUnBUWUc1TSs5d0hwd3ByZ2p6dmFq?=
- =?utf-8?B?NDh3Q0R1SXVQYldNb2UrcU1yeWgrY2FVZ2hmem9iQ0J6MmVmdW8xRnpKZkFv?=
- =?utf-8?B?enNKbEg3MWVLcHUyUlNQcnNwbUlqVFNYckpqOHcyS3NiT2lHRHZyT0xGK1ZW?=
- =?utf-8?B?QTV5RmJQdGswa0JrMm9RR1VzNnBNRUNRbE9haHAvUS8rL0RpS1o1eDdyNnRI?=
- =?utf-8?B?K2RTeFh6ZXEwY2pKaVpWa1dqNjhhcWd0Wm9lYzRxRHErRjNISVpUTlliWmkw?=
- =?utf-8?B?bnpPTDl2TjExZm4yNDFmRFZKUHNMUEs1d1lLL0RBeEsxWkFRbnBKM1BucFF1?=
- =?utf-8?B?SGF5OFliU216TTRqSHV2UisxakN5SUpWTVZiSU5xM2ZTTkptZmlsRmpxbzVn?=
- =?utf-8?B?eWVLUFZrVEhJODhoK0M5RGhVUHhTdlh2RTNwMUVLSk5mOUtXdGRlN2NYUWQ3?=
- =?utf-8?B?YWlZOWM4QTJINWkzWVg4OXRReGxkOFFoeWtwMG9KKzNvbFRONFdOSEtTWi94?=
- =?utf-8?B?ejk0dklIMzdydVNDeUhTU1lETzJ3amcvVUloSnVWN1Rvem42UURWQmZTTyto?=
- =?utf-8?B?UTFXSzdTTlhLa3QzT1dXQzUxdlV5TlNESGlraFFkdlFMNnVZY1dVN1R4cXJJ?=
- =?utf-8?B?bDlWZ3BpM1lpTlYwUkZibXUzSUx6S0lhcDR3RXVIUEx4ajdKTnkwY2JCVElR?=
- =?utf-8?B?dG82cHhYSDFva0w0eTFWL0ZhZVpHK2JaUHp6UWFwVVVseXdMN29JdnB5blRC?=
- =?utf-8?B?UTc2Wjl6Rldnei9CR3B6NWg0ZzRGRVZ4Rlk0c1JBUWY1WTBvWWNhY1hVREtk?=
- =?utf-8?B?blFNSnpqSXdLd0pwTmhIbmQ1dGh1cm54WVkrMHFxK29NcWJkcW5abDFHVktV?=
- =?utf-8?B?dGVnSis4NDN3NHJzS3VPK2h4M0loUjlXMnRoUVhaY2gveGJmcXlQaFcwc2sv?=
- =?utf-8?Q?wdoS8yBPkPzU3AdKO2XblwJgk?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c61f9c6d-6309-48de-b7b7-08da6fec0979
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB2941.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jul 2022 16:21:18.9689
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: uFJrb6Mby8B+fuBK0ja8hjJkXwzj9CXK7EGCbMI76m8XpZLKI42Rf9R6kmdwUP5p1sJoC2N/fXE1j5FolJ7B4g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB6863
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Stephen Smalley <sds@tycho.nsa.gov>
 
+commit 3a2f5a59a695a73e0cde9a61e0feae5fa730e936 upstream.
 
-On 2022-07-25 07:16, Stephen Rothwell wrote:
-> Hi all,
-> 
-> After merging the amdgpu tree, today's linux-next build (powerpc
-> allyesconfig) failed like this:
-> 
-> drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm_crtc.c:297:26: error: 'amdgpu_dm_crtc_late_register' undeclared here (not in a function); did you mean 'amdgpu_umc_ras_late_init'?
->    297 |         .late_register = amdgpu_dm_crtc_late_register,
->        |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
->        |                          amdgpu_umc_ras_late_init
-> 
-> Caused by commit
-> 
->    a6c0b96cb899 ("drm/amd/display: Create a file dedicated for CRTC")
-> 
-> I have applied the following hack for today (just to make it build).
-> 
-> From: Stephen Rothwell <sfr@canb.auug.org.au>
-> Date: Mon, 25 Jul 2022 20:48:29 +1000
-> Subject: [PATCH] fixup for "drm/amd/display: Create a file dedicated for CRTC"
-> 
-> Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> ---
->   drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_crtc.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_crtc.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_crtc.c
-> index 16b624828e0d..3eb6ea3709bc 100644
-> --- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_crtc.c
-> +++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_crtc.c
-> @@ -293,7 +293,7 @@ static const struct drm_crtc_funcs amdgpu_dm_crtc_funcs = {
->   	.enable_vblank = dm_enable_vblank,
->   	.disable_vblank = dm_disable_vblank,
->   	.get_vblank_timestamp = drm_crtc_vblank_helper_get_vblank_timestamp,
-> -#if defined(CONFIG_DEBUG_FS)
-> +#ifdef CONFIG_DRM_AMD_SECURE_DISPLAY
+As reported by yangshukui, a permission denial from security_task_wait()
+can lead to a soft lockup in zap_pid_ns_processes() since it only expects
+sys_wait4() to return 0 or -ECHILD. Further, security_task_wait() can
+in general lead to zombies; in the absence of some way to automatically
+reparent a child process upon a denial, the hook is not useful.  Remove
+the security hook and its implementations in SELinux and Smack.  Smack
+already removed its check from its hook.
 
-I guess we had a merge issue here?
+Reported-by: yangshukui <yangshukui@huawei.com>
+Signed-off-by: Stephen Smalley <sds@tycho.nsa.gov>
+Acked-by: Casey Schaufler <casey@schaufler-ca.com>
+Acked-by: Oleg Nesterov <oleg@redhat.com>
+Signed-off-by: Paul Moore <paul@paul-moore.com>
+Signed-off-by: Alexander Grund <theflamefire89@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ include/linux/lsm_hooks.h  |    7 -------
+ include/linux/security.h   |    6 ------
+ kernel/exit.c              |   19 ++-----------------
+ security/security.c        |    6 ------
+ security/selinux/hooks.c   |    6 ------
+ security/smack/smack_lsm.c |   20 --------------------
+ 6 files changed, 2 insertions(+), 62 deletions(-)
 
-If you check the original patch [1,2], you will see:
+--- a/include/linux/lsm_hooks.h
++++ b/include/linux/lsm_hooks.h
+@@ -666,11 +666,6 @@
+  *	@sig contains the signal value.
+  *	@secid contains the sid of the process where the signal originated
+  *	Return 0 if permission is granted.
+- * @task_wait:
+- *	Check permission before allowing a process to reap a child process @p
+- *	and collect its status information.
+- *	@p contains the task_struct for process.
+- *	Return 0 if permission is granted.
+  * @task_prctl:
+  *	Check permission before performing a process control operation on the
+  *	current process.
+@@ -1507,7 +1502,6 @@ union security_list_options {
+ 	int (*task_movememory)(struct task_struct *p);
+ 	int (*task_kill)(struct task_struct *p, struct siginfo *info,
+ 				int sig, u32 secid);
+-	int (*task_wait)(struct task_struct *p);
+ 	int (*task_prctl)(int option, unsigned long arg2, unsigned long arg3,
+ 				unsigned long arg4, unsigned long arg5);
+ 	void (*task_to_inode)(struct task_struct *p, struct inode *inode);
+@@ -1768,7 +1762,6 @@ struct security_hook_heads {
+ 	struct list_head task_getscheduler;
+ 	struct list_head task_movememory;
+ 	struct list_head task_kill;
+-	struct list_head task_wait;
+ 	struct list_head task_prctl;
+ 	struct list_head task_to_inode;
+ 	struct list_head ipc_permission;
+--- a/include/linux/security.h
++++ b/include/linux/security.h
+@@ -332,7 +332,6 @@ int security_task_getscheduler(struct ta
+ int security_task_movememory(struct task_struct *p);
+ int security_task_kill(struct task_struct *p, struct siginfo *info,
+ 			int sig, u32 secid);
+-int security_task_wait(struct task_struct *p);
+ int security_task_prctl(int option, unsigned long arg2, unsigned long arg3,
+ 			unsigned long arg4, unsigned long arg5);
+ void security_task_to_inode(struct task_struct *p, struct inode *inode);
+@@ -979,11 +978,6 @@ static inline int security_task_kill(str
+ {
+ 	return 0;
+ }
+-
+-static inline int security_task_wait(struct task_struct *p)
+-{
+-	return 0;
+-}
+ 
+ static inline int security_task_prctl(int option, unsigned long arg2,
+ 				      unsigned long arg3,
+--- a/kernel/exit.c
++++ b/kernel/exit.c
+@@ -14,7 +14,6 @@
+ #include <linux/tty.h>
+ #include <linux/iocontext.h>
+ #include <linux/key.h>
+-#include <linux/security.h>
+ #include <linux/cpu.h>
+ #include <linux/acct.h>
+ #include <linux/tsacct_kern.h>
+@@ -1342,7 +1341,7 @@ static int wait_task_continued(struct wa
+  * Returns nonzero for a final return, when we have unlocked tasklist_lock.
+  * Returns zero if the search for a child should continue;
+  * then ->notask_error is 0 if @p is an eligible child,
+- * or another error from security_task_wait(), or still -ECHILD.
++ * or still -ECHILD.
+  */
+ static int wait_consider_task(struct wait_opts *wo, int ptrace,
+ 				struct task_struct *p)
+@@ -1362,20 +1361,6 @@ static int wait_consider_task(struct wai
+ 	if (!ret)
+ 		return ret;
+ 
+-	ret = security_task_wait(p);
+-	if (unlikely(ret < 0)) {
+-		/*
+-		 * If we have not yet seen any eligible child,
+-		 * then let this error code replace -ECHILD.
+-		 * A permission error will give the user a clue
+-		 * to look for security policy problems, rather
+-		 * than for mysterious wait bugs.
+-		 */
+-		if (wo->notask_error)
+-			wo->notask_error = ret;
+-		return 0;
+-	}
+-
+ 	if (unlikely(exit_state == EXIT_TRACE)) {
+ 		/*
+ 		 * ptrace == 0 means we are the natural parent. In this case
+@@ -1468,7 +1453,7 @@ static int wait_consider_task(struct wai
+  * Returns nonzero for a final return, when we have unlocked tasklist_lock.
+  * Returns zero if the search for a child should continue; then
+  * ->notask_error is 0 if there were any eligible children,
+- * or another error from security_task_wait(), or still -ECHILD.
++ * or still -ECHILD.
+  */
+ static int do_wait_thread(struct wait_opts *wo, struct task_struct *tsk)
+ {
+--- a/security/security.c
++++ b/security/security.c
+@@ -1032,11 +1032,6 @@ int security_task_kill(struct task_struc
+ 	return call_int_hook(task_kill, 0, p, info, sig, secid);
+ }
+ 
+-int security_task_wait(struct task_struct *p)
+-{
+-	return call_int_hook(task_wait, 0, p);
+-}
+-
+ int security_task_prctl(int option, unsigned long arg2, unsigned long arg3,
+ 			 unsigned long arg4, unsigned long arg5)
+ {
+@@ -1776,7 +1771,6 @@ struct security_hook_heads security_hook
+ 	.task_movememory =
+ 		LIST_HEAD_INIT(security_hook_heads.task_movememory),
+ 	.task_kill =	LIST_HEAD_INIT(security_hook_heads.task_kill),
+-	.task_wait =	LIST_HEAD_INIT(security_hook_heads.task_wait),
+ 	.task_prctl =	LIST_HEAD_INIT(security_hook_heads.task_prctl),
+ 	.task_to_inode =
+ 		LIST_HEAD_INIT(security_hook_heads.task_to_inode),
+--- a/security/selinux/hooks.c
++++ b/security/selinux/hooks.c
+@@ -3951,11 +3951,6 @@ static int selinux_task_kill(struct task
+ 	return rc;
+ }
+ 
+-static int selinux_task_wait(struct task_struct *p)
+-{
+-	return task_has_perm(p, current, PROCESS__SIGCHLD);
+-}
+-
+ static void selinux_task_to_inode(struct task_struct *p,
+ 				  struct inode *inode)
+ {
+@@ -6220,7 +6215,6 @@ static struct security_hook_list selinux
+ 	LSM_HOOK_INIT(task_getscheduler, selinux_task_getscheduler),
+ 	LSM_HOOK_INIT(task_movememory, selinux_task_movememory),
+ 	LSM_HOOK_INIT(task_kill, selinux_task_kill),
+-	LSM_HOOK_INIT(task_wait, selinux_task_wait),
+ 	LSM_HOOK_INIT(task_to_inode, selinux_task_to_inode),
+ 
+ 	LSM_HOOK_INIT(ipc_permission, selinux_ipc_permission),
+--- a/security/smack/smack_lsm.c
++++ b/security/smack/smack_lsm.c
+@@ -2277,25 +2277,6 @@ static int smack_task_kill(struct task_s
+ }
+ 
+ /**
+- * smack_task_wait - Smack access check for waiting
+- * @p: task to wait for
+- *
+- * Returns 0
+- */
+-static int smack_task_wait(struct task_struct *p)
+-{
+-	/*
+-	 * Allow the operation to succeed.
+-	 * Zombies are bad.
+-	 * In userless environments (e.g. phones) programs
+-	 * get marked with SMACK64EXEC and even if the parent
+-	 * and child shouldn't be talking the parent still
+-	 * may expect to know when the child exits.
+-	 */
+-	return 0;
+-}
+-
+-/**
+  * smack_task_to_inode - copy task smack into the inode blob
+  * @p: task to copy from
+  * @inode: inode to copy to
+@@ -4686,7 +4667,6 @@ static struct security_hook_list smack_h
+ 	LSM_HOOK_INIT(task_getscheduler, smack_task_getscheduler),
+ 	LSM_HOOK_INIT(task_movememory, smack_task_movememory),
+ 	LSM_HOOK_INIT(task_kill, smack_task_kill),
+-	LSM_HOOK_INIT(task_wait, smack_task_wait),
+ 	LSM_HOOK_INIT(task_to_inode, smack_task_to_inode),
+ 
+ 	LSM_HOOK_INIT(ipc_permission, smack_ipc_permission),
 
-+#if defined(CONFIG_DRM_AMD_SECURE_DISPLAY)
-+	.late_register = amdgpu_dm_crtc_late_register,
-+#endif
-
-Anyway, maybe you want to use the above code to keep both branches in sync.
-
-1. 
-https://lore.kernel.org/amd-gfx/20220715181705.1030401-10-Rodrigo.Siqueira@amd.com/
-2. 
-https://gitlab.freedesktop.org/agd5f/linux/-/blob/amd-staging-drm-next/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_crtc.c#L297
-
-Thanks
-Siqueira
-
->   	.late_register = amdgpu_dm_crtc_late_register,
->   #endif
->   };
 
