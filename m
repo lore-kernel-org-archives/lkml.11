@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEC0CC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:02:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1494C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:02:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235835AbiG0RCd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:02:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55646 "EHLO
+        id S232367AbiG0RCq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:02:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241071AbiG0RBw (ORCPT
+        with ESMTP id S241082AbiG0RCM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:01:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 993A36BC3F;
-        Wed, 27 Jul 2022 09:38:11 -0700 (PDT)
+        Wed, 27 Jul 2022 13:02:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 393FE6C11C;
+        Wed, 27 Jul 2022 09:38:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4003B601C0;
-        Wed, 27 Jul 2022 16:38:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27189C4347C;
-        Wed, 27 Jul 2022 16:38:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AC080B8200D;
+        Wed, 27 Jul 2022 16:37:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E12BBC433D7;
+        Wed, 27 Jul 2022 16:37:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939889;
-        bh=qciahCULP5+MXiyz1Szl9JSLA7bcPoY9oSWj26A68Xs=;
+        s=korg; t=1658939859;
+        bh=mPEUpCltEvoeCnadERliB+25tv9OoFIoS22pvdNZNYU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mMSNVCkjX2r/G326sSryVgNeYUc6wkWzf98wPqQtIhcWnPgTIQS0LODgfceY41jJQ
-         orwlpZwyCWAEuTppqhVFBbmpvzlkycYSxb/2+Lmc21q7b/QiXVeeJYLp7ZJdd/8cwH
-         dTgkZ22kFxgxmGGDmF46oz8WXFwF08F4JyKoiMYU=
+        b=tTm3X+xbNMxO5dsZcTY44AV3pkiF91hYYiqet1h3813doI7SczY5c2Fj2bUMF7J/5
+         xCTJHONCZO9644Eq7gVB5mLleodrooOjEKTvbj6FWtQ4bxyRUKcEdiKRjdVtdey/1G
+         rvLHquyFb/7da+yNxre5RF0BBnlqOR36J7omOdJU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mustafa Ismail <mustafa.ismail@intel.com>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 031/201] RDMA/irdma: Do not advertise 1GB page size for x722
-Date:   Wed, 27 Jul 2022 18:08:55 +0200
-Message-Id: <20220727161028.176894618@linuxfoundation.org>
+        stable@vger.kernel.org, Brian Foster <bfoster@redhat.com>,
+        Dave Chinner <dchinner@redhat.com>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        Leah Rumancik <leah.rumancik@gmail.com>
+Subject: [PATCH 5.15 023/201] xfs: rename the next_agno perag iteration variable
+Date:   Wed, 27 Jul 2022 18:08:47 +0200
+Message-Id: <20220727161027.866105909@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -50,87 +50,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mustafa Ismail <mustafa.ismail@intel.com>
+From: Brian Foster <bfoster@redhat.com>
 
-[ Upstream commit 5e8afb8792f3b6ae7ccf700f8c19225382636401 ]
+[ Upstream commit f1788b5e5ee25bedf00bb4d25f82b93820d61189 ]
 
-x722 does not support 1GB page size but the irdma driver incorrectly
-advertises 1GB page size support for x722 device to ib_core to compute the
-best page size to use on this MR.  This could lead to incorrect start
-offsets computed by hardware on the MR.
+Rename the next_agno variable to be consistent across the several
+iteration macros and shorten line length.
 
-Fixes: b48c24c2d710 ("RDMA/irdma: Implement device supported verb APIs")
-Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
-Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+[backport: dependency for 8ed004eb9d07a5d6114db3e97a166707c186262d]
+
+Signed-off-by: Brian Foster <bfoster@redhat.com>
+Reviewed-by: Dave Chinner <dchinner@redhat.com>
+Reviewed-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Leah Rumancik <leah.rumancik@gmail.com>
+Acked-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/hw/irdma/i40iw_hw.c  | 1 +
- drivers/infiniband/hw/irdma/icrdma_hw.c | 1 +
- drivers/infiniband/hw/irdma/irdma.h     | 1 +
- drivers/infiniband/hw/irdma/verbs.c     | 4 ++--
- 4 files changed, 5 insertions(+), 2 deletions(-)
+ fs/xfs/libxfs/xfs_ag.h |   18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/infiniband/hw/irdma/i40iw_hw.c b/drivers/infiniband/hw/irdma/i40iw_hw.c
-index 64148ad8a604..040d4e2b9767 100644
---- a/drivers/infiniband/hw/irdma/i40iw_hw.c
-+++ b/drivers/infiniband/hw/irdma/i40iw_hw.c
-@@ -202,6 +202,7 @@ void i40iw_init_hw(struct irdma_sc_dev *dev)
- 	dev->hw_attrs.uk_attrs.max_hw_read_sges = I40IW_MAX_SGE_RD;
- 	dev->hw_attrs.max_hw_device_pages = I40IW_MAX_PUSH_PAGE_COUNT;
- 	dev->hw_attrs.uk_attrs.max_hw_inline = I40IW_MAX_INLINE_DATA_SIZE;
-+	dev->hw_attrs.page_size_cap = SZ_4K | SZ_2M;
- 	dev->hw_attrs.max_hw_ird = I40IW_MAX_IRD_SIZE;
- 	dev->hw_attrs.max_hw_ord = I40IW_MAX_ORD_SIZE;
- 	dev->hw_attrs.max_hw_wqes = I40IW_MAX_WQ_ENTRIES;
-diff --git a/drivers/infiniband/hw/irdma/icrdma_hw.c b/drivers/infiniband/hw/irdma/icrdma_hw.c
-index cf53b17510cd..5986fd906308 100644
---- a/drivers/infiniband/hw/irdma/icrdma_hw.c
-+++ b/drivers/infiniband/hw/irdma/icrdma_hw.c
-@@ -139,6 +139,7 @@ void icrdma_init_hw(struct irdma_sc_dev *dev)
- 	dev->cqp_db = dev->hw_regs[IRDMA_CQPDB];
- 	dev->cq_ack_db = dev->hw_regs[IRDMA_CQACK];
- 	dev->irq_ops = &icrdma_irq_ops;
-+	dev->hw_attrs.page_size_cap = SZ_4K | SZ_2M | SZ_1G;
- 	dev->hw_attrs.max_hw_ird = ICRDMA_MAX_IRD_SIZE;
- 	dev->hw_attrs.max_hw_ord = ICRDMA_MAX_ORD_SIZE;
- 	dev->hw_attrs.max_stat_inst = ICRDMA_MAX_STATS_COUNT;
-diff --git a/drivers/infiniband/hw/irdma/irdma.h b/drivers/infiniband/hw/irdma/irdma.h
-index 46c12334c735..4789e85d717b 100644
---- a/drivers/infiniband/hw/irdma/irdma.h
-+++ b/drivers/infiniband/hw/irdma/irdma.h
-@@ -127,6 +127,7 @@ struct irdma_hw_attrs {
- 	u64 max_hw_outbound_msg_size;
- 	u64 max_hw_inbound_msg_size;
- 	u64 max_mr_size;
-+	u64 page_size_cap;
- 	u32 min_hw_qp_id;
- 	u32 min_hw_aeq_size;
- 	u32 max_hw_aeq_size;
-diff --git a/drivers/infiniband/hw/irdma/verbs.c b/drivers/infiniband/hw/irdma/verbs.c
-index 8a3ac4257e86..0eef46428691 100644
---- a/drivers/infiniband/hw/irdma/verbs.c
-+++ b/drivers/infiniband/hw/irdma/verbs.c
-@@ -29,7 +29,7 @@ static int irdma_query_device(struct ib_device *ibdev,
- 	props->vendor_part_id = pcidev->device;
+--- a/fs/xfs/libxfs/xfs_ag.h
++++ b/fs/xfs/libxfs/xfs_ag.h
+@@ -127,22 +127,22 @@ void xfs_perag_put(struct xfs_perag *pag
+ static inline struct xfs_perag *
+ xfs_perag_next(
+ 	struct xfs_perag	*pag,
+-	xfs_agnumber_t		*next_agno)
++	xfs_agnumber_t		*agno)
+ {
+ 	struct xfs_mount	*mp = pag->pag_mount;
  
- 	props->hw_ver = rf->pcidev->revision;
--	props->page_size_cap = SZ_4K | SZ_2M | SZ_1G;
-+	props->page_size_cap = hw_attrs->page_size_cap;
- 	props->max_mr_size = hw_attrs->max_mr_size;
- 	props->max_qp = rf->max_qp - rf->used_qps;
- 	props->max_qp_wr = hw_attrs->max_qp_wr;
-@@ -2776,7 +2776,7 @@ static struct ib_mr *irdma_reg_user_mr(struct ib_pd *pd, u64 start, u64 len,
+-	*next_agno = pag->pag_agno + 1;
++	*agno = pag->pag_agno + 1;
+ 	xfs_perag_put(pag);
+-	return xfs_perag_get(mp, *next_agno);
++	return xfs_perag_get(mp, *agno);
+ }
  
- 	if (req.reg_type == IRDMA_MEMREG_TYPE_MEM) {
- 		iwmr->page_size = ib_umem_find_best_pgsz(region,
--							 SZ_4K | SZ_2M | SZ_1G,
-+							 iwdev->rf->sc_dev.hw_attrs.page_size_cap,
- 							 virt);
- 		if (unlikely(!iwmr->page_size)) {
- 			kfree(iwmr);
--- 
-2.35.1
-
+-#define for_each_perag_range(mp, next_agno, end_agno, pag) \
+-	for ((pag) = xfs_perag_get((mp), (next_agno)); \
+-		(pag) != NULL && (next_agno) <= (end_agno); \
+-		(pag) = xfs_perag_next((pag), &(next_agno)))
++#define for_each_perag_range(mp, agno, end_agno, pag) \
++	for ((pag) = xfs_perag_get((mp), (agno)); \
++		(pag) != NULL && (agno) <= (end_agno); \
++		(pag) = xfs_perag_next((pag), &(agno)))
+ 
+-#define for_each_perag_from(mp, next_agno, pag) \
+-	for_each_perag_range((mp), (next_agno), (mp)->m_sb.sb_agcount, (pag))
++#define for_each_perag_from(mp, agno, pag) \
++	for_each_perag_range((mp), (agno), (mp)->m_sb.sb_agcount, (pag))
+ 
+ 
+ #define for_each_perag(mp, agno, pag) \
 
 
