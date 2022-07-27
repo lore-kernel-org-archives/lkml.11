@@ -2,156 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1913C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 09:09:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CABDC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 09:10:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231405AbiG0JJa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 05:09:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48378 "EHLO
+        id S231749AbiG0JKA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 05:10:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231627AbiG0JIv (ORCPT
+        with ESMTP id S231820AbiG0JJP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 05:08:51 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D483548CAB;
-        Wed, 27 Jul 2022 02:07:28 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id o12so15545661pfp.5;
-        Wed, 27 Jul 2022 02:07:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=WdjHuRxAl4NImVFIF4JC02Fp7SCGdh6XVUJ8vK99+aY=;
-        b=ncLcqy6RH5X84w9V5TliSJ1AfuprYyfl2xZtNKIjiMw6kvHmhS0O5CSH0oEQC/4Zxv
-         uzKCknzlSwrbjPrFa0KzpEE9mSfA08jHMAFZbEsZEshSUfFro5G23QZK/wo3dqc5duH0
-         Lol55r/HjF635EBQ9sDkVKT/vMOLrMp8XpkX6E2mpzUTOhtdWfFh6n2iEwz2bXk8M+cy
-         qiH4UTh0ad0thYxTN4FCNUQ8+kM3Ix49rS86xTQOvMQLVfi4MKnLw0+reJ5fkIs3DBjI
-         OQ9vHZUz34FlK+ni3Z9pVQ8GOkvhoHySepcgfyBRs3kh48I37PkvfyJbAywY9Lz+4AvP
-         VxUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=WdjHuRxAl4NImVFIF4JC02Fp7SCGdh6XVUJ8vK99+aY=;
-        b=JP/thpCMU3DhSoPSz9KMIlqzij2Kp75f39ZwxQBseIyERd7xuTTUFxPpbU3H3LJQI4
-         BgGBiAI8D0TNM+3qkX++vcwbYhdEPuoVBaTMcs5JJrBzLnuHWbEzhliBVYMrj9+krwJT
-         XrNvNqbougYfcyfiyuYX2P+PPkzmz5QN/034MM3Js2zKFsucih9YSR1vo0Uz0kneR6Er
-         5MhIN/H9EnKICY6NRBRqiI1YZiffXLdyrN/C0DY8c86tqKGm4Yb+w7eXsJO+FqepyZjW
-         6565Dk3wAr8Erq1OUlbonFaFkMmFj7EMciCWAMUfjQXAvVbMXiVLyNFrfaiA/TxOG3US
-         1grA==
-X-Gm-Message-State: AJIora871u0n6FR75rWgMk17H1dXHHq9zXptIMQEyLesmiIu//qLa+6t
-        GYgh+P12iKHlKGJPbbgzbCH26uTsO0jLDlVNSFgdQbfirymEjOE=
-X-Google-Smtp-Source: AGRyM1vH/AEHYfbs3aWF0iR26kLMNpggartHuW2PnZK1D5a+ET0ksgorCUOsRG+F8rVfm3t1ZwjFgIc1WMSfJSMwbOQ=
-X-Received: by 2002:a63:f809:0:b0:41b:4a4c:4fbf with SMTP id
- n9-20020a63f809000000b0041b4a4c4fbfmr1260766pgh.616.1658912848298; Wed, 27
- Jul 2022 02:07:28 -0700 (PDT)
+        Wed, 27 Jul 2022 05:09:15 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F1E448E9A;
+        Wed, 27 Jul 2022 02:07:37 -0700 (PDT)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Lt7CL67RQzkYM5;
+        Wed, 27 Jul 2022 17:05:02 +0800 (CST)
+Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 27 Jul 2022 17:06:19 +0800
+Received: from ubuntu1804.huawei.com (10.67.174.61) by
+ kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 27 Jul 2022 17:06:18 +0800
+From:   Yang Jihong <yangjihong1@huawei.com>
+To:     <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
+        <mark.rutland@arm.com>, <alexander.shishkin@linux.intel.com>,
+        <jolsa@kernel.org>, <namhyung@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>
+CC:     <pc@us.ibm.com>, <yhs@fb.com>, <andrii.nakryiko@gmail.com>,
+        <songliubraving@fb.com>, <yangjihong1@huawei.com>
+Subject: [RFC v4 11/17] perf kwork: Add softirq latency support
+Date:   Wed, 27 Jul 2022 17:03:24 +0800
+Message-ID: <20220727090330.107760-12-yangjihong1@huawei.com>
+X-Mailer: git-send-email 2.30.GIT
+In-Reply-To: <20220727090330.107760-1-yangjihong1@huawei.com>
+References: <20220727090330.107760-1-yangjihong1@huawei.com>
 MIME-Version: 1.0
-From:   Zheyu Ma <zheyuma97@gmail.com>
-Date:   Wed, 27 Jul 2022 17:07:17 +0800
-Message-ID: <CAMhUBjkps_2EAkbCpGuLiWVFObLkLuj=3UqbxcuENUNXMkbS9Q@mail.gmail.com>
-Subject: [BUG] video: fbdev: arkfb: Found a divide-by-zero bug which may cause DoS
-To:     Helge Deller <deller@gmx.de>
-Cc:     Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.174.61]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ kwepemm600003.china.huawei.com (7.193.23.202)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+Implements softirq latency function.
 
-I found a bug in the arkfb driver in the latest kernel, which may cause DoS.
+Test cases:
 
-The reason for this bug is that the user controls some input to ioctl,
-making 'mode' 0x7 on line 704, which causes hdiv = 1, hmul = 2, and if
-the pixclock is controlled to be 1, it will cause a division error in
-the function ark_set_pixclock().
+  # perf kwork -k softirq lat
 
-Here is a simple PoC:
+    Kwork Name                     | Cpu  | Avg delay     | Count     | Max delay     | Max delay start     | Max delay end       |
+   --------------------------------------------------------------------------------------------------------------------------------
+    (s)TIMER:1                     | 0006 |      1.048 ms |         1 |      1.048 ms |      44000.829759 s |      44000.830807 s |
+    (s)TIMER:1                     | 0001 |      1.008 ms |         4 |      3.434 ms |      43997.662069 s |      43997.665503 s |
+    (s)RCU:9                       | 0006 |      0.675 ms |         7 |      1.328 ms |      43997.670304 s |      43997.671632 s |
+    (s)RCU:9                       | 0000 |      0.414 ms |       701 |      3.996 ms |      43997.661170 s |      43997.665167 s |
+    (s)RCU:9                       | 0005 |      0.245 ms |        88 |      1.866 ms |      43997.683105 s |      43997.684971 s |
+    (s)SCHED:7                     | 0000 |      0.158 ms |       677 |      2.639 ms |      44004.785716 s |      44004.788355 s |
+    ... <SNIP> ...
+    (s)RCU:9                       | 0002 |      0.141 ms |       932 |      1.662 ms |      44005.010206 s |      44005.011868 s |
+    (s)RCU:9                       | 0003 |      0.129 ms |      2193 |      1.507 ms |      44006.010208 s |      44006.011715 s |
+    (s)TIMER:1                     | 0005 |      0.128 ms |         1 |      0.128 ms |      44007.820346 s |      44007.820474 s |
+    (s)SCHED:7                     | 0002 |      0.040 ms |      1731 |      0.211 ms |      44005.009237 s |      44005.009447 s |
+   --------------------------------------------------------------------------------------------------------------------------------
 
-#include <fcntl.h>
-#include <stdio.h>
-#include <sys/ioctl.h>
+  # perf kwork -k softirq lat -C 1,2
 
-typedef unsigned int __u32;
+    Kwork Name                     | Cpu  | Avg delay     | Count     | Max delay     | Max delay start     | Max delay end       |
+   --------------------------------------------------------------------------------------------------------------------------------
+    (s)TIMER:1                     | 0001 |      1.008 ms |         4 |      3.434 ms |      43997.662069 s |      43997.665503 s |
+    (s)RCU:9                       | 0001 |      0.216 ms |      1619 |      3.659 ms |      43997.662069 s |      43997.665727 s |
+    (s)RCU:9                       | 0002 |      0.141 ms |       932 |      1.662 ms |      44005.010206 s |      44005.011868 s |
+    (s)NET_RX:3                    | 0002 |      0.106 ms |         5 |      0.163 ms |      44005.012255 s |      44005.012418 s |
+    (s)TIMER:1                     | 0002 |      0.084 ms |         9 |      0.114 ms |      44005.009168 s |      44005.009282 s |
+    (s)SCHED:7                     | 0001 |      0.049 ms |       655 |      0.837 ms |      44005.707998 s |      44005.708835 s |
+    (s)SCHED:7                     | 0002 |      0.040 ms |      1731 |      0.211 ms |      44005.009237 s |      44005.009447 s |
+   --------------------------------------------------------------------------------------------------------------------------------
 
-#define FBIOPUT_VSCREENINFO 0x4601
+  # perf kwork -k softirq lat -n RCU
 
-struct fb_bitfield {
-__u32 offset; /* beginning of bitfield */
-__u32 length; /* length of bitfield */
-__u32 msb_right; /* != 0 : Most significant bit is */
-/* right */
-};
+    Kwork Name                     | Cpu  | Avg delay     | Count     | Max delay     | Max delay start     | Max delay end       |
+   --------------------------------------------------------------------------------------------------------------------------------
+    (s)RCU:9                       | 0006 |      0.675 ms |         7 |      1.328 ms |      43997.670304 s |      43997.671632 s |
+    (s)RCU:9                       | 0000 |      0.414 ms |       701 |      3.996 ms |      43997.661170 s |      43997.665167 s |
+    (s)RCU:9                       | 0005 |      0.245 ms |        88 |      1.866 ms |      43997.683105 s |      43997.684971 s |
+    (s)RCU:9                       | 0004 |      0.237 ms |        26 |      0.792 ms |      43997.683018 s |      43997.683810 s |
+    (s)RCU:9                       | 0007 |      0.217 ms |       140 |      1.335 ms |      43997.671080 s |      43997.672415 s |
+    (s)RCU:9                       | 0001 |      0.216 ms |      1619 |      3.659 ms |      43997.662069 s |      43997.665727 s |
+    (s)RCU:9                       | 0002 |      0.141 ms |       932 |      1.662 ms |      44005.010206 s |      44005.011868 s |
+    (s)RCU:9                       | 0003 |      0.129 ms |      2193 |      1.507 ms |      44006.010208 s |      44006.011715 s |
+   --------------------------------------------------------------------------------------------------------------------------------
 
-struct fb_var_screeninfo {
-__u32 xres; /* visible resolution */
-__u32 yres;
-__u32 xres_virtual; /* virtual resolution */
-__u32 yres_virtual;
-__u32 xoffset; /* offset from virtual to visible */
-__u32 yoffset; /* resolution */
+  # perf kwork -k softirq lat -s count,avg -n RCU
 
-__u32 bits_per_pixel; /* guess what */
-__u32 grayscale; /* 0 = color, 1 = grayscale, */
-/* >1 = FOURCC */
-struct fb_bitfield red; /* bitfield in fb mem if true color, */
-struct fb_bitfield green; /* else only length is significant */
-struct fb_bitfield blue;
-struct fb_bitfield transp; /* transparency */
+    Kwork Name                     | Cpu  | Avg delay     | Count     | Max delay     | Max delay start     | Max delay end       |
+   --------------------------------------------------------------------------------------------------------------------------------
+    (s)RCU:9                       | 0003 |      0.129 ms |      2193 |      1.507 ms |      44006.010208 s |      44006.011715 s |
+    (s)RCU:9                       | 0001 |      0.216 ms |      1619 |      3.659 ms |      43997.662069 s |      43997.665727 s |
+    (s)RCU:9                       | 0002 |      0.141 ms |       932 |      1.662 ms |      44005.010206 s |      44005.011868 s |
+    (s)RCU:9                       | 0000 |      0.414 ms |       701 |      3.996 ms |      43997.661170 s |      43997.665167 s |
+    (s)RCU:9                       | 0007 |      0.217 ms |       140 |      1.335 ms |      43997.671080 s |      43997.672415 s |
+    (s)RCU:9                       | 0005 |      0.245 ms |        88 |      1.866 ms |      43997.683105 s |      43997.684971 s |
+    (s)RCU:9                       | 0004 |      0.237 ms |        26 |      0.792 ms |      43997.683018 s |      43997.683810 s |
+    (s)RCU:9                       | 0006 |      0.675 ms |         7 |      1.328 ms |      43997.670304 s |      43997.671632 s |
+   --------------------------------------------------------------------------------------------------------------------------------
 
-__u32 nonstd; /* != 0 Non standard pixel format */
+  # perf kwork -k softirq lat --time 43997,
 
-__u32 activate; /* see FB_ACTIVATE_* */
+    Kwork Name                     | Cpu  | Avg delay     | Count     | Max delay     | Max delay start     | Max delay end       |
+   --------------------------------------------------------------------------------------------------------------------------------
+    (s)TIMER:1                     | 0006 |      1.048 ms |         1 |      1.048 ms |      44000.829759 s |      44000.830807 s |
+    (s)TIMER:1                     | 0001 |      1.008 ms |         4 |      3.434 ms |      43997.662069 s |      43997.665503 s |
+    (s)RCU:9                       | 0006 |      0.675 ms |         7 |      1.328 ms |      43997.670304 s |      43997.671632 s |
+    (s)RCU:9                       | 0000 |      0.414 ms |       701 |      3.996 ms |      43997.661170 s |      43997.665167 s |
+    (s)TIMER:1                     | 0004 |      0.083 ms |        21 |      0.127 ms |      44004.969171 s |      44004.969298 s |
+    ... <SNIP> ...
+    (s)SCHED:7                     | 0005 |      0.050 ms |         4 |      0.086 ms |      43997.684852 s |      43997.684938 s |
+    (s)SCHED:7                     | 0001 |      0.049 ms |       655 |      0.837 ms |      44005.707998 s |      44005.708835 s |
+    (s)SCHED:7                     | 0007 |      0.044 ms |       171 |      0.077 ms |      43997.943265 s |      43997.943342 s |
+    (s)SCHED:7                     | 0002 |      0.040 ms |      1731 |      0.211 ms |      44005.009237 s |      44005.009447 s |
+   --------------------------------------------------------------------------------------------------------------------------------
 
-__u32 height; /* height of picture in mm    */
-__u32 width; /* width of picture in mm     */
+Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
+---
+ tools/perf/builtin-kwork.c | 17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
 
-__u32 accel_flags; /* (OBSOLETE) see fb_info.flags */
+diff --git a/tools/perf/builtin-kwork.c b/tools/perf/builtin-kwork.c
+index acf87f929f01..c7d66b0f7f68 100644
+--- a/tools/perf/builtin-kwork.c
++++ b/tools/perf/builtin-kwork.c
+@@ -651,6 +651,21 @@ static struct kwork_class kwork_irq = {
+ };
+ 
+ static struct kwork_class kwork_softirq;
++static int process_softirq_raise_event(struct perf_tool *tool,
++				       struct evsel *evsel,
++				       struct perf_sample *sample,
++				       struct machine *machine)
++{
++	struct perf_kwork *kwork = container_of(tool, struct perf_kwork, tool);
++
++	if (kwork->tp_handler->raise_event) {
++		return kwork->tp_handler->raise_event(kwork, &kwork_softirq,
++						      evsel, sample, machine);
++	}
++
++	return 0;
++}
++
+ static int process_softirq_entry_event(struct perf_tool *tool,
+ 				       struct evsel *evsel,
+ 				       struct perf_sample *sample,
+@@ -682,7 +697,7 @@ static int process_softirq_exit_event(struct perf_tool *tool,
+ }
+ 
+ const struct evsel_str_handler softirq_tp_handlers[] = {
+-	{ "irq:softirq_raise", NULL, },
++	{ "irq:softirq_raise", process_softirq_raise_event, },
+ 	{ "irq:softirq_entry", process_softirq_entry_event, },
+ 	{ "irq:softirq_exit",  process_softirq_exit_event,  },
+ };
+-- 
+2.30.GIT
 
-/* Timing: All values in pixclocks, except pixclock (of course) */
-__u32 pixclock; /* pixel clock in ps (pico seconds) */
-__u32 left_margin; /* time from sync to picture */
-__u32 right_margin; /* time from picture to sync */
-__u32 upper_margin; /* time from sync to picture */
-__u32 lower_margin;
-__u32 hsync_len; /* length of horizontal sync */
-__u32 vsync_len; /* length of vertical sync */
-__u32 sync; /* see FB_SYNC_* */
-__u32 vmode; /* see FB_VMODE_* */
-__u32 rotate; /* angle we rotate counter clockwise */
-__u32 colorspace; /* colorspace for FOURCC-based modes */
-__u32 reserved[4]; /* Reserved for future compatibility */
-};
-
-struct fb_var_screeninfo var;
-
-int main(void) {
-int fd, ret;
-
-fd = open("/dev/fb0", O_RDONLY);
-if (fd < 0) {
-perror("Failed to open the device");
-return 1;
-}
-var.xres = 40;
-var.yres = 40;
-var.hsync_len = 1;
-var.vsync_len = 1;
-var.pixclock = 1;
-var.bits_per_pixel = 32;
-
-ret = ioctl(fd, FBIOPUT_VSCREENINFO, &var);
-if (ret < 0) {
-perror("Failed to call the ioctl");
-return 1;
-}
-return 0;
-}
-
-The easiest patch is to check the value of the argument 'pixclock' in
-the ark_set_pixclock function, but this is perhaps too late, should we
-do this check earlier? I'm not sure, so I'll report this bug to you.
-
-regards,
-
-Zheyu Ma
