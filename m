@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18B5BC19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:48:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFE86C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:48:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240574AbiG0Qsm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:48:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42816 "EHLO
+        id S240590AbiG0Qsr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:48:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240314AbiG0QsD (ORCPT
+        with ESMTP id S240165AbiG0QsR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:48:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBCFB606A2;
-        Wed, 27 Jul 2022 09:32:16 -0700 (PDT)
+        Wed, 27 Jul 2022 12:48:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49D07606B7;
+        Wed, 27 Jul 2022 09:32:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 67306619FF;
-        Wed, 27 Jul 2022 16:32:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B724C433C1;
-        Wed, 27 Jul 2022 16:32:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BEE99B821B6;
+        Wed, 27 Jul 2022 16:27:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25C2FC433B5;
+        Wed, 27 Jul 2022 16:27:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939535;
-        bh=CLfupA+ve829J+GGA8oCBo4IjFXt4oHO4dQK627Iol0=;
+        s=korg; t=1658939238;
+        bh=479H/WC34/j9bzML+WwgbpDWqcwcVPd/wV4cSm3tBaU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Rg9ygTRYGpaGU09O3zvVOjTCHDj33qO8U2R8GQs69RGaARCNIiPKwCHdXVQiQtJjB
-         ywjjQSptiCL51Wm6/OZkrK25r8IIPZddb9MjZLWpBqwP5MtAckE7Om7zj73GtgKck2
-         k3JBbVwMIbq46hkyhfuPNDv4abAnAswc+RC+FwnM=
+        b=fGeKxUoNiUZMBCs4TUAugZjJsh4UGfTBm8YrHfUXGqwoOAtrZfx32v/jx0KlMcVpB
+         8wwLR0UDVotcfGMnSBZMG4S6KMmHbAOpz+ef91np4AhTQjclqOOhDONke6AI3FWVdY
+         B57iZ+G7t+uQ1MmfC874WoQqjmu175K/x1dRhN4E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Ungerer <gerg@linux-m68k.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 016/105] Revert "m68knommu: only set CONFIG_ISA_DMA_API for ColdFire sub-arch"
-Date:   Wed, 27 Jul 2022 18:10:02 +0200
-Message-Id: <20220727161012.728484473@linuxfoundation.org>
+        Dexuan Cui <decui@microsoft.com>,
+        Jeffrey Hugo <quic_jhugo@quicinc.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        Carl Vanderlip <quic_carlv@quicinc.com>
+Subject: [PATCH 4.19 62/62] PCI: hv: Fix interrupt mapping for multi-MSI
+Date:   Wed, 27 Jul 2022 18:11:11 +0200
+Message-Id: <20220727161006.565676300@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220727161012.056867467@linuxfoundation.org>
-References: <20220727161012.056867467@linuxfoundation.org>
+In-Reply-To: <20220727161004.175638564@linuxfoundation.org>
+References: <20220727161004.175638564@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,33 +51,182 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+From: Jeffrey Hugo <quic_jhugo@quicinc.com>
 
-This reverts commit 87ae522e467e17a13b796e2cb595f9c3943e4d5e which is
-commit db87db65c1059f3be04506d122f8ec9b2fa3b05e upstream.
+commit a2bad844a67b1c7740bda63e87453baf63c3a7f7 upstream.
 
-It is not needed in 5.10.y and causes problems.
+According to Dexuan, the hypervisor folks beleive that multi-msi
+allocations are not correct.  compose_msi_msg() will allocate multi-msi
+one by one.  However, multi-msi is a block of related MSIs, with alignment
+requirements.  In order for the hypervisor to allocate properly aligned
+and consecutive entries in the IOMMU Interrupt Remapping Table, there
+should be a single mapping request that requests all of the multi-msi
+vectors in one shot.
 
-Link: https://lore.kernel.org/r/CAK8P3a0vZrXxNp3YhrxFjFunHgxSZBKD9Y4darSODgeFAukCeQ@mail.gmail.com
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Arnd Bergmann <arnd@arndb.de>
-Cc: Greg Ungerer <gerg@linux-m68k.org>
-Cc: Sasha Levin <sashal@kernel.org>
+Dexuan suggests detecting the multi-msi case and composing a single
+request related to the first MSI.  Then for the other MSIs in the same
+block, use the cached information.  This appears to be viable, so do it.
+
+4.19 backport - add hv_msi_get_int_vector helper function. Fixed merge
+conflict due to delivery_mode name change (APIC_DELIVERY_MODE_FIXED
+is the value given to dest_Fixed). Removed unused variable in
+hv_compose_msi_msg. Fixed reference to msi_desc->pci to point to
+the same is_msix variable. Removed changes to compose_msi_req_v3 since
+it doesn't exist yet.
+
+Suggested-by: Dexuan Cui <decui@microsoft.com>
+Signed-off-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
+Reviewed-by: Dexuan Cui <decui@microsoft.com>
+Tested-by: Michael Kelley <mikelley@microsoft.com>
+Link: https://lore.kernel.org/r/1652282599-21643-1-git-send-email-quic_jhugo@quicinc.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Signed-off-by: Carl Vanderlip <quic_carlv@quicinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/m68k/Kconfig.bus |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pci/controller/pci-hyperv.c |   61 +++++++++++++++++++++++++++++++-----
+ 1 file changed, 53 insertions(+), 8 deletions(-)
 
---- a/arch/m68k/Kconfig.bus
-+++ b/arch/m68k/Kconfig.bus
-@@ -63,7 +63,7 @@ source "drivers/zorro/Kconfig"
+--- a/drivers/pci/controller/pci-hyperv.c
++++ b/drivers/pci/controller/pci-hyperv.c
+@@ -831,6 +831,10 @@ static void hv_int_desc_free(struct hv_p
+ 		u8 buffer[sizeof(struct pci_delete_interrupt)];
+ 	} ctxt;
  
- endif
++	if (!int_desc->vector_count) {
++		kfree(int_desc);
++		return;
++	}
+ 	memset(&ctxt, 0, sizeof(ctxt));
+ 	int_pkt = (struct pci_delete_interrupt *)&ctxt.pkt.message;
+ 	int_pkt->message_type.type =
+@@ -893,6 +897,13 @@ static void hv_irq_mask(struct irq_data
+ 	pci_msi_mask_irq(data);
+ }
  
--if COLDFIRE
-+if !MMU
++static unsigned int hv_msi_get_int_vector(struct irq_data *data)
++{
++	struct irq_cfg *cfg = irqd_cfg(data);
++
++	return cfg->vector;
++}
++
+ static int hv_msi_prepare(struct irq_domain *domain, struct device *dev,
+ 			  int nvec, msi_alloc_info_t *info)
+ {
+@@ -1035,12 +1046,12 @@ static void hv_pci_compose_compl(void *c
  
- config ISA_DMA_API
- 	def_bool !M5272
+ static u32 hv_compose_msi_req_v1(
+ 	struct pci_create_interrupt *int_pkt, struct cpumask *affinity,
+-	u32 slot, u8 vector)
++	u32 slot, u8 vector, u8 vector_count)
+ {
+ 	int_pkt->message_type.type = PCI_CREATE_INTERRUPT_MESSAGE;
+ 	int_pkt->wslot.slot = slot;
+ 	int_pkt->int_desc.vector = vector;
+-	int_pkt->int_desc.vector_count = 1;
++	int_pkt->int_desc.vector_count = vector_count;
+ 	int_pkt->int_desc.delivery_mode = dest_Fixed;
+ 
+ 	/*
+@@ -1054,14 +1065,14 @@ static u32 hv_compose_msi_req_v1(
+ 
+ static u32 hv_compose_msi_req_v2(
+ 	struct pci_create_interrupt2 *int_pkt, struct cpumask *affinity,
+-	u32 slot, u8 vector)
++	u32 slot, u8 vector, u8 vector_count)
+ {
+ 	int cpu;
+ 
+ 	int_pkt->message_type.type = PCI_CREATE_INTERRUPT_MESSAGE2;
+ 	int_pkt->wslot.slot = slot;
+ 	int_pkt->int_desc.vector = vector;
+-	int_pkt->int_desc.vector_count = 1;
++	int_pkt->int_desc.vector_count = vector_count;
+ 	int_pkt->int_desc.delivery_mode = dest_Fixed;
+ 
+ 	/*
+@@ -1089,7 +1100,6 @@ static u32 hv_compose_msi_req_v2(
+  */
+ static void hv_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
+ {
+-	struct irq_cfg *cfg = irqd_cfg(data);
+ 	struct hv_pcibus_device *hbus;
+ 	struct hv_pci_dev *hpdev;
+ 	struct pci_bus *pbus;
+@@ -1098,6 +1108,8 @@ static void hv_compose_msi_msg(struct ir
+ 	unsigned long flags;
+ 	struct compose_comp_ctxt comp;
+ 	struct tran_int_desc *int_desc;
++	struct msi_desc *msi_desc;
++	u8 vector, vector_count;
+ 	struct {
+ 		struct pci_packet pci_pkt;
+ 		union {
+@@ -1118,7 +1130,8 @@ static void hv_compose_msi_msg(struct ir
+ 		return;
+ 	}
+ 
+-	pdev = msi_desc_to_pci_dev(irq_data_get_msi_desc(data));
++	msi_desc  = irq_data_get_msi_desc(data);
++	pdev = msi_desc_to_pci_dev(msi_desc);
+ 	dest = irq_data_get_effective_affinity_mask(data);
+ 	pbus = pdev->bus;
+ 	hbus = container_of(pbus->sysdata, struct hv_pcibus_device, sysdata);
+@@ -1130,6 +1143,36 @@ static void hv_compose_msi_msg(struct ir
+ 	if (!int_desc)
+ 		goto drop_reference;
+ 
++	if (!msi_desc->msi_attrib.is_msix && msi_desc->nvec_used > 1) {
++		/*
++		 * If this is not the first MSI of Multi MSI, we already have
++		 * a mapping.  Can exit early.
++		 */
++		if (msi_desc->irq != data->irq) {
++			data->chip_data = int_desc;
++			int_desc->address = msi_desc->msg.address_lo |
++					    (u64)msi_desc->msg.address_hi << 32;
++			int_desc->data = msi_desc->msg.data +
++					 (data->irq - msi_desc->irq);
++			msg->address_hi = msi_desc->msg.address_hi;
++			msg->address_lo = msi_desc->msg.address_lo;
++			msg->data = int_desc->data;
++			put_pcichild(hpdev);
++			return;
++		}
++		/*
++		 * The vector we select here is a dummy value.  The correct
++		 * value gets sent to the hypervisor in unmask().  This needs
++		 * to be aligned with the count, and also not zero.  Multi-msi
++		 * is powers of 2 up to 32, so 32 will always work here.
++		 */
++		vector = 32;
++		vector_count = msi_desc->nvec_used;
++	} else {
++		vector = hv_msi_get_int_vector(data);
++		vector_count = 1;
++	}
++
+ 	memset(&ctxt, 0, sizeof(ctxt));
+ 	init_completion(&comp.comp_pkt.host_event);
+ 	ctxt.pci_pkt.completion_func = hv_pci_compose_compl;
+@@ -1140,14 +1183,16 @@ static void hv_compose_msi_msg(struct ir
+ 		size = hv_compose_msi_req_v1(&ctxt.int_pkts.v1,
+ 					dest,
+ 					hpdev->desc.win_slot.slot,
+-					cfg->vector);
++					vector,
++					vector_count);
+ 		break;
+ 
+ 	case PCI_PROTOCOL_VERSION_1_2:
+ 		size = hv_compose_msi_req_v2(&ctxt.int_pkts.v2,
+ 					dest,
+ 					hpdev->desc.win_slot.slot,
+-					cfg->vector);
++					vector,
++					vector_count);
+ 		break;
+ 
+ 	default:
 
 
