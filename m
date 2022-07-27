@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB55EC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:28:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E693C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:28:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234620AbiG0R2k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:28:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37404 "EHLO
+        id S237910AbiG0R2n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:28:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242154AbiG0R1e (ORCPT
+        with ESMTP id S242163AbiG0R1g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:27:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 348007E33D;
-        Wed, 27 Jul 2022 09:47:16 -0700 (PDT)
+        Wed, 27 Jul 2022 13:27:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 794F152474;
+        Wed, 27 Jul 2022 09:47:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 36B98B821A6;
-        Wed, 27 Jul 2022 16:47:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42809C433B5;
-        Wed, 27 Jul 2022 16:47:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2AEE761557;
+        Wed, 27 Jul 2022 16:46:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38285C433B5;
+        Wed, 27 Jul 2022 16:46:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940430;
-        bh=LDe2d3/aX99mWMtN2t4AG9MQrz+qUjNJhrrFYgdFu9Y=;
+        s=korg; t=1658940413;
+        bh=+3Pj8ZvBdsOpEI4vxaUMxo337gIqMh//unFM5xke8xo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T727YET9OyVzP8mWKT3iXrnmsftbGFWTt442y0FsUNSg8fBbPVT+oN/dicx04blkY
-         Y1j0B1otmvE26qYrbibT2pf3ZIl5OaSFPTRzdYAFZE0WheE+TOl4PNTncUFuKgrrQO
-         chC2f1hL06dxnwqfjRu7JegJMQJy2++Lz+1U+R9A=
+        b=CedvuP2GBM1shW+DfjMzWKDIkudkfUlm829r+anZuhXpIYGaK0/kZM8IxEdhxwxZk
+         eS+xbZW0uxy9TxshDaa+DcuJ4/rjgalIXsdsQcWB38ldA/CybIsKFbx+f5wToUpHjz
+         N30M902YUN0wuRkHpS475b3ORPO7zmw/JCCQ3KiY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 020/158] xfrm: xfrm_policy: fix a possible double xfrm_pols_put() in xfrm_bundle_lookup()
-Date:   Wed, 27 Jul 2022 18:11:24 +0200
-Message-Id: <20220727161022.277422268@linuxfoundation.org>
+        Jeffrey Hugo <quic_jhugo@quicinc.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        Carl Vanderlip <quic_carlv@quicinc.com>
+Subject: [PATCH 5.18 015/158] PCI: hv: Fix hv_arch_irq_unmask() for multi-MSI
+Date:   Wed, 27 Jul 2022 18:11:19 +0200
+Message-Id: <20220727161022.084869974@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -49,57 +50,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Jeffrey Hugo <quic_jhugo@quicinc.com>
 
-[ Upstream commit f85daf0e725358be78dfd208dea5fd665d8cb901 ]
+[ upstream change 455880dfe292a2bdd3b4ad6a107299fce610e64b ]
 
-xfrm_policy_lookup() will call xfrm_pol_hold_rcu() to get a refcount of
-pols[0]. This refcount can be dropped in xfrm_expand_policies() when
-xfrm_expand_policies() return error. pols[0]'s refcount is balanced in
-here. But xfrm_bundle_lookup() will also call xfrm_pols_put() with
-num_pols == 1 to drop this refcount when xfrm_expand_policies() return
-error.
+In the multi-MSI case, hv_arch_irq_unmask() will only operate on the first
+MSI of the N allocated.  This is because only the first msi_desc is cached
+and it is shared by all the MSIs of the multi-MSI block.  This means that
+hv_arch_irq_unmask() gets the correct address, but the wrong data (always
+0).
 
-This patch also fix an illegal address access. pols[0] will save a error
-point when xfrm_policy_lookup fails. This lead to xfrm_pols_put to resolve
-an illegal address in xfrm_bundle_lookup's error path.
+This can break MSIs.
 
-Fix these by setting num_pols = 0 in xfrm_expand_policies()'s error path.
+Lets assume MSI0 is vector 34 on CPU0, and MSI1 is vector 33 on CPU0.
 
-Fixes: 80c802f3073e ("xfrm: cache bundles instead of policies for outgoing flows")
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+hv_arch_irq_unmask() is called on MSI0.  It uses a hypercall to configure
+the MSI address and data (0) to vector 34 of CPU0.  This is correct.  Then
+hv_arch_irq_unmask is called on MSI1.  It uses another hypercall to
+configure the MSI address and data (0) to vector 33 of CPU0.  This is
+wrong, and results in both MSI0 and MSI1 being routed to vector 33.  Linux
+will observe extra instances of MSI1 and no instances of MSI0 despite the
+endpoint device behaving correctly.
+
+For the multi-MSI case, we need unique address and data info for each MSI,
+but the cached msi_desc does not provide that.  However, that information
+can be gotten from the int_desc cached in the chip_data by
+compose_msi_msg().  Fix the multi-MSI case to use that cached information
+instead.  Since hv_set_msi_entry_from_desc() is no longer applicable,
+remove it.
+
+Signed-off-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
+Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+Link: https://lore.kernel.org/r/1651068453-29588-1-git-send-email-quic_jhugo@quicinc.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Signed-off-by: Carl Vanderlip <quic_carlv@quicinc.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/xfrm/xfrm_policy.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/pci/controller/pci-hyperv.c |   12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
 
-diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-index f1876ea61fdc..f1a0bab920a5 100644
---- a/net/xfrm/xfrm_policy.c
-+++ b/net/xfrm/xfrm_policy.c
-@@ -2678,8 +2678,10 @@ static int xfrm_expand_policies(const struct flowi *fl, u16 family,
- 		*num_xfrms = 0;
- 		return 0;
- 	}
--	if (IS_ERR(pols[0]))
-+	if (IS_ERR(pols[0])) {
-+		*num_pols = 0;
- 		return PTR_ERR(pols[0]);
-+	}
+--- a/drivers/pci/controller/pci-hyperv.c
++++ b/drivers/pci/controller/pci-hyperv.c
+@@ -604,13 +604,6 @@ static unsigned int hv_msi_get_int_vecto
+ 	return cfg->vector;
+ }
  
- 	*num_xfrms = pols[0]->xfrm_nr;
+-static void hv_set_msi_entry_from_desc(union hv_msi_entry *msi_entry,
+-				       struct msi_desc *msi_desc)
+-{
+-	msi_entry->address.as_uint32 = msi_desc->msg.address_lo;
+-	msi_entry->data.as_uint32 = msi_desc->msg.data;
+-}
+-
+ static int hv_msi_prepare(struct irq_domain *domain, struct device *dev,
+ 			  int nvec, msi_alloc_info_t *info)
+ {
+@@ -640,6 +633,7 @@ static void hv_arch_irq_unmask(struct ir
+ {
+ 	struct msi_desc *msi_desc = irq_data_get_msi_desc(data);
+ 	struct hv_retarget_device_interrupt *params;
++	struct tran_int_desc *int_desc;
+ 	struct hv_pcibus_device *hbus;
+ 	struct cpumask *dest;
+ 	cpumask_var_t tmp;
+@@ -654,6 +648,7 @@ static void hv_arch_irq_unmask(struct ir
+ 	pdev = msi_desc_to_pci_dev(msi_desc);
+ 	pbus = pdev->bus;
+ 	hbus = container_of(pbus->sysdata, struct hv_pcibus_device, sysdata);
++	int_desc = data->chip_data;
  
-@@ -2694,6 +2696,7 @@ static int xfrm_expand_policies(const struct flowi *fl, u16 family,
- 		if (pols[1]) {
- 			if (IS_ERR(pols[1])) {
- 				xfrm_pols_put(pols, *num_pols);
-+				*num_pols = 0;
- 				return PTR_ERR(pols[1]);
- 			}
- 			(*num_pols)++;
--- 
-2.35.1
-
+ 	spin_lock_irqsave(&hbus->retarget_msi_interrupt_lock, flags);
+ 
+@@ -661,7 +656,8 @@ static void hv_arch_irq_unmask(struct ir
+ 	memset(params, 0, sizeof(*params));
+ 	params->partition_id = HV_PARTITION_ID_SELF;
+ 	params->int_entry.source = HV_INTERRUPT_SOURCE_MSI;
+-	hv_set_msi_entry_from_desc(&params->int_entry.msi_entry, msi_desc);
++	params->int_entry.msi_entry.address.as_uint32 = int_desc->address & 0xffffffff;
++	params->int_entry.msi_entry.data.as_uint32 = int_desc->data;
+ 	params->device_id = (hbus->hdev->dev_instance.b[5] << 24) |
+ 			   (hbus->hdev->dev_instance.b[4] << 16) |
+ 			   (hbus->hdev->dev_instance.b[7] << 8) |
 
 
