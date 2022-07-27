@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D558C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:35:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6C34C19F2C
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:35:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236853AbiG0RfH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:35:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41260 "EHLO
+        id S241257AbiG0RfN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:35:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236506AbiG0Rdn (ORCPT
+        with ESMTP id S242415AbiG0Rde (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:33:43 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DA9861101;
-        Wed, 27 Jul 2022 09:48:52 -0700 (PDT)
+        Wed, 27 Jul 2022 13:33:34 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17B61606B4;
+        Wed, 27 Jul 2022 09:48:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1C439B821C5;
-        Wed, 27 Jul 2022 16:48:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84F29C433C1;
-        Wed, 27 Jul 2022 16:48:46 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 2F717CE2311;
+        Wed, 27 Jul 2022 16:48:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F11BFC433D6;
+        Wed, 27 Jul 2022 16:48:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940526;
-        bh=OEykdUPXVNQvb/VQCM+52YVDVEsWYbSFVHjVP5N/vg0=;
+        s=korg; t=1658940507;
+        bh=1cPJDOWf1YZmUIflLvJDJ9vPMZP8ZvGzCyuRVCTr26Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dU5BwEeiZcQdC4h9NEb3uhIAmmITLUzrpJf1wgGkDuD9oBTAWWC98MfnTkCyNk+Am
-         dxt8OR0gcmooP7hQT6PMELIyBOuoJ+kd77KC3wL9mUnz7F9EUVUt2vzq2fzlwr8fVz
-         2Yh9gKA8tyG4p5dwUglmI8Ch7HcwXnQPpk/8qImA=
+        b=X/gPtgBfNAWOmSgNrfOPZ1XA2qbCmSAxSX54k5hEknqlasH1nYvUA/YcUwxxTCova
+         ibWcDtbsGPAGbLi87BCzMZKReAK4Ub946H4iXddyi/J6ovDeSrZa8uIS0SUrDnDePJ
+         84Is/8nMAreXN8je4+069/iD+2u1I5Lr+A/wtOsM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
-        Shubhrajyoti Datta <Shubhrajyoti.datta@amd.com>,
-        Michal Simek <michal.simek@amd.com>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 054/158] i2c: cadence: Change large transfer count reset logic to be unconditional
-Date:   Wed, 27 Jul 2022 18:11:58 +0200
-Message-Id: <20220727161023.685887172@linuxfoundation.org>
+        stable@vger.kernel.org, Biao Huang <biao.huang@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 048/158] stmmac: dwmac-mediatek: fix clock issue
+Date:   Wed, 27 Jul 2022 18:11:52 +0200
+Message-Id: <20220727161023.445815090@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -50,108 +50,119 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
+From: Biao Huang <biao.huang@mediatek.com>
 
-[ Upstream commit 4ca8ca873d454635c20d508261bfc0081af75cf8 ]
+[ Upstream commit fa4b3ca60e8011d3046765b3de8d3f1ffc53af28 ]
 
-Problems were observed on the Xilinx ZynqMP platform with large I2C reads.
-When a read of 277 bytes was performed, the controller NAKed the transfer
-after only 252 bytes were transferred and returned an ENXIO error on the
-transfer.
+The pm_runtime takes care of the clock handling in current
+stmmac drivers, and dwmac-mediatek implement the
+mediatek_dwmac_clks_config() as the callback for pm_runtime.
 
-There is some code in cdns_i2c_master_isr to handle this case by resetting
-the transfer count in the controller before it reaches 0, to allow larger
-transfers to work, but it was conditional on the CDNS_I2C_BROKEN_HOLD_BIT
-quirk being set on the controller, and ZynqMP uses the r1p14 version of
-the core where this quirk is not being set. The requirement to do this to
-support larger reads seems like an inherently required workaround due to
-the core only having an 8-bit transfer size register, so it does not
-appear that this should be conditional on the broken HOLD bit quirk which
-is used elsewhere in the driver.
+Then, stripping duplicated clocks handling in old init()/exit()
+to fix clock issue in suspend/resume test.
 
-Remove the dependency on the CDNS_I2C_BROKEN_HOLD_BIT for this transfer
-size reset logic to fix this problem.
+As to clocks in probe/remove, vendor need symmetric handling to
+ensure clocks balance.
 
-Fixes: 63cab195bf49 ("i2c: removed work arounds in i2c driver for Zynq Ultrascale+ MPSoC")
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Reviewed-by: Shubhrajyoti Datta <Shubhrajyoti.datta@amd.com>
-Acked-by: Michal Simek <michal.simek@amd.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Test pass, including suspend/resume and ko insertion/remove.
+
+Fixes: 3186bdad97d5 ("stmmac: dwmac-mediatek: add platform level clocks management")
+Signed-off-by: Biao Huang <biao.huang@mediatek.com>
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-cadence.c | 30 +++++-------------------------
- 1 file changed, 5 insertions(+), 25 deletions(-)
+ .../ethernet/stmicro/stmmac/dwmac-mediatek.c  | 49 ++++++++-----------
+ 1 file changed, 21 insertions(+), 28 deletions(-)
 
-diff --git a/drivers/i2c/busses/i2c-cadence.c b/drivers/i2c/busses/i2c-cadence.c
-index 3d6f8ee355bf..630cfa4ddd46 100644
---- a/drivers/i2c/busses/i2c-cadence.c
-+++ b/drivers/i2c/busses/i2c-cadence.c
-@@ -388,9 +388,9 @@ static irqreturn_t cdns_i2c_slave_isr(void *ptr)
-  */
- static irqreturn_t cdns_i2c_master_isr(void *ptr)
- {
--	unsigned int isr_status, avail_bytes, updatetx;
-+	unsigned int isr_status, avail_bytes;
- 	unsigned int bytes_to_send;
--	bool hold_quirk;
-+	bool updatetx;
- 	struct cdns_i2c *id = ptr;
- 	/* Signal completion only after everything is updated */
- 	int done_flag = 0;
-@@ -410,11 +410,7 @@ static irqreturn_t cdns_i2c_master_isr(void *ptr)
- 	 * Check if transfer size register needs to be updated again for a
- 	 * large data receive operation.
- 	 */
--	updatetx = 0;
--	if (id->recv_count > id->curr_recv_count)
--		updatetx = 1;
--
--	hold_quirk = (id->quirks & CDNS_I2C_BROKEN_HOLD_BIT) && updatetx;
-+	updatetx = id->recv_count > id->curr_recv_count;
- 
- 	/* When receiving, handle data interrupt and completion interrupt */
- 	if (id->p_recv_buf &&
-@@ -445,7 +441,7 @@ static irqreturn_t cdns_i2c_master_isr(void *ptr)
- 				break;
- 			}
- 
--			if (cdns_is_holdquirk(id, hold_quirk))
-+			if (cdns_is_holdquirk(id, updatetx))
- 				break;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
+index 6ff88df58767..ca8ab290013c 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-mediatek.c
+@@ -576,32 +576,7 @@ static int mediatek_dwmac_init(struct platform_device *pdev, void *priv)
  		}
+ 	}
  
-@@ -456,7 +452,7 @@ static irqreturn_t cdns_i2c_master_isr(void *ptr)
- 		 * maintain transfer size non-zero while performing a large
- 		 * receive operation.
- 		 */
--		if (cdns_is_holdquirk(id, hold_quirk)) {
-+		if (cdns_is_holdquirk(id, updatetx)) {
- 			/* wait while fifo is full */
- 			while (cdns_i2c_readreg(CDNS_I2C_XFER_SIZE_OFFSET) !=
- 			       (id->curr_recv_count - CDNS_I2C_FIFO_DEPTH))
-@@ -478,22 +474,6 @@ static irqreturn_t cdns_i2c_master_isr(void *ptr)
- 						  CDNS_I2C_XFER_SIZE_OFFSET);
- 				id->curr_recv_count = id->recv_count;
- 			}
--		} else if (id->recv_count && !hold_quirk &&
--						!id->curr_recv_count) {
+-	ret = clk_bulk_prepare_enable(variant->num_clks, plat->clks);
+-	if (ret) {
+-		dev_err(plat->dev, "failed to enable clks, err = %d\n", ret);
+-		return ret;
+-	}
 -
--			/* Set the slave address in address register*/
--			cdns_i2c_writereg(id->p_msg->addr & CDNS_I2C_ADDR_MASK,
--						CDNS_I2C_ADDR_OFFSET);
+-	ret = clk_prepare_enable(plat->rmii_internal_clk);
+-	if (ret) {
+-		dev_err(plat->dev, "failed to enable rmii internal clk, err = %d\n", ret);
+-		goto err_clk;
+-	}
 -
--			if (id->recv_count > CDNS_I2C_TRANSFER_SIZE) {
--				cdns_i2c_writereg(CDNS_I2C_TRANSFER_SIZE,
--						CDNS_I2C_XFER_SIZE_OFFSET);
--				id->curr_recv_count = CDNS_I2C_TRANSFER_SIZE;
--			} else {
--				cdns_i2c_writereg(id->recv_count,
--						CDNS_I2C_XFER_SIZE_OFFSET);
--				id->curr_recv_count = id->recv_count;
--			}
- 		}
+ 	return 0;
+-
+-err_clk:
+-	clk_bulk_disable_unprepare(variant->num_clks, plat->clks);
+-	return ret;
+-}
+-
+-static void mediatek_dwmac_exit(struct platform_device *pdev, void *priv)
+-{
+-	struct mediatek_dwmac_plat_data *plat = priv;
+-	const struct mediatek_dwmac_variant *variant = plat->variant;
+-
+-	clk_disable_unprepare(plat->rmii_internal_clk);
+-	clk_bulk_disable_unprepare(variant->num_clks, plat->clks);
+ }
  
- 		/* Clear hold (if not repeated start) and signal completion */
+ static int mediatek_dwmac_clks_config(void *priv, bool enabled)
+@@ -643,7 +618,6 @@ static int mediatek_dwmac_common_data(struct platform_device *pdev,
+ 	plat->addr64 = priv_plat->variant->dma_bit_mask;
+ 	plat->bsp_priv = priv_plat;
+ 	plat->init = mediatek_dwmac_init;
+-	plat->exit = mediatek_dwmac_exit;
+ 	plat->clks_config = mediatek_dwmac_clks_config;
+ 	if (priv_plat->variant->dwmac_fix_mac_speed)
+ 		plat->fix_mac_speed = priv_plat->variant->dwmac_fix_mac_speed;
+@@ -712,13 +686,32 @@ static int mediatek_dwmac_probe(struct platform_device *pdev)
+ 	mediatek_dwmac_common_data(pdev, plat_dat, priv_plat);
+ 	mediatek_dwmac_init(pdev, priv_plat);
+ 
++	ret = mediatek_dwmac_clks_config(priv_plat, true);
++	if (ret)
++		return ret;
++
+ 	ret = stmmac_dvr_probe(&pdev->dev, plat_dat, &stmmac_res);
+ 	if (ret) {
+ 		stmmac_remove_config_dt(pdev, plat_dat);
+-		return ret;
++		goto err_drv_probe;
+ 	}
+ 
+ 	return 0;
++
++err_drv_probe:
++	mediatek_dwmac_clks_config(priv_plat, false);
++	return ret;
++}
++
++static int mediatek_dwmac_remove(struct platform_device *pdev)
++{
++	struct mediatek_dwmac_plat_data *priv_plat = get_stmmac_bsp_priv(&pdev->dev);
++	int ret;
++
++	ret = stmmac_pltfr_remove(pdev);
++	mediatek_dwmac_clks_config(priv_plat, false);
++
++	return ret;
+ }
+ 
+ static const struct of_device_id mediatek_dwmac_match[] = {
+@@ -733,7 +726,7 @@ MODULE_DEVICE_TABLE(of, mediatek_dwmac_match);
+ 
+ static struct platform_driver mediatek_dwmac_driver = {
+ 	.probe  = mediatek_dwmac_probe,
+-	.remove = stmmac_pltfr_remove,
++	.remove = mediatek_dwmac_remove,
+ 	.driver = {
+ 		.name           = "dwmac-mediatek",
+ 		.pm		= &stmmac_pltfr_pm_ops,
 -- 
 2.35.1
 
