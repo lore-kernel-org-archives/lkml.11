@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDE24C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:25:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B63D0C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:25:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235948AbiG0QZC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:25:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49950 "EHLO
+        id S235361AbiG0QZF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:25:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235390AbiG0QX6 (ORCPT
+        with ESMTP id S235789AbiG0QX5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:23:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18C184D155;
-        Wed, 27 Jul 2022 09:23:07 -0700 (PDT)
+        Wed, 27 Jul 2022 12:23:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6CB84D829;
+        Wed, 27 Jul 2022 09:23:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 37607619D0;
-        Wed, 27 Jul 2022 16:22:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EF3EC43470;
-        Wed, 27 Jul 2022 16:22:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C2A14B821B9;
+        Wed, 27 Jul 2022 16:23:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23DAEC4314F;
+        Wed, 27 Jul 2022 16:22:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658938977;
-        bh=3iCMFHDjs1WQc6tiSgGz2iqgwppC7LL8WG2EUZz6tfg=;
+        s=korg; t=1658938980;
+        bh=KEIaJi8lrA6F8TQthN9Avi7j7nLeBSA+Btq6vmsi3Bo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GU86tkKkFz4n4347T9qqkEyInBhJnW7Ubb4SlxuWK1H9gaXXHgb5k6wu53xw87wU+
-         PTL6us4EtEpkRDB2rX8h5Clg3KWhRceo4TSNX6mvg+3wlCIokn2IYBMdPN6jtN9X/c
-         nf/EqTOp5B3NNsxoJUEd3NmH6lSJtBmIirLLJaGc=
+        b=KupRJ0hetaBe/v7L5x1t6mlrjRA4rz4PWWIu0fUjdND6/kGvFNdI1HtgHyQ28TA7r
+         lw133vzEdK4oh5Qbo7pBuJfQONkRWAy/EUjlAC+4AISsz+4/Mzkjt75t4VDqKkIpPp
+         vcFSq+Qn8Z81S+sWBBCVBZ3wDs7r4pRXEzW4M77Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 4.9 20/26] ALSA: memalloc: Align buffer allocations in page size
-Date:   Wed, 27 Jul 2022 18:10:49 +0200
-Message-Id: <20220727160959.929028820@linuxfoundation.org>
+        stable@vger.kernel.org, Juergen Gross <jgross@suse.com>,
+        Demi Marie Obenour <demi@invisiblethingslab.com>,
+        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+Subject: [PATCH 4.14 01/37] xen/gntdev: Ignore failure to unmap INVALID_GRANT_HANDLE
+Date:   Wed, 27 Jul 2022 18:10:27 +0200
+Message-Id: <20220727161000.891042002@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220727160959.122591422@linuxfoundation.org>
-References: <20220727160959.122591422@linuxfoundation.org>
+In-Reply-To: <20220727161000.822869853@linuxfoundation.org>
+References: <20220727161000.822869853@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -48,41 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Demi Marie Obenour <demi@invisiblethingslab.com>
 
-commit 5c1733e33c888a3cb7f576564d8ad543d5ad4a9e upstream.
+commit 166d3863231667c4f64dee72b77d1102cdfad11f upstream.
 
-Currently the standard memory allocator (snd_dma_malloc_pages*())
-passes the byte size to allocate as is.  Most of the backends
-allocates real pages, hence the actual allocations are aligned in page
-size.  However, the genalloc doesn't seem assuring the size alignment,
-hence it may result in the access outside the buffer when the whole
-memory pages are exposed via mmap.
+The error paths of gntdev_mmap() can call unmap_grant_pages() even
+though not all of the pages have been successfully mapped.  This will
+trigger the WARN_ON()s in __unmap_grant_pages_done().  The number of
+warnings can be very large; I have observed thousands of lines of
+warnings in the systemd journal.
 
-For avoiding such inconsistencies, this patch makes the allocation
-size always to be aligned in page size.
+Avoid this problem by only warning on unmapping failure if the handle
+being unmapped is not INVALID_GRANT_HANDLE.  The handle field of any
+page that was not successfully mapped will be INVALID_GRANT_HANDLE, so
+this catches all cases where unmapping can legitimately fail.
 
-Note that, after this change, snd_dma_buffer.bytes field contains the
-aligned size, not the originally requested size.  This value is also
-used for releasing the pages in return.
-
-Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
-Link: https://lore.kernel.org/r/20201218145625.2045-2-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Fixes: dbe97cff7dd9 ("xen/gntdev: Avoid blocking in unmap_grant_pages()")
+Cc: stable@vger.kernel.org
+Suggested-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Demi Marie Obenour <demi@invisiblethingslab.com>
+Reviewed-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+Reviewed-by: Juergen Gross <jgross@suse.com>
+Link: https://lore.kernel.org/r/20220710230522.1563-1-demi@invisiblethingslab.com
+Signed-off-by: Juergen Gross <jgross@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/core/memalloc.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/xen/gntdev.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/sound/core/memalloc.c
-+++ b/sound/core/memalloc.c
-@@ -177,6 +177,7 @@ int snd_dma_alloc_pages(int type, struct
- 	if (WARN_ON(!dmab))
- 		return -ENXIO;
+--- a/drivers/xen/gntdev.c
++++ b/drivers/xen/gntdev.c
+@@ -393,7 +393,8 @@ static void __unmap_grant_pages_done(int
+ 	unsigned int offset = data->unmap_ops - map->unmap_ops;
  
-+	size = PAGE_ALIGN(size);
- 	dmab->dev.type = type;
- 	dmab->dev.dev = device;
- 	dmab->bytes = 0;
+ 	for (i = 0; i < data->count; i++) {
+-		WARN_ON(map->unmap_ops[offset+i].status);
++		WARN_ON(map->unmap_ops[offset+i].status &&
++			map->unmap_ops[offset+i].handle != -1);
+ 		pr_debug("unmap handle=%d st=%d\n",
+ 			map->unmap_ops[offset+i].handle,
+ 			map->unmap_ops[offset+i].status);
 
 
