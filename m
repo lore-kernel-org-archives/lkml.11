@@ -2,62 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A82C6C19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:20:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38671C19F2C
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:20:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241706AbiG0RUE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:20:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36846 "EHLO
+        id S241787AbiG0RUI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:20:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236313AbiG0RSb (ORCPT
+        with ESMTP id S230242AbiG0RSb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Jul 2022 13:18:31 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FA8B79EE8;
-        Wed, 27 Jul 2022 09:43:52 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id 15-20020a17090a098f00b001f305b453feso2801865pjo.1;
-        Wed, 27 Jul 2022 09:43:52 -0700 (PDT)
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AE7E79EDE
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:43:52 -0700 (PDT)
+Received: by mail-lj1-x22e.google.com with SMTP id r14so20437575ljp.2
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:43:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=jLl28q0YHHTxCCA5OBtJuL5L9i48jfBj5mPfPnOXWnU=;
-        b=gTqC3mK7AhqDxoVzYGypLAHyHnuJyOHaNTyQjZSxbDDaLLMzHWR/WP9vjN+BEf7ZrN
-         Fit/pgr3trM5rPWHk48OyLLH9RgVMVbUXkIkCk+Jf8UUq7Ixq10MdWG5TqYbEOGR31nV
-         qsGV3q9SwnGIQePCh+MvO/t8bPRTd+8yYBHbLfqgUeg11NiAFrxhLg7KRX+lMGCNvMj5
-         eshRUR5CIFKYl0Q/8ArSW7i1Kc7cq0Ija+q7nd/mvYJD++RTwcjdDwoerC5TwBXLzCDS
-         jFvTidDTb5rxdGrTKSLMVxZmoCHN+DVOy2LOS3p+Gk01xSY112n3ooSyfPPZJeieGzO6
-         h1iA==
+        bh=pGvBGO7The5vMYhAFkbpIL+Mx8zg6qvgHGnml6XuW/Q=;
+        b=kT8v/97SO5qLemWpEOWgpsCzVFRBTJYQVgSNWxMeLA16Y2z+rJrCOKi2p4POvRXPbP
+         jjZJvOZubNUSNIu1yOPJNnupfVf2+J6ACs7Aol56110eu1sX8VAGfaNJg9wrDM5w/Pt6
+         LNfPyGeA42f6Omj/+ctTdqrqHoVpXo2BpltaGDUA7ROclI22vXnhkISrlVPqsfBxgMHI
+         yu2HMuNWmFp+DmZG+6shqoEW3hPhHfPGfyNq93wS3wy15d7vDJrTYisKeaySnQkKb6hW
+         YLV87o4hDYRKoLUJIOmnmdOxlPAIDrqwj+dwuGw4IlP0QbO2XQdG55iXeYgxg/dMy5vx
+         AgAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=jLl28q0YHHTxCCA5OBtJuL5L9i48jfBj5mPfPnOXWnU=;
-        b=4/ZJ/ClXYcD/5Rg5Ljcqv64J7b7yVW0c+Z7wSqsP8gxPq7iBVjlxaRGGz8+l/xSayS
-         3UIFfLis3MYfysFlQOFr81jMn2azRqjIdhJUhf8U36WkRi0ikTBom2NkQbD8z+KtA/NX
-         AvV2COgTpH3ovYsDRd2LPukSyt6ew87A+u4jJeQhDnrYhq0c19GlHrYNPYPB3xS/4lfJ
-         SCWTQsMhcP6EfIa9xz2M8WuzMaUZMhzlOTB09t6JyCk9Wb70mFMnA9U72kRpJNZ00Y7f
-         V+738uD11XhV/CXXjNKiUDjHIrJSpPEXm4asbHIcqLFKvPGOoOL6UfJ3ZXqlgNdqxi6h
-         wTbw==
-X-Gm-Message-State: AJIora+fL8jk8VZc5Mca85Aaw06XMH3UYaOhazKGrqV5If8c+d5KmnQ1
-        QmQCuxFMMT48O4I0APgyhQt7bTpvcP+FKg==
-X-Google-Smtp-Source: AGRyM1ts0wZ3ofA/neE3N1ENMf3fYKfoZeO2BR/ZDCXzFjjnHZTPpgl6A1YvRBAQn0cpHTliNUb18w==
-X-Received: by 2002:a17:90a:62ca:b0:1f2:ef43:72a1 with SMTP id k10-20020a17090a62ca00b001f2ef4372a1mr5495888pjs.217.1658940231334;
-        Wed, 27 Jul 2022 09:43:51 -0700 (PDT)
-Received: from potin-quanta.. (125-228-123-29.hinet-ip.hinet.net. [125.228.123.29])
-        by smtp.gmail.com with ESMTPSA id h13-20020a17090a3d0d00b001ef3f85d1aasm2030480pjc.9.2022.07.27.09.43.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        bh=pGvBGO7The5vMYhAFkbpIL+Mx8zg6qvgHGnml6XuW/Q=;
+        b=OGT0ABWPnuCLGm04/MdhcxLnw846XVokaMc53IB2/1KncEXTqtxTtIrqUWN+nHZjnL
+         e+7gLDlBaJnTmxDX8FEl/QKIkCcGRWd7rOQR3kjSGU2bb+nBXe7doAMSrpmo2OKQEs2S
+         AZZ9apLH08+oPuRUjwPs/WLQRa9bfV5cxqlF2T44j60zuLd7L0P76MohSRBnjOwHXsk8
+         nLWIX2hUlg7iM406crdgxedr7Gwbu0rMpagINTSDd2l5bb9C72slSSyKZa8+LtMCNXHm
+         alHIs3r6kwjMFOnOvsDDEbOmNHIvAdhtUCKEq7lq4BxtLRl+7W2HOjt19n9tKqYMqjSf
+         3TAA==
+X-Gm-Message-State: AJIora/BQjs+3YLpHMQ+wTa6UeGgOqhB28hDBO6wGYBp3ZTUsJkRa6zE
+        HQyLIosbOI5FPsJqhY9sy6MwPw==
+X-Google-Smtp-Source: AGRyM1sUZd0ZGxF9ub3vjabtve4gBxpZIV8y/DKP9xt3YNCnlcWviSeIKQsMlcKe4GnCRnhJQQPrRg==
+X-Received: by 2002:a2e:8095:0:b0:25d:f573:db4c with SMTP id i21-20020a2e8095000000b0025df573db4cmr7587113ljg.62.1658940230242;
         Wed, 27 Jul 2022 09:43:50 -0700 (PDT)
-From:   Potin Lai <potin.lai.pt@gmail.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Cc:     Patrick Williams <patrick@stwcx.xyz>,
-        Potin Lai <potin.lai@quantatw.com>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Potin Lai <potin.lai.pt@gmail.com>
-Subject: [PATCH v3 0/2] iio: humidity: hdc100x: add manufacturer and device ID check
-Date:   Thu, 28 Jul 2022 00:41:31 +0800
-Message-Id: <20220727164133.973930-1-potin.lai.pt@gmail.com>
+Received: from krzk-bin.lan (78-26-46-173.network.trollfjord.no. [78.26.46.173])
+        by smtp.gmail.com with ESMTPSA id i22-20020a056512341600b0048137a6486bsm3865662lfr.228.2022.07.27.09.43.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jul 2022 09:43:49 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Conor Dooley <conor.dooley@microchip.com>,
+        Ivan Bornyakov <i.bornyakov@metrotek.ru>,
+        Moritz Fischer <mdf@kernel.org>, Wu Hao <hao.wu@intel.com>,
+        Xu Yilun <yilun.xu@intel.com>, Tom Rix <trix@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-fpga@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH] dt-bindings: fpga: microchip,mpf-spi-fpga-mgr: use spi-peripheral-props.yaml
+Date:   Wed, 27 Jul 2022 18:43:47 +0200
+Message-Id: <20220727164347.386398-1-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -65,29 +68,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In this patch series, we move the callback from probe to probe_new, and add
-manufacturer and device ID check for hdc100x driver.
+Instead of listing directly properties typical for SPI peripherals,
+reference the spi-peripheral-props.yaml schema.  This allows using all
+properties typical for SPI-connected devices, even these which device
+bindings author did not tried yet.
 
-LINK: [v1] https://lore.kernel.org/all/20220722172035.44977-1-potin.lai.pt@gmail.com/
-LINK: [v2] https://lore.kernel.org/all/20220727064415.940690-1-potin.lai.pt@gmail.com/
+Remove the spi-* properties which now come via spi-peripheral-props.yaml
+schema, except for the cases when device schema adds some constraints
+like maximum frequency.
 
-changes v1 --> v2:
-- fix typo in commit message
-- change to use probe_new
-- use device_get_match_data instead of i2c_of_match_device
+While changing additionalProperties->unevaluatedProperties, put it in
+typical place, just before example DTS.
 
-changes v2 --> v3:
-- move probe_new part into a separate patch
-- remove unsed variable
-- remove redundant checking of matched data
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Potin Lai (2):
-  iio: humidity: hdc100x: switch to probe_new callback
-  iio: humidity: hdc100x: add manufacturer and device ID check
+---
 
- drivers/iio/humidity/hdc100x.c | 75 +++++++++++++++++++++++++++-------
- 1 file changed, 61 insertions(+), 14 deletions(-)
+Technically, this depends on [1] merged to SPI tree, if we want to
+preserve existing behavior of not allowing SPI CPHA and CPOL in each of
+schemas in this patch.
 
+If this patch comes independently via different tree, the SPI CPHA and
+CPOL will be allowed for brief period of time, before [1] is merged.
+This will not have negative impact, just DT schema checks will be
+loosened for that period.
+
+[1] https://lore.kernel.org/all/20220722191539.90641-2-krzysztof.kozlowski@linaro.org/
+---
+ .../bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml          | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml b/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
+index aee45cb15592..527532f039ce 100644
+--- a/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
++++ b/Documentation/devicetree/bindings/fpga/microchip,mpf-spi-fpga-mgr.yaml
+@@ -22,13 +22,14 @@ properties:
+     description: SPI chip select
+     maxItems: 1
+ 
+-  spi-max-frequency: true
+-
+ required:
+   - compatible
+   - reg
+ 
+-additionalProperties: false
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++
++unevaluatedProperties: false
+ 
+ examples:
+   - |
 -- 
-2.31.1
+2.34.1
 
