@@ -2,113 +2,206 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97B44C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 07:23:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 830DDC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 07:23:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230206AbiG0HW7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 03:22:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57804 "EHLO
+        id S230128AbiG0HXp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 03:23:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229478AbiG0HW4 (ORCPT
+        with ESMTP id S229568AbiG0HXk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 03:22:56 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19E98402EC
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 00:22:56 -0700 (PDT)
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26R61Zsm008067;
-        Wed, 27 Jul 2022 07:22:55 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : to : cc : from : subject : content-type :
- content-transfer-encoding; s=pp1;
- bh=Y5n80P9wmHCJwMqQdwnyVve0bgknGeP9i3Q1IHTk8QY=;
- b=gsVJaiaj2Pvj95MS8bRN5MOzOLWHNvBMHFb2upfuI8qmMpfY/lgcysdyQ7rZsSMWEN72
- nUkOHe2ypnAMKXJ8swzsT6ydewT/bDTJk0qffqCdNmDC5hHYDxJ9wwcfQ3wkOhDfZaZX
- PuhEhnL+AnHjAtOBd1Mw8FsU5hMQdN66bmvXObn7uJhLSmR/nBL3IJCxde8Cj1/ikcQt
- pPwpvGWwwEPPwNKO65yz/zfyORry6OhAGf6EQ5bkiy+2EKd5X6QbjhnGCIfnk8Fcp5Uo
- gLPz2E4DIOZL6Q+Sk59Mb4v1RJsage9p5XV4uTa3HG1CfRMtNlwL0c/tLDyTh+mNP2W+ Sw== 
-Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hjyqxt56k-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 27 Jul 2022 07:22:55 +0000
-Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
-        by ppma01wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26R7KGd3027121;
-        Wed, 27 Jul 2022 07:22:54 GMT
-Received: from b03cxnp07028.gho.boulder.ibm.com (b03cxnp07028.gho.boulder.ibm.com [9.17.130.15])
-        by ppma01wdc.us.ibm.com with ESMTP id 3hg94vqq99-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 27 Jul 2022 07:22:54 +0000
-Received: from b03ledav005.gho.boulder.ibm.com (b03ledav005.gho.boulder.ibm.com [9.17.130.236])
-        by b03cxnp07028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26R7MrhV33161716
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 27 Jul 2022 07:22:53 GMT
-Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6B496BE05B;
-        Wed, 27 Jul 2022 07:22:53 +0000 (GMT)
-Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 8E644BE054;
-        Wed, 27 Jul 2022 07:22:51 +0000 (GMT)
-Received: from [9.43.111.89] (unknown [9.43.111.89])
-        by b03ledav005.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Wed, 27 Jul 2022 07:22:50 +0000 (GMT)
-Message-ID: <94b935e1-5b5a-1da5-a24d-2906802bf802@linux.vnet.ibm.com>
-Date:   Wed, 27 Jul 2022 12:52:18 +0530
+        Wed, 27 Jul 2022 03:23:40 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43D1440BC4
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 00:23:38 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id y11so25703605lfs.6
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 00:23:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ft3XCwNiOjU+32vJUTrHCohDlzXHlrGObjp/2D3lLcw=;
+        b=D2vcTf6EHxluMdEITJVhlFAhkbW4JXwi4l16W6a5A5FW0GepRJX9Hz0VOFqH4OJ3wj
+         y0rysj0Ybv4kH6MNX324hPKweTIx+9oV9gisPrVjJ6i35zZ/pRYd1H/dD9gTertXKydw
+         QM98CFre3HZrSY0dBfvD4/4qAo2bD5sBxN3qoysT+IjmD5ers8ddWUnRvHqjNJEVH/v3
+         LNm/UZRG9iGKtJNCYgo7kr+eKfozku480KhGGtqiFFigOrP9OjE/Uos5MkYy/PNpuY55
+         hrPdf6wrmD4tAW6gYoHF0KcPidX//mUg5U5xdPL8ylBCsbjjXSKgHw88aOrMWLuOhZXo
+         fBog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ft3XCwNiOjU+32vJUTrHCohDlzXHlrGObjp/2D3lLcw=;
+        b=ffIJ5ygDv5Iey7ETp+3pMpiF4EOEPZHRM9/feN+2art2eBdl6+BZmUNHenTgKyG2ll
+         1imu1AEhQqMgRAv2olSXLKXabdpWkoxoqhOnRXoRXQb9VT3IlnDs0/CvSUMtAw52PSPj
+         GRnOXD25EdJ2fhhf0/UnPIOd5HDZ7blCg74fMij2fPwyXMS5G7fpWXfd61iAgTpZ665h
+         Vm0HWdxXrYla0vhAXa6n3AF5JzVAZIoSPxwtEoAp9oblzxi6E9Urd2QooPR3AK9Otnb/
+         b4eYRm4hxCEDETET7sAcP8FYyTU8y1efclabk54GGHFvz+2QMP/dFEr45cO+BUEF89+x
+         iAZA==
+X-Gm-Message-State: AJIora8l8lcqZFvfhrxvvG5JRDdWm0SidHjsV7Ur3spM5x4pJBYI8ZDj
+        CDwW1nW8MKRx8KoWEHI719puXg==
+X-Google-Smtp-Source: AGRyM1uHJ5ymf8whLvfZFW+rSC4qpuSxZKs4pbYbEi1RVIOv6PYyOgAgAz2r6JpgBX6lGa3re4pjbA==
+X-Received: by 2002:a19:dc4d:0:b0:489:63cb:20c7 with SMTP id f13-20020a19dc4d000000b0048963cb20c7mr7155587lfj.101.1658906616374;
+        Wed, 27 Jul 2022 00:23:36 -0700 (PDT)
+Received: from [192.168.3.197] (78-26-46-173.network.trollfjord.no. [78.26.46.173])
+        by smtp.gmail.com with ESMTPSA id o14-20020ac24e8e000000b0048a8899db0fsm1733291lfr.7.2022.07.27.00.23.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 Jul 2022 00:23:35 -0700 (PDT)
+Message-ID: <aaa6b5d0-20e8-146f-ba37-8784dbfd6072@linaro.org>
+Date:   Wed, 27 Jul 2022 09:23:34 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v15 01/11] dt-bindings: mediatek,dp: Add Display Port
+ binding
 Content-Language: en-US
-To:     linux-kernel@vger.kernel.org
-Cc:     abdhalee@linux.vnet.ibm.com, sachinp@linux.vnet.com,
-        mputtash@linux.vnet.com
-From:   Tasmiya Nalatwad <tasmiya@linux.vnet.ibm.com>
-Subject: Build Failure "kernel/watchdog.o"
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Bo-Chen Chen <rex-bc.chen@mediatek.com>, chunkuang.hu@kernel.org,
+        p.zabel@pengutronix.de, daniel@ffwll.ch, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, mripard@kernel.org,
+        tzimmermann@suse.de, matthias.bgg@gmail.com, deller@gmx.de,
+        airlied@linux.ie
+Cc:     msp@baylibre.com, granquet@baylibre.com, jitao.shi@mediatek.com,
+        wenst@chromium.org, angelogioacchino.delregno@collabora.com,
+        ck.hu@mediatek.com, liangxu.xu@mediatek.com,
+        dri-devel@lists.freedesktop.org,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-fbdev@vger.kernel.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220727045035.32225-1-rex-bc.chen@mediatek.com>
+ <20220727045035.32225-2-rex-bc.chen@mediatek.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220727045035.32225-2-rex-bc.chen@mediatek.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: Y5ybXNK6EJrEjM6GQL3WAzrSlGT9zgSs
-X-Proofpoint-ORIG-GUID: Y5ybXNK6EJrEjM6GQL3WAzrSlGT9zgSs
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-26_07,2022-07-26_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 clxscore=1015
- malwarescore=0 impostorscore=0 adultscore=0 lowpriorityscore=0 bulkscore=0
- mlxlogscore=850 mlxscore=0 suspectscore=0 priorityscore=1501 phishscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
- definitions=main-2207270025
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Greetings,
+On 27/07/2022 06:50, Bo-Chen Chen wrote:
+> From: Markus Schneider-Pargmann <msp@baylibre.com>
+> 
+> This controller is present on several mediatek hardware. Currently
+> mt8195 and mt8395 have this controller without a functional difference,
+> so only one compatible field is added.
+> 
+> The controller can have two forms, as a normal display port and as an
+> embedded display port.
+> 
+> Signed-off-by: Markus Schneider-Pargmann <msp@baylibre.com>
+> Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
+> Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
+> ---
+>  .../display/mediatek/mediatek,dp.yaml         | 117 ++++++++++++++++++
+>  1 file changed, 117 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/display/mediatek/mediatek,dp.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,dp.yaml b/Documentation/devicetree/bindings/display/mediatek/mediatek,dp.yaml
+> new file mode 100644
+> index 000000000000..fd68c6c08df3
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,dp.yaml
+> @@ -0,0 +1,117 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/display/mediatek/mediatek,dp.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: MediaTek Display Port Controller
+> +
+> +maintainers:
+> +  - Chun-Kuang Hu <chunkuang.hu@kernel.org>
+> +  - Jitao shi <jitao.shi@mediatek.com>
+> +
+> +description: |
+> +  Device tree bindings for the MediaTek display port TX (DP) and
+> +  embedded display port TX (eDP) controller present on some MediaTek SoCs.
 
-Build Failure seen on linux-next with below error
+Drop entire sentence and just describe the hardware.
 
---- Traces ---
-make -j 33 -s && make modules && make modules_install && make install
-kernel/watchdog.c:597:20: error: static declaration of 
-'lockup_detector_reconfigure' follows non-static declaration
-  static inline void lockup_detector_reconfigure(void)
-                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-In file included from kernel/watchdog.c:17:
-./include/linux/nmi.h:125:6: note: previous declaration of 
-'lockup_detector_reconfigure' was here
-  void lockup_detector_reconfigure(void);
-       ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-make[1]: *** [scripts/Makefile.build:250: kernel/watchdog.o] Error 1
-make: *** [Makefile:2005: kernel] Error 2
-make: *** Waiting for unfinished jobs....
+> +  We just need to enable the power domain of DP. The clock of DP is
+> +  generated by itself and we are not using other PLL to generate clocks.
+> +  MediaTek DP and eDP are different hardwares and there are some features
+> +  which are not supported for eDP. For example, audio is not supported for
+> +  eDP. Therefore, we need to use two different compatibles to describe them.
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - mediatek,mt8195-dp-tx
+> +      - mediatek,mt8195-edp-tx
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  nvmem-cells:
+> +    maxItems: 1
+> +    description: efuse data for display port calibration
+> +
+> +  nvmem-cell-names:
+> +    const: dp_calibration_data
+> +
+> +  power-domains:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  ports:
+> +    $ref: /schemas/graph.yaml#/properties/ports
+> +    properties:
+> +      port@0:
+> +        $ref: /schemas/graph.yaml#/properties/port
+> +        description: Input endpoint of the controller, usually dp_intf
+> +
+> +      port@1:
+> +        $ref: /schemas/graph.yaml#/$defs/port-base
+> +        unevaluatedProperties: false
+> +        description: Output endpoint of the controller
+> +        properties:
+> +          endpoint:
+> +            $ref: /schemas/media/video-interfaces.yaml#
+> +            unevaluatedProperties: false
+> +            properties:
+> +              data-lanes:
+> +                description: |
+> +                  number of lanes supported by the hardware.
+> +                  The possible values:
+> +                  0       - For 1 lane enabled in IP.
+> +                  0 1     - For 2 lanes enabled in IP.
+> +                  0 1 2 3 - For 4 lanes enabled in IP.
+> +                minItems: 1
+> +                maxItems: 4
+> +            required:
+> +              - data-lanes
+> +
+> +    required:
+> +      - port@0
+> +      - port@1
+> +
+> +  max-linkrate-mhz:
+> +    enum: [ 1620, 2700, 5400, 8100 ]
+> +    description: maximum link rate supported by the hardware.
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +  - ports
+> +  - max-linkrate-mhz
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +    #include <dt-bindings/power/mt8195-power.h>
+> +    dp_tx@1c600000 {
 
+No underscores in node names, so just "dp".
 
-Failure is seen in Build 26-07-2022
-Build 19-07-2022 was good
-
-Git bisect points to following commit id
-Commit id : 058affafc65a74cf54499fb578b66ad0b18f939b
-
-
-
-
--- 
-Regards,
-Tasmiya Nalatwad
-IBM Linux Technology Center
+Best regards,
+Krzysztof
