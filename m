@@ -2,158 +2,230 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 139F5C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:30:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BB2CC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:31:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242315AbiG0Raz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:30:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58224 "EHLO
+        id S242277AbiG0RbB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:31:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242133AbiG0R1t (ORCPT
+        with ESMTP id S242137AbiG0R1t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Jul 2022 13:27:49 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06FED7FE44
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:47:25 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id bf9so27843448lfb.13
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:47:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=G58v43xma03waMnam16LPp6PjErsC4YB3W0kFW2yXEw=;
-        b=bkweZ8DUw8CXRKbjPLdIjIMR9jSuhPlbY/WgGBuPuZjvISu/X5g5hsJldTx/S+tux5
-         H1O6H4yiGvwQuw1wPyBDRmR+MHE/HKQu4JZEe78b2PiTONvXPu+p7gBmrVsgbfQx0OLH
-         O0ebEpNNCLP2YOE3Q/zCZzt7+T0hlOie7x9iPFMjO58tEoMfwIBRoFxRzD0Tp0BsoA8b
-         wDINxw4SiKwKwavER2Nl5vmkU5yVOBavA3s63FgBX7zfE0gBoV6tA1qNVfywm6nkWmJg
-         P9EvVQodM6kgg1iGz1M3SEzo8hjH1ZxzrxKM2yn7qczRHbEy6cdzNrnmptoI5dit7JGU
-         DpfA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=G58v43xma03waMnam16LPp6PjErsC4YB3W0kFW2yXEw=;
-        b=uCCqo5wBvBumMqwVSGnn2IqtL/rPlW4D/AmqQKubG5i2AvZibjeOAw5Ll456a9Supb
-         aY7D0jK/ZjCMwoKWSGe0zRO1xe6T3bAdTDGUpQMN4+qqUlW0119CO8mrr8TdHWlgkd1x
-         X8RP0gh4wM7BCQv+38o/HUqnGbkESvk3hMctWKOz5+06C5SvOa5YEgoeUmBARWq3vQbq
-         /ykOVD3M5MizM0haN6i2apYiPtuUTd7kF0EQuS3s0j/xTnPQHonrvFHkhuZMKdpyDxgd
-         zYV0Ff+7YHa/LtIeAPTgKA3V3erprIvfMisVwACVvZa0OZcnyUd6E0Q4YTTkhZWKvTos
-         UK5g==
-X-Gm-Message-State: AJIora9BlFvrEjF7ywo6VpNdfWxNwOZnV2RJap5sF1lJ5Sqmz2UJNd6/
-        FpANrtRvUmGYI6xMKoqjUFe2jA==
-X-Google-Smtp-Source: AGRyM1vH0CUVOEcBUq1/Yiy2wWxdiPJq8QJMm8MMUeir/jyTAwdNpR1ErRGBl6KcNmi7ge05zM/W9Q==
-X-Received: by 2002:a05:6512:1393:b0:489:dd15:f04b with SMTP id p19-20020a056512139300b00489dd15f04bmr8180807lfa.284.1658940440119;
-        Wed, 27 Jul 2022 09:47:20 -0700 (PDT)
-Received: from krzk-bin.lan (78-26-46-173.network.trollfjord.no. [78.26.46.173])
-        by smtp.gmail.com with ESMTPSA id 18-20020ac25f52000000b0048910301774sm3375149lfz.307.2022.07.27.09.47.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 09:47:19 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Lucas Stankus <lucas.p.stankus@gmail.com>,
-        Puranjay Mohan <puranjay12@gmail.com>,
-        Cosmin Tanislav <cosmin.tanislav@analog.com>,
-        Alexandru Tachici <alexandru.tachici@analog.com>,
-        Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
-        Marcus Folkesson <marcus.folkesson@gmail.com>,
-        Kent Gustavsson <kent@minoris.se>,
-        Tomislav Denis <tomislav.denis@avl.com>,
-        Oleksij Rempel <linux@rempel-privat.de>, kernel@pengutronix.de,
-        Antoniu Miclaus <antoniu.miclaus@analog.com>,
-        Ricardo Ribalda <ribalda@kernel.org>,
-        Dragos Bogdan <dragos.bogdan@analog.com>,
-        Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Stefan Popa <stefan.popa@analog.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        Mike Looijmans <mike.looijmans@topic.nl>,
-        Joachim Eastwood <manabian@gmail.com>,
-        Tomas Melin <tomas.melin@vaisala.com>,
-        Sean Nyekjaer <sean@geanix.com>,
-        Beniamin Bia <beniamin.bia@analog.com>,
-        Patrick Vasseur <patrick.vasseur@c-s.fr>,
-        Charles-Antoine Couret <charles-antoine.couret@essensium.com>,
-        Vladimir Barinov <vladimir.barinov@cogentembedded.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Philippe Reynes <tremyfr@yahoo.fr>,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        Akinobu Mita <akinobu.mita@gmail.com>,
-        Alexandru Lazar <alazar@startmail.com>,
-        Oskar Andero <oskar.andero@gmail.com>,
-        =?UTF-8?q?M=C3=A5rten=20Lindahl?= <martenli@axis.com>,
-        Bogdan Pricop <bogdan.pricop@emutex.com>,
-        Angelo Compagnucci <angelo.compagnucci@gmail.com>,
-        Matt Ranostay <matt.ranostay@konsulko.com>,
-        Dan Murphy <dmurphy@ti.com>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Phil Reid <preid@electromag.com.au>,
-        Michael Welling <mwelling@ieee.org>,
-        Lukas Wunner <lukas@wunner.de>,
-        Robert Jones <rjones@gateworks.com>,
-        Chris Coffey <cmc@babblebit.net>,
-        Slawomir Stepien <sst@poczta.fm>,
-        Sankar Velliangiri <navin@linumiz.com>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-fbdev@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v2 06/10] dt-bindings: iio: health: ti,afe4403: use spi-peripheral-props.yaml
-Date:   Wed, 27 Jul 2022 18:46:42 +0200
-Message-Id: <20220727164646.387541-7-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220727164646.387541-1-krzysztof.kozlowski@linaro.org>
-References: <20220727164646.387541-1-krzysztof.kozlowski@linaro.org>
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C89D47E82F;
+        Wed, 27 Jul 2022 09:47:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8212DB821D5;
+        Wed, 27 Jul 2022 16:47:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD1BDC433C1;
+        Wed, 27 Jul 2022 16:46:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658940419;
+        bh=QGVr2ZyyoQ561rkrPsxvQAu8+NGwK0pg+cyAp/UQSVo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=J5XkWCJD40NOv6Z98q0C/lgEtQ8ZHz744rCzWajFKIuXQp9j5as7rJOlJSQCdPCBE
+         0kTiN8Pif8kWGLaGRIYmsu+EfCOgz9IRA4CSD5D8qopGN+Epfw9pU7UZy+TjFpLdsm
+         diajinQtiRkuEOqjM+xZD4ko239xAX1Gvn71iJ/k=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        Jeffrey Hugo <quic_jhugo@quicinc.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        Carl Vanderlip <quic_carlv@quicinc.com>
+Subject: [PATCH 5.18 017/158] PCI: hv: Fix interrupt mapping for multi-MSI
+Date:   Wed, 27 Jul 2022 18:11:21 +0200
+Message-Id: <20220727161022.166458774@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
+References: <20220727161021.428340041@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of listing directly properties typical for SPI peripherals,
-reference the spi-peripheral-props.yaml schema.  This allows using all
-properties typical for SPI-connected devices, even these which device
-bindings author did not tried yet.
+From: Jeffrey Hugo <quic_jhugo@quicinc.com>
 
-Remove the spi-* properties which now come via spi-peripheral-props.yaml
-schema, except for the cases when device schema adds some constraints
-like maximum frequency.
+[ upstream change a2bad844a67b1c7740bda63e87453baf63c3a7f7 ]
 
-While changing additionalProperties->unevaluatedProperties, put it in
-typical place, just before example DTS.
+According to Dexuan, the hypervisor folks beleive that multi-msi
+allocations are not correct.  compose_msi_msg() will allocate multi-msi
+one by one.  However, multi-msi is a block of related MSIs, with alignment
+requirements.  In order for the hypervisor to allocate properly aligned
+and consecutive entries in the IOMMU Interrupt Remapping Table, there
+should be a single mapping request that requests all of the multi-msi
+vectors in one shot.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Dexuan suggests detecting the multi-msi case and composing a single
+request related to the first MSI.  Then for the other MSIs in the same
+block, use the cached information.  This appears to be viable, so do it.
+
+Suggested-by: Dexuan Cui <decui@microsoft.com>
+Signed-off-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
+Reviewed-by: Dexuan Cui <decui@microsoft.com>
+Tested-by: Michael Kelley <mikelley@microsoft.com>
+Link: https://lore.kernel.org/r/1652282599-21643-1-git-send-email-quic_jhugo@quicinc.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Signed-off-by: Carl Vanderlip <quic_carlv@quicinc.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../devicetree/bindings/iio/health/ti,afe4403.yaml       | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/pci/controller/pci-hyperv.c |   60 ++++++++++++++++++++++++++++++------
+ 1 file changed, 50 insertions(+), 10 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/health/ti,afe4403.yaml b/Documentation/devicetree/bindings/iio/health/ti,afe4403.yaml
-index d861526c5c42..6c5ad426a016 100644
---- a/Documentation/devicetree/bindings/iio/health/ti,afe4403.yaml
-+++ b/Documentation/devicetree/bindings/iio/health/ti,afe4403.yaml
-@@ -25,14 +25,15 @@ properties:
+--- a/drivers/pci/controller/pci-hyperv.c
++++ b/drivers/pci/controller/pci-hyperv.c
+@@ -1518,6 +1518,10 @@ static void hv_int_desc_free(struct hv_p
+ 		u8 buffer[sizeof(struct pci_delete_interrupt)];
+ 	} ctxt;
  
-   reset-gpios: true
++	if (!int_desc->vector_count) {
++		kfree(int_desc);
++		return;
++	}
+ 	memset(&ctxt, 0, sizeof(ctxt));
+ 	int_pkt = (struct pci_delete_interrupt *)&ctxt.pkt.message;
+ 	int_pkt->message_type.type =
+@@ -1602,12 +1606,12 @@ static void hv_pci_compose_compl(void *c
  
--  spi-max-frequency: true
--
--additionalProperties: false
--
- required:
-   - compatible
-   - reg
+ static u32 hv_compose_msi_req_v1(
+ 	struct pci_create_interrupt *int_pkt, struct cpumask *affinity,
+-	u32 slot, u8 vector)
++	u32 slot, u8 vector, u8 vector_count)
+ {
+ 	int_pkt->message_type.type = PCI_CREATE_INTERRUPT_MESSAGE;
+ 	int_pkt->wslot.slot = slot;
+ 	int_pkt->int_desc.vector = vector;
+-	int_pkt->int_desc.vector_count = 1;
++	int_pkt->int_desc.vector_count = vector_count;
+ 	int_pkt->int_desc.delivery_mode = DELIVERY_MODE;
  
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
+ 	/*
+@@ -1630,14 +1634,14 @@ static int hv_compose_msi_req_get_cpu(st
+ 
+ static u32 hv_compose_msi_req_v2(
+ 	struct pci_create_interrupt2 *int_pkt, struct cpumask *affinity,
+-	u32 slot, u8 vector)
++	u32 slot, u8 vector, u8 vector_count)
+ {
+ 	int cpu;
+ 
+ 	int_pkt->message_type.type = PCI_CREATE_INTERRUPT_MESSAGE2;
+ 	int_pkt->wslot.slot = slot;
+ 	int_pkt->int_desc.vector = vector;
+-	int_pkt->int_desc.vector_count = 1;
++	int_pkt->int_desc.vector_count = vector_count;
+ 	int_pkt->int_desc.delivery_mode = DELIVERY_MODE;
+ 	cpu = hv_compose_msi_req_get_cpu(affinity);
+ 	int_pkt->int_desc.processor_array[0] =
+@@ -1649,7 +1653,7 @@ static u32 hv_compose_msi_req_v2(
+ 
+ static u32 hv_compose_msi_req_v3(
+ 	struct pci_create_interrupt3 *int_pkt, struct cpumask *affinity,
+-	u32 slot, u32 vector)
++	u32 slot, u32 vector, u8 vector_count)
+ {
+ 	int cpu;
+ 
+@@ -1657,7 +1661,7 @@ static u32 hv_compose_msi_req_v3(
+ 	int_pkt->wslot.slot = slot;
+ 	int_pkt->int_desc.vector = vector;
+ 	int_pkt->int_desc.reserved = 0;
+-	int_pkt->int_desc.vector_count = 1;
++	int_pkt->int_desc.vector_count = vector_count;
+ 	int_pkt->int_desc.delivery_mode = DELIVERY_MODE;
+ 	cpu = hv_compose_msi_req_get_cpu(affinity);
+ 	int_pkt->int_desc.processor_array[0] =
+@@ -1688,6 +1692,8 @@ static void hv_compose_msi_msg(struct ir
+ 	struct cpumask *dest;
+ 	struct compose_comp_ctxt comp;
+ 	struct tran_int_desc *int_desc;
++	struct msi_desc *msi_desc;
++	u8 vector, vector_count;
+ 	struct {
+ 		struct pci_packet pci_pkt;
+ 		union {
+@@ -1709,7 +1715,8 @@ static void hv_compose_msi_msg(struct ir
+ 		return;
+ 	}
+ 
+-	pdev = msi_desc_to_pci_dev(irq_data_get_msi_desc(data));
++	msi_desc  = irq_data_get_msi_desc(data);
++	pdev = msi_desc_to_pci_dev(msi_desc);
+ 	dest = irq_data_get_effective_affinity_mask(data);
+ 	pbus = pdev->bus;
+ 	hbus = container_of(pbus->sysdata, struct hv_pcibus_device, sysdata);
+@@ -1722,6 +1729,36 @@ static void hv_compose_msi_msg(struct ir
+ 	if (!int_desc)
+ 		goto drop_reference;
+ 
++	if (!msi_desc->pci.msi_attrib.is_msix && msi_desc->nvec_used > 1) {
++		/*
++		 * If this is not the first MSI of Multi MSI, we already have
++		 * a mapping.  Can exit early.
++		 */
++		if (msi_desc->irq != data->irq) {
++			data->chip_data = int_desc;
++			int_desc->address = msi_desc->msg.address_lo |
++					    (u64)msi_desc->msg.address_hi << 32;
++			int_desc->data = msi_desc->msg.data +
++					 (data->irq - msi_desc->irq);
++			msg->address_hi = msi_desc->msg.address_hi;
++			msg->address_lo = msi_desc->msg.address_lo;
++			msg->data = int_desc->data;
++			put_pcichild(hpdev);
++			return;
++		}
++		/*
++		 * The vector we select here is a dummy value.  The correct
++		 * value gets sent to the hypervisor in unmask().  This needs
++		 * to be aligned with the count, and also not zero.  Multi-msi
++		 * is powers of 2 up to 32, so 32 will always work here.
++		 */
++		vector = 32;
++		vector_count = msi_desc->nvec_used;
++	} else {
++		vector = hv_msi_get_int_vector(data);
++		vector_count = 1;
++	}
 +
-+unevaluatedProperties: false
-+
- examples:
-   - |
-     #include <dt-bindings/gpio/gpio.h>
--- 
-2.34.1
+ 	memset(&ctxt, 0, sizeof(ctxt));
+ 	init_completion(&comp.comp_pkt.host_event);
+ 	ctxt.pci_pkt.completion_func = hv_pci_compose_compl;
+@@ -1732,7 +1769,8 @@ static void hv_compose_msi_msg(struct ir
+ 		size = hv_compose_msi_req_v1(&ctxt.int_pkts.v1,
+ 					dest,
+ 					hpdev->desc.win_slot.slot,
+-					hv_msi_get_int_vector(data));
++					vector,
++					vector_count);
+ 		break;
+ 
+ 	case PCI_PROTOCOL_VERSION_1_2:
+@@ -1740,14 +1778,16 @@ static void hv_compose_msi_msg(struct ir
+ 		size = hv_compose_msi_req_v2(&ctxt.int_pkts.v2,
+ 					dest,
+ 					hpdev->desc.win_slot.slot,
+-					hv_msi_get_int_vector(data));
++					vector,
++					vector_count);
+ 		break;
+ 
+ 	case PCI_PROTOCOL_VERSION_1_4:
+ 		size = hv_compose_msi_req_v3(&ctxt.int_pkts.v3,
+ 					dest,
+ 					hpdev->desc.win_slot.slot,
+-					hv_msi_get_int_vector(data));
++					vector,
++					vector_count);
+ 		break;
+ 
+ 	default:
+
 
