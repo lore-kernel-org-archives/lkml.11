@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFC7FC19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:43:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6D31C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:44:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242981AbiG0Rn5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:43:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39730 "EHLO
+        id S243024AbiG0RoE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:44:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242974AbiG0RnQ (ORCPT
+        with ESMTP id S242943AbiG0Rn1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:43:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98E4989EA8;
-        Wed, 27 Jul 2022 09:52:34 -0700 (PDT)
+        Wed, 27 Jul 2022 13:43:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D03F89EBA;
+        Wed, 27 Jul 2022 09:52:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8032AB821AC;
-        Wed, 27 Jul 2022 16:52:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0B56C433D6;
-        Wed, 27 Jul 2022 16:52:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5FBE1616BD;
+        Wed, 27 Jul 2022 16:52:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66CD7C433D6;
+        Wed, 27 Jul 2022 16:52:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940742;
-        bh=OJcd3z38Zh8nkGq4PkOJbi8tLzOObhuROopTRYiPVIY=;
+        s=korg; t=1658940747;
+        bh=09q0fp0UNnv65fb09KZBA3JX8+stgJ9Pdq795VBDTWY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YLIyuOQ5NznVN2OC+fZK45yFgqwyrXa+sfH3X+6kWlSKxkHkY1Wu9BmPxdLTNfeTh
-         3vePwedBHR5+6MgDO5xKn8sJ7ab6ks8UYkj3hN3t2LoH6cehe0HzBe0I3ZiCTTXh7M
-         wBUyclgWQr8RMNa/iH8M64S8CHPlBJoXTT/E/1KQ=
+        b=wgPgVNiNe5SYdWJ2+dg8/mjFnsmw4WAAiXZJtMwOwv9/JO2OIRcAVpMay2CwwXL88
+         1RRLXHlZl1SD2Ot8vJ6TBA6aHDgBpZzyLpUPg0PJghGDvDmSnH8p+EXtEO2bQ11DEa
+         LAdmexzoJzg886BgNhYBpD+rpkR9TyTktxYCuTQs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        stable@vger.kernel.org, Taehee Yoo <ap420073@gmail.com>,
         Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 100/158] net: dsa: vitesse-vsc73xx: silent spi_device_id warnings
-Date:   Wed, 27 Jul 2022 18:12:44 +0200
-Message-Id: <20220727161025.468303678@linuxfoundation.org>
+Subject: [PATCH 5.18 102/158] amt: remove unnecessary locks
+Date:   Wed, 27 Jul 2022 18:12:46 +0200
+Message-Id: <20220727161025.552206594@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -50,47 +49,141 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oleksij Rempel <o.rempel@pengutronix.de>
+From: Taehee Yoo <ap420073@gmail.com>
 
-[ Upstream commit 1774559f07993e1cac33c2406e99049d4bdea6c8 ]
+[ Upstream commit 9c343ea6185febe5f6b74f7f7b3757f3dd9c5af6 ]
 
-Add spi_device_id entries to silent SPI warnings.
+By the previous patch, amt gateway handlers are changed to worked by
+a single thread.
+So, most locks for gateway are not needed.
+So, it removes.
 
-Fixes: 5fa6863ba692 ("spi: Check we have a spi_device_id for each DT compatible")
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-Link: https://lore.kernel.org/r/20220717135831.2492844-2-o.rempel@pengutronix.de
+Fixes: cbc21dc1cfe9 ("amt: add data plane of amt interface")
+Signed-off-by: Taehee Yoo <ap420073@gmail.com>
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/vitesse-vsc73xx-spi.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/net/amt.c | 32 +++++---------------------------
+ 1 file changed, 5 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/net/dsa/vitesse-vsc73xx-spi.c b/drivers/net/dsa/vitesse-vsc73xx-spi.c
-index 3110895358d8..97a92e6da60d 100644
---- a/drivers/net/dsa/vitesse-vsc73xx-spi.c
-+++ b/drivers/net/dsa/vitesse-vsc73xx-spi.c
-@@ -205,10 +205,20 @@ static const struct of_device_id vsc73xx_of_match[] = {
- };
- MODULE_DEVICE_TABLE(of, vsc73xx_of_match);
+diff --git a/drivers/net/amt.c b/drivers/net/amt.c
+index f8e8381e266b..615f26a553ae 100644
+--- a/drivers/net/amt.c
++++ b/drivers/net/amt.c
+@@ -577,8 +577,8 @@ static struct sk_buff *amt_build_igmp_gq(struct amt_dev *amt)
+ 	return skb;
+ }
  
-+static const struct spi_device_id vsc73xx_spi_ids[] = {
-+	{ "vsc7385" },
-+	{ "vsc7388" },
-+	{ "vsc7395" },
-+	{ "vsc7398" },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(spi, vsc73xx_spi_ids);
-+
- static struct spi_driver vsc73xx_spi_driver = {
- 	.probe = vsc73xx_spi_probe,
- 	.remove = vsc73xx_spi_remove,
- 	.shutdown = vsc73xx_spi_shutdown,
-+	.id_table = vsc73xx_spi_ids,
- 	.driver = {
- 		.name = "vsc73xx-spi",
- 		.of_match_table = vsc73xx_of_match,
+-static void __amt_update_gw_status(struct amt_dev *amt, enum amt_status status,
+-				   bool validate)
++static void amt_update_gw_status(struct amt_dev *amt, enum amt_status status,
++				 bool validate)
+ {
+ 	if (validate && amt->status >= status)
+ 		return;
+@@ -600,14 +600,6 @@ static void __amt_update_relay_status(struct amt_tunnel_list *tunnel,
+ 	tunnel->status = status;
+ }
+ 
+-static void amt_update_gw_status(struct amt_dev *amt, enum amt_status status,
+-				 bool validate)
+-{
+-	spin_lock_bh(&amt->lock);
+-	__amt_update_gw_status(amt, status, validate);
+-	spin_unlock_bh(&amt->lock);
+-}
+-
+ static void amt_update_relay_status(struct amt_tunnel_list *tunnel,
+ 				    enum amt_status status, bool validate)
+ {
+@@ -700,9 +692,7 @@ static void amt_send_discovery(struct amt_dev *amt)
+ 	if (unlikely(net_xmit_eval(err)))
+ 		amt->dev->stats.tx_errors++;
+ 
+-	spin_lock_bh(&amt->lock);
+-	__amt_update_gw_status(amt, AMT_STATUS_SENT_DISCOVERY, true);
+-	spin_unlock_bh(&amt->lock);
++	amt_update_gw_status(amt, AMT_STATUS_SENT_DISCOVERY, true);
+ out:
+ 	rcu_read_unlock();
+ }
+@@ -937,18 +927,14 @@ static void amt_secret_work(struct work_struct *work)
+ 
+ static void amt_event_send_discovery(struct amt_dev *amt)
+ {
+-	spin_lock_bh(&amt->lock);
+ 	if (amt->status > AMT_STATUS_SENT_DISCOVERY)
+ 		goto out;
+ 	get_random_bytes(&amt->nonce, sizeof(__be32));
+-	spin_unlock_bh(&amt->lock);
+ 
+ 	amt_send_discovery(amt);
+-	spin_lock_bh(&amt->lock);
+ out:
+ 	mod_delayed_work(amt_wq, &amt->discovery_wq,
+ 			 msecs_to_jiffies(AMT_DISCOVERY_TIMEOUT));
+-	spin_unlock_bh(&amt->lock);
+ }
+ 
+ static void amt_discovery_work(struct work_struct *work)
+@@ -966,7 +952,6 @@ static void amt_event_send_request(struct amt_dev *amt)
+ {
+ 	u32 exp;
+ 
+-	spin_lock_bh(&amt->lock);
+ 	if (amt->status < AMT_STATUS_RECEIVED_ADVERTISEMENT)
+ 		goto out;
+ 
+@@ -976,21 +961,18 @@ static void amt_event_send_request(struct amt_dev *amt)
+ 		amt->ready4 = false;
+ 		amt->ready6 = false;
+ 		amt->remote_ip = 0;
+-		__amt_update_gw_status(amt, AMT_STATUS_INIT, false);
++		amt_update_gw_status(amt, AMT_STATUS_INIT, false);
+ 		amt->req_cnt = 0;
+ 		goto out;
+ 	}
+-	spin_unlock_bh(&amt->lock);
+ 
+ 	amt_send_request(amt, false);
+ 	amt_send_request(amt, true);
+-	spin_lock_bh(&amt->lock);
+-	__amt_update_gw_status(amt, AMT_STATUS_SENT_REQUEST, true);
++	amt_update_gw_status(amt, AMT_STATUS_SENT_REQUEST, true);
+ 	amt->req_cnt++;
+ out:
+ 	exp = min_t(u32, (1 * (1 << amt->req_cnt)), AMT_MAX_REQ_TIMEOUT);
+ 	mod_delayed_work(amt_wq, &amt->req_wq, msecs_to_jiffies(exp * 1000));
+-	spin_unlock_bh(&amt->lock);
+ }
+ 
+ static void amt_req_work(struct work_struct *work)
+@@ -2386,12 +2368,10 @@ static bool amt_membership_query_handler(struct amt_dev *amt,
+ 		ihv3 = skb_pull(skb, sizeof(*iph) + AMT_IPHDR_OPTS);
+ 		skb_reset_transport_header(skb);
+ 		skb_push(skb, sizeof(*iph) + AMT_IPHDR_OPTS);
+-		spin_lock_bh(&amt->lock);
+ 		amt->ready4 = true;
+ 		amt->mac = amtmq->response_mac;
+ 		amt->req_cnt = 0;
+ 		amt->qi = ihv3->qqic;
+-		spin_unlock_bh(&amt->lock);
+ 		skb->protocol = htons(ETH_P_IP);
+ 		eth->h_proto = htons(ETH_P_IP);
+ 		ip_eth_mc_map(iph->daddr, eth->h_dest);
+@@ -2411,12 +2391,10 @@ static bool amt_membership_query_handler(struct amt_dev *amt,
+ 		mld2q = skb_pull(skb, sizeof(*ip6h) + AMT_IP6HDR_OPTS);
+ 		skb_reset_transport_header(skb);
+ 		skb_push(skb, sizeof(*ip6h) + AMT_IP6HDR_OPTS);
+-		spin_lock_bh(&amt->lock);
+ 		amt->ready6 = true;
+ 		amt->mac = amtmq->response_mac;
+ 		amt->req_cnt = 0;
+ 		amt->qi = mld2q->mld2q_qqic;
+-		spin_unlock_bh(&amt->lock);
+ 		skb->protocol = htons(ETH_P_IPV6);
+ 		eth->h_proto = htons(ETH_P_IPV6);
+ 		ipv6_eth_mc_map(&ip6h->daddr, eth->h_dest);
 -- 
 2.35.1
 
