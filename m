@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE8A2C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:36:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FE4AC19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:36:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235810AbiG0RgO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:36:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41676 "EHLO
+        id S240203AbiG0RgS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:36:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242674AbiG0Reo (ORCPT
+        with ESMTP id S242691AbiG0Rer (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:34:44 -0400
+        Wed, 27 Jul 2022 13:34:47 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89CD883217;
-        Wed, 27 Jul 2022 09:49:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7C8B8322E;
+        Wed, 27 Jul 2022 09:49:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5E1C5B8200D;
-        Wed, 27 Jul 2022 16:49:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC666C4314B;
-        Wed, 27 Jul 2022 16:49:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 68D56B821BA;
+        Wed, 27 Jul 2022 16:49:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4D62C433D7;
+        Wed, 27 Jul 2022 16:49:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940543;
-        bh=1FNzOP63Yh7F+2bl4b9dtHLmiHFN1ZIPU25hzTFYPpk=;
+        s=korg; t=1658940568;
+        bh=UfdR8alEtr+J6C83yGSrEMxB5kYXnNaWCvzjtgVLPQA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1zX7W8fPbeH71zG9l0ZQzPXa096Q/RAi9uQJgMqVElAWgOemSaftRYexBL+B7UeT/
-         Z0PwfA6CXabRGvGOD1TRMTC7JMtTYvAb6K4OrtkWyb/2b6AdgkmuhdNi4lJf1Fdk8u
-         w9L3RruaZ9bhFbwC7GP0CDRjymSvbi3e1Fpc69mk=
+        b=PBp9GBgSN2ahNX9Xm+SsMMjpp4qpMQcdZP9eV/7x6uwwdg/9PxOQyx1u3XKhkEkbF
+         Ikc0BbYs8+IdlnryJMuyprXGf5zs29vyYgrMVSuJxrCXwg/hMq5f8lwHRzrfmr0x/T
+         Mmpi9H5Gm6imNhYxTyD1fpHBhsOEDh7eUkZwD5lk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Cedric Wassenaar <cedric@bytespeed.nl>,
-        Junxiao Chang <junxiao.chang@intel.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Yang Jihong <yangjihong1@huawei.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 059/158] net: stmmac: fix dma queue left shift overflow issue
-Date:   Wed, 27 Jul 2022 18:12:03 +0200
-Message-Id: <20220727161023.874713129@linuxfoundation.org>
+Subject: [PATCH 5.18 029/158] perf/core: Fix data race between perf_event_set_output() and perf_mmap_close()
+Date:   Wed, 27 Jul 2022 18:11:33 +0200
+Message-Id: <20220727161022.646512129@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -51,80 +49,164 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Junxiao Chang <junxiao.chang@intel.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-[ Upstream commit 613b065ca32e90209024ec4a6bb5ca887ee70980 ]
+[ Upstream commit 68e3c69803dada336893640110cb87221bb01dcf ]
 
-When queue number is > 4, left shift overflows due to 32 bits
-integer variable. Mask calculation is wrong for MTL_RXQ_DMA_MAP1.
+Yang Jihing reported a race between perf_event_set_output() and
+perf_mmap_close():
 
-If CONFIG_UBSAN is enabled, kernel dumps below warning:
-[   10.363842] ==================================================================
-[   10.363882] UBSAN: shift-out-of-bounds in /build/linux-intel-iotg-5.15-8e6Tf4/
-linux-intel-iotg-5.15-5.15.0/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c:224:12
-[   10.363929] shift exponent 40 is too large for 32-bit type 'unsigned int'
-[   10.363953] CPU: 1 PID: 599 Comm: NetworkManager Not tainted 5.15.0-1003-intel-iotg
-[   10.363956] Hardware name: ADLINK Technology Inc. LEC-EL/LEC-EL, BIOS 0.15.11 12/22/2021
-[   10.363958] Call Trace:
-[   10.363960]  <TASK>
-[   10.363963]  dump_stack_lvl+0x4a/0x5f
-[   10.363971]  dump_stack+0x10/0x12
-[   10.363974]  ubsan_epilogue+0x9/0x45
-[   10.363976]  __ubsan_handle_shift_out_of_bounds.cold+0x61/0x10e
-[   10.363979]  ? wake_up_klogd+0x4a/0x50
-[   10.363983]  ? vprintk_emit+0x8f/0x240
-[   10.363986]  dwmac4_map_mtl_dma.cold+0x42/0x91 [stmmac]
-[   10.364001]  stmmac_mtl_configuration+0x1ce/0x7a0 [stmmac]
-[   10.364009]  ? dwmac410_dma_init_channel+0x70/0x70 [stmmac]
-[   10.364020]  stmmac_hw_setup.cold+0xf/0xb14 [stmmac]
-[   10.364030]  ? page_pool_alloc_pages+0x4d/0x70
-[   10.364034]  ? stmmac_clear_tx_descriptors+0x6e/0xe0 [stmmac]
-[   10.364042]  stmmac_open+0x39e/0x920 [stmmac]
-[   10.364050]  __dev_open+0xf0/0x1a0
-[   10.364054]  __dev_change_flags+0x188/0x1f0
-[   10.364057]  dev_change_flags+0x26/0x60
-[   10.364059]  do_setlink+0x908/0xc40
-[   10.364062]  ? do_setlink+0xb10/0xc40
-[   10.364064]  ? __nla_validate_parse+0x4c/0x1a0
-[   10.364068]  __rtnl_newlink+0x597/0xa10
-[   10.364072]  ? __nla_reserve+0x41/0x50
-[   10.364074]  ? __kmalloc_node_track_caller+0x1d0/0x4d0
-[   10.364079]  ? pskb_expand_head+0x75/0x310
-[   10.364082]  ? nla_reserve_64bit+0x21/0x40
-[   10.364086]  ? skb_free_head+0x65/0x80
-[   10.364089]  ? security_sock_rcv_skb+0x2c/0x50
-[   10.364094]  ? __cond_resched+0x19/0x30
-[   10.364097]  ? kmem_cache_alloc_trace+0x15a/0x420
-[   10.364100]  rtnl_newlink+0x49/0x70
+	CPU1					CPU2
 
-This change fixes MTL_RXQ_DMA_MAP1 mask issue and channel/queue
-mapping warning.
+	perf_mmap_close(e2)
+	  if (atomic_dec_and_test(&e2->rb->mmap_count)) // 1 - > 0
+	    detach_rest = true
 
-Fixes: d43042f4da3e ("net: stmmac: mapping mtl rx to dma channel")
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=216195
-Reported-by: Cedric Wassenaar <cedric@bytespeed.nl>
-Signed-off-by: Junxiao Chang <junxiao.chang@intel.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+						ioctl(e1, IOC_SET_OUTPUT, e2)
+						  perf_event_set_output(e1, e2)
+
+	  ...
+	  list_for_each_entry_rcu(e, &e2->rb->event_list, rb_entry)
+	    ring_buffer_attach(e, NULL);
+	    // e1 isn't yet added and
+	    // therefore not detached
+
+						    ring_buffer_attach(e1, e2->rb)
+						      list_add_rcu(&e1->rb_entry,
+								   &e2->rb->event_list)
+
+After this; e1 is attached to an unmapped rb and a subsequent
+perf_mmap() will loop forever more:
+
+	again:
+		mutex_lock(&e->mmap_mutex);
+		if (event->rb) {
+			...
+			if (!atomic_inc_not_zero(&e->rb->mmap_count)) {
+				...
+				mutex_unlock(&e->mmap_mutex);
+				goto again;
+			}
+		}
+
+The loop in perf_mmap_close() holds e2->mmap_mutex, while the attach
+in perf_event_set_output() holds e1->mmap_mutex. As such there is no
+serialization to avoid this race.
+
+Change perf_event_set_output() to take both e1->mmap_mutex and
+e2->mmap_mutex to alleviate that problem. Additionally, have the loop
+in perf_mmap() detach the rb directly, this avoids having to wait for
+the concurrent perf_mmap_close() to get around to doing it to make
+progress.
+
+Fixes: 9bb5d40cd93c ("perf: Fix mmap() accounting hole")
+Reported-by: Yang Jihong <yangjihong1@huawei.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Tested-by: Yang Jihong <yangjihong1@huawei.com>
+Link: https://lkml.kernel.org/r/YsQ3jm2GR38SW7uD@worktop.programming.kicks-ass.net
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c | 3 +++
- 1 file changed, 3 insertions(+)
+ kernel/events/core.c | 45 ++++++++++++++++++++++++++++++--------------
+ 1 file changed, 31 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-index fd41db65fe1d..af3339041134 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-@@ -219,6 +219,9 @@ static void dwmac4_map_mtl_dma(struct mac_device_info *hw, u32 queue, u32 chan)
- 	if (queue == 0 || queue == 4) {
- 		value &= ~MTL_RXQ_DMA_Q04MDMACH_MASK;
- 		value |= MTL_RXQ_DMA_Q04MDMACH(chan);
-+	} else if (queue > 4) {
-+		value &= ~MTL_RXQ_DMA_QXMDMACH_MASK(queue - 4);
-+		value |= MTL_RXQ_DMA_QXMDMACH(chan, queue - 4);
- 	} else {
- 		value &= ~MTL_RXQ_DMA_QXMDMACH_MASK(queue);
- 		value |= MTL_RXQ_DMA_QXMDMACH(chan, queue);
+diff --git a/kernel/events/core.c b/kernel/events/core.c
+index 950b25c3f210..82238406f5f5 100644
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -6254,10 +6254,10 @@ static int perf_mmap(struct file *file, struct vm_area_struct *vma)
+ 
+ 		if (!atomic_inc_not_zero(&event->rb->mmap_count)) {
+ 			/*
+-			 * Raced against perf_mmap_close() through
+-			 * perf_event_set_output(). Try again, hope for better
+-			 * luck.
++			 * Raced against perf_mmap_close(); remove the
++			 * event and try again.
+ 			 */
++			ring_buffer_attach(event, NULL);
+ 			mutex_unlock(&event->mmap_mutex);
+ 			goto again;
+ 		}
+@@ -11826,14 +11826,25 @@ static int perf_copy_attr(struct perf_event_attr __user *uattr,
+ 	goto out;
+ }
+ 
++static void mutex_lock_double(struct mutex *a, struct mutex *b)
++{
++	if (b < a)
++		swap(a, b);
++
++	mutex_lock(a);
++	mutex_lock_nested(b, SINGLE_DEPTH_NESTING);
++}
++
+ static int
+ perf_event_set_output(struct perf_event *event, struct perf_event *output_event)
+ {
+ 	struct perf_buffer *rb = NULL;
+ 	int ret = -EINVAL;
+ 
+-	if (!output_event)
++	if (!output_event) {
++		mutex_lock(&event->mmap_mutex);
+ 		goto set;
++	}
+ 
+ 	/* don't allow circular references */
+ 	if (event == output_event)
+@@ -11871,8 +11882,15 @@ perf_event_set_output(struct perf_event *event, struct perf_event *output_event)
+ 	    event->pmu != output_event->pmu)
+ 		goto out;
+ 
++	/*
++	 * Hold both mmap_mutex to serialize against perf_mmap_close().  Since
++	 * output_event is already on rb->event_list, and the list iteration
++	 * restarts after every removal, it is guaranteed this new event is
++	 * observed *OR* if output_event is already removed, it's guaranteed we
++	 * observe !rb->mmap_count.
++	 */
++	mutex_lock_double(&event->mmap_mutex, &output_event->mmap_mutex);
+ set:
+-	mutex_lock(&event->mmap_mutex);
+ 	/* Can't redirect output if we've got an active mmap() */
+ 	if (atomic_read(&event->mmap_count))
+ 		goto unlock;
+@@ -11882,6 +11900,12 @@ perf_event_set_output(struct perf_event *event, struct perf_event *output_event)
+ 		rb = ring_buffer_get(output_event);
+ 		if (!rb)
+ 			goto unlock;
++
++		/* did we race against perf_mmap_close() */
++		if (!atomic_read(&rb->mmap_count)) {
++			ring_buffer_put(rb);
++			goto unlock;
++		}
+ 	}
+ 
+ 	ring_buffer_attach(event, rb);
+@@ -11889,20 +11913,13 @@ perf_event_set_output(struct perf_event *event, struct perf_event *output_event)
+ 	ret = 0;
+ unlock:
+ 	mutex_unlock(&event->mmap_mutex);
++	if (output_event)
++		mutex_unlock(&output_event->mmap_mutex);
+ 
+ out:
+ 	return ret;
+ }
+ 
+-static void mutex_lock_double(struct mutex *a, struct mutex *b)
+-{
+-	if (b < a)
+-		swap(a, b);
+-
+-	mutex_lock(a);
+-	mutex_lock_nested(b, SINGLE_DEPTH_NESTING);
+-}
+-
+ static int perf_event_set_clock(struct perf_event *event, clockid_t clk_id)
+ {
+ 	bool nmi_safe = false;
 -- 
 2.35.1
 
