@@ -2,216 +2,245 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 416E8C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 14:26:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FB6AC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 14:30:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233908AbiG0O0z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 10:26:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51828 "EHLO
+        id S233939AbiG0Oam (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 10:30:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54718 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233785AbiG0O0s (ORCPT
+        with ESMTP id S233657AbiG0Oal (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 10:26:48 -0400
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (mail-dm6nam12on2053.outbound.protection.outlook.com [40.107.243.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B1712BB2F;
-        Wed, 27 Jul 2022 07:26:47 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NJYwNedsuersceWKI31CfBevuyJQoLcXP2qsTEBgETkky3J4T6s6CPYiaFfH4U9Cwin7ZOrf/4Ehi7fg4595BuqIZ85B89ufkePqCcCDYDz2s+rblNgSL1+tzD3w3Y4GcBAp0uwsHgZ9QGN7XAbvRKsFgiCbeESD+axobEQ6YeWPe/0FbNXNfVIu//hk2VRalYsYaqzNdmf4N7vLQ67Do102fq/4JW1Ah+faH6LkJ14H4s6fCqxIkYuKt04dKFYsfZKONkaZowFcBr9w3MkIwew2uKtud4r1hvR5ZiuTj53hfvKNFEPTulYF81CtyE2AAf2E/5Trs/1GrzcVr/bVjg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=s3aD8t/LRAS+RTeXX67+nt2C+BjTya53f44Ez2mn2pA=;
- b=m8xiPaZksy/Vcu6YKt5KGjWmq5/csT5MVBL+U+/j6e3FSbbqdlNLhQIYReZqfiPJPjHGKb7qpnNxUU7F2+q49Xh1Z/L1WI06ezjPxFJmOzmX1a6yESIc4B+v1Xbnus2FLrhNtMCm8PQ2fOQOIm10nOhGmooVcDThytuG6TsLylSBDT2t0QRYpzMuUb3uCbiA3H02lsav3kIO+2bov00TuZkWnFpGb0cQJWvA4GCPLrCRZHhiUylkWtO8xBVPmJEEU/63ZOlTMZERlEjXbKqwXg59bUvLz7upCI0LAM8tbezGfljec4q5RtZ7a2hMzCVSLhL3JMR1MBzJa32YwZNx3w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.238) smtp.rcpttodomain=renesas.com smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=s3aD8t/LRAS+RTeXX67+nt2C+BjTya53f44Ez2mn2pA=;
- b=XGIV9fHFMDQhTtj0ze2pHxvFS3KZOPjbfmBb+LFXO6dpRXCC6V1UHNx7CWSLdZFjMNj+A+rcqnr8Umyj4sfpSzypI4I/UKJC3FjfiGhg7lvGBhQwD48D2JeLt/8Rb2jOEMcWHuZ6+l8CHOB18Z03GTwbN87DDHI/tOwwjCtilGFGet0cRVuqtdWGXBCKY18+09QX56m/gD/mez7pK0pJKAMf1FIGQHgyY8hm9T32HlZtHF3U9bsQmpWrcHT1KYKQzDLUPg229QNBE0A5u258+IFNfBAgvpSh5bPo96AZN+ZPMBS2mOtqaox00xbs8zOOpECt3gbZeHyo4ZdSbWXeGA==
-Received: from MW2PR16CA0017.namprd16.prod.outlook.com (2603:10b6:907::30) by
- MN2PR12MB3005.namprd12.prod.outlook.com (2603:10b6:208:c5::24) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5458.25; Wed, 27 Jul 2022 14:26:44 +0000
-Received: from CO1NAM11FT048.eop-nam11.prod.protection.outlook.com
- (2603:10b6:907:0:cafe::f5) by MW2PR16CA0017.outlook.office365.com
- (2603:10b6:907::30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.10 via Frontend
- Transport; Wed, 27 Jul 2022 14:26:44 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.238; helo=mail.nvidia.com; pr=C
-Received: from mail.nvidia.com (12.22.5.238) by
- CO1NAM11FT048.mail.protection.outlook.com (10.13.175.148) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5482.10 via Frontend Transport; Wed, 27 Jul 2022 14:26:44 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- DRHQMAIL105.nvidia.com (10.27.9.14) with Microsoft SMTP Server (TLS) id
- 15.0.1497.32; Wed, 27 Jul 2022 14:26:41 +0000
-Received: from drhqmail202.nvidia.com (10.126.190.181) by
- drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.26; Wed, 27 Jul 2022 07:26:41 -0700
-Received: from audio.nvidia.com (10.127.8.10) by mail.nvidia.com
- (10.126.190.181) with Microsoft SMTP Server id 15.2.986.26 via Frontend
- Transport; Wed, 27 Jul 2022 07:26:38 -0700
-From:   Sameer Pujar <spujar@nvidia.com>
-To:     <broonie@kernel.org>, <lgirdwood@gmail.com>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <perex@perex.cz>,
-        <tiwai@suse.com>, <kuninori.morimoto.gx@renesas.com>
-CC:     <alsa-devel@alsa-project.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, Sameer Pujar <spujar@nvidia.com>
-Subject: [PATCH 1/2] ASoC: dt-bindings: Add sample format conversion
-Date:   Wed, 27 Jul 2022 19:56:22 +0530
-Message-ID: <1658931983-31647-2-git-send-email-spujar@nvidia.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1658931983-31647-1-git-send-email-spujar@nvidia.com>
-References: <1658931983-31647-1-git-send-email-spujar@nvidia.com>
+        Wed, 27 Jul 2022 10:30:41 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D4A524BC8
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 07:30:39 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id j22so31831475ejs.2
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 07:30:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=raspberrypi.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MWccOyNxgdqhK/BqmRoycaQ1tfE452HTaiSZXF4pnU4=;
+        b=JyI+Dlq/A9zOMx58hwKLSpc9cW2f2qzJPj7629VcDspts3Uq/XRuxoLAIpw5dOLuSk
+         D+EK+zlW3yDxOinUu22OvYSD5ZCoij6jYhL6zUSzZEKIxGRqhEX1VZdKCgXgFRyzWj1N
+         ojA7fwgfrlxkbzPANsg01uMhcJXq/kE18NXcJrZBadHTLj0S08/i47pByx1BkeQ2MhLA
+         5vYZFdjIxQyNNCm/PIYZMDU4g3YtYWX8acyuMyWaXiKUTRK8MZJYVT4bS5vVBAQiVBxR
+         GRV0j1R2fe80S3DVRDXnQEX1/+uxrXFwhWLDfNLIVGXiNT8UsBA5LaLZq56paDot3KBt
+         LdEw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MWccOyNxgdqhK/BqmRoycaQ1tfE452HTaiSZXF4pnU4=;
+        b=FevQSRH7KF1WPuP3UvOmk6uRcBTkqhbiESZ4uM/32IWr1aBo6p4FH8CJNYaHU0PqTc
+         ZA8TVtuMIYVJ5f7G5eRkrk/PH3TzJ9JqA7Lagxmbg6A+oK4IBYyk8TD/uSVMGcw5NDaN
+         iZ4/7MsxbJRpb/dPSY5ZX7932soQyj1QKbRQ8YNrJCIq78Wr4lq/yqFsGMICkQPeYmL5
+         m1BbrEMHxZ0AFzrEizZuWanh2qhJFucDyapbif9CGMaJfon813aNLHEks2nc6XuQ3K03
+         iUgh6qmf6K6c+gxdnbdBLntuIYXIQ2UUXy+jGhrRT2wjDxXH1BGjWPgJCB7kcpaHGbAg
+         WZRw==
+X-Gm-Message-State: AJIora9UoIwlNR0HU+f28M6RX4rgnvRDXC5eIsjjCOiWGLIA0O++2zNe
+        r/bH2a9FXB98LwkANxm7jrc8a1KuS/9O3y1pIJnxGI2bpy78NA==
+X-Google-Smtp-Source: AGRyM1uHFepge1efC95gQQJt0cF6vWq4pbvGzMJfyVcEloueJifAikTWnldLTrJgDSExYBSShTqmuVaPMtpe9nrsCO8=
+X-Received: by 2002:a17:907:96a4:b0:72b:647e:30fd with SMTP id
+ hd36-20020a17090796a400b0072b647e30fdmr17634863ejc.723.1658932237636; Wed, 27
+ Jul 2022 07:30:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8cd28919-a952-4711-19cb-08da6fdc0813
-X-MS-TrafficTypeDiagnostic: MN2PR12MB3005:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: FgPx2XfvxGOB9A2GDKvVLSMuzbWjORVzkqMLnY4MEWiUTyeuM33LeOTsv2TfzOen+1qz6UJt9LdU/1NztP8yy3/u+49Njbtc+Wu+a1eR97XfGb6rzMCbDady+ZbZAqlm7hNmXEzOQeaW2IyhG3cR2Wixf8xelRD0HRWywlRQOp84ZKY0lMaOG1+OULAL2qVMk3EouZOfy980TsqbZ+SuYWJhJl5d4f4hzQL/n5pZQJC9N65/9/kWvSJM/yMyPaWpM93vHkfID6O6vbRtxpJA8Oiw1CGcANNWdyYWh+8ZlqHeOvx20g2uIrhWv3b5afF6XGucxsahXN/YWUHQUiQTxrvvQMRo3XQ58oix4dRepjRxva0y8UP4Zf21GJCrDUb68/xuT0OZJRwwWm1b2AzWNtFuNYvtrTBWNZiWolYsi7NmuyOvI4FDD7Lc5jr4B3GGDh4aeBT5AM8YZYmY6exOS2I0MVryXYJ2xcZ2KimNHqrYHbByiIYTXYrpRtZv77WNm/KpngCeHyvukx+zi5RcT3mFF0nFixmKhdvNcCqvnicQa7z1BOw2yXZBVnpVJP0FbWbBk1zGzPxLqWBkytW0TyRCy/l/cKYXk2ZDwEQCD/8Qu1BgITcF2n+s4iXtdZ8b+l1YIB6w3w4RUexOAvKjI9M+bbkJOOLMqva5x0sy2l+RyUXmkScLjAjCfBz1mLmL8aKgD2H2vZCMEqGJJablNJ0TjckpBisbhGVB37dO/HWc03eVMzTn98y2Z/x8mXxjyF6zvCtASYEQWz8AkAlnsgc39+ChcmKV9YQb9sbEMODAd3Zrv4R5ucJinXBaVPZgiW4Y5VpZJnPPYqXYtqs5+A==
-X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230016)(4636009)(346002)(396003)(376002)(39860400002)(136003)(36840700001)(46966006)(40470700004)(7416002)(8936002)(5660300002)(70586007)(70206006)(82310400005)(8676002)(4326008)(40480700001)(40460700003)(186003)(2906002)(36860700001)(356005)(81166007)(86362001)(36756003)(316002)(82740400003)(110136005)(54906003)(2616005)(26005)(426003)(336012)(47076005)(107886003)(41300700001)(478600001)(7696005)(6666004)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jul 2022 14:26:44.4210
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8cd28919-a952-4711-19cb-08da6fdc0813
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT048.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3005
+References: <20220709135052.3850913-1-aford173@gmail.com> <20220709135052.3850913-2-aford173@gmail.com>
+In-Reply-To: <20220709135052.3850913-2-aford173@gmail.com>
+From:   Dave Stevenson <dave.stevenson@raspberrypi.com>
+Date:   Wed, 27 Jul 2022 15:30:21 +0100
+Message-ID: <CAPY8ntA-KBfJwgxtsHdG32wA+v518=r5NBNbHZqFgEC7fp5xUA@mail.gmail.com>
+Subject: Re: [PATCH 2/2] media: i2c: imx219: Support four-lane operation
+To:     Adam Ford <aford173@gmail.com>
+Cc:     linux-media@vger.kernel.org, mchehab@kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Presently "convert-channels" and "convert-rate" DT bindings are available
-for channel and rate fixups respectively.
+Hi Adam
 
-Similarly add "convert-sample-format" binding to fixup DAI sample format
-as well. This is added to simple-card and audio-graph based sound cards.
+Sorry for the delay in reviewing.
 
-Signed-off-by: Sameer Pujar <spujar@nvidia.com>
-Cc: Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
----
- .../devicetree/bindings/sound/audio-graph-port.yaml | 21 +++++++++++++++++++++
- .../devicetree/bindings/sound/audio-graph.yaml      | 11 +++++++++++
- .../devicetree/bindings/sound/simple-card.yaml      | 15 +++++++++++++++
- 3 files changed, 47 insertions(+)
+On Sat, 9 Jul 2022 at 14:51, Adam Ford <aford173@gmail.com> wrote:
+>
+> The imx219 camera is capable of either two-lane or four-lane
+> operation.  When operating in four-lane, both the pixel rate and
+> link frequency change. Regardless of the mode, however, both
+> frequencies remain fixed.
+>
+> Helper functions are needed to read and set pixel and link frequencies
+> which also reduces the number of fixed registers in the table of modes.
+>
+> Since the link frequency and number of lanes is extracted from the
+> endpoint, move the endpoint handling into the probe function and
+> out of the imx219_check_hwcfg.  This simplifies the imx219_check_hwcfg
+> just a bit.
 
-diff --git a/Documentation/devicetree/bindings/sound/audio-graph-port.yaml b/Documentation/devicetree/bindings/sound/audio-graph-port.yaml
-index 5c36867..d7491038 100644
---- a/Documentation/devicetree/bindings/sound/audio-graph-port.yaml
-+++ b/Documentation/devicetree/bindings/sound/audio-graph-port.yaml
-@@ -24,6 +24,17 @@ properties:
-   convert-channels:
-     description: CPU to Codec rate channels.
-     $ref: /schemas/types.yaml#/definitions/uint32
-+  convert-sample-format:
-+    description: CPU to Codec sample format.
-+      Value    Format
-+        0        S8
-+        2        S16_LE
-+        6        S24_LE
-+        10       S32_LE
-+        32       S24_3LE
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    enum: [0, 2, 6, 10, 32]
-+
- patternProperties:
-   "^endpoint(@[0-9a-f]+)?":
-     $ref: /schemas/graph.yaml#/$defs/endpoint-base
-@@ -70,6 +81,16 @@ patternProperties:
-       convert-channels:
-         description: CPU to Codec rate channels.
-         $ref: /schemas/types.yaml#/definitions/uint32
-+      convert-sample-format:
-+        description: CPU to Codec sample format.
-+          Value    Format
-+            0        S8
-+            2        S16_LE
-+            6        S24_LE
-+            10       S32_LE
-+            32       S24_3LE
-+        $ref: /schemas/types.yaml#/definitions/uint32
-+        enum: [0, 2, 6, 10, 32]
- 
-       dai-tdm-slot-width-map:
-         description: Mapping of sample widths to slot widths. For hardware
-diff --git a/Documentation/devicetree/bindings/sound/audio-graph.yaml b/Documentation/devicetree/bindings/sound/audio-graph.yaml
-index 4b46794..df8a994 100644
---- a/Documentation/devicetree/bindings/sound/audio-graph.yaml
-+++ b/Documentation/devicetree/bindings/sound/audio-graph.yaml
-@@ -32,6 +32,17 @@ properties:
-   convert-channels:
-     description: CPU to Codec rate channels.
-     $ref: /schemas/types.yaml#/definitions/uint32
-+  convert-sample-format:
-+    description: CPU to Codec sample format.
-+      Value    Format
-+        0        S8
-+        2        S16_LE
-+        6        S24_LE
-+        10       S32_LE
-+        32       S24_3LE
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    enum: [0, 2, 6, 10, 32]
-+
-   pa-gpios:
-     maxItems: 1
-   hp-det-gpio:
-diff --git a/Documentation/devicetree/bindings/sound/simple-card.yaml b/Documentation/devicetree/bindings/sound/simple-card.yaml
-index b261d49..6decd73 100644
---- a/Documentation/devicetree/bindings/sound/simple-card.yaml
-+++ b/Documentation/devicetree/bindings/sound/simple-card.yaml
-@@ -77,6 +77,17 @@ definitions:
-     description: CPU to Codec rate channels.
-     $ref: /schemas/types.yaml#/definitions/uint32
- 
-+  convert-sample-format:
-+    description: CPU to Codec sample format.
-+      Value    Format
-+        0        S8
-+        2        S16_LE
-+        6        S24_LE
-+        10       S32_LE
-+        32       S24_3LE
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    enum: [0, 2, 6, 10, 32]
-+
-   prefix:
-     description: "device name prefix"
-     $ref: /schemas/types.yaml#/definitions/string
-@@ -191,6 +202,8 @@ properties:
-     $ref: "#/definitions/convert-rate"
-   simple-audio-card,convert-channels:
-     $ref: "#/definitions/convert-channels"
-+  simple-audio-card,convert-sample-format:
-+    $ref: "#/definitions/convert-sample-format"
-   simple-audio-card,prefix:
-     $ref: "#/definitions/prefix"
-   simple-audio-card,pin-switches:
-@@ -234,6 +247,8 @@ patternProperties:
-         $ref: "#/definitions/convert-rate"
-       convert-channels:
-         $ref: "#/definitions/convert-channels"
-+      convert-sample-format:
-+        $ref: "#/definitions/convert-sample-format"
-       prefix:
-         $ref: "#/definitions/prefix"
-       pin-switches:
--- 
-2.7.4
+This paragraph isn't relevant any more.
 
+> Signed-off-by: Adam Ford <aford173@gmail.com>
+> ---
+> V3:  Keep the helper function doing the link and lane parsing to
+>      keep th probe function small.
+>
+> diff --git a/drivers/media/i2c/imx219.c b/drivers/media/i2c/imx219.c
+> index faa5dab3c2ec..bb4125e7e113 100644
+> --- a/drivers/media/i2c/imx219.c
+> +++ b/drivers/media/i2c/imx219.c
+> @@ -42,10 +42,16 @@
+>  /* External clock frequency is 24.0M */
+>  #define IMX219_XCLK_FREQ               24000000
+>
+> -/* Pixel rate is fixed at 182.4M for all the modes */
+> +/* Pixel rate is fixed for all the modes */
+>  #define IMX219_PIXEL_RATE              182400000
+> +#define IMX219_PIXEL_RATE_4LANE                280800000
+>
+>  #define IMX219_DEFAULT_LINK_FREQ       456000000
+> +#define IMX219_DEFAULT_LINK_FREQ_4LANE 363000000
+> +
+> +#define IMX219_REG_CSI_LANE_MODE       0x0114
+> +#define IMX219_CSI_2_LANE_MODE         0x01
+> +#define IMX219_CSI_4_LANE_MODE         0x03
+>
+>  /* V_TIMING internal */
+>  #define IMX219_REG_VTS                 0x0160
+> @@ -299,6 +305,10 @@ static const s64 imx219_link_freq_menu[] = {
+>         IMX219_DEFAULT_LINK_FREQ,
+>  };
+>
+> +static const s64 imx219_link_freq_4lane_menu[] = {
+> +       IMX219_DEFAULT_LINK_FREQ_4LANE,
+> +};
+> +
+>  static const char * const imx219_test_pattern_menu[] = {
+>         "Disabled",
+>         "Color Bars",
+> @@ -474,6 +484,9 @@ struct imx219 {
+>
+>         /* Streaming on/off */
+>         bool streaming;
+> +
+> +       /* Two or Four lanes */
+> +       u8 lanes;
+>  };
+>
+>  static inline struct imx219 *to_imx219(struct v4l2_subdev *_sd)
+> @@ -936,6 +949,13 @@ static int imx219_get_selection(struct v4l2_subdev *sd,
+>         return -EINVAL;
+>  }
+>
+> +static int imx219_configure_lanes(struct imx219 *imx219)
+> +{
+> +       return imx219_write_reg(imx219, IMX219_REG_CSI_LANE_MODE,
+> +                               IMX219_REG_VALUE_08BIT, (imx219->lanes == 2) ?
+> +                               IMX219_CSI_2_LANE_MODE : IMX219_CSI_4_LANE_MODE);
+> +};
+> +
+>  static int imx219_start_streaming(struct imx219 *imx219)
+>  {
+>         struct i2c_client *client = v4l2_get_subdevdata(&imx219->sd);
+> @@ -953,6 +973,13 @@ static int imx219_start_streaming(struct imx219 *imx219)
+>                 goto err_rpm_put;
+>         }
+>
+> +       /* Configure two or four Lane mode */
+> +       ret = imx219_configure_lanes(imx219);
+> +       if (ret) {
+> +               dev_err(&client->dev, "%s failed to configure lanes\n", __func__);
+> +               goto err_rpm_put;
+> +       }
+> +
+>         /* Apply default values of current mode */
+>         reg_list = &imx219->mode->reg_list;
+>         ret = imx219_write_regs(imx219, reg_list->regs, reg_list->num_of_regs);
+> @@ -1184,6 +1211,11 @@ static const struct v4l2_subdev_internal_ops imx219_internal_ops = {
+>         .open = imx219_open,
+>  };
+>
+> +static unsigned long imx219_get_pixel_rate(struct imx219 *imx219)
+> +{
+> +       return (imx219->lanes == 2) ? IMX219_PIXEL_RATE : IMX219_PIXEL_RATE_4LANE;
+> +}
+> +
+>  /* Initialize control handlers */
+>  static int imx219_init_controls(struct imx219 *imx219)
+>  {
+> @@ -1205,15 +1237,16 @@ static int imx219_init_controls(struct imx219 *imx219)
+>         /* By default, PIXEL_RATE is read only */
+>         imx219->pixel_rate = v4l2_ctrl_new_std(ctrl_hdlr, &imx219_ctrl_ops,
+>                                                V4L2_CID_PIXEL_RATE,
+> -                                              IMX219_PIXEL_RATE,
+> -                                              IMX219_PIXEL_RATE, 1,
+> -                                              IMX219_PIXEL_RATE);
+> +                                              imx219_get_pixel_rate(imx219),
+> +                                              imx219_get_pixel_rate(imx219), 1,
+> +                                              imx219_get_pixel_rate(imx219));
+>
+>         imx219->link_freq =
+>                 v4l2_ctrl_new_int_menu(ctrl_hdlr, &imx219_ctrl_ops,
+>                                        V4L2_CID_LINK_FREQ,
+>                                        ARRAY_SIZE(imx219_link_freq_menu) - 1, 0,
+> -                                      imx219_link_freq_menu);
+> +                                      (imx219->lanes == 2) ? imx219_link_freq_menu :
+> +                                      imx219_link_freq_4lane_menu);
+>         if (imx219->link_freq)
+>                 imx219->link_freq->flags |= V4L2_CTRL_FLAG_READ_ONLY;
+>
+> @@ -1308,7 +1341,7 @@ static void imx219_free_controls(struct imx219 *imx219)
+>         mutex_destroy(&imx219->mutex);
+>  }
+>
+> -static int imx219_check_hwcfg(struct device *dev)
+> +static int imx219_check_hwcfg(struct device *dev, struct imx219 *imx219)
+>  {
+>         struct fwnode_handle *endpoint;
+>         struct v4l2_fwnode_endpoint ep_cfg = {
+> @@ -1328,10 +1361,12 @@ static int imx219_check_hwcfg(struct device *dev)
+>         }
+>
+>         /* Check the number of MIPI CSI2 data lanes */
+> -       if (ep_cfg.bus.mipi_csi2.num_data_lanes != 2) {
+> -               dev_err(dev, "only 2 data lanes are currently supported\n");
+> +       if (ep_cfg.bus.mipi_csi2.num_data_lanes != 2 &&
+> +           ep_cfg.bus.mipi_csi2.num_data_lanes != 4) {
+> +               dev_err(dev, "only 2 or 4 data lanes are currently supported\n");
+>                 goto error_out;
+>         }
+> +       imx219->lanes = ep_cfg.bus.mipi_csi2.num_data_lanes;
+>
+>         /* Check the link frequency set in device tree */
+>         if (!ep_cfg.nr_of_link_frequencies) {
+> @@ -1339,8 +1374,8 @@ static int imx219_check_hwcfg(struct device *dev)
+>                 goto error_out;
+>         }
+>
+> -       if (ep_cfg.nr_of_link_frequencies != 1 ||
+> -           ep_cfg.link_frequencies[0] != IMX219_DEFAULT_LINK_FREQ) {
+> +       if (ep_cfg.link_frequencies[0] != ((imx219->lanes == 2) ?
+> +           IMX219_DEFAULT_LINK_FREQ : IMX219_DEFAULT_LINK_FREQ_4LANE)) {
+
+You've lost the check of ep_cfg.nr_of_link_frequencies != 1 in this update.
+
+Otherwise it looks good to me.
+
+  Dave
+
+>                 dev_err(dev, "Link frequency not supported: %lld\n",
+>                         ep_cfg.link_frequencies[0]);
+>                 goto error_out;
+> @@ -1368,7 +1403,7 @@ static int imx219_probe(struct i2c_client *client)
+>         v4l2_i2c_subdev_init(&imx219->sd, client, &imx219_subdev_ops);
+>
+>         /* Check the hardware configuration in device tree */
+> -       if (imx219_check_hwcfg(dev))
+> +       if (imx219_check_hwcfg(dev, imx219))
+>                 return -EINVAL;
+>
+>         /* Get system clock (xclk) */
+> --
+> 2.34.1
+>
