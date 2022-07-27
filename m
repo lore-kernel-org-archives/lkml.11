@@ -2,121 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FDEFC19F21
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 03:25:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 383B0C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 03:28:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240304AbiG0DZH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 23:25:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52480 "EHLO
+        id S233932AbiG0D15 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 23:27:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240303AbiG0DY7 (ORCPT
+        with ESMTP id S229721AbiG0D1w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 23:24:59 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DCC13C164;
-        Tue, 26 Jul 2022 20:24:58 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id p5so8826810edi.12;
-        Tue, 26 Jul 2022 20:24:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=/7RZLsjyTI0R4ZfKKOyrHQdFEO+4TXaNSeF8vSSb7tI=;
-        b=cVFC+UPtE/3zcIq7u5nwCpzP8EzjiMSvS9+k/JFYwrMQT8j9A72UuXQV0mo7Ye6F/A
-         pLhefr7Z1Dx1hHC1Rvac0ay79PYaJlvHFF+ekEJ6voOIHyLAg0RgGk/ZCcN8+bQ33IG5
-         Z7uTGyaAhf8Oxzl2cXAK5uBBXFgPY/tojpZqg5iURMumJpPjbQfB1sMqE7kKyrzX3UNc
-         5f0kRMtkHt6d+UT9GG32eXUmBlkPJU0G5nUORkY4GL9uogZR/kzBdbqoIXptptqZgK1U
-         AgBQcTFzXF0nGUHzUyS7edENyjz99a/ZaCa1P1J+AT0HXgc9JJFjdIXCHJfGdeufATyn
-         4p+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=/7RZLsjyTI0R4ZfKKOyrHQdFEO+4TXaNSeF8vSSb7tI=;
-        b=3uMhHaNpktxbhXa9bXRhcbYk6a8jQExEoSk7Vfdgqc0XgflDvmN9oRlUohJsn29u7X
-         83+/tWGmT98GIo83XQS/i1WpzSxqfRjcZZzNElsNsMM+u1SM7PwAKnkT+o/QXP+FeP3S
-         dWDg6Fc+oRJxlDIEKqbDNggCGVTxIs6Gv5wESqnsWeQP9riNuXe2LsrwspOpDRBxSVjK
-         RgKhiHEastTYS4BCrmRzg+kKPwEbV2SS6VVU9f7b2pm6kL02peVkZ4TYXulxiH/rEpFo
-         /tLeEICBa/4Q4n99ri1nkm+HfjnQdFucWNQPUjamBHMR7jjnHmvDsEhM9hiBWEOLp/kV
-         MyFg==
-X-Gm-Message-State: AJIora8hjArDWhrMCNFjZFASIFxR6ZMEieZL7cT+zrrbxhQChW+DkHdB
-        vMfldYyYgvqm/BTctfjZr/6YjswCzG6LdTDLGO2id7IY
-X-Google-Smtp-Source: AGRyM1vxIL6k5kOgHXbW+8CMv2eWQF/THRb/39MgpPWjav/mjtDNp/blw3eauSZ+Vy+/ap3KtNHg0TKu8u0ei3KlclY=
-X-Received: by 2002:a05:6402:249b:b0:43c:8ce6:8890 with SMTP id
- q27-20020a056402249b00b0043c8ce68890mr3626994eda.74.1658892296672; Tue, 26
- Jul 2022 20:24:56 -0700 (PDT)
+        Tue, 26 Jul 2022 23:27:52 -0400
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 738D8220FD;
+        Tue, 26 Jul 2022 20:27:51 -0700 (PDT)
+X-UUID: ef4d942149b142158d6541f45c30817d-20220727
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.8,REQID:b42602a8-a014-44d3-a825-2d23371128f9,OB:0,LO
+        B:0,IP:0,URL:5,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,AC
+        TION:release,TS:95
+X-CID-INFO: VERSION:1.1.8,REQID:b42602a8-a014-44d3-a825-2d23371128f9,OB:0,LOB:
+        0,IP:0,URL:5,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,AC
+        TION:quarantine,TS:95
+X-CID-META: VersionHash:0f94e32,CLOUDID:4b9e20ee-db04-4499-9fdf-04ef44b9468c,C
+        OID:bf5641d6a27a,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
+        RL:1,File:nil,QS:nil,BEC:nil,COL:0
+X-UUID: ef4d942149b142158d6541f45c30817d-20220727
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
+        (envelope-from <stanley.chu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1761566154; Wed, 27 Jul 2022 11:27:48 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Wed, 27 Jul 2022 11:27:47 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
+ mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
+ 15.2.792.15 via Frontend Transport; Wed, 27 Jul 2022 11:27:47 +0800
+From:   Stanley Chu <stanley.chu@mediatek.com>
+To:     <linux-scsi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <martin.petersen@oracle.com>, <avri.altman@wdc.com>,
+        <alim.akhtar@samsung.com>, <jejb@linux.ibm.com>,
+        <bvanassche@acm.org>
+CC:     <peter.wang@mediatek.com>, <chun-hung.wu@mediatek.com>,
+        <alice.chao@mediatek.com>, <powen.kao@mediatek.com>,
+        <mason.zhang@mediatek.com>, <qilin.tan@mediatek.com>,
+        <lin.gui@mediatek.com>, <eddie.huang@mediatek.com>,
+        <tun-yu.yu@mediatek.com>, <cc.chou@mediatek.com>,
+        <chaotian.jing@mediatek.com>, <jiajie.hao@mediatek.com>,
+        <stanley.chu@mediatek.com>
+Subject: [PATCH v1 3/5] scsi: ufs: ufs-mediatek: Dump more registers
+Date:   Wed, 27 Jul 2022 11:27:43 +0800
+Message-ID: <20220727032745.31728-4-stanley.chu@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20220727032745.31728-1-stanley.chu@mediatek.com>
+References: <20220727032745.31728-1-stanley.chu@mediatek.com>
 MIME-Version: 1.0
-References: <20220711124742.3b151992@canb.auug.org.au> <6e60d396-2a52-d1fa-f125-3c585605b531@amd.com>
- <20220718094453.2f1a1f09@canb.auug.org.au> <20220727125508.1991f1e7@canb.auug.org.au>
-In-Reply-To: <20220727125508.1991f1e7@canb.auug.org.au>
-From:   Dave Airlie <airlied@gmail.com>
-Date:   Wed, 27 Jul 2022 13:24:45 +1000
-Message-ID: <CAPM=9txm_fZX781zMr0RAS6uBD_FoE63THY-WaiB92xYEUrfTw@mail.gmail.com>
-Subject: Re: linux-next: manual merge of the drm tree with the drm-misc-fixes tree
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     Dave Airlie <airlied@linux.ie>,
-        Arunpravin Paneer Selvam <Arunpravin.PaneerSelvam@amd.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Intel Graphics <intel-gfx@lists.freedesktop.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        DRI <dri-devel@lists.freedesktop.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 27 Jul 2022 at 12:55, Stephen Rothwell <sfr@canb.auug.org.au> wrote=
-:
->
-> Hi all,
->
-> On Mon, 18 Jul 2022 09:44:53 +1000 Stephen Rothwell <sfr@canb.auug.org.au=
-> wrote:
-> >
-> > On Mon, 11 Jul 2022 10:05:45 +0200 Christian K=C3=B6nig <christian.koen=
-ig@amd.com> wrote:
-> > >
-> > > Am 11.07.22 um 04:47 schrieb Stephen Rothwell:
-> > > >
-> > > > Today's linux-next merge of the drm tree got a conflict in:
-> > > >
-> > > >    drivers/gpu/drm/amd/amdgpu/amdgpu_vram_mgr.c
-> > > >
-> > > > between commit:
-> > > >
-> > > >    925b6e59138c ("Revert "drm/amdgpu: add drm buddy support to amdg=
-pu"")
-> > > >
-> > > > from the drm-misc-fixes tree and commit:
-> > > >
-> > > >    5e3f1e7729ec ("drm/amdgpu: fix start calculation in amdgpu_vram_=
-mgr_new")
-> > > >
-> > > > from the drm tree.
-> > > >
-> > > > This is a mess :-(  I have just reverted the above revert before me=
-rgin
-> > > > the drm tree for today, please fix it up.
-> > >
-> > > Sorry for the noise, the patch "5e3f1e7729ec ("drm/amdgpu: fix start
-> > > calculation in amdgpu_vram_mgr_new")" and another one is going to be
-> > > reverted from the drm tree as well.
-> > >
-> > > It's just that -fixes patches where faster than -next patches.
-> >
-> > Here we are a week later, -rc7 has been released and as far as I can
-> > tell (though I may have missed it), this is still a problem :-(
-> >
-> > I am still reverting 925b6e59138c (which is now in Linus' tree).
->
-> Ping?
+From: Peter Wang <peter.wang@mediatek.com>
 
-My assumption is I fix this on sending my -next tree to Linus with a
-resolution I create at that time?
+Dump more proprietary UFSHCI status registers for
+easier issue breakdown.
 
-Is there another option, we have this fixed in out drm-tip tree already.
+Signed-off-by: Peter Wang <peter.wang@mediatek.com>
+Signed-off-by: Stanley Chu <stanley.chu@mediatek.com>
+---
+ drivers/ufs/host/ufs-mediatek.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-Dave.
+diff --git a/drivers/ufs/host/ufs-mediatek.c b/drivers/ufs/host/ufs-mediatek.c
+index b590fb267c20..ddbfcf1ab925 100644
+--- a/drivers/ufs/host/ufs-mediatek.c
++++ b/drivers/ufs/host/ufs-mediatek.c
+@@ -1246,13 +1246,16 @@ static int ufs_mtk_resume(struct ufs_hba *hba, enum ufs_pm_op pm_op)
+ 
+ static void ufs_mtk_dbg_register_dump(struct ufs_hba *hba)
+ {
+-	ufshcd_dump_regs(hba, REG_UFS_REFCLK_CTRL, 0x4, "Ref-Clk Ctrl ");
++	/* Dump ufshci register 0x140 ~ 0x14C */
++	ufshcd_dump_regs(hba, REG_UFS_XOUFS_CTRL, 0x10,
++			 "XOUFS Ctrl (0x140): ");
+ 
+ 	ufshcd_dump_regs(hba, REG_UFS_EXTREG, 0x4, "Ext Reg ");
+ 
++	/* Dump ufshci register 0x2200 ~ 0x22AC */
+ 	ufshcd_dump_regs(hba, REG_UFS_MPHYCTRL,
+ 			 REG_UFS_REJECT_MON - REG_UFS_MPHYCTRL + 4,
+-			 "MPHY Ctrl ");
++			 "MPHY Ctrl (0x2200): ");
+ 
+ 	/* Direct debugging information to REG_MTK_PROBE */
+ 	ufs_mtk_dbg_sel(hba);
+-- 
+2.18.0
+
