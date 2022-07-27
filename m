@@ -2,115 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91D9FC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 12:30:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A411C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 12:31:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233110AbiG0Mal (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 08:30:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42532 "EHLO
+        id S233128AbiG0Ma7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 08:30:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233006AbiG0MaE (ORCPT
+        with ESMTP id S233168AbiG0Mam (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 08:30:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C5CB186D6;
-        Wed, 27 Jul 2022 05:30:03 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0541DB82077;
-        Wed, 27 Jul 2022 12:30:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89ECCC4347C;
-        Wed, 27 Jul 2022 12:30:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658925000;
-        bh=GQnU144pkObOuuSOogSq2lICybfwG6TF/c3AiwyFiLU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iIUU+xwD3iVDACp1ZnSRc544KHgche8Xy0PlTjUYVBQ/hPu2sI9nV01zGlvR6HMmN
-         8hWPFzbcpPnfY/3wZ2V7Z7G/7sjFRxgnD51Z6gRBz+UDLaO5d7eAfieCMrIfB52K8t
-         0Rd0BnFe/tiNEdb/wpqyEwv8/B16/JtJbAS5Z18pEA5dsUo6Ca9/iYfYV87On/WBBZ
-         EE+ZjOenfcBGZuIQA2CZVC+84I/4jyT/So3w9uUT8WJe7pZDJxo5wZ2e5epuQOwATl
-         deUoe+Waz2xy4n/MqIsQDoa92AY78A3piVR7d9TPGNqbwD6iPDZYZRmd50WJQhjNCA
-         jYVmNJCH3NoBA==
-Received: from mchehab by mail.kernel.org with local (Exim 4.95)
-        (envelope-from <mchehab@kernel.org>)
-        id 1oGgAo-003xmL-B2;
-        Wed, 27 Jul 2022 14:29:58 +0200
-From:   Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     Chris Wilson <chris.p.wilson@intel.com>,
-        Andi Shyti <andi.shyti@linux.intel.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Daniele Ceraolo Spurio <daniele.ceraolospurio@intel.com>,
-        Dave Airlie <airlied@redhat.com>,
-        David Airlie <airlied@linux.ie>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Lucas De Marchi <lucas.demarchi@intel.com>,
-        Matt Roper <matthew.d.roper@intel.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Fei Yang <fei.yang@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@intel.com>,
-        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
-        <thomas.hellstrom@linux.intel.com>
-Subject: [PATCH v3 4/6] drm/i915/gt: Skip TLB invalidations once wedged
-Date:   Wed, 27 Jul 2022 14:29:54 +0200
-Message-Id: <5aa86564b9ec5fe7fe605c1dd7de76855401ed73.1658924372.git.mchehab@kernel.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <cover.1658924372.git.mchehab@kernel.org>
-References: <cover.1658924372.git.mchehab@kernel.org>
+        Wed, 27 Jul 2022 08:30:42 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ECC8617C
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 05:30:13 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id t1so26851145lft.8
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 05:30:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ventanamicro.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Ps/+5VPVaYevdh/6gOs5F1hcVnusMTfNaW2Z1T8LP+A=;
+        b=aneJs51DgGyKe9+lAleeq51Nfv17XMEKNKoFAMBIFEhU+PzxuRLX7O3yCmBYWHpHGA
+         UUtuAYipA+JLfIwHYEYndPbayzRJU037rJv2XVArk57C7iO8aD92FJ1RPFTNvPaQ0WbL
+         nTahfc/XfkSTifQIxmxyejZdwUUjONq5RpnZX/w2WeXaV2AbPLFuK58K7Oer3tYocPQC
+         9MYWf6/Fe+cCzHpNc3JR6oKbgNgfqhbrPDKnzK+2njD+iRo+IEK1pScOX+9byFS3o31k
+         OXS911hCdbaxYyanxSRLF0De0Mwg9dnxElewjqurL8zRgOjTe6nZYnVJd/yQPPSN0Oz/
+         zfRQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Ps/+5VPVaYevdh/6gOs5F1hcVnusMTfNaW2Z1T8LP+A=;
+        b=cM5pkSZqqqXOsX7Cc/a1Ve3SUM5R49BhhN/4Q7HwP9lon4Ua7Q0c/0AJY/oE0ZrWVk
+         Gxuk55lrjl12xJfveqQEjKl//MUudpcvf2tX+6IX6pPCYYmwh/dfn1180alds9YcTDOV
+         3K6NSKxgsjdXuBdUVRImrbTSIuA5lE2J4F0ef9pBY9PS8yWba0PtxV7UibXn0HNc4ZBm
+         WK/i9cL5WcQyvxmbI4xB3LK/sFCWW8WGgBpydSoH2rmK8rDjv0C/OGfqTXbHrEJLwK++
+         gEQvOXSANZR7jOSgeUQoz5GvdEDkWIVFm3B21BDD79lbAoVMVotPHgoHoPbvYH3oiNv0
+         6yWw==
+X-Gm-Message-State: AJIora9xJH4ajN6U91cFZEGgdGkf9xrvVRv1ZsLVsji4U+BkmgxoTPhP
+        yYO25xi9j9cSn/l16p7c09wI1lRiDsRIgvVtFZ+p5Q==
+X-Google-Smtp-Source: AGRyM1usi3VvuAE9QHArHqPE+QINC2fW0qFj7SnfxJ0dIbBnMc/9ltEW0eEe8ey9YdP9hysi5LJxlZnjzcb87Fg6NAo=
+X-Received: by 2002:ac2:44af:0:b0:48a:9e9f:74e5 with SMTP id
+ c15-20020ac244af000000b0048a9e9f74e5mr3058834lfm.100.1658925011234; Wed, 27
+ Jul 2022 05:30:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+References: <20220727114302.302201-1-apatel@ventanamicro.com>
+ <20220727114302.302201-2-apatel@ventanamicro.com> <20220727121838.tpy55twdkuasjab7@bogus>
+In-Reply-To: <20220727121838.tpy55twdkuasjab7@bogus>
+From:   Anup Patel <apatel@ventanamicro.com>
+Date:   Wed, 27 Jul 2022 17:59:59 +0530
+Message-ID: <CAK9=C2UFgZv5T433S6EVVa+4V2Uaffg6Xq1e2zLKbdFVFYhf0Q@mail.gmail.com>
+Subject: Re: [PATCH v2 1/2] dt-bindings: riscv: Add optional DT property riscv,timer-can-wake-cpu
+To:     Sudeep Holla <sudeep.holla@arm.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andrew Jones <ajones@ventanamicro.com>,
+        Atish Patra <atishp@atishpatra.org>,
+        Samuel Holland <samuel@sholland.org>,
+        Anup Patel <anup@brainfault.org>, devicetree@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chris Wilson <chris.p.wilson@intel.com>
+On Wed, Jul 27, 2022 at 5:48 PM Sudeep Holla <sudeep.holla@arm.com> wrote:
+>
+> On Wed, Jul 27, 2022 at 05:13:01PM +0530, Anup Patel wrote:
+> > We add an optional DT property riscv,timer-can-wake-cpu which if present
+> > in CPU DT node then CPU timer is always powered-on and never loses context.
+> >
+>
+> I don't have much idea on idle states on RISC-V but associating this
+> property in just CPU node seems like not so good idea.
+>
+> This will be applicable for all CPU idle states which means you
+> can't use this even if one of the deepest idle state switches off
+> the timer.
+>
+> We have local-timer-stop in each idle states node. IIRC RISC-V uses the
+> binding which is now not arm specific[0] and IIRC you moved the binding
+> yourself. Any reason why not can't be used and any specific reason for
+> needing this extra property.
 
-Skip all further TLB invalidations once the device is wedged and
-had been reset, as, on such cases, it can no longer process instructions
-on the GPU and the user no longer has access to the TLB's in each engine.
+Indeed, the "local-timer-stop" property should be used. I guess,
+Allwinner D1 should use this property in idle state and we should
+not unconditionally set CLOCK_EVT_FEAT_C3STOP in the timer
+driver.
 
-So, an attempt to do a TLB cache invalidation will produce a timeout.
+@Samuel Holland Can you confirm that the "local-timer-stop" property
+works for Allwinner D1 ? If yes, then please send a patch to remove
+CLOCK_EVT_FEAT_C3STOP from timer driver.
 
-That helps to reduce the performance regression introduced by TLB
-invalidate logic.
-
-Cc: stable@vger.kernel.org
-Fixes: 7938d61591d3 ("drm/i915: Flush TLBs before releasing backing store")
-Signed-off-by: Chris Wilson <chris.p.wilson@intel.com>
-Cc: Fei Yang <fei.yang@intel.com>
-Cc: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
-Reviewed-by: Andi Shyti <andi.shyti@linux.intel.com>
-Acked-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
----
-
-To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
-See [PATCH v3 0/6] at: https://lore.kernel.org/all/cover.1658924372.git.mchehab@kernel.org/
-
- drivers/gpu/drm/i915/gt/intel_gt.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/gpu/drm/i915/gt/intel_gt.c b/drivers/gpu/drm/i915/gt/intel_gt.c
-index 1d84418e8676..5c55a90672f4 100644
---- a/drivers/gpu/drm/i915/gt/intel_gt.c
-+++ b/drivers/gpu/drm/i915/gt/intel_gt.c
-@@ -934,6 +934,9 @@ void intel_gt_invalidate_tlbs(struct intel_gt *gt)
- 	if (I915_SELFTEST_ONLY(gt->awake == -ENODEV))
- 		return;
- 
-+	if (intel_gt_is_wedged(gt))
-+		return;
-+
- 	if (GRAPHICS_VER(i915) == 12) {
- 		regs = gen12_regs;
- 		num = ARRAY_SIZE(gen12_regs);
--- 
-2.36.1
-
+Regards,
+Anup
