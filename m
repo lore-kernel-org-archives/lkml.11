@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED5ACC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:55:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16A85C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:55:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241013AbiG0QyL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:54:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56604 "EHLO
+        id S241040AbiG0QyP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:54:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240863AbiG0Qwo (ORCPT
+        with ESMTP id S240867AbiG0Qwp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:52:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B6AB4F199;
-        Wed, 27 Jul 2022 09:34:49 -0700 (PDT)
+        Wed, 27 Jul 2022 12:52:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E66E4D4D6;
+        Wed, 27 Jul 2022 09:34:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3ED6EB8200C;
-        Wed, 27 Jul 2022 16:34:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FE4EC433C1;
-        Wed, 27 Jul 2022 16:34:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2DA3561A3F;
+        Wed, 27 Jul 2022 16:34:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13F61C433D6;
+        Wed, 27 Jul 2022 16:34:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939687;
-        bh=Iz/mwSZsiPX2GA66vcgC0gHeYQ5WYfVUcaxSwmCZink=;
+        s=korg; t=1658939695;
+        bh=vxPJPnvPSpdpqJTN8v+43mt7W4CL1/GrqoBK8VR7Mak=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t4UncEyqz5ciHix5MnAIIsfcST7NXfaVDth9LzsueVyrw0Hj5DCfpiHIURcFqMtDq
-         DRWer/zDOLuwuaTAlRg3gdkrQVeWIJRLmlrSv3XeOtFGkb+zMHneW7xmZh55G9c5pf
-         VrCRlZev7eLBg+F7Akl7uuGkr+xusWSrjY10iWdM=
+        b=hM4oMiczewenRMIalFGvjV+ejEY241MbmeWnYOIVgxId5nC6+xpbNRttJcbj1dp4K
+         WX3Rsn/63V5LGTOlx9hyUbODW795f4svlUshSDrxq6KXichPC4A6CjiWGOvMF3vtLJ
+         0yYPIi7HL0rvipoO5efxIjyo/AHetu1uhb3hVepo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 069/105] tcp: Fix a data-race around sysctl_tcp_early_retrans.
-Date:   Wed, 27 Jul 2022 18:10:55 +0200
-Message-Id: <20220727161014.829100312@linuxfoundation.org>
+Subject: [PATCH 5.10 054/105] tcp: Fix data-races around sysctl_max_syn_backlog.
+Date:   Wed, 27 Jul 2022 18:10:40 +0200
+Message-Id: <20220727161014.250317229@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161012.056867467@linuxfoundation.org>
 References: <20220727161012.056867467@linuxfoundation.org>
@@ -51,32 +51,38 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 52e65865deb6a36718a463030500f16530eaab74 ]
+[ Upstream commit 79539f34743d3e14cc1fa6577d326a82cc64d62f ]
 
-While reading sysctl_tcp_early_retrans, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its reader.
+While reading sysctl_max_syn_backlog, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its readers.
 
-Fixes: eed530b6c676 ("tcp: early retransmit")
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp_output.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv4/tcp_input.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 772dd6241b70..0cbf3d859745 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -2735,7 +2735,7 @@ bool tcp_schedule_loss_probe(struct sock *sk, bool advancing_rto)
- 	if (rcu_access_pointer(tp->fastopen_rsk))
- 		return false;
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 070e7015e9c9..5cbabe0e42c9 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -6847,10 +6847,12 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
+ 		goto drop_and_free;
  
--	early_retrans = sock_net(sk)->ipv4.sysctl_tcp_early_retrans;
-+	early_retrans = READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_early_retrans);
- 	/* Schedule a loss probe in 2*RTT for SACK capable connections
- 	 * not in loss recovery, that are either limited by cwnd or application.
- 	 */
+ 	if (!want_cookie && !isn) {
++		int max_syn_backlog = READ_ONCE(net->ipv4.sysctl_max_syn_backlog);
++
+ 		/* Kill the following clause, if you dislike this way. */
+ 		if (!syncookies &&
+-		    (net->ipv4.sysctl_max_syn_backlog - inet_csk_reqsk_queue_len(sk) <
+-		     (net->ipv4.sysctl_max_syn_backlog >> 2)) &&
++		    (max_syn_backlog - inet_csk_reqsk_queue_len(sk) <
++		     (max_syn_backlog >> 2)) &&
+ 		    !tcp_peer_is_proven(req, dst)) {
+ 			/* Without syncookies last quarter of
+ 			 * backlog is filled with destinations,
 -- 
 2.35.1
 
