@@ -2,157 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B01DC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 10:12:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8388C19F29
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 10:15:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231440AbiG0KMX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 06:12:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49482 "EHLO
+        id S232086AbiG0KOh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 06:14:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229763AbiG0KMU (ORCPT
+        with ESMTP id S229763AbiG0KOG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 06:12:20 -0400
-Received: from imap4.hz.codethink.co.uk (imap4.hz.codethink.co.uk [188.40.203.114])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E44A625A
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 03:12:19 -0700 (PDT)
-Received: from cpc152649-stkp13-2-0-cust121.10-2.cable.virginm.net ([86.15.83.122] helo=[192.168.0.17])
-        by imap4.hz.codethink.co.uk with esmtpsa  (Exim 4.94.2 #2 (Debian))
-        id 1oGe1X-0065Nk-78; Wed, 27 Jul 2022 11:12:15 +0100
-Message-ID: <20a94c3c-85ed-2227-458e-60c780fd4ad7@codethink.co.uk>
-Date:   Wed, 27 Jul 2022 11:12:14 +0100
+        Wed, 27 Jul 2022 06:14:06 -0400
+X-Greylist: delayed 588 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 27 Jul 2022 03:14:04 PDT
+Received: from mxct.zte.com.cn (mxct.zte.com.cn [58.251.27.85])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C60B1277B;
+        Wed, 27 Jul 2022 03:14:04 -0700 (PDT)
+Received: from mxde.zte.com.cn (unknown [10.35.8.63])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mxct.zte.com.cn (FangMail) with ESMTPS id 4Lt8Wf6X0KzvLC;
+        Wed, 27 Jul 2022 18:04:14 +0800 (CST)
+Received: from mxus.zte.com.cn (unknown [10.207.168.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mxde.zte.com.cn (FangMail) with ESMTPS id 4Lt8WN3JS5zCVKg3;
+        Wed, 27 Jul 2022 18:04:00 +0800 (CST)
+Received: from mxhk.zte.com.cn (unknown [192.168.250.137])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mxus.zte.com.cn (FangMail) with ESMTPS id 4Lt8WJ6mXSzdmXX7;
+        Wed, 27 Jul 2022 18:03:56 +0800 (CST)
+Received: from mse-fl1.zte.com.cn (unknown [10.5.228.81])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mxhk.zte.com.cn (FangMail) with ESMTPS id 4Lt8WF1LG4z8R047;
+        Wed, 27 Jul 2022 18:03:53 +0800 (CST)
+Received: from szxlzmapp05.zte.com.cn ([10.5.230.85])
+        by mse-fl1.zte.com.cn with SMTP id 26RA3VN4074081;
+        Wed, 27 Jul 2022 18:03:31 +0800 (GMT-8)
+        (envelope-from wang.yi59@zte.com.cn)
+Received: from fox-cloudhost8.zte.com.cn (unknown [10.234.72.110])
+        by smtp (Zmail) with SMTP;
+        Wed, 27 Jul 2022 18:03:32 +0800
+X-Zmail-TransId: 3e8162e10d73022-19baa
+From:   Yi Wang <wang.yi59@zte.com.cn>
+To:     trond.myklebust@hammerspace.com
+Cc:     anna@kernel.org, linux-nfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org, xue.zhihong@zte.com.cn,
+        wang.yi59@zte.com.cn, wang.liang82@zte.com.cn,
+        Zhang Xianwei <zhang.xianwei8@zte.com.cn>
+Subject: [PATCH] NFSv4.1: RECLAIM_COMPLETE must handle EACCES
+Date:   Wed, 27 Jul 2022 18:01:07 +0800
+Message-Id: <20220727100107.3062-1-wang.yi59@zte.com.cn>
+X-Mailer: git-send-email 2.33.0.rc0.dirty
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v2] RISC-V: Add mvendorid, marchid, and mimpid to
- /proc/cpuinfo output
-Content-Language: en-GB
-To:     Anup Patel <anup@brainfault.org>
-Cc:     Anup Patel <apatel@ventanamicro.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
-        Heinrich Schuchardt <heinrich.schuchardt@canonical.com>,
-        Atish Patra <atishp@atishpatra.org>,
-        linux-riscv@lists.infradead.org, Nikita Shubin <n.shubin@yadro.com>
-References: <20220727043829.151794-1-apatel@ventanamicro.com>
- <724f176b-02f1-b171-726f-16158c650896@codethink.co.uk>
- <CAAhSdy1tnTDv0AVyo=5FD=aE070ds6qYGGhdup+8jUqr3M66qA@mail.gmail.com>
-From:   Ben Dooks <ben.dooks@codethink.co.uk>
-Organization: Codethink Limited.
-In-Reply-To: <CAAhSdy1tnTDv0AVyo=5FD=aE070ds6qYGGhdup+8jUqr3M66qA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain;
+        charset="UTF-8"
+X-MAIL: mse-fl1.zte.com.cn 26RA3VN4074081
+X-Fangmail-Gw-Spam-Type: 0
+X-FangMail-Miltered: at cgslv5.04-192.168.251.14.novalocal with ID 62E10D9D.000 by FangMail milter!
+X-FangMail-Envelope: 1658916255/4Lt8Wf6X0KzvLC/62E10D9D.000/10.35.8.63/[10.35.8.63]/mxde.zte.com.cn/<wang.yi59@zte.com.cn>
+X-Fangmail-Anti-Spam-Filtered: true
+X-Fangmail-MID-QID: 62E10D9D.000/4Lt8Wf6X0KzvLC
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 27/07/2022 11:06, Anup Patel wrote:
-> On Wed, Jul 27, 2022 at 2:25 PM Ben Dooks <ben.dooks@codethink.co.uk> wrote:
->>
->> On 27/07/2022 05:38, Anup Patel wrote:
->>> Identifying the underlying RISC-V implementation can be important
->>> for some of the user space applications. For example, the perf tool
->>> uses arch specific CPU implementation id (i.e. CPUID) to select a
->>> JSON file describing custom perf events on a CPU.
->>>
->>> Currently, there is no way to identify RISC-V implementation so we
->>> add mvendorid, marchid, and mimpid to /proc/cpuinfo output.
->>>
->>> Signed-off-by: Anup Patel <apatel@ventanamicro.com>
->>> Reviewed-by: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
->>> Tested-by: Nikita Shubin <n.shubin@yadro.com>
->>> ---
->>> Changes since v1:
->>>    - Use IS_ENABLED() to check CONFIG defines
->>>    - Added RB and TB tags in commit description
->>> ---
->>>    arch/riscv/kernel/cpu.c | 51 +++++++++++++++++++++++++++++++++++++++++
->>>    1 file changed, 51 insertions(+)
->>>
->>> diff --git a/arch/riscv/kernel/cpu.c b/arch/riscv/kernel/cpu.c
->>> index fba9e9f46a8c..04bcc91c91ea 100644
->>> --- a/arch/riscv/kernel/cpu.c
->>> +++ b/arch/riscv/kernel/cpu.c
->>> @@ -3,10 +3,13 @@
->>>     * Copyright (C) 2012 Regents of the University of California
->>>     */
->>>
->>> +#include <linux/cpu.h>
->>>    #include <linux/init.h>
->>>    #include <linux/seq_file.h>
->>>    #include <linux/of.h>
->>> +#include <asm/csr.h>
->>>    #include <asm/hwcap.h>
->>> +#include <asm/sbi.h>
->>>    #include <asm/smp.h>
->>>    #include <asm/pgtable.h>
->>>
->>> @@ -64,6 +67,50 @@ int riscv_of_parent_hartid(struct device_node *node)
->>>    }
->>>
->>>    #ifdef CONFIG_PROC_FS
->>> +
->>> +struct riscv_cpuinfo {
->>> +     unsigned long mvendorid;
->>> +     unsigned long marchid;
->>> +     unsigned long mimpid;
->>> +};
->>> +static DEFINE_PER_CPU(struct riscv_cpuinfo, riscv_cpuinfo);
->>> +
->>> +static int riscv_cpuinfo_starting(unsigned int cpu)
->>> +{
->>> +     struct riscv_cpuinfo *ci = this_cpu_ptr(&riscv_cpuinfo);
->>> +
->>> +#if IS_ENABLED(CONFIG_RISCV_SBI)
->>> +     ci->mvendorid = sbi_spec_is_0_1() ? 0 : sbi_get_mvendorid();
->>> +     ci->marchid = sbi_spec_is_0_1() ? 0 : sbi_get_marchid();
->>> +     ci->mimpid = sbi_spec_is_0_1() ? 0 : sbi_get_mimpid();
->>
->> how about:
->>
->>          if (IS_ENABLED(CONFIG_RISCV_SBI)) {
->>                  ...
->>          } ... {
->>
->> or maybe even:
->>
->>
->>          if (IS_ENABLED(CONFIG_RISCV_SBI)) {
->>                  if (sbi_spec_is_0_1()) {
->>                          ...
->>                  }
->>          } ... {
->>
->> would mean better compile coverage (at the slight exepnese of
->> having "false" sbi_spec_is_0_1() implemenation
-> 
-> Most of the sbi_xyz() functions are not available for NoMMU
-> kernel so using "if (IS_ENABLED())" results in compile error.
+From: Zhang Xianwei <zhang.xianwei8@zte.com.cn>
 
-How about defining "false" versions for no-mmu case and try
-and avoid these #if mountains?
+A client should be able to handle getting an EACCES error while doing
+a mount operation to reclaim state due to NFS4CLNT_RECLAIM_REBOOT
+being set. If the server returns RPC_AUTH_BADCRED because authentication
+failed when we execute "exportfs -au", then RECLAIM_COMPLETE will go a
+wrong way. After mount succeeds, all OPEN call will fail due to an
+NFS4ERR_GRACE error being returned. This patch is to fix it by resending
+a RPC request.
 
->>
->>> +#elif IS_ENABLED(CONFIG_RISCV_M_MODE)
->>> +     ci->mvendorid = csr_read(CSR_MVENDORID);
->>> +     ci->marchid = csr_read(CSR_MARCHID);
->>> +     ci->mimpid = csr_read(CSR_MIMPID);
->>> +#else
->>> +     ci->mvendorid = 0;
->>> +     ci->marchid = 0;
->>> +     ci->mimpid = 0;
->>> +#endif
->>
->> Would it be easier to zero out all the fields first and then fill them
->> in if supported?
-> 
-> Clearing out fields before "#if" ladder results in dead assignments.
+Signed-off-by: Zhang Xianwei <zhang.xianwei8@zte.com.cn>
+Signed-off-by: Yi Wang <wang.yi59@zte.com.cn>
+---
+ fs/nfs/nfs4proc.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Not sure which is worse here, the #if ladder or some possibly dead
-assignments.
-
+diff --git a/fs/nfs/nfs4proc.c b/fs/nfs/nfs4proc.c
+index bb0e84a46d61..b51b83506011 100644
+--- a/fs/nfs/nfs4proc.c
++++ b/fs/nfs/nfs4proc.c
+@@ -9477,6 +9477,9 @@ static int nfs41_reclaim_complete_handle_errors(struct rpc_task *task, struct nf
+ 		rpc_delay(task, NFS4_POLL_RETRY_MAX);
+ 		fallthrough;
+ 	case -NFS4ERR_RETRY_UNCACHED_REP:
++	case -EACCES:
++		dprintk("%s: failed to reclaim complete error %d for server %s, retrying\n",
++			__func__, task->tk_status, clp->cl_hostname);
+ 		return -EAGAIN;
+ 	case -NFS4ERR_BADSESSION:
+ 	case -NFS4ERR_DEADSESSION:
 -- 
-Ben Dooks				http://www.codethink.co.uk/
-Senior Engineer				Codethink - Providing Genius
-
-https://www.codethink.co.uk/privacy.html
+2.18.4
