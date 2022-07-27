@@ -2,83 +2,249 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C61CC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:45:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AC60C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:45:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240348AbiG0Qpl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:45:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35408 "EHLO
+        id S240363AbiG0Qpp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:45:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240462AbiG0Qo2 (ORCPT
+        with ESMTP id S240482AbiG0Qo3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:44:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2260651A3B;
-        Wed, 27 Jul 2022 09:31:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9E34BB821BE;
-        Wed, 27 Jul 2022 16:31:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF398C433D6;
-        Wed, 27 Jul 2022 16:31:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939468;
-        bh=xDorO/C3ElwiBLmXQmAIT9qsfde0KxyKSDyPqNa8N5s=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AnJpSbq928Qa3d6wmMtYjjFoOYM2/Fdabp3EQzPGn/bfJ6fmbkfqaNnk7jG29LrAz
-         E6GiUtJlnPzs3pIDJCerWmtUrAIlC2MVqw2LtoBQaD7myUZ8DOSnE8y392TyYPa4wS
-         ollHe8Iug/GFG8dWgqtxKWvGqCVot0CjJcBSIhv0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 49/87] tcp: Fix a data-race around sysctl_tcp_thin_linear_timeouts.
-Date:   Wed, 27 Jul 2022 18:10:42 +0200
-Message-Id: <20220727161011.044246395@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220727161008.993711844@linuxfoundation.org>
-References: <20220727161008.993711844@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Wed, 27 Jul 2022 12:44:29 -0400
+Received: from xry111.site (xry111.site [IPv6:2001:470:683e::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5B025F108
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:31:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xry111.site;
+        s=default; t=1658939469;
+        bh=HrNxPzF6dJ12J1BPkZaz5pUYuW251mjEZT0aRcTaEHQ=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=XIRjQux7MbnnW0Aj0AGPLttXUPm8Yw+iCdS0o3c7e7/Gy0uXgEXPAHrwHhZ72i6Lf
+         fqaVEsfKo4q64xC5x21iUOLSzZi6rftk8SS/xchNMpz8KvjB77nmvW0kI/w8j3rk/N
+         kM4u3WWUKTS7rNAQ9S2LjSh8OcZGrTGTfKbHLQqM=
+Received: from localhost.localdomain (xry111.site [IPv6:2001:470:683e::1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature ECDSA (P-384))
+        (Client did not present a certificate)
+        (Authenticated sender: xry111@xry111.site)
+        by xry111.site (Postfix) with ESMTPSA id 4B3016698A;
+        Wed, 27 Jul 2022 12:31:08 -0400 (EDT)
+Message-ID: <4007f3ef167f93ffd9fcae841e144a0fc89f0117.camel@xry111.site>
+Subject: [PATCH 5/5] LoongArch: Support modules with new relocation types
+From:   Xi Ruoyao <xry111@xry111.site>
+To:     loongarch@lists.linux.dev
+Cc:     linux-kernel@vger.kernel.org, WANG Xuerui <kernel@xen0n.name>,
+        Huacai Chen <chenhuacai@kernel.org>
+Date:   Thu, 28 Jul 2022 00:31:07 +0800
+In-Reply-To: <385f63bcbee8e37c42f479ce9cdc7e7d731d419b.camel@xry111.site>
+References: <385f63bcbee8e37c42f479ce9cdc7e7d731d419b.camel@xry111.site>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.3 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+If GAS 2.40 and/or GCC 13 is used to build the kernel, the modules will
+contain R_LARCH_B26, R_LARCH_PCALA_HI20, R_LARCH_PCALA_LO12,
+R_LARCH_GOT_PC_HI20, and R_LARCH_GOT_PC_LO12 relocations.  Support them
+in the module loader to allow a kernel built with latest toolchain
+capable to load the modules.
 
-[ Upstream commit 7c6f2a86ca590d5187a073d987e9599985fb1c7c ]
-
-While reading sysctl_tcp_thin_linear_timeouts, it can be changed
-concurrently.  Thus, we need to add READ_ONCE() to its reader.
-
-Fixes: 36e31b0af587 ("net: TCP thin linear timeouts")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Xi Ruoyao <xry111@xry111.site>
 ---
- net/ipv4/tcp_timer.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/loongarch/include/asm/elf.h        | 37 +++++++++++
+ arch/loongarch/kernel/module-sections.c | 12 +++-
+ arch/loongarch/kernel/module.c          | 83 +++++++++++++++++++++++++
+ 3 files changed, 130 insertions(+), 2 deletions(-)
 
-diff --git a/net/ipv4/tcp_timer.c b/net/ipv4/tcp_timer.c
-index 26da44e196ed..a0107eb02ae4 100644
---- a/net/ipv4/tcp_timer.c
-+++ b/net/ipv4/tcp_timer.c
-@@ -569,7 +569,7 @@ void tcp_retransmit_timer(struct sock *sk)
- 	 * linear-timeout retransmissions into a black hole
- 	 */
- 	if (sk->sk_state == TCP_ESTABLISHED &&
--	    (tp->thin_lto || net->ipv4.sysctl_tcp_thin_linear_timeouts) &&
-+	    (tp->thin_lto || READ_ONCE(net->ipv4.sysctl_tcp_thin_linear_timeouts)) &&
- 	    tcp_stream_is_thin(tp) &&
- 	    icsk->icsk_retransmits <= TCP_THIN_LINEAR_RETRIES) {
- 		icsk->icsk_backoff = 0;
--- 
-2.35.1
-
+diff --git a/arch/loongarch/include/asm/elf.h b/arch/loongarch/include/asm/=
+elf.h
+index f3960b18a90e..aeca7a9924ea 100644
+--- a/arch/loongarch/include/asm/elf.h
++++ b/arch/loongarch/include/asm/elf.h
+@@ -74,6 +74,43 @@
+ #define R_LARCH_SUB64				56
+ #define R_LARCH_GNU_VTINHERIT			57
+ #define R_LARCH_GNU_VTENTRY			58
++#define R_LARCH_B16				64
++#define R_LARCH_B21				65
++#define R_LARCH_B26				66
++#define R_LARCH_ABS_HI20			67
++#define R_LARCH_ABS_LO12			68
++#define R_LARCH_ABS64_LO20			69
++#define R_LARCH_ABS64_HI12			70
++#define R_LARCH_PCALA_HI20			71
++#define R_LARCH_PCALA_LO12			72
++#define R_LARCH_PCALA64_LO20			73
++#define R_LARCH_PCALA64_HI12			74
++#define R_LARCH_GOT_PC_HI20			75
++#define R_LARCH_GOT_PC_LO12			76
++#define R_LARCH_GOT64_PC_LO20			77
++#define R_LARCH_GOT64_PC_HI12			78
++#define R_LARCH_GOT_HI20			79
++#define R_LARCH_GOT_LO12			80
++#define R_LARCH_GOT64_LO20			81
++#define R_LARCH_GOT64_HI12			82
++#define R_LARCH_TLS_LE_HI20			83
++#define R_LARCH_TLS_LE_LO12			84
++#define R_LARCH_TLS_LE64_LO20			85
++#define R_LARCH_TLS_LE64_HI12			86
++#define R_LARCH_TLS_IE_PC_HI20			87
++#define R_LARCH_TLS_IE_PC_LO12			88
++#define R_LARCH_TLS_IE64_PC_LO20		89
++#define R_LARCH_TLS_IE64_PC_HI12		90
++#define R_LARCH_TLS_IE_HI20			91
++#define R_LARCH_TLS_IE_LO12			92
++#define R_LARCH_TLS_IE64_LO20			93
++#define R_LARCH_TLS_IE64_HI12			94
++#define R_LARCH_TLS_LD_PC_HI20			95
++#define R_LARCH_TLS_LD_HI20			96
++#define R_LARCH_TLS_GD_PC_HI20			97
++#define R_LARCH_TLS_GD_HI20			98
++#define R_LARCH_32_PCREL			99
++#define R_LARCH_RELAX				100
+=20
+ #ifndef ELF_ARCH
+=20
+diff --git a/arch/loongarch/kernel/module-sections.c b/arch/loongarch/kerne=
+l/module-sections.c
+index 73976addbf60..9baf119388b9 100644
+--- a/arch/loongarch/kernel/module-sections.c
++++ b/arch/loongarch/kernel/module-sections.c
+@@ -76,12 +76,20 @@ static void count_max_entries(Elf_Rela *relas, int num,
+=20
+ 	for (i =3D 0; i < num; i++) {
+ 		type =3D ELF_R_TYPE(relas[i].r_info);
+-		if (type =3D=3D R_LARCH_SOP_PUSH_PLT_PCREL) {
++		switch (type) {
++		case R_LARCH_SOP_PUSH_PLT_PCREL:
++		case R_LARCH_B26:
+ 			if (!duplicate_rela(relas, i))
+ 				(*plts)++;
+-		} else if (type =3D=3D R_LARCH_SOP_PUSH_GPREL)
++			break;
++		case R_LARCH_SOP_PUSH_GPREL:
++		case R_LARCH_GOT_PC_HI20:
+ 			if (!duplicate_rela(relas, i))
+ 				(*gots)++;
++			break;
++		default:
++			/* Do nothing. */
++		}
+ 	}
+ }
+=20
+diff --git a/arch/loongarch/kernel/module.c b/arch/loongarch/kernel/module.=
+c
+index e5f1fd022cd0..1aa6a58b1c21 100644
+--- a/arch/loongarch/kernel/module.c
++++ b/arch/loongarch/kernel/module.c
+@@ -291,6 +291,84 @@ static int apply_r_larch_add_sub(struct module *mod, u=
+32 *location, Elf_Addr v,
+ 	}
+ }
+=20
++static int apply_r_larch_b26(struct module *mod, u32 *location, Elf_Addr v=
+,
++			s64 *rela_stack, size_t *rela_stack_top, unsigned int type)
++{
++	ptrdiff_t offset =3D (void *)v - (void *)location;
++
++	if (offset >=3D SZ_128M)
++		v =3D module_emit_plt_entry(mod, v);
++
++	if (offset < -SZ_128M)
++		v =3D module_emit_plt_entry(mod, v);
++
++	offset =3D (void *)v - (void *)location;
++
++	if (!signed_imm_check(offset, 28)) {
++		pr_err("module %s: jump offset =3D 0x%llx overflow! dangerous R_LARCH_B2=
+6 (%u) relocation\n",
++				mod->name, (long long)offset, type);
++		return -ENOEXEC;
++	}
++
++	if (offset & 3) {
++		pr_err("module %s: jump offset =3D 0x%llx unaligned! dangerous R_LARCH_B=
+26 (%u) relocation\n",
++				mod->name, (long long)offset, type);
++		return -ENOEXEC;
++	}
++
++	*location &=3D ~(u32)0x3ffffff;
++	*location |=3D (offset >> 18) & 0x3ff;
++	*location |=3D ((offset >> 2) & 0xffff) << 10;
++	return 0;
++}
++
++static int apply_r_larch_pcala_hi20(struct module *mod, u32 *location,
++		Elf_Addr v, s64 *rela_stack, size_t *rela_stack_top,
++		unsigned int type)
++{
++	ptrdiff_t offset =3D (void *)((v + 0x800) & ~0xfff) -
++		(void *)((Elf_Addr)location & ~0xfff);
++
++	if (!signed_imm_check(offset, 32)) {
++		pr_err("module %s: PCALA offset =3D 0x%llx does not fit in 32-bit signed=
+ and is unsupported by kernel! dangerous %s (%u) relocation\n",
++				mod->name, (long long)offset, __func__, type);
++		return -ENOEXEC;
++	}
++
++	*location &=3D ~((u32)0xfffff << 5);
++	*location |=3D ((offset >> 12) & 0xfffff) << 5;
++	return 0;
++}
++
++static int apply_r_larch_got_pc_hi20(struct module *mod, u32 *location,
++		Elf_Addr v, s64 *rela_stack, size_t *rela_stack_top,
++		unsigned int type)
++{
++	Elf_Addr got =3D module_emit_got_entry(mod, v);
++
++	return apply_r_larch_pcala_hi20(mod, location, got, rela_stack,
++			rela_stack_top, type);
++}
++
++static int apply_r_larch_pcala_lo12(struct module *mod, u32 *location,
++		Elf_Addr v, s64 *rela_stack, size_t *rela_stack_top,
++		unsigned int type)
++{
++	*location &=3D ~((u32)0xfff << 10);
++	*location |=3D ((u32)v & 0xfff) << 10;
++	return 0;
++}
++
++static int apply_r_larch_got_pc_lo12(struct module *mod, u32 *location,
++		Elf_Addr v, s64 *rela_stack, size_t *rela_stack_top,
++		unsigned int type)
++{
++	Elf_Addr got =3D module_emit_got_entry(mod, v);
++
++	return apply_r_larch_pcala_lo12(mod, location, got, rela_stack,
++			rela_stack_top, type);
++}
++
+ /*
+  * reloc_handlers_rela() - Apply a particular relocation to a module
+  * @mod: the module to apply the reloc to
+@@ -321,6 +399,11 @@ static reloc_rela_handler reloc_rela_handlers[] =3D {
+ 	[R_LARCH_SOP_POP_32_S_10_5 ... R_LARCH_SOP_POP_32_U] =3D apply_r_larch_so=
+p_imm_field,
+ 	[R_LARCH_ADD32 ... R_LARCH_SUB64]		     =3D apply_r_larch_add_sub,
+ 	[R_LARCH_SOP_PUSH_GPREL]			     =3D apply_r_larch_sop_push_gprel,
++	[R_LARCH_B26]					     =3D apply_r_larch_b26,
++	[R_LARCH_PCALA_HI20]				     =3D apply_r_larch_pcala_hi20,
++	[R_LARCH_PCALA_LO12]				     =3D apply_r_larch_pcala_lo12,
++	[R_LARCH_GOT_PC_HI20]				     =3D apply_r_larch_got_pc_hi20,
++	[R_LARCH_GOT_PC_LO12]				     =3D apply_r_larch_got_pc_lo12,
+ };
+=20
+ int apply_relocate_add(Elf_Shdr *sechdrs, const char *strtab,
+--=20
+2.37.0
 
 
