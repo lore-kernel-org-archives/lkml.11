@@ -2,141 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0F3EC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 14:12:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3E04C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 14:14:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232844AbiG0OMv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 10:12:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40476 "EHLO
+        id S233300AbiG0OOz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 10:14:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232333AbiG0OMt (ORCPT
+        with ESMTP id S232458AbiG0OOx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 10:12:49 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B46AD22B22
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 07:12:47 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 5268038923;
-        Wed, 27 Jul 2022 14:12:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1658931166; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3H98ZbyL+yCoBqBhV71DiorzBZIV17eeA3gst4o8mrk=;
-        b=bgQoHYCprpaw4pMJP0e2jDu5EvkOWB9a3HmUBXACljqsjBUt87bFlkE5Yse6iYZgKl9lQ6
-        cXQWtvVALZgXOgqbJbTWhboHpJ/pnW60pln1Ll4o0fhJETEDrSrObo7htBWJyCFSZahO+R
-        wirE0MwPArcMHgxaNm8Hl17qgAgc20k=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1658931166;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=3H98ZbyL+yCoBqBhV71DiorzBZIV17eeA3gst4o8mrk=;
-        b=7+xTh6q4y3M/AUe0+yTtSDDSrDHYe+YQx05ty09JeTaV3FhChgTM05wqgkG3pFsiDqkd1y
-        ZfaEKuYkkTD+UJBw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 2377313A8E;
-        Wed, 27 Jul 2022 14:12:46 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id MbwLCN5H4WImTgAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Wed, 27 Jul 2022 14:12:46 +0000
-Message-ID: <071e9a19-4aa8-e6c5-2e50-d59e60dca3e2@suse.cz>
-Date:   Wed, 27 Jul 2022 16:12:45 +0200
+        Wed, 27 Jul 2022 10:14:53 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E3213CBE5
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 07:14:50 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id h8so24437093wrw.1
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 07:14:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=HlFl4TB+ozKKXomSw+QhNP8jLuIDommpFYIfVxfLtCc=;
+        b=rUfK2qdgZHqlVpoXX0nP91/R5TMDc8m05GlXIZ8h+UpC6YIYJWJR18mAsjE0pFzdhW
+         J0h+m/HvNlcDWeW2Xeu1hcmxVT2yFGAlR0gaAk8q8FWN2lzsaugcNNKUqTVhpHjofa4u
+         GcOAGYDcZcjciNv38yQ2mUiAAobxQbQUnlOwsciaFq/ysk38Il8TKHLOo93MQ0gTchX8
+         Rxb0OVDt+5yixxinOqNdDfdLyCDMrsUq0dPHuCFdlwSbqtgolYBff41g+xROdziLLUrO
+         fbbwULZU5Dr8QAAdKZQ6Uaj+PuUyEqc2Di70BCEwF0bh+Hr3+hVqOizB4H661FTy2Br2
+         BOAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=HlFl4TB+ozKKXomSw+QhNP8jLuIDommpFYIfVxfLtCc=;
+        b=Rkk3pXktRCpPVHMvRUFbLrR5cyc4BLnfUpmfhsoDqQ6Oc/PrqJerRcKwKPJVlohWog
+         FEDgHr6YkecoOnM8ebQthYp+hYiW1yUvU0dtf2iZlbhqrSMY5arrtvHVTFVVkYxfLtQn
+         RwGaIgFDQ/rBuklKrehwhE1N3sQ/9SDEq/PyHP0ogLYKLXqI0EwwUi2FfRL2If7PbDhA
+         HRYfRBzMTVFr1K5+CQ8Hhw9+lOEJ33n4bfXpbanz9jNrFMSWqf6k59M6x88IJVIFd+er
+         e0x2OJT6wr4YpLlEP2NOlsxk4WJFGOooLMwRqetGFo/1S5y68bfrjtCNLqTd5/mdNK9L
+         qmBw==
+X-Gm-Message-State: AJIora9OnQfKWS0K2zqUuiIJ9UGok9xO9SsqyutIMwzdbyllYjXQAPGa
+        fXHikqC5BDoZbvZCK0ge7n6qqQ==
+X-Google-Smtp-Source: AGRyM1tmAzBvRGxN5q9WGQAVHCzdtmgiFFKwLKon/HRs50v9bLy+7JJn+oW4qgu8LLZ8X/dDIrmh2A==
+X-Received: by 2002:adf:d4c2:0:b0:21e:ddf3:8b14 with SMTP id w2-20020adfd4c2000000b0021eddf38b14mr1589672wrk.355.1658931289199;
+        Wed, 27 Jul 2022 07:14:49 -0700 (PDT)
+Received: from localhost.localdomain (210.145.15.109.rev.sfr.net. [109.15.145.210])
+        by smtp.googlemail.com with ESMTPSA id o20-20020a05600c339400b0039c54bb28f2sm2489524wmp.36.2022.07.27.07.14.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jul 2022 07:14:48 -0700 (PDT)
+From:   Amjad Ouled-Ameur <aouledameur@baylibre.com>
+To:     jan.kiszka@siemens.com
+Cc:     linux-kernel@vger.kernel.org, narmstrong@baylibre.com,
+        kbingham@kernel.org, Amjad Ouled-Ameur <aouledameur@baylibre.com>
+Subject: [PATCH 1/3] scripts/gdb: timerlist: use range instead of xrange
+Date:   Wed, 27 Jul 2022 16:14:41 +0200
+Message-Id: <20220727141443.133094-2-aouledameur@baylibre.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220727141443.133094-1-aouledameur@baylibre.com>
+References: <20220727141443.133094-1-aouledameur@baylibre.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v3 1/3] mm/slub: enable debugging memory wasting of
- kmalloc
-Content-Language: en-US
-To:     Christoph Lameter <cl@gentwo.de>, Feng Tang <feng.tang@intel.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, Dave Hansen <dave.hansen@intel.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        John Garry <john.garry@huawei.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>
-References: <20220727071042.8796-1-feng.tang@intel.com>
- <20220727071042.8796-2-feng.tang@intel.com>
- <alpine.DEB.2.22.394.2207271214570.1205438@gentwo.de>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <alpine.DEB.2.22.394.2207271214570.1205438@gentwo.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/27/22 12:20, Christoph Lameter wrote:
-> On Wed, 27 Jul 2022, Feng Tang wrote:
-> 
->> @@ -2905,7 +2950,7 @@ static inline void *get_freelist(struct kmem_cache *s, struct slab *slab)
->>   * already disabled (which is the case for bulk allocation).
->>   */
->>  static void *___slab_alloc(struct kmem_cache *s, gfp_t gfpflags, int node,
->> -			  unsigned long addr, struct kmem_cache_cpu *c)
->> +			  unsigned long addr, struct kmem_cache_cpu *c, unsigned int orig_size)
->>  {
->>  	void *freelist;
->>  	struct slab *slab;
->> @@ -3102,7 +3147,7 @@ static void *___slab_alloc(struct kmem_cache *s, gfp_t gfpflags, int node,
->>   * pointer.
->>   */
->>  static void *__slab_alloc(struct kmem_cache *s, gfp_t gfpflags, int node,
->> -			  unsigned long addr, struct kmem_cache_cpu *c)
->> +			  unsigned long addr, struct kmem_cache_cpu *c, unsigned int orig_size)
->>  {
->>  	void *p;
->>
->> @@ -3115,7 +3160,7 @@ static void *__slab_alloc(struct kmem_cache *s, gfp_t gfpflags, int node,
->>  	c = slub_get_cpu_ptr(s->cpu_slab);
->>  #endif
->>
->> -	p = ___slab_alloc(s, gfpflags, node, addr, c);
->> +	p = ___slab_alloc(s, gfpflags, node, addr, c, orig_size);
->>  #ifdef CONFIG_PREEMPT_COUNT
->>  	slub_put_cpu_ptr(s->cpu_slab);
-> 
-> This is modifying and making execution of standard slab functions more
-> expensive. Could you restrict modifications to the kmalloc subsystem?
-> 
-> kmem_cache_alloc() and friends are not doing any rounding up to power of
-> two  sizes.
-> 
-> What is happening here is that you pass kmalloc object size info through
-> the kmem_cache_alloc functions so that the regular allocation functions
-> debug functionality can then save the kmalloc specific object request
-> size. This is active even when no debugging options are enabled.
+xrange has been renamed to range in Python 3. Therefore,
+timerlist currently fails with NameError exception:
 
-I don't think the extra orig_size parameter (unused for non-debug caches)
-adds any noticeable overhead. In slab_alloc_node() we already have the
-orig_size parameter (for both kmalloc and non-kmalloc caches) before this
-patch, and it remains unused in the cmpxchg based fast path. The patch adds
-it to __slab_alloc() which is not the fast path, and it's still unused for
-non-debug caches there. So the overhead is basically one less register
-available (because of the extra param) in a slow path and that should be
-immeasurable.
+Python Exception <class 'NameError'> name 'xrange' is not defined.
 
-> Can you avoid that? Have kmalloc do the object allocation without passing
-> through the kmalloc request size and then add the original size info
-> to the debug field later after execution continues in the kmalloc functions?
+Use range instead of xrange.
 
-That approach is problematic wrt patches 2+3 if we want to use orig_size to
-affect the boundaries of zero-init and redzoning.
-Also it goes against the attempt to fix races wrt validation, see [1] where
-the idea is to have alloc_debug_processing() including redzoning done under
-n->list_lock and for that should have orig_size passed there as well.
+Signed-off-by: Amjad Ouled-Ameur <aouledameur@baylibre.com>
+---
+ scripts/gdb/linux/timerlist.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-[1] https://lore.kernel.org/all/69462916-2d1c-dd50-2e64-b31c2b61690e@suse.cz/
+diff --git a/scripts/gdb/linux/timerlist.py b/scripts/gdb/linux/timerlist.py
+index 071d0dd5a634..fac951236dc4 100644
+--- a/scripts/gdb/linux/timerlist.py
++++ b/scripts/gdb/linux/timerlist.py
+@@ -73,7 +73,7 @@ def print_cpu(hrtimer_bases, cpu, max_clock_bases):
+     ts = cpus.per_cpu(tick_sched_ptr, cpu)
+ 
+     text = "cpu: {}\n".format(cpu)
+-    for i in xrange(max_clock_bases):
++    for i in range(max_clock_bases):
+         text += " clock {}:\n".format(i)
+         text += print_base(cpu_base['clock_base'][i])
+ 
+-- 
+2.37.1
+
