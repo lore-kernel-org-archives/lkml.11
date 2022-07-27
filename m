@@ -2,103 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58CF7C19F21
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 10:10:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBB8DC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 10:11:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231938AbiG0KKx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 06:10:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48290 "EHLO
+        id S231955AbiG0KLA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 06:11:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229943AbiG0KKs (ORCPT
+        with ESMTP id S231923AbiG0KKw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 06:10:48 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBCFE625A
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 03:10:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658916647; x=1690452647;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=eJqnjBLXed5Sycp5HsRP/0/nQuHyMkYLa+orQZuUTn8=;
-  b=D1KYpzrATyrnuNeqW7f/1ZJWSSJIROFMr3oj5i4WFp/iqbBEacAmwF+f
-   1HDqjZfy8fshuRRBsCdDCpcKjIm/ZDaFugelAcfMxwCqKWDs3B8RwGcGk
-   JHScEenX0JCa/DeCdU7gCzWMYiIvI5D/rLLNy+SAHt6UADwdupBQBQWAg
-   FLh67mXQo++xV4cl5+paPdWECkbOVBNpIoJDnRAOR0ja21X5CBLsb4t6z
-   jWWL0pnY6i51p+72t8DvlHW044PBWPhZyzdqxksJSEHZ3hhJUfzCgeL7K
-   +CCJIBNArHWOioIfznVTvvQJKMQ/Nz4YwAppcQOdfMqTVkRXIdU4uXLT6
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10420"; a="288206887"
-X-IronPort-AV: E=Sophos;i="5.93,195,1654585200"; 
-   d="scan'208";a="288206887"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2022 03:09:52 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,195,1654585200"; 
-   d="scan'208";a="927730299"
-Received: from q.bj.intel.com ([10.238.154.102])
-  by fmsmga005.fm.intel.com with ESMTP; 27 Jul 2022 03:09:50 -0700
-From:   shaoqin.huang@intel.com
-To:     rppt@kernel.org
-Cc:     Shaoqin Huang <shaoqin.huang@intel.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] memblock test: Modify the obsolete description in README
-Date:   Wed, 27 Jul 2022 19:12:28 -0600
-Message-Id: <20220728011228.23691-1-shaoqin.huang@intel.com>
-X-Mailer: git-send-email 2.30.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Wed, 27 Jul 2022 06:10:52 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7716A2DAA2;
+        Wed, 27 Jul 2022 03:10:51 -0700 (PDT)
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26R9tuwq003440;
+        Wed, 27 Jul 2022 10:10:44 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=content-type :
+ mime-version : subject : from : in-reply-to : date : cc :
+ content-transfer-encoding : message-id : references : to; s=pp1;
+ bh=Btvhh+0Q1z5/M9Ck8Tw1udY6NkBdiQDICS53v+anSJ8=;
+ b=DCgCqSUULN7P5W0bxpi76TLbPrD5nbmpU8i/96KoxBvWDHUXmmiUJHgj3jQi02Kpj8FR
+ J1cfo6zAiAkTSzaQMwiVoovOTy6vX6Wq/LbdAdet/xVHKXNyYQ/PpA6kXgRRNjUfHtIi
+ KkdGnvMvgynJ5SRqrA1RYhW6cIUZXgoEZnZSLUcO+d9MAaAvDEWG+S+gBaB1riKApKpz
+ 5Lf4W/ORHt1h8+htE9M2H+AeJ0toHCEkH+c6GmqnCWhNwy5SHIOO808h51xp8PqZr+aV
+ Dilfv5AxDQWCVXfwV7YXN4VlBM9AeE69m8pHxD9O1m0hr4Pyjh0dRLfBZR7zsSawToyA xg== 
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hk35t8s4q-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 27 Jul 2022 10:10:44 +0000
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26RA7P50030210;
+        Wed, 27 Jul 2022 10:10:41 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma04fra.de.ibm.com with ESMTP id 3hg945kppm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 27 Jul 2022 10:10:41 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26RAAdbK24248760
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 27 Jul 2022 10:10:39 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 00A3A5204E;
+        Wed, 27 Jul 2022 10:10:39 +0000 (GMT)
+Received: from smtpclient.apple (unknown [9.43.70.200])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id DBC0F5204F;
+        Wed, 27 Jul 2022 10:10:37 +0000 (GMT)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.100.31\))
+Subject: Re: [PATCH] watchdog: Fix build error when CONFIG_SOFTLOCKUP_DETECTOR
+ is not set
+From:   Sachin Sant <sachinp@linux.ibm.com>
+In-Reply-To: <20220727092109.31362-1-ldufour@linux.ibm.com>
+Date:   Wed, 27 Jul 2022 15:40:36 +0530
+Cc:     Michael Ellerman <mpe@ellerman.id.au>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-next@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+Message-Id: <23117A1A-0607-4700-95FC-C1F0DCC1E3B0@linux.ibm.com>
+References: <20220727092109.31362-1-ldufour@linux.ibm.com>
+To:     Laurent Dufour <ldufour@linux.ibm.com>
+X-Mailer: Apple Mail (2.3696.100.31)
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: Znep5W-zpHGlqrJwDk17fNwedJaqfLCX
+X-Proofpoint-ORIG-GUID: Znep5W-zpHGlqrJwDk17fNwedJaqfLCX
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-26_07,2022-07-26_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
+ lowpriorityscore=0 malwarescore=0 mlxlogscore=999 suspectscore=0
+ bulkscore=0 phishscore=0 priorityscore=1501 mlxscore=0 impostorscore=0
+ spamscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2207270041
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shaoqin Huang <shaoqin.huang@intel.com>
 
-The VERBOSE option in Makefile has been moved, but there still have the
-description left in README. For now, we use `-v` options when running
-memblock test to print information, so using the new to replace the
-obsolete items.
+> The definition of lockup_detector_reconfigure should be exported even in
+> that case, and __lockup_detector_reconfigure should remain static.
+> 
+> Fixes: 24a1260705b7 ("watchdog: export lockup_detector_reconfigure")
+> Reported-by: Sachin Sant <sachinp@linux.ibm.com>
+> Signed-off-by: Laurent Dufour <ldufour@linux.ibm.com>
+> ---
+> kernel/watchdog.c | 4 ++--
+> 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Signed-off-by: Shaoqin Huang <shaoqin.huang@intel.com>
----
-Changelog:
-----------
-v2:
-  - Tweak the sentence to make it more clear and continuesly.
-  - Commit log changes.
+Thanks Laurent for the fix.
 
- tools/testing/memblock/README | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+Tested-by: Sachin Sant <sachinp@linux.ibm.com>
 
-diff --git a/tools/testing/memblock/README b/tools/testing/memblock/README
-index 058146b528a5..d3875e7065fd 100644
---- a/tools/testing/memblock/README
-+++ b/tools/testing/memblock/README
-@@ -33,16 +33,19 @@ To run the tests, build the main target and run it:
- 
- $ make && ./main
- 
--A successful run produces no output. It is also possible to override different
--configuration parameters. For example, to include verbose output, specify the
--VERBOSE flag when building the main target:
-+A successful run produces no output. It is possible to control the behavior
-+by passing options from command line. For example, to include verbose output,
-+append the `-v` options when you run the tests:
- 
--$ make VERBOSE=1
-+$ ./main -v
- 
- This will print information about which functions are being tested and the
- number of test cases that passed.
- 
--To simulate enabled NUMA, use:
-+For the full list of options from command line, see `./main --help`.
-+
-+It is also possible to override different configuration parameters to change it
-+test functions. For example, To simulate enabled NUMA, use:
- 
- $ make NUMA=1
- 
--- 
-2.30.2
 
+ - Sachin
