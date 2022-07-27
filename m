@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16A85C04A68
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36208C19F2B
 	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:55:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241040AbiG0QyP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:54:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57806 "EHLO
+        id S241074AbiG0QyR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:54:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240867AbiG0Qwp (ORCPT
+        with ESMTP id S240865AbiG0Qwp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Jul 2022 12:52:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E66E4D4D6;
-        Wed, 27 Jul 2022 09:34:56 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4B884C612;
+        Wed, 27 Jul 2022 09:34:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2DA3561A3F;
-        Wed, 27 Jul 2022 16:34:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13F61C433D6;
-        Wed, 27 Jul 2022 16:34:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 41BF761A24;
+        Wed, 27 Jul 2022 16:34:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 507C7C433C1;
+        Wed, 27 Jul 2022 16:34:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939695;
-        bh=vxPJPnvPSpdpqJTN8v+43mt7W4CL1/GrqoBK8VR7Mak=;
+        s=korg; t=1658939692;
+        bh=taGXvwh8QulMfFeNAopT3SELzpb/vZWaKrweY7XJzN4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hM4oMiczewenRMIalFGvjV+ejEY241MbmeWnYOIVgxId5nC6+xpbNRttJcbj1dp4K
-         WX3Rsn/63V5LGTOlx9hyUbODW795f4svlUshSDrxq6KXichPC4A6CjiWGOvMF3vtLJ
-         0yYPIi7HL0rvipoO5efxIjyo/AHetu1uhb3hVepo=
+        b=ySPejKRWluxQqaWzN1ZUdJUNJJJQGDlB6dVo44/ci5e69hjuRYsGeRDtwtqDaZCRG
+         s/WqDptFEgzt0S/ji+kyeZ93J/tYfDFRuwWVSu/rcU+9fBMH2cdvGlJG1uImPpq8kA
+         6Jn1gvumm4jEXSGrb5/F6R1M9EJAkpVrumCiRCBY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 054/105] tcp: Fix data-races around sysctl_max_syn_backlog.
-Date:   Wed, 27 Jul 2022 18:10:40 +0200
-Message-Id: <20220727161014.250317229@linuxfoundation.org>
+Subject: [PATCH 5.10 071/105] tcp: Fix a data-race around sysctl_tcp_thin_linear_timeouts.
+Date:   Wed, 27 Jul 2022 18:10:57 +0200
+Message-Id: <20220727161014.907629753@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161012.056867467@linuxfoundation.org>
 References: <20220727161012.056867467@linuxfoundation.org>
@@ -51,38 +51,32 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 79539f34743d3e14cc1fa6577d326a82cc64d62f ]
+[ Upstream commit 7c6f2a86ca590d5187a073d987e9599985fb1c7c ]
 
-While reading sysctl_max_syn_backlog, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its readers.
+While reading sysctl_tcp_thin_linear_timeouts, it can be changed
+concurrently.  Thus, we need to add READ_ONCE() to its reader.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Fixes: 36e31b0af587 ("net: TCP thin linear timeouts")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp_input.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ net/ipv4/tcp_timer.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 070e7015e9c9..5cbabe0e42c9 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -6847,10 +6847,12 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
- 		goto drop_and_free;
- 
- 	if (!want_cookie && !isn) {
-+		int max_syn_backlog = READ_ONCE(net->ipv4.sysctl_max_syn_backlog);
-+
- 		/* Kill the following clause, if you dislike this way. */
- 		if (!syncookies &&
--		    (net->ipv4.sysctl_max_syn_backlog - inet_csk_reqsk_queue_len(sk) <
--		     (net->ipv4.sysctl_max_syn_backlog >> 2)) &&
-+		    (max_syn_backlog - inet_csk_reqsk_queue_len(sk) <
-+		     (max_syn_backlog >> 2)) &&
- 		    !tcp_peer_is_proven(req, dst)) {
- 			/* Without syncookies last quarter of
- 			 * backlog is filled with destinations,
+diff --git a/net/ipv4/tcp_timer.c b/net/ipv4/tcp_timer.c
+index e20fd86a2a89..888683f2ff3e 100644
+--- a/net/ipv4/tcp_timer.c
++++ b/net/ipv4/tcp_timer.c
+@@ -574,7 +574,7 @@ void tcp_retransmit_timer(struct sock *sk)
+ 	 * linear-timeout retransmissions into a black hole
+ 	 */
+ 	if (sk->sk_state == TCP_ESTABLISHED &&
+-	    (tp->thin_lto || net->ipv4.sysctl_tcp_thin_linear_timeouts) &&
++	    (tp->thin_lto || READ_ONCE(net->ipv4.sysctl_tcp_thin_linear_timeouts)) &&
+ 	    tcp_stream_is_thin(tp) &&
+ 	    icsk->icsk_retransmits <= TCP_THIN_LINEAR_RETRIES) {
+ 		icsk->icsk_backoff = 0;
 -- 
 2.35.1
 
