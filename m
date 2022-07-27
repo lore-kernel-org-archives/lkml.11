@@ -2,184 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFE2DC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 08:20:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68174C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 08:21:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230075AbiG0IUy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 04:20:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41830 "EHLO
+        id S230286AbiG0IVb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 04:21:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229608AbiG0IUv (ORCPT
+        with ESMTP id S229608AbiG0IVZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 04:20:51 -0400
-X-Greylist: delayed 529 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 27 Jul 2022 01:20:51 PDT
-Received: from wnew3-smtp.messagingengine.com (wnew3-smtp.messagingengine.com [64.147.123.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13D563C16C;
-        Wed, 27 Jul 2022 01:20:50 -0700 (PDT)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailnew.west.internal (Postfix) with ESMTP id 777522B05A15;
-        Wed, 27 Jul 2022 04:11:57 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute1.internal (MEProxy); Wed, 27 Jul 2022 04:11:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm3; t=1658909516; x=1658916716; bh=Ujzoa7+jS8
-        fYmceJHmeFpMQR3KXUNY5FvTEHQqyR5LA=; b=dShcvtJbMiAa/sWG9PWNR0OApg
-        TpLcNilzPqQpkfuZSb/81vFuDInCf8BtqJceCIEfUa7XwE9GKoI0pjJjLe+GTTuE
-        jcYylFUpwwvRDHCAf1b/wqbQezuJy6DitsrfkAuHNw6QYEXIw9lXpgEQMdNHaYzY
-        0G4M+aAyVlT5n0WkWLnPV7ueGXnhV+UO9Oio9dEUcmkfwDcQSjSqrwBmMHM2qCKS
-        AFXm29HcOXAuuU322Ayy6mk319CsysJwIp3fJzypa69551CeWt+1elQR1x5wLY+f
-        VNSPq36+IMoKzYDSBitWi+ouxCHdrWn/0G0H6A5XA4JSUqujwHWrsZyAvuDg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; t=1658909516; x=1658916716; bh=Ujzoa7+jS8fYmceJHmeFpMQR3KXU
-        NY5FvTEHQqyR5LA=; b=bbNjEDBGaZ3eYhYSuh4TkgaXzlzMxSsV2LJP1cpRmk3y
-        U6St2BVN4edJlkhzHfUIKp9PJVaGyZql44Vz8z+2dpxiPeTq9rYa6tNJUBlWZ8cc
-        1SVtumVOHzw8G2WTnAk5j4XKKwzu58O5x3HySJdNAPGZM2Olh1P3hP0m9BChS7SK
-        GW4g89IhaQNJB6rLL5HSVd04reHBTEmL1zLsaUWJeeusDJGJjrk4XtpLGup1z/R6
-        G5SKmq23h+9yj9kcvI8uAue8HWLGJnjjFg7K5SZaOBfhhxpyI+qzRmvK3J4oYj4Y
-        LLQ+wLRh36t9SkFQzZy4MNzfJDOzfkjmLHxueEUdLg==
-X-ME-Sender: <xms:TPPgYieolKFn6F3EyXwB0m0NXzlQLQR3-HCvZUjbsOpMAvah5bGqFA>
-    <xme:TPPgYsO-SHloPHsbkim72Pa4mhksLjr1ttpUFMPX0VqLQHzmcXjwtf-LX4HH-hgFX
-    FieU2wlH6rjzQ>
-X-ME-Received: <xmr:TPPgYjjDgOxD9hH-fdaHJJrVIawEOczrePbw3TckFHx0cgRt3ruS3nhu-dTi2uEyjCrpPC-usOSPMFPgTo_v4u9XTnAm9yIe>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdduvdcutefuodetggdotefrodftvfcurf
-    hrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecuuegr
-    ihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjug
-    hrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefirhgvghcumffj
-    uceoghhrvghgsehkrhhorghhrdgtohhmqeenucggtffrrghtthgvrhhnpeegheeuhefgtd
-    eluddtleekfeegjeetgeeikeehfeduieffvddufeefleevtddtvdenucffohhmrghinhep
-    khgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrg
-    hilhhfrhhomhepghhrvghgsehkrhhorghhrdgtohhm
-X-ME-Proxy: <xmx:TPPgYv_aui7llQbtInQMN-hRgl3ecjvyJdivxgPuAidPYfvFlEHNlQ>
-    <xmx:TPPgYuscqAfDhAkUmX67YKm9AxpISPuZePYNgvs5UGIu2XlMu-94Rw>
-    <xmx:TPPgYmEOGkDvf0lKeCCwuBzcwzEQIua7gQMpdtD4MgjZs04SEUfgLw>
-    <xmx:TPPgYvOxUA4gRVcWSqLtQPRcYTKSTM8lAvMeyD3Q7w0Q6YwlocvmcYL7P7E>
-Feedback-ID: i787e41f1:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 27 Jul 2022 04:11:56 -0400 (EDT)
-Date:   Wed, 27 Jul 2022 10:11:33 +0200
-From:   Greg KH <greg@kroah.com>
-To:     Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Cc:     stable@vger.kernel.org,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>, johan.hedberg@gmail.com,
-        harshit.m.mogalapalli@gmail.com,
-        Ramanan Govindarajan <ramanan.govindarajan@oracle.com>,
-        linux-bluetooth@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        George Kennedy <george.kennedy@oracle.com>,
-        John Donnelly <john.p.donnelly@oracle.com>
-Subject: Re: Backport request to fix a WARNING in sco_sock_sendmsg on LTS
-Message-ID: <YuDzNUkeEv37sR2S@kroah.com>
-References: <fd01f110-05ce-569c-4910-722a5fab9f1c@oracle.com>
+        Wed, 27 Jul 2022 04:21:25 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12F133C17A;
+        Wed, 27 Jul 2022 01:21:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1658910083; x=1690446083;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=fcEdx7SDSmlzMiusxJuVLk1TnRR610lzQxaLemWdBPo=;
+  b=Hp0/aknS+mtbj0Knff6NoaxU/5ZexeF6ftAkfF7BpijHtkO3OD+p/izD
+   n8eo7jvg3ThjLWc+eV43cwDEp4SlG3tbXfvgd4/M71jnKOJcDMCpo8t64
+   KQTxH3aI0WuP7A+dPVhLgq38fKZqFb2X4Ja9dl5cDAgO3HBaL0i8DDgqa
+   xsmh7KKbditYVJQiath67ZeEyeGWL7ZAcbQXXXvbfIDNjLaFyA6Wbze9q
+   Cd6Wn/4BYk51zdWhiPwwMPN6OCFPgZEuQwSl3iB2YYv35pTOK2mwpgrNH
+   67/nWc+wrz70lpGcuS6NGU1C7BgiAkDiOLpuEl33Ka5QQUpyMMShGqwen
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.93,195,1654585200"; 
+   d="scan'208";a="106319316"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 27 Jul 2022 01:21:22 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Wed, 27 Jul 2022 01:21:20 -0700
+Received: from NAM02-BN1-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.71) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17 via Frontend
+ Transport; Wed, 27 Jul 2022 01:21:20 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PwnOpOj1+6PWbaW72TfhmwZNCL9g128JSPI4w9klyqhUxTj65isW0Yso7DU4P1EsB8GsWbBq0RerpgxwnddFbAMtcAvOGCLAjOd4lM0AqrAdLUtfXFNN/qluP/+09qIXfBTcjbkZYfVlKBb7aTJxcUig02BceCV0TitBqlaF22ot4gCklYsbpxEHC/lHYJhdPyboep/bpmmcW7JLw6zc1bg1eurffQCJ5NxoRt+2ESdseTbq3FqF6PiI23yp/gyWt2MGT1Ujc9NWAmTxdQxlgHPblPvkVA2+4kmKBROTGn69QzmShsukQHkkz3JHDf6b7b8M9b8GB8nWDmJqo8+LTA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=fcEdx7SDSmlzMiusxJuVLk1TnRR610lzQxaLemWdBPo=;
+ b=B2fvIiHy00TtJ+5Dc3NZBuRnuOorZAv/j4DIW95tzvJyYK4BiGCPK8n48Pu2Vj3+bdOk9BYhJ1Jrs47FzA9dMx11amZZGcUzz1fYRZJ61bzgcEHV0SVO3lkyvy7XaKzs4EjQvh9O11XORJMQPQ/s1r+hVoGFSJU4X9+eg82YhFpvKu2ejCmMjZr5Q0WwC97cDLap4ryJc5GKxcvvPx3Cl9FohvtQIRlGF7/Z7bLD47fZndtByvOk+7Ar82kBXkzMGgJXkkiYmbfKAnL6Mea7vIUulhOQHJypd15y0pMMYsLIklMhqWhRu/56DRGSNFQ6Be7yKp3ugOzUCsLaam23iQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=fcEdx7SDSmlzMiusxJuVLk1TnRR610lzQxaLemWdBPo=;
+ b=NjMhs5kGOBGbo6hvZ7CPP9/khEIFIlYMhJ1qLvQSLoCzEyZiqn2LEJfzvij05JLls4ovjARpq/x53X3p+/ZWmNdNotD/d8XpT0Le36kJFXsOB62BF9AW3O5UKGDoIAquXEu0n3FoXpLpms1Nx0QH1bh7dbkJMckcldbrBUCFbK8=
+Received: from CO1PR11MB5154.namprd11.prod.outlook.com (2603:10b6:303:99::15)
+ by DM8PR11MB5701.namprd11.prod.outlook.com (2603:10b6:8:20::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.19; Wed, 27 Jul
+ 2022 08:21:15 +0000
+Received: from CO1PR11MB5154.namprd11.prod.outlook.com
+ ([fe80::ac89:75cd:26e0:51c3]) by CO1PR11MB5154.namprd11.prod.outlook.com
+ ([fe80::ac89:75cd:26e0:51c3%7]) with mapi id 15.20.5458.025; Wed, 27 Jul 2022
+ 08:21:15 +0000
+From:   <Conor.Dooley@microchip.com>
+To:     <prabhakar.csengg@gmail.com>, <Conor.Dooley@microchip.com>
+CC:     <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        <geert+renesas@glider.be>, <magnus.damm@gmail.com>,
+        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <paul.walmsley@sifive.com>, <palmer@dabbelt.com>,
+        <aou@eecs.berkeley.edu>, <anup@brainfault.org>,
+        <linux-renesas-soc@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-riscv@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
+        <biju.das.jz@bp.renesas.com>
+Subject: Re: [PATCH 6/6] riscv: dts: renesas: Add initial devicetree for
+ Renesas RZ/Five SoC
+Thread-Topic: [PATCH 6/6] riscv: dts: renesas: Add initial devicetree for
+ Renesas RZ/Five SoC
+Thread-Index: AQHYoRqPxI/VCgWJ706uhVm84f5gp62Q992AgADmcICAAANLAA==
+Date:   Wed, 27 Jul 2022 08:21:15 +0000
+Message-ID: <bcc1dbc9-37a2-157a-1da2-7e51d3edb6f7@microchip.com>
+References: <20220726180623.1668-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20220726180623.1668-7-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <cc6f723a-441e-55fc-5044-890d45fb79b4@microchip.com>
+ <CA+V-a8vwhsa2S2UX+hi0MPnrjpfRYLzo1Ca1vffx-5A9jr6Hpg@mail.gmail.com>
+In-Reply-To: <CA+V-a8vwhsa2S2UX+hi0MPnrjpfRYLzo1Ca1vffx-5A9jr6Hpg@mail.gmail.com>
+Accept-Language: en-IE, en-US
+Content-Language: en-IE
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 587c0504-7dd3-4552-23b6-08da6fa8f953
+x-ms-traffictypediagnostic: DM8PR11MB5701:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: hY1It+XRfcXriIMnvai73sTKKSRs2MhjsPQJUNh8eNidHcgWNJ37onetqh25dcEcozDuxaYr3rntQNf2lMR4jIivb4cw2/VGe8D+KdiAEChnoHDvh63DCzmuLwlCF3wq6S4zCNAQx9cq8YenEHiaPmDZ4aIH1/76mB+esnsWB3z5CQUeL0gbEMOPLqed+rz/3DRIrRl6wDuri4dwVAiuV4K6KJeRrIBfRgcPn+zivyPV/OjfSVt02Qe2pgReMx5OlABgJDd+SsNzvOPh6xFrkfUfe5InLEVKtAqK3eEPI6TWKoL7wqA66qHFv0U/qYb4myW4BkkcVC2/8VOOWbN1MRyeu/+24ez+TibW//Nw1arDg4+LHSw5Uo24dP6Bx1n1ZMmCJa48WNFA87SDQ8b+4CeoRaKOx3jAh6vQOHTr7WxGDiv53rpkR6bNpT7Kkz3jqujS4cNEVmymOFlYxQddOU1mDROAS0Rp2KbFxZXWMF5Jj7N86JvlQTY9GLIDTzVqd1io1jB7Xc7/lg4O0m5WUhz8zBmluChp0pZUp9wHZfFURQd7J0iYqkf9fbvlp7rdJ0Q/RYuUT046NdBMKWVOJWMdqamdhm4YV+6YYNXrCqBOV4mcpK40vm0fYVtnn2AZlblRxpXmz2W3mh3Y2UuU4JcgjnoliS07fms7wtZV+DqGoqxO4jCV8MSMWbpPDYe6zgsivC49PrissPjzA7y0xe0kMosasNyyTBrhCek9ui48F79vi1rH7eFs8EzGWWiXqc7ZabsuSb7V35zR7r3bIPKU/y8GKnzqmSDejsQVhKYloGdPpa4mzvvyMNrUPbDdfCcDHztIYq4T+2LurapfmdFNhnH+G4Mz/gxw9/2YgrlPrTChl8xprYTfK1ujQnXs
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5154.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(366004)(39860400002)(376002)(396003)(346002)(26005)(53546011)(38070700005)(66446008)(2906002)(71200400001)(8676002)(66946007)(122000001)(66476007)(4326008)(66556008)(41300700001)(64756008)(54906003)(76116006)(91956017)(6512007)(6506007)(5660300002)(6486002)(4744005)(7416002)(186003)(478600001)(31696002)(86362001)(38100700002)(8936002)(2616005)(36756003)(31686004)(110136005)(316002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?S2V4bE5xY1g3NDYyMG91YnU4SzZQelpaVWhGNGc2YkZrdUhWMFFMWTRINWdJ?=
+ =?utf-8?B?Qlo2dWUyWEZ5Q0c1aGlNa0d0UkhYU2lmS2JBNGp2Vms5UDEzV0R1eVZycVFn?=
+ =?utf-8?B?Q3o4SVVCV2RCeG51ajM1d1d6UmQxQm55NTFTSFluZEMyL1h0NDRXTG5uM2Jj?=
+ =?utf-8?B?VitwZHdDZ0p1bUhmY2hwbU5BNjN1VzNiRW90N3lrTncvWEZ0QWlSdDJ4ak8v?=
+ =?utf-8?B?cFBkVXhoVzhaSWtFdHZpNDR4Wm5TeXc0MWt2eEQ3Q2U5MVZtYjdzaG10cW40?=
+ =?utf-8?B?UVNaR0NBU0t6M2dIMnBRbTBBTWpUVmgwN2pTeTdoNDR1NEhqUkl6UW52dU53?=
+ =?utf-8?B?aGFmbXFwQis1M0RjRDJkSnN5YWUwbmg3aGpZdTBrd0o2NzdaY1ZpVTdzcWVT?=
+ =?utf-8?B?dkY3b1lxeTRoL1JPVzU4a3dxQmlCeExDNGk4YktDUnBwOHJGczFqVUllOERu?=
+ =?utf-8?B?clFXalFRbCtxVGxMY25RZVVFN2RXc0NvK042TkVVZ2hpNXpnMDJTMlFkQVBI?=
+ =?utf-8?B?c2dheTZ4R0FkYzVXbGlLZnFMUEpzMzMrUmpiNlVLbG5hU1cvZWsyQ1dRTjhC?=
+ =?utf-8?B?b1JYaWtZWWVyRTBWemlRTTV5NmRDbE5Jby9sK2NROVhudDh0c3daK0NiVTJo?=
+ =?utf-8?B?WEtvQkhDWTE3VkNXcGpLaFNKSEdtOTE2dGNITjVhaDBxNmF6T1lCQlRuOURN?=
+ =?utf-8?B?L1NLSTZka3lkSEV5dmFaUlNUWGFMY1ZFeWFuMm01bWNNVmdDUDRHZmZBRkpR?=
+ =?utf-8?B?RG9aTUJ2VTR0a290eTNvUjQxZnBmWUNOcGs3aHVwWnY1Mi9qVEtKdHc1Rkgz?=
+ =?utf-8?B?QjBudUxLbTlOTDN2dGwvVXVuaEQxVk9CN3VTcUc4aCt1OENGRC9Qc09ReEdE?=
+ =?utf-8?B?WUhzSjFjMXI5QXRGazVsVW1QeW5KTkltemJmVlJFNXJTQ2xWMTZ4ZHRYLzFU?=
+ =?utf-8?B?c1FOOWxDbStnWHNPcHp1MndLMHRPVVk3R1lQc1NPcktaaXNEVjV0VGUyR1VB?=
+ =?utf-8?B?VHQ1S04wajg1YU1iNHpWcWg2SGhLcWgrQkMyVFJ3UUZVTnBoMFdxUGZ1cC9I?=
+ =?utf-8?B?RE9OM1NWMllVdU5yZmZOejg5NUc1SFR3TTlVdEFlbjVZcEh3emNXUitPTjJG?=
+ =?utf-8?B?TW5DYWNYb0h2dGRWdU1vVU1nSDdJV0RkOENlOHVpR1lSVGtiWTdZcUJzMEc3?=
+ =?utf-8?B?RjVKckRkN2g4eENCOGxyd0lOcXo4KzRGK0JIbVRHWTFEUGlveW5pQmlRZkJs?=
+ =?utf-8?B?TksrSGZUNVI2NzlMQitmbEE0MDdJc3VmRW1MMnRXRHlqNzE2K3pkakFBTnFO?=
+ =?utf-8?B?MW5XTXBNVHdVMGpiNmdCeTlHbHFEOWZrcXNTZFhMWCtKZ1pPTkRvUnBwWVlU?=
+ =?utf-8?B?OTBOQ01HODBwam1qeWp3a2NMRXlZQ1QrdFR1anlTWTdQU2NhSWRwR2NCQk5M?=
+ =?utf-8?B?OEFLVDZYOTZsTWp2SDB0Y3VrREo1WHdlNFpqNXJmeStEZlYrQlFyamF3SVhw?=
+ =?utf-8?B?L1dKYVl5ZjlySE0xVWVWRXhGcDFwb0FXS3pyZllrZFJnL1hybmtZY0dqL29D?=
+ =?utf-8?B?RndOK3pCLytyK1NidmwvanFxOFl4R2dWWnBwUW1aWTNmQ3FkVWR4ZTlEUW1W?=
+ =?utf-8?B?RFgxR3B5YUlyKzY0eG51aU5tRXJpMk92YW1LSDhDdXRLaG1iR3ZaY1NET1hB?=
+ =?utf-8?B?dDFpWTZrRWx0Y1QzTXhzekh2Tk53OVJieDdsNG5DdkwrTVoyWk5reUM4elpH?=
+ =?utf-8?B?V21nd0p5Ri96Vk9UTXJJZ2t3d0xqRERCR3hjMkJXNVNTRFFBVTZiOEJJR0dJ?=
+ =?utf-8?B?L1dvTkIrR1hTZFJhbk1vRnpwUm1FQTRrM3pRWnlFVCtZWUp1VjZQRTJPMmFO?=
+ =?utf-8?B?U01GMmx1SDBORTNKT3JQb2FuMlpUcVRqZ0hlSGZvMG01NGRFb0Y0LzRSNDFL?=
+ =?utf-8?B?QURwUWhOczk0SWd0a3pXMGNmK3ZiNHpJL3piRTlHMkFZZ1p6VFBSdWJtR3dm?=
+ =?utf-8?B?MTIzRmFVOHJIVFp6N3AwUEFiUDNObFk4dGpEV2xkU1daUVpLRDVnV3VMeURG?=
+ =?utf-8?B?YlZFZEVjZnZZREs3VStrTURBK1Y3aTJSaWFaR2hRSFN0L2REVmIyQUVUUUY3?=
+ =?utf-8?Q?xdh02gLtpQcgk5q1jhJAv6/Ph?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <D0040C6391D01B43BCA0C23035774483@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <fd01f110-05ce-569c-4910-722a5fab9f1c@oracle.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5154.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 587c0504-7dd3-4552-23b6-08da6fa8f953
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Jul 2022 08:21:15.4042
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: KIr13MiJ6vvoxFBUzdguGju3dYaLHxUusAqvkO2ArS/mVss7Wnxog6XStVkQUAUvWqW770mP4NfBOOxpD1oEHTOB7CIsByvUMWgkFeKAryg=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR11MB5701
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 01:26:49PM +0530, Harshit Mogalapalli wrote:
-> Hi,
-> 
-> We have seen a WARNING message while fuzzing with syzkaller.
-> 
-> 
-> Kernel 5.15.54 on an x86_64
-> 
-> localhost login: [  104.557712] ------------[ cut here ]------------
-> [  104.558404] WARNING: CPU: 1 PID: 15544 at mm/page_alloc.c:5358
-> __alloc_pages+0x38a/0x410
-> [  104.559584] Modules linked in:
-> [  104.560030] CPU: 1 PID: 15544 Comm: repro Not tainted 5.15.54 #1
-> [  104.560896] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-> 1.11.0-2.el7 04/01/2014
-> [  104.562190] RIP: 0010:__alloc_pages+0x38a/0x410
-> [  104.562864] Code: ff 4c 89 fa 44 89 f6 89 ef 89 6c 24 48 c6 44 24 78 00
-> 4c 89 6c 24 60 e8 c4 e5 ff ff 49 89 c4 e9 43 fe ff ff 40 80 e5 3f eb c5 <0f>
-> 0b eb a5 4c 89 e7 44 89 f6 45 31 e4 e8 c4 9f ff ff e9 4a fe ff
-> [  104.565421] RSP: 0018:ffff88801b4577f0 EFLAGS: 00010246
-> [  104.566182] RAX: 0000000000000000 RBX: 1ffff1100368aeff RCX:
-> dffffc0000000000
-> [  104.567177] RDX: 0000000000000000 RSI: 0000000000000012 RDI:
-> 0000000000040cc0
-> [  104.568185] RBP: 0000000000000000 R08: 0000000000000000 R09:
-> 0000000000000000
-> [  104.569196] R10: fffffff900000000 R11: 0000000000000001 R12:
-> 0000000000000001
-> [  104.570194] R13: 0000000000000000 R14: 0000000000000000 R15:
-> 0000000000000000
-> [  104.571201] FS:  00007fda701c7740(0000) GS:ffff888107080000(0000)
-> knlGS:0000000000000000
-> [  104.572330] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [  104.573146] CR2: 0000000020004640 CR3: 0000000020c34000 CR4:
-> 00000000000006e0
-> [  104.574149] Call Trace:
-> [  104.574503]  <TASK>
-> [  104.574838]  ? __sanitizer_cov_trace_cmp4+0x25/0x90
-> [  104.575535]  ? __alloc_pages_slowpath.constprop.0+0x16c0/0x16c0
-> [  104.576391]  ? bpf_ksym_find+0x171/0x1c0
-> [  104.576985]  ? selinux_socket_sendmsg+0x207/0x2d0
-> [  104.577938]  ? __sanitizer_cov_trace_const_cmp8+0x27/0x90
-> [  104.578739]  alloc_pages+0x191/0x3f0
-> [  104.579258]  kmalloc_order+0x34/0xb0
-> [  104.579794]  kmalloc_order_trace+0x19/0xa0
-> [  104.580375]  sco_sock_sendmsg+0x10f/0x300
-> [  104.581228]  ? security_socket_sendmsg+0x8e/0xc0
-> 
-> 
-> I have attached the report and the reproducer. A similar warning is seen
-> on some testing previously.
-> 
-> Ref: https://lore.kernel.org/linux-mm/812dab5c-845d-df58-2752-abea7c07890@google.com/
-> 
-> Commit: 99c23da0eed4 ("Bluetooth: sco: Fix lock_sock() blockage by
-> memcpy_from_msg()") is backported to LTS. So we have this bug on LTS
-> branches.
-> 
-> The Fix commit is not backported to LTS.
-> Commit: 0771cbb3b97d ("Bluetooth: SCO: Replace use of memcpy_from_msg
-> with bt_skb_sendmsg")
-> 
-> I have tried backporting onto LTS locally.
-> 
-> Can you please backport the following commits to these branches.
-> 4.14.y, 4.19.y, 5.4.y, 5.10.y, 5.15.y LTS. (applying from 1 to 7)
-> 
-> 1. commit 38f64f650dc0e44c146ff88d15a7339efa325918 upstream
-> 	("Bluetooth: Add bt_skb_sendmsg helper")
-> 2. commit 97e4e80299844bb5f6ce5a7540742ffbffae3d97 upstream
-> 	("Bluetooth: Add bt_skb_sendmmsg helper")
-> 3. commit 0771cbb3b97d3c1d68eecd7f00055f599954c34e upstream
-> 	("Bluetooth: SCO: Replace use of memcpy_from_msg with bt_skb_sendmsg")
-> 4. commit 81be03e026dc0c16dc1c64e088b2a53b73caa895 upstream
-> 	("Bluetooth: RFCOMM: Replace use of memcpy_from_msg with bt_skb_sendmmsg")
-> 5. commit 266191aa8d14b84958aaeb5e96ee4e97839e3d87 upstream
-> 	("Bluetooth: Fix passing NULL to PTR_ERR")
-> 6. commit 037ce005af6b8a3e40ee07c6e9266c8997e6a4d6 upstream
-> 	("Bluetooth: SCO: Fix sco_send_frame returning
-> skb->len")
-> 7. commit 29fb608396d6a62c1b85acc421ad7a4399085b9f upstream
-> 	("Bluetooth: Fix bt_skb_sendmmsg not allocating partial chunks")
-> 
-> 
-> Notes:
-> 3 is the fix for the WARNING.
-> 1,2 are prerequisites for applying 3. At this stage the WARNING is fixed.
-> 4,5,6,7 are necessary as they are fixing newly introduced commits by us.
-> 
-> This is a clean cherry-pick series(7 commits) on all mentioned branches(LTS
-> 4.14->5.15)
-> 
-> I have tested all mentioned LTS branches with the reproducer(only) and the
-> WARNING is fixed after applying these 7 patches.
-
-All now queued up, thanks.
-
-greg k-h
+DQpPbiAyNy8wNy8yMDIyIDA5OjA5LCBMYWQsIFByYWJoYWthciB3cm90ZToNCj4gSGkgQ29ub3Is
+DQo+IA0KPj4NCj4+IE1pc3NpbmcgZmlsZXM/IFdoZXJlIGlzIHlvdXIgTWFrZWZpbGUgZm9yIHRo
+aXMgZGlyZWN0b3J5Pw0KPj4gT3IgdGhlIGJvYXJkIGR0cz8NCj4+DQo+IE15IHBsYW4gd2FzIHRv
+IGdldCB0aGUgaW5pdGlhbCBtaW5pbWFsIFNvQyBEVFNpIGFuZCB0aGVuIGxhdGVyDQo+IGdyYWR1
+YWxseSBhZGQgdGhlIGJvYXJkIERUUywgYnV0IGl0IGxvb2tzIGxpa2UgSSdsbCBoYXZlIHRvIGlu
+Y2x1ZGUgaXQNCj4gYWxvbmcgd2l0aCB0aGlzIHNlcmllcy4NCj4gDQoNCllvdSBjb3VsZCBzdGls
+bCBhZGQgYSBtaW5pbWFsIGR0cyAmIGFkZCBtb3JlIHRoaW5ncyB0byBpdCBvdmVyIHRpbWUgSQ0K
+Z3Vlc3M/DQoNCg0K
