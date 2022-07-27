@@ -2,82 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7725EC19F28
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 03:11:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6630DC19F21
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 03:13:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240129AbiG0DLx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 23:11:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42558 "EHLO
+        id S240216AbiG0DNM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 23:13:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231543AbiG0DLu (ORCPT
+        with ESMTP id S240187AbiG0DNI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 23:11:50 -0400
+        Tue, 26 Jul 2022 23:13:08 -0400
 Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96291CE3E;
-        Tue, 26 Jul 2022 20:11:49 -0700 (PDT)
-Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LszJq0HFyzkXkj;
-        Wed, 27 Jul 2022 11:09:15 +0800 (CST)
-Received: from dggpeml500005.china.huawei.com (7.185.36.59) by
- dggpeml500026.china.huawei.com (7.185.36.106) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 27 Jul 2022 11:11:47 +0800
-Received: from huawei.com (10.247.19.50) by dggpeml500005.china.huawei.com
- (7.185.36.59) with Microsoft SMTP Server (version=TLS1_2,
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 045B83CBF7
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 20:13:08 -0700 (PDT)
+Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LszJm2W8JzWft6;
+        Wed, 27 Jul 2022 11:09:12 +0800 (CST)
+Received: from huawei.com (10.175.112.208) by kwepemi500012.china.huawei.com
+ (7.221.188.12) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 27 Jul
- 2022 11:11:47 +0800
-From:   Chen Xingdi <chenxingdi@huawei.com>
-To:     <mathias.nyman@intel.com>
-CC:     <gregkh@linuxfoundation.org>, <linux-usb@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <chunkeey@googlemail.com>,
-        <chenxingdi@huawei.com>
-Subject: [PATCH v2 -next] usb: renesas-xhci: Do not print any log while fw verif success
-Date:   Wed, 27 Jul 2022 11:11:46 +0800
-Message-ID: <20220727031146.19345-1-chenxingdi@huawei.com>
+ 2022 11:13:05 +0800
+From:   Xu Qiang <xuqiang36@huawei.com>
+To:     <linux@armlinux.org.uk>, <robh@kernel.org>,
+        <rmk+kernel@armlinux.org.uk>, <kirill.shtuemov@linux.intel.com>,
+        <akpm@linux-foundation.org>, <ardb@kernel.org>, <rppt@kernel.org>,
+        <austindh.kim@gmail.com>
+CC:     <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>, <weiyongjun1@huawei.com>,
+        <guohanjun@huawei.com>, <xuqiang36@huawei.com>
+Subject: [PATCH -next 1/3] ARM: 9011/1: remove atags_vaddr variable double check
+Date:   Wed, 27 Jul 2022 03:10:58 +0000
+Message-ID: <20220727031100.112919-1-xuqiang36@huawei.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220726060509.20748-1-chenxingdi@huawei.com>
-References: <20220726060509.20748-1-chenxingdi@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Originating-IP: [10.247.19.50]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpeml500005.china.huawei.com (7.185.36.59)
+X-Originating-IP: [10.175.112.208]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemi500012.china.huawei.com (7.221.188.12)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When drivers are working properly, they should be quiet.
+setup_machine_fdt() can handle NULL atags_vaddr as its argument,
+and return NULL mdesc when atags_vaddr is NULL. So remove NULL
+check before setup_machine_fdt operation.
 
-Signed-off-by: Chen Xingdi <chenxingdi@huawei.com>
+Signed-off-by: Xu Qiang <xuqiang36@huawei.com>
 ---
-v2:
-- delete the log instead of change the log level to info.
- drivers/usb/host/xhci-pci-renesas.c | 4 ----
- 1 file changed, 4 deletions(-)
+ arch/arm/kernel/setup.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/usb/host/xhci-pci-renesas.c b/drivers/usb/host/xhci-pci-renesas.c
-index 52599d96634f..93f8b355bc70 100644
---- a/drivers/usb/host/xhci-pci-renesas.c
-+++ b/drivers/usb/host/xhci-pci-renesas.c
-@@ -120,7 +120,6 @@ static int renesas_fw_verify(const void *fw_data,
- 			     size_t length)
- {
- 	u16 fw_version_pointer;
--	u16 fw_version;
+diff --git a/arch/arm/kernel/setup.c b/arch/arm/kernel/setup.c
+index 1e8a50a97edf..07039c98be15 100644
+--- a/arch/arm/kernel/setup.c
++++ b/arch/arm/kernel/setup.c
+@@ -1101,13 +1101,10 @@ void __init setup_arch(char **cmdline_p)
+ 		atags_vaddr = FDT_VIRT_BASE(__atags_pointer);
  
- 	/*
- 	 * The Firmware's Data Format is describe in
-@@ -150,9 +149,6 @@ static int renesas_fw_verify(const void *fw_data,
- 		return -EINVAL;
- 	}
- 
--	fw_version = get_unaligned_le16(fw_data + fw_version_pointer);
--	pr_err("got firmware version: %02x.", fw_version);
--
- 	return 0;
- }
- 
+ 	setup_processor();
+-	if (atags_vaddr) {
+-		mdesc = setup_machine_fdt(atags_vaddr);
+-		if (mdesc)
+-			memblock_reserve(__atags_pointer,
+-					 fdt_totalsize(atags_vaddr));
+-	}
+-	if (!mdesc)
++	mdesc = setup_machine_fdt(atags_vaddr);
++	if (mdesc)
++		memblock_reserve(__atags_pointer, fdt_totalsize(atags_vaddr));
++	else
+ 		mdesc = setup_machine_tags(atags_vaddr, __machine_arch_type);
+ 	if (!mdesc) {
+ 		early_print("\nError: invalid dtb and unrecognized/unsupported machine ID\n");
 -- 
 2.17.1
 
