@@ -2,266 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63E46C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:24:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D9B2C19F2C
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:24:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235392AbiG0QYk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:24:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50138 "EHLO
+        id S235613AbiG0QYo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:24:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235907AbiG0QXd (ORCPT
+        with ESMTP id S235951AbiG0QXh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:23:33 -0400
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A6994D4FE
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:22:55 -0700 (PDT)
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20220727162253euoutp01f03cf89780b710c7f357cc6679d7ff17~FvDT6eekC2257722577euoutp01g
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 16:22:53 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20220727162253euoutp01f03cf89780b710c7f357cc6679d7ff17~FvDT6eekC2257722577euoutp01g
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1658938973;
-        bh=bmsUIhH5Krf3Y93QZk8wMGkt40E+vbrfCAl2ZfzXFsk=;
+        Wed, 27 Jul 2022 12:23:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C79F4C624;
+        Wed, 27 Jul 2022 09:22:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A6403617F2;
+        Wed, 27 Jul 2022 16:22:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26AAAC433D6;
+        Wed, 27 Jul 2022 16:22:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658938972;
+        bh=5qi6U/J8lpNHkYSJT47rBq2xJq10SOA9cxnccKqgGDI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W8QLFiZfxGNaCEKMnvfjEjYvySW8dKoJtmUhqnBSNbRJUuJ8SldtiziT3U1wCUS+/
-         wllPoEGA8PFpqxWYUS4DM6THyrjxH14NWcoTd/txHoWrZWHTej0W1vI4XYoE+qDzRD
-         FJJ/w5bZ7ejNIdCur3atdEkKNk4p2Ft+rAs/XfJo=
-Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-        20220727162252eucas1p2d1d5681c130281324a73b4703be63e00~FvDSn8ez52169521695eucas1p2l;
-        Wed, 27 Jul 2022 16:22:52 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
-        eusmges1new.samsung.com (EUCPMTA) with SMTP id 40.C3.09664.B5661E26; Wed, 27
-        Jul 2022 17:22:52 +0100 (BST)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-        20220727162251eucas1p12939ac3864fd8705ae139eb2d1087d8f~FvDSJxEkF1290212902eucas1p1C;
-        Wed, 27 Jul 2022 16:22:51 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
-        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20220727162251eusmtrp2555dbc48e32b198aa34ad92aed686343~FvDSJEXCA0811608116eusmtrp2w;
-        Wed, 27 Jul 2022 16:22:51 +0000 (GMT)
-X-AuditID: cbfec7f2-d81ff700000025c0-ec-62e1665b6998
-Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
-        eusmgms1.samsung.com (EUCPMTA) with SMTP id 8A.1E.09095.B5661E26; Wed, 27
-        Jul 2022 17:22:51 +0100 (BST)
-Received: from localhost (unknown [106.210.248.8]) by eusmtip1.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20220727162251eusmtip1dfc3f183a47358335b251e9c7f2f11bb~FvDRv8eGX0448504485eusmtip1C;
-        Wed, 27 Jul 2022 16:22:51 +0000 (GMT)
-From:   Pankaj Raghav <p.raghav@samsung.com>
-To:     damien.lemoal@opensource.wdc.com, hch@lst.de, axboe@kernel.dk,
-        snitzer@kernel.org, Johannes.Thumshirn@wdc.com
-Cc:     matias.bjorling@wdc.com, gost.dev@samsung.com,
-        linux-kernel@vger.kernel.org, hare@suse.de,
-        linux-block@vger.kernel.org, pankydev8@gmail.com,
-        bvanassche@acm.org, jaegeuk@kernel.org, dm-devel@redhat.com,
-        linux-nvme@lists.infradead.org,
-        Pankaj Raghav <p.raghav@samsung.com>,
-        Luis Chamberlain <mcgrof@kernel.org>
-Subject: [PATCH v8 05/11] null_blk: allow non power of 2 zoned devices
-Date:   Wed, 27 Jul 2022 18:22:39 +0200
-Message-Id: <20220727162245.209794-6-p.raghav@samsung.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220727162245.209794-1-p.raghav@samsung.com>
+        b=vR5xv194SgSj2EfqgBB4e9a5wEPPHZv1jTmw5fQKR/GJYRCU2nvy3WQkBHSKLUV0A
+         Aq+5WEoUO966nj7PHZGAV4pAlqkcrYCW/hKGahf0evIbzvXnw0YGsr+WPOIk8dOnOu
+         H3ali/Tqyh6Z1b9miTcAx3XnX3KmyLbITWt+SViI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?=E4=B8=80=E5=8F=AA=E7=8B=97?= <chennbnbnb@gmail.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Hillf Danton <hdanton@sina.com>, Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH 4.9 25/26] tty: use new tty_insert_flip_string_and_push_buffer() in pty_write()
+Date:   Wed, 27 Jul 2022 18:10:54 +0200
+Message-Id: <20220727161000.122591546@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220727160959.122591422@linuxfoundation.org>
+References: <20220727160959.122591422@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrLKsWRmVeSWpSXmKPExsWy7djP87oxaQ+TDCZPZbJYfbefzWLah5/M
-        Fr/Pnme22PtuNqvFzQM7mSz2LJrEZLFy9VEmiyfrZzFb/O26x2Sx95a2xeVdc9gs5i97ym4x
-        oe0rs8WNCU8ZLT4vbWG3WHPzKYvFiVvSDoIel694e+ycdZfd4/LZUo9NqzrZPDYvqffYfbOB
-        zWNn631Wj/f7rrJ59G1Zxeix+XS1x+dNch7tB7qZAniiuGxSUnMyy1KL9O0SuDLO7TIvmG5S
-        sffefpYGxiuaXYwcHBICJhL/j6h1MXJxCAmsYJRYNX0rK4TzhVHi64wF7BDOZ0aJ/e0r2LoY
-        OcE6vr/9B1W1nFFi+4cvTBDOc0aJaf8nM4LMZRPQkmjsZAdpEBEolnj4rpUFpIZZ4ACTxIPb
-        LWCThAXcJE49vcICYrMIqEpMvTuTCcTmFbCS+HR/CTPENnmJmZe+gw3iFLCW2DxlHlSNoMTJ
-        mU/AepmBapq3zoaqX88pcX1aPYTtInFpxUsWCFtY4tXxLewQtozE/53zmSDsaomnN34zgxwn
-        IdDCKNG/cz0bJGCsJfrO5ICYzAKaEut36UOUO0pceXWcCaKCT+LGW0GIC/gkJm2bzgwR5pXo
-        aBOCqFaS2PnzCdRSCYnLTXOgjvGQWPi9n3kCo+IsJL/MQvLLLIS9CxiZVzGKp5YW56anFhvm
-        pZbrFSfmFpfmpesl5+duYgSmwNP/jn/awTj31Ue9Q4xMHIyHGCU4mJVEeBOi7ycJ8aYkVlal
-        FuXHF5XmpBYfYpTmYFES503O3JAoJJCeWJKanZpakFoEk2Xi4JRqYMp5dS7k5NkT4VwfOBtc
-        brYuXdYjsHa3or5M/URT58aU50U/FVr57tpe/8G3ce576z/clcabCow8Q+YyHOubW8JmVs34
-        8bHi518Ge5g92U9N+ZtZsipssZNaJPsBx3XHm0NmzViZ+knxVsmz2h8f57z3CP7FYq38ZWX1
-        38uJPXsYd3W927r0jk3hmpqZ1vJTTGJ+zxHpOWYzZ4t33/tCvtNPBfhOztqz98Y8D/vktf82
-        8a6P6S6xFJQScnoi5zo1/XD5Odbsng2dD8PzAqw1vUWFfVaFyd76f/Gax/wU02nzdcpOxfb9
-        NCss+Ge6iHdypM9aqU7OqzfffJmg0B4V//+BjvabK3VnXxkuFOJULlRiKc5INNRiLipOBABO
-        FLOe8AMAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrLIsWRmVeSWpSXmKPExsVy+t/xu7rRaQ+TDO6vlbJYfbefzWLah5/M
-        Fr/Pnme22PtuNqvFzQM7mSz2LJrEZLFy9VEmiyfrZzFb/O26x2Sx95a2xeVdc9gs5i97ym4x
-        oe0rs8WNCU8ZLT4vbWG3WHPzKYvFiVvSDoIel694e+ycdZfd4/LZUo9NqzrZPDYvqffYfbOB
-        zWNn631Wj/f7rrJ59G1Zxeix+XS1x+dNch7tB7qZAnii9GyK8ktLUhUy8otLbJWiDS2M9Awt
-        LfSMTCz1DI3NY62MTJX07WxSUnMyy1KL9O0S9DLO7TIvmG5SsffefpYGxiuaXYycHBICJhLf
-        3/5j7WLk4hASWMooMeXFJnaIhITE7YVNjBC2sMSfa11sEEVPGSWebrgG1MHBwSagJdHYyQ5i
-        ighUSpz9IgtSwixwjkni5sVrbCC9wgJuEqeeXmEBsVkEVCWm3p3JBGLzClhJfLq/hBlivrzE
-        zEvfwfZyClhLbJ4yD6xGCKjm2YOPbBD1ghInZz4Bm8MMVN+8dTbzBEaBWUhSs5CkFjAyrWIU
-        SS0tzk3PLTbUK07MLS7NS9dLzs/dxAiM123Hfm7ewTjv1Ue9Q4xMHIyHGCU4mJVEeBOi7ycJ
-        8aYkVlalFuXHF5XmpBYfYjQFunsis5Rocj4wYeSVxBuaGZgamphZGphamhkrifN6FnQkCgmk
-        J5akZqemFqQWwfQxcXBKNTDlJqUZ8yxlf7JMvfTZonvHfzL9/1LyuHTnDv11pz+vi5kY7KzE
-        xvz7jLr9w4831VfU789ccmDlFfm7wocY4znuW0WmXLGfWXJl8qYmWY1tmkwS7wO/BBuetU1c
-        3XGcsWPW3XligkFhf7ffO5p9zop5ymrxyuhrAlxPft1+s+art4emxoGg6YtP3e6P3FbWk7Uv
-        rGfD5OeLt9cqzuc9qZkQWN/NvODg3VsiTOv01gQsrzP70/pW78hPvkrNxM9cX5aJPTzvHrgj
-        7rTBMuu36bYuL2+JNn1TP3TlJMeJj/cOhH5Ks893UBHY28H7ku3M5HmHJ/g+/N2o98Hm0Vv1
-        JZO+5EalPShcLtHCNPNyK4vaNCWW4oxEQy3mouJEAIWhMsdgAwAA
-X-CMS-MailID: 20220727162251eucas1p12939ac3864fd8705ae139eb2d1087d8f
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20220727162251eucas1p12939ac3864fd8705ae139eb2d1087d8f
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20220727162251eucas1p12939ac3864fd8705ae139eb2d1087d8f
-References: <20220727162245.209794-1-p.raghav@samsung.com>
-        <CGME20220727162251eucas1p12939ac3864fd8705ae139eb2d1087d8f@eucas1p1.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the power of 2 based calculation with zone size to be generic in
-null_zone_no with optimization for power of 2 based zone sizes.
+From: Jiri Slaby <jslaby@suse.cz>
 
-The nr_zones calculation in null_init_zoned_dev has been replaced with a
-division without special handling for power of 2 based zone sizes as
-this function is called only during the initialization and will not
-invoked in the hot path.
+commit a501ab75e7624d133a5a3c7ec010687c8b961d23 upstream.
 
-Performance Measurement:
+There is a race in pty_write(). pty_write() can be called in parallel
+with e.g. ioctl(TIOCSTI) or ioctl(TCXONC) which also inserts chars to
+the buffer. Provided, tty_flip_buffer_push() in pty_write() is called
+outside the lock, it can commit inconsistent tail. This can lead to out
+of bounds writes and other issues. See the Link below.
 
-Device:
-zone size = 128M, blocksize=4k
+To fix this, we have to introduce a new helper called
+tty_insert_flip_string_and_push_buffer(). It does both
+tty_insert_flip_string() and tty_flip_buffer_commit() under the port
+lock. It also calls queue_work(), but outside the lock. See
+71a174b39f10 (pty: do tty_flip_buffer_push without port->lock in
+pty_write) for the reasons.
 
-FIO cmd:
+Keep the helper internal-only (in drivers' tty.h). It is not intended to
+be used widely.
 
-fio --name=zbc --filename=/dev/nullb0 --direct=1 --zonemode=zbd  --size=23G
---io_size=<iosize> --ioengine=io_uring --iodepth=<iod> --rw=<mode> --bs=4k
---loops=4
-
-The following results are an average of 4 runs on AMD Ryzen 5 5600X with
-32GB of RAM:
-
-Sequential Write:
-
-x-----------------x---------------------------------x---------------------------------x
-|     IOdepth     |            8                    |            16                   |
-x-----------------x---------------------------------x---------------------------------x
-|                 |  KIOPS   |BW(MiB/s) | Lat(usec) |  KIOPS   |BW(MiB/s) | Lat(usec) |
-x-----------------x---------------------------------x---------------------------------x
-| Without patch   |  578     |  2257    |   12.80   |  576     |  2248    |   25.78   |
-x-----------------x---------------------------------x---------------------------------x
-|  With patch     |  581     |  2268    |   12.74   |  576     |  2248    |   25.85   |
-x-----------------x---------------------------------x---------------------------------x
-
-Sequential read:
-
-x-----------------x---------------------------------x---------------------------------x
-| IOdepth         |            8                    |            16                   |
-x-----------------x---------------------------------x---------------------------------x
-|                 |  KIOPS   |BW(MiB/s) | Lat(usec) |  KIOPS   |BW(MiB/s) | Lat(usec) |
-x-----------------x---------------------------------x---------------------------------x
-| Without patch   |  667     |  2605    |   11.79   |  675     |  2637    |   23.49   |
-x-----------------x---------------------------------x---------------------------------x
-|  With patch     |  667     |  2605    |   11.79   |  675     |  2638    |   23.48   |
-x-----------------x---------------------------------x---------------------------------x
-
-Random read:
-
-x-----------------x---------------------------------x---------------------------------x
-| IOdepth         |            8                    |            16                   |
-x-----------------x---------------------------------x---------------------------------x
-|                 |  KIOPS   |BW(MiB/s) | Lat(usec) |  KIOPS   |BW(MiB/s) | Lat(usec) |
-x-----------------x---------------------------------x---------------------------------x
-| Without patch   |  522     |  2038    |   15.05   |  514     |  2006    |   30.87   |
-x-----------------x---------------------------------x---------------------------------x
-|  With patch     |  522     |  2039    |   15.04   |  523     |  2042    |   30.33   |
-x-----------------x---------------------------------x---------------------------------x
-
-Minor variations are noticed in Sequential write with io depth 8 and
-in random read with io depth 16. But overall no noticeable differences
-were noticed
-
-Reviewed-by: Luis Chamberlain <mcgrof@kernel.org>
-Reviewed by: Adam Manzanares <a.manzanares@samsung.com>
-Reviewed-by: Hannes Reinecke <hare@suse.de>
-Signed-off-by: Pankaj Raghav <p.raghav@samsung.com>
+Link: https://seclists.org/oss-sec/2022/q2/155
+Fixes: 71a174b39f10 (pty: do tty_flip_buffer_push without port->lock in pty_write)
+Cc: 一只狗 <chennbnbnb@gmail.com>
+Cc: Dan Carpenter <dan.carpenter@oracle.com>
+Suggested-by: Hillf Danton <hdanton@sina.com>
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Link: https://lore.kernel.org/r/20220707082558.9250-2-jslaby@suse.cz
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/block/null_blk/main.c     |  5 ++---
- drivers/block/null_blk/null_blk.h |  6 ++++++
- drivers/block/null_blk/zoned.c    | 18 +++++++++++-------
- 3 files changed, 19 insertions(+), 10 deletions(-)
+ drivers/tty/pty.c        |   14 ++------------
+ drivers/tty/tty_buffer.c |   31 +++++++++++++++++++++++++++++++
+ include/linux/tty_flip.h |    3 +++
+ 3 files changed, 36 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/block/null_blk/main.c b/drivers/block/null_blk/main.c
-index c451c477978f..f1e0605dee94 100644
---- a/drivers/block/null_blk/main.c
-+++ b/drivers/block/null_blk/main.c
-@@ -1976,9 +1976,8 @@ static int null_validate_conf(struct nullb_device *dev)
- 	if (dev->queue_mode == NULL_Q_BIO)
- 		dev->mbps = 0;
- 
--	if (dev->zoned &&
--	    (!dev->zone_size || !is_power_of_2(dev->zone_size))) {
--		pr_err("zone_size must be power-of-two\n");
-+	if (dev->zoned && !dev->zone_size) {
-+		pr_err("Invalid zero zone size\n");
- 		return -EINVAL;
- 	}
- 
-diff --git a/drivers/block/null_blk/null_blk.h b/drivers/block/null_blk/null_blk.h
-index 94ff68052b1e..ece6dded9508 100644
---- a/drivers/block/null_blk/null_blk.h
-+++ b/drivers/block/null_blk/null_blk.h
-@@ -83,6 +83,12 @@ struct nullb_device {
- 	unsigned int imp_close_zone_no;
- 	struct nullb_zone *zones;
- 	sector_t zone_size_sects;
-+	/*
-+	 * zone_size_sects_shift is only useful when the zone size is
-+	 * power of 2. This variable is set to zero when zone size is non
-+	 * power of 2.
-+	 */
-+	unsigned int zone_size_sects_shift;
- 	bool need_zone_res_mgmt;
- 	spinlock_t zone_res_lock;
- 
-diff --git a/drivers/block/null_blk/zoned.c b/drivers/block/null_blk/zoned.c
-index 55a69e48ef8b..015f6823706c 100644
---- a/drivers/block/null_blk/zoned.c
-+++ b/drivers/block/null_blk/zoned.c
-@@ -16,7 +16,10 @@ static inline sector_t mb_to_sects(unsigned long mb)
- 
- static inline unsigned int null_zone_no(struct nullb_device *dev, sector_t sect)
+--- a/drivers/tty/pty.c
++++ b/drivers/tty/pty.c
+@@ -106,21 +106,11 @@ static void pty_unthrottle(struct tty_st
+ static int pty_write(struct tty_struct *tty, const unsigned char *buf, int c)
  {
--	return sect >> ilog2(dev->zone_size_sects);
-+	if (dev->zone_size_sects_shift)
-+		return sect >> dev->zone_size_sects_shift;
-+
-+	return div64_u64(sect, dev->zone_size_sects);
+ 	struct tty_struct *to = tty->link;
+-	unsigned long flags;
+ 
+-	if (tty->stopped)
++	if (tty->stopped || !c)
+ 		return 0;
+ 
+-	if (c > 0) {
+-		spin_lock_irqsave(&to->port->lock, flags);
+-		/* Stuff the data into the input queue of the other end */
+-		c = tty_insert_flip_string(to->port, buf, c);
+-		spin_unlock_irqrestore(&to->port->lock, flags);
+-		/* And shovel */
+-		if (c)
+-			tty_flip_buffer_push(to->port);
+-	}
+-	return c;
++	return tty_insert_flip_string_and_push_buffer(to->port, buf, c);
  }
  
- static inline void null_lock_zone_res(struct nullb_device *dev)
-@@ -65,10 +68,6 @@ int null_init_zoned_dev(struct nullb_device *dev, struct request_queue *q)
- 	sector_t sector = 0;
- 	unsigned int i;
+ /**
+--- a/drivers/tty/tty_buffer.c
++++ b/drivers/tty/tty_buffer.c
+@@ -556,6 +556,37 @@ void tty_flip_buffer_push(struct tty_por
+ EXPORT_SYMBOL(tty_flip_buffer_push);
  
--	if (!is_power_of_2(dev->zone_size)) {
--		pr_err("zone_size must be power-of-two\n");
--		return -EINVAL;
--	}
- 	if (dev->zone_size > dev->size) {
- 		pr_err("Zone size larger than device capacity\n");
- 		return -EINVAL;
-@@ -86,9 +85,14 @@ int null_init_zoned_dev(struct nullb_device *dev, struct request_queue *q)
- 	zone_capacity_sects = mb_to_sects(dev->zone_capacity);
- 	dev_capacity_sects = mb_to_sects(dev->size);
- 	dev->zone_size_sects = mb_to_sects(dev->zone_size);
--	dev->nr_zones = round_up(dev_capacity_sects, dev->zone_size_sects)
--		>> ilog2(dev->zone_size_sects);
- 
-+	if (is_power_of_2(dev->zone_size_sects))
-+		dev->zone_size_sects_shift = ilog2(dev->zone_size_sects);
-+	else
-+		dev->zone_size_sects_shift = 0;
+ /**
++ * tty_insert_flip_string_and_push_buffer - add characters to the tty buffer and
++ *	push
++ * @port: tty port
++ * @chars: characters
++ * @size: size
++ *
++ * The function combines tty_insert_flip_string() and tty_flip_buffer_push()
++ * with the exception of properly holding the @port->lock.
++ *
++ * To be used only internally (by pty currently).
++ *
++ * Returns: the number added.
++ */
++int tty_insert_flip_string_and_push_buffer(struct tty_port *port,
++		const unsigned char *chars, size_t size)
++{
++	struct tty_bufhead *buf = &port->buf;
++	unsigned long flags;
 +
-+	dev->nr_zones =	DIV_ROUND_UP_SECTOR_T(dev_capacity_sects,
-+					      dev->zone_size_sects);
- 	dev->zones = kvmalloc_array(dev->nr_zones, sizeof(struct nullb_zone),
- 				    GFP_KERNEL | __GFP_ZERO);
- 	if (!dev->zones)
--- 
-2.25.1
++	spin_lock_irqsave(&port->lock, flags);
++	size = tty_insert_flip_string(port, chars, size);
++	if (size)
++		tty_flip_buffer_commit(buf->tail);
++	spin_unlock_irqrestore(&port->lock, flags);
++
++	queue_work(system_unbound_wq, &buf->work);
++
++	return size;
++}
++
++/**
+  *	tty_buffer_init		-	prepare a tty buffer structure
+  *	@tty: tty to initialise
+  *
+--- a/include/linux/tty_flip.h
++++ b/include/linux/tty_flip.h
+@@ -38,4 +38,7 @@ static inline int tty_insert_flip_string
+ extern void tty_buffer_lock_exclusive(struct tty_port *port);
+ extern void tty_buffer_unlock_exclusive(struct tty_port *port);
+ 
++int tty_insert_flip_string_and_push_buffer(struct tty_port *port,
++		const unsigned char *chars, size_t cnt);
++
+ #endif /* _LINUX_TTY_FLIP_H */
+
 
