@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B004CC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:39:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EB6AC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:39:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239041AbiG0Qjo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:39:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58696 "EHLO
+        id S237598AbiG0Qjs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:39:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239043AbiG0Qix (ORCPT
+        with ESMTP id S239153AbiG0QjA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:38:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 480085A152;
-        Wed, 27 Jul 2022 09:28:38 -0700 (PDT)
+        Wed, 27 Jul 2022 12:39:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87BA44C63C;
+        Wed, 27 Jul 2022 09:28:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8B94DB821BC;
-        Wed, 27 Jul 2022 16:28:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D21B6C433C1;
-        Wed, 27 Jul 2022 16:28:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7FEDC619FD;
+        Wed, 27 Jul 2022 16:28:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B892C433C1;
+        Wed, 27 Jul 2022 16:28:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939317;
-        bh=HDQlZl209yb3N5mcFkuwfVpZiduu9n6n/X73yCLOr4w=;
+        s=korg; t=1658939302;
+        bh=MoYEj7eAG+6DjitY8iEdsOqKj5O7i39pKXTevkVBEgs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xmC5vs6s20mRGIkUt956iE51pb6rKnY+usrHe+T8EiMucYCSK4NSrl9d/YYtI2ot9
-         +YKgVa1FqFFbehCRixyKEfU/Vh8nGKElsJsQZE7vTQfDBGKrrw3J73tuyQG4d6FEuQ
-         6qsJo5pfxuE0dUHuZycIcsW6fQrjT3TsLC7aEkUM=
+        b=giGcAc4VGeEkENfNPF2fmOYs8kXYx/Op7T8DSm6aYdaxDIF/+BIvq0bGS2sVWVeha
+         5vriFdzEb+u01D0cQzKz6sk+v7cI/A7yCGf6h26sz7rD3nvd0JYkiccjVVoeAq8uMN
+         gKuDslnCeDVFpm3G0G/q6iX1Jve2dEzleyzgtvaU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
-        Shubhrajyoti Datta <Shubhrajyoti.datta@amd.com>,
-        Michal Simek <michal.simek@amd.com>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 27/87] i2c: cadence: Change large transfer count reset logic to be unconditional
-Date:   Wed, 27 Jul 2022 18:10:20 +0200
-Message-Id: <20220727161010.128877012@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 22/87] tcp: Fix data-races around sysctl_tcp_base_mss.
+Date:   Wed, 27 Jul 2022 18:10:15 +0200
+Message-Id: <20220727161009.919908958@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161008.993711844@linuxfoundation.org>
 References: <20220727161008.993711844@linuxfoundation.org>
@@ -50,108 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 4ca8ca873d454635c20d508261bfc0081af75cf8 ]
+[ Upstream commit 88d78bc097cd8ebc6541e93316c9d9bf651b13e8 ]
 
-Problems were observed on the Xilinx ZynqMP platform with large I2C reads.
-When a read of 277 bytes was performed, the controller NAKed the transfer
-after only 252 bytes were transferred and returned an ENXIO error on the
-transfer.
+While reading sysctl_tcp_base_mss, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its readers.
 
-There is some code in cdns_i2c_master_isr to handle this case by resetting
-the transfer count in the controller before it reaches 0, to allow larger
-transfers to work, but it was conditional on the CDNS_I2C_BROKEN_HOLD_BIT
-quirk being set on the controller, and ZynqMP uses the r1p14 version of
-the core where this quirk is not being set. The requirement to do this to
-support larger reads seems like an inherently required workaround due to
-the core only having an 8-bit transfer size register, so it does not
-appear that this should be conditional on the broken HOLD bit quirk which
-is used elsewhere in the driver.
-
-Remove the dependency on the CDNS_I2C_BROKEN_HOLD_BIT for this transfer
-size reset logic to fix this problem.
-
-Fixes: 63cab195bf49 ("i2c: removed work arounds in i2c driver for Zynq Ultrascale+ MPSoC")
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Reviewed-by: Shubhrajyoti Datta <Shubhrajyoti.datta@amd.com>
-Acked-by: Michal Simek <michal.simek@amd.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Fixes: 5d424d5a674f ("[TCP]: MTU probing")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-cadence.c | 30 +++++-------------------------
- 1 file changed, 5 insertions(+), 25 deletions(-)
+ net/ipv4/tcp_output.c | 2 +-
+ net/ipv4/tcp_timer.c  | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/i2c/busses/i2c-cadence.c b/drivers/i2c/busses/i2c-cadence.c
-index 3a1bdc75275f..8750e444f449 100644
---- a/drivers/i2c/busses/i2c-cadence.c
-+++ b/drivers/i2c/busses/i2c-cadence.c
-@@ -198,9 +198,9 @@ static inline bool cdns_is_holdquirk(struct cdns_i2c *id, bool hold_wrkaround)
-  */
- static irqreturn_t cdns_i2c_isr(int irq, void *ptr)
- {
--	unsigned int isr_status, avail_bytes, updatetx;
-+	unsigned int isr_status, avail_bytes;
- 	unsigned int bytes_to_send;
--	bool hold_quirk;
-+	bool updatetx;
- 	struct cdns_i2c *id = ptr;
- 	/* Signal completion only after everything is updated */
- 	int done_flag = 0;
-@@ -219,11 +219,7 @@ static irqreturn_t cdns_i2c_isr(int irq, void *ptr)
- 	 * Check if transfer size register needs to be updated again for a
- 	 * large data receive operation.
- 	 */
--	updatetx = 0;
--	if (id->recv_count > id->curr_recv_count)
--		updatetx = 1;
--
--	hold_quirk = (id->quirks & CDNS_I2C_BROKEN_HOLD_BIT) && updatetx;
-+	updatetx = id->recv_count > id->curr_recv_count;
- 
- 	/* When receiving, handle data interrupt and completion interrupt */
- 	if (id->p_recv_buf &&
-@@ -246,7 +242,7 @@ static irqreturn_t cdns_i2c_isr(int irq, void *ptr)
- 			id->recv_count--;
- 			id->curr_recv_count--;
- 
--			if (cdns_is_holdquirk(id, hold_quirk))
-+			if (cdns_is_holdquirk(id, updatetx))
- 				break;
- 		}
- 
-@@ -257,7 +253,7 @@ static irqreturn_t cdns_i2c_isr(int irq, void *ptr)
- 		 * maintain transfer size non-zero while performing a large
- 		 * receive operation.
- 		 */
--		if (cdns_is_holdquirk(id, hold_quirk)) {
-+		if (cdns_is_holdquirk(id, updatetx)) {
- 			/* wait while fifo is full */
- 			while (cdns_i2c_readreg(CDNS_I2C_XFER_SIZE_OFFSET) !=
- 			       (id->curr_recv_count - CDNS_I2C_FIFO_DEPTH))
-@@ -279,22 +275,6 @@ static irqreturn_t cdns_i2c_isr(int irq, void *ptr)
- 						  CDNS_I2C_XFER_SIZE_OFFSET);
- 				id->curr_recv_count = id->recv_count;
- 			}
--		} else if (id->recv_count && !hold_quirk &&
--						!id->curr_recv_count) {
--
--			/* Set the slave address in address register*/
--			cdns_i2c_writereg(id->p_msg->addr & CDNS_I2C_ADDR_MASK,
--						CDNS_I2C_ADDR_OFFSET);
--
--			if (id->recv_count > CDNS_I2C_TRANSFER_SIZE) {
--				cdns_i2c_writereg(CDNS_I2C_TRANSFER_SIZE,
--						CDNS_I2C_XFER_SIZE_OFFSET);
--				id->curr_recv_count = CDNS_I2C_TRANSFER_SIZE;
--			} else {
--				cdns_i2c_writereg(id->recv_count,
--						CDNS_I2C_XFER_SIZE_OFFSET);
--				id->curr_recv_count = id->recv_count;
--			}
- 		}
- 
- 		/* Clear hold (if not repeated start) and signal completion */
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index 5ac81c4f076d..b84bedf2804a 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -1540,7 +1540,7 @@ void tcp_mtup_init(struct sock *sk)
+ 	icsk->icsk_mtup.enabled = READ_ONCE(net->ipv4.sysctl_tcp_mtu_probing) > 1;
+ 	icsk->icsk_mtup.search_high = tp->rx_opt.mss_clamp + sizeof(struct tcphdr) +
+ 			       icsk->icsk_af_ops->net_header_len;
+-	icsk->icsk_mtup.search_low = tcp_mss_to_mtu(sk, net->ipv4.sysctl_tcp_base_mss);
++	icsk->icsk_mtup.search_low = tcp_mss_to_mtu(sk, READ_ONCE(net->ipv4.sysctl_tcp_base_mss));
+ 	icsk->icsk_mtup.probe_size = 0;
+ 	if (icsk->icsk_mtup.enabled)
+ 		icsk->icsk_mtup.probe_timestamp = tcp_jiffies32;
+diff --git a/net/ipv4/tcp_timer.c b/net/ipv4/tcp_timer.c
+index 57fa707e9e98..0c3ee2aa244f 100644
+--- a/net/ipv4/tcp_timer.c
++++ b/net/ipv4/tcp_timer.c
+@@ -171,7 +171,7 @@ static void tcp_mtu_probing(struct inet_connection_sock *icsk, struct sock *sk)
+ 		icsk->icsk_mtup.probe_timestamp = tcp_jiffies32;
+ 	} else {
+ 		mss = tcp_mtu_to_mss(sk, icsk->icsk_mtup.search_low) >> 1;
+-		mss = min(net->ipv4.sysctl_tcp_base_mss, mss);
++		mss = min(READ_ONCE(net->ipv4.sysctl_tcp_base_mss), mss);
+ 		mss = max(mss, net->ipv4.sysctl_tcp_mtu_probe_floor);
+ 		mss = max(mss, net->ipv4.sysctl_tcp_min_snd_mss);
+ 		icsk->icsk_mtup.search_low = tcp_mss_to_mtu(sk, mss);
 -- 
 2.35.1
 
