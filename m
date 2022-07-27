@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18C7BC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:47:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 145C2C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:47:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240490AbiG0QrQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:47:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42940 "EHLO
+        id S240008AbiG0Qri (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:47:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240447AbiG0Qqn (ORCPT
+        with ESMTP id S240404AbiG0Qqx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:46:43 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECD6360536;
-        Wed, 27 Jul 2022 09:31:46 -0700 (PDT)
+        Wed, 27 Jul 2022 12:46:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 168775247D;
+        Wed, 27 Jul 2022 09:31:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CAE2761A38;
-        Wed, 27 Jul 2022 16:31:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D45C3C433D6;
-        Wed, 27 Jul 2022 16:31:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9CCAB61A4F;
+        Wed, 27 Jul 2022 16:31:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3B00C433C1;
+        Wed, 27 Jul 2022 16:31:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939506;
-        bh=ydtawCHI9tI+KQC+sjXz+6STk9xAOxNf1KQiu79LHKw=;
+        s=korg; t=1658939509;
+        bh=smYeKmamlWhHlqS80zNjKhdEHi3FB7mA4ILpi3O5Zzk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oJEEk97GRplMn9upSC+0sZVbjVrnNp9hcoPLOzas+Z/b0vnu1ZNifMIl5QLb9D+Am
-         REMoETt7n8IfgrB9Pa51QS9HaY1NVE9BgCh34P7wH58RriVNVtgMHc+mSbJr/beqdz
-         9FiVRkqPJJ9eaFh1Ub3rz6QOrffxHcPcSv1FaRL8=
+        b=XM1FrO4C80moDNu+gMaG0FciS45KLeUhDNrlhmOAqs7zQXwLFjdxLD9uZgM7La90N
+         V+B1IjiMTTAdg7NqYq8dcBvPFQ0tgavFd9RDRqLsr1qlKaQvnfSpGorhTMAx7TdY55
+         WIjrfZ+96p3Gsb+AhFtUkWFYcfmGNI0/Ch/i8UX8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jose Alonso <joalonsof@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.4 86/87] net: usb: ax88179_178a needs FLAG_SEND_ZLP
-Date:   Wed, 27 Jul 2022 18:11:19 +0200
-Message-Id: <20220727161012.546406528@linuxfoundation.org>
+        stable@vger.kernel.org, Jan Beulich <jbeulich@suse.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.4 87/87] x86: drop bogus "cc" clobber from __try_cmpxchg_user_asm()
+Date:   Wed, 27 Jul 2022 18:11:20 +0200
+Message-Id: <20220727161012.576805216@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161008.993711844@linuxfoundation.org>
 References: <20220727161008.993711844@linuxfoundation.org>
@@ -48,121 +48,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jose Alonso <joalonsof@gmail.com>
+From: Jan Beulich <jbeulich@suse.com>
 
-commit 36a15e1cb134c0395261ba1940762703f778438c upstream.
+commit 1df931d95f4dc1c11db1123e85d4e08156e46ef9 upstream.
 
-The extra byte inserted by usbnet.c when
- (length % dev->maxpacket == 0) is causing problems to device.
+As noted (and fixed) a couple of times in the past, "=@cc<cond>" outputs
+and clobbering of "cc" don't work well together. The compiler appears to
+mean to reject such, but doesn't - in its upstream form - quite manage
+to yet for "cc". Furthermore two similar macros don't clobber "cc", and
+clobbering "cc" is pointless in asm()-s for x86 anyway - the compiler
+always assumes status flags to be clobbered there.
 
-This patch sets FLAG_SEND_ZLP to avoid this.
-
-Tested with: 0b95:1790 ASIX Electronics Corp. AX88179 Gigabit Ethernet
-
-Problems observed:
-======================================================================
-1) Using ssh/sshfs. The remote sshd daemon can abort with the message:
-   "message authentication code incorrect"
-   This happens because the tcp message sent is corrupted during the
-   USB "Bulk out". The device calculate the tcp checksum and send a
-   valid tcp message to the remote sshd. Then the encryption detects
-   the error and aborts.
-2) NETDEV WATCHDOG: ... (ax88179_178a): transmit queue 0 timed out
-3) Stop normal work without any log message.
-   The "Bulk in" continue receiving packets normally.
-   The host sends "Bulk out" and the device responds with -ECONNRESET.
-   (The netusb.c code tx_complete ignore -ECONNRESET)
-Under normal conditions these errors take days to happen and in
-intense usage take hours.
-
-A test with ping gives packet loss, showing that something is wrong:
-ping -4 -s 462 {destination}	# 462 = 512 - 42 - 8
-Not all packets fail.
-My guess is that the device tries to find another packet starting
-at the extra byte and will fail or not depending on the next
-bytes (old buffer content).
-======================================================================
-
-Signed-off-by: Jose Alonso <joalonsof@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 989b5db215a2 ("x86/uaccess: Implement macros for CMPXCHG on user addresses")
+Signed-off-by: Jan Beulich <jbeulich@suse.com>
+Message-Id: <485c0c0b-a3a7-0b7c-5264-7d00c01de032@suse.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/usb/ax88179_178a.c |   16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ arch/x86/include/asm/uaccess.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/usb/ax88179_178a.c
-+++ b/drivers/net/usb/ax88179_178a.c
-@@ -1690,7 +1690,7 @@ static const struct driver_info ax88179_
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1703,7 +1703,7 @@ static const struct driver_info ax88178a
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1716,7 +1716,7 @@ static const struct driver_info cypress_
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1729,7 +1729,7 @@ static const struct driver_info dlink_du
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1742,7 +1742,7 @@ static const struct driver_info sitecom_
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1755,7 +1755,7 @@ static const struct driver_info samsung_
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1768,7 +1768,7 @@ static const struct driver_info lenovo_i
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1781,7 +1781,7 @@ static const struct driver_info belkin_i
- 	.link_reset = ax88179_link_reset,
- 	.reset	= ax88179_reset,
- 	.stop	= ax88179_stop,
--	.flags	= FLAG_ETHER | FLAG_FRAMING_AX,
-+	.flags	= FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
+--- a/arch/x86/include/asm/uaccess.h
++++ b/arch/x86/include/asm/uaccess.h
+@@ -498,7 +498,7 @@ __pu_label:							\
+ 		       [ptr] "+m" (*_ptr),				\
+ 		       [old] "+a" (__old)				\
+ 		     : [new] ltype (__new)				\
+-		     : "memory", "cc");					\
++		     : "memory");					\
+ 	if (unlikely(__err))						\
+ 		goto label;						\
+ 	if (unlikely(!success))						\
 
 
