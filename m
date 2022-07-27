@@ -2,112 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D324C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 12:48:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC58BC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 12:48:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230136AbiG0Mr6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 08:47:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59476 "EHLO
+        id S233336AbiG0MsB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 08:48:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232724AbiG0Mr4 (ORCPT
+        with ESMTP id S233232AbiG0Mr5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 08:47:56 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 359BF1C109
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 05:47:54 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LtD565KcPzjXSb;
-        Wed, 27 Jul 2022 20:44:58 +0800 (CST)
-Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 27 Jul 2022 20:47:52 +0800
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 27 Jul 2022 20:47:51 +0800
-From:   Kefeng Wang <wangkefeng.wang@huawei.com>
-To:     Stuart Yoder <stuyoder@gmail.com>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>
-CC:     <linux-kernel@vger.kernel.org>, <catalin.marinas@arm.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        kernel test robot <lkp@intel.com>
-Subject: [PATCH] bus: fsl-mc: dprc: replace strncpy() with strscpy_pad()
-Date:   Wed, 27 Jul 2022 20:54:32 +0800
-Message-ID: <20220727125432.160233-1-wangkefeng.wang@huawei.com>
-X-Mailer: git-send-email 2.35.3
+        Wed, 27 Jul 2022 08:47:57 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4561C22523
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 05:47:56 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id bn9so13127631wrb.9
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 05:47:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IbIXmqIjdkMi2JSciZ0bPMUrJ9m41pWmErdo7Yp7XLI=;
+        b=ASvzG8Gogpot3oN8wT5STKfQTyFMb/mSVeq6Q5nSqyg5mfmI6rJMduP+YYpYKgdRFk
+         Jc0adbLOucoOl90q+2gOcollCJYDz2Ii3cSbRW5FIiAhj2rIg+QLU3p/NrOvD2UlsOUm
+         mcEHMZj4ZLuOab+BeDzbbeeHUHJKZ/n3bCL8kG03mb9MaYTdTtRrEUcrkPcXKv5CH6fg
+         mkzDlRfO/ZyKypfvjvL9OX+PYD9PKcOGCAbaVr0/1YxzTzkjy2ViLV02dZWigtIVqABP
+         kFvI7p9UFFatzuk0XpqA3urAJKKhUXHmR3Y6SzM58/SdrKJoHqVOrgGCOdFQexIY774j
+         Sjtg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IbIXmqIjdkMi2JSciZ0bPMUrJ9m41pWmErdo7Yp7XLI=;
+        b=IHvnrhfXPFoz4/n6CQJPI4juvYCn72wo+EGJMVCmLT5E8GCBSGFrWl4OJr1DvOEY2C
+         iTd+PBkRZXGf7sPNiWksk87vMdsR0OVyOxaqRSP3HzMv7w1jcZjtLH4bS1y6/DRw4xrQ
+         acuFt9T5C6/bWFwPHJDCW7UJ3o9x1F5tTASiVrUHTE8oO0PfTmiOWIZgvD48LZyF3F/y
+         amh/817ZJ3VFkHgE5pT6/71dzxAXX0Q6M6eJs3sRHxL9CjNQcC4vtMGb/J1jhaoFDyEv
+         TzRn16EFlVRKYJelzdM719+Vh5CIvpWnjiblOq+N7Ep9KAD+MoOuP72LfRtkNBW9xHGb
+         9JvQ==
+X-Gm-Message-State: AJIora+uKhIQ8ApsEZeAMvE0mRqcaX0xjg7eilFFToY7jVuElJSid9+c
+        vhtl3/tJMAWM7/1qj8LkxSHAsaH4jEn8Lg==
+X-Google-Smtp-Source: AGRyM1s64lTTZ728IL9ytTtfwVIyDnGmVDjh6LGF9RFAtf7d7cwiHHV6yYwE/uUmhVFkFnJ24zoCxA==
+X-Received: by 2002:a5d:58c9:0:b0:21d:9374:1373 with SMTP id o9-20020a5d58c9000000b0021d93741373mr13987359wrf.20.1658926074695;
+        Wed, 27 Jul 2022 05:47:54 -0700 (PDT)
+Received: from srini-hackbase.lan (cpc90716-aztw32-2-0-cust825.18-1.cable.virginm.net. [86.26.103.58])
+        by smtp.gmail.com with ESMTPSA id n40-20020a05600c3ba800b003a2ed2a40e4sm2459559wms.17.2022.07.27.05.47.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jul 2022 05:47:54 -0700 (PDT)
+From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+To:     broonie@kernel.org
+Cc:     alsa-devel@alsa-project.org, lgirdwood@gmail.com, perex@perex.cz,
+        tiwai@suse.com, linux-kernel@vger.kernel.org,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Subject: [PATCH] ASoC: codecs: va-macro: use fsgen as clock
+Date:   Wed, 27 Jul 2022 13:47:49 +0100
+Message-Id: <20220727124749.4604-1-srinivas.kandagatla@linaro.org>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500001.china.huawei.com (7.185.36.107)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Following warning when using W=1 to build kernel,
+VA Macro fsgen clock is supplied to other LPASS Macros using proper
+clock apis, however the internal user uses the registers directly without
+clk apis. This approch has race condition where in external users of
+the clock might cut the clock while VA macro is actively using this.
 
-   drivers/bus/fsl-mc/dprc.c: In function 'dprc_get_obj':
-   drivers/bus/fsl-mc/dprc.c:453:9: warning: 'strncpy' output may be truncated copying 15 bytes from a string of length 15 [-Wstringop-truncation]
-     453 |         strncpy(obj_desc->type, rsp_params->type, 16);
-         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/bus/fsl-mc/dprc.c:455:9: warning: 'strncpy' output may be truncated copying 15 bytes from a string of length 15 [-Wstringop-truncation]
-     455 |         strncpy(obj_desc->label, rsp_params->label, 16);
-         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/bus/fsl-mc/dprc.c: In function 'dprc_set_obj_irq':
-   drivers/bus/fsl-mc/dprc.c:494:9: warning: 'strncpy' specified bound 16 equals destination size [-Wstringop-truncation]
-     494 |         strncpy(cmd_params->obj_type, obj_type, 16);
-         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/bus/fsl-mc/dprc.c: In function 'dprc_get_obj_region':
-   drivers/bus/fsl-mc/dprc.c:567:9: warning: 'strncpy' specified bound 16 equals destination size [-Wstringop-truncation]
-     567 |         strncpy(cmd_params->obj_type, obj_type, 16);
-         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Moving the internal usage to clk apis would provide a proper refcounting
+and avoid such race conditions.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+This issue was noticed while headset was pulled out while recording is
+in progress and shifting record patch to DMIC.
+
+Reported-by: Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 ---
- drivers/bus/fsl-mc/dprc.c | 12 ++++--------
- 1 file changed, 4 insertions(+), 8 deletions(-)
+ sound/soc/codecs/lpass-va-macro.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/bus/fsl-mc/dprc.c b/drivers/bus/fsl-mc/dprc.c
-index d129338b8bc0..dd1b5c0fb7e2 100644
---- a/drivers/bus/fsl-mc/dprc.c
-+++ b/drivers/bus/fsl-mc/dprc.c
-@@ -450,10 +450,8 @@ int dprc_get_obj(struct fsl_mc_io *mc_io,
- 	obj_desc->ver_major = le16_to_cpu(rsp_params->version_major);
- 	obj_desc->ver_minor = le16_to_cpu(rsp_params->version_minor);
- 	obj_desc->flags = le16_to_cpu(rsp_params->flags);
--	strncpy(obj_desc->type, rsp_params->type, 16);
--	obj_desc->type[15] = '\0';
--	strncpy(obj_desc->label, rsp_params->label, 16);
--	obj_desc->label[15] = '\0';
-+	strscpy_pad(obj_desc->type, rsp_params->type, 16);
-+	strscpy_pad(obj_desc->label, rsp_params->label, 16);
+diff --git a/sound/soc/codecs/lpass-va-macro.c b/sound/soc/codecs/lpass-va-macro.c
+index d18b56e60433..1ea10dc70748 100644
+--- a/sound/soc/codecs/lpass-va-macro.c
++++ b/sound/soc/codecs/lpass-va-macro.c
+@@ -199,6 +199,7 @@ struct va_macro {
+ 	struct clk *mclk;
+ 	struct clk *macro;
+ 	struct clk *dcodec;
++	struct clk *fsgen;
+ 	struct clk_hw hw;
+ 	struct lpass_macro *pds;
+ 
+@@ -467,9 +468,9 @@ static int va_macro_mclk_event(struct snd_soc_dapm_widget *w,
+ 
+ 	switch (event) {
+ 	case SND_SOC_DAPM_PRE_PMU:
+-		return va_macro_mclk_enable(va, true);
++		return clk_prepare_enable(va->fsgen);
+ 	case SND_SOC_DAPM_POST_PMD:
+-		return va_macro_mclk_enable(va, false);
++		clk_disable_unprepare(va->fsgen);
+ 	}
+ 
  	return 0;
- }
- EXPORT_SYMBOL_GPL(dprc_get_obj);
-@@ -491,8 +489,7 @@ int dprc_set_obj_irq(struct fsl_mc_io *mc_io,
- 	cmd_params->irq_addr = cpu_to_le64(irq_cfg->paddr);
- 	cmd_params->irq_num = cpu_to_le32(irq_cfg->irq_num);
- 	cmd_params->obj_id = cpu_to_le32(obj_id);
--	strncpy(cmd_params->obj_type, obj_type, 16);
--	cmd_params->obj_type[15] = '\0';
-+	strscpy_pad(cmd_params->obj_type, obj_type, 16);
+@@ -1473,6 +1474,12 @@ static int va_macro_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		goto err_clkout;
  
- 	/* send command to mc*/
- 	return mc_send_command(mc_io, &cmd);
-@@ -564,8 +561,7 @@ int dprc_get_obj_region(struct fsl_mc_io *mc_io,
- 	cmd_params = (struct dprc_cmd_get_obj_region *)cmd.params;
- 	cmd_params->obj_id = cpu_to_le32(obj_id);
- 	cmd_params->region_index = region_index;
--	strncpy(cmd_params->obj_type, obj_type, 16);
--	cmd_params->obj_type[15] = '\0';
-+	strscpy_pad(cmd_params->obj_type, obj_type, 16);
- 
- 	/* send command to mc*/
- 	err = mc_send_command(mc_io, &cmd);
++	va->fsgen = clk_hw_get_clk(&va->hw, "fsgen");
++	if (IS_ERR(va->fsgen)) {
++		ret = PTR_ERR(va->fsgen);
++		goto err_clkout;
++	}
++
+ 	ret = devm_snd_soc_register_component(dev, &va_macro_component_drv,
+ 					      va_macro_dais,
+ 					      ARRAY_SIZE(va_macro_dais));
 -- 
-2.35.3
+2.25.1
 
