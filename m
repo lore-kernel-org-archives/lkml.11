@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79B36C25B08
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:45:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4343EC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:45:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232630AbiG0Ro7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:44:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40936 "EHLO
+        id S242972AbiG0RpE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:45:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242853AbiG0Rnb (ORCPT
+        with ESMTP id S242884AbiG0Rnx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:43:31 -0400
+        Wed, 27 Jul 2022 13:43:53 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B95789E83;
-        Wed, 27 Jul 2022 09:52:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27D188AB22;
+        Wed, 27 Jul 2022 09:52:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A508CB821BE;
-        Wed, 27 Jul 2022 16:52:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE42DC433C1;
-        Wed, 27 Jul 2022 16:52:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 287ABB821C5;
+        Wed, 27 Jul 2022 16:52:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80F31C433C1;
+        Wed, 27 Jul 2022 16:52:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940756;
-        bh=OQUb/8RzLCrzVZweQIabAHag8h5C3q52n++aj87Xar8=;
+        s=korg; t=1658940761;
+        bh=ccuhAFP7Pd2RNc4Jmg+ShmILDJdlYXwxHsxkBs6VuDY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zDTgB9ERv7Z7lfQqiYKLGfV2EqBGRtbDKfozR7RnSlQrt0rmsGvP0zmg+Y+QiW/76
-         wF5gmf34AUmTU24xniKYoi+1+ViIYEVYm0c0BeN2yZpxALQyDGP2xDQB+kJW69u6hk
-         KAZUc0LVfR1c0TyGzihMlSnQN4Umwyzwwvj+nl+E=
+        b=n1D1x3/47YuRjAFX5LNanRHhZsXuItYrr/d6o2kejSgg7k6YHlf6eo3AsGsyKnkP6
+         reql2QqBqnRW82Zm6Gy9hDQSiSa6kKreAOPZh2CS1U5wKmtnEOQp2fw7++BCtHg4m7
+         hC4Tq+fxNwFrXg+aY2f2Zl3nxNnQKdaPoBc6u0tA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Taehee Yoo <ap420073@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 105/158] amt: drop unexpected advertisement message
-Date:   Wed, 27 Jul 2022 18:12:49 +0200
-Message-Id: <20220727161025.678539930@linuxfoundation.org>
+        stable@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Alexey Kardashevskiy <aik@ozlabs.ru>
+Subject: [PATCH 5.18 132/158] KVM: Dont null dereference ops->destroy
+Date:   Wed, 27 Jul 2022 18:13:16 +0200
+Message-Id: <20220727161026.679104794@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -49,46 +48,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Taehee Yoo <ap420073@gmail.com>
+From: Alexey Kardashevskiy <aik@ozlabs.ru>
 
-[ Upstream commit 40185f359fbabaa61da754cc29d12f3a41e0a987 ]
+commit e8bc2427018826e02add7b0ed0fc625a60390ae5 upstream.
 
-AMT gateway interface should not receive unexpected advertisement messages.
-In order to drop these packets, it should check nonce and amt->status.
+A KVM device cleanup happens in either of two callbacks:
+1) destroy() which is called when the VM is being destroyed;
+2) release() which is called when a device fd is closed.
 
-Fixes: cbc21dc1cfe9 ("amt: add data plane of amt interface")
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Most KVM devices use 1) but Book3s's interrupt controller KVM devices
+(XICS, XIVE, XIVE-native) use 2) as they need to close and reopen during
+the machine execution. The error handling in kvm_ioctl_create_device()
+assumes destroy() is always defined which leads to NULL dereference as
+discovered by Syzkaller.
+
+This adds a checks for destroy!=NULL and adds a missing release().
+
+This is not changing kvm_destroy_devices() as devices with defined
+release() should have been removed from the KVM devices list by then.
+
+Suggested-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/amt.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ virt/kvm/kvm_main.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/amt.c b/drivers/net/amt.c
-index 2fe56640e493..0811a5211ec4 100644
---- a/drivers/net/amt.c
-+++ b/drivers/net/amt.c
-@@ -2260,6 +2260,10 @@ static bool amt_advertisement_handler(struct amt_dev *amt, struct sk_buff *skb)
- 	    ipv4_is_zeronet(amta->ip4))
- 		return true;
+--- a/virt/kvm/kvm_main.c
++++ b/virt/kvm/kvm_main.c
+@@ -4299,8 +4299,11 @@ static int kvm_ioctl_create_device(struc
+ 		kvm_put_kvm_no_destroy(kvm);
+ 		mutex_lock(&kvm->lock);
+ 		list_del(&dev->vm_node);
++		if (ops->release)
++			ops->release(dev);
+ 		mutex_unlock(&kvm->lock);
+-		ops->destroy(dev);
++		if (ops->destroy)
++			ops->destroy(dev);
+ 		return ret;
+ 	}
  
-+	if (amt->status != AMT_STATUS_SENT_DISCOVERY ||
-+	    amt->nonce != amta->nonce)
-+		return true;
-+
- 	amt->remote_ip = amta->ip4;
- 	netdev_dbg(amt->dev, "advertised remote ip = %pI4\n", &amt->remote_ip);
- 	mod_delayed_work(amt_wq, &amt->req_wq, 0);
-@@ -2975,6 +2979,7 @@ static int amt_dev_open(struct net_device *dev)
- 
- 	amt->req_cnt = 0;
- 	amt->remote_ip = 0;
-+	amt->nonce = 0;
- 	get_random_bytes(&amt->key, sizeof(siphash_key_t));
- 
- 	amt->status = AMT_STATUS_INIT;
--- 
-2.35.1
-
 
 
