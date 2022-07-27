@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F111AC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:27:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE480C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:27:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236965AbiG0Q1J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:27:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50440 "EHLO
+        id S236584AbiG0Q1M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:27:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235927AbiG0Q02 (ORCPT
+        with ESMTP id S236813AbiG0Q02 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Jul 2022 12:26:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65F894D4D4;
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 074644D4D1;
         Wed, 27 Jul 2022 09:23:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 41FDDB821BF;
-        Wed, 27 Jul 2022 16:23:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 922D6C433B5;
-        Wed, 27 Jul 2022 16:23:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C5EDAB821C1;
+        Wed, 27 Jul 2022 16:23:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EE2BC433D6;
+        Wed, 27 Jul 2022 16:23:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939021;
-        bh=N3tpqyxZB5quSkEhcWuxECivH92hL3svKEE4t/+PPoE=;
+        s=korg; t=1658939009;
+        bh=1N+4lpZUk0zs3H2gdygF1p5srqF4mzfZQUYBSwso3eQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q+a2RJB9lar4qPf9oJO0B4wd1AxJsbBZqbZlwxbzKnMAMbSFw3W1PAW+qpfxyOMqA
-         3gvVg5B77Zj4SF4ujx+Sh7JvcDben4AaAztE5dnYk9qdFqQl4WTVHi/fQlIniwOhbI
-         JzEhO7nL7eTmq2JTCwM4iFqX0JkYsDlS1lDCPoHc=
+        b=X7S5SZ4TZ8zxk3LFsVJuGXStY9r0drjdsPklFTFiXp382DRHdZwNErhf5dYwZ3XN2
+         EoskeE7uHZTv7sLFbiXLjzaB2p//p835iuFpVCQmxvL3EFCML+OdVQiRA7tvazBpEm
+         zx/qT5vf9mEet5SjrEbLw9BmaVNtbmdpgGDKQu4s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Subject: [PATCH 4.14 23/37] Bluetooth: SCO: Replace use of memcpy_from_msg with bt_skb_sendmsg
-Date:   Wed, 27 Jul 2022 18:10:49 +0200
-Message-Id: <20220727161001.767891451@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 11/37] igmp: Fix data-races around sysctl_igmp_llm_reports.
+Date:   Wed, 27 Jul 2022 18:10:37 +0200
+Message-Id: <20220727161001.322705619@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161000.822869853@linuxfoundation.org>
 References: <20220727161000.822869853@linuxfoundation.org>
@@ -50,94 +49,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit 0771cbb3b97d3c1d68eecd7f00055f599954c34e upstream.
+[ Upstream commit f6da2267e71106474fbc0943dc24928b9cb79119 ]
 
-This makes use of bt_skb_sendmsg instead of allocating a different
-buffer to be used with memcpy_from_msg which cause one extra copy.
+While reading sysctl_igmp_llm_reports, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its readers.
 
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
-Cc: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This test can be packed into a helper, so such changes will be in the
+follow-up series after net is merged into net-next.
+
+  if (ipv4_is_local_multicast(pmc->multiaddr) &&
+      !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
+
+Fixes: df2cf4a78e48 ("IGMP: Inhibit reports for local multicast groups")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/sco.c |   34 +++++++++++-----------------------
- 1 file changed, 11 insertions(+), 23 deletions(-)
+ net/ipv4/igmp.c | 21 +++++++++++++--------
+ 1 file changed, 13 insertions(+), 8 deletions(-)
 
---- a/net/bluetooth/sco.c
-+++ b/net/bluetooth/sco.c
-@@ -279,27 +279,19 @@ static int sco_connect(struct hci_dev *h
- 	return err;
- }
+diff --git a/net/ipv4/igmp.c b/net/ipv4/igmp.c
+index 16255dd0abf4..4b3875acc876 100644
+--- a/net/ipv4/igmp.c
++++ b/net/ipv4/igmp.c
+@@ -474,7 +474,8 @@ static struct sk_buff *add_grec(struct sk_buff *skb, struct ip_mc_list *pmc,
  
--static int sco_send_frame(struct sock *sk, void *buf, int len,
--			  unsigned int msg_flags)
-+static int sco_send_frame(struct sock *sk, struct sk_buff *skb)
- {
- 	struct sco_conn *conn = sco_pi(sk)->conn;
--	struct sk_buff *skb;
--	int err;
+ 	if (pmc->multiaddr == IGMP_ALL_HOSTS)
+ 		return skb;
+-	if (ipv4_is_local_multicast(pmc->multiaddr) && !net->ipv4.sysctl_igmp_llm_reports)
++	if (ipv4_is_local_multicast(pmc->multiaddr) &&
++	    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
+ 		return skb;
  
- 	/* Check outgoing MTU */
--	if (len > conn->mtu)
-+	if (skb->len > conn->mtu)
- 		return -EINVAL;
+ 	mtu = READ_ONCE(dev->mtu);
+@@ -600,7 +601,7 @@ static int igmpv3_send_report(struct in_device *in_dev, struct ip_mc_list *pmc)
+ 			if (pmc->multiaddr == IGMP_ALL_HOSTS)
+ 				continue;
+ 			if (ipv4_is_local_multicast(pmc->multiaddr) &&
+-			     !net->ipv4.sysctl_igmp_llm_reports)
++			    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
+ 				continue;
+ 			spin_lock_bh(&pmc->lock);
+ 			if (pmc->sfcount[MCAST_EXCLUDE])
+@@ -743,7 +744,8 @@ static int igmp_send_report(struct in_device *in_dev, struct ip_mc_list *pmc,
+ 	if (type == IGMPV3_HOST_MEMBERSHIP_REPORT)
+ 		return igmpv3_send_report(in_dev, pmc);
  
--	BT_DBG("sk %p len %d", sk, len);
--
--	skb = bt_skb_send_alloc(sk, len, msg_flags & MSG_DONTWAIT, &err);
--	if (!skb)
--		return err;
-+	BT_DBG("sk %p len %d", sk, skb->len);
+-	if (ipv4_is_local_multicast(group) && !net->ipv4.sysctl_igmp_llm_reports)
++	if (ipv4_is_local_multicast(group) &&
++	    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
+ 		return 0;
  
--	memcpy(skb_put(skb, len), buf, len);
- 	hci_send_sco(conn->hcon, skb);
+ 	if (type == IGMP_HOST_LEAVE_MESSAGE)
+@@ -921,7 +923,8 @@ static bool igmp_heard_report(struct in_device *in_dev, __be32 group)
  
--	return len;
-+	return skb->len;
- }
+ 	if (group == IGMP_ALL_HOSTS)
+ 		return false;
+-	if (ipv4_is_local_multicast(group) && !net->ipv4.sysctl_igmp_llm_reports)
++	if (ipv4_is_local_multicast(group) &&
++	    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
+ 		return false;
  
- static void sco_recv_frame(struct sco_conn *conn, struct sk_buff *skb)
-@@ -716,7 +708,7 @@ static int sco_sock_sendmsg(struct socke
- 			    size_t len)
- {
- 	struct sock *sk = sock->sk;
--	void *buf;
-+	struct sk_buff *skb;
- 	int err;
+ 	rcu_read_lock();
+@@ -1031,7 +1034,7 @@ static bool igmp_heard_query(struct in_device *in_dev, struct sk_buff *skb,
+ 		if (im->multiaddr == IGMP_ALL_HOSTS)
+ 			continue;
+ 		if (ipv4_is_local_multicast(im->multiaddr) &&
+-		    !net->ipv4.sysctl_igmp_llm_reports)
++		    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
+ 			continue;
+ 		spin_lock_bh(&im->lock);
+ 		if (im->tm_running)
+@@ -1280,7 +1283,8 @@ static void igmp_group_dropped(struct ip_mc_list *im)
+ #ifdef CONFIG_IP_MULTICAST
+ 	if (im->multiaddr == IGMP_ALL_HOSTS)
+ 		return;
+-	if (ipv4_is_local_multicast(im->multiaddr) && !net->ipv4.sysctl_igmp_llm_reports)
++	if (ipv4_is_local_multicast(im->multiaddr) &&
++	    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
+ 		return;
  
- 	BT_DBG("sock %p, sk %p", sock, sk);
-@@ -728,24 +720,20 @@ static int sco_sock_sendmsg(struct socke
- 	if (msg->msg_flags & MSG_OOB)
- 		return -EOPNOTSUPP;
+ 	reporter = im->reporter;
+@@ -1317,7 +1321,8 @@ static void igmp_group_added(struct ip_mc_list *im)
+ #ifdef CONFIG_IP_MULTICAST
+ 	if (im->multiaddr == IGMP_ALL_HOSTS)
+ 		return;
+-	if (ipv4_is_local_multicast(im->multiaddr) && !net->ipv4.sysctl_igmp_llm_reports)
++	if (ipv4_is_local_multicast(im->multiaddr) &&
++	    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
+ 		return;
  
--	buf = kmalloc(len, GFP_KERNEL);
--	if (!buf)
--		return -ENOMEM;
--
--	if (memcpy_from_msg(buf, msg, len)) {
--		kfree(buf);
--		return -EFAULT;
--	}
-+	skb = bt_skb_sendmsg(sk, msg, len, len, 0, 0);
-+	if (IS_ERR_OR_NULL(skb))
-+		return PTR_ERR(skb);
+ 	if (in_dev->dead)
+@@ -1629,7 +1634,7 @@ static void ip_mc_rejoin_groups(struct in_device *in_dev)
+ 		if (im->multiaddr == IGMP_ALL_HOSTS)
+ 			continue;
+ 		if (ipv4_is_local_multicast(im->multiaddr) &&
+-		    !net->ipv4.sysctl_igmp_llm_reports)
++		    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
+ 			continue;
  
- 	lock_sock(sk);
- 
- 	if (sk->sk_state == BT_CONNECTED)
--		err = sco_send_frame(sk, buf, len, msg->msg_flags);
-+		err = sco_send_frame(sk, skb);
- 	else
- 		err = -ENOTCONN;
- 
- 	release_sock(sk);
--	kfree(buf);
-+	if (err)
-+		kfree_skb(skb);
- 	return err;
- }
- 
+ 		/* a failover is happening and switches
+-- 
+2.35.1
+
 
 
