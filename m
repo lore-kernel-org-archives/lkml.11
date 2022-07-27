@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09FD5C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:55:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54152C19F2C
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:56:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241113AbiG0Qzy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:55:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42422 "EHLO
+        id S240803AbiG0Qz6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:55:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241155AbiG0Qy1 (ORCPT
+        with ESMTP id S241211AbiG0Qyg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:54:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDFF74F663;
-        Wed, 27 Jul 2022 09:35:40 -0700 (PDT)
+        Wed, 27 Jul 2022 12:54:36 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EFE3564FA;
+        Wed, 27 Jul 2022 09:35:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7FA20B821C6;
-        Wed, 27 Jul 2022 16:35:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C57D9C433D6;
-        Wed, 27 Jul 2022 16:35:37 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 6A2ECCE22F9;
+        Wed, 27 Jul 2022 16:35:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81E38C433C1;
+        Wed, 27 Jul 2022 16:35:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939738;
-        bh=2hJsBTzn0+OHhp5WVfO8GDI7HZLUvR3ikSXny/yDIsM=;
+        s=korg; t=1658939740;
+        bh=ah6HZXPTHtNEbP7zu+5lTh/rq8pif47I4x0TvqU/K+s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X1K3B+B5chbnpv950lxAWIDf+X4KUKIrLlEOeUml/TcY1hWAuUmy416uXt3mWTWtb
-         VHUGPyI/pstAQQVG7/dh9JabA0jKkChfbQoSWSlTDdGlwIn9gF/cUctg0zVx76cRV0
-         RaFH0tpnDGtCzzouMRTD2R1gQAKCrmt6vDk26VNk=
+        b=Ggnv2JVPWZLshnmEKObNo/lkhXexRhaVu8B0nYBf8jWPNw4W5qJr+V0fw9OH57MTc
+         RFejexyquHAGRlm/RMSwTBEL37RUMW5imU4fd8tYvGw845JsZfAmUSNiTw8WmB0Vky
+         YoJJZ1mhCjl1+2/iCUTKqoRYpnuX31g7BOtwC8Vo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 085/105] bitfield.h: Fix "type of reg too small for mask" test
-Date:   Wed, 27 Jul 2022 18:11:11 +0200
-Message-Id: <20220727161015.506412298@linuxfoundation.org>
+        stable@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.10 086/105] ALSA: memalloc: Align buffer allocations in page size
+Date:   Wed, 27 Jul 2022 18:11:12 +0200
+Message-Id: <20220727161015.555280649@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161012.056867467@linuxfoundation.org>
 References: <20220727161012.056867467@linuxfoundation.org>
@@ -50,63 +48,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit bff8c3848e071d387d8b0784dc91fa49cd563774 ]
+commit 5c1733e33c888a3cb7f576564d8ad543d5ad4a9e upstream.
 
-The test: 'mask > (typeof(_reg))~0ull' only works correctly when both
-sides are unsigned, consider:
+Currently the standard memory allocator (snd_dma_malloc_pages*())
+passes the byte size to allocate as is.  Most of the backends
+allocates real pages, hence the actual allocations are aligned in page
+size.  However, the genalloc doesn't seem assuring the size alignment,
+hence it may result in the access outside the buffer when the whole
+memory pages are exposed via mmap.
 
- - 0xff000000 vs (int)~0ull
- - 0x000000ff vs (int)~0ull
+For avoiding such inconsistencies, this patch makes the allocation
+size always to be aligned in page size.
 
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lore.kernel.org/r/20211110101324.950210584@infradead.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Note that, after this change, snd_dma_buffer.bytes field contains the
+aligned size, not the originally requested size.  This value is also
+used for releasing the pages in return.
+
+Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
+Link: https://lore.kernel.org/r/20201218145625.2045-2-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/bitfield.h | 19 ++++++++++++++++++-
- 1 file changed, 18 insertions(+), 1 deletion(-)
+ sound/core/memalloc.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/include/linux/bitfield.h b/include/linux/bitfield.h
-index 4e035aca6f7e..6093fa6db260 100644
---- a/include/linux/bitfield.h
-+++ b/include/linux/bitfield.h
-@@ -41,6 +41,22 @@
+--- a/sound/core/memalloc.c
++++ b/sound/core/memalloc.c
+@@ -133,6 +133,7 @@ int snd_dma_alloc_pages(int type, struct
+ 	if (WARN_ON(!dmab))
+ 		return -ENXIO;
  
- #define __bf_shf(x) (__builtin_ffsll(x) - 1)
- 
-+#define __scalar_type_to_unsigned_cases(type)				\
-+		unsigned type:	(unsigned type)0,			\
-+		signed type:	(unsigned type)0
-+
-+#define __unsigned_scalar_typeof(x) typeof(				\
-+		_Generic((x),						\
-+			char:	(unsigned char)0,			\
-+			__scalar_type_to_unsigned_cases(char),		\
-+			__scalar_type_to_unsigned_cases(short),		\
-+			__scalar_type_to_unsigned_cases(int),		\
-+			__scalar_type_to_unsigned_cases(long),		\
-+			__scalar_type_to_unsigned_cases(long long),	\
-+			default: (x)))
-+
-+#define __bf_cast_unsigned(type, x)	((__unsigned_scalar_typeof(type))(x))
-+
- #define __BF_FIELD_CHECK(_mask, _reg, _val, _pfx)			\
- 	({								\
- 		BUILD_BUG_ON_MSG(!__builtin_constant_p(_mask),		\
-@@ -49,7 +65,8 @@
- 		BUILD_BUG_ON_MSG(__builtin_constant_p(_val) ?		\
- 				 ~((_mask) >> __bf_shf(_mask)) & (_val) : 0, \
- 				 _pfx "value too large for the field"); \
--		BUILD_BUG_ON_MSG((_mask) > (typeof(_reg))~0ull,		\
-+		BUILD_BUG_ON_MSG(__bf_cast_unsigned(_mask, _mask) >	\
-+				 __bf_cast_unsigned(_reg, ~0ull),	\
- 				 _pfx "type of reg too small for mask"); \
- 		__BUILD_BUG_ON_NOT_POWER_OF_2((_mask) +			\
- 					      (1ULL << __bf_shf(_mask))); \
--- 
-2.35.1
-
++	size = PAGE_ALIGN(size);
+ 	dmab->dev.type = type;
+ 	dmab->dev.dev = device;
+ 	dmab->bytes = 0;
 
 
