@@ -2,183 +2,448 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6617C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:31:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D592FC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:31:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242242AbiG0RbL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:31:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37380 "EHLO
+        id S242324AbiG0RbQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:31:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242117AbiG0R22 (ORCPT
+        with ESMTP id S242147AbiG0R23 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:28:28 -0400
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FDBD7FE56
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:47:28 -0700 (PDT)
-Received: by mail-lj1-x22f.google.com with SMTP id z13so20058867ljj.6
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:47:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=7axPEVk6MWtPTP7h5E9Ae0SR4WCvVBdWSVGZwXrfCJc=;
-        b=OXVXmyiSwBKGxExCjMfAYqoW/5KcBGPFCllunr4xkxrHjAZAfzmM6C5GvVNZ9WEQ5n
-         Vd/L2eEK7/Jjeh65uCxfhFzTpwW/nfY41WJO2GEJ5FxJPrUbsJunJnUDZnHRyd13jXNV
-         el6qv/PaSM+iuGypevpNuTYXrfdWlfqJ4+hT3YN3sngePZTynARw5jANlBUTqDrgrZuI
-         lGTcnP7reAfuXpo7kE6zlfzjXf/fsCeGhInXq0FMW8slnZbx8Fip//DVdVpO9N5r9Ss6
-         ePb/gSBH8koPezr5mIrtzyAJSj95Ya4ZuV2zggUxbyOc9scukgioz7s73ng1wpBub0FS
-         pIvw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=7axPEVk6MWtPTP7h5E9Ae0SR4WCvVBdWSVGZwXrfCJc=;
-        b=tHk/ud3vXjgofzthqfkmQhD6OJntdOYULLLloVbClcs5kX92rvGbiKiT4uihfQYntI
-         fGCXbamKrUvUEH0aZ7eXyNBgeVWM7qT0Vkz47FhXuu5nsnvWmk9yZopFh7FablEMUuyx
-         ddpF8My68ihDBHsC0/mFAJt8SZEOKaMrRgmrKWv0Yatnk1W2fBsBReVO7raC3GeJXlqJ
-         DdkiSL6ZU0Z2LNBdmtWqzOLtkWZeMBCP9Vpw3Xu2LPTzCtH1R4h+Ff8DFYS0/RqvRDOL
-         UcuoC5r/gw2XOeDVnZGdOV8IA4EwqrM7g7oKhyfVo50gBclBiq+X5NtbAgkaTZLfK1oN
-         S05g==
-X-Gm-Message-State: AJIora/xKJazAz1rKG5mbg1psohAtGjNfae3VyMCSkMMVGgNpno4oqm7
-        7UdoDAg3F4IxY3zyRGm9tYQJTw==
-X-Google-Smtp-Source: AGRyM1sKYUvvHKjGHjubByE9l1jd6M1xEA+oiFn/KZJEYN6GKSHQtVPNl1ZvwRL1PD+wISXUf38VUw==
-X-Received: by 2002:a2e:a99e:0:b0:25e:a54:8328 with SMTP id x30-20020a2ea99e000000b0025e0a548328mr4685386ljq.141.1658940447509;
-        Wed, 27 Jul 2022 09:47:27 -0700 (PDT)
-Received: from krzk-bin.lan (78-26-46-173.network.trollfjord.no. [78.26.46.173])
-        by smtp.gmail.com with ESMTPSA id 18-20020ac25f52000000b0048910301774sm3375149lfz.307.2022.07.27.09.47.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 09:47:25 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Lucas Stankus <lucas.p.stankus@gmail.com>,
-        Puranjay Mohan <puranjay12@gmail.com>,
-        Cosmin Tanislav <cosmin.tanislav@analog.com>,
-        Alexandru Tachici <alexandru.tachici@analog.com>,
-        Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
-        Marcus Folkesson <marcus.folkesson@gmail.com>,
-        Kent Gustavsson <kent@minoris.se>,
-        Tomislav Denis <tomislav.denis@avl.com>,
-        Oleksij Rempel <linux@rempel-privat.de>, kernel@pengutronix.de,
-        Antoniu Miclaus <antoniu.miclaus@analog.com>,
-        Ricardo Ribalda <ribalda@kernel.org>,
-        Dragos Bogdan <dragos.bogdan@analog.com>,
-        Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Stefan Popa <stefan.popa@analog.com>,
+        Wed, 27 Jul 2022 13:28:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FC587FE4C;
+        Wed, 27 Jul 2022 09:47:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A9ED9600BE;
+        Wed, 27 Jul 2022 16:47:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B26EAC433C1;
+        Wed, 27 Jul 2022 16:47:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658940446;
+        bh=9daQcHA1ca8CTNZjEp82Tejpl/6LJe3wwlznXAHn6+c=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=wnyI0QosExcNM9PmwHBAcrmtaD3SZX56kOFnei6l6d1xDfvd433+QjfutA2CHL/Bm
+         hd4prnm7OS979GZBFYmM/ZlCk9LJ4LUTrXR1pK3+bZkOTp8+Aoqo37GKpzVdnwMpdk
+         tu12AMHjGUsNmUCLUVDTSnNKPq01CTplDxBnF/qQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Ar=C4=B1n=C3=A7=20=C3=9CNAL?= <arinc.unal@arinc9.com>,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
         Linus Walleij <linus.walleij@linaro.org>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        Mike Looijmans <mike.looijmans@topic.nl>,
-        Joachim Eastwood <manabian@gmail.com>,
-        Tomas Melin <tomas.melin@vaisala.com>,
-        Sean Nyekjaer <sean@geanix.com>,
-        Beniamin Bia <beniamin.bia@analog.com>,
-        Patrick Vasseur <patrick.vasseur@c-s.fr>,
-        Charles-Antoine Couret <charles-antoine.couret@essensium.com>,
-        Vladimir Barinov <vladimir.barinov@cogentembedded.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Philippe Reynes <tremyfr@yahoo.fr>,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        Akinobu Mita <akinobu.mita@gmail.com>,
-        Alexandru Lazar <alazar@startmail.com>,
-        Oskar Andero <oskar.andero@gmail.com>,
-        =?UTF-8?q?M=C3=A5rten=20Lindahl?= <martenli@axis.com>,
-        Bogdan Pricop <bogdan.pricop@emutex.com>,
-        Angelo Compagnucci <angelo.compagnucci@gmail.com>,
-        Matt Ranostay <matt.ranostay@konsulko.com>,
-        Dan Murphy <dmurphy@ti.com>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Phil Reid <preid@electromag.com.au>,
-        Michael Welling <mwelling@ieee.org>,
-        Lukas Wunner <lukas@wunner.de>,
-        Robert Jones <rjones@gateworks.com>,
-        Chris Coffey <cmc@babblebit.net>,
-        Slawomir Stepien <sst@poczta.fm>,
-        Sankar Velliangiri <navin@linumiz.com>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-fbdev@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v2 08/10] dt-bindings: iio: potentiometer: use spi-peripheral-props.yaml
-Date:   Wed, 27 Jul 2022 18:46:44 +0200
-Message-Id: <20220727164646.387541-9-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220727164646.387541-1-krzysztof.kozlowski@linaro.org>
-References: <20220727164646.387541-1-krzysztof.kozlowski@linaro.org>
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 025/158] pinctrl: ralink: rename MT7628(an) functions to MT76X8
+Date:   Wed, 27 Jul 2022 18:11:29 +0200
+Message-Id: <20220727161022.476750720@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
+References: <20220727161021.428340041@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of listing directly properties typical for SPI peripherals,
-reference the spi-peripheral-props.yaml schema.  This allows using all
-properties typical for SPI-connected devices, even these which device
-bindings author did not tried yet.
+From: Arınç ÜNAL <arinc.unal@arinc9.com>
 
-Remove the spi-* properties which now come via spi-peripheral-props.yaml
-schema, except for the cases when device schema adds some constraints
-like maximum frequency.
+[ Upstream commit 150438c86f55989632005b92c94f4aa2ec562ed6 ]
 
-While changing additionalProperties->unevaluatedProperties, put it in
-typical place, just before example DTS.
+The functions that include "MT7628(an)" are for MT7628 and MT7688 SoCs.
+Rename them to MT76X8 to refer to both of the SoCs.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Arınç ÜNAL <arinc.unal@arinc9.com>
+Reviewed-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Acked-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
+Link: https://lore.kernel.org/r/20220414173916.5552-2-arinc.unal@arinc9.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../bindings/iio/potentiometer/microchip,mcp41010.yaml   | 9 +++++----
- .../bindings/iio/potentiometer/microchip,mcp4131.yaml    | 9 +++++----
- 2 files changed, 10 insertions(+), 8 deletions(-)
+ drivers/pinctrl/ralink/pinctrl-mt7620.c | 218 ++++++++++++------------
+ 1 file changed, 109 insertions(+), 109 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/potentiometer/microchip,mcp41010.yaml b/Documentation/devicetree/bindings/iio/potentiometer/microchip,mcp41010.yaml
-index 567697d996ec..87e88f2a9908 100644
---- a/Documentation/devicetree/bindings/iio/potentiometer/microchip,mcp41010.yaml
-+++ b/Documentation/devicetree/bindings/iio/potentiometer/microchip,mcp41010.yaml
-@@ -25,14 +25,15 @@ properties:
-   reg:
-     maxItems: 1
+diff --git a/drivers/pinctrl/ralink/pinctrl-mt7620.c b/drivers/pinctrl/ralink/pinctrl-mt7620.c
+index 6853b5b8b0fe..d3f9feec1f74 100644
+--- a/drivers/pinctrl/ralink/pinctrl-mt7620.c
++++ b/drivers/pinctrl/ralink/pinctrl-mt7620.c
+@@ -112,260 +112,260 @@ static struct rt2880_pmx_group mt7620a_pinmux_data[] = {
+ 	{ 0 }
+ };
  
--  spi-max-frequency: true
--
--additionalProperties: false
--
- required:
-   - compatible
-   - reg
+-static struct rt2880_pmx_func pwm1_grp_mt7628[] = {
++static struct rt2880_pmx_func pwm1_grp_mt76x8[] = {
+ 	FUNC("sdxc d6", 3, 19, 1),
+ 	FUNC("utif", 2, 19, 1),
+ 	FUNC("gpio", 1, 19, 1),
+ 	FUNC("pwm1", 0, 19, 1),
+ };
  
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+
-+unevaluatedProperties: false
-+
- examples:
-   - |
-     spi {
-diff --git a/Documentation/devicetree/bindings/iio/potentiometer/microchip,mcp4131.yaml b/Documentation/devicetree/bindings/iio/potentiometer/microchip,mcp4131.yaml
-index 32e92bced81f..896fe0b5edcc 100644
---- a/Documentation/devicetree/bindings/iio/potentiometer/microchip,mcp4131.yaml
-+++ b/Documentation/devicetree/bindings/iio/potentiometer/microchip,mcp4131.yaml
-@@ -80,14 +80,15 @@ properties:
-   reg:
-     maxItems: 1
+-static struct rt2880_pmx_func pwm0_grp_mt7628[] = {
++static struct rt2880_pmx_func pwm0_grp_mt76x8[] = {
+ 	FUNC("sdxc d7", 3, 18, 1),
+ 	FUNC("utif", 2, 18, 1),
+ 	FUNC("gpio", 1, 18, 1),
+ 	FUNC("pwm0", 0, 18, 1),
+ };
  
--  spi-max-frequency: true
--
--additionalProperties: false
--
- required:
-   - compatible
-   - reg
+-static struct rt2880_pmx_func uart2_grp_mt7628[] = {
++static struct rt2880_pmx_func uart2_grp_mt76x8[] = {
+ 	FUNC("sdxc d5 d4", 3, 20, 2),
+ 	FUNC("pwm", 2, 20, 2),
+ 	FUNC("gpio", 1, 20, 2),
+ 	FUNC("uart2", 0, 20, 2),
+ };
  
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
+-static struct rt2880_pmx_func uart1_grp_mt7628[] = {
++static struct rt2880_pmx_func uart1_grp_mt76x8[] = {
+ 	FUNC("sw_r", 3, 45, 2),
+ 	FUNC("pwm", 2, 45, 2),
+ 	FUNC("gpio", 1, 45, 2),
+ 	FUNC("uart1", 0, 45, 2),
+ };
+ 
+-static struct rt2880_pmx_func i2c_grp_mt7628[] = {
++static struct rt2880_pmx_func i2c_grp_mt76x8[] = {
+ 	FUNC("-", 3, 4, 2),
+ 	FUNC("debug", 2, 4, 2),
+ 	FUNC("gpio", 1, 4, 2),
+ 	FUNC("i2c", 0, 4, 2),
+ };
+ 
+-static struct rt2880_pmx_func refclk_grp_mt7628[] = { FUNC("refclk", 0, 37, 1) };
+-static struct rt2880_pmx_func perst_grp_mt7628[] = { FUNC("perst", 0, 36, 1) };
+-static struct rt2880_pmx_func wdt_grp_mt7628[] = { FUNC("wdt", 0, 38, 1) };
+-static struct rt2880_pmx_func spi_grp_mt7628[] = { FUNC("spi", 0, 7, 4) };
++static struct rt2880_pmx_func refclk_grp_mt76x8[] = { FUNC("refclk", 0, 37, 1) };
++static struct rt2880_pmx_func perst_grp_mt76x8[] = { FUNC("perst", 0, 36, 1) };
++static struct rt2880_pmx_func wdt_grp_mt76x8[] = { FUNC("wdt", 0, 38, 1) };
++static struct rt2880_pmx_func spi_grp_mt76x8[] = { FUNC("spi", 0, 7, 4) };
+ 
+-static struct rt2880_pmx_func sd_mode_grp_mt7628[] = {
++static struct rt2880_pmx_func sd_mode_grp_mt76x8[] = {
+ 	FUNC("jtag", 3, 22, 8),
+ 	FUNC("utif", 2, 22, 8),
+ 	FUNC("gpio", 1, 22, 8),
+ 	FUNC("sdxc", 0, 22, 8),
+ };
+ 
+-static struct rt2880_pmx_func uart0_grp_mt7628[] = {
++static struct rt2880_pmx_func uart0_grp_mt76x8[] = {
+ 	FUNC("-", 3, 12, 2),
+ 	FUNC("-", 2, 12, 2),
+ 	FUNC("gpio", 1, 12, 2),
+ 	FUNC("uart0", 0, 12, 2),
+ };
+ 
+-static struct rt2880_pmx_func i2s_grp_mt7628[] = {
++static struct rt2880_pmx_func i2s_grp_mt76x8[] = {
+ 	FUNC("antenna", 3, 0, 4),
+ 	FUNC("pcm", 2, 0, 4),
+ 	FUNC("gpio", 1, 0, 4),
+ 	FUNC("i2s", 0, 0, 4),
+ };
+ 
+-static struct rt2880_pmx_func spi_cs1_grp_mt7628[] = {
++static struct rt2880_pmx_func spi_cs1_grp_mt76x8[] = {
+ 	FUNC("-", 3, 6, 1),
+ 	FUNC("refclk", 2, 6, 1),
+ 	FUNC("gpio", 1, 6, 1),
+ 	FUNC("spi cs1", 0, 6, 1),
+ };
+ 
+-static struct rt2880_pmx_func spis_grp_mt7628[] = {
++static struct rt2880_pmx_func spis_grp_mt76x8[] = {
+ 	FUNC("pwm_uart2", 3, 14, 4),
+ 	FUNC("utif", 2, 14, 4),
+ 	FUNC("gpio", 1, 14, 4),
+ 	FUNC("spis", 0, 14, 4),
+ };
+ 
+-static struct rt2880_pmx_func gpio_grp_mt7628[] = {
++static struct rt2880_pmx_func gpio_grp_mt76x8[] = {
+ 	FUNC("pcie", 3, 11, 1),
+ 	FUNC("refclk", 2, 11, 1),
+ 	FUNC("gpio", 1, 11, 1),
+ 	FUNC("gpio", 0, 11, 1),
+ };
+ 
+-static struct rt2880_pmx_func p4led_kn_grp_mt7628[] = {
++static struct rt2880_pmx_func p4led_kn_grp_mt76x8[] = {
+ 	FUNC("jtag", 3, 30, 1),
+ 	FUNC("utif", 2, 30, 1),
+ 	FUNC("gpio", 1, 30, 1),
+ 	FUNC("p4led_kn", 0, 30, 1),
+ };
+ 
+-static struct rt2880_pmx_func p3led_kn_grp_mt7628[] = {
++static struct rt2880_pmx_func p3led_kn_grp_mt76x8[] = {
+ 	FUNC("jtag", 3, 31, 1),
+ 	FUNC("utif", 2, 31, 1),
+ 	FUNC("gpio", 1, 31, 1),
+ 	FUNC("p3led_kn", 0, 31, 1),
+ };
+ 
+-static struct rt2880_pmx_func p2led_kn_grp_mt7628[] = {
++static struct rt2880_pmx_func p2led_kn_grp_mt76x8[] = {
+ 	FUNC("jtag", 3, 32, 1),
+ 	FUNC("utif", 2, 32, 1),
+ 	FUNC("gpio", 1, 32, 1),
+ 	FUNC("p2led_kn", 0, 32, 1),
+ };
+ 
+-static struct rt2880_pmx_func p1led_kn_grp_mt7628[] = {
++static struct rt2880_pmx_func p1led_kn_grp_mt76x8[] = {
+ 	FUNC("jtag", 3, 33, 1),
+ 	FUNC("utif", 2, 33, 1),
+ 	FUNC("gpio", 1, 33, 1),
+ 	FUNC("p1led_kn", 0, 33, 1),
+ };
+ 
+-static struct rt2880_pmx_func p0led_kn_grp_mt7628[] = {
++static struct rt2880_pmx_func p0led_kn_grp_mt76x8[] = {
+ 	FUNC("jtag", 3, 34, 1),
+ 	FUNC("rsvd", 2, 34, 1),
+ 	FUNC("gpio", 1, 34, 1),
+ 	FUNC("p0led_kn", 0, 34, 1),
+ };
+ 
+-static struct rt2880_pmx_func wled_kn_grp_mt7628[] = {
++static struct rt2880_pmx_func wled_kn_grp_mt76x8[] = {
+ 	FUNC("rsvd", 3, 35, 1),
+ 	FUNC("rsvd", 2, 35, 1),
+ 	FUNC("gpio", 1, 35, 1),
+ 	FUNC("wled_kn", 0, 35, 1),
+ };
+ 
+-static struct rt2880_pmx_func p4led_an_grp_mt7628[] = {
++static struct rt2880_pmx_func p4led_an_grp_mt76x8[] = {
+ 	FUNC("jtag", 3, 39, 1),
+ 	FUNC("utif", 2, 39, 1),
+ 	FUNC("gpio", 1, 39, 1),
+ 	FUNC("p4led_an", 0, 39, 1),
+ };
+ 
+-static struct rt2880_pmx_func p3led_an_grp_mt7628[] = {
++static struct rt2880_pmx_func p3led_an_grp_mt76x8[] = {
+ 	FUNC("jtag", 3, 40, 1),
+ 	FUNC("utif", 2, 40, 1),
+ 	FUNC("gpio", 1, 40, 1),
+ 	FUNC("p3led_an", 0, 40, 1),
+ };
+ 
+-static struct rt2880_pmx_func p2led_an_grp_mt7628[] = {
++static struct rt2880_pmx_func p2led_an_grp_mt76x8[] = {
+ 	FUNC("jtag", 3, 41, 1),
+ 	FUNC("utif", 2, 41, 1),
+ 	FUNC("gpio", 1, 41, 1),
+ 	FUNC("p2led_an", 0, 41, 1),
+ };
+ 
+-static struct rt2880_pmx_func p1led_an_grp_mt7628[] = {
++static struct rt2880_pmx_func p1led_an_grp_mt76x8[] = {
+ 	FUNC("jtag", 3, 42, 1),
+ 	FUNC("utif", 2, 42, 1),
+ 	FUNC("gpio", 1, 42, 1),
+ 	FUNC("p1led_an", 0, 42, 1),
+ };
+ 
+-static struct rt2880_pmx_func p0led_an_grp_mt7628[] = {
++static struct rt2880_pmx_func p0led_an_grp_mt76x8[] = {
+ 	FUNC("jtag", 3, 43, 1),
+ 	FUNC("rsvd", 2, 43, 1),
+ 	FUNC("gpio", 1, 43, 1),
+ 	FUNC("p0led_an", 0, 43, 1),
+ };
+ 
+-static struct rt2880_pmx_func wled_an_grp_mt7628[] = {
++static struct rt2880_pmx_func wled_an_grp_mt76x8[] = {
+ 	FUNC("rsvd", 3, 44, 1),
+ 	FUNC("rsvd", 2, 44, 1),
+ 	FUNC("gpio", 1, 44, 1),
+ 	FUNC("wled_an", 0, 44, 1),
+ };
+ 
+-#define MT7628_GPIO_MODE_MASK		0x3
+-
+-#define MT7628_GPIO_MODE_P4LED_KN	58
+-#define MT7628_GPIO_MODE_P3LED_KN	56
+-#define MT7628_GPIO_MODE_P2LED_KN	54
+-#define MT7628_GPIO_MODE_P1LED_KN	52
+-#define MT7628_GPIO_MODE_P0LED_KN	50
+-#define MT7628_GPIO_MODE_WLED_KN	48
+-#define MT7628_GPIO_MODE_P4LED_AN	42
+-#define MT7628_GPIO_MODE_P3LED_AN	40
+-#define MT7628_GPIO_MODE_P2LED_AN	38
+-#define MT7628_GPIO_MODE_P1LED_AN	36
+-#define MT7628_GPIO_MODE_P0LED_AN	34
+-#define MT7628_GPIO_MODE_WLED_AN	32
+-#define MT7628_GPIO_MODE_PWM1		30
+-#define MT7628_GPIO_MODE_PWM0		28
+-#define MT7628_GPIO_MODE_UART2		26
+-#define MT7628_GPIO_MODE_UART1		24
+-#define MT7628_GPIO_MODE_I2C		20
+-#define MT7628_GPIO_MODE_REFCLK		18
+-#define MT7628_GPIO_MODE_PERST		16
+-#define MT7628_GPIO_MODE_WDT		14
+-#define MT7628_GPIO_MODE_SPI		12
+-#define MT7628_GPIO_MODE_SDMODE		10
+-#define MT7628_GPIO_MODE_UART0		8
+-#define MT7628_GPIO_MODE_I2S		6
+-#define MT7628_GPIO_MODE_CS1		4
+-#define MT7628_GPIO_MODE_SPIS		2
+-#define MT7628_GPIO_MODE_GPIO		0
+-
+-static struct rt2880_pmx_group mt7628an_pinmux_data[] = {
+-	GRP_G("pwm1", pwm1_grp_mt7628, MT7628_GPIO_MODE_MASK,
+-				1, MT7628_GPIO_MODE_PWM1),
+-	GRP_G("pwm0", pwm0_grp_mt7628, MT7628_GPIO_MODE_MASK,
+-				1, MT7628_GPIO_MODE_PWM0),
+-	GRP_G("uart2", uart2_grp_mt7628, MT7628_GPIO_MODE_MASK,
+-				1, MT7628_GPIO_MODE_UART2),
+-	GRP_G("uart1", uart1_grp_mt7628, MT7628_GPIO_MODE_MASK,
+-				1, MT7628_GPIO_MODE_UART1),
+-	GRP_G("i2c", i2c_grp_mt7628, MT7628_GPIO_MODE_MASK,
+-				1, MT7628_GPIO_MODE_I2C),
+-	GRP("refclk", refclk_grp_mt7628, 1, MT7628_GPIO_MODE_REFCLK),
+-	GRP("perst", perst_grp_mt7628, 1, MT7628_GPIO_MODE_PERST),
+-	GRP("wdt", wdt_grp_mt7628, 1, MT7628_GPIO_MODE_WDT),
+-	GRP("spi", spi_grp_mt7628, 1, MT7628_GPIO_MODE_SPI),
+-	GRP_G("sdmode", sd_mode_grp_mt7628, MT7628_GPIO_MODE_MASK,
+-				1, MT7628_GPIO_MODE_SDMODE),
+-	GRP_G("uart0", uart0_grp_mt7628, MT7628_GPIO_MODE_MASK,
+-				1, MT7628_GPIO_MODE_UART0),
+-	GRP_G("i2s", i2s_grp_mt7628, MT7628_GPIO_MODE_MASK,
+-				1, MT7628_GPIO_MODE_I2S),
+-	GRP_G("spi cs1", spi_cs1_grp_mt7628, MT7628_GPIO_MODE_MASK,
+-				1, MT7628_GPIO_MODE_CS1),
+-	GRP_G("spis", spis_grp_mt7628, MT7628_GPIO_MODE_MASK,
+-				1, MT7628_GPIO_MODE_SPIS),
+-	GRP_G("gpio", gpio_grp_mt7628, MT7628_GPIO_MODE_MASK,
+-				1, MT7628_GPIO_MODE_GPIO),
+-	GRP_G("wled_an", wled_an_grp_mt7628, MT7628_GPIO_MODE_MASK,
+-				1, MT7628_GPIO_MODE_WLED_AN),
+-	GRP_G("p0led_an", p0led_an_grp_mt7628, MT7628_GPIO_MODE_MASK,
+-				1, MT7628_GPIO_MODE_P0LED_AN),
+-	GRP_G("p1led_an", p1led_an_grp_mt7628, MT7628_GPIO_MODE_MASK,
+-				1, MT7628_GPIO_MODE_P1LED_AN),
+-	GRP_G("p2led_an", p2led_an_grp_mt7628, MT7628_GPIO_MODE_MASK,
+-				1, MT7628_GPIO_MODE_P2LED_AN),
+-	GRP_G("p3led_an", p3led_an_grp_mt7628, MT7628_GPIO_MODE_MASK,
+-				1, MT7628_GPIO_MODE_P3LED_AN),
+-	GRP_G("p4led_an", p4led_an_grp_mt7628, MT7628_GPIO_MODE_MASK,
+-				1, MT7628_GPIO_MODE_P4LED_AN),
+-	GRP_G("wled_kn", wled_kn_grp_mt7628, MT7628_GPIO_MODE_MASK,
+-				1, MT7628_GPIO_MODE_WLED_KN),
+-	GRP_G("p0led_kn", p0led_kn_grp_mt7628, MT7628_GPIO_MODE_MASK,
+-				1, MT7628_GPIO_MODE_P0LED_KN),
+-	GRP_G("p1led_kn", p1led_kn_grp_mt7628, MT7628_GPIO_MODE_MASK,
+-				1, MT7628_GPIO_MODE_P1LED_KN),
+-	GRP_G("p2led_kn", p2led_kn_grp_mt7628, MT7628_GPIO_MODE_MASK,
+-				1, MT7628_GPIO_MODE_P2LED_KN),
+-	GRP_G("p3led_kn", p3led_kn_grp_mt7628, MT7628_GPIO_MODE_MASK,
+-				1, MT7628_GPIO_MODE_P3LED_KN),
+-	GRP_G("p4led_kn", p4led_kn_grp_mt7628, MT7628_GPIO_MODE_MASK,
+-				1, MT7628_GPIO_MODE_P4LED_KN),
++#define MT76X8_GPIO_MODE_MASK		0x3
 +
-+unevaluatedProperties: false
++#define MT76X8_GPIO_MODE_P4LED_KN	58
++#define MT76X8_GPIO_MODE_P3LED_KN	56
++#define MT76X8_GPIO_MODE_P2LED_KN	54
++#define MT76X8_GPIO_MODE_P1LED_KN	52
++#define MT76X8_GPIO_MODE_P0LED_KN	50
++#define MT76X8_GPIO_MODE_WLED_KN	48
++#define MT76X8_GPIO_MODE_P4LED_AN	42
++#define MT76X8_GPIO_MODE_P3LED_AN	40
++#define MT76X8_GPIO_MODE_P2LED_AN	38
++#define MT76X8_GPIO_MODE_P1LED_AN	36
++#define MT76X8_GPIO_MODE_P0LED_AN	34
++#define MT76X8_GPIO_MODE_WLED_AN	32
++#define MT76X8_GPIO_MODE_PWM1		30
++#define MT76X8_GPIO_MODE_PWM0		28
++#define MT76X8_GPIO_MODE_UART2		26
++#define MT76X8_GPIO_MODE_UART1		24
++#define MT76X8_GPIO_MODE_I2C		20
++#define MT76X8_GPIO_MODE_REFCLK		18
++#define MT76X8_GPIO_MODE_PERST		16
++#define MT76X8_GPIO_MODE_WDT		14
++#define MT76X8_GPIO_MODE_SPI		12
++#define MT76X8_GPIO_MODE_SDMODE		10
++#define MT76X8_GPIO_MODE_UART0		8
++#define MT76X8_GPIO_MODE_I2S		6
++#define MT76X8_GPIO_MODE_CS1		4
++#define MT76X8_GPIO_MODE_SPIS		2
++#define MT76X8_GPIO_MODE_GPIO		0
 +
- examples:
-   - |
-     spi {
++static struct rt2880_pmx_group mt76x8_pinmux_data[] = {
++	GRP_G("pwm1", pwm1_grp_mt76x8, MT76X8_GPIO_MODE_MASK,
++				1, MT76X8_GPIO_MODE_PWM1),
++	GRP_G("pwm0", pwm0_grp_mt76x8, MT76X8_GPIO_MODE_MASK,
++				1, MT76X8_GPIO_MODE_PWM0),
++	GRP_G("uart2", uart2_grp_mt76x8, MT76X8_GPIO_MODE_MASK,
++				1, MT76X8_GPIO_MODE_UART2),
++	GRP_G("uart1", uart1_grp_mt76x8, MT76X8_GPIO_MODE_MASK,
++				1, MT76X8_GPIO_MODE_UART1),
++	GRP_G("i2c", i2c_grp_mt76x8, MT76X8_GPIO_MODE_MASK,
++				1, MT76X8_GPIO_MODE_I2C),
++	GRP("refclk", refclk_grp_mt76x8, 1, MT76X8_GPIO_MODE_REFCLK),
++	GRP("perst", perst_grp_mt76x8, 1, MT76X8_GPIO_MODE_PERST),
++	GRP("wdt", wdt_grp_mt76x8, 1, MT76X8_GPIO_MODE_WDT),
++	GRP("spi", spi_grp_mt76x8, 1, MT76X8_GPIO_MODE_SPI),
++	GRP_G("sdmode", sd_mode_grp_mt76x8, MT76X8_GPIO_MODE_MASK,
++				1, MT76X8_GPIO_MODE_SDMODE),
++	GRP_G("uart0", uart0_grp_mt76x8, MT76X8_GPIO_MODE_MASK,
++				1, MT76X8_GPIO_MODE_UART0),
++	GRP_G("i2s", i2s_grp_mt76x8, MT76X8_GPIO_MODE_MASK,
++				1, MT76X8_GPIO_MODE_I2S),
++	GRP_G("spi cs1", spi_cs1_grp_mt76x8, MT76X8_GPIO_MODE_MASK,
++				1, MT76X8_GPIO_MODE_CS1),
++	GRP_G("spis", spis_grp_mt76x8, MT76X8_GPIO_MODE_MASK,
++				1, MT76X8_GPIO_MODE_SPIS),
++	GRP_G("gpio", gpio_grp_mt76x8, MT76X8_GPIO_MODE_MASK,
++				1, MT76X8_GPIO_MODE_GPIO),
++	GRP_G("wled_an", wled_an_grp_mt76x8, MT76X8_GPIO_MODE_MASK,
++				1, MT76X8_GPIO_MODE_WLED_AN),
++	GRP_G("p0led_an", p0led_an_grp_mt76x8, MT76X8_GPIO_MODE_MASK,
++				1, MT76X8_GPIO_MODE_P0LED_AN),
++	GRP_G("p1led_an", p1led_an_grp_mt76x8, MT76X8_GPIO_MODE_MASK,
++				1, MT76X8_GPIO_MODE_P1LED_AN),
++	GRP_G("p2led_an", p2led_an_grp_mt76x8, MT76X8_GPIO_MODE_MASK,
++				1, MT76X8_GPIO_MODE_P2LED_AN),
++	GRP_G("p3led_an", p3led_an_grp_mt76x8, MT76X8_GPIO_MODE_MASK,
++				1, MT76X8_GPIO_MODE_P3LED_AN),
++	GRP_G("p4led_an", p4led_an_grp_mt76x8, MT76X8_GPIO_MODE_MASK,
++				1, MT76X8_GPIO_MODE_P4LED_AN),
++	GRP_G("wled_kn", wled_kn_grp_mt76x8, MT76X8_GPIO_MODE_MASK,
++				1, MT76X8_GPIO_MODE_WLED_KN),
++	GRP_G("p0led_kn", p0led_kn_grp_mt76x8, MT76X8_GPIO_MODE_MASK,
++				1, MT76X8_GPIO_MODE_P0LED_KN),
++	GRP_G("p1led_kn", p1led_kn_grp_mt76x8, MT76X8_GPIO_MODE_MASK,
++				1, MT76X8_GPIO_MODE_P1LED_KN),
++	GRP_G("p2led_kn", p2led_kn_grp_mt76x8, MT76X8_GPIO_MODE_MASK,
++				1, MT76X8_GPIO_MODE_P2LED_KN),
++	GRP_G("p3led_kn", p3led_kn_grp_mt76x8, MT76X8_GPIO_MODE_MASK,
++				1, MT76X8_GPIO_MODE_P3LED_KN),
++	GRP_G("p4led_kn", p4led_kn_grp_mt76x8, MT76X8_GPIO_MODE_MASK,
++				1, MT76X8_GPIO_MODE_P4LED_KN),
+ 	{ 0 }
+ };
+ 
+ static int mt7620_pinmux_probe(struct platform_device *pdev)
+ {
+ 	if (is_mt76x8())
+-		return rt2880_pinmux_init(pdev, mt7628an_pinmux_data);
++		return rt2880_pinmux_init(pdev, mt76x8_pinmux_data);
+ 	else
+ 		return rt2880_pinmux_init(pdev, mt7620a_pinmux_data);
+ }
 -- 
-2.34.1
+2.35.1
+
+
 
