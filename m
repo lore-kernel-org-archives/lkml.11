@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37798C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:46:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0842C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:46:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237968AbiG0Qqa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:46:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44908 "EHLO
+        id S240452AbiG0Qqp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:46:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240292AbiG0Qp1 (ORCPT
+        with ESMTP id S240375AbiG0Qpr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:45:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 318455F9B8;
-        Wed, 27 Jul 2022 09:31:30 -0700 (PDT)
+        Wed, 27 Jul 2022 12:45:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D020B5FADC;
+        Wed, 27 Jul 2022 09:31:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B7D4D61A39;
-        Wed, 27 Jul 2022 16:31:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E7D0C433D6;
-        Wed, 27 Jul 2022 16:31:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4131BB821BB;
+        Wed, 27 Jul 2022 16:31:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99EB0C433D6;
+        Wed, 27 Jul 2022 16:31:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939489;
-        bh=TX+Sdx7vNb92kNhrkYvV7Qs/pncP26B1lxcQyV/riF4=;
+        s=korg; t=1658939492;
+        bh=nUv+h/EUkaR55wIdNw5/QvZ3wmR8Hsx3O2sYlliQHDY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wpc5UJCw3JgZl678cP6ICwNIUiLNcP5IlhW+YtpW8zvr8L6iTksLKCMoM77MwPrDH
-         EBzYg4k8g8mNtCoQYfzKTHpPTTCs1SufTfEVaow8yetEDAwKaIx/VrAF5xVFN07+FJ
-         z6NFIujv/tbDvhbrtIJp48ag7s4EGA2Dvkp/b3KU=
+        b=2lIZp4rOsfCOJYUkfXlF2HztJQL01HWtHKNhS29PQojH258rZ6OQEjjXkD2TefhD8
+         P5wPGdUb6g2EgGZJqfcqS+Nn3863MdyoLbiJ25/lolg/BPgvF862MWnfhPjaL4ntgP
+         HlFwl5jqRN2AMCNDxkqzxCjGUGpyeIz9d0/88Km8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paul Menzel <pmenzel@molgen.mpg.de>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Subject: [PATCH 5.4 80/87] Bluetooth: Fix bt_skb_sendmmsg not allocating partial chunks
-Date:   Wed, 27 Jul 2022 18:11:13 +0200
-Message-Id: <20220727161012.318635744@linuxfoundation.org>
+        stable@vger.kernel.org, Vladimir Zapolskiy <vz@mleia.com>,
+        Johan Hovold <johan@kernel.org>, Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH 5.4 81/87] tty: drivers/tty/, stop using tty_schedule_flip()
+Date:   Wed, 27 Jul 2022 18:11:14 +0200
+Message-Id: <20220727161012.352211572@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161008.993711844@linuxfoundation.org>
 References: <20220727161008.993711844@linuxfoundation.org>
@@ -50,38 +48,139 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+From: Jiri Slaby <jslaby@suse.cz>
 
-commit 29fb608396d6a62c1b85acc421ad7a4399085b9f upstream.
+commit 5f6a85158ccacc3f09744b3aafe8b11ab3b6c6f6 upstream.
 
-Since bt_skb_sendmmsg can be used with the likes of SOCK_STREAM it
-shall return the partial chunks it could allocate instead of freeing
-everything as otherwise it can cause problems like bellow.
+Since commit a9c3f68f3cd8d (tty: Fix low_latency BUG) in 2014,
+tty_flip_buffer_push() is only a wrapper to tty_schedule_flip(). We are
+going to remove the latter (as it is used less), so call the former in
+drivers/tty/.
 
-Fixes: 81be03e026dc ("Bluetooth: RFCOMM: Replace use of memcpy_from_msg with bt_skb_sendmmsg")
-Reported-by: Paul Menzel <pmenzel@molgen.mpg.de>
-Link: https://lore.kernel.org/r/d7206e12-1b99-c3be-84f4-df22af427ef5@molgen.mpg.de
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215594
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Tested-by: Paul Menzel <pmenzel@molgen.mpg.de> (Nokia N9 (MeeGo/Harmattan)
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
-Cc: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Cc: Vladimir Zapolskiy <vz@mleia.com>
+Reviewed-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Link: https://lore.kernel.org/r/20211122111648.30379-2-jslaby@suse.cz
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/bluetooth/bluetooth.h |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/tty/cyclades.c          |    6 +++---
+ drivers/tty/goldfish.c          |    2 +-
+ drivers/tty/moxa.c              |    4 ++--
+ drivers/tty/serial/lpc32xx_hs.c |    2 +-
+ drivers/tty/vt/keyboard.c       |    6 +++---
+ drivers/tty/vt/vt.c             |    2 +-
+ 6 files changed, 11 insertions(+), 11 deletions(-)
 
---- a/include/net/bluetooth/bluetooth.h
-+++ b/include/net/bluetooth/bluetooth.h
-@@ -423,8 +423,7 @@ static inline struct sk_buff *bt_skb_sen
- 
- 		tmp = bt_skb_sendmsg(sk, msg, len, mtu, headroom, tailroom);
- 		if (IS_ERR(tmp)) {
--			kfree_skb(skb);
--			return tmp;
-+			return skb;
+--- a/drivers/tty/cyclades.c
++++ b/drivers/tty/cyclades.c
+@@ -556,7 +556,7 @@ static void cyy_chip_rx(struct cyclades_
  		}
+ 		info->idle_stats.recv_idle = jiffies;
+ 	}
+-	tty_schedule_flip(port);
++	tty_flip_buffer_push(port);
  
- 		len -= tmp->len;
+ 	/* end of service */
+ 	cyy_writeb(info, CyRIR, save_xir & 0x3f);
+@@ -996,7 +996,7 @@ static void cyz_handle_rx(struct cyclade
+ 		mod_timer(&info->rx_full_timer, jiffies + 1);
+ #endif
+ 	info->idle_stats.recv_idle = jiffies;
+-	tty_schedule_flip(&info->port);
++	tty_flip_buffer_push(&info->port);
+ 
+ 	/* Update rx_get */
+ 	cy_writel(&buf_ctrl->rx_get, new_rx_get);
+@@ -1172,7 +1172,7 @@ static void cyz_handle_cmd(struct cyclad
+ 		if (delta_count)
+ 			wake_up_interruptible(&info->port.delta_msr_wait);
+ 		if (special_count)
+-			tty_schedule_flip(&info->port);
++			tty_flip_buffer_push(&info->port);
+ 	}
+ }
+ 
+--- a/drivers/tty/goldfish.c
++++ b/drivers/tty/goldfish.c
+@@ -151,7 +151,7 @@ static irqreturn_t goldfish_tty_interrup
+ 	address = (unsigned long)(void *)buf;
+ 	goldfish_tty_rw(qtty, address, count, 0);
+ 
+-	tty_schedule_flip(&qtty->port);
++	tty_flip_buffer_push(&qtty->port);
+ 	return IRQ_HANDLED;
+ }
+ 
+--- a/drivers/tty/moxa.c
++++ b/drivers/tty/moxa.c
+@@ -1385,7 +1385,7 @@ static int moxa_poll_port(struct moxa_po
+ 		if (inited && !tty_throttled(tty) &&
+ 				MoxaPortRxQueue(p) > 0) { /* RX */
+ 			MoxaPortReadData(p);
+-			tty_schedule_flip(&p->port);
++			tty_flip_buffer_push(&p->port);
+ 		}
+ 	} else {
+ 		clear_bit(EMPTYWAIT, &p->statusflags);
+@@ -1410,7 +1410,7 @@ static int moxa_poll_port(struct moxa_po
+ 
+ 	if (tty && (intr & IntrBreak) && !I_IGNBRK(tty)) { /* BREAK */
+ 		tty_insert_flip_char(&p->port, 0, TTY_BREAK);
+-		tty_schedule_flip(&p->port);
++		tty_flip_buffer_push(&p->port);
+ 	}
+ 
+ 	if (intr & IntrLine)
+--- a/drivers/tty/serial/lpc32xx_hs.c
++++ b/drivers/tty/serial/lpc32xx_hs.c
+@@ -345,7 +345,7 @@ static irqreturn_t serial_lpc32xx_interr
+ 		       LPC32XX_HSUART_IIR(port->membase));
+ 		port->icount.overrun++;
+ 		tty_insert_flip_char(tport, 0, TTY_OVERRUN);
+-		tty_schedule_flip(tport);
++		tty_flip_buffer_push(tport);
+ 	}
+ 
+ 	/* Data received? */
+--- a/drivers/tty/vt/keyboard.c
++++ b/drivers/tty/vt/keyboard.c
+@@ -310,7 +310,7 @@ int kbd_rate(struct kbd_repeat *rpt)
+ static void put_queue(struct vc_data *vc, int ch)
+ {
+ 	tty_insert_flip_char(&vc->port, ch, 0);
+-	tty_schedule_flip(&vc->port);
++	tty_flip_buffer_push(&vc->port);
+ }
+ 
+ static void puts_queue(struct vc_data *vc, char *cp)
+@@ -319,7 +319,7 @@ static void puts_queue(struct vc_data *v
+ 		tty_insert_flip_char(&vc->port, *cp, 0);
+ 		cp++;
+ 	}
+-	tty_schedule_flip(&vc->port);
++	tty_flip_buffer_push(&vc->port);
+ }
+ 
+ static void applkey(struct vc_data *vc, int key, char mode)
+@@ -564,7 +564,7 @@ static void fn_inc_console(struct vc_dat
+ static void fn_send_intr(struct vc_data *vc)
+ {
+ 	tty_insert_flip_char(&vc->port, 0, TTY_BREAK);
+-	tty_schedule_flip(&vc->port);
++	tty_flip_buffer_push(&vc->port);
+ }
+ 
+ static void fn_scroll_forw(struct vc_data *vc)
+--- a/drivers/tty/vt/vt.c
++++ b/drivers/tty/vt/vt.c
+@@ -1837,7 +1837,7 @@ static void respond_string(const char *p
+ 		tty_insert_flip_char(port, *p, 0);
+ 		p++;
+ 	}
+-	tty_schedule_flip(port);
++	tty_flip_buffer_push(port);
+ }
+ 
+ static void cursor_report(struct vc_data *vc, struct tty_struct *tty)
 
 
