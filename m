@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8460C19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:43:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A689C19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:43:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242790AbiG0RnK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:43:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42570 "EHLO
+        id S242976AbiG0RnQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:43:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242786AbiG0Rmp (ORCPT
+        with ESMTP id S242910AbiG0Rmr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:42:45 -0400
+        Wed, 27 Jul 2022 13:42:47 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B74089A99;
-        Wed, 27 Jul 2022 09:52:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B7FF54ACA;
+        Wed, 27 Jul 2022 09:52:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 08B6EB821D5;
-        Wed, 27 Jul 2022 16:52:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BBCDC433C1;
-        Wed, 27 Jul 2022 16:52:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7DB1CB821D4;
+        Wed, 27 Jul 2022 16:52:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBCB1C433C1;
+        Wed, 27 Jul 2022 16:52:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940725;
-        bh=S8MbOHpDXGviGRD/I1+/w6TY0TLAHiwFdOgvISSGvt0=;
+        s=korg; t=1658940731;
+        bh=W/HHsRq2sC87P8Jl6L/qDVBFwjJgLDL+rERMXNdKZ0E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OK2qT3q3LnEzligtTI7AKM8MVYofjTVAunNOgKAibBB3bydtnvxapwL6+GY0FOLbJ
-         IUl5uIgFt910l+DHe2BNciYlEapAmmkiiWQEYXJTdBVbR9lKa8DV72R/O1dop8qzG8
-         K9qNA8L6MbcPF0yMuYj7JTKSROVza6TrVYBhCq5Y=
+        b=or/Y+9hG4ZTKz4NPsfuENi0KzFrBYEJkivuagANuG9iNOAyG/dg7XcKvAhCWN2kEp
+         x5Fc4DVOCbbI85JyRftd09j0BMfdEqIfo8FI5o+GuhPcSoqeBHe2GGaq1m/Mlt8Mp3
+         UULdzwZlLIxG70qyWqT9SPi855HTUhY8TM9NOU00=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Oz Shlomo <ozsh@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>,
+        Baowen Zheng <baowen.zheng@corigine.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 099/158] net: dsa: sja1105: silent spi_device_id warnings
-Date:   Wed, 27 Jul 2022 18:12:43 +0200
-Message-Id: <20220727161025.419040793@linuxfoundation.org>
+Subject: [PATCH 5.18 127/158] net/sched: cls_api: Fix flow action initialization
+Date:   Wed, 27 Jul 2022 18:13:11 +0200
+Message-Id: <20220727161026.492887422@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -51,66 +51,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oleksij Rempel <o.rempel@pengutronix.de>
+From: Oz Shlomo <ozsh@nvidia.com>
 
-[ Upstream commit 855fe49984a8a3899f07ae1d149d46cd8d4acb52 ]
+[ Upstream commit c0f47c2822aadeb8b2829f3e4c3792f184c7be33 ]
 
-Add spi_device_id entries to silent following warnings:
- SPI driver sja1105 has no spi_device_id for nxp,sja1105e
- SPI driver sja1105 has no spi_device_id for nxp,sja1105t
- SPI driver sja1105 has no spi_device_id for nxp,sja1105p
- SPI driver sja1105 has no spi_device_id for nxp,sja1105q
- SPI driver sja1105 has no spi_device_id for nxp,sja1105r
- SPI driver sja1105 has no spi_device_id for nxp,sja1105s
- SPI driver sja1105 has no spi_device_id for nxp,sja1110a
- SPI driver sja1105 has no spi_device_id for nxp,sja1110b
- SPI driver sja1105 has no spi_device_id for nxp,sja1110c
- SPI driver sja1105 has no spi_device_id for nxp,sja1110d
+The cited commit refactored the flow action initialization sequence to
+use an interface method when translating tc action instances to flow
+offload objects. The refactored version skips the initialization of the
+generic flow action attributes for tc actions, such as pedit, that allocate
+more than one offload entry. This can cause potential issues for drivers
+mapping flow action ids.
 
-Fixes: 5fa6863ba692 ("spi: Check we have a spi_device_id for each DT compatible")
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20220717135831.2492844-1-o.rempel@pengutronix.de
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Populate the generic flow action fields for all the flow action entries.
+
+Fixes: c54e1d920f04 ("flow_offload: add ops to tc_action_ops for flow action setup")
+Signed-off-by: Oz Shlomo <ozsh@nvidia.com>
+Reviewed-by: Roi Dayan <roid@nvidia.com>
+
+----
+v1 -> v2:
+ - coalese the generic flow action fields initialization to a single loop
+Reviewed-by: Baowen Zheng <baowen.zheng@corigine.com>
+
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/sja1105/sja1105_main.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ net/sched/cls_api.c | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index b33841c6507a..7734c6b1baca 100644
---- a/drivers/net/dsa/sja1105/sja1105_main.c
-+++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -3383,12 +3383,28 @@ static const struct of_device_id sja1105_dt_ids[] = {
- };
- MODULE_DEVICE_TABLE(of, sja1105_dt_ids);
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index 2d4dc1468a9a..6fd33c75d6bb 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -3531,7 +3531,7 @@ int tc_setup_action(struct flow_action *flow_action,
+ 		    struct tc_action *actions[],
+ 		    struct netlink_ext_ack *extack)
+ {
+-	int i, j, index, err = 0;
++	int i, j, k, index, err = 0;
+ 	struct tc_action *act;
  
-+static const struct spi_device_id sja1105_spi_ids[] = {
-+	{ "sja1105e" },
-+	{ "sja1105t" },
-+	{ "sja1105p" },
-+	{ "sja1105q" },
-+	{ "sja1105r" },
-+	{ "sja1105s" },
-+	{ "sja1110a" },
-+	{ "sja1110b" },
-+	{ "sja1110c" },
-+	{ "sja1110d" },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(spi, sja1105_spi_ids);
+ 	BUILD_BUG_ON(TCA_ACT_HW_STATS_ANY != FLOW_ACTION_HW_STATS_ANY);
+@@ -3551,14 +3551,18 @@ int tc_setup_action(struct flow_action *flow_action,
+ 		if (err)
+ 			goto err_out_locked;
+ 
+-		entry->hw_stats = tc_act_hw_stats(act->hw_stats);
+-		entry->hw_index = act->tcfa_index;
+ 		index = 0;
+ 		err = tc_setup_offload_act(act, entry, &index, extack);
+-		if (!err)
+-			j += index;
+-		else
++		if (err)
+ 			goto err_out_locked;
 +
- static struct spi_driver sja1105_driver = {
- 	.driver = {
- 		.name  = "sja1105",
- 		.owner = THIS_MODULE,
- 		.of_match_table = of_match_ptr(sja1105_dt_ids),
- 	},
-+	.id_table = sja1105_spi_ids,
- 	.probe  = sja1105_probe,
- 	.remove = sja1105_remove,
- 	.shutdown = sja1105_shutdown,
++		for (k = 0; k < index ; k++) {
++			entry[k].hw_stats = tc_act_hw_stats(act->hw_stats);
++			entry[k].hw_index = act->tcfa_index;
++		}
++
++		j += index;
++
+ 		spin_unlock_bh(&act->tcfa_lock);
+ 	}
+ 
 -- 
 2.35.1
 
