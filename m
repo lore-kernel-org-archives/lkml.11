@@ -2,49 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DBF0C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:27:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F23AAC19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:27:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242106AbiG0R1T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:27:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58418 "EHLO
+        id S229587AbiG0R1Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:27:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242070AbiG0R06 (ORCPT
+        with ESMTP id S242117AbiG0R07 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:26:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 508FF7E312;
-        Wed, 27 Jul 2022 09:46:53 -0700 (PDT)
+        Wed, 27 Jul 2022 13:26:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 090905FAE6;
+        Wed, 27 Jul 2022 09:46:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B7547600BE;
-        Wed, 27 Jul 2022 16:46:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C318EC433C1;
-        Wed, 27 Jul 2022 16:46:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1C6B3B821AC;
+        Wed, 27 Jul 2022 16:46:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FF9DC433D7;
+        Wed, 27 Jul 2022 16:46:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940394;
-        bh=9lAlWYIreBqMVyYbmM7NsAPiX5t/podqVbEtNIGuWOU=;
+        s=korg; t=1658940410;
+        bh=ZhxdM7jcjpWARpoyc/iCo1myCVH6FRG8l2e//X3LXSM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nt29/CD3lMsOaC7XQ01+TL2DCw64rgEuOx4FArQC+mjNUqeC3gyXZWfPQ31doaZ73
-         0/RvGjA2IJujX32jsSgE1raeKZdhcLLzNxwD6mdg3lBjlaP2k65o2IyhCE8hPGkgqR
-         DRjtPLvZVdj8xlCuYqK/T/+uOuaoFuCqMAVD1UAQ=
+        b=VcYfgtcN+1Ek6uiyg0NNpnUbvoYLZ14G/S025CTm6TWxkyXxs8H/QxWL4XqiH0NKQ
+         r5nZUyeZC2Y7yrunX0Oy08rmofcoyvb6zz3iJtAl/u9XXYGhO7o2f/qRuS29+zgW4M
+         h7XnPfpD85X0LEf203+99f5A13+e40ZJVkqc4XHk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ingo Molnar <mingo@redhat.com>,
-        Baik Song An <bsahn@etri.re.kr>,
-        Hong Yeon Kim <kimhy@etri.re.kr>,
-        Taeung Song <taeung@reallinux.co.kr>, linuxgeek@linuxgeek.io,
-        Wonhyuk Yang <vvghjk1234@gmail.com>,
-        "Steven Rostedt (Google)" <rostedt@goodmis.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 171/201] tracing: Fix return value of trace_pid_write()
-Date:   Wed, 27 Jul 2022 18:11:15 +0200
-Message-Id: <20220727161034.910245226@linuxfoundation.org>
+        Jeffrey Hugo <quic_jhugo@quicinc.com>,
+        Dexuan Cui <decui@microsoft.com>, Wei Liu <wei.liu@kernel.org>,
+        Carl Vanderlip <quic_carlv@quicinc.com>
+Subject: [PATCH 5.18 014/158] PCI: hv: Fix multi-MSI to allow more than one MSI vector
+Date:   Wed, 27 Jul 2022 18:11:18 +0200
+Message-Id: <20220727161022.034016477@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
-References: <20220727161026.977588183@linuxfoundation.org>
+In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
+References: <20220727161021.428340041@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,84 +49,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wonhyuk Yang <vvghjk1234@gmail.com>
+From: Jeffrey Hugo <quic_jhugo@quicinc.com>
 
-[ Upstream commit b27f266f74fbda4ee36c2b2b04d15992860cf23b ]
+[ upstream change 08e61e861a0e47e5e1a3fb78406afd6b0cea6b6d ]
 
-Setting set_event_pid with trailing whitespace lead to endless write
-system calls like below.
+If the allocation of multiple MSI vectors for multi-MSI fails in the core
+PCI framework, the framework will retry the allocation as a single MSI
+vector, assuming that meets the min_vecs specified by the requesting
+driver.
 
-    $ strace echo "123 " > /sys/kernel/debug/tracing/set_event_pid
-    execve("/usr/bin/echo", ["echo", "123 "], ...) = 0
-    ...
-    write(1, "123 \n", 5)                   = 4
-    write(1, "\n", 1)                       = 0
-    write(1, "\n", 1)                       = 0
-    write(1, "\n", 1)                       = 0
-    write(1, "\n", 1)                       = 0
-    write(1, "\n", 1)                       = 0
-    ....
+Hyper-V advertises that multi-MSI is supported, but reuses the VECTOR
+domain to implement that for x86.  The VECTOR domain does not support
+multi-MSI, so the alloc will always fail and fallback to a single MSI
+allocation.
 
-This is because, the result of trace_get_user's are not returned when it
-read at least one pid. To fix it, update read variable even if
-parser->idx == 0.
+In short, Hyper-V advertises a capability it does not implement.
 
-The result of applied patch is below.
+Hyper-V can support multi-MSI because it coordinates with the hypervisor
+to map the MSIs in the IOMMU's interrupt remapper, which is something the
+VECTOR domain does not have.  Therefore the fix is simple - copy what the
+x86 IOMMU drivers (AMD/Intel-IR) do by removing
+X86_IRQ_ALLOC_CONTIGUOUS_VECTORS after calling the VECTOR domain's
+pci_msi_prepare().
 
-    $ strace echo "123 " > /sys/kernel/debug/tracing/set_event_pid
-    execve("/usr/bin/echo", ["echo", "123 "], ...) = 0
-    ...
-    write(1, "123 \n", 5)                   = 5
-    close(1)                                = 0
-
-Link: https://lkml.kernel.org/r/20220503050546.288911-1-vvghjk1234@gmail.com
-
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Baik Song An <bsahn@etri.re.kr>
-Cc: Hong Yeon Kim <kimhy@etri.re.kr>
-Cc: Taeung Song <taeung@reallinux.co.kr>
-Cc: linuxgeek@linuxgeek.io
-Cc: stable@vger.kernel.org
-Fixes: 4909010788640 ("tracing: Add set_event_pid directory for future use")
-Signed-off-by: Wonhyuk Yang <vvghjk1234@gmail.com>
-Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 4daace0d8ce8 ("PCI: hv: Add paravirtual PCI front-end for Microsoft Hyper-V VMs")
+Signed-off-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
+Reviewed-by: Dexuan Cui <decui@microsoft.com>
+Link: https://lore.kernel.org/r/1649856981-14649-1-git-send-email-quic_jhugo@quicinc.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Signed-off-by: Carl Vanderlip <quic_carlv@quicinc.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/trace/trace.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/pci/controller/pci-hyperv.c |   11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-index abbe8489faae..d93f9c59f50e 100644
---- a/kernel/trace/trace.c
-+++ b/kernel/trace/trace.c
-@@ -711,13 +711,16 @@ int trace_pid_write(struct trace_pid_list *filtered_pids,
- 		pos = 0;
- 
- 		ret = trace_get_user(&parser, ubuf, cnt, &pos);
--		if (ret < 0 || !trace_parser_loaded(&parser))
-+		if (ret < 0)
- 			break;
- 
- 		read += ret;
- 		ubuf += ret;
- 		cnt -= ret;
- 
-+		if (!trace_parser_loaded(&parser))
-+			break;
+--- a/drivers/pci/controller/pci-hyperv.c
++++ b/drivers/pci/controller/pci-hyperv.c
+@@ -614,7 +614,16 @@ static void hv_set_msi_entry_from_desc(u
+ static int hv_msi_prepare(struct irq_domain *domain, struct device *dev,
+ 			  int nvec, msi_alloc_info_t *info)
+ {
+-	return pci_msi_prepare(domain, dev, nvec, info);
++	int ret = pci_msi_prepare(domain, dev, nvec, info);
 +
- 		ret = -EINVAL;
- 		if (kstrtoul(parser.buffer, 0, &val))
- 			break;
-@@ -743,7 +746,6 @@ int trace_pid_write(struct trace_pid_list *filtered_pids,
- 	if (!nr_pids) {
- 		/* Cleared the list of pids */
- 		trace_pid_list_free(pid_list);
--		read = ret;
- 		pid_list = NULL;
- 	}
++	/*
++	 * By using the interrupt remapper in the hypervisor IOMMU, contiguous
++	 * CPU vectors is not needed for multi-MSI
++	 */
++	if (info->type == X86_IRQ_ALLOC_TYPE_PCI_MSI)
++		info->flags &= ~X86_IRQ_ALLOC_CONTIGUOUS_VECTORS;
++
++	return ret;
+ }
  
--- 
-2.35.1
-
+ /**
 
 
