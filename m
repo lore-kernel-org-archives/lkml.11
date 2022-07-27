@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC51FC19F28
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:55:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57FA1C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:55:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241085AbiG0Qzo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:55:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58010 "EHLO
+        id S240830AbiG0Qzq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:55:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241060AbiG0QyQ (ORCPT
+        with ESMTP id S241090AbiG0QyT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:54:16 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 724CD4D4F6;
-        Wed, 27 Jul 2022 09:35:27 -0700 (PDT)
+        Wed, 27 Jul 2022 12:54:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3B38550A5;
+        Wed, 27 Jul 2022 09:35:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 99452CE22F9;
-        Wed, 27 Jul 2022 16:35:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75244C4314D;
-        Wed, 27 Jul 2022 16:35:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1FBCC61A3F;
+        Wed, 27 Jul 2022 16:35:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D90FC433C1;
+        Wed, 27 Jul 2022 16:35:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939723;
-        bh=UPIv0T6nDo9e/uQ8ZM73NKvPM2cdoZv0Mwp+teEI3Fw=;
+        s=korg; t=1658939729;
+        bh=0Jadx+C+a0mw1bHyeJzABIsob/Z/w1uORvsOwJChtE4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h8kNwdwTepu2jRi6oeu0bM9NeYY59vcmascRBnQxavGNN1ObuGppk3+EVTrwwwaQ+
-         4gy5paW6KeuaSvKyej/ZmCXHhAMF5UfWQkNEico7xdCgfqOCJSZl65T9vf9wMA0Uu/
-         easgtGn1uK4ElJu1UqxzGogfdxyQdED5Kxlj4faU=
+        b=op31ULRHTz29ivwFoE5NSwxou32c3c6nvdy3bfUj6iDs0NCBvVBEfoDK2+GxC3CB7
+         sl20hZS5DHVcRxSXGEKbNYH5q4ZXs2dthZgrntjHrwR8mRV/9JWsZ69/z6YI3Q+ga9
+         EUIdOQTIKhiyT6xucxEDIIzuxI1GiY+wlG4AErqY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Juri Lelli <juri.lelli@redhat.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Subject: [PATCH 5.10 081/105] sched/deadline: Fix BUG_ON condition for deboosted tasks
-Date:   Wed, 27 Jul 2022 18:11:07 +0200
-Message-Id: <20220727161015.341956303@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Subject: [PATCH 5.10 082/105] x86/bugs: Warn when "ibrs" mitigation is selected on Enhanced IBRS parts
+Date:   Wed, 27 Jul 2022 18:11:08 +0200
+Message-Id: <20220727161015.389362802@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161012.056867467@linuxfoundation.org>
 References: <20220727161012.056867467@linuxfoundation.org>
@@ -48,45 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juri Lelli <juri.lelli@redhat.com>
+From: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
 
-commit ddfc710395cccc61247348df9eb18ea50321cbed upstream.
+commit eb23b5ef9131e6d65011de349a4d25ef1b3d4314 upstream.
 
-Tasks the are being deboosted from SCHED_DEADLINE might enter
-enqueue_task_dl() one last time and hit an erroneous BUG_ON condition:
-since they are not boosted anymore, the if (is_dl_boosted()) branch is
-not taken, but the else if (!dl_prio) is and inside this one we
-BUG_ON(!is_dl_boosted), which is of course false (BUG_ON triggered)
-otherwise we had entered the if branch above. Long story short, the
-current condition doesn't make sense and always leads to triggering of a
-BUG.
+IBRS mitigation for spectre_v2 forces write to MSR_IA32_SPEC_CTRL at
+every kernel entry/exit. On Enhanced IBRS parts setting
+MSR_IA32_SPEC_CTRL[IBRS] only once at boot is sufficient. MSR writes at
+every kernel entry/exit incur unnecessary performance loss.
 
-Fix this by only checking enqueue flags, properly: ENQUEUE_REPLENISH has
-to be present, but additional flags are not a problem.
+When Enhanced IBRS feature is present, print a warning about this
+unnecessary performance loss.
 
-Fixes: 64be6f1f5f71 ("sched/deadline: Don't replenish from a !SCHED_DEADLINE entity")
-Signed-off-by: Juri Lelli <juri.lelli@redhat.com>
+Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Cc: stable@vger.kernel.org
-Link: https://lkml.kernel.org/r/20220714151908.533052-1-juri.lelli@redhat.com
+Link: https://lore.kernel.org/r/2a5eaf54583c2bfe0edc4fea64006656256cca17.1657814857.git.pawan.kumar.gupta@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/sched/deadline.c |    5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ arch/x86/kernel/cpu/bugs.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/kernel/sched/deadline.c
-+++ b/kernel/sched/deadline.c
-@@ -1563,7 +1563,10 @@ static void enqueue_task_dl(struct rq *r
- 		 * the throttle.
- 		 */
- 		p->dl.dl_throttled = 0;
--		BUG_ON(!is_dl_boosted(&p->dl) || flags != ENQUEUE_REPLENISH);
-+		if (!(flags & ENQUEUE_REPLENISH))
-+			printk_deferred_once("sched: DL de-boosted task PID %d: REPLENISH flag missing\n",
-+					     task_pid_nr(p));
-+
- 		return;
- 	}
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -931,6 +931,7 @@ static inline const char *spectre_v2_mod
+ #define SPECTRE_V2_LFENCE_MSG "WARNING: LFENCE mitigation is not recommended for this CPU, data leaks possible!\n"
+ #define SPECTRE_V2_EIBRS_EBPF_MSG "WARNING: Unprivileged eBPF is enabled with eIBRS on, data leaks possible via Spectre v2 BHB attacks!\n"
+ #define SPECTRE_V2_EIBRS_LFENCE_EBPF_SMT_MSG "WARNING: Unprivileged eBPF is enabled with eIBRS+LFENCE mitigation and SMT, data leaks possible via Spectre v2 BHB attacks!\n"
++#define SPECTRE_V2_IBRS_PERF_MSG "WARNING: IBRS mitigation selected on Enhanced IBRS CPU, this may cause unnecessary performance loss\n"
  
+ #ifdef CONFIG_BPF_SYSCALL
+ void unpriv_ebpf_notify(int new_state)
+@@ -1371,6 +1372,8 @@ static void __init spectre_v2_select_mit
+ 
+ 	case SPECTRE_V2_IBRS:
+ 		setup_force_cpu_cap(X86_FEATURE_KERNEL_IBRS);
++		if (boot_cpu_has(X86_FEATURE_IBRS_ENHANCED))
++			pr_warn(SPECTRE_V2_IBRS_PERF_MSG);
+ 		break;
+ 
+ 	case SPECTRE_V2_LFENCE:
 
 
