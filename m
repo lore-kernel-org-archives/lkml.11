@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE409C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:05:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B9A0C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:05:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241362AbiG0RFh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:05:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33400 "EHLO
+        id S241376AbiG0RFl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:05:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241549AbiG0RE2 (ORCPT
+        with ESMTP id S241551AbiG0RE3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:04:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FBB15A140;
-        Wed, 27 Jul 2022 09:39:12 -0700 (PDT)
+        Wed, 27 Jul 2022 13:04:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71D436F7CA;
+        Wed, 27 Jul 2022 09:39:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 023B3B821AC;
-        Wed, 27 Jul 2022 16:39:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E086C433C1;
-        Wed, 27 Jul 2022 16:39:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F0B4560B9E;
+        Wed, 27 Jul 2022 16:39:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D383AC433B5;
+        Wed, 27 Jul 2022 16:39:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939945;
-        bh=e20EUWmZgSZbpAgmRG7IFoz3qsJJw30BAVwpb8YR1jw=;
+        s=korg; t=1658939951;
+        bh=2OV7QM4VRlC9VoPMrR3G1NY2dsKHxkkbtdoeD4eJBoY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Onm12+Ntc2zTUETcmCzs0dCqxmY7QzK/v6vNA2iugZdFl3bAeKnFFtqjRoEQ8fuCU
-         lqPFJUr/rqX3lmmk+312U3KkBKb57hWjx3a8P2H4fVAUvQxfnraP2SCizq0hoZbyNY
-         Wp4sdMlw/JNASuzo08C0EOIMXB3YJF05wOognOpU=
+        b=chvFBWab/OsCzhk9jzeZs/zp4WeoWKyyDpM/Z5+yDrCdzdnT3pXGzcikcdqUFq0CD
+         Y1o/WWRJwlGnpucFipSRvaCteggcPjduGjH+in/RanQP+ta2BBaOtjCSHLTKcNYXR9
+         s3d9nF+YYn9WwV6IiLM6jflp0xLjNn0B8OiyMY98=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sasha Neftin <sasha.neftin@intel.com>,
-        Naama Meir <naamax.meir@linux.intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 052/201] Revert "e1000e: Fix possible HW unit hang after an s0ix exit"
-Date:   Wed, 27 Jul 2022 18:09:16 +0200
-Message-Id: <20220727161029.051627351@linuxfoundation.org>
+Subject: [PATCH 5.15 054/201] ip: Fix data-races around sysctl_ip_no_pmtu_disc.
+Date:   Wed, 27 Jul 2022 18:09:18 +0200
+Message-Id: <20220727161029.152740326@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -50,122 +49,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sasha Neftin <sasha.neftin@intel.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 6cfa45361d3eac31ba67d7d0bbef547151450106 ]
+[ Upstream commit 0968d2a441bf6afb551fd99e60fa65ed67068963 ]
 
-This reverts commit 1866aa0d0d6492bc2f8d22d0df49abaccf50cddd.
+While reading sysctl_ip_no_pmtu_disc, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its readers.
 
-Commit 1866aa0d0d64 ("e1000e: Fix possible HW unit hang after an s0ix
-exit") was a workaround for CSME problem to handle messages comes via H2ME
-mailbox. This problem has been fixed by patch "e1000e: Enable the GPT
-clock before sending message to the CSME".
-
-Fixes: 3e55d231716e ("e1000e: Add handshake with the CSME to support S0ix")
-Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=214821
-Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
-Tested-by: Naama Meir <naamax.meir@linux.intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/e1000e/hw.h      |  1 -
- drivers/net/ethernet/intel/e1000e/ich8lan.c |  4 ----
- drivers/net/ethernet/intel/e1000e/ich8lan.h |  1 -
- drivers/net/ethernet/intel/e1000e/netdev.c  | 26 ---------------------
- 4 files changed, 32 deletions(-)
+ net/ipv4/af_inet.c    | 2 +-
+ net/ipv4/icmp.c       | 2 +-
+ net/ipv6/af_inet6.c   | 2 +-
+ net/xfrm/xfrm_state.c | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/e1000e/hw.h b/drivers/net/ethernet/intel/e1000e/hw.h
-index 13382df2f2ef..bcf680e83811 100644
---- a/drivers/net/ethernet/intel/e1000e/hw.h
-+++ b/drivers/net/ethernet/intel/e1000e/hw.h
-@@ -630,7 +630,6 @@ struct e1000_phy_info {
- 	bool disable_polarity_correction;
- 	bool is_mdix;
- 	bool polarity_correction;
--	bool reset_disable;
- 	bool speed_downgraded;
- 	bool autoneg_wait_to_complete;
- };
-diff --git a/drivers/net/ethernet/intel/e1000e/ich8lan.c b/drivers/net/ethernet/intel/e1000e/ich8lan.c
-index e6c8e6d5234f..9466f65a6da7 100644
---- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
-+++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
-@@ -2050,10 +2050,6 @@ static s32 e1000_check_reset_block_ich8lan(struct e1000_hw *hw)
- 	bool blocked = false;
- 	int i = 0;
+diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+index 44f21278003d..781c595f6880 100644
+--- a/net/ipv4/af_inet.c
++++ b/net/ipv4/af_inet.c
+@@ -338,7 +338,7 @@ static int inet_create(struct net *net, struct socket *sock, int protocol,
+ 			inet->hdrincl = 1;
+ 	}
  
--	/* Check the PHY (LCD) reset flag */
--	if (hw->phy.reset_disable)
--		return true;
--
- 	while ((blocked = !(er32(FWSM) & E1000_ICH_FWSM_RSPCIPHY)) &&
- 	       (i++ < 30))
- 		usleep_range(10000, 11000);
-diff --git a/drivers/net/ethernet/intel/e1000e/ich8lan.h b/drivers/net/ethernet/intel/e1000e/ich8lan.h
-index 638a3ddd7ada..2504b11c3169 100644
---- a/drivers/net/ethernet/intel/e1000e/ich8lan.h
-+++ b/drivers/net/ethernet/intel/e1000e/ich8lan.h
-@@ -271,7 +271,6 @@
- #define I217_CGFREG_ENABLE_MTA_RESET	0x0002
- #define I217_MEMPWR			PHY_REG(772, 26)
- #define I217_MEMPWR_DISABLE_SMB_RELEASE	0x0010
--#define I217_MEMPWR_MOEM		0x1000
+-	if (net->ipv4.sysctl_ip_no_pmtu_disc)
++	if (READ_ONCE(net->ipv4.sysctl_ip_no_pmtu_disc))
+ 		inet->pmtudisc = IP_PMTUDISC_DONT;
+ 	else
+ 		inet->pmtudisc = IP_PMTUDISC_WANT;
+diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
+index a5cc89506c1e..609c4ff7edc6 100644
+--- a/net/ipv4/icmp.c
++++ b/net/ipv4/icmp.c
+@@ -887,7 +887,7 @@ static bool icmp_unreach(struct sk_buff *skb)
+ 			 * values please see
+ 			 * Documentation/networking/ip-sysctl.rst
+ 			 */
+-			switch (net->ipv4.sysctl_ip_no_pmtu_disc) {
++			switch (READ_ONCE(net->ipv4.sysctl_ip_no_pmtu_disc)) {
+ 			default:
+ 				net_dbg_ratelimited("%pI4: fragmentation needed and DF set\n",
+ 						    &iph->daddr);
+diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
+index dab4a047590b..3a91d0d40aec 100644
+--- a/net/ipv6/af_inet6.c
++++ b/net/ipv6/af_inet6.c
+@@ -226,7 +226,7 @@ static int inet6_create(struct net *net, struct socket *sock, int protocol,
+ 	RCU_INIT_POINTER(inet->mc_list, NULL);
+ 	inet->rcv_tos	= 0;
  
- /* Receive Address Initial CRC Calculation */
- #define E1000_PCH_RAICC(_n)	(0x05F50 + ((_n) * 4))
-diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-index 0fba6ccecf12..407bbb4cc236 100644
---- a/drivers/net/ethernet/intel/e1000e/netdev.c
-+++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-@@ -6996,21 +6996,8 @@ static __maybe_unused int e1000e_pm_suspend(struct device *dev)
- 	struct net_device *netdev = pci_get_drvdata(to_pci_dev(dev));
- 	struct e1000_adapter *adapter = netdev_priv(netdev);
- 	struct pci_dev *pdev = to_pci_dev(dev);
--	struct e1000_hw *hw = &adapter->hw;
--	u16 phy_data;
- 	int rc;
+-	if (net->ipv4.sysctl_ip_no_pmtu_disc)
++	if (READ_ONCE(net->ipv4.sysctl_ip_no_pmtu_disc))
+ 		inet->pmtudisc = IP_PMTUDISC_DONT;
+ 	else
+ 		inet->pmtudisc = IP_PMTUDISC_WANT;
+diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
+index f7bfa1916968..b1a04a22166f 100644
+--- a/net/xfrm/xfrm_state.c
++++ b/net/xfrm/xfrm_state.c
+@@ -2619,7 +2619,7 @@ int __xfrm_init_state(struct xfrm_state *x, bool init_replay, bool offload)
+ 	int err;
  
--	if (er32(FWSM) & E1000_ICH_FWSM_FW_VALID &&
--	    hw->mac.type >= e1000_pch_adp) {
--		/* Mask OEM Bits / Gig Disable / Restart AN (772_26[12] = 1) */
--		e1e_rphy(hw, I217_MEMPWR, &phy_data);
--		phy_data |= I217_MEMPWR_MOEM;
--		e1e_wphy(hw, I217_MEMPWR, phy_data);
--
--		/* Disable LCD reset */
--		hw->phy.reset_disable = true;
--	}
--
- 	e1000e_flush_lpic(pdev);
+ 	if (family == AF_INET &&
+-	    xs_net(x)->ipv4.sysctl_ip_no_pmtu_disc)
++	    READ_ONCE(xs_net(x)->ipv4.sysctl_ip_no_pmtu_disc))
+ 		x->props.flags |= XFRM_STATE_NOPMTUDISC;
  
- 	e1000e_pm_freeze(dev);
-@@ -7032,8 +7019,6 @@ static __maybe_unused int e1000e_pm_resume(struct device *dev)
- 	struct net_device *netdev = pci_get_drvdata(to_pci_dev(dev));
- 	struct e1000_adapter *adapter = netdev_priv(netdev);
- 	struct pci_dev *pdev = to_pci_dev(dev);
--	struct e1000_hw *hw = &adapter->hw;
--	u16 phy_data;
- 	int rc;
- 
- 	/* Introduce S0ix implementation */
-@@ -7044,17 +7029,6 @@ static __maybe_unused int e1000e_pm_resume(struct device *dev)
- 	if (rc)
- 		return rc;
- 
--	if (er32(FWSM) & E1000_ICH_FWSM_FW_VALID &&
--	    hw->mac.type >= e1000_pch_adp) {
--		/* Unmask OEM Bits / Gig Disable / Restart AN 772_26[12] = 0 */
--		e1e_rphy(hw, I217_MEMPWR, &phy_data);
--		phy_data &= ~I217_MEMPWR_MOEM;
--		e1e_wphy(hw, I217_MEMPWR, phy_data);
--
--		/* Enable LCD reset */
--		hw->phy.reset_disable = false;
--	}
--
- 	return e1000e_pm_thaw(dev);
- }
- 
+ 	err = -EPROTONOSUPPORT;
 -- 
 2.35.1
 
