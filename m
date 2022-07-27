@@ -2,94 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 980A4C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 18:37:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CC28C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 18:39:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234229AbiG0ShN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 14:37:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48462 "EHLO
+        id S234420AbiG0Sjb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 14:39:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239495AbiG0Sg4 (ORCPT
+        with ESMTP id S243305AbiG0SjN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 14:36:56 -0400
-X-Greylist: delayed 85 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 27 Jul 2022 10:34:08 PDT
-Received: from EX-PRD-EDGE02.vmware.com (EX-PRD-EDGE02.vmware.com [208.91.3.34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4600382441;
-        Wed, 27 Jul 2022 10:34:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-    s=s1024; d=vmware.com;
-    h=from:to:cc:subject:date:message-id:mime-version:content-type;
-    bh=wrErnZfhnRkvo2LLwoRnPYYKs/RlfqIiCHFipEomp8I=;
-    b=T6LxgJKVo1tp6h58WY/sG48nhf7IFTJ+R66xis/ZNiEJt1SCiXA7znrFGW+S6T
-      egaKPNkLNPqanjMeikCav5Tb6R5RrUK63X0FJckR7OVzdgaIn7Qa5O0QynwSr0
-      gdj8evEPFCb3qycFf5J+CQ0110UPORXHDiYYz0RBjxJoBeY=
-Received: from sc9-mailhost3.vmware.com (10.113.161.73) by
- EX-PRD-EDGE02.vmware.com (10.188.245.7) with Microsoft SMTP Server id
- 15.1.2308.14; Wed, 27 Jul 2022 10:30:33 -0700
-Received: from htb-1n-eng-dhcp122.eng.vmware.com (unknown [10.20.114.216])
-        by sc9-mailhost3.vmware.com (Postfix) with ESMTP id 1F5DA20151;
-        Wed, 27 Jul 2022 10:30:40 -0700 (PDT)
-Received: by htb-1n-eng-dhcp122.eng.vmware.com (Postfix, from userid 0)
-        id 17361AA49F; Wed, 27 Jul 2022 10:30:40 -0700 (PDT)
-From:   Ronak Doshi <doshir@vmware.com>
-To:     <netdev@vger.kernel.org>
-CC:     Ronak Doshi <doshir@vmware.com>,
-        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Guolin Yang <gyang@vmware.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next] vmxnet3: do not reschedule napi for rx processing
-Date:   Wed, 27 Jul 2022 10:30:37 -0700
-Message-ID: <20220727173038.9951-1-doshir@vmware.com>
-X-Mailer: git-send-email 2.11.0
+        Wed, 27 Jul 2022 14:39:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30A4E58B5F;
+        Wed, 27 Jul 2022 10:36:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 457CAB8200D;
+        Wed, 27 Jul 2022 17:36:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9146C433B5;
+        Wed, 27 Jul 2022 17:36:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658943378;
+        bh=Xl6d7YyAtLFXVLl6Ln+ny8Wog2OwDSUSA9+ZSYKIOdw=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=IYPAGyhuvTrsIitUMGuHCgmfmlfCeZIGgKOXoWE1/ZITtnddMLiyh8HQ9KXCxZwtK
+         q+czlO4HrUOL4WmwUYUtxAZR5wLXRTgmQSxnIymXS/tvmehJPVZsV50eF/ryhWxPgm
+         kvR9oVsvJImHrKn5+eXBEjBwOQmP69Tofq7kW4/7NvzK8hAFe3E2CJzSf+a1go8XID
+         5EUHIth9R6DtkHl6zxjhfhWm20bAm0yJ8+BEidXmx5i7Sc6XUOGHY0bPUAoLmC3dTW
+         j52n66WRU3C6VR55rTGdLcQh/af5GuGqr9m+hyKjQg9vGuNf9JQHmAxNZh3KmNXJdi
+         38YpuO07hImug==
+Received: by mail-vs1-f51.google.com with SMTP id 125so17261625vsx.7;
+        Wed, 27 Jul 2022 10:36:18 -0700 (PDT)
+X-Gm-Message-State: AJIora+HBLR2Y4VYxJFFcXCY5ak8xckOJcc7FTC6mRYkUC3ze6m+tyVK
+        rHcHstXbAFtkYNYS+8f1eyB9U9I3t9hNO+ygQg==
+X-Google-Smtp-Source: AGRyM1sqajAmGpG1DBpnRP1OvqhcDouhF5LqwT+puFHiLc7y1VR9ZhXVBVVc1JXtlVOPyDLfejXswbayiyasf8Agx3o=
+X-Received: by 2002:a05:6102:21aa:b0:35a:1419:1bc7 with SMTP id
+ i10-20020a05610221aa00b0035a14191bc7mr2601385vsb.26.1658943377685; Wed, 27
+ Jul 2022 10:36:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-Received-SPF: None (EX-PRD-EDGE02.vmware.com: doshir@vmware.com does not
- designate permitted sender hosts)
+References: <20220727100615.638072-1-dmitry.baryshkov@linaro.org>
+In-Reply-To: <20220727100615.638072-1-dmitry.baryshkov@linaro.org>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Wed, 27 Jul 2022 11:36:06 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqJjLn8ypBo+bBoO+CE-si7gemP02fi8EWk97QRPPpNoVg@mail.gmail.com>
+Message-ID: <CAL_JsqJjLn8ypBo+bBoO+CE-si7gemP02fi8EWk97QRPPpNoVg@mail.gmail.com>
+Subject: Re: [PATCH] kbuild: take into account DT_SCHEMA_FILES changes while
+ checking dtbs
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit '2c5a5748105a ("vmxnet3: add support for out of order rx
-completion")' added support for out of order rx completion. Within
-that patch, an enhancement was done to reschedule napi for processing
-rx completions.
+On Wed, Jul 27, 2022 at 4:06 AM Dmitry Baryshkov
+<dmitry.baryshkov@linaro.org> wrote:
+>
+> It is useful to be able to recheck dtbs files against a limited set of
+> DT schema files. This can be accomplished by using differnt
+> DT_SCHEMA_FILES argument values while rerunning make dtbs_check. However
+> for some reason if_changed_rule doesn't pick up the rule_dtc changes
+> (and doesn't retrigger the build).
+>
+> Fix this by changing if_changed_rule to if_changed_dep and squashing DTC
+> and dt-validate into a single new command. Then if_changed_dep triggers
+> on DT_SCHEMA_FILES changes and reruns the build/check.
+>
+> Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> ---
+>  scripts/Makefile.lib | 14 ++++++--------
+>  1 file changed, 6 insertions(+), 8 deletions(-)
+>
+> diff --git a/scripts/Makefile.lib b/scripts/Makefile.lib
+> index c88b98b5dc44..3df470289382 100644
+> --- a/scripts/Makefile.lib
+> +++ b/scripts/Makefile.lib
+> @@ -383,17 +383,15 @@ DT_CHECKER_FLAGS ?= $(if $(DT_SCHEMA_FILES),-l $(DT_SCHEMA_FILES),-m)
+>  DT_BINDING_DIR := Documentation/devicetree/bindings
+>  DT_TMP_SCHEMA := $(objtree)/$(DT_BINDING_DIR)/processed-schema.json
+>
+> -quiet_cmd_dtb_check =  CHECK   $@
+> -      cmd_dtb_check =  $(DT_CHECKER) $(DT_CHECKER_FLAGS) -u $(srctree)/$(DT_BINDING_DIR) -p $(DT_TMP_SCHEMA) $@ || true
+> +quiet_cmd_dtb =        DTC/CHECK   $@
 
-However, it can lead to missing an interrupt. So, this patch reverts
-that part of the code.
+This is supposed to be 7 chars or less. DTCCHK or DTC_CHK perhaps. Or
+always do just 'DTC'. I can fixup when applying.
 
-Fixes: 2c5a5748105a ("vmxnet3: add support for out of order rx completion")
-Signed-off-by: Ronak Doshi <doshir@vmware.com>
-Acked-by: Guolin Yang <gyang@vmware.com>
----
- drivers/net/vmxnet3/vmxnet3_drv.c | 9 ---------
- 1 file changed, 9 deletions(-)
+I'll give it a few days for other comments.
 
-diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
-index dd831adbc1d1..53b3b241e027 100644
---- a/drivers/net/vmxnet3/vmxnet3_drv.c
-+++ b/drivers/net/vmxnet3/vmxnet3_drv.c
-@@ -2075,17 +2075,8 @@ vmxnet3_poll_rx_only(struct napi_struct *napi, int budget)
- 	rxd_done = vmxnet3_rq_rx_complete(rq, adapter, budget);
- 
- 	if (rxd_done < budget) {
--		struct Vmxnet3_RxCompDesc *rcd;
--#ifdef __BIG_ENDIAN_BITFIELD
--		struct Vmxnet3_RxCompDesc rxComp;
--#endif
- 		napi_complete_done(napi, rxd_done);
- 		vmxnet3_enable_intr(adapter, rq->comp_ring.intr_idx);
--		/* after unmasking the interrupt, check if any descriptors were completed */
--		vmxnet3_getRxComp(rcd, &rq->comp_ring.base[rq->comp_ring.next2proc].rcd,
--				  &rxComp);
--		if (rcd->gen == rq->comp_ring.gen && napi_reschedule(napi))
--			vmxnet3_disable_intr(adapter, rq->comp_ring.intr_idx);
- 	}
- 	return rxd_done;
- }
--- 
-2.11.0
-
+> +      cmd_dtb =        $(cmd_dtc) ; $(DT_CHECKER) $(DT_CHECKER_FLAGS) -u $(srctree)/$(DT_BINDING_DIR) -p $(DT_TMP_SCHEMA) $@ || true
+> +else
+> +quiet_cmd_dtb = $(quiet_cmd_dtc)
+> +      cmd_dtb = $(cmd_dtc)
+>  endif
+>
+> -define rule_dtc
+> -       $(call cmd_and_fixdep,dtc)
+> -       $(call cmd,dtb_check)
+> -endef
+> -
+>  $(obj)/%.dtb: $(src)/%.dts $(DTC) $(DT_TMP_SCHEMA) FORCE
+> -       $(call if_changed_rule,dtc)
+> +       $(call if_changed_dep,dtb)
+>
+>  $(obj)/%.dtbo: $(src)/%.dts $(DTC) FORCE
+>         $(call if_changed_dep,dtc)
+> --
+> 2.35.1
+>
