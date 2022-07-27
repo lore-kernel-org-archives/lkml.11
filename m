@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D9B2C19F2C
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:24:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A426C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:24:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235613AbiG0QYo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:24:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50258 "EHLO
+        id S235791AbiG0QYv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:24:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235951AbiG0QXh (ORCPT
+        with ESMTP id S235679AbiG0QXm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:23:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C79F4C624;
-        Wed, 27 Jul 2022 09:22:59 -0700 (PDT)
+        Wed, 27 Jul 2022 12:23:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DD014D81E;
+        Wed, 27 Jul 2022 09:23:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A6403617F2;
-        Wed, 27 Jul 2022 16:22:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26AAAC433D6;
-        Wed, 27 Jul 2022 16:22:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 42B42B821B8;
+        Wed, 27 Jul 2022 16:22:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85FA3C43470;
+        Wed, 27 Jul 2022 16:22:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658938972;
-        bh=5qi6U/J8lpNHkYSJT47rBq2xJq10SOA9cxnccKqgGDI=;
+        s=korg; t=1658938974;
+        bh=XtGu8TE7CovI0KYOLPZ54gTgLYD3hr7Az98aZLAAFW4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vR5xv194SgSj2EfqgBB4e9a5wEPPHZv1jTmw5fQKR/GJYRCU2nvy3WQkBHSKLUV0A
-         Aq+5WEoUO966nj7PHZGAV4pAlqkcrYCW/hKGahf0evIbzvXnw0YGsr+WPOIk8dOnOu
-         H3ali/Tqyh6Z1b9miTcAx3XnX3KmyLbITWt+SViI=
+        b=dHm6dllLulQTTGRUexeQIOKnHk0t6fj5sSJW5VEJoAk85LBXF6X5atvl0vboh9GTp
+         LaohSAd/H9jxEG9ePBYbGa+/rVenUt5sO+Mtzsq9mncVnWwZNVKKTYlusaN1VgGKTg
+         n5FnDIC7lrqm1kqE92sgO3TW7HL3BNFGpyPMj5VQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?=E4=B8=80=E5=8F=AA=E7=8B=97?= <chennbnbnb@gmail.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Hillf Danton <hdanton@sina.com>, Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 4.9 25/26] tty: use new tty_insert_flip_string_and_push_buffer() in pty_write()
-Date:   Wed, 27 Jul 2022 18:10:54 +0200
-Message-Id: <20220727161000.122591546@linuxfoundation.org>
+        stable@vger.kernel.org, Jose Alonso <joalonsof@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.9 26/26] net: usb: ax88179_178a needs FLAG_SEND_ZLP
+Date:   Wed, 27 Jul 2022 18:10:55 +0200
+Message-Id: <20220727161000.160421507@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727160959.122591422@linuxfoundation.org>
 References: <20220727160959.122591422@linuxfoundation.org>
@@ -50,115 +48,112 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiri Slaby <jslaby@suse.cz>
+From: Jose Alonso <joalonsof@gmail.com>
 
-commit a501ab75e7624d133a5a3c7ec010687c8b961d23 upstream.
+commit 36a15e1cb134c0395261ba1940762703f778438c upstream.
 
-There is a race in pty_write(). pty_write() can be called in parallel
-with e.g. ioctl(TIOCSTI) or ioctl(TCXONC) which also inserts chars to
-the buffer. Provided, tty_flip_buffer_push() in pty_write() is called
-outside the lock, it can commit inconsistent tail. This can lead to out
-of bounds writes and other issues. See the Link below.
+The extra byte inserted by usbnet.c when
+ (length % dev->maxpacket == 0) is causing problems to device.
 
-To fix this, we have to introduce a new helper called
-tty_insert_flip_string_and_push_buffer(). It does both
-tty_insert_flip_string() and tty_flip_buffer_commit() under the port
-lock. It also calls queue_work(), but outside the lock. See
-71a174b39f10 (pty: do tty_flip_buffer_push without port->lock in
-pty_write) for the reasons.
+This patch sets FLAG_SEND_ZLP to avoid this.
 
-Keep the helper internal-only (in drivers' tty.h). It is not intended to
-be used widely.
+Tested with: 0b95:1790 ASIX Electronics Corp. AX88179 Gigabit Ethernet
 
-Link: https://seclists.org/oss-sec/2022/q2/155
-Fixes: 71a174b39f10 (pty: do tty_flip_buffer_push without port->lock in pty_write)
-Cc: 一只狗 <chennbnbnb@gmail.com>
-Cc: Dan Carpenter <dan.carpenter@oracle.com>
-Suggested-by: Hillf Danton <hdanton@sina.com>
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Link: https://lore.kernel.org/r/20220707082558.9250-2-jslaby@suse.cz
+Problems observed:
+======================================================================
+1) Using ssh/sshfs. The remote sshd daemon can abort with the message:
+   "message authentication code incorrect"
+   This happens because the tcp message sent is corrupted during the
+   USB "Bulk out". The device calculate the tcp checksum and send a
+   valid tcp message to the remote sshd. Then the encryption detects
+   the error and aborts.
+2) NETDEV WATCHDOG: ... (ax88179_178a): transmit queue 0 timed out
+3) Stop normal work without any log message.
+   The "Bulk in" continue receiving packets normally.
+   The host sends "Bulk out" and the device responds with -ECONNRESET.
+   (The netusb.c code tx_complete ignore -ECONNRESET)
+Under normal conditions these errors take days to happen and in
+intense usage take hours.
+
+A test with ping gives packet loss, showing that something is wrong:
+ping -4 -s 462 {destination}	# 462 = 512 - 42 - 8
+Not all packets fail.
+My guess is that the device tries to find another packet starting
+at the extra byte and will fail or not depending on the next
+bytes (old buffer content).
+======================================================================
+
+Signed-off-by: Jose Alonso <joalonsof@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/pty.c        |   14 ++------------
- drivers/tty/tty_buffer.c |   31 +++++++++++++++++++++++++++++++
- include/linux/tty_flip.h |    3 +++
- 3 files changed, 36 insertions(+), 12 deletions(-)
+ drivers/net/usb/ax88179_178a.c |   14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
---- a/drivers/tty/pty.c
-+++ b/drivers/tty/pty.c
-@@ -106,21 +106,11 @@ static void pty_unthrottle(struct tty_st
- static int pty_write(struct tty_struct *tty, const unsigned char *buf, int c)
- {
- 	struct tty_struct *to = tty->link;
--	unsigned long flags;
- 
--	if (tty->stopped)
-+	if (tty->stopped || !c)
- 		return 0;
- 
--	if (c > 0) {
--		spin_lock_irqsave(&to->port->lock, flags);
--		/* Stuff the data into the input queue of the other end */
--		c = tty_insert_flip_string(to->port, buf, c);
--		spin_unlock_irqrestore(&to->port->lock, flags);
--		/* And shovel */
--		if (c)
--			tty_flip_buffer_push(to->port);
--	}
--	return c;
-+	return tty_insert_flip_string_and_push_buffer(to->port, buf, c);
- }
- 
- /**
---- a/drivers/tty/tty_buffer.c
-+++ b/drivers/tty/tty_buffer.c
-@@ -556,6 +556,37 @@ void tty_flip_buffer_push(struct tty_por
- EXPORT_SYMBOL(tty_flip_buffer_push);
- 
- /**
-+ * tty_insert_flip_string_and_push_buffer - add characters to the tty buffer and
-+ *	push
-+ * @port: tty port
-+ * @chars: characters
-+ * @size: size
-+ *
-+ * The function combines tty_insert_flip_string() and tty_flip_buffer_push()
-+ * with the exception of properly holding the @port->lock.
-+ *
-+ * To be used only internally (by pty currently).
-+ *
-+ * Returns: the number added.
-+ */
-+int tty_insert_flip_string_and_push_buffer(struct tty_port *port,
-+		const unsigned char *chars, size_t size)
-+{
-+	struct tty_bufhead *buf = &port->buf;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&port->lock, flags);
-+	size = tty_insert_flip_string(port, chars, size);
-+	if (size)
-+		tty_flip_buffer_commit(buf->tail);
-+	spin_unlock_irqrestore(&port->lock, flags);
-+
-+	queue_work(system_unbound_wq, &buf->work);
-+
-+	return size;
-+}
-+
-+/**
-  *	tty_buffer_init		-	prepare a tty buffer structure
-  *	@tty: tty to initialise
-  *
---- a/include/linux/tty_flip.h
-+++ b/include/linux/tty_flip.h
-@@ -38,4 +38,7 @@ static inline int tty_insert_flip_string
- extern void tty_buffer_lock_exclusive(struct tty_port *port);
- extern void tty_buffer_unlock_exclusive(struct tty_port *port);
- 
-+int tty_insert_flip_string_and_push_buffer(struct tty_port *port,
-+		const unsigned char *chars, size_t cnt);
-+
- #endif /* _LINUX_TTY_FLIP_H */
+--- a/drivers/net/usb/ax88179_178a.c
++++ b/drivers/net/usb/ax88179_178a.c
+@@ -1703,7 +1703,7 @@ static const struct driver_info ax88179_
+ 	.link_reset = ax88179_link_reset,
+ 	.reset = ax88179_reset,
+ 	.stop = ax88179_stop,
+-	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
++	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
+ 	.rx_fixup = ax88179_rx_fixup,
+ 	.tx_fixup = ax88179_tx_fixup,
+ };
+@@ -1716,7 +1716,7 @@ static const struct driver_info ax88178a
+ 	.link_reset = ax88179_link_reset,
+ 	.reset = ax88179_reset,
+ 	.stop = ax88179_stop,
+-	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
++	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
+ 	.rx_fixup = ax88179_rx_fixup,
+ 	.tx_fixup = ax88179_tx_fixup,
+ };
+@@ -1729,7 +1729,7 @@ static const struct driver_info cypress_
+ 	.link_reset = ax88179_link_reset,
+ 	.reset = ax88179_reset,
+ 	.stop = ax88179_stop,
+-	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
++	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
+ 	.rx_fixup = ax88179_rx_fixup,
+ 	.tx_fixup = ax88179_tx_fixup,
+ };
+@@ -1742,7 +1742,7 @@ static const struct driver_info dlink_du
+ 	.link_reset = ax88179_link_reset,
+ 	.reset = ax88179_reset,
+ 	.stop = ax88179_stop,
+-	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
++	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
+ 	.rx_fixup = ax88179_rx_fixup,
+ 	.tx_fixup = ax88179_tx_fixup,
+ };
+@@ -1755,7 +1755,7 @@ static const struct driver_info sitecom_
+ 	.link_reset = ax88179_link_reset,
+ 	.reset = ax88179_reset,
+ 	.stop = ax88179_stop,
+-	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
++	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
+ 	.rx_fixup = ax88179_rx_fixup,
+ 	.tx_fixup = ax88179_tx_fixup,
+ };
+@@ -1768,7 +1768,7 @@ static const struct driver_info samsung_
+ 	.link_reset = ax88179_link_reset,
+ 	.reset = ax88179_reset,
+ 	.stop = ax88179_stop,
+-	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
++	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
+ 	.rx_fixup = ax88179_rx_fixup,
+ 	.tx_fixup = ax88179_tx_fixup,
+ };
+@@ -1781,7 +1781,7 @@ static const struct driver_info lenovo_i
+ 	.link_reset = ax88179_link_reset,
+ 	.reset = ax88179_reset,
+ 	.stop = ax88179_stop,
+-	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
++	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
+ 	.rx_fixup = ax88179_rx_fixup,
+ 	.tx_fixup = ax88179_tx_fixup,
+ };
 
 
