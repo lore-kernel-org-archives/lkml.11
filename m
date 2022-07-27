@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52389C19F2C
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:02:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10FEBC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:02:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237980AbiG0RCP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:02:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55518 "EHLO
+        id S241248AbiG0RCT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:02:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241206AbiG0RBo (ORCPT
+        with ESMTP id S241235AbiG0RBo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Jul 2022 13:01:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9395C6BC05;
-        Wed, 27 Jul 2022 09:38:05 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D29A6BC09;
+        Wed, 27 Jul 2022 09:38:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DEDCBB821B6;
-        Wed, 27 Jul 2022 16:37:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 506BFC433C1;
-        Wed, 27 Jul 2022 16:37:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6B164B8200C;
+        Wed, 27 Jul 2022 16:38:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3F9AC433C1;
+        Wed, 27 Jul 2022 16:38:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939847;
-        bh=WujFwljSuwH2VXyG++3F5nOsrXX2VIrrQKO+07kLxmA=;
+        s=korg; t=1658939881;
+        bh=qXw/I2fUS2IOujk0ZA76gow/5hHBvGsPgEnrGSVqpQg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ts46/PJ4ltL9VNnoQOreO0gmrtyv5NoT+HNZBH+CkHGNl5JsJgRkAeGWp/AfYf2sV
-         +VrLQkrXjm8VilWKDujcSHKgg4zhDDbZmQqBT7hBMxo9oBWoNv/GTECiHkYGn5yXqF
-         q3e0y4YAuu4XGBaqXNdbXBQ4muxzqHtML2Ja2Rr4=
+        b=pzp1FQipyKLzRX2dBOhu7krkxH0o3zpO89m7WJPFIZXGRF5INJs7fllqMKcNUQBuD
+         qJRvUelN+Vr9q9nyzI5V6nW78NOIwBfEMhvlkTou72cJEwkH5MQyuPuulRYRDY/k1G
+         lDJFCPwPiJaqYHARTfmUKAQRGw+34bxBKLMK9jOs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Felix Fietkau <nbd@nbd.name>
-Subject: [PATCH 5.15 020/201] mt76: mt7921: Fix the error handling path of mt7921_pci_probe()
-Date:   Wed, 27 Jul 2022 18:08:44 +0200
-Message-Id: <20220727161027.748066262@linuxfoundation.org>
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 029/201] xfrm: xfrm_policy: fix a possible double xfrm_pols_put() in xfrm_bundle_lookup()
+Date:   Wed, 27 Jul 2022 18:08:53 +0200
+Message-Id: <20220727161028.109685397@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -48,45 +49,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-commit 4e90db5e21eb3bb272fe47386dc3506755e209e9 upstream.
+[ Upstream commit f85daf0e725358be78dfd208dea5fd665d8cb901 ]
 
-In case of error, some resources must be freed, as already done above and
-below the devm_kmemdup() and __mt7921e_mcu_drv_pmctrl() calls added in the
-commit in Fixes:.
+xfrm_policy_lookup() will call xfrm_pol_hold_rcu() to get a refcount of
+pols[0]. This refcount can be dropped in xfrm_expand_policies() when
+xfrm_expand_policies() return error. pols[0]'s refcount is balanced in
+here. But xfrm_bundle_lookup() will also call xfrm_pols_put() with
+num_pols == 1 to drop this refcount when xfrm_expand_policies() return
+error.
 
-Fixes: 602cc0c9618a ("mt76: mt7921e: fix possible probe failure after reboot")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This patch also fix an illegal address access. pols[0] will save a error
+point when xfrm_policy_lookup fails. This lead to xfrm_pols_put to resolve
+an illegal address in xfrm_bundle_lookup's error path.
+
+Fix these by setting num_pols = 0 in xfrm_expand_policies()'s error path.
+
+Fixes: 80c802f3073e ("xfrm: cache bundles instead of policies for outgoing flows")
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7921/pci.c |    8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ net/xfrm/xfrm_policy.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
-@@ -254,8 +254,10 @@ static int mt7921_pci_probe(struct pci_d
- 	dev->bus_ops = dev->mt76.bus;
- 	bus_ops = devm_kmemdup(dev->mt76.dev, dev->bus_ops, sizeof(*bus_ops),
- 			       GFP_KERNEL);
--	if (!bus_ops)
--		return -ENOMEM;
-+	if (!bus_ops) {
-+		ret = -ENOMEM;
-+		goto err_free_dev;
+diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+index a6271b955e11..fb198f9490a0 100644
+--- a/net/xfrm/xfrm_policy.c
++++ b/net/xfrm/xfrm_policy.c
+@@ -2678,8 +2678,10 @@ static int xfrm_expand_policies(const struct flowi *fl, u16 family,
+ 		*num_xfrms = 0;
+ 		return 0;
+ 	}
+-	if (IS_ERR(pols[0]))
++	if (IS_ERR(pols[0])) {
++		*num_pols = 0;
+ 		return PTR_ERR(pols[0]);
 +	}
  
- 	bus_ops->rr = mt7921_rr;
- 	bus_ops->wr = mt7921_wr;
-@@ -264,7 +266,7 @@ static int mt7921_pci_probe(struct pci_d
+ 	*num_xfrms = pols[0]->xfrm_nr;
  
- 	ret = __mt7921e_mcu_drv_pmctrl(dev);
- 	if (ret)
--		return ret;
-+		goto err_free_dev;
- 
- 	mdev->rev = (mt7921_l1_rr(dev, MT_HW_CHIPID) << 16) |
- 		    (mt7921_l1_rr(dev, MT_HW_REV) & 0xff);
+@@ -2694,6 +2696,7 @@ static int xfrm_expand_policies(const struct flowi *fl, u16 family,
+ 		if (pols[1]) {
+ 			if (IS_ERR(pols[1])) {
+ 				xfrm_pols_put(pols, *num_pols);
++				*num_pols = 0;
+ 				return PTR_ERR(pols[1]);
+ 			}
+ 			(*num_pols)++;
+-- 
+2.35.1
+
 
 
