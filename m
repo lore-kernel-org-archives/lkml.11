@@ -2,83 +2,205 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29DD2C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:23:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B04EFC19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:23:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235838AbiG0QXW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:23:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50396 "EHLO
+        id S235926AbiG0QXf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:23:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235361AbiG0QWg (ORCPT
+        with ESMTP id S235536AbiG0QWx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:22:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C6C04D151;
-        Wed, 27 Jul 2022 09:22:35 -0700 (PDT)
+        Wed, 27 Jul 2022 12:22:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D1084D16E;
+        Wed, 27 Jul 2022 09:22:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F21D617F2;
-        Wed, 27 Jul 2022 16:22:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B00B6C433D7;
-        Wed, 27 Jul 2022 16:22:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 290D5B821A6;
+        Wed, 27 Jul 2022 16:22:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5204DC433C1;
+        Wed, 27 Jul 2022 16:22:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658938954;
-        bh=FFNPAA1oV66r9wF2ZPiFXCs/NafvjNsgtCw0tpuA1Ls=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yNPj1JALmxyghhyHztMPbvMa9UBPP+65aTDMBPP37fByr1mLmpBCEHoEip40H9174
-         kEPdVf7VNKKgb2NmYwCqCEwDYSY8+39PLdLTEn6ZMIrqs/d+/ZE56ZxTGNgYNbIGtX
-         HvhPNyowiuDkMwelRIEQ475QmMly6vFf5/bozkIY=
+        s=korg; t=1658938956;
+        bh=gaBrScAaCmUC6aNKiBmd9h4bfCdJILFqhKUgDplWUvQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=DCLXmZqe7JtOtz384FV+Wt0KDoGY3OIMYcbbhsDOGkFhiFTgkvKIRMsMgFxYa4MWE
+         oNJmf6EjNCVaVhzqYWKoNgDqdZRsH4pMZowIZurWQMJ5R7jRtbQ/HYSDd0Ernz029a
+         25lQdIwkKrll/9qc/7p6XX88cG38VW2e/5iFFNyo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 09/26] ip: Fix a data-race around sysctl_fwmark_reflect.
-Date:   Wed, 27 Jul 2022 18:10:38 +0200
-Message-Id: <20220727160959.512108187@linuxfoundation.org>
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 4.9 00/26] 4.9.325-rc1 review
+Date:   Wed, 27 Jul 2022 18:10:29 +0200
+Message-Id: <20220727160959.122591422@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220727160959.122591422@linuxfoundation.org>
-References: <20220727160959.122591422@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.325-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-4.9.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 4.9.325-rc1
+X-KernelTest-Deadline: 2022-07-29T16:10+00:00
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+This is the start of the stable review cycle for the 4.9.325 release.
+There are 26 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-[ Upstream commit 85d0b4dbd74b95cc492b1f4e34497d3f894f5d9a ]
+Responses should be made by Fri, 29 Jul 2022 16:09:50 +0000.
+Anything received after that time might be too late.
 
-While reading sysctl_fwmark_reflect, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its reader.
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.325-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.9.y
+and the diffstat can be found below.
 
-Fixes: e110861f8609 ("net: add a sysctl to reflect the fwmark on replies")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- include/net/ip.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+thanks,
 
-diff --git a/include/net/ip.h b/include/net/ip.h
-index c762fd047ef4..f0e13a256582 100644
---- a/include/net/ip.h
-+++ b/include/net/ip.h
-@@ -283,7 +283,7 @@ void ipfrag_init(void);
- void ip_static_sysctl_init(void);
- 
- #define IP4_REPLY_MARK(net, mark) \
--	((net)->ipv4.sysctl_fwmark_reflect ? (mark) : 0)
-+	(READ_ONCE((net)->ipv4.sysctl_fwmark_reflect) ? (mark) : 0)
- 
- static inline bool ip_is_fragment(const struct iphdr *iph)
- {
--- 
-2.35.1
+greg k-h
 
+-------------
+Pseudo-Shortlog of commits:
+
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 4.9.325-rc1
+
+Jose Alonso <joalonsof@gmail.com>
+    net: usb: ax88179_178a needs FLAG_SEND_ZLP
+
+Jiri Slaby <jslaby@suse.cz>
+    tty: use new tty_insert_flip_string_and_push_buffer() in pty_write()
+
+Jiri Slaby <jslaby@suse.cz>
+    tty: extract tty_flip_buffer_commit() from tty_flip_buffer_push()
+
+Jiri Slaby <jslaby@suse.cz>
+    tty: drop tty_schedule_flip()
+
+Jiri Slaby <jslaby@suse.cz>
+    tty: the rest, stop using tty_schedule_flip()
+
+Jiri Slaby <jslaby@suse.cz>
+    tty: drivers/tty/, stop using tty_schedule_flip()
+
+Takashi Iwai <tiwai@suse.de>
+    ALSA: memalloc: Align buffer allocations in page size
+
+Eric Dumazet <edumazet@google.com>
+    bpf: Make sure mac_header was set before using it
+
+Wang Cheng <wanngchenng@gmail.com>
+    mm/mempolicy: fix uninit-value in mpol_rebind_policy()
+
+Jason A. Donenfeld <Jason@zx2c4.com>
+    Revert "Revert "char/random: silence a lockdep splat with printk()""
+
+Hristo Venev <hristo@venev.name>
+    be2net: Fix buffer overflow in be_get_module_eeprom
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    tcp: Fix a data-race around sysctl_tcp_notsent_lowat.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    igmp: Fix a data-race around sysctl_igmp_max_memberships.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    igmp: Fix data-races around sysctl_igmp_llm_reports.
+
+Robert Hancock <robert.hancock@calian.com>
+    i2c: cadence: Change large transfer count reset logic to be unconditional
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    tcp: Fix a data-race around sysctl_tcp_probe_threshold.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    tcp/dccp: Fix a data-race around sysctl_tcp_fwmark_accept.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    ip: Fix a data-race around sysctl_fwmark_reflect.
+
+Peter Zijlstra <peterz@infradead.org>
+    perf/core: Fix data race between perf_event_set_output() and perf_mmap_close()
+
+Miaoqian Lin <linmq006@gmail.com>
+    power/reset: arm-versatile: Fix refcount leak in versatile_reboot_probe
+
+Hangyu Hua <hbh25y@gmail.com>
+    xfrm: xfrm_policy: fix a possible double xfrm_pols_put() in xfrm_bundle_lookup()
+
+Shuah Khan <skhan@linuxfoundation.org>
+    misc: rtsx_usb: set return value in rsp_buf alloc err path
+
+Shuah Khan <skhan@linuxfoundation.org>
+    misc: rtsx_usb: use separate command and response buffers
+
+Shuah Khan <skhan@linuxfoundation.org>
+    misc: rtsx_usb: fix use of dma mapped buffer for usb bulk transfer
+
+Demi Marie Obenour <demi@invisiblethingslab.com>
+    xen/gntdev: Ignore failure to unmap INVALID_GRANT_HANDLE
+
+Stephen Smalley <sds@tycho.nsa.gov>
+    security,selinux,smack: kill security_task_wait hook
+
+
+-------------
+
+Diffstat:
+
+ Makefile                                       |  4 +-
+ arch/alpha/kernel/srmcons.c                    |  2 +-
+ drivers/char/random.c                          |  4 +-
+ drivers/i2c/busses/i2c-cadence.c               | 30 ++----------
+ drivers/mfd/rtsx_usb.c                         | 27 +++++++----
+ drivers/net/ethernet/emulex/benet/be_cmds.c    | 10 ++--
+ drivers/net/ethernet/emulex/benet/be_cmds.h    |  2 +-
+ drivers/net/ethernet/emulex/benet/be_ethtool.c | 31 +++++++-----
+ drivers/net/usb/ax88179_178a.c                 | 14 +++---
+ drivers/power/reset/arm-versatile-reboot.c     |  1 +
+ drivers/s390/char/keyboard.h                   |  4 +-
+ drivers/tty/cyclades.c                         |  6 +--
+ drivers/tty/goldfish.c                         |  2 +-
+ drivers/tty/moxa.c                             |  4 +-
+ drivers/tty/pty.c                              | 14 +-----
+ drivers/tty/serial/lpc32xx_hs.c                |  2 +-
+ drivers/tty/tty_buffer.c                       | 66 +++++++++++++++++---------
+ drivers/tty/vt/keyboard.c                      |  6 +--
+ drivers/tty/vt/vt.c                            |  2 +-
+ drivers/xen/gntdev.c                           |  3 +-
+ include/linux/lsm_hooks.h                      |  7 ---
+ include/linux/mfd/rtsx_usb.h                   |  2 -
+ include/linux/security.h                       |  6 ---
+ include/linux/tty_flip.h                       |  4 +-
+ include/net/inet_sock.h                        |  3 +-
+ include/net/ip.h                               |  2 +-
+ include/net/tcp.h                              |  2 +-
+ kernel/bpf/core.c                              |  8 ++--
+ kernel/events/core.c                           | 45 ++++++++++++------
+ kernel/exit.c                                  | 19 +-------
+ mm/mempolicy.c                                 |  2 +-
+ net/ipv4/igmp.c                                | 23 +++++----
+ net/ipv4/tcp_output.c                          |  2 +-
+ net/xfrm/xfrm_policy.c                         |  5 +-
+ security/security.c                            |  6 ---
+ security/selinux/hooks.c                       |  6 ---
+ security/smack/smack_lsm.c                     | 20 --------
+ sound/core/memalloc.c                          |  1 +
+ 38 files changed, 189 insertions(+), 208 deletions(-)
 
 
