@@ -2,554 +2,197 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B14AC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:53:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12795C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:53:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243186AbiG0RxZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:53:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58648 "EHLO
+        id S243227AbiG0Rx3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:53:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242940AbiG0RxA (ORCPT
+        with ESMTP id S242140AbiG0RxD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:53:00 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1311974AB
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:57:42 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id q7-20020a17090a7a8700b001f300db8677so2718084pjf.5
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:57:42 -0700 (PDT)
+        Wed, 27 Jul 2022 13:53:03 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7734A664E5;
+        Wed, 27 Jul 2022 09:57:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1658941065; x=1690477065;
+  h=from:to:subject:date:message-id:references:in-reply-to:
+   content-id:content-transfer-encoding:mime-version;
+  bh=KUrk7PR+QiscyP/js/aPiisfg00dl7ph+l+UFXn65bc=;
+  b=Kk9rP9jQpYSOBwuuNrkJqcLisbpvKq5+m5TjQeHSB0JfK/3OeFRnaO98
+   qzDbMLszAFkrcKmBSe3y9maN7oLqrxz0pjzNhCyJ7C1QKVL0zklXAVQwT
+   1ynT6Ub8er1qha0aVBAEe2ZksnpWYNJAfyB7nHlHTHcgn7EAfil4hFXBx
+   PpKqFjcieA6MRIskawlMOlKgSoQ5iGhtUF/85Orl1Rt1nTs9mj+EuJGho
+   NU58YxncxK/B0JYBtbDrcB2RCGI3aJLzNEqlBrbHzbsxk3EkvlmB41Ayb
+   PnM84DfjeC0AnrW/oV0cRzXcLozhMaIfL1uyc0YWcrAydrikHvczb+GWo
+   A==;
+X-IronPort-AV: E=Sophos;i="5.93,196,1654585200"; 
+   d="scan'208";a="106400444"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 27 Jul 2022 09:57:44 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 27 Jul 2022 09:57:44 -0700
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.72) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.17 via Frontend
+ Transport; Wed, 27 Jul 2022 09:57:44 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=M0Svsa8HpktYQ+2Gcst5yuOM5lyo44NZ2NuEAUNvvFRzAquLkdPrR9CHQJM2HytUYZvAvDl6whs1gU+hKsV/TiJB6SZT5qm1Rp1THNSqXv+1ehHaM2eWMV3mGYcUi98ixzAXj9Nq+5/CrApaQ43eJ2zAW3BrgiIoCh0pgzvFe9HhZDgSRIFG2tfMWt7YE1LSpjkdc9lny1qCKJlZmyGz0dPxAbvn6HJ1H9TSj0Gq8mobkHlubxLYiv5hP/m1AVoXhBSVhY5tbUy8Fw/TY2wHHrN2JAKnYjnIyAL1sv9PesuhFyjAvHQW9uMpysfWVz58gLgkawhURhw9J3n4VlBt9g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=KUrk7PR+QiscyP/js/aPiisfg00dl7ph+l+UFXn65bc=;
+ b=cbkVoRzDgeMhq7mcnbYaqQtm2JKVdyxouNjyPt9SC2h3vPo//i5ZAdArWY7DBI7kM54LY2JLYL1KjyJPAggEckbJp6qgt/SlWRj5Km4F2q+KQkb7tuVUt7ag629nQoSHTz6nWQs2V1UKE5UMRwrf45C1xGnjBUUFge/wmSORJ43fMSffqCZHwvGzbCiGlN9MF6OkUrFAcD/+QIHH20/OxSNKqodh2sh5dviZIjOiMVfGjgbCohRKRo5F1ZY7PlTkf+hZWQ2/NKaYxlKnQuJ5mJxjusO0/OeSuPszYj9nxXGSAtVjNPB+IBdiYdhvBpojMBjQsf47N3nyjEJWLupuDg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=7Xh1YsWgeIhLV/qWna0t1xQte21GlqcP6EU1Jx3cAms=;
-        b=CqZ/lqnhF6IImbTBvsWfWrQmUaK8G9r4Mlg6BDThEhHFoERyjdua0eCW5JToS5IQT+
-         7OYD3k65OCiLl+1IGNW/wntfYLb/XWkWkh/bykvylsRO11EvTnXwQpk6HxjZIp8xhdna
-         QsutvcXw3QY4APZ3NbIOGSwLK2XLKCPz99cRo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=7Xh1YsWgeIhLV/qWna0t1xQte21GlqcP6EU1Jx3cAms=;
-        b=yqt1fWQGj1WjDi4lWCX5iwSHfmte/tKCd8fBbULxr91Rx6KQgFQHGgin4NQSUFHy+m
-         d7SwXIq29BbtDIykt2Vj9QXM9YY7I+5yspDO10ey921okVHLchljfQsuOCnCQwcNgPlj
-         cblvHoosfCmRSQOhg7df2xokcdYWr7stf84c4GyrKi1O6oBZXfn73ChIXNc+yqxQ/P8t
-         bXE2a90H9d/f2ProrUgpSsP+TSsAS/B73TLmUGLxL3OQPO8R1Scp/qYWQ5+kIuGgQmvZ
-         Ohjg9at5gQf8QND9oR+9IBTBZgcvGEboaqM1Dzd7+l0xPRyfN8bLilMTX9G9dVL1K1J4
-         18Dw==
-X-Gm-Message-State: AJIora/l+Cw0rLNBFOjTcIO63lEkh/jOVzoD0eI/PfCqNBvW7nvdlmNq
-        1MTSX7U+tsVOySulPclZgmyCrw==
-X-Google-Smtp-Source: AGRyM1v0NvD7FYUDPm8yK4zwPHs2vHGqjgz7OJToLnZdC/i8qnzbKHTHjpxeUyP62PGfQcq47chsiQ==
-X-Received: by 2002:a17:902:f705:b0:16b:9b6d:67a1 with SMTP id h5-20020a170902f70500b0016b9b6d67a1mr23119291plo.39.1658941061768;
-        Wed, 27 Jul 2022 09:57:41 -0700 (PDT)
-Received: from rahul_yocto_ubuntu18.ibn.broadcom.net ([192.19.234.250])
-        by smtp.gmail.com with ESMTPSA id c15-20020a631c0f000000b0040c74f0cdb5sm12280280pgc.6.2022.07.27.09.57.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 09:57:41 -0700 (PDT)
-From:   Vikas Gupta <vikas.gupta@broadcom.com>
-To:     jiri@nvidia.com, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        davem@davemloft.net, dsahern@kernel.org,
-        stephen@networkplumber.org, edumazet@google.com, pabeni@redhat.com,
-        ast@kernel.org, leon@kernel.org, linux-doc@vger.kernel.org,
-        corbet@lwn.net, michael.chan@broadcom.com,
-        andrew.gospodarek@broadcom.com,
-        Vikas Gupta <vikas.gupta@broadcom.com>
-Subject: [PATCH net-next v9 1/2] devlink: introduce framework for selftests
-Date:   Wed, 27 Jul 2022 22:27:20 +0530
-Message-Id: <20220727165721.37959-2-vikas.gupta@broadcom.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220727165721.37959-1-vikas.gupta@broadcom.com>
-References: <20220727165721.37959-1-vikas.gupta@broadcom.com>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000b89dc205e4cc50fd"
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=KUrk7PR+QiscyP/js/aPiisfg00dl7ph+l+UFXn65bc=;
+ b=tUw140vRQZ+R+tZANXn4ocm6SPymbJYJUg9bQ/JIZ10271R2I/EwaW0a/KMObtUrtPqRyInH1sSr70OIE6DLZ5G2IUtiB672T2XGwt9M3QrxZkQxd4Ji61ALnw+qTSUIs19Psd20xBt7fiw1r0DYFT8irlD/pJdzikZg8b845VA=
+Received: from CO1PR11MB5154.namprd11.prod.outlook.com (2603:10b6:303:99::15)
+ by SA0PR11MB4623.namprd11.prod.outlook.com (2603:10b6:806:95::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.18; Wed, 27 Jul
+ 2022 16:57:39 +0000
+Received: from CO1PR11MB5154.namprd11.prod.outlook.com
+ ([fe80::ac89:75cd:26e0:51c3]) by CO1PR11MB5154.namprd11.prod.outlook.com
+ ([fe80::ac89:75cd:26e0:51c3%7]) with mapi id 15.20.5458.025; Wed, 27 Jul 2022
+ 16:57:39 +0000
+From:   <Conor.Dooley@microchip.com>
+To:     <krzysztof.kozlowski@linaro.org>, <i.bornyakov@metrotek.ru>,
+        <mdf@kernel.org>, <hao.wu@intel.com>, <yilun.xu@intel.com>,
+        <trix@redhat.com>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <linux-fpga@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] dt-bindings: fpga: microchip,mpf-spi-fpga-mgr: use
+ spi-peripheral-props.yaml
+Thread-Topic: [PATCH] dt-bindings: fpga: microchip,mpf-spi-fpga-mgr: use
+ spi-peripheral-props.yaml
+Thread-Index: AQHYodgiuClAJQHLFkm5YQbKggoK+K2ScESA
+Date:   Wed, 27 Jul 2022 16:57:39 +0000
+Message-ID: <80eeee3d-ff1c-393f-f894-5f0f32cd4112@microchip.com>
+References: <20220727164347.386398-1-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220727164347.386398-1-krzysztof.kozlowski@linaro.org>
+Accept-Language: en-IE, en-US
+Content-Language: en-IE
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: a94aafff-4585-4193-5997-08da6ff11d37
+x-ms-traffictypediagnostic: SA0PR11MB4623:EE_
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: yqW2Rfj5uXhd8zoLuU+TfiCgWFOc+Km/mpiN+TuvTumSFBvr9OriSJGcqbzz5kJPmaJXUul8CjI8Rh46uT8hwhpPYAOI4wZN3eFdv1jbaNHywLXMn5WDNh5xGxEH1tB5RchBjmSiIYXoK7kdFfAHngXVvakG0ANdsZtKZ/UB3cpZK1jGEf/DzcVL/l+wDx0EY8UQ973v3nisHHHrYuAuuQRBTX2NTnT1OAbCv6RGfdeERnVDdGlmVzltONerG0zPgu68H44Yzk8k+4jjaaVCs7lzh5hl/UgWTxaJZP1HW9DqoiyvfNnX9n91bA4szdwcRzaXE91iCdY9hsMwiIUuslld3AiYaEYNA62IKty+jkUi/qD4S5s1Y8zVDzQ8xvGVanR7q2t4rvJkBKLVKKKPrGMGCATFV6auVrL8SdrUL8aPlgAp4zCUInVTbK0NCL3U6GHDkJ1RGoWMvA+OT2cH1aOyNN9RuuX2+VIFKNwUyaoAxJTvLQkV5KEWPYWNxaTyBPd8hne4ICvIvKNSLhEJ7h8aCXS06Zz+LACh9sbHmS+F2OSMYlHQMAM9XxELn+WR9fB2Ma+ig1jkXrbEIwqe0UD/RX0WxRWHBfzYDlmImONTBMyyR5YyP08GPC3+SqdxQc17kmI32s+hVt0ByxHwGIK6EXfsYY5SjYVZm6esCeCGj5wYxRWWxLT5PndMMDA6tTVrcQ34sbeKzknnLMpKzJs1b6cTNKlUYz6LmEf6/EB3+mKhVI+lKbW54nJstejfRFlDvffng6C1X3w5+KfmKJz8XJ8CshSVTqaLrNAUnEhns8Anc4274iiKRNe85vU2rkYOzr0xFOAALZEzA4BMpnAq4BgB/h/3JaGXu37Q3oVZhQiJXXoCOsJ6whuxg8338T+Hs0xgRM0/yAFVK/sb42jQfi7zEhpbR6Uo4oZE5M8=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5154.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(39860400002)(346002)(396003)(366004)(136003)(376002)(110136005)(316002)(2616005)(36756003)(6506007)(478600001)(41300700001)(966005)(53546011)(6486002)(26005)(6512007)(2906002)(71200400001)(31696002)(86362001)(64756008)(8676002)(76116006)(66476007)(91956017)(66556008)(66946007)(66446008)(5660300002)(8936002)(83380400001)(122000001)(38100700002)(921005)(186003)(38070700005)(31686004)(7416002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?TmlOUThERUw3TVE3MzRvVVd4WWlBdVdZZWhPbGtYbEJTWFd5Q3g5QWl0YjlL?=
+ =?utf-8?B?U3M3T0tqdm1oRWVyTTNEUUtnakczTmgxaVZkcDdmYy90R3drb0QyQnlWSnN6?=
+ =?utf-8?B?YmY4OUhJcytIVExXbGM4L1ZkRlpGeVdwZENicGwrYTBtVllwYy9aOXoxeXNP?=
+ =?utf-8?B?Q3lndHFoTEY4TmRkNmJCTDYwcmI1NXJ0bWh5RUhNZ0gwRk1iazZFRUdpRWcw?=
+ =?utf-8?B?dTE5WVd5TGU1eXF0L0I0V2hadVhsalp4UE84NHlVTFhVbzRLSnE5UUl2dzlX?=
+ =?utf-8?B?QVYvam14eE9acWpvY2FrVzhLN2tQWUZ4SXBITi80M0xBck9BMEwyQkczb2ZG?=
+ =?utf-8?B?RmYwVCtVZVJIQ09uejRhZFdncVdHb21FT0loQXZSazdmOTRTVTVSV0tJenpT?=
+ =?utf-8?B?ZVQrdiszZjQ5a0JmZXl3QnRUQUNRYkpadW1QLzBYL3pPU3JNN1VGTEZRVkg5?=
+ =?utf-8?B?M0pvSUZLTHlXUEJNN015SmM1M3dFa2lrWHB3bWdodUs5cFd4VVd4Nmt1cFR4?=
+ =?utf-8?B?dGMveXlMRTI3YThRQXhibUVFUEprVDU3anFXVGtuZGNoUm95aE9HT0ZuaVMx?=
+ =?utf-8?B?NzRPVzgraHdHY21PS3FpaUlNaUdWajlHWm04REw0SG5uazZpNVNKYUM1TmdT?=
+ =?utf-8?B?MUk5am1oQTQ5Uk9OMVZqTDZIcEgyRUw2TEtrVnZEdzFUcDVTSllMY3BXUkcv?=
+ =?utf-8?B?R1VkTmhuSkFUd0U2WXVjQkJ3bTBoMnVQQ3MvQklQSXROWkRGTjd1eFd6K0Zh?=
+ =?utf-8?B?MmhLaytkWFNCenB4YTlKVzVQYkNVRkRtaExWUEJyMHFyTCtzYWlEdzdEV3dV?=
+ =?utf-8?B?enAwT3hjLzhyWG9TQWdsQU82cW9MQldsSkdETlVzd1hTYktuV0c0NldEditZ?=
+ =?utf-8?B?Um9QN0xOM2pVK2ZWeUdpRktQMUllRkZuYXEwVmR1UlFWWit1V21WN0ZQeVlz?=
+ =?utf-8?B?dHpXVkhQQTRhSmViWXBwTjM1VjJUdjZuaEZyS2gzVy9iR21yNUtaV3Rodjgr?=
+ =?utf-8?B?MWhLWHZTM0JMRXNWZ1VOWmdtMEpuVVcrbE1nS2N3YW5XcDl0Q1dGZmFiUTFw?=
+ =?utf-8?B?aVIvZkozeFA3cU90L0oyYi9XeS92aFVMSU03T1RVY0s3QWtpQ05BclIvcmo5?=
+ =?utf-8?B?STIwV2xobUlUUHZtZGk4MnRLQy9vOUZJSmVXc05uRnhhbDFQMG5rcTQ3dnVS?=
+ =?utf-8?B?UDN5L1JFbE1vZ1FYMTVjYWlvSXpYK1RsT1ZpcTdyUDVweWVmU2lWZGxwd3BF?=
+ =?utf-8?B?WStNZ2FXOEpsVGExNXpLZ01SM2o5QS9SQ3NwbkJ3ditxOGp1eDhWZTg2NGFK?=
+ =?utf-8?B?Q1pKZ2psY0dCTllRZlFucFAzc2NtV3M1WFJsQzZ4T1d0akpOa1pRdXFJMm9k?=
+ =?utf-8?B?dTJiWjUrS1lWSFZXbEk4NkpRMmhzRVdLVVlUZ2wzcjdFTkh1WW1RWEh5TTRK?=
+ =?utf-8?B?MmJQNHRIQmc2NTl5M3Fsam12aGZ4OEEyVzl6NGhvZEtCVFdLT3BTQU85WDFu?=
+ =?utf-8?B?ZlNtY3F2dUdwWWVSRUtYTVNxa2ZQaFBJTGUxbUtnQnRzK2tKR0xUbW9jMCta?=
+ =?utf-8?B?MGp3cVg0ZWNuQnlxdmpsVUtnSXZ5RldpRlhWdXhVR2VYaVZnY0VJSDhNcTha?=
+ =?utf-8?B?SlJIVlFLeWh1MER2Y24vb2tzQ3gyaG9jNnFVamQ1WUk2L1oweTZRQU9oSG96?=
+ =?utf-8?B?NE1ZSld5VllMeWRPbXY5SEhVSTNvMFhqYVE2R2FPTWlkekFIbjA4RmdrbTYw?=
+ =?utf-8?B?cy81UDI2cE1FZ2VxbzRQdEZyN3haT0ZoSndYOWdyWVdxcTBIaEszODU4azQ5?=
+ =?utf-8?B?U0RoaTdwZEJlM1JQcWFYWTNzR21GWjJYVTVDTk83Mk5PUjFlZXpmQmhnanRO?=
+ =?utf-8?B?TDR1MGJwQzJ6TnhpeEVrL3YxUnJpVEFHREdsWTZqRE0xdzNtbXlwZkd4K2Uy?=
+ =?utf-8?B?ZFh2NEMyQnNoTkQvTHkxUE9HSkVoTXZvSVVQVy9TM3RsbmVDaEU2b0hXOEpw?=
+ =?utf-8?B?RzZnSzFKYWpWQVB4MzZVbWcrS2tKNmtEU1JhOS9sNEFCYnorZHd5NlNiU1Jw?=
+ =?utf-8?B?Y0JNUTJPRHVCb0ZDb2FrSXd4eDVOS2JtMUt1M2tuMldRR2xXUUlKWmp3ZTlE?=
+ =?utf-8?B?QjJreTFYM2owVk50Q29EWjJtcGRwMzhRTVV5QTkwUW1OSXFrK0xRMHFJOGdP?=
+ =?utf-8?B?VkE9PQ==?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <A0D82CDE2CFDBC46964A25D102955B8C@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5154.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a94aafff-4585-4193-5997-08da6ff11d37
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Jul 2022 16:57:39.3845
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: zncxTGFzlGCdrWOWDkS7/fGeMOzJ0Ez54+y/gNE9TjCxrufJEfMXrYaQgY8tvQoYwUGPH3sNLN8ncy3NcgJwm9zIou+rZdBaJRgsn2VIk04=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA0PR11MB4623
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---000000000000b89dc205e4cc50fd
-
-Add a framework for running selftests.
-Framework exposes devlink commands and test suite(s) to the user
-to execute and query the supported tests by the driver.
-
-Below are new entries in devlink_nl_ops
-devlink_nl_cmd_selftests_show_doit/dumpit: To query the supported
-selftests by the drivers.
-devlink_nl_cmd_selftests_run: To execute selftests. Users can
-provide a test mask for executing group tests or standalone tests.
-
-Documentation/networking/devlink/ path is already part of MAINTAINERS &
-the new files come under this path. Hence no update needed to the
-MAINTAINERS
-
-Signed-off-by: Vikas Gupta <vikas.gupta@broadcom.com>
----
- .../networking/devlink/devlink-selftests.rst  |  38 +++
- include/net/devlink.h                         |  21 ++
- include/uapi/linux/devlink.h                  |  29 +++
- net/core/devlink.c                            | 216 ++++++++++++++++++
- 4 files changed, 304 insertions(+)
- create mode 100644 Documentation/networking/devlink/devlink-selftests.rst
-
-diff --git a/Documentation/networking/devlink/devlink-selftests.rst b/Documentation/networking/devlink/devlink-selftests.rst
-new file mode 100644
-index 000000000000..c0aa1f3aef0d
---- /dev/null
-+++ b/Documentation/networking/devlink/devlink-selftests.rst
-@@ -0,0 +1,38 @@
-+.. SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+
-+=================
-+Devlink Selftests
-+=================
-+
-+The ``devlink-selftests`` API allows executing selftests on the device.
-+
-+Tests Mask
-+==========
-+The ``devlink-selftests`` command should be run with a mask indicating
-+the tests to be executed.
-+
-+Tests Description
-+=================
-+The following is a list of tests that drivers may execute.
-+
-+.. list-table:: List of tests
-+   :widths: 5 90
-+
-+   * - Name
-+     - Description
-+   * - ``DEVLINK_SELFTEST_FLASH``
-+     - Devices may have the firmware on non-volatile memory on the board, e.g.
-+       flash. This particular test helps to run a flash selftest on the device.
-+       Implementation of the test is left to the driver/firmware.
-+
-+example usage
-+-------------
-+
-+.. code:: shell
-+
-+    # Query selftests supported on the devlink device
-+    $ devlink dev selftests show DEV
-+    # Query selftests supported on all devlink devices
-+    $ devlink dev selftests show
-+    # Executes selftests on the device
-+    $ devlink dev selftests run DEV id flash
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 5bd3fac12e9e..119ed1ffb988 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -1509,6 +1509,27 @@ struct devlink_ops {
- 				    struct devlink_rate *parent,
- 				    void *priv_child, void *priv_parent,
- 				    struct netlink_ext_ack *extack);
-+	/**
-+	 * selftests_check() - queries if selftest is supported
-+	 * @devlink: devlink instance
-+	 * @id: test index
-+	 * @extack: extack for reporting error messages
-+	 *
-+	 * Return: true if test is supported by the driver
-+	 */
-+	bool (*selftest_check)(struct devlink *devlink, unsigned int id,
-+			       struct netlink_ext_ack *extack);
-+	/**
-+	 * selftest_run() - Runs a selftest
-+	 * @devlink: devlink instance
-+	 * @id: test index
-+	 * @extack: extack for reporting error messages
-+	 *
-+	 * Return: status of the test
-+	 */
-+	enum devlink_selftest_status
-+	(*selftest_run)(struct devlink *devlink, unsigned int id,
-+			struct netlink_ext_ack *extack);
- };
- 
- void *devlink_priv(struct devlink *devlink);
-diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
-index 541321695f52..2f24b53a87a5 100644
---- a/include/uapi/linux/devlink.h
-+++ b/include/uapi/linux/devlink.h
-@@ -136,6 +136,9 @@ enum devlink_command {
- 	DEVLINK_CMD_LINECARD_NEW,
- 	DEVLINK_CMD_LINECARD_DEL,
- 
-+	DEVLINK_CMD_SELFTESTS_GET,	/* can dump */
-+	DEVLINK_CMD_SELFTESTS_RUN,
-+
- 	/* add new commands above here */
- 	__DEVLINK_CMD_MAX,
- 	DEVLINK_CMD_MAX = __DEVLINK_CMD_MAX - 1
-@@ -276,6 +279,30 @@ enum {
- #define DEVLINK_SUPPORTED_FLASH_OVERWRITE_SECTIONS \
- 	(_BITUL(__DEVLINK_FLASH_OVERWRITE_MAX_BIT) - 1)
- 
-+enum devlink_attr_selftest_id {
-+	DEVLINK_ATTR_SELFTEST_ID_UNSPEC,
-+	DEVLINK_ATTR_SELFTEST_ID_FLASH,	/* flag */
-+
-+	__DEVLINK_ATTR_SELFTEST_ID_MAX,
-+	DEVLINK_ATTR_SELFTEST_ID_MAX = __DEVLINK_ATTR_SELFTEST_ID_MAX - 1
-+};
-+
-+enum devlink_selftest_status {
-+	DEVLINK_SELFTEST_STATUS_SKIP,
-+	DEVLINK_SELFTEST_STATUS_PASS,
-+	DEVLINK_SELFTEST_STATUS_FAIL
-+};
-+
-+enum devlink_attr_selftest_result {
-+	DEVLINK_ATTR_SELFTEST_RESULT_UNSPEC,
-+	DEVLINK_ATTR_SELFTEST_RESULT,		/* nested */
-+	DEVLINK_ATTR_SELFTEST_RESULT_ID,	/* u32, enum devlink_attr_selftest_id */
-+	DEVLINK_ATTR_SELFTEST_RESULT_STATUS,	/* u8, enum devlink_selftest_status */
-+
-+	__DEVLINK_ATTR_SELFTEST_RESULT_MAX,
-+	DEVLINK_ATTR_SELFTEST_RESULT_MAX = __DEVLINK_ATTR_SELFTEST_RESULT_MAX - 1
-+};
-+
- /**
-  * enum devlink_trap_action - Packet trap action.
-  * @DEVLINK_TRAP_ACTION_DROP: Packet is dropped by the device and a copy is not
-@@ -578,6 +605,8 @@ enum devlink_attr {
- 
- 	DEVLINK_ATTR_NESTED_DEVLINK,		/* nested */
- 
-+	DEVLINK_ATTR_SELFTESTS,			/* nested */
-+
- 	/* add new attributes above here, update the policy in devlink.c */
- 
- 	__DEVLINK_ATTR_MAX,
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 698b2d6e0ec7..32730ad25081 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -201,6 +201,10 @@ static const struct nla_policy devlink_function_nl_policy[DEVLINK_PORT_FUNCTION_
- 				 DEVLINK_PORT_FN_STATE_ACTIVE),
- };
- 
-+static const struct nla_policy devlink_selftest_nl_policy[DEVLINK_ATTR_SELFTEST_ID_MAX + 1] = {
-+	[DEVLINK_ATTR_SELFTEST_ID_FLASH] = { .type = NLA_FLAG },
-+};
-+
- static DEFINE_XARRAY_FLAGS(devlinks, XA_FLAGS_ALLOC);
- #define DEVLINK_REGISTERED XA_MARK_1
- 
-@@ -4827,6 +4831,206 @@ static int devlink_nl_cmd_flash_update(struct sk_buff *skb,
- 	return ret;
- }
- 
-+static int
-+devlink_nl_selftests_fill(struct sk_buff *msg, struct devlink *devlink,
-+			  u32 portid, u32 seq, int flags,
-+			  struct netlink_ext_ack *extack)
-+{
-+	struct nlattr *selftests;
-+	void *hdr;
-+	int err;
-+	int i;
-+
-+	hdr = genlmsg_put(msg, portid, seq, &devlink_nl_family, flags,
-+			  DEVLINK_CMD_SELFTESTS_GET);
-+	if (!hdr)
-+		return -EMSGSIZE;
-+
-+	err = -EMSGSIZE;
-+	if (devlink_nl_put_handle(msg, devlink))
-+		goto err_cancel_msg;
-+
-+	selftests = nla_nest_start(msg, DEVLINK_ATTR_SELFTESTS);
-+	if (!selftests)
-+		goto err_cancel_msg;
-+
-+	for (i = DEVLINK_ATTR_SELFTEST_ID_UNSPEC + 1;
-+	     i <= DEVLINK_ATTR_SELFTEST_ID_MAX; i++) {
-+		if (devlink->ops->selftest_check(devlink, i, extack)) {
-+			err = nla_put_flag(msg, i);
-+			if (err)
-+				goto err_cancel_msg;
-+		}
-+	}
-+
-+	nla_nest_end(msg, selftests);
-+	genlmsg_end(msg, hdr);
-+	return 0;
-+
-+err_cancel_msg:
-+	genlmsg_cancel(msg, hdr);
-+	return err;
-+}
-+
-+static int devlink_nl_cmd_selftests_get_doit(struct sk_buff *skb,
-+					     struct genl_info *info)
-+{
-+	struct devlink *devlink = info->user_ptr[0];
-+	struct sk_buff *msg;
-+	int err;
-+
-+	if (!devlink->ops->selftest_check)
-+		return -EOPNOTSUPP;
-+
-+	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
-+	if (!msg)
-+		return -ENOMEM;
-+
-+	err = devlink_nl_selftests_fill(msg, devlink, info->snd_portid,
-+					info->snd_seq, 0, info->extack);
-+	if (err) {
-+		nlmsg_free(msg);
-+		return err;
-+	}
-+
-+	return genlmsg_reply(msg, info);
-+}
-+
-+static int devlink_nl_cmd_selftests_get_dumpit(struct sk_buff *msg,
-+					       struct netlink_callback *cb)
-+{
-+	struct devlink *devlink;
-+	int start = cb->args[0];
-+	unsigned long index;
-+	int idx = 0;
-+	int err = 0;
-+
-+	mutex_lock(&devlink_mutex);
-+	devlinks_xa_for_each_registered_get(sock_net(msg->sk), index, devlink) {
-+		if (idx < start || !devlink->ops->selftest_check)
-+			goto inc;
-+
-+		devl_lock(devlink);
-+		err = devlink_nl_selftests_fill(msg, devlink,
-+						NETLINK_CB(cb->skb).portid,
-+						cb->nlh->nlmsg_seq, NLM_F_MULTI,
-+						cb->extack);
-+		devl_unlock(devlink);
-+		if (err) {
-+			devlink_put(devlink);
-+			break;
-+		}
-+inc:
-+		idx++;
-+		devlink_put(devlink);
-+	}
-+	mutex_unlock(&devlink_mutex);
-+
-+	if (err != -EMSGSIZE)
-+		return err;
-+
-+	cb->args[0] = idx;
-+	return msg->len;
-+}
-+
-+static int devlink_selftest_result_put(struct sk_buff *skb, unsigned int id,
-+				       enum devlink_selftest_status test_status)
-+{
-+	struct nlattr *result_attr;
-+
-+	result_attr = nla_nest_start(skb, DEVLINK_ATTR_SELFTEST_RESULT);
-+	if (!result_attr)
-+		return -EMSGSIZE;
-+
-+	if (nla_put_u32(skb, DEVLINK_ATTR_SELFTEST_RESULT_ID, id) ||
-+	    nla_put_u8(skb, DEVLINK_ATTR_SELFTEST_RESULT_STATUS,
-+		       test_status))
-+		goto nla_put_failure;
-+
-+	nla_nest_end(skb, result_attr);
-+	return 0;
-+
-+nla_put_failure:
-+	nla_nest_cancel(skb, result_attr);
-+	return -EMSGSIZE;
-+}
-+
-+static int devlink_nl_cmd_selftests_run(struct sk_buff *skb,
-+					struct genl_info *info)
-+{
-+	struct nlattr *tb[DEVLINK_ATTR_SELFTEST_ID_MAX + 1];
-+	struct devlink *devlink = info->user_ptr[0];
-+	struct nlattr *attrs, *selftests;
-+	struct sk_buff *msg;
-+	void *hdr;
-+	int err;
-+	int i;
-+
-+	if (!devlink->ops->selftest_run || !devlink->ops->selftest_check)
-+		return -EOPNOTSUPP;
-+
-+	if (!info->attrs[DEVLINK_ATTR_SELFTESTS]) {
-+		NL_SET_ERR_MSG_MOD(info->extack, "selftest required");
-+		return -EINVAL;
-+	}
-+
-+	attrs = info->attrs[DEVLINK_ATTR_SELFTESTS];
-+
-+	err = nla_parse_nested(tb, DEVLINK_ATTR_SELFTEST_ID_MAX, attrs,
-+			       devlink_selftest_nl_policy, info->extack);
-+	if (err < 0)
-+		return err;
-+
-+	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
-+	if (!msg)
-+		return -ENOMEM;
-+
-+	err = -EMSGSIZE;
-+	hdr = genlmsg_put(msg, info->snd_portid, info->snd_seq,
-+			  &devlink_nl_family, 0, DEVLINK_CMD_SELFTESTS_RUN);
-+	if (!hdr)
-+		goto free_msg;
-+
-+	if (devlink_nl_put_handle(msg, devlink))
-+		goto genlmsg_cancel;
-+
-+	selftests = nla_nest_start(msg, DEVLINK_ATTR_SELFTESTS);
-+	if (!selftests)
-+		goto genlmsg_cancel;
-+
-+	for (i = DEVLINK_ATTR_SELFTEST_ID_UNSPEC + 1;
-+	     i <= DEVLINK_ATTR_SELFTEST_ID_MAX; i++) {
-+		enum devlink_selftest_status test_status;
-+
-+		if (nla_get_flag(tb[i])) {
-+			if (!devlink->ops->selftest_check(devlink, i,
-+							  info->extack)) {
-+				if (devlink_selftest_result_put(msg, i,
-+								DEVLINK_SELFTEST_STATUS_SKIP))
-+					goto selftests_nest_cancel;
-+				continue;
-+			}
-+
-+			test_status = devlink->ops->selftest_run(devlink, i,
-+								 info->extack);
-+			if (devlink_selftest_result_put(msg, i, test_status))
-+				goto selftests_nest_cancel;
-+		}
-+	}
-+
-+	nla_nest_end(msg, selftests);
-+	genlmsg_end(msg, hdr);
-+	return genlmsg_reply(msg, info);
-+
-+selftests_nest_cancel:
-+	nla_nest_cancel(msg, selftests);
-+genlmsg_cancel:
-+	genlmsg_cancel(msg, hdr);
-+free_msg:
-+	nlmsg_free(msg);
-+	return err;
-+}
-+
- static const struct devlink_param devlink_param_generic[] = {
- 	{
- 		.id = DEVLINK_PARAM_GENERIC_ID_INT_ERR_RESET,
-@@ -8970,6 +9174,7 @@ static const struct nla_policy devlink_nl_policy[DEVLINK_ATTR_MAX + 1] = {
- 	[DEVLINK_ATTR_RATE_PARENT_NODE_NAME] = { .type = NLA_NUL_STRING },
- 	[DEVLINK_ATTR_LINECARD_INDEX] = { .type = NLA_U32 },
- 	[DEVLINK_ATTR_LINECARD_TYPE] = { .type = NLA_NUL_STRING },
-+	[DEVLINK_ATTR_SELFTESTS] = { .type = NLA_NESTED },
- };
- 
- static const struct genl_small_ops devlink_nl_ops[] = {
-@@ -9329,6 +9534,17 @@ static const struct genl_small_ops devlink_nl_ops[] = {
- 		.doit = devlink_nl_cmd_trap_policer_set_doit,
- 		.flags = GENL_ADMIN_PERM,
- 	},
-+	{
-+		.cmd = DEVLINK_CMD_SELFTESTS_GET,
-+		.doit = devlink_nl_cmd_selftests_get_doit,
-+		.dumpit = devlink_nl_cmd_selftests_get_dumpit
-+		/* can be retrieved by unprivileged users */
-+	},
-+	{
-+		.cmd = DEVLINK_CMD_SELFTESTS_RUN,
-+		.doit = devlink_nl_cmd_selftests_run,
-+		.flags = GENL_ADMIN_PERM,
-+	},
- };
- 
- static struct genl_family devlink_nl_family __ro_after_init = {
--- 
-2.31.1
-
-
---000000000000b89dc205e4cc50fd
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-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
-I7qKxvF8Yo7eGTnHRTa99J+6yTd88AKVuhM5TEhpC8cS7qvrQXJje+Uing2xWC4FH76LEWIFH0Pt
-x8C1WoCU0ClXHU/XfzH2mYrFANBSCeP1Co6QdEfRAgMBAAGjggHZMIIB1TAOBgNVHQ8BAf8EBAMC
-BaAwgaMGCCsGAQUFBwEBBIGWMIGTME4GCCsGAQUFBzAChkJodHRwOi8vc2VjdXJlLmdsb2JhbHNp
-Z24uY29tL2NhY2VydC9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcnQwQQYIKwYBBQUHMAGG
-NWh0dHA6Ly9vY3NwLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwME0G
-A1UdIARGMEQwQgYKKwYBBAGgMgEoCjA0MDIGCCsGAQUFBwIBFiZodHRwczovL3d3dy5nbG9iYWxz
-aWduLmNvbS9yZXBvc2l0b3J5LzAJBgNVHRMEAjAAMEkGA1UdHwRCMEAwPqA8oDqGOGh0dHA6Ly9j
-cmwuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3JsMCMGA1UdEQQc
-MBqBGHZpa2FzLmd1cHRhQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNVHSME
-GDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUUc6J11rH3s6PyZQ0zIVZHIuP20Yw
-DQYJKoZIhvcNAQELBQADggEBALvCjXn9gy9a2nU/Ey0nphGZefIP33ggiyuKnmqwBt7Wk/uDHIIc
-kkIlqtTbo0x0PqphS9A23CxCDjKqZq2WN34fL5MMW83nrK0vqnPloCaxy9/6yuLbottBY4STNuvA
-mQ//Whh+PE+DZadqiDbxXbos3IH8AeFXH4A1zIqIrc0Um2/CSD/T6pvu9QrchtvemfP0z/f1Bk+8
-QbQ4ARVP93WV1I13US69evWXw+mOv9VnejShU9PMcDK203xjXbBOi9Hm+fthrWfwIyGoC5aEf7vd
-PKkEDt4VZ9RbudZU/c3N8+kURaHNtrvu2K+mQs5w/AF7HYZThqmOzQJnvMRjuL8xggJtMIICaQIB
-ATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQDEyhH
-bG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwYjepatB64S625eswwDQYJ
-YIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIOIT2YMU3NMi27XlgMeXf19Us8wvNXM3SqhJ
-1WsmXbqYMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDcyNzE2
-NTc0MlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCGSAFl
-AwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQCATAN
-BgkqhkiG9w0BAQEFAASCAQC0y8qBFjZ3v3+gHSIKITlsDg+TFLEDUpLveW+Vz49TfDHcwn09G6ln
-2So4bksScayg2OBYZWU+GyjXI81dSmXujPl0Jx27flJR8mHCFiulJI3OtLR7RQ0htnFXH7MKlU9e
-VszbNzead8izcxz5W7g4FxvSCxTbXR4Igxx6Wn2fKqgK2EBCf4q8Q2ti12EMbpOLnwm49ALn0o39
-aP0ufuYKlcVorMfjP4HPlFNI0UPNRes6HH1/n6SEhpTlvVPOibEM8HVo6q3ML5WvYpKGdybmRzSB
-Q3yEISXnN3PufsCreNcTALNr+jv1hTWIJzaDcaIArvfZYcU3SGu/Fjr1MppO
---000000000000b89dc205e4cc50fd--
+SGV5IEtyenlzenRvZiwNCg0KT24gMjcvMDcvMjAyMiAxNzo0MywgS3J6eXN6dG9mIEtvemxvd3Nr
+aSB3cm90ZToNCj4gRVhURVJOQUwgRU1BSUw6IERvIG5vdCBjbGljayBsaW5rcyBvciBvcGVuIGF0
+dGFjaG1lbnRzIHVubGVzcyB5b3Uga25vdyB0aGUgY29udGVudCBpcyBzYWZlDQo+IA0KPiBJbnN0
+ZWFkIG9mIGxpc3RpbmcgZGlyZWN0bHkgcHJvcGVydGllcyB0eXBpY2FsIGZvciBTUEkgcGVyaXBo
+ZXJhbHMsDQo+IHJlZmVyZW5jZSB0aGUgc3BpLXBlcmlwaGVyYWwtcHJvcHMueWFtbCBzY2hlbWEu
+ICBUaGlzIGFsbG93cyB1c2luZyBhbGwNCj4gcHJvcGVydGllcyB0eXBpY2FsIGZvciBTUEktY29u
+bmVjdGVkIGRldmljZXMsIGV2ZW4gdGhlc2Ugd2hpY2ggZGV2aWNlDQo+IGJpbmRpbmdzIGF1dGhv
+ciBkaWQgbm90IHRyaWVkIHlldC4NCj4gDQo+IFJlbW92ZSB0aGUgc3BpLSogcHJvcGVydGllcyB3
+aGljaCBub3cgY29tZSB2aWEgc3BpLXBlcmlwaGVyYWwtcHJvcHMueWFtbA0KPiBzY2hlbWEsIGV4
+Y2VwdCBmb3IgdGhlIGNhc2VzIHdoZW4gZGV2aWNlIHNjaGVtYSBhZGRzIHNvbWUgY29uc3RyYWlu
+dHMNCj4gbGlrZSBtYXhpbXVtIGZyZXF1ZW5jeS4NCj4gDQo+IFdoaWxlIGNoYW5naW5nIGFkZGl0
+aW9uYWxQcm9wZXJ0aWVzLT51bmV2YWx1YXRlZFByb3BlcnRpZXMsIHB1dCBpdCBpbg0KPiB0eXBp
+Y2FsIHBsYWNlLCBqdXN0IGJlZm9yZSBleGFtcGxlIERUUy4NCg0KVGhpcyBpcyBwcm9iYWJseSBq
+dXN0IG1lIG1pc3Npbmcgc29tZXRoaW5nIGFib3V0IGR0LXNjaGVtYSBub3JtcywNCmJ1dCBob3cg
+Y29tZSB5b3UgYWRkZWQgdGhlICRyZWYganVzdCBhYm92ZSB0aGUgZXhhbXBsZSByYXRoZXIgdGhh
+bg0KYWJvdmUgdGhlIHByb3BlcnRpZXMgbGlzdD8NCg0KRWl0aGVyIHdheSwgdGhlIGNoYW5nZSBp
+dHNlbGYgbWFrZXMgc2Vuc2UgdG8gbWU6DQpSZXZpZXdlZC1ieTogQ29ub3IgRG9vbGV5IDxjb25v
+ci5kb29sZXlAbWljcm9jaGlwLmNvbT4NCg0KVGhhbmtzLA0KQ29ub3IuDQoNCj4gDQo+IFNpZ25l
+ZC1vZmYtYnk6IEtyenlzenRvZiBLb3psb3dza2kgPGtyenlzenRvZi5rb3psb3dza2lAbGluYXJv
+Lm9yZz4NCj4gDQo+IC0tLQ0KPiANCj4gVGVjaG5pY2FsbHksIHRoaXMgZGVwZW5kcyBvbiBbMV0g
+bWVyZ2VkIHRvIFNQSSB0cmVlLCBpZiB3ZSB3YW50IHRvDQo+IHByZXNlcnZlIGV4aXN0aW5nIGJl
+aGF2aW9yIG9mIG5vdCBhbGxvd2luZyBTUEkgQ1BIQSBhbmQgQ1BPTCBpbiBlYWNoIG9mDQo+IHNj
+aGVtYXMgaW4gdGhpcyBwYXRjaC4NCj4gDQo+IElmIHRoaXMgcGF0Y2ggY29tZXMgaW5kZXBlbmRl
+bnRseSB2aWEgZGlmZmVyZW50IHRyZWUsIHRoZSBTUEkgQ1BIQSBhbmQNCj4gQ1BPTCB3aWxsIGJl
+IGFsbG93ZWQgZm9yIGJyaWVmIHBlcmlvZCBvZiB0aW1lLCBiZWZvcmUgWzFdIGlzIG1lcmdlZC4N
+Cj4gVGhpcyB3aWxsIG5vdCBoYXZlIG5lZ2F0aXZlIGltcGFjdCwganVzdCBEVCBzY2hlbWEgY2hl
+Y2tzIHdpbGwgYmUNCj4gbG9vc2VuZWQgZm9yIHRoYXQgcGVyaW9kLg0KPiANCj4gWzFdIGh0dHBz
+Oi8vbG9yZS5rZXJuZWwub3JnL2FsbC8yMDIyMDcyMjE5MTUzOS45MDY0MS0yLWtyenlzenRvZi5r
+b3psb3dza2lAbGluYXJvLm9yZy8NCj4gLS0tDQo+ICAuLi4vYmluZGluZ3MvZnBnYS9taWNyb2No
+aXAsbXBmLXNwaS1mcGdhLW1nci55YW1sICAgICAgICAgIHwgNyArKysrLS0tDQo+ICAxIGZpbGUg
+Y2hhbmdlZCwgNCBpbnNlcnRpb25zKCspLCAzIGRlbGV0aW9ucygtKQ0KPiANCj4gZGlmZiAtLWdp
+dCBhL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9mcGdhL21pY3JvY2hpcCxtcGYt
+c3BpLWZwZ2EtbWdyLnlhbWwgYi9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvZnBn
+YS9taWNyb2NoaXAsbXBmLXNwaS1mcGdhLW1nci55YW1sDQo+IGluZGV4IGFlZTQ1Y2IxNTU5Mi4u
+NTI3NTMyZjAzOWNlIDEwMDY0NA0KPiAtLS0gYS9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmlu
+ZGluZ3MvZnBnYS9taWNyb2NoaXAsbXBmLXNwaS1mcGdhLW1nci55YW1sDQo+ICsrKyBiL0RvY3Vt
+ZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9mcGdhL21pY3JvY2hpcCxtcGYtc3BpLWZwZ2Et
+bWdyLnlhbWwNCj4gQEAgLTIyLDEzICsyMiwxNCBAQCBwcm9wZXJ0aWVzOg0KPiAgICAgIGRlc2Ny
+aXB0aW9uOiBTUEkgY2hpcCBzZWxlY3QNCj4gICAgICBtYXhJdGVtczogMQ0KPiANCj4gLSAgc3Bp
+LW1heC1mcmVxdWVuY3k6IHRydWUNCj4gLQ0KPiAgcmVxdWlyZWQ6DQo+ICAgIC0gY29tcGF0aWJs
+ZQ0KPiAgICAtIHJlZw0KPiANCj4gLWFkZGl0aW9uYWxQcm9wZXJ0aWVzOiBmYWxzZQ0KPiArYWxs
+T2Y6DQo+ICsgIC0gJHJlZjogL3NjaGVtYXMvc3BpL3NwaS1wZXJpcGhlcmFsLXByb3BzLnlhbWwj
+DQo+ICsNCj4gK3VuZXZhbHVhdGVkUHJvcGVydGllczogZmFsc2UNCj4gDQo+ICBleGFtcGxlczoN
+Cj4gICAgLSB8DQo+IC0tDQo+IDIuMzQuMQ0KPiANCg0K
