@@ -2,54 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67607C00144
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 00:44:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA028C00144
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 00:44:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240078AbiG0Aoi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 20:44:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47720 "EHLO
+        id S240092AbiG0Aol (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 20:44:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229545AbiG0Aof (ORCPT
+        with ESMTP id S229643AbiG0Aog (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 20:44:35 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35F9A27FD2
+        Tue, 26 Jul 2022 20:44:36 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DAF3286C7
         for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 17:44:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1658882674; x=1690418674;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=lx4Vd72+aERHnEd6xmnfmZ66oE4bFXTIrWHD7CFJbyM=;
-  b=DI1i7srtlPG4cBWytMbR9uc4hfaChkQpPHZPPWwVDEWIt1ccq4+J6w/M
-   tdd+oONt4f9Nxm1l6k+eoltms5P9pXNt702u+8smr5jGANCkmNrSpnB67
-   ID3XxfIpgExvRbnwsFX7bwjw/GwNZTUWkbvCe/1l6PY+QIaFOIECsg8uZ
-   t3/u/JlPqM+efyVEC2+neDHICeYMaawp9/kHp8cy95PxwJwAHnGGOZ4pj
-   dRNz3jELwLEj2e2ilDR/s9BGqbIILmJVB8oHcXJN4n/5cdIIuxentfObG
-   z8fP846mp2mbchKQlGE1MEgK0Qvp5qGl5wA0Yixwo+THxhMc8znE6IH47
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10420"; a="288120867"
+  bh=YX10oloxAvyKxW08wf2eEZMGJSafvzOo6ATwL/KJXd4=;
+  b=jshSWNSX2oEAnpf43Y1gEnUJZOA1Qun50ZXSglBFbYXNsQ2wXLd+I7Lh
+   VCAHVlyq7OmcSdNxchiuL+lYppeWqNydw1srxdKqty90+FhGbmzHCGWn/
+   esdXxIV9+ipvnn5vYC5NmFVZjP/U0fupzbosTSut4QyW3FqhMvYazyiUD
+   0OlnZg0sbJ2l21Q+mTej45wzRs48Tvyq3/etaYcfK9yT3GuTBnWuWfTz8
+   /z5z4/AJU4srASH68zZovlhYXTdQf/ZuEEVhvhAu9eWUPJJOVLjGYzLO2
+   Mnkvd5k/zR6mZjubHw3/cnC4+ZrZdM867yfS7yiykpT23Ktdv/+KpHe5J
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10420"; a="352105189"
 X-IronPort-AV: E=Sophos;i="5.93,194,1654585200"; 
-   d="scan'208";a="288120867"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2022 17:44:33 -0700
+   d="scan'208";a="352105189"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2022 17:44:34 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,194,1654585200"; 
-   d="scan'208";a="633001623"
+   d="scan'208";a="575745469"
 Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 26 Jul 2022 17:44:32 -0700
+  by orsmga006.jf.intel.com with ESMTP; 26 Jul 2022 17:44:31 -0700
 Received: from kbuild by e0eace57cfef with local (Exim 4.96)
         (envelope-from <lkp@intel.com>)
-        id 1oGVA7-00086j-1Q;
+        id 1oGVA7-00086g-0o;
         Wed, 27 Jul 2022 00:44:31 +0000
-Date:   Wed, 27 Jul 2022 08:44:19 +0800
+Date:   Wed, 27 Jul 2022 08:44:15 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     Daniel Vetter <daniel.vetter@ffwll.ch>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Helge Deller <deller@gmx.de>,
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Helge Deller <deller@gmx.de>,
         Javier Martinez Canillas <javierm@redhat.com>
-Subject: [deller-fbdev:for-next 22/22] drivers/video/fbdev/simplefb.c:426:13:
- error: 'num_registered_fb' undeclared; did you mean 'WB_registered'?
-Message-ID: <202207270806.KAsFcU48-lkp@intel.com>
+Subject: [deller-fbdev:for-next 22/22] drivers/video/fbdev/simplefb.c:426:6:
+ error: use of undeclared identifier 'num_registered_fb'; did you mean
+ 'WB_registered'?
+Message-ID: <202207270857.mo9oRcRE-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -60,28 +61,34 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 tree:   git://git.kernel.org/pub/scm/linux/kernel/git/deller/linux-fbdev.git for-next
 head:   96eed011e2413fc83f14632e8782f60b76b34a50
 commit: 96eed011e2413fc83f14632e8782f60b76b34a50 [22/22] video: fbdev: Make registered_fb[] private to fbmem.c
-config: x86_64-randconfig-a002 (https://download.01.org/0day-ci/archive/20220727/202207270806.KAsFcU48-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
+config: arm64-randconfig-r003-20220724 (https://download.01.org/0day-ci/archive/20220727/202207270857.mo9oRcRE-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 83882606dbd7ffb0bdd3460356202d97705809c8)
 reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
         # https://git.kernel.org/pub/scm/linux/kernel/git/deller/linux-fbdev.git/commit/?id=96eed011e2413fc83f14632e8782f60b76b34a50
         git remote add deller-fbdev git://git.kernel.org/pub/scm/linux/kernel/git/deller/linux-fbdev.git
         git fetch --no-tags deller-fbdev for-next
         git checkout 96eed011e2413fc83f14632e8782f60b76b34a50
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/video/fbdev/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/video/fbdev/
 
 If you fix the issue, kindly add following tag where applicable
 Reported-by: kernel test robot <lkp@intel.com>
 
 All errors (new ones prefixed by >>):
 
-   drivers/video/fbdev/simplefb.c: In function 'simplefb_probe':
->> drivers/video/fbdev/simplefb.c:426:13: error: 'num_registered_fb' undeclared (first use in this function); did you mean 'WB_registered'?
-     426 |         if (num_registered_fb > 0) {
-         |             ^~~~~~~~~~~~~~~~~
-         |             WB_registered
-   drivers/video/fbdev/simplefb.c:426:13: note: each undeclared identifier is reported only once for each function it appears in
+>> drivers/video/fbdev/simplefb.c:426:6: error: use of undeclared identifier 'num_registered_fb'; did you mean 'WB_registered'?
+           if (num_registered_fb > 0) {
+               ^~~~~~~~~~~~~~~~~
+               WB_registered
+   include/linux/backing-dev-defs.h:25:2: note: 'WB_registered' declared here
+           WB_registered,          /* bdi_register() was done */
+           ^
+   1 error generated.
 
 
 vim +426 drivers/video/fbdev/simplefb.c
