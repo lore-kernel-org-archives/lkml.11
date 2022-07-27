@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E217C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:23:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48856C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:23:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232351AbiG0RXI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:23:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44454 "EHLO
+        id S233589AbiG0RXM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:23:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241718AbiG0RVt (ORCPT
+        with ESMTP id S241932AbiG0RVt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Jul 2022 13:21:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61FE95F112;
-        Wed, 27 Jul 2022 09:45:26 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7935D5F119;
+        Wed, 27 Jul 2022 09:45:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8BB87600BE;
-        Wed, 27 Jul 2022 16:45:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92E2AC433D6;
-        Wed, 27 Jul 2022 16:45:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D7FFFB821C6;
+        Wed, 27 Jul 2022 16:45:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 484F7C433D7;
+        Wed, 27 Jul 2022 16:45:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940325;
-        bh=+uMl4FLl097Loyy9TApm/tAdFNX8flz7zh2/oIFqi54=;
+        s=korg; t=1658940316;
+        bh=q+ehiNDbz3MqQd5JBHu7bhdKpk+g3BTj6YabfJtgHlM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xo9fmTFqLpx6WqxqinBPhjyK2EfaZdq0upewc9U4io8tEwnw4NsTO1xntMd2pZucx
-         a3J+lOAVaCWLbMPg40F5Fyjs7y0CKH2wOXpZfYUCpCEkZakCp8dxMSK/1xWtNWILcz
-         17JDwJjEe+4U9zKqiDtI1xWxbvGLIV/chBMdMh3s=
+        b=qL6x2LW/UjwPKIFOBPddvTiYv2Nk8eIz0LPwy7L7OquYuOSSIgCUzeCEJcmmTCFIv
+         Ekv7uvpn5p3jfDfaU3fhkdGQ8QZiQabUFGtN5Cd9mBWzrrmZS7+To8MX15K8ajG57K
+         aTupOSs6W+cGzu966wF2YOt8OOWykT+6EAgeLe80=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>
-Subject: [PATCH 5.15 185/201] x86/amd: Use IBPB for firmware calls
-Date:   Wed, 27 Jul 2022 18:11:29 +0200
-Message-Id: <20220727161035.433409425@linuxfoundation.org>
+        Aurabindo Jayamohanan Pillai <Aurabindo.Pillai@amd.com>,
+        Pavle Kotarac <Pavle.Kotarac@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
+        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        "Limonciello, Mario" <Mario.Limonciello@amd.com>
+Subject: [PATCH 5.15 182/201] drm/amd/display: Reset DMCUB before HW init
+Date:   Wed, 27 Jul 2022 18:11:26 +0200
+Message-Id: <20220727161035.332980447@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -49,70 +53,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
 
-commit 28a99e95f55c61855983d36a88c05c178d966bb7 upstream.
+commit 791255ca9fbe38042cfd55df5deb116dc11fef18 upstream.
 
-On AMD IBRS does not prevent Retbleed; as such use IBPB before a
-firmware call to flush the branch history state.
+[Why]
+If the firmware wasn't reset by PSP or HW and is currently running
+then the firmware will hang or perform underfined behavior when we
+modify its firmware state underneath it.
 
-And because in order to do an EFI call, the kernel maps a whole lot of
-the kernel page table into the EFI page table, do an IBPB just in case
-in order to prevent the scenario of poisoning the BTB and causing an EFI
-call using the unprotected RET there.
+[How]
+Reset DMCUB before setting up cache windows and performing HW init.
 
-  [ bp: Massage. ]
-
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20220715194550.793957-1-cascardo@canonical.com
+Reviewed-by: Aurabindo Jayamohanan Pillai <Aurabindo.Pillai@amd.com>
+Acked-by: Pavle Kotarac <Pavle.Kotarac@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: "Limonciello, Mario" <Mario.Limonciello@amd.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/cpufeatures.h   |    1 +
- arch/x86/include/asm/nospec-branch.h |    2 ++
- arch/x86/kernel/cpu/bugs.c           |   11 ++++++++++-
- 3 files changed, 13 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/arch/x86/include/asm/cpufeatures.h
-+++ b/arch/x86/include/asm/cpufeatures.h
-@@ -300,6 +300,7 @@
- #define X86_FEATURE_RETPOLINE_LFENCE	(11*32+13) /* "" Use LFENCE for Spectre variant 2 */
- #define X86_FEATURE_RETHUNK		(11*32+14) /* "" Use REturn THUNK */
- #define X86_FEATURE_UNRET		(11*32+15) /* "" AMD BTB untrain return */
-+#define X86_FEATURE_USE_IBPB_FW		(11*32+16) /* "" Use IBPB during runtime firmware calls */
- 
- /* Intel-defined CPU features, CPUID level 0x00000007:1 (EAX), word 12 */
- #define X86_FEATURE_AVX_VNNI		(12*32+ 4) /* AVX VNNI instructions */
---- a/arch/x86/include/asm/nospec-branch.h
-+++ b/arch/x86/include/asm/nospec-branch.h
-@@ -298,6 +298,8 @@ do {									\
- 	alternative_msr_write(MSR_IA32_SPEC_CTRL,			\
- 			      spec_ctrl_current() | SPEC_CTRL_IBRS,	\
- 			      X86_FEATURE_USE_IBRS_FW);			\
-+	alternative_msr_write(MSR_IA32_PRED_CMD, PRED_CMD_IBPB,		\
-+			      X86_FEATURE_USE_IBPB_FW);			\
- } while (0)
- 
- #define firmware_restrict_branch_speculation_end()			\
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -1512,7 +1512,16 @@ static void __init spectre_v2_select_mit
- 	 * the CPU supports Enhanced IBRS, kernel might un-intentionally not
- 	 * enable IBRS around firmware calls.
- 	 */
--	if (boot_cpu_has(X86_FEATURE_IBRS) && !spectre_v2_in_ibrs_mode(mode)) {
-+	if (boot_cpu_has_bug(X86_BUG_RETBLEED) &&
-+	    (boot_cpu_data.x86_vendor == X86_VENDOR_AMD ||
-+	     boot_cpu_data.x86_vendor == X86_VENDOR_HYGON)) {
-+
-+		if (retbleed_cmd != RETBLEED_CMD_IBPB) {
-+			setup_force_cpu_cap(X86_FEATURE_USE_IBPB_FW);
-+			pr_info("Enabling Speculation Barrier for firmware calls\n");
-+		}
-+
-+	} else if (boot_cpu_has(X86_FEATURE_IBRS) && !spectre_v2_in_ibrs_mode(mode)) {
- 		setup_force_cpu_cap(X86_FEATURE_USE_IBRS_FW);
- 		pr_info("Enabling Restricted Speculation for firmware calls\n");
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -1028,6 +1028,11 @@ static int dm_dmub_hw_init(struct amdgpu
+ 		return 0;
  	}
+ 
++	/* Reset DMCUB if it was previously running - before we overwrite its memory. */
++	status = dmub_srv_hw_reset(dmub_srv);
++	if (status != DMUB_STATUS_OK)
++		DRM_WARN("Error resetting DMUB HW: %d\n", status);
++
+ 	hdr = (const struct dmcub_firmware_header_v1_0 *)dmub_fw->data;
+ 
+ 	fw_inst_const = dmub_fw->data +
 
 
