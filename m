@@ -2,209 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA41DC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 18:31:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8709C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 18:33:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234062AbiG0Sby (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 14:31:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44072 "EHLO
+        id S233674AbiG0Sd3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 14:33:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233836AbiG0Sb2 (ORCPT
+        with ESMTP id S235727AbiG0SdJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 14:31:28 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9C6619581
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 10:29:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658942985;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fEIQ19tql/jpfio1zfIhkIdZRcHX2TtLFigEENlwyz4=;
-        b=U/I9XcHoqcgBYe5FPJ59Y2+WylQr9IqgBBlDTEU01nXlLO/O0tHzW2tCIsYRHlfbmoHMA3
-        DZUGrADIR7At0+wHIYhGLHc9uT56cGvcwk6XCQZawT/Ta6yWd3qEr2WAV3a4pOomujcPJM
-        jupW7+v4YFSOTDSuxHmKNq498eyLjLY=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-224-Hmr_WctMOa-NeBuuGVhVKA-1; Wed, 27 Jul 2022 13:29:43 -0400
-X-MC-Unique: Hmr_WctMOa-NeBuuGVhVKA-1
-Received: by mail-wm1-f70.google.com with SMTP id ay19-20020a05600c1e1300b003a315c2c1c0so1191182wmb.7
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 10:29:43 -0700 (PDT)
+        Wed, 27 Jul 2022 14:33:09 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CFE994652
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 10:31:09 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id e1so6408582pjl.1
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 10:31:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=LmCBfs2WW3NfL4Q2WAECQ3SJcL3MvIgv0G1LKqCA5+s=;
+        b=luD3Yki0EVhKjTfuukT9qc77ZjHYo27BbgwSsT+U1g9rxEwphDlqqmXs62NaigLL0l
+         CBc7BJ3b7nd9qn1Sm8nKdgjnEjkM4NBc6YvblNcJ+2iIcydBSLfN4wfB6DlxNaCfovpP
+         z7XxvoxOQfJNGNrJ6P5rv7WTu8ghKariGrFss=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=fEIQ19tql/jpfio1zfIhkIdZRcHX2TtLFigEENlwyz4=;
-        b=oTORclElWcd8abpyEcSz0228RUKO+SzMQOqY9yB2bK3RByWfChwkOwVidG7eqSSRQr
-         m4nJklsAzXSOmV4SyOOIH3eR7fH+Erz+qYZAMHUZQfD6HhKz6szn+0bF7Q40cB68ZIkH
-         sDsF1RRDzqja2zmiKk3eVZuj8VznpC7hIMdbxxUr+s7GM68ZotYcOYO62zf+5JklNEnI
-         uzPq4ggVfAtmDFIDvxUP6iAqIZQeWFAyybPD/KolXZz+DqCu1HltKHNL6NTiduKctJqn
-         bHoRbLkO+bBy9i6vOj9aqRXG5Xi5059h7p9R6W09vpDXppXej/usJGcqh7Zer854MjTj
-         6Ruw==
-X-Gm-Message-State: AJIora9GVE5OlXMoz/Wmbpy8u7iybwAcbHnxoEJFFnc3HRg/Wph0d6ls
-        v8V8bKdQ7BePAoUvB2QxiqvhIQzBXeE/ATJCPMEiV6YVdKtcy2RjqX2X19JX0vumpyRPs9da3+J
-        +fiDikFbggzE9TTfT5KGfU7wO
-X-Received: by 2002:a5d:4b81:0:b0:21e:e3c8:7055 with SMTP id b1-20020a5d4b81000000b0021ee3c87055mr1548060wrt.519.1658942981994;
-        Wed, 27 Jul 2022 10:29:41 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1u5hDE/h2o9jh/qDvlEby7XGmrwuGF7oyOoDEodiimeOGJhTSLMZ6f9RZk732dM12pzMnP8MQ==
-X-Received: by 2002:a5d:4b81:0:b0:21e:e3c8:7055 with SMTP id b1-20020a5d4b81000000b0021ee3c87055mr1548040wrt.519.1658942981643;
-        Wed, 27 Jul 2022 10:29:41 -0700 (PDT)
-Received: from ?IPV6:2003:cb:c713:7b00:d3e8:c80b:4abc:d55c? (p200300cbc7137b00d3e8c80b4abcd55c.dip0.t-ipconnect.de. [2003:cb:c713:7b00:d3e8:c80b:4abc:d55c])
-        by smtp.gmail.com with ESMTPSA id h9-20020a5d4fc9000000b0021e6277bc50sm17578329wrw.36.2022.07.27.10.29.40
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=LmCBfs2WW3NfL4Q2WAECQ3SJcL3MvIgv0G1LKqCA5+s=;
+        b=PUG0NPNjLhcCs/SYqvMagTlfDTZ9smUgdyEY6UD+xbdcj4aLjpTP9b3+X/8z66WVyk
+         gjDOqhfizfd5qGcejdAyyxI9ZDxmOq21J0FRPU7eFIusf5Wz5Q17IIc15hxggfCLgeH3
+         M7X907oXa7XsQ8moUetfIj5A9uCT6XM4pdCew8akwg0NF0ifcglF7qgVA6ppE4LNyFny
+         vP9KdvkE0TtflSXb9FOUAshVlDfGoZ0j5ECSOaHlX+AVeuQCxb5SucX4l3WV9+DJzsfY
+         H0fjhWhIxrvjIzU1Tu8BY0shtUq7Gw0ItrKWlqNQksH22Lnj8hNSLKV4J7BQDqZdqK/r
+         MtQw==
+X-Gm-Message-State: AJIora862HjGDRE7T46gK+1bS/TcnLIKf0MJQFnyBWSYxLvSj+GBMjzH
+        JiGboT2Z4ZMx4tOFCOxjfxkPpQ==
+X-Google-Smtp-Source: AGRyM1s61hwu3OOAI7THZ86GAIVvVdAYUlKEMykBTMZ256AKnNkQODCbKZZC3RaY3jEpecyvONt+7Q==
+X-Received: by 2002:a17:902:d651:b0:16b:f55e:c626 with SMTP id y17-20020a170902d65100b0016bf55ec626mr22746641plh.78.1658943066729;
+        Wed, 27 Jul 2022 10:31:06 -0700 (PDT)
+Received: from localhost ([2620:15c:11a:202:472c:7351:bacf:5228])
+        by smtp.gmail.com with UTF8SMTPSA id mj1-20020a17090b368100b001f310564e8bsm1456767pjb.30.2022.07.27.10.31.05
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 Jul 2022 10:29:41 -0700 (PDT)
-Message-ID: <6168cf49-bf75-2ebb-ab55-30de473835e3@redhat.com>
-Date:   Wed, 27 Jul 2022 19:29:40 +0200
+        Wed, 27 Jul 2022 10:31:06 -0700 (PDT)
+Date:   Wed, 27 Jul 2022 10:31:04 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Krishna Kurapati <quic_kriskura@quicinc.com>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        linux-arm-msm@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] usb: dwc3: qcom: Defer dwc3-qcom probe if dwc3 isn't
+ probed properly
+Message-ID: <YuF2WLOx8iGiwvWO@google.com>
+References: <1657891312-21748-1-git-send-email-quic_kriskura@quicinc.com>
+ <YtHRFcol5uslEel1@google.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH V2] mm: fix use-after free of page_ext after race with
- memory-offline
-Content-Language: en-US
-To:     Charan Teja Kalla <quic_charante@quicinc.com>,
-        akpm@linux-foundation.org, hocko@suse.com,
-        quic_pkondeti@quicinc.com, pasha.tatashin@soleen.com,
-        sjpark@amazon.de, sieberf@amazon.com, shakeelb@google.com,
-        dhowells@redhat.com, willy@infradead.org,
-        liuting.0x7c00@bytedance.com, minchan@kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org
-References: <1658931303-17024-1-git-send-email-quic_charante@quicinc.com>
-From:   David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-In-Reply-To: <1658931303-17024-1-git-send-email-quic_charante@quicinc.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YtHRFcol5uslEel1@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 27.07.22 16:15, Charan Teja Kalla wrote:
-> The below is one path where race between page_ext and  offline of the
-> respective memory blocks will cause use-after-free on the access of
-> page_ext structure.
+On Fri, Jul 15, 2022 at 01:41:57PM -0700, Matthias Kaehlcke wrote:
+> On Fri, Jul 15, 2022 at 06:51:52PM +0530, Krishna Kurapati wrote:
 > 
-> process1		              process2
-> ---------                             ---------
-> a)doing /proc/page_owner           doing memory offline
-> 			           through offline_pages.
+> > Subject: usb: dwc3: qcom: Defer dwc3-qcom probe if dwc3 isn't probed properly
 > 
-> b)PageBuddy check is failed
-> thus proceed to get the
-> page_owner information
-> through page_ext access.
-> page_ext = lookup_page_ext(page);
+> nit: "isn't probed properly" sounds like a bug or HW issue. In case
+> you re-spin maybe change it to "hasn't probed yet" or similar.
 > 
-> 				    migrate_pages();
-> 				    .................
-> 				Since all pages are successfully
-> 				migrated as part of the offline
-> 				operation,send MEM_OFFLINE notification
-> 				where for page_ext it calls:
-> 				offline_page_ext()-->
-> 				__free_page_ext()-->
-> 				   free_page_ext()-->
-> 				     vfree(ms->page_ext)
-> 			           mem_section->page_ext = NULL
+> > On SC7180 devices, it is observed that dwc3 probing is deferred
+> > because device_links_check_suppliers() finds that '88e3000.phy'
+> > isn't ready yet.
+> > 
+> > As a part of its probe call, dwc3-qcom driver checks if dwc3 core
+> > is wakeup capable or not. If the dwc3 core is wakeup capable, driver
+> > configures dwc-qcom's power domain to be always ON. Also it configures
+> > dp/dm interrupts accordingly to support wakeup from system suspend.
+> > 
+> > More info regarding the same can be found at:
+> > commit d9be8d5c5b03 ("usb: dwc3: qcom: Keep power domain on to retain controller status")
+> > commit 6895ea55c385 ("usb: dwc3: qcom: Configure wakeup interrupts during suspend")
+> > 
+> > In the event, dwc3 probe gets deferred and is processed after dwc3-qcom
+> > probe, driver ends up reading the wakeup capability of dwc3 core as false
+> > leading to instability in suspend/resume path.
+> > 
+> > To avoid this scenario, ensure dwc3_probe is successful by checking
+> > if appropriate driver is assigned to it or not after the of_platform_populate
+> > call. If it isn't then defer dwc3-qcom probe as well.
+> > 
+> > Fixes: 649f5c842ba3 ("usb: dwc3: core: Host wake up support from system suspend")
+> > Signed-off-by: Krishna Kurapati <quic_kriskura@quicinc.com>
 > 
-> c) Check for the PAGE_EXT flags
-> in the page_ext->flags access
-> results into the use-after-free(leading
-> to the translation faults).
-> 
-> As mentioned above, there is really no synchronization between page_ext
-> access and its freeing in the memory_offline.
-> 
-> The memory offline steps(roughly) on a memory block is as below:
-> 1) Isolate all the pages
-> 2) while(1)
->   try free the pages to buddy.(->free_list[MIGRATE_ISOLATE])
-> 3) delete the pages from this buddy list.
-> 4) Then free page_ext.(Note: The struct page is still alive as it is
-> freed only during hot remove of the memory which frees the memmap, which
-> steps the user might not perform).
-> 
-> This design leads to the state where struct page is alive but the struct
-> page_ext is freed, where the later is ideally part of the former which
-> just representing the page_flags.
-> 
-> The above mentioned race is just one example __but the problem persists
-> in the other paths too involving page_ext->flags access(eg:
-> page_is_idle())__. Since offline waits till the last reference on the
-> page goes down i.e. any path that took the refcount on the page can make
-> the memory offline operation to wait. Eg: In the migrate_pages()
-> operation, we do take the extra refcount on the pages that are under
-> migration and then we do copy page_owner by accessing page_ext. For
-> 
-> Fix those paths where offline races with page_ext access by maintaining
-> synchronization with rcu lock and is achieved in 3 steps:
-> 1) Invalidate all the page_ext's of the sections of a memory block by
-> storing a flag in the LSB of mem_section->page_ext.
-> 
-> 2) Wait till all the existing readers to finish working with the
-> ->page_ext's with synchronize_rcu(). Any parallel process that starts
-> after this call will not get page_ext, through lookup_page_ext(), for
-> the block parallel offline operation is being performed.
-> 
-> 3) Now safely free all sections ->page_ext's of the block on which
-> offline operation is being performed.
-> 
-> Thanks to David Hildenbrand for his views/suggestions on the initial
-> discussion[1] and Pavan kondeti for various inputs on this patch.
-> 
-> FAQ's:
-> Q) Should page_ext_[get|put]() needs to be used for every page_ext
-> access?
-> A) NO, the synchronization is really not needed in all the paths of
-> accessing page_ext. One case is where extra refcount is taken on a
-> page for which memory block, this pages falls into, offline operation is
-> being performed. This extra refcount makes the offline operation not to
-> succeed hence the freeing of page_ext.  Another case is where the page
-> is already being freed and we do reset its page_owner.
-> 
-> Some examples where the rcu_lock is not taken while accessing the
-> page_ext are:
-> 1) In migration (where we also migrate the page_owner information), we
-> take the extra refcount on the source and destination pages and then
-> start the migration. This extra refcount makes the test_pages_isolated()
-> function to fail thus retry the offline operation.
-> 
-> 2) In free_pages_prepare(), we do reset the page_owner(through page_ext)
-> which again doesn't need the protection to access because the page is
-> already freeing (through only one path).
-> 
-> So, users need not to use page_ext_[get|put]() when they are sure that
-> extra refcount is taken on a page preventing the offline operation.
-> 
-> Q) Why can't the page_ext is freed in the hot_remove path, where memmap
-> is also freed ?
-> 
-> A) As per David's answers, there are many reasons and a few are:
-> 1) Discussions had happened in the past to eventually also use rcu
-> protection for handling pfn_to_online_page(). So doing it cleanly here
-> is certainly an improvement.
-> 
-> 2) It's not good having to scatter section online checks all over the
-> place in page ext code. Once there is a difference between active vs.
-> stale page ext data things get a bit messy and error prone. This is
-> already ugly enough in our generic memmap handling code.
-> 
-> 3) Having on-demand allocations, such as KASAN or page ext from the
-> memory online notifier is at least currently cleaner, because we don't
-> have to handle each and every subsystem that hooks into that during the
-> core memory hotadd/remove phase, which primarily only setups the
-> vmemmap, direct map and memory block devices.
-> 
-> [1] https://lore.kernel.org/linux-mm/59edde13-4167-8550-86f0-11fc67882107@quicinc.com/
-> 
+> Reported-by: Matthias Kaehlcke <mka@chromium.org>
+> Tested-by: Matthias Kaehlcke <mka@chromium.org>
+> Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
 
-I guess if we care about the synchronize_rcu() we could go crazy with
-temporary allocations for data-to-free + call_rcu().
+(attempt to 'summarize' and move the discussion from v1 [1] to here)
 
--- 
-Thanks,
+gregkh> Why not limit this check to a device type like your changelog mentions?
 
-David / dhildenb
+mka> It is not an sc7180 specific issue. It can occur on any platform where the
+mka> dwc3 core has supplies that aren't ready when the dwc3-qcom driver probes.
+mka>
+mka> It won't blow up right away since it requires 'wakeup-source' to be set for
+mka> the dwc3 core, which currently is only the case for 'usb@a600000' of the
+mka> sc7280 AFAIK (I set it for sc7180 in my tree for testing, which is when I
+mka> found the issue this patch intends to address).
 
+krishna> As Mathias pointed out, no issue was seen so far on present QC targets
+krishna> as wakeup-source property was added recently and only for SC7180 and
+krishna> SC7280. We ran into some issues like wakeup from system suspend in
+krishna> host mode wasn't happening although we enabled wakeup-source in SC7180
+krishna> that eventually led us to this bug. But, we tried to add debug prints
+krishna> to follow the code flow and see that the issue is present on SM8350
+krishna> as well : "supplier 88e9000.phy-wrapper not ready" and deferring dwc3
+krishna> probe. This doesn't seem to be specific to SC7180.
+krishna>
+krishna> Since this is seen on multiple platforms, can we go ahead without
+krishna> having any platforms specific checks in the code as in V2 version ?
+
+[1] https://lore.kernel.org/all/YtAv1U1VYkhIY1GA@kroah.com/t/#m6714bf1f2309cfe8be92e6c270ef2a99a9b09ac6
