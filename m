@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A689C19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:43:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94266C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:43:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242976AbiG0RnQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:43:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35088 "EHLO
+        id S242925AbiG0RnT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:43:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242910AbiG0Rmr (ORCPT
+        with ESMTP id S242926AbiG0Rmu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:42:47 -0400
+        Wed, 27 Jul 2022 13:42:50 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B7FF54ACA;
-        Wed, 27 Jul 2022 09:52:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC41B89AA4;
+        Wed, 27 Jul 2022 09:52:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7DB1CB821D4;
-        Wed, 27 Jul 2022 16:52:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBCB1C433C1;
-        Wed, 27 Jul 2022 16:52:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E6DDFB821C5;
+        Wed, 27 Jul 2022 16:52:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44A09C433C1;
+        Wed, 27 Jul 2022 16:52:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940731;
-        bh=W/HHsRq2sC87P8Jl6L/qDVBFwjJgLDL+rERMXNdKZ0E=;
+        s=korg; t=1658940736;
+        bh=fuBdEORhVUHgoKP0511WtVTCy7BoG+RleVc/OuNVrLo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=or/Y+9hG4ZTKz4NPsfuENi0KzFrBYEJkivuagANuG9iNOAyG/dg7XcKvAhCWN2kEp
-         x5Fc4DVOCbbI85JyRftd09j0BMfdEqIfo8FI5o+GuhPcSoqeBHe2GGaq1m/Mlt8Mp3
-         UULdzwZlLIxG70qyWqT9SPi855HTUhY8TM9NOU00=
+        b=CFr85k42K/0hzjbJFLDHewwTBHiZ2u8kEthZ60V+YrErEwAP0UpcvzKzuksq3ajM7
+         GBcanww6RBcpyzx4Ivv0T6+xi0ijE8QrBH7AE4CmCVV7gtI4BhX+U1G4OaHWzSemZg
+         TuNILn6atLq4S3yIrLoueQBssJu5iwNYZGPAuSr0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oz Shlomo <ozsh@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>,
-        Baowen Zheng <baowen.zheng@corigine.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Srinivas Neeli <srinivas.neeli@xilinx.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 127/158] net/sched: cls_api: Fix flow action initialization
-Date:   Wed, 27 Jul 2022 18:13:11 +0200
-Message-Id: <20220727161026.492887422@linuxfoundation.org>
+Subject: [PATCH 5.18 129/158] gpio: gpio-xilinx: Fix integer overflow
+Date:   Wed, 27 Jul 2022 18:13:13 +0200
+Message-Id: <20220727161026.580717761@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -51,71 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oz Shlomo <ozsh@nvidia.com>
+From: Srinivas Neeli <srinivas.neeli@xilinx.com>
 
-[ Upstream commit c0f47c2822aadeb8b2829f3e4c3792f184c7be33 ]
+[ Upstream commit 32c094a09d5829ad9b02cdf667569aefa8de0ea6 ]
 
-The cited commit refactored the flow action initialization sequence to
-use an interface method when translating tc action instances to flow
-offload objects. The refactored version skips the initialization of the
-generic flow action attributes for tc actions, such as pedit, that allocate
-more than one offload entry. This can cause potential issues for drivers
-mapping flow action ids.
+Current implementation is not able to configure more than 32 pins
+due to incorrect data type. So type casting with unsigned long
+to avoid it.
 
-Populate the generic flow action fields for all the flow action entries.
-
-Fixes: c54e1d920f04 ("flow_offload: add ops to tc_action_ops for flow action setup")
-Signed-off-by: Oz Shlomo <ozsh@nvidia.com>
-Reviewed-by: Roi Dayan <roid@nvidia.com>
-
-----
-v1 -> v2:
- - coalese the generic flow action fields initialization to a single loop
-Reviewed-by: Baowen Zheng <baowen.zheng@corigine.com>
-
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 02b3f84d9080 ("xilinx: Switch to use bitmap APIs")
+Signed-off-by: Srinivas Neeli <srinivas.neeli@xilinx.com>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sched/cls_api.c | 16 ++++++++++------
- 1 file changed, 10 insertions(+), 6 deletions(-)
+ drivers/gpio/gpio-xilinx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index 2d4dc1468a9a..6fd33c75d6bb 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -3531,7 +3531,7 @@ int tc_setup_action(struct flow_action *flow_action,
- 		    struct tc_action *actions[],
- 		    struct netlink_ext_ack *extack)
- {
--	int i, j, index, err = 0;
-+	int i, j, k, index, err = 0;
- 	struct tc_action *act;
+diff --git a/drivers/gpio/gpio-xilinx.c b/drivers/gpio/gpio-xilinx.c
+index b6d3a57e27ed..7f8e2fed2988 100644
+--- a/drivers/gpio/gpio-xilinx.c
++++ b/drivers/gpio/gpio-xilinx.c
+@@ -99,7 +99,7 @@ static inline void xgpio_set_value32(unsigned long *map, int bit, u32 v)
+ 	const unsigned long offset = (bit % BITS_PER_LONG) & BIT(5);
  
- 	BUILD_BUG_ON(TCA_ACT_HW_STATS_ANY != FLOW_ACTION_HW_STATS_ANY);
-@@ -3551,14 +3551,18 @@ int tc_setup_action(struct flow_action *flow_action,
- 		if (err)
- 			goto err_out_locked;
+ 	map[index] &= ~(0xFFFFFFFFul << offset);
+-	map[index] |= v << offset;
++	map[index] |= (unsigned long)v << offset;
+ }
  
--		entry->hw_stats = tc_act_hw_stats(act->hw_stats);
--		entry->hw_index = act->tcfa_index;
- 		index = 0;
- 		err = tc_setup_offload_act(act, entry, &index, extack);
--		if (!err)
--			j += index;
--		else
-+		if (err)
- 			goto err_out_locked;
-+
-+		for (k = 0; k < index ; k++) {
-+			entry[k].hw_stats = tc_act_hw_stats(act->hw_stats);
-+			entry[k].hw_index = act->tcfa_index;
-+		}
-+
-+		j += index;
-+
- 		spin_unlock_bh(&act->tcfa_lock);
- 	}
- 
+ static inline int xgpio_regoffset(struct xgpio_instance *chip, int ch)
 -- 
 2.35.1
 
