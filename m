@@ -2,90 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B00BC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 06:25:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B14FCC19F21
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 06:29:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229589AbiG0GZo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 02:25:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41362 "EHLO
+        id S229582AbiG0G3h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 02:29:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229972AbiG0GZl (ORCPT
+        with ESMTP id S229501AbiG0G3f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 02:25:41 -0400
-Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B8D5248D1;
-        Tue, 26 Jul 2022 23:25:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-        d=metrotek.ru; s=mail;
-        h=from:subject:date:message-id:to:cc:mime-version:content-type:in-reply-to:
-         references;
-        bh=kgGiHabl0/d2c20Z+4lE361tfrM1XekbYouuRVgUfS8=;
-        b=T/0l3MGwNWjkjtS8LmH59PhhgDtw21q1DFl8xWja3mKUiAwc2hwiztH3wDTh+nkghjW2JMj5mVxDa
-         FptKOqFzTBersO/hetIFz86LymsKWrGnXqnhqp9gzZgKr7VphJpLlSGmvBbdW4oS59RVFMPhhueeVF
-         QxXFwzhNyG5REqVUto1y0MosnHkFmeZ4ITF15W1QSmYolyJhRli3EGIjnU9MBz7lr7AsWq7VcvXM/Q
-         bMXp/Usq1ppehWnaHyD7wTiCj0XbG5JWHRcFBOu66vUNDh/gr5odoBxJRSj1nKEbGC0Gple9MUKoKb
-         VFuCHB4FQk0cZHiz/IA5/TcqZ6etBew==
-X-Kerio-Anti-Spam:  Build: [Engines: 2.16.3.1424, Stamp: 3], Multi: [Enabled, t: (0.000008,0.007390)], BW: [Enabled, t: (0.000013,0.000001)], RTDA: [Enabled, t: (0.076210), Hit: No, Details: v2.41.0; Id: 15.52k4j7.1g8v59cer.4ih1; mclb], total: 0(700)
-X-Footer: bWV0cm90ZWsucnU=
-Received: from x260 ([85.93.58.13])
-        (authenticated user i.bornyakov@metrotek.ru)
-        by mail.pr-group.ru with ESMTPSA
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
-        Wed, 27 Jul 2022 09:25:12 +0300
-Date:   Wed, 27 Jul 2022 09:00:30 +0300
-From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
-To:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
-        trix@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org
-Cc:     linux-fpga@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, system@metrotek.ru
-Subject: Re: [PATCH v5 0/2] Lattice ECP5 FPGA manager
-Message-ID: <20220727060030.7tlhisjwmm5wqjac@x260>
-References: <20220719112335.9528-1-i.bornyakov@metrotek.ru>
+        Wed, 27 Jul 2022 02:29:35 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D0751EAFD;
+        Tue, 26 Jul 2022 23:29:34 -0700 (PDT)
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Lt3kX65Ygz9sxl;
+        Wed, 27 Jul 2022 14:28:20 +0800 (CST)
+Received: from kwepemm600010.china.huawei.com (7.193.23.86) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 27 Jul 2022 14:29:31 +0800
+Received: from [10.67.110.237] (10.67.110.237) by
+ kwepemm600010.china.huawei.com (7.193.23.86) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 27 Jul 2022 14:29:29 +0800
+Subject: Re: [PATCH 5/5] ARM: stacktrace: Convert stacktrace to generic
+ ARCH_STACKWALK
+To:     Linus Walleij <linus.walleij@linaro.org>
+CC:     <linux@armlinux.org.uk>, <rmk+kernel@armlinux.org.uk>,
+        <ardb@kernel.org>, <will@kernel.org>, <mark.rutland@arm.com>,
+        <broonie@kernel.org>, <peterz@infradead.org>, <mingo@redhat.com>,
+        <acme@kernel.org>, <alexander.shishkin@linux.intel.com>,
+        <jolsa@kernel.org>, <namhyung@kernel.org>, <arnd@arndb.de>,
+        <rostedt@goodmis.org>, <nick.hawkins@hpe.com>, <john@phrozen.org>,
+        <mhiramat@kernel.org>, <ast@kernel.org>, <linyujun809@huawei.com>,
+        <ndesaulniers@google.com>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>
+References: <20220712021527.109921-1-lihuafei1@huawei.com>
+ <20220712021527.109921-6-lihuafei1@huawei.com>
+ <CACRpkdZVxyCsENJQ_-KZBMHjVrYCHzFG2UdCAe=mt_5Ts8_RFw@mail.gmail.com>
+From:   Li Huafei <lihuafei1@huawei.com>
+Message-ID: <ecc9376b-694b-e42c-977c-813be0a76792@huawei.com>
+Date:   Wed, 27 Jul 2022 14:29:29 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220719112335.9528-1-i.bornyakov@metrotek.ru>
+In-Reply-To: <CACRpkdZVxyCsENJQ_-KZBMHjVrYCHzFG2UdCAe=mt_5Ts8_RFw@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.110.237]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ kwepemm600010.china.huawei.com (7.193.23.86)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 19, 2022 at 02:23:33PM +0300, Ivan Bornyakov wrote:
-> Add support to the FPGA manager for programming Lattice ECP5 FPGA over
-> slave SPI interface with .bit formatted uncompressed bitstream image.
+
+Hi Linus,
+
+On 2022/7/18 17:12, Linus Walleij wrote:
+> On Tue, Jul 12, 2022 at 4:19 AM Li Huafei <lihuafei1@huawei.com> wrote:
 > 
-> ChangeLog:
->   v1 -> v2:
->     * remove "spi" from compatible string
->     * reword description in dt-bindings doc
->     * add reference to spi-peripheral-props.yaml in dt-binding doc
->     * fix DTS example in dt-bindings doc: 4-spaces indentations, no
->       undersores in node names.
->   v2 -> v3:
->     * fix typo "##size-cells" -> "#size-cells" in dt-bindings example
->   v3 -> v4:
->     * dt-bindings: reword description
->     * dt-bindings: revert props order
->   v4 -> v5:
->     * dt-bindings: remove trailing dot from title
->     * dt-bindings: reword description to avoid driver reference
->     * dt-bindings: add "Reviewed-by: Krzysztof Kozlowski" tag
+>> This patch converts ARM stacktrace to the generic ARCH_STACKWALK
+>> implemented by commit 214d8ca6ee85 ("stacktrace: Provide common
+>> infrastructure").
+>>
+>> Signed-off-by: Li Huafei <lihuafei1@huawei.com>
 > 
-> Ivan Bornyakov (2):
->   fpga: ecp5-spi: add Lattice ECP5 FPGA manager
->   dt-bindings: fpga: add binding doc for ecp5-spi fpga mgr
+> Looks good to me:
+> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 > 
->  .../bindings/fpga/lattice,ecp5-fpga-mgr.yaml  |  74 +++++
->  drivers/fpga/Kconfig                          |   7 +
->  drivers/fpga/Makefile                         |   1 +
->  drivers/fpga/ecp5-spi.c                       | 275 ++++++++++++++++++
->  4 files changed, 357 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/fpga/lattice,ecp5-fpga-mgr.yaml
->  create mode 100644 drivers/fpga/ecp5-spi.c
-> 
-> -- 
-> 2.37.1
+> What I want to know is if this commit will avoid the problem mentioned
+> in review of commit 3? I.e. the generic stackwalk code will make sure we are
+> not running the task on another CPU, so that is why we could remove
+> that check?
 > 
 
-Friendly ping.
+In v3, I removed patch 3 of v1 and kept that check, see
 
+  https://lore.kernel.org/lkml/20220727040022.139387-1-lihuafei1@huawei.com/
+
+Given this change, I did not add your reviewed-by to patch 4 of v3. If 
+you think patch 4 of v3 is still ok, please do let me know. Thank you 
+very much!
+
+Thanks,
+Huafei
+
+> Yours,
+> Linus Walleij
+> .
+> 
