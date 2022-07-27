@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B726C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:03:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DDFCC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:03:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241201AbiG0RDh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:03:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55692 "EHLO
+        id S232755AbiG0RDo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:03:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241283AbiG0RDG (ORCPT
+        with ESMTP id S232874AbiG0RDH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:03:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BECC6D576;
+        Wed, 27 Jul 2022 13:03:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B3606D572;
         Wed, 27 Jul 2022 09:38:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F3743B8200C;
-        Wed, 27 Jul 2022 16:38:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29269C433C1;
-        Wed, 27 Jul 2022 16:38:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 595BA601CE;
+        Wed, 27 Jul 2022 16:38:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66D5AC433D6;
+        Wed, 27 Jul 2022 16:38:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939894;
-        bh=Jut1UrqA484SZyvoDgmLDM1uXbmIRUU2CmoC0FX+9io=;
+        s=korg; t=1658939911;
+        bh=+kCkmqrmQ+ezg/La72IVCkAR8CRuOOBy4ZA/yaCOHtE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Rlg4T+H7QNleuv+7wI7fnyMPbv42GtE4r8tKKOg0Q88KOcUOrS5UKzxE/ayWpAGyP
-         8xkr8P57bgs0W+d1BmuJVgSjhkIJKAWGM7B+xo9yoYQh6h9y95EkQWxUHARRTRlLt7
-         2K4FfA0NqBq1ArbQ5GO5mq3IpEPMp6F6gQhIjY0I=
+        b=TD49W+aqMwWTUmQvgk18oduiuVI0WnBY90Y2k4fehujqGHGN03xTC59+lBtyD/V5j
+         vxg4A7LCaQGTbUJIkTatO41BlEbxYBK0s8sMjDgEi/dA4AF9cgOrAY49jREAhgyGwa
+         28WGMDiqVBqaCB3WxcI8nQSr1guEv/U3pTaI/sx4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mustafa Ismail <mustafa.ismail@intel.com>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 032/201] RDMA/irdma: Fix sleep from invalid context BUG
-Date:   Wed, 27 Jul 2022 18:08:56 +0200
-Message-Id: <20220727161028.215848380@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "sidhartha.kumar@oracle.com, stable@vger.kernel.org, Oleksandr
+        Tymoshenko" <ovt@google.com>, Oleksandr Tymoshenko <ovt@google.com>
+Subject: [PATCH 5.15 008/201] Revert "selftest/vm: verify remap destination address in mremap_test"
+Date:   Wed, 27 Jul 2022 18:08:32 +0200
+Message-Id: <20220727161027.294082875@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -50,113 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mustafa Ismail <mustafa.ismail@intel.com>
+From: Oleksandr Tymoshenko <ovt@google.com>
 
-[ Upstream commit cc0315564d6eec91c716d314b743321be24c70b3 ]
+This reverts commit 0b4e16093e081a3ab08b0d6cedf79b249f41b248.
 
-Taking the qos_mutex to process RoCEv2 QP's on netdev events causes a
-kernel splat.
+The upstream commit 18d609daa546 ("selftest/vm: verify remap destination
+address in mremap_test") was backported as commit 2688d967ec65
+("selftest/vm: verify remap destination address in mremap_test").
+Repeated backport introduced the duplicate of function
+is_remap_region_valid to the file breakign the vm selftest build.
 
-Fix this by removing the handling for RoCEv2 in
-irdma_cm_teardown_connections that uses the mutex. This handling is only
-needed for iWARP to avoid having connections established while the link is
-down or having connections remain functional after the IP address is
-removed.
-
-  BUG: sleeping function called from invalid context at kernel/locking/mutex.
-  Call Trace:
-  kernel: dump_stack+0x66/0x90
-  kernel: ___might_sleep.cold.92+0x8d/0x9a
-  kernel: mutex_lock+0x1c/0x40
-  kernel: irdma_cm_teardown_connections+0x28e/0x4d0 [irdma]
-  kernel: ? check_preempt_curr+0x7a/0x90
-  kernel: ? select_idle_sibling+0x22/0x3c0
-  kernel: ? select_task_rq_fair+0x94c/0xc90
-  kernel: ? irdma_exec_cqp_cmd+0xc27/0x17c0 [irdma]
-  kernel: ? __wake_up_common+0x7a/0x190
-  kernel: irdma_if_notify+0x3cc/0x450 [irdma]
-  kernel: ? sched_clock_cpu+0xc/0xb0
-  kernel: irdma_inet6addr_event+0xc6/0x150 [irdma]
-
-Fixes: 146b9756f14c ("RDMA/irdma: Add connection manager")
-Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
-Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 0b4e16093e08 ("selftest/vm: verify remap destination address in mremap_test")
+Signed-off-by: Oleksandr Tymoshenko <ovt@google.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/hw/irdma/cm.c | 50 --------------------------------
- 1 file changed, 50 deletions(-)
+ tools/testing/selftests/vm/mremap_test.c |   24 ------------------------
+ 1 file changed, 24 deletions(-)
 
-diff --git a/drivers/infiniband/hw/irdma/cm.c b/drivers/infiniband/hw/irdma/cm.c
-index 632f65e53b63..60d4e9c151ff 100644
---- a/drivers/infiniband/hw/irdma/cm.c
-+++ b/drivers/infiniband/hw/irdma/cm.c
-@@ -4221,10 +4221,6 @@ void irdma_cm_teardown_connections(struct irdma_device *iwdev, u32 *ipaddr,
- 	struct irdma_cm_node *cm_node;
- 	struct list_head teardown_list;
- 	struct ib_qp_attr attr;
--	struct irdma_sc_vsi *vsi = &iwdev->vsi;
--	struct irdma_sc_qp *sc_qp;
--	struct irdma_qp *qp;
--	int i;
- 
- 	INIT_LIST_HEAD(&teardown_list);
- 
-@@ -4241,52 +4237,6 @@ void irdma_cm_teardown_connections(struct irdma_device *iwdev, u32 *ipaddr,
- 			irdma_cm_disconn(cm_node->iwqp);
- 		irdma_rem_ref_cm_node(cm_node);
- 	}
--	if (!iwdev->roce_mode)
--		return;
--
--	INIT_LIST_HEAD(&teardown_list);
--	for (i = 0; i < IRDMA_MAX_USER_PRIORITY; i++) {
--		mutex_lock(&vsi->qos[i].qos_mutex);
--		list_for_each_safe (list_node, list_core_temp,
--				    &vsi->qos[i].qplist) {
--			u32 qp_ip[4];
--
--			sc_qp = container_of(list_node, struct irdma_sc_qp,
--					     list);
--			if (sc_qp->qp_uk.qp_type != IRDMA_QP_TYPE_ROCE_RC)
--				continue;
--
--			qp = sc_qp->qp_uk.back_qp;
--			if (!disconnect_all) {
--				if (nfo->ipv4)
--					qp_ip[0] = qp->udp_info.local_ipaddr[3];
--				else
--					memcpy(qp_ip,
--					       &qp->udp_info.local_ipaddr[0],
--					       sizeof(qp_ip));
--			}
--
--			if (disconnect_all ||
--			    (nfo->vlan_id == (qp->udp_info.vlan_tag & VLAN_VID_MASK) &&
--			     !memcmp(qp_ip, ipaddr, nfo->ipv4 ? 4 : 16))) {
--				spin_lock(&iwdev->rf->qptable_lock);
--				if (iwdev->rf->qp_table[sc_qp->qp_uk.qp_id]) {
--					irdma_qp_add_ref(&qp->ibqp);
--					list_add(&qp->teardown_entry,
--						 &teardown_list);
--				}
--				spin_unlock(&iwdev->rf->qptable_lock);
--			}
--		}
--		mutex_unlock(&vsi->qos[i].qos_mutex);
--	}
--
--	list_for_each_safe (list_node, list_core_temp, &teardown_list) {
--		qp = container_of(list_node, struct irdma_qp, teardown_entry);
--		attr.qp_state = IB_QPS_ERR;
--		irdma_modify_qp_roce(&qp->ibqp, &attr, IB_QP_STATE, NULL);
--		irdma_qp_rem_ref(&qp->ibqp);
--	}
+--- a/tools/testing/selftests/vm/mremap_test.c
++++ b/tools/testing/selftests/vm/mremap_test.c
+@@ -66,30 +66,6 @@ enum {
+ 	.expect_failure = should_fail				\
  }
  
- /**
--- 
-2.35.1
-
+-/*
+- * Returns false if the requested remap region overlaps with an
+- * existing mapping (e.g text, stack) else returns true.
+- */
+-static bool is_remap_region_valid(void *addr, unsigned long long size)
+-{
+-	void *remap_addr = NULL;
+-	bool ret = true;
+-
+-	/* Use MAP_FIXED_NOREPLACE flag to ensure region is not mapped */
+-	remap_addr = mmap(addr, size, PROT_READ | PROT_WRITE,
+-					 MAP_FIXED_NOREPLACE | MAP_ANONYMOUS | MAP_SHARED,
+-					 -1, 0);
+-
+-	if (remap_addr == MAP_FAILED) {
+-		if (errno == EEXIST)
+-			ret = false;
+-	} else {
+-		munmap(remap_addr, size);
+-	}
+-
+-	return ret;
+-}
+-
+ /* Returns mmap_min_addr sysctl tunable from procfs */
+ static unsigned long long get_mmap_min_addr(void)
+ {
 
 
