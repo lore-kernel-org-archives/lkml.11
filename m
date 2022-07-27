@@ -2,83 +2,251 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D50ADC19F28
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:35:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 267F9C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:35:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238332AbiG0Qfm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:35:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46642 "EHLO
+        id S238390AbiG0Qfo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:35:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237598AbiG0QeD (ORCPT
+        with ESMTP id S238160AbiG0QeE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:34:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C7B955081;
-        Wed, 27 Jul 2022 09:26:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 073B2619F6;
-        Wed, 27 Jul 2022 16:26:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B78AC433D6;
-        Wed, 27 Jul 2022 16:26:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939212;
-        bh=litbR69duY36rJVkPTx9ttxUI4b+oSyRTS99K/GfFUk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q2DT0i7fd4GdqOBo+c3dQ368jgRx/R/ZIujjXUHDAOU2Lx1cj+8Ux1ZNfuZBGQmdv
-         //MZoyiZq5WeG0I4U/BkHndQxHFo+J4brJJvOhX/NbRB3CA2jCwOxrVTEl9bHYZGnE
-         caEWScgGP7avb89K0DK46zhY3edaSvC6ShlpnbVk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 21/62] tcp: Fix a data-race around sysctl_tcp_notsent_lowat.
-Date:   Wed, 27 Jul 2022 18:10:30 +0200
-Message-Id: <20220727161005.019894926@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220727161004.175638564@linuxfoundation.org>
-References: <20220727161004.175638564@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Wed, 27 Jul 2022 12:34:04 -0400
+Received: from xry111.site (xry111.site [IPv6:2001:470:683e::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B6B155091
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:26:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xry111.site;
+        s=default; t=1658939182;
+        bh=gPikXEVTEkOizm6Y/+JWUlq+5aMwIx1THz9Lm+KZLn8=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=MDmd+PGp48e5VAE0kCqQTD9VpKg/H6SZ0c64YHgS3sZGgvne8pnzEX+s4zZ/FQSJS
+         ekzrN07IzxucwhUjz8NfIjwW3raIEI2b0Ous2hDdQLgGFusdtd+GCDw/lc5aMm1how
+         LxKoQi6FF8hPVPD9cFZW2eMRLwXyAJ4UZLEAPRDo=
+Received: from localhost.localdomain (xry111.site [IPv6:2001:470:683e::1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature ECDSA (P-384) server-digest SHA384)
+        (Client did not present a certificate)
+        (Authenticated sender: xry111@xry111.site)
+        by xry111.site (Postfix) with ESMTPSA id 1437166986;
+        Wed, 27 Jul 2022 12:26:20 -0400 (EDT)
+Message-ID: <3f43d51d530344f73a0a7087407799ff9dff3ba8.camel@xry111.site>
+Subject: [PATCH 1/5] LoongArch: Add section of GOT for kernel module
+From:   Xi Ruoyao <xry111@xry111.site>
+To:     loongarch@lists.linux.dev
+Cc:     linux-kernel@vger.kernel.org, WANG Xuerui <kernel@xen0n.name>,
+        Huacai Chen <chenhuacai@kernel.org>
+Date:   Thu, 28 Jul 2022 00:26:19 +0800
+In-Reply-To: <385f63bcbee8e37c42f479ce9cdc7e7d731d419b.camel@xry111.site>
+References: <385f63bcbee8e37c42f479ce9cdc7e7d731d419b.camel@xry111.site>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.3 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+The address of external symbols will locate more than 32-bit offset.  We
+were using the `-Wa,-mla-global-with-abs` and `-Wa,-mla-local-with-abs`
+to prevent the compiler and assembler from generating GOT relocations,
+but these options are undocumented hacks and do not work anymore with
+GAS 2.40 and GCC 13.
 
-[ Upstream commit 55be873695ed8912eb77ff46d1d1cadf028bd0f3 ]
+Let the module loader emit GOT entries for data symbols so we would be
+able to handle GOT relocations.  The GOT entry is just the data symbol
+address.
 
-While reading sysctl_tcp_notsent_lowat, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its reader.
-
-Fixes: c9bee3b7fdec ("tcp: TCP_NOTSENT_LOWAT socket option")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Xi Ruoyao <xry111@xry111.site>
 ---
- include/net/tcp.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/loongarch/include/asm/module.h     | 23 +++++++++++++
+ arch/loongarch/include/asm/module.lds.h |  1 +
+ arch/loongarch/kernel/module-sections.c | 43 ++++++++++++++++++++++---
+ 3 files changed, 63 insertions(+), 4 deletions(-)
 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index f92b93cf074c..9b1bf1567861 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -1876,7 +1876,7 @@ void __tcp_v4_send_check(struct sk_buff *skb, __be32 saddr, __be32 daddr);
- static inline u32 tcp_notsent_lowat(const struct tcp_sock *tp)
+diff --git a/arch/loongarch/include/asm/module.h b/arch/loongarch/include/a=
+sm/module.h
+index 9f6718df1854..76a98a0ab8a0 100644
+--- a/arch/loongarch/include/asm/module.h
++++ b/arch/loongarch/include/asm/module.h
+@@ -19,6 +19,7 @@ struct mod_section {
+ struct mod_arch_specific {
+ 	struct mod_section plt;
+ 	struct mod_section plt_idx;
++	struct mod_section got;
+ };
+=20
+ struct plt_entry {
+@@ -28,11 +29,16 @@ struct plt_entry {
+ 	u32 inst_jirl;
+ };
+=20
++struct got_entry {
++	Elf_Addr symbol_addr;
++};
++
+ struct plt_idx_entry {
+ 	unsigned long symbol_addr;
+ };
+=20
+ Elf_Addr module_emit_plt_entry(struct module *mod, unsigned long val);
++Elf_Addr module_emit_got_entry(struct module *mod, Elf_Addr val);
+=20
+ static inline struct plt_entry emit_plt_entry(unsigned long val)
  {
- 	struct net *net = sock_net((struct sock *)tp);
--	return tp->notsent_lowat ?: net->ipv4.sysctl_tcp_notsent_lowat;
-+	return tp->notsent_lowat ?: READ_ONCE(net->ipv4.sysctl_tcp_notsent_lowat);
+@@ -51,6 +57,11 @@ static inline struct plt_idx_entry emit_plt_idx_entry(un=
+signed long val)
+ 	return (struct plt_idx_entry) { val };
  }
- 
- static inline bool tcp_stream_memory_free(const struct sock *sk)
--- 
-2.35.1
-
+=20
++static inline struct got_entry emit_got_entry(Elf_Addr val)
++{
++	return (struct got_entry) { val };
++}
++
+ static inline int get_plt_idx(unsigned long val, const struct mod_section =
+*sec)
+ {
+ 	int i;
+@@ -77,4 +88,16 @@ static inline struct plt_entry *get_plt_entry(unsigned l=
+ong val,
+ 	return plt + plt_idx;
+ }
+=20
++static inline struct got_entry *get_got_entry(Elf_Addr val,
++					      const struct mod_section *sec)
++{
++	struct got_entry *got =3D (struct got_entry *)sec->shdr->sh_addr;
++	int i;
++
++	for (i =3D 0; i < sec->num_entries; i++)
++		if (got[i].symbol_addr =3D=3D val)
++			return &got[i];
++	return NULL;
++}
++
+ #endif /* _ASM_MODULE_H */
+diff --git a/arch/loongarch/include/asm/module.lds.h b/arch/loongarch/inclu=
+de/asm/module.lds.h
+index 31c1c0db11a3..57bbd0cedd26 100644
+--- a/arch/loongarch/include/asm/module.lds.h
++++ b/arch/loongarch/include/asm/module.lds.h
+@@ -4,4 +4,5 @@ SECTIONS {
+ 	. =3D ALIGN(4);
+ 	.plt : { BYTE(0) }
+ 	.plt.idx : { BYTE(0) }
++	.got : { BYTE(0) }
+ }
+diff --git a/arch/loongarch/kernel/module-sections.c b/arch/loongarch/kerne=
+l/module-sections.c
+index 6d498288977d..509c0b86b1e9 100644
+--- a/arch/loongarch/kernel/module-sections.c
++++ b/arch/loongarch/kernel/module-sections.c
+@@ -33,6 +33,25 @@ Elf_Addr module_emit_plt_entry(struct module *mod, unsig=
+ned long val)
+ 	return (Elf_Addr)&plt[nr];
+ }
+=20
++Elf_Addr module_emit_got_entry(struct module *mod, Elf_Addr val)
++{
++	struct mod_section *got_sec =3D &mod->arch.got;
++	int i =3D got_sec->num_entries;
++	struct got_entry *got =3D get_got_entry(val, got_sec);
++
++	if (got)
++		return (Elf_Addr)got;
++
++	/* There is no GOT entry existing for val yet.  Create a new one.  */
++	got =3D (struct got_entry *)got_sec->shdr->sh_addr;
++	got[i] =3D emit_got_entry(val);
++
++	got_sec->num_entries++;
++	BUG_ON(got_sec->num_entries > got_sec->max_entries);
++
++	return (Elf_Addr)&got[i];
++}
++
+ static int is_rela_equal(const Elf_Rela *x, const Elf_Rela *y)
+ {
+ 	return x->r_info =3D=3D y->r_info && x->r_addend =3D=3D y->r_addend;
+@@ -50,7 +69,8 @@ static bool duplicate_rela(const Elf_Rela *rela, int idx)
+ 	return false;
+ }
+=20
+-static void count_max_entries(Elf_Rela *relas, int num, unsigned int *plts=
+)
++static void count_max_entries(Elf_Rela *relas, int num,
++			      unsigned int *plts, unsigned int *gots)
+ {
+ 	unsigned int i, type;
+=20
+@@ -59,14 +79,16 @@ static void count_max_entries(Elf_Rela *relas, int num,=
+ unsigned int *plts)
+ 		if (type =3D=3D R_LARCH_SOP_PUSH_PLT_PCREL) {
+ 			if (!duplicate_rela(relas, i))
+ 				(*plts)++;
+-		}
++		} else if (type =3D=3D R_LARCH_SOP_PUSH_GPREL)
++			if (!duplicate_rela(relas, i))
++				(*gots)++;
+ 	}
+ }
+=20
+ int module_frob_arch_sections(Elf_Ehdr *ehdr, Elf_Shdr *sechdrs,
+ 			      char *secstrings, struct module *mod)
+ {
+-	unsigned int i, num_plts =3D 0;
++	unsigned int i, num_plts =3D 0, num_gots =3D 0;
+=20
+ 	/*
+ 	 * Find the empty .plt sections.
+@@ -76,6 +98,8 @@ int module_frob_arch_sections(Elf_Ehdr *ehdr, Elf_Shdr *s=
+echdrs,
+ 			mod->arch.plt.shdr =3D sechdrs + i;
+ 		else if (!strcmp(secstrings + sechdrs[i].sh_name, ".plt.idx"))
+ 			mod->arch.plt_idx.shdr =3D sechdrs + i;
++		else if (!strcmp(secstrings + sechdrs[i].sh_name, ".got"))
++			mod->arch.got.shdr =3D sechdrs + i;
+ 	}
+=20
+ 	if (!mod->arch.plt.shdr) {
+@@ -86,6 +110,10 @@ int module_frob_arch_sections(Elf_Ehdr *ehdr, Elf_Shdr =
+*sechdrs,
+ 		pr_err("%s: module PLT.IDX section(s) missing\n", mod->name);
+ 		return -ENOEXEC;
+ 	}
++	if (!mod->arch.got.shdr) {
++		pr_err("%s: module GOT section(s) missing\n", mod->name);
++		return -ENOEXEC;
++	}
+=20
+ 	/* Calculate the maxinum number of entries */
+ 	for (i =3D 0; i < ehdr->e_shnum; i++) {
+@@ -100,7 +128,7 @@ int module_frob_arch_sections(Elf_Ehdr *ehdr, Elf_Shdr =
+*sechdrs,
+ 		if (!(dst_sec->sh_flags & SHF_EXECINSTR))
+ 			continue;
+=20
+-		count_max_entries(relas, num_rela, &num_plts);
++		count_max_entries(relas, num_rela, &num_plts, &num_gots);
+ 	}
+=20
+ 	mod->arch.plt.shdr->sh_type =3D SHT_NOBITS;
+@@ -117,5 +145,12 @@ int module_frob_arch_sections(Elf_Ehdr *ehdr, Elf_Shdr=
+ *sechdrs,
+ 	mod->arch.plt_idx.num_entries =3D 0;
+ 	mod->arch.plt_idx.max_entries =3D num_plts;
+=20
++	mod->arch.got.shdr->sh_type =3D SHT_NOBITS;
++	mod->arch.got.shdr->sh_flags =3D SHF_ALLOC;
++	mod->arch.got.shdr->sh_addralign =3D L1_CACHE_BYTES;
++	mod->arch.got.shdr->sh_size =3D (num_plts + 1) * sizeof(struct plt_entry)=
+;
++	mod->arch.got.num_entries =3D 0;
++	mod->arch.got.max_entries =3D num_plts;
++
+ 	return 0;
+ }
+--=20
+2.37.0
 
 
