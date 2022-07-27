@@ -2,162 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C55DAC19F29
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 07:24:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0F71C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 07:25:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230203AbiG0HYA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 03:24:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58656 "EHLO
+        id S230094AbiG0HZf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 03:25:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230211AbiG0HXz (ORCPT
+        with ESMTP id S229592AbiG0HZc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 03:23:55 -0400
-X-Greylist: delayed 123 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 27 Jul 2022 00:23:48 PDT
-Received: from unicom145.biz-email.net (unicom145.biz-email.net [210.51.26.145])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 216F940BC4;
-        Wed, 27 Jul 2022 00:23:47 -0700 (PDT)
-Received: from ([60.208.111.195])
-        by unicom145.biz-email.net ((D)) with ASMTP (SSL) id VEW00040;
-        Wed, 27 Jul 2022 15:21:40 +0800
-Received: from Jtjnmail201613.home.langchao.com (10.100.2.13) by
- Jtjnmail201613.home.langchao.com (10.100.2.13) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.9; Wed, 27 Jul 2022 15:21:39 +0800
-Received: from Jtjnmail201613.home.langchao.com ([fe80::b8bf:393:bebe:1197])
- by Jtjnmail201613.home.langchao.com ([fe80::b8bf:393:bebe:1197%12]) with mapi
- id 15.01.2507.009; Wed, 27 Jul 2022 15:21:39 +0800
-From:   =?gb2312?B?QW5keSBHdW8gKLn5zsCx8yk=?= <guoweibin@inspur.com>
-To:     "b-liu@ti.com" <b-liu@ti.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-CC:     "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: [PATCH] usb: musb: Fix musb_gadget.c rxstate may cause request->buf
- overflow problems
-Thread-Topic: [PATCH] usb: musb: Fix musb_gadget.c rxstate may cause
- request->buf overflow problems
-Thread-Index: AdihiVlJUOiuGCF1RMKG91qAO7Amow==
-Date:   Wed, 27 Jul 2022 07:21:39 +0000
-Message-ID: <7acfffb210974cff959d056ef88221de@inspur.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: yes
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.180.162.69]
-Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
-        micalg=SHA1; boundary="----=_NextPart_000_003A_01D8A1CC.907B0010"
+        Wed, 27 Jul 2022 03:25:32 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 231DD3E75C
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 00:25:31 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id b11so29914402eju.10
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 00:25:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rydDqlFJvbn5JuZDSQ+fXBnsGfZJlblYwnY24ftaijo=;
+        b=E+qTzrBWSrgHjQRguRQQdvlNKWssv6zsmDgh33eijxuIPtJRHibCfgdaeFR71FqghW
+         38YRPWmQ4EjiiKd+dbY4W5rNW52QKyxNv227fhUNR8AaPik/PUfwVwivkKPKG8rgrYrL
+         Xv20fgwOtbto9sx7cnvnFC/yHAgLvlvkbELc4gajxdtqHPCaajA/MxpiaMR5iB0cUAgb
+         q9dsM/bIs13WbIEEQiO1a73RC7mBL69301FVhw03jFILZKYXMpL2J/OsBZsyYe6xSbut
+         qu8LtSqWNcDaRuEDyT+Y9+H5V+b5UGOXEqk7107xwG8uymYj+8GaNFIM5XCyW+7p3vkk
+         maog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rydDqlFJvbn5JuZDSQ+fXBnsGfZJlblYwnY24ftaijo=;
+        b=hPD5F8iiFoBkewCQo9aHHURtHoATbaLV7sgej7+8UozzkIigW6nzkUF7kM9Zj7Q2Mu
+         0paCenGOKrrbuM7igF79W7uPTeKn8Szc9eLIVEBk+SovOQ/4dYKJMfU48BHmlCoSR+KS
+         LOiy2uFYNdTl4NidlW9Ssetz6MHIpuqjd6dqZjAyibawiPIWmsr+ytlrWCNXZCEsEO0B
+         vQjyRWr+NcCPFhMjfr7btJrxailDZJsCDYIabvCk6t/iwC9Q1n3m65mhy0ZxaGpUWw/Z
+         Ck7nsnWJtRlDimWITTZy6wlnXCJdtmrTZsxtMmeuNqZTGGPJ8RudhFbSnB5XpGNBrjHr
+         ZrCg==
+X-Gm-Message-State: AJIora/rTpX9Ch2Q34kFzKp08xFUL1IwwGNy690Aj9V+XyBmDI+R83H6
+        OvKFhcLyCyVgMmxhlBswAParoriU3M+0m6sUicht0w==
+X-Google-Smtp-Source: AGRyM1vxmco3aYUjfYxZjr+kwVOiRBIVmMeZhZUY4wsw3ERIYrSEPbtpbvKETSkTS/aUQ66bA/Tt85bh1Np0KmYc9oc=
+X-Received: by 2002:a17:906:2ed7:b0:72f:d080:411 with SMTP id
+ s23-20020a1709062ed700b0072fd0800411mr12069816eji.203.1658906729603; Wed, 27
+ Jul 2022 00:25:29 -0700 (PDT)
 MIME-Version: 1.0
-tUid:   202272715214042c5e7daceb5030428b39d602d9ad597
-X-Abuse-Reports-To: service@corp-email.com
-Abuse-Reports-To: service@corp-email.com
-X-Complaints-To: service@corp-email.com
-X-Report-Abuse-To: service@corp-email.com
+References: <20220727040022.139387-1-lihuafei1@huawei.com> <20220727040022.139387-5-lihuafei1@huawei.com>
+In-Reply-To: <20220727040022.139387-5-lihuafei1@huawei.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Wed, 27 Jul 2022 09:25:18 +0200
+Message-ID: <CACRpkdbu8M84s2rPsKTwMmMXeeYEmNVaXFnp1hsKM0Dc9jzNfw@mail.gmail.com>
+Subject: Re: [PATCH v3 4/4] ARM: stacktrace: Convert stacktrace to generic ARCH_STACKWALK
+To:     Li Huafei <lihuafei1@huawei.com>
+Cc:     linux@armlinux.org.uk, rmk+kernel@armlinux.org.uk, ardb@kernel.org,
+        will@kernel.org, broonie@kernel.org, mark.rutland@arm.com,
+        peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
+        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
+        namhyung@kernel.org, arnd@arndb.de, rostedt@goodmis.org,
+        nick.hawkins@hpe.com, john@phrozen.org, mhiramat@kernel.org,
+        ast@kernel.org, linyujun809@huawei.com, ndesaulniers@google.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-perf-users@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-------=_NextPart_000_003A_01D8A1CC.907B0010
-Content-Type: text/plain;
-	charset="gb2312"
-Content-Transfer-Encoding: 7bit
+On Wed, Jul 27, 2022 at 6:03 AM Li Huafei <lihuafei1@huawei.com> wrote:
 
-when the rxstate function executes the 'goto buffer_aint_mapped' code
-branch, it will always copy the fifocnt bytes data to request->buf,
-which may cause request->buf out of bounds. for Ethernet-over-USB will
-cause skb_over_panic when a packet larger than mtu is recived.
+> Historically architectures have had duplicated code in their stack trace
+> implementations for filtering what gets traced. In order to avoid this
+> duplication some generic code has been provided using a new interface
+> arch_stack_walk(), enabled by selecting ARCH_STACKWALK in Kconfig, which
+> factors all this out into the generic stack trace code. Convert ARM to
+> use this common infrastructure.
+>
+> When initializing the stack frame of the current task, arm64 uses
+> __builtin_frame_address(1) to initialize the frame pointer, skipping
+> arch_stack_walk(), see the commit c607ab4f916d ("arm64: stacktrace:
+> don't trace arch_ stack_walk()"). Since __builtin_frame_address(1) does
+> not work on ARM, unwind_frame() is used to unwind the stack one layer
+> forward before calling walk_stackframe().
+>
+> Signed-off-by: Li Huafei <lihuafei1@huawei.com>
 
-Fix it by add the length check :
-fifocnt = min_t(unsigned, request->length - request->actual, fifocnt);
+Looks good to me.
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-Signed-off-by: guoweibin <guoweibin@inspur.com>
----
- drivers/usb/musb/musb_gadget.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/usb/musb/musb_gadget.c b/drivers/usb/musb/musb_gadget.c
-index 51274b87f46c..4ad5a1f31d7e 100644
---- a/drivers/usb/musb/musb_gadget.c
-+++ b/drivers/usb/musb/musb_gadget.c
-@@ -760,6 +760,7 @@ static void rxstate(struct musb *musb, struct musb_request *req)
- 			musb_writew(epio, MUSB_RXCSR, csr);
- 
- buffer_aint_mapped:
-+			fifo_count = min_t(unsigned, request->length - request->actual, fifo_count);
- 			musb_read_fifo(musb_ep->hw_ep, fifo_count, (u8 *)
- 					(request->buf + request->actual));
- 			request->actual += fifo_count;
-
-
-------=_NextPart_000_003A_01D8A1CC.907B0010
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-
-MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIILCDCCA6Iw
-ggKKoAMCAQICEGPKUixTOHaaTcIS5DrQVuowDQYJKoZIhvcNAQELBQAwWTETMBEGCgmSJomT8ixk
-ARkWA2NvbTEYMBYGCgmSJomT8ixkARkWCGxhbmdjaGFvMRQwEgYKCZImiZPyLGQBGRYEaG9tZTES
-MBAGA1UEAxMJSU5TUFVSLUNBMB4XDTE3MDEwOTA5MjgzMFoXDTI3MDEwOTA5MzgyOVowWTETMBEG
-CgmSJomT8ixkARkWA2NvbTEYMBYGCgmSJomT8ixkARkWCGxhbmdjaGFvMRQwEgYKCZImiZPyLGQB
-GRYEaG9tZTESMBAGA1UEAxMJSU5TUFVSLUNBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
-AQEAq+Q17xtjJLyp5hgXDie1r4DeNj76VUvbZNSywWU5zhx+e0Lu0kwcZ0T3KncZdgdWyqYvRJMQ
-/VVqX3gS4VxtLw3zBrg9kGuD0LfpH0cA2b0ZHpxRh5WapP14flcSh/lnawig29z44wfUEg43yTZO
-lOfPKos/Dm6wyrJtaPmD6AF7w4+vFZH0zMYfjQkSN/xGgS3OPBNAB8PTHM2sV+fFmnnlTFpyRg0O
-IIA2foALZvjIjNdUfp8kMGSh/ZVMfHqTH4eo+FcZPZ+t9nTaJQz9cSylw36+Ig6FGZHA/Zq+0fYy
-VCxR1ZLULGS6wsVep8j075zlSinrVpMadguOcArThwIDAQABo2YwZDATBgkrBgEEAYI3FAIEBh4E
-AEMAQTALBgNVHQ8EBAMCAYYwDwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQUXlkDprRMWGCRTvYe
-taU5pjLBNWowEAYJKwYBBAGCNxUBBAMCAQAwDQYJKoZIhvcNAQELBQADggEBAErE37vtdSu2iYVX
-Fvmrg5Ce4Y5NyEyvaTh5rTGt/CeDjuFS5kwYpHVLt3UFYJxLPTlAuBKNBwJuQTDXpnEOkBjTwukC
-0VZ402ag3bvF/AQ81FVycKZ6ts8cAzd2GOjRrQylYBwZb/H3iTfEsAf5rD/eYFBNS6a4cJ27OQ3s
-Y4N3ZyCXVRlogsH+dXV8Nn68BsHoY76TvgWbaxVsIeprTdSZUzNCscb5rx46q+fnE0FeHK01iiKA
-xliHryDoksuCJoHhKYxQTuS82A9r5EGALTdmRxhSLL/kvr2M3n3WZmVL6UulBFsNSKJXuIzTe2+D
-mMr5DYcsm0ZfNbDOAVrLPnUwggdeMIIGRqADAgECAhN+AAEdNy55bfLwB97IAAAAAR03MA0GCSqG
-SIb3DQEBCwUAMFkxEzARBgoJkiaJk/IsZAEZFgNjb20xGDAWBgoJkiaJk/IsZAEZFghsYW5nY2hh
-bzEUMBIGCgmSJomT8ixkARkWBGhvbWUxEjAQBgNVBAMTCUlOU1BVUi1DQTAeFw0yMTA5MjgwMjM3
-MjVaFw0yNjA5MjcwMjM3MjVaMIG2MRMwEQYKCZImiZPyLGQBGRYDY29tMRgwFgYKCZImiZPyLGQB
-GRYIbGFuZ2NoYW8xFDASBgoJkiaJk/IsZAEZFgRob21lMTYwNAYDVQQLDC3lsbHkuJzmtarmva7k
-urrlt6Xmmbrog73noJTnqbbpmaLmnInpmZDlhazlj7gxEjAQBgNVBAMMCemDreWNq+aWjDEjMCEG
-CSqGSIb3DQEJARYUZ3Vvd2VpYmluQGluc3B1ci5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAw
-ggEKAoIBAQCjdZKVnBBaa8QChPBTS/gCTUffqKBndFjlLCuzKdNm0zdLkgLOx870D218y8pRg49h
-MiP4NYYbrLSJe6kEPUSXhCHMEMh1WRYfilKBLjF93bs7Ky4SKfPW/sgj+k+foO5uD6fvzMPtwpQW
-O3ABdD7N0nlhQr/oeGgNlXjfI7DKahv6ffy3v/nDtr96vQIi4XOZZxv3a8w0n6lOq7WqAbaGWiCY
-Pi/gEOMgqhb1qlJxhBnSWzY/q/B825sefZGZRJ8KKKHLrchHGW8JAuMeP9Hox3L6WhZr8SpXdd78
-1xsNLsdifXaiZCRee+Nt0KBjjg+e9S02ChjLN4yNvDWXcJuxAgMBAAGjggO/MIIDuzA9BgkrBgEE
-AYI3FQcEMDAuBiYrBgEEAYI3FQiC8qkfhIHXeoapkT2GgPcVg9iPXIFK/YsmgZSnTQIBZAIBYTAp
-BgNVHSUEIjAgBggrBgEFBQcDAgYIKwYBBQUHAwQGCisGAQQBgjcKAwQwCwYDVR0PBAQDAgWgMDUG
-CSsGAQQBgjcVCgQoMCYwCgYIKwYBBQUHAwIwCgYIKwYBBQUHAwQwDAYKKwYBBAGCNwoDBDBEBgkq
-hkiG9w0BCQ8ENzA1MA4GCCqGSIb3DQMCAgIAgDAOBggqhkiG9w0DBAICAIAwBwYFKw4DAgcwCgYI
-KoZIhvcNAwcwHQYDVR0OBBYEFMQsrLB+sPkRXpck2/e+v3MbZSVSMB8GA1UdIwQYMBaAFF5ZA6a0
-TFhgkU72HrWlOaYywTVqMIIBDwYDVR0fBIIBBjCCAQIwgf+ggfyggfmGgbpsZGFwOi8vL0NOPUlO
-U1BVUi1DQSxDTj1KVENBMjAxMixDTj1DRFAsQ049UHVibGljJTIwS2V5JTIwU2VydmljZXMsQ049
-U2VydmljZXMsQ049Q29uZmlndXJhdGlvbixEQz1ob21lLERDPWxhbmdjaGFvLERDPWNvbT9jZXJ0
-aWZpY2F0ZVJldm9jYXRpb25MaXN0P2Jhc2U/b2JqZWN0Q2xhc3M9Y1JMRGlzdHJpYnV0aW9uUG9p
-bnSGOmh0dHA6Ly9KVENBMjAxMi5ob21lLmxhbmdjaGFvLmNvbS9DZXJ0RW5yb2xsL0lOU1BVUi1D
-QS5jcmwwggEpBggrBgEFBQcBAQSCARswggEXMIGxBggrBgEFBQcwAoaBpGxkYXA6Ly8vQ049SU5T
-UFVSLUNBLENOPUFJQSxDTj1QdWJsaWMlMjBLZXklMjBTZXJ2aWNlcyxDTj1TZXJ2aWNlcyxDTj1D
-b25maWd1cmF0aW9uLERDPWhvbWUsREM9bGFuZ2NoYW8sREM9Y29tP2NBQ2VydGlmaWNhdGU/YmFz
-ZT9vYmplY3RDbGFzcz1jZXJ0aWZpY2F0aW9uQXV0aG9yaXR5MGEGCCsGAQUFBzAChlVodHRwOi8v
-SlRDQTIwMTIuaG9tZS5sYW5nY2hhby5jb20vQ2VydEVucm9sbC9KVENBMjAxMi5ob21lLmxhbmdj
-aGFvLmNvbV9JTlNQVVItQ0EuY3J0MEUGA1UdEQQ+MDygJAYKKwYBBAGCNxQCA6AWDBRndW93ZWli
-aW5AaW5zcHVyLmNvbYEUZ3Vvd2VpYmluQGluc3B1ci5jb20wDQYJKoZIhvcNAQELBQADggEBAHG7
-MvBCm6jp8r5MutquLYG4kFy61gH6nCfHLdgFgSdPXMb+SHfeQ8chc28iTJdnvSx7qEsqiD0iCuyr
-dodbNBNHatGxzreWr8C9U3in46Zf2kQKnZJBrOKNYPWlg9jM9Gr/ZboUAFiQBMN1aJ/C/xK3jUQ+
-B8JVuvcIV6eO6Unvrwl3UXM6CeP6ovP5zDZhdjR4pR6UgRNHz/93aaOQGD/T76yUiUBBZYCa4Uh9
-xmPoVLmBUxuRNc4K+QvpwrjVCMheCepElkZwm/qz8Sya6P5sGag+6rfh4RSYXN+74I2ZgUqjBgaL
-MK4Z24DkB4aQBR7GABtrt8mia7MQWw6Vg/oxggOTMIIDjwIBATBwMFkxEzARBgoJkiaJk/IsZAEZ
-FgNjb20xGDAWBgoJkiaJk/IsZAEZFghsYW5nY2hhbzEUMBIGCgmSJomT8ixkARkWBGhvbWUxEjAQ
-BgNVBAMTCUlOU1BVUi1DQQITfgABHTcueW3y8AfeyAAAAAEdNzAJBgUrDgMCGgUAoIIB+DAYBgkq
-hkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3DQEJBTEPFw0yMjA3MjcwNzIxMzdaMCMGCSqG
-SIb3DQEJBDEWBBTa6xd8BRh+nVzsR9PMsxby5MUKuDB/BgkrBgEEAYI3EAQxcjBwMFkxEzARBgoJ
-kiaJk/IsZAEZFgNjb20xGDAWBgoJkiaJk/IsZAEZFghsYW5nY2hhbzEUMBIGCgmSJomT8ixkARkW
-BGhvbWUxEjAQBgNVBAMTCUlOU1BVUi1DQQITfgABHTcueW3y8AfeyAAAAAEdNzCBgQYLKoZIhvcN
-AQkQAgsxcqBwMFkxEzARBgoJkiaJk/IsZAEZFgNjb20xGDAWBgoJkiaJk/IsZAEZFghsYW5nY2hh
-bzEUMBIGCgmSJomT8ixkARkWBGhvbWUxEjAQBgNVBAMTCUlOU1BVUi1DQQITfgABHTcueW3y8Afe
-yAAAAAEdNzCBkwYJKoZIhvcNAQkPMYGFMIGCMAoGCCqGSIb3DQMHMAsGCWCGSAFlAwQBKjALBglg
-hkgBZQMEARYwCwYJYIZIAWUDBAECMA4GCCqGSIb3DQMCAgIAgDANBggqhkiG9w0DAgIBQDAHBgUr
-DgMCGjALBglghkgBZQMEAgMwCwYJYIZIAWUDBAICMAsGCWCGSAFlAwQCATANBgkqhkiG9w0BAQEF
-AASCAQCB31KqJ83wpIPAKwgH9O4v7sK6B7wfVATcmj9aCbnsh5+L08uTfv2nZkebsi3fheA3VelR
-cjEnPVQnbodP+mJatLpO7nUENWgsxpbn4ofCEXOroJNqdR/D0LtuGb9Tt9NVbrlrim0uKy6fKw8Y
-Ml/PVEIeWLvrrBzU2kIUDZSUZcuCFTyaCnYnp94wz+/FnJYEKmQNAGlzPtisksj4OPLnNMzfk1M9
-WAap4FUUBhRzWb7aQO1Fs3c6ZdgcEke4YbhJH3qZs5vIbk/OoGV3uo639Q6DlPeQzrOmKzzBxwBp
-mHxZ3z0lXDzSHPYmir+jUVo7hnXGx6rEiodGxrEnUbm9AAAAAAAA
-
-------=_NextPart_000_003A_01D8A1CC.907B0010--
+Yours,
+Linus Walleij
