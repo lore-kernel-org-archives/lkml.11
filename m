@@ -2,41 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80B77C19F2D
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:10:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75E8DC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:10:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239411AbiG0RKB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:10:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37932 "EHLO
+        id S241395AbiG0RKE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:10:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237264AbiG0RIs (ORCPT
+        with ESMTP id S241487AbiG0RIy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:08:48 -0400
+        Wed, 27 Jul 2022 13:08:54 -0400
 Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38D2572ED0;
-        Wed, 27 Jul 2022 09:40:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D127D4D153;
+        Wed, 27 Jul 2022 09:40:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 2AC80CE230F;
-        Wed, 27 Jul 2022 16:40:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B604C433C1;
-        Wed, 27 Jul 2022 16:40:33 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id CC100CE22F9;
+        Wed, 27 Jul 2022 16:40:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8996EC433C1;
+        Wed, 27 Jul 2022 16:40:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940034;
-        bh=Zp7O+qA6v8hNhs/CuX4OQqC8NTPMh5+4zcXaPfJnW5A=;
+        s=korg; t=1658940040;
+        bh=9YoCgJ40rzOqNOclYBRcgD4FzYAA8Mvm+m3wKZjwpPE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lXmxulfV38spYBck0YF1gC4WKcUOfg5rxHyjEQLQE7qjBPvp9/c7FTDLNkGHaIKwW
-         wUX5+JSJvMQxQhSO7YnGoljNh974+KZT1uqy8irSZaagKf4FPGrAoYCjTunHdTixYa
-         eE3tBYMb+hDQliBgEeiu+PAQub+6Q0mQ6KRDdQOo=
+        b=hdnNKzkDXsiZ06lgdBBzwIcZ+EcK+3mitbxol4e0C46SAnXPmXX7rYiZQEqYlDfJm
+         HIqkwir5qJLTfRJJu5AZ8Zk/Pfq6g8HqFGRVHdbrCWd1PBC1Q55VRfg67uwfV6kEnM
+         78xJMylC+wfVxh57zGhzW6Hmf2joLIxqyiaNynqs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vadim Pasternak <vadimp@nvidia.com>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 082/201] i2c: mlxcpld: Fix register setting for 400KHz frequency
-Date:   Wed, 27 Jul 2022 18:09:46 +0200
-Message-Id: <20220727161031.138829059@linuxfoundation.org>
+        stable@vger.kernel.org, Kan Liang <kan.liang@linux.intel.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Ian Rogers <irogers@google.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Thomas Richter <tmricht@linux.ibm.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 084/201] perf tests: Fix Convert perf time to TSC test for hybrid
+Date:   Wed, 27 Jul 2022 18:09:48 +0200
+Message-Id: <20220727161031.227950259@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -48,33 +55,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vadim Pasternak <vadimp@nvidia.com>
+From: Adrian Hunter <adrian.hunter@intel.com>
 
-[ Upstream commit e1f77ecc75aaee6bed04e8fd7830e00032af012e ]
+[ Upstream commit deb44a6249f696106645c63c0603eab08a6122af ]
 
-Fix setting of 'Half Cycle' register for 400KHz frequency.
+The test does not always correctly determine the number of events for
+hybrids, nor allow for more than 1 evsel when parsing.
 
-Fixes: fa1049135c15 ("i2c: mlxcpld: Modify register setting for 400KHz frequency")
-Signed-off-by: Vadim Pasternak <vadimp@nvidia.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Fix by iterating the events actually created and getting the correct
+evsel for the events processed.
+
+Fixes: d9da6f70eb235110 ("perf tests: Support 'Convert perf time to TSC' test for hybrid")
+Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
+Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Ian Rogers <irogers@google.com>
+Cc: Jin Yao <yao.jin@linux.intel.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Thomas Richter <tmricht@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220713123459.24145-3-adrian.hunter@intel.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-mlxcpld.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/perf/tests/perf-time-to-tsc.c | 18 ++++--------------
+ 1 file changed, 4 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/i2c/busses/i2c-mlxcpld.c b/drivers/i2c/busses/i2c-mlxcpld.c
-index 015e11c4663f..077d716c73ca 100644
---- a/drivers/i2c/busses/i2c-mlxcpld.c
-+++ b/drivers/i2c/busses/i2c-mlxcpld.c
-@@ -49,7 +49,7 @@
- #define MLXCPLD_LPCI2C_NACK_IND		2
+diff --git a/tools/perf/tests/perf-time-to-tsc.c b/tools/perf/tests/perf-time-to-tsc.c
+index 7c56bc1f4cff..89d25befb171 100644
+--- a/tools/perf/tests/perf-time-to-tsc.c
++++ b/tools/perf/tests/perf-time-to-tsc.c
+@@ -20,8 +20,6 @@
+ #include "tsc.h"
+ #include "mmap.h"
+ #include "tests.h"
+-#include "pmu.h"
+-#include "pmu-hybrid.h"
  
- #define MLXCPLD_I2C_FREQ_1000KHZ_SET	0x04
--#define MLXCPLD_I2C_FREQ_400KHZ_SET	0x0c
-+#define MLXCPLD_I2C_FREQ_400KHZ_SET	0x0e
- #define MLXCPLD_I2C_FREQ_100KHZ_SET	0x42
+ #define CHECK__(x) {				\
+ 	while ((x) < 0) {			\
+@@ -84,18 +82,8 @@ int test__perf_time_to_tsc(struct test *test __maybe_unused, int subtest __maybe
  
- enum mlxcpld_i2c_frequency {
+ 	evlist__config(evlist, &opts, NULL);
+ 
+-	evsel = evlist__first(evlist);
+-
+-	evsel->core.attr.comm = 1;
+-	evsel->core.attr.disabled = 1;
+-	evsel->core.attr.enable_on_exec = 0;
+-
+-	/*
+-	 * For hybrid "cycles:u", it creates two events.
+-	 * Init the second evsel here.
+-	 */
+-	if (perf_pmu__has_hybrid() && perf_pmu__hybrid_mounted("cpu_atom")) {
+-		evsel = evsel__next(evsel);
++	/* For hybrid "cycles:u", it creates two events */
++	evlist__for_each_entry(evlist, evsel) {
+ 		evsel->core.attr.comm = 1;
+ 		evsel->core.attr.disabled = 1;
+ 		evsel->core.attr.enable_on_exec = 0;
+@@ -141,10 +129,12 @@ int test__perf_time_to_tsc(struct test *test __maybe_unused, int subtest __maybe
+ 				goto next_event;
+ 
+ 			if (strcmp(event->comm.comm, comm1) == 0) {
++				CHECK_NOT_NULL__(evsel = evlist__event2evsel(evlist, event));
+ 				CHECK__(evsel__parse_sample(evsel, event, &sample));
+ 				comm1_time = sample.time;
+ 			}
+ 			if (strcmp(event->comm.comm, comm2) == 0) {
++				CHECK_NOT_NULL__(evsel = evlist__event2evsel(evlist, event));
+ 				CHECK__(evsel__parse_sample(evsel, event, &sample));
+ 				comm2_time = sample.time;
+ 			}
 -- 
 2.35.1
 
