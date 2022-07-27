@@ -2,121 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22F56C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 15:33:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EE54C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 15:36:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233801AbiG0PdA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 11:33:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40088 "EHLO
+        id S233188AbiG0PgO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 11:36:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232685AbiG0Pc5 (ORCPT
+        with ESMTP id S229867AbiG0PgM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 11:32:57 -0400
-Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64CE11F61F;
-        Wed, 27 Jul 2022 08:32:56 -0700 (PDT)
-Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-31f445bd486so60777147b3.13;
-        Wed, 27 Jul 2022 08:32:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UQl6ehKgsHyBcO+W1cY0L1NdZu5y/xwam/X+NYPQiLI=;
-        b=DeXHGhLgtfyynj98wV8YO+BCLU/Yzf46/Fa08tj2uwlIiGSuXkHKxFj+or8DphUJMl
-         ptVfTRP7Lr69Rb5HZQpGnjpDx73NVijiQrvaLm75o5dLo1Y+30Q2zI9e3DK++wyFqOCj
-         Sbr8b0SCC/8fsjHe63vYZdtuFi2Vc0FEWvcCJOHKhtxh2UCi1/xKXnDGpXK/zHdYa2f3
-         4elZnFzDTlcM9TOmqq2QfrvGxy3WDv3uQyTBBrgO+qDkIY9aeWr+pMQ6anyoDsO3/Wdw
-         aZk6C590YR1L4+kKOCpuZnu5uSAonYVLSbQBHbfLdJ2YnWmEQ814i2s5l+MlJqjmSd3G
-         IJvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UQl6ehKgsHyBcO+W1cY0L1NdZu5y/xwam/X+NYPQiLI=;
-        b=D84PecWQxNg5rSp6980y4db+GUZ/tI9Q4ilBAhc3ris8PSfWLduZ75Z5XDCxGT7oo1
-         0nFeX2AtCqw1+h6nauWZ/a81XRUMzixIpQHSewXDCkRK/jkTaRYrGWLmQTxFmmeEWUDZ
-         y9GvZzeJouWJ/Bi8t8M6Yl7fxy+3lFm1bvedDLt1/v3cRlZ+lJ/JecnL6XSORs2Vj0ng
-         OE4riCXArTHEigiYQJpoTy+uAIZjuVwSYkI7g0Ok87yWVo8quWNMJWXLEXcN3JMA9eG4
-         jGCyn0CU4Ir5tUkRObiFIyP+0RQAnG2wY/tmyTiieYlPHWAWUZRRNATWAwQ76uAy6Tcu
-         60+Q==
-X-Gm-Message-State: AJIora9o7+z705Qyi5LDbCLAbP1X9Knwi6KAu/yuCMO1UvsX0twzJQgc
-        /B1Ncm7GmjT43n++9r97uzDZIBy5oMx9iefd1uc=
-X-Google-Smtp-Source: AGRyM1sO8vBRq9aT9sglSssa+iwKjicoels0vxgWeCj/K+xF2arUKXy1DBNmqhRSbnGdnNWfin4mhsUYSijorGIdNcw=
-X-Received: by 2002:a81:5d55:0:b0:31c:dce7:96c9 with SMTP id
- r82-20020a815d55000000b0031cdce796c9mr19528137ywb.519.1658935975618; Wed, 27
- Jul 2022 08:32:55 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220726180623.1668-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20220726180623.1668-5-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <636e9214-4b36-e9a6-3c6b-b6edb944335e@linaro.org> <CA+V-a8sTw1qzuTeD2vb7RgDmmNdEP5qEcxXCjrFgkyrBrLrt5Q@mail.gmail.com>
- <e64cc15e-b31e-876d-b3cf-b60d255c495b@linaro.org> <CA+V-a8u1VW9xaj2KjySyMuegpisLVENO_6uJOpAFZGbKziYLYw@mail.gmail.com>
- <e31e0c1f-4755-704e-8428-93970877d8f5@linaro.org> <CA+V-a8sX=Frs_cds9MriauTFRvcZUNCvoeZ+SaC0GUpL7L6qhg@mail.gmail.com>
- <9f32a4a9-66b4-ba2e-1713-436103c2faf8@linaro.org> <OS0PR01MB5922763582B836DA45CDFF0886979@OS0PR01MB5922.jpnprd01.prod.outlook.com>
- <80f08089-e3bb-983e-313b-45613364829e@linaro.org> <OS0PR01MB5922FDF8CFFE44A611D3783886979@OS0PR01MB5922.jpnprd01.prod.outlook.com>
- <75e5ace3-3255-2302-65f5-9fbef9cb1147@linaro.org> <5292fbdd-9eae-2398-1260-cbef652f6af2@microchip.com>
-In-Reply-To: <5292fbdd-9eae-2398-1260-cbef652f6af2@microchip.com>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Wed, 27 Jul 2022 16:32:28 +0100
-Message-ID: <CA+V-a8vVOXeqUZL7fTVHrc1qnC==uLR+nHooz=1mg-K3BwW3mQ@mail.gmail.com>
-Subject: Re: [PATCH 4/6] dt-bindings: riscv: Add DT binding documentation for
- Renesas RZ/Five SoC and SMARC EVK
-To:     Conor.Dooley@microchip.com
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        "Lad, Prabhakar" <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Anup Patel <anup@brainfault.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Wed, 27 Jul 2022 11:36:12 -0400
+Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 75635237D9
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 08:36:11 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by mail.nfschina.com (Postfix) with ESMTP id 8C6CD1E80D54;
+        Wed, 27 Jul 2022 23:36:18 +0800 (CST)
+X-Virus-Scanned: amavisd-new at test.com
+Received: from mail.nfschina.com ([127.0.0.1])
+        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 3y15_qWQBiFQ; Wed, 27 Jul 2022 23:36:16 +0800 (CST)
+Received: from localhost.localdomain (unknown [180.167.10.98])
+        (Authenticated sender: liqiong@nfschina.com)
+        by mail.nfschina.com (Postfix) with ESMTPA id 698451E80D05;
+        Wed, 27 Jul 2022 23:36:15 +0800 (CST)
+From:   Li Qiong <liqiong@nfschina.com>
+To:     Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, yuzhe@nfschina.com,
+        renyu@nfschina.com, jiaming@nfschina.com,
+        Li Qiong <liqiong@nfschina.com>
+Subject: [PATCH] tracing: Do PTR_ERR() after IS_ERR()
+Date:   Wed, 27 Jul 2022 23:35:19 +0800
+Message-Id: <20220727153519.6697-1-liqiong@nfschina.com>
+X-Mailer: git-send-email 2.11.0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 2:29 PM <Conor.Dooley@microchip.com> wrote:
->
-> On 27/07/2022 14:00, Krzysztof Kozlowski wrote:
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> >
-> > On 27/07/2022 14:56, Biju Das wrote:
-> >>>
-> >>> Then it is not the same SoC! Same means same, identical. CPU
-> >>> architecture is one of the major differences, which means it is not the
-> >>> same.
-> >>
-> >> Family SoC(R9A07G043) is at top level. Then it has different SoCId for taking care of
-> >> differences for SoC based on ARMV8 and RISC-V which has separate compatible like
-> >> r9a07g043u11 and r9a07g043f01?
-> >
-> > This does not answer the concern - it's not the same SoC. The most
-> > generic compatible denotes the most common part. I would argue that
-> > instruction set and architecture are the most important differences.
-> > None of ARMv8 SoCs (SoCs, not CPU cores) have "arm,armv8" compatible and
-> > you went even more - you combined two architectures in the most generic
-> > compatibles.
->
-> I would have to agree with this. The most "core" part of the SoC is
-> its architecture and while the peripheral IPs might be the same etc
-> & the Renesas marketing team might have put them in the same "family",
-> for the purposes of a device tree I don't see how having a common
-> fallback makes sense.
->
-Agreed, I was following the same which we have done on the ARM64 schema.
+Check IS_ERR() firstly, then do PTR_ERR().
 
-I am waiting on Geert's feedback on whether we should follow as
-Krzysztof suggested ie to have
+Signed-off-by: Li Qiong <liqiong@nfschina.com>
+---
+ kernel/trace/ring_buffer_benchmark.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-renesas,smarc-evk-r9a07g043f01 - for the board
-renesas,9a07g043f01 - for the SoC
+diff --git a/kernel/trace/ring_buffer_benchmark.c b/kernel/trace/ring_buffer_benchmark.c
+index 78e576575b79..a8f6b0725c45 100644
+--- a/kernel/trace/ring_buffer_benchmark.c
++++ b/kernel/trace/ring_buffer_benchmark.c
+@@ -439,17 +439,19 @@ static int __init ring_buffer_benchmark_init(void)
+ 	if (!disable_reader) {
+ 		consumer = kthread_create(ring_buffer_consumer_thread,
+ 					  NULL, "rb_consumer");
+-		ret = PTR_ERR(consumer);
+-		if (IS_ERR(consumer))
++		if (IS_ERR(consumer)) {
++			ret = PTR_ERR(consumer);
+ 			goto out_fail;
++		}
+ 	}
+ 
+ 	producer = kthread_run(ring_buffer_producer_thread,
+ 			       NULL, "rb_producer");
+-	ret = PTR_ERR(producer);
+ 
+-	if (IS_ERR(producer))
++	if (IS_ERR(producer)) {
++		ret = PTR_ERR(producer);
+ 		goto out_kill;
++	}
+ 
+ 	/*
+ 	 * Run them as low-prio background tasks by default:
+-- 
+2.11.0
 
-Cheers,
-Prabhakar
