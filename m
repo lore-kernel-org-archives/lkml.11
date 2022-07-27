@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48BC4C19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:47:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D502C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:47:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230019AbiG0RrM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:47:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52162 "EHLO
+        id S243168AbiG0RrO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:47:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243188AbiG0Rqe (ORCPT
+        with ESMTP id S243196AbiG0Rqj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:46:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BCEC8C775;
-        Wed, 27 Jul 2022 09:53:48 -0700 (PDT)
+        Wed, 27 Jul 2022 13:46:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B7A84D4CB;
+        Wed, 27 Jul 2022 09:53:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 27E20B821D7;
-        Wed, 27 Jul 2022 16:53:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 507D5C433C1;
-        Wed, 27 Jul 2022 16:53:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 82B67B821B9;
+        Wed, 27 Jul 2022 16:53:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E066CC433D6;
+        Wed, 27 Jul 2022 16:53:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940809;
-        bh=WsH6qdCjwRPejsJXtp/9b+oVzgQaxs/0Nr45MAGQSlE=;
+        s=korg; t=1658940826;
+        bh=xzLNXcz4miuOscNHT52+ulkgeYXs8Noj2UPKsvKI/sE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y7J0uVZ6/NQ1QdDkoyXUEvZwU2mbG+02ku+T0gv2NNf1VDv998CxY9unywUFuA7la
-         PCCE4IHg6Q1oumZ9QoGzrQNBoLxoTISNvWqRG+kavUjUN4X5hywsPIIGIDZzJcsF21
-         OGEbcrsuhZxS4m6mYKyQlHDwN+EvANVOu7SvAPjs=
+        b=UjODPlLPzo0xDwjwl6mxSJQ+YePeSyljkS78N74zj29beypFSkNPZWs8lEaNgcLVy
+         +Ibh8WrS9FN9FAoX9o+l4ULb+nY+nRFnc1ayOenKZEIb0H6n097NUh1o+7tGhWm7Cz
+         GPjqaaUlVO4rQoDso5ZBNPQX7NKurTcJ0uYKUngU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        =?UTF-8?q?P=C3=A9ter=20Ujfalusi?= <peter.ujfalusi@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.18 156/158] ASoC: SOF: pm: add definitions for S4 and S5 states
-Date:   Wed, 27 Jul 2022 18:13:40 +0200
-Message-Id: <20220727161027.581987180@linuxfoundation.org>
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Subject: [PATCH 5.18 137/158] x86/bugs: Warn when "ibrs" mitigation is selected on Enhanced IBRS parts
+Date:   Wed, 27 Jul 2022 18:13:21 +0200
+Message-Id: <20220727161026.871390189@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -51,60 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+From: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
 
-commit 9d2d462713384538477703e68577b05131c7d97d upstream.
+commit eb23b5ef9131e6d65011de349a4d25ef1b3d4314 upstream.
 
-We currently don't have a means to differentiate between S3, S4 and
-S5. Add definitions so that we have select different code paths
-depending on the target state in follow-up patches.
+IBRS mitigation for spectre_v2 forces write to MSR_IA32_SPEC_CTRL at
+every kernel entry/exit. On Enhanced IBRS parts setting
+MSR_IA32_SPEC_CTRL[IBRS] only once at boot is sufficient. MSR writes at
+every kernel entry/exit incur unnecessary performance loss.
 
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Reviewed-by: Péter Ujfalusi <peter.ujfalusi@linux.intel.com>
-Link: https://lore.kernel.org/r/20220616201818.130802-3-pierre-louis.bossart@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+When Enhanced IBRS feature is present, print a warning about this
+unnecessary performance loss.
+
+Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/2a5eaf54583c2bfe0edc4fea64006656256cca17.1657814857.git.pawan.kumar.gupta@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/sof/pm.c       |    9 +++++++++
- sound/soc/sof/sof-priv.h |    2 ++
- 2 files changed, 11 insertions(+)
+ arch/x86/kernel/cpu/bugs.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/sound/soc/sof/pm.c
-+++ b/sound/soc/sof/pm.c
-@@ -23,6 +23,9 @@ static u32 snd_sof_dsp_power_target(stru
- 	u32 target_dsp_state;
+--- a/arch/x86/kernel/cpu/bugs.c
++++ b/arch/x86/kernel/cpu/bugs.c
+@@ -968,6 +968,7 @@ static inline const char *spectre_v2_mod
+ #define SPECTRE_V2_LFENCE_MSG "WARNING: LFENCE mitigation is not recommended for this CPU, data leaks possible!\n"
+ #define SPECTRE_V2_EIBRS_EBPF_MSG "WARNING: Unprivileged eBPF is enabled with eIBRS on, data leaks possible via Spectre v2 BHB attacks!\n"
+ #define SPECTRE_V2_EIBRS_LFENCE_EBPF_SMT_MSG "WARNING: Unprivileged eBPF is enabled with eIBRS+LFENCE mitigation and SMT, data leaks possible via Spectre v2 BHB attacks!\n"
++#define SPECTRE_V2_IBRS_PERF_MSG "WARNING: IBRS mitigation selected on Enhanced IBRS CPU, this may cause unnecessary performance loss\n"
  
- 	switch (sdev->system_suspend_target) {
-+	case SOF_SUSPEND_S5:
-+	case SOF_SUSPEND_S4:
-+		/* DSP should be in D3 if the system is suspending to S3+ */
- 	case SOF_SUSPEND_S3:
- 		/* DSP should be in D3 if the system is suspending to S3 */
- 		target_dsp_state = SOF_DSP_PM_D3;
-@@ -336,6 +339,12 @@ int snd_sof_prepare(struct device *dev)
- 	case ACPI_STATE_S3:
- 		sdev->system_suspend_target = SOF_SUSPEND_S3;
- 		break;
-+	case ACPI_STATE_S4:
-+		sdev->system_suspend_target = SOF_SUSPEND_S4;
-+		break;
-+	case ACPI_STATE_S5:
-+		sdev->system_suspend_target = SOF_SUSPEND_S5;
-+		break;
- 	default:
- 		break;
- 	}
---- a/sound/soc/sof/sof-priv.h
-+++ b/sound/soc/sof/sof-priv.h
-@@ -85,6 +85,8 @@ enum sof_system_suspend_state {
- 	SOF_SUSPEND_NONE = 0,
- 	SOF_SUSPEND_S0IX,
- 	SOF_SUSPEND_S3,
-+	SOF_SUSPEND_S4,
-+	SOF_SUSPEND_S5,
- };
+ #ifdef CONFIG_BPF_SYSCALL
+ void unpriv_ebpf_notify(int new_state)
+@@ -1408,6 +1409,8 @@ static void __init spectre_v2_select_mit
  
- enum sof_dfsentry_type {
+ 	case SPECTRE_V2_IBRS:
+ 		setup_force_cpu_cap(X86_FEATURE_KERNEL_IBRS);
++		if (boot_cpu_has(X86_FEATURE_IBRS_ENHANCED))
++			pr_warn(SPECTRE_V2_IBRS_PERF_MSG);
+ 		break;
+ 
+ 	case SPECTRE_V2_LFENCE:
 
 
