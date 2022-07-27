@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21A99C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:37:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49DC7C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:38:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242642AbiG0Rh4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:37:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48646 "EHLO
+        id S242670AbiG0RiT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:38:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242529AbiG0Rha (ORCPT
+        with ESMTP id S242616AbiG0Rhw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:37:30 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E18B245042;
-        Wed, 27 Jul 2022 09:50:20 -0700 (PDT)
+        Wed, 27 Jul 2022 13:37:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 219AD86C04;
+        Wed, 27 Jul 2022 09:50:33 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 49A94CE2309;
-        Wed, 27 Jul 2022 16:50:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54E90C433D6;
-        Wed, 27 Jul 2022 16:50:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D71761715;
+        Wed, 27 Jul 2022 16:50:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1935FC433D6;
+        Wed, 27 Jul 2022 16:50:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940614;
-        bh=+8SJxx9RJkr5LTCCI4UBjOurlm0KCiWs5ONe1w8diZI=;
+        s=korg; t=1658940631;
+        bh=DRQYRlbI2tk8VanfqfLKF4jeCb/5wKzDplKQLZQu1LM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uH4d9B9eg429FSpp8IddUCmqwyKO5uq9ZDvQu7Ec2uYTr1BZVs48F2sd4BD5NEJya
-         Fas1SA7ByhgOHzieYhbNquOMmwxLpsEouYJLd/Z85kkQ37M7+uT4HbjNvQclIa4jdU
-         5E9dr4ldkmvTjIHvJDacbnzWivlFlS3Kbb/jmxZI=
+        b=SYDiaK/8EUzC3wtgVa5vZ2Y2H8gvyE87GQqc4wDyuxDXl0kEKfh+VTHO5fzrup1fm
+         8rzkVrFQM97R0hA1T+FFq6Men79JYBWG1hcT2kF3FxP931iCScG6ZuyvMfutXnIqrP
+         pBagvP4gs8U6UCnehE9p/8ithnrl4nKMRmN7XSsA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 086/158] net: lan966x: Fix usage of lan966x->mac_lock when entry is removed
-Date:   Wed, 27 Jul 2022 18:12:30 +0200
-Message-Id: <20220727161024.927677733@linuxfoundation.org>
+Subject: [PATCH 5.18 065/158] igmp: Fix data-races around sysctl_igmp_qrv.
+Date:   Wed, 27 Jul 2022 18:12:09 +0200
+Message-Id: <20220727161024.110473558@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -51,68 +49,148 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Horatiu Vultur <horatiu.vultur@microchip.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 99343cfa4f7560abf933fff7ab3ea58a6905c917 ]
+[ Upstream commit 8ebcc62c738f68688ee7c6fec2efe5bc6d3d7e60 ]
 
-To remove an entry to the MAC table, it is required first to setup the
-entry and then issue a command for the MAC to forget the entry.
-So if it happens for two threads to remove simultaneously an entry
-in MAC table then it would be a race condition.
-Fix this by using lan966x->mac_lock to protect the HW access.
+While reading sysctl_igmp_qrv, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its readers.
 
-Fixes: e18aba8941b40 ("net: lan966x: add mactable support")
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+This test can be packed into a helper, so such changes will be in the
+follow-up series after net is merged into net-next.
+
+  qrv ?: READ_ONCE(net->ipv4.sysctl_igmp_qrv);
+
+Fixes: a9fe8e29945d ("ipv4: implement igmp_qrv sysctl to tune igmp robustness variable")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../ethernet/microchip/lan966x/lan966x_mac.c  | 24 +++++++++++++++----
- 1 file changed, 20 insertions(+), 4 deletions(-)
+ drivers/net/amt.c |  4 ++--
+ net/ipv4/igmp.c   | 24 +++++++++++++-----------
+ 2 files changed, 15 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c b/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
-index 4f8fd5cde950..d0b8eba0a66d 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
-@@ -119,11 +119,13 @@ int lan966x_mac_learn(struct lan966x *lan966x, int port,
- 	return __lan966x_mac_learn(lan966x, port, false, mac, vid, type);
+diff --git a/drivers/net/amt.c b/drivers/net/amt.c
+index 14fe03dbd9b1..6c64953db487 100644
+--- a/drivers/net/amt.c
++++ b/drivers/net/amt.c
+@@ -563,7 +563,7 @@ static struct sk_buff *amt_build_igmp_gq(struct amt_dev *amt)
+ 	ihv3->nsrcs	= 0;
+ 	ihv3->resv	= 0;
+ 	ihv3->suppress	= false;
+-	ihv3->qrv	= amt->net->ipv4.sysctl_igmp_qrv;
++	ihv3->qrv	= READ_ONCE(amt->net->ipv4.sysctl_igmp_qrv);
+ 	ihv3->csum	= 0;
+ 	csum		= &ihv3->csum;
+ 	csum_start	= (void *)ihv3;
+@@ -3095,7 +3095,7 @@ static int amt_newlink(struct net *net, struct net_device *dev,
+ 		goto err;
+ 	}
+ 	if (amt->mode == AMT_MODE_RELAY) {
+-		amt->qrv = amt->net->ipv4.sysctl_igmp_qrv;
++		amt->qrv = READ_ONCE(amt->net->ipv4.sysctl_igmp_qrv);
+ 		amt->qri = 10;
+ 		dev->needed_headroom = amt->stream_dev->needed_headroom +
+ 				       AMT_RELAY_HLEN;
+diff --git a/net/ipv4/igmp.c b/net/ipv4/igmp.c
+index 655d2ab946e0..0a0010f89627 100644
+--- a/net/ipv4/igmp.c
++++ b/net/ipv4/igmp.c
+@@ -827,7 +827,7 @@ static void igmp_ifc_event(struct in_device *in_dev)
+ 	struct net *net = dev_net(in_dev->dev);
+ 	if (IGMP_V1_SEEN(in_dev) || IGMP_V2_SEEN(in_dev))
+ 		return;
+-	WRITE_ONCE(in_dev->mr_ifc_count, in_dev->mr_qrv ?: net->ipv4.sysctl_igmp_qrv);
++	WRITE_ONCE(in_dev->mr_ifc_count, in_dev->mr_qrv ?: READ_ONCE(net->ipv4.sysctl_igmp_qrv));
+ 	igmp_ifc_start_timer(in_dev, 1);
  }
  
--int lan966x_mac_forget(struct lan966x *lan966x,
--		       const unsigned char mac[ETH_ALEN],
--		       unsigned int vid,
--		       enum macaccess_entry_type type)
-+static int lan966x_mac_forget_locked(struct lan966x *lan966x,
-+				     const unsigned char mac[ETH_ALEN],
-+				     unsigned int vid,
-+				     enum macaccess_entry_type type)
- {
-+	lockdep_assert_held(&lan966x->mac_lock);
-+
- 	lan966x_mac_select(lan966x, mac, vid);
+@@ -1009,7 +1009,7 @@ static bool igmp_heard_query(struct in_device *in_dev, struct sk_buff *skb,
+ 		 * received value was zero, use the default or statically
+ 		 * configured value.
+ 		 */
+-		in_dev->mr_qrv = ih3->qrv ?: net->ipv4.sysctl_igmp_qrv;
++		in_dev->mr_qrv = ih3->qrv ?: READ_ONCE(net->ipv4.sysctl_igmp_qrv);
+ 		in_dev->mr_qi = IGMPV3_QQIC(ih3->qqic)*HZ ?: IGMP_QUERY_INTERVAL;
  
- 	/* Issue a forget command */
-@@ -134,6 +136,20 @@ int lan966x_mac_forget(struct lan966x *lan966x,
- 	return lan966x_mac_wait_for_completion(lan966x);
+ 		/* RFC3376, 8.3. Query Response Interval:
+@@ -1189,7 +1189,7 @@ static void igmpv3_add_delrec(struct in_device *in_dev, struct ip_mc_list *im,
+ 	pmc->interface = im->interface;
+ 	in_dev_hold(in_dev);
+ 	pmc->multiaddr = im->multiaddr;
+-	pmc->crcount = in_dev->mr_qrv ?: net->ipv4.sysctl_igmp_qrv;
++	pmc->crcount = in_dev->mr_qrv ?: READ_ONCE(net->ipv4.sysctl_igmp_qrv);
+ 	pmc->sfmode = im->sfmode;
+ 	if (pmc->sfmode == MCAST_INCLUDE) {
+ 		struct ip_sf_list *psf;
+@@ -1240,9 +1240,11 @@ static void igmpv3_del_delrec(struct in_device *in_dev, struct ip_mc_list *im)
+ 			swap(im->tomb, pmc->tomb);
+ 			swap(im->sources, pmc->sources);
+ 			for (psf = im->sources; psf; psf = psf->sf_next)
+-				psf->sf_crcount = in_dev->mr_qrv ?: net->ipv4.sysctl_igmp_qrv;
++				psf->sf_crcount = in_dev->mr_qrv ?:
++					READ_ONCE(net->ipv4.sysctl_igmp_qrv);
+ 		} else {
+-			im->crcount = in_dev->mr_qrv ?: net->ipv4.sysctl_igmp_qrv;
++			im->crcount = in_dev->mr_qrv ?:
++				READ_ONCE(net->ipv4.sysctl_igmp_qrv);
+ 		}
+ 		in_dev_put(pmc->interface);
+ 		kfree_pmc(pmc);
+@@ -1349,7 +1351,7 @@ static void igmp_group_added(struct ip_mc_list *im)
+ 	if (in_dev->dead)
+ 		return;
+ 
+-	im->unsolicit_count = net->ipv4.sysctl_igmp_qrv;
++	im->unsolicit_count = READ_ONCE(net->ipv4.sysctl_igmp_qrv);
+ 	if (IGMP_V1_SEEN(in_dev) || IGMP_V2_SEEN(in_dev)) {
+ 		spin_lock_bh(&im->lock);
+ 		igmp_start_timer(im, IGMP_INITIAL_REPORT_DELAY);
+@@ -1363,7 +1365,7 @@ static void igmp_group_added(struct ip_mc_list *im)
+ 	 * IN() to IN(A).
+ 	 */
+ 	if (im->sfmode == MCAST_EXCLUDE)
+-		im->crcount = in_dev->mr_qrv ?: net->ipv4.sysctl_igmp_qrv;
++		im->crcount = in_dev->mr_qrv ?: READ_ONCE(net->ipv4.sysctl_igmp_qrv);
+ 
+ 	igmp_ifc_event(in_dev);
+ #endif
+@@ -1754,7 +1756,7 @@ static void ip_mc_reset(struct in_device *in_dev)
+ 
+ 	in_dev->mr_qi = IGMP_QUERY_INTERVAL;
+ 	in_dev->mr_qri = IGMP_QUERY_RESPONSE_INTERVAL;
+-	in_dev->mr_qrv = net->ipv4.sysctl_igmp_qrv;
++	in_dev->mr_qrv = READ_ONCE(net->ipv4.sysctl_igmp_qrv);
  }
+ #else
+ static void ip_mc_reset(struct in_device *in_dev)
+@@ -1888,7 +1890,7 @@ static int ip_mc_del1_src(struct ip_mc_list *pmc, int sfmode,
+ #ifdef CONFIG_IP_MULTICAST
+ 		if (psf->sf_oldin &&
+ 		    !IGMP_V1_SEEN(in_dev) && !IGMP_V2_SEEN(in_dev)) {
+-			psf->sf_crcount = in_dev->mr_qrv ?: net->ipv4.sysctl_igmp_qrv;
++			psf->sf_crcount = in_dev->mr_qrv ?: READ_ONCE(net->ipv4.sysctl_igmp_qrv);
+ 			psf->sf_next = pmc->tomb;
+ 			pmc->tomb = psf;
+ 			rv = 1;
+@@ -1952,7 +1954,7 @@ static int ip_mc_del_src(struct in_device *in_dev, __be32 *pmca, int sfmode,
+ 		/* filter mode change */
+ 		pmc->sfmode = MCAST_INCLUDE;
+ #ifdef CONFIG_IP_MULTICAST
+-		pmc->crcount = in_dev->mr_qrv ?: net->ipv4.sysctl_igmp_qrv;
++		pmc->crcount = in_dev->mr_qrv ?: READ_ONCE(net->ipv4.sysctl_igmp_qrv);
+ 		WRITE_ONCE(in_dev->mr_ifc_count, pmc->crcount);
+ 		for (psf = pmc->sources; psf; psf = psf->sf_next)
+ 			psf->sf_crcount = 0;
+@@ -2131,7 +2133,7 @@ static int ip_mc_add_src(struct in_device *in_dev, __be32 *pmca, int sfmode,
+ #ifdef CONFIG_IP_MULTICAST
+ 		/* else no filters; keep old mode for reports */
  
-+int lan966x_mac_forget(struct lan966x *lan966x,
-+		       const unsigned char mac[ETH_ALEN],
-+		       unsigned int vid,
-+		       enum macaccess_entry_type type)
-+{
-+	int ret;
-+
-+	spin_lock(&lan966x->mac_lock);
-+	ret = lan966x_mac_forget_locked(lan966x, mac, vid, type);
-+	spin_unlock(&lan966x->mac_lock);
-+
-+	return ret;
-+}
-+
- int lan966x_mac_cpu_learn(struct lan966x *lan966x, const char *addr, u16 vid)
- {
- 	return lan966x_mac_learn(lan966x, PGID_CPU, addr, vid, ENTRYTYPE_LOCKED);
+-		pmc->crcount = in_dev->mr_qrv ?: net->ipv4.sysctl_igmp_qrv;
++		pmc->crcount = in_dev->mr_qrv ?: READ_ONCE(net->ipv4.sysctl_igmp_qrv);
+ 		WRITE_ONCE(in_dev->mr_ifc_count, pmc->crcount);
+ 		for (psf = pmc->sources; psf; psf = psf->sf_next)
+ 			psf->sf_crcount = 0;
 -- 
 2.35.1
 
