@@ -2,107 +2,186 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C85B9C19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 12:30:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE608C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 12:30:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233018AbiG0MaP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 08:30:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42490 "EHLO
+        id S233084AbiG0MaT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 08:30:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232997AbiG0MaC (ORCPT
+        with ESMTP id S233002AbiG0MaC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Jul 2022 08:30:02 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17BDE3DF3C
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 05:30:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3B521DA48;
+        Wed, 27 Jul 2022 05:30:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AAB5C611D2
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 12:30:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9734DC43143;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 37C9260FDD;
+        Wed, 27 Jul 2022 12:30:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91EF6C43142;
         Wed, 27 Jul 2022 12:30:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1658925000;
-        bh=Bnw95kKCUQrDufKC0VVSFnBSR2tCZOWA2za105c45Go=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VdF5FWJ87oU8m4GpcVcn5AQmVa6fnLlbv/G8KNY1ksm9ejz0QGgPF02zIRHkwiyDM
-         s8XuQX17mD4u7aCJv6VFFSum9WoSb6AmaBQ3th2rqNNOWXJuZAF58QvBlV/kh6j4Yb
-         BuBu/YX9hNaoNz/wq0GC9/YwuPV+8zCmLQmsmPJTDprbMXz24x44zlUPLwR+GqPad1
-         bMHz64HE6H8HUkBmBFr/Mr6g59ClxjdudJ6ZV0SQMftFtjObfQcKVJ56kzhMPqZ/UD
-         Uy+AEwnaGjueKifx4GVnbs21YmVxyuv6aFt18Fo9IgZz7zjlzgZh04+Jki3MMEo8/2
-         Bgdza87u2BqCg==
+        bh=O16fl6xnuruHw9EitYozS/ajIy5XCfOlDNrLaJzlciQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=AoERcxQFSIZcDBNsr19j3+HxaOu+iJiBwf6HJO6H5dpAlq9Hu6f9iqMZOt+B2+Yfz
+         Me3zIB9YfCF+YeQ99RHm+j4ZFYDDVHJzRvkhj6gGa6Pr/jz1MFBnWyXWBVcPNG8Arw
+         Y2bBzb3XC97Zjn0ynPJbxbM6+ohDPRoaM+FQyray0uikPSnxTXYgkQU2wgoE7dQzVq
+         LbW/kgUiUXQ+sxK8vHLo+W7GSorikGm42YxVyub295/U4F1N2MgC+ljriNTFEYZkOQ
+         Hw4zq+4zz7V+hZ6RV5Ko2saS0vxyAiG8DU5w51vmNCHo1jnIJt020SA/QOinj9J4X3
+         AVEYkzIoevCxA==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1oGgAo-003xmT-Du;
+        id 1oGgAo-003xm5-4u;
         Wed, 27 Jul 2022 14:29:58 +0200
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
         Daniel Vetter <daniel@ffwll.ch>,
         David Airlie <airlied@linux.ie>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
         dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 6/6] drm/i915/gt: describe the new tlb parameter at i915_vma_resource
-Date:   Wed, 27 Jul 2022 14:29:56 +0200
-Message-Id: <aa55eef7e63b8f3d0f69b525db2dd2eb87e9db6b.1658924372.git.mchehab@kernel.org>
+        linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org
+Subject: [PATCH v3 0/6] drm/i915: reduce TLB performance regressions
+Date:   Wed, 27 Jul 2022 14:29:50 +0200
+Message-Id: <cover.1658924372.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <cover.1658924372.git.mchehab@kernel.org>
-References: <cover.1658924372.git.mchehab@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-TLB cache invalidation can happen on two different situations:
+Doing TLB invalidation cause performance regressions, like:
+	[424.370996] i915 0000:00:02.0: [drm] *ERROR* rcs0 TLB invalidation did not complete in 4ms!
 
-1. synchronously, at __vma_put_pages();
-2. asynchronously.
+As reported at:
+	https://gitlab.freedesktop.org/drm/intel/-/issues/6424
 
-On the first case, TLB cache invalidation happens inside
-__vma_put_pages(). So, no need to do it later on.
+as this is an expensive operation. So, reduce the need of it by:
+  - checking if the engine is awake;
+  - checking if the engine is not wedged;
+  - batching operations.
 
-However, on the second case, the pages will keep in memory
-until __i915_vma_evict() is called.
+Additionally, add a workaround for a known hardware issue on some GPUs.
 
-So, we need to store the TLB data at struct i915_vma_resource,
-in order to do a TLB cache invalidation before allowing
-userspace to re-use the same memory.
+In order to double-check that this series won't be introducing any regressions,
+I used this new IGT test:
 
-So, i915_vma_resource_unbind() has gained a new parameter
-in order to store the TLB data at the second case.
+https://patchwork.freedesktop.org/patch/495684/?series=106757&rev=1
 
-Document it.
+Checking the results for 3 different patchsets, on Broadwell:
 
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
----
+1) On the top of drm-tip (2022y-07m-14d-08h-35m-36) - e. g. with TLB
+invalidation and serialization patches:
 
-To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
-See [PATCH v3 0/6] at: https://lore.kernel.org/all/cover.1658924372.git.mchehab@kernel.org/
+	$ sudo build/tests/gem_exec_tlb|grep Subtest
+	Subtest close-clear: SUCCESS (10.490s)
+	Subtest madv-clear: SUCCESS (10.484s)
+	Subtest u-unmap-clear: SUCCESS (10.527s)
+	Subtest u-shrink-clear: SUCCESS (10.506s)
+	Subtest close-dumb: SUCCESS (10.165s)
+	Subtest madv-dumb: SUCCESS (10.177s)
+	Subtest u-unmap-dumb: SUCCESS (10.172s)
+	Subtest u-shrink-dumb: SUCCESS (10.172s)
 
- drivers/gpu/drm/i915/i915_vma_resource.c | 4 ++++
- 1 file changed, 4 insertions(+)
+2) With the new version of the batch TLB invalidation patches from this series:
 
-diff --git a/drivers/gpu/drm/i915/i915_vma_resource.c b/drivers/gpu/drm/i915/i915_vma_resource.c
-index 5a67995ea5fe..4fe09ea0a825 100644
---- a/drivers/gpu/drm/i915/i915_vma_resource.c
-+++ b/drivers/gpu/drm/i915/i915_vma_resource.c
-@@ -216,6 +216,10 @@ i915_vma_resource_fence_notify(struct i915_sw_fence *fence,
- /**
-  * i915_vma_resource_unbind - Unbind a vma resource
-  * @vma_res: The vma resource to unbind.
-+ * @tlb: pointer to vma->obj->mm.tlb associated with the resource
-+ *	 to be stored at vma_res->tlb. When not-NULL, it will be used
-+ *	 to do TLB cache invalidation before freeing a VMA resource.
-+ *	 used only for async unbind.
-  *
-  * At this point this function does little more than publish a fence that
-  * signals immediately unless signaling is held back.
+	$ sudo build/tests/gem_exec_tlb|grep Subtest
+	Subtest close-clear: SUCCESS (10.483s)
+	Subtest madv-clear: SUCCESS (10.495s)
+	Subtest u-unmap-clear: SUCCESS (10.545s)
+	Subtest u-shrink-clear: SUCCESS (10.508s)
+	Subtest close-dumb: SUCCESS (10.172s)
+	Subtest madv-dumb: SUCCESS (10.169s)
+	Subtest u-unmap-dumb: SUCCESS (10.174s)
+	Subtest u-shrink-dumb: SUCCESS (10.176s)
+
+3) Changing the TLB invalidation routine to do nothing[1]:
+
+	$ sudo ~/freedesktop-igt/build/tests/gem_exec_tlb|grep Subtest
+	(gem_exec_tlb:1958) CRITICAL: Test assertion failure function check_bo, file ../tests/i915/gem_exec_tlb.c:384:
+	(gem_exec_tlb:1958) CRITICAL: Failed assertion: !sq
+	(gem_exec_tlb:1958) CRITICAL: Found deadbeef in a new (clear) buffer after 3 tries!
+	(gem_exec_tlb:1956) CRITICAL: Test assertion failure function check_bo, file ../tests/i915/gem_exec_tlb.c:384:
+	(gem_exec_tlb:1956) CRITICAL: Failed assertion: !sq
+	(gem_exec_tlb:1956) CRITICAL: Found deadbeef in a new (clear) buffer after 89 tries!
+	(gem_exec_tlb:1957) CRITICAL: Test assertion failure function check_bo, file ../tests/i915/gem_exec_tlb.c:384:
+	(gem_exec_tlb:1957) CRITICAL: Failed assertion: !sq
+	(gem_exec_tlb:1957) CRITICAL: Found deadbeef in a new (clear) buffer after 256 tries!
+	(gem_exec_tlb:1960) CRITICAL: Test assertion failure function check_bo, file ../tests/i915/gem_exec_tlb.c:384:
+	(gem_exec_tlb:1960) CRITICAL: Failed assertion: !sq
+	(gem_exec_tlb:1960) CRITICAL: Found deadbeef in a new (clear) buffer after 845 tries!
+	(gem_exec_tlb:1961) CRITICAL: Test assertion failure function check_bo, file ../tests/i915/gem_exec_tlb.c:384:
+	(gem_exec_tlb:1961) CRITICAL: Failed assertion: !sq
+	(gem_exec_tlb:1961) CRITICAL: Found deadbeef in a new (clear) buffer after 1138 tries!
+	(gem_exec_tlb:1954) CRITICAL: Test assertion failure function check_bo, file ../tests/i915/gem_exec_tlb.c:384:
+	(gem_exec_tlb:1954) CRITICAL: Failed assertion: !sq
+	(gem_exec_tlb:1954) CRITICAL: Found deadbeef in a new (clear) buffer after 1359 tries!
+	(gem_exec_tlb:1955) CRITICAL: Test assertion failure function check_bo, file ../tests/i915/gem_exec_tlb.c:384:
+	(gem_exec_tlb:1955) CRITICAL: Failed assertion: !sq
+	(gem_exec_tlb:1955) CRITICAL: Found deadbeef in a new (clear) buffer after 1794 tries!
+	(gem_exec_tlb:1959) CRITICAL: Test assertion failure function check_bo, file ../tests/i915/gem_exec_tlb.c:384:
+	(gem_exec_tlb:1959) CRITICAL: Failed assertion: !sq
+	(gem_exec_tlb:1959) CRITICAL: Found deadbeef in a new (clear) buffer after 2139 tries!
+	Dynamic subtest smem0 failed.
+	**** DEBUG ****
+	(gem_exec_tlb:1944) DEBUG: 2M hole:200000 contains poison:6b6b6b6b
+	(gem_exec_tlb:1944) DEBUG: Running writer for 200000 at 300000 on bcs0
+	(gem_exec_tlb:1944) DEBUG: Closing hole:200000 on rcs0, sample:deadbeef
+	(gem_exec_tlb:1944) DEBUG: Rechecking hole:200000, sample:6b6b6b6b
+	****  END  ****
+	Subtest close-clear: FAIL (10.434s)
+	Subtest madv-clear: SUCCESS (10.479s)
+	Subtest u-unmap-clear: SUCCESS (10.512s)
+
+In summary, the test does properly detect fail when TLB cache invalidation doesn't happen,
+as shown at result (3). It also shows that both current drm-tip and drm-tip with this series
+applied don't have TLB invalidation cache issues.
+
+[1] I applied this patch on the top of drm-tip:
+
+	diff --git a/drivers/gpu/drm/i915/gt/intel_gt.c b/drivers/gpu/drm/i915/gt/intel_gt.c
+	index 68c2b0d8f187..0aefcd7be5e9 100644
+	--- a/drivers/gpu/drm/i915/gt/intel_gt.c
+	+++ b/drivers/gpu/drm/i915/gt/intel_gt.c
+	@@ -930,0 +931,3 @@ void intel_gt_invalidate_tlbs(struct intel_gt *gt)
+	+	// HACK: don't do TLB invalidations!!!
+	+	return;
+	+
+
+Regards,
+Mauro
+
+Chris Wilson (4):
+  drm/i915/gt: Ignore TLB invalidations on idle engines
+  drm/i915/gt: Invalidate TLB of the OA unit at TLB invalidations
+  drm/i915/gt: Skip TLB invalidations once wedged
+  drm/i915/gt: Batch TLB invalidations
+
+Mauro Carvalho Chehab (2):
+  drm/i915/gt: document with_intel_gt_pm_if_awake()
+  drm/i915/gt: describe the new tlb parameter at i915_vma_resource
+
+ .../gpu/drm/i915/gem/i915_gem_object_types.h  |  3 +-
+ drivers/gpu/drm/i915/gem/i915_gem_pages.c     | 25 +++---
+ drivers/gpu/drm/i915/gt/intel_gt.c            | 77 +++++++++++++++----
+ drivers/gpu/drm/i915/gt/intel_gt.h            | 12 ++-
+ drivers/gpu/drm/i915/gt/intel_gt_pm.h         | 11 +++
+ drivers/gpu/drm/i915/gt/intel_gt_types.h      | 18 ++++-
+ drivers/gpu/drm/i915/gt/intel_ppgtt.c         |  8 +-
+ drivers/gpu/drm/i915/i915_vma.c               | 33 ++++++--
+ drivers/gpu/drm/i915/i915_vma.h               |  1 +
+ drivers/gpu/drm/i915/i915_vma_resource.c      |  9 ++-
+ drivers/gpu/drm/i915/i915_vma_resource.h      |  6 +-
+ 11 files changed, 163 insertions(+), 40 deletions(-)
+
 -- 
 2.36.1
+
 
