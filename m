@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C6CBC19F2D
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:00:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCF47C19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:00:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240633AbiG0RAB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:00:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42466 "EHLO
+        id S235888AbiG0RAF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:00:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230173AbiG0Q6v (ORCPT
+        with ESMTP id S241206AbiG0Q65 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:58:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D60C6759F;
-        Wed, 27 Jul 2022 09:37:02 -0700 (PDT)
+        Wed, 27 Jul 2022 12:58:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E318F675BD;
+        Wed, 27 Jul 2022 09:37:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 06B11B821A6;
-        Wed, 27 Jul 2022 16:36:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 494D2C433D6;
-        Wed, 27 Jul 2022 16:36:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DF9C061AA9;
+        Wed, 27 Jul 2022 16:37:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECAEEC433D7;
+        Wed, 27 Jul 2022 16:37:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939785;
-        bh=TRUEB7p4AbyqXNIiq6XMX+D4eko7r6zTCXx7Ibqm4S4=;
+        s=korg; t=1658939822;
+        bh=5nBEjBIzLOia/efdCOlZmxwgl2SbuzyDpTTIsEyjpK8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ip0nrFGvVOJjmq0MHmqJx8FmkV9ZrdvzconIDUXKST4UjOyP6HD6xfzlkxOuNlh6h
-         Vgey0YKOMb44wVN7US4JiiGiQJVaJfe4ewTTEN+4ZUvh+YWI9aMa//LOuCmX527mM+
-         wA5iNEcOTw+uCfia3F90R4uJtztbZzbpx1z/DLNM=
+        b=l3jC98VpC6flz+VJUkUp4lOghgH5ndOq2iI25/TQF6BV+PWdYkQRwEipJHKl+M3UE
+         3ZvMm4CkjnUBD8quZBY7qAq6wL+ttIM37DfHNTs7eCidw59iuRWIDtLp8BfgdsJxTP
+         yIaSirws7Vx6UOSNIqN40ZF6AOMbfPTkVH2jtHu0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
-        Chaitanya Kulkarni <chaitanya.kulkarni@wdc.com>,
-        Damien Le Moal <damien.lemoal@wdc.com>,
-        Christoph Hellwig <hch@lst.de>, Ming Lei <ming.lei@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.10 104/105] block: fix memory leak of bvec
-Date:   Wed, 27 Jul 2022 18:11:30 +0200
-Message-Id: <20220727161016.275605431@linuxfoundation.org>
+        Jeffrey Hugo <quic_jhugo@quicinc.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        Carl Vanderlip <quic_carlv@quicinc.com>
+Subject: [PATCH 5.15 011/201] PCI: hv: Fix hv_arch_irq_unmask() for multi-MSI
+Date:   Wed, 27 Jul 2022 18:08:35 +0200
+Message-Id: <20220727161027.412476761@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220727161012.056867467@linuxfoundation.org>
-References: <20220727161012.056867467@linuxfoundation.org>
+In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
+References: <20220727161026.977588183@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,36 +50,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ming Lei <ming.lei@redhat.com>
+From: Jeffrey Hugo <quic_jhugo@quicinc.com>
 
-commit 8358c28a5d44bf0223a55a2334086c3707bb4185 upstream.
+commit 455880dfe292a2bdd3b4ad6a107299fce610e64b upstream.
 
-bio_init() clears bio instance, so the bvec index has to be set after
-bio_init(), otherwise bio->bi_io_vec may be leaked.
+In the multi-MSI case, hv_arch_irq_unmask() will only operate on the first
+MSI of the N allocated.  This is because only the first msi_desc is cached
+and it is shared by all the MSIs of the multi-MSI block.  This means that
+hv_arch_irq_unmask() gets the correct address, but the wrong data (always
+0).
 
-Fixes: 3175199ab0ac ("block: split bio_kmalloc from bio_alloc_bioset")
-Cc: Johannes Thumshirn <johannes.thumshirn@wdc.com>
-Cc: Chaitanya Kulkarni <chaitanya.kulkarni@wdc.com>
-Cc: Damien Le Moal <damien.lemoal@wdc.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Ming Lei <ming.lei@redhat.com>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+This can break MSIs.
+
+Lets assume MSI0 is vector 34 on CPU0, and MSI1 is vector 33 on CPU0.
+
+hv_arch_irq_unmask() is called on MSI0.  It uses a hypercall to configure
+the MSI address and data (0) to vector 34 of CPU0.  This is correct.  Then
+hv_arch_irq_unmask is called on MSI1.  It uses another hypercall to
+configure the MSI address and data (0) to vector 33 of CPU0.  This is
+wrong, and results in both MSI0 and MSI1 being routed to vector 33.  Linux
+will observe extra instances of MSI1 and no instances of MSI0 despite the
+endpoint device behaving correctly.
+
+For the multi-MSI case, we need unique address and data info for each MSI,
+but the cached msi_desc does not provide that.  However, that information
+can be gotten from the int_desc cached in the chip_data by
+compose_msi_msg().  Fix the multi-MSI case to use that cached information
+instead.  Since hv_set_msi_entry_from_desc() is no longer applicable,
+remove it.
+
+5.15 backport - no changes to code, but merge conflict due to refactor.
+
+Signed-off-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
+Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+Link: https://lore.kernel.org/r/1651068453-29588-1-git-send-email-quic_jhugo@quicinc.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Signed-off-by: Carl Vanderlip <quic_carlv@quicinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- block/bio.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/include/asm/mshyperv.h     |    7 -------
+ drivers/pci/controller/pci-hyperv.c |    5 ++++-
+ 2 files changed, 4 insertions(+), 8 deletions(-)
 
---- a/block/bio.c
-+++ b/block/bio.c
-@@ -491,8 +491,8 @@ struct bio *bio_alloc_bioset(gfp_t gfp_m
- 		if (unlikely(!bvl))
- 			goto err_free;
+--- a/arch/x86/include/asm/mshyperv.h
++++ b/arch/x86/include/asm/mshyperv.h
+@@ -176,13 +176,6 @@ bool hv_vcpu_is_preempted(int vcpu);
+ static inline void hv_apic_init(void) {}
+ #endif
  
--		bio->bi_flags |= idx << BVEC_POOL_OFFSET;
- 		bio_init(bio, bvl, bvec_nr_vecs(idx));
-+		bio->bi_flags |= idx << BVEC_POOL_OFFSET;
- 	} else if (nr_iovecs) {
- 		bio_init(bio, bio->bi_inline_vecs, BIO_INLINE_VECS);
- 	} else {
+-static inline void hv_set_msi_entry_from_desc(union hv_msi_entry *msi_entry,
+-					      struct msi_desc *msi_desc)
+-{
+-	msi_entry->address.as_uint32 = msi_desc->msg.address_lo;
+-	msi_entry->data.as_uint32 = msi_desc->msg.data;
+-}
+-
+ struct irq_domain *hv_create_pci_msi_domain(void);
+ 
+ int hv_map_ioapic_interrupt(int ioapic_id, bool level, int vcpu, int vector,
+--- a/drivers/pci/controller/pci-hyperv.c
++++ b/drivers/pci/controller/pci-hyperv.c
+@@ -1234,6 +1234,7 @@ static void hv_irq_unmask(struct irq_dat
+ 	struct msi_desc *msi_desc = irq_data_get_msi_desc(data);
+ 	struct irq_cfg *cfg = irqd_cfg(data);
+ 	struct hv_retarget_device_interrupt *params;
++	struct tran_int_desc *int_desc;
+ 	struct hv_pcibus_device *hbus;
+ 	struct cpumask *dest;
+ 	cpumask_var_t tmp;
+@@ -1248,6 +1249,7 @@ static void hv_irq_unmask(struct irq_dat
+ 	pdev = msi_desc_to_pci_dev(msi_desc);
+ 	pbus = pdev->bus;
+ 	hbus = container_of(pbus->sysdata, struct hv_pcibus_device, sysdata);
++	int_desc = data->chip_data;
+ 
+ 	spin_lock_irqsave(&hbus->retarget_msi_interrupt_lock, flags);
+ 
+@@ -1255,7 +1257,8 @@ static void hv_irq_unmask(struct irq_dat
+ 	memset(params, 0, sizeof(*params));
+ 	params->partition_id = HV_PARTITION_ID_SELF;
+ 	params->int_entry.source = HV_INTERRUPT_SOURCE_MSI;
+-	hv_set_msi_entry_from_desc(&params->int_entry.msi_entry, msi_desc);
++	params->int_entry.msi_entry.address.as_uint32 = int_desc->address & 0xffffffff;
++	params->int_entry.msi_entry.data.as_uint32 = int_desc->data;
+ 	params->device_id = (hbus->hdev->dev_instance.b[5] << 24) |
+ 			   (hbus->hdev->dev_instance.b[4] << 16) |
+ 			   (hbus->hdev->dev_instance.b[7] << 8) |
 
 
