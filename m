@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6918BC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:54:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13F1BC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:54:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240998AbiG0QyF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:54:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56256 "EHLO
+        id S241005AbiG0QyI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:54:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240854AbiG0Qwe (ORCPT
+        with ESMTP id S240864AbiG0Qwo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:52:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AE3A4D4D8;
-        Wed, 27 Jul 2022 09:34:45 -0700 (PDT)
+        Wed, 27 Jul 2022 12:52:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC94A4D17D;
+        Wed, 27 Jul 2022 09:34:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B3F8661A3F;
-        Wed, 27 Jul 2022 16:34:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85D40C433D6;
-        Wed, 27 Jul 2022 16:34:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A6B661A24;
+        Wed, 27 Jul 2022 16:34:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 930F3C433D6;
+        Wed, 27 Jul 2022 16:34:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939684;
-        bh=07XIG2GMPoCXlF1LVyvINxUFkecKs0VlRnCAf3tGxxs=;
+        s=korg; t=1658939690;
+        bh=HyQgHOeOFZ3XVC2J1qYJZurG46tm1pEbA9bEGX1Ibdc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kwmv/JdVCBBEmWic2iIM2YypJ4brPqmIJD9s+8z9eqrbY7wv+wUx7p121qQ6UYwW+
-         zpJV9F+zCKXMYrsB613JVRq0XGFw5082vvOIJkHwKrobnnqfOAB8muhRDolIg8mDNj
-         0p0ykyoqD2gfGhMlxO53EMMsSWA7BscCGzsa8Mu4=
+        b=rAMRoBzNCIGmVZY4NrlD/Uj26qlNuy1B239GZVsMY8xFLaMoC5K98MwAx0Iac4ttA
+         qzbArAvv2/vv2ZxQL71jOtT9HAm1bPLsxvs0pZ19CZIQEKw9syU2yb8CPc5C+NUOgg
+         /xq+b4puh7R9Go+PEFwnMsbS7AV9A9wxGNRfAndU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 068/105] tcp: Fix data-races around sysctl knobs related to SYN option.
-Date:   Wed, 27 Jul 2022 18:10:54 +0200
-Message-Id: <20220727161014.793683267@linuxfoundation.org>
+Subject: [PATCH 5.10 070/105] tcp: Fix data-races around sysctl_tcp_recovery.
+Date:   Wed, 27 Jul 2022 18:10:56 +0200
+Message-Id: <20220727161014.859504799@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161012.056867467@linuxfoundation.org>
 References: <20220727161012.056867467@linuxfoundation.org>
@@ -51,175 +51,57 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 3666f666e99600518ab20982af04a078bbdad277 ]
+[ Upstream commit e7d2ef837e14a971a05f60ea08c47f3fed1a36e4 ]
 
-While reading these knobs, they can be changed concurrently.
-Thus, we need to add READ_ONCE() to their readers.
+While reading sysctl_tcp_recovery, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its readers.
 
-  - tcp_sack
-  - tcp_window_scaling
-  - tcp_timestamps
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Fixes: 4f41b1c58a32 ("tcp: use RACK to detect losses")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../ethernet/chelsio/inline_crypto/chtls/chtls_cm.c    |  6 +++---
- net/core/secure_seq.c                                  |  4 ++--
- net/ipv4/syncookies.c                                  |  6 +++---
- net/ipv4/tcp_input.c                                   |  6 +++---
- net/ipv4/tcp_output.c                                  | 10 +++++-----
- 5 files changed, 16 insertions(+), 16 deletions(-)
+ net/ipv4/tcp_input.c    | 3 ++-
+ net/ipv4/tcp_recovery.c | 6 ++++--
+ 2 files changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
-index 51e071c20e39..cd6e016e6210 100644
---- a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
-+++ b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
-@@ -1235,8 +1235,8 @@ static struct sock *chtls_recv_sock(struct sock *lsk,
- 	csk->sndbuf = newsk->sk_sndbuf;
- 	csk->smac_idx = ((struct port_info *)netdev_priv(ndev))->smt_idx;
- 	RCV_WSCALE(tp) = select_rcv_wscale(tcp_full_space(newsk),
--					   sock_net(newsk)->
--						ipv4.sysctl_tcp_window_scaling,
-+					   READ_ONCE(sock_net(newsk)->
-+						     ipv4.sysctl_tcp_window_scaling),
- 					   tp->window_clamp);
- 	neigh_release(n);
- 	inet_inherit_port(&tcp_hashinfo, lsk, newsk);
-@@ -1383,7 +1383,7 @@ static void chtls_pass_accept_request(struct sock *sk,
- #endif
- 	}
- 	if (req->tcpopt.wsf <= 14 &&
--	    sock_net(sk)->ipv4.sysctl_tcp_window_scaling) {
-+	    READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_window_scaling)) {
- 		inet_rsk(oreq)->wscale_ok = 1;
- 		inet_rsk(oreq)->snd_wscale = req->tcpopt.wsf;
- 	}
-diff --git a/net/core/secure_seq.c b/net/core/secure_seq.c
-index 7131cd1fb2ad..189eea1372d5 100644
---- a/net/core/secure_seq.c
-+++ b/net/core/secure_seq.c
-@@ -64,7 +64,7 @@ u32 secure_tcpv6_ts_off(const struct net *net,
- 		.daddr = *(struct in6_addr *)daddr,
- 	};
- 
--	if (net->ipv4.sysctl_tcp_timestamps != 1)
-+	if (READ_ONCE(net->ipv4.sysctl_tcp_timestamps) != 1)
- 		return 0;
- 
- 	ts_secret_init();
-@@ -120,7 +120,7 @@ EXPORT_SYMBOL(secure_ipv6_port_ephemeral);
- #ifdef CONFIG_INET
- u32 secure_tcp_ts_off(const struct net *net, __be32 saddr, __be32 daddr)
- {
--	if (net->ipv4.sysctl_tcp_timestamps != 1)
-+	if (READ_ONCE(net->ipv4.sysctl_tcp_timestamps) != 1)
- 		return 0;
- 
- 	ts_secret_init();
-diff --git a/net/ipv4/syncookies.c b/net/ipv4/syncookies.c
-index b52cc46bdadd..41afc9155f31 100644
---- a/net/ipv4/syncookies.c
-+++ b/net/ipv4/syncookies.c
-@@ -249,12 +249,12 @@ bool cookie_timestamp_decode(const struct net *net,
- 		return true;
- 	}
- 
--	if (!net->ipv4.sysctl_tcp_timestamps)
-+	if (!READ_ONCE(net->ipv4.sysctl_tcp_timestamps))
- 		return false;
- 
- 	tcp_opt->sack_ok = (options & TS_OPT_SACK) ? TCP_SACK_SEEN : 0;
- 
--	if (tcp_opt->sack_ok && !net->ipv4.sysctl_tcp_sack)
-+	if (tcp_opt->sack_ok && !READ_ONCE(net->ipv4.sysctl_tcp_sack))
- 		return false;
- 
- 	if ((options & TS_OPT_WSCALE_MASK) == TS_OPT_WSCALE_MASK)
-@@ -263,7 +263,7 @@ bool cookie_timestamp_decode(const struct net *net,
- 	tcp_opt->wscale_ok = 1;
- 	tcp_opt->snd_wscale = options & TS_OPT_WSCALE_MASK;
- 
--	return net->ipv4.sysctl_tcp_window_scaling != 0;
-+	return READ_ONCE(net->ipv4.sysctl_tcp_window_scaling) != 0;
- }
- EXPORT_SYMBOL(cookie_timestamp_decode);
- 
 diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 5cbabe0e42c9..8ac3acde08b4 100644
+index 8ac3acde08b4..1dc1d62093b3 100644
 --- a/net/ipv4/tcp_input.c
 +++ b/net/ipv4/tcp_input.c
-@@ -4007,7 +4007,7 @@ void tcp_parse_options(const struct net *net,
- 				break;
- 			case TCPOPT_WINDOW:
- 				if (opsize == TCPOLEN_WINDOW && th->syn &&
--				    !estab && net->ipv4.sysctl_tcp_window_scaling) {
-+				    !estab && READ_ONCE(net->ipv4.sysctl_tcp_window_scaling)) {
- 					__u8 snd_wscale = *(__u8 *)ptr;
- 					opt_rx->wscale_ok = 1;
- 					if (snd_wscale > TCP_MAX_WSCALE) {
-@@ -4023,7 +4023,7 @@ void tcp_parse_options(const struct net *net,
- 			case TCPOPT_TIMESTAMP:
- 				if ((opsize == TCPOLEN_TIMESTAMP) &&
- 				    ((estab && opt_rx->tstamp_ok) ||
--				     (!estab && net->ipv4.sysctl_tcp_timestamps))) {
-+				     (!estab && READ_ONCE(net->ipv4.sysctl_tcp_timestamps)))) {
- 					opt_rx->saw_tstamp = 1;
- 					opt_rx->rcv_tsval = get_unaligned_be32(ptr);
- 					opt_rx->rcv_tsecr = get_unaligned_be32(ptr + 4);
-@@ -4031,7 +4031,7 @@ void tcp_parse_options(const struct net *net,
- 				break;
- 			case TCPOPT_SACK_PERM:
- 				if (opsize == TCPOLEN_SACK_PERM && th->syn &&
--				    !estab && net->ipv4.sysctl_tcp_sack) {
-+				    !estab && READ_ONCE(net->ipv4.sysctl_tcp_sack)) {
- 					opt_rx->sack_ok = TCP_SACK_SEEN;
- 					tcp_sack_reset(opt_rx);
- 				}
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index e7348e70e6e3..772dd6241b70 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -789,18 +789,18 @@ static unsigned int tcp_syn_options(struct sock *sk, struct sk_buff *skb,
- 	opts->mss = tcp_advertise_mss(sk);
- 	remaining -= TCPOLEN_MSS_ALIGNED;
+@@ -2055,7 +2055,8 @@ static inline void tcp_init_undo(struct tcp_sock *tp)
  
--	if (likely(sock_net(sk)->ipv4.sysctl_tcp_timestamps && !*md5)) {
-+	if (likely(READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_timestamps) && !*md5)) {
- 		opts->options |= OPTION_TS;
- 		opts->tsval = tcp_skb_timestamp(skb) + tp->tsoffset;
- 		opts->tsecr = tp->rx_opt.ts_recent;
- 		remaining -= TCPOLEN_TSTAMP_ALIGNED;
- 	}
--	if (likely(sock_net(sk)->ipv4.sysctl_tcp_window_scaling)) {
-+	if (likely(READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_window_scaling))) {
- 		opts->ws = tp->rx_opt.rcv_wscale;
- 		opts->options |= OPTION_WSCALE;
- 		remaining -= TCPOLEN_WSCALE_ALIGNED;
- 	}
--	if (likely(sock_net(sk)->ipv4.sysctl_tcp_sack)) {
-+	if (likely(READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_sack))) {
- 		opts->options |= OPTION_SACK_ADVERTISE;
- 		if (unlikely(!(OPTION_TS & opts->options)))
- 			remaining -= TCPOLEN_SACKPERM_ALIGNED;
-@@ -3648,7 +3648,7 @@ static void tcp_connect_init(struct sock *sk)
- 	 * See tcp_input.c:tcp_rcv_state_process case TCP_SYN_SENT.
- 	 */
- 	tp->tcp_header_len = sizeof(struct tcphdr);
--	if (sock_net(sk)->ipv4.sysctl_tcp_timestamps)
-+	if (READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_timestamps))
- 		tp->tcp_header_len += TCPOLEN_TSTAMP_ALIGNED;
+ static bool tcp_is_rack(const struct sock *sk)
+ {
+-	return sock_net(sk)->ipv4.sysctl_tcp_recovery & TCP_RACK_LOSS_DETECTION;
++	return READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_recovery) &
++		TCP_RACK_LOSS_DETECTION;
+ }
  
- #ifdef CONFIG_TCP_MD5SIG
-@@ -3684,7 +3684,7 @@ static void tcp_connect_init(struct sock *sk)
- 				  tp->advmss - (tp->rx_opt.ts_recent_stamp ? tp->tcp_header_len - sizeof(struct tcphdr) : 0),
- 				  &tp->rcv_wnd,
- 				  &tp->window_clamp,
--				  sock_net(sk)->ipv4.sysctl_tcp_window_scaling,
-+				  READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_window_scaling),
- 				  &rcv_wscale,
- 				  rcv_wnd);
+ /* If we detect SACK reneging, forget all SACK information
+diff --git a/net/ipv4/tcp_recovery.c b/net/ipv4/tcp_recovery.c
+index 31fc178f42c0..21fc9859d421 100644
+--- a/net/ipv4/tcp_recovery.c
++++ b/net/ipv4/tcp_recovery.c
+@@ -19,7 +19,8 @@ static u32 tcp_rack_reo_wnd(const struct sock *sk)
+ 			return 0;
+ 
+ 		if (tp->sacked_out >= tp->reordering &&
+-		    !(sock_net(sk)->ipv4.sysctl_tcp_recovery & TCP_RACK_NO_DUPTHRESH))
++		    !(READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_recovery) &
++		      TCP_RACK_NO_DUPTHRESH))
+ 			return 0;
+ 	}
+ 
+@@ -190,7 +191,8 @@ void tcp_rack_update_reo_wnd(struct sock *sk, struct rate_sample *rs)
+ {
+ 	struct tcp_sock *tp = tcp_sk(sk);
+ 
+-	if (sock_net(sk)->ipv4.sysctl_tcp_recovery & TCP_RACK_STATIC_REO_WND ||
++	if ((READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_recovery) &
++	     TCP_RACK_STATIC_REO_WND) ||
+ 	    !rs->prior_delivered)
+ 		return;
  
 -- 
 2.35.1
