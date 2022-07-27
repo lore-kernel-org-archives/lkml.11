@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9881C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:00:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB8CAC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:00:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241178AbiG0RAk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:00:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55604 "EHLO
+        id S239729AbiG0RAo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:00:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241386AbiG0Q7h (ORCPT
+        with ESMTP id S241398AbiG0Q7j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:59:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 411A3691DC;
-        Wed, 27 Jul 2022 09:37:33 -0700 (PDT)
+        Wed, 27 Jul 2022 12:59:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41AEB691F0;
+        Wed, 27 Jul 2022 09:37:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6061261A91;
-        Wed, 27 Jul 2022 16:36:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B9E4C433C1;
-        Wed, 27 Jul 2022 16:36:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B156AB821A6;
+        Wed, 27 Jul 2022 16:37:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06B94C433C1;
+        Wed, 27 Jul 2022 16:37:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939813;
-        bh=7cxcXXPeU7k5QbBJxp1iNTuJ664l3od0idVpycl5vRg=;
+        s=korg; t=1658939853;
+        bh=H6Ls8YFqH71j1ApB6PrAmK28ZzaHYIEAR7Jz0lr46Oc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DozhZZOeB+yKbUVf+pNhdQdgwseZOwHl6Sphn4tYbeQiX2aW9KukjIm5bKaUviQmN
-         RS294yjjipGwzGZLUFtl2unPAj4Ayy9PurqaHvvXDYTcUUH7jpNdw/A4GUA/7HMov2
-         51Xtgi0U9Uf08G4ptqRTTm/4t1o6tdNPCMsq6r2s=
+        b=Bx/f/pBjgSrYYCOxq3YSTYzW0G/tH5PBjFmWpmohv0l+lRPcGXnc9mJjIRoH1eAJY
+         oyX/jf20UNFD7jv2zA7uBYs4LsK+4tHsQAud8COnJMtc9MyJEwX2CtbBWWMvbv4eee
+         zgkzMutm89/NWVQGxbUX4m4VpYix588qN8vuveLk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Subject: [PATCH 5.10 087/105] Bluetooth: Add bt_skb_sendmsg helper
-Date:   Wed, 27 Jul 2022 18:11:13 +0200
-Message-Id: <20220727161015.594866397@linuxfoundation.org>
+        stable@vger.kernel.org, "Darrick J. Wong" <djwong@kernel.org>,
+        Chandan Babu R <chandan.babu@oracle.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Leah Rumancik <leah.rumancik@gmail.com>
+Subject: [PATCH 5.15 021/201] xfs: fix maxlevels comparisons in the btree staging code
+Date:   Wed, 27 Jul 2022 18:08:45 +0200
+Message-Id: <20220727161027.780172627@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220727161012.056867467@linuxfoundation.org>
-References: <20220727161012.056867467@linuxfoundation.org>
+In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
+References: <20220727161026.977588183@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,58 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+From: "Darrick J. Wong" <djwong@kernel.org>
 
-commit 38f64f650dc0e44c146ff88d15a7339efa325918 upstream.
+[ Upstream commit 78e8ec83a404d63dcc86b251f42e4ee8aff27465 ]
 
-bt_skb_sendmsg helps takes care of allocation the skb and copying the
-the contents of msg over to the skb while checking for possible errors
-so it should be safe to call it without holding lock_sock.
+The btree geometry computation function has an off-by-one error in that
+it does not allow maximally tall btrees (nlevels == XFS_BTREE_MAXLEVELS).
+This can result in repairs failing unnecessarily on very fragmented
+filesystems.  Subsequent patches to remove MAXLEVELS usage in favor of
+the per-btree type computations will make this a much more likely
+occurrence.
 
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
-Cc: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Signed-off-by: Darrick J. Wong <djwong@kernel.org>
+Reviewed-by: Chandan Babu R <chandan.babu@oracle.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Leah Rumancik <leah.rumancik@gmail.com>
+Acked-by: Darrick J. Wong <djwong@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/bluetooth/bluetooth.h |   28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+ fs/xfs/libxfs/xfs_btree_staging.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/include/net/bluetooth/bluetooth.h
-+++ b/include/net/bluetooth/bluetooth.h
-@@ -422,6 +422,34 @@ out:
- 	return NULL;
- }
+--- a/fs/xfs/libxfs/xfs_btree_staging.c
++++ b/fs/xfs/libxfs/xfs_btree_staging.c
+@@ -662,7 +662,7 @@ xfs_btree_bload_compute_geometry(
+ 	xfs_btree_bload_ensure_slack(cur, &bbl->node_slack, 1);
  
-+/* Shall not be called with lock_sock held */
-+static inline struct sk_buff *bt_skb_sendmsg(struct sock *sk,
-+					     struct msghdr *msg,
-+					     size_t len, size_t mtu,
-+					     size_t headroom, size_t tailroom)
-+{
-+	struct sk_buff *skb;
-+	size_t size = min_t(size_t, len, mtu);
-+	int err;
-+
-+	skb = bt_skb_send_alloc(sk, size + headroom + tailroom,
-+				msg->msg_flags & MSG_DONTWAIT, &err);
-+	if (!skb)
-+		return ERR_PTR(err);
-+
-+	skb_reserve(skb, headroom);
-+	skb_tailroom_reserve(skb, mtu, tailroom);
-+
-+	if (!copy_from_iter_full(skb_put(skb, size), size, &msg->msg_iter)) {
-+		kfree_skb(skb);
-+		return ERR_PTR(-EFAULT);
-+	}
-+
-+	skb->priority = sk->sk_priority;
-+
-+	return skb;
-+}
-+
- int bt_to_errno(u16 code);
+ 	bbl->nr_records = nr_this_level = nr_records;
+-	for (cur->bc_nlevels = 1; cur->bc_nlevels < XFS_BTREE_MAXLEVELS;) {
++	for (cur->bc_nlevels = 1; cur->bc_nlevels <= XFS_BTREE_MAXLEVELS;) {
+ 		uint64_t	level_blocks;
+ 		uint64_t	dontcare64;
+ 		unsigned int	level = cur->bc_nlevels - 1;
+@@ -724,7 +724,7 @@ xfs_btree_bload_compute_geometry(
+ 		nr_this_level = level_blocks;
+ 	}
  
- void hci_sock_set_flag(struct sock *sk, int nr);
+-	if (cur->bc_nlevels == XFS_BTREE_MAXLEVELS)
++	if (cur->bc_nlevels > XFS_BTREE_MAXLEVELS)
+ 		return -EOVERFLOW;
+ 
+ 	bbl->btree_height = cur->bc_nlevels;
 
 
