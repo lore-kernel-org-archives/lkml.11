@@ -2,57 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49E8FC19F2C
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 12:30:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C85B9C19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 12:30:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232935AbiG0MaL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 08:30:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42470 "EHLO
+        id S233018AbiG0MaP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 08:30:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232967AbiG0MaC (ORCPT
+        with ESMTP id S232997AbiG0MaC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Jul 2022 08:30:02 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E1F2186D6
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 05:30:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17BDE3DF3C
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 05:30:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2957561194
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AAB5C611D2
         for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 12:30:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86642C433D6;
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9734DC43143;
         Wed, 27 Jul 2022 12:30:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1658925000;
-        bh=Nm93lIHfAfepbN4O0hsAfnZomLbvcVLQp4MPg4Aq9vI=;
+        bh=Bnw95kKCUQrDufKC0VVSFnBSR2tCZOWA2za105c45Go=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZAQlO772UyaZbJ0IE7U/AQqndZjAc71FhOxikHLF0dl3+8qpOkq9pqpqcYv+aUHoP
-         1uGIFHvwntdcuWwU8Hf7Ua2oFi0DT71upyfhRFK6JsUcFq2pUNBylUZpmnPml8Y3Lk
-         emf1OK/GWPEY27uCUP/08xvJagBq+5g+UGqCNJiDyC2hSof88mX+AZDTyu7SFdpybS
-         +MeIYQRz9atGjmIUAeqWZ2EukM5SkKpATLUNy2A800Uqr6MitD3Jov/6mWQoEA8kZf
-         yc99KNDgFqqZF1wW3kGYlaMU4NlZluBCnst0KfABicZFPgqWoFVpSXk3eN8SX16vhx
-         uCw6kiJXQAsuQ==
+        b=VdF5FWJ87oU8m4GpcVcn5AQmVa6fnLlbv/G8KNY1ksm9ejz0QGgPF02zIRHkwiyDM
+         s8XuQX17mD4u7aCJv6VFFSum9WoSb6AmaBQ3th2rqNNOWXJuZAF58QvBlV/kh6j4Yb
+         BuBu/YX9hNaoNz/wq0GC9/YwuPV+8zCmLQmsmPJTDprbMXz24x44zlUPLwR+GqPad1
+         bMHz64HE6H8HUkBmBFr/Mr6g59ClxjdudJ6ZV0SQMftFtjObfQcKVJ56kzhMPqZ/UD
+         Uy+AEwnaGjueKifx4GVnbs21YmVxyuv6aFt18Fo9IgZz7zjlzgZh04+Jki3MMEo8/2
+         Bgdza87u2BqCg==
 Received: from mchehab by mail.kernel.org with local (Exim 4.95)
         (envelope-from <mchehab@kernel.org>)
-        id 1oGgAo-003xmC-8F;
+        id 1oGgAo-003xmT-Du;
         Wed, 27 Jul 2022 14:29:58 +0200
 From:   Mauro Carvalho Chehab <mchehab@kernel.org>
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Chris Wilson <chris.p.wilson@intel.com>,
         Daniel Vetter <daniel@ffwll.ch>,
         David Airlie <airlied@linux.ie>,
         Jani Nikula <jani.nikula@linux.intel.com>,
-        John Harrison <John.C.Harrison@Intel.com>,
         Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Matthew Brost <matthew.brost@intel.com>,
         Rodrigo Vivi <rodrigo.vivi@intel.com>,
         Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
         dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org,
-        Tvrtko Ursulin <tvrtko.ursulin@intel.com>
-Subject: [PATCH v3 2/6] drm/i915/gt: document with_intel_gt_pm_if_awake()
-Date:   Wed, 27 Jul 2022 14:29:52 +0200
-Message-Id: <b974905bd0f6b5308b91561cc85eeecd94f1452a.1658924372.git.mchehab@kernel.org>
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3 6/6] drm/i915/gt: describe the new tlb parameter at i915_vma_resource
+Date:   Wed, 27 Jul 2022 14:29:56 +0200
+Message-Id: <aa55eef7e63b8f3d0f69b525db2dd2eb87e9db6b.1658924372.git.mchehab@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <cover.1658924372.git.mchehab@kernel.org>
 References: <cover.1658924372.git.mchehab@kernel.org>
@@ -63,37 +59,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a kernel-doc markup to document this new macro.
+TLB cache invalidation can happen on two different situations:
 
-Reviewed-by: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
+1. synchronously, at __vma_put_pages();
+2. asynchronously.
+
+On the first case, TLB cache invalidation happens inside
+__vma_put_pages(). So, no need to do it later on.
+
+However, on the second case, the pages will keep in memory
+until __i915_vma_evict() is called.
+
+So, we need to store the TLB data at struct i915_vma_resource,
+in order to do a TLB cache invalidation before allowing
+userspace to re-use the same memory.
+
+So, i915_vma_resource_unbind() has gained a new parameter
+in order to store the TLB data at the second case.
+
+Document it.
+
 Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
 ---
 
 To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
 See [PATCH v3 0/6] at: https://lore.kernel.org/all/cover.1658924372.git.mchehab@kernel.org/
 
- drivers/gpu/drm/i915/gt/intel_gt_pm.h | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/gpu/drm/i915/i915_vma_resource.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/gpu/drm/i915/gt/intel_gt_pm.h b/drivers/gpu/drm/i915/gt/intel_gt_pm.h
-index a334787a4939..6c9a46452364 100644
---- a/drivers/gpu/drm/i915/gt/intel_gt_pm.h
-+++ b/drivers/gpu/drm/i915/gt/intel_gt_pm.h
-@@ -55,6 +55,14 @@ static inline void intel_gt_pm_might_put(struct intel_gt *gt)
- 	for (tmp = 1, intel_gt_pm_get(gt); tmp; \
- 	     intel_gt_pm_put(gt), tmp = 0)
- 
-+/**
-+ * with_intel_gt_pm_if_awake - if GT is PM awake, get a reference to prevent
-+ *	it to sleep, run some code and then asynchrously put the reference
-+ *	away.
-+ *
-+ * @gt: pointer to the gt
-+ * @wf: pointer to a temporary wakeref.
-+ */
- #define with_intel_gt_pm_if_awake(gt, wf) \
- 	for (wf = intel_gt_pm_get_if_awake(gt); wf; intel_gt_pm_put_async(gt), wf = 0)
- 
+diff --git a/drivers/gpu/drm/i915/i915_vma_resource.c b/drivers/gpu/drm/i915/i915_vma_resource.c
+index 5a67995ea5fe..4fe09ea0a825 100644
+--- a/drivers/gpu/drm/i915/i915_vma_resource.c
++++ b/drivers/gpu/drm/i915/i915_vma_resource.c
+@@ -216,6 +216,10 @@ i915_vma_resource_fence_notify(struct i915_sw_fence *fence,
+ /**
+  * i915_vma_resource_unbind - Unbind a vma resource
+  * @vma_res: The vma resource to unbind.
++ * @tlb: pointer to vma->obj->mm.tlb associated with the resource
++ *	 to be stored at vma_res->tlb. When not-NULL, it will be used
++ *	 to do TLB cache invalidation before freeing a VMA resource.
++ *	 used only for async unbind.
+  *
+  * At this point this function does little more than publish a fence that
+  * signals immediately unless signaling is held back.
 -- 
 2.36.1
 
