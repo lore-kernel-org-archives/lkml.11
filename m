@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96996C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:36:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD122C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:36:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238802AbiG0Qgk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:36:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47138 "EHLO
+        id S238809AbiG0Qgp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:36:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239200AbiG0Qe7 (ORCPT
+        with ESMTP id S235802AbiG0QfC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:34:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 197564D4FD;
-        Wed, 27 Jul 2022 09:27:38 -0700 (PDT)
+        Wed, 27 Jul 2022 12:35:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A2BD4F652;
+        Wed, 27 Jul 2022 09:27:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4886D619FF;
-        Wed, 27 Jul 2022 16:27:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 588F9C433C1;
-        Wed, 27 Jul 2022 16:27:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1FFBE619D6;
+        Wed, 27 Jul 2022 16:26:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31EF8C433D7;
+        Wed, 27 Jul 2022 16:26:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939249;
-        bh=tXwLX7d9DTRh3m3uL6UzHNSTBXNtjhjwwsi0+G9K12c=;
+        s=korg; t=1658939209;
+        bh=8CQ8rsKERdiu9+Ig5+Kfcc5GKHqTaAhILdolMlu++n4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2ZJfdP4SBxSUad03glmVZvtnOyYp4Gjm/9bJp3IcYdBrfSfDRImPoV+B2KR0KlVQh
-         7qT+bQbeZD2R54GXhPaTkWV3I0L2yithQrNvDY3/X664bD/NMY0NI2YZWYKDuCplfH
-         t50F5j5BYVvNhOl/g8BjM/BHRYjVdxecsuVeh59g=
+        b=o/uWD2+z2fMKpTXuJzYjwYNHjKsykf+dSSdBCDTXxpx873jGnlaRDzKXeqMEFPFg6
+         NrPI1HtGAAR3hbSHY+q0D7IwdBzOfyEMgrECwW5lHxd0pDkR6DHKD+pfx1XMEqyaNo
+         ztl3fU3hGkLhMPJUoac+VGjNmMfQO4rsKB2medAg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Zapolskiy <vz@mleia.com>,
-        Johan Hovold <johan@kernel.org>, Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 4.19 53/62] tty: drivers/tty/, stop using tty_schedule_flip()
-Date:   Wed, 27 Jul 2022 18:11:02 +0200
-Message-Id: <20220727161006.223109342@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 20/62] tcp: Fix data-races around some timeout sysctl knobs.
+Date:   Wed, 27 Jul 2022 18:10:29 +0200
+Message-Id: <20220727161004.987834230@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161004.175638564@linuxfoundation.org>
 References: <20220727161004.175638564@linuxfoundation.org>
@@ -48,139 +49,120 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiri Slaby <jslaby@suse.cz>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit 5f6a85158ccacc3f09744b3aafe8b11ab3b6c6f6 upstream.
+[ Upstream commit 39e24435a776e9de5c6dd188836cf2523547804b ]
 
-Since commit a9c3f68f3cd8d (tty: Fix low_latency BUG) in 2014,
-tty_flip_buffer_push() is only a wrapper to tty_schedule_flip(). We are
-going to remove the latter (as it is used less), so call the former in
-drivers/tty/.
+While reading these sysctl knobs, they can be changed concurrently.
+Thus, we need to add READ_ONCE() to their readers.
 
-Cc: Vladimir Zapolskiy <vz@mleia.com>
-Reviewed-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Link: https://lore.kernel.org/r/20211122111648.30379-2-jslaby@suse.cz
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+  - tcp_retries1
+  - tcp_retries2
+  - tcp_orphan_retries
+  - tcp_fin_timeout
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/cyclades.c          |    6 +++---
- drivers/tty/goldfish.c          |    2 +-
- drivers/tty/moxa.c              |    4 ++--
- drivers/tty/serial/lpc32xx_hs.c |    2 +-
- drivers/tty/vt/keyboard.c       |    6 +++---
- drivers/tty/vt/vt.c             |    2 +-
- 6 files changed, 11 insertions(+), 11 deletions(-)
+ include/net/tcp.h     |  3 ++-
+ net/ipv4/tcp.c        |  2 +-
+ net/ipv4/tcp_output.c |  2 +-
+ net/ipv4/tcp_timer.c  | 10 +++++-----
+ 4 files changed, 9 insertions(+), 8 deletions(-)
 
---- a/drivers/tty/cyclades.c
-+++ b/drivers/tty/cyclades.c
-@@ -556,7 +556,7 @@ static void cyy_chip_rx(struct cyclades_
- 		}
- 		info->idle_stats.recv_idle = jiffies;
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index 5c5807ed66ee..f92b93cf074c 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -1430,7 +1430,8 @@ static inline u32 keepalive_time_elapsed(const struct tcp_sock *tp)
+ 
+ static inline int tcp_fin_time(const struct sock *sk)
+ {
+-	int fin_timeout = tcp_sk(sk)->linger2 ? : sock_net(sk)->ipv4.sysctl_tcp_fin_timeout;
++	int fin_timeout = tcp_sk(sk)->linger2 ? :
++		READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_fin_timeout);
+ 	const int rto = inet_csk(sk)->icsk_rto;
+ 
+ 	if (fin_timeout < (rto << 2) - (rto >> 1))
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index b1b121d5076c..0f89d0f2c21f 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -3386,7 +3386,7 @@ static int do_tcp_getsockopt(struct sock *sk, int level,
+ 	case TCP_LINGER2:
+ 		val = tp->linger2;
+ 		if (val >= 0)
+-			val = (val ? : net->ipv4.sysctl_tcp_fin_timeout) / HZ;
++			val = (val ? : READ_ONCE(net->ipv4.sysctl_tcp_fin_timeout)) / HZ;
+ 		break;
+ 	case TCP_DEFER_ACCEPT:
+ 		val = retrans_to_secs(icsk->icsk_accept_queue.rskq_defer_accept,
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index 33f9a486661c..3d5ea169e905 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -3776,7 +3776,7 @@ void tcp_send_probe0(struct sock *sk)
  	}
--	tty_schedule_flip(port);
-+	tty_flip_buffer_push(port);
  
- 	/* end of service */
- 	cyy_writeb(info, CyRIR, save_xir & 0x3f);
-@@ -996,7 +996,7 @@ static void cyz_handle_rx(struct cyclade
- 		mod_timer(&info->rx_full_timer, jiffies + 1);
- #endif
- 	info->idle_stats.recv_idle = jiffies;
--	tty_schedule_flip(&info->port);
-+	tty_flip_buffer_push(&info->port);
+ 	if (err <= 0) {
+-		if (icsk->icsk_backoff < net->ipv4.sysctl_tcp_retries2)
++		if (icsk->icsk_backoff < READ_ONCE(net->ipv4.sysctl_tcp_retries2))
+ 			icsk->icsk_backoff++;
+ 		icsk->icsk_probes_out++;
+ 		probe_max = TCP_RTO_MAX;
+diff --git a/net/ipv4/tcp_timer.c b/net/ipv4/tcp_timer.c
+index 5d761333ffc4..e905fff09fea 100644
+--- a/net/ipv4/tcp_timer.c
++++ b/net/ipv4/tcp_timer.c
+@@ -124,7 +124,7 @@ static int tcp_out_of_resources(struct sock *sk, bool do_reset)
+  */
+ static int tcp_orphan_retries(struct sock *sk, bool alive)
+ {
+-	int retries = sock_net(sk)->ipv4.sysctl_tcp_orphan_retries; /* May be zero. */
++	int retries = READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_orphan_retries); /* May be zero. */
  
- 	/* Update rx_get */
- 	cy_writel(&buf_ctrl->rx_get, new_rx_get);
-@@ -1172,7 +1172,7 @@ static void cyz_handle_cmd(struct cyclad
- 		if (delta_count)
- 			wake_up_interruptible(&info->port.delta_msr_wait);
- 		if (special_count)
--			tty_schedule_flip(&info->port);
-+			tty_flip_buffer_push(&info->port);
- 	}
- }
- 
---- a/drivers/tty/goldfish.c
-+++ b/drivers/tty/goldfish.c
-@@ -151,7 +151,7 @@ static irqreturn_t goldfish_tty_interrup
- 	address = (unsigned long)(void *)buf;
- 	goldfish_tty_rw(qtty, address, count, 0);
- 
--	tty_schedule_flip(&qtty->port);
-+	tty_flip_buffer_push(&qtty->port);
- 	return IRQ_HANDLED;
- }
- 
---- a/drivers/tty/moxa.c
-+++ b/drivers/tty/moxa.c
-@@ -1393,7 +1393,7 @@ static int moxa_poll_port(struct moxa_po
- 		if (inited && !tty_throttled(tty) &&
- 				MoxaPortRxQueue(p) > 0) { /* RX */
- 			MoxaPortReadData(p);
--			tty_schedule_flip(&p->port);
-+			tty_flip_buffer_push(&p->port);
- 		}
+ 	/* We know from an ICMP that something is wrong. */
+ 	if (sk->sk_err_soft && !alive)
+@@ -226,7 +226,7 @@ static int tcp_write_timeout(struct sock *sk)
+ 		retry_until = icsk->icsk_syn_retries ? : net->ipv4.sysctl_tcp_syn_retries;
+ 		expired = icsk->icsk_retransmits >= retry_until;
  	} else {
- 		clear_bit(EMPTYWAIT, &p->statusflags);
-@@ -1418,7 +1418,7 @@ static int moxa_poll_port(struct moxa_po
+-		if (retransmits_timed_out(sk, net->ipv4.sysctl_tcp_retries1, 0)) {
++		if (retransmits_timed_out(sk, READ_ONCE(net->ipv4.sysctl_tcp_retries1), 0)) {
+ 			/* Black hole detection */
+ 			tcp_mtu_probing(icsk, sk);
  
- 	if (tty && (intr & IntrBreak) && !I_IGNBRK(tty)) { /* BREAK */
- 		tty_insert_flip_char(&p->port, 0, TTY_BREAK);
--		tty_schedule_flip(&p->port);
-+		tty_flip_buffer_push(&p->port);
+@@ -235,7 +235,7 @@ static int tcp_write_timeout(struct sock *sk)
+ 			sk_rethink_txhash(sk);
+ 		}
+ 
+-		retry_until = net->ipv4.sysctl_tcp_retries2;
++		retry_until = READ_ONCE(net->ipv4.sysctl_tcp_retries2);
+ 		if (sock_flag(sk, SOCK_DEAD)) {
+ 			const bool alive = icsk->icsk_rto < TCP_RTO_MAX;
+ 
+@@ -362,7 +362,7 @@ static void tcp_probe_timer(struct sock *sk)
+ 		 (s32)(tcp_time_stamp(tp) - start_ts) > icsk->icsk_user_timeout)
+ 		goto abort;
+ 
+-	max_probes = sock_net(sk)->ipv4.sysctl_tcp_retries2;
++	max_probes = READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_retries2);
+ 	if (sock_flag(sk, SOCK_DEAD)) {
+ 		const bool alive = inet_csk_rto_backoff(icsk, TCP_RTO_MAX) < TCP_RTO_MAX;
+ 
+@@ -556,7 +556,7 @@ void tcp_retransmit_timer(struct sock *sk)
  	}
+ 	inet_csk_reset_xmit_timer(sk, ICSK_TIME_RETRANS,
+ 				  tcp_clamp_rto_to_user_timeout(sk), TCP_RTO_MAX);
+-	if (retransmits_timed_out(sk, net->ipv4.sysctl_tcp_retries1 + 1, 0))
++	if (retransmits_timed_out(sk, READ_ONCE(net->ipv4.sysctl_tcp_retries1) + 1, 0))
+ 		__sk_dst_reset(sk);
  
- 	if (intr & IntrLine)
---- a/drivers/tty/serial/lpc32xx_hs.c
-+++ b/drivers/tty/serial/lpc32xx_hs.c
-@@ -341,7 +341,7 @@ static irqreturn_t serial_lpc32xx_interr
- 		       LPC32XX_HSUART_IIR(port->membase));
- 		port->icount.overrun++;
- 		tty_insert_flip_char(tport, 0, TTY_OVERRUN);
--		tty_schedule_flip(tport);
-+		tty_flip_buffer_push(tport);
- 	}
- 
- 	/* Data received? */
---- a/drivers/tty/vt/keyboard.c
-+++ b/drivers/tty/vt/keyboard.c
-@@ -310,7 +310,7 @@ int kbd_rate(struct kbd_repeat *rpt)
- static void put_queue(struct vc_data *vc, int ch)
- {
- 	tty_insert_flip_char(&vc->port, ch, 0);
--	tty_schedule_flip(&vc->port);
-+	tty_flip_buffer_push(&vc->port);
- }
- 
- static void puts_queue(struct vc_data *vc, char *cp)
-@@ -319,7 +319,7 @@ static void puts_queue(struct vc_data *v
- 		tty_insert_flip_char(&vc->port, *cp, 0);
- 		cp++;
- 	}
--	tty_schedule_flip(&vc->port);
-+	tty_flip_buffer_push(&vc->port);
- }
- 
- static void applkey(struct vc_data *vc, int key, char mode)
-@@ -564,7 +564,7 @@ static void fn_inc_console(struct vc_dat
- static void fn_send_intr(struct vc_data *vc)
- {
- 	tty_insert_flip_char(&vc->port, 0, TTY_BREAK);
--	tty_schedule_flip(&vc->port);
-+	tty_flip_buffer_push(&vc->port);
- }
- 
- static void fn_scroll_forw(struct vc_data *vc)
---- a/drivers/tty/vt/vt.c
-+++ b/drivers/tty/vt/vt.c
-@@ -1838,7 +1838,7 @@ static void respond_string(const char *p
- 		tty_insert_flip_char(port, *p, 0);
- 		p++;
- 	}
--	tty_schedule_flip(port);
-+	tty_flip_buffer_push(port);
- }
- 
- static void cursor_report(struct vc_data *vc, struct tty_struct *tty)
+ out:;
+-- 
+2.35.1
+
 
 
