@@ -2,139 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCF47C19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:00:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19811C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:00:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235888AbiG0RAF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:00:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41744 "EHLO
+        id S233834AbiG0RAL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:00:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241206AbiG0Q65 (ORCPT
+        with ESMTP id S241252AbiG0Q7U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:58:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E318F675BD;
-        Wed, 27 Jul 2022 09:37:08 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DF9C061AA9;
-        Wed, 27 Jul 2022 16:37:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECAEEC433D7;
-        Wed, 27 Jul 2022 16:37:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939822;
-        bh=5nBEjBIzLOia/efdCOlZmxwgl2SbuzyDpTTIsEyjpK8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l3jC98VpC6flz+VJUkUp4lOghgH5ndOq2iI25/TQF6BV+PWdYkQRwEipJHKl+M3UE
-         3ZvMm4CkjnUBD8quZBY7qAq6wL+ttIM37DfHNTs7eCidw59iuRWIDtLp8BfgdsJxTP
-         yIaSirws7Vx6UOSNIqN40ZF6AOMbfPTkVH2jtHu0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jeffrey Hugo <quic_jhugo@quicinc.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        Carl Vanderlip <quic_carlv@quicinc.com>
-Subject: [PATCH 5.15 011/201] PCI: hv: Fix hv_arch_irq_unmask() for multi-MSI
-Date:   Wed, 27 Jul 2022 18:08:35 +0200
-Message-Id: <20220727161027.412476761@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
-References: <20220727161026.977588183@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Wed, 27 Jul 2022 12:59:20 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AD4E67CAB
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:37:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658939837; x=1690475837;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=/Xu6IgGf7EmqEfszrQvOKIjQaHODWfI38AJXg11+tcA=;
+  b=LdcmHtpdDxppgPmOvqfnDo1TKA+q+7C9clzYiQcZURl4uiD2ZmTq1jZS
+   QPU4r3tVPvYmvTX5zyZgJwhtdqp+gfAz571lB6EP/DfVF9Kbw8KEoEgFt
+   cNl2LpvwIEVKofPrz/HzWT3fDojCzWpHFR8pyHL1/y3wsNPntzU+cCaZH
+   A+SYsGco5TxJ/FRjC99zt1WkOw8HnIGoDYXNDoJMu7kYzw/iot5w8GRkR
+   hSdGDi0Lrn0sNKmNeoEpaSYY8rUgIpVU3TFTXF3aKya3UgL2DnFLVNx+g
+   7fBPAC6I1Hr7SbLaclyVFD/iaOvDSVVby4Aic6H2J8NRcWaL/W+NnST6Q
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10421"; a="352279806"
+X-IronPort-AV: E=Sophos;i="5.93,196,1654585200"; 
+   d="scan'208";a="352279806"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2022 09:36:45 -0700
+X-IronPort-AV: E=Sophos;i="5.93,196,1654585200"; 
+   d="scan'208";a="628450023"
+Received: from lgumar-mobl.amr.corp.intel.com (HELO [10.209.151.195]) ([10.209.151.195])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2022 09:36:44 -0700
+Message-ID: <69713155-39b0-5492-4966-73dfdacd1fc1@linux.intel.com>
+Date:   Wed, 27 Jul 2022 11:36:43 -0500
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.11.0
+Subject: Re: [PATCH v2] ASoC: Intel: cirrus-common: Use UID to map correct amp
+ to prefix
+Content-Language: en-US
+To:     Stefan Binding <sbinding@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Brent Lu <brent.lu@intel.com>, xliu <xiang.liu@cirrus.com>
+Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        patches@opensource.cirrus.com,
+        Vitaly Rodionov <vitalyr@opensource.cirrus.com>
+References: <20220727160051.3373125-1-sbinding@opensource.cirrus.com>
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+In-Reply-To: <20220727160051.3373125-1-sbinding@opensource.cirrus.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeffrey Hugo <quic_jhugo@quicinc.com>
-
-commit 455880dfe292a2bdd3b4ad6a107299fce610e64b upstream.
-
-In the multi-MSI case, hv_arch_irq_unmask() will only operate on the first
-MSI of the N allocated.  This is because only the first msi_desc is cached
-and it is shared by all the MSIs of the multi-MSI block.  This means that
-hv_arch_irq_unmask() gets the correct address, but the wrong data (always
-0).
-
-This can break MSIs.
-
-Lets assume MSI0 is vector 34 on CPU0, and MSI1 is vector 33 on CPU0.
-
-hv_arch_irq_unmask() is called on MSI0.  It uses a hypercall to configure
-the MSI address and data (0) to vector 34 of CPU0.  This is correct.  Then
-hv_arch_irq_unmask is called on MSI1.  It uses another hypercall to
-configure the MSI address and data (0) to vector 33 of CPU0.  This is
-wrong, and results in both MSI0 and MSI1 being routed to vector 33.  Linux
-will observe extra instances of MSI1 and no instances of MSI0 despite the
-endpoint device behaving correctly.
-
-For the multi-MSI case, we need unique address and data info for each MSI,
-but the cached msi_desc does not provide that.  However, that information
-can be gotten from the int_desc cached in the chip_data by
-compose_msi_msg().  Fix the multi-MSI case to use that cached information
-instead.  Since hv_set_msi_entry_from_desc() is no longer applicable,
-remove it.
-
-5.15 backport - no changes to code, but merge conflict due to refactor.
-
-Signed-off-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
-Link: https://lore.kernel.org/r/1651068453-29588-1-git-send-email-quic_jhugo@quicinc.com
-Signed-off-by: Wei Liu <wei.liu@kernel.org>
-Signed-off-by: Carl Vanderlip <quic_carlv@quicinc.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/x86/include/asm/mshyperv.h     |    7 -------
- drivers/pci/controller/pci-hyperv.c |    5 ++++-
- 2 files changed, 4 insertions(+), 8 deletions(-)
-
---- a/arch/x86/include/asm/mshyperv.h
-+++ b/arch/x86/include/asm/mshyperv.h
-@@ -176,13 +176,6 @@ bool hv_vcpu_is_preempted(int vcpu);
- static inline void hv_apic_init(void) {}
- #endif
- 
--static inline void hv_set_msi_entry_from_desc(union hv_msi_entry *msi_entry,
--					      struct msi_desc *msi_desc)
--{
--	msi_entry->address.as_uint32 = msi_desc->msg.address_lo;
--	msi_entry->data.as_uint32 = msi_desc->msg.data;
--}
--
- struct irq_domain *hv_create_pci_msi_domain(void);
- 
- int hv_map_ioapic_interrupt(int ioapic_id, bool level, int vcpu, int vector,
---- a/drivers/pci/controller/pci-hyperv.c
-+++ b/drivers/pci/controller/pci-hyperv.c
-@@ -1234,6 +1234,7 @@ static void hv_irq_unmask(struct irq_dat
- 	struct msi_desc *msi_desc = irq_data_get_msi_desc(data);
- 	struct irq_cfg *cfg = irqd_cfg(data);
- 	struct hv_retarget_device_interrupt *params;
-+	struct tran_int_desc *int_desc;
- 	struct hv_pcibus_device *hbus;
- 	struct cpumask *dest;
- 	cpumask_var_t tmp;
-@@ -1248,6 +1249,7 @@ static void hv_irq_unmask(struct irq_dat
- 	pdev = msi_desc_to_pci_dev(msi_desc);
- 	pbus = pdev->bus;
- 	hbus = container_of(pbus->sysdata, struct hv_pcibus_device, sysdata);
-+	int_desc = data->chip_data;
- 
- 	spin_lock_irqsave(&hbus->retarget_msi_interrupt_lock, flags);
- 
-@@ -1255,7 +1257,8 @@ static void hv_irq_unmask(struct irq_dat
- 	memset(params, 0, sizeof(*params));
- 	params->partition_id = HV_PARTITION_ID_SELF;
- 	params->int_entry.source = HV_INTERRUPT_SOURCE_MSI;
--	hv_set_msi_entry_from_desc(&params->int_entry.msi_entry, msi_desc);
-+	params->int_entry.msi_entry.address.as_uint32 = int_desc->address & 0xffffffff;
-+	params->int_entry.msi_entry.data.as_uint32 = int_desc->data;
- 	params->device_id = (hbus->hdev->dev_instance.b[5] << 24) |
- 			   (hbus->hdev->dev_instance.b[4] << 16) |
- 			   (hbus->hdev->dev_instance.b[7] << 8) |
 
 
+
+> +/*
+> + * Expected UIDs are integers (stored as strings).
+> + * UID Mapping is fixed:
+> + * UID 0x0 -> WL
+> + * UID 0x1 -> WR
+> + * UID 0x2 -> TL
+> + * UID 0x3 -> TR
+> + * Note: If there are less than 4 Amps, UIDs still map to WL/WR/TL/TR. Dynamic code will only create
+> + * dai links for UIDs which exist, and ignore non-existant ones.
+
+is this intentional to support all variations of 1,2,3 and 4 amplifiers
+being present?
+
+Or is the intent to really support 2 or 4?
+
+> + * Return number of codecs found.
+> + */
+> +static int cs35l41_compute_codec_conf(void)
+> +{
+> +	const char * const uid_strings[] = { "0", "1", "2", "3" };
+> +	unsigned int uid, sz = 0;
+> +	struct acpi_device *adev;
+> +	struct device *physdev;
+> +
+> +	for (uid = 0; uid < CS35L41_MAX_AMPS; uid++) {
+> +		adev = acpi_dev_get_first_match_dev(CS35L41_HID, uid_strings[uid], -1);
+> +		if (!adev) {
+> +			pr_warn("Cannot find match for HID %s UID %u (%s)\n", CS35L41_HID, uid,
+> +				cs35l41_name_prefixes[uid]);
+
+A warning is a bit strong if some valid configurations don't expose all
+4 codecs.
+
+> +			continue;
+> +		}
+> +		physdev = get_device(acpi_get_first_physical_node(adev));
+> +		cs35l41_components[sz].name = dev_name(physdev);
+> +		cs35l41_components[sz].dai_name = CS35L41_CODEC_DAI;
+> +		cs35l41_codec_conf[sz].dlc.name = dev_name(physdev);
+> +		cs35l41_codec_conf[sz].name_prefix = cs35l41_name_prefixes[uid];
+> +		acpi_dev_put(adev);
+> +		sz++;
+> +	}
+> +	return sz;
