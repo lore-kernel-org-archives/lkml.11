@@ -2,54 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24142C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:37:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33B5AC19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:37:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238798AbiG0Qhr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:37:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47064 "EHLO
+        id S239062AbiG0Qhu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:37:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238672AbiG0QgN (ORCPT
+        with ESMTP id S238372AbiG0QgO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:36:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B64356BB6;
-        Wed, 27 Jul 2022 09:28:06 -0700 (PDT)
+        Wed, 27 Jul 2022 12:36:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D92F57209;
+        Wed, 27 Jul 2022 09:28:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C2313B821C6;
-        Wed, 27 Jul 2022 16:27:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5DF1C433D6;
-        Wed, 27 Jul 2022 16:27:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A17BDB821BC;
+        Wed, 27 Jul 2022 16:28:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BE2FC433C1;
+        Wed, 27 Jul 2022 16:28:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939252;
-        bh=mOFED5k46BSdcCPPiEfgP6QcLJrPfdghTqkdp+JAGMc=;
+        s=korg; t=1658939285;
+        bh=sEAb8857nDX1S4zPiUu/bn2DuWqrkyYRxLx0ObIrJNA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NakBvEVCwcvPxmgphK6YLXgKgmVQE1GtdJfqjCFPLxG+/rULjZm01ySjlXSf5Cuc1
-         a6wBADKYr0fjKlN6TWbhEuWdeIl443Co9QP0ZL+ArjmY2mo8i6vXk+X4v0nlhWl66v
-         D5go/k57ktCGtN1SFyUKzEeMxjVi5iRTd8aqmqM8=
+        b=WFAd2h3rNr1xPhWsbGkVTYOAnqDmNaZOD37UnjiRzaLKc5Ys+mn3NoHvcWqJhQ7tE
+         /r5h0ouC3G98tFQGtTwJ8J0wR4M/yywo+UX33UGR9MVgZbDPjF0of4Ofov8mwAH3V5
+         p8PAkKzbUSddTOwsaATkwmTvzgSXlQsAlN7eyfjk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        William Hubbs <w.d.hubbs@gmail.com>,
-        Chris Brannon <chris@the-brannons.com>,
-        Kirk Reiser <kirk@reisers.ca>,
-        Samuel Thibault <samuel.thibault@ens-lyon.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Johan Hovold <johan@kernel.org>, Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 4.19 54/62] tty: the rest, stop using tty_schedule_flip()
-Date:   Wed, 27 Jul 2022 18:11:03 +0200
-Message-Id: <20220727161006.261681396@linuxfoundation.org>
+        Jeffrey Hugo <quic_jhugo@quicinc.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        Carl Vanderlip <quic_carlv@quicinc.com>
+Subject: [PATCH 5.4 07/87] PCI: hv: Fix hv_arch_irq_unmask() for multi-MSI
+Date:   Wed, 27 Jul 2022 18:10:00 +0200
+Message-Id: <20220727161009.304825411@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220727161004.175638564@linuxfoundation.org>
-References: <20220727161004.175638564@linuxfoundation.org>
+In-Reply-To: <20220727161008.993711844@linuxfoundation.org>
+References: <20220727161008.993711844@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -58,84 +50,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiri Slaby <jslaby@suse.cz>
+From: Jeffrey Hugo <quic_jhugo@quicinc.com>
 
-commit b68b914494df4f79b4e9b58953110574af1cb7a2 upstream.
+commit 455880dfe292a2bdd3b4ad6a107299fce610e64b upstream.
 
-Since commit a9c3f68f3cd8d (tty: Fix low_latency BUG) in 2014,
-tty_flip_buffer_push() is only a wrapper to tty_schedule_flip(). We are
-going to remove the latter (as it is used less), so call the former in
-the rest of the users.
+In the multi-MSI case, hv_arch_irq_unmask() will only operate on the first
+MSI of the N allocated.  This is because only the first msi_desc is cached
+and it is shared by all the MSIs of the multi-MSI block.  This means that
+hv_arch_irq_unmask() gets the correct address, but the wrong data (always
+0).
 
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: William Hubbs <w.d.hubbs@gmail.com>
-Cc: Chris Brannon <chris@the-brannons.com>
-Cc: Kirk Reiser <kirk@reisers.ca>
-Cc: Samuel Thibault <samuel.thibault@ens-lyon.org>
-Cc: Heiko Carstens <hca@linux.ibm.com>
-Cc: Vasily Gorbik <gor@linux.ibm.com>
-Cc: Christian Borntraeger <borntraeger@de.ibm.com>
-Cc: Alexander Gordeev <agordeev@linux.ibm.com>
-Reviewed-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Link: https://lore.kernel.org/r/20211122111648.30379-3-jslaby@suse.cz
+This can break MSIs.
+
+Lets assume MSI0 is vector 34 on CPU0, and MSI1 is vector 33 on CPU0.
+
+hv_arch_irq_unmask() is called on MSI0.  It uses a hypercall to configure
+the MSI address and data (0) to vector 34 of CPU0.  This is correct.  Then
+hv_arch_irq_unmask is called on MSI1.  It uses another hypercall to
+configure the MSI address and data (0) to vector 33 of CPU0.  This is
+wrong, and results in both MSI0 and MSI1 being routed to vector 33.  Linux
+will observe extra instances of MSI1 and no instances of MSI0 despite the
+endpoint device behaving correctly.
+
+For the multi-MSI case, we need unique address and data info for each MSI,
+but the cached msi_desc does not provide that.  However, that information
+can be gotten from the int_desc cached in the chip_data by
+compose_msi_msg().  Fix the multi-MSI case to use that cached information
+instead.  Since hv_set_msi_entry_from_desc() is no longer applicable,
+remove it.
+
+5.4 backport - hv_set_msi_entry_from_desc doesn't exist to be removed.
+msi_desc replaces msi_entry for location int_desc is written to.
+
+Signed-off-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
+Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+Link: https://lore.kernel.org/r/1651068453-29588-1-git-send-email-quic_jhugo@quicinc.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Signed-off-by: Carl Vanderlip <quic_carlv@quicinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/alpha/kernel/srmcons.c         |    2 +-
- drivers/s390/char/keyboard.h        |    4 ++--
- drivers/staging/speakup/spk_ttyio.c |    4 ++--
- 3 files changed, 5 insertions(+), 5 deletions(-)
+ drivers/pci/controller/pci-hyperv.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/arch/alpha/kernel/srmcons.c
-+++ b/arch/alpha/kernel/srmcons.c
-@@ -59,7 +59,7 @@ srmcons_do_receive_chars(struct tty_port
- 	} while((result.bits.status & 1) && (++loops < 10));
+--- a/drivers/pci/controller/pci-hyperv.c
++++ b/drivers/pci/controller/pci-hyperv.c
+@@ -1202,6 +1202,7 @@ static void hv_irq_unmask(struct irq_dat
+ 	struct msi_desc *msi_desc = irq_data_get_msi_desc(data);
+ 	struct irq_cfg *cfg = irqd_cfg(data);
+ 	struct retarget_msi_interrupt *params;
++	struct tran_int_desc *int_desc;
+ 	struct hv_pcibus_device *hbus;
+ 	struct cpumask *dest;
+ 	cpumask_var_t tmp;
+@@ -1216,6 +1217,7 @@ static void hv_irq_unmask(struct irq_dat
+ 	pdev = msi_desc_to_pci_dev(msi_desc);
+ 	pbus = pdev->bus;
+ 	hbus = container_of(pbus->sysdata, struct hv_pcibus_device, sysdata);
++	int_desc = data->chip_data;
  
- 	if (count)
--		tty_schedule_flip(port);
-+		tty_flip_buffer_push(port);
+ 	spin_lock_irqsave(&hbus->retarget_msi_interrupt_lock, flags);
  
- 	return count;
- }
---- a/drivers/s390/char/keyboard.h
-+++ b/drivers/s390/char/keyboard.h
-@@ -56,7 +56,7 @@ static inline void
- kbd_put_queue(struct tty_port *port, int ch)
- {
- 	tty_insert_flip_char(port, ch, 0);
--	tty_schedule_flip(port);
-+	tty_flip_buffer_push(port);
- }
- 
- static inline void
-@@ -64,5 +64,5 @@ kbd_puts_queue(struct tty_port *port, ch
- {
- 	while (*cp)
- 		tty_insert_flip_char(port, *cp++, 0);
--	tty_schedule_flip(port);
-+	tty_flip_buffer_push(port);
- }
---- a/drivers/staging/speakup/spk_ttyio.c
-+++ b/drivers/staging/speakup/spk_ttyio.c
-@@ -88,7 +88,7 @@ static int spk_ttyio_receive_buf2(struct
- 	}
- 
- 	if (!ldisc_data->buf_free)
--		/* ttyio_in will tty_schedule_flip */
-+		/* ttyio_in will tty_flip_buffer_push */
- 		return 0;
- 
- 	/* Make sure the consumer has read buf before we have seen
-@@ -321,7 +321,7 @@ static unsigned char ttyio_in(int timeou
- 	mb();
- 	ldisc_data->buf_free = true;
- 	/* Let TTY push more characters */
--	tty_schedule_flip(speakup_tty->port);
-+	tty_flip_buffer_push(speakup_tty->port);
- 
- 	return rv;
- }
+@@ -1223,8 +1225,8 @@ static void hv_irq_unmask(struct irq_dat
+ 	memset(params, 0, sizeof(*params));
+ 	params->partition_id = HV_PARTITION_ID_SELF;
+ 	params->int_entry.source = 1; /* MSI(-X) */
+-	params->int_entry.address = msi_desc->msg.address_lo;
+-	params->int_entry.data = msi_desc->msg.data;
++	params->int_entry.address = int_desc->address & 0xffffffff;
++	params->int_entry.data = int_desc->data;
+ 	params->device_id = (hbus->hdev->dev_instance.b[5] << 24) |
+ 			   (hbus->hdev->dev_instance.b[4] << 16) |
+ 			   (hbus->hdev->dev_instance.b[7] << 8) |
 
 
