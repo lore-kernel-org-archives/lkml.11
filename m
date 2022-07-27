@@ -2,189 +2,272 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 328D4C19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 04:38:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B18E8C19F21
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 04:39:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240376AbiG0Eih (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 00:38:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38750 "EHLO
+        id S240386AbiG0EjB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 00:39:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233245AbiG0Eif (ORCPT
+        with ESMTP id S233245AbiG0Ei6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 00:38:35 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFD0E3D5B3;
-        Tue, 26 Jul 2022 21:38:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658896714; x=1690432714;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:content-transfer-encoding:mime-version;
-  bh=YMhXWeVMk+UkhxXqNppHdouIOblrChcF2IrAL1cV3hc=;
-  b=eljJLS3ZU4+czZKZB2raD/R9jw6xT+DeYhSK40m4U1xZmcRm4NykGBGO
-   /VxkQ59dDX4y6xYrxwQdaJnlcd2+uYpuKErIMLsP6cfgorpwcWpMLuRa1
-   E0GQOnvvJUJ7dSKUqJtmXAKQskE8LoIBgNRQye7SSvIppEDgwbrKXJEDD
-   Lhex/pXwaj3laOZNeHfjvayjO+ZCFHHTOrxq/ZEnw84b8nwM2KjdjrGoc
-   c3oOXWrs5gra0Xme+l6nPXonR0hr1DI+mEqvW5gDAvjuKXv+0z91Mk9Cf
-   hSrzoX0m7EN3bqRg4uMpqXUnBIMGuqjAiEoaLY4mZA2WDAHA9BHcjqcwp
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10420"; a="352136439"
-X-IronPort-AV: E=Sophos;i="5.93,194,1654585200"; 
-   d="scan'208";a="352136439"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2022 21:38:34 -0700
-X-IronPort-AV: E=Sophos;i="5.93,194,1654585200"; 
-   d="scan'208";a="726800762"
-Received: from jlseahol-mobl3.amr.corp.intel.com (HELO khuang2-desk.gar.corp.intel.com) ([10.212.1.35])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2022 21:38:32 -0700
-Message-ID: <14c534e33cd45feba6a9a79ec442631f0a36418a.camel@intel.com>
-Subject: Re: [PATCH v7 011/102] KVM: TDX: Initialize TDX module when loading
- kvm_intel.ko
-From:   Kai Huang <kai.huang@intel.com>
-To:     Isaku Yamahata <isaku.yamahata@gmail.com>
-Cc:     isaku.yamahata@intel.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-Date:   Wed, 27 Jul 2022 16:38:30 +1200
-In-Reply-To: <20220727003938.GG1379820@ls.amr.corp.intel.com>
-References: <cover.1656366337.git.isaku.yamahata@intel.com>
-         <d933e5f16ff8cb58020f1479b7af35196f0ef61e.1656366338.git.isaku.yamahata@intel.com>
-         <81ea5068b890400ca4064781f7d2221826701020.camel@intel.com>
-         <20220712004640.GD1379820@ls.amr.corp.intel.com>
-         <d495a777f31df86271f1c4511b2f521adfa867d1.camel@intel.com>
-         <20220727003938.GG1379820@ls.amr.corp.intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.3 (3.44.3-1.fc36) 
+        Wed, 27 Jul 2022 00:38:58 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3B493DF1D
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 21:38:57 -0700 (PDT)
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26R4Tcgd011016;
+        Wed, 27 Jul 2022 04:38:28 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : in-reply-to : references : date : message-id : content-type :
+ mime-version; s=pp1; bh=7PkLLJfsngw7ZWteV9ZG6v5tDLrSl0UkFzTL7lb4Ess=;
+ b=I6tnB+HigJUoLDUqbK/2M4zkykfMg7q26W69fXlwIcuPLDFF8rxapmOPsMoHgzWaUrcD
+ Ae/z63LsSYUyb6BvB+uWVm+J2jvxNeBzhC/QkfPrCECDlgQGMKlp6jMj7wNi7AIXnrvG
+ bIroX6FJ+KS6YivCQxs5BZnRu0JlhCKNwEc8+18sg9wNy1wzcqFT1gWCFMfwhvCX8G4h
+ x8fHcyItGpuBQDvoPCrmXJeXkk1TeBOqlib+L2t3wspPUTHc3m6MDpqG8yi/3OumN5+U
+ rLF2NynO2bFBzIGDXnJNye4S8pfCh/3lFn14xWiDsxPEG49FCcqjpMF5GVz/MS472qgX Zw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hjxcur6mk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 27 Jul 2022 04:38:28 +0000
+Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26R4Tta9011434;
+        Wed, 27 Jul 2022 04:38:27 GMT
+Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hjxcur6ky-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 27 Jul 2022 04:38:27 +0000
+Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
+        by ppma02wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26R4K1Cp007967;
+        Wed, 27 Jul 2022 04:38:26 GMT
+Received: from b01cxnp22035.gho.pok.ibm.com (b01cxnp22035.gho.pok.ibm.com [9.57.198.25])
+        by ppma02wdc.us.ibm.com with ESMTP id 3hg97uexyb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 27 Jul 2022 04:38:26 +0000
+Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com [9.57.199.110])
+        by b01cxnp22035.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26R4cPog1114744
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 27 Jul 2022 04:38:25 GMT
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7570BAE060;
+        Wed, 27 Jul 2022 04:38:25 +0000 (GMT)
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E5198AE05C;
+        Wed, 27 Jul 2022 04:38:19 +0000 (GMT)
+Received: from skywalker.linux.ibm.com (unknown [9.43.5.110])
+        by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTP;
+        Wed, 27 Jul 2022 04:38:19 +0000 (GMT)
+X-Mailer: emacs 29.0.50 (via feedmail 11-beta-1 I)
+From:   "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
+To:     "Huang, Ying" <ying.huang@intel.com>,
+        Alistair Popple <apopple@nvidia.com>
+Cc:     linux-mm@kvack.org, akpm@linux-foundation.org,
+        Wei Xu <weixugc@google.com>, Yang Shi <shy828301@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Tim C Chen <tim.c.chen@intel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hesham Almatary <hesham.almatary@huawei.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Johannes Weiner <hannes@cmpxchg.org>, jvgediya.oss@gmail.com
+Subject: Re: [PATCH v10 3/8] mm/demotion: Add hotplug callbacks to handle
+ new numa node onlined
+In-Reply-To: <87czdruxs0.fsf@yhuang6-desk2.ccr.corp.intel.com>
+References: <20220720025920.1373558-1-aneesh.kumar@linux.ibm.com>
+ <20220720025920.1373558-4-aneesh.kumar@linux.ibm.com>
+ <87fsiowmdt.fsf@yhuang6-desk2.ccr.corp.intel.com>
+ <28582201-b438-9ac9-ca6b-1ee6e5794dd2@linux.ibm.com>
+ <87czdruxs0.fsf@yhuang6-desk2.ccr.corp.intel.com>
+Date:   Wed, 27 Jul 2022 10:08:16 +0530
+Message-ID: <87h733rwzr.fsf@linux.ibm.com>
+Content-Type: text/plain
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: JOe4k0Eh7PPXbOycLuQEO_5le5QXvcEl
+X-Proofpoint-ORIG-GUID: b0nmiTWrokmfvatE3ypJMmp47dUIXCve
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-26_07,2022-07-26_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
+ lowpriorityscore=0 phishscore=0 suspectscore=0 priorityscore=1501
+ mlxlogscore=999 spamscore=0 mlxscore=0 adultscore=0 clxscore=1015
+ impostorscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2206140000 definitions=main-2207270014
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-07-26 at 17:39 -0700, Isaku Yamahata wrote:
-> On Tue, Jul 12, 2022 at 01:13:10PM +1200,
-> Kai Huang <kai.huang@intel.com> wrote:
->=20
-> > >     To use TDX functionality, TDX module needs to be loaded and initi=
-alized.
-> > >     This patch is to call a function, tdx_init(), when loading kvm_in=
-tel.ko.
-> >=20
-> > Could you add explain why we need to init TDX module when loading KVM m=
-odule?
->=20
-> Makes sense. Added a paragraph for it.
->=20
->=20
-> > >     Add a hook, kvm_arch_post_hardware_enable_setup, to module initia=
-lization
-> > >     while hardware is enabled, i.e. after hardware_enable_all() and b=
-efore
-> > >     hardware_disable_all().  Because TDX requires all present CPUs to=
- enable
-> > >     VMX (VMXON).
-> >=20
-> > Please explicitly say it is a replacement of the default __weak version=
-, so
-> > people can know there's already a default one.  Otherwise people may wo=
-nder why
-> > this isn't called in this patch (i.e. I skipped patch 03 as it looks no=
-t
-> > directly related to TDX).
-> >=20
-> > That being said, why cannot you send out that patch separately but have=
- to
-> > include it into TDX series?
-> >=20
-> > Looking at it, the only thing that is related to TDX is an empty
-> > kvm_arch_post_hardware_enable_setup() with a comment saying TDX needs t=
-o do
-> > something there.  This logic has nothing to do with the actual job in t=
-hat
-> > patch.=20
-> >=20
-> > So why cannot we introduce that __weak version in this patch, so that t=
-he rest
-> > of it can be non-TDX related at all and can be upstreamed separately?
->=20
-> The patch that adds weak kvm_arch_post_hardware_enable_setup() doesn't ma=
-ke
-> sense without the hook because it only enable_hardware and then disable h=
-ardware
-> immediately.
+"Huang, Ying" <ying.huang@intel.com> writes:
 
-It's not a disaster if you describe the reason to do so in the changelog, b=
-ut no
-strong opinion here.
+> Aneesh Kumar K V <aneesh.kumar@linux.ibm.com> writes:
+>
+>> On 7/26/22 9:33 AM, Huang, Ying wrote:
+>>> "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com> writes:
+>>> 
+>>>> If the new NUMA node onlined doesn't have a performance level assigned,
+>>>> the kernel adds the NUMA node to default memory tier.
+>>>>
+>>>> Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
+>>>> ---
+>>>>  include/linux/memory-tiers.h |  1 +
+>>>>  mm/memory-tiers.c            | 75 ++++++++++++++++++++++++++++++++++++
+>>>>  2 files changed, 76 insertions(+)
+>>>>
+>>>> diff --git a/include/linux/memory-tiers.h b/include/linux/memory-tiers.h
+>>>> index ef380a39db3a..3d5f14d57ae6 100644
+>>>> --- a/include/linux/memory-tiers.h
+>>>> +++ b/include/linux/memory-tiers.h
+>>>> @@ -14,6 +14,7 @@
+>>>>  #define MEMTIER_PERF_LEVEL_DRAM	(1 << (MEMTIER_CHUNK_BITS + 2))
+>>>>  /* leave one tier below this slow pmem */
+>>>>  #define MEMTIER_PERF_LEVEL_PMEM	(1 << MEMTIER_CHUNK_BITS)
+>>>> +#define MEMTIER_HOTPLUG_PRIO	100
+>>>>  
+>>>>  extern bool numa_demotion_enabled;
+>>>>  
+>>>> diff --git a/mm/memory-tiers.c b/mm/memory-tiers.c
+>>>> index 41a21cc5ae55..cc3a47ec18e4 100644
+>>>> --- a/mm/memory-tiers.c
+>>>> +++ b/mm/memory-tiers.c
+>>>> @@ -5,6 +5,7 @@
+>>>>  #include <linux/lockdep.h>
+>>>>  #include <linux/moduleparam.h>
+>>>>  #include <linux/node.h>
+>>>> +#include <linux/memory.h>
+>>>>  #include <linux/memory-tiers.h>
+>>>>  
+>>>>  struct memory_tier {
+>>>> @@ -64,6 +65,78 @@ static struct memory_tier *find_create_memory_tier(unsigned int perf_level)
+>>>>  	return new_memtier;
+>>>>  }
+>>>>  
+>>>> +static struct memory_tier *__node_get_memory_tier(int node)
+>>>> +{
+>>>> +	struct memory_tier *memtier;
+>>>> +
+>>>> +	list_for_each_entry(memtier, &memory_tiers, list) {
+>>>> +		if (node_isset(node, memtier->nodelist))
+>>>> +			return memtier;
+>>>> +	}
+>>>> +	return NULL;
+>>>> +}
+>>>> +
+>>>> +static void init_node_memory_tier(int node)
+>>> 
+>>> set_node_memory_tier()?
+>>
+>> That was done based on feedback from Alistair 
+>>
+>> https://lore.kernel.org/linux-mm/87h73iapg1.fsf@nvdebian.thelocal
+>>
+>>> 
+>>>> +{
+>>>> +	int perf_level;
+>>>> +	struct memory_tier *memtier;
+>>>> +
+>>>> +	mutex_lock(&memory_tier_lock);
+>>>> +
+>>>> +	memtier = __node_get_memory_tier(node);
+>>>> +	if (!memtier) {
+>>>> +		perf_level = node_devices[node]->perf_level;
+>>>> +		memtier = find_create_memory_tier(perf_level);
+>>>> +		node_set(node, memtier->nodelist);
+>>>> +	}
+>
+> It's related to Alistair's comments too.  When will memtier != NULL
+> here?  We may need just VM_WARN_ON() here?
 
-But I do think you need a comment to explain why disable hardware is called
-immediately.  Is it because we want to maintain the current behaviour that =
-we
-want to allow out-of-tree driver, i.e. virtualbox to be loaded when KVM is
-loaded?
+When the platform driver sets memory tier directly. With the old code
+it can happen when dax/kmem register a node to a memory tier. With
+memory_type proposal this can happen if the node is part of memory
+type that is already added to a memory tier. 
 
-=20
-> The patch touches multiple kvm arch.  and I split out TDX specific part i=
-n this
-> patch.  Ideally those two patch should be near. But I move it early to dr=
-aw
-> attention for reviewers from multiple kvm arch.
-
-Explicitly say this is the replacement of the default __weak version is fin=
-e.
-
->=20
-> Here is the updated version.
->=20
->     KVM: TDX: Initialize the TDX module when loading the KVM intel kernel=
- module
->    =20
->     To use TDX, the TDX module needs to be loaded and initialized.  This =
-patch
->     is to call a function to initialize the TDX module when loading KVM i=
-ntel
->     kernel module.
->    =20
->     There are several options on when to initialize the TDX module.  A.)
->     kernel boot time as builtin, B.) kernel module loading time, C.) the =
-first
->     guest TD creation time.  B.) was chosen.  A.) causes unnecessary over=
-head
->     (boot time and memory) even when TDX isn't used.  With C.), a user ma=
-y hit
->     an error of the TDX initialization when trying to create the first gu=
-est
->     TD.  The machine that fails to initialize the TDX module can't boot a=
-ny
->     guest TD further.  Such failure is undesirable.  B.) has a good balan=
-ce
->     between them.
-
-You don't need to mention A.  When this patch is merged, the host series mu=
-st
-have been merged already.  In another words, this is already a fact, but no=
-t an
-option.
-
->    =20
->     Add a hook, kvm_arch_post_hardware_enable_setup, to module initializa=
-tion
->     while hardware is enabled, i.e. after hardware_enable_all() and befor=
-e
->     hardware_disable_all(). =C2=A0
->=20
-
-You don't need to say "add a hook ..., i.e. after hardware_enable_all() and
-before hardware_disable_all()".  Where the function is called is already a =
-fact.
-We have a __weak version already.
-
-
-> Because TDX requires all present CPUs to enable
->     VMX (VMXON).  The x86 specific kvm_arch_post_hardware_enable_setup ov=
-errides
->     the existing weak symbol of kvm_arch_post_hardware_enable_setup which=
- is
->     called at the KVM module initialization.
->=20
-
+>
+>>>> +	mutex_unlock(&memory_tier_lock);
+>>>> +}
+>>>> +
+>>>> +static void clear_node_memory_tier(int node)
+>>>> +{
+>>>> +	struct memory_tier *memtier;
+>>>> +
+>>>> +	mutex_lock(&memory_tier_lock);
+>>>> +	memtier = __node_get_memory_tier(node);
+>>>> +	if (memtier)
+>>>> +		node_clear(node, memtier->nodelist);
+>>> 
+>>> When memtier->nodelist becomes empty, we need to free memtier?
+>>> 
+>>>> +	mutex_unlock(&memory_tier_lock);
+>>>> +}
+>>>> +
+>>>> +/*
+>>>> + * This runs whether reclaim-based migration is enabled or not,
+>>>> + * which ensures that the user can turn reclaim-based migration
+>>>> + * at any time without needing to recalculate migration targets.
+>>>> + */
+>>> 
+>>> The comments doesn't apply here.
+>>> 
+>>>> +static int __meminit migrate_on_reclaim_callback(struct notifier_block *self,
+>>>> +						 unsigned long action, void *_arg)
+>>> 
+>>> Now we are building memory tiers instead of working on demotion.  So I
+>>> think we should rename the function to memtier_hotplug_callback().
+>>> 
+>>>> +{
+>>>> +	struct memory_notify *arg = _arg;
+>>>> +
+>>>> +	/*
+>>>> +	 * Only update the node migration order when a node is
+>>>> +	 * changing status, like online->offline.
+>>>> +	 */
+>>>> +	if (arg->status_change_nid < 0)
+>>>> +		return notifier_from_errno(0);
+>>>> +
+>>>> +	switch (action) {
+>>>> +	case MEM_OFFLINE:
+>>>> +		clear_node_memory_tier(arg->status_change_nid);
+>>>> +		break;
+>>>> +	case MEM_ONLINE:
+>>>> +		init_node_memory_tier(arg->status_change_nid);
+>>>> +		break;
+>>>> +	}
+>>>> +
+>>>> +	return notifier_from_errno(0);
+>>>> +}
+>>>> +
+>>>> +static void __init migrate_on_reclaim_init(void)
+>>>> +{
+>>>> +	hotplug_memory_notifier(migrate_on_reclaim_callback, MEMTIER_HOTPLUG_PRIO);
+>>>> +}
+>>> 
+>>> I suggest to call hotplug_memory_notifier() in memory_tier_init()
+>>> directly.  We are not working on demotion here.
+>>> 
+>>>> +
+>>>>  static int __init memory_tier_init(void)
+>>>>  {
+>>>>  	int node;
+>>>> @@ -96,6 +169,8 @@ static int __init memory_tier_init(void)
+>>>>  			node_property->perf_level = default_memtier_perf_level;
+>>>>  	}
+>>>>  	mutex_unlock(&memory_tier_lock);
+>>>> +
+>>>> +	migrate_on_reclaim_init();
+>>>>  	return 0;
+>>>>  }
+>>>>  subsys_initcall(memory_tier_init);
+>>> 
+>>> Best Regards,
+>>> Huang, Ying
+>>
+>>
+>> Will update the patch in next iteration to take care of other feedback.
+>
+> Thanks!
+>
+> Best Regards,
+> Huang, Ying
