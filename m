@@ -2,80 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D25AC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 18:56:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25BEFC19F29
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 18:56:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236275AbiG0S4S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 14:56:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39508 "EHLO
+        id S231246AbiG0S4O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 14:56:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232455AbiG0Sz4 (ORCPT
+        with ESMTP id S235472AbiG0Szv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 14:55:56 -0400
-Received: from mail-pg1-f169.google.com (mail-pg1-f169.google.com [209.85.215.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1958127B27;
-        Wed, 27 Jul 2022 10:55:56 -0700 (PDT)
-Received: by mail-pg1-f169.google.com with SMTP id bf13so16495252pgb.11;
-        Wed, 27 Jul 2022 10:55:56 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=7qxn+JNDvcIG+lyVki0RgRQJyk3Tl2RlS02Rp/s2JCk=;
-        b=K8JHfvN1G1QdSYLrl6zoAGa+extXSsGu2FKZfLze/LAUbCYFWdrUoIp1/6Xb3BJmKk
-         IJdqzVeTzE1v+S2l2DiQrqL07lZdwjnS+N7ZwPkFBsVwe+Nw40kzwowZeLiISkakyvOM
-         LdHjqrJMcfDsMBJIxcHUaIM0Uto/pgHUisL5Uu47ewua4qBAhpNxq9M7puP1erpOcW+3
-         pfUhc0/ZZecn2dnDckWKTJmIYifvY74LWroQjAcFSwmuFpB+qOhess1jrR4aucWxWHkF
-         ZX0Of0FO3OFxAVIQ+DYQPGvfaC4tdqLuLdHcekDS1tg9NTJkLmqmPhWjFSLzGb+TQcFw
-         2/Sw==
-X-Gm-Message-State: AJIora8y1tefT7wgAFugzd9T5EswFf8Nrm2LfBFYCJqebIxiB35nYP4j
-        gRTT2d2dgSTxmK5RPDvLcHU=
-X-Google-Smtp-Source: AGRyM1tO2NHQPOkTbEkiTtiX+GPr//1Bgn2ydfjx67gqokU31MXnafLgfUyNg7YxYZECA4U2oJYiCQ==
-X-Received: by 2002:a63:c5:0:b0:40d:d290:24ef with SMTP id 188-20020a6300c5000000b0040dd29024efmr16467841pga.141.1658944555427;
-        Wed, 27 Jul 2022 10:55:55 -0700 (PDT)
-Received: from ?IPV6:2620:15c:211:201:a84e:2ec1:1b57:b033? ([2620:15c:211:201:a84e:2ec1:1b57:b033])
-        by smtp.gmail.com with ESMTPSA id mj1-20020a17090b368100b001f310564e8bsm1480908pjb.30.2022.07.27.10.55.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 Jul 2022 10:55:54 -0700 (PDT)
-Message-ID: <b8ecd9ce-35b7-276d-b028-2d8a4a900945@acm.org>
-Date:   Wed, 27 Jul 2022 10:55:51 -0700
+        Wed, 27 Jul 2022 14:55:51 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7C8278052D
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 10:55:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658944544;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=70KAGnfv8UJJ+vlSDeqdToDvV6amtpqy/ROgE4cjYlE=;
+        b=dGQ+tR+TtUt2S7wK6zFcIG/XqIXy+ZbdFWVM3Ny8jS30aEkIvkDX9atM45BytbNsRkpHvP
+        +sNLQvpS6KziMIMoV3Wu3taa1KTf7TL7BXTcrerMQBgsw+OkK/ZeNZcv/lVO2wPnmVKHTR
+        Swu27mLGBS4FYn2BoCZg4+HaNqTb/Mw=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-67-mklhdHPCPoKVdH_1RkztBA-1; Wed, 27 Jul 2022 13:55:43 -0400
+X-MC-Unique: mklhdHPCPoKVdH_1RkztBA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C29DC101A589;
+        Wed, 27 Jul 2022 17:55:42 +0000 (UTC)
+Received: from dhcp-27-174.brq.redhat.com (unknown [10.40.194.193])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 1CFD640CF8E2;
+        Wed, 27 Jul 2022 17:55:40 +0000 (UTC)
+Received: by dhcp-27-174.brq.redhat.com (nbSMTP-1.00) for uid 1000
+        oleg@redhat.com; Wed, 27 Jul 2022 19:55:42 +0200 (CEST)
+Date:   Wed, 27 Jul 2022 19:55:39 +0200
+From:   Oleg Nesterov <oleg@redhat.com>
+To:     Tycho Andersen <tycho@tycho.pizza>
+Cc:     "Serge E. Hallyn" <serge@hallyn.com>,
+        "Eric W . Biederman" <ebiederm@xmission.com>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] sched: __fatal_signal_pending() should also check
+ PF_EXITING
+Message-ID: <20220727175538.GC18822@redhat.com>
+References: <Ys2PwTS0qFmGNFqy@netflix>
+ <20220713175305.1327649-1-tycho@tycho.pizza>
+ <20220720150328.GA30749@mail.hallyn.com>
+ <YthsgqAZYnwHZLn+@tycho.pizza>
+ <20220721015459.GA4297@mail.hallyn.com>
+ <YuFdUj5X4qckC/6g@tycho.pizza>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2 1/5] scsi: ufs: ufs-mediatek: Remove redundant header
- files
-Content-Language: en-US
-To:     Stanley Chu <stanley.chu@mediatek.com>, linux-scsi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, martin.petersen@oracle.com,
-        avri.altman@wdc.com, alim.akhtar@samsung.com, jejb@linux.ibm.com
-Cc:     peter.wang@mediatek.com, chun-hung.wu@mediatek.com,
-        alice.chao@mediatek.com, powen.kao@mediatek.com,
-        mason.zhang@mediatek.com, qilin.tan@mediatek.com,
-        lin.gui@mediatek.com, eddie.huang@mediatek.com,
-        tun-yu.yu@mediatek.com, cc.chou@mediatek.com,
-        chaotian.jing@mediatek.com, jiajie.hao@mediatek.com
-References: <20220727034454.31892-1-stanley.chu@mediatek.com>
- <20220727034454.31892-2-stanley.chu@mediatek.com>
-From:   Bart Van Assche <bvanassche@acm.org>
-In-Reply-To: <20220727034454.31892-2-stanley.chu@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YuFdUj5X4qckC/6g@tycho.pizza>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/26/22 20:44, Stanley Chu wrote:
-> Remove redundant header files like
-> <linux/sched/clock.h>
-> 
-> Signed-off-by: Stanley Chu <stanley.chu@mediatek.com>
-> Change-Id: I7796a23a5fdc767a4d00475b399844ceeaded0a8
+On 07/27, Tycho Andersen wrote:
+>
+> Hi all,
+>
+> On Wed, Jul 20, 2022 at 08:54:59PM -0500, Serge E. Hallyn wrote:
+> > Oh - I didn't either - checking the sigkill in shared signals *seems*
+> > legit if they can be put there - but since you posted the new patch I
+> > assumed his reasoning was clear to you.  I know Eric's busy, cc:ing Oleg
+> > for his interpretation too.
+>
+> Any thoughts on this?
 
-Please leave out Change-Id tags from patches that are sent upstream.
+Cough... I don't know what can I say except I personally dislike this
+patch no matter what ;)
 
-Otherwise this patch looks good to me.
+And I do not understand how can this patch help. OK, a single-threaded
+PF_EXITING task sleeps in TASK_KILLABLE. send_signal_locked() won't
+wake it up anyway?
 
-Thanks,
+I must have missed something.
 
-Bart.
+Oleg.
+
