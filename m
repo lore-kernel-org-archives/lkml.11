@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E289C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:45:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 756E7C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:46:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240387AbiG0Qpx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:45:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42288 "EHLO
+        id S240394AbiG0Qp6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:45:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240341AbiG0QoT (ORCPT
+        with ESMTP id S240484AbiG0Qo3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:44:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A660ABF44;
-        Wed, 27 Jul 2022 09:31:01 -0700 (PDT)
+        Wed, 27 Jul 2022 12:44:29 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21AF552447;
+        Wed, 27 Jul 2022 09:31:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2EDF0B821BE;
-        Wed, 27 Jul 2022 16:31:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90998C4314A;
-        Wed, 27 Jul 2022 16:30:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AFFC2B821C2;
+        Wed, 27 Jul 2022 16:31:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA8DAC433C1;
+        Wed, 27 Jul 2022 16:31:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939460;
-        bh=tS+ar2byvGXQkV54OvZ4Jwy6/JT/BUmN8BRsenhz6fA=;
+        s=korg; t=1658939471;
+        bh=B3sJuDz8JKCCHdebYVp43xh6OlmonYf9crjFVu7HnJk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i43/pN0DFIIdDQ/2EQqMuJS3QLSXyye6nbD1lg5iuQjNnVpQWf4KS9yocXsTlVI4k
-         aPYrRHtttHx0dTD6CTHnTDq7wYJiGTPgpxU9nYmNXN2QBACPh1/XxkxGga19AzYjlB
-         LlHkLabnpB5JyNBKNtV9bPAdwE5Krh4w8FoPni8Q=
+        b=FgjuW24PCBRx/5BAOVZ33pw75HfVGHItxg86F0vubXthf6opq0qP8Agba7UueNIJO
+         7IMNNcn87AbCb1kIG3berODMBdYqYpgejoHddcxojBn41LxgXFdYvYPTmxOC9E61Uc
+         vfehaFvfR20LtSVB1+8+xJHEBoSGJfZzLDiZYu0o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Subject: [PATCH 5.4 76/87] Bluetooth: SCO: Replace use of memcpy_from_msg with bt_skb_sendmsg
-Date:   Wed, 27 Jul 2022 18:11:09 +0200
-Message-Id: <20220727161012.153598073@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 50/87] tcp: Fix data-races around sysctl_tcp_slow_start_after_idle.
+Date:   Wed, 27 Jul 2022 18:10:43 +0200
+Message-Id: <20220727161011.091709543@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161008.993711844@linuxfoundation.org>
 References: <20220727161008.993711844@linuxfoundation.org>
@@ -50,94 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit 0771cbb3b97d3c1d68eecd7f00055f599954c34e upstream.
+[ Upstream commit 4845b5713ab18a1bb6e31d1fbb4d600240b8b691 ]
 
-This makes use of bt_skb_sendmsg instead of allocating a different
-buffer to be used with memcpy_from_msg which cause one extra copy.
+While reading sysctl_tcp_slow_start_after_idle, it can be changed
+concurrently.  Thus, we need to add READ_ONCE() to its readers.
 
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
-Cc: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 35089bb203f4 ("[TCP]: Add tcp_slow_start_after_idle sysctl.")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/sco.c |   34 +++++++++++-----------------------
- 1 file changed, 11 insertions(+), 23 deletions(-)
+ include/net/tcp.h     | 4 ++--
+ net/ipv4/tcp_output.c | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
---- a/net/bluetooth/sco.c
-+++ b/net/bluetooth/sco.c
-@@ -279,27 +279,19 @@ static int sco_connect(struct hci_dev *h
- 	return err;
- }
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index eb984ec22f22..aaf1d5d5a13b 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -1373,8 +1373,8 @@ static inline void tcp_slow_start_after_idle_check(struct sock *sk)
+ 	struct tcp_sock *tp = tcp_sk(sk);
+ 	s32 delta;
  
--static int sco_send_frame(struct sock *sk, void *buf, int len,
--			  unsigned int msg_flags)
-+static int sco_send_frame(struct sock *sk, struct sk_buff *skb)
- {
- 	struct sco_conn *conn = sco_pi(sk)->conn;
--	struct sk_buff *skb;
--	int err;
+-	if (!sock_net(sk)->ipv4.sysctl_tcp_slow_start_after_idle || tp->packets_out ||
+-	    ca_ops->cong_control)
++	if (!READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_slow_start_after_idle) ||
++	    tp->packets_out || ca_ops->cong_control)
+ 		return;
+ 	delta = tcp_jiffies32 - tp->lsndtime;
+ 	if (delta > inet_csk(sk)->icsk_rto)
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index 72ee1fca0501..5d9a1a498a18 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -1673,7 +1673,7 @@ static void tcp_cwnd_validate(struct sock *sk, bool is_cwnd_limited)
+ 		if (tp->packets_out > tp->snd_cwnd_used)
+ 			tp->snd_cwnd_used = tp->packets_out;
  
- 	/* Check outgoing MTU */
--	if (len > conn->mtu)
-+	if (skb->len > conn->mtu)
- 		return -EINVAL;
- 
--	BT_DBG("sk %p len %d", sk, len);
--
--	skb = bt_skb_send_alloc(sk, len, msg_flags & MSG_DONTWAIT, &err);
--	if (!skb)
--		return err;
-+	BT_DBG("sk %p len %d", sk, skb->len);
- 
--	memcpy(skb_put(skb, len), buf, len);
- 	hci_send_sco(conn->hcon, skb);
- 
--	return len;
-+	return skb->len;
- }
- 
- static void sco_recv_frame(struct sco_conn *conn, struct sk_buff *skb)
-@@ -715,7 +707,7 @@ static int sco_sock_sendmsg(struct socke
- 			    size_t len)
- {
- 	struct sock *sk = sock->sk;
--	void *buf;
-+	struct sk_buff *skb;
- 	int err;
- 
- 	BT_DBG("sock %p, sk %p", sock, sk);
-@@ -727,24 +719,20 @@ static int sco_sock_sendmsg(struct socke
- 	if (msg->msg_flags & MSG_OOB)
- 		return -EOPNOTSUPP;
- 
--	buf = kmalloc(len, GFP_KERNEL);
--	if (!buf)
--		return -ENOMEM;
--
--	if (memcpy_from_msg(buf, msg, len)) {
--		kfree(buf);
--		return -EFAULT;
--	}
-+	skb = bt_skb_sendmsg(sk, msg, len, len, 0, 0);
-+	if (IS_ERR_OR_NULL(skb))
-+		return PTR_ERR(skb);
- 
- 	lock_sock(sk);
- 
- 	if (sk->sk_state == BT_CONNECTED)
--		err = sco_send_frame(sk, buf, len, msg->msg_flags);
-+		err = sco_send_frame(sk, skb);
- 	else
- 		err = -ENOTCONN;
- 
- 	release_sock(sk);
--	kfree(buf);
-+	if (err)
-+		kfree_skb(skb);
- 	return err;
- }
- 
+-		if (sock_net(sk)->ipv4.sysctl_tcp_slow_start_after_idle &&
++		if (READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_slow_start_after_idle) &&
+ 		    (s32)(tcp_jiffies32 - tp->snd_cwnd_stamp) >= inet_csk(sk)->icsk_rto &&
+ 		    !ca_ops->cong_control)
+ 			tcp_cwnd_application_limited(sk);
+-- 
+2.35.1
+
 
 
