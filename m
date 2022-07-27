@@ -2,180 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96A12C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 18:57:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1B95C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 18:57:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234612AbiG0S4u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 14:56:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36234 "EHLO
+        id S230148AbiG0S5G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 14:57:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234722AbiG0S4E (ORCPT
+        with ESMTP id S232605AbiG0S4o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 14:56:04 -0400
-Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDE8789EB4
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 10:55:51 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.west.internal (Postfix) with ESMTP id 197EA3200916;
-        Wed, 27 Jul 2022 13:55:48 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Wed, 27 Jul 2022 13:55:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tycho.pizza; h=
-        cc:cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; t=1658944547; x=1659030947; bh=pKs6T4WGKF
-        20rXlh25ysa3f2j1+q+odx8NMOTR3xoyE=; b=SCbk3DIf9o5P7JRfpdfGEkc9QQ
-        VE0JQWcqDxC3aoGbY16dLKMl1RxMul9mb1mSoJrCSpD3jxPsbDvXTBTwfw0M9Qzk
-        5xX67VGagpwBcooA41joDmooKanjCd8sl2TOEayEwFs7YBXwLXAAI/3cOiZugGy0
-        uG9OnUV0Lar+o2a16LggdNFNf0vR9uhuyYRUHeILvw5moNYZRwiFZCYJyGtfdNEE
-        HFddSnyJQDTxgmC/UYcXhlB/nNN88QismbFptN+W8UpLSWS1R+PBntUzBtr8w8gK
-        WxNe7aMrhKrjm0n0ihYBV2Oj/yBKo1WnTTt9M8hTF/tlATu8gM8/y3EiGmCw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; t=1658944547; x=1659030947; bh=pKs6T4WGKF20rXlh25ysa3f2j1+q
-        +odx8NMOTR3xoyE=; b=UMdLdkKdJP37f8rRU8oCkOU/rxNq18J9cYUkJX2btSMp
-        WPkzfzwdFeKd6ET/Fda4ZGGATX3B+6cEMdEKqd2eA6MMTDltz1G3QQ54WeLkSK9Z
-        mM/fpjrwDW9Kc1/XlJ3YXuVhSDD5z85J1hQ2NvLMNtYRvanqG7Z46mPmzmD08tMH
-        vgntM6CWbIyhRAwrblWauFGjPP5I2cJi+zcsWMaoUhK5r4vSstwjxV+xJ/0Dok8W
-        j7G9kcTvzWYEr7hJj0p5/8pm+hWLQetPnU3VD+M8a/gMJWPQopm9CEPbU5SvORZR
-        KSrFwj6HFZ0kvJVvho2CAHBtkqH7Uo5VRzTdeqZkfw==
-X-ME-Sender: <xms:I3zhYhIaAZOvgq2uuiIV5-6pRoLjZSsQ_Z0f4DmjFZcui-C5BpNfEQ>
-    <xme:I3zhYtJhcoHxbSIi8gbXA25nq0zAH3rJo2Prj1Izt19JMfqkTmd4MSQx_xoNSmiWI
-    ElF8OEGWR4WxhnkpgA>
-X-ME-Received: <xmr:I3zhYpuqjiJwgkJRIUR3ksn2UxnBItYgFQ_mNG5ZL7hOFo06wM0IWINqY0fwjg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdduvddguddulecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefvhigt
-    hhhoucetnhguvghrshgvnhcuoehthigthhhosehthigthhhordhpihiiiigrqeenucggtf
-    frrghtthgvrhhnpeejieeitdekgeevhfefhefgvdehjeegudegudeltddvjeevieejhfev
-    vdekffdtheenucffohhmrghinhepghhithhhuhgsrdgtohhmnecuvehluhhsthgvrhfuih
-    iivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepthihtghhohesthihtghhohdrphhi
-    iiiirg
-X-ME-Proxy: <xmx:I3zhYiZSzdnW-sqSqrPt3vI6XPMemfbwUk6-WquHjUo8n9cZaKSUZg>
-    <xmx:I3zhYobihR_Y7Kn5Omc6BYOLAkft5eyvSieSXB4h3_MlUfJ0fqD8ag>
-    <xmx:I3zhYmBz9D3PVBHpm13PRmeHZB7XeFUcCMGWrrUgV_cuJcGJ2_8SVw>
-    <xmx:I3zhYgHlswLfYUTsx-gyhrJpExq20LgObtWiQ60tWYyhp81uH_1szg>
-Feedback-ID: i21f147d5:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 27 Jul 2022 13:55:46 -0400 (EDT)
-Date:   Wed, 27 Jul 2022 11:55:43 -0600
-From:   Tycho Andersen <tycho@tycho.pizza>
-To:     "Eric W. Biederman" <ebiederm@xmission.com>
-Cc:     "Serge E. Hallyn" <serge@hallyn.com>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        linux-kernel@vger.kernel.org, Oleg Nesterov <oleg@redhat.com>
-Subject: Re: [PATCH] sched: __fatal_signal_pending() should also check
- PF_EXITING
-Message-ID: <YuF8H3ZVNugbLtFC@tycho.pizza>
-References: <Ys2PwTS0qFmGNFqy@netflix>
- <20220713175305.1327649-1-tycho@tycho.pizza>
- <20220720150328.GA30749@mail.hallyn.com>
- <YthsgqAZYnwHZLn+@tycho.pizza>
- <20220721015459.GA4297@mail.hallyn.com>
- <YuFdUj5X4qckC/6g@tycho.pizza>
- <871qu6bjp3.fsf@email.froward.int.ebiederm.org>
+        Wed, 27 Jul 2022 14:56:44 -0400
+Received: from mail-pj1-f49.google.com (mail-pj1-f49.google.com [209.85.216.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E94554C62D;
+        Wed, 27 Jul 2022 10:58:00 -0700 (PDT)
+Received: by mail-pj1-f49.google.com with SMTP id ha11so731106pjb.2;
+        Wed, 27 Jul 2022 10:58:00 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=4vE7Bsz6vrHUNePlGNIG+g1zzaWWwe+MjkqFS82oLcU=;
+        b=jaOFWWE6QX36qBEc/1dpgUqRXGaox+48OC/dj7b1V9GjH1VjXarB362XWI0FEUWeF4
+         9/oyohNFj3F0Z9mTOfo4BSV+bl+yzfQDZfu12TS6tnFRYWBmbGOE+P1tRDf7tNaLIOkr
+         iMSvdRbGbkMmycf8ijlFerJKSGR1oPZTtqwjvgFw9dIZokCH+q0A6vjmXQt91ZECdCHQ
+         lPASR2KDllApn+1Kx2GLDl4xFh0kbBtDay8u0vnyi5foLK4loO/5smvMSff/gz4YKt7r
+         BxOOv6V6mZCnatDtw1ieYyr2+ShVMd5bn/GKG685yjyxxQVgpvgfNC63ltU/AnXyZsr8
+         1QHg==
+X-Gm-Message-State: AJIora/+ZwT0XYj9OC7Z/0uOyvGQg2UMW2MQxDtt0HAWQYV80t1TlUNK
+        X2OzLSeFhhjqLCp+tlS9CRk=
+X-Google-Smtp-Source: AGRyM1tFVd8EqwxIE+VDBtTOrcnZ22zKgfGpfCBk21Zv7Woc9eTIJzAuoFWzsa9F1fR+kw0nGXPpKw==
+X-Received: by 2002:a17:90b:4d0e:b0:1f1:9109:99df with SMTP id mw14-20020a17090b4d0e00b001f1910999dfmr5884407pjb.234.1658944680200;
+        Wed, 27 Jul 2022 10:58:00 -0700 (PDT)
+Received: from ?IPV6:2620:15c:211:201:a84e:2ec1:1b57:b033? ([2620:15c:211:201:a84e:2ec1:1b57:b033])
+        by smtp.gmail.com with ESMTPSA id e1-20020a170902784100b0016d4f05eb95sm9939079pln.272.2022.07.27.10.57.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 Jul 2022 10:57:58 -0700 (PDT)
+Message-ID: <fa60e605-a881-79aa-b9ed-9c8bdf06778f@acm.org>
+Date:   Wed, 27 Jul 2022 10:57:56 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <871qu6bjp3.fsf@email.froward.int.ebiederm.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2 2/5] scsi: ufs: ufs-mediatek: Provide detailed
+ description for UIC errors
+Content-Language: en-US
+To:     Stanley Chu <stanley.chu@mediatek.com>, linux-scsi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, martin.petersen@oracle.com,
+        avri.altman@wdc.com, alim.akhtar@samsung.com, jejb@linux.ibm.com
+Cc:     peter.wang@mediatek.com, chun-hung.wu@mediatek.com,
+        alice.chao@mediatek.com, powen.kao@mediatek.com,
+        mason.zhang@mediatek.com, qilin.tan@mediatek.com,
+        lin.gui@mediatek.com, eddie.huang@mediatek.com,
+        tun-yu.yu@mediatek.com, cc.chou@mediatek.com,
+        chaotian.jing@mediatek.com, jiajie.hao@mediatek.com
+References: <20220727034454.31892-1-stanley.chu@mediatek.com>
+ <20220727034454.31892-3-stanley.chu@mediatek.com>
+From:   Bart Van Assche <bvanassche@acm.org>
+In-Reply-To: <20220727034454.31892-3-stanley.chu@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 11:32:08AM -0500, Eric W. Biederman wrote:
-> Tycho Andersen <tycho@tycho.pizza> writes:
-> 
-> > Hi all,
-> >
-> > On Wed, Jul 20, 2022 at 08:54:59PM -0500, Serge E. Hallyn wrote:
-> >> Oh - I didn't either - checking the sigkill in shared signals *seems*
-> >> legit if they can be put there - but since you posted the new patch I
-> >> assumed his reasoning was clear to you.  I know Eric's busy, cc:ing Oleg
-> >> for his interpretation too.
-> >
-> > Any thoughts on this?
-> 
-> Having __fatal_signal_pending check SIGKILL in shared signals is
-> completely and utterly wrong.
-> 
-> What __fatal_signal_pending reports is if a signal has gone through
-> short cirucuit delivery after determining that the delivery of the
-> signal will terminate the process.
+On 7/26/22 20:44, Stanley Chu wrote:
+> diff --git a/drivers/ufs/host/ufs-mediatek.h b/drivers/ufs/host/ufs-mediatek.h
+> index aa26d415527b..9017ab8f9867 100644
+> --- a/drivers/ufs/host/ufs-mediatek.h
+> +++ b/drivers/ufs/host/ufs-mediatek.h
+> @@ -26,6 +26,44 @@
+>   #define REG_UFS_DEBUG_SEL_B2        0x22D8
+>   #define REG_UFS_DEBUG_SEL_B3        0x22DC
+>   
+> +/*
+> + * Details of UIC Errors
+> + */
+> +static const u8 *ufs_uic_err_str[] = {
+> +	"PHY Adapter Layer",
+> +	"Data Link Layer",
+> +	"Network Link Layer",
+> +	"Transport Link Layer",
+> +	"DME"
+> +};
 
-This short-circuiting you're talking about happens in __send_signal()?
-The problem here is that __send_signal() will add things to the shared
-queue:
+Why type u8 for strings instead of char?
 
-    pending = (type != PIDTYPE_PID) ? &t->signal->shared_pending : &t->pending;
+Please define arrays in .c files. Otherwise one copy of the array will 
+be included in each source file this header file is included in.
 
-and indeed we add it to the shared set because of the way
-zap_pid_ns_processes() calls it:
+Thanks,
 
-    roup_send_sig_info(SIGKILL, SEND_SIG_PRIV, task, PIDTYPE_MAX);
-
-> Using "sigismember(&tsk->pending.signal, SIGKILL)" to report that a
-> fatal signal has experienced short circuit delivery is a bit of an
-> abuse, but essentially harmless as tkill of SIGKILL to a thread will
-> result in every thread in the process experiencing short circuit
-> delivery of the fatal SIGKILL.  So a pending SIGKILL can't really mean
-> anything else.
-
-This is the part I don't follow. If it's ok to send a signal to this
-set, why is it not ok to also look there (other than that it was a
-slight hack in the first place)? Maybe it will short circuit
-more threads, but that seems ok.
-
-> After having looked at the code a little more I can unfortunately also
-> say that testing PF_EXITING in __fatal_signal_pending will cause
-> kernel_wait4 in zap_pid_ns_processes to not sleep, and instead to return
-> 0.  Which will cause zap_pid_ns_processes to busy wait.  That seems very
-> unfortunate.
-> 
-> I hadn't realized it at the time I wrote zap_pid_ns_processes but I
-> think anything called from do_exit that cares about signal pending state
-> is pretty much broken and needs to be fixed.
-
-> So the question is how do we fix the problem in fuse that shows up
-> during a pid namespace exit without having interruptible sleeps we need
-> to wake up?
-> 
-> What are the code paths that experience the problem?
-
-[<0>] request_wait_answer+0x282/0x710 [fuse]
-[<0>] fuse_simple_request+0x502/0xc10 [fuse]
-[<0>] fuse_flush+0x431/0x630 [fuse]
-[<0>] filp_close+0x96/0x120
-[<0>] put_files_struct+0x15c/0x2c0
-[<0>] do_exit+0xa00/0x2450
-[<0>] do_group_exit+0xb2/0x2a0
-[<0>] get_signal+0x1eed/0x2090
-[<0>] arch_do_signal_or_restart+0x89/0x1bc0
-[<0>] exit_to_user_mode_prepare+0x11d/0x1b0
-[<0>] syscall_exit_to_user_mode+0x19/0x50
-[<0>] do_syscall_64+0x50/0x90
-[<0>] entry_SYSCALL_64_after_hwframe+0x46/0xb0
-
-is the full call stack, I have a reproducer here (make check will run
-it): https://github.com/tych0/kernel-utils/tree/master/fuse2
-
-In addition to fuse, it looks like nfs_file_flush() eventually ends up
-in __fatal_signal_pending(), and probably a few others that want to
-synchronize with something outside the local kernel.
-
-> Will refactoring zap_pid_ns_processes as I have proposed so that it does
-> not use kernel_wait4 help sort this out?  AKA make it work something
-> like thread group leader of a process and not allow wait to reap the
-> init process of a pid namespace until all of the processes in a pid
-> namespaces have been gone.  Not that I see the problem in using
-> kernel_wait4 it looks like zap_pid_ns_processes needs to stop calling
-> kernel_wait4 regardless of the fuse problem.
-
-I can look at this, but I really don't think it will help: in this
-brave new world, what wakes up tasks stuck like the above? They're
-still looking at the wrong signal set.
-
-Tycho
+Bart.
