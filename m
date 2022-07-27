@@ -2,157 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEEF9C19F2C
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:28:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91D06C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:28:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242182AbiG0R2b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:28:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37376 "EHLO
+        id S236699AbiG0R2e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:28:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242146AbiG0R1c (ORCPT
+        with ESMTP id S242150AbiG0R1e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:27:32 -0400
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0812C7E83E
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:47:14 -0700 (PDT)
-Received: by mail-lj1-x232.google.com with SMTP id v21so1863211ljh.3
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:47:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=mXw/gx1TvWDFNgjG1qr/pqI36Mmqb6KSC/b/lR/QsLU=;
-        b=layrHSzuuv7WZaKIMxqMlq4RK1ZL55arpJ65jtX7RdCUtFejuIaL8Knr9jz9MPtQKa
-         igjYvSZ7O12G4rPWOkL6+xA/t65NoZGrKQFnnZ8lsn6tYFWQFIaBT+PRnfSXjl4vmNPA
-         zRpZP3PKnU0ia3VaEVGFu4o/i1c1z8g6RjQz8SM1A4n329tpp8JeQNmbqX3HpN8bbNc9
-         DzW/KCI3QSS+5TMzXtB9XuXEfHWaomVMtzZSZRnmtlRaKVWIyb+/4Yf5rFrsES3ShMUx
-         Y67Fvc9DW12vdPuz0tv6k2Q43OjsUTwYy6HsU1dMrrFrwwUcgFcGPTZ/U1Eb35abgpDX
-         +P4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=mXw/gx1TvWDFNgjG1qr/pqI36Mmqb6KSC/b/lR/QsLU=;
-        b=Pb9ZhGyzelbWK9RYtTHZH7Vf2PkhGIsK/pX+eBgwO/h4hUcZM3sIlzsjDZQ1gj+P20
-         IRlN6uiunTl5Fhs5AJ5wUmQOu6RHjZQVrwwmkprHCQbg9+HTohuhhhEPsEeZDeNPT5+i
-         3Y4tV7zCB15NakrYFQpmOJ3L//FxlexcLztxoN4buymuDchYBQ8yapLhq0rDyb1G20aL
-         MOPmimMCZoMyKbcmN/UqMB5ADZJHzLsbWhWfsoFCMvT7+pNGSZNo2JdPimH+3XAznbgp
-         rRYVY4H+CBcKZMc+OrX03Lv0+tntWZJi5EU3syGXJw47GB0PmjUlTQyUqtiWrZx/cPen
-         zeRQ==
-X-Gm-Message-State: AJIora97lskbSp5cUFWffgzOaQAJy12CNeZ/vF3qBgboOfqKJAv2d2IE
-        qoWGMN7lDj6p45tb/oo5Rq/tPQ==
-X-Google-Smtp-Source: AGRyM1uCkfI3WTlZUr7WEZGfvAesB7wgSz0zkg+J9RomegxGE4tsQI4qHhyYZ9pnFuMvhJCs3YaR9Q==
-X-Received: by 2002:a2e:844a:0:b0:255:46b9:5e86 with SMTP id u10-20020a2e844a000000b0025546b95e86mr7505870ljh.388.1658940430765;
-        Wed, 27 Jul 2022 09:47:10 -0700 (PDT)
-Received: from krzk-bin.lan (78-26-46-173.network.trollfjord.no. [78.26.46.173])
-        by smtp.gmail.com with ESMTPSA id 18-20020ac25f52000000b0048910301774sm3375149lfz.307.2022.07.27.09.47.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 09:47:10 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Lucas Stankus <lucas.p.stankus@gmail.com>,
-        Puranjay Mohan <puranjay12@gmail.com>,
-        Cosmin Tanislav <cosmin.tanislav@analog.com>,
-        Alexandru Tachici <alexandru.tachici@analog.com>,
-        Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
-        Marcus Folkesson <marcus.folkesson@gmail.com>,
-        Kent Gustavsson <kent@minoris.se>,
-        Tomislav Denis <tomislav.denis@avl.com>,
-        Oleksij Rempel <linux@rempel-privat.de>, kernel@pengutronix.de,
-        Antoniu Miclaus <antoniu.miclaus@analog.com>,
-        Ricardo Ribalda <ribalda@kernel.org>,
-        Dragos Bogdan <dragos.bogdan@analog.com>,
-        Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Stefan Popa <stefan.popa@analog.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        Mike Looijmans <mike.looijmans@topic.nl>,
-        Joachim Eastwood <manabian@gmail.com>,
-        Tomas Melin <tomas.melin@vaisala.com>,
-        Sean Nyekjaer <sean@geanix.com>,
-        Beniamin Bia <beniamin.bia@analog.com>,
-        Patrick Vasseur <patrick.vasseur@c-s.fr>,
-        Charles-Antoine Couret <charles-antoine.couret@essensium.com>,
-        Vladimir Barinov <vladimir.barinov@cogentembedded.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Philippe Reynes <tremyfr@yahoo.fr>,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        Akinobu Mita <akinobu.mita@gmail.com>,
-        Alexandru Lazar <alazar@startmail.com>,
-        Oskar Andero <oskar.andero@gmail.com>,
-        =?UTF-8?q?M=C3=A5rten=20Lindahl?= <martenli@axis.com>,
-        Bogdan Pricop <bogdan.pricop@emutex.com>,
-        Angelo Compagnucci <angelo.compagnucci@gmail.com>,
-        Matt Ranostay <matt.ranostay@konsulko.com>,
-        Dan Murphy <dmurphy@ti.com>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Phil Reid <preid@electromag.com.au>,
-        Michael Welling <mwelling@ieee.org>,
-        Lukas Wunner <lukas@wunner.de>,
-        Robert Jones <rjones@gateworks.com>,
-        Chris Coffey <cmc@babblebit.net>,
-        Slawomir Stepien <sst@poczta.fm>,
-        Sankar Velliangiri <navin@linumiz.com>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-fbdev@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v2 03/10] dt-bindings: iio: amplifiers: adi,ada4250: use spi-peripheral-props.yaml
-Date:   Wed, 27 Jul 2022 18:46:39 +0200
-Message-Id: <20220727164646.387541-4-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220727164646.387541-1-krzysztof.kozlowski@linaro.org>
-References: <20220727164646.387541-1-krzysztof.kozlowski@linaro.org>
+        Wed, 27 Jul 2022 13:27:34 -0400
+Received: from mx0a-002e3701.pphosted.com (mx0a-002e3701.pphosted.com [148.163.147.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 824B67F503;
+        Wed, 27 Jul 2022 09:47:15 -0700 (PDT)
+Received: from pps.filterd (m0148663.ppops.net [127.0.0.1])
+        by mx0a-002e3701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26RF9tUa027060;
+        Wed, 27 Jul 2022 16:46:39 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version; s=pps0720;
+ bh=yM0Ig2cbgqvc5wP+3CqaCkj0J95s12T3qxvGESDqBag=;
+ b=nSFBjLoqKc1KSaW7zkWIByFVpAxjqc0qi2KSyokfW/G2hNiuzdNPnb4/si7rXhTJWgc0
+ p1QSpe54OYFbFfq941cccbERbXHJDccotwucLKZF81ILv1clybJMrVleifCjtDEHdKrg
+ TGOPlK3ODVpsnkdfZavnYRXqbQRvQ8v5Rsvt6DiNZGnes85yNo50CLTXhaHg3mqRmFZ2
+ VqMgoOmpkGIAgzPuW6qSLoQN/N2nljiPUFj+Xu+X3bvKjvgdo1pXv41vPnEKfxKt7RQk
+ 6CsM0Uj3Cqge2177lVOhe0AqZg8MhBs1qwy29giXRyYHx/Gu5/Fxwk9YZ29w3LRrHhLj MQ== 
+Received: from p1lg14880.it.hpe.com (p1lg14880.it.hpe.com [16.230.97.201])
+        by mx0a-002e3701.pphosted.com (PPS) with ESMTPS id 3hk7pgrsj4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 27 Jul 2022 16:46:39 +0000
+Received: from p1lg14885.dc01.its.hpecorp.net (unknown [10.119.18.236])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by p1lg14880.it.hpe.com (Postfix) with ESMTPS id 6EC1C8001AD;
+        Wed, 27 Jul 2022 16:46:38 +0000 (UTC)
+Received: from hpe.com (unknown [16.231.227.36])
+        by p1lg14885.dc01.its.hpecorp.net (Postfix) with ESMTP id 7DD33807642;
+        Wed, 27 Jul 2022 16:46:37 +0000 (UTC)
+From:   nick.hawkins@hpe.com
+To:     nick.hawkins@hpe.com
+Cc:     broonie@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, verdun@hpe.com,
+        linux@armlinux.org.uk, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, arnd@arndb.de, joel@jms.id.au
+Subject: [PATCH v5 2/5] spi: dt-bindings: add documentation for hpe,gxp-spifi
+Date:   Wed, 27 Jul 2022 11:47:33 -0500
+Message-Id: <20220727164736.48619-3-nick.hawkins@hpe.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220727164736.48619-1-nick.hawkins@hpe.com>
+References: <20220727164736.48619-1-nick.hawkins@hpe.com>
+X-Proofpoint-GUID: GBS37mzajiuyePcc934L8CfH4a92IUkW
+X-Proofpoint-ORIG-GUID: GBS37mzajiuyePcc934L8CfH4a92IUkW
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-27_06,2022-07-27_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 mlxscore=0
+ priorityscore=1501 lowpriorityscore=0 phishscore=0 impostorscore=0
+ suspectscore=0 malwarescore=0 mlxlogscore=771 spamscore=0 adultscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2207270069
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of listing directly properties typical for SPI peripherals,
-reference the spi-peripheral-props.yaml schema.  This allows using all
-properties typical for SPI-connected devices, even these which device
-bindings author did not tried yet.
+From: Nick Hawkins <nick.hawkins@hpe.com>
 
-Remove the spi-* properties which now come via spi-peripheral-props.yaml
-schema, except for the cases when device schema adds some constraints
-like maximum frequency.
+Create documentation for the hpe,gxp-spifi binding to support access to
+the SPI parts
 
-While changing additionalProperties->unevaluatedProperties, put it in
-typical place, just before example DTS.
+Signed-off-by: Nick Hawkins <nick.hawkins@hpe.com>
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
 ---
- .../devicetree/bindings/iio/amplifiers/adi,ada4250.yaml    | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+v5:
+ *No change, add Krzysztof review from previous version
+v4:
+ *Remove uneccessary quotes
+v3:
+ *Fix indentation
+v2:
+ *Removed extra space around < > for reg
+ *Changed interrupt-parrent to interrupt-parent
+---
+ .../bindings/spi/hpe,gxp-spifi.yaml           | 56 +++++++++++++++++++
+ 1 file changed, 56 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/spi/hpe,gxp-spifi.yaml
 
-diff --git a/Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml b/Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml
-index 5277479be382..c15da155d300 100644
---- a/Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml
-+++ b/Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml
-@@ -27,14 +27,15 @@ properties:
-       Enable internal buffer to drive the reference pin.
-     type: boolean
- 
--  spi-max-frequency: true
--
- required:
-   - compatible
-   - reg
-   - avdd-supply
- 
--additionalProperties: false
+diff --git a/Documentation/devicetree/bindings/spi/hpe,gxp-spifi.yaml b/Documentation/devicetree/bindings/spi/hpe,gxp-spifi.yaml
+new file mode 100644
+index 000000000000..7797c3123b7e
+--- /dev/null
++++ b/Documentation/devicetree/bindings/spi/hpe,gxp-spifi.yaml
+@@ -0,0 +1,56 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/spi/hpe,gxp-spifi.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: HPE GXP spi controller flash interface
++
++maintainers:
++  - Nick Hawkins <nick.hawkins@hpe.com>
++  - Jean-Marie Verdun <verdun@hpe.com>
++
 +allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++  - $ref: spi-controller.yaml#
++
++properties:
++  compatible:
++    const: hpe,gxp-spifi
++
++  reg:
++    items:
++      - description: cfg registers
++      - description: data registers
++      - description: mapped memory
++
++  interrupts:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - interrupts
 +
 +unevaluatedProperties: false
- 
- examples:
-   - |
++
++examples:
++  - |
++
++    spi@200 {
++      compatible = "hpe,gxp-spifi";
++      reg = <0x200 0x80>, <0xc000 0x100>, <0x38000000 0x800000>;
++      interrupts = <20>;
++      interrupt-parent = <&vic0>;
++      #address-cells = <1>;
++      #size-cells = <0>;
++
++      flash@0 {
++        reg = <0>;
++        compatible = "jedec,spi-nor";
++      };
++
++      flash@1 {
++        reg = <1>;
++        compatible = "jedec,spi-nor";
++      };
++    };
 -- 
-2.34.1
+2.17.1
 
