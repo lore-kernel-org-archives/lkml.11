@@ -2,80 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F5F0C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 12:47:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D324C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 12:48:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231665AbiG0Mrf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 08:47:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59094 "EHLO
+        id S230136AbiG0Mr6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 08:47:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232613AbiG0Mrc (ORCPT
+        with ESMTP id S232724AbiG0Mr4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 08:47:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4896A1CB26
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 05:47:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E328B60ABB
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 12:47:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBCAAC433D6;
-        Wed, 27 Jul 2022 12:47:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658926051;
-        bh=XuFtqN23dSuIFq0y8p4ETr/6CgsJu41LfPO3wuUj/lY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=yeunWGh0a5i/Djb0trgDdUL+hy2MDxqaZrOOCm91Jn0Olo2lWsYiDcNiBD974/r9r
-         AhMrHqGaMPI4pYsS0azgpSUffKtA5TReurhfdtFX2QL8YvUlgCLmDsPjeycy9tAPAY
-         T0/miobKalnlMbuY4EYxjFQKOd9pQsATejIHUHOw=
-Date:   Wed, 27 Jul 2022 14:47:28 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Phillip Potter <phil@philpotter.co.uk>, Larry.Finger@lwfinger.net,
-        paskripkin@gmail.com, straube.linux@gmail.com, martin@kaiser.cx,
-        abdun.nihaal@gmail.com, philipp.g.hortmann@gmail.com,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] staging: r8188eu: convert rtw_pwr_wakeup to correct
- error code semantics
-Message-ID: <YuEz4Edtp8J3Honj@kroah.com>
-References: <20220725220745.12739-1-phil@philpotter.co.uk>
- <YuDcKoSibAo93a6P@kroah.com>
- <20220727124342.GR2316@kadam>
+        Wed, 27 Jul 2022 08:47:56 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 359BF1C109
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 05:47:54 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LtD565KcPzjXSb;
+        Wed, 27 Jul 2022 20:44:58 +0800 (CST)
+Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 27 Jul 2022 20:47:52 +0800
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 27 Jul 2022 20:47:51 +0800
+From:   Kefeng Wang <wangkefeng.wang@huawei.com>
+To:     Stuart Yoder <stuyoder@gmail.com>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>
+CC:     <linux-kernel@vger.kernel.org>, <catalin.marinas@arm.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH] bus: fsl-mc: dprc: replace strncpy() with strscpy_pad()
+Date:   Wed, 27 Jul 2022 20:54:32 +0800
+Message-ID: <20220727125432.160233-1-wangkefeng.wang@huawei.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220727124342.GR2316@kadam>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500001.china.huawei.com (7.185.36.107)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 03:43:42PM +0300, Dan Carpenter wrote:
-> On Wed, Jul 27, 2022 at 08:33:14AM +0200, Greg KH wrote:
-> > > diff --git a/drivers/staging/r8188eu/core/rtw_pwrctrl.c b/drivers/staging/r8188eu/core/rtw_pwrctrl.c
-> > > index cf9020a73933..8b1c50668dfe 100644
-> > > --- a/drivers/staging/r8188eu/core/rtw_pwrctrl.c
-> > > +++ b/drivers/staging/r8188eu/core/rtw_pwrctrl.c
-> > > @@ -381,24 +381,24 @@ int rtw_pwr_wakeup(struct adapter *padapter)
-> > >  	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
-> > >  	unsigned long timeout = jiffies + msecs_to_jiffies(3000);
-> > >  	unsigned long deny_time;
-> > > -	int ret = _SUCCESS;
-> > > +	int ret = 0;
-> > >  
-> > >  	while (pwrpriv->ps_processing && time_before(jiffies, timeout))
-> > >  		msleep(10);
-> > >  
-> > >  	/* I think this should be check in IPS, LPS, autosuspend functions... */
-> > >  	if (check_fwstate(pmlmepriv, _FW_LINKED)) {
-> > > -		ret = _SUCCESS;
-> > > +		ret = 0;
-> > 
-> > Nit, you don't need to set this again, as you already set it above to 0.
-> > 
-> 
-> I would sort of prefer to drop the initialization and keep this one.
+Following warning when using W=1 to build kernel,
 
-Fine with me, either works.
+   drivers/bus/fsl-mc/dprc.c: In function 'dprc_get_obj':
+   drivers/bus/fsl-mc/dprc.c:453:9: warning: 'strncpy' output may be truncated copying 15 bytes from a string of length 15 [-Wstringop-truncation]
+     453 |         strncpy(obj_desc->type, rsp_params->type, 16);
+         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/bus/fsl-mc/dprc.c:455:9: warning: 'strncpy' output may be truncated copying 15 bytes from a string of length 15 [-Wstringop-truncation]
+     455 |         strncpy(obj_desc->label, rsp_params->label, 16);
+         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/bus/fsl-mc/dprc.c: In function 'dprc_set_obj_irq':
+   drivers/bus/fsl-mc/dprc.c:494:9: warning: 'strncpy' specified bound 16 equals destination size [-Wstringop-truncation]
+     494 |         strncpy(cmd_params->obj_type, obj_type, 16);
+         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/bus/fsl-mc/dprc.c: In function 'dprc_get_obj_region':
+   drivers/bus/fsl-mc/dprc.c:567:9: warning: 'strncpy' specified bound 16 equals destination size [-Wstringop-truncation]
+     567 |         strncpy(cmd_params->obj_type, obj_type, 16);
+         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-greg k-h
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Kefeng Wang <wangkefeng.wang@huawei.com>
+---
+ drivers/bus/fsl-mc/dprc.c | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/bus/fsl-mc/dprc.c b/drivers/bus/fsl-mc/dprc.c
+index d129338b8bc0..dd1b5c0fb7e2 100644
+--- a/drivers/bus/fsl-mc/dprc.c
++++ b/drivers/bus/fsl-mc/dprc.c
+@@ -450,10 +450,8 @@ int dprc_get_obj(struct fsl_mc_io *mc_io,
+ 	obj_desc->ver_major = le16_to_cpu(rsp_params->version_major);
+ 	obj_desc->ver_minor = le16_to_cpu(rsp_params->version_minor);
+ 	obj_desc->flags = le16_to_cpu(rsp_params->flags);
+-	strncpy(obj_desc->type, rsp_params->type, 16);
+-	obj_desc->type[15] = '\0';
+-	strncpy(obj_desc->label, rsp_params->label, 16);
+-	obj_desc->label[15] = '\0';
++	strscpy_pad(obj_desc->type, rsp_params->type, 16);
++	strscpy_pad(obj_desc->label, rsp_params->label, 16);
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(dprc_get_obj);
+@@ -491,8 +489,7 @@ int dprc_set_obj_irq(struct fsl_mc_io *mc_io,
+ 	cmd_params->irq_addr = cpu_to_le64(irq_cfg->paddr);
+ 	cmd_params->irq_num = cpu_to_le32(irq_cfg->irq_num);
+ 	cmd_params->obj_id = cpu_to_le32(obj_id);
+-	strncpy(cmd_params->obj_type, obj_type, 16);
+-	cmd_params->obj_type[15] = '\0';
++	strscpy_pad(cmd_params->obj_type, obj_type, 16);
+ 
+ 	/* send command to mc*/
+ 	return mc_send_command(mc_io, &cmd);
+@@ -564,8 +561,7 @@ int dprc_get_obj_region(struct fsl_mc_io *mc_io,
+ 	cmd_params = (struct dprc_cmd_get_obj_region *)cmd.params;
+ 	cmd_params->obj_id = cpu_to_le32(obj_id);
+ 	cmd_params->region_index = region_index;
+-	strncpy(cmd_params->obj_type, obj_type, 16);
+-	cmd_params->obj_type[15] = '\0';
++	strscpy_pad(cmd_params->obj_type, obj_type, 16);
+ 
+ 	/* send command to mc*/
+ 	err = mc_send_command(mc_io, &cmd);
+-- 
+2.35.3
+
