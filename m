@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30347C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:40:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E81D6C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:40:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242674AbiG0RkH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:40:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53678 "EHLO
+        id S242691AbiG0RkK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:40:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242779AbiG0RjO (ORCPT
+        with ESMTP id S242790AbiG0RjP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:39:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 515B061D51;
+        Wed, 27 Jul 2022 13:39:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F34787F62;
         Wed, 27 Jul 2022 09:51:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F0DD4B821D5;
-        Wed, 27 Jul 2022 16:50:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43BA7C433C1;
-        Wed, 27 Jul 2022 16:50:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4ED6E61617;
+        Wed, 27 Jul 2022 16:51:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E6C1C433D6;
+        Wed, 27 Jul 2022 16:51:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940640;
-        bh=AIwM/I+phVjD+oYqdvliQ+tHcIar9EIALVjDGeHJd4Q=;
+        s=korg; t=1658940662;
+        bh=zLQxbYrkLcDFl6J6e+B7wZO25bHdB5ORWRiwTpF/Ft4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SdxgVNPy9gkg8N/zpHCKHMvrmakYOTzwaiLB8RDNBUpDoLA8mQwMpDC5HpBQdZKE2
-         V8c1Y6UJSIEUQQQ2lX6xxCC0OGczpQcSiP77edbvTKU/h/4XIprtsulNB7C9L6DgRr
-         KMozNEfUv3/WdmMvOZfkokBY+g5GcvhemahF4qxg=
+        b=lzYKakc4osLDyam08H0Knd3npYFJ6JE2uUHFW7Kb5i0YD9NBWbGxw5/g45Zu6mGdc
+         +bREJBD56xTn4AtT80vYX+BAGT00F+lXCmKFJKBxg7Q0yh7+IUmizkWRBg6wmfhaGL
+         7HFJTtsNuhF45uYTkgIHml1+ZOqlDo6k9lIawGQg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Wong Vee Khee <vee.khee.wong@linux.intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 094/158] net: stmmac: remove redunctant disable xPCS EEE call
-Date:   Wed, 27 Jul 2022 18:12:38 +0200
-Message-Id: <20220727161025.231313079@linuxfoundation.org>
+Subject: [PATCH 5.18 062/158] igmp: Fix data-races around sysctl_igmp_llm_reports.
+Date:   Wed, 27 Jul 2022 18:12:06 +0200
+Message-Id: <20220727161023.996054917@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -50,43 +49,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wong Vee Khee <vee.khee.wong@linux.intel.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit da791bac104a3169b05b54270afe75daacba4641 ]
+[ Upstream commit f6da2267e71106474fbc0943dc24928b9cb79119 ]
 
-Disable is done in stmmac_init_eee() on the event of MAC link down.
-Since setting enable/disable EEE via ethtool will eventually trigger
-a MAC down, removing this redunctant call in stmmac_ethtool.c to avoid
-calling xpcs_config_eee() twice.
+While reading sysctl_igmp_llm_reports, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its readers.
 
-Fixes: d4aeaed80b0e ("net: stmmac: trigger PCS EEE to turn off on link down")
-Signed-off-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
-Link: https://lore.kernel.org/r/20220715122402.1017470-1-vee.khee.wong@linux.intel.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+This test can be packed into a helper, so such changes will be in the
+follow-up series after net is merged into net-next.
+
+  if (ipv4_is_local_multicast(pmc->multiaddr) &&
+      !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
+
+Fixes: df2cf4a78e48 ("IGMP: Inhibit reports for local multicast groups")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c | 8 --------
- 1 file changed, 8 deletions(-)
+ net/ipv4/igmp.c | 21 +++++++++++++--------
+ 1 file changed, 13 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-index abfb3cd5958d..9c3055ee2608 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
-@@ -803,14 +803,6 @@ static int stmmac_ethtool_op_set_eee(struct net_device *dev,
- 		netdev_warn(priv->dev,
- 			    "Setting EEE tx-lpi is not supported\n");
+diff --git a/net/ipv4/igmp.c b/net/ipv4/igmp.c
+index 1d9e6d5e9a76..0bde3774505f 100644
+--- a/net/ipv4/igmp.c
++++ b/net/ipv4/igmp.c
+@@ -467,7 +467,8 @@ static struct sk_buff *add_grec(struct sk_buff *skb, struct ip_mc_list *pmc,
  
--	if (priv->hw->xpcs) {
--		ret = xpcs_config_eee(priv->hw->xpcs,
--				      priv->plat->mult_fact_100ns,
--				      edata->eee_enabled);
--		if (ret)
--			return ret;
--	}
--
- 	if (!edata->eee_enabled)
- 		stmmac_disable_eee_mode(priv);
+ 	if (pmc->multiaddr == IGMP_ALL_HOSTS)
+ 		return skb;
+-	if (ipv4_is_local_multicast(pmc->multiaddr) && !net->ipv4.sysctl_igmp_llm_reports)
++	if (ipv4_is_local_multicast(pmc->multiaddr) &&
++	    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
+ 		return skb;
  
+ 	mtu = READ_ONCE(dev->mtu);
+@@ -593,7 +594,7 @@ static int igmpv3_send_report(struct in_device *in_dev, struct ip_mc_list *pmc)
+ 			if (pmc->multiaddr == IGMP_ALL_HOSTS)
+ 				continue;
+ 			if (ipv4_is_local_multicast(pmc->multiaddr) &&
+-			     !net->ipv4.sysctl_igmp_llm_reports)
++			    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
+ 				continue;
+ 			spin_lock_bh(&pmc->lock);
+ 			if (pmc->sfcount[MCAST_EXCLUDE])
+@@ -736,7 +737,8 @@ static int igmp_send_report(struct in_device *in_dev, struct ip_mc_list *pmc,
+ 	if (type == IGMPV3_HOST_MEMBERSHIP_REPORT)
+ 		return igmpv3_send_report(in_dev, pmc);
+ 
+-	if (ipv4_is_local_multicast(group) && !net->ipv4.sysctl_igmp_llm_reports)
++	if (ipv4_is_local_multicast(group) &&
++	    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
+ 		return 0;
+ 
+ 	if (type == IGMP_HOST_LEAVE_MESSAGE)
+@@ -920,7 +922,8 @@ static bool igmp_heard_report(struct in_device *in_dev, __be32 group)
+ 
+ 	if (group == IGMP_ALL_HOSTS)
+ 		return false;
+-	if (ipv4_is_local_multicast(group) && !net->ipv4.sysctl_igmp_llm_reports)
++	if (ipv4_is_local_multicast(group) &&
++	    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
+ 		return false;
+ 
+ 	rcu_read_lock();
+@@ -1045,7 +1048,7 @@ static bool igmp_heard_query(struct in_device *in_dev, struct sk_buff *skb,
+ 		if (im->multiaddr == IGMP_ALL_HOSTS)
+ 			continue;
+ 		if (ipv4_is_local_multicast(im->multiaddr) &&
+-		    !net->ipv4.sysctl_igmp_llm_reports)
++		    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
+ 			continue;
+ 		spin_lock_bh(&im->lock);
+ 		if (im->tm_running)
+@@ -1296,7 +1299,8 @@ static void __igmp_group_dropped(struct ip_mc_list *im, gfp_t gfp)
+ #ifdef CONFIG_IP_MULTICAST
+ 	if (im->multiaddr == IGMP_ALL_HOSTS)
+ 		return;
+-	if (ipv4_is_local_multicast(im->multiaddr) && !net->ipv4.sysctl_igmp_llm_reports)
++	if (ipv4_is_local_multicast(im->multiaddr) &&
++	    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
+ 		return;
+ 
+ 	reporter = im->reporter;
+@@ -1338,7 +1342,8 @@ static void igmp_group_added(struct ip_mc_list *im)
+ #ifdef CONFIG_IP_MULTICAST
+ 	if (im->multiaddr == IGMP_ALL_HOSTS)
+ 		return;
+-	if (ipv4_is_local_multicast(im->multiaddr) && !net->ipv4.sysctl_igmp_llm_reports)
++	if (ipv4_is_local_multicast(im->multiaddr) &&
++	    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
+ 		return;
+ 
+ 	if (in_dev->dead)
+@@ -1642,7 +1647,7 @@ static void ip_mc_rejoin_groups(struct in_device *in_dev)
+ 		if (im->multiaddr == IGMP_ALL_HOSTS)
+ 			continue;
+ 		if (ipv4_is_local_multicast(im->multiaddr) &&
+-		    !net->ipv4.sysctl_igmp_llm_reports)
++		    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
+ 			continue;
+ 
+ 		/* a failover is happening and switches
 -- 
 2.35.1
 
