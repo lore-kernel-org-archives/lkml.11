@@ -2,89 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 360EAC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 21:25:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 236FAC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 21:27:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235452AbiG0VZt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 17:25:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51306 "EHLO
+        id S230349AbiG0V1h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 17:27:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229543AbiG0VZs (ORCPT
+        with ESMTP id S229543AbiG0V1e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 17:25:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 388E25C977
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 14:25:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B8C2860A6D
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 21:25:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B065FC433D6;
-        Wed, 27 Jul 2022 21:25:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658957145;
-        bh=RQDcnihAQECpIPIGtWrEQpvzYtBnkf+NmAmzZ4dC/+Y=;
-        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-        b=qKpjjjqn72xgTFE8Qs967fz8bQD3tFQehF+DhEXll8ngJ6CijQxk74P78F9PgEEAl
-         cPg3QrIlLgVmk9c8J6XrPwFx4duifuTOvNznH6a4FL9d2EXnRTcpuK6NO1IKzp6zF+
-         CFsOzPkhTWpmv9M74RzJYoHPOlb5/ogttmxg6adjPewcBNoGK33dJh/vXxU5IWfTtO
-         /QgOK9PSHj1BfJAtuKKQoB5wu1YQbYZc3D3JpOO2OQxeK0B14LBJqRCgnsUCfcdXHH
-         Ap+5hzZ6i52hj6/zevDEdIJCfzT0HDS8bw5VAgLgWCrzQz4eCKLWDLcvKFA44uTWNw
-         Wd5jvPxQxF58g==
-From:   Mark Brown <broonie@kernel.org>
-To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Cc:     Srinivasa Rao Mandadapu <quic_srivasam@quicinc.com>,
-        perex@perex.cz, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org, tiwai@suse.com, lgirdwood@gmail.com
-In-Reply-To: <20220727124749.4604-1-srinivas.kandagatla@linaro.org>
-References: <20220727124749.4604-1-srinivas.kandagatla@linaro.org>
-Subject: Re: [PATCH] ASoC: codecs: va-macro: use fsgen as clock
-Message-Id: <165895714343.1039659.13792597737035466028.b4-ty@kernel.org>
-Date:   Wed, 27 Jul 2022 22:25:43 +0100
+        Wed, 27 Jul 2022 17:27:34 -0400
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCCD05C972;
+        Wed, 27 Jul 2022 14:27:33 -0700 (PDT)
+Received: by mail-ej1-x636.google.com with SMTP id bp15so33736524ejb.6;
+        Wed, 27 Jul 2022 14:27:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=dHk/nIZIen1AdZIuJjh0VLKLPwk90ODmGxgfoYUv0pM=;
+        b=NUintwL8++PesHsw3v01wuUfAC4+ztcOw7Zb1LqLX3JL7NNi58TqpeHWbfZ7vVY4j6
+         HNweitKxjbV7snOL9vBxB09RXpcmFxl/ro1TGnC9vNHRrCn4Nzyip9vERGIvOBZE5Flg
+         HJc0tmAMEQyjG9JTsxhqWOJQ0IDLMc32g4xCTxn0jFuknDyCGSEprBTNokSfT6+J9d2g
+         Q0Viwkn3ckuATa0ywSJJ/tSp7lsedI1KyfuVlH0Z1iWifwYf44WRu0ZeM5cvs7NWfVfG
+         JCTueRN835o9aA1tfpzKaS9iZi6jNMqkyfPfLaxwn/tBpDbY3mrHfRPeYZS4II7ReX+x
+         dQqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=dHk/nIZIen1AdZIuJjh0VLKLPwk90ODmGxgfoYUv0pM=;
+        b=mB9Kgk6POtp+MfWGsQptycI2bKtsm7dh9Mr8h2YLfpUcF+lMk9QoKCfMeUDTdgO/FK
+         XCjss8w6MAExu7i6KSx+g/cWadIqK6Nkl7O8AHODRG8qS8hf3nv2rscWur+RThJjBRu3
+         4P4JrlJK8b3Y2RSfRVmGepnKhXdYUTozUlRCQXRLbxh0Y+059eNZqiJ5nNy/e1tUOpj4
+         eQnRAq4kUGeT+zuMJROguFhpj+D1I1zbOO2XgqsAyCsi7KzWCtjx/LMEeimt7KYuCGN3
+         mvFln38Ao9lsiBMpp+xvFOoXIBNUMogrEqnT2WyHPbVtbiIlOU5WnqcCfzkuYL2gkgzV
+         ouvw==
+X-Gm-Message-State: AJIora8TQBD8TMYP/mvuIz6fp4hzA5+IAUg4+YodT1q6zlLb+/zm/3PF
+        FgC5EnWxxAB2TkmfWLt4Twg=
+X-Google-Smtp-Source: AGRyM1tZTJ6VoFWUEsrjg8ZdZdjWjNpwMczEJ2oNxZ5eZgqUIFB015mHYH5m704ibrPyhECQdRAccg==
+X-Received: by 2002:a17:906:93e8:b0:72b:6923:a0b9 with SMTP id yl8-20020a17090693e800b0072b6923a0b9mr18572531ejb.244.1658957252154;
+        Wed, 27 Jul 2022 14:27:32 -0700 (PDT)
+Received: from skbuf ([188.25.231.115])
+        by smtp.gmail.com with ESMTPSA id y3-20020aa7ccc3000000b0043577da51f1sm10888831edt.81.2022.07.27.14.27.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jul 2022 14:27:31 -0700 (PDT)
+Date:   Thu, 28 Jul 2022 00:27:28 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Marcin Wojtas <mw@semihalf.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Grzegorz Bernacki <gjb@semihalf.com>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>,
+        Tomasz Nowicki <tn@semihalf.com>,
+        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
+        upstream@semihalf.com
+Subject: Re: [net-next: PATCH v3 6/8] net: core: switch to
+ fwnode_find_net_device_by_node()
+Message-ID: <20220727212728.hgf7vbasmup4i2il@skbuf>
+References: <20220727064321.2953971-1-mw@semihalf.com>
+ <20220727064321.2953971-7-mw@semihalf.com>
+ <20220727143147.u6yd6wqslilspyhw@skbuf>
+ <CAPv3WKc88KQN=athEqBg=Z5Bd1SC3QSOPZpDH7dfuYGHhR+oVg@mail.gmail.com>
+ <20220727163848.f4e2b263zz3vl2hc@skbuf>
+ <CAPv3WKe+e6sFd6+7eoZbA2iRTPhBorD+mk6W+kJr-f9P8SFh+w@mail.gmail.com>
+ <20220727211112.kcpbxbql3tw5q5sx@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Mailer: b4 0.10.0-dev-d1cc2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220727211112.kcpbxbql3tw5q5sx@skbuf>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 27 Jul 2022 13:47:49 +0100, Srinivas Kandagatla wrote:
-> VA Macro fsgen clock is supplied to other LPASS Macros using proper
-> clock apis, however the internal user uses the registers directly without
-> clk apis. This approch has race condition where in external users of
-> the clock might cut the clock while VA macro is actively using this.
-> 
-> Moving the internal usage to clk apis would provide a proper refcounting
-> and avoid such race conditions.
-> 
-> [...]
+On Thu, Jul 28, 2022 at 12:11:12AM +0300, Vladimir Oltean wrote:
+> The 'label' property of a port was optional, you've made it mandatory by accident.
+> It is used only by DSA drivers that register using platform data.
 
-Applied to
+I didn't mean to say exactly this, the second phrase was an addition
+through which I tried to make it clear that the "cpu" label *is* used,
+but only by the drivers using platform data. With OF it's not, neither
+that nor label = "dsa". We have other means of recognizing a CPU or DSA
+port, by the 'ethernet' and/or 'dsa' phandles.
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
-
-Thanks!
-
-[1/1] ASoC: codecs: va-macro: use fsgen as clock
-      commit: 30097967e0566cac817273ef76add100f6b0f463
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
+Additionally, the label is optional even for user port. One can have
+udev rules that assign names to Ethernet ports. I think that is even
+encouraged; some of the things in DSA predate the establishment of some
+best practices.
