@@ -2,98 +2,231 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5018C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:12:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51F6AC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:12:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232800AbiG0RMZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:12:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48672 "EHLO
+        id S241517AbiG0RMb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:12:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241325AbiG0RLp (ORCPT
+        with ESMTP id S241520AbiG0RLq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:11:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0580D5141D;
-        Wed, 27 Jul 2022 09:41:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EEAAAB821C5;
-        Wed, 27 Jul 2022 16:41:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 551A2C433C1;
-        Wed, 27 Jul 2022 16:41:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940093;
-        bh=xcRkLHyCPVW45pzjC+BD+ePo1H07buCXLbvYrUCnzl0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zmSMAQ2DQF3KXBOLaIAfUmngbOGgz3wY615vG7ByKzKjNxbdtQFYhfmJSwKQMwk9a
-         5TSK0RGdjEDCvJolOEcdiTwSHXsKz/SQxKUN9kzkyg9tNPm6Z9ss2b5GDj94o8Um3+
-         ELlgIzKJvQK/mC0Brtqyn2AcM7fnRFMpNolWHqgY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 101/201] iavf: Fix handling of dummy receive descriptors
-Date:   Wed, 27 Jul 2022 18:10:05 +0200
-Message-Id: <20220727161031.924437707@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
-References: <20220727161026.977588183@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Wed, 27 Jul 2022 13:11:46 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABBA174DC8
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:41:42 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id p10so20409752lfd.9
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:41:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding;
+        bh=noZsE9hzm+1k0IDbKYcJedBCS8keQWIZ5dwJ9Bh2iyA=;
+        b=EvaFQ0LZE/erLTRglemqXFQcs3XLxjLrE10420FuIJORcU8P0nkjppHqEchtCoTdrV
+         QP3EHReO5Zj5phUAfO0cxLHKN2bfz0WwIlTvjKlOSHBNTX60u8ZOyI3BJ6DA74rpJkT0
+         8GE21IktCR/UbYLecNeeifL6SJcsv1OCP0KnhjoJWpm9vTJmfsOkimnmmVNmiKXSCjrq
+         PCIvFb2Z/9iLYQZjt4s1MFE4W9GqIdaCKe3Bj9niregePX3wluJt/DkX3AeE/2dJiwmo
+         OUqGp5MF42tU4cR9HJcR08KOXhPf/hL38/GwuPr2abMfrRWfMEMzEVdqiblUcsKeSAsU
+         1shQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=noZsE9hzm+1k0IDbKYcJedBCS8keQWIZ5dwJ9Bh2iyA=;
+        b=VdjgmgJLOBNN/AXdMGaaTdFJkvMa4CPYwhme799mDlnWKrB+IRDkneZbEA6XNuQ6OD
+         Wv/mwZC1XmyjgHB9kh4VZJl3LyXFjGXR4pByskdwbgw2udKsnGl/4PAo987bxsozjvMh
+         lprv9fCP2kb74dyVXS+f8/algnJRFYHCvfvy4gzcQ5th4n0MX0YKB5MVXLRbL924o/RJ
+         Ig372HGINXVIBCBGMqxqjQeCTfTKOvpd3u/Ndam+4PnUURkNYoLRt6sRib1mKQc3hWQh
+         +bJPUDN0ahRPNqq1AnYy0Qgp9rM+MKWSSaiKxRizGOZRchga8bWtC1JWftZ9K54jtHzX
+         s1Ew==
+X-Gm-Message-State: AJIora+MPH8VQRie4XFdHu13DCj6j04VxngSalSnfqyM20xEfVF+GrCL
+        AcVCn703oqfepsx/N33gr6Kjkw==
+X-Google-Smtp-Source: AGRyM1vOxShQJVI2IuMwmQBmBYBiblwWa0oXL7CXsC4l1qkEdcyTkrYB2g5dMB9y4tgZP27svG3sNw==
+X-Received: by 2002:a05:6512:1107:b0:48a:87db:7d24 with SMTP id l7-20020a056512110700b0048a87db7d24mr6539653lfg.58.1658940094944;
+        Wed, 27 Jul 2022 09:41:34 -0700 (PDT)
+Received: from krzk-bin.lan (78-26-46-173.network.trollfjord.no. [78.26.46.173])
+        by smtp.gmail.com with ESMTPSA id i17-20020a2ea231000000b0025a67779931sm3872519ljm.57.2022.07.27.09.41.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jul 2022 09:41:34 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Greer <mgreer@animalcreek.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        =?UTF-8?q?J=C3=A9r=C3=B4me=20Pouiller?= 
+        <jerome.pouiller@silabs.com>,
+        Adham Abozaeid <adham.abozaeid@microchip.com>,
+        Ajay Singh <ajay.kathat@microchip.com>,
+        Tony Lindgren <tony@atomide.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-wireless@vger.kernel.org
+Subject: [PATCH 2/2] dt-bindings: wireless: use spi-peripheral-props.yaml
+Date:   Wed, 27 Jul 2022 18:41:30 +0200
+Message-Id: <20220727164130.385411-2-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220727164130.385411-1-krzysztof.kozlowski@linaro.org>
+References: <20220727164130.385411-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
+Instead of listing directly properties typical for SPI peripherals,
+reference the spi-peripheral-props.yaml schema.  This allows using all
+properties typical for SPI-connected devices, even these which device
+bindings author did not tried yet.
 
-[ Upstream commit a9f49e0060301a9bfebeca76739158d0cf91cdf6 ]
+Remove the spi-* properties which now come via spi-peripheral-props.yaml
+schema, except for the cases when device schema adds some constraints
+like maximum frequency.
 
-Fix memory leak caused by not handling dummy receive descriptor properly.
-iavf_get_rx_buffer now sets the rx_buffer return value for dummy receive
-descriptors. Without this patch, when the hardware writes a dummy
-descriptor, iavf would not free the page allocated for the previous receive
-buffer. This is an unlikely event but can still happen.
+While changing additionalProperties->unevaluatedProperties, put it in
+typical place, just before example DTS.
 
-[Jesse: massaged commit message]
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Fixes: efa14c398582 ("iavf: allow null RX descriptors")
-Signed-off-by: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
-Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/iavf/iavf_txrx.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/iavf/iavf_txrx.c b/drivers/net/ethernet/intel/iavf/iavf_txrx.c
-index 3525eab8e9f9..5448ed0e0357 100644
---- a/drivers/net/ethernet/intel/iavf/iavf_txrx.c
-+++ b/drivers/net/ethernet/intel/iavf/iavf_txrx.c
-@@ -1250,11 +1250,10 @@ static struct iavf_rx_buffer *iavf_get_rx_buffer(struct iavf_ring *rx_ring,
- {
- 	struct iavf_rx_buffer *rx_buffer;
+Technically, this depends on [1] merged to SPI tree, if we want to
+preserve existing behavior of not allowing SPI CPHA and CPOL in each of
+schemas in this patch.
+
+If this patch comes independently via different tree, the SPI CPHA and
+CPOL will be allowed for brief period of time, before [1] is merged.
+This will not have negative impact, just DT schema checks will be
+loosened for that period.
+
+[1] https://lore.kernel.org/all/20220722191539.90641-2-krzysztof.kozlowski@linaro.org/
+---
+ .../net/wireless/microchip,wilc1000.yaml      |  7 ++--
+ .../bindings/net/wireless/silabs,wfx.yaml     | 15 +++------
+ .../bindings/net/wireless/ti,wlcore.yaml      | 32 +++++++++----------
+ 3 files changed, 25 insertions(+), 29 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/net/wireless/microchip,wilc1000.yaml b/Documentation/devicetree/bindings/net/wireless/microchip,wilc1000.yaml
+index 60de78f1bc7b..b3405f284580 100644
+--- a/Documentation/devicetree/bindings/net/wireless/microchip,wilc1000.yaml
++++ b/Documentation/devicetree/bindings/net/wireless/microchip,wilc1000.yaml
+@@ -20,8 +20,6 @@ properties:
  
--	if (!size)
--		return NULL;
+   reg: true
+ 
+-  spi-max-frequency: true
 -
- 	rx_buffer = &rx_ring->rx_bi[rx_ring->next_to_clean];
- 	prefetchw(rx_buffer->page);
-+	if (!size)
-+		return rx_buffer;
+   interrupts:
+     maxItems: 1
  
- 	/* we are reusing so sync this buffer for CPU use */
- 	dma_sync_single_range_for_cpu(rx_ring->dev,
+@@ -51,7 +49,10 @@ required:
+   - compatible
+   - interrupts
+ 
+-additionalProperties: false
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++
++unevaluatedProperties: false
+ 
+ examples:
+   - |
+diff --git a/Documentation/devicetree/bindings/net/wireless/silabs,wfx.yaml b/Documentation/devicetree/bindings/net/wireless/silabs,wfx.yaml
+index 76199a67d628..b35d2f3ad1ad 100644
+--- a/Documentation/devicetree/bindings/net/wireless/silabs,wfx.yaml
++++ b/Documentation/devicetree/bindings/net/wireless/silabs,wfx.yaml
+@@ -29,12 +29,6 @@ description: >
+     Documentation/devicetree/bindings/mmc/mmc-pwrseq-simple.yaml for more
+     information.
+ 
+-  For SPI:
+-
+-    In add of the properties below, please consult
+-    Documentation/devicetree/bindings/spi/spi-controller.yaml for optional SPI
+-    related properties.
+-
+ properties:
+   compatible:
+     items:
+@@ -52,8 +46,6 @@ properties:
+       bindings.
+     maxItems: 1
+ 
+-  spi-max-frequency: true
+-
+   interrupts:
+     description: The interrupt line. Should be IRQ_TYPE_EDGE_RISING. When SPI is
+       used, this property is required. When SDIO is used, the "in-band"
+@@ -84,12 +76,15 @@ properties:
+ 
+   mac-address: true
+ 
+-additionalProperties: false
+-
+ required:
+   - compatible
+   - reg
+ 
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++
++unevaluatedProperties: false
++
+ examples:
+   - |
+     #include <dt-bindings/gpio/gpio.h>
+diff --git a/Documentation/devicetree/bindings/net/wireless/ti,wlcore.yaml b/Documentation/devicetree/bindings/net/wireless/ti,wlcore.yaml
+index d68bb2ec1f7e..e31456730e9f 100644
+--- a/Documentation/devicetree/bindings/net/wireless/ti,wlcore.yaml
++++ b/Documentation/devicetree/bindings/net/wireless/ti,wlcore.yaml
+@@ -36,8 +36,6 @@ properties:
+       This is required when connected via SPI, and optional when connected via
+       SDIO.
+ 
+-  spi-max-frequency: true
+-
+   interrupts:
+     minItems: 1
+     maxItems: 2
+@@ -69,20 +67,22 @@ required:
+   - compatible
+   - interrupts
+ 
+-if:
+-  properties:
+-    compatible:
+-      contains:
+-        enum:
+-          - ti,wl1271
+-          - ti,wl1273
+-          - ti,wl1281
+-          - ti,wl1283
+-then:
+-  required:
+-    - ref-clock-frequency
+-
+-additionalProperties: false
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - ti,wl1271
++              - ti,wl1273
++              - ti,wl1281
++              - ti,wl1283
++    then:
++      required:
++        - ref-clock-frequency
++
++unevaluatedProperties: false
+ 
+ examples:
+   - |
 -- 
-2.35.1
-
-
+2.34.1
 
