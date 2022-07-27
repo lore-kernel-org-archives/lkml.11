@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB424C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:29:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6C86C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:29:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237314AbiG0Q3l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:29:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34402 "EHLO
+        id S235381AbiG0Q3s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:29:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236543AbiG0Q2m (ORCPT
+        with ESMTP id S236890AbiG0Q2s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:28:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 523B55018C;
-        Wed, 27 Jul 2022 09:24:39 -0700 (PDT)
+        Wed, 27 Jul 2022 12:28:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7996D501AA;
+        Wed, 27 Jul 2022 09:24:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BE01D619C0;
-        Wed, 27 Jul 2022 16:24:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C818FC433D6;
-        Wed, 27 Jul 2022 16:24:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1D2F5B821B8;
+        Wed, 27 Jul 2022 16:24:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76EDAC433D6;
+        Wed, 27 Jul 2022 16:24:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939063;
-        bh=ZyoYRBKz5DuCDinjIvv/3ET8Bs0cHLEPSRydJa3gzFU=;
+        s=korg; t=1658939068;
+        bh=uiUGTwAC6da7fWJZz7M1UEyF2xig5WJwOlwZQXodwVk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r5nAklTDCpQ85swa7dJtQz3lycPDc1YS0yT5cFNSVG3ph8ICD5ufsphvCNYWM5Qdp
-         K1NCBqiCN/04msorYWasLc4//Fp1LTb19+yKolJRP8Sryw+33rCJEv0zHH2hhPk2P/
-         gIz4daNOoZuwVGpYo+ZxvrgTj/CpnKKMO21/pdZ4=
+        b=wppf6cO5ygukDe0Vl0pMKIvnl5xO8mYLveEOzyKOAdpNNw+utwEK8jiITAXSWTKjK
+         UkW9eGznP1lyeIesOhrXWneHO5BFXNDEmIMgk3Ykmk3SjUBOsxD66fnD77R1rArDrD
+         z+B6FTwHloXDUAl3aBkx5uQxf7hgcMo9BlW8E4tU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        Jeffrey Hugo <quic_jhugo@quicinc.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        Carl Vanderlip <quic_carlv@quicinc.com>
-Subject: [PATCH 4.14 37/37] PCI: hv: Fix interrupt mapping for multi-MSI
-Date:   Wed, 27 Jul 2022 18:11:03 +0200
-Message-Id: <20220727161002.347852819@linuxfoundation.org>
+        stable@vger.kernel.org, Hristo Venev <hristo@venev.name>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 14/37] be2net: Fix buffer overflow in be_get_module_eeprom
+Date:   Wed, 27 Jul 2022 18:10:40 +0200
+Message-Id: <20220727161001.437452503@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161000.822869853@linuxfoundation.org>
 References: <20220727161000.822869853@linuxfoundation.org>
@@ -51,183 +49,144 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeffrey Hugo <quic_jhugo@quicinc.com>
+From: Hristo Venev <hristo@venev.name>
 
-commit a2bad844a67b1c7740bda63e87453baf63c3a7f7 upstream.
+[ Upstream commit d7241f679a59cfe27f92cb5c6272cb429fb1f7ec ]
 
-According to Dexuan, the hypervisor folks beleive that multi-msi
-allocations are not correct.  compose_msi_msg() will allocate multi-msi
-one by one.  However, multi-msi is a block of related MSIs, with alignment
-requirements.  In order for the hypervisor to allocate properly aligned
-and consecutive entries in the IOMMU Interrupt Remapping Table, there
-should be a single mapping request that requests all of the multi-msi
-vectors in one shot.
+be_cmd_read_port_transceiver_data assumes that it is given a buffer that
+is at least PAGE_DATA_LEN long, or twice that if the module supports SFF
+8472. However, this is not always the case.
 
-Dexuan suggests detecting the multi-msi case and composing a single
-request related to the first MSI.  Then for the other MSIs in the same
-block, use the cached information.  This appears to be viable, so do it.
+Fix this by passing the desired offset and length to
+be_cmd_read_port_transceiver_data so that we only copy the bytes once.
 
-4.14 backport - file moved to host/pci-hyperv.c. add hv_msi_get_int_vector
-helper function. Fixed merge conflict due to delivery_mode name change
-(APIC_DELIVERY_MODE_FIXED is the value given to dest_Fixed). Removed unused
-variable in hv_compose_msi_msg. Fixed reference to msi_desc->pci to point
-to the same is_msix variable. Removed changes to compose_msi_req_v3 since
-it doesn't exist yet. Added "reason" to put_pcichild (unused in function).
-
-Suggested-by: Dexuan Cui <decui@microsoft.com>
-Signed-off-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
-Reviewed-by: Dexuan Cui <decui@microsoft.com>
-Tested-by: Michael Kelley <mikelley@microsoft.com>
-Link: https://lore.kernel.org/r/1652282599-21643-1-git-send-email-quic_jhugo@quicinc.com
-Signed-off-by: Wei Liu <wei.liu@kernel.org>
-Signed-off-by: Carl Vanderlip <quic_carlv@quicinc.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: e36edd9d26cf ("be2net: add ethtool "-m" option support")
+Signed-off-by: Hristo Venev <hristo@venev.name>
+Link: https://lore.kernel.org/r/20220716085134.6095-1-hristo@venev.name
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/host/pci-hyperv.c |   62 ++++++++++++++++++++++++++++++++++++------
- 1 file changed, 54 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/emulex/benet/be_cmds.c   | 10 +++---
+ drivers/net/ethernet/emulex/benet/be_cmds.h   |  2 +-
+ .../net/ethernet/emulex/benet/be_ethtool.c    | 31 ++++++++++++-------
+ 3 files changed, 25 insertions(+), 18 deletions(-)
 
---- a/drivers/pci/host/pci-hyperv.c
-+++ b/drivers/pci/host/pci-hyperv.c
-@@ -846,6 +846,11 @@ static void hv_int_desc_free(struct hv_p
- 		u8 buffer[sizeof(struct pci_delete_interrupt)];
- 	} ctxt;
+diff --git a/drivers/net/ethernet/emulex/benet/be_cmds.c b/drivers/net/ethernet/emulex/benet/be_cmds.c
+index 1589a568bfe0..7ea2e5dbacd5 100644
+--- a/drivers/net/ethernet/emulex/benet/be_cmds.c
++++ b/drivers/net/ethernet/emulex/benet/be_cmds.c
+@@ -2291,7 +2291,7 @@ int be_cmd_get_beacon_state(struct be_adapter *adapter, u8 port_num, u32 *state)
  
-+	if (!int_desc->vector_count) {
-+		kfree(int_desc);
-+		return;
-+	}
-+
- 	memset(&ctxt, 0, sizeof(ctxt));
- 	int_pkt = (struct pci_delete_interrupt *)&ctxt.pkt.message;
- 	int_pkt->message_type.type =
-@@ -908,6 +913,13 @@ static void hv_irq_mask(struct irq_data
- 	pci_msi_mask_irq(data);
- }
- 
-+static unsigned int hv_msi_get_int_vector(struct irq_data *data)
-+{
-+	struct irq_cfg *cfg = irqd_cfg(data);
-+
-+	return cfg->vector;
-+}
-+
- static int hv_msi_prepare(struct irq_domain *domain, struct device *dev,
- 			  int nvec, msi_alloc_info_t *info)
+ /* Uses sync mcc */
+ int be_cmd_read_port_transceiver_data(struct be_adapter *adapter,
+-				      u8 page_num, u8 *data)
++				      u8 page_num, u32 off, u32 len, u8 *data)
  {
-@@ -1050,12 +1062,12 @@ static void hv_pci_compose_compl(void *c
+ 	struct be_dma_mem cmd;
+ 	struct be_mcc_wrb *wrb;
+@@ -2325,10 +2325,10 @@ int be_cmd_read_port_transceiver_data(struct be_adapter *adapter,
+ 	req->port = cpu_to_le32(adapter->hba_port_num);
+ 	req->page_num = cpu_to_le32(page_num);
+ 	status = be_mcc_notify_wait(adapter);
+-	if (!status) {
++	if (!status && len > 0) {
+ 		struct be_cmd_resp_port_type *resp = cmd.va;
  
- static u32 hv_compose_msi_req_v1(
- 	struct pci_create_interrupt *int_pkt, struct cpumask *affinity,
--	u32 slot, u8 vector)
-+	u32 slot, u8 vector, u8 vector_count)
- {
- 	int_pkt->message_type.type = PCI_CREATE_INTERRUPT_MESSAGE;
- 	int_pkt->wslot.slot = slot;
- 	int_pkt->int_desc.vector = vector;
--	int_pkt->int_desc.vector_count = 1;
-+	int_pkt->int_desc.vector_count = vector_count;
- 	int_pkt->int_desc.delivery_mode =
- 		(apic->irq_delivery_mode == dest_LowestPrio) ?
- 			dest_LowestPrio : dest_Fixed;
-@@ -1071,14 +1083,14 @@ static u32 hv_compose_msi_req_v1(
- 
- static u32 hv_compose_msi_req_v2(
- 	struct pci_create_interrupt2 *int_pkt, struct cpumask *affinity,
--	u32 slot, u8 vector)
-+	u32 slot, u8 vector, u8 vector_count)
- {
- 	int cpu;
- 
- 	int_pkt->message_type.type = PCI_CREATE_INTERRUPT_MESSAGE2;
- 	int_pkt->wslot.slot = slot;
- 	int_pkt->int_desc.vector = vector;
--	int_pkt->int_desc.vector_count = 1;
-+	int_pkt->int_desc.vector_count = vector_count;
- 	int_pkt->int_desc.delivery_mode =
- 		(apic->irq_delivery_mode == dest_LowestPrio) ?
- 			dest_LowestPrio : dest_Fixed;
-@@ -1108,7 +1120,6 @@ static u32 hv_compose_msi_req_v2(
-  */
- static void hv_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
- {
--	struct irq_cfg *cfg = irqd_cfg(data);
- 	struct hv_pcibus_device *hbus;
- 	struct hv_pci_dev *hpdev;
- 	struct pci_bus *pbus;
-@@ -1117,6 +1128,8 @@ static void hv_compose_msi_msg(struct ir
- 	unsigned long flags;
- 	struct compose_comp_ctxt comp;
- 	struct tran_int_desc *int_desc;
-+	struct msi_desc *msi_desc;
-+	u8 vector, vector_count;
- 	struct {
- 		struct pci_packet pci_pkt;
- 		union {
-@@ -1137,7 +1150,8 @@ static void hv_compose_msi_msg(struct ir
- 		return;
+-		memcpy(data, resp->page_data, PAGE_DATA_LEN);
++		memcpy(data, resp->page_data + off, len);
  	}
+ err:
+ 	mutex_unlock(&adapter->mcc_lock);
+@@ -2419,7 +2419,7 @@ int be_cmd_query_cable_type(struct be_adapter *adapter)
+ 	int status;
  
--	pdev = msi_desc_to_pci_dev(irq_data_get_msi_desc(data));
-+	msi_desc = irq_data_get_msi_desc(data);
-+	pdev = msi_desc_to_pci_dev(msi_desc);
- 	dest = irq_data_get_effective_affinity_mask(data);
- 	pbus = pdev->bus;
- 	hbus = container_of(pbus->sysdata, struct hv_pcibus_device, sysdata);
-@@ -1149,6 +1163,36 @@ static void hv_compose_msi_msg(struct ir
- 	if (!int_desc)
- 		goto drop_reference;
+ 	status = be_cmd_read_port_transceiver_data(adapter, TR_PAGE_A0,
+-						   page_data);
++						   0, PAGE_DATA_LEN, page_data);
+ 	if (!status) {
+ 		switch (adapter->phy.interface_type) {
+ 		case PHY_TYPE_QSFP:
+@@ -2444,7 +2444,7 @@ int be_cmd_query_sfp_info(struct be_adapter *adapter)
+ 	int status;
  
-+	if (!msi_desc->msi_attrib.is_msix && msi_desc->nvec_used > 1) {
-+		/*
-+		 * If this is not the first MSI of Multi MSI, we already have
-+		 * a mapping.  Can exit early.
-+		 */
-+		if (msi_desc->irq != data->irq) {
-+			data->chip_data = int_desc;
-+			int_desc->address = msi_desc->msg.address_lo |
-+					    (u64)msi_desc->msg.address_hi << 32;
-+			int_desc->data = msi_desc->msg.data +
-+					 (data->irq - msi_desc->irq);
-+			msg->address_hi = msi_desc->msg.address_hi;
-+			msg->address_lo = msi_desc->msg.address_lo;
-+			msg->data = int_desc->data;
-+			put_pcichild(hpdev, hv_pcidev_ref_by_slot);
-+			return;
-+		}
-+		/*
-+		 * The vector we select here is a dummy value.  The correct
-+		 * value gets sent to the hypervisor in unmask().  This needs
-+		 * to be aligned with the count, and also not zero.  Multi-msi
-+		 * is powers of 2 up to 32, so 32 will always work here.
-+		 */
-+		vector = 32;
-+		vector_count = msi_desc->nvec_used;
-+	} else {
-+		vector = hv_msi_get_int_vector(data);
-+		vector_count = 1;
-+	}
+ 	status = be_cmd_read_port_transceiver_data(adapter, TR_PAGE_A0,
+-						   page_data);
++						   0, PAGE_DATA_LEN, page_data);
+ 	if (!status) {
+ 		strlcpy(adapter->phy.vendor_name, page_data +
+ 			SFP_VENDOR_NAME_OFFSET, SFP_VENDOR_NAME_LEN - 1);
+diff --git a/drivers/net/ethernet/emulex/benet/be_cmds.h b/drivers/net/ethernet/emulex/benet/be_cmds.h
+index 09da2d82c2f0..8af11a5e49fe 100644
+--- a/drivers/net/ethernet/emulex/benet/be_cmds.h
++++ b/drivers/net/ethernet/emulex/benet/be_cmds.h
+@@ -2431,7 +2431,7 @@ int be_cmd_set_beacon_state(struct be_adapter *adapter, u8 port_num, u8 beacon,
+ int be_cmd_get_beacon_state(struct be_adapter *adapter, u8 port_num,
+ 			    u32 *state);
+ int be_cmd_read_port_transceiver_data(struct be_adapter *adapter,
+-				      u8 page_num, u8 *data);
++				      u8 page_num, u32 off, u32 len, u8 *data);
+ int be_cmd_query_cable_type(struct be_adapter *adapter);
+ int be_cmd_query_sfp_info(struct be_adapter *adapter);
+ int lancer_cmd_read_object(struct be_adapter *adapter, struct be_dma_mem *cmd,
+diff --git a/drivers/net/ethernet/emulex/benet/be_ethtool.c b/drivers/net/ethernet/emulex/benet/be_ethtool.c
+index f66b246acaea..d0d96fa71084 100644
+--- a/drivers/net/ethernet/emulex/benet/be_ethtool.c
++++ b/drivers/net/ethernet/emulex/benet/be_ethtool.c
+@@ -1340,7 +1340,7 @@ static int be_get_module_info(struct net_device *netdev,
+ 		return -EOPNOTSUPP;
+ 
+ 	status = be_cmd_read_port_transceiver_data(adapter, TR_PAGE_A0,
+-						   page_data);
++						   0, PAGE_DATA_LEN, page_data);
+ 	if (!status) {
+ 		if (!page_data[SFP_PLUS_SFF_8472_COMP]) {
+ 			modinfo->type = ETH_MODULE_SFF_8079;
+@@ -1358,25 +1358,32 @@ static int be_get_module_eeprom(struct net_device *netdev,
+ {
+ 	struct be_adapter *adapter = netdev_priv(netdev);
+ 	int status;
++	u32 begin, end;
+ 
+ 	if (!check_privilege(adapter, MAX_PRIVILEGES))
+ 		return -EOPNOTSUPP;
+ 
+-	status = be_cmd_read_port_transceiver_data(adapter, TR_PAGE_A0,
+-						   data);
+-	if (status)
+-		goto err;
++	begin = eeprom->offset;
++	end = eeprom->offset + eeprom->len;
 +
- 	memset(&ctxt, 0, sizeof(ctxt));
- 	init_completion(&comp.comp_pkt.host_event);
- 	ctxt.pci_pkt.completion_func = hv_pci_compose_compl;
-@@ -1159,14 +1203,16 @@ static void hv_compose_msi_msg(struct ir
- 		size = hv_compose_msi_req_v1(&ctxt.int_pkts.v1,
- 					dest,
- 					hpdev->desc.win_slot.slot,
--					cfg->vector);
-+					vector,
-+					vector_count);
- 		break;
++	if (begin < PAGE_DATA_LEN) {
++		status = be_cmd_read_port_transceiver_data(adapter, TR_PAGE_A0, begin,
++							   min_t(u32, end, PAGE_DATA_LEN) - begin,
++							   data);
++		if (status)
++			goto err;
++
++		data += PAGE_DATA_LEN - begin;
++		begin = PAGE_DATA_LEN;
++	}
  
- 	case PCI_PROTOCOL_VERSION_1_2:
- 		size = hv_compose_msi_req_v2(&ctxt.int_pkts.v2,
- 					dest,
- 					hpdev->desc.win_slot.slot,
--					cfg->vector);
-+					vector,
-+					vector_count);
- 		break;
- 
- 	default:
+-	if (eeprom->offset + eeprom->len > PAGE_DATA_LEN) {
+-		status = be_cmd_read_port_transceiver_data(adapter,
+-							   TR_PAGE_A2,
+-							   data +
+-							   PAGE_DATA_LEN);
++	if (end > PAGE_DATA_LEN) {
++		status = be_cmd_read_port_transceiver_data(adapter, TR_PAGE_A2,
++							   begin - PAGE_DATA_LEN,
++							   end - begin, data);
+ 		if (status)
+ 			goto err;
+ 	}
+-	if (eeprom->offset)
+-		memcpy(data, data + eeprom->offset, eeprom->len);
+ err:
+ 	return be_cmd_status(status);
+ }
+-- 
+2.35.1
+
 
 
