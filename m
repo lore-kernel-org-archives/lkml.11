@@ -2,1008 +2,545 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67FCDC19F21
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 04:51:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB87BC19F21
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 04:54:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240385AbiG0Evq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 00:51:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45590 "EHLO
+        id S240425AbiG0Ex7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 00:53:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240429AbiG0EvJ (ORCPT
+        with ESMTP id S232586AbiG0Ex4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 00:51:09 -0400
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E15718E13;
-        Tue, 26 Jul 2022 21:50:49 -0700 (PDT)
-X-UUID: 2f5f566fdc734f9e8438ddc1cf06e2af-20220727
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:084f65e4-6bb8-4642-91a8-1a65e2179022,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:-5
-X-CID-META: VersionHash:0f94e32,CLOUDID:fa30eacb-7c9b-4dbc-a9d4-00659d6b7a90,C
-        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
-        ,QS:nil,BEC:nil,COL:0
-X-UUID: 2f5f566fdc734f9e8438ddc1cf06e2af-20220727
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw02.mediatek.com
-        (envelope-from <rex-bc.chen@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1152130842; Wed, 27 Jul 2022 12:50:41 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Wed, 27 Jul 2022 12:50:39 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
- mtkmbs11n2.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.15 via Frontend Transport; Wed, 27 Jul 2022 12:50:39 +0800
-From:   Bo-Chen Chen <rex-bc.chen@mediatek.com>
-To:     <chunkuang.hu@kernel.org>, <p.zabel@pengutronix.de>,
-        <daniel@ffwll.ch>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <mripard@kernel.org>,
-        <tzimmermann@suse.de>, <matthias.bgg@gmail.com>, <deller@gmx.de>,
-        <airlied@linux.ie>
-CC:     <msp@baylibre.com>, <granquet@baylibre.com>,
-        <jitao.shi@mediatek.com>, <wenst@chromium.org>,
-        <angelogioacchino.delregno@collabora.com>, <ck.hu@mediatek.com>,
-        <liangxu.xu@mediatek.com>, <dri-devel@lists.freedesktop.org>,
-        <linux-mediatek@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-fbdev@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Bo-Chen Chen <rex-bc.chen@mediatek.com>
-Subject: [PATCH v15 10/11] drm/mediatek: DP audio support for MT8195
-Date:   Wed, 27 Jul 2022 12:50:34 +0800
-Message-ID: <20220727045035.32225-11-rex-bc.chen@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20220727045035.32225-1-rex-bc.chen@mediatek.com>
-References: <20220727045035.32225-1-rex-bc.chen@mediatek.com>
+        Wed, 27 Jul 2022 00:53:56 -0400
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2D553ED45
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 21:53:53 -0700 (PDT)
+Received: by mail-wm1-x32d.google.com with SMTP id 8-20020a05600c024800b003a2fe343db1so399234wmj.1
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 21:53:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VfIlsxK1VlIloX47nwajbiVHF3hEhwMYcSlo1ktsUCQ=;
+        b=tdHCFvUCkoZV0I0vri/AeWYibyP34zUuYSbOAuRJxK5wPXmj+fBAHtZXJjPc4dSspu
+         C8ZyxS/DVWo9qIuGnPi2N3fM02H4b+f+8EttYop2KHjg6qdcsJOxnuVYVcAdvvixpInU
+         lHGoijq6c6SjoZYQRM0Hu23OtRUkNJpNjzoYSbG2eIGO7Itai1MbUtYzHIoxMt7bQNpx
+         Tu/t/HvZfrytDRygpro/Mr0Fr8hbr2MowT8Nv+dciPagqX0LQFY6hnD3MS/NrBnUcAoA
+         h47MWTGCtOzYv/Jc3K7hGZa0wiJaXhJN6PbUyomW3xdg0I6vo+JP31H22FkqvxVEEtOD
+         SWeA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VfIlsxK1VlIloX47nwajbiVHF3hEhwMYcSlo1ktsUCQ=;
+        b=3hjDrDifOP6rH6r0m04thlPOVHCBadkLvvj2ERxrIzu3sjby8XS6c/Mso6pCl3N/Wn
+         uYfqA8e3EpHytWxnU4c53LNAt8md8snajrXHw/yKAdrnz8fQuJXj7vE+ha/noimxZy/P
+         LTRTAUWr6Lo08uVfVWzaJe39ae3lbe2xEiGw5mNifaUALx4GcW8A8M8iN9ymnt6UUxDJ
+         OYbd90CUl3OTTbNZg2raocfGUF147KDJwbFf4pC0EgFPpXYU+6WwrNft9fY3Rvo1qVMK
+         NwlWOsOarQ+dqF0G5Jp0OLGUZe8LJu8ftODqmjaGJ+Nru7VqYT87dDaMP3ZLWWc5mvSs
+         j6Pg==
+X-Gm-Message-State: AJIora8uDycWCwKdyb0nJkiMtUQ+rauDote6ApLk2mfNDK6iIhElkvoH
+        u7Kuqwe1ItlDxzGYOcoRxe9pKoq2/VbfcuLU9k+Ffg==
+X-Google-Smtp-Source: AGRyM1src0SO+YNtTeVThg0n7AG9r+ESwkyTepNhpLMcMryMbH1rQcTjKXsrv9YMTSDgBpJjStqq7J7mkHQZP/AWMu0=
+X-Received: by 2002:a05:600c:2854:b0:3a3:1551:d7d with SMTP id
+ r20-20020a05600c285400b003a315510d7dmr1431530wmb.174.1658897631699; Tue, 26
+ Jul 2022 21:53:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MTK:  N
+References: <20220715063653.3203761-1-irogers@google.com> <20220715063653.3203761-16-irogers@google.com>
+ <CAM9d7cigU9Sq2T3i3M1vA_vU+MrqCEbhOZPQ4D13dO+WomKP_A@mail.gmail.com>
+In-Reply-To: <CAM9d7cigU9Sq2T3i3M1vA_vU+MrqCEbhOZPQ4D13dO+WomKP_A@mail.gmail.com>
+From:   Ian Rogers <irogers@google.com>
+Date:   Tue, 26 Jul 2022 21:53:39 -0700
+Message-ID: <CAP-5=fWqJkytGTCRsxUzJgAOUYmqwgh_bp_01HrwLQMPZmiOig@mail.gmail.com>
+Subject: Re: [PATCH v1 15/15] perf jevents: Compress the pmu_events_table
+To:     Namhyung Kim <namhyung@kernel.org>
+Cc:     John Garry <john.garry@huawei.com>, Will Deacon <will@kernel.org>,
+        James Clark <james.clark@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>, Andi Kleen <ak@linux.intel.com>,
+        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
+        Ravi Bangoria <ravi.bangoria@amd.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-perf-users <linux-perf-users@vger.kernel.org>,
+        Stephane Eranian <eranian@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guillaume Ranquet <granquet@baylibre.com>
+On Tue, Jul 26, 2022 at 9:04 PM Namhyung Kim <namhyung@kernel.org> wrote:
+>
+> Hi Ian,
+>
+> On Thu, Jul 14, 2022 at 11:37 PM Ian Rogers <irogers@google.com> wrote:
+> >
+> > The pmu_events array requires 15 pointers per entry which in position
+> > independent code need relocating. Change the array to be an array of
+> > offsets within a big C string. Only the offset of the first variable is
+> > required, subsequent variables are stored in order after the \0
+> > terminator (requiring a byte per variable rather than 4 bytes per
+> > offset).
+> >
+> > The file size savings are:
+> > no jevents - the same 19,579,104bytes
+> > x86 jevents - ~12.5% file size saving 22,088,944bytes vs 25,235,048bytes
+> > all jevents - ~15.8% file size saving 22,821,896bytes vs 27,106,648bytes
+> > default build options plus NO_LIBBFD=1.
+> >
+> > For example, the x86 build savings come from .rela.dyn and
+> > .data.rel.ro becoming smaller by 1,911,072bytes and 2,022,656bytes
+> > respectively. .rodata increases by 789,600bytes, giving an overall
+> > 3,146,104bytes saving.
+>
+> Great!  I also noticed my build has fairly large reloc sections.
+>
+> >
+> > To make metric strings more shareable, the topic is changed from say
+> > 'skx metrics' to just 'metrics'.
+> >
+> > To try to help with the memory layout the pmu_events are ordered as used
+> > by perf qsort comparator functions.
+> >
+> > Signed-off-by: Ian Rogers <irogers@google.com>
+> > ---
+> >  tools/perf/pmu-events/jevents.py | 236 +++++++++++++++++++++++++------
+> >  1 file changed, 193 insertions(+), 43 deletions(-)
+> >
+> > diff --git a/tools/perf/pmu-events/jevents.py b/tools/perf/pmu-events/jevents.py
+> > index d7e03864ca6a..b5bc25790695 100755
+> > --- a/tools/perf/pmu-events/jevents.py
+> > +++ b/tools/perf/pmu-events/jevents.py
+> > @@ -6,8 +6,8 @@ import csv
+> >  import json
+> >  import os
+> >  import sys
+> > -from typing import Callable
+> > -from typing import Sequence
+> > +from typing import (Callable, Dict, Sequence, Set)
+> > +import collections
+> >
+> >  # Global command line arguments.
+> >  _args = None
+> > @@ -21,6 +21,19 @@ _arch_std_events = {}
+> >  _close_table = False
+> >  # Events to write out when the table is closed
+> >  _pending_events = []
+> > +# Global BigCString shared by all structures.
+> > +_bcs = None
+> > +# Order specific JsonEvent attributes will be visited.
+> > +_json_event_attributes = [
+> > +    # cmp_sevent related attributes.
+> > +    'name', 'pmu', 'topic', 'desc', 'metric_name', 'metric_group',
+> > +    # Seems useful, put it early.
+> > +    'event',
+> > +    # Short things in alphabetical order.
+> > +    'aggr_mode', 'compat', 'deprecated', 'perpkg', 'unit',
+> > +    # Longer things (the last won't be iterated over during decompress).
+> > +    'metric_constraint', 'metric_expr', 'long_desc'
+> > +]
+> >
+> >
+> >  def removesuffix(s: str, suffix: str) -> str:
+> > @@ -40,6 +53,100 @@ def file_name_to_table_name(parents: Sequence[str], dirname: str) -> str:
+> >    tblname += '_' + dirname
+> >    return tblname.replace('-', '_')
+> >
+> > +def c_len(s: str) -> int:
+> > +  """Return the length of s a C string
+> > +
+> > +  This doesn't handle all escape characters properly. It first assumes
+> > +  all \ are for escaping, it then adjusts as it will have over counted
+> > +  \\. The code uses \000 rather than \0 as a terminator as an adjacent
+> > +  number would be folded into a string of \0 (ie. "\0" + "5" doesn't
+> > +  equal a terminator followed by the number 5 but the escape of
+> > +  \05). The code adjusts for \000 but not properly for all octal, hex
+> > +  or unicode values.
+> > +  """
+> > +  try:
+> > +    utf = s.encode(encoding='utf-8',errors='strict')
+> > +  except:
+> > +    print(f'broken string {s}')
+> > +    raise
+> > +  return len(utf) - utf.count(b'\\') + utf.count(b'\\\\') - (utf.count(b'\\000') * 2)
+>
+> Sorry, I don't understand why it needs the last utf.count * 2.
+> Could you elaborate more?
 
-This patch adds audio support to the DP driver for MT8195 with up to 8
-channels.
+Yep, so
+1) start with the length of the string
+2) \ will escape the next character, e.g. \n, so instead of counting
+that as 2 count it as 1
+3) but, \\ will now get counted as 0 and it should be 1
+4) but also, a numeric escape like \000 will get counted as 3 rather
+than 1 so adjust that.
 
-Signed-off-by: Guillaume Ranquet <granquet@baylibre.com>
-Signed-off-by: Bo-Chen Chen <rex-bc.chen@mediatek.com>
----
- drivers/gpu/drm/mediatek/mtk_dp.c     | 725 ++++++++++++++++++++++++++
- drivers/gpu/drm/mediatek/mtk_dp_reg.h |   2 +
- 2 files changed, 727 insertions(+)
+Obviously this isn't full C string parsing, but it is sufficient for
+what comes in the json files.
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_dp.c b/drivers/gpu/drm/mediatek/mtk_dp.c
-index 637fd535704a..4fc61e0a1963 100644
---- a/drivers/gpu/drm/mediatek/mtk_dp.c
-+++ b/drivers/gpu/drm/mediatek/mtk_dp.c
-@@ -43,6 +43,7 @@
- #define MTK_DP_TBC_BUF_READ_START_ADDR 0x08
- #define MTK_DP_TRAIN_DOWNSCALE_RETRY 8
- #define MTK_DP_TRAIN_CLEAR_RETRY 50
-+#define MTK_DP_VERSION 0x11
- 
- struct mtk_dp_train_info {
- 	bool tps3;
-@@ -57,9 +58,43 @@ struct mtk_dp_train_info {
- 	bool hpd_inerrupt;
- };
- 
-+enum mtk_dp_sdp_type {
-+	MTK_DP_SDP_NONE = 0x00,
-+	MTK_DP_SDP_ACM = 0x01,
-+	MTK_DP_SDP_ISRC = 0x02,
-+	MTK_DP_SDP_AVI = 0x03,
-+	MTK_DP_SDP_AUI = 0x04,
-+	MTK_DP_SDP_SPD = 0x05,
-+	MTK_DP_SDP_MPEG = 0x06,
-+	MTK_DP_SDP_NTSC = 0x07,
-+	MTK_DP_SDP_VSP = 0x08,
-+	MTK_DP_SDP_VSC = 0x09,
-+	MTK_DP_SDP_EXT = 0x0A,
-+	MTK_DP_SDP_PPS0 = 0x0B,
-+	MTK_DP_SDP_PPS1 = 0x0C,
-+	MTK_DP_SDP_PPS2 = 0x0D,
-+	MTK_DP_SDP_PPS3 = 0x0E,
-+	MTK_DP_SDP_DRM = 0x10,
-+	MTK_DP_SDP_MAX_NUM
-+};
-+
-+struct mtk_dp_sdp_packet {
-+	enum mtk_dp_sdp_type type;
-+	struct dp_sdp sdp;
-+};
-+
-+struct mtk_dp_audio_cfg {
-+	int sample_rate;
-+	int word_length_bits;
-+	int channels;
-+};
-+
- struct mtk_dp_info {
- 	enum dp_pixelformat format;
- 	struct videomode vm;
-+	u8 frame_rate;
-+	u32 pix_rate_khz;
-+	struct mtk_dp_audio_cfg audio_caps;
- };
- 
- struct dp_cal_data {
-@@ -73,6 +108,7 @@ struct dp_cal_data {
- struct mtk_dp {
- 	struct device *dev;
- 	struct platform_device *phy_dev;
-+	struct platform_device *audio_pdev;
- 	struct phy *phy;
- 	struct dp_cal_data cal_data;
- 	u8 max_lanes;
-@@ -92,6 +128,19 @@ struct mtk_dp {
- 	struct regmap *regs;
- 
- 	bool enabled;
-+	bool audio_enable;
-+
-+	/* protect the plugged_cb as it's used in both bridge ops and audio */
-+	struct mutex update_plugged_status_lock;
-+	/* protect the eld data as it's used in both bridge ops and audio */
-+	struct mutex eld_lock;
-+	/* protect edid as it is used in both bridge ops and IRQ handler */
-+	struct mutex edid_lock;
-+	struct edid *edid;
-+
-+	hdmi_codec_plugged_cb plugged_cb;
-+	struct device *codec_dev;
-+	u8 connector_eld[MAX_ELD_BYTES];
- 
- 	struct drm_connector *conn;
- 	bool need_debounce;
-@@ -349,6 +398,125 @@ static void mtk_dp_pg_enable(struct mtk_dp *mtk_dp, bool enable)
- 			   4 << PGEN_PATTERN_SEL_SHIFT, PGEN_PATTERN_SEL_MASK);
- }
- 
-+static void mtk_dp_audio_setup_channels(struct mtk_dp *mtk_dp,
-+					struct mtk_dp_audio_cfg *cfg)
-+{
-+	u32 channel_enable_bits;
-+
-+	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC1_P0_3324,
-+			   AUDIO_SOURCE_MUX_DP_ENC1_P0_DPRX,
-+			   AUDIO_SOURCE_MUX_DP_ENC1_P0_MASK);
-+
-+	/* audio channel count change reset */
-+	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC1_P0_33F4, BIT(9), BIT(9));
-+	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC1_P0_3304,
-+			   AU_PRTY_REGEN_DP_ENC1_P0_MASK,
-+			   AU_PRTY_REGEN_DP_ENC1_P0_MASK);
-+	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC1_P0_3304,
-+			   AU_CH_STS_REGEN_DP_ENC1_P0_MASK,
-+			   AU_CH_STS_REGEN_DP_ENC1_P0_MASK);
-+	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC1_P0_3304,
-+			   AUDIO_SAMPLE_PRSENT_REGEN_DP_ENC1_P0_MASK,
-+			   AUDIO_SAMPLE_PRSENT_REGEN_DP_ENC1_P0_MASK);
-+
-+	switch (cfg->channels) {
-+	case 2:
-+		channel_enable_bits = AUDIO_2CH_SEL_DP_ENC0_P0_MASK |
-+				      AUDIO_2CH_EN_DP_ENC0_P0_MASK;
-+		break;
-+	case 8:
-+	default:
-+		channel_enable_bits = AUDIO_8CH_SEL_DP_ENC0_P0_MASK |
-+				      AUDIO_8CH_EN_DP_ENC0_P0_MASK;
-+		break;
-+	}
-+	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_3088,
-+			   channel_enable_bits | AU_EN_DP_ENC0_P0_MASK,
-+			   AUDIO_2CH_SEL_DP_ENC0_P0_MASK |
-+			   AUDIO_2CH_EN_DP_ENC0_P0_MASK |
-+			   AUDIO_8CH_SEL_DP_ENC0_P0_MASK |
-+			   AUDIO_8CH_EN_DP_ENC0_P0_MASK |
-+			   AU_EN_DP_ENC0_P0_MASK);
-+
-+	/* audio channel count change reset */
-+	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC1_P0_33F4, 0, BIT(9));
-+
-+	/* enable audio reset */
-+	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC1_P0_33F4, BIT(0), BIT(0));
-+}
-+
-+static void mtk_dp_audio_channel_status_set(struct mtk_dp *mtk_dp,
-+					    struct mtk_dp_audio_cfg *cfg)
-+{
-+	struct snd_aes_iec958 iec = { 0 };
-+
-+	switch (cfg->sample_rate) {
-+	case 32000:
-+		iec.status[3] = IEC958_AES3_CON_FS_32000;
-+		break;
-+	case 44100:
-+		iec.status[3] = IEC958_AES3_CON_FS_44100;
-+		break;
-+	case 48000:
-+		iec.status[3] = IEC958_AES3_CON_FS_48000;
-+		break;
-+	case 88200:
-+		iec.status[3] = IEC958_AES3_CON_FS_88200;
-+		break;
-+	case 96000:
-+		iec.status[3] = IEC958_AES3_CON_FS_96000;
-+		break;
-+	case 192000:
-+		iec.status[3] = IEC958_AES3_CON_FS_192000;
-+		break;
-+	default:
-+		iec.status[3] = IEC958_AES3_CON_FS_NOTID;
-+		break;
-+	}
-+
-+	switch (cfg->word_length_bits) {
-+	case 16:
-+		iec.status[4] = IEC958_AES4_CON_WORDLEN_20_16;
-+		break;
-+	case 20:
-+		iec.status[4] = IEC958_AES4_CON_WORDLEN_20_16 |
-+			IEC958_AES4_CON_MAX_WORDLEN_24;
-+		break;
-+	case 24:
-+		iec.status[4] = IEC958_AES4_CON_WORDLEN_24_20 |
-+			IEC958_AES4_CON_MAX_WORDLEN_24;
-+		break;
-+	default:
-+		iec.status[4] = IEC958_AES4_CON_WORDLEN_NOTID;
-+	}
-+
-+	/* IEC 60958 consumer channel status bits */
-+	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_308C,
-+			   0, CH_STATUS_0_DP_ENC0_P0_MASK);
-+	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_3090,
-+			   iec.status[3] << 8, CH_STATUS_1_DP_ENC0_P0_MASK);
-+	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_3094,
-+			   iec.status[4], CH_STATUS_2_DP_ENC0_P0_MASK);
-+}
-+
-+static void mtk_dp_audio_sdp_asp_set_channels(struct mtk_dp *mtk_dp,
-+					      int channels)
-+{
-+	if (channels != 2 && channels != 8)
-+		channels = 8;
-+
-+	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_312C,
-+			   (channels - 1) << ASP_HB3_DP_ENC0_P0_SHIFT,
-+			   ASP_HB2_DP_ENC0_P0_MASK | ASP_HB3_DP_ENC0_P0_MASK);
-+}
-+
-+static void mtk_dp_audio_set_divider(struct mtk_dp *mtk_dp)
-+{
-+	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_30BC,
-+			   AUDIO_M_CODE_MULT_DIV_SEL_DP_ENC0_P0_DIV_2,
-+			   AUDIO_M_CODE_MULT_DIV_SEL_DP_ENC0_P0_MASK);
-+}
-+
- static bool mtk_dp_plug_state(struct mtk_dp *mtk_dp)
- {
- 	return mtk_dp->train_info.cable_plugged_in;
-@@ -362,6 +530,169 @@ static bool mtk_dp_plug_state_avoid_pulse(struct mtk_dp *mtk_dp)
- 				    4000, 7 * 4000));
- }
- 
-+static void mtk_dp_sdp_trigger_packet(struct mtk_dp *mtk_dp,
-+				      enum mtk_dp_sdp_type type)
-+{
-+	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC1_P0_3280,
-+			   type, SDP_PACKET_TYPE_DP_ENC1_P0_MASK);
-+	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC1_P0_3280,
-+			   SDP_PACKET_W_DP_ENC1_P0, SDP_PACKET_W_DP_ENC1_P0);
-+}
-+
-+static void mtk_dp_sdp_set_data(struct mtk_dp *mtk_dp, u8 *data_bytes)
-+{
-+	mtk_dp_bulk_16bit_write(mtk_dp, MTK_DP_ENC1_P0_3200,
-+				data_bytes, 0x10);
-+}
-+
-+static void mtk_dp_sdp_set_header(struct mtk_dp *mtk_dp,
-+				  enum mtk_dp_sdp_type type,
-+				  struct dp_sdp_header *header)
-+{
-+	u32 db_addr;
-+
-+	switch (type) {
-+	case MTK_DP_SDP_DRM:
-+		db_addr = MTK_DP_ENC0_P0_3138;
-+		break;
-+	case MTK_DP_SDP_PPS0:
-+	case MTK_DP_SDP_PPS1:
-+	case MTK_DP_SDP_PPS2:
-+	case MTK_DP_SDP_PPS3:
-+		db_addr = MTK_DP_ENC0_P0_3130;
-+		break;
-+	default:
-+		db_addr = MTK_DP_ENC0_P0_30D8 + (type - MTK_DP_SDP_ACM) * 8;
-+		break;
-+	}
-+
-+	mtk_dp_bulk_16bit_write(mtk_dp, db_addr, (u8 *)header, 4);
-+}
-+
-+static const u32 sdp_type_to_reg[MTK_DP_SDP_MAX_NUM] = {
-+	[MTK_DP_SDP_NONE]	= 0x0,
-+	[MTK_DP_SDP_ACM]	= MTK_DP_ENC0_P0_30B4,
-+	[MTK_DP_SDP_ISRC]	= MTK_DP_ENC0_P0_30B4 + 1,
-+	[MTK_DP_SDP_AVI]	= MTK_DP_ENC0_P0_30A4 + 1,
-+	[MTK_DP_SDP_AUI]	= MTK_DP_ENC0_P0_30A8,
-+	[MTK_DP_SDP_SPD]	= MTK_DP_ENC0_P0_30A8 + 1,
-+	[MTK_DP_SDP_MPEG]	= MTK_DP_ENC0_P0_30AC,
-+	[MTK_DP_SDP_NTSC]	= MTK_DP_ENC0_P0_30AC + 1,
-+	[MTK_DP_SDP_VSP]	= MTK_DP_ENC0_P0_30B0,
-+	[MTK_DP_SDP_VSC]	= MTK_DP_ENC0_P0_30B8,
-+	[MTK_DP_SDP_EXT]	= MTK_DP_ENC0_P0_30B0 + 1,
-+	[MTK_DP_SDP_PPS0]	= MTK_DP_ENC0_P0_31E8,
-+	[MTK_DP_SDP_PPS1]	= MTK_DP_ENC0_P0_31E8,
-+	[MTK_DP_SDP_PPS2]	= MTK_DP_ENC0_P0_31E8,
-+	[MTK_DP_SDP_PPS3]	= MTK_DP_ENC0_P0_31E8,
-+	[MTK_DP_SDP_DRM]	= MTK_DP_ENC0_P0_31DC,
-+};
-+
-+static void mtk_dp_disable_sdp(struct mtk_dp *mtk_dp, enum mtk_dp_sdp_type type)
-+{
-+	if (type == MTK_DP_SDP_NONE)
-+		return;
-+
-+	/* Disable periodic send */
-+	mtk_dp_update_bits(mtk_dp, sdp_type_to_reg[type] & 0xfffc, 0,
-+			   0xFF << ((sdp_type_to_reg[type] & 3) * 8));
-+}
-+
-+static void mtk_dp_setup_sdp(struct mtk_dp *mtk_dp,
-+			     struct mtk_dp_sdp_packet *packet)
-+{
-+	u32 reg, shift;
-+
-+	mtk_dp_sdp_set_data(mtk_dp, packet->sdp.db);
-+	mtk_dp_sdp_set_header(mtk_dp, packet->type, &packet->sdp.sdp_header);
-+
-+	mtk_dp_disable_sdp(mtk_dp, packet->type);
-+
-+	switch (packet->type) {
-+	case MTK_DP_SDP_ISRC:
-+		mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_31EC,
-+				   0x1C << ISRC1_HB3_DP_ENC0_P0_SHIFT,
-+				   ISRC1_HB3_DP_ENC0_P0_MASK);
-+		mtk_dp_update_bits(mtk_dp, MTK_DP_ENC1_P0_3280,
-+				   MTK_DP_SDP_ISRC,
-+				   SDP_PACKET_TYPE_DP_ENC1_P0_MASK);
-+
-+		if (packet->sdp.sdp_header.HB3 & BIT(2))
-+			mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_30BC,
-+					   BIT(ISRC_CONT_DP_ENC0_P0_SHIFT),
-+					   ISRC_CONT_DP_ENC0_P0_MASK);
-+		else
-+			mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_30BC,
-+					   0, ISRC_CONT_DP_ENC0_P0_MASK);
-+
-+		mtk_dp_update_bits(mtk_dp, MTK_DP_ENC1_P0_3280,
-+				   SDP_PACKET_W_DP_ENC1_P0,
-+				   SDP_PACKET_W_DP_ENC1_P0);
-+		mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_30B4,
-+				   5 << ISRC_CFG_DP_ENC0_P0_SHIFT,
-+				   ISRC_CFG_DP_ENC0_P0_MASK);
-+		break;
-+	case MTK_DP_SDP_DRM:
-+		mtk_dp_sdp_trigger_packet(mtk_dp, packet->type);
-+		mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_31DC,
-+				   5 << HDR0_CFG_DP_ENC0_P0_SHIFT,
-+				   HDR0_CFG_DP_ENC0_P0_MASK);
-+		mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_31EC,
-+				   0x1C << ISRC1_HB3_DP_ENC0_P0_SHIFT,
-+				   ISRC1_HB3_DP_ENC0_P0_MASK);
-+		mtk_dp_update_bits(mtk_dp, MTK_DP_ENC1_P0_3280,
-+				   MTK_DP_SDP_ISRC,
-+				   SDP_PACKET_TYPE_DP_ENC1_P0_MASK);
-+
-+		if (packet->sdp.sdp_header.HB3 & BIT(2))
-+			mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_30BC,
-+					   BIT(ISRC_CONT_DP_ENC0_P0_SHIFT),
-+					   ISRC_CONT_DP_ENC0_P0_MASK);
-+		else
-+			mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_30BC,
-+					   0, ISRC_CONT_DP_ENC0_P0_MASK);
-+
-+		mtk_dp_update_bits(mtk_dp, MTK_DP_ENC1_P0_3280,
-+				   SDP_PACKET_W_DP_ENC1_P0,
-+				   SDP_PACKET_W_DP_ENC1_P0);
-+		mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_30B4,
-+				   5 << ISRC_CFG_DP_ENC0_P0_SHIFT,
-+				   ISRC_CFG_DP_ENC0_P0_MASK);
-+		break;
-+	case MTK_DP_SDP_ACM:
-+	case MTK_DP_SDP_AVI:
-+	case MTK_DP_SDP_AUI:
-+	case MTK_DP_SDP_SPD:
-+	case MTK_DP_SDP_MPEG:
-+	case MTK_DP_SDP_NTSC:
-+	case MTK_DP_SDP_VSP:
-+	case MTK_DP_SDP_VSC:
-+	case MTK_DP_SDP_EXT:
-+	case MTK_DP_SDP_PPS0:
-+	case MTK_DP_SDP_PPS1:
-+	case MTK_DP_SDP_PPS2:
-+	case MTK_DP_SDP_PPS3:
-+		reg = sdp_type_to_reg[packet->type];
-+		shift = (reg & 3) * 8;
-+
-+		mtk_dp_sdp_trigger_packet(mtk_dp, packet->type);
-+		/* Enable periodic sending */
-+		mtk_dp_update_bits(mtk_dp, reg & 0xfffc,
-+				   0x05 << shift, 0xff << shift);
-+		break;
-+	case MTK_DP_SDP_NONE:
-+	default:
-+		break;
-+	}
-+}
-+
-+static void mtk_dp_sdp_vsc_ext_disable(struct mtk_dp *mtk_dp)
-+{
-+	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_30A0,
-+			   0, BIT(7) | BIT(8) | BIT(12));
-+	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC1_P0_328C, 0, BIT(7));
-+}
-+
- static void mtk_dp_aux_irq_clear(struct mtk_dp *mtk_dp)
- {
- 	mtk_dp_write(mtk_dp, MTK_DP_AUX_P0_3640,
-@@ -985,6 +1316,32 @@ static void mtk_dp_video_mute(struct mtk_dp *mtk_dp, bool enable)
- 			    MTK_DP_SIP_ATF_VIDEO_UNMUTE, enable);
- }
- 
-+static void mtk_dp_audio_mute(struct mtk_dp *mtk_dp, bool mute)
-+{
-+	u32 val[3];
-+
-+	if (mute) {
-+		val[0] = BIT(VBID_AUDIO_MUTE_SW_DP_ENC0_P0_SHIFT) |
-+			 BIT(VBID_AUDIO_MUTE_SEL_DP_ENC0_P0_SHIFT);
-+		val[1] = 0;
-+		val[2] = 0;
-+	} else {
-+		val[0] = 0;
-+		val[1] = BIT(AU_EN_DP_ENC0_P0_SHIFT);
-+		/* Send one every two frames */
-+		val[2] = 0x0F;
-+	}
-+
-+	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_3030,
-+			   val[0],
-+			   VBID_AUDIO_MUTE_FLAG_SW_DP_ENC0_P0_MASK |
-+			   VBID_AUDIO_MUTE_FLAG_SEL_DP_ENC0_P0_MASK);
-+	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_3088,
-+			   val[1], AU_EN_DP_ENC0_P0_MASK);
-+	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_30A4,
-+			   val[2], AU_TS_CFG_DP_ENC0_P0_MASK);
-+}
-+
- static void mtk_dp_power_enable(struct mtk_dp *mtk_dp)
- {
- 	mtk_dp_update_bits(mtk_dp, MTK_DP_TOP_RESET_AND_PROBE,
-@@ -1025,6 +1382,80 @@ static void mtk_dp_initialize_priv_data(struct mtk_dp *mtk_dp)
- 
- 	mtk_dp->info.format = DP_PIXELFORMAT_RGB;
- 	memset(&mtk_dp->info.vm, 0, sizeof(struct videomode));
-+	mtk_dp->info.frame_rate = 60;
-+	mtk_dp->info.pix_rate_khz = 0;
-+	mtk_dp->audio_enable = false;
-+}
-+
-+static void mtk_dp_sdp_set_down_cnt_init(struct mtk_dp *mtk_dp,
-+					 u32 sram_read_start)
-+{
-+	u32 sdp_down_cnt_init = 0;
-+	struct drm_display_mode mode;
-+	struct videomode *vm = &mtk_dp->info.vm;
-+
-+	drm_display_mode_from_videomode(vm, &mode);
-+
-+	if (mtk_dp->info.pix_rate_khz > 0)
-+		sdp_down_cnt_init = sram_read_start *
-+				    mtk_dp->train_info.link_rate * 2700 * 8 /
-+				    (mtk_dp->info.pix_rate_khz * 4);
-+
-+	switch (mtk_dp->train_info.lane_count) {
-+	case 1:
-+		sdp_down_cnt_init = max_t(u32, sdp_down_cnt_init, 0x1A);
-+		break;
-+	case 2:
-+		/* case for LowResolution && High Audio Sample Rate */
-+		sdp_down_cnt_init = max_t(u32, sdp_down_cnt_init, 0x10);
-+		sdp_down_cnt_init += mode.vtotal <= 525 ? 4 : 0;
-+		break;
-+	case 4:
-+	default:
-+		sdp_down_cnt_init = max_t(u32, sdp_down_cnt_init, 6);
-+		break;
-+	}
-+
-+	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC0_P0_3040,
-+			   sdp_down_cnt_init
-+			   << SDP_DOWN_CNT_INIT_DP_ENC0_P0_SHIFT,
-+			   SDP_DOWN_CNT_INIT_DP_ENC0_P0_MASK);
-+}
-+
-+static void mtk_dp_sdp_set_down_cnt_init_in_hblank(struct mtk_dp *mtk_dp)
-+{
-+	int pix_clk_mhz;
-+	u32 dc_offset;
-+	u32 spd_down_cnt_init = 0;
-+	struct drm_display_mode mode;
-+	struct videomode *vm = &mtk_dp->info.vm;
-+
-+	drm_display_mode_from_videomode(vm, &mode);
-+
-+	pix_clk_mhz = mtk_dp->info.format == DP_PIXELFORMAT_YUV420 ?
-+		      mtk_dp->info.pix_rate_khz / 2000 :
-+		      mtk_dp->info.pix_rate_khz / 1000;
-+
-+	switch (mtk_dp->train_info.lane_count) {
-+	case 1:
-+		spd_down_cnt_init = 0x20;
-+		break;
-+	case 2:
-+		dc_offset = (mode.vtotal <= 525) ? 0x14 : 0x00;
-+		spd_down_cnt_init = 0x18 + dc_offset;
-+		break;
-+	case 4:
-+	default:
-+		dc_offset = (mode.vtotal <= 525) ? 0x08 : 0x00;
-+		if (pix_clk_mhz > mtk_dp->train_info.link_rate * 27)
-+			spd_down_cnt_init = 0x8;
-+		else
-+			spd_down_cnt_init = 0x10 + dc_offset;
-+		break;
-+	}
-+
-+	mtk_dp_update_bits(mtk_dp, MTK_DP_ENC1_P0_3364, spd_down_cnt_init,
-+			   SDP_DOWN_CNT_INIT_IN_HBLANK_DP_ENC1_P0_MASK);
- }
- 
- static void mtk_dp_setup_tu(struct mtk_dp *mtk_dp)
-@@ -1036,13 +1467,44 @@ static void mtk_dp_setup_tu(struct mtk_dp *mtk_dp)
- 				    MTK_DP_PIX_PER_ADDR);
- 	mtk_dp_set_sram_read_start(mtk_dp, sram_read_start);
- 	mtk_dp_setup_encoder(mtk_dp);
-+	mtk_dp_sdp_set_down_cnt_init_in_hblank(mtk_dp);
-+	mtk_dp_sdp_set_down_cnt_init(mtk_dp, sram_read_start);
-+}
-+
-+static void mtk_dp_calculate_pixrate(struct mtk_dp *mtk_dp)
-+{
-+	u32 target_pixel_clk;
-+	struct drm_display_mode mode;
-+	struct videomode *vm = &mtk_dp->info.vm;
-+
-+	drm_display_mode_from_videomode(vm, &mode);
-+
-+	if (mtk_dp->info.frame_rate > 0) {
-+		target_pixel_clk = mode.htotal * mode.vtotal *
-+				   mtk_dp->info.frame_rate;
-+	} else if (mtk_dp->info.pix_rate_khz > 0) {
-+		target_pixel_clk = mtk_dp->info.pix_rate_khz * 1000;
-+	} else {
-+		target_pixel_clk = mode.htotal * mode.vtotal * 60;
-+	}
-+
-+	mtk_dp->info.pix_rate_khz = target_pixel_clk / 1000;
- }
- 
- static void mtk_dp_set_tx_out(struct mtk_dp *mtk_dp)
- {
-+	mtk_dp_calculate_pixrate(mtk_dp);
- 	mtk_dp_setup_tu(mtk_dp);
- }
- 
-+static void mtk_dp_edid_free(struct mtk_dp *mtk_dp)
-+{
-+	mutex_lock(&mtk_dp->edid_lock);
-+	kfree(mtk_dp->edid);
-+	mtk_dp->edid = NULL;
-+	mutex_unlock(&mtk_dp->edid_lock);
-+}
-+
- static void mtk_dp_hpd_sink_event(struct mtk_dp *mtk_dp)
- {
- 	ssize_t ret;
-@@ -1066,6 +1528,17 @@ static void mtk_dp_hpd_sink_event(struct mtk_dp *mtk_dp)
- 				   DP_REMOTE_CONTROL_COMMAND_PENDING);
- }
- 
-+static void mtk_dp_sdp_stop_sending(struct mtk_dp *mtk_dp)
-+{
-+	u8 packet_type;
-+
-+	for (packet_type = MTK_DP_SDP_ACM; packet_type < MTK_DP_SDP_MAX_NUM;
-+	     packet_type++)
-+		mtk_dp_disable_sdp(mtk_dp, packet_type);
-+
-+	mtk_dp_sdp_vsc_ext_disable(mtk_dp);
-+}
-+
- static void mtk_dp_train_update_swing_pre(struct mtk_dp *mtk_dp, int lanes,
- 					  u8 dpcd_adjust_req[2])
- {
-@@ -1322,6 +1795,55 @@ static int mtk_dp_parse_capabilities(struct mtk_dp *mtk_dp)
- 	return 0;
- }
- 
-+static bool mtk_dp_edid_parse_audio_capabilities(struct mtk_dp *mtk_dp,
-+						 struct mtk_dp_audio_cfg *cfg)
-+{
-+	struct cea_sad *sads;
-+	int sad_count;
-+	int i;
-+	bool ret = false;
-+
-+	if (mtk_dp_is_edp(mtk_dp))
-+		return false;
-+
-+	mutex_lock(&mtk_dp->edid_lock);
-+	if (!mtk_dp->edid) {
-+		mutex_unlock(&mtk_dp->edid_lock);
-+		dev_err(mtk_dp->dev, "EDID not found!\n");
-+		return false;
-+	}
-+	sad_count = drm_edid_to_sad(mtk_dp->edid, &sads);
-+	mutex_unlock(&mtk_dp->edid_lock);
-+
-+	if (sad_count <= 0) {
-+		drm_info(mtk_dp->drm_dev, "The SADs is NULL\n");
-+		return false;
-+	}
-+
-+	for (i = 0; i < sad_count; i++) {
-+		int sample_rate, word_length;
-+
-+		/* Only PCM supported at the moment */
-+		if (sads[i].format != HDMI_AUDIO_CODING_TYPE_PCM)
-+			continue;
-+
-+		sample_rate = drm_cea_sad_get_sample_rate(&sads[i]);
-+		word_length =
-+			drm_cea_sad_get_uncompressed_word_length(&sads[i]);
-+		if (sample_rate <= 0 || word_length <= 0)
-+			continue;
-+
-+		cfg->channels = sads[i].channels;
-+		cfg->word_length_bits = word_length;
-+		cfg->sample_rate = sample_rate;
-+		ret = true;
-+		break;
-+	}
-+	kfree(sads);
-+
-+	return ret;
-+}
-+
- static void mtk_dp_train_change_mode(struct mtk_dp *mtk_dp)
- {
- 	phy_reset(mtk_dp->phy);
-@@ -1419,6 +1941,47 @@ static void mtk_dp_video_enable(struct mtk_dp *mtk_dp, bool enable)
- 	}
- }
- 
-+static void mtk_dp_audio_sdp_setup(struct mtk_dp *mtk_dp,
-+				   struct mtk_dp_audio_cfg *cfg)
-+{
-+	struct mtk_dp_sdp_packet packet;
-+	struct hdmi_audio_infoframe frame;
-+
-+	hdmi_audio_infoframe_init(&frame);
-+	frame.coding_type = HDMI_AUDIO_CODING_TYPE_PCM;
-+	frame.channels = cfg->channels;
-+	frame.sample_frequency = cfg->sample_rate;
-+
-+	switch (cfg->word_length_bits) {
-+	case 16:
-+		frame.sample_size = HDMI_AUDIO_SAMPLE_SIZE_16;
-+		break;
-+	case 20:
-+		frame.sample_size = HDMI_AUDIO_SAMPLE_SIZE_20;
-+		break;
-+	case 24:
-+	default:
-+		frame.sample_size = HDMI_AUDIO_SAMPLE_SIZE_24;
-+		break;
-+	}
-+
-+	packet.type = MTK_DP_SDP_AUI;
-+	hdmi_audio_infoframe_pack_for_dp(&frame, &packet.sdp, MTK_DP_VERSION);
-+
-+	mtk_dp_audio_sdp_asp_set_channels(mtk_dp, cfg->channels);
-+	mtk_dp_setup_sdp(mtk_dp, &packet);
-+}
-+
-+static void mtk_dp_audio_setup(struct mtk_dp *mtk_dp,
-+			       struct mtk_dp_audio_cfg *cfg)
-+{
-+	mtk_dp_audio_sdp_setup(mtk_dp, cfg);
-+	mtk_dp_audio_channel_status_set(mtk_dp, cfg);
-+
-+	mtk_dp_audio_setup_channels(mtk_dp, cfg);
-+	mtk_dp_audio_set_divider(mtk_dp);
-+}
-+
- static int mtk_dp_video_config(struct mtk_dp *mtk_dp)
- {
- 	int ret;
-@@ -1459,6 +2022,17 @@ static int mtk_dp_training(struct mtk_dp *mtk_dp)
- 		return ret;
- 	mtk_dp_video_enable(mtk_dp, true);
- 
-+	mtk_dp->audio_enable =
-+		mtk_dp_edid_parse_audio_capabilities(mtk_dp,
-+						     &mtk_dp->info.audio_caps);
-+	if (mtk_dp->audio_enable) {
-+		mtk_dp_audio_setup(mtk_dp, &mtk_dp->info.audio_caps);
-+		mtk_dp_audio_mute(mtk_dp, false);
-+	} else {
-+		memset(&mtk_dp->info.audio_caps, 0,
-+		       sizeof(mtk_dp->info.audio_caps));
-+	}
-+
- 	return 0;
- }
- 
-@@ -1536,10 +2110,13 @@ static irqreturn_t mtk_dp_hpd_event(int hpd, void *dev)
- 
- 		if (!train_info->cable_plugged_in) {
- 			mtk_dp_video_mute(mtk_dp, true);
-+			mtk_dp_audio_mute(mtk_dp, true);
- 
- 			mtk_dp_initialize_priv_data(mtk_dp);
- 			mtk_dp_set_idle_pattern(mtk_dp, true);
-+			mtk_dp_sdp_stop_sending(mtk_dp);
- 
-+			mtk_dp_edid_free(mtk_dp);
- 			mtk_dp_update_bits(mtk_dp, MTK_DP_TOP_PWR_STATE,
- 					   DP_PWR_STATE_BANDGAP_TPLL,
- 					   DP_PWR_STATE_MASK);
-@@ -1596,6 +2173,18 @@ static int mtk_dp_dt_parse(struct mtk_dp *mtk_dp,
- 	return 0;
- }
- 
-+static void mtk_dp_update_plugged_status(struct mtk_dp *mtk_dp)
-+{
-+	bool connected, has_audio;
-+
-+	mutex_lock(&mtk_dp->update_plugged_status_lock);
-+	connected = mtk_dp_plug_state_avoid_pulse(mtk_dp);
-+	has_audio = drm_detect_monitor_audio(mtk_dp->edid);
-+	if (mtk_dp->plugged_cb && mtk_dp->codec_dev)
-+		mtk_dp->plugged_cb(mtk_dp->codec_dev, connected & has_audio);
-+	mutex_unlock(&mtk_dp->update_plugged_status_lock);
-+}
-+
- static enum drm_connector_status mtk_dp_bdg_detect(struct drm_bridge *bridge)
- {
- 	struct mtk_dp *mtk_dp = mtk_dp_from_bridge(bridge);
-@@ -1611,6 +2200,7 @@ static enum drm_connector_status mtk_dp_bdg_detect(struct drm_bridge *bridge)
- 			ret = connector_status_connected;
- 	}
- 
-+	mtk_dp_update_plugged_status(mtk_dp);
- 	return ret;
- }
- 
-@@ -1633,6 +2223,18 @@ static struct edid *mtk_dp_get_edid(struct drm_bridge *bridge,
- 	if (!enabled)
- 		drm_bridge_chain_post_disable(bridge);
- 
-+	mutex_lock(&mtk_dp->edid_lock);
-+	kfree(mtk_dp->edid);
-+	mtk_dp->edid = NULL;
-+
-+	if (!new_edid) {
-+		mutex_unlock(&mtk_dp->edid_lock);
-+		return NULL;
-+	}
-+
-+	mtk_dp->edid = drm_edid_duplicate(new_edid);
-+	mutex_unlock(&mtk_dp->edid_lock);
-+
- 	return new_edid;
- }
- 
-@@ -1805,6 +2407,7 @@ static void mtk_dp_bridge_atomic_disable(struct drm_bridge *bridge,
- 	}
- 
- 	mtk_dp_video_mute(mtk_dp, true);
-+	mtk_dp_audio_mute(mtk_dp, true);
- 
- 	mtk_dp->enabled = false;
- 	/* Ensure the sink is muted */
-@@ -1815,6 +2418,7 @@ static void mtk_dp_parse_drm_mode_timings(struct mtk_dp *mtk_dp,
- 					  struct drm_display_mode *mode)
- {
- 	drm_display_mode_to_videomode(mode, &mtk_dp->info.vm);
-+	mtk_dp->info.frame_rate = drm_mode_vrefresh(mode);
- }
- 
- static void mtk_dp_bridge_atomic_enable(struct drm_bridge *bridge,
-@@ -1832,6 +2436,8 @@ static void mtk_dp_bridge_atomic_enable(struct drm_bridge *bridge,
- 	}
- 
- 	mtk_dp_video_mute(mtk_dp, true);
-+	mtk_dp_audio_mute(mtk_dp, true);
-+	mtk_dp_sdp_stop_sending(mtk_dp);
- 
- 	if (mtk_dp_parse_capabilities(mtk_dp)) {
- 		drm_err(mtk_dp->drm_dev, "Can't parse capabilities\n");
-@@ -1845,7 +2451,13 @@ static void mtk_dp_bridge_atomic_enable(struct drm_bridge *bridge,
- 		return;
- 	}
- 
-+	mutex_lock(&mtk_dp->eld_lock);
-+	memcpy(mtk_dp->connector_eld, mtk_dp->conn->eld, MAX_ELD_BYTES);
-+	mutex_unlock(&mtk_dp->eld_lock);
-+
- 	mtk_dp->enabled = true;
-+
-+	mtk_dp_update_plugged_status(mtk_dp);
- }
- 
- static enum drm_mode_status
-@@ -1983,6 +2595,102 @@ static void mtk_dp_debounce_timer(struct timer_list *t)
- 	mtk_dp->need_debounce = true;
- }
- 
-+/*
-+ * HDMI audio codec callbacks
-+ */
-+static int mtk_dp_audio_hw_params(struct device *dev, void *data,
-+				  struct hdmi_codec_daifmt *daifmt,
-+				  struct hdmi_codec_params *params)
-+{
-+	struct mtk_dp *mtk_dp = dev_get_drvdata(dev);
-+	struct mtk_dp_audio_cfg cfg;
-+
-+	if (!mtk_dp->enabled) {
-+		dev_err(mtk_dp->dev, "%s, DP is not ready!\n", __func__);
-+		return -ENODEV;
-+	}
-+
-+	cfg.channels = params->cea.channels;
-+	cfg.sample_rate = params->sample_rate;
-+	cfg.word_length_bits = 24;
-+
-+	mtk_dp_audio_setup(mtk_dp, &cfg);
-+
-+	return 0;
-+}
-+
-+static int mtk_dp_audio_startup(struct device *dev, void *data)
-+{
-+	struct mtk_dp *mtk_dp = dev_get_drvdata(dev);
-+
-+	mtk_dp_audio_mute(mtk_dp, false);
-+
-+	return 0;
-+}
-+
-+static void mtk_dp_audio_shutdown(struct device *dev, void *data)
-+{
-+	struct mtk_dp *mtk_dp = dev_get_drvdata(dev);
-+
-+	mtk_dp_audio_mute(mtk_dp, true);
-+}
-+
-+static int mtk_dp_audio_get_eld(struct device *dev, void *data, uint8_t *buf,
-+				size_t len)
-+{
-+	struct mtk_dp *mtk_dp = dev_get_drvdata(dev);
-+
-+	if (mtk_dp->enabled)
-+		memcpy(buf, mtk_dp->connector_eld, len);
-+	else
-+		memset(buf, 0, len);
-+
-+	return 0;
-+}
-+
-+static int mtk_dp_audio_hook_plugged_cb(struct device *dev, void *data,
-+					hdmi_codec_plugged_cb fn,
-+					struct device *codec_dev)
-+{
-+	struct mtk_dp *mtk_dp = data;
-+
-+	mutex_lock(&mtk_dp->update_plugged_status_lock);
-+	mtk_dp->plugged_cb = fn;
-+	mtk_dp->codec_dev = codec_dev;
-+	mutex_unlock(&mtk_dp->update_plugged_status_lock);
-+
-+	mtk_dp_update_plugged_status(mtk_dp);
-+
-+	return 0;
-+}
-+
-+static const struct hdmi_codec_ops mtk_dp_audio_codec_ops = {
-+	.hw_params = mtk_dp_audio_hw_params,
-+	.audio_startup = mtk_dp_audio_startup,
-+	.audio_shutdown = mtk_dp_audio_shutdown,
-+	.get_eld = mtk_dp_audio_get_eld,
-+	.hook_plugged_cb = mtk_dp_audio_hook_plugged_cb,
-+	.no_capture_mute = 1,
-+};
-+
-+static int mtk_dp_register_audio_driver(struct device *dev)
-+{
-+	struct mtk_dp *mtk_dp = dev_get_drvdata(dev);
-+	struct hdmi_codec_pdata codec_data = {
-+		.ops = &mtk_dp_audio_codec_ops,
-+		.max_i2s_channels = 8,
-+		.i2s = 1,
-+		.data = mtk_dp,
-+	};
-+
-+	mtk_dp->audio_pdev = platform_device_register_data(dev,
-+							   HDMI_CODEC_DRV_NAME,
-+							   PLATFORM_DEVID_AUTO,
-+							   &codec_data,
-+							   sizeof(codec_data));
-+	return PTR_ERR_OR_ZERO(mtk_dp->audio_pdev);
-+}
-+
- static int mtk_dp_probe(struct platform_device *pdev)
- {
- 	struct mtk_dp *mtk_dp;
-@@ -2028,8 +2736,21 @@ static int mtk_dp_probe(struct platform_device *pdev)
- 		return dev_err_probe(dev, -EPROBE_DEFER,
- 				     "failed to request mediatek dptx irq\n");
- 
-+	mutex_init(&mtk_dp->edid_lock);
-+	mutex_init(&mtk_dp->eld_lock);
-+	mutex_init(&mtk_dp->update_plugged_status_lock);
-+
- 	platform_set_drvdata(pdev, mtk_dp);
- 
-+	if (!mtk_dp_is_edp(mtk_dp)) {
-+		ret = mtk_dp_register_audio_driver(dev);
-+		if (ret) {
-+			dev_err(dev, "Failed to register audio driver: %d\n",
-+				ret);
-+			return ret;
-+		}
-+	}
-+
- 	mtk_dp->phy_dev = platform_device_register_data(dev, "mediatek-dp-phy",
- 							PLATFORM_DEVID_AUTO,
- 							&mtk_dp->regs,
-@@ -2074,7 +2795,11 @@ static int mtk_dp_remove(struct platform_device *pdev)
- 	struct mtk_dp *mtk_dp = platform_get_drvdata(pdev);
- 
- 	platform_device_unregister(mtk_dp->phy_dev);
-+	if (mtk_dp->audio_pdev)
-+		platform_device_unregister(mtk_dp->audio_pdev);
-+
- 	mtk_dp_video_mute(mtk_dp, true);
-+	mtk_dp_audio_mute(mtk_dp, true);
- 	del_timer_sync(&mtk_dp->debounce_timer);
- 
- 	pm_runtime_disable(&pdev->dev);
-diff --git a/drivers/gpu/drm/mediatek/mtk_dp_reg.h b/drivers/gpu/drm/mediatek/mtk_dp_reg.h
-index 59086eb82868..325b01f43348 100644
---- a/drivers/gpu/drm/mediatek/mtk_dp_reg.h
-+++ b/drivers/gpu/drm/mediatek/mtk_dp_reg.h
-@@ -240,6 +240,8 @@
- #define ASP_HB3_DP_ENC0_P0_MASK		GENMASK(15, 8)
- #define ASP_HB3_DP_ENC0_P0_SHIFT	BIT(3)
- 
-+#define MTK_DP_ENC0_P0_3130			(ENC0_OFFSET + 0x130)
-+#define MTK_DP_ENC0_P0_3138			(ENC0_OFFSET + 0x138)
- #define MTK_DP_ENC0_P0_3154			(ENC0_OFFSET + 0x154)
- #define PGEN_HTOTAL_DP_ENC0_P0_MASK		GENMASK(13, 0)
- #define MTK_DP_ENC0_P0_3158			(ENC0_OFFSET + 0x158)
--- 
-2.18.0
+>
+> > +
+> > +class BigCString:
+> > +  """A class to hold many strings concatenated together.
+> > +
+> > +  Generating a large number of stand-alone C strings creates a large
+> > +  number of relocations in position independent code. The BigCString
+> > +  is a helper for this case. It builds a single string which within it
+> > +  are all the other C strings (to avoid memory issues the string
+> > +  itself is held as a list of strings). The offsets within the big
+> > +  string are recorded and when stored to disk these don't need
+> > +  relocation. To reduce the size of the string further, identical
+> > +  strings are merged. If a longer string ends-with the same value as a
+> > +  shorter string, these entries are also merged.
+> > +  """
+> > +  strings: Set[str]
+> > +  big_string: Sequence[str]
+> > +  offsets: Dict[str, int]
+> > +
+> > +  def __init__(self):
+> > +    self.strings = set()
+> > +
+> > +  def add(self, s: str) -> None:
+> > +    """Called to add to the big string."""
+> > +    self.strings.add(s)
+> > +
+> > +  def compute(self) -> None:
+> > +    """Called once all strings are added to compute the string and offsets."""
+> > +
+> > +    folded_strings = {}
+> > +    # Determine if two strings can be folded, ie. let 1 string use the
+> > +    # end of another. First reverse all strings and sort them.
+> > +    sorted_reversed_strings = sorted([x[::-1] for x in self.strings])
+>
+> I think some blank lines would increase readability a bit.
 
+Ack. Can add in v2.
+
+> IIUC these strings are already concatenated with \\000
+> by build_c_string(), right?
+
+They are, but this code is agnostic to that. The code must give every
+string an offset, but it also tries as much as possible to combine
+strings. The \\000 defeats that in all but 1 case for x86, but if we
+were to have 1 offset per field it does better.
+
+> > +    # Strings 'xyz' and 'yz' will now be [ 'zy', 'zyx' ]. Scan forward
+> > +    # for each string to see if there is a better candidate to fold it
+> > +    # into, in the example rather than using 'yz' we can use'xyz' at
+> > +    # an offset of 1.
+> > +    for pos,s in enumerate(sorted_reversed_strings):
+> > +      best_pos = pos
+> > +      for check_pos in range(pos + 1, len(sorted_reversed_strings)):
+> > +        if sorted_reversed_strings[check_pos].startswith(s):
+> > +          best_pos = check_pos
+> > +        else:
+> > +          break
+>
+> That means the best pos is the last match?  I guess python
+> string comparison can deal with strings with NUL bytes in it.
+>
+> Also I'm not sure how much it actually hits?
+
+Once for x86 currently. The code runs quickly so I didn't disable it.
+In other situations it hits more, as mentioned above.
+
+> In my understanding, each string contains a name, description
+> and many other fields.  Does it have some duplication?
+
+There may be, and having an offset per variable would mean we could
+take advantage of that. What I found was that a majority of the
+variables are empty/NULL so what we lose by not having sharing is more
+than gained by reducing a variable down to 1 byte rather than 4 (in
+the order of 100s of KB).
+
+> Maybe I'm missing but not sure it's worth the complexity.
+
+Agreed. There's limited utility in finding 1 string inside another for
+the current string representation. The code is still necessary to give
+every string an offset. The code to find 1 string inside another isn't
+that large nor that slow, so I kept it around.
+
+Thanks,
+Ian
+
+> Thanks,
+> Namhyung
+>
+>
+> > +      if pos != best_pos:
+> > +        folded_strings[s[::-1]] = sorted_reversed_strings[best_pos][::-1]
+> > +    # Compute reverse mappings for debugging.
+> > +    fold_into_strings = collections.defaultdict(set)
+> > +    for key, val in folded_strings.items():
+> > +      if key != val:
+> > +        fold_into_strings[val].add(key)
+> > +    # big_string_offset is the current location within the C string
+> > +    # being appended to - comments, etc. don't count. big_string is
+> > +    # the string contents represented as a list. Strings are immutable
+> > +    # in Python and so appending to one causes memory issues, while
+> > +    # lists are mutable.
+> > +    big_string_offset = 0
+> > +    self.big_string = []
+> > +    self.offsets = {}
+> > +    # Emit all strings that aren't folded in a sorted manner.
+> > +    for s in sorted(self.strings):
+> > +      if s not in folded_strings:
+> > +        self.offsets[s] = big_string_offset
+> > +        self.big_string.append(f'/* offset={big_string_offset} */ "')
+> > +        self.big_string.append(s)
+> > +        self.big_string.append('"')
+> > +        if s in fold_into_strings:
+> > +          self.big_string.append(' /* also: ' + ', '.join(fold_into_strings[s]) + ' */')
+> > +        self.big_string.append('\n')
+> > +        big_string_offset += c_len(s)
+> > +        continue
+> > +    # Compute the offsets of the folded strings.
+> > +    for s in folded_strings.keys():
+> > +      assert s not in self.offsets
+> > +      folded_s = folded_strings[s]
+> > +      self.offsets[s] = self.offsets[folded_s] + c_len(folded_s) - c_len(s)
+> > +
+> > +_bcs = BigCString()
+> >
+> >  class JsonEvent:
+> >    """Representation of an event loaded from a json file dictionary."""
+> > @@ -203,26 +310,18 @@ class JsonEvent:
+> >          s += f'\t{attr} = {value},\n'
+> >      return s + '}'
+> >
+> > +  def build_c_string(self):
+> > +    s = ''
+> > +    for attr in _json_event_attributes:
+> > +      x = getattr(self, attr)
+> > +      s += f'{x}\\000' if x else '\\000'
+> > +    return s
+> > +
+> >    def to_c_string(self) -> str:
+> >      """Representation of the event as a C struct initializer."""
+> >
+> > -    def attr_string(attr: str, value: str) -> str:
+> > -      return f'\t.{attr} = \"{value}\",\n'
+> > -
+> > -    def str_if_present(self, attr: str) -> str:
+> > -      if not getattr(self, attr):
+> > -        return ''
+> > -      return attr_string(attr, getattr(self, attr))
+> > -
+> > -    s = '{\n'
+> > -    for attr in [
+> > -        'aggr_mode', 'compat', 'deprecated', 'desc', 'event', 'long_desc',
+> > -        'metric_constraint', 'metric_expr', 'metric_group', 'metric_name',
+> > -        'name', 'perpkg', 'pmu', 'topic', 'unit'
+> > -    ]:
+> > -      s += str_if_present(self, attr)
+> > -    s += '},\n'
+> > -    return s
+> > +    s = self.build_c_string()
+> > +    return f'{{ { _bcs.offsets[s] } }}, /* {s} */\n'
+> >
+> >
+> >  def read_json_events(path: str, topic: str) -> Sequence[JsonEvent]:
+> > @@ -237,7 +336,6 @@ def read_json_events(path: str, topic: str) -> Sequence[JsonEvent]:
+> >      event.topic = topic
+> >    return result
+> >
+> > -
+> >  def preprocess_arch_std_files(archpath: str) -> None:
+> >    """Read in all architecture standard events."""
+> >    global _arch_std_events
+> > @@ -253,7 +351,7 @@ def print_events_table_prefix(tblname: str) -> None:
+> >    global _close_table
+> >    if _close_table:
+> >      raise IOError('Printing table prefix but last table has no suffix')
+> > -  _args.output_file.write(f'static const struct pmu_event {tblname}[] = {{\n')
+> > +  _args.output_file.write(f'static const struct compact_pmu_event {tblname}[] = {{\n')
+> >    _close_table = True
+> >
+> >
+> > @@ -286,23 +384,37 @@ def print_events_table_suffix() -> None:
+> >      _args.output_file.write(event.to_c_string())
+> >      _pending_events = []
+> >
+> > -  _args.output_file.write("""{
+> > -\t.name = 0,
+> > -\t.event = 0,
+> > -\t.desc = 0,
+> > -},
+> > -};
+> > -""")
+> > +  _args.output_file.write('};\n\n')
+> >    _close_table = False
+> >
+> > +def get_topic(topic: str) -> str:
+> > +  if topic.endswith('metrics.json'):
+> > +    return 'metrics'
+> > +  return removesuffix(topic, '.json').replace('-', ' ')
+> > +
+> > +def preprocess_one_file(parents: Sequence[str], item: os.DirEntry) -> None:
+> > +
+> > +  if item.is_dir():
+> > +    return
+> > +
+> > +  # base dir or too deep
+> > +  level = len(parents)
+> > +  if level == 0 or level > 4:
+> > +    return
+> > +
+> > +  # Ignore other directories. If the file name does not have a .json
+> > +  # extension, ignore it. It could be a readme.txt for instance.
+> > +  if not item.is_file() or not item.name.endswith('.json'):
+> > +    return
+> > +
+> > +  topic = get_topic(item.name)
+> > +  for event in read_json_events(item.path, topic):
+> > +    _bcs.add(event.build_c_string())
+> >
+> >  def process_one_file(parents: Sequence[str], item: os.DirEntry) -> None:
+> >    """Process a JSON file during the main walk."""
+> >    global _sys_event_tables
+> >
+> > -  def get_topic(topic: str) -> str:
+> > -    return removesuffix(topic, '.json').replace('-', ' ')
+> > -
+> >    def is_leaf_dir(path: str) -> bool:
+> >      for item in os.scandir(path):
+> >        if item.is_dir():
+> > @@ -337,7 +449,8 @@ def print_mapping_table(archs: Sequence[str]) -> None:
+> >    _args.output_file.write("""
+> >  /* Struct used to make the PMU event table implementation opaque to callers. */
+> >  struct pmu_events_table {
+> > -        const struct pmu_event *entries;
+> > +        const struct compact_pmu_event *entries;
+> > +        size_t length;
+> >  };
+> >
+> >  /*
+> > @@ -365,7 +478,10 @@ const struct pmu_events_map pmu_events_map[] = {
+> >        _args.output_file.write("""{
+> >  \t.arch = "testarch",
+> >  \t.cpuid = "testcpu",
+> > -\t.table = { pme_test_soc_cpu },
+> > +\t.table = {
+> > +\t.entries = pme_test_soc_cpu,
+> > +\t.length = ARRAY_SIZE(pme_test_soc_cpu),
+> > +\t}
+> >  },
+> >  """)
+> >      else:
+> > @@ -380,7 +496,10 @@ const struct pmu_events_map pmu_events_map[] = {
+> >              _args.output_file.write(f"""{{
+> >  \t.arch = "{arch}",
+> >  \t.cpuid = "{cpuid}",
+> > -\t.table = {{ {tblname} }}
+> > +\t.table = {{
+> > +\t\t.entries = {tblname},
+> > +\t\t.length = ARRAY_SIZE({tblname})
+> > +\t}}
+> >  }},
+> >  """)
+> >            first = False
+> > @@ -388,7 +507,7 @@ const struct pmu_events_map pmu_events_map[] = {
+> >    _args.output_file.write("""{
+> >  \t.arch = 0,
+> >  \t.cpuid = 0,
+> > -\t.table = { 0 },
+> > +\t.table = { 0, 0 },
+> >  }
+> >  };
+> >  """)
+> > @@ -406,23 +525,41 @@ static const struct pmu_sys_events pmu_sys_event_tables[] = {
+> >  """)
+> >    for tblname in _sys_event_tables:
+> >      _args.output_file.write(f"""\t{{
+> > -\t\t.table = {{ {tblname} }},
+> > +\t\t.table = {{
+> > +\t\t\t.entries = {tblname},
+> > +\t\t\t.length = ARRAY_SIZE({tblname})
+> > +\t\t}},
+> >  \t\t.name = \"{tblname}\",
+> >  \t}},
+> >  """)
+> >    _args.output_file.write("""\t{
+> > -\t\t.table = { 0 }
+> > +\t\t.table = { 0, 0 }
+> >  \t},
+> >  };
+> >
+> > -int pmu_events_table_for_each_event(const struct pmu_events_table *table, pmu_event_iter_fn fn,
+> > +static void decompress(int offset, struct pmu_event *pe)
+> > +{
+> > +\tconst char *p = &big_c_string[offset];
+> > +""")
+> > +  for attr in _json_event_attributes:
+> > +    _args.output_file.write(f"""
+> > +\tpe->{attr} = (*p == '\\0' ? NULL : p);
+> > +""")
+> > +    if attr == _json_event_attributes[-1]:
+> > +      continue
+> > +    _args.output_file.write('\twhile (*p++);')
+> > +  _args.output_file.write("""}
+> > +
+> > +int pmu_events_table_for_each_event(const struct pmu_events_table *table,
+> > +                                    pmu_event_iter_fn fn,
+> >                                      void *data)
+> >  {
+> > -        for (const struct pmu_event *pe = &table->entries[0];
+> > -             pe->name || pe->metric_group || pe->metric_name;
+> > -             pe++) {
+> > -                int ret = fn(pe, table, data);
+> > +        for (size_t i = 0; i < table->length; i++) {
+> > +                struct pmu_event pe;
+> > +                int ret;
+> >
+> > +                decompress(table->entries[i].offset, &pe);
+> > +                ret = fn(&pe, table, data);
+> >                  if (ret)
+> >                          return ret;
+> >          }
+> > @@ -531,7 +668,7 @@ def main() -> None:
+> >        help='Root of tree containing architecture directories containing json files'
+> >    )
+> >    ap.add_argument(
+> > -      'output_file', type=argparse.FileType('w'), nargs='?', default=sys.stdout)
+> > +      'output_file', type=argparse.FileType('w', encoding='utf-8'), nargs='?', default=sys.stdout)
+> >    _args = ap.parse_args()
+> >
+> >    _args.output_file.write("""
+> > @@ -541,6 +678,10 @@ def main() -> None:
+> >  #include <string.h>
+> >  #include <stddef.h>
+> >
+> > +struct compact_pmu_event {
+> > +  int offset;
+> > +};
+> > +
+> >  """)
+> >    archs = []
+> >    for item in os.scandir(_args.starting_dir):
+> > @@ -556,6 +697,15 @@ def main() -> None:
+> >    for arch in archs:
+> >      arch_path = f'{_args.starting_dir}/{arch}'
+> >      preprocess_arch_std_files(arch_path)
+> > +    ftw(arch_path, [], preprocess_one_file)
+> > +
+> > +  _bcs.compute()
+> > +  _args.output_file.write('static const char *const big_c_string =\n')
+> > +  for s in _bcs.big_string:
+> > +    _args.output_file.write(s)
+> > +  _args.output_file.write(';\n\n')
+> > +  for arch in archs:
+> > +    arch_path = f'{_args.starting_dir}/{arch}'
+> >      ftw(arch_path, [], process_one_file)
+> >      print_events_table_suffix()
+> >
+> > --
+> > 2.37.0.170.g444d1eabd0-goog
+> >
