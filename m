@@ -2,75 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 513AFC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:06:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23D7FC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:06:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233864AbiG0QGW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:06:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37016 "EHLO
+        id S234590AbiG0QGn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:06:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234538AbiG0QGN (ORCPT
+        with ESMTP id S233779AbiG0QGl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:06:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3901B2CDF8
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:06:07 -0700 (PDT)
+        Wed, 27 Jul 2022 12:06:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03FFC22515;
+        Wed, 27 Jul 2022 09:06:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C93FD6198A
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 16:06:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA9D9C433C1;
-        Wed, 27 Jul 2022 16:06:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658937966;
-        bh=R2p0of76K8a2ZHcxkNUvLgEJAOqcDlPPdWFYl5pfpn4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=n+tfQY0Je0Ydf+R9oOH9HgmZYYW5++5a6jmKQ/bX/yFvQ9opacM49gpQj9VVkHMBs
-         Bb5GQTfbi3UwefOKBhzmOMc76Qxuc10xCc2XQAWRhm3LQ6HjIer5SI4x5ERU6iWk3d
-         VZyWC1XSPzBh9bSa54RabWnPEzlo8f8jLNJB/lHc=
-Date:   Wed, 27 Jul 2022 18:06:03 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Philipp Hortmann <philipp.g.hortmann@gmail.com>
-Cc:     Forest Bond <forest@alittletooquiet.net>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] staging: vt6655: Rename byOrgValue to reg_value in a
- macro
-Message-ID: <YuFia1Z7tJrxbIwQ@kroah.com>
-References: <cover.1658333350.git.philipp.g.hortmann@gmail.com>
- <83920d919acd7596488943182f37132e479d70f4.1658333350.git.philipp.g.hortmann@gmail.com>
- <YuDfjwHJN6n/CZ4i@kroah.com>
- <4d1e2294-a3b7-972b-f021-cecee8779f1b@gmail.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7144AB821B2;
+        Wed, 27 Jul 2022 16:06:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA74DC433C1;
+        Wed, 27 Jul 2022 16:06:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658937997;
+        bh=5XHQir5HRajZVkwdA1nsiY7rF0CyIi1tGP/Ej1MXlVc=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=SR4njLkGCtRQJ3ftmswRAWHh/ViyPNjAZRf1LECfzlX9vwebRSx2YzVnz2Yt5geJm
+         UVmHLIeM/aqdmfPOtMOrnPAhflq8YJ6ilQ3F49cId+mxj0xMzWKgnWkKgQ4X+yxtgV
+         jY3iTRmqxjfP4j3x3roONUwhqbSPCLIjp0euEsOEDMlDzprcEbSBXfL01AUqSrnq1A
+         dFpxkO1+z0ugV6PdgTLOtTGPbWn4ZYBqk+a/qov2ElVa+VDFSFwEmJXohuNMNsU+//
+         dq/1YffRTAyX95u7lXCVJZLVafPCFucN+4T0SleIK94cbf4vd0vTyM2t7GWpMabnnP
+         l4IrbSwNK1TUw==
+Message-ID: <973f6718-bb88-724b-0900-5c8eb0c24d78@kernel.org>
+Date:   Wed, 27 Jul 2022 18:06:26 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4d1e2294-a3b7-972b-f021-cecee8779f1b@gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH V7 04/16] rv/include: Add deterministic automata monitor
+ definition via C macros
+Content-Language: en-US
+To:     Tao Zhou <tao.zhou@linux.dev>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Marco Elver <elver@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Gabriele Paoloni <gpaoloni@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Clark Williams <williams@redhat.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-trace-devel@vger.kernel.org
+References: <cover.1658778484.git.bristot@kernel.org>
+ <75d14829c5234c2ff43aff744ac41f246b970ed8.1658778484.git.bristot@kernel.org>
+ <YuFZ2scVb658mhoq@geo.homenetwork>
+From:   Daniel Bristot de Oliveira <bristot@kernel.org>
+In-Reply-To: <YuFZ2scVb658mhoq@geo.homenetwork>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 05:54:04PM +0200, Philipp Hortmann wrote:
-> On 7/27/22 08:47, Greg Kroah-Hartman wrote:
-> > On Wed, Jul 20, 2022 at 06:24:32PM +0200, Philipp Hortmann wrote:
-> > > Fix name of a variable in a macro that uses CamelCase which is not
-> > > accepted by checkpatch.pl
-> > 
-> > Why rename something you are about to delete in a later patch?
-> > 
-> > thanks,
-> > 
-> > greg k-h
+On 7/27/22 17:29, Tao Zhou wrote:
+>> +/*
+>> + * Handle event for implicit monitor: da_get_monitor_##name() will figure out
+>> + * the monitor.
+>> + */
+>> +#define DECLARE_DA_MON_MONITOR_HANDLER_IMPLICIT(name, type)					\
+>> +												\
+>> +static inline void __da_handle_event_##name(struct da_monitor *da_mon,				\
+>> +					    enum events_##name event)				\
+>> +{												\
+>> +	int retval;										\
+>> +												\
+>> +	retval = da_monitor_handling_event_##name(da_mon);					\
+>> +	if (!retval)										\
+>> +		return;										\
+> I checked the callers of __da_handle_event_##name():
+> da_handle_event_##name() for all cases need the above check.
+> da_handle_start_event_##name() for all cases may not need this check.
+> (this function checked the enable first and the da_monitoring later and if
+> it is not monitoring it will start monitoring and return, the later event
+> handler will not be called. Otherwise enable is enabled, da_monitoring is
+> monitoring)
+> da_handle_start_run_event_##name() for implicit case may not need this check.
+> (almost the same with the above, the difference is if da-monitor is not
+> monitoring, it will start monitoring and not return and do the event handler,
+> here enable is enabled and da_monitoring is monitoring, if I am not wrong)
+> So after another(v7) looking at this patch, I realized that this check can
+> be omited in two cases(all three cases). Just in fuction da_handle_event_##name()
+> we need to do da_monitor_handling_event_##name().
+> So I'd write like this:
+> static inline void __da_handle_event_##name(struct da_monitor *da_mon,				\
+> 					    enum events_##name event)				\
+> {												\
+> 	int retval;										\
+>                                                     \
+>     retval = da_event_##name(da_mon, event);						\
+>     if (!retval)										\
+>         da_monitor_reset_##name(da_mon);						\
+> }												\
 > 
-> I need to rename this variable. Does it matter if I do it in first or last
-> patch? When doing it first I do not have to review so much checkpatch
-> warnings.
+> static inline void da_handle_event_##name(enum events_##name event)				\
+> {												\
+>     struct da_monitor *da_mon = da_get_monitor_##name();					\
+> 	int retval;										\
+>                                                     \
+>     retval = da_monitor_handling_event_##name(da_mon);					\
+>     if (!retval)										\
+>         return;										\
+>                                                     \
+>     __da_handle_event_##name(da_mon, event);						\
 > 
-> Or is it OK to convert the macro to a function and rename the variable in
-> one patch?
+> }												\
+> 
 
-Convert and rename at the same time, that makes it easier and simpler
-overall.
+IOW,
 
-thanks,
+The code is checking twice if the monitor is enabled in these two cases:
+	- da_handle_start_run_event_##name()
+	- da_handle_start_event_##name()
 
-greg k-h
+Because it is checking in these functions first and then again in __da_handle_event_##name().
+
+The function da_handle_event_##name() is not checking if the monitors are enabled because
+__da_handle_event_##name() does it.
+
+By adding the check on da_handle_event_##name(), we can remove it in
+__da_handle_event_##name(). Making the check run only once for all cases.
+
+This is an optimization, and it makes sense.
+
+(changed return value to bool)
+
+-- Daniel
