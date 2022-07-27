@@ -2,231 +2,444 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF71AC19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:38:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9EC0C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:38:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239085AbiG0QiA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:38:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47654 "EHLO
+        id S238284AbiG0QiE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:38:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238535AbiG0Qg7 (ORCPT
+        with ESMTP id S238347AbiG0QhP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:36:59 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D08057230;
-        Wed, 27 Jul 2022 09:28:12 -0700 (PDT)
+        Wed, 27 Jul 2022 12:37:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83A554C613;
+        Wed, 27 Jul 2022 09:28:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E685F617F2;
-        Wed, 27 Jul 2022 16:28:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB10CC433D6;
-        Wed, 27 Jul 2022 16:28:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C1BF0619FF;
+        Wed, 27 Jul 2022 16:28:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F3A4C433D6;
+        Wed, 27 Jul 2022 16:28:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939291;
-        bh=YfmTqNI3tTK0SChiA4BqqgiN/t5quimciEuF2M5o5Yo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eXETW20jywI65LWCAOFtCqufh9jhMJt/bhUJY4GZHUklumZCZMSeCR3YVkOsgybpv
-         lKve5l3qzidkXJPEGxsdT5Da9WLs6SqGO0n0bNrXzYgauFDxlQqgTTcWGSNa6K/BpH
-         fnHJdmyi+4dLzZEWJqwrhSO4YcdMKkr+Bp8NfDxU=
+        s=korg; t=1658939294;
+        bh=FJB6YvgF4vTxzWh37WtnjYz3mBlhKx0zmLuJtYlSfKY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=R2bT1xVloNxMEmC7Q6UIxNdAOguBx1oK+sNmbDp0ayfxeOaKec0NitIeyce2y+Off
+         iUcBXayk3Y2X1uyMdr1pm/iaJtlDNxjetFMnqxitsWFwLQcr4DjxL7iw4uK6BJ5pzy
+         X2HMrPA3r5IwM0SB4SEittBj2LGnPPr32U08P9Ds=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        Jeffrey Hugo <quic_jhugo@quicinc.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        Carl Vanderlip <quic_carlv@quicinc.com>
-Subject: [PATCH 5.4 09/87] PCI: hv: Fix interrupt mapping for multi-MSI
-Date:   Wed, 27 Jul 2022 18:10:02 +0200
-Message-Id: <20220727161009.393555877@linuxfoundation.org>
+        stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+Subject: [PATCH 5.4 00/87] 5.4.208-rc1 review
+Date:   Wed, 27 Jul 2022 18:09:53 +0200
+Message-Id: <20220727161008.993711844@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220727161008.993711844@linuxfoundation.org>
-References: <20220727161008.993711844@linuxfoundation.org>
-User-Agent: quilt/0.66
 MIME-Version: 1.0
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
+X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.208-rc1.gz
+X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
+X-KernelTest-Branch: linux-5.4.y
+X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
+X-KernelTest-Version: 5.4.208-rc1
+X-KernelTest-Deadline: 2022-07-29T16:10+00:00
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeffrey Hugo <quic_jhugo@quicinc.com>
+This is the start of the stable review cycle for the 5.4.208 release.
+There are 87 patches in this series, all will be posted as a response
+to this one.  If anyone has any issues with these being applied, please
+let me know.
 
-commit a2bad844a67b1c7740bda63e87453baf63c3a7f7 upstream.
+Responses should be made by Fri, 29 Jul 2022 16:09:50 +0000.
+Anything received after that time might be too late.
 
-According to Dexuan, the hypervisor folks beleive that multi-msi
-allocations are not correct.  compose_msi_msg() will allocate multi-msi
-one by one.  However, multi-msi is a block of related MSIs, with alignment
-requirements.  In order for the hypervisor to allocate properly aligned
-and consecutive entries in the IOMMU Interrupt Remapping Table, there
-should be a single mapping request that requests all of the multi-msi
-vectors in one shot.
+The whole patch series can be found in one patch at:
+	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.208-rc1.gz
+or in the git tree and branch at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.4.y
+and the diffstat can be found below.
 
-Dexuan suggests detecting the multi-msi case and composing a single
-request related to the first MSI.  Then for the other MSIs in the same
-block, use the cached information.  This appears to be viable, so do it.
+thanks,
 
-5.4 backport - add hv_msi_get_int_vector helper function. Fixed merge
-conflict due to delivery_mode name change (APIC_DELIVERY_MODE_FIXED
-is the value given to dest_Fixed). Removed unused variable in
-hv_compose_msi_msg. Fixed reference to msi_desc->pci to point to
-the same is_msix variable. Removed changes to compose_msi_req_v3 since
-it doesn't exist yet.
+greg k-h
 
-Suggested-by: Dexuan Cui <decui@microsoft.com>
-Signed-off-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
-Reviewed-by: Dexuan Cui <decui@microsoft.com>
-Tested-by: Michael Kelley <mikelley@microsoft.com>
-Link: https://lore.kernel.org/r/1652282599-21643-1-git-send-email-quic_jhugo@quicinc.com
-Signed-off-by: Wei Liu <wei.liu@kernel.org>
-Signed-off-by: Carl Vanderlip <quic_carlv@quicinc.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/pci/controller/pci-hyperv.c |   61 +++++++++++++++++++++++++++++++-----
- 1 file changed, 53 insertions(+), 8 deletions(-)
+-------------
+Pseudo-Shortlog of commits:
 
---- a/drivers/pci/controller/pci-hyperv.c
-+++ b/drivers/pci/controller/pci-hyperv.c
-@@ -1110,6 +1110,10 @@ static void hv_int_desc_free(struct hv_p
- 		u8 buffer[sizeof(struct pci_delete_interrupt)];
- 	} ctxt;
- 
-+	if (!int_desc->vector_count) {
-+		kfree(int_desc);
-+		return;
-+	}
- 	memset(&ctxt, 0, sizeof(ctxt));
- 	int_pkt = (struct pci_delete_interrupt *)&ctxt.pkt.message;
- 	int_pkt->message_type.type =
-@@ -1172,6 +1176,13 @@ static void hv_irq_mask(struct irq_data
- 	pci_msi_mask_irq(data);
- }
- 
-+static unsigned int hv_msi_get_int_vector(struct irq_data *data)
-+{
-+	struct irq_cfg *cfg = irqd_cfg(data);
-+
-+	return cfg->vector;
-+}
-+
- static int hv_msi_prepare(struct irq_domain *domain, struct device *dev,
- 			  int nvec, msi_alloc_info_t *info)
- {
-@@ -1313,12 +1324,12 @@ static void hv_pci_compose_compl(void *c
- 
- static u32 hv_compose_msi_req_v1(
- 	struct pci_create_interrupt *int_pkt, struct cpumask *affinity,
--	u32 slot, u8 vector)
-+	u32 slot, u8 vector, u8 vector_count)
- {
- 	int_pkt->message_type.type = PCI_CREATE_INTERRUPT_MESSAGE;
- 	int_pkt->wslot.slot = slot;
- 	int_pkt->int_desc.vector = vector;
--	int_pkt->int_desc.vector_count = 1;
-+	int_pkt->int_desc.vector_count = vector_count;
- 	int_pkt->int_desc.delivery_mode = dest_Fixed;
- 
- 	/*
-@@ -1332,14 +1343,14 @@ static u32 hv_compose_msi_req_v1(
- 
- static u32 hv_compose_msi_req_v2(
- 	struct pci_create_interrupt2 *int_pkt, struct cpumask *affinity,
--	u32 slot, u8 vector)
-+	u32 slot, u8 vector, u8 vector_count)
- {
- 	int cpu;
- 
- 	int_pkt->message_type.type = PCI_CREATE_INTERRUPT_MESSAGE2;
- 	int_pkt->wslot.slot = slot;
- 	int_pkt->int_desc.vector = vector;
--	int_pkt->int_desc.vector_count = 1;
-+	int_pkt->int_desc.vector_count = vector_count;
- 	int_pkt->int_desc.delivery_mode = dest_Fixed;
- 
- 	/*
-@@ -1367,7 +1378,6 @@ static u32 hv_compose_msi_req_v2(
-  */
- static void hv_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
- {
--	struct irq_cfg *cfg = irqd_cfg(data);
- 	struct hv_pcibus_device *hbus;
- 	struct hv_pci_dev *hpdev;
- 	struct pci_bus *pbus;
-@@ -1376,6 +1386,8 @@ static void hv_compose_msi_msg(struct ir
- 	unsigned long flags;
- 	struct compose_comp_ctxt comp;
- 	struct tran_int_desc *int_desc;
-+	struct msi_desc *msi_desc;
-+	u8 vector, vector_count;
- 	struct {
- 		struct pci_packet pci_pkt;
- 		union {
-@@ -1396,7 +1408,8 @@ static void hv_compose_msi_msg(struct ir
- 		return;
- 	}
- 
--	pdev = msi_desc_to_pci_dev(irq_data_get_msi_desc(data));
-+	msi_desc  = irq_data_get_msi_desc(data);
-+	pdev = msi_desc_to_pci_dev(msi_desc);
- 	dest = irq_data_get_effective_affinity_mask(data);
- 	pbus = pdev->bus;
- 	hbus = container_of(pbus->sysdata, struct hv_pcibus_device, sysdata);
-@@ -1408,6 +1421,36 @@ static void hv_compose_msi_msg(struct ir
- 	if (!int_desc)
- 		goto drop_reference;
- 
-+	if (!msi_desc->msi_attrib.is_msix && msi_desc->nvec_used > 1) {
-+		/*
-+		 * If this is not the first MSI of Multi MSI, we already have
-+		 * a mapping.  Can exit early.
-+		 */
-+		if (msi_desc->irq != data->irq) {
-+			data->chip_data = int_desc;
-+			int_desc->address = msi_desc->msg.address_lo |
-+					    (u64)msi_desc->msg.address_hi << 32;
-+			int_desc->data = msi_desc->msg.data +
-+					 (data->irq - msi_desc->irq);
-+			msg->address_hi = msi_desc->msg.address_hi;
-+			msg->address_lo = msi_desc->msg.address_lo;
-+			msg->data = int_desc->data;
-+			put_pcichild(hpdev);
-+			return;
-+		}
-+		/*
-+		 * The vector we select here is a dummy value.  The correct
-+		 * value gets sent to the hypervisor in unmask().  This needs
-+		 * to be aligned with the count, and also not zero.  Multi-msi
-+		 * is powers of 2 up to 32, so 32 will always work here.
-+		 */
-+		vector = 32;
-+		vector_count = msi_desc->nvec_used;
-+	} else {
-+		vector = hv_msi_get_int_vector(data);
-+		vector_count = 1;
-+	}
-+
- 	memset(&ctxt, 0, sizeof(ctxt));
- 	init_completion(&comp.comp_pkt.host_event);
- 	ctxt.pci_pkt.completion_func = hv_pci_compose_compl;
-@@ -1418,14 +1461,16 @@ static void hv_compose_msi_msg(struct ir
- 		size = hv_compose_msi_req_v1(&ctxt.int_pkts.v1,
- 					dest,
- 					hpdev->desc.win_slot.slot,
--					cfg->vector);
-+					vector,
-+					vector_count);
- 		break;
- 
- 	case PCI_PROTOCOL_VERSION_1_2:
- 		size = hv_compose_msi_req_v2(&ctxt.int_pkts.v2,
- 					dest,
- 					hpdev->desc.win_slot.slot,
--					cfg->vector);
-+					vector,
-+					vector_count);
- 		break;
- 
- 	default:
+Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+    Linux 5.4.208-rc1
+
+Jan Beulich <jbeulich@suse.com>
+    x86: drop bogus "cc" clobber from __try_cmpxchg_user_asm()
+
+Jose Alonso <joalonsof@gmail.com>
+    net: usb: ax88179_178a needs FLAG_SEND_ZLP
+
+Jiri Slaby <jslaby@suse.cz>
+    tty: use new tty_insert_flip_string_and_push_buffer() in pty_write()
+
+Jiri Slaby <jslaby@suse.cz>
+    tty: extract tty_flip_buffer_commit() from tty_flip_buffer_push()
+
+Jiri Slaby <jslaby@suse.cz>
+    tty: drop tty_schedule_flip()
+
+Jiri Slaby <jslaby@suse.cz>
+    tty: the rest, stop using tty_schedule_flip()
+
+Jiri Slaby <jslaby@suse.cz>
+    tty: drivers/tty/, stop using tty_schedule_flip()
+
+Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+    Bluetooth: Fix bt_skb_sendmmsg not allocating partial chunks
+
+Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+    Bluetooth: SCO: Fix sco_send_frame returning skb->len
+
+Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+    Bluetooth: Fix passing NULL to PTR_ERR
+
+Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+    Bluetooth: RFCOMM: Replace use of memcpy_from_msg with bt_skb_sendmmsg
+
+Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+    Bluetooth: SCO: Replace use of memcpy_from_msg with bt_skb_sendmsg
+
+Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+    Bluetooth: Add bt_skb_sendmmsg helper
+
+Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+    Bluetooth: Add bt_skb_sendmsg helper
+
+Takashi Iwai <tiwai@suse.de>
+    ALSA: memalloc: Align buffer allocations in page size
+
+Peter Zijlstra <peterz@infradead.org>
+    bitfield.h: Fix "type of reg too small for mask" test
+
+Thomas Gleixner <tglx@linutronix.de>
+    x86/mce: Deduplicate exception handling
+
+Michel Lespinasse <walken@google.com>
+    mmap locking API: initial implementation as rwsem wrappers
+
+Peter Zijlstra <peterz@infradead.org>
+    x86/uaccess: Implement macros for CMPXCHG on user addresses
+
+Al Viro <viro@zeniv.linux.org.uk>
+    x86: get rid of small constant size cases in raw_copy_{to,from}_user()
+
+Will Deacon <will@kernel.org>
+    locking/refcount: Consolidate implementations of refcount_t
+
+Will Deacon <will@kernel.org>
+    locking/refcount: Consolidate REFCOUNT_{MAX,SATURATED} definitions
+
+Will Deacon <will@kernel.org>
+    locking/refcount: Move saturation warnings out of line
+
+Will Deacon <will@kernel.org>
+    locking/refcount: Improve performance of generic REFCOUNT_FULL code
+
+Will Deacon <will@kernel.org>
+    locking/refcount: Move the bulk of the REFCOUNT_FULL implementation into the <linux/refcount.h> header
+
+Will Deacon <will@kernel.org>
+    locking/refcount: Remove unused refcount_*_checked() variants
+
+Will Deacon <will@kernel.org>
+    locking/refcount: Ensure integer operands are treated as signed
+
+Will Deacon <will@kernel.org>
+    locking/refcount: Define constants for saturation and max refcount values
+
+GUO Zihua <guozihua@huawei.com>
+    ima: remove the IMA_TEMPLATE Kconfig option
+
+Alexander Aring <aahringo@redhat.com>
+    dlm: fix pending remove if msg allocation fails
+
+Eric Dumazet <edumazet@google.com>
+    bpf: Make sure mac_header was set before using it
+
+Wang Cheng <wanngchenng@gmail.com>
+    mm/mempolicy: fix uninit-value in mpol_rebind_policy()
+
+Marc Kleine-Budde <mkl@pengutronix.de>
+    spi: bcm2835: bcm2835_spi_handle_err(): fix NULL pointer deref for non DMA transfers
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    tcp: Fix data-races around sysctl_tcp_max_reordering.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    tcp: Fix a data-race around sysctl_tcp_rfc1337.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    tcp: Fix a data-race around sysctl_tcp_stdurg.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    tcp: Fix a data-race around sysctl_tcp_retrans_collapse.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    tcp: Fix data-races around sysctl_tcp_slow_start_after_idle.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    tcp: Fix a data-race around sysctl_tcp_thin_linear_timeouts.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    tcp: Fix data-races around sysctl_tcp_recovery.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    tcp: Fix a data-race around sysctl_tcp_early_retrans.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    tcp: Fix data-races around sysctl knobs related to SYN option.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    udp: Fix a data-race around sysctl_udp_l3mdev_accept.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    ipv4: Fix a data-race around sysctl_fib_multipath_use_neigh.
+
+Hristo Venev <hristo@venev.name>
+    be2net: Fix buffer overflow in be_get_module_eeprom
+
+Haibo Chen <haibo.chen@nxp.com>
+    gpio: pca953x: only use single read/write for No AI mode
+
+Piotr Skajewski <piotrx.skajewski@intel.com>
+    ixgbe: Add locking to prevent panic when setting sriov_numvfs to zero
+
+Dawid Lukwinski <dawid.lukwinski@intel.com>
+    i40e: Fix erroneous adapter reinitialization during recovery process
+
+Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
+    iavf: Fix handling of dummy receive descriptors
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    tcp: Fix data-races around sysctl_tcp_fastopen.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    tcp: Fix data-races around sysctl_max_syn_backlog.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    tcp: Fix a data-race around sysctl_tcp_tw_reuse.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    tcp: Fix a data-race around sysctl_tcp_notsent_lowat.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    tcp: Fix data-races around some timeout sysctl knobs.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    tcp: Fix data-races around sysctl_tcp_reordering.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    tcp: Fix data-races around sysctl_tcp_syncookies.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    igmp: Fix a data-race around sysctl_igmp_max_memberships.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    igmp: Fix data-races around sysctl_igmp_llm_reports.
+
+Tariq Toukan <tariqt@nvidia.com>
+    net/tls: Fix race in TLS device down flow
+
+Junxiao Chang <junxiao.chang@intel.com>
+    net: stmmac: fix dma queue left shift overflow issue
+
+Robert Hancock <robert.hancock@calian.com>
+    i2c: cadence: Change large transfer count reset logic to be unconditional
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    tcp: Fix a data-race around sysctl_tcp_probe_interval.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    tcp: Fix a data-race around sysctl_tcp_probe_threshold.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    tcp: Fix a data-race around sysctl_tcp_mtu_probe_floor.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    tcp: Fix data-races around sysctl_tcp_min_snd_mss.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    tcp: Fix data-races around sysctl_tcp_base_mss.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    tcp: Fix data-races around sysctl_tcp_mtu_probing.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    tcp/dccp: Fix a data-race around sysctl_tcp_fwmark_accept.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    ip: Fix a data-race around sysctl_fwmark_reflect.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    ip: Fix data-races around sysctl_ip_nonlocal_bind.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    ip: Fix data-races around sysctl_ip_fwd_use_pmtu.
+
+Kuniyuki Iwashima <kuniyu@amazon.com>
+    ip: Fix data-races around sysctl_ip_no_pmtu_disc.
+
+Lennert Buytenhek <buytenh@wantstofly.org>
+    igc: Reinstate IGC_REMOVED logic and implement it properly
+
+Peter Zijlstra <peterz@infradead.org>
+    perf/core: Fix data race between perf_event_set_output() and perf_mmap_close()
+
+William Dean <williamsukatube@gmail.com>
+    pinctrl: ralink: Check for null return of devm_kcalloc
+
+Miaoqian Lin <linmq006@gmail.com>
+    power/reset: arm-versatile: Fix refcount leak in versatile_reboot_probe
+
+Hangyu Hua <hbh25y@gmail.com>
+    xfrm: xfrm_policy: fix a possible double xfrm_pols_put() in xfrm_bundle_lookup()
+
+Pali Rohár <pali@kernel.org>
+    serial: mvebu-uart: correctly report configured baudrate value
+
+Jeffrey Hugo <quic_jhugo@quicinc.com>
+    PCI: hv: Fix interrupt mapping for multi-MSI
+
+Jeffrey Hugo <quic_jhugo@quicinc.com>
+    PCI: hv: Reuse existing IRTE allocation in compose_msi_msg()
+
+Jeffrey Hugo <quic_jhugo@quicinc.com>
+    PCI: hv: Fix hv_arch_irq_unmask() for multi-MSI
+
+Jeffrey Hugo <quic_jhugo@quicinc.com>
+    PCI: hv: Fix multi-MSI to allow more than one MSI vector
+
+Demi Marie Obenour <demi@invisiblethingslab.com>
+    xen/gntdev: Ignore failure to unmap INVALID_GRANT_HANDLE
+
+Eric Snowberg <eric.snowberg@oracle.com>
+    lockdown: Fix kexec lockdown bypass with ima policy
+
+Ido Schimmel <idosch@nvidia.com>
+    mlxsw: spectrum_router: Fix IPv4 nexthop gateway indication
+
+Ben Dooks <ben.dooks@codethink.co.uk>
+    riscv: add as-options for modules with assembly compontents
+
+Fabien Dessenne <fabien.dessenne@foss.st.com>
+    pinctrl: stm32: fix optional IRQ support to gpios
+
+
+-------------
+
+Diffstat:
+
+ Makefile                                           |   4 +-
+ arch/Kconfig                                       |  21 --
+ arch/alpha/kernel/srmcons.c                        |   2 +-
+ arch/arm/Kconfig                                   |   1 -
+ arch/arm64/Kconfig                                 |   1 -
+ arch/riscv/Makefile                                |   1 +
+ arch/s390/configs/debug_defconfig                  |   1 -
+ arch/x86/Kconfig                                   |   1 -
+ arch/x86/include/asm/asm.h                         |   6 -
+ arch/x86/include/asm/refcount.h                    | 126 ----------
+ arch/x86/include/asm/uaccess.h                     | 154 +++++++++++-
+ arch/x86/include/asm/uaccess_32.h                  |  27 ---
+ arch/x86/include/asm/uaccess_64.h                  | 108 +--------
+ arch/x86/kernel/cpu/mce/core.c                     |  34 +--
+ arch/x86/mm/extable.c                              |  49 ----
+ drivers/crypto/chelsio/chtls/chtls_cm.c            |   6 +-
+ drivers/gpio/gpio-pca953x.c                        |   3 +
+ drivers/gpu/drm/i915/Kconfig.debug                 |   1 -
+ drivers/i2c/busses/i2c-cadence.c                   |  30 +--
+ drivers/misc/lkdtm/refcount.c                      |   8 -
+ drivers/net/ethernet/emulex/benet/be_cmds.c        |  10 +-
+ drivers/net/ethernet/emulex/benet/be_cmds.h        |   2 +-
+ drivers/net/ethernet/emulex/benet/be_ethtool.c     |  31 ++-
+ drivers/net/ethernet/intel/i40e/i40e_main.c        |  13 +-
+ drivers/net/ethernet/intel/iavf/iavf_txrx.c        |   5 +-
+ drivers/net/ethernet/intel/igc/igc_regs.h          |   2 +
+ drivers/net/ethernet/intel/ixgbe/ixgbe.h           |   1 +
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c      |   3 +
+ drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c     |   6 +
+ .../net/ethernet/mellanox/mlxsw/spectrum_router.c  |   2 +-
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c  |   3 +
+ drivers/net/usb/ax88179_178a.c                     |  16 +-
+ drivers/pci/controller/pci-hyperv.c                | 100 ++++++--
+ drivers/pinctrl/stm32/pinctrl-stm32.c              |  18 +-
+ drivers/power/reset/arm-versatile-reboot.c         |   1 +
+ drivers/s390/char/keyboard.h                       |   4 +-
+ drivers/spi/spi-bcm2835.c                          |  12 +-
+ drivers/staging/mt7621-pinctrl/pinctrl-rt2880.c    |   2 +
+ drivers/staging/speakup/spk_ttyio.c                |   4 +-
+ drivers/tty/cyclades.c                             |   6 +-
+ drivers/tty/goldfish.c                             |   2 +-
+ drivers/tty/moxa.c                                 |   4 +-
+ drivers/tty/pty.c                                  |  14 +-
+ drivers/tty/serial/lpc32xx_hs.c                    |   2 +-
+ drivers/tty/serial/mvebu-uart.c                    |  25 +-
+ drivers/tty/tty_buffer.c                           |  66 +++--
+ drivers/tty/vt/keyboard.c                          |   6 +-
+ drivers/tty/vt/vt.c                                |   2 +-
+ drivers/xen/gntdev.c                               |   3 +-
+ fs/dlm/lock.c                                      |   3 +-
+ include/linux/bitfield.h                           |  19 +-
+ include/linux/mm.h                                 |   1 +
+ include/linux/mmap_lock.h                          |  54 +++++
+ include/linux/refcount.h                           | 269 ++++++++++++++++++---
+ include/linux/tty_flip.h                           |   4 +-
+ include/net/bluetooth/bluetooth.h                  |  65 +++++
+ include/net/inet_sock.h                            |   5 +-
+ include/net/ip.h                                   |   4 +-
+ include/net/tcp.h                                  |   9 +-
+ include/net/udp.h                                  |   2 +-
+ kernel/bpf/core.c                                  |   8 +-
+ kernel/events/core.c                               |  45 ++--
+ lib/refcount.c                                     | 255 +++----------------
+ mm/mempolicy.c                                     |   2 +-
+ net/bluetooth/rfcomm/core.c                        |  50 +++-
+ net/bluetooth/rfcomm/sock.c                        |  46 +---
+ net/bluetooth/sco.c                                |  30 +--
+ net/core/filter.c                                  |   4 +-
+ net/core/secure_seq.c                              |   4 +-
+ net/ipv4/af_inet.c                                 |   4 +-
+ net/ipv4/fib_semantics.c                           |   2 +-
+ net/ipv4/icmp.c                                    |   2 +-
+ net/ipv4/igmp.c                                    |  23 +-
+ net/ipv4/route.c                                   |   2 +-
+ net/ipv4/syncookies.c                              |   9 +-
+ net/ipv4/tcp.c                                     |  10 +-
+ net/ipv4/tcp_fastopen.c                            |   4 +-
+ net/ipv4/tcp_input.c                               |  51 ++--
+ net/ipv4/tcp_ipv4.c                                |   2 +-
+ net/ipv4/tcp_metrics.c                             |   3 +-
+ net/ipv4/tcp_minisocks.c                           |   2 +-
+ net/ipv4/tcp_output.c                              |  29 +--
+ net/ipv4/tcp_recovery.c                            |   6 +-
+ net/ipv4/tcp_timer.c                               |  20 +-
+ net/ipv6/af_inet6.c                                |   2 +-
+ net/ipv6/syncookies.c                              |   3 +-
+ net/sctp/protocol.c                                |   2 +-
+ net/tls/tls_device.c                               |   8 +-
+ net/xfrm/xfrm_policy.c                             |   5 +-
+ net/xfrm/xfrm_state.c                              |   2 +-
+ security/integrity/ima/Kconfig                     |  12 +-
+ security/integrity/ima/ima_policy.c                |   4 +
+ sound/core/memalloc.c                              |   1 +
+ 93 files changed, 1046 insertions(+), 990 deletions(-)
 
 
