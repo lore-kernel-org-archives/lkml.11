@@ -2,132 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9D89C19F2D
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:27:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98A7EC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:27:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236920AbiG0Q1D (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:27:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49904 "EHLO
+        id S236162AbiG0Q1G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:27:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235176AbiG0Q0M (ORCPT
+        with ESMTP id S236800AbiG0Q02 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:26:12 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC3974D4C1;
-        Wed, 27 Jul 2022 09:23:42 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id oy13so32417241ejb.1;
-        Wed, 27 Jul 2022 09:23:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=++nWJk4Cva+vsdrhaueMv6rlXc4xrPaOvWuiySUp564=;
-        b=N6N1V+wZjLgUfbcM4Y+kxoXzi6s6DdSLzlDU5SNNa3b/KrkQR3nNblpl10rgwsfLe8
-         aOHBitqkf952yxl59Bd4AhbLjwF5U3ITnJAIodStpw0LttES8jr2VpDIBJmPrafv383d
-         6belogoHYAfyk3NtAJIC+cBoBVwqwGtL76YdC8CEwNwJKvPTeqzvk7xtUK3zP8nSmrG+
-         k1bqmbCxrVKpWpKoXwyyUfj7MyoqrX9liYhOPFEdj3hlto919ik/j8ExouVjbxhW0FPr
-         LhXxVn9ni42GRAnc0alEF4hj3ZgmnS4URS5kY333h3LVar31rtaWYoVIECLaibFoUrY8
-         jCdw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=++nWJk4Cva+vsdrhaueMv6rlXc4xrPaOvWuiySUp564=;
-        b=QfgsD7mO61gNO6+VYbRTvuJ8sP17+dB/aP6mxsWOJOUfqUd/JTImaMRrAHqVJFGgxb
-         X1eKfmxgC0sLWmPgO+SXc95IatX2I6k/sicnv7PeRyhAcouRJOaocvFp+3rEFutpCIUE
-         SaYvA4u0Czkmp2McODCYVLjRxcAJCm3Nju08W8r0jkZq1chkvW7hOUBDC1gIQVfouDJ2
-         FwMxHnSaLiRv9LK0iz/KUR1EiwItkmgzQKCrxuLkU60IcTxASvdVYMQZLsEI5edlWhFM
-         RzriBnujxzBjWQPmUhyrFgVtt+6jOsCHP6j7w/WEOoJO67rn6eBAoy+ZYW/9TZV0UaX2
-         1E/w==
-X-Gm-Message-State: AJIora8LOwIG8+OQynKgyXHjXkUNjJnI/cxc02LmV9a/H/rJnNqngZZc
-        lkPtiaSLgca1Go01goKQ6qELGCjF/9OChpX3LGYH97WX
-X-Google-Smtp-Source: AGRyM1tZ/A8JpWOGX4VcAQo8Th3v85UKE/GuWnHTam94qRdbRNe3aCZcC8GzLjx7RgWZ0kF6BIznJOAIWh8jNnDFcJs=
-X-Received: by 2002:a17:907:a427:b0:72b:8cc5:5487 with SMTP id
- sg39-20020a170907a42700b0072b8cc55487mr18060749ejc.354.1658939020893; Wed, 27
- Jul 2022 09:23:40 -0700 (PDT)
+        Wed, 27 Jul 2022 12:26:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68AC54D179;
+        Wed, 27 Jul 2022 09:23:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B3EA61995;
+        Wed, 27 Jul 2022 16:23:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FC36C433D6;
+        Wed, 27 Jul 2022 16:23:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658939023;
+        bh=jNEKLf54zl2KwmjY+c4vxV4Lcye4TS306qtU0o1laFk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=tpd9LB0uZJh1FB2Yry+3OMitGKmeAMcv23kvoL7jTah7RhuDhQjrZqEiLt1JgZno9
+         z7LLD1dXZs+YKpUINHIaBFa2Zd6wDpv5hLlDnfMrEyh6HeBfjSfeNeDVzvUTSuVLqb
+         M86WmowURtLh0IRX92kfVnMjtXLBHdX9PTQ2qnds=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Subject: [PATCH 4.14 24/37] Bluetooth: RFCOMM: Replace use of memcpy_from_msg with bt_skb_sendmmsg
+Date:   Wed, 27 Jul 2022 18:10:50 +0200
+Message-Id: <20220727161001.819953752@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220727161000.822869853@linuxfoundation.org>
+References: <20220727161000.822869853@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220725211612.7e3331ff@canb.auug.org.au> <f10da3c3-f688-b948-c058-28a448bec0d5@amd.com>
-In-Reply-To: <f10da3c3-f688-b948-c058-28a448bec0d5@amd.com>
-From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Wed, 27 Jul 2022 12:23:29 -0400
-Message-ID: <CADnq5_MQQJdZ9o6b9OXah+399zY6wCs8WX=g0cF4fXo=sR5kmw@mail.gmail.com>
-Subject: Re: linux-next: build failure after merge of the amdgpu tree
-To:     Rodrigo Siqueira Jordao <Rodrigo.Siqueira@amd.com>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 12:21 PM Rodrigo Siqueira Jordao
-<Rodrigo.Siqueira@amd.com> wrote:
->
->
->
-> On 2022-07-25 07:16, Stephen Rothwell wrote:
-> > Hi all,
-> >
-> > After merging the amdgpu tree, today's linux-next build (powerpc
-> > allyesconfig) failed like this:
-> >
-> > drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm_crtc.c:297:26: error: 'amdgpu_dm_crtc_late_register' undeclared here (not in a function); did you mean 'amdgpu_umc_ras_late_init'?
-> >    297 |         .late_register = amdgpu_dm_crtc_late_register,
-> >        |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> >        |                          amdgpu_umc_ras_late_init
-> >
-> > Caused by commit
-> >
-> >    a6c0b96cb899 ("drm/amd/display: Create a file dedicated for CRTC")
-> >
-> > I have applied the following hack for today (just to make it build).
-> >
-> > From: Stephen Rothwell <sfr@canb.auug.org.au>
-> > Date: Mon, 25 Jul 2022 20:48:29 +1000
-> > Subject: [PATCH] fixup for "drm/amd/display: Create a file dedicated for CRTC"
-> >
-> > Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> > ---
-> >   drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_crtc.c | 2 +-
-> >   1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_crtc.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_crtc.c
-> > index 16b624828e0d..3eb6ea3709bc 100644
-> > --- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_crtc.c
-> > +++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_crtc.c
-> > @@ -293,7 +293,7 @@ static const struct drm_crtc_funcs amdgpu_dm_crtc_funcs = {
-> >       .enable_vblank = dm_enable_vblank,
-> >       .disable_vblank = dm_disable_vblank,
-> >       .get_vblank_timestamp = drm_crtc_vblank_helper_get_vblank_timestamp,
-> > -#if defined(CONFIG_DEBUG_FS)
-> > +#ifdef CONFIG_DRM_AMD_SECURE_DISPLAY
->
-> I guess we had a merge issue here?
->
-> If you check the original patch [1,2], you will see:
->
-> +#if defined(CONFIG_DRM_AMD_SECURE_DISPLAY)
-> +       .late_register = amdgpu_dm_crtc_late_register,
-> +#endif
->
-> Anyway, maybe you want to use the above code to keep both branches in sync.
->
-> 1.
-> https://lore.kernel.org/amd-gfx/20220715181705.1030401-10-Rodrigo.Siqueira@amd.com/
-> 2.
-> https://gitlab.freedesktop.org/agd5f/linux/-/blob/amd-staging-drm-next/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_crtc.c#L297
->
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 
-There was a conflict with another patch in drm-misc that changed this
-code.  I'ved fixed it up properly in my drm-next branch.
+commit 81be03e026dc0c16dc1c64e088b2a53b73caa895 upstream.
 
-Alex
+This makes use of bt_skb_sendmmsg instead using memcpy_from_msg which
+is not considered safe to be used when lock_sock is held.
 
-> Thanks
-> Siqueira
->
-> >       .late_register = amdgpu_dm_crtc_late_register,
-> >   #endif
-> >   };
->
+Also make rfcomm_dlc_send handle skb with fragments and queue them all
+atomically.
+
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Cc: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ net/bluetooth/rfcomm/core.c |   50 +++++++++++++++++++++++++++++++++++++-------
+ net/bluetooth/rfcomm/sock.c |   50 ++++++++++----------------------------------
+ 2 files changed, 55 insertions(+), 45 deletions(-)
+
+--- a/net/bluetooth/rfcomm/core.c
++++ b/net/bluetooth/rfcomm/core.c
+@@ -552,22 +552,58 @@ struct rfcomm_dlc *rfcomm_dlc_exists(bda
+ 	return dlc;
+ }
+ 
++static int rfcomm_dlc_send_frag(struct rfcomm_dlc *d, struct sk_buff *frag)
++{
++	int len = frag->len;
++
++	BT_DBG("dlc %p mtu %d len %d", d, d->mtu, len);
++
++	if (len > d->mtu)
++		return -EINVAL;
++
++	rfcomm_make_uih(frag, d->addr);
++	__skb_queue_tail(&d->tx_queue, frag);
++
++	return len;
++}
++
+ int rfcomm_dlc_send(struct rfcomm_dlc *d, struct sk_buff *skb)
+ {
+-	int len = skb->len;
++	unsigned long flags;
++	struct sk_buff *frag, *next;
++	int len;
+ 
+ 	if (d->state != BT_CONNECTED)
+ 		return -ENOTCONN;
+ 
+-	BT_DBG("dlc %p mtu %d len %d", d, d->mtu, len);
++	frag = skb_shinfo(skb)->frag_list;
++	skb_shinfo(skb)->frag_list = NULL;
+ 
+-	if (len > d->mtu)
+-		return -EINVAL;
++	/* Queue all fragments atomically. */
++	spin_lock_irqsave(&d->tx_queue.lock, flags);
++
++	len = rfcomm_dlc_send_frag(d, skb);
++	if (len < 0 || !frag)
++		goto unlock;
++
++	for (; frag; frag = next) {
++		int ret;
++
++		next = frag->next;
++
++		ret = rfcomm_dlc_send_frag(d, frag);
++		if (ret < 0) {
++			kfree_skb(frag);
++			goto unlock;
++		}
++
++		len += ret;
++	}
+ 
+-	rfcomm_make_uih(skb, d->addr);
+-	skb_queue_tail(&d->tx_queue, skb);
++unlock:
++	spin_unlock_irqrestore(&d->tx_queue.lock, flags);
+ 
+-	if (!test_bit(RFCOMM_TX_THROTTLED, &d->flags))
++	if (len > 0 && !test_bit(RFCOMM_TX_THROTTLED, &d->flags))
+ 		rfcomm_schedule();
+ 	return len;
+ }
+--- a/net/bluetooth/rfcomm/sock.c
++++ b/net/bluetooth/rfcomm/sock.c
+@@ -578,47 +578,21 @@ static int rfcomm_sock_sendmsg(struct so
+ 	lock_sock(sk);
+ 
+ 	sent = bt_sock_wait_ready(sk, msg->msg_flags);
+-	if (sent)
+-		goto done;
+-
+-	while (len) {
+-		size_t size = min_t(size_t, len, d->mtu);
+-		int err;
+-
+-		skb = sock_alloc_send_skb(sk, size + RFCOMM_SKB_RESERVE,
+-				msg->msg_flags & MSG_DONTWAIT, &err);
+-		if (!skb) {
+-			if (sent == 0)
+-				sent = err;
+-			break;
+-		}
+-		skb_reserve(skb, RFCOMM_SKB_HEAD_RESERVE);
+-
+-		err = memcpy_from_msg(skb_put(skb, size), msg, size);
+-		if (err) {
+-			kfree_skb(skb);
+-			if (sent == 0)
+-				sent = err;
+-			break;
+-		}
+-
+-		skb->priority = sk->sk_priority;
+-
+-		err = rfcomm_dlc_send(d, skb);
+-		if (err < 0) {
+-			kfree_skb(skb);
+-			if (sent == 0)
+-				sent = err;
+-			break;
+-		}
+-
+-		sent += size;
+-		len  -= size;
+-	}
+ 
+-done:
+ 	release_sock(sk);
+ 
++	if (sent)
++		return sent;
++
++	skb = bt_skb_sendmmsg(sk, msg, len, d->mtu, RFCOMM_SKB_HEAD_RESERVE,
++			      RFCOMM_SKB_TAIL_RESERVE);
++	if (IS_ERR_OR_NULL(skb))
++		return PTR_ERR(skb);
++
++	sent = rfcomm_dlc_send(d, skb);
++	if (sent < 0)
++		kfree_skb(skb);
++
+ 	return sent;
+ }
+ 
+
+
