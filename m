@@ -2,122 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F077C19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 15:24:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACC8BC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 15:26:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232883AbiG0PYR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 11:24:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34524 "EHLO
+        id S233175AbiG0P0X (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 11:26:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233785AbiG0PYN (ORCPT
+        with ESMTP id S229526AbiG0P0U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 11:24:13 -0400
-X-Greylist: delayed 528 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 27 Jul 2022 08:24:10 PDT
-Received: from serv108.segi.ulg.ac.be (serv108.segi.ulg.ac.be [139.165.32.111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14F8547B95;
-        Wed, 27 Jul 2022 08:24:09 -0700 (PDT)
-Received: from [31.133.137.93] (dhcp-895d.meeting.ietf.org [31.133.137.93])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by serv108.segi.ulg.ac.be (Postfix) with ESMTPSA id 76039200DF96;
-        Wed, 27 Jul 2022 17:15:15 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 76039200DF96
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
-        s=ulg20190529; t=1658934916;
-        bh=I848GIMG+rr1vSQNnER5ZP2Oz/37p0WtxAU9zeysw/I=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=kQ14gRdmvnxnQkRtSxXOGlkfGEkGd+/lwkS5LaE1/zcdeL5o9gJaxqmMh/gVTcY4U
-         msClq4fhT2aOmVaFcjnQNNkpwNcfkH+K2zE93PkazIdEnzeWsDOdFfKNltlJRTDEe7
-         jbfjoFIB2sZORqQUxpkDVP0Xb81zbBIY9Xlh3u0tQm8lsmGOUr0chyghO03PF1EXoN
-         l0PDUQNZXezrQoKNV9AkJZNc0qXxs9EKhGkH3ri+wSFKLc4NKrfQx0LpUUJ4eWAtxT
-         mc4Z4QShFTtAiq1lwPOzESKqVzlPWFIjzgMHikik5jLEqLXmsDr4ODjpvCsBMU5jdW
-         IstyOlvhX7aOg==
-Message-ID: <8810d090-3fcb-0e93-ce5d-e88abb421dba@uliege.be>
-Date:   Wed, 27 Jul 2022 11:15:13 -0400
+        Wed, 27 Jul 2022 11:26:20 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 785DC3336E;
+        Wed, 27 Jul 2022 08:26:19 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id ABAA5113E;
+        Wed, 27 Jul 2022 08:26:19 -0700 (PDT)
+Received: from bogus (unknown [10.57.11.51])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E04EB3F73B;
+        Wed, 27 Jul 2022 08:26:16 -0700 (PDT)
+Date:   Wed, 27 Jul 2022 16:26:13 +0100
+From:   Sudeep Holla <sudeep.holla@arm.com>
+To:     Anup Patel <anup@brainfault.org>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Anup Patel <apatel@ventanamicro.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andrew Jones <ajones@ventanamicro.com>,
+        Atish Patra <atishp@atishpatra.org>,
+        Samuel Holland <samuel@sholland.org>,
+        devicetree@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] dt-bindings: riscv: Add optional DT property
+ riscv,timer-can-wake-cpu
+Message-ID: <20220727152613.kbhfnvekpkd7na72@bogus>
+References: <20220727114302.302201-1-apatel@ventanamicro.com>
+ <20220727114302.302201-2-apatel@ventanamicro.com>
+ <372e37bf-ac90-c371-ad9e-b9c18e1cc059@linaro.org>
+ <20220727124556.owk3zlyzsg5uaa4t@bogus>
+ <CAAhSdy0TSKhR8_2eU7pmgizybuxPbwAycn4YudvkfGWGbnXNtQ@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] selftests: net: fix IOAM test skip return code
-Content-Language: en-US
-To:     Kleber Sacilotto de Souza <kleber.souza@canonical.com>,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>
-References: <20220727093742.115882-1-kleber.souza@canonical.com>
-From:   Justin Iurman <justin.iurman@uliege.be>
-In-Reply-To: <20220727093742.115882-1-kleber.souza@canonical.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAAhSdy0TSKhR8_2eU7pmgizybuxPbwAycn4YudvkfGWGbnXNtQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/27/22 11:37, Kleber Sacilotto de Souza wrote:
-> The ioam6.sh test script exits with an error code (1) when tests are
-> skipped due to lack of support from userspace/kernel or not enough
-> permissions. It should return the kselftests SKIP code instead.
+On Wed, Jul 27, 2022 at 07:15:28PM +0530, Anup Patel wrote:
+> Hi Sudeep,
 > 
-> Signed-off-by: Kleber Sacilotto de Souza <kleber.souza@canonical.com>
-> ---
->   tools/testing/selftests/net/ioam6.sh | 12 +++++++-----
->   1 file changed, 7 insertions(+), 5 deletions(-)
+> On Wed, Jul 27, 2022 at 6:16 PM Sudeep Holla <sudeep.holla@arm.com> wrote:
+> >
+> > On Wed, Jul 27, 2022 at 02:07:50PM +0200, Krzysztof Kozlowski wrote:
+> > > On 27/07/2022 13:43, Anup Patel wrote:
+> > > > We add an optional DT property riscv,timer-can-wake-cpu which if present
+> > > > in CPU DT node then CPU timer is always powered-on and never loses context.
+> > > >
+> > > > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+> > > > ---
+> > > >  Documentation/devicetree/bindings/riscv/cpus.yaml | 6 ++++++
+> > > >  1 file changed, 6 insertions(+)
+> > > >
+> > > > diff --git a/Documentation/devicetree/bindings/riscv/cpus.yaml b/Documentation/devicetree/bindings/riscv/cpus.yaml
+> > > > index d632ac76532e..b60b64b4113a 100644
+> > > > --- a/Documentation/devicetree/bindings/riscv/cpus.yaml
+> > > > +++ b/Documentation/devicetree/bindings/riscv/cpus.yaml
+> > > > @@ -78,6 +78,12 @@ properties:
+> > > >        - rv64imac
+> > > >        - rv64imafdc
+> > > >
+> > > > +  riscv,timer-can-wake-cpu:
+> > > > +    type: boolean
+> > > > +    description:
+> > > > +      If present, the timer interrupt can wake up the CPU from
+> > > > +      suspend/idle state.
+> > >
+> > > Isn't this a property of a timer, not CPU? IOW, your timer node should
+> > > have "wakeup-source" property.
+> > >
+> >
+> > I agree on the concept that this is property of the timer and not CPU.
+> > However we generally don't need to use wakeup-source property for timer
+> > as we ideally use this for waking up from system sleep state and we don't
+> > want to be running timer when we enter the state.
 > 
-> diff --git a/tools/testing/selftests/net/ioam6.sh b/tools/testing/selftests/net/ioam6.sh
-> index a2b9fad5a9a6..4ceb401da1bf 100755
-> --- a/tools/testing/selftests/net/ioam6.sh
-> +++ b/tools/testing/selftests/net/ioam6.sh
-> @@ -117,6 +117,8 @@
->   #        | Schema Data         |                                     |
->   #        +-----------------------------------------------------------+
->   
-> +# Kselftest framework requirement - SKIP code is 4.
-> +ksft_skip=4
->   
->   ################################################################################
->   #                                                                              #
-> @@ -211,7 +213,7 @@ check_kernel_compatibility()
->       echo "SKIP: kernel version probably too old, missing ioam support"
->       ip link del veth0 2>/dev/null || true
->       ip netns del ioam-tmp-node || true
-> -    exit 1
-> +    exit $ksft_skip
->     fi
->   
->     ip -netns ioam-tmp-node route add db02::/64 encap ioam6 mode inline \
-> @@ -227,7 +229,7 @@ check_kernel_compatibility()
->            "without CONFIG_IPV6_IOAM6_LWTUNNEL?"
->       ip link del veth0 2>/dev/null || true
->       ip netns del ioam-tmp-node || true
-> -    exit 1
-> +    exit $ksft_skip
->     fi
->   
->     ip link del veth0 2>/dev/null || true
-> @@ -752,20 +754,20 @@ nfailed=0
->   if [ "$(id -u)" -ne 0 ]
->   then
->     echo "SKIP: Need root privileges"
-> -  exit 1
-> +  exit $ksft_skip
->   fi
->   
->   if [ ! -x "$(command -v ip)" ]
->   then
->     echo "SKIP: Could not run test without ip tool"
-> -  exit 1
-> +  exit $ksft_skip
->   fi
->   
->   ip ioam &>/dev/null
->   if [ $? = 1 ]
->   then
->     echo "SKIP: iproute2 too old, missing ioam command"
-> -  exit 1
-> +  exit $ksft_skip
->   fi
->   
->   check_kernel_compatibility
+> It seems ARM is using two separate timer DT properties: one for
+> system suspend (i.e. arm,no-tick-in-suspend) and another for CPU
+> system (i.e. always-on). Is this understanding correct ?
+>
 
-LGTM, thanks.
+TBH, I hadn't looked at "arm,no-tick-in-suspend" before though it seem to
+be there for few years now. Based on the log, I see this as quirk for some
+platform and not used on many platforms. Ideally to account how much time
+was spent in suspend, we could use the counter as it continues to tick
+during the suspend as well i.e. just the timers are not available if
+not always. This was added to handle systems that are not conformant to
+the expectation of always available counter.
 
-Reviewed-by: Justin Iurman <justin.iurman@uliege.be>
+-- 
+Regards,
+Sudeep
