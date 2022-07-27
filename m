@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E00DC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:52:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADF10C19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:52:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240881AbiG0Qwx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:52:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55454 "EHLO
+        id S240889AbiG0Qw4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:52:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240775AbiG0QwM (ORCPT
+        with ESMTP id S240813AbiG0QwO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:52:12 -0400
+        Wed, 27 Jul 2022 12:52:14 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1E1854667;
-        Wed, 27 Jul 2022 09:34:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF96D4C61A;
+        Wed, 27 Jul 2022 09:34:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E81C61A3F;
-        Wed, 27 Jul 2022 16:34:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A02B5C433D7;
-        Wed, 27 Jul 2022 16:34:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C36661A7E;
+        Wed, 27 Jul 2022 16:34:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69BCBC433C1;
+        Wed, 27 Jul 2022 16:34:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939641;
-        bh=RUd5dWlWT5NpwVFbuDCpuP3rASZUwSAnYpaVibavCDI=;
+        s=korg; t=1658939643;
+        bh=b1zYqBD/WqElTEuUwmtzh0IfW8TiO4wTB0nofd3g2Yk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TK1gdXgHDDHDXOznamLlLu6TROy0LQ8fp1Pahz6m14vMXJ+7SBgjmblNAz69R52IA
-         DY2V/1hE30LZzYB8n8gSdtQo2kNwFWoHSIplr4KTpn23eJayaVdaBk/haQpZCkSAYT
-         dIEYhR+/Os3SM6PGUmpgl847WQCDoF1bi6b873VA=
+        b=vOftltn1uzG4v19tOKOeCzM9KkBt/bP4ZKRiZFN4sCeOIYYmokrQ8xVzhU85c7PvX
+         e5QQaeWOJOsj48MUx61dQtC2FflTa8X9hX8Yrrf7h2ByaAiQn2rvLrauMZfLbOTpJn
+         rRrz5QPsMI9g47T/wqvoz7iTcmOCNdKbcpAUErUQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 051/105] tcp: Fix data-races around some timeout sysctl knobs.
-Date:   Wed, 27 Jul 2022 18:10:37 +0200
-Message-Id: <20220727161014.145255276@linuxfoundation.org>
+Subject: [PATCH 5.10 022/105] xfrm: xfrm_policy: fix a possible double xfrm_pols_put() in xfrm_bundle_lookup()
+Date:   Wed, 27 Jul 2022 18:10:08 +0200
+Message-Id: <20220727161012.982229722@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161012.056867467@linuxfoundation.org>
 References: <20220727161012.056867467@linuxfoundation.org>
@@ -49,117 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-[ Upstream commit 39e24435a776e9de5c6dd188836cf2523547804b ]
+[ Upstream commit f85daf0e725358be78dfd208dea5fd665d8cb901 ]
 
-While reading these sysctl knobs, they can be changed concurrently.
-Thus, we need to add READ_ONCE() to their readers.
+xfrm_policy_lookup() will call xfrm_pol_hold_rcu() to get a refcount of
+pols[0]. This refcount can be dropped in xfrm_expand_policies() when
+xfrm_expand_policies() return error. pols[0]'s refcount is balanced in
+here. But xfrm_bundle_lookup() will also call xfrm_pols_put() with
+num_pols == 1 to drop this refcount when xfrm_expand_policies() return
+error.
 
-  - tcp_retries1
-  - tcp_retries2
-  - tcp_orphan_retries
-  - tcp_fin_timeout
+This patch also fix an illegal address access. pols[0] will save a error
+point when xfrm_policy_lookup fails. This lead to xfrm_pols_put to resolve
+an illegal address in xfrm_bundle_lookup's error path.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fix these by setting num_pols = 0 in xfrm_expand_policies()'s error path.
+
+Fixes: 80c802f3073e ("xfrm: cache bundles instead of policies for outgoing flows")
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/tcp.h     |  3 ++-
- net/ipv4/tcp.c        |  2 +-
- net/ipv4/tcp_output.c |  2 +-
- net/ipv4/tcp_timer.c  | 10 +++++-----
- 4 files changed, 9 insertions(+), 8 deletions(-)
+ net/xfrm/xfrm_policy.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 9ef9fd0677b5..da75513a77d4 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -1477,7 +1477,8 @@ static inline u32 keepalive_time_elapsed(const struct tcp_sock *tp)
- 
- static inline int tcp_fin_time(const struct sock *sk)
- {
--	int fin_timeout = tcp_sk(sk)->linger2 ? : sock_net(sk)->ipv4.sysctl_tcp_fin_timeout;
-+	int fin_timeout = tcp_sk(sk)->linger2 ? :
-+		READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_fin_timeout);
- 	const int rto = inet_csk(sk)->icsk_rto;
- 
- 	if (fin_timeout < (rto << 2) - (rto >> 1))
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 5582b05d0638..6cd5ce3eac0c 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -3727,7 +3727,7 @@ static int do_tcp_getsockopt(struct sock *sk, int level,
- 	case TCP_LINGER2:
- 		val = tp->linger2;
- 		if (val >= 0)
--			val = (val ? : net->ipv4.sysctl_tcp_fin_timeout) / HZ;
-+			val = (val ? : READ_ONCE(net->ipv4.sysctl_tcp_fin_timeout)) / HZ;
- 		break;
- 	case TCP_DEFER_ACCEPT:
- 		val = retrans_to_secs(icsk->icsk_accept_queue.rskq_defer_accept,
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index b58697336bd4..e7348e70e6e3 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -4092,7 +4092,7 @@ void tcp_send_probe0(struct sock *sk)
- 
- 	icsk->icsk_probes_out++;
- 	if (err <= 0) {
--		if (icsk->icsk_backoff < net->ipv4.sysctl_tcp_retries2)
-+		if (icsk->icsk_backoff < READ_ONCE(net->ipv4.sysctl_tcp_retries2))
- 			icsk->icsk_backoff++;
- 		timeout = tcp_probe0_when(sk, TCP_RTO_MAX);
- 	} else {
-diff --git a/net/ipv4/tcp_timer.c b/net/ipv4/tcp_timer.c
-index da92c5d70b70..e20fd86a2a89 100644
---- a/net/ipv4/tcp_timer.c
-+++ b/net/ipv4/tcp_timer.c
-@@ -143,7 +143,7 @@ static int tcp_out_of_resources(struct sock *sk, bool do_reset)
-  */
- static int tcp_orphan_retries(struct sock *sk, bool alive)
- {
--	int retries = sock_net(sk)->ipv4.sysctl_tcp_orphan_retries; /* May be zero. */
-+	int retries = READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_orphan_retries); /* May be zero. */
- 
- 	/* We know from an ICMP that something is wrong. */
- 	if (sk->sk_err_soft && !alive)
-@@ -242,14 +242,14 @@ static int tcp_write_timeout(struct sock *sk)
- 		retry_until = icsk->icsk_syn_retries ? : net->ipv4.sysctl_tcp_syn_retries;
- 		expired = icsk->icsk_retransmits >= retry_until;
- 	} else {
--		if (retransmits_timed_out(sk, net->ipv4.sysctl_tcp_retries1, 0)) {
-+		if (retransmits_timed_out(sk, READ_ONCE(net->ipv4.sysctl_tcp_retries1), 0)) {
- 			/* Black hole detection */
- 			tcp_mtu_probing(icsk, sk);
- 
- 			__dst_negative_advice(sk);
- 		}
- 
--		retry_until = net->ipv4.sysctl_tcp_retries2;
-+		retry_until = READ_ONCE(net->ipv4.sysctl_tcp_retries2);
- 		if (sock_flag(sk, SOCK_DEAD)) {
- 			const bool alive = icsk->icsk_rto < TCP_RTO_MAX;
- 
-@@ -380,7 +380,7 @@ static void tcp_probe_timer(struct sock *sk)
- 		 msecs_to_jiffies(icsk->icsk_user_timeout))
- 		goto abort;
- 
--	max_probes = sock_net(sk)->ipv4.sysctl_tcp_retries2;
-+	max_probes = READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_retries2);
- 	if (sock_flag(sk, SOCK_DEAD)) {
- 		const bool alive = inet_csk_rto_backoff(icsk, TCP_RTO_MAX) < TCP_RTO_MAX;
- 
-@@ -585,7 +585,7 @@ void tcp_retransmit_timer(struct sock *sk)
+diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+index 93cbcc8f9b39..603b05ed7eb4 100644
+--- a/net/xfrm/xfrm_policy.c
++++ b/net/xfrm/xfrm_policy.c
+@@ -2680,8 +2680,10 @@ static int xfrm_expand_policies(const struct flowi *fl, u16 family,
+ 		*num_xfrms = 0;
+ 		return 0;
  	}
- 	inet_csk_reset_xmit_timer(sk, ICSK_TIME_RETRANS,
- 				  tcp_clamp_rto_to_user_timeout(sk), TCP_RTO_MAX);
--	if (retransmits_timed_out(sk, net->ipv4.sysctl_tcp_retries1 + 1, 0))
-+	if (retransmits_timed_out(sk, READ_ONCE(net->ipv4.sysctl_tcp_retries1) + 1, 0))
- 		__sk_dst_reset(sk);
+-	if (IS_ERR(pols[0]))
++	if (IS_ERR(pols[0])) {
++		*num_pols = 0;
+ 		return PTR_ERR(pols[0]);
++	}
  
- out:;
+ 	*num_xfrms = pols[0]->xfrm_nr;
+ 
+@@ -2696,6 +2698,7 @@ static int xfrm_expand_policies(const struct flowi *fl, u16 family,
+ 		if (pols[1]) {
+ 			if (IS_ERR(pols[1])) {
+ 				xfrm_pols_put(pols, *num_pols);
++				*num_pols = 0;
+ 				return PTR_ERR(pols[1]);
+ 			}
+ 			(*num_pols)++;
 -- 
 2.35.1
 
