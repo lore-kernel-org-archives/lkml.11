@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 168A1C19F29
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 21:06:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FDEEC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 21:06:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237637AbiG0VGQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 17:06:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55174 "EHLO
+        id S237738AbiG0VG0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 17:06:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237007AbiG0VFo (ORCPT
+        with ESMTP id S237164AbiG0VFr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 17:05:44 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC6EF6172B
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 14:04:21 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id w8-20020a05600c014800b003a32e89bc4eso92731wmm.5
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 14:04:21 -0700 (PDT)
+        Wed, 27 Jul 2022 17:05:47 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60D4861B0B
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 14:04:24 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id x23-20020a05600c179700b003a30e3e7989so118514wmo.0
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 14:04:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linexp-org.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=kpAJvHnsGVgVYdV6CGwRXamKol+XLg/BJyowOdExSUs=;
-        b=gBmx9wqQLoqOz1G8d20izBhuJqPdHv57Lnkp1oGme86ifNa1BX5VaVX6Qxni4w11x0
-         M5zasePCyPuhkkRG7E4ecxaZtVm3iRm5eHLpLZPBANzAUDlBB29l7RG7wxAdPCjmW+K8
-         I3ErWXL6Gwezl/+usLr2NQm7fGLJM1fjDkrbCY+RZSK7VCNfKlRaiEg79sLuQ6TtiXWb
-         BaaMSQ+T81j7SbXHZbGqpSl905NGyHTffwPDdGqHZXhrRr6lKrF0G2Z4cpEdNb8PTKnP
-         aneAxR3IUSJHYeTylaPGo2J/cIAjCJMsSXhMh8D3cOr3wS1Ms7vEJsdwrjb8KMZlxRj3
-         Figw==
+        bh=rnCGi6xpPST6ZeDBqGy3tzDc5ZKe/PTe7JtrBaBAkJQ=;
+        b=jKnz0njDpEzXq1qOrr+TJWGJdZvFvlo4FArE/EW5YE6q/mzqeKf1+4nbKUmMhOmI/s
+         6qM40soN0NJHu1gP/4TUQFr5YNmPZKZWCH6V6Nd/8PJeiVG4WUqx/1T9HlF9iDXcobTp
+         I5DwRgu1750bzLYhaJcGQVKxzEuKic5blAyJOrqX6mKIIWMXhlW1o99yTr5jAn7xSHXP
+         Nft3zYxnjWvO5343SLrGAp+mqAl0dfJIgG5d2xG7RdArB81fzpxEJrWaOpDAOlyEp6/A
+         O88QHHkclMjDzV8saCmLAh8L5LDAfxT7/KZLPrJjPWs+ZSdLy6OThfojI/OlzXEcsdI/
+         13Eg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=kpAJvHnsGVgVYdV6CGwRXamKol+XLg/BJyowOdExSUs=;
-        b=5Y29py/GyolYEuLjYpfaywYisUvHbdu24PKbxzDNQPI/UV7S383eqZHA3c+l7iWe7c
-         omHH5ShT6Ruk0Obf78ZZuKpzAvzZKIJIstYXUDMQ1B2Wg3UQM1WckMuqGJrCsv2IO4Qj
-         0o9yK2eYHTXn6Fac6NMA1yu30STfrwASaPrRtNVAP/DLmt/h4uEa9kkmKqY2QLWdg0Xu
-         bsj4efBl94xAWEFMjgQY8PknYWnngcn9zPjSmXKnmEYDGD3IWXQmzthC+aU6bQ8KXgfF
-         OCQVGnwK/UCOHIo67HzL5jJbprjZ6RQ9D16rvNkj4cgLqPNg/FYGicNiMdinGhDaEE4+
-         GWLQ==
-X-Gm-Message-State: AJIora/vba/TsBk68h0waWgBA7jZlwannSWqnsSLIO959PNOO8Cix303
-        8T5E2JOsQg8ncHudUkRsaoqkDg==
-X-Google-Smtp-Source: AGRyM1ugHIvYzT8GdJW8TvjMkyTFgxeT9hbgI4acFLt2PD9dNPAlJfHZAYPec9JkG0vYfhz8FRL5JA==
-X-Received: by 2002:a05:600c:1d1b:b0:3a3:e2:42d1 with SMTP id l27-20020a05600c1d1b00b003a300e242d1mr4242428wms.137.1658955858007;
-        Wed, 27 Jul 2022 14:04:18 -0700 (PDT)
+        bh=rnCGi6xpPST6ZeDBqGy3tzDc5ZKe/PTe7JtrBaBAkJQ=;
+        b=UNHGYv0xE0Oey8d4pR2LSb3JiXHepB9uiraWaIJSmRhKOGZ/5F7yBnbr5gMKi1sZs8
+         NDhVwv4mc/jSkk+rBZ1UMV4Cf/0B4vvw0avwuDxg078c/hiMfSS9tr5dOqQtYU/hixSa
+         ngpUjGhw6voCIjq9Kq2gtkNMhl2ZOZulyy/VYepYbmbyQYwIH5Vn2++VjzQNyU+H2NCb
+         j6nv1Xq+7GA5cIO0v7ahFvqPEamKX6oZAr+QyAsCLg3En1j0vZRikrAi9zcs4Af0U6nq
+         2jMnOVN2flz4L/NBEbWO95aJby/tjAOel8LsAskbhEr08FpxDd2QR/WlYKVo4bbKaM0t
+         CJIg==
+X-Gm-Message-State: AJIora9nx31Otvzvn493n8JOOeCT59a7yfFgl0VeMGy1Dt/1p2Lp2goM
+        3GmJBzQJ/Yigcjrlu2ut4yAgeg==
+X-Google-Smtp-Source: AGRyM1szxiU43+kQ1HDC7fH8/tRvSPGut666rRtlFyYczLGGo4Q4HXzTxHqpQwtCpbqNSz4f8qKFHQ==
+X-Received: by 2002:a05:600c:3ba3:b0:3a3:227b:f754 with SMTP id n35-20020a05600c3ba300b003a3227bf754mr4234756wms.64.1658955862418;
+        Wed, 27 Jul 2022 14:04:22 -0700 (PDT)
 Received: from mai.box.freepro.com ([2a05:6e02:1041:c10:65a8:ebd8:4098:d9d0])
-        by smtp.gmail.com with ESMTPSA id h6-20020a05600c350600b003a38606385esm37908wmq.3.2022.07.27.14.04.15
+        by smtp.gmail.com with ESMTPSA id h6-20020a05600c350600b003a38606385esm37908wmq.3.2022.07.27.14.04.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 14:04:17 -0700 (PDT)
+        Wed, 27 Jul 2022 14:04:22 -0700 (PDT)
 From:   Daniel Lezcano <daniel.lezcano@linexp.org>
 To:     daniel.lezcano@linaro.org, rafael@kernel.org
 Cc:     rui.zhang@intel.com, linux-pm@vger.kernel.org,
@@ -62,18 +62,16 @@ Cc:     rui.zhang@intel.com, linux-pm@vger.kernel.org,
         glaroque@baylibre.com, miquel.raynal@bootlin.com,
         shawnguo@kernel.org, niklas.soderlund@ragnatech.se,
         matthias.bgg@gmail.com, j-keerthy@ti.com,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        linux-input@vger.kernel.org (open list:INPUT (KEYBOARD, MOUSE, JOYSTICK
-        , TOUCHSCREEN)...),
-        linux-arm-kernel@lists.infradead.org (moderated list:ARM/Allwinner
-        sunXi SoC support),
-        linux-sunxi@lists.linux.dev (open list:ARM/Allwinner sunXi SoC support)
-Subject: [PATCH v3 28/32] Input: sun4i-ts - switch to new of thermal API
-Date:   Wed, 27 Jul 2022 23:02:49 +0200
-Message-Id: <20220727210253.3794069-29-daniel.lezcano@linexp.org>
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Bartlomiej Zolnierkiewicz <bzolnier@gmail.com>,
+        Amit Kucheria <amitk@kernel.org>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        linux-samsung-soc@vger.kernel.org (open list:SAMSUNG THERMAL DRIVER),
+        linux-arm-kernel@lists.infradead.org (moderated list:ARM/SAMSUNG S3C,
+        S5P AND EXYNOS ARM ARCHITECTURES)
+Subject: [PATCH v3 30/32] thermal/drivers/samsung: Switch to new of thermal API
+Date:   Wed, 27 Jul 2022 23:02:51 +0200
+Message-Id: <20220727210253.3794069-31-daniel.lezcano@linexp.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220727210253.3794069-1-daniel.lezcano@linexp.org>
 References: <20220727210253.3794069-1-daniel.lezcano@linexp.org>
@@ -91,42 +89,102 @@ Convert the ops to the thermal_zone_device_ops format and use the new
 API to register the thermal zone with these generic ops.
 
 Signed-off-by: Daniel Lezcano <daniel.lezcano@linexp.org>
-Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- drivers/input/touchscreen/sun4i-ts.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/thermal/samsung/exynos_tmu.c | 24 ++++++++++--------------
+ 1 file changed, 10 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/input/touchscreen/sun4i-ts.c b/drivers/input/touchscreen/sun4i-ts.c
-index 742a7e96c1b5..73eb8f80be6e 100644
---- a/drivers/input/touchscreen/sun4i-ts.c
-+++ b/drivers/input/touchscreen/sun4i-ts.c
-@@ -192,12 +192,12 @@ static int sun4i_get_temp(const struct sun4i_ts_data *ts, int *temp)
+diff --git a/drivers/thermal/samsung/exynos_tmu.c b/drivers/thermal/samsung/exynos_tmu.c
+index f4ab4c5b4b62..5b1a8a1e193d 100644
+--- a/drivers/thermal/samsung/exynos_tmu.c
++++ b/drivers/thermal/samsung/exynos_tmu.c
+@@ -650,9 +650,9 @@ static void exynos7_tmu_control(struct platform_device *pdev, bool on)
+ 	writel(con, data->base + EXYNOS_TMU_REG_CONTROL);
+ }
+ 
+-static int exynos_get_temp(void *p, int *temp)
++static int exynos_get_temp(struct thermal_zone_device *tz, int *temp)
+ {
+-	struct exynos_tmu_data *data = p;
++	struct exynos_tmu_data *data = tz->devdata;
+ 	int value, ret = 0;
+ 
+ 	if (!data || !data->tmu_read)
+@@ -728,9 +728,9 @@ static void exynos4412_tmu_set_emulation(struct exynos_tmu_data *data,
+ 	writel(val, data->base + emul_con);
+ }
+ 
+-static int exynos_tmu_set_emulation(void *drv_data, int temp)
++static int exynos_tmu_set_emulation(struct thermal_zone_device *tz, int temp)
+ {
+-	struct exynos_tmu_data *data = drv_data;
++	struct exynos_tmu_data *data = tz->devdata;
+ 	int ret = -EINVAL;
+ 
+ 	if (data->soc == SOC_ARCH_EXYNOS4210)
+@@ -750,7 +750,7 @@ static int exynos_tmu_set_emulation(void *drv_data, int temp)
+ }
+ #else
+ #define exynos4412_tmu_set_emulation NULL
+-static int exynos_tmu_set_emulation(void *drv_data, int temp)
++static int exynos_tmu_set_emulation(struct thermal_zone *tz, int temp)
+ 	{ return -EINVAL; }
+ #endif /* CONFIG_THERMAL_EMULATION */
+ 
+@@ -997,7 +997,7 @@ static int exynos_map_dt_data(struct platform_device *pdev)
  	return 0;
  }
  
--static int sun4i_get_tz_temp(void *data, int *temp)
-+static int sun4i_get_tz_temp(struct thermal_zone_device *tz, int *temp)
- {
--	return sun4i_get_temp(data, temp);
-+	return sun4i_get_temp(tz->devdata, temp);
- }
- 
--static const struct thermal_zone_of_device_ops sun4i_ts_tz_ops = {
-+static const struct thermal_zone_device_ops sun4i_ts_tz_ops = {
- 	.get_temp = sun4i_get_tz_temp,
+-static const struct thermal_zone_of_device_ops exynos_sensor_ops = {
++static const struct thermal_zone_device_ops exynos_sensor_ops = {
+ 	.get_temp = exynos_get_temp,
+ 	.set_emul_temp = exynos_tmu_set_emulation,
  };
+@@ -1091,8 +1091,8 @@ static int exynos_tmu_probe(struct platform_device *pdev)
+ 	 * data->tzd must be registered before calling exynos_tmu_initialize(),
+ 	 * requesting irq and calling exynos_tmu_control().
+ 	 */
+-	data->tzd = thermal_zone_of_sensor_register(&pdev->dev, 0, data,
+-						    &exynos_sensor_ops);
++	data->tzd = devm_thermal_of_zone_register(&pdev->dev, 0, data,
++						  &exynos_sensor_ops);
+ 	if (IS_ERR(data->tzd)) {
+ 		ret = PTR_ERR(data->tzd);
+ 		if (ret != -EPROBE_DEFER)
+@@ -1104,21 +1104,19 @@ static int exynos_tmu_probe(struct platform_device *pdev)
+ 	ret = exynos_tmu_initialize(pdev);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "Failed to initialize TMU\n");
+-		goto err_thermal;
++		goto err_sclk;
+ 	}
  
-@@ -356,8 +356,8 @@ static int sun4i_ts_probe(struct platform_device *pdev)
- 	if (IS_ERR(hwmon))
- 		return PTR_ERR(hwmon);
+ 	ret = devm_request_irq(&pdev->dev, data->irq, exynos_tmu_irq,
+ 		IRQF_TRIGGER_RISING | IRQF_SHARED, dev_name(&pdev->dev), data);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "Failed to request irq: %d\n", data->irq);
+-		goto err_thermal;
++		goto err_sclk;
+ 	}
  
--	thermal = devm_thermal_zone_of_sensor_register(ts->dev, 0, ts,
--						       &sun4i_ts_tz_ops);
-+	thermal = devm_thermal_of_zone_register(ts->dev, 0, ts,
-+						&sun4i_ts_tz_ops);
- 	if (IS_ERR(thermal))
- 		return PTR_ERR(thermal);
+ 	exynos_tmu_control(pdev, true);
+ 	return 0;
  
+-err_thermal:
+-	thermal_zone_of_sensor_unregister(&pdev->dev, data->tzd);
+ err_sclk:
+ 	clk_disable_unprepare(data->sclk);
+ err_clk:
+@@ -1136,9 +1134,7 @@ static int exynos_tmu_probe(struct platform_device *pdev)
+ static int exynos_tmu_remove(struct platform_device *pdev)
+ {
+ 	struct exynos_tmu_data *data = platform_get_drvdata(pdev);
+-	struct thermal_zone_device *tzd = data->tzd;
+ 
+-	thermal_zone_of_sensor_unregister(&pdev->dev, tzd);
+ 	exynos_tmu_control(pdev, false);
+ 
+ 	clk_disable_unprepare(data->sclk);
 -- 
 2.25.1
 
