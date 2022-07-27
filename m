@@ -2,138 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 799A0C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:15:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D465C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:15:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238226AbiG0RPU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:15:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48950 "EHLO
+        id S241586AbiG0RP3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:15:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241663AbiG0ROK (ORCPT
+        with ESMTP id S241674AbiG0ROL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:14:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6A5B76EB9;
-        Wed, 27 Jul 2022 09:42:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 18635614EA;
-        Wed, 27 Jul 2022 16:42:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 277A3C433D6;
-        Wed, 27 Jul 2022 16:42:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940149;
-        bh=z2V8vFHMnhOnE4/gebZpZ4UaFOeyJaDeG+40vnJokD8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P/q7eqcS+cMPv34Oa8SOLqWi5ld6L7CCDJMnp1ryup92LAgPZdZfqQ2iyMphfssVV
-         3XtEGFoxtXoGtutjh0xvdgJYSJQvftHVVtUaW6df18n4kh3Kh+/bjxHHbvWL3llTsd
-         hlcFrBAPy06BYwVH+7TdKYC/MRMuCka7j5beJUXw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 105/201] pinctrl: armada-37xx: use raw spinlocks for regmap to avoid invalid wait context
-Date:   Wed, 27 Jul 2022 18:10:09 +0200
-Message-Id: <20220727161032.096638768@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
-References: <20220727161026.977588183@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Wed, 27 Jul 2022 13:14:11 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECB027754E
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:42:33 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id z23so32275903eju.8
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:42:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=AcPJOkIHEC0icvBEnpWtnVKxz/BvRtFJOpxpTEHoQRg=;
+        b=dnnAblfbBitvVzSIxg4x60tAPSI8URVjg+EFtGQCO+Egbv95vWxxuJA0seKRUNvCni
+         MH/l2lfP3y3m2n82QniX+RZ7l/z/R/u1/iB5fRHweoFmNcwnKUaQHfBq5L2Tk1oDNYlw
+         q+xyWk2wZadVAhHiWbYj77fvxQHCyW96l9uJ0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=AcPJOkIHEC0icvBEnpWtnVKxz/BvRtFJOpxpTEHoQRg=;
+        b=LTHT4f6C4jZrlo4MyeihkoUp57FkTo7VU5kDdsf5ND+DXvlx/6NJS/Xpl3oeOwVydH
+         jgCzt99QPswd8+7K3d2KXe5ZZt4817k0tm7puRLwc3JMFngmMLnLXwlO1RUdm1fE9YjW
+         90yQMF+VgTCaLg8tzg16g5DVn0vK2mtEYAVSt4tRDAJ4lOVRllHQtEW9xz6t7uDm4PjS
+         J5uPgUVmlKkuYa8fGNem2e8/ztd+AxG0Dpwb7lCa2pOeRfPJFko7bOd4DAf619ljYo8L
+         2Bw6i0oDfn46SvfXtMfspXqxtLnF2WPMVGytavp+E/BaW7NyvtkNmr3ahLtuqWgaHrHl
+         lukg==
+X-Gm-Message-State: AJIora+jfMscaORpr8LT92V0jbUrBXZ8pzmNlTyVi8WAzvDZJ5G+uk5l
+        xg3kK3LDmmMrl3OoaLC9kMnkuD61aCnVEK0X
+X-Google-Smtp-Source: AGRyM1uXCccNlffFijyS17h5gFUVepUDaN652+eRFT87KKwbxXkYyNP+YDIhKqh8rayLbuD35uhY6w==
+X-Received: by 2002:a17:906:9b0a:b0:72b:4f33:b247 with SMTP id eo10-20020a1709069b0a00b0072b4f33b247mr18633962ejc.267.1658940150043;
+        Wed, 27 Jul 2022 09:42:30 -0700 (PDT)
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com. [209.85.221.41])
+        by smtp.gmail.com with ESMTPSA id i21-20020aa7c715000000b0043a6fde6e7bsm10346422edq.19.2022.07.27.09.42.28
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 Jul 2022 09:42:29 -0700 (PDT)
+Received: by mail-wr1-f41.google.com with SMTP id d8so25226977wrp.6
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:42:28 -0700 (PDT)
+X-Received: by 2002:a05:600c:4ed0:b0:3a3:3ef3:c8d1 with SMTP id
+ g16-20020a05600c4ed000b003a33ef3c8d1mr3721170wmq.154.1658940137807; Wed, 27
+ Jul 2022 09:42:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20210929185823.499268-1-alex.popov@linux.com> <d290202d-a72d-0821-9edf-efbecf6f6cef@linux.com>
+ <20210929194924.GA880162@paulmck-ThinkPad-P17-Gen-1> <YVWAPXSzFNbHz6+U@alley>
+ <CAHk-=widOm3FXMPXXK0cVaoFuy3jCk65=5VweLceQCuWdep=Hg@mail.gmail.com> <7c567acd-1cc1-a480-ca5a-d50a9c5a69ef@ispras.ru>
+In-Reply-To: <7c567acd-1cc1-a480-ca5a-d50a9c5a69ef@ispras.ru>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Wed, 27 Jul 2022 09:42:01 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wgSyNh2gZTnC-EoiGs5WNtVu99jcHXxLRUvwMabm37iKg@mail.gmail.com>
+Message-ID: <CAHk-=wgSyNh2gZTnC-EoiGs5WNtVu99jcHXxLRUvwMabm37iKg@mail.gmail.com>
+Subject: Re: [PATCH] Introduce the pkill_on_warn boot parameter
+To:     Alexey Khoroshilov <khoroshilov@ispras.ru>
+Cc:     Petr Mladek <pmladek@suse.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Alexander Popov <alex.popov@linux.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Joerg Roedel <jroedel@suse.de>,
+        Maciej Rozycki <macro@orcam.me.uk>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Kees Cook <keescook@chromium.org>,
+        Luis Chamberlain <mcgrof@kernel.org>, Wei Liu <wl@xen.org>,
+        John Ogness <john.ogness@linutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Alexey Kardashevskiy <aik@ozlabs.ru>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Jann Horn <jannh@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Garnier <thgarnie@google.com>,
+        Will Deacon <will.deacon@arm.com>,
+        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
+        Laura Abbott <labbott@redhat.com>,
+        David S Miller <davem@davemloft.net>,
+        Borislav Petkov <bp@alien8.de>,
+        Kernel Hardening <kernel-hardening@lists.openwall.com>,
+        linux-hardening@vger.kernel.org,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        notify@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Wed, Jul 27, 2022 at 9:17 AM Alexey Khoroshilov
+<khoroshilov@ispras.ru> wrote:
+>
+> We see a number of cases where WARNING is used to inform userspace that
+> it is doing something wrong, e.g.
+> https://elixir.bootlin.com/linux/v5.19-rc8/source/net/can/j1939/socket.c#L181
+> https://elixir.bootlin.com/linux/v5.19-rc8/source/drivers/video/fbdev/core/fbmem.c#L1023
 
-[ Upstream commit 4546760619cfa9b718fe2059ceb07101cf9ff61e ]
+That first case is entirely bogus.
 
-The irqchip->irq_set_type method is called by __irq_set_trigger() under
-the desc->lock raw spinlock.
+WARN_ON() should only be used for "This cannot happen, but if it does,
+I want to know how we got here".
 
-The armada-37xx implementation, armada_37xx_irq_set_type(), uses an MMIO
-regmap created by of_syscon_register(), which uses plain spinlocks
-(the kind that are sleepable on RT).
+But the second case is fine: Using "pr_warn()" is fine. A kernel
+warning (without a backtrace) is a normal thing for something that is
+deprecated or questionable, and you want to tell the user that "this
+app is doing something wrong".
 
-Therefore, this is an invalid locking scheme for which we get a kernel
-splat stating just that ("[ BUG: Invalid wait context ]"), because the
-context in which the plain spinlock may sleep is atomic due to the raw
-spinlock. We need to go raw spinlocks all the way.
+So if that j1939 thing is something that can be triggered by a user,
+then the backtrace should be reported to the driver maintainer, and
+then either
 
-Make this driver create its own MMIO regmap, with use_raw_spinlock=true,
-and stop relying on syscon to provide it.
+ (a) the WARN_ON_ONCE() should just be removed ("ok, this can happen,
+we understand why it can happen, and it's fine")
 
-This patch depends on commit 67021f25d952 ("regmap: teach regmap to use
-raw spinlocks if requested in the config").
+ (b) the problem the WARN_ON_ONCE() reports about should be made
+impossible some way
 
-Cc: <stable@vger.kernel.org> # 5.15+
-Fixes: 2f227605394b ("pinctrl: armada-37xx: Add irqchip support")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Link: https://lore.kernel.org/r/20220716233745.1704677-3-vladimir.oltean@nxp.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/pinctrl/mvebu/pinctrl-armada-37xx.c | 27 ++++++++++++++++-----
- 1 file changed, 21 insertions(+), 6 deletions(-)
+ (c) it might be downgraded to a pr_warn() if people really want to
+tell user space that "guys, you're doing something wrong" and it's
+considered a useful warning.
 
-diff --git a/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c b/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
-index 7d0d2771a9ac..7338bc353347 100644
---- a/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
-+++ b/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
-@@ -1116,25 +1116,40 @@ static const struct of_device_id armada_37xx_pinctrl_of_match[] = {
- 	{ },
- };
- 
-+static const struct regmap_config armada_37xx_pinctrl_regmap_config = {
-+	.reg_bits = 32,
-+	.val_bits = 32,
-+	.reg_stride = 4,
-+	.use_raw_spinlock = true,
-+};
-+
- static int __init armada_37xx_pinctrl_probe(struct platform_device *pdev)
- {
- 	struct armada_37xx_pinctrl *info;
- 	struct device *dev = &pdev->dev;
--	struct device_node *np = dev->of_node;
- 	struct regmap *regmap;
-+	void __iomem *base;
- 	int ret;
- 
-+	base = devm_platform_get_and_ioremap_resource(pdev, 0, NULL);
-+	if (IS_ERR(base)) {
-+		dev_err(dev, "failed to ioremap base address: %pe\n", base);
-+		return PTR_ERR(base);
-+	}
-+
-+	regmap = devm_regmap_init_mmio(dev, base,
-+				       &armada_37xx_pinctrl_regmap_config);
-+	if (IS_ERR(regmap)) {
-+		dev_err(dev, "failed to create regmap: %pe\n", regmap);
-+		return PTR_ERR(regmap);
-+	}
-+
- 	info = devm_kzalloc(dev, sizeof(*info), GFP_KERNEL);
- 	if (!info)
- 		return -ENOMEM;
- 
- 	info->dev = dev;
--
--	regmap = syscon_node_to_regmap(np);
--	if (IS_ERR(regmap))
--		return dev_err_probe(dev, PTR_ERR(regmap), "cannot get regmap\n");
- 	info->regmap = regmap;
--
- 	info->data = of_device_get_match_data(dev);
- 
- 	ret = armada_37xx_pinctrl_register(pdev, info);
--- 
-2.35.1
+Honestly, for something like that j1939 can driver, I doubt (c) is
+ever an option. The "return -EBUSY" is the only real information that
+a user needs.
 
-
-
+               Linus
