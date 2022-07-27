@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46973C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:02:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F876C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:02:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241258AbiG0RCX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:02:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55736 "EHLO
+        id S239871AbiG0RC3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:02:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232795AbiG0RBq (ORCPT
+        with ESMTP id S237639AbiG0RBr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:01:46 -0400
+        Wed, 27 Jul 2022 13:01:47 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 953CB6BC1C;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4BA46BC1F;
         Wed, 27 Jul 2022 09:38:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 53190601BE;
-        Wed, 27 Jul 2022 16:38:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F294C433D6;
-        Wed, 27 Jul 2022 16:38:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 887C760BF0;
+        Wed, 27 Jul 2022 16:38:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 908F2C433D6;
+        Wed, 27 Jul 2022 16:38:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939886;
-        bh=T5DNPEG6pVCv0mZuUdiT16dtsq5c62BWvkJUSFQFrys=;
+        s=korg; t=1658939883;
+        bh=jsF4LpQm777PxNt5/h+cNChfYSEvUrbp0KZNEszQamk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VcfniOkNvxFybIufn7OSF2YR/ykBrUwy5zcb3YzGAHWJr0LycKPvNG/kf05sFSXgV
-         anOBOlqUjq6E+YRcQrSlXGT841ooU6aBqkQkNoq2I5XRmXn08b76bhp7/XOXkUu86b
-         Qpcap6eshuJT45+jFnqOJXSMvalzKZ5q2jrSTrPM=
+        b=PAaNFg6GaUl/XrPcHT7UpcdI/iGYBILQio/DDLDIn95f46skOCyojzGf4P1xDWgbL
+         ethI215yo7A11Sl0uG284PxQoy+bPA2p5lG/8zNR5Oa+BjFNvYjeghGVE3x5vQbLjE
+         dvrkny7CTUMSoezowXfkfxa1Uv1xFoVFIuRWYH7s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Snowberg <eric.snowberg@oracle.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        John Haxby <john.haxby@oracle.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.15 004/201] lockdown: Fix kexec lockdown bypass with ima policy
-Date:   Wed, 27 Jul 2022 18:08:28 +0200
-Message-Id: <20220727161027.136489560@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 030/201] power/reset: arm-versatile: Fix refcount leak in versatile_reboot_probe
+Date:   Wed, 27 Jul 2022 18:08:54 +0200
+Message-Id: <20220727161028.138866860@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -50,57 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Snowberg <eric.snowberg@oracle.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 543ce63b664e2c2f9533d089a4664b559c3e6b5b upstream.
+[ Upstream commit 80192eff64eee9b3bc0594a47381937b94b9d65a ]
 
-The lockdown LSM is primarily used in conjunction with UEFI Secure Boot.
-This LSM may also be used on machines without UEFI.  It can also be
-enabled when UEFI Secure Boot is disabled.  One of lockdown's features
-is to prevent kexec from loading untrusted kernels.  Lockdown can be
-enabled through a bootparam or after the kernel has booted through
-securityfs.
+of_find_matching_node_and_match() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-If IMA appraisal is used with the "ima_appraise=log" boot param,
-lockdown can be defeated with kexec on any machine when Secure Boot is
-disabled or unavailable.  IMA prevents setting "ima_appraise=log" from
-the boot param when Secure Boot is enabled, but this does not cover
-cases where lockdown is used without Secure Boot.
-
-To defeat lockdown, boot without Secure Boot and add ima_appraise=log to
-the kernel command line; then:
-
-  $ echo "integrity" > /sys/kernel/security/lockdown
-  $ echo "appraise func=KEXEC_KERNEL_CHECK appraise_type=imasig" > \
-    /sys/kernel/security/ima/policy
-  $ kexec -ls unsigned-kernel
-
-Add a call to verify ima appraisal is set to "enforce" whenever lockdown
-is enabled.  This fixes CVE-2022-21505.
-
-Cc: stable@vger.kernel.org
-Fixes: 29d3c1c8dfe7 ("kexec: Allow kexec_file() with appropriate IMA policy when locked down")
-Signed-off-by: Eric Snowberg <eric.snowberg@oracle.com>
-Acked-by: Mimi Zohar <zohar@linux.ibm.com>
-Reviewed-by: John Haxby <john.haxby@oracle.com>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 0e545f57b708 ("power: reset: driver for the Versatile syscon reboot")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/integrity/ima/ima_policy.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/power/reset/arm-versatile-reboot.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/security/integrity/ima/ima_policy.c
-+++ b/security/integrity/ima/ima_policy.c
-@@ -2034,6 +2034,10 @@ bool ima_appraise_signature(enum kernel_
- 	if (id >= READING_MAX_ID)
- 		return false;
+diff --git a/drivers/power/reset/arm-versatile-reboot.c b/drivers/power/reset/arm-versatile-reboot.c
+index 08d0a07b58ef..c7624d7611a7 100644
+--- a/drivers/power/reset/arm-versatile-reboot.c
++++ b/drivers/power/reset/arm-versatile-reboot.c
+@@ -146,6 +146,7 @@ static int __init versatile_reboot_probe(void)
+ 	versatile_reboot_type = (enum versatile_reboot)reboot_id->data;
  
-+	if (id == READING_KEXEC_IMAGE && !(ima_appraise & IMA_APPRAISE_ENFORCE)
-+	    && security_locked_down(LOCKDOWN_KEXEC))
-+		return false;
-+
- 	func = read_idmap[id] ?: FILE_CHECK;
+ 	syscon_regmap = syscon_node_to_regmap(np);
++	of_node_put(np);
+ 	if (IS_ERR(syscon_regmap))
+ 		return PTR_ERR(syscon_regmap);
  
- 	rcu_read_lock();
+-- 
+2.35.1
+
 
 
