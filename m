@@ -2,112 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFB82C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 01:49:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88E14C00144
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 01:53:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240107AbiG0Btb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 21:49:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54468 "EHLO
+        id S239893AbiG0BxL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 21:53:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231205AbiG0Bt3 (ORCPT
+        with ESMTP id S232925AbiG0BxI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 21:49:29 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D71B37F89
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 18:49:28 -0700 (PDT)
-Received: from canpemm500002.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LsxTp1984zkXkg;
-        Wed, 27 Jul 2022 09:46:54 +0800 (CST)
-Received: from [10.174.177.76] (10.174.177.76) by
- canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+        Tue, 26 Jul 2022 21:53:08 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15AE927CCD
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 18:53:08 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Lsxbc1GDwz9sy2;
+        Wed, 27 Jul 2022 09:51:56 +0800 (CST)
+Received: from dggpemm500014.china.huawei.com (7.185.36.153) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 27 Jul 2022 09:49:26 +0800
-Subject: Re: [bug report] mm/hugetlb: possible data leak with huge pmd sharing
-To:     Mike Kravetz <mike.kravetz@oracle.com>
-CC:     Linux-MM <linux-mm@kvack.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Muchun Song <songmuchun@bytedance.com>
-References: <025b3ea6-4b26-f091-5464-0eef5aac7719@huawei.com>
- <Yt7iVRaDGuIx8LVE@monkey> <2ec4cd05-5b3a-cd5c-7785-5a7236804bef@huawei.com>
- <YuAh0JQL9zQwfZkg@monkey>
-From:   Miaohe Lin <linmiaohe@huawei.com>
-Message-ID: <9d670229-4bbf-a33b-ba80-73fc33c9bac3@huawei.com>
-Date:   Wed, 27 Jul 2022 09:49:25 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+ 15.1.2375.24; Wed, 27 Jul 2022 09:53:06 +0800
+Received: from [10.174.178.120] (10.174.178.120) by
+ dggpemm500014.china.huawei.com (7.185.36.153) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 27 Jul 2022 09:53:05 +0800
+Message-ID: <a89a98fd-568e-790f-229a-76566bce3637@huawei.com>
+Date:   Wed, 27 Jul 2022 09:53:05 +0800
 MIME-Version: 1.0
-In-Reply-To: <YuAh0JQL9zQwfZkg@monkey>
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0.3
+CC:     <mawupeng1@huawei.com>, <rppt@kernel.org>, <linux-mm@kvack.org>,
+        <david@redhat.com>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] memblock tests: compiling error
 Content-Language: en-US
+To:     <jrdr.linux@gmail.com>, <liuxp11@chinatelecom.cn>
+References: <1658804705-16996-1-git-send-email-liuxp11@chinatelecom.cn>
+ <CAFqt6zabgY6DgCQBe0HCsMYScNEnKbm-0nH4ghhALZpF14rm4g@mail.gmail.com>
+From:   mawupeng <mawupeng1@huawei.com>
+In-Reply-To: <CAFqt6zabgY6DgCQBe0HCsMYScNEnKbm-0nH4ghhALZpF14rm4g@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.177.76]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500002.china.huawei.com (7.192.104.244)
+X-Originating-IP: [10.174.178.120]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500014.china.huawei.com (7.185.36.153)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/7/27 1:18, Mike Kravetz wrote:
-> On 07/26/22 15:14, Miaohe Lin wrote:
->> On 2022/7/26 2:35, Mike Kravetz wrote:
->>> On 07/25/22 17:07, Miaohe Lin wrote:
->>>> Hi all:
->>>>     When I investigate the mm/hugetlb code, I found there's a possible data leak issue
->>>> with huge pmd sharing. Thank about the below scene:
->>>>
->>>>     1. Process A and process B shares huge pmd page.(vm_flags: VM_MAYSHARE but !VM_SHARED)
->>>
->>> Thanks,
->>>
->>> I often get confused about the setting of VM_MAYSHARE and VM_SHARED.  When
->>> you throw in the possibility of shared and anonymous, then I struggle a bit
->>> more.  At one time did an audit to get the meaning clear in my mind, but still
->>> struggle with the meanings.
->>>
->>> Is it possible to have VM_MAYSHARE and !VM_SHARED on a hugetlb vma?  I only
->>> took a quick look and could not find a way for this to happen.  But, I> could have easily missed something.
->>
->> Thanks for your reply. It's possible to have VM_MAYSHARE and !VM_SHARED on a hugetlb vma
->> with below code snippet:
->>
->> ...
->>     fd = open("/root/huge/hugepagefile", O_CREAT | O_RDONLY, 0755);
->>     if (fd < 0) {
->>             perror("Open failed");
->>             exit(1);
->>     }
->>
->>     addr = mmap(0, 32UL*1024*1024, PROT_READ, MAP_SHARED, fd, 0);
->> ...
->>
->> cat /proc/<pid>/smaps:
->>
->> 400000000000-400002000000 r--s 00000000 00:2f 153780886                  /root/huge/hugepagefile
->> Size:              32768 kB
->> KernelPageSize:     2048 kB
->> MMUPageSize:        2048 kB
->> ...
->> VmFlags: rd mr me ms de ht
->>
->> /* sh: VM_SHARED, mw: VM_MAYWRITE, ms:VM_MAYSHARE */
->>
->> So vm_flags is VM_MAYSHARE but !VM_SHARED.
->>
->> But in this case, it's readonly. So the above scene won't happen. Sorry for make noise.
->>
-> 
-> No worries!  And, thank you for looking at the pmd sharing code.  In concept
-> the functionality is simple.  However, details and edge cases make things
-> complicated.
-> 
-> If you are interested in the pmd sharing code, more eyes on this proposal
-> would be appreciated.
 
-Yes, thanks for your hard work. ;)
+
+On 2022/7/27 9:01, Souptick Joarder wrote:
+> On Tue, Jul 26, 2022 at 8:35 AM Liu Xinpeng <liuxp11@chinatelecom.cn> wrote:
+>>
+>> memblock.o: In function `memblock_find_in_range.constprop.9':
+>> memblock.c:(.text+0x4651): undefined reference to `pr_warn_ratelimited'
+>> memblock.o: In function `memblock_mark_mirror':
+>> memblock.c:(.text+0x7171): undefined reference to `mirrored_kernelcore'
+>>
+> 
+> what is the steps to hit this compile error ?
+
+Do make -C tools/testing/memblock can hit this compile error.
 
 > 
-> https://lore.kernel.org/linux-mm/20220706202347.95150-1-mike.kravetz@oracle.com/
-> 
+>> Fixs: 902c2d91582 ("memblock: Disable mirror feature if kernelcore is not
+>> specified")
 
+>> Fixs: 14d9a675fd0 ("mm: Ratelimited mirrored memory related warning")
+>>
+>> Signed-off-by: Liu Xinpeng <liuxp11@chinatelecom.cn>
+>> ---
+>>  tools/testing/memblock/internal.h | 3 +++
+>>  1 file changed, 3 insertions(+)
+>>
+>> diff --git a/tools/testing/memblock/internal.h b/tools/testing/memblock/internal.h
+>> index c2a492c..cf67e6e 100644
+>> --- a/tools/testing/memblock/internal.h
+>> +++ b/tools/testing/memblock/internal.h
+>> @@ -9,6 +9,9 @@
+>>  static int memblock_debug = 1;
+>>  #endif
+>>
+>> +#define pr_warn_ratelimited(fmt, ...)    printf(fmt, ##__VA_ARGS__);
+>> +
+>> +bool mirrored_kernelcore = false;
+>>  struct page {};
+>>
+>>  void memblock_free_pages(struct page *page, unsigned long pfn,
+>> --
+>> 1.8.3.1
+>>
+>>
