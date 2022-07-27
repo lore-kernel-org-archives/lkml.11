@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 483D9C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:32:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2D3DC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:32:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237846AbiG0Qc2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:32:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33062 "EHLO
+        id S237418AbiG0Qce (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:32:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235592AbiG0QcA (ORCPT
+        with ESMTP id S237705AbiG0QcA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Jul 2022 12:32:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBD6652FCB;
-        Wed, 27 Jul 2022 09:25:58 -0700 (PDT)
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 198A952FCD;
+        Wed, 27 Jul 2022 09:25:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0007FB821BF;
-        Wed, 27 Jul 2022 16:25:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58435C43140;
-        Wed, 27 Jul 2022 16:25:36 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id DFC02CE2303;
+        Wed, 27 Jul 2022 16:24:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEDC8C433D7;
+        Wed, 27 Jul 2022 16:24:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939136;
-        bh=Ah/hhKtg8RhQI3Os/uogsJTfd+tyUxBuQgNvDHm/FgY=;
+        s=korg; t=1658939094;
+        bh=1HcNia9FqHE2hkx0BFQITQ6ChPd0Zwd2QPUi9++C3qg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zJx3f9KzrxlNlWUdTEz5KF4YsKO9vnmm/5qIDESWgL7TvPaFvCg6oMqPKliLUIF2K
-         Tu8tzwJ2O7pi1ui5JroK/z9ru4m+3jjr0yuiHXQZXGrze4cGSwtD3XwY4YZ98QDgAh
-         npXrqa2PGTB9IILcth6jAywkMj0velmPR/wT/itE=
+        b=jc6LmH8ZIxC4/IxhFnCC3wNvNSrq7dU3pRwRlTZ8LzcOWBXXcSJ2vMNlE5AZGBRxA
+         B+zIny/NWxaVKATlXMIvXZM+hRz483UYtJvcGNu70vsumqc+7627TNLlXfwLReRGL0
+         uFF6Jt4BUKqtKDodcLU3VJDS9lZ7egQo7dU4UCY8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 26/62] tcp: Fix data-races around sysctl_tcp_recovery.
-Date:   Wed, 27 Jul 2022 18:10:35 +0200
-Message-Id: <20220727161005.221488139@linuxfoundation.org>
+Subject: [PATCH 4.19 11/62] tcp: Fix data-races around sysctl_tcp_mtu_probing.
+Date:   Wed, 27 Jul 2022 18:10:20 +0200
+Message-Id: <20220727161004.610623579@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161004.175638564@linuxfoundation.org>
 References: <20220727161004.175638564@linuxfoundation.org>
@@ -51,58 +51,46 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit e7d2ef837e14a971a05f60ea08c47f3fed1a36e4 ]
+[ Upstream commit f47d00e077e7d61baf69e46dde3210c886360207 ]
 
-While reading sysctl_tcp_recovery, it can be changed concurrently.
+While reading sysctl_tcp_mtu_probing, it can be changed concurrently.
 Thus, we need to add READ_ONCE() to its readers.
 
-Fixes: 4f41b1c58a32 ("tcp: use RACK to detect losses")
+Fixes: 5d424d5a674f ("[TCP]: MTU probing")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp_input.c    | 3 ++-
- net/ipv4/tcp_recovery.c | 6 ++++--
- 2 files changed, 6 insertions(+), 3 deletions(-)
+ net/ipv4/tcp_output.c | 2 +-
+ net/ipv4/tcp_timer.c  | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index afe195e03a95..731c4d220905 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -1938,7 +1938,8 @@ static inline void tcp_init_undo(struct tcp_sock *tp)
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index 25dbdb27a571..02a7799c4b72 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -1523,7 +1523,7 @@ void tcp_mtup_init(struct sock *sk)
+ 	struct inet_connection_sock *icsk = inet_csk(sk);
+ 	struct net *net = sock_net(sk);
  
- static bool tcp_is_rack(const struct sock *sk)
- {
--	return sock_net(sk)->ipv4.sysctl_tcp_recovery & TCP_RACK_LOSS_DETECTION;
-+	return READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_recovery) &
-+		TCP_RACK_LOSS_DETECTION;
- }
+-	icsk->icsk_mtup.enabled = net->ipv4.sysctl_tcp_mtu_probing > 1;
++	icsk->icsk_mtup.enabled = READ_ONCE(net->ipv4.sysctl_tcp_mtu_probing) > 1;
+ 	icsk->icsk_mtup.search_high = tp->rx_opt.mss_clamp + sizeof(struct tcphdr) +
+ 			       icsk->icsk_af_ops->net_header_len;
+ 	icsk->icsk_mtup.search_low = tcp_mss_to_mtu(sk, net->ipv4.sysctl_tcp_base_mss);
+diff --git a/net/ipv4/tcp_timer.c b/net/ipv4/tcp_timer.c
+index d071ed6b8b9a..5d761333ffc4 100644
+--- a/net/ipv4/tcp_timer.c
++++ b/net/ipv4/tcp_timer.c
+@@ -144,7 +144,7 @@ static void tcp_mtu_probing(struct inet_connection_sock *icsk, struct sock *sk)
+ 	int mss;
  
- /* If we detect SACK reneging, forget all SACK information
-diff --git a/net/ipv4/tcp_recovery.c b/net/ipv4/tcp_recovery.c
-index 0d96decba13d..61969bb9395c 100644
---- a/net/ipv4/tcp_recovery.c
-+++ b/net/ipv4/tcp_recovery.c
-@@ -33,7 +33,8 @@ static u32 tcp_rack_reo_wnd(const struct sock *sk)
- 			return 0;
- 
- 		if (tp->sacked_out >= tp->reordering &&
--		    !(sock_net(sk)->ipv4.sysctl_tcp_recovery & TCP_RACK_NO_DUPTHRESH))
-+		    !(READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_recovery) &
-+		      TCP_RACK_NO_DUPTHRESH))
- 			return 0;
- 	}
- 
-@@ -203,7 +204,8 @@ void tcp_rack_update_reo_wnd(struct sock *sk, struct rate_sample *rs)
- {
- 	struct tcp_sock *tp = tcp_sk(sk);
- 
--	if (sock_net(sk)->ipv4.sysctl_tcp_recovery & TCP_RACK_STATIC_REO_WND ||
-+	if ((READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_recovery) &
-+	     TCP_RACK_STATIC_REO_WND) ||
- 	    !rs->prior_delivered)
+ 	/* Black hole detection */
+-	if (!net->ipv4.sysctl_tcp_mtu_probing)
++	if (!READ_ONCE(net->ipv4.sysctl_tcp_mtu_probing))
  		return;
  
+ 	if (!icsk->icsk_mtup.enabled) {
 -- 
 2.35.1
 
