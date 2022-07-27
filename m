@@ -2,90 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AE56C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 14:15:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE52DC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 14:15:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233427AbiG0OPF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 10:15:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41306 "EHLO
+        id S233552AbiG0OPI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 10:15:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232982AbiG0OOx (ORCPT
+        with ESMTP id S233421AbiG0OO7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 10:14:53 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19B923ED52
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 07:14:52 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id v13so16673791wru.12
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 07:14:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=pgiicmFbHSV+cnHrXl1sGqeUiitZ3BsicQPNI51cCmM=;
-        b=YcQ6nagqtnIjc6HP17wf717/xUNa8Xp8WAw8F1L6Czw7NPtkINekRK+7XcOMNxRKWo
-         ob4cCRrfxGt+8EGc9CR9A/7e+YQ2+7jA9sc4sYe1QuZA5qyWk7fzjzAt2YP/m2FNxU4P
-         mu2FYGreZNuicSOk7HQauit1IGFEk5dvQFlopho2X0NOwh6XhKyF6Cmoz8yq/9MnbX7+
-         ukc4YRhAXh6jbo72lxdN57Wjv5/fcrpf9IXaVCnhOjidkjPwINKwG9o/rS05ZSi6ER9O
-         HvpyoOHwLU/3ZPurk/JQ7TLTwXK3ZTSkS8fGT4+brzDFAbC1/pAOt49aDW36HjmIR3p7
-         GE4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=pgiicmFbHSV+cnHrXl1sGqeUiitZ3BsicQPNI51cCmM=;
-        b=xI37e9kSgR9MP+87DUTsse4sGBCM5t07opnlJs5mIWvQofYdtuHXhFm199uj1KwUPc
-         KqXfxNxrln875IesCx3Y19Rf85/uJ2r0T1KZFOuV+i81Frti3owyGyAXJm6/8jwZypju
-         9z8aHE+eki//w8vb9Dnkk6EKJutZU74StV+mT6CevakScmM95ZcVD55cyOyzEwteo78m
-         GUZ+/ATwB73uGwwtKJlIOfKvAfBRf3HQvNBkS133yCCvFLS82IQC//zRgrj6WSoyGmsw
-         tbNDS9FnuzC+Cxx6V8MHzjjJFW0uPYAXnw2hEnlffC20m3FJSpPtIzuuxEBRt+dEkItv
-         U5cQ==
-X-Gm-Message-State: AJIora/kpTZjUOjBKgGr64GLsWO8I4il0my1j5VvxxP4H+spRLBzaxDa
-        cthuQQc/wlYOjpfPVP1z+CQZRQ==
-X-Google-Smtp-Source: AGRyM1tTJYxDOoXCV28u1H4DSZIyhb/0aGX6VVOUkzgLCrsmdPKKoQZCEfiC4od2irWvsxe+iVGrWw==
-X-Received: by 2002:a05:600c:4e44:b0:3a3:279b:30e4 with SMTP id e4-20020a05600c4e4400b003a3279b30e4mr3379879wmq.37.1658931290552;
-        Wed, 27 Jul 2022 07:14:50 -0700 (PDT)
-Received: from localhost.localdomain (210.145.15.109.rev.sfr.net. [109.15.145.210])
-        by smtp.googlemail.com with ESMTPSA id o20-20020a05600c339400b0039c54bb28f2sm2489524wmp.36.2022.07.27.07.14.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 07:14:50 -0700 (PDT)
-From:   Amjad Ouled-Ameur <aouledameur@baylibre.com>
-To:     jan.kiszka@siemens.com
-Cc:     linux-kernel@vger.kernel.org, narmstrong@baylibre.com,
-        kbingham@kernel.org, Amjad Ouled-Ameur <aouledameur@baylibre.com>
-Subject: [PATCH 3/3] scripts/gdb: timerlist: convert int chunks to str
-Date:   Wed, 27 Jul 2022 16:14:43 +0200
-Message-Id: <20220727141443.133094-4-aouledameur@baylibre.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220727141443.133094-1-aouledameur@baylibre.com>
-References: <20220727141443.133094-1-aouledameur@baylibre.com>
+        Wed, 27 Jul 2022 10:14:59 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C65C23D5A1;
+        Wed, 27 Jul 2022 07:14:58 -0700 (PDT)
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26RECiqx008649;
+        Wed, 27 Jul 2022 14:14:53 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=9UvBoKjveAd8vWIz26CXlNFNnDhnua88gOlDU7zqGVg=;
+ b=k6pzpnbqy2FUeJYFNcY/2K5Ux3LgKfOfx/KaP49k1LWAt6udyP3s5oZBmbiI/16Q9Wq3
+ zfFcupVsslxpGy4j4WUII4a984OEYLQi8NqnYGDPCVm4jPHpyY3YF7f6aRMbg3lsNEVG
+ qMJpmO6ssXmPoEim+FsJLTKDg3Mz58saDVXJ4tNwJg/ADsBE+jMW5UsZKRTHhCQJpjyS
+ lvTVbhXISABrog/iOnNOoj7nKylgdW6hGOCc9YBLutaDVlpVb5rGQukuoxXmNCVZlnDi
+ HonGfarsEWoYrb4EB3jyGV2ZkRroaVRyKImFiqb2Z1gcs4eepykHLXyFkr7wbB6ZIBRQ Qw== 
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3hk6gf1d4m-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 27 Jul 2022 14:14:53 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26RE7RPs002840;
+        Wed, 27 Jul 2022 14:14:49 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma03ams.nl.ibm.com with ESMTP id 3hh6eukun2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 27 Jul 2022 14:14:49 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26REEk2C24707430
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 27 Jul 2022 14:14:46 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7FC34A4051;
+        Wed, 27 Jul 2022 14:14:46 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 2D7A8A4053;
+        Wed, 27 Jul 2022 14:14:46 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed, 27 Jul 2022 14:14:46 +0000 (GMT)
+From:   Thomas Richter <tmricht@linux.ibm.com>
+To:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        acme@kernel.org, james.clark@arm.com, german.gomez@arm.com
+Cc:     svens@linux.ibm.com, gor@linux.ibm.com, sumanthk@linux.ibm.com,
+        hca@linux.ibm.com, Thomas Richter <tmricht@linux.ibm.com>
+Subject: [PATCH] perf/tests: Fix test case 95 on s390 and use same event
+Date:   Wed, 27 Jul 2022 16:14:39 +0200
+Message-Id: <20220727141439.712582-1-tmricht@linux.ibm.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: EkiA4MTTwO57ch-xc9SbOaQI9DZX2IGI
+X-Proofpoint-ORIG-GUID: EkiA4MTTwO57ch-xc9SbOaQI9DZX2IGI
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-27_05,2022-07-27_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 suspectscore=0
+ mlxscore=0 mlxlogscore=999 adultscore=0 phishscore=0 lowpriorityscore=0
+ spamscore=0 impostorscore=0 priorityscore=1501 bulkscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
+ definitions=main-2207270056
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-join() expects strings but integers are given.
+On linux-next tree perf test 95 was added recently.
+s390 does not support branch sampling at all and the test case fails
+despite for checking branch support before hand.
+The check for support of branching
+uses the software event named dummy, as seen in the line:
 
-Convert chunks list to strings before passing it to join()
+ perf record -b -o- -e dummy -B true > /dev/null 2>&1 || exit 2
 
-Signed-off-by: Amjad Ouled-Ameur <aouledameur@baylibre.com>
+However when the branch recording is actually done, a different
+event is used, as seen in the line:
+
+ perf record -o $TMPDIR/... --branch-filter any,save_type,u -- ...
+
+The event is omitted and for perf record the default event is
+cycles, which is not supported by s390 and this fails when executed
+on s390:
+
+ # perf record --branch-filter any,save_type,u -- \
+	/tmp/__perf_test.program.iDSmQ/a.out
+ Error:
+ cycles: PMU Hardware or event type doesn't support branch stack sampling.
+ #
+
+Therefore fix this and use the same event cycles for testing support
+and actually running the test.
+
+Output before:
+ # ./perf test -Fv 95
+ 95: Check branch stack sampling                                     :
+ --- start ---
+ Testing user branch stack sampling
+ ---- end ----
+ Check branch stack sampling: FAILED!
+ #
+
+Output after:
+ # ./perf test -Fv 95
+ 95: Check branch stack sampling                                     :
+ --- start ---
+ ---- end ----
+ Check branch stack sampling: Skip
+ #
+
+Fixes: b55878c90ab9 ("perf test: Add test for branch stack sampling")
+Signed-off-by: Thomas Richter <tmricht@linux.ibm.com>
 ---
- scripts/gdb/linux/timerlist.py | 2 +-
+ tools/perf/tests/shell/test_brstack.sh | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/scripts/gdb/linux/timerlist.py b/scripts/gdb/linux/timerlist.py
-index d16909f8df35..98bb9a239283 100644
---- a/scripts/gdb/linux/timerlist.py
-+++ b/scripts/gdb/linux/timerlist.py
-@@ -172,7 +172,7 @@ def pr_cpumask(mask):
-     if 0 < extra <= 4:
-         chunks[0] = chunks[0][0]  # Cut off the first 0
+diff --git a/tools/perf/tests/shell/test_brstack.sh b/tools/perf/tests/shell/test_brstack.sh
+index 113ccd17bf03..c644f94a6500 100755
+--- a/tools/perf/tests/shell/test_brstack.sh
++++ b/tools/perf/tests/shell/test_brstack.sh
+@@ -12,7 +12,7 @@ if ! [ -x "$(command -v cc)" ]; then
+ fi
  
--    return "".join(chunks)
-+    return "".join(str(chunks))
+ # skip the test if the hardware doesn't support branch stack sampling
+-perf record -b -o- -e dummy -B true > /dev/null 2>&1 || exit 2
++perf record -b -o- -B true > /dev/null 2>&1 || exit 2
  
+ TMPDIR=$(mktemp -d /tmp/__perf_test.program.XXXXX)
  
- class LxTimerList(gdb.Command):
 -- 
-2.37.1
+2.36.1
 
