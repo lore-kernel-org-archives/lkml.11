@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5E3BC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:26:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E821DC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:26:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236490AbiG0Q0s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:26:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50090 "EHLO
+        id S234247AbiG0Q0x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:26:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236318AbiG0QZr (ORCPT
+        with ESMTP id S236428AbiG0QZu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:25:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B566B4F181;
-        Wed, 27 Jul 2022 09:23:35 -0700 (PDT)
+        Wed, 27 Jul 2022 12:25:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E80C44F185;
+        Wed, 27 Jul 2022 09:23:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6AF90619DD;
-        Wed, 27 Jul 2022 16:23:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 722DCC433D6;
-        Wed, 27 Jul 2022 16:23:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 870AAB821BC;
+        Wed, 27 Jul 2022 16:23:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BD6FFC433D7;
+        Wed, 27 Jul 2022 16:23:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658938997;
-        bh=c3tV6BAXwRyUF0hyRxeSfe4RgHesWx2wasczt0+YFDU=;
+        s=korg; t=1658939015;
+        bh=u4byFlQJsz3ZevS0sUJUuzhJBaAdVaUfUAUmILwEF9k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z6tU3AkuiAQ2YhggJMEb8wfoyOkp+N34t5uF4o7Wa+NbC5ouyKBdE8no8+GRbDUdb
-         h6L3tLJtF5Wk4sKQT0qFyRJENTqK5dqzBw/OtuMeM3Rd+9VTCI0FpSWrIbAvf8XXQb
-         Chjon2Yd0qbTUksbYoqFYYgwdG323M6/46dGFPuc=
+        b=kuqGzMaElK2yAcmgP1qp/B7nlmv0VAwemKlvKWIUuxAAadqjlgjkdCZ2kNOGnXg0U
+         ShKiTFQCuzBPLkWV94I4n+YRmPcHTGEw39TbNMnlPblfE/K8gPetb5nW+ExcjPNKki
+         JpUfElLzYuZgJhQmXfdduJ5uF5DJYImOLPTr886g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 07/37] tcp: Fix a data-race around sysctl_tcp_probe_threshold.
-Date:   Wed, 27 Jul 2022 18:10:33 +0200
-Message-Id: <20220727161001.151820081@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Subject: [PATCH 4.14 21/37] Bluetooth: Add bt_skb_sendmsg helper
+Date:   Wed, 27 Jul 2022 18:10:47 +0200
+Message-Id: <20220727161001.682182744@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161000.822869853@linuxfoundation.org>
 References: <20220727161000.822869853@linuxfoundation.org>
@@ -49,36 +50,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 
-[ Upstream commit 92c0aa4175474483d6cf373314343d4e624e882a ]
+commit 38f64f650dc0e44c146ff88d15a7339efa325918 upstream.
 
-While reading sysctl_tcp_probe_threshold, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its reader.
+bt_skb_sendmsg helps takes care of allocation the skb and copying the
+the contents of msg over to the skb while checking for possible errors
+so it should be safe to call it without holding lock_sock.
 
-Fixes: 6b58e0a5f32d ("ipv4: Use binary search to choose tcp PMTU probe_size")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Cc: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/tcp_output.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/net/bluetooth/bluetooth.h |   28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
 
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index a231993c81c4..8ac23e8439c3 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -2087,7 +2087,7 @@ static int tcp_mtu_probe(struct sock *sk)
- 	 * probing process by not resetting search range to its orignal.
- 	 */
- 	if (probe_size > tcp_mtu_to_mss(sk, icsk->icsk_mtup.search_high) ||
--		interval < net->ipv4.sysctl_tcp_probe_threshold) {
-+	    interval < READ_ONCE(net->ipv4.sysctl_tcp_probe_threshold)) {
- 		/* Check whether enough time has elaplased for
- 		 * another round of probing.
- 		 */
--- 
-2.35.1
-
+--- a/include/net/bluetooth/bluetooth.h
++++ b/include/net/bluetooth/bluetooth.h
+@@ -367,6 +367,34 @@ out:
+ 	return NULL;
+ }
+ 
++/* Shall not be called with lock_sock held */
++static inline struct sk_buff *bt_skb_sendmsg(struct sock *sk,
++					     struct msghdr *msg,
++					     size_t len, size_t mtu,
++					     size_t headroom, size_t tailroom)
++{
++	struct sk_buff *skb;
++	size_t size = min_t(size_t, len, mtu);
++	int err;
++
++	skb = bt_skb_send_alloc(sk, size + headroom + tailroom,
++				msg->msg_flags & MSG_DONTWAIT, &err);
++	if (!skb)
++		return ERR_PTR(err);
++
++	skb_reserve(skb, headroom);
++	skb_tailroom_reserve(skb, mtu, tailroom);
++
++	if (!copy_from_iter_full(skb_put(skb, size), size, &msg->msg_iter)) {
++		kfree_skb(skb);
++		return ERR_PTR(-EFAULT);
++	}
++
++	skb->priority = sk->sk_priority;
++
++	return skb;
++}
++
+ int bt_to_errno(u16 code);
+ 
+ void hci_sock_set_flag(struct sock *sk, int nr);
 
 
