@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87547C04A68
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE10DC19F28
 	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:25:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242031AbiG0RYL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:24:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44514 "EHLO
+        id S242091AbiG0RYQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:24:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241956AbiG0RXZ (ORCPT
+        with ESMTP id S242029AbiG0RX1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:23:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F39117AB3C;
-        Wed, 27 Jul 2022 09:45:48 -0700 (PDT)
+        Wed, 27 Jul 2022 13:23:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F6FD7AC03;
+        Wed, 27 Jul 2022 09:45:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6834FB8200C;
-        Wed, 27 Jul 2022 16:45:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A86F4C433D7;
-        Wed, 27 Jul 2022 16:45:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CFB860D38;
+        Wed, 27 Jul 2022 16:45:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35E5CC433D7;
+        Wed, 27 Jul 2022 16:45:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940342;
-        bh=FP2F7zyyKo6KwfdNeVpY3GPe5U5gotHLjQ3RQIvnQQg=;
+        s=korg; t=1658940347;
+        bh=tERZppFqcEhedvwOcLJyBDztk0AV46GCOnRXiuvGQrg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0YlhmCiiGGdZWnRpMfueYGIXgmqc2sYATgKm9Ayo3oloGeDEKPUGzwb/nTu+vZDL0
-         +y/WM898aJ1K7R94iHojM5EIpTAFDVXPjlb7zzgfB+95RFSoiNrMXzNJpHn4+jut3p
-         AwwX457MzXpB2Vdv3+nB8f/ksXtMOGvf2swlcBIc=
+        b=gy5SWLPIsiPgZHr/SjqoQ2yEfk2zmk2GERGX8Dv0XjGiJS0gKvgTCvPZAd+nT3X1r
+         gbam32LF303l2uW4uGf4KWITtSQoquKO8MFCEyu+4gL5M+LOqXhV4W9jVyMpIGRM2l
+         40W8th61ByYzft+O8nKLkgBg68SLywktF7+GPnFs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Richard Weinberger <richard@nod.at>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 173/201] um: virtio_uml: Fix broken device handling in time-travel
-Date:   Wed, 27 Jul 2022 18:11:17 +0200
-Message-Id: <20220727161034.977809905@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?=E4=B8=80=E5=8F=AA=E7=8B=97?= <chennbnbnb@gmail.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Hillf Danton <hdanton@sina.com>, Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH 5.15 192/201] tty: use new tty_insert_flip_string_and_push_buffer() in pty_write()
+Date:   Wed, 27 Jul 2022 18:11:36 +0200
+Message-Id: <20220727161035.722436889@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -49,122 +50,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Jiri Slaby <jslaby@suse.cz>
 
-[ Upstream commit af9fb41ed315ce95f659f0b10b4d59a71975381d ]
+commit a501ab75e7624d133a5a3c7ec010687c8b961d23 upstream.
 
-If a device implementation crashes, virtio_uml will mark it
-as dead by calling virtio_break_device() and scheduling the
-work that will remove it.
+There is a race in pty_write(). pty_write() can be called in parallel
+with e.g. ioctl(TIOCSTI) or ioctl(TCXONC) which also inserts chars to
+the buffer. Provided, tty_flip_buffer_push() in pty_write() is called
+outside the lock, it can commit inconsistent tail. This can lead to out
+of bounds writes and other issues. See the Link below.
 
-This still seems like the right thing to do, but it's done
-directly while reading the message, and if time-travel is
-used, this is in the time-travel handler, outside of the
-normal Linux machinery. Therefore, we cannot acquire locks
-or do normal "linux-y" things because e.g. lockdep will be
-confused about the context.
+To fix this, we have to introduce a new helper called
+tty_insert_flip_string_and_push_buffer(). It does both
+tty_insert_flip_string() and tty_flip_buffer_commit() under the port
+lock. It also calls queue_work(), but outside the lock. See
+71a174b39f10 (pty: do tty_flip_buffer_push without port->lock in
+pty_write) for the reasons.
 
-Move handling this situation out of the read function and
-into the actual IRQ handler and response handling instead,
-so that in the case of time-travel we don't call it in the
-wrong context.
+Keep the helper internal-only (in drivers' tty.h). It is not intended to
+be used widely.
 
-Chances are the system will still crash immediately, since
-the device implementation crashing may also cause the time-
-travel controller to go down, but at least all of that now
-happens without strange warnings from lockdep.
-
-Fixes: c8177aba37ca ("um: time-travel: rework interrupt handling in ext mode")
-Cc: stable@vger.kernel.org
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://seclists.org/oss-sec/2022/q2/155
+Fixes: 71a174b39f10 (pty: do tty_flip_buffer_push without port->lock in pty_write)
+Cc: 一只狗 <chennbnbnb@gmail.com>
+Cc: Dan Carpenter <dan.carpenter@oracle.com>
+Suggested-by: Hillf Danton <hdanton@sina.com>
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Link: https://lore.kernel.org/r/20220707082558.9250-2-jslaby@suse.cz
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/um/drivers/virtio_uml.c | 33 +++++++++++++++++++++++----------
- 1 file changed, 23 insertions(+), 10 deletions(-)
+ drivers/tty/pty.c        |   14 ++------------
+ drivers/tty/tty.h        |    3 +++
+ drivers/tty/tty_buffer.c |   31 +++++++++++++++++++++++++++++++
+ 3 files changed, 36 insertions(+), 12 deletions(-)
 
-diff --git a/arch/um/drivers/virtio_uml.c b/arch/um/drivers/virtio_uml.c
-index ba562d68dc04..82ff3785bf69 100644
---- a/arch/um/drivers/virtio_uml.c
-+++ b/arch/um/drivers/virtio_uml.c
-@@ -63,6 +63,7 @@ struct virtio_uml_device {
+--- a/drivers/tty/pty.c
++++ b/drivers/tty/pty.c
+@@ -111,21 +111,11 @@ static void pty_unthrottle(struct tty_st
+ static int pty_write(struct tty_struct *tty, const unsigned char *buf, int c)
+ {
+ 	struct tty_struct *to = tty->link;
+-	unsigned long flags;
  
- 	u8 config_changed_irq:1;
- 	uint64_t vq_irq_vq_map;
-+	int recv_rc;
- };
+-	if (tty->flow.stopped)
++	if (tty->flow.stopped || !c)
+ 		return 0;
  
- struct virtio_uml_vq_info {
-@@ -148,14 +149,6 @@ static int vhost_user_recv(struct virtio_uml_device *vu_dev,
- 
- 	rc = vhost_user_recv_header(fd, msg);
- 
--	if (rc == -ECONNRESET && vu_dev->registered) {
--		struct virtio_uml_platform_data *pdata;
--
--		pdata = vu_dev->pdata;
--
--		virtio_break_device(&vu_dev->vdev);
--		schedule_work(&pdata->conn_broken_wk);
+-	if (c > 0) {
+-		spin_lock_irqsave(&to->port->lock, flags);
+-		/* Stuff the data into the input queue of the other end */
+-		c = tty_insert_flip_string(to->port, buf, c);
+-		spin_unlock_irqrestore(&to->port->lock, flags);
+-		/* And shovel */
+-		if (c)
+-			tty_flip_buffer_push(to->port);
 -	}
- 	if (rc)
- 		return rc;
- 	size = msg->header.size;
-@@ -164,6 +157,21 @@ static int vhost_user_recv(struct virtio_uml_device *vu_dev,
- 	return full_read(fd, &msg->payload, size, false);
+-	return c;
++	return tty_insert_flip_string_and_push_buffer(to->port, buf, c);
  }
  
-+static void vhost_user_check_reset(struct virtio_uml_device *vu_dev,
-+				   int rc)
+ /**
+--- a/drivers/tty/tty.h
++++ b/drivers/tty/tty.h
+@@ -111,4 +111,7 @@ static inline void tty_audit_tiocsti(str
+ 
+ ssize_t redirected_tty_write(struct kiocb *, struct iov_iter *);
+ 
++int tty_insert_flip_string_and_push_buffer(struct tty_port *port,
++		const unsigned char *chars, size_t cnt);
++
+ #endif
+--- a/drivers/tty/tty_buffer.c
++++ b/drivers/tty/tty_buffer.c
+@@ -563,6 +563,37 @@ void tty_flip_buffer_push(struct tty_por
+ EXPORT_SYMBOL(tty_flip_buffer_push);
+ 
+ /**
++ * tty_insert_flip_string_and_push_buffer - add characters to the tty buffer and
++ *	push
++ * @port: tty port
++ * @chars: characters
++ * @size: size
++ *
++ * The function combines tty_insert_flip_string() and tty_flip_buffer_push()
++ * with the exception of properly holding the @port->lock.
++ *
++ * To be used only internally (by pty currently).
++ *
++ * Returns: the number added.
++ */
++int tty_insert_flip_string_and_push_buffer(struct tty_port *port,
++		const unsigned char *chars, size_t size)
 +{
-+	struct virtio_uml_platform_data *pdata = vu_dev->pdata;
++	struct tty_bufhead *buf = &port->buf;
++	unsigned long flags;
 +
-+	if (rc != -ECONNRESET)
-+		return;
++	spin_lock_irqsave(&port->lock, flags);
++	size = tty_insert_flip_string(port, chars, size);
++	if (size)
++		tty_flip_buffer_commit(buf->tail);
++	spin_unlock_irqrestore(&port->lock, flags);
 +
-+	if (!vu_dev->registered)
-+		return;
++	queue_work(system_unbound_wq, &buf->work);
 +
-+	virtio_break_device(&vu_dev->vdev);
-+	schedule_work(&pdata->conn_broken_wk);
++	return size;
 +}
 +
- static int vhost_user_recv_resp(struct virtio_uml_device *vu_dev,
- 				struct vhost_user_msg *msg,
- 				size_t max_payload_size)
-@@ -171,8 +179,10 @@ static int vhost_user_recv_resp(struct virtio_uml_device *vu_dev,
- 	int rc = vhost_user_recv(vu_dev, vu_dev->sock, msg,
- 				 max_payload_size, true);
- 
--	if (rc)
-+	if (rc) {
-+		vhost_user_check_reset(vu_dev, rc);
- 		return rc;
-+	}
- 
- 	if (msg->header.flags != (VHOST_USER_FLAG_REPLY | VHOST_USER_VERSION))
- 		return -EPROTO;
-@@ -369,6 +379,7 @@ static irqreturn_t vu_req_read_message(struct virtio_uml_device *vu_dev,
- 				 sizeof(msg.msg.payload) +
- 				 sizeof(msg.extra_payload));
- 
-+	vu_dev->recv_rc = rc;
- 	if (rc)
- 		return IRQ_NONE;
- 
-@@ -412,7 +423,9 @@ static irqreturn_t vu_req_interrupt(int irq, void *data)
- 	if (!um_irq_timetravel_handler_used())
- 		ret = vu_req_read_message(vu_dev, NULL);
- 
--	if (vu_dev->vq_irq_vq_map) {
-+	if (vu_dev->recv_rc) {
-+		vhost_user_check_reset(vu_dev, vu_dev->recv_rc);
-+	} else if (vu_dev->vq_irq_vq_map) {
- 		struct virtqueue *vq;
- 
- 		virtio_device_for_each_vq((&vu_dev->vdev), vq) {
--- 
-2.35.1
-
++/**
+  *	tty_buffer_init		-	prepare a tty buffer structure
+  *	@port: tty port to initialise
+  *
 
 
