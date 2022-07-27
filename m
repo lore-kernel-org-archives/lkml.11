@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D04D4C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:40:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FBEBC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:41:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239092AbiG0Qku (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:40:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58304 "EHLO
+        id S239473AbiG0Qk6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:40:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238617AbiG0QkW (ORCPT
+        with ESMTP id S239486AbiG0Qka (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:40:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B7E650183;
-        Wed, 27 Jul 2022 09:29:10 -0700 (PDT)
+        Wed, 27 Jul 2022 12:40:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AB94501AC;
+        Wed, 27 Jul 2022 09:29:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2444861A24;
-        Wed, 27 Jul 2022 16:29:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 090D5C433C1;
-        Wed, 27 Jul 2022 16:29:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 676D5B821C2;
+        Wed, 27 Jul 2022 16:29:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B98F8C433D6;
+        Wed, 27 Jul 2022 16:29:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939347;
-        bh=vtGg6SI/q50xKoMLxFbsX/Do7BdAGDv3823ufYQsLdI=;
+        s=korg; t=1658939353;
+        bh=tgPNGXPOkBAd7r6Ni+4X8q4Ck+twZNZSzRrprPQ2w5s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A0YZFp+EOmAIziIN42oO5NX0ddcqsO56RKBVcFWu9uI0OepsdrDNumfB5MjXyYCsg
-         Br9VAqSCDd2bWJ5L/ziz1R8UqJp2ZmbgEuFssJf7FuHbeaMtSh51wasHpyI8btzXx3
-         +0J9pl4SVFg8XxNHpElTb2fC8oYtWp18mV+efyy4=
+        b=ludhTKWYbEbcIDM3LbK682452e9JMna5wHqJC+Fgy7q1/8HLNXw82RBUZGURguPTz
+         9nys4vGmIUVFguEoa+AgkDYVYbS+UcaQRAoz+9pLMlseCpzHe7vsm7ilCuz8EfXaNp
+         uWxxvfQwgO/2rdTiENbwzFeRincMvSEwhYCMxdkg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org,
+        Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 37/87] tcp: Fix data-races around sysctl_max_syn_backlog.
-Date:   Wed, 27 Jul 2022 18:10:30 +0200
-Message-Id: <20220727161010.553776187@linuxfoundation.org>
+Subject: [PATCH 5.4 39/87] iavf: Fix handling of dummy receive descriptors
+Date:   Wed, 27 Jul 2022 18:10:32 +0200
+Message-Id: <20220727161010.640531326@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161008.993711844@linuxfoundation.org>
 References: <20220727161008.993711844@linuxfoundation.org>
@@ -49,40 +52,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
 
-[ Upstream commit 79539f34743d3e14cc1fa6577d326a82cc64d62f ]
+[ Upstream commit a9f49e0060301a9bfebeca76739158d0cf91cdf6 ]
 
-While reading sysctl_max_syn_backlog, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its readers.
+Fix memory leak caused by not handling dummy receive descriptor properly.
+iavf_get_rx_buffer now sets the rx_buffer return value for dummy receive
+descriptors. Without this patch, when the hardware writes a dummy
+descriptor, iavf would not free the page allocated for the previous receive
+buffer. This is an unlikely event but can still happen.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+[Jesse: massaged commit message]
+
+Fixes: efa14c398582 ("iavf: allow null RX descriptors")
+Signed-off-by: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
+Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp_input.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/intel/iavf/iavf_txrx.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index fbdb5de29a97..c1f26603cd2c 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -6676,10 +6676,12 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
- 		goto drop_and_free;
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_txrx.c b/drivers/net/ethernet/intel/iavf/iavf_txrx.c
+index 7a30d5d5ef53..c6905d1b6182 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_txrx.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_txrx.c
+@@ -1263,11 +1263,10 @@ static struct iavf_rx_buffer *iavf_get_rx_buffer(struct iavf_ring *rx_ring,
+ {
+ 	struct iavf_rx_buffer *rx_buffer;
  
- 	if (!want_cookie && !isn) {
-+		int max_syn_backlog = READ_ONCE(net->ipv4.sysctl_max_syn_backlog);
-+
- 		/* Kill the following clause, if you dislike this way. */
- 		if (!syncookies &&
--		    (net->ipv4.sysctl_max_syn_backlog - inet_csk_reqsk_queue_len(sk) <
--		     (net->ipv4.sysctl_max_syn_backlog >> 2)) &&
-+		    (max_syn_backlog - inet_csk_reqsk_queue_len(sk) <
-+		     (max_syn_backlog >> 2)) &&
- 		    !tcp_peer_is_proven(req, dst)) {
- 			/* Without syncookies last quarter of
- 			 * backlog is filled with destinations,
+-	if (!size)
+-		return NULL;
+-
+ 	rx_buffer = &rx_ring->rx_bi[rx_ring->next_to_clean];
+ 	prefetchw(rx_buffer->page);
++	if (!size)
++		return rx_buffer;
+ 
+ 	/* we are reusing so sync this buffer for CPU use */
+ 	dma_sync_single_range_for_cpu(rx_ring->dev,
 -- 
 2.35.1
 
