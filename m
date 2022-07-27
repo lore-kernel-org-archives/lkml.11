@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5EE1C19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:36:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0A80C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:36:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238737AbiG0Qgb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:36:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46930 "EHLO
+        id S238759AbiG0Qgh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:36:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239085AbiG0Qew (ORCPT
+        with ESMTP id S239108AbiG0Qew (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Jul 2022 12:34:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 161C04D4D9;
-        Wed, 27 Jul 2022 09:27:35 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 441352BB14;
+        Wed, 27 Jul 2022 09:27:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 947F861A1B;
-        Wed, 27 Jul 2022 16:27:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0018C433D7;
-        Wed, 27 Jul 2022 16:27:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2F08D61662;
+        Wed, 27 Jul 2022 16:26:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCD50C433D7;
+        Wed, 27 Jul 2022 16:26:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939247;
-        bh=zL31rUaogdM0Oz7SjUjidmnhf6c2vEMJMOe9tCOLlxc=;
+        s=korg; t=1658939218;
+        bh=bHWOYzOT2Xrewl7+mdQEPqZaXcMv9WJSN1IRkhw5VDU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E6NQpjE+qg/NytPHDFy4k45CvthsAk+7Pis+OGPtTY6132jfb9XcVYTnvcluaTfua
-         rdpUbWidfUOPBWOwk66GCKQIaLvQipL1bpRXpTpJo8AUZxagWYovNoGeTaVhdLfLHD
-         m+iRyLhI6GYpJuLGbRuPP30Cvw8G3aJxFBMPBqrA=
+        b=z4JBFjGqQtnd+aol6GhBheIzomySszI73XCwcImk+yX3H5zYCeTDL9WNiO4uTZk7j
+         EV8rqdukFahPpzMunE0cpF1OiwUvDgvw6cp0T7Fk4ZJRVOERY/p1LnGicTZEmP1ikn
+         7c+dkDD0hD7CY0pmC6QfwXXIf54VdsXqJezMs/CQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-Subject: [PATCH 4.19 52/62] serial: mvebu-uart: correctly report configured baudrate value
-Date:   Wed, 27 Jul 2022 18:11:01 +0200
-Message-Id: <20220727161006.174737118@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 23/62] tcp: Fix data-races around sysctl_tcp_fastopen.
+Date:   Wed, 27 Jul 2022 18:10:32 +0200
+Message-Id: <20220727161005.109101571@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161004.175638564@linuxfoundation.org>
 References: <20220727161004.175638564@linuxfoundation.org>
@@ -49,90 +50,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit 4f532c1e25319e42996ec18a1f473fd50c8e575d upstream.
+[ Upstream commit 5a54213318c43f4009ae158347aa6016e3b9b55a ]
 
-Functions tty_termios_encode_baud_rate() and uart_update_timeout() should
-be called with the baudrate value which was set to hardware. Linux then
-report exact values via ioctl(TCGETS2) to userspace.
+While reading sysctl_tcp_fastopen, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its readers.
 
-Change mvebu_uart_baud_rate_set() function to return baudrate value which
-was set to hardware and propagate this value to above mentioned functions.
-
-With this change userspace would see precise value in termios c_ospeed
-field.
-
-Fixes: 68a0db1d7da2 ("serial: mvebu-uart: add function to change baudrate")
-Cc: stable <stable@kernel.org>
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Link: https://lore.kernel.org/r/20220628100922.10717-1-pali@kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 2100c8d2d9db ("net-tcp: Fast Open base")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Acked-by: Yuchung Cheng <ycheng@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/mvebu-uart.c |   25 +++++++++++++------------
- 1 file changed, 13 insertions(+), 12 deletions(-)
+ net/ipv4/af_inet.c      | 2 +-
+ net/ipv4/tcp.c          | 6 ++++--
+ net/ipv4/tcp_fastopen.c | 4 ++--
+ 3 files changed, 7 insertions(+), 5 deletions(-)
 
---- a/drivers/tty/serial/mvebu-uart.c
-+++ b/drivers/tty/serial/mvebu-uart.c
-@@ -442,14 +442,14 @@ static void mvebu_uart_shutdown(struct u
- 	}
- }
+diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+index dadd42a07c07..229519001cc3 100644
+--- a/net/ipv4/af_inet.c
++++ b/net/ipv4/af_inet.c
+@@ -218,7 +218,7 @@ int inet_listen(struct socket *sock, int backlog)
+ 		 * because the socket was in TCP_LISTEN state previously but
+ 		 * was shutdown() rather than close().
+ 		 */
+-		tcp_fastopen = sock_net(sk)->ipv4.sysctl_tcp_fastopen;
++		tcp_fastopen = READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_fastopen);
+ 		if ((tcp_fastopen & TFO_SERVER_WO_SOCKOPT1) &&
+ 		    (tcp_fastopen & TFO_SERVER_ENABLE) &&
+ 		    !inet_csk(sk)->icsk_accept_queue.fastopenq.max_qlen) {
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 0f89d0f2c21f..7acc0d07f148 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -1160,7 +1160,8 @@ static int tcp_sendmsg_fastopen(struct sock *sk, struct msghdr *msg,
+ 	struct sockaddr *uaddr = msg->msg_name;
+ 	int err, flags;
  
--static int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
-+static unsigned int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
+-	if (!(sock_net(sk)->ipv4.sysctl_tcp_fastopen & TFO_CLIENT_ENABLE) ||
++	if (!(READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_fastopen) &
++	      TFO_CLIENT_ENABLE) ||
+ 	    (uaddr && msg->msg_namelen >= sizeof(uaddr->sa_family) &&
+ 	     uaddr->sa_family == AF_UNSPEC))
+ 		return -EOPNOTSUPP;
+@@ -3056,7 +3057,8 @@ static int do_tcp_setsockopt(struct sock *sk, int level,
+ 	case TCP_FASTOPEN_CONNECT:
+ 		if (val > 1 || val < 0) {
+ 			err = -EINVAL;
+-		} else if (net->ipv4.sysctl_tcp_fastopen & TFO_CLIENT_ENABLE) {
++		} else if (READ_ONCE(net->ipv4.sysctl_tcp_fastopen) &
++			   TFO_CLIENT_ENABLE) {
+ 			if (sk->sk_state == TCP_CLOSE)
+ 				tp->fastopen_connect = val;
+ 			else
+diff --git a/net/ipv4/tcp_fastopen.c b/net/ipv4/tcp_fastopen.c
+index 119d2c2f3b04..f726591de7c7 100644
+--- a/net/ipv4/tcp_fastopen.c
++++ b/net/ipv4/tcp_fastopen.c
+@@ -313,7 +313,7 @@ static bool tcp_fastopen_no_cookie(const struct sock *sk,
+ 				   const struct dst_entry *dst,
+ 				   int flag)
  {
- 	struct mvebu_uart *mvuart = to_mvuart(port);
- 	unsigned int d_divisor, m_divisor;
- 	u32 brdv;
- 
- 	if (IS_ERR(mvuart->clk))
--		return -PTR_ERR(mvuart->clk);
-+		return 0;
- 
- 	/*
- 	 * The baudrate is derived from the UART clock thanks to two divisors:
-@@ -469,7 +469,7 @@ static int mvebu_uart_baud_rate_set(stru
- 	brdv |= d_divisor;
- 	writel(brdv, port->membase + UART_BRDV);
- 
--	return 0;
-+	return DIV_ROUND_CLOSEST(port->uartclk, d_divisor * m_divisor);
+-	return (sock_net(sk)->ipv4.sysctl_tcp_fastopen & flag) ||
++	return (READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_fastopen) & flag) ||
+ 	       tcp_sk(sk)->fastopen_no_cookie ||
+ 	       (dst && dst_metric(dst, RTAX_FASTOPEN_NO_COOKIE));
  }
+@@ -328,7 +328,7 @@ struct sock *tcp_try_fastopen(struct sock *sk, struct sk_buff *skb,
+ 			      const struct dst_entry *dst)
+ {
+ 	bool syn_data = TCP_SKB_CB(skb)->end_seq != TCP_SKB_CB(skb)->seq + 1;
+-	int tcp_fastopen = sock_net(sk)->ipv4.sysctl_tcp_fastopen;
++	int tcp_fastopen = READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_fastopen);
+ 	struct tcp_fastopen_cookie valid_foc = { .len = -1 };
+ 	struct sock *child;
  
- static void mvebu_uart_set_termios(struct uart_port *port,
-@@ -506,15 +506,11 @@ static void mvebu_uart_set_termios(struc
- 	max_baud = 230400;
- 
- 	baud = uart_get_baud_rate(port, termios, old, min_baud, max_baud);
--	if (mvebu_uart_baud_rate_set(port, baud)) {
--		/* No clock available, baudrate cannot be changed */
--		if (old)
--			baud = uart_get_baud_rate(port, old, NULL,
--						  min_baud, max_baud);
--	} else {
--		tty_termios_encode_baud_rate(termios, baud, baud);
--		uart_update_timeout(port, termios->c_cflag, baud);
--	}
-+	baud = mvebu_uart_baud_rate_set(port, baud);
-+
-+	/* In case baudrate cannot be changed, report previous old value */
-+	if (baud == 0 && old)
-+		baud = tty_termios_baud_rate(old);
- 
- 	/* Only the following flag changes are supported */
- 	if (old) {
-@@ -525,6 +521,11 @@ static void mvebu_uart_set_termios(struc
- 		termios->c_cflag |= CS8;
- 	}
- 
-+	if (baud != 0) {
-+		tty_termios_encode_baud_rate(termios, baud, baud);
-+		uart_update_timeout(port, termios->c_cflag, baud);
-+	}
-+
- 	spin_unlock_irqrestore(&port->lock, flags);
- }
- 
+-- 
+2.35.1
+
 
 
