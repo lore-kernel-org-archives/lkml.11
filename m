@@ -2,110 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D515FC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:18:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AF98C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:21:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234822AbiG0QSo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:18:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46372 "EHLO
+        id S233009AbiG0QVY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:21:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234772AbiG0QSk (ORCPT
+        with ESMTP id S229763AbiG0QVW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:18:40 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3ED434AD7D;
-        Wed, 27 Jul 2022 09:18:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658938719; x=1690474719;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=tBeOUp/yxaWMe5c9npreqRETmrBhESTwQGPebnMPCV8=;
-  b=WM6Zer+CYEHxp3MM/UrGAq+kb5Y9zI9bIJqfyt4yjQgtDWlrPiGd46BB
-   MlfW24giCYqtwn1VRqTXKCwGkEG0Ea3XP/n7SeDoyWK5ESGRYq0d2a++Q
-   bpucvPZtpPhYyGRQVE89XtvUF4kbjOmtY+2q9S9R4q3zP5bRVKsrO0Yd3
-   HU7/FfRVoB+dJGw55Ezqhznrc9D4+ls0SYKus5+kUexmT1YPE63QYBYUC
-   rZz/qn6yiV5VIsLSthg0B6haw3G24JV250wkg0N0REuyLo+EehCC5DhbI
-   neLaW3ZhuWQalWRIfa4xUn0TmvOGRAyZoS4xJ6uJNUqnRfZvXY1pGIXX0
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10421"; a="289473329"
-X-IronPort-AV: E=Sophos;i="5.93,196,1654585200"; 
-   d="scan'208";a="289473329"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2022 09:18:36 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,196,1654585200"; 
-   d="scan'208";a="927851599"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by fmsmga005.fm.intel.com with ESMTP; 27 Jul 2022 09:18:34 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oGjk2-0008tK-0M;
-        Wed, 27 Jul 2022 16:18:34 +0000
-Date:   Thu, 28 Jul 2022 00:17:53 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org
-Subject: drivers/media/platform/st/sti/c8sectpfe/c8sectpfe-core.c:1175:34:
- warning: unused variable 'c8sectpfe_match'
-Message-ID: <202207280016.r8tOLF4N-lkp@intel.com>
+        Wed, 27 Jul 2022 12:21:22 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2070.outbound.protection.outlook.com [40.107.220.70])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5F4D2BB04;
+        Wed, 27 Jul 2022 09:21:20 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YuBh4bfuEK+BLfsmqmIlOzc0VjlAZfjEllYry+KX2m7FeHESiDEWpoKpOmdV+uIMYWv/Oi2hqcm8SdpidbSqWqUuTe1NEXZtCl2xmp4OoXSMpHfP+ICEcq47bREsAnlvvRgASwiJh3/GK4+WWTv6HplPobJl2Xifb9EZXfBIUdNO2Ta9HjA6hNVHbIdM7bmzO+DTfhlJhSB9IbSzUtPI4fQJfACVLqoZXWPiGAR4hkuwpOSjuXpeqZ+sFgWtGpX0VnFDfa0jJ7DtJibmqS6tsbPqXAxXJS3G4HyY2yES5yuV1obE57ppwF+WMyBC7SiGFmJxAdCRPGDYsxnVq4SydQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=F0noXTyBrKreQcV4SKZMRcxe1FkKuaNE+H5WCYFNNdA=;
+ b=jHitKlaDvkcEGTZQDU0Di7Cl0/v2gwafu8BlK8nsyOkPWJuYtyEOfFr51ByF01srMdC06GXOq3Wx9gJvT6ZkkVbsjSxLLq/Rjc5Lw62vReGDpCrR5YAe0QVuEbflekEog8GzYg/pEtDu6uo/Yp2MHT4tTlwuAT75dE5sbGOcLcJcZcprWzf0lzd3xCexH/jeBR2YJ2hS8HW6UqeNAPIOyiKqkzpf0JffnLzIQ0iesu2+R6KwZgqvPnfHAVT8dhkfVNV+2tRubGtHVqd+itSvgrLyeXlua9LY3QjeZvbtOa2+56wO5ANMk4yf/icv5qEg6PVI4WuY7PxrTebW1wSclQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=F0noXTyBrKreQcV4SKZMRcxe1FkKuaNE+H5WCYFNNdA=;
+ b=yPHh5f1+2agnHItNltVGsNN5y8Mm56Ah4C8sK777KSDRnWP7ogBk/soeYEDXCwnMIS9rH9n2aeVTf42YfTdFMepx3u3PokMxR1G4PQiM8eik7aQgX9fw60AArsLbXsGR0A3Q9ByImpkNumxfFPuce11pE18Y0f+aTwDrO9BZN4o=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from MN2PR12MB2941.namprd12.prod.outlook.com (2603:10b6:208:a9::12)
+ by SN7PR12MB6863.namprd12.prod.outlook.com (2603:10b6:806:264::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.19; Wed, 27 Jul
+ 2022 16:21:19 +0000
+Received: from MN2PR12MB2941.namprd12.prod.outlook.com
+ ([fe80::d122:1dae:8445:2e43]) by MN2PR12MB2941.namprd12.prod.outlook.com
+ ([fe80::d122:1dae:8445:2e43%7]) with mapi id 15.20.5458.024; Wed, 27 Jul 2022
+ 16:21:19 +0000
+Message-ID: <f10da3c3-f688-b948-c058-28a448bec0d5@amd.com>
+Date:   Wed, 27 Jul 2022 12:21:17 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: linux-next: build failure after merge of the amdgpu tree
+Content-Language: en-US
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Alex Deucher <alexdeucher@gmail.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+References: <20220725211612.7e3331ff@canb.auug.org.au>
+From:   Rodrigo Siqueira Jordao <Rodrigo.Siqueira@amd.com>
+In-Reply-To: <20220725211612.7e3331ff@canb.auug.org.au>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BL1PR13CA0344.namprd13.prod.outlook.com
+ (2603:10b6:208:2c6::19) To MN2PR12MB2941.namprd12.prod.outlook.com
+ (2603:10b6:208:a9::12)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c61f9c6d-6309-48de-b7b7-08da6fec0979
+X-MS-TrafficTypeDiagnostic: SN7PR12MB6863:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: aMVYvEIkKGsierZXF6e27xqp9S+dovsZoFIUw88L4B/w28Pd1R1OCu5ObDQ+/g+bGkdlSvn+ZDeoXvzq4W95FbU8BHn6jHdXqRXxzwM9ht3ODvv5KaBIN+Lt3qT8jHDX8vFtfY2x9TCKXbYrecEuSEIzL50C63E+BB4wkT2xu9aQtYn2fA+9DcTA1M+m69OYPmr2NlaVOwBLuxxzGomJpO0zAd/5nuaSJHtDgO9mch09CQAQ7Ne0k5z13tBcVAO4pXZ/jjp/krCFOiCkPlWfnJ2aH71PLUTgAg/I+3ciXhOhfnd9Aag+gA+CaoYWTvCcTwMEKxPWEV2ZtnfpfQxJsC+HBbfjVUI6eXn9jm1WD9Mk8krcr0b1a8E+lKSmFqEQ/ylDw4bUmfYqQHYmxfUnYohHfu7VY0I3ITL2FepWoNkkY9qiH53p+eb1jPIhCaOtkxJ2ORVpdk3afgI/kaLVDs8bh+b/2Hr5kbfJ6CHeZzGGfg4bqL7fIvuE7+PDTo1SZyl6gLSrGBQ95TPUpWyLRvvB2r0hL+aP3K3mF0ZP7mgNZKiOu8p5Jf6501x2B4hc6qZd9HKwx81rCxyV45638txZVMW/bZJhGN1gyU35WnSwRDp8E1n5MrAsLujC3n4wzMaqEjOUhTVIWK7oBLplSZDmZU6jbwiNxI5l9CRSVdUytvfu+bKACjtkY422zfuF6/eiNdzVbH41ua9UPD7f0TiUdJNieiajG+8ISLNaM9t88dhFR0S6wYlR8+UrHnzGaYUdpVykGhfFm+i+TMqJRlBh6oTMEeTO70s8sg7EqzGx2kkuaQYAdDNb2G1J1ZTxA3X2HbUZnBGJ5rUH2toqPQ/25bycdDTbFv0Xg1JGtQV71n+eX7axqn0gCVKWj7Mi
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB2941.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(366004)(346002)(376002)(396003)(39860400002)(4326008)(8676002)(478600001)(66476007)(66556008)(6486002)(36756003)(110136005)(5660300002)(8936002)(66946007)(966005)(31686004)(6506007)(6512007)(53546011)(26005)(41300700001)(186003)(316002)(54906003)(2906002)(83380400001)(2616005)(38100700002)(86362001)(31696002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?YmNnTUtkYTJyR29wblNIOWk0L1ZMb0lWcjhyb055anZjMEpKYm9SR09OTVI5?=
+ =?utf-8?B?QWMwcHFIRmxOa2RpZ0NjY0lwUCsvYTdtU2RHYmN3N25ZN1FwcGNOVHgyc3Nl?=
+ =?utf-8?B?QzVNMC9wTStmdUVHVDBwSHlZazNqU0R6aDBxdWkzYUhhMnVjNXFtd3o3bGM5?=
+ =?utf-8?B?ekkrdmdCbTFWZ0pvVDRRaUV6N0ZWbWVBQ2lVeDBNQWlCYUpZN3hwL0UwKzFH?=
+ =?utf-8?B?Q3pkZDYvNnZUY1hFdkYyVnErYWhOSVFYZWgwaGtiTnp6a1EwV2xNRlJNcEZG?=
+ =?utf-8?B?SWp3ZE9mRE0xMzY2R29ETkhudDg5SlhRNFlYZGE4bFBBbkJrQWpXTWNaVnF2?=
+ =?utf-8?B?R0VFTkNtRCtVRUZ1MllVYm8vb3pVM2dJbDVTZVVtYW5FUk84NmdjZVNPeGV2?=
+ =?utf-8?B?MjZwT0Q3OE5mcjhNKzYycWJYVmVZeDYwOWZUMEI4OXdFeE43WTBkOXhjRU03?=
+ =?utf-8?B?Y2wrV3M4dWg0YzZaTS9weFpYd1hjOHl6L1M3cktjbDlxQXhMeVFLeGovK3ZU?=
+ =?utf-8?B?Q0l0TjdQeWU1MjJ0UjVpbWxuTWxGMktTTHNTeVVWcVgrS05DK2hxMlhFbXZq?=
+ =?utf-8?B?NkI0R0dmZSt5dFRNdmlvdVdhdllySGxSZ3RRNDl1OXdCR1pZejFka002b1pn?=
+ =?utf-8?B?elJaaU5ZQUlDbHNpd1M3K1gybUs0emkwd3hNRVgrTjlzVGI3VjVuWW9YeUF4?=
+ =?utf-8?B?YTJZbnhkZHljcXZZKzIzSjdqTWloaUFGYmVjOGNWQjhpOU8yL1JLblFJNzRG?=
+ =?utf-8?B?VDhlNEJXcERRWE5GRGpveXRQQkdONXhSSjVGcS9nNmxERHE1SnNjaXhJNlJo?=
+ =?utf-8?B?NDViV1dDdkc5eVBBSG5obnppWkYwdjRJcGd5THY3RzlXdHNXQ1kzZk5zWTZS?=
+ =?utf-8?B?N01LR1k5cStINzdsK3VCMkdKU1U4MEtzaktnL2hjekxwTlBMc3lTbzhQZUlS?=
+ =?utf-8?B?dmwyMTgwZVpLUFFsUjNvOUdxVjNPZ3RHcUVoSUpUS1VBMnlMSTFwbURFSFgr?=
+ =?utf-8?B?aE5keWtMYTBKM2tneVVURkdhY3Z3dVdWZUd0OC9TS0xTVXFnaHlqcmtqeS9q?=
+ =?utf-8?B?c01ZTmpRZmI4VXlWYmZQN0UyY1BYakdBM0Z3ZnN4c0xQd1VQWlMwUDNzaVo4?=
+ =?utf-8?B?VmNvM0RyQmhTOFRYQUtsa081MG1WbU9UUnBUWUc1TSs5d0hwd3ByZ2p6dmFq?=
+ =?utf-8?B?NDh3Q0R1SXVQYldNb2UrcU1yeWgrY2FVZ2hmem9iQ0J6MmVmdW8xRnpKZkFv?=
+ =?utf-8?B?enNKbEg3MWVLcHUyUlNQcnNwbUlqVFNYckpqOHcyS3NiT2lHRHZyT0xGK1ZW?=
+ =?utf-8?B?QTV5RmJQdGswa0JrMm9RR1VzNnBNRUNRbE9haHAvUS8rL0RpS1o1eDdyNnRI?=
+ =?utf-8?B?K2RTeFh6ZXEwY2pKaVpWa1dqNjhhcWd0Wm9lYzRxRHErRjNISVpUTlliWmkw?=
+ =?utf-8?B?bnpPTDl2TjExZm4yNDFmRFZKUHNMUEs1d1lLL0RBeEsxWkFRbnBKM1BucFF1?=
+ =?utf-8?B?SGF5OFliU216TTRqSHV2UisxakN5SUpWTVZiSU5xM2ZTTkptZmlsRmpxbzVn?=
+ =?utf-8?B?eWVLUFZrVEhJODhoK0M5RGhVUHhTdlh2RTNwMUVLSk5mOUtXdGRlN2NYUWQ3?=
+ =?utf-8?B?YWlZOWM4QTJINWkzWVg4OXRReGxkOFFoeWtwMG9KKzNvbFRONFdOSEtTWi94?=
+ =?utf-8?B?ejk0dklIMzdydVNDeUhTU1lETzJ3amcvVUloSnVWN1Rvem42UURWQmZTTyto?=
+ =?utf-8?B?UTFXSzdTTlhLa3QzT1dXQzUxdlV5TlNESGlraFFkdlFMNnVZY1dVN1R4cXJJ?=
+ =?utf-8?B?bDlWZ3BpM1lpTlYwUkZibXUzSUx6S0lhcDR3RXVIUEx4ajdKTnkwY2JCVElR?=
+ =?utf-8?B?dG82cHhYSDFva0w0eTFWL0ZhZVpHK2JaUHp6UWFwVVVseXdMN29JdnB5blRC?=
+ =?utf-8?B?UTc2Wjl6Rldnei9CR3B6NWg0ZzRGRVZ4Rlk0c1JBUWY1WTBvWWNhY1hVREtk?=
+ =?utf-8?B?blFNSnpqSXdLd0pwTmhIbmQ1dGh1cm54WVkrMHFxK29NcWJkcW5abDFHVktV?=
+ =?utf-8?B?dGVnSis4NDN3NHJzS3VPK2h4M0loUjlXMnRoUVhaY2gveGJmcXlQaFcwc2sv?=
+ =?utf-8?Q?wdoS8yBPkPzU3AdKO2XblwJgk?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c61f9c6d-6309-48de-b7b7-08da6fec0979
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB2941.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jul 2022 16:21:18.9689
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: uFJrb6Mby8B+fuBK0ja8hjJkXwzj9CXK7EGCbMI76m8XpZLKI42Rf9R6kmdwUP5p1sJoC2N/fXE1j5FolJ7B4g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR12MB6863
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mauro,
-
-First bad commit (maybe != root cause):
-
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   39c3c396f8131f3db454c80e0fcfcdc54ed9ec01
-commit: e7b8153e2a4f0c9c8d1450aa7328d54ea64fe8b2 media: platform: place stm32/ and sti/ under st/ dir
-date:   4 months ago
-config: mips-buildonly-randconfig-r001-20220727 (https://download.01.org/0day-ci/archive/20220728/202207280016.r8tOLF4N-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 8dfaecc4c24494337933aff9d9166486ca0949f1)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install mips cross compiling tool for clang build
-        # apt-get install binutils-mipsel-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=e7b8153e2a4f0c9c8d1450aa7328d54ea64fe8b2
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout e7b8153e2a4f0c9c8d1450aa7328d54ea64fe8b2
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash drivers/media/platform/ drivers/tty/serial/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/media/platform/st/sti/c8sectpfe/c8sectpfe-core.c:1175:34: warning: unused variable 'c8sectpfe_match' [-Wunused-const-variable]
-   static const struct of_device_id c8sectpfe_match[] = {
-                                    ^
-   1 warning generated.
 
 
-vim +/c8sectpfe_match +1175 drivers/media/platform/st/sti/c8sectpfe/c8sectpfe-core.c
+On 2022-07-25 07:16, Stephen Rothwell wrote:
+> Hi all,
+> 
+> After merging the amdgpu tree, today's linux-next build (powerpc
+> allyesconfig) failed like this:
+> 
+> drivers/gpu/drm/amd/amdgpu/../display/amdgpu_dm/amdgpu_dm_crtc.c:297:26: error: 'amdgpu_dm_crtc_late_register' undeclared here (not in a function); did you mean 'amdgpu_umc_ras_late_init'?
+>    297 |         .late_register = amdgpu_dm_crtc_late_register,
+>        |                          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>        |                          amdgpu_umc_ras_late_init
+> 
+> Caused by commit
+> 
+>    a6c0b96cb899 ("drm/amd/display: Create a file dedicated for CRTC")
+> 
+> I have applied the following hack for today (just to make it build).
+> 
+> From: Stephen Rothwell <sfr@canb.auug.org.au>
+> Date: Mon, 25 Jul 2022 20:48:29 +1000
+> Subject: [PATCH] fixup for "drm/amd/display: Create a file dedicated for CRTC"
+> 
+> Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> ---
+>   drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_crtc.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_crtc.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_crtc.c
+> index 16b624828e0d..3eb6ea3709bc 100644
+> --- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_crtc.c
+> +++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_crtc.c
+> @@ -293,7 +293,7 @@ static const struct drm_crtc_funcs amdgpu_dm_crtc_funcs = {
+>   	.enable_vblank = dm_enable_vblank,
+>   	.disable_vblank = dm_disable_vblank,
+>   	.get_vblank_timestamp = drm_crtc_vblank_helper_get_vblank_timestamp,
+> -#if defined(CONFIG_DEBUG_FS)
+> +#ifdef CONFIG_DRM_AMD_SECURE_DISPLAY
 
-c5f5d0f99794cfb drivers/media/platform/sti/c8sectpfe/c8sectpfe-core.c Peter Griffin 2015-07-30  1174  
-c5f5d0f99794cfb drivers/media/platform/sti/c8sectpfe/c8sectpfe-core.c Peter Griffin 2015-07-30 @1175  static const struct of_device_id c8sectpfe_match[] = {
-c5f5d0f99794cfb drivers/media/platform/sti/c8sectpfe/c8sectpfe-core.c Peter Griffin 2015-07-30  1176  	{ .compatible = "st,stih407-c8sectpfe" },
-c5f5d0f99794cfb drivers/media/platform/sti/c8sectpfe/c8sectpfe-core.c Peter Griffin 2015-07-30  1177  	{ /* sentinel */ },
-c5f5d0f99794cfb drivers/media/platform/sti/c8sectpfe/c8sectpfe-core.c Peter Griffin 2015-07-30  1178  };
-c5f5d0f99794cfb drivers/media/platform/sti/c8sectpfe/c8sectpfe-core.c Peter Griffin 2015-07-30  1179  MODULE_DEVICE_TABLE(of, c8sectpfe_match);
-c5f5d0f99794cfb drivers/media/platform/sti/c8sectpfe/c8sectpfe-core.c Peter Griffin 2015-07-30  1180  
+I guess we had a merge issue here?
 
-:::::: The code at line 1175 was first introduced by commit
-:::::: c5f5d0f99794cfb675ecacfe37a1b33b352b9752 [media] c8sectpfe: STiH407/10 Linux DVB demux support
+If you check the original patch [1,2], you will see:
 
-:::::: TO: Peter Griffin <peter.griffin@linaro.org>
-:::::: CC: Mauro Carvalho Chehab <mchehab@osg.samsung.com>
++#if defined(CONFIG_DRM_AMD_SECURE_DISPLAY)
++	.late_register = amdgpu_dm_crtc_late_register,
++#endif
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Anyway, maybe you want to use the above code to keep both branches in sync.
+
+1. 
+https://lore.kernel.org/amd-gfx/20220715181705.1030401-10-Rodrigo.Siqueira@amd.com/
+2. 
+https://gitlab.freedesktop.org/agd5f/linux/-/blob/amd-staging-drm-next/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_crtc.c#L297
+
+Thanks
+Siqueira
+
+>   	.late_register = amdgpu_dm_crtc_late_register,
+>   #endif
+>   };
+
