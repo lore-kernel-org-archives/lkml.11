@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96385C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:13:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16CC8C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:13:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241542AbiG0RNN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:13:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48934 "EHLO
+        id S240080AbiG0RNQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:13:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237315AbiG0RM1 (ORCPT
+        with ESMTP id S241532AbiG0RMh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:12:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5E0B75395;
-        Wed, 27 Jul 2022 09:41:57 -0700 (PDT)
+        Wed, 27 Jul 2022 13:12:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DA7A5141E;
+        Wed, 27 Jul 2022 09:41:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 69F61B821BA;
-        Wed, 27 Jul 2022 16:41:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C97A5C433C1;
-        Wed, 27 Jul 2022 16:41:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 854FDB821D7;
+        Wed, 27 Jul 2022 16:41:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6FE6C433C1;
+        Wed, 27 Jul 2022 16:41:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940116;
-        bh=MqCc0ciLdhTySaAZJ8iBq1nKYb0UgeE4CQTs/ipDFI0=;
+        s=korg; t=1658940110;
+        bh=dX2+usKkMs6QVDHsG9LU9bsX+tJXsNK7ZQnTcmsdsNQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OVxY2w0QE3y077r/LtPDwLFSSt6aYwUwKEOXadn18bh0kpKvgQki5ljwyS87EPdIN
-         aJ3QKsNyEs7PqfuRtUha0ag7H4Go2EaomEPqIM+NBa81lqxhK5NY0EqTOhBqs1uVax
-         fHuEGAp5aMH2GrO0TfobY2CcUf656lgN5h22vXJ8=
+        b=wBevXiK/YNMuk4afnU7hC2fZ1D12Ti2Mmv+rW59POCjyr75Swfvz85JSepTqyr4V5
+         dgZrF9f8nhXIso8LOxiwVdfMJL3o6yfTz3fQbLzx8DQvJtWWPCck/2gFlycEGBgLV4
+         lCdGkSRHeaPA6/RxJFffjOIUi30esBaC+plMGmWI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Biao Huang <biao.huang@mediatek.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Menglong Dong <imagedong@tencent.com>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 069/201] net: stmmac: fix pm runtime issue in stmmac_dvr_remove()
-Date:   Wed, 27 Jul 2022 18:09:33 +0200
-Message-Id: <20220727161029.797686433@linuxfoundation.org>
+Subject: [PATCH 5.15 077/201] net: socket: rename SKB_DROP_REASON_SOCKET_FILTER
+Date:   Wed, 27 Jul 2022 18:09:41 +0200
+Message-Id: <20220727161030.135220141@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -49,57 +50,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Biao Huang <biao.huang@mediatek.com>
+From: Menglong Dong <imagedong@tencent.com>
 
-[ Upstream commit 0d9a15913b871e03fdd3b3d90a2e665fb22f9bcf ]
+[ Upstream commit 364df53c081d93fcfd6b91085ff2650c7f17b3c7 ]
 
-If netif is running when stmmac_dvr_remove is invoked,
-the unregister_netdev will call ndo_stop(stmmac_release) and
-vlan_kill_rx_filter(stmmac_vlan_rx_kill_vid).
+Rename SKB_DROP_REASON_SOCKET_FILTER, which is used
+as the reason of skb drop out of socket filter before
+it's part of a released kernel. It will be used for
+more protocols than just TCP in future series.
 
-Currently, stmmac_dvr_remove() will disable pm runtime before
-unregister_netdev. When stmmac_vlan_rx_kill_vid is invoked,
-pm_runtime_resume_and_get in it returns EACCESS error number,
-and reports:
-
-	dwmac-mediatek 11021000.ethernet eth0: stmmac_dvr_remove: removing driver
-	dwmac-mediatek 11021000.ethernet eth0: FPE workqueue stop
-	dwmac-mediatek 11021000.ethernet eth0: failed to kill vid 0081/0
-
-Move the pm_runtime_disable to the end of stmmac_dvr_remove
-to fix this issue.
-
-Fixes: 6449520391dfc ("net: stmmac: properly handle with runtime pm in stmmac_dvr_remove()")
-Signed-off-by: Biao Huang <biao.huang@mediatek.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Menglong Dong <imagedong@tencent.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Link: https://lore.kernel.org/all/20220127091308.91401-2-imagedong@tencent.com/
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ include/linux/skbuff.h     | 2 +-
+ include/trace/events/skb.h | 2 +-
+ net/ipv4/tcp_ipv4.c        | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 9c1e19ea6fcd..95e1307cfda2 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -7279,8 +7279,6 @@ int stmmac_dvr_remove(struct device *dev)
- 	netdev_info(priv->dev, "%s: removing driver", __func__);
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 66aac2006868..f92f05c9d72d 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -315,7 +315,7 @@ enum skb_drop_reason {
+ 	SKB_DROP_REASON_NO_SOCKET,
+ 	SKB_DROP_REASON_PKT_TOO_SMALL,
+ 	SKB_DROP_REASON_TCP_CSUM,
+-	SKB_DROP_REASON_TCP_FILTER,
++	SKB_DROP_REASON_SOCKET_FILTER,
+ 	SKB_DROP_REASON_UDP_CSUM,
+ 	SKB_DROP_REASON_MAX,
+ };
+diff --git a/include/trace/events/skb.h b/include/trace/events/skb.h
+index 3e042ca2cedb..a8a64b97504d 100644
+--- a/include/trace/events/skb.h
++++ b/include/trace/events/skb.h
+@@ -14,7 +14,7 @@
+ 	EM(SKB_DROP_REASON_NO_SOCKET, NO_SOCKET)		\
+ 	EM(SKB_DROP_REASON_PKT_TOO_SMALL, PKT_TOO_SMALL)	\
+ 	EM(SKB_DROP_REASON_TCP_CSUM, TCP_CSUM)			\
+-	EM(SKB_DROP_REASON_TCP_FILTER, TCP_FILTER)		\
++	EM(SKB_DROP_REASON_SOCKET_FILTER, SOCKET_FILTER)	\
+ 	EM(SKB_DROP_REASON_UDP_CSUM, UDP_CSUM)			\
+ 	EMe(SKB_DROP_REASON_MAX, MAX)
  
- 	pm_runtime_get_sync(dev);
--	pm_runtime_disable(dev);
--	pm_runtime_put_noidle(dev);
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index d901858aa440..235ae91bfd5a 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -2098,7 +2098,7 @@ int tcp_v4_rcv(struct sk_buff *skb)
+ 	nf_reset_ct(skb);
  
- 	stmmac_stop_all_dma(priv);
- 	stmmac_mac_set(priv, priv->ioaddr, false);
-@@ -7307,6 +7305,9 @@ int stmmac_dvr_remove(struct device *dev)
- 	mutex_destroy(&priv->lock);
- 	bitmap_free(priv->af_xdp_zc_qps);
- 
-+	pm_runtime_disable(dev);
-+	pm_runtime_put_noidle(dev);
-+
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(stmmac_dvr_remove);
+ 	if (tcp_filter(sk, skb)) {
+-		drop_reason = SKB_DROP_REASON_TCP_FILTER;
++		drop_reason = SKB_DROP_REASON_SOCKET_FILTER;
+ 		goto discard_and_relse;
+ 	}
+ 	th = (const struct tcphdr *)skb->data;
 -- 
 2.35.1
 
