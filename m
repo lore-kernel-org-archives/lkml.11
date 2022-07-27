@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49DC7C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:38:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9C9DC19F2C
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:38:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242670AbiG0RiT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:38:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53680 "EHLO
+        id S242644AbiG0RiX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:38:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242616AbiG0Rhw (ORCPT
+        with ESMTP id S242619AbiG0Rhy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:37:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 219AD86C04;
-        Wed, 27 Jul 2022 09:50:33 -0700 (PDT)
+        Wed, 27 Jul 2022 13:37:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC43B8689F;
+        Wed, 27 Jul 2022 09:50:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D71761715;
-        Wed, 27 Jul 2022 16:50:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1935FC433D6;
-        Wed, 27 Jul 2022 16:50:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 60B3F616FA;
+        Wed, 27 Jul 2022 16:50:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B9E1C433D6;
+        Wed, 27 Jul 2022 16:50:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940631;
-        bh=DRQYRlbI2tk8VanfqfLKF4jeCb/5wKzDplKQLZQu1LM=;
+        s=korg; t=1658940603;
+        bh=49Ylmd6QtRg5NoLeTrOXyRJ1bNwFt5vYNEfZxBZVBSM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SYDiaK/8EUzC3wtgVa5vZ2Y2H8gvyE87GQqc4wDyuxDXl0kEKfh+VTHO5fzrup1fm
-         8rzkVrFQM97R0hA1T+FFq6Men79JYBWG1hcT2kF3FxP931iCScG6ZuyvMfutXnIqrP
-         pBagvP4gs8U6UCnehE9p/8ithnrl4nKMRmN7XSsA=
+        b=g5klBnD2u4hcpmOhr2Gt+ZNGX/p/9zhSvM/eIIMX0gaCOdu4O4ZUNPpFD9cy7q+XC
+         aa3FwLxRG2TTZ0hQWAJSCSK2AxEEhzX5w5n3lGvggBYwm852XdpBcqNoX8aB/vn72k
+         G1HKCsAnrrxzlyoP6IWwpAWHEwvzYnH3i1ZHcDa8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 065/158] igmp: Fix data-races around sysctl_igmp_qrv.
-Date:   Wed, 27 Jul 2022 18:12:09 +0200
-Message-Id: <20220727161024.110473558@linuxfoundation.org>
+Subject: [PATCH 5.18 082/158] pinctrl: armada-37xx: Reuse GPIO fwnode in armada_37xx_irqchip_register()
+Date:   Wed, 27 Jul 2022 18:12:26 +0200
+Message-Id: <20220727161024.788030612@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -49,148 +49,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-[ Upstream commit 8ebcc62c738f68688ee7c6fec2efe5bc6d3d7e60 ]
+[ Upstream commit 46d34d4d502ea1030f5de434e6677ec96ca131c3 ]
 
-While reading sysctl_igmp_qrv, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its readers.
+Since we have fwnode of the first found GPIO controller assigned to the
+struct gpio_chip, we may reuse it in the armada_37xx_irqchip_register().
 
-This test can be packed into a helper, so such changes will be in the
-follow-up series after net is merged into net-next.
-
-  qrv ?: READ_ONCE(net->ipv4.sysctl_igmp_qrv);
-
-Fixes: a9fe8e29945d ("ipv4: implement igmp_qrv sysctl to tune igmp robustness variable")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/amt.c |  4 ++--
- net/ipv4/igmp.c   | 24 +++++++++++++-----------
- 2 files changed, 15 insertions(+), 13 deletions(-)
+ drivers/pinctrl/mvebu/pinctrl-armada-37xx.c | 16 +++-------------
+ 1 file changed, 3 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/amt.c b/drivers/net/amt.c
-index 14fe03dbd9b1..6c64953db487 100644
---- a/drivers/net/amt.c
-+++ b/drivers/net/amt.c
-@@ -563,7 +563,7 @@ static struct sk_buff *amt_build_igmp_gq(struct amt_dev *amt)
- 	ihv3->nsrcs	= 0;
- 	ihv3->resv	= 0;
- 	ihv3->suppress	= false;
--	ihv3->qrv	= amt->net->ipv4.sysctl_igmp_qrv;
-+	ihv3->qrv	= READ_ONCE(amt->net->ipv4.sysctl_igmp_qrv);
- 	ihv3->csum	= 0;
- 	csum		= &ihv3->csum;
- 	csum_start	= (void *)ihv3;
-@@ -3095,7 +3095,7 @@ static int amt_newlink(struct net *net, struct net_device *dev,
- 		goto err;
- 	}
- 	if (amt->mode == AMT_MODE_RELAY) {
--		amt->qrv = amt->net->ipv4.sysctl_igmp_qrv;
-+		amt->qrv = READ_ONCE(amt->net->ipv4.sysctl_igmp_qrv);
- 		amt->qri = 10;
- 		dev->needed_headroom = amt->stream_dev->needed_headroom +
- 				       AMT_RELAY_HLEN;
-diff --git a/net/ipv4/igmp.c b/net/ipv4/igmp.c
-index 655d2ab946e0..0a0010f89627 100644
---- a/net/ipv4/igmp.c
-+++ b/net/ipv4/igmp.c
-@@ -827,7 +827,7 @@ static void igmp_ifc_event(struct in_device *in_dev)
- 	struct net *net = dev_net(in_dev->dev);
- 	if (IGMP_V1_SEEN(in_dev) || IGMP_V2_SEEN(in_dev))
- 		return;
--	WRITE_ONCE(in_dev->mr_ifc_count, in_dev->mr_qrv ?: net->ipv4.sysctl_igmp_qrv);
-+	WRITE_ONCE(in_dev->mr_ifc_count, in_dev->mr_qrv ?: READ_ONCE(net->ipv4.sysctl_igmp_qrv));
- 	igmp_ifc_start_timer(in_dev, 1);
- }
+diff --git a/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c b/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
+index 5fc305222d2f..226798d9c067 100644
+--- a/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
++++ b/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
+@@ -726,23 +726,13 @@ static int armada_37xx_irqchip_register(struct platform_device *pdev,
+ 	struct gpio_chip *gc = &info->gpio_chip;
+ 	struct irq_chip *irqchip = &info->irq_chip;
+ 	struct gpio_irq_chip *girq = &gc->irq;
++	struct device_node *np = to_of_node(gc->fwnode);
+ 	struct device *dev = &pdev->dev;
+-	struct device_node *np;
+-	int ret = -ENODEV, i, nr_irq_parent;
+-
+-	/* Check if we have at least one gpio-controller child node */
+-	for_each_child_of_node(dev->of_node, np) {
+-		if (of_property_read_bool(np, "gpio-controller")) {
+-			ret = 0;
+-			break;
+-		}
+-	}
+-	if (ret)
+-		return dev_err_probe(dev, ret, "no gpio-controller child node\n");
++	unsigned int i, nr_irq_parent;
  
-@@ -1009,7 +1009,7 @@ static bool igmp_heard_query(struct in_device *in_dev, struct sk_buff *skb,
- 		 * received value was zero, use the default or statically
- 		 * configured value.
- 		 */
--		in_dev->mr_qrv = ih3->qrv ?: net->ipv4.sysctl_igmp_qrv;
-+		in_dev->mr_qrv = ih3->qrv ?: READ_ONCE(net->ipv4.sysctl_igmp_qrv);
- 		in_dev->mr_qi = IGMPV3_QQIC(ih3->qqic)*HZ ?: IGMP_QUERY_INTERVAL;
+-	nr_irq_parent = of_irq_count(np);
+ 	spin_lock_init(&info->irq_lock);
  
- 		/* RFC3376, 8.3. Query Response Interval:
-@@ -1189,7 +1189,7 @@ static void igmpv3_add_delrec(struct in_device *in_dev, struct ip_mc_list *im,
- 	pmc->interface = im->interface;
- 	in_dev_hold(in_dev);
- 	pmc->multiaddr = im->multiaddr;
--	pmc->crcount = in_dev->mr_qrv ?: net->ipv4.sysctl_igmp_qrv;
-+	pmc->crcount = in_dev->mr_qrv ?: READ_ONCE(net->ipv4.sysctl_igmp_qrv);
- 	pmc->sfmode = im->sfmode;
- 	if (pmc->sfmode == MCAST_INCLUDE) {
- 		struct ip_sf_list *psf;
-@@ -1240,9 +1240,11 @@ static void igmpv3_del_delrec(struct in_device *in_dev, struct ip_mc_list *im)
- 			swap(im->tomb, pmc->tomb);
- 			swap(im->sources, pmc->sources);
- 			for (psf = im->sources; psf; psf = psf->sf_next)
--				psf->sf_crcount = in_dev->mr_qrv ?: net->ipv4.sysctl_igmp_qrv;
-+				psf->sf_crcount = in_dev->mr_qrv ?:
-+					READ_ONCE(net->ipv4.sysctl_igmp_qrv);
- 		} else {
--			im->crcount = in_dev->mr_qrv ?: net->ipv4.sysctl_igmp_qrv;
-+			im->crcount = in_dev->mr_qrv ?:
-+				READ_ONCE(net->ipv4.sysctl_igmp_qrv);
- 		}
- 		in_dev_put(pmc->interface);
- 		kfree_pmc(pmc);
-@@ -1349,7 +1351,7 @@ static void igmp_group_added(struct ip_mc_list *im)
- 	if (in_dev->dead)
- 		return;
- 
--	im->unsolicit_count = net->ipv4.sysctl_igmp_qrv;
-+	im->unsolicit_count = READ_ONCE(net->ipv4.sysctl_igmp_qrv);
- 	if (IGMP_V1_SEEN(in_dev) || IGMP_V2_SEEN(in_dev)) {
- 		spin_lock_bh(&im->lock);
- 		igmp_start_timer(im, IGMP_INITIAL_REPORT_DELAY);
-@@ -1363,7 +1365,7 @@ static void igmp_group_added(struct ip_mc_list *im)
- 	 * IN() to IN(A).
- 	 */
- 	if (im->sfmode == MCAST_EXCLUDE)
--		im->crcount = in_dev->mr_qrv ?: net->ipv4.sysctl_igmp_qrv;
-+		im->crcount = in_dev->mr_qrv ?: READ_ONCE(net->ipv4.sysctl_igmp_qrv);
- 
- 	igmp_ifc_event(in_dev);
- #endif
-@@ -1754,7 +1756,7 @@ static void ip_mc_reset(struct in_device *in_dev)
- 
- 	in_dev->mr_qi = IGMP_QUERY_INTERVAL;
- 	in_dev->mr_qri = IGMP_QUERY_RESPONSE_INTERVAL;
--	in_dev->mr_qrv = net->ipv4.sysctl_igmp_qrv;
-+	in_dev->mr_qrv = READ_ONCE(net->ipv4.sysctl_igmp_qrv);
- }
- #else
- static void ip_mc_reset(struct in_device *in_dev)
-@@ -1888,7 +1890,7 @@ static int ip_mc_del1_src(struct ip_mc_list *pmc, int sfmode,
- #ifdef CONFIG_IP_MULTICAST
- 		if (psf->sf_oldin &&
- 		    !IGMP_V1_SEEN(in_dev) && !IGMP_V2_SEEN(in_dev)) {
--			psf->sf_crcount = in_dev->mr_qrv ?: net->ipv4.sysctl_igmp_qrv;
-+			psf->sf_crcount = in_dev->mr_qrv ?: READ_ONCE(net->ipv4.sysctl_igmp_qrv);
- 			psf->sf_next = pmc->tomb;
- 			pmc->tomb = psf;
- 			rv = 1;
-@@ -1952,7 +1954,7 @@ static int ip_mc_del_src(struct in_device *in_dev, __be32 *pmca, int sfmode,
- 		/* filter mode change */
- 		pmc->sfmode = MCAST_INCLUDE;
- #ifdef CONFIG_IP_MULTICAST
--		pmc->crcount = in_dev->mr_qrv ?: net->ipv4.sysctl_igmp_qrv;
-+		pmc->crcount = in_dev->mr_qrv ?: READ_ONCE(net->ipv4.sysctl_igmp_qrv);
- 		WRITE_ONCE(in_dev->mr_ifc_count, pmc->crcount);
- 		for (psf = pmc->sources; psf; psf = psf->sf_next)
- 			psf->sf_crcount = 0;
-@@ -2131,7 +2133,7 @@ static int ip_mc_add_src(struct in_device *in_dev, __be32 *pmca, int sfmode,
- #ifdef CONFIG_IP_MULTICAST
- 		/* else no filters; keep old mode for reports */
- 
--		pmc->crcount = in_dev->mr_qrv ?: net->ipv4.sysctl_igmp_qrv;
-+		pmc->crcount = in_dev->mr_qrv ?: READ_ONCE(net->ipv4.sysctl_igmp_qrv);
- 		WRITE_ONCE(in_dev->mr_ifc_count, pmc->crcount);
- 		for (psf = pmc->sources; psf; psf = psf->sf_next)
- 			psf->sf_crcount = 0;
++	nr_irq_parent = of_irq_count(np);
+ 	if (!nr_irq_parent) {
+ 		dev_err(dev, "invalid or no IRQ\n");
+ 		return 0;
 -- 
 2.35.1
 
