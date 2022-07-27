@@ -2,134 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E693C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:28:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67B88C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:28:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237910AbiG0R2n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:28:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37454 "EHLO
+        id S242211AbiG0R2s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:28:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242163AbiG0R1g (ORCPT
+        with ESMTP id S242160AbiG0R1f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:27:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 794F152474;
-        Wed, 27 Jul 2022 09:47:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Wed, 27 Jul 2022 13:27:35 -0400
+Received: from mx0b-002e3701.pphosted.com (mx0b-002e3701.pphosted.com [148.163.143.35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38C557F501;
+        Wed, 27 Jul 2022 09:47:15 -0700 (PDT)
+Received: from pps.filterd (m0150245.ppops.net [127.0.0.1])
+        by mx0b-002e3701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26RFwUtK023856;
+        Wed, 27 Jul 2022 16:46:42 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references; s=pps0720;
+ bh=UFYjiEWtx65NAlZGwbjuEPkGm/TiO1KWDpSSR7Sm3co=;
+ b=DqZt92L6Smq3KbqdloSY2xA9h18G0jRP7qoMBqxvVRGepovBQoZIlM3mJv76ui3W0BB+
+ 0CcMR71Qk3ZaB962BWQiDc0c4bXghauIrsFj+K1lES3BvFe1lQqkkixfk9g4XudzzLUJ
+ QOTbYNCPigNW8NVioxBrtUC0/f2/saRBirozuENlCGwADcsI4/dEfypB/hDrM+Ky2qKW
+ w8snXdoBJIaxJnXPx3e0cSTxzFBZYEkSy5Nymo/eXYBspDZP3+quDI4Dzf04RhWIa7Fh
+ hKzAR/ulX+awIlkULBULER832qtKf96iX5GQLYc4uBNZxBrjJbLAU3QoTYexk4KzR9rm GQ== 
+Received: from p1lg14881.it.hpe.com (p1lg14881.it.hpe.com [16.230.97.202])
+        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3hk475amu2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 27 Jul 2022 16:46:42 +0000
+Received: from p1lg14885.dc01.its.hpecorp.net (unknown [10.119.18.236])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2AEE761557;
-        Wed, 27 Jul 2022 16:46:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38285C433B5;
-        Wed, 27 Jul 2022 16:46:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940413;
-        bh=+3Pj8ZvBdsOpEI4vxaUMxo337gIqMh//unFM5xke8xo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CedvuP2GBM1shW+DfjMzWKDIkudkfUlm829r+anZuhXpIYGaK0/kZM8IxEdhxwxZk
-         eS+xbZW0uxy9TxshDaa+DcuJ4/rjgalIXsdsQcWB38ldA/CybIsKFbx+f5wToUpHjz
-         N30M902YUN0wuRkHpS475b3ORPO7zmw/JCCQ3KiY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jeffrey Hugo <quic_jhugo@quicinc.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        Carl Vanderlip <quic_carlv@quicinc.com>
-Subject: [PATCH 5.18 015/158] PCI: hv: Fix hv_arch_irq_unmask() for multi-MSI
-Date:   Wed, 27 Jul 2022 18:11:19 +0200
-Message-Id: <20220727161022.084869974@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
-References: <20220727161021.428340041@linuxfoundation.org>
-User-Agent: quilt/0.66
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        by p1lg14881.it.hpe.com (Postfix) with ESMTPS id 465BB804C86;
+        Wed, 27 Jul 2022 16:46:41 +0000 (UTC)
+Received: from hpe.com (unknown [16.231.227.36])
+        by p1lg14885.dc01.its.hpecorp.net (Postfix) with ESMTP id 07EEC8001B3;
+        Wed, 27 Jul 2022 16:46:39 +0000 (UTC)
+From:   nick.hawkins@hpe.com
+To:     nick.hawkins@hpe.com
+Cc:     broonie@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, verdun@hpe.com,
+        linux@armlinux.org.uk, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, arnd@arndb.de, joel@jms.id.au
+Subject: [PATCH v5 4/5] ARM: configs: multi_v7_defconfig: Enable HPE GXP SPI driver
+Date:   Wed, 27 Jul 2022 11:47:35 -0500
+Message-Id: <20220727164736.48619-5-nick.hawkins@hpe.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220727164736.48619-1-nick.hawkins@hpe.com>
+References: <20220727164736.48619-1-nick.hawkins@hpe.com>
+X-Proofpoint-ORIG-GUID: xnrEATHz-dceqYfb9Ma87PdRr7SO74IK
+X-Proofpoint-GUID: xnrEATHz-dceqYfb9Ma87PdRr7SO74IK
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-27_06,2022-07-27_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ spamscore=0 adultscore=0 malwarescore=0 mlxlogscore=667 impostorscore=0
+ mlxscore=0 phishscore=0 bulkscore=0 suspectscore=0 clxscore=1015
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2207270070
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeffrey Hugo <quic_jhugo@quicinc.com>
+From: Nick Hawkins <nick.hawkins@hpe.com>
 
-[ upstream change 455880dfe292a2bdd3b4ad6a107299fce610e64b ]
+Enable the SPI driver on the HPE GXP BMC.
 
-In the multi-MSI case, hv_arch_irq_unmask() will only operate on the first
-MSI of the N allocated.  This is because only the first msi_desc is cached
-and it is shared by all the MSIs of the multi-MSI block.  This means that
-hv_arch_irq_unmask() gets the correct address, but the wrong data (always
-0).
+Signed-off-by: Nick Hawkins <nick.hawkins@hpe.com>
 
-This can break MSIs.
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Lets assume MSI0 is vector 34 on CPU0, and MSI1 is vector 33 on CPU0.
-
-hv_arch_irq_unmask() is called on MSI0.  It uses a hypercall to configure
-the MSI address and data (0) to vector 34 of CPU0.  This is correct.  Then
-hv_arch_irq_unmask is called on MSI1.  It uses another hypercall to
-configure the MSI address and data (0) to vector 33 of CPU0.  This is
-wrong, and results in both MSI0 and MSI1 being routed to vector 33.  Linux
-will observe extra instances of MSI1 and no instances of MSI0 despite the
-endpoint device behaving correctly.
-
-For the multi-MSI case, we need unique address and data info for each MSI,
-but the cached msi_desc does not provide that.  However, that information
-can be gotten from the int_desc cached in the chip_data by
-compose_msi_msg().  Fix the multi-MSI case to use that cached information
-instead.  Since hv_set_msi_entry_from_desc() is no longer applicable,
-remove it.
-
-Signed-off-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
-Link: https://lore.kernel.org/r/1651068453-29588-1-git-send-email-quic_jhugo@quicinc.com
-Signed-off-by: Wei Liu <wei.liu@kernel.org>
-Signed-off-by: Carl Vanderlip <quic_carlv@quicinc.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/pci-hyperv.c |   12 ++++--------
- 1 file changed, 4 insertions(+), 8 deletions(-)
+v5:
+ *No change, add Acked-by from Krzsztof from previous version
+v4:
+ *No change
+v3:
+ *No change
+v2:
+ *Change CONFIG_SPI_GXP from y to m
+---
+ arch/arm/configs/multi_v7_defconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/pci/controller/pci-hyperv.c
-+++ b/drivers/pci/controller/pci-hyperv.c
-@@ -604,13 +604,6 @@ static unsigned int hv_msi_get_int_vecto
- 	return cfg->vector;
- }
- 
--static void hv_set_msi_entry_from_desc(union hv_msi_entry *msi_entry,
--				       struct msi_desc *msi_desc)
--{
--	msi_entry->address.as_uint32 = msi_desc->msg.address_lo;
--	msi_entry->data.as_uint32 = msi_desc->msg.data;
--}
--
- static int hv_msi_prepare(struct irq_domain *domain, struct device *dev,
- 			  int nvec, msi_alloc_info_t *info)
- {
-@@ -640,6 +633,7 @@ static void hv_arch_irq_unmask(struct ir
- {
- 	struct msi_desc *msi_desc = irq_data_get_msi_desc(data);
- 	struct hv_retarget_device_interrupt *params;
-+	struct tran_int_desc *int_desc;
- 	struct hv_pcibus_device *hbus;
- 	struct cpumask *dest;
- 	cpumask_var_t tmp;
-@@ -654,6 +648,7 @@ static void hv_arch_irq_unmask(struct ir
- 	pdev = msi_desc_to_pci_dev(msi_desc);
- 	pbus = pdev->bus;
- 	hbus = container_of(pbus->sysdata, struct hv_pcibus_device, sysdata);
-+	int_desc = data->chip_data;
- 
- 	spin_lock_irqsave(&hbus->retarget_msi_interrupt_lock, flags);
- 
-@@ -661,7 +656,8 @@ static void hv_arch_irq_unmask(struct ir
- 	memset(params, 0, sizeof(*params));
- 	params->partition_id = HV_PARTITION_ID_SELF;
- 	params->int_entry.source = HV_INTERRUPT_SOURCE_MSI;
--	hv_set_msi_entry_from_desc(&params->int_entry.msi_entry, msi_desc);
-+	params->int_entry.msi_entry.address.as_uint32 = int_desc->address & 0xffffffff;
-+	params->int_entry.msi_entry.data.as_uint32 = int_desc->data;
- 	params->device_id = (hbus->hdev->dev_instance.b[5] << 24) |
- 			   (hbus->hdev->dev_instance.b[4] << 16) |
- 			   (hbus->hdev->dev_instance.b[7] << 8) |
-
+diff --git a/arch/arm/configs/multi_v7_defconfig b/arch/arm/configs/multi_v7_defconfig
+index ce9826bce29b..ee8a730dabc9 100644
+--- a/arch/arm/configs/multi_v7_defconfig
++++ b/arch/arm/configs/multi_v7_defconfig
+@@ -443,6 +443,7 @@ CONFIG_SPI_CADENCE=y
+ CONFIG_SPI_DAVINCI=y
+ CONFIG_SPI_FSL_QUADSPI=m
+ CONFIG_SPI_GPIO=m
++CONFIG_SPI_GXP=m
+ CONFIG_SPI_FSL_DSPI=m
+ CONFIG_SPI_OMAP24XX=y
+ CONFIG_SPI_ORION=y
+-- 
+2.17.1
 
