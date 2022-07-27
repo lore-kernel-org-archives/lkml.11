@@ -2,72 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E858C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 12:37:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88C1EC19F28
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 12:37:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233250AbiG0MhV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 08:37:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51268 "EHLO
+        id S232583AbiG0MhZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 08:37:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232306AbiG0MhT (ORCPT
+        with ESMTP id S233224AbiG0MhU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 08:37:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9278D2F39D;
-        Wed, 27 Jul 2022 05:37:18 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E256DB82110;
-        Wed, 27 Jul 2022 12:37:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3693DC433C1;
-        Wed, 27 Jul 2022 12:37:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658925435;
-        bh=FcC0gC1xLPcLA9GRYOYnjIS552FK1zWq5KMKcekOllM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=2MgWypE/NorWoguCTOrtK73Am2fnNirXGsNW9uJNiHSAME6ezqb3kFKjA4xHphCV9
-         WuAsU8hfR7Q5g4brxAN5P3rKkDMBmxzrhIRvNzNLhxtcy7CdIAtBupWmKkAAb5Qeu9
-         FEqxOmroUgcB7vACofiyu5i542r1mnslI5gcrFMc=
-Date:   Wed, 27 Jul 2022 14:37:13 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Slark Xiao <slark_xiao@163.com>
-Cc:     mathias.nyman@intel.com, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Subject: Re: [PATCH] xhci: Fix typo 'the the' in comment
-Message-ID: <YuExeRQp4aHZ4Viy@kroah.com>
-References: <20220722095325.78891-1-slark_xiao@163.com>
+        Wed, 27 Jul 2022 08:37:20 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5436733342
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 05:37:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658925438;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=4LWH5gfewkP2m9y0QehAONnCxfwoC2hdUW6P/cyixj4=;
+        b=MpFDnMIn5YsixoYMfxydyZGmBOrW4acAfgOaEv/w7cUB4HilrTkHDxInljKQG+KzbfnDg1
+        mcPVOi91/ny6hRF/ehyVt/wbI2zy9Mdhx4jptMbCscUIrUgw60D4w3wmjWqtTaVee1vrNL
+        qqeV07Zg2Prh3xrEROr6oXTEjaAq/ME=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-117-fAuxi1HbN0OrvJotTOPWig-1; Wed, 27 Jul 2022 08:37:17 -0400
+X-MC-Unique: fAuxi1HbN0OrvJotTOPWig-1
+Received: by mail-wr1-f70.google.com with SMTP id n7-20020adf8b07000000b0021e577a8784so2740713wra.5
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 05:37:17 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=4LWH5gfewkP2m9y0QehAONnCxfwoC2hdUW6P/cyixj4=;
+        b=P/rzooliIxANt0rQhW5vdZFdFhoXkjmPrgiew3UFYASDCVLUJZ2ZhPY2AMZ2Z4aYj4
+         LC/Q2N3TOyQpyXI2sTUNeLafCPIHh5vUNYvVDYdUDhS3GLG54VpSOE2T1nrcstDESopj
+         x41ekf+Fk2yLJROISAX93pJaQPrpPNSiuif7vE3o00i2GmQ11FUmU82ByXEhn67fwORb
+         Jg1cOb+wh3IXzh7WDIVjoKU5oyYOd2Wc1fRv/MoDYzasyVhizKtPGFrJtU8/dCIRLXSF
+         Lyp1mHcO0Rp0Y+H1JfhBjg9SexiOLbr4cSNaizb4eCPwva6xP30mHoe7KP2DhifwAg4Q
+         j/Cg==
+X-Gm-Message-State: AJIora//hhOF8akXkK+EXKfbzK1Vm27Ef7DThXhYPjTPOPpUV/BgyPz+
+        TSxs1Ia/+DRpVsk82IeVd2l0d9LvKEpfzb3rfDIGtdBx4jDsqlixkFje/SBSxQWYBFNcKEbL68/
+        WtfzlnBbARhbwZWAZi24GXjam
+X-Received: by 2002:adf:d1e8:0:b0:21d:ac9c:983d with SMTP id g8-20020adfd1e8000000b0021dac9c983dmr13770285wrd.629.1658925436047;
+        Wed, 27 Jul 2022 05:37:16 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vJrWqBiaq6uBMB03xiUMkRFhOPCI0fFvUqiEuTuZWyTbuHIhoAAyTdDFMM07jJhUESZdjGNg==
+X-Received: by 2002:adf:d1e8:0:b0:21d:ac9c:983d with SMTP id g8-20020adfd1e8000000b0021dac9c983dmr13770264wrd.629.1658925435819;
+        Wed, 27 Jul 2022 05:37:15 -0700 (PDT)
+Received: from sgarzare-redhat (host-79-46-200-178.retail.telecomitalia.it. [79.46.200.178])
+        by smtp.gmail.com with ESMTPSA id u9-20020adff889000000b0020fcaba73bcsm16755266wrp.104.2022.07.27.05.37.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jul 2022 05:37:15 -0700 (PDT)
+Date:   Wed, 27 Jul 2022 14:37:10 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>,
+        Bryan Tan <bryantan@vmware.com>,
+        Vishnu Dasa <vdasa@vmware.com>,
+        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        "kys@microsoft.com" <kys@microsoft.com>,
+        "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
+        "sthemmin@microsoft.com" <sthemmin@microsoft.com>,
+        "wei.liu@kernel.org" <wei.liu@kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        Krasnov Arseniy <oxffffaa@gmail.com>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>
+Subject: Re: [RFC PATCH v2 0/9] vsock: updates for SO_RCVLOWAT handling
+Message-ID: <20220727123710.pwzy6ag3gavotxda@sgarzare-redhat>
+References: <19e25833-5f5c-f9b9-ac0f-1945ea17638d@sberdevices.ru>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
 Content-Disposition: inline
-In-Reply-To: <20220722095325.78891-1-slark_xiao@163.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <19e25833-5f5c-f9b9-ac0f-1945ea17638d@sberdevices.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 22, 2022 at 05:53:25PM +0800, Slark Xiao wrote:
-> Replace 'the the' with 'the' in the comment.
-> 
-> Signed-off-by: Slark Xiao <slark_xiao@163.com>
-> ---
->  drivers/usb/host/xhci-ring.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/usb/host/xhci-ring.c b/drivers/usb/host/xhci-ring.c
-> index 46d0b9ad6f74..ad81e9a508b1 100644
-> --- a/drivers/usb/host/xhci-ring.c
-> +++ b/drivers/usb/host/xhci-ring.c
-> @@ -1964,7 +1964,7 @@ static void handle_port_status(struct xhci_hcd *xhci,
->  
->  	/*
->  	 * Check to see if xhci-hub.c is waiting on RExit to U0 transition (or
-> -	 * RExit to a disconnect state).  If so, let the the driver know it's
-> +	 * RExit to a disconnect state).  If so, let the driver know it's
->  	 * out of the RExit state.
->  	 */
->  	if (!DEV_SUPERSPEED_ANY(portsc) && hcd->speed < HCD_USB3 &&
-> -- 
-> 2.25.1
-> 
+Hi Arseniy,
 
-Someone else already sent this before you did, sorry.
+On Mon, Jul 25, 2022 at 07:54:05AM +0000, Arseniy Krasnov wrote:
+>Hello,
+>
+>This patchset includes some updates for SO_RCVLOWAT:
+>
+>1) af_vsock:
+>   During my experiments with zerocopy receive, i found, that in some
+>   cases, poll() implementation violates POSIX: when socket has non-
+>   default SO_RCVLOWAT(e.g. not 1), poll() will always set POLLIN and
+>   POLLRDNORM bits in 'revents' even number of bytes available to read
+>   on socket is smaller than SO_RCVLOWAT value. In this case,user sees
+>   POLLIN flag and then tries to read data(for example using  'read()'
+>   call), but read call will be blocked, because  SO_RCVLOWAT logic is
+>   supported in dequeue loop in af_vsock.c. But the same time,  POSIX
+>   requires that:
+>
+>   "POLLIN     Data other than high-priority data may be read without
+>               blocking.
+>    POLLRDNORM Normal data may be read without blocking."
+>
+>   See https://www.open-std.org/jtc1/sc22/open/n4217.pdf, page 293.
+>
+>   So, we have, that poll() syscall returns POLLIN, but read call will
+>   be blocked.
+>
+>   Also in man page socket(7) i found that:
+>
+>   "Since Linux 2.6.28, select(2), poll(2), and epoll(7) indicate a
+>   socket as readable only if at least SO_RCVLOWAT bytes are available."
+>
+>   I checked TCP callback for poll()(net/ipv4/tcp.c, tcp_poll()), it
+>   uses SO_RCVLOWAT value to set POLLIN bit, also i've tested TCP with
+>   this case for TCP socket, it works as POSIX required.
+>
+>   I've added some fixes to af_vsock.c and virtio_transport_common.c,
+>   test is also implemented.
+>
+>2) virtio/vsock:
+>   It adds some optimization to wake ups, when new data arrived. Now,
+>   SO_RCVLOWAT is considered before wake up sleepers who wait new data.
+>   There is no sense, to kick waiter, when number of available bytes
+>   in socket's queue < SO_RCVLOWAT, because if we wake up reader in
+>   this case, it will wait for SO_RCVLOWAT data anyway during dequeue,
+>   or in poll() case, POLLIN/POLLRDNORM bits won't be set, so such
+>   exit from poll() will be "spurious". This logic is also used in TCP
+>   sockets.
+
+Nice, it looks good!
+
+>
+>3) vmci/vsock:
+>   Same as 2), but i'm not sure about this changes. Will be very good,
+>   to get comments from someone who knows this code.
+
+I CCed VMCI maintainers to the patch and also to this cover, maybe 
+better to keep them in the loop for next versions.
+
+(Jorgen's and Rajesh's emails bounced back, so I'm CCing here only 
+Bryan, Vishnu, and pv-drivers@vmware.com)
+
+>
+>4) Hyper-V:
+>   As Dexuan Cui mentioned, for Hyper-V transport it is difficult to
+>   support SO_RCVLOWAT, so he suggested to disable this feature for
+>   Hyper-V.
+
+I left a couple of comments in some patches, but it seems to me to be in 
+a good state :-)
+
+I would just suggest a bit of a re-organization of the series (the 
+patches are fine, just the order):
+   - introduce vsock_set_rcvlowat()
+   - disabling it for hv_sock
+   - use 'target' in virtio transports
+   - use 'target' in vmci transports
+   - use sock_rcvlowat in vsock_poll()
+     I think is better to pass sock_rcvlowat() as 'target' when the
+     transports are already able to use it
+   - add vsock_data_ready()
+   - use vsock_data_ready() in virtio transports
+   - use vsock_data_ready() in vmci transports
+   - tests
+
+What do you think?
+
+Thanks,
+Stefano
+
