@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 090D4C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:36:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5EE1C19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:36:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238714AbiG0Qg2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:36:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46922 "EHLO
+        id S238737AbiG0Qgb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:36:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239079AbiG0Qew (ORCPT
+        with ESMTP id S239085AbiG0Qew (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Jul 2022 12:34:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A947F4F659;
-        Wed, 27 Jul 2022 09:27:34 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 161C04D4D9;
+        Wed, 27 Jul 2022 09:27:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 77B9EB821BF;
-        Wed, 27 Jul 2022 16:26:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D23C7C433D6;
-        Wed, 27 Jul 2022 16:26:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 947F861A1B;
+        Wed, 27 Jul 2022 16:27:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0018C433D7;
+        Wed, 27 Jul 2022 16:27:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939201;
-        bh=tS+ar2byvGXQkV54OvZ4Jwy6/JT/BUmN8BRsenhz6fA=;
+        s=korg; t=1658939247;
+        bh=zL31rUaogdM0Oz7SjUjidmnhf6c2vEMJMOe9tCOLlxc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tRQQp57W4DJp6oDKK+2WINwBFizrCB9DuEcxuwk1HHnm+ijMp6SN/X3iaMncEGers
-         Um5LrRqFFwHeEkLLqjOw6VLePDW59Gq6yT9v7tX6zub78V/pa3aP0pCKObQxo3zOnZ
-         HGnb9Kjj9a0kKk9aIxRiB+NHtsYo5RjdRxVPu4cc=
+        b=E6NQpjE+qg/NytPHDFy4k45CvthsAk+7Pis+OGPtTY6132jfb9XcVYTnvcluaTfua
+         rdpUbWidfUOPBWOwk66GCKQIaLvQipL1bpRXpTpJo8AUZxagWYovNoGeTaVhdLfLHD
+         m+iRyLhI6GYpJuLGbRuPP30Cvw8G3aJxFBMPBqrA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Subject: [PATCH 4.19 47/62] Bluetooth: SCO: Replace use of memcpy_from_msg with bt_skb_sendmsg
-Date:   Wed, 27 Jul 2022 18:10:56 +0200
-Message-Id: <20220727161005.976577904@linuxfoundation.org>
+        stable@vger.kernel.org, stable <stable@kernel.org>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
+Subject: [PATCH 4.19 52/62] serial: mvebu-uart: correctly report configured baudrate value
+Date:   Wed, 27 Jul 2022 18:11:01 +0200
+Message-Id: <20220727161006.174737118@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161004.175638564@linuxfoundation.org>
 References: <20220727161004.175638564@linuxfoundation.org>
@@ -50,93 +49,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+From: Pali Rohár <pali@kernel.org>
 
-commit 0771cbb3b97d3c1d68eecd7f00055f599954c34e upstream.
+commit 4f532c1e25319e42996ec18a1f473fd50c8e575d upstream.
 
-This makes use of bt_skb_sendmsg instead of allocating a different
-buffer to be used with memcpy_from_msg which cause one extra copy.
+Functions tty_termios_encode_baud_rate() and uart_update_timeout() should
+be called with the baudrate value which was set to hardware. Linux then
+report exact values via ioctl(TCGETS2) to userspace.
 
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
-Cc: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Change mvebu_uart_baud_rate_set() function to return baudrate value which
+was set to hardware and propagate this value to above mentioned functions.
+
+With this change userspace would see precise value in termios c_ospeed
+field.
+
+Fixes: 68a0db1d7da2 ("serial: mvebu-uart: add function to change baudrate")
+Cc: stable <stable@kernel.org>
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Link: https://lore.kernel.org/r/20220628100922.10717-1-pali@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/bluetooth/sco.c |   34 +++++++++++-----------------------
- 1 file changed, 11 insertions(+), 23 deletions(-)
+ drivers/tty/serial/mvebu-uart.c |   25 +++++++++++++------------
+ 1 file changed, 13 insertions(+), 12 deletions(-)
 
---- a/net/bluetooth/sco.c
-+++ b/net/bluetooth/sco.c
-@@ -279,27 +279,19 @@ static int sco_connect(struct hci_dev *h
- 	return err;
+--- a/drivers/tty/serial/mvebu-uart.c
++++ b/drivers/tty/serial/mvebu-uart.c
+@@ -442,14 +442,14 @@ static void mvebu_uart_shutdown(struct u
+ 	}
  }
  
--static int sco_send_frame(struct sock *sk, void *buf, int len,
--			  unsigned int msg_flags)
-+static int sco_send_frame(struct sock *sk, struct sk_buff *skb)
+-static int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
++static unsigned int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
  {
- 	struct sco_conn *conn = sco_pi(sk)->conn;
--	struct sk_buff *skb;
--	int err;
+ 	struct mvebu_uart *mvuart = to_mvuart(port);
+ 	unsigned int d_divisor, m_divisor;
+ 	u32 brdv;
  
- 	/* Check outgoing MTU */
--	if (len > conn->mtu)
-+	if (skb->len > conn->mtu)
- 		return -EINVAL;
+ 	if (IS_ERR(mvuart->clk))
+-		return -PTR_ERR(mvuart->clk);
++		return 0;
  
--	BT_DBG("sk %p len %d", sk, len);
--
--	skb = bt_skb_send_alloc(sk, len, msg_flags & MSG_DONTWAIT, &err);
--	if (!skb)
--		return err;
-+	BT_DBG("sk %p len %d", sk, skb->len);
+ 	/*
+ 	 * The baudrate is derived from the UART clock thanks to two divisors:
+@@ -469,7 +469,7 @@ static int mvebu_uart_baud_rate_set(stru
+ 	brdv |= d_divisor;
+ 	writel(brdv, port->membase + UART_BRDV);
  
--	memcpy(skb_put(skb, len), buf, len);
- 	hci_send_sco(conn->hcon, skb);
- 
--	return len;
-+	return skb->len;
+-	return 0;
++	return DIV_ROUND_CLOSEST(port->uartclk, d_divisor * m_divisor);
  }
  
- static void sco_recv_frame(struct sco_conn *conn, struct sk_buff *skb)
-@@ -715,7 +707,7 @@ static int sco_sock_sendmsg(struct socke
- 			    size_t len)
- {
- 	struct sock *sk = sock->sk;
--	void *buf;
-+	struct sk_buff *skb;
- 	int err;
+ static void mvebu_uart_set_termios(struct uart_port *port,
+@@ -506,15 +506,11 @@ static void mvebu_uart_set_termios(struc
+ 	max_baud = 230400;
  
- 	BT_DBG("sock %p, sk %p", sock, sk);
-@@ -727,24 +719,20 @@ static int sco_sock_sendmsg(struct socke
- 	if (msg->msg_flags & MSG_OOB)
- 		return -EOPNOTSUPP;
- 
--	buf = kmalloc(len, GFP_KERNEL);
--	if (!buf)
--		return -ENOMEM;
--
--	if (memcpy_from_msg(buf, msg, len)) {
--		kfree(buf);
--		return -EFAULT;
+ 	baud = uart_get_baud_rate(port, termios, old, min_baud, max_baud);
+-	if (mvebu_uart_baud_rate_set(port, baud)) {
+-		/* No clock available, baudrate cannot be changed */
+-		if (old)
+-			baud = uart_get_baud_rate(port, old, NULL,
+-						  min_baud, max_baud);
+-	} else {
+-		tty_termios_encode_baud_rate(termios, baud, baud);
+-		uart_update_timeout(port, termios->c_cflag, baud);
 -	}
-+	skb = bt_skb_sendmsg(sk, msg, len, len, 0, 0);
-+	if (IS_ERR_OR_NULL(skb))
-+		return PTR_ERR(skb);
++	baud = mvebu_uart_baud_rate_set(port, baud);
++
++	/* In case baudrate cannot be changed, report previous old value */
++	if (baud == 0 && old)
++		baud = tty_termios_baud_rate(old);
  
- 	lock_sock(sk);
+ 	/* Only the following flag changes are supported */
+ 	if (old) {
+@@ -525,6 +521,11 @@ static void mvebu_uart_set_termios(struc
+ 		termios->c_cflag |= CS8;
+ 	}
  
- 	if (sk->sk_state == BT_CONNECTED)
--		err = sco_send_frame(sk, buf, len, msg->msg_flags);
-+		err = sco_send_frame(sk, skb);
- 	else
- 		err = -ENOTCONN;
- 
- 	release_sock(sk);
--	kfree(buf);
-+	if (err)
-+		kfree_skb(skb);
- 	return err;
++	if (baud != 0) {
++		tty_termios_encode_baud_rate(termios, baud, baud);
++		uart_update_timeout(port, termios->c_cflag, baud);
++	}
++
+ 	spin_unlock_irqrestore(&port->lock, flags);
  }
  
 
