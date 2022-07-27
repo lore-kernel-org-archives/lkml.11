@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1ABBC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:35:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D11B2C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:35:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242470AbiG0Rfy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:35:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43162 "EHLO
+        id S242479AbiG0Rf5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:35:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242535AbiG0ReU (ORCPT
+        with ESMTP id S242540AbiG0ReV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:34:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 375EF8320C;
+        Wed, 27 Jul 2022 13:34:21 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFC9552FE3;
         Wed, 27 Jul 2022 09:49:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AACB2B821AC;
-        Wed, 27 Jul 2022 16:49:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 192C3C433C1;
-        Wed, 27 Jul 2022 16:49:10 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 5FAA7CE2315;
+        Wed, 27 Jul 2022 16:48:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B16CC433D6;
+        Wed, 27 Jul 2022 16:48:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940551;
-        bh=7fTa14/lKPNdhwduF4hY9eR8NwdSBaT24ZZOvhjIwqo=;
+        s=korg; t=1658940529;
+        bh=IOh/2jB7rdGTmLQnOWdk4AKkBIus8bWns1MLLS8jkNo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GN8/5Wi4vSjhqqBJ6d8rROiINhZg5X8hqiyXGUD2xOqz8WwkilzJrgR3SJG/vyzfu
-         PaGXi6oxli86hgEA6U5SukbJD3SaLMuT7JyhrfO9X0bh8Fy8nvB12rNDtdhElJskKj
-         QmVdmjdwoqJIaCUmi8y9BmlIN9k/cLkIv7IEukno=
+        b=1jqERB1oTSmbwKoBJ62ZYnwXfcVIN2ukCNM+vBX0SmAvt043WO88YhnJvdyjybuZ7
+         VJpxkdczXSD0lcYSL0PaixhLY8LNMYsRFEErQKqU2mzuhit43oyuq/5DoWn5FE2LqO
+         SAaIA2BNpBYW/a41qfBuUuhAKu9WSP/8yNZQkOuk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Kan Liang <kan.liang@linux.intel.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Thomas Richter <tmricht@linux.ibm.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 033/158] ip: Fix data-races around sysctl_ip_no_pmtu_disc.
-Date:   Wed, 27 Jul 2022 18:11:37 +0200
-Message-Id: <20220727161022.812447163@linuxfoundation.org>
+Subject: [PATCH 5.18 055/158] perf tests: Stop Convert perf time to TSC test opening events twice
+Date:   Wed, 27 Jul 2022 18:11:59 +0200
+Message-Id: <20220727161023.717047753@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -49,76 +53,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Adrian Hunter <adrian.hunter@intel.com>
 
-[ Upstream commit 0968d2a441bf6afb551fd99e60fa65ed67068963 ]
+[ Upstream commit 498c7a54f169b2699104d3060604d840424f15d2 ]
 
-While reading sysctl_ip_no_pmtu_disc, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its readers.
+Do not call evlist__open() twice.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 5bb017d4b97a0f13 ("perf test: Fix error message for test case 71 on s390, where it is not supported")
+Reviewed-by: Kan Liang <kan.liang@linux.intel.com>
+Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Ian Rogers <irogers@google.com>
+Cc: Jiri Olsa <jolsa@kernel.org>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Thomas Richter <tmricht@linux.ibm.com>
+Link: https://lore.kernel.org/r/20220713123459.24145-2-adrian.hunter@intel.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/af_inet.c    | 2 +-
- net/ipv4/icmp.c       | 2 +-
- net/ipv6/af_inet6.c   | 2 +-
- net/xfrm/xfrm_state.c | 2 +-
- 4 files changed, 4 insertions(+), 4 deletions(-)
+ tools/perf/tests/perf-time-to-tsc.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-index 98bc180563d1..8c0a22a5b36c 100644
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -335,7 +335,7 @@ static int inet_create(struct net *net, struct socket *sock, int protocol,
- 			inet->hdrincl = 1;
+diff --git a/tools/perf/tests/perf-time-to-tsc.c b/tools/perf/tests/perf-time-to-tsc.c
+index 4ad0dfbc8b21..8d6d60173693 100644
+--- a/tools/perf/tests/perf-time-to-tsc.c
++++ b/tools/perf/tests/perf-time-to-tsc.c
+@@ -123,11 +123,14 @@ static int test__perf_time_to_tsc(struct test_suite *test __maybe_unused, int su
+ 		evsel->core.attr.enable_on_exec = 0;
  	}
  
--	if (net->ipv4.sysctl_ip_no_pmtu_disc)
-+	if (READ_ONCE(net->ipv4.sysctl_ip_no_pmtu_disc))
- 		inet->pmtudisc = IP_PMTUDISC_DONT;
- 	else
- 		inet->pmtudisc = IP_PMTUDISC_WANT;
-diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
-index c13ceda9ce5d..d8cfa6241c04 100644
---- a/net/ipv4/icmp.c
-+++ b/net/ipv4/icmp.c
-@@ -878,7 +878,7 @@ static bool icmp_unreach(struct sk_buff *skb)
- 			 * values please see
- 			 * Documentation/networking/ip-sysctl.rst
- 			 */
--			switch (net->ipv4.sysctl_ip_no_pmtu_disc) {
-+			switch (READ_ONCE(net->ipv4.sysctl_ip_no_pmtu_disc)) {
- 			default:
- 				net_dbg_ratelimited("%pI4: fragmentation needed and DF set\n",
- 						    &iph->daddr);
-diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
-index 7d7b7523d126..ef1e6545d869 100644
---- a/net/ipv6/af_inet6.c
-+++ b/net/ipv6/af_inet6.c
-@@ -226,7 +226,7 @@ static int inet6_create(struct net *net, struct socket *sock, int protocol,
- 	RCU_INIT_POINTER(inet->mc_list, NULL);
- 	inet->rcv_tos	= 0;
+-	if (evlist__open(evlist) == -ENOENT) {
+-		err = TEST_SKIP;
++	ret = evlist__open(evlist);
++	if (ret < 0) {
++		if (ret == -ENOENT)
++			err = TEST_SKIP;
++		else
++			pr_debug("evlist__open() failed\n");
+ 		goto out_err;
+ 	}
+-	CHECK__(evlist__open(evlist));
  
--	if (net->ipv4.sysctl_ip_no_pmtu_disc)
-+	if (READ_ONCE(net->ipv4.sysctl_ip_no_pmtu_disc))
- 		inet->pmtudisc = IP_PMTUDISC_DONT;
- 	else
- 		inet->pmtudisc = IP_PMTUDISC_WANT;
-diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
-index b749935152ba..b4ce16a934a2 100644
---- a/net/xfrm/xfrm_state.c
-+++ b/net/xfrm/xfrm_state.c
-@@ -2620,7 +2620,7 @@ int __xfrm_init_state(struct xfrm_state *x, bool init_replay, bool offload)
- 	int err;
+ 	CHECK__(evlist__mmap(evlist, UINT_MAX));
  
- 	if (family == AF_INET &&
--	    xs_net(x)->ipv4.sysctl_ip_no_pmtu_disc)
-+	    READ_ONCE(xs_net(x)->ipv4.sysctl_ip_no_pmtu_disc))
- 		x->props.flags |= XFRM_STATE_NOPMTUDISC;
- 
- 	err = -EPROTONOSUPPORT;
 -- 
 2.35.1
 
