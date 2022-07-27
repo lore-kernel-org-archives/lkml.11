@@ -2,114 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 850FCC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:48:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADBAFC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:48:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240580AbiG0Qsp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:48:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49400 "EHLO
+        id S240005AbiG0Qs6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:48:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240486AbiG0QsH (ORCPT
+        with ESMTP id S240478AbiG0QsS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:48:07 -0400
-Received: from out02.mta.xmission.com (out02.mta.xmission.com [166.70.13.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3DBB60697
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:32:18 -0700 (PDT)
-Received: from in02.mta.xmission.com ([166.70.13.52]:42396)
-        by out02.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1oGjxJ-009L2K-Bb; Wed, 27 Jul 2022 10:32:17 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:47988 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1oGjxH-007kF3-TE; Wed, 27 Jul 2022 10:32:16 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Tycho Andersen <tycho@tycho.pizza>
-Cc:     "Serge E. Hallyn" <serge@hallyn.com>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        linux-kernel@vger.kernel.org, Oleg Nesterov <oleg@redhat.com>
-References: <Ys2PwTS0qFmGNFqy@netflix>
-        <20220713175305.1327649-1-tycho@tycho.pizza>
-        <20220720150328.GA30749@mail.hallyn.com>
-        <YthsgqAZYnwHZLn+@tycho.pizza> <20220721015459.GA4297@mail.hallyn.com>
-        <YuFdUj5X4qckC/6g@tycho.pizza>
-Date:   Wed, 27 Jul 2022 11:32:08 -0500
-In-Reply-To: <YuFdUj5X4qckC/6g@tycho.pizza> (Tycho Andersen's message of "Wed,
-        27 Jul 2022 09:44:18 -0600")
-Message-ID: <871qu6bjp3.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Wed, 27 Jul 2022 12:48:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A3CD61101;
+        Wed, 27 Jul 2022 09:32:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D671061A04;
+        Wed, 27 Jul 2022 16:27:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E36A5C433D6;
+        Wed, 27 Jul 2022 16:27:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658939241;
+        bh=UOpROHzo/X7Rd+9/tzUGSTkx8KnfLTdzuVsBE7Rw9Vs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=YkDQOf/AoF2Tcf+FRzzcKMwnrAiSjMNkrRGA+woMMkLOTSMO7WOkebQpSR3DD+oj1
+         yCGmjzwGDUxZtnaYTJD3P5sNvTUxZ49Wez149gN+kr9jiNmcJf3RO9Q9TwSZwoeun8
+         CFqZYDHzlH2Gl/lBq67A/I9LNIDf62dCW3ueb69o=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Tedd Ho-Jeong An <tedd.an@intel.com>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Subject: [PATCH 4.19 50/62] Bluetooth: SCO: Fix sco_send_frame returning skb->len
+Date:   Wed, 27 Jul 2022 18:10:59 +0200
+Message-Id: <20220727161006.082825060@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220727161004.175638564@linuxfoundation.org>
+References: <20220727161004.175638564@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1oGjxH-007kF3-TE;;;mid=<871qu6bjp3.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX18aPcy1jAAy0mA/ZJLcFWBzs1oaHyQSRLk=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH] sched: __fatal_signal_pending() should also check
- PF_EXITING
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Tycho Andersen <tycho@tycho.pizza> writes:
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 
-> Hi all,
->
-> On Wed, Jul 20, 2022 at 08:54:59PM -0500, Serge E. Hallyn wrote:
->> Oh - I didn't either - checking the sigkill in shared signals *seems*
->> legit if they can be put there - but since you posted the new patch I
->> assumed his reasoning was clear to you.  I know Eric's busy, cc:ing Oleg
->> for his interpretation too.
->
-> Any thoughts on this?
+commit 037ce005af6b8a3e40ee07c6e9266c8997e6a4d6 upstream.
 
-Having __fatal_signal_pending check SIGKILL in shared signals is
-completely and utterly wrong.
+The skb in modified by hci_send_sco which pushes SCO headers thus
+changing skb->len causing sco_sock_sendmsg to fail.
 
-What __fatal_signal_pending reports is if a signal has gone through
-short cirucuit delivery after determining that the delivery of the
-signal will terminate the process.
+Fixes: 0771cbb3b97d ("Bluetooth: SCO: Replace use of memcpy_from_msg with bt_skb_sendmsg")
+Tested-by: Tedd Ho-Jeong An <tedd.an@intel.com>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Cc: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ net/bluetooth/sco.c |   10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-Using "sigismember(&tsk->pending.signal, SIGKILL)" to report that a
-fatal signal has experienced short circuit delivery is a bit of an
-abuse, but essentially harmless as tkill of SIGKILL to a thread will
-result in every thread in the process experiencing short circuit
-delivery of the fatal SIGKILL.  So a pending SIGKILL can't really mean
-anything else.
-
-
-
-After having looked at the code a little more I can unfortunately also
-say that testing PF_EXITING in __fatal_signal_pending will cause
-kernel_wait4 in zap_pid_ns_processes to not sleep, and instead to return
-0.  Which will cause zap_pid_ns_processes to busy wait.  That seems very
-unfortunate.
-
-I hadn't realized it at the time I wrote zap_pid_ns_processes but I
-think anything called from do_exit that cares about signal pending state
-is pretty much broken and needs to be fixed.
-
-
-
-So the question is how do we fix the problem in fuse that shows up
-during a pid namespace exit without having interruptible sleeps we need
-to wake up?
-
-What are the code paths that experience the problem?
-
-Will refactoring zap_pid_ns_processes as I have proposed so that it does
-not use kernel_wait4 help sort this out?  AKA make it work something
-like thread group leader of a process and not allow wait to reap the
-init process of a pid namespace until all of the processes in a pid
-namespaces have been gone.  Not that I see the problem in using
-kernel_wait4 it looks like zap_pid_ns_processes needs to stop calling
-kernel_wait4 regardless of the fuse problem.
-
-Eric
-
-
+--- a/net/bluetooth/sco.c
++++ b/net/bluetooth/sco.c
+@@ -282,16 +282,17 @@ static int sco_connect(struct hci_dev *h
+ static int sco_send_frame(struct sock *sk, struct sk_buff *skb)
+ {
+ 	struct sco_conn *conn = sco_pi(sk)->conn;
++	int len = skb->len;
+ 
+ 	/* Check outgoing MTU */
+-	if (skb->len > conn->mtu)
++	if (len > conn->mtu)
+ 		return -EINVAL;
+ 
+-	BT_DBG("sk %p len %d", sk, skb->len);
++	BT_DBG("sk %p len %d", sk, len);
+ 
+ 	hci_send_sco(conn->hcon, skb);
+ 
+-	return skb->len;
++	return len;
+ }
+ 
+ static void sco_recv_frame(struct sco_conn *conn, struct sk_buff *skb)
+@@ -731,7 +732,8 @@ static int sco_sock_sendmsg(struct socke
+ 		err = -ENOTCONN;
+ 
+ 	release_sock(sk);
+-	if (err)
++
++	if (err < 0)
+ 		kfree_skb(skb);
+ 	return err;
+ }
 
 
