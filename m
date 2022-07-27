@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 806C8C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:30:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C845C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:30:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235932AbiG0Qan (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:30:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34418 "EHLO
+        id S235176AbiG0Qap (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:30:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237414AbiG0Q36 (ORCPT
+        with ESMTP id S235743AbiG0QaJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:29:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F408C2645;
-        Wed, 27 Jul 2022 09:25:09 -0700 (PDT)
+        Wed, 27 Jul 2022 12:30:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DB42205D8;
+        Wed, 27 Jul 2022 09:25:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7D754B821C8;
-        Wed, 27 Jul 2022 16:25:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C56F2C433C1;
-        Wed, 27 Jul 2022 16:25:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C1A061A00;
+        Wed, 27 Jul 2022 16:25:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DD8EC433B5;
+        Wed, 27 Jul 2022 16:25:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939108;
-        bh=0ZqCx0f3w4xzVKM7hqpvqH6GcIZzjcZOSWtNS/jyHXo=;
+        s=korg; t=1658939102;
+        bh=XMG+02M3UD6e2ITIRgYttn2ny5b0sKywMMqd2QA8CFY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KxwUsWxjZRgnmEijLf3r70Nd71s5NCyDo2MDjdyRMoMRSVFRfjIKr0sQYEJ9MqniG
-         d8w5hRz9nNgbLMIBVt3HGSecFH5w2Str2tFHkq5Ev5hcZ4nHsp3Sf4Ih/chrGN4Koh
-         df/BvJHZeGIojRJnZS2APalXDMK0dcVxq+SCCyoU=
+        b=i5rvaMoHbQYvPWjDDT52R2nmS007qDdIoj4AaM/nQt4ccqWq0J4vmzdBjcuJGdgV4
+         IY/iP+2cWL4bhtf2DaKTXrzfOFU1j/F0qjxbqYMaExmZTtuhmGI3WP7sS4ufp7xaCj
+         FB+w26tOA/I6aYWKisMZNSSmy6r9bU65w/heBb6k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 04/62] power/reset: arm-versatile: Fix refcount leak in versatile_reboot_probe
-Date:   Wed, 27 Jul 2022 18:10:13 +0200
-Message-Id: <20220727161004.335900070@linuxfoundation.org>
+        stable@vger.kernel.org, Juergen Gross <jgross@suse.com>,
+        Demi Marie Obenour <demi@invisiblethingslab.com>,
+        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+Subject: [PATCH 4.19 02/62] xen/gntdev: Ignore failure to unmap INVALID_GRANT_HANDLE
+Date:   Wed, 27 Jul 2022 18:10:11 +0200
+Message-Id: <20220727161004.261003054@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161004.175638564@linuxfoundation.org>
 References: <20220727161004.175638564@linuxfoundation.org>
@@ -50,37 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Demi Marie Obenour <demi@invisiblethingslab.com>
 
-[ Upstream commit 80192eff64eee9b3bc0594a47381937b94b9d65a ]
+commit 166d3863231667c4f64dee72b77d1102cdfad11f upstream.
 
-of_find_matching_node_and_match() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+The error paths of gntdev_mmap() can call unmap_grant_pages() even
+though not all of the pages have been successfully mapped.  This will
+trigger the WARN_ON()s in __unmap_grant_pages_done().  The number of
+warnings can be very large; I have observed thousands of lines of
+warnings in the systemd journal.
 
-Fixes: 0e545f57b708 ("power: reset: driver for the Versatile syscon reboot")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Avoid this problem by only warning on unmapping failure if the handle
+being unmapped is not INVALID_GRANT_HANDLE.  The handle field of any
+page that was not successfully mapped will be INVALID_GRANT_HANDLE, so
+this catches all cases where unmapping can legitimately fail.
+
+Fixes: dbe97cff7dd9 ("xen/gntdev: Avoid blocking in unmap_grant_pages()")
+Cc: stable@vger.kernel.org
+Suggested-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Demi Marie Obenour <demi@invisiblethingslab.com>
+Reviewed-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
+Reviewed-by: Juergen Gross <jgross@suse.com>
+Link: https://lore.kernel.org/r/20220710230522.1563-1-demi@invisiblethingslab.com
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/power/reset/arm-versatile-reboot.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/xen/gntdev.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/power/reset/arm-versatile-reboot.c b/drivers/power/reset/arm-versatile-reboot.c
-index 06d34ab47df5..8022c782f6ff 100644
---- a/drivers/power/reset/arm-versatile-reboot.c
-+++ b/drivers/power/reset/arm-versatile-reboot.c
-@@ -150,6 +150,7 @@ static int __init versatile_reboot_probe(void)
- 	versatile_reboot_type = (enum versatile_reboot)reboot_id->data;
+--- a/drivers/xen/gntdev.c
++++ b/drivers/xen/gntdev.c
+@@ -416,7 +416,8 @@ static void __unmap_grant_pages_done(int
+ 	unsigned int offset = data->unmap_ops - map->unmap_ops;
  
- 	syscon_regmap = syscon_node_to_regmap(np);
-+	of_node_put(np);
- 	if (IS_ERR(syscon_regmap))
- 		return PTR_ERR(syscon_regmap);
- 
--- 
-2.35.1
-
+ 	for (i = 0; i < data->count; i++) {
+-		WARN_ON(map->unmap_ops[offset+i].status);
++		WARN_ON(map->unmap_ops[offset+i].status &&
++			map->unmap_ops[offset+i].handle != -1);
+ 		pr_debug("unmap handle=%d st=%d\n",
+ 			map->unmap_ops[offset+i].handle,
+ 			map->unmap_ops[offset+i].status);
 
 
