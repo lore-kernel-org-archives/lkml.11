@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F4D3C19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:40:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C10A5C19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:41:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230313AbiG0Rkt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:40:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34930 "EHLO
+        id S242772AbiG0RlB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:41:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242514AbiG0Rjx (ORCPT
+        with ESMTP id S242754AbiG0RkW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:39:53 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2347288CD7;
-        Wed, 27 Jul 2022 09:51:20 -0700 (PDT)
+        Wed, 27 Jul 2022 13:40:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A48F88CF4;
+        Wed, 27 Jul 2022 09:51:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 77791B821D4;
-        Wed, 27 Jul 2022 16:51:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C80A9C433C1;
-        Wed, 27 Jul 2022 16:51:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CDD21B821D5;
+        Wed, 27 Jul 2022 16:51:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34BE8C433D6;
+        Wed, 27 Jul 2022 16:51:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940676;
-        bh=q0JSE8ux2FV7K2RUeGZwHsCybUA+f+mNEP39HiD25Ps=;
+        s=korg; t=1658940681;
+        bh=Y2lqLdKXlUsPjo/KKDUbq0isrq7bD1P1nDugIYzLdZc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DruJfRfxdpKh2/Op4i41nHsmNaPQEvY1YDOAyofr7exktP5QbB5QcyRpXONFxtOvO
-         kPSfi8UI1jHazsyHnMLPWEn6UbEYRHH0qKlAQN+iztxUvsTATE16+r+uN/Xk5jjJW7
-         OX+YHKzuX+wdZlVZQtBVg+jirgeuFG9Cr+f0ox2A=
+        b=q5D1zRSdr44fepxCQgDfzjw2lpR6EbesN+tW4PW4RbWp0pz/yCp8/IUUQ02jlBuMz
+         7fFepENm7Zdi8MA9jQRsd0gZVULqkYYqd+gGmY3yWpZMzvLAcpmHHTB1UH8755RFUQ
+         rNw8IMqzchgml3OkKmiTxh29zN9U/R3WAceJ7GzE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
-        <nfraprado@collabora.com>,
-        =?UTF-8?q?Andr=C3=A9=20Almeida?= <andrealmeid@igalia.com>,
-        Douglas Anderson <dianders@chromium.org>,
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 109/158] drm/panel-edp: Fix variable typo when saving hpd absent delay from DT
-Date:   Wed, 27 Jul 2022 18:12:53 +0200
-Message-Id: <20220727161025.849277072@linuxfoundation.org>
+Subject: [PATCH 5.18 111/158] can: rcar_canfd: Add missing of_node_put() in rcar_canfd_probe()
+Date:   Wed, 27 Jul 2022 18:12:55 +0200
+Message-Id: <20220727161025.923480839@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -52,38 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit ef2084a8388b19c8812356106e0c8d29915f9d8b ]
+[ Upstream commit 7b66dfcc6e1e1f018492619c3d0fc432b6b54272 ]
 
-The value read from the "hpd-absent-delay-ms" property in DT was being
-saved to the wrong variable, overriding the hpd_reliable delay. Fix the
-typo.
+We should use of_node_put() for the reference returned by
+of_get_child_by_name() which has increased the refcount.
 
-Fixes: 5540cf8f3e8d ("drm/panel-edp: Implement generic "edp-panel"s probed by EDID")
-Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Reviewed-by: André Almeida <andrealmeid@igalia.com>
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
-Signed-off-by: Douglas Anderson <dianders@chromium.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220719203857.1488831-4-nfraprado@collabora.com
+Fixes: 45721c406dcf ("can: rcar_canfd: Add support for r8a779a0 SoC")
+Link: https://lore.kernel.org/all/20220712095623.364287-1-windhl@126.com
+Signed-off-by: Liang He <windhl@126.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/panel/panel-edp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/can/rcar/rcar_canfd.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/panel/panel-edp.c b/drivers/gpu/drm/panel/panel-edp.c
-index f7bfcf63d48e..701a258d2e11 100644
---- a/drivers/gpu/drm/panel/panel-edp.c
-+++ b/drivers/gpu/drm/panel/panel-edp.c
-@@ -713,7 +713,7 @@ static int generic_edp_panel_probe(struct device *dev, struct panel_edp *panel)
- 	of_property_read_u32(dev->of_node, "hpd-reliable-delay-ms", &reliable_ms);
- 	desc->delay.hpd_reliable = reliable_ms;
- 	of_property_read_u32(dev->of_node, "hpd-absent-delay-ms", &absent_ms);
--	desc->delay.hpd_reliable = absent_ms;
-+	desc->delay.hpd_absent = absent_ms;
+diff --git a/drivers/net/can/rcar/rcar_canfd.c b/drivers/net/can/rcar/rcar_canfd.c
+index 589996cef5db..8d457d2c3bcc 100644
+--- a/drivers/net/can/rcar/rcar_canfd.c
++++ b/drivers/net/can/rcar/rcar_canfd.c
+@@ -1850,6 +1850,7 @@ static int rcar_canfd_probe(struct platform_device *pdev)
+ 		of_child = of_get_child_by_name(pdev->dev.of_node, name);
+ 		if (of_child && of_device_is_available(of_child))
+ 			channels_mask |= BIT(i);
++		of_node_put(of_child);
+ 	}
  
- 	/* Power the panel on so we can read the EDID */
- 	ret = pm_runtime_get_sync(dev);
+ 	if (chip_id != RENESAS_RZG2L) {
 -- 
 2.35.1
 
