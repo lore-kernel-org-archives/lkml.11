@@ -2,49 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6698C19F2C
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:44:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC854C19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:45:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239889AbiG0Qox (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:44:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43114 "EHLO
+        id S240050AbiG0QpA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:45:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235476AbiG0Qnt (ORCPT
+        with ESMTP id S240121AbiG0QoI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:43:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE5A81C12C;
-        Wed, 27 Jul 2022 09:30:38 -0700 (PDT)
+        Wed, 27 Jul 2022 12:44:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9239A51A24;
+        Wed, 27 Jul 2022 09:30:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D45FAB821BE;
-        Wed, 27 Jul 2022 16:30:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04E5AC433C1;
-        Wed, 27 Jul 2022 16:30:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 70C56B821C5;
+        Wed, 27 Jul 2022 16:30:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCB8FC433D6;
+        Wed, 27 Jul 2022 16:30:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939429;
-        bh=exjTbktyQ2L4qT7er/q8xnaoToLGPnYfi4azjwuWwgg=;
+        s=korg; t=1658939435;
+        bh=AJqytMV64rUASa1fC+FJDWlVKl+qrP5oT4VUCR05xaY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VY7p758gGcuC0bzJlPL+QbaMVE3akIZvepNOAJN9RXeXpDQHcXkVQBbE3bz4hERDm
-         gHUbh4DqzR6tukVXrc+TpEvkRSrgUJjBAN2YyFfzFaNkkYhhYEYgjUSF9Cn/2sF/Tc
-         UUc9jPAyz2rpxmYCy7M1aKx7LU89oOhk3mXTp7Ls=
+        b=RPyvm3ySCXJqroclLKKHCyK4KsAcDeryglq7EthZiQhTG03kheqU6PTdf3xBKtGc2
+         D1WkrRUiKfAh8gT3w6IZZgr1iZMP+MuUgQysH2DNGe3/U9WAeVQkW38WyxuP/a7SJb
+         0HIDhrYM3LZb/jEpCeypaeBvu8dWaOgaMi40VFOQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Will Deacon <will@kernel.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Hanjun Guo <guohanjun@huawei.com>,
-        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
-        Elena Reshetova <elena.reshetova@intel.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 66/87] locking/refcount: Consolidate REFCOUNT_{MAX,SATURATED} definitions
-Date:   Wed, 27 Jul 2022 18:10:59 +0200
-Message-Id: <20220727161011.721547216@linuxfoundation.org>
+        stable@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 68/87] x86: get rid of small constant size cases in raw_copy_{to,from}_user()
+Date:   Wed, 27 Jul 2022 18:11:01 +0200
+Message-Id: <20220727161011.803180178@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161008.993711844@linuxfoundation.org>
 References: <20220727161008.993711844@linuxfoundation.org>
@@ -56,64 +48,206 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Will Deacon <will@kernel.org>
+From: Al Viro <viro@zeniv.linux.org.uk>
 
-[ Upstream commit 65b008552469f1c37f5e06e0016924502e40b4f5 ]
+[ Upstream commit 4b842e4e25b12951fa10dedb4bc16bc47e3b850c ]
 
-The definitions of REFCOUNT_MAX and REFCOUNT_SATURATED are the same,
-regardless of CONFIG_REFCOUNT_FULL, so consolidate them into a single
-pair of definitions.
+Very few call sites where that would be triggered remain, and none
+of those is anywhere near hot enough to bother.
 
-Signed-off-by: Will Deacon <will@kernel.org>
-Reviewed-by: Ard Biesheuvel <ardb@kernel.org>
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Tested-by: Hanjun Guo <guohanjun@huawei.com>
-Cc: Ard Biesheuvel <ard.biesheuvel@linaro.org>
-Cc: Elena Reshetova <elena.reshetova@intel.com>
-Cc: Linus Torvalds <torvalds@linux-foundation.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Link: https://lkml.kernel.org/r/20191121115902.2551-8-will@kernel.org
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/refcount.h | 9 ++-------
- 1 file changed, 2 insertions(+), 7 deletions(-)
+ arch/x86/include/asm/uaccess.h    |  12 ----
+ arch/x86/include/asm/uaccess_32.h |  27 --------
+ arch/x86/include/asm/uaccess_64.h | 108 +-----------------------------
+ 3 files changed, 2 insertions(+), 145 deletions(-)
 
-diff --git a/include/linux/refcount.h b/include/linux/refcount.h
-index 1cd0a876a789..757d4630115c 100644
---- a/include/linux/refcount.h
-+++ b/include/linux/refcount.h
-@@ -22,6 +22,8 @@ typedef struct refcount_struct {
- } refcount_t;
+diff --git a/arch/x86/include/asm/uaccess.h b/arch/x86/include/asm/uaccess.h
+index 61d93f062a36..a19effb98fdc 100644
+--- a/arch/x86/include/asm/uaccess.h
++++ b/arch/x86/include/asm/uaccess.h
+@@ -378,18 +378,6 @@ do {									\
+ 		     : "=r" (err), ltype(x)				\
+ 		     : "m" (__m(addr)), "i" (errret), "0" (err))
  
- #define REFCOUNT_INIT(n)	{ .refs = ATOMIC_INIT(n), }
-+#define REFCOUNT_MAX		INT_MAX
-+#define REFCOUNT_SATURATED	(INT_MIN / 2)
- 
- enum refcount_saturation_type {
- 	REFCOUNT_ADD_NOT_ZERO_OVF,
-@@ -57,9 +59,6 @@ static inline unsigned int refcount_read(const refcount_t *r)
- #ifdef CONFIG_REFCOUNT_FULL
- #include <linux/bug.h>
- 
--#define REFCOUNT_MAX		INT_MAX
--#define REFCOUNT_SATURATED	(INT_MIN / 2)
+-#define __get_user_asm_nozero(x, addr, err, itype, rtype, ltype, errret)	\
+-	asm volatile("\n"						\
+-		     "1:	mov"itype" %2,%"rtype"1\n"		\
+-		     "2:\n"						\
+-		     ".section .fixup,\"ax\"\n"				\
+-		     "3:	mov %3,%0\n"				\
+-		     "	jmp 2b\n"					\
+-		     ".previous\n"					\
+-		     _ASM_EXTABLE_UA(1b, 3b)				\
+-		     : "=r" (err), ltype(x)				\
+-		     : "m" (__m(addr)), "i" (errret), "0" (err))
 -
  /*
-  * Variant of atomic_t specialized for reference counts.
-  *
-@@ -300,10 +299,6 @@ static inline void refcount_dec(refcount_t *r)
- 		refcount_warn_saturate(r, REFCOUNT_DEC_LEAK);
+  * This doesn't do __uaccess_begin/end - the exception handling
+  * around it must do that.
+diff --git a/arch/x86/include/asm/uaccess_32.h b/arch/x86/include/asm/uaccess_32.h
+index ba2dc1930630..388a40660c7b 100644
+--- a/arch/x86/include/asm/uaccess_32.h
++++ b/arch/x86/include/asm/uaccess_32.h
+@@ -23,33 +23,6 @@ raw_copy_to_user(void __user *to, const void *from, unsigned long n)
+ static __always_inline unsigned long
+ raw_copy_from_user(void *to, const void __user *from, unsigned long n)
+ {
+-	if (__builtin_constant_p(n)) {
+-		unsigned long ret;
+-
+-		switch (n) {
+-		case 1:
+-			ret = 0;
+-			__uaccess_begin_nospec();
+-			__get_user_asm_nozero(*(u8 *)to, from, ret,
+-					      "b", "b", "=q", 1);
+-			__uaccess_end();
+-			return ret;
+-		case 2:
+-			ret = 0;
+-			__uaccess_begin_nospec();
+-			__get_user_asm_nozero(*(u16 *)to, from, ret,
+-					      "w", "w", "=r", 2);
+-			__uaccess_end();
+-			return ret;
+-		case 4:
+-			ret = 0;
+-			__uaccess_begin_nospec();
+-			__get_user_asm_nozero(*(u32 *)to, from, ret,
+-					      "l", "k", "=r", 4);
+-			__uaccess_end();
+-			return ret;
+-		}
+-	}
+ 	return __copy_user_ll(to, (__force const void *)from, n);
  }
- #else /* CONFIG_REFCOUNT_FULL */
+ 
+diff --git a/arch/x86/include/asm/uaccess_64.h b/arch/x86/include/asm/uaccess_64.h
+index 5cd1caa8bc65..bc10e3dc64fe 100644
+--- a/arch/x86/include/asm/uaccess_64.h
++++ b/arch/x86/include/asm/uaccess_64.h
+@@ -65,117 +65,13 @@ copy_to_user_mcsafe(void *to, const void *from, unsigned len)
+ static __always_inline __must_check unsigned long
+ raw_copy_from_user(void *dst, const void __user *src, unsigned long size)
+ {
+-	int ret = 0;
 -
--#define REFCOUNT_MAX		INT_MAX
--#define REFCOUNT_SATURATED	(INT_MIN / 2)
+-	if (!__builtin_constant_p(size))
+-		return copy_user_generic(dst, (__force void *)src, size);
+-	switch (size) {
+-	case 1:
+-		__uaccess_begin_nospec();
+-		__get_user_asm_nozero(*(u8 *)dst, (u8 __user *)src,
+-			      ret, "b", "b", "=q", 1);
+-		__uaccess_end();
+-		return ret;
+-	case 2:
+-		__uaccess_begin_nospec();
+-		__get_user_asm_nozero(*(u16 *)dst, (u16 __user *)src,
+-			      ret, "w", "w", "=r", 2);
+-		__uaccess_end();
+-		return ret;
+-	case 4:
+-		__uaccess_begin_nospec();
+-		__get_user_asm_nozero(*(u32 *)dst, (u32 __user *)src,
+-			      ret, "l", "k", "=r", 4);
+-		__uaccess_end();
+-		return ret;
+-	case 8:
+-		__uaccess_begin_nospec();
+-		__get_user_asm_nozero(*(u64 *)dst, (u64 __user *)src,
+-			      ret, "q", "", "=r", 8);
+-		__uaccess_end();
+-		return ret;
+-	case 10:
+-		__uaccess_begin_nospec();
+-		__get_user_asm_nozero(*(u64 *)dst, (u64 __user *)src,
+-			       ret, "q", "", "=r", 10);
+-		if (likely(!ret))
+-			__get_user_asm_nozero(*(u16 *)(8 + (char *)dst),
+-				       (u16 __user *)(8 + (char __user *)src),
+-				       ret, "w", "w", "=r", 2);
+-		__uaccess_end();
+-		return ret;
+-	case 16:
+-		__uaccess_begin_nospec();
+-		__get_user_asm_nozero(*(u64 *)dst, (u64 __user *)src,
+-			       ret, "q", "", "=r", 16);
+-		if (likely(!ret))
+-			__get_user_asm_nozero(*(u64 *)(8 + (char *)dst),
+-				       (u64 __user *)(8 + (char __user *)src),
+-				       ret, "q", "", "=r", 8);
+-		__uaccess_end();
+-		return ret;
+-	default:
+-		return copy_user_generic(dst, (__force void *)src, size);
+-	}
++	return copy_user_generic(dst, (__force void *)src, size);
+ }
+ 
+ static __always_inline __must_check unsigned long
+ raw_copy_to_user(void __user *dst, const void *src, unsigned long size)
+ {
+-	int ret = 0;
 -
- # ifdef CONFIG_ARCH_HAS_REFCOUNT
- #  include <asm/refcount.h>
- # else
+-	if (!__builtin_constant_p(size))
+-		return copy_user_generic((__force void *)dst, src, size);
+-	switch (size) {
+-	case 1:
+-		__uaccess_begin();
+-		__put_user_asm(*(u8 *)src, (u8 __user *)dst,
+-			      ret, "b", "b", "iq", 1);
+-		__uaccess_end();
+-		return ret;
+-	case 2:
+-		__uaccess_begin();
+-		__put_user_asm(*(u16 *)src, (u16 __user *)dst,
+-			      ret, "w", "w", "ir", 2);
+-		__uaccess_end();
+-		return ret;
+-	case 4:
+-		__uaccess_begin();
+-		__put_user_asm(*(u32 *)src, (u32 __user *)dst,
+-			      ret, "l", "k", "ir", 4);
+-		__uaccess_end();
+-		return ret;
+-	case 8:
+-		__uaccess_begin();
+-		__put_user_asm(*(u64 *)src, (u64 __user *)dst,
+-			      ret, "q", "", "er", 8);
+-		__uaccess_end();
+-		return ret;
+-	case 10:
+-		__uaccess_begin();
+-		__put_user_asm(*(u64 *)src, (u64 __user *)dst,
+-			       ret, "q", "", "er", 10);
+-		if (likely(!ret)) {
+-			asm("":::"memory");
+-			__put_user_asm(4[(u16 *)src], 4 + (u16 __user *)dst,
+-				       ret, "w", "w", "ir", 2);
+-		}
+-		__uaccess_end();
+-		return ret;
+-	case 16:
+-		__uaccess_begin();
+-		__put_user_asm(*(u64 *)src, (u64 __user *)dst,
+-			       ret, "q", "", "er", 16);
+-		if (likely(!ret)) {
+-			asm("":::"memory");
+-			__put_user_asm(1[(u64 *)src], 1 + (u64 __user *)dst,
+-				       ret, "q", "", "er", 8);
+-		}
+-		__uaccess_end();
+-		return ret;
+-	default:
+-		return copy_user_generic((__force void *)dst, src, size);
+-	}
++	return copy_user_generic((__force void *)dst, src, size);
+ }
+ 
+ static __always_inline __must_check
 -- 
 2.35.1
 
