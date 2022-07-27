@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8CF2C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:46:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CCEDC19F28
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:47:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243002AbiG0Rqw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:46:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46602 "EHLO
+        id S243097AbiG0RrH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:47:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242993AbiG0RqY (ORCPT
+        with ESMTP id S243080AbiG0Rqb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:46:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D3EA8C5AC;
-        Wed, 27 Jul 2022 09:53:41 -0700 (PDT)
+        Wed, 27 Jul 2022 13:46:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09A8D8C76A;
+        Wed, 27 Jul 2022 09:53:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 71500B821D9;
-        Wed, 27 Jul 2022 16:53:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBD77C433C1;
-        Wed, 27 Jul 2022 16:53:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 319D161743;
+        Wed, 27 Jul 2022 16:53:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FEFCC433C1;
+        Wed, 27 Jul 2022 16:53:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940818;
-        bh=u/XzXGZFA2dYFioj9Dm6L2aIM9lGaJmYbqnm9tjzGC0=;
+        s=korg; t=1658940823;
+        bh=BgXZK7+K8o2mjyPze4zimnYbMgx7vzX+PZeG7dtgKOM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hCAp/jWC2x8eFFFHawx3MP7Iw/L8nWBizFm8q0vjLB4MxvDOY1kx9Mu/2q5WgBStz
-         qjSFPHLhT+IXtk+4JhYzcZRKPGNa8R0a1eFhBUPQ9Tg/+nadsuvT3NL2705j6+vg5/
-         0Myyf6utpSo8BrdIEVzRnl3OIRDzF2N8OlBY5A1U=
+        b=LHrs3mDEgNVBKOLCVawVIkuhhh5AdJ1q6zPSiw8oalHmyLE6sDguGoSydU35ou1or
+         RYxaUyy1pugQiRjRGs2WuNZXgAd0UtT9aEqum9vTHsY8+8dClfaJAcgD2pUUNyUgSG
+         1CufDvF7rbiVRfbv8tpAx/1JPV+HwphuixsgXslk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, syzbot <syzkaller@googlegroups.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Subject: [PATCH 5.18 134/158] bpf: Make sure mac_header was set before using it
-Date:   Wed, 27 Jul 2022 18:13:18 +0200
-Message-Id: <20220727161026.754087236@linuxfoundation.org>
+        stable@vger.kernel.org, Vince Weaver <vincent.weaver@maine.edu>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>
+Subject: [PATCH 5.18 136/158] perf/x86/intel/lbr: Fix unchecked MSR access error on HSW
+Date:   Wed, 27 Jul 2022 18:13:20 +0200
+Message-Id: <20220727161026.822310872@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -49,74 +49,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Kan Liang <kan.liang@linux.intel.com>
 
-commit 0326195f523a549e0a9d7fd44c70b26fd7265090 upstream.
+commit b0380e13502adf7dd8be4c47d622c3522aae6c63 upstream.
 
-Classic BPF has a way to load bytes starting from the mac header.
+The fuzzer triggers the below trace.
 
-Some skbs do not have a mac header, and skb_mac_header()
-in this case is returning a pointer that 65535 bytes after
-skb->head.
+[ 7763.384369] unchecked MSR access error: WRMSR to 0x689
+(tried to write 0x1fffffff8101349e) at rIP: 0xffffffff810704a4
+(native_write_msr+0x4/0x20)
+[ 7763.397420] Call Trace:
+[ 7763.399881]  <TASK>
+[ 7763.401994]  intel_pmu_lbr_restore+0x9a/0x1f0
+[ 7763.406363]  intel_pmu_lbr_sched_task+0x91/0x1c0
+[ 7763.410992]  __perf_event_task_sched_in+0x1cd/0x240
 
-Existing range check in bpf_internal_load_pointer_neg_helper()
-was properly kicking and no illegal access was happening.
+On a machine with the LBR format LBR_FORMAT_EIP_FLAGS2, when the TSX is
+disabled, a TSX quirk is required to access LBR from registers.
+The lbr_from_signext_quirk_needed() is introduced to determine whether
+the TSX quirk should be applied. However, the
+lbr_from_signext_quirk_needed() is invoked before the
+intel_pmu_lbr_init(), which parses the LBR format information. Without
+the correct LBR format information, the TSX quirk never be applied.
 
-New sanity check in skb_mac_header() is firing, so we need
-to avoid it.
+Move the lbr_from_signext_quirk_needed() into the intel_pmu_lbr_init().
+Checking x86_pmu.lbr_has_tsx in the lbr_from_signext_quirk_needed() is
+not required anymore.
 
-WARNING: CPU: 1 PID: 28990 at include/linux/skbuff.h:2785 skb_mac_header include/linux/skbuff.h:2785 [inline]
-WARNING: CPU: 1 PID: 28990 at include/linux/skbuff.h:2785 bpf_internal_load_pointer_neg_helper+0x1b1/0x1c0 kernel/bpf/core.c:74
-Modules linked in:
-CPU: 1 PID: 28990 Comm: syz-executor.0 Not tainted 5.19.0-rc4-syzkaller-00865-g4874fb9484be #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 06/29/2022
-RIP: 0010:skb_mac_header include/linux/skbuff.h:2785 [inline]
-RIP: 0010:bpf_internal_load_pointer_neg_helper+0x1b1/0x1c0 kernel/bpf/core.c:74
-Code: ff ff 45 31 f6 e9 5a ff ff ff e8 aa 27 40 00 e9 3b ff ff ff e8 90 27 40 00 e9 df fe ff ff e8 86 27 40 00 eb 9e e8 2f 2c f3 ff <0f> 0b eb b1 e8 96 27 40 00 e9 79 fe ff ff 90 41 57 41 56 41 55 41
-RSP: 0018:ffffc9000309f668 EFLAGS: 00010216
-RAX: 0000000000000118 RBX: ffffffffffeff00c RCX: ffffc9000e417000
-RDX: 0000000000040000 RSI: ffffffff81873f21 RDI: 0000000000000003
-RBP: ffff8880842878c0 R08: 0000000000000003 R09: 000000000000ffff
-R10: 000000000000ffff R11: 0000000000000001 R12: 0000000000000004
-R13: ffff88803ac56c00 R14: 000000000000ffff R15: dffffc0000000000
-FS: 00007f5c88a16700(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
-CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fdaa9f6c058 CR3: 000000003a82c000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
-<TASK>
-____bpf_skb_load_helper_32 net/core/filter.c:276 [inline]
-bpf_skb_load_helper_32+0x191/0x220 net/core/filter.c:264
+Both LBR_FORMAT_EIP_FLAGS2 and LBR_FORMAT_INFO have LBR_TSX flag, but
+only the LBR_FORMAT_EIP_FLAGS2 requirs the quirk. Update the comments
+accordingly.
 
-Fixes: f9aefd6b2aa3 ("net: warn if mac header was not set")
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/bpf/20220707123900.945305-1-edumazet@google.com
+Fixes: 1ac7fd8159a8 ("perf/x86/intel/lbr: Support LBR format V7")
+Reported-by: Vince Weaver <vincent.weaver@maine.edu>
+Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Cc: stable@vger.kernel.org
+Link: https://lkml.kernel.org/r/20220714182630.342107-1-kan.liang@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/bpf/core.c |    8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ arch/x86/events/intel/lbr.c |   19 ++++++++++---------
+ 1 file changed, 10 insertions(+), 9 deletions(-)
 
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -68,11 +68,13 @@ void *bpf_internal_load_pointer_neg_help
- {
- 	u8 *ptr = NULL;
+--- a/arch/x86/events/intel/lbr.c
++++ b/arch/x86/events/intel/lbr.c
+@@ -278,9 +278,9 @@ enum {
+ };
  
--	if (k >= SKF_NET_OFF)
-+	if (k >= SKF_NET_OFF) {
- 		ptr = skb_network_header(skb) + k - SKF_NET_OFF;
--	else if (k >= SKF_LL_OFF)
-+	} else if (k >= SKF_LL_OFF) {
-+		if (unlikely(!skb_mac_header_was_set(skb)))
-+			return NULL;
- 		ptr = skb_mac_header(skb) + k - SKF_LL_OFF;
+ /*
+- * For formats with LBR_TSX flags (e.g. LBR_FORMAT_EIP_FLAGS2), bits 61:62 in
+- * MSR_LAST_BRANCH_FROM_x are the TSX flags when TSX is supported, but when
+- * TSX is not supported they have no consistent behavior:
++ * For format LBR_FORMAT_EIP_FLAGS2, bits 61:62 in MSR_LAST_BRANCH_FROM_x
++ * are the TSX flags when TSX is supported, but when TSX is not supported
++ * they have no consistent behavior:
+  *
+  *   - For wrmsr(), bits 61:62 are considered part of the sign extension.
+  *   - For HW updates (branch captures) bits 61:62 are always OFF and are not
+@@ -288,7 +288,7 @@ enum {
+  *
+  * Therefore, if:
+  *
+- *   1) LBR has TSX format
++ *   1) LBR format LBR_FORMAT_EIP_FLAGS2
+  *   2) CPU has no TSX support enabled
+  *
+  * ... then any value passed to wrmsr() must be sign extended to 63 bits and any
+@@ -300,7 +300,7 @@ static inline bool lbr_from_signext_quir
+ 	bool tsx_support = boot_cpu_has(X86_FEATURE_HLE) ||
+ 			   boot_cpu_has(X86_FEATURE_RTM);
+ 
+-	return !tsx_support && x86_pmu.lbr_has_tsx;
++	return !tsx_support;
+ }
+ 
+ static DEFINE_STATIC_KEY_FALSE(lbr_from_quirk_key);
+@@ -1611,9 +1611,6 @@ void intel_pmu_lbr_init_hsw(void)
+ 	x86_pmu.lbr_sel_map  = hsw_lbr_sel_map;
+ 
+ 	x86_get_pmu(smp_processor_id())->task_ctx_cache = create_lbr_kmem_cache(size, 0);
 -
-+	}
- 	if (ptr >= skb->head && ptr + size <= skb_tail_pointer(skb))
- 		return ptr;
+-	if (lbr_from_signext_quirk_needed())
+-		static_branch_enable(&lbr_from_quirk_key);
+ }
  
+ /* skylake */
+@@ -1704,7 +1701,11 @@ void intel_pmu_lbr_init(void)
+ 	switch (x86_pmu.intel_cap.lbr_format) {
+ 	case LBR_FORMAT_EIP_FLAGS2:
+ 		x86_pmu.lbr_has_tsx = 1;
+-		fallthrough;
++		x86_pmu.lbr_from_flags = 1;
++		if (lbr_from_signext_quirk_needed())
++			static_branch_enable(&lbr_from_quirk_key);
++		break;
++
+ 	case LBR_FORMAT_EIP_FLAGS:
+ 		x86_pmu.lbr_from_flags = 1;
+ 		break;
 
 
