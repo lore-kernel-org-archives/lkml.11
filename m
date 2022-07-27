@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED2C1C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:25:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61733C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:25:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241951AbiG0RZZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:25:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52826 "EHLO
+        id S240168AbiG0RZa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:25:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241817AbiG0RX6 (ORCPT
+        with ESMTP id S237123AbiG0RYA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:23:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABB687B1DB;
-        Wed, 27 Jul 2022 09:46:00 -0700 (PDT)
+        Wed, 27 Jul 2022 13:24:00 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2049D7B1E6;
+        Wed, 27 Jul 2022 09:46:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 20668B821D6;
-        Wed, 27 Jul 2022 16:45:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75E79C433D6;
-        Wed, 27 Jul 2022 16:45:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DB47E60DDB;
+        Wed, 27 Jul 2022 16:46:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E884FC433D6;
+        Wed, 27 Jul 2022 16:46:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940355;
-        bh=q8Ov8be4qwisSLNLiF3Apy5coHceXShTJRLQIfONrDg=;
+        s=korg; t=1658940361;
+        bh=gvB9qFkp5oTwRe9KAeYPBcwDLw972dcraVKHBnGj8A8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=drQAAgXWKcq+GzrPaJx/syqcYXxegbLs1SgdInqi+UrqAC6V8bA8eRYwz8nKgJEC8
-         mkpyunXFadYyZ3KKC5EqdljZpL236vOCAS9joLGC+GQcMEq/96z/Dp6A9dP4KmkWEU
-         YDfgCBlZZQ+XTtM69BIi/jl0MAmACRoov7dwZgbM=
+        b=UwdtsLiQoct0rlXj4k2A/OUHMDlnMeLYzm4ghbKvgwBe2DmmrMbTPsUEE1DpsF9EB
+         ny7EB7wAGTbegE31y9rwqzQGqSinXtAkLy1UroWg6f0JaVLeni7Q9L8amKE7BaMbUU
+         r76isaXs/4UXtc37uKE0ioGrWL7ONbVaVVKXdCBM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jude Shih <shenshih@amd.com>,
-        Anson Jacob <Anson.Jacob@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.15 195/201] drm/amd/display: Dont lock connection_mutex for DMUB HPD
-Date:   Wed, 27 Jul 2022 18:11:39 +0200
-Message-Id: <20220727161035.852969586@linuxfoundation.org>
+        stable@vger.kernel.org, Bernardo Meurer Costa <beme@google.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Nathan Chancellor <nathan@kernel.org>
+Subject: [PATCH 5.15 197/201] x86/extable: Prefer local labels in .set directives
+Date:   Wed, 27 Jul 2022 18:11:41 +0200
+Message-Id: <20220727161035.940264257@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -51,59 +50,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
+From: Nick Desaulniers <ndesaulniers@google.com>
 
-commit d82b3266ef88dc10fe0e7031b2bd8ba7eedb7e59 upstream.
+commit 334865b2915c33080624e0d06f1c3e917036472c upstream.
 
-[Why]
-Per DRM spec we only need to hold that lock when touching
-connector->state - which we do not do in that handler.
+Bernardo reported an error that Nathan bisected down to
+(x86_64) defconfig+LTO_CLANG_FULL+X86_PMEM_LEGACY.
 
-Taking this locking introduces unnecessary dependencies with other
-threads which is bad for performance and opens up the potential for
-a deadlock since there are multiple locks being held at once.
+    LTO     vmlinux.o
+  ld.lld: error: <instantiation>:1:13: redefinition of 'found'
+  .set found, 0
+              ^
 
-[How]
-Remove the connection_mutex lock/unlock routine and just iterate over
-the drm connectors normally. The iter helpers implicitly lock the
-connection list so this is safe to do.
+  <inline asm>:29:1: while in macro instantiation
+  extable_type_reg reg=%eax, type=(17 | ((0) << 16))
+  ^
 
-DC link access also does not need to be guarded since the link
-table is static at creation - we don't dynamically add or remove links,
-just streams.
+This appears to be another LTO specific issue similar to what was folded
+into commit 4b5305decc84 ("x86/extable: Extend extable functionality"),
+where the `.set found, 0` in DEFINE_EXTABLE_TYPE_REG in
+arch/x86/include/asm/asm.h conflicts with the symbol for the static
+function `found` in arch/x86/kernel/pmem.c.
 
-Fixes: e27c41d5b068 ("drm/amd/display: Support for DMUB HPD interrupt handling")
+Assembler .set directive declare symbols with global visibility, so the
+assembler may not rename such symbols in the event of a conflict. LTO
+could rename static functions if there was a conflict in C sources, but
+it cannot see into symbols defined in inline asm.
 
-Reviewed-by: Jude Shih <shenshih@amd.com>
-Acked-by: Anson Jacob <Anson.Jacob@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+The symbols are also retained in the symbol table, regardless of LTO.
+
+Give the symbols .L prefixes making them locally visible, so that they
+may be renamed for LTO to avoid conflicts, and to drop them from the
+symbol table regardless of LTO.
+
+Fixes: 4b5305decc84 ("x86/extable: Extend extable functionality")
+Reported-by: Bernardo Meurer Costa <beme@google.com>
+Debugged-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Nathan Chancellor <nathan@kernel.org>
+Tested-by: Nathan Chancellor <nathan@kernel.org>
+Link: https://lore.kernel.org/r/20220329202148.2379697-1-ndesaulniers@google.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c |    4 ----
- 1 file changed, 4 deletions(-)
+ arch/x86/include/asm/asm.h |   20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-@@ -668,10 +668,7 @@ void dmub_hpd_callback(struct amdgpu_dev
- 		return;
- 	}
+--- a/arch/x86/include/asm/asm.h
++++ b/arch/x86/include/asm/asm.h
+@@ -149,24 +149,24 @@
  
--	drm_modeset_lock(&dev->mode_config.connection_mutex, NULL);
--
- 	link_index = notify->link_index;
--
- 	link = adev->dm.dc->links[link_index];
- 
- 	drm_connector_list_iter_begin(dev, &iter);
-@@ -684,7 +681,6 @@ void dmub_hpd_callback(struct amdgpu_dev
- 		}
- 	}
- 	drm_connector_list_iter_end(&iter);
--	drm_modeset_unlock(&dev->mode_config.connection_mutex);
- 
- }
- 
+ # define DEFINE_EXTABLE_TYPE_REG \
+ 	".macro extable_type_reg type:req reg:req\n"						\
+-	".set found, 0\n"									\
+-	".set regnr, 0\n"									\
++	".set .Lfound, 0\n"									\
++	".set .Lregnr, 0\n"									\
+ 	".irp rs,rax,rcx,rdx,rbx,rsp,rbp,rsi,rdi,r8,r9,r10,r11,r12,r13,r14,r15\n"		\
+ 	".ifc \\reg, %%\\rs\n"									\
+-	".set found, found+1\n"									\
+-	".long \\type + (regnr << 8)\n"								\
++	".set .Lfound, .Lfound+1\n"								\
++	".long \\type + (.Lregnr << 8)\n"							\
+ 	".endif\n"										\
+-	".set regnr, regnr+1\n"									\
++	".set .Lregnr, .Lregnr+1\n"								\
+ 	".endr\n"										\
+-	".set regnr, 0\n"									\
++	".set .Lregnr, 0\n"									\
+ 	".irp rs,eax,ecx,edx,ebx,esp,ebp,esi,edi,r8d,r9d,r10d,r11d,r12d,r13d,r14d,r15d\n"	\
+ 	".ifc \\reg, %%\\rs\n"									\
+-	".set found, found+1\n"									\
+-	".long \\type + (regnr << 8)\n"								\
++	".set .Lfound, .Lfound+1\n"								\
++	".long \\type + (.Lregnr << 8)\n"							\
+ 	".endif\n"										\
+-	".set regnr, regnr+1\n"									\
++	".set .Lregnr, .Lregnr+1\n"								\
+ 	".endr\n"										\
+-	".if (found != 1)\n"									\
++	".if (.Lfound != 1)\n"									\
+ 	".error \"extable_type_reg: bad register argument\"\n"					\
+ 	".endif\n"										\
+ 	".endm\n"
 
 
