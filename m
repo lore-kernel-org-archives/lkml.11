@@ -2,74 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA4D7C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 09:32:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40C3AC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 09:33:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230372AbiG0JcR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 05:32:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44796 "EHLO
+        id S230281AbiG0Jdo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 05:33:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229581AbiG0JcN (ORCPT
+        with ESMTP id S229527AbiG0Jdj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 05:32:13 -0400
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6813118399
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 02:32:10 -0700 (PDT)
-Received: by mail-ed1-x52d.google.com with SMTP id m8so20623162edd.9
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 02:32:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=szeredi.hu; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pDxU8UpTzIwC16C1Npz7pNPhe0tD3l3qzIZ1ONOmOR4=;
-        b=NeR96LvHqZ4iiknwkBuU1u7f6VpIPcxOlNjDmhTTE13tFIrwW1ooRsTz3eqVihjsyc
-         3eAZu96HSAb+QSXpsLzFY/XbevcakwU3HospbNRqWamftyFqJ9rJUq7bokpML3GHzzYI
-         J/RgaW3DRCBmVFGpG7D1IlGH0KS4EmS0DsZwU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pDxU8UpTzIwC16C1Npz7pNPhe0tD3l3qzIZ1ONOmOR4=;
-        b=zVWKxQliDveS6E8+mZd3yZlJ3vO4giqi9usA5Jl0stlwM0LOM7aaInA2MsndehQ6ZE
-         eJHs1q3ya+dWa8rOdryawLkNWo9lv6wy4bMbVlX7CHcjIb8oVrfznyIzKfkIJ9vMdlC/
-         U0wmQTrP7Rh+2v3ZLTxTc+hBVQLxOAMToOpENm+zWBwzV17fWpR3LBIWbCpK3abk9Efb
-         XLenKAIDFRMlJ+k9jhUtfsmeBTEPN9BbTzOxG+4ZJFjb17E6rsvoytiBDcPbgoid7jAM
-         F76va1z7kdQn60OwST5wh0c9u7F12Lcj8w1ZqEjvGaym6jP6orBHqs3Wf9PSFdqXwOD4
-         ODIw==
-X-Gm-Message-State: AJIora/U5s+kOWXCTkH1Vn2w95epmQqBUMuIxg+XK63qJvsXH9AK37j/
-        uD1x4VhnXUHuWxMXlpEMGq4aZK38BJ0xts9o35/7JQ==
-X-Google-Smtp-Source: AGRyM1tJ8HEDSa4exKeP0jeZ8ob6/irEJZGScgGGiNY/DmF9Cae3HXrXiVrDHvSw2pqtwtxp5E9OZ3rP1Mmkszoy/rI=
-X-Received: by 2002:a05:6402:e96:b0:43a:f21f:42a0 with SMTP id
- h22-20020a0564020e9600b0043af21f42a0mr22730535eda.382.1658914328760; Wed, 27
- Jul 2022 02:32:08 -0700 (PDT)
+        Wed, 27 Jul 2022 05:33:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FC8A286D0
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 02:33:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E9DA4617AD
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:33:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F1E8C433C1;
+        Wed, 27 Jul 2022 09:33:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658914417;
+        bh=6Mk43boL7n4AfNnssO3TRzTylRUQVCu7yWdz07hbC5g=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=npDt2sUoMwyKg8WwtJeoFBJwPiY+9K+He+v6kiOSBPXh0JOfeLqelTMS6uGRqBB9g
+         mIQT2BJ2B5bcEp6PSm4MyDv1vl/wp8omH6D7gVAmFI1U5h3BeYxUYPx+mykSESVjWR
+         zvw6vD1DT3aa/7f66oeJ2Hupd5UGxXR+L7hDdFRhNNJOFYZ0whblf+bxe/PGd9EGZz
+         aKBZkx457mFkzxf6ta1jzIrIFkQG1FmeV0IVD90Siy8fIu6cfwHOye9yLg3yHp6BNS
+         FWGSOrNZW7ZhhVG6PyshKkH/T3GbHtCjPcrKBcOoGRJmkTut0tnSVlIPa4TxoZvq/k
+         ntSsno6Chr42g==
+Date:   Wed, 27 Jul 2022 12:33:24 +0300
+From:   Mike Rapoport <rppt@kernel.org>
+To:     Liu Xinpeng <liuxp11@chinatelecom.cn>
+Cc:     mawupeng1@huawei.com, jrdr.linux@gmail.com, david@redhat.com,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] memblock tests: compiling error
+Message-ID: <YuEGZKpXCoj7P/pV@kernel.org>
+References: <1658889585-20778-1-git-send-email-liuxp11@chinatelecom.cn>
 MIME-Version: 1.0
-References: <20220727064425.4144478-1-dlunev@chromium.org>
-In-Reply-To: <20220727064425.4144478-1-dlunev@chromium.org>
-From:   Miklos Szeredi <miklos@szeredi.hu>
-Date:   Wed, 27 Jul 2022 11:31:57 +0200
-Message-ID: <CAJfpegvN8vKVMqqBYX+WyYKSEC5y5avTZ2qCUvJGjBDAHBUUEw@mail.gmail.com>
-Subject: Re: [PATCH v5 0/2] Prevent re-use of FUSE block-device-based
- superblock after force unmount
-To:     Daniil Lunev <dlunev@chromium.org>
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        linux-fsdevel@vger.kernel.org,
-        fuse-devel <fuse-devel@lists.sourceforge.net>,
-        Christoph Hellwig <hch@lst.de>, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1658889585-20778-1-git-send-email-liuxp11@chinatelecom.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 27 Jul 2022 at 08:44, Daniil Lunev <dlunev@chromium.org> wrote:
->
-> Force unmount of fuse severes the connection between FUSE driver and its
-> userspace counterpart. However, open file handles will prevent the
-> superblock from being reclaimed. An attempt to remount the filesystem at
-> the same endpoint will try re-using the superblock, if still present.
-> Since the superblock re-use path doesn't go through the fs-specific
-> superblock setup code, its state in FUSE case is already disfunctional,
-> and that will prevent the mount from succeeding.
+Hi,
 
-Applied, thanks.
+On Wed, Jul 27, 2022 at 10:39:45AM +0800, Liu Xinpeng wrote:
+> Subject: [PATCH v3] memblock tests: compiling error
 
-Miklos
+"fix compilation errors" looks better, don't you think?
+
+Another thing, is when you post vN of a patch please add a "patch
+changelog" that describes the changes to the previous version.
+
+I'd suggest to take a look at sections "Respond to review comments" and
+"Don't get discouraged - or impatient" of the submitting patches guide.
+
+https://kernel.org/doc/html/latest/process/submitting-patches.html
+
+> memblock.o: In function `memblock_find_in_range.constprop.9':
+> memblock.c:(.text+0x4651): undefined reference to `pr_warn_ratelimited'
+> memblock.o: In function `memblock_mark_mirror':
+> memblock.c:(.text+0x7171): undefined reference to `mirrored_kernelcore'
+
+As people pointed in v1 thread, the description on how to reproduce this is
+missing.
+ 
+> Fixes: 902c2d91582c ("memblock: Disable mirror feature if kernelcore is not specified")
+> Fixes: 14d9a675fd0d ("mm: Ratelimited mirrored memory related warning messages")
+> 
+> Signed-off-by: Liu Xinpeng <liuxp11@chinatelecom.cn>
+> Tested-by: Ma Wupeng <mawupeng1@huawei.com>
+> ---
+>  tools/testing/memblock/internal.h | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/tools/testing/memblock/internal.h b/tools/testing/memblock/internal.h
+> index c2a492c05e0c..fdb7f5db7308 100644
+> --- a/tools/testing/memblock/internal.h
+> +++ b/tools/testing/memblock/internal.h
+> @@ -9,6 +9,10 @@
+>  static int memblock_debug = 1;
+>  #endif
+>  
+> +#define pr_warn_ratelimited(fmt, ...)    printf(fmt, ##__VA_ARGS__)
+> +
+> +bool mirrored_kernelcore = false;
+> +
+>  struct page {};
+>  
+>  void memblock_free_pages(struct page *page, unsigned long pfn,
+> -- 
+> 1.8.3.1
+> 
+
+-- 
+Sincerely yours,
+Mike.
