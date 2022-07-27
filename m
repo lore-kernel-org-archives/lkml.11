@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA2A3C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:56:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 813DDC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:57:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241012AbiG0Q44 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:56:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43174 "EHLO
+        id S240783AbiG0Q47 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:56:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241100AbiG0Qzs (ORCPT
+        with ESMTP id S241142AbiG0Q4Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:55:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDA1565599;
-        Wed, 27 Jul 2022 09:36:08 -0700 (PDT)
+        Wed, 27 Jul 2022 12:56:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C4354F6A2;
+        Wed, 27 Jul 2022 09:36:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AED49B821A6;
-        Wed, 27 Jul 2022 16:36:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBC35C433C1;
-        Wed, 27 Jul 2022 16:35:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 066E861A98;
+        Wed, 27 Jul 2022 16:36:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 047CDC433D7;
+        Wed, 27 Jul 2022 16:36:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939760;
-        bh=LSVyED/iVxKWML1b/n63x/q/kEobrnsL5ufMj7hyiTM=;
+        s=korg; t=1658939763;
+        bh=4ghA5FEC/uW3xtlrEE/rw7ykV6N69eTp+mhyE3BWyMc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O3smoya2/vVu2FJSEarK/lEOvlvZIYAj61kTlgsJUdDGdCpD4XrNwGTG+qvL2681A
-         rcjyxkJeEBUkg5zYVKYdYkhKO4c9PNxso7pLto+zJT2MyPPRtSS97L/bE16LDeNSkC
-         zeN2sVG4a2KOpM5Kkh+pM6lr7bzAWzmtEfXxAjb8=
+        b=sDSXk35xrZ17WfmZc5MehMsSSlmlbVlp/cJnEtWXaAmLPJRBCMTdegssq0xqfbo/b
+         PFRMq1fxiXUUwwZtHZWoM0Wxk7OlWrxwQVsyLJoROPkSGP7GT6sfzWmmzxfnYCelqF
+         iqkq6IXCxIjYdUgLJvOloM/hWYA1wwcWRe3tWlWc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 052/105] tcp: Fix a data-race around sysctl_tcp_notsent_lowat.
-Date:   Wed, 27 Jul 2022 18:10:38 +0200
-Message-Id: <20220727161014.178314636@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Subject: [PATCH 5.10 088/105] Bluetooth: Add bt_skb_sendmmsg helper
+Date:   Wed, 27 Jul 2022 18:11:14 +0200
+Message-Id: <20220727161015.624218001@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161012.056867467@linuxfoundation.org>
 References: <20220727161012.056867467@linuxfoundation.org>
@@ -49,36 +50,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 
-[ Upstream commit 55be873695ed8912eb77ff46d1d1cadf028bd0f3 ]
+commit 97e4e80299844bb5f6ce5a7540742ffbffae3d97 upstream.
 
-While reading sysctl_tcp_notsent_lowat, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its reader.
+This works similarly to bt_skb_sendmsg but can split the msg into
+multiple skb fragments which is useful for stream sockets.
 
-Fixes: c9bee3b7fdec ("tcp: TCP_NOTSENT_LOWAT socket option")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Cc: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/tcp.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/net/bluetooth/bluetooth.h |   38 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 38 insertions(+)
 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index da75513a77d4..aa46f4016245 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -1973,7 +1973,7 @@ void __tcp_v4_send_check(struct sk_buff *skb, __be32 saddr, __be32 daddr);
- static inline u32 tcp_notsent_lowat(const struct tcp_sock *tp)
- {
- 	struct net *net = sock_net((struct sock *)tp);
--	return tp->notsent_lowat ?: net->ipv4.sysctl_tcp_notsent_lowat;
-+	return tp->notsent_lowat ?: READ_ONCE(net->ipv4.sysctl_tcp_notsent_lowat);
+--- a/include/net/bluetooth/bluetooth.h
++++ b/include/net/bluetooth/bluetooth.h
+@@ -450,6 +450,44 @@ static inline struct sk_buff *bt_skb_sen
+ 	return skb;
  }
  
- /* @wake is one when sk_stream_write_space() calls us.
--- 
-2.35.1
-
++/* Similar to bt_skb_sendmsg but can split the msg into multiple fragments
++ * accourding to the MTU.
++ */
++static inline struct sk_buff *bt_skb_sendmmsg(struct sock *sk,
++					      struct msghdr *msg,
++					      size_t len, size_t mtu,
++					      size_t headroom, size_t tailroom)
++{
++	struct sk_buff *skb, **frag;
++
++	skb = bt_skb_sendmsg(sk, msg, len, mtu, headroom, tailroom);
++	if (IS_ERR_OR_NULL(skb))
++		return skb;
++
++	len -= skb->len;
++	if (!len)
++		return skb;
++
++	/* Add remaining data over MTU as continuation fragments */
++	frag = &skb_shinfo(skb)->frag_list;
++	while (len) {
++		struct sk_buff *tmp;
++
++		tmp = bt_skb_sendmsg(sk, msg, len, mtu, headroom, tailroom);
++		if (IS_ERR_OR_NULL(tmp)) {
++			kfree_skb(skb);
++			return tmp;
++		}
++
++		len -= tmp->len;
++
++		*frag = tmp;
++		frag = &(*frag)->next;
++	}
++
++	return skb;
++}
++
+ int bt_to_errno(u16 code);
+ 
+ void hci_sock_set_flag(struct sock *sk, int nr);
 
 
