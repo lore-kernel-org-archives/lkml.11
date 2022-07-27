@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7E91C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:00:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 173AEC19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:00:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241051AbiG0RAY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:00:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55622 "EHLO
+        id S233557AbiG0RA2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:00:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241278AbiG0Q7Y (ORCPT
+        with ESMTP id S241336AbiG0Q7b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:59:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 973AB56BAB;
-        Wed, 27 Jul 2022 09:37:20 -0700 (PDT)
+        Wed, 27 Jul 2022 12:59:31 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0874D68DEF;
+        Wed, 27 Jul 2022 09:37:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BBC01B821C6;
-        Wed, 27 Jul 2022 16:37:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29CA4C433C1;
-        Wed, 27 Jul 2022 16:37:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8AA7EB821CD;
+        Wed, 27 Jul 2022 16:36:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8FD2C433D6;
+        Wed, 27 Jul 2022 16:36:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939836;
-        bh=b50X13tPwRaIQrRXxckQEC9kAycAWKdZsivSy60YEyc=;
+        s=korg; t=1658939808;
+        bh=ZEGxTVXn2E1dxNf8JVVIRGePBuIKuNtXgQUvjIa1rms=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j5tGmjnwvdYJQQraQGH4ZX8yEFpMlK7EubqV3BRj798qLgcXgl8OsbcWGPdEB4nae
-         yISnU3BPLWZvTjXhyjChao3p6819MXLpr0ou+gOt+R+zOzBWI2D9iS4OOCL2NMimnB
-         WDy/hgs7QEYNH9mKzY37QW0lxKZcNWS3/X3k5qug=
+        b=2UGZx9Mwc5KM1AFoCzvpV6y7E38Q2mh/de6ufrgqtQm0PhtIF0U1S/VhURLSl3ENo
+         XVZ4XNhm1X/LIvOIMK28HCVIVqCYxWzVk5R9YB94QdGOro5RNkqQw7tYP4MrwURlvS
+         XDYE4sxqGVMjVLB3b+y84F4tZ0W9WOZAEFCUqAFU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "linux-wireless@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Sean Wang" <sean.wang@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>
-Subject: [PATCH 5.15 016/201] Revert "mt76: mt7921: Fix the error handling path of mt7921_pci_probe()"
-Date:   Wed, 27 Jul 2022 18:08:40 +0200
-Message-Id: <20220727161027.585937125@linuxfoundation.org>
+        stable@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+        Kees Cook <keescook@chromium.org>
+Subject: [PATCH 5.10 095/105] x86/alternative: Report missing return thunk details
+Date:   Wed, 27 Jul 2022 18:11:21 +0200
+Message-Id: <20220727161015.927272635@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
-References: <20220727161026.977588183@linuxfoundation.org>
+In-Reply-To: <20220727161012.056867467@linuxfoundation.org>
+References: <20220727161012.056867467@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,50 +48,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Wang <sean.wang@mediatek.com>
+From: Kees Cook <keescook@chromium.org>
 
-This reverts commit 663457f421d41e9d2fcb1e84baf43d1433f80c08 that is the
-commit 44c4237cf3436bda2b185ff728123651ad133f69 upstream.
+commit 65cdf0d623bedf0e069bb64ed52e8bb20105e2ba upstream.
 
-Because there was mistake in
-'649178c0493e ("mt76: mt7921e: fix possible probe failure after reboot")'
-that caused WiFi reset cannot work well as the reported issue
-"PROBLEM: [Stable v5.15.42+] [mt7921] Wake after suspend locks up system
-when mt7921-driver is used on a Lenovo ThinkPad E15 G3" described in
-http://lists.infradead.org/pipermail/linux-mediatek/2022-June/042668.html
-So we need to revert the patch first to avoid the conflict of reverting
-'649178c0493e ("mt76: mt7921e: fix possible probe failure after reboot")'
-and will be applied back later after fixing.
+Debugging missing return thunks is easier if we can see where they're
+happening.
 
-Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+Suggested-by: Peter Zijlstra <peterz@infradead.org>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lore.kernel.org/lkml/Ys66hwtFcGbYmoiZ@hirez.programming.kicks-ass.net/
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7921/pci.c |    8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ arch/x86/kernel/alternative.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
-@@ -254,10 +254,8 @@ static int mt7921_pci_probe(struct pci_d
- 	dev->bus_ops = dev->mt76.bus;
- 	bus_ops = devm_kmemdup(dev->mt76.dev, dev->bus_ops, sizeof(*bus_ops),
- 			       GFP_KERNEL);
--	if (!bus_ops) {
--		ret = -ENOMEM;
--		goto err_free_dev;
--	}
-+	if (!bus_ops)
-+		return -ENOMEM;
+--- a/arch/x86/kernel/alternative.c
++++ b/arch/x86/kernel/alternative.c
+@@ -709,7 +709,9 @@ void __init_or_module noinline apply_ret
+ 			dest = addr + insn.length + insn.immediate.value;
  
- 	bus_ops->rr = mt7921_rr;
- 	bus_ops->wr = mt7921_wr;
-@@ -266,7 +264,7 @@ static int mt7921_pci_probe(struct pci_d
+ 		if (__static_call_fixup(addr, op, dest) ||
+-		    WARN_ON_ONCE(dest != &__x86_return_thunk))
++		    WARN_ONCE(dest != &__x86_return_thunk,
++			      "missing return thunk: %pS-%pS: %*ph",
++			      addr, dest, 5, addr))
+ 			continue;
  
- 	ret = __mt7921_mcu_drv_pmctrl(dev);
- 	if (ret)
--		goto err_free_dev;
-+		return ret;
- 
- 	mdev->rev = (mt7921_l1_rr(dev, MT_HW_CHIPID) << 16) |
- 		    (mt7921_l1_rr(dev, MT_HW_REV) & 0xff);
+ 		DPRINTK("return thunk at: %pS (%px) len: %d to: %pS",
 
 
