@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 732A5C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:36:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 405B2C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:36:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242558AbiG0Rgi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:36:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53174 "EHLO
+        id S231582AbiG0Rgn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:36:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242732AbiG0Rew (ORCPT
+        with ESMTP id S242786AbiG0Re6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:34:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78A3983F07;
-        Wed, 27 Jul 2022 09:49:33 -0700 (PDT)
+        Wed, 27 Jul 2022 13:34:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FEF961B16;
+        Wed, 27 Jul 2022 09:49:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C7AA1B821D2;
-        Wed, 27 Jul 2022 16:49:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3456AC433D6;
-        Wed, 27 Jul 2022 16:49:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 30E5B61560;
+        Wed, 27 Jul 2022 16:49:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CF1CC433C1;
+        Wed, 27 Jul 2022 16:49:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940559;
-        bh=yO/lDs1tzTNDuRJk8SFnUSVSSqM3pggkSXFLZ0ov0Aw=;
+        s=korg; t=1658940573;
+        bh=dy39VTQLqjl3oCSWU7y0LdZ9XQDsjAkSbWuoLdmHovs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SIgdBk4ijfd3LABkUzBuiwoJIxSh83iEqKsCSHkJ4+bTh0xaBVDr6fcJ986yqIqDZ
-         AuYRotU+tOmhjQSMs92rY0V+q+Bcb3RMT53HdSt9p9jKc1nI5RW2H5kXAZD3uHzxNG
-         At7vletW1LWxGbCS4/hF2dDE6jGEYgSP7MNKGTH0=
+        b=WJByOq7F3fQ9HIav1Gx12shhIsnw34YkX763C2Nly9bliGtqnh84EyDWIvLYQuMbF
+         SeSZm2Bl/PU3WbI9Yrb2YIgiFX6YiuFGOCaIHvz8uD+M9ZOxh8lRx4SX1MZZNSSLfW
+         h+UVCKxt8Ecr3VIUTVrvUjlSm8FaAZoGkUZOSmUY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 036/158] ip: Fix data-races around sysctl_ip_nonlocal_bind.
-Date:   Wed, 27 Jul 2022 18:11:40 +0200
-Message-Id: <20220727161022.924691668@linuxfoundation.org>
+Subject: [PATCH 5.18 072/158] tcp: Fix a data-race around sysctl_tcp_notsent_lowat.
+Date:   Wed, 27 Jul 2022 18:12:16 +0200
+Message-Id: <20220727161024.404079328@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -51,46 +51,32 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 289d3b21fb0bfc94c4e98f10635bba1824e5f83c ]
+[ Upstream commit 55be873695ed8912eb77ff46d1d1cadf028bd0f3 ]
 
-While reading sysctl_ip_nonlocal_bind, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its readers.
+While reading sysctl_tcp_notsent_lowat, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its reader.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Fixes: c9bee3b7fdec ("tcp: TCP_NOTSENT_LOWAT socket option")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/inet_sock.h | 2 +-
- net/sctp/protocol.c     | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ include/net/tcp.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/net/inet_sock.h b/include/net/inet_sock.h
-index 48e4c59d85e2..2f6b715acc15 100644
---- a/include/net/inet_sock.h
-+++ b/include/net/inet_sock.h
-@@ -373,7 +373,7 @@ static inline bool inet_get_convert_csum(struct sock *sk)
- static inline bool inet_can_nonlocal_bind(struct net *net,
- 					  struct inet_sock *inet)
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index 815ea8f9b93f..8d02972e46cd 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -2045,7 +2045,7 @@ void __tcp_v4_send_check(struct sk_buff *skb, __be32 saddr, __be32 daddr);
+ static inline u32 tcp_notsent_lowat(const struct tcp_sock *tp)
  {
--	return net->ipv4.sysctl_ip_nonlocal_bind ||
-+	return READ_ONCE(net->ipv4.sysctl_ip_nonlocal_bind) ||
- 		inet->freebind || inet->transparent;
+ 	struct net *net = sock_net((struct sock *)tp);
+-	return tp->notsent_lowat ?: net->ipv4.sysctl_tcp_notsent_lowat;
++	return tp->notsent_lowat ?: READ_ONCE(net->ipv4.sysctl_tcp_notsent_lowat);
  }
  
-diff --git a/net/sctp/protocol.c b/net/sctp/protocol.c
-index 35928fefae33..1a094b087d88 100644
---- a/net/sctp/protocol.c
-+++ b/net/sctp/protocol.c
-@@ -358,7 +358,7 @@ static int sctp_v4_available(union sctp_addr *addr, struct sctp_sock *sp)
- 	if (addr->v4.sin_addr.s_addr != htonl(INADDR_ANY) &&
- 	   ret != RTN_LOCAL &&
- 	   !sp->inet.freebind &&
--	   !net->ipv4.sysctl_ip_nonlocal_bind)
-+	    !READ_ONCE(net->ipv4.sysctl_ip_nonlocal_bind))
- 		return 0;
- 
- 	if (ipv6_only_sock(sctp_opt2sk(sp)))
+ bool tcp_stream_memory_free(const struct sock *sk, int wake);
 -- 
 2.35.1
 
