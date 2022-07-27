@@ -2,128 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 646EAC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 13:25:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11971C19F2C
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 13:26:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233721AbiG0NZe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 09:25:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35246 "EHLO
+        id S233711AbiG0N0s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 09:26:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233572AbiG0NZa (ORCPT
+        with ESMTP id S232366AbiG0N0q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 09:25:30 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9F39EE2E;
-        Wed, 27 Jul 2022 06:25:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658928329; x=1690464329;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=yNoz6gUDdCaF3+5NR4n7n9yqzCM4pJ5iaqzLtMQ2SD4=;
-  b=FpreTkAsOMdPjK7luCmJXdk9UuqlXwaYsrbk2rJflWb1Z+nSrr//xJj3
-   7k27dvBnbiot6WGI3PQFT4J8wP+2lguvM8QySB/7HF9wWHDz8aa6ohbFE
-   2rh4VfI33w2EOs12AufgPy41sp5qNdrKPB7PRPlYRrAwB0k9jnkZhrEBb
-   bBWaaj4Aoj8oJBMmPCwnqaSAXU2Bi3meV0JrRIyS5e9yvAbyoU0SEUdrA
-   EwVYd0JFJ+JOt7eNiEeTvhcccCzd+380fSDziIW3mR1QEJqTioNvK1OL+
-   eORab60fYLv+n4Fhh5czQ/s78HCSlCeR8JBTVGBzJTmnQYfNr6e/II8X1
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10420"; a="275106290"
-X-IronPort-AV: E=Sophos;i="5.93,195,1654585200"; 
-   d="scan'208";a="275106290"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2022 06:25:28 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,195,1654585200"; 
-   d="scan'208";a="668331743"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 27 Jul 2022 06:25:23 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oGh2R-0008k2-0b;
-        Wed, 27 Jul 2022 13:25:23 +0000
-Date:   Wed, 27 Jul 2022 21:24:59 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jiucheng Xu <jiucheng.xu@amlogic.com>,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, devicetree@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Will Deacon <will@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Chris Healy <cphealy@gmail.com>,
-        Jiucheng Xu <jiucheng.xu@amlogic.com>
-Subject: Re: [PATCH v2 1/4] perf/amlogic: Add support for Amlogic meson G12
- SoC DDR PMU driver
-Message-ID: <202207272141.rn8Zx4Az-lkp@intel.com>
-References: <20220726230329.2844101-1-jiucheng.xu@amlogic.com>
+        Wed, 27 Jul 2022 09:26:46 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5974324086;
+        Wed, 27 Jul 2022 06:26:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=mgBlxw3zoFf3ZyCaTXfuTNRiZgDv+TxjgdIc10s0/eI=; b=lrE3GVppvUINE6sTnPwE27jG18
+        yj7BTz0ZW5YjqGc3ley97AxbPT1Rv7V3Qj1TMEPoexfUfZMhylJJUxhuy+ryLH8rUY1m88HuB0nH7
+        zVxoBE+tkXWx/3IfR0mfRXCjzUuiBt3zwvGGeXbdbKlUe8olKTh9XN5vX/TZJumbOiN0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oGh3T-00Bg6P-4Q; Wed, 27 Jul 2022 15:26:27 +0200
+Date:   Wed, 27 Jul 2022 15:26:27 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     alexandru.tachici@analog.com
+Cc:     d.michailidis@fungible.com, davem@davemloft.net,
+        devicetree@vger.kernel.org, edumazet@google.com,
+        geert+renesas@glider.be, geert@linux-m68k.org,
+        gerhard@engleder-embedded.com, joel@jms.id.au,
+        krzysztof.kozlowski+dt@linaro.org, kuba@kernel.org,
+        l.stelmach@samsung.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, robh+dt@kernel.org, stefan.wahren@i2se.com,
+        stephen@networkplumber.org, wellslutw@gmail.com
+Subject: Re: [net-next,v2,2/3] net: ethernet: adi: Add ADIN1110 support
+Message-ID: <YuE9AxMmw4+/9Joy@lunn.ch>
+References: <Yt76W+MbeHucJj0f@lunn.ch>
+ <20220727132612.31445-1-alexandru.tachici@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220726230329.2844101-1-jiucheng.xu@amlogic.com>
+In-Reply-To: <20220727132612.31445-1-alexandru.tachici@analog.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jiucheng,
+On Wed, Jul 27, 2022 at 04:26:12PM +0300, alexandru.tachici@analog.com wrote:
+> > > +static irqreturn_t adin1110_irq(int irq, void *p)
+> > > +{
+> > > +	struct adin1110_priv *priv = p;
+> > > +	u32 status1;
+> > > +	u32 val;
+> > > +	int ret;
+> > > +	int i;
+> > > +
+> > > +	mutex_lock(&priv->lock);
+> > 
+> > The MDIO bus operations are using the same lock. MDIO can be quite
+> > slow. Do you really need mutual exclusion between MDIO and interrupts?
+> > What exactly is this lock protecting?
+> > 
+> >   Andrew
+> 
+> Hi Andrew,
+> 
+> Thanks for all the help here.
+> 
+> With this lock I am mainly protecting SPI read/writes. The hardware doesn't expose the MDIO pins.
+> In order to read/write a PHY reg, there has to be a SPI read/write to the device, the same
+> line where the MAC is programmed and ethernet frames are sent/received, not very efficient I know.
 
-I love your patch! Perhaps something to improve:
+Have you profiled adin1110_mdio_read()?
 
-[auto build test WARNING on robh/for-next]
-[also build test WARNING on arm64/for-next/core clk/clk-next soc/for-next linus/master v5.19-rc8 next-20220726]
-[cannot apply to xilinx-xlnx/master]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+You could hold the mutex for the "write the clause 22 read command",
+and then release it. And then take the mutex in
+adin1110_read_mdio_acc(). That will allow for example the interrupt
+handler to jump in between polls, etc.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Jiucheng-Xu/perf-amlogic-Add-support-for-Amlogic-meson-G12-SoC-DDR-PMU-driver/20220727-070511
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
-config: sh-allmodconfig (https://download.01.org/0day-ci/archive/20220727/202207272141.rn8Zx4Az-lkp@intel.com/config)
-compiler: sh4-linux-gcc (GCC) 12.1.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/be1236818a5d0ad61b0f9ecbe5f03b9e63f99365
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Jiucheng-Xu/perf-amlogic-Add-support-for-Amlogic-meson-G12-SoC-DDR-PMU-driver/20220727-070511
-        git checkout be1236818a5d0ad61b0f9ecbe5f03b9e63f99365
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=sh SHELL=/bin/bash drivers/perf/amlogic/
+If all you are protecting is SPI read/writes, i wonder if you even
+need this mutex, the SPI core has one as well.
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
-   drivers/perf/amlogic/aml_ddr_pmu_core.c: In function 'event_show_unit':
->> drivers/perf/amlogic/aml_ddr_pmu_core.c:208:38: warning: variable 'pmu_attr' set but not used [-Wunused-but-set-variable]
-     208 |         struct perf_pmu_events_attr *pmu_attr;
-         |                                      ^~~~~~~~
-   drivers/perf/amlogic/aml_ddr_pmu_core.c: In function 'event_show_scale':
-   drivers/perf/amlogic/aml_ddr_pmu_core.c:218:38: warning: variable 'pmu_attr' set but not used [-Wunused-but-set-variable]
-     218 |         struct perf_pmu_events_attr *pmu_attr;
-         |                                      ^~~~~~~~
-
-
-vim +/pmu_attr +208 drivers/perf/amlogic/aml_ddr_pmu_core.c
-
-   203	
-   204	static ssize_t
-   205	event_show_unit(struct device *dev, struct device_attribute *attr,
-   206			char *page)
-   207	{
- > 208		struct perf_pmu_events_attr *pmu_attr;
-   209	
-   210		pmu_attr = container_of(attr, struct perf_pmu_events_attr, attr);
-   211		return sysfs_emit(page, "MB\n");
-   212	}
-   213	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+	Andrew
