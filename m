@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E5B6C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:08:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4448CC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:08:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241446AbiG0RIf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:08:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44642 "EHLO
+        id S241450AbiG0RIj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:08:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237673AbiG0RHw (ORCPT
+        with ESMTP id S241451AbiG0RH4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:07:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23DA04E609;
-        Wed, 27 Jul 2022 09:40:19 -0700 (PDT)
+        Wed, 27 Jul 2022 13:07:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A1061658D;
+        Wed, 27 Jul 2022 09:40:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0ACC860D3C;
-        Wed, 27 Jul 2022 16:40:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 123F5C433D6;
-        Wed, 27 Jul 2022 16:40:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C9B6A601CE;
+        Wed, 27 Jul 2022 16:40:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D63E8C433C1;
+        Wed, 27 Jul 2022 16:40:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940018;
-        bh=Xd3Ruhz90sS4nMtEn5T2f4REu/L1TQxJ8JzAp/2+XaM=;
+        s=korg; t=1658940021;
+        bh=B28QdpMn8RV/RTfUkpe7kvUhoTVi3QlwDrWpHF7ZnbM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iH1BiLMska++rh+V1huD+UmhUHUXo7OzHNHksomOg+g+5Ve4jYx/3G8QbQgt7Zfck
-         sayczo26M7wDcL6jex+mdfO45jU4+f9WZ9KwCyjRzXqRhUVoUnMOnJdqdn5/0r/vgQ
-         0B65FmZxRSEbZOl1PCV7Rjo8gBwlgqlIr5CklqbY=
+        b=nFVGA9RXG/FSAzOFiROn3vNbK4fG26lys57yx9EG8W9BGHSWxnEbR/BdWZ+EMiC5n
+         0Ji/GEzYtDlpGlbwie1hr+Z0gJpzJ7ijaCyLr8FnGrSEUU5hH9wbxjWKjZ0RSzKwmk
+         eufznZSqz2pJsv2zCDM6xbY+KzzljBj9Fgt9T2h0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Biao Huang <biao.huang@mediatek.com>,
+        stable@vger.kernel.org, Menglong Dong <imagedong@tencent.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 070/201] net: stmmac: fix unbalanced ptp clock issue in suspend/resume flow
-Date:   Wed, 27 Jul 2022 18:09:34 +0200
-Message-Id: <20220727161029.846082694@linuxfoundation.org>
+Subject: [PATCH 5.15 079/201] net: netfilter: use kfree_drop_reason() for NF_DROP
+Date:   Wed, 27 Jul 2022 18:09:43 +0200
+Message-Id: <20220727161030.222475094@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -49,90 +49,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Biao Huang <biao.huang@mediatek.com>
+From: Menglong Dong <imagedong@tencent.com>
 
-[ Upstream commit f4c7d8948e866918d61493264dbbd67e45ef2bda ]
+[ Upstream commit 2df3041ba3be950376e8c25a8f6da22f7fcc765c ]
 
-Current stmmac driver will prepare/enable ptp_ref clock in
-stmmac_init_tstamp_counter().
+Replace kfree_skb() with kfree_skb_reason() in nf_hook_slow() when
+skb is dropped by reason of NF_DROP. Following new drop reasons
+are introduced:
 
-The stmmac_pltfr_noirq_suspend will disable it once in suspend flow.
+SKB_DROP_REASON_NETFILTER_DROP
 
-But in resume flow,
-	stmmac_pltfr_noirq_resume --> stmmac_init_tstamp_counter
-	stmmac_resume --> stmmac_hw_setup --> stmmac_init_ptp --> stmmac_init_tstamp_counter
-ptp_ref clock reference counter increases twice, which leads to unbalance
-ptp clock when resume back.
-
-Move ptp_ref clock prepare/enable out of stmmac_init_tstamp_counter to fix it.
-
-Fixes: 0735e639f129d ("net: stmmac: skip only stmmac_ptp_register when resume from suspend")
-Signed-off-by: Biao Huang <biao.huang@mediatek.com>
+Signed-off-by: Menglong Dong <imagedong@tencent.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/stmicro/stmmac/stmmac_main.c   | 17 ++++++++---------
- .../ethernet/stmicro/stmmac/stmmac_platform.c   |  8 +++++++-
- 2 files changed, 15 insertions(+), 10 deletions(-)
+ include/linux/skbuff.h     | 1 +
+ include/trace/events/skb.h | 1 +
+ net/netfilter/core.c       | 3 ++-
+ 3 files changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 95e1307cfda2..b4f83c865568 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -844,19 +844,10 @@ int stmmac_init_tstamp_counter(struct stmmac_priv *priv, u32 systime_flags)
- 	struct timespec64 now;
- 	u32 sec_inc = 0;
- 	u64 temp = 0;
--	int ret;
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index f329c617eb96..b63da0d1a4b2 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -317,6 +317,7 @@ enum skb_drop_reason {
+ 	SKB_DROP_REASON_TCP_CSUM,	/* TCP checksum error */
+ 	SKB_DROP_REASON_SOCKET_FILTER,	/* dropped by socket filter */
+ 	SKB_DROP_REASON_UDP_CSUM,	/* UDP checksum error */
++	SKB_DROP_REASON_NETFILTER_DROP,	/* dropped by netfilter */
+ 	SKB_DROP_REASON_MAX,
+ };
  
- 	if (!(priv->dma_cap.time_stamp || priv->dma_cap.atime_stamp))
- 		return -EOPNOTSUPP;
+diff --git a/include/trace/events/skb.h b/include/trace/events/skb.h
+index a8a64b97504d..3d89f7b09a43 100644
+--- a/include/trace/events/skb.h
++++ b/include/trace/events/skb.h
+@@ -16,6 +16,7 @@
+ 	EM(SKB_DROP_REASON_TCP_CSUM, TCP_CSUM)			\
+ 	EM(SKB_DROP_REASON_SOCKET_FILTER, SOCKET_FILTER)	\
+ 	EM(SKB_DROP_REASON_UDP_CSUM, UDP_CSUM)			\
++	EM(SKB_DROP_REASON_NETFILTER_DROP, NETFILTER_DROP)	\
+ 	EMe(SKB_DROP_REASON_MAX, MAX)
  
--	ret = clk_prepare_enable(priv->plat->clk_ptp_ref);
--	if (ret < 0) {
--		netdev_warn(priv->dev,
--			    "failed to enable PTP reference clock: %pe\n",
--			    ERR_PTR(ret));
--		return ret;
--	}
--
- 	stmmac_config_hw_tstamping(priv, priv->ptpaddr, systime_flags);
- 	priv->systime_flags = systime_flags;
- 
-@@ -3325,6 +3316,14 @@ static int stmmac_hw_setup(struct net_device *dev, bool ptp_register)
- 
- 	stmmac_mmc_setup(priv);
- 
-+	if (ptp_register) {
-+		ret = clk_prepare_enable(priv->plat->clk_ptp_ref);
-+		if (ret < 0)
-+			netdev_warn(priv->dev,
-+				    "failed to enable PTP reference clock: %pe\n",
-+				    ERR_PTR(ret));
-+	}
-+
- 	ret = stmmac_init_ptp(priv);
- 	if (ret == -EOPNOTSUPP)
- 		netdev_warn(priv->dev, "PTP not supported by HW\n");
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-index 11e1055e8260..9f5cac4000da 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-@@ -815,7 +815,13 @@ static int __maybe_unused stmmac_pltfr_noirq_resume(struct device *dev)
- 		if (ret)
- 			return ret;
- 
--		stmmac_init_tstamp_counter(priv, priv->systime_flags);
-+		ret = clk_prepare_enable(priv->plat->clk_ptp_ref);
-+		if (ret < 0) {
-+			netdev_warn(priv->dev,
-+				    "failed to enable PTP reference clock: %pe\n",
-+				    ERR_PTR(ret));
-+			return ret;
-+		}
- 	}
- 
- 	return 0;
+ #undef EM
+diff --git a/net/netfilter/core.c b/net/netfilter/core.c
+index 60332fdb6dd4..cca0762a9010 100644
+--- a/net/netfilter/core.c
++++ b/net/netfilter/core.c
+@@ -592,7 +592,8 @@ int nf_hook_slow(struct sk_buff *skb, struct nf_hook_state *state,
+ 		case NF_ACCEPT:
+ 			break;
+ 		case NF_DROP:
+-			kfree_skb(skb);
++			kfree_skb_reason(skb,
++					 SKB_DROP_REASON_NETFILTER_DROP);
+ 			ret = NF_DROP_GETERR(verdict);
+ 			if (ret == 0)
+ 				ret = -EPERM;
 -- 
 2.35.1
 
