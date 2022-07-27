@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBB01C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:49:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1A3EC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:49:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240556AbiG0Qtx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:49:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44776 "EHLO
+        id S238929AbiG0Qt4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:49:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240602AbiG0Qsw (ORCPT
+        with ESMTP id S240640AbiG0QtJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:48:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C2C461706;
-        Wed, 27 Jul 2022 09:32:36 -0700 (PDT)
+        Wed, 27 Jul 2022 12:49:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADDD56172E;
+        Wed, 27 Jul 2022 09:32:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8F010B81F90;
-        Wed, 27 Jul 2022 16:32:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E946DC433D6;
-        Wed, 27 Jul 2022 16:32:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8393B619C0;
+        Wed, 27 Jul 2022 16:27:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93EB5C433C1;
+        Wed, 27 Jul 2022 16:27:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939553;
-        bh=pdGLQn7VDYhM1aT48ZUnONutDizr5+cvdh95TOtaeqk=;
+        s=korg; t=1658939257;
+        bh=vKTOit1j4oqPUe/wwvhNKAYzkOLY6aMMJK7gUc90wME=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AzMKcCV+wM0MRWEVeTnmAsUA6EtAHGWkPuDWEtLhDjsQXMg2fAbvP1WhLIareh2G7
-         QUbgXz+bycWDnBygWqMKs5Cw9ngMy+slEy3gqWjsKgP1uKJMmnhdAI8uDic+lYI4Nj
-         Ze3PUD2KBEdLKdi4r9hIG3oSABzRpBD9UoXCxalw=
+        b=kKNj9NqnVgOzdkTk724bs/PkD7mCyhvmFYzWCUEQJjupnjHhxKjux84pAyiEHhO3i
+         1VCfLAwELtnNNyHwlGCrckrI4/nEGUd8PEnLtQdIOR5y6/Fm979+W70ObwC0pZdxXp
+         0KW6xfgrHJ6m+pAoLUUGLl2hcXXvU0JkgNMQ1GNk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Juergen Gross <jgross@suse.com>,
-        Demi Marie Obenour <demi@invisiblethingslab.com>,
-        Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
-Subject: [PATCH 5.10 006/105] xen/gntdev: Ignore failure to unmap INVALID_GRANT_HANDLE
-Date:   Wed, 27 Jul 2022 18:09:52 +0200
-Message-Id: <20220727161012.319855967@linuxfoundation.org>
+        stable@vger.kernel.org, Hillf Danton <hdanton@sina.com>,
+        =?UTF-8?q?=E4=B8=80=E5=8F=AA=E7=8B=97?= <chennbnbnb@gmail.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH 4.19 56/62] tty: extract tty_flip_buffer_commit() from tty_flip_buffer_push()
+Date:   Wed, 27 Jul 2022 18:11:05 +0200
+Message-Id: <20220727161006.333043974@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220727161012.056867467@linuxfoundation.org>
-References: <20220727161012.056867467@linuxfoundation.org>
+In-Reply-To: <20220727161004.175638564@linuxfoundation.org>
+References: <20220727161004.175638564@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,45 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Demi Marie Obenour <demi@invisiblethingslab.com>
+From: Jiri Slaby <jslaby@suse.cz>
 
-commit 166d3863231667c4f64dee72b77d1102cdfad11f upstream.
+commit 716b10580283fda66f2b88140e3964f8a7f9da89 upstream.
 
-The error paths of gntdev_mmap() can call unmap_grant_pages() even
-though not all of the pages have been successfully mapped.  This will
-trigger the WARN_ON()s in __unmap_grant_pages_done().  The number of
-warnings can be very large; I have observed thousands of lines of
-warnings in the systemd journal.
+We will need this new helper in the next patch.
 
-Avoid this problem by only warning on unmapping failure if the handle
-being unmapped is not INVALID_GRANT_HANDLE.  The handle field of any
-page that was not successfully mapped will be INVALID_GRANT_HANDLE, so
-this catches all cases where unmapping can legitimately fail.
-
-Fixes: dbe97cff7dd9 ("xen/gntdev: Avoid blocking in unmap_grant_pages()")
-Cc: stable@vger.kernel.org
-Suggested-by: Juergen Gross <jgross@suse.com>
-Signed-off-by: Demi Marie Obenour <demi@invisiblethingslab.com>
-Reviewed-by: Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>
-Reviewed-by: Juergen Gross <jgross@suse.com>
-Link: https://lore.kernel.org/r/20220710230522.1563-1-demi@invisiblethingslab.com
-Signed-off-by: Juergen Gross <jgross@suse.com>
+Cc: Hillf Danton <hdanton@sina.com>
+Cc: 一只狗 <chennbnbnb@gmail.com>
+Cc: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Link: https://lore.kernel.org/r/20220707082558.9250-1-jslaby@suse.cz
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/xen/gntdev.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/tty/tty_buffer.c |   15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
---- a/drivers/xen/gntdev.c
-+++ b/drivers/xen/gntdev.c
-@@ -401,7 +401,8 @@ static void __unmap_grant_pages_done(int
- 	unsigned int offset = data->unmap_ops - map->unmap_ops;
+--- a/drivers/tty/tty_buffer.c
++++ b/drivers/tty/tty_buffer.c
+@@ -518,6 +518,15 @@ static void flush_to_ldisc(struct work_s
  
- 	for (i = 0; i < data->count; i++) {
--		WARN_ON(map->unmap_ops[offset+i].status);
-+		WARN_ON(map->unmap_ops[offset+i].status &&
-+			map->unmap_ops[offset+i].handle != -1);
- 		pr_debug("unmap handle=%d st=%d\n",
- 			map->unmap_ops[offset+i].handle,
- 			map->unmap_ops[offset+i].status);
+ }
+ 
++static inline void tty_flip_buffer_commit(struct tty_buffer *tail)
++{
++	/*
++	 * Paired w/ acquire in flush_to_ldisc(); ensures flush_to_ldisc() sees
++	 * buffer data.
++	 */
++	smp_store_release(&tail->commit, tail->used);
++}
++
+ /**
+  *	tty_flip_buffer_push	-	terminal
+  *	@port: tty port to push
+@@ -533,11 +542,7 @@ void tty_flip_buffer_push(struct tty_por
+ {
+ 	struct tty_bufhead *buf = &port->buf;
+ 
+-	/*
+-	 * Paired w/ acquire in flush_to_ldisc(); ensures flush_to_ldisc() sees
+-	 * buffer data.
+-	 */
+-	smp_store_release(&buf->tail->commit, buf->tail->used);
++	tty_flip_buffer_commit(buf->tail);
+ 	queue_work(system_unbound_wq, &buf->work);
+ }
+ EXPORT_SYMBOL(tty_flip_buffer_push);
 
 
