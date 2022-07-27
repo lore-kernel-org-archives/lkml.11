@@ -2,129 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE50FC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 14:45:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A91C6C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 14:46:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234108AbiG0Op5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 10:45:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34750 "EHLO
+        id S234117AbiG0Oqx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 10:46:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234015AbiG0Opz (ORCPT
+        with ESMTP id S233343AbiG0Oqu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 10:45:55 -0400
+        Wed, 27 Jul 2022 10:46:50 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3A35EB4B8
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 07:45:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 502C21EC68
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 07:46:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658933153;
+        s=mimecast20190719; t=1658933208;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=UPwTphlEofW1gzVyQij5B8duPZwdaVcNitr1RayVqqU=;
-        b=IcX5LYesOJLmKfbHOMjFsABILoaZw4n710JmahF7dySwZENvZCyobsOPGIajqNEA6m6YpY
-        0TEQ/SSjnnCGcdIuTJ/rCtR50K6aWP51YJ1kPNWU50XN0aYH5uqqKPCMpTV5aP357U4xTn
-        l8EJMcFqzCtJxSdTwSuoH8Ah6QYVQIo=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=xuFpOaXJaj/gAOk0ci5YpbcXaLPN1T4Ab/tSiyAfQzA=;
+        b=EzTr3jpc6kPxoCbFYwAUEIoTfmrZOPhUUPijqNTdlS4XG0drK/IpPrBBEKb9oGO1+2mqAH
+        801GwC4ADlWLPSJI6PVhdvJLNkGpehL9h9uvdOL4wO+86rsYKrMeC/BN4x/5yc3wboTFqV
+        QPuN/3Ucva3NTvp5b16GaAKmPanQ338=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-101-jpjKzrmBMKeYdz4RzveM4A-1; Wed, 27 Jul 2022 10:45:51 -0400
-X-MC-Unique: jpjKzrmBMKeYdz4RzveM4A-1
-Received: by mail-wr1-f72.google.com with SMTP id k26-20020adfb35a000000b0021d6c3b9363so2989813wrd.1
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 07:45:51 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=UPwTphlEofW1gzVyQij5B8duPZwdaVcNitr1RayVqqU=;
-        b=KwsKN6LA1QnmFpZyzqfmdF3POTlBuTBUeXlsTlX/ACOv0L2tP3UHRFfqiYD9oXQzJz
-         Od5IDcPI5CXDmIB+Kp+Okqvk0jr+4wUV78EKZ+9Dar/1fRBu6vLbQgvdOX8dp4n2gNtY
-         KvggFJSUBm+1p/8UQmy5+198II+3kpF4E7JTuYU2h5dBmf7LO+T0xO69nbwO3QRmzx6Q
-         d3knBYSSYo78dVIrxSZrTOdO3EBFR/N+0m2tRK3WFOEJ5I+T6ONcjsykBJ1qHPmLftKU
-         nr24CVr7/aWrcHEUa2izNl6f2MdmrBYFhp+vDnd4dxFGTw3esFtVjhTFrteng0DSWI19
-         1nxA==
-X-Gm-Message-State: AJIora+wF0tYTF4qFCJ+A8ycLA8qcUZV0rK2Nbhm1rbaKtZs+GIgeS66
-        m+LhjsGfSOt0FpOmZue8qiYFzsTqMiEbe3Urktery2a+BA86Jz8vN7eCmKR4AtMOozEY7kgv0ue
-        LI3K1aQi1Yo/Ee0sX0Fp0Q9EL
-X-Received: by 2002:a05:600c:3ac4:b0:3a3:19c5:7cb2 with SMTP id d4-20020a05600c3ac400b003a319c57cb2mr3399343wms.63.1658933150782;
-        Wed, 27 Jul 2022 07:45:50 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1s6EJaKWyltBC+mMZ+ewmsTuEWGKm93G14zzMdF0IwF3w4YCkILjcZ/BxC2B1sq/Pb8+8Hg6Q==
-X-Received: by 2002:a05:600c:3ac4:b0:3a3:19c5:7cb2 with SMTP id d4-20020a05600c3ac400b003a319c57cb2mr3399327wms.63.1658933150598;
-        Wed, 27 Jul 2022 07:45:50 -0700 (PDT)
-Received: from pc-4.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
-        by smtp.gmail.com with ESMTPSA id h18-20020a05600c351200b003a31df6af2esm2693291wmq.1.2022.07.27.07.45.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 07:45:50 -0700 (PDT)
-Date:   Wed, 27 Jul 2022 16:45:48 +0200
-From:   Guillaume Nault <gnault@redhat.com>
-To:     Matthias May <matthias.may@westermo.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, dsahern@kernel.org, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, nicolas.dichtel@6wind.com,
-        eyal.birger@gmail.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2 net-next] geneve: fix TOS inheriting for ipv6
-Message-ID: <20220727144548.GB31646@pc-4.home>
-References: <20220724003741.57816-1-matthias.may@westermo.com>
- <20220724003741.57816-3-matthias.may@westermo.com>
- <20220725170519.GD18808@pc-4.home>
- <712bcd84-4dbe-67a6-afa9-ddc01ea27cc8@westermo.com>
+ us-mta-635-zjaeplmAPJ668snlUMnWUQ-1; Wed, 27 Jul 2022 10:46:42 -0400
+X-MC-Unique: zjaeplmAPJ668snlUMnWUQ-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2FA543C10222;
+        Wed, 27 Jul 2022 14:46:42 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.10])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E06FA1415121;
+        Wed, 27 Jul 2022 14:46:40 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <1822b768504.1d4e377e236061.5518350412857967240@siddh.me>
+References: <1822b768504.1d4e377e236061.5518350412857967240@siddh.me> <20220723135447.199557-1-code@siddh.me> <Ytv/4Tljvlt0PJ2r@kroah.com>
+To:     Siddh Raman Pant <code@siddh.me>
+Cc:     dhowells@redhat.com, "Greg KH" <gregkh@linuxfoundation.org>,
+        "Christophe JAILLET" <christophe.jaillet@wanadoo.fr>,
+        "Eric Dumazet" <edumazet@google.com>,
+        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
+        "linux-security-modules" <linux-security-module@vger.kernel.org>,
+        "linux-kernel-mentees" 
+        <linux-kernel-mentees@lists.linuxfoundation.org>,
+        "linux-kernel" <linux-kernel@vger.kernel.org>,
+        "syzbot+c70d87ac1d001f29a058" 
+        <syzbot+c70d87ac1d001f29a058@syzkaller.appspotmail.com>
+Subject: Re: [PATCH] kernel/watch_queue: Make pipe NULL while clearing watch_queue
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <712bcd84-4dbe-67a6-afa9-ddc01ea27cc8@westermo.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <3558069.1658933200.1@warthog.procyon.org.uk>
+Content-Transfer-Encoding: quoted-printable
+Date:   Wed, 27 Jul 2022 15:46:40 +0100
+Message-ID: <3558070.1658933200@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 26, 2022 at 06:29:56PM +0200, Matthias May wrote:
-> On 25/07/2022 19:05, Guillaume Nault wrote:
-> > On Sun, Jul 24, 2022 at 02:37:41AM +0200, Matthias May wrote:
-> > > The current code uses the RT_TOS macro to cut off the 6 DSCP
-> > > bits, down to the original 3 TOS bits.
-> > > 
-> > > Do not use this macro to get the prio for inheriting purposes.
-> > 
-> > Honestly, this patch is a bug fix and is suitable for the net tree
-> > (with appropriate 'Fixes' tag).
-> > 
-> > Ideally, we'd also fix ip6_dst_lookup_tunnel() (used by bareudp
-> > tunnels) and vxlan6_get_route().
-> > 
-> > Also, mlx5e_tc_tun_update_header_ipv6() and
-> > mlx5e_tc_tun_create_header_ipv6() both call RT_TOS() inside
-> > ip6_make_flowinfo() and certainly need to be fixed too.
-> > 
-> 
-> Hi Guillaume
-> How would i do that?
-> Send a v2 to net with the fixes tag on 95caf6f71a999?
-> Or just resend to net with the fixes tag on 95caf6f71a999?
-> Since there are no actual changes to the patch.
+Siddh Raman Pant <code@siddh.me> wrote:
 
-Hi Matthias,
+> Greg KH <gregkh@linuxfoundation.org> wrote:
 
-Ideally, send a patch series to net that'd removes RT_TOS() from the
-ip6_make_flowinfo() calls in geneve, vxlan and bareudp (one patch for
-each protocol, with the appropriate Fixes tag). You can add the IPv4
-patch in that series or send it separately, as you see fit.
+> > > -	spin_unlock_bh(&wqueue->lock);
+> > >  	rcu_read_unlock();
+> >
+> > Also you now have a spinlock held when calling rcu_read_unlock(), are
+> > you sure that's ok?
 
-Alternatively you can just repost this series to net, with a proper
-Fixes tag for each patch (and I'll take care of vxlan and bareudp in
-a future series).
+Worse, we have softirqs disabled still, which might cause problems for
+rcu_read_unlock()?
 
-> This kind of contradicts the statement that IPv4 and IPv6 should behave the same.
-> --> v6 would be fixed, but v4 not.
+> We logically should not do write operations in a read critical section, =
+so the
+> nulling of `wqueue->pipe->watch_queue` should happen after rcu_read_unlo=
+ck().
+> Also, since we already have a spinlock, we can use it to ensure the null=
+ing.
+> So I think it is okay.
 
-I personally consider the current IPv4 behaviour for TOS inherit option
-to be a bug, so, in this case, we can have both IPv4 and IPv6 fixed in
-the same tree.
+Read/write locks are perhaps misnamed in this sense; they perhaps should b=
+e
+shared/exclusive.  But, yes, we *can* do certain write operations with the
+lock held - if we're careful.  Locks are required if we need to pairs of
+related memory accesses; if we're only making a single non-dependent write=
+,
+then we don't necessarily need a write lock.
 
-But generally speaking, we have some divergence in how IPv4 and IPv6
-treat tos/dsfield. That's because of some historical reasons and it's
-not easy to reconciliate both implementations (because of backward
-compatibility).
+However, you're referring to RCU read lock.  That's a very special lock th=
+at
+has to do with maintenance of persistence of objects without taking any ot=
+her
+lock.  The moment you drop that lock, anything you accessed under RCU prot=
+ocol
+rules should be considered to have evaporated.
 
-> BR
-> Matthias
+Think of it more as a way to have a deferred destructor/deallocator.
 
+So I would do:
 
++
++	/* Clearing the watch queue, so we should clean the associated pipe. */
++	if (wqueue->pipe) {
++		wqueue->pipe->watch_queue =3D NULL;
++		wqueue->pipe =3D NULL;
++	}
++
+	spin_unlock_bh(&wqueue->lock);
+ 	rcu_read_unlock();
+ }
+
+However, since you're now changing wqueue->pipe whilst a notification is b=
+eing
+posted, you need a barrier in post_one_notification() to prevent the compi=
+ler
+from reloading the value:
+
+	struct pipe_inode_info *pipe =3D READ_ONCE(wqueue->pipe);
+
+David
 
