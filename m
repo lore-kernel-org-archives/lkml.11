@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FB2BC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:36:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52C2FC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:36:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238594AbiG0QgB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:36:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47586 "EHLO
+        id S238613AbiG0QgF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:36:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238367AbiG0QeW (ORCPT
+        with ESMTP id S238452AbiG0Qe0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:34:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DFA654CBE;
-        Wed, 27 Jul 2022 09:27:02 -0700 (PDT)
+        Wed, 27 Jul 2022 12:34:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CCC64E86D;
+        Wed, 27 Jul 2022 09:27:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AFBC661A1E;
-        Wed, 27 Jul 2022 16:26:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6B35C433D6;
-        Wed, 27 Jul 2022 16:26:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CED9361A09;
+        Wed, 27 Jul 2022 16:27:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA484C433C1;
+        Wed, 27 Jul 2022 16:27:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939190;
-        bh=4a07L9FAYE6Hy2yov2eTzQtFHuUk6iOwB8T/ZXIwaEE=;
+        s=korg; t=1658939224;
+        bh=u7bKTBJfAOMOZ9/sDoWY4Vi6VndC+6DTovQ/pdYctDU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YBNyOCag7oJOH4C3PjZgwSP051CEMMSZGYPJxuqyRXGpOO/GGFjxr3I0kZK+A3fKc
-         TCjP8YcdalBoZ+xYMYqjl1kXOiRMo/HR1L8vsg7EhLgxB0fKUq8tmSnN4SQ+vNRuJg
-         Rl6GCtjj4sy4Frr1q4xcEd86jtBqeXnUegBwcSrU=
+        b=I4a9rwj1fqIUzDbOzsdhFciJQewh1MdWq34GyQVMnziuM8BLWK0wSqlvu1t61EDWZ
+         q2GeESQBSkDY5Ocjlek8uSN2BE6WaRVTUJzMDzkde0jkNPi0suTop8Kud3S/+r+eDv
+         et4P3vxnuUA60x5Qv8ojg9EtwlG5CdW8vzyYnDSw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 17/62] igmp: Fix data-races around sysctl_igmp_llm_reports.
-Date:   Wed, 27 Jul 2022 18:10:26 +0200
-Message-Id: <20220727161004.870745121@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Tedd Ho-Jeong An <tedd.an@intel.com>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Subject: [PATCH 4.19 49/62] Bluetooth: Fix passing NULL to PTR_ERR
+Date:   Wed, 27 Jul 2022 18:10:58 +0200
+Message-Id: <20220727161006.045213779@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161004.175638564@linuxfoundation.org>
 References: <20220727161004.175638564@linuxfoundation.org>
@@ -49,110 +51,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 
-[ Upstream commit f6da2267e71106474fbc0943dc24928b9cb79119 ]
+commit 266191aa8d14b84958aaeb5e96ee4e97839e3d87 upstream.
 
-While reading sysctl_igmp_llm_reports, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its readers.
+Passing NULL to PTR_ERR will result in 0 (success), also since the likes of
+bt_skb_sendmsg does never return NULL it is safe to replace the instances of
+IS_ERR_OR_NULL with IS_ERR when checking its return.
 
-This test can be packed into a helper, so such changes will be in the
-follow-up series after net is merged into net-next.
-
-  if (ipv4_is_local_multicast(pmc->multiaddr) &&
-      !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
-
-Fixes: df2cf4a78e48 ("IGMP: Inhibit reports for local multicast groups")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Tested-by: Tedd Ho-Jeong An <tedd.an@intel.com>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Cc: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/igmp.c | 21 +++++++++++++--------
- 1 file changed, 13 insertions(+), 8 deletions(-)
+ include/net/bluetooth/bluetooth.h |    2 +-
+ net/bluetooth/rfcomm/sock.c       |    2 +-
+ net/bluetooth/sco.c               |    2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/net/ipv4/igmp.c b/net/ipv4/igmp.c
-index ee179e08dd20..957e1170a8a3 100644
---- a/net/ipv4/igmp.c
-+++ b/net/ipv4/igmp.c
-@@ -471,7 +471,8 @@ static struct sk_buff *add_grec(struct sk_buff *skb, struct ip_mc_list *pmc,
+--- a/include/net/bluetooth/bluetooth.h
++++ b/include/net/bluetooth/bluetooth.h
+@@ -422,7 +422,7 @@ static inline struct sk_buff *bt_skb_sen
+ 		struct sk_buff *tmp;
  
- 	if (pmc->multiaddr == IGMP_ALL_HOSTS)
- 		return skb;
--	if (ipv4_is_local_multicast(pmc->multiaddr) && !net->ipv4.sysctl_igmp_llm_reports)
-+	if (ipv4_is_local_multicast(pmc->multiaddr) &&
-+	    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
- 		return skb;
+ 		tmp = bt_skb_sendmsg(sk, msg, len, mtu, headroom, tailroom);
+-		if (IS_ERR_OR_NULL(tmp)) {
++		if (IS_ERR(tmp)) {
+ 			kfree_skb(skb);
+ 			return tmp;
+ 		}
+--- a/net/bluetooth/rfcomm/sock.c
++++ b/net/bluetooth/rfcomm/sock.c
+@@ -586,7 +586,7 @@ static int rfcomm_sock_sendmsg(struct so
  
- 	mtu = READ_ONCE(dev->mtu);
-@@ -597,7 +598,7 @@ static int igmpv3_send_report(struct in_device *in_dev, struct ip_mc_list *pmc)
- 			if (pmc->multiaddr == IGMP_ALL_HOSTS)
- 				continue;
- 			if (ipv4_is_local_multicast(pmc->multiaddr) &&
--			     !net->ipv4.sysctl_igmp_llm_reports)
-+			    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
- 				continue;
- 			spin_lock_bh(&pmc->lock);
- 			if (pmc->sfcount[MCAST_EXCLUDE])
-@@ -740,7 +741,8 @@ static int igmp_send_report(struct in_device *in_dev, struct ip_mc_list *pmc,
- 	if (type == IGMPV3_HOST_MEMBERSHIP_REPORT)
- 		return igmpv3_send_report(in_dev, pmc);
+ 	skb = bt_skb_sendmmsg(sk, msg, len, d->mtu, RFCOMM_SKB_HEAD_RESERVE,
+ 			      RFCOMM_SKB_TAIL_RESERVE);
+-	if (IS_ERR_OR_NULL(skb))
++	if (IS_ERR(skb))
+ 		return PTR_ERR(skb);
  
--	if (ipv4_is_local_multicast(group) && !net->ipv4.sysctl_igmp_llm_reports)
-+	if (ipv4_is_local_multicast(group) &&
-+	    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
- 		return 0;
+ 	sent = rfcomm_dlc_send(d, skb);
+--- a/net/bluetooth/sco.c
++++ b/net/bluetooth/sco.c
+@@ -720,7 +720,7 @@ static int sco_sock_sendmsg(struct socke
+ 		return -EOPNOTSUPP;
  
- 	if (type == IGMP_HOST_LEAVE_MESSAGE)
-@@ -924,7 +926,8 @@ static bool igmp_heard_report(struct in_device *in_dev, __be32 group)
+ 	skb = bt_skb_sendmsg(sk, msg, len, len, 0, 0);
+-	if (IS_ERR_OR_NULL(skb))
++	if (IS_ERR(skb))
+ 		return PTR_ERR(skb);
  
- 	if (group == IGMP_ALL_HOSTS)
- 		return false;
--	if (ipv4_is_local_multicast(group) && !net->ipv4.sysctl_igmp_llm_reports)
-+	if (ipv4_is_local_multicast(group) &&
-+	    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
- 		return false;
- 
- 	rcu_read_lock();
-@@ -1049,7 +1052,7 @@ static bool igmp_heard_query(struct in_device *in_dev, struct sk_buff *skb,
- 		if (im->multiaddr == IGMP_ALL_HOSTS)
- 			continue;
- 		if (ipv4_is_local_multicast(im->multiaddr) &&
--		    !net->ipv4.sysctl_igmp_llm_reports)
-+		    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
- 			continue;
- 		spin_lock_bh(&im->lock);
- 		if (im->tm_running)
-@@ -1299,7 +1302,8 @@ static void igmp_group_dropped(struct ip_mc_list *im)
- #ifdef CONFIG_IP_MULTICAST
- 	if (im->multiaddr == IGMP_ALL_HOSTS)
- 		return;
--	if (ipv4_is_local_multicast(im->multiaddr) && !net->ipv4.sysctl_igmp_llm_reports)
-+	if (ipv4_is_local_multicast(im->multiaddr) &&
-+	    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
- 		return;
- 
- 	reporter = im->reporter;
-@@ -1336,7 +1340,8 @@ static void igmp_group_added(struct ip_mc_list *im)
- #ifdef CONFIG_IP_MULTICAST
- 	if (im->multiaddr == IGMP_ALL_HOSTS)
- 		return;
--	if (ipv4_is_local_multicast(im->multiaddr) && !net->ipv4.sysctl_igmp_llm_reports)
-+	if (ipv4_is_local_multicast(im->multiaddr) &&
-+	    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
- 		return;
- 
- 	if (in_dev->dead)
-@@ -1657,7 +1662,7 @@ static void ip_mc_rejoin_groups(struct in_device *in_dev)
- 		if (im->multiaddr == IGMP_ALL_HOSTS)
- 			continue;
- 		if (ipv4_is_local_multicast(im->multiaddr) &&
--		    !net->ipv4.sysctl_igmp_llm_reports)
-+		    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
- 			continue;
- 
- 		/* a failover is happening and switches
--- 
-2.35.1
-
+ 	lock_sock(sk);
 
 
