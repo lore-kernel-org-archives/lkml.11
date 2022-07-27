@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49345C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:45:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D948C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:45:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240290AbiG0QpQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:45:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43820 "EHLO
+        id S240298AbiG0Qp1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:45:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240212AbiG0QoM (ORCPT
+        with ESMTP id S240294AbiG0QoQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:44:12 -0400
+        Wed, 27 Jul 2022 12:44:16 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14063BC06;
-        Wed, 27 Jul 2022 09:30:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 736535E311;
+        Wed, 27 Jul 2022 09:30:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 97D18619FD;
-        Wed, 27 Jul 2022 16:30:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6111C433D7;
-        Wed, 27 Jul 2022 16:30:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AB5FB619CF;
+        Wed, 27 Jul 2022 16:30:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAF2DC433C1;
+        Wed, 27 Jul 2022 16:30:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939449;
-        bh=0nPcMk7X2zRWW6IEONlkgBKjawbM0P/bEPivCLl7JwM=;
+        s=korg; t=1658939457;
+        bh=Wvw7I+nGSwocAWbyQDmTKOy9jcP8+ZoXNRue2rb7Ycg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R0bLRql+90Ym3LF+bTVxOQ+Ly7ruLKS6FS4eI7Dmdcshn24QfQkHO5S/7PAmYm9yq
-         XC1tgLQ8A/lbGawh26Djck7TG/djGGSY7pugBLnpQuvyRYHElZ3L9XlLTfLj2cGWj8
-         3VJyMP0Fx0eA5ExnydGsvZa0P2Cfipi1F9ncEQJw=
+        b=rbwxRsy+gPunKe3jkmJvyBuZjF0G9ZNUFkfBuHQbPggGNaQgXGVXQBJTlrgJM0hm9
+         1mnBAw9rvoHJ8NyJ9G18+OhCeOqYYq/+lV5sGeImNrB4jouofadYtTJyFcEQxyaMGr
+         PWVLqV6nah/Q63JZYdoIhksRyCP9FBrPGueXPcZs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.4 73/87] ALSA: memalloc: Align buffer allocations in page size
-Date:   Wed, 27 Jul 2022 18:11:06 +0200
-Message-Id: <20220727161012.026313331@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Subject: [PATCH 5.4 75/87] Bluetooth: Add bt_skb_sendmmsg helper
+Date:   Wed, 27 Jul 2022 18:11:08 +0200
+Message-Id: <20220727161012.104704033@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161008.993711844@linuxfoundation.org>
 References: <20220727161008.993711844@linuxfoundation.org>
@@ -48,41 +50,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 
-commit 5c1733e33c888a3cb7f576564d8ad543d5ad4a9e upstream.
+commit 97e4e80299844bb5f6ce5a7540742ffbffae3d97 upstream.
 
-Currently the standard memory allocator (snd_dma_malloc_pages*())
-passes the byte size to allocate as is.  Most of the backends
-allocates real pages, hence the actual allocations are aligned in page
-size.  However, the genalloc doesn't seem assuring the size alignment,
-hence it may result in the access outside the buffer when the whole
-memory pages are exposed via mmap.
+This works similarly to bt_skb_sendmsg but can split the msg into
+multiple skb fragments which is useful for stream sockets.
 
-For avoiding such inconsistencies, this patch makes the allocation
-size always to be aligned in page size.
-
-Note that, after this change, snd_dma_buffer.bytes field contains the
-aligned size, not the originally requested size.  This value is also
-used for releasing the pages in return.
-
-Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
-Link: https://lore.kernel.org/r/20201218145625.2045-2-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Cc: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/core/memalloc.c |    1 +
- 1 file changed, 1 insertion(+)
+ include/net/bluetooth/bluetooth.h |   38 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 38 insertions(+)
 
---- a/sound/core/memalloc.c
-+++ b/sound/core/memalloc.c
-@@ -124,6 +124,7 @@ int snd_dma_alloc_pages(int type, struct
- 	if (WARN_ON(!device))
- 		return -EINVAL;
+--- a/include/net/bluetooth/bluetooth.h
++++ b/include/net/bluetooth/bluetooth.h
+@@ -398,6 +398,44 @@ static inline struct sk_buff *bt_skb_sen
+ 	return skb;
+ }
  
-+	size = PAGE_ALIGN(size);
- 	dmab->dev.type = type;
- 	dmab->dev.dev = device;
- 	dmab->bytes = 0;
++/* Similar to bt_skb_sendmsg but can split the msg into multiple fragments
++ * accourding to the MTU.
++ */
++static inline struct sk_buff *bt_skb_sendmmsg(struct sock *sk,
++					      struct msghdr *msg,
++					      size_t len, size_t mtu,
++					      size_t headroom, size_t tailroom)
++{
++	struct sk_buff *skb, **frag;
++
++	skb = bt_skb_sendmsg(sk, msg, len, mtu, headroom, tailroom);
++	if (IS_ERR_OR_NULL(skb))
++		return skb;
++
++	len -= skb->len;
++	if (!len)
++		return skb;
++
++	/* Add remaining data over MTU as continuation fragments */
++	frag = &skb_shinfo(skb)->frag_list;
++	while (len) {
++		struct sk_buff *tmp;
++
++		tmp = bt_skb_sendmsg(sk, msg, len, mtu, headroom, tailroom);
++		if (IS_ERR_OR_NULL(tmp)) {
++			kfree_skb(skb);
++			return tmp;
++		}
++
++		len -= tmp->len;
++
++		*frag = tmp;
++		frag = &(*frag)->next;
++	}
++
++	return skb;
++}
++
+ int bt_to_errno(u16 code);
+ 
+ void hci_sock_set_flag(struct sock *sk, int nr);
 
 
