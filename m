@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6752C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:01:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6C96C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:01:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238361AbiG0RBY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:01:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55570 "EHLO
+        id S231513AbiG0RBd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:01:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241492AbiG0Q7x (ORCPT
+        with ESMTP id S236197AbiG0Q75 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:59:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4C15691D9;
-        Wed, 27 Jul 2022 09:37:44 -0700 (PDT)
+        Wed, 27 Jul 2022 12:59:57 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4C6A6A9D7;
+        Wed, 27 Jul 2022 09:37:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AB0DC61ACF;
-        Wed, 27 Jul 2022 16:37:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4FA1C433B5;
-        Wed, 27 Jul 2022 16:37:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 77962601CD;
+        Wed, 27 Jul 2022 16:37:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E7F3C433C1;
+        Wed, 27 Jul 2022 16:37:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939825;
-        bh=CyJDOAFbwxtuupOzya6XMcjIY+cX2xf5OaMm8Kb0NLQ=;
+        s=korg; t=1658939864;
+        bh=I5DTKrP2Y6N/lxCCIGd2q5PUInTDb42tcimBsKjacpE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qnFzpLyQmmFYvmjs4/wtNTg4+IEmaQuRqpbYQuwJaSWLz3ezSBFJLm8BlLI7sNrwz
-         tFl2CrKWWmm8WkXLq8JwooT7/zruG+EIxqqf75EJ9sLYAer/DEuJtodoBFnJDhb/2M
-         VUX9HxHuG7ziUxcc+H7XptUoSBFyLJZmjCd3I5QM=
+        b=s2Z3PHOMuzJ+T41boi6pZsQxD+xd7Ny2VNqnBzuVccHl31+90h1LuVFLBYfmHmfrr
+         hqbi/vHjFjUxcyrJDE3GUbWYPoc1AKp/iuBtcgBAaIBDC0Yv160N1cv+T8F94cfN1Q
+         SnvFzcWxnWP0+eEz4YOfOlgvUw9UfiX9T7XnzYmI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jeffrey Hugo <quic_jhugo@quicinc.com>,
-        Dexuan Cui <decui@microsoft.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        Carl Vanderlip <quic_carlv@quicinc.com>
-Subject: [PATCH 5.15 012/201] PCI: hv: Reuse existing IRTE allocation in compose_msi_msg()
-Date:   Wed, 27 Jul 2022 18:08:36 +0200
-Message-Id: <20220727161027.451675981@linuxfoundation.org>
+        stable@vger.kernel.org, Brian Foster <bfoster@redhat.com>,
+        Dave Chinner <dchinner@redhat.com>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        Leah Rumancik <leah.rumancik@gmail.com>
+Subject: [PATCH 5.15 025/201] xfs: fix perag reference leak on iteration race with growfs
+Date:   Wed, 27 Jul 2022 18:08:49 +0200
+Message-Id: <20220727161027.934257844@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -51,66 +50,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeffrey Hugo <quic_jhugo@quicinc.com>
+From: Brian Foster <bfoster@redhat.com>
 
-commit b4b77778ecc5bfbd4e77de1b2fd5c1dd3c655f1f upstream.
+[ Upstream commit 892a666fafa19ab04b5e948f6c92f98f1dafb489 ]
 
-Currently if compose_msi_msg() is called multiple times, it will free any
-previous IRTE allocation, and generate a new allocation.  While nothing
-prevents this from occurring, it is extraneous when Linux could just reuse
-the existing allocation and avoid a bunch of overhead.
+The for_each_perag*() set of macros are hacky in that some (i.e.
+those based on sb_agcount) rely on the assumption that perag
+iteration terminates naturally with a NULL perag at the specified
+end_agno. Others allow for the final AG to have a valid perag and
+require the calling function to clean up any potential leftover
+xfs_perag reference on termination of the loop.
 
-However, when future IRTE allocations operate on blocks of MSIs instead of
-a single line, freeing the allocation will impact all of the lines.  This
-could cause an issue where an allocation of N MSIs occurs, then some of
-the lines are retargeted, and finally the allocation is freed/reallocated.
-The freeing of the allocation removes all of the configuration for the
-entire block, which requires all the lines to be retargeted, which might
-not happen since some lines might already be unmasked/active.
+Aside from providing a subtly inconsistent interface, the former
+variant is racy with growfs because growfs can create discoverable
+post-eofs perags before the final superblock update that completes
+the grow operation and increases sb_agcount. This leads to the
+following assert failure (reproduced by xfs/104) in the perag free
+path during unmount:
 
-Signed-off-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
-Reviewed-by: Dexuan Cui <decui@microsoft.com>
-Tested-by: Dexuan Cui <decui@microsoft.com>
-Tested-by: Michael Kelley <mikelley@microsoft.com>
-Link: https://lore.kernel.org/r/1652282582-21595-1-git-send-email-quic_jhugo@quicinc.com
-Signed-off-by: Wei Liu <wei.liu@kernel.org>
-Signed-off-by: Carl Vanderlip <quic_carlv@quicinc.com>
+ XFS: Assertion failed: atomic_read(&pag->pag_ref) == 0, file: fs/xfs/libxfs/xfs_ag.c, line: 195
+
+This occurs because one of the many for_each_perag() loops in the
+code that is expected to terminate with a NULL pag (and thus has no
+post-loop xfs_perag_put() check) raced with a growfs and found a
+non-NULL post-EOFS perag, but terminated naturally based on the
+end_agno check without releasing the post-EOFS perag.
+
+Rework the iteration logic to lift the agno check from the main for
+loop conditional to the iteration helper function. The for loop now
+purely terminates on a NULL pag and xfs_perag_next() avoids taking a
+reference to any perag beyond end_agno in the first place.
+
+Fixes: f250eedcf762 ("xfs: make for_each_perag... a first class citizen")
+Signed-off-by: Brian Foster <bfoster@redhat.com>
+Reviewed-by: Dave Chinner <dchinner@redhat.com>
+Reviewed-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Leah Rumancik <leah.rumancik@gmail.com>
+Acked-by: Darrick J. Wong <djwong@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/pci-hyperv.c |   16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
+ fs/xfs/libxfs/xfs_ag.h |   16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
 
---- a/drivers/pci/controller/pci-hyperv.c
-+++ b/drivers/pci/controller/pci-hyperv.c
-@@ -1458,6 +1458,15 @@ static void hv_compose_msi_msg(struct ir
- 	u32 size;
- 	int ret;
+--- a/fs/xfs/libxfs/xfs_ag.h
++++ b/fs/xfs/libxfs/xfs_ag.h
+@@ -116,30 +116,26 @@ void xfs_perag_put(struct xfs_perag *pag
  
-+	/* Reuse the previous allocation */
-+	if (data->chip_data) {
-+		int_desc = data->chip_data;
-+		msg->address_hi = int_desc->address >> 32;
-+		msg->address_lo = int_desc->address & 0xffffffff;
-+		msg->data = int_desc->data;
-+		return;
-+	}
-+
- 	pdev = msi_desc_to_pci_dev(irq_data_get_msi_desc(data));
- 	dest = irq_data_get_effective_affinity_mask(data);
- 	pbus = pdev->bus;
-@@ -1467,13 +1476,6 @@ static void hv_compose_msi_msg(struct ir
- 	if (!hpdev)
- 		goto return_null_message;
+ /*
+  * Perag iteration APIs
+- *
+- * XXX: for_each_perag_range() usage really needs an iterator to clean up when
+- * we terminate at end_agno because we may have taken a reference to the perag
+- * beyond end_agno. Right now callers have to be careful to catch and clean that
+- * up themselves. This is not necessary for the callers of for_each_perag() and
+- * for_each_perag_from() because they terminate at sb_agcount where there are
+- * no perag structures in tree beyond end_agno.
+  */
+ static inline struct xfs_perag *
+ xfs_perag_next(
+ 	struct xfs_perag	*pag,
+-	xfs_agnumber_t		*agno)
++	xfs_agnumber_t		*agno,
++	xfs_agnumber_t		end_agno)
+ {
+ 	struct xfs_mount	*mp = pag->pag_mount;
  
--	/* Free any previous message that might have already been composed. */
--	if (data->chip_data) {
--		int_desc = data->chip_data;
--		data->chip_data = NULL;
--		hv_int_desc_free(hpdev, int_desc);
--	}
--
- 	int_desc = kzalloc(sizeof(*int_desc), GFP_ATOMIC);
- 	if (!int_desc)
- 		goto drop_reference;
+ 	*agno = pag->pag_agno + 1;
+ 	xfs_perag_put(pag);
++	if (*agno > end_agno)
++		return NULL;
+ 	return xfs_perag_get(mp, *agno);
+ }
+ 
+ #define for_each_perag_range(mp, agno, end_agno, pag) \
+ 	for ((pag) = xfs_perag_get((mp), (agno)); \
+-		(pag) != NULL && (agno) <= (end_agno); \
+-		(pag) = xfs_perag_next((pag), &(agno)))
++		(pag) != NULL; \
++		(pag) = xfs_perag_next((pag), &(agno), (end_agno)))
+ 
+ #define for_each_perag_from(mp, agno, pag) \
+ 	for_each_perag_range((mp), (agno), (mp)->m_sb.sb_agcount - 1, (pag))
 
 
