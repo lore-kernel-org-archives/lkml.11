@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDCD3C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:23:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B139C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:23:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235303AbiG0QXE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:23:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49902 "EHLO
+        id S235146AbiG0QXI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:23:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235145AbiG0QWZ (ORCPT
+        with ESMTP id S235148AbiG0QW1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:22:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AA004C616;
-        Wed, 27 Jul 2022 09:22:24 -0700 (PDT)
+        Wed, 27 Jul 2022 12:22:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C97654C610;
+        Wed, 27 Jul 2022 09:22:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9BFD2619BF;
-        Wed, 27 Jul 2022 16:22:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4222C433C1;
-        Wed, 27 Jul 2022 16:22:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 67430619C0;
+        Wed, 27 Jul 2022 16:22:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EB61C433D6;
+        Wed, 27 Jul 2022 16:22:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658938943;
-        bh=Okep6Jt9kN+VW7sygVkWdndpohFXPsorOiiSUiUZ+hg=;
+        s=korg; t=1658938945;
+        bh=LU/6JYDmJVCAIJc5hn/I2FwrmPcI5S2waUtTQhLrexc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ChQ7W6KZCqqJAap7GUPP/VWaoB1kEC/bdsPNCqocES1gOCthw5C9JJCMcNvcAk5Bv
-         tST07GjBqjbAcFG8O4lDmec+YkJqWEzA43zSBiDvBvpKsKBlLkNmLOyZmNOFbhhEBX
-         Ld8qIvCMshOMPK5kP9wT5Mj+kXn3jOLzytjMHvt4=
+        b=ZKa4Nvu8Or5wp11BxNsgYkSdbIOPuPaHrKPbr5kM2wTubAKTZpgle/cHW+J9Nz9lX
+         C5PA/nVh5XUiJMFFgNgbogM9n39F/GScBDBeUrcLXAbKi9hCr1sa1ZSBpCNL8E4MxD
+         Z9X3V//ozgRbcHwoI/umUv1KumXQ2Z82fipjdK20=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        stable <stable@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
+        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 05/26] misc: rtsx_usb: set return value in rsp_buf alloc err path
-Date:   Wed, 27 Jul 2022 18:10:34 +0200
-Message-Id: <20220727160959.355318920@linuxfoundation.org>
+Subject: [PATCH 4.9 06/26] xfrm: xfrm_policy: fix a possible double xfrm_pols_put() in xfrm_bundle_lookup()
+Date:   Wed, 27 Jul 2022 18:10:35 +0200
+Message-Id: <20220727160959.403628194@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727160959.122591422@linuxfoundation.org>
 References: <20220727160959.122591422@linuxfoundation.org>
@@ -50,54 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shuah Khan <skhan@linuxfoundation.org>
+From: Hangyu Hua <hbh25y@gmail.com>
 
-[ Upstream commit 2cd37c2e72449a7add6da1183d20a6247d6db111 ]
+[ Upstream commit f85daf0e725358be78dfd208dea5fd665d8cb901 ]
 
-Set return value in rsp_buf alloc error path before going to
-error handling.
+xfrm_policy_lookup() will call xfrm_pol_hold_rcu() to get a refcount of
+pols[0]. This refcount can be dropped in xfrm_expand_policies() when
+xfrm_expand_policies() return error. pols[0]'s refcount is balanced in
+here. But xfrm_bundle_lookup() will also call xfrm_pols_put() with
+num_pols == 1 to drop this refcount when xfrm_expand_policies() return
+error.
 
-drivers/misc/cardreader/rtsx_usb.c:639:6: warning: variable 'ret' is used uninitialized whenever 'if' condition is true [-Wsometimes-uninitialized]
-           if (!ucr->rsp_buf)
-               ^~~~~~~~~~~~~
-   drivers/misc/cardreader/rtsx_usb.c:678:9: note: uninitialized use occurs here
-           return ret;
-                  ^~~
-   drivers/misc/cardreader/rtsx_usb.c:639:2: note: remove the 'if' if its condition is always false
-           if (!ucr->rsp_buf)
-           ^~~~~~~~~~~~~~~~~~
-   drivers/misc/cardreader/rtsx_usb.c:622:9: note: initialize the variable 'ret' to silence this warning
-           int ret;
-                  ^
-                   = 0
+This patch also fix an illegal address access. pols[0] will save a error
+point when xfrm_policy_lookup fails. This lead to xfrm_pols_put to resolve
+an illegal address in xfrm_bundle_lookup's error path.
 
-Fixes: 3776c7855985 ("misc: rtsx_usb: use separate command and response buffers")
-Reported-by: kernel test robot <lkp@intel.com>
-Cc: stable <stable@kernel.org>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
-Link: https://lore.kernel.org/r/20220701165352.15687-1-skhan@linuxfoundation.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fix these by setting num_pols = 0 in xfrm_expand_policies()'s error path.
+
+Fixes: 80c802f3073e ("xfrm: cache bundles instead of policies for outgoing flows")
+Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mfd/rtsx_usb.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/xfrm/xfrm_policy.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/mfd/rtsx_usb.c b/drivers/mfd/rtsx_usb.c
-index 134c6fbd9c50..fd859a7872a6 100644
---- a/drivers/mfd/rtsx_usb.c
-+++ b/drivers/mfd/rtsx_usb.c
-@@ -647,8 +647,10 @@ static int rtsx_usb_probe(struct usb_interface *intf,
- 		return -ENOMEM;
- 
- 	ucr->rsp_buf = kmalloc(IOBUF_SIZE, GFP_KERNEL);
--	if (!ucr->rsp_buf)
-+	if (!ucr->rsp_buf) {
-+		ret = -ENOMEM;
- 		goto out_free_cmd_buf;
+diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+index 9179b47e8b61..0894108f561c 100644
+--- a/net/xfrm/xfrm_policy.c
++++ b/net/xfrm/xfrm_policy.c
+@@ -1819,8 +1819,10 @@ static int xfrm_expand_policies(const struct flowi *fl, u16 family,
+ 		*num_xfrms = 0;
+ 		return 0;
+ 	}
+-	if (IS_ERR(pols[0]))
++	if (IS_ERR(pols[0])) {
++		*num_pols = 0;
+ 		return PTR_ERR(pols[0]);
 +	}
  
- 	usb_set_intfdata(intf, ucr);
+ 	*num_xfrms = pols[0]->xfrm_nr;
  
+@@ -1834,6 +1836,7 @@ static int xfrm_expand_policies(const struct flowi *fl, u16 family,
+ 		if (pols[1]) {
+ 			if (IS_ERR(pols[1])) {
+ 				xfrm_pols_put(pols, *num_pols);
++				*num_pols = 0;
+ 				return PTR_ERR(pols[1]);
+ 			}
+ 			(*num_pols)++;
 -- 
 2.35.1
 
