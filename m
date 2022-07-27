@@ -2,85 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58A5BC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 15:23:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F077C19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 15:24:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232606AbiG0PXr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 11:23:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34118 "EHLO
+        id S232883AbiG0PYR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 11:24:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230028AbiG0PXl (ORCPT
+        with ESMTP id S233785AbiG0PYN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 11:23:41 -0400
-Received: from mail-il1-f173.google.com (mail-il1-f173.google.com [209.85.166.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A1AD46D9C;
-        Wed, 27 Jul 2022 08:23:41 -0700 (PDT)
-Received: by mail-il1-f173.google.com with SMTP id f8so780029ils.13;
-        Wed, 27 Jul 2022 08:23:41 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=z5vpqZfmFKwVrz9tfkSeyBo2CWCpn59/Ud7Jqj6aBSo=;
-        b=69wpzKAF8NxsdRTN2v59i5fLz9BzWm3UxJcTDNrHavHwSRcjUkqQtDC+/bUCfOInzS
-         jEuk5uKz9WGfdVLs/Ws3Ot9xNYJuuIngyyVRI5uHjooss8LyRnNpXH8rNZktL+rRLvgV
-         btiXBsS+j2pVsY3piQ3sYxOL7M2bhJSJx2g6+TW4D0NuHnDJhB2fo7zxsSPz13sFwcWC
-         BLUraUFFxaXvnYkuPvnr8mgh2BB9Szjt8bfpv/TVwRNXJM9d2lG7IGEAUQw1ddlA9yEg
-         ZF4GH/PiRMao4QQykvql5YeGaxEbko88Okv1f5D64xhsRkLg7UnGimYCzFkCv06KYfcU
-         umMg==
-X-Gm-Message-State: AJIora8iXcLna1qLTdHNTzrhrjsHRBjbqrYhBiyVEzCeTtVOsylTcbtc
-        2DpToQAzfEm8YhvCdCP0fg==
-X-Google-Smtp-Source: AGRyM1up1oPDnQEY9tNohSqCcyJOjFy1DCKFfz/b2rGCtlJVjvqTI93Dp4hC6w8f3DmUzFX2ZvN2pA==
-X-Received: by 2002:a05:6e02:1c8d:b0:2dc:8162:282e with SMTP id w13-20020a056e021c8d00b002dc8162282emr8837058ill.5.1658935420412;
-        Wed, 27 Jul 2022 08:23:40 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id v5-20020a056e0213c500b002dce9ddcb08sm61488ilj.30.2022.07.27.08.23.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 08:23:39 -0700 (PDT)
-Received: (nullmailer pid 2696011 invoked by uid 1000);
-        Wed, 27 Jul 2022 15:23:38 -0000
-Date:   Wed, 27 Jul 2022 09:23:38 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Conor Dooley <mail@conchuod.ie>
-Cc:     Atul Khare <atulkhare@rivosinc.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, linux-gpio@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Sagar Kadam <sagar.kadam@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        linux-riscv@lists.infradead.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] dt-bindings: sifive: add gpio-line-names
-Message-ID: <20220727152338.GA2695979-robh@kernel.org>
-References: <20220726170725.3245278-1-mail@conchuod.ie>
- <20220726170725.3245278-3-mail@conchuod.ie>
+        Wed, 27 Jul 2022 11:24:13 -0400
+X-Greylist: delayed 528 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 27 Jul 2022 08:24:10 PDT
+Received: from serv108.segi.ulg.ac.be (serv108.segi.ulg.ac.be [139.165.32.111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14F8547B95;
+        Wed, 27 Jul 2022 08:24:09 -0700 (PDT)
+Received: from [31.133.137.93] (dhcp-895d.meeting.ietf.org [31.133.137.93])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by serv108.segi.ulg.ac.be (Postfix) with ESMTPSA id 76039200DF96;
+        Wed, 27 Jul 2022 17:15:15 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 76039200DF96
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
+        s=ulg20190529; t=1658934916;
+        bh=I848GIMG+rr1vSQNnER5ZP2Oz/37p0WtxAU9zeysw/I=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=kQ14gRdmvnxnQkRtSxXOGlkfGEkGd+/lwkS5LaE1/zcdeL5o9gJaxqmMh/gVTcY4U
+         msClq4fhT2aOmVaFcjnQNNkpwNcfkH+K2zE93PkazIdEnzeWsDOdFfKNltlJRTDEe7
+         jbfjoFIB2sZORqQUxpkDVP0Xb81zbBIY9Xlh3u0tQm8lsmGOUr0chyghO03PF1EXoN
+         l0PDUQNZXezrQoKNV9AkJZNc0qXxs9EKhGkH3ri+wSFKLc4NKrfQx0LpUUJ4eWAtxT
+         mc4Z4QShFTtAiq1lwPOzESKqVzlPWFIjzgMHikik5jLEqLXmsDr4ODjpvCsBMU5jdW
+         IstyOlvhX7aOg==
+Message-ID: <8810d090-3fcb-0e93-ce5d-e88abb421dba@uliege.be>
+Date:   Wed, 27 Jul 2022 11:15:13 -0400
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220726170725.3245278-3-mail@conchuod.ie>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH] selftests: net: fix IOAM test skip return code
+Content-Language: en-US
+To:     Kleber Sacilotto de Souza <kleber.souza@canonical.com>,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>
+References: <20220727093742.115882-1-kleber.souza@canonical.com>
+From:   Justin Iurman <justin.iurman@uliege.be>
+In-Reply-To: <20220727093742.115882-1-kleber.souza@canonical.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 26 Jul 2022 18:07:26 +0100, Conor Dooley wrote:
-> From: Atul Khare <atulkhare@rivosinc.com>
+On 7/27/22 11:37, Kleber Sacilotto de Souza wrote:
+> The ioam6.sh test script exits with an error code (1) when tests are
+> skipped due to lack of support from userspace/kernel or not enough
+> permissions. It should return the kselftests SKIP code instead.
 > 
-> Fix device tree schema validation messages like 'gpio-line-names'
-> does not match any of the regexes: 'pinctrl-[0-9]+' From schema: ...
-> sifive,gpio.yaml'.
-> 
-> The bindings were missing the gpio-line-names element, which was
-> causing the dt-schema checker to trip-up.
-> 
-> Signed-off-by: Atul Khare <atulkhare@rivosinc.com>
-> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+> Signed-off-by: Kleber Sacilotto de Souza <kleber.souza@canonical.com>
 > ---
->  Documentation/devicetree/bindings/gpio/sifive,gpio.yaml | 4 ++++
->  1 file changed, 4 insertions(+)
+>   tools/testing/selftests/net/ioam6.sh | 12 +++++++-----
+>   1 file changed, 7 insertions(+), 5 deletions(-)
 > 
+> diff --git a/tools/testing/selftests/net/ioam6.sh b/tools/testing/selftests/net/ioam6.sh
+> index a2b9fad5a9a6..4ceb401da1bf 100755
+> --- a/tools/testing/selftests/net/ioam6.sh
+> +++ b/tools/testing/selftests/net/ioam6.sh
+> @@ -117,6 +117,8 @@
+>   #        | Schema Data         |                                     |
+>   #        +-----------------------------------------------------------+
+>   
+> +# Kselftest framework requirement - SKIP code is 4.
+> +ksft_skip=4
+>   
+>   ################################################################################
+>   #                                                                              #
+> @@ -211,7 +213,7 @@ check_kernel_compatibility()
+>       echo "SKIP: kernel version probably too old, missing ioam support"
+>       ip link del veth0 2>/dev/null || true
+>       ip netns del ioam-tmp-node || true
+> -    exit 1
+> +    exit $ksft_skip
+>     fi
+>   
+>     ip -netns ioam-tmp-node route add db02::/64 encap ioam6 mode inline \
+> @@ -227,7 +229,7 @@ check_kernel_compatibility()
+>            "without CONFIG_IPV6_IOAM6_LWTUNNEL?"
+>       ip link del veth0 2>/dev/null || true
+>       ip netns del ioam-tmp-node || true
+> -    exit 1
+> +    exit $ksft_skip
+>     fi
+>   
+>     ip link del veth0 2>/dev/null || true
+> @@ -752,20 +754,20 @@ nfailed=0
+>   if [ "$(id -u)" -ne 0 ]
+>   then
+>     echo "SKIP: Need root privileges"
+> -  exit 1
+> +  exit $ksft_skip
+>   fi
+>   
+>   if [ ! -x "$(command -v ip)" ]
+>   then
+>     echo "SKIP: Could not run test without ip tool"
+> -  exit 1
+> +  exit $ksft_skip
+>   fi
+>   
+>   ip ioam &>/dev/null
+>   if [ $? = 1 ]
+>   then
+>     echo "SKIP: iproute2 too old, missing ioam command"
+> -  exit 1
+> +  exit $ksft_skip
+>   fi
+>   
+>   check_kernel_compatibility
 
-Acked-by: Rob Herring <robh@kernel.org>
+LGTM, thanks.
+
+Reviewed-by: Justin Iurman <justin.iurman@uliege.be>
