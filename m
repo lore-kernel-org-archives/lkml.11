@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 874FAC19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:31:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18D86C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:31:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242346AbiG0RbZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:31:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58398 "EHLO
+        id S231620AbiG0Rbb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:31:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242162AbiG0R2b (ORCPT
+        with ESMTP id S242262AbiG0R3L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:28:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04BF17FE68;
-        Wed, 27 Jul 2022 09:47:29 -0700 (PDT)
+        Wed, 27 Jul 2022 13:29:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26B4B80482;
+        Wed, 27 Jul 2022 09:47:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 87C4C615FE;
-        Wed, 27 Jul 2022 16:47:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98241C433C1;
-        Wed, 27 Jul 2022 16:47:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 326DDB821AC;
+        Wed, 27 Jul 2022 16:47:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70F67C43143;
+        Wed, 27 Jul 2022 16:47:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940422;
-        bh=zl8nkHP5kUCeFYDnIhWo5vo26zKl4GVTupTw4VrhxM8=;
+        s=korg; t=1658940424;
+        bh=1+iurOaVQp3iZhPQt/kTqOFCUdJRGjD5/lCZjsj38Bc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nmi5f8O5XxZtNcIXWJVgsXHaXnkyeCVV/qGG9cT74X/kPk39pEtyFpR8KIuRx/BFY
-         9Nx1fDu8hnSE9mZMlLVObbzgEux63iudi8qBExDVi/D1kUAUmDcMzHshbM3V/joliK
-         E6fJG7I7OSpvST6N2mrlqc8VTKMDwfGUTI4pzOkc=
+        b=g4C3oHKJl15uK0ale3EDo5JIoPv9yt88mpNHPQrwbtHpmEhtvV17jR5QxacDK880Z
+         W8152uXmiEODArCg1naS83jFqBq4pMJBEijr9KrQpJi9WQmBPTRv1JekOcOtU5v7NQ
+         SOsnqdyCP7iHOsI3Zbf1IZzuRp01QUlZgmH2ebIU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hayes Wang <hayeswang@realtek.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.18 018/158] r8152: fix a WOL issue
-Date:   Wed, 27 Jul 2022 18:11:22 +0200
-Message-Id: <20220727161022.205844893@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.18 019/158] ip: Fix data-races around sysctl_ip_default_ttl.
+Date:   Wed, 27 Jul 2022 18:11:23 +0200
+Message-Id: <20220727161022.246265876@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -48,79 +48,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hayes Wang <hayeswang@realtek.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit cdf0b86b250fd3c1c3e120c86583ea510c52e4ce upstream.
+commit 8281b7ec5c56b71cb2cc5a1728b41607be66959c upstream.
 
-This fixes that the platform is waked by an unexpected packet. The
-size and range of FIFO is different when the device enters S3 state,
-so it is necessary to correct some settings when suspending.
+While reading sysctl_ip_default_ttl, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its readers.
 
-Regardless of jumbo frame, set RMS to 1522 and MTPS to MTPS_DEFAULT.
-Besides, enable MCU_BORW_EN to update the method of calculating the
-pointer of data. Then, the hardware could get the correct data.
-
-Fixes: 195aae321c82 ("r8152: support new chips")
-Signed-off-by: Hayes Wang <hayeswang@realtek.com>
-Link: https://lore.kernel.org/r/20220718082120.10957-391-nic_swsd@realtek.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/usb/r8152.c |   16 ++++++++++++++--
- 1 file changed, 14 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/netronome/nfp/flower/action.c |    2 +-
+ include/net/route.h                                |    2 +-
+ net/ipv4/ip_sockglue.c                             |    2 +-
+ net/ipv4/netfilter/nf_reject_ipv4.c                |    4 ++--
+ net/ipv4/proc.c                                    |    2 +-
+ net/netfilter/nf_synproxy_core.c                   |    2 +-
+ 6 files changed, 7 insertions(+), 7 deletions(-)
 
---- a/drivers/net/usb/r8152.c
-+++ b/drivers/net/usb/r8152.c
-@@ -32,7 +32,7 @@
- #define NETNEXT_VERSION		"12"
+--- a/drivers/net/ethernet/netronome/nfp/flower/action.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/action.c
+@@ -473,7 +473,7 @@ nfp_fl_set_tun(struct nfp_app *app, stru
+ 			set_tun->ttl = ip4_dst_hoplimit(&rt->dst);
+ 			ip_rt_put(rt);
+ 		} else {
+-			set_tun->ttl = net->ipv4.sysctl_ip_default_ttl;
++			set_tun->ttl = READ_ONCE(net->ipv4.sysctl_ip_default_ttl);
+ 		}
+ 	}
  
- /* Information for net */
--#define NET_VERSION		"12"
-+#define NET_VERSION		"13"
+--- a/include/net/route.h
++++ b/include/net/route.h
+@@ -361,7 +361,7 @@ static inline int ip4_dst_hoplimit(const
+ 	struct net *net = dev_net(dst->dev);
  
- #define DRIVER_VERSION		"v1." NETNEXT_VERSION "." NET_VERSION
- #define DRIVER_AUTHOR "Realtek linux nic maintainers <nic_swsd@realtek.com>"
-@@ -5915,7 +5915,8 @@ static void r8153_enter_oob(struct r8152
+ 	if (hoplimit == 0)
+-		hoplimit = net->ipv4.sysctl_ip_default_ttl;
++		hoplimit = READ_ONCE(net->ipv4.sysctl_ip_default_ttl);
+ 	return hoplimit;
+ }
  
- 	wait_oob_link_list_ready(tp);
+--- a/net/ipv4/ip_sockglue.c
++++ b/net/ipv4/ip_sockglue.c
+@@ -1606,7 +1606,7 @@ static int do_ip_getsockopt(struct sock
+ 	{
+ 		struct net *net = sock_net(sk);
+ 		val = (inet->uc_ttl == -1 ?
+-		       net->ipv4.sysctl_ip_default_ttl :
++		       READ_ONCE(net->ipv4.sysctl_ip_default_ttl) :
+ 		       inet->uc_ttl);
+ 		break;
+ 	}
+--- a/net/ipv4/netfilter/nf_reject_ipv4.c
++++ b/net/ipv4/netfilter/nf_reject_ipv4.c
+@@ -62,7 +62,7 @@ struct sk_buff *nf_reject_skb_v4_tcp_res
  
--	ocp_write_word(tp, MCU_TYPE_PLA, PLA_RMS, mtu_to_size(tp->netdev->mtu));
-+	ocp_write_word(tp, MCU_TYPE_PLA, PLA_RMS, 1522);
-+	ocp_write_byte(tp, MCU_TYPE_PLA, PLA_MTPS, MTPS_DEFAULT);
+ 	skb_reserve(nskb, LL_MAX_HEADER);
+ 	niph = nf_reject_iphdr_put(nskb, oldskb, IPPROTO_TCP,
+-				   net->ipv4.sysctl_ip_default_ttl);
++				   READ_ONCE(net->ipv4.sysctl_ip_default_ttl));
+ 	nf_reject_ip_tcphdr_put(nskb, oldskb, oth);
+ 	niph->tot_len = htons(nskb->len);
+ 	ip_send_check(niph);
+@@ -115,7 +115,7 @@ struct sk_buff *nf_reject_skb_v4_unreach
  
- 	switch (tp->version) {
- 	case RTL_VER_03:
-@@ -5951,6 +5952,10 @@ static void r8153_enter_oob(struct r8152
- 	ocp_data |= NOW_IS_OOB | DIS_MCU_CLROOB;
- 	ocp_write_byte(tp, MCU_TYPE_PLA, PLA_OOB_CTRL, ocp_data);
+ 	skb_reserve(nskb, LL_MAX_HEADER);
+ 	niph = nf_reject_iphdr_put(nskb, oldskb, IPPROTO_ICMP,
+-				   net->ipv4.sysctl_ip_default_ttl);
++				   READ_ONCE(net->ipv4.sysctl_ip_default_ttl));
  
-+	ocp_data = ocp_read_word(tp, MCU_TYPE_PLA, PLA_SFF_STS_7);
-+	ocp_data |= MCU_BORW_EN;
-+	ocp_write_word(tp, MCU_TYPE_PLA, PLA_SFF_STS_7, ocp_data);
-+
- 	rxdy_gated_en(tp, false);
+ 	skb_reset_transport_header(nskb);
+ 	icmph = skb_put_zero(nskb, sizeof(struct icmphdr));
+--- a/net/ipv4/proc.c
++++ b/net/ipv4/proc.c
+@@ -387,7 +387,7 @@ static int snmp_seq_show_ipstats(struct
  
- 	ocp_data = ocp_read_dword(tp, MCU_TYPE_PLA, PLA_RCR);
-@@ -6553,6 +6558,9 @@ static void rtl8156_down(struct r8152 *t
- 	rtl_disable(tp);
- 	rtl_reset_bmu(tp);
+ 	seq_printf(seq, "\nIp: %d %d",
+ 		   IPV4_DEVCONF_ALL(net, FORWARDING) ? 1 : 2,
+-		   net->ipv4.sysctl_ip_default_ttl);
++		   READ_ONCE(net->ipv4.sysctl_ip_default_ttl));
  
-+	ocp_write_word(tp, MCU_TYPE_PLA, PLA_RMS, 1522);
-+	ocp_write_byte(tp, MCU_TYPE_PLA, PLA_MTPS, MTPS_DEFAULT);
-+
- 	/* Clear teredo wake event. bit[15:8] is the teredo wakeup
- 	 * type. Set it to zero. bits[7:0] are the W1C bits about
- 	 * the events. Set them to all 1 to clear them.
-@@ -6563,6 +6571,10 @@ static void rtl8156_down(struct r8152 *t
- 	ocp_data |= NOW_IS_OOB;
- 	ocp_write_byte(tp, MCU_TYPE_PLA, PLA_OOB_CTRL, ocp_data);
- 
-+	ocp_data = ocp_read_word(tp, MCU_TYPE_PLA, PLA_SFF_STS_7);
-+	ocp_data |= MCU_BORW_EN;
-+	ocp_write_word(tp, MCU_TYPE_PLA, PLA_SFF_STS_7, ocp_data);
-+
- 	rtl_rx_vlan_en(tp, true);
- 	rxdy_gated_en(tp, false);
- 
+ 	BUILD_BUG_ON(offsetof(struct ipstats_mib, mibs) != 0);
+ 	snmp_get_cpu_field64_batch(buff64, snmp4_ipstats_list,
+--- a/net/netfilter/nf_synproxy_core.c
++++ b/net/netfilter/nf_synproxy_core.c
+@@ -405,7 +405,7 @@ synproxy_build_ip(struct net *net, struc
+ 	iph->tos	= 0;
+ 	iph->id		= 0;
+ 	iph->frag_off	= htons(IP_DF);
+-	iph->ttl	= net->ipv4.sysctl_ip_default_ttl;
++	iph->ttl	= READ_ONCE(net->ipv4.sysctl_ip_default_ttl);
+ 	iph->protocol	= IPPROTO_TCP;
+ 	iph->check	= 0;
+ 	iph->saddr	= saddr;
 
 
