@@ -2,55 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2317EC19F28
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:45:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67166C19F2C
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:45:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240181AbiG0QpD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:45:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42466 "EHLO
+        id S240231AbiG0QpG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:45:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240152AbiG0QoJ (ORCPT
+        with ESMTP id S240144AbiG0QoJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Jul 2022 12:44:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A47345FCF;
-        Wed, 27 Jul 2022 09:30:44 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11CC99FDB;
+        Wed, 27 Jul 2022 09:30:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 25558B821BC;
-        Wed, 27 Jul 2022 16:30:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45820C433C1;
-        Wed, 27 Jul 2022 16:30:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E6CA61A24;
+        Wed, 27 Jul 2022 16:30:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9886AC433C1;
+        Wed, 27 Jul 2022 16:30:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939440;
-        bh=FOFblN+8rHzafB95Zu3FHcxg7fSjHHCQPRX6hJ/tA2g=;
+        s=korg; t=1658939438;
+        bh=j4gFqz2+AZhseKpgjUD2DF/jrkEfbT3tUCKaJr/8GTA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iciO1cqRec+JwB7wIfM5q1XWeAaQTgYvktdEb60BN0ENpBneGpWvk8T00xt5iDAZt
-         KDyNlLDJ2cx/6w9tSIsKzpV/sNPjMRk2FZ3ZtgllgZDzqYrQP4bzXEfEzs8Lv5/vE1
-         HKBLffvVBEWGdEWeTi/pTRMyoSdx5/3fbso4A2ys=
+        b=b2HfZtIWblQfstJbnfVJwu+6r9FeNfucpH/a6s1A+Mu4SORWQTpgkI2wt7rT2MwP4
+         xvs3rfGwR5diggeSmTdd2fpcN/ndwqA+4Ol/sED1IQbLIhygB3xrOmpWPKA3KA3Klu
+         PohCynF0aAxVT9ZwMcvp/GFOYD8azU+muZ14OH4k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michel Lespinasse <walken@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Daniel Jordan <daniel.m.jordan@oracle.com>,
-        Davidlohr Bueso <dbueso@suse.de>,
-        Laurent Dufour <ldufour@linux.ibm.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Liam Howlett <Liam.Howlett@oracle.com>,
-        Jerome Glisse <jglisse@redhat.com>,
-        David Rientjes <rientjes@google.com>,
-        Hugh Dickins <hughd@google.com>, Ying Han <yinghan@google.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
+        stable@vger.kernel.org,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 70/87] mmap locking API: initial implementation as rwsem wrappers
-Date:   Wed, 27 Jul 2022 18:11:03 +0200
-Message-Id: <20220727161011.904986942@linuxfoundation.org>
+Subject: [PATCH 5.4 69/87] x86/uaccess: Implement macros for CMPXCHG on user addresses
+Date:   Wed, 27 Jul 2022 18:11:02 +0200
+Message-Id: <20220727161011.854462551@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161008.993711844@linuxfoundation.org>
 References: <20220727161008.993711844@linuxfoundation.org>
@@ -62,134 +51,194 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michel Lespinasse <walken@google.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-[ Upstream commit 9740ca4e95b43b91a4a848694a20d01ba6818f7b ]
+[ Upstream commit 989b5db215a2f22f89d730b607b071d964780f10 ]
 
-This patch series adds a new mmap locking API replacing the existing
-mmap_sem lock and unlocks.  Initially the API is just implemente in terms
-of inlined rwsem calls, so it doesn't provide any new functionality.
+Add support for CMPXCHG loops on userspace addresses.  Provide both an
+"unsafe" version for tight loops that do their own uaccess begin/end, as
+well as a "safe" version for use cases where the CMPXCHG is not buried in
+a loop, e.g. KVM will resume the guest instead of looping when emulation
+of a guest atomic accesses fails the CMPXCHG.
 
-There are two justifications for the new API:
+Provide 8-byte versions for 32-bit kernels so that KVM can do CMPXCHG on
+guest PAE PTEs, which are accessed via userspace addresses.
 
-- At first, it provides an easy hooking point to instrument mmap_sem
-  locking latencies independently of any other rwsems.
+Guard the asm_volatile_goto() variation with CC_HAS_ASM_GOTO_TIED_OUTPUT,
+the "+m" constraint fails on some compilers that otherwise support
+CC_HAS_ASM_GOTO_OUTPUT.
 
-- In the future, it may be a starting point for replacing the rwsem
-  implementation with a different one, such as range locks.  This is
-  something that is being explored, even though there is no wide concensus
-  about this possible direction yet.  (see
-  https://patchwork.kernel.org/cover/11401483/)
-
-This patch (of 12):
-
-This change wraps the existing mmap_sem related rwsem calls into a new
-mmap locking API.  There are two justifications for the new API:
-
-- At first, it provides an easy hooking point to instrument mmap_sem
-  locking latencies independently of any other rwsems.
-
-- In the future, it may be a starting point for replacing the rwsem
-  implementation with a different one, such as range locks.
-
-Signed-off-by: Michel Lespinasse <walken@google.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Reviewed-by: Daniel Jordan <daniel.m.jordan@oracle.com>
-Reviewed-by: Davidlohr Bueso <dbueso@suse.de>
-Reviewed-by: Laurent Dufour <ldufour@linux.ibm.com>
-Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Matthew Wilcox <willy@infradead.org>
-Cc: Liam Howlett <Liam.Howlett@oracle.com>
-Cc: Jerome Glisse <jglisse@redhat.com>
-Cc: David Rientjes <rientjes@google.com>
-Cc: Hugh Dickins <hughd@google.com>
-Cc: Ying Han <yinghan@google.com>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: John Hubbard <jhubbard@nvidia.com>
-Cc: Michel Lespinasse <walken@google.com>
-Link: http://lkml.kernel.org/r/20200520052908.204642-1-walken@google.com
-Link: http://lkml.kernel.org/r/20200520052908.204642-2-walken@google.com
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Cc: stable@vger.kernel.org
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Co-developed-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220202004945.2540433-3-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/mm.h        |  1 +
- include/linux/mmap_lock.h | 54 +++++++++++++++++++++++++++++++++++++++
- 2 files changed, 55 insertions(+)
- create mode 100644 include/linux/mmap_lock.h
+ arch/x86/include/asm/uaccess.h | 142 +++++++++++++++++++++++++++++++++
+ 1 file changed, 142 insertions(+)
 
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index c125fea49752..d35c29d322d8 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -15,6 +15,7 @@
- #include <linux/atomic.h>
- #include <linux/debug_locks.h>
- #include <linux/mm_types.h>
-+#include <linux/mmap_lock.h>
- #include <linux/range.h>
- #include <linux/pfn.h>
- #include <linux/percpu-refcount.h>
-diff --git a/include/linux/mmap_lock.h b/include/linux/mmap_lock.h
-new file mode 100644
-index 000000000000..97ac53b66052
---- /dev/null
-+++ b/include/linux/mmap_lock.h
-@@ -0,0 +1,54 @@
-+#ifndef _LINUX_MMAP_LOCK_H
-+#define _LINUX_MMAP_LOCK_H
+diff --git a/arch/x86/include/asm/uaccess.h b/arch/x86/include/asm/uaccess.h
+index a19effb98fdc..865795e2355e 100644
+--- a/arch/x86/include/asm/uaccess.h
++++ b/arch/x86/include/asm/uaccess.h
+@@ -441,6 +441,103 @@ __pu_label:							\
+ 	__builtin_expect(__gu_err, 0);					\
+ })
+ 
++#ifdef CONFIG_CC_HAS_ASM_GOTO_TIED_OUTPUT
++#define __try_cmpxchg_user_asm(itype, ltype, _ptr, _pold, _new, label)	({ \
++	bool success;							\
++	__typeof__(_ptr) _old = (__typeof__(_ptr))(_pold);		\
++	__typeof__(*(_ptr)) __old = *_old;				\
++	__typeof__(*(_ptr)) __new = (_new);				\
++	asm_volatile_goto("\n"						\
++		     "1: " LOCK_PREFIX "cmpxchg"itype" %[new], %[ptr]\n"\
++		     _ASM_EXTABLE_UA(1b, %l[label])			\
++		     : CC_OUT(z) (success),				\
++		       [ptr] "+m" (*_ptr),				\
++		       [old] "+a" (__old)				\
++		     : [new] ltype (__new)				\
++		     : "memory"						\
++		     : label);						\
++	if (unlikely(!success))						\
++		*_old = __old;						\
++	likely(success);					})
 +
-+static inline void mmap_init_lock(struct mm_struct *mm)
-+{
-+	init_rwsem(&mm->mmap_sem);
-+}
++#ifdef CONFIG_X86_32
++#define __try_cmpxchg64_user_asm(_ptr, _pold, _new, label)	({	\
++	bool success;							\
++	__typeof__(_ptr) _old = (__typeof__(_ptr))(_pold);		\
++	__typeof__(*(_ptr)) __old = *_old;				\
++	__typeof__(*(_ptr)) __new = (_new);				\
++	asm_volatile_goto("\n"						\
++		     "1: " LOCK_PREFIX "cmpxchg8b %[ptr]\n"		\
++		     _ASM_EXTABLE_UA(1b, %l[label])			\
++		     : CC_OUT(z) (success),				\
++		       "+A" (__old),					\
++		       [ptr] "+m" (*_ptr)				\
++		     : "b" ((u32)__new),				\
++		       "c" ((u32)((u64)__new >> 32))			\
++		     : "memory"						\
++		     : label);						\
++	if (unlikely(!success))						\
++		*_old = __old;						\
++	likely(success);					})
++#endif // CONFIG_X86_32
++#else  // !CONFIG_CC_HAS_ASM_GOTO_TIED_OUTPUT
++#define __try_cmpxchg_user_asm(itype, ltype, _ptr, _pold, _new, label)	({ \
++	int __err = 0;							\
++	bool success;							\
++	__typeof__(_ptr) _old = (__typeof__(_ptr))(_pold);		\
++	__typeof__(*(_ptr)) __old = *_old;				\
++	__typeof__(*(_ptr)) __new = (_new);				\
++	asm volatile("\n"						\
++		     "1: " LOCK_PREFIX "cmpxchg"itype" %[new], %[ptr]\n"\
++		     CC_SET(z)						\
++		     "2:\n"						\
++		     _ASM_EXTABLE_TYPE_REG(1b, 2b, EX_TYPE_EFAULT_REG,	\
++					   %[errout])			\
++		     : CC_OUT(z) (success),				\
++		       [errout] "+r" (__err),				\
++		       [ptr] "+m" (*_ptr),				\
++		       [old] "+a" (__old)				\
++		     : [new] ltype (__new)				\
++		     : "memory", "cc");					\
++	if (unlikely(__err))						\
++		goto label;						\
++	if (unlikely(!success))						\
++		*_old = __old;						\
++	likely(success);					})
 +
-+static inline void mmap_write_lock(struct mm_struct *mm)
-+{
-+	down_write(&mm->mmap_sem);
-+}
++#ifdef CONFIG_X86_32
++/*
++ * Unlike the normal CMPXCHG, hardcode ECX for both success/fail and error.
++ * There are only six GPRs available and four (EAX, EBX, ECX, and EDX) are
++ * hardcoded by CMPXCHG8B, leaving only ESI and EDI.  If the compiler uses
++ * both ESI and EDI for the memory operand, compilation will fail if the error
++ * is an input+output as there will be no register available for input.
++ */
++#define __try_cmpxchg64_user_asm(_ptr, _pold, _new, label)	({	\
++	int __result;							\
++	__typeof__(_ptr) _old = (__typeof__(_ptr))(_pold);		\
++	__typeof__(*(_ptr)) __old = *_old;				\
++	__typeof__(*(_ptr)) __new = (_new);				\
++	asm volatile("\n"						\
++		     "1: " LOCK_PREFIX "cmpxchg8b %[ptr]\n"		\
++		     "mov $0, %%ecx\n\t"				\
++		     "setz %%cl\n"					\
++		     "2:\n"						\
++		     _ASM_EXTABLE_TYPE_REG(1b, 2b, EX_TYPE_EFAULT_REG, %%ecx) \
++		     : [result]"=c" (__result),				\
++		       "+A" (__old),					\
++		       [ptr] "+m" (*_ptr)				\
++		     : "b" ((u32)__new),				\
++		       "c" ((u32)((u64)__new >> 32))			\
++		     : "memory", "cc");					\
++	if (unlikely(__result < 0))					\
++		goto label;						\
++	if (unlikely(!__result))					\
++		*_old = __old;						\
++	likely(__result);					})
++#endif // CONFIG_X86_32
++#endif // CONFIG_CC_HAS_ASM_GOTO_TIED_OUTPUT
 +
-+static inline int mmap_write_lock_killable(struct mm_struct *mm)
-+{
-+	return down_write_killable(&mm->mmap_sem);
-+}
+ /* FIXME: this hack is definitely wrong -AK */
+ struct __large_struct { unsigned long buf[100]; };
+ #define __m(x) (*(struct __large_struct __user *)(x))
+@@ -722,6 +819,51 @@ do {										\
+ 	if (unlikely(__gu_err)) goto err_label;					\
+ } while (0)
+ 
++extern void __try_cmpxchg_user_wrong_size(void);
 +
-+static inline bool mmap_write_trylock(struct mm_struct *mm)
-+{
-+	return down_write_trylock(&mm->mmap_sem) != 0;
-+}
++#ifndef CONFIG_X86_32
++#define __try_cmpxchg64_user_asm(_ptr, _oldp, _nval, _label)		\
++	__try_cmpxchg_user_asm("q", "r", (_ptr), (_oldp), (_nval), _label)
++#endif
 +
-+static inline void mmap_write_unlock(struct mm_struct *mm)
-+{
-+	up_write(&mm->mmap_sem);
-+}
++/*
++ * Force the pointer to u<size> to match the size expected by the asm helper.
++ * clang/LLVM compiles all cases and only discards the unused paths after
++ * processing errors, which breaks i386 if the pointer is an 8-byte value.
++ */
++#define unsafe_try_cmpxchg_user(_ptr, _oldp, _nval, _label) ({			\
++	bool __ret;								\
++	__chk_user_ptr(_ptr);							\
++	switch (sizeof(*(_ptr))) {						\
++	case 1:	__ret = __try_cmpxchg_user_asm("b", "q",			\
++					       (__force u8 *)(_ptr), (_oldp),	\
++					       (_nval), _label);		\
++		break;								\
++	case 2:	__ret = __try_cmpxchg_user_asm("w", "r",			\
++					       (__force u16 *)(_ptr), (_oldp),	\
++					       (_nval), _label);		\
++		break;								\
++	case 4:	__ret = __try_cmpxchg_user_asm("l", "r",			\
++					       (__force u32 *)(_ptr), (_oldp),	\
++					       (_nval), _label);		\
++		break;								\
++	case 8:	__ret = __try_cmpxchg64_user_asm((__force u64 *)(_ptr), (_oldp),\
++						 (_nval), _label);		\
++		break;								\
++	default: __try_cmpxchg_user_wrong_size();				\
++	}									\
++	__ret;						})
 +
-+static inline void mmap_write_downgrade(struct mm_struct *mm)
-+{
-+	downgrade_write(&mm->mmap_sem);
-+}
++/* "Returns" 0 on success, 1 on failure, -EFAULT if the access faults. */
++#define __try_cmpxchg_user(_ptr, _oldp, _nval, _label)	({		\
++	int __ret = -EFAULT;						\
++	__uaccess_begin_nospec();					\
++	__ret = !unsafe_try_cmpxchg_user(_ptr, _oldp, _nval, _label);	\
++_label:									\
++	__uaccess_end();						\
++	__ret;								\
++							})
 +
-+static inline void mmap_read_lock(struct mm_struct *mm)
-+{
-+	down_read(&mm->mmap_sem);
-+}
-+
-+static inline int mmap_read_lock_killable(struct mm_struct *mm)
-+{
-+	return down_read_killable(&mm->mmap_sem);
-+}
-+
-+static inline bool mmap_read_trylock(struct mm_struct *mm)
-+{
-+	return down_read_trylock(&mm->mmap_sem) != 0;
-+}
-+
-+static inline void mmap_read_unlock(struct mm_struct *mm)
-+{
-+	up_read(&mm->mmap_sem);
-+}
-+
-+#endif /* _LINUX_MMAP_LOCK_H */
+ /*
+  * We want the unsafe accessors to always be inlined and use
+  * the error labels - thus the macro games.
 -- 
 2.35.1
 
