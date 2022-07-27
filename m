@@ -2,232 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A96A3C19F2C
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:51:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7525FC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:51:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240763AbiG0Qvf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:51:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57570 "EHLO
+        id S240730AbiG0Qvi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:51:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240644AbiG0QvB (ORCPT
+        with ESMTP id S240727AbiG0QvB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Jul 2022 12:51:01 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E81B461D9E;
-        Wed, 27 Jul 2022 09:33:19 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D709261A74;
-        Wed, 27 Jul 2022 16:33:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD879C433C1;
-        Wed, 27 Jul 2022 16:33:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939598;
-        bh=CTdHHqXgnYxT68ljy/SEmGkgeqO487aQEcM+i7haNSk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=e4sWkbjrws54tL1PiAFM+b0l5zVQM6i3p8R8ikaT8T3mxMkNWInqlsBYtYoRAn21t
-         CtCm949d1Os8kphkYpT1ypMpqZse82vBFwjCBXJ7BN3ZGcLpcH0oz3bt+LPkUX0T2a
-         zUTPMclbSlL0wAym69q4FoEExCYHOzJzWXsP0ZLU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        Jeffrey Hugo <quic_jhugo@quicinc.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        Carl Vanderlip <quic_carlv@quicinc.com>
-Subject: [PATCH 5.10 020/105] PCI: hv: Fix interrupt mapping for multi-MSI
-Date:   Wed, 27 Jul 2022 18:10:06 +0200
-Message-Id: <20220727161012.907747745@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220727161012.056867467@linuxfoundation.org>
-References: <20220727161012.056867467@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2951E61DA1
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:33:20 -0700 (PDT)
+Received: by mail-lj1-x229.google.com with SMTP id v21so1822057ljh.3
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:33:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hzahODgMNuon2IeUr2EuuHPWt8+D9EzcvbJbwRZcpkA=;
+        b=q37f8MYDml0WJQ6tALjGlG5Vm7UhkOtu+hluMsitRxWmOAPmVBZWNmPWNbjHKSc1N9
+         QGY6rimQfE6pvxDGfLLTJtOLancrwW4USdDDzbqGrxGxoJBos/6bKm2yrdmFi6rpMHb8
+         JSSk01V4sXf1ecwSzunHRWz+9wQkpvuLuzE2z+T1GGoDaJPCDx3DA6L7qxDhrV3XXjcO
+         nzjlX+BpVDXctxfyqiIOZu57hV6UNdMJgKgMlcKeS/bo03JKmsks6tn9htHJk9XlMXWW
+         zNBpRKP8AVoaaaRaBqsXUg08ZVrekrYI5Fhq0tJqY8Cbtes3dNJxM+xPEYI7d7APDGsl
+         y8tQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hzahODgMNuon2IeUr2EuuHPWt8+D9EzcvbJbwRZcpkA=;
+        b=RsNSh7sQ3RxRUzozIvyjR8OkfrZLmkjtn/tAzBfXCetr/cf6fc1gpxCiUHHvF8vLtT
+         OBZVXPT7mPalph6wZnaJ3ZkAAFtIu3yPBhM7000o/dosW0AxKYZJLHrTUqpb626IUlJK
+         vHKxrETVWU4DKKWt2h9Ze1J7CDo8Q+cYhRD45TpCtMW8ZhvmJQ8lQ7Uv/9iIvnq9PsCL
+         CqTz7213TcoRVPH6MqO9IeIu8UJTR+ubDd56COb/Gd0ablojLSq+0ZZEereCKigLRkJF
+         LjqfcPesiEbFPHP7ZsvMYrpbHgDCsYWCaRoaR0M7liYVu62EBNiziisR6hT1S5Xah9Ss
+         QETw==
+X-Gm-Message-State: AJIora9/kaUQ7Cp92Pjh9R3ChvNb08mG8W5+T78qRBKJhzRg5GxVySQp
+        f4Z4sbiswVuJ4Es6JybeIAQGux3YyGE69L1SXlu/9Uh8Hrs=
+X-Google-Smtp-Source: AGRyM1u+ugCfHWSJfs+Xcjaw0Npmkbnj0H+gh0RdJaFTfS9O/IUFRBKCCuHQG2kHb0WKS/09gAr8JI7by1jmQn8McKM=
+X-Received: by 2002:a2e:a914:0:b0:25d:f74a:54c0 with SMTP id
+ j20-20020a2ea914000000b0025df74a54c0mr8116851ljq.290.1658939598105; Wed, 27
+ Jul 2022 09:33:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <CAPm50aKursUrDpgqLt7RT-VoSfBJswsnR2w1sVAt5mburmdd8g@mail.gmail.com>
+In-Reply-To: <CAPm50aKursUrDpgqLt7RT-VoSfBJswsnR2w1sVAt5mburmdd8g@mail.gmail.com>
+From:   David Matlack <dmatlack@google.com>
+Date:   Wed, 27 Jul 2022 09:32:51 -0700
+Message-ID: <CALzav=eccuGWGpBs=tp5RO_wJqQecGRwDAPi+tyPkMcYrbrPoA@mail.gmail.com>
+Subject: Re: [PATCH] kvm: mmu: fix typos in struct kvm_arch
+To:     Hao Peng <flyingpenghao@gmail.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        kvm list <kvm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Sean Christopherson <seanjc@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeffrey Hugo <quic_jhugo@quicinc.com>
+On Wed, Jul 27, 2022 at 3:58 AM Hao Peng <flyingpenghao@gmail.com> wrote:
+>
+> From: Peng Hao <flyingpeng@tencent.com>
+>
+> No 'kvmp_mmu_pages', it should be 'kvm_mmu_page'. And
+> struct kvm_mmu_pages and struct kvm_mmu_page are different structures,
+> here should be kvm_mmu_page.
+> kvm_mmu_pages is defined in arch/x86/kvm/mmu/mmu.c.
+>
+> Signed-off-by: Peng Hao <flyingpeng@tencent.com>
+> ---
+>  arch/x86/include/asm/kvm_host.h | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+>
+> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
+> index e8281d64a431..205a9f374e14 100644
+> --- a/arch/x86/include/asm/kvm_host.h
+> +++ b/arch/x86/include/asm/kvm_host.h
+> @@ -1272,8 +1272,8 @@ struct kvm_arch {
+>         bool tdp_mmu_enabled;
+>
+>         /*
+> -        * List of struct kvm_mmu_pages being used as roots.
+> -        * All struct kvm_mmu_pages in the list should have
+> +        * List of struct kvm_mmu_page being used as roots.
 
-commit a2bad844a67b1c7740bda63e87453baf63c3a7f7 upstream.
+I agree that "struct <name>s" is a bad/misleading way to make a struct
+plural in comments. The way I prefer to do it is "<name> structs".
+That avoids changing the <name> and still makes it clear it's plural.
+So in this case the comment would be:
 
-According to Dexuan, the hypervisor folks beleive that multi-msi
-allocations are not correct.  compose_msi_msg() will allocate multi-msi
-one by one.  However, multi-msi is a block of related MSIs, with alignment
-requirements.  In order for the hypervisor to allocate properly aligned
-and consecutive entries in the IOMMU Interrupt Remapping Table, there
-should be a single mapping request that requests all of the multi-msi
-vectors in one shot.
+/*
+ * List of kvm_mmu_page structs being used as roots.
+ * All kvm_mmu_page structs in the list should have
+ * tdp_mmu_page set.
+ */
 
-Dexuan suggests detecting the multi-msi case and composing a single
-request related to the first MSI.  Then for the other MSIs in the same
-block, use the cached information.  This appears to be viable, so do it.
-
-5.10 backport - add hv_msi_get_int_vector helper function. Fixed merge
-conflict due to delivery_mode name change (APIC_DELIVERY_MODE_FIXED
-is the value given to dest_Fixed). Removed unused variable in
-hv_compose_msi_msg. Fixed reference to msi_desc->pci to point to
-the same is_msix variable. Removed changes to compose_msi_req_v3 since
-it doesn't exist yet.
-
-Suggested-by: Dexuan Cui <decui@microsoft.com>
-Signed-off-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
-Reviewed-by: Dexuan Cui <decui@microsoft.com>
-Tested-by: Michael Kelley <mikelley@microsoft.com>
-Link: https://lore.kernel.org/r/1652282599-21643-1-git-send-email-quic_jhugo@quicinc.com
-Signed-off-by: Wei Liu <wei.liu@kernel.org>
-Signed-off-by: Carl Vanderlip <quic_carlv@quicinc.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/pci/controller/pci-hyperv.c |   61 +++++++++++++++++++++++++++++++-----
- 1 file changed, 53 insertions(+), 8 deletions(-)
-
---- a/drivers/pci/controller/pci-hyperv.c
-+++ b/drivers/pci/controller/pci-hyperv.c
-@@ -1118,6 +1118,10 @@ static void hv_int_desc_free(struct hv_p
- 		u8 buffer[sizeof(struct pci_delete_interrupt)];
- 	} ctxt;
- 
-+	if (!int_desc->vector_count) {
-+		kfree(int_desc);
-+		return;
-+	}
- 	memset(&ctxt, 0, sizeof(ctxt));
- 	int_pkt = (struct pci_delete_interrupt *)&ctxt.pkt.message;
- 	int_pkt->message_type.type =
-@@ -1180,6 +1184,13 @@ static void hv_irq_mask(struct irq_data
- 	pci_msi_mask_irq(data);
- }
- 
-+static unsigned int hv_msi_get_int_vector(struct irq_data *data)
-+{
-+	struct irq_cfg *cfg = irqd_cfg(data);
-+
-+	return cfg->vector;
-+}
-+
- static int hv_msi_prepare(struct irq_domain *domain, struct device *dev,
- 			  int nvec, msi_alloc_info_t *info)
- {
-@@ -1335,12 +1346,12 @@ static void hv_pci_compose_compl(void *c
- 
- static u32 hv_compose_msi_req_v1(
- 	struct pci_create_interrupt *int_pkt, struct cpumask *affinity,
--	u32 slot, u8 vector)
-+	u32 slot, u8 vector, u8 vector_count)
- {
- 	int_pkt->message_type.type = PCI_CREATE_INTERRUPT_MESSAGE;
- 	int_pkt->wslot.slot = slot;
- 	int_pkt->int_desc.vector = vector;
--	int_pkt->int_desc.vector_count = 1;
-+	int_pkt->int_desc.vector_count = vector_count;
- 	int_pkt->int_desc.delivery_mode = dest_Fixed;
- 
- 	/*
-@@ -1354,14 +1365,14 @@ static u32 hv_compose_msi_req_v1(
- 
- static u32 hv_compose_msi_req_v2(
- 	struct pci_create_interrupt2 *int_pkt, struct cpumask *affinity,
--	u32 slot, u8 vector)
-+	u32 slot, u8 vector, u8 vector_count)
- {
- 	int cpu;
- 
- 	int_pkt->message_type.type = PCI_CREATE_INTERRUPT_MESSAGE2;
- 	int_pkt->wslot.slot = slot;
- 	int_pkt->int_desc.vector = vector;
--	int_pkt->int_desc.vector_count = 1;
-+	int_pkt->int_desc.vector_count = vector_count;
- 	int_pkt->int_desc.delivery_mode = dest_Fixed;
- 
- 	/*
-@@ -1389,7 +1400,6 @@ static u32 hv_compose_msi_req_v2(
-  */
- static void hv_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
- {
--	struct irq_cfg *cfg = irqd_cfg(data);
- 	struct hv_pcibus_device *hbus;
- 	struct vmbus_channel *channel;
- 	struct hv_pci_dev *hpdev;
-@@ -1398,6 +1408,8 @@ static void hv_compose_msi_msg(struct ir
- 	struct cpumask *dest;
- 	struct compose_comp_ctxt comp;
- 	struct tran_int_desc *int_desc;
-+	struct msi_desc *msi_desc;
-+	u8 vector, vector_count;
- 	struct {
- 		struct pci_packet pci_pkt;
- 		union {
-@@ -1418,7 +1430,8 @@ static void hv_compose_msi_msg(struct ir
- 		return;
- 	}
- 
--	pdev = msi_desc_to_pci_dev(irq_data_get_msi_desc(data));
-+	msi_desc  = irq_data_get_msi_desc(data);
-+	pdev = msi_desc_to_pci_dev(msi_desc);
- 	dest = irq_data_get_effective_affinity_mask(data);
- 	pbus = pdev->bus;
- 	hbus = container_of(pbus->sysdata, struct hv_pcibus_device, sysdata);
-@@ -1431,6 +1444,36 @@ static void hv_compose_msi_msg(struct ir
- 	if (!int_desc)
- 		goto drop_reference;
- 
-+	if (!msi_desc->msi_attrib.is_msix && msi_desc->nvec_used > 1) {
-+		/*
-+		 * If this is not the first MSI of Multi MSI, we already have
-+		 * a mapping.  Can exit early.
-+		 */
-+		if (msi_desc->irq != data->irq) {
-+			data->chip_data = int_desc;
-+			int_desc->address = msi_desc->msg.address_lo |
-+					    (u64)msi_desc->msg.address_hi << 32;
-+			int_desc->data = msi_desc->msg.data +
-+					 (data->irq - msi_desc->irq);
-+			msg->address_hi = msi_desc->msg.address_hi;
-+			msg->address_lo = msi_desc->msg.address_lo;
-+			msg->data = int_desc->data;
-+			put_pcichild(hpdev);
-+			return;
-+		}
-+		/*
-+		 * The vector we select here is a dummy value.  The correct
-+		 * value gets sent to the hypervisor in unmask().  This needs
-+		 * to be aligned with the count, and also not zero.  Multi-msi
-+		 * is powers of 2 up to 32, so 32 will always work here.
-+		 */
-+		vector = 32;
-+		vector_count = msi_desc->nvec_used;
-+	} else {
-+		vector = hv_msi_get_int_vector(data);
-+		vector_count = 1;
-+	}
-+
- 	memset(&ctxt, 0, sizeof(ctxt));
- 	init_completion(&comp.comp_pkt.host_event);
- 	ctxt.pci_pkt.completion_func = hv_pci_compose_compl;
-@@ -1441,7 +1484,8 @@ static void hv_compose_msi_msg(struct ir
- 		size = hv_compose_msi_req_v1(&ctxt.int_pkts.v1,
- 					dest,
- 					hpdev->desc.win_slot.slot,
--					cfg->vector);
-+					vector,
-+					vector_count);
- 		break;
- 
- 	case PCI_PROTOCOL_VERSION_1_2:
-@@ -1449,7 +1493,8 @@ static void hv_compose_msi_msg(struct ir
- 		size = hv_compose_msi_req_v2(&ctxt.int_pkts.v2,
- 					dest,
- 					hpdev->desc.win_slot.slot,
--					cfg->vector);
-+					vector,
-+					vector_count);
- 		break;
- 
- 	default:
-
-
+> +        * All struct kvm_mmu_page in the list should have
+>          * tdp_mmu_page set.
+>          *
+>          * For reads, this list is protected by:
+> @@ -1292,8 +1292,8 @@ struct kvm_arch {
+>         struct list_head tdp_mmu_roots;
+>
+>         /*
+> -        * List of struct kvmp_mmu_pages not being used as roots.
+> -        * All struct kvm_mmu_pages in the list should have
+> +        * List of struct kvm_mmu_page not being used as roots.
+> +        * All struct kvm_mmu_page in the list should have
+>          * tdp_mmu_page set and a tdp_mmu_root_count of 0.
+>          */
+>         struct list_head tdp_mmu_pages;
+> --
+> 2.27.0
