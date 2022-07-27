@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 622EDC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:32:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E2E8C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:32:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241218AbiG0RcH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:32:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58376 "EHLO
+        id S242107AbiG0RcL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:32:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242421AbiG0R3h (ORCPT
+        with ESMTP id S242506AbiG0R3s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:29:37 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E43352DF3;
-        Wed, 27 Jul 2022 09:47:50 -0700 (PDT)
+        Wed, 27 Jul 2022 13:29:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0447E80F67;
+        Wed, 27 Jul 2022 09:47:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6927761556;
-        Wed, 27 Jul 2022 16:47:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7085FC433C1;
-        Wed, 27 Jul 2022 16:47:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 86E06B821D4;
+        Wed, 27 Jul 2022 16:47:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E61D3C433D7;
+        Wed, 27 Jul 2022 16:47:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940468;
-        bh=MZS7xM2P/QhUfUhlJ/ZyYiAd7ucFRqtt4/MMoU+Odgg=;
+        s=korg; t=1658940474;
+        bh=RfQQQrVVHg+qrqR7Zwd2k658vR9G4P25h5UQdUhcilY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pLesKRth8yXu9ox0rZf4LulVDyhFZhmdfDV8rNTP5XPBfZGqyDsXjCx1+kJc0H56S
-         B+vI5SNaFN0nickEmLd4NCk5PxyUgnQCZkcfdxquXcjbm0Za0pKiS90faiq7Pk5S0V
-         hD3DWzcss1R1LnWzdyXH0E/PPvmsNU6f2OOqew4k=
+        b=Yc/pcTOqvirDRV+o8Gw10yLDExgi5PNEwUvRsXhCNKZ8I9DJ7z76qga+AwJD7bf9C
+         lh9M/j39TH0zz6EFqwQ7QDGQcd4UI9qaxC6m7MYlndPnVYbtumq35FvXJz/Q3V+deF
+         1rg5HWW5j3kgkHlz26FCN/dUJVeTLm9yVZF3Vhuc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sascha Hauer <s.hauer@pengutronix.de>,
-        Han Xu <han.xu@nxp.com>,
-        =?UTF-8?q?Tomasz=20Mo=C5=84?= <tomasz.mon@camlingroup.com>,
-        Richard Weinberger <richard@nod.at>
-Subject: [PATCH 5.18 007/158] mtd: rawnand: gpmi: Set WAIT_FOR_READY timeout based on program/erase times
-Date:   Wed, 27 Jul 2022 18:11:11 +0200
-Message-Id: <20220727161021.734636052@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Nicholas Kazlauskas <Nicholas.Kazlauskas@amd.com>,
+        Solomon Chiu <solomon.chiu@amd.com>,
+        Stylon Wang <stylon.wang@amd.com>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.18 009/158] drm/amd/display: Fix new dmub notification enabling in DM
+Date:   Wed, 27 Jul 2022 18:11:13 +0200
+Message-Id: <20220727161021.801746226@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -50,68 +52,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sascha Hauer <s.hauer@pengutronix.de>
+From: Stylon Wang <stylon.wang@amd.com>
 
-commit 0fddf9ad06fd9f439f137139861556671673e31c upstream.
+commit 2d4bd81fea1ad6ebba543bd6da3ef5179d130e6a upstream.
 
-06781a5026350 Fixes the calculation of the DEVICE_BUSY_TIMEOUT register
-value from busy_timeout_cycles. busy_timeout_cycles is calculated wrong
-though: It is calculated based on the maximum page read time, but the
-timeout is also used for page write and block erase operations which
-require orders of magnitude bigger timeouts.
+[Why]
+Changes from "Fix for dmub outbox notification enable" need to land
+in DM or DMUB outbox notification would be disabled.
 
-Fix this by calculating busy_timeout_cycles from the maximum of
-tBERS_max and tPROG_max.
+[How]
+Enable outbox notification only after interrupt are enabled and IRQ
+handlers registered. Any pending notification will be sent by DMUB
+once outbox notification is enabled.
 
-This is for now the easiest and most obvious way to fix the driver.
-There's room for improvements though: The NAND_OP_WAITRDY_INSTR tells us
-the desired timeout for the current operation, so we could program the
-timeout dynamically for each operation instead of setting a fixed
-timeout. Also we could wire up the interrupt handler to actually detect
-and forward timeouts occurred when waiting for the chip being ready.
-
-As a sidenote I verified that the change in 06781a5026350 is really
-correct. I wired up the interrupt handler in my tree and measured the
-time between starting the operation and the timeout interrupt handler
-coming in. The time increases 41us with each step in the timeout
-register which corresponds to 4096 clock cycles with the 99MHz clock
-that I have.
-
-Fixes: 06781a5026350 ("mtd: rawnand: gpmi: Fix setting busy timeout setting")
-Fixes: b1206122069aa ("mtd: rawniand: gpmi: use core timings instead of an empirical derivation")
+Fixes: ed7208706448 ("drm/amd/display: Fix for dmub outbox notification enable")
+Reviewed-by: Nicholas Kazlauskas <Nicholas.Kazlauskas@amd.com>
+Acked-by: Solomon Chiu <solomon.chiu@amd.com>
+Signed-off-by: Stylon Wang <stylon.wang@amd.com>
+Acked-by: Harry Wentland <harry.wentland@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Cc: stable@vger.kernel.org
-Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
-Acked-by: Han Xu <han.xu@nxp.com>
-Tested-by: Tomasz Moń <tomasz.mon@camlingroup.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c |   27 +++++++++++++++-------
+ 1 file changed, 19 insertions(+), 8 deletions(-)
 
---- a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
-+++ b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
-@@ -655,9 +655,10 @@ static int gpmi_nfc_compute_timings(stru
- 	unsigned int tRP_ps;
- 	bool use_half_period;
- 	int sample_delay_ps, sample_delay_factor;
--	u16 busy_timeout_cycles;
-+	unsigned int busy_timeout_cycles;
- 	u8 wrn_dly_sel;
- 	unsigned long clk_rate, min_rate;
-+	u64 busy_timeout_ps;
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -1670,7 +1670,7 @@ static int amdgpu_dm_init(struct amdgpu_
+ #if defined(CONFIG_DRM_AMD_SECURE_DISPLAY)
+ 	adev->dm.crc_rd_wrk = amdgpu_dm_crtc_secure_display_create_work();
+ #endif
+-	if (dc_enable_dmub_notifications(adev->dm.dc)) {
++	if (dc_is_dmub_outbox_supported(adev->dm.dc)) {
+ 		init_completion(&adev->dm.dmub_aux_transfer_done);
+ 		adev->dm.dmub_notify = kzalloc(sizeof(struct dmub_notification), GFP_KERNEL);
+ 		if (!adev->dm.dmub_notify) {
+@@ -1708,6 +1708,13 @@ static int amdgpu_dm_init(struct amdgpu_
+ 		goto error;
+ 	}
  
- 	if (sdr->tRC_min >= 30000) {
- 		/* ONFI non-EDO modes [0-3] */
-@@ -690,7 +691,8 @@ static int gpmi_nfc_compute_timings(stru
- 	addr_setup_cycles = TO_CYCLES(sdr->tALS_min, period_ps);
- 	data_setup_cycles = TO_CYCLES(sdr->tDS_min, period_ps);
- 	data_hold_cycles = TO_CYCLES(sdr->tDH_min, period_ps);
--	busy_timeout_cycles = TO_CYCLES(sdr->tWB_max + sdr->tR_max, period_ps);
-+	busy_timeout_ps = max(sdr->tBERS_max, sdr->tPROG_max);
-+	busy_timeout_cycles = TO_CYCLES(busy_timeout_ps, period_ps);
++	/* Enable outbox notification only after IRQ handlers are registered and DMUB is alive.
++	 * It is expected that DMUB will resend any pending notifications at this point, for
++	 * example HPD from DPIA.
++	 */
++	if (dc_is_dmub_outbox_supported(adev->dm.dc))
++		dc_enable_dmub_outbox(adev->dm.dc);
++
+ 	/* create fake encoders for MST */
+ 	dm_dp_create_fake_mst_encoders(adev);
  
- 	hw->timing0 = BF_GPMI_TIMING0_ADDRESS_SETUP(addr_setup_cycles) |
- 		      BF_GPMI_TIMING0_DATA_HOLD(data_hold_cycles) |
+@@ -2701,9 +2708,6 @@ static int dm_resume(void *handle)
+ 		 */
+ 		link_enc_cfg_copy(adev->dm.dc->current_state, dc_state);
+ 
+-		if (dc_enable_dmub_notifications(adev->dm.dc))
+-			amdgpu_dm_outbox_init(adev);
+-
+ 		r = dm_dmub_hw_init(adev);
+ 		if (r)
+ 			DRM_ERROR("DMUB interface failed to initialize: status=%d\n", r);
+@@ -2721,6 +2725,11 @@ static int dm_resume(void *handle)
+ 			}
+ 		}
+ 
++		if (dc_is_dmub_outbox_supported(adev->dm.dc)) {
++			amdgpu_dm_outbox_init(adev);
++			dc_enable_dmub_outbox(adev->dm.dc);
++		}
++
+ 		WARN_ON(!dc_commit_state(dm->dc, dc_state));
+ 
+ 		dm_gpureset_commit_state(dm->cached_dc_state, dm);
+@@ -2742,13 +2751,15 @@ static int dm_resume(void *handle)
+ 	/* TODO: Remove dc_state->dccg, use dc->dccg directly. */
+ 	dc_resource_state_construct(dm->dc, dm_state->context);
+ 
+-	/* Re-enable outbox interrupts for DPIA. */
+-	if (dc_enable_dmub_notifications(adev->dm.dc))
+-		amdgpu_dm_outbox_init(adev);
+-
+ 	/* Before powering on DC we need to re-initialize DMUB. */
+ 	dm_dmub_hw_resume(adev);
+ 
++	/* Re-enable outbox interrupts for DPIA. */
++	if (dc_is_dmub_outbox_supported(adev->dm.dc)) {
++		amdgpu_dm_outbox_init(adev);
++		dc_enable_dmub_outbox(adev->dm.dc);
++	}
++
+ 	/* power on hardware */
+ 	dc_set_power_state(dm->dc, DC_ACPI_CM_POWER_STATE_D0);
+ 
 
 
