@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADF10C19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:52:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D95BC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:53:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240889AbiG0Qw4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:52:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55510 "EHLO
+        id S240895AbiG0QxB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:53:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240813AbiG0QwO (ORCPT
+        with ESMTP id S240822AbiG0QwP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:52:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF96D4C61A;
-        Wed, 27 Jul 2022 09:34:04 -0700 (PDT)
+        Wed, 27 Jul 2022 12:52:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A140F4D16E;
+        Wed, 27 Jul 2022 09:34:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C36661A7E;
-        Wed, 27 Jul 2022 16:34:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69BCBC433C1;
-        Wed, 27 Jul 2022 16:34:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B6CC61A7E;
+        Wed, 27 Jul 2022 16:34:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4438AC43470;
+        Wed, 27 Jul 2022 16:34:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939643;
-        bh=b1zYqBD/WqElTEuUwmtzh0IfW8TiO4wTB0nofd3g2Yk=;
+        s=korg; t=1658939646;
+        bh=jsF4LpQm777PxNt5/h+cNChfYSEvUrbp0KZNEszQamk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vOftltn1uzG4v19tOKOeCzM9KkBt/bP4ZKRiZFN4sCeOIYYmokrQ8xVzhU85c7PvX
-         e5QQaeWOJOsj48MUx61dQtC2FflTa8X9hX8Yrrf7h2ByaAiQn2rvLrauMZfLbOTpJn
-         rRrz5QPsMI9g47T/wqvoz7iTcmOCNdKbcpAUErUQ=
+        b=Mkb+EWlh3jL7W/yh8od5O4bCOtytQBtYe41sLTMCuSTIffv+GElVI2ZZBA+y+DaLR
+         JIpTrzSm+7PqJYegGHzi4hj9NU6ZnnSrBpEZ8+R5I6wrBwvkOJ34F+X52fQc16fi30
+         WnVZ+j0crgj3frRt7uXaaXcT+TzRcV2qqhG5Xn2I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hangyu Hua <hbh25y@gmail.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 022/105] xfrm: xfrm_policy: fix a possible double xfrm_pols_put() in xfrm_bundle_lookup()
-Date:   Wed, 27 Jul 2022 18:10:08 +0200
-Message-Id: <20220727161012.982229722@linuxfoundation.org>
+Subject: [PATCH 5.10 023/105] power/reset: arm-versatile: Fix refcount leak in versatile_reboot_probe
+Date:   Wed, 27 Jul 2022 18:10:09 +0200
+Message-Id: <20220727161013.024294674@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161012.056867467@linuxfoundation.org>
 References: <20220727161012.056867467@linuxfoundation.org>
@@ -49,55 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hangyu Hua <hbh25y@gmail.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit f85daf0e725358be78dfd208dea5fd665d8cb901 ]
+[ Upstream commit 80192eff64eee9b3bc0594a47381937b94b9d65a ]
 
-xfrm_policy_lookup() will call xfrm_pol_hold_rcu() to get a refcount of
-pols[0]. This refcount can be dropped in xfrm_expand_policies() when
-xfrm_expand_policies() return error. pols[0]'s refcount is balanced in
-here. But xfrm_bundle_lookup() will also call xfrm_pols_put() with
-num_pols == 1 to drop this refcount when xfrm_expand_policies() return
-error.
+of_find_matching_node_and_match() returns a node pointer with refcount
+incremented, we should use of_node_put() on it when not need anymore.
+Add missing of_node_put() to avoid refcount leak.
 
-This patch also fix an illegal address access. pols[0] will save a error
-point when xfrm_policy_lookup fails. This lead to xfrm_pols_put to resolve
-an illegal address in xfrm_bundle_lookup's error path.
-
-Fix these by setting num_pols = 0 in xfrm_expand_policies()'s error path.
-
-Fixes: 80c802f3073e ("xfrm: cache bundles instead of policies for outgoing flows")
-Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Fixes: 0e545f57b708 ("power: reset: driver for the Versatile syscon reboot")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/xfrm/xfrm_policy.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/power/reset/arm-versatile-reboot.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-index 93cbcc8f9b39..603b05ed7eb4 100644
---- a/net/xfrm/xfrm_policy.c
-+++ b/net/xfrm/xfrm_policy.c
-@@ -2680,8 +2680,10 @@ static int xfrm_expand_policies(const struct flowi *fl, u16 family,
- 		*num_xfrms = 0;
- 		return 0;
- 	}
--	if (IS_ERR(pols[0]))
-+	if (IS_ERR(pols[0])) {
-+		*num_pols = 0;
- 		return PTR_ERR(pols[0]);
-+	}
+diff --git a/drivers/power/reset/arm-versatile-reboot.c b/drivers/power/reset/arm-versatile-reboot.c
+index 08d0a07b58ef..c7624d7611a7 100644
+--- a/drivers/power/reset/arm-versatile-reboot.c
++++ b/drivers/power/reset/arm-versatile-reboot.c
+@@ -146,6 +146,7 @@ static int __init versatile_reboot_probe(void)
+ 	versatile_reboot_type = (enum versatile_reboot)reboot_id->data;
  
- 	*num_xfrms = pols[0]->xfrm_nr;
+ 	syscon_regmap = syscon_node_to_regmap(np);
++	of_node_put(np);
+ 	if (IS_ERR(syscon_regmap))
+ 		return PTR_ERR(syscon_regmap);
  
-@@ -2696,6 +2698,7 @@ static int xfrm_expand_policies(const struct flowi *fl, u16 family,
- 		if (pols[1]) {
- 			if (IS_ERR(pols[1])) {
- 				xfrm_pols_put(pols, *num_pols);
-+				*num_pols = 0;
- 				return PTR_ERR(pols[1]);
- 			}
- 			(*num_pols)++;
 -- 
 2.35.1
 
