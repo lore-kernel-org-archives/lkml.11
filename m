@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9C9DC19F2C
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:38:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFEC1C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:38:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242644AbiG0RiX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:38:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53804 "EHLO
+        id S242654AbiG0Ri1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:38:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242619AbiG0Rhy (ORCPT
+        with ESMTP id S242533AbiG0Rh4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:37:54 -0400
+        Wed, 27 Jul 2022 13:37:56 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC43B8689F;
-        Wed, 27 Jul 2022 09:50:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2695186C0B;
+        Wed, 27 Jul 2022 09:50:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 60B3F616FA;
-        Wed, 27 Jul 2022 16:50:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B9E1C433D6;
-        Wed, 27 Jul 2022 16:50:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B5DDC60D3B;
+        Wed, 27 Jul 2022 16:50:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C57A8C433D6;
+        Wed, 27 Jul 2022 16:50:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940603;
-        bh=49Ylmd6QtRg5NoLeTrOXyRJ1bNwFt5vYNEfZxBZVBSM=;
+        s=korg; t=1658940609;
+        bh=MB48tir69+UgtBlHJV7vcCVKs43QLs5qQdmeSAwoAEE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g5klBnD2u4hcpmOhr2Gt+ZNGX/p/9zhSvM/eIIMX0gaCOdu4O4ZUNPpFD9cy7q+XC
-         aa3FwLxRG2TTZ0hQWAJSCSK2AxEEhzX5w5n3lGvggBYwm852XdpBcqNoX8aB/vn72k
-         G1HKCsAnrrxzlyoP6IWwpAWHEwvzYnH3i1ZHcDa8=
+        b=fvX1sHmxirNuM/WSsZYBP1g5B+aoN2FTm0XrbIzOjUr+/qCs5As3PufZavFzuRLbU
+         rNX+KQ6XphA5WoIiNGTznEZtUg+KZzPIC3ACbi7QBHgFHVKZ/yi/Mrcr2jCFEe7jVK
+         Bl5e7bSqSi1u8xwow7HZZwJdlAYlaW8PPB4cBdxE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 082/158] pinctrl: armada-37xx: Reuse GPIO fwnode in armada_37xx_irqchip_register()
-Date:   Wed, 27 Jul 2022 18:12:26 +0200
-Message-Id: <20220727161024.788030612@linuxfoundation.org>
+Subject: [PATCH 5.18 084/158] net: lan966x: Fix taking rtnl_lock while holding spin_lock
+Date:   Wed, 27 Jul 2022 18:12:28 +0200
+Message-Id: <20220727161024.861930432@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -49,50 +51,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Horatiu Vultur <horatiu.vultur@microchip.com>
 
-[ Upstream commit 46d34d4d502ea1030f5de434e6677ec96ca131c3 ]
+[ Upstream commit 45533a534a45cb12c20c81615d17306176cb1c57 ]
 
-Since we have fwnode of the first found GPIO controller assigned to the
-struct gpio_chip, we may reuse it in the armada_37xx_irqchip_register().
+When the HW deletes an entry in MAC table then it generates an
+interrupt. The SW will go through it's own list of MAC entries and if it
+is not found then it would notify the listeners about this. The problem
+is that when the SW will go through it's own list it would take a spin
+lock(lan966x->mac_lock) and when it notifies that the entry is deleted.
+But to notify the listeners it taking the rtnl_lock which is illegal.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+This is fixed by instead of notifying right away that the entry is
+deleted, move the entry on a temp list and once, it checks all the
+entries then just notify that the entries from temp list are deleted.
+
+Fixes: 5ccd66e01cbe ("net: lan966x: add support for interrupts from analyzer")
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/mvebu/pinctrl-armada-37xx.c | 16 +++-------------
- 1 file changed, 3 insertions(+), 13 deletions(-)
+ .../ethernet/microchip/lan966x/lan966x_mac.c  | 27 ++++++++++++-------
+ 1 file changed, 18 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c b/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
-index 5fc305222d2f..226798d9c067 100644
---- a/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
-+++ b/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
-@@ -726,23 +726,13 @@ static int armada_37xx_irqchip_register(struct platform_device *pdev,
- 	struct gpio_chip *gc = &info->gpio_chip;
- 	struct irq_chip *irqchip = &info->irq_chip;
- 	struct gpio_irq_chip *girq = &gc->irq;
-+	struct device_node *np = to_of_node(gc->fwnode);
- 	struct device *dev = &pdev->dev;
--	struct device_node *np;
--	int ret = -ENODEV, i, nr_irq_parent;
+diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c b/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
+index 005e56ea5da1..2d2b83c03796 100644
+--- a/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
++++ b/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
+@@ -325,10 +325,13 @@ static void lan966x_mac_irq_process(struct lan966x *lan966x, u32 row,
+ {
+ 	struct lan966x_mac_entry *mac_entry, *tmp;
+ 	unsigned char mac[ETH_ALEN] __aligned(2);
++	struct list_head mac_deleted_entries;
+ 	u32 dest_idx;
+ 	u32 column;
+ 	u16 vid;
+ 
++	INIT_LIST_HEAD(&mac_deleted_entries);
++
+ 	spin_lock(&lan966x->mac_lock);
+ 	list_for_each_entry_safe(mac_entry, tmp, &lan966x->mac_entries, list) {
+ 		bool found = false;
+@@ -362,20 +365,26 @@ static void lan966x_mac_irq_process(struct lan966x *lan966x, u32 row,
+ 		}
+ 
+ 		if (!found) {
+-			/* Notify the bridge that the entry doesn't exist
+-			 * anymore in the HW and remove the entry from the SW
+-			 * list
+-			 */
+-			lan966x_mac_notifiers(SWITCHDEV_FDB_DEL_TO_BRIDGE,
+-					      mac_entry->mac, mac_entry->vid,
+-					      lan966x->ports[mac_entry->port_index]->dev);
 -
--	/* Check if we have at least one gpio-controller child node */
--	for_each_child_of_node(dev->of_node, np) {
--		if (of_property_read_bool(np, "gpio-controller")) {
--			ret = 0;
--			break;
--		}
--	}
--	if (ret)
--		return dev_err_probe(dev, ret, "no gpio-controller child node\n");
-+	unsigned int i, nr_irq_parent;
+ 			list_del(&mac_entry->list);
+-			kfree(mac_entry);
++			/* Move the entry from SW list to a tmp list such that
++			 * it would be deleted later
++			 */
++			list_add_tail(&mac_entry->list, &mac_deleted_entries);
+ 		}
+ 	}
+ 	spin_unlock(&lan966x->mac_lock);
  
--	nr_irq_parent = of_irq_count(np);
- 	spin_lock_init(&info->irq_lock);
- 
-+	nr_irq_parent = of_irq_count(np);
- 	if (!nr_irq_parent) {
- 		dev_err(dev, "invalid or no IRQ\n");
- 		return 0;
++	list_for_each_entry_safe(mac_entry, tmp, &mac_deleted_entries, list) {
++		/* Notify the bridge that the entry doesn't exist
++		 * anymore in the HW
++		 */
++		lan966x_mac_notifiers(SWITCHDEV_FDB_DEL_TO_BRIDGE,
++				      mac_entry->mac, mac_entry->vid,
++				      lan966x->ports[mac_entry->port_index]->dev);
++		list_del(&mac_entry->list);
++		kfree(mac_entry);
++	}
++
+ 	/* Now go to the list of columns and see if any entry was not in the SW
+ 	 * list, then that means that the entry is new so it needs to notify the
+ 	 * bridge.
 -- 
 2.35.1
 
