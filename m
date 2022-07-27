@@ -2,90 +2,65 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 998E1C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 13:15:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81B8FC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 13:15:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233670AbiG0NPO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 09:15:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53404 "EHLO
+        id S233733AbiG0NPj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 09:15:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229565AbiG0NPK (ORCPT
+        with ESMTP id S233711AbiG0NPa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 09:15:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C93C2AE5
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 06:15:09 -0700 (PDT)
+        Wed, 27 Jul 2022 09:15:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EB662019B
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 06:15:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 19227B82013
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 13:15:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACEB9C433C1;
-        Wed, 27 Jul 2022 13:15:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658927706;
-        bh=U3Bzn+TVhMtRLOQN+l5pTReQt5Mcr5T77ghXE08T+sA=;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E2F47616E8
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 13:15:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED042C433C1;
+        Wed, 27 Jul 2022 13:15:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658927728;
+        bh=+YT+ojoK3bYTC00tyuvmILyv2F2d7TCBW5svs+Jz8OU=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=LIEWKDOVvvo3jIWxaEzytb7UfTEONtoLbUr4FVH1ExjZP+8KkrgiEFPPFRZrpoueg
-         BMa9zYQMGThfG2+McD+2gfBLDmkOrs1BZ+6w3lIuM2w6bzeYBLUKMEBwsYrHbmDfUk
-         1kKNbKWx6G1/8SnfcFiBYCUXn6/P6qgd9PAH/aX75bvnV5ksR8B3LjIthXi3w8mkHY
-         tVJJTlP3d4Tt+r9qGOTeplnDo36Fhy/CvWwicwzfZGQ4kkKDbJBDUOSMqrCFz6PxXm
-         B8NWIKbrTHJ7nT9quucTSGD9L6xjti/iTRgyyZyK2fOtMVK/PWQLgtYKDkja0htivw
-         oSWREjgBUvlnA==
-Received: by pali.im (Postfix)
-        id 38DC07C3; Wed, 27 Jul 2022 15:15:04 +0200 (CEST)
-Date:   Wed, 27 Jul 2022 15:15:04 +0200
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] ARM: dts: turris-omnia: Add ethernet aliases
-Message-ID: <20220727131504.avbfyoydzgcf6wyo@pali>
-References: <20220727130926.1874-1-pali@kernel.org>
+        b=cKcxWSE27As7BZFD/QEEnFfa1/w1NtyCUV4fIphw+Ii2MRRPPr7pUBZwMKy+fyDaT
+         k06w5zwLlP+IR/MBHxp2l9+EgOictrpwPimQeJQdl+Gq2DpjBbpAXWz8c4mrzkjUqj
+         wdwjXJ/97uesu1//W3Qkqoo8FxDxirTAQi/Dypvo=
+Date:   Wed, 27 Jul 2022 15:15:25 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Jiho Chu <jiho.chu@samsung.com>
+Cc:     arnd@arndb.de, linux-kernel@vger.kernel.org,
+        yelini.jeong@samsung.com, myungjoo.ham@samsung.com
+Subject: Re: [PATCH 2/9] tirnity: Add dma memory module
+Message-ID: <YuE6bQeTI/pcbLZh@kroah.com>
+References: <20220725065308.2457024-1-jiho.chu@samsung.com>
+ <CGME20220725065309epcas1p3c691bbc54c84775524b97c4b717c7ce7@epcas1p3.samsung.com>
+ <20220725065308.2457024-3-jiho.chu@samsung.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220727130926.1874-1-pali@kernel.org>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <20220725065308.2457024-3-jiho.chu@samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wednesday 27 July 2022 15:09:26 Pali Rohár wrote:
-> This allows bootloader to correctly pass MAC addresses used by bootloader
-> to individual interfaces into kernel device tree.
+On Mon, Jul 25, 2022 at 03:53:01PM +0900, Jiho Chu wrote:
+> This patch includes memory management module.
 > 
-> Signed-off-by: Pali Rohár <pali@kernel.org>
-> ---
+> It provides abstraction layer to handle DMA buffer.
 
-Maybe this should have Fixes line?
+Again, no abstactions please.  Get this working and merged properly
+first, before worrying about any sort of additional hardware models or
+abstractions.  It just makes this so much harder to review and to
+determine what you really are, or are not, using here.
 
-Fixes: 26ca8b52d6e1 ("ARM: dts: add support for Turris Omnia")
+So far, it seems you aren't using any of these new abstractions, which
+is odd.  Or I just can't find them.  Either way that's a huge sign this
+code is wrong and needs to be cleaned up.
 
->  arch/arm/boot/dts/armada-385-turris-omnia.dts | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
-> diff --git a/arch/arm/boot/dts/armada-385-turris-omnia.dts b/arch/arm/boot/dts/armada-385-turris-omnia.dts
-> index f4eb6898aa6b..d2afa466e29a 100644
-> --- a/arch/arm/boot/dts/armada-385-turris-omnia.dts
-> +++ b/arch/arm/boot/dts/armada-385-turris-omnia.dts
-> @@ -23,6 +23,12 @@
->  		stdout-path = &uart0;
->  	};
->  
-> +	aliases {
-> +		ethernet0 = &eth0;
-> +		ethernet1 = &eth1;
-> +		ethernet2 = &eth2;
-> +	};
-> +
->  	memory {
->  		device_type = "memory";
->  		reg = <0x00000000 0x40000000>; /* 1024 MB */
-> -- 
-> 2.20.1
-> 
+thanks,
+
+greg k-h
