@@ -2,101 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE656C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 21:47:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F27FEC19F29
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 21:51:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232881AbiG0VrE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 17:47:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36068 "EHLO
+        id S233074AbiG0Vva (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 17:51:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233678AbiG0VrB (ORCPT
+        with ESMTP id S229517AbiG0Vv2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 17:47:01 -0400
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B09232B9E;
-        Wed, 27 Jul 2022 14:46:59 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1658958383; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=B3ioLD6zMn0q9fjP5nD5PI1+TagRfWeRDOhUXcD/VigY8TgshWkUP4xAQBwKDwIawuBzetO/yF+gGkXpvvGpYLdWGWFTnoncmebY8xnbYcslhr+i1RHZfhUQzHuvBX8l5T5q9RwsEWARsv+IwIMsD1FCQLnSpIvxfqKUIUX4mpk=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1658958383; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=EQnd5MTa5GwmtvVXuhiqKY2o43R6jbBEFNobiOt8bvE=; 
-        b=dPj5kFzLAcGXhIZbUcidVsjWvuCU7TFbFfB7puNazauN87j3G9HZpJnUISTHdbRInNOe6tLfDmrxh9iQVYI6K81gvTgj2OyD3WfolJ3b4DXSHIl3dOiPrK3brA+JHpTKEDebdhCCvEgvOiNoody1hhe//I4+NkEHvP/CCJLf/U0=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1658958383;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:To:To:Cc:Cc:References:From:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=EQnd5MTa5GwmtvVXuhiqKY2o43R6jbBEFNobiOt8bvE=;
-        b=j9OspCQJ/jYPdgUT7H9CG0lLgrOpWZipgpGxZoJ67ITayymv9QnSjgokYwAiXJwT
-        4GHGnDFnjKFArSY67dIxoajdTrdPIi4JtlYaNgOUrdRTfmqm/0Rjs1Cb0kknD8gQc9g
-        Rm3O4OxBkZ0yu4z02YHkVP9393fwzAvTGHGDzt3Y=
-Received: from [10.10.10.3] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
-        with SMTPS id 1658958380604134.56822702591387; Wed, 27 Jul 2022 14:46:20 -0700 (PDT)
-Message-ID: <28a1620c-9771-f4dd-c432-4940d3b8f430@arinc9.com>
-Date:   Thu, 28 Jul 2022 00:46:13 +0300
+        Wed, 27 Jul 2022 17:51:28 -0400
+Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 285F42C114;
+        Wed, 27 Jul 2022 14:51:27 -0700 (PDT)
+Received: by mail-pg1-x52a.google.com with SMTP id f65so16915404pgc.12;
+        Wed, 27 Jul 2022 14:51:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=rkjBsi1c69LoC24Xf516mQgoWnGspVcUZ+1F/npRnIQ=;
+        b=fCZY//9BKaFQINtpxaXPxabdQLaP42RUZ/DaqwRQ/8CLuoMsuhCTkeaatoqJPpF1Pd
+         JEiI49iCaZOVBb0HDMBsBTr3cpml4QVSKTeN5UatqkJQo4yqCavuMLubNuddE1PEUSlF
+         sLNlkXgpXMLmdQRxYRX3deeh0HrgynDuZz/CwLwn8e1nX4qJZtcarUh8J19r2cDflMs2
+         D/XHYHv+inSvWlBKtO29Lu0Kjg4YdyoB+VA4skH/CHeWpUhchrsYa2HI8bGiNAhFEArl
+         UQ5Y8eNNiUTG/J/atM1bVZs6ufuPB+2gopOCeJ3/k8cklf7r9X+VlUvt6aWOCJ57ocld
+         pb1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=rkjBsi1c69LoC24Xf516mQgoWnGspVcUZ+1F/npRnIQ=;
+        b=OOLqIc+OKhSFXwpugLuWY30L169bu4A7/2qs3Kv5ed1IyB03/7Lkt5nDx+8QJ79E3A
+         N3Sjlaf7cj3HyXrebwceeWLcLxfZO8Gc9TdY8CcpApzYxYw+f+segEkroGHLdYyRyFzT
+         md+adRVEylukZvkRJmVjWD7HoVKneGGLay6ESBUMuXQ8sD+2h+E2FtirQeJfUX/lvTjS
+         6mP5gB/FO/JBFCuEwu2KHKzX70WiycM1Xr/Nby+1a8VV/3is5r64oitS7VpcKvigHUGe
+         TRwoDM80FT1Z0KiGYn09t+4wTFeA5AyKF82SH2XiMcHltSsNit8jUqT0mwiL30irO/eW
+         CguA==
+X-Gm-Message-State: AJIora/I8Idvkgd8+1n7zeuNBmKfYEgzsXsyz6SPFlPEH1/r4bh71cmy
+        uQcDD7quXheCwQBRcRqHe6s=
+X-Google-Smtp-Source: AGRyM1vpnw2S+wW3eqWaqwqeetfX/Afny2l9bVPauXSZNSOKQSX6k652gDjiTshTLKuWADmdu1p9Qw==
+X-Received: by 2002:a63:8841:0:b0:412:b40b:cfb5 with SMTP id l62-20020a638841000000b00412b40bcfb5mr21279602pgd.197.1658958686396;
+        Wed, 27 Jul 2022 14:51:26 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id n12-20020a63f80c000000b0040d0a57be02sm12697412pgh.31.2022.07.27.14.51.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 Jul 2022 14:51:25 -0700 (PDT)
+Message-ID: <f309790a-a41b-cb2d-811e-51dc08154c04@gmail.com>
+Date:   Wed, 27 Jul 2022 14:51:24 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: Aw: [RFC PATCH net-next] dt-bindings: net: dsa: mediatek,mt7530:
- completely rework binding
+Subject: Re: bcm2711_thermal: Kernel panic - not syncing: Asynchronous SError
+ Interrupt
 Content-Language: en-US
-To:     frank-w@public-files.de
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Sander Vanheule <sander@svanheule.net>,
-        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>,
-        Daniel Golle <daniel@makrotopia.org>, erkin.bozoglu@xeront.com,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220726122406.31043-1-arinc.unal@arinc9.com>
- <trinity-96b64414-7b29-4886-b309-48fc9f108959-1658953872981@3c-app-gmx-bs42>
- <f8ccb632-4bca-486b-a8a4-65b6b90de751@arinc9.com>
- <0426AFB2-55B6-48E6-998F-8DA09D0BDC29@public-files.de>
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-In-Reply-To: <0426AFB2-55B6-48E6-998F-8DA09D0BDC29@public-files.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
+To:     Juerg Haefliger <juerg.haefliger@canonical.com>
+Cc:     Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
+        Robin Murphy <robin.murphy@arm.com>, stefan.wahren@i2se.com,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Robin Murphy <robin.murphy@arm.con>,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-pm@vger.kernel.org
+References: <20210210114829.2915de78@gollum>
+ <6d9ca41b4ad2225db102da654d38bc61f6c1c111.camel@suse.de>
+ <35e17dc9-c88d-582f-607d-1d90b20868fa@arm.com>
+ <c6774af169854dc1d4efa272b439e80cea8cd8ff.camel@suse.de>
+ <6612b35f-86bb-bb1e-bae8-188366495dbe@gmail.com>
+ <20220727100510.4723ec84@smeagol>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220727100510.4723ec84@smeagol>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 28.07.2022 00:26, Frank Wunderlich wrote:
-> Am 27. Juli 2022 22:59:16 MESZ schrieb "Arınç ÜNAL" <arinc.unal@arinc9.com>:
->> On 27.07.2022 23:31, Frank Wunderlich wrote:
+On 7/27/22 01:05, Juerg Haefliger wrote:
+> On Wed, 10 Feb 2021 14:59:45 -0800
+> Florian Fainelli <f.fainelli@gmail.com> wrote:
+> 
+>> On 2/10/2021 8:55 AM, Nicolas Saenz Julienne wrote:
+>>> Hi Robin,
 >>>
-> 
->> I've seen this under mt7530_setup():
->> The bit for MHWTRAP_P6_DIS is cleared to enable port 6 with the comment "Enable Port 6 only; P5 as GMAC5 which currently is not supported".
+>>> On Wed, 2021-02-10 at 16:25 +0000, Robin Murphy wrote:  
+>>>> On 2021-02-10 13:15, Nicolas Saenz Julienne wrote:  
+>>>>> [ Add Robin, Catalin and Florian in case they want to chime in ]
+>>>>>
+>>>>> Hi Juerg, thanks for the report!
+>>>>>
+>>>>> On Wed, 2021-02-10 at 11:48 +0100, Juerg Haefliger wrote:  
+>>>>>> Trying to dump the BCM2711 registers kills the kernel:
+>>>>>>
+>>>>>> # cat /sys/kernel/debug/regmap/dummy-avs-monitor\@fd5d2000/range
+>>>>>> 0-efc
+>>>>>> # cat /sys/kernel/debug/regmap/dummy-avs-monitor\@fd5d2000/registers
+>>>>>>
+>>>>>> [   62.857661] SError Interrupt on CPU1, code 0xbf000002 -- SError  
+>>>>>
+>>>>> So ESR's IDS (bit 24) is set, which means it's an 'Implementation Defined
+>>>>> SError,' hence IIUC the rest of the error code is meaningless to anyone outside
+>>>>> of Broadcom/RPi.  
+>>>>
+>>>> It's imp-def from the architecture's PoV, but the implementation in this 
+>>>> case is Cortex-A72, where 0x000002 means an attributable, containable 
+>>>> Slave Error:
+>>>>
+>>>> https://developer.arm.com/documentation/100095/0003/system-control/aarch64-register-descriptions/exception-syndrome-register--el1-and-el3?lang=en
+>>>>
+>>>> In other words, the thing at the other end of an interconnect 
+>>>> transaction said "no" :)
+>>>>
+>>>> (The fact that Cortex-A72 gets too far ahead of itself to take it as a 
+>>>> synchronous external abort is a mild annoyance, but hey...)  
+>>>
+>>> Thanks for both your clarifications! Reading arm documentation is a skill on
+>>> its own.  
 >>
->> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/tree/drivers/net/dsa/mt7530.c#n2189
+>> Yes it is.
+>>
+>>>   
+>>>>> The regmap is created through the following syscon device:
+>>>>>
+>>>>> 	avs_monitor: avs-monitor@7d5d2000 {
+>>>>> 		compatible = "brcm,bcm2711-avs-monitor",
+>>>>> 			     "syscon", "simple-mfd";
+>>>>> 		reg = <0x7d5d2000 0xf00>;
+>>>>>
+>>>>> 		thermal: thermal {
+>>>>> 			compatible = "brcm,bcm2711-thermal";
+>>>>> 			#thermal-sensor-cells = <0>;
+>>>>> 		};
+>>>>> 	};
+>>>>>
+>>>>> I've done some tests with devmem, and the whole <0x7d5d2000 0xf00> range is
+>>>>> full of addresses that trigger this same error. Also note that as per Florian's
+>>>>> comments[1]: "AVS_RO_REGISTERS_0: 0x7d5d2200 - 0x7d5d22e3." But from what I can
+>>>>> tell, at least 0x7d5d22b0 seems to be faulty too.
+>>>>>
+>>>>> Any ideas/comments? My guess is that those addresses are marked somehow as
+>>>>> secure, and only for VC4 to access (VC4 is RPi4's co-processor). Ultimately,
+>>>>> the solution is to narrow the register range exposed by avs-monitor to whatever
+>>>>> bcm2711-thermal needs (which is ATM a single 32bit register).  
+>>>>
+>>>> When a peripheral decodes a region of address space, nobody says it has 
+>>>> to accept accesses to *every* address in that space; registers may be 
+>>>> sparsely populated, and although some devices might be "nice" and make 
+>>>> unused areas behave as RAZ/WI, others may throw slave errors if you poke 
+>>>> at the wrong places. As you note, in a TrustZone-aware device some 
+>>>> registers may only exist in one or other of the Secure/Non-Secure 
+>>>> address spaces.
+>>>>
+>>>> Even when there is a defined register at a given address, it still 
+>>>> doesn't necessarily accept all possible types of access; it wouldn't be 
+>>>> particularly friendly, but a device *could* have, say, some registers 
+>>>> that support 32-bit accesses and others that only support 16-bit 
+>>>> accesses, and thus throw slave errors if you do the wrong thing in the 
+>>>> wrong place.
+>>>>
+>>>> It really all depends on the device itself.  
+>>>
+>>> All in all, assuming there is no special device quirk to apply, the feeling I'm
+>>> getting is to just let the error be. As you hint, firmware has no blame here,
+>>> and debugfs is a 'best effort, zero guarantees' interface after all.  
+>>
+>> We should probably fill a regmap_access_table to deny reading registers
+>> for which there is no address decoding and possibly another one to deny
+>> writing to the read-only registers.
 > 
-> Later in same function it looks comment is obsolete.
 > 
-> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/tree/drivers/net/dsa/mt7530.c#n2234
-> 
->   I know that rene added p5 support while phylink conversion,but not sure it was complete.
+> Below is a patch that adds a read access table but it seems wrong to include
+> 'internal.h' and add the table in the thermal driver. Shouldn't this happen
+> in a higher layer, somehow between syscon and the thermal node?
 
-Thanks for pointing it out. I suppose it works fine since you tested it. 
-I will update my patch to allow setting port 5 as cpu port along with 
-splitting the patch.
-
-Arınç
+What is the purpose of doing doing this though that cannot already be done using devmem/devmem2 if the point is explore the address space?
+-- 
+Florian
