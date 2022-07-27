@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96B3EC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:22:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 174F0C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:22:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237549AbiG0RWM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:22:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36516 "EHLO
+        id S237715AbiG0RWP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:22:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242068AbiG0RTm (ORCPT
+        with ESMTP id S242104AbiG0RTr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:19:42 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FF065D0FA;
-        Wed, 27 Jul 2022 09:44:57 -0700 (PDT)
+        Wed, 27 Jul 2022 13:19:47 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 671185247E;
+        Wed, 27 Jul 2022 09:45:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7E219B8200D;
-        Wed, 27 Jul 2022 16:44:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1513C433C1;
-        Wed, 27 Jul 2022 16:44:53 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 79AEECE2309;
+        Wed, 27 Jul 2022 16:44:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C76EC433C1;
+        Wed, 27 Jul 2022 16:44:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940294;
-        bh=XM8LLTq/A9czvkII5l07LJYXoWg9J2CU3JwouMlRan8=;
+        s=korg; t=1658940296;
+        bh=rOrmLFrxGWYV871MsyQQEIzigWMtnhgSC8ReLXbMgD0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xWb5bwGwRet9OPFGmR9/rIMrV0LwL7iMBziUP9btNlnC0j0j81zpQNG2p72fvweAn
-         J1I1Y/TIZi6qXpn0UUA6yPwI5bflv6422HBZqH8lfgxt2TJgCH70Ks90IGkQyDd2ip
-         iLBclFkuhqJDsQV8mqTCAWdlshJZL7ux2m5m0+DM=
+        b=GSOjbKE3wU4s/4uEmDrTxwG3K8jSudBzGARySogdGE83epLpnYTM4cW/w/CAsa4/S
+         EhhEIf5AtA1IQVcfZSgQhg9WwKFoMNT78yVlrWngb9i0vyZE8OjpB4tIkVUAhGMsxG
+         FebxHdrvZct/f4a98IzvROwNZqEV/vIM0SRVhFdI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
         Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 142/201] x86/extable: Get rid of redundant macros
-Date:   Wed, 27 Jul 2022 18:10:46 +0200
-Message-Id: <20220727161033.703449241@linuxfoundation.org>
+Subject: [PATCH 5.15 143/201] x86/mce: Deduplicate exception handling
+Date:   Wed, 27 Jul 2022 18:10:47 +0200
+Message-Id: <20220727161033.735314528@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -50,80 +50,79 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Thomas Gleixner <tglx@linutronix.de>
 
-[ Upstream commit 32fd8b59f91fcd3bf9459aa72d90345735cc2588 ]
+[ Upstream commit e42404afc4ca856c48f1e05752541faa3587c472 ]
 
-No point in defining the identical macros twice depending on C or assembly
-mode. They are still identical.
+Prepare code for further simplification. No functional change.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lkml.kernel.org/r/20210908132525.023659534@linutronix.de
+Link: https://lkml.kernel.org/r/20210908132525.096452100@linutronix.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/include/asm/asm.h | 36 ++++++++++++------------------------
- 1 file changed, 12 insertions(+), 24 deletions(-)
+ arch/x86/kernel/cpu/mce/core.c | 34 +++++++++++++++++-----------------
+ 1 file changed, 17 insertions(+), 17 deletions(-)
 
-diff --git a/arch/x86/include/asm/asm.h b/arch/x86/include/asm/asm.h
-index 3ad3da9a7d97..719955e658a2 100644
---- a/arch/x86/include/asm/asm.h
-+++ b/arch/x86/include/asm/asm.h
-@@ -132,18 +132,6 @@
- 	.long (handler) - . ;					\
- 	.popsection
+diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
+index 848cfb013f58..d8da3acf1ffd 100644
+--- a/arch/x86/kernel/cpu/mce/core.c
++++ b/arch/x86/kernel/cpu/mce/core.c
+@@ -382,13 +382,16 @@ static int msr_to_offset(u32 msr)
+ 	return -1;
+ }
  
--# define _ASM_EXTABLE(from, to)					\
--	_ASM_EXTABLE_HANDLE(from, to, ex_handler_default)
--
--# define _ASM_EXTABLE_UA(from, to)				\
--	_ASM_EXTABLE_HANDLE(from, to, ex_handler_uaccess)
--
--# define _ASM_EXTABLE_CPY(from, to)				\
--	_ASM_EXTABLE_HANDLE(from, to, ex_handler_copy)
--
--# define _ASM_EXTABLE_FAULT(from, to)				\
--	_ASM_EXTABLE_HANDLE(from, to, ex_handler_fault)
--
- # ifdef CONFIG_KPROBES
- #  define _ASM_NOKPROBE(entry)					\
- 	.pushsection "_kprobe_blacklist","aw" ;			\
-@@ -164,18 +152,6 @@
- 	" .long (" _EXPAND_EXTABLE_HANDLE(handler) ") - .\n"	\
- 	" .popsection\n"
+-__visible bool ex_handler_rdmsr_fault(const struct exception_table_entry *fixup,
+-				      struct pt_regs *regs, int trapnr,
+-				      unsigned long error_code,
+-				      unsigned long fault_addr)
++static void ex_handler_msr_mce(struct pt_regs *regs, bool wrmsr)
+ {
+-	pr_emerg("MSR access error: RDMSR from 0x%x at rIP: 0x%lx (%pS)\n",
+-		 (unsigned int)regs->cx, regs->ip, (void *)regs->ip);
++	if (wrmsr) {
++		pr_emerg("MSR access error: WRMSR to 0x%x (tried to write 0x%08x%08x) at rIP: 0x%lx (%pS)\n",
++			 (unsigned int)regs->cx, (unsigned int)regs->dx, (unsigned int)regs->ax,
++			 regs->ip, (void *)regs->ip);
++	} else {
++		pr_emerg("MSR access error: RDMSR from 0x%x at rIP: 0x%lx (%pS)\n",
++			 (unsigned int)regs->cx, regs->ip, (void *)regs->ip);
++	}
  
--# define _ASM_EXTABLE(from, to)					\
--	_ASM_EXTABLE_HANDLE(from, to, ex_handler_default)
--
--# define _ASM_EXTABLE_UA(from, to)				\
--	_ASM_EXTABLE_HANDLE(from, to, ex_handler_uaccess)
--
--# define _ASM_EXTABLE_CPY(from, to)				\
--	_ASM_EXTABLE_HANDLE(from, to, ex_handler_copy)
--
--# define _ASM_EXTABLE_FAULT(from, to)				\
--	_ASM_EXTABLE_HANDLE(from, to, ex_handler_fault)
--
- /* For C file, we already have NOKPROBE_SYMBOL macro */
+ 	show_stack_regs(regs);
  
- /*
-@@ -188,6 +164,18 @@ register unsigned long current_stack_pointer asm(_ASM_SP);
- #define ASM_CALL_CONSTRAINT "+r" (current_stack_pointer)
- #endif /* __ASSEMBLY__ */
+@@ -396,7 +399,14 @@ __visible bool ex_handler_rdmsr_fault(const struct exception_table_entry *fixup,
  
-+#define _ASM_EXTABLE(from, to)					\
-+	_ASM_EXTABLE_HANDLE(from, to, ex_handler_default)
-+
-+#define _ASM_EXTABLE_UA(from, to)				\
-+	_ASM_EXTABLE_HANDLE(from, to, ex_handler_uaccess)
-+
-+#define _ASM_EXTABLE_CPY(from, to)				\
-+	_ASM_EXTABLE_HANDLE(from, to, ex_handler_copy)
-+
-+#define _ASM_EXTABLE_FAULT(from, to)				\
-+	_ASM_EXTABLE_HANDLE(from, to, ex_handler_fault)
-+
- #endif /* __KERNEL__ */
+ 	while (true)
+ 		cpu_relax();
++}
  
- #endif /* _ASM_X86_ASM_H */
++__visible bool ex_handler_rdmsr_fault(const struct exception_table_entry *fixup,
++				      struct pt_regs *regs, int trapnr,
++				      unsigned long error_code,
++				      unsigned long fault_addr)
++{
++	ex_handler_msr_mce(regs, false);
+ 	return true;
+ }
+ 
+@@ -441,17 +451,7 @@ __visible bool ex_handler_wrmsr_fault(const struct exception_table_entry *fixup,
+ 				      unsigned long error_code,
+ 				      unsigned long fault_addr)
+ {
+-	pr_emerg("MSR access error: WRMSR to 0x%x (tried to write 0x%08x%08x) at rIP: 0x%lx (%pS)\n",
+-		 (unsigned int)regs->cx, (unsigned int)regs->dx, (unsigned int)regs->ax,
+-		  regs->ip, (void *)regs->ip);
+-
+-	show_stack_regs(regs);
+-
+-	panic("MCA architectural violation!\n");
+-
+-	while (true)
+-		cpu_relax();
+-
++	ex_handler_msr_mce(regs, true);
+ 	return true;
+ }
+ 
 -- 
 2.35.1
 
