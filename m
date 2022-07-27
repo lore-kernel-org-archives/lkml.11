@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F1D1C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:06:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59F70C19F2C
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:06:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241462AbiG0RGu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:06:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38016 "EHLO
+        id S241464AbiG0RGx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:06:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235096AbiG0RGO (ORCPT
+        with ESMTP id S241430AbiG0RGS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:06:14 -0400
+        Wed, 27 Jul 2022 13:06:18 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42FE36FA1E;
-        Wed, 27 Jul 2022 09:39:43 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98D986FA37;
+        Wed, 27 Jul 2022 09:39:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 93779601D6;
-        Wed, 27 Jul 2022 16:39:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 773A9C433D6;
-        Wed, 27 Jul 2022 16:39:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 549A5601C0;
+        Wed, 27 Jul 2022 16:39:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 383BBC433D6;
+        Wed, 27 Jul 2022 16:39:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939982;
-        bh=vGECSNQYe+TmL3K/N9ppIzMcy/1IbI0ocNu9D1LRQFI=;
+        s=korg; t=1658939984;
+        bh=jbEMALo+xvgRCp9VzneVZGqOAaFCUwn5qV2cXVD6yeQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iYhX3fAy7QS73g7dZRE6wSKPlXOfnqNUxqDEf5tsh9ynQqhgzpUcs3JUO2PVrYoN4
-         3uUhqsth9jgzd9ii4XtC7qfq7p0vIBgcIGNKFutMs7/nmsQDJ9OJEjWg8TypGmT6vV
-         MWibUqyP0tq6VoJU49QpjEI/Wpuc03xGOKpkFDMk=
+        b=ph/X5fUEVZXZyrhVbIR+5hsueFRKiVhRIgwu9mz1xRuXpr65KC6iCoIiNfvd6HT8G
+         JJRBRPLsu2M9lo9wJWMp5OkWU0lWPYqYivbZ9dDr9APCC0NS9IyEaY5LUkDfHZJjUG
+         9AfaGF/Rvx+QVuUJwXze74rNo16aIar3TcJx9IOM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        stable@vger.kernel.org, Joao Martins <joao.m.martins@oracle.com>,
+        Joe Jin <joe.jin@oracle.com>,
+        Dongli Zhang <dongli.zhang@oracle.com>,
+        David Ahern <dsahern@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 064/201] tcp: Fix data-races around sysctl_tcp_base_mss.
-Date:   Wed, 27 Jul 2022 18:09:28 +0200
-Message-Id: <20220727161029.569159430@linuxfoundation.org>
+Subject: [PATCH 5.15 038/201] net: tun: split run_ebpf_filter() and pskb_trim() into different "if statement"
+Date:   Wed, 27 Jul 2022 18:09:02 +0200
+Message-Id: <20220727161028.445637095@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -49,48 +52,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Dongli Zhang <dongli.zhang@oracle.com>
 
-[ Upstream commit 88d78bc097cd8ebc6541e93316c9d9bf651b13e8 ]
+[ Upstream commit 45a15d89fbcd280571eba8e5ca309e14ba6afa8f ]
 
-While reading sysctl_tcp_base_mss, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its readers.
+No functional change.
 
-Fixes: 5d424d5a674f ("[TCP]: MTU probing")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Just to split the if statement into different conditions to use
+kfree_skb_reason() to trace the reason later.
+
+Cc: Joao Martins <joao.m.martins@oracle.com>
+Cc: Joe Jin <joe.jin@oracle.com>
+Signed-off-by: Dongli Zhang <dongli.zhang@oracle.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp_output.c | 2 +-
- net/ipv4/tcp_timer.c  | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/tun.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 1acfd4298a01..53277a9a2300 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -1768,7 +1768,7 @@ void tcp_mtup_init(struct sock *sk)
- 	icsk->icsk_mtup.enabled = READ_ONCE(net->ipv4.sysctl_tcp_mtu_probing) > 1;
- 	icsk->icsk_mtup.search_high = tp->rx_opt.mss_clamp + sizeof(struct tcphdr) +
- 			       icsk->icsk_af_ops->net_header_len;
--	icsk->icsk_mtup.search_low = tcp_mss_to_mtu(sk, net->ipv4.sysctl_tcp_base_mss);
-+	icsk->icsk_mtup.search_low = tcp_mss_to_mtu(sk, READ_ONCE(net->ipv4.sysctl_tcp_base_mss));
- 	icsk->icsk_mtup.probe_size = 0;
- 	if (icsk->icsk_mtup.enabled)
- 		icsk->icsk_mtup.probe_timestamp = tcp_jiffies32;
-diff --git a/net/ipv4/tcp_timer.c b/net/ipv4/tcp_timer.c
-index 98bb00e29e1e..04063c7e33ba 100644
---- a/net/ipv4/tcp_timer.c
-+++ b/net/ipv4/tcp_timer.c
-@@ -171,7 +171,7 @@ static void tcp_mtu_probing(struct inet_connection_sock *icsk, struct sock *sk)
- 		icsk->icsk_mtup.probe_timestamp = tcp_jiffies32;
- 	} else {
- 		mss = tcp_mtu_to_mss(sk, icsk->icsk_mtup.search_low) >> 1;
--		mss = min(net->ipv4.sysctl_tcp_base_mss, mss);
-+		mss = min(READ_ONCE(net->ipv4.sysctl_tcp_base_mss), mss);
- 		mss = max(mss, net->ipv4.sysctl_tcp_mtu_probe_floor);
- 		mss = max(mss, net->ipv4.sysctl_tcp_min_snd_mss);
- 		icsk->icsk_mtup.search_low = tcp_mss_to_mtu(sk, mss);
+diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+index ea60453fe69a..f92d6a12831f 100644
+--- a/drivers/net/tun.c
++++ b/drivers/net/tun.c
+@@ -1097,7 +1097,10 @@ static netdev_tx_t tun_net_xmit(struct sk_buff *skb, struct net_device *dev)
+ 		goto drop;
+ 
+ 	len = run_ebpf_filter(tun, skb, len);
+-	if (len == 0 || pskb_trim(skb, len))
++	if (len == 0)
++		goto drop;
++
++	if (pskb_trim(skb, len))
+ 		goto drop;
+ 
+ 	if (unlikely(skb_orphan_frags_rx(skb, GFP_ATOMIC)))
 -- 
 2.35.1
 
