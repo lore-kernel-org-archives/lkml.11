@@ -2,122 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B1E9C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:05:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E474C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:05:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241206AbiG0RFC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:05:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55672 "EHLO
+        id S229598AbiG0RFF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:05:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241309AbiG0REC (ORCPT
+        with ESMTP id S241400AbiG0REL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:04:02 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41A9E6E2DB;
-        Wed, 27 Jul 2022 09:38:55 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id va17so32548539ejb.0;
-        Wed, 27 Jul 2022 09:38:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ipHXah2drN1ztV/qFRrJg6iGYe+5yo1q7EilyB1MV54=;
-        b=oscMZj9/5l585E43z0ceX2e56hA2FeFafLwYq+rT+Ga/38O31b7pw7AGdOgnlZCp3K
-         KVeQTolwwmIlNdtz4GHcfpJjZKw/4iO5bdg5qeelrYcx/gMCt6iIxx8D1u0ero2+UL1t
-         0tLlPdNQqlhzabFWy+a36q0lF5Dy0Kl2cmhyPwiB9ECqMitHRnP0/GaIF1DuOf17JhfP
-         ddSeKX6lSCBtYqbW4BLqH714Ag6yJJ4h00CzNdX+MTtbHyQBHSW9kgiPLuWsh0L5ASre
-         pdZkE1eiS6EZefEJsJDmVZ54HEB6Z6Qu21b0QFEGFuL7cltLcEtySNnQgTN7ik0XHurF
-         OmZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ipHXah2drN1ztV/qFRrJg6iGYe+5yo1q7EilyB1MV54=;
-        b=k4eZ3w8QbwZx0zTJrSFZ7VwCT/qSzO1+iYL1xH3hkopJ4zTE3zjatKAQcFvyUqscz+
-         ux0N9Re626F2JnAQeLkqA88bF5/9Cy+4xWilWe6QJZUM/E+z/IDuaxjBIs5So29p3Wja
-         r/FBlAUyMcqQIPIIGacrhy2qEutWe/uMFZ9jLJJLiANN45VWs9LGhPD9qiij+hz3wyLn
-         olvs2RVzQ557j06+JTX6ojKecQfwVV655tOpbMQ7TERn/KPuIMPTRUOUS9q3/LjqlWzs
-         MGtEc/73hA/G8PnP8il1mmbrjWruhaIq91yFCsuq1P6JpJpdELjkjZdH9lCLN+r/Uv+p
-         MdlA==
-X-Gm-Message-State: AJIora8CQl2Ds7umt5c5sC0hwz124Ee1xHs3Jkh34otMLDtzfxcMzGVs
-        Xe8r9QMLPCrglQLPGoCmGd4=
-X-Google-Smtp-Source: AGRyM1uDjvm2zAG/PSoErEmq90918CkkiQuU0zpUrVSOeP2VeZuH8ZgY0NMtTfmAPNs8g2BkXZVpyw==
-X-Received: by 2002:a17:907:a40b:b0:72b:64e3:4c5e with SMTP id sg11-20020a170907a40b00b0072b64e34c5emr18516200ejc.612.1658939932706;
-        Wed, 27 Jul 2022 09:38:52 -0700 (PDT)
-Received: from skbuf ([188.25.231.115])
-        by smtp.gmail.com with ESMTPSA id fu3-20020a170907b00300b0072f47838640sm7803355ejc.71.2022.07.27.09.38.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 09:38:51 -0700 (PDT)
-Date:   Wed, 27 Jul 2022 19:38:48 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Marcin Wojtas <mw@semihalf.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Grzegorz Bernacki <gjb@semihalf.com>,
-        Grzegorz Jaszczyk <jaz@semihalf.com>,
-        Tomasz Nowicki <tn@semihalf.com>,
-        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
-        upstream@semihalf.com
-Subject: Re: [net-next: PATCH v3 6/8] net: core: switch to
- fwnode_find_net_device_by_node()
-Message-ID: <20220727163848.f4e2b263zz3vl2hc@skbuf>
-References: <20220727064321.2953971-1-mw@semihalf.com>
- <20220727064321.2953971-7-mw@semihalf.com>
- <20220727143147.u6yd6wqslilspyhw@skbuf>
- <CAPv3WKc88KQN=athEqBg=Z5Bd1SC3QSOPZpDH7dfuYGHhR+oVg@mail.gmail.com>
+        Wed, 27 Jul 2022 13:04:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D48E6E88B;
+        Wed, 27 Jul 2022 09:39:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 04F7D601CD;
+        Wed, 27 Jul 2022 16:38:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D07F6C433D6;
+        Wed, 27 Jul 2022 16:38:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658939931;
+        bh=gwizZq9ZKJfacNy3ZHHGP30UdHE5Ee0t3vfEcqGt4H4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=zB3BAjhMpoh4iqi+db9Y0vkTyrVLfetLFoZcUpWDZhgh2co3cw4zpFhORQezLkIoq
+         6hgWBcKw96yrzz34XesDrAoABXtiFxFiaoDodhaHpI/CCBUkx3udNmH3oz6x8byIOH
+         A7nwNhKDGIjWhlPhNIZv0xsMkSmgurxMyMNQVASo=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Kashyap Desai <kashyap.desai@broadcom.com>,
+        sumit.saxena@broadcom.com, chandrakanth.patil@broadcom.com,
+        linux-block@vger.kernel.org, Hannes Reinecke <hare@suse.de>,
+        Guangwu Zhang <guazhang@redhat.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        Ming Lei <ming.lei@redhat.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 047/201] scsi: megaraid: Clear READ queue maps nr_queues
+Date:   Wed, 27 Jul 2022 18:09:11 +0200
+Message-Id: <20220727161028.830121884@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
+References: <20220727161026.977588183@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAPv3WKc88KQN=athEqBg=Z5Bd1SC3QSOPZpDH7dfuYGHhR+oVg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 05:18:16PM +0200, Marcin Wojtas wrote:
-> Do you mean a situation analogous to what I addressed in:
-> [net-next: PATCH v3 4/8] net: mvpp2: initialize port fwnode pointer
-> ?
+From: Ming Lei <ming.lei@redhat.com>
 
-Not sure if "analogous" is the right word. My estimation is that the
-overwhelmingly vast majority of DSA masters can be found by DSA simply
-due to the SET_NETDEV_DEV() call that the Ethernet drivers need to make
-anyway.  I see that mvpp2 also needed commit c4053ef32208 ("net: mvpp2:
-initialize port of_node pointer"), but that isn't needed in general, and
-I can't tell you exactly why it is needed there, I don't know enough
-about the mvpp2 driver.
+[ Upstream commit 8312cd3a7b835ae3033a679e5f0014a40e7891c5 ]
 
-> I found indeed a couple of drivers that may require a similar change
-> (e.g. dpaa2).
+The megaraid SCSI driver sets set->nr_maps as 3 if poll_queues is > 0, and
+blk-mq actually initializes each map's nr_queues as nr_hw_queues.
+Consequently the driver has to clear READ queue map's nr_queues, otherwise
+the queue map becomes broken if poll_queues is set as non-zero.
 
-There I can tell you why the dpaa2-mac code mangles with net_dev->dev.of_node,
-but I'd rather not go into an explanation that essentially doesn't matter.
-The point is that you'd be mistaken to think that only the drivers which
-touch the net device's ->dev->of_node are the ones that need updating
-for your series to not cause regressions.
+Link: https://lore.kernel.org/r/20220706125942.528533-1-ming.lei@redhat.com
+Fixes: 9e4bec5b2a23 ("scsi: megaraid_sas: mq_poll support")
+Cc: Kashyap Desai <kashyap.desai@broadcom.com>
+Cc: sumit.saxena@broadcom.com
+Cc: chandrakanth.patil@broadcom.com
+Cc: linux-block@vger.kernel.org
+Cc: Hannes Reinecke <hare@suse.de>
+Reported-by: Guangwu Zhang <guazhang@redhat.com>
+Tested-by: Guangwu Zhang <guazhang@redhat.com>
+Reviewed-by: Bart Van Assche <bvanassche@acm.org>
+Signed-off-by: Ming Lei <ming.lei@redhat.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/scsi/megaraid/megaraid_sas_base.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-> IMO we have 2 options:
-> - update these drivers
-> - add some kind of fallback? If yes, I am wondering about an elegant
-> solution - maybe add an extra check inside
-> fwnode_find_parent_dev_match?
-> 
-> What would you suggest?
+diff --git a/drivers/scsi/megaraid/megaraid_sas_base.c b/drivers/scsi/megaraid/megaraid_sas_base.c
+index bb3f78013a13..88e164e3d2ea 100644
+--- a/drivers/scsi/megaraid/megaraid_sas_base.c
++++ b/drivers/scsi/megaraid/megaraid_sas_base.c
+@@ -3196,6 +3196,9 @@ static int megasas_map_queues(struct Scsi_Host *shost)
+ 	qoff += map->nr_queues;
+ 	offset += map->nr_queues;
+ 
++	/* we never use READ queue, so can't cheat blk-mq */
++	shost->tag_set.map[HCTX_TYPE_READ].nr_queues = 0;
++
+ 	/* Setup Poll hctx */
+ 	map = &shost->tag_set.map[HCTX_TYPE_POLL];
+ 	map->nr_queues = instance->iopoll_q_count;
+-- 
+2.35.1
 
-Fixing fwnode_find_parent_dev_match(), of course. This change broke DSA
-on my LS1028A system (master in drivers/net/ethernet/freescale/enetc/)
-and LS1021A (master in drivers/net/ethernet/freescale/gianfar.c).
+
+
