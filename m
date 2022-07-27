@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C92D2C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:39:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEC79C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:40:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242541AbiG0Rjz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:39:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53490 "EHLO
+        id S242621AbiG0RkA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:40:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242760AbiG0RjL (ORCPT
+        with ESMTP id S242766AbiG0RjM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:39:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 749F561D52;
-        Wed, 27 Jul 2022 09:51:01 -0700 (PDT)
+        Wed, 27 Jul 2022 13:39:12 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6843661D6D;
+        Wed, 27 Jul 2022 09:51:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 898C2B821AC;
-        Wed, 27 Jul 2022 16:50:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2028C433C1;
-        Wed, 27 Jul 2022 16:50:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 414AAB821BE;
+        Wed, 27 Jul 2022 16:50:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D185C433D6;
+        Wed, 27 Jul 2022 16:50:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940657;
-        bh=7Mqre8JZG1CKvrxH2SAJXMU9h38rgBhPBRpY+Z7RhWw=;
+        s=korg; t=1658940623;
+        bh=0Hz8/hFoBN0GjaM6W/+HjXYAMPRkWM8xHaE1RB5/m1A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fwXueyz8/YunWAeOe51jLjkplbixCsszATE36C1wJHMnGjpwRBg2f3kK0tAqRUufu
-         doQ2eIX3/CCh3AiyjXJxs8YyHVsZ9oLbc3KC9eCtXL/G2Dj+VeF+QxR4AmhZrBdpYu
-         0JxXzy32uGwekNVETS0wORwdt2NqgaY4beI12SGA=
+        b=ib8lxNaq2LOb+vqDINmyiIquxXVTXRVeD67UiGAHRbEkjSzGTtvixC+Cla8vZu5Kj
+         AWXP23w3jA32iwJ1f5paZjZ/mIIyuscClipSSd0VzvGrR3ZTRH1lGwJ7Il6/Ukxz54
+         qbTXK0i9WCTKRIgaF5BHZC94a+0g/CCzkb6MNwPs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org,
+        Dawid Lukwinski <dawid.lukwinski@intel.com>,
+        Jan Sokolowski <jan.sokolowski@intel.com>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 070/158] tcp: Fix data-races around sysctl_tcp_reordering.
-Date:   Wed, 27 Jul 2022 18:12:14 +0200
-Message-Id: <20220727161024.310392415@linuxfoundation.org>
+Subject: [PATCH 5.18 089/158] i40e: Fix erroneous adapter reinitialization during recovery process
+Date:   Wed, 27 Jul 2022 18:12:33 +0200
+Message-Id: <20220727161025.042585831@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -49,87 +53,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Dawid Lukwinski <dawid.lukwinski@intel.com>
 
-[ Upstream commit 46778cd16e6a5ad1b2e3a91f6c057c907379418e ]
+[ Upstream commit f838a63369818faadec4ad1736cfbd20ab5da00e ]
 
-While reading sysctl_tcp_reordering, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its readers.
+Fix an issue when driver incorrectly detects state
+of recovery process and erroneously reinitializes interrupts,
+which results in a kernel error and call trace message.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+The issue was caused by a combination of two factors:
+1. Assuming the EMP reset issued after completing
+firmware recovery means the whole recovery process is complete.
+2. Erroneous reinitialization of interrupt vector after detecting
+the above mentioned EMP reset.
+
+Fixes (1) by changing how recovery state change is detected
+and (2) by adjusting the conditional expression to ensure using proper
+interrupt reinitialization method, depending on the situation.
+
+Fixes: 4ff0ee1af016 ("i40e: Introduce recovery mode support")
+Signed-off-by: Dawid Lukwinski <dawid.lukwinski@intel.com>
+Signed-off-by: Jan Sokolowski <jan.sokolowski@intel.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Link: https://lore.kernel.org/r/20220715214542.2968762-1-anthony.l.nguyen@intel.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp.c         |  2 +-
- net/ipv4/tcp_input.c   | 10 +++++++---
- net/ipv4/tcp_metrics.c |  3 ++-
- 3 files changed, 10 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/intel/i40e/i40e_main.c | 13 +++++--------
+ 1 file changed, 5 insertions(+), 8 deletions(-)
 
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index df3bf1a24c39..0e0ee9c58257 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -441,7 +441,7 @@ void tcp_init_sock(struct sock *sk)
- 	tp->snd_cwnd_clamp = ~0;
- 	tp->mss_cache = TCP_MSS_DEFAULT;
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
+index 77eb9c726205..6f01bffd7e5c 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -10645,7 +10645,7 @@ static int i40e_reset(struct i40e_pf *pf)
+  **/
+ static void i40e_rebuild(struct i40e_pf *pf, bool reinit, bool lock_acquired)
+ {
+-	int old_recovery_mode_bit = test_bit(__I40E_RECOVERY_MODE, pf->state);
++	const bool is_recovery_mode_reported = i40e_check_recovery_mode(pf);
+ 	struct i40e_vsi *vsi = pf->vsi[pf->lan_vsi];
+ 	struct i40e_hw *hw = &pf->hw;
+ 	i40e_status ret;
+@@ -10653,13 +10653,11 @@ static void i40e_rebuild(struct i40e_pf *pf, bool reinit, bool lock_acquired)
+ 	int v;
  
--	tp->reordering = sock_net(sk)->ipv4.sysctl_tcp_reordering;
-+	tp->reordering = READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_reordering);
- 	tcp_assign_congestion_control(sk);
+ 	if (test_bit(__I40E_EMP_RESET_INTR_RECEIVED, pf->state) &&
+-	    i40e_check_recovery_mode(pf)) {
++	    is_recovery_mode_reported)
+ 		i40e_set_ethtool_ops(pf->vsi[pf->lan_vsi]->netdev);
+-	}
  
- 	tp->tsoffset = 0;
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index f5ca08dfa02d..391f4a3f10fd 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -2139,6 +2139,7 @@ void tcp_enter_loss(struct sock *sk)
- 	struct tcp_sock *tp = tcp_sk(sk);
- 	struct net *net = sock_net(sk);
- 	bool new_recovery = icsk->icsk_ca_state < TCP_CA_Recovery;
-+	u8 reordering;
+ 	if (test_bit(__I40E_DOWN, pf->state) &&
+-	    !test_bit(__I40E_RECOVERY_MODE, pf->state) &&
+-	    !old_recovery_mode_bit)
++	    !test_bit(__I40E_RECOVERY_MODE, pf->state))
+ 		goto clear_recovery;
+ 	dev_dbg(&pf->pdev->dev, "Rebuilding internal switch\n");
  
- 	tcp_timeout_mark_lost(sk);
- 
-@@ -2159,10 +2160,12 @@ void tcp_enter_loss(struct sock *sk)
- 	/* Timeout in disordered state after receiving substantial DUPACKs
- 	 * suggests that the degree of reordering is over-estimated.
+@@ -10686,13 +10684,12 @@ static void i40e_rebuild(struct i40e_pf *pf, bool reinit, bool lock_acquired)
+ 	 * accordingly with regard to resources initialization
+ 	 * and deinitialization
  	 */
-+	reordering = READ_ONCE(net->ipv4.sysctl_tcp_reordering);
- 	if (icsk->icsk_ca_state <= TCP_CA_Disorder &&
--	    tp->sacked_out >= net->ipv4.sysctl_tcp_reordering)
-+	    tp->sacked_out >= reordering)
- 		tp->reordering = min_t(unsigned int, tp->reordering,
--				       net->ipv4.sysctl_tcp_reordering);
-+				       reordering);
-+
- 	tcp_set_ca_state(sk, TCP_CA_Loss);
- 	tp->high_seq = tp->snd_nxt;
- 	tcp_ecn_queue_cwr(tp);
-@@ -3464,7 +3467,8 @@ static inline bool tcp_may_raise_cwnd(const struct sock *sk, const int flag)
- 	 * new SACK or ECE mark may first advance cwnd here and later reduce
- 	 * cwnd in tcp_fastretrans_alert() based on more states.
- 	 */
--	if (tcp_sk(sk)->reordering > sock_net(sk)->ipv4.sysctl_tcp_reordering)
-+	if (tcp_sk(sk)->reordering >
-+	    READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_reordering))
- 		return flag & FLAG_FORWARD_PROGRESS;
+-	if (test_bit(__I40E_RECOVERY_MODE, pf->state) ||
+-	    old_recovery_mode_bit) {
++	if (test_bit(__I40E_RECOVERY_MODE, pf->state)) {
+ 		if (i40e_get_capabilities(pf,
+ 					  i40e_aqc_opc_list_func_capabilities))
+ 			goto end_unlock;
  
- 	return flag & FLAG_DATA_ACKED;
-diff --git a/net/ipv4/tcp_metrics.c b/net/ipv4/tcp_metrics.c
-index 7029b0e98edb..a501150deaa3 100644
---- a/net/ipv4/tcp_metrics.c
-+++ b/net/ipv4/tcp_metrics.c
-@@ -428,7 +428,8 @@ void tcp_update_metrics(struct sock *sk)
- 		if (!tcp_metric_locked(tm, TCP_METRIC_REORDERING)) {
- 			val = tcp_metric_get(tm, TCP_METRIC_REORDERING);
- 			if (val < tp->reordering &&
--			    tp->reordering != net->ipv4.sysctl_tcp_reordering)
-+			    tp->reordering !=
-+			    READ_ONCE(net->ipv4.sysctl_tcp_reordering))
- 				tcp_metric_set(tm, TCP_METRIC_REORDERING,
- 					       tp->reordering);
- 		}
+-		if (test_bit(__I40E_RECOVERY_MODE, pf->state)) {
++		if (is_recovery_mode_reported) {
+ 			/* we're staying in recovery mode so we'll reinitialize
+ 			 * misc vector here
+ 			 */
 -- 
 2.35.1
 
