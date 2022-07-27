@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41F7CC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:58:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81A80C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:59:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240719AbiG0Q6z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:58:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43224 "EHLO
+        id S232364AbiG0Q7A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:59:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236298AbiG0Q6X (ORCPT
+        with ESMTP id S240633AbiG0Q6Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:58:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43C1467146;
-        Wed, 27 Jul 2022 09:36:48 -0700 (PDT)
+        Wed, 27 Jul 2022 12:58:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D00D067166;
+        Wed, 27 Jul 2022 09:36:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C6A81B8200C;
-        Wed, 27 Jul 2022 16:36:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 298C4C433C1;
-        Wed, 27 Jul 2022 16:36:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 92C0861A8E;
+        Wed, 27 Jul 2022 16:36:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F933C433D7;
+        Wed, 27 Jul 2022 16:36:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939805;
-        bh=zzTRmBX+mdkIB2l6y4mLCikYtDBJ8T+XgL98IBlYq1c=;
+        s=korg; t=1658939811;
+        bh=7yvDQWnND4ZyWhVfrWdvzBV3QLcB2BtDLr3nL9fwep4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IF4Ivt4tEHprb397k2fb2iKNqCyiymzBf07bDFW0Z9YtxgLW1aKv1LwD/cfYaA49P
-         +M0ljLJqrPlxPYNGJcCdsoCj7klvhDpwBm4HO6ci4qR5G2HQ1bVoPEWvVjLCkwoarV
-         EuUp7EHL4TJwwJVd2E40xlnmMt6Vtb6tOua2lJJY=
+        b=fpt68wB95/fbl5ZprPE+yOzymTKh70/MEuTTpzRnpH1ZYH46Ha+7sPlmEicGnLY+4
+         7EE0g46f0vag/QP5+JeZmJ+XxMQBQAI7W8wL34R6QBg83FyeQBVpE4KelRdTiguQ5y
+         KjoY7QrKT3CyaDPhvcjpdryzR3faZsnZrtZFIav0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Borislav Petkov <bp@suse.de>
-Subject: [PATCH 5.10 094/105] x86/amd: Use IBPB for firmware calls
-Date:   Wed, 27 Jul 2022 18:11:20 +0200
-Message-Id: <20220727161015.888691679@linuxfoundation.org>
+        stable@vger.kernel.org, Noam Rathaus <noamr@ssd-disclosure.com>,
+        David Howells <dhowells@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.10 096/105] watchqueue: make sure to serialize wqueue->defunct properly
+Date:   Wed, 27 Jul 2022 18:11:22 +0200
+Message-Id: <20220727161015.962743329@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161012.056867467@linuxfoundation.org>
 References: <20220727161012.056867467@linuxfoundation.org>
@@ -49,70 +49,135 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-commit 28a99e95f55c61855983d36a88c05c178d966bb7 upstream.
+commit 353f7988dd8413c47718f7ca79c030b6fb62cfe5 upstream.
 
-On AMD IBRS does not prevent Retbleed; as such use IBPB before a
-firmware call to flush the branch history state.
+When the pipe is closed, we mark the associated watchqueue defunct by
+calling watch_queue_clear().  However, while that is protected by the
+watchqueue lock, new watchqueue entries aren't actually added under that
+lock at all: they use the pipe->rd_wait.lock instead, and looking up
+that pipe happens without any locking.
 
-And because in order to do an EFI call, the kernel maps a whole lot of
-the kernel page table into the EFI page table, do an IBPB just in case
-in order to prevent the scenario of poisoning the BTB and causing an EFI
-call using the unprotected RET there.
+The watchqueue code uses the RCU read-side section to make sure that the
+wqueue entry itself hasn't disappeared, but that does not protect the
+pipe_info in any way.
 
-  [ bp: Massage. ]
+So make sure to actually hold the wqueue lock when posting watch events,
+properly serializing against the pipe being torn down.
 
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20220715194550.793957-1-cascardo@canonical.com
+Reported-by: Noam Rathaus <noamr@ssd-disclosure.com>
+Cc: Greg KH <gregkh@linuxfoundation.org>
+Cc: David Howells <dhowells@redhat.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/cpufeatures.h   |    1 +
- arch/x86/include/asm/nospec-branch.h |    2 ++
- arch/x86/kernel/cpu/bugs.c           |   11 ++++++++++-
- 3 files changed, 13 insertions(+), 1 deletion(-)
+ kernel/watch_queue.c |   53 +++++++++++++++++++++++++++++++++++----------------
+ 1 file changed, 37 insertions(+), 16 deletions(-)
 
---- a/arch/x86/include/asm/cpufeatures.h
-+++ b/arch/x86/include/asm/cpufeatures.h
-@@ -298,6 +298,7 @@
- #define X86_FEATURE_RETPOLINE_LFENCE	(11*32+13) /* "" Use LFENCE for Spectre variant 2 */
- #define X86_FEATURE_RETHUNK		(11*32+14) /* "" Use REturn THUNK */
- #define X86_FEATURE_UNRET		(11*32+15) /* "" AMD BTB untrain return */
-+#define X86_FEATURE_USE_IBPB_FW		(11*32+16) /* "" Use IBPB during runtime firmware calls */
+--- a/kernel/watch_queue.c
++++ b/kernel/watch_queue.c
+@@ -34,6 +34,27 @@ MODULE_LICENSE("GPL");
+ #define WATCH_QUEUE_NOTE_SIZE 128
+ #define WATCH_QUEUE_NOTES_PER_PAGE (PAGE_SIZE / WATCH_QUEUE_NOTE_SIZE)
  
- /* Intel-defined CPU features, CPUID level 0x00000007:1 (EAX), word 12 */
- #define X86_FEATURE_AVX512_BF16		(12*32+ 5) /* AVX512 BFLOAT16 instructions */
---- a/arch/x86/include/asm/nospec-branch.h
-+++ b/arch/x86/include/asm/nospec-branch.h
-@@ -298,6 +298,8 @@ do {									\
- 	alternative_msr_write(MSR_IA32_SPEC_CTRL,			\
- 			      spec_ctrl_current() | SPEC_CTRL_IBRS,	\
- 			      X86_FEATURE_USE_IBRS_FW);			\
-+	alternative_msr_write(MSR_IA32_PRED_CMD, PRED_CMD_IBPB,		\
-+			      X86_FEATURE_USE_IBPB_FW);			\
- } while (0)
- 
- #define firmware_restrict_branch_speculation_end()			\
---- a/arch/x86/kernel/cpu/bugs.c
-+++ b/arch/x86/kernel/cpu/bugs.c
-@@ -1475,7 +1475,16 @@ static void __init spectre_v2_select_mit
- 	 * the CPU supports Enhanced IBRS, kernel might un-intentionally not
- 	 * enable IBRS around firmware calls.
- 	 */
--	if (boot_cpu_has(X86_FEATURE_IBRS) && !spectre_v2_in_ibrs_mode(mode)) {
-+	if (boot_cpu_has_bug(X86_BUG_RETBLEED) &&
-+	    (boot_cpu_data.x86_vendor == X86_VENDOR_AMD ||
-+	     boot_cpu_data.x86_vendor == X86_VENDOR_HYGON)) {
++/*
++ * This must be called under the RCU read-lock, which makes
++ * sure that the wqueue still exists. It can then take the lock,
++ * and check that the wqueue hasn't been destroyed, which in
++ * turn makes sure that the notification pipe still exists.
++ */
++static inline bool lock_wqueue(struct watch_queue *wqueue)
++{
++	spin_lock_bh(&wqueue->lock);
++	if (unlikely(wqueue->defunct)) {
++		spin_unlock_bh(&wqueue->lock);
++		return false;
++	}
++	return true;
++}
 +
-+		if (retbleed_cmd != RETBLEED_CMD_IBPB) {
-+			setup_force_cpu_cap(X86_FEATURE_USE_IBPB_FW);
-+			pr_info("Enabling Speculation Barrier for firmware calls\n");
++static inline void unlock_wqueue(struct watch_queue *wqueue)
++{
++	spin_unlock_bh(&wqueue->lock);
++}
++
+ static void watch_queue_pipe_buf_release(struct pipe_inode_info *pipe,
+ 					 struct pipe_buffer *buf)
+ {
+@@ -69,6 +90,10 @@ static const struct pipe_buf_operations
+ 
+ /*
+  * Post a notification to a watch queue.
++ *
++ * Must be called with the RCU lock for reading, and the
++ * watch_queue lock held, which guarantees that the pipe
++ * hasn't been released.
+  */
+ static bool post_one_notification(struct watch_queue *wqueue,
+ 				  struct watch_notification *n)
+@@ -85,9 +110,6 @@ static bool post_one_notification(struct
+ 
+ 	spin_lock_irq(&pipe->rd_wait.lock);
+ 
+-	if (wqueue->defunct)
+-		goto out;
+-
+ 	mask = pipe->ring_size - 1;
+ 	head = pipe->head;
+ 	tail = pipe->tail;
+@@ -203,7 +225,10 @@ void __post_watch_notification(struct wa
+ 		if (security_post_notification(watch->cred, cred, n) < 0)
+ 			continue;
+ 
+-		post_one_notification(wqueue, n);
++		if (lock_wqueue(wqueue)) {
++			post_one_notification(wqueue, n);
++			unlock_wqueue(wqueue);;
 +		}
-+
-+	} else if (boot_cpu_has(X86_FEATURE_IBRS) && !spectre_v2_in_ibrs_mode(mode)) {
- 		setup_force_cpu_cap(X86_FEATURE_USE_IBRS_FW);
- 		pr_info("Enabling Restricted Speculation for firmware calls\n");
  	}
+ 
+ 	rcu_read_unlock();
+@@ -465,11 +490,12 @@ int add_watch_to_object(struct watch *wa
+ 		return -EAGAIN;
+ 	}
+ 
+-	spin_lock_bh(&wqueue->lock);
+-	kref_get(&wqueue->usage);
+-	kref_get(&watch->usage);
+-	hlist_add_head(&watch->queue_node, &wqueue->watches);
+-	spin_unlock_bh(&wqueue->lock);
++	if (lock_wqueue(wqueue)) {
++		kref_get(&wqueue->usage);
++		kref_get(&watch->usage);
++		hlist_add_head(&watch->queue_node, &wqueue->watches);
++		unlock_wqueue(wqueue);
++	}
+ 
+ 	hlist_add_head(&watch->list_node, &wlist->watchers);
+ 	return 0;
+@@ -523,20 +549,15 @@ found:
+ 
+ 	wqueue = rcu_dereference(watch->queue);
+ 
+-	/* We don't need the watch list lock for the next bit as RCU is
+-	 * protecting *wqueue from deallocation.
+-	 */
+-	if (wqueue) {
++	if (lock_wqueue(wqueue)) {
+ 		post_one_notification(wqueue, &n.watch);
+ 
+-		spin_lock_bh(&wqueue->lock);
+-
+ 		if (!hlist_unhashed(&watch->queue_node)) {
+ 			hlist_del_init_rcu(&watch->queue_node);
+ 			put_watch(watch);
+ 		}
+ 
+-		spin_unlock_bh(&wqueue->lock);
++		unlock_wqueue(wqueue);
+ 	}
+ 
+ 	if (wlist->release_watch) {
 
 
