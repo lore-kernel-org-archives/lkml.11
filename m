@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AB3CC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:22:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2D6FC19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:22:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235373AbiG0QWi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:22:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49526 "EHLO
+        id S234666AbiG0QWn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:22:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234075AbiG0QWK (ORCPT
+        with ESMTP id S235144AbiG0QWQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:22:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 017504BD3F;
-        Wed, 27 Jul 2022 09:22:10 -0700 (PDT)
+        Wed, 27 Jul 2022 12:22:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ADD02BB04;
+        Wed, 27 Jul 2022 09:22:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A64D619AC;
-        Wed, 27 Jul 2022 16:22:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96B05C433D6;
-        Wed, 27 Jul 2022 16:22:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E6D22B821B9;
+        Wed, 27 Jul 2022 16:22:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52D12C433D6;
+        Wed, 27 Jul 2022 16:22:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658938929;
-        bh=XxsZqC5lRPgiVb1BfJ8Az073MMEg2CsJPLRQC8M4CNo=;
+        s=korg; t=1658938931;
+        bh=x7MXIbRyh87EpyP2If66oVAwRiv0rDKPLJvSBv6XxHo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s6emZUhjGR2TFX8gXxNZ9jSq4hPCrZAYo+nYGrW5uSSU+E5Qb0NrdDe7aPaY7xd1b
-         6yQ7g16pI0sv+x99Yx2XvDIqMpF9RsWJxAY0p+2Saxx2ZNS4OfAdxymyQO4XiuIxtA
-         5ayUBE5yAai3oy4UHjjwJjrahVLmlKEPiU+Q23/8=
+        b=wIMoQXhmwao9Iv7H6mar+kUqwBYVIXUMxG1JBpY08N6PjlLoaeQj1pAev1b+G6UR1
+         +uTgAfZgJ9iDF/TwBf3SRS6G06S+MFcI6gQEX+FKyAiI3gtIdzCZV0O75Y0wUyQicE
+         pPczKB2RF5zKfK2gT0l5v6FjUIS6SZvrKBMt1x/g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wang Cheng <wanngchenng@gmail.com>,
-        syzbot+217f792c92599518a2ab@syzkaller.appspotmail.com,
-        David Rientjes <rientjes@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Andrew Morton <akpm@linux-foundation.org>
-Subject: [PATCH 4.9 18/26] mm/mempolicy: fix uninit-value in mpol_rebind_policy()
-Date:   Wed, 27 Jul 2022 18:10:47 +0200
-Message-Id: <20220727160959.847927953@linuxfoundation.org>
+        stable@vger.kernel.org, syzbot <syzkaller@googlegroups.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Subject: [PATCH 4.9 19/26] bpf: Make sure mac_header was set before using it
+Date:   Wed, 27 Jul 2022 18:10:48 +0200
+Message-Id: <20220727160959.878920967@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727160959.122591422@linuxfoundation.org>
 References: <20220727160959.122591422@linuxfoundation.org>
@@ -51,106 +49,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Cheng <wanngchenng@gmail.com>
+From: Eric Dumazet <edumazet@google.com>
 
-commit 018160ad314d75b1409129b2247b614a9f35894c upstream.
+commit 0326195f523a549e0a9d7fd44c70b26fd7265090 upstream.
 
-mpol_set_nodemask()(mm/mempolicy.c) does not set up nodemask when
-pol->mode is MPOL_LOCAL.  Check pol->mode before access
-pol->w.cpuset_mems_allowed in mpol_rebind_policy()(mm/mempolicy.c).
+Classic BPF has a way to load bytes starting from the mac header.
 
-BUG: KMSAN: uninit-value in mpol_rebind_policy mm/mempolicy.c:352 [inline]
-BUG: KMSAN: uninit-value in mpol_rebind_task+0x2ac/0x2c0 mm/mempolicy.c:368
- mpol_rebind_policy mm/mempolicy.c:352 [inline]
- mpol_rebind_task+0x2ac/0x2c0 mm/mempolicy.c:368
- cpuset_change_task_nodemask kernel/cgroup/cpuset.c:1711 [inline]
- cpuset_attach+0x787/0x15e0 kernel/cgroup/cpuset.c:2278
- cgroup_migrate_execute+0x1023/0x1d20 kernel/cgroup/cgroup.c:2515
- cgroup_migrate kernel/cgroup/cgroup.c:2771 [inline]
- cgroup_attach_task+0x540/0x8b0 kernel/cgroup/cgroup.c:2804
- __cgroup1_procs_write+0x5cc/0x7a0 kernel/cgroup/cgroup-v1.c:520
- cgroup1_tasks_write+0x94/0xb0 kernel/cgroup/cgroup-v1.c:539
- cgroup_file_write+0x4c2/0x9e0 kernel/cgroup/cgroup.c:3852
- kernfs_fop_write_iter+0x66a/0x9f0 fs/kernfs/file.c:296
- call_write_iter include/linux/fs.h:2162 [inline]
- new_sync_write fs/read_write.c:503 [inline]
- vfs_write+0x1318/0x2030 fs/read_write.c:590
- ksys_write+0x28b/0x510 fs/read_write.c:643
- __do_sys_write fs/read_write.c:655 [inline]
- __se_sys_write fs/read_write.c:652 [inline]
- __x64_sys_write+0xdb/0x120 fs/read_write.c:652
- do_syscall_x64 arch/x86/entry/common.c:51 [inline]
- do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+Some skbs do not have a mac header, and skb_mac_header()
+in this case is returning a pointer that 65535 bytes after
+skb->head.
 
-Uninit was created at:
- slab_post_alloc_hook mm/slab.h:524 [inline]
- slab_alloc_node mm/slub.c:3251 [inline]
- slab_alloc mm/slub.c:3259 [inline]
- kmem_cache_alloc+0x902/0x11c0 mm/slub.c:3264
- mpol_new mm/mempolicy.c:293 [inline]
- do_set_mempolicy+0x421/0xb70 mm/mempolicy.c:853
- kernel_set_mempolicy mm/mempolicy.c:1504 [inline]
- __do_sys_set_mempolicy mm/mempolicy.c:1510 [inline]
- __se_sys_set_mempolicy+0x44c/0xb60 mm/mempolicy.c:1507
- __x64_sys_set_mempolicy+0xd8/0x110 mm/mempolicy.c:1507
- do_syscall_x64 arch/x86/entry/common.c:51 [inline]
- do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+Existing range check in bpf_internal_load_pointer_neg_helper()
+was properly kicking and no illegal access was happening.
 
-KMSAN: uninit-value in mpol_rebind_task (2)
-https://syzkaller.appspot.com/bug?id=d6eb90f952c2a5de9ea718a1b873c55cb13b59dc
+New sanity check in skb_mac_header() is firing, so we need
+to avoid it.
 
-This patch seems to fix below bug too.
-KMSAN: uninit-value in mpol_rebind_mm (2)
-https://syzkaller.appspot.com/bug?id=f2fecd0d7013f54ec4162f60743a2b28df40926b
+WARNING: CPU: 1 PID: 28990 at include/linux/skbuff.h:2785 skb_mac_header include/linux/skbuff.h:2785 [inline]
+WARNING: CPU: 1 PID: 28990 at include/linux/skbuff.h:2785 bpf_internal_load_pointer_neg_helper+0x1b1/0x1c0 kernel/bpf/core.c:74
+Modules linked in:
+CPU: 1 PID: 28990 Comm: syz-executor.0 Not tainted 5.19.0-rc4-syzkaller-00865-g4874fb9484be #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 06/29/2022
+RIP: 0010:skb_mac_header include/linux/skbuff.h:2785 [inline]
+RIP: 0010:bpf_internal_load_pointer_neg_helper+0x1b1/0x1c0 kernel/bpf/core.c:74
+Code: ff ff 45 31 f6 e9 5a ff ff ff e8 aa 27 40 00 e9 3b ff ff ff e8 90 27 40 00 e9 df fe ff ff e8 86 27 40 00 eb 9e e8 2f 2c f3 ff <0f> 0b eb b1 e8 96 27 40 00 e9 79 fe ff ff 90 41 57 41 56 41 55 41
+RSP: 0018:ffffc9000309f668 EFLAGS: 00010216
+RAX: 0000000000000118 RBX: ffffffffffeff00c RCX: ffffc9000e417000
+RDX: 0000000000040000 RSI: ffffffff81873f21 RDI: 0000000000000003
+RBP: ffff8880842878c0 R08: 0000000000000003 R09: 000000000000ffff
+R10: 000000000000ffff R11: 0000000000000001 R12: 0000000000000004
+R13: ffff88803ac56c00 R14: 000000000000ffff R15: dffffc0000000000
+FS: 00007f5c88a16700(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
+CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fdaa9f6c058 CR3: 000000003a82c000 CR4: 00000000003506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+<TASK>
+____bpf_skb_load_helper_32 net/core/filter.c:276 [inline]
+bpf_skb_load_helper_32+0x191/0x220 net/core/filter.c:264
 
-The uninit-value is pol->w.cpuset_mems_allowed in mpol_rebind_policy().
-When syzkaller reproducer runs to the beginning of mpol_new(),
-
-	    mpol_new() mm/mempolicy.c
-	  do_mbind() mm/mempolicy.c
-	kernel_mbind() mm/mempolicy.c
-
-`mode` is 1(MPOL_PREFERRED), nodes_empty(*nodes) is `true` and `flags`
-is 0. Then
-
-	mode = MPOL_LOCAL;
-	...
-	policy->mode = mode;
-	policy->flags = flags;
-
-will be executed. So in mpol_set_nodemask(),
-
-	    mpol_set_nodemask() mm/mempolicy.c
-	  do_mbind()
-	kernel_mbind()
-
-pol->mode is 4 (MPOL_LOCAL), that `nodemask` in `pol` is not initialized,
-which will be accessed in mpol_rebind_policy().
-
-Link: https://lkml.kernel.org/r/20220512123428.fq3wofedp6oiotd4@ppc.localdomain
-Signed-off-by: Wang Cheng <wanngchenng@gmail.com>
-Reported-by: <syzbot+217f792c92599518a2ab@syzkaller.appspotmail.com>
-Tested-by: <syzbot+217f792c92599518a2ab@syzkaller.appspotmail.com>
-Cc: David Rientjes <rientjes@google.com>
-Cc: Vlastimil Babka <vbabka@suse.cz>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Fixes: f9aefd6b2aa3 ("net: warn if mac header was not set")
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/bpf/20220707123900.945305-1-edumazet@google.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/mempolicy.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/bpf/core.c |    8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
---- a/mm/mempolicy.c
-+++ b/mm/mempolicy.c
-@@ -396,7 +396,7 @@ static void mpol_rebind_preferred(struct
- static void mpol_rebind_policy(struct mempolicy *pol, const nodemask_t *newmask,
- 				enum mpol_rebind_step step)
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -60,11 +60,13 @@ void *bpf_internal_load_pointer_neg_help
  {
--	if (!pol)
-+	if (!pol || pol->mode == MPOL_LOCAL)
- 		return;
- 	if (!mpol_store_user_nodemask(pol) && step == MPOL_REBIND_ONCE &&
- 	    nodes_equal(pol->w.cpuset_mems_allowed, *newmask))
+ 	u8 *ptr = NULL;
+ 
+-	if (k >= SKF_NET_OFF)
++	if (k >= SKF_NET_OFF) {
+ 		ptr = skb_network_header(skb) + k - SKF_NET_OFF;
+-	else if (k >= SKF_LL_OFF)
++	} else if (k >= SKF_LL_OFF) {
++		if (unlikely(!skb_mac_header_was_set(skb)))
++			return NULL;
+ 		ptr = skb_mac_header(skb) + k - SKF_LL_OFF;
+-
++	}
+ 	if (ptr >= skb->head && ptr + size <= skb_tail_pointer(skb))
+ 		return ptr;
+ 
 
 
