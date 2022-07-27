@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65EC7C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:40:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEFB6C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:40:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242778AbiG0Rk2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:40:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35104 "EHLO
+        id S242755AbiG0Rko (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:40:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242889AbiG0Rj1 (ORCPT
+        with ESMTP id S242936AbiG0Rjc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:39:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAA2661D7A;
-        Wed, 27 Jul 2022 09:51:12 -0700 (PDT)
+        Wed, 27 Jul 2022 13:39:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5B4D88CC3;
+        Wed, 27 Jul 2022 09:51:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2DCD9B821BE;
-        Wed, 27 Jul 2022 16:51:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B0ECC433D6;
-        Wed, 27 Jul 2022 16:51:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E9258616ED;
+        Wed, 27 Jul 2022 16:51:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0172AC433D6;
+        Wed, 27 Jul 2022 16:51:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940670;
-        bh=wQ4x2T2sHA5A7GZsTF5GyIl9+xpUVMCBVkOEG3kfipU=;
+        s=korg; t=1658940665;
+        bh=BFJdDl0BVAGoHtb4izvkJFUW5xUjgpjEeVVSQdffYQg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RJEj0IDMr6eWkFotdAkLz71SIj50BdsqlCBGvfmKMPp/HQAKoyjwyhU4DZeUtkRTy
-         UWOGmb40h/Wb/cWsFSA6Ey43ZoAErrSNrpOZxhIMtsQ5AK03Zu0Q1BnxbkVGF30DXW
-         206EGl424Fi1Q/CuZk+Mz+N9JzSgnAEfjRdNwOdk=
+        b=XX4yihu5iT90RDwCPIgPp5TVLt+tx8yOWaITc85Nt0SlkwcQ7gkaQ+bWBITFZb0EN
+         sb4tVYC4C/zOLH6FSBx2niPq7kgaV71T2vCbTSfk/4WsIgDEeRE8tzyAyiOCBMadvW
+         80+Nr6frLUvOnpvcrylNKPwvNr7ksWF32MFMKk5E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Taehee Yoo <ap420073@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Haibo Chen <haibo.chen@nxp.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 107/158] amt: drop unexpected multicast data
-Date:   Wed, 27 Jul 2022 18:12:51 +0200
-Message-Id: <20220727161025.765824123@linuxfoundation.org>
+Subject: [PATCH 5.18 097/158] gpio: pca953x: use the correct register address when regcache sync during init
+Date:   Wed, 27 Jul 2022 18:12:41 +0200
+Message-Id: <20220727161025.335410255@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -49,38 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Taehee Yoo <ap420073@gmail.com>
+From: Haibo Chen <haibo.chen@nxp.com>
 
-[ Upstream commit e882827d5b8942a27b4d28548aa27562a3a7e94c ]
+[ Upstream commit b8c768ccdd8338504fb78370747728d5002b1b5a ]
 
-AMT gateway interface should not receive unexpected multicast data.
-Multicast data message type should be received after sending an update
-message, which means all establishment between gateway and relay is
-finished.
-So, amt_multicast_data_handler() checks amt->status.
+For regcache_sync_region, we need to use pca953x_recalc_addr() to get
+the real register address.
 
-Fixes: cbc21dc1cfe9 ("amt: add data plane of amt interface")
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fixes: ec82d1eba346 ("gpio: pca953x: Zap ad-hoc reg_output cache")
+Fixes: 0f25fda840a9 ("gpio: pca953x: Zap ad-hoc reg_direction cache")
+Signed-off-by: Haibo Chen <haibo.chen@nxp.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/amt.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/gpio/gpio-pca953x.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/amt.c b/drivers/net/amt.c
-index 5c65908abd5a..4277924ab3b9 100644
---- a/drivers/net/amt.c
-+++ b/drivers/net/amt.c
-@@ -2282,6 +2282,9 @@ static bool amt_multicast_data_handler(struct amt_dev *amt, struct sk_buff *skb)
- 	struct ethhdr *eth;
- 	struct iphdr *iph;
+diff --git a/drivers/gpio/gpio-pca953x.c b/drivers/gpio/gpio-pca953x.c
+index 60b7616dd4aa..64befd6f702b 100644
+--- a/drivers/gpio/gpio-pca953x.c
++++ b/drivers/gpio/gpio-pca953x.c
+@@ -897,15 +897,18 @@ static int pca953x_irq_setup(struct pca953x_chip *chip,
+ static int device_pca95xx_init(struct pca953x_chip *chip, u32 invert)
+ {
+ 	DECLARE_BITMAP(val, MAX_LINE);
++	u8 regaddr;
+ 	int ret;
  
-+	if (READ_ONCE(amt->status) != AMT_STATUS_SENT_UPDATE)
-+		return true;
-+
- 	hdr_size = sizeof(*amtmd) + sizeof(struct udphdr);
- 	if (!pskb_may_pull(skb, hdr_size))
- 		return true;
+-	ret = regcache_sync_region(chip->regmap, chip->regs->output,
+-				   chip->regs->output + NBANK(chip) - 1);
++	regaddr = pca953x_recalc_addr(chip, chip->regs->output, 0);
++	ret = regcache_sync_region(chip->regmap, regaddr,
++				   regaddr + NBANK(chip) - 1);
+ 	if (ret)
+ 		goto out;
+ 
+-	ret = regcache_sync_region(chip->regmap, chip->regs->direction,
+-				   chip->regs->direction + NBANK(chip) - 1);
++	regaddr = pca953x_recalc_addr(chip, chip->regs->direction, 0);
++	ret = regcache_sync_region(chip->regmap, regaddr,
++				   regaddr + NBANK(chip) - 1);
+ 	if (ret)
+ 		goto out;
+ 
 -- 
 2.35.1
 
