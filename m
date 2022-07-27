@@ -2,178 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F89DC19F21
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 04:39:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B75F0C19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 04:47:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240382AbiG0Ej3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 00:39:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39396 "EHLO
+        id S240260AbiG0Erd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 00:47:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240396AbiG0EjZ (ORCPT
+        with ESMTP id S229499AbiG0Erb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 00:39:25 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E53A73DF1B
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 21:39:23 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id ku18so15314269pjb.2
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 21:39:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=72mc9rV+Or/UCSUqmbngTq+GJzkxqJLuquOjL+k6DMk=;
-        b=RUBWXp3346mGXGsT/osQGMIKkSCA7yBvKUWTxP6L7ZIoPDHhZWW3FU0T2eh8E66tQu
-         639S1w9a6BlXBIGp2jX6yp5WT2gYUDqvnvYRa4cuHGwRQ3xENfJv/A+KPLMCA3EUsGhI
-         hgzz0vAqmQoeaVWvPbRpm/8xi0fiS2xSf1wsACbKru8KFtUNsK0c+O+stYy2n8GxyAim
-         qrRUEbZGWGVSDoicrAUaKPzTHfVF23eXYxcO/PIFW5gbXJPU5+tynMvpsPUogKKg9d1P
-         nG3fUHb7Ln1NJ3aU99x6VeKAkO2mWvEMaPOxwSYv7hAZvbO88LjX9WrifLX3tfQWSyE+
-         ihNg==
+        Wed, 27 Jul 2022 00:47:31 -0400
+Received: from mail-il1-f200.google.com (mail-il1-f200.google.com [209.85.166.200])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1A8E3DBEC
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 21:47:29 -0700 (PDT)
+Received: by mail-il1-f200.google.com with SMTP id g6-20020a056e021e0600b002ddc52f6236so638510ila.10
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 21:47:29 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=72mc9rV+Or/UCSUqmbngTq+GJzkxqJLuquOjL+k6DMk=;
-        b=zO2MDSmx0R5gm8Si4ZRg7T5LPUN60Ir4Q6NwYYScx8hFxoF7yjSA3Wol+wcJaKvgVv
-         QOFCSO5G2to+DI4m5G5oWQum1QiPuZWbSubMPa/FWoXsA1WUDmzEohZYagmdjbZ5S9jK
-         mLUQIUMRtdW0WHgeT6JzhkF6khPLI1fkla9rQBYM6r9vHqaqoWB+MdFK+zLp9RTvu45M
-         8KewkzE4lQ1ez8y+1EynjQws/UZIrN0+gM117z95WPKCzzG8dtGTMN6UKYHK/DKbOLJj
-         Kh2lOtz3+nslNy3uit3Tv6NTMwXOL2B2VfvBDInNnezeYTwqXSIcSOfYdxwuGB8P/QbC
-         Kv7Q==
-X-Gm-Message-State: AJIora9Q/RP38wQO1BtmH18jQ4AAKA4Xq8jUNmaQtGTit0kHG9iUPII6
-        /67BhVKFn+GU3BNxlOdJt1qilw==
-X-Google-Smtp-Source: AGRyM1sye5+G+KwpZYkgsqAmcItRzmgg5pY5UJAmggWcyiP+mzsHBRWAibIrbpUGHL0TCdZYem73+g==
-X-Received: by 2002:a17:902:7143:b0:16d:986c:f2f9 with SMTP id u3-20020a170902714300b0016d986cf2f9mr7136604plm.42.1658896763327;
-        Tue, 26 Jul 2022 21:39:23 -0700 (PDT)
-Received: from anup-ubuntu64-vm.. ([171.76.87.63])
-        by smtp.gmail.com with ESMTPSA id p2-20020a17090a284200b001f216407204sm500698pjf.36.2022.07.26.21.39.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Jul 2022 21:39:22 -0700 (PDT)
-From:   Anup Patel <apatel@ventanamicro.com>
-To:     Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Atish Patra <atishp@atishpatra.org>,
-        Nikita Shubin <nikita.shubin@maquefel.me>,
-        Heinrich Schuchardt <heinrich.schuchardt@canonical.com>,
-        Anup Patel <anup@brainfault.org>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Anup Patel <apatel@ventanamicro.com>,
-        Nikita Shubin <n.shubin@yadro.com>
-Subject: [PATCH v2] RISC-V: Add mvendorid, marchid, and mimpid to /proc/cpuinfo output
-Date:   Wed, 27 Jul 2022 10:08:29 +0530
-Message-Id: <20220727043829.151794-1-apatel@ventanamicro.com>
-X-Mailer: git-send-email 2.34.1
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=/ub7C209U2i1ZQ26TnANhRBorghIVJMSqJvhdz+G0Mc=;
+        b=7+aHMuIdknFQo02BfGpTlztvhP431Pr+AFk3chCp8cc0srnuYbwnwr1MhMuumxM0X7
+         BgNrjSTUDMH786bF8rsiwvLB4P00KAQiSDJ3X3rhfwGZbjuwdcr53jfT8YoqGtD2xSfb
+         ie5CE7OCgtfVb3T3jbwTB8xZi1HTZe1ltLARP2lr4uWzvbpB/YaHB74Rw8bGzPQvnVrq
+         dMp3swgiv9qWrmki+NcukLAOhgbJb2OPDgUPyEsxWgbXV2p+Xa8t56C/i5e/cV2jj9KT
+         W2MjN/CyLd4XQAXv427spHJ1490yIXykkU0ymGQdHoPg29t7vQ0rHO5HhFr4RwZPIE5f
+         9W5w==
+X-Gm-Message-State: AJIora+oH3Mb6GfLRWUOKWZizLAi9nhF5ItNIQFunua2pQOdws/O51FY
+        R/ELUz1bVHTd46RTJaSQKlge+/bZi9/GHBttwlSO/44rqHOS
+X-Google-Smtp-Source: AGRyM1s68Awxg2ZiqZMLrzsfJehvdtNZsvf6v6K7eWxwWGVFDxTMke9zlKfi2ry5aaec13hvHDT2k9StqPEdRA7Pj9AuwUH4cCRw
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a05:6602:1355:b0:63d:a9ab:7e30 with SMTP id
+ i21-20020a056602135500b0063da9ab7e30mr7259013iov.119.1658897249041; Tue, 26
+ Jul 2022 21:47:29 -0700 (PDT)
+Date:   Tue, 26 Jul 2022 21:47:29 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000003f87b505e4c21d7b@google.com>
+Subject: [syzbot] WARNING in floppy_interrupt
+From:   syzbot <syzbot+7c9e87a5d6b088cd78a3@syzkaller.appspotmail.com>
+To:     axboe@kernel.dk, efremov@linux.com, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Identifying the underlying RISC-V implementation can be important
-for some of the user space applications. For example, the perf tool
-uses arch specific CPU implementation id (i.e. CPUID) to select a
-JSON file describing custom perf events on a CPU.
+Hello,
 
-Currently, there is no way to identify RISC-V implementation so we
-add mvendorid, marchid, and mimpid to /proc/cpuinfo output.
+syzbot found the following issue on:
 
-Signed-off-by: Anup Patel <apatel@ventanamicro.com>
-Reviewed-by: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
-Tested-by: Nikita Shubin <n.shubin@yadro.com>
+HEAD commit:    4a57a8400075 vf/remap: return the amount of bytes actually..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=119ac0fc080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=cd73026ceaed1402
+dashboard link: https://syzkaller.appspot.com/bug?extid=7c9e87a5d6b088cd78a3
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+userspace arch: i386
+
+Unfortunately, I don't have any reproducer for this issue yet.
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+7c9e87a5d6b088cd78a3@syzkaller.appspotmail.com
+
+------------[ cut here ]------------
+WARNING: CPU: 3 PID: 33 at drivers/block/floppy.c:999 schedule_bh drivers/block/floppy.c:999 [inline]
+WARNING: CPU: 3 PID: 33 at drivers/block/floppy.c:999 floppy_interrupt+0x32b/0x3a0 drivers/block/floppy.c:1765
+Modules linked in:
+CPU: 3 PID: 33 Comm: ksoftirqd/3 Not tainted 5.19.0-rc6-syzkaller-00115-g4a57a8400075 #0
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
+RIP: 0010:schedule_bh drivers/block/floppy.c:999 [inline]
+RIP: 0010:floppy_interrupt+0x32b/0x3a0 drivers/block/floppy.c:1765
+Code: fe ff ff e8 87 25 e0 fc 0f b6 1d 80 24 89 0c 31 ff 89 de e8 77 21 e0 fc 84 db 0f 85 30 b6 ad 04 e9 18 fe ff ff e8 65 25 e0 fc <0f> 0b e9 1a ff ff ff e8 29 e1 2c fd e9 ed fd ff ff e8 1f e1 2c fd
+RSP: 0018:ffffc900005d8e58 EFLAGS: 00010046
+RAX: 0000000000000000 RBX: 0000000000000001 RCX: 0000000000000100
+RDX: ffff888012229d80 RSI: ffffffff849a457b RDI: 0000000000000007
+RBP: 0000000000000001 R08: 0000000000000007 R09: 0000000000000000
+R10: 0000000000000001 R11: 0000000000000001 R12: 0000000000000002
+R13: ffffffff8499f800 R14: 0000000000000000 R15: 0000000000000000
+FS:  0000000000000000(0000) GS:ffff88802cb00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00000000f6f5c034 CR3: 000000000ba8e000 CR4: 0000000000150ee0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <IRQ>
+ floppy_hardint+0x1ad/0x200 arch/x86/include/asm/floppy.h:66
+ __handle_irq_event_percpu+0x22b/0x880 kernel/irq/handle.c:158
+ handle_irq_event_percpu kernel/irq/handle.c:193 [inline]
+ handle_irq_event+0xa7/0x1e0 kernel/irq/handle.c:210
+ handle_edge_irq+0x25f/0xd00 kernel/irq/chip.c:817
+ generic_handle_irq_desc include/linux/irqdesc.h:158 [inline]
+ handle_irq arch/x86/kernel/irq.c:231 [inline]
+ __common_interrupt+0x9d/0x210 arch/x86/kernel/irq.c:250
+ common_interrupt+0xa4/0xc0 arch/x86/kernel/irq.c:240
+ </IRQ>
+ <TASK>
+ asm_common_interrupt+0x22/0x40 arch/x86/include/asm/idtentry.h:640
+RIP: 0010:__raw_spin_unlock_irqrestore include/linux/spinlock_api_smp.h:152 [inline]
+RIP: 0010:_raw_spin_unlock_irqrestore+0x38/0x70 kernel/locking/spinlock.c:194
+Code: 74 24 10 e8 ca de e3 f7 48 89 ef e8 d2 5f e4 f7 81 e3 00 02 00 00 75 25 9c 58 f6 c4 02 75 2d 48 85 db 74 01 fb bf 01 00 00 00 <e8> 43 67 d7 f7 65 8b 05 fc fb 87 76 85 c0 74 0a 5b 5d c3 e8 90 46
+RSP: 0018:ffffc900005afbe0 EFLAGS: 00000206
+RAX: 0000000000000006 RBX: 0000000000000200 RCX: 1ffffffff1b77019
+RDX: 0000000000000000 RSI: 0000000000000101 RDI: 0000000000000001
+RBP: ffffffff91193240 R08: 0000000000000001 R09: 0000000000000001
+R10: fffffbfff2232648 R11: 0000000000000001 R12: 0000000000000002
+R13: 0000000000000002 R14: dead000000000100 R15: dffffc0000000000
+ __debug_check_no_obj_freed lib/debugobjects.c:999 [inline]
+ debug_check_no_obj_freed+0x20c/0x420 lib/debugobjects.c:1020
+ slab_free_hook mm/slub.c:1729 [inline]
+ slab_free_freelist_hook+0xeb/0x1c0 mm/slub.c:1780
+ slab_free mm/slub.c:3536 [inline]
+ kmem_cache_free+0xdd/0x5a0 mm/slub.c:3553
+ i_callback+0x3f/0x70 fs/inode.c:249
+ rcu_do_batch kernel/rcu/tree.c:2578 [inline]
+ rcu_core+0x7b1/0x1880 kernel/rcu/tree.c:2838
+ __do_softirq+0x29b/0x9c2 kernel/softirq.c:571
+ run_ksoftirqd kernel/softirq.c:934 [inline]
+ run_ksoftirqd+0x2d/0x60 kernel/softirq.c:926
+ smpboot_thread_fn+0x645/0x9c0 kernel/smpboot.c:164
+ kthread+0x2e9/0x3a0 kernel/kthread.c:376
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:306
+ </TASK>
+----------------
+Code disassembly (best guess):
+   0:	74 24                	je     0x26
+   2:	10 e8                	adc    %ch,%al
+   4:	ca de e3             	lret   $0xe3de
+   7:	f7 48 89 ef e8 d2 5f 	testl  $0x5fd2e8ef,-0x77(%rax)
+   e:	e4 f7                	in     $0xf7,%al
+  10:	81 e3 00 02 00 00    	and    $0x200,%ebx
+  16:	75 25                	jne    0x3d
+  18:	9c                   	pushfq
+  19:	58                   	pop    %rax
+  1a:	f6 c4 02             	test   $0x2,%ah
+  1d:	75 2d                	jne    0x4c
+  1f:	48 85 db             	test   %rbx,%rbx
+  22:	74 01                	je     0x25
+  24:	fb                   	sti
+  25:	bf 01 00 00 00       	mov    $0x1,%edi
+* 2a:	e8 43 67 d7 f7       	callq  0xf7d76772 <-- trapping instruction
+  2f:	65 8b 05 fc fb 87 76 	mov    %gs:0x7687fbfc(%rip),%eax        # 0x7687fc32
+  36:	85 c0                	test   %eax,%eax
+  38:	74 0a                	je     0x44
+  3a:	5b                   	pop    %rbx
+  3b:	5d                   	pop    %rbp
+  3c:	c3                   	retq
+  3d:	e8                   	.byte 0xe8
+  3e:	90                   	nop
+  3f:	46                   	rex.RX
+
+
 ---
-Changes since v1:
- - Use IS_ENABLED() to check CONFIG defines
- - Added RB and TB tags in commit description
----
- arch/riscv/kernel/cpu.c | 51 +++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 51 insertions(+)
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/arch/riscv/kernel/cpu.c b/arch/riscv/kernel/cpu.c
-index fba9e9f46a8c..04bcc91c91ea 100644
---- a/arch/riscv/kernel/cpu.c
-+++ b/arch/riscv/kernel/cpu.c
-@@ -3,10 +3,13 @@
-  * Copyright (C) 2012 Regents of the University of California
-  */
- 
-+#include <linux/cpu.h>
- #include <linux/init.h>
- #include <linux/seq_file.h>
- #include <linux/of.h>
-+#include <asm/csr.h>
- #include <asm/hwcap.h>
-+#include <asm/sbi.h>
- #include <asm/smp.h>
- #include <asm/pgtable.h>
- 
-@@ -64,6 +67,50 @@ int riscv_of_parent_hartid(struct device_node *node)
- }
- 
- #ifdef CONFIG_PROC_FS
-+
-+struct riscv_cpuinfo {
-+	unsigned long mvendorid;
-+	unsigned long marchid;
-+	unsigned long mimpid;
-+};
-+static DEFINE_PER_CPU(struct riscv_cpuinfo, riscv_cpuinfo);
-+
-+static int riscv_cpuinfo_starting(unsigned int cpu)
-+{
-+	struct riscv_cpuinfo *ci = this_cpu_ptr(&riscv_cpuinfo);
-+
-+#if IS_ENABLED(CONFIG_RISCV_SBI)
-+	ci->mvendorid = sbi_spec_is_0_1() ? 0 : sbi_get_mvendorid();
-+	ci->marchid = sbi_spec_is_0_1() ? 0 : sbi_get_marchid();
-+	ci->mimpid = sbi_spec_is_0_1() ? 0 : sbi_get_mimpid();
-+#elif IS_ENABLED(CONFIG_RISCV_M_MODE)
-+	ci->mvendorid = csr_read(CSR_MVENDORID);
-+	ci->marchid = csr_read(CSR_MARCHID);
-+	ci->mimpid = csr_read(CSR_MIMPID);
-+#else
-+	ci->mvendorid = 0;
-+	ci->marchid = 0;
-+	ci->mimpid = 0;
-+#endif
-+
-+	return 0;
-+}
-+
-+static int __init riscv_cpuinfo_init(void)
-+{
-+	int ret;
-+
-+	ret = cpuhp_setup_state(CPUHP_AP_ONLINE_DYN, "riscv/cpuinfo:starting",
-+				riscv_cpuinfo_starting, NULL);
-+	if (ret < 0) {
-+		pr_err("cpuinfo: failed to register hotplug callbacks.\n");
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+device_initcall(riscv_cpuinfo_init);
-+
- #define __RISCV_ISA_EXT_DATA(UPROP, EXTID) \
- 	{							\
- 		.uprop = #UPROP,				\
-@@ -178,6 +225,7 @@ static int c_show(struct seq_file *m, void *v)
- {
- 	unsigned long cpu_id = (unsigned long)v - 1;
- 	struct device_node *node = of_get_cpu_node(cpu_id, NULL);
-+	struct riscv_cpuinfo *ci = per_cpu_ptr(&riscv_cpuinfo, cpu_id);
- 	const char *compat, *isa;
- 
- 	seq_printf(m, "processor\t: %lu\n", cpu_id);
-@@ -188,6 +236,9 @@ static int c_show(struct seq_file *m, void *v)
- 	if (!of_property_read_string(node, "compatible", &compat)
- 	    && strcmp(compat, "riscv"))
- 		seq_printf(m, "uarch\t\t: %s\n", compat);
-+	seq_printf(m, "mvendorid\t: 0x%lx\n", ci->mvendorid);
-+	seq_printf(m, "marchid\t\t: 0x%lx\n", ci->marchid);
-+	seq_printf(m, "mimpid\t\t: 0x%lx\n", ci->mimpid);
- 	seq_puts(m, "\n");
- 	of_node_put(node);
- 
--- 
-2.34.1
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
