@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D285C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:35:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66BEDC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:35:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238400AbiG0Qfr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:35:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47010 "EHLO
+        id S238387AbiG0Qfu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:35:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238132AbiG0QeF (ORCPT
+        with ESMTP id S235592AbiG0QeH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:34:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A0AA55097;
-        Wed, 27 Jul 2022 09:26:56 -0700 (PDT)
+        Wed, 27 Jul 2022 12:34:07 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9EAA550A6;
+        Wed, 27 Jul 2022 09:26:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D5DDD619FE;
-        Wed, 27 Jul 2022 16:26:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE72AC433C1;
-        Wed, 27 Jul 2022 16:26:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C7601B821BC;
+        Wed, 27 Jul 2022 16:26:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CD06C433D6;
+        Wed, 27 Jul 2022 16:26:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939215;
-        bh=dMztBhjROoIEkA2hYgIClMgpARqNyyRZ4ceGRDt6saI=;
+        s=korg; t=1658939184;
+        bh=ha1Tvj/TwkZrbyOljA7y31mT43yEh3Mf6mEIHFW84/4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Gxqoh2ucWtV/1sM/KWDtA1PN1doslhJAJc1BhCRxwR77MjC2DiM6l2sKUxHLqwjNk
-         yDc7ZIfUVxTqSAQOkYtwX8d4MmXTSw1gxSUqe9Xtta5j76B9OKs548WIAoK3JPXMQm
-         Qya7Zfq+GVgfZYQms2Fo8ADVa+bsHbLjZYvqpdEg=
+        b=xmn7M5kb635d1FiVj7V6zNBj23ZJwYW/BmDzTJUgMMwImpoDfJkYDGR/NPASK06iy
+         afF83amQ6Zw4ImvBo5cRyc/p97ElokprUc+ksPE+YIguB4XLBanVxBtoj8qztv3tyM
+         TxJX79MYgp0R8rny/L5TbZ6M6sLC5dayfD512PAc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Alexander Aring <aahringo@redhat.com>,
+        David Teigland <teigland@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 22/62] tcp: Fix a data-race around sysctl_tcp_tw_reuse.
-Date:   Wed, 27 Jul 2022 18:10:31 +0200
-Message-Id: <20220727161005.059321286@linuxfoundation.org>
+Subject: [PATCH 4.19 42/62] dlm: fix pending remove if msg allocation fails
+Date:   Wed, 27 Jul 2022 18:10:51 +0200
+Message-Id: <20220727161005.821253678@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161004.175638564@linuxfoundation.org>
 References: <20220727161004.175638564@linuxfoundation.org>
@@ -49,37 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Alexander Aring <aahringo@redhat.com>
 
-[ Upstream commit cbfc6495586a3f09f6f07d9fb3c7cafe807e3c55 ]
+[ Upstream commit ba58995909b5098ca4003af65b0ccd5a8d13dd25 ]
 
-While reading sysctl_tcp_tw_reuse, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its reader.
+This patch unsets ls_remove_len and ls_remove_name if a message
+allocation of a remove messages fails. In this case we never send a
+remove message out but set the per ls ls_remove_len ls_remove_name
+variable for a pending remove. Unset those variable should indicate
+possible waiters in wait_pending_remove() that no pending remove is
+going on at this moment.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Cc: stable@vger.kernel.org
+Signed-off-by: Alexander Aring <aahringo@redhat.com>
+Signed-off-by: David Teigland <teigland@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp_ipv4.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/dlm/lock.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index 2719c60f285b..ddc1af8731e3 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -110,10 +110,10 @@ static u32 tcp_v4_init_ts_off(const struct net *net, const struct sk_buff *skb)
+diff --git a/fs/dlm/lock.c b/fs/dlm/lock.c
+index ac53403e9edb..35bfb681bf13 100644
+--- a/fs/dlm/lock.c
++++ b/fs/dlm/lock.c
+@@ -4069,13 +4069,14 @@ static void send_repeat_remove(struct dlm_ls *ls, char *ms_name, int len)
+ 	rv = _create_message(ls, sizeof(struct dlm_message) + len,
+ 			     dir_nodeid, DLM_MSG_REMOVE, &ms, &mh);
+ 	if (rv)
+-		return;
++		goto out;
  
- int tcp_twsk_unique(struct sock *sk, struct sock *sktw, void *twp)
- {
-+	int reuse = READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_tw_reuse);
- 	const struct inet_timewait_sock *tw = inet_twsk(sktw);
- 	const struct tcp_timewait_sock *tcptw = tcp_twsk(sktw);
- 	struct tcp_sock *tp = tcp_sk(sk);
--	int reuse = sock_net(sk)->ipv4.sysctl_tcp_tw_reuse;
+ 	memcpy(ms->m_extra, name, len);
+ 	ms->m_hash = hash;
  
- 	if (reuse == 2) {
- 		/* Still does not detect *everything* that goes through
+ 	send_message(mh, ms);
+ 
++out:
+ 	spin_lock(&ls->ls_remove_spin);
+ 	ls->ls_remove_len = 0;
+ 	memset(ls->ls_remove_name, 0, DLM_RESNAME_MAXLEN);
 -- 
 2.35.1
 
