@@ -2,84 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71748C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:30:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34457C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:30:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237420AbiG0QaA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:30:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33870 "EHLO
+        id S237433AbiG0QaE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:30:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237666AbiG0Q3T (ORCPT
+        with ESMTP id S237705AbiG0Q3U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:29:19 -0400
-Received: from xry111.site (xry111.site [IPv6:2001:470:683e::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3BBE5141A
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:24:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xry111.site;
-        s=default; t=1658939083;
-        bh=URBEKTfwamiTdM/8PEcGrd5kvmSXQHincxTHAC54EM0=;
-        h=Subject:From:To:Cc:Date:From;
-        b=NZkdcT/0CeqNwa/lruV78hA5Li3djhwETZd0GhLUQsL1WThIV9La26O4FVQMIqnLQ
-         UztdGKT98oWuQd5Ws2bHX5M1RrLfC71n6A1m998hW8LY4E5Sy3XBaJ2Wm1OOTifeNf
-         +lRE/0m418PzjJwBa/iovnZQjtJzRyzHS6wWF69U=
-Received: from localhost.localdomain (xry111.site [IPv6:2001:470:683e::1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature ECDSA (P-384) server-digest SHA384)
-        (Client did not present a certificate)
-        (Authenticated sender: xry111@xry111.site)
-        by xry111.site (Postfix) with ESMTPSA id D6D5E66986;
-        Wed, 27 Jul 2022 12:24:42 -0400 (EDT)
-Message-ID: <385f63bcbee8e37c42f479ce9cdc7e7d731d419b.camel@xry111.site>
-Subject: [PATCH 0/5] LoongArch: Support new relocation types
-From:   Xi Ruoyao <xry111@xry111.site>
-To:     loongarch@lists.linux.dev
-Cc:     linux-kernel@vger.kernel.org, WANG Xuerui <kernel@xen0n.name>,
-        Huacai Chen <chenhuacai@kernel.org>
-Date:   Thu, 28 Jul 2022 00:24:40 +0800
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.3 
+        Wed, 27 Jul 2022 12:29:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FE4C51413;
+        Wed, 27 Jul 2022 09:24:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AB0FBB821C3;
+        Wed, 27 Jul 2022 16:24:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13217C43470;
+        Wed, 27 Jul 2022 16:24:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658939091;
+        bh=KBgj1OBe0JaxOawd5I4mNB9N4o8Hfa8jfOhoRmlyiUc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=RprgFDREQ4vU2fXJSG69UCaNQ0iijvrUQX4Ch3100tUrQoQkEKA20mU5myYx4I5fo
+         HMT7wqKexTZKVfB7VPKJzpQRjbjjN+pr0ieAZ70Qx/vD2r/pgfDNNDsGxLbI71i79+
+         R+mGLLVrYGgedNLfcAbzM+TJRghIiRZu3QP7kvPc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 10/62] tcp/dccp: Fix a data-race around sysctl_tcp_fwmark_accept.
+Date:   Wed, 27 Jul 2022 18:10:19 +0200
+Message-Id: <20220727161004.580313911@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220727161004.175638564@linuxfoundation.org>
+References: <20220727161004.175638564@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The version 2.00 of LoongArch ELF ABI specification introduced new
-relocation types, and the development tree of Binutils and GCC has
-started to use them.  If the kernel is built with the latest snapshot of
-Binutils or GCC, it will fail to load the modules because of unrecognized
-relocation types in modules.
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-Add support for GOT and new relocation types for the module loader, so
-the kernel (with modules) can be built with the "normal" code model and
-function properly.
+[ Upstream commit 1a0008f9df59451d0a17806c1ee1a19857032fa8 ]
 
-Tested by building the kernel with Binutils & GCC master branch, and
-running the kernel with 35 in-tree modules loaded.
+While reading sysctl_tcp_fwmark_accept, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its reader.
 
-Link: https://github.com/loongson/LoongArch-Documentation/pull/57
-Link: https://gcc.gnu.org/r13-1834
-Link: https://sourceware.org/git/?p=3Dbinutils-gdb.git;a=3Dcommit;h=3Df0948=
-2a
+Fixes: 84f39b08d786 ("net: support marking accepting TCP sockets")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ include/net/inet_sock.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Xi Ruoyao (5):
-  LoongArch: Add section of GOT for kernel module
-  LoongArch: Support R_LARCH_SOP_PUSH_GPREL relocation type in kernel
-    module
-  LoongArch: Support relocation against _GLOBAL_OFFSET_TABLE_
-  LoongArch: Stop using undocumented assembler options
-  LoongArch: Support modules with new relocation types
+diff --git a/include/net/inet_sock.h b/include/net/inet_sock.h
+index e3d943813ff8..d5552ff1d361 100644
+--- a/include/net/inet_sock.h
++++ b/include/net/inet_sock.h
+@@ -111,7 +111,8 @@ static inline struct inet_request_sock *inet_rsk(const struct request_sock *sk)
+ 
+ static inline u32 inet_request_mark(const struct sock *sk, struct sk_buff *skb)
+ {
+-	if (!sk->sk_mark && sock_net(sk)->ipv4.sysctl_tcp_fwmark_accept)
++	if (!sk->sk_mark &&
++	    READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_fwmark_accept))
+ 		return skb->mark;
+ 
+ 	return sk->sk_mark;
+-- 
+2.35.1
 
- arch/loongarch/Makefile                 |  5 +-
- arch/loongarch/include/asm/elf.h        | 37 ++++++++++
- arch/loongarch/include/asm/module.h     | 23 ++++++
- arch/loongarch/include/asm/module.lds.h |  1 +
- arch/loongarch/kernel/head.S            | 10 +--
- arch/loongarch/kernel/module-sections.c | 72 +++++++++++++++++--
- arch/loongarch/kernel/module.c          | 94 +++++++++++++++++++++++++
- 7 files changed, 229 insertions(+), 13 deletions(-)
-
---=20
-2.37.0
 
 
