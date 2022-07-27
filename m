@@ -2,63 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CD34C19F2A
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 02:47:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57A48C00144
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 02:52:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240189AbiG0Cq6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 22:46:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56148 "EHLO
+        id S240087AbiG0Cwh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 22:52:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240072AbiG0Cqz (ORCPT
+        with ESMTP id S229717AbiG0Cwe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 22:46:55 -0400
-Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 74EC0240AA;
-        Tue, 26 Jul 2022 19:46:54 -0700 (PDT)
-Received: from localhost (unknown [127.0.0.1])
-        by mail.nfschina.com (Postfix) with ESMTP id E17BD1E80D54;
-        Wed, 27 Jul 2022 10:47:05 +0800 (CST)
-X-Virus-Scanned: amavisd-new at test.com
-Received: from mail.nfschina.com ([127.0.0.1])
-        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id fTvU8SdDfP1i; Wed, 27 Jul 2022 10:47:03 +0800 (CST)
-Received: from localhost.localdomain (unknown [180.167.10.98])
-        (Authenticated sender: yuzhe@nfschina.com)
-        by mail.nfschina.com (Postfix) with ESMTPA id 972301E80D05;
-        Wed, 27 Jul 2022 10:47:02 +0800 (CST)
-From:   Yu Zhe <yuzhe@nfschina.com>
-To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com
-Cc:     linux-decnet-user@lists.sourceforge.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        liqiong@nfschina.com, Yu Zhe <yuzhe@nfschina.com>
-Subject: [PATCH] dn_route: use time_is_before_jiffies(a) to replace "jiffies - a > 0"
-Date:   Wed, 27 Jul 2022 10:46:00 +0800
-Message-Id: <20220727024600.18413-1-yuzhe@nfschina.com>
-X-Mailer: git-send-email 2.11.0
+        Tue, 26 Jul 2022 22:52:34 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 018963B96B;
+        Tue, 26 Jul 2022 19:52:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9463F61761;
+        Wed, 27 Jul 2022 02:52:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68E95C433D6;
+        Wed, 27 Jul 2022 02:52:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658890352;
+        bh=mOvAqtymjKTyNB33hg2ZKI/KGchB0ZSy5/mlAYTBUOA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=NiMqKvPl/nfHT0J/79eWG9MQcSvoCr/GfTZfPO5Y4E0dmORqA4TuvLHFCNFM9kop+
+         juo3Nj/x196GIHtKN7+tkp3imeXXdGaS8VP25mdKZaTO3GqR4UNBBknJlvbLEOG5s3
+         Gj3Os8kZJthXVknYUaY4zKJzOSgZbgnaYyFndF7AzyBi7MbWDRnumqsrD3ikIOxoO8
+         v6flBlepBQyWY1pfkUbJIoSKi1KbstGCaoBqxjeW3sx8UeTqYbP9r+14C/dQ9/j5oL
+         pSC96vJ0XqHL0kdFcWAT+93nswod7CfsP2OF2Kuvfx6SWUt1Im9g6LuHLuEMH6oTs1
+         15Gfk+jeTf+7w==
+Date:   Tue, 26 Jul 2022 19:52:30 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Dmitry Safonov <dima@arista.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Biggers <ebiggers@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Francesco Ruggeri <fruggeri@arista.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Leonard Crestez <cdleonard@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Salam Noureddine <noureddine@arista.com>,
+        netdev@vger.kernel.org, linux-crypto@vger.kernel.org
+Subject: Re: [PATCH 6/6] net/ipv6: sr: Switch to using crypto_pool
+Message-ID: <20220726195230.1ba174fb@kernel.org>
+In-Reply-To: <20220726201600.1715505-7-dima@arista.com>
+References: <20220726201600.1715505-1-dima@arista.com>
+        <20220726201600.1715505-7-dima@arista.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-time_is_before_jiffies deals with timer wrapping correctly.
+On Tue, 26 Jul 2022 21:16:00 +0100 Dmitry Safonov wrote:
+> The conversion to use crypto_pool has the following upsides:
+> - now SR uses asynchronous API which may potentially free CPU cycles and
+>   improve performance for of CPU crypto algorithm providers;
+> - hash descriptors now don't have to be allocated on boot, but only at
+>   the moment SR starts using HMAC and until the last HMAC secret is
+>   deleted;
+> - potentially reuse ahash_request(s) for different users
+> - allocate only one per-CPU scratch buffer rather than a new one for
+>   each user
+> - have a common API for net/ users that need ahash on RX/TX fast path
 
-Signed-off-by: Yu Zhe <yuzhe@nfschina.com>
----
- net/decnet/dn_route.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Build problems on allmodconfig:
 
-diff --git a/net/decnet/dn_route.c b/net/decnet/dn_route.c
-index 552a53f1d5d0..0a4bed0bc2e3 100644
---- a/net/decnet/dn_route.c
-+++ b/net/decnet/dn_route.c
-@@ -201,7 +201,7 @@ static void dn_dst_check_expire(struct timer_list *unused)
- 		}
- 		spin_unlock(&dn_rt_hash_table[i].lock);
- 
--		if ((jiffies - now) > 0)
-+		if (time_is_before_jiffies(now))
- 			break;
- 	}
- 
--- 
-2.11.0
-
+ERROR: modpost: "crypto_pool_reserve_scratch" [net/ipv6/ipv6.ko] undefined!
