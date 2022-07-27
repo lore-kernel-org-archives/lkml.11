@@ -2,161 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AE71C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 00:38:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF08EC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 00:39:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239963AbiG0Aij (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 20:38:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44448 "EHLO
+        id S240063AbiG0AjC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 20:39:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232498AbiG0Aih (ORCPT
+        with ESMTP id S240028AbiG0Ai5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 20:38:37 -0400
-Received: from shelob.surriel.com (shelob.surriel.com [96.67.55.147])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A85F3AB27;
-        Tue, 26 Jul 2022 17:38:36 -0700 (PDT)
-Received: from imladris.surriel.com ([96.67.55.152])
-        by shelob.surriel.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.95)
-        (envelope-from <riel@shelob.surriel.com>)
-        id 1oGUss-0001dG-Cc;
-        Tue, 26 Jul 2022 20:26:42 -0400
-Message-ID: <924f1cf4b93ff3e4ff217203bd88448dfa4c0f85.camel@surriel.com>
-Subject: Re: [PATCH v3] livepatch: fix race between fork and
- klp_reverse_transition
-From:   Rik van Riel <riel@surriel.com>
-To:     Josh Poimboeuf <jpoimboe@kernel.org>
-Cc:     Petr Mladek <pmladek@suse.com>, linux-kernel@vger.kernel.org,
-        live-patching@vger.kernel.org, kernel-team@fb.com,
-        Jiri Kosina <jikos@kernel.org>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Breno Leitao <leitao@debian.org>
-Date:   Tue, 26 Jul 2022 20:26:41 -0400
-In-Reply-To: <20220727001040.vlqnnb4a3um46746@treble>
-References: <20220720121023.043738bb@imladris.surriel.com>
-         <YtrCqMLUqJlcoqIo@alley> <20220722150106.683f3704@imladris.surriel.com>
-         <Yt6bZo5ztnVSjLLC@alley> <20220725094919.52bcde19@imladris.surriel.com>
-         <20220727001040.vlqnnb4a3um46746@treble>
-Content-Type: multipart/signed; micalg="pgp-sha256";
-        protocol="application/pgp-signature"; boundary="=-TLgTqhyEYwEQwuZaJg5g"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+        Tue, 26 Jul 2022 20:38:57 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC8CE3AB36;
+        Tue, 26 Jul 2022 17:38:56 -0700 (PDT)
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Lsvy067LGz9swK;
+        Wed, 27 Jul 2022 08:37:44 +0800 (CST)
+Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 27 Jul 2022 08:38:54 +0800
+Received: from [10.67.111.205] (10.67.111.205) by
+ kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 27 Jul 2022 08:38:53 +0800
+Subject: Re: [RFC v3 01/17] perf kwork: New tool
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+CC:     <peterz@infradead.org>, <mingo@redhat.com>, <mark.rutland@arm.com>,
+        <alexander.shishkin@linux.intel.com>, <jolsa@kernel.org>,
+        <namhyung@kernel.org>, <pc@us.ibm.com>,
+        <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>
+References: <20220709015033.38326-1-yangjihong1@huawei.com>
+ <20220709015033.38326-2-yangjihong1@huawei.com> <YuAkHkxgYyvdHKOO@kernel.org>
+From:   Yang Jihong <yangjihong1@huawei.com>
+Message-ID: <b4becabb-3b8d-b35b-caa9-db106ed3fbb8@huawei.com>
+Date:   Wed, 27 Jul 2022 08:38:53 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-Sender: riel@shelob.surriel.com
+In-Reply-To: <YuAkHkxgYyvdHKOO@kernel.org>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.111.205]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemm600003.china.huawei.com (7.193.23.202)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hello,
 
---=-TLgTqhyEYwEQwuZaJg5g
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+On 2022/7/27 1:27, Arnaldo Carvalho de Melo wrote:
+> Em Sat, Jul 09, 2022 at 09:50:17AM +0800, Yang Jihong escreveu:
+>> The perf-kwork tool is used to trace time properties of kernel work
+>> (such as irq, softirq, and workqueue), including runtime, latency,
+>> and timehist, using the infrastructure in the perf tools to allow
+>> tracing extra targets.
+>>
+>> This is the first commit to reuse perf_record framework code to
+>> implement a simple record function, kwork is not supported currently.
+> 
+> So, since I have to fix some issues I'm adding small stylistic changes,
+> starting with this:
+> 
+> 
+> - multiline if/for blocks need {}
+> 
+> - remove needless spaces between variable declaration + initialization.
+> 
+> - Arnaldo
+> 
+OK, I'll fix it in next version.
 
-On Tue, 2022-07-26 at 17:10 -0700, Josh Poimboeuf wrote:
-> On Mon, Jul 25, 2022 at 09:49:19AM -0400, Rik van Riel wrote:
-> > When a KLP fails to apply, klp_reverse_transition will clear the
-> > TIF_PATCH_PENDING flag on all tasks, except for newly created tasks
-> > which are not on the task list yet.
->=20
-> This paragraph and $SUBJECT both talk about a reverse transition.=C2=A0
-> Isn't
-> it also possible to race on a normal (forward) transition?
-
-I don't know whether the race is also possible on a forward
-transition.  If the parent task has transitioned, will
-the child have, as well, by the time we reach the end of fork?
-
-I suppose the only way the parent task can transition while
-inside fork would be if none of the functions in its stack
-need to be transitioned, and at that point the child process
-would automatically be safe, too?
-
-That would make copying the KLP transition state from parent to
-child safe on a forward transition, too.
-
-Am I overlooking anything?
-
-However, we have only observed this warning on reverse transitions
-for some reason.
-
-> > Meanwhile, fork will copy over the TIF_PATCH_PENDING flag from the
-> > parent to the child early on, in dup_task_struct ->
-> > setup_thread_stack.
-> >=20
-> > Much later, klp_copy_process will set child->patch_state to match
-> > that of the parent.
-> >=20
-> > However, the parent's patch_state may have been changed by KLP
-> > loading
-> > or unloading since it was initially copied over into the child.
-> >=20
-> > This results in the KLP code occasionally hitting this warning in
-> > klp_complete_transition:
-> >=20
-> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 for_each_process_thread(g, t=
-ask) {
-> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0 WARN_ON_ONCE(test_tsk_thread_flag(task,
-> > TIF_PATCH_PENDING));
-> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0 task->patch_state =3D KLP_UNDEFINED;
-> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
-> >=20
-> > This patch will set, or clear, the TIF_PATCH_PENDING flag in the
-> > child
-> > process depending on whether or not it is needed at the time
-> > klp_copy_process is called, at a point in copy_process where the
-> > tasklist_lock is held exclusively, preventing races with the KLP
-> > code.
->=20
-> Use imperative language, i.e. no "This patch".=C2=A0 See
-> Documentation/process/submitting-patches.rst
-> >=20
-
-Will do. I'll send a v4 tomorrow.
-
-> > The KLP code does have a few places where the state is changed
-> > without the tasklist_lock held, but those should not cause
-> > problems because klp_update_patch_state(current) cannot be
-> > called while the current task is in the middle of fork,
-> > klp_check_and_switch_task() which is called under the pi_lock,
-> > which prevents rescheduling, and manipulation of the patch
-> > state of idle tasks, which do not fork.
-> >=20
-> > This should prevent this warning from triggering again in the
-> > future.
-> >=20
->=20
-> Fixes: d83a7cb375ee ("livepatch: change to a per-task consistency
-> model")
->=20
-> > Signed-off-by: Rik van Riel <riel@surriel.com>
-> > Reported-by: Breno Leitao <leitao@debian.org>
-> > Reviewed-by: Petr Mladek <pmladek@suse.com>
->=20
-> With the above minor things fixed:
->=20
-> Acked-by: Josh Poimboeuf <jpoimboe@kernel.org>
->=20
-
---=20
-All Rights Reversed.
-
---=-TLgTqhyEYwEQwuZaJg5g
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEEKR73pCCtJ5Xj3yADznnekoTE3oMFAmLghkEACgkQznnekoTE
-3oN07ggAmmLQ3eP1Up7hCtc3DjHHadiJ4XzQx3ZAXJnyNtjj7gNdHG/F6naSSrWD
-Tcqz7ArnUyaDldVKWssa4iRooRQwqdi+0IXDow4Ca1sfbvusSS3/SeofR9QcaDT7
-swok1FA82hPY+Vi8LixgDILRMTw3tPVIGihlN/isPhe07LU+KxXwuIDd7pdg7qOk
-NZLlGLaywOzqqHegFrW1vcwLjTq4QwEIIGDLwiJ7K4+U1r9s2hnMs0+74H3BafvD
-Gznj2iOasGKTKooFof0waWEPPD+z9sBuVAPLb0RAf9Q4KlAEOdRrnjpyCAfqiw7O
-mhq0eXrcvGAsIY2PvJ6j1FJ8nh7ugg==
-=e8zs
------END PGP SIGNATURE-----
-
---=-TLgTqhyEYwEQwuZaJg5g--
+Regards,
+Jihong
