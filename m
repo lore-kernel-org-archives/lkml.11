@@ -2,217 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B126BC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 07:34:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0C95C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 07:36:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230331AbiG0Hel (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 03:34:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37916 "EHLO
+        id S230336AbiG0HgZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 03:36:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230355AbiG0Heh (ORCPT
+        with ESMTP id S229680AbiG0HgX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 03:34:37 -0400
-Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8E77422DD
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 00:34:33 -0700 (PDT)
+        Wed, 27 Jul 2022 03:36:23 -0400
+Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5017F21278
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 00:36:22 -0700 (PDT)
+Received: by mail-qk1-x72e.google.com with SMTP id l3so12722962qkl.3
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 00:36:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1658907273; x=1690443273;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=zkWtaFjvHO+h70yxBl/vZPnpQu6YsT2P4TacQ7mT4kI=;
-  b=qjwkT5uE55ieyqyxLlLQ8iXkc0fR6Bm3+Y+ODnGQDCHJtt+SbdgZvm2W
-   oJ6ya3N1kp0fGil7YBoT1RvYjt+CPquyFSc6svBJOkjONFQhCeN/nw7EX
-   QCy/Ct5EN2aFsHiq04bvnbxwXgXy8k2heRX1oRvgouhg0m78GcTXEeQSl
-   E=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 27 Jul 2022 00:34:33 -0700
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2022 00:34:31 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 27 Jul 2022 00:34:31 -0700
-Received: from hu-pkondeti-hyd.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 27 Jul 2022 00:34:24 -0700
-Date:   Wed, 27 Jul 2022 13:04:20 +0530
-From:   Pavan Kondeti <quic_pkondeti@quicinc.com>
-To:     Michel Lespinasse <michel@lespinasse.org>
-CC:     Linux-MM <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>,
-        "Andrew Morton" <akpm@linux-foundation.org>, <kernel-team@fb.com>,
-        Laurent Dufour <ldufour@linux.ibm.com>,
-        Jerome Glisse <jglisse@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Michal Hocko <mhocko@suse.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Matthew Wilcox <willy@infradead.org>,
-        Liam Howlett <liam.howlett@oracle.com>,
-        Rik van Riel <riel@surriel.com>,
-        Paul McKenney <paulmck@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Minchan Kim <minchan@google.com>,
-        Joel Fernandes <joelaf@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        "Andy Lutomirski" <luto@kernel.org>
-Subject: Re: [PATCH v2 23/35] mm: add mmu_notifier_lock
-Message-ID: <20220727073420.GA8985@hu-pkondeti-hyd.qualcomm.com>
-References: <20220128131006.67712-1-michel@lespinasse.org>
- <20220128131006.67712-24-michel@lespinasse.org>
+        d=streamunlimited.com; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=rO4phdManN60SPf1W9WiyPdt9raYFpN1OI/PcK1NnQ0=;
+        b=uf7lDkpVYO56NWMPL08t3bV7ykOUYmDaRNEf57tqkkhLMFpNUwzcla0Lokoe8tkjv6
+         GY7TYiWRZHqk7bMBMb76LrdFBYz0PHG29omXVyfilS5Kj7k2Y34QjUeFMx9v5Rx6hD86
+         OatRJqn2LPFVr9JyH10I7+SY5t911D/Yjk6Sc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=rO4phdManN60SPf1W9WiyPdt9raYFpN1OI/PcK1NnQ0=;
+        b=FrPTfO7oI8wv5FilmgdG60e2rKeF/ueZAgcHYyfHav6A6GTj7BN3PsN56io5iMIQPM
+         Sm7Z3FJ3EWE9nLrVCa6b/e7GJYssEKE2MTk9xqwf8BA9XNL9syUNbrXMg609xQpmpOxN
+         phDkQ3djaSGcyVlZYQVJp2MzwsL2/oMIF5irA4UR9dDIYLfn8aX83LtHsxFims+3S78r
+         1rRvIQO42gyCfJiF+j2SdJ9eIzsm9v5CtLZEU/POYCkZYjgO3Y1SNuwqV/Qf7AMcdoKm
+         2OISNzvLaXPl0JZERKBpwtNnRxbqL9gdK+hx9PWXij13tz5F3lr7n8uIi9kLiwvxZ8HN
+         BH6A==
+X-Gm-Message-State: AJIora8A5yVcr7cLaTmZuqP+jGsXqi9Zfi72r/Y3KUmiH43G/JcbsCr9
+        cI45+thJwHTm+mbPJlWm+xIxWg==
+X-Google-Smtp-Source: AGRyM1tTVXmc9JrwYNXN2698PGpq5P5gj2i9zaPSZqNDeI8sJMebG7pGAmT8yx65QQjJq/P/t8m5dQ==
+X-Received: by 2002:a05:620a:2552:b0:6b4:8dbf:8992 with SMTP id s18-20020a05620a255200b006b48dbf8992mr15785127qko.109.1658907381478;
+        Wed, 27 Jul 2022 00:36:21 -0700 (PDT)
+Received: from localhost.localdomain (vpn.streamunlimited.com. [91.114.0.140])
+        by smtp.gmail.com with ESMTPSA id x22-20020ac86b56000000b0031f4007dd92sm2709526qts.89.2022.07.27.00.36.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jul 2022 00:36:21 -0700 (PDT)
+From:   Peter Suti <peter.suti@streamunlimited.com>
+To:     chuansheng.liu@intel.com, dan.carpenter@oracle.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Javier Martinez Canillas <javierm@redhat.com>
+Cc:     Peter Suti <peter.suti@streamunlimited.com>,
+        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: [PATCH v3] staging: fbtft: core: set smem_len before fb_deferred_io_init call
+Date:   Wed, 27 Jul 2022 09:35:50 +0200
+Message-Id: <20220727073550.1491126-1-peter.suti@streamunlimited.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <YuDlfLeossnntH/C@kroah.com>
+References: <YuDlfLeossnntH/C@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220128131006.67712-24-michel@lespinasse.org>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 28, 2022 at 05:09:54AM -0800, Michel Lespinasse wrote:
-> Introduce mmu_notifier_lock as a per-mm percpu_rw_semaphore,
-> as well as the code to initialize and destroy it together with the mm.
-> 
-> This lock will be used to prevent races between mmu_notifier_register()
-> and speculative fault handlers that need to fire MMU notifications
-> without holding any of the mmap or rmap locks.
-> 
-> Signed-off-by: Michel Lespinasse <michel@lespinasse.org>
-> ---
->  include/linux/mm_types.h     |  6 +++++-
->  include/linux/mmu_notifier.h | 27 +++++++++++++++++++++++++--
->  kernel/fork.c                |  3 ++-
->  3 files changed, 32 insertions(+), 4 deletions(-)
-> 
-> diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
-> index 305f05d2a4bc..f77e2dec038d 100644
-> --- a/include/linux/mm_types.h
-> +++ b/include/linux/mm_types.h
-> @@ -462,6 +462,7 @@ struct vm_area_struct {
->  } __randomize_layout;
->  
->  struct kioctx_table;
-> +struct percpu_rw_semaphore;
->  struct mm_struct {
->  	struct {
->  		struct vm_area_struct *mmap;		/* list of VMAs */
-> @@ -608,7 +609,10 @@ struct mm_struct {
->  		struct file __rcu *exe_file;
->  #ifdef CONFIG_MMU_NOTIFIER
->  		struct mmu_notifier_subscriptions *notifier_subscriptions;
-> -#endif
-> +#ifdef CONFIG_SPECULATIVE_PAGE_FAULT
-> +		struct percpu_rw_semaphore *mmu_notifier_lock;
-> +#endif	/* CONFIG_SPECULATIVE_PAGE_FAULT */
-> +#endif	/* CONFIG_MMU_NOTIFIER */
->  #if defined(CONFIG_TRANSPARENT_HUGEPAGE) && !USE_SPLIT_PMD_PTLOCKS
->  		pgtable_t pmd_huge_pte; /* protected by page_table_lock */
->  #endif
-> diff --git a/include/linux/mmu_notifier.h b/include/linux/mmu_notifier.h
-> index 45fc2c81e370..ace76fe91c0c 100644
-> --- a/include/linux/mmu_notifier.h
-> +++ b/include/linux/mmu_notifier.h
-> @@ -6,6 +6,8 @@
->  #include <linux/spinlock.h>
->  #include <linux/mm_types.h>
->  #include <linux/mmap_lock.h>
-> +#include <linux/percpu-rwsem.h>
-> +#include <linux/slab.h>
->  #include <linux/srcu.h>
->  #include <linux/interval_tree.h>
->  
-> @@ -499,15 +501,35 @@ static inline void mmu_notifier_invalidate_range(struct mm_struct *mm,
->  		__mmu_notifier_invalidate_range(mm, start, end);
->  }
->  
-> -static inline void mmu_notifier_subscriptions_init(struct mm_struct *mm)
-> +static inline bool mmu_notifier_subscriptions_init(struct mm_struct *mm)
->  {
-> +#ifdef CONFIG_SPECULATIVE_PAGE_FAULT
-> +	mm->mmu_notifier_lock = kzalloc(sizeof(struct percpu_rw_semaphore), GFP_KERNEL);
-> +	if (!mm->mmu_notifier_lock)
-> +		return false;
-> +	if (percpu_init_rwsem(mm->mmu_notifier_lock)) {
-> +		kfree(mm->mmu_notifier_lock);
-> +		return false;
-> +	}
-> +#endif
-> +
->  	mm->notifier_subscriptions = NULL;
-> +	return true;
->  }
->  
->  static inline void mmu_notifier_subscriptions_destroy(struct mm_struct *mm)
->  {
->  	if (mm_has_notifiers(mm))
->  		__mmu_notifier_subscriptions_destroy(mm);
-> +
-> +#ifdef CONFIG_SPECULATIVE_PAGE_FAULT
-> +	if (!in_atomic()) {
-> +		percpu_free_rwsem(mm->mmu_notifier_lock);
-> +		kfree(mm->mmu_notifier_lock);
-> +	} else {
-> +		percpu_rwsem_async_destroy(mm->mmu_notifier_lock);
-> +	}
-> +#endif
->  }
->  
+The fbtft_framebuffer_alloc() calls fb_deferred_io_init() before
+initializing info->fix.smem_len.  It is set to zero by the
+framebuffer_alloc() function.  It will trigger a WARN_ON() at the
+start of fb_deferred_io_init() and the function will not do anything.
 
-We have received a bug report from our customer running Android GKI kernel
-android-13-5.15 branch where this series is included. As the callstack [1]
-indicates, the non-atomic test it self is not sufficient to free the percpu
-rwsem. 
+Fixes: 856082f021a2 ("fbdev: defio: fix the pagelist corruption")
 
-The scenario deduced from the callstack:
+Signed-off-by: Peter Suti <peter.suti@streamunlimited.com>
+---
+ V2 -> V3: Add patch changelog 
+ V1 -> V2: Change commit message and base on top of linux-next
 
-- context switch on CPU#0 from 'A' to idle. idle thread took A's mm
+ drivers/staging/fbtft/fbtft-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-- 'A' later ran on another CPU and exited. A's mm has still reference.
+diff --git a/drivers/staging/fbtft/fbtft-core.c b/drivers/staging/fbtft/fbtft-core.c
+index 9b3eaed80cdd..afaba94d1d1c 100644
+--- a/drivers/staging/fbtft/fbtft-core.c
++++ b/drivers/staging/fbtft/fbtft-core.c
+@@ -654,7 +654,6 @@ struct fb_info *fbtft_framebuffer_alloc(struct fbtft_display *display,
+ 	fbdefio->delay =            HZ / fps;
+ 	fbdefio->sort_pagereflist = true;
+ 	fbdefio->deferred_io =      fbtft_deferred_io;
+-	fb_deferred_io_init(info);
+ 
+ 	snprintf(info->fix.id, sizeof(info->fix.id), "%s", dev->driver->name);
+ 	info->fix.type =           FB_TYPE_PACKED_PIXELS;
+@@ -665,6 +664,7 @@ struct fb_info *fbtft_framebuffer_alloc(struct fbtft_display *display,
+ 	info->fix.line_length =    width * bpp / 8;
+ 	info->fix.accel =          FB_ACCEL_NONE;
+ 	info->fix.smem_len =       vmem_size;
++	fb_deferred_io_init(info);
+ 
+ 	info->var.rotate =         pdata->rotate;
+ 	info->var.xres =           width;
+-- 
+2.25.1
 
-- Now CPU#0 is being hotplugged out. As part of this, idle thread's
-mm is switched (in idle_task_exit()) but its active_mm freeing is
-deferred to finish_cpu() which gets called later from the control processor
-(the thread which initiated the CPU hotplug). Please see the reasoning
-on why mmdrop() is not called in idle_task_exit() at
-commit bf2c59fce4074('sched/core: Fix illegal RCU from offline CPUs')
-
-- Now when finish_cpu() tries call percpu_free_rwsem() directly since we are
-not in atomic path but hotplug path where cpus_write_lock() called is causing
-the deadlock.
-
-I am not sure if there is a clean way other than freeing the per-cpu
-rwsemaphore asynchronously all the time.
-
-[1]
-
--001|context_switch(inline)
--001|__schedule()
--002|__preempt_count_sub(inline)
--002|schedule()
--003|_raw_spin_unlock_irq(inline)
--003|spin_unlock_irq(inline)
--003|percpu_rwsem_wait()
--004|__preempt_count_add(inline)
--004|__percpu_down_read()
--005|percpu_down_read(inline)
--005|cpus_read_lock() // trying to get cpu_hotplug_lock again
--006|rcu_barrier()
--007|rcu_sync_dtor()
--008|mmu_notifier_subscriptions_destroy(inline)
--008|__mmdrop()
--009|mmdrop(inline)
--009|finish_cpu()
--010|cpuhp_invoke_callback()
--011|cpuhp_invoke_callback_range(inline)
--011|cpuhp_down_callbacks()
--012|_cpu_down() // acquired cpu_hotplug_lock (write lock)
-
-Thanks,
-Pavan
