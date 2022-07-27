@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7190FC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:47:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26C67C19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:48:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240461AbiG0Qrx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:47:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44870 "EHLO
+        id S240482AbiG0QsC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:48:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240058AbiG0Qq7 (ORCPT
+        with ESMTP id S240314AbiG0QrE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:46:59 -0400
+        Wed, 27 Jul 2022 12:47:04 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AE3852DFD;
-        Wed, 27 Jul 2022 09:32:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5663952E52;
+        Wed, 27 Jul 2022 09:32:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 14E1AB821BA;
-        Wed, 27 Jul 2022 16:31:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62F5DC433D6;
-        Wed, 27 Jul 2022 16:31:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DEBA4B821BE;
+        Wed, 27 Jul 2022 16:32:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C3BFC433C1;
+        Wed, 27 Jul 2022 16:32:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939517;
-        bh=htyf8dAJwRiQSesYEE98VZHxac6Wn8C8lGyj2NnpPXs=;
+        s=korg; t=1658939520;
+        bh=VmvQaZowy1d0aqIWB3OQ1GQv0t682IOsWS1iF7J5FK0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V6apZ4crY5cQCt0bJ4N3PUwk7XBT98FL/ho28gE+2DHOrZxEZ2P2KmtZ9KcyZ18P4
-         pO7NlrxZaFix0aCUhSdfa++EXaEn3jMuRM1CIepuYtjaLlvAxbi69Ouj81+v7iyB3W
-         a9bVghNeeQhmiS0lP5Fgy6FhhYn3mFcLwd0lOLvY=
+        b=JDhZ/m2HUQvxcM2nscczvut5ShelFugvn2uy0adWwN3m6QOu57QxPKNZqnZdhMDBP
+         Tpr8yJkRGTQu5MyN84ErgR/gSLwW7w05KNQXXpXXCsXD8FWnsH9etHSR8mjapMWfRj
+         PElZyTkVVQz78hwsWVfBifjjAHeKtUuC+iy0v7/k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Fedor Pchelkin <pchelkin@ispras.ru>
-Subject: [PATCH 5.10 010/105] net: make free_netdev() more lenient with unregistering devices
-Date:   Wed, 27 Jul 2022 18:09:56 +0200
-Message-Id: <20220727161012.480155559@linuxfoundation.org>
+Subject: [PATCH 5.10 011/105] net: make sure devices go through netdev_wait_all_refs
+Date:   Wed, 27 Jul 2022 18:09:57 +0200
+Message-Id: <20220727161012.515394196@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161012.056867467@linuxfoundation.org>
 References: <20220727161012.056867467@linuxfoundation.org>
@@ -52,110 +54,61 @@ From: Fedor Pchelkin <pchelkin@ispras.ru>
 
 From: Jakub Kicinski <kuba@kernel.org>
 
-commit c269a24ce057abfc31130960e96ab197ef6ab196 upstream.
+commit 766b0515d5bec4b780750773ed3009b148df8c0a upstream.
 
-There are two flavors of handling netdev registration:
- - ones called without holding rtnl_lock: register_netdev() and
-   unregister_netdev(); and
- - those called with rtnl_lock held: register_netdevice() and
-   unregister_netdevice().
+If register_netdevice() fails at the very last stage - the
+notifier call - some subsystems may have already seen it and
+grabbed a reference. struct net_device can't be freed right
+away without calling netdev_wait_all_refs().
 
-While the semantics of the former are pretty clear, the same can't
-be said about the latter. The netdev_todo mechanism is utilized to
-perform some of the device unregistering tasks and it hooks into
-rtnl_unlock() so the locked variants can't actually finish the work.
-In general free_netdev() does not mix well with locked calls. Most
-drivers operating under rtnl_lock set dev->needs_free_netdev to true
-and expect core to make the free_netdev() call some time later.
+Now that we have a clean interface in form of dev->needs_free_netdev
+and lenient free_netdev() we can undo what commit 93ee31f14f6f ("[NET]:
+Fix free_netdev on register_netdev failure.") has done and complete
+the unregistration path by bringing the net_set_todo() call back.
 
-The part where this becomes most problematic is error paths. There is
-no way to unwind the state cleanly after a call to register_netdevice(),
-since unreg can't be performed fully without dropping locks.
+After registration fails user is still expected to explicitly
+free the net_device, so make sure ->needs_free_netdev is cleared,
+otherwise rolling back the registration will cause the old double
+free for callers who release rtnl_lock before the free.
 
-Make free_netdev() more lenient, and defer the freeing if device
-is being unregistered. This allows error paths to simply call
-free_netdev() both after register_netdevice() failed, and after
-a call to unregister_netdevice() but before dropping rtnl_lock.
+This also solves the problem of priv_destructor not being called
+on notifier error.
 
-Simplify the error paths which are currently doing gymnastics
-around free_netdev() handling.
+net_set_todo() will be moved back into unregister_netdevice_queue()
+in a follow up.
 
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Reported-by: Yang Yingliang <yangyingliang@huawei.com>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/8021q/vlan.c     |    4 +---
- net/core/dev.c       |   11 +++++++++++
- net/core/rtnetlink.c |   23 ++++++-----------------
- 3 files changed, 18 insertions(+), 20 deletions(-)
+ net/core/dev.c |   14 ++++----------
+ 1 file changed, 4 insertions(+), 10 deletions(-)
 
---- a/net/8021q/vlan.c
-+++ b/net/8021q/vlan.c
-@@ -278,9 +278,7 @@ static int register_vlan_device(struct n
- 	return 0;
- 
- out_free_newdev:
--	if (new_dev->reg_state == NETREG_UNINITIALIZED ||
--	    new_dev->reg_state == NETREG_UNREGISTERED)
--		free_netdev(new_dev);
-+	free_netdev(new_dev);
- 	return err;
- }
- 
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -10683,6 +10683,17 @@ void free_netdev(struct net_device *dev)
- 	struct napi_struct *p, *n;
- 
- 	might_sleep();
-+
-+	/* When called immediately after register_netdevice() failed the unwind
-+	 * handling may still be dismantling the device. Handle that case by
-+	 * deferring the free.
-+	 */
-+	if (dev->reg_state == NETREG_UNREGISTERING) {
-+		ASSERT_RTNL();
-+		dev->needs_free_netdev = true;
-+		return;
-+	}
-+
- 	netif_free_tx_queues(dev);
- 	netif_free_rx_queues(dev);
- 
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -3442,26 +3442,15 @@ replay:
- 
- 	dev->ifindex = ifm->ifi_index;
- 
--	if (ops->newlink) {
-+	if (ops->newlink)
- 		err = ops->newlink(link_net ? : net, dev, tb, data, extack);
--		/* Drivers should set dev->needs_free_netdev
--		 * and unregister it on failure after registration
--		 * so that device could be finally freed in rtnl_unlock.
+@@ -10144,17 +10144,11 @@ int register_netdevice(struct net_device
+ 	ret = call_netdevice_notifiers(NETDEV_REGISTER, dev);
+ 	ret = notifier_to_errno(ret);
+ 	if (ret) {
++		/* Expect explicit free_netdev() on failure */
++		dev->needs_free_netdev = false;
+ 		rollback_registered(dev);
+-		rcu_barrier();
+-
+-		dev->reg_state = NETREG_UNREGISTERED;
+-		/* We should put the kobject that hold in
+-		 * netdev_unregister_kobject(), otherwise
+-		 * the net device cannot be freed when
+-		 * driver calls free_netdev(), because the
+-		 * kobject is being hold.
 -		 */
--		if (err < 0) {
--			/* If device is not registered at all, free it now */
--			if (dev->reg_state == NETREG_UNINITIALIZED ||
--			    dev->reg_state == NETREG_UNREGISTERED)
--				free_netdev(dev);
--			goto out;
--		}
--	} else {
-+	else
- 		err = register_netdevice(dev);
--		if (err < 0) {
--			free_netdev(dev);
--			goto out;
--		}
-+	if (err < 0) {
-+		free_netdev(dev);
+-		kobject_put(&dev->dev.kobj);
++		net_set_todo(dev);
 +		goto out;
  	}
-+
- 	err = rtnl_configure_link(dev, ifm);
- 	if (err < 0)
- 		goto out_unregister;
+ 	/*
+ 	 *	Prevent userspace races by waiting until the network
 
 
