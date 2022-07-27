@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9C5DC19F28
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:31:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2765C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:31:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237511AbiG0QbP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:31:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35338 "EHLO
+        id S237666AbiG0QbR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:31:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237434AbiG0Qak (ORCPT
+        with ESMTP id S237446AbiG0Qal (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:30:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B925252444;
-        Wed, 27 Jul 2022 09:25:17 -0700 (PDT)
+        Wed, 27 Jul 2022 12:30:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DCBA5247E;
+        Wed, 27 Jul 2022 09:25:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4BC85B821BC;
-        Wed, 27 Jul 2022 16:24:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8C80C43141;
-        Wed, 27 Jul 2022 16:24:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C6DC617EF;
+        Wed, 27 Jul 2022 16:25:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55C4BC433C1;
+        Wed, 27 Jul 2022 16:25:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939083;
-        bh=4Efy3BNZmCgFWM3LGklpsnk3qmp4e7cRajBAEfrglUY=;
+        s=korg; t=1658939116;
+        bh=HaPcLU8OTjq/O0rBKkVeU0xDiBOTbO2unGt7nLpjxW8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yzE5klTTTA1XG3cXeLp9tC0pZh2kZ3pS3Y50iSbiHDN/AP4RT5xLqhN7jq+vOYWu5
-         uw6STeqKfHbcMPgzToJwNrwlvw/dUapw72RfXFCvsii5lAsXIKQ72UHkqKNCw7uW8m
-         R3Yjz9qursLYC5021MCkiX811jsnCst8BuPhMecw=
+        b=qd3j45M7StFg0v59aBfnVpx7lnyVh1kVNSr2Yt8ssgGx7EikG2HJvBki1RPoAsVWz
+         gLnjwMKhQq5WW8DDQO9gzjxdW+Dd24V9uzF36xNMR8HHCz6VuN/koNfv4w9B9p4OiL
+         1AnX5BzJtpwBeDY7FXiMM+4A2gvVKB6512sA6UO4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaomeng Tong <xiam0nd.tong@gmail.com>,
-        Jyri Sarha <jyri.sarha@iki.fi>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 19/37] tilcdc: tilcdc_external: fix an incorrect NULL check on list iterator
-Date:   Wed, 27 Jul 2022 18:10:45 +0200
-Message-Id: <20220727161001.611377422@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 07/62] ip: Fix data-races around sysctl_ip_fwd_use_pmtu.
+Date:   Wed, 27 Jul 2022 18:10:16 +0200
+Message-Id: <20220727161004.448768084@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220727161000.822869853@linuxfoundation.org>
-References: <20220727161000.822869853@linuxfoundation.org>
+In-Reply-To: <20220727161004.175638564@linuxfoundation.org>
+References: <20220727161004.175638564@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,55 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 8b917cbe38e9b0d002492477a9fc2bfee2412ce4 ]
+[ Upstream commit 60c158dc7b1f0558f6cadd5b50d0386da0000d50 ]
 
-The bug is here:
-	if (!encoder) {
+While reading sysctl_ip_fwd_use_pmtu, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its readers.
 
-The list iterator value 'encoder' will *always* be set and non-NULL
-by list_for_each_entry(), so it is incorrect to assume that the
-iterator value will be NULL if the list is empty or no element
-is found.
-
-To fix the bug, use a new variable 'iter' as the list iterator,
-while use the original variable 'encoder' as a dedicated pointer
-to point to the found element.
-
-Cc: stable@vger.kernel.org
-Fixes: ec9eab097a500 ("drm/tilcdc: Add drm bridge support for attaching drm bridge drivers")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Reviewed-by: Jyri Sarha <jyri.sarha@iki.fi>
-Tested-by: Jyri Sarha <jyri.sarha@iki.fi>
-Signed-off-by: Jyri Sarha <jyri.sarha@iki.fi>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220327061516.5076-1-xiam0nd.tong@gmail.com
+Fixes: f87c10a8aa1e ("ipv4: introduce ip_dst_mtu_maybe_forward and protect forwarding path against pmtu spoofing")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/tilcdc/tilcdc_external.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ include/net/ip.h | 2 +-
+ net/ipv4/route.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/tilcdc/tilcdc_external.c b/drivers/gpu/drm/tilcdc/tilcdc_external.c
-index 9c8520569d31..511e178012cd 100644
---- a/drivers/gpu/drm/tilcdc/tilcdc_external.c
-+++ b/drivers/gpu/drm/tilcdc/tilcdc_external.c
-@@ -61,11 +61,13 @@ struct drm_connector *tilcdc_encoder_find_connector(struct drm_device *ddev,
- int tilcdc_add_component_encoder(struct drm_device *ddev)
- {
- 	struct tilcdc_drm_private *priv = ddev->dev_private;
--	struct drm_encoder *encoder;
-+	struct drm_encoder *encoder = NULL, *iter;
+diff --git a/include/net/ip.h b/include/net/ip.h
+index d1a4efedbc03..471463bfe6f9 100644
+--- a/include/net/ip.h
++++ b/include/net/ip.h
+@@ -402,7 +402,7 @@ static inline unsigned int ip_dst_mtu_maybe_forward(const struct dst_entry *dst,
+ 	struct net *net = dev_net(dst->dev);
+ 	unsigned int mtu;
  
--	list_for_each_entry(encoder, &ddev->mode_config.encoder_list, head)
--		if (encoder->possible_crtcs & (1 << priv->crtc->index))
-+	list_for_each_entry(iter, &ddev->mode_config.encoder_list, head)
-+		if (iter->possible_crtcs & (1 << priv->crtc->index)) {
-+			encoder = iter;
- 			break;
-+		}
+-	if (net->ipv4.sysctl_ip_fwd_use_pmtu ||
++	if (READ_ONCE(net->ipv4.sysctl_ip_fwd_use_pmtu) ||
+ 	    ip_mtu_locked(dst) ||
+ 	    !forwarding)
+ 		return dst_mtu(dst);
+diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+index d7f17581df7d..57e2316529d0 100644
+--- a/net/ipv4/route.c
++++ b/net/ipv4/route.c
+@@ -1419,7 +1419,7 @@ u32 ip_mtu_from_fib_result(struct fib_result *res, __be32 daddr)
+ 	struct net_device *dev = nh->nh_dev;
+ 	u32 mtu = 0;
  
- 	if (!encoder) {
- 		dev_err(ddev->dev, "%s: No suitable encoder found\n", __func__);
+-	if (dev_net(dev)->ipv4.sysctl_ip_fwd_use_pmtu ||
++	if (READ_ONCE(dev_net(dev)->ipv4.sysctl_ip_fwd_use_pmtu) ||
+ 	    fi->fib_metrics->metrics[RTAX_LOCK - 1] & (1 << RTAX_MTU))
+ 		mtu = fi->fib_mtu;
+ 
 -- 
 2.35.1
 
