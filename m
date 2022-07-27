@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A00E6C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:14:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 901AEC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:14:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236328AbiG0ROF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:14:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48866 "EHLO
+        id S241634AbiG0ROI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:14:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241569AbiG0RNc (ORCPT
+        with ESMTP id S238131AbiG0RNl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:13:32 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3555576951;
-        Wed, 27 Jul 2022 09:42:13 -0700 (PDT)
+        Wed, 27 Jul 2022 13:13:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F6525B78C;
+        Wed, 27 Jul 2022 09:42:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63CE5B821A6;
-        Wed, 27 Jul 2022 16:42:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCD7DC433B5;
-        Wed, 27 Jul 2022 16:42:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B1D360D3B;
+        Wed, 27 Jul 2022 16:42:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79991C433D6;
+        Wed, 27 Jul 2022 16:42:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940130;
-        bh=deshV2X/m340dN/SVCmmSE8XyFHZN1oMpbGKKrA4AUM=;
+        s=korg; t=1658940135;
+        bh=QMlouGdUSHtpzVpbNT1n810JgfCBDB50pAHdCH7HfUk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0qWDFwCfuc3UIivllqszgWxyp6r+0uyIx9F5YLsGgFS5BB9CWHK0II1JrjsrzwAzJ
-         Ab00O/MYbb5R3cK9oLGrkrA+Yb9SMJZ9/cPwhcdaT7EdNxB6tSXM5l170RkyzlAFG1
-         ZXzLoie9gVT3X6uesJDb/l4aNCnnA55YbN1Z8sKQ=
+        b=K6qaPdM/zUPU5HLzE8hYEhQFZ9D/iUNJj2ERHOjl15Pk72IjfSP+qu2by3veba5Q9
+         OuVtDzWaOdmzsKeWd9WofJ0VyC2+MrVrk9GPSG2AGE0I9cKdihqweF+kcmasd6TBY5
+         KgVD92X0dGFHqlljpSRvcSuMAedRvMqY8G8fIBaA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Ido Schimmel <idosch@nvidia.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 116/201] ipv4: Fix a data-race around sysctl_fib_multipath_use_neigh.
-Date:   Wed, 27 Jul 2022 18:10:20 +0200
-Message-Id: <20220727161032.577503809@linuxfoundation.org>
+Subject: [PATCH 5.15 118/201] ipv4: Fix data-races around sysctl_fib_multipath_hash_fields.
+Date:   Wed, 27 Jul 2022 18:10:22 +0200
+Message-Id: <20220727161032.665812955@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -51,32 +52,65 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 87507bcb4f5de16bb419e9509d874f4db6c0ad0f ]
+[ Upstream commit 8895a9c2ac76fb9d3922fed4fe092c8ec5e5cccc ]
 
-While reading sysctl_fib_multipath_use_neigh, it can be changed
-concurrently.  Thus, we need to add READ_ONCE() to its reader.
+While reading sysctl_fib_multipath_hash_fields, it can be changed
+concurrently.  Thus, we need to add READ_ONCE() to its readers.
 
-Fixes: a6db4494d218 ("net: ipv4: Consider failed nexthops in multipath routes")
+Fixes: ce5c9c20d364 ("ipv4: Add a sysctl to control multipath hash fields")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/fib_semantics.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c | 2 +-
+ net/ipv4/route.c                                      | 6 +++---
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
-index 674694d8ac61..55de6fa83dea 100644
---- a/net/ipv4/fib_semantics.c
-+++ b/net/ipv4/fib_semantics.c
-@@ -2233,7 +2233,7 @@ void fib_select_multipath(struct fib_result *res, int hash)
- 	}
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+index 6cdf0e232b1c..55de90d5ae59 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+@@ -9606,7 +9606,7 @@ static void mlxsw_sp_mp4_hash_init(struct mlxsw_sp *mlxsw_sp,
+ 		mlxsw_sp_mp_hash_inner_l3(config);
+ 		break;
+ 	case 3:
+-		hash_fields = net->ipv4.sysctl_fib_multipath_hash_fields;
++		hash_fields = READ_ONCE(net->ipv4.sysctl_fib_multipath_hash_fields);
+ 		/* Outer */
+ 		MLXSW_SP_MP_HASH_HEADER_SET(headers, IPV4_EN_NOT_TCP_NOT_UDP);
+ 		MLXSW_SP_MP_HASH_HEADER_SET(headers, IPV4_EN_TCP_UDP);
+diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+index ade6cb309c40..ca59b61fd3a3 100644
+--- a/net/ipv4/route.c
++++ b/net/ipv4/route.c
+@@ -1929,7 +1929,7 @@ static u32 fib_multipath_custom_hash_outer(const struct net *net,
+ 					   const struct sk_buff *skb,
+ 					   bool *p_has_inner)
+ {
+-	u32 hash_fields = net->ipv4.sysctl_fib_multipath_hash_fields;
++	u32 hash_fields = READ_ONCE(net->ipv4.sysctl_fib_multipath_hash_fields);
+ 	struct flow_keys keys, hash_keys;
  
- 	change_nexthops(fi) {
--		if (net->ipv4.sysctl_fib_multipath_use_neigh) {
-+		if (READ_ONCE(net->ipv4.sysctl_fib_multipath_use_neigh)) {
- 			if (!fib_good_nh(nexthop_nh))
- 				continue;
- 			if (!first) {
+ 	if (!(hash_fields & FIB_MULTIPATH_HASH_FIELD_OUTER_MASK))
+@@ -1958,7 +1958,7 @@ static u32 fib_multipath_custom_hash_inner(const struct net *net,
+ 					   const struct sk_buff *skb,
+ 					   bool has_inner)
+ {
+-	u32 hash_fields = net->ipv4.sysctl_fib_multipath_hash_fields;
++	u32 hash_fields = READ_ONCE(net->ipv4.sysctl_fib_multipath_hash_fields);
+ 	struct flow_keys keys, hash_keys;
+ 
+ 	/* We assume the packet carries an encapsulation, but if none was
+@@ -2018,7 +2018,7 @@ static u32 fib_multipath_custom_hash_skb(const struct net *net,
+ static u32 fib_multipath_custom_hash_fl4(const struct net *net,
+ 					 const struct flowi4 *fl4)
+ {
+-	u32 hash_fields = net->ipv4.sysctl_fib_multipath_hash_fields;
++	u32 hash_fields = READ_ONCE(net->ipv4.sysctl_fib_multipath_hash_fields);
+ 	struct flow_keys hash_keys;
+ 
+ 	if (!(hash_fields & FIB_MULTIPATH_HASH_FIELD_OUTER_MASK))
 -- 
 2.35.1
 
