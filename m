@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7455FC19F28
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:19:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC861C25B06
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:20:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233214AbiG0RTy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:19:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33462 "EHLO
+        id S240059AbiG0RT7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:19:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240113AbiG0RSX (ORCPT
+        with ESMTP id S241755AbiG0RSa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:18:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26D795C9C3;
-        Wed, 27 Jul 2022 09:43:48 -0700 (PDT)
+        Wed, 27 Jul 2022 13:18:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AE8D5C9D5;
+        Wed, 27 Jul 2022 09:43:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BCBE7B8200C;
-        Wed, 27 Jul 2022 16:43:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CF11C433C1;
-        Wed, 27 Jul 2022 16:43:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B91A8B821A6;
+        Wed, 27 Jul 2022 16:43:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 076FDC433D7;
+        Wed, 27 Jul 2022 16:43:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940225;
-        bh=fQbnzm2Dq9Za4ZflIcr2EXIrw0q4yIR4IjS0LUqj6cU=;
+        s=korg; t=1658940228;
+        bh=0ucAd0MVzOEGl6VOE3Lt6pJMcebyDiezvpzd9ZbChPQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JvL7+CEQ+TkQlw9ljrObHvmbq/XD9aLIP7ycTmD+OJCv30JZdAJCP+U9Nip17/940
-         hJD0+x9jxGW/cScFLMCsoeGTDT67F5yLnc1S147e2rCRgR1UYP7PQSlTod9AGq7Iva
-         1W/EiipzEjI28JKfdntvgs7RkEFZ5J7SIAsX/A7Q=
+        b=TDcpHejqaMO42lD/18ZtGixIRmEPvoYGrypjhWBPKzU+KuSmuhEh6BWK4vYzkfFZW
+         MqHz4u+i3JxqykINSDuhKzd372Mw0KdrIFzMNW2ck3It96PuGd64J6OKbJrOYKEV1J
+         JizkeeFNewLO2FKeduIwU0QIqnj5r5HyzcrnBVQs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 150/201] x86/futex: Remove .fixup usage
-Date:   Wed, 27 Jul 2022 18:10:54 +0200
-Message-Id: <20220727161034.050152608@linuxfoundation.org>
+Subject: [PATCH 5.15 151/201] KVM: x86: Use __try_cmpxchg_user() to emulate atomic accesses
+Date:   Wed, 27 Jul 2022 18:10:55 +0200
+Message-Id: <20220727161034.082862959@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -50,93 +49,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Sean Christopherson <seanjc@google.com>
 
-[ Upstream commit 4c132d1d844a53fc4e4b5c34e36ef10d6124b783 ]
+[ Upstream commit 1c2361f667f3648855ceae25f1332c18413fdb9f ]
 
-Use the new EX_TYPE_IMM_REG to store -EFAULT into the designated 'ret'
-register, this removes the need for anonymous .fixup code.
+Use the recently introduce __try_cmpxchg_user() to emulate atomic guest
+accesses via the associated userspace address instead of mapping the
+backing pfn into kernel address space.  Using kvm_vcpu_map() is unsafe as
+it does not coordinate with KVM's mmu_notifier to ensure the hva=>pfn
+translation isn't changed/unmapped in the memremap() path, i.e. when
+there's no struct page and thus no elevated refcount.
 
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lore.kernel.org/r/20211110101325.426016322@infradead.org
+Fixes: 42e35f8072c3 ("KVM/X86: Use kvm_vcpu_map in emulator_cmpxchg_emulated")
+Cc: stable@vger.kernel.org
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20220202004945.2540433-5-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/include/asm/extable_fixup_types.h |  2 ++
- arch/x86/include/asm/futex.h               | 28 +++++++---------------
- 2 files changed, 10 insertions(+), 20 deletions(-)
+ arch/x86/kvm/x86.c | 35 ++++++++++++++---------------------
+ 1 file changed, 14 insertions(+), 21 deletions(-)
 
-diff --git a/arch/x86/include/asm/extable_fixup_types.h b/arch/x86/include/asm/extable_fixup_types.h
-index 9d597fe1017d..7469038de100 100644
---- a/arch/x86/include/asm/extable_fixup_types.h
-+++ b/arch/x86/include/asm/extable_fixup_types.h
-@@ -42,6 +42,8 @@
- #define	EX_TYPE_DEFAULT_MCE_SAFE	14
- #define	EX_TYPE_FAULT_MCE_SAFE		15
- #define	EX_TYPE_POP_ZERO		16
-+
- #define	EX_TYPE_IMM_REG			17 /* reg := (long)imm */
-+#define	EX_TYPE_EFAULT_REG		(EX_TYPE_IMM_REG | EX_DATA_IMM(-EFAULT))
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index 4525d0b25a43..f9802ceed60a 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -6894,15 +6894,8 @@ static int emulator_write_emulated(struct x86_emulate_ctxt *ctxt,
+ 				   exception, &write_emultor);
+ }
  
- #endif
-diff --git a/arch/x86/include/asm/futex.h b/arch/x86/include/asm/futex.h
-index f9c00110a69a..99d345b686fa 100644
---- a/arch/x86/include/asm/futex.h
-+++ b/arch/x86/include/asm/futex.h
-@@ -17,13 +17,9 @@ do {								\
- 	int oldval = 0, ret;					\
- 	asm volatile("1:\t" insn "\n"				\
- 		     "2:\n"					\
--		     "\t.section .fixup,\"ax\"\n"		\
--		     "3:\tmov\t%3, %1\n"			\
--		     "\tjmp\t2b\n"				\
--		     "\t.previous\n"				\
--		     _ASM_EXTABLE_UA(1b, 3b)			\
-+		     _ASM_EXTABLE_TYPE_REG(1b, 2b, EX_TYPE_EFAULT_REG, %1) \
- 		     : "=r" (oldval), "=r" (ret), "+m" (*uaddr)	\
--		     : "i" (-EFAULT), "0" (oparg), "1" (0));	\
-+		     : "0" (oparg), "1" (0));	\
- 	if (ret)						\
- 		goto label;					\
- 	*oval = oldval;						\
-@@ -39,15 +35,11 @@ do {								\
- 		     "3:\t" LOCK_PREFIX "cmpxchgl %3, %2\n"	\
- 		     "\tjnz\t2b\n"				\
- 		     "4:\n"					\
--		     "\t.section .fixup,\"ax\"\n"		\
--		     "5:\tmov\t%5, %1\n"			\
--		     "\tjmp\t4b\n"				\
--		     "\t.previous\n"				\
--		     _ASM_EXTABLE_UA(1b, 5b)			\
--		     _ASM_EXTABLE_UA(3b, 5b)			\
-+		     _ASM_EXTABLE_TYPE_REG(1b, 4b, EX_TYPE_EFAULT_REG, %1) \
-+		     _ASM_EXTABLE_TYPE_REG(3b, 4b, EX_TYPE_EFAULT_REG, %1) \
- 		     : "=&a" (oldval), "=&r" (ret),		\
- 		       "+m" (*uaddr), "=&r" (tem)		\
--		     : "r" (oparg), "i" (-EFAULT), "1" (0));	\
-+		     : "r" (oparg), "1" (0));			\
- 	if (ret)						\
- 		goto label;					\
- 	*oval = oldval;						\
-@@ -95,15 +87,11 @@ static inline int futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
- 	if (!user_access_begin(uaddr, sizeof(u32)))
- 		return -EFAULT;
- 	asm volatile("\n"
--		"1:\t" LOCK_PREFIX "cmpxchgl %4, %2\n"
-+		"1:\t" LOCK_PREFIX "cmpxchgl %3, %2\n"
- 		"2:\n"
--		"\t.section .fixup, \"ax\"\n"
--		"3:\tmov     %3, %0\n"
--		"\tjmp     2b\n"
--		"\t.previous\n"
--		_ASM_EXTABLE_UA(1b, 3b)
-+		_ASM_EXTABLE_TYPE_REG(1b, 2b, EX_TYPE_EFAULT_REG, %0) \
- 		: "+r" (ret), "=a" (oldval), "+m" (*uaddr)
--		: "i" (-EFAULT), "r" (newval), "1" (oldval)
-+		: "r" (newval), "1" (oldval)
- 		: "memory"
- 	);
- 	user_access_end();
+-#define CMPXCHG_TYPE(t, ptr, old, new) \
+-	(cmpxchg((t *)(ptr), *(t *)(old), *(t *)(new)) == *(t *)(old))
+-
+-#ifdef CONFIG_X86_64
+-#  define CMPXCHG64(ptr, old, new) CMPXCHG_TYPE(u64, ptr, old, new)
+-#else
+-#  define CMPXCHG64(ptr, old, new) \
+-	(cmpxchg64((u64 *)(ptr), *(u64 *)(old), *(u64 *)(new)) == *(u64 *)(old))
+-#endif
++#define emulator_try_cmpxchg_user(t, ptr, old, new) \
++	(__try_cmpxchg_user((t __user *)(ptr), (t *)(old), *(t *)(new), efault ## t))
+ 
+ static int emulator_cmpxchg_emulated(struct x86_emulate_ctxt *ctxt,
+ 				     unsigned long addr,
+@@ -6911,12 +6904,11 @@ static int emulator_cmpxchg_emulated(struct x86_emulate_ctxt *ctxt,
+ 				     unsigned int bytes,
+ 				     struct x86_exception *exception)
+ {
+-	struct kvm_host_map map;
+ 	struct kvm_vcpu *vcpu = emul_to_vcpu(ctxt);
+ 	u64 page_line_mask;
++	unsigned long hva;
+ 	gpa_t gpa;
+-	char *kaddr;
+-	bool exchanged;
++	int r;
+ 
+ 	/* guests cmpxchg8b have to be emulated atomically */
+ 	if (bytes > 8 || (bytes & (bytes - 1)))
+@@ -6940,31 +6932,32 @@ static int emulator_cmpxchg_emulated(struct x86_emulate_ctxt *ctxt,
+ 	if (((gpa + bytes - 1) & page_line_mask) != (gpa & page_line_mask))
+ 		goto emul_write;
+ 
+-	if (kvm_vcpu_map(vcpu, gpa_to_gfn(gpa), &map))
++	hva = kvm_vcpu_gfn_to_hva(vcpu, gpa_to_gfn(gpa));
++	if (kvm_is_error_hva(addr))
+ 		goto emul_write;
+ 
+-	kaddr = map.hva + offset_in_page(gpa);
++	hva += offset_in_page(gpa);
+ 
+ 	switch (bytes) {
+ 	case 1:
+-		exchanged = CMPXCHG_TYPE(u8, kaddr, old, new);
++		r = emulator_try_cmpxchg_user(u8, hva, old, new);
+ 		break;
+ 	case 2:
+-		exchanged = CMPXCHG_TYPE(u16, kaddr, old, new);
++		r = emulator_try_cmpxchg_user(u16, hva, old, new);
+ 		break;
+ 	case 4:
+-		exchanged = CMPXCHG_TYPE(u32, kaddr, old, new);
++		r = emulator_try_cmpxchg_user(u32, hva, old, new);
+ 		break;
+ 	case 8:
+-		exchanged = CMPXCHG64(kaddr, old, new);
++		r = emulator_try_cmpxchg_user(u64, hva, old, new);
+ 		break;
+ 	default:
+ 		BUG();
+ 	}
+ 
+-	kvm_vcpu_unmap(vcpu, &map, true);
+-
+-	if (!exchanged)
++	if (r < 0)
++		goto emul_write;
++	if (r)
+ 		return X86EMUL_CMPXCHG_FAILED;
+ 
+ 	kvm_page_track_write(vcpu, gpa, new, bytes);
 -- 
 2.35.1
 
