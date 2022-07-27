@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43A18C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:13:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C654C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:13:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241449AbiG0RNf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:13:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48876 "EHLO
+        id S241610AbiG0RNn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:13:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230149AbiG0RMq (ORCPT
+        with ESMTP id S241578AbiG0RMz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:12:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2E1A753BD;
-        Wed, 27 Jul 2022 09:42:03 -0700 (PDT)
+        Wed, 27 Jul 2022 13:12:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 460757644C;
+        Wed, 27 Jul 2022 09:42:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 456CDB821D5;
-        Wed, 27 Jul 2022 16:42:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FD9FC433C1;
-        Wed, 27 Jul 2022 16:41:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2847560D3B;
+        Wed, 27 Jul 2022 16:42:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 367F5C433C1;
+        Wed, 27 Jul 2022 16:42:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940119;
-        bh=BXg5fLLfCrboKcDhCRE6/09nN66VrHApWnu3zne7LGw=;
+        s=korg; t=1658940124;
+        bh=4ErHXwOhPcEPwMUnQeYwhJKbusd/k1X5rqkKC/8iioU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JKEUadedFeR/cSTp3aoKAhDGVlJ61gorXWN3PmWrzIt+CsUh8I2m8dhNBDfno5KWj
-         7wTSr8ZDFAh7zzbYAk+mpCT3XhhjrBdo0Dbwa84uqxPhFkhdRwWEptGxjhoepzmEGi
-         L7IzTZzomZzyszCe9qrUaLs87MtE10GJuc7MXZdM=
+        b=CsrXCQwd8PkjBOnihqLPPLaqb8f/Xph2B1P0bcejRdl8legb/No6TKxZeF8ilo3jN
+         54FwqPAGnuMqnC6fVwj2+2M6tgq2m1o2MyMOGKw72dZV8YEJTNXYd3lHsdW10pDjz4
+         IHTQwdL8zRoNkhUUz4l6QtmATcjc0MvSLk5d+zRE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
+        stable@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 104/201] pinctrl: armada-37xx: Convert to use dev_err_probe()
-Date:   Wed, 27 Jul 2022 18:10:08 +0200
-Message-Id: <20220727161032.059592834@linuxfoundation.org>
+Subject: [PATCH 5.15 114/201] net: dsa: vitesse-vsc73xx: silent spi_device_id warnings
+Date:   Wed, 27 Jul 2022 18:10:18 +0200
+Message-Id: <20220727161032.483840946@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -50,63 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Oleksij Rempel <o.rempel@pengutronix.de>
 
-[ Upstream commit 06cb10ea0cd5c5f4db9627a33ab47fec32cb5960 ]
+[ Upstream commit 1774559f07993e1cac33c2406e99049d4bdea6c8 ]
 
-It's fine to call dev_err_probe() in ->probe() when error code is known.
-Convert the driver to use dev_err_probe().
+Add spi_device_id entries to silent SPI warnings.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Reviewed-by: Gregory CLEMENT <gregory.clement@bootlin.com>
+Fixes: 5fa6863ba692 ("spi: Check we have a spi_device_id for each DT compatible")
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Link: https://lore.kernel.org/r/20220717135831.2492844-2-o.rempel@pengutronix.de
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/mvebu/pinctrl-armada-37xx.c | 18 ++++++------------
- 1 file changed, 6 insertions(+), 12 deletions(-)
+ drivers/net/dsa/vitesse-vsc73xx-spi.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c b/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
-index 40bcf05123eb..7d0d2771a9ac 100644
---- a/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
-+++ b/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
-@@ -736,10 +736,8 @@ static int armada_37xx_irqchip_register(struct platform_device *pdev,
- 			break;
- 		}
- 	}
--	if (ret) {
--		dev_err(dev, "no gpio-controller child node\n");
--		return ret;
--	}
-+	if (ret)
-+		return dev_err_probe(dev, ret, "no gpio-controller child node\n");
+diff --git a/drivers/net/dsa/vitesse-vsc73xx-spi.c b/drivers/net/dsa/vitesse-vsc73xx-spi.c
+index 645398901e05..922ae22fad66 100644
+--- a/drivers/net/dsa/vitesse-vsc73xx-spi.c
++++ b/drivers/net/dsa/vitesse-vsc73xx-spi.c
+@@ -207,10 +207,20 @@ static const struct of_device_id vsc73xx_of_match[] = {
+ };
+ MODULE_DEVICE_TABLE(of, vsc73xx_of_match);
  
- 	nr_irq_parent = of_irq_count(np);
- 	spin_lock_init(&info->irq_lock);
-@@ -996,10 +994,8 @@ static int armada_37xx_pinctrl_register(struct platform_device *pdev,
- 		return ret;
- 
- 	info->pctl_dev = devm_pinctrl_register(dev, ctrldesc, info);
--	if (IS_ERR(info->pctl_dev)) {
--		dev_err(dev, "could not register pinctrl driver\n");
--		return PTR_ERR(info->pctl_dev);
--	}
-+	if (IS_ERR(info->pctl_dev))
-+		return dev_err_probe(dev, PTR_ERR(info->pctl_dev), "could not register pinctrl driver\n");
- 
- 	return 0;
- }
-@@ -1135,10 +1131,8 @@ static int __init armada_37xx_pinctrl_probe(struct platform_device *pdev)
- 	info->dev = dev;
- 
- 	regmap = syscon_node_to_regmap(np);
--	if (IS_ERR(regmap)) {
--		dev_err(dev, "cannot get regmap\n");
--		return PTR_ERR(regmap);
--	}
-+	if (IS_ERR(regmap))
-+		return dev_err_probe(dev, PTR_ERR(regmap), "cannot get regmap\n");
- 	info->regmap = regmap;
- 
- 	info->data = of_device_get_match_data(dev);
++static const struct spi_device_id vsc73xx_spi_ids[] = {
++	{ "vsc7385" },
++	{ "vsc7388" },
++	{ "vsc7395" },
++	{ "vsc7398" },
++	{ },
++};
++MODULE_DEVICE_TABLE(spi, vsc73xx_spi_ids);
++
+ static struct spi_driver vsc73xx_spi_driver = {
+ 	.probe = vsc73xx_spi_probe,
+ 	.remove = vsc73xx_spi_remove,
+ 	.shutdown = vsc73xx_spi_shutdown,
++	.id_table = vsc73xx_spi_ids,
+ 	.driver = {
+ 		.name = "vsc73xx-spi",
+ 		.of_match_table = vsc73xx_of_match,
 -- 
 2.35.1
 
