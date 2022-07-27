@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09EFCC19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:53:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ACBEC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:53:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240958AbiG0Qxk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:53:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58038 "EHLO
+        id S240965AbiG0Qxo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:53:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229713AbiG0QwV (ORCPT
+        with ESMTP id S240784AbiG0QwW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:52:21 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDD5554AED;
-        Wed, 27 Jul 2022 09:34:24 -0700 (PDT)
+        Wed, 27 Jul 2022 12:52:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAA4D54AF0;
+        Wed, 27 Jul 2022 09:34:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6BC7961A3F;
-        Wed, 27 Jul 2022 16:34:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 796A9C433C1;
-        Wed, 27 Jul 2022 16:34:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 42663619BF;
+        Wed, 27 Jul 2022 16:34:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BCDCC433D6;
+        Wed, 27 Jul 2022 16:34:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939663;
-        bh=ntIuSKi+AcYKIWjWNXdXlDnxJ7Q9NS+vMaanFb8K3FU=;
+        s=korg; t=1658939666;
+        bh=CDy4plvDjjyk25XXASBm/JCvaBp3tZqSP4Flrdk2Nv8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uUwxNwvNVktK/hj4YKPBD/e/xBbTeMjID3kHh+nHC4hpmnQ8Le1vbkFdBSVBx+ICX
-         5MPO0SkhI0+s5zfCf5wDEVwaKKSxBa2r+mETnBOfmFf5SkGRzlAIHLwIkIP94DcLyE
-         n8rXGI46a0ClxdeZAR78QbFGOhLhimLRDj/PVEIQ=
+        b=ixv5PTWH0/yiQ5Q6VKsQfFjKeYZ9c5L3hNGYbTe6vprvZwuxc5MWdI226Z8YhxKbU
+         sY9koToZf0xDvLvctncAjx6ARBE0dC6PWw47ZNxFcqm+/JCzS8qX11cYmOOOwTybnd
+         sXdXUdSLFHu1DUj6aOvPR5qDYeAHU0kMPNsilnYg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Haibo Chen <haibo.chen@nxp.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 053/105] tcp: Fix a data-race around sysctl_tcp_tw_reuse.
-Date:   Wed, 27 Jul 2022 18:10:39 +0200
-Message-Id: <20220727161014.219624573@linuxfoundation.org>
+Subject: [PATCH 5.10 062/105] gpio: pca953x: use the correct register address when regcache sync during init
+Date:   Wed, 27 Jul 2022 18:10:48 +0200
+Message-Id: <20220727161014.566435860@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161012.056867467@linuxfoundation.org>
 References: <20220727161012.056867467@linuxfoundation.org>
@@ -49,37 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Haibo Chen <haibo.chen@nxp.com>
 
-[ Upstream commit cbfc6495586a3f09f6f07d9fb3c7cafe807e3c55 ]
+[ Upstream commit b8c768ccdd8338504fb78370747728d5002b1b5a ]
 
-While reading sysctl_tcp_tw_reuse, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its reader.
+For regcache_sync_region, we need to use pca953x_recalc_addr() to get
+the real register address.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: ec82d1eba346 ("gpio: pca953x: Zap ad-hoc reg_output cache")
+Fixes: 0f25fda840a9 ("gpio: pca953x: Zap ad-hoc reg_direction cache")
+Signed-off-by: Haibo Chen <haibo.chen@nxp.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp_ipv4.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpio/gpio-pca953x.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index 32c60122db9c..d5f13ff7d900 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -106,10 +106,10 @@ static u32 tcp_v4_init_ts_off(const struct net *net, const struct sk_buff *skb)
- 
- int tcp_twsk_unique(struct sock *sk, struct sock *sktw, void *twp)
+diff --git a/drivers/gpio/gpio-pca953x.c b/drivers/gpio/gpio-pca953x.c
+index b63ac46beceb..957be5f69406 100644
+--- a/drivers/gpio/gpio-pca953x.c
++++ b/drivers/gpio/gpio-pca953x.c
+@@ -896,15 +896,18 @@ static int pca953x_irq_setup(struct pca953x_chip *chip,
+ static int device_pca95xx_init(struct pca953x_chip *chip, u32 invert)
  {
-+	int reuse = READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_tw_reuse);
- 	const struct inet_timewait_sock *tw = inet_twsk(sktw);
- 	const struct tcp_timewait_sock *tcptw = tcp_twsk(sktw);
- 	struct tcp_sock *tp = tcp_sk(sk);
--	int reuse = sock_net(sk)->ipv4.sysctl_tcp_tw_reuse;
+ 	DECLARE_BITMAP(val, MAX_LINE);
++	u8 regaddr;
+ 	int ret;
  
- 	if (reuse == 2) {
- 		/* Still does not detect *everything* that goes through
+-	ret = regcache_sync_region(chip->regmap, chip->regs->output,
+-				   chip->regs->output + NBANK(chip) - 1);
++	regaddr = pca953x_recalc_addr(chip, chip->regs->output, 0);
++	ret = regcache_sync_region(chip->regmap, regaddr,
++				   regaddr + NBANK(chip) - 1);
+ 	if (ret)
+ 		goto out;
+ 
+-	ret = regcache_sync_region(chip->regmap, chip->regs->direction,
+-				   chip->regs->direction + NBANK(chip) - 1);
++	regaddr = pca953x_recalc_addr(chip, chip->regs->direction, 0);
++	ret = regcache_sync_region(chip->regmap, regaddr,
++				   regaddr + NBANK(chip) - 1);
+ 	if (ret)
+ 		goto out;
+ 
 -- 
 2.35.1
 
