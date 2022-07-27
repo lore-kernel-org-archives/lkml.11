@@ -2,114 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 505FFC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:42:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD53EC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:42:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239616AbiG0QmX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:42:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59184 "EHLO
+        id S239720AbiG0Qm0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:42:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239238AbiG0Qli (ORCPT
+        with ESMTP id S239240AbiG0Qlj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:41:38 -0400
-Received: from xry111.site (xry111.site [IPv6:2001:470:683e::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1F1E5B783
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:29:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xry111.site;
-        s=default; t=1658939381;
-        bh=5uWlBqSdy2RPXpPwAJasX2ffP9FsCCAt1xQrucd15uE=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=OpQy5wSbA7dWTR3bn656uDvmG/mlT/P6ZI96Voa5qTeK1Vq4TWpncb5MS+OaJX+mz
-         1XQ0HhQ+DX1OP+BOznPPVsBVcB2raCCtbmA4XY1/CS2PZW6Agv/tj+ujn2wV8rdrks
-         ndK8/A+E1blc08HcrDtXY/pHtkmPR+sB3UUeDcv0=
-Received: from localhost.localdomain (xry111.site [IPv6:2001:470:683e::1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature ECDSA (P-384))
-        (Client did not present a certificate)
-        (Authenticated sender: xry111@xry111.site)
-        by xry111.site (Postfix) with ESMTPSA id 40DDD66986;
-        Wed, 27 Jul 2022 12:29:39 -0400 (EDT)
-Message-ID: <4f09c81c22d0a16883a6914a8f7209957386c07c.camel@xry111.site>
-Subject: [PATCH 4/5] LoongArch: Stop using undocumented assembler options
-From:   Xi Ruoyao <xry111@xry111.site>
-To:     loongarch@lists.linux.dev
-Cc:     linux-kernel@vger.kernel.org, WANG Xuerui <kernel@xen0n.name>,
-        Huacai Chen <chenhuacai@kernel.org>
-Date:   Thu, 28 Jul 2022 00:29:38 +0800
-In-Reply-To: <385f63bcbee8e37c42f479ce9cdc7e7d731d419b.camel@xry111.site>
-References: <385f63bcbee8e37c42f479ce9cdc7e7d731d419b.camel@xry111.site>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.3 
+        Wed, 27 Jul 2022 12:41:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 231DC5B7A0;
+        Wed, 27 Jul 2022 09:29:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AFB64B821BC;
+        Wed, 27 Jul 2022 16:29:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19AF4C433C1;
+        Wed, 27 Jul 2022 16:29:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658939386;
+        bh=V0ufKcihEuhpCTK1oLhFFDvtxYa5zEyVxGoDNHTiRSM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=sfybvKxZTw6fxNN1ESyAi4xzXmmEQlXU/LsCa9ySTW3dGESYR0Gp6nJzlo+BnByDJ
+         jzsoF8fcO/FYNUJeqRNt5tOKNVq3SAK3mepR3mAnaxGueSUVyMcdAeiYXtlxlXbta7
+         Q0ACg+EkXaWbsK0xiYo/88USXYuRj72SBYU7Ofxg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 20/87] tcp/dccp: Fix a data-race around sysctl_tcp_fwmark_accept.
+Date:   Wed, 27 Jul 2022 18:10:13 +0200
+Message-Id: <20220727161009.838154557@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220727161008.993711844@linuxfoundation.org>
+References: <20220727161008.993711844@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Now we can handle GOT and GOT-based relocations properly, remove the
-undocumented `-Wa,-mla-{global,local}-with-{pcrel,abs}` assembler hacks.
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-Adjust assembly code to explicitly use "la.pcrel" where necessary.
+[ Upstream commit 1a0008f9df59451d0a17806c1ee1a19857032fa8 ]
 
-Signed-off-by: Xi Ruoyao <xry111@xry111.site>
+While reading sysctl_tcp_fwmark_accept, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its reader.
+
+Fixes: 84f39b08d786 ("net: support marking accepting TCP sockets")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/loongarch/Makefile      |  5 +----
- arch/loongarch/kernel/head.S | 10 +++++-----
- 2 files changed, 6 insertions(+), 9 deletions(-)
+ include/net/inet_sock.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/loongarch/Makefile b/arch/loongarch/Makefile
-index 039dcc4fe1f3..9552c7880d34 100644
---- a/arch/loongarch/Makefile
-+++ b/arch/loongarch/Makefile
-@@ -40,10 +40,7 @@ endif
-=20
- cflags-y			+=3D -G0 -pipe -msoft-float
- LDFLAGS_vmlinux			+=3D -G0 -static -n -nostdlib
--KBUILD_AFLAGS_KERNEL		+=3D -Wa,-mla-global-with-pcrel
--KBUILD_CFLAGS_KERNEL		+=3D -Wa,-mla-global-with-pcrel
--KBUILD_AFLAGS_MODULE		+=3D -Wa,-mla-global-with-abs
--KBUILD_CFLAGS_MODULE		+=3D -fplt -Wa,-mla-global-with-abs,-mla-local-with-=
-abs
-+KBUILD_CFLAGS_MODULE		+=3D -fplt
-=20
- cflags-y +=3D -ffreestanding
- cflags-y +=3D $(call cc-option, -mno-check-zero-division)
-diff --git a/arch/loongarch/kernel/head.S b/arch/loongarch/kernel/head.S
-index 74ea7bf6c8d6..193329ed6e8c 100644
---- a/arch/loongarch/kernel/head.S
-+++ b/arch/loongarch/kernel/head.S
-@@ -60,17 +60,17 @@ SYM_CODE_START(kernel_entry)			# kernel entry point
- 	la.abs		t0, 0f
- 	jirl		zero, t0, 0
- 0:
--	la		t0, __bss_start		# clear .bss
-+	la.pcrel	t0, __bss_start		# clear .bss
- 	st.d		zero, t0, 0
--	la		t1, __bss_stop - LONGSIZE
-+	la.pcrel	t1, __bss_stop - LONGSIZE
- 1:
- 	addi.d		t0, t0, LONGSIZE
- 	st.d		zero, t0, 0
- 	bne		t0, t1, 1b
-=20
--	la		t0, fw_arg0
-+	la.pcrel	t0, fw_arg0
- 	st.d		a0, t0, 0		# firmware arguments
--	la		t0, fw_arg1
-+	la.pcrel	t0, fw_arg1
- 	st.d		a1, t0, 0
-=20
- 	/* KSave3 used for percpu base, initialized as 0 */
-@@ -78,7 +78,7 @@ SYM_CODE_START(kernel_entry)			# kernel entry point
- 	/* GPR21 used for percpu base (runtime), initialized as 0 */
- 	or		u0, zero, zero
-=20
--	la		tp, init_thread_union
-+	la.pcrel	tp, init_thread_union
- 	/* Set the SP after an empty pt_regs.  */
- 	PTR_LI		sp, (_THREAD_SIZE - 32 - PT_SIZE)
- 	PTR_ADD		sp, sp, tp
---=20
-2.37.0
+diff --git a/include/net/inet_sock.h b/include/net/inet_sock.h
+index 40f92f5a3047..58db7c69c146 100644
+--- a/include/net/inet_sock.h
++++ b/include/net/inet_sock.h
+@@ -107,7 +107,8 @@ static inline struct inet_request_sock *inet_rsk(const struct request_sock *sk)
+ 
+ static inline u32 inet_request_mark(const struct sock *sk, struct sk_buff *skb)
+ {
+-	if (!sk->sk_mark && sock_net(sk)->ipv4.sysctl_tcp_fwmark_accept)
++	if (!sk->sk_mark &&
++	    READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_fwmark_accept))
+ 		return skb->mark;
+ 
+ 	return sk->sk_mark;
+-- 
+2.35.1
+
 
 
