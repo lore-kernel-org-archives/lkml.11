@@ -2,161 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E85EC19F28
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:31:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6617C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:31:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242329AbiG0RbF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:31:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37378 "EHLO
+        id S242242AbiG0RbL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:31:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241977AbiG0R21 (ORCPT
+        with ESMTP id S242117AbiG0R22 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:28:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 854717FE51;
+        Wed, 27 Jul 2022 13:28:28 -0400
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FDBD7FE56
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:47:28 -0700 (PDT)
+Received: by mail-lj1-x22f.google.com with SMTP id z13so20058867ljj.6
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:47:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=7axPEVk6MWtPTP7h5E9Ae0SR4WCvVBdWSVGZwXrfCJc=;
+        b=OXVXmyiSwBKGxExCjMfAYqoW/5KcBGPFCllunr4xkxrHjAZAfzmM6C5GvVNZ9WEQ5n
+         Vd/L2eEK7/Jjeh65uCxfhFzTpwW/nfY41WJO2GEJ5FxJPrUbsJunJnUDZnHRyd13jXNV
+         el6qv/PaSM+iuGypevpNuTYXrfdWlfqJ4+hT3YN3sngePZTynARw5jANlBUTqDrgrZuI
+         lGTcnP7reAfuXpo7kE6zlfzjXf/fsCeGhInXq0FMW8slnZbx8Fip//DVdVpO9N5r9Ss6
+         ePb/gSBH8koPezr5mIrtzyAJSj95Ya4ZuV2zggUxbyOc9scukgioz7s73ng1wpBub0FS
+         pIvw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=7axPEVk6MWtPTP7h5E9Ae0SR4WCvVBdWSVGZwXrfCJc=;
+        b=tHk/ud3vXjgofzthqfkmQhD6OJntdOYULLLloVbClcs5kX92rvGbiKiT4uihfQYntI
+         fGCXbamKrUvUEH0aZ7eXyNBgeVWM7qT0Vkz47FhXuu5nsnvWmk9yZopFh7FablEMUuyx
+         ddpF8My68ihDBHsC0/mFAJt8SZEOKaMrRgmrKWv0Yatnk1W2fBsBReVO7raC3GeJXlqJ
+         DdkiSL6ZU0Z2LNBdmtWqzOLtkWZeMBCP9Vpw3Xu2LPTzCtH1R4h+Ff8DFYS0/RqvRDOL
+         UcuoC5r/gw2XOeDVnZGdOV8IA4EwqrM7g7oKhyfVo50gBclBiq+X5NtbAgkaTZLfK1oN
+         S05g==
+X-Gm-Message-State: AJIora/xKJazAz1rKG5mbg1psohAtGjNfae3VyMCSkMMVGgNpno4oqm7
+        7UdoDAg3F4IxY3zyRGm9tYQJTw==
+X-Google-Smtp-Source: AGRyM1sKYUvvHKjGHjubByE9l1jd6M1xEA+oiFn/KZJEYN6GKSHQtVPNl1ZvwRL1PD+wISXUf38VUw==
+X-Received: by 2002:a2e:a99e:0:b0:25e:a54:8328 with SMTP id x30-20020a2ea99e000000b0025e0a548328mr4685386ljq.141.1658940447509;
         Wed, 27 Jul 2022 09:47:27 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DDDDC60DDB;
-        Wed, 27 Jul 2022 16:47:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E662BC433D6;
-        Wed, 27 Jul 2022 16:47:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940443;
-        bh=wNWaaf9ZVTOkTXZushfipplNyncTlNCML5XFMyU0joc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dxpKXnzCYhPCkpwESwpX41NT6KQS6sjKYyfjQaUrHMB2j7xEU1n8Mi7rFq975TqKT
-         /vuY7zDh4L8auHj8YCUlmdsf7WDnMNBZMSChDNdVmv6UXV1R0O6hzmvbPXb5j+eYxc
-         JRNd6aNHQ36Z09gk0SLpeP+RHmWq4cDr/nviVUhY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mustafa Ismail <mustafa.ismail@intel.com>,
-        Shiraz Saleem <shiraz.saleem@intel.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 024/158] RDMA/irdma: Fix sleep from invalid context BUG
-Date:   Wed, 27 Jul 2022 18:11:28 +0200
-Message-Id: <20220727161022.437017263@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
-References: <20220727161021.428340041@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from krzk-bin.lan (78-26-46-173.network.trollfjord.no. [78.26.46.173])
+        by smtp.gmail.com with ESMTPSA id 18-20020ac25f52000000b0048910301774sm3375149lfz.307.2022.07.27.09.47.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jul 2022 09:47:25 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lucas Stankus <lucas.p.stankus@gmail.com>,
+        Puranjay Mohan <puranjay12@gmail.com>,
+        Cosmin Tanislav <cosmin.tanislav@analog.com>,
+        Alexandru Tachici <alexandru.tachici@analog.com>,
+        Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
+        Marcus Folkesson <marcus.folkesson@gmail.com>,
+        Kent Gustavsson <kent@minoris.se>,
+        Tomislav Denis <tomislav.denis@avl.com>,
+        Oleksij Rempel <linux@rempel-privat.de>, kernel@pengutronix.de,
+        Antoniu Miclaus <antoniu.miclaus@analog.com>,
+        Ricardo Ribalda <ribalda@kernel.org>,
+        Dragos Bogdan <dragos.bogdan@analog.com>,
+        Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Stefan Popa <stefan.popa@analog.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Stephan Gerhold <stephan@gerhold.net>,
+        Mike Looijmans <mike.looijmans@topic.nl>,
+        Joachim Eastwood <manabian@gmail.com>,
+        Tomas Melin <tomas.melin@vaisala.com>,
+        Sean Nyekjaer <sean@geanix.com>,
+        Beniamin Bia <beniamin.bia@analog.com>,
+        Patrick Vasseur <patrick.vasseur@c-s.fr>,
+        Charles-Antoine Couret <charles-antoine.couret@essensium.com>,
+        Vladimir Barinov <vladimir.barinov@cogentembedded.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Philippe Reynes <tremyfr@yahoo.fr>,
+        Jacopo Mondi <jacopo@jmondi.org>,
+        Akinobu Mita <akinobu.mita@gmail.com>,
+        Alexandru Lazar <alazar@startmail.com>,
+        Oskar Andero <oskar.andero@gmail.com>,
+        =?UTF-8?q?M=C3=A5rten=20Lindahl?= <martenli@axis.com>,
+        Bogdan Pricop <bogdan.pricop@emutex.com>,
+        Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+        Matt Ranostay <matt.ranostay@konsulko.com>,
+        Dan Murphy <dmurphy@ti.com>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Phil Reid <preid@electromag.com.au>,
+        Michael Welling <mwelling@ieee.org>,
+        Lukas Wunner <lukas@wunner.de>,
+        Robert Jones <rjones@gateworks.com>,
+        Chris Coffey <cmc@babblebit.net>,
+        Slawomir Stepien <sst@poczta.fm>,
+        Sankar Velliangiri <navin@linumiz.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-fbdev@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v2 08/10] dt-bindings: iio: potentiometer: use spi-peripheral-props.yaml
+Date:   Wed, 27 Jul 2022 18:46:44 +0200
+Message-Id: <20220727164646.387541-9-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220727164646.387541-1-krzysztof.kozlowski@linaro.org>
+References: <20220727164646.387541-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mustafa Ismail <mustafa.ismail@intel.com>
+Instead of listing directly properties typical for SPI peripherals,
+reference the spi-peripheral-props.yaml schema.  This allows using all
+properties typical for SPI-connected devices, even these which device
+bindings author did not tried yet.
 
-[ Upstream commit cc0315564d6eec91c716d314b743321be24c70b3 ]
+Remove the spi-* properties which now come via spi-peripheral-props.yaml
+schema, except for the cases when device schema adds some constraints
+like maximum frequency.
 
-Taking the qos_mutex to process RoCEv2 QP's on netdev events causes a
-kernel splat.
+While changing additionalProperties->unevaluatedProperties, put it in
+typical place, just before example DTS.
 
-Fix this by removing the handling for RoCEv2 in
-irdma_cm_teardown_connections that uses the mutex. This handling is only
-needed for iWARP to avoid having connections established while the link is
-down or having connections remain functional after the IP address is
-removed.
-
-  BUG: sleeping function called from invalid context at kernel/locking/mutex.
-  Call Trace:
-  kernel: dump_stack+0x66/0x90
-  kernel: ___might_sleep.cold.92+0x8d/0x9a
-  kernel: mutex_lock+0x1c/0x40
-  kernel: irdma_cm_teardown_connections+0x28e/0x4d0 [irdma]
-  kernel: ? check_preempt_curr+0x7a/0x90
-  kernel: ? select_idle_sibling+0x22/0x3c0
-  kernel: ? select_task_rq_fair+0x94c/0xc90
-  kernel: ? irdma_exec_cqp_cmd+0xc27/0x17c0 [irdma]
-  kernel: ? __wake_up_common+0x7a/0x190
-  kernel: irdma_if_notify+0x3cc/0x450 [irdma]
-  kernel: ? sched_clock_cpu+0xc/0xb0
-  kernel: irdma_inet6addr_event+0xc6/0x150 [irdma]
-
-Fixes: 146b9756f14c ("RDMA/irdma: Add connection manager")
-Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
-Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- drivers/infiniband/hw/irdma/cm.c | 50 --------------------------------
- 1 file changed, 50 deletions(-)
+ .../bindings/iio/potentiometer/microchip,mcp41010.yaml   | 9 +++++----
+ .../bindings/iio/potentiometer/microchip,mcp4131.yaml    | 9 +++++----
+ 2 files changed, 10 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/infiniband/hw/irdma/cm.c b/drivers/infiniband/hw/irdma/cm.c
-index 638bf4a1ed94..646fa8677490 100644
---- a/drivers/infiniband/hw/irdma/cm.c
-+++ b/drivers/infiniband/hw/irdma/cm.c
-@@ -4231,10 +4231,6 @@ void irdma_cm_teardown_connections(struct irdma_device *iwdev, u32 *ipaddr,
- 	struct irdma_cm_node *cm_node;
- 	struct list_head teardown_list;
- 	struct ib_qp_attr attr;
--	struct irdma_sc_vsi *vsi = &iwdev->vsi;
--	struct irdma_sc_qp *sc_qp;
--	struct irdma_qp *qp;
--	int i;
+diff --git a/Documentation/devicetree/bindings/iio/potentiometer/microchip,mcp41010.yaml b/Documentation/devicetree/bindings/iio/potentiometer/microchip,mcp41010.yaml
+index 567697d996ec..87e88f2a9908 100644
+--- a/Documentation/devicetree/bindings/iio/potentiometer/microchip,mcp41010.yaml
++++ b/Documentation/devicetree/bindings/iio/potentiometer/microchip,mcp41010.yaml
+@@ -25,14 +25,15 @@ properties:
+   reg:
+     maxItems: 1
  
- 	INIT_LIST_HEAD(&teardown_list);
+-  spi-max-frequency: true
+-
+-additionalProperties: false
+-
+ required:
+   - compatible
+   - reg
  
-@@ -4251,52 +4247,6 @@ void irdma_cm_teardown_connections(struct irdma_device *iwdev, u32 *ipaddr,
- 			irdma_cm_disconn(cm_node->iwqp);
- 		irdma_rem_ref_cm_node(cm_node);
- 	}
--	if (!iwdev->roce_mode)
--		return;
--
--	INIT_LIST_HEAD(&teardown_list);
--	for (i = 0; i < IRDMA_MAX_USER_PRIORITY; i++) {
--		mutex_lock(&vsi->qos[i].qos_mutex);
--		list_for_each_safe (list_node, list_core_temp,
--				    &vsi->qos[i].qplist) {
--			u32 qp_ip[4];
--
--			sc_qp = container_of(list_node, struct irdma_sc_qp,
--					     list);
--			if (sc_qp->qp_uk.qp_type != IRDMA_QP_TYPE_ROCE_RC)
--				continue;
--
--			qp = sc_qp->qp_uk.back_qp;
--			if (!disconnect_all) {
--				if (nfo->ipv4)
--					qp_ip[0] = qp->udp_info.local_ipaddr[3];
--				else
--					memcpy(qp_ip,
--					       &qp->udp_info.local_ipaddr[0],
--					       sizeof(qp_ip));
--			}
--
--			if (disconnect_all ||
--			    (nfo->vlan_id == (qp->udp_info.vlan_tag & VLAN_VID_MASK) &&
--			     !memcmp(qp_ip, ipaddr, nfo->ipv4 ? 4 : 16))) {
--				spin_lock(&iwdev->rf->qptable_lock);
--				if (iwdev->rf->qp_table[sc_qp->qp_uk.qp_id]) {
--					irdma_qp_add_ref(&qp->ibqp);
--					list_add(&qp->teardown_entry,
--						 &teardown_list);
--				}
--				spin_unlock(&iwdev->rf->qptable_lock);
--			}
--		}
--		mutex_unlock(&vsi->qos[i].qos_mutex);
--	}
--
--	list_for_each_safe (list_node, list_core_temp, &teardown_list) {
--		qp = container_of(list_node, struct irdma_qp, teardown_entry);
--		attr.qp_state = IB_QPS_ERR;
--		irdma_modify_qp_roce(&qp->ibqp, &attr, IB_QP_STATE, NULL);
--		irdma_qp_rem_ref(&qp->ibqp);
--	}
- }
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++
++unevaluatedProperties: false
++
+ examples:
+   - |
+     spi {
+diff --git a/Documentation/devicetree/bindings/iio/potentiometer/microchip,mcp4131.yaml b/Documentation/devicetree/bindings/iio/potentiometer/microchip,mcp4131.yaml
+index 32e92bced81f..896fe0b5edcc 100644
+--- a/Documentation/devicetree/bindings/iio/potentiometer/microchip,mcp4131.yaml
++++ b/Documentation/devicetree/bindings/iio/potentiometer/microchip,mcp4131.yaml
+@@ -80,14 +80,15 @@ properties:
+   reg:
+     maxItems: 1
  
- /**
+-  spi-max-frequency: true
+-
+-additionalProperties: false
+-
+ required:
+   - compatible
+   - reg
+ 
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++
++unevaluatedProperties: false
++
+ examples:
+   - |
+     spi {
 -- 
-2.35.1
-
-
+2.34.1
 
