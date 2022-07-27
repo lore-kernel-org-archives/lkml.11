@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 555ADC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:38:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D0A3C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:38:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239020AbiG0QiR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:38:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47196 "EHLO
+        id S239152AbiG0QiV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:38:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238978AbiG0Qh1 (ORCPT
+        with ESMTP id S238379AbiG0Qhg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:37:27 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF51C4D4C6;
-        Wed, 27 Jul 2022 09:28:18 -0700 (PDT)
+        Wed, 27 Jul 2022 12:37:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D6F94F6B7;
+        Wed, 27 Jul 2022 09:28:19 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4EBF3B821C6;
-        Wed, 27 Jul 2022 16:28:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90DCFC433D6;
-        Wed, 27 Jul 2022 16:28:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 574AFB821A6;
+        Wed, 27 Jul 2022 16:27:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEDE6C433D7;
+        Wed, 27 Jul 2022 16:27:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939296;
-        bh=jsF4LpQm777PxNt5/h+cNChfYSEvUrbp0KZNEszQamk=;
+        s=korg; t=1658939269;
+        bh=WtF9BKyztuDudarIy8lWa8uBbyXGJ5Wc6Q/lzCzgqR8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fje+8hyT/turBQv0zYzffwl5sD8bODcydM1zrSfBLr/fzNdJ+zb5rl6XICb0sNF8H
-         m/P1D5bUgrD0Yaz3uIdATtXYLdbCiT4r499u/sNq6PbiGLD0XHlbqGGcC3hwtHgDJV
-         HUocuAwB5BVTR8B58S130CKJTfpi4dqY8ESi3Bu8=
+        b=DS17Fi1yGp4eNpQEp0DI8T0qW6A9qwfw/9nXE6BOuKVyinBMQCI2EOrEXij93JFY9
+         Eds7+shP+wYuUALflsXQjzrVtR8NSCt8+MlCbamXDLZ12uB+YKfDCzw0k7jVvt4BEG
+         QXtf+InspiSUTJ4V1bqxqfi/G12q9BWNIRcHLv2o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 12/87] power/reset: arm-versatile: Fix refcount leak in versatile_reboot_probe
-Date:   Wed, 27 Jul 2022 18:10:05 +0200
-Message-Id: <20220727161009.505251459@linuxfoundation.org>
+        stable@vger.kernel.org, stable <stable@kernel.org>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
+Subject: [PATCH 5.4 10/87] serial: mvebu-uart: correctly report configured baudrate value
+Date:   Wed, 27 Jul 2022 18:10:03 +0200
+Message-Id: <20220727161009.434828786@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161008.993711844@linuxfoundation.org>
 References: <20220727161008.993711844@linuxfoundation.org>
@@ -50,37 +49,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Pali Rohár <pali@kernel.org>
 
-[ Upstream commit 80192eff64eee9b3bc0594a47381937b94b9d65a ]
+commit 4f532c1e25319e42996ec18a1f473fd50c8e575d upstream.
 
-of_find_matching_node_and_match() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+Functions tty_termios_encode_baud_rate() and uart_update_timeout() should
+be called with the baudrate value which was set to hardware. Linux then
+report exact values via ioctl(TCGETS2) to userspace.
 
-Fixes: 0e545f57b708 ("power: reset: driver for the Versatile syscon reboot")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Change mvebu_uart_baud_rate_set() function to return baudrate value which
+was set to hardware and propagate this value to above mentioned functions.
+
+With this change userspace would see precise value in termios c_ospeed
+field.
+
+Fixes: 68a0db1d7da2 ("serial: mvebu-uart: add function to change baudrate")
+Cc: stable <stable@kernel.org>
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Link: https://lore.kernel.org/r/20220628100922.10717-1-pali@kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/power/reset/arm-versatile-reboot.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/tty/serial/mvebu-uart.c |   25 +++++++++++++------------
+ 1 file changed, 13 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/power/reset/arm-versatile-reboot.c b/drivers/power/reset/arm-versatile-reboot.c
-index 08d0a07b58ef..c7624d7611a7 100644
---- a/drivers/power/reset/arm-versatile-reboot.c
-+++ b/drivers/power/reset/arm-versatile-reboot.c
-@@ -146,6 +146,7 @@ static int __init versatile_reboot_probe(void)
- 	versatile_reboot_type = (enum versatile_reboot)reboot_id->data;
+--- a/drivers/tty/serial/mvebu-uart.c
++++ b/drivers/tty/serial/mvebu-uart.c
+@@ -443,13 +443,13 @@ static void mvebu_uart_shutdown(struct u
+ 	}
+ }
  
- 	syscon_regmap = syscon_node_to_regmap(np);
-+	of_node_put(np);
- 	if (IS_ERR(syscon_regmap))
- 		return PTR_ERR(syscon_regmap);
+-static int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
++static unsigned int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
+ {
+ 	unsigned int d_divisor, m_divisor;
+ 	u32 brdv, osamp;
  
--- 
-2.35.1
-
+ 	if (!port->uartclk)
+-		return -EOPNOTSUPP;
++		return 0;
+ 
+ 	/*
+ 	 * The baudrate is derived from the UART clock thanks to two divisors:
+@@ -473,7 +473,7 @@ static int mvebu_uart_baud_rate_set(stru
+ 	osamp &= ~OSAMP_DIVISORS_MASK;
+ 	writel(osamp, port->membase + UART_OSAMP);
+ 
+-	return 0;
++	return DIV_ROUND_CLOSEST(port->uartclk, d_divisor * m_divisor);
+ }
+ 
+ static void mvebu_uart_set_termios(struct uart_port *port,
+@@ -510,15 +510,11 @@ static void mvebu_uart_set_termios(struc
+ 	max_baud = 230400;
+ 
+ 	baud = uart_get_baud_rate(port, termios, old, min_baud, max_baud);
+-	if (mvebu_uart_baud_rate_set(port, baud)) {
+-		/* No clock available, baudrate cannot be changed */
+-		if (old)
+-			baud = uart_get_baud_rate(port, old, NULL,
+-						  min_baud, max_baud);
+-	} else {
+-		tty_termios_encode_baud_rate(termios, baud, baud);
+-		uart_update_timeout(port, termios->c_cflag, baud);
+-	}
++	baud = mvebu_uart_baud_rate_set(port, baud);
++
++	/* In case baudrate cannot be changed, report previous old value */
++	if (baud == 0 && old)
++		baud = tty_termios_baud_rate(old);
+ 
+ 	/* Only the following flag changes are supported */
+ 	if (old) {
+@@ -529,6 +525,11 @@ static void mvebu_uart_set_termios(struc
+ 		termios->c_cflag |= CS8;
+ 	}
+ 
++	if (baud != 0) {
++		tty_termios_encode_baud_rate(termios, baud, baud);
++		uart_update_timeout(port, termios->c_cflag, baud);
++	}
++
+ 	spin_unlock_irqrestore(&port->lock, flags);
+ }
+ 
 
 
