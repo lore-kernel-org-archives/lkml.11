@@ -2,85 +2,70 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CE45C19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:00:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56C14C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:00:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234454AbiG0QAa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:00:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59788 "EHLO
+        id S234480AbiG0QAy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:00:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234116AbiG0QA1 (ORCPT
+        with ESMTP id S234116AbiG0QAt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:00:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2DBAE3E745
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:00:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658937626;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=XNYAzpbrdFeqkLd/QeiydKTf4ZkAUvL844eMUk9c+qI=;
-        b=d1EMAkiCk0E5zmYLDbpPRly9KIYO4P1shYk1OfJZuIT8U8V+UJZTOaizS3NUw/4vqkBFDW
-        yuSJuNxfeh7/OQDeODySrDKg1JWS1eLSvQ2KmCbbs5in3sy8JmFVSzR/moIYGtBDa80PDU
-        wWUKxxRazI2I7dzRs7PG7DqivvHCB7k=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-475-PwZ4nW0tMMyBcYo8tCDBPg-1; Wed, 27 Jul 2022 12:00:20 -0400
-X-MC-Unique: PwZ4nW0tMMyBcYo8tCDBPg-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C9FD43C0CD4C;
-        Wed, 27 Jul 2022 16:00:19 +0000 (UTC)
-Received: from T590 (ovpn-8-32.pek2.redhat.com [10.72.8.32])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id AFDB240CF8E2;
-        Wed, 27 Jul 2022 16:00:12 +0000 (UTC)
-Date:   Thu, 28 Jul 2022 00:00:07 +0800
-From:   Ming Lei <ming.lei@redhat.com>
-To:     syzbot <syzbot+3ba0493d523d007b3819@syzkaller.appspotmail.com>
-Cc:     axboe@kernel.dk, cgroups@vger.kernel.org, fweisbec@gmail.com,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mingo@kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de, tj@kernel.org
-Subject: Re: [syzbot] INFO: rcu detected stall in net_tx_action
-Message-ID: <YuFhB2FaEacNI26/@T590>
-References: <00000000000026864605c611cc51@google.com>
- <0000000000004bee3605e4b74106@google.com>
+        Wed, 27 Jul 2022 12:00:49 -0400
+Received: from mail-io1-f51.google.com (mail-io1-f51.google.com [209.85.166.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACEA74A82A;
+        Wed, 27 Jul 2022 09:00:48 -0700 (PDT)
+Received: by mail-io1-f51.google.com with SMTP id 125so13866676iou.6;
+        Wed, 27 Jul 2022 09:00:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=uBsgoWPScdkjNHTUG+UX4gTQ/1ojeJRsC75QZ5pUW2M=;
+        b=dQeSjiXtNJ+TC/1F2dxC/wG8brQRm6WmZvQT04giY1+WkVUf/C/59pCacRKwT/1f7v
+         JHiessbZqaIJi3QdmLLqG9EkEhpp3GBAEobpP+/nMERRLuzq+DQxjLaM22jcLzR25MVV
+         KGhbEfFRG9zZf4IdYg8r83BbnzFGZwsPQHhJbZPq4dyn2cqvTq+xuaU8dtcPSZvMa3ww
+         MCw22f7LIj6rSVmFDCP7DZTM988xD6uSNWpYt7QOthGirG/soehOANYgWYUdFMNYnXrc
+         NR6Q2qe3or6ZDLwHOXQlHE85EzPGnLAGzsYoz9woVjzkbSiZhlwkNmJt8WTVBszUKPoj
+         ET8A==
+X-Gm-Message-State: AJIora92tmzTquy25lYW8/+gLerxu/llAIAk2ToMrXCySAWwZlfFJDdl
+        bwgGRxRDGrvsLF1uHzkGew==
+X-Google-Smtp-Source: AGRyM1sD8B2rbELo9ocOtlLalIh62gFYeLVGS+WKt5OHRvdHFMThwl6MxVNUoXL9QBmLT7sf0+wjNw==
+X-Received: by 2002:a6b:771a:0:b0:67b:d23e:277b with SMTP id n26-20020a6b771a000000b0067bd23e277bmr7818827iom.203.1658937647850;
+        Wed, 27 Jul 2022 09:00:47 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id b125-20020a021983000000b0033f027c2dbcsm7953186jab.156.2022.07.27.09.00.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jul 2022 09:00:47 -0700 (PDT)
+Received: (nullmailer pid 2754701 invoked by uid 1000);
+        Wed, 27 Jul 2022 16:00:46 -0000
+Date:   Wed, 27 Jul 2022 10:00:46 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+        linux-renesas-soc@vger.kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH] dt-bindings: timer: renesas,tmu: Add r8a779f0 support
+Message-ID: <20220727160046.GA2754636-robh@kernel.org>
+References: <20220726205858.1199-1-wsa+renesas@sang-engineering.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <0000000000004bee3605e4b74106@google.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+In-Reply-To: <20220726205858.1199-1-wsa+renesas@sang-engineering.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 26, 2022 at 08:50:09AM -0700, syzbot wrote:
-> syzbot suspects this issue was fixed by commit:
-> 
-> commit 0a9a25ca78437b39e691bcc3dc8240455b803d8d
-> Author: Ming Lei <ming.lei@redhat.com>
-> Date:   Fri Mar 18 13:01:43 2022 +0000
-> 
->     block: let blkcg_gq grab request queue's refcnt
-> 
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1004f05a080000
-> start commit:   d6765985a42a Revert "be2net: disable bh with spin_lock in ..
-> git tree:       net
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=7ca96a2d153c74b0
-> dashboard link: https://syzkaller.appspot.com/bug?extid=3ba0493d523d007b3819
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=14c9edc8300000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=172463c8300000
+On Tue, 26 Jul 2022 22:58:57 +0200, Wolfram Sang wrote:
+> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+> ---
+>  Documentation/devicetree/bindings/timer/renesas,tmu.yaml | 1 +
+>  1 file changed, 1 insertion(+)
 > 
 
-The bad commit has been fixed by the following patch:
-
-d578c770c852 block: avoid calling blkg_free() in atomic context
-
-
-
-Thanks, 
-Ming
-
+Acked-by: Rob Herring <robh@kernel.org>
