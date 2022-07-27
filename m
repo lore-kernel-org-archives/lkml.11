@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E200C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:26:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5E3BC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:26:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236356AbiG0Q0q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:26:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49168 "EHLO
+        id S236490AbiG0Q0s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:26:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236231AbiG0QZe (ORCPT
+        with ESMTP id S236318AbiG0QZr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:25:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4C9F4E87B;
-        Wed, 27 Jul 2022 09:23:34 -0700 (PDT)
+        Wed, 27 Jul 2022 12:25:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B566B4F181;
+        Wed, 27 Jul 2022 09:23:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E282D619AC;
-        Wed, 27 Jul 2022 16:23:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE5FFC433D6;
-        Wed, 27 Jul 2022 16:23:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6AF90619DD;
+        Wed, 27 Jul 2022 16:23:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 722DCC433D6;
+        Wed, 27 Jul 2022 16:23:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939012;
-        bh=IEo2m9o6KKrcSAAzgwAsEjTKgLNYFDTVee/FfJ2LAD4=;
+        s=korg; t=1658938997;
+        bh=c3tV6BAXwRyUF0hyRxeSfe4RgHesWx2wasczt0+YFDU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LX4qJf5NOB34HCXP0JCaaX2jMzKgUm9gZRQK8vI9VTOCoO+L24Lw9/KiYN+hcWrPM
-         JXCmcCzdqYHuf8kYRPjkLD2eECcthOJLeQPF7Ca/EiQRIHMy6t987XSivySexewrTt
-         GeZuICM8UDL2LU7lJ2Qm6t31youwaP2oyW/qKcQA=
+        b=z6tU3AkuiAQ2YhggJMEb8wfoyOkp+N34t5uF4o7Wa+NbC5ouyKBdE8no8+GRbDUdb
+         h6L3tLJtF5Wk4sKQT0qFyRJENTqK5dqzBw/OtuMeM3Rd+9VTCI0FpSWrIbAvf8XXQb
+         Chjon2Yd0qbTUksbYoqFYYgwdG323M6/46dGFPuc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 4.14 20/37] ALSA: memalloc: Align buffer allocations in page size
-Date:   Wed, 27 Jul 2022 18:10:46 +0200
-Message-Id: <20220727161001.642823053@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 07/37] tcp: Fix a data-race around sysctl_tcp_probe_threshold.
+Date:   Wed, 27 Jul 2022 18:10:33 +0200
+Message-Id: <20220727161001.151820081@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161000.822869853@linuxfoundation.org>
 References: <20220727161000.822869853@linuxfoundation.org>
@@ -48,41 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit 5c1733e33c888a3cb7f576564d8ad543d5ad4a9e upstream.
+[ Upstream commit 92c0aa4175474483d6cf373314343d4e624e882a ]
 
-Currently the standard memory allocator (snd_dma_malloc_pages*())
-passes the byte size to allocate as is.  Most of the backends
-allocates real pages, hence the actual allocations are aligned in page
-size.  However, the genalloc doesn't seem assuring the size alignment,
-hence it may result in the access outside the buffer when the whole
-memory pages are exposed via mmap.
+While reading sysctl_tcp_probe_threshold, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its reader.
 
-For avoiding such inconsistencies, this patch makes the allocation
-size always to be aligned in page size.
-
-Note that, after this change, snd_dma_buffer.bytes field contains the
-aligned size, not the originally requested size.  This value is also
-used for releasing the pages in return.
-
-Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
-Link: https://lore.kernel.org/r/20201218145625.2045-2-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 6b58e0a5f32d ("ipv4: Use binary search to choose tcp PMTU probe_size")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/core/memalloc.c |    1 +
- 1 file changed, 1 insertion(+)
+ net/ipv4/tcp_output.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/sound/core/memalloc.c
-+++ b/sound/core/memalloc.c
-@@ -179,6 +179,7 @@ int snd_dma_alloc_pages(int type, struct
- 	if (WARN_ON(!dmab))
- 		return -ENXIO;
- 
-+	size = PAGE_ALIGN(size);
- 	dmab->dev.type = type;
- 	dmab->dev.dev = device;
- 	dmab->bytes = 0;
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index a231993c81c4..8ac23e8439c3 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -2087,7 +2087,7 @@ static int tcp_mtu_probe(struct sock *sk)
+ 	 * probing process by not resetting search range to its orignal.
+ 	 */
+ 	if (probe_size > tcp_mtu_to_mss(sk, icsk->icsk_mtup.search_high) ||
+-		interval < net->ipv4.sysctl_tcp_probe_threshold) {
++	    interval < READ_ONCE(net->ipv4.sysctl_tcp_probe_threshold)) {
+ 		/* Check whether enough time has elaplased for
+ 		 * another round of probing.
+ 		 */
+-- 
+2.35.1
+
 
 
