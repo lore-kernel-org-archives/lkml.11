@@ -2,91 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ED72C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:39:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8202C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:40:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239194AbiG0Qjy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:39:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51226 "EHLO
+        id S239283AbiG0QkA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:40:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239370AbiG0QjN (ORCPT
+        with ESMTP id S239463AbiG0QjQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:39:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCB725A2D2;
-        Wed, 27 Jul 2022 09:28:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5F444B821A6;
-        Wed, 27 Jul 2022 16:28:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C602CC433C1;
-        Wed, 27 Jul 2022 16:28:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939328;
-        bh=fZCRhPWBOFQUBqV5FF//jX1LfJGFpbtLedILZSXCl8U=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Qmi6dzNKf6OSxCEqJQb+bl02DlNWkf2WxwSfOHFNT5PDLMQY1LhWZCYsnzYX3QP4S
-         81geYRO94Fkn+txAyN2ju5PQIuuGFT0M8sGfBFwIdT5FUV0DDlYhu/IM58tz3QOf8a
-         5SXFXvsWiSVoTXB6dIy/RRbgsDMuihNNzI2J+Z/U=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hacash Robot <hacashRobot@santino.com>,
-        William Dean <williamsukatube@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 13/87] pinctrl: ralink: Check for null return of devm_kcalloc
-Date:   Wed, 27 Jul 2022 18:10:06 +0200
-Message-Id: <20220727161009.535088850@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220727161008.993711844@linuxfoundation.org>
-References: <20220727161008.993711844@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Wed, 27 Jul 2022 12:39:16 -0400
+Received: from xry111.site (xry111.site [IPv6:2001:470:683e::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B3035926A
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:28:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xry111.site;
+        s=default; t=1658939322;
+        bh=Iwt8WdYsuC5jK4JTIRtEaA1Ad9D4kr5a9YoeDI0+3FU=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=ggUT3csrm6pEJ5Wmol1fudCE/EKG7wqnSEXfikmrzN+PId1w+FCAFt1KI5jXx5vR4
+         EQZyhh27swq4ZjBoxFDDvhO+wRGLrlculT22SI0eE9uJGohhNj36eaiR7l3vP3UqnI
+         kQtnSlTbcHEX26UpQspAh35ZnYqaKnIyHzJEXjN0=
+Received: from localhost.localdomain (xry111.site [IPv6:2001:470:683e::1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature ECDSA (P-384) server-digest SHA384)
+        (Client did not present a certificate)
+        (Authenticated sender: xry111@xry111.site)
+        by xry111.site (Postfix) with ESMTPSA id 0E74266986;
+        Wed, 27 Jul 2022 12:28:40 -0400 (EDT)
+Message-ID: <99733532831377ab6585d43ee40bf314a2d4c5a3.camel@xry111.site>
+Subject: [PATCH 3/5] LoongArch: Support relocation against
+ _GLOBAL_OFFSET_TABLE_
+From:   Xi Ruoyao <xry111@xry111.site>
+To:     loongarch@lists.linux.dev
+Cc:     linux-kernel@vger.kernel.org, WANG Xuerui <kernel@xen0n.name>,
+        Huacai Chen <chenhuacai@kernel.org>
+Date:   Thu, 28 Jul 2022 00:28:39 +0800
+In-Reply-To: <385f63bcbee8e37c42f479ce9cdc7e7d731d419b.camel@xry111.site>
+References: <385f63bcbee8e37c42f479ce9cdc7e7d731d419b.camel@xry111.site>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.3 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: William Dean <williamsukatube@gmail.com>
+With the stack-based relocations, the assembler emits three relocations
+to push the PC-relative offset of a GOT entry:
 
-[ Upstream commit c3b821e8e406d5650e587b7ac624ac24e9b780a8 ]
+    R_LARCH_SOP_PUSH_PCREL _GLOBAL_OFFSET_TABLE_
+    R_LARCH_SOP_PUSH_GPREL foo
+    R_LARCH_SOP_ADD
 
-Because of the possible failure of the allocation, data->domains might
-be NULL pointer and will cause the dereference of the NULL pointer
-later.
-Therefore, it might be better to check it and directly return -ENOMEM
-without releasing data manually if fails, because the comment of the
-devm_kmalloc() says "Memory allocated with this function is
-automatically freed on driver detach.".
+"_GLOBAL_OFFSET_TABLE_" does not really exist in the symtab and the BFD
+linker handles it with special hack.  Implement a similar hack for
+kernel so we will be able to really use R_LARCH_SOP_PUSH_GPREL
+relocation.
 
-Fixes: a86854d0c599b ("treewide: devm_kzalloc() -> devm_kcalloc()")
-Reported-by: Hacash Robot <hacashRobot@santino.com>
-Signed-off-by: William Dean <williamsukatube@gmail.com>
-Link: https://lore.kernel.org/r/20220710154922.2610876-1-williamsukatube@163.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Xi Ruoyao <xry111@xry111.site>
 ---
- drivers/staging/mt7621-pinctrl/pinctrl-rt2880.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/loongarch/kernel/module-sections.c | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
-diff --git a/drivers/staging/mt7621-pinctrl/pinctrl-rt2880.c b/drivers/staging/mt7621-pinctrl/pinctrl-rt2880.c
-index 0ba4e4e070a9..7cfbdfb10e23 100644
---- a/drivers/staging/mt7621-pinctrl/pinctrl-rt2880.c
-+++ b/drivers/staging/mt7621-pinctrl/pinctrl-rt2880.c
-@@ -267,6 +267,8 @@ static int rt2880_pinmux_pins(struct rt2880_priv *p)
- 						p->func[i]->pin_count,
- 						sizeof(int),
- 						GFP_KERNEL);
-+		if (!p->func[i]->pins)
-+			return -ENOMEM;
- 		for (j = 0; j < p->func[i]->pin_count; j++)
- 			p->func[i]->pins[j] = p->func[i]->pin_first + j;
- 
--- 
-2.35.1
-
+diff --git a/arch/loongarch/kernel/module-sections.c b/arch/loongarch/kerne=
+l/module-sections.c
+index 509c0b86b1e9..73976addbf60 100644
+--- a/arch/loongarch/kernel/module-sections.c
++++ b/arch/loongarch/kernel/module-sections.c
+@@ -89,6 +89,9 @@ int module_frob_arch_sections(Elf_Ehdr *ehdr, Elf_Shdr *s=
+echdrs,
+ 			      char *secstrings, struct module *mod)
+ {
+ 	unsigned int i, num_plts =3D 0, num_gots =3D 0;
++	Elf_Shdr *symtab =3D NULL;
++	Elf_Sym *symbols;
++	char *strings;
+=20
+ 	/*
+ 	 * Find the empty .plt sections.
+@@ -100,6 +103,8 @@ int module_frob_arch_sections(Elf_Ehdr *ehdr, Elf_Shdr =
+*sechdrs,
+ 			mod->arch.plt_idx.shdr =3D sechdrs + i;
+ 		else if (!strcmp(secstrings + sechdrs[i].sh_name, ".got"))
+ 			mod->arch.got.shdr =3D sechdrs + i;
++		else if (sechdrs[i].sh_type =3D=3D SHT_SYMTAB)
++			symtab =3D sechdrs + i;
+ 	}
+=20
+ 	if (!mod->arch.plt.shdr) {
+@@ -115,6 +120,22 @@ int module_frob_arch_sections(Elf_Ehdr *ehdr, Elf_Shdr=
+ *sechdrs,
+ 		return -ENOEXEC;
+ 	}
+=20
++	if (!symtab) {
++		pr_err("%s: module symbol table missing\n", mod->name);
++		return -ENOEXEC;
++	}
++
++	symbols =3D (void *) ehdr + symtab->sh_offset;
++	strings =3D (void *) ehdr + sechdrs[symtab->sh_link].sh_offset;
++
++	for (i =3D 0; i < symtab->sh_size / sizeof(Elf_Sym); i++)
++		if (symbols[i].st_shndx =3D=3D SHN_UNDEF &&
++		    strcmp(strings + symbols[i].st_name,
++			   "_GLOBAL_OFFSET_TABLE_") =3D=3D 0) {
++			symbols[i].st_shndx =3D mod->arch.got.shdr - sechdrs;
++			symbols[i].st_value =3D 0;
++		}
++
+ 	/* Calculate the maxinum number of entries */
+ 	for (i =3D 0; i < ehdr->e_shnum; i++) {
+ 		int num_rela =3D sechdrs[i].sh_size / sizeof(Elf_Rela);
+--=20
+2.37.0
 
 
