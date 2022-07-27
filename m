@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04D2AC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:22:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96B3EC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:22:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241837AbiG0RWF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:22:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33702 "EHLO
+        id S237549AbiG0RWM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:22:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242019AbiG0RTf (ORCPT
+        with ESMTP id S242068AbiG0RTm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:19:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0F295C9C1;
-        Wed, 27 Jul 2022 09:44:52 -0700 (PDT)
+        Wed, 27 Jul 2022 13:19:42 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FF065D0FA;
+        Wed, 27 Jul 2022 09:44:57 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0301461479;
-        Wed, 27 Jul 2022 16:44:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1322FC433B5;
-        Wed, 27 Jul 2022 16:44:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7E219B8200D;
+        Wed, 27 Jul 2022 16:44:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1513C433C1;
+        Wed, 27 Jul 2022 16:44:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940291;
-        bh=LaAiy6oA8wRBDndG/jd576RVds9v/VmyZte9tl5TmaI=;
+        s=korg; t=1658940294;
+        bh=XM8LLTq/A9czvkII5l07LJYXoWg9J2CU3JwouMlRan8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JU8227mjhqPSOSgldRhf8+wRZGMTlCCvztAPqhh7Qnme6FzHt4P6QJFzPo4W48Ci+
-         6B5+l0f0YHgbYCGSp5j9Lk1dBzm+AO7GW2+uIRZVI/Uuhr50Xw7TaRiG+ZYvuqAW3u
-         jqCPu2Vh4eEi3EnWqviEVGgoL3kcqx4BIvy79EyI=
+        b=xWb5bwGwRet9OPFGmR9/rIMrV0LwL7iMBziUP9btNlnC0j0j81zpQNG2p72fvweAn
+         J1I1Y/TIZi6qXpn0UUA6yPwI5bflv6422HBZqH8lfgxt2TJgCH70Ks90IGkQyDd2ip
+         iLBclFkuhqJDsQV8mqTCAWdlshJZL7ux2m5m0+DM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
         Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 141/201] x86/extable: Tidy up redundant handler functions
-Date:   Wed, 27 Jul 2022 18:10:45 +0200
-Message-Id: <20220727161033.656172234@linuxfoundation.org>
+Subject: [PATCH 5.15 142/201] x86/extable: Get rid of redundant macros
+Date:   Wed, 27 Jul 2022 18:10:46 +0200
+Message-Id: <20220727161033.703449241@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -50,76 +50,80 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Thomas Gleixner <tglx@linutronix.de>
 
-[ Upstream commit 326b567f82df0c4c8f50092b9af9a3014616fb3c ]
+[ Upstream commit 32fd8b59f91fcd3bf9459aa72d90345735cc2588 ]
 
-No need to have the same code all over the place.
+No point in defining the identical macros twice depending on C or assembly
+mode. They are still identical.
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lkml.kernel.org/r/20210908132524.963232825@linutronix.de
+Link: https://lkml.kernel.org/r/20210908132525.023659534@linutronix.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/mm/extable.c | 16 +++++-----------
- 1 file changed, 5 insertions(+), 11 deletions(-)
+ arch/x86/include/asm/asm.h | 36 ++++++++++++------------------------
+ 1 file changed, 12 insertions(+), 24 deletions(-)
 
-diff --git a/arch/x86/mm/extable.c b/arch/x86/mm/extable.c
-index e1664e9f969c..d9a1046f3a98 100644
---- a/arch/x86/mm/extable.c
-+++ b/arch/x86/mm/extable.c
-@@ -39,9 +39,8 @@ __visible bool ex_handler_fault(const struct exception_table_entry *fixup,
- 				unsigned long error_code,
- 				unsigned long fault_addr)
- {
--	regs->ip = ex_fixup_addr(fixup);
- 	regs->ax = trapnr;
--	return true;
-+	return ex_handler_default(fixup, regs, trapnr, error_code, fault_addr);
- }
- EXPORT_SYMBOL_GPL(ex_handler_fault);
+diff --git a/arch/x86/include/asm/asm.h b/arch/x86/include/asm/asm.h
+index 3ad3da9a7d97..719955e658a2 100644
+--- a/arch/x86/include/asm/asm.h
++++ b/arch/x86/include/asm/asm.h
+@@ -132,18 +132,6 @@
+ 	.long (handler) - . ;					\
+ 	.popsection
  
-@@ -76,8 +75,7 @@ __visible bool ex_handler_uaccess(const struct exception_table_entry *fixup,
- 				  unsigned long fault_addr)
- {
- 	WARN_ONCE(trapnr == X86_TRAP_GP, "General protection fault in user access. Non-canonical address?");
--	regs->ip = ex_fixup_addr(fixup);
--	return true;
-+	return ex_handler_default(fixup, regs, trapnr, error_code, fault_addr);
- }
- EXPORT_SYMBOL(ex_handler_uaccess);
+-# define _ASM_EXTABLE(from, to)					\
+-	_ASM_EXTABLE_HANDLE(from, to, ex_handler_default)
+-
+-# define _ASM_EXTABLE_UA(from, to)				\
+-	_ASM_EXTABLE_HANDLE(from, to, ex_handler_uaccess)
+-
+-# define _ASM_EXTABLE_CPY(from, to)				\
+-	_ASM_EXTABLE_HANDLE(from, to, ex_handler_copy)
+-
+-# define _ASM_EXTABLE_FAULT(from, to)				\
+-	_ASM_EXTABLE_HANDLE(from, to, ex_handler_fault)
+-
+ # ifdef CONFIG_KPROBES
+ #  define _ASM_NOKPROBE(entry)					\
+ 	.pushsection "_kprobe_blacklist","aw" ;			\
+@@ -164,18 +152,6 @@
+ 	" .long (" _EXPAND_EXTABLE_HANDLE(handler) ") - .\n"	\
+ 	" .popsection\n"
  
-@@ -87,9 +85,7 @@ __visible bool ex_handler_copy(const struct exception_table_entry *fixup,
- 			       unsigned long fault_addr)
- {
- 	WARN_ONCE(trapnr == X86_TRAP_GP, "General protection fault in user access. Non-canonical address?");
--	regs->ip = ex_fixup_addr(fixup);
--	regs->ax = trapnr;
--	return true;
-+	return ex_handler_fault(fixup, regs, trapnr, error_code, fault_addr);
- }
- EXPORT_SYMBOL(ex_handler_copy);
+-# define _ASM_EXTABLE(from, to)					\
+-	_ASM_EXTABLE_HANDLE(from, to, ex_handler_default)
+-
+-# define _ASM_EXTABLE_UA(from, to)				\
+-	_ASM_EXTABLE_HANDLE(from, to, ex_handler_uaccess)
+-
+-# define _ASM_EXTABLE_CPY(from, to)				\
+-	_ASM_EXTABLE_HANDLE(from, to, ex_handler_copy)
+-
+-# define _ASM_EXTABLE_FAULT(from, to)				\
+-	_ASM_EXTABLE_HANDLE(from, to, ex_handler_fault)
+-
+ /* For C file, we already have NOKPROBE_SYMBOL macro */
  
-@@ -103,10 +99,9 @@ __visible bool ex_handler_rdmsr_unsafe(const struct exception_table_entry *fixup
- 		show_stack_regs(regs);
+ /*
+@@ -188,6 +164,18 @@ register unsigned long current_stack_pointer asm(_ASM_SP);
+ #define ASM_CALL_CONSTRAINT "+r" (current_stack_pointer)
+ #endif /* __ASSEMBLY__ */
  
- 	/* Pretend that the read succeeded and returned 0. */
--	regs->ip = ex_fixup_addr(fixup);
- 	regs->ax = 0;
- 	regs->dx = 0;
--	return true;
-+	return ex_handler_default(fixup, regs, trapnr, error_code, fault_addr);
- }
- EXPORT_SYMBOL(ex_handler_rdmsr_unsafe);
++#define _ASM_EXTABLE(from, to)					\
++	_ASM_EXTABLE_HANDLE(from, to, ex_handler_default)
++
++#define _ASM_EXTABLE_UA(from, to)				\
++	_ASM_EXTABLE_HANDLE(from, to, ex_handler_uaccess)
++
++#define _ASM_EXTABLE_CPY(from, to)				\
++	_ASM_EXTABLE_HANDLE(from, to, ex_handler_copy)
++
++#define _ASM_EXTABLE_FAULT(from, to)				\
++	_ASM_EXTABLE_HANDLE(from, to, ex_handler_fault)
++
+ #endif /* __KERNEL__ */
  
-@@ -121,8 +116,7 @@ __visible bool ex_handler_wrmsr_unsafe(const struct exception_table_entry *fixup
- 		show_stack_regs(regs);
- 
- 	/* Pretend that the write succeeded. */
--	regs->ip = ex_fixup_addr(fixup);
--	return true;
-+	return ex_handler_default(fixup, regs, trapnr, error_code, fault_addr);
- }
- EXPORT_SYMBOL(ex_handler_wrmsr_unsafe);
- 
+ #endif /* _ASM_X86_ASM_H */
 -- 
 2.35.1
 
