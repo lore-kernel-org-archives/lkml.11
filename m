@@ -2,195 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69792C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:20:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7627AC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:20:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241846AbiG0RUi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:20:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37550 "EHLO
+        id S241863AbiG0RUl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:20:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241676AbiG0RSp (ORCPT
+        with ESMTP id S241655AbiG0RSt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:18:45 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D72B79EFB;
-        Wed, 27 Jul 2022 09:43:56 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id 15-20020a17090a098f00b001f305b453feso2802054pjo.1;
-        Wed, 27 Jul 2022 09:43:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=WkXduqCunQer7KImaNq80YYtkZR4bE5GC9eBRnWBSEA=;
-        b=JB3Hr5Ww5oTt+YbeAwATLAtLz/SL3TcVPd5yC9sRf7LlclWytJmpYtTVaqoCh0AXQZ
-         PRPQpFToY8NbD+c12s4x5beVu0hs8FZwCf7XiK5OwgVxoMg1oe4XwYkv3TOGpul2KPAT
-         wTTeIzb7v8g7qeg4diTRmx2vPygGpaV3E+Sz+luLQesCFSv/NUQ/KZKohaBKNcP6lx96
-         /F/RYkUPp9WSHjDXOlzUysSBM3nxYY7vWiSvyhgchNeZVluz0zNBihDUh437CF6KKVlj
-         p8NvznXkamqfu1eTJ12PBryiCiuyY5qTQ3ZEnXBTFJj2uAPSK5x5PZDrbmpMF7Y0gvZ8
-         Uxqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=WkXduqCunQer7KImaNq80YYtkZR4bE5GC9eBRnWBSEA=;
-        b=d1z8PZDJbEBIfKbQObEUt3EgrKkn3xLiny2+AD8VPAU+VWgW/px/3c2s4ruFVMUGOu
-         rgwKq1ZtCdu+8r1BgVp0l7DEQRS2mHxNpewKv0hrEIhILtZWnaD38hHt2YIXnrqe1Lor
-         GJxf+j/SgyFYwF05r/9nSu4egWXcC7gFto+6fS5DqdSyrhl5L3HI8JhxKE6FLPlMhYUN
-         y+Lzuq0H5CNRVOvQbl26IyYkP2YeH6rhU6GiXLRMljh7fPa3bTEMTVQn8bq9824VHr1W
-         UwNPIIcJnfgxnHeVIbhtByQbhdR0fpLNkQvzs7IUsPmsHtvSl68r7L+pR/55AaPKGGUA
-         VnOQ==
-X-Gm-Message-State: AJIora8AtFcWIktnYKppW66J2jAePcQFsYGR4eIjHOLrfEAY4Z3ZqM2I
-        s0a47NXiB2C8swIQV7BbAcJvFMfmG9hg7A==
-X-Google-Smtp-Source: AGRyM1shETd1iWd+SaDgQAdVjf8pzBmIgHUJUk2sUIRw1F9nIxS5amEDqpIQxrzlH9/ZDbfhLh3TWg==
-X-Received: by 2002:a17:902:b612:b0:16c:d98d:638 with SMTP id b18-20020a170902b61200b0016cd98d0638mr21696533pls.38.1658940235720;
-        Wed, 27 Jul 2022 09:43:55 -0700 (PDT)
-Received: from potin-quanta.. (125-228-123-29.hinet-ip.hinet.net. [125.228.123.29])
-        by smtp.gmail.com with ESMTPSA id h13-20020a17090a3d0d00b001ef3f85d1aasm2030480pjc.9.2022.07.27.09.43.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 09:43:55 -0700 (PDT)
-From:   Potin Lai <potin.lai.pt@gmail.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Cc:     Patrick Williams <patrick@stwcx.xyz>,
-        Potin Lai <potin.lai@quantatw.com>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Potin Lai <potin.lai.pt@gmail.com>
-Subject: [PATCH v3 2/2] iio: humidity: hdc100x: add manufacturer and device ID check
-Date:   Thu, 28 Jul 2022 00:41:33 +0800
-Message-Id: <20220727164133.973930-3-potin.lai.pt@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220727164133.973930-1-potin.lai.pt@gmail.com>
-References: <20220727164133.973930-1-potin.lai.pt@gmail.com>
+        Wed, 27 Jul 2022 13:18:49 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19B6979EFD;
+        Wed, 27 Jul 2022 09:43:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E03E601C3;
+        Wed, 27 Jul 2022 16:43:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAF77C433D6;
+        Wed, 27 Jul 2022 16:43:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658940237;
+        bh=gZtPCMQ0JD9Ip4j75/GtiuMQLZb64IKyLIRcJaTpJzM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=tAhagIZXgDd+pGcjRjNB+F7Fqu6UAqQ+V2tjbX8exDNcXaHZ0keHku2r1Sp8ivyMR
+         J8l+d2fbbFPG3vKd/+oTAymn8Sa/sLr7ytTvoS5U7Qh73EBXeC34lyfvXJpbz1BqN5
+         y55kituK6kne9qwiqL2mniwY1KDHm30GcKdmlUlk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Mathias Nyman <mathias.nyman@linux.intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 154/201] xhci: dbc: Rename xhci_dbc_init and xhci_dbc_exit
+Date:   Wed, 27 Jul 2022 18:10:58 +0200
+Message-Id: <20220727161034.207557773@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
+References: <20220727161026.977588183@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add manufacturer and device ID checking during probe, and skip the
-checking if chip model not supported.
+From: Mathias Nyman <mathias.nyman@linux.intel.com>
 
-Supported:
-- HDC1000
-- HDC1010
-- HDC1050
-- HDC1080
+[ Upstream commit 5c44d9d7570b244ca08fef817c4c90aa7a1f1b5f ]
 
-Not supported:
-- HDC1008
+These names give the impression the functions are related to
+module init calls, but are in fact creating and removing the dbc
+fake device
 
-Signed-off-by: Potin Lai <potin.lai.pt@gmail.com>
+Rename them to xhci_create_dbc_dev() and xhci_remove_dbc_dev().
+
+We will need the _init and _exit names for actual dbc module init
+and exit calls.
+
+No functional changes
+
+Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
+Link: https://lore.kernel.org/r/20220216095153.1303105-4-mathias.nyman@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/humidity/hdc100x.c | 70 ++++++++++++++++++++++++++++------
- 1 file changed, 59 insertions(+), 11 deletions(-)
+ drivers/usb/host/xhci-dbgcap.c | 5 +++--
+ drivers/usb/host/xhci-dbgcap.h | 8 ++++----
+ drivers/usb/host/xhci.c        | 4 ++--
+ 3 files changed, 9 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/iio/humidity/hdc100x.c b/drivers/iio/humidity/hdc100x.c
-index 0d514818635cb..593a9d3caf229 100644
---- a/drivers/iio/humidity/hdc100x.c
-+++ b/drivers/iio/humidity/hdc100x.c
-@@ -34,6 +34,23 @@
- #define HDC100X_REG_CONFIG_ACQ_MODE		BIT(12)
- #define HDC100X_REG_CONFIG_HEATER_EN		BIT(13)
- 
-+#define HDC100X_REG_MFR_ID	0xFE
-+#define HDC100X_REG_DEV_ID	0xFF
-+
-+#define HDC100X_MFR_ID	0x5449
-+
-+struct hdc100x_chip_data {
-+	bool support_mfr_check;
-+};
-+
-+static const struct hdc100x_chip_data hdc100x_chip_data = {
-+	.support_mfr_check	= true,
-+};
-+
-+static const struct hdc100x_chip_data hdc1008_chip_data = {
-+	.support_mfr_check	= false,
-+};
-+
- struct hdc100x_data {
- 	struct i2c_client *client;
- 	struct mutex lock;
-@@ -351,6 +368,34 @@ static const struct iio_info hdc100x_info = {
- 	.attrs = &hdc100x_attribute_group,
- };
- 
-+static int hdc100x_read_mfr_id(struct i2c_client *client)
-+{
-+	return i2c_smbus_read_word_swapped(client, HDC100X_REG_MFR_ID);
-+}
-+
-+static int hdc100x_read_dev_id(struct i2c_client *client)
-+{
-+	return i2c_smbus_read_word_swapped(client, HDC100X_REG_DEV_ID);
-+}
-+
-+static bool is_valid_hdc100x(struct i2c_client *client)
-+{
-+	const struct hdc100x_chip_data *data;
-+	int mfr_id, dev_id;
-+
-+	data = device_get_match_data(&client->dev);
-+	if (!data->support_mfr_check)
-+		return true;
-+
-+	mfr_id = hdc100x_read_mfr_id(client);
-+	dev_id = hdc100x_read_dev_id(client);
-+	if (mfr_id == HDC100X_MFR_ID &&
-+	   (dev_id == 0x1000 || dev_id == 0x1050))
-+		return true;
-+
-+	return false;
-+}
-+
- static int hdc100x_probe(struct i2c_client *client)
- {
- 	struct iio_dev *indio_dev;
-@@ -361,6 +406,9 @@ static int hdc100x_probe(struct i2c_client *client)
- 				     I2C_FUNC_SMBUS_BYTE | I2C_FUNC_I2C))
- 		return -EOPNOTSUPP;
- 
-+	if (!is_valid_hdc100x(client))
-+		return -EINVAL;
-+
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
- 	if (!indio_dev)
- 		return -ENOMEM;
-@@ -396,22 +444,22 @@ static int hdc100x_probe(struct i2c_client *client)
+diff --git a/drivers/usb/host/xhci-dbgcap.c b/drivers/usb/host/xhci-dbgcap.c
+index f4da5708a40f..46c8f3c187f7 100644
+--- a/drivers/usb/host/xhci-dbgcap.c
++++ b/drivers/usb/host/xhci-dbgcap.c
+@@ -1017,7 +1017,8 @@ void xhci_dbc_remove(struct xhci_dbc *dbc)
+ 	kfree(dbc);
  }
  
- static const struct i2c_device_id hdc100x_id[] = {
--	{ "hdc100x", 0 },
--	{ "hdc1000", 0 },
--	{ "hdc1008", 0 },
--	{ "hdc1010", 0 },
--	{ "hdc1050", 0 },
--	{ "hdc1080", 0 },
-+	{ "hdc100X", (kernel_ulong_t)&hdc100x_chip_data },
-+	{ "hdc1000", (kernel_ulong_t)&hdc100x_chip_data },
-+	{ "hdc1008", (kernel_ulong_t)&hdc1008_chip_data },
-+	{ "hdc1010", (kernel_ulong_t)&hdc100x_chip_data },
-+	{ "hdc1050", (kernel_ulong_t)&hdc100x_chip_data },
-+	{ "hdc1080", (kernel_ulong_t)&hdc100x_chip_data },
- 	{ }
- };
- MODULE_DEVICE_TABLE(i2c, hdc100x_id);
+-int xhci_dbc_init(struct xhci_hcd *xhci)
++
++int xhci_create_dbc_dev(struct xhci_hcd *xhci)
+ {
+ 	struct device		*dev;
+ 	void __iomem		*base;
+@@ -1041,7 +1042,7 @@ int xhci_dbc_init(struct xhci_hcd *xhci)
+ 	return ret;
+ }
  
- static const struct of_device_id hdc100x_dt_ids[] = {
--	{ .compatible = "ti,hdc1000" },
--	{ .compatible = "ti,hdc1008" },
--	{ .compatible = "ti,hdc1010" },
--	{ .compatible = "ti,hdc1050" },
--	{ .compatible = "ti,hdc1080" },
-+	{ .compatible = "ti,hdc1000", .data = &hdc100x_chip_data },
-+	{ .compatible = "ti,hdc1008", .data = &hdc1008_chip_data },
-+	{ .compatible = "ti,hdc1010", .data = &hdc100x_chip_data },
-+	{ .compatible = "ti,hdc1050", .data = &hdc100x_chip_data },
-+	{ .compatible = "ti,hdc1080", .data = &hdc100x_chip_data },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, hdc100x_dt_ids);
+-void xhci_dbc_exit(struct xhci_hcd *xhci)
++void xhci_remove_dbc_dev(struct xhci_hcd *xhci)
+ {
+ 	unsigned long		flags;
+ 
+diff --git a/drivers/usb/host/xhci-dbgcap.h b/drivers/usb/host/xhci-dbgcap.h
+index 5d8c7815491c..8b5b363a0719 100644
+--- a/drivers/usb/host/xhci-dbgcap.h
++++ b/drivers/usb/host/xhci-dbgcap.h
+@@ -194,8 +194,8 @@ static inline struct dbc_ep *get_out_ep(struct xhci_dbc *dbc)
+ }
+ 
+ #ifdef CONFIG_USB_XHCI_DBGCAP
+-int xhci_dbc_init(struct xhci_hcd *xhci);
+-void xhci_dbc_exit(struct xhci_hcd *xhci);
++int xhci_create_dbc_dev(struct xhci_hcd *xhci);
++void xhci_remove_dbc_dev(struct xhci_hcd *xhci);
+ int xhci_dbc_tty_probe(struct device *dev, void __iomem *res, struct xhci_hcd *xhci);
+ void xhci_dbc_tty_remove(struct xhci_dbc *dbc);
+ struct xhci_dbc *xhci_alloc_dbc(struct device *dev, void __iomem *res,
+@@ -211,12 +211,12 @@ int xhci_dbc_suspend(struct xhci_hcd *xhci);
+ int xhci_dbc_resume(struct xhci_hcd *xhci);
+ #endif /* CONFIG_PM */
+ #else
+-static inline int xhci_dbc_init(struct xhci_hcd *xhci)
++static inline int xhci_create_dbc_dev(struct xhci_hcd *xhci)
+ {
+ 	return 0;
+ }
+ 
+-static inline void xhci_dbc_exit(struct xhci_hcd *xhci)
++static inline void xhci_remove_dbc_dev(struct xhci_hcd *xhci)
+ {
+ }
+ 
+diff --git a/drivers/usb/host/xhci.c b/drivers/usb/host/xhci.c
+index 94fe7d64e762..a4e99f8668b3 100644
+--- a/drivers/usb/host/xhci.c
++++ b/drivers/usb/host/xhci.c
+@@ -693,7 +693,7 @@ int xhci_run(struct usb_hcd *hcd)
+ 	xhci_dbg_trace(xhci, trace_xhci_dbg_init,
+ 			"Finished xhci_run for USB2 roothub");
+ 
+-	xhci_dbc_init(xhci);
++	xhci_create_dbc_dev(xhci);
+ 
+ 	xhci_debugfs_init(xhci);
+ 
+@@ -723,7 +723,7 @@ static void xhci_stop(struct usb_hcd *hcd)
+ 		return;
+ 	}
+ 
+-	xhci_dbc_exit(xhci);
++	xhci_remove_dbc_dev(xhci);
+ 
+ 	spin_lock_irq(&xhci->lock);
+ 	xhci->xhc_state |= XHCI_STATE_HALTED;
 -- 
-2.31.1
+2.35.1
+
+
 
