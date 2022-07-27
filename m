@@ -2,148 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22ADCC19F28
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:12:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA86BC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:13:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241475AbiG0RMz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:12:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44854 "EHLO
+        id S241585AbiG0RM6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:12:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241474AbiG0RMJ (ORCPT
+        with ESMTP id S241502AbiG0RMK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:12:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93E6351420;
-        Wed, 27 Jul 2022 09:41:52 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 20ED2614A3;
-        Wed, 27 Jul 2022 16:41:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31161C433C1;
-        Wed, 27 Jul 2022 16:41:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940107;
-        bh=UJGErmSItXRIZuDAwHn2eChFK9M7zB+QgDchWKCYkyo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RGRGjW55zpe+Nv4aVCtk7nBRZoMQ6o1NfzcYyEVn9EJN3xZqePvDaM05Or5WI+bKh
-         1+4PkFr8Mx5lD281n9nwSxfvVWqbWj8xvWrHlpXnSbh2aaplm496JG95cUHHCC7DjD
-         RNyw7LjchhRBGUlpBmyWB3xr2jZuH6A5ZNdTRIMI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Menglong Dong <imagedong@tencent.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 076/201] net: skb: use kfree_skb_reason() in __udp4_lib_rcv()
-Date:   Wed, 27 Jul 2022 18:09:40 +0200
-Message-Id: <20220727161030.093229958@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
-References: <20220727161026.977588183@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Wed, 27 Jul 2022 13:12:10 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5DCA74E3F
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:41:53 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id d17so25844633lfa.12
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:41:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HLLpAzhNV/l0ttpD0m4mlf6L5UXu2Cn5/3KpjyhDTBY=;
+        b=uPUaQqLTpWBsddAvwhB8kXR3XZqpK0bsfMJYxtl6vmn0LIxzSjWbEkXM+1GyWv4q3K
+         0lXRAxsqbWIDmTHN9W9otGvZnmtq6Gi31EciPJxgE8fjh2qUREoJtZEh1xQiYckDq06b
+         RsAcgGnVa7t22jloyDww1FlcS+NSMIoxuplRVXowLQCO7zd4UqWHIJTdos7ONZAPMoQO
+         X8GTSCn5qBzEmzNsHgudvTRUKqbh5UBpG8+/KsiBX1774UKZHSPq9SrIQvAY2SyBGYum
+         lrUgOkkjGsHBhfhQR0ZmWQvSkCw8rH2kUtWhMyPFl6EyINP0S5yN50siJJonzjzCBX5j
+         aA0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HLLpAzhNV/l0ttpD0m4mlf6L5UXu2Cn5/3KpjyhDTBY=;
+        b=yaEsHuOedX4oegb1o+t3ufnPacvquUxNmXHYPrtQvvFWwb9uMRFo0g8UZV3ZxCyckZ
+         VvlGrWWRFEkPsYNu8qnvoLAXSq1OCb/kOjO1iVQ/I08EFpSpgveIwNfjlEghRfdnzdEi
+         +0Fb1VGUJo78GKWl8z6hkjLSR7bvMYtwQvBF8HOAjN5V0NSerx0QEgEEd4GugfIvft/3
+         3zbzo8MRqhVERvz70J+MIKEETgFpzoD2s9Mtn3RG5u5Mk+3z/1z1JdqYL0rvBJKmA+tE
+         PwDEkYs/dQg1WWWYZ1am3AtMVKCH53iTcHSApFOeHh11rGx8I7IOh59Z+PNxwXl7t8vd
+         m3qA==
+X-Gm-Message-State: AJIora+y5yhzldNqqwx65RJr5uPaR69fahgFjJdRKttSrP4GTi7sINiZ
+        gF+i6oxa8IcnaBviIOnho6ma/w==
+X-Google-Smtp-Source: AGRyM1uF0dw37mu6pVrn0amas3Oc/3y1uf9T6DdFSISA35nOH4HUEzm1LE/4X3+zt0Kb9+FISznkdw==
+X-Received: by 2002:ac2:4f0a:0:b0:48a:839c:2fe with SMTP id k10-20020ac24f0a000000b0048a839c02femr6823774lfr.40.1658940111411;
+        Wed, 27 Jul 2022 09:41:51 -0700 (PDT)
+Received: from krzk-bin.lan (78-26-46-173.network.trollfjord.no. [78.26.46.173])
+        by smtp.gmail.com with ESMTPSA id z19-20020a056512371300b0048a73a75908sm784409lfr.302.2022.07.27.09.41.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jul 2022 09:41:50 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Heiko Schocher <hs@denx.de>, linux-mtd@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH] dt-bindings: mtd: microchip,mchp48l640: use spi-peripheral-props.yaml
+Date:   Wed, 27 Jul 2022 18:41:48 +0200
+Message-Id: <20220727164148.385476-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Menglong Dong <imagedong@tencent.com>
+Instead of listing directly properties typical for SPI peripherals,
+reference the spi-peripheral-props.yaml schema.  This allows using all
+properties typical for SPI-connected devices, even these which device
+bindings author did not tried yet.
 
-[ Upstream commit 1c7fab70df085d866a3765955f397ca2b4025b15 ]
+Remove the spi-* properties which now come via spi-peripheral-props.yaml
+schema, except for the cases when device schema adds some constraints
+like maximum frequency.
 
-Replace kfree_skb() with kfree_skb_reason() in __udp4_lib_rcv.
-New drop reason 'SKB_DROP_REASON_UDP_CSUM' is added for udp csum
-error.
+While changing additionalProperties->unevaluatedProperties, put it in
+typical place, just before example DTS.
 
-Signed-off-by: Menglong Dong <imagedong@tencent.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
 ---
- include/linux/skbuff.h     |  1 +
- include/trace/events/skb.h |  1 +
- net/ipv4/udp.c             | 10 ++++++++--
- 3 files changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 5305af6cc86f..66aac2006868 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -316,6 +316,7 @@ enum skb_drop_reason {
- 	SKB_DROP_REASON_PKT_TOO_SMALL,
- 	SKB_DROP_REASON_TCP_CSUM,
- 	SKB_DROP_REASON_TCP_FILTER,
-+	SKB_DROP_REASON_UDP_CSUM,
- 	SKB_DROP_REASON_MAX,
- };
+Technically, this depends on [1] merged to SPI tree, if we want to
+preserve existing behavior of not allowing SPI CPHA and CPOL in each of
+schemas in this patch.
+
+If this patch comes independently via different tree, the SPI CPHA and
+CPOL will be allowed for brief period of time, before [1] is merged.
+This will not have negative impact, just DT schema checks will be
+loosened for that period.
+
+[1] https://lore.kernel.org/all/20220722191539.90641-2-krzysztof.kozlowski@linaro.org/
+---
+ .../devicetree/bindings/mtd/microchip,mchp48l640.yaml      | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/mtd/microchip,mchp48l640.yaml b/Documentation/devicetree/bindings/mtd/microchip,mchp48l640.yaml
+index 2cdf6bf3dc4a..8cc2a7ceb5fb 100644
+--- a/Documentation/devicetree/bindings/mtd/microchip,mchp48l640.yaml
++++ b/Documentation/devicetree/bindings/mtd/microchip,mchp48l640.yaml
+@@ -22,13 +22,14 @@ properties:
+   reg:
+     maxItems: 1
  
-diff --git a/include/trace/events/skb.h b/include/trace/events/skb.h
-index faa7d068a7bc..3e042ca2cedb 100644
---- a/include/trace/events/skb.h
-+++ b/include/trace/events/skb.h
-@@ -15,6 +15,7 @@
- 	EM(SKB_DROP_REASON_PKT_TOO_SMALL, PKT_TOO_SMALL)	\
- 	EM(SKB_DROP_REASON_TCP_CSUM, TCP_CSUM)			\
- 	EM(SKB_DROP_REASON_TCP_FILTER, TCP_FILTER)		\
-+	EM(SKB_DROP_REASON_UDP_CSUM, UDP_CSUM)			\
- 	EMe(SKB_DROP_REASON_MAX, MAX)
+-  spi-max-frequency: true
+-
+ required:
+   - compatible
+   - reg
  
- #undef EM
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 835b9d6e4e68..4ad4daa16cce 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -2411,6 +2411,9 @@ int __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
- 	__be32 saddr, daddr;
- 	struct net *net = dev_net(skb->dev);
- 	bool refcounted;
-+	int drop_reason;
+-additionalProperties: false
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
 +
-+	drop_reason = SKB_DROP_REASON_NOT_SPECIFIED;
++unevaluatedProperties: false
  
- 	/*
- 	 *  Validate the packet.
-@@ -2466,6 +2469,7 @@ int __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
- 	if (udp_lib_checksum_complete(skb))
- 		goto csum_error;
- 
-+	drop_reason = SKB_DROP_REASON_NO_SOCKET;
- 	__UDP_INC_STATS(net, UDP_MIB_NOPORTS, proto == IPPROTO_UDPLITE);
- 	icmp_send(skb, ICMP_DEST_UNREACH, ICMP_PORT_UNREACH, 0);
- 
-@@ -2473,10 +2477,11 @@ int __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
- 	 * Hmm.  We got an UDP packet to a port to which we
- 	 * don't wanna listen.  Ignore it.
- 	 */
--	kfree_skb(skb);
-+	kfree_skb_reason(skb, drop_reason);
- 	return 0;
- 
- short_packet:
-+	drop_reason = SKB_DROP_REASON_PKT_TOO_SMALL;
- 	net_dbg_ratelimited("UDP%s: short packet: From %pI4:%u %d/%d to %pI4:%u\n",
- 			    proto == IPPROTO_UDPLITE ? "Lite" : "",
- 			    &saddr, ntohs(uh->source),
-@@ -2489,6 +2494,7 @@ int __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
- 	 * RFC1122: OK.  Discards the bad packet silently (as far as
- 	 * the network is concerned, anyway) as per 4.1.3.4 (MUST).
- 	 */
-+	drop_reason = SKB_DROP_REASON_UDP_CSUM;
- 	net_dbg_ratelimited("UDP%s: bad checksum. From %pI4:%u to %pI4:%u ulen %d\n",
- 			    proto == IPPROTO_UDPLITE ? "Lite" : "",
- 			    &saddr, ntohs(uh->source), &daddr, ntohs(uh->dest),
-@@ -2496,7 +2502,7 @@ int __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
- 	__UDP_INC_STATS(net, UDP_MIB_CSUMERRORS, proto == IPPROTO_UDPLITE);
- drop:
- 	__UDP_INC_STATS(net, UDP_MIB_INERRORS, proto == IPPROTO_UDPLITE);
--	kfree_skb(skb);
-+	kfree_skb_reason(skb, drop_reason);
- 	return 0;
- }
- 
+ examples:
+   - |
 -- 
-2.35.1
-
-
+2.34.1
 
