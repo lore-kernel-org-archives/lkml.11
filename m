@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44D8EC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:46:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37798C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:46:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240440AbiG0QqY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:46:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44864 "EHLO
+        id S237968AbiG0Qqa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:46:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240176AbiG0QpL (ORCPT
+        with ESMTP id S240292AbiG0Qp1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:45:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D19195F9B3;
-        Wed, 27 Jul 2022 09:31:28 -0700 (PDT)
+        Wed, 27 Jul 2022 12:45:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 318455F9B8;
+        Wed, 27 Jul 2022 09:31:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 23280B821C2;
-        Wed, 27 Jul 2022 16:31:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F2F8C433D6;
-        Wed, 27 Jul 2022 16:31:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B7D4D61A39;
+        Wed, 27 Jul 2022 16:31:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E7D0C433D6;
+        Wed, 27 Jul 2022 16:31:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939485;
-        bh=ljxSfJEmWLh3FCXueOr70/5vy8YC0vANe67kfev0fKs=;
+        s=korg; t=1658939489;
+        bh=TX+Sdx7vNb92kNhrkYvV7Qs/pncP26B1lxcQyV/riF4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XJw8beJ0zSDXepzCZgfineEx8ooG5Nm09TYHUR1PL2YlOgkmP+rgqOirsaj303N0T
-         4TzGwhmfy071AhxNMCryGhxqvFA3weOWEXIvSDT+nJiRQErdF8CakNnKy5Aos/Vls9
-         tlz8pYvTLzSxBah7SG4/Xksr460aI9fAuWZbuErM=
+        b=wpc5UJCw3JgZl678cP6ICwNIUiLNcP5IlhW+YtpW8zvr8L6iTksLKCMoM77MwPrDH
+         EBzYg4k8g8mNtCoQYfzKTHpPTTCs1SufTfEVaow8yetEDAwKaIx/VrAF5xVFN07+FJ
+         z6NFIujv/tbDvhbrtIJp48ag7s4EGA2Dvkp/b3KU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 45/87] udp: Fix a data-race around sysctl_udp_l3mdev_accept.
-Date:   Wed, 27 Jul 2022 18:10:38 +0200
-Message-Id: <20220727161010.877370593@linuxfoundation.org>
+        stable@vger.kernel.org, Paul Menzel <pmenzel@molgen.mpg.de>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Subject: [PATCH 5.4 80/87] Bluetooth: Fix bt_skb_sendmmsg not allocating partial chunks
+Date:   Wed, 27 Jul 2022 18:11:13 +0200
+Message-Id: <20220727161012.318635744@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161008.993711844@linuxfoundation.org>
 References: <20220727161008.993711844@linuxfoundation.org>
@@ -49,36 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 
-[ Upstream commit 3d72bb4188c708bb16758c60822fc4dda7a95174 ]
+commit 29fb608396d6a62c1b85acc421ad7a4399085b9f upstream.
 
-While reading sysctl_udp_l3mdev_accept, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its reader.
+Since bt_skb_sendmmsg can be used with the likes of SOCK_STREAM it
+shall return the partial chunks it could allocate instead of freeing
+everything as otherwise it can cause problems like bellow.
 
-Fixes: 63a6fff353d0 ("net: Avoid receiving packets with an l3mdev on unbound UDP sockets")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 81be03e026dc ("Bluetooth: RFCOMM: Replace use of memcpy_from_msg with bt_skb_sendmmsg")
+Reported-by: Paul Menzel <pmenzel@molgen.mpg.de>
+Link: https://lore.kernel.org/r/d7206e12-1b99-c3be-84f4-df22af427ef5@molgen.mpg.de
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215594
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Tested-by: Paul Menzel <pmenzel@molgen.mpg.de> (Nokia N9 (MeeGo/Harmattan)
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Cc: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/udp.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/net/bluetooth/bluetooth.h |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/include/net/udp.h b/include/net/udp.h
-index 9787a42f7ed3..e66854e767dc 100644
---- a/include/net/udp.h
-+++ b/include/net/udp.h
-@@ -252,7 +252,7 @@ static inline bool udp_sk_bound_dev_eq(struct net *net, int bound_dev_if,
- 				       int dif, int sdif)
- {
- #if IS_ENABLED(CONFIG_NET_L3_MASTER_DEV)
--	return inet_bound_dev_eq(!!net->ipv4.sysctl_udp_l3mdev_accept,
-+	return inet_bound_dev_eq(!!READ_ONCE(net->ipv4.sysctl_udp_l3mdev_accept),
- 				 bound_dev_if, dif, sdif);
- #else
- 	return inet_bound_dev_eq(true, bound_dev_if, dif, sdif);
--- 
-2.35.1
-
+--- a/include/net/bluetooth/bluetooth.h
++++ b/include/net/bluetooth/bluetooth.h
+@@ -423,8 +423,7 @@ static inline struct sk_buff *bt_skb_sen
+ 
+ 		tmp = bt_skb_sendmsg(sk, msg, len, mtu, headroom, tailroom);
+ 		if (IS_ERR(tmp)) {
+-			kfree_skb(skb);
+-			return tmp;
++			return skb;
+ 		}
+ 
+ 		len -= tmp->len;
 
 
