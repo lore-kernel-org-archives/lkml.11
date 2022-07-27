@@ -2,84 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A0F3C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 04:02:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA42EC19F28
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 04:03:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240202AbiG0EC4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 00:02:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45690 "EHLO
+        id S233185AbiG0EDM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 00:03:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231448AbiG0ECy (ORCPT
+        with ESMTP id S240175AbiG0EDJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 00:02:54 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D1C315820
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 21:02:53 -0700 (PDT)
-Received: from canpemm500009.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Lt0RL2rhFzjXMK;
-        Wed, 27 Jul 2022 11:59:58 +0800 (CST)
-Received: from [10.67.109.51] (10.67.109.51) by canpemm500009.china.huawei.com
- (7.192.105.203) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 27 Jul
- 2022 12:02:51 +0800
-Message-ID: <85d5087b-450c-351f-270d-c61303cf3187@huawei.com>
-Date:   Wed, 27 Jul 2022 12:02:51 +0800
+        Wed, 27 Jul 2022 00:03:09 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C086A18346;
+        Tue, 26 Jul 2022 21:03:08 -0700 (PDT)
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.54])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Lt0QS3VCVzWfxD;
+        Wed, 27 Jul 2022 11:59:12 +0800 (CST)
+Received: from kwepemm600010.china.huawei.com (7.193.23.86) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 27 Jul 2022 12:03:05 +0800
+Received: from ubuntu1804.huawei.com (10.67.174.174) by
+ kwepemm600010.china.huawei.com (7.193.23.86) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 27 Jul 2022 12:03:04 +0800
+From:   Li Huafei <lihuafei1@huawei.com>
+To:     <linux@armlinux.org.uk>, <rmk+kernel@armlinux.org.uk>,
+        <ardb@kernel.org>, <will@kernel.org>, <broonie@kernel.org>,
+        <linus.walleij@linaro.org>
+CC:     <mark.rutland@arm.com>, <peterz@infradead.org>, <mingo@redhat.com>,
+        <acme@kernel.org>, <alexander.shishkin@linux.intel.com>,
+        <jolsa@kernel.org>, <namhyung@kernel.org>, <arnd@arndb.de>,
+        <rostedt@goodmis.org>, <nick.hawkins@hpe.com>, <john@phrozen.org>,
+        <mhiramat@kernel.org>, <ast@kernel.org>, <linyujun809@huawei.com>,
+        <ndesaulniers@google.com>, <lihuafei1@huawei.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>
+Subject: [PATCH v3 1/4] ARM: stacktrace: Skip frame pointer boundary check for call_with_stack()
+Date:   Wed, 27 Jul 2022 12:00:19 +0800
+Message-ID: <20220727040022.139387-2-lihuafei1@huawei.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220727040022.139387-1-lihuafei1@huawei.com>
+References: <20220727040022.139387-1-lihuafei1@huawei.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.2
-To:     Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        "open list:SCHEDULER" <linux-kernel@vger.kernel.org>
-From:   "Lihua (lihua, ran)" <hucool.lihua@huawei.com>
-Subject: [Question] Reading /proc/stat has a time backward issue
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.109.51]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500009.china.huawei.com (7.192.105.203)
+Content-Type: text/plain
+X-Originating-IP: [10.67.174.174]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemm600010.china.huawei.com (7.193.23.86)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi all,
+When using the frame pointer unwinder, it was found that the stack trace
+output of stack_trace_save() is incomplete if the stack contains
+call_with_stack():
 
-I found a problem that the statistical time goes backward, the value read first is 319, and the value read again is 318. As follows：
-first：
-cat /proc/stat |  grep cpu1
-cpu1    319    0    496    41665    0    0    0    0    0    0
-then：
-cat /proc/stat |  grep cpu1
-cpu1    318    0    497    41674    0    0    0    0    0    0
+ [0x7f00002c] dump_stack_task+0x2c/0x90 [hrtimer]
+ [0x7f0000a0] hrtimer_hander+0x10/0x18 [hrtimer]
+ [0x801a67f0] __hrtimer_run_queues+0x1b0/0x3b4
+ [0x801a7350] hrtimer_run_queues+0xc4/0xd8
+ [0x801a597c] update_process_times+0x3c/0x88
+ [0x801b5a98] tick_periodic+0x50/0xd8
+ [0x801b5bf4] tick_handle_periodic+0x24/0x84
+ [0x8010ffc4] twd_handler+0x38/0x48
+ [0x8017d220] handle_percpu_devid_irq+0xa8/0x244
+ [0x80176e9c] generic_handle_domain_irq+0x2c/0x3c
+ [0x8052e3a8] gic_handle_irq+0x7c/0x90
+ [0x808ab15c] generic_handle_arch_irq+0x60/0x80
+ [0x8051191c] call_with_stack+0x1c/0x20
 
-Time goes back, which is counterintuitive.
+For the frame pointer unwinder, unwind_frame() checks stackframe::fp by
+stackframe::sp. Since call_with_stack() switches the SP from one stack
+to another, stackframe::fp and stackframe: :sp will point to different
+stacks, so we can no longer check stackframe::fp by stackframe::sp. Skip
+checking stackframe::fp at this point to avoid this problem.
 
-After debug this, I found that the problem is caused by the implementation of kcpustat_cpu_fetch_vtime. As follows：
+Signed-off-by: Li Huafei <lihuafei1@huawei.com>
+Reviewed-by: Linus Waleij <linus.walleij@linaro.org>
+---
+ arch/arm/kernel/stacktrace.c   | 40 ++++++++++++++++++++++++++++------
+ arch/arm/lib/call_with_stack.S |  2 ++
+ 2 files changed, 35 insertions(+), 7 deletions(-)
 
-                               CPU0                                                                          CPU1
-First:
-show_stat():
-     ->kcpustat_cpu_fetch()
-         ->kcpustat_cpu_fetch_vtime()
-             ->cpustat[CPUTIME_USER] = kcpustat_cpu(cpu) + vtime->utime + delta;              rq->curr is in user mod
-              ---> When CPU1 rq->curr running on userspace, need add utime and delta
-                                                                                              --->  rq->curr->vtime->utime is less than 1 tick
-Then:
-show_stat():
-     ->kcpustat_cpu_fetch()
-         ->kcpustat_cpu_fetch_vtime()
-             ->cpustat[CPUTIME_USER] = kcpustat_cpu(cpu);                                     rq->curr is in kernel mod
-             ---> When CPU1 rq->curr running on kernel space, just got kcpustat
+diff --git a/arch/arm/kernel/stacktrace.c b/arch/arm/kernel/stacktrace.c
+index d0fa2037460a..af87040b0353 100644
+--- a/arch/arm/kernel/stacktrace.c
++++ b/arch/arm/kernel/stacktrace.c
+@@ -9,6 +9,8 @@
+ #include <asm/stacktrace.h>
+ #include <asm/traps.h>
+ 
++#include "reboot.h"
++
+ #if defined(CONFIG_FRAME_POINTER) && !defined(CONFIG_ARM_UNWIND)
+ /*
+  * Unwind the current stack frame and store the new register values in the
+@@ -39,29 +41,53 @@
+  * Note that with framepointer enabled, even the leaf functions have the same
+  * prologue and epilogue, therefore we can ignore the LR value in this case.
+  */
+-int notrace unwind_frame(struct stackframe *frame)
++
++extern unsigned long call_with_stack_end;
++
++static int frame_pointer_check(struct stackframe *frame)
+ {
+ 	unsigned long high, low;
+ 	unsigned long fp = frame->fp;
++	unsigned long pc = frame->pc;
++
++	/*
++	 * call_with_stack() is the only place we allow SP to jump from one
++	 * stack to another, with FP and SP pointing to different stacks,
++	 * skipping the FP boundary check at this point.
++	 */
++	if (pc >= (unsigned long)&call_with_stack &&
++			pc < (unsigned long)&call_with_stack_end)
++		return 0;
+ 
+ 	/* only go to a higher address on the stack */
+ 	low = frame->sp;
+ 	high = ALIGN(low, THREAD_SIZE);
+ 
+-#ifdef CONFIG_CC_IS_CLANG
+ 	/* check current frame pointer is within bounds */
++#ifdef CONFIG_CC_IS_CLANG
+ 	if (fp < low + 4 || fp > high - 4)
+ 		return -EINVAL;
+-
+-	frame->sp = frame->fp;
+-	frame->fp = READ_ONCE_NOCHECK(*(unsigned long *)(fp));
+-	frame->pc = READ_ONCE_NOCHECK(*(unsigned long *)(fp + 4));
+ #else
+-	/* check current frame pointer is within bounds */
+ 	if (fp < low + 12 || fp > high - 4)
+ 		return -EINVAL;
++#endif
++
++	return 0;
++}
++
++int notrace unwind_frame(struct stackframe *frame)
++{
++	unsigned long fp = frame->fp;
++
++	if (frame_pointer_check(frame))
++		return -EINVAL;
+ 
+ 	/* restore the registers from the stack frame */
++#ifdef CONFIG_CC_IS_CLANG
++	frame->sp = frame->fp;
++	frame->fp = READ_ONCE_NOCHECK(*(unsigned long *)(fp));
++	frame->pc = READ_ONCE_NOCHECK(*(unsigned long *)(fp + 4));
++#else
+ 	frame->fp = READ_ONCE_NOCHECK(*(unsigned long *)(fp - 12));
+ 	frame->sp = READ_ONCE_NOCHECK(*(unsigned long *)(fp - 8));
+ 	frame->pc = READ_ONCE_NOCHECK(*(unsigned long *)(fp - 4));
+diff --git a/arch/arm/lib/call_with_stack.S b/arch/arm/lib/call_with_stack.S
+index 0a268a6c513c..5030d4e8d126 100644
+--- a/arch/arm/lib/call_with_stack.S
++++ b/arch/arm/lib/call_with_stack.S
+@@ -46,4 +46,6 @@ UNWIND( .setfp	fpreg, sp	)
+ 	pop	{fpreg, pc}
+ UNWIND( .fnend			)
+ #endif
++	.globl call_with_stack_end
++call_with_stack_end:
+ ENDPROC(call_with_stack)
+-- 
+2.17.1
 
-Because the values ​​of utime、 stime and delta are temporarily written to cpustat. Therefore, there are two problems  read from /proc/stat:
-1. There may be a regression phenomenon;
-2. When there are many tasks, the statistics are not accurate enough when utime and stime do not exceed one TICK.
-The time goes back is counterintuitive, and I want to discuss whether there is a good solution without compromising performance.
-
-Thanks a lot.
