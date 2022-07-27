@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26C67C19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:48:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B78F0C19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:48:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240482AbiG0QsC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:48:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43850 "EHLO
+        id S235819AbiG0QsF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:48:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240314AbiG0QrE (ORCPT
+        with ESMTP id S240486AbiG0QrL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:47:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5663952E52;
-        Wed, 27 Jul 2022 09:32:02 -0700 (PDT)
+        Wed, 27 Jul 2022 12:47:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A037552443;
+        Wed, 27 Jul 2022 09:32:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DEBA4B821BE;
-        Wed, 27 Jul 2022 16:32:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C3BFC433C1;
-        Wed, 27 Jul 2022 16:32:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 120C461A69;
+        Wed, 27 Jul 2022 16:32:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 199BEC433C1;
+        Wed, 27 Jul 2022 16:32:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939520;
-        bh=VmvQaZowy1d0aqIWB3OQ1GQv0t682IOsWS1iF7J5FK0=;
+        s=korg; t=1658939523;
+        bh=uOdU3fehE3mcaQzsyVAblZ2pH7AkrvkxKU5xEx7Ng0k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JDhZ/m2HUQvxcM2nscczvut5ShelFugvn2uy0adWwN3m6QOu57QxPKNZqnZdhMDBP
-         Tpr8yJkRGTQu5MyN84ErgR/gSLwW7w05KNQXXpXXCsXD8FWnsH9etHSR8mjapMWfRj
-         PElZyTkVVQz78hwsWVfBifjjAHeKtUuC+iy0v7/k=
+        b=EN6flW48QRjy8LXjZa+SnKcQG6nKreXP3AQOqynLaspQEqj2PWxspCYz327XD3G4K
+         zTFG43GKmaoUeSE8J2bykWfd6Je/AZgterxHNgAZ7lI4S8wVAD8obuEuJesVB6kmpJ
+         JNt8+ciePvOFyy7grfDHEsPrsN9cnfXU95fYFOgA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
+        stable@vger.kernel.org, Edwin Peer <edwin.peer@broadcom.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Fedor Pchelkin <pchelkin@ispras.ru>
-Subject: [PATCH 5.10 011/105] net: make sure devices go through netdev_wait_all_refs
-Date:   Wed, 27 Jul 2022 18:09:57 +0200
-Message-Id: <20220727161012.515394196@linuxfoundation.org>
+Subject: [PATCH 5.10 012/105] net: move net_set_todo inside rollback_registered()
+Date:   Wed, 27 Jul 2022 18:09:58 +0200
+Message-Id: <20220727161012.556160686@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161012.056867467@linuxfoundation.org>
 References: <20220727161012.056867467@linuxfoundation.org>
@@ -54,61 +53,73 @@ From: Fedor Pchelkin <pchelkin@ispras.ru>
 
 From: Jakub Kicinski <kuba@kernel.org>
 
-commit 766b0515d5bec4b780750773ed3009b148df8c0a upstream.
+commit 2014beea7eb165c745706b13659a0f1d0a9a2a61 upstream.
 
-If register_netdevice() fails at the very last stage - the
-notifier call - some subsystems may have already seen it and
-grabbed a reference. struct net_device can't be freed right
-away without calling netdev_wait_all_refs().
+Commit 93ee31f14f6f ("[NET]: Fix free_netdev on register_netdev
+failure.") moved net_set_todo() outside of rollback_registered()
+so that rollback_registered() can be used in the failure path of
+register_netdevice() but without risking a double free.
 
-Now that we have a clean interface in form of dev->needs_free_netdev
-and lenient free_netdev() we can undo what commit 93ee31f14f6f ("[NET]:
-Fix free_netdev on register_netdev failure.") has done and complete
-the unregistration path by bringing the net_set_todo() call back.
+Since commit cf124db566e6 ("net: Fix inconsistent teardown and
+release of private netdev state."), however, we have a better
+way of handling that condition, since destructors don't call
+free_netdev() directly.
 
-After registration fails user is still expected to explicitly
-free the net_device, so make sure ->needs_free_netdev is cleared,
-otherwise rolling back the registration will cause the old double
-free for callers who release rtnl_lock before the free.
+After the change in commit c269a24ce057 ("net: make free_netdev()
+more lenient with unregistering devices") we can now move
+net_set_todo() back.
 
-This also solves the problem of priv_destructor not being called
-on notifier error.
-
-net_set_todo() will be moved back into unregister_netdevice_queue()
-in a follow up.
-
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Reported-by: Yang Yingliang <yangyingliang@huawei.com>
+Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/dev.c |   14 ++++----------
- 1 file changed, 4 insertions(+), 10 deletions(-)
+ net/core/dev.c |   11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
 
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -10144,17 +10144,11 @@ int register_netdevice(struct net_device
- 	ret = call_netdevice_notifiers(NETDEV_REGISTER, dev);
- 	ret = notifier_to_errno(ret);
- 	if (ret) {
-+		/* Expect explicit free_netdev() on failure */
-+		dev->needs_free_netdev = false;
- 		rollback_registered(dev);
--		rcu_barrier();
--
--		dev->reg_state = NETREG_UNREGISTERED;
--		/* We should put the kobject that hold in
--		 * netdev_unregister_kobject(), otherwise
--		 * the net device cannot be freed when
--		 * driver calls free_netdev(), because the
--		 * kobject is being hold.
--		 */
--		kobject_put(&dev->dev.kobj);
+@@ -9595,8 +9595,10 @@ static void rollback_registered_many(str
+ 
+ 	synchronize_net();
+ 
+-	list_for_each_entry(dev, head, unreg_list)
++	list_for_each_entry(dev, head, unreg_list) {
+ 		dev_put(dev);
 +		net_set_todo(dev);
-+		goto out;
++	}
+ }
+ 
+ static void rollback_registered(struct net_device *dev)
+@@ -10147,7 +10149,6 @@ int register_netdevice(struct net_device
+ 		/* Expect explicit free_netdev() on failure */
+ 		dev->needs_free_netdev = false;
+ 		rollback_registered(dev);
+-		net_set_todo(dev);
+ 		goto out;
  	}
  	/*
- 	 *	Prevent userspace races by waiting until the network
+@@ -10755,8 +10756,6 @@ void unregister_netdevice_queue(struct n
+ 		list_move_tail(&dev->unreg_list, head);
+ 	} else {
+ 		rollback_registered(dev);
+-		/* Finish processing unregister after unlock */
+-		net_set_todo(dev);
+ 	}
+ }
+ EXPORT_SYMBOL(unregister_netdevice_queue);
+@@ -10770,12 +10769,8 @@ EXPORT_SYMBOL(unregister_netdevice_queue
+  */
+ void unregister_netdevice_many(struct list_head *head)
+ {
+-	struct net_device *dev;
+-
+ 	if (!list_empty(head)) {
+ 		rollback_registered_many(head);
+-		list_for_each_entry(dev, head, unreg_list)
+-			net_set_todo(dev);
+ 		list_del(head);
+ 	}
+ }
 
 
