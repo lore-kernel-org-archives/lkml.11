@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0CFCC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:35:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1ABBC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:35:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242457AbiG0Rfr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:35:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48646 "EHLO
+        id S242470AbiG0Rfy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:35:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242506AbiG0ReR (ORCPT
+        with ESMTP id S242535AbiG0ReU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:34:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF28083205;
-        Wed, 27 Jul 2022 09:49:09 -0700 (PDT)
+        Wed, 27 Jul 2022 13:34:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 375EF8320C;
+        Wed, 27 Jul 2022 09:49:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1BA6C616FA;
-        Wed, 27 Jul 2022 16:49:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26A67C433D6;
-        Wed, 27 Jul 2022 16:49:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AACB2B821AC;
+        Wed, 27 Jul 2022 16:49:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 192C3C433C1;
+        Wed, 27 Jul 2022 16:49:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940548;
-        bh=w5sWh8F8n0FEZ5hPRhjKnS9zIrHd3MtT9EMOxialx48=;
+        s=korg; t=1658940551;
+        bh=7fTa14/lKPNdhwduF4hY9eR8NwdSBaT24ZZOvhjIwqo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Vya4sr97ExJgtObazu/zkqH4UnikZnwe2RnmQW2baIqWWEc7SE3AwF47tETNYubhV
-         TMDoTZHUfTeS1bZYpeVkcqiJHn93KnJdy7frUKIbvZi5QUegpdgm+9pApDrT7/LYLI
-         CViI8y2T8TSEq6TKAx9We3JsRL/nihfZNJWvYIu4=
+        b=GN8/5Wi4vSjhqqBJ6d8rROiINhZg5X8hqiyXGUD2xOqz8WwkilzJrgR3SJG/vyzfu
+         PaGXi6oxli86hgEA6U5SukbJD3SaLMuT7JyhrfO9X0bh8Fy8nvB12rNDtdhElJskKj
+         QmVdmjdwoqJIaCUmi8y9BmlIN9k/cLkIv7IEukno=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Maksym Glubokiy <maksym.glubokiy@plvision.eu>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 061/158] net: prestera: acl: use proper mask for port selector
-Date:   Wed, 27 Jul 2022 18:12:05 +0200
-Message-Id: <20220727161023.950555886@linuxfoundation.org>
+Subject: [PATCH 5.18 033/158] ip: Fix data-races around sysctl_ip_no_pmtu_disc.
+Date:   Wed, 27 Jul 2022 18:11:37 +0200
+Message-Id: <20220727161022.812447163@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -50,42 +49,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maksym Glubokiy <maksym.glubokiy@plvision.eu>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 1e20904e417738066b26490de2daf7ef3ed34483 ]
+[ Upstream commit 0968d2a441bf6afb551fd99e60fa65ed67068963 ]
 
-Adjusted as per packet processor documentation.
-This allows to properly match 'indev' for clsact rules.
+While reading sysctl_ip_no_pmtu_disc, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its readers.
 
-Fixes: 47327e198d42 ("net: prestera: acl: migrate to new vTCAM api")
-
-Signed-off-by: Maksym Glubokiy <maksym.glubokiy@plvision.eu>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/marvell/prestera/prestera_flower.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ net/ipv4/af_inet.c    | 2 +-
+ net/ipv4/icmp.c       | 2 +-
+ net/ipv6/af_inet6.c   | 2 +-
+ net/xfrm/xfrm_state.c | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/prestera/prestera_flower.c b/drivers/net/ethernet/marvell/prestera/prestera_flower.c
-index 921959a980ee..d8cfa4a7de0f 100644
---- a/drivers/net/ethernet/marvell/prestera/prestera_flower.c
-+++ b/drivers/net/ethernet/marvell/prestera/prestera_flower.c
-@@ -139,12 +139,12 @@ static int prestera_flower_parse_meta(struct prestera_acl_rule *rule,
+diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+index 98bc180563d1..8c0a22a5b36c 100644
+--- a/net/ipv4/af_inet.c
++++ b/net/ipv4/af_inet.c
+@@ -335,7 +335,7 @@ static int inet_create(struct net *net, struct socket *sock, int protocol,
+ 			inet->hdrincl = 1;
  	}
- 	port = netdev_priv(ingress_dev);
  
--	mask = htons(0x1FFF);
--	key = htons(port->hw_id);
-+	mask = htons(0x1FFF << 3);
-+	key = htons(port->hw_id << 3);
- 	rule_match_set(r_match->key, SYS_PORT, key);
- 	rule_match_set(r_match->mask, SYS_PORT, mask);
+-	if (net->ipv4.sysctl_ip_no_pmtu_disc)
++	if (READ_ONCE(net->ipv4.sysctl_ip_no_pmtu_disc))
+ 		inet->pmtudisc = IP_PMTUDISC_DONT;
+ 	else
+ 		inet->pmtudisc = IP_PMTUDISC_WANT;
+diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
+index c13ceda9ce5d..d8cfa6241c04 100644
+--- a/net/ipv4/icmp.c
++++ b/net/ipv4/icmp.c
+@@ -878,7 +878,7 @@ static bool icmp_unreach(struct sk_buff *skb)
+ 			 * values please see
+ 			 * Documentation/networking/ip-sysctl.rst
+ 			 */
+-			switch (net->ipv4.sysctl_ip_no_pmtu_disc) {
++			switch (READ_ONCE(net->ipv4.sysctl_ip_no_pmtu_disc)) {
+ 			default:
+ 				net_dbg_ratelimited("%pI4: fragmentation needed and DF set\n",
+ 						    &iph->daddr);
+diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
+index 7d7b7523d126..ef1e6545d869 100644
+--- a/net/ipv6/af_inet6.c
++++ b/net/ipv6/af_inet6.c
+@@ -226,7 +226,7 @@ static int inet6_create(struct net *net, struct socket *sock, int protocol,
+ 	RCU_INIT_POINTER(inet->mc_list, NULL);
+ 	inet->rcv_tos	= 0;
  
--	mask = htons(0x1FF);
-+	mask = htons(0x3FF);
- 	key = htons(port->dev_id);
- 	rule_match_set(r_match->key, SYS_DEV, key);
- 	rule_match_set(r_match->mask, SYS_DEV, mask);
+-	if (net->ipv4.sysctl_ip_no_pmtu_disc)
++	if (READ_ONCE(net->ipv4.sysctl_ip_no_pmtu_disc))
+ 		inet->pmtudisc = IP_PMTUDISC_DONT;
+ 	else
+ 		inet->pmtudisc = IP_PMTUDISC_WANT;
+diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
+index b749935152ba..b4ce16a934a2 100644
+--- a/net/xfrm/xfrm_state.c
++++ b/net/xfrm/xfrm_state.c
+@@ -2620,7 +2620,7 @@ int __xfrm_init_state(struct xfrm_state *x, bool init_replay, bool offload)
+ 	int err;
+ 
+ 	if (family == AF_INET &&
+-	    xs_net(x)->ipv4.sysctl_ip_no_pmtu_disc)
++	    READ_ONCE(xs_net(x)->ipv4.sysctl_ip_no_pmtu_disc))
+ 		x->props.flags |= XFRM_STATE_NOPMTUDISC;
+ 
+ 	err = -EPROTONOSUPPORT;
 -- 
 2.35.1
 
