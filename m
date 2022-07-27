@@ -2,57 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBCA9C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 22:10:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13EFEC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 22:10:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232026AbiG0WKY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 18:10:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51340 "EHLO
+        id S233228AbiG0WK2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 18:10:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236467AbiG0WJY (ORCPT
+        with ESMTP id S236028AbiG0WJy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 18:09:24 -0400
-Received: from mail-yw1-x1149.google.com (mail-yw1-x1149.google.com [IPv6:2607:f8b0:4864:20::1149])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2839C57270
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 15:09:16 -0700 (PDT)
-Received: by mail-yw1-x1149.google.com with SMTP id 00721157ae682-31f99336d8dso871597b3.17
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 15:09:16 -0700 (PDT)
+        Wed, 27 Jul 2022 18:09:54 -0400
+Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E6B9558CB
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 15:09:21 -0700 (PDT)
+Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-31f4b76446aso1178187b3.7
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 15:09:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc:content-transfer-encoding;
-        bh=6o0EQD4JQngkIEeYiGc7/XAki5aA8ETmOlcVBv+uqVk=;
-        b=d7kLx736TrBKe4g4SMk8VwPb/Dmi4PX32rpEC9IhkCL2SX7gzbMREEaSb8//rYw1es
-         3WXWjfFWaQC8mJCFrXmugMD5Bt2HTn45IYi76U5yDj/nv09k/EbfhZkdPhe+2P8uurkN
-         87o6TmygvFcFvFxt616lg3iHzqbiqVMsalTN0oO2RyvB774XsnbtrWU7TD3CCYhMOtIc
-         C31qWCifbgMJqRhJJtnbWaGXKlPx3aXvu07miFlRmTUQZvL4H1NG4VmfvnnkscguR9YD
-         ZbMMg6zzfY8EXLV998woui57ehf0MRraEDPoa262QnlrAYt4PNihbImfFMYlfPxoihbv
-         xftw==
+        bh=+2+xQnsJIyNi44BBamTR+sCT+tOfEq6Pk36Wu9OKMYo=;
+        b=bb+lADuV0dxZFaIZYuOkq+HVidM0MQNbzZk0eKvPjGuJCRbpSr72cTQR2VqdQ9jJs7
+         298sKT3G6RWgpK+aMqi+05smN1AR1qzECrUJ0CjnLsbT3meC2EpWEfSRzeUaA4aasY5X
+         Ld2Y8ySx0mhjTId1OvhaOGv6YlK/KVPau5NDF1lAUJukZAqgMKXN62ORVKTTtkDR7D+4
+         otoOnrReWftaM4DY50WgGLZtbeSFH2cEk2Cb/Paaf8J/UlY0KAvBkDC4Lt7dFEntMnbG
+         gnp5Jgt60XHtEGvDowM7zylNdTnGp5QTMGAnCgZKNi8dJHYJ7W2o1T45egqYDA4DyKTw
+         iLeQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc:content-transfer-encoding;
-        bh=6o0EQD4JQngkIEeYiGc7/XAki5aA8ETmOlcVBv+uqVk=;
-        b=A8+N5XZiXlX3HLhp7KCN+FiriuC16dgTv/d5X62Vk0ttZjO1tUAhBKYFxWOcdbS3YG
-         5X8KvYC8NAZri57P5nda9/gDQ0aurba2x36q9c0O5VHl5ErRLMaWMf0gEkjBctvEwLFQ
-         GaxN+EMiLEuZxk8b/5AcJTt72E9GIJSkfB/3q3l0XkSPCTt8iittg7b9ARei8ffkvpo4
-         Js+putv3JgGYBcUgUNX9e7gqsL+6proxUxNMLh74RzIawVjJY3NEJGt4o94wl8VZo1ML
-         5Ud/o4dDc6bJBUpcX0n1aX/QqrpczQ0ciT4G5wuHdlKqHD/DQLWZRCnLOFHpnynS9ZE9
-         os3A==
-X-Gm-Message-State: AJIora8Isgplpwd7udDm83Iu5oA/ZxchL65BO48AA+9DLHnl5H/tPDQ5
-        0f2AcJzbhAWYOpG8kRUqextMeyR3c/cs
-X-Google-Smtp-Source: AGRyM1vkUSd+RHWCBe2tX/SUwF1oljHIze8MnN9dE6VaHb22rUX1kehxIaE4GqvzIIsbadq8I7OezCg9qn37
+        bh=+2+xQnsJIyNi44BBamTR+sCT+tOfEq6Pk36Wu9OKMYo=;
+        b=RKtb90I3SZqXIL1+y1ua4zW24JBP6GIG9kY+XLOoNLjCZ/LyeXvBZyPN2EBNJZt2zh
+         e0M9pxKtcdeH7FV7Nn0W2aEJW/Lfyuo2clWB4SFIgAzFHpNiiHOKaHb1w+r8TFgO+P0a
+         MiJmSr6P/3jBS5GUpfhdlka2miRs5/Sy+Z19g+gGxY5PUBfG462R0O94Xj/HxYvVqzMi
+         FK53iD0r5LWeT6QoXb8BLgsK911TrvO4GJe+V/919vFWgsHKbvueQmVCiuA5e4wEIQ1m
+         s7b6fAnkQeGQFE6c89ovM5XTpNENNG710rvQbcjVdpmqW7KKPVMGji/xumfTu9jbNjcr
+         rzgg==
+X-Gm-Message-State: AJIora+GZVfL7JZ6ve+D/huafmLN6wK8/YrG9t7fQLA542+lMDxZkq6j
+        WIQ+zyeIbz0EGplyr3SIjYiTw58e/1+m
+X-Google-Smtp-Source: AGRyM1vjAm2ACJUKgM7Oeufp0VD0O+9YopjYmya2k8tdWlPGoq6N0mhrEHpH3vZWA4xG1ngifvqdyRs7SSv5
 X-Received: from irogers.svl.corp.google.com ([2620:15c:2d4:203:882a:af57:8cb6:6f9e])
- (user=irogers job=sendgmr) by 2002:a25:69d3:0:b0:671:7336:eab6 with SMTP id
- e202-20020a2569d3000000b006717336eab6mr7401221ybc.387.1658959755415; Wed, 27
- Jul 2022 15:09:15 -0700 (PDT)
-Date:   Wed, 27 Jul 2022 15:08:14 -0700
+ (user=irogers job=sendgmr) by 2002:a81:5404:0:b0:31c:c24d:94b0 with SMTP id
+ i4-20020a815404000000b0031cc24d94b0mr20487108ywb.502.1658959760633; Wed, 27
+ Jul 2022 15:09:20 -0700 (PDT)
+Date:   Wed, 27 Jul 2022 15:08:16 -0700
 In-Reply-To: <20220727220832.2865794-1-irogers@google.com>
-Message-Id: <20220727220832.2865794-13-irogers@google.com>
+Message-Id: <20220727220832.2865794-15-irogers@google.com>
 Mime-Version: 1.0
 References: <20220727220832.2865794-1-irogers@google.com>
 X-Mailer: git-send-email 2.37.1.359.gd136c6c3e2-goog
-Subject: [PATCH v3 12/30] perf vendor events: Update Intel icelake
+Subject: [PATCH v3 14/30] perf vendor events: Update Intel ivybridge
 From:   Ian Rogers <irogers@google.com>
 To:     perry.taylor@intel.com, caleb.biggers@intel.com,
         kshipra.bopardikar@intel.com,
@@ -80,16 +80,16 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Update to v1.14, the metrics are based on TMA 4.4 full.
+Update to v22, the metrics are based on TMA 4.4 full.
 
 Use script at:
 https://github.com/intel/event-converter-for-linux-perf/blob/master/downloa=
 d_and_gen.py
 
 to download and generate the latest events and metrics. Manually copy
-the icelake files into perf and update mapfile.csv.
+the ivybridge files into perf and update mapfile.csv.
 
-Tested on a non-icelake with 'perf test':
+Tested on a non-ivybridge with 'perf test':
  10: PMU events                                                      :
  10.1: PMU event table sanity                                        : Ok
  10.2: PMU event map aliases                                         : Ok
@@ -98,132 +98,69 @@ Tested on a non-icelake with 'perf test':
 
 Signed-off-by: Ian Rogers <irogers@google.com>
 ---
- .../pmu-events/arch/x86/icelake/cache.json    |   8 +-
- .../arch/x86/icelake/floating-point.json      |   2 +-
- .../pmu-events/arch/x86/icelake/frontend.json |   2 +-
- .../arch/x86/icelake/icl-metrics.json         | 126 ++++++++++++------
- .../arch/x86/icelake/uncore-other.json        |  31 +++++
- .../arch/x86/icelake/virtual-memory.json      |   2 +-
- tools/perf/pmu-events/arch/x86/mapfile.csv    |   4 +-
- 7 files changed, 123 insertions(+), 52 deletions(-)
- create mode 100644 tools/perf/pmu-events/arch/x86/icelake/uncore-other.jso=
-n
+ .../pmu-events/arch/x86/ivybridge/cache.json  |  2 +-
+ .../arch/x86/ivybridge/floating-point.json    |  2 +-
+ .../arch/x86/ivybridge/frontend.json          |  2 +-
+ .../arch/x86/ivybridge/ivb-metrics.json       | 94 +++++++++++++------
+ .../pmu-events/arch/x86/ivybridge/memory.json |  2 +-
+ .../pmu-events/arch/x86/ivybridge/other.json  |  2 +-
+ .../arch/x86/ivybridge/pipeline.json          |  4 +-
+ .../arch/x86/ivybridge/uncore-other.json      |  2 +-
+ .../arch/x86/ivybridge/virtual-memory.json    |  2 +-
+ tools/perf/pmu-events/arch/x86/mapfile.csv    |  2 +-
+ 10 files changed, 75 insertions(+), 39 deletions(-)
 
-diff --git a/tools/perf/pmu-events/arch/x86/icelake/cache.json b/tools/perf=
-/pmu-events/arch/x86/icelake/cache.json
-index 9989f3338f0a..b4f28f24ee63 100644
---- a/tools/perf/pmu-events/arch/x86/icelake/cache.json
-+++ b/tools/perf/pmu-events/arch/x86/icelake/cache.json
-@@ -303,7 +303,7 @@
-         "UMask": "0x41"
-     },
-     {
--        "BriefDescription": "All retired load instructions.",
-+        "BriefDescription": "Retired load instructions.",
-         "CollectPEBSRecord": "2",
-         "Counter": "0,1,2,3",
-         "Data_LA": "1",
-@@ -311,12 +311,12 @@
-         "EventName": "MEM_INST_RETIRED.ALL_LOADS",
-         "PEBS": "1",
-         "PEBScounters": "0,1,2,3",
--        "PublicDescription": "Counts all retired load instructions. This e=
-vent accounts for SW prefetch instructions for loads.",
-+        "PublicDescription": "Counts all retired load instructions. This e=
-vent accounts for SW prefetch instructions of PREFETCHNTA or PREFETCHT0/1/2=
- or PREFETCHW.",
-         "SampleAfterValue": "1000003",
-         "UMask": "0x81"
-     },
-     {
--        "BriefDescription": "All retired store instructions.",
-+        "BriefDescription": "Retired store instructions.",
-         "CollectPEBSRecord": "2",
-         "Counter": "0,1,2,3",
-         "Data_LA": "1",
-@@ -325,7 +325,7 @@
-         "L1_Hit_Indication": "1",
-         "PEBS": "1",
-         "PEBScounters": "0,1,2,3",
--        "PublicDescription": "Counts all retired store instructions. This =
-event account for SW prefetch instructions and PREFETCHW instruction for st=
-ores.",
-+        "PublicDescription": "Counts all retired store instructions.",
-         "SampleAfterValue": "1000003",
-         "UMask": "0x82"
-     },
-diff --git a/tools/perf/pmu-events/arch/x86/icelake/floating-point.json b/t=
-ools/perf/pmu-events/arch/x86/icelake/floating-point.json
-index 4347e2d0d090..1925388969bb 100644
---- a/tools/perf/pmu-events/arch/x86/icelake/floating-point.json
-+++ b/tools/perf/pmu-events/arch/x86/icelake/floating-point.json
-@@ -99,4 +99,4 @@
+diff --git a/tools/perf/pmu-events/arch/x86/ivybridge/cache.json b/tools/pe=
+rf/pmu-events/arch/x86/ivybridge/cache.json
+index 62e9705daa19..8adb2e45e23d 100644
+--- a/tools/perf/pmu-events/arch/x86/ivybridge/cache.json
++++ b/tools/perf/pmu-events/arch/x86/ivybridge/cache.json
+@@ -1099,4 +1099,4 @@
          "SampleAfterValue": "100003",
-         "UMask": "0x2"
+         "UMask": "0x10"
      }
 -]
 \ No newline at end of file
 +]
-diff --git a/tools/perf/pmu-events/arch/x86/icelake/frontend.json b/tools/p=
-erf/pmu-events/arch/x86/icelake/frontend.json
-index b510dd5d80da..739361d3f52f 100644
---- a/tools/perf/pmu-events/arch/x86/icelake/frontend.json
-+++ b/tools/perf/pmu-events/arch/x86/icelake/frontend.json
-@@ -494,4 +494,4 @@
-         "Speculative": "1",
+diff --git a/tools/perf/pmu-events/arch/x86/ivybridge/floating-point.json b=
+/tools/perf/pmu-events/arch/x86/ivybridge/floating-point.json
+index db8b1c4fceb0..4c2ac010cf55 100644
+--- a/tools/perf/pmu-events/arch/x86/ivybridge/floating-point.json
++++ b/tools/perf/pmu-events/arch/x86/ivybridge/floating-point.json
+@@ -166,4 +166,4 @@
+         "SampleAfterValue": "2000003",
          "UMask": "0x1"
      }
 -]
 \ No newline at end of file
 +]
-diff --git a/tools/perf/pmu-events/arch/x86/icelake/icl-metrics.json b/tool=
-s/perf/pmu-events/arch/x86/icelake/icl-metrics.json
-index 622c392f59be..f0356d66a927 100644
---- a/tools/perf/pmu-events/arch/x86/icelake/icl-metrics.json
-+++ b/tools/perf/pmu-events/arch/x86/icelake/icl-metrics.json
-@@ -38,7 +38,7 @@
-     {
-         "BriefDescription": "Fraction of Physical Core issue-slots utilize=
-d by this Logical Processor",
-         "MetricExpr": "TOPDOWN.SLOTS / ( TOPDOWN.SLOTS / 2 ) if #SMT_on el=
-se 1",
--        "MetricGroup": "SMT",
-+        "MetricGroup": "SMT;TmaL1",
-         "MetricName": "Slots_Utilization"
-     },
-     {
-@@ -61,24 +61,18 @@
-         "MetricName": "FLOPc"
-     },
-     {
--        "BriefDescription": "Actual per-core usage of the Floating Point e=
-xecution units (regardless of the vector width)",
-+        "BriefDescription": "Actual per-core usage of the Floating Point n=
-on-X87 execution units (regardless of precision or vector-width)",
-         "MetricExpr": "( (FP_ARITH_INST_RETIRED.SCALAR_SINGLE + FP_ARITH_I=
-NST_RETIRED.SCALAR_DOUBLE) + (FP_ARITH_INST_RETIRED.128B_PACKED_DOUBLE + FP=
-_ARITH_INST_RETIRED.128B_PACKED_SINGLE + FP_ARITH_INST_RETIRED.256B_PACKED_=
-DOUBLE + FP_ARITH_INST_RETIRED.256B_PACKED_SINGLE + FP_ARITH_INST_RETIRED.5=
-12B_PACKED_DOUBLE + FP_ARITH_INST_RETIRED.512B_PACKED_SINGLE) ) / ( 2 * CPU=
-_CLK_UNHALTED.DISTRIBUTED )",
-         "MetricGroup": "Cor;Flops;HPC",
-         "MetricName": "FP_Arith_Utilization",
--        "PublicDescription": "Actual per-core usage of the Floating Point =
-execution units (regardless of the vector width). Values > 1 are possible d=
-ue to Fused-Multiply Add (FMA) counting."
-+        "PublicDescription": "Actual per-core usage of the Floating Point =
-non-X87 execution units (regardless of precision or vector-width). Values >=
- 1 are possible due to ([BDW+] Fused-Multiply Add (FMA) counting - common; =
-[ADL+] use all of ADD/MUL/FMA in Scalar or 128/256-bit vectors - less commo=
-n)."
+diff --git a/tools/perf/pmu-events/arch/x86/ivybridge/frontend.json b/tools=
+/perf/pmu-events/arch/x86/ivybridge/frontend.json
+index c956a0a51312..2b1a82dd86ab 100644
+--- a/tools/perf/pmu-events/arch/x86/ivybridge/frontend.json
++++ b/tools/perf/pmu-events/arch/x86/ivybridge/frontend.json
+@@ -312,4 +312,4 @@
+         "SampleAfterValue": "2000003",
+         "UMask": "0x1"
+     }
+-]
+\ No newline at end of file
++]
+diff --git a/tools/perf/pmu-events/arch/x86/ivybridge/ivb-metrics.json b/to=
+ols/perf/pmu-events/arch/x86/ivybridge/ivb-metrics.json
+index 87670226f52d..3f48e75f8a86 100644
+--- a/tools/perf/pmu-events/arch/x86/ivybridge/ivb-metrics.json
++++ b/tools/perf/pmu-events/arch/x86/ivybridge/ivb-metrics.json
+@@ -130,17 +130,11 @@
+         "MetricName": "FLOPc_SMT"
      },
      {
 -        "BriefDescription": "Instruction-Level-Parallelism (average number=
  of uops executed when there is at least 1 uop executed)",
 +        "BriefDescription": "Instruction-Level-Parallelism (average number=
  of uops executed when there is execution) per-core",
-         "MetricExpr": "UOPS_EXECUTED.THREAD / (( UOPS_EXECUTED.CORE_CYCLES=
-_GE_1 / 2 ) if #SMT_on else UOPS_EXECUTED.CORE_CYCLES_GE_1)",
+         "MetricExpr": "UOPS_EXECUTED.THREAD / (( cpu@UOPS_EXECUTED.CORE\\,=
+cmask\\=3D1@ / 2 ) if #SMT_on else UOPS_EXECUTED.CYCLES_GE_1_UOP_EXEC)",
          "MetricGroup": "Backend;Cor;Pipeline;PortsUtil",
          "MetricName": "ILP"
      },
@@ -237,29 +174,20 @@ anch Misprediction (JEClear)",
      {
          "BriefDescription": "Core actual clocks when any Logical Processor=
  is active on the Physical Core",
-         "MetricExpr": "CPU_CLK_UNHALTED.DISTRIBUTED",
-@@ -169,12 +163,24 @@
-         "MetricName": "IpArith_AVX512",
-         "PublicDescription": "Instructions per FP Arithmetic AVX 512-bit i=
-nstruction (lower number means higher occurrence rate). May undercount due =
-to FMA double counting."
-     },
-+    {
-+        "BriefDescription": "Instructions per Software prefetch instructio=
-n (of any type: NTA/T0/T1/T2/Prefetch) (lower number means higher occurrenc=
-e rate)",
-+        "MetricExpr": "INST_RETIRED.ANY / cpu@SW_PREFETCH_ACCESS.T0\\,umas=
-k\\=3D0xF@",
-+        "MetricGroup": "Prefetches",
-+        "MetricName": "IpSWPF"
-+    },
-     {
-         "BriefDescription": "Total number of retired Instructions, Sample =
-with: INST_RETIRED.PREC_DIST",
-         "MetricExpr": "INST_RETIRED.ANY",
+         "MetricExpr": "( ( CPU_CLK_UNHALTED.THREAD / 2 ) * ( 1 + CPU_CLK_U=
+NHALTED.ONE_THREAD_ACTIVE / CPU_CLK_UNHALTED.REF_XCLK ) )",
+@@ -196,6 +190,18 @@
          "MetricGroup": "Summary;TmaL1",
          "MetricName": "Instructions"
      },
++    {
++        "BriefDescription": "Average number of Uops retired in cycles wher=
+e at least one uop has retired.",
++        "MetricExpr": "UOPS_RETIRED.RETIRE_SLOTS / cpu@UOPS_RETIRED.RETIRE=
+_SLOTS\\,cmask\\=3D1@",
++        "MetricGroup": "Pipeline;Ret",
++        "MetricName": "Retire"
++    },
 +    {
 +        "BriefDescription": "",
 +        "MetricExpr": "UOPS_EXECUTED.THREAD / cpu@UOPS_EXECUTED.THREAD\\,c=
@@ -268,53 +196,27 @@ mask\\=3D1@",
 +        "MetricName": "Execute"
 +    },
      {
-         "BriefDescription": "Average number of Uops issued by front-end wh=
-en it issued something",
-         "MetricExpr": "UOPS_ISSUED.ANY / cpu@UOPS_ISSUED.ANY\\,cmask\\=3D1=
-@",
-@@ -194,11 +200,23 @@
+         "BriefDescription": "Fraction of Uops delivered by the DSB (aka De=
+coded ICache; or Uop Cache)",
+         "MetricExpr": "IDQ.DSB_UOPS / (( IDQ.DSB_UOPS + LSD.UOPS + IDQ.MIT=
+E_UOPS + IDQ.MS_UOPS ) )",
+@@ -203,11 +209,16 @@
          "MetricName": "DSB_Coverage"
      },
      {
--        "BriefDescription": "Number of Instructions per non-speculative DS=
-B miss",
-+        "BriefDescription": "Average number of cycles of a switch from the=
- DSB fetch-unit to MITE fetch unit - see DSB_Switches tree node for details=
-.",
-+        "MetricExpr": "DSB2MITE_SWITCHES.PENALTY_CYCLES / cpu@DSB2MITE_SWI=
-TCHES.PENALTY_CYCLES\\,cmask\\=3D1\\,edge@",
-+        "MetricGroup": "DSBmiss",
-+        "MetricName": "DSB_Switch_Cost"
-+    },
-+    {
-+        "BriefDescription": "Number of Instructions per non-speculative DS=
-B miss (lower number means higher occurrence rate)",
-         "MetricExpr": "INST_RETIRED.ANY / FRONTEND_RETIRED.ANY_DSB_MISS",
-         "MetricGroup": "DSBmiss;Fed",
-         "MetricName": "IpDSB_Miss_Ret"
-     },
-+    {
+-        "BriefDescription": "Actual Average Latency for L1 data-cache miss=
+ demand load instructions (in core cycles)",
 +        "BriefDescription": "Number of Instructions per non-speculative Br=
 anch Misprediction (JEClear) (lower number means higher occurrence rate)",
 +        "MetricExpr": "INST_RETIRED.ANY / BR_MISP_RETIRED.ALL_BRANCHES",
 +        "MetricGroup": "Bad;BadSpec;BrMispredicts",
 +        "MetricName": "IpMispredict"
 +    },
-     {
-         "BriefDescription": "Fraction of branches that are non-taken condi=
-tionals",
-         "MetricExpr": "BR_INST_RETIRED.COND_NTAKEN / BR_INST_RETIRED.ALL_B=
-RANCHES",
-@@ -230,11 +248,10 @@
-         "MetricName": "Other_Branches"
-     },
-     {
--        "BriefDescription": "Actual Average Latency for L1 data-cache miss=
- demand load instructions (in core cycles)",
++    {
 +        "BriefDescription": "Actual Average Latency for L1 data-cache miss=
  demand load operations (in core cycles)",
-         "MetricExpr": "L1D_PEND_MISS.PENDING / ( MEM_LOAD_RETIRED.L1_MISS =
-+ MEM_LOAD_RETIRED.FB_HIT )",
+         "MetricExpr": "L1D_PEND_MISS.PENDING / ( MEM_LOAD_UOPS_RETIRED.L1_=
+MISS + mem_load_uops_retired.hit_lfb )",
          "MetricGroup": "Mem;MemoryBound;MemoryLat",
 -        "MetricName": "Load_Miss_Real_Latency",
 -        "PublicDescription": "Actual Average Latency for L1 data-cache mis=
@@ -326,7 +228,7 @@ or multi-load instructions - e.g. repeat strings."
          "BriefDescription": "Memory-Level-Parallelism (average number of L=
 1 miss demand load when there is at least one such miss. Per-Logical Proces=
 sor)",
-@@ -242,30 +259,6 @@
+@@ -215,24 +226,6 @@
          "MetricGroup": "Mem;MemoryBound;MemoryBW",
          "MetricName": "MLP"
      },
@@ -352,57 +254,14 @@ _time",
 -        "MetricGroup": "Mem;MemoryBW",
 -        "MetricName": "L3_Cache_Fill_BW"
 -    },
--    {
--        "BriefDescription": "Average per-core data access bandwidth to the=
- L3 cache [GB / sec]",
--        "MetricExpr": "64 * OFFCORE_REQUESTS.ALL_REQUESTS / 1000000000 / d=
-uration_time",
--        "MetricGroup": "Mem;MemoryBW;Offcore",
--        "MetricName": "L3_Cache_Access_BW"
--    },
      {
          "BriefDescription": "L1 cache true misses per kilo instruction for=
  retired demand loads",
-         "MetricExpr": "1000 * MEM_LOAD_RETIRED.L1_MISS / INST_RETIRED.ANY"=
-,
-@@ -285,13 +278,13 @@
-         "MetricName": "L2MPKI"
-     },
-     {
--        "BriefDescription": "L2 cache misses per kilo instruction for all =
-request types (including speculative)",
-+        "BriefDescription": "L2 cache ([RKL+] true) misses per kilo instru=
-ction for all request types (including speculative)",
-         "MetricExpr": "1000 * ( ( OFFCORE_REQUESTS.ALL_DATA_RD - OFFCORE_R=
-EQUESTS.DEMAND_DATA_RD ) + L2_RQSTS.ALL_DEMAND_MISS + L2_RQSTS.SWPF_MISS ) =
-/ INST_RETIRED.ANY",
-         "MetricGroup": "Mem;CacheMisses;Offcore",
-         "MetricName": "L2MPKI_All"
-     },
-     {
--        "BriefDescription": "L2 cache misses per kilo instruction for all =
-demand loads  (including speculative)",
-+        "BriefDescription": "L2 cache ([RKL+] true) misses per kilo instru=
-ction for all demand loads  (including speculative)",
-         "MetricExpr": "1000 * L2_RQSTS.DEMAND_DATA_RD_MISS / INST_RETIRED.=
-ANY",
-         "MetricGroup": "Mem;CacheMisses",
-         "MetricName": "L2MPKI_Load"
-@@ -309,7 +302,7 @@
-         "MetricName": "L3MPKI"
-     },
-     {
--        "BriefDescription": "Fill Buffer (FB) true hits per kilo instructi=
-ons for retired demand loads",
-+        "BriefDescription": "Fill Buffer (FB) hits per kilo instructions f=
-or retired demand loads (L1D misses that merge into ongoing miss-handling e=
-ntries)",
-         "MetricExpr": "1000 * MEM_LOAD_RETIRED.FB_HIT / INST_RETIRED.ANY",
-         "MetricGroup": "Mem;CacheMisses",
-         "MetricName": "FB_HPKI"
-@@ -321,6 +314,54 @@
-         "MetricGroup": "Mem;MemoryTLB",
-         "MetricName": "Page_Walks_Utilization"
+         "MetricExpr": "1000 * MEM_LOAD_UOPS_RETIRED.L1_MISS / INST_RETIRED=
+.ANY",
+@@ -264,6 +257,48 @@
+         "MetricGroup": "Mem;MemoryTLB_SMT",
+         "MetricName": "Page_Walks_Utilization_SMT"
      },
 +    {
 +        "BriefDescription": "Average per-core data fill bandwidth to the L=
@@ -425,14 +284,6 @@ ntries)",
 _time",
 +        "MetricGroup": "Mem;MemoryBW",
 +        "MetricName": "L3_Cache_Fill_BW"
-+    },
-+    {
-+        "BriefDescription": "Average per-core data access bandwidth to the=
- L3 cache [GB / sec]",
-+        "MetricExpr": "64 * OFFCORE_REQUESTS.ALL_REQUESTS / 1000000000 / d=
-uration_time",
-+        "MetricGroup": "Mem;MemoryBW;Offcore",
-+        "MetricName": "L3_Cache_Access_BW"
 +    },
 +    {
 +        "BriefDescription": "Average per-thread data fill bandwidth to the=
@@ -461,22 +312,19 @@ n_time)",
 +    {
 +        "BriefDescription": "Average per-thread data access bandwidth to t=
 he L3 cache [GB / sec]",
-+        "MetricExpr": "(64 * OFFCORE_REQUESTS.ALL_REQUESTS / 1000000000 / =
-duration_time)",
++        "MetricExpr": "0",
 +        "MetricGroup": "Mem;MemoryBW;Offcore",
 +        "MetricName": "L3_Cache_Access_BW_1T"
 +    },
      {
          "BriefDescription": "Average CPU Utilization",
          "MetricExpr": "CPU_CLK_UNHALTED.REF_TSC / msr@tsc@",
-@@ -337,7 +378,8 @@
+@@ -280,7 +315,8 @@
          "BriefDescription": "Giga Floating Point Operations Per Second",
-         "MetricExpr": "( ( 1 * ( FP_ARITH_INST_RETIRED.SCALAR_SINGLE + FP_=
-ARITH_INST_RETIRED.SCALAR_DOUBLE ) + 2 * FP_ARITH_INST_RETIRED.128B_PACKED_=
-DOUBLE + 4 * ( FP_ARITH_INST_RETIRED.128B_PACKED_SINGLE + FP_ARITH_INST_RET=
-IRED.256B_PACKED_DOUBLE ) + 8 * ( FP_ARITH_INST_RETIRED.256B_PACKED_SINGLE =
-+ FP_ARITH_INST_RETIRED.512B_PACKED_DOUBLE ) + 16 * FP_ARITH_INST_RETIRED.5=
-12B_PACKED_SINGLE ) / 1000000000 ) / duration_time",
+         "MetricExpr": "( ( 1 * ( FP_COMP_OPS_EXE.SSE_SCALAR_SINGLE + FP_CO=
+MP_OPS_EXE.SSE_SCALAR_DOUBLE ) + 2 * FP_COMP_OPS_EXE.SSE_PACKED_DOUBLE + 4 =
+* ( FP_COMP_OPS_EXE.SSE_PACKED_SINGLE + SIMD_FP_256.PACKED_DOUBLE ) + 8 * S=
+IMD_FP_256.PACKED_SINGLE ) / 1000000000 ) / duration_time",
          "MetricGroup": "Cor;Flops;HPC",
 -        "MetricName": "GFLOPs"
 +        "MetricName": "GFLOPs",
@@ -487,55 +335,83 @@ instructions, vector-width and AMX engine."
      {
          "BriefDescription": "Average Frequency Utilization relative nomina=
 l frequency",
-diff --git a/tools/perf/pmu-events/arch/x86/icelake/uncore-other.json b/too=
-ls/perf/pmu-events/arch/x86/icelake/uncore-other.json
-new file mode 100644
-index 000000000000..e007b976547d
---- /dev/null
-+++ b/tools/perf/pmu-events/arch/x86/icelake/uncore-other.json
-@@ -0,0 +1,31 @@
-+[
-+    {
-+        "BriefDescription": "Number of entries allocated. Account for Any =
-type: e.g. Snoop,  etc.",
-+        "Counter": "1",
-+        "EventCode": "0x84",
-+        "EventName": "UNC_ARB_COH_TRK_REQUESTS.ALL",
-+        "PerPkg": "1",
-+        "PublicDescription": "Number of entries allocated. Account for Any=
- type: e.g. Snoop,  etc.",
-+        "UMask": "0x01",
-+        "Unit": "ARB"
-+    },
-+    {
-+        "BriefDescription": "Total number of all outgoing entries allocate=
-d. Accounts for Coherent and non-coherent traffic.",
-+        "Counter": "1",
-+        "EventCode": "0x81",
-+        "EventName": "UNC_ARB_TRK_REQUESTS.ALL",
-+        "PerPkg": "1",
-+        "PublicDescription": "Total number of all outgoing entries allocat=
-ed. Accounts for Coherent and non-coherent traffic.",
-+        "UMask": "0x01",
-+        "Unit": "ARB"
-+    },
-+    {
-+        "BriefDescription": "UNC_CLOCK.SOCKET",
-+        "Counter": "FIXED",
-+        "EventCode": "0xff",
-+        "EventName": "UNC_CLOCK.SOCKET",
-+        "PerPkg": "1",
-+        "PublicDescription": "UNC_CLOCK.SOCKET",
-+        "Unit": "CLOCK"
-+    }
+diff --git a/tools/perf/pmu-events/arch/x86/ivybridge/memory.json b/tools/p=
+erf/pmu-events/arch/x86/ivybridge/memory.json
+index 5f98f7746cf7..30fc0af61eb3 100644
+--- a/tools/perf/pmu-events/arch/x86/ivybridge/memory.json
++++ b/tools/perf/pmu-events/arch/x86/ivybridge/memory.json
+@@ -233,4 +233,4 @@
+         "SampleAfterValue": "100003",
+         "UMask": "0x1"
+     }
+-]
+\ No newline at end of file
 +]
-diff --git a/tools/perf/pmu-events/arch/x86/icelake/virtual-memory.json b/t=
-ools/perf/pmu-events/arch/x86/icelake/virtual-memory.json
-index a006fd7f7b18..58809e16bf98 100644
---- a/tools/perf/pmu-events/arch/x86/icelake/virtual-memory.json
-+++ b/tools/perf/pmu-events/arch/x86/icelake/virtual-memory.json
-@@ -242,4 +242,4 @@
-         "Speculative": "1",
+diff --git a/tools/perf/pmu-events/arch/x86/ivybridge/other.json b/tools/pe=
+rf/pmu-events/arch/x86/ivybridge/other.json
+index 83fe8f79adc6..2d62521791d8 100644
+--- a/tools/perf/pmu-events/arch/x86/ivybridge/other.json
++++ b/tools/perf/pmu-events/arch/x86/ivybridge/other.json
+@@ -41,4 +41,4 @@
+         "SampleAfterValue": "2000003",
+         "UMask": "0x1"
+     }
+-]
+\ No newline at end of file
++]
+diff --git a/tools/perf/pmu-events/arch/x86/ivybridge/pipeline.json b/tools=
+/perf/pmu-events/arch/x86/ivybridge/pipeline.json
+index 2de31c56c2a5..d89d3f8db190 100644
+--- a/tools/perf/pmu-events/arch/x86/ivybridge/pipeline.json
++++ b/tools/perf/pmu-events/arch/x86/ivybridge/pipeline.json
+@@ -676,7 +676,7 @@
+         "UMask": "0x3"
+     },
+     {
+-        "BriefDescription": "Number of occurences waiting for the checkpoi=
+nts in Resource Allocation Table (RAT) to be recovered after Nuke due to al=
+l other cases except JEClear (e.g. whenever a ucode assist is needed like S=
+SE exception, memory disambiguation, etc.)",
++        "BriefDescription": "Number of occurrences waiting for the checkpo=
+ints in Resource Allocation Table (RAT) to be recovered after Nuke due to a=
+ll other cases except JEClear (e.g. whenever a ucode assist is needed like =
+SSE exception, memory disambiguation, etc.)",
+         "Counter": "0,1,2,3",
+         "CounterHTOff": "0,1,2,3,4,5,6,7",
+         "CounterMask": "1",
+@@ -1269,4 +1269,4 @@
+         "SampleAfterValue": "2000003",
+         "UMask": "0x1"
+     }
+-]
+\ No newline at end of file
++]
+diff --git a/tools/perf/pmu-events/arch/x86/ivybridge/uncore-other.json b/t=
+ools/perf/pmu-events/arch/x86/ivybridge/uncore-other.json
+index 6278068908cf..88f1e326205f 100644
+--- a/tools/perf/pmu-events/arch/x86/ivybridge/uncore-other.json
++++ b/tools/perf/pmu-events/arch/x86/ivybridge/uncore-other.json
+@@ -82,10 +82,10 @@
+     {
+         "BriefDescription": "This 48-bit fixed counter counts the UCLK cyc=
+les.",
+         "Counter": "Fixed",
++        "EventCode": "0xff",
+         "EventName": "UNC_CLOCK.SOCKET",
+         "PerPkg": "1",
+         "PublicDescription": "This 48-bit fixed counter counts the UCLK cy=
+cles.",
+-        "UMask": "0x01",
+         "Unit": "ARB"
+     }
+ ]
+diff --git a/tools/perf/pmu-events/arch/x86/ivybridge/virtual-memory.json b=
+/tools/perf/pmu-events/arch/x86/ivybridge/virtual-memory.json
+index 8cf1549797b0..a5e387bbb134 100644
+--- a/tools/perf/pmu-events/arch/x86/ivybridge/virtual-memory.json
++++ b/tools/perf/pmu-events/arch/x86/ivybridge/virtual-memory.json
+@@ -177,4 +177,4 @@
+         "SampleAfterValue": "100007",
          "UMask": "0x20"
      }
 -]
@@ -543,28 +419,18 @@ index a006fd7f7b18..58809e16bf98 100644
 +]
 diff --git a/tools/perf/pmu-events/arch/x86/mapfile.csv b/tools/perf/pmu-ev=
 ents/arch/x86/mapfile.csv
-index b602d2da1b89..898e507288a2 100644
+index 9a9593abd274..dbb1197805d3 100644
 --- a/tools/perf/pmu-events/arch/x86/mapfile.csv
 +++ b/tools/perf/pmu-events/arch/x86/mapfile.csv
-@@ -10,6 +10,7 @@ GenuineIntel-6-5[CF],v13,goldmont,core
- GenuineIntel-6-7A,v1.01,goldmontplus,core
- GenuineIntel-6-(3C|45|46),v31,haswell,core
+@@ -12,7 +12,7 @@ GenuineIntel-6-(3C|45|46),v31,haswell,core
  GenuineIntel-6-3F,v25,haswellx,core
-+GenuineIntel-6-(7D|7E|A7),v1.14,icelake,core
- GenuineIntel-6-3A,v18,ivybridge,core
+ GenuineIntel-6-(7D|7E|A7),v1.14,icelake,core
+ GenuineIntel-6-6[AC],v1.15,icelakex,core
+-GenuineIntel-6-3A,v18,ivybridge,core
++GenuineIntel-6-3A,v22,ivybridge,core
  GenuineIntel-6-3E,v19,ivytown,core
  GenuineIntel-6-2D,v20,jaketown,core
-@@ -29,10 +30,7 @@ GenuineIntel-6-2C,v2,westmereep-dp,core
- GenuineIntel-6-25,v2,westmereep-sp,core
- GenuineIntel-6-2F,v2,westmereex,core
- GenuineIntel-6-55-[01234],v1,skylakex,core
--GenuineIntel-6-7D,v1,icelake,core
--GenuineIntel-6-7E,v1,icelake,core
- GenuineIntel-6-8[CD],v1,tigerlake,core
--GenuineIntel-6-A7,v1,icelake,core
- GenuineIntel-6-6A,v1,icelakex,core
- GenuineIntel-6-6C,v1,icelakex,core
- GenuineIntel-6-86,v1,snowridgex,core
+ GenuineIntel-6-57,v9,knightslanding,core
 --=20
 2.37.1.359.gd136c6c3e2-goog
 
