@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2081C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:16:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08050C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:16:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241667AbiG0RQJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:16:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33612 "EHLO
+        id S241679AbiG0RQL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:16:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241795AbiG0ROb (ORCPT
+        with ESMTP id S241836AbiG0ROi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:14:31 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A1CF77572;
-        Wed, 27 Jul 2022 09:42:47 -0700 (PDT)
+        Wed, 27 Jul 2022 13:14:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E470B77A70;
+        Wed, 27 Jul 2022 09:42:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 840D0B8200D;
-        Wed, 27 Jul 2022 16:42:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCF52C433C1;
-        Wed, 27 Jul 2022 16:42:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5191DB8200C;
+        Wed, 27 Jul 2022 16:42:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B788EC433D6;
+        Wed, 27 Jul 2022 16:42:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940166;
-        bh=p1mKswKA82g8eOfFbK/W8nJGLiC3+vljUyxkXSYih3Q=;
+        s=korg; t=1658940169;
+        bh=IFTfDq/nVu8Qnxd+Azjs3hp0b6V9a7EczhZA0GvkXpU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uNqOzLmIDn/YDoY5rCW7shrh6nsaF6GMnPW8scN16kjuF4zFxpyKLoQLsLG6ssaRb
-         Qm4X8Ejq0UEjqnvPIBfuk6djqqAAFfLHt1rorWCaunSI5sIjNAgJ9Dy3hf2pPg7Ta+
-         DFXvBI4GHduHvnVd7qsq4FUuS4BZZlWfjcIMNpBk=
+        b=FDP++Xiqpvj+y2Apfh1BE3djzNU8/pMAtZzufWuv8YI3+Iin3/5UP2H46YSn0ThFr
+         DJobb31Hhj6yGPAIgoPXMsC0W7TgFpbg/HURAQgrAFNFaUrepo/RDk6jtxXHuqNNQ8
+         Fxx4NLTCyp2PLLUvjXY/gvDGOvAalG3jKBtSmeOI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 128/201] tcp: Fix a data-race around sysctl_tcp_rfc1337.
-Date:   Wed, 27 Jul 2022 18:10:32 +0200
-Message-Id: <20220727161033.079405045@linuxfoundation.org>
+Subject: [PATCH 5.15 129/201] tcp: Fix a data-race around sysctl_tcp_abort_on_overflow.
+Date:   Wed, 27 Jul 2022 18:10:33 +0200
+Message-Id: <20220727161033.123532033@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -51,9 +51,9 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 0b484c91911e758e53656d570de58c2ed81ec6f2 ]
+[ Upstream commit 2d17d9c7382327d00aeaea35af44e9b26d53206e ]
 
-While reading sysctl_tcp_rfc1337, it can be changed concurrently.
+While reading sysctl_tcp_abort_on_overflow, it can be changed concurrently.
 Thus, we need to add READ_ONCE() to its reader.
 
 Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
@@ -65,18 +65,18 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
-index 13783fc58e03..39d8101e8f99 100644
+index 39d8101e8f99..41368e77fbb8 100644
 --- a/net/ipv4/tcp_minisocks.c
 +++ b/net/ipv4/tcp_minisocks.c
-@@ -180,7 +180,7 @@ tcp_timewait_state_process(struct inet_timewait_sock *tw, struct sk_buff *skb,
- 			 * Oh well... nobody has a sufficient solution to this
- 			 * protocol bug yet.
- 			 */
--			if (twsk_net(tw)->ipv4.sysctl_tcp_rfc1337 == 0) {
-+			if (!READ_ONCE(twsk_net(tw)->ipv4.sysctl_tcp_rfc1337)) {
- kill:
- 				inet_twsk_deschedule_put(tw);
- 				return TCP_TW_SUCCESS;
+@@ -789,7 +789,7 @@ struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
+ 	if (sk != req->rsk_listener)
+ 		__NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPMIGRATEREQFAILURE);
+ 
+-	if (!sock_net(sk)->ipv4.sysctl_tcp_abort_on_overflow) {
++	if (!READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_abort_on_overflow)) {
+ 		inet_rsk(req)->acked = 1;
+ 		return NULL;
+ 	}
 -- 
 2.35.1
 
