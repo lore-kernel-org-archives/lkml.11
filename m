@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA3A7C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:25:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD6FEC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:25:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240356AbiG0RZm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:25:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44456 "EHLO
+        id S232229AbiG0RZr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:25:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242208AbiG0RYk (ORCPT
+        with ESMTP id S242243AbiG0RYp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:24:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFDA67C1A3;
-        Wed, 27 Jul 2022 09:46:15 -0700 (PDT)
+        Wed, 27 Jul 2022 13:24:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A86115F9A6;
+        Wed, 27 Jul 2022 09:46:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C686BB821BE;
-        Wed, 27 Jul 2022 16:46:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24760C433C1;
-        Wed, 27 Jul 2022 16:46:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C293C60DDB;
+        Wed, 27 Jul 2022 16:46:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF6EEC433D6;
+        Wed, 27 Jul 2022 16:46:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940369;
-        bh=shgkTiZDpmlnjyo4+9wTAq+VzpGLrb6OW/DecDopaRE=;
+        s=korg; t=1658940372;
+        bh=7cxcXXPeU7k5QbBJxp1iNTuJ664l3od0idVpycl5vRg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2UVM6bzIW9HP7wtnqrw/XFfmTF91m2ZTlUKlQOJ6GQfHXaNRuUrYc7e3YbTqBDa0h
-         WaJGjcis00Fgsj/BFh4VEuZ+XYaPVJB9vctkxPUhJ9OtioZ2Ilm6T3uQdfdQELAm1V
-         CVOy1ap82MrwlHoeJMWi05r0D05F1FUOTCt3YPEs=
+        b=OGFVrkB6f3JJo5Zp6bZVlArSwn85rMEegMFIKf/oZwZ7dTpfMTW1++T5ECb3m6j7I
+         ywBhsEDGQbJe7r1JYwxyUqfuv9LFzirV62NMihCsD9Z7wDhDb7M/JvLM0uPTpbAJvj
+         AHUV7ycPOAPxDa7kFCTyWurJcjg7aqw5/oKQ+cSg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Harry Wentland <harry.wentland@amd.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.15 200/201] drm/amdgpu: Off by one in dm_dmub_outbox1_low_irq()
-Date:   Wed, 27 Jul 2022 18:11:44 +0200
-Message-Id: <20220727161036.086600544@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Subject: [PATCH 5.15 174/201] Bluetooth: Add bt_skb_sendmsg helper
+Date:   Wed, 27 Jul 2022 18:11:18 +0200
+Message-Id: <20220727161035.014956207@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -49,32 +50,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 
-commit a35faec3db0e13aac8ea720bc1a3503081dd5a3d upstream.
+commit 38f64f650dc0e44c146ff88d15a7339efa325918 upstream.
 
-The > ARRAY_SIZE() should be >= ARRAY_SIZE() to prevent an out of bounds
-access.
+bt_skb_sendmsg helps takes care of allocation the skb and copying the
+the contents of msg over to the skb while checking for possible errors
+so it should be safe to call it without holding lock_sock.
 
-Fixes: e27c41d5b068 ("drm/amd/display: Support for DMUB HPD interrupt handling")
-Reviewed-by: Harry Wentland <harry.wentland@amd.com>
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Cc: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/net/bluetooth/bluetooth.h |   28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
 
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-@@ -757,7 +757,7 @@ static void dm_dmub_outbox1_low_irq(void
- 		if (irq_params->irq_src == DC_IRQ_SOURCE_DMCUB_OUTBOX) {
- 			do {
- 				dc_stat_get_dmub_notification(adev->dm.dc, &notify);
--				if (notify.type > ARRAY_SIZE(dm->dmub_thread_offload)) {
-+				if (notify.type >= ARRAY_SIZE(dm->dmub_thread_offload)) {
- 					DRM_ERROR("DM: notify type %d larger than the array size %ld !", notify.type,
- 					ARRAY_SIZE(dm->dmub_thread_offload));
- 					continue;
+--- a/include/net/bluetooth/bluetooth.h
++++ b/include/net/bluetooth/bluetooth.h
+@@ -422,6 +422,34 @@ out:
+ 	return NULL;
+ }
+ 
++/* Shall not be called with lock_sock held */
++static inline struct sk_buff *bt_skb_sendmsg(struct sock *sk,
++					     struct msghdr *msg,
++					     size_t len, size_t mtu,
++					     size_t headroom, size_t tailroom)
++{
++	struct sk_buff *skb;
++	size_t size = min_t(size_t, len, mtu);
++	int err;
++
++	skb = bt_skb_send_alloc(sk, size + headroom + tailroom,
++				msg->msg_flags & MSG_DONTWAIT, &err);
++	if (!skb)
++		return ERR_PTR(err);
++
++	skb_reserve(skb, headroom);
++	skb_tailroom_reserve(skb, mtu, tailroom);
++
++	if (!copy_from_iter_full(skb_put(skb, size), size, &msg->msg_iter)) {
++		kfree_skb(skb);
++		return ERR_PTR(-EFAULT);
++	}
++
++	skb->priority = sk->sk_priority;
++
++	return skb;
++}
++
+ int bt_to_errno(u16 code);
+ 
+ void hci_sock_set_flag(struct sock *sk, int nr);
 
 
