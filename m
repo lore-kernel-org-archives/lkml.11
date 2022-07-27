@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F1EDC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:23:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45D92C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:23:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242045AbiG0RXp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:23:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51584 "EHLO
+        id S230102AbiG0RXt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:23:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242008AbiG0RW6 (ORCPT
+        with ESMTP id S242017AbiG0RXH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:22:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AD197AB02;
-        Wed, 27 Jul 2022 09:45:41 -0700 (PDT)
+        Wed, 27 Jul 2022 13:23:07 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFA507AB10;
+        Wed, 27 Jul 2022 09:45:42 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 94F5561561;
-        Wed, 27 Jul 2022 16:45:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FB81C433D6;
-        Wed, 27 Jul 2022 16:45:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F33A6155E;
+        Wed, 27 Jul 2022 16:45:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47005C433D7;
+        Wed, 27 Jul 2022 16:45:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940339;
-        bh=vTiLwE0dkZkmLTjWT9JEPftwV50J2xM5ZrnPnwkywy0=;
+        s=korg; t=1658940330;
+        bh=7yvDQWnND4ZyWhVfrWdvzBV3QLcB2BtDLr3nL9fwep4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PiXj7e11cQ0bu71s/SvF0X2mnysvYsu5smg0vZntc3reH+/zyoj/03VrjciUf6r4/
-         3ZVlFZxetjyW+Di9PI/5bAulembE1AQTri5gzZxaRnQmRdMOjhBJRJ2S8633dqlydn
-         Fobs72vv5Assl9KS+YmuNPi9beTBHzr5OJgpiwgU=
+        b=fJlUT+Jvodi9VGlYg80XE+KBL7nbu5Cb1Yl/Ja2THRlMXK1Uso4fdx0kRfhILqCE6
+         6MIIfV518fZ+nlFXfFo7K4RSOShXU6XPJW7Ahkm/rO4kTumJo+sIrTRb3WEFGtLezn
+         WGxhkFv89+kWlu/sJwfFBRSc481GDNNu99zodY9Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 5.15 190/201] tty: drop tty_schedule_flip()
-Date:   Wed, 27 Jul 2022 18:11:34 +0200
-Message-Id: <20220727161035.639661748@linuxfoundation.org>
+        stable@vger.kernel.org, Noam Rathaus <noamr@ssd-disclosure.com>,
+        David Howells <dhowells@redhat.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.15 187/201] watchqueue: make sure to serialize wqueue->defunct properly
+Date:   Wed, 27 Jul 2022 18:11:31 +0200
+Message-Id: <20220727161035.521196235@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -48,82 +49,135 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiri Slaby <jslaby@suse.cz>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-commit 5db96ef23bda6c2a61a51693c85b78b52d03f654 upstream.
+commit 353f7988dd8413c47718f7ca79c030b6fb62cfe5 upstream.
 
-Since commit a9c3f68f3cd8d (tty: Fix low_latency BUG) in 2014,
-tty_flip_buffer_push() is only a wrapper to tty_schedule_flip(). All
-users were converted in the previous patches, so remove
-tty_schedule_flip() completely while inlining its body into
-tty_flip_buffer_push().
+When the pipe is closed, we mark the associated watchqueue defunct by
+calling watch_queue_clear().  However, while that is protected by the
+watchqueue lock, new watchqueue entries aren't actually added under that
+lock at all: they use the pipe->rd_wait.lock instead, and looking up
+that pipe happens without any locking.
 
-One less exported function.
+The watchqueue code uses the RCU read-side section to make sure that the
+wqueue entry itself hasn't disappeared, but that does not protect the
+pipe_info in any way.
 
-Reviewed-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Link: https://lore.kernel.org/r/20211122111648.30379-4-jslaby@suse.cz
+So make sure to actually hold the wqueue lock when posting watch events,
+properly serializing against the pipe being torn down.
+
+Reported-by: Noam Rathaus <noamr@ssd-disclosure.com>
+Cc: Greg KH <gregkh@linuxfoundation.org>
+Cc: David Howells <dhowells@redhat.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/tty_buffer.c |   30 ++++++++----------------------
- include/linux/tty_flip.h |    1 -
- 2 files changed, 8 insertions(+), 23 deletions(-)
+ kernel/watch_queue.c |   53 +++++++++++++++++++++++++++++++++++----------------
+ 1 file changed, 37 insertions(+), 16 deletions(-)
 
---- a/drivers/tty/tty_buffer.c
-+++ b/drivers/tty/tty_buffer.c
-@@ -403,27 +403,6 @@ int __tty_insert_flip_char(struct tty_po
- EXPORT_SYMBOL(__tty_insert_flip_char);
+--- a/kernel/watch_queue.c
++++ b/kernel/watch_queue.c
+@@ -34,6 +34,27 @@ MODULE_LICENSE("GPL");
+ #define WATCH_QUEUE_NOTE_SIZE 128
+ #define WATCH_QUEUE_NOTES_PER_PAGE (PAGE_SIZE / WATCH_QUEUE_NOTE_SIZE)
  
- /**
-- *	tty_schedule_flip	-	push characters to ldisc
-- *	@port: tty port to push from
-- *
-- *	Takes any pending buffers and transfers their ownership to the
-- *	ldisc side of the queue. It then schedules those characters for
-- *	processing by the line discipline.
-- */
--
--void tty_schedule_flip(struct tty_port *port)
--{
--	struct tty_bufhead *buf = &port->buf;
--
--	/* paired w/ acquire in flush_to_ldisc(); ensures
--	 * flush_to_ldisc() sees buffer data.
--	 */
--	smp_store_release(&buf->tail->commit, buf->tail->used);
--	queue_work(system_unbound_wq, &buf->work);
--}
--EXPORT_SYMBOL(tty_schedule_flip);
--
--/**
-  *	tty_prepare_flip_string		-	make room for characters
-  *	@port: tty port
-  *	@chars: return pointer for character write area
-@@ -567,7 +546,14 @@ static void flush_to_ldisc(struct work_s
- 
- void tty_flip_buffer_push(struct tty_port *port)
- {
--	tty_schedule_flip(port);
-+	struct tty_bufhead *buf = &port->buf;
++/*
++ * This must be called under the RCU read-lock, which makes
++ * sure that the wqueue still exists. It can then take the lock,
++ * and check that the wqueue hasn't been destroyed, which in
++ * turn makes sure that the notification pipe still exists.
++ */
++static inline bool lock_wqueue(struct watch_queue *wqueue)
++{
++	spin_lock_bh(&wqueue->lock);
++	if (unlikely(wqueue->defunct)) {
++		spin_unlock_bh(&wqueue->lock);
++		return false;
++	}
++	return true;
++}
 +
-+	/*
-+	 * Paired w/ acquire in flush_to_ldisc(); ensures flush_to_ldisc() sees
-+	 * buffer data.
-+	 */
-+	smp_store_release(&buf->tail->commit, buf->tail->used);
-+	queue_work(system_unbound_wq, &buf->work);
- }
- EXPORT_SYMBOL(tty_flip_buffer_push);
++static inline void unlock_wqueue(struct watch_queue *wqueue)
++{
++	spin_unlock_bh(&wqueue->lock);
++}
++
+ static void watch_queue_pipe_buf_release(struct pipe_inode_info *pipe,
+ 					 struct pipe_buffer *buf)
+ {
+@@ -69,6 +90,10 @@ static const struct pipe_buf_operations
  
---- a/include/linux/tty_flip.h
-+++ b/include/linux/tty_flip.h
-@@ -17,7 +17,6 @@ extern int tty_insert_flip_string_fixed_
- extern int tty_prepare_flip_string(struct tty_port *port,
- 		unsigned char **chars, size_t size);
- extern void tty_flip_buffer_push(struct tty_port *port);
--void tty_schedule_flip(struct tty_port *port);
- int __tty_insert_flip_char(struct tty_port *port, unsigned char ch, char flag);
+ /*
+  * Post a notification to a watch queue.
++ *
++ * Must be called with the RCU lock for reading, and the
++ * watch_queue lock held, which guarantees that the pipe
++ * hasn't been released.
+  */
+ static bool post_one_notification(struct watch_queue *wqueue,
+ 				  struct watch_notification *n)
+@@ -85,9 +110,6 @@ static bool post_one_notification(struct
  
- static inline int tty_insert_flip_char(struct tty_port *port,
+ 	spin_lock_irq(&pipe->rd_wait.lock);
+ 
+-	if (wqueue->defunct)
+-		goto out;
+-
+ 	mask = pipe->ring_size - 1;
+ 	head = pipe->head;
+ 	tail = pipe->tail;
+@@ -203,7 +225,10 @@ void __post_watch_notification(struct wa
+ 		if (security_post_notification(watch->cred, cred, n) < 0)
+ 			continue;
+ 
+-		post_one_notification(wqueue, n);
++		if (lock_wqueue(wqueue)) {
++			post_one_notification(wqueue, n);
++			unlock_wqueue(wqueue);;
++		}
+ 	}
+ 
+ 	rcu_read_unlock();
+@@ -465,11 +490,12 @@ int add_watch_to_object(struct watch *wa
+ 		return -EAGAIN;
+ 	}
+ 
+-	spin_lock_bh(&wqueue->lock);
+-	kref_get(&wqueue->usage);
+-	kref_get(&watch->usage);
+-	hlist_add_head(&watch->queue_node, &wqueue->watches);
+-	spin_unlock_bh(&wqueue->lock);
++	if (lock_wqueue(wqueue)) {
++		kref_get(&wqueue->usage);
++		kref_get(&watch->usage);
++		hlist_add_head(&watch->queue_node, &wqueue->watches);
++		unlock_wqueue(wqueue);
++	}
+ 
+ 	hlist_add_head(&watch->list_node, &wlist->watchers);
+ 	return 0;
+@@ -523,20 +549,15 @@ found:
+ 
+ 	wqueue = rcu_dereference(watch->queue);
+ 
+-	/* We don't need the watch list lock for the next bit as RCU is
+-	 * protecting *wqueue from deallocation.
+-	 */
+-	if (wqueue) {
++	if (lock_wqueue(wqueue)) {
+ 		post_one_notification(wqueue, &n.watch);
+ 
+-		spin_lock_bh(&wqueue->lock);
+-
+ 		if (!hlist_unhashed(&watch->queue_node)) {
+ 			hlist_del_init_rcu(&watch->queue_node);
+ 			put_watch(watch);
+ 		}
+ 
+-		spin_unlock_bh(&wqueue->lock);
++		unlock_wqueue(wqueue);
+ 	}
+ 
+ 	if (wlist->release_watch) {
 
 
