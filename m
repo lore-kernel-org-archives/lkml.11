@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06712C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:10:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A60BC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:10:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229939AbiG0RKx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:10:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48800 "EHLO
+        id S241556AbiG0RK5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:10:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241701AbiG0RJc (ORCPT
+        with ESMTP id S241716AbiG0RJh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:09:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C377743C9;
-        Wed, 27 Jul 2022 09:41:05 -0700 (PDT)
+        Wed, 27 Jul 2022 13:09:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9C01743DB;
+        Wed, 27 Jul 2022 09:41:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2672A601C3;
-        Wed, 27 Jul 2022 16:41:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F233C433B5;
-        Wed, 27 Jul 2022 16:41:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E9672614AD;
+        Wed, 27 Jul 2022 16:41:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3C23C433C1;
+        Wed, 27 Jul 2022 16:41:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940062;
-        bh=fVvNtlgbgAe6ClvXquGjijDpiSBJVzaHL91Kx5ew4Uk=;
+        s=korg; t=1658940065;
+        bh=ilUh0IvKwTJ3bPPNwTZW/MfnPkQl5fCqOhNvsYei6tk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qSCoePc2Gi9gJwFYn4Ivn6fHIEXdZPDtMQ4/B9PrmWSIOptuzfOI5wWAFwNG4eMbL
-         s7z6Ejw+ysdpZ46xMVJb2i54IlGYF4n+gijF+JXQWg9BeWKbLs/W3U51AO4c7qYHsw
-         EmNcpNIl66pYI8ret3/ox+Owhzar0uGQfV4bxnJA=
+        b=NQP95Cqqx3Gm/fjtgO0KLlrqyZkrM4IwreesxsslPnYvdw9ntdw06aID8PbumhCeu
+         6+ql3BLUZtZ7PG7Za9d55Cr1WYTwglTD9JBPOVfFAGzHviCfK691E4un5QTTvFaGSG
+         8tk58SXgtEqlCDJ4p3hDJqO6bw4v1453aeB4Taqo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 091/201] tcp: Fix data-races around sysctl_tcp_syn(ack)?_retries.
-Date:   Wed, 27 Jul 2022 18:09:55 +0200
-Message-Id: <20220727161031.529543535@linuxfoundation.org>
+Subject: [PATCH 5.15 092/201] tcp: Fix data-races around sysctl_tcp_syncookies.
+Date:   Wed, 27 Jul 2022 18:09:56 +0200
+Message-Id: <20220727161031.573205678@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -51,81 +51,139 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 20a3b1c0f603e8c55c3396abd12dfcfb523e4d3c ]
+[ Upstream commit f2e383b5bb6bbc60a0b94b87b3e49a2b1aefd11e ]
 
-While reading sysctl_tcp_syn(ack)?_retries, they can be changed
-concurrently.  Thus, we need to add READ_ONCE() to their readers.
+While reading sysctl_tcp_syncookies, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its readers.
 
 Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/inet_connection_sock.c |  3 ++-
- net/ipv4/tcp.c                  |  3 ++-
- net/ipv4/tcp_timer.c            | 10 +++++++---
- 3 files changed, 11 insertions(+), 5 deletions(-)
+ net/core/filter.c     |  4 ++--
+ net/ipv4/syncookies.c |  3 ++-
+ net/ipv4/tcp_input.c  | 20 ++++++++++++--------
+ net/ipv6/syncookies.c |  3 ++-
+ 4 files changed, 18 insertions(+), 12 deletions(-)
 
-diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-index d3bbb344bbe1..a53f9bf7886f 100644
---- a/net/ipv4/inet_connection_sock.c
-+++ b/net/ipv4/inet_connection_sock.c
-@@ -829,7 +829,8 @@ static void reqsk_timer_handler(struct timer_list *t)
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 8b2bc855714b..ac64395611ae 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -6734,7 +6734,7 @@ BPF_CALL_5(bpf_tcp_check_syncookie, struct sock *, sk, void *, iph, u32, iph_len
+ 	if (sk->sk_protocol != IPPROTO_TCP || sk->sk_state != TCP_LISTEN)
+ 		return -EINVAL;
  
- 	icsk = inet_csk(sk_listener);
- 	net = sock_net(sk_listener);
--	max_syn_ack_retries = icsk->icsk_syn_retries ? : net->ipv4.sysctl_tcp_synack_retries;
-+	max_syn_ack_retries = icsk->icsk_syn_retries ? :
-+		READ_ONCE(net->ipv4.sysctl_tcp_synack_retries);
- 	/* Normally all the openreqs are young and become mature
- 	 * (i.e. converted to established socket) for first timeout.
- 	 * If synack was not acknowledged for 1 second, it means
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 4ac53c8f0583..e22a61b2ba82 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -3974,7 +3974,8 @@ static int do_tcp_getsockopt(struct sock *sk, int level,
- 		val = keepalive_probes(tp);
- 		break;
- 	case TCP_SYNCNT:
--		val = icsk->icsk_syn_retries ? : net->ipv4.sysctl_tcp_syn_retries;
-+		val = icsk->icsk_syn_retries ? :
-+			READ_ONCE(net->ipv4.sysctl_tcp_syn_retries);
- 		break;
- 	case TCP_LINGER2:
- 		val = tp->linger2;
-diff --git a/net/ipv4/tcp_timer.c b/net/ipv4/tcp_timer.c
-index 4f3b9ab222b6..a234704e8163 100644
---- a/net/ipv4/tcp_timer.c
-+++ b/net/ipv4/tcp_timer.c
-@@ -239,7 +239,8 @@ static int tcp_write_timeout(struct sock *sk)
- 	if ((1 << sk->sk_state) & (TCPF_SYN_SENT | TCPF_SYN_RECV)) {
- 		if (icsk->icsk_retransmits)
- 			__dst_negative_advice(sk);
--		retry_until = icsk->icsk_syn_retries ? : net->ipv4.sysctl_tcp_syn_retries;
-+		retry_until = icsk->icsk_syn_retries ? :
-+			READ_ONCE(net->ipv4.sysctl_tcp_syn_retries);
- 		expired = icsk->icsk_retransmits >= retry_until;
- 	} else {
- 		if (retransmits_timed_out(sk, net->ipv4.sysctl_tcp_retries1, 0)) {
-@@ -406,12 +407,15 @@ abort:		tcp_write_err(sk);
- static void tcp_fastopen_synack_timer(struct sock *sk, struct request_sock *req)
+-	if (!sock_net(sk)->ipv4.sysctl_tcp_syncookies)
++	if (!READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_syncookies))
+ 		return -EINVAL;
+ 
+ 	if (!th->ack || th->rst || th->syn)
+@@ -6809,7 +6809,7 @@ BPF_CALL_5(bpf_tcp_gen_syncookie, struct sock *, sk, void *, iph, u32, iph_len,
+ 	if (sk->sk_protocol != IPPROTO_TCP || sk->sk_state != TCP_LISTEN)
+ 		return -EINVAL;
+ 
+-	if (!sock_net(sk)->ipv4.sysctl_tcp_syncookies)
++	if (!READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_syncookies))
+ 		return -ENOENT;
+ 
+ 	if (!th->syn || th->ack || th->fin || th->rst)
+diff --git a/net/ipv4/syncookies.c b/net/ipv4/syncookies.c
+index fd1dc86ba512..8eee771d2aca 100644
+--- a/net/ipv4/syncookies.c
++++ b/net/ipv4/syncookies.c
+@@ -342,7 +342,8 @@ struct sock *cookie_v4_check(struct sock *sk, struct sk_buff *skb)
+ 	struct flowi4 fl4;
+ 	u32 tsoff = 0;
+ 
+-	if (!sock_net(sk)->ipv4.sysctl_tcp_syncookies || !th->ack || th->rst)
++	if (!READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_syncookies) ||
++	    !th->ack || th->rst)
+ 		goto out;
+ 
+ 	if (tcp_synq_no_recent_overflow(sk))
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index ae06923fe8d0..134e36f46e91 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -6735,11 +6735,14 @@ static bool tcp_syn_flood_action(const struct sock *sk, const char *proto)
  {
- 	struct inet_connection_sock *icsk = inet_csk(sk);
--	int max_retries = icsk->icsk_syn_retries ? :
--	    sock_net(sk)->ipv4.sysctl_tcp_synack_retries + 1; /* add one more retry for fastopen */
- 	struct tcp_sock *tp = tcp_sk(sk);
-+	int max_retries;
- 
- 	req->rsk_ops->syn_ack_timeout(req);
- 
-+	/* add one more retry for fastopen */
-+	max_retries = icsk->icsk_syn_retries ? :
-+		READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_synack_retries) + 1;
+ 	struct request_sock_queue *queue = &inet_csk(sk)->icsk_accept_queue;
+ 	const char *msg = "Dropping request";
+-	bool want_cookie = false;
+ 	struct net *net = sock_net(sk);
++	bool want_cookie = false;
++	u8 syncookies;
 +
- 	if (req->num_timeout >= max_retries) {
- 		tcp_write_err(sk);
- 		return;
++	syncookies = READ_ONCE(net->ipv4.sysctl_tcp_syncookies);
+ 
+ #ifdef CONFIG_SYN_COOKIES
+-	if (net->ipv4.sysctl_tcp_syncookies) {
++	if (syncookies) {
+ 		msg = "Sending cookies";
+ 		want_cookie = true;
+ 		__NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPREQQFULLDOCOOKIES);
+@@ -6747,8 +6750,7 @@ static bool tcp_syn_flood_action(const struct sock *sk, const char *proto)
+ #endif
+ 		__NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPREQQFULLDROP);
+ 
+-	if (!queue->synflood_warned &&
+-	    net->ipv4.sysctl_tcp_syncookies != 2 &&
++	if (!queue->synflood_warned && syncookies != 2 &&
+ 	    xchg(&queue->synflood_warned, 1) == 0)
+ 		net_info_ratelimited("%s: Possible SYN flooding on port %d. %s.  Check SNMP counters.\n",
+ 				     proto, sk->sk_num, msg);
+@@ -6797,7 +6799,7 @@ u16 tcp_get_syncookie_mss(struct request_sock_ops *rsk_ops,
+ 	struct tcp_sock *tp = tcp_sk(sk);
+ 	u16 mss;
+ 
+-	if (sock_net(sk)->ipv4.sysctl_tcp_syncookies != 2 &&
++	if (READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_syncookies) != 2 &&
+ 	    !inet_csk_reqsk_queue_is_full(sk))
+ 		return 0;
+ 
+@@ -6831,13 +6833,15 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
+ 	bool want_cookie = false;
+ 	struct dst_entry *dst;
+ 	struct flowi fl;
++	u8 syncookies;
++
++	syncookies = READ_ONCE(net->ipv4.sysctl_tcp_syncookies);
+ 
+ 	/* TW buckets are converted to open requests without
+ 	 * limitations, they conserve resources and peer is
+ 	 * evidently real one.
+ 	 */
+-	if ((net->ipv4.sysctl_tcp_syncookies == 2 ||
+-	     inet_csk_reqsk_queue_is_full(sk)) && !isn) {
++	if ((syncookies == 2 || inet_csk_reqsk_queue_is_full(sk)) && !isn) {
+ 		want_cookie = tcp_syn_flood_action(sk, rsk_ops->slab_name);
+ 		if (!want_cookie)
+ 			goto drop;
+@@ -6887,7 +6891,7 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
+ 
+ 	if (!want_cookie && !isn) {
+ 		/* Kill the following clause, if you dislike this way. */
+-		if (!net->ipv4.sysctl_tcp_syncookies &&
++		if (!syncookies &&
+ 		    (net->ipv4.sysctl_max_syn_backlog - inet_csk_reqsk_queue_len(sk) <
+ 		     (net->ipv4.sysctl_max_syn_backlog >> 2)) &&
+ 		    !tcp_peer_is_proven(req, dst)) {
+diff --git a/net/ipv6/syncookies.c b/net/ipv6/syncookies.c
+index ca92dd6981de..12ae817aaf2e 100644
+--- a/net/ipv6/syncookies.c
++++ b/net/ipv6/syncookies.c
+@@ -141,7 +141,8 @@ struct sock *cookie_v6_check(struct sock *sk, struct sk_buff *skb)
+ 	__u8 rcv_wscale;
+ 	u32 tsoff = 0;
+ 
+-	if (!sock_net(sk)->ipv4.sysctl_tcp_syncookies || !th->ack || th->rst)
++	if (!READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_syncookies) ||
++	    !th->ack || th->rst)
+ 		goto out;
+ 
+ 	if (tcp_synq_no_recent_overflow(sk))
 -- 
 2.35.1
 
