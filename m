@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D0A3C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:38:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22F6BC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:38:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239152AbiG0QiV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:38:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47290 "EHLO
+        id S238997AbiG0Qi1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:38:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238379AbiG0Qhg (ORCPT
+        with ESMTP id S238729AbiG0Qhk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:37:36 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D6F94F6B7;
-        Wed, 27 Jul 2022 09:28:19 -0700 (PDT)
+        Wed, 27 Jul 2022 12:37:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA5414D80A;
+        Wed, 27 Jul 2022 09:28:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 574AFB821A6;
-        Wed, 27 Jul 2022 16:27:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEDE6C433D7;
-        Wed, 27 Jul 2022 16:27:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C430B61662;
+        Wed, 27 Jul 2022 16:27:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEA94C433D6;
+        Wed, 27 Jul 2022 16:27:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939269;
-        bh=WtF9BKyztuDudarIy8lWa8uBbyXGJ5Wc6Q/lzCzgqR8=;
+        s=korg; t=1658939277;
+        bh=o5uo9H+aQK80HuhfKYBHekHvHmapsv5dz6+d7wV1KCs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DS17Fi1yGp4eNpQEp0DI8T0qW6A9qwfw/9nXE6BOuKVyinBMQCI2EOrEXij93JFY9
-         Eds7+shP+wYuUALflsXQjzrVtR8NSCt8+MlCbamXDLZ12uB+YKfDCzw0k7jVvt4BEG
-         QXtf+InspiSUTJ4V1bqxqfi/G12q9BWNIRcHLv2o=
+        b=UY7SFRpt1ydRyZ8TedtGwRdOL4g4ZfP3SbmDcKKNEIpxqKhvelxvgrYQUjHjupd3r
+         7DkGoetRfO3IE+dXLN37xKsC+IylFBhYQYyocQH3quZKr0PmqxwOfQtHyozjjpZL7j
+         hAMn5Unkz0r3Sk7QG3RdMc62YfgXWRtZuTFuP6s0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-Subject: [PATCH 5.4 10/87] serial: mvebu-uart: correctly report configured baudrate value
-Date:   Wed, 27 Jul 2022 18:10:03 +0200
-Message-Id: <20220727161009.434828786@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Snowberg <eric.snowberg@oracle.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        John Haxby <john.haxby@oracle.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.4 04/87] lockdown: Fix kexec lockdown bypass with ima policy
+Date:   Wed, 27 Jul 2022 18:09:57 +0200
+Message-Id: <20220727161009.182304198@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161008.993711844@linuxfoundation.org>
 References: <20220727161008.993711844@linuxfoundation.org>
@@ -49,89 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Eric Snowberg <eric.snowberg@oracle.com>
 
-commit 4f532c1e25319e42996ec18a1f473fd50c8e575d upstream.
+commit 543ce63b664e2c2f9533d089a4664b559c3e6b5b upstream.
 
-Functions tty_termios_encode_baud_rate() and uart_update_timeout() should
-be called with the baudrate value which was set to hardware. Linux then
-report exact values via ioctl(TCGETS2) to userspace.
+The lockdown LSM is primarily used in conjunction with UEFI Secure Boot.
+This LSM may also be used on machines without UEFI.  It can also be
+enabled when UEFI Secure Boot is disabled.  One of lockdown's features
+is to prevent kexec from loading untrusted kernels.  Lockdown can be
+enabled through a bootparam or after the kernel has booted through
+securityfs.
 
-Change mvebu_uart_baud_rate_set() function to return baudrate value which
-was set to hardware and propagate this value to above mentioned functions.
+If IMA appraisal is used with the "ima_appraise=log" boot param,
+lockdown can be defeated with kexec on any machine when Secure Boot is
+disabled or unavailable.  IMA prevents setting "ima_appraise=log" from
+the boot param when Secure Boot is enabled, but this does not cover
+cases where lockdown is used without Secure Boot.
 
-With this change userspace would see precise value in termios c_ospeed
-field.
+To defeat lockdown, boot without Secure Boot and add ima_appraise=log to
+the kernel command line; then:
 
-Fixes: 68a0db1d7da2 ("serial: mvebu-uart: add function to change baudrate")
-Cc: stable <stable@kernel.org>
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Link: https://lore.kernel.org/r/20220628100922.10717-1-pali@kernel.org
+  $ echo "integrity" > /sys/kernel/security/lockdown
+  $ echo "appraise func=KEXEC_KERNEL_CHECK appraise_type=imasig" > \
+    /sys/kernel/security/ima/policy
+  $ kexec -ls unsigned-kernel
+
+Add a call to verify ima appraisal is set to "enforce" whenever lockdown
+is enabled.  This fixes CVE-2022-21505.
+
+Cc: stable@vger.kernel.org
+Fixes: 29d3c1c8dfe7 ("kexec: Allow kexec_file() with appropriate IMA policy when locked down")
+Signed-off-by: Eric Snowberg <eric.snowberg@oracle.com>
+Acked-by: Mimi Zohar <zohar@linux.ibm.com>
+Reviewed-by: John Haxby <john.haxby@oracle.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/serial/mvebu-uart.c |   25 +++++++++++++------------
- 1 file changed, 13 insertions(+), 12 deletions(-)
+ security/integrity/ima/ima_policy.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/drivers/tty/serial/mvebu-uart.c
-+++ b/drivers/tty/serial/mvebu-uart.c
-@@ -443,13 +443,13 @@ static void mvebu_uart_shutdown(struct u
- 	}
- }
+--- a/security/integrity/ima/ima_policy.c
++++ b/security/integrity/ima/ima_policy.c
+@@ -1542,6 +1542,10 @@ bool ima_appraise_signature(enum kernel_
+ 	if (id >= READING_MAX_ID)
+ 		return false;
  
--static int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
-+static unsigned int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
- {
- 	unsigned int d_divisor, m_divisor;
- 	u32 brdv, osamp;
- 
- 	if (!port->uartclk)
--		return -EOPNOTSUPP;
-+		return 0;
- 
- 	/*
- 	 * The baudrate is derived from the UART clock thanks to two divisors:
-@@ -473,7 +473,7 @@ static int mvebu_uart_baud_rate_set(stru
- 	osamp &= ~OSAMP_DIVISORS_MASK;
- 	writel(osamp, port->membase + UART_OSAMP);
- 
--	return 0;
-+	return DIV_ROUND_CLOSEST(port->uartclk, d_divisor * m_divisor);
- }
- 
- static void mvebu_uart_set_termios(struct uart_port *port,
-@@ -510,15 +510,11 @@ static void mvebu_uart_set_termios(struc
- 	max_baud = 230400;
- 
- 	baud = uart_get_baud_rate(port, termios, old, min_baud, max_baud);
--	if (mvebu_uart_baud_rate_set(port, baud)) {
--		/* No clock available, baudrate cannot be changed */
--		if (old)
--			baud = uart_get_baud_rate(port, old, NULL,
--						  min_baud, max_baud);
--	} else {
--		tty_termios_encode_baud_rate(termios, baud, baud);
--		uart_update_timeout(port, termios->c_cflag, baud);
--	}
-+	baud = mvebu_uart_baud_rate_set(port, baud);
++	if (id == READING_KEXEC_IMAGE && !(ima_appraise & IMA_APPRAISE_ENFORCE)
++	    && security_locked_down(LOCKDOWN_KEXEC))
++		return false;
 +
-+	/* In case baudrate cannot be changed, report previous old value */
-+	if (baud == 0 && old)
-+		baud = tty_termios_baud_rate(old);
+ 	func = read_idmap[id] ?: FILE_CHECK;
  
- 	/* Only the following flag changes are supported */
- 	if (old) {
-@@ -529,6 +525,11 @@ static void mvebu_uart_set_termios(struc
- 		termios->c_cflag |= CS8;
- 	}
- 
-+	if (baud != 0) {
-+		tty_termios_encode_baud_rate(termios, baud, baud);
-+		uart_update_timeout(port, termios->c_cflag, baud);
-+	}
-+
- 	spin_unlock_irqrestore(&port->lock, flags);
- }
- 
+ 	rcu_read_lock();
 
 
