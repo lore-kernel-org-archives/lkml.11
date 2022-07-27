@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BAF5C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:39:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0486EC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:39:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238403AbiG0Ri6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:38:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53682 "EHLO
+        id S241840AbiG0RiC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:38:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242602AbiG0RiS (ORCPT
+        with ESMTP id S242244AbiG0Rhg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:38:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 161638722B;
-        Wed, 27 Jul 2022 09:50:39 -0700 (PDT)
+        Wed, 27 Jul 2022 13:37:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE48E61B26;
+        Wed, 27 Jul 2022 09:50:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DB37F61709;
-        Wed, 27 Jul 2022 16:50:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2034C433D7;
-        Wed, 27 Jul 2022 16:50:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3DC646171D;
+        Wed, 27 Jul 2022 16:50:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50E7AC433D6;
+        Wed, 27 Jul 2022 16:50:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940620;
-        bh=7FXiz8Wqs8s3IpD8TXzH/H16cPz+n1lRHTcYIBx3ioU=;
+        s=korg; t=1658940625;
+        bh=sug5mC5+Ufrz0rs1ltH6b7wUJuRja1OEsV+BxJmRvBw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ExZQGXi9yVHqTuLPDOyNNF9mZyAIs9283yafi99xP01AChm1iwCKXaue2k0C+8Owv
-         j5HjtaAqfflOrLYVwGVRvXxLlLHGIbQWPhtwEnd77lmfSGDehgS31bZCL3YeflWRrp
-         HUoqci5nCzv/TiFGtApJJ8tQ4p+90dlyKzfX2o7E=
+        b=kib4pjsxIyVqaAvb9ps64362dOOaX+BrCz+YvEYvnW+4GZdr5Tg0+50/9nfBgF+Ic
+         CFtKei/7qbe7Vx3gaLoB2pUkDuW+JlMVmCzMMfTITgN/4bmRFqrqCOcnH1o3fORZIS
+         LC33Yz+L9++B1ff0V0GlbBxEmvE5NDxThlfIgcvo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Piotr Skajewski <piotrx.skajewski@intel.com>,
+        Marek Szlosek <marek.szlosek@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 088/158] net: lan966x: Fix usage of lan966x->mac_lock when used by FDB
-Date:   Wed, 27 Jul 2022 18:12:32 +0200
-Message-Id: <20220727161025.007895912@linuxfoundation.org>
+Subject: [PATCH 5.18 090/158] ixgbe: Add locking to prevent panic when setting sriov_numvfs to zero
+Date:   Wed, 27 Jul 2022 18:12:34 +0200
+Message-Id: <20220727161025.077884206@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -51,115 +52,136 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Horatiu Vultur <horatiu.vultur@microchip.com>
+From: Piotr Skajewski <piotrx.skajewski@intel.com>
 
-[ Upstream commit 675c807ae26b267233b97cd5006979a6bb8d54d4 ]
+[ Upstream commit 1e53834ce541d4fe271cdcca7703e50be0a44f8a ]
 
-When the SW bridge was trying to add/remove entries to/from HW, the
-access to HW was not protected by any lock. In this way, it was
-possible to have race conditions.
-Fix this by using the lan966x->mac_lock to protect parallel access to HW
-for this cases.
+It is possible to disable VFs while the PF driver is processing requests
+from the VF driver.  This can result in a panic.
 
-Fixes: 25ee9561ec622 ("net: lan966x: More MAC table functionality")
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+BUG: unable to handle kernel paging request at 000000000000106c
+PGD 0 P4D 0
+Oops: 0000 [#1] SMP NOPTI
+CPU: 8 PID: 0 Comm: swapper/8 Kdump: loaded Tainted: G I      --------- -
+Hardware name: Dell Inc. PowerEdge R740/06WXJT, BIOS 2.8.2 08/27/2020
+RIP: 0010:ixgbe_msg_task+0x4c8/0x1690 [ixgbe]
+Code: 00 00 48 8d 04 40 48 c1 e0 05 89 7c 24 24 89 fd 48 89 44 24 10 83 ff
+01 0f 84 b8 04 00 00 4c 8b 64 24 10 4d 03 a5 48 22 00 00 <41> 80 7c 24 4c
+00 0f 84 8a 03 00 00 0f b7 c7 83 f8 08 0f 84 8f 0a
+RSP: 0018:ffffb337869f8df8 EFLAGS: 00010002
+RAX: 0000000000001020 RBX: 0000000000000000 RCX: 000000000000002b
+RDX: 0000000000000002 RSI: 0000000000000008 RDI: 0000000000000006
+RBP: 0000000000000006 R08: 0000000000000002 R09: 0000000000029780
+R10: 00006957d8f42832 R11: 0000000000000000 R12: 0000000000001020
+R13: ffff8a00e8978ac0 R14: 000000000000002b R15: ffff8a00e8979c80
+FS:  0000000000000000(0000) GS:ffff8a07dfd00000(0000) knlGS:00000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000000000000106c CR3: 0000000063e10004 CR4: 00000000007726e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+PKRU: 55555554
+Call Trace:
+ <IRQ>
+ ? ttwu_do_wakeup+0x19/0x140
+ ? try_to_wake_up+0x1cd/0x550
+ ? ixgbevf_update_xcast_mode+0x71/0xc0 [ixgbevf]
+ ixgbe_msix_other+0x17e/0x310 [ixgbe]
+ __handle_irq_event_percpu+0x40/0x180
+ handle_irq_event_percpu+0x30/0x80
+ handle_irq_event+0x36/0x53
+ handle_edge_irq+0x82/0x190
+ handle_irq+0x1c/0x30
+ do_IRQ+0x49/0xd0
+ common_interrupt+0xf/0xf
+
+This can be eventually be reproduced with the following script:
+
+while :
+do
+    echo 63 > /sys/class/net/<devname>/device/sriov_numvfs
+    sleep 1
+    echo 0 > /sys/class/net/<devname>/device/sriov_numvfs
+    sleep 1
+done
+
+Add lock when disabling SR-IOV to prevent process VF mailbox communication.
+
+Fixes: d773d1310625 ("ixgbe: Fix memory leak when SR-IOV VFs are direct assigned")
+Signed-off-by: Piotr Skajewski <piotrx.skajewski@intel.com>
+Tested-by: Marek Szlosek <marek.szlosek@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Link: https://lore.kernel.org/r/20220715214456.2968711-1-anthony.l.nguyen@intel.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../ethernet/microchip/lan966x/lan966x_mac.c  | 34 +++++++++++++------
- 1 file changed, 23 insertions(+), 11 deletions(-)
+ drivers/net/ethernet/intel/ixgbe/ixgbe.h       | 1 +
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c  | 3 +++
+ drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c | 6 ++++++
+ 3 files changed, 10 insertions(+)
 
-diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c b/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
-index 69e343b7f4af..5893770bfd94 100644
---- a/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
-+++ b/drivers/net/ethernet/microchip/lan966x/lan966x_mac.c
-@@ -201,7 +201,6 @@ static struct lan966x_mac_entry *lan966x_mac_find_entry(struct lan966x *lan966x,
- 	struct lan966x_mac_entry *res = NULL;
- 	struct lan966x_mac_entry *mac_entry;
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe.h b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
+index 921a4d977d65..8813b4dd6872 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe.h
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
+@@ -779,6 +779,7 @@ struct ixgbe_adapter {
+ #ifdef CONFIG_IXGBE_IPSEC
+ 	struct ixgbe_ipsec *ipsec;
+ #endif /* CONFIG_IXGBE_IPSEC */
++	spinlock_t vfs_lock;
+ };
  
--	spin_lock(&lan966x->mac_lock);
- 	list_for_each_entry(mac_entry, &lan966x->mac_entries, list) {
- 		if (mac_entry->vid == vid &&
- 		    ether_addr_equal(mac, mac_entry->mac) &&
-@@ -210,7 +209,6 @@ static struct lan966x_mac_entry *lan966x_mac_find_entry(struct lan966x *lan966x,
- 			break;
- 		}
- 	}
--	spin_unlock(&lan966x->mac_lock);
+ static inline int ixgbe_determine_xdp_q_idx(int cpu)
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+index c4a4954aa317..6c403f112d29 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+@@ -6402,6 +6402,9 @@ static int ixgbe_sw_init(struct ixgbe_adapter *adapter,
+ 	/* n-tuple support exists, always init our spinlock */
+ 	spin_lock_init(&adapter->fdir_perfect_lock);
  
- 	return res;
- }
-@@ -253,8 +251,11 @@ int lan966x_mac_add_entry(struct lan966x *lan966x, struct lan966x_port *port,
++	/* init spinlock to avoid concurrency of VF resources */
++	spin_lock_init(&adapter->vfs_lock);
++
+ #ifdef CONFIG_IXGBE_DCB
+ 	ixgbe_init_dcb(adapter);
+ #endif
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
+index d4e63f0644c3..a1e69c734863 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
+@@ -205,10 +205,13 @@ void ixgbe_enable_sriov(struct ixgbe_adapter *adapter, unsigned int max_vfs)
+ int ixgbe_disable_sriov(struct ixgbe_adapter *adapter)
  {
- 	struct lan966x_mac_entry *mac_entry;
+ 	unsigned int num_vfs = adapter->num_vfs, vf;
++	unsigned long flags;
+ 	int rss;
  
--	if (lan966x_mac_lookup(lan966x, addr, vid, ENTRYTYPE_NORMAL))
-+	spin_lock(&lan966x->mac_lock);
-+	if (lan966x_mac_lookup(lan966x, addr, vid, ENTRYTYPE_NORMAL)) {
-+		spin_unlock(&lan966x->mac_lock);
- 		return 0;
-+	}
++	spin_lock_irqsave(&adapter->vfs_lock, flags);
+ 	/* set num VFs to 0 to prevent access to vfinfo */
+ 	adapter->num_vfs = 0;
++	spin_unlock_irqrestore(&adapter->vfs_lock, flags);
  
- 	/* In case the entry already exists, don't add it again to SW,
- 	 * just update HW, but we need to look in the actual HW because
-@@ -263,21 +264,25 @@ int lan966x_mac_add_entry(struct lan966x *lan966x, struct lan966x_port *port,
- 	 * add the entry but without the extern_learn flag.
- 	 */
- 	mac_entry = lan966x_mac_find_entry(lan966x, addr, vid, port->chip_port);
--	if (mac_entry)
--		return lan966x_mac_learn(lan966x, port->chip_port,
--					 addr, vid, ENTRYTYPE_LOCKED);
-+	if (mac_entry) {
-+		spin_unlock(&lan966x->mac_lock);
-+		goto mac_learn;
-+	}
+ 	/* put the reference to all of the vf devices */
+ 	for (vf = 0; vf < num_vfs; ++vf) {
+@@ -1355,8 +1358,10 @@ static void ixgbe_rcv_ack_from_vf(struct ixgbe_adapter *adapter, u32 vf)
+ void ixgbe_msg_task(struct ixgbe_adapter *adapter)
+ {
+ 	struct ixgbe_hw *hw = &adapter->hw;
++	unsigned long flags;
+ 	u32 vf;
  
- 	mac_entry = lan966x_mac_alloc_entry(addr, vid, port->chip_port);
--	if (!mac_entry)
-+	if (!mac_entry) {
-+		spin_unlock(&lan966x->mac_lock);
- 		return -ENOMEM;
-+	}
- 
--	spin_lock(&lan966x->mac_lock);
- 	list_add_tail(&mac_entry->list, &lan966x->mac_entries);
- 	spin_unlock(&lan966x->mac_lock);
- 
--	lan966x_mac_learn(lan966x, port->chip_port, addr, vid, ENTRYTYPE_LOCKED);
- 	lan966x_fdb_call_notifiers(SWITCHDEV_FDB_OFFLOADED, addr, vid, port->dev);
- 
-+mac_learn:
-+	lan966x_mac_learn(lan966x, port->chip_port, addr, vid, ENTRYTYPE_LOCKED);
-+
- 	return 0;
++	spin_lock_irqsave(&adapter->vfs_lock, flags);
+ 	for (vf = 0; vf < adapter->num_vfs; vf++) {
+ 		/* process any reset requests */
+ 		if (!ixgbe_check_for_rst(hw, vf))
+@@ -1370,6 +1375,7 @@ void ixgbe_msg_task(struct ixgbe_adapter *adapter)
+ 		if (!ixgbe_check_for_ack(hw, vf))
+ 			ixgbe_rcv_ack_from_vf(adapter, vf);
+ 	}
++	spin_unlock_irqrestore(&adapter->vfs_lock, flags);
  }
  
-@@ -291,8 +296,9 @@ int lan966x_mac_del_entry(struct lan966x *lan966x, const unsigned char *addr,
- 				 list) {
- 		if (mac_entry->vid == vid &&
- 		    ether_addr_equal(addr, mac_entry->mac)) {
--			lan966x_mac_forget(lan966x, mac_entry->mac, mac_entry->vid,
--					   ENTRYTYPE_LOCKED);
-+			lan966x_mac_forget_locked(lan966x, mac_entry->mac,
-+						  mac_entry->vid,
-+						  ENTRYTYPE_LOCKED);
- 
- 			list_del(&mac_entry->list);
- 			kfree(mac_entry);
-@@ -428,6 +434,12 @@ static void lan966x_mac_irq_process(struct lan966x *lan966x, u32 row,
- 			continue;
- 
- 		spin_lock(&lan966x->mac_lock);
-+		mac_entry = lan966x_mac_find_entry(lan966x, mac, vid, dest_idx);
-+		if (mac_entry) {
-+			spin_unlock(&lan966x->mac_lock);
-+			continue;
-+		}
-+
- 		mac_entry = lan966x_mac_alloc_entry(mac, vid, dest_idx);
- 		if (!mac_entry) {
- 			spin_unlock(&lan966x->mac_lock);
+ static inline void ixgbe_ping_vf(struct ixgbe_adapter *adapter, int vf)
 -- 
 2.35.1
 
