@@ -2,221 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA25AC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 09:08:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C03CAC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 09:08:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230320AbiG0JIa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 05:08:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48862 "EHLO
+        id S231640AbiG0JIm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 05:08:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231363AbiG0JGy (ORCPT
+        with ESMTP id S231624AbiG0JHQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 05:06:54 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2ED4474E6;
-        Wed, 27 Jul 2022 02:06:49 -0700 (PDT)
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Lt7CC66hdzmVFH;
-        Wed, 27 Jul 2022 17:04:55 +0800 (CST)
-Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 27 Jul 2022 17:06:18 +0800
-Received: from ubuntu1804.huawei.com (10.67.174.61) by
- kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 27 Jul 2022 17:06:17 +0800
-From:   Yang Jihong <yangjihong1@huawei.com>
-To:     <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
-        <mark.rutland@arm.com>, <alexander.shishkin@linux.intel.com>,
-        <jolsa@kernel.org>, <namhyung@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>
-CC:     <pc@us.ibm.com>, <yhs@fb.com>, <andrii.nakryiko@gmail.com>,
-        <songliubraving@fb.com>, <yangjihong1@huawei.com>
-Subject: [RFC v4 09/17] perf kwork: Add workqueue report support
-Date:   Wed, 27 Jul 2022 17:03:22 +0800
-Message-ID: <20220727090330.107760-10-yangjihong1@huawei.com>
-X-Mailer: git-send-email 2.30.GIT
-In-Reply-To: <20220727090330.107760-1-yangjihong1@huawei.com>
-References: <20220727090330.107760-1-yangjihong1@huawei.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.174.61]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemm600003.china.huawei.com (7.193.23.202)
-X-CFilter-Loop: Reflected
+        Wed, 27 Jul 2022 05:07:16 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5DDB43E46
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 02:07:07 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id d10so15559936pfd.9
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 02:07:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=2Sl2t8r1ZUfe8lzmXAHqvujfGWqYPzoD6dESsmixId8=;
+        b=jjJ8BeO4eC8mXVDiID2bspJ1p6dBYwNpZawCx7rWSN/pqy2FJOuzecozYhRBwoldNn
+         f/t3D/gjmmb6JJJVhf7hcdfnOiDsB8dgoCMy0I6+H4NVV09QkCfNmXE0SyB442KdPbXl
+         U5tJwou8ONIH1L7pnBUVHQoRnG+lMCkD47QcG3oPqTY61VSiaHuMJer+EKmOCof9BoJH
+         O+wkFKCEWTKHyIxLtAjISdk0ZIBIcEemJ/buJxMinEfqW+P9dcx2wKe0mpz+t5SABFiQ
+         KfxUzMpbF2z6NcV3Ern1UjZyV9OFIx+BgAHkXcg4hjgvTQUB427AFWAXFbmMzLCuUMRX
+         uDJA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=2Sl2t8r1ZUfe8lzmXAHqvujfGWqYPzoD6dESsmixId8=;
+        b=e1abb1+7FF9enUSR7L2ST1g2V5xZgnmU2lBBKKPZRXw0a3PSw0PYie4Mgua64Vckwl
+         IIrqcA4Omjz8spEe/YMcKdZDuRy0BTqZSVE7k3CB2MQltNDU5c6Jc1x+PBwjb6jvlvgV
+         DadJwXTR3Hiun09Ot003r1mOqUqg4WIIKFcI7X5SIH1TTMkHmLIzlCD6PlB0Fh1sgs+v
+         LgDIBtyWzHcu3lzxpAksYPDQZsp02RUu4OSjamz+PN7ssI98YpvLYiRBEgq2/MDj5+tD
+         99HaEusqVdC8u4OdaSju2c271588P7J7o2jUdqaKPGdy3oESmsvRIKByF0L2FWespQjP
+         kAAw==
+X-Gm-Message-State: AJIora87CbggCU/pgGMWRWh2s4+2sz8RBMQ5SRBU0fKLtoGTY6OytP2W
+        c5dYZWdXaYWsnkKXLYxbqov6Dg==
+X-Google-Smtp-Source: AGRyM1vtuT/ZYh9CUtmNfGXr7qX1Z6Jxa2DeJOGGWDtXWejTkzZSlxUordVbZUp7hABJPSZZiRQ9AA==
+X-Received: by 2002:a63:4c0d:0:b0:41a:77fe:2bc8 with SMTP id z13-20020a634c0d000000b0041a77fe2bc8mr17722286pga.82.1658912827076;
+        Wed, 27 Jul 2022 02:07:07 -0700 (PDT)
+Received: from n131-251-112.byted.org ([121.30.179.125])
+        by smtp.gmail.com with ESMTPSA id x8-20020a170902a38800b0016c46ff1973sm13131587pla.228.2022.07.27.02.07.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jul 2022 02:07:06 -0700 (PDT)
+From:   tujinjiang@bytedance.com
+To:     akpm@linux-foundation.org
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Jinjiang Tu <tujinjiang@bytedance.com>
+Subject: [PATCH] vmscan: fix potential arbitrary pointer passed to kfree in unregister_shrinker
+Date:   Wed, 27 Jul 2022 17:07:00 +0800
+Message-Id: <20220727090700.3238-1-tujinjiang@bytedance.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Implements workqueue report function.
+From: Jinjiang Tu <tujinjiang@bytedance.com>
 
-Test cases:
+when shrinker is registered with SHRINKER_MEMCG_AWARE flag,
+register_shrinker will not initialize shrinker->nr_deferred,
+but the pointer will be passed to kfree in unregister_shrinker
+when the shrinker is unregistered. This leads to kernel crash
+when the shrinker object is dynamically allocated.
 
-  # perf kwork -k workqueue rep
+To fix it, this patch initialize shrinker->nr_deferred at the
+beginning of prealloc_shrinker.
 
-    Kwork Name                     | Cpu  | Total Runtime | Count     | Max runtime   | Max runtime start   | Max runtime end     |
-   --------------------------------------------------------------------------------------------------------------------------------
-    (w)gc_worker                   | 0001 |   1912.389 ms |       173 |     12.896 ms |      44002.050787 s |      44002.063683 s |
-    (w)mix_interrupt_randomness    | 0000 |     24.308 ms |       285 |      3.349 ms |      44004.784908 s |      44004.788257 s |
-    (w)e1000_watchdog              | 0002 |      5.332 ms |         5 |      2.059 ms |      44000.914366 s |      44000.916424 s |
-    (w)vmstat_update               | 0005 |      0.989 ms |         2 |      0.953 ms |      43997.986991 s |      43997.987944 s |
-    (w)vmstat_shepherd             | 0000 |      0.964 ms |         8 |      0.195 ms |      43997.986453 s |      43997.986648 s |
-    (w)vmstat_update               | 0003 |      0.306 ms |         6 |      0.077 ms |      44004.689543 s |      44004.689620 s |
-    (w)vmstat_update               | 0000 |      0.196 ms |         5 |      0.049 ms |      44005.713732 s |      44005.713781 s |
-    (w)vmstat_update               | 0001 |      0.162 ms |         2 |      0.130 ms |      44000.192034 s |      44000.192164 s |
-    (w)mix_interrupt_randomness    | 0002 |      0.114 ms |         5 |      0.037 ms |      44005.012625 s |      44005.012662 s |
-    (w)vmstat_update               | 0002 |      0.084 ms |         2 |      0.043 ms |      44004.817702 s |      44004.817745 s |
-    (w)vmstat_update               | 0006 |      0.067 ms |         2 |      0.041 ms |      43997.987214 s |      43997.987254 s |
-    (w)neigh_periodic_work         | 0004 |      0.039 ms |         1 |      0.039 ms |      43999.929935 s |      43999.929974 s |
-    (w)vmstat_update               | 0007 |      0.037 ms |         1 |      0.037 ms |      43997.988969 s |      43997.989006 s |
-    (w)neigh_managed_work          | 0001 |      0.036 ms |         1 |      0.036 ms |      43997.665813 s |      43997.665849 s |
-    (w)neigh_managed_work          | 0004 |      0.036 ms |         1 |      0.036 ms |      44002.953507 s |      44002.953543 s |
-    (w)vmstat_update               | 0004 |      0.027 ms |         1 |      0.027 ms |      43997.913973 s |      43997.914000 s |
-   --------------------------------------------------------------------------------------------------------------------------------
-
-  # perf kwork -k workqueue rep -S
-
-    Kwork Name                     | Cpu  | Total Runtime | Count     | Max runtime   | Max runtime start   | Max runtime end     |
-   --------------------------------------------------------------------------------------------------------------------------------
-    (w)gc_worker                   | 0001 |   1912.389 ms |       173 |     12.896 ms |      44002.050787 s |      44002.063683 s |
-    (w)mix_interrupt_randomness    | 0000 |     24.308 ms |       285 |      3.349 ms |      44004.784908 s |      44004.788257 s |
-    (w)e1000_watchdog              | 0002 |      5.332 ms |         5 |      2.059 ms |      44000.914366 s |      44000.916424 s |
-    (w)vmstat_update               | 0005 |      0.989 ms |         2 |      0.953 ms |      43997.986991 s |      43997.987944 s |
-    (w)vmstat_shepherd             | 0000 |      0.964 ms |         8 |      0.195 ms |      43997.986453 s |      43997.986648 s |
-    (w)vmstat_update               | 0003 |      0.306 ms |         6 |      0.077 ms |      44004.689543 s |      44004.689620 s |
-    (w)vmstat_update               | 0000 |      0.196 ms |         5 |      0.049 ms |      44005.713732 s |      44005.713781 s |
-    (w)vmstat_update               | 0001 |      0.162 ms |         2 |      0.130 ms |      44000.192034 s |      44000.192164 s |
-    (w)mix_interrupt_randomness    | 0002 |      0.114 ms |         5 |      0.037 ms |      44005.012625 s |      44005.012662 s |
-    (w)vmstat_update               | 0002 |      0.084 ms |         2 |      0.043 ms |      44004.817702 s |      44004.817745 s |
-    (w)vmstat_update               | 0006 |      0.067 ms |         2 |      0.041 ms |      43997.987214 s |      43997.987254 s |
-    (w)neigh_periodic_work         | 0004 |      0.039 ms |         1 |      0.039 ms |      43999.929935 s |      43999.929974 s |
-    (w)vmstat_update               | 0007 |      0.037 ms |         1 |      0.037 ms |      43997.988969 s |      43997.989006 s |
-    (w)neigh_managed_work          | 0001 |      0.036 ms |         1 |      0.036 ms |      43997.665813 s |      43997.665849 s |
-    (w)neigh_managed_work          | 0004 |      0.036 ms |         1 |      0.036 ms |      44002.953507 s |      44002.953543 s |
-    (w)vmstat_update               | 0004 |      0.027 ms |         1 |      0.027 ms |      43997.913973 s |      43997.914000 s |
-   --------------------------------------------------------------------------------------------------------------------------------
-    Total count            :       500
-    Total runtime   (msec) :  1945.085 (0.192% load average)
-    Total time span (msec) : 10155.026
-   --------------------------------------------------------------------------------------------------------------------------------
-
-  # perf kwork -k workqueue rep -n vmstat_update
-
-    Kwork Name                     | Cpu  | Total Runtime | Count     | Max runtime   | Max runtime start   | Max runtime end     |
-   --------------------------------------------------------------------------------------------------------------------------------
-    (w)vmstat_update               | 0005 |      0.989 ms |         2 |      0.953 ms |      43997.986991 s |      43997.987944 s |
-    (w)vmstat_update               | 0003 |      0.306 ms |         6 |      0.077 ms |      44004.689543 s |      44004.689620 s |
-    (w)vmstat_update               | 0000 |      0.196 ms |         5 |      0.049 ms |      44005.713732 s |      44005.713781 s |
-    (w)vmstat_update               | 0001 |      0.162 ms |         2 |      0.130 ms |      44000.192034 s |      44000.192164 s |
-    (w)vmstat_update               | 0002 |      0.084 ms |         2 |      0.043 ms |      44004.817702 s |      44004.817745 s |
-    (w)vmstat_update               | 0006 |      0.067 ms |         2 |      0.041 ms |      43997.987214 s |      43997.987254 s |
-    (w)vmstat_update               | 0007 |      0.037 ms |         1 |      0.037 ms |      43997.988969 s |      43997.989006 s |
-    (w)vmstat_update               | 0004 |      0.027 ms |         1 |      0.027 ms |      43997.913973 s |      43997.914000 s |
-   --------------------------------------------------------------------------------------------------------------------------------
-
-Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
+Signed-off-by: Jinjiang Tu <tujinjiang@bytedance.com>
 ---
- tools/perf/builtin-kwork.c | 76 +++++++++++++++++++++++++++++++++++++-
- 1 file changed, 74 insertions(+), 2 deletions(-)
+ mm/vmscan.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/tools/perf/builtin-kwork.c b/tools/perf/builtin-kwork.c
-index c6e94d54ca36..0a9d28fc9e97 100644
---- a/tools/perf/builtin-kwork.c
-+++ b/tools/perf/builtin-kwork.c
-@@ -664,17 +664,89 @@ static struct kwork_class kwork_softirq = {
- 	.work_name      = softirq_work_name,
- };
+diff --git a/mm/vmscan.c b/mm/vmscan.c
+index f7d9a683e3a7..06ab5a398971 100644
+--- a/mm/vmscan.c
++++ b/mm/vmscan.c
+@@ -613,6 +613,7 @@ int prealloc_shrinker(struct shrinker *shrinker)
+ 	unsigned int size;
+ 	int err;
  
-+static struct kwork_class kwork_workqueue;
-+static int process_workqueue_execute_start_event(struct perf_tool *tool,
-+						 struct evsel *evsel,
-+						 struct perf_sample *sample,
-+						 struct machine *machine)
-+{
-+	struct perf_kwork *kwork = container_of(tool, struct perf_kwork, tool);
-+
-+	if (kwork->tp_handler->entry_event) {
-+		return kwork->tp_handler->entry_event(kwork, &kwork_workqueue,
-+						    evsel, sample, machine);
-+	}
-+
-+	return 0;
-+}
-+
-+static int process_workqueue_execute_end_event(struct perf_tool *tool,
-+					       struct evsel *evsel,
-+					       struct perf_sample *sample,
-+					       struct machine *machine)
-+{
-+	struct perf_kwork *kwork = container_of(tool, struct perf_kwork, tool);
-+
-+	if (kwork->tp_handler->exit_event) {
-+		return kwork->tp_handler->exit_event(kwork, &kwork_workqueue,
-+						   evsel, sample, machine);
-+	}
-+
-+	return 0;
-+}
-+
- const struct evsel_str_handler workqueue_tp_handlers[] = {
- 	{ "workqueue:workqueue_activate_work", NULL, },
--	{ "workqueue:workqueue_execute_start", NULL, },
--	{ "workqueue:workqueue_execute_end",   NULL, },
-+	{ "workqueue:workqueue_execute_start", process_workqueue_execute_start_event, },
-+	{ "workqueue:workqueue_execute_end",   process_workqueue_execute_end_event,   },
- };
- 
-+static int workqueue_class_init(struct kwork_class *class,
-+				struct perf_session *session)
-+{
-+	if (perf_session__set_tracepoints_handlers(session,
-+						   workqueue_tp_handlers)) {
-+		pr_err("Failed to set workqueue tracepoints handlers\n");
-+		return -1;
-+	}
-+
-+	class->work_root = RB_ROOT_CACHED;
-+	return 0;
-+}
-+
-+static void workqueue_work_init(struct kwork_class *class,
-+				struct kwork_work *work,
-+				struct evsel *evsel,
-+				struct perf_sample *sample,
-+				struct machine *machine)
-+{
-+	char *modp = NULL;
-+	unsigned long long function_addr = evsel__intval(evsel,
-+							 sample, "function");
-+
-+	work->class = class;
-+	work->cpu = sample->cpu;
-+	work->id = evsel__intval(evsel, sample, "work");
-+	work->name = function_addr == 0 ? NULL :
-+		machine__resolve_kernel_addr(machine, &function_addr, &modp);
-+}
-+
-+static void workqueue_work_name(struct kwork_work *work, char *buf, int len)
-+{
-+	if (work->name != NULL)
-+		snprintf(buf, len, "(w)%s", work->name);
-+	else
-+		snprintf(buf, len, "(w)0x%" PRIx64, work->id);
-+}
-+
- static struct kwork_class kwork_workqueue = {
- 	.name           = "workqueue",
- 	.type           = KWORK_CLASS_WORKQUEUE,
- 	.nr_tracepoints = 3,
- 	.tp_handlers    = workqueue_tp_handlers,
-+	.class_init     = workqueue_class_init,
-+	.work_init      = workqueue_work_init,
-+	.work_name      = workqueue_work_name,
- };
- 
- static struct kwork_class *kwork_class_supported_list[KWORK_CLASS_MAX] = {
++	shrinker->nr_deferred = NULL;
+ 	if (shrinker->flags & SHRINKER_MEMCG_AWARE) {
+ 		err = prealloc_memcg_shrinker(shrinker);
+ 		if (err != -ENOSYS)
 -- 
-2.30.GIT
+2.17.1
 
