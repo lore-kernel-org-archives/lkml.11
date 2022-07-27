@@ -2,139 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCA4DC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:46:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ACE0C19F2C
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:47:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240377AbiG0Qq5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:46:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42302 "EHLO
+        id S240460AbiG0QrA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:47:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240427AbiG0QqR (ORCPT
+        with ESMTP id S240134AbiG0QqU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:46:17 -0400
-Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3CE75FAFF
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:31:36 -0700 (PDT)
-Received: by mail-io1-xd2c.google.com with SMTP id 125so13932667iou.6
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:31:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HLpauEQ5M+lWRIlS3PcwqsZWVTFiAvj2+32FpHGOhBk=;
-        b=klS/6ZXoSeM0uv5HT7/w1pRROtMu2SFyiAGZpuVTlKfCMmZO+NVgryshOQKXZ3mRwO
-         aCapBXgciK6e8ZLoA0VmgIdcFIShZvj3yTsNZAVCWrgAfnyA1QH0nmrIVsxq906pdmc0
-         hmwXJXpwp0IwAbDiWt5D++aDEST91D1pWaKsHwWFDLX494ZYqaluBT3sHd8k0UTlRBI2
-         jEfCfG3Cu4m+fuqo+JGBOr/N1asAZoHTfyfmGqch2N4qoAxdB4As1OnAQTKzEjYhm7vg
-         3XTBjSn/35ULRdJL1A6mahAfA9wsliZ8gk/LfZ5hmyy9h93oqA8sg161qx782ugJASrw
-         dWtw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HLpauEQ5M+lWRIlS3PcwqsZWVTFiAvj2+32FpHGOhBk=;
-        b=BoDQEZfR4q3ktiR90+sEKbW5OAwaoN8ccUHOGafuYy0fmj8/bQ2NeI5Hl5oJEek6u+
-         zqutGClFzrJBhjCShlTUjqRiUGo9k2F1T+ql+aM1nyp/BcJb4OvHvVwvxhMlq1xlwmpk
-         qfCuTFqRsNPx2lHIDhFCIek+fmkDbXjqTtv7/Up7+HZMVAucm9j5hTLjHrQYiAcj3ii9
-         jNxh0euyzBoo9+wpDxixgj+AUW7aunADIHzH+UuJCcOtrLOm+0tGhIhWDFaMQO23lRfL
-         5YbfoeR/l575FbCbIOXNUEKJNQPKEcm0642F+Fdr6DSgLOb30a3Yt8FkgGV9zZKw5NyD
-         6J+A==
-X-Gm-Message-State: AJIora/aFWxHJgoXYae7Qk328ic3oP/izTdR9+ecJfPJgocFfcFzoCRO
-        C76yha2503LUjnGP5W88MpkW7dpF0zs0ujxpm1Nn9Q==
-X-Google-Smtp-Source: AGRyM1vzxJdX05n48cDiHKWT4UyZZ4xthB7HHUEb5MIzbitr5xn078iGRk5ZiOqwPRiIpO312Lx7K0+ksI9j1fyn3gg=
-X-Received: by 2002:a02:a68c:0:b0:33f:46d4:918e with SMTP id
- j12-20020a02a68c000000b0033f46d4918emr8580458jam.58.1658939495323; Wed, 27
- Jul 2022 09:31:35 -0700 (PDT)
+        Wed, 27 Jul 2022 12:46:20 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7DFB60507;
+        Wed, 27 Jul 2022 09:31:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 04140B821A6;
+        Wed, 27 Jul 2022 16:31:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3820BC433C1;
+        Wed, 27 Jul 2022 16:31:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658939494;
+        bh=2KhsuBtZEV+6+XuZIeLhyX0nuT5PSEtGK16KaFUVp48=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=UQLC9MmUEnyVIdsi0L45/ykBXMaluiE7glNouiGB1Psau4NDPYkKijKl4LhE/Qcab
+         k4FsAIJ0QiwNknSc+cn7PJyoFUbySaQ4H/NHxyQCCwgKAHIav/lC48JsWgaO90asKc
+         76LsQj82Rx9HXg+sHJFh4XUQXVa1JtJb5zMipXoQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        William Hubbs <w.d.hubbs@gmail.com>,
+        Chris Brannon <chris@the-brannons.com>,
+        Kirk Reiser <kirk@reisers.ca>,
+        Samuel Thibault <samuel.thibault@ens-lyon.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Johan Hovold <johan@kernel.org>, Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH 5.4 82/87] tty: the rest, stop using tty_schedule_flip()
+Date:   Wed, 27 Jul 2022 18:11:15 +0200
+Message-Id: <20220727161012.386373695@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220727161008.993711844@linuxfoundation.org>
+References: <20220727161008.993711844@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20210929185823.499268-1-alex.popov@linux.com> <d290202d-a72d-0821-9edf-efbecf6f6cef@linux.com>
- <20210929194924.GA880162@paulmck-ThinkPad-P17-Gen-1> <YVWAPXSzFNbHz6+U@alley>
- <CAHk-=widOm3FXMPXXK0cVaoFuy3jCk65=5VweLceQCuWdep=Hg@mail.gmail.com> <7c567acd-1cc1-a480-ca5a-d50a9c5a69ef@ispras.ru>
-In-Reply-To: <7c567acd-1cc1-a480-ca5a-d50a9c5a69ef@ispras.ru>
-From:   Jann Horn <jannh@google.com>
-Date:   Wed, 27 Jul 2022 18:30:59 +0200
-Message-ID: <CAG48ez2Sh-kngNVeCF9-X550PQMaNnQaEvS+EAiWaDjWnmoHOg@mail.gmail.com>
-Subject: Re: [PATCH] Introduce the pkill_on_warn boot parameter
-To:     Alexey Khoroshilov <khoroshilov@ispras.ru>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Petr Mladek <pmladek@suse.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Alexander Popov <alex.popov@linux.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Joerg Roedel <jroedel@suse.de>,
-        Maciej Rozycki <macro@orcam.me.uk>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Kees Cook <keescook@chromium.org>,
-        Luis Chamberlain <mcgrof@kernel.org>, Wei Liu <wl@xen.org>,
-        John Ogness <john.ogness@linutronix.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Alexey Kardashevskiy <aik@ozlabs.ru>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Garnier <thgarnie@google.com>,
-        Will Deacon <will.deacon@arm.com>,
-        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
-        Laura Abbott <labbott@redhat.com>,
-        David S Miller <davem@davemloft.net>,
-        Borislav Petkov <bp@alien8.de>,
-        Kernel Hardening <kernel-hardening@lists.openwall.com>,
-        linux-hardening@vger.kernel.org,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        notify@kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 6:17 PM Alexey Khoroshilov
-<khoroshilov@ispras.ru> wrote:
-> On 01.10.2021 22:59, Linus Torvalds wrote:
-> Coming back to the discussion of WARN_ON()/pr_warn("WARNING:") semantics.
->
-> We see a number of cases where WARNING is used to inform userspace that
-> it is doing something wrong, e.g.
-> https://elixir.bootlin.com/linux/v5.19-rc8/source/net/can/j1939/socket.c#L181
-> https://elixir.bootlin.com/linux/v5.19-rc8/source/drivers/video/fbdev/core/fbmem.c#L1023
->
-> It is definitely useful, but it does not make sense in case of fuzzing
-> when the userspace should do wrong things and check if kernel behaves
-> correctly.
->
-> As a result we have warnings with two different intentions:
-> - warn that something wrong happens in kernel, but we are able to continue;
-> - warn userspace that it is doing something wrong.
->
-> During fuzzing we would like to report the former and to ignore the
-> latter. Are any ideas how these intentions can be recognized automatically?
+From: Jiri Slaby <jslaby@suse.cz>
 
-https://elixir.bootlin.com/linux/v5.19-rc8/source/include/asm-generic/bug.h#L74
-says:
+commit b68b914494df4f79b4e9b58953110574af1cb7a2 upstream.
 
- * WARN(), WARN_ON(), WARN_ON_ONCE, and so on can be used to report
- * significant kernel issues that need prompt attention if they should ever
- * appear at runtime.
- *
- * Do not use these macros when checking for invalid external inputs
- * (e.g. invalid system call arguments, or invalid data coming from
- * network/devices), and on transient conditions like ENOMEM or EAGAIN.
- * These macros should be used for recoverable kernel issues only.
- * For invalid external inputs, transient conditions, etc use
- * pr_err[_once/_ratelimited]() followed by dump_stack(), if necessary.
- * Do not include "BUG"/"WARNING" in format strings manually to make these
- * conditions distinguishable from kernel issues.
+Since commit a9c3f68f3cd8d (tty: Fix low_latency BUG) in 2014,
+tty_flip_buffer_push() is only a wrapper to tty_schedule_flip(). We are
+going to remove the latter (as it is used less), so call the former in
+the rest of the users.
 
-So if you see drivers intentionally using WARN() or printing
-"WARNING:" on codepaths that are reachable with bogus inputs from
-userspace, those codepaths should be fixed to log warnings in a
-different format.
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: William Hubbs <w.d.hubbs@gmail.com>
+Cc: Chris Brannon <chris@the-brannons.com>
+Cc: Kirk Reiser <kirk@reisers.ca>
+Cc: Samuel Thibault <samuel.thibault@ens-lyon.org>
+Cc: Heiko Carstens <hca@linux.ibm.com>
+Cc: Vasily Gorbik <gor@linux.ibm.com>
+Cc: Christian Borntraeger <borntraeger@de.ibm.com>
+Cc: Alexander Gordeev <agordeev@linux.ibm.com>
+Reviewed-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Link: https://lore.kernel.org/r/20211122111648.30379-3-jslaby@suse.cz
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/alpha/kernel/srmcons.c         |    2 +-
+ drivers/s390/char/keyboard.h        |    4 ++--
+ drivers/staging/speakup/spk_ttyio.c |    4 ++--
+ 3 files changed, 5 insertions(+), 5 deletions(-)
+
+--- a/arch/alpha/kernel/srmcons.c
++++ b/arch/alpha/kernel/srmcons.c
+@@ -59,7 +59,7 @@ srmcons_do_receive_chars(struct tty_port
+ 	} while((result.bits.status & 1) && (++loops < 10));
+ 
+ 	if (count)
+-		tty_schedule_flip(port);
++		tty_flip_buffer_push(port);
+ 
+ 	return count;
+ }
+--- a/drivers/s390/char/keyboard.h
++++ b/drivers/s390/char/keyboard.h
+@@ -56,7 +56,7 @@ static inline void
+ kbd_put_queue(struct tty_port *port, int ch)
+ {
+ 	tty_insert_flip_char(port, ch, 0);
+-	tty_schedule_flip(port);
++	tty_flip_buffer_push(port);
+ }
+ 
+ static inline void
+@@ -64,5 +64,5 @@ kbd_puts_queue(struct tty_port *port, ch
+ {
+ 	while (*cp)
+ 		tty_insert_flip_char(port, *cp++, 0);
+-	tty_schedule_flip(port);
++	tty_flip_buffer_push(port);
+ }
+--- a/drivers/staging/speakup/spk_ttyio.c
++++ b/drivers/staging/speakup/spk_ttyio.c
+@@ -88,7 +88,7 @@ static int spk_ttyio_receive_buf2(struct
+ 	}
+ 
+ 	if (!ldisc_data->buf_free)
+-		/* ttyio_in will tty_schedule_flip */
++		/* ttyio_in will tty_flip_buffer_push */
+ 		return 0;
+ 
+ 	/* Make sure the consumer has read buf before we have seen
+@@ -325,7 +325,7 @@ static unsigned char ttyio_in(int timeou
+ 	mb();
+ 	ldisc_data->buf_free = true;
+ 	/* Let TTY push more characters */
+-	tty_schedule_flip(speakup_tty->port);
++	tty_flip_buffer_push(speakup_tty->port);
+ 
+ 	return rv;
+ }
+
+
