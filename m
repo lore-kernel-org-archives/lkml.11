@@ -2,124 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F1FCC19F21
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 08:19:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFE2DC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 08:20:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229921AbiG0ITw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 04:19:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40512 "EHLO
+        id S230075AbiG0IUy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 04:20:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229747AbiG0ITr (ORCPT
+        with ESMTP id S229608AbiG0IUv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 04:19:47 -0400
-Received: from mail-yw1-x1129.google.com (mail-yw1-x1129.google.com [IPv6:2607:f8b0:4864:20::1129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CECF243E70;
-        Wed, 27 Jul 2022 01:19:46 -0700 (PDT)
-Received: by mail-yw1-x1129.google.com with SMTP id 00721157ae682-31f379a0754so64616997b3.2;
-        Wed, 27 Jul 2022 01:19:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZtxVw1pYdcDvsQm6N6G29PT1JL73CCGF7G8sUX9Kfs4=;
-        b=hdCF6Ux5sj/Ui9SA+QZZFWkaz5tpU9oPnqTZMgUl6hVM9GTYkAyiJgwUmQ7xJXqrVC
-         CGZbCqmB4ZibJocXFQycUeXVNgG1DFaAbWs/GzGX+MPkm+55MRRkil1MkC1NVT/1FA0k
-         5Zf8kb4Y+7E1Yx9UzwIILGRYSEFn0kSSkdVICU5GuYN/eNeIin9QlQnUl9GtcOcrxSPE
-         99bveCKYmLsicmzrX5ZkgdCDNAgI0MUmQ8RNirZ6nDSYQ5klEI5rE5YDtmgraxBULcs/
-         XxKpMGAaNf1VXcyVPXKR9eS8HKBWBnwbqvlxVUUPhE+msVyY7V6rWgcb+IHQesqz+H2B
-         7F8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZtxVw1pYdcDvsQm6N6G29PT1JL73CCGF7G8sUX9Kfs4=;
-        b=YCioRMA85b0kZ+Azg3MMOCE8sA+4qMPmwCll3F7kXpbhO2qxfpz8gnG6CgQMZskCKm
-         nDYyKqaKF2JHMUKW4iiih+75NFnhQw9bwJ29sDRAEOxTkHMNOn2XDw+yc1w9c6AcmXgE
-         IIXc2i9dFiwataYK6tMIf4ZM3oFf9KMddQZCOG9S8KcZ9CzqQR2MhQQFT2pamlv7k0CT
-         YrrLw6sgwTDWuwyKWUah0PPcRkVWHUUPuQxGAl6BLjekUM2iryjS/2gqtBBNydKBjrec
-         RBlJvpddHTQhjeTtp1QiqlZ/3DsKL1Td879lP7J9mhzsWMd9eoxDt9HFZgG1MZ9F0rQs
-         VUCQ==
-X-Gm-Message-State: AJIora9eNj8wIJ2P6rc8JYy9H49m1X1wIn+2VLfiexP5urxFGY1yKx1r
-        j/Wu9WBOWZbXVcBoCt13QXNyLaOfhkkVTx5OYcI=
-X-Google-Smtp-Source: AGRyM1secQcLWHxnDAk0KB/hY+50q7KhRWosdCbuNLjT5ScRK3t60youklhj3RRe3N6FfG9loM0EXWhiCzu80vbJ9/Y=
-X-Received: by 2002:a0d:f0c7:0:b0:31e:e814:e7d6 with SMTP id
- z190-20020a0df0c7000000b0031ee814e7d6mr14519304ywe.340.1658909986075; Wed, 27
- Jul 2022 01:19:46 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220726180623.1668-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20220726180623.1668-6-prabhakar.mahadev-lad.rj@bp.renesas.com> <08083c49-68a3-6b0d-4a12-d9c9f7994281@microchip.com>
-In-Reply-To: <08083c49-68a3-6b0d-4a12-d9c9f7994281@microchip.com>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Wed, 27 Jul 2022 09:19:18 +0100
-Message-ID: <CA+V-a8vx0XLVsZxr-HcQZVqWjQ3tW9ZgbOU0GTKtEf=VcDWRqg@mail.gmail.com>
-Subject: Re: [PATCH 5/6] RISC-V: Kconfig.socs: Add Renesas RZ/Five SoC kconfig option
-To:     Conor.Dooley@microchip.com
-Cc:     "Lad, Prabhakar" <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>, aou@eecs.berkeley.edu,
-        anup@brainfault.org,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
+        Wed, 27 Jul 2022 04:20:51 -0400
+X-Greylist: delayed 529 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 27 Jul 2022 01:20:51 PDT
+Received: from wnew3-smtp.messagingengine.com (wnew3-smtp.messagingengine.com [64.147.123.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13D563C16C;
+        Wed, 27 Jul 2022 01:20:50 -0700 (PDT)
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailnew.west.internal (Postfix) with ESMTP id 777522B05A15;
+        Wed, 27 Jul 2022 04:11:57 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute1.internal (MEProxy); Wed, 27 Jul 2022 04:11:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm3; t=1658909516; x=1658916716; bh=Ujzoa7+jS8
+        fYmceJHmeFpMQR3KXUNY5FvTEHQqyR5LA=; b=dShcvtJbMiAa/sWG9PWNR0OApg
+        TpLcNilzPqQpkfuZSb/81vFuDInCf8BtqJceCIEfUa7XwE9GKoI0pjJjLe+GTTuE
+        jcYylFUpwwvRDHCAf1b/wqbQezuJy6DitsrfkAuHNw6QYEXIw9lXpgEQMdNHaYzY
+        0G4M+aAyVlT5n0WkWLnPV7ueGXnhV+UO9Oio9dEUcmkfwDcQSjSqrwBmMHM2qCKS
+        AFXm29HcOXAuuU322Ayy6mk319CsysJwIp3fJzypa69551CeWt+1elQR1x5wLY+f
+        VNSPq36+IMoKzYDSBitWi+ouxCHdrWn/0G0H6A5XA4JSUqujwHWrsZyAvuDg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm3; t=1658909516; x=1658916716; bh=Ujzoa7+jS8fYmceJHmeFpMQR3KXU
+        NY5FvTEHQqyR5LA=; b=bbNjEDBGaZ3eYhYSuh4TkgaXzlzMxSsV2LJP1cpRmk3y
+        U6St2BVN4edJlkhzHfUIKp9PJVaGyZql44Vz8z+2dpxiPeTq9rYa6tNJUBlWZ8cc
+        1SVtumVOHzw8G2WTnAk5j4XKKwzu58O5x3HySJdNAPGZM2Olh1P3hP0m9BChS7SK
+        GW4g89IhaQNJB6rLL5HSVd04reHBTEmL1zLsaUWJeeusDJGJjrk4XtpLGup1z/R6
+        G5SKmq23h+9yj9kcvI8uAue8HWLGJnjjFg7K5SZaOBfhhxpyI+qzRmvK3J4oYj4Y
+        LLQ+wLRh36t9SkFQzZy4MNzfJDOzfkjmLHxueEUdLg==
+X-ME-Sender: <xms:TPPgYieolKFn6F3EyXwB0m0NXzlQLQR3-HCvZUjbsOpMAvah5bGqFA>
+    <xme:TPPgYsO-SHloPHsbkim72Pa4mhksLjr1ttpUFMPX0VqLQHzmcXjwtf-LX4HH-hgFX
+    FieU2wlH6rjzQ>
+X-ME-Received: <xmr:TPPgYjjDgOxD9hH-fdaHJJrVIawEOczrePbw3TckFHx0cgRt3ruS3nhu-dTi2uEyjCrpPC-usOSPMFPgTo_v4u9XTnAm9yIe>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdduvdcutefuodetggdotefrodftvfcurf
+    hrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecuuegr
+    ihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjug
+    hrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefirhgvghcumffj
+    uceoghhrvghgsehkrhhorghhrdgtohhmqeenucggtffrrghtthgvrhhnpeegheeuhefgtd
+    eluddtleekfeegjeetgeeikeehfeduieffvddufeefleevtddtvdenucffohhmrghinhep
+    khgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrg
+    hilhhfrhhomhepghhrvghgsehkrhhorghhrdgtohhm
+X-ME-Proxy: <xmx:TPPgYv_aui7llQbtInQMN-hRgl3ecjvyJdivxgPuAidPYfvFlEHNlQ>
+    <xmx:TPPgYuscqAfDhAkUmX67YKm9AxpISPuZePYNgvs5UGIu2XlMu-94Rw>
+    <xmx:TPPgYmEOGkDvf0lKeCCwuBzcwzEQIua7gQMpdtD4MgjZs04SEUfgLw>
+    <xmx:TPPgYvOxUA4gRVcWSqLtQPRcYTKSTM8lAvMeyD3Q7w0Q6YwlocvmcYL7P7E>
+Feedback-ID: i787e41f1:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 27 Jul 2022 04:11:56 -0400 (EDT)
+Date:   Wed, 27 Jul 2022 10:11:33 +0200
+From:   Greg KH <greg@kroah.com>
+To:     Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Cc:     stable@vger.kernel.org,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>, johan.hedberg@gmail.com,
+        harshit.m.mogalapalli@gmail.com,
+        Ramanan Govindarajan <ramanan.govindarajan@oracle.com>,
+        linux-bluetooth@vger.kernel.org,
         LKML <linux-kernel@vger.kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+        George Kennedy <george.kennedy@oracle.com>,
+        John Donnelly <john.p.donnelly@oracle.com>
+Subject: Re: Backport request to fix a WARNING in sco_sock_sendmsg on LTS
+Message-ID: <YuDzNUkeEv37sR2S@kroah.com>
+References: <fd01f110-05ce-569c-4910-722a5fab9f1c@oracle.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <fd01f110-05ce-569c-4910-722a5fab9f1c@oracle.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Conor,
+On Wed, Jul 27, 2022 at 01:26:49PM +0530, Harshit Mogalapalli wrote:
+> Hi,
+> 
+> We have seen a WARNING message while fuzzing with syzkaller.
+> 
+> 
+> Kernel 5.15.54 on an x86_64
+> 
+> localhost login: [  104.557712] ------------[ cut here ]------------
+> [  104.558404] WARNING: CPU: 1 PID: 15544 at mm/page_alloc.c:5358
+> __alloc_pages+0x38a/0x410
+> [  104.559584] Modules linked in:
+> [  104.560030] CPU: 1 PID: 15544 Comm: repro Not tainted 5.15.54 #1
+> [  104.560896] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
+> 1.11.0-2.el7 04/01/2014
+> [  104.562190] RIP: 0010:__alloc_pages+0x38a/0x410
+> [  104.562864] Code: ff 4c 89 fa 44 89 f6 89 ef 89 6c 24 48 c6 44 24 78 00
+> 4c 89 6c 24 60 e8 c4 e5 ff ff 49 89 c4 e9 43 fe ff ff 40 80 e5 3f eb c5 <0f>
+> 0b eb a5 4c 89 e7 44 89 f6 45 31 e4 e8 c4 9f ff ff e9 4a fe ff
+> [  104.565421] RSP: 0018:ffff88801b4577f0 EFLAGS: 00010246
+> [  104.566182] RAX: 0000000000000000 RBX: 1ffff1100368aeff RCX:
+> dffffc0000000000
+> [  104.567177] RDX: 0000000000000000 RSI: 0000000000000012 RDI:
+> 0000000000040cc0
+> [  104.568185] RBP: 0000000000000000 R08: 0000000000000000 R09:
+> 0000000000000000
+> [  104.569196] R10: fffffff900000000 R11: 0000000000000001 R12:
+> 0000000000000001
+> [  104.570194] R13: 0000000000000000 R14: 0000000000000000 R15:
+> 0000000000000000
+> [  104.571201] FS:  00007fda701c7740(0000) GS:ffff888107080000(0000)
+> knlGS:0000000000000000
+> [  104.572330] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [  104.573146] CR2: 0000000020004640 CR3: 0000000020c34000 CR4:
+> 00000000000006e0
+> [  104.574149] Call Trace:
+> [  104.574503]  <TASK>
+> [  104.574838]  ? __sanitizer_cov_trace_cmp4+0x25/0x90
+> [  104.575535]  ? __alloc_pages_slowpath.constprop.0+0x16c0/0x16c0
+> [  104.576391]  ? bpf_ksym_find+0x171/0x1c0
+> [  104.576985]  ? selinux_socket_sendmsg+0x207/0x2d0
+> [  104.577938]  ? __sanitizer_cov_trace_const_cmp8+0x27/0x90
+> [  104.578739]  alloc_pages+0x191/0x3f0
+> [  104.579258]  kmalloc_order+0x34/0xb0
+> [  104.579794]  kmalloc_order_trace+0x19/0xa0
+> [  104.580375]  sco_sock_sendmsg+0x10f/0x300
+> [  104.581228]  ? security_socket_sendmsg+0x8e/0xc0
+> 
+> 
+> I have attached the report and the reproducer. A similar warning is seen
+> on some testing previously.
+> 
+> Ref: https://lore.kernel.org/linux-mm/812dab5c-845d-df58-2752-abea7c07890@google.com/
+> 
+> Commit: 99c23da0eed4 ("Bluetooth: sco: Fix lock_sock() blockage by
+> memcpy_from_msg()") is backported to LTS. So we have this bug on LTS
+> branches.
+> 
+> The Fix commit is not backported to LTS.
+> Commit: 0771cbb3b97d ("Bluetooth: SCO: Replace use of memcpy_from_msg
+> with bt_skb_sendmsg")
+> 
+> I have tried backporting onto LTS locally.
+> 
+> Can you please backport the following commits to these branches.
+> 4.14.y, 4.19.y, 5.4.y, 5.10.y, 5.15.y LTS. (applying from 1 to 7)
+> 
+> 1. commit 38f64f650dc0e44c146ff88d15a7339efa325918 upstream
+> 	("Bluetooth: Add bt_skb_sendmsg helper")
+> 2. commit 97e4e80299844bb5f6ce5a7540742ffbffae3d97 upstream
+> 	("Bluetooth: Add bt_skb_sendmmsg helper")
+> 3. commit 0771cbb3b97d3c1d68eecd7f00055f599954c34e upstream
+> 	("Bluetooth: SCO: Replace use of memcpy_from_msg with bt_skb_sendmsg")
+> 4. commit 81be03e026dc0c16dc1c64e088b2a53b73caa895 upstream
+> 	("Bluetooth: RFCOMM: Replace use of memcpy_from_msg with bt_skb_sendmmsg")
+> 5. commit 266191aa8d14b84958aaeb5e96ee4e97839e3d87 upstream
+> 	("Bluetooth: Fix passing NULL to PTR_ERR")
+> 6. commit 037ce005af6b8a3e40ee07c6e9266c8997e6a4d6 upstream
+> 	("Bluetooth: SCO: Fix sco_send_frame returning
+> skb->len")
+> 7. commit 29fb608396d6a62c1b85acc421ad7a4399085b9f upstream
+> 	("Bluetooth: Fix bt_skb_sendmmsg not allocating partial chunks")
+> 
+> 
+> Notes:
+> 3 is the fix for the WARNING.
+> 1,2 are prerequisites for applying 3. At this stage the WARNING is fixed.
+> 4,5,6,7 are necessary as they are fixing newly introduced commits by us.
+> 
+> This is a clean cherry-pick series(7 commits) on all mentioned branches(LTS
+> 4.14->5.15)
+> 
+> I have tested all mentioned LTS branches with the reproducer(only) and the
+> WARNING is fixed after applying these 7 patches.
 
-Thank you for the review.
+All now queued up, thanks.
 
-On Tue, Jul 26, 2022 at 7:49 PM <Conor.Dooley@microchip.com> wrote:
->
-> On 26/07/2022 19:06, Lad Prabhakar wrote:
-> > Introduce SOC_RENESAS_RZFIVE config option to enable Renesas RZ/Five
-> > (R9A07G043) SoC, along side also add ARCH_RENESAS config option as most
-> > of the Renesas drivers depend on this config option.
-> >
-> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> > ---
-> >  arch/riscv/Kconfig.socs | 14 ++++++++++++++
-> >  1 file changed, 14 insertions(+)
-> >
-> > diff --git a/arch/riscv/Kconfig.socs b/arch/riscv/Kconfig.socs
-> > index 69774bb362d6..91b7f38b77a8 100644
-> > --- a/arch/riscv/Kconfig.socs
-> > +++ b/arch/riscv/Kconfig.socs
-> > @@ -80,4 +80,18 @@ config SOC_CANAAN_K210_DTB_SOURCE
-> >
-> >  endif # SOC_CANAAN
-> >
-> > +config ARCH_RENESAS
->
-> Hmm, I guess since it is very late in the day for v5.20 and there
-> appear to be some issues with the SOC_ symbol breaking the dts build
-> anyway, this is likely to be v5.21 content anyway...
->
-I was targeting this for v5.21 ;)
-
-> ...but I would be wary of adding ARCH_ symbols from ARM archs prior
-> to figuring out what we actually want symbols in Kconfig.socs to
-> actually  at LPC or w/e. Palmer?
->
-> > +     bool
-> > +     select GPIOLIB
-> > +     select PINCTRL
-> > +     select SOC_BUS
-> > +
-> > +config SOC_RENESAS_RZFIVE
->
-> I would like to see this added to the default defconfig so that
-> it has dtbs_check coverage by default.
->
-Agreed, I will include it in the next version.
-
-Cheers,
-Prabhakar
+greg k-h
