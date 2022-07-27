@@ -2,111 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11DF1C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 16:53:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 996B8C19F29
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 16:53:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231185AbiG1Qxi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 12:53:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37610 "EHLO
+        id S231784AbiG1Qxv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 12:53:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229498AbiG1Qxh (ORCPT
+        with ESMTP id S231722AbiG1Qxq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 12:53:37 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4942371BDC
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 09:53:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659027216; x=1690563216;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=daeOdoRNV6EtJvAH4DKhhNq1uuHrMofKvOUMeqjcUYo=;
-  b=g2QGw4Vg8ZrNf050vyCM4docI5eypRhzoDDcaaUPkLJzMLiFJPNbR0oS
-   qNX4mk36jWbOx7QNQceYmyGWCXd5KoKuWt1W/sdfROmBXjJCJQsII8+1Z
-   plLNhyUPAXagPwQuPKYAVAyDI4BgKDH7fNvVk4Lkqf5aDBDw7k02uplQE
-   uMygtEBqAOHjgzDAY739tlDyinIapcrde0lRbadt0Ts3pl86hkLTPM1OY
-   tWhjPJ9ml0lwtUNZ0fovsZHuOpnKCbUJ2zW8hgScZCj6J26CSCHCdNAH+
-   luyQbsfiUcsvAO/MOI7BMeZetn74jlpjRL2eI/JVdsMXuprvdGkxAGEVq
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10422"; a="268945131"
-X-IronPort-AV: E=Sophos;i="5.93,198,1654585200"; 
-   d="scan'208";a="268945131"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2022 09:53:36 -0700
-X-IronPort-AV: E=Sophos;i="5.93,198,1654585200"; 
-   d="scan'208";a="633773817"
-Received: from tesmoryn-mobl.amr.corp.intel.com (HELO [10.212.62.40]) ([10.212.62.40])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2022 09:53:34 -0700
-Message-ID: <7686403c-7252-ef7a-70fc-040c5ab8cb79@linux.intel.com>
-Date:   Thu, 28 Jul 2022 11:53:33 -0500
+        Thu, 28 Jul 2022 12:53:46 -0400
+Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7802774372
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 09:53:44 -0700 (PDT)
+Received: by mail-qk1-x729.google.com with SMTP id e16so1858355qka.5
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 09:53:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ziepe.ca; s=google;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=xGVPmZSPrbx+eKc83ja2PpqsvLm/DDS+QFGGJ9xOY4g=;
+        b=Q6NVBueFd1MERNeCHWlZriu8t3DSS4Vh5eg8xjAwp+mj77zvsaROKzSgr5ponhokAm
+         hQ1DRpdJ0f0KwgNA4laYrazBJ8TXkUJliDtljK8/n+ZXTdPi9ElJsmaKxUNvBbDYutzE
+         BlWWjW30PpEqtWNA0GY5AZPUXsVuRqQkXyVnrJnWBNOrbZO2wbtqSsSCAdr8HH8jUsgr
+         Qzd1081JdtoeNc6KW8DwjeOnmfOZ/BBalk1zjyGR1wbxguXVFgeT2C3Qp9cxlyWgg/G0
+         mdUTCbD3USjmp3BFvPTNPMVrufp2v22xn9SrllvRj/rWgowPyxjVyUacMtPeXjSEE37W
+         P4IQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=xGVPmZSPrbx+eKc83ja2PpqsvLm/DDS+QFGGJ9xOY4g=;
+        b=6u3QdtP53l2jwxT1wgpJc999kxo4Q1Tq+ypXZXUqi+ERnaIW4s05pgsRO9gfSLSt3C
+         j04x6ki2Yb/Fgw+lqFJwAJm6V1LFZoNwYWwqJl7LgKsucQ4mX0PV+uGxkJPKBWCiEeqB
+         P4Uv7eb56acuNfjY2JhEfKL4DaCfSmEULw0jaq9EsQyNL47ZpzRm3d9FskDvEZHEZOtx
+         wE3eOVM9OOXr8BWk3XslDUhEM7Z/nIU1rUBBiTd7XJgjYYRAZLWETJBSSMyb2f4tbaHH
+         1+1RjhVrqNqHHy3C04Azh84B3hDWOHtmZSTJZxKWyfiVt+2saUjU+8DAoftrQXV+f2wi
+         FQ7g==
+X-Gm-Message-State: AJIora9/fwymwMBbggrJgqTdoDyCjpLRs2EwH3XSA6DgMYWo67L+51oQ
+        V4EfQnWXHmg/hbozeyp0BpKwNw==
+X-Google-Smtp-Source: AGRyM1vTkbqOAk/zj3B6akQKXO1r+tl0s/E1AShNSvjVsV09iOkh2TMcmnz+vWyiVYdnwXH0Z+Q6hA==
+X-Received: by 2002:ae9:f704:0:b0:6b2:42da:3ad with SMTP id s4-20020ae9f704000000b006b242da03admr20741386qkg.439.1659027223429;
+        Thu, 28 Jul 2022 09:53:43 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
+        by smtp.gmail.com with ESMTPSA id ay43-20020a05620a17ab00b006b66d9dd916sm809067qkb.32.2022.07.28.09.53.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Jul 2022 09:53:42 -0700 (PDT)
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+X-Google-Original-From: Jason Gunthorpe <jgg@nvidia.com>
+Received: from jgg by wakko with local (Exim 4.95)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1oH6lZ-001DFn-FG;
+        Thu, 28 Jul 2022 13:53:41 -0300
+Date:   Wed, 27 Jul 2022 15:17:55 -0300
+To:     Michael Guralnik <michaelgur@nvidia.com>
+Cc:     leonro@nvidia.com, maorg@nvidia.com, linux-kernel@vger.kernel.org,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        saeedm@nvidia.com
+Subject: Re: [PATCH rdma-next v1 0/5] MR cache cleanup
+Message-ID: <YuGBU4QqOVJRUM77@nvidia.com>
+References: <20220726071911.122765-1-michaelgur@nvidia.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.11.0
-Subject: Re: [PATCH v2 1/3] drivers: misc: intel_sysid: Add sysid from arch to
- drivers
-Content-Language: en-US
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     kah.jing.lee@intel.com, linux-kernel@vger.kernel.org,
-        arnd@arndb.de, rafael.j.wysocki@intel.com, tien.sung.ang@intel.com,
-        dinh.nguyen@intel.com, Zhou@kroah.com,
-        Furong <furong.zhou@intel.com>, Vinod Koul <vkoul@kernel.org>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>
-References: <20220721123017.416438-1-kah.jing.lee@intel.com>
- <20220721123149.416618-1-kah.jing.lee@intel.com> <YuJAll2MEgKF0MVM@kroah.com>
- <be3f189e-c17c-2438-450d-3d84dfcd71da@linux.intel.com>
- <YuKyTKHk3c7DibX3@kroah.com>
-From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-In-Reply-To: <YuKyTKHk3c7DibX3@kroah.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220726071911.122765-1-michaelgur@nvidia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 7/28/22 10:59, Greg KH wrote:
-> On Thu, Jul 28, 2022 at 10:37:37AM -0500, Pierre-Louis Bossart wrote:
->> Thanks for the review Greg,
->>
->>>> +static int intel_sysid_probe(struct platform_device *pdev)
->>>> +{
->>>> +	struct intel_sysid *sysid;
->>>> +	struct resource	*regs;
->>>> +
->>>> +	sysid = devm_kzalloc(&pdev->dev, sizeof(struct intel_sysid),
->>>> +		GFP_KERNEL);
->>>> +	if (!sysid)
->>>> +		return -ENOMEM;
->>>> +
->>>> +	regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->>>> +	if (!regs)
->>>> +		return -ENXIO;
->>>> +
->>>> +	sysid->regs = devm_ioremap_resource(&pdev->dev, regs);
->>>> +	if (IS_ERR(sysid->regs))
->>>> +		return PTR_ERR(sysid->regs);
->>>> +
->>>> +	platform_set_drvdata(pdev, sysid);
->>>> +
->>>> +	return devm_device_add_group(&pdev->dev, &intel_sysid_attr_group);
->>>
->>> You just raced with userspace and lost.  Please use the default group
->>> for the platform device.
->>>
->>> I need to go remove this function, it should not be used at all as it is
->>> broken.
->>
->> Can you elaborate on the issue and suggested replacement?
->>
->> We used this function for the SoundWire sysfs based on your review
->> comments (2 years ago?) that we should not muck with kobj, and that
->> function devm_device_add_group() is also used in a probe function.
+On Tue, Jul 26, 2022 at 10:19:06AM +0300, Michael Guralnik wrote:
+> Hi,
 > 
-> Use the default_groups pointer in the driver structure.
+> In this series, Aharon continues to clean mlx5 MR cache logic.
+> 
+> Thanks
+> 
+> v1: Change push_mkey to eliminate locking on mail flow
+> v0: http://lore.kernel.org/all/cover.1654601897.git.leonro@nvidia.com/
+> 
+> Aharon Landau (5):
+>   RDMA/mlx5: Replace ent->lock with xa_lock
+>   RDMA/mlx5: Replace cache list with Xarray
+>   RDMA/mlx5: Store the number of in_use cache mkeys instead of total_mrs
+>   RDMA/mlx5: Store in the cache mkeys instead of mrs
+>   RDMA/mlx5: Rename the mkey cache variables and functions
 
-did you mean dev_groups?
+Applied to for-next, thanks
 
-I am not following the idea, for SoundWire all the attributes are really
-device-specific or described by ACPI and cannot be hard-coded in the
-driver structure.
+Jason
