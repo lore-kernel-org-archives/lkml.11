@@ -2,121 +2,285 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A0A5C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 07:43:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 310F6C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 07:43:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230255AbiG0Hnt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 03:43:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43816 "EHLO
+        id S230420AbiG0Hnx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 03:43:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229623AbiG0Hnj (ORCPT
+        with ESMTP id S230397AbiG0Hnq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 03:43:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1045D3719A
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 00:43:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 98937B81EB9
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 07:43:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC5A3C433C1;
-        Wed, 27 Jul 2022 07:43:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658907815;
-        bh=0IZtoatpXCh/iT1PMIYHTOqCiq0Jo3hX13tZ90/Ib8E=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=VYmIframm6vtblHv2amc5pNgIDeiDXQlFUvZUQFihJqvbRv0VIqEq1bcPqSGZN0UI
-         H7jF1//MLsuHEVL6gJHgZK//lucIKqfI/0FmMJrE/BfHVLyTHFg4KdOxfOrcf+GBqS
-         P5ndcKtv2vcK06tRTQoB+DgaYxwbZoNUr/gEgoZo=
-Date:   Wed, 27 Jul 2022 09:43:32 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     "Russell King (Oracle)" <linux@armlinux.org.uk>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Rob Herring <robh@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        kernel-team@android.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5] amba: Remove deferred device addition
-Message-ID: <YuDspJ4+S1BsKLOi@kroah.com>
-References: <20220719182010.637337-1-saravanak@google.com>
- <20220720131221.azqfidkry3cwiarw@bogus>
- <YtkTK3QS0PQ2LRpM@shell.armlinux.org.uk>
- <CAGETcx8mVqX+FRiD9_PahpfQQ1CjG0FxN08pN7jgj+D4x2QjhQ@mail.gmail.com>
+        Wed, 27 Jul 2022 03:43:46 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D07E53FA0F
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 00:43:42 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id h9so23060525wrm.0
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 00:43:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=OeZrEzfrBdJ8L6waHhuRMTGFQ5BiSnlrL0yjLoaEY2k=;
+        b=U1cUW5XlqqaK1ishHwceTNUmc5PtLliTCnbBGw1T6fBlZ1+LGugtrUL0DdgXQTLYxh
+         WEqlaOFuOcLqboKvl6Ex0ZRRCmua+LJivlI/5qmStGoM156Sgr+SgY0T/NPYhkHjnlkN
+         ADXto5HiW3TQFYGjXQi3asw9jLPOjIHBkRKvNphMM0st6C3Zj2ePkvco3VanLoF994rb
+         4yYfdq3GDCVt2n56DWZJNVAXTIDB7dzNPIT+T3eEUEJ64kUpoFq/opl0mdKE5uhjQYNA
+         nPnIuKIsL+KwSdko9P137PSf9hbW0vwUhtlmztzuHIMs8DmijRpR+/vXb/CYVyQnwnL2
+         jlhw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=OeZrEzfrBdJ8L6waHhuRMTGFQ5BiSnlrL0yjLoaEY2k=;
+        b=TRr6WTXyIEqYBFygksHu6fAJetU/LpCp860DpaXUmLUO9NZ03wSUgIcSMRKDq+orim
+         CQb7jVpI6eN9AVmOmce/6CumO4u0nbPb2wOvvc9ELc4G5MyZIqQ9Tbknr4WG0yN3GOGs
+         eamTkTUeqTZWlZNxumz8fRr7LzD3YkVmMdG7+nqpVNNGaLcNUYUy3bq8wItxyiL9WOHK
+         5g/m/WK2Tp5RzN+ZeLZUoiSSzirDirTUd8ZezV7Qz2O/GPbL5AEX3n5ciK6ptBZCtRxA
+         zim1Q3zBDZeO/r3VzqUVfJp0vvHPTlix5z5n0bf6BMp8FYJUpBXBXxeEaIvsq4aaEnPr
+         GkwA==
+X-Gm-Message-State: AJIora82p3Gf8moVFFbrhrMhJ4/zaTIkQtMQwXX7/wAK0WOU9jLjCsD6
+        gRmfZU0/KfzHRQJf/MFBU4s=
+X-Google-Smtp-Source: AGRyM1tA+eHjz8jAcQpI68AJx05rJR5j9es+Cj9EOFIQ8d8RFuf45AAggQRiJxTV0KFj2tjk02HUQg==
+X-Received: by 2002:a05:6000:1284:b0:21e:6526:bef5 with SMTP id f4-20020a056000128400b0021e6526bef5mr12664583wrx.488.1658907821246;
+        Wed, 27 Jul 2022 00:43:41 -0700 (PDT)
+Received: from fedora.. ([2a01:e0a:1d2:1f90:be95:f3a2:4d99:a3b3])
+        by smtp.gmail.com with ESMTPSA id l16-20020a05600c4f1000b003a2e27fc275sm1442444wmq.12.2022.07.27.00.43.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jul 2022 00:43:40 -0700 (PDT)
+From:   Matthieu CHARETTE <matthieu.charette@gmail.com>
+To:     lkp@intel.com
+Cc:     airlied@linux.ie, andrealmeid@igalia.com, daniel@ffwll.ch,
+        dri-devel@lists.freedesktop.org, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, maarten.lankhorst@linux.intel.com,
+        matthieu.charette@gmail.com, mripard@kernel.org,
+        tzimmermann@suse.de
+Subject: [PATCH] drm: Fix EDID firmware load on resume
+Date:   Wed, 27 Jul 2022 09:41:52 +0200
+Message-Id: <20220727074152.43059-1-matthieu.charette@gmail.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <202207172035.mtErdlaw-lkp@intel.com>
+References: <202207172035.mtErdlaw-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAGETcx8mVqX+FRiD9_PahpfQQ1CjG0FxN08pN7jgj+D4x2QjhQ@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 21, 2022 at 02:58:27PM -0700, Saravana Kannan wrote:
-> On Thu, Jul 21, 2022 at 1:50 AM Russell King (Oracle)
-> <linux@armlinux.org.uk> wrote:
-> >
-> > On Wed, Jul 20, 2022 at 02:12:21PM +0100, Sudeep Holla wrote:
-> > > On Tue, Jul 19, 2022 at 11:20:10AM -0700, Saravana Kannan wrote:
-> > > > The uevents generated for an amba device need PID and CID information
-> > > > that's available only when the amba device is powered on, clocked and
-> > > > out of reset. So, if those resources aren't available, the information
-> > > > can't be read to generate the uevents. To workaround this requirement,
-> > > > if the resources weren't available, the device addition was deferred and
-> > > > retried periodically.
-> > > >
-> > > > However, this deferred addition retry isn't based on resources becoming
-> > > > available. Instead, it's retried every 5 seconds and causes arbitrary
-> > > > probe delays for amba devices and their consumers.
-> > > >
-> > > > Also, maintaining a separate deferred-probe like mechanism is
-> > > > maintenance headache.
-> > > >
-> > > > With this commit, instead of deferring the device addition, we simply
-> > > > defer the generation of uevents for the device and probing of the device
-> > > > (because drivers needs PID and CID to match) until the PID and CID
-> > > > information can be read. This allows us to delete all the amba specific
-> > > > deferring code and also avoid the arbitrary probing delays.
-> > > >
-> > > > Cc: Rob Herring <robh@kernel.org>
-> > > > Cc: Ulf Hansson <ulf.hansson@linaro.org>
-> > > > Cc: Saravana Kannan <saravanak@google.com>
-> > > > Cc: Linus Walleij <linus.walleij@linaro.org>
-> > > > Cc: Sudeep Holla <sudeep.holla@arm.com>
-> > >
-> > > Tested-by: Sudeep Holla <sudeep.holla@arm.com>
-> > >
-> > > on Juno with linux-next(which had the reported issue [1]) + this patch(which
-> > > fixes the issue)
-> >
-> > Ok, but this patch needs to end up in the patch system for me to apply
-> > it. Can someone please add "KernelVersion: 5.19-rc7" or whatever version
-> 
-> Where am I supposed to add that? Just somewhere in the email body?
-> 
-> The patch you are replying to was based on your linu-arm/for-next the
-> day I sent it. Do you still need me to rebase it on Linus's tree?
-> 
-> > the patch was generated against (just the tagged version is sufficient)
-> > somewhere in the email, and send it to patches@armlinu.org.uk.
-> 
-> I'll send out the same patch as is to that email. Wait, is there a
-> typo in the domain name? Did you leave out the x by accident or is it
-> really armlinu? I'm also getting a DNS failure for either one of those
-> domains.
-> 
-> I'll wait to hear from you before I send another email.
+Loading an EDID using drm.edid_firmware parameter makes resume to fail
+after firmware cache is being cleaned. This is because edid_load() use a
+temporary device to request the firmware. This cause the EDID firmware
+not to be cached from suspend. And, requesting the EDID firmware return
+an error during resume.
+So the request_firmware() call should use a permanent device for each
+connector. Also, we should cache the EDID even if no monitor is
+connected, in case it's plugged while suspended.
 
-Odd, I don't see the requirement for the arm patch-bot for the amba bus
-code anywhere in the documentation, am I missing it?
+Link: https://gitlab.freedesktop.org/drm/amd/-/issues/2061
+Signed-off-by: Matthieu CHARETTE <matthieu.charette@gmail.com>
+---
+ drivers/gpu/drm/drm_connector.c |  9 ++++
+ drivers/gpu/drm/drm_edid_load.c | 81 ++++++++++++++++++++++++++++-----
+ include/drm/drm_connector.h     | 12 +++++
+ include/drm/drm_edid.h          |  3 ++
+ 4 files changed, 94 insertions(+), 11 deletions(-)
 
-Anyway, I can take this now if no one objects, through my driver-core
-tree so that it can get into 5.20-rc1.
+diff --git a/drivers/gpu/drm/drm_connector.c b/drivers/gpu/drm/drm_connector.c
+index 1c48d162c77e..e8819ebf1c4b 100644
+--- a/drivers/gpu/drm/drm_connector.c
++++ b/drivers/gpu/drm/drm_connector.c
+@@ -31,6 +31,7 @@
+ #include <drm/drm_privacy_screen_consumer.h>
+ #include <drm/drm_sysfs.h>
+ 
++#include <linux/platform_device.h>
+ #include <linux/uaccess.h>
+ 
+ #include "drm_crtc_internal.h"
+@@ -289,6 +290,9 @@ int drm_connector_init(struct drm_device *dev,
+ 
+ 	drm_connector_get_cmdline_mode(connector);
+ 
++	connector->edid_load_pdev = NULL;
++	drm_cache_edid_firmware(connector);
++
+ 	/* We should add connectors at the end to avoid upsetting the connector
+ 	 * index too much.
+ 	 */
+@@ -473,6 +477,11 @@ void drm_connector_cleanup(struct drm_connector *connector)
+ 		connector->tile_group = NULL;
+ 	}
+ 
++	if (connector->edid_load_pdev) {
++		platform_device_unregister(connector->edid_load_pdev);
++		connector->edid_load_pdev = NULL;
++	}
++
+ 	list_for_each_entry_safe(mode, t, &connector->probed_modes, head)
+ 		drm_mode_remove(connector, mode);
+ 
+diff --git a/drivers/gpu/drm/drm_edid_load.c b/drivers/gpu/drm/drm_edid_load.c
+index 37d8ba3ddb46..5a82be9917ec 100644
+--- a/drivers/gpu/drm/drm_edid_load.c
++++ b/drivers/gpu/drm/drm_edid_load.c
+@@ -167,6 +167,19 @@ static int edid_size(const u8 *edid, int data_size)
+ 	return (edid[0x7e] + 1) * EDID_LENGTH;
+ }
+ 
++static struct platform_device *edid_pdev(const char *connector_name)
++{
++	struct platform_device *pdev = platform_device_register_simple(connector_name, -1, NULL, 0);
++
++	if (IS_ERR(pdev)) {
++		DRM_ERROR("Failed to register EDID firmware platform device "
++			"for connector \"%s\"\n", connector_name);
++		return ERR_CAST(pdev);
++	}
++
++	return pdev;
++}
++
+ static void *edid_load(struct drm_connector *connector, const char *name,
+ 			const char *connector_name)
+ {
+@@ -182,18 +195,17 @@ static void *edid_load(struct drm_connector *connector, const char *name,
+ 		fwdata = generic_edid[builtin];
+ 		fwsize = sizeof(generic_edid[builtin]);
+ 	} else {
+-		struct platform_device *pdev;
++		struct platform_device *pdev = connector->edid_load_pdev;
+ 		int err;
+ 
+-		pdev = platform_device_register_simple(connector_name, -1, NULL, 0);
+-		if (IS_ERR(pdev)) {
+-			DRM_ERROR("Failed to register EDID firmware platform device "
+-				  "for connector \"%s\"\n", connector_name);
+-			return ERR_CAST(pdev);
++		if (WARN_ON(!pdev)) {
++			pdev = edid_pdev(connector_name);
++			if (IS_ERR(pdev))
++				return ERR_CAST(pdev);
++			connector->edid_load_pdev = pdev;
+ 		}
+ 
+ 		err = request_firmware(&fw, name, &pdev->dev);
+-		platform_device_unregister(pdev);
+ 		if (err) {
+ 			DRM_ERROR("Requesting EDID firmware \"%s\" failed (err=%d)\n",
+ 				  name, err);
+@@ -263,11 +275,9 @@ static void *edid_load(struct drm_connector *connector, const char *name,
+ 	return edid;
+ }
+ 
+-struct edid *drm_load_edid_firmware(struct drm_connector *connector)
++static char *edid_name(const char *connector_name)
+ {
+-	const char *connector_name = connector->name;
+ 	char *edidname, *last, *colon, *fwstr, *edidstr, *fallback = NULL;
+-	struct edid *edid;
+ 
+ 	if (edid_firmware[0] == '\0')
+ 		return ERR_PTR(-ENOENT);
+@@ -310,8 +320,57 @@ struct edid *drm_load_edid_firmware(struct drm_connector *connector)
+ 	if (*last == '\n')
+ 		*last = '\0';
+ 
+-	edid = edid_load(connector, edidname, connector_name);
++	edidname = kstrdup(edidname, GFP_KERNEL);
++	if (!edidname) {
++		kfree(fwstr);
++		return ERR_PTR(-ENOMEM);
++	}
++
+ 	kfree(fwstr);
++	return edidname;
++}
++
++void drm_cache_edid_firmware(struct drm_connector *connector)
++{
++	const char *connector_name = connector->name;
++	const char *edidname = edid_name(connector_name);
++	struct platform_device *pdev;
++	int err;
++
++	if (IS_ERR(edidname))
++		return;
++
++	if (match_string(generic_edid_name, GENERIC_EDIDS, edidname) >= 0) {
++		kfree(edidname);
++		return;
++	}
++
++	pdev = edid_pdev(connector_name);
++	if (IS_ERR(pdev)) {
++		kfree(edidname);
++		return;
++	}
++	connector->edid_load_pdev = pdev;
++
++	err = firmware_request_cache(&pdev->dev, edidname);
++	if (err)
++		DRM_ERROR("Requesting EDID firmware cache \"%s\" failed (err=%d)\n",
++			edidname, err);
++
++	kfree(edidname);
++}
++
++struct edid *drm_load_edid_firmware(struct drm_connector *connector)
++{
++	const char *connector_name = connector->name;
++	const char *edidname = edid_name(connector_name);
++	struct edid *edid;
++
++	if (IS_ERR(edidname))
++		return ERR_CAST(edidname);
++
++	edid = edid_load(connector, edidname, connector_name);
++	kfree(edidname);
+ 
+ 	return edid;
+ }
+diff --git a/include/drm/drm_connector.h b/include/drm/drm_connector.h
+index 3ac4bf87f257..47c84741517e 100644
+--- a/include/drm/drm_connector.h
++++ b/include/drm/drm_connector.h
+@@ -1573,6 +1573,18 @@ struct drm_connector {
+ 	 */
+ 	struct i2c_adapter *ddc;
+ 
++	/**
++	 * @edid_load_pdev: Platform device for loading EDID via firmware.
++	 *
++	 * The platform device is registered in drm_connector_init() in case a
++	 * custom EDID firmware is used with `edid_firmware` parameter. Otherwise,
++	 * it is set to NULL.
++	 *
++	 * Platform device is unregistered in drm_connector_cleanup() if it
++	 * is not NULL.
++	 */
++	struct platform_device *edid_load_pdev;
++
+ 	/**
+ 	 * @null_edid_counter: track sinks that give us all zeros for the EDID.
+ 	 * Needed to workaround some HW bugs where we get all 0s
+diff --git a/include/drm/drm_edid.h b/include/drm/drm_edid.h
+index b2756753370b..e907c928a35d 100644
+--- a/include/drm/drm_edid.h
++++ b/include/drm/drm_edid.h
+@@ -378,10 +378,13 @@ int drm_av_sync_delay(struct drm_connector *connector,
+ 		      const struct drm_display_mode *mode);
+ 
+ #ifdef CONFIG_DRM_LOAD_EDID_FIRMWARE
++void drm_cache_edid_firmware(struct drm_connector *connector);
+ struct edid *drm_load_edid_firmware(struct drm_connector *connector);
+ int __drm_set_edid_firmware_path(const char *path);
+ int __drm_get_edid_firmware_path(char *buf, size_t bufsize);
+ #else
++inline void
++drm_cache_edid_firmware(struct drm_connector *connector);
+ static inline struct edid *
+ drm_load_edid_firmware(struct drm_connector *connector)
+ {
+-- 
+2.37.1
 
-thanks,
-
-greg k-h
