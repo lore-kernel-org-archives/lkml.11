@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AD5EC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:33:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA9AAC19F28
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:33:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238075AbiG0QdZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:33:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34608 "EHLO
+        id S237477AbiG0Qdn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:33:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237598AbiG0Qcv (ORCPT
+        with ESMTP id S237737AbiG0QdF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:32:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 307775466C;
-        Wed, 27 Jul 2022 09:26:25 -0700 (PDT)
+        Wed, 27 Jul 2022 12:33:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F42024E878;
+        Wed, 27 Jul 2022 09:26:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2199EB821C6;
-        Wed, 27 Jul 2022 16:25:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 746ADC433C1;
-        Wed, 27 Jul 2022 16:25:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D4D9619FE;
+        Wed, 27 Jul 2022 16:25:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 748DEC433C1;
+        Wed, 27 Jul 2022 16:25:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939130;
-        bh=BBk1kyASzUYpYQ+fLeaHuVmb7y3xxhjn1vuem2RYH+c=;
+        s=korg; t=1658939133;
+        bh=/f09EqkA8ylK2cgveU08oawcKEHfM+5sXxQirEs8kZ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iybAJG7TTS49BdnPcZ1YWLvZN7FhvYSiNEGk7k9RUoiibTLLKgioLHrulUv48pBeo
-         rz1jfxhdfudXuBMxnrALPGabUCo9jdwUDKcFPDiKQXTKV1UDk1aJ5QOLCPhiLinlsZ
-         bHdji69jmPMmjI24UCtJTGhDhaOahzg2b3brWavU=
+        b=JW554foM8SxUYOgHSGMKqV4X5nhWYVUBhWItwd0xFmTD1VcU/e30s7jhSbBv70uoW
+         jzux9Ydkj5DFQpkMCF1HbxdZDeQwj47vjSkjGbvGQSQi8laQSwrplFUuWQSyuJmsMm
+         grMufSLQKVkmqxHkiA/FsAS8xRLvu0pxPcuRxfp4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hristo Venev <hristo@venev.name>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 24/62] be2net: Fix buffer overflow in be_get_module_eeprom
-Date:   Wed, 27 Jul 2022 18:10:33 +0200
-Message-Id: <20220727161005.139756517@linuxfoundation.org>
+Subject: [PATCH 4.19 25/62] tcp: Fix a data-race around sysctl_tcp_early_retrans.
+Date:   Wed, 27 Jul 2022 18:10:34 +0200
+Message-Id: <20220727161005.188759957@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161004.175638564@linuxfoundation.org>
 References: <20220727161004.175638564@linuxfoundation.org>
@@ -49,142 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hristo Venev <hristo@venev.name>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit d7241f679a59cfe27f92cb5c6272cb429fb1f7ec ]
+[ Upstream commit 52e65865deb6a36718a463030500f16530eaab74 ]
 
-be_cmd_read_port_transceiver_data assumes that it is given a buffer that
-is at least PAGE_DATA_LEN long, or twice that if the module supports SFF
-8472. However, this is not always the case.
+While reading sysctl_tcp_early_retrans, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its reader.
 
-Fix this by passing the desired offset and length to
-be_cmd_read_port_transceiver_data so that we only copy the bytes once.
-
-Fixes: e36edd9d26cf ("be2net: add ethtool "-m" option support")
-Signed-off-by: Hristo Venev <hristo@venev.name>
-Link: https://lore.kernel.org/r/20220716085134.6095-1-hristo@venev.name
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fixes: eed530b6c676 ("tcp: early retransmit")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/emulex/benet/be_cmds.c   | 10 +++---
- drivers/net/ethernet/emulex/benet/be_cmds.h   |  2 +-
- .../net/ethernet/emulex/benet/be_ethtool.c    | 31 ++++++++++++-------
- 3 files changed, 25 insertions(+), 18 deletions(-)
+ net/ipv4/tcp_output.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/emulex/benet/be_cmds.c b/drivers/net/ethernet/emulex/benet/be_cmds.c
-index 1e9d882c04ef..a4a448d97451 100644
---- a/drivers/net/ethernet/emulex/benet/be_cmds.c
-+++ b/drivers/net/ethernet/emulex/benet/be_cmds.c
-@@ -2291,7 +2291,7 @@ int be_cmd_get_beacon_state(struct be_adapter *adapter, u8 port_num, u32 *state)
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index 3d5ea169e905..8dcb9484a20c 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -2454,7 +2454,7 @@ bool tcp_schedule_loss_probe(struct sock *sk, bool advancing_rto)
+ 	if (tp->fastopen_rsk)
+ 		return false;
  
- /* Uses sync mcc */
- int be_cmd_read_port_transceiver_data(struct be_adapter *adapter,
--				      u8 page_num, u8 *data)
-+				      u8 page_num, u32 off, u32 len, u8 *data)
- {
- 	struct be_dma_mem cmd;
- 	struct be_mcc_wrb *wrb;
-@@ -2325,10 +2325,10 @@ int be_cmd_read_port_transceiver_data(struct be_adapter *adapter,
- 	req->port = cpu_to_le32(adapter->hba_port_num);
- 	req->page_num = cpu_to_le32(page_num);
- 	status = be_mcc_notify_wait(adapter);
--	if (!status) {
-+	if (!status && len > 0) {
- 		struct be_cmd_resp_port_type *resp = cmd.va;
- 
--		memcpy(data, resp->page_data, PAGE_DATA_LEN);
-+		memcpy(data, resp->page_data + off, len);
- 	}
- err:
- 	mutex_unlock(&adapter->mcc_lock);
-@@ -2419,7 +2419,7 @@ int be_cmd_query_cable_type(struct be_adapter *adapter)
- 	int status;
- 
- 	status = be_cmd_read_port_transceiver_data(adapter, TR_PAGE_A0,
--						   page_data);
-+						   0, PAGE_DATA_LEN, page_data);
- 	if (!status) {
- 		switch (adapter->phy.interface_type) {
- 		case PHY_TYPE_QSFP:
-@@ -2444,7 +2444,7 @@ int be_cmd_query_sfp_info(struct be_adapter *adapter)
- 	int status;
- 
- 	status = be_cmd_read_port_transceiver_data(adapter, TR_PAGE_A0,
--						   page_data);
-+						   0, PAGE_DATA_LEN, page_data);
- 	if (!status) {
- 		strlcpy(adapter->phy.vendor_name, page_data +
- 			SFP_VENDOR_NAME_OFFSET, SFP_VENDOR_NAME_LEN - 1);
-diff --git a/drivers/net/ethernet/emulex/benet/be_cmds.h b/drivers/net/ethernet/emulex/benet/be_cmds.h
-index e8b43cf44b6f..f6f9c51a7d47 100644
---- a/drivers/net/ethernet/emulex/benet/be_cmds.h
-+++ b/drivers/net/ethernet/emulex/benet/be_cmds.h
-@@ -2431,7 +2431,7 @@ int be_cmd_set_beacon_state(struct be_adapter *adapter, u8 port_num, u8 beacon,
- int be_cmd_get_beacon_state(struct be_adapter *adapter, u8 port_num,
- 			    u32 *state);
- int be_cmd_read_port_transceiver_data(struct be_adapter *adapter,
--				      u8 page_num, u8 *data);
-+				      u8 page_num, u32 off, u32 len, u8 *data);
- int be_cmd_query_cable_type(struct be_adapter *adapter);
- int be_cmd_query_sfp_info(struct be_adapter *adapter);
- int lancer_cmd_read_object(struct be_adapter *adapter, struct be_dma_mem *cmd,
-diff --git a/drivers/net/ethernet/emulex/benet/be_ethtool.c b/drivers/net/ethernet/emulex/benet/be_ethtool.c
-index d1905d50c26c..1c1ac3488da2 100644
---- a/drivers/net/ethernet/emulex/benet/be_ethtool.c
-+++ b/drivers/net/ethernet/emulex/benet/be_ethtool.c
-@@ -1342,7 +1342,7 @@ static int be_get_module_info(struct net_device *netdev,
- 		return -EOPNOTSUPP;
- 
- 	status = be_cmd_read_port_transceiver_data(adapter, TR_PAGE_A0,
--						   page_data);
-+						   0, PAGE_DATA_LEN, page_data);
- 	if (!status) {
- 		if (!page_data[SFP_PLUS_SFF_8472_COMP]) {
- 			modinfo->type = ETH_MODULE_SFF_8079;
-@@ -1360,25 +1360,32 @@ static int be_get_module_eeprom(struct net_device *netdev,
- {
- 	struct be_adapter *adapter = netdev_priv(netdev);
- 	int status;
-+	u32 begin, end;
- 
- 	if (!check_privilege(adapter, MAX_PRIVILEGES))
- 		return -EOPNOTSUPP;
- 
--	status = be_cmd_read_port_transceiver_data(adapter, TR_PAGE_A0,
--						   data);
--	if (status)
--		goto err;
-+	begin = eeprom->offset;
-+	end = eeprom->offset + eeprom->len;
-+
-+	if (begin < PAGE_DATA_LEN) {
-+		status = be_cmd_read_port_transceiver_data(adapter, TR_PAGE_A0, begin,
-+							   min_t(u32, end, PAGE_DATA_LEN) - begin,
-+							   data);
-+		if (status)
-+			goto err;
-+
-+		data += PAGE_DATA_LEN - begin;
-+		begin = PAGE_DATA_LEN;
-+	}
- 
--	if (eeprom->offset + eeprom->len > PAGE_DATA_LEN) {
--		status = be_cmd_read_port_transceiver_data(adapter,
--							   TR_PAGE_A2,
--							   data +
--							   PAGE_DATA_LEN);
-+	if (end > PAGE_DATA_LEN) {
-+		status = be_cmd_read_port_transceiver_data(adapter, TR_PAGE_A2,
-+							   begin - PAGE_DATA_LEN,
-+							   end - begin, data);
- 		if (status)
- 			goto err;
- 	}
--	if (eeprom->offset)
--		memcpy(data, data + eeprom->offset, eeprom->len);
- err:
- 	return be_cmd_status(status);
- }
+-	early_retrans = sock_net(sk)->ipv4.sysctl_tcp_early_retrans;
++	early_retrans = READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_early_retrans);
+ 	/* Schedule a loss probe in 2*RTT for SACK capable connections
+ 	 * not in loss recovery, that are either limited by cwnd or application.
+ 	 */
 -- 
 2.35.1
 
