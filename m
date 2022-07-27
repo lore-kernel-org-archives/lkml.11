@@ -2,192 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFBFEC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 06:45:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E9D1C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 06:45:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231223AbiG0GpT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 02:45:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52978 "EHLO
+        id S231269AbiG0GpY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 02:45:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230107AbiG0GoL (ORCPT
+        with ESMTP id S230434AbiG0GoW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 02:44:11 -0400
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 294A4419AC
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 23:43:51 -0700 (PDT)
-Received: by mail-lj1-x234.google.com with SMTP id a13so18596068ljr.11
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 23:43:50 -0700 (PDT)
+        Wed, 27 Jul 2022 02:44:22 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EC453B94A
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 23:44:10 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id z23so29581007eju.8
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 23:44:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=2odXpn4NqvflBREYUYmO1+1RxmW+GuL0cfDw3Dw0WVQ=;
-        b=M5LVaRcVeMUdyxjTy9X4a749CDwTC2L+S1rGrABeAnCVmMLXlZUhhSAGPfNkGkJs8+
-         JQjk61NYK23w4PK9C0W4lFUDAlxAihIBcBlh5KFv0vIjI+zlcJ46UWwxoD0XeXTBsEfr
-         myKPItxzYkFMNKpkcL0ZAjkHPWipe+wWSeEH1gOtGAOvMwo+UOQufTqB4HB+R8e8s9NO
-         KStZG2zKWuyt6NYOGbHGPOOIVDtWccQdJ6HoEv57uZVC2DzZfmcc4GBuAjSVO2EBPEgA
-         zjCxb3hQevi+8G8WdEd0TejJz+EX0kRTiWQHwaNlNeuWmuTtPK+kFS5NWo5mwKzC3g3p
-         Lrjg==
+        d=linaro.org; s=google;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=7iMcplvFrFuS0xFVwfzryrkAohaVYhMLEybsQJs2rsA=;
+        b=wdNXLAVsJZXFL2rKCa3aEnt3bq3gpHY9nBUggNpE8tRM8PxMeNxMk/ZwyuT71cBCtZ
+         rTugaTBqG8u902DbJmnCeCRsDXDNc4JYq/CxgSRXx55cTVXN/uEU8DYRnmEhrv1IThR8
+         AG1awXakW1QzpqwZsNlS7sbL4ekY2yRJeq0STmDhS1oxJDaIR05WFq2H1f8xFWSg+hmB
+         wZjuUG4uVj+LPb7oAMyFhmaG3SEA2388vp06upiX8Qd01YdZyzYgPkTPezl3edWRvP3q
+         GA0yzKIm/jifVprE02zD3rEpbeCLPB1+DIwtrXQF4a74fW6TY3jV2nP6bQRqoAczVtGz
+         u/Lw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=2odXpn4NqvflBREYUYmO1+1RxmW+GuL0cfDw3Dw0WVQ=;
-        b=nYuqwcZ3hyjwmMMwDucQlYxuF6o56DXRJH8L7S1p+7xTvSBN/KjFOosDOVkMRB+74V
-         n/BR1tDS+X7KKlxxtl2eW2MLzC58WJ0smyz3q0X3Gp2OaIiwKJUUL7aT4q9tYqNcjAYK
-         9oNsB0//Hysgl2IADLD5YfjywY8HvlXyxGlK3oaASP0jHnnvCl91ug126Vgz4ElFyU2i
-         6onjbSuERrW0ls2xPnOW5IlfXJjqEbvsyGB1uF87F0eX857TzgBiM51kfRHizCG8jETn
-         pxBNVVJsI7COdWoTkvk30hMkqK95Baufnmwj9eHVOSZ6wg27sykQG990qpiAYLPNxehp
-         k/6g==
-X-Gm-Message-State: AJIora/MawhFbft2lp1Y12SA/Me5Yx5l/YnqPp6gaJ8IlchBlRaB7hJx
-        iTsIbCwhPYRri/UbnWGCs7LgLkUcq5eVqA==
-X-Google-Smtp-Source: AGRyM1v9ZHWvAdoM5hxEHP3+vt59f9C0lTTPauONXgBFyLTQhLSEZgKMsfzvVEnMO3r5sBQvh/at2Q==
-X-Received: by 2002:a2e:93c8:0:b0:24d:b348:b070 with SMTP id p8-20020a2e93c8000000b0024db348b070mr7445132ljh.434.1658904229157;
-        Tue, 26 Jul 2022 23:43:49 -0700 (PDT)
-Received: from gilgamesh.lab.semihalf.net ([83.142.187.85])
-        by smtp.gmail.com with ESMTPSA id w19-20020a05651234d300b0048a97a1df02sm1157231lfr.6.2022.07.26.23.43.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Jul 2022 23:43:48 -0700 (PDT)
-From:   Marcin Wojtas <mw@semihalf.com>
-To:     linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
-        netdev@vger.kernel.org
-Cc:     rafael@kernel.org, andriy.shevchenko@linux.intel.com,
-        sean.wang@mediatek.com, Landen.Chao@mediatek.com,
-        linus.walleij@linaro.org, andrew@lunn.ch, vivien.didelot@gmail.com,
-        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux@armlinux.org.uk, hkallweit1@gmail.com, gjb@semihalf.com,
-        mw@semihalf.com, jaz@semihalf.com, tn@semihalf.com,
-        Samer.El-Haj-Mahmoud@arm.com, upstream@semihalf.com
-Subject: [net-next: PATCH v3 7/8] net: mdio: introduce fwnode_mdiobus_register_device()
-Date:   Wed, 27 Jul 2022 08:43:20 +0200
-Message-Id: <20220727064321.2953971-8-mw@semihalf.com>
-X-Mailer: git-send-email 2.29.0
-In-Reply-To: <20220727064321.2953971-1-mw@semihalf.com>
-References: <20220727064321.2953971-1-mw@semihalf.com>
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=7iMcplvFrFuS0xFVwfzryrkAohaVYhMLEybsQJs2rsA=;
+        b=sSkBJpEshGrkPDHcyk1JGSjgYOD5DB/pO3iFS45iP/MJhEIMS0RuvCOE/SZimH4jqW
+         cmNFMqMuSeCDkq1wZzaun6P+FCIPB4vHZpjuiJGLgH5+iNZ61c0xnurwimQIfNMCbqFg
+         tq/g6NDSXmbQqbC0kEWBPi77tbeEPb7wMZrfQVwyca/g7yFrMXRvqEOORPltn+yYz16K
+         bn4XMa1vJ27dxz/RsTbhi3c9jRVLfIO2Tlb6iyIZgKXlRMcjuC2A5KI4rqxmyv8L8MtE
+         u61gaItg4H7u90dZLbv2yacITfutTA6YlUOoMw1ovCc4DFDIaiodp8Ki8RvYZsmUVlZ7
+         yQzQ==
+X-Gm-Message-State: AJIora8yfytOik3TxjtQ3YCdsBhNBkYqmrPb/MGNstU7L/PiDtBPWYd5
+        NuPCwwHJbJwI7vNX4plbzEA7TVTbi+zCJ8eiB7IQ7g==
+X-Google-Smtp-Source: AGRyM1u0gHfYntmhyu/g5NBuMnMaO3JTwpA7i3/SJp0/ZkN1NFrHb7F3bDasWB7vs6g716IDu0ABdqfE6xZ0h4Zwkmk=
+X-Received: by 2002:a17:907:87b0:b0:72f:ceb6:5fd2 with SMTP id
+ qv48-20020a17090787b000b0072fceb65fd2mr12586914ejc.448.1658904248365; Tue, 26
+ Jul 2022 23:44:08 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Wed, 27 Jul 2022 12:13:57 +0530
+Message-ID: <CA+G9fYt_cc5SiNv1Vbse=HYY_+uc+9OYPZuJ-x59bROSaLN6fw@mail.gmail.com>
+Subject: [next] arm: PM: domains: Delete usage of driver_deferred_probe_check_state()
+To:     Saravana Kannan <saravanak@google.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     open list <linux-kernel@vger.kernel.org>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As a preparation patch to extend MDIO capabilities in the ACPI world,
-introduce fwnode_mdiobus_register_device() to register non-PHY
-devices on the mdiobus.
+Linux next arm BeagleBoard x15 device boot failed due to the
+following commit. The x15 did not event showed any crash log
+on the serial console.
+whereas, Linux mainline kernel boot pass.
 
-Use the newly introduced routine instead of of_mdiobus_register_device().
+Anders bisect this and found the first bad commit is
 
-Signed-off-by: Marcin Wojtas <mw@semihalf.com>
----
- include/linux/fwnode_mdio.h    |  3 ++
- drivers/net/mdio/fwnode_mdio.c | 29 ++++++++++++++++++
- drivers/net/mdio/of_mdio.c     | 32 +-------------------
- 3 files changed, 33 insertions(+), 31 deletions(-)
+Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-diff --git a/include/linux/fwnode_mdio.h b/include/linux/fwnode_mdio.h
-index 98755b8c6c8a..39d74c5d1bb0 100644
---- a/include/linux/fwnode_mdio.h
-+++ b/include/linux/fwnode_mdio.h
-@@ -16,6 +16,9 @@ int fwnode_mdiobus_phy_device_register(struct mii_bus *mdio,
- int fwnode_mdiobus_register_phy(struct mii_bus *bus,
- 				struct fwnode_handle *child, u32 addr);
- 
-+int fwnode_mdiobus_register_device(struct mii_bus *mdio,
-+				   struct fwnode_handle *child, u32 addr);
-+
- int fwnode_phy_register_fixed_link(struct fwnode_handle *fwnode);
- 
- void fwnode_phy_deregister_fixed_link(struct fwnode_handle *fwnode);
-diff --git a/drivers/net/mdio/fwnode_mdio.c b/drivers/net/mdio/fwnode_mdio.c
-index 454fdae24150..3743f34e7c2d 100644
---- a/drivers/net/mdio/fwnode_mdio.c
-+++ b/drivers/net/mdio/fwnode_mdio.c
-@@ -149,6 +149,35 @@ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
- }
- EXPORT_SYMBOL(fwnode_mdiobus_register_phy);
- 
-+int fwnode_mdiobus_register_device(struct mii_bus *mdio,
-+				   struct fwnode_handle *child, u32 addr)
-+{
-+	struct mdio_device *mdiodev;
-+	int rc;
-+
-+	mdiodev = mdio_device_create(mdio, addr);
-+	if (IS_ERR(mdiodev))
-+		return PTR_ERR(mdiodev);
-+
-+	/* Associate the fwnode with the device structure so it
-+	 * can be looked up later.
-+	 */
-+	device_set_node(&mdiodev->dev, child);
-+
-+	/* All data is now stored in the mdiodev struct; register it. */
-+	rc = mdio_device_register(mdiodev);
-+	if (rc) {
-+		mdio_device_free(mdiodev);
-+		fwnode_handle_put(child);
-+		return rc;
-+	}
-+
-+	dev_dbg(&mdio->dev, "registered mdio device %p fwnode at address %i\n",
-+		child, addr);
-+	return 0;
-+}
-+EXPORT_SYMBOL(fwnode_mdiobus_register_device);
-+
- /*
-  * fwnode_phy_is_fixed_link() and fwnode_phy_register_fixed_link() must
-  * support two bindings:
-diff --git a/drivers/net/mdio/of_mdio.c b/drivers/net/mdio/of_mdio.c
-index 409da6e92f7d..bd941da030bb 100644
---- a/drivers/net/mdio/of_mdio.c
-+++ b/drivers/net/mdio/of_mdio.c
-@@ -48,36 +48,6 @@ static int of_mdiobus_register_phy(struct mii_bus *mdio,
- 	return fwnode_mdiobus_register_phy(mdio, of_fwnode_handle(child), addr);
- }
- 
--static int of_mdiobus_register_device(struct mii_bus *mdio,
--				      struct device_node *child, u32 addr)
--{
--	struct fwnode_handle *fwnode = of_fwnode_handle(child);
--	struct mdio_device *mdiodev;
--	int rc;
--
--	mdiodev = mdio_device_create(mdio, addr);
--	if (IS_ERR(mdiodev))
--		return PTR_ERR(mdiodev);
--
--	/* Associate the OF node with the device structure so it
--	 * can be looked up later.
--	 */
--	fwnode_handle_get(fwnode);
--	device_set_node(&mdiodev->dev, fwnode);
--
--	/* All data is now stored in the mdiodev struct; register it. */
--	rc = mdio_device_register(mdiodev);
--	if (rc) {
--		mdio_device_free(mdiodev);
--		of_node_put(child);
--		return rc;
--	}
--
--	dev_dbg(&mdio->dev, "registered mdio device %pOFn at address %i\n",
--		child, addr);
--	return 0;
--}
--
- /* The following is a list of PHY compatible strings which appear in
-  * some DTBs. The compatible string is never matched against a PHY
-  * driver, so is pointless. We only expect devices which are not PHYs
-@@ -186,7 +156,7 @@ int of_mdiobus_register(struct mii_bus *mdio, struct device_node *np)
- 		if (of_mdiobus_child_is_phy(child))
- 			rc = of_mdiobus_register_phy(mdio, child, addr);
- 		else
--			rc = of_mdiobus_register_device(mdio, child, addr);
-+			rc = fwnode_mdiobus_register_device(mdio, of_fwnode_handle(child), addr);
- 
- 		if (rc == -ENODEV)
- 			dev_err(&mdio->dev,
--- 
-2.29.0
+commit 5a46079a96451cfb15e4f5f01f73f7ba24ef851a
+Author: Saravana Kannan <saravanak@google.com>
+Date:   Wed Jun 1 00:06:57 2022 -0700
 
+    PM: domains: Delete usage of driver_deferred_probe_check_state()
+
+    Now that fw_devlink=on by default and fw_devlink supports
+    "power-domains" property, the execution will never get to the point
+    where driver_deferred_probe_check_state() is called before the supplier
+    has probed successfully or before deferred probe timeout has expired.
+
+    So, delete the call and replace it with -ENODEV.
+
+    Tested-by: Geert Uytterhoeven <geert+renesas@glider.be>
+    Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
+    Signed-off-by: Saravana Kannan <saravanak@google.com>
+    Link: https://lore.kernel.org/r/20220601070707.3946847-2-saravanak@google.com
+    Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+diff --git a/drivers/base/power/domain.c b/drivers/base/power/domain.c
+index 739e52cd4aba..3e86772d5fac 100644
+--- a/drivers/base/power/domain.c
++++ b/drivers/base/power/domain.c
+@@ -2730,7 +2730,7 @@ static int __genpd_dev_pm_attach(struct device
+*dev, struct device *base_dev,
+                mutex_unlock(&gpd_list_lock);
+                dev_dbg(dev, "%s() failed to find PM domain: %ld\n",
+                        __func__, PTR_ERR(pd));
+-               return driver_deferred_probe_check_state(base_dev);
++               return -ENODEV;
+        }
+
+        dev_dbg(dev, "adding to PM domain %s\n", pd->name);
+
+
+
+--
+Linaro LKFT
+https://lkft.linaro.org
