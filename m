@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFD93C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:48:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6970C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:48:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243241AbiG0RsL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:48:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51856 "EHLO
+        id S242739AbiG0Rsu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:48:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243066AbiG0Rrc (ORCPT
+        with ESMTP id S243201AbiG0RsS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:47:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2ABC8CE8F;
-        Wed, 27 Jul 2022 09:54:08 -0700 (PDT)
+        Wed, 27 Jul 2022 13:48:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5505F2E9F7;
+        Wed, 27 Jul 2022 09:54:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 88B95600BE;
-        Wed, 27 Jul 2022 16:53:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92647C433C1;
-        Wed, 27 Jul 2022 16:53:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2152BB821AC;
+        Wed, 27 Jul 2022 16:53:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F0CEC433D6;
+        Wed, 27 Jul 2022 16:53:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940832;
-        bh=wf8BNnkAc+gkIrTF0feT5mq5TPqrtY31kJFzXpcVfcQ=;
+        s=korg; t=1658940837;
+        bh=Nz5k/Pa4IhuCRVsu7UChZptB4Ka9QpSOYr0VI7yB1mQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n9S7AIQrx6IrKO/lboJ0l9jxgTvYwwRajm1ZGWFjAUy29hOYXtPekY/llg92AB5kH
-         B/c6/TMwd6Hz4aKi3D1azg810cghIVEeLpFUDVwBdPD36MlY56mA8uBNTZA8HSEP1P
-         qlHwquNjr4QjLNiGBA8pk2Dw1aIqyJXQmywoy8DI=
+        b=ykKm8yErsQe6Tv6TWPNuFtE4//NY8UD0HEZuJX1lHLLykn8xJp8TqADhh2/8AhMpk
+         PMcnw058rnPUZ5Apz5ZZ4vUMZ4xuxrOquLVcrolUYhMM1Sgrxh0NUxW19a1N8/fn2o
+         eLunvE9up1j1AbR9VP9dWR2A+BVuPHnDnEFm47/s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexander Aring <aahringo@redhat.com>,
-        David Teigland <teigland@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 139/158] dlm: fix pending remove if msg allocation fails
-Date:   Wed, 27 Jul 2022 18:13:23 +0200
-Message-Id: <20220727161026.936455745@linuxfoundation.org>
+        stable@vger.kernel.org, Lukas Wunner <lukas@wunner.de>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.18 131/158] spi: bcm2835: bcm2835_spi_handle_err(): fix NULL pointer deref for non DMA transfers
+Date:   Wed, 27 Jul 2022 18:13:15 +0200
+Message-Id: <20220727161026.649979100@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -49,47 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Aring <aahringo@redhat.com>
+From: Marc Kleine-Budde <mkl@pengutronix.de>
 
-[ Upstream commit ba58995909b5098ca4003af65b0ccd5a8d13dd25 ]
+commit 4ceaa684459d414992acbefb4e4c31f2dfc50641 upstream.
 
-This patch unsets ls_remove_len and ls_remove_name if a message
-allocation of a remove messages fails. In this case we never send a
-remove message out but set the per ls ls_remove_len ls_remove_name
-variable for a pending remove. Unset those variable should indicate
-possible waiters in wait_pending_remove() that no pending remove is
-going on at this moment.
+In case a IRQ based transfer times out the bcm2835_spi_handle_err()
+function is called. Since commit 1513ceee70f2 ("spi: bcm2835: Drop
+dma_pending flag") the TX and RX DMA transfers are unconditionally
+canceled, leading to NULL pointer derefs if ctlr->dma_tx or
+ctlr->dma_rx are not set.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Alexander Aring <aahringo@redhat.com>
-Signed-off-by: David Teigland <teigland@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fix the NULL pointer deref by checking that ctlr->dma_tx and
+ctlr->dma_rx are valid pointers before accessing them.
+
+Fixes: 1513ceee70f2 ("spi: bcm2835: Drop dma_pending flag")
+Cc: Lukas Wunner <lukas@wunner.de>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Link: https://lore.kernel.org/r/20220719072234.2782764-1-mkl@pengutronix.de
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/dlm/lock.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/spi/spi-bcm2835.c |   12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/fs/dlm/lock.c b/fs/dlm/lock.c
-index 5b485cd96c93..5298a3a43bc7 100644
---- a/fs/dlm/lock.c
-+++ b/fs/dlm/lock.c
-@@ -4085,13 +4085,14 @@ static void send_repeat_remove(struct dlm_ls *ls, char *ms_name, int len)
- 	rv = _create_message(ls, sizeof(struct dlm_message) + len,
- 			     dir_nodeid, DLM_MSG_REMOVE, &ms, &mh);
- 	if (rv)
--		return;
-+		goto out;
+--- a/drivers/spi/spi-bcm2835.c
++++ b/drivers/spi/spi-bcm2835.c
+@@ -1138,10 +1138,14 @@ static void bcm2835_spi_handle_err(struc
+ 	struct bcm2835_spi *bs = spi_controller_get_devdata(ctlr);
  
- 	memcpy(ms->m_extra, name, len);
- 	ms->m_hash = hash;
+ 	/* if an error occurred and we have an active dma, then terminate */
+-	dmaengine_terminate_sync(ctlr->dma_tx);
+-	bs->tx_dma_active = false;
+-	dmaengine_terminate_sync(ctlr->dma_rx);
+-	bs->rx_dma_active = false;
++	if (ctlr->dma_tx) {
++		dmaengine_terminate_sync(ctlr->dma_tx);
++		bs->tx_dma_active = false;
++	}
++	if (ctlr->dma_rx) {
++		dmaengine_terminate_sync(ctlr->dma_rx);
++		bs->rx_dma_active = false;
++	}
+ 	bcm2835_spi_undo_prologue(bs);
  
- 	send_message(mh, ms);
- 
-+out:
- 	spin_lock(&ls->ls_remove_spin);
- 	ls->ls_remove_len = 0;
- 	memset(ls->ls_remove_name, 0, DLM_RESNAME_MAXLEN);
--- 
-2.35.1
-
+ 	/* and reset */
 
 
