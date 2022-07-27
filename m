@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21643C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:36:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AABD8C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:36:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238676AbiG0QgT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:36:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44926 "EHLO
+        id S238697AbiG0QgY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:36:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238670AbiG0Qee (ORCPT
+        with ESMTP id S238079AbiG0QeE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:34:34 -0400
+        Wed, 27 Jul 2022 12:34:04 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B41C4558F4;
-        Wed, 27 Jul 2022 09:27:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B51AD55088;
+        Wed, 27 Jul 2022 09:26:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 71076617EF;
-        Wed, 27 Jul 2022 16:27:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FA5BC433D6;
-        Wed, 27 Jul 2022 16:27:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C96861A09;
+        Wed, 27 Jul 2022 16:26:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A26FC433C1;
+        Wed, 27 Jul 2022 16:26:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939232;
-        bh=YZ7zYuglbJZv2KjAVhigP6ic7xbN35pVa9r4sHEmF9Y=;
+        s=korg; t=1658939181;
+        bh=Zu8qtbygSgh2+lzN3ZHdXU7oyiNrr/YxjoGng1rL5lY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lbJvGp0Mwf8+5ReTOOQnWCNPeXfQhY9VLWyAGF3HDYf7QxQh5WsJ56UhoMvFvdfju
-         pdg8KUPBtBlL4NOe7dqbCfQ0INuVFjIYIahOxtvhvPfptRuP9zP+BlPx93UUZYSkMM
-         NkR2/MJ5sHmqDMLwcVtkijZNUgIyNNAh/X85RPz8=
+        b=XlNAnNgLbEgUUZLLcimPK1nuAwT6S62KXGQn97QiXK33ybomwZoFg9xqLu8Co1CtD
+         D3PGO2GiDRZJfWTLSanW+XIHpj+krhU5zHbwKcFzHhqWDGACvhnFQq3eB3Imnco1/C
+         eK1NIUxKnrpSLbA5dT/1X4r8L9FGLyHA0Psc0D4M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jeffrey Hugo <quic_jhugo@quicinc.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        Carl Vanderlip <quic_carlv@quicinc.com>
-Subject: [PATCH 4.19 60/62] PCI: hv: Fix hv_arch_irq_unmask() for multi-MSI
-Date:   Wed, 27 Jul 2022 18:11:09 +0200
-Message-Id: <20220727161006.486102474@linuxfoundation.org>
+        stable@vger.kernel.org, Tony Fischetti <tony.fischetti@gmail.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 41/62] HID: add ALWAYS_POLL quirk to lenovo pixart mouse
+Date:   Wed, 27 Jul 2022 18:10:50 +0200
+Message-Id: <20220727161005.792257842@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161004.175638564@linuxfoundation.org>
 References: <20220727161004.175638564@linuxfoundation.org>
@@ -50,76 +48,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeffrey Hugo <quic_jhugo@quicinc.com>
+From: Tony Fischetti <tony.fischetti@gmail.com>
 
-commit 455880dfe292a2bdd3b4ad6a107299fce610e64b upstream.
+[ Upstream commit 819d578d51d0ce73f06e35d69395ef55cd683a74 ]
 
-In the multi-MSI case, hv_arch_irq_unmask() will only operate on the first
-MSI of the N allocated.  This is because only the first msi_desc is cached
-and it is shared by all the MSIs of the multi-MSI block.  This means that
-hv_arch_irq_unmask() gets the correct address, but the wrong data (always
-0).
+A lenovo pixart mouse (17ef:608d) is afflicted common the the malfunction
+where it disconnects and reconnects every minute--each time incrementing
+the device number. This patch adds the device id of the device and
+specifies that it needs the HID_QUIRK_ALWAYS_POLL quirk in order to
+work properly.
 
-This can break MSIs.
-
-Lets assume MSI0 is vector 34 on CPU0, and MSI1 is vector 33 on CPU0.
-
-hv_arch_irq_unmask() is called on MSI0.  It uses a hypercall to configure
-the MSI address and data (0) to vector 34 of CPU0.  This is correct.  Then
-hv_arch_irq_unmask is called on MSI1.  It uses another hypercall to
-configure the MSI address and data (0) to vector 33 of CPU0.  This is
-wrong, and results in both MSI0 and MSI1 being routed to vector 33.  Linux
-will observe extra instances of MSI1 and no instances of MSI0 despite the
-endpoint device behaving correctly.
-
-For the multi-MSI case, we need unique address and data info for each MSI,
-but the cached msi_desc does not provide that.  However, that information
-can be gotten from the int_desc cached in the chip_data by
-compose_msi_msg().  Fix the multi-MSI case to use that cached information
-instead.  Since hv_set_msi_entry_from_desc() is no longer applicable,
-remove it.
-
-4.19 backport - hv_set_msi_entry_from_desc doesn't exist to be removed.
-int_entry replaces msi_entry for location int_desc is written to.
-
-Signed-off-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
-Link: https://lore.kernel.org/r/1651068453-29588-1-git-send-email-quic_jhugo@quicinc.com
-Signed-off-by: Wei Liu <wei.liu@kernel.org>
-Signed-off-by: Carl Vanderlip <quic_carlv@quicinc.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Tony Fischetti <tony.fischetti@gmail.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/pci-hyperv.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/hid/hid-ids.h    | 1 +
+ drivers/hid/hid-quirks.c | 1 +
+ 2 files changed, 2 insertions(+)
 
---- a/drivers/pci/controller/pci-hyperv.c
-+++ b/drivers/pci/controller/pci-hyperv.c
-@@ -923,6 +923,7 @@ static void hv_irq_unmask(struct irq_dat
- 	struct msi_desc *msi_desc = irq_data_get_msi_desc(data);
- 	struct irq_cfg *cfg = irqd_cfg(data);
- 	struct retarget_msi_interrupt *params;
-+	struct tran_int_desc *int_desc;
- 	struct hv_pcibus_device *hbus;
- 	struct cpumask *dest;
- 	struct pci_bus *pbus;
-@@ -937,6 +938,7 @@ static void hv_irq_unmask(struct irq_dat
- 	pdev = msi_desc_to_pci_dev(msi_desc);
- 	pbus = pdev->bus;
- 	hbus = container_of(pbus->sysdata, struct hv_pcibus_device, sysdata);
-+	int_desc = data->chip_data;
+diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
+index 1c1de7e128d6..70079d29822b 100644
+--- a/drivers/hid/hid-ids.h
++++ b/drivers/hid/hid-ids.h
+@@ -728,6 +728,7 @@
+ #define USB_DEVICE_ID_LENOVO_X1_COVER	0x6085
+ #define USB_DEVICE_ID_LENOVO_X1_TAB	0x60a3
+ #define USB_DEVICE_ID_LENOVO_X1_TAB3	0x60b5
++#define USB_DEVICE_ID_LENOVO_PIXART_USB_MOUSE_608D	0x608d
  
- 	spin_lock_irqsave(&hbus->retarget_msi_interrupt_lock, flags);
- 
-@@ -944,8 +946,8 @@ static void hv_irq_unmask(struct irq_dat
- 	memset(params, 0, sizeof(*params));
- 	params->partition_id = HV_PARTITION_ID_SELF;
- 	params->int_entry.source = 1; /* MSI(-X) */
--	params->int_entry.address = msi_desc->msg.address_lo;
--	params->int_entry.data = msi_desc->msg.data;
-+	params->int_entry.address = int_desc->address & 0xffffffff;
-+	params->int_entry.data = int_desc->data;
- 	params->device_id = (hbus->hdev->dev_instance.b[5] << 24) |
- 			   (hbus->hdev->dev_instance.b[4] << 16) |
- 			   (hbus->hdev->dev_instance.b[7] << 8) |
+ #define USB_VENDOR_ID_LG		0x1fd2
+ #define USB_DEVICE_ID_LG_MULTITOUCH	0x0064
+diff --git a/drivers/hid/hid-quirks.c b/drivers/hid/hid-quirks.c
+index 48e9761d4ace..c1b76ba85fb4 100644
+--- a/drivers/hid/hid-quirks.c
++++ b/drivers/hid/hid-quirks.c
+@@ -111,6 +111,7 @@ static const struct hid_device_id hid_quirks[] = {
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_KYE, USB_DEVICE_ID_KYE_MOUSEPEN_I608X_V2), HID_QUIRK_MULTI_INPUT },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_KYE, USB_DEVICE_ID_KYE_PENSKETCH_M912), HID_QUIRK_MULTI_INPUT },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_KYE, USB_DEVICE_ID_PIXART_USB_OPTICAL_MOUSE_ID2), HID_QUIRK_ALWAYS_POLL },
++	{ HID_USB_DEVICE(USB_VENDOR_ID_LENOVO, USB_DEVICE_ID_LENOVO_PIXART_USB_MOUSE_608D), HID_QUIRK_ALWAYS_POLL },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_LOGITECH, USB_DEVICE_ID_LOGITECH_C007), HID_QUIRK_ALWAYS_POLL },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_LOGITECH, USB_DEVICE_ID_LOGITECH_C077), HID_QUIRK_ALWAYS_POLL },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_LOGITECH, USB_DEVICE_ID_LOGITECH_KEYBOARD_G710_PLUS), HID_QUIRK_NOGET },
+-- 
+2.35.1
+
 
 
