@@ -2,77 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86532C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:01:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DC00C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:01:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234502AbiG0QBB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:01:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60326 "EHLO
+        id S234582AbiG0QBM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:01:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234458AbiG0QAu (ORCPT
+        with ESMTP id S234497AbiG0QBA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:00:50 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 610534A836;
-        Wed, 27 Jul 2022 09:00:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=qMrUUBtTVdKIO/818CmIJX7vjH07uHfMlbshxW7VLdA=; b=nIvbupTuXBJpWvBzPBt2Fx6zXm
-        gRJVJy0fXowGNX0j4MGolZVVSD17TQPRl1+ijvtUOyRpRwn+rWnv3MHbtKzOB3QmSFMuxDSY1PMqs
-        k9LNHU2R/ZJqM0mAW8e7VmKCLpnTTUdpZ4TNS1lYTqc05v0ftxapcGOErWHObIH+JdmdYuO0hL4px
-        HElouXjWXQkrbsONRI1jjXnEyg+ZL92+AWHLyR/74GhLk+joY+o/46+Y+0bHZuO9YB8oUXiVVskTO
-        BYVYO7ih//oF6ry8oJkuQBNjemcUJoq7X6eRl+27MLYtsSHR6F9ZWTUk4/IyOPPRZY6b49nmO6xgk
-        XRMCEjRg==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oGjSc-0031u0-Gx; Wed, 27 Jul 2022 16:00:34 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 1FC01980403; Wed, 27 Jul 2022 18:00:34 +0200 (CEST)
-Date:   Wed, 27 Jul 2022 18:00:34 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Yu Zhe <yuzhe@nfschina.com>
-Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        liqiong@nfschina.com
-Subject: Re: [PATCH] x86/aperfmperf: use time_is_before_jiffies(a + b) to
- replace "jiffies - a > b"
-Message-ID: <YuFhIgsUgNJ+o9xG@worktop.programming.kicks-ass.net>
-References: <20220727031405.26892-1-yuzhe@nfschina.com>
+        Wed, 27 Jul 2022 12:01:00 -0400
+Received: from mail-io1-f53.google.com (mail-io1-f53.google.com [209.85.166.53])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70FEA4A83D;
+        Wed, 27 Jul 2022 09:00:59 -0700 (PDT)
+Received: by mail-io1-f53.google.com with SMTP id y197so13034763iof.12;
+        Wed, 27 Jul 2022 09:00:59 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=kUIs7DBnCsR9cP62lpQKrDWjtHiCWXhqawFuOwvIork=;
+        b=KJ8oRdswQ1XFgAjwIrm4JIf6r15D/jpgOydOfp1RvPz1HnPt+nO6NOBX/g1C0UEHRb
+         y74/XJZmEV2CybIu3xX+gUuLREjivcuW+rE4OvBENd1RhTv8TNROVkcLo0ChPfHICbtA
+         ENhr5PXNPUpT7vkTEjWa39YiDplgeiWFFVOqmee77O5oB1rfYZ8Xi4xvkevyd3k6dBM7
+         S2v13vkvhjn01bU3GUN6GoPpl9CCRXKVVz5y8h+BiOw6Hr5+3pUDn7ry3qgQ22W+SKSQ
+         EoVHxXxOehAQ+8xCU1+S9FIjeTNO1Bk8ntNRbPbEQ9vBcoBG1nbBv66oC+1Mvr15LI6J
+         4Adw==
+X-Gm-Message-State: AJIora9jB/BzbO0iUt7Q9e0gtWwjwn/Jlk+NDzlbBkerCh1T+axGn00K
+        QD96sgyYFcv1yHPkd6408Q==
+X-Google-Smtp-Source: AGRyM1sWxuWqBZ+/pnkqKc4dOYIKgmM7u9Z/u1EpfWc5rboGgsQ69l5hTpQ6oZfVbOxSBQsTzRwDwQ==
+X-Received: by 2002:a05:6638:d15:b0:341:610d:5472 with SMTP id q21-20020a0566380d1500b00341610d5472mr9165526jaj.188.1658937658422;
+        Wed, 27 Jul 2022 09:00:58 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id b8-20020a920b08000000b002dc06989d86sm7017921ilf.52.2022.07.27.09.00.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jul 2022 09:00:58 -0700 (PDT)
+Received: (nullmailer pid 2755041 invoked by uid 1000);
+        Wed, 27 Jul 2022 16:00:55 -0000
+Date:   Wed, 27 Jul 2022 10:00:55 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Yunfei Dong <yunfei.dong@mediatek.com>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        George Sun <george.sun@mediatek.com>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Fritz Koenig <frkoenig@chromium.org>,
+        linux-kernel@vger.kernel.org,
+        Nicolas Dufresne <nicolas@ndufresne.ca>,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Xiaoyong Lu <xiaoyong.lu@mediatek.com>,
+        Irui Wang <irui.wang@mediatek.com>,
+        Rob Herring <robh+dt@kernel.org>, linux-media@vger.kernel.org,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        linux-mediatek@lists.infradead.org,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Project_Global_Chrome_Upstream_Group@mediatek.com,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Steve Cho <stevecho@chromium.org>, devicetree@vger.kernel.org,
+        Tiffany Lin <tiffany.lin@mediatek.com>
+Subject: Re: [PATCH v2, 1/3] dt-bindings: media: mediatek: vcodec: add
+ decoder dt-bindings for mt8188
+Message-ID: <20220727160055.GA2755004-robh@kernel.org>
+References: <20220727023721.31945-1-yunfei.dong@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220727031405.26892-1-yuzhe@nfschina.com>
+In-Reply-To: <20220727023721.31945-1-yunfei.dong@mediatek.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 11:14:05AM +0800, Yu Zhe wrote:
-> time_is_before_jiffies deals with timer wrapping correctly.
-
-Please explain how the current code does not.
-
+On Wed, 27 Jul 2022 10:37:19 +0800, Yunfei Dong wrote:
+> Add decoder document in dt-bindings yaml file for mt8188 platform.
 > 
-> Signed-off-by: Yu Zhe <yuzhe@nfschina.com>
+> Signed-off-by: Yunfei Dong <yunfei.dong@mediatek.com>
+> Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 > ---
->  arch/x86/kernel/cpu/aperfmperf.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  .../bindings/media/mediatek,vcodec-subdev-decoder.yaml           | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> diff --git a/arch/x86/kernel/cpu/aperfmperf.c b/arch/x86/kernel/cpu/aperfmperf.c
-> index 1f60a2b27936..22e0bac3fffe 100644
-> --- a/arch/x86/kernel/cpu/aperfmperf.c
-> +++ b/arch/x86/kernel/cpu/aperfmperf.c
-> @@ -423,7 +423,7 @@ unsigned int arch_freq_get_on_cpu(int cpu)
->  	 * Bail on invalid count and when the last update was too long ago,
->  	 * which covers idle and NOHZ full CPUs.
->  	 */
-> -	if (!mcnt || (jiffies - last) > MAX_SAMPLE_AGE)
-> +	if (!mcnt || time_is_before_jiffies(last + MAX_SAMPLE_AGE))
->  		goto fallback;
->  
->  	return div64_u64((cpu_khz * acnt), mcnt);
-> -- 
-> 2.11.0
-> 
+
+Acked-by: Rob Herring <robh@kernel.org>
