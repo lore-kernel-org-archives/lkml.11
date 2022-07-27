@@ -2,83 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 755B2C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:40:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D88EDC19F28
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:40:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239322AbiG0QkD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:40:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58818 "EHLO
+        id S239355AbiG0QkF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:40:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239488AbiG0QjR (ORCPT
+        with ESMTP id S239526AbiG0QjS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:39:17 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9334B5A2F4;
-        Wed, 27 Jul 2022 09:28:53 -0700 (PDT)
+        Wed, 27 Jul 2022 12:39:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EC275A2F7
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:28:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BA4EF619FD;
-        Wed, 27 Jul 2022 16:28:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 890B0C433B5;
-        Wed, 27 Jul 2022 16:28:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939331;
-        bh=nvdpweDSvH25oGsOsk++jLEIfRIAZLkJciKbzP7y+4Q=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fytYhCy5v5FM/hJ7vmM5bjU+A6MCeL2wKiCKi1Lkdx6dx8dr7pnwxALtlvZLMt4w0
-         4NPDhJaGl14F0o1VF47uTkwcMgaIYSzlAk2vh36tY/dXkOeCM4mLHvCULFXtSTJCHu
-         0/UrOJ+OwbCwNqOyspl1+U7cNJH1/WXb1gXr3jPo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 31/87] igmp: Fix a data-race around sysctl_igmp_max_memberships.
-Date:   Wed, 27 Jul 2022 18:10:24 +0200
-Message-Id: <20220727161010.305028034@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220727161008.993711844@linuxfoundation.org>
-References: <20220727161008.993711844@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ams.source.kernel.org (Postfix) with ESMTPS id C7CCCB821C8
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 16:28:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86838C433D7;
+        Wed, 27 Jul 2022 16:28:49 +0000 (UTC)
+Date:   Wed, 27 Jul 2022 12:28:47 -0400
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Li Qiong <liqiong@nfschina.com>
+Cc:     Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org,
+        yuzhe@nfschina.com, renyu@nfschina.com, jiaming@nfschina.com
+Subject: Re: [PATCH] tracing: Do PTR_ERR() after IS_ERR()
+Message-ID: <20220727122847.6b00e29d@rorschach.local.home>
+In-Reply-To: <20220727153519.6697-1-liqiong@nfschina.com>
+References: <20220727153519.6697-1-liqiong@nfschina.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+On Wed, 27 Jul 2022 23:35:19 +0800
+Li Qiong <liqiong@nfschina.com> wrote:
 
-[ Upstream commit 6305d821e3b9b5379d348528e5b5faf316383bc2 ]
+> Check IS_ERR() firstly, then do PTR_ERR().
 
-While reading sysctl_igmp_max_memberships, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its reader.
+Why?
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/ipv4/igmp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+The code is fine as is.
 
-diff --git a/net/ipv4/igmp.c b/net/ipv4/igmp.c
-index 7cd444d75c3d..660b41040c77 100644
---- a/net/ipv4/igmp.c
-+++ b/net/ipv4/igmp.c
-@@ -2199,7 +2199,7 @@ static int __ip_mc_join_group(struct sock *sk, struct ip_mreqn *imr,
- 		count++;
- 	}
- 	err = -ENOBUFS;
--	if (count >= net->ipv4.sysctl_igmp_max_memberships)
-+	if (count >= READ_ONCE(net->ipv4.sysctl_igmp_max_memberships))
- 		goto done;
- 	iml = sock_kmalloc(sk, sizeof(*iml), GFP_KERNEL);
- 	if (!iml)
--- 
-2.35.1
-
-
+-- Steve
 
