@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC8CFC19F2C
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:09:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80B77C19F2D
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:10:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238533AbiG0RJ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:09:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37886 "EHLO
+        id S239411AbiG0RKB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:10:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241459AbiG0RIr (ORCPT
+        with ESMTP id S237264AbiG0RIs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:08:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24AB55A8B0;
+        Wed, 27 Jul 2022 13:08:48 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38D2572ED0;
         Wed, 27 Jul 2022 09:40:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C349F60D38;
-        Wed, 27 Jul 2022 16:40:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D272CC433C1;
+        by sin.source.kernel.org (Postfix) with ESMTPS id 2AC80CE230F;
         Wed, 27 Jul 2022 16:40:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B604C433C1;
+        Wed, 27 Jul 2022 16:40:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940037;
-        bh=OEykdUPXVNQvb/VQCM+52YVDVEsWYbSFVHjVP5N/vg0=;
+        s=korg; t=1658940034;
+        bh=Zp7O+qA6v8hNhs/CuX4OQqC8NTPMh5+4zcXaPfJnW5A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=voQ18kONvvwG4sy0T0+VmJoWs1zV9WTMM7DKs7doqGdG/xzhYKRcogxhvWKThAyuM
-         uipin1FpYH+sA2U2b36m1LFSGRkSqERG7HTxi3Pw6Z9SSMJh6G2ellOESkBg+YNJUa
-         68i+c7yPSFqhK1q0NOgJ7jgySXEK0JeBR7hB5RIU=
+        b=lXmxulfV38spYBck0YF1gC4WKcUOfg5rxHyjEQLQE7qjBPvp9/c7FTDLNkGHaIKwW
+         wUX5+JSJvMQxQhSO7YnGoljNh974+KZT1uqy8irSZaagKf4FPGrAoYCjTunHdTixYa
+         eE3tBYMb+hDQliBgEeiu+PAQub+6Q0mQ6KRDdQOo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
-        Shubhrajyoti Datta <Shubhrajyoti.datta@amd.com>,
-        Michal Simek <michal.simek@amd.com>,
+        stable@vger.kernel.org, Vadim Pasternak <vadimp@nvidia.com>,
         Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 083/201] i2c: cadence: Change large transfer count reset logic to be unconditional
-Date:   Wed, 27 Jul 2022 18:09:47 +0200
-Message-Id: <20220727161031.177855279@linuxfoundation.org>
+Subject: [PATCH 5.15 082/201] i2c: mlxcpld: Fix register setting for 400KHz frequency
+Date:   Wed, 27 Jul 2022 18:09:46 +0200
+Message-Id: <20220727161031.138829059@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -50,108 +48,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
+From: Vadim Pasternak <vadimp@nvidia.com>
 
-[ Upstream commit 4ca8ca873d454635c20d508261bfc0081af75cf8 ]
+[ Upstream commit e1f77ecc75aaee6bed04e8fd7830e00032af012e ]
 
-Problems were observed on the Xilinx ZynqMP platform with large I2C reads.
-When a read of 277 bytes was performed, the controller NAKed the transfer
-after only 252 bytes were transferred and returned an ENXIO error on the
-transfer.
+Fix setting of 'Half Cycle' register for 400KHz frequency.
 
-There is some code in cdns_i2c_master_isr to handle this case by resetting
-the transfer count in the controller before it reaches 0, to allow larger
-transfers to work, but it was conditional on the CDNS_I2C_BROKEN_HOLD_BIT
-quirk being set on the controller, and ZynqMP uses the r1p14 version of
-the core where this quirk is not being set. The requirement to do this to
-support larger reads seems like an inherently required workaround due to
-the core only having an 8-bit transfer size register, so it does not
-appear that this should be conditional on the broken HOLD bit quirk which
-is used elsewhere in the driver.
-
-Remove the dependency on the CDNS_I2C_BROKEN_HOLD_BIT for this transfer
-size reset logic to fix this problem.
-
-Fixes: 63cab195bf49 ("i2c: removed work arounds in i2c driver for Zynq Ultrascale+ MPSoC")
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Reviewed-by: Shubhrajyoti Datta <Shubhrajyoti.datta@amd.com>
-Acked-by: Michal Simek <michal.simek@amd.com>
+Fixes: fa1049135c15 ("i2c: mlxcpld: Modify register setting for 400KHz frequency")
+Signed-off-by: Vadim Pasternak <vadimp@nvidia.com>
 Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-cadence.c | 30 +++++-------------------------
- 1 file changed, 5 insertions(+), 25 deletions(-)
+ drivers/i2c/busses/i2c-mlxcpld.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/i2c/busses/i2c-cadence.c b/drivers/i2c/busses/i2c-cadence.c
-index 3d6f8ee355bf..630cfa4ddd46 100644
---- a/drivers/i2c/busses/i2c-cadence.c
-+++ b/drivers/i2c/busses/i2c-cadence.c
-@@ -388,9 +388,9 @@ static irqreturn_t cdns_i2c_slave_isr(void *ptr)
-  */
- static irqreturn_t cdns_i2c_master_isr(void *ptr)
- {
--	unsigned int isr_status, avail_bytes, updatetx;
-+	unsigned int isr_status, avail_bytes;
- 	unsigned int bytes_to_send;
--	bool hold_quirk;
-+	bool updatetx;
- 	struct cdns_i2c *id = ptr;
- 	/* Signal completion only after everything is updated */
- 	int done_flag = 0;
-@@ -410,11 +410,7 @@ static irqreturn_t cdns_i2c_master_isr(void *ptr)
- 	 * Check if transfer size register needs to be updated again for a
- 	 * large data receive operation.
- 	 */
--	updatetx = 0;
--	if (id->recv_count > id->curr_recv_count)
--		updatetx = 1;
--
--	hold_quirk = (id->quirks & CDNS_I2C_BROKEN_HOLD_BIT) && updatetx;
-+	updatetx = id->recv_count > id->curr_recv_count;
+diff --git a/drivers/i2c/busses/i2c-mlxcpld.c b/drivers/i2c/busses/i2c-mlxcpld.c
+index 015e11c4663f..077d716c73ca 100644
+--- a/drivers/i2c/busses/i2c-mlxcpld.c
++++ b/drivers/i2c/busses/i2c-mlxcpld.c
+@@ -49,7 +49,7 @@
+ #define MLXCPLD_LPCI2C_NACK_IND		2
  
- 	/* When receiving, handle data interrupt and completion interrupt */
- 	if (id->p_recv_buf &&
-@@ -445,7 +441,7 @@ static irqreturn_t cdns_i2c_master_isr(void *ptr)
- 				break;
- 			}
+ #define MLXCPLD_I2C_FREQ_1000KHZ_SET	0x04
+-#define MLXCPLD_I2C_FREQ_400KHZ_SET	0x0c
++#define MLXCPLD_I2C_FREQ_400KHZ_SET	0x0e
+ #define MLXCPLD_I2C_FREQ_100KHZ_SET	0x42
  
--			if (cdns_is_holdquirk(id, hold_quirk))
-+			if (cdns_is_holdquirk(id, updatetx))
- 				break;
- 		}
- 
-@@ -456,7 +452,7 @@ static irqreturn_t cdns_i2c_master_isr(void *ptr)
- 		 * maintain transfer size non-zero while performing a large
- 		 * receive operation.
- 		 */
--		if (cdns_is_holdquirk(id, hold_quirk)) {
-+		if (cdns_is_holdquirk(id, updatetx)) {
- 			/* wait while fifo is full */
- 			while (cdns_i2c_readreg(CDNS_I2C_XFER_SIZE_OFFSET) !=
- 			       (id->curr_recv_count - CDNS_I2C_FIFO_DEPTH))
-@@ -478,22 +474,6 @@ static irqreturn_t cdns_i2c_master_isr(void *ptr)
- 						  CDNS_I2C_XFER_SIZE_OFFSET);
- 				id->curr_recv_count = id->recv_count;
- 			}
--		} else if (id->recv_count && !hold_quirk &&
--						!id->curr_recv_count) {
--
--			/* Set the slave address in address register*/
--			cdns_i2c_writereg(id->p_msg->addr & CDNS_I2C_ADDR_MASK,
--						CDNS_I2C_ADDR_OFFSET);
--
--			if (id->recv_count > CDNS_I2C_TRANSFER_SIZE) {
--				cdns_i2c_writereg(CDNS_I2C_TRANSFER_SIZE,
--						CDNS_I2C_XFER_SIZE_OFFSET);
--				id->curr_recv_count = CDNS_I2C_TRANSFER_SIZE;
--			} else {
--				cdns_i2c_writereg(id->recv_count,
--						CDNS_I2C_XFER_SIZE_OFFSET);
--				id->curr_recv_count = id->recv_count;
--			}
- 		}
- 
- 		/* Clear hold (if not repeated start) and signal completion */
+ enum mlxcpld_i2c_frequency {
 -- 
 2.35.1
 
