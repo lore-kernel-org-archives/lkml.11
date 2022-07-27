@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2765C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:31:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35824C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:31:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237666AbiG0QbR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:31:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34496 "EHLO
+        id S237699AbiG0QbV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:31:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237446AbiG0Qal (ORCPT
+        with ESMTP id S236065AbiG0Qan (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:30:41 -0400
+        Wed, 27 Jul 2022 12:30:43 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DCBA5247E;
-        Wed, 27 Jul 2022 09:25:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D6CE52454;
+        Wed, 27 Jul 2022 09:25:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C6DC617EF;
-        Wed, 27 Jul 2022 16:25:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55C4BC433C1;
-        Wed, 27 Jul 2022 16:25:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 85ACB619F6;
+        Wed, 27 Jul 2022 16:25:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A27BC433C1;
+        Wed, 27 Jul 2022 16:25:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939116;
-        bh=HaPcLU8OTjq/O0rBKkVeU0xDiBOTbO2unGt7nLpjxW8=;
+        s=korg; t=1658939113;
+        bh=Btiv1hzgkHyKbTO+WO6YHAWnfk85J+1PYPGcL6n2wHU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qd3j45M7StFg0v59aBfnVpx7lnyVh1kVNSr2Yt8ssgGx7EikG2HJvBki1RPoAsVWz
-         gLnjwMKhQq5WW8DDQO9gzjxdW+Dd24V9uzF36xNMR8HHCz6VuN/koNfv4w9B9p4OiL
-         1AnX5BzJtpwBeDY7FXiMM+4A2gvVKB6512sA6UO4=
+        b=ER6e7rCStFIa4gjfZiWYDxmMFCmycHzi5xxRJj9nRS/rARCsOluzPmobgRUdHUKnH
+         fEvhswOer5Xq7WRsHzNeqWWJEVSKCJ1eVnpIdLUHVP+Dj72fKkV7AFfobX7uVEoV0V
+         U6lGJvys9JjhRrE0HxoIL5NQlF6+JejUpqUeaHf4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Yang Jihong <yangjihong1@huawei.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 07/62] ip: Fix data-races around sysctl_ip_fwd_use_pmtu.
-Date:   Wed, 27 Jul 2022 18:10:16 +0200
-Message-Id: <20220727161004.448768084@linuxfoundation.org>
+Subject: [PATCH 4.19 06/62] perf/core: Fix data race between perf_event_set_output() and perf_mmap_close()
+Date:   Wed, 27 Jul 2022 18:10:15 +0200
+Message-Id: <20220727161004.416583079@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161004.175638564@linuxfoundation.org>
 References: <20220727161004.175638564@linuxfoundation.org>
@@ -49,48 +49,164 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Peter Zijlstra <peterz@infradead.org>
 
-[ Upstream commit 60c158dc7b1f0558f6cadd5b50d0386da0000d50 ]
+[ Upstream commit 68e3c69803dada336893640110cb87221bb01dcf ]
 
-While reading sysctl_ip_fwd_use_pmtu, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its readers.
+Yang Jihing reported a race between perf_event_set_output() and
+perf_mmap_close():
 
-Fixes: f87c10a8aa1e ("ipv4: introduce ip_dst_mtu_maybe_forward and protect forwarding path against pmtu spoofing")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+	CPU1					CPU2
+
+	perf_mmap_close(e2)
+	  if (atomic_dec_and_test(&e2->rb->mmap_count)) // 1 - > 0
+	    detach_rest = true
+
+						ioctl(e1, IOC_SET_OUTPUT, e2)
+						  perf_event_set_output(e1, e2)
+
+	  ...
+	  list_for_each_entry_rcu(e, &e2->rb->event_list, rb_entry)
+	    ring_buffer_attach(e, NULL);
+	    // e1 isn't yet added and
+	    // therefore not detached
+
+						    ring_buffer_attach(e1, e2->rb)
+						      list_add_rcu(&e1->rb_entry,
+								   &e2->rb->event_list)
+
+After this; e1 is attached to an unmapped rb and a subsequent
+perf_mmap() will loop forever more:
+
+	again:
+		mutex_lock(&e->mmap_mutex);
+		if (event->rb) {
+			...
+			if (!atomic_inc_not_zero(&e->rb->mmap_count)) {
+				...
+				mutex_unlock(&e->mmap_mutex);
+				goto again;
+			}
+		}
+
+The loop in perf_mmap_close() holds e2->mmap_mutex, while the attach
+in perf_event_set_output() holds e1->mmap_mutex. As such there is no
+serialization to avoid this race.
+
+Change perf_event_set_output() to take both e1->mmap_mutex and
+e2->mmap_mutex to alleviate that problem. Additionally, have the loop
+in perf_mmap() detach the rb directly, this avoids having to wait for
+the concurrent perf_mmap_close() to get around to doing it to make
+progress.
+
+Fixes: 9bb5d40cd93c ("perf: Fix mmap() accounting hole")
+Reported-by: Yang Jihong <yangjihong1@huawei.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Tested-by: Yang Jihong <yangjihong1@huawei.com>
+Link: https://lkml.kernel.org/r/YsQ3jm2GR38SW7uD@worktop.programming.kicks-ass.net
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/ip.h | 2 +-
- net/ipv4/route.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ kernel/events/core.c | 45 ++++++++++++++++++++++++++++++--------------
+ 1 file changed, 31 insertions(+), 14 deletions(-)
 
-diff --git a/include/net/ip.h b/include/net/ip.h
-index d1a4efedbc03..471463bfe6f9 100644
---- a/include/net/ip.h
-+++ b/include/net/ip.h
-@@ -402,7 +402,7 @@ static inline unsigned int ip_dst_mtu_maybe_forward(const struct dst_entry *dst,
- 	struct net *net = dev_net(dst->dev);
- 	unsigned int mtu;
+diff --git a/kernel/events/core.c b/kernel/events/core.c
+index 88dd1398ae88..ba66ea3ca705 100644
+--- a/kernel/events/core.c
++++ b/kernel/events/core.c
+@@ -5719,10 +5719,10 @@ static int perf_mmap(struct file *file, struct vm_area_struct *vma)
  
--	if (net->ipv4.sysctl_ip_fwd_use_pmtu ||
-+	if (READ_ONCE(net->ipv4.sysctl_ip_fwd_use_pmtu) ||
- 	    ip_mtu_locked(dst) ||
- 	    !forwarding)
- 		return dst_mtu(dst);
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index d7f17581df7d..57e2316529d0 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -1419,7 +1419,7 @@ u32 ip_mtu_from_fib_result(struct fib_result *res, __be32 daddr)
- 	struct net_device *dev = nh->nh_dev;
- 	u32 mtu = 0;
+ 		if (!atomic_inc_not_zero(&event->rb->mmap_count)) {
+ 			/*
+-			 * Raced against perf_mmap_close() through
+-			 * perf_event_set_output(). Try again, hope for better
+-			 * luck.
++			 * Raced against perf_mmap_close(); remove the
++			 * event and try again.
+ 			 */
++			ring_buffer_attach(event, NULL);
+ 			mutex_unlock(&event->mmap_mutex);
+ 			goto again;
+ 		}
+@@ -10396,14 +10396,25 @@ static int perf_copy_attr(struct perf_event_attr __user *uattr,
+ 	goto out;
+ }
  
--	if (dev_net(dev)->ipv4.sysctl_ip_fwd_use_pmtu ||
-+	if (READ_ONCE(dev_net(dev)->ipv4.sysctl_ip_fwd_use_pmtu) ||
- 	    fi->fib_metrics->metrics[RTAX_LOCK - 1] & (1 << RTAX_MTU))
- 		mtu = fi->fib_mtu;
++static void mutex_lock_double(struct mutex *a, struct mutex *b)
++{
++	if (b < a)
++		swap(a, b);
++
++	mutex_lock(a);
++	mutex_lock_nested(b, SINGLE_DEPTH_NESTING);
++}
++
+ static int
+ perf_event_set_output(struct perf_event *event, struct perf_event *output_event)
+ {
+ 	struct ring_buffer *rb = NULL;
+ 	int ret = -EINVAL;
  
+-	if (!output_event)
++	if (!output_event) {
++		mutex_lock(&event->mmap_mutex);
+ 		goto set;
++	}
+ 
+ 	/* don't allow circular references */
+ 	if (event == output_event)
+@@ -10441,8 +10452,15 @@ perf_event_set_output(struct perf_event *event, struct perf_event *output_event)
+ 	    event->pmu != output_event->pmu)
+ 		goto out;
+ 
++	/*
++	 * Hold both mmap_mutex to serialize against perf_mmap_close().  Since
++	 * output_event is already on rb->event_list, and the list iteration
++	 * restarts after every removal, it is guaranteed this new event is
++	 * observed *OR* if output_event is already removed, it's guaranteed we
++	 * observe !rb->mmap_count.
++	 */
++	mutex_lock_double(&event->mmap_mutex, &output_event->mmap_mutex);
+ set:
+-	mutex_lock(&event->mmap_mutex);
+ 	/* Can't redirect output if we've got an active mmap() */
+ 	if (atomic_read(&event->mmap_count))
+ 		goto unlock;
+@@ -10452,6 +10470,12 @@ perf_event_set_output(struct perf_event *event, struct perf_event *output_event)
+ 		rb = ring_buffer_get(output_event);
+ 		if (!rb)
+ 			goto unlock;
++
++		/* did we race against perf_mmap_close() */
++		if (!atomic_read(&rb->mmap_count)) {
++			ring_buffer_put(rb);
++			goto unlock;
++		}
+ 	}
+ 
+ 	ring_buffer_attach(event, rb);
+@@ -10459,20 +10483,13 @@ perf_event_set_output(struct perf_event *event, struct perf_event *output_event)
+ 	ret = 0;
+ unlock:
+ 	mutex_unlock(&event->mmap_mutex);
++	if (output_event)
++		mutex_unlock(&output_event->mmap_mutex);
+ 
+ out:
+ 	return ret;
+ }
+ 
+-static void mutex_lock_double(struct mutex *a, struct mutex *b)
+-{
+-	if (b < a)
+-		swap(a, b);
+-
+-	mutex_lock(a);
+-	mutex_lock_nested(b, SINGLE_DEPTH_NESTING);
+-}
+-
+ static int perf_event_set_clock(struct perf_event *event, clockid_t clk_id)
+ {
+ 	bool nmi_safe = false;
 -- 
 2.35.1
 
