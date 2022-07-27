@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEC16C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:41:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B4E2C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:41:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242381AbiG0RlF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:41:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39858 "EHLO
+        id S242451AbiG0RlU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:41:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242774AbiG0RkZ (ORCPT
+        with ESMTP id S242810AbiG0Rkp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:40:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 551DB61D91;
-        Wed, 27 Jul 2022 09:51:25 -0700 (PDT)
+        Wed, 27 Jul 2022 13:40:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5E9B88E1B;
+        Wed, 27 Jul 2022 09:51:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D91661560;
-        Wed, 27 Jul 2022 16:51:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E93EC433C1;
-        Wed, 27 Jul 2022 16:51:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AAED4B821D6;
+        Wed, 27 Jul 2022 16:51:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFBF4C433D6;
+        Wed, 27 Jul 2022 16:51:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940673;
-        bh=bM892KhhPAeee0HH8jIulRXOdwogdtlf43M4Vsm/Nmk=;
+        s=korg; t=1658940684;
+        bh=BXt+/DsJ/RD7ujmlAfRZ6rwtE/OfsSQKVIpcz+npSWo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lohNuymgEliGYh6pDYLbTRVCBsEj9JC5KZayxZOmHlwWxmtHxaNHTTMUZoT9mRkkO
-         lVln+gMrQ1kwlDSmbpZGYfNmXHQGy95N9dA/Cj7QT4AAwVkGE6MInaKmBsFbGhMtGW
-         j9V9GU7q/Mm3sM1IQ3OXSTysk5blAoaLkgCkN5Nc=
+        b=vysvOr33iYHn8MCKsKi8B//k49kGUAlegBwDkxfPO/2P5n+D8pT6eG7KBbEa5etjU
+         rKVxUSBqx20KWNgB/BGhk6Ux9PNujykeoOkpdNg5WyGmTH4wRpXXiusnZACWqm1JIl
+         4mAo7Mz3yqZC2Epy71UJZfkiBiA9hHJwl9cgaY0Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Taehee Yoo <ap420073@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 108/158] amt: do not use amt->nr_tunnels outside of lock
-Date:   Wed, 27 Jul 2022 18:12:52 +0200
-Message-Id: <20220727161025.804001140@linuxfoundation.org>
+Subject: [PATCH 5.18 112/158] ipv4: Fix a data-race around sysctl_fib_multipath_use_neigh.
+Date:   Wed, 27 Jul 2022 18:12:56 +0200
+Message-Id: <20220727161025.969819245@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -49,62 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Taehee Yoo <ap420073@gmail.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 989918482bbccbbce3ba2bb9156eb4c193319983 ]
+[ Upstream commit 87507bcb4f5de16bb419e9509d874f4db6c0ad0f ]
 
-amt->nr_tunnels is protected by amt->lock.
-But, amt_request_handler() has been using this variable without the
-amt->lock.
-So, it expands context of amt->lock in the amt_request_handler() to
-protect amt->nr_tunnels variable.
+While reading sysctl_fib_multipath_use_neigh, it can be changed
+concurrently.  Thus, we need to add READ_ONCE() to its reader.
 
-Fixes: cbc21dc1cfe9 ("amt: add data plane of amt interface")
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fixes: a6db4494d218 ("net: ipv4: Consider failed nexthops in multipath routes")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/amt.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ net/ipv4/fib_semantics.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/amt.c b/drivers/net/amt.c
-index 4277924ab3b9..acf5ea96652f 100644
---- a/drivers/net/amt.c
-+++ b/drivers/net/amt.c
-@@ -2679,7 +2679,9 @@ static bool amt_request_handler(struct amt_dev *amt, struct sk_buff *skb)
- 		if (tunnel->ip4 == iph->saddr)
- 			goto send;
- 
-+	spin_lock_bh(&amt->lock);
- 	if (amt->nr_tunnels >= amt->max_tunnels) {
-+		spin_unlock_bh(&amt->lock);
- 		icmp_ndo_send(skb, ICMP_DEST_UNREACH, ICMP_HOST_UNREACH, 0);
- 		return true;
+diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
+index 720f65f7bd0b..9f5c1c26c8f2 100644
+--- a/net/ipv4/fib_semantics.c
++++ b/net/ipv4/fib_semantics.c
+@@ -2216,7 +2216,7 @@ void fib_select_multipath(struct fib_result *res, int hash)
  	}
-@@ -2687,8 +2689,10 @@ static bool amt_request_handler(struct amt_dev *amt, struct sk_buff *skb)
- 	tunnel = kzalloc(sizeof(*tunnel) +
- 			 (sizeof(struct hlist_head) * amt->hash_buckets),
- 			 GFP_ATOMIC);
--	if (!tunnel)
-+	if (!tunnel) {
-+		spin_unlock_bh(&amt->lock);
- 		return true;
-+	}
  
- 	tunnel->source_port = udph->source;
- 	tunnel->ip4 = iph->saddr;
-@@ -2701,10 +2705,9 @@ static bool amt_request_handler(struct amt_dev *amt, struct sk_buff *skb)
- 
- 	INIT_DELAYED_WORK(&tunnel->gc_wq, amt_tunnel_expire);
- 
--	spin_lock_bh(&amt->lock);
- 	list_add_tail_rcu(&tunnel->list, &amt->tunnel_list);
- 	tunnel->key = amt->key;
--	amt_update_relay_status(tunnel, AMT_STATUS_RECEIVED_REQUEST, true);
-+	__amt_update_relay_status(tunnel, AMT_STATUS_RECEIVED_REQUEST, true);
- 	amt->nr_tunnels++;
- 	mod_delayed_work(amt_wq, &tunnel->gc_wq,
- 			 msecs_to_jiffies(amt_gmi(amt)));
+ 	change_nexthops(fi) {
+-		if (net->ipv4.sysctl_fib_multipath_use_neigh) {
++		if (READ_ONCE(net->ipv4.sysctl_fib_multipath_use_neigh)) {
+ 			if (!fib_good_nh(nexthop_nh))
+ 				continue;
+ 			if (!first) {
 -- 
 2.35.1
 
