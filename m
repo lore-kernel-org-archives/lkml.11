@@ -2,219 +2,317 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 894F1C19F21
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 11:53:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79933C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 11:54:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232528AbiG0Lxr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 07:53:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40586 "EHLO
+        id S232520AbiG0LyP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 07:54:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232499AbiG0Lxo (ORCPT
+        with ESMTP id S232530AbiG0LyI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 07:53:44 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2072.outbound.protection.outlook.com [40.107.223.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C29A23247F
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 04:53:42 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nqXwHLhKNwWsP/9aBz97/msmxooBX0+SqLxxhftCHERzWEmN+nXcl05m136NZYjw7vuAVFoeKsqfdV/3ocM84fVsBvM3lHPyOAoBnCDUmfZnweU1yPjOm6aWmdNOtT9EVs0YJ/d5oytO+kkXjq81vwAMGI89wLRAJdfgKOUAdQZdpx0PPVXE7CWlJGn0aczsrcLxPnoaOBmnBpLAnHFDA+Vtg1Jkxo1aUjE/u2H/AH5UdCeICmgt8cqEgnUSkzHgqFPX2HN7dBg2sFB4dwD5cx2jP5nphLb8E69MQm7Ic3jbj2PIzwGnpciaWjT3OF5QAfb8B7zb+1f7RFILDjXZpA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=kjKtUzvWXxRb1ZkCq7wBWeQEJavAFvF8AzdyPh/b9mE=;
- b=GzFcr/nEb6KvRb3/S2YtjtSuwZ3O5724fxtMTYUgrbqtCgNIRDIcTCUA3cpstfQxEawzOKCx4nYWu3VZPVbHlejwHZDVoLP98i7CXlYy3iLRsj1dOU59SCVJTtkr45JfwZwVHxXOjko7vN/9ip7vzjDuPw6EfnhQGFlEq3OgcTTaSA9t3w+chak47wvNZMLSo1yM5v3fKNcEazZbkbPOAuFFnjOrQ+0Qs9/tyUozFno1O5G9qI89nHOZVmQ/ivEGQridTQG6u+dd1FgrkckkOlDtUAswUoUfUN1xh+2K8/jNjgZgT0x+VVSYtSEJW3mGwiceaOJ6uqk1SUtBj1T+jA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kjKtUzvWXxRb1ZkCq7wBWeQEJavAFvF8AzdyPh/b9mE=;
- b=LXPj1pBz9GjHV17ojr3RfRt2epeljnuffxnUKaKUjVEgyhh8wyFdZeJlmsGUXlAgYzme/BzfQg/vCr84lFDCnMfeBIeNlVvT1e6VGXLCFFXCBa7vZn303PpqCyWY10aABWT6oTe11XqCL12Vpe8UsFpCR4wnyzfXVPaxMLsbHGX/k4us/kkW0Ijej0WTVlX1jNvvX7Dr8QKGH/+Gnan5P9vQOOF5fY8YXbJGokv+b+r3EE/AeN1YkmX/4tWi/fOJublJS0ILa1CBf3YOvqGbYO9InYwjQvzXrf36TSogk6iqzu0dgF5BRrEGJ2yywHddsmhVRRLF90P2Zu/5qKycag==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com (2603:10b6:208:1d5::15)
- by BL0PR12MB2563.namprd12.prod.outlook.com (2603:10b6:207:4b::30) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.19; Wed, 27 Jul
- 2022 11:53:41 +0000
-Received: from MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::4cce:310f:93:5d58]) by MN2PR12MB4192.namprd12.prod.outlook.com
- ([fe80::4cce:310f:93:5d58%8]) with mapi id 15.20.5482.006; Wed, 27 Jul 2022
- 11:53:40 +0000
-Date:   Wed, 27 Jul 2022 08:53:39 -0300
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     "Tian, Kevin" <kevin.tian@intel.com>
-Cc:     Baolu Lu <baolu.lu@linux.intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.com>,
-        "Jiang, Dave" <dave.jiang@intel.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Eric Auger <eric.auger@redhat.com>,
-        "Liu, Yi L" <yi.l.liu@intel.com>,
-        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
-        Zhangfei Gao <zhangfei.gao@linaro.org>,
-        "Zhu, Tony" <tony.zhu@intel.com>,
-        "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [PATCH v10 04/12] iommu: Add attach/detach_dev_pasid iommu
- interface
-Message-ID: <20220727115339.GM4438@nvidia.com>
-References: <20220705050710.2887204-1-baolu.lu@linux.intel.com>
- <20220705050710.2887204-5-baolu.lu@linux.intel.com>
- <20220723141118.GD79279@nvidia.com>
- <686b137f-232a-2a78-beb0-e4373bd20959@linux.intel.com>
- <20220725144005.GE3747@nvidia.com>
- <6da27a6b-b580-4ba4-24c8-ebdfb2d9345d@linux.intel.com>
- <20220726135722.GC4438@nvidia.com>
- <BN9PR11MB5276974ABA5981A7361953708C979@BN9PR11MB5276.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB5276974ABA5981A7361953708C979@BN9PR11MB5276.namprd11.prod.outlook.com>
-X-ClientProxiedBy: BL0PR0102CA0012.prod.exchangelabs.com
- (2603:10b6:207:18::25) To MN2PR12MB4192.namprd12.prod.outlook.com
- (2603:10b6:208:1d5::15)
+        Wed, 27 Jul 2022 07:54:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 215F53247F
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 04:54:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658922846;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=2oLtdvvBWAtUMJ3htBB4Qz85ldyVmTKr8rY6BlTDhh0=;
+        b=YguB/v+LwhTQYnzmEfbUkSEyOqATMflr32tL3Lfti+XTkP3JdIFC4HZsZv1DLhewVUACyG
+        a1odrSc6Q+9mq0kr+YhyJWSpPihSpITILvuYQ7msoLStPxa1zHF3+J22bNEuZWlSOmvoq5
+        9Xx1Rhg8YpCnW3rVazyv27dyq0ivFTY=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-54-7SwLwAm3NgmJHtE4NtEQfA-1; Wed, 27 Jul 2022 07:54:05 -0400
+X-MC-Unique: 7SwLwAm3NgmJHtE4NtEQfA-1
+Received: by mail-wm1-f70.google.com with SMTP id i133-20020a1c3b8b000000b003a2fe4c345cso1080168wma.0
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 04:54:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=2oLtdvvBWAtUMJ3htBB4Qz85ldyVmTKr8rY6BlTDhh0=;
+        b=6EEnsP4qsAveEcNt/eUuxuVMty0A4ZKy+eihlEOEXKyZJdvdSdaX3kDsjCf1eFf2nZ
+         w6jvsimL4VSfOaSJo1R6mJG0x2mMQey9rm3UGBFaBNpai0JR5oZxMROMnhbVvdZAiiYe
+         bQmi661Bjcf2VgoK04TjQ/ZLWhm0gso+0A0ab0kUfLVpaJijMTq6ZCqhnoIycy4VhVq3
+         tSumKxU4UDxklHk9IsIyqMcP68jPBV5t/Q+i0lhrgxC0/YFACYh+7thajQQBALTShpEX
+         vQucqd5QzBBmt0ZqsBPeJn/c3G0XzfYQJTXS3OG2wFOhrW0RzvE5FQK5xk2LGTpTaTfE
+         3Ijw==
+X-Gm-Message-State: AJIora/s5B6C+nZH8OupqHbSegWbQQXyzRXoAkw+BLKG6nxH6RyAPZcf
+        sFtAdBgTUB1fDAe6BGawOBFrkCN8s71trgwFo+TRjLN2zaumouYiKYfI4AtV6OEm+MXDTigurBm
+        fGTZTm3f4t7h0AdA1wj19MW1DBFfkcLOa1KlQnZZS8SQwASv4x5flx/PJ81aNLIJSzgpib8jyhD
+        +2
+X-Received: by 2002:a05:600c:3caa:b0:394:8fb8:716 with SMTP id bg42-20020a05600c3caa00b003948fb80716mr2791905wmb.105.1658922843160;
+        Wed, 27 Jul 2022 04:54:03 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1uaS9KCLG0eegE5ML7yRXuWnOxt44ghgB+lXokqt3kfBmeh9n4rAmsdgiaaFKkCBotA4tcxoQ==
+X-Received: by 2002:a05:600c:3caa:b0:394:8fb8:716 with SMTP id bg42-20020a05600c3caa00b003948fb80716mr2791869wmb.105.1658922842743;
+        Wed, 27 Jul 2022 04:54:02 -0700 (PDT)
+Received: from vschneid.remote.csb ([185.11.37.247])
+        by smtp.gmail.com with ESMTPSA id m64-20020a1c2643000000b003a30af0ec83sm2046838wmm.25.2022.07.27.04.54.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jul 2022 04:54:01 -0700 (PDT)
+From:   Valentin Schneider <vschneid@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Tejun Heo <tj@kernel.org>, Lai Jiangshan <jiangshanlai@gmail.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Phil Auld <pauld@redhat.com>,
+        Marcelo Tosatti <mtosatti@redhat.com>
+Subject: [RFC PATCH v2 1/2] workqueue: Unbind workers before sending them to exit()
+Date:   Wed, 27 Jul 2022 12:53:26 +0100
+Message-Id: <20220727115327.2273547-2-vschneid@redhat.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220727115327.2273547-1-vschneid@redhat.com>
+References: <20220727115327.2273547-1-vschneid@redhat.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 37f7cb06-e1ed-480e-8e9c-08da6fc6a600
-X-MS-TrafficTypeDiagnostic: BL0PR12MB2563:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: jKZBjct8TceItirSJN+hW+sx1x8v2NpOwJc06CM+NcFbfa8Psy+41XBNHAiVVVn8t0W1APUY+ubcqtihV38TDNDj/kC/7/KeAiW2KFxTRKp7IJlYYrWvr0mdxfjFeFZLPnX9CW5zm4E7B7ksSCzyogL5+bu4kQRUPf54IdGejlLu3LQUsbB0wS/DEGjB0MJAvOxg2+3NAicRKfCNhRVy1X0jrNhmorgejPi/8prfDILdLQ+Q09HOEBwwB5XJ9boB6jQXByuH+ShcgzJydB8tvurhD9A/aQtjdZQ4OjLHe3Tr8p9piHMq5zLUGhJe3HZ2ofopo7+IhjWnbAXWsj/r8OWcWTFrMBcb/rdtfWLEGoCnaJbSiebxOH49AArAdEtgNEwk4dN3U4CCoXKay7rMMBVn8rbH7yy+YviF5Cudp/Ki+xv4EyWevTNIdkBCPONPvBpjQvI3kyB7DmF9HnUs2Dj1oaZgiY8J7nrqpu4FpHnFk29s2IjmPinqxFA7fJTPYA6iAx1ecH1wF0/DvqPraHfxJfm0IXDBeSdPB+Ws4J6twkSRC4t7vdJmmUjjtFXvTGPThWO63WMet8t8xOAJOZWfMJLOOpb1iXMx7CE2jR7EU+7NvTlmCnYozJmP1DKKCjZblyteNfYl20akoa3pRL/JEc4a1wd/x5uIlI+oG/DsOfL1g39PqPXjJtVq37iYCkzWuD0FG66VHvyqmauLzP2zA/HJ9JYAQDT/FFghSGfc8G0gCB2PTObOYeyj9kw5
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4192.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(396003)(366004)(346002)(376002)(136003)(39860400002)(83380400001)(186003)(66476007)(41300700001)(66556008)(6506007)(8676002)(66946007)(36756003)(1076003)(6486002)(2616005)(6512007)(54906003)(26005)(86362001)(5660300002)(316002)(7416002)(8936002)(6862004)(478600001)(4326008)(33656002)(53546011)(2906002)(38100700002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?txV8Du4B7SXhk1N0CckJRS0Xab7gMu+UOKi0dJcidk5jeNcJOIG2SMGC3mob?=
- =?us-ascii?Q?9XqPFuMtrGEkyAHkKhPNil8bkrDaVvHIlLGYyN4YGTVHUqVuokDlZL9gR3KN?=
- =?us-ascii?Q?TA9nyAzO5uqcjtykia/nET31sydkpX1yS2EkcPtL3n9DMc/IL0nIrT7eoXhM?=
- =?us-ascii?Q?oP8XkNIUp8eoW9T97lOA8LNI3xkmEDHa1ELFdkDFJghgbhiBInAFC36XqmME?=
- =?us-ascii?Q?qi9azqORia1RHdS/rNNCJ+FgW6Sc7sb92N+KrPb1yeealEZ07erYo5xoxqJj?=
- =?us-ascii?Q?XTENolsRiU6w3qRjXabKhncaPZgs8nAthQMvPMnxiOoJipDgxLxGzY6YRmep?=
- =?us-ascii?Q?ID4W78TL8j09TZ141Mhnf+bNy3Un8vA9toK8wbPlh7a1dAbTbn5ieJ/jpcxb?=
- =?us-ascii?Q?Mkhtpx0nrD8rvIGsLREn9PA67ZRQ0gwws2+siq+OOy1Ls3/VbRh2fnWuEG+v?=
- =?us-ascii?Q?s75CJtIk+6+P06vpDul1+BfmdZse6xHEncaLscvdINvY/JkX6OxbT46BnN/N?=
- =?us-ascii?Q?XLyL5FpgpOWFJlwDHebAUZEdKbRc/po2Wp8geHNX89vS6g5GYUqkBJQ0y2yk?=
- =?us-ascii?Q?yffG8EZyi9PGMjMZYBPiPHdhvtGZk/jic1XQ3N8F37TXXbD7hprrvKpmylId?=
- =?us-ascii?Q?sClvBZFCC+FaO6BDnOJlSDLnT/NGV4DARpoqa0KOAS5Y6LED1NkcwRjtA+i0?=
- =?us-ascii?Q?GyOECX7PJKALVmDJEPyOf304HLbORv+SgOS7ALWlcDyNxiszILdvlWOowdAQ?=
- =?us-ascii?Q?oICK1tg3V6aqMf9uvlLlBC9eE/AM65ab643UJDB0IwFizlu54DbHQK/eaQkz?=
- =?us-ascii?Q?SAZIO9Mj9Plsg6gNHhdnOmcyBJ5UB2s1nfaaFnyXU+01uar+g/oyIIPvtARp?=
- =?us-ascii?Q?RdeP7LAS3mtEYkENoB19rMrwpYdJqx5a0zIeyIrOvpZ2xLEMVn0PsccKeVMA?=
- =?us-ascii?Q?HP9S4bpdZ7KTr9Vm9u946HlPGxZi2yL0GZ84CDWSgMQvBDkMH0gWYmXJoz+M?=
- =?us-ascii?Q?4cYfgKbzDcHiKBBMWpCoSw2f9mG6lWp3b2fxOQxWx8knXo/rzPX18xilQhji?=
- =?us-ascii?Q?eux9Tz+bxjCqRTWtkQd2j0YLILbzDsJcMeHXmaA/8ZhS8kerwakHTHB/BsSw?=
- =?us-ascii?Q?yDLXBfHglZd0t/rgLnvXnH6qy2lFwfJs53Pg1gQRDY7CaDbV29XPEkefj1hi?=
- =?us-ascii?Q?yAhIziU7uajqKRkDzfemyNpoboVt2MdZdlcZAq9tm+f5V7lVyWjLXuwqVuNr?=
- =?us-ascii?Q?C4hyxg8UsbYuDe5KUEVt4L5IiEM21XXfSsvSFArUaNETQoyys94DS1oZhT0b?=
- =?us-ascii?Q?AhdCzHGymqSV80wBl6bZP/T4kbLFgl/6XYquVPgkfuQT9TOb+U7NDa4hUJ8e?=
- =?us-ascii?Q?PyG4uEtq2RlCONthp/H4vuYaw2mm9rM562I5I1UlSvQpTMjl0A4QKCdiE9Us?=
- =?us-ascii?Q?/iOszucQjHvoMJYnwADg+tOzZLcbWLbH4v9H/e1kBtIcuaUPpYCZtL8lyraK?=
- =?us-ascii?Q?MyiKo/F+JKlKmi5l580HDTf8uQ3TteWxWnwNMNF2/G3t7VNrKtot4Q79IzeN?=
- =?us-ascii?Q?5TdfO0R4JGha5H0s9p/nReSEsksY8x2E/rxPiiN1?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 37f7cb06-e1ed-480e-8e9c-08da6fc6a600
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4192.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jul 2022 11:53:40.8889
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ZJ/0m/IIgR3XIr1EZeuASJ8Nmm1895aai7m/w3WQWORJSDXC2jPAp2srTTDMgdne
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB2563
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 03:20:25AM +0000, Tian, Kevin wrote:
-> > From: Jason Gunthorpe <jgg@nvidia.com>
-> > Sent: Tuesday, July 26, 2022 9:57 PM
-> > 
-> > On Tue, Jul 26, 2022 at 02:23:26PM +0800, Baolu Lu wrote:
-> > > On 2022/7/25 22:40, Jason Gunthorpe wrote:
-> > > > On Sun, Jul 24, 2022 at 03:03:16PM +0800, Baolu Lu wrote:
-> > > >
-> > > > > How about rephrasing this part of commit message like below:
-> > > > >
-> > > > > Some buses, like PCI, route packets without considering the PASID value.
-> > > > > Thus a DMA target address with PASID might be treated as P2P if the
-> > > > > address falls into the MMIO BAR of other devices in the group. To make
-> > > > > things simple, these interfaces only apply to devices belonging to the
-> > > > > singleton groups.
-> > > >
-> > > > > Considering that the PCI bus supports hot-plug, even a device boots
-> > with
-> > > > > a singleton group, a later hot-added device is still possible to share
-> > > > > the group, which breaks the singleton group assumption. In order to
-> > > > > avoid this situation, this interface requires that the ACS is enabled on
-> > > > > all devices on the path from the device to the host-PCI bridge.
-> > > >
-> > > > But ACS directly fixes the routing issue above
-> > > >
-> > > > This entire explanation can be recast as saying we block PASID
-> > > > attachment in all cases where the PCI fabric is routing based on
-> > > > address. ACS disables that.
-> > > >
-> > > > Not sure it even has anything to do with hotplug or singleton??
-> > >
-> > > Yes, agreed. I polished this patch like below. Does it look good to you?
-> > >
-> > > iommu: Add attach/detach_dev_pasid iommu interface
-> > >
-> > > Attaching an IOMMU domain to a PASID of a device is a generic operation
-> > > for modern IOMMU drivers which support PASID-granular DMA address
-> > > translation. Currently visible usage scenarios include (but not limited):
-> > >
-> > >  - SVA (Shared Virtual Address)
-> > >  - kernel DMA with PASID
-> > >  - hardware-assist mediated device
-> > >
-> > > This adds a pair of domain ops for this purpose and adds the interfaces
-> > > for device drivers to attach/detach a domain to/from a {device,
-> > > PASID}.
-> > 
-> > > The PCI bus routes packets without considering the PASID value.
-> > 
-> > More like:
-> > 
-> > Some configurations of the PCI fabric will route device originated TLP
-> > packets based on memory address, and these configurations are
-> > incompatible with PASID as the PASID packets form a distinct address
-> > space. For instance any configuration where switches are present
-> > without ACS is incompatible with PASID.
-> 
-> This description reads like ACS enables PASID-based routing...
+It has been reported that isolated CPUs can suffer from interference due to
+per-CPU kworkers waking up just to die.
 
-Well, that is kind of what it is.
+A surge of workqueue activity during initial setup of a latency-sensitive
+application (refresh_vm_stats() being one of the culprits) can cause extra
+per-CPU kworkers to be spawned. Then, said latency-sensitive task can be
+running merrily on an isolated CPU only to be interrupted sometime later by
+a kworker marked for death (cf. IDLE_WORKER_TIMEOUT, 5 minutes after last
+kworker activity).
 
-> In reality PCI fabric always route TLP based on memory address.
-> ACS just provides a way to redirect the packet to RC, with or
-> without PASID.
+Prevent this by affining kworkers to the wq_unbound_cpumask (which doesn't
+contain isolated CPUs, cf. HK_TYPE_WQ) before waking them up after marking
+them with WORKER_DIE.
 
-Always except in all the cases it doesn't, like ACS :)
+Changing the affinity does require a sleepable context, so get rid of the
+pool->idle_timer and use a delayed_work instead.
 
-> > > +	 * Block PASID attachment in all cases where the PCI fabric is
-> > > +	 * routing based on address. ACS disables it.
-> > > +	 */
-> > > +	if (dev_is_pci(dev) &&
-> > > +	    !pci_acs_path_enabled(to_pci_dev(dev), NULL, REQ_ACS_FLAGS))
-> > > +		return -ENODEV;
-> > 
-> > I would probably still put this in a function just to be clear, and
-> > probably even a PCI layer funcion 'pci_is_pasid_supported' that
-> > clearly indicates that the fabric path can route a PASID packet
-> > without mis-routing it.
-> 
-> But there is no single line in above check related to PASID...
+Signed-off-by: Valentin Schneider <vschneid@redhat.com>
+---
+ kernel/workqueue.c | 109 +++++++++++++++++++++++++++++++++------------
+ 1 file changed, 81 insertions(+), 28 deletions(-)
 
-The question to answer here is if the device/fabric supports PASID,
-and on PCI that requires ACS on any switches. IMHO that is a PCI layer
-question and perhaps we shouldn't even succeed pci_enable_pasid() if
-ACS isn't on.
+diff --git a/kernel/workqueue.c b/kernel/workqueue.c
+index 1ea50f6be843..27642166dcc5 100644
+--- a/kernel/workqueue.c
++++ b/kernel/workqueue.c
+@@ -167,9 +167,9 @@ struct worker_pool {
+ 	int			nr_workers;	/* L: total number of workers */
+ 	int			nr_idle;	/* L: currently idle workers */
+ 
+-	struct list_head	idle_list;	/* L: list of idle workers */
+-	struct timer_list	idle_timer;	/* L: worker idle timeout */
+-	struct timer_list	mayday_timer;	/* L: SOS timer for workers */
++	struct list_head	idle_list;	  /* L: list of idle workers */
++	struct delayed_work     idle_reaper_work; /* L: worker idle timeout */
++	struct timer_list	mayday_timer;	  /* L: SOS timer for workers */
+ 
+ 	/* a workers is either on busy_hash or idle_list, or the manager */
+ 	DECLARE_HASHTABLE(busy_hash, BUSY_WORKER_HASH_ORDER);
+@@ -1806,8 +1806,10 @@ static void worker_enter_idle(struct worker *worker)
+ 	/* idle_list is LIFO */
+ 	list_add(&worker->entry, &pool->idle_list);
+ 
+-	if (too_many_workers(pool) && !timer_pending(&pool->idle_timer))
+-		mod_timer(&pool->idle_timer, jiffies + IDLE_WORKER_TIMEOUT);
++	if (too_many_workers(pool) && !delayed_work_pending(&pool->idle_reaper_work))
++		mod_delayed_work(system_unbound_wq,
++				 &pool->idle_reaper_work,
++				 IDLE_WORKER_TIMEOUT);
+ 
+ 	/* Sanity check nr_running. */
+ 	WARN_ON_ONCE(pool->nr_workers == pool->nr_idle && pool->nr_running);
+@@ -1972,9 +1974,29 @@ static struct worker *create_worker(struct worker_pool *pool)
+ 	return NULL;
+ }
+ 
++static void unbind_worker(struct worker *worker)
++{
++	kthread_set_per_cpu(worker->task, -1);
++	WARN_ON_ONCE(set_cpus_allowed_ptr(worker->task, wq_unbound_cpumask) < 0);
++}
++
++static void rebind_worker(struct worker *worker, struct worker_pool *pool)
++{
++	kthread_set_per_cpu(worker->task, pool->cpu);
++	WARN_ON_ONCE(set_cpus_allowed_ptr(worker->task, pool->attrs->cpumask) < 0);
++}
++
++static void reap_worker(struct worker *worker)
++{
++	list_del_init(&worker->entry);
++	unbind_worker(worker);
++	wake_up_process(worker->task);
++}
++
+ /**
+  * destroy_worker - destroy a workqueue worker
+  * @worker: worker to be destroyed
++ * @list: transfer worker away from its pool->idle_list and into list
+  *
+  * Destroy @worker and adjust @pool stats accordingly.  The worker should
+  * be idle.
+@@ -1982,7 +2004,7 @@ static struct worker *create_worker(struct worker_pool *pool)
+  * CONTEXT:
+  * raw_spin_lock_irq(pool->lock).
+  */
+-static void destroy_worker(struct worker *worker)
++static void destroy_worker(struct worker *worker, struct list_head *list)
+ {
+ 	struct worker_pool *pool = worker->pool;
+ 
+@@ -1997,34 +2019,64 @@ static void destroy_worker(struct worker *worker)
+ 	pool->nr_workers--;
+ 	pool->nr_idle--;
+ 
+-	list_del_init(&worker->entry);
++	list_del(&worker->entry);
+ 	worker->flags |= WORKER_DIE;
+-	wake_up_process(worker->task);
++
++	list_add(&worker->entry, list);
+ }
+ 
+-static void idle_worker_timeout(struct timer_list *t)
++/**
++ * idle_reaper_fn - reap workers that have been idle for too long.
++ *
++ * Unbinding marked-for-destruction workers requires a sleepable context, as
++ * changing a task's affinity is not an atomic operation, and we don't want
++ * to disturb isolated CPUs IDLE_WORKER_TIMEOUT in the future just for a kworker
++ * to do_exit().
++ *
++ * Percpu kworkers should meet the conditions for the affinity change to not
++ * block (not migration-disabled and not running), but there is no *hard*
++ * guarantee that they are not running when we get here.
++ *
++ * The delayed_work is only ever modified under raw_spin_lock_irq(pool->lock).
++ */
++static void idle_reaper_fn(struct work_struct *work)
+ {
+-	struct worker_pool *pool = from_timer(pool, t, idle_timer);
++	struct delayed_work *dwork = to_delayed_work(work);
++	struct worker_pool *pool = container_of(dwork, struct worker_pool, idle_reaper_work);
++	struct list_head reaplist;
++	struct worker *worker, *tmp;
++
++	INIT_LIST_HEAD(&reaplist);
+ 
+ 	raw_spin_lock_irq(&pool->lock);
+ 
+ 	while (too_many_workers(pool)) {
+-		struct worker *worker;
+ 		unsigned long expires;
++		unsigned long now = jiffies;
+ 
+ 		/* idle_list is kept in LIFO order, check the last one */
+ 		worker = list_entry(pool->idle_list.prev, struct worker, entry);
+ 		expires = worker->last_active + IDLE_WORKER_TIMEOUT;
+ 
+-		if (time_before(jiffies, expires)) {
+-			mod_timer(&pool->idle_timer, expires);
++		/*
++		 * Careful: queueing a work item from here can and will cause a
++		 * self-deadlock when dealing with an unbound pool. However,
++		 * here the delay *cannot* be zero and *has* to be in the
++		 * future, which works.
++		 */
++		if (time_before(now, expires)) {
++			mod_delayed_work(system_unbound_wq,
++					 &pool->idle_reaper_work,
++					 expires - now);
+ 			break;
+ 		}
+ 
+-		destroy_worker(worker);
++		destroy_worker(worker, &reaplist);
+ 	}
+-
+ 	raw_spin_unlock_irq(&pool->lock);
++
++	list_for_each_entry_safe(worker, tmp, &reaplist, entry)
++		reap_worker(worker);
+ }
+ 
+ static void send_mayday(struct work_struct *work)
+@@ -3454,7 +3506,7 @@ static int init_worker_pool(struct worker_pool *pool)
+ 	INIT_LIST_HEAD(&pool->idle_list);
+ 	hash_init(pool->busy_hash);
+ 
+-	timer_setup(&pool->idle_timer, idle_worker_timeout, TIMER_DEFERRABLE);
++	INIT_DEFERRABLE_WORK(&pool->idle_reaper_work, idle_reaper_fn);
+ 
+ 	timer_setup(&pool->mayday_timer, pool_mayday_timeout, 0);
+ 
+@@ -3559,7 +3611,10 @@ static bool wq_manager_inactive(struct worker_pool *pool)
+ static void put_unbound_pool(struct worker_pool *pool)
+ {
+ 	DECLARE_COMPLETION_ONSTACK(detach_completion);
+-	struct worker *worker;
++	struct list_head dlist;
++	struct worker *worker, *tmp;
++
++	INIT_LIST_HEAD(&dlist);
+ 
+ 	lockdep_assert_held(&wq_pool_mutex);
+ 
+@@ -3588,10 +3643,13 @@ static void put_unbound_pool(struct worker_pool *pool)
+ 	pool->flags |= POOL_MANAGER_ACTIVE;
+ 
+ 	while ((worker = first_idle_worker(pool)))
+-		destroy_worker(worker);
++		destroy_worker(worker, &dlist);
+ 	WARN_ON(pool->nr_workers || pool->nr_idle);
+ 	raw_spin_unlock_irq(&pool->lock);
+ 
++	list_for_each_entry_safe(worker, tmp, &dlist, entry)
++		reap_worker(worker);
++
+ 	mutex_lock(&wq_pool_attach_mutex);
+ 	if (!list_empty(&pool->workers))
+ 		pool->detach_completion = &detach_completion;
+@@ -3601,7 +3659,7 @@ static void put_unbound_pool(struct worker_pool *pool)
+ 		wait_for_completion(pool->detach_completion);
+ 
+ 	/* shut down the timers */
+-	del_timer_sync(&pool->idle_timer);
++	cancel_delayed_work_sync(&pool->idle_reaper_work);
+ 	del_timer_sync(&pool->mayday_timer);
+ 
+ 	/* RCU protected to allow dereferences from get_work_pool() */
+@@ -4999,10 +5057,8 @@ static void unbind_workers(int cpu)
+ 
+ 		raw_spin_unlock_irq(&pool->lock);
+ 
+-		for_each_pool_worker(worker, pool) {
+-			kthread_set_per_cpu(worker->task, -1);
+-			WARN_ON_ONCE(set_cpus_allowed_ptr(worker->task, wq_unbound_cpumask) < 0);
+-		}
++		for_each_pool_worker(worker, pool)
++			unbind_worker(worker);
+ 
+ 		mutex_unlock(&wq_pool_attach_mutex);
+ 	}
+@@ -5027,11 +5083,8 @@ static void rebind_workers(struct worker_pool *pool)
+ 	 * of all workers first and then clear UNBOUND.  As we're called
+ 	 * from CPU_ONLINE, the following shouldn't fail.
+ 	 */
+-	for_each_pool_worker(worker, pool) {
+-		kthread_set_per_cpu(worker->task, pool->cpu);
+-		WARN_ON_ONCE(set_cpus_allowed_ptr(worker->task,
+-						  pool->attrs->cpumask) < 0);
+-	}
++	for_each_pool_worker(worker, pool)
++		rebind_worker(worker, pool);
+ 
+ 	raw_spin_lock_irq(&pool->lock);
+ 
+-- 
+2.31.1
 
-Then we don't need this weirdo check in the core iommu code at all.
-
-Jason
