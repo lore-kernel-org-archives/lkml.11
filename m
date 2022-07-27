@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60487C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:48:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18B5BC19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:48:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240534AbiG0Qsi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:48:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51288 "EHLO
+        id S240574AbiG0Qsm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:48:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240353AbiG0QsC (ORCPT
+        with ESMTP id S240314AbiG0QsD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:48:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD65D4E857;
-        Wed, 27 Jul 2022 09:32:15 -0700 (PDT)
+        Wed, 27 Jul 2022 12:48:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBCFB606A2;
+        Wed, 27 Jul 2022 09:32:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3B0EDB821BA;
-        Wed, 27 Jul 2022 16:32:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8739CC433D6;
-        Wed, 27 Jul 2022 16:32:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 67306619FF;
+        Wed, 27 Jul 2022 16:32:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B724C433C1;
+        Wed, 27 Jul 2022 16:32:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939532;
-        bh=4huGB46LmSsHX4JtpKQZ9/mpKisqQh47RLLpIwT9ZiA=;
+        s=korg; t=1658939535;
+        bh=CLfupA+ve829J+GGA8oCBo4IjFXt4oHO4dQK627Iol0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YemiIuqWC2tws+Jeyqo7Q2/zvypHJPRlQmSlXKSghYpVf4RMc5kQWoNPIYELaWxQj
-         /XbiwIpfaZgSgAYjcPgNQH9+6gQ/z/T214MQROH0kVoPBHr3YWlPFPNuw+JNEFMgpl
-         XEjulldRd1UyRCs3/KKAIajr/TRsZndjPVH6K54o=
+        b=Rg9ygTRYGpaGU09O3zvVOjTCHDj33qO8U2R8GQs69RGaARCNIiPKwCHdXVQiQtJjB
+         ywjjQSptiCL51Wm6/OZkrK25r8IIPZddb9MjZLWpBqwP5MtAckE7Om7zj73GtgKck2
+         k3JBbVwMIbq46hkyhfuPNDv4abAnAswc+RC+FwnM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Edwin Peer <edwin.peer@broadcom.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Fedor Pchelkin <pchelkin@ispras.ru>
-Subject: [PATCH 5.10 015/105] net: inline rollback_registered_many()
-Date:   Wed, 27 Jul 2022 18:10:01 +0200
-Message-Id: <20220727161012.679225466@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Ungerer <gerg@linux-m68k.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 016/105] Revert "m68knommu: only set CONFIG_ISA_DMA_API for ColdFire sub-arch"
+Date:   Wed, 27 Jul 2022 18:10:02 +0200
+Message-Id: <20220727161012.728484473@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161012.056867467@linuxfoundation.org>
 References: <20220727161012.056867467@linuxfoundation.org>
@@ -49,96 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fedor Pchelkin <pchelkin@ispras.ru>
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-From: Jakub Kicinski <kuba@kernel.org>
+This reverts commit 87ae522e467e17a13b796e2cb595f9c3943e4d5e which is
+commit db87db65c1059f3be04506d122f8ec9b2fa3b05e upstream.
 
-commit 0cbe1e57a7b93517100b0eb63d8e445cfbeb630c upstream.
+It is not needed in 5.10.y and causes problems.
 
-Similar to the change for rollback_registered() -
-rollback_registered_many() was a part of unregister_netdevice_many()
-minus the net_set_todo(), which is no longer needed.
-
-Functionally this patch moves the list_empty() check back after:
-
-	BUG_ON(dev_boot_phase);
-	ASSERT_RTNL();
-
-but I can't find any reason why that would be an issue.
-
-Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
+Link: https://lore.kernel.org/r/CAK8P3a0vZrXxNp3YhrxFjFunHgxSZBKD9Y4darSODgeFAukCeQ@mail.gmail.com
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Arnd Bergmann <arnd@arndb.de>
+Cc: Greg Ungerer <gerg@linux-m68k.org>
+Cc: Sasha Levin <sashal@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/dev.c |   22 ++++++++--------------
- 1 file changed, 8 insertions(+), 14 deletions(-)
+ arch/m68k/Kconfig.bus |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -5750,7 +5750,7 @@ static void flush_all_backlogs(void)
- 	}
+--- a/arch/m68k/Kconfig.bus
++++ b/arch/m68k/Kconfig.bus
+@@ -63,7 +63,7 @@ source "drivers/zorro/Kconfig"
  
- 	/* we can have in flight packet[s] on the cpus we are not flushing,
--	 * synchronize_net() in rollback_registered_many() will take care of
-+	 * synchronize_net() in unregister_netdevice_many() will take care of
- 	 * them
- 	 */
- 	for_each_cpu(cpu, &flush_cpus)
-@@ -10633,8 +10633,6 @@ void synchronize_net(void)
- }
- EXPORT_SYMBOL(synchronize_net);
+ endif
  
--static void rollback_registered_many(struct list_head *head);
--
- /**
-  *	unregister_netdevice_queue - remove device from the kernel
-  *	@dev: device
-@@ -10658,8 +10656,7 @@ void unregister_netdevice_queue(struct n
- 		LIST_HEAD(single);
+-if COLDFIRE
++if !MMU
  
- 		list_add(&dev->unreg_list, &single);
--		rollback_registered_many(&single);
--		list_del(&single);
-+		unregister_netdevice_many(&single);
- 	}
- }
- EXPORT_SYMBOL(unregister_netdevice_queue);
-@@ -10673,21 +10670,15 @@ EXPORT_SYMBOL(unregister_netdevice_queue
-  */
- void unregister_netdevice_many(struct list_head *head)
- {
--	if (!list_empty(head)) {
--		rollback_registered_many(head);
--		list_del(head);
--	}
--}
--EXPORT_SYMBOL(unregister_netdevice_many);
--
--static void rollback_registered_many(struct list_head *head)
--{
- 	struct net_device *dev, *tmp;
- 	LIST_HEAD(close_head);
- 
- 	BUG_ON(dev_boot_phase);
- 	ASSERT_RTNL();
- 
-+	if (list_empty(head))
-+		return;
-+
- 	list_for_each_entry_safe(dev, tmp, head, unreg_list) {
- 		/* Some devices call without registering
- 		 * for initialization unwind. Remove those
-@@ -10771,7 +10762,10 @@ static void rollback_registered_many(str
- 		dev_put(dev);
- 		net_set_todo(dev);
- 	}
-+
-+	list_del(head);
- }
-+EXPORT_SYMBOL(unregister_netdevice_many);
- 
- /**
-  *	unregister_netdev - remove device from the kernel
+ config ISA_DMA_API
+ 	def_bool !M5272
 
 
