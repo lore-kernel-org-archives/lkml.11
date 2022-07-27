@@ -2,340 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5669CC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:32:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F250C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:32:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236351AbiG0QcI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:32:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34406 "EHLO
+        id S237444AbiG0QcL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:32:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236983AbiG0Qbu (ORCPT
+        with ESMTP id S237046AbiG0Qbu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Jul 2022 12:31:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BAD252E65;
-        Wed, 27 Jul 2022 09:25:45 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB08B4E843;
+        Wed, 27 Jul 2022 09:25:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 54F38B821C5;
-        Wed, 27 Jul 2022 16:25:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70593C433D6;
-        Wed, 27 Jul 2022 16:25:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 80ECE61A04;
+        Wed, 27 Jul 2022 16:25:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88093C433D6;
+        Wed, 27 Jul 2022 16:25:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939125;
-        bh=dkDZF/pxtYGjls8v77g4+ZDmqI28zcGKWebVjqXHMk0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=bvbnHITR6hsX68MUTVZ655yc4+iMD774zdhoLk6EOsLhFPeQNkRGG918duv0SYToJ
-         /Nras+5TeZHBnI03a2/z6Fv1zFTgj4JRV8rdRuwl+NELWs2BNvcEhNLD1j+Tm2Z/To
-         94swCUxV+uX2VJ5sHyEWpvqh9xpEknqDWnHWj7Ns=
+        s=korg; t=1658939127;
+        bh=mCL+k2BHQLcMGCNjg/EsTYj9U+O/cmyZuF9rccIQ8sU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ZzzSgwVkoBggXxz/nJ+7w1QolqGPAkS0FjXeoIml+xbBuMh6Q2sfk2UzSKelFZyGP
+         poXeDNyU2k+xX2T4WSQ9jCNyh3RsS02oCXECnxc2mHJsAvlP69plLi0Wg+WdW2EYoi
+         47ob3ocQqb4yX/ntBW+UDl6sKS2o8tHZy7dZGRzY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
-Subject: [PATCH 4.19 00/62] 4.19.254-rc1 review
-Date:   Wed, 27 Jul 2022 18:10:09 +0200
-Message-Id: <20220727161004.175638564@linuxfoundation.org>
+        stable@vger.kernel.org, Cedric Wassenaar <cedric@bytespeed.nl>,
+        Junxiao Chang <junxiao.chang@intel.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 15/62] net: stmmac: fix dma queue left shift overflow issue
+Date:   Wed, 27 Jul 2022 18:10:24 +0200
+Message-Id: <20220727161004.781641985@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
-MIME-Version: 1.0
+In-Reply-To: <20220727161004.175638564@linuxfoundation.org>
+References: <20220727161004.175638564@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
-X-KernelTest-Patch: http://kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.254-rc1.gz
-X-KernelTest-Tree: git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-X-KernelTest-Branch: linux-4.19.y
-X-KernelTest-Patches: git://git.kernel.org/pub/scm/linux/kernel/git/stable/stable-queue.git
-X-KernelTest-Version: 4.19.254-rc1
-X-KernelTest-Deadline: 2022-07-29T16:10+00:00
+MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is the start of the stable review cycle for the 4.19.254 release.
-There are 62 patches in this series, all will be posted as a response
-to this one.  If anyone has any issues with these being applied, please
-let me know.
+From: Junxiao Chang <junxiao.chang@intel.com>
+
+[ Upstream commit 613b065ca32e90209024ec4a6bb5ca887ee70980 ]
+
+When queue number is > 4, left shift overflows due to 32 bits
+integer variable. Mask calculation is wrong for MTL_RXQ_DMA_MAP1.
+
+If CONFIG_UBSAN is enabled, kernel dumps below warning:
+[   10.363842] ==================================================================
+[   10.363882] UBSAN: shift-out-of-bounds in /build/linux-intel-iotg-5.15-8e6Tf4/
+linux-intel-iotg-5.15-5.15.0/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c:224:12
+[   10.363929] shift exponent 40 is too large for 32-bit type 'unsigned int'
+[   10.363953] CPU: 1 PID: 599 Comm: NetworkManager Not tainted 5.15.0-1003-intel-iotg
+[   10.363956] Hardware name: ADLINK Technology Inc. LEC-EL/LEC-EL, BIOS 0.15.11 12/22/2021
+[   10.363958] Call Trace:
+[   10.363960]  <TASK>
+[   10.363963]  dump_stack_lvl+0x4a/0x5f
+[   10.363971]  dump_stack+0x10/0x12
+[   10.363974]  ubsan_epilogue+0x9/0x45
+[   10.363976]  __ubsan_handle_shift_out_of_bounds.cold+0x61/0x10e
+[   10.363979]  ? wake_up_klogd+0x4a/0x50
+[   10.363983]  ? vprintk_emit+0x8f/0x240
+[   10.363986]  dwmac4_map_mtl_dma.cold+0x42/0x91 [stmmac]
+[   10.364001]  stmmac_mtl_configuration+0x1ce/0x7a0 [stmmac]
+[   10.364009]  ? dwmac410_dma_init_channel+0x70/0x70 [stmmac]
+[   10.364020]  stmmac_hw_setup.cold+0xf/0xb14 [stmmac]
+[   10.364030]  ? page_pool_alloc_pages+0x4d/0x70
+[   10.364034]  ? stmmac_clear_tx_descriptors+0x6e/0xe0 [stmmac]
+[   10.364042]  stmmac_open+0x39e/0x920 [stmmac]
+[   10.364050]  __dev_open+0xf0/0x1a0
+[   10.364054]  __dev_change_flags+0x188/0x1f0
+[   10.364057]  dev_change_flags+0x26/0x60
+[   10.364059]  do_setlink+0x908/0xc40
+[   10.364062]  ? do_setlink+0xb10/0xc40
+[   10.364064]  ? __nla_validate_parse+0x4c/0x1a0
+[   10.364068]  __rtnl_newlink+0x597/0xa10
+[   10.364072]  ? __nla_reserve+0x41/0x50
+[   10.364074]  ? __kmalloc_node_track_caller+0x1d0/0x4d0
+[   10.364079]  ? pskb_expand_head+0x75/0x310
+[   10.364082]  ? nla_reserve_64bit+0x21/0x40
+[   10.364086]  ? skb_free_head+0x65/0x80
+[   10.364089]  ? security_sock_rcv_skb+0x2c/0x50
+[   10.364094]  ? __cond_resched+0x19/0x30
+[   10.364097]  ? kmem_cache_alloc_trace+0x15a/0x420
+[   10.364100]  rtnl_newlink+0x49/0x70
+
+This change fixes MTL_RXQ_DMA_MAP1 mask issue and channel/queue
+mapping warning.
+
+Fixes: d43042f4da3e ("net: stmmac: mapping mtl rx to dma channel")
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=216195
+Reported-by: Cedric Wassenaar <cedric@bytespeed.nl>
+Signed-off-by: Junxiao Chang <junxiao.chang@intel.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
+index bc8871e7351f..00b6af0b2f3a 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
+@@ -222,6 +222,9 @@ static void dwmac4_map_mtl_dma(struct mac_device_info *hw, u32 queue, u32 chan)
+ 	if (queue == 0 || queue == 4) {
+ 		value &= ~MTL_RXQ_DMA_Q04MDMACH_MASK;
+ 		value |= MTL_RXQ_DMA_Q04MDMACH(chan);
++	} else if (queue > 4) {
++		value &= ~MTL_RXQ_DMA_QXMDMACH_MASK(queue - 4);
++		value |= MTL_RXQ_DMA_QXMDMACH(chan, queue - 4);
+ 	} else {
+ 		value &= ~MTL_RXQ_DMA_QXMDMACH_MASK(queue);
+ 		value |= MTL_RXQ_DMA_QXMDMACH(chan, queue);
+-- 
+2.35.1
 
-Responses should be made by Fri, 29 Jul 2022 16:09:50 +0000.
-Anything received after that time might be too late.
-
-The whole patch series can be found in one patch at:
-	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.19.254-rc1.gz
-or in the git tree and branch at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.19.y
-and the diffstat can be found below.
-
-thanks,
-
-greg k-h
-
--------------
-Pseudo-Shortlog of commits:
-
-Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-    Linux 4.19.254-rc1
-
-Jeffrey Hugo <quic_jhugo@quicinc.com>
-    PCI: hv: Fix interrupt mapping for multi-MSI
-
-Jeffrey Hugo <quic_jhugo@quicinc.com>
-    PCI: hv: Reuse existing IRTE allocation in compose_msi_msg()
-
-Jeffrey Hugo <quic_jhugo@quicinc.com>
-    PCI: hv: Fix hv_arch_irq_unmask() for multi-MSI
-
-Jeffrey Hugo <quic_jhugo@quicinc.com>
-    PCI: hv: Fix multi-MSI to allow more than one MSI vector
-
-Jose Alonso <joalonsof@gmail.com>
-    net: usb: ax88179_178a needs FLAG_SEND_ZLP
-
-Jiri Slaby <jslaby@suse.cz>
-    tty: use new tty_insert_flip_string_and_push_buffer() in pty_write()
-
-Jiri Slaby <jslaby@suse.cz>
-    tty: extract tty_flip_buffer_commit() from tty_flip_buffer_push()
-
-Jiri Slaby <jslaby@suse.cz>
-    tty: drop tty_schedule_flip()
-
-Jiri Slaby <jslaby@suse.cz>
-    tty: the rest, stop using tty_schedule_flip()
-
-Jiri Slaby <jslaby@suse.cz>
-    tty: drivers/tty/, stop using tty_schedule_flip()
-
-Pali Rohár <pali@kernel.org>
-    serial: mvebu-uart: correctly report configured baudrate value
-
-Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-    Bluetooth: Fix bt_skb_sendmmsg not allocating partial chunks
-
-Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-    Bluetooth: SCO: Fix sco_send_frame returning skb->len
-
-Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-    Bluetooth: Fix passing NULL to PTR_ERR
-
-Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-    Bluetooth: RFCOMM: Replace use of memcpy_from_msg with bt_skb_sendmmsg
-
-Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-    Bluetooth: SCO: Replace use of memcpy_from_msg with bt_skb_sendmsg
-
-Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-    Bluetooth: Add bt_skb_sendmmsg helper
-
-Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-    Bluetooth: Add bt_skb_sendmsg helper
-
-Takashi Iwai <tiwai@suse.de>
-    ALSA: memalloc: Align buffer allocations in page size
-
-GUO Zihua <guozihua@huawei.com>
-    ima: remove the IMA_TEMPLATE Kconfig option
-
-Alexander Aring <aahringo@redhat.com>
-    dlm: fix pending remove if msg allocation fails
-
-Tony Fischetti <tony.fischetti@gmail.com>
-    HID: add ALWAYS_POLL quirk to lenovo pixart mouse
-
-Benjamin Tissoires <benjamin.tissoires@redhat.com>
-    HID: multitouch: add support for the Smart Tech panel
-
-Mikael Wikström <leakim.wikstrom@gmail.com>
-    HID: multitouch: Lenovo X1 Tablet Gen3 trackpoint and buttons
-
-Benjamin Tissoires <benjamin.tissoires@redhat.com>
-    HID: multitouch: simplify the application retrieval
-
-Xiaomeng Tong <xiam0nd.tong@gmail.com>
-    tilcdc: tilcdc_external: fix an incorrect NULL check on list iterator
-
-Jyri Sarha <jsarha@ti.com>
-    drm/tilcdc: Remove obsolete crtc_mode_valid() hack
-
-Eric Dumazet <edumazet@google.com>
-    bpf: Make sure mac_header was set before using it
-
-Wang Cheng <wanngchenng@gmail.com>
-    mm/mempolicy: fix uninit-value in mpol_rebind_policy()
-
-Jason A. Donenfeld <Jason@zx2c4.com>
-    Revert "Revert "char/random: silence a lockdep splat with printk()""
-
-Kuniyuki Iwashima <kuniyu@amazon.com>
-    tcp: Fix data-races around sysctl_tcp_max_reordering.
-
-Kuniyuki Iwashima <kuniyu@amazon.com>
-    tcp: Fix a data-race around sysctl_tcp_rfc1337.
-
-Kuniyuki Iwashima <kuniyu@amazon.com>
-    tcp: Fix a data-race around sysctl_tcp_stdurg.
-
-Kuniyuki Iwashima <kuniyu@amazon.com>
-    tcp: Fix a data-race around sysctl_tcp_retrans_collapse.
-
-Kuniyuki Iwashima <kuniyu@amazon.com>
-    tcp: Fix data-races around sysctl_tcp_slow_start_after_idle.
-
-Kuniyuki Iwashima <kuniyu@amazon.com>
-    tcp: Fix a data-race around sysctl_tcp_thin_linear_timeouts.
-
-Kuniyuki Iwashima <kuniyu@amazon.com>
-    tcp: Fix data-races around sysctl_tcp_recovery.
-
-Kuniyuki Iwashima <kuniyu@amazon.com>
-    tcp: Fix a data-race around sysctl_tcp_early_retrans.
-
-Hristo Venev <hristo@venev.name>
-    be2net: Fix buffer overflow in be_get_module_eeprom
-
-Kuniyuki Iwashima <kuniyu@amazon.com>
-    tcp: Fix data-races around sysctl_tcp_fastopen.
-
-Kuniyuki Iwashima <kuniyu@amazon.com>
-    tcp: Fix a data-race around sysctl_tcp_tw_reuse.
-
-Kuniyuki Iwashima <kuniyu@amazon.com>
-    tcp: Fix a data-race around sysctl_tcp_notsent_lowat.
-
-Kuniyuki Iwashima <kuniyu@amazon.com>
-    tcp: Fix data-races around some timeout sysctl knobs.
-
-Kuniyuki Iwashima <kuniyu@amazon.com>
-    tcp: Fix data-races around sysctl_tcp_reordering.
-
-Kuniyuki Iwashima <kuniyu@amazon.com>
-    igmp: Fix a data-race around sysctl_igmp_max_memberships.
-
-Kuniyuki Iwashima <kuniyu@amazon.com>
-    igmp: Fix data-races around sysctl_igmp_llm_reports.
-
-Tariq Toukan <tariqt@nvidia.com>
-    net/tls: Fix race in TLS device down flow
-
-Junxiao Chang <junxiao.chang@intel.com>
-    net: stmmac: fix dma queue left shift overflow issue
-
-Robert Hancock <robert.hancock@calian.com>
-    i2c: cadence: Change large transfer count reset logic to be unconditional
-
-Kuniyuki Iwashima <kuniyu@amazon.com>
-    tcp: Fix a data-race around sysctl_tcp_probe_interval.
-
-Kuniyuki Iwashima <kuniyu@amazon.com>
-    tcp: Fix a data-race around sysctl_tcp_probe_threshold.
-
-Kuniyuki Iwashima <kuniyu@amazon.com>
-    tcp: Fix data-races around sysctl_tcp_mtu_probing.
-
-Kuniyuki Iwashima <kuniyu@amazon.com>
-    tcp/dccp: Fix a data-race around sysctl_tcp_fwmark_accept.
-
-Kuniyuki Iwashima <kuniyu@amazon.com>
-    ip: Fix a data-race around sysctl_fwmark_reflect.
-
-Kuniyuki Iwashima <kuniyu@amazon.com>
-    ip: Fix data-races around sysctl_ip_nonlocal_bind.
-
-Kuniyuki Iwashima <kuniyu@amazon.com>
-    ip: Fix data-races around sysctl_ip_fwd_use_pmtu.
-
-Peter Zijlstra <peterz@infradead.org>
-    perf/core: Fix data race between perf_event_set_output() and perf_mmap_close()
-
-William Dean <williamsukatube@gmail.com>
-    pinctrl: ralink: Check for null return of devm_kcalloc
-
-Miaoqian Lin <linmq006@gmail.com>
-    power/reset: arm-versatile: Fix refcount leak in versatile_reboot_probe
-
-Hangyu Hua <hbh25y@gmail.com>
-    xfrm: xfrm_policy: fix a possible double xfrm_pols_put() in xfrm_bundle_lookup()
-
-Demi Marie Obenour <demi@invisiblethingslab.com>
-    xen/gntdev: Ignore failure to unmap INVALID_GRANT_HANDLE
-
-Ben Dooks <ben.dooks@codethink.co.uk>
-    riscv: add as-options for modules with assembly compontents
-
-
--------------
-
-Diffstat:
-
- Makefile                                          |   4 +-
- arch/alpha/kernel/srmcons.c                       |   2 +-
- arch/riscv/Makefile                               |   1 +
- drivers/char/random.c                             |   4 +-
- drivers/gpu/drm/tilcdc/tilcdc_crtc.c              |  28 +++---
- drivers/gpu/drm/tilcdc/tilcdc_drv.c               |   1 -
- drivers/gpu/drm/tilcdc/tilcdc_drv.h               |   2 -
- drivers/gpu/drm/tilcdc/tilcdc_external.c          |  96 +++----------------
- drivers/gpu/drm/tilcdc/tilcdc_external.h          |   1 -
- drivers/gpu/drm/tilcdc/tilcdc_panel.c             |   9 --
- drivers/gpu/drm/tilcdc/tilcdc_tfp410.c            |   9 --
- drivers/hid/hid-ids.h                             |   2 +
- drivers/hid/hid-multitouch.c                      | 112 +++++++++++++---------
- drivers/hid/hid-quirks.c                          |   1 +
- drivers/i2c/busses/i2c-cadence.c                  |  30 +-----
- drivers/net/ethernet/emulex/benet/be_cmds.c       |  10 +-
- drivers/net/ethernet/emulex/benet/be_cmds.h       |   2 +-
- drivers/net/ethernet/emulex/benet/be_ethtool.c    |  31 +++---
- drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c |   3 +
- drivers/net/usb/ax88179_178a.c                    |  16 ++--
- drivers/pci/controller/pci-hyperv.c               | 100 +++++++++++++++----
- drivers/power/reset/arm-versatile-reboot.c        |   1 +
- drivers/s390/char/keyboard.h                      |   4 +-
- drivers/staging/mt7621-pinctrl/pinctrl-rt2880.c   |   2 +
- drivers/staging/speakup/spk_ttyio.c               |   4 +-
- drivers/tty/cyclades.c                            |   6 +-
- drivers/tty/goldfish.c                            |   2 +-
- drivers/tty/moxa.c                                |   4 +-
- drivers/tty/pty.c                                 |  14 +--
- drivers/tty/serial/lpc32xx_hs.c                   |   2 +-
- drivers/tty/serial/mvebu-uart.c                   |  25 ++---
- drivers/tty/tty_buffer.c                          |  66 ++++++++-----
- drivers/tty/vt/keyboard.c                         |   6 +-
- drivers/tty/vt/vt.c                               |   2 +-
- drivers/xen/gntdev.c                              |   3 +-
- fs/dlm/lock.c                                     |   3 +-
- include/linux/tty_flip.h                          |   4 +-
- include/net/bluetooth/bluetooth.h                 |  65 +++++++++++++
- include/net/inet_sock.h                           |   5 +-
- include/net/ip.h                                  |   4 +-
- include/net/tcp.h                                 |   9 +-
- kernel/bpf/core.c                                 |   8 +-
- kernel/events/core.c                              |  45 ++++++---
- mm/mempolicy.c                                    |   2 +-
- net/bluetooth/rfcomm/core.c                       |  50 ++++++++--
- net/bluetooth/rfcomm/sock.c                       |  46 ++-------
- net/bluetooth/sco.c                               |  30 ++----
- net/ipv4/af_inet.c                                |   2 +-
- net/ipv4/igmp.c                                   |  23 +++--
- net/ipv4/route.c                                  |   2 +-
- net/ipv4/tcp.c                                    |  10 +-
- net/ipv4/tcp_fastopen.c                           |   4 +-
- net/ipv4/tcp_input.c                              |  19 ++--
- net/ipv4/tcp_ipv4.c                               |   2 +-
- net/ipv4/tcp_metrics.c                            |   3 +-
- net/ipv4/tcp_minisocks.c                          |   2 +-
- net/ipv4/tcp_output.c                             |  14 +--
- net/ipv4/tcp_recovery.c                           |   6 +-
- net/ipv4/tcp_timer.c                              |  14 +--
- net/sctp/protocol.c                               |   2 +-
- net/tls/tls_device.c                              |   8 +-
- net/xfrm/xfrm_policy.c                            |   5 +-
- security/integrity/ima/Kconfig                    |  12 +--
- sound/core/memalloc.c                             |   1 +
- 64 files changed, 555 insertions(+), 450 deletions(-)
 
 
