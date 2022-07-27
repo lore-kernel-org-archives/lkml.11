@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7627AC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:20:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BE83C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:20:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241863AbiG0RUl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:20:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33706 "EHLO
+        id S241809AbiG0RUr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:20:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241655AbiG0RSt (ORCPT
+        with ESMTP id S241827AbiG0RTG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:18:49 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19B6979EFD;
-        Wed, 27 Jul 2022 09:43:58 -0700 (PDT)
+        Wed, 27 Jul 2022 13:19:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 763777A514;
+        Wed, 27 Jul 2022 09:44:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E03E601C3;
-        Wed, 27 Jul 2022 16:43:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAF77C433D6;
-        Wed, 27 Jul 2022 16:43:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 48393B821AC;
+        Wed, 27 Jul 2022 16:44:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 976ABC433C1;
+        Wed, 27 Jul 2022 16:43:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940237;
-        bh=gZtPCMQ0JD9Ip4j75/GtiuMQLZb64IKyLIRcJaTpJzM=;
+        s=korg; t=1658940240;
+        bh=e7ZRv2aecf6ctDZd+OHUCvxL1ffQxSvAwxPQGF0uR9s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tAhagIZXgDd+pGcjRjNB+F7Fqu6UAqQ+V2tjbX8exDNcXaHZ0keHku2r1Sp8ivyMR
-         J8l+d2fbbFPG3vKd/+oTAymn8Sa/sLr7ytTvoS5U7Qh73EBXeC34lyfvXJpbz1BqN5
-         y55kituK6kne9qwiqL2mniwY1KDHm30GcKdmlUlk=
+        b=ZOjdlK3HMhWoQlbvLvHWtMf+oW0JoE9xZSx3b8AFWx8yEcR2omLXyr7URaLHBq674
+         OsWR863HSNmScvTw3fg6LIrm6XlciLaFiX40vJjhRr8xUVBj6eea9mDH3Y0T3JEVnh
+         /KeVPHWZ88dC5NYb8d+0y0ycbgqxXPZZEYZai1iI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Mathias Nyman <mathias.nyman@linux.intel.com>,
+        Chris Chiu <chris.chiu@canonical.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 154/201] xhci: dbc: Rename xhci_dbc_init and xhci_dbc_exit
-Date:   Wed, 27 Jul 2022 18:10:58 +0200
-Message-Id: <20220727161034.207557773@linuxfoundation.org>
+Subject: [PATCH 5.15 155/201] xhci: Set HCD flag to defer primary roothub registration
+Date:   Wed, 27 Jul 2022 18:10:59 +0200
+Message-Id: <20220727161034.246013417@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -49,106 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mathias Nyman <mathias.nyman@linux.intel.com>
+From: Kishon Vijay Abraham I <kishon@ti.com>
 
-[ Upstream commit 5c44d9d7570b244ca08fef817c4c90aa7a1f1b5f ]
+[ Upstream commit b7a4f9b5d0e4b6dd937678c546c0b322dd1a4054 ]
 
-These names give the impression the functions are related to
-module init calls, but are in fact creating and removing the dbc
-fake device
+Set "HCD_FLAG_DEFER_RH_REGISTER" to hcd->flags in xhci_run() to defer
+registering primary roothub in usb_add_hcd() if xhci has two roothubs.
+This will make sure both primary roothub and secondary roothub will be
+registered along with the second HCD.
+This is required for cold plugged USB devices to be detected in certain
+PCIe USB cards (like Inateck USB card connected to AM64 EVM or J7200 EVM).
 
-Rename them to xhci_create_dbc_dev() and xhci_remove_dbc_dev().
+This patch has been added and reverted earier as it triggered a race
+in usb device enumeration.
+That race is now fixed in 5.16-rc3, and in stable back to 5.4
+commit 6cca13de26ee ("usb: hub: Fix locking issues with address0_mutex")
+commit 6ae6dc22d2d1 ("usb: hub: Fix usb enumeration issue due to address0
+race")
 
-We will need the _init and _exit names for actual dbc module init
-and exit calls.
+[minor rebase change, and commit message update -Mathias]
 
-No functional changes
-
-Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
-Link: https://lore.kernel.org/r/20220216095153.1303105-4-mathias.nyman@linux.intel.com
+CC: stable@vger.kernel.org # 5.4+
+Suggested-by: Mathias Nyman <mathias.nyman@linux.intel.com>
+Tested-by: Chris Chiu <chris.chiu@canonical.com>
+Signed-off-by: Kishon Vijay Abraham I <kishon@ti.com>
+Link: https://lore.kernel.org/r/20220510091630.16564-3-kishon@ti.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/host/xhci-dbgcap.c | 5 +++--
- drivers/usb/host/xhci-dbgcap.h | 8 ++++----
- drivers/usb/host/xhci.c        | 4 ++--
- 3 files changed, 9 insertions(+), 8 deletions(-)
+ drivers/usb/host/xhci.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/usb/host/xhci-dbgcap.c b/drivers/usb/host/xhci-dbgcap.c
-index f4da5708a40f..46c8f3c187f7 100644
---- a/drivers/usb/host/xhci-dbgcap.c
-+++ b/drivers/usb/host/xhci-dbgcap.c
-@@ -1017,7 +1017,8 @@ void xhci_dbc_remove(struct xhci_dbc *dbc)
- 	kfree(dbc);
- }
- 
--int xhci_dbc_init(struct xhci_hcd *xhci)
-+
-+int xhci_create_dbc_dev(struct xhci_hcd *xhci)
- {
- 	struct device		*dev;
- 	void __iomem		*base;
-@@ -1041,7 +1042,7 @@ int xhci_dbc_init(struct xhci_hcd *xhci)
- 	return ret;
- }
- 
--void xhci_dbc_exit(struct xhci_hcd *xhci)
-+void xhci_remove_dbc_dev(struct xhci_hcd *xhci)
- {
- 	unsigned long		flags;
- 
-diff --git a/drivers/usb/host/xhci-dbgcap.h b/drivers/usb/host/xhci-dbgcap.h
-index 5d8c7815491c..8b5b363a0719 100644
---- a/drivers/usb/host/xhci-dbgcap.h
-+++ b/drivers/usb/host/xhci-dbgcap.h
-@@ -194,8 +194,8 @@ static inline struct dbc_ep *get_out_ep(struct xhci_dbc *dbc)
- }
- 
- #ifdef CONFIG_USB_XHCI_DBGCAP
--int xhci_dbc_init(struct xhci_hcd *xhci);
--void xhci_dbc_exit(struct xhci_hcd *xhci);
-+int xhci_create_dbc_dev(struct xhci_hcd *xhci);
-+void xhci_remove_dbc_dev(struct xhci_hcd *xhci);
- int xhci_dbc_tty_probe(struct device *dev, void __iomem *res, struct xhci_hcd *xhci);
- void xhci_dbc_tty_remove(struct xhci_dbc *dbc);
- struct xhci_dbc *xhci_alloc_dbc(struct device *dev, void __iomem *res,
-@@ -211,12 +211,12 @@ int xhci_dbc_suspend(struct xhci_hcd *xhci);
- int xhci_dbc_resume(struct xhci_hcd *xhci);
- #endif /* CONFIG_PM */
- #else
--static inline int xhci_dbc_init(struct xhci_hcd *xhci)
-+static inline int xhci_create_dbc_dev(struct xhci_hcd *xhci)
- {
- 	return 0;
- }
- 
--static inline void xhci_dbc_exit(struct xhci_hcd *xhci)
-+static inline void xhci_remove_dbc_dev(struct xhci_hcd *xhci)
- {
- }
- 
 diff --git a/drivers/usb/host/xhci.c b/drivers/usb/host/xhci.c
-index 94fe7d64e762..a4e99f8668b3 100644
+index a4e99f8668b3..d76c10f9ad80 100644
 --- a/drivers/usb/host/xhci.c
 +++ b/drivers/usb/host/xhci.c
-@@ -693,7 +693,7 @@ int xhci_run(struct usb_hcd *hcd)
+@@ -693,6 +693,8 @@ int xhci_run(struct usb_hcd *hcd)
  	xhci_dbg_trace(xhci, trace_xhci_dbg_init,
  			"Finished xhci_run for USB2 roothub");
  
--	xhci_dbc_init(xhci);
-+	xhci_create_dbc_dev(xhci);
++	set_bit(HCD_FLAG_DEFER_RH_REGISTER, &hcd->flags);
++
+ 	xhci_create_dbc_dev(xhci);
  
  	xhci_debugfs_init(xhci);
- 
-@@ -723,7 +723,7 @@ static void xhci_stop(struct usb_hcd *hcd)
- 		return;
- 	}
- 
--	xhci_dbc_exit(xhci);
-+	xhci_remove_dbc_dev(xhci);
- 
- 	spin_lock_irq(&xhci->lock);
- 	xhci->xhc_state |= XHCI_STATE_HALTED;
 -- 
 2.35.1
 
