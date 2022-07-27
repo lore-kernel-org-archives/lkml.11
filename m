@@ -2,212 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 140B0C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:20:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69792C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:20:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241835AbiG0RUa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:20:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42272 "EHLO
+        id S241846AbiG0RUi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:20:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241793AbiG0RSl (ORCPT
+        with ESMTP id S241676AbiG0RSp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:18:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA68479EF2;
+        Wed, 27 Jul 2022 13:18:45 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D72B79EFB;
+        Wed, 27 Jul 2022 09:43:56 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id 15-20020a17090a098f00b001f305b453feso2802054pjo.1;
+        Wed, 27 Jul 2022 09:43:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=WkXduqCunQer7KImaNq80YYtkZR4bE5GC9eBRnWBSEA=;
+        b=JB3Hr5Ww5oTt+YbeAwATLAtLz/SL3TcVPd5yC9sRf7LlclWytJmpYtTVaqoCh0AXQZ
+         PRPQpFToY8NbD+c12s4x5beVu0hs8FZwCf7XiK5OwgVxoMg1oe4XwYkv3TOGpul2KPAT
+         wTTeIzb7v8g7qeg4diTRmx2vPygGpaV3E+Sz+luLQesCFSv/NUQ/KZKohaBKNcP6lx96
+         /F/RYkUPp9WSHjDXOlzUysSBM3nxYY7vWiSvyhgchNeZVluz0zNBihDUh437CF6KKVlj
+         p8NvznXkamqfu1eTJ12PBryiCiuyY5qTQ3ZEnXBTFJj2uAPSK5x5PZDrbmpMF7Y0gvZ8
+         Uxqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=WkXduqCunQer7KImaNq80YYtkZR4bE5GC9eBRnWBSEA=;
+        b=d1z8PZDJbEBIfKbQObEUt3EgrKkn3xLiny2+AD8VPAU+VWgW/px/3c2s4ruFVMUGOu
+         rgwKq1ZtCdu+8r1BgVp0l7DEQRS2mHxNpewKv0hrEIhILtZWnaD38hHt2YIXnrqe1Lor
+         GJxf+j/SgyFYwF05r/9nSu4egWXcC7gFto+6fS5DqdSyrhl5L3HI8JhxKE6FLPlMhYUN
+         y+Lzuq0H5CNRVOvQbl26IyYkP2YeH6rhU6GiXLRMljh7fPa3bTEMTVQn8bq9824VHr1W
+         UwNPIIcJnfgxnHeVIbhtByQbhdR0fpLNkQvzs7IUsPmsHtvSl68r7L+pR/55AaPKGGUA
+         VnOQ==
+X-Gm-Message-State: AJIora8AtFcWIktnYKppW66J2jAePcQFsYGR4eIjHOLrfEAY4Z3ZqM2I
+        s0a47NXiB2C8swIQV7BbAcJvFMfmG9hg7A==
+X-Google-Smtp-Source: AGRyM1shETd1iWd+SaDgQAdVjf8pzBmIgHUJUk2sUIRw1F9nIxS5amEDqpIQxrzlH9/ZDbfhLh3TWg==
+X-Received: by 2002:a17:902:b612:b0:16c:d98d:638 with SMTP id b18-20020a170902b61200b0016cd98d0638mr21696533pls.38.1658940235720;
         Wed, 27 Jul 2022 09:43:55 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CA3F9601CE;
-        Wed, 27 Jul 2022 16:43:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D31EFC433C1;
-        Wed, 27 Jul 2022 16:43:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940234;
-        bh=y884BdKINCrdyRmIMxHI65XF4GdItYKtWbvXi4nbEpE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mCzzMVhEEEKqSoVG7Sn2wYWDFhq7bn9D1ZBgSadoIgyKdbyuGjdJZaOSrzhhQhaHl
-         9oD8vPvaKArEX9X7tePdc7pBlVSZRaaTcOZpjAqcRNCDBZHd2kbwn9mBYvM3hNKf3S
-         7gYog8pbW23yfm4/UarjFFwMobxB8LNEZWtpUoiI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mathias Nyman <mathias.nyman@linux.intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 153/201] xhci: dbc: create and remove dbc structure in dbgtty driver.
-Date:   Wed, 27 Jul 2022 18:10:57 +0200
-Message-Id: <20220727161034.170996847@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
-References: <20220727161026.977588183@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from potin-quanta.. (125-228-123-29.hinet-ip.hinet.net. [125.228.123.29])
+        by smtp.gmail.com with ESMTPSA id h13-20020a17090a3d0d00b001ef3f85d1aasm2030480pjc.9.2022.07.27.09.43.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jul 2022 09:43:55 -0700 (PDT)
+From:   Potin Lai <potin.lai.pt@gmail.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Cc:     Patrick Williams <patrick@stwcx.xyz>,
+        Potin Lai <potin.lai@quantatw.com>, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Potin Lai <potin.lai.pt@gmail.com>
+Subject: [PATCH v3 2/2] iio: humidity: hdc100x: add manufacturer and device ID check
+Date:   Thu, 28 Jul 2022 00:41:33 +0800
+Message-Id: <20220727164133.973930-3-potin.lai.pt@gmail.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220727164133.973930-1-potin.lai.pt@gmail.com>
+References: <20220727164133.973930-1-potin.lai.pt@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mathias Nyman <mathias.nyman@linux.intel.com>
+Add manufacturer and device ID checking during probe, and skip the
+checking if chip model not supported.
 
-[ Upstream commit 5ce036b98dd3301fc43bb06a6383ef07b6c776bc ]
+Supported:
+- HDC1000
+- HDC1010
+- HDC1050
+- HDC1080
 
-Turn the dbgtty closer to a device driver by allocating the dbc
-structure in its own xhci_dbc_tty_probe() function, and freeing it
-in xhci_dbc_tty_remove()
+Not supported:
+- HDC1008
 
-Remove xhci_do_dbc_exit() as its no longer needed.
-
-allocate and create the dbc strcuture in xhci_dbc_tty_probe()
-
-Signed-off-by: Mathias Nyman <mathias.nyman@linux.intel.com>
-Link: https://lore.kernel.org/r/20220216095153.1303105-3-mathias.nyman@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Potin Lai <potin.lai.pt@gmail.com>
 ---
- drivers/usb/host/xhci-dbgcap.c | 26 +++-----------------------
- drivers/usb/host/xhci-dbgcap.h |  5 ++++-
- drivers/usb/host/xhci-dbgtty.c | 22 +++++++++++++++-------
- 3 files changed, 22 insertions(+), 31 deletions(-)
+ drivers/iio/humidity/hdc100x.c | 70 ++++++++++++++++++++++++++++------
+ 1 file changed, 59 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/usb/host/xhci-dbgcap.c b/drivers/usb/host/xhci-dbgcap.c
-index 6a437862b498..f4da5708a40f 100644
---- a/drivers/usb/host/xhci-dbgcap.c
-+++ b/drivers/usb/host/xhci-dbgcap.c
-@@ -914,16 +914,6 @@ static void xhci_dbc_handle_events(struct work_struct *work)
- 	mod_delayed_work(system_wq, &dbc->event_work, 1);
- }
+diff --git a/drivers/iio/humidity/hdc100x.c b/drivers/iio/humidity/hdc100x.c
+index 0d514818635cb..593a9d3caf229 100644
+--- a/drivers/iio/humidity/hdc100x.c
++++ b/drivers/iio/humidity/hdc100x.c
+@@ -34,6 +34,23 @@
+ #define HDC100X_REG_CONFIG_ACQ_MODE		BIT(12)
+ #define HDC100X_REG_CONFIG_HEATER_EN		BIT(13)
  
--static void xhci_do_dbc_exit(struct xhci_hcd *xhci)
--{
--	unsigned long		flags;
--
--	spin_lock_irqsave(&xhci->lock, flags);
--	kfree(xhci->dbc);
--	xhci->dbc = NULL;
--	spin_unlock_irqrestore(&xhci->lock, flags);
--}
--
- static ssize_t dbc_show(struct device *dev,
- 			struct device_attribute *attr,
- 			char *buf)
-@@ -984,7 +974,7 @@ static ssize_t dbc_store(struct device *dev,
- static DEVICE_ATTR_RW(dbc);
- 
- struct xhci_dbc *
--xhci_alloc_dbc(struct device *dev, void __iomem *base)
-+xhci_alloc_dbc(struct device *dev, void __iomem *base, const struct dbc_driver *driver)
- {
- 	struct xhci_dbc		*dbc;
- 	int			ret;
-@@ -995,6 +985,7 @@ xhci_alloc_dbc(struct device *dev, void __iomem *base)
- 
- 	dbc->regs = base;
- 	dbc->dev = dev;
-+	dbc->driver = driver;
- 
- 	if (readl(&dbc->regs->control) & DBC_CTRL_DBC_ENABLE)
- 		return NULL;
-@@ -1045,18 +1036,8 @@ int xhci_dbc_init(struct xhci_hcd *xhci)
- 	if (xhci->dbc)
- 		return -EBUSY;
- 
--	xhci->dbc = xhci_alloc_dbc(dev, base);
--	if (!xhci->dbc)
--		return -ENOMEM;
--
--	ret = xhci_dbc_tty_probe(xhci);
--	if (ret)
--		goto init_err2;
--
--	return 0;
-+	ret = xhci_dbc_tty_probe(dev, base + dbc_cap_offs, xhci);
- 
--init_err2:
--	xhci_do_dbc_exit(xhci);
- 	return ret;
- }
- 
-@@ -1068,7 +1049,6 @@ void xhci_dbc_exit(struct xhci_hcd *xhci)
- 		return;
- 
- 	xhci_dbc_tty_remove(xhci->dbc);
--	xhci_dbc_remove(xhci->dbc);
- 	spin_lock_irqsave(&xhci->lock, flags);
- 	xhci->dbc = NULL;
- 	spin_unlock_irqrestore(&xhci->lock, flags);
-diff --git a/drivers/usb/host/xhci-dbgcap.h b/drivers/usb/host/xhci-dbgcap.h
-index c70b78d504eb..5d8c7815491c 100644
---- a/drivers/usb/host/xhci-dbgcap.h
-+++ b/drivers/usb/host/xhci-dbgcap.h
-@@ -196,8 +196,11 @@ static inline struct dbc_ep *get_out_ep(struct xhci_dbc *dbc)
- #ifdef CONFIG_USB_XHCI_DBGCAP
- int xhci_dbc_init(struct xhci_hcd *xhci);
- void xhci_dbc_exit(struct xhci_hcd *xhci);
--int xhci_dbc_tty_probe(struct xhci_hcd *xhci);
-+int xhci_dbc_tty_probe(struct device *dev, void __iomem *res, struct xhci_hcd *xhci);
- void xhci_dbc_tty_remove(struct xhci_dbc *dbc);
-+struct xhci_dbc *xhci_alloc_dbc(struct device *dev, void __iomem *res,
-+				 const struct dbc_driver *driver);
-+void xhci_dbc_remove(struct xhci_dbc *dbc);
- struct dbc_request *dbc_alloc_request(struct xhci_dbc *dbc,
- 				      unsigned int direction,
- 				      gfp_t flags);
-diff --git a/drivers/usb/host/xhci-dbgtty.c b/drivers/usb/host/xhci-dbgtty.c
-index eb46e642e87a..18bcc96853ae 100644
---- a/drivers/usb/host/xhci-dbgtty.c
-+++ b/drivers/usb/host/xhci-dbgtty.c
-@@ -468,9 +468,9 @@ static const struct dbc_driver dbc_driver = {
- 	.disconnect		= xhci_dbc_tty_unregister_device,
++#define HDC100X_REG_MFR_ID	0xFE
++#define HDC100X_REG_DEV_ID	0xFF
++
++#define HDC100X_MFR_ID	0x5449
++
++struct hdc100x_chip_data {
++	bool support_mfr_check;
++};
++
++static const struct hdc100x_chip_data hdc100x_chip_data = {
++	.support_mfr_check	= true,
++};
++
++static const struct hdc100x_chip_data hdc1008_chip_data = {
++	.support_mfr_check	= false,
++};
++
+ struct hdc100x_data {
+ 	struct i2c_client *client;
+ 	struct mutex lock;
+@@ -351,6 +368,34 @@ static const struct iio_info hdc100x_info = {
+ 	.attrs = &hdc100x_attribute_group,
  };
  
--int xhci_dbc_tty_probe(struct xhci_hcd *xhci)
-+int xhci_dbc_tty_probe(struct device *dev, void __iomem *base, struct xhci_hcd *xhci)
- {
--	struct xhci_dbc		*dbc = xhci->dbc;
-+	struct xhci_dbc		*dbc;
- 	struct dbc_port		*port;
- 	int			status;
- 
-@@ -485,13 +485,22 @@ int xhci_dbc_tty_probe(struct xhci_hcd *xhci)
- 		goto out;
- 	}
- 
--	dbc->driver = &dbc_driver;
--	dbc->priv = port;
-+	dbc_tty_driver->driver_state = port;
++static int hdc100x_read_mfr_id(struct i2c_client *client)
++{
++	return i2c_smbus_read_word_swapped(client, HDC100X_REG_MFR_ID);
++}
 +
-+	dbc = xhci_alloc_dbc(dev, base, &dbc_driver);
-+	if (!dbc) {
-+		status = -ENOMEM;
-+		goto out2;
-+	}
- 
-+	dbc->priv = port;
- 
--	dbc_tty_driver->driver_state = port;
-+	/* get rid of xhci once this is a real driver binding to a device */
-+	xhci->dbc = dbc;
- 
- 	return 0;
-+out2:
-+	kfree(port);
- out:
- 	/* dbc_tty_exit will be called by module_exit() in the future */
- 	dbc_tty_exit();
-@@ -506,8 +515,7 @@ void xhci_dbc_tty_remove(struct xhci_dbc *dbc)
++static int hdc100x_read_dev_id(struct i2c_client *client)
++{
++	return i2c_smbus_read_word_swapped(client, HDC100X_REG_DEV_ID);
++}
++
++static bool is_valid_hdc100x(struct i2c_client *client)
++{
++	const struct hdc100x_chip_data *data;
++	int mfr_id, dev_id;
++
++	data = device_get_match_data(&client->dev);
++	if (!data->support_mfr_check)
++		return true;
++
++	mfr_id = hdc100x_read_mfr_id(client);
++	dev_id = hdc100x_read_dev_id(client);
++	if (mfr_id == HDC100X_MFR_ID &&
++	   (dev_id == 0x1000 || dev_id == 0x1050))
++		return true;
++
++	return false;
++}
++
+ static int hdc100x_probe(struct i2c_client *client)
  {
- 	struct dbc_port         *port = dbc_to_port(dbc);
+ 	struct iio_dev *indio_dev;
+@@ -361,6 +406,9 @@ static int hdc100x_probe(struct i2c_client *client)
+ 				     I2C_FUNC_SMBUS_BYTE | I2C_FUNC_I2C))
+ 		return -EOPNOTSUPP;
  
--	dbc->driver = NULL;
--	dbc->priv = NULL;
-+	xhci_dbc_remove(dbc);
- 	kfree(port);
++	if (!is_valid_hdc100x(client))
++		return -EINVAL;
++
+ 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+ 	if (!indio_dev)
+ 		return -ENOMEM;
+@@ -396,22 +444,22 @@ static int hdc100x_probe(struct i2c_client *client)
+ }
  
- 	/* dbc_tty_exit will be called by  module_exit() in the future */
+ static const struct i2c_device_id hdc100x_id[] = {
+-	{ "hdc100x", 0 },
+-	{ "hdc1000", 0 },
+-	{ "hdc1008", 0 },
+-	{ "hdc1010", 0 },
+-	{ "hdc1050", 0 },
+-	{ "hdc1080", 0 },
++	{ "hdc100X", (kernel_ulong_t)&hdc100x_chip_data },
++	{ "hdc1000", (kernel_ulong_t)&hdc100x_chip_data },
++	{ "hdc1008", (kernel_ulong_t)&hdc1008_chip_data },
++	{ "hdc1010", (kernel_ulong_t)&hdc100x_chip_data },
++	{ "hdc1050", (kernel_ulong_t)&hdc100x_chip_data },
++	{ "hdc1080", (kernel_ulong_t)&hdc100x_chip_data },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(i2c, hdc100x_id);
+ 
+ static const struct of_device_id hdc100x_dt_ids[] = {
+-	{ .compatible = "ti,hdc1000" },
+-	{ .compatible = "ti,hdc1008" },
+-	{ .compatible = "ti,hdc1010" },
+-	{ .compatible = "ti,hdc1050" },
+-	{ .compatible = "ti,hdc1080" },
++	{ .compatible = "ti,hdc1000", .data = &hdc100x_chip_data },
++	{ .compatible = "ti,hdc1008", .data = &hdc1008_chip_data },
++	{ .compatible = "ti,hdc1010", .data = &hdc100x_chip_data },
++	{ .compatible = "ti,hdc1050", .data = &hdc100x_chip_data },
++	{ .compatible = "ti,hdc1080", .data = &hdc100x_chip_data },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, hdc100x_dt_ids);
 -- 
-2.35.1
-
-
+2.31.1
 
