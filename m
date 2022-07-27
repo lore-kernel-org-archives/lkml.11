@@ -2,91 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4DB7C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:47:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA6C8C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:47:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243223AbiG0Rrm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:47:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48606 "EHLO
+        id S243258AbiG0Rrq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:47:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243219AbiG0RrG (ORCPT
+        with ESMTP id S243186AbiG0RrH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:47:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D99328CC8C;
+        Wed, 27 Jul 2022 13:47:07 -0400
+Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 769208CC86;
         Wed, 27 Jul 2022 09:53:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3974BB821D8;
-        Wed, 27 Jul 2022 16:53:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B7D9C433D6;
-        Wed, 27 Jul 2022 16:53:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940820;
-        bh=BjWDKkSbTVk6HOTJj0Ix1G7Bfz2vtR9DF2xF7kRNZnQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QoJyM5nlCTUtLV2s0V+evgdnhgCDR9AEP3UXziXuMk4lwNDfr30DbII62SXZs6lxt
-         t7VNSEDT9nJCIKPU2n6X5pD5WAeprYsZfoyifYjKqotuO69s10Bec/WgWT8buXTa3s
-         9xQMCw/nDNkE30JonuHL6EmA2J3A43HbP0OZQ+Rk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Juri Lelli <juri.lelli@redhat.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Subject: [PATCH 5.18 135/158] sched/deadline: Fix BUG_ON condition for deboosted tasks
-Date:   Wed, 27 Jul 2022 18:13:19 +0200
-Message-Id: <20220727161026.787205695@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
-References: <20220727161021.428340041@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
+        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26R4fJvX006636;
+        Wed, 27 Jul 2022 11:53:20 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=PODMain02222019;
+ bh=iesTYc/ViLkWIDaL0vep5f+nAcgKS6RyWgmV8RlYjKw=;
+ b=Lwkvkol77K7y4mq5fF092Iqo5/qSJ2IY+nGc+YGDXmQZvMt3ETuAHD4ChzdmumioxpTI
+ PU0sdZa20ypglZvtRZt93VQTmSa7SWa0UwoceqwKXpDKm16bGxN76BJZ3jfCIX0aY03J
+ KZTYNK3ozQl+MT2p5CqfytzFn3JyErt+wh0BZ0TLwGSpJuV+55ENP2P0POHUU503CZqb
+ a6MDrl0Q2ve0svGYOomlhIYh52pzSpnLlaCvtEr+PFSttwE6gvevjCeDKiwwopDdsElo
+ ANI5GhsXPtHJx9k84X18FTxxjfTNZIMkZz1tN6zMDIXtX7+e4fGt/8ApeC1IcEBQMuCF SQ== 
+Received: from ediex02.ad.cirrus.com ([84.19.233.68])
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3hgddp56r0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 27 Jul 2022 11:53:20 -0500
+Received: from ediex01.ad.cirrus.com (198.61.84.80) by ediex02.ad.cirrus.com
+ (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.9; Wed, 27 Jul
+ 2022 11:53:18 -0500
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by ediex01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.2.1118.9 via Frontend
+ Transport; Wed, 27 Jul 2022 11:53:18 -0500
+Received: from ediswmail.ad.cirrus.com (ediswmail.ad.cirrus.com [198.61.86.93])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 96AB62D4;
+        Wed, 27 Jul 2022 16:53:18 +0000 (UTC)
+Date:   Wed, 27 Jul 2022 16:53:18 +0000
+From:   Charles Keepax <ckeepax@opensource.cirrus.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+CC:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Bogdan Togorean <bogdan.togorean@analog.com>,
+        - <patches@opensource.cirrus.com>, <alsa-devel@alsa-project.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] ASoC: dt-bindings: use spi-peripheral-props.yaml
+Message-ID: <20220727165318.GH92394@ediswmail.ad.cirrus.com>
+References: <20220727164050.385241-1-krzysztof.kozlowski@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20220727164050.385241-1-krzysztof.kozlowski@linaro.org>
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-Proofpoint-GUID: Fb6-zD7Ylv_XSpFuYJi-AaYf5TVKMTY0
+X-Proofpoint-ORIG-GUID: Fb6-zD7Ylv_XSpFuYJi-AaYf5TVKMTY0
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juri Lelli <juri.lelli@redhat.com>
+On Wed, Jul 27, 2022 at 06:40:50PM +0200, Krzysztof Kozlowski wrote:
+> Instead of listing directly properties typical for SPI peripherals,
+> reference the spi-peripheral-props.yaml schema.  This allows using all
+> properties typical for SPI-connected devices, even these which device
+> bindings author did not tried yet.
+> 
+> Remove the spi-* properties which now come via spi-peripheral-props.yaml
+> schema, except for the cases when device schema adds some constraints
+> like maximum frequency.
+> 
+> While changing additionalProperties->unevaluatedProperties, put it in
+> typical place, just before example DTS.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> 
+> ---
 
-commit ddfc710395cccc61247348df9eb18ea50321cbed upstream.
+For the Wolfson bits:
 
-Tasks the are being deboosted from SCHED_DEADLINE might enter
-enqueue_task_dl() one last time and hit an erroneous BUG_ON condition:
-since they are not boosted anymore, the if (is_dl_boosted()) branch is
-not taken, but the else if (!dl_prio) is and inside this one we
-BUG_ON(!is_dl_boosted), which is of course false (BUG_ON triggered)
-otherwise we had entered the if branch above. Long story short, the
-current condition doesn't make sense and always leads to triggering of a
-BUG.
+Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
 
-Fix this by only checking enqueue flags, properly: ENQUEUE_REPLENISH has
-to be present, but additional flags are not a problem.
-
-Fixes: 64be6f1f5f71 ("sched/deadline: Don't replenish from a !SCHED_DEADLINE entity")
-Signed-off-by: Juri Lelli <juri.lelli@redhat.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Cc: stable@vger.kernel.org
-Link: https://lkml.kernel.org/r/20220714151908.533052-1-juri.lelli@redhat.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- kernel/sched/deadline.c |    5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
---- a/kernel/sched/deadline.c
-+++ b/kernel/sched/deadline.c
-@@ -1669,7 +1669,10 @@ static void enqueue_task_dl(struct rq *r
- 		 * the throttle.
- 		 */
- 		p->dl.dl_throttled = 0;
--		BUG_ON(!is_dl_boosted(&p->dl) || flags != ENQUEUE_REPLENISH);
-+		if (!(flags & ENQUEUE_REPLENISH))
-+			printk_deferred_once("sched: DL de-boosted task PID %d: REPLENISH flag missing\n",
-+					     task_pid_nr(p));
-+
- 		return;
- 	}
- 
-
-
+Thanks,
+Charles
