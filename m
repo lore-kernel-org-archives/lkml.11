@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEFB6C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:40:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F4D3C19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:40:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242755AbiG0Rko (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:40:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37170 "EHLO
+        id S230313AbiG0Rkt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:40:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242936AbiG0Rjc (ORCPT
+        with ESMTP id S242514AbiG0Rjx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:39:32 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5B4D88CC3;
-        Wed, 27 Jul 2022 09:51:17 -0700 (PDT)
+        Wed, 27 Jul 2022 13:39:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2347288CD7;
+        Wed, 27 Jul 2022 09:51:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E9258616ED;
-        Wed, 27 Jul 2022 16:51:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0172AC433D6;
-        Wed, 27 Jul 2022 16:51:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 77791B821D4;
+        Wed, 27 Jul 2022 16:51:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C80A9C433C1;
+        Wed, 27 Jul 2022 16:51:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940665;
-        bh=BFJdDl0BVAGoHtb4izvkJFUW5xUjgpjEeVVSQdffYQg=;
+        s=korg; t=1658940676;
+        bh=q0JSE8ux2FV7K2RUeGZwHsCybUA+f+mNEP39HiD25Ps=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XX4yihu5iT90RDwCPIgPp5TVLt+tx8yOWaITc85Nt0SlkwcQ7gkaQ+bWBITFZb0EN
-         sb4tVYC4C/zOLH6FSBx2niPq7kgaV71T2vCbTSfk/4WsIgDEeRE8tzyAyiOCBMadvW
-         80+Nr6frLUvOnpvcrylNKPwvNr7ksWF32MFMKk5E=
+        b=DruJfRfxdpKh2/Op4i41nHsmNaPQEvY1YDOAyofr7exktP5QbB5QcyRpXONFxtOvO
+         kPSfi8UI1jHazsyHnMLPWEn6UbEYRHH0qKlAQN+iztxUvsTATE16+r+uN/Xk5jjJW7
+         OX+YHKzuX+wdZlVZQtBVg+jirgeuFG9Cr+f0ox2A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Haibo Chen <haibo.chen@nxp.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
+        stable@vger.kernel.org,
+        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
+        <nfraprado@collabora.com>,
+        =?UTF-8?q?Andr=C3=A9=20Almeida?= <andrealmeid@igalia.com>,
+        Douglas Anderson <dianders@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 097/158] gpio: pca953x: use the correct register address when regcache sync during init
-Date:   Wed, 27 Jul 2022 18:12:41 +0200
-Message-Id: <20220727161025.335410255@linuxfoundation.org>
+Subject: [PATCH 5.18 109/158] drm/panel-edp: Fix variable typo when saving hpd absent delay from DT
+Date:   Wed, 27 Jul 2022 18:12:53 +0200
+Message-Id: <20220727161025.849277072@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -50,50 +52,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haibo Chen <haibo.chen@nxp.com>
+From: Nícolas F. R. A. Prado <nfraprado@collabora.com>
 
-[ Upstream commit b8c768ccdd8338504fb78370747728d5002b1b5a ]
+[ Upstream commit ef2084a8388b19c8812356106e0c8d29915f9d8b ]
 
-For regcache_sync_region, we need to use pca953x_recalc_addr() to get
-the real register address.
+The value read from the "hpd-absent-delay-ms" property in DT was being
+saved to the wrong variable, overriding the hpd_reliable delay. Fix the
+typo.
 
-Fixes: ec82d1eba346 ("gpio: pca953x: Zap ad-hoc reg_output cache")
-Fixes: 0f25fda840a9 ("gpio: pca953x: Zap ad-hoc reg_direction cache")
-Signed-off-by: Haibo Chen <haibo.chen@nxp.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+Fixes: 5540cf8f3e8d ("drm/panel-edp: Implement generic "edp-panel"s probed by EDID")
+Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Reviewed-by: André Almeida <andrealmeid@igalia.com>
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Signed-off-by: Douglas Anderson <dianders@chromium.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220719203857.1488831-4-nfraprado@collabora.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpio/gpio-pca953x.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/panel/panel-edp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpio/gpio-pca953x.c b/drivers/gpio/gpio-pca953x.c
-index 60b7616dd4aa..64befd6f702b 100644
---- a/drivers/gpio/gpio-pca953x.c
-+++ b/drivers/gpio/gpio-pca953x.c
-@@ -897,15 +897,18 @@ static int pca953x_irq_setup(struct pca953x_chip *chip,
- static int device_pca95xx_init(struct pca953x_chip *chip, u32 invert)
- {
- 	DECLARE_BITMAP(val, MAX_LINE);
-+	u8 regaddr;
- 	int ret;
+diff --git a/drivers/gpu/drm/panel/panel-edp.c b/drivers/gpu/drm/panel/panel-edp.c
+index f7bfcf63d48e..701a258d2e11 100644
+--- a/drivers/gpu/drm/panel/panel-edp.c
++++ b/drivers/gpu/drm/panel/panel-edp.c
+@@ -713,7 +713,7 @@ static int generic_edp_panel_probe(struct device *dev, struct panel_edp *panel)
+ 	of_property_read_u32(dev->of_node, "hpd-reliable-delay-ms", &reliable_ms);
+ 	desc->delay.hpd_reliable = reliable_ms;
+ 	of_property_read_u32(dev->of_node, "hpd-absent-delay-ms", &absent_ms);
+-	desc->delay.hpd_reliable = absent_ms;
++	desc->delay.hpd_absent = absent_ms;
  
--	ret = regcache_sync_region(chip->regmap, chip->regs->output,
--				   chip->regs->output + NBANK(chip) - 1);
-+	regaddr = pca953x_recalc_addr(chip, chip->regs->output, 0);
-+	ret = regcache_sync_region(chip->regmap, regaddr,
-+				   regaddr + NBANK(chip) - 1);
- 	if (ret)
- 		goto out;
- 
--	ret = regcache_sync_region(chip->regmap, chip->regs->direction,
--				   chip->regs->direction + NBANK(chip) - 1);
-+	regaddr = pca953x_recalc_addr(chip, chip->regs->direction, 0);
-+	ret = regcache_sync_region(chip->regmap, regaddr,
-+				   regaddr + NBANK(chip) - 1);
- 	if (ret)
- 		goto out;
- 
+ 	/* Power the panel on so we can read the EDID */
+ 	ret = pm_runtime_get_sync(dev);
 -- 
 2.35.1
 
