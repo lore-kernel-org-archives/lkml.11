@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45943C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:45:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90891C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:45:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243124AbiG0Rpv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:45:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39624 "EHLO
+        id S243131AbiG0Rp4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:45:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243240AbiG0Rob (ORCPT
+        with ESMTP id S243256AbiG0Rod (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:44:31 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C59078BA98;
-        Wed, 27 Jul 2022 09:53:14 -0700 (PDT)
+        Wed, 27 Jul 2022 13:44:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9884B8BAA2;
+        Wed, 27 Jul 2022 09:53:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id CBB5FCE2309;
-        Wed, 27 Jul 2022 16:53:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF712C433C1;
-        Wed, 27 Jul 2022 16:53:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 18936B821C5;
+        Wed, 27 Jul 2022 16:53:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 737D4C433C1;
+        Wed, 27 Jul 2022 16:53:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940790;
-        bh=1QI/Q7cS/pyQ6EjE/gPkhbaMHoT+HkDV5b+WsHny1O4=;
+        s=korg; t=1658940792;
+        bh=pUwlwt6IhOGRGSV4Ytm/b7hka4ogE1ebBrYzVKUBDbU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kvkmI6lAxjpeIM+i1TMHR1imk1v/9W77cHX5siei9+K71QU+0xzCqPxQVpfuhlffx
-         5nmqID3+tNNVRTbD8GecjUt1iLOoB90M+/MsJU2JO1qylfh96laBKWp8Ff7QWIUeyj
-         H0CuXSnHkC1mVuXx5QvUZgE2TqP2vfMYr6sd5kBA=
+        b=parUcETPDJJcArJDt6nLQN2t6NIycR9TwEUjH9NAgLBsdBIiZnPpN2OvOTkCkWRaQ
+         iU6gqvJkuUgqPJyFUdsvbZ4C7RtpsIJFEuv/DBM6Y3Dsny7VhjF/Aq2WNaaNTSEfDM
+         B0OKXoUtefdmTuB4AfUFBW6VZvsRD2R7LDGcumIM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yuezhang Mo <Yuezhang.Mo@sony.com>,
-        Andy Wu <Andy.Wu@sony.com>,
-        Aoyama Wataru <wataru.aoyama@sony.com>,
-        Daniel Palmer <daniel.palmer@sony.com>,
-        Sungjong Seo <sj1557.seo@samsung.com>,
-        Namjae Jeon <linkinjeon@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 150/158] exfat: fix referencing wrong parent directory information after renaming
-Date:   Wed, 27 Jul 2022 18:13:34 +0200
-Message-Id: <20220727161027.359196060@linuxfoundation.org>
+        stable@vger.kernel.org, Wang Cheng <wanngchenng@gmail.com>,
+        syzbot+217f792c92599518a2ab@syzkaller.appspotmail.com,
+        David Rientjes <rientjes@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.18 133/158] mm/mempolicy: fix uninit-value in mpol_rebind_policy()
+Date:   Wed, 27 Jul 2022 18:13:17 +0200
+Message-Id: <20220727161026.719300448@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -53,103 +51,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yuezhang Mo <Yuezhang.Mo@sony.com>
+From: Wang Cheng <wanngchenng@gmail.com>
 
-[ Upstream commit d8dad2588addd1d861ce19e7df3b702330f0c7e3 ]
+commit 018160ad314d75b1409129b2247b614a9f35894c upstream.
 
-During renaming, the parent directory information maybe
-updated. But the file/directory still references to the
-old parent directory information.
+mpol_set_nodemask()(mm/mempolicy.c) does not set up nodemask when
+pol->mode is MPOL_LOCAL.  Check pol->mode before access
+pol->w.cpuset_mems_allowed in mpol_rebind_policy()(mm/mempolicy.c).
 
-This bug will cause 2 problems.
+BUG: KMSAN: uninit-value in mpol_rebind_policy mm/mempolicy.c:352 [inline]
+BUG: KMSAN: uninit-value in mpol_rebind_task+0x2ac/0x2c0 mm/mempolicy.c:368
+ mpol_rebind_policy mm/mempolicy.c:352 [inline]
+ mpol_rebind_task+0x2ac/0x2c0 mm/mempolicy.c:368
+ cpuset_change_task_nodemask kernel/cgroup/cpuset.c:1711 [inline]
+ cpuset_attach+0x787/0x15e0 kernel/cgroup/cpuset.c:2278
+ cgroup_migrate_execute+0x1023/0x1d20 kernel/cgroup/cgroup.c:2515
+ cgroup_migrate kernel/cgroup/cgroup.c:2771 [inline]
+ cgroup_attach_task+0x540/0x8b0 kernel/cgroup/cgroup.c:2804
+ __cgroup1_procs_write+0x5cc/0x7a0 kernel/cgroup/cgroup-v1.c:520
+ cgroup1_tasks_write+0x94/0xb0 kernel/cgroup/cgroup-v1.c:539
+ cgroup_file_write+0x4c2/0x9e0 kernel/cgroup/cgroup.c:3852
+ kernfs_fop_write_iter+0x66a/0x9f0 fs/kernfs/file.c:296
+ call_write_iter include/linux/fs.h:2162 [inline]
+ new_sync_write fs/read_write.c:503 [inline]
+ vfs_write+0x1318/0x2030 fs/read_write.c:590
+ ksys_write+0x28b/0x510 fs/read_write.c:643
+ __do_sys_write fs/read_write.c:655 [inline]
+ __se_sys_write fs/read_write.c:652 [inline]
+ __x64_sys_write+0xdb/0x120 fs/read_write.c:652
+ do_syscall_x64 arch/x86/entry/common.c:51 [inline]
+ do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-(1) The renamed file can not be written.
+Uninit was created at:
+ slab_post_alloc_hook mm/slab.h:524 [inline]
+ slab_alloc_node mm/slub.c:3251 [inline]
+ slab_alloc mm/slub.c:3259 [inline]
+ kmem_cache_alloc+0x902/0x11c0 mm/slub.c:3264
+ mpol_new mm/mempolicy.c:293 [inline]
+ do_set_mempolicy+0x421/0xb70 mm/mempolicy.c:853
+ kernel_set_mempolicy mm/mempolicy.c:1504 [inline]
+ __do_sys_set_mempolicy mm/mempolicy.c:1510 [inline]
+ __se_sys_set_mempolicy+0x44c/0xb60 mm/mempolicy.c:1507
+ __x64_sys_set_mempolicy+0xd8/0x110 mm/mempolicy.c:1507
+ do_syscall_x64 arch/x86/entry/common.c:51 [inline]
+ do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-    [10768.175172] exFAT-fs (sda1): error, failed to bmap (inode : 7afd50e4 iblock : 0, err : -5)
-    [10768.184285] exFAT-fs (sda1): Filesystem has been set read-only
-    ash: write error: Input/output error
+KMSAN: uninit-value in mpol_rebind_task (2)
+https://syzkaller.appspot.com/bug?id=d6eb90f952c2a5de9ea718a1b873c55cb13b59dc
 
-(2) Some dentries of the renamed file/directory are not set
-    to deleted after removing the file/directory.
+This patch seems to fix below bug too.
+KMSAN: uninit-value in mpol_rebind_mm (2)
+https://syzkaller.appspot.com/bug?id=f2fecd0d7013f54ec4162f60743a2b28df40926b
 
-exfat_update_parent_info() is a workaround for the wrong parent
-directory information being used after renaming. Now that bug is
-fixed, this is no longer needed, so remove it.
+The uninit-value is pol->w.cpuset_mems_allowed in mpol_rebind_policy().
+When syzkaller reproducer runs to the beginning of mpol_new(),
 
-Fixes: 5f2aa075070c ("exfat: add inode operations")
-Cc: stable@vger.kernel.org # v5.7+
-Signed-off-by: Yuezhang Mo <Yuezhang.Mo@sony.com>
-Reviewed-by: Andy Wu <Andy.Wu@sony.com>
-Reviewed-by: Aoyama Wataru <wataru.aoyama@sony.com>
-Reviewed-by: Daniel Palmer <daniel.palmer@sony.com>
-Reviewed-by: Sungjong Seo <sj1557.seo@samsung.com>
-Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+	    mpol_new() mm/mempolicy.c
+	  do_mbind() mm/mempolicy.c
+	kernel_mbind() mm/mempolicy.c
+
+`mode` is 1(MPOL_PREFERRED), nodes_empty(*nodes) is `true` and `flags`
+is 0. Then
+
+	mode = MPOL_LOCAL;
+	...
+	policy->mode = mode;
+	policy->flags = flags;
+
+will be executed. So in mpol_set_nodemask(),
+
+	    mpol_set_nodemask() mm/mempolicy.c
+	  do_mbind()
+	kernel_mbind()
+
+pol->mode is 4 (MPOL_LOCAL), that `nodemask` in `pol` is not initialized,
+which will be accessed in mpol_rebind_policy().
+
+Link: https://lkml.kernel.org/r/20220512123428.fq3wofedp6oiotd4@ppc.localdomain
+Signed-off-by: Wang Cheng <wanngchenng@gmail.com>
+Reported-by: <syzbot+217f792c92599518a2ab@syzkaller.appspotmail.com>
+Tested-by: <syzbot+217f792c92599518a2ab@syzkaller.appspotmail.com>
+Cc: David Rientjes <rientjes@google.com>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/exfat/namei.c | 27 +--------------------------
- 1 file changed, 1 insertion(+), 26 deletions(-)
+ mm/mempolicy.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/exfat/namei.c b/fs/exfat/namei.c
-index a02a04a993bf..76acc3721951 100644
---- a/fs/exfat/namei.c
-+++ b/fs/exfat/namei.c
-@@ -1080,6 +1080,7 @@ static int exfat_rename_file(struct inode *inode, struct exfat_chain *p_dir,
- 
- 		exfat_remove_entries(inode, p_dir, oldentry, 0,
- 			num_old_entries);
-+		ei->dir = *p_dir;
- 		ei->entry = newentry;
- 	} else {
- 		if (exfat_get_entry_type(epold) == TYPE_FILE) {
-@@ -1167,28 +1168,6 @@ static int exfat_move_file(struct inode *inode, struct exfat_chain *p_olddir,
- 	return 0;
- }
- 
--static void exfat_update_parent_info(struct exfat_inode_info *ei,
--		struct inode *parent_inode)
--{
--	struct exfat_sb_info *sbi = EXFAT_SB(parent_inode->i_sb);
--	struct exfat_inode_info *parent_ei = EXFAT_I(parent_inode);
--	loff_t parent_isize = i_size_read(parent_inode);
--
--	/*
--	 * the problem that struct exfat_inode_info caches wrong parent info.
--	 *
--	 * because of flag-mismatch of ei->dir,
--	 * there is abnormal traversing cluster chain.
--	 */
--	if (unlikely(parent_ei->flags != ei->dir.flags ||
--		     parent_isize != EXFAT_CLU_TO_B(ei->dir.size, sbi) ||
--		     parent_ei->start_clu != ei->dir.dir)) {
--		exfat_chain_set(&ei->dir, parent_ei->start_clu,
--			EXFAT_B_TO_CLU_ROUND_UP(parent_isize, sbi),
--			parent_ei->flags);
--	}
--}
--
- /* rename or move a old file into a new file */
- static int __exfat_rename(struct inode *old_parent_inode,
- 		struct exfat_inode_info *ei, struct inode *new_parent_inode,
-@@ -1219,8 +1198,6 @@ static int __exfat_rename(struct inode *old_parent_inode,
- 		return -ENOENT;
- 	}
- 
--	exfat_update_parent_info(ei, old_parent_inode);
--
- 	exfat_chain_dup(&olddir, &ei->dir);
- 	dentry = ei->entry;
- 
-@@ -1241,8 +1218,6 @@ static int __exfat_rename(struct inode *old_parent_inode,
- 			goto out;
- 		}
- 
--		exfat_update_parent_info(new_ei, new_parent_inode);
--
- 		p_dir = &(new_ei->dir);
- 		new_entry = new_ei->entry;
- 		ep = exfat_get_dentry(sb, p_dir, new_entry, &new_bh);
--- 
-2.35.1
-
+--- a/mm/mempolicy.c
++++ b/mm/mempolicy.c
+@@ -350,7 +350,7 @@ static void mpol_rebind_preferred(struct
+  */
+ static void mpol_rebind_policy(struct mempolicy *pol, const nodemask_t *newmask)
+ {
+-	if (!pol)
++	if (!pol || pol->mode == MPOL_LOCAL)
+ 		return;
+ 	if (!mpol_store_user_nodemask(pol) &&
+ 	    nodes_equal(pol->w.cpuset_mems_allowed, *newmask))
 
 
