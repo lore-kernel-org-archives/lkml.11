@@ -2,133 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDCADC19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 04:02:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A0F3C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 04:02:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233991AbiG0ECP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 00:02:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45216 "EHLO
+        id S240202AbiG0EC4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 00:02:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbiG0ECN (ORCPT
+        with ESMTP id S231448AbiG0ECy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 00:02:13 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 684C311802;
-        Tue, 26 Jul 2022 21:02:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658894532; x=1690430532;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=qPDH2zg55z0dq693EvtAztxxc5KcUkiwaVa+S6O66dg=;
-  b=Joc5exCmymQ31lwx8fVmZyBiC6bQ2+lL/mUcXngtTdvZFkanEUIb3zEC
-   oomW3sK/UeHsQ3h2BwoUEAY4yAAGAQ4QP0tp5YjJnNJIl6gz2r/JGMSVe
-   EQch1gLr4mS4At0pCFUyZE62Xi/YJn80VBm9bhwUfRKKPrnHld1ngmtlh
-   wiRRu2BWVfm3zIpGNJkuRPQcnNS1X3Sajdr2nufPmaj9KeoCwxxvvr+Kq
-   KC1SZvOV0bg00uLJVTa2x973f21gFgKxCKwL5xetjghlNPYS1iwfSJCwU
-   gHS77Lqc+M7teRTz/bhUXKjQM1Wtkvb9fg8nv0mZ2+HSzYAqXpqvaVKqa
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10420"; a="288899601"
-X-IronPort-AV: E=Sophos;i="5.93,194,1654585200"; 
-   d="scan'208";a="288899601"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2022 21:02:11 -0700
-X-IronPort-AV: E=Sophos;i="5.93,194,1654585200"; 
-   d="scan'208";a="927631462"
-Received: from arianrah-mobl2.amr.corp.intel.com (HELO [10.251.20.146]) ([10.251.20.146])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jul 2022 21:02:11 -0700
-Message-ID: <b5c746db-f6a0-d89e-6db5-e4a206c9237a@linux.intel.com>
-Date:   Tue, 26 Jul 2022 21:02:10 -0700
+        Wed, 27 Jul 2022 00:02:54 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D1C315820
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 21:02:53 -0700 (PDT)
+Received: from canpemm500009.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Lt0RL2rhFzjXMK;
+        Wed, 27 Jul 2022 11:59:58 +0800 (CST)
+Received: from [10.67.109.51] (10.67.109.51) by canpemm500009.china.huawei.com
+ (7.192.105.203) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 27 Jul
+ 2022 12:02:51 +0800
+Message-ID: <85d5087b-450c-351f-270d-c61303cf3187@huawei.com>
+Date:   Wed, 27 Jul 2022 12:02:51 +0800
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.11.0
-Subject: Re: [PATCH v3] PCI/ERR: Use pcie_aer_is_native() to judge whether OS
- owns AER
-Content-Language: en-US
-To:     Zhuo Chen <chenzhuo.1@bytedance.com>, ruscur@russell.cc,
-        oohall@gmail.com, bhelgaas@google.com
-Cc:     lukas@wunner.de, jan.kiszka@siemens.com, stuart.w.hayes@gmail.com,
-        linuxppc-dev@lists.ozlabs.org, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220727035334.9997-1-chenzhuo.1@bytedance.com>
-From:   Sathyanarayanan Kuppuswamy 
-        <sathyanarayanan.kuppuswamy@linux.intel.com>
-In-Reply-To: <20220727035334.9997-1-chenzhuo.1@bytedance.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.2
+To:     Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        "open list:SCHEDULER" <linux-kernel@vger.kernel.org>
+From:   "Lihua (lihua, ran)" <hucool.lihua@huawei.com>
+Subject: [Question] Reading /proc/stat has a time backward issue
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.109.51]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500009.china.huawei.com (7.192.105.203)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi all,
 
+I found a problem that the statistical time goes backward, the value read first is 319, and the value read again is 318. As follows：
+first：
+cat /proc/stat |  grep cpu1
+cpu1    319    0    496    41665    0    0    0    0    0    0
+then：
+cat /proc/stat |  grep cpu1
+cpu1    318    0    497    41674    0    0    0    0    0    0
 
-On 7/26/22 8:53 PM, Zhuo Chen wrote:
-> Use pcie_aer_is_native() in place of "host->native_aer ||
-> pcie_ports_native" to judge whether OS has native control of AER
-> in pcie_do_recovery().
-> 
-> Replace "dev->aer_cap && (pcie_ports_native || host->native_aer)" in
-> get_port_device_capability() with pcie_aer_is_native(), which has no
-> functional changes.
-> 
-> Signed-off-by: Zhuo Chen <chenzhuo.1@bytedance.com>
-> ---
+Time goes back, which is counterintuitive.
 
-Patch looks better now. It looks like following two changes
-can also be replaced with pcie_aer_is_native() check.
+After debug this, I found that the problem is caused by the implementation of kcpustat_cpu_fetch_vtime. As follows：
 
-drivers/pci/pcie/aer.c:1407:	if ((host->native_aer || pcie_ports_native) && aer) {
-drivers/pci/pcie/aer.c:1426:	if ((host->native_aer || pcie_ports_native) && aer) {
+                               CPU0                                                                          CPU1
+First:
+show_stat():
+     ->kcpustat_cpu_fetch()
+         ->kcpustat_cpu_fetch_vtime()
+             ->cpustat[CPUTIME_USER] = kcpustat_cpu(cpu) + vtime->utime + delta;              rq->curr is in user mod
+              ---> When CPU1 rq->curr running on userspace, need add utime and delta
+                                                                                              --->  rq->curr->vtime->utime is less than 1 tick
+Then:
+show_stat():
+     ->kcpustat_cpu_fetch()
+         ->kcpustat_cpu_fetch_vtime()
+             ->cpustat[CPUTIME_USER] = kcpustat_cpu(cpu);                                     rq->curr is in kernel mod
+             ---> When CPU1 rq->curr running on kernel space, just got kcpustat
 
+Because the values ​​of utime、 stime and delta are temporarily written to cpustat. Therefore, there are two problems  read from /proc/stat:
+1. There may be a regression phenomenon;
+2. When there are many tasks, the statistics are not accurate enough when utime and stime do not exceed one TICK.
+The time goes back is counterintuitive, and I want to discuss whether there is a good solution without compromising performance.
 
-
-> Changelog:
-> v3:
-> - Simplify why we use pcie_aer_is_native().
-> - Revert modification of pci_aer_clear_nonfatal_status() and comments.
-> v2:
-> - Add details and note in commit log.
-> ---
->  drivers/pci/pcie/err.c          | 3 +--
->  drivers/pci/pcie/portdrv_core.c | 3 +--
->  2 files changed, 2 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/pci/pcie/err.c b/drivers/pci/pcie/err.c
-> index 0c5a143025af..121a53338e44 100644
-> --- a/drivers/pci/pcie/err.c
-> +++ b/drivers/pci/pcie/err.c
-> @@ -184,7 +184,6 @@ pci_ers_result_t pcie_do_recovery(struct pci_dev *dev,
->  	int type = pci_pcie_type(dev);
->  	struct pci_dev *bridge;
->  	pci_ers_result_t status = PCI_ERS_RESULT_CAN_RECOVER;
-> -	struct pci_host_bridge *host = pci_find_host_bridge(dev->bus);
->  
->  	/*
->  	 * If the error was detected by a Root Port, Downstream Port, RCEC,
-> @@ -243,7 +242,7 @@ pci_ers_result_t pcie_do_recovery(struct pci_dev *dev,
->  	 * it is responsible for clearing this status.  In that case, the
->  	 * signaling device may not even be visible to the OS.
->  	 */
-> -	if (host->native_aer || pcie_ports_native) {
-> +	if (pcie_aer_is_native(dev)) {
->  		pcie_clear_device_status(dev);
->  		pci_aer_clear_nonfatal_status(dev);
->  	}
-> diff --git a/drivers/pci/pcie/portdrv_core.c b/drivers/pci/pcie/portdrv_core.c
-> index 604feeb84ee4..98c18f4a01b2 100644
-> --- a/drivers/pci/pcie/portdrv_core.c
-> +++ b/drivers/pci/pcie/portdrv_core.c
-> @@ -221,8 +221,7 @@ static int get_port_device_capability(struct pci_dev *dev)
->  	}
->  
->  #ifdef CONFIG_PCIEAER
-> -	if (dev->aer_cap && pci_aer_available() &&
-> -	    (pcie_ports_native || host->native_aer)) {
-> +	if (pcie_aer_is_native(dev) && pci_aer_available()) {
->  		services |= PCIE_PORT_SERVICE_AER;
->  
->  		/*
-
--- 
-Sathyanarayanan Kuppuswamy
-Linux Kernel Developer
+Thanks a lot.
