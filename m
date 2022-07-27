@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32B4BC19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:41:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D71EC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:42:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238736AbiG0Ql4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:41:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58212 "EHLO
+        id S239281AbiG0Ql7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:41:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239145AbiG0QlI (ORCPT
+        with ESMTP id S239122AbiG0QlP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:41:08 -0400
+        Wed, 27 Jul 2022 12:41:15 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32D924E623;
-        Wed, 27 Jul 2022 09:29:34 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E36C251429;
+        Wed, 27 Jul 2022 09:29:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9192BB821BC;
-        Wed, 27 Jul 2022 16:29:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B33DBC433C1;
-        Wed, 27 Jul 2022 16:29:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5C55CB821BA;
+        Wed, 27 Jul 2022 16:29:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A70C7C433D6;
+        Wed, 27 Jul 2022 16:29:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939372;
-        bh=Ie/6QvGoxKNOLhlHGeLDcRr4cP1nWvy+w+noycFWjNg=;
+        s=korg; t=1658939375;
+        bh=CRrSIL4P0svdiiR+e0jcJwxpGu2VL7VEQG0U7nfZTjs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PXwVE7OdmypK5bWlPyLSTDNfQsxsrER6X9JNcK7XAySXry9EuzCc0uAmht2ztSrav
-         kf6rsbELy1wwPf++7ZICYmGmX45go73hbwjk6m1l37ozWQJW8nK2GatYIEY3E7SD9o
-         Oo9hcbUVed0tC+cLByuwbwyDRAqFBaO4p0w7AoTo=
+        b=WtP6eZH75Ei/4yHidbTq3LDg+tsv22NYeL+z2QFAtVJrHCceJZPV7KfUBRJJXj05e
+         h6K0saWDwbtGs0LrrNiwNYbfp+sFV2bYuESh6BrEDBtQLGb935nurp+XolZHNmPRXG
+         cGOATgeHcKLPc71T0+mB2tLmVPtkCNk5aRBZL/Lo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lennert Buytenhek <buytenh@arista.com>,
-        Naama Meir <naamax.meir@linux.intel.com>,
-        Sasha Neftin <sasha.neftin@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 15/87] igc: Reinstate IGC_REMOVED logic and implement it properly
-Date:   Wed, 27 Jul 2022 18:10:08 +0200
-Message-Id: <20220727161009.617339738@linuxfoundation.org>
+Subject: [PATCH 5.4 16/87] ip: Fix data-races around sysctl_ip_no_pmtu_disc.
+Date:   Wed, 27 Jul 2022 18:10:09 +0200
+Message-Id: <20220727161009.659742989@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161008.993711844@linuxfoundation.org>
 References: <20220727161008.993711844@linuxfoundation.org>
@@ -51,92 +49,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lennert Buytenhek <buytenh@wantstofly.org>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 7c1ddcee5311f3315096217881d2dbe47cc683f9 ]
+[ Upstream commit 0968d2a441bf6afb551fd99e60fa65ed67068963 ]
 
-The initially merged version of the igc driver code (via commit
-146740f9abc4, "igc: Add support for PF") contained the following
-IGC_REMOVED checks in the igc_rd32/wr32() MMIO accessors:
+While reading sysctl_ip_no_pmtu_disc, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its readers.
 
-	u32 igc_rd32(struct igc_hw *hw, u32 reg)
-	{
-		u8 __iomem *hw_addr = READ_ONCE(hw->hw_addr);
-		u32 value = 0;
-
-		if (IGC_REMOVED(hw_addr))
-			return ~value;
-
-		value = readl(&hw_addr[reg]);
-
-		/* reads should not return all F's */
-		if (!(~value) && (!reg || !(~readl(hw_addr))))
-			hw->hw_addr = NULL;
-
-		return value;
-	}
-
-And:
-
-	#define wr32(reg, val) \
-	do { \
-		u8 __iomem *hw_addr = READ_ONCE((hw)->hw_addr); \
-		if (!IGC_REMOVED(hw_addr)) \
-			writel((val), &hw_addr[(reg)]); \
-	} while (0)
-
-E.g. igb has similar checks in its MMIO accessors, and has a similar
-macro E1000_REMOVED, which is implemented as follows:
-
-	#define E1000_REMOVED(h) unlikely(!(h))
-
-These checks serve to detect and take note of an 0xffffffff MMIO read
-return from the device, which can be caused by a PCIe link flap or some
-other kind of PCI bus error, and to avoid performing MMIO reads and
-writes from that point onwards.
-
-However, the IGC_REMOVED macro was not originally implemented:
-
-	#ifndef IGC_REMOVED
-	#define IGC_REMOVED(a) (0)
-	#endif /* IGC_REMOVED */
-
-This led to the IGC_REMOVED logic to be removed entirely in a
-subsequent commit (commit 3c215fb18e70, "igc: remove IGC_REMOVED
-function"), with the rationale that such checks matter only for
-virtualization and that igc does not support virtualization -- but a
-PCIe device can become detached even without virtualization being in
-use, and without proper checks, a PCIe bus error affecting an igc
-adapter will lead to various NULL pointer dereferences, as the first
-access after the error will set hw->hw_addr to NULL, and subsequent
-accesses will blindly dereference this now-NULL pointer.
-
-This patch reinstates the IGC_REMOVED checks in igc_rd32/wr32(), and
-implements IGC_REMOVED the way it is done for igb, by checking for the
-unlikely() case of hw_addr being NULL.  This change prevents the oopses
-seen when a PCIe link flap occurs on an igc adapter.
-
-Fixes: 146740f9abc4 ("igc: Add support for PF")
-Signed-off-by: Lennert Buytenhek <buytenh@arista.com>
-Tested-by: Naama Meir <naamax.meir@linux.intel.com>
-Acked-by: Sasha Neftin <sasha.neftin@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/igc/igc_regs.h | 2 ++
- 1 file changed, 2 insertions(+)
+ net/ipv4/af_inet.c    | 2 +-
+ net/ipv4/icmp.c       | 2 +-
+ net/ipv6/af_inet6.c   | 2 +-
+ net/xfrm/xfrm_state.c | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_regs.h b/drivers/net/ethernet/intel/igc/igc_regs.h
-index 50d7c04dccf5..7bc7d7618fe1 100644
---- a/drivers/net/ethernet/intel/igc/igc_regs.h
-+++ b/drivers/net/ethernet/intel/igc/igc_regs.h
-@@ -236,4 +236,6 @@ do { \
+diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+index 9ab73fcc7411..06153386776d 100644
+--- a/net/ipv4/af_inet.c
++++ b/net/ipv4/af_inet.c
+@@ -337,7 +337,7 @@ static int inet_create(struct net *net, struct socket *sock, int protocol,
+ 			inet->hdrincl = 1;
+ 	}
  
- #define array_rd32(reg, offset) (igc_rd32(hw, (reg) + ((offset) << 2)))
+-	if (net->ipv4.sysctl_ip_no_pmtu_disc)
++	if (READ_ONCE(net->ipv4.sysctl_ip_no_pmtu_disc))
+ 		inet->pmtudisc = IP_PMTUDISC_DONT;
+ 	else
+ 		inet->pmtudisc = IP_PMTUDISC_WANT;
+diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
+index 9bc01411be4c..b44f51e404ae 100644
+--- a/net/ipv4/icmp.c
++++ b/net/ipv4/icmp.c
+@@ -886,7 +886,7 @@ static bool icmp_unreach(struct sk_buff *skb)
+ 			 * values please see
+ 			 * Documentation/networking/ip-sysctl.txt
+ 			 */
+-			switch (net->ipv4.sysctl_ip_no_pmtu_disc) {
++			switch (READ_ONCE(net->ipv4.sysctl_ip_no_pmtu_disc)) {
+ 			default:
+ 				net_dbg_ratelimited("%pI4: fragmentation needed and DF set\n",
+ 						    &iph->daddr);
+diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
+index 942da168f18f..56f396ecc26b 100644
+--- a/net/ipv6/af_inet6.c
++++ b/net/ipv6/af_inet6.c
+@@ -222,7 +222,7 @@ static int inet6_create(struct net *net, struct socket *sock, int protocol,
+ 	inet->mc_list	= NULL;
+ 	inet->rcv_tos	= 0;
  
-+#define IGC_REMOVED(h) unlikely(!(h))
-+
- #endif
+-	if (net->ipv4.sysctl_ip_no_pmtu_disc)
++	if (READ_ONCE(net->ipv4.sysctl_ip_no_pmtu_disc))
+ 		inet->pmtudisc = IP_PMTUDISC_DONT;
+ 	else
+ 		inet->pmtudisc = IP_PMTUDISC_WANT;
+diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
+index 268bba29bb60..bee1a8143d75 100644
+--- a/net/xfrm/xfrm_state.c
++++ b/net/xfrm/xfrm_state.c
+@@ -2488,7 +2488,7 @@ int __xfrm_init_state(struct xfrm_state *x, bool init_replay, bool offload)
+ 	int err;
+ 
+ 	if (family == AF_INET &&
+-	    xs_net(x)->ipv4.sysctl_ip_no_pmtu_disc)
++	    READ_ONCE(xs_net(x)->ipv4.sysctl_ip_no_pmtu_disc))
+ 		x->props.flags |= XFRM_STATE_NOPMTUDISC;
+ 
+ 	err = -EPROTONOSUPPORT;
 -- 
 2.35.1
 
