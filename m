@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D95BC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:53:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90BDFC19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:53:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240895AbiG0QxB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:53:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57872 "EHLO
+        id S240835AbiG0QxF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:53:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240822AbiG0QwP (ORCPT
+        with ESMTP id S240829AbiG0QwQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:52:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A140F4D16E;
-        Wed, 27 Jul 2022 09:34:07 -0700 (PDT)
+        Wed, 27 Jul 2022 12:52:16 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E7A653D2E;
+        Wed, 27 Jul 2022 09:34:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B6CC61A7E;
-        Wed, 27 Jul 2022 16:34:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4438AC43470;
-        Wed, 27 Jul 2022 16:34:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D5FD0B821BA;
+        Wed, 27 Jul 2022 16:34:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F44CC433D6;
+        Wed, 27 Jul 2022 16:34:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939646;
-        bh=jsF4LpQm777PxNt5/h+cNChfYSEvUrbp0KZNEszQamk=;
+        s=korg; t=1658939649;
+        bh=FKh67JCTZDQVK2ODwYqH9DX9H4uoPzNuCIzZOI8VssA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Mkb+EWlh3jL7W/yh8od5O4bCOtytQBtYe41sLTMCuSTIffv+GElVI2ZZBA+y+DaLR
-         JIpTrzSm+7PqJYegGHzi4hj9NU6ZnnSrBpEZ8+R5I6wrBwvkOJ34F+X52fQc16fi30
-         WnVZ+j0crgj3frRt7uXaaXcT+TzRcV2qqhG5Xn2I=
+        b=EY6FZK0Buva/Rj01mVHORWc9SIroQ/giSinECBy/2HnVvC7vtAu061AndXmkCv46b
+         Gwd/rwYPbt5JgR6ZovmMK3E26Zzj3cY1rjLmbuOcWgpdL0oI7h23s6Ua0e1+RwCg8D
+         yYFUTi9KS0dpZtFJqCTtisTGSM9Cf9B4o4zvpdpY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        stable@vger.kernel.org, Hacash Robot <hacashRobot@santino.com>,
+        William Dean <williamsukatube@gmail.com>,
         Linus Walleij <linus.walleij@linaro.org>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 023/105] power/reset: arm-versatile: Fix refcount leak in versatile_reboot_probe
-Date:   Wed, 27 Jul 2022 18:10:09 +0200
-Message-Id: <20220727161013.024294674@linuxfoundation.org>
+Subject: [PATCH 5.10 024/105] pinctrl: ralink: Check for null return of devm_kcalloc
+Date:   Wed, 27 Jul 2022 18:10:10 +0200
+Message-Id: <20220727161013.074316208@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161012.056867467@linuxfoundation.org>
 References: <20220727161012.056867467@linuxfoundation.org>
@@ -50,34 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: William Dean <williamsukatube@gmail.com>
 
-[ Upstream commit 80192eff64eee9b3bc0594a47381937b94b9d65a ]
+[ Upstream commit c3b821e8e406d5650e587b7ac624ac24e9b780a8 ]
 
-of_find_matching_node_and_match() returns a node pointer with refcount
-incremented, we should use of_node_put() on it when not need anymore.
-Add missing of_node_put() to avoid refcount leak.
+Because of the possible failure of the allocation, data->domains might
+be NULL pointer and will cause the dereference of the NULL pointer
+later.
+Therefore, it might be better to check it and directly return -ENOMEM
+without releasing data manually if fails, because the comment of the
+devm_kmalloc() says "Memory allocated with this function is
+automatically freed on driver detach.".
 
-Fixes: 0e545f57b708 ("power: reset: driver for the Versatile syscon reboot")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Fixes: a86854d0c599b ("treewide: devm_kzalloc() -> devm_kcalloc()")
+Reported-by: Hacash Robot <hacashRobot@santino.com>
+Signed-off-by: William Dean <williamsukatube@gmail.com>
+Link: https://lore.kernel.org/r/20220710154922.2610876-1-williamsukatube@163.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/power/reset/arm-versatile-reboot.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/staging/mt7621-pinctrl/pinctrl-rt2880.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/power/reset/arm-versatile-reboot.c b/drivers/power/reset/arm-versatile-reboot.c
-index 08d0a07b58ef..c7624d7611a7 100644
---- a/drivers/power/reset/arm-versatile-reboot.c
-+++ b/drivers/power/reset/arm-versatile-reboot.c
-@@ -146,6 +146,7 @@ static int __init versatile_reboot_probe(void)
- 	versatile_reboot_type = (enum versatile_reboot)reboot_id->data;
- 
- 	syscon_regmap = syscon_node_to_regmap(np);
-+	of_node_put(np);
- 	if (IS_ERR(syscon_regmap))
- 		return PTR_ERR(syscon_regmap);
+diff --git a/drivers/staging/mt7621-pinctrl/pinctrl-rt2880.c b/drivers/staging/mt7621-pinctrl/pinctrl-rt2880.c
+index 09b0b8a16e99..2e971cbe2d7a 100644
+--- a/drivers/staging/mt7621-pinctrl/pinctrl-rt2880.c
++++ b/drivers/staging/mt7621-pinctrl/pinctrl-rt2880.c
+@@ -267,6 +267,8 @@ static int rt2880_pinmux_pins(struct rt2880_priv *p)
+ 						p->func[i]->pin_count,
+ 						sizeof(int),
+ 						GFP_KERNEL);
++		if (!p->func[i]->pins)
++			return -ENOMEM;
+ 		for (j = 0; j < p->func[i]->pin_count; j++)
+ 			p->func[i]->pins[j] = p->func[i]->pin_first + j;
  
 -- 
 2.35.1
