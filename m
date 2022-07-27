@@ -2,195 +2,320 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E219C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 18:08:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C0E4C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 18:09:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243306AbiG0SIs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 14:08:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50586 "EHLO
+        id S238708AbiG0SJR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 14:09:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232276AbiG0SIb (ORCPT
+        with ESMTP id S243313AbiG0SIk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 14:08:31 -0400
-Received: from smtp-relay-internal-1.canonical.com (smtp-relay-internal-1.canonical.com [185.125.188.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98A5DCB74F
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 10:11:55 -0700 (PDT)
-Received: from mail-oa1-f71.google.com (mail-oa1-f71.google.com [209.85.160.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Wed, 27 Jul 2022 14:08:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D1575A8B5;
+        Wed, 27 Jul 2022 10:12:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 8EB713F130
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 17:11:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1658941912;
-        bh=p8BxUinmu0In37tgfklk8SPEbUyiUeXieDC0F6YQ4cE=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=oCIGhuE+BbtgzTjbzXY+o5mSVkNAXeBXBu16cmUG8GF/VYDhZJeXAH9lhtV13o08w
-         B6WXRFbTxNAyjFEunOqRx83DS3zet66aRFc2kYGwBEZzOlmo/+TC4mygD3XBtqWDJG
-         AN4oiC2fQ/hZCh5ta1DTZkpbaUyl8Oa410mruViOBvW48M3y9+EywQWJuxtBhUapmh
-         Zz8H1fWGSoVYIaP1Pr5oxXyUBsomojrJ4gyZbcC8JoK/7pEB37cJFIGJqtyZB4VqPl
-         ELiW9nBppKf/VkrSnTRN5RZKZP+oekH4qVB9h7LlFNKy9kM4hwg89e63VqDA5zW1aq
-         aAybR6puiyKmg==
-Received: by mail-oa1-f71.google.com with SMTP id 586e51a60fabf-10d6ce04410so9480195fac.23
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 10:11:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=p8BxUinmu0In37tgfklk8SPEbUyiUeXieDC0F6YQ4cE=;
-        b=ZDCeacaovvnNh16tmjGQBZuB2XtRVOPIQ6QINoFU2SR+oqMyWN7jPL7Vq4J8S9UGkg
-         aukJOkcZxhfQwya2hc7YJRkoYLeo4otzBaV03AgAhmOrniHZ6dGo5AohSlnGOso4D+As
-         YUFd1usxqrswbctOsG6Gof7JNpAkD0wojMeQGjXX8U2Ssw1o9a0JyVjrzD8+IRiHGQvu
-         EUwHjytD2xygh6rPKEAU4mPGqzkXm1WYQQMgUmwoAj6/ocsAeTwZdM8RNUSUTaky5LbS
-         nzRYL7dzCcJk7H/50q6DCxOvMk+aqMHE5K+yqBt61hWKmenVyvXuG0DPk7koCSg39+Bp
-         Ttcg==
-X-Gm-Message-State: AJIora/xGdjxwwAEGTHqKigL7jx/X5LGBC4SQNeMZxUSGUcURmnToXKM
-        O5Alri1IpH8cNiL4wOk6zfNKAV547vgV8JAUYh01EcbwqTB/1nQAh76j8rIrCOup9er2xodE4lV
-        51orVj5dAbx9KkRG6ABkuVh1y9YijGdy9Gjuq15N2RMCdKArZArfLktAFng==
-X-Received: by 2002:a54:4789:0:b0:33a:5a42:71c with SMTP id o9-20020a544789000000b0033a5a42071cmr2428439oic.239.1658941911503;
-        Wed, 27 Jul 2022 10:11:51 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1sjA2df/OeFt0huzK7VUHvD950PBKeHpumiDp/V7HBV47IAKGCR86pSSZrHEHOHOu4IOdk2k6op21RrZN9myhs=
-X-Received: by 2002:a54:4789:0:b0:33a:5a42:71c with SMTP id
- o9-20020a544789000000b0033a5a42071cmr2428429oic.239.1658941911233; Wed, 27
- Jul 2022 10:11:51 -0700 (PDT)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E4B3619A3;
+        Wed, 27 Jul 2022 17:12:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF4ABC433B5;
+        Wed, 27 Jul 2022 17:11:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658941925;
+        bh=03Mxfsg1RQo51H34ujBHbTUGNVPbW7U8UijOYMCriIc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Yscx4F4yb0EjvaPMpGQFMOAB39TJX5at6mvRnQffxGhqAN+uNri8+cSB2TsSBhYRy
+         MwebsIt4Y+pizZWOSlsRL2cOYmtgxTdDIQoqAh+CSzxXUX4ngGt3a+s46yaN/YZRXg
+         StUFa7SrbnaQ4TthsdtN4cxxTzXiCGAvaOPyDP2p0Pav8cntB2Y1jh6CNsFRj+kvX1
+         too+y1z+Oow/rizGihDCU7twDthvyHyGHAye6e+5/wXasvia/sSvDS8vlTPj5TEiAn
+         WF1evRc41KMpOWnBJB46AKG/FexNEhwCYKt7vmytVvF93udtPmh237xuVa5dkyJCrv
+         ON+RmJ10+FQjQ==
+From:   Daniel Bristot de Oliveira <bristot@kernel.org>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Marco Elver <elver@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Gabriele Paoloni <gpaoloni@redhat.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Clark Williams <williams@redhat.com>,
+        Tao Zhou <tao.zhou@linux.dev>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-trace-devel@vger.kernel.org
+Subject: [PATCH V8 00/16] The Runtime Verification (RV) interface
+Date:   Wed, 27 Jul 2022 19:11:28 +0200
+Message-Id: <cover.1658940828.git.bristot@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220722022416.137548-1-mfo@canonical.com> <20220722022416.137548-4-mfo@canonical.com>
- <CAK7LNARvJEhEOwg_PHe3WKT9BkSchnGOmeiUaB+7E__NS9qrVw@mail.gmail.com>
-In-Reply-To: <CAK7LNARvJEhEOwg_PHe3WKT9BkSchnGOmeiUaB+7E__NS9qrVw@mail.gmail.com>
-From:   Mauricio Faria de Oliveira <mfo@canonical.com>
-Date:   Wed, 27 Jul 2022 14:11:39 -0300
-Message-ID: <CAO9xwp2Ud-60Eb0cdpsBpq_ixOBaiOannxZ7SsbfHKrjj8mGDQ@mail.gmail.com>
-Subject: Re: [RFC PATCH 3/6] sysctl, mod_devicetable: shadow struct
- ctl_table.procname for file2alias
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-modules <linux-modules@vger.kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux FS-devel Mailing List <linux-fsdevel@vger.kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Iurii Zaikin <yzaikin@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 26, 2022 at 6:27 AM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> On Fri, Jul 22, 2022 at 11:24 AM Mauricio Faria de Oliveira
-> <mfo@canonical.com> wrote:
-> >
-> > In order to expose a sysctl entry to modpost (file2alias.c, precisely)
-> > we have to shadow 'struct ctl_table' in mod_devicetable.h, as scripts
-> > should not access kernel headers or its types (see file2alias.c).
-> >
-> > The required field is '.procname' (basename of '/proc/sys/.../entry').
-> >
-> > Since 'struct ctl_table' is annotated for structure randomization and
-> > we need a known offset for '.procname' (remember, no kernel headers),
-> > take it out of the randomized portion (as in, eg, 'struct task_struct').
-> >
-> > Of course, add build-time checks for struct size and .procname offset
-> > between both structs. (This has to be done on kernel side; for headers.)
-> >
-> > With that in place, use the regular macros in devicetable-offsets.c to
-> > define SIZE_... and OFF_... macros for the shadow struct and the field
-> > of interest.
-> >
-> > Signed-off-by: Mauricio Faria de Oliveira <mfo@canonical.com>
-> > ---
-> >  fs/proc/proc_sysctl.c             | 19 +++++++++++++++++++
-> >  include/linux/mod_devicetable.h   | 25 +++++++++++++++++++++++++
-> >  include/linux/sysctl.h            | 11 ++++++++++-
-> >  kernel/sysctl.c                   |  1 +
-> >  scripts/mod/devicetable-offsets.c |  3 +++
-> >  5 files changed, 58 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/fs/proc/proc_sysctl.c b/fs/proc/proc_sysctl.c
-> > index 021e83fe831f..ebbf8702387e 100644
-> > --- a/fs/proc/proc_sysctl.c
-> > +++ b/fs/proc/proc_sysctl.c
-> > @@ -19,6 +19,24 @@
-> >  #include <linux/kmemleak.h>
-> >  #include "internal.h"
-> >
-> > +#ifdef CONFIG_MODULES
-> > +#include <linux/mod_devicetable.h>
-> > +
-> > +static void check_struct_sysctl_device_id(void)
-> > +{
-> > +       /*
-> > +        * The shadow struct sysctl_device_id for file2alias.c needs
-> > +        * the same size of struct ctl_table and offset for procname.
-> > +        */
-> > +       BUILD_BUG_ON(sizeof(struct sysctl_device_id)
-> > +                       != sizeof(struct ctl_table));
-> > +       BUILD_BUG_ON(offsetof(struct sysctl_device_id, procname)
-> > +                       != offsetof(struct ctl_table, procname));
->
->
-> Nit:
->
-> If you use static_assert(), you can remove
->  check_struct_sysctl_device_id().
->
->
-> You can write static_assert() out of a function.
+Over the last years, I've been exploring the possibility of
+verifying the Linux kernel behavior using Runtime Verification.
 
-That's a nice cleanup; thanks!
+Runtime Verification (RV) is a lightweight (yet rigorous) method that
+complements classical exhaustive verification techniques (such as model
+checking and theorem proving) with a more practical approach for complex
+systems.
 
->
->
->
-> > diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-> > index 223376959d29..15073621cfa8 100644
-> > --- a/kernel/sysctl.c
-> > +++ b/kernel/sysctl.c
-> > @@ -2487,6 +2487,7 @@ int __init sysctl_init_bases(void)
-> >
-> >         return 0;
-> >  }
-> > +
->
->
-> Noise.
+Instead of relying on a fine-grained model of a system (e.g., a
+re-implementation a instruction level), RV works by analyzing the trace of the
+system's actual execution, comparing it against a formal specification of
+the system behavior.
 
-Fixed.
+The usage of deterministic automaton for RV is a well-established
+approach. In the specific case of the Linux kernel, you can check how
+to model complex behavior of the Linux kernel with this paper:
+
+  De Oliveira, Daniel Bristot; Cucinotta, Tommaso; De Oliveira, Romulo Silva.
+  *Efficient formal verification for the Linux kernel.* In: International
+  Conference on Software Engineering and Formal Methods. Springer, Cham, 2019.
+  p. 315-332.
+
+And how efficient is this approach here:
+
+  De Oliveira, Daniel B.; De Oliveira, Romulo S.; Cucinotta, Tommaso. *A thread
+  synchronization model for the PREEMPT_RT Linux kernel.* Journal of Systems
+  Architecture, 2020, 107: 101729.
+
+tlrd: it is possible to model complex behaviors in a modular way, with
+an acceptable overhead (even for production systems). See this
+presentation at 2019's ELCE: https://www.youtube.com/watch?v=BfTuEHafNgg
+
+Here I am proposing a more practical approach for the usage of deterministic
+automata for runtime verification, and it includes:
+
+	- An interface for controlling the verification;
+	- A tool and set of headers that enables the automatic code
+	  generation of the RV monitor (Monitor Synthesis);
+	- Sample monitors to evaluate the interface;
+
+Given that RV is a tracing consumer, the code is being placed inside the
+tracing subsystem (Steven and I have been talking about it for a while).
+
+Features to be added after this patchset:
+	- safe_wtd monitor (requires further discussion with watchdog maintainers)
+	- Export symbols for external modules
+	- dot2bpf
+	- Add a reactor that enables the visualization of the visited
+	  states via KCOV (Marco Elver & Dmitry Vyukov)
+	- Add a CRC method to check from user-space if the values
+	  exported by the monitor were not corrupted by any other
+	  kernel task (Gabriele Paoloni)
+
+Changes from v7:
+	- Optmize the check for monitoring enabled (Tao)
+	- add lockdep checks on rv_enable/disable_monitor (Steven)
+	- Adjusted the "------" of documentation titles (Steven)
+	- Adjusted turn_monitoring_on(), and added a
+	   turn_monitoring_on_with_reset() (Steven)
+	- Moved all tracepoint_synchronize_unregister() to run with
+	  interface lock taken, and added a comment about it (Steven)
+	- lockdep, WARN, and call reactor_cleanup_monitor() (Steven)
+	- Improve comments on synchronization (Steven)
+	- pop, I could've had a v-8 Joke (Daniel)
+Changes from v6:
+	- Remove lock protection when reading static data (Steven)
+	- Add lock protection in disable_all_monitors() (Steven)
+	- Re-arrange enable_monitor (Steven/Tao)
+	- Fix monitor_desc_read_data() Description (Tao)
+	- Wait for tracepoint_synchronize_unregister() anytime a monitor
+	  is Disabled (daniel)
+	- Add memory barriers around monitoring_on and reacting_on (Steven)
+	- Make rv reactor name and description const char * (Tao)
+	- Append missing _##name for some da_automata functions/variables (Steven)
+	- rv_unregister_monitor() will disable the monitor if necessary, and
+	  take care of synchronization (Daniel)
+	- Fixed da_monitor_instrumentation.rst (Tao)
+	- Fix !CONFIG_Rv_REACTORS (kbuild test)
+	- Moved struct rv/rv.h to linux/rv.h (Daniel)
+	- Add rv_ prefix on get/put task slot (Daniel)
+Changes from v5:
+	- Add task monitor slot checks (Daniel/Tao)
+	- Reset the monitors only after initializing the data (Daniel)
+	- Add static for static data (Daniel/0-day)
+	- Change start/stop *functions to enable/disable (like the user-
+	  interface (Daniel)
+	- s/init/start/ for the functions starting the monitoring (Daniel)
+	- Access monitoring_on and reacting_on via functions (Daniel)
+	- Improved vector access checks (Tao)
+	- cleanups (Daniel/Tao)
+Changes from v4:
+	- The watchdog monitor will be discussed on another thread (Daniel)
+	- s/safe/final/ in the tracepoint definition (Daniel)
+	- Improved error handling at __init functions (Daniel)
+	- Remove the hostname from example of commands in a shell (Bagas Sanjaya)
+	- Added documentation about automata representation in C/DOT/Formal
+	  and this documentation is cited in a comment on all model.h
+	  (Steven)
+	- Make wwnr a single patch (Daniel/Steven)
+	- Add the .dot file for each monitor (Daniel)
+	- Add a document for each monitor (Daniel)
+	- Add an order for documentation in the index.rst (Daniel)
+	- Add wip/wwnr/... long description (Steven/Randy)
+	- Add comments for helper functions (Steven)
+	- Improve checks in da_monitor.h (Tao Zhou)
+	- Change final states set to bool (Tao/Daniel)
+	- Adjust indentation on enabling monitor/reactor (Steven)
+	- Use strim on buffers from user-space (Steven)
+	- Remove ifdefs inside functions (Steven)
+	- Adjust depends on RV in Kconfig (Steven)
+	- Check empty enabled monitor list (Tao Zhou)
+	- Fixed Copyright (Steven)
+	- Adjusted structures' indentation (Steven)
+	- Fix rv/monitors/$monitor/enabled return value (Song Liu)
+	- Typos (Punit Agrawal/Randy)
+	- Improved python scripts w.r.t. consistency (Steve)
+	- Blamed myself for so many problems :-) (Daniel's mind)
+Changes from v3:
+	- Rebased on 5.19
+	(rostedt's request were made on 1x1 meetings)
+	- Moved monitors to monitors/$name/ (Rostedt)
+	- Consolidate the tracepoints into a single include file in the default
+	  directory (trace/events/rv.h) (Rostedt)
+	- The tracepoints now record the entire string to the buffer.
+	- Change the enable_monitors to disable monitors with ! (instead of -).
+	  (Rostedt)
+	- Add a suffix to the state/events enums, to avoid conflict in the
+	  vmlinux.h used by eBPF.
+	- The models are now placed in the $name.h (it used to store the
+	  tracepoints, but they are now consolidated in a single file)
+	- dot2c and dot2k updated to the changes
+	- models re-generated with these new standards.
+	- user-space tools moved to an directory outside of tools/tracing as
+	  other methods of verification/log sources are planned.
+Changes from v2:
+	- Tons of checkpatch and kernel test robot
+	- Moved files to better places
+	- Adjusted watchdog tracepoints patch (Guenter Roeck)
+	- Added pretimeout watchdog events (Peter Enderborg) 
+	- Used task struct to store per-task monitors (Peter Zijlstra)
+	- Changed the instrumentation to use internal definition of tracepoint
+	  and check the callback signature (Steven Rostedt)
+	- Used printk_deferred() and removed the comment about deadlocks
+	  (Shuah Khan/John Ogness)
+	- Some simplifications:
+		- Removed the safe watchdog nowayout for now (myself)
+		- Removed export symbols for now (myself)
+Changes from V1:
+	- rebased to the latest kernel;
+	- code cleanup;
+	- the watchdog dev monitor;
+	- safety app;
 
 
->
->
->
->
-> >  #endif /* CONFIG_SYSCTL */
-> >  /*
-> >   * No sense putting this after each symbol definition, twice,
-> > diff --git a/scripts/mod/devicetable-offsets.c b/scripts/mod/devicetable-offsets.c
-> > index c0d3bcb99138..43b2549940d2 100644
-> > --- a/scripts/mod/devicetable-offsets.c
-> > +++ b/scripts/mod/devicetable-offsets.c
-> > @@ -262,5 +262,8 @@ int main(void)
-> >         DEVID(ishtp_device_id);
-> >         DEVID_FIELD(ishtp_device_id, guid);
-> >
-> > +       DEVID(sysctl_device_id);
-> > +       DEVID_FIELD(sysctl_device_id, procname);
-> > +
-> >         return 0;
-> >  }
-> > --
-> > 2.25.1
-> >
->
->
-> --
-> Best Regards
-> Masahiro Yamada
 
+Daniel Bristot de Oliveira (16):
+  rv: Add Runtime Verification (RV) interface
+  rv: Add runtime reactors interface
+  rv/include: Add helper functions for deterministic automata
+  rv/include: Add deterministic automata monitor definition via C macros
+  rv/include: Add instrumentation helper functions
+  Documentation/rv: Add a basic documentation
+  tools/rv: Add dot2c
+  Documentation/rv: Add deterministic automaton documentation
+  tools/rv: Add dot2k
+  Documentation/rv: Add deterministic automata monitor synthesis
+    documentation
+  Documentation/rv: Add deterministic automata instrumentation
+    documentation
+  rv/monitor: Add the wip monitor skeleton created by dot2k
+  rv/monitor: Add the wip monitor
+  rv/monitor: Add the wwnr monitor
+  rv/reactor: Add the printk reactor
+  rv/reactor: Add the panic reactor
 
+ Documentation/trace/index.rst                 |   1 +
+ .../trace/rv/da_monitor_instrumentation.rst   | 171 ++++
+ .../trace/rv/da_monitor_synthesis.rst         | 147 ++++
+ .../trace/rv/deterministic_automata.rst       | 184 ++++
+ Documentation/trace/rv/index.rst              |  14 +
+ Documentation/trace/rv/monitor_wip.rst        |  55 ++
+ Documentation/trace/rv/monitor_wwnr.rst       |  45 +
+ .../trace/rv/runtime-verification.rst         | 231 +++++
+ include/linux/rv.h                            |  70 ++
+ include/linux/sched.h                         |  11 +
+ include/rv/automata.h                         |  75 ++
+ include/rv/da_monitor.h                       | 543 ++++++++++++
+ include/rv/instrumentation.h                  |  29 +
+ include/trace/events/rv.h                     | 142 ++++
+ kernel/fork.c                                 |  14 +
+ kernel/trace/Kconfig                          |   2 +
+ kernel/trace/Makefile                         |   1 +
+ kernel/trace/rv/Kconfig                       |  78 ++
+ kernel/trace/rv/Makefile                      |   8 +
+ kernel/trace/rv/monitors/wip/wip.c            |  88 ++
+ kernel/trace/rv/monitors/wip/wip.h            |  46 +
+ kernel/trace/rv/monitors/wwnr/wwnr.c          |  87 ++
+ kernel/trace/rv/monitors/wwnr/wwnr.h          |  46 +
+ kernel/trace/rv/reactor_panic.c               |  43 +
+ kernel/trace/rv/reactor_printk.c              |  42 +
+ kernel/trace/rv/rv.c                          | 799 ++++++++++++++++++
+ kernel/trace/rv/rv.h                          |  69 ++
+ kernel/trace/rv/rv_reactors.c                 | 508 +++++++++++
+ kernel/trace/trace.c                          |   2 +
+ kernel/trace/trace.h                          |   9 +
+ tools/verification/dot2/Makefile              |  26 +
+ tools/verification/dot2/automata.py           | 174 ++++
+ tools/verification/dot2/dot2c                 |  26 +
+ tools/verification/dot2/dot2c.py              | 254 ++++++
+ tools/verification/dot2/dot2k                 |  47 ++
+ tools/verification/dot2/dot2k.py              | 177 ++++
+ .../dot2/dot2k_templates/main_global.c        |  91 ++
+ .../dot2/dot2k_templates/main_per_cpu.c       |  91 ++
+ .../dot2/dot2k_templates/main_per_task.c      |  91 ++
+ tools/verification/models/wip.dot             |  16 +
+ tools/verification/models/wwnr.dot            |  16 +
+ 41 files changed, 4569 insertions(+)
+ create mode 100644 Documentation/trace/rv/da_monitor_instrumentation.rst
+ create mode 100644 Documentation/trace/rv/da_monitor_synthesis.rst
+ create mode 100644 Documentation/trace/rv/deterministic_automata.rst
+ create mode 100644 Documentation/trace/rv/index.rst
+ create mode 100644 Documentation/trace/rv/monitor_wip.rst
+ create mode 100644 Documentation/trace/rv/monitor_wwnr.rst
+ create mode 100644 Documentation/trace/rv/runtime-verification.rst
+ create mode 100644 include/linux/rv.h
+ create mode 100644 include/rv/automata.h
+ create mode 100644 include/rv/da_monitor.h
+ create mode 100644 include/rv/instrumentation.h
+ create mode 100644 include/trace/events/rv.h
+ create mode 100644 kernel/trace/rv/Kconfig
+ create mode 100644 kernel/trace/rv/Makefile
+ create mode 100644 kernel/trace/rv/monitors/wip/wip.c
+ create mode 100644 kernel/trace/rv/monitors/wip/wip.h
+ create mode 100644 kernel/trace/rv/monitors/wwnr/wwnr.c
+ create mode 100644 kernel/trace/rv/monitors/wwnr/wwnr.h
+ create mode 100644 kernel/trace/rv/reactor_panic.c
+ create mode 100644 kernel/trace/rv/reactor_printk.c
+ create mode 100644 kernel/trace/rv/rv.c
+ create mode 100644 kernel/trace/rv/rv.h
+ create mode 100644 kernel/trace/rv/rv_reactors.c
+ create mode 100644 tools/verification/dot2/Makefile
+ create mode 100644 tools/verification/dot2/automata.py
+ create mode 100644 tools/verification/dot2/dot2c
+ create mode 100644 tools/verification/dot2/dot2c.py
+ create mode 100644 tools/verification/dot2/dot2k
+ create mode 100644 tools/verification/dot2/dot2k.py
+ create mode 100644 tools/verification/dot2/dot2k_templates/main_global.c
+ create mode 100644 tools/verification/dot2/dot2k_templates/main_per_cpu.c
+ create mode 100644 tools/verification/dot2/dot2k_templates/main_per_task.c
+ create mode 100644 tools/verification/models/wip.dot
+ create mode 100644 tools/verification/models/wwnr.dot
 
---
-Mauricio Faria de Oliveira
+-- 
+2.35.1
+
