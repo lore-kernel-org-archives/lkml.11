@@ -2,77 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DEC0C19F29
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 06:45:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA203C19F29
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 06:45:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230243AbiG0GpC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 02:45:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52972 "EHLO
+        id S230378AbiG0GpI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 02:45:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230416AbiG0GoV (ORCPT
+        with ESMTP id S230057AbiG0GoJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 02:44:21 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF8E4422C3
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 23:44:05 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id x7so1444534pll.7
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 23:44:05 -0700 (PDT)
+        Wed, 27 Jul 2022 02:44:09 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D10D40BF9
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 23:43:48 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id d17so23661884lfa.12
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 23:43:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=uSbrL91D8dmhiCPRZ5j9cw2cZh5t8fmVS5nObDDnOS8=;
-        b=wvzx8C9qFRQWz5sX2uVC60ABeC6Jom1JzL4E4XU+rJ5pJC1Sk0kx9LRtDbr0+5OagR
-         jGPtdoDM659xgKOfhWoDGIBqWZMTU0GWUsdmLqVc+EHAxhghIbzqTbacrHxZ2xdCE+In
-         2uAFKNq2u68afsMVZ/TGz57AbN4/doUd/DAvJj+CJFB76Q05cfSqHx5+LtvKmqMWdMZh
-         BE3guhXA3Vk9Xq09Pt/cbMoUB6ziRjFRTq8pqvlrTy+C5F6lWs6YdRg3HfhQRNFo8oz4
-         fihsOjKANQ6ZGmVj3bQxl3MiClgWy6SHkoUc4JdmAqvMmSFDCBkpmK7f1DAu8wQ6pZMz
-         UdPw==
+        d=semihalf.com; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=AZnXgTWAmHAAkiH1J3eS3SuupS7jjAspolqgIKE9W3w=;
+        b=If2TkJ8pMmsyfyfVuwa7SGbtltDAMjKUSVBgzQ482CqXgjwCPUCroLSM7qOdjNGVBM
+         TNPjT8ZkVwGNKL8KCbhck1+9MDMX3E+ZB9bZ8Ln7FDo9IGAf+bVsd8o9PoPr32469aVn
+         Cm/v5Ya0yA901PbzfwGPaBZu1hX69UpO9iriYZ+vuUP1/N2EQZDVthkd/lZz6qmy7kdC
+         9ipfZGbD+lPMZJHPkZzgG9NW9Kp8WjNVjbtxD6hE8Ydrdg8lJ/ykf2UZWKlRb20T0ygH
+         jsYPNiKVscbNdWaUugzaY1V4gawVPKOtbCC8ivNzlCzf4g6mZFqhTvWM/gttpgL4BB9Q
+         10tg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=uSbrL91D8dmhiCPRZ5j9cw2cZh5t8fmVS5nObDDnOS8=;
-        b=kUuNXsNVQIqDS1pmSIqz4EICuYsEqJVDOB79yyiIELJvTDzfKpyJJbsk8FrnPiWyOA
-         BPa2sQsZcfi/XaW2CtL7lM57IlS1vvqxaF6yCVPfwpTeUw54xYVvvH2/8tTKAfeBGzA0
-         BqPy9KzBxeLxmKGNEPOY24GqOhhTy6PWNJ3fGHv7337+KCI6O1DBeANwXAgXKRvI0q6E
-         JZxJq3KxjDoKfnL989Leg3UdcnUgGRTf9xqXmjq6l56M2wiAGZhLKP4VEKftqG1V+tAS
-         UIao0+gt7ryLIlIh85cE1PhjC/hvjzKeaMvubaEHdKKaJggF35duA+fClyW/oAIrXMs8
-         tQBA==
-X-Gm-Message-State: AJIora9oKp+bGrIOqpc1Ewr12zYIWbrWzvbk5YQnHXRaKsPg2Nv8Uz9W
-        WdP+f8OiFMCubNh+RM8hrVFKzQ==
-X-Google-Smtp-Source: AGRyM1v9jbnVP4YUj1b6SWwJq2CymBR25medXBFVHukULKY5c+pl2zMynfq0uViVIUf3U5hxrr2y/w==
-X-Received: by 2002:a17:90a:5508:b0:1f2:bedd:980e with SMTP id b8-20020a17090a550800b001f2bedd980emr2841528pji.178.1658904245128;
-        Tue, 26 Jul 2022 23:44:05 -0700 (PDT)
-Received: from localhost ([139.177.225.239])
-        by smtp.gmail.com with ESMTPSA id c4-20020a170903234400b0016bea26bb2asm11052158plh.245.2022.07.26.23.44.04
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=AZnXgTWAmHAAkiH1J3eS3SuupS7jjAspolqgIKE9W3w=;
+        b=3gvmTiKjX9f8/4ONfxMuUW2YoZuQPqC5h2RoUVvu+1e8WwB6Oa8c6+wamg07F5lae2
+         x3SQTnBMtZaDyHDDZ4WcLnehKJ6ch37T66kwxXHJe3HMhQHsagJSHd/KrRNyCcFdt/gl
+         ZruSdlYBvwmzP2649bOU9dUOESxwxHH4SLjlu+TB5s7XUMHLLBgboN4HSraIhfj6R1+O
+         zC+/FfRSQlhkDCckHOxLwj6ZeRf0owCmulWspnVkrYXd6jqJXI8wiFv65tWyPmQoZJkZ
+         NI0yJef+w4CDA5NS1j01S3RN4oO+1wx0P8CtYwaFXyE4BGkWCGJCguod5wR9x5QmsBdo
+         SP6A==
+X-Gm-Message-State: AJIora8vZiEmbPq6jI9T+8Ry38vuIaOG6/rU6fvslm6Qg/G1K+jzRMGL
+        kbq7v8fc0rQ8wO/nXq3LtxKEccTSV5QqbQ==
+X-Google-Smtp-Source: AGRyM1ulVcNyJ4rwZ+4mPHuX4JlRF3Mn/mt8yKy6C/OG/KII/LeRx1Z9arhrE35NZl54VBFs1Azx0g==
+X-Received: by 2002:a05:6512:602:b0:48a:8278:52da with SMTP id b2-20020a056512060200b0048a827852damr6096896lfe.257.1658904226137;
+        Tue, 26 Jul 2022 23:43:46 -0700 (PDT)
+Received: from gilgamesh.lab.semihalf.net ([83.142.187.85])
+        by smtp.gmail.com with ESMTPSA id w19-20020a05651234d300b0048a97a1df02sm1157231lfr.6.2022.07.26.23.43.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Jul 2022 23:44:04 -0700 (PDT)
-Date:   Wed, 27 Jul 2022 14:43:59 +0800
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     akpm@linux-foundation.org, mike.kravetz@oracle.com,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/5] hugetlbfs: use helper macro SZ_1{K,M}
-Message-ID: <YuDer11XLQKtcGR0@FVFYT0MHHV2J.usts.net>
-References: <20220726142918.51693-1-linmiaohe@huawei.com>
- <20220726142918.51693-2-linmiaohe@huawei.com>
+        Tue, 26 Jul 2022 23:43:45 -0700 (PDT)
+From:   Marcin Wojtas <mw@semihalf.com>
+To:     linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     rafael@kernel.org, andriy.shevchenko@linux.intel.com,
+        sean.wang@mediatek.com, Landen.Chao@mediatek.com,
+        linus.walleij@linaro.org, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, olteanv@gmail.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux@armlinux.org.uk, hkallweit1@gmail.com, gjb@semihalf.com,
+        mw@semihalf.com, jaz@semihalf.com, tn@semihalf.com,
+        Samer.El-Haj-Mahmoud@arm.com, upstream@semihalf.com
+Subject: [net-next: PATCH v3 5/8] device property: introduce fwnode_find_parent_dev_match
+Date:   Wed, 27 Jul 2022 08:43:18 +0200
+Message-Id: <20220727064321.2953971-6-mw@semihalf.com>
+X-Mailer: git-send-email 2.29.0
+In-Reply-To: <20220727064321.2953971-1-mw@semihalf.com>
+References: <20220727064321.2953971-1-mw@semihalf.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220726142918.51693-2-linmiaohe@huawei.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 26, 2022 at 10:29:14PM +0800, Miaohe Lin wrote:
-> Use helper macro SZ_1K and SZ_1M to do the size conversion. Minor
-> readability improvement.
-> 
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
-> Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
+This patch adds a new generic routine fwnode_find_parent_dev_match
+that can be used e.g. as a callback for class_find_device().
+It searches for the struct device corresponding to a
+struct fwnode_handle by iterating over device and
+its parents.
 
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+Signed-off-by: Marcin Wojtas <mw@semihalf.com>
+---
+ include/linux/property.h |  1 +
+ drivers/base/property.c  | 23 ++++++++++++++++++++
+ 2 files changed, 24 insertions(+)
 
-Thanks.
+diff --git a/include/linux/property.h b/include/linux/property.h
+index a5b429d623f6..829254a5ae63 100644
+--- a/include/linux/property.h
++++ b/include/linux/property.h
+@@ -95,6 +95,7 @@ struct device *fwnode_get_next_parent_dev(struct fwnode_handle *fwnode);
+ unsigned int fwnode_count_parents(const struct fwnode_handle *fwn);
+ struct fwnode_handle *fwnode_get_nth_parent(struct fwnode_handle *fwn,
+ 					    unsigned int depth);
++int fwnode_find_parent_dev_match(struct device *dev, const void *data);
+ bool fwnode_is_ancestor_of(struct fwnode_handle *ancestor, struct fwnode_handle *child);
+ struct fwnode_handle *fwnode_get_next_child_node(
+ 	const struct fwnode_handle *fwnode, struct fwnode_handle *child);
+diff --git a/drivers/base/property.c b/drivers/base/property.c
+index ed6f449f8e5c..ee6a8144f103 100644
+--- a/drivers/base/property.c
++++ b/drivers/base/property.c
+@@ -685,6 +685,29 @@ struct fwnode_handle *fwnode_get_nth_parent(struct fwnode_handle *fwnode,
+ }
+ EXPORT_SYMBOL_GPL(fwnode_get_nth_parent);
+ 
++/**
++ * fwnode_find_parent_dev_match - look for a device matching the struct fwnode_handle
++ * @dev: the struct device to initiate the search
++ * @data: pointer passed for comparison
++ *
++ * Looks up the device structure corresponding with the fwnode by iterating
++ * over @dev and its parents.
++ * The routine can be used e.g. as a callback for class_find_device().
++ *
++ * Returns: %1 - match is found
++ *          %0 - match not found
++ */
++int fwnode_find_parent_dev_match(struct device *dev, const void *data)
++{
++	for (; dev; dev = dev->parent) {
++		if (device_match_fwnode(dev, data))
++			return 1;
++	}
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(fwnode_find_parent_dev_match);
++
+ /**
+  * fwnode_is_ancestor_of - Test if @ancestor is ancestor of @child
+  * @ancestor: Firmware which is tested for being an ancestor
+-- 
+2.29.0
 
