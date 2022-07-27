@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5802DC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:15:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FFE7C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:15:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241618AbiG0RPm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:15:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33368 "EHLO
+        id S241631AbiG0RPr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:15:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241688AbiG0ROP (ORCPT
+        with ESMTP id S241726AbiG0ROW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:14:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F8B45B79A;
-        Wed, 27 Jul 2022 09:42:36 -0700 (PDT)
+        Wed, 27 Jul 2022 13:14:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6551F77577;
+        Wed, 27 Jul 2022 09:42:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E803CB821A6;
-        Wed, 27 Jul 2022 16:42:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DF1EC433D6;
-        Wed, 27 Jul 2022 16:42:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 33ABFB821BA;
+        Wed, 27 Jul 2022 16:42:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85717C433B5;
+        Wed, 27 Jul 2022 16:42:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940146;
-        bh=d8KCOZQRtS3YyGHEzP8Y+vF/hcnKWbNeTEIuHdOAJqc=;
+        s=korg; t=1658940157;
+        bh=/sNS45vza5QLdinTFdHl9PLVW8EEHm8+8B8Nb2az7V0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GtYDW0uL9E51Lbe6ygW8Jwe9rsSO0Kx+PGGCpseURFPlHVwjR6x5DCwN3kVo8XhtV
-         FaM60i6xOXsdfRScQNSgRi0RCoI3uPQnMyMHA7N+N31T4JpZoX0rFJMQUTR/x62rJj
-         oOPfbO52jvfJW8f7qu2MVJg5YS+Pf1KaUuQmjiBk=
+        b=VNLhIFWZpWL/n3AfTFITq+bH3/R8HBzaQI5SFsMxdBhD9oLiYkl5qlX9ahvj84hCS
+         C6Fj4zZDOZ+q4w7MwrQGlnUaeNJ24LTSjSuDHAtIely/Mo3bs6Ngq1gYPJJbq8cT7d
+         kmAkLfn7mM+sbQPNOeihQyDXIbAWe+iduHPBA78A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 122/201] tcp: Fix a data-race around sysctl_tcp_early_retrans.
-Date:   Wed, 27 Jul 2022 18:10:26 +0200
-Message-Id: <20220727161032.815549109@linuxfoundation.org>
+Subject: [PATCH 5.15 125/201] tcp: Fix data-races around sysctl_tcp_slow_start_after_idle.
+Date:   Wed, 27 Jul 2022 18:10:29 +0200
+Message-Id: <20220727161032.941053058@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -51,32 +51,48 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 52e65865deb6a36718a463030500f16530eaab74 ]
+[ Upstream commit 4845b5713ab18a1bb6e31d1fbb4d600240b8b691 ]
 
-While reading sysctl_tcp_early_retrans, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its reader.
+While reading sysctl_tcp_slow_start_after_idle, it can be changed
+concurrently.  Thus, we need to add READ_ONCE() to its readers.
 
-Fixes: eed530b6c676 ("tcp: early retransmit")
+Fixes: 35089bb203f4 ("[TCP]: Add tcp_slow_start_after_idle sysctl.")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
+ include/net/tcp.h     | 4 ++--
  net/ipv4/tcp_output.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index 0c609d10c320..8ce8aafeef0f 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -1390,8 +1390,8 @@ static inline void tcp_slow_start_after_idle_check(struct sock *sk)
+ 	struct tcp_sock *tp = tcp_sk(sk);
+ 	s32 delta;
+ 
+-	if (!sock_net(sk)->ipv4.sysctl_tcp_slow_start_after_idle || tp->packets_out ||
+-	    ca_ops->cong_control)
++	if (!READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_slow_start_after_idle) ||
++	    tp->packets_out || ca_ops->cong_control)
+ 		return;
+ 	delta = tcp_jiffies32 - tp->lsndtime;
+ 	if (delta > inet_csk(sk)->icsk_rto)
 diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index a08fcf15372a..3b71d8735995 100644
+index 3b71d8735995..94f7841f7bfb 100644
 --- a/net/ipv4/tcp_output.c
 +++ b/net/ipv4/tcp_output.c
-@@ -2739,7 +2739,7 @@ bool tcp_schedule_loss_probe(struct sock *sk, bool advancing_rto)
- 	if (rcu_access_pointer(tp->fastopen_rsk))
- 		return false;
+@@ -1901,7 +1901,7 @@ static void tcp_cwnd_validate(struct sock *sk, bool is_cwnd_limited)
+ 		if (tp->packets_out > tp->snd_cwnd_used)
+ 			tp->snd_cwnd_used = tp->packets_out;
  
--	early_retrans = sock_net(sk)->ipv4.sysctl_tcp_early_retrans;
-+	early_retrans = READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_early_retrans);
- 	/* Schedule a loss probe in 2*RTT for SACK capable connections
- 	 * not in loss recovery, that are either limited by cwnd or application.
- 	 */
+-		if (sock_net(sk)->ipv4.sysctl_tcp_slow_start_after_idle &&
++		if (READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_slow_start_after_idle) &&
+ 		    (s32)(tcp_jiffies32 - tp->snd_cwnd_stamp) >= inet_csk(sk)->icsk_rto &&
+ 		    !ca_ops->cong_control)
+ 			tcp_cwnd_application_limited(sk);
 -- 
 2.35.1
 
