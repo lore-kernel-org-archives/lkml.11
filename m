@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE260C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:50:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93FDCC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:50:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240172AbiG0Qul (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:50:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57584 "EHLO
+        id S240693AbiG0Quo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:50:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240786AbiG0QtZ (ORCPT
+        with ESMTP id S240802AbiG0Qtc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:49:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 295954E86A;
-        Wed, 27 Jul 2022 09:32:55 -0700 (PDT)
+        Wed, 27 Jul 2022 12:49:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 922D861B3A;
+        Wed, 27 Jul 2022 09:32:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6E9ADB81F90;
-        Wed, 27 Jul 2022 16:32:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6204C433C1;
-        Wed, 27 Jul 2022 16:32:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 38C3BB8200C;
+        Wed, 27 Jul 2022 16:32:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9830CC433C1;
+        Wed, 27 Jul 2022 16:32:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939573;
-        bh=U7SjzZ87V97EDXdPPtKXqWDbu9YvGTtPAJ7iSO2QroU=;
+        s=korg; t=1658939576;
+        bh=N0ML1pABLswN1NQFGoqdU3MrpRpK1IRhmHHuJ+pi9Pc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w6AQp3hxrMixzMpF9VZsnflX2N11FrqXWPZZKaKKX4s6F4o5zkJ8/oS0saaTV9Wbx
-         RGfHhVe3HPeMju0qdHNwyX4JW+0K/41ICqQMMUQ/qQnPkiN0YmvYip/KBADz1v8rL8
-         0Z+U6TqRCVCgohZeGvLugedl83x+jfu8c+vOJr78=
+        b=Cf6EqTFu5jbNSbuLYMxTzJUfQT3iKUeTR3z4Ih+JmtbF92zgy3BH1D84ftLgDmhqW
+         /TyaDsZ2plgNmlZ9mXpTfuXxZvCdrk4tPmn/pyiH5/wd8AbDc3D3nDSJ1oUvkIZaqK
+         lxO6tNaOuafwvVHUDC83EvlkNttA1gfcrHc3T4V8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 029/105] ip: Fix data-races around sysctl_ip_fwd_use_pmtu.
-Date:   Wed, 27 Jul 2022 18:10:15 +0200
-Message-Id: <20220727161013.272212651@linuxfoundation.org>
+Subject: [PATCH 5.10 030/105] ip: Fix data-races around sysctl_ip_fwd_update_priority.
+Date:   Wed, 27 Jul 2022 18:10:16 +0200
+Message-Id: <20220727161013.301876371@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161012.056867467@linuxfoundation.org>
 References: <20220727161012.056867467@linuxfoundation.org>
@@ -51,46 +51,53 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 60c158dc7b1f0558f6cadd5b50d0386da0000d50 ]
+[ Upstream commit 7bf9e18d9a5e99e3c83482973557e9f047b051e7 ]
 
-While reading sysctl_ip_fwd_use_pmtu, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its readers.
+While reading sysctl_ip_fwd_update_priority, it can be changed
+concurrently.  Thus, we need to add READ_ONCE() to its readers.
 
-Fixes: f87c10a8aa1e ("ipv4: introduce ip_dst_mtu_maybe_forward and protect forwarding path against pmtu spoofing")
+Fixes: 432e05d32892 ("net: ipv4: Control SKB reprioritization after forwarding")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/ip.h | 2 +-
- net/ipv4/route.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c | 3 ++-
+ net/ipv4/ip_forward.c                                 | 2 +-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/include/net/ip.h b/include/net/ip.h
-index 76aaa7eb5b82..a7e40ef02732 100644
---- a/include/net/ip.h
-+++ b/include/net/ip.h
-@@ -440,7 +440,7 @@ static inline unsigned int ip_dst_mtu_maybe_forward(const struct dst_entry *dst,
- 	struct net *net = dev_net(dst->dev);
- 	unsigned int mtu;
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+index 5f143ca16c01..d2887ae508bb 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+@@ -8038,13 +8038,14 @@ static int mlxsw_sp_dscp_init(struct mlxsw_sp *mlxsw_sp)
+ static int __mlxsw_sp_router_init(struct mlxsw_sp *mlxsw_sp)
+ {
+ 	struct net *net = mlxsw_sp_net(mlxsw_sp);
+-	bool usp = net->ipv4.sysctl_ip_fwd_update_priority;
+ 	char rgcr_pl[MLXSW_REG_RGCR_LEN];
+ 	u64 max_rifs;
++	bool usp;
  
--	if (net->ipv4.sysctl_ip_fwd_use_pmtu ||
-+	if (READ_ONCE(net->ipv4.sysctl_ip_fwd_use_pmtu) ||
- 	    ip_mtu_locked(dst) ||
- 	    !forwarding)
- 		return dst_mtu(dst);
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index aab8ac383d5d..374647693d7a 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -1442,7 +1442,7 @@ u32 ip_mtu_from_fib_result(struct fib_result *res, __be32 daddr)
- 	struct fib_info *fi = res->fi;
- 	u32 mtu = 0;
+ 	if (!MLXSW_CORE_RES_VALID(mlxsw_sp->core, MAX_RIFS))
+ 		return -EIO;
+ 	max_rifs = MLXSW_CORE_RES_GET(mlxsw_sp->core, MAX_RIFS);
++	usp = READ_ONCE(net->ipv4.sysctl_ip_fwd_update_priority);
  
--	if (dev_net(dev)->ipv4.sysctl_ip_fwd_use_pmtu ||
-+	if (READ_ONCE(dev_net(dev)->ipv4.sysctl_ip_fwd_use_pmtu) ||
- 	    fi->fib_metrics->metrics[RTAX_LOCK - 1] & (1 << RTAX_MTU))
- 		mtu = fi->fib_mtu;
+ 	mlxsw_reg_rgcr_pack(rgcr_pl, true, true);
+ 	mlxsw_reg_rgcr_max_router_interfaces_set(rgcr_pl, max_rifs);
+diff --git a/net/ipv4/ip_forward.c b/net/ipv4/ip_forward.c
+index 00ec819f949b..29730edda220 100644
+--- a/net/ipv4/ip_forward.c
++++ b/net/ipv4/ip_forward.c
+@@ -151,7 +151,7 @@ int ip_forward(struct sk_buff *skb)
+ 	    !skb_sec_path(skb))
+ 		ip_rt_send_redirect(skb);
  
+-	if (net->ipv4.sysctl_ip_fwd_update_priority)
++	if (READ_ONCE(net->ipv4.sysctl_ip_fwd_update_priority))
+ 		skb->priority = rt_tos2priority(iph->tos);
+ 
+ 	return NF_HOOK(NFPROTO_IPV4, NF_INET_FORWARD,
 -- 
 2.35.1
 
