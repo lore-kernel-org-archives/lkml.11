@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F8D1C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:21:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F915C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:21:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233248AbiG0RU6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:20:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33706 "EHLO
+        id S235035AbiG0RVE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:21:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241899AbiG0RTS (ORCPT
+        with ESMTP id S241925AbiG0RTV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:19:18 -0400
+        Wed, 27 Jul 2022 13:19:21 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFB1C7A524;
-        Wed, 27 Jul 2022 09:44:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 734F150721;
+        Wed, 27 Jul 2022 09:44:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6402BB8200C;
-        Wed, 27 Jul 2022 16:44:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36566C433D6;
-        Wed, 27 Jul 2022 16:44:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 057E4B821AC;
+        Wed, 27 Jul 2022 16:44:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B3BAC433C1;
+        Wed, 27 Jul 2022 16:44:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940248;
-        bh=wNIplsC///Z+1aLsiUGI7BR3SSo4CPpuOnzTbHZt7Zg=;
+        s=korg; t=1658940254;
+        bh=ExWebhwnzEVWFIDCEFYoZ68tGImeblCF9aJvnPOKp+4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YSJrcV21spXwIq9Ks7zoYJnNwXVVvTodcRSZe4PmjZ4X4RUpx7vitFJ9gOJbN+51z
-         rh8EEP5CZ8zruLVUOEKIuv00m5qIvWdIM1rBKauKNDWLkcDwAUxUhB1Uwdn3f3UkEQ
-         sRU+DxEoda/6jHkzU+5PCJmBPvbKXiW+FcGWRBVQ=
+        b=P70lwEOTvRwp/7j88lmbR4yMy+DRIrBVxSlfO6LxjDZ6wPPsnhOD2LT6LzvP+Wozw
+         SzkK87BK7l34QvnDcD7NFGO+K+gxF0P3HumI7fpP1/xrXbrC+kSIxMDhURnNPOLm9V
+         isJ5oHlHaryGtupVPzKZdp7Rz8S8NYeCOFoJLkVo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+        Marco Chiappero <marco.chiappero@intel.com>,
+        Wojciech Ziemba <wojciech.ziemba@intel.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 157/201] iwlwifi: fw: uefi: add missing include guards
-Date:   Wed, 27 Jul 2022 18:11:01 +0200
-Message-Id: <20220727161034.339315972@linuxfoundation.org>
+Subject: [PATCH 5.15 159/201] crypto: qat - use pre-allocated buffers in datapath
+Date:   Wed, 27 Jul 2022 18:11:03 +0200
+Message-Id: <20220727161034.418781055@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -49,43 +52,205 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
 
-[ Upstream commit 91000fdf82195b66350b4f88413c2e8b5f94d994 ]
+[ Upstream commit e0831e7af4e03f2715de102e18e9179ec0a81562 ]
 
-We still don't use #pragma once in the kernel, but even if
-we did it'd be missing. Add the missing include guards.
+In order to do DMAs, the QAT device requires that the scatterlist
+structures are mapped and translated into a format that the firmware can
+understand. This is defined as the composition of a scatter gather list
+(SGL) descriptor header, the struct qat_alg_buf_list, plus a variable
+number of flat buffer descriptors, the struct qat_alg_buf.
 
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Fixes: 84c3c9952afb ("iwlwifi: move UEFI code to a separate file")
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211024181719.7fc9988ed49b.I87e300fab664047581e51fb9b02744c75320d08c@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+The allocation and mapping of these data structures is done each time a
+request is received from the skcipher and aead APIs.
+In an OOM situation, this behaviour might lead to a dead-lock if an
+allocation fails.
+
+Based on the conversation in [1], increase the size of the aead and
+skcipher request contexts to include an SGL descriptor that can handle
+a maximum of 4 flat buffers.
+If requests exceed 4 entries buffers, memory is allocated dynamically.
+
+[1] https://lore.kernel.org/linux-crypto/20200722072932.GA27544@gondor.apana.org.au/
+
+Cc: stable@vger.kernel.org
+Fixes: d370cec32194 ("crypto: qat - Intel(R) QAT crypto interface")
+Reported-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
+Reviewed-by: Marco Chiappero <marco.chiappero@intel.com>
+Reviewed-by: Wojciech Ziemba <wojciech.ziemba@intel.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/fw/uefi.h | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/crypto/qat/qat_common/qat_algs.c   | 64 +++++++++++++---------
+ drivers/crypto/qat/qat_common/qat_crypto.h | 24 ++++++++
+ 2 files changed, 61 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/fw/uefi.h b/drivers/net/wireless/intel/iwlwifi/fw/uefi.h
-index 45d0b36d79b5..d552c656ac9f 100644
---- a/drivers/net/wireless/intel/iwlwifi/fw/uefi.h
-+++ b/drivers/net/wireless/intel/iwlwifi/fw/uefi.h
-@@ -2,7 +2,8 @@
- /*
-  * Copyright(c) 2021 Intel Corporation
-  */
--
-+#ifndef __iwl_fw_uefi__
-+#define __iwl_fw_uefi__
+diff --git a/drivers/crypto/qat/qat_common/qat_algs.c b/drivers/crypto/qat/qat_common/qat_algs.c
+index f998ed58457c..ec635fe44c1f 100644
+--- a/drivers/crypto/qat/qat_common/qat_algs.c
++++ b/drivers/crypto/qat/qat_common/qat_algs.c
+@@ -46,19 +46,6 @@
+ static DEFINE_MUTEX(algs_lock);
+ static unsigned int active_devs;
  
- #define IWL_UEFI_OEM_PNVM_NAME		L"UefiCnvWlanOemSignedPnvm"
- #define IWL_UEFI_REDUCED_POWER_NAME	L"UefiCnvWlanReducedPower"
-@@ -40,3 +41,5 @@ void *iwl_uefi_get_reduced_power(struct iwl_trans *trans, size_t *len)
- 	return ERR_PTR(-EOPNOTSUPP);
- }
- #endif /* CONFIG_EFI */
+-struct qat_alg_buf {
+-	u32 len;
+-	u32 resrvd;
+-	u64 addr;
+-} __packed;
+-
+-struct qat_alg_buf_list {
+-	u64 resrvd;
+-	u32 num_bufs;
+-	u32 num_mapped_bufs;
+-	struct qat_alg_buf bufers[];
+-} __packed __aligned(64);
+-
+ /* Common content descriptor */
+ struct qat_alg_cd {
+ 	union {
+@@ -693,7 +680,10 @@ static void qat_alg_free_bufl(struct qat_crypto_instance *inst,
+ 				 bl->bufers[i].len, DMA_BIDIRECTIONAL);
+ 
+ 	dma_unmap_single(dev, blp, sz, DMA_TO_DEVICE);
+-	kfree(bl);
 +
-+#endif /* __iwl_fw_uefi__ */
++	if (!qat_req->buf.sgl_src_valid)
++		kfree(bl);
++
+ 	if (blp != blpout) {
+ 		/* If out of place operation dma unmap only data */
+ 		int bufless = blout->num_bufs - blout->num_mapped_bufs;
+@@ -704,7 +694,9 @@ static void qat_alg_free_bufl(struct qat_crypto_instance *inst,
+ 					 DMA_BIDIRECTIONAL);
+ 		}
+ 		dma_unmap_single(dev, blpout, sz_out, DMA_TO_DEVICE);
+-		kfree(blout);
++
++		if (!qat_req->buf.sgl_dst_valid)
++			kfree(blout);
+ 	}
+ }
+ 
+@@ -721,15 +713,24 @@ static int qat_alg_sgl_to_bufl(struct qat_crypto_instance *inst,
+ 	dma_addr_t blp = DMA_MAPPING_ERROR;
+ 	dma_addr_t bloutp = DMA_MAPPING_ERROR;
+ 	struct scatterlist *sg;
+-	size_t sz_out, sz = struct_size(bufl, bufers, n + 1);
++	size_t sz_out, sz = struct_size(bufl, bufers, n);
++	int node = dev_to_node(&GET_DEV(inst->accel_dev));
+ 
+ 	if (unlikely(!n))
+ 		return -EINVAL;
+ 
+-	bufl = kzalloc_node(sz, GFP_ATOMIC,
+-			    dev_to_node(&GET_DEV(inst->accel_dev)));
+-	if (unlikely(!bufl))
+-		return -ENOMEM;
++	qat_req->buf.sgl_src_valid = false;
++	qat_req->buf.sgl_dst_valid = false;
++
++	if (n > QAT_MAX_BUFF_DESC) {
++		bufl = kzalloc_node(sz, GFP_ATOMIC, node);
++		if (unlikely(!bufl))
++			return -ENOMEM;
++	} else {
++		bufl = &qat_req->buf.sgl_src.sgl_hdr;
++		memset(bufl, 0, sizeof(struct qat_alg_buf_list));
++		qat_req->buf.sgl_src_valid = true;
++	}
+ 
+ 	for_each_sg(sgl, sg, n, i)
+ 		bufl->bufers[i].addr = DMA_MAPPING_ERROR;
+@@ -760,12 +761,18 @@ static int qat_alg_sgl_to_bufl(struct qat_crypto_instance *inst,
+ 		struct qat_alg_buf *bufers;
+ 
+ 		n = sg_nents(sglout);
+-		sz_out = struct_size(buflout, bufers, n + 1);
++		sz_out = struct_size(buflout, bufers, n);
+ 		sg_nctr = 0;
+-		buflout = kzalloc_node(sz_out, GFP_ATOMIC,
+-				       dev_to_node(&GET_DEV(inst->accel_dev)));
+-		if (unlikely(!buflout))
+-			goto err_in;
++
++		if (n > QAT_MAX_BUFF_DESC) {
++			buflout = kzalloc_node(sz_out, GFP_ATOMIC, node);
++			if (unlikely(!buflout))
++				goto err_in;
++		} else {
++			buflout = &qat_req->buf.sgl_dst.sgl_hdr;
++			memset(buflout, 0, sizeof(struct qat_alg_buf_list));
++			qat_req->buf.sgl_dst_valid = true;
++		}
+ 
+ 		bufers = buflout->bufers;
+ 		for_each_sg(sglout, sg, n, i)
+@@ -810,7 +817,9 @@ static int qat_alg_sgl_to_bufl(struct qat_crypto_instance *inst,
+ 			dma_unmap_single(dev, buflout->bufers[i].addr,
+ 					 buflout->bufers[i].len,
+ 					 DMA_BIDIRECTIONAL);
+-	kfree(buflout);
++
++	if (!qat_req->buf.sgl_dst_valid)
++		kfree(buflout);
+ 
+ err_in:
+ 	if (!dma_mapping_error(dev, blp))
+@@ -823,7 +832,8 @@ static int qat_alg_sgl_to_bufl(struct qat_crypto_instance *inst,
+ 					 bufl->bufers[i].len,
+ 					 DMA_BIDIRECTIONAL);
+ 
+-	kfree(bufl);
++	if (!qat_req->buf.sgl_src_valid)
++		kfree(bufl);
+ 
+ 	dev_err(dev, "Failed to map buf for dma\n");
+ 	return -ENOMEM;
+diff --git a/drivers/crypto/qat/qat_common/qat_crypto.h b/drivers/crypto/qat/qat_common/qat_crypto.h
+index b6a4c95ae003..0928f159ea99 100644
+--- a/drivers/crypto/qat/qat_common/qat_crypto.h
++++ b/drivers/crypto/qat/qat_common/qat_crypto.h
+@@ -21,6 +21,26 @@ struct qat_crypto_instance {
+ 	atomic_t refctr;
+ };
+ 
++#define QAT_MAX_BUFF_DESC	4
++
++struct qat_alg_buf {
++	u32 len;
++	u32 resrvd;
++	u64 addr;
++} __packed;
++
++struct qat_alg_buf_list {
++	u64 resrvd;
++	u32 num_bufs;
++	u32 num_mapped_bufs;
++	struct qat_alg_buf bufers[];
++} __packed;
++
++struct qat_alg_fixed_buf_list {
++	struct qat_alg_buf_list sgl_hdr;
++	struct qat_alg_buf descriptors[QAT_MAX_BUFF_DESC];
++} __packed __aligned(64);
++
+ struct qat_crypto_request_buffs {
+ 	struct qat_alg_buf_list *bl;
+ 	dma_addr_t blp;
+@@ -28,6 +48,10 @@ struct qat_crypto_request_buffs {
+ 	dma_addr_t bloutp;
+ 	size_t sz;
+ 	size_t sz_out;
++	bool sgl_src_valid;
++	bool sgl_dst_valid;
++	struct qat_alg_fixed_buf_list sgl_src;
++	struct qat_alg_fixed_buf_list sgl_dst;
+ };
+ 
+ struct qat_crypto_request;
 -- 
 2.35.1
 
