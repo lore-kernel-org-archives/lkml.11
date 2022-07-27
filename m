@@ -2,117 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBBE7C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 14:51:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D834C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 14:51:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234352AbiG0Ovg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 10:51:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40010 "EHLO
+        id S232729AbiG0Ov5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 10:51:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234280AbiG0Ov3 (ORCPT
+        with ESMTP id S234238AbiG0Ovu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 10:51:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B6D743329
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 07:51:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 91EED618B6
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 14:51:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECB78C433D6;
-        Wed, 27 Jul 2022 14:51:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658933485;
-        bh=vqSpCepPlYeE/5Z30CAjJpT4GBqxXF90RajlOgrTJLI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=rXH5gsO3xi1jppwO0JGkyyXJe6nNvBnMS+zs7n4XDocHmIURshNFiwP9Rvoei9tMX
-         y35Wh76pqxyj1CSdrPxcO/UzyLcdSov0iEDMgd26FHs/IKa3ET579CqCBygxyq/igc
-         HE4e0PVoxOaSB1IDj+DCQLLcTRzpVLcS3tmKIKOSjc9zkcz4XVpqIX2qY0y51xYLN2
-         edOg0uEjR4ZiYyS2guPTzZvAD+1yPJLZTT3NnUY23bLFekJgNxwu8yDDGKJhN4tlKv
-         r+gcZwpkwc4Ps1FoLxitZ4DkiGcpOgXgovqbFroyD0YDNfwqszAls9Q2UDs3lXzEfh
-         EFTkwm1DTH7aQ==
-From:   Chao Yu <chao@kernel.org>
-To:     jaegeuk@kernel.org
-Cc:     linux-f2fs-devel@lists.sourceforge.net,
-        linux-kernel@vger.kernel.org, Chao Yu <chao.yu@oppo.com>,
-        Wenqing Liu <wenqingliu0120@gmail.com>
-Subject: [PATCH] f2fs: fix to do sanity check on segment type in build_sit_entries()
-Date:   Wed, 27 Jul 2022 22:51:05 +0800
-Message-Id: <20220727145105.3502-1-chao@kernel.org>
-X-Mailer: git-send-email 2.36.1
+        Wed, 27 Jul 2022 10:51:50 -0400
+Received: from mail-io1-f49.google.com (mail-io1-f49.google.com [209.85.166.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 232FD42AE9;
+        Wed, 27 Jul 2022 07:51:50 -0700 (PDT)
+Received: by mail-io1-f49.google.com with SMTP id v185so13704330ioe.11;
+        Wed, 27 Jul 2022 07:51:50 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=xCokfXhPR4KTF41sdrZm+RqhxEGMWVkr/Hg5KMBHFR8=;
+        b=H7KppZWnYL7txUh3Yivu8Z8ktrMODqMaki4KRP3lqpqZoGRZE0C25ZCDF5VE4zX14/
+         ujLlFL7993L/tnIIopWsa9aMRyei6SEG/266ztE5r256SlRK5c3hJyGTCNV2mi6+1yJH
+         s1esC8a9O7gj7cAXb7JrtGfZxVxMDSkGZrt16HLuim5xolnS00SzIinb6o9KxZ/Org9P
+         xr4WAqRQr/srv8u91w0bPghV43MyURbv8R95Ezh/tdpQV8xtd5Rxuyy/3sJxfVSAgyr/
+         zQBQCpaVSjbl/rd5D/OGgFeK5803nY/dwyGmICnCVtmzcaEGkObVNntreRmVWLnPrphh
+         oH6Q==
+X-Gm-Message-State: AJIora+ot8LpXgio4Ho2vExDE3fYcUMGC63N+MdboeaeULOhdeubCe62
+        2b6na9G1ePFISUVH9AA0Rr6YS4+kYg==
+X-Google-Smtp-Source: AGRyM1sdrzFHIbGmxlbzQsvgmhTb+u6PlXR7h1s1EkyZ/uFrpL41TeK9mHOW3wo0afjLUrYDMRJkHQ==
+X-Received: by 2002:a05:6638:250d:b0:340:4915:263 with SMTP id v13-20020a056638250d00b0034049150263mr9036435jat.17.1658933509322;
+        Wed, 27 Jul 2022 07:51:49 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id b11-20020a026f4b000000b0033158c4a312sm7921935jae.55.2022.07.27.07.51.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jul 2022 07:51:49 -0700 (PDT)
+Received: (nullmailer pid 2644092 invoked by uid 1000);
+        Wed, 27 Jul 2022 14:51:47 -0000
+Date:   Wed, 27 Jul 2022 08:51:47 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Cristian Pop <cristian.pop@analog.com>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+        Jonathan Cameron <jic23@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: iio/dac: adi,ad5766: Add missing type to
+ 'output-range-microvolts'
+Message-ID: <20220727145147.GA2644033-robh@kernel.org>
+References: <20220719215152.1877776-1-robh@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220719215152.1877776-1-robh@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao.yu@oppo.com>
+On Tue, 19 Jul 2022 15:51:52 -0600, Rob Herring wrote:
+> 'output-range-microvolts' is missing a type definition. '-microvolts' is
+> not a standard unit (should be '-microvolt'). As the property is already
+> in use, add a type reference.
+> 
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+>  Documentation/devicetree/bindings/iio/dac/adi,ad5766.yaml | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
 
-As Wenqing Liu <wenqingliu0120@gmail.com> reported in bugzilla:
-
-https://bugzilla.kernel.org/show_bug.cgi?id=216285
-
-RIP: 0010:memcpy_erms+0x6/0x10
- f2fs_update_meta_page+0x84/0x570 [f2fs]
- change_curseg.constprop.0+0x159/0xbd0 [f2fs]
- f2fs_do_replace_block+0x5c7/0x18a0 [f2fs]
- f2fs_replace_block+0xeb/0x180 [f2fs]
- recover_data+0x1abd/0x6f50 [f2fs]
- f2fs_recover_fsync_data+0x12ce/0x3250 [f2fs]
- f2fs_fill_super+0x4459/0x6190 [f2fs]
- mount_bdev+0x2cf/0x3b0
- legacy_get_tree+0xed/0x1d0
- vfs_get_tree+0x81/0x2b0
- path_mount+0x47e/0x19d0
- do_mount+0xce/0xf0
- __x64_sys_mount+0x12c/0x1a0
- do_syscall_64+0x38/0x90
- entry_SYSCALL_64_after_hwframe+0x63/0xcd
-
-The root cause is segment type is invalid, so in f2fs_do_replace_block(),
-f2fs accesses f2fs_sm_info::curseg_array with out-of-range segment type,
-result in accessing invalid curseg->sum_blk during memcpy in
-f2fs_update_meta_page(). Fix this by adding sanity check on segment type
-in build_sit_entries().
-
-Reported-by: Wenqing Liu <wenqingliu0120@gmail.com>
-Signed-off-by: Chao Yu <chao.yu@oppo.com>
----
- fs/f2fs/segment.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
-
-diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
-index 51da73b27a45..7b1d2c29aba6 100644
---- a/fs/f2fs/segment.c
-+++ b/fs/f2fs/segment.c
-@@ -4375,6 +4375,12 @@ static int build_sit_entries(struct f2fs_sb_info *sbi)
- 				return err;
- 			seg_info_from_raw_sit(se, &sit);
- 
-+			if (se->type >= NR_PERSISTENT_LOG) {
-+				f2fs_err(sbi, "Invalid segment type: %u, segno: %u",
-+							se->type, start);
-+				return -EFSCORRUPTED;
-+			}
-+
- 			sit_valid_blocks[SE_PAGETYPE(se)] += se->valid_blocks;
- 
- 			if (f2fs_block_unit_discard(sbi)) {
-@@ -4423,6 +4429,13 @@ static int build_sit_entries(struct f2fs_sb_info *sbi)
- 			break;
- 		seg_info_from_raw_sit(se, &sit);
- 
-+		if (se->type >= NR_PERSISTENT_LOG) {
-+			f2fs_err(sbi, "Invalid segment type: %u, segno: %u",
-+							se->type, start);
-+			err = -EFSCORRUPTED;
-+			break;
-+		}
-+
- 		sit_valid_blocks[SE_PAGETYPE(se)] += se->valid_blocks;
- 
- 		if (f2fs_block_unit_discard(sbi)) {
--- 
-2.36.1
-
+Applied, thanks!
