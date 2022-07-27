@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5713AC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:26:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DD5BC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:26:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242116AbiG0R0K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:26:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52066 "EHLO
+        id S242104AbiG0R0U (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:26:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242345AbiG0RY4 (ORCPT
+        with ESMTP id S242343AbiG0RY4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Jul 2022 13:24:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE2667D1F4;
-        Wed, 27 Jul 2022 09:46:33 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 949B77CB51;
+        Wed, 27 Jul 2022 09:46:32 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F375260DDB;
-        Wed, 27 Jul 2022 16:46:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 091E4C433D6;
-        Wed, 27 Jul 2022 16:46:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2040CB821DA;
+        Wed, 27 Jul 2022 16:46:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B7F0C433C1;
+        Wed, 27 Jul 2022 16:46:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940391;
-        bh=h6k8ja6jrl5KWyFSSA41/040OlijOASIOH7TtWmIBKI=;
+        s=korg; t=1658940385;
+        bh=S8SWVllnVkzSgkTz6JoTxKs8jyHatnSGmDp56hMozCU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U+t2Ve8G4Uw9LoXEvkHI9yNtCxDrtkF21Cd+gK2MQhl3AmF9A/Yn8mT71hiafTMOM
-         C39KVqzGV4InpktvHhD9p5T6rJkX45dc0h4y5AT9TuLqPjeUh39rNcF3ZTQrC78wnu
-         iVw2K0pOyCJKRFQl54If+bG1ZDsqsHdyqG0FYrQE=
+        b=ViuQZ4g11jv9QH6J3Qp1gF06UowyF/aLzh73IrFbYixuss3ldurwoUqdozmx4EhYt
+         /DGUoMMFQsvMefzWna3hdBs6Xkl2B4Xppblh7JJBBmU8DZIqy3fSbNTRgOHLHEIOTV
+         NqjJKDNe1MP0y1Ah7/s5OB8LSMcMWzdIA55yXzTY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paul Menzel <pmenzel@molgen.mpg.de>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Tedd Ho-Jeong An <tedd.an@intel.com>,
         Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
         Marcel Holtmann <marcel@holtmann.org>,
         Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Subject: [PATCH 5.15 180/201] Bluetooth: Fix bt_skb_sendmmsg not allocating partial chunks
-Date:   Wed, 27 Jul 2022 18:11:24 +0200
-Message-Id: <20220727161035.261838671@linuxfoundation.org>
+Subject: [PATCH 5.15 178/201] Bluetooth: Fix passing NULL to PTR_ERR
+Date:   Wed, 27 Jul 2022 18:11:22 +0200
+Message-Id: <20220727161035.173668564@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -52,36 +53,56 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 
-commit 29fb608396d6a62c1b85acc421ad7a4399085b9f upstream.
+commit 266191aa8d14b84958aaeb5e96ee4e97839e3d87 upstream.
 
-Since bt_skb_sendmmsg can be used with the likes of SOCK_STREAM it
-shall return the partial chunks it could allocate instead of freeing
-everything as otherwise it can cause problems like bellow.
+Passing NULL to PTR_ERR will result in 0 (success), also since the likes of
+bt_skb_sendmsg does never return NULL it is safe to replace the instances of
+IS_ERR_OR_NULL with IS_ERR when checking its return.
 
-Fixes: 81be03e026dc ("Bluetooth: RFCOMM: Replace use of memcpy_from_msg with bt_skb_sendmmsg")
-Reported-by: Paul Menzel <pmenzel@molgen.mpg.de>
-Link: https://lore.kernel.org/r/d7206e12-1b99-c3be-84f4-df22af427ef5@molgen.mpg.de
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215594
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Tested-by: Tedd Ho-Jeong An <tedd.an@intel.com>
 Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Tested-by: Paul Menzel <pmenzel@molgen.mpg.de> (Nokia N9 (MeeGo/Harmattan)
 Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Cc: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/bluetooth/bluetooth.h |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ include/net/bluetooth/bluetooth.h |    2 +-
+ net/bluetooth/rfcomm/sock.c       |    2 +-
+ net/bluetooth/sco.c               |    2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
 --- a/include/net/bluetooth/bluetooth.h
 +++ b/include/net/bluetooth/bluetooth.h
-@@ -475,8 +475,7 @@ static inline struct sk_buff *bt_skb_sen
+@@ -474,7 +474,7 @@ static inline struct sk_buff *bt_skb_sen
+ 		struct sk_buff *tmp;
  
  		tmp = bt_skb_sendmsg(sk, msg, len, mtu, headroom, tailroom);
- 		if (IS_ERR(tmp)) {
--			kfree_skb(skb);
--			return tmp;
-+			return skb;
+-		if (IS_ERR_OR_NULL(tmp)) {
++		if (IS_ERR(tmp)) {
+ 			kfree_skb(skb);
+ 			return tmp;
  		}
+--- a/net/bluetooth/rfcomm/sock.c
++++ b/net/bluetooth/rfcomm/sock.c
+@@ -583,7 +583,7 @@ static int rfcomm_sock_sendmsg(struct so
  
- 		len -= tmp->len;
+ 	skb = bt_skb_sendmmsg(sk, msg, len, d->mtu, RFCOMM_SKB_HEAD_RESERVE,
+ 			      RFCOMM_SKB_TAIL_RESERVE);
+-	if (IS_ERR_OR_NULL(skb))
++	if (IS_ERR(skb))
+ 		return PTR_ERR(skb);
+ 
+ 	sent = rfcomm_dlc_send(d, skb);
+--- a/net/bluetooth/sco.c
++++ b/net/bluetooth/sco.c
+@@ -732,7 +732,7 @@ static int sco_sock_sendmsg(struct socke
+ 		return -EOPNOTSUPP;
+ 
+ 	skb = bt_skb_sendmsg(sk, msg, len, len, 0, 0);
+-	if (IS_ERR_OR_NULL(skb))
++	if (IS_ERR(skb))
+ 		return PTR_ERR(skb);
+ 
+ 	lock_sock(sk);
 
 
