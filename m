@@ -2,51 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D88EDC19F28
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:40:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ED63C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:40:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239355AbiG0QkF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:40:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57266 "EHLO
+        id S239380AbiG0QkM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:40:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239526AbiG0QjS (ORCPT
+        with ESMTP id S239589AbiG0QjU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:39:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EC275A2F7
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:28:54 -0700 (PDT)
+        Wed, 27 Jul 2022 12:39:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46F295005D;
+        Wed, 27 Jul 2022 09:28:49 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C7CCCB821C8
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 16:28:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86838C433D7;
-        Wed, 27 Jul 2022 16:28:49 +0000 (UTC)
-Date:   Wed, 27 Jul 2022 12:28:47 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     Li Qiong <liqiong@nfschina.com>
-Cc:     Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org,
-        yuzhe@nfschina.com, renyu@nfschina.com, jiaming@nfschina.com
-Subject: Re: [PATCH] tracing: Do PTR_ERR() after IS_ERR()
-Message-ID: <20220727122847.6b00e29d@rorschach.local.home>
-In-Reply-To: <20220727153519.6697-1-liqiong@nfschina.com>
-References: <20220727153519.6697-1-liqiong@nfschina.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 03ED1619FF;
+        Wed, 27 Jul 2022 16:28:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E311C433D7;
+        Wed, 27 Jul 2022 16:28:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658939308;
+        bh=c4SmNGB0sRDDaEoM2NEHpYGli5ogoDdY1dHqExV2Ru8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=uCLi4cMD0G3t15CyYuMwqE0DfukGkpCiDO4rbOIuQmmN2X3ohA1ystlrq3iee+aYO
+         OcCJjn89RuEjRd8G7gbDVFSvlacmuU6bdsYitSK5YQccyEDGOMZuu9XPwS70styOZv
+         i+a+h6YPoLHba5bDaGo163hU8Qi6TWwC9+DznY44=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 24/87] tcp: Fix a data-race around sysctl_tcp_mtu_probe_floor.
+Date:   Wed, 27 Jul 2022 18:10:17 +0200
+Message-Id: <20220727161010.006453319@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220727161008.993711844@linuxfoundation.org>
+References: <20220727161008.993711844@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 27 Jul 2022 23:35:19 +0800
-Li Qiong <liqiong@nfschina.com> wrote:
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-> Check IS_ERR() firstly, then do PTR_ERR().
+[ Upstream commit 8e92d4423615a5257d0d871fc067aa561f597deb ]
 
-Why?
+While reading sysctl_tcp_mtu_probe_floor, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its reader.
 
-The code is fine as is.
+Fixes: c04b79b6cfd7 ("tcp: add new tcp_mtu_probe_floor sysctl")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/ipv4/tcp_timer.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
--- Steve
+diff --git a/net/ipv4/tcp_timer.c b/net/ipv4/tcp_timer.c
+index 0460c5deee3f..c48aeaef3ec7 100644
+--- a/net/ipv4/tcp_timer.c
++++ b/net/ipv4/tcp_timer.c
+@@ -172,7 +172,7 @@ static void tcp_mtu_probing(struct inet_connection_sock *icsk, struct sock *sk)
+ 	} else {
+ 		mss = tcp_mtu_to_mss(sk, icsk->icsk_mtup.search_low) >> 1;
+ 		mss = min(READ_ONCE(net->ipv4.sysctl_tcp_base_mss), mss);
+-		mss = max(mss, net->ipv4.sysctl_tcp_mtu_probe_floor);
++		mss = max(mss, READ_ONCE(net->ipv4.sysctl_tcp_mtu_probe_floor));
+ 		mss = max(mss, READ_ONCE(net->ipv4.sysctl_tcp_min_snd_mss));
+ 		icsk->icsk_mtup.search_low = tcp_mss_to_mtu(sk, mss);
+ 	}
+-- 
+2.35.1
+
+
 
