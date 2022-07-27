@@ -2,185 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0842C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:46:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCA4DC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:46:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240452AbiG0Qqp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:46:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43970 "EHLO
+        id S240377AbiG0Qq5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:46:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240375AbiG0Qpr (ORCPT
+        with ESMTP id S240427AbiG0QqR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:45:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D020B5FADC;
-        Wed, 27 Jul 2022 09:31:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4131BB821BB;
-        Wed, 27 Jul 2022 16:31:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99EB0C433D6;
-        Wed, 27 Jul 2022 16:31:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939492;
-        bh=nUv+h/EUkaR55wIdNw5/QvZ3wmR8Hsx3O2sYlliQHDY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2lIZp4rOsfCOJYUkfXlF2HztJQL01HWtHKNhS29PQojH258rZ6OQEjjXkD2TefhD8
-         P5wPGdUb6g2EgGZJqfcqS+Nn3863MdyoLbiJ25/lolg/BPgvF862MWnfhPjaL4ntgP
-         HlFwl5jqRN2AMCNDxkqzxCjGUGpyeIz9d0/88Km8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Zapolskiy <vz@mleia.com>,
-        Johan Hovold <johan@kernel.org>, Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 5.4 81/87] tty: drivers/tty/, stop using tty_schedule_flip()
-Date:   Wed, 27 Jul 2022 18:11:14 +0200
-Message-Id: <20220727161012.352211572@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220727161008.993711844@linuxfoundation.org>
-References: <20220727161008.993711844@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Wed, 27 Jul 2022 12:46:17 -0400
+Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3CE75FAFF
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:31:36 -0700 (PDT)
+Received: by mail-io1-xd2c.google.com with SMTP id 125so13932667iou.6
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:31:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HLpauEQ5M+lWRIlS3PcwqsZWVTFiAvj2+32FpHGOhBk=;
+        b=klS/6ZXoSeM0uv5HT7/w1pRROtMu2SFyiAGZpuVTlKfCMmZO+NVgryshOQKXZ3mRwO
+         aCapBXgciK6e8ZLoA0VmgIdcFIShZvj3yTsNZAVCWrgAfnyA1QH0nmrIVsxq906pdmc0
+         hmwXJXpwp0IwAbDiWt5D++aDEST91D1pWaKsHwWFDLX494ZYqaluBT3sHd8k0UTlRBI2
+         jEfCfG3Cu4m+fuqo+JGBOr/N1asAZoHTfyfmGqch2N4qoAxdB4As1OnAQTKzEjYhm7vg
+         3XTBjSn/35ULRdJL1A6mahAfA9wsliZ8gk/LfZ5hmyy9h93oqA8sg161qx782ugJASrw
+         dWtw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HLpauEQ5M+lWRIlS3PcwqsZWVTFiAvj2+32FpHGOhBk=;
+        b=BoDQEZfR4q3ktiR90+sEKbW5OAwaoN8ccUHOGafuYy0fmj8/bQ2NeI5Hl5oJEek6u+
+         zqutGClFzrJBhjCShlTUjqRiUGo9k2F1T+ql+aM1nyp/BcJb4OvHvVwvxhMlq1xlwmpk
+         qfCuTFqRsNPx2lHIDhFCIek+fmkDbXjqTtv7/Up7+HZMVAucm9j5hTLjHrQYiAcj3ii9
+         jNxh0euyzBoo9+wpDxixgj+AUW7aunADIHzH+UuJCcOtrLOm+0tGhIhWDFaMQO23lRfL
+         5YbfoeR/l575FbCbIOXNUEKJNQPKEcm0642F+Fdr6DSgLOb30a3Yt8FkgGV9zZKw5NyD
+         6J+A==
+X-Gm-Message-State: AJIora/aFWxHJgoXYae7Qk328ic3oP/izTdR9+ecJfPJgocFfcFzoCRO
+        C76yha2503LUjnGP5W88MpkW7dpF0zs0ujxpm1Nn9Q==
+X-Google-Smtp-Source: AGRyM1vzxJdX05n48cDiHKWT4UyZZ4xthB7HHUEb5MIzbitr5xn078iGRk5ZiOqwPRiIpO312Lx7K0+ksI9j1fyn3gg=
+X-Received: by 2002:a02:a68c:0:b0:33f:46d4:918e with SMTP id
+ j12-20020a02a68c000000b0033f46d4918emr8580458jam.58.1658939495323; Wed, 27
+ Jul 2022 09:31:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20210929185823.499268-1-alex.popov@linux.com> <d290202d-a72d-0821-9edf-efbecf6f6cef@linux.com>
+ <20210929194924.GA880162@paulmck-ThinkPad-P17-Gen-1> <YVWAPXSzFNbHz6+U@alley>
+ <CAHk-=widOm3FXMPXXK0cVaoFuy3jCk65=5VweLceQCuWdep=Hg@mail.gmail.com> <7c567acd-1cc1-a480-ca5a-d50a9c5a69ef@ispras.ru>
+In-Reply-To: <7c567acd-1cc1-a480-ca5a-d50a9c5a69ef@ispras.ru>
+From:   Jann Horn <jannh@google.com>
+Date:   Wed, 27 Jul 2022 18:30:59 +0200
+Message-ID: <CAG48ez2Sh-kngNVeCF9-X550PQMaNnQaEvS+EAiWaDjWnmoHOg@mail.gmail.com>
+Subject: Re: [PATCH] Introduce the pkill_on_warn boot parameter
+To:     Alexey Khoroshilov <khoroshilov@ispras.ru>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Petr Mladek <pmladek@suse.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Alexander Popov <alex.popov@linux.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Joerg Roedel <jroedel@suse.de>,
+        Maciej Rozycki <macro@orcam.me.uk>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Kees Cook <keescook@chromium.org>,
+        Luis Chamberlain <mcgrof@kernel.org>, Wei Liu <wl@xen.org>,
+        John Ogness <john.ogness@linutronix.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Alexey Kardashevskiy <aik@ozlabs.ru>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Garnier <thgarnie@google.com>,
+        Will Deacon <will.deacon@arm.com>,
+        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
+        Laura Abbott <labbott@redhat.com>,
+        David S Miller <davem@davemloft.net>,
+        Borislav Petkov <bp@alien8.de>,
+        Kernel Hardening <kernel-hardening@lists.openwall.com>,
+        linux-hardening@vger.kernel.org,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        notify@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiri Slaby <jslaby@suse.cz>
+On Wed, Jul 27, 2022 at 6:17 PM Alexey Khoroshilov
+<khoroshilov@ispras.ru> wrote:
+> On 01.10.2021 22:59, Linus Torvalds wrote:
+> Coming back to the discussion of WARN_ON()/pr_warn("WARNING:") semantics.
+>
+> We see a number of cases where WARNING is used to inform userspace that
+> it is doing something wrong, e.g.
+> https://elixir.bootlin.com/linux/v5.19-rc8/source/net/can/j1939/socket.c#L181
+> https://elixir.bootlin.com/linux/v5.19-rc8/source/drivers/video/fbdev/core/fbmem.c#L1023
+>
+> It is definitely useful, but it does not make sense in case of fuzzing
+> when the userspace should do wrong things and check if kernel behaves
+> correctly.
+>
+> As a result we have warnings with two different intentions:
+> - warn that something wrong happens in kernel, but we are able to continue;
+> - warn userspace that it is doing something wrong.
+>
+> During fuzzing we would like to report the former and to ignore the
+> latter. Are any ideas how these intentions can be recognized automatically?
 
-commit 5f6a85158ccacc3f09744b3aafe8b11ab3b6c6f6 upstream.
+https://elixir.bootlin.com/linux/v5.19-rc8/source/include/asm-generic/bug.h#L74
+says:
 
-Since commit a9c3f68f3cd8d (tty: Fix low_latency BUG) in 2014,
-tty_flip_buffer_push() is only a wrapper to tty_schedule_flip(). We are
-going to remove the latter (as it is used less), so call the former in
-drivers/tty/.
+ * WARN(), WARN_ON(), WARN_ON_ONCE, and so on can be used to report
+ * significant kernel issues that need prompt attention if they should ever
+ * appear at runtime.
+ *
+ * Do not use these macros when checking for invalid external inputs
+ * (e.g. invalid system call arguments, or invalid data coming from
+ * network/devices), and on transient conditions like ENOMEM or EAGAIN.
+ * These macros should be used for recoverable kernel issues only.
+ * For invalid external inputs, transient conditions, etc use
+ * pr_err[_once/_ratelimited]() followed by dump_stack(), if necessary.
+ * Do not include "BUG"/"WARNING" in format strings manually to make these
+ * conditions distinguishable from kernel issues.
 
-Cc: Vladimir Zapolskiy <vz@mleia.com>
-Reviewed-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Link: https://lore.kernel.org/r/20211122111648.30379-2-jslaby@suse.cz
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/tty/cyclades.c          |    6 +++---
- drivers/tty/goldfish.c          |    2 +-
- drivers/tty/moxa.c              |    4 ++--
- drivers/tty/serial/lpc32xx_hs.c |    2 +-
- drivers/tty/vt/keyboard.c       |    6 +++---
- drivers/tty/vt/vt.c             |    2 +-
- 6 files changed, 11 insertions(+), 11 deletions(-)
-
---- a/drivers/tty/cyclades.c
-+++ b/drivers/tty/cyclades.c
-@@ -556,7 +556,7 @@ static void cyy_chip_rx(struct cyclades_
- 		}
- 		info->idle_stats.recv_idle = jiffies;
- 	}
--	tty_schedule_flip(port);
-+	tty_flip_buffer_push(port);
- 
- 	/* end of service */
- 	cyy_writeb(info, CyRIR, save_xir & 0x3f);
-@@ -996,7 +996,7 @@ static void cyz_handle_rx(struct cyclade
- 		mod_timer(&info->rx_full_timer, jiffies + 1);
- #endif
- 	info->idle_stats.recv_idle = jiffies;
--	tty_schedule_flip(&info->port);
-+	tty_flip_buffer_push(&info->port);
- 
- 	/* Update rx_get */
- 	cy_writel(&buf_ctrl->rx_get, new_rx_get);
-@@ -1172,7 +1172,7 @@ static void cyz_handle_cmd(struct cyclad
- 		if (delta_count)
- 			wake_up_interruptible(&info->port.delta_msr_wait);
- 		if (special_count)
--			tty_schedule_flip(&info->port);
-+			tty_flip_buffer_push(&info->port);
- 	}
- }
- 
---- a/drivers/tty/goldfish.c
-+++ b/drivers/tty/goldfish.c
-@@ -151,7 +151,7 @@ static irqreturn_t goldfish_tty_interrup
- 	address = (unsigned long)(void *)buf;
- 	goldfish_tty_rw(qtty, address, count, 0);
- 
--	tty_schedule_flip(&qtty->port);
-+	tty_flip_buffer_push(&qtty->port);
- 	return IRQ_HANDLED;
- }
- 
---- a/drivers/tty/moxa.c
-+++ b/drivers/tty/moxa.c
-@@ -1385,7 +1385,7 @@ static int moxa_poll_port(struct moxa_po
- 		if (inited && !tty_throttled(tty) &&
- 				MoxaPortRxQueue(p) > 0) { /* RX */
- 			MoxaPortReadData(p);
--			tty_schedule_flip(&p->port);
-+			tty_flip_buffer_push(&p->port);
- 		}
- 	} else {
- 		clear_bit(EMPTYWAIT, &p->statusflags);
-@@ -1410,7 +1410,7 @@ static int moxa_poll_port(struct moxa_po
- 
- 	if (tty && (intr & IntrBreak) && !I_IGNBRK(tty)) { /* BREAK */
- 		tty_insert_flip_char(&p->port, 0, TTY_BREAK);
--		tty_schedule_flip(&p->port);
-+		tty_flip_buffer_push(&p->port);
- 	}
- 
- 	if (intr & IntrLine)
---- a/drivers/tty/serial/lpc32xx_hs.c
-+++ b/drivers/tty/serial/lpc32xx_hs.c
-@@ -345,7 +345,7 @@ static irqreturn_t serial_lpc32xx_interr
- 		       LPC32XX_HSUART_IIR(port->membase));
- 		port->icount.overrun++;
- 		tty_insert_flip_char(tport, 0, TTY_OVERRUN);
--		tty_schedule_flip(tport);
-+		tty_flip_buffer_push(tport);
- 	}
- 
- 	/* Data received? */
---- a/drivers/tty/vt/keyboard.c
-+++ b/drivers/tty/vt/keyboard.c
-@@ -310,7 +310,7 @@ int kbd_rate(struct kbd_repeat *rpt)
- static void put_queue(struct vc_data *vc, int ch)
- {
- 	tty_insert_flip_char(&vc->port, ch, 0);
--	tty_schedule_flip(&vc->port);
-+	tty_flip_buffer_push(&vc->port);
- }
- 
- static void puts_queue(struct vc_data *vc, char *cp)
-@@ -319,7 +319,7 @@ static void puts_queue(struct vc_data *v
- 		tty_insert_flip_char(&vc->port, *cp, 0);
- 		cp++;
- 	}
--	tty_schedule_flip(&vc->port);
-+	tty_flip_buffer_push(&vc->port);
- }
- 
- static void applkey(struct vc_data *vc, int key, char mode)
-@@ -564,7 +564,7 @@ static void fn_inc_console(struct vc_dat
- static void fn_send_intr(struct vc_data *vc)
- {
- 	tty_insert_flip_char(&vc->port, 0, TTY_BREAK);
--	tty_schedule_flip(&vc->port);
-+	tty_flip_buffer_push(&vc->port);
- }
- 
- static void fn_scroll_forw(struct vc_data *vc)
---- a/drivers/tty/vt/vt.c
-+++ b/drivers/tty/vt/vt.c
-@@ -1837,7 +1837,7 @@ static void respond_string(const char *p
- 		tty_insert_flip_char(port, *p, 0);
- 		p++;
- 	}
--	tty_schedule_flip(port);
-+	tty_flip_buffer_push(port);
- }
- 
- static void cursor_report(struct vc_data *vc, struct tty_struct *tty)
-
-
+So if you see drivers intentionally using WARN() or printing
+"WARNING:" on codepaths that are reachable with bogus inputs from
+userspace, those codepaths should be fixed to log warnings in a
+different format.
