@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24EADC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:52:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B5B8C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:52:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240751AbiG0Qwc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:52:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57538 "EHLO
+        id S240761AbiG0Qwf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:52:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240802AbiG0QwF (ORCPT
+        with ESMTP id S240804AbiG0QwF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Jul 2022 12:52:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A5B054ADF;
-        Wed, 27 Jul 2022 09:33:50 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5066454656;
+        Wed, 27 Jul 2022 09:33:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0800C61A69;
-        Wed, 27 Jul 2022 16:33:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FA4EC433D6;
-        Wed, 27 Jul 2022 16:33:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E147B61A73;
+        Wed, 27 Jul 2022 16:33:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E885DC433D6;
+        Wed, 27 Jul 2022 16:33:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939629;
-        bh=WtF9BKyztuDudarIy8lWa8uBbyXGJ5Wc6Q/lzCzgqR8=;
+        s=korg; t=1658939632;
+        bh=Vtrb3hA6GkN7VLsNOm4H7j5c2K8Sro92wFOX7ixBafA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZErZtmM4+jsqaO01ImfGqmZwVlAfRtPq+eD/FO/vXvh+AtAPUXGBFzDEpCbEpZdxT
-         DNZlXB+DERk4RQGnN5FarN/LW4SNwOo8rxdnaDQhEQNaSHpcHUUKJDr6aRI/KGTkYb
-         CzD9N/0FXmq+f8cXlpH1oagqwnMjHJn+hhaPR9ao=
+        b=hEMKTy94Goaj3Png2da0C0zVT9pgHt5cq3edKKpFhItysiex+vmjWA8gqJxiE4nyX
+         KKL6hJ+5ABp3H6hFeMPIXjvUiLefs8ova4t5plBwB7U4s+wj1iDhHFyx1v+XOXia4k
+         jZLr+zI7ywWFxO/9d7XN1PKbJCfuBimWu7X6yEJc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, stable <stable@kernel.org>,
-        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-Subject: [PATCH 5.10 021/105] serial: mvebu-uart: correctly report configured baudrate value
-Date:   Wed, 27 Jul 2022 18:10:07 +0200
-Message-Id: <20220727161012.939633672@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 048/105] tcp: Fix data-races around keepalive sysctl knobs.
+Date:   Wed, 27 Jul 2022 18:10:34 +0200
+Message-Id: <20220727161013.995516807@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161012.056867467@linuxfoundation.org>
 References: <20220727161012.056867467@linuxfoundation.org>
@@ -49,89 +49,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit 4f532c1e25319e42996ec18a1f473fd50c8e575d upstream.
+[ Upstream commit f2f316e287e6c2e3a1c5bab8d9b77ee03daa0463 ]
 
-Functions tty_termios_encode_baud_rate() and uart_update_timeout() should
-be called with the baudrate value which was set to hardware. Linux then
-report exact values via ioctl(TCGETS2) to userspace.
+While reading sysctl_tcp_keepalive_(time|probes|intvl), they can be changed
+concurrently.  Thus, we need to add READ_ONCE() to their readers.
 
-Change mvebu_uart_baud_rate_set() function to return baudrate value which
-was set to hardware and propagate this value to above mentioned functions.
-
-With this change userspace would see precise value in termios c_ospeed
-field.
-
-Fixes: 68a0db1d7da2 ("serial: mvebu-uart: add function to change baudrate")
-Cc: stable <stable@kernel.org>
-Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Link: https://lore.kernel.org/r/20220628100922.10717-1-pali@kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/mvebu-uart.c |   25 +++++++++++++------------
- 1 file changed, 13 insertions(+), 12 deletions(-)
+ include/net/tcp.h | 9 ++++++---
+ net/smc/smc_llc.c | 2 +-
+ 2 files changed, 7 insertions(+), 4 deletions(-)
 
---- a/drivers/tty/serial/mvebu-uart.c
-+++ b/drivers/tty/serial/mvebu-uart.c
-@@ -443,13 +443,13 @@ static void mvebu_uart_shutdown(struct u
- 	}
- }
- 
--static int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
-+static unsigned int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index 2a28e0925573..9ef9fd0677b5 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -1447,21 +1447,24 @@ static inline int keepalive_intvl_when(const struct tcp_sock *tp)
  {
- 	unsigned int d_divisor, m_divisor;
- 	u32 brdv, osamp;
+ 	struct net *net = sock_net((struct sock *)tp);
  
- 	if (!port->uartclk)
--		return -EOPNOTSUPP;
-+		return 0;
- 
- 	/*
- 	 * The baudrate is derived from the UART clock thanks to two divisors:
-@@ -473,7 +473,7 @@ static int mvebu_uart_baud_rate_set(stru
- 	osamp &= ~OSAMP_DIVISORS_MASK;
- 	writel(osamp, port->membase + UART_OSAMP);
- 
--	return 0;
-+	return DIV_ROUND_CLOSEST(port->uartclk, d_divisor * m_divisor);
+-	return tp->keepalive_intvl ? : net->ipv4.sysctl_tcp_keepalive_intvl;
++	return tp->keepalive_intvl ? :
++		READ_ONCE(net->ipv4.sysctl_tcp_keepalive_intvl);
  }
  
- static void mvebu_uart_set_termios(struct uart_port *port,
-@@ -510,15 +510,11 @@ static void mvebu_uart_set_termios(struc
- 	max_baud = 230400;
+ static inline int keepalive_time_when(const struct tcp_sock *tp)
+ {
+ 	struct net *net = sock_net((struct sock *)tp);
  
- 	baud = uart_get_baud_rate(port, termios, old, min_baud, max_baud);
--	if (mvebu_uart_baud_rate_set(port, baud)) {
--		/* No clock available, baudrate cannot be changed */
--		if (old)
--			baud = uart_get_baud_rate(port, old, NULL,
--						  min_baud, max_baud);
--	} else {
--		tty_termios_encode_baud_rate(termios, baud, baud);
--		uart_update_timeout(port, termios->c_cflag, baud);
--	}
-+	baud = mvebu_uart_baud_rate_set(port, baud);
-+
-+	/* In case baudrate cannot be changed, report previous old value */
-+	if (baud == 0 && old)
-+		baud = tty_termios_baud_rate(old);
- 
- 	/* Only the following flag changes are supported */
- 	if (old) {
-@@ -529,6 +525,11 @@ static void mvebu_uart_set_termios(struc
- 		termios->c_cflag |= CS8;
- 	}
- 
-+	if (baud != 0) {
-+		tty_termios_encode_baud_rate(termios, baud, baud);
-+		uart_update_timeout(port, termios->c_cflag, baud);
-+	}
-+
- 	spin_unlock_irqrestore(&port->lock, flags);
+-	return tp->keepalive_time ? : net->ipv4.sysctl_tcp_keepalive_time;
++	return tp->keepalive_time ? :
++		READ_ONCE(net->ipv4.sysctl_tcp_keepalive_time);
  }
  
+ static inline int keepalive_probes(const struct tcp_sock *tp)
+ {
+ 	struct net *net = sock_net((struct sock *)tp);
+ 
+-	return tp->keepalive_probes ? : net->ipv4.sysctl_tcp_keepalive_probes;
++	return tp->keepalive_probes ? :
++		READ_ONCE(net->ipv4.sysctl_tcp_keepalive_probes);
+ }
+ 
+ static inline u32 keepalive_time_elapsed(const struct tcp_sock *tp)
+diff --git a/net/smc/smc_llc.c b/net/smc/smc_llc.c
+index ee1f0fdba085..0ef15f8fba90 100644
+--- a/net/smc/smc_llc.c
++++ b/net/smc/smc_llc.c
+@@ -1787,7 +1787,7 @@ void smc_llc_lgr_init(struct smc_link_group *lgr, struct smc_sock *smc)
+ 	init_waitqueue_head(&lgr->llc_flow_waiter);
+ 	init_waitqueue_head(&lgr->llc_msg_waiter);
+ 	mutex_init(&lgr->llc_conf_mutex);
+-	lgr->llc_testlink_time = net->ipv4.sysctl_tcp_keepalive_time;
++	lgr->llc_testlink_time = READ_ONCE(net->ipv4.sysctl_tcp_keepalive_time);
+ }
+ 
+ /* called after lgr was removed from lgr_list */
+-- 
+2.35.1
+
 
 
