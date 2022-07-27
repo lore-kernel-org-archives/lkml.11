@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA203C19F29
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 06:45:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E975C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 06:45:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230378AbiG0GpI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 02:45:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52956 "EHLO
+        id S230077AbiG0GpN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 02:45:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230057AbiG0GoJ (ORCPT
+        with ESMTP id S229926AbiG0Gnp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 02:44:09 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D10D40BF9
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 23:43:48 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id d17so23661884lfa.12
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 23:43:48 -0700 (PDT)
+        Wed, 27 Jul 2022 02:43:45 -0400
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E5873C8F7
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 23:43:43 -0700 (PDT)
+Received: by mail-lj1-x22a.google.com with SMTP id w18so7706363lje.1
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 23:43:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=semihalf.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=AZnXgTWAmHAAkiH1J3eS3SuupS7jjAspolqgIKE9W3w=;
-        b=If2TkJ8pMmsyfyfVuwa7SGbtltDAMjKUSVBgzQ482CqXgjwCPUCroLSM7qOdjNGVBM
-         TNPjT8ZkVwGNKL8KCbhck1+9MDMX3E+ZB9bZ8Ln7FDo9IGAf+bVsd8o9PoPr32469aVn
-         Cm/v5Ya0yA901PbzfwGPaBZu1hX69UpO9iriYZ+vuUP1/N2EQZDVthkd/lZz6qmy7kdC
-         9ipfZGbD+lPMZJHPkZzgG9NW9Kp8WjNVjbtxD6hE8Ydrdg8lJ/ykf2UZWKlRb20T0ygH
-         jsYPNiKVscbNdWaUugzaY1V4gawVPKOtbCC8ivNzlCzf4g6mZFqhTvWM/gttpgL4BB9Q
-         10tg==
+        bh=1I6Xn/UXiMT6VknV/yDkGje3BjUktQ7ZyDrns9mPDHA=;
+        b=VyV9z9XcHmSKY/u+3U+ob/ycFMUa7f5bUOn+KNNvQdUmPbbqJSVo6GNMx1l0c+WFVF
+         nsz/45MckkVUmrrFwnK9eBECxxhD9pFmpG9rKsQq9M4napzTyi3nNFi/rElJr8Ve0NhZ
+         lUdSmMDveFfx1ZdHDk8zIdBl+iyDgrgSlff/+vgWF/GSAnWAW209aAEtcmNjI2jpNh/+
+         OuPpiSSl9wbFVTGnqiVeHztIxD3Apr532L2PjVytPkwIZRGywgRn8yGtbG9vphpk45VY
+         uFQC9aNJX8WGCS+1mZU4jMDykTy1IEno9mqhjMTkFq7Z0xxyT+WMG4CLaS6WqC1jAIm7
+         Lu0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=AZnXgTWAmHAAkiH1J3eS3SuupS7jjAspolqgIKE9W3w=;
-        b=3gvmTiKjX9f8/4ONfxMuUW2YoZuQPqC5h2RoUVvu+1e8WwB6Oa8c6+wamg07F5lae2
-         x3SQTnBMtZaDyHDDZ4WcLnehKJ6ch37T66kwxXHJe3HMhQHsagJSHd/KrRNyCcFdt/gl
-         ZruSdlYBvwmzP2649bOU9dUOESxwxHH4SLjlu+TB5s7XUMHLLBgboN4HSraIhfj6R1+O
-         zC+/FfRSQlhkDCckHOxLwj6ZeRf0owCmulWspnVkrYXd6jqJXI8wiFv65tWyPmQoZJkZ
-         NI0yJef+w4CDA5NS1j01S3RN4oO+1wx0P8CtYwaFXyE4BGkWCGJCguod5wR9x5QmsBdo
-         SP6A==
-X-Gm-Message-State: AJIora8vZiEmbPq6jI9T+8Ry38vuIaOG6/rU6fvslm6Qg/G1K+jzRMGL
-        kbq7v8fc0rQ8wO/nXq3LtxKEccTSV5QqbQ==
-X-Google-Smtp-Source: AGRyM1ulVcNyJ4rwZ+4mPHuX4JlRF3Mn/mt8yKy6C/OG/KII/LeRx1Z9arhrE35NZl54VBFs1Azx0g==
-X-Received: by 2002:a05:6512:602:b0:48a:8278:52da with SMTP id b2-20020a056512060200b0048a827852damr6096896lfe.257.1658904226137;
-        Tue, 26 Jul 2022 23:43:46 -0700 (PDT)
+        bh=1I6Xn/UXiMT6VknV/yDkGje3BjUktQ7ZyDrns9mPDHA=;
+        b=jGwCB1H8S20+19o0PZLVvRNSRr0Aa+z5rYzkXXP8j2lyhUytLdtSL395IRlF1AGs6I
+         KrPTuaSOCWEbeNP7q3SbPR/HaNCLxiC4ATYudqf+PYvF3QL/cgJYCJWdDNvIUnGoScL0
+         Lu8TUgTcWjw+erlijYMKfToyATVi8sfSQb+TCsdHKH/D46i6s+b60MvNNhZk7/xa1Gle
+         39H2JTiwzWpUuN0G9Pjhljq1Qn0NLQOlt4M6sMfM2LMPSrfScWrOFspmBMDH/hkxQfcm
+         mwb614kymkYaqI64O4rdPOw30CEuDjNMz2V4tEjjHzjw62eMCPAuk8pHQzm8p9NeLmT5
+         7Qtg==
+X-Gm-Message-State: AJIora9+TTd9fCndqZtVvaICgK30ObeyrNHOgVReJoqdSHGvmLItj2r4
+        8LhxqcaUtfUVu8Vc25FeER2RfXK/sejrbg==
+X-Google-Smtp-Source: AGRyM1v2Jzg8MJOoV3C0xCVgg4McEUzad5WIKWRz1P+ChhkRcykn+p8NckVdHoYsFxms8sfYYTk0Bw==
+X-Received: by 2002:a2e:be90:0:b0:25e:1496:a0b8 with SMTP id a16-20020a2ebe90000000b0025e1496a0b8mr2264676ljr.194.1658904221266;
+        Tue, 26 Jul 2022 23:43:41 -0700 (PDT)
 Received: from gilgamesh.lab.semihalf.net ([83.142.187.85])
-        by smtp.gmail.com with ESMTPSA id w19-20020a05651234d300b0048a97a1df02sm1157231lfr.6.2022.07.26.23.43.44
+        by smtp.gmail.com with ESMTPSA id w19-20020a05651234d300b0048a97a1df02sm1157231lfr.6.2022.07.26.23.43.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Jul 2022 23:43:45 -0700 (PDT)
+        Tue, 26 Jul 2022 23:43:40 -0700 (PDT)
 From:   Marcin Wojtas <mw@semihalf.com>
 To:     linux-kernel@vger.kernel.org, linux-acpi@vger.kernel.org,
         netdev@vger.kernel.org
@@ -59,9 +59,9 @@ Cc:     rafael@kernel.org, andriy.shevchenko@linux.intel.com,
         linux@armlinux.org.uk, hkallweit1@gmail.com, gjb@semihalf.com,
         mw@semihalf.com, jaz@semihalf.com, tn@semihalf.com,
         Samer.El-Haj-Mahmoud@arm.com, upstream@semihalf.com
-Subject: [net-next: PATCH v3 5/8] device property: introduce fwnode_find_parent_dev_match
-Date:   Wed, 27 Jul 2022 08:43:18 +0200
-Message-Id: <20220727064321.2953971-6-mw@semihalf.com>
+Subject: [net-next: PATCH v3 2/8] net: mdio: switch fixed-link PHYs API to fwnode_
+Date:   Wed, 27 Jul 2022 08:43:15 +0200
+Message-Id: <20220727064321.2953971-3-mw@semihalf.com>
 X-Mailer: git-send-email 2.29.0
 In-Reply-To: <20220727064321.2953971-1-mw@semihalf.com>
 References: <20220727064321.2953971-1-mw@semihalf.com>
@@ -71,64 +71,269 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch adds a new generic routine fwnode_find_parent_dev_match
-that can be used e.g. as a callback for class_find_device().
-It searches for the struct device corresponding to a
-struct fwnode_handle by iterating over device and
-its parents.
+fixed-link PHYs API is used by DSA and a number of drivers
+and was depending on of_. Switch to fwnode_ so to make it
+hardware description agnostic and allow to be used in ACPI
+world as well.
 
 Signed-off-by: Marcin Wojtas <mw@semihalf.com>
 ---
- include/linux/property.h |  1 +
- drivers/base/property.c  | 23 ++++++++++++++++++++
- 2 files changed, 24 insertions(+)
+ include/linux/fwnode_mdio.h    |  19 ++++
+ drivers/net/mdio/fwnode_mdio.c | 100 ++++++++++++++++++++
+ drivers/net/mdio/of_mdio.c     |  79 +---------------
+ 3 files changed, 122 insertions(+), 76 deletions(-)
 
-diff --git a/include/linux/property.h b/include/linux/property.h
-index a5b429d623f6..829254a5ae63 100644
---- a/include/linux/property.h
-+++ b/include/linux/property.h
-@@ -95,6 +95,7 @@ struct device *fwnode_get_next_parent_dev(struct fwnode_handle *fwnode);
- unsigned int fwnode_count_parents(const struct fwnode_handle *fwn);
- struct fwnode_handle *fwnode_get_nth_parent(struct fwnode_handle *fwn,
- 					    unsigned int depth);
-+int fwnode_find_parent_dev_match(struct device *dev, const void *data);
- bool fwnode_is_ancestor_of(struct fwnode_handle *ancestor, struct fwnode_handle *child);
- struct fwnode_handle *fwnode_get_next_child_node(
- 	const struct fwnode_handle *fwnode, struct fwnode_handle *child);
-diff --git a/drivers/base/property.c b/drivers/base/property.c
-index ed6f449f8e5c..ee6a8144f103 100644
---- a/drivers/base/property.c
-+++ b/drivers/base/property.c
-@@ -685,6 +685,29 @@ struct fwnode_handle *fwnode_get_nth_parent(struct fwnode_handle *fwnode,
- }
- EXPORT_SYMBOL_GPL(fwnode_get_nth_parent);
+diff --git a/include/linux/fwnode_mdio.h b/include/linux/fwnode_mdio.h
+index faf603c48c86..98755b8c6c8a 100644
+--- a/include/linux/fwnode_mdio.h
++++ b/include/linux/fwnode_mdio.h
+@@ -16,6 +16,11 @@ int fwnode_mdiobus_phy_device_register(struct mii_bus *mdio,
+ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
+ 				struct fwnode_handle *child, u32 addr);
  
-+/**
-+ * fwnode_find_parent_dev_match - look for a device matching the struct fwnode_handle
-+ * @dev: the struct device to initiate the search
-+ * @data: pointer passed for comparison
-+ *
-+ * Looks up the device structure corresponding with the fwnode by iterating
-+ * over @dev and its parents.
-+ * The routine can be used e.g. as a callback for class_find_device().
-+ *
-+ * Returns: %1 - match is found
-+ *          %0 - match not found
-+ */
-+int fwnode_find_parent_dev_match(struct device *dev, const void *data)
++int fwnode_phy_register_fixed_link(struct fwnode_handle *fwnode);
++
++void fwnode_phy_deregister_fixed_link(struct fwnode_handle *fwnode);
++
++bool fwnode_phy_is_fixed_link(struct fwnode_handle *fwnode);
+ #else /* CONFIG_FWNODE_MDIO */
+ int fwnode_mdiobus_phy_device_register(struct mii_bus *mdio,
+ 				       struct phy_device *phy,
+@@ -30,6 +35,20 @@ static inline int fwnode_mdiobus_register_phy(struct mii_bus *bus,
+ {
+ 	return -EINVAL;
+ }
++
++static inline int fwnode_phy_register_fixed_link(struct fwnode_handle *fwnode)
 +{
-+	for (; dev; dev = dev->parent) {
-+		if (device_match_fwnode(dev, data))
-+			return 1;
++	return -ENODEV;
++}
++
++static inline void fwnode_phy_deregister_fixed_link(struct fwnode_handle *fwnode)
++{
++}
++
++static inline bool fwnode_phy_is_fixed_link(struct fwnode_handle *fwnode)
++{
++	return false;
++}
+ #endif
+ 
+ #endif /* __LINUX_FWNODE_MDIO_H */
+diff --git a/drivers/net/mdio/fwnode_mdio.c b/drivers/net/mdio/fwnode_mdio.c
+index 1c1584fca632..454fdae24150 100644
+--- a/drivers/net/mdio/fwnode_mdio.c
++++ b/drivers/net/mdio/fwnode_mdio.c
+@@ -10,6 +10,7 @@
+ #include <linux/fwnode_mdio.h>
+ #include <linux/of.h>
+ #include <linux/phy.h>
++#include <linux/phy_fixed.h>
+ 
+ MODULE_AUTHOR("Calvin Johnson <calvin.johnson@oss.nxp.com>");
+ MODULE_LICENSE("GPL");
+@@ -147,3 +148,102 @@ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
+ 	return 0;
+ }
+ EXPORT_SYMBOL(fwnode_mdiobus_register_phy);
++
++/*
++ * fwnode_phy_is_fixed_link() and fwnode_phy_register_fixed_link() must
++ * support two bindings:
++ * - the old binding, where 'fixed-link' was a property with 5
++ *   cells encoding various information about the fixed PHY
++ * - the new binding, where 'fixed-link' is a sub-node of the
++ *   Ethernet device.
++ */
++bool fwnode_phy_is_fixed_link(struct fwnode_handle *fwnode)
++{
++	struct fwnode_handle *fixed_link_node;
++	const char *managed;
++	int len;
++
++	/* New binding */
++	fixed_link_node = fwnode_get_named_child_node(fwnode, "fixed-link");
++	if (fixed_link_node) {
++		fwnode_handle_put(fixed_link_node);
++		return true;
 +	}
 +
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(fwnode_find_parent_dev_match);
++	if (fwnode_property_read_string(fwnode, "managed", &managed) == 0 &&
++	    strcmp(managed, "auto") != 0)
++		return true;
 +
- /**
-  * fwnode_is_ancestor_of - Test if @ancestor is ancestor of @child
-  * @ancestor: Firmware which is tested for being an ancestor
++	/* Old binding */
++	len = fwnode_property_count_u32(fwnode, "fixed-link");
++	if (len == 5)
++		return true;
++
++	return false;
++}
++EXPORT_SYMBOL(fwnode_phy_is_fixed_link);
++
++int fwnode_phy_register_fixed_link(struct fwnode_handle *fwnode)
++{
++	struct fixed_phy_status status = {};
++	struct fwnode_handle *fixed_link_node;
++	u32 fixed_link_prop[5];
++	const char *managed;
++
++	if (fwnode_property_read_string(fwnode, "managed", &managed) == 0 &&
++	    strcmp(managed, "in-band-status") == 0) {
++		/* status is zeroed, namely its .link member */
++		goto register_phy;
++	}
++
++	/* New binding */
++	fixed_link_node = fwnode_get_named_child_node(fwnode, "fixed-link");
++	if (fixed_link_node) {
++		status.link = 1;
++		status.duplex = fwnode_property_present(fixed_link_node,
++							"full-duplex");
++		if (fwnode_property_read_u32(fixed_link_node, "speed",
++					     &status.speed)) {
++			fwnode_handle_put(fixed_link_node);
++			return -EINVAL;
++		}
++		status.pause = fwnode_property_present(fixed_link_node, "pause");
++		status.asym_pause = fwnode_property_present(fixed_link_node,
++							    "asym-pause");
++		fwnode_handle_put(fixed_link_node);
++
++		goto register_phy;
++	}
++
++	/* Old binding */
++	if (fwnode_property_read_u32_array(fwnode, "fixed-link", fixed_link_prop,
++					   ARRAY_SIZE(fixed_link_prop)) == 0) {
++		status.link = 1;
++		status.duplex = fixed_link_prop[1];
++		status.speed  = fixed_link_prop[2];
++		status.pause  = fixed_link_prop[3];
++		status.asym_pause = fixed_link_prop[4];
++		goto register_phy;
++	}
++
++	return -ENODEV;
++
++register_phy:
++	return PTR_ERR_OR_ZERO(fixed_phy_register(PHY_POLL, &status, fwnode));
++}
++EXPORT_SYMBOL(fwnode_phy_register_fixed_link);
++
++void fwnode_phy_deregister_fixed_link(struct fwnode_handle *fwnode)
++{
++	struct phy_device *phydev;
++
++	phydev = fwnode_phy_find_device(fwnode);
++	if (!phydev)
++		return;
++
++	fixed_phy_unregister(phydev);
++
++	put_device(&phydev->mdio.dev);	/* fwnode_phy_find_device() */
++	phy_device_free(phydev);	/* fixed_phy_register() */
++}
++EXPORT_SYMBOL(fwnode_phy_deregister_fixed_link);
+diff --git a/drivers/net/mdio/of_mdio.c b/drivers/net/mdio/of_mdio.c
+index d755fe1ecdda..409da6e92f7d 100644
+--- a/drivers/net/mdio/of_mdio.c
++++ b/drivers/net/mdio/of_mdio.c
+@@ -351,91 +351,18 @@ EXPORT_SYMBOL(of_phy_get_and_connect);
+  */
+ bool of_phy_is_fixed_link(struct device_node *np)
+ {
+-	struct device_node *dn;
+-	int len, err;
+-	const char *managed;
+-
+-	/* New binding */
+-	dn = of_get_child_by_name(np, "fixed-link");
+-	if (dn) {
+-		of_node_put(dn);
+-		return true;
+-	}
+-
+-	err = of_property_read_string(np, "managed", &managed);
+-	if (err == 0 && strcmp(managed, "auto") != 0)
+-		return true;
+-
+-	/* Old binding */
+-	if (of_get_property(np, "fixed-link", &len) &&
+-	    len == (5 * sizeof(__be32)))
+-		return true;
+-
+-	return false;
++	return fwnode_phy_is_fixed_link(of_fwnode_handle(np));
+ }
+ EXPORT_SYMBOL(of_phy_is_fixed_link);
+ 
+ int of_phy_register_fixed_link(struct device_node *np)
+ {
+-	struct fixed_phy_status status = {};
+-	struct device_node *fixed_link_node;
+-	u32 fixed_link_prop[5];
+-	const char *managed;
+-
+-	if (of_property_read_string(np, "managed", &managed) == 0 &&
+-	    strcmp(managed, "in-band-status") == 0) {
+-		/* status is zeroed, namely its .link member */
+-		goto register_phy;
+-	}
+-
+-	/* New binding */
+-	fixed_link_node = of_get_child_by_name(np, "fixed-link");
+-	if (fixed_link_node) {
+-		status.link = 1;
+-		status.duplex = of_property_read_bool(fixed_link_node,
+-						      "full-duplex");
+-		if (of_property_read_u32(fixed_link_node, "speed",
+-					 &status.speed)) {
+-			of_node_put(fixed_link_node);
+-			return -EINVAL;
+-		}
+-		status.pause = of_property_read_bool(fixed_link_node, "pause");
+-		status.asym_pause = of_property_read_bool(fixed_link_node,
+-							  "asym-pause");
+-		of_node_put(fixed_link_node);
+-
+-		goto register_phy;
+-	}
+-
+-	/* Old binding */
+-	if (of_property_read_u32_array(np, "fixed-link", fixed_link_prop,
+-				       ARRAY_SIZE(fixed_link_prop)) == 0) {
+-		status.link = 1;
+-		status.duplex = fixed_link_prop[1];
+-		status.speed  = fixed_link_prop[2];
+-		status.pause  = fixed_link_prop[3];
+-		status.asym_pause = fixed_link_prop[4];
+-		goto register_phy;
+-	}
+-
+-	return -ENODEV;
+-
+-register_phy:
+-	return PTR_ERR_OR_ZERO(fixed_phy_register(PHY_POLL, &status, of_fwnode_handle(np)));
++	return fwnode_phy_register_fixed_link(of_fwnode_handle(np));
+ }
+ EXPORT_SYMBOL(of_phy_register_fixed_link);
+ 
+ void of_phy_deregister_fixed_link(struct device_node *np)
+ {
+-	struct phy_device *phydev;
+-
+-	phydev = of_phy_find_device(np);
+-	if (!phydev)
+-		return;
+-
+-	fixed_phy_unregister(phydev);
+-
+-	put_device(&phydev->mdio.dev);	/* of_phy_find_device() */
+-	phy_device_free(phydev);	/* fixed_phy_register() */
++	fwnode_phy_deregister_fixed_link(of_fwnode_handle(np));
+ }
+ EXPORT_SYMBOL(of_phy_deregister_fixed_link);
 -- 
 2.29.0
 
