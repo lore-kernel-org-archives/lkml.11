@@ -2,133 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D87C2C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:07:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17313C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:07:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233861AbiG0QHA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:07:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37596 "EHLO
+        id S234633AbiG0QHn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:07:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234615AbiG0QGy (ORCPT
+        with ESMTP id S232297AbiG0QHl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:06:54 -0400
-Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD00830568
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:06:52 -0700 (PDT)
-Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-31f445bd486so61881187b3.13
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:06:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6ewmeS4McgdnQEH35NlTf+WYZOW3FH17zRDpoEtE6dI=;
-        b=INtOTD/aD9pkxpId/nbuIfYIh2625Ql2cdm3PPE/6OV3MR+Wf16Bp5IKfLSjHDDdjS
-         W7lwSfyvr4fx7EfPX3hqXV1XLbcIMhTyo9YzIwh63CE0L71Xq9Obi4EnF+MQIy1X8AJt
-         Wg+uJYmmPqba3AXMWElBsWx5w+MQ+RS/loTWNnuza6cW8u1isDc7eBuHwdXTdLQ7bxLQ
-         oSpj0xrrJsCW4Pq4spqSnAhj9GsF0WpwBPW8y/ICNyaWKHRCpa157wFfGAr5fGaoA4sI
-         QIUcdKKRbvI4kPeVTPgHneG9ZJXqa0aJU7PVTwSy8IyTy/Lg3cMir7MB3t0/5VoDrZGs
-         sV4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6ewmeS4McgdnQEH35NlTf+WYZOW3FH17zRDpoEtE6dI=;
-        b=ZmyBcsB/s9NP1rOwcFkyYNFvtRtmHEkF1SayZEJUYJOK3yry2/AGoFBzQGvKjLvGeF
-         HgQVxMvNbA1u2e6zU+djEiE0rizRWJGD1X6ORgEFKj9P7wWsY/mlqSrSSVb3N9gyi33G
-         +7kTOrbqIVq2ClUcDgF2D1f1OXNASOAG2tqxb6tNKgzg3Voj1b3E1fkrQ2M9HbWbzl0d
-         696yH5+IM6/wdvxwI/EuIJXNc4Du1DtDVp8B8wOycmKFEDxS85Ti/idQvnKs1CFm2mku
-         +poCeK3ke/pzawD/hR1Dm7otRgBzWhPzX9ngw0hoT6rctvEie8g+fWwlQfCaU6KElixO
-         gdrw==
-X-Gm-Message-State: AJIora/zitWDnoOp+ikRdJzWDeN68lciSpapsfReXgXNV+LXWHCojZNj
-        NVq4Rxrc50n7FqdxpOvfxOCqB2wk238MhW5c3p1XsA==
-X-Google-Smtp-Source: AGRyM1vqCW78Cn3V5a5E1wbeBWAhNzfNn3hKWKs7sG2nMhfHyzih69XaNV0l1aSjh7XmJa8TaUVDgp3KjFrA2y3Jezs=
-X-Received: by 2002:a05:690c:72c:b0:31f:474d:ea43 with SMTP id
- bt12-20020a05690c072c00b0031f474dea43mr8578158ywb.126.1658938011811; Wed, 27
- Jul 2022 09:06:51 -0700 (PDT)
+        Wed, 27 Jul 2022 12:07:41 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 538182A71C;
+        Wed, 27 Jul 2022 09:07:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=w9r9iD1+VJ1bB5BUofHhTNtVicBr0akZlYlPe4WCSQQ=; b=lvZsnsMXIad6IuUpCnGPnR81q2
+        acnY8KBBOU1hGSV7O0ISRk6vrJNFl/RF2gWT57/zETylrGdz0kZotBUWTPyxYZkRRefybX1Zc3PMM
+        OS/zAgpdVMu6hShabM3s88zg7aZWoAGhmJRap+XqlOdif7iB/6s6HyThVCwY1Gy1xbYX6U4GUSU8y
+        eenB9BdltjQlPKr5ZSxn8CH1RSQ6oHLkErzSEYeYnyVqBG6KbNXc7Ipgay4x4IaYfFa6IXLqENYcI
+        lZ49/7TVmlRFOWE8wJMSRk2EtilZ6o0Sx/tOtqDxsMVt2+LJXmySQ8r5lIDvmsJAuk793m0L+l/Xe
+        Uhd2GcCA==;
+Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1oGjZ7-000kBA-BG; Wed, 27 Jul 2022 16:07:19 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id EA6A2980403; Wed, 27 Jul 2022 18:07:16 +0200 (CEST)
+Date:   Wed, 27 Jul 2022 18:07:16 +0200
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Chengming Zhou <zhouchengming@bytedance.com>
+Cc:     hannes@cmpxchg.org, surenb@google.com, mingo@redhat.com,
+        tj@kernel.org, corbet@lwn.net, akpm@linux-foundation.org,
+        rdunlap@infradead.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, songmuchun@bytedance.com,
+        cgroups@vger.kernel.org
+Subject: Re: [PATCH 9/9] sched/psi: add PSI_IRQ to track IRQ/SOFTIRQ pressure
+Message-ID: <YuFitL6KuCfuqujn@worktop.programming.kicks-ass.net>
+References: <20220721040439.2651-1-zhouchengming@bytedance.com>
+ <20220721040439.2651-10-zhouchengming@bytedance.com>
 MIME-Version: 1.0
-References: <20220302211100.65264-1-paul.kocialkowski@bootlin.com>
- <20220302211100.65264-2-paul.kocialkowski@bootlin.com> <YiaTfsMDs7RGob2N@robh.at.kernel.org>
- <CAGETcx9u9RO_5nSp+=qgwDGY=jL_Q1hAcj+RfVN=q-H_8iuT4w@mail.gmail.com> <20220727120631.iefzititedahdsdt@houat>
-In-Reply-To: <20220727120631.iefzititedahdsdt@houat>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Wed, 27 Jul 2022 09:06:15 -0700
-Message-ID: <CAGETcx_o=L+Ku9CPGbQW2wS15etvi+ofkKZ0K=C7imP4=JcXeQ@mail.gmail.com>
-Subject: Re: [PATCH RFC v3 1/8] of: Mark interconnects property supplier as optional
-To:     Maxime Ripard <maxime@cerno.tech>
-Cc:     Rob Herring <robh@kernel.org>,
-        Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220721040439.2651-10-zhouchengming@bytedance.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 5:06 AM Maxime Ripard <maxime@cerno.tech> wrote:
->
-> Hi,
->
-> On Mon, Mar 07, 2022 at 07:34:22PM -0800, Saravana Kannan wrote:
-> > On Mon, Mar 7, 2022 at 3:21 PM Rob Herring <robh@kernel.org> wrote:
-> > >
-> > > +Saravana
-> > >
-> > > On Wed, Mar 02, 2022 at 10:10:53PM +0100, Paul Kocialkowski wrote:
-> > > > In order to set their correct DMA address offset, some devices rely on
-> > > > the device-tree interconnects property which identifies an
-> > > > interconnect node that provides a dma-ranges property that can be used
-> > > > to set said offset.
-> > > >
-> > > > Since that logic is all handled by the generic openfirmware and driver
-> > > > code, the device-tree description could be enough to properly set
-> > > > the offset.
-> > > >
-> > > > However the interconnects property is currently not marked as
-> > > > optional, which implies that a driver for the corresponding node
-> > > > must be loaded as a requirement. When no such driver exists, this
-> > > > results in an endless EPROBE_DEFER which gets propagated to the
-> > > > calling driver. This ends up in the driver never loading.
-> > > >
-> > > > Marking the interconnects property as optional makes it possible
-> > > > to load the driver in that situation, since the EPROBE_DEFER return
-> > > > code will no longer be propagated to the driver.
-> > > >
-> > > > There might however be undesirable consequences with this change,
-> > > > which I do not fully grasp at this point.
-> >
-> > Temporary NACK till I get a bit more time to take a closer look. I
-> > really don't like the idea of making interconnects optional. IOMMUs
-> > and DMAs were exceptions. Also, we kinda discuss similar issues in
-> > LPC. We had some consensus on how to handle these and I noted them all
-> > down with a lot of details -- let me go take a look at those notes
-> > again and see if I can send a more generic patch.
-> >
-> > Paul,
-> >
-> > Can you point to the DTS (not DTSI) file that corresponds to this?
-> > Also, if it's a builtin kernel, I'd recommend setting
-> > deferred_probe_timeout=1 and that should take care of it too.
->
-> For the record, I also encountered this today on next-20220726 with this
-> device:
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/arm/boot/dts/sun5i.dtsi#n775
->
-> The driver won't probe without fw_devlink=off
+On Thu, Jul 21, 2022 at 12:04:39PM +0800, Chengming Zhou wrote:
+> diff --git a/include/linux/psi_types.h b/include/linux/psi_types.h
+> index c124f7d186d0..195f123b1cd1 100644
+> --- a/include/linux/psi_types.h
+> +++ b/include/linux/psi_types.h
+> @@ -47,7 +47,8 @@ enum psi_res {
+>  	PSI_IO,
+>  	PSI_MEM,
+>  	PSI_CPU,
+> -	NR_PSI_RESOURCES = 3,
+> +	PSI_IRQ,
+> +	NR_PSI_RESOURCES = 4,
+>  };
+>  
+>  /*
+> @@ -63,9 +64,11 @@ enum psi_states {
+>  	PSI_MEM_FULL,
+>  	PSI_CPU_SOME,
+>  	PSI_CPU_FULL,
+> +	PSI_IRQ_SOME,
+> +	PSI_IRQ_FULL,
+>  	/* Only per-CPU, to weigh the CPU in the global average: */
+>  	PSI_NONIDLE,
+> -	NR_PSI_STATES = 7,
+> +	NR_PSI_STATES = 9,
+>  };
+>  
+>  enum psi_aggregators {
 
-Really? I basically ended up doing what I mentioned in my original
-reply. next-20220726 should have my changes that'll make sure
-fw_devlink doesn't block any probe (it'll still try to create as many
-device links as possible) after 10s (default deferred probe timeout).
-Can you try to find more info on why it's not probing?
-<debugfs>/devices_deferred should give more details.
+$ pahole -EC psi_group_cpu defconfig-build/kernel/sched/build_utility.o
+struct psi_group_cpu {
+        /* typedef seqcount_t */ struct seqcount {
+                unsigned int       sequence;                                             /*     0     4 */
+        } seq __attribute__((__aligned__(64))); /*     0     4 */
+        unsigned int               tasks[5];                                             /*     4    20 */
+        /* typedef u32 -> __u32 */ unsigned int               state_mask;                /*    24     4 */
+        /* typedef u32 -> __u32 */ unsigned int               times[7];                  /*    28    28 */
+        /* typedef u64 -> __u64 */ long long unsigned int     state_start;               /*    56     8 */
+        /* --- cacheline 1 boundary (64 bytes) --- */
+        /* typedef u32 -> __u32 */ unsigned int               times_prev[2][7] __attribute__((__aligned__(64))); /*    64    56 */
+
+        /* size: 128, cachelines: 2, members: 6 */
+        /* padding: 8 */
+        /* forced alignments: 2 */
+} __attribute__((__aligned__(64)));
 
 
--Saravana
+$ pahole -EC psi_group_cpu defconfig-build/kernel/sched/build_utility.o
+struct psi_group_cpu {
+        /* typedef seqcount_t */ struct seqcount {
+                unsigned int       sequence;                                             /*     0     4 */
+        } seq __attribute__((__aligned__(64))); /*     0     4 */
+        unsigned int               tasks[5];                                             /*     4    20 */
+        /* typedef u32 -> __u32 */ unsigned int               state_mask;                /*    24     4 */
+        /* typedef u32 -> __u32 */ unsigned int               times[9];                  /*    28    36 */
+        /* --- cacheline 1 boundary (64 bytes) --- */
+        /* typedef u64 -> __u64 */ long long unsigned int     state_start;               /*    64     8 */
+
+        /* XXX 56 bytes hole, try to pack */
+
+        /* --- cacheline 2 boundary (128 bytes) --- */
+        /* typedef u32 -> __u32 */ unsigned int               times_prev[2][9] __attribute__((__aligned__(64))); /*   128    72 */
+
+        /* size: 256, cachelines: 4, members: 6 */
+        /* sum members: 144, holes: 1, sum holes: 56 */
+        /* padding: 56 */
+        /* forced alignments: 2, forced holes: 1, sum forced holes: 56 */
+} __attribute__((__aligned__(64)));
+
+
+So yeah, I think not.
