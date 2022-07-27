@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BE83C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:20:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEB9CC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:20:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241809AbiG0RUr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:20:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38136 "EHLO
+        id S241880AbiG0RUt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:20:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241827AbiG0RTG (ORCPT
+        with ESMTP id S241848AbiG0RTJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:19:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 763777A514;
-        Wed, 27 Jul 2022 09:44:02 -0700 (PDT)
+        Wed, 27 Jul 2022 13:19:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C268F7A532;
+        Wed, 27 Jul 2022 09:44:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 48393B821AC;
-        Wed, 27 Jul 2022 16:44:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 976ABC433C1;
-        Wed, 27 Jul 2022 16:43:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4AF23600BE;
+        Wed, 27 Jul 2022 16:44:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F185C433D6;
+        Wed, 27 Jul 2022 16:44:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940240;
-        bh=e7ZRv2aecf6ctDZd+OHUCvxL1ffQxSvAwxPQGF0uR9s=;
+        s=korg; t=1658940245;
+        bh=A3+YHfCrvIpMgnEHozcBVwDMUO4GeUXh7Zbh9Kt9iD4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZOjdlK3HMhWoQlbvLvHWtMf+oW0JoE9xZSx3b8AFWx8yEcR2omLXyr7URaLHBq674
-         OsWR863HSNmScvTw3fg6LIrm6XlciLaFiX40vJjhRr8xUVBj6eea9mDH3Y0T3JEVnh
-         /KeVPHWZ88dC5NYb8d+0y0ycbgqxXPZZEYZai1iI=
+        b=weE8mLVp3W6imSUgeeTwR3VZJa8hR0LONwsEb4L5NvSqXCYyVRZkL9RS1znhzIq3j
+         TQDRgjv4kzCVrvcfFMtpKFLMdOSHzV9NXvQxCeeTFqChH5K+uFeZqGUXeWl4lIk/TN
+         5LneZ37vVZYI4oLi8tebGz1LUxOkBNqJvGdkbDBo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mathias Nyman <mathias.nyman@linux.intel.com>,
-        Chris Chiu <chris.chiu@canonical.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
+        stable@vger.kernel.org, Alexander Aring <aahringo@redhat.com>,
+        David Teigland <teigland@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 155/201] xhci: Set HCD flag to defer primary roothub registration
-Date:   Wed, 27 Jul 2022 18:10:59 +0200
-Message-Id: <20220727161034.246013417@linuxfoundation.org>
+Subject: [PATCH 5.15 139/201] dlm: fix pending remove if msg allocation fails
+Date:   Wed, 27 Jul 2022 18:10:43 +0200
+Message-Id: <20220727161033.570162032@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -51,50 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kishon Vijay Abraham I <kishon@ti.com>
+From: Alexander Aring <aahringo@redhat.com>
 
-[ Upstream commit b7a4f9b5d0e4b6dd937678c546c0b322dd1a4054 ]
+[ Upstream commit ba58995909b5098ca4003af65b0ccd5a8d13dd25 ]
 
-Set "HCD_FLAG_DEFER_RH_REGISTER" to hcd->flags in xhci_run() to defer
-registering primary roothub in usb_add_hcd() if xhci has two roothubs.
-This will make sure both primary roothub and secondary roothub will be
-registered along with the second HCD.
-This is required for cold plugged USB devices to be detected in certain
-PCIe USB cards (like Inateck USB card connected to AM64 EVM or J7200 EVM).
+This patch unsets ls_remove_len and ls_remove_name if a message
+allocation of a remove messages fails. In this case we never send a
+remove message out but set the per ls ls_remove_len ls_remove_name
+variable for a pending remove. Unset those variable should indicate
+possible waiters in wait_pending_remove() that no pending remove is
+going on at this moment.
 
-This patch has been added and reverted earier as it triggered a race
-in usb device enumeration.
-That race is now fixed in 5.16-rc3, and in stable back to 5.4
-commit 6cca13de26ee ("usb: hub: Fix locking issues with address0_mutex")
-commit 6ae6dc22d2d1 ("usb: hub: Fix usb enumeration issue due to address0
-race")
-
-[minor rebase change, and commit message update -Mathias]
-
-CC: stable@vger.kernel.org # 5.4+
-Suggested-by: Mathias Nyman <mathias.nyman@linux.intel.com>
-Tested-by: Chris Chiu <chris.chiu@canonical.com>
-Signed-off-by: Kishon Vijay Abraham I <kishon@ti.com>
-Link: https://lore.kernel.org/r/20220510091630.16564-3-kishon@ti.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: stable@vger.kernel.org
+Signed-off-by: Alexander Aring <aahringo@redhat.com>
+Signed-off-by: David Teigland <teigland@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/host/xhci.c | 2 ++
- 1 file changed, 2 insertions(+)
+ fs/dlm/lock.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/usb/host/xhci.c b/drivers/usb/host/xhci.c
-index a4e99f8668b3..d76c10f9ad80 100644
---- a/drivers/usb/host/xhci.c
-+++ b/drivers/usb/host/xhci.c
-@@ -693,6 +693,8 @@ int xhci_run(struct usb_hcd *hcd)
- 	xhci_dbg_trace(xhci, trace_xhci_dbg_init,
- 			"Finished xhci_run for USB2 roothub");
+diff --git a/fs/dlm/lock.c b/fs/dlm/lock.c
+index bb9e85e8819c..9f93496d2cc9 100644
+--- a/fs/dlm/lock.c
++++ b/fs/dlm/lock.c
+@@ -4065,13 +4065,14 @@ static void send_repeat_remove(struct dlm_ls *ls, char *ms_name, int len)
+ 	rv = _create_message(ls, sizeof(struct dlm_message) + len,
+ 			     dir_nodeid, DLM_MSG_REMOVE, &ms, &mh);
+ 	if (rv)
+-		return;
++		goto out;
  
-+	set_bit(HCD_FLAG_DEFER_RH_REGISTER, &hcd->flags);
-+
- 	xhci_create_dbc_dev(xhci);
+ 	memcpy(ms->m_extra, name, len);
+ 	ms->m_hash = hash;
  
- 	xhci_debugfs_init(xhci);
+ 	send_message(mh, ms);
+ 
++out:
+ 	spin_lock(&ls->ls_remove_spin);
+ 	ls->ls_remove_len = 0;
+ 	memset(ls->ls_remove_name, 0, DLM_RESNAME_MAXLEN);
 -- 
 2.35.1
 
