@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FA74C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:41:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 166A2C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:41:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239511AbiG0Qld (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:41:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59038 "EHLO
+        id S239662AbiG0Qlj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:41:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239220AbiG0Qkv (ORCPT
+        with ESMTP id S239221AbiG0Qkv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Jul 2022 12:40:51 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 495D0501AF;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EADDF5140A;
         Wed, 27 Jul 2022 09:29:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E693A619D6;
-        Wed, 27 Jul 2022 16:29:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 040B0C433C1;
-        Wed, 27 Jul 2022 16:29:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C210E619CB;
+        Wed, 27 Jul 2022 16:29:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD695C433C1;
+        Wed, 27 Jul 2022 16:29:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939361;
-        bh=dPxgH9y0o0iFn7kD59PJoQLyk0FOuT+iG7XyVTWrSGo=;
+        s=korg; t=1658939364;
+        bh=ReCbA0I7f/QWMMwN7Z40JHNUBCBF6sIrguLmZ2hyXRc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EyVpecaEM4g7njJuW/hxWEMirR8WlmoGUPMhEa1B0vbhQFkZUHNEF6QKRcuyQk2jF
-         33RrfH7ZzPxZcXnh5eNco4h2z60vD7oB0zOyDtEcZ+9+vgrbF6xqSYrwAGTQTOXYf7
-         SO9+N8apVwwNExpefrurvg1B7b8OmEDOoMPc2AEg=
+        b=XA+sWQpri9IsLoHITrzmWuAsFRv5lggoijCDQVwkYdvVa3fsVKoTRPY2o89geFKuY
+         E4ppXba6pp7pKU/KmK1xTisCPWzhSDV8VHm0ha+l2DsbYpvET4+fDeLgjyNexBPtDG
+         BecBFR1RimznKv6kFnHQMCR9UarZyX2RxNbrm0lA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Piotr Skajewski <piotrx.skajewski@intel.com>,
-        Marek Szlosek <marek.szlosek@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Haibo Chen <haibo.chen@nxp.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 41/87] ixgbe: Add locking to prevent panic when setting sriov_numvfs to zero
-Date:   Wed, 27 Jul 2022 18:10:34 +0200
-Message-Id: <20220727161010.708548924@linuxfoundation.org>
+Subject: [PATCH 5.4 42/87] gpio: pca953x: only use single read/write for No AI mode
+Date:   Wed, 27 Jul 2022 18:10:35 +0200
+Message-Id: <20220727161010.755473777@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161008.993711844@linuxfoundation.org>
 References: <20220727161008.993711844@linuxfoundation.org>
@@ -52,136 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Piotr Skajewski <piotrx.skajewski@intel.com>
+From: Haibo Chen <haibo.chen@nxp.com>
 
-[ Upstream commit 1e53834ce541d4fe271cdcca7703e50be0a44f8a ]
+[ Upstream commit db8edaa09d7461ec08672a92a2eef63d5882bb79 ]
 
-It is possible to disable VFs while the PF driver is processing requests
-from the VF driver.  This can result in a panic.
+For the device use NO AI mode(not support auto address increment),
+only use the single read/write when config the regmap.
 
-BUG: unable to handle kernel paging request at 000000000000106c
-PGD 0 P4D 0
-Oops: 0000 [#1] SMP NOPTI
-CPU: 8 PID: 0 Comm: swapper/8 Kdump: loaded Tainted: G I      --------- -
-Hardware name: Dell Inc. PowerEdge R740/06WXJT, BIOS 2.8.2 08/27/2020
-RIP: 0010:ixgbe_msg_task+0x4c8/0x1690 [ixgbe]
-Code: 00 00 48 8d 04 40 48 c1 e0 05 89 7c 24 24 89 fd 48 89 44 24 10 83 ff
-01 0f 84 b8 04 00 00 4c 8b 64 24 10 4d 03 a5 48 22 00 00 <41> 80 7c 24 4c
-00 0f 84 8a 03 00 00 0f b7 c7 83 f8 08 0f 84 8f 0a
-RSP: 0018:ffffb337869f8df8 EFLAGS: 00010002
-RAX: 0000000000001020 RBX: 0000000000000000 RCX: 000000000000002b
-RDX: 0000000000000002 RSI: 0000000000000008 RDI: 0000000000000006
-RBP: 0000000000000006 R08: 0000000000000002 R09: 0000000000029780
-R10: 00006957d8f42832 R11: 0000000000000000 R12: 0000000000001020
-R13: ffff8a00e8978ac0 R14: 000000000000002b R15: ffff8a00e8979c80
-FS:  0000000000000000(0000) GS:ffff8a07dfd00000(0000) knlGS:00000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000000000000106c CR3: 0000000063e10004 CR4: 00000000007726e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-PKRU: 55555554
-Call Trace:
- <IRQ>
- ? ttwu_do_wakeup+0x19/0x140
- ? try_to_wake_up+0x1cd/0x550
- ? ixgbevf_update_xcast_mode+0x71/0xc0 [ixgbevf]
- ixgbe_msix_other+0x17e/0x310 [ixgbe]
- __handle_irq_event_percpu+0x40/0x180
- handle_irq_event_percpu+0x30/0x80
- handle_irq_event+0x36/0x53
- handle_edge_irq+0x82/0x190
- handle_irq+0x1c/0x30
- do_IRQ+0x49/0xd0
- common_interrupt+0xf/0xf
+We meet issue on PCA9557PW on i.MX8QXP/DXL evk board, this device
+do not support AI mode, but when do the regmap sync, regmap will
+sync 3 byte data to register 1, logically this means write first
+data to register 1, write second data to register 2, write third data
+to register 3. But this device do not support AI mode, finally, these
+three data write only into register 1 one by one. the reault is the
+value of register 1 alway equal to the latest data, here is the third
+data, no operation happened on register 2 and register 3. This is
+not what we expect.
 
-This can be eventually be reproduced with the following script:
-
-while :
-do
-    echo 63 > /sys/class/net/<devname>/device/sriov_numvfs
-    sleep 1
-    echo 0 > /sys/class/net/<devname>/device/sriov_numvfs
-    sleep 1
-done
-
-Add lock when disabling SR-IOV to prevent process VF mailbox communication.
-
-Fixes: d773d1310625 ("ixgbe: Fix memory leak when SR-IOV VFs are direct assigned")
-Signed-off-by: Piotr Skajewski <piotrx.skajewski@intel.com>
-Tested-by: Marek Szlosek <marek.szlosek@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Link: https://lore.kernel.org/r/20220715214456.2968711-1-anthony.l.nguyen@intel.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 49427232764d ("gpio: pca953x: Perform basic regmap conversion")
+Signed-off-by: Haibo Chen <haibo.chen@nxp.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe.h       | 1 +
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c  | 3 +++
- drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c | 6 ++++++
- 3 files changed, 10 insertions(+)
+ drivers/gpio/gpio-pca953x.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe.h b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
-index 39e73ad60352..fa49ef2afde5 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe.h
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
-@@ -773,6 +773,7 @@ struct ixgbe_adapter {
- #ifdef CONFIG_IXGBE_IPSEC
- 	struct ixgbe_ipsec *ipsec;
- #endif /* CONFIG_IXGBE_IPSEC */
-+	spinlock_t vfs_lock;
- };
+diff --git a/drivers/gpio/gpio-pca953x.c b/drivers/gpio/gpio-pca953x.c
+index 54da66d02b0e..317f54f19477 100644
+--- a/drivers/gpio/gpio-pca953x.c
++++ b/drivers/gpio/gpio-pca953x.c
+@@ -379,6 +379,9 @@ static const struct regmap_config pca953x_i2c_regmap = {
+ 	.reg_bits = 8,
+ 	.val_bits = 8,
  
- static inline u8 ixgbe_max_rss_indices(struct ixgbe_adapter *adapter)
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-index 8a894e5d923f..f8aa1a0b89c5 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-@@ -6396,6 +6396,9 @@ static int ixgbe_sw_init(struct ixgbe_adapter *adapter,
- 	/* n-tuple support exists, always init our spinlock */
- 	spin_lock_init(&adapter->fdir_perfect_lock);
- 
-+	/* init spinlock to avoid concurrency of VF resources */
-+	spin_lock_init(&adapter->vfs_lock);
++	.use_single_read = true,
++	.use_single_write = true,
 +
- #ifdef CONFIG_IXGBE_DCB
- 	ixgbe_init_dcb(adapter);
- #endif
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
-index cf5c2b9465eb..0e73e3b1af19 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
-@@ -204,10 +204,13 @@ void ixgbe_enable_sriov(struct ixgbe_adapter *adapter, unsigned int max_vfs)
- int ixgbe_disable_sriov(struct ixgbe_adapter *adapter)
- {
- 	unsigned int num_vfs = adapter->num_vfs, vf;
-+	unsigned long flags;
- 	int rss;
- 
-+	spin_lock_irqsave(&adapter->vfs_lock, flags);
- 	/* set num VFs to 0 to prevent access to vfinfo */
- 	adapter->num_vfs = 0;
-+	spin_unlock_irqrestore(&adapter->vfs_lock, flags);
- 
- 	/* put the reference to all of the vf devices */
- 	for (vf = 0; vf < num_vfs; ++vf) {
-@@ -1305,8 +1308,10 @@ static void ixgbe_rcv_ack_from_vf(struct ixgbe_adapter *adapter, u32 vf)
- void ixgbe_msg_task(struct ixgbe_adapter *adapter)
- {
- 	struct ixgbe_hw *hw = &adapter->hw;
-+	unsigned long flags;
- 	u32 vf;
- 
-+	spin_lock_irqsave(&adapter->vfs_lock, flags);
- 	for (vf = 0; vf < adapter->num_vfs; vf++) {
- 		/* process any reset requests */
- 		if (!ixgbe_check_for_rst(hw, vf))
-@@ -1320,6 +1325,7 @@ void ixgbe_msg_task(struct ixgbe_adapter *adapter)
- 		if (!ixgbe_check_for_ack(hw, vf))
- 			ixgbe_rcv_ack_from_vf(adapter, vf);
- 	}
-+	spin_unlock_irqrestore(&adapter->vfs_lock, flags);
- }
- 
- void ixgbe_disable_tx_rx(struct ixgbe_adapter *adapter)
+ 	.readable_reg = pca953x_readable_register,
+ 	.writeable_reg = pca953x_writeable_register,
+ 	.volatile_reg = pca953x_volatile_register,
 -- 
 2.35.1
 
