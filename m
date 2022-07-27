@@ -2,231 +2,278 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51F6AC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:12:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C869C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:12:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241517AbiG0RMb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:12:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48682 "EHLO
+        id S236018AbiG0RMf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:12:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241520AbiG0RLq (ORCPT
+        with ESMTP id S241566AbiG0RLv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:11:46 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABBA174DC8
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:41:42 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id p10so20409752lfd.9
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:41:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=noZsE9hzm+1k0IDbKYcJedBCS8keQWIZ5dwJ9Bh2iyA=;
-        b=EvaFQ0LZE/erLTRglemqXFQcs3XLxjLrE10420FuIJORcU8P0nkjppHqEchtCoTdrV
-         QP3EHReO5Zj5phUAfO0cxLHKN2bfz0WwIlTvjKlOSHBNTX60u8ZOyI3BJ6DA74rpJkT0
-         8GE21IktCR/UbYLecNeeifL6SJcsv1OCP0KnhjoJWpm9vTJmfsOkimnmmVNmiKXSCjrq
-         PCIvFb2Z/9iLYQZjt4s1MFE4W9GqIdaCKe3Bj9niregePX3wluJt/DkX3AeE/2dJiwmo
-         OUqGp5MF42tU4cR9HJcR08KOXhPf/hL38/GwuPr2abMfrRWfMEMzEVdqiblUcsKeSAsU
-         1shQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=noZsE9hzm+1k0IDbKYcJedBCS8keQWIZ5dwJ9Bh2iyA=;
-        b=VdjgmgJLOBNN/AXdMGaaTdFJkvMa4CPYwhme799mDlnWKrB+IRDkneZbEA6XNuQ6OD
-         Wv/mwZC1XmyjgHB9kh4VZJl3LyXFjGXR4pByskdwbgw2udKsnGl/4PAo987bxsozjvMh
-         lprv9fCP2kb74dyVXS+f8/algnJRFYHCvfvy4gzcQ5th4n0MX0YKB5MVXLRbL924o/RJ
-         Ig372HGINXVIBCBGMqxqjQeCTfTKOvpd3u/Ndam+4PnUURkNYoLRt6sRib1mKQc3hWQh
-         +bJPUDN0ahRPNqq1AnYy0Qgp9rM+MKWSSaiKxRizGOZRchga8bWtC1JWftZ9K54jtHzX
-         s1Ew==
-X-Gm-Message-State: AJIora+MPH8VQRie4XFdHu13DCj6j04VxngSalSnfqyM20xEfVF+GrCL
-        AcVCn703oqfepsx/N33gr6Kjkw==
-X-Google-Smtp-Source: AGRyM1vOxShQJVI2IuMwmQBmBYBiblwWa0oXL7CXsC4l1qkEdcyTkrYB2g5dMB9y4tgZP27svG3sNw==
-X-Received: by 2002:a05:6512:1107:b0:48a:87db:7d24 with SMTP id l7-20020a056512110700b0048a87db7d24mr6539653lfg.58.1658940094944;
-        Wed, 27 Jul 2022 09:41:34 -0700 (PDT)
-Received: from krzk-bin.lan (78-26-46-173.network.trollfjord.no. [78.26.46.173])
-        by smtp.gmail.com with ESMTPSA id i17-20020a2ea231000000b0025a67779931sm3872519ljm.57.2022.07.27.09.41.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 09:41:34 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Greer <mgreer@animalcreek.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        =?UTF-8?q?J=C3=A9r=C3=B4me=20Pouiller?= 
-        <jerome.pouiller@silabs.com>,
-        Adham Abozaeid <adham.abozaeid@microchip.com>,
-        Ajay Singh <ajay.kathat@microchip.com>,
-        Tony Lindgren <tony@atomide.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org
-Subject: [PATCH 2/2] dt-bindings: wireless: use spi-peripheral-props.yaml
-Date:   Wed, 27 Jul 2022 18:41:30 +0200
-Message-Id: <20220727164130.385411-2-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220727164130.385411-1-krzysztof.kozlowski@linaro.org>
-References: <20220727164130.385411-1-krzysztof.kozlowski@linaro.org>
+        Wed, 27 Jul 2022 13:11:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91E175073D;
+        Wed, 27 Jul 2022 09:41:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B5CF6B821D5;
+        Wed, 27 Jul 2022 16:41:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13399C433B5;
+        Wed, 27 Jul 2022 16:41:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658940096;
+        bh=75Zf2TJhZZOBtHD1hLzRORjmMYG60PXKLcJYV2d+7+c=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=A1rYxXPe4gIkGO5c+y3XYetCWAHONNcUzYl7YymWTtiJXpdv4JgKgy1sCIOBPAVOS
+         yciK9vK86wlvOkiznRmHqmwPmtlmBacDxG+aPGSSEO2ZzSdxoglpHWljkuFUPLR2bN
+         ZUvJ6S887gEwdWO9wvJ3AWix6cEjCOkpaB1GQpq8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Gregory CLEMENT <gregory.clement@bootlin.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 102/201] pinctrl: armada-37xx: Use temporary variable for struct device
+Date:   Wed, 27 Jul 2022 18:10:06 +0200
+Message-Id: <20220727161031.966419418@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
+References: <20220727161026.977588183@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of listing directly properties typical for SPI peripherals,
-reference the spi-peripheral-props.yaml schema.  This allows using all
-properties typical for SPI-connected devices, even these which device
-bindings author did not tried yet.
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Remove the spi-* properties which now come via spi-peripheral-props.yaml
-schema, except for the cases when device schema adds some constraints
-like maximum frequency.
+[ Upstream commit 50cf2ed284e49028a885aa56c3ea50714c635879 ]
 
-While changing additionalProperties->unevaluatedProperties, put it in
-typical place, just before example DTS.
+Use temporary variable for struct device to make code neater.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Gregory CLEMENT <gregory.clement@bootlin.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
+ drivers/pinctrl/mvebu/pinctrl-armada-37xx.c | 56 +++++++++------------
+ 1 file changed, 23 insertions(+), 33 deletions(-)
 
-Technically, this depends on [1] merged to SPI tree, if we want to
-preserve existing behavior of not allowing SPI CPHA and CPOL in each of
-schemas in this patch.
-
-If this patch comes independently via different tree, the SPI CPHA and
-CPOL will be allowed for brief period of time, before [1] is merged.
-This will not have negative impact, just DT schema checks will be
-loosened for that period.
-
-[1] https://lore.kernel.org/all/20220722191539.90641-2-krzysztof.kozlowski@linaro.org/
----
- .../net/wireless/microchip,wilc1000.yaml      |  7 ++--
- .../bindings/net/wireless/silabs,wfx.yaml     | 15 +++------
- .../bindings/net/wireless/ti,wlcore.yaml      | 32 +++++++++----------
- 3 files changed, 25 insertions(+), 29 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/net/wireless/microchip,wilc1000.yaml b/Documentation/devicetree/bindings/net/wireless/microchip,wilc1000.yaml
-index 60de78f1bc7b..b3405f284580 100644
---- a/Documentation/devicetree/bindings/net/wireless/microchip,wilc1000.yaml
-+++ b/Documentation/devicetree/bindings/net/wireless/microchip,wilc1000.yaml
-@@ -20,8 +20,6 @@ properties:
+diff --git a/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c b/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
+index 85a0052bb0e6..e1f76b4ddf23 100644
+--- a/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
++++ b/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
+@@ -341,12 +341,12 @@ static int armada_37xx_pmx_set_by_name(struct pinctrl_dev *pctldev,
+ 				       struct armada_37xx_pin_group *grp)
+ {
+ 	struct armada_37xx_pinctrl *info = pinctrl_dev_get_drvdata(pctldev);
++	struct device *dev = info->dev;
+ 	unsigned int reg = SELECTION;
+ 	unsigned int mask = grp->reg_mask;
+ 	int func, val;
  
-   reg: true
+-	dev_dbg(info->dev, "enable function %s group %s\n",
+-		name, grp->name);
++	dev_dbg(dev, "enable function %s group %s\n", name, grp->name);
  
--  spi-max-frequency: true
+ 	func = match_string(grp->funcs, NB_FUNCS, name);
+ 	if (func < 0)
+@@ -722,16 +722,16 @@ static unsigned int armada_37xx_irq_startup(struct irq_data *d)
+ static int armada_37xx_irqchip_register(struct platform_device *pdev,
+ 					struct armada_37xx_pinctrl *info)
+ {
+-	struct device_node *np = info->dev->of_node;
+ 	struct gpio_chip *gc = &info->gpio_chip;
+ 	struct irq_chip *irqchip = &info->irq_chip;
+ 	struct gpio_irq_chip *girq = &gc->irq;
+ 	struct device *dev = &pdev->dev;
++	struct device_node *np;
+ 	struct resource res;
+ 	int ret = -ENODEV, i, nr_irq_parent;
+ 
+ 	/* Check if we have at least one gpio-controller child node */
+-	for_each_child_of_node(info->dev->of_node, np) {
++	for_each_child_of_node(dev->of_node, np) {
+ 		if (of_property_read_bool(np, "gpio-controller")) {
+ 			ret = 0;
+ 			break;
+@@ -750,12 +750,12 @@ static int armada_37xx_irqchip_register(struct platform_device *pdev,
+ 		return 0;
+ 	}
+ 
+-	if (of_address_to_resource(info->dev->of_node, 1, &res)) {
++	if (of_address_to_resource(dev->of_node, 1, &res)) {
+ 		dev_err(dev, "cannot find IO resource\n");
+ 		return -ENOENT;
+ 	}
+ 
+-	info->base = devm_ioremap_resource(info->dev, &res);
++	info->base = devm_ioremap_resource(dev, &res);
+ 	if (IS_ERR(info->base))
+ 		return PTR_ERR(info->base);
+ 
+@@ -774,8 +774,7 @@ static int armada_37xx_irqchip_register(struct platform_device *pdev,
+ 	 * the chained irq with all of them.
+ 	 */
+ 	girq->num_parents = nr_irq_parent;
+-	girq->parents = devm_kcalloc(&pdev->dev, nr_irq_parent,
+-				     sizeof(*girq->parents), GFP_KERNEL);
++	girq->parents = devm_kcalloc(dev, nr_irq_parent, sizeof(*girq->parents), GFP_KERNEL);
+ 	if (!girq->parents)
+ 		return -ENOMEM;
+ 	for (i = 0; i < nr_irq_parent; i++) {
+@@ -794,11 +793,12 @@ static int armada_37xx_irqchip_register(struct platform_device *pdev,
+ static int armada_37xx_gpiochip_register(struct platform_device *pdev,
+ 					struct armada_37xx_pinctrl *info)
+ {
++	struct device *dev = &pdev->dev;
+ 	struct device_node *np;
+ 	struct gpio_chip *gc;
+ 	int ret = -ENODEV;
+ 
+-	for_each_child_of_node(info->dev->of_node, np) {
++	for_each_child_of_node(dev->of_node, np) {
+ 		if (of_find_property(np, "gpio-controller", NULL)) {
+ 			ret = 0;
+ 			break;
+@@ -811,19 +811,16 @@ static int armada_37xx_gpiochip_register(struct platform_device *pdev,
+ 
+ 	gc = &info->gpio_chip;
+ 	gc->ngpio = info->data->nr_pins;
+-	gc->parent = &pdev->dev;
++	gc->parent = dev;
+ 	gc->base = -1;
+ 	gc->of_node = np;
+ 	gc->label = info->data->name;
+ 
+ 	ret = armada_37xx_irqchip_register(pdev, info);
+-	if (ret)
+-		return ret;
+-	ret = devm_gpiochip_add_data(&pdev->dev, gc, info);
+ 	if (ret)
+ 		return ret;
+ 
+-	return 0;
++	return devm_gpiochip_add_data(dev, gc, info);
+ }
+ 
+ /**
+@@ -874,13 +871,13 @@ static int armada_37xx_add_function(struct armada_37xx_pmx_func *funcs,
+ static int armada_37xx_fill_group(struct armada_37xx_pinctrl *info)
+ {
+ 	int n, num = 0, funcsize = info->data->nr_pins;
++	struct device *dev = info->dev;
+ 
+ 	for (n = 0; n < info->ngroups; n++) {
+ 		struct armada_37xx_pin_group *grp = &info->groups[n];
+ 		int i, j, f;
+ 
+-		grp->pins = devm_kcalloc(info->dev,
+-					 grp->npins + grp->extra_npins,
++		grp->pins = devm_kcalloc(dev, grp->npins + grp->extra_npins,
+ 					 sizeof(*grp->pins),
+ 					 GFP_KERNEL);
+ 		if (!grp->pins)
+@@ -898,8 +895,7 @@ static int armada_37xx_fill_group(struct armada_37xx_pinctrl *info)
+ 			ret = armada_37xx_add_function(info->funcs, &funcsize,
+ 					    grp->funcs[f]);
+ 			if (ret == -EOVERFLOW)
+-				dev_err(info->dev,
+-					"More functions than pins(%d)\n",
++				dev_err(dev, "More functions than pins(%d)\n",
+ 					info->data->nr_pins);
+ 			if (ret < 0)
+ 				continue;
+@@ -925,6 +921,7 @@ static int armada_37xx_fill_group(struct armada_37xx_pinctrl *info)
+ static int armada_37xx_fill_func(struct armada_37xx_pinctrl *info)
+ {
+ 	struct armada_37xx_pmx_func *funcs = info->funcs;
++	struct device *dev = info->dev;
+ 	int n;
+ 
+ 	for (n = 0; n < info->nfuncs; n++) {
+@@ -932,8 +929,7 @@ static int armada_37xx_fill_func(struct armada_37xx_pinctrl *info)
+ 		const char **groups;
+ 		int g;
+ 
+-		funcs[n].groups = devm_kcalloc(info->dev,
+-					       funcs[n].ngroups,
++		funcs[n].groups = devm_kcalloc(dev, funcs[n].ngroups,
+ 					       sizeof(*(funcs[n].groups)),
+ 					       GFP_KERNEL);
+ 		if (!funcs[n].groups)
+@@ -962,6 +958,7 @@ static int armada_37xx_pinctrl_register(struct platform_device *pdev,
+ 	const struct armada_37xx_pin_data *pin_data = info->data;
+ 	struct pinctrl_desc *ctrldesc = &info->pctl;
+ 	struct pinctrl_pin_desc *pindesc, *pdesc;
++	struct device *dev = &pdev->dev;
+ 	int pin, ret;
+ 
+ 	info->groups = pin_data->groups;
+@@ -973,9 +970,7 @@ static int armada_37xx_pinctrl_register(struct platform_device *pdev,
+ 	ctrldesc->pmxops = &armada_37xx_pmx_ops;
+ 	ctrldesc->confops = &armada_37xx_pinconf_ops;
+ 
+-	pindesc = devm_kcalloc(&pdev->dev,
+-			       pin_data->nr_pins, sizeof(*pindesc),
+-			       GFP_KERNEL);
++	pindesc = devm_kcalloc(dev, pin_data->nr_pins, sizeof(*pindesc), GFP_KERNEL);
+ 	if (!pindesc)
+ 		return -ENOMEM;
+ 
+@@ -994,14 +989,10 @@ static int armada_37xx_pinctrl_register(struct platform_device *pdev,
+ 	 * we allocate functions for number of pins and hope there are
+ 	 * fewer unique functions than pins available
+ 	 */
+-	info->funcs = devm_kcalloc(&pdev->dev,
+-				   pin_data->nr_pins,
+-				   sizeof(struct armada_37xx_pmx_func),
+-				   GFP_KERNEL);
++	info->funcs = devm_kcalloc(dev, pin_data->nr_pins, sizeof(*info->funcs), GFP_KERNEL);
+ 	if (!info->funcs)
+ 		return -ENOMEM;
+ 
 -
-   interrupts:
-     maxItems: 1
+ 	ret = armada_37xx_fill_group(info);
+ 	if (ret)
+ 		return ret;
+@@ -1010,9 +1001,9 @@ static int armada_37xx_pinctrl_register(struct platform_device *pdev,
+ 	if (ret)
+ 		return ret;
  
-@@ -51,7 +49,10 @@ required:
-   - compatible
-   - interrupts
+-	info->pctl_dev = devm_pinctrl_register(&pdev->dev, ctrldesc, info);
++	info->pctl_dev = devm_pinctrl_register(dev, ctrldesc, info);
+ 	if (IS_ERR(info->pctl_dev)) {
+-		dev_err(&pdev->dev, "could not register pinctrl driver\n");
++		dev_err(dev, "could not register pinctrl driver\n");
+ 		return PTR_ERR(info->pctl_dev);
+ 	}
  
--additionalProperties: false
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+
-+unevaluatedProperties: false
+@@ -1143,8 +1134,7 @@ static int __init armada_37xx_pinctrl_probe(struct platform_device *pdev)
+ 	struct regmap *regmap;
+ 	int ret;
  
- examples:
-   - |
-diff --git a/Documentation/devicetree/bindings/net/wireless/silabs,wfx.yaml b/Documentation/devicetree/bindings/net/wireless/silabs,wfx.yaml
-index 76199a67d628..b35d2f3ad1ad 100644
---- a/Documentation/devicetree/bindings/net/wireless/silabs,wfx.yaml
-+++ b/Documentation/devicetree/bindings/net/wireless/silabs,wfx.yaml
-@@ -29,12 +29,6 @@ description: >
-     Documentation/devicetree/bindings/mmc/mmc-pwrseq-simple.yaml for more
-     information.
+-	info = devm_kzalloc(dev, sizeof(struct armada_37xx_pinctrl),
+-			    GFP_KERNEL);
++	info = devm_kzalloc(dev, sizeof(*info), GFP_KERNEL);
+ 	if (!info)
+ 		return -ENOMEM;
  
--  For SPI:
--
--    In add of the properties below, please consult
--    Documentation/devicetree/bindings/spi/spi-controller.yaml for optional SPI
--    related properties.
--
- properties:
-   compatible:
-     items:
-@@ -52,8 +46,6 @@ properties:
-       bindings.
-     maxItems: 1
+@@ -1152,7 +1142,7 @@ static int __init armada_37xx_pinctrl_probe(struct platform_device *pdev)
  
--  spi-max-frequency: true
--
-   interrupts:
-     description: The interrupt line. Should be IRQ_TYPE_EDGE_RISING. When SPI is
-       used, this property is required. When SDIO is used, the "in-band"
-@@ -84,12 +76,15 @@ properties:
- 
-   mac-address: true
- 
--additionalProperties: false
--
- required:
-   - compatible
-   - reg
- 
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+
-+unevaluatedProperties: false
-+
- examples:
-   - |
-     #include <dt-bindings/gpio/gpio.h>
-diff --git a/Documentation/devicetree/bindings/net/wireless/ti,wlcore.yaml b/Documentation/devicetree/bindings/net/wireless/ti,wlcore.yaml
-index d68bb2ec1f7e..e31456730e9f 100644
---- a/Documentation/devicetree/bindings/net/wireless/ti,wlcore.yaml
-+++ b/Documentation/devicetree/bindings/net/wireless/ti,wlcore.yaml
-@@ -36,8 +36,6 @@ properties:
-       This is required when connected via SPI, and optional when connected via
-       SDIO.
- 
--  spi-max-frequency: true
--
-   interrupts:
-     minItems: 1
-     maxItems: 2
-@@ -69,20 +67,22 @@ required:
-   - compatible
-   - interrupts
- 
--if:
--  properties:
--    compatible:
--      contains:
--        enum:
--          - ti,wl1271
--          - ti,wl1273
--          - ti,wl1281
--          - ti,wl1283
--then:
--  required:
--    - ref-clock-frequency
--
--additionalProperties: false
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - ti,wl1271
-+              - ti,wl1273
-+              - ti,wl1281
-+              - ti,wl1283
-+    then:
-+      required:
-+        - ref-clock-frequency
-+
-+unevaluatedProperties: false
- 
- examples:
-   - |
+ 	regmap = syscon_node_to_regmap(np);
+ 	if (IS_ERR(regmap)) {
+-		dev_err(&pdev->dev, "cannot get regmap\n");
++		dev_err(dev, "cannot get regmap\n");
+ 		return PTR_ERR(regmap);
+ 	}
+ 	info->regmap = regmap;
 -- 
-2.34.1
+2.35.1
+
+
 
