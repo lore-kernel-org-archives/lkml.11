@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEABFC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:53:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F5CAC19F2C
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:53:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240942AbiG0Qxb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:53:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58002 "EHLO
+        id S240647AbiG0Qxh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:53:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240517AbiG0QwS (ORCPT
+        with ESMTP id S240673AbiG0QwV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:52:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB3B84F188;
-        Wed, 27 Jul 2022 09:34:20 -0700 (PDT)
+        Wed, 27 Jul 2022 12:52:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 241054F185;
+        Wed, 27 Jul 2022 09:34:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 84774B821BA;
-        Wed, 27 Jul 2022 16:34:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE717C433D6;
-        Wed, 27 Jul 2022 16:34:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F5F5619FF;
+        Wed, 27 Jul 2022 16:34:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E2F4C433C1;
+        Wed, 27 Jul 2022 16:34:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939658;
-        bh=Y6eKHf7YnFlT7L+au4LdTlAYiMv2LAqvSJSkWSCCpZM=;
+        s=korg; t=1658939661;
+        bh=irdUX5ecktLkYzxOiiVDLC72L1Te06yr2ZR4h6ykyLk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q0G1QmdYPbAz0WVvUlw3yhtr7t+itKU4fH79RHU2gPyepyFJJoqs46EVm7ta8p31J
-         FNW4bGZYJhfKxYZQO0Er9ex64co3t8cvV92DpVW71oAYGO634OaPFVu18YjV4B21ku
-         P+hRdfmpnkKh4Yy4mvS93G3CNjgUg/ElHkpWMswk=
+        b=BKsMGOD/gKAPYEP/ZGy/DRKs7XzSZ4RKcTD2371UJvx7GciulqI696IYGtwWCWUd1
+         JEYEJGbl9YOnbpmSR2zL/NhjU4B6WAe1YKi578h1VNwcYR1Oinaqn2lvupCxpjeN5f
+         wxfYO6lRH/RXBodcAh0NvJCD+htB9UPdpdhVH3Ww=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lennert Buytenhek <buytenh@arista.com>,
-        Naama Meir <naamax.meir@linux.intel.com>,
-        Sasha Neftin <sasha.neftin@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 027/105] igc: Reinstate IGC_REMOVED logic and implement it properly
-Date:   Wed, 27 Jul 2022 18:10:13 +0200
-Message-Id: <20220727161013.192674456@linuxfoundation.org>
+        Jeffrey Hugo <quic_jhugo@quicinc.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        Carl Vanderlip <quic_carlv@quicinc.com>
+Subject: [PATCH 5.10 018/105] PCI: hv: Fix hv_arch_irq_unmask() for multi-MSI
+Date:   Wed, 27 Jul 2022 18:10:04 +0200
+Message-Id: <20220727161012.817332469@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161012.056867467@linuxfoundation.org>
 References: <20220727161012.056867467@linuxfoundation.org>
@@ -51,119 +50,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lennert Buytenhek <buytenh@wantstofly.org>
+From: Jeffrey Hugo <quic_jhugo@quicinc.com>
 
-[ Upstream commit 7c1ddcee5311f3315096217881d2dbe47cc683f9 ]
+commit 455880dfe292a2bdd3b4ad6a107299fce610e64b upstream.
 
-The initially merged version of the igc driver code (via commit
-146740f9abc4, "igc: Add support for PF") contained the following
-IGC_REMOVED checks in the igc_rd32/wr32() MMIO accessors:
+In the multi-MSI case, hv_arch_irq_unmask() will only operate on the first
+MSI of the N allocated.  This is because only the first msi_desc is cached
+and it is shared by all the MSIs of the multi-MSI block.  This means that
+hv_arch_irq_unmask() gets the correct address, but the wrong data (always
+0).
 
-	u32 igc_rd32(struct igc_hw *hw, u32 reg)
-	{
-		u8 __iomem *hw_addr = READ_ONCE(hw->hw_addr);
-		u32 value = 0;
+This can break MSIs.
 
-		if (IGC_REMOVED(hw_addr))
-			return ~value;
+Lets assume MSI0 is vector 34 on CPU0, and MSI1 is vector 33 on CPU0.
 
-		value = readl(&hw_addr[reg]);
+hv_arch_irq_unmask() is called on MSI0.  It uses a hypercall to configure
+the MSI address and data (0) to vector 34 of CPU0.  This is correct.  Then
+hv_arch_irq_unmask is called on MSI1.  It uses another hypercall to
+configure the MSI address and data (0) to vector 33 of CPU0.  This is
+wrong, and results in both MSI0 and MSI1 being routed to vector 33.  Linux
+will observe extra instances of MSI1 and no instances of MSI0 despite the
+endpoint device behaving correctly.
 
-		/* reads should not return all F's */
-		if (!(~value) && (!reg || !(~readl(hw_addr))))
-			hw->hw_addr = NULL;
+For the multi-MSI case, we need unique address and data info for each MSI,
+but the cached msi_desc does not provide that.  However, that information
+can be gotten from the int_desc cached in the chip_data by
+compose_msi_msg().  Fix the multi-MSI case to use that cached information
+instead.  Since hv_set_msi_entry_from_desc() is no longer applicable,
+remove it.
 
-		return value;
-	}
+5.10 backport - removed unused hv_set_msi_entry_from_desc function from
+mshyperv.h instead of pci-hyperv.c. msi_entry.address/data.as_uint32
+changed to direct reference (as they are u32's, just sans union).
 
-And:
-
-	#define wr32(reg, val) \
-	do { \
-		u8 __iomem *hw_addr = READ_ONCE((hw)->hw_addr); \
-		if (!IGC_REMOVED(hw_addr)) \
-			writel((val), &hw_addr[(reg)]); \
-	} while (0)
-
-E.g. igb has similar checks in its MMIO accessors, and has a similar
-macro E1000_REMOVED, which is implemented as follows:
-
-	#define E1000_REMOVED(h) unlikely(!(h))
-
-These checks serve to detect and take note of an 0xffffffff MMIO read
-return from the device, which can be caused by a PCIe link flap or some
-other kind of PCI bus error, and to avoid performing MMIO reads and
-writes from that point onwards.
-
-However, the IGC_REMOVED macro was not originally implemented:
-
-	#ifndef IGC_REMOVED
-	#define IGC_REMOVED(a) (0)
-	#endif /* IGC_REMOVED */
-
-This led to the IGC_REMOVED logic to be removed entirely in a
-subsequent commit (commit 3c215fb18e70, "igc: remove IGC_REMOVED
-function"), with the rationale that such checks matter only for
-virtualization and that igc does not support virtualization -- but a
-PCIe device can become detached even without virtualization being in
-use, and without proper checks, a PCIe bus error affecting an igc
-adapter will lead to various NULL pointer dereferences, as the first
-access after the error will set hw->hw_addr to NULL, and subsequent
-accesses will blindly dereference this now-NULL pointer.
-
-This patch reinstates the IGC_REMOVED checks in igc_rd32/wr32(), and
-implements IGC_REMOVED the way it is done for igb, by checking for the
-unlikely() case of hw_addr being NULL.  This change prevents the oopses
-seen when a PCIe link flap occurs on an igc adapter.
-
-Fixes: 146740f9abc4 ("igc: Add support for PF")
-Signed-off-by: Lennert Buytenhek <buytenh@arista.com>
-Tested-by: Naama Meir <naamax.meir@linux.intel.com>
-Acked-by: Sasha Neftin <sasha.neftin@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
+Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+Link: https://lore.kernel.org/r/1651068453-29588-1-git-send-email-quic_jhugo@quicinc.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Signed-off-by: Carl Vanderlip <quic_carlv@quicinc.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/igc/igc_main.c | 3 +++
- drivers/net/ethernet/intel/igc/igc_regs.h | 5 ++++-
- 2 files changed, 7 insertions(+), 1 deletion(-)
+ arch/x86/include/asm/mshyperv.h     |    7 -------
+ drivers/pci/controller/pci-hyperv.c |    5 ++++-
+ 2 files changed, 4 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index 53e31002ce52..e7ffe63925fd 100644
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -4933,6 +4933,9 @@ u32 igc_rd32(struct igc_hw *hw, u32 reg)
- 	u8 __iomem *hw_addr = READ_ONCE(hw->hw_addr);
- 	u32 value = 0;
- 
-+	if (IGC_REMOVED(hw_addr))
-+		return ~value;
-+
- 	value = readl(&hw_addr[reg]);
- 
- 	/* reads should not return all F's */
-diff --git a/drivers/net/ethernet/intel/igc/igc_regs.h b/drivers/net/ethernet/intel/igc/igc_regs.h
-index b52dd9d737e8..a273e1c33b3f 100644
---- a/drivers/net/ethernet/intel/igc/igc_regs.h
-+++ b/drivers/net/ethernet/intel/igc/igc_regs.h
-@@ -252,7 +252,8 @@ u32 igc_rd32(struct igc_hw *hw, u32 reg);
- #define wr32(reg, val) \
- do { \
- 	u8 __iomem *hw_addr = READ_ONCE((hw)->hw_addr); \
--	writel((val), &hw_addr[(reg)]); \
-+	if (!IGC_REMOVED(hw_addr)) \
-+		writel((val), &hw_addr[(reg)]); \
- } while (0)
- 
- #define rd32(reg) (igc_rd32(hw, reg))
-@@ -264,4 +265,6 @@ do { \
- 
- #define array_rd32(reg, offset) (igc_rd32(hw, (reg) + ((offset) << 2)))
- 
-+#define IGC_REMOVED(h) unlikely(!(h))
-+
+--- a/arch/x86/include/asm/mshyperv.h
++++ b/arch/x86/include/asm/mshyperv.h
+@@ -247,13 +247,6 @@ bool hv_vcpu_is_preempted(int vcpu);
+ static inline void hv_apic_init(void) {}
  #endif
--- 
-2.35.1
-
+ 
+-static inline void hv_set_msi_entry_from_desc(union hv_msi_entry *msi_entry,
+-					      struct msi_desc *msi_desc)
+-{
+-	msi_entry->address = msi_desc->msg.address_lo;
+-	msi_entry->data = msi_desc->msg.data;
+-}
+-
+ #else /* CONFIG_HYPERV */
+ static inline void hyperv_init(void) {}
+ static inline void hyperv_setup_mmu_ops(void) {}
+--- a/drivers/pci/controller/pci-hyperv.c
++++ b/drivers/pci/controller/pci-hyperv.c
+@@ -1210,6 +1210,7 @@ static void hv_irq_unmask(struct irq_dat
+ 	struct msi_desc *msi_desc = irq_data_get_msi_desc(data);
+ 	struct irq_cfg *cfg = irqd_cfg(data);
+ 	struct hv_retarget_device_interrupt *params;
++	struct tran_int_desc *int_desc;
+ 	struct hv_pcibus_device *hbus;
+ 	struct cpumask *dest;
+ 	cpumask_var_t tmp;
+@@ -1224,6 +1225,7 @@ static void hv_irq_unmask(struct irq_dat
+ 	pdev = msi_desc_to_pci_dev(msi_desc);
+ 	pbus = pdev->bus;
+ 	hbus = container_of(pbus->sysdata, struct hv_pcibus_device, sysdata);
++	int_desc = data->chip_data;
+ 
+ 	spin_lock_irqsave(&hbus->retarget_msi_interrupt_lock, flags);
+ 
+@@ -1231,7 +1233,8 @@ static void hv_irq_unmask(struct irq_dat
+ 	memset(params, 0, sizeof(*params));
+ 	params->partition_id = HV_PARTITION_ID_SELF;
+ 	params->int_entry.source = 1; /* MSI(-X) */
+-	hv_set_msi_entry_from_desc(&params->int_entry.msi_entry, msi_desc);
++	params->int_entry.msi_entry.address = int_desc->address & 0xffffffff;
++	params->int_entry.msi_entry.data = int_desc->data;
+ 	params->device_id = (hbus->hdev->dev_instance.b[5] << 24) |
+ 			   (hbus->hdev->dev_instance.b[4] << 16) |
+ 			   (hbus->hdev->dev_instance.b[7] << 8) |
 
 
