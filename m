@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67166C19F2C
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:45:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D681C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:45:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240231AbiG0QpG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:45:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42484 "EHLO
+        id S240241AbiG0QpJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:45:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240144AbiG0QoJ (ORCPT
+        with ESMTP id S240176AbiG0QoJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Jul 2022 12:44:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11CC99FDB;
-        Wed, 27 Jul 2022 09:30:42 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 112DEB7C4;
+        Wed, 27 Jul 2022 09:30:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E6CA61A24;
-        Wed, 27 Jul 2022 16:30:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9886AC433C1;
-        Wed, 27 Jul 2022 16:30:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C31D2B821A6;
+        Wed, 27 Jul 2022 16:30:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 337E2C433D6;
+        Wed, 27 Jul 2022 16:30:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939438;
-        bh=j4gFqz2+AZhseKpgjUD2DF/jrkEfbT3tUCKaJr/8GTA=;
+        s=korg; t=1658939443;
+        bh=ipqvfurvud+lMyLBk/chtqVr6crzPrl2bGSbppjjn8c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b2HfZtIWblQfstJbnfVJwu+6r9FeNfucpH/a6s1A+Mu4SORWQTpgkI2wt7rT2MwP4
-         xvs3rfGwR5diggeSmTdd2fpcN/ndwqA+4Ol/sED1IQbLIhygB3xrOmpWPKA3KA3Klu
-         PohCynF0aAxVT9ZwMcvp/GFOYD8azU+muZ14OH4k=
+        b=UatOLxUva8485giQfU2OwL/uVH7jLDCifO5lmO+3yieiEXhJKpA0YD0s3Sv8qMQsM
+         qNIad5d4YF+DaYVdPtI/vzXwcvqhuC1XXtAa3mkcI78csEZqluuMy3KMZHrPxY2x5H
+         595ewxxPbWg8AanpyahRhdvInj36orsIUrQJJD2I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 69/87] x86/uaccess: Implement macros for CMPXCHG on user addresses
-Date:   Wed, 27 Jul 2022 18:11:02 +0200
-Message-Id: <20220727161011.854462551@linuxfoundation.org>
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 71/87] x86/mce: Deduplicate exception handling
+Date:   Wed, 27 Jul 2022 18:11:04 +0200
+Message-Id: <20220727161011.945541383@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161008.993711844@linuxfoundation.org>
 References: <20220727161008.993711844@linuxfoundation.org>
@@ -51,194 +48,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Zijlstra <peterz@infradead.org>
+From: Thomas Gleixner <tglx@linutronix.de>
 
-[ Upstream commit 989b5db215a2f22f89d730b607b071d964780f10 ]
+[ Upstream commit e42404afc4ca856c48f1e05752541faa3587c472 ]
 
-Add support for CMPXCHG loops on userspace addresses.  Provide both an
-"unsafe" version for tight loops that do their own uaccess begin/end, as
-well as a "safe" version for use cases where the CMPXCHG is not buried in
-a loop, e.g. KVM will resume the guest instead of looping when emulation
-of a guest atomic accesses fails the CMPXCHG.
+Prepare code for further simplification. No functional change.
 
-Provide 8-byte versions for 32-bit kernels so that KVM can do CMPXCHG on
-guest PAE PTEs, which are accessed via userspace addresses.
-
-Guard the asm_volatile_goto() variation with CC_HAS_ASM_GOTO_TIED_OUTPUT,
-the "+m" constraint fails on some compilers that otherwise support
-CC_HAS_ASM_GOTO_OUTPUT.
-
-Cc: stable@vger.kernel.org
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Co-developed-by: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20220202004945.2540433-3-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lkml.kernel.org/r/20210908132525.096452100@linutronix.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/include/asm/uaccess.h | 142 +++++++++++++++++++++++++++++++++
- 1 file changed, 142 insertions(+)
+ arch/x86/kernel/cpu/mce/core.c | 34 +++++++++++++++++-----------------
+ 1 file changed, 17 insertions(+), 17 deletions(-)
 
-diff --git a/arch/x86/include/asm/uaccess.h b/arch/x86/include/asm/uaccess.h
-index a19effb98fdc..865795e2355e 100644
---- a/arch/x86/include/asm/uaccess.h
-+++ b/arch/x86/include/asm/uaccess.h
-@@ -441,6 +441,103 @@ __pu_label:							\
- 	__builtin_expect(__gu_err, 0);					\
- })
+diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
+index 8a2b8e791314..9b98a7d8ac60 100644
+--- a/arch/x86/kernel/cpu/mce/core.c
++++ b/arch/x86/kernel/cpu/mce/core.c
+@@ -397,13 +397,16 @@ static int msr_to_offset(u32 msr)
+ 	return -1;
+ }
  
-+#ifdef CONFIG_CC_HAS_ASM_GOTO_TIED_OUTPUT
-+#define __try_cmpxchg_user_asm(itype, ltype, _ptr, _pold, _new, label)	({ \
-+	bool success;							\
-+	__typeof__(_ptr) _old = (__typeof__(_ptr))(_pold);		\
-+	__typeof__(*(_ptr)) __old = *_old;				\
-+	__typeof__(*(_ptr)) __new = (_new);				\
-+	asm_volatile_goto("\n"						\
-+		     "1: " LOCK_PREFIX "cmpxchg"itype" %[new], %[ptr]\n"\
-+		     _ASM_EXTABLE_UA(1b, %l[label])			\
-+		     : CC_OUT(z) (success),				\
-+		       [ptr] "+m" (*_ptr),				\
-+		       [old] "+a" (__old)				\
-+		     : [new] ltype (__new)				\
-+		     : "memory"						\
-+		     : label);						\
-+	if (unlikely(!success))						\
-+		*_old = __old;						\
-+	likely(success);					})
-+
-+#ifdef CONFIG_X86_32
-+#define __try_cmpxchg64_user_asm(_ptr, _pold, _new, label)	({	\
-+	bool success;							\
-+	__typeof__(_ptr) _old = (__typeof__(_ptr))(_pold);		\
-+	__typeof__(*(_ptr)) __old = *_old;				\
-+	__typeof__(*(_ptr)) __new = (_new);				\
-+	asm_volatile_goto("\n"						\
-+		     "1: " LOCK_PREFIX "cmpxchg8b %[ptr]\n"		\
-+		     _ASM_EXTABLE_UA(1b, %l[label])			\
-+		     : CC_OUT(z) (success),				\
-+		       "+A" (__old),					\
-+		       [ptr] "+m" (*_ptr)				\
-+		     : "b" ((u32)__new),				\
-+		       "c" ((u32)((u64)__new >> 32))			\
-+		     : "memory"						\
-+		     : label);						\
-+	if (unlikely(!success))						\
-+		*_old = __old;						\
-+	likely(success);					})
-+#endif // CONFIG_X86_32
-+#else  // !CONFIG_CC_HAS_ASM_GOTO_TIED_OUTPUT
-+#define __try_cmpxchg_user_asm(itype, ltype, _ptr, _pold, _new, label)	({ \
-+	int __err = 0;							\
-+	bool success;							\
-+	__typeof__(_ptr) _old = (__typeof__(_ptr))(_pold);		\
-+	__typeof__(*(_ptr)) __old = *_old;				\
-+	__typeof__(*(_ptr)) __new = (_new);				\
-+	asm volatile("\n"						\
-+		     "1: " LOCK_PREFIX "cmpxchg"itype" %[new], %[ptr]\n"\
-+		     CC_SET(z)						\
-+		     "2:\n"						\
-+		     _ASM_EXTABLE_TYPE_REG(1b, 2b, EX_TYPE_EFAULT_REG,	\
-+					   %[errout])			\
-+		     : CC_OUT(z) (success),				\
-+		       [errout] "+r" (__err),				\
-+		       [ptr] "+m" (*_ptr),				\
-+		       [old] "+a" (__old)				\
-+		     : [new] ltype (__new)				\
-+		     : "memory", "cc");					\
-+	if (unlikely(__err))						\
-+		goto label;						\
-+	if (unlikely(!success))						\
-+		*_old = __old;						\
-+	likely(success);					})
-+
-+#ifdef CONFIG_X86_32
-+/*
-+ * Unlike the normal CMPXCHG, hardcode ECX for both success/fail and error.
-+ * There are only six GPRs available and four (EAX, EBX, ECX, and EDX) are
-+ * hardcoded by CMPXCHG8B, leaving only ESI and EDI.  If the compiler uses
-+ * both ESI and EDI for the memory operand, compilation will fail if the error
-+ * is an input+output as there will be no register available for input.
-+ */
-+#define __try_cmpxchg64_user_asm(_ptr, _pold, _new, label)	({	\
-+	int __result;							\
-+	__typeof__(_ptr) _old = (__typeof__(_ptr))(_pold);		\
-+	__typeof__(*(_ptr)) __old = *_old;				\
-+	__typeof__(*(_ptr)) __new = (_new);				\
-+	asm volatile("\n"						\
-+		     "1: " LOCK_PREFIX "cmpxchg8b %[ptr]\n"		\
-+		     "mov $0, %%ecx\n\t"				\
-+		     "setz %%cl\n"					\
-+		     "2:\n"						\
-+		     _ASM_EXTABLE_TYPE_REG(1b, 2b, EX_TYPE_EFAULT_REG, %%ecx) \
-+		     : [result]"=c" (__result),				\
-+		       "+A" (__old),					\
-+		       [ptr] "+m" (*_ptr)				\
-+		     : "b" ((u32)__new),				\
-+		       "c" ((u32)((u64)__new >> 32))			\
-+		     : "memory", "cc");					\
-+	if (unlikely(__result < 0))					\
-+		goto label;						\
-+	if (unlikely(!__result))					\
-+		*_old = __old;						\
-+	likely(__result);					})
-+#endif // CONFIG_X86_32
-+#endif // CONFIG_CC_HAS_ASM_GOTO_TIED_OUTPUT
-+
- /* FIXME: this hack is definitely wrong -AK */
- struct __large_struct { unsigned long buf[100]; };
- #define __m(x) (*(struct __large_struct __user *)(x))
-@@ -722,6 +819,51 @@ do {										\
- 	if (unlikely(__gu_err)) goto err_label;					\
- } while (0)
+-__visible bool ex_handler_rdmsr_fault(const struct exception_table_entry *fixup,
+-				      struct pt_regs *regs, int trapnr,
+-				      unsigned long error_code,
+-				      unsigned long fault_addr)
++static void ex_handler_msr_mce(struct pt_regs *regs, bool wrmsr)
+ {
+-	pr_emerg("MSR access error: RDMSR from 0x%x at rIP: 0x%lx (%pS)\n",
+-		 (unsigned int)regs->cx, regs->ip, (void *)regs->ip);
++	if (wrmsr) {
++		pr_emerg("MSR access error: WRMSR to 0x%x (tried to write 0x%08x%08x) at rIP: 0x%lx (%pS)\n",
++			 (unsigned int)regs->cx, (unsigned int)regs->dx, (unsigned int)regs->ax,
++			 regs->ip, (void *)regs->ip);
++	} else {
++		pr_emerg("MSR access error: RDMSR from 0x%x at rIP: 0x%lx (%pS)\n",
++			 (unsigned int)regs->cx, regs->ip, (void *)regs->ip);
++	}
  
-+extern void __try_cmpxchg_user_wrong_size(void);
-+
-+#ifndef CONFIG_X86_32
-+#define __try_cmpxchg64_user_asm(_ptr, _oldp, _nval, _label)		\
-+	__try_cmpxchg_user_asm("q", "r", (_ptr), (_oldp), (_nval), _label)
-+#endif
-+
-+/*
-+ * Force the pointer to u<size> to match the size expected by the asm helper.
-+ * clang/LLVM compiles all cases and only discards the unused paths after
-+ * processing errors, which breaks i386 if the pointer is an 8-byte value.
-+ */
-+#define unsafe_try_cmpxchg_user(_ptr, _oldp, _nval, _label) ({			\
-+	bool __ret;								\
-+	__chk_user_ptr(_ptr);							\
-+	switch (sizeof(*(_ptr))) {						\
-+	case 1:	__ret = __try_cmpxchg_user_asm("b", "q",			\
-+					       (__force u8 *)(_ptr), (_oldp),	\
-+					       (_nval), _label);		\
-+		break;								\
-+	case 2:	__ret = __try_cmpxchg_user_asm("w", "r",			\
-+					       (__force u16 *)(_ptr), (_oldp),	\
-+					       (_nval), _label);		\
-+		break;								\
-+	case 4:	__ret = __try_cmpxchg_user_asm("l", "r",			\
-+					       (__force u32 *)(_ptr), (_oldp),	\
-+					       (_nval), _label);		\
-+		break;								\
-+	case 8:	__ret = __try_cmpxchg64_user_asm((__force u64 *)(_ptr), (_oldp),\
-+						 (_nval), _label);		\
-+		break;								\
-+	default: __try_cmpxchg_user_wrong_size();				\
-+	}									\
-+	__ret;						})
-+
-+/* "Returns" 0 on success, 1 on failure, -EFAULT if the access faults. */
-+#define __try_cmpxchg_user(_ptr, _oldp, _nval, _label)	({		\
-+	int __ret = -EFAULT;						\
-+	__uaccess_begin_nospec();					\
-+	__ret = !unsafe_try_cmpxchg_user(_ptr, _oldp, _nval, _label);	\
-+_label:									\
-+	__uaccess_end();						\
-+	__ret;								\
-+							})
-+
- /*
-  * We want the unsafe accessors to always be inlined and use
-  * the error labels - thus the macro games.
+ 	show_stack_regs(regs);
+ 
+@@ -411,7 +414,14 @@ __visible bool ex_handler_rdmsr_fault(const struct exception_table_entry *fixup,
+ 
+ 	while (true)
+ 		cpu_relax();
++}
+ 
++__visible bool ex_handler_rdmsr_fault(const struct exception_table_entry *fixup,
++				      struct pt_regs *regs, int trapnr,
++				      unsigned long error_code,
++				      unsigned long fault_addr)
++{
++	ex_handler_msr_mce(regs, false);
+ 	return true;
+ }
+ 
+@@ -447,17 +457,7 @@ __visible bool ex_handler_wrmsr_fault(const struct exception_table_entry *fixup,
+ 				      unsigned long error_code,
+ 				      unsigned long fault_addr)
+ {
+-	pr_emerg("MSR access error: WRMSR to 0x%x (tried to write 0x%08x%08x) at rIP: 0x%lx (%pS)\n",
+-		 (unsigned int)regs->cx, (unsigned int)regs->dx, (unsigned int)regs->ax,
+-		  regs->ip, (void *)regs->ip);
+-
+-	show_stack_regs(regs);
+-
+-	panic("MCA architectural violation!\n");
+-
+-	while (true)
+-		cpu_relax();
+-
++	ex_handler_msr_mce(regs, true);
+ 	return true;
+ }
+ 
 -- 
 2.35.1
 
