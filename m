@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70E2BC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:22:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BDEEC19F28
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:22:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241830AbiG0RWt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:22:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44460 "EHLO
+        id S242001AbiG0RWw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:22:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44484 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241742AbiG0RUG (ORCPT
+        with ESMTP id S241816AbiG0RUY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:20:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CFC25FE5;
+        Wed, 27 Jul 2022 13:20:24 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21B1A5FD1;
         Wed, 27 Jul 2022 09:45:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A72960D38;
-        Wed, 27 Jul 2022 16:45:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A882C433D6;
-        Wed, 27 Jul 2022 16:45:10 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id ED54ECE2314;
+        Wed, 27 Jul 2022 16:45:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7732C433C1;
+        Wed, 27 Jul 2022 16:45:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940310;
-        bh=zGCAgJhBf44iFooeQHPvXDPv29VQrkH+AaDCuOzx3rs=;
+        s=korg; t=1658940308;
+        bh=avZDDaQpycf6zwWtz0rxv7VLnt+N8pteV3NItPBxSkM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gwWZYoPUUyYcqhSxkJNKvyXXSHS0z5Sn9cV9bL9XYS9ptWr24KyitbiUOT/JB2wyt
-         chIJM/5eLeP+e2hI0A53p7OYaJ4KDZGEfqpdwkRxjDI6vX6VLdyMdTQPdeV0GfnfMQ
-         bTlyKNtDT7JX4375GBuGFqsx8Emd5gsdyHkF2RMc=
+        b=0nh48BIiOlRSO2ZD/xX61AgzmFkWCJk5mNP0hoKy9oofFNCymrYHMFBl/h1xGFBQA
+         kOktJ+YzNaHOZxuxI3eWz5TDpSlclw3KQL0Lnw6L2a6x+x3r2RghBrkY4jyGX0p+3d
+         Afq+b9dVWPSPkFKrmzC2hxxaxk+w71T65/+l9ob4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        Richard Weinberger <richard@nod.at>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 172/201] um: virtio_uml: Allow probing from devicetree
-Date:   Wed, 27 Jul 2022 18:11:16 +0200
-Message-Id: <20220727161034.940412654@linuxfoundation.org>
+        stable@vger.kernel.org, Juri Lelli <juri.lelli@redhat.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>
+Subject: [PATCH 5.15 137/201] sched/deadline: Fix BUG_ON condition for deboosted tasks
+Date:   Wed, 27 Jul 2022 18:10:41 +0200
+Message-Id: <20220727161033.482502962@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -50,135 +48,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent Whitchurch <vincent.whitchurch@axis.com>
+From: Juri Lelli <juri.lelli@redhat.com>
 
-[ Upstream commit db0dd9cee82270e032123169ceff659eced5115d ]
+commit ddfc710395cccc61247348df9eb18ea50321cbed upstream.
 
-Allow the virtio_uml device to be probed from the devicetree so that
-sub-devices can be specified using the standard virtio bindings, for
-example:
+Tasks the are being deboosted from SCHED_DEADLINE might enter
+enqueue_task_dl() one last time and hit an erroneous BUG_ON condition:
+since they are not boosted anymore, the if (is_dl_boosted()) branch is
+not taken, but the else if (!dl_prio) is and inside this one we
+BUG_ON(!is_dl_boosted), which is of course false (BUG_ON triggered)
+otherwise we had entered the if branch above. Long story short, the
+current condition doesn't make sense and always leads to triggering of a
+BUG.
 
-  virtio@1 {
-    compatible = "virtio,uml";
-    socket-path = "i2c.sock";
-    virtio-device-id = <0x22>;
+Fix this by only checking enqueue flags, properly: ENQUEUE_REPLENISH has
+to be present, but additional flags are not a problem.
 
-    i2c-controller {
-      compatible = "virtio,device22";
-      #address-cells = <0x01>;
-      #size-cells = <0x00>;
-
-      light-sensor@01 {
-        compatible = "ti,opt3001";
-        reg = <0x01>;
-      };
-    };
-  };
-
-Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 64be6f1f5f71 ("sched/deadline: Don't replenish from a !SCHED_DEADLINE entity")
+Signed-off-by: Juri Lelli <juri.lelli@redhat.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Cc: stable@vger.kernel.org
+Link: https://lkml.kernel.org/r/20220714151908.533052-1-juri.lelli@redhat.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/um/drivers/virtio_uml.c | 50 +++++++++++++++++++++++++++++++++---
- 1 file changed, 47 insertions(+), 3 deletions(-)
+ kernel/sched/deadline.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/arch/um/drivers/virtio_uml.c b/arch/um/drivers/virtio_uml.c
-index 7755cb4ff9fc..ba562d68dc04 100644
---- a/arch/um/drivers/virtio_uml.c
-+++ b/arch/um/drivers/virtio_uml.c
-@@ -21,6 +21,7 @@
-  * Based on Virtio MMIO driver by Pawel Moll, copyright 2011-2014, ARM Ltd.
-  */
- #include <linux/module.h>
-+#include <linux/of.h>
- #include <linux/platform_device.h>
- #include <linux/slab.h>
- #include <linux/virtio.h>
-@@ -49,6 +50,7 @@ struct virtio_uml_platform_data {
- struct virtio_uml_device {
- 	struct virtio_device vdev;
- 	struct platform_device *pdev;
-+	struct virtio_uml_platform_data *pdata;
- 
- 	spinlock_t sock_lock;
- 	int sock, req_fd, irq;
-@@ -149,7 +151,7 @@ static int vhost_user_recv(struct virtio_uml_device *vu_dev,
- 	if (rc == -ECONNRESET && vu_dev->registered) {
- 		struct virtio_uml_platform_data *pdata;
- 
--		pdata = vu_dev->pdev->dev.platform_data;
-+		pdata = vu_dev->pdata;
- 
- 		virtio_break_device(&vu_dev->vdev);
- 		schedule_work(&pdata->conn_broken_wk);
-@@ -1115,21 +1117,63 @@ void virtio_uml_set_no_vq_suspend(struct virtio_device *vdev,
- 		 no_vq_suspend ? "dis" : "en");
- }
- 
-+static void vu_of_conn_broken(struct work_struct *wk)
-+{
-+	/*
-+	 * We can't remove the device from the devicetree so the only thing we
-+	 * can do is warn.
-+	 */
-+	WARN_ON(1);
-+}
+--- a/kernel/sched/deadline.c
++++ b/kernel/sched/deadline.c
+@@ -1561,7 +1561,10 @@ static void enqueue_task_dl(struct rq *r
+ 		 * the throttle.
+ 		 */
+ 		p->dl.dl_throttled = 0;
+-		BUG_ON(!is_dl_boosted(&p->dl) || flags != ENQUEUE_REPLENISH);
++		if (!(flags & ENQUEUE_REPLENISH))
++			printk_deferred_once("sched: DL de-boosted task PID %d: REPLENISH flag missing\n",
++					     task_pid_nr(p));
 +
- /* Platform device */
+ 		return;
+ 	}
  
-+static struct virtio_uml_platform_data *
-+virtio_uml_create_pdata(struct platform_device *pdev)
-+{
-+	struct device_node *np = pdev->dev.of_node;
-+	struct virtio_uml_platform_data *pdata;
-+	int ret;
-+
-+	if (!np)
-+		return ERR_PTR(-EINVAL);
-+
-+	pdata = devm_kzalloc(&pdev->dev, sizeof(*pdata), GFP_KERNEL);
-+	if (!pdata)
-+		return ERR_PTR(-ENOMEM);
-+
-+	INIT_WORK(&pdata->conn_broken_wk, vu_of_conn_broken);
-+	pdata->pdev = pdev;
-+
-+	ret = of_property_read_string(np, "socket-path", &pdata->socket_path);
-+	if (ret)
-+		return ERR_PTR(ret);
-+
-+	ret = of_property_read_u32(np, "virtio-device-id",
-+				   &pdata->virtio_device_id);
-+	if (ret)
-+		return ERR_PTR(ret);
-+
-+	return pdata;
-+}
-+
- static int virtio_uml_probe(struct platform_device *pdev)
- {
- 	struct virtio_uml_platform_data *pdata = pdev->dev.platform_data;
- 	struct virtio_uml_device *vu_dev;
- 	int rc;
- 
--	if (!pdata)
--		return -EINVAL;
-+	if (!pdata) {
-+		pdata = virtio_uml_create_pdata(pdev);
-+		if (IS_ERR(pdata))
-+			return PTR_ERR(pdata);
-+	}
- 
- 	vu_dev = kzalloc(sizeof(*vu_dev), GFP_KERNEL);
- 	if (!vu_dev)
- 		return -ENOMEM;
- 
-+	vu_dev->pdata = pdata;
- 	vu_dev->vdev.dev.parent = &pdev->dev;
- 	vu_dev->vdev.dev.release = virtio_uml_release_dev;
- 	vu_dev->vdev.config = &virtio_uml_config_ops;
--- 
-2.35.1
-
 
 
