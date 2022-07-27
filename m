@@ -2,96 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0DE5C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:37:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40357C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:37:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238961AbiG0QhO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:37:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47010 "EHLO
+        id S238343AbiG0QhT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:37:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238347AbiG0QfT (ORCPT
+        with ESMTP id S238468AbiG0Qfg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:35:19 -0400
-Received: from xry111.site (xry111.site [89.208.246.23])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 328C356BB2
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:27:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xry111.site;
-        s=default; t=1658939237;
-        bh=w78BZb3/xqbgYQ+T36abwKpBBa08iLK+uJwtwbDSaKg=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=HrXKGczgsN/yeNOdBYgBvIkK2za43JLopbFjIe09dStH7jCVaz901Wnmb3OlH8/HG
-         dZ1f5HK6FVF06WYvVUwtGqx23jJwLaT21lZhoEGuo/HbfWGUVLy2vuwes/QSAkUXs3
-         ep6P+ub1a17cbpCpEzrRQo7O7rqOdecgo/1byKao=
-Received: from localhost.localdomain (xry111.site [IPv6:2001:470:683e::1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature ECDSA (P-384) server-digest SHA384)
-        (Client did not present a certificate)
-        (Authenticated sender: xry111@xry111.site)
-        by xry111.site (Postfix) with ESMTPSA id EC28766986;
-        Wed, 27 Jul 2022 12:27:15 -0400 (EDT)
-Message-ID: <26cf3550ce5f6a02631da29361b3fcac30a598d9.camel@xry111.site>
-Subject: [PATCH 2/5] LoongArch: Support R_LARCH_SOP_PUSH_GPREL relocation
- type in kernel module
-From:   Xi Ruoyao <xry111@xry111.site>
-To:     loongarch@lists.linux.dev
-Cc:     linux-kernel@vger.kernel.org, WANG Xuerui <kernel@xen0n.name>,
-        Huacai Chen <chenhuacai@kernel.org>
-Date:   Thu, 28 Jul 2022 00:27:14 +0800
-In-Reply-To: <385f63bcbee8e37c42f479ce9cdc7e7d731d419b.camel@xry111.site>
-References: <385f63bcbee8e37c42f479ce9cdc7e7d731d419b.camel@xry111.site>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.3 
+        Wed, 27 Jul 2022 12:35:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 132844F1A7;
+        Wed, 27 Jul 2022 09:27:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4B7FAB821C5;
+        Wed, 27 Jul 2022 16:27:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF883C433C1;
+        Wed, 27 Jul 2022 16:27:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658939244;
+        bh=TX+Sdx7vNb92kNhrkYvV7Qs/pncP26B1lxcQyV/riF4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=xKghRvpYgb/r7Hp5zuZmfCeVoYaEZ61wcFHqH/Bn5uxF7EAuv+GtvKzNerMsZwqjc
+         2UOSLiXLhuynHvd6T6/9mF+QTq6M9W3migTW2kw+6XCoZDGRS4nUc9f9Mbvv0thjC9
+         pBE7adO2Jp1vdaitrfWgPIM65lCJkVG7jrmHXWzo=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Paul Menzel <pmenzel@molgen.mpg.de>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Subject: [PATCH 4.19 51/62] Bluetooth: Fix bt_skb_sendmmsg not allocating partial chunks
+Date:   Wed, 27 Jul 2022 18:11:00 +0200
+Message-Id: <20220727161006.132537825@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220727161004.175638564@linuxfoundation.org>
+References: <20220727161004.175638564@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This relocation type pushes the offset of the GOT entry for a symbol
-from the beginning of GOT into the relocation stack.  Our linker script
-has initialized an empty GOT, so we need to create a new GOT entry if
-there is no exist one for a symbol.
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 
-Signed-off-by: Xi Ruoyao <xry111@xry111.site>
+commit 29fb608396d6a62c1b85acc421ad7a4399085b9f upstream.
+
+Since bt_skb_sendmmsg can be used with the likes of SOCK_STREAM it
+shall return the partial chunks it could allocate instead of freeing
+everything as otherwise it can cause problems like bellow.
+
+Fixes: 81be03e026dc ("Bluetooth: RFCOMM: Replace use of memcpy_from_msg with bt_skb_sendmmsg")
+Reported-by: Paul Menzel <pmenzel@molgen.mpg.de>
+Link: https://lore.kernel.org/r/d7206e12-1b99-c3be-84f4-df22af427ef5@molgen.mpg.de
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215594
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Tested-by: Paul Menzel <pmenzel@molgen.mpg.de> (Nokia N9 (MeeGo/Harmattan)
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Cc: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/loongarch/kernel/module.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ include/net/bluetooth/bluetooth.h |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/arch/loongarch/kernel/module.c b/arch/loongarch/kernel/module.=
-c
-index 638427ff0d51..e5f1fd022cd0 100644
---- a/arch/loongarch/kernel/module.c
-+++ b/arch/loongarch/kernel/module.c
-@@ -122,6 +122,16 @@ static int apply_r_larch_sop_push_plt_pcrel(struct mod=
-ule *mod, u32 *location, E
- 	return apply_r_larch_sop_push_pcrel(mod, location, v, rela_stack, rela_st=
-ack_top, type);
- }
-=20
-+static int apply_r_larch_sop_push_gprel(struct module *mod, u32 *location,
-+			Elf_Addr v, s64 *rela_stack, size_t *rela_stack_top,
-+			unsigned int type)
-+{
-+	Elf_Addr got =3D module_emit_got_entry(mod, v);
-+	ptrdiff_t offset =3D (void *)got - (void *)mod->arch.got.shdr->sh_addr;
-+
-+	return rela_stack_push(offset, rela_stack, rela_stack_top);
-+}
-+
- static int apply_r_larch_sop(struct module *mod, u32 *location, Elf_Addr v=
-,
- 			s64 *rela_stack, size_t *rela_stack_top, unsigned int type)
- {
-@@ -310,6 +320,7 @@ static reloc_rela_handler reloc_rela_handlers[] =3D {
- 	[R_LARCH_SOP_SUB ... R_LARCH_SOP_IF_ELSE] 	     =3D apply_r_larch_sop,
- 	[R_LARCH_SOP_POP_32_S_10_5 ... R_LARCH_SOP_POP_32_U] =3D apply_r_larch_so=
-p_imm_field,
- 	[R_LARCH_ADD32 ... R_LARCH_SUB64]		     =3D apply_r_larch_add_sub,
-+	[R_LARCH_SOP_PUSH_GPREL]			     =3D apply_r_larch_sop_push_gprel,
- };
-=20
- int apply_relocate_add(Elf_Shdr *sechdrs, const char *strtab,
---=20
-2.37.0
+--- a/include/net/bluetooth/bluetooth.h
++++ b/include/net/bluetooth/bluetooth.h
+@@ -423,8 +423,7 @@ static inline struct sk_buff *bt_skb_sen
+ 
+ 		tmp = bt_skb_sendmsg(sk, msg, len, mtu, headroom, tailroom);
+ 		if (IS_ERR(tmp)) {
+-			kfree_skb(skb);
+-			return tmp;
++			return skb;
+ 		}
+ 
+ 		len -= tmp->len;
 
 
