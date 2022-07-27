@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72A04C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:43:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E85CAC19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:43:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242856AbiG0Rnc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:43:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44178 "EHLO
+        id S243001AbiG0Rnh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:43:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242739AbiG0Rm6 (ORCPT
+        with ESMTP id S242895AbiG0RnD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:42:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23CD654656;
-        Wed, 27 Jul 2022 09:52:23 -0700 (PDT)
+        Wed, 27 Jul 2022 13:43:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 542C789A91;
+        Wed, 27 Jul 2022 09:52:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E0E0616D1;
-        Wed, 27 Jul 2022 16:52:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B06AC433C1;
-        Wed, 27 Jul 2022 16:52:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 89D4161727;
+        Wed, 27 Jul 2022 16:52:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94D4BC4314C;
+        Wed, 27 Jul 2022 16:52:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940733;
-        bh=A4PSEb0B3P0mqsdnh4osQB/Gotdxco+7iYeqMIbckC8=;
+        s=korg; t=1658940745;
+        bh=l0QRjqsE/PLnnKYLcI5xL3LQIUn0lFVG2r6ccn1t/gs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=itvK3J/0WE+cT/J3QsNCX3C6l1QAN07iHuzpUIzj7FjNpPeVLtqstsBdl10oabR0v
-         A0kO2B3y0RCPqAQ9aT5dRsbe+bb9qqrZdubCo1rX63lNnC7K/TEvVLX8MaHdjka2m/
-         9banBrlOE8hsk5BCjdR2jAHG/cPj46BqIAzHsiQc=
+        b=0p7WGe3f3l/SmvhRZrc6VvCLstEPt/Udy+nYPU0yfNz9EkZzo5J82AUR4z46RldVP
+         hOu3MCGKpTJ2cndjoEwZZnmEb7I6+NgAapEWvD5iPg6Tthe0rkfYRiV49xA06+ARjk
+         ZdQTpjmVbtp15krxaqBntpq1Gr8aVWuc+iCdA0Rs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Kent Gibson <warthog618@gmail.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
+        stable@vger.kernel.org, Taehee Yoo <ap420073@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 128/158] selftests: gpio: fix include path to kernel headers for out of tree builds
-Date:   Wed, 27 Jul 2022 18:13:12 +0200
-Message-Id: <20220727161026.541816139@linuxfoundation.org>
+Subject: [PATCH 5.18 101/158] amt: use workqueue for gateway side message handling
+Date:   Wed, 27 Jul 2022 18:12:45 +0200
+Message-Id: <20220727161025.503216107@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -50,38 +49,369 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kent Gibson <warthog618@gmail.com>
+From: Taehee Yoo <ap420073@gmail.com>
 
-[ Upstream commit f63731e18e8d8350e05b0176e39a76639f6483c7 ]
+[ Upstream commit 30e22a6ebca039572ce9bc10f1934f4eabfb5b7f ]
 
-When building selftests out of the kernel tree the gpio.h the include
-path is incorrect and the build falls back to the system includes
-which may be outdated.
+There are some synchronization issues(amt->status, amt->req_cnt, etc)
+if the interface is in gateway mode because gateway message handlers
+are processed concurrently.
+This applies a work queue for processing these messages instead of
+expanding the locking context.
 
-Add the KHDR_INCLUDES to the CFLAGS to include the gpio.h from the
-build tree.
+So, the purposes of this patch are to fix exist race conditions and to make
+gateway to be able to validate a gateway status more correctly.
 
-Fixes: 4f4d0af7b2d9 ("selftests: gpio: restore CFLAGS options")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Kent Gibson <warthog618@gmail.com>
-Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+When the AMT gateway interface is created, it tries to establish to relay.
+The establishment step looks stateless, but it should be managed well.
+In order to handle messages in the gateway, it saves the current
+status(i.e. AMT_STATUS_XXX).
+This patch makes gateway code to be worked with a single thread.
+
+Now, all messages except the multicast are triggered(received or
+delay expired), and these messages will be stored in the event
+queue(amt->events).
+Then, the single worker processes stored messages asynchronously one
+by one.
+The multicast data message type will be still processed immediately.
+
+Now, amt->lock is only needed to access the event queue(amt->events)
+if an interface is the gateway mode.
+
+Fixes: cbc21dc1cfe9 ("amt: add data plane of amt interface")
+Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/gpio/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/amt.c | 159 +++++++++++++++++++++++++++++++++++++++++-----
+ include/net/amt.h |  20 ++++++
+ 2 files changed, 164 insertions(+), 15 deletions(-)
 
-diff --git a/tools/testing/selftests/gpio/Makefile b/tools/testing/selftests/gpio/Makefile
-index 71b306602368..616ed4019655 100644
---- a/tools/testing/selftests/gpio/Makefile
-+++ b/tools/testing/selftests/gpio/Makefile
-@@ -3,6 +3,6 @@
- TEST_PROGS := gpio-mockup.sh gpio-sim.sh
- TEST_FILES := gpio-mockup-sysfs.sh
- TEST_GEN_PROGS_EXTENDED := gpio-mockup-cdev gpio-chip-info gpio-line-name
--CFLAGS += -O2 -g -Wall -I../../../../usr/include/
-+CFLAGS += -O2 -g -Wall -I../../../../usr/include/ $(KHDR_INCLUDES)
+diff --git a/drivers/net/amt.c b/drivers/net/amt.c
+index 6c64953db487..f8e8381e266b 100644
+--- a/drivers/net/amt.c
++++ b/drivers/net/amt.c
+@@ -900,6 +900,28 @@ static void amt_send_mld_gq(struct amt_dev *amt, struct amt_tunnel_list *tunnel)
+ }
+ #endif
  
- include ../lib.mk
++static bool amt_queue_event(struct amt_dev *amt, enum amt_event event,
++			    struct sk_buff *skb)
++{
++	int index;
++
++	spin_lock_bh(&amt->lock);
++	if (amt->nr_events >= AMT_MAX_EVENTS) {
++		spin_unlock_bh(&amt->lock);
++		return 1;
++	}
++
++	index = (amt->event_idx + amt->nr_events) % AMT_MAX_EVENTS;
++	amt->events[index].event = event;
++	amt->events[index].skb = skb;
++	amt->nr_events++;
++	amt->event_idx %= AMT_MAX_EVENTS;
++	queue_work(amt_wq, &amt->event_wq);
++	spin_unlock_bh(&amt->lock);
++
++	return 0;
++}
++
+ static void amt_secret_work(struct work_struct *work)
+ {
+ 	struct amt_dev *amt = container_of(to_delayed_work(work),
+@@ -913,12 +935,8 @@ static void amt_secret_work(struct work_struct *work)
+ 			 msecs_to_jiffies(AMT_SECRET_TIMEOUT));
+ }
+ 
+-static void amt_discovery_work(struct work_struct *work)
++static void amt_event_send_discovery(struct amt_dev *amt)
+ {
+-	struct amt_dev *amt = container_of(to_delayed_work(work),
+-					   struct amt_dev,
+-					   discovery_wq);
+-
+ 	spin_lock_bh(&amt->lock);
+ 	if (amt->status > AMT_STATUS_SENT_DISCOVERY)
+ 		goto out;
+@@ -933,11 +951,19 @@ static void amt_discovery_work(struct work_struct *work)
+ 	spin_unlock_bh(&amt->lock);
+ }
+ 
+-static void amt_req_work(struct work_struct *work)
++static void amt_discovery_work(struct work_struct *work)
+ {
+ 	struct amt_dev *amt = container_of(to_delayed_work(work),
+ 					   struct amt_dev,
+-					   req_wq);
++					   discovery_wq);
++
++	if (amt_queue_event(amt, AMT_EVENT_SEND_DISCOVERY, NULL))
++		mod_delayed_work(amt_wq, &amt->discovery_wq,
++				 msecs_to_jiffies(AMT_DISCOVERY_TIMEOUT));
++}
++
++static void amt_event_send_request(struct amt_dev *amt)
++{
+ 	u32 exp;
+ 
+ 	spin_lock_bh(&amt->lock);
+@@ -967,6 +993,17 @@ static void amt_req_work(struct work_struct *work)
+ 	spin_unlock_bh(&amt->lock);
+ }
+ 
++static void amt_req_work(struct work_struct *work)
++{
++	struct amt_dev *amt = container_of(to_delayed_work(work),
++					   struct amt_dev,
++					   req_wq);
++
++	if (amt_queue_event(amt, AMT_EVENT_SEND_REQUEST, NULL))
++		mod_delayed_work(amt_wq, &amt->req_wq,
++				 msecs_to_jiffies(100));
++}
++
+ static bool amt_send_membership_update(struct amt_dev *amt,
+ 				       struct sk_buff *skb,
+ 				       bool v6)
+@@ -2392,12 +2429,14 @@ static bool amt_membership_query_handler(struct amt_dev *amt,
+ 	skb->pkt_type = PACKET_MULTICAST;
+ 	skb->ip_summed = CHECKSUM_NONE;
+ 	len = skb->len;
++	local_bh_disable();
+ 	if (__netif_rx(skb) == NET_RX_SUCCESS) {
+ 		amt_update_gw_status(amt, AMT_STATUS_RECEIVED_QUERY, true);
+ 		dev_sw_netstats_rx_add(amt->dev, len);
+ 	} else {
+ 		amt->dev->stats.rx_dropped++;
+ 	}
++	local_bh_enable();
+ 
+ 	return false;
+ }
+@@ -2688,6 +2727,38 @@ static bool amt_request_handler(struct amt_dev *amt, struct sk_buff *skb)
+ 	return false;
+ }
+ 
++static void amt_gw_rcv(struct amt_dev *amt, struct sk_buff *skb)
++{
++	int type = amt_parse_type(skb);
++	int err = 1;
++
++	if (type == -1)
++		goto drop;
++
++	if (amt->mode == AMT_MODE_GATEWAY) {
++		switch (type) {
++		case AMT_MSG_ADVERTISEMENT:
++			err = amt_advertisement_handler(amt, skb);
++			break;
++		case AMT_MSG_MEMBERSHIP_QUERY:
++			err = amt_membership_query_handler(amt, skb);
++			if (!err)
++				return;
++			break;
++		default:
++			netdev_dbg(amt->dev, "Invalid type of Gateway\n");
++			break;
++		}
++	}
++drop:
++	if (err) {
++		amt->dev->stats.rx_dropped++;
++		kfree_skb(skb);
++	} else {
++		consume_skb(skb);
++	}
++}
++
+ static int amt_rcv(struct sock *sk, struct sk_buff *skb)
+ {
+ 	struct amt_dev *amt;
+@@ -2719,8 +2790,12 @@ static int amt_rcv(struct sock *sk, struct sk_buff *skb)
+ 				err = true;
+ 				goto drop;
+ 			}
+-			err = amt_advertisement_handler(amt, skb);
+-			break;
++			if (amt_queue_event(amt, AMT_EVENT_RECEIVE, skb)) {
++				netdev_dbg(amt->dev, "AMT Event queue full\n");
++				err = true;
++				goto drop;
++			}
++			goto out;
+ 		case AMT_MSG_MULTICAST_DATA:
+ 			if (iph->saddr != amt->remote_ip) {
+ 				netdev_dbg(amt->dev, "Invalid Relay IP\n");
+@@ -2738,11 +2813,12 @@ static int amt_rcv(struct sock *sk, struct sk_buff *skb)
+ 				err = true;
+ 				goto drop;
+ 			}
+-			err = amt_membership_query_handler(amt, skb);
+-			if (err)
++			if (amt_queue_event(amt, AMT_EVENT_RECEIVE, skb)) {
++				netdev_dbg(amt->dev, "AMT Event queue full\n");
++				err = true;
+ 				goto drop;
+-			else
+-				goto out;
++			}
++			goto out;
+ 		default:
+ 			err = true;
+ 			netdev_dbg(amt->dev, "Invalid type of Gateway\n");
+@@ -2780,6 +2856,46 @@ static int amt_rcv(struct sock *sk, struct sk_buff *skb)
+ 	return 0;
+ }
+ 
++static void amt_event_work(struct work_struct *work)
++{
++	struct amt_dev *amt = container_of(work, struct amt_dev, event_wq);
++	struct sk_buff *skb;
++	u8 event;
++	int i;
++
++	for (i = 0; i < AMT_MAX_EVENTS; i++) {
++		spin_lock_bh(&amt->lock);
++		if (amt->nr_events == 0) {
++			spin_unlock_bh(&amt->lock);
++			return;
++		}
++		event = amt->events[amt->event_idx].event;
++		skb = amt->events[amt->event_idx].skb;
++		amt->events[amt->event_idx].event = AMT_EVENT_NONE;
++		amt->events[amt->event_idx].skb = NULL;
++		amt->nr_events--;
++		amt->event_idx++;
++		amt->event_idx %= AMT_MAX_EVENTS;
++		spin_unlock_bh(&amt->lock);
++
++		switch (event) {
++		case AMT_EVENT_RECEIVE:
++			amt_gw_rcv(amt, skb);
++			break;
++		case AMT_EVENT_SEND_DISCOVERY:
++			amt_event_send_discovery(amt);
++			break;
++		case AMT_EVENT_SEND_REQUEST:
++			amt_event_send_request(amt);
++			break;
++		default:
++			if (skb)
++				kfree_skb(skb);
++			break;
++		}
++	}
++}
++
+ static int amt_err_lookup(struct sock *sk, struct sk_buff *skb)
+ {
+ 	struct amt_dev *amt;
+@@ -2867,6 +2983,8 @@ static int amt_dev_open(struct net_device *dev)
+ 
+ 	amt->ready4 = false;
+ 	amt->ready6 = false;
++	amt->event_idx = 0;
++	amt->nr_events = 0;
+ 
+ 	err = amt_socket_create(amt);
+ 	if (err)
+@@ -2892,6 +3010,8 @@ static int amt_dev_stop(struct net_device *dev)
+ 	struct amt_dev *amt = netdev_priv(dev);
+ 	struct amt_tunnel_list *tunnel, *tmp;
+ 	struct socket *sock;
++	struct sk_buff *skb;
++	int i;
+ 
+ 	cancel_delayed_work_sync(&amt->req_wq);
+ 	cancel_delayed_work_sync(&amt->discovery_wq);
+@@ -2904,6 +3024,15 @@ static int amt_dev_stop(struct net_device *dev)
+ 	if (sock)
+ 		udp_tunnel_sock_release(sock);
+ 
++	cancel_work_sync(&amt->event_wq);
++	for (i = 0; i < AMT_MAX_EVENTS; i++) {
++		skb = amt->events[i].skb;
++		if (skb)
++			kfree_skb(skb);
++		amt->events[i].event = AMT_EVENT_NONE;
++		amt->events[i].skb = NULL;
++	}
++
+ 	amt->ready4 = false;
+ 	amt->ready6 = false;
+ 	amt->req_cnt = 0;
+@@ -3146,8 +3275,8 @@ static int amt_newlink(struct net *net, struct net_device *dev,
+ 	INIT_DELAYED_WORK(&amt->discovery_wq, amt_discovery_work);
+ 	INIT_DELAYED_WORK(&amt->req_wq, amt_req_work);
+ 	INIT_DELAYED_WORK(&amt->secret_wq, amt_secret_work);
++	INIT_WORK(&amt->event_wq, amt_event_work);
+ 	INIT_LIST_HEAD(&amt->tunnel_list);
+-
+ 	return 0;
+ err:
+ 	dev_put(amt->stream_dev);
+@@ -3280,7 +3409,7 @@ static int __init amt_init(void)
+ 	if (err < 0)
+ 		goto unregister_notifier;
+ 
+-	amt_wq = alloc_workqueue("amt", WQ_UNBOUND, 1);
++	amt_wq = alloc_workqueue("amt", WQ_UNBOUND, 0);
+ 	if (!amt_wq) {
+ 		err = -ENOMEM;
+ 		goto rtnl_unregister;
+diff --git a/include/net/amt.h b/include/net/amt.h
+index 7a4db8b903ee..44acadf3a69e 100644
+--- a/include/net/amt.h
++++ b/include/net/amt.h
+@@ -78,6 +78,15 @@ enum amt_status {
+ 
+ #define AMT_STATUS_MAX (__AMT_STATUS_MAX - 1)
+ 
++/* Gateway events only */
++enum amt_event {
++	AMT_EVENT_NONE,
++	AMT_EVENT_RECEIVE,
++	AMT_EVENT_SEND_DISCOVERY,
++	AMT_EVENT_SEND_REQUEST,
++	__AMT_EVENT_MAX,
++};
++
+ struct amt_header {
+ #if defined(__LITTLE_ENDIAN_BITFIELD)
+ 	u8 type:4,
+@@ -292,6 +301,12 @@ struct amt_group_node {
+ 	struct hlist_head	sources[];
+ };
+ 
++#define AMT_MAX_EVENTS	16
++struct amt_events {
++	enum amt_event event;
++	struct sk_buff *skb;
++};
++
+ struct amt_dev {
+ 	struct net_device       *dev;
+ 	struct net_device       *stream_dev;
+@@ -308,6 +323,7 @@ struct amt_dev {
+ 	struct delayed_work     req_wq;
+ 	/* Protected by RTNL */
+ 	struct delayed_work     secret_wq;
++	struct work_struct	event_wq;
+ 	/* AMT status */
+ 	enum amt_status		status;
+ 	/* Generated key */
+@@ -345,6 +361,10 @@ struct amt_dev {
+ 	/* Used only in gateway mode */
+ 	u64			mac:48,
+ 				reserved:16;
++	/* AMT gateway side message handler queue */
++	struct amt_events	events[AMT_MAX_EVENTS];
++	u8			event_idx;
++	u8			nr_events;
+ };
+ 
+ #define AMT_TOS			0xc0
 -- 
 2.35.1
 
