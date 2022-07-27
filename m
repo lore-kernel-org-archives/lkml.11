@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0B04C19F2C
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:25:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB4B1C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:25:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238094AbiG0RZO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:25:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52050 "EHLO
+        id S241491AbiG0RZX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:25:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232621AbiG0RXu (ORCPT
+        with ESMTP id S241820AbiG0RX6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:23:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F6537AC39;
-        Wed, 27 Jul 2022 09:45:56 -0700 (PDT)
+        Wed, 27 Jul 2022 13:23:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91C5F5F13F;
+        Wed, 27 Jul 2022 09:46:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B6E88600BE;
-        Wed, 27 Jul 2022 16:45:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C78CFC4314E;
-        Wed, 27 Jul 2022 16:45:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0123BB821BA;
+        Wed, 27 Jul 2022 16:46:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4408AC433D6;
+        Wed, 27 Jul 2022 16:45:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940353;
-        bh=Fu+RQZP2lBIVjrGU4m9Qhg1VGiP+0En1tD5IuKWsy6g=;
+        s=korg; t=1658940358;
+        bh=cy4gpRA98YLj8Iyj6Bl+z9CYy3YNiqaOtdXfRIfQZKg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UUwdUa7oDJdFxOucTc1dWM/2pSfx1/Qyu2e7Lq830lI1Dk0+ugcm1gKdQS2oXAJoO
-         t6Z4WkVy4Hj+6SEKsiA4ka33Rw8GFT5saBrv41o1s3k5FQWd7En/kZzixUlnVu29dx
-         /njQ6NOFlz2oMqVQr0/LKGX/B1mJSE+b3qyrP1fQ=
+        b=XRj997LZjg/sid8Y45sUp1bcA121KfkfAJ6ub909ep5RhlzhptgR9tPvtzQBWsexB
+         QwHWoVGKRRgAMtOvIqG4Wrjca8TELkHP1frklogU6x1KmnkzcD7NZur2ZyCSNMjP+L
+         CrjM1qJYAxhEeophfElVC/AQapajT4rdaWF3/GeM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sedat Dilek <sedat.dilek@gmail.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.15 194/201] watch-queue: remove spurious double semicolon
-Date:   Wed, 27 Jul 2022 18:11:38 +0200
-Message-Id: <20220727161035.807389817@linuxfoundation.org>
+        stable@vger.kernel.org, Harry Wentland <harry.wentland@amd.com>,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.15 196/201] drm/amd/display: invalid parameter check in dmub_hpd_callback
+Date:   Wed, 27 Jul 2022 18:11:40 +0200
+Message-Id: <20220727161035.901178428@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -48,36 +49,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: José Expósito <jose.exposito89@gmail.com>
 
-commit 44e29e64cf1ac0cffb152e0532227ea6d002aa28 upstream.
+commit 978ffac878fd64039f95798b15b430032d2d89d5 upstream.
 
-Sedat Dilek noticed that I had an extraneous semicolon at the end of a
-line in the previous patch.
+The function performs a check on the "adev" input parameter, however, it
+is used before the check.
 
-It's harmless, but unintentional, and while compilers just treat it as
-an extra empty statement, for all I know some other tooling might warn
-about it. So clean it up before other people notice too ;)
+Initialize the "dev" variable after the sanity check to avoid a possible
+NULL pointer dereference.
 
-Fixes: 353f7988dd84 ("watchqueue: make sure to serialize 'wqueue->defunct' properly")
-Reported-by: Sedat Dilek <sedat.dilek@gmail.com>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Reported-by: Sedat Dilek <sedat.dilek@gmail.com>
+Fixes: e27c41d5b0681 ("drm/amd/display: Support for DMUB HPD interrupt handling")
+Addresses-Coverity-ID: 1493909 ("Null pointer dereference")
+Reviewed-by: Harry Wentland <harry.wentland@amd.com>
+Signed-off-by: José Expósito <jose.exposito89@gmail.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/watch_queue.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/kernel/watch_queue.c
-+++ b/kernel/watch_queue.c
-@@ -227,7 +227,7 @@ void __post_watch_notification(struct wa
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -653,7 +653,7 @@ void dmub_hpd_callback(struct amdgpu_dev
+ 	struct drm_connector_list_iter iter;
+ 	struct dc_link *link;
+ 	uint8_t link_index = 0;
+-	struct drm_device *dev = adev->dm.ddev;
++	struct drm_device *dev;
  
- 		if (lock_wqueue(wqueue)) {
- 			post_one_notification(wqueue, n);
--			unlock_wqueue(wqueue);;
-+			unlock_wqueue(wqueue);
- 		}
- 	}
+ 	if (adev == NULL)
+ 		return;
+@@ -670,6 +670,7 @@ void dmub_hpd_callback(struct amdgpu_dev
  
+ 	link_index = notify->link_index;
+ 	link = adev->dm.dc->links[link_index];
++	dev = adev->dm.ddev;
+ 
+ 	drm_connector_list_iter_begin(dev, &iter);
+ 	drm_for_each_connector_iter(connector, &iter) {
 
 
