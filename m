@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31150C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:39:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B004CC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:39:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238966AbiG0Qji (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:39:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57200 "EHLO
+        id S239041AbiG0Qjo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:39:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239130AbiG0Qiy (ORCPT
+        with ESMTP id S239043AbiG0Qix (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:38:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D760250062;
-        Wed, 27 Jul 2022 09:28:41 -0700 (PDT)
+        Wed, 27 Jul 2022 12:38:53 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 480085A152;
+        Wed, 27 Jul 2022 09:28:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3AC06B821CA;
-        Wed, 27 Jul 2022 16:28:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C879C433C1;
-        Wed, 27 Jul 2022 16:28:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8B94DB821BC;
+        Wed, 27 Jul 2022 16:28:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D21B6C433C1;
+        Wed, 27 Jul 2022 16:28:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939319;
-        bh=yp/pb7KUR+K/mKCaiDaXhO7Onv98a9lWavXvVVFNjjc=;
+        s=korg; t=1658939317;
+        bh=HDQlZl209yb3N5mcFkuwfVpZiduu9n6n/X73yCLOr4w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cv4k2unjbz0d4N0wRDhJuedDQvmM2BsY+I/vTnxsG0vPXYBGw3gnxMo+nksKoxfzS
-         g5DWHvW6iBmzOcHlscSOPmPDEBhhTZT7OKS4nAcy9U/SoQvt2i1kbqBz2tQmQmY4a6
-         t9EwtNIEyDTp4E9a4r3eA94OQXQC5g4XUARxjgzQ=
+        b=xmC5vs6s20mRGIkUt956iE51pb6rKnY+usrHe+T8EiMucYCSK4NSrl9d/YYtI2ot9
+         +YKgVa1FqFFbehCRixyKEfU/Vh8nGKElsJsQZE7vTQfDBGKrrw3J73tuyQG4d6FEuQ
+         6qsJo5pfxuE0dUHuZycIcsW6fQrjT3TsLC7aEkUM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Cedric Wassenaar <cedric@bytespeed.nl>,
-        Junxiao Chang <junxiao.chang@intel.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 28/87] net: stmmac: fix dma queue left shift overflow issue
-Date:   Wed, 27 Jul 2022 18:10:21 +0200
-Message-Id: <20220727161010.177774563@linuxfoundation.org>
+        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
+        Shubhrajyoti Datta <Shubhrajyoti.datta@amd.com>,
+        Michal Simek <michal.simek@amd.com>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 27/87] i2c: cadence: Change large transfer count reset logic to be unconditional
+Date:   Wed, 27 Jul 2022 18:10:20 +0200
+Message-Id: <20220727161010.128877012@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161008.993711844@linuxfoundation.org>
 References: <20220727161008.993711844@linuxfoundation.org>
@@ -51,80 +50,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Junxiao Chang <junxiao.chang@intel.com>
+From: Robert Hancock <robert.hancock@calian.com>
 
-[ Upstream commit 613b065ca32e90209024ec4a6bb5ca887ee70980 ]
+[ Upstream commit 4ca8ca873d454635c20d508261bfc0081af75cf8 ]
 
-When queue number is > 4, left shift overflows due to 32 bits
-integer variable. Mask calculation is wrong for MTL_RXQ_DMA_MAP1.
+Problems were observed on the Xilinx ZynqMP platform with large I2C reads.
+When a read of 277 bytes was performed, the controller NAKed the transfer
+after only 252 bytes were transferred and returned an ENXIO error on the
+transfer.
 
-If CONFIG_UBSAN is enabled, kernel dumps below warning:
-[   10.363842] ==================================================================
-[   10.363882] UBSAN: shift-out-of-bounds in /build/linux-intel-iotg-5.15-8e6Tf4/
-linux-intel-iotg-5.15-5.15.0/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c:224:12
-[   10.363929] shift exponent 40 is too large for 32-bit type 'unsigned int'
-[   10.363953] CPU: 1 PID: 599 Comm: NetworkManager Not tainted 5.15.0-1003-intel-iotg
-[   10.363956] Hardware name: ADLINK Technology Inc. LEC-EL/LEC-EL, BIOS 0.15.11 12/22/2021
-[   10.363958] Call Trace:
-[   10.363960]  <TASK>
-[   10.363963]  dump_stack_lvl+0x4a/0x5f
-[   10.363971]  dump_stack+0x10/0x12
-[   10.363974]  ubsan_epilogue+0x9/0x45
-[   10.363976]  __ubsan_handle_shift_out_of_bounds.cold+0x61/0x10e
-[   10.363979]  ? wake_up_klogd+0x4a/0x50
-[   10.363983]  ? vprintk_emit+0x8f/0x240
-[   10.363986]  dwmac4_map_mtl_dma.cold+0x42/0x91 [stmmac]
-[   10.364001]  stmmac_mtl_configuration+0x1ce/0x7a0 [stmmac]
-[   10.364009]  ? dwmac410_dma_init_channel+0x70/0x70 [stmmac]
-[   10.364020]  stmmac_hw_setup.cold+0xf/0xb14 [stmmac]
-[   10.364030]  ? page_pool_alloc_pages+0x4d/0x70
-[   10.364034]  ? stmmac_clear_tx_descriptors+0x6e/0xe0 [stmmac]
-[   10.364042]  stmmac_open+0x39e/0x920 [stmmac]
-[   10.364050]  __dev_open+0xf0/0x1a0
-[   10.364054]  __dev_change_flags+0x188/0x1f0
-[   10.364057]  dev_change_flags+0x26/0x60
-[   10.364059]  do_setlink+0x908/0xc40
-[   10.364062]  ? do_setlink+0xb10/0xc40
-[   10.364064]  ? __nla_validate_parse+0x4c/0x1a0
-[   10.364068]  __rtnl_newlink+0x597/0xa10
-[   10.364072]  ? __nla_reserve+0x41/0x50
-[   10.364074]  ? __kmalloc_node_track_caller+0x1d0/0x4d0
-[   10.364079]  ? pskb_expand_head+0x75/0x310
-[   10.364082]  ? nla_reserve_64bit+0x21/0x40
-[   10.364086]  ? skb_free_head+0x65/0x80
-[   10.364089]  ? security_sock_rcv_skb+0x2c/0x50
-[   10.364094]  ? __cond_resched+0x19/0x30
-[   10.364097]  ? kmem_cache_alloc_trace+0x15a/0x420
-[   10.364100]  rtnl_newlink+0x49/0x70
+There is some code in cdns_i2c_master_isr to handle this case by resetting
+the transfer count in the controller before it reaches 0, to allow larger
+transfers to work, but it was conditional on the CDNS_I2C_BROKEN_HOLD_BIT
+quirk being set on the controller, and ZynqMP uses the r1p14 version of
+the core where this quirk is not being set. The requirement to do this to
+support larger reads seems like an inherently required workaround due to
+the core only having an 8-bit transfer size register, so it does not
+appear that this should be conditional on the broken HOLD bit quirk which
+is used elsewhere in the driver.
 
-This change fixes MTL_RXQ_DMA_MAP1 mask issue and channel/queue
-mapping warning.
+Remove the dependency on the CDNS_I2C_BROKEN_HOLD_BIT for this transfer
+size reset logic to fix this problem.
 
-Fixes: d43042f4da3e ("net: stmmac: mapping mtl rx to dma channel")
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=216195
-Reported-by: Cedric Wassenaar <cedric@bytespeed.nl>
-Signed-off-by: Junxiao Chang <junxiao.chang@intel.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 63cab195bf49 ("i2c: removed work arounds in i2c driver for Zynq Ultrascale+ MPSoC")
+Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+Reviewed-by: Shubhrajyoti Datta <Shubhrajyoti.datta@amd.com>
+Acked-by: Michal Simek <michal.simek@amd.com>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/i2c/busses/i2c-cadence.c | 30 +++++-------------------------
+ 1 file changed, 5 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-index 66e60c7e9850..c440b192ec71 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-@@ -215,6 +215,9 @@ static void dwmac4_map_mtl_dma(struct mac_device_info *hw, u32 queue, u32 chan)
- 	if (queue == 0 || queue == 4) {
- 		value &= ~MTL_RXQ_DMA_Q04MDMACH_MASK;
- 		value |= MTL_RXQ_DMA_Q04MDMACH(chan);
-+	} else if (queue > 4) {
-+		value &= ~MTL_RXQ_DMA_QXMDMACH_MASK(queue - 4);
-+		value |= MTL_RXQ_DMA_QXMDMACH(chan, queue - 4);
- 	} else {
- 		value &= ~MTL_RXQ_DMA_QXMDMACH_MASK(queue);
- 		value |= MTL_RXQ_DMA_QXMDMACH(chan, queue);
+diff --git a/drivers/i2c/busses/i2c-cadence.c b/drivers/i2c/busses/i2c-cadence.c
+index 3a1bdc75275f..8750e444f449 100644
+--- a/drivers/i2c/busses/i2c-cadence.c
++++ b/drivers/i2c/busses/i2c-cadence.c
+@@ -198,9 +198,9 @@ static inline bool cdns_is_holdquirk(struct cdns_i2c *id, bool hold_wrkaround)
+  */
+ static irqreturn_t cdns_i2c_isr(int irq, void *ptr)
+ {
+-	unsigned int isr_status, avail_bytes, updatetx;
++	unsigned int isr_status, avail_bytes;
+ 	unsigned int bytes_to_send;
+-	bool hold_quirk;
++	bool updatetx;
+ 	struct cdns_i2c *id = ptr;
+ 	/* Signal completion only after everything is updated */
+ 	int done_flag = 0;
+@@ -219,11 +219,7 @@ static irqreturn_t cdns_i2c_isr(int irq, void *ptr)
+ 	 * Check if transfer size register needs to be updated again for a
+ 	 * large data receive operation.
+ 	 */
+-	updatetx = 0;
+-	if (id->recv_count > id->curr_recv_count)
+-		updatetx = 1;
+-
+-	hold_quirk = (id->quirks & CDNS_I2C_BROKEN_HOLD_BIT) && updatetx;
++	updatetx = id->recv_count > id->curr_recv_count;
+ 
+ 	/* When receiving, handle data interrupt and completion interrupt */
+ 	if (id->p_recv_buf &&
+@@ -246,7 +242,7 @@ static irqreturn_t cdns_i2c_isr(int irq, void *ptr)
+ 			id->recv_count--;
+ 			id->curr_recv_count--;
+ 
+-			if (cdns_is_holdquirk(id, hold_quirk))
++			if (cdns_is_holdquirk(id, updatetx))
+ 				break;
+ 		}
+ 
+@@ -257,7 +253,7 @@ static irqreturn_t cdns_i2c_isr(int irq, void *ptr)
+ 		 * maintain transfer size non-zero while performing a large
+ 		 * receive operation.
+ 		 */
+-		if (cdns_is_holdquirk(id, hold_quirk)) {
++		if (cdns_is_holdquirk(id, updatetx)) {
+ 			/* wait while fifo is full */
+ 			while (cdns_i2c_readreg(CDNS_I2C_XFER_SIZE_OFFSET) !=
+ 			       (id->curr_recv_count - CDNS_I2C_FIFO_DEPTH))
+@@ -279,22 +275,6 @@ static irqreturn_t cdns_i2c_isr(int irq, void *ptr)
+ 						  CDNS_I2C_XFER_SIZE_OFFSET);
+ 				id->curr_recv_count = id->recv_count;
+ 			}
+-		} else if (id->recv_count && !hold_quirk &&
+-						!id->curr_recv_count) {
+-
+-			/* Set the slave address in address register*/
+-			cdns_i2c_writereg(id->p_msg->addr & CDNS_I2C_ADDR_MASK,
+-						CDNS_I2C_ADDR_OFFSET);
+-
+-			if (id->recv_count > CDNS_I2C_TRANSFER_SIZE) {
+-				cdns_i2c_writereg(CDNS_I2C_TRANSFER_SIZE,
+-						CDNS_I2C_XFER_SIZE_OFFSET);
+-				id->curr_recv_count = CDNS_I2C_TRANSFER_SIZE;
+-			} else {
+-				cdns_i2c_writereg(id->recv_count,
+-						CDNS_I2C_XFER_SIZE_OFFSET);
+-				id->curr_recv_count = id->recv_count;
+-			}
+ 		}
+ 
+ 		/* Clear hold (if not repeated start) and signal completion */
 -- 
 2.35.1
 
