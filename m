@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3E8CC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:05:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1BECC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:05:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241386AbiG0RFp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:05:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37854 "EHLO
+        id S241391AbiG0RFr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:05:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241557AbiG0REa (ORCPT
+        with ESMTP id S241580AbiG0REc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:04:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1714E5A15E;
-        Wed, 27 Jul 2022 09:39:13 -0700 (PDT)
+        Wed, 27 Jul 2022 13:04:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30BBD4E607;
+        Wed, 27 Jul 2022 09:39:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D5F73B821C5;
-        Wed, 27 Jul 2022 16:39:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FD2DC433D6;
-        Wed, 27 Jul 2022 16:39:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B95EB601CD;
+        Wed, 27 Jul 2022 16:39:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C442DC433D7;
+        Wed, 27 Jul 2022 16:39:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939948;
-        bh=dCvMNa0Ys6cuvhVxigehd63DciVmN1fTCsj0DT0s+xc=;
+        s=korg; t=1658939954;
+        bh=SfAAi25jBlgvjYljMD4I14ml56dBnB6TVuJGEZX53iA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1W27+mAEA2DzYLIyytbVqaEKaOuviNSINji80gIm/3wyLUaDMQ8prw3oZZtPZ1wLd
-         1Ur8JarOvyf+ey+cleblOK5ZHS9+UwMQ05e8y+yhkhTEC51T0Dfsiq54ELHIVKK2FS
-         Lue8TENMuxUJgy1r/edQinNpV4f8G6nc6PWpLdw0=
+        b=XXVfH6Fe0appdcsZhet4Xqamb9ZEcVeEzpI9+RWURSCQkcmT/CZZJBLxG/rfMgnYs
+         Iyp6K3PtsRLH9Jh5P+1P2QQ6YCAJACCHKlgqWZxY97R977EKyehv1dKIgjm64PtTty
+         a31T9gJ5MlLobPcXujELuXyodGd1US4GwAm+gN4Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lennert Buytenhek <buytenh@arista.com>,
-        Naama Meir <naamax.meir@linux.intel.com>,
-        Sasha Neftin <sasha.neftin@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 053/201] igc: Reinstate IGC_REMOVED logic and implement it properly
-Date:   Wed, 27 Jul 2022 18:09:17 +0200
-Message-Id: <20220727161029.102794395@linuxfoundation.org>
+Subject: [PATCH 5.15 037/201] ipv4/tcp: do not use per netns ctl sockets
+Date:   Wed, 27 Jul 2022 18:09:01 +0200
+Message-Id: <20220727161028.405847629@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -51,117 +49,175 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lennert Buytenhek <buytenh@wantstofly.org>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit 7c1ddcee5311f3315096217881d2dbe47cc683f9 ]
+[ Upstream commit 37ba017dcc3b1123206808979834655ddcf93251 ]
 
-The initially merged version of the igc driver code (via commit
-146740f9abc4, "igc: Add support for PF") contained the following
-IGC_REMOVED checks in the igc_rd32/wr32() MMIO accessors:
+TCP ipv4 uses per-cpu/per-netns ctl sockets in order to send
+RST and some ACK packets (on behalf of TIMEWAIT sockets).
 
-	u32 igc_rd32(struct igc_hw *hw, u32 reg)
-	{
-		u8 __iomem *hw_addr = READ_ONCE(hw->hw_addr);
-		u32 value = 0;
+This adds memory and cpu costs, which do not seem needed.
+Now typical servers have 256 or more cores, this adds considerable
+tax to netns users.
 
-		if (IGC_REMOVED(hw_addr))
-			return ~value;
+tcp sockets are used from BH context, are not receiving packets,
+and do not store any persistent state but the 'struct net' pointer
+in order to be able to use IPv4 output functions.
 
-		value = readl(&hw_addr[reg]);
+Note that I attempted a related change in the past, that had
+to be hot-fixed in commit bdbbb8527b6f ("ipv4: tcp: get rid of ugly unicast_sock")
 
-		/* reads should not return all F's */
-		if (!(~value) && (!reg || !(~readl(hw_addr))))
-			hw->hw_addr = NULL;
+This patch could very well surface old bugs, on layers not
+taking care of sk->sk_kern_sock properly.
 
-		return value;
-	}
-
-And:
-
-	#define wr32(reg, val) \
-	do { \
-		u8 __iomem *hw_addr = READ_ONCE((hw)->hw_addr); \
-		if (!IGC_REMOVED(hw_addr)) \
-			writel((val), &hw_addr[(reg)]); \
-	} while (0)
-
-E.g. igb has similar checks in its MMIO accessors, and has a similar
-macro E1000_REMOVED, which is implemented as follows:
-
-	#define E1000_REMOVED(h) unlikely(!(h))
-
-These checks serve to detect and take note of an 0xffffffff MMIO read
-return from the device, which can be caused by a PCIe link flap or some
-other kind of PCI bus error, and to avoid performing MMIO reads and
-writes from that point onwards.
-
-However, the IGC_REMOVED macro was not originally implemented:
-
-	#ifndef IGC_REMOVED
-	#define IGC_REMOVED(a) (0)
-	#endif /* IGC_REMOVED */
-
-This led to the IGC_REMOVED logic to be removed entirely in a
-subsequent commit (commit 3c215fb18e70, "igc: remove IGC_REMOVED
-function"), with the rationale that such checks matter only for
-virtualization and that igc does not support virtualization -- but a
-PCIe device can become detached even without virtualization being in
-use, and without proper checks, a PCIe bus error affecting an igc
-adapter will lead to various NULL pointer dereferences, as the first
-access after the error will set hw->hw_addr to NULL, and subsequent
-accesses will blindly dereference this now-NULL pointer.
-
-This patch reinstates the IGC_REMOVED checks in igc_rd32/wr32(), and
-implements IGC_REMOVED the way it is done for igb, by checking for the
-unlikely() case of hw_addr being NULL.  This change prevents the oopses
-seen when a PCIe link flap occurs on an igc adapter.
-
-Fixes: 146740f9abc4 ("igc: Add support for PF")
-Signed-off-by: Lennert Buytenhek <buytenh@arista.com>
-Tested-by: Naama Meir <naamax.meir@linux.intel.com>
-Acked-by: Sasha Neftin <sasha.neftin@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/igc/igc_main.c | 3 +++
- drivers/net/ethernet/intel/igc/igc_regs.h | 5 ++++-
- 2 files changed, 7 insertions(+), 1 deletion(-)
+ include/net/netns/ipv4.h |  1 -
+ net/ipv4/tcp_ipv4.c      | 61 ++++++++++++++++++----------------------
+ 2 files changed, 27 insertions(+), 35 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index f99819fc559d..2a84f57ea68b 100644
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -6159,6 +6159,9 @@ u32 igc_rd32(struct igc_hw *hw, u32 reg)
- 	u8 __iomem *hw_addr = READ_ONCE(hw->hw_addr);
- 	u32 value = 0;
+diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
+index 6c5b2efc4f17..d60a10cfc382 100644
+--- a/include/net/netns/ipv4.h
++++ b/include/net/netns/ipv4.h
+@@ -74,7 +74,6 @@ struct netns_ipv4 {
+ 	struct sock		*mc_autojoin_sk;
  
-+	if (IGC_REMOVED(hw_addr))
-+		return ~value;
+ 	struct inet_peer_base	*peers;
+-	struct sock  * __percpu	*tcp_sk;
+ 	struct fqdir		*fqdir;
+ 
+ 	u8 sysctl_icmp_echo_ignore_all;
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index 5d94822fd506..b9a9f288bfa6 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -91,6 +91,8 @@ static int tcp_v4_md5_hash_hdr(char *md5_hash, const struct tcp_md5sig_key *key,
+ struct inet_hashinfo tcp_hashinfo;
+ EXPORT_SYMBOL(tcp_hashinfo);
+ 
++static DEFINE_PER_CPU(struct sock *, ipv4_tcp_sk);
 +
- 	value = readl(&hw_addr[reg]);
+ static u32 tcp_v4_init_seq(const struct sk_buff *skb)
+ {
+ 	return secure_tcp_seq(ip_hdr(skb)->daddr,
+@@ -807,7 +809,8 @@ static void tcp_v4_send_reset(const struct sock *sk, struct sk_buff *skb)
+ 	arg.tos = ip_hdr(skb)->tos;
+ 	arg.uid = sock_net_uid(net, sk && sk_fullsock(sk) ? sk : NULL);
+ 	local_bh_disable();
+-	ctl_sk = this_cpu_read(*net->ipv4.tcp_sk);
++	ctl_sk = this_cpu_read(ipv4_tcp_sk);
++	sock_net_set(ctl_sk, net);
+ 	if (sk) {
+ 		ctl_sk->sk_mark = (sk->sk_state == TCP_TIME_WAIT) ?
+ 				   inet_twsk(sk)->tw_mark : sk->sk_mark;
+@@ -822,6 +825,7 @@ static void tcp_v4_send_reset(const struct sock *sk, struct sk_buff *skb)
+ 			      transmit_time);
  
- 	/* reads should not return all F's */
-diff --git a/drivers/net/ethernet/intel/igc/igc_regs.h b/drivers/net/ethernet/intel/igc/igc_regs.h
-index e197a33d93a0..026c3b65fc37 100644
---- a/drivers/net/ethernet/intel/igc/igc_regs.h
-+++ b/drivers/net/ethernet/intel/igc/igc_regs.h
-@@ -306,7 +306,8 @@ u32 igc_rd32(struct igc_hw *hw, u32 reg);
- #define wr32(reg, val) \
- do { \
- 	u8 __iomem *hw_addr = READ_ONCE((hw)->hw_addr); \
--	writel((val), &hw_addr[(reg)]); \
-+	if (!IGC_REMOVED(hw_addr)) \
-+		writel((val), &hw_addr[(reg)]); \
- } while (0)
+ 	ctl_sk->sk_mark = 0;
++	sock_net_set(ctl_sk, &init_net);
+ 	__TCP_INC_STATS(net, TCP_MIB_OUTSEGS);
+ 	__TCP_INC_STATS(net, TCP_MIB_OUTRSTS);
+ 	local_bh_enable();
+@@ -905,7 +909,8 @@ static void tcp_v4_send_ack(const struct sock *sk,
+ 	arg.tos = tos;
+ 	arg.uid = sock_net_uid(net, sk_fullsock(sk) ? sk : NULL);
+ 	local_bh_disable();
+-	ctl_sk = this_cpu_read(*net->ipv4.tcp_sk);
++	ctl_sk = this_cpu_read(ipv4_tcp_sk);
++	sock_net_set(ctl_sk, net);
+ 	ctl_sk->sk_mark = (sk->sk_state == TCP_TIME_WAIT) ?
+ 			   inet_twsk(sk)->tw_mark : sk->sk_mark;
+ 	ctl_sk->sk_priority = (sk->sk_state == TCP_TIME_WAIT) ?
+@@ -918,6 +923,7 @@ static void tcp_v4_send_ack(const struct sock *sk,
+ 			      transmit_time);
  
- #define rd32(reg) (igc_rd32(hw, reg))
-@@ -318,4 +319,6 @@ do { \
+ 	ctl_sk->sk_mark = 0;
++	sock_net_set(ctl_sk, &init_net);
+ 	__TCP_INC_STATS(net, TCP_MIB_OUTSEGS);
+ 	local_bh_enable();
+ }
+@@ -3103,41 +3109,14 @@ EXPORT_SYMBOL(tcp_prot);
  
- #define array_rd32(reg, offset) (igc_rd32(hw, (reg) + ((offset) << 2)))
+ static void __net_exit tcp_sk_exit(struct net *net)
+ {
+-	int cpu;
+-
+ 	if (net->ipv4.tcp_congestion_control)
+ 		bpf_module_put(net->ipv4.tcp_congestion_control,
+ 			       net->ipv4.tcp_congestion_control->owner);
+-
+-	for_each_possible_cpu(cpu)
+-		inet_ctl_sock_destroy(*per_cpu_ptr(net->ipv4.tcp_sk, cpu));
+-	free_percpu(net->ipv4.tcp_sk);
+ }
  
-+#define IGC_REMOVED(h) unlikely(!(h))
+ static int __net_init tcp_sk_init(struct net *net)
+ {
+-	int res, cpu, cnt;
+-
+-	net->ipv4.tcp_sk = alloc_percpu(struct sock *);
+-	if (!net->ipv4.tcp_sk)
+-		return -ENOMEM;
+-
+-	for_each_possible_cpu(cpu) {
+-		struct sock *sk;
+-
+-		res = inet_ctl_sock_create(&sk, PF_INET, SOCK_RAW,
+-					   IPPROTO_TCP, net);
+-		if (res)
+-			goto fail;
+-		sock_set_flag(sk, SOCK_USE_WRITE_QUEUE);
+-
+-		/* Please enforce IP_DF and IPID==0 for RST and
+-		 * ACK sent in SYN-RECV and TIME-WAIT state.
+-		 */
+-		inet_sk(sk)->pmtudisc = IP_PMTUDISC_DO;
+-
+-		*per_cpu_ptr(net->ipv4.tcp_sk, cpu) = sk;
+-	}
++	int cnt;
+ 
+ 	net->ipv4.sysctl_tcp_ecn = 2;
+ 	net->ipv4.sysctl_tcp_ecn_fallback = 1;
+@@ -3221,10 +3200,6 @@ static int __net_init tcp_sk_init(struct net *net)
+ 		net->ipv4.tcp_congestion_control = &tcp_reno;
+ 
+ 	return 0;
+-fail:
+-	tcp_sk_exit(net);
+-
+-	return res;
+ }
+ 
+ static void __net_exit tcp_sk_exit_batch(struct list_head *net_exit_list)
+@@ -3318,6 +3293,24 @@ static void __init bpf_iter_register(void)
+ 
+ void __init tcp_v4_init(void)
+ {
++	int cpu, res;
 +
- #endif
++	for_each_possible_cpu(cpu) {
++		struct sock *sk;
++
++		res = inet_ctl_sock_create(&sk, PF_INET, SOCK_RAW,
++					   IPPROTO_TCP, &init_net);
++		if (res)
++			panic("Failed to create the TCP control socket.\n");
++		sock_set_flag(sk, SOCK_USE_WRITE_QUEUE);
++
++		/* Please enforce IP_DF and IPID==0 for RST and
++		 * ACK sent in SYN-RECV and TIME-WAIT state.
++		 */
++		inet_sk(sk)->pmtudisc = IP_PMTUDISC_DO;
++
++		per_cpu(ipv4_tcp_sk, cpu) = sk;
++	}
+ 	if (register_pernet_subsys(&tcp_sk_ops))
+ 		panic("Failed to create the TCP control socket.\n");
+ 
 -- 
 2.35.1
 
