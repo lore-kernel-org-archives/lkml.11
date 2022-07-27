@@ -2,94 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37CE8C19F21
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 10:00:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78679C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 10:01:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231634AbiG0KAt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 06:00:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38646 "EHLO
+        id S231679AbiG0KBJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 06:01:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231358AbiG0KA0 (ORCPT
+        with ESMTP id S231616AbiG0KAm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 06:00:26 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0a-001ae601.pphosted.com [67.231.149.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0D5DA1A0;
-        Wed, 27 Jul 2022 03:00:25 -0700 (PDT)
-Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26R4SNEg032560;
-        Wed, 27 Jul 2022 04:59:32 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=PODMain02222019;
- bh=OVWLOViijHvZ0gyrsr6sZosQT9smEiGwvFnRB0/TaRY=;
- b=mRbjPnM414VhyBwRFy9PC6SYYkXxG9KZHx50DRageHYP29fol+z3rOCN4NH4SluNwVPS
- Sl29+Ica17m9URmQU237sVDdieEvVJlOXM3IHctJN42WSKmBtqToO2vAlUmPMr+G50T4
- mdgYRf+57DBKJTzX81GCkIMy+QVVnI7qkZtFqfuD/SvexyJ6XWx6FmkYeHkDEQ0Jesh0
- 713+YUqO9bGG4vWUyJfjWxLXRzy8x0nKSsOuiob0f1OUzD7+P9HgQnM6e+hb25EIdWka
- MFz9O0xzXMQBqIf6O2QJs0z6ILEU03RWj9GCpa0+uAMMs8ZtrZrLLdYqC7vRtQGGpbUv 5Q== 
-Received: from ediex02.ad.cirrus.com ([84.19.233.68])
-        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3hged1vtk6-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 27 Jul 2022 04:59:32 -0500
-Received: from ediex01.ad.cirrus.com (198.61.84.80) by ediex02.ad.cirrus.com
- (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.9; Wed, 27 Jul
- 2022 04:59:29 -0500
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by
- anon-ediex01.ad.cirrus.com (198.61.84.80) with Microsoft SMTP Server id
- 15.2.1118.9 via Frontend Transport; Wed, 27 Jul 2022 04:59:29 -0500
-Received: from aryzen.ad.cirrus.com (unknown [198.61.65.94])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id E041E477;
-        Wed, 27 Jul 2022 09:59:28 +0000 (UTC)
-From:   Lucas Tanure <tanureal@opensource.cirrus.com>
-To:     Jaroslav Kysela <perex@perex.cz>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Takashi Iwai <tiwai@suse.com>,
-        Cameron Berkenpas <cam@neo-zeon.de>
-CC:     <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
-        <linux-kernel@vger.kernel.org>, <linux-acpi@vger.kernel.org>,
-        <platform-driver-x86@vger.kernel.org>,
-        Lucas Tanure <tanureal@opensource.cirrus.com>
-Subject: [PATCH v2 3/4] ACPI: scan: Add CLSA0101 Laptop Support
-Date:   Wed, 27 Jul 2022 10:59:23 +0100
-Message-ID: <20220727095924.80884-4-tanureal@opensource.cirrus.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220727095924.80884-1-tanureal@opensource.cirrus.com>
-References: <20220727095924.80884-1-tanureal@opensource.cirrus.com>
+        Wed, 27 Jul 2022 06:00:42 -0400
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11F49A1A0;
+        Wed, 27 Jul 2022 03:00:32 -0700 (PDT)
+Received: (Authenticated sender: alexandre.belloni@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id DB3FAC0010;
+        Wed, 27 Jul 2022 10:00:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1658916030;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=gWGk3O/39jRyG70XEIs0yy+M6P6aC9SXYdCpOIcWGAc=;
+        b=VzeFWcLZgtQVOgZZTgdNslvBz0tTb4PkXgvzp79bm+WUZwAwxigyk+Gr70ktpMtGBxLBAW
+        wVaKQ3MhJqOO5XWky5ME9x2eVJe4k2FvdpDsJ0W/fXeD0ymDDGzy1K2ojjQZIBtQMIKnK5
+        dZBQnOMWfR7SxX/r+JuidExS6Z/I7gNpcL+5hJS7bPPH3ci2OmYaeNiY+6A0EAbRyM9Q+g
+        p/uvbahz+PoW3R7eSve9Sw81m6nOEXqkf5mdmNLX6G5XygXIzPVTUuNo7LqZUSLNXjdG0s
+        xGvorWSHiM9NKcWKhLZMpChqHnBl+NMGjylDalsOP31rrqDz79CCYwKvb8ltlg==
+From:   alexandre.belloni@bootlin.com
+To:     Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Michal Simek <michal.simek@xilinx.com>
+Cc:     linux-rtc@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] rtc: zynqmp: initialize fract_tick
+Date:   Wed, 27 Jul 2022 12:00:18 +0200
+Message-Id: <20220727100018.3301470-1-alexandre.belloni@bootlin.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-GUID: AtdIxN_CFm9gOicAvdNFl88eKK2K7cCh
-X-Proofpoint-ORIG-GUID: AtdIxN_CFm9gOicAvdNFl88eKK2K7cCh
-X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add CLSA0101 id to the ignore_serial_bus_ids
-so serial-multi-instantiate can correctly
-instantiate the driver.
+From: Alexandre Belloni <alexandre.belloni@bootlin.com>
 
-Signed-off-by: Lucas Tanure <tanureal@opensource.cirrus.com>
+fract_tick is used uninitialized when fract_offset is 0
+
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 ---
- drivers/acpi/scan.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/rtc/rtc-zynqmp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index b100e6ca9bb4..42cec8120f18 100644
---- a/drivers/acpi/scan.c
-+++ b/drivers/acpi/scan.c
-@@ -1722,6 +1722,7 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
- 		{"INT3515", },
- 		/* Non-conforming _HID for Cirrus Logic already released */
- 		{"CLSA0100", },
-+		{"CLSA0101", },
- 	/*
- 	 * Some ACPI devs contain SerialBus resources even though they are not
- 	 * attached to a serial bus at all.
+diff --git a/drivers/rtc/rtc-zynqmp.c b/drivers/rtc/rtc-zynqmp.c
+index 1dd389b891fe..c9b85c838ebe 100644
+--- a/drivers/rtc/rtc-zynqmp.c
++++ b/drivers/rtc/rtc-zynqmp.c
+@@ -203,7 +203,7 @@ static int xlnx_rtc_set_offset(struct device *dev, long offset)
+ 	struct xlnx_rtc_dev *xrtcdev = dev_get_drvdata(dev);
+ 	unsigned long long rtc_ppb = RTC_PPB;
+ 	unsigned int tick_mult = do_div(rtc_ppb, xrtcdev->freq);
+-	unsigned char fract_tick;
++	unsigned char fract_tick = 0;
+ 	unsigned int calibval;
+ 	short int  max_tick;
+ 	int fract_offset;
 -- 
-2.37.1
+2.36.1
 
