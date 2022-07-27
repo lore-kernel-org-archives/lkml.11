@@ -2,154 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1109AC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 13:18:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97FCDC19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 13:19:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232898AbiG0NR7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 09:17:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56794 "EHLO
+        id S232871AbiG0NTl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 09:19:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232388AbiG0NRz (ORCPT
+        with ESMTP id S232837AbiG0NTj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 09:17:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCE1A2ED56;
-        Wed, 27 Jul 2022 06:17:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 799F7615FB;
-        Wed, 27 Jul 2022 13:17:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3ED00C433D7;
-        Wed, 27 Jul 2022 13:17:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658927873;
-        bh=3bYEeRrDoHeCEEoe7jHjF2GJvkd2gtFQKSnzYrnaMk4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=h37/ZN6hB5CLdV/g0/jo7fgLzZ/f3A8KMhdniVI3rbc/buFdiOnz2HE+dFnmqL4NK
-         5py547rZL8Qrge/hxg+UfGnB02hzzAVzuLX3+qAv71Tpr0/KnkVV0TJrS1yZYKYpmL
-         sEs3dEiVaJt1mm1kiaE9i/N7rff5aXuwwwKBLYXD3l3yOacDobz/fhJnHhMA4mJt/h
-         Rshc0jEcVTUSGVfAX+ptkFN1p74ewm+5jO9G6mOdd/WqVfMQy47BFrIODn5g3y/84i
-         C/VXBvqeHlewg/qBM3RXidzaJbOmyaeZikgs1+H14cXPjl0Od/nQx2rIPnv81JvuNs
-         OjutU6IJVmN9Q==
-Date:   Wed, 27 Jul 2022 15:17:49 +0200
-From:   Christian Brauner <brauner@kernel.org>
-To:     Jeff Layton <jlayton@kernel.org>
-Cc:     viro@zeniv.linux.org.uk, linux-fsdevel@vger.kernel.org,
-        linux-nfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Yongchen Yang <yoyang@redhat.com>
-Subject: Re: [RFC PATCH] vfs: don't check may_create_in_sticky if the file is
- already open/created
-Message-ID: <20220727131749.yxijglcjwvlwpnbi@wittgenstein>
-References: <20220726202333.165490-1-jlayton@kernel.org>
- <8e4d498a3e8ed80ada2d3da01e7503e082be31a3.camel@kernel.org>
- <20220727113406.ewu4kzsoo643cf66@wittgenstein>
- <b1d3c63ef5a7e8f98966552b4509381aae25afb6.camel@kernel.org>
- <20220727123207.akq6dlnuqviwtwx5@wittgenstein>
- <9f7a1304e3631274701b555589648e12696fa152.camel@kernel.org>
+        Wed, 27 Jul 2022 09:19:39 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AA5432B9F
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 06:19:36 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id v17so5186214wrr.10
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 06:19:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=brainfault-org.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Dibkbw64+uQcY04egPFlqnHwHsFqfmAeKYM6z+pWQOk=;
+        b=Y/X9OjJkkL7iDYVukFb7bLpNmZgR1h2IcOwkq2eCmqjYacPrz37zhp0ZsbdiZVi/RV
+         Xb/wNpkg0x4WAMbKdwVole23Tp5wqsEgSVNUSF+6leNzUbah8IRZpzLkhp8S3PjglWvq
+         lu0hsbVN/SNET9UoO94QR18JsGrUpRvHcYX9j+ErHYRIDKreiAs98P1cZH23eZFhpByS
+         vxCkePTSqWqN6i3Q1pAl21HvHQuEyibsLb3W3hZqJPOEMH9AMsGwXXi1IccwlFkUfgdJ
+         p5lq2gpNzSF38Yiy7tN31a+bmGQuPmFJe9o9+meZ7oVM8797/AeQKdvQYp48aBbtHTi5
+         yEOA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Dibkbw64+uQcY04egPFlqnHwHsFqfmAeKYM6z+pWQOk=;
+        b=As3iGTO2LuDHwzwxU7yEU1mdgU+g1XA1TcEOCWY1uxiChNjoKmTgJNu/HIitYrUZ5F
+         kpxa4XQot0nY/teff7cx27ANuuh0aQ6xXW2Ve9XMo7ojTK/SG6cvrbk8svN9DM1tNfhf
+         eZRTrfA9lF09F8n1aoyji10PvYVSD+Y9qHaPmv6w6IxbOzHzy/P7C05hYJmce9tsYzwS
+         wV6qMvExRg2NVNpJr6vQ9y//kxwcwrQ8rAu/35wM/WtR4QeZXLeMI2wDf3vAghSimTlD
+         poymgQALCmQhtXjb7MdJZHynqBWDiO5XJkCDfe/3CUqv0q93qdUWnDbRfnFQVTW92V2l
+         T2sA==
+X-Gm-Message-State: AJIora/80f2aOLLBaTDqpsAFpYFPmYUuqGs47TdT5EGiwOpyY8+TJTKD
+        ZD15PKEyn60aKLW5X6xTiNgffHU2tfHM1eE776zVTg==
+X-Google-Smtp-Source: AGRyM1to8HbWQ44clapjD+5JGTD4YIZugXsbUPGE3wnHGXlqx7QirS2COMcNXHJ8Gy7Ob3it50+Qnfk4bKm9iNKFwpk=
+X-Received: by 2002:a5d:64ac:0:b0:21d:7832:ecf9 with SMTP id
+ m12-20020a5d64ac000000b0021d7832ecf9mr14023296wrp.86.1658927974767; Wed, 27
+ Jul 2022 06:19:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <9f7a1304e3631274701b555589648e12696fa152.camel@kernel.org>
+References: <20220727114302.302201-1-apatel@ventanamicro.com>
+ <20220727114302.302201-2-apatel@ventanamicro.com> <372e37bf-ac90-c371-ad9e-b9c18e1cc059@linaro.org>
+ <20220727124556.owk3zlyzsg5uaa4t@bogus>
+In-Reply-To: <20220727124556.owk3zlyzsg5uaa4t@bogus>
+From:   Anup Patel <anup@brainfault.org>
+Date:   Wed, 27 Jul 2022 18:49:23 +0530
+Message-ID: <CAAhSdy1guiVFxzU+r_7njH-E_hWUDy+r7P36YEf5OB80nDHuhA@mail.gmail.com>
+Subject: Re: [PATCH v2 1/2] dt-bindings: riscv: Add optional DT property riscv,timer-can-wake-cpu
+To:     Sudeep Holla <sudeep.holla@arm.com>
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Anup Patel <apatel@ventanamicro.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andrew Jones <ajones@ventanamicro.com>,
+        Atish Patra <atishp@atishpatra.org>,
+        Samuel Holland <samuel@sholland.org>,
+        devicetree@vger.kernel.org, linux-riscv@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 09:00:46AM -0400, Jeff Layton wrote:
-> On Wed, 2022-07-27 at 14:32 +0200, Christian Brauner wrote:
-> > On Wed, Jul 27, 2022 at 08:04:34AM -0400, Jeff Layton wrote:
-> > > On Wed, 2022-07-27 at 13:34 +0200, Christian Brauner wrote:
-> > > > On Tue, Jul 26, 2022 at 04:27:56PM -0400, Jeff Layton wrote:
-> > > > > On Tue, 2022-07-26 at 16:23 -0400, Jeff Layton wrote:
-> > > > > > NFS server is exporting a sticky directory (mode 01777) with root
-> > > > > > squashing enabled. Client has protect_regular enabled and then tries to
-> > > > > > open a file as root in that directory. File is created (with ownership
-> > > > > > set to nobody:nobody) but the open syscall returns an error.
-> > > > > > 
-> > > > > > The problem is may_create_in_sticky, which rejects the open even though
-> > > > > > the file has already been created/opened. Only call may_create_in_sticky
-> > > > > > if the file hasn't already been opened or created.
-> > > > > > 
-> > > > > > Cc: Christian Brauner <brauner@kernel.org>
-> > > > > > Link: https://bugzilla.redhat.com/show_bug.cgi?id=1976829
-> > > > > > Reported-by: Yongchen Yang <yoyang@redhat.com>
-> > > > > > Signed-off-by: Jeff Layton <jlayton@kernel.org>
-> > > > > > ---
-> > > > > >  fs/namei.c | 13 +++++++++----
-> > > > > >  1 file changed, 9 insertions(+), 4 deletions(-)
-> > > > > > 
-> > > > > > diff --git a/fs/namei.c b/fs/namei.c
-> > > > > > index 1f28d3f463c3..7480b6dc8d27 100644
-> > > > > > --- a/fs/namei.c
-> > > > > > +++ b/fs/namei.c
-> > > > > > @@ -3495,10 +3495,15 @@ static int do_open(struct nameidata *nd,
-> > > > > >  			return -EEXIST;
-> > > > > >  		if (d_is_dir(nd->path.dentry))
-> > > > > >  			return -EISDIR;
-> > > > > > -		error = may_create_in_sticky(mnt_userns, nd,
-> > > > > > -					     d_backing_inode(nd->path.dentry));
-> > > > > > -		if (unlikely(error))
-> > > > > > -			return error;
-> > > > > > +		if (!(file->f_mode & (FMODE_OPENED | FMODE_CREATED))) {
-> > > > > > +			error = may_create_in_sticky(mnt_userns, nd,
-> > > > > > +						d_backing_inode(nd->path.dentry));
-> > > > > > +			if (unlikely(error)) {
-> > > > > > +				printk("%s: f_mode=0x%x oflag=0x%x\n",
-> > > > > > +					__func__, file->f_mode, open_flag);
-> > > > > > +				return error;
-> > > > > > +			}
-> > > > > > +		}
-> > > > > >  	}
-> > > > > >  	if ((nd->flags & LOOKUP_DIRECTORY) && !d_can_lookup(nd->path.dentry))
-> > > > > >  		return -ENOTDIR;
-> > > > > 
-> > > > > I'm pretty sure this patch is the wrong approach, actually, since it
-> > > > > doesn't fix the regular (non-atomic) open codepath. Any thoughts on what
-> > > > 
-> > > > Hey Jeff,
-> > > > 
-> > > > I haven't quite understood why that won't work for the regular open
-> > > > codepaths. I'm probably missing something obvious.
-> > > > 
-> > > 
-> > > In the normal open codepaths, FMODE_OPENED | FMODE_CREATED are still
-> > > clear. If we're not doing an atomic_open (i.e. the dentry doesn't exist
-> > > yet or is negative), then nothing really happens until you get to the
-> > > vfs_open call.
-> > 
-> > Hm, so for atomic open with O_CREAT it's:
-> > 
-> > path_openat()
-> > -> open_last_lookups()
-> >    -> lookup_open()
-> >       /* 
-> >        * This is ->atomic_open() and FMODE_CREATED is set in the fs so
-> >        * for NFS it's done in:
-> >        * fs/nfs/dir.c:           file->f_mode |= FMODE_CREATED;
-> >        */
-> >       -> atomic_open()
-> > 
-> > and for regular O_CREAT open it's:
-> > 
-> > path_openat()
-> > -> open_last_lookups()
-> >    -> lookup_open()
-> >       {
-> >         if (!dentry->d_inode && (open_flag & O_CREAT)) {
-> >                 file->f_mode |= FMODE_CREATED;
-> >       }
-> > 
-> > 
-> > and that should all get surfaced to:
-> > 
-> > path_openat()
-> >    -> do_open()
-> >       -> may_create_in_sticky()
-> > 
-> > ?
-> 
-> Basically, yes, but we also need to deal with the case where the file
-> already exists. That's being denied currently too and I don't think it
-> should be.
+On Wed, Jul 27, 2022 at 6:16 PM Sudeep Holla <sudeep.holla@arm.com> wrote:
+>
+> On Wed, Jul 27, 2022 at 02:07:50PM +0200, Krzysztof Kozlowski wrote:
+> > On 27/07/2022 13:43, Anup Patel wrote:
+> > > We add an optional DT property riscv,timer-can-wake-cpu which if present
+> > > in CPU DT node then CPU timer is always powered-on and never loses context.
+> > >
+> > > Signed-off-by: Anup Patel <apatel@ventanamicro.com>
+> > > ---
+> > >  Documentation/devicetree/bindings/riscv/cpus.yaml | 6 ++++++
+> > >  1 file changed, 6 insertions(+)
+> > >
+> > > diff --git a/Documentation/devicetree/bindings/riscv/cpus.yaml b/Documentation/devicetree/bindings/riscv/cpus.yaml
+> > > index d632ac76532e..b60b64b4113a 100644
+> > > --- a/Documentation/devicetree/bindings/riscv/cpus.yaml
+> > > +++ b/Documentation/devicetree/bindings/riscv/cpus.yaml
+> > > @@ -78,6 +78,12 @@ properties:
+> > >        - rv64imac
+> > >        - rv64imafdc
+> > >
+> > > +  riscv,timer-can-wake-cpu:
+> > > +    type: boolean
+> > > +    description:
+> > > +      If present, the timer interrupt can wake up the CPU from
+> > > +      suspend/idle state.
+> >
+> > Isn't this a property of a timer, not CPU? IOW, your timer node should
+> > have "wakeup-source" property.
+> >
+>
+> I agree on the concept that this is property of the timer and not CPU.
+> However we generally don't need to use wakeup-source property for timer
+> as we ideally use this for waking up from system sleep state and we don't
+> want to be running timer when we enter the state.
+>
+> > Now that's actual problem: why the RISC-V timer is bound to "riscv"
+> > compatible, not to dedicated timer node? How is it related to actual CPU
+> > (not SoC)?
+>
+> We have "always-on" property for this on arm arch timer, and I also see
+> "regulator-always-on" or something similar defined. So in absence of timer
+> node probably "local-timer-always-on" make sense ? Thoughts ?
 
-Yeah, that's the part I'm not sure I agree with (see other thread).
+I agree.
+
+In the v1 patch, I had named it "riscv,timer-always-on" but I chose a
+more specific name in v2 based on comments from Samuel. I think
+we should use more consistent naming between ARM and RISC-V
+so "riscv,timer-always-on" makes more sense to me.
+
+Regards,
+Anup
