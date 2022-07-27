@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9E14C19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:33:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25D8BC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:33:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242223AbiG0RdJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:33:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41564 "EHLO
+        id S242264AbiG0RdM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:33:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242423AbiG0Rca (ORCPT
+        with ESMTP id S242103AbiG0Rcl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:32:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 957C4820F1;
-        Wed, 27 Jul 2022 09:48:26 -0700 (PDT)
+        Wed, 27 Jul 2022 13:32:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 120A5820F8;
+        Wed, 27 Jul 2022 09:48:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 265F060D3B;
-        Wed, 27 Jul 2022 16:48:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FED2C433C1;
-        Wed, 27 Jul 2022 16:48:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0032761560;
+        Wed, 27 Jul 2022 16:48:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C71CDC43141;
+        Wed, 27 Jul 2022 16:48:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940504;
-        bh=v2APZq3y8LHDyYfiUlRZJGE/FAqvnm2e0gheW9YgKQM=;
+        s=korg; t=1658940488;
+        bh=um3XuKFXmrTfyH4G12SgpbWVKKQtJMOjq/GSVIWvn1g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D4rMva6ciKjDo6AdDisX9sgmJextTZ3NjmfjPCrsG8WiZsmZtluCmxZLhwO5eXH4q
-         xlDtRpXqaKKDDLtDH44CmrggtYK+5fNeKmENxQ8QbNaZnM//ZG+O+tr0oRrRhNS1QH
-         qigqguc1WnVCkK8vGrGJA6jlmfbRDQWUdGLVK0DA=
+        b=ZSm8yZcDb8LkZnnAbwHf4llsJK5OuxAfCBbYQStQOxC13CnaEmEAia3mioizpf2yc
+         4jwlRboCBOR1fbEa+oaORJMg9q8+GG1QJ60uYmFBH0cl2pImwdhZ1Ap3RrtgEuGI0f
+         QOyVVy0W3o7OwszN0IrJez2kG1g6aGwijcwLHH/o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 047/158] tcp: Fix a data-race around sysctl_tcp_probe_interval.
-Date:   Wed, 27 Jul 2022 18:11:51 +0200
-Message-Id: <20220727161023.405587826@linuxfoundation.org>
+Subject: [PATCH 5.18 041/158] tcp: Fix data-races around sysctl_tcp_l3mdev_accept.
+Date:   Wed, 27 Jul 2022 18:11:45 +0200
+Message-Id: <20220727161023.130892625@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -51,32 +51,55 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 2a85388f1d94a9f8b5a529118a2c5eaa0520d85c ]
+[ Upstream commit 08a75f10679470552a3a443f9aefd1399604d31d ]
 
-While reading sysctl_tcp_probe_interval, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its reader.
+While reading sysctl_tcp_l3mdev_accept, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its readers.
 
-Fixes: 05cbc0db03e8 ("ipv4: Create probe timer for tcp PMTU as per RFC4821")
+Fixes: 6dd9a14e92e5 ("net: Allow accepted sockets to be bound to l3mdev domain")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp_output.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/net/inet_hashtables.h | 2 +-
+ include/net/inet_sock.h       | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 4057da397087..99a2f4518e2e 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -2281,7 +2281,7 @@ static inline void tcp_mtu_check_reprobe(struct sock *sk)
- 	u32 interval;
- 	s32 delta;
+diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
+index 98e1ec1a14f0..749bb1e46087 100644
+--- a/include/net/inet_hashtables.h
++++ b/include/net/inet_hashtables.h
+@@ -207,7 +207,7 @@ static inline bool inet_sk_bound_dev_eq(struct net *net, int bound_dev_if,
+ 					int dif, int sdif)
+ {
+ #if IS_ENABLED(CONFIG_NET_L3_MASTER_DEV)
+-	return inet_bound_dev_eq(!!net->ipv4.sysctl_tcp_l3mdev_accept,
++	return inet_bound_dev_eq(!!READ_ONCE(net->ipv4.sysctl_tcp_l3mdev_accept),
+ 				 bound_dev_if, dif, sdif);
+ #else
+ 	return inet_bound_dev_eq(true, bound_dev_if, dif, sdif);
+diff --git a/include/net/inet_sock.h b/include/net/inet_sock.h
+index b29108f0973a..6395f6b9a5d2 100644
+--- a/include/net/inet_sock.h
++++ b/include/net/inet_sock.h
+@@ -121,7 +121,7 @@ static inline int inet_request_bound_dev_if(const struct sock *sk,
+ #ifdef CONFIG_NET_L3_MASTER_DEV
+ 	struct net *net = sock_net(sk);
  
--	interval = net->ipv4.sysctl_tcp_probe_interval;
-+	interval = READ_ONCE(net->ipv4.sysctl_tcp_probe_interval);
- 	delta = tcp_jiffies32 - icsk->icsk_mtup.probe_timestamp;
- 	if (unlikely(delta >= interval * HZ)) {
- 		int mss = tcp_current_mss(sk);
+-	if (!bound_dev_if && net->ipv4.sysctl_tcp_l3mdev_accept)
++	if (!bound_dev_if && READ_ONCE(net->ipv4.sysctl_tcp_l3mdev_accept))
+ 		return l3mdev_master_ifindex_by_index(net, skb->skb_iif);
+ #endif
+ 
+@@ -133,7 +133,7 @@ static inline int inet_sk_bound_l3mdev(const struct sock *sk)
+ #ifdef CONFIG_NET_L3_MASTER_DEV
+ 	struct net *net = sock_net(sk);
+ 
+-	if (!net->ipv4.sysctl_tcp_l3mdev_accept)
++	if (!READ_ONCE(net->ipv4.sysctl_tcp_l3mdev_accept))
+ 		return l3mdev_master_ifindex_by_index(net,
+ 						      sk->sk_bound_dev_if);
+ #endif
 -- 
 2.35.1
 
