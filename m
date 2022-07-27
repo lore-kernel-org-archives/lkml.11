@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E35AC19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:43:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FC97C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:43:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239798AbiG0QnS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:43:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57982 "EHLO
+        id S239590AbiG0QnZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:43:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239732AbiG0Qms (ORCPT
+        with ESMTP id S238617AbiG0QnG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:42:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D5DAB91;
-        Wed, 27 Jul 2022 09:30:06 -0700 (PDT)
+        Wed, 27 Jul 2022 12:43:06 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 030EEBE25;
+        Wed, 27 Jul 2022 09:30:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 11565B821BA;
-        Wed, 27 Jul 2022 16:30:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4755AC433D6;
-        Wed, 27 Jul 2022 16:30:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D3B28B821B7;
+        Wed, 27 Jul 2022 16:30:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F85EC433C1;
+        Wed, 27 Jul 2022 16:30:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939403;
-        bh=550IkI61ovCTlTtHGJVVtYH6bZgDjq0SDAiIBPV6FZo=;
+        s=korg; t=1658939406;
+        bh=irEaGC7QiScJXaA0VzHAwDN1ja0oXUlRZ6DH/Viu7J8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g93hh0D30tS8hNLZlIOI7cxIRIDMdR8g5p8rXlxWxb//ErrZKwWHXxrfn3/rnQhhn
-         6wBi0Gd/xFqB+Ix3k5LwurEc0Yp9nHSRzNvI1Q8g85ILVkVnYvjYbMIco4NumxWeNU
-         G/I9mdq3VmH0w+It44dUxh4z1BTL0ZT30dKLMKbI=
+        b=dHxzNwrqoQV3ZmsNEC12VetOAZ+PpIvNPCSxcWvZvcaab6igWPxXYy3YDj3Ec9Mj7
+         E4EUJhs1NVTxSxOTDGIvzKpHZeS7mCDOjgQxFFb7NhDrnPYulKxSGTROFs8f2xRur1
+         b5MZgge+y9SR+HhKT0RibrIXg78yeKaGRMsFMQ2E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexander Aring <aahringo@redhat.com>,
-        David Teigland <teigland@redhat.com>,
+        stable@vger.kernel.org, GUO Zihua <guozihua@huawei.com>,
+        Stable@vger.kernel.org, Mimi Zohar <zohar@linux.ibm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 58/87] dlm: fix pending remove if msg allocation fails
-Date:   Wed, 27 Jul 2022 18:10:51 +0200
-Message-Id: <20220727161011.415794656@linuxfoundation.org>
+Subject: [PATCH 5.4 59/87] ima: remove the IMA_TEMPLATE Kconfig option
+Date:   Wed, 27 Jul 2022 18:10:52 +0200
+Message-Id: <20220727161011.457961979@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161008.993711844@linuxfoundation.org>
 References: <20220727161008.993711844@linuxfoundation.org>
@@ -49,45 +49,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Aring <aahringo@redhat.com>
+From: GUO Zihua <guozihua@huawei.com>
 
-[ Upstream commit ba58995909b5098ca4003af65b0ccd5a8d13dd25 ]
+[ Upstream commit 891163adf180bc369b2f11c9dfce6d2758d2a5bd ]
 
-This patch unsets ls_remove_len and ls_remove_name if a message
-allocation of a remove messages fails. In this case we never send a
-remove message out but set the per ls ls_remove_len ls_remove_name
-variable for a pending remove. Unset those variable should indicate
-possible waiters in wait_pending_remove() that no pending remove is
-going on at this moment.
+The original 'ima' measurement list template contains a hash, defined
+as 20 bytes, and a null terminated pathname, limited to 255
+characters.  Other measurement list templates permit both larger hashes
+and longer pathnames.  When the "ima" template is configured as the
+default, a new measurement list template (ima_template=) must be
+specified before specifying a larger hash algorithm (ima_hash=) on the
+boot command line.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Alexander Aring <aahringo@redhat.com>
-Signed-off-by: David Teigland <teigland@redhat.com>
+To avoid this boot command line ordering issue, remove the legacy "ima"
+template configuration option, allowing it to still be specified on the
+boot command line.
+
+The root cause of this issue is that during the processing of ima_hash,
+we would try to check whether the hash algorithm is compatible with the
+template. If the template is not set at the moment we do the check, we
+check the algorithm against the configured default template. If the
+default template is "ima", then we reject any hash algorithm other than
+sha1 and md5.
+
+For example, if the compiled default template is "ima", and the default
+algorithm is sha1 (which is the current default). In the cmdline, we put
+in "ima_hash=sha256 ima_template=ima-ng". The expected behavior would be
+that ima starts with ima-ng as the template and sha256 as the hash
+algorithm. However, during the processing of "ima_hash=",
+"ima_template=" has not been processed yet, and hash_setup would check
+the configured hash algorithm against the compiled default: ima, and
+reject sha256. So at the end, the hash algorithm that is actually used
+will be sha1.
+
+With template "ima" removed from the configured default, we ensure that
+the default tempalte would at least be "ima-ng" which allows for
+basically any hash algorithm.
+
+This change would not break the algorithm compatibility checks for IMA.
+
+Fixes: 4286587dccd43 ("ima: add Kconfig default measurement list template")
+Signed-off-by: GUO Zihua <guozihua@huawei.com>
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/dlm/lock.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ security/integrity/ima/Kconfig | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
-diff --git a/fs/dlm/lock.c b/fs/dlm/lock.c
-index 4ae8becdb51d..9165bf56c6e8 100644
---- a/fs/dlm/lock.c
-+++ b/fs/dlm/lock.c
-@@ -4067,13 +4067,14 @@ static void send_repeat_remove(struct dlm_ls *ls, char *ms_name, int len)
- 	rv = _create_message(ls, sizeof(struct dlm_message) + len,
- 			     dir_nodeid, DLM_MSG_REMOVE, &ms, &mh);
- 	if (rv)
--		return;
-+		goto out;
+diff --git a/security/integrity/ima/Kconfig b/security/integrity/ima/Kconfig
+index 748f3ee27b23..44b3315f3235 100644
+--- a/security/integrity/ima/Kconfig
++++ b/security/integrity/ima/Kconfig
+@@ -69,10 +69,9 @@ choice
+ 	  hash, defined as 20 bytes, and a null terminated pathname,
+ 	  limited to 255 characters.  The 'ima-ng' measurement list
+ 	  template permits both larger hash digests and longer
+-	  pathnames.
++	  pathnames. The configured default template can be replaced
++	  by specifying "ima_template=" on the boot command line.
  
- 	memcpy(ms->m_extra, name, len);
- 	ms->m_hash = hash;
+-	config IMA_TEMPLATE
+-		bool "ima"
+ 	config IMA_NG_TEMPLATE
+ 		bool "ima-ng (default)"
+ 	config IMA_SIG_TEMPLATE
+@@ -82,7 +81,6 @@ endchoice
+ config IMA_DEFAULT_TEMPLATE
+ 	string
+ 	depends on IMA
+-	default "ima" if IMA_TEMPLATE
+ 	default "ima-ng" if IMA_NG_TEMPLATE
+ 	default "ima-sig" if IMA_SIG_TEMPLATE
  
- 	send_message(mh, ms);
+@@ -102,15 +100,15 @@ choice
  
-+out:
- 	spin_lock(&ls->ls_remove_spin);
- 	ls->ls_remove_len = 0;
- 	memset(ls->ls_remove_name, 0, DLM_RESNAME_MAXLEN);
+ 	config IMA_DEFAULT_HASH_SHA256
+ 		bool "SHA256"
+-		depends on CRYPTO_SHA256=y && !IMA_TEMPLATE
++		depends on CRYPTO_SHA256=y
+ 
+ 	config IMA_DEFAULT_HASH_SHA512
+ 		bool "SHA512"
+-		depends on CRYPTO_SHA512=y && !IMA_TEMPLATE
++		depends on CRYPTO_SHA512=y
+ 
+ 	config IMA_DEFAULT_HASH_WP512
+ 		bool "WP512"
+-		depends on CRYPTO_WP512=y && !IMA_TEMPLATE
++		depends on CRYPTO_WP512=y
+ endchoice
+ 
+ config IMA_DEFAULT_HASH
 -- 
 2.35.1
 
