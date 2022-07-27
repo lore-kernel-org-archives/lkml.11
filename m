@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6D31C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:44:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 162C3C19F2D
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:44:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243024AbiG0RoE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:44:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39858 "EHLO
+        id S242894AbiG0Roz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:44:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242943AbiG0Rn1 (ORCPT
+        with ESMTP id S242793AbiG0Rna (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:43:27 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D03F89EBA;
-        Wed, 27 Jul 2022 09:52:36 -0700 (PDT)
+        Wed, 27 Jul 2022 13:43:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A15C18AB0F;
+        Wed, 27 Jul 2022 09:52:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5FBE1616BD;
-        Wed, 27 Jul 2022 16:52:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66CD7C433D6;
-        Wed, 27 Jul 2022 16:52:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A4D54B8200D;
+        Wed, 27 Jul 2022 16:52:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02C8FC433C1;
+        Wed, 27 Jul 2022 16:52:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940747;
-        bh=09q0fp0UNnv65fb09KZBA3JX8+stgJ9Pdq795VBDTWY=;
+        s=korg; t=1658940753;
+        bh=zpgNjnfSpwP+s2pDPQsvK7PQ9b8gheUQM579VcK0bLI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wgPgVNiNe5SYdWJ2+dg8/mjFnsmw4WAAiXZJtMwOwv9/JO2OIRcAVpMay2CwwXL88
-         1RRLXHlZl1SD2Ot8vJ6TBA6aHDgBpZzyLpUPg0PJghGDvDmSnH8p+EXtEO2bQ11DEa
-         LAdmexzoJzg886BgNhYBpD+rpkR9TyTktxYCuTQs=
+        b=zLAYF6OWJMypTYaDSs4PCBwtLxAInSVVoYRWOUN04vcMLWN/d1kMgSRxyZ0tfUMEB
+         GbR2QsMLogPLLj1hQepf3Nb9RsiUpA1z9qCnANSYf7/EsM6Wy34jZxLitaYPwFX1Ye
+         m2l89vfR0jE3NJlchl/seEPWCrZZ9pSw/0i8cXWg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Taehee Yoo <ap420073@gmail.com>,
         Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 102/158] amt: remove unnecessary locks
-Date:   Wed, 27 Jul 2022 18:12:46 +0200
-Message-Id: <20220727161025.552206594@linuxfoundation.org>
+Subject: [PATCH 5.18 104/158] amt: add missing regeneration nonce logic in request logic
+Date:   Wed, 27 Jul 2022 18:12:48 +0200
+Message-Id: <20220727161025.629946179@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -51,139 +51,37 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Taehee Yoo <ap420073@gmail.com>
 
-[ Upstream commit 9c343ea6185febe5f6b74f7f7b3757f3dd9c5af6 ]
+[ Upstream commit 627f16931bf3cb20d50274d9341380ac2c3035fd ]
 
-By the previous patch, amt gateway handlers are changed to worked by
-a single thread.
-So, most locks for gateway are not needed.
-So, it removes.
+When AMT gateway starts sending a new request message, it should
+regenerate the nonce variable.
 
 Fixes: cbc21dc1cfe9 ("amt: add data plane of amt interface")
 Signed-off-by: Taehee Yoo <ap420073@gmail.com>
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/amt.c | 32 +++++---------------------------
- 1 file changed, 5 insertions(+), 27 deletions(-)
+ drivers/net/amt.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
 diff --git a/drivers/net/amt.c b/drivers/net/amt.c
-index f8e8381e266b..615f26a553ae 100644
+index ff859d4a4b50..2fe56640e493 100644
 --- a/drivers/net/amt.c
 +++ b/drivers/net/amt.c
-@@ -577,8 +577,8 @@ static struct sk_buff *amt_build_igmp_gq(struct amt_dev *amt)
- 	return skb;
- }
- 
--static void __amt_update_gw_status(struct amt_dev *amt, enum amt_status status,
--				   bool validate)
-+static void amt_update_gw_status(struct amt_dev *amt, enum amt_status status,
-+				 bool validate)
- {
- 	if (validate && amt->status >= status)
- 		return;
-@@ -600,14 +600,6 @@ static void __amt_update_relay_status(struct amt_tunnel_list *tunnel,
- 	tunnel->status = status;
- }
- 
--static void amt_update_gw_status(struct amt_dev *amt, enum amt_status status,
--				 bool validate)
--{
--	spin_lock_bh(&amt->lock);
--	__amt_update_gw_status(amt, status, validate);
--	spin_unlock_bh(&amt->lock);
--}
--
- static void amt_update_relay_status(struct amt_tunnel_list *tunnel,
- 				    enum amt_status status, bool validate)
- {
-@@ -700,9 +692,7 @@ static void amt_send_discovery(struct amt_dev *amt)
- 	if (unlikely(net_xmit_eval(err)))
- 		amt->dev->stats.tx_errors++;
- 
--	spin_lock_bh(&amt->lock);
--	__amt_update_gw_status(amt, AMT_STATUS_SENT_DISCOVERY, true);
--	spin_unlock_bh(&amt->lock);
-+	amt_update_gw_status(amt, AMT_STATUS_SENT_DISCOVERY, true);
- out:
- 	rcu_read_unlock();
- }
-@@ -937,18 +927,14 @@ static void amt_secret_work(struct work_struct *work)
- 
- static void amt_event_send_discovery(struct amt_dev *amt)
- {
--	spin_lock_bh(&amt->lock);
- 	if (amt->status > AMT_STATUS_SENT_DISCOVERY)
- 		goto out;
- 	get_random_bytes(&amt->nonce, sizeof(__be32));
--	spin_unlock_bh(&amt->lock);
- 
- 	amt_send_discovery(amt);
--	spin_lock_bh(&amt->lock);
- out:
- 	mod_delayed_work(amt_wq, &amt->discovery_wq,
- 			 msecs_to_jiffies(AMT_DISCOVERY_TIMEOUT));
--	spin_unlock_bh(&amt->lock);
- }
- 
- static void amt_discovery_work(struct work_struct *work)
-@@ -966,7 +952,6 @@ static void amt_event_send_request(struct amt_dev *amt)
- {
- 	u32 exp;
- 
--	spin_lock_bh(&amt->lock);
- 	if (amt->status < AMT_STATUS_RECEIVED_ADVERTISEMENT)
- 		goto out;
- 
-@@ -976,21 +961,18 @@ static void amt_event_send_request(struct amt_dev *amt)
- 		amt->ready4 = false;
- 		amt->ready6 = false;
+@@ -963,9 +963,13 @@ static void amt_event_send_request(struct amt_dev *amt)
  		amt->remote_ip = 0;
--		__amt_update_gw_status(amt, AMT_STATUS_INIT, false);
-+		amt_update_gw_status(amt, AMT_STATUS_INIT, false);
+ 		amt_update_gw_status(amt, AMT_STATUS_INIT, false);
  		amt->req_cnt = 0;
++		amt->nonce = 0;
  		goto out;
  	}
--	spin_unlock_bh(&amt->lock);
  
++	if (!amt->req_cnt)
++		get_random_bytes(&amt->nonce, sizeof(__be32));
++
  	amt_send_request(amt, false);
  	amt_send_request(amt, true);
--	spin_lock_bh(&amt->lock);
--	__amt_update_gw_status(amt, AMT_STATUS_SENT_REQUEST, true);
-+	amt_update_gw_status(amt, AMT_STATUS_SENT_REQUEST, true);
- 	amt->req_cnt++;
- out:
- 	exp = min_t(u32, (1 * (1 << amt->req_cnt)), AMT_MAX_REQ_TIMEOUT);
- 	mod_delayed_work(amt_wq, &amt->req_wq, msecs_to_jiffies(exp * 1000));
--	spin_unlock_bh(&amt->lock);
- }
- 
- static void amt_req_work(struct work_struct *work)
-@@ -2386,12 +2368,10 @@ static bool amt_membership_query_handler(struct amt_dev *amt,
- 		ihv3 = skb_pull(skb, sizeof(*iph) + AMT_IPHDR_OPTS);
- 		skb_reset_transport_header(skb);
- 		skb_push(skb, sizeof(*iph) + AMT_IPHDR_OPTS);
--		spin_lock_bh(&amt->lock);
- 		amt->ready4 = true;
- 		amt->mac = amtmq->response_mac;
- 		amt->req_cnt = 0;
- 		amt->qi = ihv3->qqic;
--		spin_unlock_bh(&amt->lock);
- 		skb->protocol = htons(ETH_P_IP);
- 		eth->h_proto = htons(ETH_P_IP);
- 		ip_eth_mc_map(iph->daddr, eth->h_dest);
-@@ -2411,12 +2391,10 @@ static bool amt_membership_query_handler(struct amt_dev *amt,
- 		mld2q = skb_pull(skb, sizeof(*ip6h) + AMT_IP6HDR_OPTS);
- 		skb_reset_transport_header(skb);
- 		skb_push(skb, sizeof(*ip6h) + AMT_IP6HDR_OPTS);
--		spin_lock_bh(&amt->lock);
- 		amt->ready6 = true;
- 		amt->mac = amtmq->response_mac;
- 		amt->req_cnt = 0;
- 		amt->qi = mld2q->mld2q_qqic;
--		spin_unlock_bh(&amt->lock);
- 		skb->protocol = htons(ETH_P_IPV6);
- 		eth->h_proto = htons(ETH_P_IPV6);
- 		ipv6_eth_mc_map(&ip6h->daddr, eth->h_dest);
+ 	amt_update_gw_status(amt, AMT_STATUS_SENT_REQUEST, true);
 -- 
 2.35.1
 
