@@ -2,99 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F01E7C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:37:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7831C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:37:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238039AbiG0Qhg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:37:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45354 "EHLO
+        id S238767AbiG0Qhl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:37:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238574AbiG0Qfz (ORCPT
+        with ESMTP id S238671AbiG0QgN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:35:55 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 329484F696;
-        Wed, 27 Jul 2022 09:28:00 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id b26so25270064wrc.2;
-        Wed, 27 Jul 2022 09:28:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=kfkoj4fNNraT0/nQVLzO6vYNRTJCIdKopXSEcy8gVDM=;
-        b=q3H37dDZW+3bOfULAfYuQJm8ZxzHjx0rixk1dhrWM5nbo4TbK8CBATCD7xIksSB0Lg
-         ouKAl16bl1ZbP/Uv73EZvnVZ8l5rAfrwU6dpPPqvk9bXxunonxcqefStjmYB0beCWs8+
-         SIRHGrlLRYuwvIgkUyk0zFktGzSZRpdDgzpUyTx/Ntp+K9UHF55kDzpDbLmEh9MRJKXL
-         RYSkyw6OQli3pZLECvucTltLlry9TD/aqJuLSSTzvXJcGTBELmhY/W0C2p+aIXg/6HuG
-         SKFp/RTBtmi4w6/qwnZr8glMe2nthiP7h4mcGxA18xD67A5PvYt+UHYsxPPiv11wEOC2
-         Nm5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=kfkoj4fNNraT0/nQVLzO6vYNRTJCIdKopXSEcy8gVDM=;
-        b=aFQBKk/mjgxuxzCcXnWGeWaSKvUJY+hSJk3JQY0vLybANqoOXPEBLt7htsV6AQQ/Ux
-         UlceXbHXSebsIcCYTBNFVUm7bTWnWn4YJwm34R8JPjeLbf/FH1IefVNg+bmtfv2b0Prr
-         d/LiJvtBPWNOnEDfZV63KJfZfV6UHyVXEp79n1HIz0+Tspj9uWBkE4LYjE4sQoFi3hiQ
-         UCa83c6dNeiRcpElcnWX4+FvP+UOI16oZnLbmsAmxRxzEBjpzIrlZg3TF4sLRbmmcWDM
-         pquveQbdJRRIXtecvtuBbr8hgAgGXGnSaoUKNw2rQFF0o6j95z8Gg5VE/tJVMWsyO9NP
-         BItg==
-X-Gm-Message-State: AJIora+VhHXKYvNsRLkoESuhzIhqcohVQymHSpZ6OMPM0W5MoE5D8GtJ
-        SKmS6wuJZWAWzcQizQXy0cE=
-X-Google-Smtp-Source: AGRyM1tGzrPKCky6a6fSRf3hKGzV7CyhtQhIjfR3kqAZAEygm9jlnBVaaOUd5JATDO60ztoTTN6kVg==
-X-Received: by 2002:a1c:e90c:0:b0:3a1:7527:cd3c with SMTP id q12-20020a1ce90c000000b003a17527cd3cmr3631590wmc.91.1658939278035;
-        Wed, 27 Jul 2022 09:27:58 -0700 (PDT)
-Received: from elementary ([94.73.33.57])
-        by smtp.gmail.com with ESMTPSA id m16-20020adffa10000000b0020e6ce4dabdsm17551020wrr.103.2022.07.27.09.27.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 09:27:57 -0700 (PDT)
-Date:   Wed, 27 Jul 2022 18:27:55 +0200
-From:   =?iso-8859-1?Q?Jos=E9_Exp=F3sito?= <jose.exposito89@gmail.com>
-To:     Stefan Hansson <newbie13xd@gmail.com>
-Cc:     Jiri Kosina <jikos@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Ping Cheng <ping.cheng@wacom.com>,
-        Peter Hutterer <peter.hutterer@who-t.net>,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: PROBLEM: Regression likely in hid_uclogic driver breaks Huion
- Inspiroy H640 drawing tablet
-Message-ID: <20220727162755.GA3839@elementary>
-References: <9e16d503-2203-57ed-d6af-61fea0c3e10b@gmail.com>
- <nycvar.YFH.7.76.2207231339500.19850@cbobk.fhfr.pm>
- <20220724114849.GA32182@elementary>
- <20220725224841.GA75640@elementary>
- <3f2e0a49-38a8-417e-1bb0-9a9f28371240@gmail.com>
- <20220726214858.GA3202@elementary>
- <8a35df7d-a6cc-63e9-b207-6fbed05e32e5@gmail.com>
+        Wed, 27 Jul 2022 12:36:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4CEC57203;
+        Wed, 27 Jul 2022 09:28:06 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E7B40B821BF;
+        Wed, 27 Jul 2022 16:28:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57043C433C1;
+        Wed, 27 Jul 2022 16:28:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658939282;
+        bh=2tCyZDBo2+NNN2tEJUrj28tl7DflKJ3dwB9KJBN7mSk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Dv15Acuj/boHLuw3rx8kcpcrXdCRRaNk4RaM3x0eX+teVXbL1jbDamlgR4CioLVpE
+         HH3IDNGtdvdvMCA4yXlSOnQJxKFWBo+GDJ4hy0e7/AFnmAIAFa0wcO2/hFcI9GfK34
+         rlvx+7i5KAZNnxokwR2+quSu/Bv5rJU6O3p1NcWM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jeffrey Hugo <quic_jhugo@quicinc.com>,
+        Dexuan Cui <decui@microsoft.com>, Wei Liu <wei.liu@kernel.org>,
+        Carl Vanderlip <quic_carlv@quicinc.com>
+Subject: [PATCH 5.4 06/87] PCI: hv: Fix multi-MSI to allow more than one MSI vector
+Date:   Wed, 27 Jul 2022 18:09:59 +0200
+Message-Id: <20220727161009.262368559@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220727161008.993711844@linuxfoundation.org>
+References: <20220727161008.993711844@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8a35df7d-a6cc-63e9-b207-6fbed05e32e5@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 26, 2022 at 10:56:33PM -0400, Stefan Hansson wrote:
-> Hi!
-> 
-> > > Thanks for looking into this! Bisecting has been slow on my end
-> > > unfortunately. I built today's linux-next (20220726) with your proposed
-> > > patch below and my drawing tablet curiously still does not work as expected.
-> > > The stylus works a couple of times, but eventually stops working (unlike
-> > > prior where it always seemed to only work once). Do I need both your revert
-> > > and this diff for it to work properly?
-> > 
-> > You are right, I just tested for a while with the diff applied (without
-> > reverting the commit causing the issue) and after putting the pen in
-> > and out proximity a fair amount of times (> 100) it stopped working.
-> 
-> This part is peculiar to me. When I said "a couple of times", I really meant
-> a couple of times. For me, this issue reproduces after maybe 10 times at
-> most. I have never been able to do it for anything close to 100 times. I
-> wonder what's up with this disparity?
+From: Jeffrey Hugo <quic_jhugo@quicinc.com>
 
-We are most likely doing something different. Anyway, the important bit
-is that with the current code present 5.18 the bug is easy to reproduce
-in order to test fixes.
+commit 08e61e861a0e47e5e1a3fb78406afd6b0cea6b6d upstream.
 
-Jose
+If the allocation of multiple MSI vectors for multi-MSI fails in the core
+PCI framework, the framework will retry the allocation as a single MSI
+vector, assuming that meets the min_vecs specified by the requesting
+driver.
+
+Hyper-V advertises that multi-MSI is supported, but reuses the VECTOR
+domain to implement that for x86.  The VECTOR domain does not support
+multi-MSI, so the alloc will always fail and fallback to a single MSI
+allocation.
+
+In short, Hyper-V advertises a capability it does not implement.
+
+Hyper-V can support multi-MSI because it coordinates with the hypervisor
+to map the MSIs in the IOMMU's interrupt remapper, which is something the
+VECTOR domain does not have.  Therefore the fix is simple - copy what the
+x86 IOMMU drivers (AMD/Intel-IR) do by removing
+X86_IRQ_ALLOC_CONTIGUOUS_VECTORS after calling the VECTOR domain's
+pci_msi_prepare().
+
+5.4 backport - adds the hv_msi_prepare wrapper function.
+X86_IRQ_ALLOC_TYPE_PCI_MSI changed to X86_IRQ_ALLOC_TYPE_MSI
+(same value).
+
+Fixes: 4daace0d8ce8 ("PCI: hv: Add paravirtual PCI front-end for Microsoft Hyper-V VMs")
+Signed-off-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
+Reviewed-by: Dexuan Cui <decui@microsoft.com>
+Link: https://lore.kernel.org/r/1649856981-14649-1-git-send-email-quic_jhugo@quicinc.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Signed-off-by: Carl Vanderlip <quic_carlv@quicinc.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/pci/controller/pci-hyperv.c |   17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
+
+--- a/drivers/pci/controller/pci-hyperv.c
++++ b/drivers/pci/controller/pci-hyperv.c
+@@ -1172,6 +1172,21 @@ static void hv_irq_mask(struct irq_data
+ 	pci_msi_mask_irq(data);
+ }
+ 
++static int hv_msi_prepare(struct irq_domain *domain, struct device *dev,
++			  int nvec, msi_alloc_info_t *info)
++{
++	int ret = pci_msi_prepare(domain, dev, nvec, info);
++
++	/*
++	 * By using the interrupt remapper in the hypervisor IOMMU, contiguous
++	 * CPU vectors is not needed for multi-MSI
++	 */
++	if (info->type == X86_IRQ_ALLOC_TYPE_MSI)
++		info->flags &= ~X86_IRQ_ALLOC_CONTIGUOUS_VECTORS;
++
++	return ret;
++}
++
+ /**
+  * hv_irq_unmask() - "Unmask" the IRQ by setting its current
+  * affinity.
+@@ -1518,7 +1533,7 @@ static irq_hw_number_t hv_msi_domain_ops
+ 
+ static struct msi_domain_ops hv_msi_ops = {
+ 	.get_hwirq	= hv_msi_domain_ops_get_hwirq,
+-	.msi_prepare	= pci_msi_prepare,
++	.msi_prepare	= hv_msi_prepare,
+ 	.set_desc	= pci_msi_set_desc,
+ 	.msi_free	= hv_msi_free,
+ };
+
+
