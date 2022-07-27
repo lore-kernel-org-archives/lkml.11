@@ -2,90 +2,171 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C685C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 08:28:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B294BC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 08:29:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229481AbiG0I2u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 04:28:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46470 "EHLO
+        id S229927AbiG0I3a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 04:29:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230179AbiG0I2n (ORCPT
+        with ESMTP id S230388AbiG0I3S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 04:28:43 -0400
+        Wed, 27 Jul 2022 04:29:18 -0400
 Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B137A459B6;
-        Wed, 27 Jul 2022 01:28:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F35F459A2;
+        Wed, 27 Jul 2022 01:29:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1658910517; x=1690446517;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=hDK80vDpkuXPJNz0zWKF4J/lc/t8yhaBiwQSS2Kg5Do=;
-  b=bwoyGWvW4dFAl3KyX0+Rwm+zJiCN3pP7BLiMzuVN+aYJ4Ks1v8chvpX+
-   BX4upNRC3i68lVu7Yp7rPxKFVuA5+sEDXYx5nMLjhjSdcF9BOzdTWqFE9
-   8s9PwzeflO0eyN9uHinekHPJrR+xotcYaEF6Qo6p9YhBvvNHhwhIYXvF1
-   w=;
+  t=1658910557; x=1690446557;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=iTamDCOH/9WmaX6NdcA+gYUfOkf4snb7Ud8mOkqbfFk=;
+  b=AxR2nJRfG9LnfZr1d6aLNA/Yb6LCnpT8r+670zpA+f+aPRWtpf5F58NS
+   HCREXg0xP2pTEgReG96Fk4Xp/9/NE5hlyrXz9OtDj0Z52wrxPiQXzOoBT
+   UbSdbOo5ni4uS2FEMNO5JwvXdFHgCkHi929TQd9e5tofpG3l+wJyIVGNE
+   0=;
 Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 27 Jul 2022 01:28:32 -0700
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 27 Jul 2022 01:29:16 -0700
 X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2022 01:28:31 -0700
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+Received: from unknown (HELO nasanex01a.na.qualcomm.com) ([10.52.223.231])
+  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2022 01:29:16 -0700
+Received: from hu-cchinnad-hyd.qualcomm.com (10.80.80.8) by
+ nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 27 Jul 2022 01:28:31 -0700
-Received: from c-skakit-linux.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Wed, 27 Jul 2022 01:28:27 -0700
-From:   Satya Priya <quic_c_skakit@quicinc.com>
-To:     Rob Herring <robh@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-CC:     Douglas Anderson <dianders@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Andy Gross <agross@kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Taniya Das <quic_tdas@quicinc.com>
-Subject: [PATCH V7 4/5] dt-bindings: clock: Add support for external MCLKs for LPASS on SC7280
-Date:   Wed, 27 Jul 2022 13:57:56 +0530
-Message-ID: <1658910477-6494-5-git-send-email-quic_c_skakit@quicinc.com>
+ 15.2.986.22; Wed, 27 Jul 2022 01:29:14 -0700
+From:   Chetan C R <quic_cchinnad@quicinc.com>
+To:     <jejb@linux.ibm.com>
+CC:     <linux-kernel@vger.kernel.org>, <linux-scsi@vger.kernel.org>,
+        Chetan C R <quic_cchinnad@quicinc.com>
+Subject: [PATCH V1] scsi: ufs: Get boot device storage type from command line
+Date:   Wed, 27 Jul 2022 13:58:55 +0530
+Message-ID: <1658910535-31802-1-git-send-email-quic_cchinnad@quicinc.com>
 X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1658910477-6494-1-git-send-email-quic_c_skakit@quicinc.com>
-References: <1658910477-6494-1-git-send-email-quic_c_skakit@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01a.na.qualcomm.com (10.52.223.231)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Taniya Das <quic_tdas@quicinc.com>
+Get the boot device storage type by reading it from
+kernel command line arguments and export the same
+information to ufs modules.
 
-Support external mclk to interface external MI2S clocks for SC7280.
-
-Fixes: 4185b27b3bef ("dt-bindings: clock: Add YAML schemas for LPASS clocks on SC7280")
-Acked-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Taniya Das <quic_tdas@quicinc.com>
-Reviewed-by: Stephen Boyd <sboyd@kernel.org>
+Signed-off-by: Chetan C R <quic_cchinnad@quicinc.com>
 ---
- include/dt-bindings/clock/qcom,lpasscorecc-sc7280.h | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/ufs/Kconfig            |  1 +
+ drivers/ufs/host/Kconfig       |  9 +++++++
+ drivers/ufs/host/Makefile      |  1 +
+ drivers/ufs/host/ufs-cmdline.c | 54 ++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 65 insertions(+)
+ create mode 100644 drivers/ufs/host/ufs-cmdline.c
 
-diff --git a/include/dt-bindings/clock/qcom,lpasscorecc-sc7280.h b/include/dt-bindings/clock/qcom,lpasscorecc-sc7280.h
-index 28ed2a0..0324c69 100644
---- a/include/dt-bindings/clock/qcom,lpasscorecc-sc7280.h
-+++ b/include/dt-bindings/clock/qcom,lpasscorecc-sc7280.h
-@@ -19,6 +19,8 @@
- #define LPASS_CORE_CC_LPM_CORE_CLK			9
- #define LPASS_CORE_CC_LPM_MEM0_CORE_CLK			10
- #define LPASS_CORE_CC_SYSNOC_MPORT_CORE_CLK		11
-+#define LPASS_CORE_CC_EXT_MCLK0_CLK			12
-+#define LPASS_CORE_CC_EXT_MCLK0_CLK_SRC			13
+diff --git a/drivers/ufs/Kconfig b/drivers/ufs/Kconfig
+index 90226f7..9d2f84e 100644
+--- a/drivers/ufs/Kconfig
++++ b/drivers/ufs/Kconfig
+@@ -9,6 +9,7 @@ menuconfig SCSI_UFSHCD
+ 	select PM_DEVFREQ
+ 	select DEVFREQ_GOV_SIMPLE_ONDEMAND
+ 	select NLS
++	select UFS_QCOM_CMDLINE if ARCH_QCOM
+ 	help
+ 	  Enables support for UFS (Universal Flash Storage) host controllers.
+ 	  A UFS host controller is an electronic component that is able to
+diff --git a/drivers/ufs/host/Kconfig b/drivers/ufs/host/Kconfig
+index 8259022..6197070 100644
+--- a/drivers/ufs/host/Kconfig
++++ b/drivers/ufs/host/Kconfig
+@@ -68,6 +68,15 @@ config SCSI_UFS_QCOM
+ 	  Select this if you have UFS controller on QCOM chipset.
+ 	  If unsure, say N.
  
- /* LPASS_CORE_CC power domains */
- #define LPASS_CORE_CC_LPASS_CORE_HM_GDSC		0
++config UFS_QCOM_CMDLINE
++	bool "Get the boot device type from kernel command line for Qcom devices"
++	help
++	  This selects the support of getting the boot device storage type
++	  from kernel command line arguments and export this information
++	  to the Qcom UFS controller platform driver.
++
++	  If unsure, say N.
++
+ config SCSI_UFS_MEDIATEK
+ 	tristate "Mediatek specific hooks to UFS controller platform driver"
+ 	depends on SCSI_UFSHCD_PLATFORM && ARCH_MEDIATEK
+diff --git a/drivers/ufs/host/Makefile b/drivers/ufs/host/Makefile
+index e4be542..a9463f1 100644
+--- a/drivers/ufs/host/Makefile
++++ b/drivers/ufs/host/Makefile
+@@ -6,6 +6,7 @@ obj-$(CONFIG_SCSI_UFS_CDNS_PLATFORM) += cdns-pltfrm.o
+ obj-$(CONFIG_SCSI_UFS_QCOM) += ufs_qcom.o
+ ufs_qcom-y += ufs-qcom.o
+ ufs_qcom-$(CONFIG_SCSI_UFS_CRYPTO) += ufs-qcom-ice.o
++obj-$(CONFIG_UFS_QCOM_CMDLINE)          += ufs-cmdline.o
+ obj-$(CONFIG_SCSI_UFS_EXYNOS) += ufs-exynos.o
+ obj-$(CONFIG_SCSI_UFSHCD_PCI) += ufshcd-pci.o
+ obj-$(CONFIG_SCSI_UFSHCD_PLATFORM) += ufshcd-pltfrm.o
+diff --git a/drivers/ufs/host/ufs-cmdline.c b/drivers/ufs/host/ufs-cmdline.c
+new file mode 100644
+index 0000000..408755c
+--- /dev/null
++++ b/drivers/ufs/host/ufs-cmdline.c
+@@ -0,0 +1,54 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (c) 2022, The Linux Foundation. All rights reserved.
++ */
++
++#include <linux/init.h>
++#include <linux/printk.h>
++#include <linux/string.h>
++
++#ifdef CONFIG_BOOT_CONFIG
++#include <linux/bootconfig.h>
++#endif
++
++#define ANDROID_BOOT_DEV_MAX_V3    30
++
++static char android_boot_dev_v3[ANDROID_BOOT_DEV_MAX_V3];
++static const char *android_boot_dev_v4;
++
++const char *get_storage_boot_device(void)
++{
++	if (android_boot_dev_v4 && strlen(android_boot_dev_v4))
++		return android_boot_dev_v4;
++
++	else if (strlen(android_boot_dev_v3))
++		return android_boot_dev_v3;
++
++	pr_err("Not able to get Bootconfig or Kernel command line param\n");
++	return NULL;
++};
++EXPORT_SYMBOL_GPL(get_storage_boot_device);
++
++/* boot image header version 3 android boot device type */
++static int __init get_android_boot_dev_v3(char *str)
++{
++	strscpy(android_boot_dev_v3, str, ANDROID_BOOT_DEV_MAX_V3);
++	return 1;
++}
++__setup("androidboot.bootdevice=", get_android_boot_dev_v3);
++
++#ifdef CONFIG_BOOT_CONFIG
++/* boot image header version 4 android boot device type */
++static int __init get_android_boot_dev_v4(void)
++{
++	struct xbc_node *vnode = NULL;
++
++	android_boot_dev_v4 = xbc_find_value("androidboot.bootdevice", &vnode);
++
++	if (vnode && xbc_node_is_array(vnode))
++		xbc_array_for_each_value(vnode, android_boot_dev_v4);
++
++	return 0;
++}
++fs_initcall(get_android_boot_dev_v4);
++#endif
 -- 
 2.7.4
 
