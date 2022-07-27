@@ -2,96 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6970C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:48:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DA1FC19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:52:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242739AbiG0Rsu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:48:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48052 "EHLO
+        id S242917AbiG0RwG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:52:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243201AbiG0RsS (ORCPT
+        with ESMTP id S238715AbiG0Rvu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:48:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5505F2E9F7;
-        Wed, 27 Jul 2022 09:54:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2152BB821AC;
-        Wed, 27 Jul 2022 16:53:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F0CEC433D6;
-        Wed, 27 Jul 2022 16:53:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940837;
-        bh=Nz5k/Pa4IhuCRVsu7UChZptB4Ka9QpSOYr0VI7yB1mQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ykKm8yErsQe6Tv6TWPNuFtE4//NY8UD0HEZuJX1lHLLykn8xJp8TqADhh2/8AhMpk
-         PMcnw058rnPUZ5Apz5ZZ4vUMZ4xuxrOquLVcrolUYhMM1Sgrxh0NUxW19a1N8/fn2o
-         eLunvE9up1j1AbR9VP9dWR2A+BVuPHnDnEFm47/s=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lukas Wunner <lukas@wunner.de>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.18 131/158] spi: bcm2835: bcm2835_spi_handle_err(): fix NULL pointer deref for non DMA transfers
-Date:   Wed, 27 Jul 2022 18:13:15 +0200
-Message-Id: <20220727161026.649979100@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
-References: <20220727161021.428340041@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Wed, 27 Jul 2022 13:51:50 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 756476557E;
+        Wed, 27 Jul 2022 09:56:49 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id iw1so2522804plb.6;
+        Wed, 27 Jul 2022 09:56:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9C42EhqujNUGLTQRquiw6KLykM7tiCDPQri3xf5gC3k=;
+        b=ieUfKeUdDlULg9PAumCjD1beVPyA0VacMpNeDzUFPAP6XcS6jykM8QW/9s8oGs56gb
+         g/oYn7HYhVUqY6Fw5OQeqIQT353rnclw4yL2uaG+76zLpQPErWsObksEkl0N+jP94gZB
+         iEdRcsah9bF4R2ju4XbyJK/Fhx6f0PUH//ZzRMn0OJ/oig6LOy7+xidT1hyQHsNnMOeI
+         36qieeqP/gGkaBXsRUwOrKHcELZQctgdqikHT8Z1hi2RM9cDlCZDU85VhjNikTibPAfO
+         VtxD6mRGTQdtE3HG4nhVF4HvXnOHkXU93iaBnMiI3YkQkJ9yNSIC7UI1K1IB47Kao43L
+         QHpg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9C42EhqujNUGLTQRquiw6KLykM7tiCDPQri3xf5gC3k=;
+        b=etUSKqwe6yAkXm7KKiPAOQdd/D0+6dgJJrB8JC1Xke21Qrn+ladBjd3EKzFUzBq+lJ
+         Lt0EM6eKS3Ote1V32lfMMXyBiHen8F3CJR9RHV9KdoHbBjv7FQiWHcYzakat+95anoey
+         hyJ8Un+Wi8tQf9Qromi+7AJB4O6sEpz31WIBxSflAP+b8sJTu1Sf5pQsWlZhn50OC2EH
+         G7X3MidTg62Zr3ZcNgNASnxYVLUJnVZEtzDyKCfd1GY8vj2+hW0PN9FLTRIJILi57vdq
+         xMNLdBMjmSw3BFhGqvBdXX3cL+5RdasWdh7ze0Ea6+y6Ns9BgGrcFADX32Z6lQPr1g5i
+         sR3w==
+X-Gm-Message-State: AJIora9I0Q/FdTgPzWkS2g8jpchwKp0whCq3wXOEsamnXw8kRJxoLSR6
+        mORDo+7uZshV0s9SDdjbPcQ=
+X-Google-Smtp-Source: AGRyM1vi21h3IwRP9EUM6w2XY3EenD1AeMYsunem2a7AJFi1iXN3jQ9XLJvDbLDCP6xU+CEvZ16TmQ==
+X-Received: by 2002:a17:902:bcca:b0:16d:3e8a:bb5a with SMTP id o10-20020a170902bcca00b0016d3e8abb5amr21834367pls.94.1658941007754;
+        Wed, 27 Jul 2022 09:56:47 -0700 (PDT)
+Received: from rfl-device.localdomain ([39.124.24.102])
+        by smtp.gmail.com with ESMTPSA id z12-20020aa7990c000000b0052baa22575asm14125503pff.134.2022.07.27.09.56.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jul 2022 09:56:47 -0700 (PDT)
+From:   RuffaloLavoisier <ruffalolavoisier@gmail.com>
+X-Google-Original-From: RuffaloLavoisier <RuffaloLavoisier@gmail.com>
+To:     Taehee Yoo <ap420073@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     RuffaloLavoisier <RuffaloLavoisier@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] drivers/net/amt.c : fix typo
+Date:   Thu, 28 Jul 2022 01:56:40 +0900
+Message-Id: <20220727165640.132955-1-RuffaloLavoisier@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Kleine-Budde <mkl@pengutronix.de>
+Correct spelling on non-existent
 
-commit 4ceaa684459d414992acbefb4e4c31f2dfc50641 upstream.
-
-In case a IRQ based transfer times out the bcm2835_spi_handle_err()
-function is called. Since commit 1513ceee70f2 ("spi: bcm2835: Drop
-dma_pending flag") the TX and RX DMA transfers are unconditionally
-canceled, leading to NULL pointer derefs if ctlr->dma_tx or
-ctlr->dma_rx are not set.
-
-Fix the NULL pointer deref by checking that ctlr->dma_tx and
-ctlr->dma_rx are valid pointers before accessing them.
-
-Fixes: 1513ceee70f2 ("spi: bcm2835: Drop dma_pending flag")
-Cc: Lukas Wunner <lukas@wunner.de>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Link: https://lore.kernel.org/r/20220719072234.2782764-1-mkl@pengutronix.de
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: RuffaloLavoisier <RuffaloLavoisier@gmail.com>
 ---
- drivers/spi/spi-bcm2835.c |   12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+I am sending it again after adding the recipient list.
+ drivers/net/amt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/spi/spi-bcm2835.c
-+++ b/drivers/spi/spi-bcm2835.c
-@@ -1138,10 +1138,14 @@ static void bcm2835_spi_handle_err(struc
- 	struct bcm2835_spi *bs = spi_controller_get_devdata(ctlr);
+diff --git a/drivers/net/amt.c b/drivers/net/amt.c
+index febfcf2d92af..9a247eb7679c 100644
+--- a/drivers/net/amt.c
++++ b/drivers/net/amt.c
+@@ -449,7 +449,7 @@ static void amt_group_work(struct work_struct *work)
+ 	dev_put(amt->dev);
+ }
  
- 	/* if an error occurred and we have an active dma, then terminate */
--	dmaengine_terminate_sync(ctlr->dma_tx);
--	bs->tx_dma_active = false;
--	dmaengine_terminate_sync(ctlr->dma_rx);
--	bs->rx_dma_active = false;
-+	if (ctlr->dma_tx) {
-+		dmaengine_terminate_sync(ctlr->dma_tx);
-+		bs->tx_dma_active = false;
-+	}
-+	if (ctlr->dma_rx) {
-+		dmaengine_terminate_sync(ctlr->dma_rx);
-+		bs->rx_dma_active = false;
-+	}
- 	bcm2835_spi_undo_prologue(bs);
- 
- 	/* and reset */
-
+-/* Non-existant group is created as INCLUDE {empty}:
++/* Non-existent group is created as INCLUDE {empty}:
+  *
+  * RFC 3376 - 5.1. Action on Change of Interface State
+  *
+-- 
+2.25.1
 
