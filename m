@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D526DC19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:25:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6810CC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:25:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236147AbiG0QZ2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:25:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51328 "EHLO
+        id S236242AbiG0QZe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:25:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236242AbiG0QYT (ORCPT
+        with ESMTP id S236318AbiG0QYU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:24:19 -0400
+        Wed, 27 Jul 2022 12:24:20 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE6E04D146;
-        Wed, 27 Jul 2022 09:23:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FB574C639;
+        Wed, 27 Jul 2022 09:23:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F239619C6;
-        Wed, 27 Jul 2022 16:23:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80634C433C1;
-        Wed, 27 Jul 2022 16:23:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A366619BD;
+        Wed, 27 Jul 2022 16:23:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90B3AC433D6;
+        Wed, 27 Jul 2022 16:23:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658938992;
-        bh=hsWA+swU9odQ5uHMtyE2bfc7DAGCDKff987Lcq+Io/g=;
+        s=korg; t=1658938995;
+        bh=9hka7xncDkenzYMrAz5zM0tQbOOUr06N0IgPvwhQfWQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ziBvzrr6bRwgSyZGw1/CUCC65khVcFV5CWIujS76M8xLNnLO8j48opf0UemWVvfuF
-         SYD2RZ6kh47zmDVefywxrmnDlcJgQAF5BeekZW1yOjyuIH3cmaJ+xyD2qF65iwnWn3
-         8JhFXXAK3ZvHopQxjC+rwa3ARJc6zBlBZU6tDOHk=
+        b=QxtfUE4MKJ6O6XvGk/kLbJ1XitAPH9Z6+IUcbn0tRTWatLTYnYHrdaRNnug0SsEVH
+         hfg4QdC76gvkY8TnYbUr0WbOnlDrpwbaQROUJpvRce4UyFZqfHEt2XAsHEVeX3bJSB
+         fUS4zwEh8j30Rtl5xTgocr/Zc9+feH3DoDmOPvw8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 05/37] ip: Fix a data-race around sysctl_fwmark_reflect.
-Date:   Wed, 27 Jul 2022 18:10:31 +0200
-Message-Id: <20220727161001.053195375@linuxfoundation.org>
+Subject: [PATCH 4.14 06/37] tcp/dccp: Fix a data-race around sysctl_tcp_fwmark_accept.
+Date:   Wed, 27 Jul 2022 18:10:32 +0200
+Message-Id: <20220727161001.100070379@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161000.822869853@linuxfoundation.org>
 References: <20220727161000.822869853@linuxfoundation.org>
@@ -51,32 +51,33 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 85d0b4dbd74b95cc492b1f4e34497d3f894f5d9a ]
+[ Upstream commit 1a0008f9df59451d0a17806c1ee1a19857032fa8 ]
 
-While reading sysctl_fwmark_reflect, it can be changed concurrently.
+While reading sysctl_tcp_fwmark_accept, it can be changed concurrently.
 Thus, we need to add READ_ONCE() to its reader.
 
-Fixes: e110861f8609 ("net: add a sysctl to reflect the fwmark on replies")
+Fixes: 84f39b08d786 ("net: support marking accepting TCP sockets")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/ip.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/net/inet_sock.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/include/net/ip.h b/include/net/ip.h
-index 4aff48d6ba91..2a92a5f4f9b3 100644
---- a/include/net/ip.h
-+++ b/include/net/ip.h
-@@ -305,7 +305,7 @@ void ipfrag_init(void);
- void ip_static_sysctl_init(void);
+diff --git a/include/net/inet_sock.h b/include/net/inet_sock.h
+index 16a1492a5bd3..f279d72273f6 100644
+--- a/include/net/inet_sock.h
++++ b/include/net/inet_sock.h
+@@ -110,7 +110,8 @@ static inline struct inet_request_sock *inet_rsk(const struct request_sock *sk)
  
- #define IP4_REPLY_MARK(net, mark) \
--	((net)->ipv4.sysctl_fwmark_reflect ? (mark) : 0)
-+	(READ_ONCE((net)->ipv4.sysctl_fwmark_reflect) ? (mark) : 0)
- 
- static inline bool ip_is_fragment(const struct iphdr *iph)
+ static inline u32 inet_request_mark(const struct sock *sk, struct sk_buff *skb)
  {
+-	if (!sk->sk_mark && sock_net(sk)->ipv4.sysctl_tcp_fwmark_accept)
++	if (!sk->sk_mark &&
++	    READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_fwmark_accept))
+ 		return skb->mark;
+ 
+ 	return sk->sk_mark;
 -- 
 2.35.1
 
