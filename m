@@ -2,170 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C3B7C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 01:33:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBC6BC00144
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 01:34:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240052AbiG0Bdx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 21:33:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45860 "EHLO
+        id S240149AbiG0BeA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 21:34:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230245AbiG0Bdv (ORCPT
+        with ESMTP id S240099AbiG0Bdz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 21:33:51 -0400
-Received: from smtp-relay-canonical-0.canonical.com (smtp-relay-canonical-0.canonical.com [185.125.188.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE5743AE74;
-        Tue, 26 Jul 2022 18:33:49 -0700 (PDT)
-Received: from localhost.localdomain (unknown [10.101.196.174])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id D66123F0E1;
-        Wed, 27 Jul 2022 01:33:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1658885628;
-        bh=zAZzDf5aGoTBpAzJoH3PK3AquzA6pEp7Sdhc0ZGtT3Q=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=n08e71jppZrm/5ZH++ydry++70qnxTirBD69Wny/y3E2uHFaUroEpOAOPrqmkHq5T
-         n6n9q4J2SWNsX0KlGsJbgyd3hdlrKL2rA/Yz/TwzHHnLKLbHKhGKHSELVPEPwgwcjc
-         CEe1bX5+HtqkFQTK+yqmqaHiF3qWkscGAHSx5wHYcYfxqikHApXBNv1lziGhPFZOXH
-         sMJM+bAIO+K4iNWktotjLWijfNVK2lcyKJMJmWbwNEFtRyVJaBkXGtIAdy3O7BhD3Q
-         UzJZ6KruMm6y2tqzXO5ee2koXLAmTp1O3+Yb0VvFUkNMsJ8DlLNeTSHQmKzWr9029d
-         qLBqNrLMcMXFw==
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-To:     bhelgaas@google.com
-Cc:     mika.westerberg@linux.intel.com, koba.ko@canonical.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Lukas Wunner <lukas@wunner.de>,
-        Jan Kiszka <jan.kiszka@siemens.com>,
-        Stuart Hayes <stuart.w.hayes@gmail.com>,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/3] PCI/portdrv: Flag services when IRQ is shared with PME
-Date:   Wed, 27 Jul 2022 09:32:50 +0800
-Message-Id: <20220727013255.269815-1-kai.heng.feng@canonical.com>
-X-Mailer: git-send-email 2.36.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Tue, 26 Jul 2022 21:33:55 -0400
+Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 540733B943
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 18:33:54 -0700 (PDT)
+Received: by mail-pg1-x54a.google.com with SMTP id 21-20020a630015000000b0041b022ba974so2981954pga.9
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 18:33:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=1N3h8/3xSQWX6SxOF5BPCgS/YJL4wXTsZ8CkYeFIT3M=;
+        b=QpSGMoTn06o1HCqJaequgVUCWVDL6y7V2pJAXhgcZslE7hepnB5qO5bhCsayf8BgZT
+         ioAnJDRO4dHDHZqT9epxdMWWuTHPxYpYQv7N9ry1QlIk5/V+cdUycj6fXPdRo+zdPUo4
+         +0Z324w4ZR5jGLPTe46w9q+JE1ZZ5ABziZoQBzBQTrwwhqWlRBOLEcHVBm9L7dK5/Xdi
+         xfKd8NoIGd/LYe/RpZOiwPs5NxYvdylykP+HFfsBwc/HIFJB2XohGmZzvFpXtiCPc2sI
+         KLyTgTV/B/ZJi0VZmQ1yZMC9+h2YpRh2EOANQBwbCIdYGeqvIQFkcbdQymaE9OuWqLHy
+         Y7lg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=1N3h8/3xSQWX6SxOF5BPCgS/YJL4wXTsZ8CkYeFIT3M=;
+        b=wfDT4xD1vCk/dOrkuh1o469g7D7xqOPBxBsdRD91mg+XFjfYv01JD0tfYdVqM+ghxu
+         S/LT6Btx9vJjXfJrm9O52fkUT7z1t+QPOM0ldwmxEjVn6UW+78HwqU+idU1k6/fjJTDG
+         CvbqbuqVAx2Vb6JyCMJtjks8jERrubEZph1lrFeIoH0XQ2ZbcdV+JK9q6RSw9XXpYUWE
+         giAZ0yhvH8d85owByTvW03SazyYN0cXThjGRy2OpMV8+do0vp6cw7cBAY1j4bo4dbOWo
+         hR1RjBNOw+4dnNuSLK9+O3xghEfEb/Nh4x7F5OjqSCt+k7PT62jaaXIV00kEyb7tgsYd
+         Cb+Q==
+X-Gm-Message-State: AJIora/4DYklsPY1T/AmH7EY1sms/GreN1tmkB21T6X0LdoIheG2+IPO
+        aDAGjCc1AIpHQk21xaoVEmO1DBGHQ+faYuc=
+X-Google-Smtp-Source: AGRyM1tNXxJJfexei0sXfG1FBir9ecawTKSUmr8oBmd7eGPMiF6IiFNkyG65ifGlltihpNEjyyTucthrEgJjoHc=
+X-Received: from saravanak.san.corp.google.com ([2620:15c:2d:3:f771:727:f95a:5335])
+ (user=saravanak job=sendgmr) by 2002:a17:90a:6b45:b0:1e3:3cfa:3104 with SMTP
+ id x5-20020a17090a6b4500b001e33cfa3104mr1862493pjl.113.1658885633796; Tue, 26
+ Jul 2022 18:33:53 -0700 (PDT)
+Date:   Tue, 26 Jul 2022 18:33:48 -0700
+Message-Id: <20220727013349.3056826-1-saravanak@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.1.359.gd136c6c3e2-goog
+Subject: [PATCH v1] pinctrl: samsung: Finish initializing the gpios before
+ registering them
+From:   Saravana Kannan <saravanak@google.com>
+To:     Tomasz Figa <tomasz.figa@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        Alim Akhtar <alim.akhtar@samsung.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Cc:     Saravana Kannan <saravanak@google.com>, kernel-team@android.com,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-After commit cb1f65c1e142 ("PM: s2idle: ACPI: Fix wakeup interrupts
-handling"), there's a system that always gets woken up by spurious PME
-event when one of the root port is put to D3cold.
+As soon as a gpio is registered, it should be usable by a consumer. So,
+do all the initialization before registering the gpios. Without this
+change, a consumer can request a GPIO IRQ and have the gpio to IRQ
+mapping fail.
 
-'/sys/power/pm_wakeup_irq' shows 122, which is an IRQ shared between
-PME, AER and DPC:
-pcieport 0000:00:01.0: PME: Signaling with IRQ 122
-pcieport 0000:00:01.0: AER: enabled with IRQ 122
-pcieport 0000:00:01.0: DPC: enabled with IRQ 122
-
-Disabling services one by one and the issue goes away when
-PCIE_PORT_SERVICE_AER is not enabled. Following the lead, more info can
-be found on resume when pci_aer_clear_status() is removed from
-pci_restore_state() to print out what happened:
-pcieport 0000:00:01.0: AER: Corrected error received: 0000:00:01.0
-pcieport 0000:00:01.0: PCIe Bus Error: severity=Corrected, type=Physical Layer, (Receiver ID)
-pcieport 0000:00:01.0:   device [8086:4c01] error status/mask=00000001/00002000
-pcieport 0000:00:01.0:    [ 0] RxErr
-
-Since the corrected AER error happens at physical layer when the root
-port is transitioning to D3cold, making system be able to suspend is
-more important than reporting issues like this.
-
-So introduce a new flag to indicate when IRQ is shared with PME,
-therefore AER and DPC can be suspended to prevent any spurious wakeup.
-HP already has its own suspend routine so it doesn't need to use this
-flag.
-
-Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=216295
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Signed-off-by: Saravana Kannan <saravanak@google.com>
 ---
- drivers/pci/pcie/portdrv.h      | 11 ++++++-----
- drivers/pci/pcie/portdrv_core.c | 21 +++++++++++++++------
- 2 files changed, 21 insertions(+), 11 deletions(-)
+ drivers/pinctrl/samsung/pinctrl-samsung.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/pci/pcie/portdrv.h b/drivers/pci/pcie/portdrv.h
-index 0ef4bf5f811d9..97a9d15638cc8 100644
---- a/drivers/pci/pcie/portdrv.h
-+++ b/drivers/pci/pcie/portdrv.h
-@@ -57,11 +57,12 @@ static inline int pcie_dpc_init(void) { return 0; }
- #define PCIE_ANY_PORT			(~0)
+diff --git a/drivers/pinctrl/samsung/pinctrl-samsung.c b/drivers/pinctrl/samsung/pinctrl-samsung.c
+index 26d309d2516d..a302b38a63a8 100644
+--- a/drivers/pinctrl/samsung/pinctrl-samsung.c
++++ b/drivers/pinctrl/samsung/pinctrl-samsung.c
+@@ -1168,15 +1168,15 @@ static int samsung_pinctrl_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		goto err_put_banks;
  
- struct pcie_device {
--	int		irq;	    /* Service IRQ/MSI/MSI-X Vector */
--	struct pci_dev *port;	    /* Root/Upstream/Downstream Port */
--	u32		service;    /* Port service this device represents */
--	void		*priv_data; /* Service Private Data */
--	struct device	device;     /* Generic Device Interface */
-+	int		irq;	        /* Service IRQ/MSI/MSI-X Vector */
-+	struct pci_dev *port;	        /* Root/Upstream/Downstream Port */
-+	u32		service;        /* Port service this device represents */
-+	bool		shared_pme_irq; /* Service IRQ shared with PME */
-+	void		*priv_data;     /* Service Private Data */
-+	struct device	device;         /* Generic Device Interface */
- };
- #define to_pcie_device(d) container_of(d, struct pcie_device, device)
+-	ret = samsung_gpiolib_register(pdev, drvdata);
+-	if (ret)
+-		goto err_unregister;
+-
+ 	if (ctrl->eint_gpio_init)
+ 		ctrl->eint_gpio_init(drvdata);
+ 	if (ctrl->eint_wkup_init)
+ 		ctrl->eint_wkup_init(drvdata);
  
-diff --git a/drivers/pci/pcie/portdrv_core.c b/drivers/pci/pcie/portdrv_core.c
-index 604feeb84ee40..ddc6854cdde2d 100644
---- a/drivers/pci/pcie/portdrv_core.c
-+++ b/drivers/pci/pcie/portdrv_core.c
-@@ -274,7 +274,7 @@ static int get_port_device_capability(struct pci_dev *dev)
-  * @service: Type of service to associate with the service device
-  * @irq: Interrupt vector to associate with the service device
-  */
--static int pcie_device_init(struct pci_dev *pdev, int service, int irq)
-+static struct pcie_device *pcie_device_init(struct pci_dev *pdev, int service, int irq)
- {
- 	int retval;
- 	struct pcie_device *pcie;
-@@ -282,7 +282,7 @@ static int pcie_device_init(struct pci_dev *pdev, int service, int irq)
- 
- 	pcie = kzalloc(sizeof(*pcie), GFP_KERNEL);
- 	if (!pcie)
--		return -ENOMEM;
-+		return ERR_PTR(-ENOMEM);
- 	pcie->port = pdev;
- 	pcie->irq = irq;
- 	pcie->service = service;
-@@ -300,12 +300,12 @@ static int pcie_device_init(struct pci_dev *pdev, int service, int irq)
- 	retval = device_register(device);
- 	if (retval) {
- 		put_device(device);
--		return retval;
-+		return ERR_PTR(retval);
- 	}
- 
- 	pm_runtime_no_callbacks(device);
- 
--	return 0;
-+	return pcie;
- }
- 
- /**
-@@ -350,10 +350,19 @@ int pcie_port_device_register(struct pci_dev *dev)
- 	nr_service = 0;
- 	for (i = 0; i < PCIE_PORT_DEVICE_MAXSERVICES; i++) {
- 		int service = 1 << i;
-+		struct pcie_device *pcie;
- 		if (!(capabilities & service))
- 			continue;
--		if (!pcie_device_init(dev, service, irqs[i]))
--			nr_service++;
++	ret = samsung_gpiolib_register(pdev, drvdata);
++	if (ret)
++		goto err_unregister;
 +
-+		pcie = pcie_device_init(dev, service, irqs[i]);
-+		if (IS_ERR(pcie))
-+			continue;
-+
-+		nr_service++;
-+
-+		if (i != PCIE_PORT_SERVICE_PME_SHIFT &&
-+		    irqs[i] == irqs[PCIE_PORT_SERVICE_PME_SHIFT])
-+			pcie->shared_pme_irq = true;
- 	}
- 	if (!nr_service)
- 		goto error_cleanup_irqs;
+ 	platform_set_drvdata(pdev, drvdata);
+ 
+ 	return 0;
 -- 
-2.36.1
+2.37.1.359.gd136c6c3e2-goog
 
