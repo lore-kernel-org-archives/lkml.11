@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67E16C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:28:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00B6EC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:28:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237128AbiG0Q2W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:28:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34506 "EHLO
+        id S236199AbiG0Q2Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:28:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237231AbiG0Q15 (ORCPT
+        with ESMTP id S237265AbiG0Q16 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:27:57 -0400
+        Wed, 27 Jul 2022 12:27:58 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 111AB4D145;
-        Wed, 27 Jul 2022 09:24:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8A0D4D81C;
+        Wed, 27 Jul 2022 09:24:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EB16A619F7;
-        Wed, 27 Jul 2022 16:24:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0C2DC433D6;
-        Wed, 27 Jul 2022 16:24:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8FA61619CB;
+        Wed, 27 Jul 2022 16:24:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98B79C433D6;
+        Wed, 27 Jul 2022 16:24:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939057;
-        bh=QUo2IJr0mlTZJeBHDdOH7mrxnr+cRy2Gv24Qedh3/N4=;
+        s=korg; t=1658939066;
+        bh=jtUa7AvO9TaJ2mHrYY7bw60/L2QAFRLBddrWZxLjEp4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EW/SF7dcASX9+hfj/pTOZHTDBZNoN4vxwzwZ4smAEqhrhmnbe2cbNvvFZ99ceM67X
-         Gz/LOWmoyTyChj6CQf3ysES5+smsRCOhhrOhcfTpWNU2raRDVmPK+M4E5xT5+L6Jgt
-         x+3L+R4hk5RdzoTnkEWhaW7RCw7RBHrDIPOKvyjI=
+        b=ctws3NBzme6lOVaM1ewITO9emwVEzzQcI39CxpQZ8DvFqkgwOU0Yw78mP3hBsybcs
+         weZ2O9mhA5EGuQuoc5IERIoIdcV+sZUSQtMKQHvX8xCjm9yE7iAZ8sG57hyeCRCjWD
+         ToLjZhhi0qN++bCGD4LdIIjCRLwCaucEq334zAzA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jeffrey Hugo <quic_jhugo@quicinc.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        Carl Vanderlip <quic_carlv@quicinc.com>
-Subject: [PATCH 4.14 35/37] PCI: hv: Fix hv_arch_irq_unmask() for multi-MSI
-Date:   Wed, 27 Jul 2022 18:11:01 +0200
-Message-Id: <20220727161002.266508593@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 13/37] tcp: Fix a data-race around sysctl_tcp_notsent_lowat.
+Date:   Wed, 27 Jul 2022 18:10:39 +0200
+Message-Id: <20220727161001.397057599@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161000.822869853@linuxfoundation.org>
 References: <20220727161000.822869853@linuxfoundation.org>
@@ -50,77 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeffrey Hugo <quic_jhugo@quicinc.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit 455880dfe292a2bdd3b4ad6a107299fce610e64b upstream.
+[ Upstream commit 55be873695ed8912eb77ff46d1d1cadf028bd0f3 ]
 
-In the multi-MSI case, hv_arch_irq_unmask() will only operate on the first
-MSI of the N allocated.  This is because only the first msi_desc is cached
-and it is shared by all the MSIs of the multi-MSI block.  This means that
-hv_arch_irq_unmask() gets the correct address, but the wrong data (always
-0).
+While reading sysctl_tcp_notsent_lowat, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its reader.
 
-This can break MSIs.
-
-Lets assume MSI0 is vector 34 on CPU0, and MSI1 is vector 33 on CPU0.
-
-hv_arch_irq_unmask() is called on MSI0.  It uses a hypercall to configure
-the MSI address and data (0) to vector 34 of CPU0.  This is correct.  Then
-hv_arch_irq_unmask is called on MSI1.  It uses another hypercall to
-configure the MSI address and data (0) to vector 33 of CPU0.  This is
-wrong, and results in both MSI0 and MSI1 being routed to vector 33.  Linux
-will observe extra instances of MSI1 and no instances of MSI0 despite the
-endpoint device behaving correctly.
-
-For the multi-MSI case, we need unique address and data info for each MSI,
-but the cached msi_desc does not provide that.  However, that information
-can be gotten from the int_desc cached in the chip_data by
-compose_msi_msg().  Fix the multi-MSI case to use that cached information
-instead.  Since hv_set_msi_entry_from_desc() is no longer applicable,
-remove it.
-
-4.14 backport - moved to host/pci-hyperv.c. hv_set_msi_entry_from_desc
-doesn't exist to be removed. int_entry replaces msi_entry for location
-int_desc is written to.
-
-Signed-off-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
-Link: https://lore.kernel.org/r/1651068453-29588-1-git-send-email-quic_jhugo@quicinc.com
-Signed-off-by: Wei Liu <wei.liu@kernel.org>
-Signed-off-by: Carl Vanderlip <quic_carlv@quicinc.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: c9bee3b7fdec ("tcp: TCP_NOTSENT_LOWAT socket option")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/host/pci-hyperv.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ include/net/tcp.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/pci/host/pci-hyperv.c
-+++ b/drivers/pci/host/pci-hyperv.c
-@@ -938,6 +938,7 @@ static void hv_irq_unmask(struct irq_dat
- 	struct msi_desc *msi_desc = irq_data_get_msi_desc(data);
- 	struct irq_cfg *cfg = irqd_cfg(data);
- 	struct retarget_msi_interrupt *params;
-+	struct tran_int_desc *int_desc;
- 	struct hv_pcibus_device *hbus;
- 	struct cpumask *dest;
- 	struct pci_bus *pbus;
-@@ -952,6 +953,7 @@ static void hv_irq_unmask(struct irq_dat
- 	pdev = msi_desc_to_pci_dev(msi_desc);
- 	pbus = pdev->bus;
- 	hbus = container_of(pbus->sysdata, struct hv_pcibus_device, sysdata);
-+	int_desc = data->chip_data;
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index 181db7dab176..5e719f9d60fd 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -1882,7 +1882,7 @@ void __tcp_v4_send_check(struct sk_buff *skb, __be32 saddr, __be32 daddr);
+ static inline u32 tcp_notsent_lowat(const struct tcp_sock *tp)
+ {
+ 	struct net *net = sock_net((struct sock *)tp);
+-	return tp->notsent_lowat ?: net->ipv4.sysctl_tcp_notsent_lowat;
++	return tp->notsent_lowat ?: READ_ONCE(net->ipv4.sysctl_tcp_notsent_lowat);
+ }
  
- 	spin_lock_irqsave(&hbus->retarget_msi_interrupt_lock, flags);
- 
-@@ -959,8 +961,8 @@ static void hv_irq_unmask(struct irq_dat
- 	memset(params, 0, sizeof(*params));
- 	params->partition_id = HV_PARTITION_ID_SELF;
- 	params->int_entry.source = 1; /* MSI(-X) */
--	params->int_entry.address = msi_desc->msg.address_lo;
--	params->int_entry.data = msi_desc->msg.data;
-+	params->int_entry.address = int_desc->address & 0xffffffff;
-+	params->int_entry.data = int_desc->data;
- 	params->device_id = (hbus->hdev->dev_instance.b[5] << 24) |
- 			   (hbus->hdev->dev_instance.b[4] << 16) |
- 			   (hbus->hdev->dev_instance.b[7] << 8) |
+ static inline bool tcp_stream_memory_free(const struct sock *sk)
+-- 
+2.35.1
+
 
 
