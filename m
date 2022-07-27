@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 134F1C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:43:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8460C19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:43:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242952AbiG0RnH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:43:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40914 "EHLO
+        id S242790AbiG0RnK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:43:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238233AbiG0Rmo (ORCPT
+        with ESMTP id S242786AbiG0Rmp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:42:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6349D62A45;
+        Wed, 27 Jul 2022 13:42:45 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B74089A99;
         Wed, 27 Jul 2022 09:52:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EC70C61748;
-        Wed, 27 Jul 2022 16:52:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0727EC433D6;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 08B6EB821D5;
         Wed, 27 Jul 2022 16:52:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BBCDC433C1;
+        Wed, 27 Jul 2022 16:52:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940728;
-        bh=nE0ZGl0fvIwXNuurVCSkbU/ykXts7IWIG215q8LiHyc=;
+        s=korg; t=1658940725;
+        bh=S8MbOHpDXGviGRD/I1+/w6TY0TLAHiwFdOgvISSGvt0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zByXmEdf08SAp6mADNcxqDedl5VDrvAZCwqe+EgiXppWI3du+Wrk1amIHIRHgHB6J
-         fgnSoRjubS086bbE6PCiNVeNN5X4Ptni1vDqOl2m0gLYc/dw7rVxMEr2xo/hat+fiu
-         RSyFrdKB/DuzHUKM1kPBkiYx2Th+Ym199CHKv4+o=
+        b=OK2qT3q3LnEzligtTI7AKM8MVYofjTVAunNOgKAibBB3bydtnvxapwL6+GY0FOLbJ
+         IUl5uIgFt910l+DHe2BNciYlEapAmmkiiWQEYXJTdBVbR9lKa8DV72R/O1dop8qzG8
+         K9qNA8L6MbcPF0yMuYj7JTKSROVza6TrVYBhCq5Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 126/158] tcp: Fix data-races around sysctl_tcp_max_reordering.
-Date:   Wed, 27 Jul 2022 18:13:10 +0200
-Message-Id: <20220727161026.462814413@linuxfoundation.org>
+Subject: [PATCH 5.18 099/158] net: dsa: sja1105: silent spi_device_id warnings
+Date:   Wed, 27 Jul 2022 18:12:43 +0200
+Message-Id: <20220727161025.419040793@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -49,43 +51,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Oleksij Rempel <o.rempel@pengutronix.de>
 
-[ Upstream commit a11e5b3e7a59fde1a90b0eaeaa82320495cf8cae ]
+[ Upstream commit 855fe49984a8a3899f07ae1d149d46cd8d4acb52 ]
 
-While reading sysctl_tcp_max_reordering, it can be changed
-concurrently.  Thus, we need to add READ_ONCE() to its readers.
+Add spi_device_id entries to silent following warnings:
+ SPI driver sja1105 has no spi_device_id for nxp,sja1105e
+ SPI driver sja1105 has no spi_device_id for nxp,sja1105t
+ SPI driver sja1105 has no spi_device_id for nxp,sja1105p
+ SPI driver sja1105 has no spi_device_id for nxp,sja1105q
+ SPI driver sja1105 has no spi_device_id for nxp,sja1105r
+ SPI driver sja1105 has no spi_device_id for nxp,sja1105s
+ SPI driver sja1105 has no spi_device_id for nxp,sja1110a
+ SPI driver sja1105 has no spi_device_id for nxp,sja1110b
+ SPI driver sja1105 has no spi_device_id for nxp,sja1110c
+ SPI driver sja1105 has no spi_device_id for nxp,sja1110d
 
-Fixes: dca145ffaa8d ("tcp: allow for bigger reordering level")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 5fa6863ba692 ("spi: Check we have a spi_device_id for each DT compatible")
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/20220717135831.2492844-1-o.rempel@pengutronix.de
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp_input.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/dsa/sja1105/sja1105_main.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index f200dd654e05..19b186a4a8e8 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -1051,7 +1051,7 @@ static void tcp_check_sack_reordering(struct sock *sk, const u32 low_seq,
- 			 tp->undo_marker ? tp->undo_retrans : 0);
- #endif
- 		tp->reordering = min_t(u32, (metric + mss - 1) / mss,
--				       sock_net(sk)->ipv4.sysctl_tcp_max_reordering);
-+				       READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_max_reordering));
- 	}
+diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+index b33841c6507a..7734c6b1baca 100644
+--- a/drivers/net/dsa/sja1105/sja1105_main.c
++++ b/drivers/net/dsa/sja1105/sja1105_main.c
+@@ -3383,12 +3383,28 @@ static const struct of_device_id sja1105_dt_ids[] = {
+ };
+ MODULE_DEVICE_TABLE(of, sja1105_dt_ids);
  
- 	/* This exciting event is worth to be remembered. 8) */
-@@ -2030,7 +2030,7 @@ static void tcp_check_reno_reordering(struct sock *sk, const int addend)
- 		return;
- 
- 	tp->reordering = min_t(u32, tp->packets_out + addend,
--			       sock_net(sk)->ipv4.sysctl_tcp_max_reordering);
-+			       READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_max_reordering));
- 	tp->reord_seen++;
- 	NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPRENOREORDER);
- }
++static const struct spi_device_id sja1105_spi_ids[] = {
++	{ "sja1105e" },
++	{ "sja1105t" },
++	{ "sja1105p" },
++	{ "sja1105q" },
++	{ "sja1105r" },
++	{ "sja1105s" },
++	{ "sja1110a" },
++	{ "sja1110b" },
++	{ "sja1110c" },
++	{ "sja1110d" },
++	{ },
++};
++MODULE_DEVICE_TABLE(spi, sja1105_spi_ids);
++
+ static struct spi_driver sja1105_driver = {
+ 	.driver = {
+ 		.name  = "sja1105",
+ 		.owner = THIS_MODULE,
+ 		.of_match_table = of_match_ptr(sja1105_dt_ids),
+ 	},
++	.id_table = sja1105_spi_ids,
+ 	.probe  = sja1105_probe,
+ 	.remove = sja1105_remove,
+ 	.shutdown = sja1105_shutdown,
 -- 
 2.35.1
 
