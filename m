@@ -2,78 +2,215 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67047C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 06:49:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AF72C19F21
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 06:49:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229798AbiG0GtR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 02:49:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55480 "EHLO
+        id S230468AbiG0Gtx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 02:49:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230128AbiG0Gs5 (ORCPT
+        with ESMTP id S229831AbiG0Gt0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 02:48:57 -0400
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BB47474CE
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 23:46:21 -0700 (PDT)
-Received: by mail-pf1-x42a.google.com with SMTP id c3so15278540pfb.13
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 23:46:20 -0700 (PDT)
+        Wed, 27 Jul 2022 02:49:26 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A86147BB3;
+        Tue, 26 Jul 2022 23:46:37 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id w7so15338922ply.12;
+        Tue, 26 Jul 2022 23:46:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=huLseZ/prynEXHgGXef4uGpZTHKOZwRXvpDZJspK1iI=;
-        b=Wkv1NDwySNVXaaMCJM8rThXVUO7h97J4LISxt0YP1ga5DneYmzIrXSHZCN03ZAsrk7
-         GYOeGZsRaO37owN05VzSPaCoogvUExe++Ny0qbj4xlTQRSwHK5RCIyB2UA59rKGtoYar
-         4TyEixdo/LvxO51EfRCvFPZI7d0rqI4XCZAadEMjtoyH3v2unhZhKb3m451ZXvvjwAjL
-         Oij9jkdppoWmo3+67inBL4U+dCgYzpS7Muq2ijeHo50sJNkSukeu2X1Lf2vkTC+PdxTd
-         4MmFn2wAkotyZMYJIkeflw47i1TgpMQn17Z8nIEc8oFqAuXhh3lnbMgBM6irtPLveIst
-         gtKQ==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Y/y/NGsYBEyTIfNWZk+cf407tuuEI0WUq+xtTfiUgps=;
+        b=iFbW8yvgdiL9TcUyZFCEDTsa17t5tOrJKO9WdNS7PYhQPeG2K4q5ZlzrUJsdDGOIyZ
+         FYLH9p5Q9u4yXunFtHGJc89/5PyGHf+qkUYTowBvHDT9fzlojgUG6Yn2civJBbVAJOV8
+         MfybykCPqP06OGGO5A4b+q0oLh9LdscvPrLHBfMxPX0xdzc6AUyLk3wnLgWz2GN1wRv9
+         B34MgMEHnJ0OXsGcRS9DipBN6pvA2exLlFo4mZBTTeSZToc0+a9S8I5kbqGO2UekggHg
+         0GKADxM8/KAm1Wg9tFoT+dmRl4N628e32HoXQCLBROmrNpZ4vZjhGHGNXTV1Y/B/obOR
+         TsfA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=huLseZ/prynEXHgGXef4uGpZTHKOZwRXvpDZJspK1iI=;
-        b=xF+IvsmBWP5eVX8vYqrKN/dEqMSiDRd5RXFBfErQOPOzjXsy/IaJGKOm3ePqxgSl70
-         V7HGOntcXHduyW2D6UzER0npNtV9PIszbLWUv2vgyU1ZQ4zOJ2MZB6vd+9KlOi3ae0du
-         NyBbRqTE+Ys1Jd5WCACo+Ab1q653fniZ6od/1rpPFmMiwcLDf7Vq74giQgQE1RFS0ctj
-         W5RooP7HYIb3FdWBkxWbnILZMEzjQd+hsB+Q0hP26bduO1KwTYVUXQtXOTOzCan/v2uL
-         1H0gZdd401MvdkB3rwRYuKEZ9k+LNyCPeWHTibAQb7x1i1lzPcONOGgJ7wN4+6T6Jw+4
-         r6eg==
-X-Gm-Message-State: AJIora8BzJkIm8hen6Ri9WwxMPIvXrKa21YL6KT+B7Z0afVQaQJP/sW+
-        /iw5S2bR8AxYNE7jgjgXUjbs5Q==
-X-Google-Smtp-Source: AGRyM1t0ZXgabQUbqCBqrBNdqF+VPD+FkdEKmNlNWyG3tPaaDA0dHgx46oalXTjIa1UroLsJ3o1VNw==
-X-Received: by 2002:a63:81c1:0:b0:412:b0dd:d95a with SMTP id t184-20020a6381c1000000b00412b0ddd95amr17115401pgd.164.1658904379146;
-        Tue, 26 Jul 2022 23:46:19 -0700 (PDT)
-Received: from localhost ([139.177.225.239])
-        by smtp.gmail.com with ESMTPSA id 134-20020a62188c000000b0052ac038672esm12848359pfy.33.2022.07.26.23.46.18
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Y/y/NGsYBEyTIfNWZk+cf407tuuEI0WUq+xtTfiUgps=;
+        b=fXtrZTieZL+sH1RlG1hunm3mAZE/nRH8uS5VYfEgsa17UtYUKx7Ud4q+OjISb52mid
+         etDU+gk+XdGNAONMs8QwBnwbITozRHbjXsF+HtGKo7jisW0iY177Q2+ja2HW16CoqFhq
+         Q/C8a80Gcfn68lx2VKmHFmAvm2t+Qts1ZQJVxWVBLZ7x7Fe9HZ6XEv6zE2UuTMB2ftZ+
+         KOkNj1Rvt3aKUp/e6Yf2kq42n2oqCPqri3IZfdy5OVWxIsDuD8INPROdIz7x3oDJyIHj
+         BMR7PmE216knP9TZZsY5924qXleMmx687p4f1afHrgB4YtL4gn6MKYJ2iCp4Q7y3+L1+
+         GKkA==
+X-Gm-Message-State: AJIora8GO1tHALwnrVtlcrX18AGk/88kNmaBCHHBHtvdkA2mQyRUiJn0
+        CbfOjbywCI+IfYpLEjRfbtQ=
+X-Google-Smtp-Source: AGRyM1vLhD8q/yparTYLclk5jUsBDeJwr6U//vyCS7QRBOpPejVocjbqDmk/0BmFMC09bvo3DcA5Ng==
+X-Received: by 2002:a17:90b:4b81:b0:1ef:cd2c:bf2e with SMTP id lr1-20020a17090b4b8100b001efcd2cbf2emr2842594pjb.137.1658904395569;
+        Tue, 26 Jul 2022 23:46:35 -0700 (PDT)
+Received: from potin-quanta.. (125-228-123-29.hinet-ip.hinet.net. [125.228.123.29])
+        by smtp.gmail.com with ESMTPSA id f15-20020a170902ce8f00b0016bf5557690sm12964882plg.4.2022.07.26.23.46.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Jul 2022 23:46:18 -0700 (PDT)
-Date:   Wed, 27 Jul 2022 14:46:14 +0800
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     Miaohe Lin <linmiaohe@huawei.com>
-Cc:     akpm@linux-foundation.org, mike.kravetz@oracle.com,
-        linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 5/5] hugetlbfs: fix inaccurate comment in
- hugetlbfs_statfs()
-Message-ID: <YuDfNvaNsB0pvvww@FVFYT0MHHV2J.usts.net>
-References: <20220726142918.51693-1-linmiaohe@huawei.com>
- <20220726142918.51693-6-linmiaohe@huawei.com>
+        Tue, 26 Jul 2022 23:46:34 -0700 (PDT)
+From:   Potin Lai <potin.lai.pt@gmail.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Cc:     Patrick Williams <patrick@stwcx.xyz>,
+        Potin Lai <potin.lai@quantatw.com>, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Potin Lai <potin.lai.pt@gmail.com>
+Subject: [PATCH v2 1/1] iio: humidity: hdc100x: add manufacturer and device ID cehck
+Date:   Wed, 27 Jul 2022 14:44:15 +0800
+Message-Id: <20220727064415.940690-1-potin.lai.pt@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220726142918.51693-6-linmiaohe@huawei.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 26, 2022 at 10:29:18PM +0800, Miaohe Lin wrote:
-> In some cases, e.g. when size option is not specified, f_blocks, f_bavail
-> and f_bfree will be set to -1 instead of 0. Likewise, when nr_inodes isn't
-> specified, f_files and f_ffree will be set to -1 too. Update the comment
-> to make this clear.
-> 
-> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+Add manufacturer and device ID checking during probe, and skip the
+checking if chip model not supported.
 
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+Supported:
+- HDC1000
+- HDC1010
+- HDC1050
+- HDC1080
 
-Thanks.
+Not supported:
+- HDC1008
+
+Signed-off-by: Potin Lai <potin.lai.pt@gmail.com>
+---
+LINK: [v1] https://lore.kernel.org/all/20220722172035.44977-1-potin.lai.pt@gmail.com/
+                                                           
+changes v1 --> v2:                       
+- fix typo in commit message           
+- change to use probe_new
+- use device_get_match_data instead of i2c_of_match_device
+---
+ drivers/iio/humidity/hdc100x.c | 78 ++++++++++++++++++++++++++++------
+ 1 file changed, 64 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/iio/humidity/hdc100x.c b/drivers/iio/humidity/hdc100x.c
+index 9e0fce917ce4c..8c69b4a610c4f 100644
+--- a/drivers/iio/humidity/hdc100x.c
++++ b/drivers/iio/humidity/hdc100x.c
+@@ -34,6 +34,23 @@
+ #define HDC100X_REG_CONFIG_ACQ_MODE		BIT(12)
+ #define HDC100X_REG_CONFIG_HEATER_EN		BIT(13)
+ 
++#define HDC100X_REG_MFR_ID	0xFE
++#define HDC100X_REG_DEV_ID	0xFF
++
++#define HDC100X_MFR_ID	0x5449
++
++struct hdc100x_chip_data {
++	bool support_mfr_check;
++};
++
++static const struct hdc100x_chip_data hdc100x_chip_data = {
++	.support_mfr_check	= true,
++};
++
++static const struct hdc100x_chip_data hdc1008_chip_data = {
++	.support_mfr_check	= false,
++};
++
+ struct hdc100x_data {
+ 	struct i2c_client *client;
+ 	struct mutex lock;
+@@ -351,8 +368,38 @@ static const struct iio_info hdc100x_info = {
+ 	.attrs = &hdc100x_attribute_group,
+ };
+ 
+-static int hdc100x_probe(struct i2c_client *client,
+-			 const struct i2c_device_id *id)
++static int hdc100x_read_mfr_id(struct i2c_client *client)
++{
++	return i2c_smbus_read_word_swapped(client, HDC100X_REG_MFR_ID);
++}
++
++static int hdc100x_read_dev_id(struct i2c_client *client)
++{
++	return i2c_smbus_read_word_swapped(client, HDC100X_REG_DEV_ID);
++}
++
++static bool is_valid_hdc100x(struct i2c_client *client)
++{
++	const struct of_device_id *match;
++	struct hdc100x_chip_data *data;
++	int mfr_id, dev_id;
++
++	data = device_get_match_data(&client->dev);
++	if (data) {
++		if (!data->support_mfr_check)
++			return true;
++	}
++
++	mfr_id = hdc100x_read_mfr_id(client);
++	dev_id = hdc100x_read_dev_id(client);
++	if (mfr_id == HDC100X_MFR_ID &&
++	   (dev_id == 0x1000 || dev_id == 0x1050))
++		return true;
++
++	return false;
++}
++
++static int hdc100x_probe(struct i2c_client *client)
+ {
+ 	struct iio_dev *indio_dev;
+ 	struct hdc100x_data *data;
+@@ -362,6 +409,9 @@ static int hdc100x_probe(struct i2c_client *client,
+ 				     I2C_FUNC_SMBUS_BYTE | I2C_FUNC_I2C))
+ 		return -EOPNOTSUPP;
+ 
++	if (!is_valid_hdc100x(client))
++		return -EOPNOTSUPP;
++
+ 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+ 	if (!indio_dev)
+ 		return -ENOMEM;
+@@ -397,22 +447,22 @@ static int hdc100x_probe(struct i2c_client *client,
+ }
+ 
+ static const struct i2c_device_id hdc100x_id[] = {
+-	{ "hdc100x", 0 },
+-	{ "hdc1000", 0 },
+-	{ "hdc1008", 0 },
+-	{ "hdc1010", 0 },
+-	{ "hdc1050", 0 },
+-	{ "hdc1080", 0 },
++	{ "hdc100X", (kernel_ulong_t)&hdc100x_chip_data },
++	{ "hdc1000", (kernel_ulong_t)&hdc100x_chip_data },
++	{ "hdc1008", (kernel_ulong_t)&hdc1008_chip_data },
++	{ "hdc1010", (kernel_ulong_t)&hdc100x_chip_data },
++	{ "hdc1050", (kernel_ulong_t)&hdc100x_chip_data },
++	{ "hdc1080", (kernel_ulong_t)&hdc100x_chip_data },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(i2c, hdc100x_id);
+ 
+ static const struct of_device_id hdc100x_dt_ids[] = {
+-	{ .compatible = "ti,hdc1000" },
+-	{ .compatible = "ti,hdc1008" },
+-	{ .compatible = "ti,hdc1010" },
+-	{ .compatible = "ti,hdc1050" },
+-	{ .compatible = "ti,hdc1080" },
++	{ .compatible = "ti,hdc1000", .data = &hdc100x_chip_data },
++	{ .compatible = "ti,hdc1008", .data = &hdc1008_chip_data },
++	{ .compatible = "ti,hdc1010", .data = &hdc100x_chip_data },
++	{ .compatible = "ti,hdc1050", .data = &hdc100x_chip_data },
++	{ .compatible = "ti,hdc1080", .data = &hdc100x_chip_data },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, hdc100x_dt_ids);
+@@ -422,7 +472,7 @@ static struct i2c_driver hdc100x_driver = {
+ 		.name	= "hdc100x",
+ 		.of_match_table = hdc100x_dt_ids,
+ 	},
+-	.probe = hdc100x_probe,
++	.probe_new = hdc100x_probe,
+ 	.id_table = hdc100x_id,
+ };
+ module_i2c_driver(hdc100x_driver);
+-- 
+2.31.1
+
