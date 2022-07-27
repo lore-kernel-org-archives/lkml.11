@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 065C8C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:25:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA3A7C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:25:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242050AbiG0RZh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:25:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44492 "EHLO
+        id S240356AbiG0RZm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:25:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242127AbiG0RYa (ORCPT
+        with ESMTP id S242208AbiG0RYk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:24:30 -0400
+        Wed, 27 Jul 2022 13:24:40 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9053E7B783;
-        Wed, 27 Jul 2022 09:46:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFDA67C1A3;
+        Wed, 27 Jul 2022 09:46:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 09BFFB821A6;
+        by ams.source.kernel.org (Postfix) with ESMTPS id C686BB821BE;
+        Wed, 27 Jul 2022 16:46:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24760C433C1;
         Wed, 27 Jul 2022 16:46:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6732FC4314B;
-        Wed, 27 Jul 2022 16:46:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940366;
-        bh=hcMIUtGOhA2zAhTnvG6zDqVyHPDT5753U0ywcU6I810=;
+        s=korg; t=1658940369;
+        bh=shgkTiZDpmlnjyo4+9wTAq+VzpGLrb6OW/DecDopaRE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HJvSCjaqqTkuVx5TxRQgDiun9K1Cdpmjtg53atBJsYoEnUZfYMOdPRhdG0o0Hwa3u
-         +D8elDzREEwIm4uptqU9kMVItP7sMyajxuMNwI0ykKvtHJQnwrTyDC3l6GhS0l1vxM
-         l1v8o8J8MIM7RGsTNDvJ8SHfQqHnUn0mxA1Kp3LM=
+        b=2UVM6bzIW9HP7wtnqrw/XFfmTF91m2ZTlUKlQOJ6GQfHXaNRuUrYc7e3YbTqBDa0h
+         WaJGjcis00Fgsj/BFh4VEuZ+XYaPVJB9vctkxPUhJ9OtioZ2Ilm6T3uQdfdQELAm1V
+         CVOy1ap82MrwlHoeJMWi05r0D05F1FUOTCt3YPEs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jan Beulich <jbeulich@suse.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.15 199/201] x86: drop bogus "cc" clobber from __try_cmpxchg_user_asm()
-Date:   Wed, 27 Jul 2022 18:11:43 +0200
-Message-Id: <20220727161036.039919451@linuxfoundation.org>
+        stable@vger.kernel.org, Harry Wentland <harry.wentland@amd.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.15 200/201] drm/amdgpu: Off by one in dm_dmub_outbox1_low_irq()
+Date:   Wed, 27 Jul 2022 18:11:44 +0200
+Message-Id: <20220727161036.086600544@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -48,36 +49,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Beulich <jbeulich@suse.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit 1df931d95f4dc1c11db1123e85d4e08156e46ef9 upstream.
+commit a35faec3db0e13aac8ea720bc1a3503081dd5a3d upstream.
 
-As noted (and fixed) a couple of times in the past, "=@cc<cond>" outputs
-and clobbering of "cc" don't work well together. The compiler appears to
-mean to reject such, but doesn't - in its upstream form - quite manage
-to yet for "cc". Furthermore two similar macros don't clobber "cc", and
-clobbering "cc" is pointless in asm()-s for x86 anyway - the compiler
-always assumes status flags to be clobbered there.
+The > ARRAY_SIZE() should be >= ARRAY_SIZE() to prevent an out of bounds
+access.
 
-Fixes: 989b5db215a2 ("x86/uaccess: Implement macros for CMPXCHG on user addresses")
-Signed-off-by: Jan Beulich <jbeulich@suse.com>
-Message-Id: <485c0c0b-a3a7-0b7c-5264-7d00c01de032@suse.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Fixes: e27c41d5b068 ("drm/amd/display: Support for DMUB HPD interrupt handling")
+Reviewed-by: Harry Wentland <harry.wentland@amd.com>
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/uaccess.h |    2 +-
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/x86/include/asm/uaccess.h
-+++ b/arch/x86/include/asm/uaccess.h
-@@ -471,7 +471,7 @@ do {									\
- 		       [ptr] "+m" (*_ptr),				\
- 		       [old] "+a" (__old)				\
- 		     : [new] ltype (__new)				\
--		     : "memory", "cc");					\
-+		     : "memory");					\
- 	if (unlikely(__err))						\
- 		goto label;						\
- 	if (unlikely(!success))						\
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -757,7 +757,7 @@ static void dm_dmub_outbox1_low_irq(void
+ 		if (irq_params->irq_src == DC_IRQ_SOURCE_DMCUB_OUTBOX) {
+ 			do {
+ 				dc_stat_get_dmub_notification(adev->dm.dc, &notify);
+-				if (notify.type > ARRAY_SIZE(dm->dmub_thread_offload)) {
++				if (notify.type >= ARRAY_SIZE(dm->dmub_thread_offload)) {
+ 					DRM_ERROR("DM: notify type %d larger than the array size %ld !", notify.type,
+ 					ARRAY_SIZE(dm->dmub_thread_offload));
+ 					continue;
 
 
