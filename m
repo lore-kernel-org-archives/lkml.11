@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42594C19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:41:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02493C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:41:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242753AbiG0Rla (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:41:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39404 "EHLO
+        id S242843AbiG0Rl1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:41:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242687AbiG0Rk4 (ORCPT
+        with ESMTP id S242174AbiG0Rk4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Jul 2022 13:40:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFEE961D98;
-        Wed, 27 Jul 2022 09:51:32 -0700 (PDT)
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAFCE88E31;
+        Wed, 27 Jul 2022 09:51:31 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CE40960D3B;
-        Wed, 27 Jul 2022 16:51:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4514C433D6;
-        Wed, 27 Jul 2022 16:51:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 33470B821C5;
+        Wed, 27 Jul 2022 16:51:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AE0DC433C1;
+        Wed, 27 Jul 2022 16:51:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940687;
-        bh=sSY7dCyFkJhDPqPhL1QYXNCCoC4XKFtB7Dmnqf7/TrE=;
+        s=korg; t=1658940678;
+        bh=laAW4N7hZQuQqUG5fJRWifvSw1PQRaXRy9+COPCqzQY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=spExzINp1Zbt6DUE3nMx8X7pJNEW326ZMW7RUXWbd6SGIcgK0qKDmXwo9u6K8OFmw
-         PBnGkc7cpWqIA6GyQONZSMPvWOzQ6MOyBFOeXZtjG+J/kydMs1zN5+qzp3HwejTwBB
-         kqFO6FvekcDHelseYnYwjI0GS0wmIarUie2cdA+k=
+        b=PmD3zVrDUGL+E7CJmQGdYzg1dtwkxnFPYZ/Ojz4GeYNf4oP5jbu9UThAQw2N5Dyfc
+         4s9ZUGcmx5ybaitb5QHYupcnGUoChCNR645QJuNFVeuwWp8hzVI1AyTwDfE5j0WpB7
+         /cAdz3S+qlBiMALjlQbdUCmKSKZe1NzrldotD9FA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Laurentiu Palcu <laurentiu.palcu@oss.nxp.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 113/158] ipv4: Fix data-races around sysctl_fib_multipath_hash_policy.
-Date:   Wed, 27 Jul 2022 18:12:57 +0200
-Message-Id: <20220727161025.999900903@linuxfoundation.org>
+Subject: [PATCH 5.18 110/158] drm/imx/dcss: Add missing of_node_put() in fail path
+Date:   Wed, 27 Jul 2022 18:12:54 +0200
+Message-Id: <20220727161025.880308594@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -49,48 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Liang He <windhl@126.com>
 
-[ Upstream commit 7998c12a08c97cc26660532c9f90a34bd7d8da5a ]
+[ Upstream commit 02c87df2480ac855d88ee308ce3fa857d9bd55a8 ]
 
-While reading sysctl_fib_multipath_hash_policy, it can be changed
-concurrently.  Thus, we need to add READ_ONCE() to its readers.
+In dcss_dev_create() and dcss_dev_destroy(), we should call of_node_put()
+in fail path or before the dcss's destroy as of_graph_get_port_by_id() has
+increased the refcount.
 
-Fixes: bf4e0a3db97e ("net: ipv4: add support for ECMP hash policy choice")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 9021c317b770 ("drm/imx: Add initial support for DCSS on iMX8MQ")
+Signed-off-by: Liang He <windhl@126.com>
+Reviewed-by: Laurentiu Palcu <laurentiu.palcu@oss.nxp.com>
+Signed-off-by: Laurentiu Palcu <laurentiu.palcu@oss.nxp.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220714081337.374761-1-windhl@126.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c | 2 +-
- net/ipv4/route.c                                      | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/imx/dcss/dcss-dev.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-index 994bd2e14e55..6bcb0f1b0816 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
-@@ -10263,7 +10263,7 @@ static void mlxsw_sp_mp4_hash_init(struct mlxsw_sp *mlxsw_sp,
- 	unsigned long *fields = config->fields;
- 	u32 hash_fields;
+diff --git a/drivers/gpu/drm/imx/dcss/dcss-dev.c b/drivers/gpu/drm/imx/dcss/dcss-dev.c
+index c849533ca83e..3f5750cc2673 100644
+--- a/drivers/gpu/drm/imx/dcss/dcss-dev.c
++++ b/drivers/gpu/drm/imx/dcss/dcss-dev.c
+@@ -207,6 +207,7 @@ struct dcss_dev *dcss_dev_create(struct device *dev, bool hdmi_output)
  
--	switch (net->ipv4.sysctl_fib_multipath_hash_policy) {
-+	switch (READ_ONCE(net->ipv4.sysctl_fib_multipath_hash_policy)) {
- 	case 0:
- 		mlxsw_sp_mp4_hash_outer_addr(config);
- 		break;
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index 8363e575c455..907cb11cbea5 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -2047,7 +2047,7 @@ int fib_multipath_hash(const struct net *net, const struct flowi4 *fl4,
- 	struct flow_keys hash_keys;
- 	u32 mhash = 0;
+ 	ret = dcss_submodules_init(dcss);
+ 	if (ret) {
++		of_node_put(dcss->of_port);
+ 		dev_err(dev, "submodules initialization failed\n");
+ 		goto clks_err;
+ 	}
+@@ -237,6 +238,8 @@ void dcss_dev_destroy(struct dcss_dev *dcss)
+ 		dcss_clocks_disable(dcss);
+ 	}
  
--	switch (net->ipv4.sysctl_fib_multipath_hash_policy) {
-+	switch (READ_ONCE(net->ipv4.sysctl_fib_multipath_hash_policy)) {
- 	case 0:
- 		memset(&hash_keys, 0, sizeof(hash_keys));
- 		hash_keys.control.addr_type = FLOW_DISSECTOR_KEY_IPV4_ADDRS;
++	of_node_put(dcss->of_port);
++
+ 	pm_runtime_disable(dcss->dev);
+ 
+ 	dcss_submodules_stop(dcss);
 -- 
 2.35.1
 
