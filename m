@@ -2,100 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4F98C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 03:17:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C540AC19F21
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 03:18:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240273AbiG0DRB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 23:17:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46998 "EHLO
+        id S240289AbiG0DSC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 23:18:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240334AbiG0DQX (ORCPT
+        with ESMTP id S240237AbiG0DR4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 23:16:23 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B56C03DBC0;
-        Tue, 26 Jul 2022 20:16:22 -0700 (PDT)
-Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26R2phCC029985;
-        Wed, 27 Jul 2022 03:16:04 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=corp-2022-7-12;
- bh=J2vBu1m4zTDwawbCKsSD5AhIF5f7bJkTK1Ll+UnC+HY=;
- b=RUcztjtvY/ykesoOqjVdG4iyE/6+UStvTWw66FgfulNYdS1LOamC5Acow0D2gPIgzmz4
- AL5uLFIgh/111E/lHojNbYCYjKY4FOZr8x3xUNKbVI+OULVoRNlFx0Zruix/pnbA15l0
- tq/2fYhEq5law2ghx6BVmga6aromdWvdPBCSXiQb+A7u6MFwN1mKIxmty86PdZm1UseS
- 5gmr5IrMXr/XoUqWAp9NaFwd+Et2cluzn1HkmxFbInzCDgLslza9UwZUSzzvQHKaFifG
- /5aVQ8f9FlyPCZyrhQuatnLIwyNH8vPkCOFekpBpvVhI8rK2giErvY5Z9XTifj9+o15b 6w== 
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3hg9hsrbrx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 27 Jul 2022 03:16:04 +0000
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.17.1.5/8.17.1.5) with ESMTP id 26R0XEvs034456;
-        Wed, 27 Jul 2022 03:16:03 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 3hh633p3w2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 27 Jul 2022 03:16:02 +0000
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26R3E0gw008228;
-        Wed, 27 Jul 2022 03:16:02 GMT
-Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
-        by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 3hh633p3uc-3;
-        Wed, 27 Jul 2022 03:16:02 +0000
-From:   "Martin K. Petersen" <martin.petersen@oracle.com>
-To:     Adrian Hunter <adrian.hunter@intel.com>,
-        Daniil Lunev <dlunev@chromium.org>,
-        Bart Van Assche <bvanassche@acm.org>
-Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Bean Huo <beanhuo@micron.com>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Avri Altman <avri.altman@wdc.com>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
-        Randy Dunlap <rdunlap@infradead.org>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>
-Subject: Re: [PATCH] scsi: ufs: ufshcd: Read device property for ref clock
-Date:   Tue, 26 Jul 2022 23:15:56 -0400
-Message-Id: <165889172881.804.1367014483116861516.b4-ty@oracle.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220715210230.1.I365d113d275117dee8fd055ce4fc7e6aebd0bce9@changeid>
-References: <20220715210230.1.I365d113d275117dee8fd055ce4fc7e6aebd0bce9@changeid>
+        Tue, 26 Jul 2022 23:17:56 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3457DF95;
+        Tue, 26 Jul 2022 20:17:54 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LszSg5p93zmVB0;
+        Wed, 27 Jul 2022 11:16:03 +0800 (CST)
+Received: from dggpemm500013.china.huawei.com (7.185.36.172) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 27 Jul 2022 11:17:53 +0800
+Received: from ubuntu1804.huawei.com (10.67.175.36) by
+ dggpemm500013.china.huawei.com (7.185.36.172) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 27 Jul 2022 11:17:52 +0800
+From:   Chen Zhongjin <chenzhongjin@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <x86@kernel.org>,
+        <linux-arch@vger.kernel.org>
+CC:     <jpoimboe@kernel.org>, <peterz@infradead.org>,
+        <tglx@linutronix.de>, <mingo@redhat.com>, <bp@alien8.de>,
+        <dave.hansen@linux.intel.com>, <hpa@zytor.com>, <mbenes@suse.cz>,
+        <chenzhongjin@huawei.com>
+Subject: [PATCH] Revert "x86/unwind/orc: Don't skip the first frame for inactive tasks"
+Date:   Wed, 27 Jul 2022 11:15:06 +0800
+Message-ID: <20220727031506.59322-1-chenzhongjin@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-26_07,2022-07-26_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 bulkscore=0 malwarescore=0
- adultscore=0 mlxscore=0 mlxlogscore=999 suspectscore=0 spamscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
- definitions=main-2207270009
-X-Proofpoint-ORIG-GUID: ox54HQOKDaSm-QN1emBiExysxKFBZJ_p
-X-Proofpoint-GUID: ox54HQOKDaSm-QN1emBiExysxKFBZJ_p
+Content-Type: text/plain
+X-Originating-IP: [10.67.175.36]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpemm500013.china.huawei.com (7.185.36.172)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 15 Jul 2022 21:03:53 +1000, Daniil Lunev wrote:
+This reverts commit f1d9a2abff66aa8156fbc1493abed468db63ea48.
 
-> UFS storage devices require bRefClkFreq attribute to be set to operate
-> correctly at high speed mode. The necessary value is determined by what the
-> SoC / board supports. The standard doesn't specify a method to query the
-> value, so the information needs to be fed in separately.
-> 
-> DT information feeds into setting up the clock framework, so platforms
-> using DT can get the UFS reference clock frequency from the clock
-> framework. A special node "ref_clk" from the clock array for the UFS
-> controller node is used as the source for the information.
-> 
-> [...]
+When CONFIG_GCOV_PROFILE_ALL is enabled, show_stack() and related
+functions (e.g. dump_stack) will break for x86 ORC unwinder.
 
-Applied to 5.20/scsi-queue, thanks!
+Call Trace:
+ <TASK>
+ ? dump_stack_lvl+0x83/0xb7
+ ? schedule+0x1/0x190
+ ? dump_stack+0x13/0x1f
+ ? handler_pre0+0x3f/0x53 [kp_unwind]
+ ...
 
-[1/1] scsi: ufs: ufshcd: Read device property for ref clock
-      https://git.kernel.org/mkp/scsi/c/ca452621b829
+show_trace_log_lvl() searches text address on stack to validate
+whether unwind results are reliable. The code:
 
+    for (; stack < stack_info.end; stack++) {
+        ...
+        if (stack == ret_addr_p)
+            reliable = 1;
+        ...
+        if (!reliable)
+            continue;
+        ...
+    }
+
+This requires:
+
+    *stack* <= ret_addr_p
+
+So that the first ret_addr_p can be found when stack++.
+
+In normal cases the frame of show_stack() should be optimized out.
+However if it is not optimized such as CONFIG_GCOV_PROFILE_ALL=y,
+unwind_start() will stop at show_stack(), where:
+
+    state->sp == first_frame == *stack*
+
+And this will causes:
+
+    ret_addr_p = unwind_get_return_address_ptr = state->sp - 1
+    => *stack* > ret_addr_p
+
+Then reliable check will ignore all unwind because first ret_addr_p
+can't be found.
+
+'f1d9a2abff66 ("x86/unwind/orc: Don't skip the first frame for inactive tasks")'
+
+This patch removed the equal condition when state->sp == first_frame
+which makes frame of show_stack() not be skipped. But the reason to
+do that is not established now:
+
+'f2ac57a4c49d ("x86/unwind/orc: Fix inactive tasks with stack pointer in %sp on GCC 10 compiled kernels")'
+
+    state->sp = first_frame + sizeof(*frame),
+
+state->sp and first_frame can't be equal for inactive stack any more.
+
+Regard this equal condition doesn't involve other cases now,
+revert it to fix above problem.
+
+After revert, stack can be printed right:
+
+Call Trace:
+ <TASK>
+ dump_stack_lvl+0x83/0xb7
+ ? schedule+0x1/0x190
+ dump_stack+0x13/0x1f
+ handler_pre0+0x3f/0x53 [kp_unwind]
+ ...
+
+Fixes: f1d9a2abff66 ("x86/unwind/orc: Don't skip the first frame for inactive tasks")
+Signed-off-by: Chen Zhongjin <chenzhongjin@huawei.com>
+---
+ arch/x86/kernel/unwind_orc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/x86/kernel/unwind_orc.c b/arch/x86/kernel/unwind_orc.c
+index 38185aedf7d1..514dc9ef99fe 100644
+--- a/arch/x86/kernel/unwind_orc.c
++++ b/arch/x86/kernel/unwind_orc.c
+@@ -708,7 +708,7 @@ void __unwind_start(struct unwind_state *state, struct task_struct *task,
+ 	/* Otherwise, skip ahead to the user-specified starting frame: */
+ 	while (!unwind_done(state) &&
+ 	       (!on_stack(&state->stack_info, first_frame, sizeof(long)) ||
+-			state->sp < (unsigned long)first_frame))
++			state->sp <= (unsigned long)first_frame))
+ 		unwind_next_frame(state);
+ 
+ 	return;
 -- 
-Martin K. Petersen	Oracle Linux Engineering
+2.17.1
+
