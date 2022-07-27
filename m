@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 960BDC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:13:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43A18C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:13:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241568AbiG0RNc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:13:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48984 "EHLO
+        id S241449AbiG0RNf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:13:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235886AbiG0RMo (ORCPT
+        with ESMTP id S230149AbiG0RMq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:12:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98348753AB;
-        Wed, 27 Jul 2022 09:42:02 -0700 (PDT)
+        Wed, 27 Jul 2022 13:12:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2E1A753BD;
+        Wed, 27 Jul 2022 09:42:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E87261479;
-        Wed, 27 Jul 2022 16:42:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DEB1C433D7;
-        Wed, 27 Jul 2022 16:42:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 456CDB821D5;
+        Wed, 27 Jul 2022 16:42:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FD9FC433C1;
+        Wed, 27 Jul 2022 16:41:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940121;
-        bh=dnuIqpfVolZ/SRhE1Fh9uNWTlG4nWV2M9XborI/p1IU=;
+        s=korg; t=1658940119;
+        bh=BXg5fLLfCrboKcDhCRE6/09nN66VrHApWnu3zne7LGw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1NWJPxFcO8SDhFwHWq/9rxNjCu1GWbEZPykcVlEZe0JJF1UdFoIrNLD3wUqbvwP0L
-         3Qbeyu6BVnmwROlmPD+7QJkTUnQ+2DRqV2YgcWMDgWYPbdUgl0ZtAeS9Bfw7s1f6it
-         IB23xPfk7tF4NuyjMhi1QxI0YzScAE1MRJiV9U+0=
+        b=JKEUadedFeR/cSTp3aoKAhDGVlJ61gorXWN3PmWrzIt+CsUh8I2m8dhNBDfno5KWj
+         7wTSr8ZDFAh7zzbYAk+mpCT3XhhjrBdo0Dbwa84uqxPhFkhdRwWEptGxjhoepzmEGi
+         L7IzTZzomZzyszCe9qrUaLs87MtE10GJuc7MXZdM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Oleksij Rempel <o.rempel@pengutronix.de>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Gregory CLEMENT <gregory.clement@bootlin.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 113/201] net: dsa: sja1105: silent spi_device_id warnings
-Date:   Wed, 27 Jul 2022 18:10:17 +0200
-Message-Id: <20220727161032.446516534@linuxfoundation.org>
+Subject: [PATCH 5.15 104/201] pinctrl: armada-37xx: Convert to use dev_err_probe()
+Date:   Wed, 27 Jul 2022 18:10:08 +0200
+Message-Id: <20220727161032.059592834@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -51,66 +50,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oleksij Rempel <o.rempel@pengutronix.de>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-[ Upstream commit 855fe49984a8a3899f07ae1d149d46cd8d4acb52 ]
+[ Upstream commit 06cb10ea0cd5c5f4db9627a33ab47fec32cb5960 ]
 
-Add spi_device_id entries to silent following warnings:
- SPI driver sja1105 has no spi_device_id for nxp,sja1105e
- SPI driver sja1105 has no spi_device_id for nxp,sja1105t
- SPI driver sja1105 has no spi_device_id for nxp,sja1105p
- SPI driver sja1105 has no spi_device_id for nxp,sja1105q
- SPI driver sja1105 has no spi_device_id for nxp,sja1105r
- SPI driver sja1105 has no spi_device_id for nxp,sja1105s
- SPI driver sja1105 has no spi_device_id for nxp,sja1110a
- SPI driver sja1105 has no spi_device_id for nxp,sja1110b
- SPI driver sja1105 has no spi_device_id for nxp,sja1110c
- SPI driver sja1105 has no spi_device_id for nxp,sja1110d
+It's fine to call dev_err_probe() in ->probe() when error code is known.
+Convert the driver to use dev_err_probe().
 
-Fixes: 5fa6863ba692 ("spi: Check we have a spi_device_id for each DT compatible")
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/20220717135831.2492844-1-o.rempel@pengutronix.de
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Gregory CLEMENT <gregory.clement@bootlin.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/sja1105/sja1105_main.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ drivers/pinctrl/mvebu/pinctrl-armada-37xx.c | 18 ++++++------------
+ 1 file changed, 6 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
-index 924c3f129992..1a2a7536ff8a 100644
---- a/drivers/net/dsa/sja1105/sja1105_main.c
-+++ b/drivers/net/dsa/sja1105/sja1105_main.c
-@@ -3372,12 +3372,28 @@ static const struct of_device_id sja1105_dt_ids[] = {
- };
- MODULE_DEVICE_TABLE(of, sja1105_dt_ids);
+diff --git a/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c b/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
+index 40bcf05123eb..7d0d2771a9ac 100644
+--- a/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
++++ b/drivers/pinctrl/mvebu/pinctrl-armada-37xx.c
+@@ -736,10 +736,8 @@ static int armada_37xx_irqchip_register(struct platform_device *pdev,
+ 			break;
+ 		}
+ 	}
+-	if (ret) {
+-		dev_err(dev, "no gpio-controller child node\n");
+-		return ret;
+-	}
++	if (ret)
++		return dev_err_probe(dev, ret, "no gpio-controller child node\n");
  
-+static const struct spi_device_id sja1105_spi_ids[] = {
-+	{ "sja1105e" },
-+	{ "sja1105t" },
-+	{ "sja1105p" },
-+	{ "sja1105q" },
-+	{ "sja1105r" },
-+	{ "sja1105s" },
-+	{ "sja1110a" },
-+	{ "sja1110b" },
-+	{ "sja1110c" },
-+	{ "sja1110d" },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(spi, sja1105_spi_ids);
-+
- static struct spi_driver sja1105_driver = {
- 	.driver = {
- 		.name  = "sja1105",
- 		.owner = THIS_MODULE,
- 		.of_match_table = of_match_ptr(sja1105_dt_ids),
- 	},
-+	.id_table = sja1105_spi_ids,
- 	.probe  = sja1105_probe,
- 	.remove = sja1105_remove,
- 	.shutdown = sja1105_shutdown,
+ 	nr_irq_parent = of_irq_count(np);
+ 	spin_lock_init(&info->irq_lock);
+@@ -996,10 +994,8 @@ static int armada_37xx_pinctrl_register(struct platform_device *pdev,
+ 		return ret;
+ 
+ 	info->pctl_dev = devm_pinctrl_register(dev, ctrldesc, info);
+-	if (IS_ERR(info->pctl_dev)) {
+-		dev_err(dev, "could not register pinctrl driver\n");
+-		return PTR_ERR(info->pctl_dev);
+-	}
++	if (IS_ERR(info->pctl_dev))
++		return dev_err_probe(dev, PTR_ERR(info->pctl_dev), "could not register pinctrl driver\n");
+ 
+ 	return 0;
+ }
+@@ -1135,10 +1131,8 @@ static int __init armada_37xx_pinctrl_probe(struct platform_device *pdev)
+ 	info->dev = dev;
+ 
+ 	regmap = syscon_node_to_regmap(np);
+-	if (IS_ERR(regmap)) {
+-		dev_err(dev, "cannot get regmap\n");
+-		return PTR_ERR(regmap);
+-	}
++	if (IS_ERR(regmap))
++		return dev_err_probe(dev, PTR_ERR(regmap), "cannot get regmap\n");
+ 	info->regmap = regmap;
+ 
+ 	info->data = of_device_get_match_data(dev);
 -- 
 2.35.1
 
