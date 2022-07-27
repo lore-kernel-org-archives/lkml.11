@@ -2,135 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE047C19F21
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 11:05:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1F38C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 11:06:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231953AbiG0LF0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 07:05:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33868 "EHLO
+        id S232016AbiG0LGH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 07:06:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229475AbiG0LFX (ORCPT
+        with ESMTP id S229475AbiG0LGF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 07:05:23 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC11B62DC;
-        Wed, 27 Jul 2022 04:05:21 -0700 (PDT)
-X-UUID: bf3bd924e80d4d0a88c6beabc9c47aee-20220727
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.8,REQID:c2ffb9cc-1000-4b1b-b495-16daaa3da22a,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Release_Ham,AC
-        TION:release,TS:90
-X-CID-INFO: VERSION:1.1.8,REQID:c2ffb9cc-1000-4b1b-b495-16daaa3da22a,OB:0,LOB:
-        0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:95,FILE:0,RULE:Spam_GS981B3D,AC
-        TION:quarantine,TS:90
-X-CID-META: VersionHash:0f94e32,CLOUDID:c39af4cb-7c9b-4dbc-a9d4-00659d6b7a90,C
-        OID:6b8dddc57071,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:0,File:nil,QS:nil,BEC:nil,COL:0
-X-UUID: bf3bd924e80d4d0a88c6beabc9c47aee-20220727
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
-        (envelope-from <macpaul.lin@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 780585816; Wed, 27 Jul 2022 19:05:18 +0800
-Received: from mtkmbs11n1.mediatek.inc (172.21.101.186) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Wed, 27 Jul 2022 19:05:17 +0800
-Received: from mtksdccf07.mediatek.inc (172.21.84.99) by
- mtkmbs11n1.mediatek.inc (172.21.101.73) with Microsoft SMTP Server id
- 15.2.792.15 via Frontend Transport; Wed, 27 Jul 2022 19:05:17 +0800
-From:   Macpaul Lin <macpaul.lin@mediatek.com>
-To:     Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>
-CC:     Bear Wang <bear.wang@mediatek.com>,
-        Pablo Sun <pablo.sun@mediatek.com>,
-        Mediatek WSD Upstream <wsd_upstream@mediatek.com>,
-        Macpaul Lin <macpaul.lin@mediatek.com>,
-        Macpaul Lin <macpaul@gmail.com>, <stable@vger.kernel.org>
-Subject: [PATCH] usb: typec: altmodes/displayport: correct pin assignment for UFP receptacles
-Date:   Wed, 27 Jul 2022 19:05:03 +0800
-Message-ID: <20220727110503.5260-1-macpaul.lin@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+        Wed, 27 Jul 2022 07:06:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC539BCB7;
+        Wed, 27 Jul 2022 04:06:04 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 893DC618E1;
+        Wed, 27 Jul 2022 11:06:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CC9BC433D7;
+        Wed, 27 Jul 2022 11:06:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658919963;
+        bh=LS1KLm7wDdF2ou3i7iBwkSLEUSAmprWv5RA1lqRiBzo=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=IRztXjfI9B6Qt+ch2FnAESvCv1QrInr377lvU2uVVn8Aw9FbNfgLVxPHKvhLs4vFD
+         yXKQqNecUTBOWqepIJNgewoam98yDlRJWc42RcsV4OFdAnMg7cvtwlbII03RXdZcyt
+         zl4ZNuJqpwNHdzpT1cqsyPyAmjE8R55Uljdwc2z7DA1grL/BLxZk7AvdV9FbxEMAM/
+         gcF98vpJ8REU1fTONaU+KRbWDOSXqGwJUeF1UuUX6kiFQI3Jzws2fUGHLwtIRN01eF
+         V4aiWFJmlfIyE9d/Bz5Yo7uNsQ/YuM11s8UTZkFCFNXrPzq392/uDV+suOuNvzWkoV
+         pPR8RyyTmAsog==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Transfer-Encoding: 7bit
+Subject: Re: wifi: rtlwifi: Remove duplicate word and Fix typo
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <20220622082524.21304-1-jiaming@nfschina.com>
+References: <20220622082524.21304-1-jiaming@nfschina.com>
+To:     Zhang Jiaming <jiaming@nfschina.com>
+Cc:     pkshih@realtek.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        liqiong@nfschina.com, renyu@nfschina.com,
+        Zhang Jiaming <jiaming@nfschina.com>
+User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <165891995972.17998.1161911298744891014.kvalo@kernel.org>
+Date:   Wed, 27 Jul 2022 11:06:01 +0000 (UTC)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Sun <pablo.sun@mediatek.com>
+Zhang Jiaming <jiaming@nfschina.com> wrote:
 
-From: Pablo Sun <pablo.sun@mediatek.com>
+> Remove duplicate 'in'.
+> Change 'entrys' to 'entries'.
+> 
+> Signed-off-by: Zhang Jiaming <jiaming@nfschina.com>
 
-Fix incorrect pin assignment values when connecting to a monitor with
-Type-C receptacle instead of a plug.
+Patch applied to wireless-next.git, thanks.
 
-According to specification, an UFP_D receptacle's pin assignment
-should came from the UFP_D pin assignments field (bit 23:16), while
-an UFP_D plug's assignments are described in the DFP_D pin assignments
-(bit 15:8) during Mode Discovery.
+8a7a5c0251e1 wifi: rtlwifi: Remove duplicate word and Fix typo
 
-For example the LG 27 UL850-W is a monitor with Type-C receptacle.
-The monitor responds to MODE DISCOVERY command with following
-DisplayPort Capability flag:
-
-        dp->alt->vdo=0x140045
-
-The existing logic only take cares of UPF_D plug case,
-and would take the bit 15:8 for this 0x140045 case.
-
-This results in an non-existing pin assignment 0x0 in
-dp_altmode_configure.
-
-To fix this problem a new set of macros are introduced
-to take plug/receptacle differences into consideration.
-
-Co-developed-by: Pablo Sun <pablo.sun@mediatek.com>
-Signed-off-by: Pablo Sun <pablo.sun@mediatek.com>
-Co-developed-by: Macpaul Lin <macpaul.lin@mediatek.com>
-Signed-off-by: Macpaul Lin <macpaul.lin@mediatek.com>
-Reviewed-by: Guillaume Ranquet <granquet@baylibre.com>
-Cc: stable@vger.kernel.org
----
- drivers/usb/typec/altmodes/displayport.c | 4 ++--
- include/linux/usb/typec_dp.h             | 5 +++++
- 2 files changed, 7 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/usb/typec/altmodes/displayport.c b/drivers/usb/typec/altmodes/displayport.c
-index 9360ca177c7d..8dd0e505ef99 100644
---- a/drivers/usb/typec/altmodes/displayport.c
-+++ b/drivers/usb/typec/altmodes/displayport.c
-@@ -98,8 +98,8 @@ static int dp_altmode_configure(struct dp_altmode *dp, u8 con)
- 	case DP_STATUS_CON_UFP_D:
- 	case DP_STATUS_CON_BOTH: /* NOTE: First acting as DP source */
- 		conf |= DP_CONF_UFP_U_AS_UFP_D;
--		pin_assign = DP_CAP_DFP_D_PIN_ASSIGN(dp->alt->vdo) &
--			     DP_CAP_UFP_D_PIN_ASSIGN(dp->port->vdo);
-+		pin_assign = DP_CAP_PIN_ASSIGN_UFP_D(dp->alt->vdo) &
-+				 DP_CAP_PIN_ASSIGN_DFP_D(dp->port->vdo);
- 		break;
- 	default:
- 		break;
-diff --git a/include/linux/usb/typec_dp.h b/include/linux/usb/typec_dp.h
-index cfb916cccd31..8d09c2f0a9b8 100644
---- a/include/linux/usb/typec_dp.h
-+++ b/include/linux/usb/typec_dp.h
-@@ -73,6 +73,11 @@ enum {
- #define DP_CAP_USB			BIT(7)
- #define DP_CAP_DFP_D_PIN_ASSIGN(_cap_)	(((_cap_) & GENMASK(15, 8)) >> 8)
- #define DP_CAP_UFP_D_PIN_ASSIGN(_cap_)	(((_cap_) & GENMASK(23, 16)) >> 16)
-+/* Get pin assignment taking plug & receptacle into consideration */
-+#define DP_CAP_PIN_ASSIGN_UFP_D(_cap_) ((_cap_ & DP_CAP_RECEPTACLE) ? \
-+			DP_CAP_UFP_D_PIN_ASSIGN(_cap_) : DP_CAP_DFP_D_PIN_ASSIGN(_cap_))
-+#define DP_CAP_PIN_ASSIGN_DFP_D(_cap_) ((_cap_ & DP_CAP_RECEPTACLE) ? \
-+			DP_CAP_DFP_D_PIN_ASSIGN(_cap_) : DP_CAP_UFP_D_PIN_ASSIGN(_cap_))
- 
- /* DisplayPort Status Update VDO bits */
- #define DP_STATUS_CONNECTION(_status_)	((_status_) & 3)
 -- 
-2.18.0
+https://patchwork.kernel.org/project/linux-wireless/patch/20220622082524.21304-1-jiaming@nfschina.com/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
