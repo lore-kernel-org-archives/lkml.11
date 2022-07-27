@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E073C19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:42:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB8CEC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:42:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239762AbiG0QmE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:42:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58744 "EHLO
+        id S239773AbiG0QmH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:42:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239452AbiG0QlY (ORCPT
+        with ESMTP id S239650AbiG0Ql0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:41:24 -0400
+        Wed, 27 Jul 2022 12:41:26 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1A5E5B068;
-        Wed, 27 Jul 2022 09:29:38 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97E4550065;
+        Wed, 27 Jul 2022 09:29:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 63EF361A1E;
-        Wed, 27 Jul 2022 16:29:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70A64C433C1;
-        Wed, 27 Jul 2022 16:29:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 543E961A39;
+        Wed, 27 Jul 2022 16:29:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 598A8C433D6;
+        Wed, 27 Jul 2022 16:29:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939377;
-        bh=BWlv9WhHqHjZUjHfPVXIuG4fj36+jf4NC1pmkcWguiU=;
+        s=korg; t=1658939380;
+        bh=zn1DvGNYVtngREh6xi9YBPcN/170vf2Wj6zm10SnjFE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dfxPRgXb+yYKXf8KMChbaHjcr3OYL1E0vzWvnfsgzv0IjIYS4uS2Eqwwb+3vgI45M
-         +VxUpl07H7eMZLEDx8MzQjT58WOS3QA+p2iKmxf46gA2aVxA8+UdbDXub6X94XykXX
-         qdLhcdf5tV3TQ0M/B1ab9IAjIS1my9HajnNy+rc0=
+        b=jY6yapUBe4hCSeNrmbAM1uOD+SfehjDMamAEtM3byLOM/urL9xcm9GXJdgpZcCVtV
+         uwnPY/xIu2ekKdQuPSakHEAm1eAZjLtLEvCi7i8eeySCCYkGLWPMcnUUQ0Y1jUCOWX
+         jXljpOBU6TcibeAoPN8wJTjme2chbrNK9ba83umI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 17/87] ip: Fix data-races around sysctl_ip_fwd_use_pmtu.
-Date:   Wed, 27 Jul 2022 18:10:10 +0200
-Message-Id: <20220727161009.708989076@linuxfoundation.org>
+Subject: [PATCH 5.4 18/87] ip: Fix data-races around sysctl_ip_nonlocal_bind.
+Date:   Wed, 27 Jul 2022 18:10:11 +0200
+Message-Id: <20220727161009.757058892@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161008.993711844@linuxfoundation.org>
 References: <20220727161008.993711844@linuxfoundation.org>
@@ -51,46 +51,46 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 60c158dc7b1f0558f6cadd5b50d0386da0000d50 ]
+[ Upstream commit 289d3b21fb0bfc94c4e98f10635bba1824e5f83c ]
 
-While reading sysctl_ip_fwd_use_pmtu, it can be changed concurrently.
+While reading sysctl_ip_nonlocal_bind, it can be changed concurrently.
 Thus, we need to add READ_ONCE() to its readers.
 
-Fixes: f87c10a8aa1e ("ipv4: introduce ip_dst_mtu_maybe_forward and protect forwarding path against pmtu spoofing")
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/ip.h | 2 +-
- net/ipv4/route.c | 2 +-
+ include/net/inet_sock.h | 2 +-
+ net/sctp/protocol.c     | 2 +-
  2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/include/net/ip.h b/include/net/ip.h
-index 3f3ea86b2173..21fc0a29a8d4 100644
---- a/include/net/ip.h
-+++ b/include/net/ip.h
-@@ -442,7 +442,7 @@ static inline unsigned int ip_dst_mtu_maybe_forward(const struct dst_entry *dst,
- 	struct net *net = dev_net(dst->dev);
- 	unsigned int mtu;
+diff --git a/include/net/inet_sock.h b/include/net/inet_sock.h
+index 34c4436fd18f..40f92f5a3047 100644
+--- a/include/net/inet_sock.h
++++ b/include/net/inet_sock.h
+@@ -375,7 +375,7 @@ static inline bool inet_get_convert_csum(struct sock *sk)
+ static inline bool inet_can_nonlocal_bind(struct net *net,
+ 					  struct inet_sock *inet)
+ {
+-	return net->ipv4.sysctl_ip_nonlocal_bind ||
++	return READ_ONCE(net->ipv4.sysctl_ip_nonlocal_bind) ||
+ 		inet->freebind || inet->transparent;
+ }
  
--	if (net->ipv4.sysctl_ip_fwd_use_pmtu ||
-+	if (READ_ONCE(net->ipv4.sysctl_ip_fwd_use_pmtu) ||
- 	    ip_mtu_locked(dst) ||
- 	    !forwarding)
- 		return dst_mtu(dst);
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index 9280e5087159..7004e379c325 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -1423,7 +1423,7 @@ u32 ip_mtu_from_fib_result(struct fib_result *res, __be32 daddr)
- 	struct fib_info *fi = res->fi;
- 	u32 mtu = 0;
+diff --git a/net/sctp/protocol.c b/net/sctp/protocol.c
+index bb370a7948f4..363a64c12414 100644
+--- a/net/sctp/protocol.c
++++ b/net/sctp/protocol.c
+@@ -358,7 +358,7 @@ static int sctp_v4_available(union sctp_addr *addr, struct sctp_sock *sp)
+ 	if (addr->v4.sin_addr.s_addr != htonl(INADDR_ANY) &&
+ 	   ret != RTN_LOCAL &&
+ 	   !sp->inet.freebind &&
+-	   !net->ipv4.sysctl_ip_nonlocal_bind)
++	    !READ_ONCE(net->ipv4.sysctl_ip_nonlocal_bind))
+ 		return 0;
  
--	if (dev_net(dev)->ipv4.sysctl_ip_fwd_use_pmtu ||
-+	if (READ_ONCE(dev_net(dev)->ipv4.sysctl_ip_fwd_use_pmtu) ||
- 	    fi->fib_metrics->metrics[RTAX_LOCK - 1] & (1 << RTAX_MTU))
- 		mtu = fi->fib_mtu;
- 
+ 	if (ipv6_only_sock(sctp_opt2sk(sp)))
 -- 
 2.35.1
 
