@@ -2,96 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F28E3C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:16:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9483EC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:16:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229719AbiG0RQu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:16:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36870 "EHLO
+        id S241730AbiG0RQz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:16:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241655AbiG0RPz (ORCPT
+        with ESMTP id S241657AbiG0RPz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Jul 2022 13:15:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B39AB7859D;
-        Wed, 27 Jul 2022 09:43:04 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7374E614DE;
-        Wed, 27 Jul 2022 16:43:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C314C433C1;
-        Wed, 27 Jul 2022 16:43:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940182;
-        bh=Nz5k/Pa4IhuCRVsu7UChZptB4Ka9QpSOYr0VI7yB1mQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cEqTm86UdqkLIy9bKS1+KzteD3jMRCzwWOyAT8HkE0Ob5P1YH7hxu+Ic4RORl4hjf
-         q7/BTD/6XWAntzM2wQ2nf/ka5CUv4VRlN/fCzmtQB12JLZ1OtAkXWQHXZfANouymi3
-         OeOGnsQpLQ4e4boFF+k9nQcoyq492p/YgSkhXwSw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lukas Wunner <lukas@wunner.de>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.15 133/201] spi: bcm2835: bcm2835_spi_handle_err(): fix NULL pointer deref for non DMA transfers
-Date:   Wed, 27 Jul 2022 18:10:37 +0200
-Message-Id: <20220727161033.307712918@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
-References: <20220727161026.977588183@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBACE7823C
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:43:01 -0700 (PDT)
+Received: by mail-lj1-x233.google.com with SMTP id q7so5001529ljp.13
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:43:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2tfmeNJmvtz7gaWiNehJRaGBYlsaQKFkN13/Ktjs1O4=;
+        b=pv47+NLr60QYIZhHvV0JM43fXrCZu2tNV8hC8pycJDtdzGMGjqoeq5iVKQ31xXQPJI
+         ETgqgrwvOJzaQ7get4X4xmIZERmv25rk+FDwMxQyA3kCIRjKUzg9mX7kB83Nc/sLKgw5
+         rdFGQAAD8bBYzucr/gR2l0K0LXW0HgyxDHnFFIEWbNFUayaQvzPgdD3r6X0R0mGFu1XE
+         xlcc9Qy/3cu3pD7jJkGOhgLvDaqeRx1yfDvpcAy4tf5QhK7Yw8uVzAmA8HWpGp+xwnqf
+         nBX+mPZfiGq84uynJdgua3z/yF+Y7RCjlTCG+M6/sLcMAz84AH+LDPQRO8Pi117ABgh2
+         9ROg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=2tfmeNJmvtz7gaWiNehJRaGBYlsaQKFkN13/Ktjs1O4=;
+        b=1vbDEodycHfmAjCAoXCVaRSb58oH04yQJUMjC42ue9W4AnHBxj4XE9MqC2lx1tO/Az
+         e8LJNEP0QgknNVVVJjQc8mLn2+tcv4L9bM5TMVFMcRUBJKZ6ML9a+VN56Q8yn2S0xPj+
+         AMkhViQtRqLzbvN6DaMDj6+b4WhtXZS3QOKPFYKDa0dgAbuI0y3/oEHXT7MvPftwFBJk
+         FoIV0kUkxAM64GIqwfg9IoAdZDaXfFAyzaYTHG2geTqEoQgJuQSojIyRDDfc7bmbcpKO
+         JqD8Vl5k6KAB83/JCaqI872bgQ6IH5tCvFN8A84/wERoBfyG44Q+S/H9EATgsuhuOg0j
+         A/tg==
+X-Gm-Message-State: AJIora+H8g+/Ds+10r+GJeixW61PZw6+6vv8DymJ6PWEgWbuKLpuemUv
+        CyzwuEz40VZJUpN/vAUf30BI4w==
+X-Google-Smtp-Source: AGRyM1uvf+IxxwmBWWpBSNonkVO56XBc21x+QKfARTNbktO6Yzp3QSgilfse3r4MQAhLEHYTp0OohQ==
+X-Received: by 2002:a2e:bd89:0:b0:25a:86c8:93ca with SMTP id o9-20020a2ebd89000000b0025a86c893camr7423468ljq.419.1658940179711;
+        Wed, 27 Jul 2022 09:42:59 -0700 (PDT)
+Received: from krzk-bin.lan (78-26-46-173.network.trollfjord.no. [78.26.46.173])
+        by smtp.gmail.com with ESMTPSA id a5-20020a056512390500b00477c5940bbasm2295612lfu.265.2022.07.27.09.42.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jul 2022 09:42:59 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Maxime Ripard <mripard@kernel.org>, linux-gpio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH] dt-bindings: gpio: fairchild,74hc595: use spi-peripheral-props.yaml
+Date:   Wed, 27 Jul 2022 18:42:51 +0200
+Message-Id: <20220727164251.385683-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Kleine-Budde <mkl@pengutronix.de>
+Instead of listing directly properties typical for SPI peripherals,
+reference the spi-peripheral-props.yaml schema.  This allows using all
+properties typical for SPI-connected devices, even these which device
+bindings author did not tried yet.
 
-commit 4ceaa684459d414992acbefb4e4c31f2dfc50641 upstream.
+Remove the spi-* properties which now come via spi-peripheral-props.yaml
+schema, except for the cases when device schema adds some constraints
+like maximum frequency.
 
-In case a IRQ based transfer times out the bcm2835_spi_handle_err()
-function is called. Since commit 1513ceee70f2 ("spi: bcm2835: Drop
-dma_pending flag") the TX and RX DMA transfers are unconditionally
-canceled, leading to NULL pointer derefs if ctlr->dma_tx or
-ctlr->dma_rx are not set.
+While changing additionalProperties->unevaluatedProperties, put it in
+typical place, just before example DTS.
 
-Fix the NULL pointer deref by checking that ctlr->dma_tx and
-ctlr->dma_rx are valid pointers before accessing them.
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Fixes: 1513ceee70f2 ("spi: bcm2835: Drop dma_pending flag")
-Cc: Lukas Wunner <lukas@wunner.de>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Link: https://lore.kernel.org/r/20220719072234.2782764-1-mkl@pengutronix.de
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/spi/spi-bcm2835.c |   12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
 
---- a/drivers/spi/spi-bcm2835.c
-+++ b/drivers/spi/spi-bcm2835.c
-@@ -1138,10 +1138,14 @@ static void bcm2835_spi_handle_err(struc
- 	struct bcm2835_spi *bs = spi_controller_get_devdata(ctlr);
- 
- 	/* if an error occurred and we have an active dma, then terminate */
--	dmaengine_terminate_sync(ctlr->dma_tx);
--	bs->tx_dma_active = false;
--	dmaengine_terminate_sync(ctlr->dma_rx);
--	bs->rx_dma_active = false;
-+	if (ctlr->dma_tx) {
-+		dmaengine_terminate_sync(ctlr->dma_tx);
-+		bs->tx_dma_active = false;
-+	}
-+	if (ctlr->dma_rx) {
-+		dmaengine_terminate_sync(ctlr->dma_rx);
-+		bs->rx_dma_active = false;
-+	}
- 	bcm2835_spi_undo_prologue(bs);
- 
- 	/* and reset */
+Technically, this depends on [1] merged to SPI tree, if we want to
+preserve existing behavior of not allowing SPI CPHA and CPOL in each of
+schemas in this patch.
 
+If this patch comes independently via different tree, the SPI CPHA and
+CPOL will be allowed for brief period of time, before [1] is merged.
+This will not have negative impact, just DT schema checks will be
+loosened for that period.
+
+[1] https://lore.kernel.org/all/20220722191539.90641-2-krzysztof.kozlowski@linaro.org/
+---
+ .../devicetree/bindings/gpio/fairchild,74hc595.yaml        | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/gpio/fairchild,74hc595.yaml b/Documentation/devicetree/bindings/gpio/fairchild,74hc595.yaml
+index a99e7842ca17..c0ad70e66f76 100644
+--- a/Documentation/devicetree/bindings/gpio/fairchild,74hc595.yaml
++++ b/Documentation/devicetree/bindings/gpio/fairchild,74hc595.yaml
+@@ -33,8 +33,6 @@ properties:
+     description: GPIO connected to the OE (Output Enable) pin.
+     maxItems: 1
+ 
+-  spi-max-frequency: true
+-
+ patternProperties:
+   "^(hog-[0-9]+|.+-hog(-[0-9]+)?)$":
+     type: object
+@@ -59,7 +57,10 @@ required:
+   - '#gpio-cells'
+   - registers-number
+ 
+-additionalProperties: false
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++
++unevaluatedProperties: false
+ 
+ examples:
+   - |
+-- 
+2.34.1
 
