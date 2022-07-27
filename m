@@ -2,113 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF7D2C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 22:05:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D26FDC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 22:05:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234061AbiG0WFX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 18:05:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48282 "EHLO
+        id S234185AbiG0WFs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 18:05:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234136AbiG0WFS (ORCPT
+        with ESMTP id S229628AbiG0WFq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 18:05:18 -0400
-Received: from sender4-op-o14.zoho.com (sender4-op-o14.zoho.com [136.143.188.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7438D5C;
-        Wed, 27 Jul 2022 15:05:09 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1658959465; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=XYz5/7b34v/qGC1P86nS7wd8YdpQ+TTXaWaAx+qOw93D5LjLlad4sNVkB6zpR1hoTGUkjNs+s7eLj2yvoJkAB5rWVauZdLhI+E8cP3dGEvUcLq+kRagyhhqUuguZz+mwcW8ddGZhNS6PCkILbhSsvH8FEMa5aNPG1lr3WaGSJFg=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1658959465; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=KulfU3qDbvzcs/NpGiiPGnxBjN9EcMNe7GHzjnyKn1Y=; 
-        b=ewGX6dPcfZFIqAAy08Ki6QwaQ9hl4Hub76XjsYIUfQ3HlvPpZzwAOMz2NJRcc/yOjbIdT2TS0VsYc7yfaQ1YbA3oXlvSGQJhd9GYJsx8/MBGikSlVqqC+FQvSPtF0b/bp8OzWtgDt2gRuJBKG8dX+qtZV3ENo2vsgZrt5BQNagk=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        dkim=pass  header.i=arinc9.com;
-        spf=pass  smtp.mailfrom=arinc.unal@arinc9.com;
-        dmarc=pass header.from=<arinc.unal@arinc9.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1658959465;
-        s=zmail; d=arinc9.com; i=arinc.unal@arinc9.com;
-        h=Message-ID:Date:Date:MIME-Version:Subject:Subject:From:From:To:To:Cc:Cc:References:In-Reply-To:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=KulfU3qDbvzcs/NpGiiPGnxBjN9EcMNe7GHzjnyKn1Y=;
-        b=Lv/ydmnJa0iF7zD9n9fFkXJl+kxAD7cabcm7J6y8vQLwMhG75UNMPF6NU10+R48K
-        elj5/gcFsiV75xzs91Bv5iZWW1ASbCEXKCzl0mUsDyDPQZ4osuec4WQxTkF8B91bdvh
-        3FDinO3g+Xp0zU6sgS9r3LVXXPZWfvtPEOBrCDMY=
-Received: from [10.10.10.3] (37.120.152.236 [37.120.152.236]) by mx.zohomail.com
-        with SMTPS id 1658959461763271.8212578498445; Wed, 27 Jul 2022 15:04:21 -0700 (PDT)
-Message-ID: <709af825-7fde-d2c6-2237-3490163afa0e@arinc9.com>
-Date:   Thu, 28 Jul 2022 01:04:14 +0300
+        Wed, 27 Jul 2022 18:05:46 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 283115FAF;
+        Wed, 27 Jul 2022 15:05:45 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id ha11so290689pjb.2;
+        Wed, 27 Jul 2022 15:05:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc;
+        bh=LiTE1tqkRaXoGmySEYYRcpLO/+mjVSFHJMv7429wZro=;
+        b=NHwA96X568WaIEaeAdyZO0/H9EiUstVUoUzwPvi2DW1XeFPSXJM+pno7z20CNEPdfy
+         jtpUoD/NG77HMfz2SM4Ew7XWm1yx8KoqX+PI7rWzBicwdqH9eDqFHw2hbPV6fOOzZ8Ap
+         uMKQuplFrpNzf5Cb5h/NBlg9o1HDqGzE0Kt/Dwj9q7S2WYHvoSsd2krjCbICCTtH4zt4
+         P6E8MSKWyMYt4AwrkdxRnTiJLFDggFyKpRxi9r8belvxHq0vSmVEVCjrOVv2hpHD55dY
+         +Oul0/kXpRw8XYWK7OM3ESjaB8h/IKZJICgzzFqdnyU8j2XN04DKgNTmo+Vi/yWLXWn7
+         aYYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
+        bh=LiTE1tqkRaXoGmySEYYRcpLO/+mjVSFHJMv7429wZro=;
+        b=1JqeiBNk7OjM2DZd2d0orKG/rzWHvdRodeAjTerIyLAtGeGaP1VF6FJL1DhICqtLXC
+         7oKnrW+1CNhM8FqT+sddIK56LA4g+yaJBGae6b53BILWgI0zuD0s21LHnndD6I5lf+ty
+         ocRwAxVKQ3XII9LrZftPniv3Ca9idnJ1GH+41IZcLLNoZWENyMiJqmbb7D3hWvzXvm3T
+         5LkwYd1GTbXzhWGpSs/zG+1jOI6kpETECaSiUfqajA1isvzee/aS7CtTSFdoPE46sLe/
+         M9ZSfVhDiPEQRDKP/PBP92Jb/x0lw0lr7KFYxACq/GSjfA+U/0VGgfGsRPcJ/xbTZVvi
+         9org==
+X-Gm-Message-State: AJIora/n7oo3M8/GZgSQCYibchwkopVfXsiaMl4b0N/cPc1pdeqhTBVk
+        u7mxgXzUfP3GPMpc2CunuYU=
+X-Google-Smtp-Source: AGRyM1sOnkApFtvoXih9H6FXYdeOtMGZvB9VSQD6m0DxjYnRs64/cCZfh/dSg2k1v8GKt4MWAe1kgQ==
+X-Received: by 2002:a17:902:aa89:b0:16b:e514:54d2 with SMTP id d9-20020a170902aa8900b0016be51454d2mr23780612plr.127.1658959544183;
+        Wed, 27 Jul 2022 15:05:44 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::5:5a55])
+        by smtp.gmail.com with ESMTPSA id f10-20020a170902ce8a00b0016d785ef6d2sm7302739plg.223.2022.07.27.15.05.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jul 2022 15:05:43 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Wed, 27 Jul 2022 12:05:41 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Qais Yousef <qais.yousef@arm.com>,
+        Xuewen Yan <xuewen.yan@unisoc.com>, rafael@kernel.org,
+        viresh.kumar@linaro.org, mingo@redhat.com, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
+        bristot@redhat.com, linux-kernel@vger.kernel.org,
+        ke.wang@unisoc.com, xuewyan@foxmail.com, linux-pm@vger.kernel.org,
+        Waiman Long <longman@redhat.com>
+Subject: Re: [PATCH] sched/schedutil: Fix deadlock between cpuset and cpu
+ hotplug when using schedutil
+Message-ID: <YuG2tU1EoQmRqLjK@slm.duckdns.org>
+References: <20220705123705.764-1-xuewen.yan@unisoc.com>
+ <20220711174629.uehfmqegcwn2lqzu@wubuntu>
+ <YsyO9GM9mCydaybo@slm.duckdns.org>
+ <20220712125702.yg4eqbaakvj56k6m@wubuntu>
+ <Ys2duuPDNq/q+oOz@slm.duckdns.org>
+ <YuG1vwqs1GgE/twg@worktop.programming.kicks-ass.net>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: Aw: [RFC PATCH net-next] dt-bindings: net: dsa: mediatek,mt7530:
- completely rework binding
-Content-Language: en-US
-From:   =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
-To:     frank-w@public-files.de
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Sander Vanheule <sander@svanheule.net>,
-        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>,
-        Daniel Golle <daniel@makrotopia.org>, erkin.bozoglu@xeront.com,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220726122406.31043-1-arinc.unal@arinc9.com>
- <trinity-96b64414-7b29-4886-b309-48fc9f108959-1658953872981@3c-app-gmx-bs42>
- <f8ccb632-4bca-486b-a8a4-65b6b90de751@arinc9.com>
- <0426AFB2-55B6-48E6-998F-8DA09D0BDC29@public-files.de>
- <28a1620c-9771-f4dd-c432-4940d3b8f430@arinc9.com>
-In-Reply-To: <28a1620c-9771-f4dd-c432-4940d3b8f430@arinc9.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ZohoMailClient: External
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YuG1vwqs1GgE/twg@worktop.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 28.07.2022 00:46, Arınç ÜNAL wrote:
-> On 28.07.2022 00:26, Frank Wunderlich wrote:
->> Am 27. Juli 2022 22:59:16 MESZ schrieb "Arınç ÜNAL" 
->> <arinc.unal@arinc9.com>:
->>> On 27.07.2022 23:31, Frank Wunderlich wrote:
->>>>
->>
->>> I've seen this under mt7530_setup():
->>> The bit for MHWTRAP_P6_DIS is cleared to enable port 6 with the 
->>> comment "Enable Port 6 only; P5 as GMAC5 which currently is not 
->>> supported".
->>>
->>> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/tree/drivers/net/dsa/mt7530.c#n2189 
->>>
->>
->> Later in same function it looks comment is obsolete.
->>
->> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/tree/drivers/net/dsa/mt7530.c#n2234 
+Hello,
 
-By the way, port 6 seems to be enabled even though port 5 is used as the 
-cpu port. Shouldn’t that be behind a check?
+On Thu, Jul 28, 2022 at 12:01:35AM +0200, Peter Zijlstra wrote:
+> On Tue, Jul 12, 2022 at 06:13:46AM -1000, Tejun Heo wrote:
+> 
+> > But now we're failing user-initiated operations randomly. I have a hard time
+> > seeing that as an acceptable solution. 
+> 
+> There (sadly) is precedent for that; grep for "cpu_hotplug_disable".
 
->>
->>
->>   I know that rene added p5 support while phylink conversion,but not 
->> sure it was complete.
-> 
-> Thanks for pointing it out. I suppose it works fine since you tested it. 
-> I will update my patch to allow setting port 5 as cpu port along with 
-> splitting the patch.
-> 
-> Arınç
+Yeah, there's another one in cpu cgroup controller attach path. We should
+get better at not doing these. Low frequency arbitrary failures are really
+difficult to handle reliably downstream.
+
+Thanks.
+
+-- 
+tejun
