@@ -2,269 +2,298 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A5F7C19F21
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 08:10:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FCACC19F21
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 08:13:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229808AbiG0IK1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 04:10:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33848 "EHLO
+        id S230079AbiG0INm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 04:13:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbiG0IKZ (ORCPT
+        with ESMTP id S229507AbiG0INk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 04:10:25 -0400
-Received: from mail-yw1-x112f.google.com (mail-yw1-x112f.google.com [IPv6:2607:f8b0:4864:20::112f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 301DA559B;
-        Wed, 27 Jul 2022 01:10:24 -0700 (PDT)
-Received: by mail-yw1-x112f.google.com with SMTP id 00721157ae682-31d85f82f0bso166964557b3.7;
-        Wed, 27 Jul 2022 01:10:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=K8WsuTI5HqjVqZ3mqJBPeJnAkwvhfGL30L5LTvOm6u4=;
-        b=D5Kgg84JRiZOPD+q5N9vaIRd2tAD5RR1MMcDuqJUuLM5SoPObzBi0fHFHtSyVJUR9O
-         v98JAwUINxP/fSbxHCfYR5FNx4zgpBC6hISx2oW9k0/zBoX9FE7YiJW+J1EFMEAEJ+Oq
-         lA2xBcvprRZtJ+tHFoyslZUNR5dAFOwIGhqiaS9/SmpRU/TgdpMjXJ/EhTDnZfA+Dbq/
-         hZYkSm7aS2gxXZFc93DL31tdTuVc1ePql257a4NK2rTX46Eqz+9E3k8hznhoenxQDIeC
-         figuSrUlcgUE5iPST0Y6XB2hsacUgifsw9KnJp79loAdx2GyMHN7e1D2M4xe4ceLDo77
-         /0UQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=K8WsuTI5HqjVqZ3mqJBPeJnAkwvhfGL30L5LTvOm6u4=;
-        b=kFpzpIAqA7JWNLUr7XxOOHbNVKlUzZRYED0n5OyaDj+c255fo89vmFCnEuooSaZf8J
-         HsIXZuEL/T2lrWuBtsL6IalUiiCg7kboWgDPNbWiAG6U4+eO+Dvl8CWPF1Ho16XEyDSm
-         E0hQlMSOqHRW7hW7LMhn3vao1cohmdoH6sVHLs1vqxLeOIfQaLD94+b7MiYKq0QQQPbp
-         txenUmw+4UH2BLoudytMs9kYJRmbIa+rYUf+ek0K4vSop+3a+uVLUmTwtPTZrDF7o/er
-         hCwkOPKYkkKb8gU2/Ctm/MPngzwA1ip6ovSA7m8Fe3VjvBrgpB4v5S0g3iwZrzZMgKCE
-         64uQ==
-X-Gm-Message-State: AJIora/hT2rgrQC8dh197zMWB6EiD24kJF18xJHt5j3nHQ5otY9xG8Sa
-        pxahbsI/1A5jvFHIwzgOYhmUktRRUgaG6favo8o=
-X-Google-Smtp-Source: AGRyM1tq/fVV6xPYbEKCqMXyTJ4clWzdeyD8mpCOp2Jxixf0hphMcBS1e5sTtpCLva92LX3/MwHqdomugY1fgU0srZs=
-X-Received: by 2002:a81:d542:0:b0:31e:c878:7565 with SMTP id
- l2-20020a81d542000000b0031ec8787565mr17170281ywj.382.1658909423375; Wed, 27
- Jul 2022 01:10:23 -0700 (PDT)
+        Wed, 27 Jul 2022 04:13:40 -0400
+Received: from mail-m974.mail.163.com (mail-m974.mail.163.com [123.126.97.4])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DBF7412618;
+        Wed, 27 Jul 2022 01:13:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=6XnCe
+        a9yoiW31TrsttMsxP++0aBbuQBm1X7eC68itbM=; b=A+Zp2bmeuzrZrIk/u0HRK
+        qwc5ACR655gOU38zOAVMePm4Ni/mA/jVUgQRGs7BM1USMfe8tX+p0PXkoCswQXpd
+        apR8aTMdNNYR2hnWI9ViNC7tkuJfQFwXVCKZBVdxwgYyMpXMHhlE9Jm2fzQao/hA
+        5egHE5hKK3N03sG+li7StU=
+Received: from localhost.localdomain (unknown [123.58.221.99])
+        by smtp4 (Coremail) with SMTP id HNxpCgCn2NCJ8+Bi86CaRA--.243S2;
+        Wed, 27 Jul 2022 16:12:59 +0800 (CST)
+From:   studentxswpy@163.com
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, oliver@neukum.org, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Xie Shaowen <studentxswpy@163.com>
+Subject: [PATCH net-next] net: usb: delete extra space and tab in blank line
+Date:   Wed, 27 Jul 2022 16:12:53 +0800
+Message-Id: <20220727081253.3043941-1-studentxswpy@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220726180623.1668-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20220726180623.1668-7-prabhakar.mahadev-lad.rj@bp.renesas.com> <cc6f723a-441e-55fc-5044-890d45fb79b4@microchip.com>
-In-Reply-To: <cc6f723a-441e-55fc-5044-890d45fb79b4@microchip.com>
-From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Wed, 27 Jul 2022 09:09:55 +0100
-Message-ID: <CA+V-a8vwhsa2S2UX+hi0MPnrjpfRYLzo1Ca1vffx-5A9jr6Hpg@mail.gmail.com>
-Subject: Re: [PATCH 6/6] riscv: dts: renesas: Add initial devicetree for
- Renesas RZ/Five SoC
-To:     Conor.Dooley@microchip.com
-Cc:     "Lad, Prabhakar" <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>, aou@eecs.berkeley.edu,
-        anup@brainfault.org,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: HNxpCgCn2NCJ8+Bi86CaRA--.243S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW3Gr15Zw43XF4fWryUGF1Utrb_yoWxKFykpF
+        43JF43tr15Xr45X3yxXrs7Zry5Xw4UK340kr1xZ3s5ZF98A34jqr17GFyIkr90yrWfAFy3
+        tF4DC3yUWF15C37anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jr0eQUUUUU=
+X-Originating-IP: [123.58.221.99]
+X-CM-SenderInfo: xvwxvv5qw024ls16il2tof0z/1tbiqwxLJFUMezch2gAAsm
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Conor,
+From: Xie Shaowen <studentxswpy@163.com>
 
-On Tue, Jul 26, 2022 at 7:25 PM <Conor.Dooley@microchip.com> wrote:
->
-> Hey,
-> Saw your other binding patches coming in earlier & wondered if
-> this would show up today ;)
->
-:)
+delete extra space and tab in blank line, there is no functional change.
 
-> On 26/07/2022 19:06, Lad Prabhakar wrote:
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> >
-> > Add initial device tree for Renesas RZ/Five RISC-V CPU Core (AX45MP
-> > Single).
-> >
-> > Below is the list of IP blocks added in the initial SoC DTSI which can be
-> > used to boot via initramfs on RZ/Five SMARC EVK:
-> > - AX45MP CPU
-> > - CPG
-> > - PINCTRL
-> > - PLIC
-> > - SCIF0
-> > - SYSC
-> >
-> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> > ---
-> >  arch/riscv/boot/dts/Makefile               |   1 +
-> >  arch/riscv/boot/dts/renesas/r9a07g043.dtsi | 121 +++++++++++++++++++++
->
-> Missing files? Where is your Makefile for this directory?
-> Or the board dts?
->
-My plan was to get the initial minimal SoC DTSi and then later
-gradually add the board DTS, but it looks like I'll have to include it
-along with this series.
+Signed-off-by: Xie Shaowen <studentxswpy@163.com>
+---
+ drivers/net/usb/catc.c       | 44 ++++++++++++++++++------------------
+ drivers/net/usb/cdc_subset.c | 10 ++++----
+ drivers/net/usb/kaweth.c     |  2 +-
+ drivers/net/usb/plusb.c      |  2 +-
+ drivers/net/usb/usbnet.c     |  2 +-
+ 5 files changed, 30 insertions(+), 30 deletions(-)
 
-> Enabling CONFIG_SOC_RENESAS_RZFIVE causes dtbs_check to fail :(
->
-I shall include the Makefile and boards dts in v2
+diff --git a/drivers/net/usb/catc.c b/drivers/net/usb/catc.c
+index 1a376ed45d7a..f536d65bb045 100644
+--- a/drivers/net/usb/catc.c
++++ b/drivers/net/usb/catc.c
+@@ -8,13 +8,13 @@
+  *
+  *  Based on the work of
+  *		Donald Becker
+- * 
++ *
+  *  Old chipset support added by Simon Evans <spse@secret.org.uk> 2002
+  *    - adds support for Belkin F5U011
+  */
+ 
+ /*
+- * 
++ *
+  * Should you need to contact me, the author, you can do so either by
+  * e-mail - mail your message to <vojtech@suse.cz>, or by paper mail:
+  * Vojtech Pavlik, Simunkova 1594, Prague 8, 182 00 Czech Republic
+@@ -54,7 +54,7 @@ static const char driver_name[] = "catc";
+ 
+ /*
+  * Some defines.
+- */ 
++ */
+ 
+ #define STATS_UPDATE		(HZ)	/* Time between stats updates */
+ #define TX_TIMEOUT		(5*HZ)	/* Max time the queue can be stopped */
+@@ -332,7 +332,7 @@ static void catc_irq_done(struct urb *urb)
+ 				dev_err(&catc->usbdev->dev,
+ 					"submit(rx_urb) status %d\n", res);
+ 			}
+-		} 
++		}
+ 	}
+ resubmit:
+ 	res = usb_submit_urb (urb, GFP_ATOMIC);
+@@ -538,7 +538,7 @@ static int catc_ctrl_async(struct catc *catc, u8 dir, u8 request, u16 value,
+ 	unsigned long flags;
+ 
+ 	spin_lock_irqsave(&catc->ctrl_lock, flags);
+-	
++
+ 	q = catc->ctrl_queue + catc->ctrl_head;
+ 
+ 	q->dir = dir;
+@@ -639,7 +639,7 @@ static void catc_set_multicast_list(struct net_device *netdev)
+ 	if (netdev->flags & IFF_PROMISC) {
+ 		memset(catc->multicast, 0xff, 64);
+ 		rx |= (!catc->is_f5u011) ? RxPromisc : AltRxPromisc;
+-	} 
++	}
+ 
+ 	if (netdev->flags & IFF_ALLMULTI) {
+ 		memset(catc->multicast, 0xff, 64);
+@@ -806,7 +806,7 @@ static int catc_probe(struct usb_interface *intf, const struct usb_device_id *id
+ 	catc->tx_urb = usb_alloc_urb(0, GFP_KERNEL);
+ 	catc->rx_urb = usb_alloc_urb(0, GFP_KERNEL);
+ 	catc->irq_urb = usb_alloc_urb(0, GFP_KERNEL);
+-	if ((!catc->ctrl_urb) || (!catc->tx_urb) || 
++	if ((!catc->ctrl_urb) || (!catc->tx_urb) ||
+ 	    (!catc->rx_urb) || (!catc->irq_urb)) {
+ 		dev_err(&intf->dev, "No free urbs available.\n");
+ 		ret = -ENOMEM;
+@@ -814,17 +814,17 @@ static int catc_probe(struct usb_interface *intf, const struct usb_device_id *id
+ 	}
+ 
+ 	/* The F5U011 has the same vendor/product as the netmate but a device version of 0x130 */
+-	if (le16_to_cpu(usbdev->descriptor.idVendor) == 0x0423 && 
++	if (le16_to_cpu(usbdev->descriptor.idVendor) == 0x0423 &&
+ 	    le16_to_cpu(usbdev->descriptor.idProduct) == 0xa &&
+ 	    le16_to_cpu(catc->usbdev->descriptor.bcdDevice) == 0x0130) {
+ 		dev_dbg(dev, "Testing for f5u011\n");
+-		catc->is_f5u011 = 1;		
++		catc->is_f5u011 = 1;
+ 		atomic_set(&catc->recq_sz, 0);
+ 		pktsz = RX_PKT_SZ;
+ 	} else {
+ 		pktsz = RX_MAX_BURST * (PKT_SZ + 2);
+ 	}
+-	
++
+ 	usb_fill_control_urb(catc->ctrl_urb, usbdev, usb_sndctrlpipe(usbdev, 0),
+ 		NULL, NULL, 0, catc_ctrl_done, catc);
+ 
+@@ -854,7 +854,7 @@ static int catc_probe(struct usb_interface *intf, const struct usb_device_id *id
+ 		*buf = 0x87654321;
+ 		catc_write_mem(catc, 0xfa80, buf, 4);
+ 		catc_read_mem(catc, 0x7a80, buf, 4);
+-	  
++
+ 		switch (*buf) {
+ 		case 0x12345678:
+ 			catc_set_reg(catc, TxBufCount, 8);
+@@ -873,32 +873,32 @@ static int catc_probe(struct usb_interface *intf, const struct usb_device_id *id
+ 		}
+ 
+ 		kfree(buf);
+-	  
++
+ 		dev_dbg(dev, "Getting MAC from SEEROM.\n");
+-	  
++
+ 		catc_get_mac(catc, macbuf);
+ 		eth_hw_addr_set(netdev, macbuf);
+-		
++
+ 		dev_dbg(dev, "Setting MAC into registers.\n");
+-	  
++
+ 		for (i = 0; i < 6; i++)
+ 			catc_set_reg(catc, StationAddr0 - i, netdev->dev_addr[i]);
+-		
++
+ 		dev_dbg(dev, "Filling the multicast list.\n");
+-	  
++
+ 		eth_broadcast_addr(broadcast);
+ 		catc_multicast(broadcast, catc->multicast);
+ 		catc_multicast(netdev->dev_addr, catc->multicast);
+ 		catc_write_mem(catc, 0xfa80, catc->multicast, 64);
+-		
++
+ 		dev_dbg(dev, "Clearing error counters.\n");
+-		
++
+ 		for (i = 0; i < 8; i++)
+ 			catc_set_reg(catc, EthStats + i, 0);
+ 		catc->last_stats = jiffies;
+-		
++
+ 		dev_dbg(dev, "Enabling.\n");
+-		
++
+ 		catc_set_reg(catc, MaxBurst, RX_MAX_BURST);
+ 		catc_set_reg(catc, OpModes, OpTxMerge | OpRxMerge | OpLenInclude | Op3MemWaits);
+ 		catc_set_reg(catc, LEDCtrl, LEDLink);
+@@ -908,7 +908,7 @@ static int catc_probe(struct usb_interface *intf, const struct usb_device_id *id
+ 		catc_reset(catc);
+ 		catc_get_mac(catc, macbuf);
+ 		eth_hw_addr_set(netdev, macbuf);
+-		
++
+ 		dev_dbg(dev, "Setting RX Mode\n");
+ 		catc->rxmode[0] = RxEnable | RxPolarity | RxMultiCast;
+ 		catc->rxmode[1] = 0;
+diff --git a/drivers/net/usb/cdc_subset.c b/drivers/net/usb/cdc_subset.c
+index 32637df0f4cc..f4a44f05c6ab 100644
+--- a/drivers/net/usb/cdc_subset.c
++++ b/drivers/net/usb/cdc_subset.c
+@@ -120,7 +120,7 @@ static const struct driver_info	an2720_info = {
+ 
+ #endif	/* CONFIG_USB_AN2720 */
+ 
+-
++
+ #ifdef	CONFIG_USB_BELKIN
+ #define	HAVE_HARDWARE
+ 
+@@ -140,7 +140,7 @@ static const struct driver_info	belkin_info = {
+ #endif	/* CONFIG_USB_BELKIN */
+ 
+ 
+-
++
+ #ifdef	CONFIG_USB_EPSON2888
+ #define	HAVE_HARDWARE
+ 
+@@ -167,7 +167,7 @@ static const struct driver_info	epson2888_info = {
+ 
+ #endif	/* CONFIG_USB_EPSON2888 */
+ 
+-
++
+ /*-------------------------------------------------------------------------
+  *
+  * info from Jonathan McDowell <noodles@earth.li>
+@@ -181,7 +181,7 @@ static const struct driver_info kc2190_info = {
+ };
+ #endif /* CONFIG_USB_KC2190 */
+ 
+-
++
+ #ifdef	CONFIG_USB_ARMLINUX
+ #define	HAVE_HARDWARE
+ 
+@@ -222,7 +222,7 @@ static const struct driver_info	blob_info = {
+ 
+ #endif	/* CONFIG_USB_ARMLINUX */
+ 
+-
++
+ /*-------------------------------------------------------------------------*/
+ 
+ #ifndef	HAVE_HARDWARE
+diff --git a/drivers/net/usb/kaweth.c b/drivers/net/usb/kaweth.c
+index 9b2bc1993ece..c9efb7df892e 100644
+--- a/drivers/net/usb/kaweth.c
++++ b/drivers/net/usb/kaweth.c
+@@ -221,7 +221,7 @@ struct kaweth_device
+ 	dma_addr_t rxbufferhandle;
+ 	__u8 *rx_buf;
+ 
+-	
++
+ 	struct sk_buff *tx_skb;
+ 
+ 	__u8 *firmware_buf;
+diff --git a/drivers/net/usb/plusb.c b/drivers/net/usb/plusb.c
+index 17c9c63b8eeb..2c82fbcaab22 100644
+--- a/drivers/net/usb/plusb.c
++++ b/drivers/net/usb/plusb.c
+@@ -18,7 +18,7 @@
+ 
+ 
+ /*
+- * Prolific PL-2301/PL-2302 driver ... http://www.prolific.com.tw/ 
++ * Prolific PL-2301/PL-2302 driver ... http://www.prolific.com.tw/
+  *
+  * The protocol and handshaking used here should be bug-compatible
+  * with the Linux 2.2 "plusb" driver, by Deti Fliegl.
+diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
+index 78a92751ce4c..acef8936a203 100644
+--- a/drivers/net/usb/usbnet.c
++++ b/drivers/net/usb/usbnet.c
+@@ -384,7 +384,7 @@ void usbnet_update_max_qlen(struct usbnet *dev)
+ }
+ EXPORT_SYMBOL_GPL(usbnet_update_max_qlen);
+ 
+-
++
+ /*-------------------------------------------------------------------------
+  *
+  * Network Device Driver (peer link to "Host Device", from USB host)
+-- 
+2.25.1
 
-> >  2 files changed, 122 insertions(+)
-> >  create mode 100644 arch/riscv/boot/dts/renesas/r9a07g043.dtsi
-> >
-> > diff --git a/arch/riscv/boot/dts/Makefile b/arch/riscv/boot/dts/Makefile
-> > index ff174996cdfd..b0ff5fbabb0c 100644
-> > --- a/arch/riscv/boot/dts/Makefile
-> > +++ b/arch/riscv/boot/dts/Makefile
-> > @@ -3,5 +3,6 @@ subdir-y += sifive
-> >  subdir-y += starfive
-> >  subdir-$(CONFIG_SOC_CANAAN_K210_DTB_BUILTIN) += canaan
-> >  subdir-y += microchip
-> > +subdir-y += renesas
-> >
-> >  obj-$(CONFIG_BUILTIN_DTB) := $(addsuffix /, $(subdir-y))
-> > diff --git a/arch/riscv/boot/dts/renesas/r9a07g043.dtsi b/arch/riscv/boot/dts/renesas/r9a07g043.dtsi
-> > new file mode 100644
-> > index 000000000000..6e0b640c6c7f
-> > --- /dev/null
-> > +++ b/arch/riscv/boot/dts/renesas/r9a07g043.dtsi
-> > @@ -0,0 +1,121 @@
-> > +// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > +/*
-> > + * Device Tree Source for the RZ/Five SoC
-> > + *
-> > + * Copyright (C) 2022 Renesas Electronics Corp.
-> > + */
-> > +
-> > +#include <dt-bindings/interrupt-controller/arm-gic.h>
->
-> Including arm gic stuff on riscv? That seems a bit odd to me.
->
-Ouch this needs to be replaced with irq.h (required for IRQ_TYPE_LEVEL_* flags)
-
-> > +#include <dt-bindings/clock/r9a07g043-cpg.h>
-> > +
-> > +/ {
-> > +       compatible = "renesas,r9a07g043";
-> > +       #address-cells = <2>;
-> > +       #size-cells = <2>;
-> > +
-> > +       /* clock can be either from exclk or crystal oscillator (XIN/XOUT) */
-> > +       extal_clk: extal-clk {
-> > +               compatible = "fixed-clock";
-> > +               #clock-cells = <0>;
-> > +               /* This value must be overridden by the board */
-> > +               clock-frequency = <0>;
->
-> Why add the empty value in that case?
->
-For ARM64 SoC DTSI we use the above approach so f Iollowed the same,
-but you are right this can be dropped.
-
-> > +       };
-> > +
-> > +       cpus {
-> > +               #address-cells = <1>;
-> > +               #size-cells = <0>;
-> > +               timebase-frequency = <24000000>;
-> > +
-> > +               ax45mp: cpu@0 {
-> > +                       compatible = "andestech,ax45mp", "riscv";
-> > +                       device_type = "cpu";
-> > +                       reg = <0x0>;
-> > +                       status = "okay";
-> > +                       riscv,isa = "rv64imafdc";
-> > +                       mmu-type = "riscv,sv39";
-> > +                       i-cache-size = <0x8000>;
-> > +                       i-cache-line-size = <0x40>;
-> > +                       d-cache-size = <0x8000>;
-> > +                       d-cache-line-size = <0x40>;
-> > +                       clocks = <&cpg CPG_CORE R9A07G043_AX45MP_CORE0_CLK>,
-> > +                                <&cpg CPG_CORE R9A07G043_AX45MP_ACLK>;
-> > +
-> > +                       cpu0_intc: interrupt-controller {
-> > +                               #interrupt-cells = <1>;
-> > +                               compatible = "riscv,cpu-intc";
-> > +                               interrupt-controller;
-> > +                       };
-> > +               };
-> > +       };
-> > +
-> > +       soc: soc {
-> > +               compatible = "simple-bus";
-> > +               interrupt-parent = <&plic>;
-> > +               #address-cells = <2>;
-> > +               #size-cells = <2>;
-> > +               ranges;
-> > +
-> > +               scif0: serial@1004b800 {
-> > +                       compatible = "renesas,scif-r9a07g043",
-> > +                                    "renesas,scif-r9a07g044";
-> > +                       reg = <0 0x1004b800 0 0x400>;
-> > +                       interrupts = <412 IRQ_TYPE_LEVEL_HIGH>,
-> > +                                    <414 IRQ_TYPE_LEVEL_HIGH>,
-> > +                                    <415 IRQ_TYPE_LEVEL_HIGH>,
-> > +                                    <413 IRQ_TYPE_LEVEL_HIGH>,
-> > +                                    <416 IRQ_TYPE_LEVEL_HIGH>,
-> > +                                    <416 IRQ_TYPE_LEVEL_HIGH>;
-> > +                       interrupt-names = "eri", "rxi", "txi",
-> > +                                         "bri", "dri", "tei";
-> > +                       clocks = <&cpg CPG_MOD R9A07G043_SCIF0_CLK_PCK>;
-> > +                       clock-names = "fck";
-> > +                       power-domains = <&cpg>;
-> > +                       resets = <&cpg R9A07G043_SCIF0_RST_SYSTEM_N>;
-> > +                       status = "disabled";
-> > +               };
-> > +
-> > +               cpg: clock-controller@11010000 {
-> > +                       compatible = "renesas,r9a07g043-cpg";
-> > +                       reg = <0 0x11010000 0 0x10000>;
-> > +                       clocks = <&extal_clk>;
-> > +                       clock-names = "extal";
-> > +                       #clock-cells = <2>;
-> > +                       #reset-cells = <1>;
-> > +                       #power-domain-cells = <0>;
-> > +               };
-> > +
-> > +               sysc: system-controller@11020000 {
-> > +                       compatible = "renesas,r9a07g043-sysc";
-> > +                       reg = <0 0x11020000 0 0x10000>;
-> > +                       status = "disabled";
-> > +               };
-> > +
-> > +               pinctrl: pinctrl@11030000 {
-> > +                       compatible = "renesas,r9a07g043-pinctrl";
-> > +                       reg = <0 0x11030000 0 0x10000>;
-> > +                       gpio-controller;
-> > +                       #gpio-cells = <2>;
-> > +                       #interrupt-cells = <2>;
-> > +                       interrupt-controller;
-> > +                       gpio-ranges = <&pinctrl 0 0 152>;
-> > +                       clocks = <&cpg CPG_MOD R9A07G043_GPIO_HCLK>;
-> > +                       power-domains = <&cpg>;
-> > +                       resets = <&cpg R9A07G043_GPIO_RSTN>,
-> > +                                <&cpg R9A07G043_GPIO_PORT_RESETN>,
-> > +                                <&cpg R9A07G043_GPIO_SPARE_RESETN>;
-> > +               };
-> > +
-> > +               plic: interrupt-controller@12c00000 {
-> > +                       compatible = "renesas,r9a07g043-plic", "andestech,nceplic100";
-> > +                       #interrupt-cells = <2>;
-> > +                       #address-cells = <0>;
-> > +                       riscv,ndev = <543>;
-> > +                       interrupt-controller;
-> > +                       reg = <0x0 0x12c00000 0 0x400000>;
->
-> Does reg not usually get sorted after compatible?
-> For consistency in this file it should at least.
->
-Agreed will fix that.
-
-Cheers,
-Prabhakar
