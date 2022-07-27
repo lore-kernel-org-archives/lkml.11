@@ -2,70 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE748C19F2C
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 15:04:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D4CCC19F28
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 15:06:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232762AbiG0PEy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 11:04:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49698 "EHLO
+        id S233425AbiG0PGw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 11:06:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232807AbiG0PEv (ORCPT
+        with ESMTP id S232284AbiG0PGt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 11:04:51 -0400
-Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0219345F53;
-        Wed, 27 Jul 2022 08:04:49 -0700 (PDT)
-Received: from localhost (unknown [127.0.0.1])
-        by mail.nfschina.com (Postfix) with ESMTP id CE0871E80D89;
-        Wed, 27 Jul 2022 23:04:56 +0800 (CST)
-X-Virus-Scanned: amavisd-new at test.com
-Received: from mail.nfschina.com ([127.0.0.1])
-        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id Ijy2gFPFcoVt; Wed, 27 Jul 2022 23:04:54 +0800 (CST)
-Received: from localhost.localdomain (unknown [180.167.10.98])
-        (Authenticated sender: liqiong@nfschina.com)
-        by mail.nfschina.com (Postfix) with ESMTPA id 6E2401E80D54;
-        Wed, 27 Jul 2022 23:04:53 +0800 (CST)
-From:   Li Qiong <liqiong@nfschina.com>
-To:     Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        rds-devel@oss.oracle.com, linux-kernel@vger.kernel.org,
-        yuzhe@nfschina.com, renyu@nfschina.com, jiaming@nfschina.com,
-        Li Qiong <liqiong@nfschina.com>
-Subject: [PATCH] net/rds: Use PTR_ERR instead of IS_ERR for rdsdebug()
-Date:   Wed, 27 Jul 2022 23:03:41 +0800
-Message-Id: <20220727150341.23746-1-liqiong@nfschina.com>
-X-Mailer: git-send-email 2.11.0
+        Wed, 27 Jul 2022 11:06:49 -0400
+Received: from mail-io1-f43.google.com (mail-io1-f43.google.com [209.85.166.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C29CA2E6A8;
+        Wed, 27 Jul 2022 08:06:48 -0700 (PDT)
+Received: by mail-io1-f43.google.com with SMTP id e69so13772522iof.5;
+        Wed, 27 Jul 2022 08:06:48 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=I+Wo8Z2vtq8v8ZDTFu137lzidph+nIAzDw0CaJdsoA4=;
+        b=BwgCXS/Z20M3Sai3Xa8XYQIcIeHtgIaGC4Cz7SsfsDdNY8hzdFATTWEKZ190qxsOsB
+         nZI2QyUZulKpR7fq8H+U6rQL0Bbp/gRRj+WOha6wf5q6C+joGQZL8WgL2iDQJ1Hrho+D
+         CMSe/jDgJmYVHFptyIZ3yJNlvh4y2j0G7MglHM6gwcgwufBDXPT0a9WaJ1nuD2lSAqj5
+         /BnyaiAza6hsyAU7+WwUsjqN7fdPTat1kjzRM/BPWj5bLrlnMFXRIbTYBA8rdwe2g/JK
+         FzjlJOakKZZd5VGfsrbSDXrVyo4dv7mgpjCBYHh0gOgt8PlK8HdQZeJqE2BFKT22Tem1
+         Bl8Q==
+X-Gm-Message-State: AJIora80qvoSigWnaGjZMt0L1XM1+JSNK7uwiUNEFHKjunjH24Qf82vv
+        UGBqrbvAZPL0IpjkwcX4LQ==
+X-Google-Smtp-Source: AGRyM1tT0ZB91E444DVbZyN4xdFJRhnMvmRyvzvn1Ms1ySxN4bPGQ4iKn+fe4JHaG1BwcLDV7jVtsw==
+X-Received: by 2002:a05:6638:379b:b0:33f:6a8f:cd22 with SMTP id w27-20020a056638379b00b0033f6a8fcd22mr9008229jal.102.1658934408031;
+        Wed, 27 Jul 2022 08:06:48 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id s66-20020a025145000000b00339e669df91sm7979892jaa.153.2022.07.27.08.06.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jul 2022 08:06:47 -0700 (PDT)
+Received: (nullmailer pid 2668204 invoked by uid 1000);
+        Wed, 27 Jul 2022 15:06:45 -0000
+Date:   Wed, 27 Jul 2022 09:06:45 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     linux-gpio@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Andy Gross <agross@kernel.org>, linux-arm-msm@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: pinctrl: qcom,pmic-gpio: add PM8226
+ constraints
+Message-ID: <20220727150645.GA2668145-robh@kernel.org>
+References: <20220726115202.99108-1-krzysztof.kozlowski@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220726115202.99108-1-krzysztof.kozlowski@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If 'local_odp_mr->r_trans_private' is a error code,
-it is better to print the error code than to print
-the value of IS_ERR().
+On Tue, 26 Jul 2022 13:52:02 +0200, Krzysztof Kozlowski wrote:
+> Document the constraints (number of GPIOs) for PM8226 variant.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> ---
+>  Documentation/devicetree/bindings/pinctrl/qcom,pmic-gpio.yaml | 1 +
+>  1 file changed, 1 insertion(+)
+> 
 
-Signed-off-by: Li Qiong <liqiong@nfschina.com>
----
- net/rds/rdma.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/rds/rdma.c b/net/rds/rdma.c
-index 6f1a50d50d06..fba82d36593a 100644
---- a/net/rds/rdma.c
-+++ b/net/rds/rdma.c
-@@ -742,7 +742,7 @@ int rds_cmsg_rdma_args(struct rds_sock *rs, struct rds_message *rm,
- 					NULL, 0, rs, &local_odp_mr->r_key, NULL,
- 					iov->addr, iov->bytes, ODP_VIRTUAL);
- 			if (IS_ERR(local_odp_mr->r_trans_private)) {
--				ret = IS_ERR(local_odp_mr->r_trans_private);
-+				ret = PTR_ERR(local_odp_mr->r_trans_private);
- 				rdsdebug("get_mr ret %d %p\"", ret,
- 					 local_odp_mr->r_trans_private);
- 				kfree(local_odp_mr);
--- 
-2.11.0
-
+Acked-by: Rob Herring <robh@kernel.org>
