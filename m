@@ -2,51 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E7FEC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 20:38:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A843C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 20:42:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233276AbiG0Ui4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 16:38:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39454 "EHLO
+        id S233814AbiG0Ul7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 16:41:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229653AbiG0Uiz (ORCPT
+        with ESMTP id S229924AbiG0Ul5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 16:38:55 -0400
-X-Greylist: delayed 594 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 27 Jul 2022 13:38:54 PDT
-Received: from mail.bsqueak.com (mail.bsqueak.com [71.254.102.134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20C31140C3
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 13:38:54 -0700 (PDT)
-Received: from bsqueak.com (unknown [192.168.8.1])
-        by mail.bsqueak.com (Postfix) with ESMTPS id 101B31887A99
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 20:28:15 +0000 (UTC)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.bsqueak.com 101B31887A99
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bsqueak.com;
-        s=email; t=1658953696;
-        bh=oQpM7xj81jarkFoyR3Y5P8ZmqzUe3DTC8O+P1ctMsYw=;
-        h=Reply-To:From:To:Subject:Date:From;
-        z=Reply-To:=20info.firstheritageloans@gmail.com|From:=20Jimm=20Falt
-         ersack=20<craig@bsqueak.com>|To:=20linux-kernel@vger.kernel.org|Su
-         bject:=20Brauchen=20Sie=20einen=20Kredit=20?|Date:=2027=20Jul=2020
-         22=2022:26:53=20+0200;
-        b=RDdcP79lcuRQLsVgWV/RIbZMARyqdF1a42XhCM4ZPgmb17JM1ov87SM9SqkgkJec7
-         o+cyKrJ9udNmO1oZirneQBjFXFfYohKxYQl622/wZBnzuV99aZYQ5qsfROQA4Sbr2U
-         K5fsLvsgufWdI38Jb40qrtMUTVjpKspsRX+AHX/0=
-Reply-To: info.firstheritageloans@gmail.com
-From:   Jimm Faltersack <craig@bsqueak.com>
-To:     linux-kernel@vger.kernel.org
-Subject: Brauchen Sie einen Kredit ?
-Date:   27 Jul 2022 22:26:53 +0200
-Message-ID: <20220727222653.1B96FD1D6A85A0D3@bsqueak.com>
+        Wed, 27 Jul 2022 16:41:57 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90E4450057
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 13:41:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658954516; x=1690490516;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=cBy4FodWZnHqf7//8vQ019DMO0qEwapi7UZ8kTuLDBw=;
+  b=HaXDrOFC96aa/X8M16axR2fWZR3Ldh9ztgflpEbTUHeqybugaKuJszxo
+   rS0+yGSxi3h3h9YyRGkwvByq0pkk98lJhccjwidcLEsvVoApuWqG0JeDf
+   xN+WBRfpUIxCKr53DsHtVA1meKlXzwakPJjMfW8NTnsupTEDuFo/Hcf/n
+   iRVnnDc71iT82P0UFRx4bhTvuTvo1ODqbG8Ws1iyY7yAxmM9hdlBOwhxv
+   /rfY8tacypxnYsuxS7JbeF0178cgfiH81MFE9U3u513P1yzfQw7yFmMJI
+   8hhfol7da5hD5lEMgiltmUB0r3HNgGMLNI1tcDI0icHouK+gLWe3FNeHS
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10421"; a="268726240"
+X-IronPort-AV: E=Sophos;i="5.93,196,1654585200"; 
+   d="scan'208";a="268726240"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2022 13:41:56 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,196,1654585200"; 
+   d="scan'208";a="550993499"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 27 Jul 2022 13:41:54 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oGnqr-000966-23;
+        Wed, 27 Jul 2022 20:41:53 +0000
+Date:   Thu, 28 Jul 2022 04:41:48 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Volodymyr Mytnyk <vmytnyk@marvell.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Vadym Kochan <vkochan@marvell.com>,
+        Yevhen Orlov <yevhen.orlov@plvision.eu>,
+        Taras Chornyi <tchornyi@marvell.com>
+Subject: include/linux/compiler_types.h:322:45: error: call to
+ '__compiletime_assert_366' declared with attribute error: BUILD_BUG_ON
+ failed: sizeof(struct prestera_msg_event_fdb) != 20
+Message-ID: <202207280401.jA7KdKlp-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Wir bieten Gesch=C3=A4fts- und Privatkredite bis zu 10 Millionen=20
-Dollar/Euro zu einem Zinssatz von 2 % an.
-WhatsApp: +1 (205) 852-6811
-info.firstheritageloans@gmail.com
+Hi Volodymyr,
 
+FYI, the error/warning still remains.
+
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   6e7765cb477a9753670d4351d14de93f1e9dbbd4
+commit: bb5dbf2cc64d5cfa696765944c784c0010c48ae8 net: marvell: prestera: add firmware v4.0 support
+date:   9 months ago
+config: arm-randconfig-r022-20220727 (https://download.01.org/0day-ci/archive/20220728/202207280401.jA7KdKlp-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=bb5dbf2cc64d5cfa696765944c784c0010c48ae8
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout bb5dbf2cc64d5cfa696765944c784c0010c48ae8
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   drivers/net/ethernet/marvell/prestera/prestera_hw.c:284:1: warning: alignment 1 of 'union prestera_msg_port_param' is less than 4 [-Wpacked-not-aligned]
+     284 | } __packed;
+         | ^
+   In file included from <command-line>:
+   In function 'prestera_hw_build_tests',
+       inlined from 'prestera_hw_switch_init' at drivers/net/ethernet/marvell/prestera/prestera_hw.c:788:2:
+>> include/linux/compiler_types.h:322:45: error: call to '__compiletime_assert_366' declared with attribute error: BUILD_BUG_ON failed: sizeof(struct prestera_msg_event_fdb) != 20
+     322 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+         |                                             ^
+   include/linux/compiler_types.h:303:25: note: in definition of macro '__compiletime_assert'
+     303 |                         prefix ## suffix();                             \
+         |                         ^~~~~~
+   include/linux/compiler_types.h:322:9: note: in expansion of macro '_compiletime_assert'
+     322 |         _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+         |         ^~~~~~~~~~~~~~~~~~~
+   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
+      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
+         |                                     ^~~~~~~~~~~~~~~~~~
+   include/linux/build_bug.h:50:9: note: in expansion of macro 'BUILD_BUG_ON_MSG'
+      50 |         BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
+         |         ^~~~~~~~~~~~~~~~
+   drivers/net/ethernet/marvell/prestera/prestera_hw.c:531:9: note: in expansion of macro 'BUILD_BUG_ON'
+     531 |         BUILD_BUG_ON(sizeof(struct prestera_msg_event_fdb) != 20);
+         |         ^~~~~~~~~~~~
+
+
+vim +/__compiletime_assert_366 +322 include/linux/compiler_types.h
+
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  308  
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  309  #define _compiletime_assert(condition, msg, prefix, suffix) \
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  310  	__compiletime_assert(condition, msg, prefix, suffix)
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  311  
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  312  /**
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  313   * compiletime_assert - break build and emit msg if condition is false
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  314   * @condition: a compile-time constant condition to check
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  315   * @msg:       a message to emit if condition is false
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  316   *
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  317   * In tradition of POSIX assert, this macro will break the build if the
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  318   * supplied condition is *false*, emitting the supplied error message if the
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  319   * compiler has support to do so.
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  320   */
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  321  #define compiletime_assert(condition, msg) \
+eb5c2d4b45e3d2 Will Deacon 2020-07-21 @322  	_compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+eb5c2d4b45e3d2 Will Deacon 2020-07-21  323  
+
+:::::: The code at line 322 was first introduced by commit
+:::::: eb5c2d4b45e3d2d5d052ea6b8f1463976b1020d5 compiler.h: Move compiletime_assert() macros into compiler_types.h
+
+:::::: TO: Will Deacon <will@kernel.org>
+:::::: CC: Will Deacon <will@kernel.org>
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
