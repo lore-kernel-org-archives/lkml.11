@@ -2,123 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DD8DC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 15:40:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A661C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 15:40:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233559AbiG0PkP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 11:40:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44344 "EHLO
+        id S234031AbiG0PkY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 11:40:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229867AbiG0PkK (ORCPT
+        with ESMTP id S233964AbiG0PkU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 11:40:10 -0400
-X-Greylist: delayed 423 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 27 Jul 2022 08:40:05 PDT
-Received: from mail.sai.msu.ru (mail.sai.msu.ru [93.180.27.60])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE7283DBEB;
-        Wed, 27 Jul 2022 08:40:05 -0700 (PDT)
-Received: from oak.local (unknown [83.167.113.121])
-        by mail.sai.msu.ru (Postfix) with ESMTPSA id 102DD1603C6;
-        Wed, 27 Jul 2022 15:32:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=sai.msu.ru; s=mail;
-        t=1658935979; bh=XqSc/cfsfhBrKEn3XCkL9QnEX/0FNbuSlrJn/D5KsNw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ywKNO55fBkQaWNL1GaF+KhqBCZNM8nnGyMUwdwFMoGUixmPTTuIomlSJfuBfkA4i8
-         yOyQ46K9TO43+dV5rp9Lm7f6KxYUq5jGBVp/1M+kE7P/FfCAJn4rS2+x6w5NFAVSBB
-         JSM6uNyEVbZnQeWHi1DSYB3QFNzJC9zuREomM4PlRazGui8UM0UjNwYtkOYx1pkGQo
-         meqGrrx9LLNzL+611+Jr9DzyJ/zdg59vN+Dl1pOv8VXtEQ30RWkLgPUYSOJ710jhuI
-         TmzO20KG33yoU7nW4GNtP93Bzz0xfmTaTJVonq57Bd5vJOyKnUztqMliNQr3Mu2cN4
-         COqRSwHeY3BkQ==
-From:   "Matwey V. Kornilov" <matwey@sai.msu.ru>
-To:     hdegoede@redhat.com
-Cc:     andriy.shevchenko@linux.intel.com, carlo@endlessm.com,
-        davem@davemloft.net, hkallweit1@gmail.com, js@sig21.net,
-        linux-clk@vger.kernel.org, linux-wireless@vger.kernel.org,
-        matwey.kornilov@gmail.com, mturquette@baylibre.com,
-        netdev@vger.kernel.org, pierre-louis.bossart@linux.intel.com,
-        sboyd@kernel.org, markgross@kernel.org,
-        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
-        paul.gortmaker@windriver.com,
-        "Matwey V. Kornilov" <matwey@sai.msu.ru>, stable@vger.kernel.org
-Subject: [PATCH] platform/x86: pmc_atom: Add DMI quirk for Lex 3I380A/CW boards
-Date:   Wed, 27 Jul 2022 18:32:32 +0300
-Message-Id: <20220727153232.13359-1-matwey@sai.msu.ru>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: 08c744e6-385b-8fcf-ecdf-1292b5869f94@redhat.com
-References: 
+        Wed, 27 Jul 2022 11:40:20 -0400
+Received: from mail-il1-f172.google.com (mail-il1-f172.google.com [209.85.166.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E16DD60C2;
+        Wed, 27 Jul 2022 08:40:19 -0700 (PDT)
+Received: by mail-il1-f172.google.com with SMTP id d4so9006575ilc.8;
+        Wed, 27 Jul 2022 08:40:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=t3FU8d4Wj0M3Eyh9HoxKqYpBbMzTEHv/yrad80ETmLM=;
+        b=fR5FECsJJydlsO1Rp/lnHYyuKt3Z5o271o7GDFoF14ZkM0lX9De6WXPZBzFVpt13VE
+         B4Fz+R/x7Ob2RQpwhVO5mSkRVVLPiMXHkONqjM9CPWenfGseNakjSiVScF4lxNHyrtwh
+         HQDu+OCtr3WUX43qegO2evBxlmZa2DTWj6nO4uL3yrcGROKRi1o9q+XPglk7uhtLRZ3+
+         4aaGaQ8vXsMXmkzpoj9jbTP4U7OXtBU7cT4cT5THXCpnqIlSnEU7xc13bPHp4tZvSZen
+         kTPwwWjVdh/kgUD3aNfaZSdxJ0MI1q1AmeXi752G6+NMsNwsnCUPZ7dSSTa6T3bBBzLz
+         KUdQ==
+X-Gm-Message-State: AJIora+W3fxrtnVgW1E49JbTJa6ot7sJtBC54Pd/Pic9x+mFlPesDqfo
+        Sf1OaBpVa0HWcrPXmHCfq2JrqA+F1w==
+X-Google-Smtp-Source: AGRyM1t20vXhVdoB7I3TKoBxYqHb5rVTy2avw7tGmc9yR+PHWyeHgKTvBxryzQ/rY+Tf9/sCSO06FQ==
+X-Received: by 2002:a05:6e02:1bca:b0:2dc:c06d:9212 with SMTP id x10-20020a056e021bca00b002dcc06d9212mr8254407ilv.58.1658936419106;
+        Wed, 27 Jul 2022 08:40:19 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id m128-20020a6b3f86000000b006794eecbce3sm8507967ioa.18.2022.07.27.08.40.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jul 2022 08:40:18 -0700 (PDT)
+Received: (nullmailer pid 2722149 invoked by uid 1000);
+        Wed, 27 Jul 2022 15:40:16 -0000
+Date:   Wed, 27 Jul 2022 09:40:16 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-renesas-soc@vger.kernel.org, linux-gpio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Subject: Re: [PATCH] dt-bindings: pinctrl: renesas: Document RZ/Five SoC
+Message-ID: <20220727154016.GA2719108-robh@kernel.org>
+References: <20220726175315.1147-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220726175315.1147-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Lex 3I380A/CW (Atom E3845) motherboards are equipped with dual Intel I211
-based 1Gbps copper ethernet:
+On Tue, Jul 26, 2022 at 06:53:15PM +0100, Lad Prabhakar wrote:
+> RZ/Five SoC is pin compatible with RZ/G2UL (Type 1) SoC. This patch
+> updates the comment to include RZ/Five SoC so that we make it clear
+> "renesas,r9a07g043-pinctrl" compatible string will be used for RZ/Five
+> SoC.
+> 
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> ---
+>  .../devicetree/bindings/pinctrl/renesas,rzg2l-pinctrl.yaml      | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-     http://www.lex.com.tw/products/pdf/3I380A&3I380CW.pdf
+Same comments as here[1].
 
-This patch is to fix the issue with broken "LAN2" port. Before the
-patch, only one ethernet port is initialized:
+Rob
 
-     igb 0000:01:00.0: added PHC on eth0
-     igb 0000:01:00.0: Intel(R) Gigabit Ethernet Network Connection
-     igb 0000:01:00.0: eth0: (PCIe:2.5Gb/s:Width x1) 4c:02:89:10:02:e4
-     igb 0000:01:00.0: eth0: PBA No: FFFFFF-0FF
-     igb 0000:01:00.0: Using MSI-X interrupts. 2 rx queue(s), 2 tx queue(s)
-     igb: probe of 0000:02:00.0 failed with error -2
-
-With this patch, both ethernet ports are available:
-
-     igb 0000:01:00.0: added PHC on eth0
-     igb 0000:01:00.0: Intel(R) Gigabit Ethernet Network Connection
-     igb 0000:01:00.0: eth0: (PCIe:2.5Gb/s:Width x1) 4c:02:89:10:02:e4
-     igb 0000:01:00.0: eth0: PBA No: FFFFFF-0FF
-     igb 0000:01:00.0: Using MSI-X interrupts. 2 rx queue(s), 2 tx queue(s)
-     igb 0000:02:00.0: added PHC on eth1
-     igb 0000:02:00.0: Intel(R) Gigabit Ethernet Network Connection
-     igb 0000:02:00.0: eth1: (PCIe:2.5Gb/s:Width x1) 4c:02:89:10:02:e5
-     igb 0000:02:00.0: eth1: PBA No: FFFFFF-0FF
-     igb 0000:02:00.0: Using MSI-X interrupts. 2 rx queue(s), 2 tx queue(s)
-
-The issue was observed at 3I380A board with BIOS version "A4 01/15/2016"
-and 3I380CW board with BIOS version "A3 09/29/2014".
-
-Reference: https://lore.kernel.org/netdev/08c744e6-385b-8fcf-ecdf-1292b5869f94@redhat.com/
-Fixes: 648e921888ad ("clk: x86: Stop marking clocks as CLK_IS_CRITICAL")
-Cc: <stable@vger.kernel.org> # v4.19+
-Signed-off-by: Matwey V. Kornilov <matwey@sai.msu.ru>
----
- drivers/platform/x86/pmc_atom.c | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
-
-diff --git a/drivers/platform/x86/pmc_atom.c b/drivers/platform/x86/pmc_atom.c
-index b8b1ed1406de..5dc82667907b 100644
---- a/drivers/platform/x86/pmc_atom.c
-+++ b/drivers/platform/x86/pmc_atom.c
-@@ -388,6 +388,24 @@ static const struct dmi_system_id critclk_systems[] = {
- 			DMI_MATCH(DMI_PRODUCT_NAME, "CEC10 Family"),
- 		},
- 	},
-+	{
-+		/* pmc_plt_clk* - are used for ethernet controllers */
-+		.ident = "Lex 3I380A",
-+		.callback = dmi_callback,
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "Lex BayTrail"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "3I380A"),
-+		},
-+	},
-+	{
-+		/* pmc_plt_clk* - are used for ethernet controllers */
-+		.ident = "Lex 3I380CW",
-+		.callback = dmi_callback,
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "Lex BayTrail"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "3I380CW"),
-+		},
-+	},
- 	{
- 		/* pmc_plt_clk0 - 3 are used for the 4 ethernet controllers */
- 		.ident = "Lex 3I380D",
--- 
-2.35.3
-
+[1] https://lore.kernel.org/all/20220727153738.GA2696116-robh@kernel.org/
