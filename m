@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2675C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:43:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72A04C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:43:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242935AbiG0Rn3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:43:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37154 "EHLO
+        id S242856AbiG0Rnc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:43:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242931AbiG0Rm5 (ORCPT
+        with ESMTP id S242739AbiG0Rm6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:42:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB77B62A50;
-        Wed, 27 Jul 2022 09:52:21 -0700 (PDT)
+        Wed, 27 Jul 2022 13:42:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23CD654656;
+        Wed, 27 Jul 2022 09:52:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C4E660D3B;
-        Wed, 27 Jul 2022 16:52:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2475CC433C1;
-        Wed, 27 Jul 2022 16:52:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E0E0616D1;
+        Wed, 27 Jul 2022 16:52:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B06AC433C1;
+        Wed, 27 Jul 2022 16:52:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940739;
-        bh=nuk6k46O1twf9CdjFjcfM3U4cWPkm33h0fNx0B0HY3c=;
+        s=korg; t=1658940733;
+        bh=A4PSEb0B3P0mqsdnh4osQB/Gotdxco+7iYeqMIbckC8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oUAmARHiE9bYAMdfJx9fMrSoxKcWbCVw0wPEGVXigak0F7TJcSENQxepiwJSOmwdq
-         sMNWmDvn1FyJfC9Q87dIjlkwjEPtppL0G9MK9HFLBTA+rRWHFWsZvi1PyJhU8urwV8
-         mmET15ioMflC3MnkWF/SNOs+PwjthNDXo4KnLDpU=
+        b=itvK3J/0WE+cT/J3QsNCX3C6l1QAN07iHuzpUIzj7FjNpPeVLtqstsBdl10oabR0v
+         A0kO2B3y0RCPqAQ9aT5dRsbe+bb9qqrZdubCo1rX63lNnC7K/TEvVLX8MaHdjka2m/
+         9banBrlOE8hsk5BCjdR2jAHG/cPj46BqIAzHsiQc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-        Gavin Shan <gshan@redhat.com>,
-        Oliver Upton <oliver.upton@linux.dev>,
-        Andrew Jones <andrew.jones@linux.dev>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.18 130/158] KVM: selftests: Fix target thread to be migrated in rseq_test
-Date:   Wed, 27 Jul 2022 18:13:14 +0200
-Message-Id: <20220727161026.610932328@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Kent Gibson <warthog618@gmail.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 128/158] selftests: gpio: fix include path to kernel headers for out of tree builds
+Date:   Wed, 27 Jul 2022 18:13:12 +0200
+Message-Id: <20220727161026.541816139@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -51,87 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gavin Shan <gshan@redhat.com>
+From: Kent Gibson <warthog618@gmail.com>
 
-commit e923b0537d28e15c9d31ce8b38f810b325816903 upstream.
+[ Upstream commit f63731e18e8d8350e05b0176e39a76639f6483c7 ]
 
-In rseq_test, there are two threads, which are vCPU thread and migration
-worker separately. Unfortunately, the test has the wrong PID passed to
-sched_setaffinity() in the migration worker. It forces migration on the
-migration worker because zeroed PID represents the calling thread, which
-is the migration worker itself. It means the vCPU thread is never enforced
-to migration and it can migrate at any time, which eventually leads to
-failure as the following logs show.
+When building selftests out of the kernel tree the gpio.h the include
+path is incorrect and the build falls back to the system includes
+which may be outdated.
 
-  host# uname -r
-  5.19.0-rc6-gavin+
-  host# # cat /proc/cpuinfo | grep processor | tail -n 1
-  processor    : 223
-  host# pwd
-  /home/gavin/sandbox/linux.main/tools/testing/selftests/kvm
-  host# for i in `seq 1 100`; do \
-        echo "--------> $i"; ./rseq_test; done
-  --------> 1
-  --------> 2
-  --------> 3
-  --------> 4
-  --------> 5
-  --------> 6
-  ==== Test Assertion Failure ====
-    rseq_test.c:265: rseq_cpu == cpu
-    pid=3925 tid=3925 errno=4 - Interrupted system call
-       1  0x0000000000401963: main at rseq_test.c:265 (discriminator 2)
-       2  0x0000ffffb044affb: ?? ??:0
-       3  0x0000ffffb044b0c7: ?? ??:0
-       4  0x0000000000401a6f: _start at ??:?
-    rseq CPU = 4, sched CPU = 27
+Add the KHDR_INCLUDES to the CFLAGS to include the gpio.h from the
+build tree.
 
-Fix the issue by passing correct parameter, TID of the vCPU thread, to
-sched_setaffinity() in the migration worker.
-
-Fixes: 61e52f1630f5 ("KVM: selftests: Add a test for KVM_RUN+rseq to detect task migration bugs")
-Suggested-by: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Gavin Shan <gshan@redhat.com>
-Reviewed-by: Oliver Upton <oliver.upton@linux.dev>
-Message-Id: <20220719020830.3479482-1-gshan@redhat.com>
-Reviewed-by: Andrew Jones <andrew.jones@linux.dev>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 4f4d0af7b2d9 ("selftests: gpio: restore CFLAGS options")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Kent Gibson <warthog618@gmail.com>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/kvm/rseq_test.c |    8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ tools/testing/selftests/gpio/Makefile | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/tools/testing/selftests/kvm/rseq_test.c
-+++ b/tools/testing/selftests/kvm/rseq_test.c
-@@ -82,8 +82,9 @@ static int next_cpu(int cpu)
- 	return cpu;
- }
+diff --git a/tools/testing/selftests/gpio/Makefile b/tools/testing/selftests/gpio/Makefile
+index 71b306602368..616ed4019655 100644
+--- a/tools/testing/selftests/gpio/Makefile
++++ b/tools/testing/selftests/gpio/Makefile
+@@ -3,6 +3,6 @@
+ TEST_PROGS := gpio-mockup.sh gpio-sim.sh
+ TEST_FILES := gpio-mockup-sysfs.sh
+ TEST_GEN_PROGS_EXTENDED := gpio-mockup-cdev gpio-chip-info gpio-line-name
+-CFLAGS += -O2 -g -Wall -I../../../../usr/include/
++CFLAGS += -O2 -g -Wall -I../../../../usr/include/ $(KHDR_INCLUDES)
  
--static void *migration_worker(void *ign)
-+static void *migration_worker(void *__rseq_tid)
- {
-+	pid_t rseq_tid = (pid_t)(unsigned long)__rseq_tid;
- 	cpu_set_t allowed_mask;
- 	int r, i, cpu;
- 
-@@ -106,7 +107,7 @@ static void *migration_worker(void *ign)
- 		 * stable, i.e. while changing affinity is in-progress.
- 		 */
- 		smp_wmb();
--		r = sched_setaffinity(0, sizeof(allowed_mask), &allowed_mask);
-+		r = sched_setaffinity(rseq_tid, sizeof(allowed_mask), &allowed_mask);
- 		TEST_ASSERT(!r, "sched_setaffinity failed, errno = %d (%s)",
- 			    errno, strerror(errno));
- 		smp_wmb();
-@@ -231,7 +232,8 @@ int main(int argc, char *argv[])
- 	vm = vm_create_default(VCPU_ID, 0, guest_code);
- 	ucall_init(vm, NULL);
- 
--	pthread_create(&migration_thread, NULL, migration_worker, 0);
-+	pthread_create(&migration_thread, NULL, migration_worker,
-+		       (void *)(unsigned long)gettid());
- 
- 	for (i = 0; !done; i++) {
- 		vcpu_run(vm, VCPU_ID);
+ include ../lib.mk
+-- 
+2.35.1
+
 
 
