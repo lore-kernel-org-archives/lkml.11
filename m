@@ -2,87 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72D51C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 14:24:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23DD6C19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 14:24:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233653AbiG0OYR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 10:24:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49520 "EHLO
+        id S233719AbiG0OYt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 10:24:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233695AbiG0OYF (ORCPT
+        with ESMTP id S233565AbiG0OYq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 10:24:05 -0400
-Received: from sender-of-o53.zoho.in (sender-of-o53.zoho.in [103.117.158.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCB2A24BC8;
-        Wed, 27 Jul 2022 07:24:03 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1658931818; cv=none; 
-        d=zohomail.in; s=zohoarc; 
-        b=Gn6024WfIqYtxX409/CLXpvCxOVLgbqFJ6qEMea3xTxlY7nwj/9Q9JJrsB0EcxnhgVOQzVC2p8IygGnoZA8HmOcnHuzSa6a9EwwwNIeSSujseaj493ETZ119KI6D0Uk7yMtBbT2gqPq4Lqz6xFC4BCkw8S8gBeapv+Dbhm5+Umk=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
-        t=1658931818; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=vJz648pDJtTE6Zea5RSkp7IQnH9AlpVg9o0A4CGYeA0=; 
-        b=ciEOj1Fr/2J5wyyAk/UMgLQIynSBGzd3zTddvhElc65sGCBvN4h27IKVqUdaRYy1HNyOImWTt29vbF16MLl8c/D3NLEz135bscA/ilTkCy/rvo0A4Jt/KYx94vz/ZJ6AdE0cGOpp6lgqhSObUR175oHzI2WgUB4AtuK8Gi4Isk0=
-ARC-Authentication-Results: i=1; mx.zohomail.in;
-        dkim=pass  header.i=siddh.me;
-        spf=pass  smtp.mailfrom=code@siddh.me;
-        dmarc=pass header.from=<code@siddh.me>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1658931818;
-        s=zmail; d=siddh.me; i=code@siddh.me;
-        h=Date:Date:From:From:To:To:Cc:Cc:Message-ID:In-Reply-To:References:Subject:Subject:MIME-Version:Content-Type:Content-Transfer-Encoding:Message-Id:Reply-To;
-        bh=vJz648pDJtTE6Zea5RSkp7IQnH9AlpVg9o0A4CGYeA0=;
-        b=ZQCB67Mu/wHCWnMIR0ae4dmc5rffor0LThYV+OyZtrTDNBN50Kq9kHAK56CX6U68
-        cSptNF2hfrpmvhv1IkhduRq6lnqBT5Vz0L825c0y/faH3LGS17I5CE6OYFLfxBCGJ3E
-        58kQiv9Bfw9A1RUBTAQAnu+d/6FjeJ/IToUDWh4g=
-Received: from mail.zoho.in by mx.zoho.in
-        with SMTP id 1658931806891187.92810589018586; Wed, 27 Jul 2022 19:53:26 +0530 (IST)
-Date:   Wed, 27 Jul 2022 19:53:26 +0530
-From:   Siddh Raman Pant <code@siddh.me>
-To:     "David Howells" <dhowells@redhat.com>
-Cc:     "Christophe JAILLET" <christophe.jaillet@wanadoo.fr>,
-        "Eric Dumazet" <edumazet@google.com>,
-        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>,
-        "linux-security-modules" <linux-security-module@vger.kernel.org>,
-        "linux-kernel" <linux-kernel@vger.kernel.org>,
-        "linux-kernel-mentees" 
-        <linux-kernel-mentees@lists.linuxfoundation.org>,
-        "syzbot+c70d87ac1d001f29a058" 
-        <syzbot+c70d87ac1d001f29a058@syzkaller.appspotmail.com>
-Message-ID: <182400a8296.20631a172223.5777840252698367587@siddh.me>
-In-Reply-To: <3473429.1658931342@warthog.procyon.org.uk>
-References: <20220723135447.199557-1-code@siddh.me> <3473429.1658931342@warthog.procyon.org.uk>
-Subject: Re: [PATCH] kernel/watch_queue: Make pipe NULL while clearing
- watch_queue
+        Wed, 27 Jul 2022 10:24:46 -0400
+Received: from shelob.surriel.com (shelob.surriel.com [96.67.55.147])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F24E624BC8;
+        Wed, 27 Jul 2022 07:24:45 -0700 (PDT)
+Received: from [2603:3005:d05:2b00:6e0b:84ff:fee2:98bb] (helo=imladris.surriel.com)
+        by shelob.surriel.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <riel@shelob.surriel.com>)
+        id 1oGhxl-0008Bo-Ua;
+        Wed, 27 Jul 2022 10:24:37 -0400
+Date:   Wed, 27 Jul 2022 10:24:37 -0400
+From:   Rik van Riel <riel@surriel.com>
+To:     Josh Poimboeuf <jpoimboe@kernel.org>
+Cc:     Petr Mladek <pmladek@suse.com>, linux-kernel@vger.kernel.org,
+        live-patching@vger.kernel.org, kernel-team@fb.com,
+        Jiri Kosina <jikos@kernel.org>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Breno Leitao <leitao@debian.org>
+Subject: [PATCH v4] livepatch: fix race between fork and KLP transition
+Message-ID: <20220727102437.34530586@imladris.surriel.com>
+In-Reply-To: <20220727001040.vlqnnb4a3um46746@treble>
+References: <20220720121023.043738bb@imladris.surriel.com>
+        <YtrCqMLUqJlcoqIo@alley>
+        <20220722150106.683f3704@imladris.surriel.com>
+        <Yt6bZo5ztnVSjLLC@alley>
+        <20220725094919.52bcde19@imladris.surriel.com>
+        <20220727001040.vlqnnb4a3um46746@treble>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Importance: Medium
-User-Agent: Zoho Mail
-X-Mailer: Zoho Mail
+Sender: riel@shelob.surriel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 27 Jul 2022 19:45:42 +0530  David Howells <dhowells@redhat.com> wrote:
-> Siddh Raman Pant <code@siddh.me> wrote:
-> 
-> > +++ b/kernel/watch_queue.c
-> > ...
-> >+#ifdef CONFIG_WATCH_QUEUE
-> 
-> But it says:
-> 
-> obj-$(CONFIG_WATCH_QUEUE) += watch_queue.o
-> 
-> in the Makefile.
-> 
-> David
-> 
-> 
+v4: address changelog comments by Josh (thank you)
 
-Yes, that's what I realised and meant in reply to Khalid.
+---8<---
+When a KLP fails to apply, klp_reverse_transition will clear the
+TIF_PATCH_PENDING flag on all tasks, except for newly created tasks
+which are not on the task list yet. A similar race is possible
+for normal (forward) transitions, where TIF_PATCH_PENDING gets
+copied to the child, then later cleared in the parent.
 
-I had sent a v2, which you can find here:
-https://lore.kernel.org/linux-kernel/20220724040240.7842-1-code@siddh.me/
+Meanwhile, fork will copy over the TIF_PATCH_PENDING flag from the
+parent to the child early on, in dup_task_struct -> setup_thread_stack.
 
-Thanks,
-Siddh
+Much later, klp_copy_process will set child->patch_state to match
+that of the parent.
+
+However, the parent's patch_state may have been changed by KLP loading
+or unloading since it was initially copied over into the child.
+
+This results in the KLP code occasionally hitting this warning in
+klp_complete_transition:
+
+        for_each_process_thread(g, task) {
+                WARN_ON_ONCE(test_tsk_thread_flag(task, TIF_PATCH_PENDING));
+                task->patch_state = KLP_UNDEFINED;
+        }
+
+Set, or clear, the TIF_PATCH_PENDING flag in the child task
+depending on whether or not it is needed at the time
+klp_copy_process is called, at a point in copy_process where the
+tasklist_lock is held exclusively, preventing races with the KLP
+code.
+
+The KLP code does have a few places where the state is changed
+without the tasklist_lock held, but those should not cause
+problems because klp_update_patch_state(current) cannot be
+called while the current task is in the middle of fork,
+klp_check_and_switch_task() which is called under the pi_lock,
+which prevents rescheduling, and manipulation of the patch
+state of idle tasks, which do not fork.
+
+This should prevent this warning from triggering again in the
+future, and close the race for both normal and reverse transitions.
+
+Signed-off-by: Rik van Riel <riel@surriel.com>
+Reported-by: Breno Leitao <leitao@debian.org>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Acked-by: Josh Poimboeuf <jpoimboe@kernel.org>
+Fixes: d83a7cb375ee ("livepatch: change to a per-task consistency model")
+Cc: stable@kernel.org
+---
+ kernel/livepatch/transition.c | 18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/livepatch/transition.c b/kernel/livepatch/transition.c
+index 5d03a2ad1066..30187b1d8275 100644
+--- a/kernel/livepatch/transition.c
++++ b/kernel/livepatch/transition.c
+@@ -610,9 +610,23 @@ void klp_reverse_transition(void)
+ /* Called from copy_process() during fork */
+ void klp_copy_process(struct task_struct *child)
+ {
+-	child->patch_state = current->patch_state;
+ 
+-	/* TIF_PATCH_PENDING gets copied in setup_thread_stack() */
++	/*
++	 * The parent process may have gone through a KLP transition since
++	 * the thread flag was copied in setup_thread_stack earlier. Bring
++	 * the task flag up to date with the parent here.
++	 *
++	 * The operation is serialized against all klp_*_transition()
++	 * operations by the tasklist_lock. The only exception is
++	 * klp_update_patch_state(current), but we cannot race with
++	 * that because we are current.
++	 */
++	if (test_tsk_thread_flag(current, TIF_PATCH_PENDING))
++		set_tsk_thread_flag(child, TIF_PATCH_PENDING);
++	else
++		clear_tsk_thread_flag(child, TIF_PATCH_PENDING);
++
++	child->patch_state = current->patch_state;
+ }
+ 
+ /*
+-- 
+2.35.1
+
