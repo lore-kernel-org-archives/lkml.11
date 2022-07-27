@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDDB2C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:01:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52389C19F2C
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:02:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241279AbiG0RB5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:01:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55646 "EHLO
+        id S237980AbiG0RCP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:02:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237919AbiG0RBU (ORCPT
+        with ESMTP id S241206AbiG0RBo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:01:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5742857230;
-        Wed, 27 Jul 2022 09:38:00 -0700 (PDT)
+        Wed, 27 Jul 2022 13:01:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9395C6BC05;
+        Wed, 27 Jul 2022 09:38:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D1F71601CD;
-        Wed, 27 Jul 2022 16:37:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEAE1C433C1;
-        Wed, 27 Jul 2022 16:37:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DEDCBB821B6;
+        Wed, 27 Jul 2022 16:37:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 506BFC433C1;
+        Wed, 27 Jul 2022 16:37:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939878;
-        bh=b4toqc/QbDYniqKpZ6WSq9fi4n5gdJWLetTFuuGFIp0=;
+        s=korg; t=1658939847;
+        bh=WujFwljSuwH2VXyG++3F5nOsrXX2VIrrQKO+07kLxmA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FdPUUlpOFZimCE4bEBumTsiMHBvYXc7NYtvaYzopY9TgYnn9reR8lMIakB8aAduHn
-         x5R+SoYkh1KQJ+UdGRwXLRdEquPcBDhr6L8uXdmFHEqd8ft/YmAyBjjUuYIhb5B4H5
-         GBL0q3Skd4fcX82oG+/PjWjNiMgIw4L8jh8H246I=
+        b=Ts46/PJ4ltL9VNnoQOreO0gmrtyv5NoT+HNZBH+CkHGNl5JsJgRkAeGWp/AfYf2sV
+         +VrLQkrXjm8VilWKDujcSHKgg4zhDDbZmQqBT7hBMxo9oBWoNv/GTECiHkYGn5yXqF
+         q3e0y4YAuu4XGBaqXNdbXBQ4muxzqHtML2Ja2Rr4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 028/201] ip: Fix data-races around sysctl_ip_default_ttl.
-Date:   Wed, 27 Jul 2022 18:08:52 +0200
-Message-Id: <20220727161028.070987983@linuxfoundation.org>
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Felix Fietkau <nbd@nbd.name>
+Subject: [PATCH 5.15 020/201] mt76: mt7921: Fix the error handling path of mt7921_pci_probe()
+Date:   Wed, 27 Jul 2022 18:08:44 +0200
+Message-Id: <20220727161027.748066262@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -48,100 +48,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-commit 8281b7ec5c56b71cb2cc5a1728b41607be66959c upstream.
+commit 4e90db5e21eb3bb272fe47386dc3506755e209e9 upstream.
 
-While reading sysctl_ip_default_ttl, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its readers.
+In case of error, some resources must be freed, as already done above and
+below the devm_kmemdup() and __mt7921e_mcu_drv_pmctrl() calls added in the
+commit in Fixes:.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 602cc0c9618a ("mt76: mt7921e: fix possible probe failure after reboot")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/netronome/nfp/flower/action.c |    2 +-
- include/net/route.h                                |    2 +-
- net/ipv4/ip_sockglue.c                             |    2 +-
- net/ipv4/netfilter/nf_reject_ipv4.c                |    4 ++--
- net/ipv4/proc.c                                    |    2 +-
- net/netfilter/nf_synproxy_core.c                   |    2 +-
- 6 files changed, 7 insertions(+), 7 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt7921/pci.c |    8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
---- a/drivers/net/ethernet/netronome/nfp/flower/action.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/action.c
-@@ -472,7 +472,7 @@ nfp_fl_set_tun(struct nfp_app *app, stru
- 			set_tun->ttl = ip4_dst_hoplimit(&rt->dst);
- 			ip_rt_put(rt);
- 		} else {
--			set_tun->ttl = net->ipv4.sysctl_ip_default_ttl;
-+			set_tun->ttl = READ_ONCE(net->ipv4.sysctl_ip_default_ttl);
- 		}
- 	}
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
+@@ -254,8 +254,10 @@ static int mt7921_pci_probe(struct pci_d
+ 	dev->bus_ops = dev->mt76.bus;
+ 	bus_ops = devm_kmemdup(dev->mt76.dev, dev->bus_ops, sizeof(*bus_ops),
+ 			       GFP_KERNEL);
+-	if (!bus_ops)
+-		return -ENOMEM;
++	if (!bus_ops) {
++		ret = -ENOMEM;
++		goto err_free_dev;
++	}
  
---- a/include/net/route.h
-+++ b/include/net/route.h
-@@ -360,7 +360,7 @@ static inline int ip4_dst_hoplimit(const
- 	struct net *net = dev_net(dst->dev);
+ 	bus_ops->rr = mt7921_rr;
+ 	bus_ops->wr = mt7921_wr;
+@@ -264,7 +266,7 @@ static int mt7921_pci_probe(struct pci_d
  
- 	if (hoplimit == 0)
--		hoplimit = net->ipv4.sysctl_ip_default_ttl;
-+		hoplimit = READ_ONCE(net->ipv4.sysctl_ip_default_ttl);
- 	return hoplimit;
- }
+ 	ret = __mt7921e_mcu_drv_pmctrl(dev);
+ 	if (ret)
+-		return ret;
++		goto err_free_dev;
  
---- a/net/ipv4/ip_sockglue.c
-+++ b/net/ipv4/ip_sockglue.c
-@@ -1597,7 +1597,7 @@ static int do_ip_getsockopt(struct sock
- 	{
- 		struct net *net = sock_net(sk);
- 		val = (inet->uc_ttl == -1 ?
--		       net->ipv4.sysctl_ip_default_ttl :
-+		       READ_ONCE(net->ipv4.sysctl_ip_default_ttl) :
- 		       inet->uc_ttl);
- 		break;
- 	}
---- a/net/ipv4/netfilter/nf_reject_ipv4.c
-+++ b/net/ipv4/netfilter/nf_reject_ipv4.c
-@@ -62,7 +62,7 @@ struct sk_buff *nf_reject_skb_v4_tcp_res
- 
- 	skb_reserve(nskb, LL_MAX_HEADER);
- 	niph = nf_reject_iphdr_put(nskb, oldskb, IPPROTO_TCP,
--				   net->ipv4.sysctl_ip_default_ttl);
-+				   READ_ONCE(net->ipv4.sysctl_ip_default_ttl));
- 	nf_reject_ip_tcphdr_put(nskb, oldskb, oth);
- 	niph->tot_len = htons(nskb->len);
- 	ip_send_check(niph);
-@@ -115,7 +115,7 @@ struct sk_buff *nf_reject_skb_v4_unreach
- 
- 	skb_reserve(nskb, LL_MAX_HEADER);
- 	niph = nf_reject_iphdr_put(nskb, oldskb, IPPROTO_ICMP,
--				   net->ipv4.sysctl_ip_default_ttl);
-+				   READ_ONCE(net->ipv4.sysctl_ip_default_ttl));
- 
- 	skb_reset_transport_header(nskb);
- 	icmph = skb_put_zero(nskb, sizeof(struct icmphdr));
---- a/net/ipv4/proc.c
-+++ b/net/ipv4/proc.c
-@@ -387,7 +387,7 @@ static int snmp_seq_show_ipstats(struct
- 
- 	seq_printf(seq, "\nIp: %d %d",
- 		   IPV4_DEVCONF_ALL(net, FORWARDING) ? 1 : 2,
--		   net->ipv4.sysctl_ip_default_ttl);
-+		   READ_ONCE(net->ipv4.sysctl_ip_default_ttl));
- 
- 	BUILD_BUG_ON(offsetof(struct ipstats_mib, mibs) != 0);
- 	snmp_get_cpu_field64_batch(buff64, snmp4_ipstats_list,
---- a/net/netfilter/nf_synproxy_core.c
-+++ b/net/netfilter/nf_synproxy_core.c
-@@ -427,7 +427,7 @@ synproxy_build_ip(struct net *net, struc
- 	iph->tos	= 0;
- 	iph->id		= 0;
- 	iph->frag_off	= htons(IP_DF);
--	iph->ttl	= net->ipv4.sysctl_ip_default_ttl;
-+	iph->ttl	= READ_ONCE(net->ipv4.sysctl_ip_default_ttl);
- 	iph->protocol	= IPPROTO_TCP;
- 	iph->check	= 0;
- 	iph->saddr	= saddr;
+ 	mdev->rev = (mt7921_l1_rr(dev, MT_HW_CHIPID) << 16) |
+ 		    (mt7921_l1_rr(dev, MT_HW_REV) & 0xff);
 
 
