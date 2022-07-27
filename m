@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E474C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:05:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19E31C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:05:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229598AbiG0RFF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:05:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37746 "EHLO
+        id S235187AbiG0RFN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:05:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241400AbiG0REL (ORCPT
+        with ESMTP id S241440AbiG0REP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:04:11 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D48E6E88B;
-        Wed, 27 Jul 2022 09:39:01 -0700 (PDT)
+        Wed, 27 Jul 2022 13:04:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B826C6E899;
+        Wed, 27 Jul 2022 09:39:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 04F7D601CD;
-        Wed, 27 Jul 2022 16:38:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D07F6C433D6;
-        Wed, 27 Jul 2022 16:38:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6E726601C0;
+        Wed, 27 Jul 2022 16:39:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76407C433D7;
+        Wed, 27 Jul 2022 16:39:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939931;
-        bh=gwizZq9ZKJfacNy3ZHHGP30UdHE5Ee0t3vfEcqGt4H4=;
+        s=korg; t=1658939942;
+        bh=giqDU7zsSjegWF/j8kJdmRjlOFOf2/ZA0i2RNKPQALM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zB3BAjhMpoh4iqi+db9Y0vkTyrVLfetLFoZcUpWDZhgh2co3cw4zpFhORQezLkIoq
-         6hgWBcKw96yrzz34XesDrAoABXtiFxFiaoDodhaHpI/CCBUkx3udNmH3oz6x8byIOH
-         A7nwNhKDGIjWhlPhNIZv0xsMkSmgurxMyMNQVASo=
+        b=wz1omDRPOy2AiSsbo2jv/hhOBqsy8bMgqWtti7hbSFnv3UMLMGP7W58q/1MJiy3L+
+         p1U4i0XRUBd3HfcJPZm8T7eTwAhS/FowJHwvAzZ8C2H4ztFu+dyJbinR2wUn1VOWL7
+         eTKiXefJoooCseboJzzOQeikW5pp3OTkWFEKZSwY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kashyap Desai <kashyap.desai@broadcom.com>,
-        sumit.saxena@broadcom.com, chandrakanth.patil@broadcom.com,
-        linux-block@vger.kernel.org, Hannes Reinecke <hare@suse.de>,
-        Guangwu Zhang <guazhang@redhat.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Ming Lei <ming.lei@redhat.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Dima Ruinskiy <dima.ruinskiy@intel.com>,
+        Sasha Neftin <sasha.neftin@intel.com>,
+        "Chia-Lin Kao (AceLan)" <acelan.kao@canonical.com>,
+        Naama Meir <naamax.meir@linux.intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 047/201] scsi: megaraid: Clear READ queue maps nr_queues
-Date:   Wed, 27 Jul 2022 18:09:11 +0200
-Message-Id: <20220727161028.830121884@linuxfoundation.org>
+Subject: [PATCH 5.15 051/201] e1000e: Enable GPT clock before sending message to CSME
+Date:   Wed, 27 Jul 2022 18:09:15 +0200
+Message-Id: <20220727161029.008245517@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -54,46 +52,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ming Lei <ming.lei@redhat.com>
+From: Sasha Neftin <sasha.neftin@intel.com>
 
-[ Upstream commit 8312cd3a7b835ae3033a679e5f0014a40e7891c5 ]
+[ Upstream commit b49feacbeffc7635cc6692cbcc6a1eae2c17da6f ]
 
-The megaraid SCSI driver sets set->nr_maps as 3 if poll_queues is > 0, and
-blk-mq actually initializes each map's nr_queues as nr_hw_queues.
-Consequently the driver has to clear READ queue map's nr_queues, otherwise
-the queue map becomes broken if poll_queues is set as non-zero.
+On corporate (CSME) ADL systems, the Ethernet Controller may stop working
+("HW unit hang") after exiting from the s0ix state. The reason is that
+CSME misses the message sent by the host. Enabling the dynamic GPT clock
+solves this problem. This clock is cleared upon HW initialization.
 
-Link: https://lore.kernel.org/r/20220706125942.528533-1-ming.lei@redhat.com
-Fixes: 9e4bec5b2a23 ("scsi: megaraid_sas: mq_poll support")
-Cc: Kashyap Desai <kashyap.desai@broadcom.com>
-Cc: sumit.saxena@broadcom.com
-Cc: chandrakanth.patil@broadcom.com
-Cc: linux-block@vger.kernel.org
-Cc: Hannes Reinecke <hare@suse.de>
-Reported-by: Guangwu Zhang <guazhang@redhat.com>
-Tested-by: Guangwu Zhang <guazhang@redhat.com>
-Reviewed-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Ming Lei <ming.lei@redhat.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: 3e55d231716e ("e1000e: Add handshake with the CSME to support S0ix")
+Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=214821
+Reviewed-by: Dima Ruinskiy <dima.ruinskiy@intel.com>
+Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
+Tested-by: Chia-Lin Kao (AceLan) <acelan.kao@canonical.com>
+Tested-by: Naama Meir <naamax.meir@linux.intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/megaraid/megaraid_sas_base.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/intel/e1000e/netdev.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/scsi/megaraid/megaraid_sas_base.c b/drivers/scsi/megaraid/megaraid_sas_base.c
-index bb3f78013a13..88e164e3d2ea 100644
---- a/drivers/scsi/megaraid/megaraid_sas_base.c
-+++ b/drivers/scsi/megaraid/megaraid_sas_base.c
-@@ -3196,6 +3196,9 @@ static int megasas_map_queues(struct Scsi_Host *shost)
- 	qoff += map->nr_queues;
- 	offset += map->nr_queues;
+diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+index ce48e630fe55..0fba6ccecf12 100644
+--- a/drivers/net/ethernet/intel/e1000e/netdev.c
++++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+@@ -6499,6 +6499,10 @@ static void e1000e_s0ix_exit_flow(struct e1000_adapter *adapter)
  
-+	/* we never use READ queue, so can't cheat blk-mq */
-+	shost->tag_set.map[HCTX_TYPE_READ].nr_queues = 0;
-+
- 	/* Setup Poll hctx */
- 	map = &shost->tag_set.map[HCTX_TYPE_POLL];
- 	map->nr_queues = instance->iopoll_q_count;
+ 	if (er32(FWSM) & E1000_ICH_FWSM_FW_VALID &&
+ 	    hw->mac.type >= e1000_pch_adp) {
++		/* Keep the GPT clock enabled for CSME */
++		mac_data = er32(FEXTNVM);
++		mac_data |= BIT(3);
++		ew32(FEXTNVM, mac_data);
+ 		/* Request ME unconfigure the device from S0ix */
+ 		mac_data = er32(H2ME);
+ 		mac_data &= ~E1000_H2ME_START_DPG;
 -- 
 2.35.1
 
