@@ -2,96 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 636E2C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 15:44:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD338C19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 15:44:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233730AbiG0PoC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 11:44:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47454 "EHLO
+        id S233511AbiG0Pou (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 11:44:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbiG0Pn6 (ORCPT
+        with ESMTP id S233157AbiG0Poq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 11:43:58 -0400
-Received: from mail-il1-f181.google.com (mail-il1-f181.google.com [209.85.166.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F898481F1;
-        Wed, 27 Jul 2022 08:43:58 -0700 (PDT)
-Received: by mail-il1-f181.google.com with SMTP id y10so1270430ili.3;
-        Wed, 27 Jul 2022 08:43:58 -0700 (PDT)
+        Wed, 27 Jul 2022 11:44:46 -0400
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ACDA47B91;
+        Wed, 27 Jul 2022 08:44:46 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id 70so16492736pfx.1;
+        Wed, 27 Jul 2022 08:44:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=QlqJyCLvvK+TzxVp0Du/4sfixvkQDQzIZY8oBXbSMvI=;
+        b=Bwdq8tjLd/xcPIAX/uEU4inNf7eeMUPTp9P1C+D0MChY+VIXw28n3UkSB/a1OdUNj0
+         0+QFhKaZN1H0VWQDVV4xwl3vHnsEj+cnfTVGWkv5YeZjdGg5tPLjPWcJ0N1SUU1v9kBN
+         ZFe5SUBKqVGeSE+tpUXxbUFrmy3y1XCjwkzIE98+N8n8A5pVcp8/jJedgnzPRquBnRkq
+         dUOU6rx0R4mNCZ//8Mi79hRHJBZJ8uHiFcSKMx03ltmwyZjiKxtUWR3cqcepMKY8QsYc
+         CYHsiHY2a+niuSncMud8bS/oOwb0jPlN+P/pR4tHOnRF5Rf8ZlFFToN7pdTaxb/20C8N
+         ONCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=EBPsyq8xCTUIGHkDPSsIKhxwmfJ6F+duXUDyo4llVo0=;
-        b=Dd4XhgcraxGfeXihvDttIG+3BJg7BPXpZA1zb+K7jHbf+jM4h/hfp1GdjhPONgOU7W
-         sTcBHTgNh398/wuHvboiY5Zw3z+7bfReEeinFdVnOJYDWNPrhs1YjIbKPtSLB0KQgF3v
-         P2xVKp/9laZY4RMNEABJCnhUl7JOkpcvyaxa+3G5aydbcp+eTr8znI7ditlN+1Nta57X
-         aOALgIOe5FjMl/0re01w7VtFvc6MANsI0ejePTdFXBp0kWU3mtSwcMHOfqvYz5f6UCBX
-         uCnkWmWpczUIFc0K5/ZlwnDyTbd9IZiEZVEW8Nf6CFgV+JnCbfDT+tpOc9PoGxC4xCTf
-         TRww==
-X-Gm-Message-State: AJIora9eFpBE3wkG46L7F2BztFPiRxRxK+YEZYKDHs2hWIftoJv5zXR4
-        UykbjHY34a3PsuNGvamJLA==
-X-Google-Smtp-Source: AGRyM1sP6a08WkTCUGcmRvfX3ijrTpt7NEQ6DQj6lTIcMRgPCXMgOcSJmDPAyD1mwUTjZKCujuIgzg==
-X-Received: by 2002:a92:6504:0:b0:2dd:8201:fdeb with SMTP id z4-20020a926504000000b002dd8201fdebmr3968342ilb.98.1658936637261;
-        Wed, 27 Jul 2022 08:43:57 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id a20-20020a027a14000000b0033f5e8dab90sm8092861jac.143.2022.07.27.08.43.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 08:43:56 -0700 (PDT)
-Received: (nullmailer pid 2728328 invoked by uid 1000);
-        Wed, 27 Jul 2022 15:43:55 -0000
-Date:   Wed, 27 Jul 2022 09:43:55 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Anup Patel <anup@brainfault.org>,
-        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>
-Subject: Re: [PATCH 1/6] dt-bindings: arm: renesas: Ignore the schema for
- RISC-V arch
-Message-ID: <20220727154355.GA2723077-robh@kernel.org>
-References: <20220726180623.1668-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20220726180623.1668-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=QlqJyCLvvK+TzxVp0Du/4sfixvkQDQzIZY8oBXbSMvI=;
+        b=4iOCBhaCUaxoHghbr2BJODEQv4JiVRPTn5zwG6qTIxXQIuYehcXFqfTWhezugRQHL4
+         Bd5PjqloQ5vOcS5V26UDe7qcXi5WDLlMXyEktnNHetvuCPqrLQJyoicS3TVt0LIabkRd
+         77gJf5xNY0MeeDPDcnBCyC5yOrO7F7E+13L/2Wk1XFfKOc9OqTWNfG/9zhRhJ8ETd8tE
+         El50iO3b2DI1OF1BHVAmIETn3Zq8nEzCv93SSppBp+Ym/5IuFJuibwg5AcLQROeL+PJ+
+         RYMSV9KRmqwlX6agvKDPTvCGz6dthfun10x8AtOsQMjxgtK845R7Girb6x7sQZA9wyUf
+         0oeA==
+X-Gm-Message-State: AJIora873qUNbxv4pVMZBsFEiuAB1niXk7PbXkQTQcO/3mChY2bi+zA5
+        g7UKVfBN/xESXV2cKt8f+Fg=
+X-Google-Smtp-Source: AGRyM1sDCBNblHpd1A/SV3TzZb8mfKld5q5VlxnaFVr0AN48IX0aLrkPmvmWp+XpPjoMYuy/0dqNWQ==
+X-Received: by 2002:a63:2a95:0:b0:41a:27e5:1996 with SMTP id q143-20020a632a95000000b0041a27e51996mr19160174pgq.447.1658936685669;
+        Wed, 27 Jul 2022 08:44:45 -0700 (PDT)
+Received: from [10.10.20.47] (125-228-123-29.hinet-ip.hinet.net. [125.228.123.29])
+        by smtp.gmail.com with ESMTPSA id d10-20020a170902654a00b0016d1e514ec5sm13849539pln.139.2022.07.27.08.44.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 Jul 2022 08:44:44 -0700 (PDT)
+Message-ID: <47516b38-58e1-e3c9-1ac2-7b8d8586566e@gmail.com>
+Date:   Wed, 27 Jul 2022 23:44:42 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220726180623.1668-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v2 1/1] iio: humidity: hdc100x: add manufacturer and
+ device ID cehck
+Content-Language: en-US
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Patrick Williams <patrick@stwcx.xyz>,
+        Potin Lai <potin.lai@quantatw.com>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20220727064415.940690-1-potin.lai.pt@gmail.com>
+ <CAHp75VfNmq12Yv7mqVeijqK0vwRdPsSrH5wMzg9qR15+t7ArSQ@mail.gmail.com>
+ <a385e266-b24e-7ffb-c083-891edd4b0b14@gmail.com>
+ <CAHp75VdjvJRwzPLLdMji+_m2tQY4JLBcNwt-QFkDJTyGFUOdKg@mail.gmail.com>
+From:   Potin Lai <potin.lai.pt@gmail.com>
+In-Reply-To: <CAHp75VdjvJRwzPLLdMji+_m2tQY4JLBcNwt-QFkDJTyGFUOdKg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 26, 2022 at 07:06:18PM +0100, Lad Prabhakar wrote:
-> Ignore the ARM renesas.yaml schema if the board is RZ/Five SMARC EVK
-> (RISC-V arch).
-> 
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> ---
->  Documentation/devicetree/bindings/arm/renesas.yaml | 9 +++++++++
->  1 file changed, 9 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/arm/renesas.yaml b/Documentation/devicetree/bindings/arm/renesas.yaml
-> index ff80152f092f..f646df1a23af 100644
-> --- a/Documentation/devicetree/bindings/arm/renesas.yaml
-> +++ b/Documentation/devicetree/bindings/arm/renesas.yaml
-> @@ -9,6 +9,15 @@ title: Renesas SH-Mobile, R-Mobile, and R-Car Platform Device Tree Bindings
->  maintainers:
->    - Geert Uytterhoeven <geert+renesas@glider.be>
->  
-> +# We want to ignore this schema if the board is of RISC-V arch
-> +select:
-> +  not:
-> +    properties:
-> +      compatible:
-> +        contains:
-> +          items:
-> +            - const: renesas,r9a07g043f01
 
-As I've said, this doesn't work without tool changes I proposed.
+Andy Shevchenko 於 7/27/2022 7:56 PM 寫道:
+> On Wed, Jul 27, 2022 at 12:42 PM Potin Lai <potin.lai.pt@gmail.com> wrote:
+>> On 7/27/22 18:00, Andy Shevchenko wrote:
+>>> On Wed, Jul 27, 2022 at 8:46 AM Potin Lai <potin.lai.pt@gmail.com> wrote:
+> ...
+>
+>>>> +       data = device_get_match_data(&client->dev);
+>>>> +       if (data) {
+>>> This check is redundant. Too much protective programming. Just oblige
+>>> that matched ID has to always have an associated data.
+>> Is it guaranteed that device_get_match_data will not return NULL? I find some examples in other drivers, all of them have a check on returned data.
+> No, but as I said you may guarantee that by obliging developers not to
+> shoot in their feet.
+Thanks for the explanation, I will remove the checking part.
 
-Rob
+Potin
+>> Will it be more appropriate if I move device_get_match_data to probe function, and return EINVAL when we get a NULL pointer from device_get_match_data?
+> Why is this check needed? We do not like dead code.
+>
+>>>> +               if (!data->support_mfr_check)
+>>>> +                       return true;
+>>>> +       }
