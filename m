@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CDF0C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:32:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E20AC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:32:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242258AbiG0Rcc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:32:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41832 "EHLO
+        id S242252AbiG0Rcg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:32:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241250AbiG0RaL (ORCPT
+        with ESMTP id S242251AbiG0Ra3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:30:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FB2981B07;
-        Wed, 27 Jul 2022 09:48:09 -0700 (PDT)
+        Wed, 27 Jul 2022 13:30:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD74F81B2F;
+        Wed, 27 Jul 2022 09:48:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BEB80B821D2;
-        Wed, 27 Jul 2022 16:48:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B39AC433C1;
-        Wed, 27 Jul 2022 16:48:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2871261479;
+        Wed, 27 Jul 2022 16:47:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36C2AC433C1;
+        Wed, 27 Jul 2022 16:47:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940485;
-        bh=t4+PmeHplRjYmog1XkVipDtST+ACitslT3Asytvp7/o=;
+        s=korg; t=1658940471;
+        bh=9tCpcYupvaxeRANDUq8GCP66gANHEGG8QwCZcmAUZjA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d4730nk26hUk1HGU7B3IzxFhetti+hwhf48n+oHJIdu25J0UyE9CYR16sdFrKYvz7
-         +3kgwdUhFwrij2zqzjEXXCa3eKbTcZo1UoiAB01Yt2RPh6WLLIiZpxEbVOKTl8tnr8
-         DSxgTnFn7dSGIAK9rERa8ivYb6kI32lr9kzOTVbY=
+        b=biiGTC1kaQnp34+WnNnKB/EyJmK9nJodVUdoso4tFv8yZ7hR0U6eGhzs5G/AmM2xn
+         DPfNO6J38mi1h4PDbuXC3aaQonOQq+2KQSeoA7LJIy3JP0ntqiNdRd+yCsotOZJygR
+         y0AbqkIjjzEdsMJlXN0qpuNSuap+kefc5B/Qh8oA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 040/158] tcp: sk->sk_bound_dev_if once in inet_request_bound_dev_if()
-Date:   Wed, 27 Jul 2022 18:11:44 +0200
-Message-Id: <20220727161023.090802081@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Dmitry Osipenko <dmitry.osipenko@collabora.com>
+Subject: [PATCH 5.18 008/158] drm/ttm: fix locking in vmap/vunmap TTM GEM helpers
+Date:   Wed, 27 Jul 2022 18:11:12 +0200
+Message-Id: <20220727161021.764692072@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -49,46 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Christian König <christian.koenig@amd.com>
 
-[ Upstream commit fdb5fd7f736ec7ae9fb36d2842ea6d9ebc4e7269 ]
+commit dbd0da2453c694f2f74651834d90fb280b57f151 upstream.
 
-inet_request_bound_dev_if() reads sk->sk_bound_dev_if twice
-while listener socket is not locked.
+I've stumbled over this while reviewing patches for DMA-buf and it looks
+like we completely messed the locking up here.
 
-Another cpu could change this field under us.
+In general most TTM function should only be called while holding the
+appropriate BO resv lock. Without this we could break the internal
+buffer object state here.
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Only compile tested!
+
+Signed-off-by: Christian König <christian.koenig@amd.com>
+Fixes: 43676605f890 ("drm/ttm: Add vmap/vunmap to TTM and TTM GEM helpers")
+Cc: stable@vger.kernel.org
+Reviewed-by: Dmitry Osipenko <dmitry.osipenko@collabora.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220715111533.467012-1-christian.koenig@amd.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/inet_sock.h | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/drm_gem_ttm_helper.c |    9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/include/net/inet_sock.h b/include/net/inet_sock.h
-index d3cf5871289b..b29108f0973a 100644
---- a/include/net/inet_sock.h
-+++ b/include/net/inet_sock.h
-@@ -117,14 +117,15 @@ static inline u32 inet_request_mark(const struct sock *sk, struct sk_buff *skb)
- static inline int inet_request_bound_dev_if(const struct sock *sk,
- 					    struct sk_buff *skb)
+--- a/drivers/gpu/drm/drm_gem_ttm_helper.c
++++ b/drivers/gpu/drm/drm_gem_ttm_helper.c
+@@ -64,8 +64,13 @@ int drm_gem_ttm_vmap(struct drm_gem_obje
+ 		     struct iosys_map *map)
  {
-+	int bound_dev_if = READ_ONCE(sk->sk_bound_dev_if);
- #ifdef CONFIG_NET_L3_MASTER_DEV
- 	struct net *net = sock_net(sk);
+ 	struct ttm_buffer_object *bo = drm_gem_ttm_of_gem(gem);
++	int ret;
  
--	if (!sk->sk_bound_dev_if && net->ipv4.sysctl_tcp_l3mdev_accept)
-+	if (!bound_dev_if && net->ipv4.sysctl_tcp_l3mdev_accept)
- 		return l3mdev_master_ifindex_by_index(net, skb->skb_iif);
- #endif
- 
--	return sk->sk_bound_dev_if;
-+	return bound_dev_if;
+-	return ttm_bo_vmap(bo, map);
++	dma_resv_lock(gem->resv, NULL);
++	ret = ttm_bo_vmap(bo, map);
++	dma_resv_unlock(gem->resv);
++
++	return ret;
  }
+ EXPORT_SYMBOL(drm_gem_ttm_vmap);
  
- static inline int inet_sk_bound_l3mdev(const struct sock *sk)
--- 
-2.35.1
-
+@@ -82,7 +87,9 @@ void drm_gem_ttm_vunmap(struct drm_gem_o
+ {
+ 	struct ttm_buffer_object *bo = drm_gem_ttm_of_gem(gem);
+ 
++	dma_resv_lock(gem->resv, NULL);
+ 	ttm_bo_vunmap(bo, map);
++	dma_resv_unlock(gem->resv);
+ }
+ EXPORT_SYMBOL(drm_gem_ttm_vunmap);
+ 
 
 
