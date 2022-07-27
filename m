@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0779FC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 21:03:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03133C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 21:03:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235040AbiG0VDf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 17:03:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55110 "EHLO
+        id S235258AbiG0VDj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 17:03:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234152AbiG0VDT (ORCPT
+        with ESMTP id S234578AbiG0VD2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 17:03:19 -0400
+        Wed, 27 Jul 2022 17:03:28 -0400
 Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EDE156B80
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 14:03:18 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id i8so3127753wro.11
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 14:03:18 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15BAF5724F
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 14:03:26 -0700 (PDT)
+Received: by mail-wr1-x42b.google.com with SMTP id i8so3128133wro.11
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 14:03:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linexp-org.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=0qNXTGFtlOgyRJms2wUe/LQRkw+99ki5ct4br/6n4uE=;
-        b=QPHAvvQkj70Y803XO/PVmLOMcqwmSt5eOVTiGxW2Qx92bhC5Cph0f5iuO3Z6NUdnBl
-         HrayMHWWgdq6NDxPwLIkgAN5g0Fuj0BAFFevscZ3priNoJMtSzHLpt0zpRrUB6NY6F2E
-         IAWrrL89tl1w8JNQADd1CHG8sY+r92EVszvnuiUCxO77ctb2bdS7w3YGK0Vt8EZh7kQI
-         idVkJO8bZMNX25FwECOR1cE+/1UWl19L3ZXVlhFGe46nAIqGhx+/fL4m/qEpWS8Pfff4
-         APBruzthgSN+cVpzRUZLSdIDIpk9qXXuMQwJCTCsYn5OsBoazXC1AemMB9a3Tfc/UK9F
-         q92w==
+        bh=KoCo3jVOreA60M5B2h+gu+yJSl6IxRYoUlnzq7WRBI0=;
+        b=FGGLVzfx4BZq6tb0SPQJeiGIls9Y9otMd0oDQ8KKBCrCOid6Um1zjDXdapW9zopV3O
+         gNsZWoglPbSDWFPOyr9yJdyGtgE3IaYP3VsjNwEoHVOcs6zgY78tgAt++783huFC8N25
+         bC2KsnGaPbvpqtwIGI/j4O9EQLi608OQLkJI2RGqRVysceitXpr/OiH5AAvn9aq0Q8cr
+         fOXbpIXzmgMltKUJWGu4HM1dWlIJKjouOnZdJR1ZI3SLJOHbUMeKDVcy1vy/7R1Xo7K5
+         mZDvdKMUVTSP5EO8wSd1HMJnPqk2O4aRBPZZccissOcB+IjnYWKQ59QMPpFUllEh0Xw8
+         oo+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=0qNXTGFtlOgyRJms2wUe/LQRkw+99ki5ct4br/6n4uE=;
-        b=5xBb95ZR4QyZEgbcduiW77lg5tWyDXXaThd9r7OrlnVOeivuk/mEMM/gfS20dOltuw
-         XFRze7qh9OY0n9bctz0L0i3awIw/r0uKRcFycZXQf9yU1KjK+ymny72vm3eeqjpXQTlJ
-         6RVBmjA9SBXrjKJ5V07l2rBxlQfWPWqtGikVUB102IKi7JLA12R5Rg24X27kf9+3AaEZ
-         RBymxtHCCzVQJlSgzpc4PmADdxrCsUPrdlFCwElRjGy/oblxD5RzlDYY7yoaEfDUwRSr
-         7uAs86P2ABeHKeXQIaYhK3Aw/aLtcLoGDE5mFA6twzsOFzdFLbZS8qyQA9h1o277ybSl
-         yf9A==
-X-Gm-Message-State: AJIora+NjuoOOCBW0uguUhUhRDWYuOxamum8WdgAf4aJ2Wp82OvdsjTz
-        n/Duk0P2lZY4pgYLeMYNoHyZRA==
-X-Google-Smtp-Source: AGRyM1u62p/rY229sA+4Ohz9Ha2FoxypBBltUN5/AlW8l3lQClXZB3VbR6iNS2o8SjNZ5nd9VhwX/w==
-X-Received: by 2002:adf:f90c:0:b0:21e:5293:4390 with SMTP id b12-20020adff90c000000b0021e52934390mr15255954wrr.167.1658955797002;
-        Wed, 27 Jul 2022 14:03:17 -0700 (PDT)
+        bh=KoCo3jVOreA60M5B2h+gu+yJSl6IxRYoUlnzq7WRBI0=;
+        b=qqnAz65Pv5ryEtSRaIGQEKPwP0HGFpHsnAZaPz/3EtgVTgx7i7jbqU/wcvZSHHJL45
+         U0KSFMaBmmJYd7M3nD+v9MjBSd+3Pf3InixVoA0B/p1fZP9rtuacZQqhCblXGeMmP6y1
+         YEUjHmZXy7HG1ufKZVIMgpeFPtsD24HTL0GMOrwR4sebIW9ZySYXHZMZOsa6EY0e2CMs
+         VxJjcTMhO9/n18qYw9IziODLnhjo8fsLue9QYVGe1rLr0xAf4apzMvD7SS6LNTDiz95j
+         E6VBb7fyt0XR7TDGlyTP8v12dGTiMEMMDm7hhMJEdMwjSSDZdLWonYv1Ezqigp8P0i+f
+         H8GA==
+X-Gm-Message-State: AJIora/3ec0yf2sB3io4rBqqI7u+WdvIzbYp3eF2nw+hso73DCBaa9xc
+        Wjr83Npdh827287Jbu0aCm+IUA==
+X-Google-Smtp-Source: AGRyM1tXz/i+RQouBdI72BasLcWFpSsgokti/kC2BxvW6NBwQNGEzXEydiPc+macGX4K1FVqLUI8AQ==
+X-Received: by 2002:a05:6000:1a8b:b0:21d:9ae8:f8d9 with SMTP id f11-20020a0560001a8b00b0021d9ae8f8d9mr14493418wry.686.1658955806595;
+        Wed, 27 Jul 2022 14:03:26 -0700 (PDT)
 Received: from mai.box.freepro.com ([2a05:6e02:1041:c10:65a8:ebd8:4098:d9d0])
-        by smtp.gmail.com with ESMTPSA id h6-20020a05600c350600b003a38606385esm37908wmq.3.2022.07.27.14.03.15
+        by smtp.gmail.com with ESMTPSA id h6-20020a05600c350600b003a38606385esm37908wmq.3.2022.07.27.14.03.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 14:03:16 -0700 (PDT)
+        Wed, 27 Jul 2022 14:03:26 -0700 (PDT)
 From:   Daniel Lezcano <daniel.lezcano@linexp.org>
 To:     daniel.lezcano@linaro.org, rafael@kernel.org
 Cc:     rui.zhang@intel.com, linux-pm@vger.kernel.org,
@@ -62,10 +62,15 @@ Cc:     rui.zhang@intel.com, linux-pm@vger.kernel.org,
         glaroque@baylibre.com, miquel.raynal@bootlin.com,
         shawnguo@kernel.org, niklas.soderlund@ragnatech.se,
         matthias.bgg@gmail.com, j-keerthy@ti.com,
-        Amit Kucheria <amitk@kernel.org>
-Subject: [PATCH v3 06/32] thermal/drivers/mmio: Switch to new of API
-Date:   Wed, 27 Jul 2022 23:02:27 +0200
-Message-Id: <20220727210253.3794069-7-daniel.lezcano@linexp.org>
+        Amit Kucheria <amitk@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        linux-arm-kernel@lists.infradead.org (moderated list:ARM/Allwinner
+        sunXi SoC support),
+        linux-sunxi@lists.linux.dev (open list:ARM/Allwinner sunXi SoC support)
+Subject: [PATCH v3 08/32] thermal/drivers/sun8i: Switch to new of API
+Date:   Wed, 27 Jul 2022 23:02:29 +0200
+Message-Id: <20220727210253.3794069-9-daniel.lezcano@linexp.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220727210253.3794069-1-daniel.lezcano@linexp.org>
 References: <20220727210253.3794069-1-daniel.lezcano@linexp.org>
@@ -84,60 +89,49 @@ API to register the thermal zone with these generic ops.
 
 Signed-off-by: Daniel Lezcano <daniel.lezcano@linexp.org>
 ---
- drivers/thermal/thermal_mmio.c | 17 ++++++++---------
- 1 file changed, 8 insertions(+), 9 deletions(-)
+ drivers/thermal/sun8i_thermal.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/thermal/thermal_mmio.c b/drivers/thermal/thermal_mmio.c
-index 360b0dfdc3b0..1bf1a16533da 100644
---- a/drivers/thermal/thermal_mmio.c
-+++ b/drivers/thermal/thermal_mmio.c
-@@ -20,11 +20,10 @@ static u32 thermal_mmio_readb(void __iomem *mmio_base)
- 	return readb(mmio_base);
+diff --git a/drivers/thermal/sun8i_thermal.c b/drivers/thermal/sun8i_thermal.c
+index 212c87e63a66..e64d06d1328c 100644
+--- a/drivers/thermal/sun8i_thermal.c
++++ b/drivers/thermal/sun8i_thermal.c
+@@ -108,9 +108,9 @@ static int sun50i_h5_calc_temp(struct ths_device *tmdev,
+ 		return -1590 * reg / 10 + 276000;
  }
  
--static int thermal_mmio_get_temperature(void *private, int *temp)
-+static int thermal_mmio_get_temperature(struct thermal_zone_device *tz, int *temp)
+-static int sun8i_ths_get_temp(void *data, int *temp)
++static int sun8i_ths_get_temp(struct thermal_zone_device *tz, int *temp)
  {
- 	int t;
--	struct thermal_mmio *sensor =
--		(struct thermal_mmio *)private;
-+	struct thermal_mmio *sensor = tz->devdata;
+-	struct tsensor *s = data;
++	struct tsensor *s = tz->devdata;
+ 	struct ths_device *tmdev = s->tmdev;
+ 	int val = 0;
  
- 	t = sensor->read_mmio(sensor->mmio_base) & sensor->mask;
- 	t *= sensor->factor;
-@@ -34,7 +33,7 @@ static int thermal_mmio_get_temperature(void *private, int *temp)
+@@ -135,7 +135,7 @@ static int sun8i_ths_get_temp(void *data, int *temp)
  	return 0;
  }
  
--static const struct thermal_zone_of_device_ops thermal_mmio_ops = {
-+static const struct thermal_zone_device_ops thermal_mmio_ops = {
- 	.get_temp = thermal_mmio_get_temperature,
+-static const struct thermal_zone_of_device_ops ths_ops = {
++static const struct thermal_zone_device_ops ths_ops = {
+ 	.get_temp = sun8i_ths_get_temp,
  };
  
-@@ -68,10 +67,10 @@ static int thermal_mmio_probe(struct platform_device *pdev)
- 		}
- 	}
+@@ -468,10 +468,10 @@ static int sun8i_ths_register(struct ths_device *tmdev)
+ 		tmdev->sensor[i].tmdev = tmdev;
+ 		tmdev->sensor[i].id = i;
+ 		tmdev->sensor[i].tzd =
+-			devm_thermal_zone_of_sensor_register(tmdev->dev,
+-							     i,
+-							     &tmdev->sensor[i],
+-							     &ths_ops);
++			devm_thermal_of_zone_register(tmdev->dev,
++						      i,
++						      &tmdev->sensor[i],
++						      &ths_ops);
+ 		if (IS_ERR(tmdev->sensor[i].tzd))
+ 			return PTR_ERR(tmdev->sensor[i].tzd);
  
--	thermal_zone = devm_thermal_zone_of_sensor_register(&pdev->dev,
--							    0,
--							    sensor,
--							    &thermal_mmio_ops);
-+	thermal_zone = devm_thermal_of_zone_register(&pdev->dev,
-+						     0,
-+						     sensor,
-+						     &thermal_mmio_ops);
- 	if (IS_ERR(thermal_zone)) {
- 		dev_err(&pdev->dev,
- 			"failed to register sensor (%ld)\n",
-@@ -79,7 +78,7 @@ static int thermal_mmio_probe(struct platform_device *pdev)
- 		return PTR_ERR(thermal_zone);
- 	}
- 
--	thermal_mmio_get_temperature(sensor, &temperature);
-+	thermal_mmio_get_temperature(thermal_zone, &temperature);
- 	dev_info(&pdev->dev,
- 		 "thermal mmio sensor %s registered, current temperature: %d\n",
- 		 pdev->name, temperature);
 -- 
 2.25.1
 
