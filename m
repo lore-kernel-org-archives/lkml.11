@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D5C0C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:32:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF4E8C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:32:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242175AbiG0RcY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:32:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41404 "EHLO
+        id S242408AbiG0Rc1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:32:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242585AbiG0RaE (ORCPT
+        with ESMTP id S242591AbiG0RaF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:30:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B38485246C;
-        Wed, 27 Jul 2022 09:48:03 -0700 (PDT)
+        Wed, 27 Jul 2022 13:30:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B68D852441;
+        Wed, 27 Jul 2022 09:48:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A23C600BE;
-        Wed, 27 Jul 2022 16:47:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9943BC433C1;
-        Wed, 27 Jul 2022 16:47:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6E17760DDB;
+        Wed, 27 Jul 2022 16:48:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79977C433D7;
+        Wed, 27 Jul 2022 16:48:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940466;
-        bh=LDTAR5XNGEs6IbAPArum+Jk2Iiza2SC3BANq8xb76xM=;
+        s=korg; t=1658940482;
+        bh=5eRz3WFU8EPC45Oedg//mJwlMSW4YQq7xFg16rfQVrI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1xOISjigE5jYPoVqbVcfrKCqkAX90p8HZbZ7BURSqVTFhkzCPSkkPIHJ2w7ff6GfZ
-         42bCXcO9jeuwaJn3JlRnDOe22e7z50I8qRofunRbhEFuhJarXzu6+eVuKgW0aog1zI
-         SssQrerLwXWUlms3+D0yPYHHvyRj0Dfi53/3tuso=
+        b=wc4SGfFDfiZfsJVUUffRu0ZgkrBw+J+CklvO7Rrc2bC6QptjBcS6TRQoxVcqZqwdu
+         DELYfntwksiTQlTiRiZ4BF/YA//JHOqqYx27XpN4KYKJMZisllTumIlUaLBBg7DdHF
+         l/nVMQuj5UySgKd1of0N/ARywmMV2kKsNAg2oJKo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Yegor Yefremov <yegorslists@googlemail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Tony Lindgren <tony@atomide.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>
-Subject: [PATCH 5.18 006/158] mmc: sdhci-omap: Fix a lockdep warning for PM runtime init
-Date:   Wed, 27 Jul 2022 18:11:10 +0200
-Message-Id: <20220727161021.703512831@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 039/158] tcp/dccp: Fix a data-race around sysctl_tcp_fwmark_accept.
+Date:   Wed, 27 Jul 2022 18:11:43 +0200
+Message-Id: <20220727161023.040288482@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -52,66 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tony Lindgren <tony@atomide.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit 51189eb9ddc88851edc42f539a0f9862fd0630c2 upstream.
+[ Upstream commit 1a0008f9df59451d0a17806c1ee1a19857032fa8 ]
 
-We need runtime PM enabled early in probe before sdhci_setup_host() for
-sdhci_omap_set_capabilities(). But on the first runtime resume we must
-not call sdhci_runtime_resume_host() as sdhci_setup_host() has not been
-called yet. Let's check for an initialized controller like we already do
-for context restore to fix a lockdep warning.
+While reading sysctl_tcp_fwmark_accept, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its reader.
 
-Fixes: f433e8aac6b9 ("mmc: sdhci-omap: Implement PM runtime functions")
-Reported-by: Yegor Yefremov <yegorslists@googlemail.com>
-Suggested-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Tony Lindgren <tony@atomide.com>
-Acked-by: Adrian Hunter <adrian.hunter@intel.com>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20220622051215.34063-1-tony@atomide.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 84f39b08d786 ("net: support marking accepting TCP sockets")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/sdhci-omap.c |   14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+ include/net/inet_sock.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/mmc/host/sdhci-omap.c
-+++ b/drivers/mmc/host/sdhci-omap.c
-@@ -1303,8 +1303,9 @@ static int sdhci_omap_probe(struct platf
- 	/*
- 	 * omap_device_pm_domain has callbacks to enable the main
- 	 * functional clock, interface clock and also configure the
--	 * SYSCONFIG register of omap devices. The callback will be invoked
--	 * as part of pm_runtime_get_sync.
-+	 * SYSCONFIG register to clear any boot loader set voltage
-+	 * capabilities before calling sdhci_setup_host(). The
-+	 * callback will be invoked as part of pm_runtime_get_sync.
- 	 */
- 	pm_runtime_use_autosuspend(dev);
- 	pm_runtime_set_autosuspend_delay(dev, 50);
-@@ -1446,7 +1447,8 @@ static int __maybe_unused sdhci_omap_run
- 	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
- 	struct sdhci_omap_host *omap_host = sdhci_pltfm_priv(pltfm_host);
+diff --git a/include/net/inet_sock.h b/include/net/inet_sock.h
+index 2f6b715acc15..d3cf5871289b 100644
+--- a/include/net/inet_sock.h
++++ b/include/net/inet_sock.h
+@@ -107,7 +107,8 @@ static inline struct inet_request_sock *inet_rsk(const struct request_sock *sk)
  
--	sdhci_runtime_suspend_host(host);
-+	if (omap_host->con != -EINVAL)
-+		sdhci_runtime_suspend_host(host);
+ static inline u32 inet_request_mark(const struct sock *sk, struct sk_buff *skb)
+ {
+-	if (!sk->sk_mark && sock_net(sk)->ipv4.sysctl_tcp_fwmark_accept)
++	if (!sk->sk_mark &&
++	    READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_fwmark_accept))
+ 		return skb->mark;
  
- 	sdhci_omap_context_save(omap_host);
- 
-@@ -1463,10 +1465,10 @@ static int __maybe_unused sdhci_omap_run
- 
- 	pinctrl_pm_select_default_state(dev);
- 
--	if (omap_host->con != -EINVAL)
-+	if (omap_host->con != -EINVAL) {
- 		sdhci_omap_context_restore(omap_host);
--
--	sdhci_runtime_resume_host(host, 0);
-+		sdhci_runtime_resume_host(host, 0);
-+	}
- 
- 	return 0;
- }
+ 	return sk->sk_mark;
+-- 
+2.35.1
+
 
 
