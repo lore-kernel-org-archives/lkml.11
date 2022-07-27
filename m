@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82E23C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:35:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2A7DC19F28
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:35:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237254AbiG0QfF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:35:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47226 "EHLO
+        id S238014AbiG0QfK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:35:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237662AbiG0Qdn (ORCPT
+        with ESMTP id S237868AbiG0Qdp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:33:43 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E34254C94;
-        Wed, 27 Jul 2022 09:26:44 -0700 (PDT)
+        Wed, 27 Jul 2022 12:33:45 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE66A474CB;
+        Wed, 27 Jul 2022 09:26:45 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 1A1FACE2303;
-        Wed, 27 Jul 2022 16:26:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F8C7C433D6;
-        Wed, 27 Jul 2022 16:26:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 92537619F4;
+        Wed, 27 Jul 2022 16:26:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C047C433D6;
+        Wed, 27 Jul 2022 16:26:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939198;
-        bh=Wvw7I+nGSwocAWbyQDmTKOy9jcP8+ZoXNRue2rb7Ycg=;
+        s=korg; t=1658939204;
+        bh=W0q27RSXpDQKArdu1Qarm0cHko2rXjDyC3znbuUCfFE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eJP6p22CqlgMJJUYIT/quJRm5z17w17kmRFb06mMBP1eU5b3XwYuuhx2Dgs0jHWa5
-         ldE+rWjsYBcTMFUPyU1wOWIHk6hGF4XoCxIckxP1r4Ox+M252wG27OI4PqXr7251zt
-         Dxjmazeu6LOW9qZJSehWh2F+Hn68oI3FrkhmzqCU=
+        b=D1/NTL4UUMpSqRBwB6b6Pc2GU/jL9jxLcEQp74oQCU16+wCRTt5V3qxqFicxvCDIj
+         yEAkFlo1ukjIgNVhNjDYTnZAVAEhQ8NXpZO0nB6BbWe8PH3AWtxw7xqio//hf0yVA4
+         CCpu7MjshLMfgoVVVWM3/KZDpvCGw4p3o2PMstM8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Subject: [PATCH 4.19 46/62] Bluetooth: Add bt_skb_sendmmsg helper
-Date:   Wed, 27 Jul 2022 18:10:55 +0200
-Message-Id: <20220727161005.947877005@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 18/62] igmp: Fix a data-race around sysctl_igmp_max_memberships.
+Date:   Wed, 27 Jul 2022 18:10:27 +0200
+Message-Id: <20220727161004.910586609@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161004.175638564@linuxfoundation.org>
 References: <20220727161004.175638564@linuxfoundation.org>
@@ -50,67 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit 97e4e80299844bb5f6ce5a7540742ffbffae3d97 upstream.
+[ Upstream commit 6305d821e3b9b5379d348528e5b5faf316383bc2 ]
 
-This works similarly to bt_skb_sendmsg but can split the msg into
-multiple skb fragments which is useful for stream sockets.
+While reading sysctl_igmp_max_memberships, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its reader.
 
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
-Cc: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/bluetooth/bluetooth.h |   38 ++++++++++++++++++++++++++++++++++++++
- 1 file changed, 38 insertions(+)
+ net/ipv4/igmp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/include/net/bluetooth/bluetooth.h
-+++ b/include/net/bluetooth/bluetooth.h
-@@ -398,6 +398,44 @@ static inline struct sk_buff *bt_skb_sen
- 	return skb;
- }
- 
-+/* Similar to bt_skb_sendmsg but can split the msg into multiple fragments
-+ * accourding to the MTU.
-+ */
-+static inline struct sk_buff *bt_skb_sendmmsg(struct sock *sk,
-+					      struct msghdr *msg,
-+					      size_t len, size_t mtu,
-+					      size_t headroom, size_t tailroom)
-+{
-+	struct sk_buff *skb, **frag;
-+
-+	skb = bt_skb_sendmsg(sk, msg, len, mtu, headroom, tailroom);
-+	if (IS_ERR_OR_NULL(skb))
-+		return skb;
-+
-+	len -= skb->len;
-+	if (!len)
-+		return skb;
-+
-+	/* Add remaining data over MTU as continuation fragments */
-+	frag = &skb_shinfo(skb)->frag_list;
-+	while (len) {
-+		struct sk_buff *tmp;
-+
-+		tmp = bt_skb_sendmsg(sk, msg, len, mtu, headroom, tailroom);
-+		if (IS_ERR_OR_NULL(tmp)) {
-+			kfree_skb(skb);
-+			return tmp;
-+		}
-+
-+		len -= tmp->len;
-+
-+		*frag = tmp;
-+		frag = &(*frag)->next;
-+	}
-+
-+	return skb;
-+}
-+
- int bt_to_errno(u16 code);
- 
- void hci_sock_set_flag(struct sock *sk, int nr);
+diff --git a/net/ipv4/igmp.c b/net/ipv4/igmp.c
+index 957e1170a8a3..b831825f234f 100644
+--- a/net/ipv4/igmp.c
++++ b/net/ipv4/igmp.c
+@@ -2212,7 +2212,7 @@ static int __ip_mc_join_group(struct sock *sk, struct ip_mreqn *imr,
+ 		count++;
+ 	}
+ 	err = -ENOBUFS;
+-	if (count >= net->ipv4.sysctl_igmp_max_memberships)
++	if (count >= READ_ONCE(net->ipv4.sysctl_igmp_max_memberships))
+ 		goto done;
+ 	iml = sock_kmalloc(sk, sizeof(*iml), GFP_KERNEL);
+ 	if (!iml)
+-- 
+2.35.1
+
 
 
