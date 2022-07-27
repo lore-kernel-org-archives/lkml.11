@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 558E5C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:10:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8C7EC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:10:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239576AbiG0RKP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:10:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37890 "EHLO
+        id S241492AbiG0RKT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:10:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241491AbiG0RJG (ORCPT
+        with ESMTP id S241542AbiG0RJK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:09:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 632775B054;
-        Wed, 27 Jul 2022 09:40:48 -0700 (PDT)
+        Wed, 27 Jul 2022 13:09:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA68250063;
+        Wed, 27 Jul 2022 09:40:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C90460BAF;
-        Wed, 27 Jul 2022 16:40:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75563C433D6;
-        Wed, 27 Jul 2022 16:40:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EC12360D3D;
+        Wed, 27 Jul 2022 16:40:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0577FC433C1;
+        Wed, 27 Jul 2022 16:40:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940042;
-        bh=NEa48WcsFvIgqPqblPrCpFOSbs6qiZ9b5ObRDAzNO18=;
+        s=korg; t=1658940048;
+        bh=FQxLPzvBoA8moseFHIyvnkKdcTwqNUzEN00yHZI4IG4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n2Dn9yvr/EGFFqnqZjgKQv74lOy4ZaTIjU8wimDblEumOBVvVVDBQsNkS/JR2EC6v
-         DntyAk5T2mcWupgqChXTm+Bj5iYtXY0Vyq49NJ+H8gRulPoFdZaVsAeXAjJ+2AKPbX
-         ID+xIi1j6HF02qa9Em28jqIJePO2mDY/o7vR3Xz0=
+        b=dj/t3GzHuKkyITVNY3tDGii28Gpx5iMFMzDF3Wo5vgbATNqjLiY8BmFUDfSEKbzzn
+         +iuTzIWdQ2DHLfy+38+4FxupYV8XoyiekksVYrZ3Mn4GMpZ4G965tgFjd3NlgGgpaH
+         Wf1SljSPptwhFxpvxyz/IWPtO7sl4teY9dOjPmXk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Cedric Wassenaar <cedric@bytespeed.nl>,
-        Junxiao Chang <junxiao.chang@intel.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 085/201] net: stmmac: fix dma queue left shift overflow issue
-Date:   Wed, 27 Jul 2022 18:09:49 +0200
-Message-Id: <20220727161031.268059384@linuxfoundation.org>
+Subject: [PATCH 5.15 087/201] igmp: Fix data-races around sysctl_igmp_llm_reports.
+Date:   Wed, 27 Jul 2022 18:09:51 +0200
+Message-Id: <20220727161031.345518560@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -51,80 +49,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Junxiao Chang <junxiao.chang@intel.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 613b065ca32e90209024ec4a6bb5ca887ee70980 ]
+[ Upstream commit f6da2267e71106474fbc0943dc24928b9cb79119 ]
 
-When queue number is > 4, left shift overflows due to 32 bits
-integer variable. Mask calculation is wrong for MTL_RXQ_DMA_MAP1.
+While reading sysctl_igmp_llm_reports, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its readers.
 
-If CONFIG_UBSAN is enabled, kernel dumps below warning:
-[   10.363842] ==================================================================
-[   10.363882] UBSAN: shift-out-of-bounds in /build/linux-intel-iotg-5.15-8e6Tf4/
-linux-intel-iotg-5.15-5.15.0/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c:224:12
-[   10.363929] shift exponent 40 is too large for 32-bit type 'unsigned int'
-[   10.363953] CPU: 1 PID: 599 Comm: NetworkManager Not tainted 5.15.0-1003-intel-iotg
-[   10.363956] Hardware name: ADLINK Technology Inc. LEC-EL/LEC-EL, BIOS 0.15.11 12/22/2021
-[   10.363958] Call Trace:
-[   10.363960]  <TASK>
-[   10.363963]  dump_stack_lvl+0x4a/0x5f
-[   10.363971]  dump_stack+0x10/0x12
-[   10.363974]  ubsan_epilogue+0x9/0x45
-[   10.363976]  __ubsan_handle_shift_out_of_bounds.cold+0x61/0x10e
-[   10.363979]  ? wake_up_klogd+0x4a/0x50
-[   10.363983]  ? vprintk_emit+0x8f/0x240
-[   10.363986]  dwmac4_map_mtl_dma.cold+0x42/0x91 [stmmac]
-[   10.364001]  stmmac_mtl_configuration+0x1ce/0x7a0 [stmmac]
-[   10.364009]  ? dwmac410_dma_init_channel+0x70/0x70 [stmmac]
-[   10.364020]  stmmac_hw_setup.cold+0xf/0xb14 [stmmac]
-[   10.364030]  ? page_pool_alloc_pages+0x4d/0x70
-[   10.364034]  ? stmmac_clear_tx_descriptors+0x6e/0xe0 [stmmac]
-[   10.364042]  stmmac_open+0x39e/0x920 [stmmac]
-[   10.364050]  __dev_open+0xf0/0x1a0
-[   10.364054]  __dev_change_flags+0x188/0x1f0
-[   10.364057]  dev_change_flags+0x26/0x60
-[   10.364059]  do_setlink+0x908/0xc40
-[   10.364062]  ? do_setlink+0xb10/0xc40
-[   10.364064]  ? __nla_validate_parse+0x4c/0x1a0
-[   10.364068]  __rtnl_newlink+0x597/0xa10
-[   10.364072]  ? __nla_reserve+0x41/0x50
-[   10.364074]  ? __kmalloc_node_track_caller+0x1d0/0x4d0
-[   10.364079]  ? pskb_expand_head+0x75/0x310
-[   10.364082]  ? nla_reserve_64bit+0x21/0x40
-[   10.364086]  ? skb_free_head+0x65/0x80
-[   10.364089]  ? security_sock_rcv_skb+0x2c/0x50
-[   10.364094]  ? __cond_resched+0x19/0x30
-[   10.364097]  ? kmem_cache_alloc_trace+0x15a/0x420
-[   10.364100]  rtnl_newlink+0x49/0x70
+This test can be packed into a helper, so such changes will be in the
+follow-up series after net is merged into net-next.
 
-This change fixes MTL_RXQ_DMA_MAP1 mask issue and channel/queue
-mapping warning.
+  if (ipv4_is_local_multicast(pmc->multiaddr) &&
+      !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
 
-Fixes: d43042f4da3e ("net: stmmac: mapping mtl rx to dma channel")
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=216195
-Reported-by: Cedric Wassenaar <cedric@bytespeed.nl>
-Signed-off-by: Junxiao Chang <junxiao.chang@intel.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Fixes: df2cf4a78e48 ("IGMP: Inhibit reports for local multicast groups")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c | 3 +++
- 1 file changed, 3 insertions(+)
+ net/ipv4/igmp.c | 21 +++++++++++++--------
+ 1 file changed, 13 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-index b21745368983..412abfabd28b 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
-@@ -219,6 +219,9 @@ static void dwmac4_map_mtl_dma(struct mac_device_info *hw, u32 queue, u32 chan)
- 	if (queue == 0 || queue == 4) {
- 		value &= ~MTL_RXQ_DMA_Q04MDMACH_MASK;
- 		value |= MTL_RXQ_DMA_Q04MDMACH(chan);
-+	} else if (queue > 4) {
-+		value &= ~MTL_RXQ_DMA_QXMDMACH_MASK(queue - 4);
-+		value |= MTL_RXQ_DMA_QXMDMACH(chan, queue - 4);
- 	} else {
- 		value &= ~MTL_RXQ_DMA_QXMDMACH_MASK(queue);
- 		value |= MTL_RXQ_DMA_QXMDMACH(chan, queue);
+diff --git a/net/ipv4/igmp.c b/net/ipv4/igmp.c
+index 930f6c41f519..ccfbc0a8f11c 100644
+--- a/net/ipv4/igmp.c
++++ b/net/ipv4/igmp.c
+@@ -467,7 +467,8 @@ static struct sk_buff *add_grec(struct sk_buff *skb, struct ip_mc_list *pmc,
+ 
+ 	if (pmc->multiaddr == IGMP_ALL_HOSTS)
+ 		return skb;
+-	if (ipv4_is_local_multicast(pmc->multiaddr) && !net->ipv4.sysctl_igmp_llm_reports)
++	if (ipv4_is_local_multicast(pmc->multiaddr) &&
++	    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
+ 		return skb;
+ 
+ 	mtu = READ_ONCE(dev->mtu);
+@@ -593,7 +594,7 @@ static int igmpv3_send_report(struct in_device *in_dev, struct ip_mc_list *pmc)
+ 			if (pmc->multiaddr == IGMP_ALL_HOSTS)
+ 				continue;
+ 			if (ipv4_is_local_multicast(pmc->multiaddr) &&
+-			     !net->ipv4.sysctl_igmp_llm_reports)
++			    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
+ 				continue;
+ 			spin_lock_bh(&pmc->lock);
+ 			if (pmc->sfcount[MCAST_EXCLUDE])
+@@ -736,7 +737,8 @@ static int igmp_send_report(struct in_device *in_dev, struct ip_mc_list *pmc,
+ 	if (type == IGMPV3_HOST_MEMBERSHIP_REPORT)
+ 		return igmpv3_send_report(in_dev, pmc);
+ 
+-	if (ipv4_is_local_multicast(group) && !net->ipv4.sysctl_igmp_llm_reports)
++	if (ipv4_is_local_multicast(group) &&
++	    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
+ 		return 0;
+ 
+ 	if (type == IGMP_HOST_LEAVE_MESSAGE)
+@@ -920,7 +922,8 @@ static bool igmp_heard_report(struct in_device *in_dev, __be32 group)
+ 
+ 	if (group == IGMP_ALL_HOSTS)
+ 		return false;
+-	if (ipv4_is_local_multicast(group) && !net->ipv4.sysctl_igmp_llm_reports)
++	if (ipv4_is_local_multicast(group) &&
++	    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
+ 		return false;
+ 
+ 	rcu_read_lock();
+@@ -1045,7 +1048,7 @@ static bool igmp_heard_query(struct in_device *in_dev, struct sk_buff *skb,
+ 		if (im->multiaddr == IGMP_ALL_HOSTS)
+ 			continue;
+ 		if (ipv4_is_local_multicast(im->multiaddr) &&
+-		    !net->ipv4.sysctl_igmp_llm_reports)
++		    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
+ 			continue;
+ 		spin_lock_bh(&im->lock);
+ 		if (im->tm_running)
+@@ -1296,7 +1299,8 @@ static void __igmp_group_dropped(struct ip_mc_list *im, gfp_t gfp)
+ #ifdef CONFIG_IP_MULTICAST
+ 	if (im->multiaddr == IGMP_ALL_HOSTS)
+ 		return;
+-	if (ipv4_is_local_multicast(im->multiaddr) && !net->ipv4.sysctl_igmp_llm_reports)
++	if (ipv4_is_local_multicast(im->multiaddr) &&
++	    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
+ 		return;
+ 
+ 	reporter = im->reporter;
+@@ -1338,7 +1342,8 @@ static void igmp_group_added(struct ip_mc_list *im)
+ #ifdef CONFIG_IP_MULTICAST
+ 	if (im->multiaddr == IGMP_ALL_HOSTS)
+ 		return;
+-	if (ipv4_is_local_multicast(im->multiaddr) && !net->ipv4.sysctl_igmp_llm_reports)
++	if (ipv4_is_local_multicast(im->multiaddr) &&
++	    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
+ 		return;
+ 
+ 	if (in_dev->dead)
+@@ -1642,7 +1647,7 @@ static void ip_mc_rejoin_groups(struct in_device *in_dev)
+ 		if (im->multiaddr == IGMP_ALL_HOSTS)
+ 			continue;
+ 		if (ipv4_is_local_multicast(im->multiaddr) &&
+-		    !net->ipv4.sysctl_igmp_llm_reports)
++		    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
+ 			continue;
+ 
+ 		/* a failover is happening and switches
 -- 
 2.35.1
 
