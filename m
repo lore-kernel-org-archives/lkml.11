@@ -2,115 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F765C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:10:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91E77C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:10:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241541AbiG0RKd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:10:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48666 "EHLO
+        id S237196AbiG0RKi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:10:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241621AbiG0RJU (ORCPT
+        with ESMTP id S241636AbiG0RJW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:09:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04DB04C639;
+        Wed, 27 Jul 2022 13:09:22 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9308374372
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:41:01 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id q23so14701564lfr.3
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:41:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pixZf6AxzKsbblWkPgEa/wCEjEyv0eH7Z0aYp8YUpGU=;
+        b=vNCansP6Trr0iw18LZc9CTOYN+jcJ/hP3lk/BF0RUdZbtfbg4+HowoEuynrmouACf7
+         o04lz9lo+1IVXZtXMMJbnuK7BmlaKr2DgxuLzRhQCQjpznp8J0FkmLp4zQ2LwUkfFMtx
+         6urFZ06hO/g5AibAezm9Fi9ybD/kFR6al2ZO7slNIbPv4/cpuzQFFekqkwVBvSWv5vYs
+         +OwBIm6YiNQs7Abkj2eMLulvzgZSIYUFyb923C+ovEiC6j7W3BijHM+ZaRTid7+ou1Jt
+         Sk8bvlrPrQQwskCrr5ogokAmvMocGONqjWs48T6Pt2l5D/GVcDKT+p0pUTi9mGIN2LgH
+         aAUA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pixZf6AxzKsbblWkPgEa/wCEjEyv0eH7Z0aYp8YUpGU=;
+        b=wT80Lb34pCJSOUQTdY0NSB1Y4rl9doEWptshF9tEuQ3kd1cV2YQMhbzJccPyegZlj0
+         DQAfT54TEw8+7Z5mE3ll9zlwJVd3/gAFa63WmROEoX1psTASLfAy69gcIYeRM4fPwSS+
+         IpiT8ZzS61xiChQ/10v0EjbfrDnXUisynxnZuBbgUlOc/qZZpjYFMJx/xR2vr00VgM49
+         98kR1RaUXNwDW6ckynlE6KU1PAaWXIAoI1MS7JLrCVZ59Jhlhv/NRh2FfIWY/DEnRcfP
+         Q0bigZoo9nUVj1DTJLZuTsK7lk1PKW8sv5gqcD8MAxokjyBHvB4fyGkTuvOET500curQ
+         Eybg==
+X-Gm-Message-State: AJIora9C85x6J1QssESaAUAGjiuNSPk7Hq6HeT7vK39alPUmnEWH/FYL
+        3wMA6UP9ENbvsDnEBFv/OTqq+w==
+X-Google-Smtp-Source: AGRyM1sEa8xnb9s4uf0W9nB9PCobLc+j3L3f+ElRoTRRKIH1ldBG30FknIESIJMvaO4t5rvFhQ1TEQ==
+X-Received: by 2002:a19:6408:0:b0:48a:139e:67b7 with SMTP id y8-20020a196408000000b0048a139e67b7mr7923551lfb.203.1658940059516;
         Wed, 27 Jul 2022 09:40:59 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ECBAEB821AC;
-        Wed, 27 Jul 2022 16:40:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 539C2C433C1;
-        Wed, 27 Jul 2022 16:40:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940056;
-        bh=sKZP2mYqjo4WOulxsCq2wPhmo/rksLNmsICaNcomTXA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=npsl9ltSJrpwpAHKVOgCsx3JGbNhbWlOIHkmDCulvh3fUIJaSVsIq9BNR6XLwA6z3
-         ibSsz0FoPW6AnKAFPQipRhqUa0K7qjTvoq3Tf+TNxmNNqkEGzsZVOubRdqBTUJi00S
-         DVNl25nTd95FObWM841MjVOpPan0zWrICEVW9k4w=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 089/201] igmp: Fix data-races around sysctl_igmp_max_msf.
-Date:   Wed, 27 Jul 2022 18:09:53 +0200
-Message-Id: <20220727161031.436175071@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
-References: <20220727161026.977588183@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from krzk-bin.lan (78-26-46-173.network.trollfjord.no. [78.26.46.173])
+        by smtp.gmail.com with ESMTPSA id v3-20020a05651203a300b00478f174c598sm489358lfp.95.2022.07.27.09.40.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jul 2022 09:40:58 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Bogdan Togorean <bogdan.togorean@analog.com>,
+        - <patches@opensource.cirrus.com>, alsa-devel@alsa-project.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH] ASoC: dt-bindings: use spi-peripheral-props.yaml
+Date:   Wed, 27 Jul 2022 18:40:50 +0200
+Message-Id: <20220727164050.385241-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+Instead of listing directly properties typical for SPI peripherals,
+reference the spi-peripheral-props.yaml schema.  This allows using all
+properties typical for SPI-connected devices, even these which device
+bindings author did not tried yet.
 
-[ Upstream commit 6ae0f2e553737b8cce49a1372573c81130ffa80e ]
+Remove the spi-* properties which now come via spi-peripheral-props.yaml
+schema, except for the cases when device schema adds some constraints
+like maximum frequency.
 
-While reading sysctl_igmp_max_msf, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its readers.
+While changing additionalProperties->unevaluatedProperties, put it in
+typical place, just before example DTS.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+
 ---
- net/ipv4/igmp.c        | 2 +-
- net/ipv4/ip_sockglue.c | 6 +++---
- 2 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/net/ipv4/igmp.c b/net/ipv4/igmp.c
-index 8920ae3751d1..9f4674244aff 100644
---- a/net/ipv4/igmp.c
-+++ b/net/ipv4/igmp.c
-@@ -2384,7 +2384,7 @@ int ip_mc_source(int add, int omode, struct sock *sk, struct
- 	}
- 	/* else, add a new source to the filter */
+Technically, this depends on [1] merged to SPI tree, if we want to
+preserve existing behavior of not allowing SPI CPHA and CPOL in each of
+schemas in this patch.
+
+If this patch comes independently via different tree, the SPI CPHA and
+CPOL will be allowed for brief period of time, before [1] is merged.
+This will not have negative impact, just DT schema checks will be
+loosened for that period.
+
+[1] https://lore.kernel.org/all/20220722191539.90641-2-krzysztof.kozlowski@linaro.org/
+---
+ .../devicetree/bindings/sound/adi,adau1977.yaml          | 7 ++++---
+ Documentation/devicetree/bindings/sound/wlf,wm8731.yaml  | 9 +++++----
+ 2 files changed, 9 insertions(+), 7 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/sound/adi,adau1977.yaml b/Documentation/devicetree/bindings/sound/adi,adau1977.yaml
+index b80454ad97da..847b83398d3d 100644
+--- a/Documentation/devicetree/bindings/sound/adi,adau1977.yaml
++++ b/Documentation/devicetree/bindings/sound/adi,adau1977.yaml
+@@ -32,8 +32,6 @@ properties:
+   reset-gpios:
+     maxItems: 1
  
--	if (psl && psl->sl_count >= net->ipv4.sysctl_igmp_max_msf) {
-+	if (psl && psl->sl_count >= READ_ONCE(net->ipv4.sysctl_igmp_max_msf)) {
- 		err = -ENOBUFS;
- 		goto done;
- 	}
-diff --git a/net/ipv4/ip_sockglue.c b/net/ipv4/ip_sockglue.c
-index 8268e427f889..38f296afb663 100644
---- a/net/ipv4/ip_sockglue.c
-+++ b/net/ipv4/ip_sockglue.c
-@@ -782,7 +782,7 @@ static int ip_set_mcast_msfilter(struct sock *sk, sockptr_t optval, int optlen)
- 	/* numsrc >= (4G-140)/128 overflow in 32 bits */
- 	err = -ENOBUFS;
- 	if (gsf->gf_numsrc >= 0x1ffffff ||
--	    gsf->gf_numsrc > sock_net(sk)->ipv4.sysctl_igmp_max_msf)
-+	    gsf->gf_numsrc > READ_ONCE(sock_net(sk)->ipv4.sysctl_igmp_max_msf))
- 		goto out_free_gsf;
+-  spi-max-frequency: true
+-
+   AVDD-supply:
+     description: Analog power support for the device.
  
- 	err = -EINVAL;
-@@ -832,7 +832,7 @@ static int compat_ip_set_mcast_msfilter(struct sock *sk, sockptr_t optval,
+@@ -52,7 +50,10 @@ required:
+   - compatible
+   - AVDD-supply
  
- 	/* numsrc >= (4G-140)/128 overflow in 32 bits */
- 	err = -ENOBUFS;
--	if (n > sock_net(sk)->ipv4.sysctl_igmp_max_msf)
-+	if (n > READ_ONCE(sock_net(sk)->ipv4.sysctl_igmp_max_msf))
- 		goto out_free_gsf;
- 	err = set_mcast_msfilter(sk, gf32->gf_interface, n, gf32->gf_fmode,
- 				 &gf32->gf_group, gf32->gf_slist_flex);
-@@ -1242,7 +1242,7 @@ static int do_ip_setsockopt(struct sock *sk, int level, int optname,
- 		}
- 		/* numsrc >= (1G-4) overflow in 32 bits */
- 		if (msf->imsf_numsrc >= 0x3ffffffcU ||
--		    msf->imsf_numsrc > net->ipv4.sysctl_igmp_max_msf) {
-+		    msf->imsf_numsrc > READ_ONCE(net->ipv4.sysctl_igmp_max_msf)) {
- 			kfree(msf);
- 			err = -ENOBUFS;
- 			break;
+-additionalProperties: false
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++
++unevaluatedProperties: false
+ 
+ examples:
+   - |
+diff --git a/Documentation/devicetree/bindings/sound/wlf,wm8731.yaml b/Documentation/devicetree/bindings/sound/wlf,wm8731.yaml
+index e7220e8b49f0..15795f63b5a3 100644
+--- a/Documentation/devicetree/bindings/sound/wlf,wm8731.yaml
++++ b/Documentation/devicetree/bindings/sound/wlf,wm8731.yaml
+@@ -52,10 +52,6 @@ properties:
+   DCVDD-supply:
+     description: Digital core supply regulator for the DCVDD pin.
+ 
+-  spi-max-frequency: true
+-
+-additionalProperties: false
+-
+ required:
+   - reg
+   - compatible
+@@ -64,6 +60,11 @@ required:
+   - DBVDD-supply
+   - DCVDD-supply
+ 
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++
++unevaluatedProperties: false
++
+ examples:
+   - |
+     spi {
 -- 
-2.35.1
-
-
+2.34.1
 
