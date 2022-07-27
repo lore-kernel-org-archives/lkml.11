@@ -2,163 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE6E3C19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 18:19:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6624C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 18:19:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243421AbiG0STM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 14:19:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60786 "EHLO
+        id S243383AbiG0ST4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 14:19:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243398AbiG0SSw (ORCPT
+        with ESMTP id S243539AbiG0ST3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 14:18:52 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17F23796BD
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 10:18:39 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id f65so16428626pgc.12
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 10:18:39 -0700 (PDT)
+        Wed, 27 Jul 2022 14:19:29 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9133B110
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 10:19:51 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id jw17so4573551pjb.0
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 10:19:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=WWCmALyIfyfxZcOwM+WnJXH5fX1Oapc9tMvQ2tyZ/gA=;
-        b=RUGgbOZZiX9cKnAXmZSPCy70hMCEU8askQzkDRUlKVRVAodzICC7cgYAtYsie3UFzj
-         L3TePliA+yGPcmjr9x0ihXFmgK0+p4Z3HIkfxhwXrqOWNp0iGDI0M7axOhthf2bDWtJ4
-         fBf6wfG0P3yVO8lG6QMrjVT4qbsz6kbB6X+qRNG2/qP73aP5H0otgk4wulFpir6yq5tz
-         PEN2viguJ7e1Q/BwDt8QZmdhSyl6gW9R07YA2Tnh+ksZj3osBIQsfKJL1SPw2Ow8ScZK
-         6Z3t+/LppY9MZsKP3phkfXXWV7Kqz0/JNYxDVQQDkmyopr9z6n707dy7026MIwcW3iHy
-         5WCw==
+        d=broadcom.com; s=google;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :in-reply-to;
+        bh=Gg5X4yYRZBmyFbowsjiVzUaQDGCyqXoypwdoLH6RWO4=;
+        b=cdZnjL6Jkl2Y/jHtGLg6BK3uHQ0TdW8XHDdgtuN7lbI3l/mAbAa1CVj2drgJmV/vdK
+         tpbIW3K1QA7TZJdH86s21LjoeGL3Yiy6qHu0KtsbI8p9HNx76D5FicBMZgAPm6ApfzAg
+         uqXpgI0HpKbjQCLl4665HzWsbuCq+p7YHdnBk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=WWCmALyIfyfxZcOwM+WnJXH5fX1Oapc9tMvQ2tyZ/gA=;
-        b=uRzg3jbkNBzeQjqGbZ01e3iL/G+PDusOkeEnkaigWxxUaXKdsImb6T2bK12n39FW9j
-         6/JqMpaOlA3wdoLewJPD2bbCXVQgBgCV+K0qHDmPgciCd+2ZZ/ct0U/GkCsKgWtl3D/b
-         3e6ltN40p8jdUoynypw53PWNNQvxVs8lZRg6d0G9deUCdtbAPGD+GzYuFICKSzKzSLGX
-         Y+teLt1y4fTNqixIFdc8VxxqM+khfsZ5wGoFqt7QeIigUOYtsTxRPM+/7WjrxMIOCp7K
-         rYfyQiHHVCrkm54Fiz963lLWJ2ncerEDYLtYgIlLhf5ORQ6KEYA2fAINn8rTkYN24HGO
-         Rf6w==
-X-Gm-Message-State: AJIora/MS8PZIgY16I96DHYAe61xXGS6vJN0reXu3xohdDC6PhZRJgUS
-        v3N/oMqRintlS+JTUpgtLoyRwA==
-X-Google-Smtp-Source: AGRyM1v6W5TTmMy+3aH01G2tHhgfhxx5mBK5jrf+PdOXn2Kww1Zmm2jC4Vo9LZW2r3fOUH6xPga6Jw==
-X-Received: by 2002:a05:6a00:130a:b0:52c:5932:7160 with SMTP id j10-20020a056a00130a00b0052c59327160mr1898840pfu.19.1658942318560;
-        Wed, 27 Jul 2022 10:18:38 -0700 (PDT)
-Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
-        by smtp.gmail.com with ESMTPSA id n59-20020a17090a5ac100b001f2b0f8e047sm2081502pji.27.2022.07.27.10.18.37
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:in-reply-to;
+        bh=Gg5X4yYRZBmyFbowsjiVzUaQDGCyqXoypwdoLH6RWO4=;
+        b=wR01zaJ8sw1t5ey98rKQ3P+Wo0XrClI8h2fbx5M6rCeIqikVa/oa7Tx//001mPQxBg
+         dnEsBInpHriElRxh92fnCtkxNY09o40l9W5Ivmr3VlFhIXPJbMCuYqVV4uxg4p8b5KmR
+         O2b43CvbmC9N61kEpRUJZrASlh7B/IxUvCd/m9fnchp7tYlAwdhceQ/XAg3/kUkWEg7e
+         VyphdHjVD9ZeEHkGm0p2c7CgfSZykSQ2oysaxcLJhPQsZ1+tRG0LhoSc3oNxBEpJ6Fct
+         RjpuSUItv7z6mQ6R/Bn3vTvZFlgBYCFwn3F3LqjWY/GR9EmSmHzbYD8nj28ZTBh3snlg
+         t4Ig==
+X-Gm-Message-State: AJIora/rwJK430X9eG6do7uwF//ynSC5Szi0ZaFN8XfwXiD00dEJVKIw
+        uR1DymTKra50mvHbOtOGjUwH1A==
+X-Google-Smtp-Source: AGRyM1u4XBcCtpAsrDVNa3RcUuIQr2kRoS4CEuBsLCgfIgWIc6zhzaXw3BiD2XZGdF4kGQgjmnjUuA==
+X-Received: by 2002:a17:902:ce83:b0:16c:2e89:d640 with SMTP id f3-20020a170902ce8300b0016c2e89d640mr22324410plg.23.1658942390950;
+        Wed, 27 Jul 2022 10:19:50 -0700 (PDT)
+Received: from C02YVCJELVCG.dhcp.broadcom.net ([192.19.144.250])
+        by smtp.gmail.com with ESMTPSA id x28-20020aa78f1c000000b0052ba859da14sm13999161pfr.184.2022.07.27.10.19.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 10:18:37 -0700 (PDT)
-Date:   Wed, 27 Jul 2022 11:18:36 -0600
-From:   Mathieu Poirier <mathieu.poirier@linaro.org>
-To:     Chris Lew <quic_clew@quicinc.com>
-Cc:     bjorn.andersson@linaro.org, linux-remoteproc@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/4] rpmsg: char: Add support to use rpmsg_rx_done
-Message-ID: <20220727171836.GB199805@p14s>
-References: <1654651005-15475-1-git-send-email-quic_clew@quicinc.com>
- <1654651005-15475-3-git-send-email-quic_clew@quicinc.com>
+        Wed, 27 Jul 2022 10:19:50 -0700 (PDT)
+From:   Andy Gospodarek <andrew.gospodarek@broadcom.com>
+X-Google-Original-From: Andy Gospodarek <gospo@broadcom.com>
+Date:   Wed, 27 Jul 2022 13:19:37 -0400
+To:     Vikas Gupta <vikas.gupta@broadcom.com>
+Cc:     jiri@nvidia.com, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, davem@davemloft.net,
+        dsahern@kernel.org, stephen@networkplumber.org,
+        edumazet@google.com, pabeni@redhat.com, ast@kernel.org,
+        leon@kernel.org, linux-doc@vger.kernel.org, corbet@lwn.net,
+        michael.chan@broadcom.com, andrew.gospodarek@broadcom.com
+Subject: Re: [PATCH net-next v9 1/2] devlink: introduce framework for
+ selftests
+Message-ID: <YuFzqb6HK+2gLqsF@C02YVCJELVCG.dhcp.broadcom.net>
+References: <20220727165721.37959-1-vikas.gupta@broadcom.com>
+ <20220727165721.37959-2-vikas.gupta@broadcom.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1654651005-15475-3-git-send-email-quic_clew@quicinc.com>
+In-Reply-To: <20220727165721.37959-2-vikas.gupta@broadcom.com>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="000000000000f0849f05e4cc9f26"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jun 07, 2022 at 06:16:43PM -0700, Chris Lew wrote:
-> Add support into the rpmsg char driver to skip copying the data into an
-> skb if the endpoint supports rpmsg_rx_done. If the endpoint supports
-> the rx_done operation, allocate a zero sized skb and set the data to
-> the buffer returned in the rx callback. When the packet is read from
-> the character device, release the memory by calling rpmsg_rx_done().
+--000000000000f0849f05e4cc9f26
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+On Wed, Jul 27, 2022 at 10:27:20PM +0530, Vikas Gupta wrote:
+> Add a framework for running selftests.
+> Framework exposes devlink commands and test suite(s) to the user
+> to execute and query the supported tests by the driver.
 > 
-> Signed-off-by: Chris Lew <quic_clew@quicinc.com>
-> ---
->  drivers/rpmsg/rpmsg_char.c | 50 ++++++++++++++++++++++++++++++++++++++++++++--
->  1 file changed, 48 insertions(+), 2 deletions(-)
+> Below are new entries in devlink_nl_ops
+> devlink_nl_cmd_selftests_show_doit/dumpit: To query the supported
+> selftests by the drivers.
+> devlink_nl_cmd_selftests_run: To execute selftests. Users can
+> provide a test mask for executing group tests or standalone tests.
 > 
-> diff --git a/drivers/rpmsg/rpmsg_char.c b/drivers/rpmsg/rpmsg_char.c
-> index b6183d4f62a2..be62ddcf356c 100644
-> --- a/drivers/rpmsg/rpmsg_char.c
-> +++ b/drivers/rpmsg/rpmsg_char.c
-> @@ -91,8 +91,8 @@ int rpmsg_chrdev_eptdev_destroy(struct device *dev, void *data)
->  }
->  EXPORT_SYMBOL(rpmsg_chrdev_eptdev_destroy);
->  
-> -static int rpmsg_ept_cb(struct rpmsg_device *rpdev, void *buf, int len,
-> -			void *priv, u32 addr)
-> +static int rpmsg_ept_copy_cb(struct rpmsg_device *rpdev, void *buf, int len,
-> +			     void *priv, u32 addr)
->  {
->  	struct rpmsg_eptdev *eptdev = priv;
->  	struct sk_buff *skb;
-> @@ -113,6 +113,43 @@ static int rpmsg_ept_cb(struct rpmsg_device *rpdev, void *buf, int len,
->  	return 0;
->  }
->  
-> +static int rpmsg_ept_no_copy_cb(struct rpmsg_device *rpdev, void *buf, int len,
-> +				void *priv, u32 addr)
-> +{
-> +	struct rpmsg_eptdev *eptdev = priv;
-> +	struct sk_buff *skb;
-> +
-> +	skb = alloc_skb(0, GFP_ATOMIC);
-> +	if (!skb)
-> +		return -ENOMEM;
-> +
-> +	skb->head = buf;
-> +	skb->data = buf;
-> +	skb_reset_tail_pointer(skb);
-> +	skb_set_end_offset(skb, len);
-> +	skb_put(skb, len);
-> +
-
-I was worried about all that open ended code but looking at the sk_buff API I
-don't think it is possible to do otherwise.  As such:
-
-Reviewed-by: Mathieu Poirier <mathieu.poirier@linaro.org>
-
-
-> +	spin_lock(&eptdev->queue_lock);
-> +	skb_queue_tail(&eptdev->queue, skb);
-> +	spin_unlock(&eptdev->queue_lock);
-> +
-> +	/* wake up any blocking processes, waiting for new data */
-> +	wake_up_interruptible(&eptdev->readq);
-> +
-> +	return RPMSG_DEFER;
-> +}
-> +
-> +static int rpmsg_ept_cb(struct rpmsg_device *rpdev, void *buf, int len,
-> +			void *priv, u32 addr)
-> +{
-> +	struct rpmsg_eptdev *eptdev = priv;
-> +	rpmsg_rx_cb_t cb;
-> +
-> +	cb = (eptdev->ept->rx_done) ? rpmsg_ept_no_copy_cb : rpmsg_ept_copy_cb;
-> +
-> +	return cb(rpdev, buf, len, priv, addr);
-> +}
-> +
->  static int rpmsg_eptdev_open(struct inode *inode, struct file *filp)
->  {
->  	struct rpmsg_eptdev *eptdev = cdev_to_eptdev(inode->i_cdev);
-> @@ -210,6 +247,15 @@ static ssize_t rpmsg_eptdev_read_iter(struct kiocb *iocb, struct iov_iter *to)
->  	if (copy_to_iter(skb->data, use, to) != use)
->  		use = -EFAULT;
->  
-> +	if (eptdev->ept->rx_done) {
-> +		rpmsg_rx_done(eptdev->ept, skb->data);
-> +		/*
-> +		 * Data memory is freed by rpmsg_rx_done(), reset the skb data
-> +		 * pointers so kfree_skb() does not try to free a second time.
-> +		 */
-> +		skb->head = NULL;
-> +		skb->data = NULL;
-> +	}
->  	kfree_skb(skb);
->  
->  	return use;
-> -- 
-> 2.7.4
+> Documentation/networking/devlink/ path is already part of MAINTAINERS &
+> the new files come under this path. Hence no update needed to the
+> MAINTAINERS
 > 
+> Signed-off-by: Vikas Gupta <vikas.gupta@broadcom.com>
+
+Reviewed-by: Andy Gospodarek <gospo@broadcom.com>
+
+
+--000000000000f0849f05e4cc9f26
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
+
+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
+riBJ/K1AFUjRAjFhGV64l++td7dkmnq/X8ET75ti+w1s4FRpFqkD2m7pg5NxdsZphYIXAgMBAAGj
+QjBAMA4GA1UdDwEB/wQEAwIBBjAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBSP8Et/qC5FJK5N
+UPpjmove4t0bvDANBgkqhkiG9w0BAQsFAAOCAQEAS0DbwFCq/sgM7/eWVEVJu5YACUGssxOGhigH
+M8pr5nS5ugAtrqQK0/Xx8Q+Kv3NnSoPHRHt44K9ubG8DKY4zOUXDjuS5V2yq/BKW7FPGLeQkbLmU
+Y/vcU2hnVj6DuM81IcPJaP7O2sJTqsyQiunwXUaMld16WCgaLx3ezQA3QY/tRG3XUyiXfvNnBB4V
+14qWtNPeTCekTBtzc3b0F5nCH3oO4y0IrQocLP88q1UOD5F+NuvDV0m+4S4tfGCLw0FREyOdzvcy
+a5QBqJnnLDMfOjsl0oZAzjsshnjJYS8Uuu7bVW/fhO4FCU29KNhyztNiUGUe65KXgzHZs7XKR1g/
+XzCCBVkwggRBoAMCAQICDBPdG+g0KtOPKKsBCTANBgkqhkiG9w0BAQsFADBbMQswCQYDVQQGEwJC
+RTEZMBcGA1UEChMQR2xvYmFsU2lnbiBudi1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMg
+UGVyc29uYWxTaWduIDIgQ0EgMjAyMDAeFw0yMTAyMjIxNDAyMzhaFw0yMjA5MjIxNDExNTVaMIGW
+MQswCQYDVQQGEwJJTjESMBAGA1UECBMJS2FybmF0YWthMRIwEAYDVQQHEwlCYW5nYWxvcmUxFjAU
+BgNVBAoTDUJyb2FkY29tIEluYy4xGDAWBgNVBAMTD0FuZHkgR29zcG9kYXJlazEtMCsGCSqGSIb3
+DQEJARYeYW5kcmV3Lmdvc3BvZGFyZWtAYnJvYWRjb20uY29tMIIBIjANBgkqhkiG9w0BAQEFAAOC
+AQ8AMIIBCgKCAQEAp9JFtMqwgpbnvA3lNVCpnR5ehv0kWK9zMpw2VWslbEZq4WxlXr1zZLZEFo9Y
+rdIZ0jlxwJ4QGYCvxE093p9easqc7NMemeMg7JpF63hhjCksrGnsxb6jCVUreXPSpBDD0cjaE409
+9yo/J5OQORNPelDd4Ihod6g0XlcxOLtlTk1F0SOODSjBZvaDm0zteqiVZb+7xgle3NOSZm3kiCby
+iRuyS0gMTdQN3gdgwal9iC3cSXHMZFBXyQz+JGSHomhPC66L6j4t6dUqSTdSP07wg38ZPV6ct/Sv
+/O2HcK+E/yYkdMXrDBgcOelO4t8AYHhmedCIvFVp4pFb2oit9tBuFQIDAQABo4IB3zCCAdswDgYD
+VR0PAQH/BAQDAgWgMIGjBggrBgEFBQcBAQSBljCBkzBOBggrBgEFBQcwAoZCaHR0cDovL3NlY3Vy
+ZS5nbG9iYWxzaWduLmNvbS9jYWNlcnQvZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAuY3J0MEEG
+CCsGAQUFBzABhjVodHRwOi8vb2NzcC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWdu
+MmNhMjAyMDBNBgNVHSAERjBEMEIGCisGAQQBoDIBKAowNDAyBggrBgEFBQcCARYmaHR0cHM6Ly93
+d3cuZ2xvYmFsc2lnbi5jb20vcmVwb3NpdG9yeS8wCQYDVR0TBAIwADBJBgNVHR8EQjBAMD6gPKA6
+hjhodHRwOi8vY3JsLmdsb2JhbHNpZ24uY29tL2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNy
+bDApBgNVHREEIjAggR5hbmRyZXcuZ29zcG9kYXJla0Bicm9hZGNvbS5jb20wEwYDVR0lBAwwCgYI
+KwYBBQUHAwQwHwYDVR0jBBgwFoAUljPR5lgXWzR1ioFWZNW+SN6hj88wHQYDVR0OBBYEFKARn7Ud
+RlGu+rBdUDirYE+Ee4TeMA0GCSqGSIb3DQEBCwUAA4IBAQAcWqh4fdwhDN0+MKyH7Mj0vS10E7xg
+mDetQhQ+twwKk5qPe3tJXrjD/NyZzrUgguNaE+X97jRsEbszO7BqdnM0j5vLDOmzb7d6qeNluJvk
+OYyzItlqZk9cJPoP9sD8w3lr2GRcajj5JCKV4pd2PX/i7r30Qco0VnloXpiesFmNTXQqD6lguUyn
+nb7IGM3v/Nb7NTFH8/KUVg33xw829ztuGrOvfrHfBbeVcUoOHEHObXoaofYOJjtmSOQdMeJIiBgP
+XEpJG8/HB8t4FF6A8W++4cHhv0+ayyEnznrbOCn6WUmIvV2WiJymRpvRG7Hhdlk0zA97MRpqK5yn
+ai3dQ6VvMYICbTCCAmkCAQEwazBbMQswCQYDVQQGEwJCRTEZMBcGA1UEChMQR2xvYmFsU2lnbiBu
+di1zYTExMC8GA1UEAxMoR2xvYmFsU2lnbiBHQ0MgUjMgUGVyc29uYWxTaWduIDIgQ0EgMjAyMAIM
+E90b6DQq048oqwEJMA0GCWCGSAFlAwQCAQUAoIHUMC8GCSqGSIb3DQEJBDEiBCBxFfHHaxfjBUvx
+h0ocx6wlduTKTiLXkhTU5r0AO+H0vjAYBgkqhkiG9w0BCQMxCwYJKoZIhvcNAQcBMBwGCSqGSIb3
+DQEJBTEPFw0yMjA3MjcxNzE5NTFaMGkGCSqGSIb3DQEJDzFcMFowCwYJYIZIAWUDBAEqMAsGCWCG
+SAFlAwQBFjALBglghkgBZQMEAQIwCgYIKoZIhvcNAwcwCwYJKoZIhvcNAQEKMAsGCSqGSIb3DQEB
+BzALBglghkgBZQMEAgEwDQYJKoZIhvcNAQEBBQAEggEAUDUDzI02QZL9cyUig1Gas85f4yHpM0QD
+Q/5IFk71xWKQOPchGDWJBMutdmNm/SnzImZHF1FtAnSDN4V3wzP41itJKWz7YqAynIjh+WeS+s9M
+Fp4JdS76m/zeptmAKreDsV/eCM0316EnNU4iJnDUFc+a497tlW4Jr25ncdwym0DX3KxKKDpTXRPU
+LdoHOCK0N+hH1ep4MFrAfAxV16METhJV8sLK9xufLyZnDF9qheBbMeZBVBSqNr/mThMXZlUNVB7P
+G7LVy+PLD4vt53vo+T1Ol4kPXlaQ9FkQkAtJJd0OjuuWOr+bYVSqu/FhOEMDvgLouWExPZvaF4XN
++k2ITA==
+--000000000000f0849f05e4cc9f26--
