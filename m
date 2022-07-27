@@ -2,74 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 456E8C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 19:03:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9CDAC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 19:03:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233790AbiG0TDA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 15:03:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46760 "EHLO
+        id S233157AbiG0TDD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 15:03:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229946AbiG0TCf (ORCPT
+        with ESMTP id S231676AbiG0TCg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 15:02:35 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F0FB389C;
-        Wed, 27 Jul 2022 11:19:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1658945952;
-        bh=JCDCK9yrw3I1gJGNfUmVRzLTQwGLcyOig7ZAmiVFQGY=;
-        h=X-UI-Sender-Class:Date:From:To:Cc:Subject;
-        b=h+xi5NDw6BeRX97636tfWxlOuXdY1ciIgcgI+CIvMbuH1Ik345FCqoZXvQ76eWDZq
-         TnWGKk54JZqaJsYTKSamMPcInfU3Xp681A+S2VcyDpH1L4c8H1YX1VB5i67yO/8chw
-         ZDu7IEB7rk9cClLuji0Nnp+hSwA5Qiz1As++7Reg=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.100.20] ([46.142.34.120]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1N7iCg-1nM6b41GqY-014gZe; Wed, 27
- Jul 2022 20:19:12 +0200
-Message-ID: <ac440113-6054-a5b4-7a09-76b35fb910ab@gmx.de>
-Date:   Wed, 27 Jul 2022 20:19:11 +0200
+        Wed, 27 Jul 2022 15:02:36 -0400
+Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD40B617F;
+        Wed, 27 Jul 2022 11:19:20 -0700 (PDT)
+Received: by mail-qv1-xf2f.google.com with SMTP id m10so13503362qvu.4;
+        Wed, 27 Jul 2022 11:19:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sv2OvnfK+ly8it9Ot2HpoNH1vK1oSywKBPdopl6H5R8=;
+        b=Twlrq0tNdqqveLigPpocGVsZXRU2r9eAEaUUylTV26/b6aqH6kKTOZlJ7c7zFpsSUG
+         8JPcZUHR/YO0EylnHF/925QFeleH0Ub+IKPiEkqNfkIE/DjlcR5mv8JPFiv+bbhxO62U
+         msFl2XrFDtLc17p1nAl/lOmcoq6uDw5GZGemJ7NGU8TsHUZH5FTQ/39H23FZvhc9JkZa
+         s3JhmZQeqi3GQhwdyY+yAfBXsmYxGGCzehgKvNF3AomD37eZbXKjMoDjprabRVI7p1kU
+         PEzyqm7//tQfh4jnGh2/N6PeGW7u/yLILgnPc8I8p1zkBdEGTsyWIvWU8MIVussAJGYv
+         vENA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sv2OvnfK+ly8it9Ot2HpoNH1vK1oSywKBPdopl6H5R8=;
+        b=4bml9UYGMgqGU1d/lWI9PiWB8r159PnHi1pwP0gs2OxqvBDqMMvISZ6XnbFYRd2nTO
+         daPyyXC1jCWwJNQ7lfGdCkcXdV27yB5XJeI8YX51G9NtcmxwMzEr2dFQwGHZhzToPVML
+         5O58eYH84sOScMl4WnsyNQFovzEKza9RemfFC2kzAuX8SRnVAzURv5rfK/8NE4KPkMIW
+         HcuaVClkvsTxSTRfk8GRNKIj1vhLPVgyLTjtfCgpoqgBhXOpThcI4frGRY9zEFd9rfsU
+         t1QCe6Tt0A6nlAzC7fU07jGhGc8p3WPbteb5l7RGdwX2dTrmLwXKNe3XOKuKqHYafeF8
+         yqQQ==
+X-Gm-Message-State: AJIora/+EXiqvEU+gsqCDLtz2argOveLG75wa1JMC847RBBsUBmRl6lW
+        9OPWICwAns+TzKnNuUEojfdQN8FkN6U=
+X-Google-Smtp-Source: AGRyM1tYsvDYgGXdzQUrtSBXjoLLmRNU+zuMAssdoC44h45+6ZECyNwpwOyuvjcvn5+d/x/O6YfU9g==
+X-Received: by 2002:a05:6214:2aa1:b0:473:2cc2:63e with SMTP id js1-20020a0562142aa100b004732cc2063emr20989931qvb.26.1658945960021;
+        Wed, 27 Jul 2022 11:19:20 -0700 (PDT)
+Received: from spruce.. (c-71-206-142-238.hsd1.va.comcast.net. [71.206.142.238])
+        by smtp.gmail.com with ESMTPSA id bk27-20020a05620a1a1b00b006af1f0af045sm13195972qkb.107.2022.07.27.11.19.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jul 2022 11:19:19 -0700 (PDT)
+From:   Joe Simmons-Talbott <joetalbott@gmail.com>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Joe Simmons-Talbott <joetalbott@gmail.com>
+Subject: [PATCH 0/2] iio: Whitespace cleanup
+Date:   Wed, 27 Jul 2022 14:18:53 -0400
+Message-Id: <20220727181855.589052-1-joetalbott@gmail.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-From:   Ronald Warsow <rwarsow@gmx.de>
-To:     linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org
-Content-Language: de-DE
-Subject: Re: [PATCH 5.18 000/158] 5.18.15-rc1 review
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Provags-ID: V03:K1:9j7VYiNGc1TSNXY/NRnL8mhlDGBGua5EM/whEq25ov0NbaFryK3
- mz2s8VUePXiRgew+MNuMCkB+b+dDrTaEGORP8k1fSaR1nj2zV+oMSSA8H0awMxSGZ8rljMf
- SHQHtHz2wPEPFScr+iJrnoZF9xnJoAT+LKqoqCam3iYh24alMIEdJuV5FMJdgaQ3hH81nfy
- 9aSA+bm3Onv/qGy1hcq1Q==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:8DhFGsCZepQ=:IDr8A6vs3cZbTqJVsZtryc
- tmqf4UV9UPZCIX6iK7ELPfR7hIkxym7L3ZBbt3FSSXotBuxn3NnTLF11H+hp5S4Ui+d/pHAnV
- PlaICDc5JXyab7ge05nYsmBPXKIqB+KS4+ePHmJ+ktrGPLzVzaLZtfLsm+ivYFNTyo4aILgkZ
- v+rypnAjDZRqs3zYauixQY8EAh1k/wwkQZGmMjTF2Of1o/vu3w851UF8SDusNslxnRyUS9xZb
- C6CotH01FkdjR/QgWrmIoGa1/uWgWNE/dBXNFC+btDMO25+ty6bi1CUiTfn92/5A+0SBfIT9Y
- lq1eatr7oTkuE6WHGDOx6xG3w717uwc3Jfzh0d4ziU7pPXnz6uWXhZ8GT7AQ29mGO3OHnJmft
- RSMETkfZkbwRYDqexw3qKPRoaLkzuNLEXaV4x+kT33W79ga/XYH3aPxvm9rMxUto5DlP4erqN
- yeuZHHiETMW2lavtmVq0vyaMpaA0WrVM3yrJG23lQQk9RJfmsVeTDjIiJ29tfHeJRwbOGBfx8
- N3Q6tq5w5LyKWwaHr8tyzjcrT+y9AmU5Qknoqyu6+KFXqdDfueAOYl3WUSUzQX/+V7RbbxwtY
- 3aYXBkS+T0l5Sj1AnXO3pnANS9Ssju/ttf2C3ZOUsUQLHq9CqPfDy42AdNhGV5GWInQaDrry3
- iPTJGq7BH8Q/6kep525Bddb/7cz8bZCN1qkE68+uOI+sbJgsibTAR4S6kzePbjg42HoxMSqNA
- hIZ1s2cUWaecKSbqw51LwiPD+29TGQBkzt2fvw60XLqCvEgXGEfc4CYXTnp2mMM6Tr23Z1xYN
- /KCnes5tS/5eNKwUz5QIg6VY0j4CPCm1L2PAecM6S4BdGSje95rJ4Z3oJrjl8NoFW8lPDHvCX
- CJMfofz1GktZnYvnMN5pOeyo0XxIZ/WiiZs9xufilnxWddj07MyLgEhO4zUf+9qaSZsvyNoyz
- sNyHGHdvCJxIFm+x9NMFWOpzyC7nNw1BGLkKY8xAGehFsFqBwAqsi2JVGTjB7E/mkhCe6kcBj
- FiIA7/UzZo79wVhg/TolHA2IcFENFxoU80vo118VSFadCxf51K0iHeMXb/99XRAu+KbwTZD1X
- +LZOQTmQdc3DVHdi0F7lOo4wJhMy5MRVw7lv4o4xknUuxBPFie5SExEiA==
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-hallo Greg
+Fix whitespace warnings reported by checkpatch.pl.
 
-5.18.15-rc1
+Joe Simmons-Talbott (2):
+  iio: Add blank lines after declarations.
+  iio: Fix indentation for multiline conditional.
 
-compiles, boots and runs here on x86_64
-(Intel i5-11400, Fedora 36)
+ drivers/iio/industrialio-buffer.c  | 5 +++--
+ drivers/iio/industrialio-core.c    | 7 +++++++
+ drivers/iio/industrialio-trigger.c | 1 +
+ 3 files changed, 11 insertions(+), 2 deletions(-)
 
-Thanks
+-- 
+2.36.1
 
-Tested-by: Ronald Warsow <rwarsow@gmx.de>
