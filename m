@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 418F3C19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:52:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9269C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:52:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240805AbiG0QwF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:52:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58016 "EHLO
+        id S240782AbiG0QwW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:52:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240596AbiG0Qvb (ORCPT
+        with ESMTP id S240681AbiG0Qvq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:51:31 -0400
+        Wed, 27 Jul 2022 12:51:46 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 234ED54670;
-        Wed, 27 Jul 2022 09:33:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6967624B5;
+        Wed, 27 Jul 2022 09:33:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 514CE61A24;
-        Wed, 27 Jul 2022 16:33:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D3FEC433C1;
-        Wed, 27 Jul 2022 16:33:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 22BA261A73;
+        Wed, 27 Jul 2022 16:33:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31A4BC433C1;
+        Wed, 27 Jul 2022 16:33:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939609;
-        bh=LMFLkaARFUSM+NsSDl+g6LE9sF4zJ1l9KvkUVRUo8Hs=;
+        s=korg; t=1658939615;
+        bh=u8CuO5FjMoSU7M4wPa4zMj9J5tMmegeEh7mn/v6qdUU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Gri+OL2yS+BOo/vdT1wOpsnMWNRJ8KE7RrG36WZ46BnSRJkOt6TqBBwZIWZP6LT1s
-         4/Q+uC/FsQYjrpMphsFnVtQCrWixk32vYweJIgx4P3G3eL++feivaFOx0Q3AuT5LmK
-         9SoCU9jzB4vtkdcs4KXV8mVtWpw8DfTWaguhAwYY=
+        b=dDvzpGKLRgZUhSAkCL8mZebEy0nPenwEUxr74f0FyzCpmK1al5HDzi6yDgZAjbW5t
+         J9b/r/Ehp+0WBgVzR3E8PU0sh6qkeaZgEUjeAoFtYqEOiApWGjNqomGu1zvIprOmRC
+         DHAIMvIFm5gXfzQAEIXJEURWwjtpuzAwqkODQ290=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Biao Huang <biao.huang@mediatek.com>,
+        stable@vger.kernel.org, Cedric Wassenaar <cedric@bytespeed.nl>,
+        Junxiao Chang <junxiao.chang@intel.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 041/105] net: stmmac: fix unbalanced ptp clock issue in suspend/resume flow
-Date:   Wed, 27 Jul 2022 18:10:27 +0200
-Message-Id: <20220727161013.744754839@linuxfoundation.org>
+Subject: [PATCH 5.10 043/105] net: stmmac: fix dma queue left shift overflow issue
+Date:   Wed, 27 Jul 2022 18:10:29 +0200
+Message-Id: <20220727161013.821677571@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161012.056867467@linuxfoundation.org>
 References: <20220727161012.056867467@linuxfoundation.org>
@@ -49,90 +51,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Biao Huang <biao.huang@mediatek.com>
+From: Junxiao Chang <junxiao.chang@intel.com>
 
-[ Upstream commit f4c7d8948e866918d61493264dbbd67e45ef2bda ]
+[ Upstream commit 613b065ca32e90209024ec4a6bb5ca887ee70980 ]
 
-Current stmmac driver will prepare/enable ptp_ref clock in
-stmmac_init_tstamp_counter().
+When queue number is > 4, left shift overflows due to 32 bits
+integer variable. Mask calculation is wrong for MTL_RXQ_DMA_MAP1.
 
-The stmmac_pltfr_noirq_suspend will disable it once in suspend flow.
+If CONFIG_UBSAN is enabled, kernel dumps below warning:
+[   10.363842] ==================================================================
+[   10.363882] UBSAN: shift-out-of-bounds in /build/linux-intel-iotg-5.15-8e6Tf4/
+linux-intel-iotg-5.15-5.15.0/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c:224:12
+[   10.363929] shift exponent 40 is too large for 32-bit type 'unsigned int'
+[   10.363953] CPU: 1 PID: 599 Comm: NetworkManager Not tainted 5.15.0-1003-intel-iotg
+[   10.363956] Hardware name: ADLINK Technology Inc. LEC-EL/LEC-EL, BIOS 0.15.11 12/22/2021
+[   10.363958] Call Trace:
+[   10.363960]  <TASK>
+[   10.363963]  dump_stack_lvl+0x4a/0x5f
+[   10.363971]  dump_stack+0x10/0x12
+[   10.363974]  ubsan_epilogue+0x9/0x45
+[   10.363976]  __ubsan_handle_shift_out_of_bounds.cold+0x61/0x10e
+[   10.363979]  ? wake_up_klogd+0x4a/0x50
+[   10.363983]  ? vprintk_emit+0x8f/0x240
+[   10.363986]  dwmac4_map_mtl_dma.cold+0x42/0x91 [stmmac]
+[   10.364001]  stmmac_mtl_configuration+0x1ce/0x7a0 [stmmac]
+[   10.364009]  ? dwmac410_dma_init_channel+0x70/0x70 [stmmac]
+[   10.364020]  stmmac_hw_setup.cold+0xf/0xb14 [stmmac]
+[   10.364030]  ? page_pool_alloc_pages+0x4d/0x70
+[   10.364034]  ? stmmac_clear_tx_descriptors+0x6e/0xe0 [stmmac]
+[   10.364042]  stmmac_open+0x39e/0x920 [stmmac]
+[   10.364050]  __dev_open+0xf0/0x1a0
+[   10.364054]  __dev_change_flags+0x188/0x1f0
+[   10.364057]  dev_change_flags+0x26/0x60
+[   10.364059]  do_setlink+0x908/0xc40
+[   10.364062]  ? do_setlink+0xb10/0xc40
+[   10.364064]  ? __nla_validate_parse+0x4c/0x1a0
+[   10.364068]  __rtnl_newlink+0x597/0xa10
+[   10.364072]  ? __nla_reserve+0x41/0x50
+[   10.364074]  ? __kmalloc_node_track_caller+0x1d0/0x4d0
+[   10.364079]  ? pskb_expand_head+0x75/0x310
+[   10.364082]  ? nla_reserve_64bit+0x21/0x40
+[   10.364086]  ? skb_free_head+0x65/0x80
+[   10.364089]  ? security_sock_rcv_skb+0x2c/0x50
+[   10.364094]  ? __cond_resched+0x19/0x30
+[   10.364097]  ? kmem_cache_alloc_trace+0x15a/0x420
+[   10.364100]  rtnl_newlink+0x49/0x70
 
-But in resume flow,
-	stmmac_pltfr_noirq_resume --> stmmac_init_tstamp_counter
-	stmmac_resume --> stmmac_hw_setup --> stmmac_init_ptp --> stmmac_init_tstamp_counter
-ptp_ref clock reference counter increases twice, which leads to unbalance
-ptp clock when resume back.
+This change fixes MTL_RXQ_DMA_MAP1 mask issue and channel/queue
+mapping warning.
 
-Move ptp_ref clock prepare/enable out of stmmac_init_tstamp_counter to fix it.
-
-Fixes: 0735e639f129d ("net: stmmac: skip only stmmac_ptp_register when resume from suspend")
-Signed-off-by: Biao Huang <biao.huang@mediatek.com>
+Fixes: d43042f4da3e ("net: stmmac: mapping mtl rx to dma channel")
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=216195
+Reported-by: Cedric Wassenaar <cedric@bytespeed.nl>
+Signed-off-by: Junxiao Chang <junxiao.chang@intel.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/stmicro/stmmac/stmmac_main.c   | 17 ++++++++---------
- .../ethernet/stmicro/stmmac/stmmac_platform.c   |  8 +++++++-
- 2 files changed, 15 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index e9aa9a5eba6b..27b7bb64a028 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -738,19 +738,10 @@ int stmmac_init_tstamp_counter(struct stmmac_priv *priv, u32 systime_flags)
- 	struct timespec64 now;
- 	u32 sec_inc = 0;
- 	u64 temp = 0;
--	int ret;
- 
- 	if (!(priv->dma_cap.time_stamp || priv->dma_cap.atime_stamp))
- 		return -EOPNOTSUPP;
- 
--	ret = clk_prepare_enable(priv->plat->clk_ptp_ref);
--	if (ret < 0) {
--		netdev_warn(priv->dev,
--			    "failed to enable PTP reference clock: %pe\n",
--			    ERR_PTR(ret));
--		return ret;
--	}
--
- 	stmmac_config_hw_tstamping(priv, priv->ptpaddr, systime_flags);
- 	priv->systime_flags = systime_flags;
- 
-@@ -2755,6 +2746,14 @@ static int stmmac_hw_setup(struct net_device *dev, bool ptp_register)
- 
- 	stmmac_mmc_setup(priv);
- 
-+	if (ptp_register) {
-+		ret = clk_prepare_enable(priv->plat->clk_ptp_ref);
-+		if (ret < 0)
-+			netdev_warn(priv->dev,
-+				    "failed to enable PTP reference clock: %pe\n",
-+				    ERR_PTR(ret));
-+	}
-+
- 	ret = stmmac_init_ptp(priv);
- 	if (ret == -EOPNOTSUPP)
- 		netdev_warn(priv->dev, "PTP not supported by HW\n");
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-index b40b962055fa..f70d8d1ce329 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-@@ -814,7 +814,13 @@ static int __maybe_unused stmmac_pltfr_noirq_resume(struct device *dev)
- 		if (ret)
- 			return ret;
- 
--		stmmac_init_tstamp_counter(priv, priv->systime_flags);
-+		ret = clk_prepare_enable(priv->plat->clk_ptp_ref);
-+		if (ret < 0) {
-+			netdev_warn(priv->dev,
-+				    "failed to enable PTP reference clock: %pe\n",
-+				    ERR_PTR(ret));
-+			return ret;
-+		}
- 	}
- 
- 	return 0;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
+index 16c538cfaf59..2e71e510e127 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
+@@ -215,6 +215,9 @@ static void dwmac4_map_mtl_dma(struct mac_device_info *hw, u32 queue, u32 chan)
+ 	if (queue == 0 || queue == 4) {
+ 		value &= ~MTL_RXQ_DMA_Q04MDMACH_MASK;
+ 		value |= MTL_RXQ_DMA_Q04MDMACH(chan);
++	} else if (queue > 4) {
++		value &= ~MTL_RXQ_DMA_QXMDMACH_MASK(queue - 4);
++		value |= MTL_RXQ_DMA_QXMDMACH(chan, queue - 4);
+ 	} else {
+ 		value &= ~MTL_RXQ_DMA_QXMDMACH_MASK(queue);
+ 		value |= MTL_RXQ_DMA_QXMDMACH(chan, queue);
 -- 
 2.35.1
 
