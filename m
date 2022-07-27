@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCB2BC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:32:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAB27C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:32:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237627AbiG0Qcv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:32:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34488 "EHLO
+        id S235313AbiG0Qc4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:32:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237137AbiG0QcJ (ORCPT
+        with ESMTP id S237685AbiG0QcY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:32:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96FAA4E842;
-        Wed, 27 Jul 2022 09:26:07 -0700 (PDT)
+        Wed, 27 Jul 2022 12:32:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 390004E868;
+        Wed, 27 Jul 2022 09:26:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C8EB5619FF;
-        Wed, 27 Jul 2022 16:25:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D68A8C433C1;
-        Wed, 27 Jul 2022 16:25:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 359ABB821BC;
+        Wed, 27 Jul 2022 16:25:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 943BFC433C1;
+        Wed, 27 Jul 2022 16:25:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939142;
-        bh=scXYP/FW6QAMrU5amOioIXw6fu+7zQRpdpnHXwy0Fpc=;
+        s=korg; t=1658939145;
+        bh=GH8X8H40DZmlNZYLKIumjz4WqGqR3FFDqpyqZxYZORs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lexCEtf1N5etsv04yP5/fUSE7+Ikq7H8yszVbZzhAdn6P1vrF6x1BkTwF4v+Bs0+H
-         hcU/rTLISs1aA/kbxVqgbTudfTLPWcM5YFoVPrpUwJ581cb/hJsMcffNR9O5+DZE08
-         cgmA4m9V77k4rNhiKshOHzyoK9noMrnbT03yuDFA=
+        b=RyhA2VrYkeIvDfsc5SVs4xizTr50k2baTSKCDWOl/p6P3RwHv8LN8GLYPq+E6xYNa
+         8tnPvFd5pL0q3fKQHKvIDKwfBLGCRPxakWhZqXcHWsgq09LvcwA9gtp3YuLSt0BaS9
+         nLuOtXmzoLe13zMImDiSVVEw3o99AnNPyhSYKlGU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 28/62] tcp: Fix data-races around sysctl_tcp_slow_start_after_idle.
-Date:   Wed, 27 Jul 2022 18:10:37 +0200
-Message-Id: <20220727161005.311596158@linuxfoundation.org>
+Subject: [PATCH 4.19 29/62] tcp: Fix a data-race around sysctl_tcp_retrans_collapse.
+Date:   Wed, 27 Jul 2022 18:10:38 +0200
+Message-Id: <20220727161005.350741940@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161004.175638564@linuxfoundation.org>
 References: <20220727161004.175638564@linuxfoundation.org>
@@ -51,48 +51,32 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 4845b5713ab18a1bb6e31d1fbb4d600240b8b691 ]
+[ Upstream commit 1a63cb91f0c2fcdeced6d6edee8d1d886583d139 ]
 
-While reading sysctl_tcp_slow_start_after_idle, it can be changed
-concurrently.  Thus, we need to add READ_ONCE() to its readers.
+While reading sysctl_tcp_retrans_collapse, it can be changed
+concurrently.  Thus, we need to add READ_ONCE() to its reader.
 
-Fixes: 35089bb203f4 ("[TCP]: Add tcp_slow_start_after_idle sysctl.")
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/tcp.h     | 4 ++--
  net/ipv4/tcp_output.c | 2 +-
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 9b1bf1567861..d28fa78dedb5 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -1339,8 +1339,8 @@ static inline void tcp_slow_start_after_idle_check(struct sock *sk)
- 	struct tcp_sock *tp = tcp_sk(sk);
- 	s32 delta;
- 
--	if (!sock_net(sk)->ipv4.sysctl_tcp_slow_start_after_idle || tp->packets_out ||
--	    ca_ops->cong_control)
-+	if (!READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_slow_start_after_idle) ||
-+	    tp->packets_out || ca_ops->cong_control)
- 		return;
- 	delta = tcp_jiffies32 - tp->lsndtime;
- 	if (delta > inet_csk(sk)->icsk_rto)
 diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 8dcb9484a20c..3b416dfb8aff 100644
+index 3b416dfb8aff..13d9e8570ce5 100644
 --- a/net/ipv4/tcp_output.c
 +++ b/net/ipv4/tcp_output.c
-@@ -1658,7 +1658,7 @@ static void tcp_cwnd_validate(struct sock *sk, bool is_cwnd_limited)
- 		if (tp->packets_out > tp->snd_cwnd_used)
- 			tp->snd_cwnd_used = tp->packets_out;
+@@ -2816,7 +2816,7 @@ static void tcp_retrans_try_collapse(struct sock *sk, struct sk_buff *to,
+ 	struct sk_buff *skb = to, *tmp;
+ 	bool first = true;
  
--		if (sock_net(sk)->ipv4.sysctl_tcp_slow_start_after_idle &&
-+		if (READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_slow_start_after_idle) &&
- 		    (s32)(tcp_jiffies32 - tp->snd_cwnd_stamp) >= inet_csk(sk)->icsk_rto &&
- 		    !ca_ops->cong_control)
- 			tcp_cwnd_application_limited(sk);
+-	if (!sock_net(sk)->ipv4.sysctl_tcp_retrans_collapse)
++	if (!READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_retrans_collapse))
+ 		return;
+ 	if (TCP_SKB_CB(skb)->tcp_flags & TCPHDR_SYN)
+ 		return;
 -- 
 2.35.1
 
