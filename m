@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDD62C19F28
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:17:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6D6BC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:17:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241720AbiG0RRg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:17:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33586 "EHLO
+        id S231167AbiG0RRk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:17:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241652AbiG0RQr (ORCPT
+        with ESMTP id S241656AbiG0RQr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Jul 2022 13:16:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E47EC78DCE;
-        Wed, 27 Jul 2022 09:43:14 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86E625C95B;
+        Wed, 27 Jul 2022 09:43:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DA22CB8200C;
-        Wed, 27 Jul 2022 16:43:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26EE5C433D7;
-        Wed, 27 Jul 2022 16:43:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E82FB60D3B;
+        Wed, 27 Jul 2022 16:43:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0053FC433D6;
+        Wed, 27 Jul 2022 16:43:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940191;
-        bh=njurI18qD1t1r66D78QE8tvSsJDqwpTLVeo3OeAw6N4=;
+        s=korg; t=1658940194;
+        bh=c9s70STEPcpvDZalC6QpagPkoFuKsN/joFPCxLWbenc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RYtvxZDwY1pk3cQUVots/Xr++2B+LTLdwdgso2YunB0xXqo/hHkdxHXBbDxb/ORwo
-         vDVeANNHtb0WTzNf3ylvmilU2mLet8lsrCwydBGqBXdojf0cOZLnKQIHQktikjMXl/
-         iS3cpR3c216T+PesZKqU2s0Fafjq4RIjf7TcTJEs=
+        b=Hbh2bz42nt4zgCZunMB+YditNjuU45rZg0FT/mloBhGtFpEuP1T8HI5NdHud8craC
+         csSCTOyz3OoYFFmHDAfaAEXSp/K1Q1XR6qC+po2HVtSJ2Srciuy9NkdPJBEIE+NhcJ
+         Ql5+sCfcdfngftM7gfnjoszsGGPtiRlx5yADiLYQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, syzbot <syzkaller@googlegroups.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Subject: [PATCH 5.15 136/201] bpf: Make sure mac_header was set before using it
-Date:   Wed, 27 Jul 2022 18:10:40 +0200
-Message-Id: <20220727161033.442229540@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Piotr Skajewski <piotrx.skajewski@intel.com>,
+        Marek Szlosek <marek.szlosek@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 107/201] ixgbe: Add locking to prevent panic when setting sriov_numvfs to zero
+Date:   Wed, 27 Jul 2022 18:10:11 +0200
+Message-Id: <20220727161032.187952434@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -49,74 +52,138 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Piotr Skajewski <piotrx.skajewski@intel.com>
 
-commit 0326195f523a549e0a9d7fd44c70b26fd7265090 upstream.
+[ Upstream commit 1e53834ce541d4fe271cdcca7703e50be0a44f8a ]
 
-Classic BPF has a way to load bytes starting from the mac header.
+It is possible to disable VFs while the PF driver is processing requests
+from the VF driver.  This can result in a panic.
 
-Some skbs do not have a mac header, and skb_mac_header()
-in this case is returning a pointer that 65535 bytes after
-skb->head.
-
-Existing range check in bpf_internal_load_pointer_neg_helper()
-was properly kicking and no illegal access was happening.
-
-New sanity check in skb_mac_header() is firing, so we need
-to avoid it.
-
-WARNING: CPU: 1 PID: 28990 at include/linux/skbuff.h:2785 skb_mac_header include/linux/skbuff.h:2785 [inline]
-WARNING: CPU: 1 PID: 28990 at include/linux/skbuff.h:2785 bpf_internal_load_pointer_neg_helper+0x1b1/0x1c0 kernel/bpf/core.c:74
-Modules linked in:
-CPU: 1 PID: 28990 Comm: syz-executor.0 Not tainted 5.19.0-rc4-syzkaller-00865-g4874fb9484be #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 06/29/2022
-RIP: 0010:skb_mac_header include/linux/skbuff.h:2785 [inline]
-RIP: 0010:bpf_internal_load_pointer_neg_helper+0x1b1/0x1c0 kernel/bpf/core.c:74
-Code: ff ff 45 31 f6 e9 5a ff ff ff e8 aa 27 40 00 e9 3b ff ff ff e8 90 27 40 00 e9 df fe ff ff e8 86 27 40 00 eb 9e e8 2f 2c f3 ff <0f> 0b eb b1 e8 96 27 40 00 e9 79 fe ff ff 90 41 57 41 56 41 55 41
-RSP: 0018:ffffc9000309f668 EFLAGS: 00010216
-RAX: 0000000000000118 RBX: ffffffffffeff00c RCX: ffffc9000e417000
-RDX: 0000000000040000 RSI: ffffffff81873f21 RDI: 0000000000000003
-RBP: ffff8880842878c0 R08: 0000000000000003 R09: 000000000000ffff
-R10: 000000000000ffff R11: 0000000000000001 R12: 0000000000000004
-R13: ffff88803ac56c00 R14: 000000000000ffff R15: dffffc0000000000
-FS: 00007f5c88a16700(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
-CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fdaa9f6c058 CR3: 000000003a82c000 CR4: 00000000003506e0
+BUG: unable to handle kernel paging request at 000000000000106c
+PGD 0 P4D 0
+Oops: 0000 [#1] SMP NOPTI
+CPU: 8 PID: 0 Comm: swapper/8 Kdump: loaded Tainted: G I      --------- -
+Hardware name: Dell Inc. PowerEdge R740/06WXJT, BIOS 2.8.2 08/27/2020
+RIP: 0010:ixgbe_msg_task+0x4c8/0x1690 [ixgbe]
+Code: 00 00 48 8d 04 40 48 c1 e0 05 89 7c 24 24 89 fd 48 89 44 24 10 83 ff
+01 0f 84 b8 04 00 00 4c 8b 64 24 10 4d 03 a5 48 22 00 00 <41> 80 7c 24 4c
+00 0f 84 8a 03 00 00 0f b7 c7 83 f8 08 0f 84 8f 0a
+RSP: 0018:ffffb337869f8df8 EFLAGS: 00010002
+RAX: 0000000000001020 RBX: 0000000000000000 RCX: 000000000000002b
+RDX: 0000000000000002 RSI: 0000000000000008 RDI: 0000000000000006
+RBP: 0000000000000006 R08: 0000000000000002 R09: 0000000000029780
+R10: 00006957d8f42832 R11: 0000000000000000 R12: 0000000000001020
+R13: ffff8a00e8978ac0 R14: 000000000000002b R15: ffff8a00e8979c80
+FS:  0000000000000000(0000) GS:ffff8a07dfd00000(0000) knlGS:00000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 000000000000106c CR3: 0000000063e10004 CR4: 00000000007726e0
 DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
 DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+PKRU: 55555554
 Call Trace:
-<TASK>
-____bpf_skb_load_helper_32 net/core/filter.c:276 [inline]
-bpf_skb_load_helper_32+0x191/0x220 net/core/filter.c:264
+ <IRQ>
+ ? ttwu_do_wakeup+0x19/0x140
+ ? try_to_wake_up+0x1cd/0x550
+ ? ixgbevf_update_xcast_mode+0x71/0xc0 [ixgbevf]
+ ixgbe_msix_other+0x17e/0x310 [ixgbe]
+ __handle_irq_event_percpu+0x40/0x180
+ handle_irq_event_percpu+0x30/0x80
+ handle_irq_event+0x36/0x53
+ handle_edge_irq+0x82/0x190
+ handle_irq+0x1c/0x30
+ do_IRQ+0x49/0xd0
+ common_interrupt+0xf/0xf
 
-Fixes: f9aefd6b2aa3 ("net: warn if mac header was not set")
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/bpf/20220707123900.945305-1-edumazet@google.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This can be eventually be reproduced with the following script:
+
+while :
+do
+    echo 63 > /sys/class/net/<devname>/device/sriov_numvfs
+    sleep 1
+    echo 0 > /sys/class/net/<devname>/device/sriov_numvfs
+    sleep 1
+done
+
+Add lock when disabling SR-IOV to prevent process VF mailbox communication.
+
+Fixes: d773d1310625 ("ixgbe: Fix memory leak when SR-IOV VFs are direct assigned")
+Signed-off-by: Piotr Skajewski <piotrx.skajewski@intel.com>
+Tested-by: Marek Szlosek <marek.szlosek@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Link: https://lore.kernel.org/r/20220715214456.2968711-1-anthony.l.nguyen@intel.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/bpf/core.c |    8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/intel/ixgbe/ixgbe.h       | 1 +
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c  | 3 +++
+ drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c | 6 ++++++
+ 3 files changed, 10 insertions(+)
 
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -66,11 +66,13 @@ void *bpf_internal_load_pointer_neg_help
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe.h b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
+index a604552fa634..c375a5d54b40 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe.h
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
+@@ -770,6 +770,7 @@ struct ixgbe_adapter {
+ #ifdef CONFIG_IXGBE_IPSEC
+ 	struct ixgbe_ipsec *ipsec;
+ #endif /* CONFIG_IXGBE_IPSEC */
++	spinlock_t vfs_lock;
+ };
+ 
+ static inline u8 ixgbe_max_rss_indices(struct ixgbe_adapter *adapter)
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+index 750b02bb2fdc..8cb20af51ecd 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+@@ -6397,6 +6397,9 @@ static int ixgbe_sw_init(struct ixgbe_adapter *adapter,
+ 	/* n-tuple support exists, always init our spinlock */
+ 	spin_lock_init(&adapter->fdir_perfect_lock);
+ 
++	/* init spinlock to avoid concurrency of VF resources */
++	spin_lock_init(&adapter->vfs_lock);
++
+ #ifdef CONFIG_IXGBE_DCB
+ 	ixgbe_init_dcb(adapter);
+ #endif
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
+index aaebdae8b5ff..0078ae592616 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
+@@ -204,10 +204,13 @@ void ixgbe_enable_sriov(struct ixgbe_adapter *adapter, unsigned int max_vfs)
+ int ixgbe_disable_sriov(struct ixgbe_adapter *adapter)
  {
- 	u8 *ptr = NULL;
+ 	unsigned int num_vfs = adapter->num_vfs, vf;
++	unsigned long flags;
+ 	int rss;
  
--	if (k >= SKF_NET_OFF)
-+	if (k >= SKF_NET_OFF) {
- 		ptr = skb_network_header(skb) + k - SKF_NET_OFF;
--	else if (k >= SKF_LL_OFF)
-+	} else if (k >= SKF_LL_OFF) {
-+		if (unlikely(!skb_mac_header_was_set(skb)))
-+			return NULL;
- 		ptr = skb_mac_header(skb) + k - SKF_LL_OFF;
--
-+	}
- 	if (ptr >= skb->head && ptr + size <= skb_tail_pointer(skb))
- 		return ptr;
++	spin_lock_irqsave(&adapter->vfs_lock, flags);
+ 	/* set num VFs to 0 to prevent access to vfinfo */
+ 	adapter->num_vfs = 0;
++	spin_unlock_irqrestore(&adapter->vfs_lock, flags);
  
+ 	/* put the reference to all of the vf devices */
+ 	for (vf = 0; vf < num_vfs; ++vf) {
+@@ -1305,8 +1308,10 @@ static void ixgbe_rcv_ack_from_vf(struct ixgbe_adapter *adapter, u32 vf)
+ void ixgbe_msg_task(struct ixgbe_adapter *adapter)
+ {
+ 	struct ixgbe_hw *hw = &adapter->hw;
++	unsigned long flags;
+ 	u32 vf;
+ 
++	spin_lock_irqsave(&adapter->vfs_lock, flags);
+ 	for (vf = 0; vf < adapter->num_vfs; vf++) {
+ 		/* process any reset requests */
+ 		if (!ixgbe_check_for_rst(hw, vf))
+@@ -1320,6 +1325,7 @@ void ixgbe_msg_task(struct ixgbe_adapter *adapter)
+ 		if (!ixgbe_check_for_ack(hw, vf))
+ 			ixgbe_rcv_ack_from_vf(adapter, vf);
+ 	}
++	spin_unlock_irqrestore(&adapter->vfs_lock, flags);
+ }
+ 
+ void ixgbe_disable_tx_rx(struct ixgbe_adapter *adapter)
+-- 
+2.35.1
+
 
 
