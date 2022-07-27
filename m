@@ -2,125 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9483EC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:16:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B6E5C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:17:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241730AbiG0RQz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:16:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36880 "EHLO
+        id S232036AbiG0RQ7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:16:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241657AbiG0RPz (ORCPT
+        with ESMTP id S241671AbiG0RQK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:15:55 -0400
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBACE7823C
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:43:01 -0700 (PDT)
-Received: by mail-lj1-x233.google.com with SMTP id q7so5001529ljp.13
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:43:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2tfmeNJmvtz7gaWiNehJRaGBYlsaQKFkN13/Ktjs1O4=;
-        b=pv47+NLr60QYIZhHvV0JM43fXrCZu2tNV8hC8pycJDtdzGMGjqoeq5iVKQ31xXQPJI
-         ETgqgrwvOJzaQ7get4X4xmIZERmv25rk+FDwMxQyA3kCIRjKUzg9mX7kB83Nc/sLKgw5
-         rdFGQAAD8bBYzucr/gR2l0K0LXW0HgyxDHnFFIEWbNFUayaQvzPgdD3r6X0R0mGFu1XE
-         xlcc9Qy/3cu3pD7jJkGOhgLvDaqeRx1yfDvpcAy4tf5QhK7Yw8uVzAmA8HWpGp+xwnqf
-         nBX+mPZfiGq84uynJdgua3z/yF+Y7RCjlTCG+M6/sLcMAz84AH+LDPQRO8Pi117ABgh2
-         9ROg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2tfmeNJmvtz7gaWiNehJRaGBYlsaQKFkN13/Ktjs1O4=;
-        b=1vbDEodycHfmAjCAoXCVaRSb58oH04yQJUMjC42ue9W4AnHBxj4XE9MqC2lx1tO/Az
-         e8LJNEP0QgknNVVVJjQc8mLn2+tcv4L9bM5TMVFMcRUBJKZ6ML9a+VN56Q8yn2S0xPj+
-         AMkhViQtRqLzbvN6DaMDj6+b4WhtXZS3QOKPFYKDa0dgAbuI0y3/oEHXT7MvPftwFBJk
-         FoIV0kUkxAM64GIqwfg9IoAdZDaXfFAyzaYTHG2geTqEoQgJuQSojIyRDDfc7bmbcpKO
-         JqD8Vl5k6KAB83/JCaqI872bgQ6IH5tCvFN8A84/wERoBfyG44Q+S/H9EATgsuhuOg0j
-         A/tg==
-X-Gm-Message-State: AJIora+H8g+/Ds+10r+GJeixW61PZw6+6vv8DymJ6PWEgWbuKLpuemUv
-        CyzwuEz40VZJUpN/vAUf30BI4w==
-X-Google-Smtp-Source: AGRyM1uvf+IxxwmBWWpBSNonkVO56XBc21x+QKfARTNbktO6Yzp3QSgilfse3r4MQAhLEHYTp0OohQ==
-X-Received: by 2002:a2e:bd89:0:b0:25a:86c8:93ca with SMTP id o9-20020a2ebd89000000b0025a86c893camr7423468ljq.419.1658940179711;
-        Wed, 27 Jul 2022 09:42:59 -0700 (PDT)
-Received: from krzk-bin.lan (78-26-46-173.network.trollfjord.no. [78.26.46.173])
-        by smtp.gmail.com with ESMTPSA id a5-20020a056512390500b00477c5940bbasm2295612lfu.265.2022.07.27.09.42.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 09:42:59 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Maxime Ripard <mripard@kernel.org>, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH] dt-bindings: gpio: fairchild,74hc595: use spi-peripheral-props.yaml
-Date:   Wed, 27 Jul 2022 18:42:51 +0200
-Message-Id: <20220727164251.385683-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
+        Wed, 27 Jul 2022 13:16:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 158CE7858C;
+        Wed, 27 Jul 2022 09:43:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 529AFB821D6;
+        Wed, 27 Jul 2022 16:43:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4256C433D7;
+        Wed, 27 Jul 2022 16:42:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658940180;
+        bh=VS7Kwf68vVLhN3/JM0Y6LtduQnkhHZwpCEeasFfSBQA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=O4u16NrhH70Wmoc//44IrrAL1bGnEWuuccqKFX+SRD6gOD8i+s/g+OKQLO/bKHZSH
+         T0xs2pwgJEb1YCV1cqSFBGzNeeqcx8cHs9evlgr/NrnQjObyDLxeOi3ZZ7BQTlKMTz
+         PsAXkSR1nopGqfbFToRzBEMskONICtcD3AaQNXiU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Dawid Lukwinski <dawid.lukwinski@intel.com>,
+        Jan Sokolowski <jan.sokolowski@intel.com>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 106/201] i40e: Fix erroneous adapter reinitialization during recovery process
+Date:   Wed, 27 Jul 2022 18:10:10 +0200
+Message-Id: <20220727161032.148382227@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
+References: <20220727161026.977588183@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of listing directly properties typical for SPI peripherals,
-reference the spi-peripheral-props.yaml schema.  This allows using all
-properties typical for SPI-connected devices, even these which device
-bindings author did not tried yet.
+From: Dawid Lukwinski <dawid.lukwinski@intel.com>
 
-Remove the spi-* properties which now come via spi-peripheral-props.yaml
-schema, except for the cases when device schema adds some constraints
-like maximum frequency.
+[ Upstream commit f838a63369818faadec4ad1736cfbd20ab5da00e ]
 
-While changing additionalProperties->unevaluatedProperties, put it in
-typical place, just before example DTS.
+Fix an issue when driver incorrectly detects state
+of recovery process and erroneously reinitializes interrupts,
+which results in a kernel error and call trace message.
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+The issue was caused by a combination of two factors:
+1. Assuming the EMP reset issued after completing
+firmware recovery means the whole recovery process is complete.
+2. Erroneous reinitialization of interrupt vector after detecting
+the above mentioned EMP reset.
 
+Fixes (1) by changing how recovery state change is detected
+and (2) by adjusting the conditional expression to ensure using proper
+interrupt reinitialization method, depending on the situation.
+
+Fixes: 4ff0ee1af016 ("i40e: Introduce recovery mode support")
+Signed-off-by: Dawid Lukwinski <dawid.lukwinski@intel.com>
+Signed-off-by: Jan Sokolowski <jan.sokolowski@intel.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Link: https://lore.kernel.org/r/20220715214542.2968762-1-anthony.l.nguyen@intel.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
+ drivers/net/ethernet/intel/i40e/i40e_main.c | 13 +++++--------
+ 1 file changed, 5 insertions(+), 8 deletions(-)
 
-Technically, this depends on [1] merged to SPI tree, if we want to
-preserve existing behavior of not allowing SPI CPHA and CPOL in each of
-schemas in this patch.
-
-If this patch comes independently via different tree, the SPI CPHA and
-CPOL will be allowed for brief period of time, before [1] is merged.
-This will not have negative impact, just DT schema checks will be
-loosened for that period.
-
-[1] https://lore.kernel.org/all/20220722191539.90641-2-krzysztof.kozlowski@linaro.org/
----
- .../devicetree/bindings/gpio/fairchild,74hc595.yaml        | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/gpio/fairchild,74hc595.yaml b/Documentation/devicetree/bindings/gpio/fairchild,74hc595.yaml
-index a99e7842ca17..c0ad70e66f76 100644
---- a/Documentation/devicetree/bindings/gpio/fairchild,74hc595.yaml
-+++ b/Documentation/devicetree/bindings/gpio/fairchild,74hc595.yaml
-@@ -33,8 +33,6 @@ properties:
-     description: GPIO connected to the OE (Output Enable) pin.
-     maxItems: 1
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
+index 02594e4d6258..c801b128e5b2 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -10631,7 +10631,7 @@ static int i40e_reset(struct i40e_pf *pf)
+  **/
+ static void i40e_rebuild(struct i40e_pf *pf, bool reinit, bool lock_acquired)
+ {
+-	int old_recovery_mode_bit = test_bit(__I40E_RECOVERY_MODE, pf->state);
++	const bool is_recovery_mode_reported = i40e_check_recovery_mode(pf);
+ 	struct i40e_vsi *vsi = pf->vsi[pf->lan_vsi];
+ 	struct i40e_hw *hw = &pf->hw;
+ 	i40e_status ret;
+@@ -10639,13 +10639,11 @@ static void i40e_rebuild(struct i40e_pf *pf, bool reinit, bool lock_acquired)
+ 	int v;
  
--  spi-max-frequency: true
--
- patternProperties:
-   "^(hog-[0-9]+|.+-hog(-[0-9]+)?)$":
-     type: object
-@@ -59,7 +57,10 @@ required:
-   - '#gpio-cells'
-   - registers-number
+ 	if (test_bit(__I40E_EMP_RESET_INTR_RECEIVED, pf->state) &&
+-	    i40e_check_recovery_mode(pf)) {
++	    is_recovery_mode_reported)
+ 		i40e_set_ethtool_ops(pf->vsi[pf->lan_vsi]->netdev);
+-	}
  
--additionalProperties: false
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+
-+unevaluatedProperties: false
+ 	if (test_bit(__I40E_DOWN, pf->state) &&
+-	    !test_bit(__I40E_RECOVERY_MODE, pf->state) &&
+-	    !old_recovery_mode_bit)
++	    !test_bit(__I40E_RECOVERY_MODE, pf->state))
+ 		goto clear_recovery;
+ 	dev_dbg(&pf->pdev->dev, "Rebuilding internal switch\n");
  
- examples:
-   - |
+@@ -10672,13 +10670,12 @@ static void i40e_rebuild(struct i40e_pf *pf, bool reinit, bool lock_acquired)
+ 	 * accordingly with regard to resources initialization
+ 	 * and deinitialization
+ 	 */
+-	if (test_bit(__I40E_RECOVERY_MODE, pf->state) ||
+-	    old_recovery_mode_bit) {
++	if (test_bit(__I40E_RECOVERY_MODE, pf->state)) {
+ 		if (i40e_get_capabilities(pf,
+ 					  i40e_aqc_opc_list_func_capabilities))
+ 			goto end_unlock;
+ 
+-		if (test_bit(__I40E_RECOVERY_MODE, pf->state)) {
++		if (is_recovery_mode_reported) {
+ 			/* we're staying in recovery mode so we'll reinitialize
+ 			 * misc vector here
+ 			 */
 -- 
-2.34.1
+2.35.1
+
+
 
