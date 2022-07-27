@@ -2,113 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4DCFC19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:56:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92D31C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:57:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242722AbiG0R4t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:56:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40050 "EHLO
+        id S242150AbiG0R5s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:57:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242922AbiG0R4e (ORCPT
+        with ESMTP id S238698AbiG0R51 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:56:34 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EAFF9C279;
-        Wed, 27 Jul 2022 10:01:00 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id z22so22234564edd.6;
-        Wed, 27 Jul 2022 10:00:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=E87C+NlfCXvLpu0xuiimJX9d0y6Hhjgvfv+tefp2zBQ=;
-        b=Cd4p940ZUF4xOgn2nYp6lHdne9lyf/AsO7bXQVzkOE/6TE/wm7RrHRkhYxn+adrUBm
-         4kbvTIyTbwGLOZlMH0u1haSU8NLMrl4atnJe0uwWG3v58TBYpENxIp7JTdMAf6tlGZcd
-         Y+/oKGiUcdcrPacY9Bt3mLErgIhKg38I4f3pIcIMCnNLd06qihxaO6rk0oTJ5rb/TxHU
-         bnQt9ym4lP3lSBUV482yuecSHJxJJUwuAu4rw5cnKFuyO5cEsPaLb6NsWEmhMy6u+hAL
-         dUtzr+yjWVgXmLCgZJ4wgxUXAv13Mnhwmn040Thkz6BjP4GcEITwTYfY1eIJWdHqvrn5
-         9BaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=E87C+NlfCXvLpu0xuiimJX9d0y6Hhjgvfv+tefp2zBQ=;
-        b=LCIlCISNk7SU2k9TKyS5ov3QMrAFHYh/TkGKXBcO8LvxSrfssA9FZq3YOFRNCje049
-         NAM2sHbWMHeedGwXABxplP3JD6K6+21jeXJ6NNjH7NqEwYHl/xCj4JKFrmhMYAGhH2un
-         3EtdmsXIW1XdN9nkWRcTatd4gRWQuONrsSboOXDd+gLT/9usK0G8zYWqKv0UaXUnOUbS
-         Vmp/Yhjz29mt6+ZniRKjkJt7mSWPe4FESFYtJpjKZBv9vPG2VyFedVgdC9oMZZlr1JMz
-         r+/CsDy7tOdlwIQ8VLA0fBpv9EZhjYJZd8DKjoaBQN14GbxnfF6FZHAOp6cXztWH/q74
-         oLOA==
-X-Gm-Message-State: AJIora9r1E3/Oj8oX8p6/SxGlC3Sx7ef3T2Y6+mywDHdjfBBhwBYZLOA
-        5B2x/jYrPCLxSi3m4V7OdseILCtaAQ6CSI238zY=
-X-Google-Smtp-Source: AGRyM1t8/S9koTsfhnO7lR7P6+hZGiz8DclxfuSxow2UeYoZzjdOI0eIy57iEtDcw1iZGBwwH6kxynA9aXl8g8eJ814=
-X-Received: by 2002:a05:6402:40c3:b0:43b:d65a:cbf7 with SMTP id
- z3-20020a05640240c300b0043bd65acbf7mr24290878edb.380.1658941258507; Wed, 27
- Jul 2022 10:00:58 -0700 (PDT)
+        Wed, 27 Jul 2022 13:57:27 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83AAF6B247;
+        Wed, 27 Jul 2022 10:01:44 -0700 (PDT)
+Received: from zn.tnic (p200300ea970f4fe3329c23fffea6a903.dip0.t-ipconnect.de [IPv6:2003:ea:970f:4fe3:329c:23ff:fea6:a903])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id F050F1EC04DA;
+        Wed, 27 Jul 2022 19:01:37 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1658941298;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=RWJzFBq0WyV6tQ+ZqLZ1AEB5KdQiAYWTFZnp9js+IYk=;
+        b=E1jfg4k4GTyDy4tx4WSwNylGy++reaewl6nh/UZAIdvOu54O6BrtIP6SOogm1scyjOXkAm
+        8OhwlXGLsnG/RMNgmC8aGcjmXcdcrTMVKMEdygb4vDnz8FHsZzd0q5O65TP4M8EaAActq7
+        gUMbQ6dBJ9jj5WGbPtQGg33bagoOLwQ=
+Date:   Wed, 27 Jul 2022 19:01:34 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Ashish Kalra <Ashish.Kalra@amd.com>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
+        linux-coco@lists.linux.dev, linux-mm@kvack.org,
+        linux-crypto@vger.kernel.org, tglx@linutronix.de, mingo@redhat.com,
+        jroedel@suse.de, thomas.lendacky@amd.com, hpa@zytor.com,
+        ardb@kernel.org, pbonzini@redhat.com, seanjc@google.com,
+        vkuznets@redhat.com, jmattson@google.com, luto@kernel.org,
+        dave.hansen@linux.intel.com, slp@redhat.com, pgonda@google.com,
+        peterz@infradead.org, srinivas.pandruvada@linux.intel.com,
+        rientjes@google.com, dovmurik@linux.ibm.com, tobin@ibm.com,
+        michael.roth@amd.com, vbabka@suse.cz, kirill@shutemov.name,
+        ak@linux.intel.com, tony.luck@intel.com, marcorr@google.com,
+        sathyanarayanan.kuppuswamy@linux.intel.com, alpergun@google.com,
+        dgilbert@redhat.com, jarkko@kernel.org
+Subject: Re: [PATCH Part2 v6 07/49] x86/sev: Invalid pages from direct map
+ when adding it to RMP table
+Message-ID: <YuFvbm/Zck9Tr5pq@zn.tnic>
+References: <cover.1655761627.git.ashish.kalra@amd.com>
+ <243778c282cd55a554af9c11d2ecd3ff9ea6820f.1655761627.git.ashish.kalra@amd.com>
 MIME-Version: 1.0
-References: <20220727064321.2953971-1-mw@semihalf.com> <20220727064321.2953971-7-mw@semihalf.com>
- <20220727143147.u6yd6wqslilspyhw@skbuf> <CAPv3WKc88KQN=athEqBg=Z5Bd1SC3QSOPZpDH7dfuYGHhR+oVg@mail.gmail.com>
-In-Reply-To: <CAPv3WKc88KQN=athEqBg=Z5Bd1SC3QSOPZpDH7dfuYGHhR+oVg@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 27 Jul 2022 19:00:21 +0200
-Message-ID: <CAHp75Vfn+tfuzxU31kVxp3sMAoT=ve3tcfDv84Omm-1tqvW3+w@mail.gmail.com>
-Subject: Re: [net-next: PATCH v3 6/8] net: core: switch to fwnode_find_net_device_by_node()
-To:     Marcin Wojtas <mw@semihalf.com>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Grzegorz Bernacki <gjb@semihalf.com>,
-        Grzegorz Jaszczyk <jaz@semihalf.com>,
-        Tomasz Nowicki <tn@semihalf.com>,
-        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
-        upstream@semihalf.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <243778c282cd55a554af9c11d2ecd3ff9ea6820f.1655761627.git.ashish.kalra@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 5:24 PM Marcin Wojtas <mw@semihalf.com> wrote:
-> =C5=9Br., 27 lip 2022 o 16:31 Vladimir Oltean <olteanv@gmail.com> napisa=
-=C5=82(a):
-> > On Wed, Jul 27, 2022 at 08:43:19AM +0200, Marcin Wojtas wrote:
+On Mon, Jun 20, 2022 at 11:03:07PM +0000, Ashish Kalra wrote:
 
-...
+> Subject: x86/sev: Invalid pages from direct map when adding it to RMP table
 
-> > > +     dev =3D class_find_device(&net_class, NULL, fwnode, fwnode_find=
-_parent_dev_match);
-> >
-> > This needs to maintain compatibility with DSA masters that have
-> > dev->of_node but don't have dev->fwnode populated.
->
-> Do you mean a situation analogous to what I addressed in:
-> [net-next: PATCH v3 4/8] net: mvpp2: initialize port fwnode pointer
-> ?
->
-> I found indeed a couple of drivers that may require a similar change
-> (e.g. dpaa2).
->
-> IMO we have 2 options:
-> - update these drivers
+"...: Invalidate pages from the direct map when adding them to the RMP table"
 
-Not Vladimir here, but my 2cents that update is best and elegant, it
-can be done even before this series.
+> +static int restore_direct_map(u64 pfn, int npages)
+> +{
+> +	int i, ret = 0;
+> +
+> +	for (i = 0; i < npages; i++) {
+> +		ret = set_direct_map_default_noflush(pfn_to_page(pfn + i));
 
---=20
-With Best Regards,
-Andy Shevchenko
+set_memory_p() ?
+
+> +		if (ret)
+> +			goto cleanup;
+> +	}
+> +
+> +cleanup:
+> +	WARN(ret > 0, "Failed to restore direct map for pfn 0x%llx\n", pfn + i);
+
+Warn for each pfn?!
+
+That'll flood dmesg mightily.
+
+> +	return ret;
+> +}
+> +
+> +static int invalid_direct_map(unsigned long pfn, int npages)
+> +{
+> +	int i, ret = 0;
+> +
+> +	for (i = 0; i < npages; i++) {
+> +		ret = set_direct_map_invalid_noflush(pfn_to_page(pfn + i));
+
+As above, set_memory_np() doesn't work here instead of looping over each
+page?
+
+> @@ -2462,11 +2494,38 @@ static int rmpupdate(u64 pfn, struct rmpupdate *val)
+>  	if (!cpu_feature_enabled(X86_FEATURE_SEV_SNP))
+>  		return -ENXIO;
+>  
+> +	level = RMP_TO_X86_PG_LEVEL(val->pagesize);
+> +	npages = page_level_size(level) / PAGE_SIZE;
+> +
+> +	/*
+> +	 * If page is getting assigned in the RMP table then unmap it from the
+> +	 * direct map.
+> +	 */
+> +	if (val->assigned) {
+> +		if (invalid_direct_map(pfn, npages)) {
+> +			pr_err("Failed to unmap pfn 0x%llx pages %d from direct_map\n",
+
+"Failed to unmap %d pages at pfn 0x... from the direct map\n"
+
+> +			       pfn, npages);
+> +			return -EFAULT;
+> +		}
+> +	}
+> +
+>  	/* Binutils version 2.36 supports the RMPUPDATE mnemonic. */
+>  	asm volatile(".byte 0xF2, 0x0F, 0x01, 0xFE"
+>  		     : "=a"(ret)
+>  		     : "a"(paddr), "c"((unsigned long)val)
+>  		     : "memory", "cc");
+> +
+> +	/*
+> +	 * Restore the direct map after the page is removed from the RMP table.
+> +	 */
+> +	if (!ret && !val->assigned) {
+> +		if (restore_direct_map(pfn, npages)) {
+> +			pr_err("Failed to map pfn 0x%llx pages %d in direct_map\n",
+
+"Failed to map %d pages at pfn 0x... into the direct map\n"
+
+Thx.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
