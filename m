@@ -2,96 +2,231 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB2CDC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:21:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53B42C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:21:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241908AbiG0RVW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:21:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38268 "EHLO
+        id S229578AbiG0RVa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:21:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241955AbiG0RTX (ORCPT
+        with ESMTP id S241953AbiG0RTX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Jul 2022 13:19:23 -0400
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF97260ED
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:44:30 -0700 (PDT)
-Received: by mail-lj1-x22f.google.com with SMTP id w18so9375787lje.1
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:44:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=TsOv4pGaUtCcXXEbEcGrs3Nq1JuLEmKn5+ZRivl7r0g=;
-        b=nyyy+baCowjfPIvpfSbsrhQV+q0K8U8uz1CA1PLUUUz4T2n1/8FSSnLJsqMfbVixYi
-         B+TTz3I7q0hcq0nR3M8hR+W87i3nN6paIfJDSycE77YRK+9lG40C3NV6m/3puZ7uEyf6
-         r9MuuTBhgUNEeDF/LTZG/kguQykzRRqU1tCz7P4W95C/W60q6KW5wiWWdA6GUjsD4BhE
-         8WE7WEmvvz6RvTlD30YNmx28d9dRIq8x0yM1lDHh6WlHD5gtc4OoBOXs4qc7hROchAXg
-         j25xPI90HGyvnGYLyzJ83uWpId4zzXSAY8HSEqMSraEuJXmEC4nn28Of4h8LIiDDgL9o
-         g+PQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=TsOv4pGaUtCcXXEbEcGrs3Nq1JuLEmKn5+ZRivl7r0g=;
-        b=Cv0WxtYuobaovLvN8cziR1Zn9LatFgDJslqWjjqRzTHUJ2l0gDBDDZimmorW2al4N1
-         MtY1AKSRJrRneoOGNchbBNLZzUuQrmgcYGxAuKTeYucRmhm+l3AdjPbcoFXTRo85oJAV
-         KNIp4Uvxa8Iodc4C17Vyez4uYFZEZ3Vp1khvCIZ1OIB9KxSo/SSZ19ANKIzp1oSRHG1d
-         4C4uS7HYBN8SvIy3vriqQsUjMCq5tEUJefqR+KiljQ3jLQ9X8uLPRgdD2ToRykvLHGUi
-         gnTPm8/E4HG8wN7BP2Sm+M8e61ay8aZD1FmrxIkDPfx1qBokcdkekLPZNe4lJ1DUHHq3
-         EKnQ==
-X-Gm-Message-State: AJIora9pPlw5IFPWqJbigrr2CLYy9QCjjIfYTm5jvC+g3tiYgTvYswEU
-        lBKocCPumWJvJng5q4q34gLaGO8SRFh6GzYb
-X-Google-Smtp-Source: AGRyM1toaXYDXjtrsFJEuaoLzZbKB9hARAFNZbfriEELIYeEy1MaWz1uam6OLi1/Pnhb+2WGoLw1ng==
-X-Received: by 2002:a2e:3919:0:b0:25e:566:89cf with SMTP id g25-20020a2e3919000000b0025e056689cfmr6011961lja.73.1658940269126;
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB5AE2DB;
         Wed, 27 Jul 2022 09:44:29 -0700 (PDT)
-Received: from krzk-bin.lan (78-26-46-173.network.trollfjord.no. [78.26.46.173])
-        by smtp.gmail.com with ESMTPSA id m4-20020a056512358400b0048a95ffc6a2sm1462673lfr.123.2022.07.27.09.44.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 09:44:28 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Christian Eggers <ceggers@arri.de>,
-        Cory Tusar <cory.tusar@pid1solutions.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 2/2] dt-bindings: eeprom: microchip,93lc46b: move to eeprom directory
-Date:   Wed, 27 Jul 2022 18:44:24 +0200
-Message-Id: <20220727164424.386499-2-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220727164424.386499-1-krzysztof.kozlowski@linaro.org>
-References: <20220727164424.386499-1-krzysztof.kozlowski@linaro.org>
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 89348614DE;
+        Wed, 27 Jul 2022 16:44:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97EE9C433C1;
+        Wed, 27 Jul 2022 16:44:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658940269;
+        bh=7upjMH8v1lO5gmKMhprbMT2ertIoz1OLzCcHbMIlJ5M=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=a9wrgTcGpwHM3xK0wXXvLh07g1SZMGfLtKODCqvvPQzB4QCNiw8Fn28FXB91DpHEZ
+         B7GoRlBvFYSRPFXWewA/6RYgzS8GfupSgnq4rCLiq5QLmPasflwDiVfzOQeJqvkZaN
+         LK3SweJX3WzODq3eg2ZtwogwGYaxkbkonR/YlKto=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+        Adam Guerin <adam.guerin@intel.com>,
+        Wojciech Ziemba <wojciech.ziemba@intel.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 164/201] crypto: qat - remove dma_free_coherent() for DH
+Date:   Wed, 27 Jul 2022 18:11:08 +0200
+Message-Id: <20220727161034.637741056@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
+References: <20220727161026.977588183@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move the Atmel/Microchip 93xx46 SPI compatible EEPROM family bindings
-from misc to eeprom directory to properly match subsystem.
+From: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+[ Upstream commit 029aa4624a7fe35233bdd3d1354dc7be260380bf ]
+
+The functions qat_dh_compute_value() allocates memory with
+dma_alloc_coherent() if the source or the destination buffers are made
+of multiple flat buffers or of a size that is not compatible with the
+hardware.
+This memory is then freed with dma_free_coherent() in the context of a
+tasklet invoked to handle the response for the corresponding request.
+
+According to Documentation/core-api/dma-api-howto.rst, the function
+dma_free_coherent() cannot be called in an interrupt context.
+
+Replace allocations with dma_alloc_coherent() in the function
+qat_dh_compute_value() with kmalloc() + dma_map_single().
+
+Cc: stable@vger.kernel.org
+Fixes: c9839143ebbf ("crypto: qat - Add DH support")
+Signed-off-by: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
+Reviewed-by: Adam Guerin <adam.guerin@intel.com>
+Reviewed-by: Wojciech Ziemba <wojciech.ziemba@intel.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../{misc/eeprom-93xx46.yaml => eeprom/microchip,93lc46b.yaml}  | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
- rename Documentation/devicetree/bindings/{misc/eeprom-93xx46.yaml => eeprom/microchip,93lc46b.yaml} (95%)
+ drivers/crypto/qat/qat_common/qat_asym_algs.c | 83 ++++++++-----------
+ 1 file changed, 34 insertions(+), 49 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/misc/eeprom-93xx46.yaml b/Documentation/devicetree/bindings/eeprom/microchip,93lc46b.yaml
-similarity index 95%
-rename from Documentation/devicetree/bindings/misc/eeprom-93xx46.yaml
-rename to Documentation/devicetree/bindings/eeprom/microchip,93lc46b.yaml
-index 43ac2376a453..0c2f5ddb79c5 100644
---- a/Documentation/devicetree/bindings/misc/eeprom-93xx46.yaml
-+++ b/Documentation/devicetree/bindings/eeprom/microchip,93lc46b.yaml
-@@ -1,7 +1,7 @@
- # SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
- %YAML 1.2
- ---
--$id: http://devicetree.org/schemas/misc/eeprom-93xx46.yaml#
-+$id: http://devicetree.org/schemas/eeprom/microchip,93lc46b.yaml#
- $schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/drivers/crypto/qat/qat_common/qat_asym_algs.c b/drivers/crypto/qat/qat_common/qat_asym_algs.c
+index b31372bddb96..25bbd22085c3 100644
+--- a/drivers/crypto/qat/qat_common/qat_asym_algs.c
++++ b/drivers/crypto/qat/qat_common/qat_asym_algs.c
+@@ -164,26 +164,21 @@ static void qat_dh_cb(struct icp_qat_fw_pke_resp *resp)
+ 	err = (err == ICP_QAT_FW_COMN_STATUS_FLAG_OK) ? 0 : -EINVAL;
  
- title: Microchip 93xx46 SPI compatible EEPROM family dt bindings
+ 	if (areq->src) {
+-		if (req->src_align)
+-			dma_free_coherent(dev, req->ctx.dh->p_size,
+-					  req->src_align, req->in.dh.in.b);
+-		else
+-			dma_unmap_single(dev, req->in.dh.in.b,
+-					 req->ctx.dh->p_size, DMA_TO_DEVICE);
++		dma_unmap_single(dev, req->in.dh.in.b, req->ctx.dh->p_size,
++				 DMA_TO_DEVICE);
++		kfree_sensitive(req->src_align);
+ 	}
+ 
+ 	areq->dst_len = req->ctx.dh->p_size;
+ 	if (req->dst_align) {
+ 		scatterwalk_map_and_copy(req->dst_align, areq->dst, 0,
+ 					 areq->dst_len, 1);
+-
+-		dma_free_coherent(dev, req->ctx.dh->p_size, req->dst_align,
+-				  req->out.dh.r);
+-	} else {
+-		dma_unmap_single(dev, req->out.dh.r, req->ctx.dh->p_size,
+-				 DMA_FROM_DEVICE);
++		kfree_sensitive(req->dst_align);
+ 	}
+ 
++	dma_unmap_single(dev, req->out.dh.r, req->ctx.dh->p_size,
++			 DMA_FROM_DEVICE);
++
+ 	dma_unmap_single(dev, req->phy_in, sizeof(struct qat_dh_input_params),
+ 			 DMA_TO_DEVICE);
+ 	dma_unmap_single(dev, req->phy_out,
+@@ -231,6 +226,7 @@ static int qat_dh_compute_value(struct kpp_request *req)
+ 	struct icp_qat_fw_pke_request *msg = &qat_req->req;
+ 	int ret;
+ 	int n_input_params = 0;
++	u8 *vaddr;
+ 
+ 	if (unlikely(!ctx->xa))
+ 		return -EINVAL;
+@@ -287,27 +283,24 @@ static int qat_dh_compute_value(struct kpp_request *req)
+ 		 */
+ 		if (sg_is_last(req->src) && req->src_len == ctx->p_size) {
+ 			qat_req->src_align = NULL;
+-			qat_req->in.dh.in.b = dma_map_single(dev,
+-							     sg_virt(req->src),
+-							     req->src_len,
+-							     DMA_TO_DEVICE);
+-			if (unlikely(dma_mapping_error(dev,
+-						       qat_req->in.dh.in.b)))
+-				return ret;
+-
++			vaddr = sg_virt(req->src);
+ 		} else {
+ 			int shift = ctx->p_size - req->src_len;
+ 
+-			qat_req->src_align = dma_alloc_coherent(dev,
+-								ctx->p_size,
+-								&qat_req->in.dh.in.b,
+-								GFP_KERNEL);
++			qat_req->src_align = kzalloc(ctx->p_size, GFP_KERNEL);
+ 			if (unlikely(!qat_req->src_align))
+ 				return ret;
+ 
+ 			scatterwalk_map_and_copy(qat_req->src_align + shift,
+ 						 req->src, 0, req->src_len, 0);
++
++			vaddr = qat_req->src_align;
+ 		}
++
++		qat_req->in.dh.in.b = dma_map_single(dev, vaddr, ctx->p_size,
++						     DMA_TO_DEVICE);
++		if (unlikely(dma_mapping_error(dev, qat_req->in.dh.in.b)))
++			goto unmap_src;
+ 	}
+ 	/*
+ 	 * dst can be of any size in valid range, but HW expects it to be the
+@@ -318,20 +311,18 @@ static int qat_dh_compute_value(struct kpp_request *req)
+ 	 */
+ 	if (sg_is_last(req->dst) && req->dst_len == ctx->p_size) {
+ 		qat_req->dst_align = NULL;
+-		qat_req->out.dh.r = dma_map_single(dev, sg_virt(req->dst),
+-						   req->dst_len,
+-						   DMA_FROM_DEVICE);
+-
+-		if (unlikely(dma_mapping_error(dev, qat_req->out.dh.r)))
+-			goto unmap_src;
+-
++		vaddr = sg_virt(req->dst);
+ 	} else {
+-		qat_req->dst_align = dma_alloc_coherent(dev, ctx->p_size,
+-							&qat_req->out.dh.r,
+-							GFP_KERNEL);
++		qat_req->dst_align = kzalloc(ctx->p_size, GFP_KERNEL);
+ 		if (unlikely(!qat_req->dst_align))
+ 			goto unmap_src;
++
++		vaddr = qat_req->dst_align;
+ 	}
++	qat_req->out.dh.r = dma_map_single(dev, vaddr, ctx->p_size,
++					   DMA_FROM_DEVICE);
++	if (unlikely(dma_mapping_error(dev, qat_req->out.dh.r)))
++		goto unmap_dst;
+ 
+ 	qat_req->in.dh.in_tab[n_input_params] = 0;
+ 	qat_req->out.dh.out_tab[1] = 0;
+@@ -371,23 +362,17 @@ static int qat_dh_compute_value(struct kpp_request *req)
+ 				 sizeof(struct qat_dh_input_params),
+ 				 DMA_TO_DEVICE);
+ unmap_dst:
+-	if (qat_req->dst_align)
+-		dma_free_coherent(dev, ctx->p_size, qat_req->dst_align,
+-				  qat_req->out.dh.r);
+-	else
+-		if (!dma_mapping_error(dev, qat_req->out.dh.r))
+-			dma_unmap_single(dev, qat_req->out.dh.r, ctx->p_size,
+-					 DMA_FROM_DEVICE);
++	if (!dma_mapping_error(dev, qat_req->out.dh.r))
++		dma_unmap_single(dev, qat_req->out.dh.r, ctx->p_size,
++				 DMA_FROM_DEVICE);
++	kfree_sensitive(qat_req->dst_align);
+ unmap_src:
+ 	if (req->src) {
+-		if (qat_req->src_align)
+-			dma_free_coherent(dev, ctx->p_size, qat_req->src_align,
+-					  qat_req->in.dh.in.b);
+-		else
+-			if (!dma_mapping_error(dev, qat_req->in.dh.in.b))
+-				dma_unmap_single(dev, qat_req->in.dh.in.b,
+-						 ctx->p_size,
+-						 DMA_TO_DEVICE);
++		if (!dma_mapping_error(dev, qat_req->in.dh.in.b))
++			dma_unmap_single(dev, qat_req->in.dh.in.b,
++					 ctx->p_size,
++					 DMA_TO_DEVICE);
++		kfree_sensitive(qat_req->src_align);
+ 	}
+ 	return ret;
+ }
 -- 
-2.34.1
+2.35.1
+
+
 
