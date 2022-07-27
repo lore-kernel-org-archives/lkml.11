@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F34EC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:23:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F1EDC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:23:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242041AbiG0RXj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:23:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44442 "EHLO
+        id S242045AbiG0RXp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:23:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242000AbiG0RWw (ORCPT
+        with ESMTP id S242008AbiG0RW6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:22:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B2A26F7FA;
-        Wed, 27 Jul 2022 09:45:39 -0700 (PDT)
+        Wed, 27 Jul 2022 13:22:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AD197AB02;
+        Wed, 27 Jul 2022 09:45:41 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A896CB821A6;
-        Wed, 27 Jul 2022 16:45:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AF18C433C1;
-        Wed, 27 Jul 2022 16:45:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 94F5561561;
+        Wed, 27 Jul 2022 16:45:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FB81C433D6;
+        Wed, 27 Jul 2022 16:45:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940333;
-        bh=STSC/uyrBVz7rV5fTY9o9fyE0PYLOMybtV5+kYBr4eA=;
+        s=korg; t=1658940339;
+        bh=vTiLwE0dkZkmLTjWT9JEPftwV50J2xM5ZrnPnwkywy0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L/m29RHoOtuWpNtqe253DAMuyvyLoEq52jYrVGqIWwtYq4JnYSpPLvR8yj5rwgiEB
-         EqOJz83uuwx738xiSquFr+F8Ja5//02ImBbCYGDfvJx7rDI6CCENWMIuNluDW5jfUG
-         hM2BWx7iHzR2KWKXxlQpQNsMcc09xwhgLoT2OuGs=
+        b=PiXj7e11cQ0bu71s/SvF0X2mnysvYsu5smg0vZntc3reH+/zyoj/03VrjciUf6r4/
+         3ZVlFZxetjyW+Di9PI/5bAulembE1AQTri5gzZxaRnQmRdMOjhBJRJ2S8633dqlydn
+         Fobs72vv5Assl9KS+YmuNPi9beTBHzr5OJgpiwgU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Zapolskiy <vz@mleia.com>,
-        Johan Hovold <johan@kernel.org>, Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 5.15 188/201] tty: drivers/tty/, stop using tty_schedule_flip()
-Date:   Wed, 27 Jul 2022 18:11:32 +0200
-Message-Id: <20220727161035.559931107@linuxfoundation.org>
+        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH 5.15 190/201] tty: drop tty_schedule_flip()
+Date:   Wed, 27 Jul 2022 18:11:34 +0200
+Message-Id: <20220727161035.639661748@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -50,105 +50,80 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jiri Slaby <jslaby@suse.cz>
 
-commit 5f6a85158ccacc3f09744b3aafe8b11ab3b6c6f6 upstream.
+commit 5db96ef23bda6c2a61a51693c85b78b52d03f654 upstream.
 
 Since commit a9c3f68f3cd8d (tty: Fix low_latency BUG) in 2014,
-tty_flip_buffer_push() is only a wrapper to tty_schedule_flip(). We are
-going to remove the latter (as it is used less), so call the former in
-drivers/tty/.
+tty_flip_buffer_push() is only a wrapper to tty_schedule_flip(). All
+users were converted in the previous patches, so remove
+tty_schedule_flip() completely while inlining its body into
+tty_flip_buffer_push().
 
-Cc: Vladimir Zapolskiy <vz@mleia.com>
+One less exported function.
+
 Reviewed-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Link: https://lore.kernel.org/r/20211122111648.30379-2-jslaby@suse.cz
+Link: https://lore.kernel.org/r/20211122111648.30379-4-jslaby@suse.cz
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/tty/goldfish.c          |    2 +-
- drivers/tty/moxa.c              |    4 ++--
- drivers/tty/serial/lpc32xx_hs.c |    2 +-
- drivers/tty/vt/keyboard.c       |    6 +++---
- drivers/tty/vt/vt.c             |    2 +-
- 5 files changed, 8 insertions(+), 8 deletions(-)
+ drivers/tty/tty_buffer.c |   30 ++++++++----------------------
+ include/linux/tty_flip.h |    1 -
+ 2 files changed, 8 insertions(+), 23 deletions(-)
 
---- a/drivers/tty/goldfish.c
-+++ b/drivers/tty/goldfish.c
-@@ -151,7 +151,7 @@ static irqreturn_t goldfish_tty_interrup
- 	address = (unsigned long)(void *)buf;
- 	goldfish_tty_rw(qtty, address, count, 0);
+--- a/drivers/tty/tty_buffer.c
++++ b/drivers/tty/tty_buffer.c
+@@ -403,27 +403,6 @@ int __tty_insert_flip_char(struct tty_po
+ EXPORT_SYMBOL(__tty_insert_flip_char);
  
--	tty_schedule_flip(&qtty->port);
-+	tty_flip_buffer_push(&qtty->port);
- 	return IRQ_HANDLED;
- }
+ /**
+- *	tty_schedule_flip	-	push characters to ldisc
+- *	@port: tty port to push from
+- *
+- *	Takes any pending buffers and transfers their ownership to the
+- *	ldisc side of the queue. It then schedules those characters for
+- *	processing by the line discipline.
+- */
+-
+-void tty_schedule_flip(struct tty_port *port)
+-{
+-	struct tty_bufhead *buf = &port->buf;
+-
+-	/* paired w/ acquire in flush_to_ldisc(); ensures
+-	 * flush_to_ldisc() sees buffer data.
+-	 */
+-	smp_store_release(&buf->tail->commit, buf->tail->used);
+-	queue_work(system_unbound_wq, &buf->work);
+-}
+-EXPORT_SYMBOL(tty_schedule_flip);
+-
+-/**
+  *	tty_prepare_flip_string		-	make room for characters
+  *	@port: tty port
+  *	@chars: return pointer for character write area
+@@ -567,7 +546,14 @@ static void flush_to_ldisc(struct work_s
  
---- a/drivers/tty/moxa.c
-+++ b/drivers/tty/moxa.c
-@@ -1383,7 +1383,7 @@ static int moxa_poll_port(struct moxa_po
- 		if (inited && !tty_throttled(tty) &&
- 				MoxaPortRxQueue(p) > 0) { /* RX */
- 			MoxaPortReadData(p);
--			tty_schedule_flip(&p->port);
-+			tty_flip_buffer_push(&p->port);
- 		}
- 	} else {
- 		clear_bit(EMPTYWAIT, &p->statusflags);
-@@ -1408,7 +1408,7 @@ static int moxa_poll_port(struct moxa_po
- 
- 	if (tty && (intr & IntrBreak) && !I_IGNBRK(tty)) { /* BREAK */
- 		tty_insert_flip_char(&p->port, 0, TTY_BREAK);
--		tty_schedule_flip(&p->port);
-+		tty_flip_buffer_push(&p->port);
- 	}
- 
- 	if (intr & IntrLine)
---- a/drivers/tty/serial/lpc32xx_hs.c
-+++ b/drivers/tty/serial/lpc32xx_hs.c
-@@ -341,7 +341,7 @@ static irqreturn_t serial_lpc32xx_interr
- 		       LPC32XX_HSUART_IIR(port->membase));
- 		port->icount.overrun++;
- 		tty_insert_flip_char(tport, 0, TTY_OVERRUN);
--		tty_schedule_flip(tport);
-+		tty_flip_buffer_push(tport);
- 	}
- 
- 	/* Data received? */
---- a/drivers/tty/vt/keyboard.c
-+++ b/drivers/tty/vt/keyboard.c
-@@ -324,13 +324,13 @@ int kbd_rate(struct kbd_repeat *rpt)
- static void put_queue(struct vc_data *vc, int ch)
+ void tty_flip_buffer_push(struct tty_port *port)
  {
- 	tty_insert_flip_char(&vc->port, ch, 0);
--	tty_schedule_flip(&vc->port);
-+	tty_flip_buffer_push(&vc->port);
- }
- 
- static void puts_queue(struct vc_data *vc, const char *cp)
- {
- 	tty_insert_flip_string(&vc->port, cp, strlen(cp));
--	tty_schedule_flip(&vc->port);
-+	tty_flip_buffer_push(&vc->port);
- }
- 
- static void applkey(struct vc_data *vc, int key, char mode)
-@@ -584,7 +584,7 @@ static void fn_inc_console(struct vc_dat
- static void fn_send_intr(struct vc_data *vc)
- {
- 	tty_insert_flip_char(&vc->port, 0, TTY_BREAK);
--	tty_schedule_flip(&vc->port);
-+	tty_flip_buffer_push(&vc->port);
- }
- 
- static void fn_scroll_forw(struct vc_data *vc)
---- a/drivers/tty/vt/vt.c
-+++ b/drivers/tty/vt/vt.c
-@@ -1833,7 +1833,7 @@ static void csi_m(struct vc_data *vc)
- static void respond_string(const char *p, size_t len, struct tty_port *port)
- {
- 	tty_insert_flip_string(port, p, len);
 -	tty_schedule_flip(port);
-+	tty_flip_buffer_push(port);
++	struct tty_bufhead *buf = &port->buf;
++
++	/*
++	 * Paired w/ acquire in flush_to_ldisc(); ensures flush_to_ldisc() sees
++	 * buffer data.
++	 */
++	smp_store_release(&buf->tail->commit, buf->tail->used);
++	queue_work(system_unbound_wq, &buf->work);
  }
+ EXPORT_SYMBOL(tty_flip_buffer_push);
  
- static void cursor_report(struct vc_data *vc, struct tty_struct *tty)
+--- a/include/linux/tty_flip.h
++++ b/include/linux/tty_flip.h
+@@ -17,7 +17,6 @@ extern int tty_insert_flip_string_fixed_
+ extern int tty_prepare_flip_string(struct tty_port *port,
+ 		unsigned char **chars, size_t size);
+ extern void tty_flip_buffer_push(struct tty_port *port);
+-void tty_schedule_flip(struct tty_port *port);
+ int __tty_insert_flip_char(struct tty_port *port, unsigned char ch, char flag);
+ 
+ static inline int tty_insert_flip_char(struct tty_port *port,
 
 
