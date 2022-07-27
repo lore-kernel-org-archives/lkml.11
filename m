@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9A98C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:25:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0B04C19F2C
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:25:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230238AbiG0RZJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:25:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44434 "EHLO
+        id S238094AbiG0RZO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:25:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241993AbiG0RX3 (ORCPT
+        with ESMTP id S232621AbiG0RXu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:23:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A2837AC13;
-        Wed, 27 Jul 2022 09:45:52 -0700 (PDT)
+        Wed, 27 Jul 2022 13:23:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F6537AC39;
+        Wed, 27 Jul 2022 09:45:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A309601D2;
-        Wed, 27 Jul 2022 16:45:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17624C433C1;
-        Wed, 27 Jul 2022 16:45:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B6E88600BE;
+        Wed, 27 Jul 2022 16:45:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C78CFC4314E;
+        Wed, 27 Jul 2022 16:45:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940350;
-        bh=/DE94iSpnRoKGxTdCHkKpVV3Z0O7VoGmiHYgXKyAVEE=;
+        s=korg; t=1658940353;
+        bh=Fu+RQZP2lBIVjrGU4m9Qhg1VGiP+0En1tD5IuKWsy6g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IU+XamX5uo25avdv9UNm0on2dEVs22+posL+caI7sy0qQTqBds2CF5/GkKYPwfASC
-         GmrWemztMBz3IrvcHxm6zyqqZJUsDj2KRWBMyZK8zNcAKHz2iPjOd/uIWOEXehx2Gc
-         Ll53Q0fyBVNQ0YF1Uildd9gjTQoE1XGM7IlYbN+U=
+        b=UUwdUa7oDJdFxOucTc1dWM/2pSfx1/Qyu2e7Lq830lI1Dk0+ugcm1gKdQS2oXAJoO
+         t6Z4WkVy4Hj+6SEKsiA4ka33Rw8GFT5saBrv41o1s3k5FQWd7En/kZzixUlnVu29dx
+         /njQ6NOFlz2oMqVQr0/LKGX/B1mJSE+b3qyrP1fQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jose Alonso <joalonsof@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 193/201] net: usb: ax88179_178a needs FLAG_SEND_ZLP
-Date:   Wed, 27 Jul 2022 18:11:37 +0200
-Message-Id: <20220727161035.761975836@linuxfoundation.org>
+        stable@vger.kernel.org, Sedat Dilek <sedat.dilek@gmail.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.15 194/201] watch-queue: remove spurious double semicolon
+Date:   Wed, 27 Jul 2022 18:11:38 +0200
+Message-Id: <20220727161035.807389817@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -48,139 +48,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jose Alonso <joalonsof@gmail.com>
+From: Linus Torvalds <torvalds@linux-foundation.org>
 
-commit 36a15e1cb134c0395261ba1940762703f778438c upstream.
+commit 44e29e64cf1ac0cffb152e0532227ea6d002aa28 upstream.
 
-The extra byte inserted by usbnet.c when
- (length % dev->maxpacket == 0) is causing problems to device.
+Sedat Dilek noticed that I had an extraneous semicolon at the end of a
+line in the previous patch.
 
-This patch sets FLAG_SEND_ZLP to avoid this.
+It's harmless, but unintentional, and while compilers just treat it as
+an extra empty statement, for all I know some other tooling might warn
+about it. So clean it up before other people notice too ;)
 
-Tested with: 0b95:1790 ASIX Electronics Corp. AX88179 Gigabit Ethernet
-
-Problems observed:
-======================================================================
-1) Using ssh/sshfs. The remote sshd daemon can abort with the message:
-   "message authentication code incorrect"
-   This happens because the tcp message sent is corrupted during the
-   USB "Bulk out". The device calculate the tcp checksum and send a
-   valid tcp message to the remote sshd. Then the encryption detects
-   the error and aborts.
-2) NETDEV WATCHDOG: ... (ax88179_178a): transmit queue 0 timed out
-3) Stop normal work without any log message.
-   The "Bulk in" continue receiving packets normally.
-   The host sends "Bulk out" and the device responds with -ECONNRESET.
-   (The netusb.c code tx_complete ignore -ECONNRESET)
-Under normal conditions these errors take days to happen and in
-intense usage take hours.
-
-A test with ping gives packet loss, showing that something is wrong:
-ping -4 -s 462 {destination}	# 462 = 512 - 42 - 8
-Not all packets fail.
-My guess is that the device tries to find another packet starting
-at the extra byte and will fail or not depending on the next
-bytes (old buffer content).
-======================================================================
-
-Signed-off-by: Jose Alonso <joalonsof@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 353f7988dd84 ("watchqueue: make sure to serialize 'wqueue->defunct' properly")
+Reported-by: Sedat Dilek <sedat.dilek@gmail.com>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Reported-by: Sedat Dilek <sedat.dilek@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/usb/ax88179_178a.c |   20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
+ kernel/watch_queue.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/usb/ax88179_178a.c
-+++ b/drivers/net/usb/ax88179_178a.c
-@@ -1796,7 +1796,7 @@ static const struct driver_info ax88179_
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1809,7 +1809,7 @@ static const struct driver_info ax88178a
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1822,7 +1822,7 @@ static const struct driver_info cypress_
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1835,7 +1835,7 @@ static const struct driver_info dlink_du
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1848,7 +1848,7 @@ static const struct driver_info sitecom_
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1861,7 +1861,7 @@ static const struct driver_info samsung_
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1874,7 +1874,7 @@ static const struct driver_info lenovo_i
- 	.link_reset = ax88179_link_reset,
- 	.reset = ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags = FLAG_ETHER | FLAG_FRAMING_AX,
-+	.flags = FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1887,7 +1887,7 @@ static const struct driver_info belkin_i
- 	.link_reset = ax88179_link_reset,
- 	.reset	= ax88179_reset,
- 	.stop	= ax88179_stop,
--	.flags	= FLAG_ETHER | FLAG_FRAMING_AX,
-+	.flags	= FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1900,7 +1900,7 @@ static const struct driver_info toshiba_
- 	.link_reset = ax88179_link_reset,
- 	.reset	= ax88179_reset,
- 	.stop = ax88179_stop,
--	.flags	= FLAG_ETHER | FLAG_FRAMING_AX,
-+	.flags	= FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
-@@ -1913,7 +1913,7 @@ static const struct driver_info mct_info
- 	.link_reset = ax88179_link_reset,
- 	.reset	= ax88179_reset,
- 	.stop	= ax88179_stop,
--	.flags	= FLAG_ETHER | FLAG_FRAMING_AX,
-+	.flags	= FLAG_ETHER | FLAG_FRAMING_AX | FLAG_SEND_ZLP,
- 	.rx_fixup = ax88179_rx_fixup,
- 	.tx_fixup = ax88179_tx_fixup,
- };
+--- a/kernel/watch_queue.c
++++ b/kernel/watch_queue.c
+@@ -227,7 +227,7 @@ void __post_watch_notification(struct wa
+ 
+ 		if (lock_wqueue(wqueue)) {
+ 			post_one_notification(wqueue, n);
+-			unlock_wqueue(wqueue);;
++			unlock_wqueue(wqueue);
+ 		}
+ 	}
+ 
 
 
