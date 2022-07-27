@@ -2,147 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8BA0C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 12:24:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB02DC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 12:24:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232953AbiG0MYc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 08:24:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37328 "EHLO
+        id S232984AbiG0MYy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 08:24:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232925AbiG0MY2 (ORCPT
+        with ESMTP id S231968AbiG0MYs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 08:24:28 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8E6C14B49D
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 05:24:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1658924666;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=dapYisiCBXlgZkwMi+Hyveg1G9f8dLox6yKCT12ZMlw=;
-        b=Os9ibwKHZCbV2+07ovnFkq/xVnf2YPtkViszeCBPjsjHVAy1TpnUTxZo6doZR9hEeHGpk4
-        seSBsffdsuVwkbLIrNUfNURoOIR8kxVk7p0ubnuKAnuZD87G/rOVGu1ORb5fOu3AHy4aF2
-        bebSaPaArp2zEqgFM1b8WCV+qtFJER4=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-458-M9E2s2O3MgyNdy3oHj2oWA-1; Wed, 27 Jul 2022 08:24:25 -0400
-X-MC-Unique: M9E2s2O3MgyNdy3oHj2oWA-1
-Received: by mail-wm1-f70.google.com with SMTP id v18-20020a05600c215200b003a2fea66b7cso484931wml.4
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 05:24:25 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=dapYisiCBXlgZkwMi+Hyveg1G9f8dLox6yKCT12ZMlw=;
-        b=iWyi9xxBXYzJyfYAWplISEaOSN+8yoGIoqEOfe1GX4kWcxy1mxKjmy9BQI3QkrhFlt
-         rAKNWCweJThdHIqVvOZR9sKppi1TFDxC+DHRwLbj1lWHoUkNyz0ZMyd4ZvtZbG4GB/0b
-         AhzmxapOf5xTU+nBRaySFf0HprLn7k6+oYd6KPM3LI0kU9vhYZqPaeNDiWhFf1Bqi0mF
-         ho5FRovelIB38QX5gq/AYZ9y/xgO0Xyz6gspxO1xL7DRP0n8oW2szUuUw0H2p20eQN9K
-         ucKrLY3afVsGNyGdAS70g9z2PYl+k7jvIKmuE59Yig6bXD0qd5S2VQ6QggEzUM92RmjI
-         w1/w==
-X-Gm-Message-State: AJIora+pzNxFCk9KAvMU00sAxOOu3q8QlqO+O7TdFCliZzBVhI7R7mgL
-        DrkiN/9NCDEAnKGQjR07tW1Bxf/s8OkVFOJ+z2gpdDfxRKMdOoS4NxO3iY9kPvyVqc9QcPXgWRl
-        AsZIt1pthNymTFdaptozbkiRq
-X-Received: by 2002:a05:6000:1541:b0:21d:b298:96be with SMTP id 1-20020a056000154100b0021db29896bemr13644419wry.206.1658924663470;
-        Wed, 27 Jul 2022 05:24:23 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vC2MGRjFi3qSHZ2fm0BkjEDxRi6ABSiXhvcdsFTw4lBpGNZw6+Ua7w1AgH+IiVMbwoDfqM2g==
-X-Received: by 2002:a05:6000:1541:b0:21d:b298:96be with SMTP id 1-20020a056000154100b0021db29896bemr13644403wry.206.1658924663274;
-        Wed, 27 Jul 2022 05:24:23 -0700 (PDT)
-Received: from sgarzare-redhat (host-79-46-200-178.retail.telecomitalia.it. [79.46.200.178])
-        by smtp.gmail.com with ESMTPSA id bg26-20020a05600c3c9a00b003a3279b9037sm2308365wmb.16.2022.07.27.05.24.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 05:24:22 -0700 (PDT)
-Date:   Wed, 27 Jul 2022 14:24:17 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "kys@microsoft.com" <kys@microsoft.com>,
-        "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
-        "sthemmin@microsoft.com" <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Krasnov Arseniy <oxffffaa@gmail.com>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>
-Subject: Re: [RFC PATCH v2 5/9] vsock: SO_RCVLOWAT transport set callback
-Message-ID: <20220727122417.jvdfjnuybk3mwxkq@sgarzare-redhat>
-References: <19e25833-5f5c-f9b9-ac0f-1945ea17638d@sberdevices.ru>
- <8baa2e3a-af6b-c0fe-9bfb-7cf89506474a@sberdevices.ru>
+        Wed, 27 Jul 2022 08:24:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B8174BD32;
+        Wed, 27 Jul 2022 05:24:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BEAF660FE1;
+        Wed, 27 Jul 2022 12:24:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD540C433D7;
+        Wed, 27 Jul 2022 12:24:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658924681;
+        bh=uY1zTBQEvp8bkm0buZfF6/zpOUaKqdhOdqdS2g7EJWY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=YGcqvW73vQB/HmUnnhS0kB6h1GuVSOGSop97Aoy847aQV/5dfxYbjpH3w94NYyT1e
+         PQIXbulB28Z0Q3N5IYc9kBaHobXM0CF93qqtg797p3Z5b95m7g2y0j4msxwXJlFoGx
+         ct5Cit5SpuTIReI2oRKIR3Gwl5Ppw3tPxGBZeufI=
+Date:   Wed, 27 Jul 2022 14:24:38 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Xin Ji <xji@analogixsemi.com>
+Cc:     Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        bliang@analogixsemi.com, qwen@analogixsemi.com,
+        jli@analogixsemi.com, Dan Carpenter <dan.carpenter@oracle.com>,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org
+Subject: Re: [PATCH v20 2/2] usb: typec: anx7411: Add Analogix PD ANX7411
+ support
+Message-ID: <YuEuhp6blxomKdUA@kroah.com>
+References: <20220719024704.47395-1-xji@analogixsemi.com>
+ <20220719024704.47395-2-xji@analogixsemi.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <8baa2e3a-af6b-c0fe-9bfb-7cf89506474a@sberdevices.ru>
+In-Reply-To: <20220719024704.47395-2-xji@analogixsemi.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jul 25, 2022 at 08:05:28AM +0000, Arseniy Krasnov wrote:
->This adds transport specific callback for SO_RCVLOWAT, because in some
->transports it may be difficult to know current available number of bytes
->ready to read. Thus, when SO_RCVLOWAT is set, transport may reject it.
->
->Signed-off-by: Arseniy Krasnov <AVKrasnov@sberdevices.ru>
->---
-> include/net/af_vsock.h   |  1 +
-> net/vmw_vsock/af_vsock.c | 19 +++++++++++++++++++
-> 2 files changed, 20 insertions(+)
->
->diff --git a/include/net/af_vsock.h b/include/net/af_vsock.h
->index f742e50207fb..eae5874bae35 100644
->--- a/include/net/af_vsock.h
->+++ b/include/net/af_vsock.h
->@@ -134,6 +134,7 @@ struct vsock_transport {
-> 	u64 (*stream_rcvhiwat)(struct vsock_sock *);
-> 	bool (*stream_is_active)(struct vsock_sock *);
-> 	bool (*stream_allow)(u32 cid, u32 port);
->+	int (*set_rcvlowat)(struct vsock_sock *, int);
->
-> 	/* SEQ_PACKET. */
-> 	ssize_t (*seqpacket_dequeue)(struct vsock_sock *vsk, struct msghdr *msg,
->diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
->index 63a13fa2686a..b7a286db4af1 100644
->--- a/net/vmw_vsock/af_vsock.c
->+++ b/net/vmw_vsock/af_vsock.c
->@@ -2130,6 +2130,24 @@ vsock_connectible_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
-> 	return err;
-> }
->
->+static int vsock_set_rcvlowat(struct sock *sk, int val)
->+{
->+	const struct vsock_transport *transport;
->+	struct vsock_sock *vsk;
->+	int err = 0;
->+
->+	vsk = vsock_sk(sk);
->+	transport = vsk->transport;
+On Tue, Jul 19, 2022 at 10:47:04AM +0800, Xin Ji wrote:
+> Add driver for analogix ANX7411 USB Type-C DRP port controller.
+> 
+> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-`transport` can be NULL if the user call SO_RCVLOWAT before we assign 
-it, so we should check it.
+The driver is not "reported-by:" dan, he just found issues that you
+resolved, right?
 
-I think if the transport implements `set_rcvlowat`, maybe we should set 
-there sk->sk_rcvlowat, so I would do something like that:
+thanks,
 
-     if (transport && transport->set_rcvlowat)
-         err = transport->set_rcvlowat(vsk, val);
-     else
-         WRITE_ONCE(sk->sk_rcvlowat, val ? : 1);
-
-     return err;
-
-In addition I think we should check that val does not exceed 
-vsk->buffer_size, something similar of what tcp_set_rcvlowat() does.
-
-Thanks,
-Stefano
-
+greg k-h
