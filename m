@@ -2,664 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 272CBC19F28
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:30:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1AAEC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:30:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242165AbiG0RaW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:30:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58420 "EHLO
+        id S242195AbiG0Ra1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:30:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238218AbiG0R1k (ORCPT
+        with ESMTP id S238407AbiG0R1l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:27:40 -0400
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 818457F516
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:47:17 -0700 (PDT)
-Received: by mail-lj1-x22d.google.com with SMTP id p21so12803991ljh.12
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:47:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=5hs2L2k4qCWX2gnOpNz9FnyN8tjq/hVKa8FSzGNbvHY=;
-        b=Nz0NtvJJcqRxKRT5px1ZtW+FsV3draGdGXgF0M1caY5X80Ck5ISgFnye8Uc4zVnKP+
-         NZAJDWjUgAB1QXuRhbz5q7XwylRoJkn6ZrwdtRq+uc4nbfL2dbcdfL3rCVkenbinO2lX
-         RkEaydx3XxdbrMXW7MnBOEbMkbp66BAu5KOoqz1fCHNrrFCWndREWI31kaUy4y2GdjSz
-         7VhhNvCgBBiBd8t6xRsMoPPNJsS6jBWIjX4E52O+5eQWrf57+LgA/gYg0tr+wkLL09Hi
-         j1BkwCmAnJazmJetMngMGCZm0ksdNSqRd/eDy/klK1zvtCHT/G7lCeZ7cM426Xw314zr
-         GFrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=5hs2L2k4qCWX2gnOpNz9FnyN8tjq/hVKa8FSzGNbvHY=;
-        b=s38XAjx3Eggeg0YRWU1cf9xB7BYI25Bp4LF/Fjr1IBCtoQ39XUV6JP6oGGbVKraxrD
-         k1EHtJ2QOs9UaLryBpZU5EzYWWX/skylMkUphtVC6BPsqb2XXR0Ed5jx4OnlF2+TQO94
-         wOddnNVSFK9b1IHoJkcBnaVe6UClsTBdl65hBNmEFPE0tw1/KOKG/CX5f4tabf/3u7LX
-         GijPfva2DWti+qmLZ+FcE8MTMNrAdbc0cSkQWAKnyWakEymrF4daE/ifeFeTeZfQHin+
-         jSztjD0gzJpquw8H531/rZ/5xFgNWeZkg3IH1X7/+ZDiqlXTlAC499PI5y6nhAtpekCj
-         jcBA==
-X-Gm-Message-State: AJIora/xIUWZS5UGAT7qblYV5KxX5pS45Fc9w7Ol2mptN3ncAIMH59tu
-        JOyiMSq03AG8hwR59YvPmNr07w==
-X-Google-Smtp-Source: AGRyM1tnLBvt1C5HTanFjLIbWJ2+62dBBeJtU9YqyUQ6RsYe+3R4sNIhehgwrriDI2l1EWHaP57Qqw==
-X-Received: by 2002:a2e:780a:0:b0:25d:f5af:856d with SMTP id t10-20020a2e780a000000b0025df5af856dmr7663949ljc.222.1658940433759;
-        Wed, 27 Jul 2022 09:47:13 -0700 (PDT)
-Received: from krzk-bin.lan (78-26-46-173.network.trollfjord.no. [78.26.46.173])
-        by smtp.gmail.com with ESMTPSA id 18-20020ac25f52000000b0048910301774sm3375149lfz.307.2022.07.27.09.47.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 09:47:13 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Lucas Stankus <lucas.p.stankus@gmail.com>,
-        Puranjay Mohan <puranjay12@gmail.com>,
-        Cosmin Tanislav <cosmin.tanislav@analog.com>,
-        Alexandru Tachici <alexandru.tachici@analog.com>,
-        Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
-        Marcus Folkesson <marcus.folkesson@gmail.com>,
-        Kent Gustavsson <kent@minoris.se>,
-        Tomislav Denis <tomislav.denis@avl.com>,
-        Oleksij Rempel <linux@rempel-privat.de>, kernel@pengutronix.de,
-        Antoniu Miclaus <antoniu.miclaus@analog.com>,
-        Ricardo Ribalda <ribalda@kernel.org>,
-        Dragos Bogdan <dragos.bogdan@analog.com>,
-        Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Stefan Popa <stefan.popa@analog.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        Mike Looijmans <mike.looijmans@topic.nl>,
-        Joachim Eastwood <manabian@gmail.com>,
-        Tomas Melin <tomas.melin@vaisala.com>,
-        Sean Nyekjaer <sean@geanix.com>,
-        Beniamin Bia <beniamin.bia@analog.com>,
-        Patrick Vasseur <patrick.vasseur@c-s.fr>,
-        Charles-Antoine Couret <charles-antoine.couret@essensium.com>,
-        Vladimir Barinov <vladimir.barinov@cogentembedded.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Philippe Reynes <tremyfr@yahoo.fr>,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        Akinobu Mita <akinobu.mita@gmail.com>,
-        Alexandru Lazar <alazar@startmail.com>,
-        Oskar Andero <oskar.andero@gmail.com>,
-        =?UTF-8?q?M=C3=A5rten=20Lindahl?= <martenli@axis.com>,
-        Bogdan Pricop <bogdan.pricop@emutex.com>,
-        Angelo Compagnucci <angelo.compagnucci@gmail.com>,
-        Matt Ranostay <matt.ranostay@konsulko.com>,
-        Dan Murphy <dmurphy@ti.com>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Phil Reid <preid@electromag.com.au>,
-        Michael Welling <mwelling@ieee.org>,
-        Lukas Wunner <lukas@wunner.de>,
-        Robert Jones <rjones@gateworks.com>,
-        Chris Coffey <cmc@babblebit.net>,
-        Slawomir Stepien <sst@poczta.fm>,
-        Sankar Velliangiri <navin@linumiz.com>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-fbdev@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v2 04/10] dt-bindings: iio: dac: use spi-peripheral-props.yaml
-Date:   Wed, 27 Jul 2022 18:46:40 +0200
-Message-Id: <20220727164646.387541-5-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220727164646.387541-1-krzysztof.kozlowski@linaro.org>
-References: <20220727164646.387541-1-krzysztof.kozlowski@linaro.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Wed, 27 Jul 2022 13:27:41 -0400
+Received: from mx0b-002e3701.pphosted.com (mx0b-002e3701.pphosted.com [148.163.143.35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B082C7F51B;
+        Wed, 27 Jul 2022 09:47:17 -0700 (PDT)
+Received: from pps.filterd (m0134424.ppops.net [127.0.0.1])
+        by mx0b-002e3701.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26RFqMDf020021;
+        Wed, 27 Jul 2022 16:46:44 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hpe.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references; s=pps0720;
+ bh=3M3IEzSGWbR/8RQRMU9r6LZ5cPbzCABI9eXCDPIC+0A=;
+ b=irFKYHZf3j0596r68gLyksmrnuhDYGopsxMKjLOfBXXo+qlrrjrloplvMM5LUMejhPZm
+ JC5EDdiGlVz4ZC/eT7a5oHkYWE3MLTO19khX1TWDINgEBCohMolobTbZz0jOuFhqtYu1
+ 2jqaeAOj07nrILLO0tKIqlbdXA59MZj+9bGtYwvpaDdsIy+n+xkMGSuDRMCjtqU7cCN5
+ j7K4IraU/4mCS+rWRfVju59Iuo1yRoQ3keJG9N5/3xiezISZzG9Xbcxam98B8SpmzYHJ
+ UOl9E2hbE8l8ZED0HQ0AcBA2CqXGj/KQe/E7wvqYppKv60O1Aga1NOeveeXvvd1Q/03J 5g== 
+Received: from p1lg14879.it.hpe.com (p1lg14879.it.hpe.com [16.230.97.200])
+        by mx0b-002e3701.pphosted.com (PPS) with ESMTPS id 3hk8csre04-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 27 Jul 2022 16:46:44 +0000
+Received: from p1lg14885.dc01.its.hpecorp.net (unknown [10.119.18.236])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by p1lg14879.it.hpe.com (Postfix) with ESMTPS id D006DD2DE;
+        Wed, 27 Jul 2022 16:46:42 +0000 (UTC)
+Received: from hpe.com (unknown [16.231.227.36])
+        by p1lg14885.dc01.its.hpecorp.net (Postfix) with ESMTP id 4BC3B801086;
+        Wed, 27 Jul 2022 16:46:41 +0000 (UTC)
+From:   nick.hawkins@hpe.com
+To:     nick.hawkins@hpe.com
+Cc:     broonie@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, verdun@hpe.com,
+        linux@armlinux.org.uk, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, arnd@arndb.de, joel@jms.id.au
+Subject: [PATCH v5 5/5] MAINTAINERS: add spi support to GXP
+Date:   Wed, 27 Jul 2022 11:47:36 -0500
+Message-Id: <20220727164736.48619-6-nick.hawkins@hpe.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220727164736.48619-1-nick.hawkins@hpe.com>
+References: <20220727164736.48619-1-nick.hawkins@hpe.com>
+X-Proofpoint-GUID: 3hm7R5riO-5aoUP3LisAjDx4V2azFJ2J
+X-Proofpoint-ORIG-GUID: 3hm7R5riO-5aoUP3LisAjDx4V2azFJ2J
+X-HPE-SCL: -1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-27_06,2022-07-27_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ suspectscore=0 priorityscore=1501 phishscore=0 spamscore=0 mlxscore=0
+ clxscore=1015 mlxlogscore=952 adultscore=0 bulkscore=0 malwarescore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2207270070
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of listing directly properties typical for SPI peripherals,
-reference the spi-peripheral-props.yaml schema.  This allows using all
-properties typical for SPI-connected devices, even these which device
-bindings author did not tried yet.
+From: Nick Hawkins <nick.hawkins@hpe.com>
 
-Remove the spi-* properties which now come via spi-peripheral-props.yaml
-schema, except for the cases when device schema adds some constraints
-like maximum frequency.
+Add the spi driver and dt-binding documentation
 
-While changing additionalProperties->unevaluatedProperties, put it in
-typical place, just before example DTS.
+Signed-off-by: Nick Hawkins <nick.hawkins@hpe.com>
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- .../devicetree/bindings/iio/dac/adi,ad5064.yaml          | 7 +++----
- .../devicetree/bindings/iio/dac/adi,ad5360.yaml          | 7 +++----
- .../devicetree/bindings/iio/dac/adi,ad5380.yaml          | 9 +++++----
- .../devicetree/bindings/iio/dac/adi,ad5421.yaml          | 7 ++++---
- .../devicetree/bindings/iio/dac/adi,ad5449.yaml          | 7 +++----
- .../devicetree/bindings/iio/dac/adi,ad5624r.yaml         | 9 +++++----
- .../devicetree/bindings/iio/dac/adi,ad5686.yaml          | 9 +++++----
- .../devicetree/bindings/iio/dac/adi,ad5755.yaml          | 9 +++++----
- .../devicetree/bindings/iio/dac/adi,ad5758.yaml          | 4 ++--
- .../devicetree/bindings/iio/dac/adi,ad5761.yaml          | 7 +++----
- .../devicetree/bindings/iio/dac/adi,ad5764.yaml          | 7 +++----
- .../devicetree/bindings/iio/dac/adi,ad5770r.yaml         | 7 ++++---
- .../devicetree/bindings/iio/dac/adi,ad5791.yaml          | 9 +++++----
- .../devicetree/bindings/iio/dac/adi,ad8801.yaml          | 7 +++----
- .../devicetree/bindings/iio/dac/microchip,mcp4922.yaml   | 9 +++++----
- .../devicetree/bindings/iio/dac/ti,dac082s085.yaml       | 9 +++++----
- .../devicetree/bindings/iio/dac/ti,dac7311.yaml          | 7 ++++---
- .../devicetree/bindings/iio/dac/ti,dac7612.yaml          | 7 ++++---
- 18 files changed, 71 insertions(+), 66 deletions(-)
+v5:
+ *No change
+v4:
+ *No change
+v3:
+ *No change
+v2:
+ *No change
+---
+ MAINTAINERS | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5064.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5064.yaml
-index 05ed4e0ec364..c04165fa9259 100644
---- a/Documentation/devicetree/bindings/iio/dac/adi,ad5064.yaml
-+++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5064.yaml
-@@ -95,15 +95,12 @@ properties:
-   vrefD-supply: true
-   vref-supply: true
+diff --git a/MAINTAINERS b/MAINTAINERS
+index a6d3bd9d2a8d..f87728549ecf 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -2140,11 +2140,13 @@ M:	Jean-Marie Verdun <verdun@hpe.com>
+ M:	Nick Hawkins <nick.hawkins@hpe.com>
+ S:	Maintained
+ F:	Documentation/devicetree/bindings/arm/hpe,gxp.yaml
++F:	Documentation/devicetree/bindings/spi/hpe,gxp-spi.yaml
+ F:	Documentation/devicetree/bindings/timer/hpe,gxp-timer.yaml
+ F:	arch/arm/boot/dts/hpe-bmc*
+ F:	arch/arm/boot/dts/hpe-gxp*
+ F:	arch/arm/mach-hpe/
+ F:	drivers/clocksource/timer-gxp.c
++F:	drivers/spi/spi-gxp.c
+ F:	drivers/watchdog/gxp-wdt.c
  
--  spi-max-frequency: true
--
--additionalProperties: false
--
- required:
-   - compatible
-   - reg
- 
- allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-   - # Shared external vref, no internal reference
-     if:
-       properties:
-@@ -232,6 +229,8 @@ allOf:
-         - vrefA-supply
-         - vrefB-supply
- 
-+unevaluatedProperties: false
-+
- examples:
-   - |
-     spi {
-diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5360.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5360.yaml
-index 65f86f26947c..86e2884cdfb1 100644
---- a/Documentation/devicetree/bindings/iio/dac/adi,ad5360.yaml
-+++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5360.yaml
-@@ -28,10 +28,6 @@ properties:
-   vref1-supply: true
-   vref2-supply: true
- 
--  spi-max-frequency: true
--
--additionalProperties: false
--
- required:
-   - compatible
-   - reg
-@@ -39,6 +35,7 @@ required:
-   - vref1-supply
- 
- allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-   - if:
-       properties:
-         compatible:
-@@ -63,6 +60,8 @@ allOf:
-       required:
-         - vref2-supply
- 
-+unevaluatedProperties: false
-+
- examples:
-   - |
-     spi {
-diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5380.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5380.yaml
-index d599b418a020..ff50c72c62b5 100644
---- a/Documentation/devicetree/bindings/iio/dac/adi,ad5380.yaml
-+++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5380.yaml
-@@ -39,14 +39,15 @@ properties:
-     description:
-       If not supplied devices will use internal regulators.
- 
--  spi-max-frequency: true
--
--additionalProperties: false
--
- required:
-   - compatible
-   - reg
- 
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+
-+unevaluatedProperties: false
-+
- examples:
-   - |
-     spi {
-diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5421.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5421.yaml
-index 188f656617e3..52d089ebde95 100644
---- a/Documentation/devicetree/bindings/iio/dac/adi,ad5421.yaml
-+++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5421.yaml
-@@ -26,13 +26,14 @@ properties:
-     maxItems: 1
-     description: Fault signal.
- 
--  spi-max-frequency: true
--
- required:
-   - compatible
-   - reg
- 
--additionalProperties: false
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+
-+unevaluatedProperties: false
- 
- examples:
-   - |
-diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5449.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5449.yaml
-index 044332c97743..d2af2d491986 100644
---- a/Documentation/devicetree/bindings/iio/dac/adi,ad5449.yaml
-+++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5449.yaml
-@@ -27,19 +27,16 @@ properties:
-   reg:
-     maxItems: 1
- 
--  spi-max-frequency: true
--
-   VREF-supply: true
-   VREFA-supply: true
-   VREFB-supply: true
- 
--additionalProperties: false
--
- required:
-   - compatible
-   - reg
- 
- allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-   - if:
-       properties:
-         compatible:
-@@ -72,6 +69,8 @@ allOf:
-         - VREFA-supply
-         - VREFB-supply
- 
-+unevaluatedProperties: false
-+
- examples:
-   - |
-     spi {
-diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5624r.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5624r.yaml
-index 330383b85eeb..4d5111a5f9bd 100644
---- a/Documentation/devicetree/bindings/iio/dac/adi,ad5624r.yaml
-+++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5624r.yaml
-@@ -22,17 +22,18 @@ properties:
-   reg:
-     maxItems: 1
- 
--  spi-max-frequency: true
--
-   vref-supply:
-     description: If not present, internal reference will be used.
- 
--additionalProperties: false
--
- required:
-   - compatible
-   - reg
- 
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+
-+unevaluatedProperties: false
-+
- examples:
-   - |
-     spi {
-diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5686.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5686.yaml
-index 5c26441eae9f..13f214234b8e 100644
---- a/Documentation/devicetree/bindings/iio/dac/adi,ad5686.yaml
-+++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5686.yaml
-@@ -53,14 +53,15 @@ properties:
-   vcc-supply:
-     description: If not supplied the internal reference is used.
- 
--  spi-max-frequency: true
--
--additionalProperties: false
--
- required:
-   - compatible
-   - reg
- 
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+
-+unevaluatedProperties: false
-+
- examples:
-   - |
-     spi {
-diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5755.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5755.yaml
-index f866b88e1440..9a3c2926bf85 100644
---- a/Documentation/devicetree/bindings/iio/dac/adi,ad5755.yaml
-+++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5755.yaml
-@@ -25,8 +25,6 @@ properties:
-     description: Either this or spi-cpol but not both.
-   spi-cpol: true
- 
--  spi-max-frequency: true
--
-   adi,ext-dc-dc-compenstation-resistor:
-     $ref: /schemas/types.yaml#/definitions/flag
-     description:
-@@ -67,8 +65,6 @@ required:
-   - compatible
-   - reg
- 
--additionalProperties: false
--
- patternProperties:
-   "^channel@[0-7]$":
-     type: object
-@@ -123,6 +119,11 @@ oneOf:
-   - required:
-       - spi-cpol
- 
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+
-+unevaluatedProperties: false
-+
- examples:
-   - |
-     spi {
-diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5758.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5758.yaml
-index fd4edca34a28..e49e7556175d 100644
---- a/Documentation/devicetree/bindings/iio/dac/adi,ad5758.yaml
-+++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5758.yaml
-@@ -16,7 +16,6 @@ properties:
-   reg:
-     maxItems: 1
- 
--  spi-max-frequency: true
-   spi-cpha: true
- 
-   adi,dc-dc-mode:
-@@ -99,6 +98,7 @@ required:
-   - adi,dc-dc-mode
- 
- allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-   - if:
-       properties:
-         adi,dc-dc-mode:
-@@ -115,7 +115,7 @@ allOf:
-       required:
-         - adi,range-microvolt
- 
--additionalProperties: false
-+unevaluatedProperties: false
- 
- examples:
-   - |
-diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5761.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5761.yaml
-index 7f95a9ed55fe..df550b5af2f7 100644
---- a/Documentation/devicetree/bindings/iio/dac/adi,ad5761.yaml
-+++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5761.yaml
-@@ -22,18 +22,15 @@ properties:
-   reg:
-     maxItems: 1
- 
--  spi-max-frequency: true
--
-   vref-supply:
-     description: If not supplied, internal reference will be used.
- 
--additionalProperties: false
--
- required:
-   - compatible
-   - reg
- 
- allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-   - if:
-       properties:
-         compatible:
-@@ -45,6 +42,8 @@ allOf:
-       required:
-         - vref-supply
- 
-+unevaluatedProperties: false
-+
- examples:
-   - |
-     spi {
-diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5764.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5764.yaml
-index 8e893d52bfb1..0b409a727a43 100644
---- a/Documentation/devicetree/bindings/iio/dac/adi,ad5764.yaml
-+++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5764.yaml
-@@ -22,18 +22,15 @@ properties:
-   reg:
-     maxItems: 1
- 
--  spi-max-frequency: true
--
-   vrefAB-supply: true
-   vrefCD-supply: true
- 
--additionalProperties: false
--
- required:
-   - compatible
-   - reg
- 
- allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-   - if:
-       properties:
-         compatible:
-@@ -46,6 +43,8 @@ allOf:
-         - vrefAB-supply
-         - vrefCD-supply
- 
-+unevaluatedProperties: false
-+
- examples:
-   - |
-     spi {
-diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5770r.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5770r.yaml
-index 24ac40180ac1..ca5432ffdedb 100644
---- a/Documentation/devicetree/bindings/iio/dac/adi,ad5770r.yaml
-+++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5770r.yaml
-@@ -49,8 +49,6 @@ properties:
-       asserted during driver probe.
-     maxItems: 1
- 
--  spi-max-frequency: true
--
-   '#address-cells':
-     const: 1
- 
-@@ -138,7 +136,10 @@ required:
-   - channel@4
-   - channel@5
- 
--additionalProperties: false
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+
-+unevaluatedProperties: false
- 
- examples:
-   - |
-diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5791.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5791.yaml
-index 650d1ebdcec3..3a84739736f6 100644
---- a/Documentation/devicetree/bindings/iio/dac/adi,ad5791.yaml
-+++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5791.yaml
-@@ -23,19 +23,20 @@ properties:
-   reg:
-     maxItems: 1
- 
--  spi-max-frequency: true
--
-   vdd-supply: true
-   vss-supply: true
- 
--additionalProperties: false
--
- required:
-   - compatible
-   - reg
-   - vdd-supply
-   - vss-supply
- 
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+
-+unevaluatedProperties: false
-+
- examples:
-   - |
-     spi {
-diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad8801.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad8801.yaml
-index 6a3990a8d0ad..1849a2ff05c7 100644
---- a/Documentation/devicetree/bindings/iio/dac/adi,ad8801.yaml
-+++ b/Documentation/devicetree/bindings/iio/dac/adi,ad8801.yaml
-@@ -19,19 +19,16 @@ properties:
-   reg:
-     maxItems: 1
- 
--  spi-max-frequency: true
--
-   vrefh-supply: true
-   vrefl-supply: true
- 
--additionalProperties: false
--
- required:
-   - compatible
-   - reg
-   - vrefh-supply
- 
- allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-   - if:
-       properties:
-         compatible:
-@@ -44,6 +41,8 @@ allOf:
-       properties:
-         vrefl-supply: false
- 
-+unevaluatedProperties: false
-+
- examples:
-   - |
-     spi {
-diff --git a/Documentation/devicetree/bindings/iio/dac/microchip,mcp4922.yaml b/Documentation/devicetree/bindings/iio/dac/microchip,mcp4922.yaml
-index 4c430abcdbf9..19374401e509 100644
---- a/Documentation/devicetree/bindings/iio/dac/microchip,mcp4922.yaml
-+++ b/Documentation/devicetree/bindings/iio/dac/microchip,mcp4922.yaml
-@@ -21,17 +21,18 @@ properties:
-   reg:
-     maxItems: 1
- 
--  spi-max-frequency: true
--
-   vref-supply: true
- 
--additionalProperties: false
--
- required:
-   - compatible
-   - reg
-   - vref-supply
- 
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+
-+unevaluatedProperties: false
-+
- examples:
-   - |
-     spi {
-diff --git a/Documentation/devicetree/bindings/iio/dac/ti,dac082s085.yaml b/Documentation/devicetree/bindings/iio/dac/ti,dac082s085.yaml
-index b0157050f1ee..201b04af2b22 100644
---- a/Documentation/devicetree/bindings/iio/dac/ti,dac082s085.yaml
-+++ b/Documentation/devicetree/bindings/iio/dac/ti,dac082s085.yaml
-@@ -33,21 +33,22 @@ properties:
-   vref-supply:
-     description: Needed to provide output scaling.
- 
--  spi-max-frequency: true
--
- required:
-   - compatible
-   - reg
-   - vref-supply
- 
--additionalProperties: false
--
- oneOf:
-   - required:
-       - spi-cpha
-   - required:
-       - spi-cpol
- 
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+
-+unevaluatedProperties: false
-+
- examples:
-   - |
-     vref_2v5_reg: regulator-vref {
-diff --git a/Documentation/devicetree/bindings/iio/dac/ti,dac7311.yaml b/Documentation/devicetree/bindings/iio/dac/ti,dac7311.yaml
-index 10be98d1f19c..a6814587dbc4 100644
---- a/Documentation/devicetree/bindings/iio/dac/ti,dac7311.yaml
-+++ b/Documentation/devicetree/bindings/iio/dac/ti,dac7311.yaml
-@@ -24,14 +24,15 @@ properties:
-       Reference voltage must be supplied to establish the scaling of the
-       output voltage.
- 
--  spi-max-frequency: true
--
- required:
-   - compatible
-   - reg
-   - vref-supply
- 
--additionalProperties: false
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+
-+unevaluatedProperties: false
- 
- examples:
-   - |
-diff --git a/Documentation/devicetree/bindings/iio/dac/ti,dac7612.yaml b/Documentation/devicetree/bindings/iio/dac/ti,dac7612.yaml
-index d172b142f6ed..20dd1370660d 100644
---- a/Documentation/devicetree/bindings/iio/dac/ti,dac7612.yaml
-+++ b/Documentation/devicetree/bindings/iio/dac/ti,dac7612.yaml
-@@ -29,13 +29,14 @@ properties:
-       DACs are loaded when the pin connected to this GPIO is pulled low.
-     maxItems: 1
- 
--  spi-max-frequency: true
--
- required:
-   - compatible
-   - reg
- 
--additionalProperties: false
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+
-+unevaluatedProperties: false
- 
- examples:
-   - |
+ ARM/IGEP MACHINE SUPPORT
 -- 
-2.34.1
+2.17.1
 
