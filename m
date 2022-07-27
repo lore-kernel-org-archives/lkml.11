@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 517BDC19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:35:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D558C19F28
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:35:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242461AbiG0ReL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:34:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41584 "EHLO
+        id S236853AbiG0RfH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:35:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238422AbiG0Rde (ORCPT
+        with ESMTP id S236506AbiG0Rdn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:33:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23FC38244D;
-        Wed, 27 Jul 2022 09:48:51 -0700 (PDT)
+        Wed, 27 Jul 2022 13:33:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DA9861101;
+        Wed, 27 Jul 2022 09:48:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E993B61684;
-        Wed, 27 Jul 2022 16:48:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3156C433B5;
-        Wed, 27 Jul 2022 16:48:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1C439B821C5;
+        Wed, 27 Jul 2022 16:48:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84F29C433C1;
+        Wed, 27 Jul 2022 16:48:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940510;
-        bh=HExVcHZTruUUfXUkliReJ0ROIBKXM0SO1OOV/4zgfhw=;
+        s=korg; t=1658940526;
+        bh=OEykdUPXVNQvb/VQCM+52YVDVEsWYbSFVHjVP5N/vg0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Dau8xouMusYxpIPi18cvf+npgLLFIZHtQWyNLDJQqF9WepZT8Ozg7SIjLNpZSDl02
-         Co9YZ9dU+HvjJO5DO8sOh8OggFdEPAfS0X7FcJCui/mn/8Jc2lDkgDRjjB/PtCMDQV
-         Q5QiiNNcL2uPXmE8wKEjZaWdxynbB4cKm5Ifqmkw=
+        b=dU5BwEeiZcQdC4h9NEb3uhIAmmITLUzrpJf1wgGkDuD9oBTAWWC98MfnTkCyNk+Am
+         dxt8OR0gcmooP7hQT6PMELIyBOuoJ+kd77KC3wL9mUnz7F9EUVUt2vzq2fzlwr8fVz
+         2Yh9gKA8tyG4p5dwUglmI8Ch7HcwXnQPpk/8qImA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sasha Neftin <sasha.neftin@intel.com>,
-        Naama Meir <naamax.meir@linux.intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 031/158] Revert "e1000e: Fix possible HW unit hang after an s0ix exit"
-Date:   Wed, 27 Jul 2022 18:11:35 +0200
-Message-Id: <20220727161022.727044176@linuxfoundation.org>
+        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
+        Shubhrajyoti Datta <Shubhrajyoti.datta@amd.com>,
+        Michal Simek <michal.simek@amd.com>,
+        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 054/158] i2c: cadence: Change large transfer count reset logic to be unconditional
+Date:   Wed, 27 Jul 2022 18:11:58 +0200
+Message-Id: <20220727161023.685887172@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -50,122 +50,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sasha Neftin <sasha.neftin@intel.com>
+From: Robert Hancock <robert.hancock@calian.com>
 
-[ Upstream commit 6cfa45361d3eac31ba67d7d0bbef547151450106 ]
+[ Upstream commit 4ca8ca873d454635c20d508261bfc0081af75cf8 ]
 
-This reverts commit 1866aa0d0d6492bc2f8d22d0df49abaccf50cddd.
+Problems were observed on the Xilinx ZynqMP platform with large I2C reads.
+When a read of 277 bytes was performed, the controller NAKed the transfer
+after only 252 bytes were transferred and returned an ENXIO error on the
+transfer.
 
-Commit 1866aa0d0d64 ("e1000e: Fix possible HW unit hang after an s0ix
-exit") was a workaround for CSME problem to handle messages comes via H2ME
-mailbox. This problem has been fixed by patch "e1000e: Enable the GPT
-clock before sending message to the CSME".
+There is some code in cdns_i2c_master_isr to handle this case by resetting
+the transfer count in the controller before it reaches 0, to allow larger
+transfers to work, but it was conditional on the CDNS_I2C_BROKEN_HOLD_BIT
+quirk being set on the controller, and ZynqMP uses the r1p14 version of
+the core where this quirk is not being set. The requirement to do this to
+support larger reads seems like an inherently required workaround due to
+the core only having an 8-bit transfer size register, so it does not
+appear that this should be conditional on the broken HOLD bit quirk which
+is used elsewhere in the driver.
 
-Fixes: 3e55d231716e ("e1000e: Add handshake with the CSME to support S0ix")
-Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=214821
-Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
-Tested-by: Naama Meir <naamax.meir@linux.intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Remove the dependency on the CDNS_I2C_BROKEN_HOLD_BIT for this transfer
+size reset logic to fix this problem.
+
+Fixes: 63cab195bf49 ("i2c: removed work arounds in i2c driver for Zynq Ultrascale+ MPSoC")
+Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+Reviewed-by: Shubhrajyoti Datta <Shubhrajyoti.datta@amd.com>
+Acked-by: Michal Simek <michal.simek@amd.com>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/e1000e/hw.h      |  1 -
- drivers/net/ethernet/intel/e1000e/ich8lan.c |  4 ----
- drivers/net/ethernet/intel/e1000e/ich8lan.h |  1 -
- drivers/net/ethernet/intel/e1000e/netdev.c  | 26 ---------------------
- 4 files changed, 32 deletions(-)
+ drivers/i2c/busses/i2c-cadence.c | 30 +++++-------------------------
+ 1 file changed, 5 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/e1000e/hw.h b/drivers/net/ethernet/intel/e1000e/hw.h
-index 13382df2f2ef..bcf680e83811 100644
---- a/drivers/net/ethernet/intel/e1000e/hw.h
-+++ b/drivers/net/ethernet/intel/e1000e/hw.h
-@@ -630,7 +630,6 @@ struct e1000_phy_info {
- 	bool disable_polarity_correction;
- 	bool is_mdix;
- 	bool polarity_correction;
--	bool reset_disable;
- 	bool speed_downgraded;
- 	bool autoneg_wait_to_complete;
- };
-diff --git a/drivers/net/ethernet/intel/e1000e/ich8lan.c b/drivers/net/ethernet/intel/e1000e/ich8lan.c
-index e6c8e6d5234f..9466f65a6da7 100644
---- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
-+++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
-@@ -2050,10 +2050,6 @@ static s32 e1000_check_reset_block_ich8lan(struct e1000_hw *hw)
- 	bool blocked = false;
- 	int i = 0;
- 
--	/* Check the PHY (LCD) reset flag */
--	if (hw->phy.reset_disable)
--		return true;
+diff --git a/drivers/i2c/busses/i2c-cadence.c b/drivers/i2c/busses/i2c-cadence.c
+index 3d6f8ee355bf..630cfa4ddd46 100644
+--- a/drivers/i2c/busses/i2c-cadence.c
++++ b/drivers/i2c/busses/i2c-cadence.c
+@@ -388,9 +388,9 @@ static irqreturn_t cdns_i2c_slave_isr(void *ptr)
+  */
+ static irqreturn_t cdns_i2c_master_isr(void *ptr)
+ {
+-	unsigned int isr_status, avail_bytes, updatetx;
++	unsigned int isr_status, avail_bytes;
+ 	unsigned int bytes_to_send;
+-	bool hold_quirk;
++	bool updatetx;
+ 	struct cdns_i2c *id = ptr;
+ 	/* Signal completion only after everything is updated */
+ 	int done_flag = 0;
+@@ -410,11 +410,7 @@ static irqreturn_t cdns_i2c_master_isr(void *ptr)
+ 	 * Check if transfer size register needs to be updated again for a
+ 	 * large data receive operation.
+ 	 */
+-	updatetx = 0;
+-	if (id->recv_count > id->curr_recv_count)
+-		updatetx = 1;
 -
- 	while ((blocked = !(er32(FWSM) & E1000_ICH_FWSM_RSPCIPHY)) &&
- 	       (i++ < 30))
- 		usleep_range(10000, 11000);
-diff --git a/drivers/net/ethernet/intel/e1000e/ich8lan.h b/drivers/net/ethernet/intel/e1000e/ich8lan.h
-index 638a3ddd7ada..2504b11c3169 100644
---- a/drivers/net/ethernet/intel/e1000e/ich8lan.h
-+++ b/drivers/net/ethernet/intel/e1000e/ich8lan.h
-@@ -271,7 +271,6 @@
- #define I217_CGFREG_ENABLE_MTA_RESET	0x0002
- #define I217_MEMPWR			PHY_REG(772, 26)
- #define I217_MEMPWR_DISABLE_SMB_RELEASE	0x0010
--#define I217_MEMPWR_MOEM		0x1000
+-	hold_quirk = (id->quirks & CDNS_I2C_BROKEN_HOLD_BIT) && updatetx;
++	updatetx = id->recv_count > id->curr_recv_count;
  
- /* Receive Address Initial CRC Calculation */
- #define E1000_PCH_RAICC(_n)	(0x05F50 + ((_n) * 4))
-diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-index c64102b29862..f1729940e46c 100644
---- a/drivers/net/ethernet/intel/e1000e/netdev.c
-+++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-@@ -6991,21 +6991,8 @@ static __maybe_unused int e1000e_pm_suspend(struct device *dev)
- 	struct net_device *netdev = pci_get_drvdata(to_pci_dev(dev));
- 	struct e1000_adapter *adapter = netdev_priv(netdev);
- 	struct pci_dev *pdev = to_pci_dev(dev);
--	struct e1000_hw *hw = &adapter->hw;
--	u16 phy_data;
- 	int rc;
+ 	/* When receiving, handle data interrupt and completion interrupt */
+ 	if (id->p_recv_buf &&
+@@ -445,7 +441,7 @@ static irqreturn_t cdns_i2c_master_isr(void *ptr)
+ 				break;
+ 			}
  
--	if (er32(FWSM) & E1000_ICH_FWSM_FW_VALID &&
--	    hw->mac.type >= e1000_pch_adp) {
--		/* Mask OEM Bits / Gig Disable / Restart AN (772_26[12] = 1) */
--		e1e_rphy(hw, I217_MEMPWR, &phy_data);
--		phy_data |= I217_MEMPWR_MOEM;
--		e1e_wphy(hw, I217_MEMPWR, phy_data);
+-			if (cdns_is_holdquirk(id, hold_quirk))
++			if (cdns_is_holdquirk(id, updatetx))
+ 				break;
+ 		}
+ 
+@@ -456,7 +452,7 @@ static irqreturn_t cdns_i2c_master_isr(void *ptr)
+ 		 * maintain transfer size non-zero while performing a large
+ 		 * receive operation.
+ 		 */
+-		if (cdns_is_holdquirk(id, hold_quirk)) {
++		if (cdns_is_holdquirk(id, updatetx)) {
+ 			/* wait while fifo is full */
+ 			while (cdns_i2c_readreg(CDNS_I2C_XFER_SIZE_OFFSET) !=
+ 			       (id->curr_recv_count - CDNS_I2C_FIFO_DEPTH))
+@@ -478,22 +474,6 @@ static irqreturn_t cdns_i2c_master_isr(void *ptr)
+ 						  CDNS_I2C_XFER_SIZE_OFFSET);
+ 				id->curr_recv_count = id->recv_count;
+ 			}
+-		} else if (id->recv_count && !hold_quirk &&
+-						!id->curr_recv_count) {
 -
--		/* Disable LCD reset */
--		hw->phy.reset_disable = true;
--	}
+-			/* Set the slave address in address register*/
+-			cdns_i2c_writereg(id->p_msg->addr & CDNS_I2C_ADDR_MASK,
+-						CDNS_I2C_ADDR_OFFSET);
 -
- 	e1000e_flush_lpic(pdev);
+-			if (id->recv_count > CDNS_I2C_TRANSFER_SIZE) {
+-				cdns_i2c_writereg(CDNS_I2C_TRANSFER_SIZE,
+-						CDNS_I2C_XFER_SIZE_OFFSET);
+-				id->curr_recv_count = CDNS_I2C_TRANSFER_SIZE;
+-			} else {
+-				cdns_i2c_writereg(id->recv_count,
+-						CDNS_I2C_XFER_SIZE_OFFSET);
+-				id->curr_recv_count = id->recv_count;
+-			}
+ 		}
  
- 	e1000e_pm_freeze(dev);
-@@ -7027,8 +7014,6 @@ static __maybe_unused int e1000e_pm_resume(struct device *dev)
- 	struct net_device *netdev = pci_get_drvdata(to_pci_dev(dev));
- 	struct e1000_adapter *adapter = netdev_priv(netdev);
- 	struct pci_dev *pdev = to_pci_dev(dev);
--	struct e1000_hw *hw = &adapter->hw;
--	u16 phy_data;
- 	int rc;
- 
- 	/* Introduce S0ix implementation */
-@@ -7039,17 +7024,6 @@ static __maybe_unused int e1000e_pm_resume(struct device *dev)
- 	if (rc)
- 		return rc;
- 
--	if (er32(FWSM) & E1000_ICH_FWSM_FW_VALID &&
--	    hw->mac.type >= e1000_pch_adp) {
--		/* Unmask OEM Bits / Gig Disable / Restart AN 772_26[12] = 0 */
--		e1e_rphy(hw, I217_MEMPWR, &phy_data);
--		phy_data &= ~I217_MEMPWR_MOEM;
--		e1e_wphy(hw, I217_MEMPWR, phy_data);
--
--		/* Enable LCD reset */
--		hw->phy.reset_disable = false;
--	}
--
- 	return e1000e_pm_thaw(dev);
- }
- 
+ 		/* Clear hold (if not repeated start) and signal completion */
 -- 
 2.35.1
 
