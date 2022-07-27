@@ -2,69 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 761EAC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 14:51:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66614C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 14:51:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233210AbiG0OvW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 10:51:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39334 "EHLO
+        id S234287AbiG0Ovc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 10:51:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234280AbiG0OvP (ORCPT
+        with ESMTP id S234238AbiG0OvZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 10:51:15 -0400
-Received: from mail-il1-f179.google.com (mail-il1-f179.google.com [209.85.166.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FD703ED4B;
-        Wed, 27 Jul 2022 07:51:14 -0700 (PDT)
-Received: by mail-il1-f179.google.com with SMTP id p5so1754435ilg.9;
-        Wed, 27 Jul 2022 07:51:14 -0700 (PDT)
+        Wed, 27 Jul 2022 10:51:25 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A87E4330B;
+        Wed, 27 Jul 2022 07:51:24 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id z23so31661241eju.8;
+        Wed, 27 Jul 2022 07:51:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=BcjOvUvgWV3BAQ3E9l0s9PTFaWNeusUy+QCOuPABOmE=;
+        b=aIlAHoCIkpUuoFHze+Z/HfYl16wa//iWgR50y4BIOQG12KxZNheuNuPx4QaMsPcHqm
+         mnZTKT30y4hERKheVcKgOWuc9ILKvw4bvMHYTknr/uVZW9ct0Ca6BFmzjcfx3DyePj7n
+         HAYQ76lfQFgdfuGwema7jPQu6LQk2DhfWdQ+oPd0fihedkj3mLKCQblU5z98ZVBTHIge
+         fh3OjF7BjuZxDumYWnhc6u6sn5U4IOAsTsRUuxARtB96zK69iLbRdwMg2dskRxnAox0s
+         zLu1DF5KshQ0UR0ZaWhIoIktCXouEHktxJT3w+9LNU1l51A511dTlxH59oI4qZkxWCf1
+         P9UA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=5y7PFmcjHVgT/qs/LxH1VBCcidqbiuh6OAS20LCFKqI=;
-        b=61MSNy5v5tRhKPL32//rRnf1LuflroSTM6e+A4Cs8lAq/KINSEMqC9+IxUzaNjWds4
-         0USY2wt+ahDm1f1Qv05SFa7GJB47wdwJ0u9wTb1rTAzrvzEDp9TxFcFP520qXs5VrrQD
-         JDxO7z6doRqeP0LM+7rzCDK6VR5Ra/51T9MRB3PZXj220T0UvSbb0WRO0KHhiDs3NS0k
-         TdsZ6w47050LvjVqBs62kc7wc79F2hQkhv9Yt8TNZ9F6lWzqWh8MuJCEE32XMlUNczNU
-         +fRaefvNNemHFwpVsHLC6TfU2xU1vVApOO1B7v5mgrKWdILQyu8DUhCs8TiI8nYQrLBr
-         ruUg==
-X-Gm-Message-State: AJIora9GpVXJiTCuTch3HjoZ++A+/UQaA9TdJ/6iIfkHfj1BJLyOrE+U
-        s8xSyHlJW8HzUUmBI7Gmc7mENVge8Q==
-X-Google-Smtp-Source: AGRyM1uMNY3xVs834cDXl2d5qqsiLYPY8gWspaJBg8N+CLm7LfyyhmcoIxu4cNLtSIwjHVEQLefXhQ==
-X-Received: by 2002:a05:6e02:1e0d:b0:2dd:63ac:880d with SMTP id g13-20020a056e021e0d00b002dd63ac880dmr5214909ila.129.1658933473846;
-        Wed, 27 Jul 2022 07:51:13 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id v9-20020a92ab09000000b002dab4765893sm6688701ilh.66.2022.07.27.07.51.13
+        bh=BcjOvUvgWV3BAQ3E9l0s9PTFaWNeusUy+QCOuPABOmE=;
+        b=H8CP0P7uX3xoDSnLDDnBQ+6g4o+tt6oznWODDswGy2UXsKxWzBMDH0E5gT5rIBH6ct
+         2FsC56XejELVFUp/moitUYtkbLllUwUxj2EPouYK0OzvBJN0K3/UWN1CNFjxiNf9+yiO
+         nPylJLcZ5cJ6ChWaRjuMgqhcmZlpRIC3U4t3krhoMAAfPVUSgmqkj1izNxtVlS+L357I
+         7nelT7NDKOtjRHbELu85US9jgJ92PQOsjaCfltvAllMj+SZQ1gdVMXjNPUCkLGQ6cJjl
+         dLCIAFfPobZXPz3fbmdJnq1m4c5QFrL3HYH/Ur4KDy3mBXLxPpmOsXwMvobtEAt1jcRt
+         NtJQ==
+X-Gm-Message-State: AJIora8h7igH6mkcL5He9rgfFZXV9eDbj38s7jZEqdJE1CJ3pNgb+ljL
+        SVnkoqA7h4QphF7GqfDFIJ8=
+X-Google-Smtp-Source: AGRyM1s+7nwMGXZmSD9whtEJSdR5QkrRdiRbcb5I4XYYYpgtg2Y/shyvcZjjk5AcViB/yqWvzIj8OQ==
+X-Received: by 2002:a17:907:7f1c:b0:72b:6e63:1798 with SMTP id qf28-20020a1709077f1c00b0072b6e631798mr17622362ejc.538.1658933482763;
+        Wed, 27 Jul 2022 07:51:22 -0700 (PDT)
+Received: from skbuf ([188.25.231.115])
+        by smtp.gmail.com with ESMTPSA id gr19-20020a170906e2d300b0072b592ee073sm7808216ejb.147.2022.07.27.07.51.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 07:51:13 -0700 (PDT)
-Received: (nullmailer pid 2643014 invoked by uid 1000);
-        Wed, 27 Jul 2022 14:51:12 -0000
-Date:   Wed, 27 Jul 2022 08:51:12 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Sebastian Reichel <sre@kernel.org>, linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-pm@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: power: supply: charger-manager: Add missing
- type for 'cm-battery-stat'
-Message-ID: <20220727145112.GA2642918-robh@kernel.org>
-References: <20220719215017.1875530-1-robh@kernel.org>
+        Wed, 27 Jul 2022 07:51:22 -0700 (PDT)
+Date:   Wed, 27 Jul 2022 17:51:19 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Christian Marangi <ansuelsmth@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [net-next PATCH v5 06/14] net: dsa: qca8k: move mib init
+ function to common code
+Message-ID: <20220727145119.cruovluea4go7yl7@skbuf>
+References: <20220727113523.19742-1-ansuelsmth@gmail.com>
+ <20220727113523.19742-1-ansuelsmth@gmail.com>
+ <20220727113523.19742-7-ansuelsmth@gmail.com>
+ <20220727113523.19742-7-ansuelsmth@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220719215017.1875530-1-robh@kernel.org>
+In-Reply-To: <20220727113523.19742-7-ansuelsmth@gmail.com>
+ <20220727113523.19742-7-ansuelsmth@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 19 Jul 2022 15:50:16 -0600, Rob Herring wrote:
-> 'cm-battery-stat' is missing a type definition and is not a common
-> property. The type is boolean.
+On Wed, Jul 27, 2022 at 01:35:15PM +0200, Christian Marangi wrote:
+> The same mib function is used by drivers based on qca8k family switch.
+> Move it to common code to make it accessible also by other drivers.
 > 
-> Signed-off-by: Rob Herring <robh@kernel.org>
+> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
 > ---
->  .../devicetree/bindings/power/supply/charger-manager.yaml        | 1 +
->  1 file changed, 1 insertion(+)
-> 
 
-Applied, thanks!
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
