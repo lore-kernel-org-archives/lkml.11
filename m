@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19E31C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:05:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A70AC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:05:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235187AbiG0RFN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:05:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37854 "EHLO
+        id S241329AbiG0RFX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:05:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241440AbiG0REP (ORCPT
+        with ESMTP id S241472AbiG0RET (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:04:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B826C6E899;
-        Wed, 27 Jul 2022 09:39:04 -0700 (PDT)
+        Wed, 27 Jul 2022 13:04:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E7A56E8A9;
+        Wed, 27 Jul 2022 09:39:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6E726601C0;
-        Wed, 27 Jul 2022 16:39:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76407C433D7;
-        Wed, 27 Jul 2022 16:39:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 86C13B821B6;
+        Wed, 27 Jul 2022 16:38:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D04B4C433D6;
+        Wed, 27 Jul 2022 16:38:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939942;
-        bh=giqDU7zsSjegWF/j8kJdmRjlOFOf2/ZA0i2RNKPQALM=;
+        s=korg; t=1658939934;
+        bh=NIaVVLE+pEn8Ee5MvqbaxjbH8CI2HF9VkpWMB7V+KKo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wz1omDRPOy2AiSsbo2jv/hhOBqsy8bMgqWtti7hbSFnv3UMLMGP7W58q/1MJiy3L+
-         p1U4i0XRUBd3HfcJPZm8T7eTwAhS/FowJHwvAzZ8C2H4ztFu+dyJbinR2wUn1VOWL7
-         eTKiXefJoooCseboJzzOQeikW5pp3OTkWFEKZSwY=
+        b=1FokX5ckaCjighnTfT0/wfWGnDurcnCc3kwNcQbe2I3P5+OHvRfOXw7WOd0qQ1UpM
+         /1Ve9dGkpVOXGgEcd13e+NRDLiMX7bCWAoznzo3EjoKrPgy/gRgX9wwzWPFrzpjUAw
+         wYpiVyjJIOyO7ApPTt0KFKV+Bkmk/m967TE+mRFM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dima Ruinskiy <dima.ruinskiy@intel.com>,
-        Sasha Neftin <sasha.neftin@intel.com>,
-        "Chia-Lin Kao (AceLan)" <acelan.kao@canonical.com>,
-        Naama Meir <naamax.meir@linux.intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        stable@vger.kernel.org, Alim Akhtar <alim.akhtar@samsung.com>,
+        Bean Huo <beanhuo@micron.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 051/201] e1000e: Enable GPT clock before sending message to CSME
-Date:   Wed, 27 Jul 2022 18:09:15 +0200
-Message-Id: <20220727161029.008245517@linuxfoundation.org>
+Subject: [PATCH 5.15 048/201] scsi: ufs: core: Drop loglevel of WriteBoost message
+Date:   Wed, 27 Jul 2022 18:09:12 +0200
+Message-Id: <20220727161028.870672255@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -52,42 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sasha Neftin <sasha.neftin@intel.com>
+From: Bjorn Andersson <bjorn.andersson@linaro.org>
 
-[ Upstream commit b49feacbeffc7635cc6692cbcc6a1eae2c17da6f ]
+[ Upstream commit 2ae57c995003a7840cb6b5ec5f0c06193695321b ]
 
-On corporate (CSME) ADL systems, the Ethernet Controller may stop working
-("HW unit hang") after exiting from the s0ix state. The reason is that
-CSME misses the message sent by the host. Enabling the dynamic GPT clock
-solves this problem. This clock is cleared upon HW initialization.
+Commit '3b5f3c0d0548 ("scsi: ufs: core: Tidy up WB configuration code")'
+changed the log level of the write boost enable/disable notification from
+debug to info. This results in a lot of noise in the kernel log during
+normal operation.
 
-Fixes: 3e55d231716e ("e1000e: Add handshake with the CSME to support S0ix")
-Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=214821
-Reviewed-by: Dima Ruinskiy <dima.ruinskiy@intel.com>
-Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
-Tested-by: Chia-Lin Kao (AceLan) <acelan.kao@canonical.com>
-Tested-by: Naama Meir <naamax.meir@linux.intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Drop it back to debug level to avoid this.
+
+Link: https://lore.kernel.org/r/20220709000027.3929970-1-bjorn.andersson@linaro.org
+Fixes: 3b5f3c0d0548 ("scsi: ufs: core: Tidy up WB configuration code")
+Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
+Acked-by: Bean Huo <beanhuo@micron.com>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/e1000e/netdev.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/scsi/ufs/ufshcd.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
-index ce48e630fe55..0fba6ccecf12 100644
---- a/drivers/net/ethernet/intel/e1000e/netdev.c
-+++ b/drivers/net/ethernet/intel/e1000e/netdev.c
-@@ -6499,6 +6499,10 @@ static void e1000e_s0ix_exit_flow(struct e1000_adapter *adapter)
+diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
+index 5c9a31f18b7f..4a7248421bcd 100644
+--- a/drivers/scsi/ufs/ufshcd.c
++++ b/drivers/scsi/ufs/ufshcd.c
+@@ -5638,7 +5638,7 @@ int ufshcd_wb_toggle(struct ufs_hba *hba, bool enable)
+ 	}
  
- 	if (er32(FWSM) & E1000_ICH_FWSM_FW_VALID &&
- 	    hw->mac.type >= e1000_pch_adp) {
-+		/* Keep the GPT clock enabled for CSME */
-+		mac_data = er32(FEXTNVM);
-+		mac_data |= BIT(3);
-+		ew32(FEXTNVM, mac_data);
- 		/* Request ME unconfigure the device from S0ix */
- 		mac_data = er32(H2ME);
- 		mac_data &= ~E1000_H2ME_START_DPG;
+ 	hba->dev_info.wb_enabled = enable;
+-	dev_info(hba->dev, "%s Write Booster %s\n",
++	dev_dbg(hba->dev, "%s Write Booster %s\n",
+ 			__func__, enable ? "enabled" : "disabled");
+ 
+ 	return ret;
 -- 
 2.35.1
 
