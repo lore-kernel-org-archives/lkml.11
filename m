@@ -2,51 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AC39C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:58:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45B01C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:58:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230224AbiG0Q57 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:57:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41076 "EHLO
+        id S241191AbiG0Q6P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:58:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241185AbiG0Q50 (ORCPT
+        with ESMTP id S240812AbiG0Q5f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:57:26 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B831466AC0;
-        Wed, 27 Jul 2022 09:36:33 -0700 (PDT)
+        Wed, 27 Jul 2022 12:57:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EF1E66AF4;
+        Wed, 27 Jul 2022 09:36:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5E830B821D4;
-        Wed, 27 Jul 2022 16:36:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A8F4C433D6;
-        Wed, 27 Jul 2022 16:36:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CE038B8200C;
+        Wed, 27 Jul 2022 16:36:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 244A9C433D6;
+        Wed, 27 Jul 2022 16:36:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939769;
-        bh=IUKrvgR9qEPjvc7ubUpN6mhb+LpczifZ0GWm7PfjtOQ=;
+        s=korg; t=1658939788;
+        bh=8ubWmqh3XHqEGO/Zk88/CHKjpD14FPE7JN30pNzglOg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oe+e9irdF/R0rq7MkxyoZVC5paLSe5EzT8TZC19FhCI9l9eId6zrJiJoG+BknpzRi
-         tCveJF10J7O1HKaA7ikiIH0UL0Pe0iCjlmRuduZP6zEp8IxuAmGrtJu9zWFgHsZcuc
-         vPtPj1wl+Y5wqttLBacBUXEj3ADyBs/8Vgn6WA1c=
+        b=fFay2UW7HkdVVrD3nJFZtr5ZMKIYZCAkNr6o4no5WtWcnSYz0NJq+w84rU3pZ+8VB
+         6KxAhVm7CiOf53F36ahG2VRlDSioSBqzjbta2JNB35MXRliXU+VRd4DjYgRUl/Cf6W
+         w3+WbEr7EcG7czNIusdy9jdBwsnU8DQZxzizvcg0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Richard Henderson <rth@twiddle.net>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        Matt Turner <mattst88@gmail.com>,
-        William Hubbs <w.d.hubbs@gmail.com>,
-        Chris Brannon <chris@the-brannons.com>,
-        Kirk Reiser <kirk@reisers.ca>,
-        Samuel Thibault <samuel.thibault@ens-lyon.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Johan Hovold <johan@kernel.org>, Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 5.10 098/105] tty: the rest, stop using tty_schedule_flip()
-Date:   Wed, 27 Jul 2022 18:11:24 +0200
-Message-Id: <20220727161016.046323719@linuxfoundation.org>
+        stable@vger.kernel.org, John Stultz <john.stultz@linaro.org>,
+        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.10 105/105] block-crypto-fallback: use a bio_set for splitting bios
+Date:   Wed, 27 Jul 2022 18:11:31 +0200
+Message-Id: <20220727161016.316853329@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161012.056867467@linuxfoundation.org>
 References: <20220727161012.056867467@linuxfoundation.org>
@@ -58,84 +48,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiri Slaby <jslaby@suse.cz>
+From: Christoph Hellwig <hch@lst.de>
 
-commit b68b914494df4f79b4e9b58953110574af1cb7a2 upstream.
+commit 5407334c53e9922c1c3fb28801e489d0b74f2c8d upstream.
 
-Since commit a9c3f68f3cd8d (tty: Fix low_latency BUG) in 2014,
-tty_flip_buffer_push() is only a wrapper to tty_schedule_flip(). We are
-going to remove the latter (as it is used less), so call the former in
-the rest of the users.
+bio_split with a NULL bs argumen used to fall back to kmalloc the
+bio, which does not guarantee forward progress and could to deadlocks.
+Now that the overloading of the NULL bs argument to bio_alloc_bioset
+has been removed it crashes instead.  Fix all that by using a special
+crafted bioset.
 
-Cc: Richard Henderson <rth@twiddle.net>
-Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
-Cc: Matt Turner <mattst88@gmail.com>
-Cc: William Hubbs <w.d.hubbs@gmail.com>
-Cc: Chris Brannon <chris@the-brannons.com>
-Cc: Kirk Reiser <kirk@reisers.ca>
-Cc: Samuel Thibault <samuel.thibault@ens-lyon.org>
-Cc: Heiko Carstens <hca@linux.ibm.com>
-Cc: Vasily Gorbik <gor@linux.ibm.com>
-Cc: Christian Borntraeger <borntraeger@de.ibm.com>
-Cc: Alexander Gordeev <agordeev@linux.ibm.com>
-Reviewed-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Link: https://lore.kernel.org/r/20211122111648.30379-3-jslaby@suse.cz
+Fixes: 3175199ab0ac ("block: split bio_kmalloc from bio_alloc_bioset")
+Reported-by: John Stultz <john.stultz@linaro.org>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Tested-by: John Stultz <john.stultz@linaro.org>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/alpha/kernel/srmcons.c               |    2 +-
- drivers/accessibility/speakup/spk_ttyio.c |    4 ++--
- drivers/s390/char/keyboard.h              |    4 ++--
- 3 files changed, 5 insertions(+), 5 deletions(-)
+ block/blk-crypto-fallback.c |   12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
---- a/arch/alpha/kernel/srmcons.c
-+++ b/arch/alpha/kernel/srmcons.c
-@@ -59,7 +59,7 @@ srmcons_do_receive_chars(struct tty_port
- 	} while((result.bits.status & 1) && (++loops < 10));
+--- a/block/blk-crypto-fallback.c
++++ b/block/blk-crypto-fallback.c
+@@ -80,6 +80,7 @@ static struct blk_crypto_keyslot {
+ static struct blk_keyslot_manager blk_crypto_ksm;
+ static struct workqueue_struct *blk_crypto_wq;
+ static mempool_t *blk_crypto_bounce_page_pool;
++static struct bio_set crypto_bio_split;
  
- 	if (count)
--		tty_schedule_flip(port);
-+		tty_flip_buffer_push(port);
+ /*
+  * This is the key we set when evicting a keyslot. This *should* be the all 0's
+@@ -222,7 +223,8 @@ static bool blk_crypto_split_bio_if_need
+ 	if (num_sectors < bio_sectors(bio)) {
+ 		struct bio *split_bio;
  
- 	return count;
- }
---- a/drivers/accessibility/speakup/spk_ttyio.c
-+++ b/drivers/accessibility/speakup/spk_ttyio.c
-@@ -88,7 +88,7 @@ static int spk_ttyio_receive_buf2(struct
- 	}
+-		split_bio = bio_split(bio, num_sectors, GFP_NOIO, NULL);
++		split_bio = bio_split(bio, num_sectors, GFP_NOIO,
++				      &crypto_bio_split);
+ 		if (!split_bio) {
+ 			bio->bi_status = BLK_STS_RESOURCE;
+ 			return false;
+@@ -536,9 +538,13 @@ static int blk_crypto_fallback_init(void
  
- 	if (!ldisc_data->buf_free)
--		/* ttyio_in will tty_schedule_flip */
-+		/* ttyio_in will tty_flip_buffer_push */
- 		return 0;
+ 	prandom_bytes(blank_key, BLK_CRYPTO_MAX_KEY_SIZE);
  
- 	/* Make sure the consumer has read buf before we have seen
-@@ -334,7 +334,7 @@ static unsigned char ttyio_in(int timeou
- 	mb();
- 	ldisc_data->buf_free = true;
- 	/* Let TTY push more characters */
--	tty_schedule_flip(speakup_tty->port);
-+	tty_flip_buffer_push(speakup_tty->port);
+-	err = blk_ksm_init(&blk_crypto_ksm, blk_crypto_num_keyslots);
++	err = bioset_init(&crypto_bio_split, 64, 0, 0);
+ 	if (err)
+ 		goto out;
++
++	err = blk_ksm_init(&blk_crypto_ksm, blk_crypto_num_keyslots);
++	if (err)
++		goto fail_free_bioset;
+ 	err = -ENOMEM;
  
- 	return rv;
- }
---- a/drivers/s390/char/keyboard.h
-+++ b/drivers/s390/char/keyboard.h
-@@ -56,7 +56,7 @@ static inline void
- kbd_put_queue(struct tty_port *port, int ch)
- {
- 	tty_insert_flip_char(port, ch, 0);
--	tty_schedule_flip(port);
-+	tty_flip_buffer_push(port);
- }
- 
- static inline void
-@@ -64,5 +64,5 @@ kbd_puts_queue(struct tty_port *port, ch
- {
- 	while (*cp)
- 		tty_insert_flip_char(port, *cp++, 0);
--	tty_schedule_flip(port);
-+	tty_flip_buffer_push(port);
+ 	blk_crypto_ksm.ksm_ll_ops = blk_crypto_ksm_ll_ops;
+@@ -589,6 +595,8 @@ fail_free_wq:
+ 	destroy_workqueue(blk_crypto_wq);
+ fail_free_ksm:
+ 	blk_ksm_destroy(&blk_crypto_ksm);
++fail_free_bioset:
++	bioset_exit(&crypto_bio_split);
+ out:
+ 	return err;
  }
 
 
