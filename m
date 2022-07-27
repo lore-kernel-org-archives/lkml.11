@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60DD1C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:27:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFCF6C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:28:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237133AbiG0Q1t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:27:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49950 "EHLO
+        id S236871AbiG0Q15 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:27:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236949AbiG0Q1H (ORCPT
+        with ESMTP id S235595AbiG0Q1P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:27:07 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04F0C4B0DB;
+        Wed, 27 Jul 2022 12:27:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A6CE4F1A7;
         Wed, 27 Jul 2022 09:24:03 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0027ACE2306;
-        Wed, 27 Jul 2022 16:23:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAA81C433D6;
-        Wed, 27 Jul 2022 16:23:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B0F27B821BC;
+        Wed, 27 Jul 2022 16:24:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F309C433D6;
+        Wed, 27 Jul 2022 16:23:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939029;
-        bh=AW5RXxI/zOyzH4BAEaTiesoBUF+TPpnxWXvCKwuUL9E=;
+        s=korg; t=1658939040;
+        bh=IS95Ux7y3Du7rX8+WAHdx5ZWxHFA3ifE1uxa9QhbhDA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Thm+8mgKYEjPYJwIFXdPofvtcXeAA7XF7fRdjdEmW232vJr6NM48g/jfJKElnYbbz
-         fGMLizA57krEeSJBfqMfyiKUrMlg9xg9dT5Fl8i6gHKvq8OUCq8qCtRfEQLqwhJqdu
-         8QnwUd2JGPGHuJQxhZYqCG6zrNpf4ETStxd96+2k=
+        b=jMap0XDOHwmhPcRL2i3xkITVKAi9y8LInfZffwN42yNhumCH+IRvskXZYwPjudZ46
+         liFvyN4f1Sepa34yRVaUHhI8GaaL2Yfz2QaVGqKg96cCqe3Inwr56Po0H3jOlWYoWx
+         TJ2O57g+cZsRdv3TH7qcaXVEgTKCB1QTP5MMuaNk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tedd Ho-Jeong An <tedd.an@intel.com>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Subject: [PATCH 4.14 26/37] Bluetooth: SCO: Fix sco_send_frame returning skb->len
-Date:   Wed, 27 Jul 2022 18:10:52 +0200
-Message-Id: <20220727161001.905918967@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 12/37] igmp: Fix a data-race around sysctl_igmp_max_memberships.
+Date:   Wed, 27 Jul 2022 18:10:38 +0200
+Message-Id: <20220727161001.357244881@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161000.822869853@linuxfoundation.org>
 References: <20220727161000.822869853@linuxfoundation.org>
@@ -50,55 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit 037ce005af6b8a3e40ee07c6e9266c8997e6a4d6 upstream.
+[ Upstream commit 6305d821e3b9b5379d348528e5b5faf316383bc2 ]
 
-The skb in modified by hci_send_sco which pushes SCO headers thus
-changing skb->len causing sco_sock_sendmsg to fail.
+While reading sysctl_igmp_max_memberships, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its reader.
 
-Fixes: 0771cbb3b97d ("Bluetooth: SCO: Replace use of memcpy_from_msg with bt_skb_sendmsg")
-Tested-by: Tedd Ho-Jeong An <tedd.an@intel.com>
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
-Cc: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/sco.c |   10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ net/ipv4/igmp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/net/bluetooth/sco.c
-+++ b/net/bluetooth/sco.c
-@@ -282,16 +282,17 @@ static int sco_connect(struct hci_dev *h
- static int sco_send_frame(struct sock *sk, struct sk_buff *skb)
- {
- 	struct sco_conn *conn = sco_pi(sk)->conn;
-+	int len = skb->len;
- 
- 	/* Check outgoing MTU */
--	if (skb->len > conn->mtu)
-+	if (len > conn->mtu)
- 		return -EINVAL;
- 
--	BT_DBG("sk %p len %d", sk, skb->len);
-+	BT_DBG("sk %p len %d", sk, len);
- 
- 	hci_send_sco(conn->hcon, skb);
- 
--	return skb->len;
-+	return len;
- }
- 
- static void sco_recv_frame(struct sco_conn *conn, struct sk_buff *skb)
-@@ -732,7 +733,8 @@ static int sco_sock_sendmsg(struct socke
- 		err = -ENOTCONN;
- 
- 	release_sock(sk);
--	if (err)
-+
-+	if (err < 0)
- 		kfree_skb(skb);
- 	return err;
- }
+diff --git a/net/ipv4/igmp.c b/net/ipv4/igmp.c
+index 4b3875acc876..fd2c634eeee4 100644
+--- a/net/ipv4/igmp.c
++++ b/net/ipv4/igmp.c
+@@ -2179,7 +2179,7 @@ int ip_mc_join_group(struct sock *sk, struct ip_mreqn *imr)
+ 		count++;
+ 	}
+ 	err = -ENOBUFS;
+-	if (count >= net->ipv4.sysctl_igmp_max_memberships)
++	if (count >= READ_ONCE(net->ipv4.sysctl_igmp_max_memberships))
+ 		goto done;
+ 	iml = sock_kmalloc(sk, sizeof(*iml), GFP_KERNEL);
+ 	if (!iml)
+-- 
+2.35.1
+
 
 
