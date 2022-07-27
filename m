@@ -2,176 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7ED6C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:17:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11DB3C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:18:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231557AbiG0RRp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:17:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57850 "EHLO
+        id S241756AbiG0RR5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:17:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241684AbiG0RQu (ORCPT
+        with ESMTP id S231937AbiG0RRN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:16:50 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4411627B
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:43:17 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id bf9so27828519lfb.13
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:43:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dq1uiZkAWa3YJvnfamL8dc9poZEqWN+zXqH3YX0Ei5g=;
-        b=qCyMVBkCXFWl1AlJ5rfWeaCJL8jbUT35O7IxR89YvWURkZkpEiIbfagT6bJR1uSTck
-         YbU0zVyldV6p6XW6UPlKR00YL+u6oN22qGh3V9lr5RSCTRxlTg+6j/L1shioPpEaS7DM
-         ftpLvGyWCZ4+68kqY/LMvV0tyXTclfFKxn0mbsxA8s+4Q6K4RFIO+s856ieFJmBcpnW+
-         /D2V4JWTU3+J4p4RgsA9fCq1V2L8dieLqfkcESOSMz5v+uN+0E8rlxc14XXQP5MqGJmq
-         uJ5bAEibiJbYXh7hTOYcNgy4qXuk7IeI2q0jqOu2k2ViRQo6nhIypR1TXJ/sh8Xcs7M3
-         7PjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dq1uiZkAWa3YJvnfamL8dc9poZEqWN+zXqH3YX0Ei5g=;
-        b=wuTkZWN5+ue5MdjllRSDGVkeMNPO2bLGjxu6ALD75MIji+agcI8VVpa1N0RlDly6OF
-         gQTBmHAVmk80aCz9ir/tDnNDz2ClaKI0Ad6S2kmgvAhOGnKaPuYCna08j5fTEY4f0xMo
-         qOogmuX2PxwQpa2Q3DfzzEtO99/s3d9Vk4hSn11V3PoJ+/oZ+EmJfCTGknUCmAF6mmLi
-         YnG96lWS8aSAjNspSEYHmCI3VHR7ZheBrEvTPlKRdHnvu0lVDl1auHbPPmh7VMYDdzSH
-         S/ddsPGW+32U36jzyoHeTXU8jX76ok/r+6Qgx7TuvcP0tSXaZum6L6G8kmh2YdoZmfU2
-         Yy1w==
-X-Gm-Message-State: AJIora/R3pceLYGW3s3CbjPF1HymEU1RuJPNVr+jwB2oy7gy4Ylywxu8
-        kkN36bKikUb7WN3d0jleXwqGWg==
-X-Google-Smtp-Source: AGRyM1tjstljwcPGnQ8nUewAwhzjHnExmu7i325wwT19JRsKZYk7zO7l24iTwuawcmiATp8A/e/MEQ==
-X-Received: by 2002:a05:6512:2826:b0:48a:a02c:4a6a with SMTP id cf38-20020a056512282600b0048aa02c4a6amr3196539lfb.29.1658940195058;
-        Wed, 27 Jul 2022 09:43:15 -0700 (PDT)
-Received: from krzk-bin.lan (78-26-46-173.network.trollfjord.no. [78.26.46.173])
-        by smtp.gmail.com with ESMTPSA id t17-20020ac243b1000000b0047fae90bfb4sm3869763lfl.56.2022.07.27.09.43.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 09:43:14 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        David Lechner <david@lechnology.com>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Heiko Schocher <hs@denx.de>,
-        Maxime Ripard <mripard@kernel.org>,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH] dt-bindings: display: use spi-peripheral-props.yaml
-Date:   Wed, 27 Jul 2022 18:43:12 +0200
-Message-Id: <20220727164312.385836-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
+        Wed, 27 Jul 2022 13:17:13 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EED4BCA;
+        Wed, 27 Jul 2022 09:43:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 80C51B821C5;
+        Wed, 27 Jul 2022 16:43:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C94C3C433D7;
+        Wed, 27 Jul 2022 16:43:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658940197;
+        bh=reqS1FC7SNHKb5oM0t/Ti65oP22ffR5nY0X7/alNUK0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=gvOevyWHlkigzhZXUQCNVBU8qm+Y2kRnR3HSNnr26IWG7llpescgjpI0uYt5KnzJp
+         F2Q8wx8HZ4DeHDu9zyK+eq68zhI4P5VdLFCVtKYLIQkdjfhpzuNY9MPoEhd1plUwcZ
+         ql+NQjozZNIAHYqxoYSTIGmTnq2yBhy5BM2efJ7s=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Wong Vee Khee <vee.khee.wong@linux.intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 108/201] net: stmmac: remove redunctant disable xPCS EEE call
+Date:   Wed, 27 Jul 2022 18:10:12 +0200
+Message-Id: <20220727161032.236526995@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
+References: <20220727161026.977588183@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instead of listing directly properties typical for SPI peripherals,
-reference the spi-peripheral-props.yaml schema.  This allows using all
-properties typical for SPI-connected devices, even these which device
-bindings author did not tried yet.
+From: Wong Vee Khee <vee.khee.wong@linux.intel.com>
 
-Remove the spi-* properties which now come via spi-peripheral-props.yaml
-schema, except for the cases when device schema adds some constraints
-like maximum frequency.
+[ Upstream commit da791bac104a3169b05b54270afe75daacba4641 ]
 
-While changing additionalProperties->unevaluatedProperties, put it in
-typical place, just before example DTS.
+Disable is done in stmmac_init_eee() on the event of MAC link down.
+Since setting enable/disable EEE via ethtool will eventually trigger
+a MAC down, removing this redunctant call in stmmac_ethtool.c to avoid
+calling xpcs_config_eee() twice.
 
-The sitronix,st7735r references also panel-common.yaml and lists
-explicitly allowed properties, thus here reference only
-spi-peripheral-props.yaml for purpose of documenting the SPI slave
-device and bringing spi-max-frequency type validation.
-
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
+Fixes: d4aeaed80b0e ("net: stmmac: trigger PCS EEE to turn off on link down")
+Signed-off-by: Wong Vee Khee <vee.khee.wong@linux.intel.com>
+Link: https://lore.kernel.org/r/20220715122402.1017470-1-vee.khee.wong@linux.intel.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c | 8 --------
+ 1 file changed, 8 deletions(-)
 
-Technically, this depends on [1] merged to SPI tree, if we want to
-preserve existing behavior of not allowing SPI CPHA and CPOL in each of
-schemas in this patch.
-
-If this patch comes independently via different tree, the SPI CPHA and
-CPOL will be allowed for brief period of time, before [1] is merged.
-This will not have negative impact, just DT schema checks will be
-loosened for that period.
-
-[1] https://lore.kernel.org/all/20220722191539.90641-2-krzysztof.kozlowski@linaro.org/
----
- .../devicetree/bindings/display/panel/lg,lg4573.yaml       | 2 +-
- .../devicetree/bindings/display/sitronix,st7735r.yaml      | 1 +
- .../devicetree/bindings/display/solomon,ssd1307fb.yaml     | 7 +++----
- 3 files changed, 5 insertions(+), 5 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/display/panel/lg,lg4573.yaml b/Documentation/devicetree/bindings/display/panel/lg,lg4573.yaml
-index b4314ce7b411..ee357e139ac0 100644
---- a/Documentation/devicetree/bindings/display/panel/lg,lg4573.yaml
-+++ b/Documentation/devicetree/bindings/display/panel/lg,lg4573.yaml
-@@ -15,13 +15,13 @@ maintainers:
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
+index 8f563b446d5c..dc31501fec8f 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
+@@ -800,14 +800,6 @@ static int stmmac_ethtool_op_set_eee(struct net_device *dev,
+ 		netdev_warn(priv->dev,
+ 			    "Setting EEE tx-lpi is not supported\n");
  
- allOf:
-   - $ref: panel-common.yaml#
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
- 
- properties:
-   compatible:
-     const: lg,lg4573
- 
-   reg: true
--  spi-max-frequency: true
- 
- required:
-   - compatible
-diff --git a/Documentation/devicetree/bindings/display/sitronix,st7735r.yaml b/Documentation/devicetree/bindings/display/sitronix,st7735r.yaml
-index 157b1a7b18f9..53f181ef3670 100644
---- a/Documentation/devicetree/bindings/display/sitronix,st7735r.yaml
-+++ b/Documentation/devicetree/bindings/display/sitronix,st7735r.yaml
-@@ -15,6 +15,7 @@ description:
- 
- allOf:
-   - $ref: panel/panel-common.yaml#
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
- 
- properties:
-   compatible:
-diff --git a/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml b/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
-index 3fbd87c2c120..669f70b1b4c4 100644
---- a/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
-+++ b/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
-@@ -49,9 +49,6 @@ properties:
-   vbat-supply:
-     description: The supply for VBAT
- 
--  # Only required for SPI
--  spi-max-frequency: true
+-	if (priv->hw->xpcs) {
+-		ret = xpcs_config_eee(priv->hw->xpcs,
+-				      priv->plat->mult_fact_100ns,
+-				      edata->eee_enabled);
+-		if (ret)
+-			return ret;
+-	}
 -
-   solomon,height:
-     $ref: /schemas/types.yaml#/definitions/uint32
-     default: 16
-@@ -153,6 +150,8 @@ required:
-   - reg
+ 	if (!edata->eee_enabled)
+ 		stmmac_disable_eee_mode(priv);
  
- allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+
-   - if:
-       properties:
-         compatible:
-@@ -223,7 +222,7 @@ allOf:
-         solomon,dclk-frq:
-           default: 10
- 
--additionalProperties: false
-+unevaluatedProperties: false
- 
- examples:
-   - |
 -- 
-2.34.1
+2.35.1
+
+
 
