@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02493C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:41:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67828C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:41:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242843AbiG0Rl1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:41:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58216 "EHLO
+        id S242785AbiG0Rll (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:41:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242174AbiG0Rk4 (ORCPT
+        with ESMTP id S242754AbiG0RlC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:40:56 -0400
+        Wed, 27 Jul 2022 13:41:02 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAFCE88E31;
-        Wed, 27 Jul 2022 09:51:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B62788F04;
+        Wed, 27 Jul 2022 09:51:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 33470B821C5;
-        Wed, 27 Jul 2022 16:51:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AE0DC433C1;
-        Wed, 27 Jul 2022 16:51:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 37039B821BE;
+        Wed, 27 Jul 2022 16:51:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E357C433C1;
+        Wed, 27 Jul 2022 16:51:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940678;
-        bh=laAW4N7hZQuQqUG5fJRWifvSw1PQRaXRy9+COPCqzQY=;
+        s=korg; t=1658940690;
+        bh=8bZ0b7bWiHjQAOrjYWtzLe7K+pj3Y+wOjeW+dTBZ99o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PmD3zVrDUGL+E7CJmQGdYzg1dtwkxnFPYZ/Ojz4GeYNf4oP5jbu9UThAQw2N5Dyfc
-         4s9ZUGcmx5ybaitb5QHYupcnGUoChCNR645QJuNFVeuwWp8hzVI1AyTwDfE5j0WpB7
-         /cAdz3S+qlBiMALjlQbdUCmKSKZe1NzrldotD9FA=
+        b=O86Xt74J3e0oOTxZ4lMV5PMcuABrOIhbBcY18Cytr0FsxiWsWOwadZgWsN8waG4NW
+         CIDsLDzmMnliSdsoKFTZmF6pfbEPycXNTTk/xarfXqQYMy25pdyTvoT3fBeeZaY5AF
+         Aq2Mwg+jMKN3h2m2ajWFmEJ+dAXIyf1s7PN+HcZk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Liang He <windhl@126.com>,
-        Laurentiu Palcu <laurentiu.palcu@oss.nxp.com>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 110/158] drm/imx/dcss: Add missing of_node_put() in fail path
-Date:   Wed, 27 Jul 2022 18:12:54 +0200
-Message-Id: <20220727161025.880308594@linuxfoundation.org>
+Subject: [PATCH 5.18 114/158] ipv4: Fix data-races around sysctl_fib_multipath_hash_fields.
+Date:   Wed, 27 Jul 2022 18:12:58 +0200
+Message-Id: <20220727161026.048539202@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -49,45 +50,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Liang He <windhl@126.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 02c87df2480ac855d88ee308ce3fa857d9bd55a8 ]
+[ Upstream commit 8895a9c2ac76fb9d3922fed4fe092c8ec5e5cccc ]
 
-In dcss_dev_create() and dcss_dev_destroy(), we should call of_node_put()
-in fail path or before the dcss's destroy as of_graph_get_port_by_id() has
-increased the refcount.
+While reading sysctl_fib_multipath_hash_fields, it can be changed
+concurrently.  Thus, we need to add READ_ONCE() to its readers.
 
-Fixes: 9021c317b770 ("drm/imx: Add initial support for DCSS on iMX8MQ")
-Signed-off-by: Liang He <windhl@126.com>
-Reviewed-by: Laurentiu Palcu <laurentiu.palcu@oss.nxp.com>
-Signed-off-by: Laurentiu Palcu <laurentiu.palcu@oss.nxp.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220714081337.374761-1-windhl@126.com
+Fixes: ce5c9c20d364 ("ipv4: Add a sysctl to control multipath hash fields")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/imx/dcss/dcss-dev.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c | 2 +-
+ net/ipv4/route.c                                      | 6 +++---
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/imx/dcss/dcss-dev.c b/drivers/gpu/drm/imx/dcss/dcss-dev.c
-index c849533ca83e..3f5750cc2673 100644
---- a/drivers/gpu/drm/imx/dcss/dcss-dev.c
-+++ b/drivers/gpu/drm/imx/dcss/dcss-dev.c
-@@ -207,6 +207,7 @@ struct dcss_dev *dcss_dev_create(struct device *dev, bool hdmi_output)
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+index 6bcb0f1b0816..c00d6c4ed37c 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c
+@@ -10281,7 +10281,7 @@ static void mlxsw_sp_mp4_hash_init(struct mlxsw_sp *mlxsw_sp,
+ 		mlxsw_sp_mp_hash_inner_l3(config);
+ 		break;
+ 	case 3:
+-		hash_fields = net->ipv4.sysctl_fib_multipath_hash_fields;
++		hash_fields = READ_ONCE(net->ipv4.sysctl_fib_multipath_hash_fields);
+ 		/* Outer */
+ 		MLXSW_SP_MP_HASH_HEADER_SET(headers, IPV4_EN_NOT_TCP_NOT_UDP);
+ 		MLXSW_SP_MP_HASH_HEADER_SET(headers, IPV4_EN_TCP_UDP);
+diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+index 907cb11cbea5..02a0a397a2f3 100644
+--- a/net/ipv4/route.c
++++ b/net/ipv4/route.c
+@@ -1928,7 +1928,7 @@ static u32 fib_multipath_custom_hash_outer(const struct net *net,
+ 					   const struct sk_buff *skb,
+ 					   bool *p_has_inner)
+ {
+-	u32 hash_fields = net->ipv4.sysctl_fib_multipath_hash_fields;
++	u32 hash_fields = READ_ONCE(net->ipv4.sysctl_fib_multipath_hash_fields);
+ 	struct flow_keys keys, hash_keys;
  
- 	ret = dcss_submodules_init(dcss);
- 	if (ret) {
-+		of_node_put(dcss->of_port);
- 		dev_err(dev, "submodules initialization failed\n");
- 		goto clks_err;
- 	}
-@@ -237,6 +238,8 @@ void dcss_dev_destroy(struct dcss_dev *dcss)
- 		dcss_clocks_disable(dcss);
- 	}
+ 	if (!(hash_fields & FIB_MULTIPATH_HASH_FIELD_OUTER_MASK))
+@@ -1957,7 +1957,7 @@ static u32 fib_multipath_custom_hash_inner(const struct net *net,
+ 					   const struct sk_buff *skb,
+ 					   bool has_inner)
+ {
+-	u32 hash_fields = net->ipv4.sysctl_fib_multipath_hash_fields;
++	u32 hash_fields = READ_ONCE(net->ipv4.sysctl_fib_multipath_hash_fields);
+ 	struct flow_keys keys, hash_keys;
  
-+	of_node_put(dcss->of_port);
-+
- 	pm_runtime_disable(dcss->dev);
+ 	/* We assume the packet carries an encapsulation, but if none was
+@@ -2017,7 +2017,7 @@ static u32 fib_multipath_custom_hash_skb(const struct net *net,
+ static u32 fib_multipath_custom_hash_fl4(const struct net *net,
+ 					 const struct flowi4 *fl4)
+ {
+-	u32 hash_fields = net->ipv4.sysctl_fib_multipath_hash_fields;
++	u32 hash_fields = READ_ONCE(net->ipv4.sysctl_fib_multipath_hash_fields);
+ 	struct flow_keys hash_keys;
  
- 	dcss_submodules_stop(dcss);
+ 	if (!(hash_fields & FIB_MULTIPATH_HASH_FIELD_OUTER_MASK))
 -- 
 2.35.1
 
