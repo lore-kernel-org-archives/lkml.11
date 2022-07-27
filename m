@@ -2,41 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4343EC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:45:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32CDEC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:45:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242972AbiG0RpE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:45:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39548 "EHLO
+        id S243011AbiG0RpG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:45:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242884AbiG0Rnx (ORCPT
+        with ESMTP id S242973AbiG0Rny (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:43:53 -0400
+        Wed, 27 Jul 2022 13:43:54 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27D188AB22;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDF9C4D154;
         Wed, 27 Jul 2022 09:52:47 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 287ABB821C5;
-        Wed, 27 Jul 2022 16:52:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80F31C433C1;
-        Wed, 27 Jul 2022 16:52:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 26CD1B821D4;
+        Wed, 27 Jul 2022 16:52:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7281EC433C1;
+        Wed, 27 Jul 2022 16:52:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940761;
-        bh=ccuhAFP7Pd2RNc4Jmg+ShmILDJdlYXwxHsxkBs6VuDY=;
+        s=korg; t=1658940764;
+        bh=ExWebhwnzEVWFIDCEFYoZ68tGImeblCF9aJvnPOKp+4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n1D1x3/47YuRjAFX5LNanRHhZsXuItYrr/d6o2kejSgg7k6YHlf6eo3AsGsyKnkP6
-         reql2QqBqnRW82Zm6Gy9hDQSiSa6kKreAOPZh2CS1U5wKmtnEOQp2fw7++BCtHg4m7
-         hC4Tq+fxNwFrXg+aY2f2Zl3nxNnQKdaPoBc6u0tA=
+        b=XcMXbGJ1Q7nrScyHmKRijxXaC5UNy6dPMWMW/hR/NaxB0JseMnhbFcEVRFNfJ105z
+         FZYNTnIRGsCbwsiOmf7B3j+qobj10QmrTttgCTcNFXXL6gPU08FM3os17kfaZkUEJo
+         1Nu3vXBImZhGYrzIhEm7LRXUWrVCV7A5T4EJnquk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Alexey Kardashevskiy <aik@ozlabs.ru>
-Subject: [PATCH 5.18 132/158] KVM: Dont null dereference ops->destroy
-Date:   Wed, 27 Jul 2022 18:13:16 +0200
-Message-Id: <20220727161026.679104794@linuxfoundation.org>
+        stable@vger.kernel.org, Mikulas Patocka <mpatocka@redhat.com>,
+        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+        Marco Chiappero <marco.chiappero@intel.com>,
+        Wojciech Ziemba <wojciech.ziemba@intel.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 141/158] crypto: qat - use pre-allocated buffers in datapath
+Date:   Wed, 27 Jul 2022 18:13:25 +0200
+Message-Id: <20220727161027.015397882@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -48,47 +52,207 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Kardashevskiy <aik@ozlabs.ru>
+From: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
 
-commit e8bc2427018826e02add7b0ed0fc625a60390ae5 upstream.
+[ Upstream commit e0831e7af4e03f2715de102e18e9179ec0a81562 ]
 
-A KVM device cleanup happens in either of two callbacks:
-1) destroy() which is called when the VM is being destroyed;
-2) release() which is called when a device fd is closed.
+In order to do DMAs, the QAT device requires that the scatterlist
+structures are mapped and translated into a format that the firmware can
+understand. This is defined as the composition of a scatter gather list
+(SGL) descriptor header, the struct qat_alg_buf_list, plus a variable
+number of flat buffer descriptors, the struct qat_alg_buf.
 
-Most KVM devices use 1) but Book3s's interrupt controller KVM devices
-(XICS, XIVE, XIVE-native) use 2) as they need to close and reopen during
-the machine execution. The error handling in kvm_ioctl_create_device()
-assumes destroy() is always defined which leads to NULL dereference as
-discovered by Syzkaller.
+The allocation and mapping of these data structures is done each time a
+request is received from the skcipher and aead APIs.
+In an OOM situation, this behaviour might lead to a dead-lock if an
+allocation fails.
 
-This adds a checks for destroy!=NULL and adds a missing release().
+Based on the conversation in [1], increase the size of the aead and
+skcipher request contexts to include an SGL descriptor that can handle
+a maximum of 4 flat buffers.
+If requests exceed 4 entries buffers, memory is allocated dynamically.
 
-This is not changing kvm_destroy_devices() as devices with defined
-release() should have been removed from the KVM devices list by then.
+[1] https://lore.kernel.org/linux-crypto/20200722072932.GA27544@gondor.apana.org.au/
 
-Suggested-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: stable@vger.kernel.org
+Fixes: d370cec32194 ("crypto: qat - Intel(R) QAT crypto interface")
+Reported-by: Mikulas Patocka <mpatocka@redhat.com>
+Signed-off-by: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
+Reviewed-by: Marco Chiappero <marco.chiappero@intel.com>
+Reviewed-by: Wojciech Ziemba <wojciech.ziemba@intel.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- virt/kvm/kvm_main.c |    5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/crypto/qat/qat_common/qat_algs.c   | 64 +++++++++++++---------
+ drivers/crypto/qat/qat_common/qat_crypto.h | 24 ++++++++
+ 2 files changed, 61 insertions(+), 27 deletions(-)
 
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -4299,8 +4299,11 @@ static int kvm_ioctl_create_device(struc
- 		kvm_put_kvm_no_destroy(kvm);
- 		mutex_lock(&kvm->lock);
- 		list_del(&dev->vm_node);
-+		if (ops->release)
-+			ops->release(dev);
- 		mutex_unlock(&kvm->lock);
--		ops->destroy(dev);
-+		if (ops->destroy)
-+			ops->destroy(dev);
- 		return ret;
- 	}
+diff --git a/drivers/crypto/qat/qat_common/qat_algs.c b/drivers/crypto/qat/qat_common/qat_algs.c
+index f998ed58457c..ec635fe44c1f 100644
+--- a/drivers/crypto/qat/qat_common/qat_algs.c
++++ b/drivers/crypto/qat/qat_common/qat_algs.c
+@@ -46,19 +46,6 @@
+ static DEFINE_MUTEX(algs_lock);
+ static unsigned int active_devs;
  
+-struct qat_alg_buf {
+-	u32 len;
+-	u32 resrvd;
+-	u64 addr;
+-} __packed;
+-
+-struct qat_alg_buf_list {
+-	u64 resrvd;
+-	u32 num_bufs;
+-	u32 num_mapped_bufs;
+-	struct qat_alg_buf bufers[];
+-} __packed __aligned(64);
+-
+ /* Common content descriptor */
+ struct qat_alg_cd {
+ 	union {
+@@ -693,7 +680,10 @@ static void qat_alg_free_bufl(struct qat_crypto_instance *inst,
+ 				 bl->bufers[i].len, DMA_BIDIRECTIONAL);
+ 
+ 	dma_unmap_single(dev, blp, sz, DMA_TO_DEVICE);
+-	kfree(bl);
++
++	if (!qat_req->buf.sgl_src_valid)
++		kfree(bl);
++
+ 	if (blp != blpout) {
+ 		/* If out of place operation dma unmap only data */
+ 		int bufless = blout->num_bufs - blout->num_mapped_bufs;
+@@ -704,7 +694,9 @@ static void qat_alg_free_bufl(struct qat_crypto_instance *inst,
+ 					 DMA_BIDIRECTIONAL);
+ 		}
+ 		dma_unmap_single(dev, blpout, sz_out, DMA_TO_DEVICE);
+-		kfree(blout);
++
++		if (!qat_req->buf.sgl_dst_valid)
++			kfree(blout);
+ 	}
+ }
+ 
+@@ -721,15 +713,24 @@ static int qat_alg_sgl_to_bufl(struct qat_crypto_instance *inst,
+ 	dma_addr_t blp = DMA_MAPPING_ERROR;
+ 	dma_addr_t bloutp = DMA_MAPPING_ERROR;
+ 	struct scatterlist *sg;
+-	size_t sz_out, sz = struct_size(bufl, bufers, n + 1);
++	size_t sz_out, sz = struct_size(bufl, bufers, n);
++	int node = dev_to_node(&GET_DEV(inst->accel_dev));
+ 
+ 	if (unlikely(!n))
+ 		return -EINVAL;
+ 
+-	bufl = kzalloc_node(sz, GFP_ATOMIC,
+-			    dev_to_node(&GET_DEV(inst->accel_dev)));
+-	if (unlikely(!bufl))
+-		return -ENOMEM;
++	qat_req->buf.sgl_src_valid = false;
++	qat_req->buf.sgl_dst_valid = false;
++
++	if (n > QAT_MAX_BUFF_DESC) {
++		bufl = kzalloc_node(sz, GFP_ATOMIC, node);
++		if (unlikely(!bufl))
++			return -ENOMEM;
++	} else {
++		bufl = &qat_req->buf.sgl_src.sgl_hdr;
++		memset(bufl, 0, sizeof(struct qat_alg_buf_list));
++		qat_req->buf.sgl_src_valid = true;
++	}
+ 
+ 	for_each_sg(sgl, sg, n, i)
+ 		bufl->bufers[i].addr = DMA_MAPPING_ERROR;
+@@ -760,12 +761,18 @@ static int qat_alg_sgl_to_bufl(struct qat_crypto_instance *inst,
+ 		struct qat_alg_buf *bufers;
+ 
+ 		n = sg_nents(sglout);
+-		sz_out = struct_size(buflout, bufers, n + 1);
++		sz_out = struct_size(buflout, bufers, n);
+ 		sg_nctr = 0;
+-		buflout = kzalloc_node(sz_out, GFP_ATOMIC,
+-				       dev_to_node(&GET_DEV(inst->accel_dev)));
+-		if (unlikely(!buflout))
+-			goto err_in;
++
++		if (n > QAT_MAX_BUFF_DESC) {
++			buflout = kzalloc_node(sz_out, GFP_ATOMIC, node);
++			if (unlikely(!buflout))
++				goto err_in;
++		} else {
++			buflout = &qat_req->buf.sgl_dst.sgl_hdr;
++			memset(buflout, 0, sizeof(struct qat_alg_buf_list));
++			qat_req->buf.sgl_dst_valid = true;
++		}
+ 
+ 		bufers = buflout->bufers;
+ 		for_each_sg(sglout, sg, n, i)
+@@ -810,7 +817,9 @@ static int qat_alg_sgl_to_bufl(struct qat_crypto_instance *inst,
+ 			dma_unmap_single(dev, buflout->bufers[i].addr,
+ 					 buflout->bufers[i].len,
+ 					 DMA_BIDIRECTIONAL);
+-	kfree(buflout);
++
++	if (!qat_req->buf.sgl_dst_valid)
++		kfree(buflout);
+ 
+ err_in:
+ 	if (!dma_mapping_error(dev, blp))
+@@ -823,7 +832,8 @@ static int qat_alg_sgl_to_bufl(struct qat_crypto_instance *inst,
+ 					 bufl->bufers[i].len,
+ 					 DMA_BIDIRECTIONAL);
+ 
+-	kfree(bufl);
++	if (!qat_req->buf.sgl_src_valid)
++		kfree(bufl);
+ 
+ 	dev_err(dev, "Failed to map buf for dma\n");
+ 	return -ENOMEM;
+diff --git a/drivers/crypto/qat/qat_common/qat_crypto.h b/drivers/crypto/qat/qat_common/qat_crypto.h
+index b6a4c95ae003..0928f159ea99 100644
+--- a/drivers/crypto/qat/qat_common/qat_crypto.h
++++ b/drivers/crypto/qat/qat_common/qat_crypto.h
+@@ -21,6 +21,26 @@ struct qat_crypto_instance {
+ 	atomic_t refctr;
+ };
+ 
++#define QAT_MAX_BUFF_DESC	4
++
++struct qat_alg_buf {
++	u32 len;
++	u32 resrvd;
++	u64 addr;
++} __packed;
++
++struct qat_alg_buf_list {
++	u64 resrvd;
++	u32 num_bufs;
++	u32 num_mapped_bufs;
++	struct qat_alg_buf bufers[];
++} __packed;
++
++struct qat_alg_fixed_buf_list {
++	struct qat_alg_buf_list sgl_hdr;
++	struct qat_alg_buf descriptors[QAT_MAX_BUFF_DESC];
++} __packed __aligned(64);
++
+ struct qat_crypto_request_buffs {
+ 	struct qat_alg_buf_list *bl;
+ 	dma_addr_t blp;
+@@ -28,6 +48,10 @@ struct qat_crypto_request_buffs {
+ 	dma_addr_t bloutp;
+ 	size_t sz;
+ 	size_t sz_out;
++	bool sgl_src_valid;
++	bool sgl_dst_valid;
++	struct qat_alg_fixed_buf_list sgl_src;
++	struct qat_alg_fixed_buf_list sgl_dst;
+ };
+ 
+ struct qat_crypto_request;
+-- 
+2.35.1
+
 
 
