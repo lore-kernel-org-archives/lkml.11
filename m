@@ -2,119 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8202C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:40:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 755B2C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:40:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239283AbiG0QkA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:40:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58696 "EHLO
+        id S239322AbiG0QkD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:40:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239463AbiG0QjQ (ORCPT
+        with ESMTP id S239488AbiG0QjR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:39:16 -0400
-Received: from xry111.site (xry111.site [IPv6:2001:470:683e::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B3035926A
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:28:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xry111.site;
-        s=default; t=1658939322;
-        bh=Iwt8WdYsuC5jK4JTIRtEaA1Ad9D4kr5a9YoeDI0+3FU=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=ggUT3csrm6pEJ5Wmol1fudCE/EKG7wqnSEXfikmrzN+PId1w+FCAFt1KI5jXx5vR4
-         EQZyhh27swq4ZjBoxFDDvhO+wRGLrlculT22SI0eE9uJGohhNj36eaiR7l3vP3UqnI
-         kQtnSlTbcHEX26UpQspAh35ZnYqaKnIyHzJEXjN0=
-Received: from localhost.localdomain (xry111.site [IPv6:2001:470:683e::1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature ECDSA (P-384) server-digest SHA384)
-        (Client did not present a certificate)
-        (Authenticated sender: xry111@xry111.site)
-        by xry111.site (Postfix) with ESMTPSA id 0E74266986;
-        Wed, 27 Jul 2022 12:28:40 -0400 (EDT)
-Message-ID: <99733532831377ab6585d43ee40bf314a2d4c5a3.camel@xry111.site>
-Subject: [PATCH 3/5] LoongArch: Support relocation against
- _GLOBAL_OFFSET_TABLE_
-From:   Xi Ruoyao <xry111@xry111.site>
-To:     loongarch@lists.linux.dev
-Cc:     linux-kernel@vger.kernel.org, WANG Xuerui <kernel@xen0n.name>,
-        Huacai Chen <chenhuacai@kernel.org>
-Date:   Thu, 28 Jul 2022 00:28:39 +0800
-In-Reply-To: <385f63bcbee8e37c42f479ce9cdc7e7d731d419b.camel@xry111.site>
-References: <385f63bcbee8e37c42f479ce9cdc7e7d731d419b.camel@xry111.site>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.3 
+        Wed, 27 Jul 2022 12:39:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9334B5A2F4;
+        Wed, 27 Jul 2022 09:28:53 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BA4EF619FD;
+        Wed, 27 Jul 2022 16:28:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 890B0C433B5;
+        Wed, 27 Jul 2022 16:28:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658939331;
+        bh=nvdpweDSvH25oGsOsk++jLEIfRIAZLkJciKbzP7y+4Q=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=fytYhCy5v5FM/hJ7vmM5bjU+A6MCeL2wKiCKi1Lkdx6dx8dr7pnwxALtlvZLMt4w0
+         4NPDhJaGl14F0o1VF47uTkwcMgaIYSzlAk2vh36tY/dXkOeCM4mLHvCULFXtSTJCHu
+         0/UrOJ+OwbCwNqOyspl1+U7cNJH1/WXb1gXr3jPo=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 31/87] igmp: Fix a data-race around sysctl_igmp_max_memberships.
+Date:   Wed, 27 Jul 2022 18:10:24 +0200
+Message-Id: <20220727161010.305028034@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220727161008.993711844@linuxfoundation.org>
+References: <20220727161008.993711844@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With the stack-based relocations, the assembler emits three relocations
-to push the PC-relative offset of a GOT entry:
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-    R_LARCH_SOP_PUSH_PCREL _GLOBAL_OFFSET_TABLE_
-    R_LARCH_SOP_PUSH_GPREL foo
-    R_LARCH_SOP_ADD
+[ Upstream commit 6305d821e3b9b5379d348528e5b5faf316383bc2 ]
 
-"_GLOBAL_OFFSET_TABLE_" does not really exist in the symtab and the BFD
-linker handles it with special hack.  Implement a similar hack for
-kernel so we will be able to really use R_LARCH_SOP_PUSH_GPREL
-relocation.
+While reading sysctl_igmp_max_memberships, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its reader.
 
-Signed-off-by: Xi Ruoyao <xry111@xry111.site>
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/loongarch/kernel/module-sections.c | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+ net/ipv4/igmp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/loongarch/kernel/module-sections.c b/arch/loongarch/kerne=
-l/module-sections.c
-index 509c0b86b1e9..73976addbf60 100644
---- a/arch/loongarch/kernel/module-sections.c
-+++ b/arch/loongarch/kernel/module-sections.c
-@@ -89,6 +89,9 @@ int module_frob_arch_sections(Elf_Ehdr *ehdr, Elf_Shdr *s=
-echdrs,
- 			      char *secstrings, struct module *mod)
- {
- 	unsigned int i, num_plts =3D 0, num_gots =3D 0;
-+	Elf_Shdr *symtab =3D NULL;
-+	Elf_Sym *symbols;
-+	char *strings;
-=20
- 	/*
- 	 * Find the empty .plt sections.
-@@ -100,6 +103,8 @@ int module_frob_arch_sections(Elf_Ehdr *ehdr, Elf_Shdr =
-*sechdrs,
- 			mod->arch.plt_idx.shdr =3D sechdrs + i;
- 		else if (!strcmp(secstrings + sechdrs[i].sh_name, ".got"))
- 			mod->arch.got.shdr =3D sechdrs + i;
-+		else if (sechdrs[i].sh_type =3D=3D SHT_SYMTAB)
-+			symtab =3D sechdrs + i;
+diff --git a/net/ipv4/igmp.c b/net/ipv4/igmp.c
+index 7cd444d75c3d..660b41040c77 100644
+--- a/net/ipv4/igmp.c
++++ b/net/ipv4/igmp.c
+@@ -2199,7 +2199,7 @@ static int __ip_mc_join_group(struct sock *sk, struct ip_mreqn *imr,
+ 		count++;
  	}
-=20
- 	if (!mod->arch.plt.shdr) {
-@@ -115,6 +120,22 @@ int module_frob_arch_sections(Elf_Ehdr *ehdr, Elf_Shdr=
- *sechdrs,
- 		return -ENOEXEC;
- 	}
-=20
-+	if (!symtab) {
-+		pr_err("%s: module symbol table missing\n", mod->name);
-+		return -ENOEXEC;
-+	}
-+
-+	symbols =3D (void *) ehdr + symtab->sh_offset;
-+	strings =3D (void *) ehdr + sechdrs[symtab->sh_link].sh_offset;
-+
-+	for (i =3D 0; i < symtab->sh_size / sizeof(Elf_Sym); i++)
-+		if (symbols[i].st_shndx =3D=3D SHN_UNDEF &&
-+		    strcmp(strings + symbols[i].st_name,
-+			   "_GLOBAL_OFFSET_TABLE_") =3D=3D 0) {
-+			symbols[i].st_shndx =3D mod->arch.got.shdr - sechdrs;
-+			symbols[i].st_value =3D 0;
-+		}
-+
- 	/* Calculate the maxinum number of entries */
- 	for (i =3D 0; i < ehdr->e_shnum; i++) {
- 		int num_rela =3D sechdrs[i].sh_size / sizeof(Elf_Rela);
---=20
-2.37.0
+ 	err = -ENOBUFS;
+-	if (count >= net->ipv4.sysctl_igmp_max_memberships)
++	if (count >= READ_ONCE(net->ipv4.sysctl_igmp_max_memberships))
+ 		goto done;
+ 	iml = sock_kmalloc(sk, sizeof(*iml), GFP_KERNEL);
+ 	if (!iml)
+-- 
+2.35.1
+
 
 
