@@ -2,157 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 110B0C19F21
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 09:04:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0441C19F29
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 09:06:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231350AbiG0JER (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 05:04:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46034 "EHLO
+        id S229964AbiG0JGB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 05:06:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231233AbiG0JEO (ORCPT
+        with ESMTP id S229544AbiG0JFz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 05:04:14 -0400
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DC8E474CB
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 02:04:13 -0700 (PDT)
-Received: by mail-yb1-xb36.google.com with SMTP id r3so29232671ybr.6
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 02:04:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=p2f3kh3jqi9yjSQzKeEhCTNVhq9kV2tSI6rer8mhvNI=;
-        b=WjFzxSO2wJzIbJH4XkUpRb5mtLv5lM7tMqrUu61P+vX0mCZ/dxyDFrjHgg+qBFmghP
-         nfGkL9gbS4Vwnuud/OmpQCyB0dChfNXSYl32JihYvnsBaCCarUtHOOga4p4XSzpQttS6
-         tzpx1dwoudB1NWkAiJvbO21luJ/qSTi1mF8Ku8IMdXHKV/5OiSzbGwXEVW0QvM71M8EC
-         SeUocZhlVq/HD29CtUs1jWRlWUZg0UGiSRK1SMN0nL1eB+v5zdZz/2mSy009D7aOwqFW
-         KSeQ/Q7fVmh7VjJga5qADbHbVztwLQMIU30KVKqPo5h4nsiKuHvwDyAZGhzrWlgFzhK3
-         N3AA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=p2f3kh3jqi9yjSQzKeEhCTNVhq9kV2tSI6rer8mhvNI=;
-        b=dkHQlqOq/6EXahRI5El8+jCW1FhCYkn7kqTAENuhmRfqqbgvJ/rmumggjaIFaMCUHK
-         qHSgPyUd6xJxtMVKBJRJaCxPAznwfXyWbBB8g5aXr/IBkcjJGJC441CPCx9TwigOGbaS
-         e6CPtS9WFQD9sKbHJ21AoiT9yg79rmhrIT4yqBzy4vtrZBBJgl4WWzlTbkJhkMmlAqzI
-         BFiFcwkEctBfsBQ/1nSRU+UY65lZjltIjDzMCJbdI7Gcc9AMUtoXS3XddJ0saB5j2ZgH
-         uBR6uATyLQnEPCGNnvuQQLyafQHI64+ORHo5a7ip85TBFSi6Xjx30slVHsYnrOY2qkuR
-         6DyA==
-X-Gm-Message-State: AJIora9pDn+/F21UkG0MoFePKaOTFtw7QLN5aMr3XvuhZbwQrT6KYf6H
-        7vAkYbTk/AFN+045hqJcovlY8PCP7veXLzU/0wXM8Q==
-X-Google-Smtp-Source: AGRyM1tFqXVl1Wq7EQt3qviY8BvioiYzPA9jdIWLjIYucLUw/m0e/HDPSy2RNp34GiUJ0LE93SKzgQ/kW9FUP7L1iYE=
-X-Received: by 2002:a25:ba02:0:b0:670:8171:3176 with SMTP id
- t2-20020a25ba02000000b0067081713176mr15910761ybg.61.1658912652855; Wed, 27
- Jul 2022 02:04:12 -0700 (PDT)
+        Wed, 27 Jul 2022 05:05:55 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C454243337
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 02:05:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1658912755; x=1690448755;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=NVXOybPJqEwP6MHqK15Tsb+Wcp2uLtsdOnoZ40Pv0zw=;
+  b=yYE3dqHv1/Kum2eHQxutk0Qgp8BmQaJVVmiPtt/6E9XtIfkKa0OEPWkt
+   iFsD/zhNyaLJfdA3NBFLaoM2KpfQ6wYi1Vn6ehSI9LRrMDltIHeBIRNqR
+   L+DyWuPdSjhdSbCtjnYyDueG51FvhssS28yyhJm8ZMNsXpqwiTBhNIBt2
+   Qzh8Mn3SdE8nFRyNtWrRTUrogHvsUz7rd0U2zAljWdX7vs4i10VQlc1PB
+   Dv+aNRgr5fvcWa9vnYGIdfMonyatxKD/N/V+4UbmUs8C4LFcgjRjlW9Xp
+   hSGF7DhDox91GTagpnBC48MugeOhWCZV9RAkMNEYFojg7/snTAaSdpqN8
+   A==;
+X-IronPort-AV: E=Sophos;i="5.93,195,1654585200"; 
+   d="scan'208";a="183930488"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 27 Jul 2022 02:05:54 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Wed, 27 Jul 2022 02:05:53 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Wed, 27 Jul 2022 02:05:51 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <lgirdwood@gmail.com>, <broonie@kernel.org>, <perex@perex.cz>,
+        <tiwai@suse.com>, <nicolas.ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>
+CC:     <alsa-devel@alsa-project.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [PATCH v3 1/2] ASoC: mchp-spdifrx: disable end of block interrupt on failures
+Date:   Wed, 27 Jul 2022 12:08:13 +0300
+Message-ID: <20220727090814.2446111-2-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220727090814.2446111-1-claudiu.beznea@microchip.com>
+References: <20220727090814.2446111-1-claudiu.beznea@microchip.com>
 MIME-Version: 1.0
-References: <20220726135506.485108-1-bchihi@baylibre.com> <20220726135506.485108-2-bchihi@baylibre.com>
- <3cb97e73-d60a-086d-83c2-1711c70057a2@collabora.com>
-In-Reply-To: <3cb97e73-d60a-086d-83c2-1711c70057a2@collabora.com>
-From:   Balsam CHIHI <bchihi@baylibre.com>
-Date:   Wed, 27 Jul 2022 11:03:36 +0200
-Message-ID: <CAGuA+orsPVDjKcD=nMoHNKkQd3LNP8FP+TDSCWvabmR9f19TWw@mail.gmail.com>
-Subject: Re: [PATCH v8 1/6] thermal: mediatek: Relocate driver to mediatek folder
-To:     AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Cc:     rafael@kernel.org, rui.zhang@intel.com, daniel.lezcano@linaro.org,
-        amitk@kernel.org, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, khilman@baylibre.com,
-        mka@chromium.org, robh+dt@kernel.org, krzk+dt@kernel.org,
-        matthias.bgg@gmail.com, p.zabel@pengutronix.de,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, james.lo@mediatek.com,
-        fan.chen@mediatek.com, louis.yu@mediatek.com,
-        rex-bc.chen@mediatek.com, abailon@baylibre.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 10:24 AM AngeloGioacchino Del Regno
-<angelogioacchino.delregno@collabora.com> wrote:
->
-> Il 26/07/22 15:55, Balsam CHIHI ha scritto:
-> > Add Mediatek proprietary folder to upstream more thermal zone and cooler
-> > drivers. Relocate the original thermal controller driver to it and rename
-> > as soc_temp.c to show its purpose more clearly.
-> >
-> > Signed-off-by: Michael Kao <michael.kao@mediatek.com>
-> > Signed-off-by: Ben Tseng <ben.tseng@mediatek.com>
-> > Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-> > Signed-off-by: Balsam CHIHI <bchihi@baylibre.com>
-> > ---
-> >   drivers/thermal/Kconfig                       | 14 ++++-------
-> >   drivers/thermal/Makefile                      |  2 +-
-> >   drivers/thermal/mediatek/Kconfig              | 23 +++++++++++++++++++
-> >   drivers/thermal/mediatek/Makefile             |  1 +
-> >   .../{mtk_thermal.c => mediatek/soc_temp.c}    |  0
-> >   5 files changed, 29 insertions(+), 11 deletions(-)
-> >   create mode 100644 drivers/thermal/mediatek/Kconfig
-> >   create mode 100644 drivers/thermal/mediatek/Makefile
-> >   rename drivers/thermal/{mtk_thermal.c => mediatek/soc_temp.c} (100%)
-> >
-> > diff --git a/drivers/thermal/Kconfig b/drivers/thermal/Kconfig
-> > index 0e5cc948373c..ecba8d6e313b 100644
-> > --- a/drivers/thermal/Kconfig
-> > +++ b/drivers/thermal/Kconfig
-> > @@ -412,16 +412,10 @@ config DA9062_THERMAL
-> >         zone.
-> >         Compatible with the DA9062 and DA9061 PMICs.
-> >
-> > -config MTK_THERMAL
-> > -     tristate "Temperature sensor driver for mediatek SoCs"
-> > -     depends on ARCH_MEDIATEK || COMPILE_TEST
-> > -     depends on HAS_IOMEM
-> > -     depends on NVMEM || NVMEM=n
-> > -     depends on RESET_CONTROLLER
-> > -     default y
-> > -     help
-> > -       Enable this option if you want to have support for thermal management
-> > -       controller present in Mediatek SoCs
-> > +menu "Mediatek thermal drivers"
-> > +depends on ARCH_MEDIATEK || COMPILE_TEST
-> > +source "drivers/thermal/mediatek/Kconfig"
-> > +endmenu
-> >
-> >   config AMLOGIC_THERMAL
-> >       tristate "Amlogic Thermal Support"
-> > diff --git a/drivers/thermal/Makefile b/drivers/thermal/Makefile
-> > index def8e1a0399c..3c00e864ad55 100644
-> > --- a/drivers/thermal/Makefile
-> > +++ b/drivers/thermal/Makefile
-> > @@ -55,7 +55,7 @@ obj-y                               += st/
-> >   obj-$(CONFIG_QCOM_TSENS)    += qcom/
-> >   obj-y                               += tegra/
-> >   obj-$(CONFIG_HISI_THERMAL)     += hisi_thermal.o
-> > -obj-$(CONFIG_MTK_THERMAL)    += mtk_thermal.o
-> > +obj-$(CONFIG_MTK_THERMAL)    += mediatek/
-> >   obj-$(CONFIG_GENERIC_ADC_THERMAL)   += thermal-generic-adc.o
-> >   obj-$(CONFIG_UNIPHIER_THERMAL)      += uniphier_thermal.o
-> >   obj-$(CONFIG_AMLOGIC_THERMAL)     += amlogic_thermal.o
-> > diff --git a/drivers/thermal/mediatek/Kconfig b/drivers/thermal/mediatek/Kconfig
-> > new file mode 100644
-> > index 000000000000..9c41e9079fc3
-> > --- /dev/null
-> > +++ b/drivers/thermal/mediatek/Kconfig
-> > @@ -0,0 +1,23 @@
-> > +config MTK_THERMAL
-> > +     tristate "MediaTek thermal drivers"
-> > +     depends on THERMAL_OF
-> > +     help
-> > +             This is the option for MediaTek thermal software
-> > +             solutions. Please enable corresponding options to
-> > +             get temperature information from thermal sensors or
-> > +             turn on throttle mechaisms for thermal mitigation.
->
-> Sorry, I just noticed that the indentation must be fixed.
->
->         help
->           This is the option .....
->
-> Thanks,
-> Angelo
-OK, It will be fixed ASAP.
+Disable end of block interrupt in case of wait for completion timeout
+or errors to undo previously enable operation (done in
+mchp_spdifrx_isr_blockend_en()). Otherwise we can end up with an
+unbalanced reference counter for this interrupt.
 
-Thanks,
-Balsam.
+Fixes: ef265c55c1ac ("ASoC: mchp-spdifrx: add driver for SPDIF RX")
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+---
+ sound/soc/atmel/mchp-spdifrx.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/sound/soc/atmel/mchp-spdifrx.c b/sound/soc/atmel/mchp-spdifrx.c
+index 85d1d92a21db..ec0705cc40fa 100644
+--- a/sound/soc/atmel/mchp-spdifrx.c
++++ b/sound/soc/atmel/mchp-spdifrx.c
+@@ -288,15 +288,17 @@ static void mchp_spdifrx_isr_blockend_en(struct mchp_spdifrx_dev *dev)
+ 	spin_unlock_irqrestore(&dev->blockend_lock, flags);
+ }
+ 
+-/* called from atomic context only */
++/* called from atomic/non-atomic context */
+ static void mchp_spdifrx_isr_blockend_dis(struct mchp_spdifrx_dev *dev)
+ {
+-	spin_lock(&dev->blockend_lock);
++	unsigned long flags;
++
++	spin_lock_irqsave(&dev->blockend_lock, flags);
+ 	dev->blockend_refcount--;
+ 	/* don't enable BLOCKEND interrupt if it's already enabled */
+ 	if (dev->blockend_refcount == 0)
+ 		regmap_write(dev->regmap, SPDIFRX_IDR, SPDIFRX_IR_BLOCKEND);
+-	spin_unlock(&dev->blockend_lock);
++	spin_unlock_irqrestore(&dev->blockend_lock, flags);
+ }
+ 
+ static irqreturn_t mchp_spdif_interrupt(int irq, void *dev_id)
+@@ -575,6 +577,7 @@ static int mchp_spdifrx_subcode_ch_get(struct mchp_spdifrx_dev *dev,
+ 	if (ret <= 0) {
+ 		dev_dbg(dev->dev, "user data for channel %d timeout\n",
+ 			channel);
++		mchp_spdifrx_isr_blockend_dis(dev);
+ 		return ret;
+ 	}
+ 
+-- 
+2.34.1
+
