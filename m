@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0B22C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:11:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A252CC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:11:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241558AbiG0RLL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:11:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44818 "EHLO
+        id S236894AbiG0RLY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:11:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241835AbiG0RJw (ORCPT
+        with ESMTP id S236728AbiG0RJ4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:09:52 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A79EC747BA;
-        Wed, 27 Jul 2022 09:41:17 -0700 (PDT)
+        Wed, 27 Jul 2022 13:09:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A682747A5;
+        Wed, 27 Jul 2022 09:41:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6942C60D3B;
-        Wed, 27 Jul 2022 16:41:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FF75C433C1;
-        Wed, 27 Jul 2022 16:41:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 842AFB8200C;
+        Wed, 27 Jul 2022 16:41:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3913C43148;
+        Wed, 27 Jul 2022 16:41:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940076;
-        bh=OSWP3tpzDQLa4+c1qd6OeUMHvX9asp4gxZJtIF6jX0s=;
+        s=korg; t=1658940071;
+        bh=1pglrrwycW2z8U297nLs5MoMbieH2foR75zOwcWSSas=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VRa7gpMNzR3naIjaTL7VMHfulVgRo0vtFgKYOxktV2O3w1LF6JlXAqv07t/6y23Z+
-         rOt19WdTmQ/eCRDjTq9v6fZP9uj7Haq29lBHThrNJYFHiAUp0K2gJ6DaSPnHq1/1Rk
-         O9Jscq3kkq8qDwBoUjAQnvUuQqttujj58LAiYcJw=
+        b=G7SdClG//wN0irUM0ACqgy4dJz4AMBmgsAX2imKSXf2mtGD3Jw6kJi1fCTeRdghdZ
+         jSZxF/b5/ojdKYL/rphueuptPXyGoHOOKKaOjv40lfZD8MEqlcTesYROeVCdxpFoAC
+         hhbyyGORNADG1bwYXAxHafb8qOjzNRKRND2MfQ0k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 096/201] tcp: Fix a data-race around sysctl_tcp_notsent_lowat.
-Date:   Wed, 27 Jul 2022 18:10:00 +0200
-Message-Id: <20220727161031.732774489@linuxfoundation.org>
+Subject: [PATCH 5.15 094/201] tcp: Fix data-races around sysctl_tcp_reordering.
+Date:   Wed, 27 Jul 2022 18:09:58 +0200
+Message-Id: <20220727161031.653048318@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -51,32 +51,85 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 55be873695ed8912eb77ff46d1d1cadf028bd0f3 ]
+[ Upstream commit 46778cd16e6a5ad1b2e3a91f6c057c907379418e ]
 
-While reading sysctl_tcp_notsent_lowat, it can be changed concurrently.
-Thus, we need to add READ_ONCE() to its reader.
+While reading sysctl_tcp_reordering, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its readers.
 
-Fixes: c9bee3b7fdec ("tcp: TCP_NOTSENT_LOWAT socket option")
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
 Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/tcp.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv4/tcp.c         |  2 +-
+ net/ipv4/tcp_input.c   | 10 +++++++---
+ net/ipv4/tcp_metrics.c |  3 ++-
+ 3 files changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index caecc020e521..0c609d10c320 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -1994,7 +1994,7 @@ void __tcp_v4_send_check(struct sk_buff *skb, __be32 saddr, __be32 daddr);
- static inline u32 tcp_notsent_lowat(const struct tcp_sock *tp)
- {
- 	struct net *net = sock_net((struct sock *)tp);
--	return tp->notsent_lowat ?: net->ipv4.sysctl_tcp_notsent_lowat;
-+	return tp->notsent_lowat ?: READ_ONCE(net->ipv4.sysctl_tcp_notsent_lowat);
- }
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index e22a61b2ba82..480fac19a074 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -447,7 +447,7 @@ void tcp_init_sock(struct sock *sk)
+ 	tp->snd_cwnd_clamp = ~0;
+ 	tp->mss_cache = TCP_MSS_DEFAULT;
  
- bool tcp_stream_memory_free(const struct sock *sk, int wake);
+-	tp->reordering = sock_net(sk)->ipv4.sysctl_tcp_reordering;
++	tp->reordering = READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_reordering);
+ 	tcp_assign_congestion_control(sk);
+ 
+ 	tp->tsoffset = 0;
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 134e36f46e91..06802295e170 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -2131,6 +2131,7 @@ void tcp_enter_loss(struct sock *sk)
+ 	struct tcp_sock *tp = tcp_sk(sk);
+ 	struct net *net = sock_net(sk);
+ 	bool new_recovery = icsk->icsk_ca_state < TCP_CA_Recovery;
++	u8 reordering;
+ 
+ 	tcp_timeout_mark_lost(sk);
+ 
+@@ -2151,10 +2152,12 @@ void tcp_enter_loss(struct sock *sk)
+ 	/* Timeout in disordered state after receiving substantial DUPACKs
+ 	 * suggests that the degree of reordering is over-estimated.
+ 	 */
++	reordering = READ_ONCE(net->ipv4.sysctl_tcp_reordering);
+ 	if (icsk->icsk_ca_state <= TCP_CA_Disorder &&
+-	    tp->sacked_out >= net->ipv4.sysctl_tcp_reordering)
++	    tp->sacked_out >= reordering)
+ 		tp->reordering = min_t(unsigned int, tp->reordering,
+-				       net->ipv4.sysctl_tcp_reordering);
++				       reordering);
++
+ 	tcp_set_ca_state(sk, TCP_CA_Loss);
+ 	tp->high_seq = tp->snd_nxt;
+ 	tcp_ecn_queue_cwr(tp);
+@@ -3457,7 +3460,8 @@ static inline bool tcp_may_raise_cwnd(const struct sock *sk, const int flag)
+ 	 * new SACK or ECE mark may first advance cwnd here and later reduce
+ 	 * cwnd in tcp_fastretrans_alert() based on more states.
+ 	 */
+-	if (tcp_sk(sk)->reordering > sock_net(sk)->ipv4.sysctl_tcp_reordering)
++	if (tcp_sk(sk)->reordering >
++	    READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_reordering))
+ 		return flag & FLAG_FORWARD_PROGRESS;
+ 
+ 	return flag & FLAG_DATA_ACKED;
+diff --git a/net/ipv4/tcp_metrics.c b/net/ipv4/tcp_metrics.c
+index 7029b0e98edb..a501150deaa3 100644
+--- a/net/ipv4/tcp_metrics.c
++++ b/net/ipv4/tcp_metrics.c
+@@ -428,7 +428,8 @@ void tcp_update_metrics(struct sock *sk)
+ 		if (!tcp_metric_locked(tm, TCP_METRIC_REORDERING)) {
+ 			val = tcp_metric_get(tm, TCP_METRIC_REORDERING);
+ 			if (val < tp->reordering &&
+-			    tp->reordering != net->ipv4.sysctl_tcp_reordering)
++			    tp->reordering !=
++			    READ_ONCE(net->ipv4.sysctl_tcp_reordering))
+ 				tcp_metric_set(tm, TCP_METRIC_REORDERING,
+ 					       tp->reordering);
+ 		}
 -- 
 2.35.1
 
