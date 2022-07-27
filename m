@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0566DC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:23:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB237C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:23:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241928AbiG0RW6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:22:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44386 "EHLO
+        id S242013AbiG0RXC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:23:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241819AbiG0RU6 (ORCPT
+        with ESMTP id S235333AbiG0RVO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:20:58 -0400
+        Wed, 27 Jul 2022 13:21:14 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA254664CF;
-        Wed, 27 Jul 2022 09:45:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C198751A1B;
+        Wed, 27 Jul 2022 09:45:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B1C12B8200D;
-        Wed, 27 Jul 2022 16:45:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AB90C433C1;
-        Wed, 27 Jul 2022 16:45:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 08F9AB821A6;
+        Wed, 27 Jul 2022 16:45:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67594C433C1;
+        Wed, 27 Jul 2022 16:45:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940319;
-        bh=q4FJTfADqyAATI/6Vy4O68t1Bj6HIZ0dpHIGC62mgoc=;
+        s=korg; t=1658940313;
+        bh=1YJj+zf8oi0rxQU45OyHdE/CCMttpqbIvrrCYGyaOQI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XJUjcuBb60YyGq92FQOmdfX05hFWVIalbcPwUlKAghWcZ5/V0ie9H+C03pf1FUygJ
-         A2EneKa3AXGFR9U1v4FiF8VUhAcyp2qZbYADWqtGv9T4CCHcXRFnr4NSWeg0KxSeJQ
-         D5qYsyf1ZEnEittk0HGW6bMiYN50fjOsbU+yh2Fg=
+        b=YxWWuAbRn5PlWl5w4uG3Hvvw9jlQXL0UbE257FJATS5182g8+1QvHaLP7hioyabwv
+         65nf+S5gWapbsL0Vzkgqc0hYnUnjH7oDKwR10DXUceS2+GlzpztkPDLPPAss7MeESv
+         GUC7AF6DZJYFLjBPmgEwMjPRAl+z/DiBQ20OkfpY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Bhawanpreet Lakha <bhawanpreet.lakha@amd.com>,
-        Mikita Lipski <mikita.lipski@amd.com>,
-        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Mario Limonciello <Mario.Limonciello@amd.com>
-Subject: [PATCH 5.15 183/201] drm/amd/display: Optimize bandwidth on following fast update
-Date:   Wed, 27 Jul 2022 18:11:27 +0200
-Message-Id: <20220727161035.371672809@linuxfoundation.org>
+        stable@vger.kernel.org, Wang Yugui <wangyugui@e16-tech.com>,
+        Sungjong Seo <sj1557.seo@samsung.com>,
+        Namjae Jeon <linkinjeon@kernel.org>
+Subject: [PATCH 5.15 181/201] exfat: use updated exfat_chain directly during renaming
+Date:   Wed, 27 Jul 2022 18:11:25 +0200
+Message-Id: <20220727161035.302903018@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -53,68 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
+From: Sungjong Seo <sj1557.seo@samsung.com>
 
-commit 34316c1e561db0b24e341029f04a5a5bead9a7bc upstream.
+commit 204e6ceaa1035cb7b92b156517e88842ebb4c7ff upstream.
 
-[Why]
-The current call to optimize_bandwidth never occurs because flip is
-always pending from the FULL and FAST updates.
+In order for a file to access its own directory entry set,
+exfat_inode_info(ei) has two copied values. One is ei->dir, which is
+a snapshot of exfat_chain of the parent directory, and the other is
+ei->entry, which is the offset of the start of the directory entry set
+in the parent directory.
 
-[How]
-Optimize on the following flip when it's a FAST update and we know we
-aren't going to be modifying the clocks again.
+Since the parent directory can be updated after the snapshot point,
+it should be used only for accessing one's own directory entry set.
 
-Reviewed-by: Bhawanpreet Lakha <bhawanpreet.lakha@amd.com>
-Acked-by: Mikita Lipski <mikita.lipski@amd.com>
-Signed-off-by: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Cc: Mario Limonciello <Mario.Limonciello@amd.com>
+However, as of now, during renaming, it could try to traverse or to
+allocate clusters via snapshot values, it does not make sense.
+
+This potential problem has been revealed when exfat_update_parent_info()
+was removed by commit d8dad2588add ("exfat: fix referencing wrong parent
+directory information after renaming"). However, I don't think it's good
+idea to bring exfat_update_parent_info() back.
+
+Instead, let's use the updated exfat_chain of parent directory diectly.
+
+Fixes: d8dad2588add ("exfat: fix referencing wrong parent directory information after renaming")
+Reported-by: Wang Yugui <wangyugui@e16-tech.com>
+Signed-off-by: Sungjong Seo <sj1557.seo@samsung.com>
+Tested-by: Wang Yugui <wangyugui@e16-tech.com>
+Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/display/dc/core/dc.c |   17 ++++++++---------
- 1 file changed, 8 insertions(+), 9 deletions(-)
+ fs/exfat/namei.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/amd/display/dc/core/dc.c
-+++ b/drivers/gpu/drm/amd/display/dc/core/dc.c
-@@ -1788,6 +1788,11 @@ void dc_post_update_surfaces_to_stream(s
- 
- 	post_surface_trace(dc);
- 
-+	if (dc->ctx->dce_version >= DCE_VERSION_MAX)
-+		TRACE_DCN_CLOCK_STATE(&context->bw_ctx.bw.dcn.clk);
-+	else
-+		TRACE_DCE_CLOCK_STATE(&context->bw_ctx.bw.dce);
-+
- 	if (is_flip_pending_in_pipes(dc, context))
- 		return;
- 
-@@ -2974,6 +2979,9 @@ void dc_commit_updates_for_stream(struct
- 			if (new_pipe->plane_state && new_pipe->plane_state != old_pipe->plane_state)
- 				new_pipe->plane_state->force_full_update = true;
- 		}
-+	} else if (update_type == UPDATE_TYPE_FAST) {
-+		/* Previous frame finished and HW is ready for optimization. */
-+		dc_post_update_surfaces_to_stream(dc);
+--- a/fs/exfat/namei.c
++++ b/fs/exfat/namei.c
+@@ -1190,7 +1190,9 @@ static int __exfat_rename(struct inode *
+ 		return -ENOENT;
  	}
  
+-	exfat_chain_dup(&olddir, &ei->dir);
++	exfat_chain_set(&olddir, EXFAT_I(old_parent_inode)->start_clu,
++		EXFAT_B_TO_CLU_ROUND_UP(i_size_read(old_parent_inode), sbi),
++		EXFAT_I(old_parent_inode)->flags);
+ 	dentry = ei->entry;
  
-@@ -3030,15 +3038,6 @@ void dc_commit_updates_for_stream(struct
- 				pipe_ctx->plane_state->force_full_update = false;
- 		}
- 	}
--	/*let's use current_state to update watermark etc*/
--	if (update_type >= UPDATE_TYPE_FULL) {
--		dc_post_update_surfaces_to_stream(dc);
--
--		if (dc_ctx->dce_version >= DCE_VERSION_MAX)
--			TRACE_DCN_CLOCK_STATE(&context->bw_ctx.bw.dcn.clk);
--		else
--			TRACE_DCE_CLOCK_STATE(&context->bw_ctx.bw.dce);
--	}
- 
- 	return;
- 
+ 	ep = exfat_get_dentry(sb, &olddir, dentry, &old_bh, NULL);
 
 
