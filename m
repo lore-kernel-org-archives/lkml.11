@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1ADEC19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:49:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5298C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:49:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240527AbiG0Qtp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:49:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56310 "EHLO
+        id S240545AbiG0Qts (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:49:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240449AbiG0Qsj (ORCPT
+        with ESMTP id S240604AbiG0Qsx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:48:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5162561131;
-        Wed, 27 Jul 2022 09:32:33 -0700 (PDT)
+        Wed, 27 Jul 2022 12:48:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8935B52E66;
+        Wed, 27 Jul 2022 09:32:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C6710B821D0;
-        Wed, 27 Jul 2022 16:32:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CBECC433D6;
-        Wed, 27 Jul 2022 16:32:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A1FBA61A04;
+        Wed, 27 Jul 2022 16:32:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC09EC433C1;
+        Wed, 27 Jul 2022 16:32:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939550;
-        bh=0u1Q4T/coKPKlkRYB8LRz3wU3+rbSCklXjpL4Hkyeds=;
+        s=korg; t=1658939556;
+        bh=FeCdmP6du55VKIjZLjCHLYaOC6HIqbWya7cDxcsTO5Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ys3SfmOY2ZvQtjqUamZWdKV5Ai9f1+MyiFzgLiLCVQgg+1LSk9LoQIr8HkEqsmZaQ
-         5mbzv3Wt/0Sf+pjZKxgmQxJ36doXCuTfRH9i2dI1UV1G4kt/MFlB86O9SCt7RRB35e
-         awjfyazj1clVvp84IIPHLaRUD3Q6nRmF8fjQzODA=
+        b=vVxtON02CPgKXoutbeO9lssP9mqXNjhAtVrbIf+exd3rDKTM0bdlIsYq7WQMJTJcb
+         iBYpJMbVAh4X6w+kW/wA3a0XV3+uBrhvk2ALQMWL4VriFjPA771tI6hneynQUR8UEu
+         n0HrtKkFWE2zDhG+CmVt7/wtM/ALjko4x8mY4RG4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, lee@kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        io-uring@vger.kernel.org, linux-fsdevel@vger.kernel.org
-Subject: [PATCH 5.10 005/105] io_uring: Use original task for req identity in io_identity_cow()
-Date:   Wed, 27 Jul 2022 18:09:51 +0200
-Message-Id: <20220727161012.279068616@linuxfoundation.org>
+        stable@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
+        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
+        Chaitanya Kulkarni <chaitanya.kulkarni@wdc.com>,
+        Damien Le Moal <damien.lemoal@wdc.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        Tadeusz Struk <tadeusz.struk@linaro.org>
+Subject: [PATCH 5.10 007/105] block: split bio_kmalloc from bio_alloc_bioset
+Date:   Wed, 27 Jul 2022 18:09:53 +0200
+Message-Id: <20220727161012.364032637@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161012.056867467@linuxfoundation.org>
 References: <20220727161012.056867467@linuxfoundation.org>
@@ -50,45 +52,267 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lee Jones <lee@kernel.org>
+From: Christoph Hellwig <hch@lst.de>
 
-This issue is conceptually identical to the one fixed in 29f077d07051
-("io_uring: always use original task when preparing req identity"), so
-rather than reinvent the wheel, I'm shamelessly quoting the commit
-message from that patch - thanks Jens:
+commit 3175199ab0ac8c874ec25c6bf169f74888917435 upstream.
 
- "If the ring is setup with IORING_SETUP_IOPOLL and we have more than
-  one task doing submissions on a ring, we can up in a situation where
-  we assign the context from the current task rather than the request
-  originator.
+bio_kmalloc shares almost no logic with the bio_set based fast path
+in bio_alloc_bioset.  Split it into an entirely separate implementation.
 
-  Always use req->task rather than assume it's the same as current.
-
-  No upstream patch exists for this issue, as only older kernels with
-  the non-native workers have this problem."
-
-Cc: Jens Axboe <axboe@kernel.dk>
-Cc: Pavel Begunkov <asml.silence@gmail.com>
-Cc: Alexander Viro <viro@zeniv.linux.org.uk>
-Cc: io-uring@vger.kernel.org
-Cc: linux-fsdevel@vger.kernel.org
-Fixes: 5c3462cfd123b ("io_uring: store io_identity in io_uring_task")
-Signed-off-by: Lee Jones <lee@kernel.org>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Johannes Thumshirn <johannes.thumshirn@wdc.com>
+Reviewed-by: Chaitanya Kulkarni <chaitanya.kulkarni@wdc.com>
+Acked-by: Damien Le Moal <damien.lemoal@wdc.com>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/io_uring.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ block/bio.c         |  174 ++++++++++++++++++++++++++--------------------------
+ include/linux/bio.h |    6 -
+ 2 files changed, 90 insertions(+), 90 deletions(-)
 
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -1325,7 +1325,7 @@ static void io_req_clean_work(struct io_
+--- a/block/bio.c
++++ b/block/bio.c
+@@ -405,122 +405,101 @@ static void punt_bios_to_rescuer(struct
+  * @nr_iovecs:	number of iovecs to pre-allocate
+  * @bs:		the bio_set to allocate from.
+  *
+- * Description:
+- *   If @bs is NULL, uses kmalloc() to allocate the bio; else the allocation is
+- *   backed by the @bs's mempool.
+- *
+- *   When @bs is not NULL, if %__GFP_DIRECT_RECLAIM is set then bio_alloc will
+- *   always be able to allocate a bio. This is due to the mempool guarantees.
+- *   To make this work, callers must never allocate more than 1 bio at a time
+- *   from this pool. Callers that need to allocate more than 1 bio must always
+- *   submit the previously allocated bio for IO before attempting to allocate
+- *   a new one. Failure to do so can cause deadlocks under memory pressure.
+- *
+- *   Note that when running under submit_bio_noacct() (i.e. any block
+- *   driver), bios are not submitted until after you return - see the code in
+- *   submit_bio_noacct() that converts recursion into iteration, to prevent
+- *   stack overflows.
+- *
+- *   This would normally mean allocating multiple bios under
+- *   submit_bio_noacct() would be susceptible to deadlocks, but we have
+- *   deadlock avoidance code that resubmits any blocked bios from a rescuer
+- *   thread.
+- *
+- *   However, we do not guarantee forward progress for allocations from other
+- *   mempools. Doing multiple allocations from the same mempool under
+- *   submit_bio_noacct() should be avoided - instead, use bio_set's front_pad
+- *   for per bio allocations.
++ * Allocate a bio from the mempools in @bs.
+  *
+- *   RETURNS:
+- *   Pointer to new bio on success, NULL on failure.
++ * If %__GFP_DIRECT_RECLAIM is set then bio_alloc will always be able to
++ * allocate a bio.  This is due to the mempool guarantees.  To make this work,
++ * callers must never allocate more than 1 bio at a time from the general pool.
++ * Callers that need to allocate more than 1 bio must always submit the
++ * previously allocated bio for IO before attempting to allocate a new one.
++ * Failure to do so can cause deadlocks under memory pressure.
++ *
++ * Note that when running under submit_bio_noacct() (i.e. any block driver),
++ * bios are not submitted until after you return - see the code in
++ * submit_bio_noacct() that converts recursion into iteration, to prevent
++ * stack overflows.
++ *
++ * This would normally mean allocating multiple bios under submit_bio_noacct()
++ * would be susceptible to deadlocks, but we have
++ * deadlock avoidance code that resubmits any blocked bios from a rescuer
++ * thread.
++ *
++ * However, we do not guarantee forward progress for allocations from other
++ * mempools. Doing multiple allocations from the same mempool under
++ * submit_bio_noacct() should be avoided - instead, use bio_set's front_pad
++ * for per bio allocations.
++ *
++ * Returns: Pointer to new bio on success, NULL on failure.
   */
- static bool io_identity_cow(struct io_kiocb *req)
+ struct bio *bio_alloc_bioset(gfp_t gfp_mask, unsigned int nr_iovecs,
+ 			     struct bio_set *bs)
  {
--	struct io_uring_task *tctx = current->io_uring;
-+	struct io_uring_task *tctx = req->task->io_uring;
- 	const struct cred *creds = NULL;
- 	struct io_identity *id;
+ 	gfp_t saved_gfp = gfp_mask;
+-	unsigned front_pad;
+-	unsigned inline_vecs;
+-	struct bio_vec *bvl = NULL;
+ 	struct bio *bio;
+ 	void *p;
  
+-	if (!bs) {
+-		if (nr_iovecs > UIO_MAXIOV)
+-			return NULL;
+-
+-		p = kmalloc(struct_size(bio, bi_inline_vecs, nr_iovecs), gfp_mask);
+-		front_pad = 0;
+-		inline_vecs = nr_iovecs;
+-	} else {
+-		/* should not use nobvec bioset for nr_iovecs > 0 */
+-		if (WARN_ON_ONCE(!mempool_initialized(&bs->bvec_pool) &&
+-				 nr_iovecs > 0))
+-			return NULL;
+-		/*
+-		 * submit_bio_noacct() converts recursion to iteration; this
+-		 * means if we're running beneath it, any bios we allocate and
+-		 * submit will not be submitted (and thus freed) until after we
+-		 * return.
+-		 *
+-		 * This exposes us to a potential deadlock if we allocate
+-		 * multiple bios from the same bio_set() while running
+-		 * underneath submit_bio_noacct(). If we were to allocate
+-		 * multiple bios (say a stacking block driver that was splitting
+-		 * bios), we would deadlock if we exhausted the mempool's
+-		 * reserve.
+-		 *
+-		 * We solve this, and guarantee forward progress, with a rescuer
+-		 * workqueue per bio_set. If we go to allocate and there are
+-		 * bios on current->bio_list, we first try the allocation
+-		 * without __GFP_DIRECT_RECLAIM; if that fails, we punt those
+-		 * bios we would be blocking to the rescuer workqueue before
+-		 * we retry with the original gfp_flags.
+-		 */
+-
+-		if (current->bio_list &&
+-		    (!bio_list_empty(&current->bio_list[0]) ||
+-		     !bio_list_empty(&current->bio_list[1])) &&
+-		    bs->rescue_workqueue)
+-			gfp_mask &= ~__GFP_DIRECT_RECLAIM;
++	/* should not use nobvec bioset for nr_iovecs > 0 */
++	if (WARN_ON_ONCE(!mempool_initialized(&bs->bvec_pool) && nr_iovecs > 0))
++		return NULL;
+ 
++	/*
++	 * submit_bio_noacct() converts recursion to iteration; this means if
++	 * we're running beneath it, any bios we allocate and submit will not be
++	 * submitted (and thus freed) until after we return.
++	 *
++	 * This exposes us to a potential deadlock if we allocate multiple bios
++	 * from the same bio_set() while running underneath submit_bio_noacct().
++	 * If we were to allocate multiple bios (say a stacking block driver
++	 * that was splitting bios), we would deadlock if we exhausted the
++	 * mempool's reserve.
++	 *
++	 * We solve this, and guarantee forward progress, with a rescuer
++	 * workqueue per bio_set. If we go to allocate and there are bios on
++	 * current->bio_list, we first try the allocation without
++	 * __GFP_DIRECT_RECLAIM; if that fails, we punt those bios we would be
++	 * blocking to the rescuer workqueue before we retry with the original
++	 * gfp_flags.
++	 */
++	if (current->bio_list &&
++	    (!bio_list_empty(&current->bio_list[0]) ||
++	     !bio_list_empty(&current->bio_list[1])) &&
++	    bs->rescue_workqueue)
++		gfp_mask &= ~__GFP_DIRECT_RECLAIM;
++
++	p = mempool_alloc(&bs->bio_pool, gfp_mask);
++	if (!p && gfp_mask != saved_gfp) {
++		punt_bios_to_rescuer(bs);
++		gfp_mask = saved_gfp;
+ 		p = mempool_alloc(&bs->bio_pool, gfp_mask);
+-		if (!p && gfp_mask != saved_gfp) {
+-			punt_bios_to_rescuer(bs);
+-			gfp_mask = saved_gfp;
+-			p = mempool_alloc(&bs->bio_pool, gfp_mask);
+-		}
+-
+-		front_pad = bs->front_pad;
+-		inline_vecs = BIO_INLINE_VECS;
+ 	}
+-
+ 	if (unlikely(!p))
+ 		return NULL;
+ 
+-	bio = p + front_pad;
+-	bio_init(bio, NULL, 0);
+-
+-	if (nr_iovecs > inline_vecs) {
++	bio = p + bs->front_pad;
++	if (nr_iovecs > BIO_INLINE_VECS) {
+ 		unsigned long idx = 0;
++		struct bio_vec *bvl = NULL;
+ 
+ 		bvl = bvec_alloc(gfp_mask, nr_iovecs, &idx, &bs->bvec_pool);
+ 		if (!bvl && gfp_mask != saved_gfp) {
+ 			punt_bios_to_rescuer(bs);
+ 			gfp_mask = saved_gfp;
+-			bvl = bvec_alloc(gfp_mask, nr_iovecs, &idx, &bs->bvec_pool);
++			bvl = bvec_alloc(gfp_mask, nr_iovecs, &idx,
++					 &bs->bvec_pool);
+ 		}
+ 
+ 		if (unlikely(!bvl))
+ 			goto err_free;
+ 
+ 		bio->bi_flags |= idx << BVEC_POOL_OFFSET;
++		bio_init(bio, bvl, bvec_nr_vecs(idx));
+ 	} else if (nr_iovecs) {
+-		bvl = bio->bi_inline_vecs;
++		bio_init(bio, bio->bi_inline_vecs, BIO_INLINE_VECS);
++	} else {
++		bio_init(bio, NULL, 0);
+ 	}
+ 
+ 	bio->bi_pool = bs;
+-	bio->bi_max_vecs = nr_iovecs;
+-	bio->bi_io_vec = bvl;
+ 	return bio;
+ 
+ err_free:
+@@ -529,6 +508,31 @@ err_free:
+ }
+ EXPORT_SYMBOL(bio_alloc_bioset);
+ 
++/**
++ * bio_kmalloc - kmalloc a bio for I/O
++ * @gfp_mask:   the GFP_* mask given to the slab allocator
++ * @nr_iovecs:	number of iovecs to pre-allocate
++ *
++ * Use kmalloc to allocate and initialize a bio.
++ *
++ * Returns: Pointer to new bio on success, NULL on failure.
++ */
++struct bio *bio_kmalloc(gfp_t gfp_mask, unsigned int nr_iovecs)
++{
++	struct bio *bio;
++
++	if (nr_iovecs > UIO_MAXIOV)
++		return NULL;
++
++	bio = kmalloc(struct_size(bio, bi_inline_vecs, nr_iovecs), gfp_mask);
++	if (unlikely(!bio))
++		return NULL;
++	bio_init(bio, nr_iovecs ? bio->bi_inline_vecs : NULL, nr_iovecs);
++	bio->bi_pool = NULL;
++	return bio;
++}
++EXPORT_SYMBOL(bio_kmalloc);
++
+ void zero_fill_bio_iter(struct bio *bio, struct bvec_iter start)
+ {
+ 	unsigned long flags;
+--- a/include/linux/bio.h
++++ b/include/linux/bio.h
+@@ -390,6 +390,7 @@ extern int biovec_init_pool(mempool_t *p
+ extern int bioset_init_from_src(struct bio_set *bs, struct bio_set *src);
+ 
+ extern struct bio *bio_alloc_bioset(gfp_t, unsigned int, struct bio_set *);
++struct bio *bio_kmalloc(gfp_t gfp_mask, unsigned int nr_iovecs);
+ extern void bio_put(struct bio *);
+ 
+ extern void __bio_clone_fast(struct bio *, struct bio *);
+@@ -402,11 +403,6 @@ static inline struct bio *bio_alloc(gfp_
+ 	return bio_alloc_bioset(gfp_mask, nr_iovecs, &fs_bio_set);
+ }
+ 
+-static inline struct bio *bio_kmalloc(gfp_t gfp_mask, unsigned int nr_iovecs)
+-{
+-	return bio_alloc_bioset(gfp_mask, nr_iovecs, NULL);
+-}
+-
+ extern blk_qc_t submit_bio(struct bio *);
+ 
+ extern void bio_endio(struct bio *);
 
 
