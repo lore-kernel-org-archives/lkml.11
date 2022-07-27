@@ -2,117 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7525FC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:51:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD655C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:51:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240730AbiG0Qvi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:51:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57606 "EHLO
+        id S240346AbiG0Qvl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:51:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240727AbiG0QvB (ORCPT
+        with ESMTP id S240654AbiG0QvD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:51:01 -0400
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2951E61DA1
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:33:20 -0700 (PDT)
-Received: by mail-lj1-x229.google.com with SMTP id v21so1822057ljh.3
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:33:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hzahODgMNuon2IeUr2EuuHPWt8+D9EzcvbJbwRZcpkA=;
-        b=q37f8MYDml0WJQ6tALjGlG5Vm7UhkOtu+hluMsitRxWmOAPmVBZWNmPWNbjHKSc1N9
-         QGY6rimQfE6pvxDGfLLTJtOLancrwW4USdDDzbqGrxGxoJBos/6bKm2yrdmFi6rpMHb8
-         JSSk01V4sXf1ecwSzunHRWz+9wQkpvuLuzE2z+T1GGoDaJPCDx3DA6L7qxDhrV3XXjcO
-         nzjlX+BpVDXctxfyqiIOZu57hV6UNdMJgKgMlcKeS/bo03JKmsks6tn9htHJk9XlMXWW
-         zNBpRKP8AVoaaaRaBqsXUg08ZVrekrYI5Fhq0tJqY8Cbtes3dNJxM+xPEYI7d7APDGsl
-         y8tQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hzahODgMNuon2IeUr2EuuHPWt8+D9EzcvbJbwRZcpkA=;
-        b=RsNSh7sQ3RxRUzozIvyjR8OkfrZLmkjtn/tAzBfXCetr/cf6fc1gpxCiUHHvF8vLtT
-         OBZVXPT7mPalph6wZnaJ3ZkAAFtIu3yPBhM7000o/dosW0AxKYZJLHrTUqpb626IUlJK
-         vHKxrETVWU4DKKWt2h9Ze1J7CDo8Q+cYhRD45TpCtMW8ZhvmJQ8lQ7Uv/9iIvnq9PsCL
-         CqTz7213TcoRVPH6MqO9IeIu8UJTR+ubDd56COb/Gd0ablojLSq+0ZZEereCKigLRkJF
-         LjqfcPesiEbFPHP7ZsvMYrpbHgDCsYWCaRoaR0M7liYVu62EBNiziisR6hT1S5Xah9Ss
-         QETw==
-X-Gm-Message-State: AJIora9/kaUQ7Cp92Pjh9R3ChvNb08mG8W5+T78qRBKJhzRg5GxVySQp
-        f4Z4sbiswVuJ4Es6JybeIAQGux3YyGE69L1SXlu/9Uh8Hrs=
-X-Google-Smtp-Source: AGRyM1u+ugCfHWSJfs+Xcjaw0Npmkbnj0H+gh0RdJaFTfS9O/IUFRBKCCuHQG2kHb0WKS/09gAr8JI7by1jmQn8McKM=
-X-Received: by 2002:a2e:a914:0:b0:25d:f74a:54c0 with SMTP id
- j20-20020a2ea914000000b0025df74a54c0mr8116851ljq.290.1658939598105; Wed, 27
- Jul 2022 09:33:18 -0700 (PDT)
+        Wed, 27 Jul 2022 12:51:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 618884E84C;
+        Wed, 27 Jul 2022 09:33:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AE18E61A24;
+        Wed, 27 Jul 2022 16:33:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA214C433C1;
+        Wed, 27 Jul 2022 16:33:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658939601;
+        bh=kUoyaHAhXD0DPJJ42Ry5JTe19vdwlhVeeiKUvFiTuv0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=mU67ohh2FCTlKjlFFSMbVFDm39zklfvr2DOf9bvF2QhWz+TqeBhO7nG4whZAVBGKX
+         WG6jiiKfb8nqfZzAZPuiHHU1qtkpDn+k2SBlFu9CQYtGUbTA0HC5UMXkfv6RurvljS
+         HKBgJOugak3dKVs37kjVgLfe2tVnIsEQyFgFuzJ0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 038/105] tcp: Fix a data-race around sysctl_tcp_mtu_probe_floor.
+Date:   Wed, 27 Jul 2022 18:10:24 +0200
+Message-Id: <20220727161013.625305448@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220727161012.056867467@linuxfoundation.org>
+References: <20220727161012.056867467@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <CAPm50aKursUrDpgqLt7RT-VoSfBJswsnR2w1sVAt5mburmdd8g@mail.gmail.com>
-In-Reply-To: <CAPm50aKursUrDpgqLt7RT-VoSfBJswsnR2w1sVAt5mburmdd8g@mail.gmail.com>
-From:   David Matlack <dmatlack@google.com>
-Date:   Wed, 27 Jul 2022 09:32:51 -0700
-Message-ID: <CALzav=eccuGWGpBs=tp5RO_wJqQecGRwDAPi+tyPkMcYrbrPoA@mail.gmail.com>
-Subject: Re: [PATCH] kvm: mmu: fix typos in struct kvm_arch
-To:     Hao Peng <flyingpenghao@gmail.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        kvm list <kvm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Sean Christopherson <seanjc@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 3:58 AM Hao Peng <flyingpenghao@gmail.com> wrote:
->
-> From: Peng Hao <flyingpeng@tencent.com>
->
-> No 'kvmp_mmu_pages', it should be 'kvm_mmu_page'. And
-> struct kvm_mmu_pages and struct kvm_mmu_page are different structures,
-> here should be kvm_mmu_page.
-> kvm_mmu_pages is defined in arch/x86/kvm/mmu/mmu.c.
->
-> Signed-off-by: Peng Hao <flyingpeng@tencent.com>
-> ---
->  arch/x86/include/asm/kvm_host.h | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
->
-> diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-> index e8281d64a431..205a9f374e14 100644
-> --- a/arch/x86/include/asm/kvm_host.h
-> +++ b/arch/x86/include/asm/kvm_host.h
-> @@ -1272,8 +1272,8 @@ struct kvm_arch {
->         bool tdp_mmu_enabled;
->
->         /*
-> -        * List of struct kvm_mmu_pages being used as roots.
-> -        * All struct kvm_mmu_pages in the list should have
-> +        * List of struct kvm_mmu_page being used as roots.
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-I agree that "struct <name>s" is a bad/misleading way to make a struct
-plural in comments. The way I prefer to do it is "<name> structs".
-That avoids changing the <name> and still makes it clear it's plural.
-So in this case the comment would be:
+[ Upstream commit 8e92d4423615a5257d0d871fc067aa561f597deb ]
 
-/*
- * List of kvm_mmu_page structs being used as roots.
- * All kvm_mmu_page structs in the list should have
- * tdp_mmu_page set.
- */
+While reading sysctl_tcp_mtu_probe_floor, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its reader.
 
-> +        * All struct kvm_mmu_page in the list should have
->          * tdp_mmu_page set.
->          *
->          * For reads, this list is protected by:
-> @@ -1292,8 +1292,8 @@ struct kvm_arch {
->         struct list_head tdp_mmu_roots;
->
->         /*
-> -        * List of struct kvmp_mmu_pages not being used as roots.
-> -        * All struct kvm_mmu_pages in the list should have
-> +        * List of struct kvm_mmu_page not being used as roots.
-> +        * All struct kvm_mmu_page in the list should have
->          * tdp_mmu_page set and a tdp_mmu_root_count of 0.
->          */
->         struct list_head tdp_mmu_pages;
-> --
-> 2.27.0
+Fixes: c04b79b6cfd7 ("tcp: add new tcp_mtu_probe_floor sysctl")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/ipv4/tcp_timer.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/ipv4/tcp_timer.c b/net/ipv4/tcp_timer.c
+index 953f36868369..da92c5d70b70 100644
+--- a/net/ipv4/tcp_timer.c
++++ b/net/ipv4/tcp_timer.c
+@@ -172,7 +172,7 @@ static void tcp_mtu_probing(struct inet_connection_sock *icsk, struct sock *sk)
+ 	} else {
+ 		mss = tcp_mtu_to_mss(sk, icsk->icsk_mtup.search_low) >> 1;
+ 		mss = min(READ_ONCE(net->ipv4.sysctl_tcp_base_mss), mss);
+-		mss = max(mss, net->ipv4.sysctl_tcp_mtu_probe_floor);
++		mss = max(mss, READ_ONCE(net->ipv4.sysctl_tcp_mtu_probe_floor));
+ 		mss = max(mss, READ_ONCE(net->ipv4.sysctl_tcp_min_snd_mss));
+ 		icsk->icsk_mtup.search_low = tcp_mss_to_mtu(sk, mss);
+ 	}
+-- 
+2.35.1
+
+
+
