@@ -2,45 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7831C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:37:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24142C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:37:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238767AbiG0Qhl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:37:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47208 "EHLO
+        id S238798AbiG0Qhr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:37:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238671AbiG0QgN (ORCPT
+        with ESMTP id S238672AbiG0QgN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Jul 2022 12:36:13 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4CEC57203;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B64356BB6;
         Wed, 27 Jul 2022 09:28:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E7B40B821BF;
-        Wed, 27 Jul 2022 16:28:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57043C433C1;
-        Wed, 27 Jul 2022 16:28:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C2313B821C6;
+        Wed, 27 Jul 2022 16:27:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5DF1C433D6;
+        Wed, 27 Jul 2022 16:27:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939282;
-        bh=2tCyZDBo2+NNN2tEJUrj28tl7DflKJ3dwB9KJBN7mSk=;
+        s=korg; t=1658939252;
+        bh=mOFED5k46BSdcCPPiEfgP6QcLJrPfdghTqkdp+JAGMc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Dv15Acuj/boHLuw3rx8kcpcrXdCRRaNk4RaM3x0eX+teVXbL1jbDamlgR4CioLVpE
-         HH3IDNGtdvdvMCA4yXlSOnQJxKFWBo+GDJ4hy0e7/AFnmAIAFa0wcO2/hFcI9GfK34
-         rlvx+7i5KAZNnxokwR2+quSu/Bv5rJU6O3p1NcWM=
+        b=NakBvEVCwcvPxmgphK6YLXgKgmVQE1GtdJfqjCFPLxG+/rULjZm01ySjlXSf5Cuc1
+         a6wBADKYr0fjKlN6TWbhEuWdeIl443Co9QP0ZL+ArjmY2mo8i6vXk+X4v0nlhWl66v
+         D5go/k57ktCGtN1SFyUKzEeMxjVi5iRTd8aqmqM8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jeffrey Hugo <quic_jhugo@quicinc.com>,
-        Dexuan Cui <decui@microsoft.com>, Wei Liu <wei.liu@kernel.org>,
-        Carl Vanderlip <quic_carlv@quicinc.com>
-Subject: [PATCH 5.4 06/87] PCI: hv: Fix multi-MSI to allow more than one MSI vector
-Date:   Wed, 27 Jul 2022 18:09:59 +0200
-Message-Id: <20220727161009.262368559@linuxfoundation.org>
+        stable@vger.kernel.org, Richard Henderson <rth@twiddle.net>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>,
+        William Hubbs <w.d.hubbs@gmail.com>,
+        Chris Brannon <chris@the-brannons.com>,
+        Kirk Reiser <kirk@reisers.ca>,
+        Samuel Thibault <samuel.thibault@ens-lyon.org>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@de.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Johan Hovold <johan@kernel.org>, Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH 4.19 54/62] tty: the rest, stop using tty_schedule_flip()
+Date:   Wed, 27 Jul 2022 18:11:03 +0200
+Message-Id: <20220727161006.261681396@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220727161008.993711844@linuxfoundation.org>
-References: <20220727161008.993711844@linuxfoundation.org>
+In-Reply-To: <20220727161004.175638564@linuxfoundation.org>
+References: <20220727161004.175638564@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,76 +58,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeffrey Hugo <quic_jhugo@quicinc.com>
+From: Jiri Slaby <jslaby@suse.cz>
 
-commit 08e61e861a0e47e5e1a3fb78406afd6b0cea6b6d upstream.
+commit b68b914494df4f79b4e9b58953110574af1cb7a2 upstream.
 
-If the allocation of multiple MSI vectors for multi-MSI fails in the core
-PCI framework, the framework will retry the allocation as a single MSI
-vector, assuming that meets the min_vecs specified by the requesting
-driver.
+Since commit a9c3f68f3cd8d (tty: Fix low_latency BUG) in 2014,
+tty_flip_buffer_push() is only a wrapper to tty_schedule_flip(). We are
+going to remove the latter (as it is used less), so call the former in
+the rest of the users.
 
-Hyper-V advertises that multi-MSI is supported, but reuses the VECTOR
-domain to implement that for x86.  The VECTOR domain does not support
-multi-MSI, so the alloc will always fail and fallback to a single MSI
-allocation.
-
-In short, Hyper-V advertises a capability it does not implement.
-
-Hyper-V can support multi-MSI because it coordinates with the hypervisor
-to map the MSIs in the IOMMU's interrupt remapper, which is something the
-VECTOR domain does not have.  Therefore the fix is simple - copy what the
-x86 IOMMU drivers (AMD/Intel-IR) do by removing
-X86_IRQ_ALLOC_CONTIGUOUS_VECTORS after calling the VECTOR domain's
-pci_msi_prepare().
-
-5.4 backport - adds the hv_msi_prepare wrapper function.
-X86_IRQ_ALLOC_TYPE_PCI_MSI changed to X86_IRQ_ALLOC_TYPE_MSI
-(same value).
-
-Fixes: 4daace0d8ce8 ("PCI: hv: Add paravirtual PCI front-end for Microsoft Hyper-V VMs")
-Signed-off-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
-Reviewed-by: Dexuan Cui <decui@microsoft.com>
-Link: https://lore.kernel.org/r/1649856981-14649-1-git-send-email-quic_jhugo@quicinc.com
-Signed-off-by: Wei Liu <wei.liu@kernel.org>
-Signed-off-by: Carl Vanderlip <quic_carlv@quicinc.com>
+Cc: Richard Henderson <rth@twiddle.net>
+Cc: Ivan Kokshaysky <ink@jurassic.park.msu.ru>
+Cc: Matt Turner <mattst88@gmail.com>
+Cc: William Hubbs <w.d.hubbs@gmail.com>
+Cc: Chris Brannon <chris@the-brannons.com>
+Cc: Kirk Reiser <kirk@reisers.ca>
+Cc: Samuel Thibault <samuel.thibault@ens-lyon.org>
+Cc: Heiko Carstens <hca@linux.ibm.com>
+Cc: Vasily Gorbik <gor@linux.ibm.com>
+Cc: Christian Borntraeger <borntraeger@de.ibm.com>
+Cc: Alexander Gordeev <agordeev@linux.ibm.com>
+Reviewed-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Link: https://lore.kernel.org/r/20211122111648.30379-3-jslaby@suse.cz
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/pci-hyperv.c |   17 ++++++++++++++++-
- 1 file changed, 16 insertions(+), 1 deletion(-)
+ arch/alpha/kernel/srmcons.c         |    2 +-
+ drivers/s390/char/keyboard.h        |    4 ++--
+ drivers/staging/speakup/spk_ttyio.c |    4 ++--
+ 3 files changed, 5 insertions(+), 5 deletions(-)
 
---- a/drivers/pci/controller/pci-hyperv.c
-+++ b/drivers/pci/controller/pci-hyperv.c
-@@ -1172,6 +1172,21 @@ static void hv_irq_mask(struct irq_data
- 	pci_msi_mask_irq(data);
+--- a/arch/alpha/kernel/srmcons.c
++++ b/arch/alpha/kernel/srmcons.c
+@@ -59,7 +59,7 @@ srmcons_do_receive_chars(struct tty_port
+ 	} while((result.bits.status & 1) && (++loops < 10));
+ 
+ 	if (count)
+-		tty_schedule_flip(port);
++		tty_flip_buffer_push(port);
+ 
+ 	return count;
+ }
+--- a/drivers/s390/char/keyboard.h
++++ b/drivers/s390/char/keyboard.h
+@@ -56,7 +56,7 @@ static inline void
+ kbd_put_queue(struct tty_port *port, int ch)
+ {
+ 	tty_insert_flip_char(port, ch, 0);
+-	tty_schedule_flip(port);
++	tty_flip_buffer_push(port);
  }
  
-+static int hv_msi_prepare(struct irq_domain *domain, struct device *dev,
-+			  int nvec, msi_alloc_info_t *info)
-+{
-+	int ret = pci_msi_prepare(domain, dev, nvec, info);
-+
-+	/*
-+	 * By using the interrupt remapper in the hypervisor IOMMU, contiguous
-+	 * CPU vectors is not needed for multi-MSI
-+	 */
-+	if (info->type == X86_IRQ_ALLOC_TYPE_MSI)
-+		info->flags &= ~X86_IRQ_ALLOC_CONTIGUOUS_VECTORS;
-+
-+	return ret;
-+}
-+
- /**
-  * hv_irq_unmask() - "Unmask" the IRQ by setting its current
-  * affinity.
-@@ -1518,7 +1533,7 @@ static irq_hw_number_t hv_msi_domain_ops
+ static inline void
+@@ -64,5 +64,5 @@ kbd_puts_queue(struct tty_port *port, ch
+ {
+ 	while (*cp)
+ 		tty_insert_flip_char(port, *cp++, 0);
+-	tty_schedule_flip(port);
++	tty_flip_buffer_push(port);
+ }
+--- a/drivers/staging/speakup/spk_ttyio.c
++++ b/drivers/staging/speakup/spk_ttyio.c
+@@ -88,7 +88,7 @@ static int spk_ttyio_receive_buf2(struct
+ 	}
  
- static struct msi_domain_ops hv_msi_ops = {
- 	.get_hwirq	= hv_msi_domain_ops_get_hwirq,
--	.msi_prepare	= pci_msi_prepare,
-+	.msi_prepare	= hv_msi_prepare,
- 	.set_desc	= pci_msi_set_desc,
- 	.msi_free	= hv_msi_free,
- };
+ 	if (!ldisc_data->buf_free)
+-		/* ttyio_in will tty_schedule_flip */
++		/* ttyio_in will tty_flip_buffer_push */
+ 		return 0;
+ 
+ 	/* Make sure the consumer has read buf before we have seen
+@@ -321,7 +321,7 @@ static unsigned char ttyio_in(int timeou
+ 	mb();
+ 	ldisc_data->buf_free = true;
+ 	/* Let TTY push more characters */
+-	tty_schedule_flip(speakup_tty->port);
++	tty_flip_buffer_push(speakup_tty->port);
+ 
+ 	return rv;
+ }
 
 
