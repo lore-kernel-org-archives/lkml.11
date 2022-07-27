@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 765D1C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:56:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4791C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:56:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240894AbiG0Q4E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:56:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41868 "EHLO
+        id S241129AbiG0Q4G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:56:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241237AbiG0Qyj (ORCPT
+        with ESMTP id S241262AbiG0Qyl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:54:39 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C4F862A70;
-        Wed, 27 Jul 2022 09:35:47 -0700 (PDT)
+        Wed, 27 Jul 2022 12:54:41 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 955D562A7F;
+        Wed, 27 Jul 2022 09:35:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 4E9D4CE230F;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 012C961A97;
+        Wed, 27 Jul 2022 16:35:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B6DCC433D7;
         Wed, 27 Jul 2022 16:35:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CDE3C433C1;
-        Wed, 27 Jul 2022 16:35:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939743;
-        bh=D613NYS3RItS9SkfSXwFD6OJEOqctu9XNqKGGC5B9Ys=;
+        s=korg; t=1658939746;
+        bh=hfOuLggCpUFacgJ6Z/LvlCpugNeG7CshtVBtk70/sWo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZH4m6NDTrQ9eVE98d1rGva7ZBWNn4gT7UI5l4hGVcc2lkQQ36IpeXASlv8SYQhfce
-         7RPk4UgKleLgAxgvXSIXTeyQYS0MKdos+QGHAw/voczApAgp0UBocmt9nd40aSWPHr
-         8YHVpo35FvBlG3hDm4WFr+vZY/c777TQfSFAQqNU=
+        b=RAanYcCik8Xzu+KQWMU6mujfMHn4MC4pizTaP6dDybaGFFF3I7sOz4iYaGgDb5bmT
+         VlYvIoolEFKXDAh9N0w7/dLP9U0O71pLYOIt3ifqOLYGDK0L0K1lVxeea6wVizNI4P
+         2Qluw/8/4LExrUSmnsws/pc7g2Yh1++wBpd0fDY0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org,
+        Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 056/105] tcp: Fix data-races around sysctl_tcp_fastopen_blackhole_timeout.
-Date:   Wed, 27 Jul 2022 18:10:42 +0200
-Message-Id: <20220727161014.339107685@linuxfoundation.org>
+Subject: [PATCH 5.10 057/105] iavf: Fix handling of dummy receive descriptors
+Date:   Wed, 27 Jul 2022 18:10:43 +0200
+Message-Id: <20220727161014.374516739@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161012.056867467@linuxfoundation.org>
 References: <20220727161012.056867467@linuxfoundation.org>
@@ -49,44 +52,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.com>
+From: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
 
-[ Upstream commit 021266ec640c7a4527e6cd4b7349a512b351de1d ]
+[ Upstream commit a9f49e0060301a9bfebeca76739158d0cf91cdf6 ]
 
-While reading sysctl_tcp_fastopen_blackhole_timeout, it can be changed
-concurrently.  Thus, we need to add READ_ONCE() to its readers.
+Fix memory leak caused by not handling dummy receive descriptor properly.
+iavf_get_rx_buffer now sets the rx_buffer return value for dummy receive
+descriptors. Without this patch, when the hardware writes a dummy
+descriptor, iavf would not free the page allocated for the previous receive
+buffer. This is an unlikely event but can still happen.
 
-Fixes: cf1ef3f0719b ("net/tcp_fastopen: Disable active side TFO in certain scenarios")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+[Jesse: massaged commit message]
+
+Fixes: efa14c398582 ("iavf: allow null RX descriptors")
+Signed-off-by: Przemyslaw Patynowski <przemyslawx.patynowski@intel.com>
+Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp_fastopen.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/intel/iavf/iavf_txrx.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/net/ipv4/tcp_fastopen.c b/net/ipv4/tcp_fastopen.c
-index ed7aa6ae7b51..39fb037ce5f3 100644
---- a/net/ipv4/tcp_fastopen.c
-+++ b/net/ipv4/tcp_fastopen.c
-@@ -506,7 +506,7 @@ void tcp_fastopen_active_disable(struct sock *sk)
+diff --git a/drivers/net/ethernet/intel/iavf/iavf_txrx.c b/drivers/net/ethernet/intel/iavf/iavf_txrx.c
+index 256fa07d54d5..99983f7a0ce0 100644
+--- a/drivers/net/ethernet/intel/iavf/iavf_txrx.c
++++ b/drivers/net/ethernet/intel/iavf/iavf_txrx.c
+@@ -1263,11 +1263,10 @@ static struct iavf_rx_buffer *iavf_get_rx_buffer(struct iavf_ring *rx_ring,
  {
- 	struct net *net = sock_net(sk);
+ 	struct iavf_rx_buffer *rx_buffer;
  
--	if (!sock_net(sk)->ipv4.sysctl_tcp_fastopen_blackhole_timeout)
-+	if (!READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_fastopen_blackhole_timeout))
- 		return;
+-	if (!size)
+-		return NULL;
+-
+ 	rx_buffer = &rx_ring->rx_bi[rx_ring->next_to_clean];
+ 	prefetchw(rx_buffer->page);
++	if (!size)
++		return rx_buffer;
  
- 	/* Paired with READ_ONCE() in tcp_fastopen_active_should_disable() */
-@@ -527,7 +527,8 @@ void tcp_fastopen_active_disable(struct sock *sk)
-  */
- bool tcp_fastopen_active_should_disable(struct sock *sk)
- {
--	unsigned int tfo_bh_timeout = sock_net(sk)->ipv4.sysctl_tcp_fastopen_blackhole_timeout;
-+	unsigned int tfo_bh_timeout =
-+		READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_fastopen_blackhole_timeout);
- 	unsigned long timeout;
- 	int tfo_da_times;
- 	int multiplier;
+ 	/* we are reusing so sync this buffer for CPU use */
+ 	dma_sync_single_range_for_cpu(rx_ring->dev,
 -- 
 2.35.1
 
