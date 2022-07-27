@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22F6BC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:38:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89BB4C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:38:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238997AbiG0Qi1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:38:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47510 "EHLO
+        id S238632AbiG0Qik (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:38:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238729AbiG0Qhk (ORCPT
+        with ESMTP id S238931AbiG0QiB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:37:40 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA5414D80A;
-        Wed, 27 Jul 2022 09:28:21 -0700 (PDT)
+        Wed, 27 Jul 2022 12:38:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C9E757206;
+        Wed, 27 Jul 2022 09:28:26 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C430B61662;
-        Wed, 27 Jul 2022 16:27:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEA94C433D6;
-        Wed, 27 Jul 2022 16:27:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E375619D6;
+        Wed, 27 Jul 2022 16:28:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A9BCC433D6;
+        Wed, 27 Jul 2022 16:28:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939277;
-        bh=o5uo9H+aQK80HuhfKYBHekHvHmapsv5dz6+d7wV1KCs=;
+        s=korg; t=1658939305;
+        bh=OYJJJx9RYWDm60BM5+qoCBIC/9TeiaV9YhQBCOoW37U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UY7SFRpt1ydRyZ8TedtGwRdOL4g4ZfP3SbmDcKKNEIpxqKhvelxvgrYQUjHjupd3r
-         7DkGoetRfO3IE+dXLN37xKsC+IylFBhYQYyocQH3quZKr0PmqxwOfQtHyozjjpZL7j
-         hAMn5Unkz0r3Sk7QG3RdMc62YfgXWRtZuTFuP6s0=
+        b=v+jj0cYdrTq6AyeiO0wE56HnCOGVWmVLHa5ttso3f0quxuv+/hWfbNpJjx9rJvAvj
+         K6RkGarwByiyEq4UnqGbAKnK8lsEk7wsHDM0uZlGTCbMcQv/N/yoTj3NhZB4ypc532
+         wHGMAf6jg1edR+VujoGeiNu/PddrfMvf65iybzsI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Snowberg <eric.snowberg@oracle.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        John Haxby <john.haxby@oracle.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.4 04/87] lockdown: Fix kexec lockdown bypass with ima policy
-Date:   Wed, 27 Jul 2022 18:09:57 +0200
-Message-Id: <20220727161009.182304198@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 23/87] tcp: Fix data-races around sysctl_tcp_min_snd_mss.
+Date:   Wed, 27 Jul 2022 18:10:16 +0200
+Message-Id: <20220727161009.959774666@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161008.993711844@linuxfoundation.org>
 References: <20220727161008.993711844@linuxfoundation.org>
@@ -50,57 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Snowberg <eric.snowberg@oracle.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit 543ce63b664e2c2f9533d089a4664b559c3e6b5b upstream.
+[ Upstream commit 78eb166cdefcc3221c8c7c1e2d514e91a2eb5014 ]
 
-The lockdown LSM is primarily used in conjunction with UEFI Secure Boot.
-This LSM may also be used on machines without UEFI.  It can also be
-enabled when UEFI Secure Boot is disabled.  One of lockdown's features
-is to prevent kexec from loading untrusted kernels.  Lockdown can be
-enabled through a bootparam or after the kernel has booted through
-securityfs.
+While reading sysctl_tcp_min_snd_mss, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its readers.
 
-If IMA appraisal is used with the "ima_appraise=log" boot param,
-lockdown can be defeated with kexec on any machine when Secure Boot is
-disabled or unavailable.  IMA prevents setting "ima_appraise=log" from
-the boot param when Secure Boot is enabled, but this does not cover
-cases where lockdown is used without Secure Boot.
-
-To defeat lockdown, boot without Secure Boot and add ima_appraise=log to
-the kernel command line; then:
-
-  $ echo "integrity" > /sys/kernel/security/lockdown
-  $ echo "appraise func=KEXEC_KERNEL_CHECK appraise_type=imasig" > \
-    /sys/kernel/security/ima/policy
-  $ kexec -ls unsigned-kernel
-
-Add a call to verify ima appraisal is set to "enforce" whenever lockdown
-is enabled.  This fixes CVE-2022-21505.
-
-Cc: stable@vger.kernel.org
-Fixes: 29d3c1c8dfe7 ("kexec: Allow kexec_file() with appropriate IMA policy when locked down")
-Signed-off-by: Eric Snowberg <eric.snowberg@oracle.com>
-Acked-by: Mimi Zohar <zohar@linux.ibm.com>
-Reviewed-by: John Haxby <john.haxby@oracle.com>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 5f3e2bf008c2 ("tcp: add tcp_min_snd_mss sysctl")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/integrity/ima/ima_policy.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ net/ipv4/tcp_output.c | 3 ++-
+ net/ipv4/tcp_timer.c  | 2 +-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
---- a/security/integrity/ima/ima_policy.c
-+++ b/security/integrity/ima/ima_policy.c
-@@ -1542,6 +1542,10 @@ bool ima_appraise_signature(enum kernel_
- 	if (id >= READING_MAX_ID)
- 		return false;
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index b84bedf2804a..7c0b96319fc0 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -1494,7 +1494,8 @@ static inline int __tcp_mtu_to_mss(struct sock *sk, int pmtu)
+ 	mss_now -= icsk->icsk_ext_hdr_len;
  
-+	if (id == READING_KEXEC_IMAGE && !(ima_appraise & IMA_APPRAISE_ENFORCE)
-+	    && security_locked_down(LOCKDOWN_KEXEC))
-+		return false;
-+
- 	func = read_idmap[id] ?: FILE_CHECK;
+ 	/* Then reserve room for full set of TCP options and 8 bytes of data */
+-	mss_now = max(mss_now, sock_net(sk)->ipv4.sysctl_tcp_min_snd_mss);
++	mss_now = max(mss_now,
++		      READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_min_snd_mss));
+ 	return mss_now;
+ }
  
- 	rcu_read_lock();
+diff --git a/net/ipv4/tcp_timer.c b/net/ipv4/tcp_timer.c
+index 0c3ee2aa244f..0460c5deee3f 100644
+--- a/net/ipv4/tcp_timer.c
++++ b/net/ipv4/tcp_timer.c
+@@ -173,7 +173,7 @@ static void tcp_mtu_probing(struct inet_connection_sock *icsk, struct sock *sk)
+ 		mss = tcp_mtu_to_mss(sk, icsk->icsk_mtup.search_low) >> 1;
+ 		mss = min(READ_ONCE(net->ipv4.sysctl_tcp_base_mss), mss);
+ 		mss = max(mss, net->ipv4.sysctl_tcp_mtu_probe_floor);
+-		mss = max(mss, net->ipv4.sysctl_tcp_min_snd_mss);
++		mss = max(mss, READ_ONCE(net->ipv4.sysctl_tcp_min_snd_mss));
+ 		icsk->icsk_mtup.search_low = tcp_mss_to_mtu(sk, mss);
+ 	}
+ 	tcp_sync_mss(sk, icsk->icsk_pmtu_cookie);
+-- 
+2.35.1
+
 
 
