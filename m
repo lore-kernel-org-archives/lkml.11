@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31B82C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:45:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45943C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:45:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243117AbiG0Rps (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:45:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45794 "EHLO
+        id S243124AbiG0Rpv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:45:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243235AbiG0Rob (ORCPT
+        with ESMTP id S243240AbiG0Rob (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Jul 2022 13:44:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 980198BA95;
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C59078BA98;
         Wed, 27 Jul 2022 09:53:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0266C61743;
-        Wed, 27 Jul 2022 16:53:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AA49C43146;
-        Wed, 27 Jul 2022 16:53:03 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id CBB5FCE2309;
+        Wed, 27 Jul 2022 16:53:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF712C433C1;
+        Wed, 27 Jul 2022 16:53:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940784;
-        bh=OGCj6S1xjd9XwIbJO81L93cBRcKmCDMbwE+p77sNUko=;
+        s=korg; t=1658940790;
+        bh=1QI/Q7cS/pyQ6EjE/gPkhbaMHoT+HkDV5b+WsHny1O4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uTHv2fH7QC1f6m0UbnSlOY2v3qJPlXjE6HC2cuY+OVM4BzHfOG/i0vBj666aoJSVA
-         HzPyWMVJZDTRbAcAfVLbHbha5aDLGjtfcyDUowB9TSXpOcIxniFFMkV0SdtjrXZ22m
-         ZYkzspOOfxeppju6Yu5PHjFHtRLcQep6t/qPaEw0=
+        b=kvkmI6lAxjpeIM+i1TMHR1imk1v/9W77cHX5siei9+K71QU+0xzCqPxQVpfuhlffx
+         5nmqID3+tNNVRTbD8GecjUt1iLOoB90M+/MsJU2JO1qylfh96laBKWp8Ff7QWIUeyj
+         H0CuXSnHkC1mVuXx5QvUZgE2TqP2vfMYr6sd5kBA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
-        Adam Guerin <adam.guerin@intel.com>,
-        Wojciech Ziemba <wojciech.ziemba@intel.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, Yuezhang Mo <Yuezhang.Mo@sony.com>,
+        Andy Wu <Andy.Wu@sony.com>,
+        Aoyama Wataru <wataru.aoyama@sony.com>,
+        Daniel Palmer <daniel.palmer@sony.com>,
+        Sungjong Seo <sj1557.seo@samsung.com>,
+        Namjae Jeon <linkinjeon@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 148/158] crypto: qat - add param check for DH
-Date:   Wed, 27 Jul 2022 18:13:32 +0200
-Message-Id: <20220727161027.286098097@linuxfoundation.org>
+Subject: [PATCH 5.18 150/158] exfat: fix referencing wrong parent directory information after renaming
+Date:   Wed, 27 Jul 2022 18:13:34 +0200
+Message-Id: <20220727161027.359196060@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -52,39 +53,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
+From: Yuezhang Mo <Yuezhang.Mo@sony.com>
 
-[ Upstream commit 2acbb8771f6ac82422886e63832ee7a0f4b1635b ]
+[ Upstream commit d8dad2588addd1d861ce19e7df3b702330f0c7e3 ]
 
-Reject requests with a source buffer that is bigger than the size of the
-key. This is to prevent a possible integer underflow that might happen
-when copying the source scatterlist into a linear buffer.
+During renaming, the parent directory information maybe
+updated. But the file/directory still references to the
+old parent directory information.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
-Reviewed-by: Adam Guerin <adam.guerin@intel.com>
-Reviewed-by: Wojciech Ziemba <wojciech.ziemba@intel.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+This bug will cause 2 problems.
+
+(1) The renamed file can not be written.
+
+    [10768.175172] exFAT-fs (sda1): error, failed to bmap (inode : 7afd50e4 iblock : 0, err : -5)
+    [10768.184285] exFAT-fs (sda1): Filesystem has been set read-only
+    ash: write error: Input/output error
+
+(2) Some dentries of the renamed file/directory are not set
+    to deleted after removing the file/directory.
+
+exfat_update_parent_info() is a workaround for the wrong parent
+directory information being used after renaming. Now that bug is
+fixed, this is no longer needed, so remove it.
+
+Fixes: 5f2aa075070c ("exfat: add inode operations")
+Cc: stable@vger.kernel.org # v5.7+
+Signed-off-by: Yuezhang Mo <Yuezhang.Mo@sony.com>
+Reviewed-by: Andy Wu <Andy.Wu@sony.com>
+Reviewed-by: Aoyama Wataru <wataru.aoyama@sony.com>
+Reviewed-by: Daniel Palmer <daniel.palmer@sony.com>
+Reviewed-by: Sungjong Seo <sj1557.seo@samsung.com>
+Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/qat/qat_common/qat_asym_algs.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ fs/exfat/namei.c | 27 +--------------------------
+ 1 file changed, 1 insertion(+), 26 deletions(-)
 
-diff --git a/drivers/crypto/qat/qat_common/qat_asym_algs.c b/drivers/crypto/qat/qat_common/qat_asym_algs.c
-index 947eeff181b4..7173a2a0a484 100644
---- a/drivers/crypto/qat/qat_common/qat_asym_algs.c
-+++ b/drivers/crypto/qat/qat_common/qat_asym_algs.c
-@@ -235,6 +235,10 @@ static int qat_dh_compute_value(struct kpp_request *req)
- 		req->dst_len = ctx->p_size;
- 		return -EOVERFLOW;
+diff --git a/fs/exfat/namei.c b/fs/exfat/namei.c
+index a02a04a993bf..76acc3721951 100644
+--- a/fs/exfat/namei.c
++++ b/fs/exfat/namei.c
+@@ -1080,6 +1080,7 @@ static int exfat_rename_file(struct inode *inode, struct exfat_chain *p_dir,
+ 
+ 		exfat_remove_entries(inode, p_dir, oldentry, 0,
+ 			num_old_entries);
++		ei->dir = *p_dir;
+ 		ei->entry = newentry;
+ 	} else {
+ 		if (exfat_get_entry_type(epold) == TYPE_FILE) {
+@@ -1167,28 +1168,6 @@ static int exfat_move_file(struct inode *inode, struct exfat_chain *p_olddir,
+ 	return 0;
+ }
+ 
+-static void exfat_update_parent_info(struct exfat_inode_info *ei,
+-		struct inode *parent_inode)
+-{
+-	struct exfat_sb_info *sbi = EXFAT_SB(parent_inode->i_sb);
+-	struct exfat_inode_info *parent_ei = EXFAT_I(parent_inode);
+-	loff_t parent_isize = i_size_read(parent_inode);
+-
+-	/*
+-	 * the problem that struct exfat_inode_info caches wrong parent info.
+-	 *
+-	 * because of flag-mismatch of ei->dir,
+-	 * there is abnormal traversing cluster chain.
+-	 */
+-	if (unlikely(parent_ei->flags != ei->dir.flags ||
+-		     parent_isize != EXFAT_CLU_TO_B(ei->dir.size, sbi) ||
+-		     parent_ei->start_clu != ei->dir.dir)) {
+-		exfat_chain_set(&ei->dir, parent_ei->start_clu,
+-			EXFAT_B_TO_CLU_ROUND_UP(parent_isize, sbi),
+-			parent_ei->flags);
+-	}
+-}
+-
+ /* rename or move a old file into a new file */
+ static int __exfat_rename(struct inode *old_parent_inode,
+ 		struct exfat_inode_info *ei, struct inode *new_parent_inode,
+@@ -1219,8 +1198,6 @@ static int __exfat_rename(struct inode *old_parent_inode,
+ 		return -ENOENT;
  	}
-+
-+	if (req->src_len > ctx->p_size)
-+		return -EINVAL;
-+
- 	memset(msg, '\0', sizeof(*msg));
- 	ICP_QAT_FW_PKE_HDR_VALID_FLAG_SET(msg->pke_hdr,
- 					  ICP_QAT_FW_COMN_REQ_FLAG_SET);
+ 
+-	exfat_update_parent_info(ei, old_parent_inode);
+-
+ 	exfat_chain_dup(&olddir, &ei->dir);
+ 	dentry = ei->entry;
+ 
+@@ -1241,8 +1218,6 @@ static int __exfat_rename(struct inode *old_parent_inode,
+ 			goto out;
+ 		}
+ 
+-		exfat_update_parent_info(new_ei, new_parent_inode);
+-
+ 		p_dir = &(new_ei->dir);
+ 		new_entry = new_ei->entry;
+ 		ep = exfat_get_dentry(sb, p_dir, new_entry, &new_bh);
 -- 
 2.35.1
 
