@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA2A5C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:45:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C61CC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:45:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240335AbiG0Qpj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:45:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42780 "EHLO
+        id S240348AbiG0Qpl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:45:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240436AbiG0QoZ (ORCPT
+        with ESMTP id S240462AbiG0Qo2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:44:25 -0400
+        Wed, 27 Jul 2022 12:44:28 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 954515F103;
-        Wed, 27 Jul 2022 09:31:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2260651A3B;
+        Wed, 27 Jul 2022 09:31:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D513EB821BD;
-        Wed, 27 Jul 2022 16:31:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32AE6C433D6;
-        Wed, 27 Jul 2022 16:31:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9E34BB821BE;
+        Wed, 27 Jul 2022 16:31:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF398C433D6;
+        Wed, 27 Jul 2022 16:31:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939465;
-        bh=u7bKTBJfAOMOZ9/sDoWY4Vi6VndC+6DTovQ/pdYctDU=;
+        s=korg; t=1658939468;
+        bh=xDorO/C3ElwiBLmXQmAIT9qsfde0KxyKSDyPqNa8N5s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xfMrcu2w7G5rU6DV3LWdtulVdA3quYkAAeVO3YRwxtzZSk8sp8kalBE1l7Kyt5hz0
-         cHvdUS8LFSugjj59Zws7jiX91iyxyBNzUHlDW9IJDV22Cot9isb56W9OpcJ59C3LiA
-         Z7w5ItckCFfBKtnTGjeLOf0XoRwk6WzILKpxLZdQ=
+        b=AnJpSbq928Qa3d6wmMtYjjFoOYM2/Fdabp3EQzPGn/bfJ6fmbkfqaNnk7jG29LrAz
+         E6GiUtJlnPzs3pIDJCerWmtUrAIlC2MVqw2LtoBQaD7myUZ8DOSnE8y392TyYPa4wS
+         ollHe8Iug/GFG8dWgqtxKWvGqCVot0CjJcBSIhv0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Tedd Ho-Jeong An <tedd.an@intel.com>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Subject: [PATCH 5.4 78/87] Bluetooth: Fix passing NULL to PTR_ERR
-Date:   Wed, 27 Jul 2022 18:11:11 +0200
-Message-Id: <20220727161012.233338716@linuxfoundation.org>
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 49/87] tcp: Fix a data-race around sysctl_tcp_thin_linear_timeouts.
+Date:   Wed, 27 Jul 2022 18:10:42 +0200
+Message-Id: <20220727161011.044246395@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161008.993711844@linuxfoundation.org>
 References: <20220727161008.993711844@linuxfoundation.org>
@@ -51,58 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-commit 266191aa8d14b84958aaeb5e96ee4e97839e3d87 upstream.
+[ Upstream commit 7c6f2a86ca590d5187a073d987e9599985fb1c7c ]
 
-Passing NULL to PTR_ERR will result in 0 (success), also since the likes of
-bt_skb_sendmsg does never return NULL it is safe to replace the instances of
-IS_ERR_OR_NULL with IS_ERR when checking its return.
+While reading sysctl_tcp_thin_linear_timeouts, it can be changed
+concurrently.  Thus, we need to add READ_ONCE() to its reader.
 
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Tested-by: Tedd Ho-Jeong An <tedd.an@intel.com>
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
-Cc: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 36e31b0af587 ("net: TCP thin linear timeouts")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/bluetooth/bluetooth.h |    2 +-
- net/bluetooth/rfcomm/sock.c       |    2 +-
- net/bluetooth/sco.c               |    2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+ net/ipv4/tcp_timer.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/include/net/bluetooth/bluetooth.h
-+++ b/include/net/bluetooth/bluetooth.h
-@@ -422,7 +422,7 @@ static inline struct sk_buff *bt_skb_sen
- 		struct sk_buff *tmp;
- 
- 		tmp = bt_skb_sendmsg(sk, msg, len, mtu, headroom, tailroom);
--		if (IS_ERR_OR_NULL(tmp)) {
-+		if (IS_ERR(tmp)) {
- 			kfree_skb(skb);
- 			return tmp;
- 		}
---- a/net/bluetooth/rfcomm/sock.c
-+++ b/net/bluetooth/rfcomm/sock.c
-@@ -586,7 +586,7 @@ static int rfcomm_sock_sendmsg(struct so
- 
- 	skb = bt_skb_sendmmsg(sk, msg, len, d->mtu, RFCOMM_SKB_HEAD_RESERVE,
- 			      RFCOMM_SKB_TAIL_RESERVE);
--	if (IS_ERR_OR_NULL(skb))
-+	if (IS_ERR(skb))
- 		return PTR_ERR(skb);
- 
- 	sent = rfcomm_dlc_send(d, skb);
---- a/net/bluetooth/sco.c
-+++ b/net/bluetooth/sco.c
-@@ -720,7 +720,7 @@ static int sco_sock_sendmsg(struct socke
- 		return -EOPNOTSUPP;
- 
- 	skb = bt_skb_sendmsg(sk, msg, len, len, 0, 0);
--	if (IS_ERR_OR_NULL(skb))
-+	if (IS_ERR(skb))
- 		return PTR_ERR(skb);
- 
- 	lock_sock(sk);
+diff --git a/net/ipv4/tcp_timer.c b/net/ipv4/tcp_timer.c
+index 26da44e196ed..a0107eb02ae4 100644
+--- a/net/ipv4/tcp_timer.c
++++ b/net/ipv4/tcp_timer.c
+@@ -569,7 +569,7 @@ void tcp_retransmit_timer(struct sock *sk)
+ 	 * linear-timeout retransmissions into a black hole
+ 	 */
+ 	if (sk->sk_state == TCP_ESTABLISHED &&
+-	    (tp->thin_lto || net->ipv4.sysctl_tcp_thin_linear_timeouts) &&
++	    (tp->thin_lto || READ_ONCE(net->ipv4.sysctl_tcp_thin_linear_timeouts)) &&
+ 	    tcp_stream_is_thin(tp) &&
+ 	    icsk->icsk_retransmits <= TCP_THIN_LINEAR_RETRIES) {
+ 		icsk->icsk_backoff = 0;
+-- 
+2.35.1
+
 
 
