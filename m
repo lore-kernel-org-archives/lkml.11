@@ -2,48 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E25C2C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:28:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A384C19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:29:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237295AbiG0Q2x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:28:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33802 "EHLO
+        id S237110AbiG0Q3A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:29:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236983AbiG0Q2U (ORCPT
+        with ESMTP id S237070AbiG0Q2V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:28:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D3274F1BF;
+        Wed, 27 Jul 2022 12:28:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90D3950061;
         Wed, 27 Jul 2022 09:24:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EBDF5B821BE;
-        Wed, 27 Jul 2022 16:24:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E40DC433D7;
-        Wed, 27 Jul 2022 16:24:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B5519B821BB;
+        Wed, 27 Jul 2022 16:24:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9446C433D7;
+        Wed, 27 Jul 2022 16:24:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939071;
-        bh=TaTB8GRVljmqGovaTLx5QRJ/B7bQxZgLx0Nf/yBLeLU=;
+        s=korg; t=1658939054;
+        bh=4AphrC4HChNJsB6o7tzA+z0ny0FEX8mWiyKBjVXxQRs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tgbhlOUSok6tXVKTVykvWi1B47U/1DoXdJJUIMp4EXy51pTOUf0Be1ywv81tegQDV
-         sm5wAbng9Q12WOnqV9Hu729ZSwRskedsNsKPxDLZuGViLJLWkOyUoni+qF7W3eJINR
-         ZWFqOrsMWU9AyunT4hmkqZFTUBiYOt4XqCErxTvQ=
+        b=Zoff63yaqs3Lfpo91Ii2XW8ChhwDE2VCFZX1BC88fmrddWfekh1EKP9hTv2kiWQTV
+         fhFz088MWLVgbBMeYYA1rHzzKtzfeH5WSGhfdVZ7gYCt1vbmVm2hL9bVHVyCW9U+4p
+         O+/xTYp0dp67MgTXiIo8uyBGUlAGQ0D1vTUV7/Bs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>,
-        Qian Cai <cai@lca.pw>,
-        Lech Perczak <l.perczak@camlintechnologies.com>,
-        Theodore Tso <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>,
-        Petr Mladek <pmladek@suse.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        kernel test robot <oliver.sang@intel.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.14 15/37] Revert "Revert "char/random: silence a lockdep splat with printk()""
-Date:   Wed, 27 Jul 2022 18:10:41 +0200
-Message-Id: <20220727161001.478020446@linuxfoundation.org>
+        Jeffrey Hugo <quic_jhugo@quicinc.com>,
+        Dexuan Cui <decui@microsoft.com>, Wei Liu <wei.liu@kernel.org>,
+        Carl Vanderlip <quic_carlv@quicinc.com>
+Subject: [PATCH 4.14 34/37] PCI: hv: Fix multi-MSI to allow more than one MSI vector
+Date:   Wed, 27 Jul 2022 18:11:00 +0200
+Message-Id: <20220727161002.225670872@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161000.822869853@linuxfoundation.org>
 References: <20220727161000.822869853@linuxfoundation.org>
@@ -55,197 +49,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Jeffrey Hugo <quic_jhugo@quicinc.com>
 
-In 2019, Sergey fixed a lockdep splat with 15341b1dd409 ("char/random:
-silence a lockdep splat with printk()"), but that got reverted soon
-after from 4.19 because back then it apparently caused various problems.
-But the issue it was fixing is still there, and more generally, many
-patches turning printk() into printk_deferred() have landed since,
-making me suspect it's okay to try this out again.
+commit 08e61e861a0e47e5e1a3fb78406afd6b0cea6b6d upstream.
 
-This should fix the following deadlock found by the kernel test robot:
+If the allocation of multiple MSI vectors for multi-MSI fails in the core
+PCI framework, the framework will retry the allocation as a single MSI
+vector, assuming that meets the min_vecs specified by the requesting
+driver.
 
-[   18.287691] WARNING: possible circular locking dependency detected
-[   18.287692] 4.19.248-00165-g3d1f971aa81f #1 Not tainted
-[   18.287693] ------------------------------------------------------
-[   18.287712] stop/202 is trying to acquire lock:
-[   18.287713] (ptrval) (console_owner){..-.}, at: console_unlock (??:?)
-[   18.287717]
-[   18.287718] but task is already holding lock:
-[   18.287718] (ptrval) (&(&port->lock)->rlock){-...}, at: pty_write (pty.c:?)
-[   18.287722]
-[   18.287722] which lock already depends on the new lock.
-[   18.287723]
-[   18.287724]
-[   18.287725] the existing dependency chain (in reverse order) is:
-[   18.287725]
-[   18.287726] -> #2 (&(&port->lock)->rlock){-...}:
-[   18.287729] validate_chain+0x84a/0xe00
-[   18.287729] __lock_acquire (lockdep.c:?)
-[   18.287730] lock_acquire (??:?)
-[   18.287731] _raw_spin_lock_irqsave (??:?)
-[   18.287732] tty_port_tty_get (??:?)
-[   18.287733] tty_port_default_wakeup (tty_port.c:?)
-[   18.287734] tty_port_tty_wakeup (??:?)
-[   18.287734] uart_write_wakeup (??:?)
-[   18.287735] serial8250_tx_chars (??:?)
-[   18.287736] serial8250_handle_irq (??:?)
-[   18.287737] serial8250_default_handle_irq (8250_port.c:?)
-[   18.287738] serial8250_interrupt (8250_core.c:?)
-[   18.287738] __handle_irq_event_percpu (??:?)
-[   18.287739] handle_irq_event_percpu (??:?)
-[   18.287740] handle_irq_event (??:?)
-[   18.287741] handle_edge_irq (??:?)
-[   18.287742] handle_irq (??:?)
-[   18.287742] do_IRQ (??:?)
-[   18.287743] common_interrupt (entry_32.o:?)
-[   18.287744] _raw_spin_unlock_irqrestore (??:?)
-[   18.287745] uart_write (serial_core.c:?)
-[   18.287746] process_output_block (n_tty.c:?)
-[   18.287747] n_tty_write (n_tty.c:?)
-[   18.287747] tty_write (tty_io.c:?)
-[   18.287748] __vfs_write (??:?)
-[   18.287749] vfs_write (??:?)
-[   18.287750] ksys_write (??:?)
-[   18.287750] sys_write (??:?)
-[   18.287751] do_fast_syscall_32 (??:?)
-[   18.287752] entry_SYSENTER_32 (??:?)
-[   18.287752]
-[   18.287753] -> #1 (&port_lock_key){-.-.}:
-[   18.287756]
-[   18.287756] -> #0 (console_owner){..-.}:
-[   18.287759] check_prevs_add (lockdep.c:?)
-[   18.287760] validate_chain+0x84a/0xe00
-[   18.287761] __lock_acquire (lockdep.c:?)
-[   18.287761] lock_acquire (??:?)
-[   18.287762] console_unlock (??:?)
-[   18.287763] vprintk_emit (??:?)
-[   18.287764] vprintk_default (??:?)
-[   18.287764] vprintk_func (??:?)
-[   18.287765] printk (??:?)
-[   18.287766] get_random_u32 (??:?)
-[   18.287767] shuffle_freelist (slub.c:?)
-[   18.287767] allocate_slab (slub.c:?)
-[   18.287768] new_slab (slub.c:?)
-[   18.287769] ___slab_alloc+0x6d0/0xb20
-[   18.287770] __slab_alloc+0xd6/0x2e0
-[   18.287770] __kmalloc (??:?)
-[   18.287771] tty_buffer_alloc (tty_buffer.c:?)
-[   18.287772] __tty_buffer_request_room (tty_buffer.c:?)
-[   18.287773] tty_insert_flip_string_fixed_flag (??:?)
-[   18.287774] pty_write (pty.c:?)
-[   18.287775] process_output_block (n_tty.c:?)
-[   18.287776] n_tty_write (n_tty.c:?)
-[   18.287777] tty_write (tty_io.c:?)
-[   18.287778] __vfs_write (??:?)
-[   18.287779] vfs_write (??:?)
-[   18.287780] ksys_write (??:?)
-[   18.287780] sys_write (??:?)
-[   18.287781] do_fast_syscall_32 (??:?)
-[   18.287782] entry_SYSENTER_32 (??:?)
-[   18.287783]
-[   18.287783] other info that might help us debug this:
-[   18.287784]
-[   18.287785] Chain exists of:
-[   18.287785]   console_owner --> &port_lock_key --> &(&port->lock)->rlock
-[   18.287789]
-[   18.287790]  Possible unsafe locking scenario:
-[   18.287790]
-[   18.287791]        CPU0                    CPU1
-[   18.287792]        ----                    ----
-[   18.287792]   lock(&(&port->lock)->rlock);
-[   18.287794]                                lock(&port_lock_key);
-[   18.287814]                                lock(&(&port->lock)->rlock);
-[   18.287815]   lock(console_owner);
-[   18.287817]
-[   18.287818]  *** DEADLOCK ***
-[   18.287818]
-[   18.287819] 6 locks held by stop/202:
-[   18.287820] #0: (ptrval) (&tty->ldisc_sem){++++}, at: ldsem_down_read (??:?)
-[   18.287823] #1: (ptrval) (&tty->atomic_write_lock){+.+.}, at: tty_write_lock (tty_io.c:?)
-[   18.287826] #2: (ptrval) (&o_tty->termios_rwsem/1){++++}, at: n_tty_write (n_tty.c:?)
-[   18.287830] #3: (ptrval) (&ldata->output_lock){+.+.}, at: process_output_block (n_tty.c:?)
-[   18.287834] #4: (ptrval) (&(&port->lock)->rlock){-...}, at: pty_write (pty.c:?)
-[   18.287838] #5: (ptrval) (console_lock){+.+.}, at: console_trylock_spinning (printk.c:?)
-[   18.287841]
-[   18.287842] stack backtrace:
-[   18.287843] CPU: 0 PID: 202 Comm: stop Not tainted 4.19.248-00165-g3d1f971aa81f #1
-[   18.287843] Call Trace:
-[   18.287844] dump_stack (??:?)
-[   18.287845] print_circular_bug.cold+0x78/0x8b
-[   18.287846] check_prev_add+0x66a/0xd20
-[   18.287847] check_prevs_add (lockdep.c:?)
-[   18.287848] validate_chain+0x84a/0xe00
-[   18.287848] __lock_acquire (lockdep.c:?)
-[   18.287849] lock_acquire (??:?)
-[   18.287850] ? console_unlock (??:?)
-[   18.287851] console_unlock (??:?)
-[   18.287851] ? console_unlock (??:?)
-[   18.287852] ? native_save_fl (??:?)
-[   18.287853] vprintk_emit (??:?)
-[   18.287854] vprintk_default (??:?)
-[   18.287855] vprintk_func (??:?)
-[   18.287855] printk (??:?)
-[   18.287856] get_random_u32 (??:?)
-[   18.287857] ? shuffle_freelist (slub.c:?)
-[   18.287858] shuffle_freelist (slub.c:?)
-[   18.287858] ? page_address (??:?)
-[   18.287859] allocate_slab (slub.c:?)
-[   18.287860] new_slab (slub.c:?)
-[   18.287861] ? pvclock_clocksource_read (??:?)
-[   18.287862] ___slab_alloc+0x6d0/0xb20
-[   18.287862] ? kvm_sched_clock_read (kvmclock.c:?)
-[   18.287863] ? __slab_alloc+0xbc/0x2e0
-[   18.287864] ? native_wbinvd (paravirt.c:?)
-[   18.287865] __slab_alloc+0xd6/0x2e0
-[   18.287865] __kmalloc (??:?)
-[   18.287866] ? __lock_acquire (lockdep.c:?)
-[   18.287867] ? tty_buffer_alloc (tty_buffer.c:?)
-[   18.287868] tty_buffer_alloc (tty_buffer.c:?)
-[   18.287869] __tty_buffer_request_room (tty_buffer.c:?)
-[   18.287869] tty_insert_flip_string_fixed_flag (??:?)
-[   18.287870] pty_write (pty.c:?)
-[   18.287871] process_output_block (n_tty.c:?)
-[   18.287872] n_tty_write (n_tty.c:?)
-[   18.287873] ? print_dl_stats (??:?)
-[   18.287874] ? n_tty_ioctl (n_tty.c:?)
-[   18.287874] tty_write (tty_io.c:?)
-[   18.287875] ? n_tty_ioctl (n_tty.c:?)
-[   18.287876] ? tty_write_unlock (tty_io.c:?)
-[   18.287877] __vfs_write (??:?)
-[   18.287877] vfs_write (??:?)
-[   18.287878] ? __fget_light (file.c:?)
-[   18.287879] ksys_write (??:?)
+Hyper-V advertises that multi-MSI is supported, but reuses the VECTOR
+domain to implement that for x86.  The VECTOR domain does not support
+multi-MSI, so the alloc will always fail and fallback to a single MSI
+allocation.
 
-Cc: Sergey Senozhatsky <sergey.senozhatsky.work@gmail.com>
-Cc: Qian Cai <cai@lca.pw>
-Cc: Lech Perczak <l.perczak@camlintechnologies.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Theodore Ts'o <tytso@mit.edu>
-Cc: Sasha Levin <sashal@kernel.org>
-Cc: Petr Mladek <pmladek@suse.com>
-Cc: John Ogness <john.ogness@linutronix.de>
-Reported-by: kernel test robot <oliver.sang@intel.com>
-Link: https://lore.kernel.org/lkml/Ytz+lo4zRQYG3JUR@xsang-OptiPlex-9020
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+In short, Hyper-V advertises a capability it does not implement.
+
+Hyper-V can support multi-MSI because it coordinates with the hypervisor
+to map the MSIs in the IOMMU's interrupt remapper, which is something the
+VECTOR domain does not have.  Therefore the fix is simple - copy what the
+x86 IOMMU drivers (AMD/Intel-IR) do by removing
+X86_IRQ_ALLOC_CONTIGUOUS_VECTORS after calling the VECTOR domain's
+pci_msi_prepare().
+
+4.14 backport - file location change to host/pci-hyperv.c. adds the
+hv_msi_prepare wrapper function. X86_IRQ_ALLOC_TYPE_PCI_MSI changed to
+X86_IRQ_ALLOC_TYPE_MSI (same value).
+
+Fixes: 4daace0d8ce8 ("PCI: hv: Add paravirtual PCI front-end for Microsoft Hyper-V VMs")
+Signed-off-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
+Reviewed-by: Dexuan Cui <decui@microsoft.com>
+Link: https://lore.kernel.org/r/1649856981-14649-1-git-send-email-quic_jhugo@quicinc.com
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
+Signed-off-by: Carl Vanderlip <quic_carlv@quicinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/pci/host/pci-hyperv.c |   17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -183,8 +183,8 @@ static void __cold process_random_ready_
+--- a/drivers/pci/host/pci-hyperv.c
++++ b/drivers/pci/host/pci-hyperv.c
+@@ -908,6 +908,21 @@ static void hv_irq_mask(struct irq_data
+ 	pci_msi_mask_irq(data);
+ }
  
- #define warn_unseeded_randomness() \
- 	if (IS_ENABLED(CONFIG_WARN_ALL_UNSEEDED_RANDOM) && !crng_ready()) \
--		pr_notice("%s called from %pS with crng_init=%d\n", \
--			  __func__, (void *)_RET_IP_, crng_init)
-+		printk_deferred(KERN_NOTICE "random: %s called from %pS with crng_init=%d\n", \
-+				__func__, (void *)_RET_IP_, crng_init)
++static int hv_msi_prepare(struct irq_domain *domain, struct device *dev,
++			  int nvec, msi_alloc_info_t *info)
++{
++	int ret = pci_msi_prepare(domain, dev, nvec, info);
++
++	/*
++	 * By using the interrupt remapper in the hypervisor IOMMU, contiguous
++	 * CPU vectors is not needed for multi-MSI
++	 */
++	 if (info->type == X86_IRQ_ALLOC_TYPE_MSI)
++		info->flags &= ~X86_IRQ_ALLOC_CONTIGUOUS_VECTORS;
++
++	return ret;
++}
++
+ /**
+  * hv_irq_unmask() - "Unmask" the IRQ by setting its current
+  * affinity.
+@@ -1259,7 +1274,7 @@ static irq_hw_number_t hv_msi_domain_ops
  
- 
- /*********************************************************************
+ static struct msi_domain_ops hv_msi_ops = {
+ 	.get_hwirq	= hv_msi_domain_ops_get_hwirq,
+-	.msi_prepare	= pci_msi_prepare,
++	.msi_prepare	= hv_msi_prepare,
+ 	.set_desc	= pci_msi_set_desc,
+ 	.msi_free	= hv_msi_free,
+ };
 
 
