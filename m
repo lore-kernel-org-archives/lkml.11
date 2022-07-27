@@ -2,90 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 940ADC19F21
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 03:13:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CCD1C19F21
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 03:15:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240236AbiG0DNV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 23:13:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43558 "EHLO
+        id S240246AbiG0DPM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 23:15:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240120AbiG0DNL (ORCPT
+        with ESMTP id S240120AbiG0DPI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 23:13:11 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CEEC3CBFD
-        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 20:13:10 -0700 (PDT)
-Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LszKz1Fp3zjXQ2;
-        Wed, 27 Jul 2022 11:10:15 +0800 (CST)
-Received: from huawei.com (10.175.112.208) by kwepemi500012.china.huawei.com
- (7.221.188.12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 27 Jul
- 2022 11:13:07 +0800
-From:   Xu Qiang <xuqiang36@huawei.com>
-To:     <linux@armlinux.org.uk>, <robh@kernel.org>,
-        <rmk+kernel@armlinux.org.uk>, <kirill.shtuemov@linux.intel.com>,
-        <akpm@linux-foundation.org>, <ardb@kernel.org>, <rppt@kernel.org>,
-        <austindh.kim@gmail.com>
-CC:     <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <weiyongjun1@huawei.com>,
-        <guohanjun@huawei.com>, <xuqiang36@huawei.com>
-Subject: [PATCH -next 3/3] arm: Delete similar code across of_flat_dt_match_machine and setup_machine_fdt
-Date:   Wed, 27 Jul 2022 03:11:00 +0000
-Message-ID: <20220727031100.112919-3-xuqiang36@huawei.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220727031100.112919-1-xuqiang36@huawei.com>
-References: <20220727031100.112919-1-xuqiang36@huawei.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.208]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemi500012.china.huawei.com (7.221.188.12)
-X-CFilter-Loop: Reflected
+        Tue, 26 Jul 2022 23:15:08 -0400
+Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 868EB3CBFC;
+        Tue, 26 Jul 2022 20:15:04 -0700 (PDT)
+Received: from localhost (unknown [127.0.0.1])
+        by mail.nfschina.com (Postfix) with ESMTP id 8B8FE1E80D54;
+        Wed, 27 Jul 2022 11:15:15 +0800 (CST)
+X-Virus-Scanned: amavisd-new at test.com
+Received: from mail.nfschina.com ([127.0.0.1])
+        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 05eI2f5kp0in; Wed, 27 Jul 2022 11:15:12 +0800 (CST)
+Received: from localhost.localdomain (unknown [180.167.10.98])
+        (Authenticated sender: yuzhe@nfschina.com)
+        by mail.nfschina.com (Postfix) with ESMTPA id C0AFD1E80D05;
+        Wed, 27 Jul 2022 11:15:11 +0800 (CST)
+From:   Yu Zhe <yuzhe@nfschina.com>
+To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com
+Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        liqiong@nfschina.com, Yu Zhe <yuzhe@nfschina.com>
+Subject: [PATCH] x86/aperfmperf: use time_is_before_jiffies(a + b) to replace "jiffies - a > b"
+Date:   Wed, 27 Jul 2022 11:14:05 +0800
+Message-Id: <20220727031405.26892-1-yuzhe@nfschina.com>
+X-Mailer: git-send-email 2.11.0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-of_flat_dt_match_machine() print compatible content when its
-return value is NULL, and setup_machine_fdt print again when
-mdesc is NULL. So remove duplicate print codes in setup_machine_fdt.
+time_is_before_jiffies deals with timer wrapping correctly.
 
-Signed-off-by: Xu Qiang <xuqiang36@huawei.com>
+Signed-off-by: Yu Zhe <yuzhe@nfschina.com>
 ---
- arch/arm/kernel/devtree.c | 19 +------------------
- 1 file changed, 1 insertion(+), 18 deletions(-)
+ arch/x86/kernel/cpu/aperfmperf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/kernel/devtree.c b/arch/arm/kernel/devtree.c
-index 182a59b23b09..b6151bcf31cb 100644
---- a/arch/arm/kernel/devtree.c
-+++ b/arch/arm/kernel/devtree.c
-@@ -208,25 +208,8 @@ const struct machine_desc * __init setup_machine_fdt(void *dt_virt)
+diff --git a/arch/x86/kernel/cpu/aperfmperf.c b/arch/x86/kernel/cpu/aperfmperf.c
+index 1f60a2b27936..22e0bac3fffe 100644
+--- a/arch/x86/kernel/cpu/aperfmperf.c
++++ b/arch/x86/kernel/cpu/aperfmperf.c
+@@ -423,7 +423,7 @@ unsigned int arch_freq_get_on_cpu(int cpu)
+ 	 * Bail on invalid count and when the last update was too long ago,
+ 	 * which covers idle and NOHZ full CPUs.
+ 	 */
+-	if (!mcnt || (jiffies - last) > MAX_SAMPLE_AGE)
++	if (!mcnt || time_is_before_jiffies(last + MAX_SAMPLE_AGE))
+ 		goto fallback;
  
- 	mdesc = of_flat_dt_match_machine(mdesc_best, arch_get_next_mach);
- 
--	if (!mdesc) {
--		const char *prop;
--		int size;
--		unsigned long dt_root;
--
--		early_print("\nError: unrecognized/unsupported "
--			    "device tree compatible list:\n[ ");
--
--		dt_root = of_get_flat_dt_root();
--		prop = of_get_flat_dt_prop(dt_root, "compatible", &size);
--		while (size > 0) {
--			early_print("'%s' ", prop);
--			size -= strlen(prop) + 1;
--			prop += strlen(prop) + 1;
--		}
--		early_print("]\n\n");
--
-+	if (!mdesc)
- 		dump_machine_table(); /* does not return */
--	}
- 
- 	/* We really don't want to do this, but sometimes firmware provides buggy data */
- 	if (mdesc->dt_fixup)
+ 	return div64_u64((cpu_khz * acnt), mcnt);
 -- 
-2.17.1
+2.11.0
 
