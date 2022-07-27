@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3C5EC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 11:36:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E288C19F29
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 11:36:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232447AbiG0Lgo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 07:36:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52798 "EHLO
+        id S232493AbiG0Lgs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 07:36:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232289AbiG0LgI (ORCPT
+        with ESMTP id S232213AbiG0LgV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 07:36:08 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70B184A819;
-        Wed, 27 Jul 2022 04:35:55 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id ez10so30827138ejc.13;
-        Wed, 27 Jul 2022 04:35:55 -0700 (PDT)
+        Wed, 27 Jul 2022 07:36:21 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2851049B59;
+        Wed, 27 Jul 2022 04:35:57 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id l23so31001240ejr.5;
+        Wed, 27 Jul 2022 04:35:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=4YypBtO7DBxDIqaV2gvYUg5aIwcrwgavrc6e5GQ6Kf8=;
-        b=ql+C+HwjAJjtdveNobuTAyDgyj2jIkqv31cLrtYSK4FAdcOgyS2bXKs8Q/npqKfKxg
-         1nVbjZV2MIxC9NlwouxavMPZjw5huhWE6EPeKTwNbck9xfQPECVPQ5jREKVb6lOUVO1z
-         1pf+4KpfmerMbGTeqlPVJPNihRIMV2XG5PYxcsqWHh/5appqK3oOkbzgEWnR724JqzuN
-         /2rtHrLsGpHYAClP4isEr7UIaEQEL4KqXCcVvxv1cyo+GHr4iVoNK/KHBsZfpJgkRvvI
-         +pOnWeqnxfiHHDEHF+q3OSxfCgYQTWqbDb0DFCCb/T+lLuYwE7IWui+T0gkSJ1rHsSBZ
-         6jJQ==
+        bh=emj/GT5JmzJUsrf2mYkh+NM1juwE9cvNm3oeIvLkIFs=;
+        b=lgQImgCWyDxKWU3Py9LKvFXtuJjs+gr1X8OqVQcQ02SinqqP4Ot1JbbCdr8RnyRrYW
+         3q+V6jMCugzj7EvwiLWl/IoIPngmenUcTKa+EBnsJQ8vy/fO3hQ35YhAHhVEYSsZLr9V
+         mX/JZIkP9pmQKSwaFL1oUZoSJySzfnADoLB3yDP++AGiUXmkQLwraigWw0jYcXE/hGbp
+         cKnMaWkkSaLn7yP3OITLbHV+yTaMITe5dPCnYvcO+3R1kmck6lxFv0S3XcYmwGHTBI9B
+         1arolvoslTeqEiW/W7WfQGq218kd9FRZlWmVHMhcEl8NLlGvpzfE7wVNm/x6Ja7jze29
+         tsPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=4YypBtO7DBxDIqaV2gvYUg5aIwcrwgavrc6e5GQ6Kf8=;
-        b=jvw1EuKYFU6RUttXI1ybaij3xR4TYX7sd1xwgj6ZOVsmIUJQtwWQJDRRMR7UDIUV81
-         pfA/Rg7uqPK6aBegA24tzDWbxPrk31B5k3gac2SQUKdFNAWX123M8urzHEdaG4yo0wzN
-         AUEPMq37v3VxgBu+7n6oa9o14RQoGGgcQ6/kzKm7O5lrM3vI91rEEooq0enJMi9qv+yA
-         7LQApauCmofnMISFXNwhIWePSn7OVqzXJnRmudrIqROrWqJX0z9+BtVlPpYNqTQT3Mw7
-         RrFbuHv6ph6OeMVgFM4FxtDgNKaLRfcr/2jexuejyMvCMNxYrBYV/zf7JQuAKUJ1BG1t
-         o1JA==
-X-Gm-Message-State: AJIora98busP56r8HxlrkT9O3n6eooiJ6h7EhXVDk6Gb3W5xZC/dy83F
-        vuBbuSAz47FTLrGJGlSyeXjOB5yKbUEGok63
-X-Google-Smtp-Source: AGRyM1uGkbcW1tPhlVZArEULqYo1sYQarQDmCTFaj8cfhQy5263gBZbUg0ledRuq964m2YyZOWpKxw==
-X-Received: by 2002:a17:907:a218:b0:72b:8aae:3f8c with SMTP id qp24-20020a170907a21800b0072b8aae3f8cmr17708077ejc.191.1658921753402;
-        Wed, 27 Jul 2022 04:35:53 -0700 (PDT)
+        bh=emj/GT5JmzJUsrf2mYkh+NM1juwE9cvNm3oeIvLkIFs=;
+        b=FGB6btGWP3ciuJ//44dqAVop//fH33geEFDLVNLVCIU/SeS4iKR4F6qlbND7drnknO
+         1M2HdCY546vWVdrtih5InYKXRPHd9xt82yzi+ENCT89R7DMqmQTVDekuGmqO0ESVaIG1
+         mxdCq1LRGBKQYiGRXReXopy9ZExmNbLTQUqsZxM020BA+U8C3LhgcbPsw1iE/CMtphQK
+         /jtyt9sjQXbhtL5Qbp26sdrE7tcco4S/2vyYSHCpvV3FzUeGiOyDlNq4pUFpXx42KZMG
+         khLZAX2hsecHH+gUXXCC8Je4alrZV1fi3Z9fycSQWoymJddJRq6Dx559wA7H7nGuw3rz
+         eY3w==
+X-Gm-Message-State: AJIora9RIHIJIJekyn+n5NJebozoVwxcQjDyRHYAqIJlntZlaBRqqRjj
+        M66Pblut7HdAQdDfBrBO+Wk=
+X-Google-Smtp-Source: AGRyM1t1wUXtRZIVAHKFfpeIsusgD8bZLdzEySo627OygCnertmSvHdN2VrPtAhqX3+vXq2zi91jjg==
+X-Received: by 2002:a17:907:7394:b0:72b:3e52:6262 with SMTP id er20-20020a170907739400b0072b3e526262mr17880914ejc.756.1658921756343;
+        Wed, 27 Jul 2022 04:35:56 -0700 (PDT)
 Received: from localhost.localdomain (c105-182.i13-27.melita.com. [94.17.105.182])
-        by smtp.googlemail.com with ESMTPSA id p25-20020aa7cc99000000b0043ca6fb7e7dsm1334056edt.68.2022.07.27.04.35.52
+        by smtp.googlemail.com with ESMTPSA id p25-20020aa7cc99000000b0043ca6fb7e7dsm1334056edt.68.2022.07.27.04.35.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 04:35:53 -0700 (PDT)
+        Wed, 27 Jul 2022 04:35:55 -0700 (PDT)
 From:   Christian Marangi <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -61,9 +61,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Jens Axboe <axboe@kernel.dk>,
         Christian Marangi <ansuelsmth@gmail.com>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [net-next PATCH v5 09/14] net: dsa: qca8k: move set age/MTU/port enable/disable functions to common code
-Date:   Wed, 27 Jul 2022 13:35:18 +0200
-Message-Id: <20220727113523.19742-10-ansuelsmth@gmail.com>
+Subject: [net-next PATCH v5 11/14] net: dsa: qca8k: move port mirror functions to common code
+Date:   Wed, 27 Jul 2022 13:35:20 +0200
+Message-Id: <20220727113523.19742-12-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220727113523.19742-1-ansuelsmth@gmail.com>
 References: <20220727113523.19742-1-ansuelsmth@gmail.com>
@@ -73,229 +73,235 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The same set age, MTU and port enable/disable function are used by
-driver based on qca8k family switch.
-Move them to common code to make them accessible also by other drivers.
-While at it also drop unnecessary qca8k_priv cast for void pointers.
+The same port mirror functions are used by drivers based on qca8k family
+switch. Move them to common code to make them accessible also by other
+drivers.
 
 Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 ---
- drivers/net/dsa/qca/qca8k-8xxx.c   | 88 ------------------------------
- drivers/net/dsa/qca/qca8k-common.c | 85 +++++++++++++++++++++++++++++
- drivers/net/dsa/qca/qca8k.h        | 12 ++++
- 3 files changed, 97 insertions(+), 88 deletions(-)
+ drivers/net/dsa/qca/qca8k-8xxx.c   | 93 ------------------------------
+ drivers/net/dsa/qca/qca8k-common.c | 91 +++++++++++++++++++++++++++++
+ drivers/net/dsa/qca/qca8k.h        |  7 +++
+ 3 files changed, 98 insertions(+), 93 deletions(-)
 
 diff --git a/drivers/net/dsa/qca/qca8k-8xxx.c b/drivers/net/dsa/qca/qca8k-8xxx.c
-index 11d3116733af..1815863502c9 100644
+index bf4dd1cd0f9d..f6ea5a82da9e 100644
 --- a/drivers/net/dsa/qca/qca8k-8xxx.c
 +++ b/drivers/net/dsa/qca/qca8k-8xxx.c
-@@ -1908,94 +1908,6 @@ qca8k_port_fast_age(struct dsa_switch *ds, int port)
- 	mutex_unlock(&priv->reg_mutex);
+@@ -1687,99 +1687,6 @@ qca8k_get_ethtool_stats_eth(struct dsa_switch *ds, int port, u64 *data)
+ 	return ret;
  }
  
 -static int
--qca8k_set_ageing_time(struct dsa_switch *ds, unsigned int msecs)
+-qca8k_port_mirror_add(struct dsa_switch *ds, int port,
+-		      struct dsa_mall_mirror_tc_entry *mirror,
+-		      bool ingress, struct netlink_ext_ack *extack)
 -{
 -	struct qca8k_priv *priv = ds->priv;
--	unsigned int secs = msecs / 1000;
--	u32 val;
+-	int monitor_port, ret;
+-	u32 reg, val;
 -
--	/* AGE_TIME reg is set in 7s step */
--	val = secs / 7;
+-	/* Check for existent entry */
+-	if ((ingress ? priv->mirror_rx : priv->mirror_tx) & BIT(port))
+-		return -EEXIST;
 -
--	/* Handle case with 0 as val to NOT disable
--	 * learning
+-	ret = regmap_read(priv->regmap, QCA8K_REG_GLOBAL_FW_CTRL0, &val);
+-	if (ret)
+-		return ret;
+-
+-	/* QCA83xx can have only one port set to mirror mode.
+-	 * Check that the correct port is requested and return error otherwise.
+-	 * When no mirror port is set, the values is set to 0xF
 -	 */
--	if (!val)
--		val = 1;
+-	monitor_port = FIELD_GET(QCA8K_GLOBAL_FW_CTRL0_MIRROR_PORT_NUM, val);
+-	if (monitor_port != 0xF && monitor_port != mirror->to_local_port)
+-		return -EEXIST;
 -
--	return regmap_update_bits(priv->regmap, QCA8K_REG_ATU_CTRL, QCA8K_ATU_AGE_TIME_MASK,
--				  QCA8K_ATU_AGE_TIME(val));
--}
+-	/* Set the monitor port */
+-	val = FIELD_PREP(QCA8K_GLOBAL_FW_CTRL0_MIRROR_PORT_NUM,
+-			 mirror->to_local_port);
+-	ret = regmap_update_bits(priv->regmap, QCA8K_REG_GLOBAL_FW_CTRL0,
+-				 QCA8K_GLOBAL_FW_CTRL0_MIRROR_PORT_NUM, val);
+-	if (ret)
+-		return ret;
 -
--static int
--qca8k_port_enable(struct dsa_switch *ds, int port,
--		  struct phy_device *phy)
--{
--	struct qca8k_priv *priv = (struct qca8k_priv *)ds->priv;
+-	if (ingress) {
+-		reg = QCA8K_PORT_LOOKUP_CTRL(port);
+-		val = QCA8K_PORT_LOOKUP_ING_MIRROR_EN;
+-	} else {
+-		reg = QCA8K_REG_PORT_HOL_CTRL1(port);
+-		val = QCA8K_PORT_HOL_CTRL1_EG_MIRROR_EN;
+-	}
 -
--	qca8k_port_set_status(priv, port, 1);
--	priv->port_enabled_map |= BIT(port);
+-	ret = regmap_update_bits(priv->regmap, reg, val, val);
+-	if (ret)
+-		return ret;
 -
--	if (dsa_is_user_port(ds, port))
--		phy_support_asym_pause(phy);
+-	/* Track mirror port for tx and rx to decide when the
+-	 * mirror port has to be disabled.
+-	 */
+-	if (ingress)
+-		priv->mirror_rx |= BIT(port);
+-	else
+-		priv->mirror_tx |= BIT(port);
 -
 -	return 0;
 -}
 -
 -static void
--qca8k_port_disable(struct dsa_switch *ds, int port)
--{
--	struct qca8k_priv *priv = (struct qca8k_priv *)ds->priv;
--
--	qca8k_port_set_status(priv, port, 0);
--	priv->port_enabled_map &= ~BIT(port);
--}
--
--static int
--qca8k_port_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
+-qca8k_port_mirror_del(struct dsa_switch *ds, int port,
+-		      struct dsa_mall_mirror_tc_entry *mirror)
 -{
 -	struct qca8k_priv *priv = ds->priv;
+-	u32 reg, val;
 -	int ret;
 -
--	/* We have only have a general MTU setting.
--	 * DSA always set the CPU port's MTU to the largest MTU of the slave
--	 * ports.
--	 * Setting MTU just for the CPU port is sufficient to correctly set a
--	 * value for every port.
--	 */
--	if (!dsa_is_cpu_port(ds, port))
--		return 0;
+-	if (mirror->ingress) {
+-		reg = QCA8K_PORT_LOOKUP_CTRL(port);
+-		val = QCA8K_PORT_LOOKUP_ING_MIRROR_EN;
+-	} else {
+-		reg = QCA8K_REG_PORT_HOL_CTRL1(port);
+-		val = QCA8K_PORT_HOL_CTRL1_EG_MIRROR_EN;
+-	}
 -
--	/* To change the MAX_FRAME_SIZE the cpu ports must be off or
--	 * the switch panics.
--	 * Turn off both cpu ports before applying the new value to prevent
--	 * this.
--	 */
--	if (priv->port_enabled_map & BIT(0))
--		qca8k_port_set_status(priv, 0, 0);
+-	ret = regmap_clear_bits(priv->regmap, reg, val);
+-	if (ret)
+-		goto err;
 -
--	if (priv->port_enabled_map & BIT(6))
--		qca8k_port_set_status(priv, 6, 0);
+-	if (mirror->ingress)
+-		priv->mirror_rx &= ~BIT(port);
+-	else
+-		priv->mirror_tx &= ~BIT(port);
 -
--	/* Include L2 header / FCS length */
--	ret = qca8k_write(priv, QCA8K_MAX_FRAME_SIZE, new_mtu + ETH_HLEN + ETH_FCS_LEN);
--
--	if (priv->port_enabled_map & BIT(0))
--		qca8k_port_set_status(priv, 0, 1);
--
--	if (priv->port_enabled_map & BIT(6))
--		qca8k_port_set_status(priv, 6, 1);
--
--	return ret;
--}
--
--static int
--qca8k_port_max_mtu(struct dsa_switch *ds, int port)
--{
--	return QCA8K_MAX_MTU;
+-	/* No port set to send packet to mirror port. Disable mirror port */
+-	if (!priv->mirror_rx && !priv->mirror_tx) {
+-		val = FIELD_PREP(QCA8K_GLOBAL_FW_CTRL0_MIRROR_PORT_NUM, 0xF);
+-		ret = regmap_update_bits(priv->regmap, QCA8K_REG_GLOBAL_FW_CTRL0,
+-					 QCA8K_GLOBAL_FW_CTRL0_MIRROR_PORT_NUM, val);
+-		if (ret)
+-			goto err;
+-	}
+-err:
+-	dev_err(priv->dev, "Failed to del mirror port from %d", port);
 -}
 -
  static int
- qca8k_port_fdb_insert(struct qca8k_priv *priv, const u8 *addr,
- 		      u16 port_mask, u16 vid)
+ qca8k_port_vlan_filtering(struct dsa_switch *ds, int port, bool vlan_filtering,
+ 			  struct netlink_ext_ack *extack)
 diff --git a/drivers/net/dsa/qca/qca8k-common.c b/drivers/net/dsa/qca/qca8k-common.c
-index 13069c9ba3e6..e25df4b23b9a 100644
+index 8e92837781ee..c0a088418c20 100644
 --- a/drivers/net/dsa/qca/qca8k-common.c
 +++ b/drivers/net/dsa/qca/qca8k-common.c
-@@ -368,3 +368,88 @@ void qca8k_port_bridge_leave(struct dsa_switch *ds, int port,
- 	qca8k_rmw(priv, QCA8K_PORT_LOOKUP_CTRL(port),
- 		  QCA8K_PORT_LOOKUP_MEMBER, BIT(cpu_port));
+@@ -746,3 +746,94 @@ int qca8k_port_mdb_del(struct dsa_switch *ds, int port,
+ 
+ 	return qca8k_fdb_search_and_del(priv, BIT(port), addr, vid);
  }
 +
-+int qca8k_set_ageing_time(struct dsa_switch *ds, unsigned int msecs)
++int qca8k_port_mirror_add(struct dsa_switch *ds, int port,
++			  struct dsa_mall_mirror_tc_entry *mirror,
++			  bool ingress, struct netlink_ext_ack *extack)
 +{
 +	struct qca8k_priv *priv = ds->priv;
-+	unsigned int secs = msecs / 1000;
-+	u32 val;
++	int monitor_port, ret;
++	u32 reg, val;
 +
-+	/* AGE_TIME reg is set in 7s step */
-+	val = secs / 7;
++	/* Check for existent entry */
++	if ((ingress ? priv->mirror_rx : priv->mirror_tx) & BIT(port))
++		return -EEXIST;
 +
-+	/* Handle case with 0 as val to NOT disable
-+	 * learning
++	ret = regmap_read(priv->regmap, QCA8K_REG_GLOBAL_FW_CTRL0, &val);
++	if (ret)
++		return ret;
++
++	/* QCA83xx can have only one port set to mirror mode.
++	 * Check that the correct port is requested and return error otherwise.
++	 * When no mirror port is set, the values is set to 0xF
 +	 */
-+	if (!val)
-+		val = 1;
++	monitor_port = FIELD_GET(QCA8K_GLOBAL_FW_CTRL0_MIRROR_PORT_NUM, val);
++	if (monitor_port != 0xF && monitor_port != mirror->to_local_port)
++		return -EEXIST;
 +
-+	return regmap_update_bits(priv->regmap, QCA8K_REG_ATU_CTRL,
-+				  QCA8K_ATU_AGE_TIME_MASK,
-+				  QCA8K_ATU_AGE_TIME(val));
-+}
++	/* Set the monitor port */
++	val = FIELD_PREP(QCA8K_GLOBAL_FW_CTRL0_MIRROR_PORT_NUM,
++			 mirror->to_local_port);
++	ret = regmap_update_bits(priv->regmap, QCA8K_REG_GLOBAL_FW_CTRL0,
++				 QCA8K_GLOBAL_FW_CTRL0_MIRROR_PORT_NUM, val);
++	if (ret)
++		return ret;
 +
-+int qca8k_port_enable(struct dsa_switch *ds, int port,
-+		      struct phy_device *phy)
-+{
-+	struct qca8k_priv *priv = ds->priv;
++	if (ingress) {
++		reg = QCA8K_PORT_LOOKUP_CTRL(port);
++		val = QCA8K_PORT_LOOKUP_ING_MIRROR_EN;
++	} else {
++		reg = QCA8K_REG_PORT_HOL_CTRL1(port);
++		val = QCA8K_PORT_HOL_CTRL1_EG_MIRROR_EN;
++	}
 +
-+	qca8k_port_set_status(priv, port, 1);
-+	priv->port_enabled_map |= BIT(port);
++	ret = regmap_update_bits(priv->regmap, reg, val, val);
++	if (ret)
++		return ret;
 +
-+	if (dsa_is_user_port(ds, port))
-+		phy_support_asym_pause(phy);
++	/* Track mirror port for tx and rx to decide when the
++	 * mirror port has to be disabled.
++	 */
++	if (ingress)
++		priv->mirror_rx |= BIT(port);
++	else
++		priv->mirror_tx |= BIT(port);
 +
 +	return 0;
 +}
 +
-+void qca8k_port_disable(struct dsa_switch *ds, int port)
++void qca8k_port_mirror_del(struct dsa_switch *ds, int port,
++			   struct dsa_mall_mirror_tc_entry *mirror)
 +{
 +	struct qca8k_priv *priv = ds->priv;
-+
-+	qca8k_port_set_status(priv, port, 0);
-+	priv->port_enabled_map &= ~BIT(port);
-+}
-+
-+int qca8k_port_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
-+{
-+	struct qca8k_priv *priv = ds->priv;
++	u32 reg, val;
 +	int ret;
 +
-+	/* We have only have a general MTU setting.
-+	 * DSA always set the CPU port's MTU to the largest MTU of the slave
-+	 * ports.
-+	 * Setting MTU just for the CPU port is sufficient to correctly set a
-+	 * value for every port.
-+	 */
-+	if (!dsa_is_cpu_port(ds, port))
-+		return 0;
++	if (mirror->ingress) {
++		reg = QCA8K_PORT_LOOKUP_CTRL(port);
++		val = QCA8K_PORT_LOOKUP_ING_MIRROR_EN;
++	} else {
++		reg = QCA8K_REG_PORT_HOL_CTRL1(port);
++		val = QCA8K_PORT_HOL_CTRL1_EG_MIRROR_EN;
++	}
 +
-+	/* To change the MAX_FRAME_SIZE the cpu ports must be off or
-+	 * the switch panics.
-+	 * Turn off both cpu ports before applying the new value to prevent
-+	 * this.
-+	 */
-+	if (priv->port_enabled_map & BIT(0))
-+		qca8k_port_set_status(priv, 0, 0);
++	ret = regmap_clear_bits(priv->regmap, reg, val);
++	if (ret)
++		goto err;
 +
-+	if (priv->port_enabled_map & BIT(6))
-+		qca8k_port_set_status(priv, 6, 0);
++	if (mirror->ingress)
++		priv->mirror_rx &= ~BIT(port);
++	else
++		priv->mirror_tx &= ~BIT(port);
 +
-+	/* Include L2 header / FCS length */
-+	ret = qca8k_write(priv, QCA8K_MAX_FRAME_SIZE, new_mtu +
-+			  ETH_HLEN + ETH_FCS_LEN);
-+
-+	if (priv->port_enabled_map & BIT(0))
-+		qca8k_port_set_status(priv, 0, 1);
-+
-+	if (priv->port_enabled_map & BIT(6))
-+		qca8k_port_set_status(priv, 6, 1);
-+
-+	return ret;
-+}
-+
-+int qca8k_port_max_mtu(struct dsa_switch *ds, int port)
-+{
-+	return QCA8K_MAX_MTU;
++	/* No port set to send packet to mirror port. Disable mirror port */
++	if (!priv->mirror_rx && !priv->mirror_tx) {
++		val = FIELD_PREP(QCA8K_GLOBAL_FW_CTRL0_MIRROR_PORT_NUM, 0xF);
++		ret = regmap_update_bits(priv->regmap, QCA8K_REG_GLOBAL_FW_CTRL0,
++					 QCA8K_GLOBAL_FW_CTRL0_MIRROR_PORT_NUM, val);
++		if (ret)
++			goto err;
++	}
++err:
++	dev_err(priv->dev, "Failed to del mirror port from %d", port);
 +}
 diff --git a/drivers/net/dsa/qca/qca8k.h b/drivers/net/dsa/qca/qca8k.h
-index edb2b23a02b9..e7d4df253b8c 100644
+index 9da7928de83c..3a2131b7abfa 100644
 --- a/drivers/net/dsa/qca/qca8k.h
 +++ b/drivers/net/dsa/qca/qca8k.h
-@@ -463,4 +463,16 @@ int qca8k_port_bridge_join(struct dsa_switch *ds, int port,
- void qca8k_port_bridge_leave(struct dsa_switch *ds, int port,
- 			     struct dsa_bridge bridge);
+@@ -494,4 +494,11 @@ int qca8k_port_mdb_del(struct dsa_switch *ds, int port,
+ 		       const struct switchdev_obj_port_mdb *mdb,
+ 		       struct dsa_db db);
  
-+/* Common port enable/disable function */
-+int qca8k_port_enable(struct dsa_switch *ds, int port,
-+		      struct phy_device *phy);
-+void qca8k_port_disable(struct dsa_switch *ds, int port);
-+
-+/* Common MTU function */
-+int qca8k_port_change_mtu(struct dsa_switch *ds, int port, int new_mtu);
-+int qca8k_port_max_mtu(struct dsa_switch *ds, int port);
-+
-+/* Common fast age function */
-+int qca8k_set_ageing_time(struct dsa_switch *ds, unsigned int msecs);
++/* Common port mirror function */
++int qca8k_port_mirror_add(struct dsa_switch *ds, int port,
++			  struct dsa_mall_mirror_tc_entry *mirror,
++			  bool ingress, struct netlink_ext_ack *extack);
++void qca8k_port_mirror_del(struct dsa_switch *ds, int port,
++			   struct dsa_mall_mirror_tc_entry *mirror);
 +
  #endif /* __QCA8K_H */
 -- 
