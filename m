@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 357BFC19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:42:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7034C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:42:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239873AbiG0Qmp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:42:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57364 "EHLO
+        id S239631AbiG0Qmx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:42:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239220AbiG0QmP (ORCPT
+        with ESMTP id S239669AbiG0QmS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:42:15 -0400
+        Wed, 27 Jul 2022 12:42:18 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 148D75C357;
-        Wed, 27 Jul 2022 09:29:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 845A45C368;
+        Wed, 27 Jul 2022 09:29:59 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DF5B261A39;
-        Wed, 27 Jul 2022 16:29:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE92EC433D6;
-        Wed, 27 Jul 2022 16:29:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A2DB261A1E;
+        Wed, 27 Jul 2022 16:29:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B18EAC433C1;
+        Wed, 27 Jul 2022 16:29:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939395;
-        bh=HBTuDHmlNIq/Hz/znquvPZXH2RPXYA59ZP/S06U5vHs=;
+        s=korg; t=1658939398;
+        bh=Ptp8f9ez5kMPmK7FFCiOYpyQIN2l2mkSWZa8q1gwRqk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fCFlkXne+xvJ4NpRvMhL4G2jqN2oRS8kmNmYqJCBwCFpb0IYaHmsGPbHScLtwLMlP
-         tnU4xovbf+XrwJ6lMdhdgtUPsy5SowECoow7VAQI4QTKEhsFdBO4loLzOkNmWFKgMp
-         1/5IW7jO6uqS84AICYHj2PSxlfZmZxxtrn2wvwWs=
+        b=VswefJ+yu/ePIyXq8sMKXLcdBB2sHvy1LFCvRlSTMLCtvz956W+0ymbCeR3eUPDKJ
+         5bJMr8Id+DjF3PU3f2E0cq/sQA4tb75/p7EGf4HO+uO2absYLkDgEfTp362nOpOAOf
+         nVD51Eic2m03t6XOa2sO+BWNkxwmqOM6jr82gUy4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lukas Wunner <lukas@wunner.de>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.4 55/87] spi: bcm2835: bcm2835_spi_handle_err(): fix NULL pointer deref for non DMA transfers
-Date:   Wed, 27 Jul 2022 18:10:48 +0200
-Message-Id: <20220727161011.295157882@linuxfoundation.org>
+        stable@vger.kernel.org, Wang Cheng <wanngchenng@gmail.com>,
+        syzbot+217f792c92599518a2ab@syzkaller.appspotmail.com,
+        David Rientjes <rientjes@google.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Andrew Morton <akpm@linux-foundation.org>
+Subject: [PATCH 5.4 56/87] mm/mempolicy: fix uninit-value in mpol_rebind_policy()
+Date:   Wed, 27 Jul 2022 18:10:49 +0200
+Message-Id: <20220727161011.332184136@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161008.993711844@linuxfoundation.org>
 References: <20220727161008.993711844@linuxfoundation.org>
@@ -49,49 +51,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Kleine-Budde <mkl@pengutronix.de>
+From: Wang Cheng <wanngchenng@gmail.com>
 
-commit 4ceaa684459d414992acbefb4e4c31f2dfc50641 upstream.
+commit 018160ad314d75b1409129b2247b614a9f35894c upstream.
 
-In case a IRQ based transfer times out the bcm2835_spi_handle_err()
-function is called. Since commit 1513ceee70f2 ("spi: bcm2835: Drop
-dma_pending flag") the TX and RX DMA transfers are unconditionally
-canceled, leading to NULL pointer derefs if ctlr->dma_tx or
-ctlr->dma_rx are not set.
+mpol_set_nodemask()(mm/mempolicy.c) does not set up nodemask when
+pol->mode is MPOL_LOCAL.  Check pol->mode before access
+pol->w.cpuset_mems_allowed in mpol_rebind_policy()(mm/mempolicy.c).
 
-Fix the NULL pointer deref by checking that ctlr->dma_tx and
-ctlr->dma_rx are valid pointers before accessing them.
+BUG: KMSAN: uninit-value in mpol_rebind_policy mm/mempolicy.c:352 [inline]
+BUG: KMSAN: uninit-value in mpol_rebind_task+0x2ac/0x2c0 mm/mempolicy.c:368
+ mpol_rebind_policy mm/mempolicy.c:352 [inline]
+ mpol_rebind_task+0x2ac/0x2c0 mm/mempolicy.c:368
+ cpuset_change_task_nodemask kernel/cgroup/cpuset.c:1711 [inline]
+ cpuset_attach+0x787/0x15e0 kernel/cgroup/cpuset.c:2278
+ cgroup_migrate_execute+0x1023/0x1d20 kernel/cgroup/cgroup.c:2515
+ cgroup_migrate kernel/cgroup/cgroup.c:2771 [inline]
+ cgroup_attach_task+0x540/0x8b0 kernel/cgroup/cgroup.c:2804
+ __cgroup1_procs_write+0x5cc/0x7a0 kernel/cgroup/cgroup-v1.c:520
+ cgroup1_tasks_write+0x94/0xb0 kernel/cgroup/cgroup-v1.c:539
+ cgroup_file_write+0x4c2/0x9e0 kernel/cgroup/cgroup.c:3852
+ kernfs_fop_write_iter+0x66a/0x9f0 fs/kernfs/file.c:296
+ call_write_iter include/linux/fs.h:2162 [inline]
+ new_sync_write fs/read_write.c:503 [inline]
+ vfs_write+0x1318/0x2030 fs/read_write.c:590
+ ksys_write+0x28b/0x510 fs/read_write.c:643
+ __do_sys_write fs/read_write.c:655 [inline]
+ __se_sys_write fs/read_write.c:652 [inline]
+ __x64_sys_write+0xdb/0x120 fs/read_write.c:652
+ do_syscall_x64 arch/x86/entry/common.c:51 [inline]
+ do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-Fixes: 1513ceee70f2 ("spi: bcm2835: Drop dma_pending flag")
-Cc: Lukas Wunner <lukas@wunner.de>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Link: https://lore.kernel.org/r/20220719072234.2782764-1-mkl@pengutronix.de
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Uninit was created at:
+ slab_post_alloc_hook mm/slab.h:524 [inline]
+ slab_alloc_node mm/slub.c:3251 [inline]
+ slab_alloc mm/slub.c:3259 [inline]
+ kmem_cache_alloc+0x902/0x11c0 mm/slub.c:3264
+ mpol_new mm/mempolicy.c:293 [inline]
+ do_set_mempolicy+0x421/0xb70 mm/mempolicy.c:853
+ kernel_set_mempolicy mm/mempolicy.c:1504 [inline]
+ __do_sys_set_mempolicy mm/mempolicy.c:1510 [inline]
+ __se_sys_set_mempolicy+0x44c/0xb60 mm/mempolicy.c:1507
+ __x64_sys_set_mempolicy+0xd8/0x110 mm/mempolicy.c:1507
+ do_syscall_x64 arch/x86/entry/common.c:51 [inline]
+ do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+KMSAN: uninit-value in mpol_rebind_task (2)
+https://syzkaller.appspot.com/bug?id=d6eb90f952c2a5de9ea718a1b873c55cb13b59dc
+
+This patch seems to fix below bug too.
+KMSAN: uninit-value in mpol_rebind_mm (2)
+https://syzkaller.appspot.com/bug?id=f2fecd0d7013f54ec4162f60743a2b28df40926b
+
+The uninit-value is pol->w.cpuset_mems_allowed in mpol_rebind_policy().
+When syzkaller reproducer runs to the beginning of mpol_new(),
+
+	    mpol_new() mm/mempolicy.c
+	  do_mbind() mm/mempolicy.c
+	kernel_mbind() mm/mempolicy.c
+
+`mode` is 1(MPOL_PREFERRED), nodes_empty(*nodes) is `true` and `flags`
+is 0. Then
+
+	mode = MPOL_LOCAL;
+	...
+	policy->mode = mode;
+	policy->flags = flags;
+
+will be executed. So in mpol_set_nodemask(),
+
+	    mpol_set_nodemask() mm/mempolicy.c
+	  do_mbind()
+	kernel_mbind()
+
+pol->mode is 4 (MPOL_LOCAL), that `nodemask` in `pol` is not initialized,
+which will be accessed in mpol_rebind_policy().
+
+Link: https://lkml.kernel.org/r/20220512123428.fq3wofedp6oiotd4@ppc.localdomain
+Signed-off-by: Wang Cheng <wanngchenng@gmail.com>
+Reported-by: <syzbot+217f792c92599518a2ab@syzkaller.appspotmail.com>
+Tested-by: <syzbot+217f792c92599518a2ab@syzkaller.appspotmail.com>
+Cc: David Rientjes <rientjes@google.com>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/spi/spi-bcm2835.c |   12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ mm/mempolicy.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/spi/spi-bcm2835.c
-+++ b/drivers/spi/spi-bcm2835.c
-@@ -1159,10 +1159,14 @@ static void bcm2835_spi_handle_err(struc
- 	struct bcm2835_spi *bs = spi_controller_get_devdata(ctlr);
- 
- 	/* if an error occurred and we have an active dma, then terminate */
--	dmaengine_terminate_sync(ctlr->dma_tx);
--	bs->tx_dma_active = false;
--	dmaengine_terminate_sync(ctlr->dma_rx);
--	bs->rx_dma_active = false;
-+	if (ctlr->dma_tx) {
-+		dmaengine_terminate_sync(ctlr->dma_tx);
-+		bs->tx_dma_active = false;
-+	}
-+	if (ctlr->dma_rx) {
-+		dmaengine_terminate_sync(ctlr->dma_rx);
-+		bs->rx_dma_active = false;
-+	}
- 	bcm2835_spi_undo_prologue(bs);
- 
- 	/* and reset */
+--- a/mm/mempolicy.c
++++ b/mm/mempolicy.c
+@@ -348,7 +348,7 @@ static void mpol_rebind_preferred(struct
+  */
+ static void mpol_rebind_policy(struct mempolicy *pol, const nodemask_t *newmask)
+ {
+-	if (!pol)
++	if (!pol || pol->mode == MPOL_LOCAL)
+ 		return;
+ 	if (!mpol_store_user_nodemask(pol) && !(pol->flags & MPOL_F_LOCAL) &&
+ 	    nodes_equal(pol->w.cpuset_mems_allowed, *newmask))
 
 
