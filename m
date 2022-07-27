@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B32A0C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:10:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06712C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:10:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240271AbiG0RKr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:10:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48730 "EHLO
+        id S229939AbiG0RKx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:10:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241664AbiG0RJZ (ORCPT
+        with ESMTP id S241701AbiG0RJc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:09:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D90317437D;
-        Wed, 27 Jul 2022 09:41:02 -0700 (PDT)
+        Wed, 27 Jul 2022 13:09:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C377743C9;
+        Wed, 27 Jul 2022 09:41:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E73D7B821D2;
-        Wed, 27 Jul 2022 16:41:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54256C433C1;
-        Wed, 27 Jul 2022 16:40:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2672A601C3;
+        Wed, 27 Jul 2022 16:41:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F233C433B5;
+        Wed, 27 Jul 2022 16:41:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940059;
-        bh=TJ7lSjhNZhHZWqjTPBeUQE7e2CXAbgfjDfZB53K4Vgw=;
+        s=korg; t=1658940062;
+        bh=fVvNtlgbgAe6ClvXquGjijDpiSBJVzaHL91Kx5ew4Uk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lVwMNYB4zvlYDlqNjbHg3e8l5Ym9L8g/wy5CRZJMTHrmQ7GtFqhswREXxjd1o3mV1
-         q0ZlvFnYu9fWbBTE5lv5qg+BhcY7J0HbJVIbr5FJtyrO4BdbXLNOfWZhqFojDtSkgr
-         iR33X1wNrRJp7qBYcDia8tGo8BpVTfInUYuU18lM=
+        b=qSCoePc2Gi9gJwFYn4Ivn6fHIEXdZPDtMQ4/B9PrmWSIOptuzfOI5wWAFwNG4eMbL
+         s7z6Ejw+ysdpZ46xMVJb2i54IlGYF4n+gijF+JXQWg9BeWKbLs/W3U51AO4c7qYHsw
+         EmNcpNIl66pYI8ret3/ox+Owhzar0uGQfV4bxnJA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 090/201] tcp: Fix data-races around keepalive sysctl knobs.
-Date:   Wed, 27 Jul 2022 18:09:54 +0200
-Message-Id: <20220727161031.478958779@linuxfoundation.org>
+Subject: [PATCH 5.15 091/201] tcp: Fix data-races around sysctl_tcp_syn(ack)?_retries.
+Date:   Wed, 27 Jul 2022 18:09:55 +0200
+Message-Id: <20220727161031.529543535@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -51,9 +51,9 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit f2f316e287e6c2e3a1c5bab8d9b77ee03daa0463 ]
+[ Upstream commit 20a3b1c0f603e8c55c3396abd12dfcfb523e4d3c ]
 
-While reading sysctl_tcp_keepalive_(time|probes|intvl), they can be changed
+While reading sysctl_tcp_syn(ack)?_retries, they can be changed
 concurrently.  Thus, we need to add READ_ONCE() to their readers.
 
 Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
@@ -61,55 +61,71 @@ Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/tcp.h | 9 ++++++---
- net/smc/smc_llc.c | 2 +-
- 2 files changed, 7 insertions(+), 4 deletions(-)
+ net/ipv4/inet_connection_sock.c |  3 ++-
+ net/ipv4/tcp.c                  |  3 ++-
+ net/ipv4/tcp_timer.c            | 10 +++++++---
+ 3 files changed, 11 insertions(+), 5 deletions(-)
 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 3b97db2d438f..cae0c9102eda 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -1469,21 +1469,24 @@ static inline int keepalive_intvl_when(const struct tcp_sock *tp)
+diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+index d3bbb344bbe1..a53f9bf7886f 100644
+--- a/net/ipv4/inet_connection_sock.c
++++ b/net/ipv4/inet_connection_sock.c
+@@ -829,7 +829,8 @@ static void reqsk_timer_handler(struct timer_list *t)
+ 
+ 	icsk = inet_csk(sk_listener);
+ 	net = sock_net(sk_listener);
+-	max_syn_ack_retries = icsk->icsk_syn_retries ? : net->ipv4.sysctl_tcp_synack_retries;
++	max_syn_ack_retries = icsk->icsk_syn_retries ? :
++		READ_ONCE(net->ipv4.sysctl_tcp_synack_retries);
+ 	/* Normally all the openreqs are young and become mature
+ 	 * (i.e. converted to established socket) for first timeout.
+ 	 * If synack was not acknowledged for 1 second, it means
+diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+index 4ac53c8f0583..e22a61b2ba82 100644
+--- a/net/ipv4/tcp.c
++++ b/net/ipv4/tcp.c
+@@ -3974,7 +3974,8 @@ static int do_tcp_getsockopt(struct sock *sk, int level,
+ 		val = keepalive_probes(tp);
+ 		break;
+ 	case TCP_SYNCNT:
+-		val = icsk->icsk_syn_retries ? : net->ipv4.sysctl_tcp_syn_retries;
++		val = icsk->icsk_syn_retries ? :
++			READ_ONCE(net->ipv4.sysctl_tcp_syn_retries);
+ 		break;
+ 	case TCP_LINGER2:
+ 		val = tp->linger2;
+diff --git a/net/ipv4/tcp_timer.c b/net/ipv4/tcp_timer.c
+index 4f3b9ab222b6..a234704e8163 100644
+--- a/net/ipv4/tcp_timer.c
++++ b/net/ipv4/tcp_timer.c
+@@ -239,7 +239,8 @@ static int tcp_write_timeout(struct sock *sk)
+ 	if ((1 << sk->sk_state) & (TCPF_SYN_SENT | TCPF_SYN_RECV)) {
+ 		if (icsk->icsk_retransmits)
+ 			__dst_negative_advice(sk);
+-		retry_until = icsk->icsk_syn_retries ? : net->ipv4.sysctl_tcp_syn_retries;
++		retry_until = icsk->icsk_syn_retries ? :
++			READ_ONCE(net->ipv4.sysctl_tcp_syn_retries);
+ 		expired = icsk->icsk_retransmits >= retry_until;
+ 	} else {
+ 		if (retransmits_timed_out(sk, net->ipv4.sysctl_tcp_retries1, 0)) {
+@@ -406,12 +407,15 @@ abort:		tcp_write_err(sk);
+ static void tcp_fastopen_synack_timer(struct sock *sk, struct request_sock *req)
  {
- 	struct net *net = sock_net((struct sock *)tp);
+ 	struct inet_connection_sock *icsk = inet_csk(sk);
+-	int max_retries = icsk->icsk_syn_retries ? :
+-	    sock_net(sk)->ipv4.sysctl_tcp_synack_retries + 1; /* add one more retry for fastopen */
+ 	struct tcp_sock *tp = tcp_sk(sk);
++	int max_retries;
  
--	return tp->keepalive_intvl ? : net->ipv4.sysctl_tcp_keepalive_intvl;
-+	return tp->keepalive_intvl ? :
-+		READ_ONCE(net->ipv4.sysctl_tcp_keepalive_intvl);
- }
+ 	req->rsk_ops->syn_ack_timeout(req);
  
- static inline int keepalive_time_when(const struct tcp_sock *tp)
- {
- 	struct net *net = sock_net((struct sock *)tp);
- 
--	return tp->keepalive_time ? : net->ipv4.sysctl_tcp_keepalive_time;
-+	return tp->keepalive_time ? :
-+		READ_ONCE(net->ipv4.sysctl_tcp_keepalive_time);
- }
- 
- static inline int keepalive_probes(const struct tcp_sock *tp)
- {
- 	struct net *net = sock_net((struct sock *)tp);
- 
--	return tp->keepalive_probes ? : net->ipv4.sysctl_tcp_keepalive_probes;
-+	return tp->keepalive_probes ? :
-+		READ_ONCE(net->ipv4.sysctl_tcp_keepalive_probes);
- }
- 
- static inline u32 keepalive_time_elapsed(const struct tcp_sock *tp)
-diff --git a/net/smc/smc_llc.c b/net/smc/smc_llc.c
-index ee1f0fdba085..0ef15f8fba90 100644
---- a/net/smc/smc_llc.c
-+++ b/net/smc/smc_llc.c
-@@ -1787,7 +1787,7 @@ void smc_llc_lgr_init(struct smc_link_group *lgr, struct smc_sock *smc)
- 	init_waitqueue_head(&lgr->llc_flow_waiter);
- 	init_waitqueue_head(&lgr->llc_msg_waiter);
- 	mutex_init(&lgr->llc_conf_mutex);
--	lgr->llc_testlink_time = net->ipv4.sysctl_tcp_keepalive_time;
-+	lgr->llc_testlink_time = READ_ONCE(net->ipv4.sysctl_tcp_keepalive_time);
- }
- 
- /* called after lgr was removed from lgr_list */
++	/* add one more retry for fastopen */
++	max_retries = icsk->icsk_syn_retries ? :
++		READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_synack_retries) + 1;
++
+ 	if (req->num_timeout >= max_retries) {
+ 		tcp_write_err(sk);
+ 		return;
 -- 
 2.35.1
 
