@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF4ECC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 09:06:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3008CC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 09:06:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229790AbiG0JF7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 05:05:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47880 "EHLO
+        id S230314AbiG0JGG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 05:06:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229550AbiG0JFy (ORCPT
+        with ESMTP id S229625AbiG0JF6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 05:05:54 -0400
+        Wed, 27 Jul 2022 05:05:58 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C28E4333B
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 02:05:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99ACF4333D
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 02:05:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1658912753; x=1690448753;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=YkUS4VT+nAqLrUuOLwypQQDGOIVF2886Ab8ulGKy5xk=;
-  b=bnWer+p8WLXHv/wMxCqN+SlZ4g6y7U6fuKMRvUfkilaq7qlsSCGe1M8V
-   LE6BWcQPZZmGXHmfYltYt3Vq3x44kA1UHUXbM5z4W9fuQnAc5nmbfi6e9
-   E/TF9HflYwYKxamwoZNprnC+fuLtDebVBN7QI6pVhQ+QtjDGBD6as3GZs
-   rUlx6krmXMXunPVemuhWvV7QZMUW9xdCBvVMDGKeWmDElpecpGI6IdGDe
-   DoGxpRnaGKpJ+tewygSFEpt8skB8cFOW9YK6/eP44Smo7NZEPeLZRVf/V
-   5KG18CgMO4cyAXAwKWcJ/sJWrxZtJXG5SYvOMPSRv62TiiHG2iA8JqHmz
-   A==;
+  t=1658912757; x=1690448757;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=CIUopwxdZIlwqjXMsHY6dSEUUehkgUCOaiTv2Ru/m5M=;
+  b=Xn+4mlvMguuQUXijWrHjsZSnnvXbR57GoS/g/+E6R7o3w0+ZmZ5Ozo9v
+   fMo2Wlqkz6ktxAtaanfHhhvXpztqFWsRVYTw6Ox2NJXezXTYQtG+HN9eV
+   Q2OizPhtN1DZs3ydwEvo4fdEvq1CoUj9NWdQ/HtQMcuOGH+8YEKi+igdl
+   +fVzlWUdIJLl+SmuH5rgTR2cyW+wXKffhOdKUMpml1cHumCX8qzg39k8b
+   mSByFyA8QXokn+l1YZidGBnrJUMOsmCCR7kxwddo4YqlHElZ5a/Fpg7Qd
+   U2R2vz5y+EOO2gCRM9im8zgRRGbAFi6Un8xh2D0NGoEKSwUnt9wIlds6G
+   w==;
 X-IronPort-AV: E=Sophos;i="5.93,195,1654585200"; 
-   d="scan'208";a="169710941"
+   d="scan'208";a="169710970"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 27 Jul 2022 02:05:52 -0700
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 27 Jul 2022 02:05:56 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 27 Jul 2022 02:05:50 -0700
+ 15.1.2375.17; Wed, 27 Jul 2022 02:05:56 -0700
 Received: from localhost.localdomain (10.10.115.15) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Wed, 27 Jul 2022 02:05:48 -0700
+ 15.1.2375.17 via Frontend Transport; Wed, 27 Jul 2022 02:05:54 -0700
 From:   Claudiu Beznea <claudiu.beznea@microchip.com>
 To:     <lgirdwood@gmail.com>, <broonie@kernel.org>, <perex@perex.cz>,
         <tiwai@suse.com>, <nicolas.ferre@microchip.com>,
@@ -47,10 +47,12 @@ CC:     <alsa-devel@alsa-project.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>,
         Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH v3 0/2] ASoC: atmel: one fix and one cleanup
-Date:   Wed, 27 Jul 2022 12:08:12 +0300
-Message-ID: <20220727090814.2446111-1-claudiu.beznea@microchip.com>
+Subject: [PATCH v3 2/2] ASoC: mchp-spdiftx: remove references to mchp_i2s_caps
+Date:   Wed, 27 Jul 2022 12:08:14 +0300
+Message-ID: <20220727090814.2446111-3-claudiu.beznea@microchip.com>
 X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220727090814.2446111-1-claudiu.beznea@microchip.com>
+References: <20220727090814.2446111-1-claudiu.beznea@microchip.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -58,31 +60,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Remove references to struct mchp_i2s_caps as they are not used.
 
-The series adds one fix for mchp-spdifrx and one cleanups for
-mchp-spdifrx and mchp-spdifrx drivers.
-
-Thank you,
-Claudiu Beznea
-
-Changes in v3:
-- changed cover letter title s/few/one, s/cleanups/cleanup
-- fix compilation error and warnings
-- keep only patch 1/5 and patch 3/5 from previous version as the rest
-  of them were integrated
-
-Changes in v2:
-- s/tag/tab in the title of patch 2/5
-
-Claudiu Beznea (2):
-  ASoC: mchp-spdifrx: disable end of block interrupt on failures
-  ASoC: mchp-spdiftx: remove references to mchp_i2s_caps
-
- sound/soc/atmel/mchp-spdifrx.c | 9 ++++++---
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+---
  sound/soc/atmel/mchp-spdiftx.c | 8 --------
- 2 files changed, 6 insertions(+), 11 deletions(-)
+ 1 file changed, 8 deletions(-)
 
+diff --git a/sound/soc/atmel/mchp-spdiftx.c b/sound/soc/atmel/mchp-spdiftx.c
+index cb4d0140dfe0..4850a177803d 100644
+--- a/sound/soc/atmel/mchp-spdiftx.c
++++ b/sound/soc/atmel/mchp-spdiftx.c
+@@ -196,7 +196,6 @@ struct mchp_spdiftx_dev {
+ 	struct clk				*pclk;
+ 	struct clk				*gclk;
+ 	unsigned int				fmt;
+-	const struct mchp_i2s_caps		*caps;
+ 	int					gclk_enabled:1;
+ };
+ 
+@@ -765,8 +764,6 @@ MODULE_DEVICE_TABLE(of, mchp_spdiftx_dt_ids);
+ 
+ static int mchp_spdiftx_probe(struct platform_device *pdev)
+ {
+-	struct device_node *np = pdev->dev.of_node;
+-	const struct of_device_id *match;
+ 	struct mchp_spdiftx_dev *dev;
+ 	struct resource *mem;
+ 	struct regmap *regmap;
+@@ -780,11 +777,6 @@ static int mchp_spdiftx_probe(struct platform_device *pdev)
+ 	if (!dev)
+ 		return -ENOMEM;
+ 
+-	/* Get hardware capabilities. */
+-	match = of_match_node(mchp_spdiftx_dt_ids, np);
+-	if (match)
+-		dev->caps = match->data;
+-
+ 	/* Map I/O registers. */
+ 	base = devm_platform_get_and_ioremap_resource(pdev, 0, &mem);
+ 	if (IS_ERR(base))
 -- 
 2.34.1
 
