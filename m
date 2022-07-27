@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BDEEC19F28
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:22:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39EC9C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:22:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242001AbiG0RWw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:22:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44484 "EHLO
+        id S241641AbiG0RWz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:22:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241816AbiG0RUY (ORCPT
+        with ESMTP id S241848AbiG0RUy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:20:24 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21B1A5FD1;
-        Wed, 27 Jul 2022 09:45:12 -0700 (PDT)
+        Wed, 27 Jul 2022 13:20:54 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61BC45F110;
+        Wed, 27 Jul 2022 09:45:25 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id ED54ECE2314;
-        Wed, 27 Jul 2022 16:45:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7732C433C1;
-        Wed, 27 Jul 2022 16:45:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6A8A3B821D4;
+        Wed, 27 Jul 2022 16:45:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9504C433C1;
+        Wed, 27 Jul 2022 16:45:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940308;
-        bh=avZDDaQpycf6zwWtz0rxv7VLnt+N8pteV3NItPBxSkM=;
+        s=korg; t=1658940322;
+        bh=MxIqrIPmkawLpmAgdInOx6a9yL6SrBN/IMRL0oRRGK8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0nh48BIiOlRSO2ZD/xX61AgzmFkWCJk5mNP0hoKy9oofFNCymrYHMFBl/h1xGFBQA
-         kOktJ+YzNaHOZxuxI3eWz5TDpSlclw3KQL0Lnw6L2a6x+x3r2RghBrkY4jyGX0p+3d
-         Afq+b9dVWPSPkFKrmzC2hxxaxk+w71T65/+l9ob4=
+        b=UJNMiQE9V9mvm9y0uGs2s8kkY/DBmF7XSbQGPTlzjDv8x04KAWZUEgZFfcVstQFXU
+         yt11ojcdAtTXNb09uwJcUgI8RC8CmSSZxZlgNofJGs/1pmU04DjEnOhekA3oHIsDyV
+         DDdFd3xvv9ig2gopy3L2oxCCeIpSnh21bwN3v1JQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Juri Lelli <juri.lelli@redhat.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>
-Subject: [PATCH 5.15 137/201] sched/deadline: Fix BUG_ON condition for deboosted tasks
-Date:   Wed, 27 Jul 2022 18:10:41 +0200
-Message-Id: <20220727161033.482502962@linuxfoundation.org>
+        stable@vger.kernel.org, Tom St Denis <tom.stdenis@amd.com>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Mario Limonciello <Mario.Limonciello@amd.com>
+Subject: [PATCH 5.15 184/201] drm/amd/display: Fix surface optimization regression on Carrizo
+Date:   Wed, 27 Jul 2022 18:11:28 +0200
+Message-Id: <20220727161035.401781717@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -48,45 +51,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Juri Lelli <juri.lelli@redhat.com>
+From: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
 
-commit ddfc710395cccc61247348df9eb18ea50321cbed upstream.
+commit 62e5a7e2333a9f5395f6a9db766b7b06c949fe7a upstream.
 
-Tasks the are being deboosted from SCHED_DEADLINE might enter
-enqueue_task_dl() one last time and hit an erroneous BUG_ON condition:
-since they are not boosted anymore, the if (is_dl_boosted()) branch is
-not taken, but the else if (!dl_prio) is and inside this one we
-BUG_ON(!is_dl_boosted), which is of course false (BUG_ON triggered)
-otherwise we had entered the if branch above. Long story short, the
-current condition doesn't make sense and always leads to triggering of a
-BUG.
+[Why]
+DCE legacy optimization path isn't well tested under new DC optimization
+flow which can result in underflow occuring when initializing X11 on
+Carrizo.
 
-Fix this by only checking enqueue flags, properly: ENQUEUE_REPLENISH has
-to be present, but additional flags are not a problem.
+[How]
+Retain the legacy optimization flow for DCE and keep the new one for DCN
+to satisfy optimizations being correctly applied for ASIC that can
+support it.
 
-Fixes: 64be6f1f5f71 ("sched/deadline: Don't replenish from a !SCHED_DEADLINE entity")
-Signed-off-by: Juri Lelli <juri.lelli@redhat.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Cc: stable@vger.kernel.org
-Link: https://lkml.kernel.org/r/20220714151908.533052-1-juri.lelli@redhat.com
+Fixes: 34316c1e561db0 ("drm/amd/display: Optimize bandwidth on following fast update")
+Reported-by: Tom St Denis <tom.stdenis@amd.com>
+Tested-by: Tom St Denis <tom.stdenis@amd.com>
+Reviewed-by: Harry Wentland <harry.wentland@amd.com>
+Signed-off-by: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Cc: Mario Limonciello <Mario.Limonciello@amd.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/sched/deadline.c |    5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/amd/display/dc/core/dc.c |   15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
---- a/kernel/sched/deadline.c
-+++ b/kernel/sched/deadline.c
-@@ -1561,7 +1561,10 @@ static void enqueue_task_dl(struct rq *r
- 		 * the throttle.
- 		 */
- 		p->dl.dl_throttled = 0;
--		BUG_ON(!is_dl_boosted(&p->dl) || flags != ENQUEUE_REPLENISH);
-+		if (!(flags & ENQUEUE_REPLENISH))
-+			printk_deferred_once("sched: DL de-boosted task PID %d: REPLENISH flag missing\n",
-+					     task_pid_nr(p));
-+
- 		return;
+--- a/drivers/gpu/drm/amd/display/dc/core/dc.c
++++ b/drivers/gpu/drm/amd/display/dc/core/dc.c
+@@ -2979,8 +2979,13 @@ void dc_commit_updates_for_stream(struct
+ 			if (new_pipe->plane_state && new_pipe->plane_state != old_pipe->plane_state)
+ 				new_pipe->plane_state->force_full_update = true;
+ 		}
+-	} else if (update_type == UPDATE_TYPE_FAST) {
+-		/* Previous frame finished and HW is ready for optimization. */
++	} else if (update_type == UPDATE_TYPE_FAST && dc_ctx->dce_version >= DCE_VERSION_MAX) {
++		/*
++		 * Previous frame finished and HW is ready for optimization.
++		 *
++		 * Only relevant for DCN behavior where we can guarantee the optimization
++		 * is safe to apply - retain the legacy behavior for DCE.
++		 */
+ 		dc_post_update_surfaces_to_stream(dc);
  	}
  
+@@ -3039,6 +3044,12 @@ void dc_commit_updates_for_stream(struct
+ 		}
+ 	}
+ 
++	/* Legacy optimization path for DCE. */
++	if (update_type >= UPDATE_TYPE_FULL && dc_ctx->dce_version < DCE_VERSION_MAX) {
++		dc_post_update_surfaces_to_stream(dc);
++		TRACE_DCE_CLOCK_STATE(&context->bw_ctx.bw.dce);
++	}
++
+ 	return;
+ 
+ }
 
 
