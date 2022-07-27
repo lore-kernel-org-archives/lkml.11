@@ -2,171 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A7AFC00144
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 01:34:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59A0CC00144
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 01:34:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240178AbiG0BeP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 21:34:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46316 "EHLO
+        id S240169AbiG0BeW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 21:34:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240173AbiG0BeI (ORCPT
+        with ESMTP id S240196AbiG0BeK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 21:34:08 -0400
-Received: from smtp-relay-canonical-0.canonical.com (smtp-relay-canonical-0.canonical.com [185.125.188.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E52163B954;
-        Tue, 26 Jul 2022 18:34:02 -0700 (PDT)
-Received: from localhost.localdomain (unknown [10.101.196.174])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id E199F3F39B;
-        Wed, 27 Jul 2022 01:33:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1658885640;
-        bh=DsZRX8j/q4Cpjzn1W11I3hAQXEWJrBN86NgoVVaLV3A=;
-        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=TFT3im8fedDV8eqhGPtwSn5vtGFvE76IEoZRXyiGAyzytfZ8PqyKDLyMGQMWenpoz
-         EdSIjBu6PSxYV7wq2N2wFN1sjp2XAE+SK1jV7fNMAAz8baJle8ANICSqr+hTaycaEh
-         FuYrwAQ2Di/3kKJWgn6RN/72amg9Xwr4/uATsenmxJ0BgIRSXeod0tz+cHOwRMQnu1
-         /R68+i0BdBJgtsIjpvbw9QwfsdOwIwgSUDlTyRXpn9DA6Sh2gOy/CNheuZLoPyvSq5
-         a4cN9IRMFVgkW+Ij64VEIj9aOxWqBDJLEO93w7suSgZPd0+IMpRG85rwJZ24vvL62M
-         1rBCFxj6z5rGg==
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-To:     bhelgaas@google.com
-Cc:     mika.westerberg@linux.intel.com, koba.ko@canonical.com,
-        sathyanarayanan.kuppuswamy@linux.intel.com,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Russell Currey <ruscur@russell.cc>,
-        "Oliver O'Halloran" <oohall@gmail.com>,
-        linuxppc-dev@lists.ozlabs.org, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 3/3] PCI/DPC: Disable DPC service on suspend when IRQ is shared with PME
-Date:   Wed, 27 Jul 2022 09:32:52 +0800
-Message-Id: <20220727013255.269815-3-kai.heng.feng@canonical.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220727013255.269815-1-kai.heng.feng@canonical.com>
-References: <20220727013255.269815-1-kai.heng.feng@canonical.com>
+        Tue, 26 Jul 2022 21:34:10 -0400
+Received: from mail-vs1-xe32.google.com (mail-vs1-xe32.google.com [IPv6:2607:f8b0:4864:20::e32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EDEF3B944
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 18:34:08 -0700 (PDT)
+Received: by mail-vs1-xe32.google.com with SMTP id 129so7721313vsq.8
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 18:34:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5/vmVKqoirO/ZnmWFWh7pPMm3cXVMOD/O70AH93NwoQ=;
+        b=Jc6Ja1iL+PmFORd+ayfCdUAApsKwWJH3RfjPl/SQuZhrBaZzCXxdetQ7soy2EcQ6dE
+         f/nj5SyVuHTBOA/KjFi5utIcWohXkfywgsRATmBnYC04gNbsmz83ocjbKaRp9g83rcuk
+         DhMYOeaq/VteMEk0cRjq+hFoBQcrQ3fUYOHARFyICB9SNqsTFisArW8UEaQ90k5lEh8z
+         anyJBKA7hPC0NEyC5JZ1wQ4BYi/YB9bCXWuo5pm0FVN4qHFWpH4yPs3QQIBJlhzOkclx
+         2F7lKyyI/n+cS7QMfS0nNxChHpDhxlQvH7kvT3LDfZ0jZzvcM+4rXNAnke9WUeAjp7Y6
+         Xtyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5/vmVKqoirO/ZnmWFWh7pPMm3cXVMOD/O70AH93NwoQ=;
+        b=hPZx2PZ1y5k+wnsUGNS0AqJjjp+M2twIABMmH7uRYLQZcRBfnsVCRzjp4MvMnb0AjE
+         bRhDPSbTjX/g0opVOEMI2kdjd2IKPmQCmXuVmLYkQzUvPbHyB06f1DFKyF0t+Rb6FSxo
+         1EoYbAQCxRLC+qkp92opvAwDLhZ6BvefTqMwecOUnbzx7yZtcg0pJe3ab3F85rZPvRTd
+         zTc3SbzFlRsazXSnmOmLSwCidLMlOlps0YwaIcp+bKcJe1T2xp2cvokYDCArmv51Hgnd
+         69UuKGFM5nR/jms6jvKKsI79/Ppu9zkaqdgmt86hVy3xLRP3aj/zZHo6kso4fVNOOuIX
+         i57Q==
+X-Gm-Message-State: AJIora954Qew9fUMqBVS16fcdw/peHM5efLjc+HGn8SEFLKifHsZ3BCc
+        Jcr+NCHrSkenuAESnmu7HYidb59HhbxdtF2eBYw=
+X-Google-Smtp-Source: AGRyM1sFGyULinUFRT9jlmibW4PcLK23Ey/VconZdFQvR2s3dTBQrqddR20oAw/7ezMa0qJ0CAjintrL+9pmKUHhcRc=
+X-Received: by 2002:a05:6102:2387:b0:34b:9f6d:10da with SMTP id
+ v7-20020a056102238700b0034b9f6d10damr6233583vsr.28.1658885647112; Tue, 26 Jul
+ 2022 18:34:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CAHk-=wiWwDYxNhnStS0e+p-NTFAQSHvab=2-8LwxunCVuY5-2A@mail.gmail.com>
+ <20220725161141.GA1306881@roeck-us.net> <CAHk-=whtGUwJwHUSNsXd4g7cok=n0Zwje7nACp8skh1fa2NtJA@mail.gmail.com>
+ <YuAm5h1B6bsrR/9q@fedora> <CAHk-=wgYpJTMMxmfbpqc=JVtSK0Zj4b15G=AvEYk6vPNySDSsA@mail.gmail.com>
+ <YuAv+lV324G7pmlk@yury-laptop> <CAHk-=wg2-j8zocUjurAeg_bimNz7C5h5HDEXKK6PxDmR+DaHRg@mail.gmail.com>
+ <YuBEIiLL1xZVyEFl@shell.armlinux.org.uk> <CAHk-=wjpYLLoi1m0VRfVoyzGgmMiNwBhQ0XXG0VWwjskcz5Cug@mail.gmail.com>
+ <YuCDscyJotkjNQcH@shell.armlinux.org.uk>
+In-Reply-To: <YuCDscyJotkjNQcH@shell.armlinux.org.uk>
+From:   Yury Norov <yury.norov@gmail.com>
+Date:   Tue, 26 Jul 2022 18:33:55 -0700
+Message-ID: <CAAH8bW-BNfhuXF_2cO+x2Qc51G-DFskFmKw8hzDHhC+3Rn1ZUA@mail.gmail.com>
+Subject: Re: Linux 5.19-rc8
+To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Dennis Zhou <dennis@kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        linux-m68k@lists.linux-m68k.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PCIe service that shares IRQ with PME may cause spurious wakeup on
-system suspend.
+On Tue, Jul 26, 2022 at 5:15 PM Russell King (Oracle)
+<linux@armlinux.org.uk> wrote:
+>
+> On Tue, Jul 26, 2022 at 01:20:23PM -0700, Linus Torvalds wrote:
+> > On Tue, Jul 26, 2022 at 12:44 PM Russell King (Oracle)
+> > <linux@armlinux.org.uk> wrote:
+> > >
+> > > Overall, I would say it's pretty similar (some generic perform
+> > > marginally better, some native perform marginally better) with the
+> > > exception of find_first_bit() being much better with the generic
+> > > implementation, but find_next_zero_bit() being noticably worse.
+> >
+> > The generic _find_first_bit() code is actually sane and simple. It
+> > loops over words until it finds a non-zero one, and then does trivial
+> > calculations on that last word.
+> >
+> > That explains why the generic code does so much better than your byte-wise asm.
+> >
+> > In contrast, the generic _find_next_bit() I find almost offensively
+> > silly - which in turn explains why your byte-wide asm does better.
+> >
+> > I think the generic _find_next_bit() should actually do what the m68k
+> > find_next_bit code does: handle the first special word itself, and
+> > then just call find_first_bit() on the rest of it.
+> >
+> > And it should *not* try to handle the dynamic "bswap and/or bit sense
+> > invert" thing at all. That should be just four different (trivial)
+> > cases for the first word.
+>
+> Here's the results for the native version converted to use word loads:
+>
+> [   37.319937]
+>                Start testing find_bit() with random-filled bitmap
+> [   37.330289] find_next_bit:                 2222703 ns, 163781 iterations
+> [   37.339186] find_next_zero_bit:            2154375 ns, 163900 iterations
+> [   37.348118] find_last_bit:                 2208104 ns, 163780 iterations
+> [   37.372564] find_first_bit:               17722203 ns,  16370 iterations
+> [   37.737415] find_first_and_bit:          358135191 ns,  32453 iterations
+> [   37.745420] find_next_and_bit:             1280537 ns,  73644 iterations
+> [   37.752143]
+>                Start testing find_bit() with sparse bitmap
+> [   37.759032] find_next_bit:                   41256 ns,    655 iterations
+> [   37.769905] find_next_zero_bit:            4148410 ns, 327026 iterations
+> [   37.776675] find_last_bit:                   48742 ns,    655 iterations
+> [   37.790961] find_first_bit:                7562371 ns,    655 iterations
+> [   37.797743] find_first_and_bit:              47366 ns,      1 iterations
+> [   37.804527] find_next_and_bit:               59924 ns,      1 iterations
+>
+> which is generally faster than the generic version, with the exception
+> of the sparse find_first_bit (generic was:
+> [   25.657304] find_first_bit:                7328573 ns,    656 iterations)
+>
+> find_next_{,zero_}bit() in the sparse case are quite a bit faster than
+> the generic code.
 
-Since AER is conditionally disabled in previous patch, also apply the
-same condition to disable DPC which depends on AER to work.
+Look at find_{first,next}_and_bit results. Those two have no arch version
+and in both cases use generic code. In theory they should be equally fast
+before and after, but your testing says that generic case is slower even
+for them, and the difference is comparable with real arch functions numbers.
+It makes me feel like:
+ - there's something unrelated, like governor/throttling that affect results;
+ - the numbers are identical, taking the dispersion into account.
 
-PCIe Base Spec 5.0, section 5.2 "Link State Power Management" states
-that TLP and DLLP transmission is disabled for a Link in L2/L3 Ready
-(D3hot), L2 (D3cold with aux power) and L3 (D3cold), so we don't lose
-much here to disable DPC during system suspend.
+If the difference really concerns you, I'd suggest running the test
+several times
+to measure confidence intervals.
 
-This is very similar to previous attempts to suspend AER and DPC [1],
-but with a different reason.
-
-[1] https://lore.kernel.org/linux-pci/20220408153159.106741-1-kai.heng.feng@canonical.com/
-Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=216295
-
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
----
- drivers/pci/pcie/dpc.c | 52 +++++++++++++++++++++++++++++++++---------
- 1 file changed, 41 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/pci/pcie/dpc.c b/drivers/pci/pcie/dpc.c
-index 3e9afee02e8d1..542f282c43f75 100644
---- a/drivers/pci/pcie/dpc.c
-+++ b/drivers/pci/pcie/dpc.c
-@@ -343,13 +343,33 @@ void pci_dpc_init(struct pci_dev *pdev)
- 	}
- }
- 
-+static void dpc_enable(struct pcie_device *dev)
-+{
-+	struct pci_dev *pdev = dev->port;
-+	u16 ctl;
-+
-+	pci_read_config_word(pdev, pdev->dpc_cap + PCI_EXP_DPC_CTL, &ctl);
-+	ctl = (ctl & 0xfff4) | PCI_EXP_DPC_CTL_EN_FATAL | PCI_EXP_DPC_CTL_INT_EN;
-+	pci_write_config_word(pdev, pdev->dpc_cap + PCI_EXP_DPC_CTL, ctl);
-+}
-+
-+static void dpc_disable(struct pcie_device *dev)
-+{
-+	struct pci_dev *pdev = dev->port;
-+	u16 ctl;
-+
-+	pci_read_config_word(pdev, pdev->dpc_cap + PCI_EXP_DPC_CTL, &ctl);
-+	ctl &= ~(PCI_EXP_DPC_CTL_EN_FATAL | PCI_EXP_DPC_CTL_INT_EN);
-+	pci_write_config_word(pdev, pdev->dpc_cap + PCI_EXP_DPC_CTL, ctl);
-+}
-+
- #define FLAG(x, y) (((x) & (y)) ? '+' : '-')
- static int dpc_probe(struct pcie_device *dev)
- {
- 	struct pci_dev *pdev = dev->port;
- 	struct device *device = &dev->device;
- 	int status;
--	u16 ctl, cap;
-+	u16 cap;
- 
- 	if (!pcie_aer_is_native(pdev) && !pcie_ports_dpc_native)
- 		return -ENOTSUPP;
-@@ -364,10 +384,7 @@ static int dpc_probe(struct pcie_device *dev)
- 	}
- 
- 	pci_read_config_word(pdev, pdev->dpc_cap + PCI_EXP_DPC_CAP, &cap);
--	pci_read_config_word(pdev, pdev->dpc_cap + PCI_EXP_DPC_CTL, &ctl);
--
--	ctl = (ctl & 0xfff4) | PCI_EXP_DPC_CTL_EN_FATAL | PCI_EXP_DPC_CTL_INT_EN;
--	pci_write_config_word(pdev, pdev->dpc_cap + PCI_EXP_DPC_CTL, ctl);
-+	dpc_enable(dev);
- 	pci_info(pdev, "enabled with IRQ %d\n", dev->irq);
- 
- 	pci_info(pdev, "error containment capabilities: Int Msg #%d, RPExt%c PoisonedTLP%c SwTrigger%c RP PIO Log %d, DL_ActiveErr%c\n",
-@@ -380,14 +397,25 @@ static int dpc_probe(struct pcie_device *dev)
- 	return status;
- }
- 
--static void dpc_remove(struct pcie_device *dev)
-+static int dpc_suspend(struct pcie_device *dev)
- {
--	struct pci_dev *pdev = dev->port;
--	u16 ctl;
-+	if (dev->shared_pme_irq)
-+		dpc_disable(dev);
- 
--	pci_read_config_word(pdev, pdev->dpc_cap + PCI_EXP_DPC_CTL, &ctl);
--	ctl &= ~(PCI_EXP_DPC_CTL_EN_FATAL | PCI_EXP_DPC_CTL_INT_EN);
--	pci_write_config_word(pdev, pdev->dpc_cap + PCI_EXP_DPC_CTL, ctl);
-+	return 0;
-+}
-+
-+static int dpc_resume(struct pcie_device *dev)
-+{
-+	if (dev->shared_pme_irq)
-+		dpc_enable(dev);
-+
-+	return 0;
-+}
-+
-+static void dpc_remove(struct pcie_device *dev)
-+{
-+	dpc_disable(dev);
- }
- 
- static struct pcie_port_service_driver dpcdriver = {
-@@ -395,6 +423,8 @@ static struct pcie_port_service_driver dpcdriver = {
- 	.port_type	= PCIE_ANY_PORT,
- 	.service	= PCIE_PORT_SERVICE_DPC,
- 	.probe		= dpc_probe,
-+	.suspend	= dpc_suspend,
-+	.resume		= dpc_resume,
- 	.remove		= dpc_remove,
- };
- 
--- 
-2.36.1
-
+Thanks,
+Yury
