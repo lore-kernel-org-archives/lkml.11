@@ -2,183 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E09F5C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 13:12:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D0B6C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 13:13:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232620AbiG0NM1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 09:12:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51528 "EHLO
+        id S233696AbiG0NNT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 09:13:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229565AbiG0NMZ (ORCPT
+        with ESMTP id S229565AbiG0NNR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 09:12:25 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0FAA22BFC;
-        Wed, 27 Jul 2022 06:12:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1658927544; x=1690463544;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=2K+VWj/VVwFKNZXxoXRjQ6QamXRt3ccAfYaRmtxAmTs=;
-  b=Ey9nrgDk+6vI9EKZlYaDiruI3QNnTlIeiY2dh5p7YQU68BIbnmG8jAYv
-   G5sRF6l5zDJaS9vTvQIHA7vJcVJaztsMxJVJr8CqyKI5n1pnjsrQTqqvn
-   iNxkdCd6h2bETwac4CQuJ+0Ei8yVEgb4cFMVlBq3+gHmsMoFD1SxAm778
-   eP59eevUcSNvFob+P0tQ6Cr4d9o5aWebRCSLPxy/3x1V0JsznNFURPh2b
-   Is/ynfXQv8UnpLVyNkzep9HlOMHBCnSai0x/Uk34m6XYR9WNymPAOYqZn
-   qJzrt3zybFXtHURO30pwvSelRls++6f15+EYCih7RdUDFnlQgV9tvG1Ym
-   A==;
-X-IronPort-AV: E=Sophos;i="5.93,195,1654585200"; 
-   d="scan'208";a="106361582"
-Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 27 Jul 2022 06:12:23 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 27 Jul 2022 06:12:23 -0700
-Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.2375.28 via Frontend
- Transport; Wed, 27 Jul 2022 06:12:21 -0700
-From:   Conor Dooley <conor.dooley@microchip.com>
-To:     Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-CC:     Jyri Sarha <jsarha@ti.com>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        <linux-clk@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] dt-bindings: clock: gpio-gate-clock: Convert to json-schema
-Date:   Wed, 27 Jul 2022 14:10:16 +0100
-Message-ID: <20220727131015.2073100-1-conor.dooley@microchip.com>
-X-Mailer: git-send-email 2.36.1
+        Wed, 27 Jul 2022 09:13:17 -0400
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 089FC22BFC;
+        Wed, 27 Jul 2022 06:13:16 -0700 (PDT)
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26RACOnK013409;
+        Wed, 27 Jul 2022 09:12:46 -0400
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3hgdw6b1f9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 27 Jul 2022 09:12:46 -0400
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 26RDCj63061066
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 27 Jul 2022 09:12:45 -0400
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Wed, 27 Jul 2022 09:12:44 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Wed, 27 Jul 2022 09:12:44 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Wed, 27 Jul 2022 09:12:44 -0400
+Received: from localhost.localdomain ([10.48.65.12])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 26RDCB50024189;
+        Wed, 27 Jul 2022 09:12:17 -0400
+From:   <alexandru.tachici@analog.com>
+To:     <andrew@lunn.ch>
+CC:     <alexandru.tachici@analog.com>, <d.michailidis@fungible.com>,
+        <davem@davemloft.net>, <devicetree@vger.kernel.org>,
+        <edumazet@google.com>, <geert+renesas@glider.be>,
+        <geert@linux-m68k.org>, <gerhard@engleder-embedded.com>,
+        <joel@jms.id.au>, <krzysztof.kozlowski+dt@linaro.org>,
+        <kuba@kernel.org>, <l.stelmach@samsung.com>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <robh+dt@kernel.org>, <stefan.wahren@i2se.com>,
+        <stephen@networkplumber.org>, <wellslutw@gmail.com>
+Subject: [net-next,v2,2/3] net: ethernet: adi: Add ADIN1110 support
+Date:   Wed, 27 Jul 2022 16:26:12 +0300
+Message-ID: <20220727132612.31445-1-alexandru.tachici@analog.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <Yt76W+MbeHucJj0f@lunn.ch>
+References: <Yt76W+MbeHucJj0f@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: u0jf2sfaQPUe4lUCdPtLJvWVr9epQG22
+X-Proofpoint-ORIG-GUID: u0jf2sfaQPUe4lUCdPtLJvWVr9epQG22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-27_03,2022-07-27_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011
+ priorityscore=1501 spamscore=0 malwarescore=0 suspectscore=0 bulkscore=0
+ phishscore=0 lowpriorityscore=0 mlxlogscore=749 adultscore=0 mlxscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2207270054
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert the simple GPIO clock gate Device Tree binding to json-schema
-and fix-up references to this file in other text format bindings.
-Jyri Sarha is the file's only editor/author so they have been added as
-maintainer of the new yaml binding.
+> > +static irqreturn_t adin1110_irq(int irq, void *p)
+> > +{
+> > +	struct adin1110_priv *priv = p;
+> > +	u32 status1;
+> > +	u32 val;
+> > +	int ret;
+> > +	int i;
+> > +
+> > +	mutex_lock(&priv->lock);
+> 
+> The MDIO bus operations are using the same lock. MDIO can be quite
+> slow. Do you really need mutual exclusion between MDIO and interrupts?
+> What exactly is this lock protecting?
+> 
+>   Andrew
 
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
----
-The original file does not specifiy dual licensing, but when Geert did
-the gpio-mux-clock conversion the yaml binding was created with dual,
-so I have done the same thing here.
----
- .../bindings/clock/gpio-gate-clock.txt        | 21 ----------
- .../bindings/clock/gpio-gate-clock.yaml       | 42 +++++++++++++++++++
- .../devicetree/bindings/clock/ti/gate.txt     |  2 +-
- .../bindings/clock/ti/interface.txt           |  2 +-
- 4 files changed, 44 insertions(+), 23 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/clock/gpio-gate-clock.txt
- create mode 100644 Documentation/devicetree/bindings/clock/gpio-gate-clock.yaml
+Hi Andrew,
 
-diff --git a/Documentation/devicetree/bindings/clock/gpio-gate-clock.txt b/Documentation/devicetree/bindings/clock/gpio-gate-clock.txt
-deleted file mode 100644
-index d3379ff9b84b..000000000000
---- a/Documentation/devicetree/bindings/clock/gpio-gate-clock.txt
-+++ /dev/null
-@@ -1,21 +0,0 @@
--Binding for simple gpio gated clock.
--
--This binding uses the common clock binding[1].
--
--[1] Documentation/devicetree/bindings/clock/clock-bindings.txt
--
--Required properties:
--- compatible : shall be "gpio-gate-clock".
--- #clock-cells : from common clock binding; shall be set to 0.
--- enable-gpios : GPIO reference for enabling and disabling the clock.
--
--Optional properties:
--- clocks: Maximum of one parent clock is supported.
--
--Example:
--	clock {
--		compatible = "gpio-gate-clock";
--		clocks = <&parentclk>;
--		#clock-cells = <0>;
--		enable-gpios = <&gpio 1 GPIO_ACTIVE_HIGH>;
--	};
-diff --git a/Documentation/devicetree/bindings/clock/gpio-gate-clock.yaml b/Documentation/devicetree/bindings/clock/gpio-gate-clock.yaml
-new file mode 100644
-index 000000000000..d09d0e3f0c6e
---- /dev/null
-+++ b/Documentation/devicetree/bindings/clock/gpio-gate-clock.yaml
-@@ -0,0 +1,42 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/clock/gpio-gate-clock.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Simple GPIO clock gate
-+
-+maintainers:
-+  - Jyri Sarha <jsarha@ti.com>
-+
-+properties:
-+  compatible:
-+    const: gpio-gate-clock
-+
-+  clocks:
-+    maxItems: 1
-+
-+  '#clock-cells':
-+    const: 0
-+
-+  enable-gpios:
-+    description: GPIO reference for enabling and disabling the clock.
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - '#clock-cells'
-+  - enable-gpios
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+
-+    clock {
-+        compatible = "gpio-gate-clock";
-+        clocks = <&parentclk>;
-+        #clock-cells = <0>;
-+        enable-gpios = <&gpio 1 GPIO_ACTIVE_HIGH>;
-+    };
-diff --git a/Documentation/devicetree/bindings/clock/ti/gate.txt b/Documentation/devicetree/bindings/clock/ti/gate.txt
-index b4820b1de4f0..4982615c01b9 100644
---- a/Documentation/devicetree/bindings/clock/ti/gate.txt
-+++ b/Documentation/devicetree/bindings/clock/ti/gate.txt
-@@ -10,7 +10,7 @@ will be controlled instead and the corresponding hw-ops for
- that is used.
- 
- [1] Documentation/devicetree/bindings/clock/clock-bindings.txt
--[2] Documentation/devicetree/bindings/clock/gpio-gate-clock.txt
-+[2] Documentation/devicetree/bindings/clock/gpio-gate-clock.yaml
- [3] Documentation/devicetree/bindings/clock/ti/clockdomain.txt
- 
- Required properties:
-diff --git a/Documentation/devicetree/bindings/clock/ti/interface.txt b/Documentation/devicetree/bindings/clock/ti/interface.txt
-index 94ec77dc3c59..d3eb5ca92a7f 100644
---- a/Documentation/devicetree/bindings/clock/ti/interface.txt
-+++ b/Documentation/devicetree/bindings/clock/ti/interface.txt
-@@ -9,7 +9,7 @@ companion clock finding (match corresponding functional gate
- clock) and hardware autoidle enable / disable.
- 
- [1] Documentation/devicetree/bindings/clock/clock-bindings.txt
--[2] Documentation/devicetree/bindings/clock/gpio-gate-clock.txt
-+[2] Documentation/devicetree/bindings/clock/gpio-gate-clock.yaml
- 
- Required properties:
- - compatible : shall be one of:
--- 
-2.36.1
+Thanks for all the help here.
+
+With this lock I am mainly protecting SPI read/writes. The hardware doesn't expose the MDIO pins.
+In order to read/write a PHY reg, there has to be a SPI read/write to the device, the same
+line where the MAC is programmed and ethernet frames are sent/received, not very efficient I know.
+
+Best regards,
+Alexandru
 
