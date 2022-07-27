@@ -2,86 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66614C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 14:51:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBBE7C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 14:51:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234287AbiG0Ovc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 10:51:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39934 "EHLO
+        id S234352AbiG0Ovg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 10:51:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234238AbiG0OvZ (ORCPT
+        with ESMTP id S234280AbiG0Ov3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 10:51:25 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A87E4330B;
-        Wed, 27 Jul 2022 07:51:24 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id z23so31661241eju.8;
-        Wed, 27 Jul 2022 07:51:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=BcjOvUvgWV3BAQ3E9l0s9PTFaWNeusUy+QCOuPABOmE=;
-        b=aIlAHoCIkpUuoFHze+Z/HfYl16wa//iWgR50y4BIOQG12KxZNheuNuPx4QaMsPcHqm
-         mnZTKT30y4hERKheVcKgOWuc9ILKvw4bvMHYTknr/uVZW9ct0Ca6BFmzjcfx3DyePj7n
-         HAYQ76lfQFgdfuGwema7jPQu6LQk2DhfWdQ+oPd0fihedkj3mLKCQblU5z98ZVBTHIge
-         fh3OjF7BjuZxDumYWnhc6u6sn5U4IOAsTsRUuxARtB96zK69iLbRdwMg2dskRxnAox0s
-         zLu1DF5KshQ0UR0ZaWhIoIktCXouEHktxJT3w+9LNU1l51A511dTlxH59oI4qZkxWCf1
-         P9UA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=BcjOvUvgWV3BAQ3E9l0s9PTFaWNeusUy+QCOuPABOmE=;
-        b=H8CP0P7uX3xoDSnLDDnBQ+6g4o+tt6oznWODDswGy2UXsKxWzBMDH0E5gT5rIBH6ct
-         2FsC56XejELVFUp/moitUYtkbLllUwUxj2EPouYK0OzvBJN0K3/UWN1CNFjxiNf9+yiO
-         nPylJLcZ5cJ6ChWaRjuMgqhcmZlpRIC3U4t3krhoMAAfPVUSgmqkj1izNxtVlS+L357I
-         7nelT7NDKOtjRHbELu85US9jgJ92PQOsjaCfltvAllMj+SZQ1gdVMXjNPUCkLGQ6cJjl
-         dLCIAFfPobZXPz3fbmdJnq1m4c5QFrL3HYH/Ur4KDy3mBXLxPpmOsXwMvobtEAt1jcRt
-         NtJQ==
-X-Gm-Message-State: AJIora8h7igH6mkcL5He9rgfFZXV9eDbj38s7jZEqdJE1CJ3pNgb+ljL
-        SVnkoqA7h4QphF7GqfDFIJ8=
-X-Google-Smtp-Source: AGRyM1s+7nwMGXZmSD9whtEJSdR5QkrRdiRbcb5I4XYYYpgtg2Y/shyvcZjjk5AcViB/yqWvzIj8OQ==
-X-Received: by 2002:a17:907:7f1c:b0:72b:6e63:1798 with SMTP id qf28-20020a1709077f1c00b0072b6e631798mr17622362ejc.538.1658933482763;
-        Wed, 27 Jul 2022 07:51:22 -0700 (PDT)
-Received: from skbuf ([188.25.231.115])
-        by smtp.gmail.com with ESMTPSA id gr19-20020a170906e2d300b0072b592ee073sm7808216ejb.147.2022.07.27.07.51.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 07:51:22 -0700 (PDT)
-Date:   Wed, 27 Jul 2022 17:51:19 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Christian Marangi <ansuelsmth@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jens Axboe <axboe@kernel.dk>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [net-next PATCH v5 06/14] net: dsa: qca8k: move mib init
- function to common code
-Message-ID: <20220727145119.cruovluea4go7yl7@skbuf>
-References: <20220727113523.19742-1-ansuelsmth@gmail.com>
- <20220727113523.19742-1-ansuelsmth@gmail.com>
- <20220727113523.19742-7-ansuelsmth@gmail.com>
- <20220727113523.19742-7-ansuelsmth@gmail.com>
+        Wed, 27 Jul 2022 10:51:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B6D743329
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 07:51:25 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 91EED618B6
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 14:51:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECB78C433D6;
+        Wed, 27 Jul 2022 14:51:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658933485;
+        bh=vqSpCepPlYeE/5Z30CAjJpT4GBqxXF90RajlOgrTJLI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=rXH5gsO3xi1jppwO0JGkyyXJe6nNvBnMS+zs7n4XDocHmIURshNFiwP9Rvoei9tMX
+         y35Wh76pqxyj1CSdrPxcO/UzyLcdSov0iEDMgd26FHs/IKa3ET579CqCBygxyq/igc
+         HE4e0PVoxOaSB1IDj+DCQLLcTRzpVLcS3tmKIKOSjc9zkcz4XVpqIX2qY0y51xYLN2
+         edOg0uEjR4ZiYyS2guPTzZvAD+1yPJLZTT3NnUY23bLFekJgNxwu8yDDGKJhN4tlKv
+         r+gcZwpkwc4Ps1FoLxitZ4DkiGcpOgXgovqbFroyD0YDNfwqszAls9Q2UDs3lXzEfh
+         EFTkwm1DTH7aQ==
+From:   Chao Yu <chao@kernel.org>
+To:     jaegeuk@kernel.org
+Cc:     linux-f2fs-devel@lists.sourceforge.net,
+        linux-kernel@vger.kernel.org, Chao Yu <chao.yu@oppo.com>,
+        Wenqing Liu <wenqingliu0120@gmail.com>
+Subject: [PATCH] f2fs: fix to do sanity check on segment type in build_sit_entries()
+Date:   Wed, 27 Jul 2022 22:51:05 +0800
+Message-Id: <20220727145105.3502-1-chao@kernel.org>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220727113523.19742-7-ansuelsmth@gmail.com>
- <20220727113523.19742-7-ansuelsmth@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 01:35:15PM +0200, Christian Marangi wrote:
-> The same mib function is used by drivers based on qca8k family switch.
-> Move it to common code to make it accessible also by other drivers.
-> 
-> Signed-off-by: Christian Marangi <ansuelsmth@gmail.com>
-> ---
+From: Chao Yu <chao.yu@oppo.com>
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+As Wenqing Liu <wenqingliu0120@gmail.com> reported in bugzilla:
+
+https://bugzilla.kernel.org/show_bug.cgi?id=216285
+
+RIP: 0010:memcpy_erms+0x6/0x10
+ f2fs_update_meta_page+0x84/0x570 [f2fs]
+ change_curseg.constprop.0+0x159/0xbd0 [f2fs]
+ f2fs_do_replace_block+0x5c7/0x18a0 [f2fs]
+ f2fs_replace_block+0xeb/0x180 [f2fs]
+ recover_data+0x1abd/0x6f50 [f2fs]
+ f2fs_recover_fsync_data+0x12ce/0x3250 [f2fs]
+ f2fs_fill_super+0x4459/0x6190 [f2fs]
+ mount_bdev+0x2cf/0x3b0
+ legacy_get_tree+0xed/0x1d0
+ vfs_get_tree+0x81/0x2b0
+ path_mount+0x47e/0x19d0
+ do_mount+0xce/0xf0
+ __x64_sys_mount+0x12c/0x1a0
+ do_syscall_64+0x38/0x90
+ entry_SYSCALL_64_after_hwframe+0x63/0xcd
+
+The root cause is segment type is invalid, so in f2fs_do_replace_block(),
+f2fs accesses f2fs_sm_info::curseg_array with out-of-range segment type,
+result in accessing invalid curseg->sum_blk during memcpy in
+f2fs_update_meta_page(). Fix this by adding sanity check on segment type
+in build_sit_entries().
+
+Reported-by: Wenqing Liu <wenqingliu0120@gmail.com>
+Signed-off-by: Chao Yu <chao.yu@oppo.com>
+---
+ fs/f2fs/segment.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/fs/f2fs/segment.c b/fs/f2fs/segment.c
+index 51da73b27a45..7b1d2c29aba6 100644
+--- a/fs/f2fs/segment.c
++++ b/fs/f2fs/segment.c
+@@ -4375,6 +4375,12 @@ static int build_sit_entries(struct f2fs_sb_info *sbi)
+ 				return err;
+ 			seg_info_from_raw_sit(se, &sit);
+ 
++			if (se->type >= NR_PERSISTENT_LOG) {
++				f2fs_err(sbi, "Invalid segment type: %u, segno: %u",
++							se->type, start);
++				return -EFSCORRUPTED;
++			}
++
+ 			sit_valid_blocks[SE_PAGETYPE(se)] += se->valid_blocks;
+ 
+ 			if (f2fs_block_unit_discard(sbi)) {
+@@ -4423,6 +4429,13 @@ static int build_sit_entries(struct f2fs_sb_info *sbi)
+ 			break;
+ 		seg_info_from_raw_sit(se, &sit);
+ 
++		if (se->type >= NR_PERSISTENT_LOG) {
++			f2fs_err(sbi, "Invalid segment type: %u, segno: %u",
++							se->type, start);
++			err = -EFSCORRUPTED;
++			break;
++		}
++
+ 		sit_valid_blocks[SE_PAGETYPE(se)] += se->valid_blocks;
+ 
+ 		if (f2fs_block_unit_discard(sbi)) {
+-- 
+2.36.1
+
