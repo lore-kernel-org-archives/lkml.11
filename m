@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8436CC19F28
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:35:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FB2BC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:36:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237988AbiG0Qf4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:35:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47320 "EHLO
+        id S238594AbiG0QgB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:36:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238246AbiG0QeN (ORCPT
+        with ESMTP id S238367AbiG0QeW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:34:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFD394F194;
-        Wed, 27 Jul 2022 09:26:58 -0700 (PDT)
+        Wed, 27 Jul 2022 12:34:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DFA654CBE;
+        Wed, 27 Jul 2022 09:27:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DD03D619C0;
-        Wed, 27 Jul 2022 16:26:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7DA4C433D7;
-        Wed, 27 Jul 2022 16:26:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AFBC661A1E;
+        Wed, 27 Jul 2022 16:26:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6B35C433D6;
+        Wed, 27 Jul 2022 16:26:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939187;
-        bh=sKEh1h1g2EloXlRno4EC8xmmU1FOwVQwFsLKDWV/Ugg=;
+        s=korg; t=1658939190;
+        bh=4a07L9FAYE6Hy2yov2eTzQtFHuUk6iOwB8T/ZXIwaEE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CnegrMT+n6sIhcq5izHJH4bpeixzCkzyMZX8Tzn8Yve1c1uqWWAEoLeJ2c7Q/V7qx
-         blYMar44WQFfmq9py4j+HUR7SHAFYsJ95omuv44hsx4Oz9rbd1fLP+ixJmW6/fZnjI
-         EyawGpUg6/GguYOMCcGu3XHVEXCEfrBDFHqMIY3g=
+        b=YBNyOCag7oJOH4C3PjZgwSP051CEMMSZGYPJxuqyRXGpOO/GGFjxr3I0kZK+A3fKc
+         TCjP8YcdalBoZ+xYMYqjl1kXOiRMo/HR1L8vsg7EhLgxB0fKUq8tmSnN4SQ+vNRuJg
+         Rl6GCtjj4sy4Frr1q4xcEd86jtBqeXnUegBwcSrU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, GUO Zihua <guozihua@huawei.com>,
-        Stable@vger.kernel.org, Mimi Zohar <zohar@linux.ibm.com>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 43/62] ima: remove the IMA_TEMPLATE Kconfig option
-Date:   Wed, 27 Jul 2022 18:10:52 +0200
-Message-Id: <20220727161005.855488592@linuxfoundation.org>
+Subject: [PATCH 4.19 17/62] igmp: Fix data-races around sysctl_igmp_llm_reports.
+Date:   Wed, 27 Jul 2022 18:10:26 +0200
+Message-Id: <20220727161004.870745121@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161004.175638564@linuxfoundation.org>
 References: <20220727161004.175638564@linuxfoundation.org>
@@ -49,98 +49,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: GUO Zihua <guozihua@huawei.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 891163adf180bc369b2f11c9dfce6d2758d2a5bd ]
+[ Upstream commit f6da2267e71106474fbc0943dc24928b9cb79119 ]
 
-The original 'ima' measurement list template contains a hash, defined
-as 20 bytes, and a null terminated pathname, limited to 255
-characters.  Other measurement list templates permit both larger hashes
-and longer pathnames.  When the "ima" template is configured as the
-default, a new measurement list template (ima_template=) must be
-specified before specifying a larger hash algorithm (ima_hash=) on the
-boot command line.
+While reading sysctl_igmp_llm_reports, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its readers.
 
-To avoid this boot command line ordering issue, remove the legacy "ima"
-template configuration option, allowing it to still be specified on the
-boot command line.
+This test can be packed into a helper, so such changes will be in the
+follow-up series after net is merged into net-next.
 
-The root cause of this issue is that during the processing of ima_hash,
-we would try to check whether the hash algorithm is compatible with the
-template. If the template is not set at the moment we do the check, we
-check the algorithm against the configured default template. If the
-default template is "ima", then we reject any hash algorithm other than
-sha1 and md5.
+  if (ipv4_is_local_multicast(pmc->multiaddr) &&
+      !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
 
-For example, if the compiled default template is "ima", and the default
-algorithm is sha1 (which is the current default). In the cmdline, we put
-in "ima_hash=sha256 ima_template=ima-ng". The expected behavior would be
-that ima starts with ima-ng as the template and sha256 as the hash
-algorithm. However, during the processing of "ima_hash=",
-"ima_template=" has not been processed yet, and hash_setup would check
-the configured hash algorithm against the compiled default: ima, and
-reject sha256. So at the end, the hash algorithm that is actually used
-will be sha1.
-
-With template "ima" removed from the configured default, we ensure that
-the default tempalte would at least be "ima-ng" which allows for
-basically any hash algorithm.
-
-This change would not break the algorithm compatibility checks for IMA.
-
-Fixes: 4286587dccd43 ("ima: add Kconfig default measurement list template")
-Signed-off-by: GUO Zihua <guozihua@huawei.com>
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Mimi Zohar <zohar@linux.ibm.com>
+Fixes: df2cf4a78e48 ("IGMP: Inhibit reports for local multicast groups")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/integrity/ima/Kconfig | 12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
+ net/ipv4/igmp.c | 21 +++++++++++++--------
+ 1 file changed, 13 insertions(+), 8 deletions(-)
 
-diff --git a/security/integrity/ima/Kconfig b/security/integrity/ima/Kconfig
-index 5095b2e8fcee..3ec45028a8c5 100644
---- a/security/integrity/ima/Kconfig
-+++ b/security/integrity/ima/Kconfig
-@@ -68,10 +68,9 @@ choice
- 	  hash, defined as 20 bytes, and a null terminated pathname,
- 	  limited to 255 characters.  The 'ima-ng' measurement list
- 	  template permits both larger hash digests and longer
--	  pathnames.
-+	  pathnames. The configured default template can be replaced
-+	  by specifying "ima_template=" on the boot command line.
+diff --git a/net/ipv4/igmp.c b/net/ipv4/igmp.c
+index ee179e08dd20..957e1170a8a3 100644
+--- a/net/ipv4/igmp.c
++++ b/net/ipv4/igmp.c
+@@ -471,7 +471,8 @@ static struct sk_buff *add_grec(struct sk_buff *skb, struct ip_mc_list *pmc,
  
--	config IMA_TEMPLATE
--		bool "ima"
- 	config IMA_NG_TEMPLATE
- 		bool "ima-ng (default)"
- 	config IMA_SIG_TEMPLATE
-@@ -81,7 +80,6 @@ endchoice
- config IMA_DEFAULT_TEMPLATE
- 	string
- 	depends on IMA
--	default "ima" if IMA_TEMPLATE
- 	default "ima-ng" if IMA_NG_TEMPLATE
- 	default "ima-sig" if IMA_SIG_TEMPLATE
+ 	if (pmc->multiaddr == IGMP_ALL_HOSTS)
+ 		return skb;
+-	if (ipv4_is_local_multicast(pmc->multiaddr) && !net->ipv4.sysctl_igmp_llm_reports)
++	if (ipv4_is_local_multicast(pmc->multiaddr) &&
++	    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
+ 		return skb;
  
-@@ -101,15 +99,15 @@ choice
+ 	mtu = READ_ONCE(dev->mtu);
+@@ -597,7 +598,7 @@ static int igmpv3_send_report(struct in_device *in_dev, struct ip_mc_list *pmc)
+ 			if (pmc->multiaddr == IGMP_ALL_HOSTS)
+ 				continue;
+ 			if (ipv4_is_local_multicast(pmc->multiaddr) &&
+-			     !net->ipv4.sysctl_igmp_llm_reports)
++			    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
+ 				continue;
+ 			spin_lock_bh(&pmc->lock);
+ 			if (pmc->sfcount[MCAST_EXCLUDE])
+@@ -740,7 +741,8 @@ static int igmp_send_report(struct in_device *in_dev, struct ip_mc_list *pmc,
+ 	if (type == IGMPV3_HOST_MEMBERSHIP_REPORT)
+ 		return igmpv3_send_report(in_dev, pmc);
  
- 	config IMA_DEFAULT_HASH_SHA256
- 		bool "SHA256"
--		depends on CRYPTO_SHA256=y && !IMA_TEMPLATE
-+		depends on CRYPTO_SHA256=y
+-	if (ipv4_is_local_multicast(group) && !net->ipv4.sysctl_igmp_llm_reports)
++	if (ipv4_is_local_multicast(group) &&
++	    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
+ 		return 0;
  
- 	config IMA_DEFAULT_HASH_SHA512
- 		bool "SHA512"
--		depends on CRYPTO_SHA512=y && !IMA_TEMPLATE
-+		depends on CRYPTO_SHA512=y
+ 	if (type == IGMP_HOST_LEAVE_MESSAGE)
+@@ -924,7 +926,8 @@ static bool igmp_heard_report(struct in_device *in_dev, __be32 group)
  
- 	config IMA_DEFAULT_HASH_WP512
- 		bool "WP512"
--		depends on CRYPTO_WP512=y && !IMA_TEMPLATE
-+		depends on CRYPTO_WP512=y
- endchoice
+ 	if (group == IGMP_ALL_HOSTS)
+ 		return false;
+-	if (ipv4_is_local_multicast(group) && !net->ipv4.sysctl_igmp_llm_reports)
++	if (ipv4_is_local_multicast(group) &&
++	    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
+ 		return false;
  
- config IMA_DEFAULT_HASH
+ 	rcu_read_lock();
+@@ -1049,7 +1052,7 @@ static bool igmp_heard_query(struct in_device *in_dev, struct sk_buff *skb,
+ 		if (im->multiaddr == IGMP_ALL_HOSTS)
+ 			continue;
+ 		if (ipv4_is_local_multicast(im->multiaddr) &&
+-		    !net->ipv4.sysctl_igmp_llm_reports)
++		    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
+ 			continue;
+ 		spin_lock_bh(&im->lock);
+ 		if (im->tm_running)
+@@ -1299,7 +1302,8 @@ static void igmp_group_dropped(struct ip_mc_list *im)
+ #ifdef CONFIG_IP_MULTICAST
+ 	if (im->multiaddr == IGMP_ALL_HOSTS)
+ 		return;
+-	if (ipv4_is_local_multicast(im->multiaddr) && !net->ipv4.sysctl_igmp_llm_reports)
++	if (ipv4_is_local_multicast(im->multiaddr) &&
++	    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
+ 		return;
+ 
+ 	reporter = im->reporter;
+@@ -1336,7 +1340,8 @@ static void igmp_group_added(struct ip_mc_list *im)
+ #ifdef CONFIG_IP_MULTICAST
+ 	if (im->multiaddr == IGMP_ALL_HOSTS)
+ 		return;
+-	if (ipv4_is_local_multicast(im->multiaddr) && !net->ipv4.sysctl_igmp_llm_reports)
++	if (ipv4_is_local_multicast(im->multiaddr) &&
++	    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
+ 		return;
+ 
+ 	if (in_dev->dead)
+@@ -1657,7 +1662,7 @@ static void ip_mc_rejoin_groups(struct in_device *in_dev)
+ 		if (im->multiaddr == IGMP_ALL_HOSTS)
+ 			continue;
+ 		if (ipv4_is_local_multicast(im->multiaddr) &&
+-		    !net->ipv4.sysctl_igmp_llm_reports)
++		    !READ_ONCE(net->ipv4.sysctl_igmp_llm_reports))
+ 			continue;
+ 
+ 		/* a failover is happening and switches
 -- 
 2.35.1
 
