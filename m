@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 439D8C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:56:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A286AC04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:56:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241018AbiG0Q42 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:56:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42286 "EHLO
+        id S240804AbiG0Q4d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:56:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241137AbiG0QyZ (ORCPT
+        with ESMTP id S241383AbiG0Qy4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:54:25 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D93CD4D4DF;
-        Wed, 27 Jul 2022 09:35:38 -0700 (PDT)
+        Wed, 27 Jul 2022 12:54:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 233C863925;
+        Wed, 27 Jul 2022 09:35:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0EA64CE2301;
-        Wed, 27 Jul 2022 16:35:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC7C0C433D6;
-        Wed, 27 Jul 2022 16:35:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5FC0FB821B9;
+        Wed, 27 Jul 2022 16:35:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6E9AC433D6;
+        Wed, 27 Jul 2022 16:35:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939735;
-        bh=F8ZiAE7YZXuQSsyBrtT3P/GZVlUNUGHQ+fXJZiNmSOw=;
+        s=korg; t=1658939749;
+        bh=jcHmUKIpsbENuhRrjItq3XN6dbKmx1M5yVCGYCxfTNo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b+9fIqaS3ium9F6SOTNmgYgOOhGngfbrJnO5ZZ+NuyO++l+GnMHRYr+wNt72ttvtv
-         JBeUGadJu7euQqHTNaCgrVu5BWDDQzNmA9/UHW4k/bH7pk1gYNjgACZR2UeocKeucx
-         F/2jL20YU48f5WWkSCWee9lk8w7fq0ZDi+dr+ff8=
+        b=VdAWwWOh1uT/yYZf6P5hWs92Q4iQhPGMxAiFJ2ZhO/IdZTM6nYlQnWLMWtnbPl4W2
+         anjdoHlGz3gTHwIwyfydSfjz627qfcEGX1TSW7a9hwQnTG+OucrjZc8BuEAYU6+FVo
+         BbbbD+SPd4q1xv3TyT0quQzLh7BRJOu95gVD59v4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Wang ShaoBo <bobo.shaobowang@huawei.com>,
-        Laurentiu Palcu <laurentiu.palcu@oss.nxp.com>,
-        Lucas Stach <l.stach@pengutronix.de>,
+        stable@vger.kernel.org,
+        Dawid Lukwinski <dawid.lukwinski@intel.com>,
+        Jan Sokolowski <jan.sokolowski@intel.com>,
+        Konrad Jankowski <konrad0.jankowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 084/105] drm/imx/dcss: fix unused but set variable warnings
-Date:   Wed, 27 Jul 2022 18:11:10 +0200
-Message-Id: <20220727161015.469788131@linuxfoundation.org>
+Subject: [PATCH 5.10 058/105] i40e: Fix erroneous adapter reinitialization during recovery process
+Date:   Wed, 27 Jul 2022 18:10:44 +0200
+Message-Id: <20220727161014.411223227@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161012.056867467@linuxfoundation.org>
 References: <20220727161012.056867467@linuxfoundation.org>
@@ -51,48 +53,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang ShaoBo <bobo.shaobowang@huawei.com>
+From: Dawid Lukwinski <dawid.lukwinski@intel.com>
 
-[ Upstream commit 523be44c334bc4e4c014032738dc277b8909d009 ]
+[ Upstream commit f838a63369818faadec4ad1736cfbd20ab5da00e ]
 
-Fix unused but set variable warning building with `make W=1`:
+Fix an issue when driver incorrectly detects state
+of recovery process and erroneously reinitializes interrupts,
+which results in a kernel error and call trace message.
 
-drivers/gpu/drm/imx/dcss/dcss-plane.c:270:6: warning:
- variable ‘pixel_format’ set but not used [-Wunused-but-set-variable]
-  u32 pixel_format;
-      ^~~~~~~~~~~~
+The issue was caused by a combination of two factors:
+1. Assuming the EMP reset issued after completing
+firmware recovery means the whole recovery process is complete.
+2. Erroneous reinitialization of interrupt vector after detecting
+the above mentioned EMP reset.
 
-Fixes: 9021c317b770 ("drm/imx: Add initial support for DCSS on iMX8MQ")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wang ShaoBo <bobo.shaobowang@huawei.com>
-Reviewed-by: Laurentiu Palcu <laurentiu.palcu@oss.nxp.com>
-Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
-Link: https://patchwork.freedesktop.org/patch/msgid/20200911014414.4663-1-bobo.shaobowang@huawei.com
+Fixes (1) by changing how recovery state change is detected
+and (2) by adjusting the conditional expression to ensure using proper
+interrupt reinitialization method, depending on the situation.
+
+Fixes: 4ff0ee1af016 ("i40e: Introduce recovery mode support")
+Signed-off-by: Dawid Lukwinski <dawid.lukwinski@intel.com>
+Signed-off-by: Jan Sokolowski <jan.sokolowski@intel.com>
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Link: https://lore.kernel.org/r/20220715214542.2968762-1-anthony.l.nguyen@intel.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/imx/dcss/dcss-plane.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/net/ethernet/intel/i40e/i40e_main.c | 13 +++++--------
+ 1 file changed, 5 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/gpu/drm/imx/dcss/dcss-plane.c b/drivers/gpu/drm/imx/dcss/dcss-plane.c
-index f54087ac44d3..46a188dd02ad 100644
---- a/drivers/gpu/drm/imx/dcss/dcss-plane.c
-+++ b/drivers/gpu/drm/imx/dcss/dcss-plane.c
-@@ -268,7 +268,6 @@ static void dcss_plane_atomic_update(struct drm_plane *plane,
- 	struct dcss_plane *dcss_plane = to_dcss_plane(plane);
- 	struct dcss_dev *dcss = plane->dev->dev_private;
- 	struct drm_framebuffer *fb = state->fb;
--	u32 pixel_format;
- 	struct drm_crtc_state *crtc_state;
- 	bool modifiers_present;
- 	u32 src_w, src_h, dst_w, dst_h;
-@@ -279,7 +278,6 @@ static void dcss_plane_atomic_update(struct drm_plane *plane,
- 	if (!fb || !state->crtc || !state->visible)
- 		return;
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
+index 58453f7958df..11d4e3ba9af4 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_main.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
+@@ -10187,7 +10187,7 @@ static int i40e_reset(struct i40e_pf *pf)
+  **/
+ static void i40e_rebuild(struct i40e_pf *pf, bool reinit, bool lock_acquired)
+ {
+-	int old_recovery_mode_bit = test_bit(__I40E_RECOVERY_MODE, pf->state);
++	const bool is_recovery_mode_reported = i40e_check_recovery_mode(pf);
+ 	struct i40e_vsi *vsi = pf->vsi[pf->lan_vsi];
+ 	struct i40e_hw *hw = &pf->hw;
+ 	i40e_status ret;
+@@ -10195,13 +10195,11 @@ static void i40e_rebuild(struct i40e_pf *pf, bool reinit, bool lock_acquired)
+ 	int v;
  
--	pixel_format = state->fb->format->format;
- 	crtc_state = state->crtc->state;
- 	modifiers_present = !!(fb->flags & DRM_MODE_FB_MODIFIERS);
+ 	if (test_bit(__I40E_EMP_RESET_INTR_RECEIVED, pf->state) &&
+-	    i40e_check_recovery_mode(pf)) {
++	    is_recovery_mode_reported)
+ 		i40e_set_ethtool_ops(pf->vsi[pf->lan_vsi]->netdev);
+-	}
  
+ 	if (test_bit(__I40E_DOWN, pf->state) &&
+-	    !test_bit(__I40E_RECOVERY_MODE, pf->state) &&
+-	    !old_recovery_mode_bit)
++	    !test_bit(__I40E_RECOVERY_MODE, pf->state))
+ 		goto clear_recovery;
+ 	dev_dbg(&pf->pdev->dev, "Rebuilding internal switch\n");
+ 
+@@ -10228,13 +10226,12 @@ static void i40e_rebuild(struct i40e_pf *pf, bool reinit, bool lock_acquired)
+ 	 * accordingly with regard to resources initialization
+ 	 * and deinitialization
+ 	 */
+-	if (test_bit(__I40E_RECOVERY_MODE, pf->state) ||
+-	    old_recovery_mode_bit) {
++	if (test_bit(__I40E_RECOVERY_MODE, pf->state)) {
+ 		if (i40e_get_capabilities(pf,
+ 					  i40e_aqc_opc_list_func_capabilities))
+ 			goto end_unlock;
+ 
+-		if (test_bit(__I40E_RECOVERY_MODE, pf->state)) {
++		if (is_recovery_mode_reported) {
+ 			/* we're staying in recovery mode so we'll reinitialize
+ 			 * misc vector here
+ 			 */
 -- 
 2.35.1
 
