@@ -2,106 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F23AAC19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:27:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A013C19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:27:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229587AbiG0R1Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:27:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58274 "EHLO
+        id S239592AbiG0R1o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:27:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242117AbiG0R07 (ORCPT
+        with ESMTP id S230258AbiG0R1K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:26:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 090905FAE6;
-        Wed, 27 Jul 2022 09:46:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1C6B3B821AC;
-        Wed, 27 Jul 2022 16:46:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FF9DC433D7;
-        Wed, 27 Jul 2022 16:46:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940410;
-        bh=ZhxdM7jcjpWARpoyc/iCo1myCVH6FRG8l2e//X3LXSM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VcYfgtcN+1Ek6uiyg0NNpnUbvoYLZ14G/S025CTm6TWxkyXxs8H/QxWL4XqiH0NKQ
-         r5nZUyeZC2Y7yrunX0Oy08rmofcoyvb6zz3iJtAl/u9XXYGhO7o2f/qRuS29+zgW4M
-         h7XnPfpD85X0LEf203+99f5A13+e40ZJVkqc4XHk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jeffrey Hugo <quic_jhugo@quicinc.com>,
-        Dexuan Cui <decui@microsoft.com>, Wei Liu <wei.liu@kernel.org>,
-        Carl Vanderlip <quic_carlv@quicinc.com>
-Subject: [PATCH 5.18 014/158] PCI: hv: Fix multi-MSI to allow more than one MSI vector
-Date:   Wed, 27 Jul 2022 18:11:18 +0200
-Message-Id: <20220727161022.034016477@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
-References: <20220727161021.428340041@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Wed, 27 Jul 2022 13:27:10 -0400
+Received: from xry111.site (xry111.site [IPv6:2001:470:683e::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A16A6051A
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:47:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xry111.site;
+        s=default; t=1658940417;
+        bh=7ILEiHkZaaxtluhCY7IN0k/C4z/OAzKEwdfgQuLQnP8=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=mpLqyFpBqF9FNRtrKpzraGF8g9SzmkzzzmdF5BuoUAYv/6S1va6AMpCFQ8b1wYMuM
+         6ubR9vwpgdSJ7dq1/KqEfm42+kkJW+rKsauiI24h5O+0X0SeogAIYz+9RygPM1uX4C
+         qO/9Y6dmrvBl/5jdqIL0InWp0I8S2nUmPCpDeG5Y=
+Received: from localhost.localdomain (xry111.site [IPv6:2001:470:683e::1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature ECDSA (P-384))
+        (Client did not present a certificate)
+        (Authenticated sender: xry111@xry111.site)
+        by xry111.site (Postfix) with ESMTPSA id 7E4596685A;
+        Wed, 27 Jul 2022 12:46:55 -0400 (EDT)
+Message-ID: <aced7303ca2a4130b73cfa46d7a25c1f4812a651.camel@xry111.site>
+Subject: Re: [PATCH 0/5] LoongArch: Support new relocation types
+From:   Xi Ruoyao <xry111@xry111.site>
+To:     loongarch@lists.linux.dev
+Cc:     linux-kernel@vger.kernel.org, WANG Xuerui <kernel@xen0n.name>,
+        Huacai Chen <chenhuacai@kernel.org>
+Date:   Thu, 28 Jul 2022 00:46:53 +0800
+In-Reply-To: <385f63bcbee8e37c42f479ce9cdc7e7d731d419b.camel@xry111.site>
+References: <385f63bcbee8e37c42f479ce9cdc7e7d731d419b.camel@xry111.site>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.3 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeffrey Hugo <quic_jhugo@quicinc.com>
+Self notes:
 
-[ upstream change 08e61e861a0e47e5e1a3fb78406afd6b0cea6b6d ]
+With "-mla-global-with-pcrel" in KBUILD_CFLAGS_KERNEL gone (even if I
+don't remove it, it will be ineffective with binutils-2.40/gcc-13), the
+kernel will use GOT to access the objects in other translation units.=20
+It may cause a performance regression.
 
-If the allocation of multiple MSI vectors for multi-MSI fails in the core
-PCI framework, the framework will retry the allocation as a single MSI
-vector, assuming that meets the min_vecs specified by the requesting
-driver.
+*If* such a performance regression is really observed, we need to change
+GCC to use PC relative addressing (instead of GOT) for loading external
+objects when -fno-PIC.  Such a change will benefit userspace apps as
+well, *if* PC relative addressing is really faster than GOT access.
 
-Hyper-V advertises that multi-MSI is supported, but reuses the VECTOR
-domain to implement that for x86.  The VECTOR domain does not support
-multi-MSI, so the alloc will always fail and fallback to a single MSI
-allocation.
+(Emphasize "if" here: I've not run any benchmarks yet.)
 
-In short, Hyper-V advertises a capability it does not implement.
+I'll be mostly AFK in the following one or two weeks, apologize for
+possible slow respond.
 
-Hyper-V can support multi-MSI because it coordinates with the hypervisor
-to map the MSIs in the IOMMU's interrupt remapper, which is something the
-VECTOR domain does not have.  Therefore the fix is simple - copy what the
-x86 IOMMU drivers (AMD/Intel-IR) do by removing
-X86_IRQ_ALLOC_CONTIGUOUS_VECTORS after calling the VECTOR domain's
-pci_msi_prepare().
+On Thu, 2022-07-28 at 00:24 +0800, Xi Ruoyao wrote:
+> The version 2.00 of LoongArch ELF ABI specification introduced new
+> relocation types, and the development tree of Binutils and GCC has
+> started to use them.=C2=A0 If the kernel is built with the latest snapsho=
+t of
+> Binutils or GCC, it will fail to load the modules because of unrecognized
+> relocation types in modules.
+>=20
+> Add support for GOT and new relocation types for the module loader, so
+> the kernel (with modules) can be built with the "normal" code model and
+> function properly.
+>=20
+> Tested by building the kernel with Binutils & GCC master branch, and
+> running the kernel with 35 in-tree modules loaded.
+>=20
+> Link: https://github.com/loongson/LoongArch-Documentation/pull/57
+> Link: https://gcc.gnu.org/r13-1834
+> Link: https://sourceware.org/git/?p=3Dbinutils-gdb.git;a=3Dcommit;h=3Df09=
+482a
+>=20
+> Xi Ruoyao (5):
+> =C2=A0 LoongArch: Add section of GOT for kernel module
+> =C2=A0 LoongArch: Support R_LARCH_SOP_PUSH_GPREL relocation type in kerne=
+l
+> =C2=A0=C2=A0=C2=A0 module
+> =C2=A0 LoongArch: Support relocation against _GLOBAL_OFFSET_TABLE_
+> =C2=A0 LoongArch: Stop using undocumented assembler options
+> =C2=A0 LoongArch: Support modules with new relocation types
+>=20
+> =C2=A0arch/loongarch/Makefile=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 5 +-
+> =C2=A0arch/loongarch/include/asm/elf.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0 | 37 ++++++++++
+> =C2=A0arch/loongarch/include/asm/module.h=C2=A0=C2=A0=C2=A0=C2=A0 | 23 ++=
+++++
+> =C2=A0arch/loongarch/include/asm/module.lds.h |=C2=A0 1 +
+> =C2=A0arch/loongarch/kernel/head.S=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0 | 10 +--
+> =C2=A0arch/loongarch/kernel/module-sections.c | 72 +++++++++++++++++--
+> =C2=A0arch/loongarch/kernel/module.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 | 94 +++++++++++++++++++++++++
+> =C2=A07 files changed, 229 insertions(+), 13 deletions(-)
+>=20
 
-Fixes: 4daace0d8ce8 ("PCI: hv: Add paravirtual PCI front-end for Microsoft Hyper-V VMs")
-Signed-off-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
-Reviewed-by: Dexuan Cui <decui@microsoft.com>
-Link: https://lore.kernel.org/r/1649856981-14649-1-git-send-email-quic_jhugo@quicinc.com
-Signed-off-by: Wei Liu <wei.liu@kernel.org>
-Signed-off-by: Carl Vanderlip <quic_carlv@quicinc.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/pci/controller/pci-hyperv.c |   11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
-
---- a/drivers/pci/controller/pci-hyperv.c
-+++ b/drivers/pci/controller/pci-hyperv.c
-@@ -614,7 +614,16 @@ static void hv_set_msi_entry_from_desc(u
- static int hv_msi_prepare(struct irq_domain *domain, struct device *dev,
- 			  int nvec, msi_alloc_info_t *info)
- {
--	return pci_msi_prepare(domain, dev, nvec, info);
-+	int ret = pci_msi_prepare(domain, dev, nvec, info);
-+
-+	/*
-+	 * By using the interrupt remapper in the hypervisor IOMMU, contiguous
-+	 * CPU vectors is not needed for multi-MSI
-+	 */
-+	if (info->type == X86_IRQ_ALLOC_TYPE_PCI_MSI)
-+		info->flags &= ~X86_IRQ_ALLOC_CONTIGUOUS_VECTORS;
-+
-+	return ret;
- }
- 
- /**
-
-
+--=20
+Xi Ruoyao <xry111@xry111.site>
+School of Aerospace Science and Technology, Xidian University
