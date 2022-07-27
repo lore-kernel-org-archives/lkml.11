@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6B9EC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:40:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4912C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:40:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242729AbiG0RkU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:40:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34920 "EHLO
+        id S242768AbiG0RkY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:40:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242861AbiG0RjX (ORCPT
+        with ESMTP id S242882AbiG0RjZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:39:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB9A288758;
-        Wed, 27 Jul 2022 09:51:09 -0700 (PDT)
+        Wed, 27 Jul 2022 13:39:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57EBF53D3F;
+        Wed, 27 Jul 2022 09:51:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 58C5EB821C5;
-        Wed, 27 Jul 2022 16:51:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9639C433D6;
-        Wed, 27 Jul 2022 16:51:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E13CB616D1;
+        Wed, 27 Jul 2022 16:50:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEB12C433D6;
+        Wed, 27 Jul 2022 16:50:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940668;
-        bh=/eMDGI/9OToQZPUaNvF2iNvmdwDeVgUaWbAg4meaaP0=;
+        s=korg; t=1658940654;
+        bh=4nPOBYRVh1TeKFhmDIyIk4pggIEMowzCSYFN4GeClBc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jOdIV9hgn5tGTajYaQyR1g8oNsLp+g9Ov+Aa0jsyWGbJ0O8oF446y9rCsLWjve5no
-         2xYpUYngz/Z1GPVYCHI0LnWci3i8PyRg8MEYTLAX6wGr41TJYc9E6FYj9qzjkkDv1d
-         hegrwc8uZwmNB64m5r6wRTuIBMKXyyKUoSL4TZpw=
+        b=ZuYS6jw0ktJo7lH3l9ejJsnzUgco/oi5Dom2DqQlK+lwz7/1gysnAv7RU4T6sHMkT
+         9qDGyshyhFxYYLx+o4zOCOrt8eVfXAw9EzXUgJ8U+JL0thPUOWB0LIme/24lEvbazD
+         jBP2T/LXbzPpz3T01o1aNWzwILjvNNzGs2da7MIE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Taehee Yoo <ap420073@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 106/158] amt: drop unexpected query message
-Date:   Wed, 27 Jul 2022 18:12:50 +0200
-Message-Id: <20220727161025.717770820@linuxfoundation.org>
+Subject: [PATCH 5.18 069/158] tcp: Fix data-races around sysctl_tcp_migrate_req.
+Date:   Wed, 27 Jul 2022 18:12:13 +0200
+Message-Id: <20220727161024.269885983@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -49,69 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Taehee Yoo <ap420073@gmail.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.com>
 
-[ Upstream commit 239d886601e38d948a28f3b2a1c9ce5f01bf75f2 ]
+[ Upstream commit 4177f545895b1da08447a80692f30617154efa6e ]
 
-AMT gateway interface should not receive unexpected query messages.
-In order to drop unexpected query messages, it checks nonce.
-And it also checks ready4 and ready6 variables to drop duplicated messages.
+While reading sysctl_tcp_migrate_req, it can be changed concurrently.
+Thus, we need to add READ_ONCE() to its readers.
 
-Fixes: cbc21dc1cfe9 ("amt: add data plane of amt interface")
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Fixes: f9ac779f881c ("net: Introduce net.ipv4.tcp_migrate_req.")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/amt.c | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+ net/core/sock_reuseport.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/amt.c b/drivers/net/amt.c
-index 0811a5211ec4..5c65908abd5a 100644
---- a/drivers/net/amt.c
-+++ b/drivers/net/amt.c
-@@ -967,8 +967,11 @@ static void amt_event_send_request(struct amt_dev *amt)
- 		goto out;
+diff --git a/net/core/sock_reuseport.c b/net/core/sock_reuseport.c
+index 3f00a28fe762..5daa1fa54249 100644
+--- a/net/core/sock_reuseport.c
++++ b/net/core/sock_reuseport.c
+@@ -387,7 +387,7 @@ void reuseport_stop_listen_sock(struct sock *sk)
+ 		prog = rcu_dereference_protected(reuse->prog,
+ 						 lockdep_is_held(&reuseport_lock));
+ 
+-		if (sock_net(sk)->ipv4.sysctl_tcp_migrate_req ||
++		if (READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_migrate_req) ||
+ 		    (prog && prog->expected_attach_type == BPF_SK_REUSEPORT_SELECT_OR_MIGRATE)) {
+ 			/* Migration capable, move sk from the listening section
+ 			 * to the closed section.
+@@ -545,7 +545,7 @@ struct sock *reuseport_migrate_sock(struct sock *sk,
+ 	hash = migrating_sk->sk_hash;
+ 	prog = rcu_dereference(reuse->prog);
+ 	if (!prog || prog->expected_attach_type != BPF_SK_REUSEPORT_SELECT_OR_MIGRATE) {
+-		if (sock_net(sk)->ipv4.sysctl_tcp_migrate_req)
++		if (READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_migrate_req))
+ 			goto select_by_hash;
+ 		goto failure;
  	}
- 
--	if (!amt->req_cnt)
-+	if (!amt->req_cnt) {
-+		WRITE_ONCE(amt->ready4, false);
-+		WRITE_ONCE(amt->ready6, false);
- 		get_random_bytes(&amt->nonce, sizeof(__be32));
-+	}
- 
- 	amt_send_request(amt, false);
- 	amt_send_request(amt, true);
-@@ -2353,6 +2356,9 @@ static bool amt_membership_query_handler(struct amt_dev *amt,
- 	if (amtmq->reserved || amtmq->version)
- 		return true;
- 
-+	if (amtmq->nonce != amt->nonce)
-+		return true;
-+
- 	hdr_size -= sizeof(*eth);
- 	if (iptunnel_pull_header(skb, hdr_size, htons(ETH_P_TEB), false))
- 		return true;
-@@ -2367,6 +2373,9 @@ static bool amt_membership_query_handler(struct amt_dev *amt,
- 
- 	iph = ip_hdr(skb);
- 	if (iph->version == 4) {
-+		if (READ_ONCE(amt->ready4))
-+			return true;
-+
- 		if (!pskb_may_pull(skb, sizeof(*iph) + AMT_IPHDR_OPTS +
- 				   sizeof(*ihv3)))
- 			return true;
-@@ -2389,6 +2398,9 @@ static bool amt_membership_query_handler(struct amt_dev *amt,
- 		struct mld2_query *mld2q;
- 		struct ipv6hdr *ip6h;
- 
-+		if (READ_ONCE(amt->ready6))
-+			return true;
-+
- 		if (!pskb_may_pull(skb, sizeof(*ip6h) + AMT_IP6HDR_OPTS +
- 				   sizeof(*mld2q)))
- 			return true;
 -- 
 2.35.1
 
