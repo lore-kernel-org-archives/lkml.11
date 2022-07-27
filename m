@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44B90C3F6B0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64CA4C19F2B
 	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:39:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242673AbiG0RjD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:39:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53826 "EHLO
+        id S242718AbiG0RjG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:39:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242638AbiG0RiS (ORCPT
+        with ESMTP id S242674AbiG0RiT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:38:18 -0400
+        Wed, 27 Jul 2022 13:38:19 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44B9D87233;
-        Wed, 27 Jul 2022 09:50:40 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D945C8720C;
+        Wed, 27 Jul 2022 09:50:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4716561700;
-        Wed, 27 Jul 2022 16:50:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21BF5C433D6;
-        Wed, 27 Jul 2022 16:50:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8263061703;
+        Wed, 27 Jul 2022 16:50:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AC19C433D6;
+        Wed, 27 Jul 2022 16:50:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940628;
-        bh=ZuA+typshrCmrsRBPWqRteM1Ok9S+840Vcu8naMnhHM=;
+        s=korg; t=1658940637;
+        bh=o+akZ35ZAEw0I3rv/1uVKaBlVR4impvq0HOGY5wcKYc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aeCA4e2KrTGqMp2F2A+KY11XdaM1SZrJ77zLW4pEruPMCDD39sB1Ogw3ItqcDkWfl
-         4C6fScv/MwvKlFGUmM1DmgCO8a3j3lKxpK29zUUvDySx12lxsHZTiOa9WZzzNCFhBQ
-         qF/OJUNaE6d8ucg5UKCb+CnFere9Ebwx+wuN4IxY=
+        b=mR3snXN57K0UJiorfNTINx2sh+2vxSb4hw6DXTC1zcb5SMWnaTxZA7lzYzc5sb8cz
+         7uVeKdzoZbOJPfPljJtVeYGPZyMudvwettZGcuNiURcx7TQXJ56Pwqe7fAIuZzBCOm
+         dQQWwMJQMRvNryxaZCyvxSu0CM0+daaxvLSbD3RE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lucian Banu <Lucian.Banu@westermo.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 091/158] net: dsa: fix dsa_port_vlan_filtering when global
-Date:   Wed, 27 Jul 2022 18:12:35 +0200
-Message-Id: <20220727161025.117414644@linuxfoundation.org>
+Subject: [PATCH 5.18 093/158] net: dsa: fix NULL pointer dereference in dsa_port_reset_vlan_filtering
+Date:   Wed, 27 Jul 2022 18:12:37 +0200
+Message-Id: <20220727161025.191624282@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -52,38 +51,50 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-[ Upstream commit 4db2a5ef4ccbe6d138828284cfab241b434b5d95 ]
+[ Upstream commit 1699b4d502eda3c7ea4070debad3ee570b5091b1 ]
 
-The blamed refactoring commit changed a "port" iterator with "other_dp",
-but still looked at the slave_dev of the dp outside the loop, instead of
-other_dp->slave from the loop.
+The "ds" iterator variable used in dsa_port_reset_vlan_filtering() ->
+dsa_switch_for_each_port() overwrites the "dp" received as argument,
+which is later used to call dsa_port_vlan_filtering() proper.
 
-As a result, dsa_port_vlan_filtering() would not call
-dsa_slave_manage_vlan_filtering() except for the port in cause, and not
-for all switch ports as expected.
+As a result, switches which do enter that code path (the ones with
+vlan_filtering_is_global=true) will dereference an invalid dp in
+dsa_port_reset_vlan_filtering() after leaving a VLAN-aware bridge.
+
+Use a dedicated "other_dp" iterator variable to avoid this from
+happening.
 
 Fixes: d0004a020bb5 ("net: dsa: remove the "dsa_to_port in a loop" antipattern from the core")
-Reported-by: Lucian Banu <Lucian.Banu@westermo.com>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/dsa/port.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/dsa/port.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/net/dsa/port.c b/net/dsa/port.c
-index bdccb613285d..4b72513cc9e4 100644
+index 6aab5768ef96..7bc79e28d48e 100644
 --- a/net/dsa/port.c
 +++ b/net/dsa/port.c
-@@ -752,7 +752,7 @@ int dsa_port_vlan_filtering(struct dsa_port *dp, bool vlan_filtering,
- 		ds->vlan_filtering = vlan_filtering;
+@@ -248,6 +248,7 @@ static void dsa_port_reset_vlan_filtering(struct dsa_port *dp,
+ 	struct netlink_ext_ack extack = {0};
+ 	bool change_vlan_filtering = false;
+ 	struct dsa_switch *ds = dp->ds;
++	struct dsa_port *other_dp;
+ 	bool vlan_filtering;
+ 	int err;
  
- 		dsa_switch_for_each_user_port(other_dp, ds) {
--			struct net_device *slave = dp->slave;
-+			struct net_device *slave = other_dp->slave;
+@@ -270,8 +271,8 @@ static void dsa_port_reset_vlan_filtering(struct dsa_port *dp,
+ 	 * VLAN-aware bridge.
+ 	 */
+ 	if (change_vlan_filtering && ds->vlan_filtering_is_global) {
+-		dsa_switch_for_each_port(dp, ds) {
+-			struct net_device *br = dsa_port_bridge_dev_get(dp);
++		dsa_switch_for_each_port(other_dp, ds) {
++			struct net_device *br = dsa_port_bridge_dev_get(other_dp);
  
- 			/* We might be called in the unbind path, so not
- 			 * all slave devices might still be registered.
+ 			if (br && br_vlan_enabled(br)) {
+ 				change_vlan_filtering = false;
 -- 
 2.35.1
 
