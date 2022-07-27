@@ -2,200 +2,245 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F09ABC00144
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 00:27:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08CB0C00144
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 00:28:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240048AbiG0A0G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 26 Jul 2022 20:26:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38774 "EHLO
+        id S240060AbiG0A21 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 26 Jul 2022 20:28:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229458AbiG0A0E (ORCPT
+        with ESMTP id S229458AbiG0A2X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 26 Jul 2022 20:26:04 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CB7C32EEA;
-        Tue, 26 Jul 2022 17:26:03 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id c139so14696874pfc.2;
-        Tue, 26 Jul 2022 17:26:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Jf6QAz2nVfnBI0fnKRxxMlR+59XYLFAdw/tdsgL99ag=;
-        b=CKBLT5/jFohLTUaBLrLSOgxvFUVtsdpSeZMrFHRS/ksGOHyZ1YaHWlBLkv8h2TEQbE
-         ZWIePDcyUiZ6MD77U5r2QS+80VwTBH9CEknw44hh2qb8TmjSpponEIz87b5GkXRnJ2Tg
-         g8yqRXnjKK0kL6ohjhee9D44xm/oEbXXpCMpcJc2HcNNhMl348Laz7Hh0zhGU0IDOZxS
-         CKtxOzc+Nyfxh78sxxD+1MU/iXJR185Sj1m5PoMm8lNRNW8T2OD+GIizRfm/vXh8aStu
-         0WIlxaU3e1OlOGhWZHlPvo8o5BuPdLfodMQBXNCiOYM7wKIGHUX1XvgrQxiS1A2JmNva
-         4eIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Jf6QAz2nVfnBI0fnKRxxMlR+59XYLFAdw/tdsgL99ag=;
-        b=aHcpkkfQzW0kuHYACUEEtERHGVy+/nRyZcmrgiUsNy+ksuuDiPmSbjPzjA3eJ6Oxff
-         o/DhJBb7nNOjQRDf4w6xozl7kgI329wizrqgXn34NWcOHtq2nTrcNOTyvuYN5vWcj/Em
-         q2RFmj4SovybSmJSgjcdpLmSyYQL5+aUvbj3h6ri68CvXFKIgo5+C9S+ZXY4PVSHtxwg
-         TQ8ZL5Nw91/WDOfBBRXReNg2mD24Am1nhEx7ITqjHs2QhbgUdHmhphxcc4WVM3pluDum
-         cI791p5RCoHUGZJqOnCjDNYm5m1pABAUoSL4FEI8RxFe/CRbvz6LjtI1CCCu49tdy+wg
-         3r1g==
-X-Gm-Message-State: AJIora8lgBQuG9JyDrnEvZ8oCU/IEMS6Otn56yZ6XAK+gkOlO4UZmYIh
-        d0YZ+shRbcxOI+gfXqtgSHs=
-X-Google-Smtp-Source: AGRyM1shjcgFeFy9LM7LyrQ3tclfQT3iFtGy9QNvp9vQtiC+WiPem4Oe4Rr08rs9TIsYB7gAsSwKPw==
-X-Received: by 2002:a05:6a00:1a86:b0:52a:d419:9552 with SMTP id e6-20020a056a001a8600b0052ad4199552mr19708455pfv.70.1658881562671;
-        Tue, 26 Jul 2022 17:26:02 -0700 (PDT)
-Received: from gmail.com ([2601:600:8500:5f14:d627:c51e:516e:a105])
-        by smtp.gmail.com with ESMTPSA id d10-20020a170902ceca00b0016d5e4d29f8sm3898287plg.9.2022.07.26.17.26.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Jul 2022 17:26:01 -0700 (PDT)
-Date:   Tue, 26 Jul 2022 17:25:59 -0700
-From:   Andrei Vagin <avagin@gmail.com>
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Andrei Vagin <avagin@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Jianfeng Tan <henry.tjf@antfin.com>,
-        Adin Scannell <ascannell@google.com>,
-        Konstantin Bogomolov <bogomolov@google.com>,
-        Etienne Perot <eperot@google.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>
-Subject: Re: [PATCH 0/5] KVM/x86: add a new hypercall to execute host system
-Message-ID: <YuCGF/7sOPmSoFSa@gmail.com>
-References: <20220722230241.1944655-1-avagin@google.com>
- <Yts1tUfPxdPH5XGs@google.com>
- <CAEWA0a4hrRb5HYLqa1Q47=guY6TLsWSJ_zxNjOXXV2jCjUekUA@mail.gmail.com>
- <YuAD6qY+F2nuGm62@google.com>
+        Tue, 26 Jul 2022 20:28:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7F2B3AB20
+        for <linux-kernel@vger.kernel.org>; Tue, 26 Jul 2022 17:28:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C9921B818CC
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 00:28:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B6F8C433C1;
+        Wed, 27 Jul 2022 00:28:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658881698;
+        bh=HmcWhABLJ63PalyIIq06ebp1W9f38FOzAhRM1xaQi1w=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Nvh9AD1Noqr+ONuRh0xKOpGC1se4Pl9kEoFKf3hd6xKUxkg/olle7vGPo0RLvgeVM
+         WwWYKq9mYJNWZFGjFWtGxH/KkGGG4qfXFCX3DF1kDTGxnXYZA2vw9+SeOJSVsmil9h
+         ALgE3BIiLxIaDOwBITOhU3xlOXkLM4xZSQFaf4PALZyNcdKpOVoTKpYHLq9MKW3Xzv
+         ZWhJQxAty+5ZaUM9nD8xJuUfR1ouDNgw9TDDbnvW2ywU0HlK3SIV/vwjFcbt7JE8ki
+         /7VW5nPGwdYOuHtfmhmIb2tcVq8gnHhR/aW5fOuJrjvxUH2VOGyYbXDV9f5okfEGiR
+         9oh/uvmPmZcAQ==
+Date:   Tue, 26 Jul 2022 17:28:16 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Liam Howlett <liam.howlett@oracle.com>
+Cc:     "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Hugh Dickins <hughd@google.com>, Yu Zhao <yuzhao@google.com>
+Subject: Re: [PATCH v12 08/69] mm: start tracking VMAs with maple tree
+Message-ID: <YuCGoB3Ackadj5up@dev-arch.thelio-3990X>
+References: <20220720021727.17018-1-Liam.Howlett@oracle.com>
+ <20220720021727.17018-9-Liam.Howlett@oracle.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=koi8-r
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YuAD6qY+F2nuGm62@google.com>
+In-Reply-To: <20220720021727.17018-9-Liam.Howlett@oracle.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 26, 2022 at 03:10:34PM +0000, Sean Christopherson wrote:
-> On Tue, Jul 26, 2022, Andrei Vagin wrote:
-> > On Fri, Jul 22, 2022 at 4:41 PM Sean Christopherson <seanjc@google.com> wrote:
-> > >
-> > > +x86 maintainers, patch 1 most definitely needs acceptance from folks beyond KVM.
-> > >
-> > > On Fri, Jul 22, 2022, Andrei Vagin wrote:
-> > > > Another option is the KVM platform. In this case, the Sentry (gVisor
-> > > > kernel) can run in a guest ring0 and create/manage multiple address
-> > > > spaces. Its performance is much better than the ptrace one, but it is
-> > > > still not great compared with the native performance. This change
-> > > > optimizes the most critical part, which is the syscall overhead.
-> > >
-> > > What exactly is the source of the syscall overhead,
-> > 
-> > Here are perf traces for two cases: when "guest" syscalls are executed via
-> > hypercalls and when syscalls are executed by the user-space VMM:
-> > https://gist.github.com/avagin/f50a6d569440c9ae382281448c187f4e
-> > 
-> > And here are two tests that I use to collect these traces:
-> > https://github.com/avagin/linux-task-diag/commit/4e19c7007bec6a15645025c337f2e85689b81f99
-> > 
-> > If we compare these traces, we can find that in the second case, we spend extra
-> > time in vmx_prepare_switch_to_guest, fpu_swap_kvm_fpstate, vcpu_put,
-> > syscall_exit_to_user_mode.
+Hi Liam,
+
+On Wed, Jul 20, 2022 at 02:17:45AM +0000, Liam Howlett wrote:
+> From: "Liam R. Howlett" <Liam.Howlett@Oracle.com>
 > 
-> So of those, I think the only path a robust implementation can actually avoid,
-> without significantly whittling down the allowed set of syscalls, is
-> syscall_exit_to_user_mode().
+> Start tracking the VMAs with the new maple tree structure in parallel with
+> the rb_tree.  Add debug and trace events for maple tree operations and
+> duplicate the rb_tree that is created on forks into the maple tree.
 > 
-> The bulk of vcpu_put() is vmx_prepare_switch_to_host(), and KVM needs to run
-> through that before calling out of KVM.  E.g. prctrl(ARCH_GET_GS) will read the
-> wrong GS.base if MSR_KERNEL_GS_BASE isn't restored.  And that necessitates
-> calling vmx_prepare_switch_to_guest() when resuming the vCPU.
+> The maple tree is added to the mm_struct including the mm_init struct,
+> added support in required mm/mmap functions, added tracking in kernel/fork
+> for process forking, and used to find the unmapped_area and checked
+> against what the rbtree finds.
 > 
-> FPU state, i.e. fpu_swap_kvm_fpstate() is likely a similar story, there's bound
-> to be a syscall that accesses user FPU state and will do the wrong thing if guest
-> state is loaded.
+> This also moves the mmap_lock() in exit_mmap() since the oom reaper call
+> does walk the VMAs.  Otherwise lockdep will be unhappy if oom happens.
 > 
-> For gVisor, that's all presumably a non-issue because it uses a small set of
-> syscalls (or has guest==host state?), but for a common KVM feature it's problematic.
-
-
-I think the number of system calls that touch a state that is
-intersected with KVM is very limited and we can blocklist all of them.
-Another option is to have an allow list of system calls to be sure that
-we don't miss anything.
-
+> When splitting a vma fails due to allocations of the maple tree nodes,
+> the error path in __split_vma() calls new->vm_ops->close(new).  The page
+> accounting for hugetlb is actually in the close() operation,  so it
+> accounts for the removal of 1/2 of the VMA which was not adjusted.  This
+> results in a negative exit value.  To avoid the negative charge, set
+> vm_start = vm_end and vm_pgoff = 0.
 > 
-> > > and what alternatives have been explored?  Making arbitrary syscalls from
-> > > within KVM is mildly terrifying.
-> > 
-> > "mildly terrifying" is a good sentence in this case:). If I were in your place,
-> > I would think about it similarly.
-> > 
-> > I understand these concerns about calling syscalls from the KVM code, and this
-> > is why I hide this feature under a separate capability that can be enabled
-> > explicitly.
-> > 
-> > We can think about restricting the list of system calls that this hypercall can
-> > execute. In the user-space changes for gVisor, we have a list of system calls
-> > that are not executed via this hypercall.
+> There is also a potential accounting issue in special mappings from
+> insert_vm_struct() failing to allocate, so reverse the charge there in
+> the failure scenario.
 > 
-> Can you provide that list?
+> Link: https://lkml.kernel.org/r/20220504010716.661115-10-Liam.Howlett@oracle.com
+> Link: https://lkml.kernel.org/r/20220621204632.3370049-9-Liam.Howlett@oracle.com
+> Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
+> Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+> Cc: Catalin Marinas <catalin.marinas@arm.com>
+> Cc: David Howells <dhowells@redhat.com>
+> Cc: SeongJae Park <sj@kernel.org>
+> Cc: Vlastimil Babka <vbabka@suse.cz>
+> Cc: Will Deacon <will@kernel.org>
+> Cc: Davidlohr Bueso <dave@stgolabs.net>
+> Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
 
-Here is the list that are not executed via this hypercall:
-clone, exit, exit_group, ioctl, rt_sigreturn, mmap, arch_prctl,
-sigprocmask.
+Apologies if this has been reported already, I tried searching the
+mailing lists but I did not really find anything.
 
-And here is the list of all system calls that we allow for the Sentry:
-clock_gettime, close, dup, dup3, epoll_create1, epoll_ctl, epoll_pwait,
-eventfd2, exit, exit_group, fallocate, fchmod, fcntl, fstat, fsync,
-ftruncate, futex, getcpu, getpid, getrandom, getsockopt, gettid,
-gettimeofday, ioctl, lseek, madvise, membarrier, mincore, mmap,
-mprotect, munmap, nanosleep, ppol, pread64, preadv, preadv2, pwrite64,
-pwritev, pwritev2, read, recvmsg, recvmmsg, sendmsg, sendmmsg,
-restart_syscall, rt_sigaction, rt_sigprocmask, rt_sigreturn,
-sched_yield, settimer, shutdown, sigaltstack, statx, sync_file_range,
-tee, timer_create, timer_delete, timer_settime, tgkill, utimensat,
-write, writev.
+I bisected my arm64 test system failing to boot to this change as commit
+fdfbd22f37db ("mm: start tracking VMAs with maple tree") in
+next-20220726 (bisect log at the end).
 
-> 
-> > But it has downsides:
-> > * Each sentry system call trigger the full exit to hr3.
-> > * Each vmenter/vmexit requires to trigger a signal but it is expensive.
-> 
-> Can you explain this one?  I didn't quite follow what this is referring to.
+[    4.295886] Unable to handle kernel access to user memory outside uaccess routines at virtual address 0000000000000000
+[    4.306595] Mem abort info:
+[    4.309381]   ESR = 0x0000000096000044
+[    4.313118]   EC = 0x25: DABT (current EL), IL = 32 bits
+[    4.318422]   SET = 0, FnV = 0
+[    4.321464]   EA = 0, S1PTW = 0
+[    4.324592]   FSC = 0x04: level 0 translation fault
+[    4.329461] Data abort info:
+[    4.332329]   ISV = 0, ISS = 0x00000044
+[    4.336152]   CM = 0, WnR = 1
+[    4.339110] user pgtable: 4k pages, 48-bit VAs, pgdp=00000020a9712000
+[    4.345539] [0000000000000000] pgd=0000000000000000, p4d=0000000000000000
+[    4.352321] Internal error: Oops: 96000044 [#1] SMP
+[    4.357188] Modules linked in:
+[    4.360232] CPU: 6 PID: 264 Comm: dracut-rootfs-g Not tainted 5.19.0-rc4-00288-gfdfbd22f37db #1
+[    4.368918] Hardware name: SolidRun Ltd. SolidRun CEX7 Platform, BIOS EDK II Jun 21 2022
+[    4.376994] pstate: 80400005 (Nzcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[    4.383943] pc : mas_split.isra.0+0x50c/0x784
+[    4.388295] lr : mas_split.isra.0+0x204/0x784
+[    4.392640] sp : ffff8000094a3510
+[    4.395942] x29: ffff8000094a3510 x28: ffff08dd66c0c000 x27: ffff8000094a3610
+[    4.403067] x26: ffff8000094a35d0 x25: ffff8000094a3578 x24: ffffd823cb5448b8
+[    4.410192] x23: ffff8000094a3650 x22: ffff8000094a3690 x21: ffff8000094a3738
+[    4.417316] x20: 0000000000000002 x19: ffff8000094a3af0 x18: 0000000000000002
+[    4.424441] x17: 0000000000000000 x16: ffff08dd66c45450 x15: 0000000000000000
+[    4.431565] x14: ffff08dd66c459c8 x13: ffff8000094a3748 x12: 0000000000000001
+[    4.438689] x11: ffff8000094a3610 x10: 0000000000000003 x9 : ffff08dd66c47300
+[    4.445813] x8 : 000000000000001c x7 : 0000000000000003 x6 : 0000000000000006
+[    4.452937] x5 : ffff08dd68a44409 x4 : 0000000000000001 x3 : ffff8000094a35d0
+[    4.460061] x2 : 0000000000000000 x1 : 0000000000000000 x0 : ffff8000094a3738
+[    4.467186] Call trace:
+[    4.469620]  mas_split.isra.0+0x50c/0x784
+[    4.473618]  mas_commit_b_node.isra.0+0x1e0/0x274
+[    4.478311]  mas_wr_modify+0x10c/0x28c
+[    4.482048]  mas_wr_store_entry.isra.0+0x10c/0x4a0
+[    4.486827]  mas_store+0x48/0x110
+[    4.490131]  dup_mmap+0x268/0x514
+[    4.493436]  dup_mm+0x68/0xfc
+[    4.496391]  copy_process+0x864/0x10b4
+[    4.500129]  kernel_clone+0x88/0x494
+[    4.503692]  __do_sys_clone+0x60/0x80
+[    4.507342]  __arm64_sys_clone+0x2c/0x40
+[    4.511254]  invoke_syscall+0x78/0x100
+[    4.514991]  el0_svc_common.constprop.0+0x4c/0xf4
+[    4.519683]  do_el0_svc+0x38/0x4c
+[    4.522985]  el0_svc+0x34/0x100
+[    4.526115]  el0t_64_sync_handler+0x11c/0x150
+[    4.530460]  el0t_64_sync+0x190/0x194
+[    4.534112] Code: f9000125 f9400e65 9278dca5 f94000a5 (f9000045)
+[    4.540193] ---[ end trace 0000000000000000 ]---
 
-In my message, there was the explanation of how the gVisor KVM platform
-works right now, and here are two points why it is slow.
+I was also able to reproduce the same crash in a Fedora virtual machine
+using QEMU with Fedora's rawhide configuration [1]:
 
-Each time when the Sentry triggers a system call, it has to switch to
-the host ring3.
+[    5.913992] Unable to handle kernel access to user memory outside uaccess routines at virtual address 0000000000000000
+[    5.914510] Mem abort info:
+[    5.914581]   ESR = 0x0000000096000044
+[    5.914705]   EC = 0x25: DABT (current EL), IL = 32 bits
+[    5.914858]   SET = 0, FnV = 0
+[    5.914951]   EA = 0, S1PTW = 0
+[    5.915065]   FSC = 0x04: level 0 translation fault
+[    5.915215] Data abort info:
+[    5.915321]   ISV = 0, ISS = 0x00000044
+[    5.915465]   CM = 0, WnR = 1
+[    5.915624] user pgtable: 4k pages, 48-bit VAs, pgdp=0000000103051000
+[    5.915799] [0000000000000000] pgd=0000000000000000, p4d=0000000000000000
+[    5.916196] Internal error: Oops: 96000044 [#1] SMP
+[    5.916504] Modules linked in:
+[    5.916771] CPU: 2 PID: 202 Comm: dracut-rootfs-g Not tainted 5.19.0-rc4+ #1
+[    5.917003] Hardware name: QEMU QEMU Virtual Machine, BIOS 0.0.0 02/06/2015
+[    5.917339] pstate: 80400005 (Nzcv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[    5.917584] pc : mas_split.isra.0+0x50c/0x784
+[    5.917794] lr : mas_split.isra.0+0x204/0x784
+[    5.917949] sp : ffff8000086334a0
+[    5.918038] x29: ffff8000086334a0 x28: ffff5b65c095a258 x27: ffff8000086335a0
+[    5.918289] x26: ffff800008633560 x25: ffff800008633508 x24: ffffdb30c80d9778
+[    5.918844] x23: ffff8000086335e0 x22: ffff800008633620 x21: ffff8000086336c8
+[    5.919277] x20: 0000000000000002 x19: ffff800008633a80 x18: 0000000000000002
+[    5.919533] x17: 0000000000000000 x16: ffff5b65c095a4b0 x15: 0000000000000000
+[    5.919747] x14: ffff5b65c095a898 x13: ffff8000086336d8 x12: 0000000000000001
+[    5.919971] x11: ffff8000086335a0 x10: 0000000000000003 x9 : ffff5b66f42e2a00
+[    5.920214] x8 : 000000000000001c x7 : 0000000000000003 x6 : 0000000000000006
+[    5.920493] x5 : ffff5b65c3077309 x4 : 0000000000000001 x3 : ffff800008633560
+[    5.920739] x2 : 0000000000000000 x1 : 0000000000000000 x0 : ffff8000086336c8
+[    5.921051] Call trace:
+[    5.921152]  mas_split.isra.0+0x50c/0x784
+[    5.921303]  mas_commit_b_node.isra.0+0x1e0/0x274
+[    5.921459]  mas_wr_modify+0x10c/0x28c
+[    5.921565]  mas_wr_store_entry.isra.0+0x10c/0x4a0
+[    5.921725]  mas_store+0x48/0x110
+[    5.921864]  dup_mmap+0x268/0x514
+[    5.921993]  dup_mm+0x68/0xfc
+[    5.922074]  copy_process+0x864/0x10b4
+[    5.922213]  kernel_clone+0x88/0x494
+[    5.922315]  __do_sys_clone+0x60/0x80
+[    5.922444]  __arm64_sys_clone+0x2c/0x40
+[    5.922576]  invoke_syscall+0x78/0x100
+[    5.922686]  el0_svc_common.constprop.0+0x4c/0xf4
+[    5.922847]  do_el0_svc+0x38/0x4c
+[    5.922947]  el0_svc+0x34/0x100
+[    5.923056]  el0t_64_sync_handler+0x11c/0x150
+[    5.923179]  el0t_64_sync+0x190/0x194
+[    5.923365] Code: f9000125 f9400e65 9278dca5 f94000a5 (f9000045)
+[    5.923833] ---[ end trace 0000000000000000 ]---
 
+If there is any additional information I can provide or patches I can
+test, please let me know!
 
-When the Sentry wants to switch to the guest ring0, it triggers a signal to
-fall in a signal handler. There, we have a sigcontext that we use to get
-the current thread state to resume execution in gr0, and then when the
-Sentry needs to switch back to hr3, we set the sentry state from gr0 to
-sigcontext and returns from the signal handler.
+Cheers,
+Nathan
 
-> 
-> > * It doesn't allow to support Confidential Computing (SEV-ES/SGX). The Sentry
-> >   has to be fully enclosed in a VM to be able to support these technologies.
-> 
-> Speaking of SGX, this reminds me a lot of Graphene, SCONEs, etc..., which IIRC
-> tackled the "syscalls are crazy expensive" problem by using a message queue and
-> a dedicated task outside of the enclave to handle syscalls.  Would something like
-> that work, or is having to burn a pCPU (or more) to handle syscalls in the host a
-> non-starter?
+[1]: https://src.fedoraproject.org/rpms/kernel/raw/rawhide/f/kernel-aarch64-fedora.config
 
-Context-switching is expensive... There was a few attempts to implement
-synchronous context-switching ([1], [2]) that can help in this case,
-but even with this sort of optimizations, it is too expensive.
-
-1. https://lwn.net/Articles/824409/
-2. https://www.spinics.net/lists/linux-api/msg50417.html
-
-Thanks,
-Andrei
+# bad: [058affafc65a74cf54499fb578b66ad0b18f939b] Add linux-next specific files for 20220726
+# good: [e0dccc3b76fb35bb257b4118367a883073d7390e] Linux 5.19-rc8
+git bisect start '058affafc65a74cf54499fb578b66ad0b18f939b' 'e0dccc3b76fb35bb257b4118367a883073d7390e'
+# good: [e9173a7b08211b52862d61e7cdc8899fc5e6a44d] Merge branch 'drm-next' of git://git.freedesktop.org/git/drm/drm.git
+git bisect good e9173a7b08211b52862d61e7cdc8899fc5e6a44d
+# good: [45dfa9ecc6a971ab9217e41c1e2ea3ee98fd0f70] Merge branch 'next' of git://git.kernel.org/pub/scm/virt/kvm/kvm.git
+git bisect good 45dfa9ecc6a971ab9217e41c1e2ea3ee98fd0f70
+# good: [1991de2cb33a921c5a422e749eaba9067b9e8a29] Merge branch 'staging-next' of git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging.git
+git bisect good 1991de2cb33a921c5a422e749eaba9067b9e8a29
+# good: [21a47601220fc0b93b7ab254381b2a3ef1f6d3fe] Merge branch 'for-next' of git://git.kernel.org/pub/scm/linux/kernel/git/rppt/memblock.git
+git bisect good 21a47601220fc0b93b7ab254381b2a3ef1f6d3fe
+# bad: [2a210fe818f13dfe3342eb117a4bfeb36aad8215] mm: khugepaged: don't carry huge page to the next loop for !CONFIG_NUMA
+git bisect bad 2a210fe818f13dfe3342eb117a4bfeb36aad8215
+# good: [43957b5d11037a651d162f65c682ec3c76777fc8] mm/mmap: define DECLARE_VM_GET_PAGE_PROT
+git bisect good 43957b5d11037a651d162f65c682ec3c76777fc8
+# good: [e3e449def7ea1d17e890408ea01013592e65298b] radix tree test suite: add pr_err define
+git bisect good e3e449def7ea1d17e890408ea01013592e65298b
+# bad: [c1870dd3ebf1f8a1337f10f2b2ef97e0c1d7e03a] ipc/shm: use VMA iterator instead of linked list
+git bisect bad c1870dd3ebf1f8a1337f10f2b2ef97e0c1d7e03a
+# bad: [5f9f7cac1a89ff1c7d111dfc7edbcb1b0987000a] mm: use maple tree operations for find_vma_intersection()
+git bisect bad 5f9f7cac1a89ff1c7d111dfc7edbcb1b0987000a
+# bad: [3b6a687016b08feb5c1b8d9fb78b31dcb314674d] mm/mmap: use maple tree for unmapped_area{_topdown}
+git bisect bad 3b6a687016b08feb5c1b8d9fb78b31dcb314674d
+# good: [264f03ef6aaca0d56e1c6efed11c93680b8156ac] lib/test_maple_tree: add testing for maple tree
+git bisect good 264f03ef6aaca0d56e1c6efed11c93680b8156ac
+# bad: [bea49723f45480acf67f46f6fd76bc5cde941e5d] mmap: use the VMA iterator in count_vma_pages_range()
+git bisect bad bea49723f45480acf67f46f6fd76bc5cde941e5d
+# bad: [423dbb83d4e1b9e894a2309a0035284eb20d9f2b] mm: add VMA iterator
+git bisect bad 423dbb83d4e1b9e894a2309a0035284eb20d9f2b
+# bad: [fdfbd22f37db37d2db32411d7f48c57bc810366b] mm: start tracking VMAs with maple tree
+git bisect bad fdfbd22f37db37d2db32411d7f48c57bc810366b
+# first bad commit: [fdfbd22f37db37d2db32411d7f48c57bc810366b] mm: start tracking VMAs with maple tree
