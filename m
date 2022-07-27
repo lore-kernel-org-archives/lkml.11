@@ -2,101 +2,180 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8D38C19F21
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 18:56:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96A12C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 18:57:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231987AbiG0S4i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 14:56:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36716 "EHLO
+        id S234612AbiG0S4u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 14:56:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234475AbiG0S4A (ORCPT
+        with ESMTP id S234722AbiG0S4E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 14:56:00 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E403053D26;
-        Wed, 27 Jul 2022 10:56:02 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id b22so178835plz.9;
-        Wed, 27 Jul 2022 10:56:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:sender
-         :from:to:cc;
-        bh=FNJqWOgunTysXo2x6MYgmJbijH0daSpLu5NGEZRQviE=;
-        b=A/u3Wjgc6Pq6XfpcsLe9ZPc/0GNdFxt8A6JJ8VmjPhGMKdLSNN0EOiS3dWtui4azMj
-         jn+/Al0U4PLfPbF/zMf5d86WrI52ysytboMjjFBBeB648qMEb8Aqz+lZbCbQyc57iKpo
-         oKudOAu9TkIAt9p86u7HAMxUvTwWdKk1L1IUsue7nMeXmd15oOllnyTw3zhykckM7Y+U
-         FIJSVm1SxY6FrxyjbHs06eOwTeYNwwU5vX0hJdD170g4TLSKUb2BEfS6OdC0gHLwKLNE
-         qnf4v73uF3y43EfbJUa8wb/VLBO59ynVFHOdiixIpZXo/amlH+T+In2IblGizPkTzNh+
-         MXkQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:sender
-         :x-gm-message-state:from:to:cc;
-        bh=FNJqWOgunTysXo2x6MYgmJbijH0daSpLu5NGEZRQviE=;
-        b=Px/LucuhAfcFZE3AAu2h8J9FCVRnJ+LQmq4zVSURZ/G6W9daOTWO8tlqPKozW7clHg
-         nSWDzpVqbAW6iS2ztDiaG2JpcN6NHGmCB+J0gwl4D8TqCTBCVck5+cy9OtxaTDCmv7LO
-         z/jfrefipCphBgFe76TnRGIjxKx4GAAOuCkRXZiLdSfEddaTHO3hYe3ij1NrGDxUceSr
-         ZSbRAnDbRwkzxA56RMxnpydLb4qXBcRFA89c0/vKiL2HWHNamN4RJmML13CbFK6ro4E+
-         VT2TevF7ejOftXpTko2QOwNS3Ds9vyWNzb6NkrlNV4cE3BEmB4sThC7Gw/yeTFgaAH7v
-         oz5Q==
-X-Gm-Message-State: AJIora9SmmgU5LJ2HqRCB4bMgU23Pok0AtiRvwaQeEtinT0q21DoOXcQ
-        BNuT7QqfqeitjQFyLW26WLk=
-X-Google-Smtp-Source: AGRyM1vtw0uIJ2M7Ps/ai2eBKkXMxcto+mK+opMvLe2CBHf2/mbesFYUsC65FJyktEAbZTHaPPV2sQ==
-X-Received: by 2002:a17:903:2281:b0:16d:614a:63a0 with SMTP id b1-20020a170903228100b0016d614a63a0mr18846955plh.140.1658944561122;
-        Wed, 27 Jul 2022 10:56:01 -0700 (PDT)
-Received: from localhost ([2620:10d:c090:400::5:5a55])
-        by smtp.gmail.com with ESMTPSA id u8-20020a1709026e0800b0016d01c133e1sm6882006plk.248.2022.07.27.10.55.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 10:55:59 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Wed, 27 Jul 2022 07:55:58 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        John Stultz <john.stultz@linaro.org>,
-        Dmitry Shmidt <dimitrysh@google.com>,
-        Oleg Nesterov <oleg@redhat.com>, linux-kernel@vger.kernel.org,
-        cgroups@vger.kernel.org
-Subject: Re: [PATCH cgroup/for-5.20] cgroup: remove "no" prefixed mount
- options options
-Message-ID: <YuF8LrDcd9tpYLnX@slm.duckdns.org>
-References: <YtDvN0wJ6CKaEPN8@slm.duckdns.org>
- <YtDvU4jRPSsarcNp@slm.duckdns.org>
- <20220726143246.GA23794@blackbody.suse.cz>
- <YuBIACfZDk72yjI3@slm.duckdns.org>
- <YuB5ICv3bXsy5Xuh@slm.duckdns.org>
- <YuB9QXapVUy1t8TZ@slm.duckdns.org>
- <20220727092715.GA1569@blackbody.suse.cz>
+        Wed, 27 Jul 2022 14:56:04 -0400
+Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDE8789EB4
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 10:55:51 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.west.internal (Postfix) with ESMTP id 197EA3200916;
+        Wed, 27 Jul 2022 13:55:48 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute2.internal (MEProxy); Wed, 27 Jul 2022 13:55:48 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tycho.pizza; h=
+        cc:cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm2; t=1658944547; x=1659030947; bh=pKs6T4WGKF
+        20rXlh25ysa3f2j1+q+odx8NMOTR3xoyE=; b=SCbk3DIf9o5P7JRfpdfGEkc9QQ
+        VE0JQWcqDxC3aoGbY16dLKMl1RxMul9mb1mSoJrCSpD3jxPsbDvXTBTwfw0M9Qzk
+        5xX67VGagpwBcooA41joDmooKanjCd8sl2TOEayEwFs7YBXwLXAAI/3cOiZugGy0
+        uG9OnUV0Lar+o2a16LggdNFNf0vR9uhuyYRUHeILvw5moNYZRwiFZCYJyGtfdNEE
+        HFddSnyJQDTxgmC/UYcXhlB/nNN88QismbFptN+W8UpLSWS1R+PBntUzBtr8w8gK
+        WxNe7aMrhKrjm0n0ihYBV2Oj/yBKo1WnTTt9M8hTF/tlATu8gM8/y3EiGmCw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm3; t=1658944547; x=1659030947; bh=pKs6T4WGKF20rXlh25ysa3f2j1+q
+        +odx8NMOTR3xoyE=; b=UMdLdkKdJP37f8rRU8oCkOU/rxNq18J9cYUkJX2btSMp
+        WPkzfzwdFeKd6ET/Fda4ZGGATX3B+6cEMdEKqd2eA6MMTDltz1G3QQ54WeLkSK9Z
+        mM/fpjrwDW9Kc1/XlJ3YXuVhSDD5z85J1hQ2NvLMNtYRvanqG7Z46mPmzmD08tMH
+        vgntM6CWbIyhRAwrblWauFGjPP5I2cJi+zcsWMaoUhK5r4vSstwjxV+xJ/0Dok8W
+        j7G9kcTvzWYEr7hJj0p5/8pm+hWLQetPnU3VD+M8a/gMJWPQopm9CEPbU5SvORZR
+        KSrFwj6HFZ0kvJVvho2CAHBtkqH7Uo5VRzTdeqZkfw==
+X-ME-Sender: <xms:I3zhYhIaAZOvgq2uuiIV5-6pRoLjZSsQ_Z0f4DmjFZcui-C5BpNfEQ>
+    <xme:I3zhYtJhcoHxbSIi8gbXA25nq0zAH3rJo2Prj1Izt19JMfqkTmd4MSQx_xoNSmiWI
+    ElF8OEGWR4WxhnkpgA>
+X-ME-Received: <xmr:I3zhYpuqjiJwgkJRIUR3ksn2UxnBItYgFQ_mNG5ZL7hOFo06wM0IWINqY0fwjg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdduvddguddulecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefvhigt
+    hhhoucetnhguvghrshgvnhcuoehthigthhhosehthigthhhordhpihiiiigrqeenucggtf
+    frrghtthgvrhhnpeejieeitdekgeevhfefhefgvdehjeegudegudeltddvjeevieejhfev
+    vdekffdtheenucffohhmrghinhepghhithhhuhgsrdgtohhmnecuvehluhhsthgvrhfuih
+    iivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepthihtghhohesthihtghhohdrphhi
+    iiiirg
+X-ME-Proxy: <xmx:I3zhYiZSzdnW-sqSqrPt3vI6XPMemfbwUk6-WquHjUo8n9cZaKSUZg>
+    <xmx:I3zhYobihR_Y7Kn5Omc6BYOLAkft5eyvSieSXB4h3_MlUfJ0fqD8ag>
+    <xmx:I3zhYmBz9D3PVBHpm13PRmeHZB7XeFUcCMGWrrUgV_cuJcGJ2_8SVw>
+    <xmx:I3zhYgHlswLfYUTsx-gyhrJpExq20LgObtWiQ60tWYyhp81uH_1szg>
+Feedback-ID: i21f147d5:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
+ 27 Jul 2022 13:55:46 -0400 (EDT)
+Date:   Wed, 27 Jul 2022 11:55:43 -0600
+From:   Tycho Andersen <tycho@tycho.pizza>
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     "Serge E. Hallyn" <serge@hallyn.com>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        linux-kernel@vger.kernel.org, Oleg Nesterov <oleg@redhat.com>
+Subject: Re: [PATCH] sched: __fatal_signal_pending() should also check
+ PF_EXITING
+Message-ID: <YuF8H3ZVNugbLtFC@tycho.pizza>
+References: <Ys2PwTS0qFmGNFqy@netflix>
+ <20220713175305.1327649-1-tycho@tycho.pizza>
+ <20220720150328.GA30749@mail.hallyn.com>
+ <YthsgqAZYnwHZLn+@tycho.pizza>
+ <20220721015459.GA4297@mail.hallyn.com>
+ <YuFdUj5X4qckC/6g@tycho.pizza>
+ <871qu6bjp3.fsf@email.froward.int.ebiederm.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220727092715.GA1569@blackbody.suse.cz>
+In-Reply-To: <871qu6bjp3.fsf@email.froward.int.ebiederm.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 11:27:15AM +0200, Michal Koutný wrote:
-> On Tue, Jul 26, 2022 at 01:48:17PM -1000, Tejun Heo <tj@kernel.org> wrote:
-> Thanks.
+On Wed, Jul 27, 2022 at 11:32:08AM -0500, Eric W. Biederman wrote:
+> Tycho Andersen <tycho@tycho.pizza> writes:
 > 
-> > While a bit confusing, given that there is a way to turn off the options,
-> > there's no reason to have the explicit "no" prefixed options. Let's remove
-> > them.
+> > Hi all,
+> >
+> > On Wed, Jul 20, 2022 at 08:54:59PM -0500, Serge E. Hallyn wrote:
+> >> Oh - I didn't either - checking the sigkill in shared signals *seems*
+> >> legit if they can be put there - but since you posted the new patch I
+> >> assumed his reasoning was clear to you.  I know Eric's busy, cc:ing Oleg
+> >> for his interpretation too.
+> >
+> > Any thoughts on this?
 > 
-> This is sensible...
+> Having __fatal_signal_pending check SIGKILL in shared signals is
+> completely and utterly wrong.
 > 
-> >  Documentation/admin-guide/cgroup-v2.rst |    8 ++++----
-> >  kernel/cgroup/cgroup.c                  |   24 ++++--------------------
-> >  2 files changed, 8 insertions(+), 24 deletions(-)
-> 
-> ...and cleaner.
+> What __fatal_signal_pending reports is if a signal has gone through
+> short cirucuit delivery after determining that the delivery of the
+> signal will terminate the process.
 
-Alright, applied to cgroup/for-5.20.
+This short-circuiting you're talking about happens in __send_signal()?
+The problem here is that __send_signal() will add things to the shared
+queue:
 
-Thanks.
+    pending = (type != PIDTYPE_PID) ? &t->signal->shared_pending : &t->pending;
 
--- 
-tejun
+and indeed we add it to the shared set because of the way
+zap_pid_ns_processes() calls it:
+
+    roup_send_sig_info(SIGKILL, SEND_SIG_PRIV, task, PIDTYPE_MAX);
+
+> Using "sigismember(&tsk->pending.signal, SIGKILL)" to report that a
+> fatal signal has experienced short circuit delivery is a bit of an
+> abuse, but essentially harmless as tkill of SIGKILL to a thread will
+> result in every thread in the process experiencing short circuit
+> delivery of the fatal SIGKILL.  So a pending SIGKILL can't really mean
+> anything else.
+
+This is the part I don't follow. If it's ok to send a signal to this
+set, why is it not ok to also look there (other than that it was a
+slight hack in the first place)? Maybe it will short circuit
+more threads, but that seems ok.
+
+> After having looked at the code a little more I can unfortunately also
+> say that testing PF_EXITING in __fatal_signal_pending will cause
+> kernel_wait4 in zap_pid_ns_processes to not sleep, and instead to return
+> 0.  Which will cause zap_pid_ns_processes to busy wait.  That seems very
+> unfortunate.
+> 
+> I hadn't realized it at the time I wrote zap_pid_ns_processes but I
+> think anything called from do_exit that cares about signal pending state
+> is pretty much broken and needs to be fixed.
+
+> So the question is how do we fix the problem in fuse that shows up
+> during a pid namespace exit without having interruptible sleeps we need
+> to wake up?
+> 
+> What are the code paths that experience the problem?
+
+[<0>] request_wait_answer+0x282/0x710 [fuse]
+[<0>] fuse_simple_request+0x502/0xc10 [fuse]
+[<0>] fuse_flush+0x431/0x630 [fuse]
+[<0>] filp_close+0x96/0x120
+[<0>] put_files_struct+0x15c/0x2c0
+[<0>] do_exit+0xa00/0x2450
+[<0>] do_group_exit+0xb2/0x2a0
+[<0>] get_signal+0x1eed/0x2090
+[<0>] arch_do_signal_or_restart+0x89/0x1bc0
+[<0>] exit_to_user_mode_prepare+0x11d/0x1b0
+[<0>] syscall_exit_to_user_mode+0x19/0x50
+[<0>] do_syscall_64+0x50/0x90
+[<0>] entry_SYSCALL_64_after_hwframe+0x46/0xb0
+
+is the full call stack, I have a reproducer here (make check will run
+it): https://github.com/tych0/kernel-utils/tree/master/fuse2
+
+In addition to fuse, it looks like nfs_file_flush() eventually ends up
+in __fatal_signal_pending(), and probably a few others that want to
+synchronize with something outside the local kernel.
+
+> Will refactoring zap_pid_ns_processes as I have proposed so that it does
+> not use kernel_wait4 help sort this out?  AKA make it work something
+> like thread group leader of a process and not allow wait to reap the
+> init process of a pid namespace until all of the processes in a pid
+> namespaces have been gone.  Not that I see the problem in using
+> kernel_wait4 it looks like zap_pid_ns_processes needs to stop calling
+> kernel_wait4 regardless of the fuse problem.
+
+I can look at this, but I really don't think it will help: in this
+brave new world, what wakes up tasks stuck like the above? They're
+still looking at the wrong signal set.
+
+Tycho
