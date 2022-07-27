@@ -2,216 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1731C19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:01:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BCCAC19F28
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:03:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234555AbiG0QBm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:01:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60678 "EHLO
+        id S233451AbiG0QD3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:03:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234655AbiG0QBZ (ORCPT
+        with ESMTP id S233421AbiG0QDX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:01:25 -0400
-Received: from mx0b-001ae601.pphosted.com (mx0b-001ae601.pphosted.com [67.231.152.168])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 501364AD5E
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:01:24 -0700 (PDT)
-Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
-        by mx0b-001ae601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26R4fJsV006636;
-        Wed, 27 Jul 2022 11:00:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=PODMain02222019;
- bh=+PQw3busqBkk59dCK7o0jRl+GcaN0sL9tWpcJFAGrfE=;
- b=SaRP8vd/15l6hMuH1Sz0jss1ROAT2ZuujUdyCBG1CtilILevvOWz4CTArnE/gVBXez0v
- 43pBjxfs0NrZ0/9mabJWctGid2945YAOt4lvmOYKKwmd05Uk1xWVbIVBX+NC4VgnfLJU
- WceMJcL9khWhPSprDadU38tnBdbz32jQ7fmTEM81Qd9F/Tq6kKPjWJFHT2H1G7eCAt0o
- EEtXPEKxMzqg3WeMtcAqB9Ft0GYWfsm1xBWhoTH2EG+HTDn6hSUpPZtGnG2P5XY2Q+sj
- lvcTANR+lHetbOacf6hoqfMtikYBcLo/dQ/kUYP08EmrToWCkSXq7dEXIX2PcJJ4y0// Cw== 
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3hgddp54q4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 27 Jul 2022 11:00:55 -0500
-Received: from ediex01.ad.cirrus.com (198.61.84.80) by ediex01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.9; Wed, 27 Jul
- 2022 11:00:54 -0500
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by ediex01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.2.1118.9 via Frontend
- Transport; Wed, 27 Jul 2022 11:00:54 -0500
-Received: from sbinding-cirrus-dsktp2.ad.cirrus.com (unknown [198.90.202.160])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 713292D4;
-        Wed, 27 Jul 2022 16:00:53 +0000 (UTC)
-From:   Stefan Binding <sbinding@opensource.cirrus.com>
-To:     Mark Brown <broonie@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Brent Lu <brent.lu@intel.com>, xliu <xiang.liu@cirrus.com>
-CC:     <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>,
-        <patches@opensource.cirrus.com>,
-        Stefan Binding <sbinding@opensource.cirrus.com>,
-        Vitaly Rodionov <vitalyr@opensource.cirrus.com>
-Subject: [PATCH v2] ASoC: Intel: cirrus-common: Use UID to map correct amp to prefix
-Date:   Wed, 27 Jul 2022 17:00:51 +0100
-Message-ID: <20220727160051.3373125-1-sbinding@opensource.cirrus.com>
-X-Mailer: git-send-email 2.34.1
+        Wed, 27 Jul 2022 12:03:23 -0400
+Received: from mail-il1-f179.google.com (mail-il1-f179.google.com [209.85.166.179])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14AE84A838;
+        Wed, 27 Jul 2022 09:03:23 -0700 (PDT)
+Received: by mail-il1-f179.google.com with SMTP id f8so835524ils.13;
+        Wed, 27 Jul 2022 09:03:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=wBsnIffBjiQs1dYf9x9tNvshsRG8mL+pqvf1EO0wYjk=;
+        b=fCzXo09KDuA1Jam4oVPaStv29i6W9oYEW3rVDkII+q8Pg/Rwp3UemoYRTdmdeHmAyx
+         SKvYQUxEhf8HbDQGMYCUIVyrpqR58mygd71w6F1eE7vfRbvwtoemEOci31DpW82mm4c3
+         LUGhpfJxiytIbRaCKy0cUXCVKsIzHsze+Tb9p6Pcw1YCW3Pox+Xu5wBFbdFMaeJ9VuLF
+         AAXMxEXusvCK/0SlxEb9igOqb3pjxAHdGDv9C9oUuNTqluLWA/I3V0TZ6e7XN78pEIuO
+         0LeLetqBCqPA0HY1tjcaANRfHpO1dHydnbAynzC9caoLuEgnPCIQ7skbI56qPo40JSsu
+         M25g==
+X-Gm-Message-State: AJIora94+kFUhcZiIYTC+Rb/Zui3h5VvUifmpp12zcVwp1T0m3PT4clp
+        GW+q9ZFQLHS8SghwOroEgw==
+X-Google-Smtp-Source: AGRyM1tPmy1PxfqCjQmXrwzib4b/M/R/vQyHbMQ1eoFA6LUMW4jtRIa+FKY7nd88pa4eRIcxLfaDhg==
+X-Received: by 2002:a05:6e02:1d1b:b0:2dc:dfac:6131 with SMTP id i27-20020a056e021d1b00b002dcdfac6131mr8892921ila.60.1658937802247;
+        Wed, 27 Jul 2022 09:03:22 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.248])
+        by smtp.gmail.com with ESMTPSA id m4-20020a02a144000000b0033eff75fb32sm7921295jah.15.2022.07.27.09.03.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jul 2022 09:03:21 -0700 (PDT)
+Received: (nullmailer pid 2758902 invoked by uid 1000);
+        Wed, 27 Jul 2022 16:03:20 -0000
+Date:   Wed, 27 Jul 2022 10:03:20 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Bob Moragues <moragues@chromium.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Bob Moragues <moragues@google.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Stephen Boyd <sboyd@codeaurora.org>,
+        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH 1/2] dt-bindings: arm: qcom: document zoglin board
+Message-ID: <20220727160320.GA2755147-robh@kernel.org>
+References: <20220726212354.1.I5b9006878bdabd6493b866b46dbd6149968d545b@changeid>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-GUID: d8dJn7FSCFucxiSrBEWL58PTrABkuQNk
-X-Proofpoint-ORIG-GUID: d8dJn7FSCFucxiSrBEWL58PTrABkuQNk
-X-Proofpoint-Spam-Reason: safe
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220726212354.1.I5b9006878bdabd6493b866b46dbd6149968d545b@changeid>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since the order of the amps in the ACPI determines the device name,
-and the ACPI order may change depending on hardware configuration,
-use UID to dynamically compute the dai links, allowing dynamic
-assignment of the name_prefix.
+On Tue, Jul 26, 2022 at 09:24:31PM -0700, Bob Moragues wrote:
+> Zoglin is a Hoglin Chromebook with SPI Flash reduced from 64MB to 8MB.
+> Zoglin is identical to Hoglin except for the SPI Flash.
+> The actual SPI Flash is dynamically probed at and not specified in DTS.
+> 
+> Signed-off-by: Bob Moragues <moragues@chromium.org>
+> 
+> Signed-off-by: Bob Moragues <moragues@google.com>
+> ---
+> 
+>  Documentation/devicetree/bindings/arm/qcom.yaml | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/arm/qcom.yaml b/Documentation/devicetree/bindings/arm/qcom.yaml
+> index 581485392404..63091df3cbb3 100644
+> --- a/Documentation/devicetree/bindings/arm/qcom.yaml
+> +++ b/Documentation/devicetree/bindings/arm/qcom.yaml
+> @@ -475,6 +475,7 @@ properties:
+>  
+>        - description: Qualcomm Technologies, Inc. sc7280 CRD platform (newest rev)
+>          items:
+> +          - const: google,zoglin
+>            - const: google,hoglin
+>            - const: qcom,sc7280
 
-The UIDs for these amps in ACPI are fixed, and map to a name_prefix,
-where:
-UID 0x0 -> WL
-UID 0x1 -> WR
-UID 0x2 -> TL
-UID 0x3 -> TR
+Is just "google,hoglin", "qcom,sc7280" no longer valid? If it is valid, 
+you need another entry.
 
-Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
-Signed-off-by: Vitaly Rodionov <vitalyr@opensource.cirrus.com>
----
- sound/soc/intel/boards/sof_cirrus_common.c | 89 +++++++++++-----------
- 1 file changed, 46 insertions(+), 43 deletions(-)
-
-diff --git a/sound/soc/intel/boards/sof_cirrus_common.c b/sound/soc/intel/boards/sof_cirrus_common.c
-index f4192df962d6..e74c4adbf2a5 100644
---- a/sound/soc/intel/boards/sof_cirrus_common.c
-+++ b/sound/soc/intel/boards/sof_cirrus_common.c
-@@ -10,6 +10,9 @@
- #include "../../codecs/cs35l41.h"
- #include "sof_cirrus_common.h"
- 
-+#define CS35L41_HID "CSC3541"
-+#define CS35L41_MAX_AMPS 4
-+
- /*
-  * Cirrus Logic CS35L41/CS35L53
-  */
-@@ -35,50 +38,12 @@ static const struct snd_soc_dapm_route cs35l41_dapm_routes[] = {
- 	{"TR Spk", NULL, "TR SPK"},
- };
- 
--static struct snd_soc_dai_link_component cs35l41_components[] = {
--	{
--		.name = CS35L41_DEV0_NAME,
--		.dai_name = CS35L41_CODEC_DAI,
--	},
--	{
--		.name = CS35L41_DEV1_NAME,
--		.dai_name = CS35L41_CODEC_DAI,
--	},
--	{
--		.name = CS35L41_DEV2_NAME,
--		.dai_name = CS35L41_CODEC_DAI,
--	},
--	{
--		.name = CS35L41_DEV3_NAME,
--		.dai_name = CS35L41_CODEC_DAI,
--	},
--};
-+static struct snd_soc_dai_link_component cs35l41_components[CS35L41_MAX_AMPS];
- 
- /*
-  * Mapping between ACPI instance id and speaker position.
-- *
-- * Four speakers:
-- *         0: Tweeter left, 1: Woofer left
-- *         2: Tweeter right, 3: Woofer right
-  */
--static struct snd_soc_codec_conf cs35l41_codec_conf[] = {
--	{
--		.dlc = COMP_CODEC_CONF(CS35L41_DEV0_NAME),
--		.name_prefix = "TL",
--	},
--	{
--		.dlc = COMP_CODEC_CONF(CS35L41_DEV1_NAME),
--		.name_prefix = "WL",
--	},
--	{
--		.dlc = COMP_CODEC_CONF(CS35L41_DEV2_NAME),
--		.name_prefix = "TR",
--	},
--	{
--		.dlc = COMP_CODEC_CONF(CS35L41_DEV3_NAME),
--		.name_prefix = "WR",
--	},
--};
-+static struct snd_soc_codec_conf cs35l41_codec_conf[CS35L41_MAX_AMPS];
- 
- static int cs35l41_init(struct snd_soc_pcm_runtime *rtd)
- {
-@@ -117,10 +82,10 @@ static int cs35l41_init(struct snd_soc_pcm_runtime *rtd)
- static const struct {
- 	unsigned int rx[2];
- } cs35l41_channel_map[] = {
--	{.rx = {0, 1}}, /* TL */
- 	{.rx = {0, 1}}, /* WL */
--	{.rx = {1, 0}}, /* TR */
- 	{.rx = {1, 0}}, /* WR */
-+	{.rx = {0, 1}}, /* TL */
-+	{.rx = {1, 0}}, /* TR */
- };
- 
- static int cs35l41_hw_params(struct snd_pcm_substream *substream,
-@@ -175,10 +140,48 @@ static const struct snd_soc_ops cs35l41_ops = {
- 	.hw_params = cs35l41_hw_params,
- };
- 
-+static const char * const cs35l41_name_prefixes[] = { "WL", "WR", "TL", "TR" };
-+
-+/*
-+ * Expected UIDs are integers (stored as strings).
-+ * UID Mapping is fixed:
-+ * UID 0x0 -> WL
-+ * UID 0x1 -> WR
-+ * UID 0x2 -> TL
-+ * UID 0x3 -> TR
-+ * Note: If there are less than 4 Amps, UIDs still map to WL/WR/TL/TR. Dynamic code will only create
-+ * dai links for UIDs which exist, and ignore non-existant ones.
-+ * Return number of codecs found.
-+ */
-+static int cs35l41_compute_codec_conf(void)
-+{
-+	const char * const uid_strings[] = { "0", "1", "2", "3" };
-+	unsigned int uid, sz = 0;
-+	struct acpi_device *adev;
-+	struct device *physdev;
-+
-+	for (uid = 0; uid < CS35L41_MAX_AMPS; uid++) {
-+		adev = acpi_dev_get_first_match_dev(CS35L41_HID, uid_strings[uid], -1);
-+		if (!adev) {
-+			pr_warn("Cannot find match for HID %s UID %u (%s)\n", CS35L41_HID, uid,
-+				cs35l41_name_prefixes[uid]);
-+			continue;
-+		}
-+		physdev = get_device(acpi_get_first_physical_node(adev));
-+		cs35l41_components[sz].name = dev_name(physdev);
-+		cs35l41_components[sz].dai_name = CS35L41_CODEC_DAI;
-+		cs35l41_codec_conf[sz].dlc.name = dev_name(physdev);
-+		cs35l41_codec_conf[sz].name_prefix = cs35l41_name_prefixes[uid];
-+		acpi_dev_put(adev);
-+		sz++;
-+	}
-+	return sz;
-+}
-+
- void cs35l41_set_dai_link(struct snd_soc_dai_link *link)
- {
-+	link->num_codecs = cs35l41_compute_codec_conf();
- 	link->codecs = cs35l41_components;
--	link->num_codecs = ARRAY_SIZE(cs35l41_components);
- 	link->init = cs35l41_init;
- 	link->ops = &cs35l41_ops;
- }
--- 
-2.34.1
-
+>  
+> -- 
+> 2.37.1.359.gd136c6c3e2-goog
+> 
+> 
