@@ -2,188 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6D6BC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:17:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7ED6C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:17:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231167AbiG0RRk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:17:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33588 "EHLO
+        id S231557AbiG0RRp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:17:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241656AbiG0RQr (ORCPT
+        with ESMTP id S241684AbiG0RQu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:16:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86E625C95B;
+        Wed, 27 Jul 2022 13:16:50 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4411627B
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:43:17 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id bf9so27828519lfb.13
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:43:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dq1uiZkAWa3YJvnfamL8dc9poZEqWN+zXqH3YX0Ei5g=;
+        b=qCyMVBkCXFWl1AlJ5rfWeaCJL8jbUT35O7IxR89YvWURkZkpEiIbfagT6bJR1uSTck
+         YbU0zVyldV6p6XW6UPlKR00YL+u6oN22qGh3V9lr5RSCTRxlTg+6j/L1shioPpEaS7DM
+         ftpLvGyWCZ4+68kqY/LMvV0tyXTclfFKxn0mbsxA8s+4Q6K4RFIO+s856ieFJmBcpnW+
+         /D2V4JWTU3+J4p4RgsA9fCq1V2L8dieLqfkcESOSMz5v+uN+0E8rlxc14XXQP5MqGJmq
+         uJ5bAEibiJbYXh7hTOYcNgy4qXuk7IeI2q0jqOu2k2ViRQo6nhIypR1TXJ/sh8Xcs7M3
+         7PjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dq1uiZkAWa3YJvnfamL8dc9poZEqWN+zXqH3YX0Ei5g=;
+        b=wuTkZWN5+ue5MdjllRSDGVkeMNPO2bLGjxu6ALD75MIji+agcI8VVpa1N0RlDly6OF
+         gQTBmHAVmk80aCz9ir/tDnNDz2ClaKI0Ad6S2kmgvAhOGnKaPuYCna08j5fTEY4f0xMo
+         qOogmuX2PxwQpa2Q3DfzzEtO99/s3d9Vk4hSn11V3PoJ+/oZ+EmJfCTGknUCmAF6mmLi
+         YnG96lWS8aSAjNspSEYHmCI3VHR7ZheBrEvTPlKRdHnvu0lVDl1auHbPPmh7VMYDdzSH
+         S/ddsPGW+32U36jzyoHeTXU8jX76ok/r+6Qgx7TuvcP0tSXaZum6L6G8kmh2YdoZmfU2
+         Yy1w==
+X-Gm-Message-State: AJIora/R3pceLYGW3s3CbjPF1HymEU1RuJPNVr+jwB2oy7gy4Ylywxu8
+        kkN36bKikUb7WN3d0jleXwqGWg==
+X-Google-Smtp-Source: AGRyM1tjstljwcPGnQ8nUewAwhzjHnExmu7i325wwT19JRsKZYk7zO7l24iTwuawcmiATp8A/e/MEQ==
+X-Received: by 2002:a05:6512:2826:b0:48a:a02c:4a6a with SMTP id cf38-20020a056512282600b0048aa02c4a6amr3196539lfb.29.1658940195058;
         Wed, 27 Jul 2022 09:43:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E82FB60D3B;
-        Wed, 27 Jul 2022 16:43:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0053FC433D6;
-        Wed, 27 Jul 2022 16:43:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940194;
-        bh=c9s70STEPcpvDZalC6QpagPkoFuKsN/joFPCxLWbenc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Hbh2bz42nt4zgCZunMB+YditNjuU45rZg0FT/mloBhGtFpEuP1T8HI5NdHud8craC
-         csSCTOyz3OoYFFmHDAfaAEXSp/K1Q1XR6qC+po2HVtSJ2Srciuy9NkdPJBEIE+NhcJ
-         Ql5+sCfcdfngftM7gfnjoszsGGPtiRlx5yADiLYQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Piotr Skajewski <piotrx.skajewski@intel.com>,
-        Marek Szlosek <marek.szlosek@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 107/201] ixgbe: Add locking to prevent panic when setting sriov_numvfs to zero
-Date:   Wed, 27 Jul 2022 18:10:11 +0200
-Message-Id: <20220727161032.187952434@linuxfoundation.org>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
-References: <20220727161026.977588183@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from krzk-bin.lan (78-26-46-173.network.trollfjord.no. [78.26.46.173])
+        by smtp.gmail.com with ESMTPSA id t17-20020ac243b1000000b0047fae90bfb4sm3869763lfl.56.2022.07.27.09.43.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jul 2022 09:43:14 -0700 (PDT)
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+To:     Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        David Lechner <david@lechnology.com>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Heiko Schocher <hs@denx.de>,
+        Maxime Ripard <mripard@kernel.org>,
+        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH] dt-bindings: display: use spi-peripheral-props.yaml
+Date:   Wed, 27 Jul 2022 18:43:12 +0200
+Message-Id: <20220727164312.385836-1-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Piotr Skajewski <piotrx.skajewski@intel.com>
+Instead of listing directly properties typical for SPI peripherals,
+reference the spi-peripheral-props.yaml schema.  This allows using all
+properties typical for SPI-connected devices, even these which device
+bindings author did not tried yet.
 
-[ Upstream commit 1e53834ce541d4fe271cdcca7703e50be0a44f8a ]
+Remove the spi-* properties which now come via spi-peripheral-props.yaml
+schema, except for the cases when device schema adds some constraints
+like maximum frequency.
 
-It is possible to disable VFs while the PF driver is processing requests
-from the VF driver.  This can result in a panic.
+While changing additionalProperties->unevaluatedProperties, put it in
+typical place, just before example DTS.
 
-BUG: unable to handle kernel paging request at 000000000000106c
-PGD 0 P4D 0
-Oops: 0000 [#1] SMP NOPTI
-CPU: 8 PID: 0 Comm: swapper/8 Kdump: loaded Tainted: G I      --------- -
-Hardware name: Dell Inc. PowerEdge R740/06WXJT, BIOS 2.8.2 08/27/2020
-RIP: 0010:ixgbe_msg_task+0x4c8/0x1690 [ixgbe]
-Code: 00 00 48 8d 04 40 48 c1 e0 05 89 7c 24 24 89 fd 48 89 44 24 10 83 ff
-01 0f 84 b8 04 00 00 4c 8b 64 24 10 4d 03 a5 48 22 00 00 <41> 80 7c 24 4c
-00 0f 84 8a 03 00 00 0f b7 c7 83 f8 08 0f 84 8f 0a
-RSP: 0018:ffffb337869f8df8 EFLAGS: 00010002
-RAX: 0000000000001020 RBX: 0000000000000000 RCX: 000000000000002b
-RDX: 0000000000000002 RSI: 0000000000000008 RDI: 0000000000000006
-RBP: 0000000000000006 R08: 0000000000000002 R09: 0000000000029780
-R10: 00006957d8f42832 R11: 0000000000000000 R12: 0000000000001020
-R13: ffff8a00e8978ac0 R14: 000000000000002b R15: ffff8a00e8979c80
-FS:  0000000000000000(0000) GS:ffff8a07dfd00000(0000) knlGS:00000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 000000000000106c CR3: 0000000063e10004 CR4: 00000000007726e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-PKRU: 55555554
-Call Trace:
- <IRQ>
- ? ttwu_do_wakeup+0x19/0x140
- ? try_to_wake_up+0x1cd/0x550
- ? ixgbevf_update_xcast_mode+0x71/0xc0 [ixgbevf]
- ixgbe_msix_other+0x17e/0x310 [ixgbe]
- __handle_irq_event_percpu+0x40/0x180
- handle_irq_event_percpu+0x30/0x80
- handle_irq_event+0x36/0x53
- handle_edge_irq+0x82/0x190
- handle_irq+0x1c/0x30
- do_IRQ+0x49/0xd0
- common_interrupt+0xf/0xf
+The sitronix,st7735r references also panel-common.yaml and lists
+explicitly allowed properties, thus here reference only
+spi-peripheral-props.yaml for purpose of documenting the SPI slave
+device and bringing spi-max-frequency type validation.
 
-This can be eventually be reproduced with the following script:
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-while :
-do
-    echo 63 > /sys/class/net/<devname>/device/sriov_numvfs
-    sleep 1
-    echo 0 > /sys/class/net/<devname>/device/sriov_numvfs
-    sleep 1
-done
-
-Add lock when disabling SR-IOV to prevent process VF mailbox communication.
-
-Fixes: d773d1310625 ("ixgbe: Fix memory leak when SR-IOV VFs are direct assigned")
-Signed-off-by: Piotr Skajewski <piotrx.skajewski@intel.com>
-Tested-by: Marek Szlosek <marek.szlosek@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Link: https://lore.kernel.org/r/20220715214456.2968711-1-anthony.l.nguyen@intel.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/ixgbe/ixgbe.h       | 1 +
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c  | 3 +++
- drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c | 6 ++++++
- 3 files changed, 10 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe.h b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
-index a604552fa634..c375a5d54b40 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe.h
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
-@@ -770,6 +770,7 @@ struct ixgbe_adapter {
- #ifdef CONFIG_IXGBE_IPSEC
- 	struct ixgbe_ipsec *ipsec;
- #endif /* CONFIG_IXGBE_IPSEC */
-+	spinlock_t vfs_lock;
- };
+Technically, this depends on [1] merged to SPI tree, if we want to
+preserve existing behavior of not allowing SPI CPHA and CPOL in each of
+schemas in this patch.
+
+If this patch comes independently via different tree, the SPI CPHA and
+CPOL will be allowed for brief period of time, before [1] is merged.
+This will not have negative impact, just DT schema checks will be
+loosened for that period.
+
+[1] https://lore.kernel.org/all/20220722191539.90641-2-krzysztof.kozlowski@linaro.org/
+---
+ .../devicetree/bindings/display/panel/lg,lg4573.yaml       | 2 +-
+ .../devicetree/bindings/display/sitronix,st7735r.yaml      | 1 +
+ .../devicetree/bindings/display/solomon,ssd1307fb.yaml     | 7 +++----
+ 3 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/display/panel/lg,lg4573.yaml b/Documentation/devicetree/bindings/display/panel/lg,lg4573.yaml
+index b4314ce7b411..ee357e139ac0 100644
+--- a/Documentation/devicetree/bindings/display/panel/lg,lg4573.yaml
++++ b/Documentation/devicetree/bindings/display/panel/lg,lg4573.yaml
+@@ -15,13 +15,13 @@ maintainers:
  
- static inline u8 ixgbe_max_rss_indices(struct ixgbe_adapter *adapter)
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-index 750b02bb2fdc..8cb20af51ecd 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-@@ -6397,6 +6397,9 @@ static int ixgbe_sw_init(struct ixgbe_adapter *adapter,
- 	/* n-tuple support exists, always init our spinlock */
- 	spin_lock_init(&adapter->fdir_perfect_lock);
+ allOf:
+   - $ref: panel-common.yaml#
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
  
-+	/* init spinlock to avoid concurrency of VF resources */
-+	spin_lock_init(&adapter->vfs_lock);
+ properties:
+   compatible:
+     const: lg,lg4573
+ 
+   reg: true
+-  spi-max-frequency: true
+ 
+ required:
+   - compatible
+diff --git a/Documentation/devicetree/bindings/display/sitronix,st7735r.yaml b/Documentation/devicetree/bindings/display/sitronix,st7735r.yaml
+index 157b1a7b18f9..53f181ef3670 100644
+--- a/Documentation/devicetree/bindings/display/sitronix,st7735r.yaml
++++ b/Documentation/devicetree/bindings/display/sitronix,st7735r.yaml
+@@ -15,6 +15,7 @@ description:
+ 
+ allOf:
+   - $ref: panel/panel-common.yaml#
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
+ 
+ properties:
+   compatible:
+diff --git a/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml b/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
+index 3fbd87c2c120..669f70b1b4c4 100644
+--- a/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
++++ b/Documentation/devicetree/bindings/display/solomon,ssd1307fb.yaml
+@@ -49,9 +49,6 @@ properties:
+   vbat-supply:
+     description: The supply for VBAT
+ 
+-  # Only required for SPI
+-  spi-max-frequency: true
+-
+   solomon,height:
+     $ref: /schemas/types.yaml#/definitions/uint32
+     default: 16
+@@ -153,6 +150,8 @@ required:
+   - reg
+ 
+ allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
 +
- #ifdef CONFIG_IXGBE_DCB
- 	ixgbe_init_dcb(adapter);
- #endif
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
-index aaebdae8b5ff..0078ae592616 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
-@@ -204,10 +204,13 @@ void ixgbe_enable_sriov(struct ixgbe_adapter *adapter, unsigned int max_vfs)
- int ixgbe_disable_sriov(struct ixgbe_adapter *adapter)
- {
- 	unsigned int num_vfs = adapter->num_vfs, vf;
-+	unsigned long flags;
- 	int rss;
+   - if:
+       properties:
+         compatible:
+@@ -223,7 +222,7 @@ allOf:
+         solomon,dclk-frq:
+           default: 10
  
-+	spin_lock_irqsave(&adapter->vfs_lock, flags);
- 	/* set num VFs to 0 to prevent access to vfinfo */
- 	adapter->num_vfs = 0;
-+	spin_unlock_irqrestore(&adapter->vfs_lock, flags);
+-additionalProperties: false
++unevaluatedProperties: false
  
- 	/* put the reference to all of the vf devices */
- 	for (vf = 0; vf < num_vfs; ++vf) {
-@@ -1305,8 +1308,10 @@ static void ixgbe_rcv_ack_from_vf(struct ixgbe_adapter *adapter, u32 vf)
- void ixgbe_msg_task(struct ixgbe_adapter *adapter)
- {
- 	struct ixgbe_hw *hw = &adapter->hw;
-+	unsigned long flags;
- 	u32 vf;
- 
-+	spin_lock_irqsave(&adapter->vfs_lock, flags);
- 	for (vf = 0; vf < adapter->num_vfs; vf++) {
- 		/* process any reset requests */
- 		if (!ixgbe_check_for_rst(hw, vf))
-@@ -1320,6 +1325,7 @@ void ixgbe_msg_task(struct ixgbe_adapter *adapter)
- 		if (!ixgbe_check_for_ack(hw, vf))
- 			ixgbe_rcv_ack_from_vf(adapter, vf);
- 	}
-+	spin_unlock_irqrestore(&adapter->vfs_lock, flags);
- }
- 
- void ixgbe_disable_tx_rx(struct ixgbe_adapter *adapter)
+ examples:
+   - |
 -- 
-2.35.1
-
-
+2.34.1
 
