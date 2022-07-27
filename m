@@ -2,109 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19811C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:00:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30498C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:00:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233834AbiG0RAL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:00:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43180 "EHLO
+        id S232550AbiG0RAR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:00:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241252AbiG0Q7U (ORCPT
+        with ESMTP id S241260AbiG0Q7V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:59:20 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AD4E67CAB
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:37:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658939837; x=1690475837;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=/Xu6IgGf7EmqEfszrQvOKIjQaHODWfI38AJXg11+tcA=;
-  b=LdcmHtpdDxppgPmOvqfnDo1TKA+q+7C9clzYiQcZURl4uiD2ZmTq1jZS
-   QPU4r3tVPvYmvTX5zyZgJwhtdqp+gfAz571lB6EP/DfVF9Kbw8KEoEgFt
-   cNl2LpvwIEVKofPrz/HzWT3fDojCzWpHFR8pyHL1/y3wsNPntzU+cCaZH
-   A+SYsGco5TxJ/FRjC99zt1WkOw8HnIGoDYXNDoJMu7kYzw/iot5w8GRkR
-   hSdGDi0Lrn0sNKmNeoEpaSYY8rUgIpVU3TFTXF3aKya3UgL2DnFLVNx+g
-   7fBPAC6I1Hr7SbLaclyVFD/iaOvDSVVby4Aic6H2J8NRcWaL/W+NnST6Q
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10421"; a="352279806"
-X-IronPort-AV: E=Sophos;i="5.93,196,1654585200"; 
-   d="scan'208";a="352279806"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2022 09:36:45 -0700
-X-IronPort-AV: E=Sophos;i="5.93,196,1654585200"; 
-   d="scan'208";a="628450023"
-Received: from lgumar-mobl.amr.corp.intel.com (HELO [10.209.151.195]) ([10.209.151.195])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2022 09:36:44 -0700
-Message-ID: <69713155-39b0-5492-4966-73dfdacd1fc1@linux.intel.com>
-Date:   Wed, 27 Jul 2022 11:36:43 -0500
+        Wed, 27 Jul 2022 12:59:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4552067CAF;
+        Wed, 27 Jul 2022 09:37:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 25840B821B6;
+        Wed, 27 Jul 2022 16:37:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AA25C433D6;
+        Wed, 27 Jul 2022 16:37:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658939830;
+        bh=hfbxyf/DUJ3IQqVUNeTv9mC8aZK0OZHI4xKyS0XTpjQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=p7GEPPuyz47XWza4DJ1OjkR870T7yfBGuy/ClwfHjvxNMpe48bIP5wH+2svNcqKN5
+         /qXViuAYXNjwFmO95B/jrDJKgApeqJUoXTfI5kcLLq17RCtkA6NXkUPk5tTQfzmpA5
+         DCN1/eUpMdC+9g/zKWWGs65B19lcErHlJgI0pKNU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, stable <stable@kernel.org>,
+        =?UTF-8?q?Ilpo=20J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
+Subject: [PATCH 5.15 014/201] serial: mvebu-uart: correctly report configured baudrate value
+Date:   Wed, 27 Jul 2022 18:08:38 +0200
+Message-Id: <20220727161027.512869711@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
+References: <20220727161026.977588183@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.11.0
-Subject: Re: [PATCH v2] ASoC: Intel: cirrus-common: Use UID to map correct amp
- to prefix
-Content-Language: en-US
-To:     Stefan Binding <sbinding@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Brent Lu <brent.lu@intel.com>, xliu <xiang.liu@cirrus.com>
-Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        patches@opensource.cirrus.com,
-        Vitaly Rodionov <vitalyr@opensource.cirrus.com>
-References: <20220727160051.3373125-1-sbinding@opensource.cirrus.com>
-From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-In-Reply-To: <20220727160051.3373125-1-sbinding@opensource.cirrus.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Pali Rohár <pali@kernel.org>
+
+commit 4f532c1e25319e42996ec18a1f473fd50c8e575d upstream.
+
+Functions tty_termios_encode_baud_rate() and uart_update_timeout() should
+be called with the baudrate value which was set to hardware. Linux then
+report exact values via ioctl(TCGETS2) to userspace.
+
+Change mvebu_uart_baud_rate_set() function to return baudrate value which
+was set to hardware and propagate this value to above mentioned functions.
+
+With this change userspace would see precise value in termios c_ospeed
+field.
+
+Fixes: 68a0db1d7da2 ("serial: mvebu-uart: add function to change baudrate")
+Cc: stable <stable@kernel.org>
+Reviewed-by: Ilpo Järvinen <ilpo.jarvinen@linux.intel.com>
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Link: https://lore.kernel.org/r/20220628100922.10717-1-pali@kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/tty/serial/mvebu-uart.c |   25 +++++++++++++------------
+ 1 file changed, 13 insertions(+), 12 deletions(-)
+
+--- a/drivers/tty/serial/mvebu-uart.c
++++ b/drivers/tty/serial/mvebu-uart.c
+@@ -442,13 +442,13 @@ static void mvebu_uart_shutdown(struct u
+ 	}
+ }
+ 
+-static int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
++static unsigned int mvebu_uart_baud_rate_set(struct uart_port *port, unsigned int baud)
+ {
+ 	unsigned int d_divisor, m_divisor;
+ 	u32 brdv, osamp;
+ 
+ 	if (!port->uartclk)
+-		return -EOPNOTSUPP;
++		return 0;
+ 
+ 	/*
+ 	 * The baudrate is derived from the UART clock thanks to two divisors:
+@@ -472,7 +472,7 @@ static int mvebu_uart_baud_rate_set(stru
+ 	osamp &= ~OSAMP_DIVISORS_MASK;
+ 	writel(osamp, port->membase + UART_OSAMP);
+ 
+-	return 0;
++	return DIV_ROUND_CLOSEST(port->uartclk, d_divisor * m_divisor);
+ }
+ 
+ static void mvebu_uart_set_termios(struct uart_port *port,
+@@ -509,15 +509,11 @@ static void mvebu_uart_set_termios(struc
+ 	max_baud = 230400;
+ 
+ 	baud = uart_get_baud_rate(port, termios, old, min_baud, max_baud);
+-	if (mvebu_uart_baud_rate_set(port, baud)) {
+-		/* No clock available, baudrate cannot be changed */
+-		if (old)
+-			baud = uart_get_baud_rate(port, old, NULL,
+-						  min_baud, max_baud);
+-	} else {
+-		tty_termios_encode_baud_rate(termios, baud, baud);
+-		uart_update_timeout(port, termios->c_cflag, baud);
+-	}
++	baud = mvebu_uart_baud_rate_set(port, baud);
++
++	/* In case baudrate cannot be changed, report previous old value */
++	if (baud == 0 && old)
++		baud = tty_termios_baud_rate(old);
+ 
+ 	/* Only the following flag changes are supported */
+ 	if (old) {
+@@ -528,6 +524,11 @@ static void mvebu_uart_set_termios(struc
+ 		termios->c_cflag |= CS8;
+ 	}
+ 
++	if (baud != 0) {
++		tty_termios_encode_baud_rate(termios, baud, baud);
++		uart_update_timeout(port, termios->c_cflag, baud);
++	}
++
+ 	spin_unlock_irqrestore(&port->lock, flags);
+ }
+ 
 
 
-
-> +/*
-> + * Expected UIDs are integers (stored as strings).
-> + * UID Mapping is fixed:
-> + * UID 0x0 -> WL
-> + * UID 0x1 -> WR
-> + * UID 0x2 -> TL
-> + * UID 0x3 -> TR
-> + * Note: If there are less than 4 Amps, UIDs still map to WL/WR/TL/TR. Dynamic code will only create
-> + * dai links for UIDs which exist, and ignore non-existant ones.
-
-is this intentional to support all variations of 1,2,3 and 4 amplifiers
-being present?
-
-Or is the intent to really support 2 or 4?
-
-> + * Return number of codecs found.
-> + */
-> +static int cs35l41_compute_codec_conf(void)
-> +{
-> +	const char * const uid_strings[] = { "0", "1", "2", "3" };
-> +	unsigned int uid, sz = 0;
-> +	struct acpi_device *adev;
-> +	struct device *physdev;
-> +
-> +	for (uid = 0; uid < CS35L41_MAX_AMPS; uid++) {
-> +		adev = acpi_dev_get_first_match_dev(CS35L41_HID, uid_strings[uid], -1);
-> +		if (!adev) {
-> +			pr_warn("Cannot find match for HID %s UID %u (%s)\n", CS35L41_HID, uid,
-> +				cs35l41_name_prefixes[uid]);
-
-A warning is a bit strong if some valid configurations don't expose all
-4 codecs.
-
-> +			continue;
-> +		}
-> +		physdev = get_device(acpi_get_first_physical_node(adev));
-> +		cs35l41_components[sz].name = dev_name(physdev);
-> +		cs35l41_components[sz].dai_name = CS35L41_CODEC_DAI;
-> +		cs35l41_codec_conf[sz].dlc.name = dev_name(physdev);
-> +		cs35l41_codec_conf[sz].name_prefix = cs35l41_name_prefixes[uid];
-> +		acpi_dev_put(adev);
-> +		sz++;
-> +	}
-> +	return sz;
