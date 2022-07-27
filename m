@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3113FC04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:34:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 517BDC19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:35:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241719AbiG0Rd6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:33:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48646 "EHLO
+        id S242461AbiG0ReL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:34:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242335AbiG0RdY (ORCPT
+        with ESMTP id S238422AbiG0Rde (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:33:24 -0400
+        Wed, 27 Jul 2022 13:33:34 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0497E823A7;
-        Wed, 27 Jul 2022 09:48:44 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23FC38244D;
+        Wed, 27 Jul 2022 09:48:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B810E61557;
-        Wed, 27 Jul 2022 16:48:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA6AAC433C1;
-        Wed, 27 Jul 2022 16:48:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E993B61684;
+        Wed, 27 Jul 2022 16:48:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3156C433B5;
+        Wed, 27 Jul 2022 16:48:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940524;
-        bh=k2x8KRa8zb0bGlUslzf5eGp7kQTir1VRH1brWNXvN8c=;
+        s=korg; t=1658940510;
+        bh=HExVcHZTruUUfXUkliReJ0ROIBKXM0SO1OOV/4zgfhw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=inVVL4xXEv7XT3gNtuQXnMRbdQn5qe43eP2eI4QUq/I7GRbtINu8THaC/yZ9Swunu
-         vTqeoYft7QKm61gPT3ck/zg7CtaGWRAJ5C7anZ2tGV7GU3DzzjLSS8GGU2lXNHtWe8
-         S1zNoerARrRsmicKlNXO8ZhvUF7vvvoM+Nqx1+/w=
+        b=Dau8xouMusYxpIPi18cvf+npgLLFIZHtQWyNLDJQqF9WepZT8Ozg7SIjLNpZSDl02
+         Co9YZ9dU+HvjJO5DO8sOh8OggFdEPAfS0X7FcJCui/mn/8Jc2lDkgDRjjB/PtCMDQV
+         Q5QiiNNcL2uPXmE8wKEjZaWdxynbB4cKm5Ifqmkw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vadim Pasternak <vadimp@nvidia.com>,
-        Wolfram Sang <wsa@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.18 053/158] i2c: mlxcpld: Fix register setting for 400KHz frequency
-Date:   Wed, 27 Jul 2022 18:11:57 +0200
-Message-Id: <20220727161023.636086448@linuxfoundation.org>
+        stable@vger.kernel.org, Sasha Neftin <sasha.neftin@intel.com>,
+        Naama Meir <naamax.meir@linux.intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.18 031/158] Revert "e1000e: Fix possible HW unit hang after an s0ix exit"
+Date:   Wed, 27 Jul 2022 18:11:35 +0200
+Message-Id: <20220727161022.727044176@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
 References: <20220727161021.428340041@linuxfoundation.org>
@@ -48,33 +50,122 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vadim Pasternak <vadimp@nvidia.com>
+From: Sasha Neftin <sasha.neftin@intel.com>
 
-[ Upstream commit e1f77ecc75aaee6bed04e8fd7830e00032af012e ]
+[ Upstream commit 6cfa45361d3eac31ba67d7d0bbef547151450106 ]
 
-Fix setting of 'Half Cycle' register for 400KHz frequency.
+This reverts commit 1866aa0d0d6492bc2f8d22d0df49abaccf50cddd.
 
-Fixes: fa1049135c15 ("i2c: mlxcpld: Modify register setting for 400KHz frequency")
-Signed-off-by: Vadim Pasternak <vadimp@nvidia.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Commit 1866aa0d0d64 ("e1000e: Fix possible HW unit hang after an s0ix
+exit") was a workaround for CSME problem to handle messages comes via H2ME
+mailbox. This problem has been fixed by patch "e1000e: Enable the GPT
+clock before sending message to the CSME".
+
+Fixes: 3e55d231716e ("e1000e: Add handshake with the CSME to support S0ix")
+Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=214821
+Signed-off-by: Sasha Neftin <sasha.neftin@intel.com>
+Tested-by: Naama Meir <naamax.meir@linux.intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-mlxcpld.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/intel/e1000e/hw.h      |  1 -
+ drivers/net/ethernet/intel/e1000e/ich8lan.c |  4 ----
+ drivers/net/ethernet/intel/e1000e/ich8lan.h |  1 -
+ drivers/net/ethernet/intel/e1000e/netdev.c  | 26 ---------------------
+ 4 files changed, 32 deletions(-)
 
-diff --git a/drivers/i2c/busses/i2c-mlxcpld.c b/drivers/i2c/busses/i2c-mlxcpld.c
-index 56aa424fd71d..815cc561386b 100644
---- a/drivers/i2c/busses/i2c-mlxcpld.c
-+++ b/drivers/i2c/busses/i2c-mlxcpld.c
-@@ -49,7 +49,7 @@
- #define MLXCPLD_LPCI2C_NACK_IND		2
+diff --git a/drivers/net/ethernet/intel/e1000e/hw.h b/drivers/net/ethernet/intel/e1000e/hw.h
+index 13382df2f2ef..bcf680e83811 100644
+--- a/drivers/net/ethernet/intel/e1000e/hw.h
++++ b/drivers/net/ethernet/intel/e1000e/hw.h
+@@ -630,7 +630,6 @@ struct e1000_phy_info {
+ 	bool disable_polarity_correction;
+ 	bool is_mdix;
+ 	bool polarity_correction;
+-	bool reset_disable;
+ 	bool speed_downgraded;
+ 	bool autoneg_wait_to_complete;
+ };
+diff --git a/drivers/net/ethernet/intel/e1000e/ich8lan.c b/drivers/net/ethernet/intel/e1000e/ich8lan.c
+index e6c8e6d5234f..9466f65a6da7 100644
+--- a/drivers/net/ethernet/intel/e1000e/ich8lan.c
++++ b/drivers/net/ethernet/intel/e1000e/ich8lan.c
+@@ -2050,10 +2050,6 @@ static s32 e1000_check_reset_block_ich8lan(struct e1000_hw *hw)
+ 	bool blocked = false;
+ 	int i = 0;
  
- #define MLXCPLD_I2C_FREQ_1000KHZ_SET	0x04
--#define MLXCPLD_I2C_FREQ_400KHZ_SET	0x0c
-+#define MLXCPLD_I2C_FREQ_400KHZ_SET	0x0e
- #define MLXCPLD_I2C_FREQ_100KHZ_SET	0x42
+-	/* Check the PHY (LCD) reset flag */
+-	if (hw->phy.reset_disable)
+-		return true;
+-
+ 	while ((blocked = !(er32(FWSM) & E1000_ICH_FWSM_RSPCIPHY)) &&
+ 	       (i++ < 30))
+ 		usleep_range(10000, 11000);
+diff --git a/drivers/net/ethernet/intel/e1000e/ich8lan.h b/drivers/net/ethernet/intel/e1000e/ich8lan.h
+index 638a3ddd7ada..2504b11c3169 100644
+--- a/drivers/net/ethernet/intel/e1000e/ich8lan.h
++++ b/drivers/net/ethernet/intel/e1000e/ich8lan.h
+@@ -271,7 +271,6 @@
+ #define I217_CGFREG_ENABLE_MTA_RESET	0x0002
+ #define I217_MEMPWR			PHY_REG(772, 26)
+ #define I217_MEMPWR_DISABLE_SMB_RELEASE	0x0010
+-#define I217_MEMPWR_MOEM		0x1000
  
- enum mlxcpld_i2c_frequency {
+ /* Receive Address Initial CRC Calculation */
+ #define E1000_PCH_RAICC(_n)	(0x05F50 + ((_n) * 4))
+diff --git a/drivers/net/ethernet/intel/e1000e/netdev.c b/drivers/net/ethernet/intel/e1000e/netdev.c
+index c64102b29862..f1729940e46c 100644
+--- a/drivers/net/ethernet/intel/e1000e/netdev.c
++++ b/drivers/net/ethernet/intel/e1000e/netdev.c
+@@ -6991,21 +6991,8 @@ static __maybe_unused int e1000e_pm_suspend(struct device *dev)
+ 	struct net_device *netdev = pci_get_drvdata(to_pci_dev(dev));
+ 	struct e1000_adapter *adapter = netdev_priv(netdev);
+ 	struct pci_dev *pdev = to_pci_dev(dev);
+-	struct e1000_hw *hw = &adapter->hw;
+-	u16 phy_data;
+ 	int rc;
+ 
+-	if (er32(FWSM) & E1000_ICH_FWSM_FW_VALID &&
+-	    hw->mac.type >= e1000_pch_adp) {
+-		/* Mask OEM Bits / Gig Disable / Restart AN (772_26[12] = 1) */
+-		e1e_rphy(hw, I217_MEMPWR, &phy_data);
+-		phy_data |= I217_MEMPWR_MOEM;
+-		e1e_wphy(hw, I217_MEMPWR, phy_data);
+-
+-		/* Disable LCD reset */
+-		hw->phy.reset_disable = true;
+-	}
+-
+ 	e1000e_flush_lpic(pdev);
+ 
+ 	e1000e_pm_freeze(dev);
+@@ -7027,8 +7014,6 @@ static __maybe_unused int e1000e_pm_resume(struct device *dev)
+ 	struct net_device *netdev = pci_get_drvdata(to_pci_dev(dev));
+ 	struct e1000_adapter *adapter = netdev_priv(netdev);
+ 	struct pci_dev *pdev = to_pci_dev(dev);
+-	struct e1000_hw *hw = &adapter->hw;
+-	u16 phy_data;
+ 	int rc;
+ 
+ 	/* Introduce S0ix implementation */
+@@ -7039,17 +7024,6 @@ static __maybe_unused int e1000e_pm_resume(struct device *dev)
+ 	if (rc)
+ 		return rc;
+ 
+-	if (er32(FWSM) & E1000_ICH_FWSM_FW_VALID &&
+-	    hw->mac.type >= e1000_pch_adp) {
+-		/* Unmask OEM Bits / Gig Disable / Restart AN 772_26[12] = 0 */
+-		e1e_rphy(hw, I217_MEMPWR, &phy_data);
+-		phy_data &= ~I217_MEMPWR_MOEM;
+-		e1e_wphy(hw, I217_MEMPWR, phy_data);
+-
+-		/* Enable LCD reset */
+-		hw->phy.reset_disable = false;
+-	}
+-
+ 	return e1000e_pm_thaw(dev);
+ }
+ 
 -- 
 2.35.1
 
