@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FCA2C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:42:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E35AC19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 16:43:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239721AbiG0Qm5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 12:42:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35410 "EHLO
+        id S239798AbiG0QnS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 12:43:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239715AbiG0QmY (ORCPT
+        with ESMTP id S239732AbiG0Qms (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 12:42:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BD0D5C37A;
-        Wed, 27 Jul 2022 09:30:02 -0700 (PDT)
+        Wed, 27 Jul 2022 12:42:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D5DAB91;
+        Wed, 27 Jul 2022 09:30:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6FA04619FD;
-        Wed, 27 Jul 2022 16:30:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A585C433C1;
-        Wed, 27 Jul 2022 16:30:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 11565B821BA;
+        Wed, 27 Jul 2022 16:30:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4755AC433D6;
+        Wed, 27 Jul 2022 16:30:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939400;
-        bh=bEhIf7cld2niPZDZbI/nEIeJ8wE5plv3kEKkLMSzO7w=;
+        s=korg; t=1658939403;
+        bh=550IkI61ovCTlTtHGJVVtYH6bZgDjq0SDAiIBPV6FZo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ky/VLzMqp09RHaFLcgt5Xp8brs1EEPNjq1dmg3Yroh4Jlo06y49VRaPWXkideDeCH
-         0VgVZI1sbBofCTMvHLOaw17XNnghcDvi++WJcaJEKBrsxIrBZoooSwWcEQHIgvAD8c
-         10XRYLBDvswyW/z+XGgCaIJjRQTJzLpl58jqJnTs=
+        b=g93hh0D30tS8hNLZlIOI7cxIRIDMdR8g5p8rXlxWxb//ErrZKwWHXxrfn3/rnQhhn
+         6wBi0Gd/xFqB+Ix3k5LwurEc0Yp9nHSRzNvI1Q8g85ILVkVnYvjYbMIco4NumxWeNU
+         G/I9mdq3VmH0w+It44dUxh4z1BTL0ZT30dKLMKbI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, syzbot <syzkaller@googlegroups.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Subject: [PATCH 5.4 57/87] bpf: Make sure mac_header was set before using it
-Date:   Wed, 27 Jul 2022 18:10:50 +0200
-Message-Id: <20220727161011.377354790@linuxfoundation.org>
+        stable@vger.kernel.org, Alexander Aring <aahringo@redhat.com>,
+        David Teigland <teigland@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 58/87] dlm: fix pending remove if msg allocation fails
+Date:   Wed, 27 Jul 2022 18:10:51 +0200
+Message-Id: <20220727161011.415794656@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161008.993711844@linuxfoundation.org>
 References: <20220727161008.993711844@linuxfoundation.org>
@@ -49,74 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Alexander Aring <aahringo@redhat.com>
 
-commit 0326195f523a549e0a9d7fd44c70b26fd7265090 upstream.
+[ Upstream commit ba58995909b5098ca4003af65b0ccd5a8d13dd25 ]
 
-Classic BPF has a way to load bytes starting from the mac header.
+This patch unsets ls_remove_len and ls_remove_name if a message
+allocation of a remove messages fails. In this case we never send a
+remove message out but set the per ls ls_remove_len ls_remove_name
+variable for a pending remove. Unset those variable should indicate
+possible waiters in wait_pending_remove() that no pending remove is
+going on at this moment.
 
-Some skbs do not have a mac header, and skb_mac_header()
-in this case is returning a pointer that 65535 bytes after
-skb->head.
-
-Existing range check in bpf_internal_load_pointer_neg_helper()
-was properly kicking and no illegal access was happening.
-
-New sanity check in skb_mac_header() is firing, so we need
-to avoid it.
-
-WARNING: CPU: 1 PID: 28990 at include/linux/skbuff.h:2785 skb_mac_header include/linux/skbuff.h:2785 [inline]
-WARNING: CPU: 1 PID: 28990 at include/linux/skbuff.h:2785 bpf_internal_load_pointer_neg_helper+0x1b1/0x1c0 kernel/bpf/core.c:74
-Modules linked in:
-CPU: 1 PID: 28990 Comm: syz-executor.0 Not tainted 5.19.0-rc4-syzkaller-00865-g4874fb9484be #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 06/29/2022
-RIP: 0010:skb_mac_header include/linux/skbuff.h:2785 [inline]
-RIP: 0010:bpf_internal_load_pointer_neg_helper+0x1b1/0x1c0 kernel/bpf/core.c:74
-Code: ff ff 45 31 f6 e9 5a ff ff ff e8 aa 27 40 00 e9 3b ff ff ff e8 90 27 40 00 e9 df fe ff ff e8 86 27 40 00 eb 9e e8 2f 2c f3 ff <0f> 0b eb b1 e8 96 27 40 00 e9 79 fe ff ff 90 41 57 41 56 41 55 41
-RSP: 0018:ffffc9000309f668 EFLAGS: 00010216
-RAX: 0000000000000118 RBX: ffffffffffeff00c RCX: ffffc9000e417000
-RDX: 0000000000040000 RSI: ffffffff81873f21 RDI: 0000000000000003
-RBP: ffff8880842878c0 R08: 0000000000000003 R09: 000000000000ffff
-R10: 000000000000ffff R11: 0000000000000001 R12: 0000000000000004
-R13: ffff88803ac56c00 R14: 000000000000ffff R15: dffffc0000000000
-FS: 00007f5c88a16700(0000) GS:ffff8880b9b00000(0000) knlGS:0000000000000000
-CS: 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fdaa9f6c058 CR3: 000000003a82c000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
-<TASK>
-____bpf_skb_load_helper_32 net/core/filter.c:276 [inline]
-bpf_skb_load_helper_32+0x191/0x220 net/core/filter.c:264
-
-Fixes: f9aefd6b2aa3 ("net: warn if mac header was not set")
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/bpf/20220707123900.945305-1-edumazet@google.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: stable@vger.kernel.org
+Signed-off-by: Alexander Aring <aahringo@redhat.com>
+Signed-off-by: David Teigland <teigland@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/bpf/core.c |    8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ fs/dlm/lock.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -64,11 +64,13 @@ void *bpf_internal_load_pointer_neg_help
- {
- 	u8 *ptr = NULL;
+diff --git a/fs/dlm/lock.c b/fs/dlm/lock.c
+index 4ae8becdb51d..9165bf56c6e8 100644
+--- a/fs/dlm/lock.c
++++ b/fs/dlm/lock.c
+@@ -4067,13 +4067,14 @@ static void send_repeat_remove(struct dlm_ls *ls, char *ms_name, int len)
+ 	rv = _create_message(ls, sizeof(struct dlm_message) + len,
+ 			     dir_nodeid, DLM_MSG_REMOVE, &ms, &mh);
+ 	if (rv)
+-		return;
++		goto out;
  
--	if (k >= SKF_NET_OFF)
-+	if (k >= SKF_NET_OFF) {
- 		ptr = skb_network_header(skb) + k - SKF_NET_OFF;
--	else if (k >= SKF_LL_OFF)
-+	} else if (k >= SKF_LL_OFF) {
-+		if (unlikely(!skb_mac_header_was_set(skb)))
-+			return NULL;
- 		ptr = skb_mac_header(skb) + k - SKF_LL_OFF;
--
-+	}
- 	if (ptr >= skb->head && ptr + size <= skb_tail_pointer(skb))
- 		return ptr;
+ 	memcpy(ms->m_extra, name, len);
+ 	ms->m_hash = hash;
  
+ 	send_message(mh, ms);
+ 
++out:
+ 	spin_lock(&ls->ls_remove_spin);
+ 	ls->ls_remove_len = 0;
+ 	memset(ls->ls_remove_name, 0, DLM_RESNAME_MAXLEN);
+-- 
+2.35.1
+
 
 
