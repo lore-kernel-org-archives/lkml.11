@@ -2,89 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 801D2C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:13:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2807BC19F28
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:13:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241615AbiG0RNs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:13:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48690 "EHLO
+        id S236826AbiG0RN5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:13:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48956 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230172AbiG0RNJ (ORCPT
+        with ESMTP id S241591AbiG0RNN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:13:09 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44ACE76467
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:42:08 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id z25so27997035lfr.2
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 09:42:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=eSPaxO046Ze33lKCriyBi8yHHhzQgKxgn//51vCRfws=;
-        b=AbbhqBv9E178tMhwtsG5r7YM5oszCwrW9k1hW7z+DlAQTz6Lt/6jGLCEB0pJXBYqTb
-         qGGCKjH1dHXi+rkpdvlJp4Gf41vcYJ/fDKD9Pb+DupvIZkF6xiEqz2EjjqyjJw5CxCea
-         vcZYtGeykc+4WHvvwczUw+ZTAOJgAGMZxX75x8adytC0aQbpvCJuroAPPWboUeSG2JgP
-         Sb/VvWX624MEMNeEhO7Kz1ZmX1fiEyXIg80rbAHqyvEy4stbPqAD3DjfypWtQb1h92b4
-         nTxen8Y1UzzFj3pHKbdcwyIQiAjeXXsHqxdz4twV6JzQZoQ+J7ag9BannbCD1kKhcJnT
-         idnQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=eSPaxO046Ze33lKCriyBi8yHHhzQgKxgn//51vCRfws=;
-        b=aAC9eGBNwoONwArqaFzITdl7XRc1NSW0CkWGlOVrZnuIJ+uC7GYvoVYR0eArcYFHMr
-         Q7cu7c2IIRKK9WyB0BmhzqeaDraBtsqSphjZ6POLzpFyNX81OHTZn5uPuQYEVe++R2BX
-         b8dojwarGo5YLkqi5GLZ3belnlrP5LPiW7fxBUrO9aLhkuN9HRCu5yBZhA6OGyT6nleS
-         UVJInECAZ76fF3Mvf61oy9d560a4e2tK4Khv88aNZFo4FFWkBEfFWyGX1UzagyyoEyCz
-         s5b0Q1t+q71rI82ninQYzp0zdjTQBtZ1eylMAWYyHD5C1FRzB92Ny0y+dFQU8tuqd22H
-         mpfw==
-X-Gm-Message-State: AJIora9SMBYnAi764mk8CJZIc3SgdCCXjCL6g3GTJQrCcRoPYNrN1gjc
-        hOpgNDdPIUABP/oxHPiBJz8SbxXQRERS4R3c
-X-Google-Smtp-Source: AGRyM1uhBH6wuAdgpcLkgYgpaPQs3mxVcKJnj5iurbEFj6ZPkbZ2ibDfKFQvRyZPsqlhyOim+ut2cA==
-X-Received: by 2002:ac2:4f06:0:b0:489:4a1b:ad7f with SMTP id k6-20020ac24f06000000b004894a1bad7fmr9274231lfr.311.1658940125963;
-        Wed, 27 Jul 2022 09:42:05 -0700 (PDT)
-Received: from krzk-bin.lan (78-26-46-173.network.trollfjord.no. [78.26.46.173])
-        by smtp.gmail.com with ESMTPSA id c1-20020a056512238100b0048a706d9fe5sm3509260lfv.294.2022.07.27.09.42.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 09:42:05 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-mmc@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH] dt-bindings: mmc: mmc-spi-slot: drop unneeded spi-max-frequency
-Date:   Wed, 27 Jul 2022 18:42:02 +0200
-Message-Id: <20220727164202.385531-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.34.1
+        Wed, 27 Jul 2022 13:13:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FAC676472;
+        Wed, 27 Jul 2022 09:42:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E7DAB601C0;
+        Wed, 27 Jul 2022 16:42:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03162C433D6;
+        Wed, 27 Jul 2022 16:42:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1658940127;
+        bh=laAW4N7hZQuQqUG5fJRWifvSw1PQRaXRy9+COPCqzQY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=fwjQRWywWPb813Edb7g7dEmq7EUlZumNKyWzNG+8rXTqE3LZ2efYsnq/pKZidpeZy
+         6E2SgpIhyBu23jgP8cYVgEGIOUPjvlDqDc2yfJUE/+5+G3l8uUc16BYE0FoGdwvXb5
+         rBwYIa966SS935Dq1eKX3h913/7KEXHW6R+zqf0E=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Liang He <windhl@126.com>,
+        Laurentiu Palcu <laurentiu.palcu@oss.nxp.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 115/201] drm/imx/dcss: Add missing of_node_put() in fail path
+Date:   Wed, 27 Jul 2022 18:10:19 +0200
+Message-Id: <20220727161032.530165830@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
+References: <20220727161026.977588183@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-spi-max-frequency comes from spi-peripheral-props.yaml.
+From: Liang He <windhl@126.com>
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+[ Upstream commit 02c87df2480ac855d88ee308ce3fa857d9bd55a8 ]
+
+In dcss_dev_create() and dcss_dev_destroy(), we should call of_node_put()
+in fail path or before the dcss's destroy as of_graph_get_port_by_id() has
+increased the refcount.
+
+Fixes: 9021c317b770 ("drm/imx: Add initial support for DCSS on iMX8MQ")
+Signed-off-by: Liang He <windhl@126.com>
+Reviewed-by: Laurentiu Palcu <laurentiu.palcu@oss.nxp.com>
+Signed-off-by: Laurentiu Palcu <laurentiu.palcu@oss.nxp.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220714081337.374761-1-windhl@126.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/devicetree/bindings/mmc/mmc-spi-slot.yaml | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/gpu/drm/imx/dcss/dcss-dev.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/mmc/mmc-spi-slot.yaml b/Documentation/devicetree/bindings/mmc/mmc-spi-slot.yaml
-index c45b91099325..c0662ce9946d 100644
---- a/Documentation/devicetree/bindings/mmc/mmc-spi-slot.yaml
-+++ b/Documentation/devicetree/bindings/mmc/mmc-spi-slot.yaml
-@@ -23,8 +23,6 @@ properties:
-   reg:
-     maxItems: 1
+diff --git a/drivers/gpu/drm/imx/dcss/dcss-dev.c b/drivers/gpu/drm/imx/dcss/dcss-dev.c
+index c849533ca83e..3f5750cc2673 100644
+--- a/drivers/gpu/drm/imx/dcss/dcss-dev.c
++++ b/drivers/gpu/drm/imx/dcss/dcss-dev.c
+@@ -207,6 +207,7 @@ struct dcss_dev *dcss_dev_create(struct device *dev, bool hdmi_output)
  
--  spi-max-frequency: true
--
-   interrupts:
-     maxItems: 1
+ 	ret = dcss_submodules_init(dcss);
+ 	if (ret) {
++		of_node_put(dcss->of_port);
+ 		dev_err(dev, "submodules initialization failed\n");
+ 		goto clks_err;
+ 	}
+@@ -237,6 +238,8 @@ void dcss_dev_destroy(struct dcss_dev *dcss)
+ 		dcss_clocks_disable(dcss);
+ 	}
  
++	of_node_put(dcss->of_port);
++
+ 	pm_runtime_disable(dcss->dev);
+ 
+ 	dcss_submodules_stop(dcss);
 -- 
-2.34.1
+2.35.1
+
+
 
