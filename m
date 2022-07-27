@@ -2,56 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85A17C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 08:56:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85134C04A68
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 09:00:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231282AbiG0I4R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 04:56:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40676 "EHLO
+        id S231245AbiG0JAv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 05:00:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231336AbiG0I4H (ORCPT
+        with ESMTP id S229489AbiG0JAs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 04:56:07 -0400
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 316FB46DA9;
-        Wed, 27 Jul 2022 01:56:05 -0700 (PDT)
-Received: by mail-yb1-xb36.google.com with SMTP id 7so29308744ybw.0;
-        Wed, 27 Jul 2022 01:56:05 -0700 (PDT)
+        Wed, 27 Jul 2022 05:00:48 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 972A26459;
+        Wed, 27 Jul 2022 02:00:47 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id r3so29220682ybr.6;
+        Wed, 27 Jul 2022 02:00:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=FkB6NL9eAnr19/TQLpmTufTfbZl37uoNWuGYLlmz/8k=;
-        b=GqRkP7vFcAVq2DhhITbw1b0xfQ1uKUk6N6xmReUGdyyCKqbxM4CI7Fpe1h/97fSriA
-         UrRy2LQNlfpk8GDHsobZT9fV74fJnv2kthAwTTDtdsT/nBhhH7KEfYbGkOsujUYJr2Tv
-         eJjpGZpf7ScJwDsakDqoHDX5G2U5+pY83R03AJXK7iFTWfZJwSx1KvHpH5oNaTCAAWxw
-         3ebU6Ts11JtpSpaHodhpQ6QeJCRTkyHJnUru1Xt5fJcTpMxS3bAgePlPON50cKKwGuB/
-         QF5X14Q8ZVPhiozyWwGrZV3Q+F5tWEla7Lf29uSjyPmQzuOsaXChwzkm1evf60WcFtDT
-         GaRg==
+        bh=Lp2UjJeoZNtF3jPddaeCcZ2oTGYQdnwK+wO4WeAagn8=;
+        b=XSbIlFiwirHn32plE+wRVIidNeyGwGE7rZrO/FxalW9hGgD1B9ySrWfh7gdqqFTZVY
+         H0IejLiZa0buXTKLM1YPKWBU91ytBxfhcdenftN4TD9ztWV/Fdg66hs7YkNaspOMKUly
+         7Sw+B7WD/IsXkTMpXtLW7SkG9qfM8tf/lYzBfRtwO56Wjci9sTysluMbYUgld7IzNeA4
+         gOYFUXNc3FhUpXS4jZwP76jeObHD5HwiL7+8RIRlGS0t5bg5wdoTmr6Y3ls4q/3UP1kO
+         lm8oCE9OvlCbXqnYkYmQzq/H9jCWjI6f2JiJMxMusR5mu2HmG+gEXPqV+mfVT6AmcGDT
+         M89Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=FkB6NL9eAnr19/TQLpmTufTfbZl37uoNWuGYLlmz/8k=;
-        b=2KlHkDv4UY57abJxvkBg43srqyQiE3Y3OWuWnjQ98UYZLmjrXatKo7tfiGUPDXfiNg
-         SJGHk/Qt5Hc60dEMIvqUrR0W06/9Ggl4VMwrWx1njYnGvoYMiUFnV8P5ZWk/RUkRshFk
-         KFkFcxdpgPbISXyOyBa3kNjvupRTaC+sbR+ZNVwgl+L05Hzt69SWLh0tqLkJwKP8oL9u
-         Qwcmux2I9yv9yU+Ik/inxO/kN02810pELTC+HSw2+tmtvvO55iQgOLRo9yO1DmVORfkS
-         lDz45JxehUuoZIoaNutQqHYJOrZmNdG60KFznC4sMJHHFc1nOPXO6P29se+ev7jw5rqt
-         b83w==
-X-Gm-Message-State: AJIora/niA33ivCRpofMXUuD+/fvRNcuK9ZEqGrmC+qGsRBL2sGBRGVw
-        UnuFXMwH4bd6J81ojHw1hS8Jn9Y1KJjmXWppwyY=
-X-Google-Smtp-Source: AGRyM1vxCFNIpm4r9DElzmSmhQabM1an5qQ3zyXIaUD5kyzOkB0PNy9FkUfrry+SpKtM+GOzesxYN8vcgJD352Iqfbg=
-X-Received: by 2002:a05:6902:1082:b0:670:9307:b0eb with SMTP id
- v2-20020a056902108200b006709307b0ebmr17460924ybu.335.1658912164494; Wed, 27
- Jul 2022 01:56:04 -0700 (PDT)
+        bh=Lp2UjJeoZNtF3jPddaeCcZ2oTGYQdnwK+wO4WeAagn8=;
+        b=rMYZI8hoFpnS+K5MZOv6Q9xbFh1V9zPwAXDb/VtoCxfSqcmf7gtN26SS5MqbptSLIj
+         HYrobI6/xneO5fR+Yxnj8ngEifEKE/dSEMxc+u81DJL5b5kTY7v9tpiuD44NJGqCpBjH
+         7BiWQ/JK0/csGQd3qus2J16aXYpwEG89zbhNbkZhmpCDxEIv6QluZ4HO6o1Z5T32DGB1
+         sMCjBVlCKBPoSRIhV8ekV+vXb2r7VSULtDbdW5z18V+L1KipcimTzUQB4BIWH0+tj8e3
+         vkHe9LBOuNmaszhfSjbfeb+GcCQib3Hzeoxvne+V0Xk580XAXoEsQvl+uko3hR/jbkXV
+         3kVg==
+X-Gm-Message-State: AJIora+CAWmdgMd0yuX8FD0OqylwpiOooqn22NmZGmsiVLYqD5g3BzNz
+        lTQbAoJ5tdG9LWh3OGPRQJ/wRtKNLcmff+VQQuc=
+X-Google-Smtp-Source: AGRyM1ueFJysPUexyidBDBCQ2Ajm5GpI2JfoVj8pVsuoL+AzQRgL3tl0GMPhkouwXL5dOZX4XHhkjaJbr0lJsLccxPg=
+X-Received: by 2002:a05:6902:20a:b0:670:c563:9180 with SMTP id
+ j10-20020a056902020a00b00670c5639180mr16432213ybs.401.1658912446846; Wed, 27
+ Jul 2022 02:00:46 -0700 (PDT)
 MIME-Version: 1.0
 References: <20220726180623.1668-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20220726180623.1668-2-prabhakar.mahadev-lad.rj@bp.renesas.com> <7a02225c-5c7b-f342-e29e-995d1ae0f4e3@linaro.org>
-In-Reply-To: <7a02225c-5c7b-f342-e29e-995d1ae0f4e3@linaro.org>
+ <20220726180623.1668-2-prabhakar.mahadev-lad.rj@bp.renesas.com> <952a85ec-d1e9-7c14-6404-bc087723252f@linaro.org>
+In-Reply-To: <952a85ec-d1e9-7c14-6404-bc087723252f@linaro.org>
 From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
-Date:   Wed, 27 Jul 2022 09:55:37 +0100
-Message-ID: <CA+V-a8vCRNb9r8o=C97DV11ZA4Uf+7rHmbO6+Gjq+q=CUuDPRA@mail.gmail.com>
+Date:   Wed, 27 Jul 2022 10:00:19 +0100
+Message-ID: <CA+V-a8vb+za1Zckk5aTxz0hKkd5fHQk7gtfV+HR_2YMZ5JuJEQ@mail.gmail.com>
 Subject: Re: [PATCH 1/6] dt-bindings: arm: renesas: Ignore the schema for
  RISC-V arch
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
@@ -77,20 +77,12 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 Hi Krzysztof,
 
-Thank you for the review.
-
-On Wed, Jul 27, 2022 at 9:51 AM Krzysztof Kozlowski
+On Wed, Jul 27, 2022 at 9:53 AM Krzysztof Kozlowski
 <krzysztof.kozlowski@linaro.org> wrote:
 >
 > On 26/07/2022 20:06, Lad Prabhakar wrote:
 > > Ignore the ARM renesas.yaml schema if the board is RZ/Five SMARC EVK
 > > (RISC-V arch).
->
-> Your commit msg says one, but patch ignores r9a07g043f01 which sounds
-> entirely different for non-Renesas people. Be a bit more clear.
->
-Sure will update the commit message.
-
 > >
 > > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 > > ---
@@ -112,12 +104,20 @@ Sure will update the commit message.
 > > +      compatible:
 > > +        contains:
 > > +          items:
+> > +            - const: renesas,r9a07g043f01
 >
-> It is only one item, so I guess you wanted here enum.
+> Second issue - why not renesas,r9a07g043?
 >
-> Just like syscon is doing...
->
-Ok I will switch to enum.
+We have two R9A07G043 SOC'S one is based on ARM64 and other on RISC-V.
+
+RZ/G2UL ARM64:
+Type-1 Part Number: R9A07G043U11GBG#BC0
+Type-2 Part Number: R9A07G043U12GBG#BC0
+
+RZ/Five RISCV:
+13 x 13 mm Package Part Number: R9A07G043F01GBG#BC0
+
+So to differentiate in ARM schema I am using  renesas,r9a07g043f01.
 
 Cheers,
 Prabhakar
