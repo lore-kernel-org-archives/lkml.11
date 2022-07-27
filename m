@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D113C19F2B
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:01:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8950C19F2B
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:01:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241259AbiG0RBF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:01:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55544 "EHLO
+        id S235113AbiG0RBJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:01:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241476AbiG0Q7w (ORCPT
+        with ESMTP id S241480AbiG0Q7w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 27 Jul 2022 12:59:52 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D96B869F2C;
-        Wed, 27 Jul 2022 09:37:42 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E255469F31;
+        Wed, 27 Jul 2022 09:37:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 46681B8200C;
-        Wed, 27 Jul 2022 16:37:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A223BC433C1;
-        Wed, 27 Jul 2022 16:37:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6183FB821CB;
+        Wed, 27 Jul 2022 16:37:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF687C433D6;
+        Wed, 27 Jul 2022 16:37:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658939828;
-        bh=o5MEAFf0pMJkybVP0AJTLDjQ/Vb5msp0ru0Amwqev1w=;
+        s=korg; t=1658939862;
+        bh=x6twVJUTKOoXyXY/6nUmkDDzHd1kvJiKG2CYgWRP7kw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=soqLluZkIm+MXF/uaDs1t061nCaGom6tjFwiuqL4o1nSFbMR9KfalrwOwQiD5I+nP
-         8oIE8eTUbbtPhDmKsBiXfEpgvtVpV5A3sVtsc4QKE1CmijwGqkg2jMZ49mAkURN8Ht
-         d5K3HVEvfII7D22kZOWl4Drp4OW5oiHzpv/tOoPI=
+        b=qT1lL6vQMzQDpaELapVTY4wTKc4rFJ2OgLQMxGlvK8VItS9I8TgUYsl4zv3ogWJBB
+         s1qCQRhpm+m6UAOVfjUif77ZgH1rSkdYIRcbIuyZHfOxInt9yo/oI42YjIZuCT0fXe
+         S14X3nIb7AvTcghNblZNsWEKTMzgR7GLapJifHMI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        Jeffrey Hugo <quic_jhugo@quicinc.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        Carl Vanderlip <quic_carlv@quicinc.com>
-Subject: [PATCH 5.15 013/201] PCI: hv: Fix interrupt mapping for multi-MSI
-Date:   Wed, 27 Jul 2022 18:08:37 +0200
-Message-Id: <20220727161027.482458055@linuxfoundation.org>
+        stable@vger.kernel.org, Brian Foster <bfoster@redhat.com>,
+        Dave Chinner <dchinner@redhat.com>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        Leah Rumancik <leah.rumancik@gmail.com>
+Subject: [PATCH 5.15 024/201] xfs: terminate perag iteration reliably on agcount
+Date:   Wed, 27 Jul 2022 18:08:48 +0200
+Message-Id: <20220727161027.897328210@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -51,209 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeffrey Hugo <quic_jhugo@quicinc.com>
+From: Brian Foster <bfoster@redhat.com>
 
-commit a2bad844a67b1c7740bda63e87453baf63c3a7f7 upstream.
+[ Upstream commit 8ed004eb9d07a5d6114db3e97a166707c186262d ]
 
-According to Dexuan, the hypervisor folks beleive that multi-msi
-allocations are not correct.  compose_msi_msg() will allocate multi-msi
-one by one.  However, multi-msi is a block of related MSIs, with alignment
-requirements.  In order for the hypervisor to allocate properly aligned
-and consecutive entries in the IOMMU Interrupt Remapping Table, there
-should be a single mapping request that requests all of the multi-msi
-vectors in one shot.
+The for_each_perag_from() iteration macro relies on sb_agcount to
+process every perag currently within EOFS from a given starting
+point. It's perfectly valid to have perag structures beyond
+sb_agcount, however, such as if a growfs is in progress. If a perag
+loop happens to race with growfs in this manner, it will actually
+attempt to process the post-EOFS perag where ->pag_agno ==
+sb_agcount. This is reproduced by xfs/104 and manifests as the
+following assert failure in superblock write verifier context:
 
-Dexuan suggests detecting the multi-msi case and composing a single
-request related to the first MSI.  Then for the other MSIs in the same
-block, use the cached information.  This appears to be viable, so do it.
+ XFS: Assertion failed: agno < mp->m_sb.sb_agcount, file: fs/xfs/libxfs/xfs_types.c, line: 22
 
-5.15 backport - add hv_msi_get_int_vector helper function. Fixed merge
-conflict due to delivery_mode name change (APIC_DELIVERY_MODE_FIXED
-is the value given to DELIVERY_MODE on x86). Removed unused variable
-in hv_compose_msi_msg. Fixed reference to msi_desc->pci to point to
-the same is_msix variable.
+Update the corresponding macro to only process perags that are
+within the current sb_agcount.
 
-Suggested-by: Dexuan Cui <decui@microsoft.com>
-Signed-off-by: Jeffrey Hugo <quic_jhugo@quicinc.com>
-Reviewed-by: Dexuan Cui <decui@microsoft.com>
-Tested-by: Michael Kelley <mikelley@microsoft.com>
-Link: https://lore.kernel.org/r/1652282599-21643-1-git-send-email-quic_jhugo@quicinc.com
-Signed-off-by: Wei Liu <wei.liu@kernel.org>
-Signed-off-by: Carl Vanderlip <quic_carlv@quicinc.com>
+Fixes: 58d43a7e3263 ("xfs: pass perags around in fsmap data dev functions")
+Signed-off-by: Brian Foster <bfoster@redhat.com>
+Reviewed-by: Dave Chinner <dchinner@redhat.com>
+Reviewed-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Leah Rumancik <leah.rumancik@gmail.com>
+Acked-by: Darrick J. Wong <djwong@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/pci-hyperv.c |   68 ++++++++++++++++++++++++++++++------
- 1 file changed, 57 insertions(+), 11 deletions(-)
+ fs/xfs/libxfs/xfs_ag.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/pci/controller/pci-hyperv.c
-+++ b/drivers/pci/controller/pci-hyperv.c
-@@ -1142,6 +1142,10 @@ static void hv_int_desc_free(struct hv_p
- 		u8 buffer[sizeof(struct pci_delete_interrupt)];
- 	} ctxt;
+--- a/fs/xfs/libxfs/xfs_ag.h
++++ b/fs/xfs/libxfs/xfs_ag.h
+@@ -142,7 +142,7 @@ xfs_perag_next(
+ 		(pag) = xfs_perag_next((pag), &(agno)))
  
-+	if (!int_desc->vector_count) {
-+		kfree(int_desc);
-+		return;
-+	}
- 	memset(&ctxt, 0, sizeof(ctxt));
- 	int_pkt = (struct pci_delete_interrupt *)&ctxt.pkt.message;
- 	int_pkt->message_type.type =
-@@ -1204,6 +1208,13 @@ static void hv_irq_mask(struct irq_data
- 	pci_msi_mask_irq(data);
- }
+ #define for_each_perag_from(mp, agno, pag) \
+-	for_each_perag_range((mp), (agno), (mp)->m_sb.sb_agcount, (pag))
++	for_each_perag_range((mp), (agno), (mp)->m_sb.sb_agcount - 1, (pag))
  
-+static unsigned int hv_msi_get_int_vector(struct irq_data *data)
-+{
-+	struct irq_cfg *cfg = irqd_cfg(data);
-+
-+	return cfg->vector;
-+}
-+
- static int hv_msi_prepare(struct irq_domain *domain, struct device *dev,
- 			  int nvec, msi_alloc_info_t *info)
- {
-@@ -1359,12 +1370,12 @@ static void hv_pci_compose_compl(void *c
  
- static u32 hv_compose_msi_req_v1(
- 	struct pci_create_interrupt *int_pkt, struct cpumask *affinity,
--	u32 slot, u8 vector)
-+	u32 slot, u8 vector, u8 vector_count)
- {
- 	int_pkt->message_type.type = PCI_CREATE_INTERRUPT_MESSAGE;
- 	int_pkt->wslot.slot = slot;
- 	int_pkt->int_desc.vector = vector;
--	int_pkt->int_desc.vector_count = 1;
-+	int_pkt->int_desc.vector_count = vector_count;
- 	int_pkt->int_desc.delivery_mode = APIC_DELIVERY_MODE_FIXED;
- 
- 	/*
-@@ -1387,14 +1398,14 @@ static int hv_compose_msi_req_get_cpu(st
- 
- static u32 hv_compose_msi_req_v2(
- 	struct pci_create_interrupt2 *int_pkt, struct cpumask *affinity,
--	u32 slot, u8 vector)
-+	u32 slot, u8 vector, u8 vector_count)
- {
- 	int cpu;
- 
- 	int_pkt->message_type.type = PCI_CREATE_INTERRUPT_MESSAGE2;
- 	int_pkt->wslot.slot = slot;
- 	int_pkt->int_desc.vector = vector;
--	int_pkt->int_desc.vector_count = 1;
-+	int_pkt->int_desc.vector_count = vector_count;
- 	int_pkt->int_desc.delivery_mode = APIC_DELIVERY_MODE_FIXED;
- 	cpu = hv_compose_msi_req_get_cpu(affinity);
- 	int_pkt->int_desc.processor_array[0] =
-@@ -1406,7 +1417,7 @@ static u32 hv_compose_msi_req_v2(
- 
- static u32 hv_compose_msi_req_v3(
- 	struct pci_create_interrupt3 *int_pkt, struct cpumask *affinity,
--	u32 slot, u32 vector)
-+	u32 slot, u32 vector, u8 vector_count)
- {
- 	int cpu;
- 
-@@ -1414,7 +1425,7 @@ static u32 hv_compose_msi_req_v3(
- 	int_pkt->wslot.slot = slot;
- 	int_pkt->int_desc.vector = vector;
- 	int_pkt->int_desc.reserved = 0;
--	int_pkt->int_desc.vector_count = 1;
-+	int_pkt->int_desc.vector_count = vector_count;
- 	int_pkt->int_desc.delivery_mode = APIC_DELIVERY_MODE_FIXED;
- 	cpu = hv_compose_msi_req_get_cpu(affinity);
- 	int_pkt->int_desc.processor_array[0] =
-@@ -1437,7 +1448,6 @@ static u32 hv_compose_msi_req_v3(
-  */
- static void hv_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
- {
--	struct irq_cfg *cfg = irqd_cfg(data);
- 	struct hv_pcibus_device *hbus;
- 	struct vmbus_channel *channel;
- 	struct hv_pci_dev *hpdev;
-@@ -1446,6 +1456,8 @@ static void hv_compose_msi_msg(struct ir
- 	struct cpumask *dest;
- 	struct compose_comp_ctxt comp;
- 	struct tran_int_desc *int_desc;
-+	struct msi_desc *msi_desc;
-+	u8 vector, vector_count;
- 	struct {
- 		struct pci_packet pci_pkt;
- 		union {
-@@ -1467,7 +1479,8 @@ static void hv_compose_msi_msg(struct ir
- 		return;
- 	}
- 
--	pdev = msi_desc_to_pci_dev(irq_data_get_msi_desc(data));
-+	msi_desc  = irq_data_get_msi_desc(data);
-+	pdev = msi_desc_to_pci_dev(msi_desc);
- 	dest = irq_data_get_effective_affinity_mask(data);
- 	pbus = pdev->bus;
- 	hbus = container_of(pbus->sysdata, struct hv_pcibus_device, sysdata);
-@@ -1480,6 +1493,36 @@ static void hv_compose_msi_msg(struct ir
- 	if (!int_desc)
- 		goto drop_reference;
- 
-+	if (!msi_desc->msi_attrib.is_msix && msi_desc->nvec_used > 1) {
-+		/*
-+		 * If this is not the first MSI of Multi MSI, we already have
-+		 * a mapping.  Can exit early.
-+		 */
-+		if (msi_desc->irq != data->irq) {
-+			data->chip_data = int_desc;
-+			int_desc->address = msi_desc->msg.address_lo |
-+					    (u64)msi_desc->msg.address_hi << 32;
-+			int_desc->data = msi_desc->msg.data +
-+					 (data->irq - msi_desc->irq);
-+			msg->address_hi = msi_desc->msg.address_hi;
-+			msg->address_lo = msi_desc->msg.address_lo;
-+			msg->data = int_desc->data;
-+			put_pcichild(hpdev);
-+			return;
-+		}
-+		/*
-+		 * The vector we select here is a dummy value.  The correct
-+		 * value gets sent to the hypervisor in unmask().  This needs
-+		 * to be aligned with the count, and also not zero.  Multi-msi
-+		 * is powers of 2 up to 32, so 32 will always work here.
-+		 */
-+		vector = 32;
-+		vector_count = msi_desc->nvec_used;
-+	} else {
-+		vector = hv_msi_get_int_vector(data);
-+		vector_count = 1;
-+	}
-+
- 	memset(&ctxt, 0, sizeof(ctxt));
- 	init_completion(&comp.comp_pkt.host_event);
- 	ctxt.pci_pkt.completion_func = hv_pci_compose_compl;
-@@ -1490,7 +1533,8 @@ static void hv_compose_msi_msg(struct ir
- 		size = hv_compose_msi_req_v1(&ctxt.int_pkts.v1,
- 					dest,
- 					hpdev->desc.win_slot.slot,
--					cfg->vector);
-+					vector,
-+					vector_count);
- 		break;
- 
- 	case PCI_PROTOCOL_VERSION_1_2:
-@@ -1498,14 +1542,16 @@ static void hv_compose_msi_msg(struct ir
- 		size = hv_compose_msi_req_v2(&ctxt.int_pkts.v2,
- 					dest,
- 					hpdev->desc.win_slot.slot,
--					cfg->vector);
-+					vector,
-+					vector_count);
- 		break;
- 
- 	case PCI_PROTOCOL_VERSION_1_4:
- 		size = hv_compose_msi_req_v3(&ctxt.int_pkts.v3,
- 					dest,
- 					hpdev->desc.win_slot.slot,
--					cfg->vector);
-+					vector,
-+					vector_count);
- 		break;
- 
- 	default:
+ #define for_each_perag(mp, agno, pag) \
 
 
