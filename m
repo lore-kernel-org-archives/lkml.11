@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D1C5C04A68
-	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:18:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7455FC19F28
+	for <linux-kernel@archiver.kernel.org>; Wed, 27 Jul 2022 17:19:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241803AbiG0RS4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:18:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42272 "EHLO
+        id S233214AbiG0RTy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:19:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241719AbiG0RSP (ORCPT
+        with ESMTP id S240113AbiG0RSX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 13:18:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1709751A18;
-        Wed, 27 Jul 2022 09:43:44 -0700 (PDT)
+        Wed, 27 Jul 2022 13:18:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26D795C9C3;
+        Wed, 27 Jul 2022 09:43:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 55514600BE;
-        Wed, 27 Jul 2022 16:43:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C52CC433D6;
-        Wed, 27 Jul 2022 16:43:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BCBE7B8200C;
+        Wed, 27 Jul 2022 16:43:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CF11C433C1;
+        Wed, 27 Jul 2022 16:43:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658940222;
-        bh=c59alnyliArV4i4Px+c5O5zxXdRrdJ6MsB7Ex49Djd8=;
+        s=korg; t=1658940225;
+        bh=fQbnzm2Dq9Za4ZflIcr2EXIrw0q4yIR4IjS0LUqj6cU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wcwyKgrujaRv1yDeFjcUZWlC29PE/pdiFDk2tFfmIYtBOPPN40dXqQUyqCpg4qC+r
-         bX0OPztXDVVwzLtiRbo17e8migvs98xeP9FbPg/0VHr3lviR4Pz26Tl05aosUS32dM
-         iC7oR4YbwJk3n+mBRmKq1xCLxrIiEIDzI2kvqZQM=
+        b=JvL7+CEQ+TkQlw9ljrObHvmbq/XD9aLIP7ycTmD+OJCv30JZdAJCP+U9Nip17/940
+         hJD0+x9jxGW/cScFLMCsoeGTDT67F5yLnc1S147e2rCRgR1UYP7PQSlTod9AGq7Iva
+         1W/EiipzEjI28JKfdntvgs7RkEFZ5J7SIAsX/A7Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -36,9 +36,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         Josh Poimboeuf <jpoimboe@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 149/201] x86/msr: Remove .fixup usage
-Date:   Wed, 27 Jul 2022 18:10:53 +0200
-Message-Id: <20220727161034.001689487@linuxfoundation.org>
+Subject: [PATCH 5.15 150/201] x86/futex: Remove .fixup usage
+Date:   Wed, 27 Jul 2022 18:10:54 +0200
+Message-Id: <20220727161034.050152608@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
 References: <20220727161026.977588183@linuxfoundation.org>
@@ -52,181 +52,91 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Peter Zijlstra <peterz@infradead.org>
 
-[ Upstream commit d52a7344bdfa9c3442d3f86fb3501d9343726c76 ]
+[ Upstream commit 4c132d1d844a53fc4e4b5c34e36ef10d6124b783 ]
 
-Rework the MSR accessors to remove .fixup usage. Add two new extable
-types (to the 4 already existing msr ones) using the new register
-infrastructure to record which register should get the error value.
+Use the new EX_TYPE_IMM_REG to store -EFAULT into the designated 'ret'
+register, this removes the need for anonymous .fixup code.
 
 Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Reviewed-by: Josh Poimboeuf <jpoimboe@redhat.com>
-Link: https://lore.kernel.org/r/20211110101325.364084212@infradead.org
+Link: https://lore.kernel.org/r/20211110101325.426016322@infradead.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/include/asm/extable_fixup_types.h | 23 +++++-----
- arch/x86/include/asm/msr.h                 | 26 ++++-------
- arch/x86/mm/extable.c                      | 51 ++++++++++++----------
- 3 files changed, 47 insertions(+), 53 deletions(-)
+ arch/x86/include/asm/extable_fixup_types.h |  2 ++
+ arch/x86/include/asm/futex.h               | 28 +++++++---------------
+ 2 files changed, 10 insertions(+), 20 deletions(-)
 
 diff --git a/arch/x86/include/asm/extable_fixup_types.h b/arch/x86/include/asm/extable_fixup_types.h
-index 944f8329022a..9d597fe1017d 100644
+index 9d597fe1017d..7469038de100 100644
 --- a/arch/x86/include/asm/extable_fixup_types.h
 +++ b/arch/x86/include/asm/extable_fixup_types.h
-@@ -32,17 +32,16 @@
- #define	EX_TYPE_COPY			 4
- #define	EX_TYPE_CLEAR_FS		 5
- #define	EX_TYPE_FPU_RESTORE		 6
--#define	EX_TYPE_WRMSR			 7
--#define	EX_TYPE_RDMSR			 8
--#define	EX_TYPE_BPF			 9
--
--#define	EX_TYPE_WRMSR_IN_MCE		10
--#define	EX_TYPE_RDMSR_IN_MCE		11
--
--#define	EX_TYPE_DEFAULT_MCE_SAFE	12
--#define	EX_TYPE_FAULT_MCE_SAFE		13
--
--#define	EX_TYPE_POP_ZERO		14
--#define	EX_TYPE_IMM_REG			15 /* reg := (long)imm */
-+#define	EX_TYPE_BPF			 7
-+#define	EX_TYPE_WRMSR			 8
-+#define	EX_TYPE_RDMSR			 9
-+#define	EX_TYPE_WRMSR_SAFE		10 /* reg := -EIO */
-+#define	EX_TYPE_RDMSR_SAFE		11 /* reg := -EIO */
-+#define	EX_TYPE_WRMSR_IN_MCE		12
-+#define	EX_TYPE_RDMSR_IN_MCE		13
-+#define	EX_TYPE_DEFAULT_MCE_SAFE	14
-+#define	EX_TYPE_FAULT_MCE_SAFE		15
-+#define	EX_TYPE_POP_ZERO		16
-+#define	EX_TYPE_IMM_REG			17 /* reg := (long)imm */
+@@ -42,6 +42,8 @@
+ #define	EX_TYPE_DEFAULT_MCE_SAFE	14
+ #define	EX_TYPE_FAULT_MCE_SAFE		15
+ #define	EX_TYPE_POP_ZERO		16
++
+ #define	EX_TYPE_IMM_REG			17 /* reg := (long)imm */
++#define	EX_TYPE_EFAULT_REG		(EX_TYPE_IMM_REG | EX_DATA_IMM(-EFAULT))
  
  #endif
-diff --git a/arch/x86/include/asm/msr.h b/arch/x86/include/asm/msr.h
-index 6b52182e178a..d42e6c6b47b1 100644
---- a/arch/x86/include/asm/msr.h
-+++ b/arch/x86/include/asm/msr.h
-@@ -137,17 +137,11 @@ static inline unsigned long long native_read_msr_safe(unsigned int msr,
- {
- 	DECLARE_ARGS(val, low, high);
- 
--	asm volatile("2: rdmsr ; xor %[err],%[err]\n"
--		     "1:\n\t"
--		     ".section .fixup,\"ax\"\n\t"
--		     "3: mov %[fault],%[err]\n\t"
--		     "xorl %%eax, %%eax\n\t"
--		     "xorl %%edx, %%edx\n\t"
--		     "jmp 1b\n\t"
--		     ".previous\n\t"
--		     _ASM_EXTABLE(2b, 3b)
-+	asm volatile("1: rdmsr ; xor %[err],%[err]\n"
-+		     "2:\n\t"
-+		     _ASM_EXTABLE_TYPE_REG(1b, 2b, EX_TYPE_RDMSR_SAFE, %[err])
- 		     : [err] "=r" (*err), EAX_EDX_RET(val, low, high)
--		     : "c" (msr), [fault] "i" (-EIO));
-+		     : "c" (msr));
- 	if (tracepoint_enabled(read_msr))
- 		do_trace_read_msr(msr, EAX_EDX_VAL(val, low, high), *err);
- 	return EAX_EDX_VAL(val, low, high);
-@@ -169,15 +163,11 @@ native_write_msr_safe(unsigned int msr, u32 low, u32 high)
- {
- 	int err;
- 
--	asm volatile("2: wrmsr ; xor %[err],%[err]\n"
--		     "1:\n\t"
--		     ".section .fixup,\"ax\"\n\t"
--		     "3:  mov %[fault],%[err] ; jmp 1b\n\t"
--		     ".previous\n\t"
--		     _ASM_EXTABLE(2b, 3b)
-+	asm volatile("1: wrmsr ; xor %[err],%[err]\n"
-+		     "2:\n\t"
-+		     _ASM_EXTABLE_TYPE_REG(1b, 2b, EX_TYPE_WRMSR_SAFE, %[err])
- 		     : [err] "=a" (err)
--		     : "c" (msr), "0" (low), "d" (high),
--		       [fault] "i" (-EIO)
-+		     : "c" (msr), "0" (low), "d" (high)
- 		     : "memory");
- 	if (tracepoint_enabled(write_msr))
- 		do_trace_write_msr(msr, ((u64)high << 32 | low), err);
-diff --git a/arch/x86/mm/extable.c b/arch/x86/mm/extable.c
-index 251732113624..1c558f8e8c07 100644
---- a/arch/x86/mm/extable.c
-+++ b/arch/x86/mm/extable.c
-@@ -83,28 +83,29 @@ static bool ex_handler_copy(const struct exception_table_entry *fixup,
- 	return ex_handler_fault(fixup, regs, trapnr);
- }
- 
--static bool ex_handler_rdmsr_unsafe(const struct exception_table_entry *fixup,
--				    struct pt_regs *regs)
-+static bool ex_handler_msr(const struct exception_table_entry *fixup,
-+			   struct pt_regs *regs, bool wrmsr, bool safe, int reg)
- {
--	if (pr_warn_once("unchecked MSR access error: RDMSR from 0x%x at rIP: 0x%lx (%pS)\n",
-+	if (!safe && wrmsr &&
-+	    pr_warn_once("unchecked MSR access error: WRMSR to 0x%x (tried to write 0x%08x%08x) at rIP: 0x%lx (%pS)\n",
-+			 (unsigned int)regs->cx, (unsigned int)regs->dx,
-+			 (unsigned int)regs->ax,  regs->ip, (void *)regs->ip))
-+		show_stack_regs(regs);
-+
-+	if (!safe && !wrmsr &&
-+	    pr_warn_once("unchecked MSR access error: RDMSR from 0x%x at rIP: 0x%lx (%pS)\n",
- 			 (unsigned int)regs->cx, regs->ip, (void *)regs->ip))
- 		show_stack_regs(regs);
- 
--	/* Pretend that the read succeeded and returned 0. */
--	regs->ax = 0;
--	regs->dx = 0;
--	return ex_handler_default(fixup, regs);
--}
-+	if (!wrmsr) {
-+		/* Pretend that the read succeeded and returned 0. */
-+		regs->ax = 0;
-+		regs->dx = 0;
-+	}
- 
--static bool ex_handler_wrmsr_unsafe(const struct exception_table_entry *fixup,
--				    struct pt_regs *regs)
--{
--	if (pr_warn_once("unchecked MSR access error: WRMSR to 0x%x (tried to write 0x%08x%08x) at rIP: 0x%lx (%pS)\n",
--			 (unsigned int)regs->cx, (unsigned int)regs->dx,
--			 (unsigned int)regs->ax,  regs->ip, (void *)regs->ip))
--		show_stack_regs(regs);
-+	if (safe)
-+		*pt_regs_nr(regs, reg) = -EIO;
- 
--	/* Pretend that the write succeeded. */
- 	return ex_handler_default(fixup, regs);
- }
- 
-@@ -186,18 +187,22 @@ int fixup_exception(struct pt_regs *regs, int trapnr, unsigned long error_code,
- 		return ex_handler_clear_fs(e, regs);
- 	case EX_TYPE_FPU_RESTORE:
- 		return ex_handler_fprestore(e, regs);
--	case EX_TYPE_RDMSR:
--		return ex_handler_rdmsr_unsafe(e, regs);
--	case EX_TYPE_WRMSR:
--		return ex_handler_wrmsr_unsafe(e, regs);
- 	case EX_TYPE_BPF:
- 		return ex_handler_bpf(e, regs);
--	case EX_TYPE_RDMSR_IN_MCE:
--		ex_handler_msr_mce(regs, false);
--		break;
-+	case EX_TYPE_WRMSR:
-+		return ex_handler_msr(e, regs, true, false, reg);
-+	case EX_TYPE_RDMSR:
-+		return ex_handler_msr(e, regs, false, false, reg);
-+	case EX_TYPE_WRMSR_SAFE:
-+		return ex_handler_msr(e, regs, true, true, reg);
-+	case EX_TYPE_RDMSR_SAFE:
-+		return ex_handler_msr(e, regs, false, true, reg);
- 	case EX_TYPE_WRMSR_IN_MCE:
- 		ex_handler_msr_mce(regs, true);
- 		break;
-+	case EX_TYPE_RDMSR_IN_MCE:
-+		ex_handler_msr_mce(regs, false);
-+		break;
- 	case EX_TYPE_POP_ZERO:
- 		return ex_handler_pop_zero(e, regs);
- 	case EX_TYPE_IMM_REG:
+diff --git a/arch/x86/include/asm/futex.h b/arch/x86/include/asm/futex.h
+index f9c00110a69a..99d345b686fa 100644
+--- a/arch/x86/include/asm/futex.h
++++ b/arch/x86/include/asm/futex.h
+@@ -17,13 +17,9 @@ do {								\
+ 	int oldval = 0, ret;					\
+ 	asm volatile("1:\t" insn "\n"				\
+ 		     "2:\n"					\
+-		     "\t.section .fixup,\"ax\"\n"		\
+-		     "3:\tmov\t%3, %1\n"			\
+-		     "\tjmp\t2b\n"				\
+-		     "\t.previous\n"				\
+-		     _ASM_EXTABLE_UA(1b, 3b)			\
++		     _ASM_EXTABLE_TYPE_REG(1b, 2b, EX_TYPE_EFAULT_REG, %1) \
+ 		     : "=r" (oldval), "=r" (ret), "+m" (*uaddr)	\
+-		     : "i" (-EFAULT), "0" (oparg), "1" (0));	\
++		     : "0" (oparg), "1" (0));	\
+ 	if (ret)						\
+ 		goto label;					\
+ 	*oval = oldval;						\
+@@ -39,15 +35,11 @@ do {								\
+ 		     "3:\t" LOCK_PREFIX "cmpxchgl %3, %2\n"	\
+ 		     "\tjnz\t2b\n"				\
+ 		     "4:\n"					\
+-		     "\t.section .fixup,\"ax\"\n"		\
+-		     "5:\tmov\t%5, %1\n"			\
+-		     "\tjmp\t4b\n"				\
+-		     "\t.previous\n"				\
+-		     _ASM_EXTABLE_UA(1b, 5b)			\
+-		     _ASM_EXTABLE_UA(3b, 5b)			\
++		     _ASM_EXTABLE_TYPE_REG(1b, 4b, EX_TYPE_EFAULT_REG, %1) \
++		     _ASM_EXTABLE_TYPE_REG(3b, 4b, EX_TYPE_EFAULT_REG, %1) \
+ 		     : "=&a" (oldval), "=&r" (ret),		\
+ 		       "+m" (*uaddr), "=&r" (tem)		\
+-		     : "r" (oparg), "i" (-EFAULT), "1" (0));	\
++		     : "r" (oparg), "1" (0));			\
+ 	if (ret)						\
+ 		goto label;					\
+ 	*oval = oldval;						\
+@@ -95,15 +87,11 @@ static inline int futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
+ 	if (!user_access_begin(uaddr, sizeof(u32)))
+ 		return -EFAULT;
+ 	asm volatile("\n"
+-		"1:\t" LOCK_PREFIX "cmpxchgl %4, %2\n"
++		"1:\t" LOCK_PREFIX "cmpxchgl %3, %2\n"
+ 		"2:\n"
+-		"\t.section .fixup, \"ax\"\n"
+-		"3:\tmov     %3, %0\n"
+-		"\tjmp     2b\n"
+-		"\t.previous\n"
+-		_ASM_EXTABLE_UA(1b, 3b)
++		_ASM_EXTABLE_TYPE_REG(1b, 2b, EX_TYPE_EFAULT_REG, %0) \
+ 		: "+r" (ret), "=a" (oldval), "+m" (*uaddr)
+-		: "i" (-EFAULT), "r" (newval), "1" (oldval)
++		: "r" (newval), "1" (oldval)
+ 		: "memory"
+ 	);
+ 	user_access_end();
 -- 
 2.35.1
 
