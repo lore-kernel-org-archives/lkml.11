@@ -2,52 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBD54C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 04:39:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC9EBC04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 04:39:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231864AbiG1Ejj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 00:39:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58094 "EHLO
+        id S231986AbiG1Ejl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 00:39:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229597AbiG1Eji (ORCPT
+        with ESMTP id S230180AbiG1Eji (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 28 Jul 2022 00:39:38 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F97949B55
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 21:39:36 -0700 (PDT)
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5696F49B5F
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 21:39:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1658983177; x=1690519177;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=cDZ5sQcP8lKOVgr80scfvjNaiLrp4ghRr840W+KQyEU=;
-  b=WujjVHFLtQ1hbquGikMBmebcL920n1zw7JT+M5q7icnw1uxS1stSJSK0
-   mw96+aD0QNH047EEOGp1WllXfjFYsb1QWWfe/l6gcq+E2fInM/QFvpZe0
-   MKDe2TY8gxhW1ZX+iibPFjPhAwi2KFBTMgcFWKC9WHdf7NjvbNVmMVNKk
-   FLJFW6+rPW085GwxbCRRMjwSGDPWNqZBgHS0VktOkdW8kNVQU7V5HoZwk
-   2w2kzCNXRL26c0hK2Zzj8bNBeFrXVN7ZanyggcZRP4SIhshJ3WFnYS6lZ
-   KcDA3mxgsSP/THLydXj27H8+3vThtoZkaivL9vjGzntFx5S0r4dggkJYc
+  bh=aV4uxwdZjbiNyhwrmiFMvGYCNKLvLJmd0wQnE8pAKG4=;
+  b=Zk2usbaVW4K0QY3ztvU3jMf3zWhqBKLGVNss/U2bF+wl/AfdskBKx8Gm
+   uPiRIVgaO4aa8v+rOjKSymljyC5vmbBNMvaXz7a14RSzniSCuwxwfDr86
+   /6DCYOf4UN6JVXEwQChGFG1o/4ayeYRFNDy5TOCIBfN++/5mvXs6DWpxp
+   MaMafLQfLOwDpwcCKKChP7GKuHwhCCIWL8e4Cx/xSYumNvdrUljacZ3L5
+   p7ZIzmquvE4ISXh5qhc/LkBvdWPzbrjMLuCyVF6tXzJqDP5bsZFzJsCFI
+   hXXiDeSBNeszdCqg6KxT/7NuVr+FY0P43Ca2F/Cuparxz0SiuOr2zbGjj
    g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10421"; a="287173769"
+X-IronPort-AV: E=McAfee;i="6400,9594,10421"; a="374721088"
 X-IronPort-AV: E=Sophos;i="5.93,196,1654585200"; 
-   d="scan'208";a="287173769"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2022 21:39:36 -0700
+   d="scan'208";a="374721088"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2022 21:39:37 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,196,1654585200"; 
-   d="scan'208";a="846536165"
+   d="scan'208";a="690128689"
 Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 27 Jul 2022 21:39:35 -0700
+  by FMSMGA003.fm.intel.com with ESMTP; 27 Jul 2022 21:39:35 -0700
 Received: from kbuild by e0eace57cfef with local (Exim 4.96)
         (envelope-from <lkp@intel.com>)
-        id 1oGvJ9-0009ep-0A;
-        Thu, 28 Jul 2022 04:39:35 +0000
-Date:   Thu, 28 Jul 2022 12:38:46 +0800
+        id 1oGvJ8-0009ed-2x;
+        Thu, 28 Jul 2022 04:39:34 +0000
+Date:   Thu, 28 Jul 2022 12:38:44 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [jolsa-perf:bpf/tracing_multi_4 14/34] kernel/bpf/syscall.c:2522:22:
- error: implicit declaration of function 'is_tracing_multi'
-Message-ID: <202207281228.VdBNGu2A-lkp@intel.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [jolsa-perf:bpf/tracing_multi_4 14/34] kernel/bpf/syscall.c:2522:15:
+ error: call to undeclared function 'is_tracing_multi'; ISO C99 and later do
+ not support implicit function declarations
+Message-ID: <202207281247.02G79Ah0-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -58,8 +60,8 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git bpf/tracing_multi_4
 head:   1637b6b5bec11596e52cdc0a6eadfa45a15276c3
 commit: bea966904e542c1a3a8d12a19f56042211d4e302 [14/34] bpf: Add multi tracing attach types
-config: riscv-randconfig-r042-20220728 (https://download.01.org/0day-ci/archive/20220728/202207281228.VdBNGu2A-lkp@intel.com/config)
-compiler: riscv64-linux-gcc (GCC) 12.1.0
+config: hexagon-randconfig-r041-20220728 (https://download.01.org/0day-ci/archive/20220728/202207281247.02G79Ah0-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 8dfaecc4c24494337933aff9d9166486ca0949f1)
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
@@ -69,24 +71,22 @@ reproduce (this is a W=1 build):
         git checkout bea966904e542c1a3a8d12a19f56042211d4e302
         # save the config file
         mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash kernel/bpf/ kernel/trace/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash kernel/bpf/
 
 If you fix the issue, kindly add following tag where applicable
 Reported-by: kernel test robot <lkp@intel.com>
 
 All errors (new ones prefixed by >>):
 
-   kernel/bpf/syscall.c: In function 'bpf_prog_load':
->> kernel/bpf/syscall.c:2522:22: error: implicit declaration of function 'is_tracing_multi' [-Werror=implicit-function-declaration]
-    2522 |         multi_func = is_tracing_multi(attr->expected_attach_type);
-         |                      ^~~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
+>> kernel/bpf/syscall.c:2522:15: error: call to undeclared function 'is_tracing_multi'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+           multi_func = is_tracing_multi(attr->expected_attach_type);
+                        ^
+   1 error generated.
 --
-   kernel/bpf/verifier.c: In function 'check_attach_btf_id':
->> kernel/bpf/verifier.c:15099:20: error: implicit declaration of function 'is_tracing_multi' [-Werror=implicit-function-declaration]
-   15099 |         } else if (is_tracing_multi(prog->expected_attach_type))
-         |                    ^~~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
+>> kernel/bpf/verifier.c:15099:13: error: call to undeclared function 'is_tracing_multi'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+           } else if (is_tracing_multi(prog->expected_attach_type))
+                      ^
+   1 error generated.
 
 
 vim +/is_tracing_multi +2522 kernel/bpf/syscall.c
