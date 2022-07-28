@@ -2,101 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47194C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 12:03:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C38EC04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 12:03:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237616AbiG1MDa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 08:03:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40608 "EHLO
+        id S237762AbiG1MDy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 08:03:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236715AbiG1MD0 (ORCPT
+        with ESMTP id S237668AbiG1MDw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 08:03:26 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B599D69F38
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 05:03:24 -0700 (PDT)
-Received: from mail-ej1-f45.google.com ([209.85.218.45]) by
- mrelayeu.kundenserver.de (mreue106 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1N33ZD-1nL2lr44jN-013O7J for <linux-kernel@vger.kernel.org>; Thu, 28 Jul
- 2022 14:03:23 +0200
-Received: by mail-ej1-f45.google.com with SMTP id z23so2764534eju.8
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 05:03:22 -0700 (PDT)
-X-Gm-Message-State: AJIora8J+pdb9SgWvbAlwlJLv7bfeoJtSQk95HwSR40ZLbdxH3yOnZrF
-        LUIkbeeN7Q5NES+79rhrmpR79XsXUMn5X+9MBTA=
-X-Google-Smtp-Source: AGRyM1vbcZtXff9wdVPPzf+JJ956N9jBi6RVLMTg4p5oOr7chFDjRAgayypXIkN9s9OCY7Rbo+VZ/Wqd9spSTPDDM/I=
-X-Received: by 2002:a17:907:d0f:b0:72e:db1f:9b91 with SMTP id
- gn15-20020a1709070d0f00b0072edb1f9b91mr21266735ejc.470.1659009802540; Thu, 28
- Jul 2022 05:03:22 -0700 (PDT)
+        Thu, 28 Jul 2022 08:03:52 -0400
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF35A6A9DC
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 05:03:46 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id e11so1732343ljl.4
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 05:03:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=q9T4iy1pZp5kC18JyQLxVFdDu8isMdHf7HBSk6vNwbE=;
+        b=xV8MWaeIavDGen9mt2j3QZmf3CU0Z4oZxsP7O1C4PduaceBZ+fltC8DkKczdMrwgUa
+         +k4TMxxkH+s2HczuSjILcePmorXBVowGbaCl5/kFW840iRVGiiG5sjWXMz68iLLPge0C
+         9VNOFAuAS7Wc2UiZ2UAhzJzlJrFSD+3f1WKRljfdNIqtvgZvdSKZtbiHwpckMfrLkheJ
+         wEVQ6v0+7mi+6vKDi7dbvpQiQiE/kDTywCqz+I5jhmoxbz6ZFUjojnBagxbnOThfwbsu
+         RHR5mVOqY53lJ1xN1pHPUaOvtU5kpN0VLsKiOpZLFckrviQxPq8ZXWOeI/3Onm+1Ga1g
+         EGwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=q9T4iy1pZp5kC18JyQLxVFdDu8isMdHf7HBSk6vNwbE=;
+        b=LwFfLBTscK60EN79wmPWtAjhm0e+hm3QPjNKDBv1wA+2dDxv6Nc59wOuQm4QbMdS/g
+         jIQ+HCY0tysSzrbYPSLYvNxh6Fo6NHbHg5NirjaEuMxgBgn4/i8zeaMz+rXr1b4rzVyR
+         ccQlC3iVOfqf3Ftq+8BwEqIiFHKjM+lUxNCjRBOnQrGf0WgonZF3pJloU6sLi35IEYsT
+         DIv3gABlDQo8qzXcEe7HM0UGxRBGOsV3Tr1nZ6Bla/W4mAWmNvnZ4rHLhcGvGOrL0yKL
+         vlqK46YbmX19P3pTFdc4U2UsTVuHO1JUTBmxjwF7cKkt0BFMyOTQ7+KhMr5hmB2IjEi/
+         AvHg==
+X-Gm-Message-State: AJIora/plUa8k3EijyRULNWxWwrwP7SxnrAiP+FY96569TFtbXLJjtpz
+        +80Vv6dYEjcXIgB2sJKzU8Yjvg==
+X-Google-Smtp-Source: AGRyM1ss6s3dXMIqkcr4wYj1FsNn44b4U8NcjOWWRxpcNJloMstEGWpRv7gTXsnaUxiwChK8XtK4QA==
+X-Received: by 2002:a2e:5705:0:b0:25d:f295:c9d8 with SMTP id l5-20020a2e5705000000b0025df295c9d8mr9472731ljb.292.1659009824736;
+        Thu, 28 Jul 2022 05:03:44 -0700 (PDT)
+Received: from [192.168.3.197] (78-26-46-173.network.trollfjord.no. [78.26.46.173])
+        by smtp.gmail.com with ESMTPSA id t20-20020a2e8e74000000b0025a724f2935sm105370ljk.137.2022.07.28.05.03.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Jul 2022 05:03:44 -0700 (PDT)
+Message-ID: <9ba45cca-79c9-d1e4-5b2c-15c73a8297b6@linaro.org>
+Date:   Thu, 28 Jul 2022 14:03:42 +0200
 MIME-Version: 1.0
-References: <1658681004-132191-1-git-send-email-john.garry@huawei.com>
- <CAK8P3a0umWWic6LAzxXJ7BACYVE--m-wbynh7Z8F+pGoUBxGTA@mail.gmail.com>
- <25237c44-ebc4-fc9a-7c6f-3e990f968038@huawei.com> <CAK8P3a2+0EwSJ=fRBL2JCGypJRL-qE4rEiXYnJbqhZ=weethdQ@mail.gmail.com>
- <b39bf8c4-c702-8f49-12aa-d3ac05889b80@huawei.com> <CAK8P3a0w+_MLOjJAKMENe6MYvBcXWXSir47Hz34WbtdEeAmaBw@mail.gmail.com>
- <4d010f40-6c4c-32c7-2772-1bbfa02c03b7@linaro.org> <CAK8P3a38uGGGLA4b2bi=v8cV6-dH5yEcvBYcwr5ChzkwMTX9_Q@mail.gmail.com>
- <966a62da-52b6-1789-13d6-5fe06b62c7fe@marek.ca>
-In-Reply-To: <966a62da-52b6-1789-13d6-5fe06b62c7fe@marek.ca>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 28 Jul 2022 14:03:06 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a2HGYJZvcXM+9fROys5A6c40zFWD2qATT4xssSJf6hRfQ@mail.gmail.com>
-Message-ID: <CAK8P3a2HGYJZvcXM+9fROys5A6c40zFWD2qATT4xssSJf6hRfQ@mail.gmail.com>
-Subject: Re: [PATCH 0/2] arm64 defconfig: Get faddr2line working
-To:     Jonathan Marek <jonathan@marek.ca>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        John Garry <john.garry@huawei.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Olof Johansson <olof@lixom.net>, SoC Team <soc@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Vinod Koul <vkoul@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:xVJOdBOsIQjuFIi3cL17M0Cl/DpUHhg5lxdtZ8F0Tq2wbkSDYZg
- EwlpUXB3OkCZPbviUz0kKAr8fXZdM/fU9DLyoufpshmj/UykoipDpPKWv2dTDXgCdRVl2Ea
- 6k81F4WUPKm9t4Q6nmCxzf+CasqEg6X+H51leVnxE1MyJMWtfgElQZFC5ctTZmiFXlVbHm+
- rlFIp+5hKdfP2yaEOFnFQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:mzPKANfprsg=:DNJlnpS/IZdYPb27FeAC+s
- 6+CF8Ppc6Ye1hInlkg39qAcQ+YKu0EaBikfV270R/+w4i29ptbI1gvGfv5UigpClPwxW7wjGx
- 4sr1PtEdazq+9RjkZwfrHrePYexJIhEI5p2rR3JMcFCaOq5L0KcVffe2inx5SLUgaRoxpIMLU
- roZFpZ3Cor3iud2jQOvbWmxv+LiOSfwEWFNDT1eg/s3DLMtNbavmg1d8vdTyUZuG8WX+8AcQB
- bFrBL6dEfHsPae2YUNydsfjVn2tLAKGPQkZVr8IV73MBTONigKyYwM7Ka7XhfrF4VAC3251k/
- eqFSSJew6IiDg8oavtkSEi+lazwItoJdrzAhwhbHPEKWnDDB/Khx2uwt/leQVsK3jJlzk6Wfx
- JWKW1U0YbjMQX31MFbEsliF2FlM76uMwmVjtDLUssxgijdIObHBvJwUwBRb1LguWkpoBsGL/D
- JQJW4Vde5ol0ZdUZo7oF37U8qGSCa9muqf5BQIV6KqHoRUBRbL19bCqJgywGbOBsBt/UBdfFI
- EZR5uKF6n8GaVdtEXpp5WhquIYkwB2w0LlYXJHkkPr/j3a392zRjgDzz1f5xiS/TUHmunM7cb
- OV6MDZ43banzYulpTRlfjoeunDwfk6BxRgr6JjAzMKZUIBdOXN2VaLT9olL9S3YMmc4ggweoB
- OK0mRHUQIFXIPNuKO8AjTODU6yU9yCPNmGrFZGAs7ulEgtvgx7lpE19XX/ee/KBvRXIhKZg9d
- uAKTVYGbOgXUYdw9Bf7vKu/9Ss8mHRkTLS10AaFhKxHoYAtBpCJl3BMH+MZbKRJGDn+wFHvDe
- ZZjZhgFMnz9SGUZKMLXFVKCyalmUDbL9Fnp2/XadIW3dhflajEsW2Euqqcd+xbabBpgoLgWG+
- HVrql/XD53rJxfKiguRg==
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 3/3] dt-bindings: phy: add definition for MSM8960
+Content-Language: en-US
+To:     David Heidelberg <david@ixit.cz>, Shinjo Park <peremen@gmail.com>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220728111740.30595-1-peremen@gmail.com>
+ <aef9bae5-b72b-d520-a8e5-8f6a838775eb@linaro.org>
+ <875f6675-9d28-7ca2-704c-4d1a6c69a21c@ixit.cz>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <875f6675-9d28-7ca2-704c-4d1a6c69a21c@ixit.cz>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 28, 2022 at 1:57 PM Jonathan Marek <jonathan@marek.ca> wrote:
-> On 7/28/22 5:09 AM, Arnd Bergmann wrote:
-> > diff --git a/drivers/soundwire/qcom.c b/drivers/soundwire/qcom.c
-> > index 22b706350ead..f65c7737c2db 100644
-> > --- a/drivers/soundwire/qcom.c
-> > +++ b/drivers/soundwire/qcom.c
-> > @@ -1289,11 +1289,7 @@ static int qcom_swrm_probe(struct platform_device *pdev)
-> >          data = of_device_get_match_data(dev);
-> >          ctrl->rows_index = sdw_find_row_index(data->default_rows);
-> >          ctrl->cols_index = sdw_find_col_index(data->default_cols);
-> > -#if IS_REACHABLE(CONFIG_SLIMBUS)
-> > -       if (dev->parent->bus == &slimbus_bus) {
-> > -#else
-> > -       if (false) {
-> > -#endif
-> > +       if (IS_ENABLED(CONFIG_SLIMBUS) && dev->parent->bus == &slimbus_bus) {
-> >                  ctrl->reg_read = qcom_swrm_ahb_reg_read;
-> >                  ctrl->reg_write = qcom_swrm_ahb_reg_write;
-> >                  ctrl->regmap = dev_get_regmap(dev->parent, NULL);
-> >
->
-> This relies on the compiler optimizing out the reference to slimbus_bus,
-> which doesn't exist in the CONFIG_SLIMBUS=n case (not tested, but I
-> think this means an O0 build will fail?).
+On 28/07/2022 13:54, David Heidelberg wrote:
+> On 28/07/2022 13:47, Krzysztof Kozlowski wrote:
+>> On 28/07/2022 13:17, Shinjo Park wrote:
+>>> Document the changes introduced by MSM8960 inclusion.
+>>>
+>> 1. Thread your submissions.
+>> 2. Use subject prefix matching the file.
+>>
+>>> Signed-off-by: Shinjo Park <peremen@gmail.com>
+>>> Reviewed-by: David Heidelberg <david@ixit.cz>
+>> It is a v1. How the review tag got here?
+> 
+> We have a Matrix channel ( #linux-apq8064:matrix.org and downstream fork 
+> for apq8064/msm8960 [1]), so I saw the patch before it was send to ML.
+> 
+> David
 
-That is correct: We rely on this everywhere in the kernel, which is why
-it is impossible to build kernels with -O0.
+New submitters and beginners should rather use full-mailing list
+process. Since there is quite a chance of beginner mistakes (which was
+seen here), they might misunderstand something and add Reviewed-by tag
+even if not received it with respective "Reviewer's statement of oversight".
 
-       Arnd
+Best regards,
+Krzysztof
