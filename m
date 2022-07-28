@@ -2,117 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58276C19F2B
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 06:18:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE0F2C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 06:18:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230018AbiG1GSQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 02:18:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58520 "EHLO
+        id S234049AbiG1GS1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 02:18:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233627AbiG1GSN (ORCPT
+        with ESMTP id S233781AbiG1GSY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 02:18:13 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBF1C5A8A6
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 23:18:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658989092; x=1690525092;
-  h=from:to:cc:subject:references:date:in-reply-to:
-   message-id:mime-version;
-  bh=Rwc/qniW/RO2BA+uBG6gExEBv7Fj2QLZKI7Go3cAQKw=;
-  b=YprFm7tOiPLpXgNZF9vJTalX1mJ/++5b7CpOdy5Hl7zyCBVsjvRFHMsi
-   SB3KfTraPTNkfsZB4x2tKXrtNGj6Xt0xSvISKljhRQzIFE/KDidRmpX7m
-   +8/LGarnY3VZMMorSkvUlI3fg8DpT3eoTdCs5ZEJ1p5iUzeZzzQP16Gxn
-   /+l7mHPDMO1za4oG1PIJKV98Zx8967AOv5GlJwsPpZGNskHWH2r+uQeF2
-   DOQohVvpED0qThIxxDs5N1AyO5o+BwOJMwaGshL41GAX9HyxsrbxhbAqD
-   ginp9MlVijeP5fXtn7tVC86wXX5hGPVwnxGB5LHOx4FXXVJ79qxoaIJW3
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10421"; a="289627817"
-X-IronPort-AV: E=Sophos;i="5.93,196,1654585200"; 
-   d="scan'208";a="289627817"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2022 23:18:12 -0700
-X-IronPort-AV: E=Sophos;i="5.93,196,1654585200"; 
-   d="scan'208";a="576311730"
-Received: from yhuang6-desk2.sh.intel.com (HELO yhuang6-desk2.ccr.corp.intel.com) ([10.239.13.94])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2022 23:18:10 -0700
-From:   "Huang, Ying" <ying.huang@intel.com>
-To:     Baolin Wang <baolin.wang@linux.alibaba.com>
-Cc:     <akpm@linux-foundation.org>, <ziy@nvidia.com>,
-        <shy828301@gmail.com>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] mm: migrate: Do not retry 10 times for the subpages of
- fail-to-migrate THP
-References: <1658405108-100658-1-git-send-email-baolin.wang@linux.alibaba.com>
-Date:   Thu, 28 Jul 2022 14:16:35 +0800
-In-Reply-To: <1658405108-100658-1-git-send-email-baolin.wang@linux.alibaba.com>
-        (Baolin Wang's message of "Thu, 21 Jul 2022 20:05:08 +0800")
-Message-ID: <875yjhoj7g.fsf@yhuang6-desk2.ccr.corp.intel.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Thu, 28 Jul 2022 02:18:24 -0400
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DCA115D0F2;
+        Wed, 27 Jul 2022 23:18:22 -0700 (PDT)
+Received: from [192.168.87.140] (unknown [50.47.106.71])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 18D4620FE86F;
+        Wed, 27 Jul 2022 23:18:22 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 18D4620FE86F
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1658989102;
+        bh=dOWYO9Tc9My88lpKym2V9t4KyEwrpWAjOIRXvs4C5XQ=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=Ak0uQ40xJOJRfAIrFUYHIr9TFMyUDjJbJTZm6CGUkKy+4qOq8U56I8c+XrKWgMQ8B
+         csdkyl9vpQCSv5JuJFTpnLAuSRIlKNFG4wOc1us79zruuwJNmDK1gCUlFhLZtlZyG7
+         wGUvBV/uHTBcB+UTdH5KjjtwmuxD2IG+4K95CEvI=
+Message-ID: <450dee2f-63bf-51a7-730e-b780b594c1c5@linux.microsoft.com>
+Date:   Wed, 27 Jul 2022 23:18:22 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ascii
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v8 5/5] crypto: aspeed: add HACE crypto driver
+Content-Language: en-US
+To:     Neal Liu <neal_liu@aspeedtech.com>,
+        Corentin Labbe <clabbe.montjoie@gmail.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Johnny Huang <johnny_huang@aspeedtech.com>
+Cc:     "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>,
+        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        BMC-SW <BMC-SW@aspeedtech.com>
+References: <20220726113448.2964968-1-neal_liu@aspeedtech.com>
+ <20220726113448.2964968-6-neal_liu@aspeedtech.com>
+ <9d6beefe-9974-22f8-750c-68c9acb707ab@linux.microsoft.com>
+ <TY2PR06MB32137A54B483D6D700BDE7EC80979@TY2PR06MB3213.apcprd06.prod.outlook.com>
+From:   Dhananjay Phadke <dphadke@linux.microsoft.com>
+In-Reply-To: <TY2PR06MB32137A54B483D6D700BDE7EC80979@TY2PR06MB3213.apcprd06.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Baolin,
+On 7/26/2022 10:31 PM, Neal Liu wrote:
+>> Why are separate options required for hash and crypto algorithms, if hace is
+>> only hw crypto on the SoCs?
+>>
+>> Looks like that's requiring unnecessary __weak register / unregister functions
+>> [see below].
+>>
+>> Couldn't just two options CONFIG_CRYPTO_DEV_ASPEED and
+>> CONFIG_CRYPTO_DEV_ASPEED_DEBUG be simpler to set for downstream
+>> defconfigs?
+> I would like to separate different algorithms by different options for more convenient for further use and debug.
+> We also have RSA engine named ACRY, and would upstream once hash & crypto being accepted.
+> So combined them into one option seems not a good choice for multiple hw crypto, do you agree?
 
-Baolin Wang <baolin.wang@linux.alibaba.com> writes:
+Not sure what's the use case of just enabling crypto or hash separately
+out of same HW engine and esp. when there's no alternative accel 
+available, but that's fine.
 
-> If THP is failed to migrate due to -ENOSYS or -ENOMEM case, the THP will
-> be split, and the subpages of fail-to-migrate THP will be tried to migrate
-> again, so we should not account the retry counter in the second loop, since
-> we already accounted 'nr_thp_failed' in the first loop.
->
-> Moreover we also do not need retry 10 times for -EAGAIN case for the subpages
-> of fail-to-migrate THP in the second loop, since we already regarded the
-> THP as migration failure, and save some migration time (for the worst case,
-> will try 512 * 10 times) according to previous discussion [1].
->
-> [1] https://lore.kernel.org/linux-mm/87r13a7n04.fsf@yhuang6-desk2.ccr.corp.intel.com/
->
-> Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+If ARCY is different HW engine (interface) then having separate config
+sounds logical.
 
-I have tested this patch, and it works as expected.
+Multiplying DEBUG configs seems unnecessary though. With dynamic debug
+any of the dev_dbg could be turned on. Suggest using single one for
+the module, if not drop it altogether. Following code is still not
+covered by Kconfig, it in common code.
 
-Tested-by: "Huang, Ying" <ying.huang@intel.com>
+ > +#ifdef ASPEED_HACE_DEBUG
+ > +#define HACE_DBG(d, fmt, ...)	\
+ > +	dev_info((d)->dev, "%s() " fmt, __func__, ##__VA_ARGS__)
+ > +#else
+ > +#define HACE_DBG(d, fmt, ...)	\
+ > +	dev_dbg((d)->dev, "%s() " fmt, __func__, ##__VA_ARGS__)
+ > +#endif
 
-> ---
-> Note, this patch is based on the patch set [1] from Huang Ying.
-> [1] https://lore.kernel.org/linux-mm/20220711084948.274787-1-ying.huang@intel.com/
+Regards,
+Dhananjay
 
-Please this patch is based on my patchset that hasn't been merged.  I
-can add it as the last patch of my migrate_pages failure path fixing
-patchset if you don't object.
 
-Best Regards,
-Huang, Ying
-
-> ---
->  mm/migrate.c | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
->
-> diff --git a/mm/migrate.c b/mm/migrate.c
-> index 8429206..e36a084 100644
-> --- a/mm/migrate.c
-> +++ b/mm/migrate.c
-> @@ -1507,7 +1507,7 @@ int migrate_pages(struct list_head *from, new_page_t get_new_page,
->  			case -EAGAIN:
->  				if (is_thp)
->  					thp_retry++;
-> -				else
-> +				else if (!no_subpage_counting)
->  					retry++;
->  				nr_retry_pages += nr_subpages;
->  				break;
-> @@ -1533,8 +1533,7 @@ int migrate_pages(struct list_head *from, new_page_t get_new_page,
->  			}
->  		}
->  	}
-> -	if (!no_subpage_counting)
-> -		nr_failed += retry;
-> +	nr_failed += retry;
->  	nr_thp_failed += thp_retry;
->  	nr_failed_pages += nr_retry_pages;
->  	/*
