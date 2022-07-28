@@ -2,105 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EF49C19F2B
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 14:35:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E979C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 14:36:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232573AbiG1Of1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 10:35:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33440 "EHLO
+        id S231932AbiG1OgF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 10:36:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232525AbiG1OfG (ORCPT
+        with ESMTP id S232375AbiG1OfW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 10:35:06 -0400
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC726627A
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 07:34:14 -0700 (PDT)
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 17FC23F11F
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 14:34:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1659018853;
-        bh=smAmLQDqaAhXYtvdpeSgEu24V4rDJU+98olXFW6DsY0=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=QXAt1CJF2EncS3zzwCWphaId3zC1GCQzRylnxNWCJgprHfPesmUztoSXIa6YQrZyP
-         2U2cjXyivXwrxfZqwUgQBwnxjMftuR6b0ysmFyY/CABXpqjbAkbnJG5+eUGtOTEbao
-         phWhvqps66Sr/xuxF+Avdv0cMOg6Z1DD+q+Z8CLwh9VFJ/ElblETxb5zoa9uJkOsOD
-         IlfQ+c3wK73jA65BRNAt4h66bPn41dtQ+MN1QdaU77hpBOPv1Pep2ixAjMqxv98hE6
-         iIBN3sbPPX9MIEmcz9iI90o0NcrEiAXUaG7/z4Twee9C7z802hjrs935ugtUfsMgZ1
-         lZwGmZmbLt/KA==
-Received: by mail-io1-f71.google.com with SMTP id v5-20020a5d9405000000b0067c98e0011dso594795ion.1
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 07:34:13 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=smAmLQDqaAhXYtvdpeSgEu24V4rDJU+98olXFW6DsY0=;
-        b=mMeWOvtF0oieSbcLykIRLWb1iK1RpieUobt/gK9CzzognzTOT3k91fX85OFYtojkU7
-         +JANTo2nOTRfYl5/IR/x0bHPawoqgKpFQ9SfVd9wdBUt1ux9OFMMms+1+bkktKEet9SD
-         nCX4EHF8fgeHnwU9sxbd+nm3w4RFwJzcKEV4XhjoVx1FewV+dGkD6OjyM0yg342geOrb
-         FhnTfCgZmUw0GylnQy7u8D1gFVup1g6a/sHLIeWxnRwSj2Vxy0Vx2RZbNIee0z9a8Etu
-         63vVPsQ01c+d0ehlaUuoIKTns7t87IAefGwJHEUYP9utSyuYcvjZXXqRSvogloWa7Pi6
-         3rbw==
-X-Gm-Message-State: AJIora+6xe2w1SFo7gWGHdABmNXf8sTWZNr9cSj4ZnkaA1J8nMfRFYFb
-        bVZYQ3VKlC7xvJEKjKBoKuL/xmBPHkynGNFP5YA30GabHD2oZVGYsxdIPy2IPOwKlz6vhRs+3e6
-        khED6JCcxyGOK9WASrSTTO2HgvkV1EwZijp8TDoto9zTfSJf2WRLfXyKmDQ==
-X-Received: by 2002:a05:6638:1312:b0:341:40a1:7e20 with SMTP id r18-20020a056638131200b0034140a17e20mr10730103jad.228.1659018851755;
-        Thu, 28 Jul 2022 07:34:11 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1sO8Inr1oA7DW5DfOY7SZGAvnWP2w936SHR2YGe8sa8XqC9EHtPsYxNlwAzfgb53552GDvTByb6QG/2yAh7A8k=
-X-Received: by 2002:a05:6638:1312:b0:341:40a1:7e20 with SMTP id
- r18-20020a056638131200b0034140a17e20mr10730093jad.228.1659018851534; Thu, 28
- Jul 2022 07:34:11 -0700 (PDT)
+        Thu, 28 Jul 2022 10:35:22 -0400
+Received: from mail.baikalelectronics.com (unknown [87.245.175.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 20C7C5007A;
+        Thu, 28 Jul 2022 07:34:58 -0700 (PDT)
+Received: from mail (mail.baikal.int [192.168.51.25])
+        by mail.baikalelectronics.com (Postfix) with ESMTP id 2B73B16D7;
+        Thu, 28 Jul 2022 17:37:18 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 2B73B16D7
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baikalelectronics.ru; s=mail; t=1659019038;
+        bh=x1q91lEz0XBvWdnyyQGgeNMqXMRx13S9g6zrL7EUBKg=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
+        b=rPS/NEssPluBBiQy3rdAdeWnFom4n6iVL2jhyN1g933/YFEfDt5jAdXswlIn1T9h9
+         YzT111kHRQxATZFE2bjRIf82HlWKBoZv/6aObMZLCfIoE7PNdFwqgJo3b4b+8hmzSa
+         t21bsUDao+iBKU2OXQoZ3kUeGOxhxODV50hu+CoQ=
+Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 28 Jul 2022 17:34:52 +0300
+From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
+To:     Rob Herring <robh+dt@kernel.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>
+CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+        Frank Li <Frank.Li@nxp.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        <linux-pci@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH v4 06/17] dt-bindings: PCI: dwc: Add max-functions EP property
+Date:   Thu, 28 Jul 2022 17:34:16 +0300
+Message-ID: <20220728143427.13617-7-Sergey.Semin@baikalelectronics.ru>
+In-Reply-To: <20220728143427.13617-1-Sergey.Semin@baikalelectronics.ru>
+References: <20220728143427.13617-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-References: <20220728122602.2500509-1-cascardo@canonical.com> <YuKCpLOLeDOI7GII@zn.tnic>
-In-Reply-To: <YuKCpLOLeDOI7GII@zn.tnic>
-From:   Dimitri John Ledkov <dimitri.ledkov@canonical.com>
-Date:   Thu, 28 Jul 2022 15:33:35 +0100
-Message-ID: <CADWks+aosM99jv9WwLvFo3LPEnsqts+2bJPzMnRqJX70qz51cg@mail.gmail.com>
-Subject: Re: [PATCH] x86/bugs: Do not enable IBPB at firmware entry when IBPB
- is not available
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
-        linux-kernel@vger.kernel.org, x86@kernel.org,
-        Peter Zijlstra <peterz@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 28 Jul 2022 at 13:35, Borislav Petkov <bp@alien8.de> wrote:
->
-> drop stable@
->
-> On Thu, Jul 28, 2022 at 09:26:02AM -0300, Thadeu Lima de Souza Cascardo wrote:
-> > Some cloud hypervisors do not provide IBPB on very recent CPU processors,
-> > including AMD processors affected by Retbleed.
->
-> Which hypervisors are those? How relevant is that use case?
->
-> How do I reproduce it here?
+In accordance with [1] the CX_NFUNC IP-core synthesize parameter is
+responsible for the number of physical functions to support in the EP
+mode. Its upper limit is 32. Let's use it to constrain the number of
+PCIe functions the DW PCIe EP DT-nodes can advertise.
 
-Azure public cloud (so it is Azure custom hyper-v hypervisor) these
-instance types https://docs.microsoft.com/en-us/azure/virtual-machines/dav4-dasv4-series
-booted as gen2 (UEFI boot, so Dasv4-series instance types). A
-particular one is chosen in our automated testing, and always fails. I
-believe more than one instance type from that series of instance types
-is affected.
+[1] Synopsys DesignWare Cores PCI Express Controller Databook - DWC PCIe
+Endpoint, Version 5.40a, March 2019, p. 887.
 
-I haven't tested but
-https://docs.microsoft.com/en-us/azure/virtual-machines/dasv5-dadsv5-series
-are probably affected too.
+Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Reviewed-by: Rob Herring <robh@kernel.org>
 
-It's a class of popular-ish instance types, meaning that it could
-potentially take out a class of users who due to availability,
-performance, and/or pricing choose to run their workloads on those
-instance types. Potentially causing them a major outage of being
-unable to boot and/or reboot.
+---
 
+Changelog v3:
+- This is a new patch unpinned from the next one:
+  https://lore.kernel.org/linux-pci/20220503214638.1895-2-Sergey.Semin@baikalelectronics.ru/
+  by the Rob' request. (@Rob)
+---
+ Documentation/devicetree/bindings/pci/snps,dw-pcie-ep.yaml | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/pci/snps,dw-pcie-ep.yaml b/Documentation/devicetree/bindings/pci/snps,dw-pcie-ep.yaml
+index b04ce7ddb796..9411366d6ca7 100644
+--- a/Documentation/devicetree/bindings/pci/snps,dw-pcie-ep.yaml
++++ b/Documentation/devicetree/bindings/pci/snps,dw-pcie-ep.yaml
+@@ -53,6 +53,9 @@ properties:
+     items:
+       enum: [dbi, dbi2, config, atu, addr_space, link, atu_dma, appl]
+ 
++  max-functions:
++    maximum: 32
++
+ required:
+   - compatible
+   - reg
+@@ -73,4 +76,5 @@ examples:
+       phy-names = "pcie0", "pcie1", "pcie2", "pcie3";
+ 
+       max-link-speed = <3>;
++      max-functions = /bits/ 8 <4>;
+     };
 -- 
-okurrr,
+2.35.1
 
-Dimitri
