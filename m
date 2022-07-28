@@ -2,126 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBFF5C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 14:29:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58B0AC04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 14:29:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231960AbiG1O3J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 10:29:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56706 "EHLO
+        id S231968AbiG1O3N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 10:29:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231807AbiG1O2y (ORCPT
+        with ESMTP id S231841AbiG1O24 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 10:28:54 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F12C565D66;
-        Thu, 28 Jul 2022 07:28:52 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id j22so3491429ejs.2;
-        Thu, 28 Jul 2022 07:28:52 -0700 (PDT)
+        Thu, 28 Jul 2022 10:28:56 -0400
+Received: from mail.baikalelectronics.com (unknown [87.245.175.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A719A66123;
+        Thu, 28 Jul 2022 07:28:54 -0700 (PDT)
+Received: from mail (mail.baikal.int [192.168.51.25])
+        by mail.baikalelectronics.com (Postfix) with ESMTP id 00EF016DD;
+        Thu, 28 Jul 2022 17:31:15 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 00EF016DD
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=+qxi1BsKPmynG3xfpNZLp6J5s/IWJprPFoEGd6KJx1s=;
-        b=Dqobgjs1nII8eXteQLjz2ED1bVraj/SM6DyKm259IZRg1sN9fXwxKHIjnG2b0D3INP
-         CJtDIdhUiiT3FrZ8VGIV5YyCY/B5CS56vg2LrtG2qoKAVoBPg5C5Rc4irrfAhqzUR8Gh
-         +kybMZBZKngEWg1dyX5m4BVx0V2laC+H53UD1uGBiO18QUV/cjUgIsNB5O4VSdrtTV9W
-         Cjr63Q11WQXEj+bfEst6CJpV6b6nywbFMPcaGL39fGMjwTeOGbNRQn9EtmKqq7ZN4xwN
-         pF26gzooknPqRasWoevZQAJ4FehkqRleQDodSdYOcvnJ8YGzspu/VUm+wAjSwHvBT353
-         9FoA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=+qxi1BsKPmynG3xfpNZLp6J5s/IWJprPFoEGd6KJx1s=;
-        b=HBiH159v6FP5hmFNEK1MbJWvrDYIqVclT5Dl+AOO0iKd0yHrkxHnbsO58UF3dO770+
-         hEF952flatyyhaMQX7pTelv6SWMFjW4K5pNdiwlOLxNqGzDT97hVFYlyapWCorZpMtWB
-         0uy1lu/vysX5fUd+pQ312MxgwSDyR+FWIjCCVHCKb7RXa74Py+xi8/yCN9wztZVszwu1
-         GTXHlYHs/+5b71YUB1HZ2jW2x48TesaXd4Emr5jK5yZkvg11JRqyK7k7lM5b33GMteZL
-         KK7erNO0ijxdKiqNWS+huOqDTYzVhj2khydwnOiBS507h+9QHCqQKuGJKwlaVt1POxvM
-         SAXQ==
-X-Gm-Message-State: AJIora+rHdZaamCrYfr2AnIh9uK5Ad2uAfyA0RKBUHuj0fIWP6egv66r
-        YAux1owDDUEwsfCbH1hbPclwCQiID5pQIKCj
-X-Google-Smtp-Source: AGRyM1thhqvyGnz1B8Vxf/2phwUgpIo+oFuDvwayWQtnd+524pm6oLNhycj5/sutoRUawvMv1D4DGA==
-X-Received: by 2002:a17:907:6089:b0:72f:56db:ccb6 with SMTP id ht9-20020a170907608900b0072f56dbccb6mr21020085ejc.318.1659018530972;
-        Thu, 28 Jul 2022 07:28:50 -0700 (PDT)
-Received: from nergzd-desktop.localdomain ([23.154.177.9])
-        by smtp.gmail.com with ESMTPSA id y1-20020aa7d501000000b0043cce1d3a0fsm755949edq.87.2022.07.28.07.28.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Jul 2022 07:28:50 -0700 (PDT)
-From:   Markuss Broks <markuss.broks@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Markuss Broks <markuss.broks@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Helge Deller <deller@gmx.de>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Borislav Petkov <bp@suse.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Michal Suchanek <msuchanek@suse.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Wei Ming Chen <jj251510319013@gmail.com>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        Tony Lindgren <tony@atomide.com>, linux-doc@vger.kernel.org,
-        linux-efi@vger.kernel.org, linux-serial@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Petr Mladek <pmladek@suse.com>
-Subject: [PATCH 1/2] drivers: serial: earlycon: Pass device-tree node
-Date:   Thu, 28 Jul 2022 17:28:18 +0300
-Message-Id: <20220728142824.3836-2-markuss.broks@gmail.com>
-X-Mailer: git-send-email 2.37.0
-In-Reply-To: <20220728142824.3836-1-markuss.broks@gmail.com>
-References: <20220728142824.3836-1-markuss.broks@gmail.com>
+        d=baikalelectronics.ru; s=mail; t=1659018675;
+        bh=17/2wYbrQgogQ/AnOlqJwuN0f3HJbuhq/LuIABB8iF0=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
+        b=VsKu/S/qUkCE2R7a/4gvA2tGHNl4TrlIj4VyM/16rSqPT2BzWMQ+C0IIYlhhDl7QA
+         JpfRH8D6kR36wQBZPa6KUU5qZ9UAsCZOOrzu2LBTYBgbw+akfEWMvSOubGjc5NHxhE
+         o/uwP+In761ki1XZp+aPg/kmfjI/xa4wBIRsi4uI=
+Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 28 Jul 2022 17:28:49 +0300
+From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
+To:     Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Vinod Koul <vkoul@kernel.org>, Rob Herring <robh@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jingoo Han <jingoohan1@gmail.com>, Frank Li <Frank.Li@nxp.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+        <linux-pci@vger.kernel.org>, <dmaengine@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        Gustavo Pimentel <Gustavo.Pimentel@synopsys.com>
+Subject: [PATCH v4 06/24] dmaengine: dw-edma: Fix invalid interleaved xfers semantics
+Date:   Thu, 28 Jul 2022 17:28:23 +0300
+Message-ID: <20220728142841.12305-7-Sergey.Semin@baikalelectronics.ru>
+In-Reply-To: <20220728142841.12305-1-Sergey.Semin@baikalelectronics.ru>
+References: <20220728142841.12305-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Pass a pointer to device-tree node in case the driver probed from
-OF. This makes early console drivers able to fetch options from
-device-tree node properties.
+The interleaved DMA transfer support added in commit 85e7518f42c8
+("dmaengine: dw-edma: Add device_prep_interleave_dma() support") seems
+contradicting to what the DMA-engine defines. The next conditional
+statements:
+	if (!xfer->xfer.il->numf)
+		return NULL;
+	if (xfer->xfer.il->numf > 0 && xfer->xfer.il->frame_size > 0)
+		return NULL;
+basically mean that numf can't be zero and frame_size must always be zero,
+otherwise the transfer won't be executed. But further the transfer
+execution method takes the frames size from the
+dma_interleaved_template.sgl[] array for each frame. That array in
+accordance with [1] is supposed to be of
+dma_interleaved_template.frame_size size, which as we discovered before
+the code expects to be zero. So judging by the dw_edma_device_transfer()
+implementation the method implies the dma_interleaved_template.sgl[] array
+being of dma_interleaved_template.numf size, which is wrong. Since the
+dw_edma_device_transfer() method doesn't permit
+dma_interleaved_template.frame_size being non-zero then actual multi-chunk
+interleaved transfer turns to be unsupported even though the code implies
+having it supported.
 
-Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
+Let's fix that by adding a fully functioning support of the interleaved
+DMA transfers. First of all dma_interleaved_template.frame_size is
+supposed to be greater or equal to one thus having at least simple linear
+chunked frames. Secondly we can create a walk-through all over the chunks
+and frames just by initializing the number of the eDMA burst transactios
+as a multiple of dma_interleaved_template.numf and
+dma_interleaved_template.frame_size and getting the frame_size-modulo of
+the iteration step as an index of the dma_interleaved_template.sgl[]
+array. The rest of the dw_edma_device_transfer() method code can be left
+unchanged.
+
+[1] include/linux/dmaengine.h: doc struct dma_interleaved_template
+
+Fixes: 85e7518f42c8 ("dmaengine: dw-edma: Add device_prep_interleave_dma() support")
+Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Tested-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Acked-By: Vinod Koul <vkoul@kernel.org>
 ---
- drivers/tty/serial/earlycon.c | 3 +++
- include/linux/serial_core.h   | 1 +
- 2 files changed, 4 insertions(+)
+ drivers/dma/dw-edma/dw-edma-core.c | 18 +++++++-----------
+ 1 file changed, 7 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
-index 57c70851f22a0e78805f34d1a7700708104b6f6a..14e8a7fe54486a1c377a6659c37a73858de5bf0b 100644
---- a/drivers/tty/serial/earlycon.c
-+++ b/drivers/tty/serial/earlycon.c
-@@ -304,6 +304,9 @@ int __init of_setup_earlycon(const struct earlycon_id *match,
- 		strlcpy(early_console_dev.options, options,
- 			sizeof(early_console_dev.options));
- 	}
-+
-+	early_console_dev.node = node;
-+
- 	earlycon_init(&early_console_dev, match->name);
- 	err = match->setup(&early_console_dev, options);
- 	earlycon_print_info(&early_console_dev);
-diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
-index cbd5070bc87f42aa450c4ca7af8a9b59fbe88574..3295721f33e482124fae8370b5889d5d6c012303 100644
---- a/include/linux/serial_core.h
-+++ b/include/linux/serial_core.h
-@@ -349,6 +349,7 @@ struct earlycon_device {
- 	struct uart_port port;
- 	char options[16];		/* e.g., 115200n8 */
- 	unsigned int baud;
-+	unsigned long node;
- };
+diff --git a/drivers/dma/dw-edma/dw-edma-core.c b/drivers/dma/dw-edma/dw-edma-core.c
+index 225eab58acb7..ef49deb5a7f3 100644
+--- a/drivers/dma/dw-edma/dw-edma-core.c
++++ b/drivers/dma/dw-edma/dw-edma-core.c
+@@ -333,6 +333,7 @@ dw_edma_device_transfer(struct dw_edma_transfer *xfer)
+ 	struct dw_edma_chunk *chunk;
+ 	struct dw_edma_burst *burst;
+ 	struct dw_edma_desc *desc;
++	size_t fsz = 0;
+ 	u32 cnt = 0;
+ 	int i;
  
- struct earlycon_id {
+@@ -382,9 +383,7 @@ dw_edma_device_transfer(struct dw_edma_transfer *xfer)
+ 		if (xfer->xfer.sg.len < 1)
+ 			return NULL;
+ 	} else if (xfer->type == EDMA_XFER_INTERLEAVED) {
+-		if (!xfer->xfer.il->numf)
+-			return NULL;
+-		if (xfer->xfer.il->numf > 0 && xfer->xfer.il->frame_size > 0)
++		if (!xfer->xfer.il->numf || xfer->xfer.il->frame_size < 1)
+ 			return NULL;
+ 		if (!xfer->xfer.il->src_inc || !xfer->xfer.il->dst_inc)
+ 			return NULL;
+@@ -414,10 +413,8 @@ dw_edma_device_transfer(struct dw_edma_transfer *xfer)
+ 		cnt = xfer->xfer.sg.len;
+ 		sg = xfer->xfer.sg.sgl;
+ 	} else if (xfer->type == EDMA_XFER_INTERLEAVED) {
+-		if (xfer->xfer.il->numf > 0)
+-			cnt = xfer->xfer.il->numf;
+-		else
+-			cnt = xfer->xfer.il->frame_size;
++		cnt = xfer->xfer.il->numf * xfer->xfer.il->frame_size;
++		fsz = xfer->xfer.il->frame_size;
+ 	}
+ 
+ 	for (i = 0; i < cnt; i++) {
+@@ -439,7 +436,7 @@ dw_edma_device_transfer(struct dw_edma_transfer *xfer)
+ 		else if (xfer->type == EDMA_XFER_SCATTER_GATHER)
+ 			burst->sz = sg_dma_len(sg);
+ 		else if (xfer->type == EDMA_XFER_INTERLEAVED)
+-			burst->sz = xfer->xfer.il->sgl[i].size;
++			burst->sz = xfer->xfer.il->sgl[i % fsz].size;
+ 
+ 		chunk->ll_region.sz += burst->sz;
+ 		desc->alloc_sz += burst->sz;
+@@ -482,10 +479,9 @@ dw_edma_device_transfer(struct dw_edma_transfer *xfer)
+ 
+ 		if (xfer->type == EDMA_XFER_SCATTER_GATHER) {
+ 			sg = sg_next(sg);
+-		} else if (xfer->type == EDMA_XFER_INTERLEAVED &&
+-			   xfer->xfer.il->frame_size > 0) {
++		} else if (xfer->type == EDMA_XFER_INTERLEAVED) {
+ 			struct dma_interleaved_template *il = xfer->xfer.il;
+-			struct data_chunk *dc = &il->sgl[i];
++			struct data_chunk *dc = &il->sgl[i % fsz];
+ 
+ 			src_addr += burst->sz;
+ 			if (il->src_sgl)
 -- 
-2.37.0
+2.35.1
 
