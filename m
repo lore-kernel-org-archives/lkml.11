@@ -2,33 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E8C3C19F29
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 14:53:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D252EC04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 14:53:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232642AbiG1OxP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 10:53:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60910 "EHLO
+        id S229796AbiG1OxT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 10:53:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232245AbiG1OxE (ORCPT
+        with ESMTP id S232458AbiG1OxJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 10:53:04 -0400
+        Thu, 28 Jul 2022 10:53:09 -0400
 Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::223])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57F956050B;
-        Thu, 28 Jul 2022 07:53:02 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D62A5D0FA;
+        Thu, 28 Jul 2022 07:53:05 -0700 (PDT)
 Received: (Authenticated sender: maxime.chevallier@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 94FB260009;
-        Thu, 28 Jul 2022 14:52:54 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id ABBF56000B;
+        Thu, 28 Jul 2022 14:53:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1659019978;
+        t=1659019982;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=w9gjrFfJNDyi+UVEtu1C2UBFOyncoWXQkKZtz3CZtE8=;
-        b=o3sxx7HQE6bPRAFefUy9+Yi6mBcI36Wp00NT/2+0A9NLCgpsN7gC899XWtjYi3SvDulVPY
-        q9AsRK/lyCobDOktBquxGBLOs6MpT9VIgp1hQ2N/nWfBDtuKNzy2Wliv12CICDJ0qZFf74
-        AijxQ54dJhWAAIjRBgpfYEy+sOaM9GzHno52Tew4dRPd3cziBCEGQdxtfB0JClCqI83Qxq
-        jipUJPKweHtp7ZD2iLUmUrKHk+gs+R0/V80xSzkkaPBELItM8IJbAeK2oLJX+IhCYzCkZ1
-        OhPIE+NNa+DSn1cPEDXhEUUxPmfS4H+Nmnw30jiN/CRSDUrB0r/WA9sAntg2Fw==
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=bfRFgIm9TD823qNLzMMh6i2HmzOFrr2qvhJOGCSLGw8=;
+        b=LvInS2Igr/SwKW/LEc8udAuBQkdClSN/n/IysqCQ6t5P73M8SlYHqK6iBh/QT5BWb5LZMW
+        yuWATT+wzFU2K7GVMQ/RlErmHItWsL3grrRdxaO+50sg0467qjDLW+8tzHRYBSohPXSaQs
+        uc/rrZV3UWkSM9cciPc0Z6lY14TRs9tKw62fEPfhA2tMy2b8QcZKUU7RXCtLO6R4IFqtLn
+        KXza+WxrPfRQWSJWCAhRVWwTZjh4/swlkwRDD8rI22BxPcWjj9eUOebT5U0H2V4w1ccQEa
+        VK+LRY2zNPpTLzG3zFKu5cRJvZCk3+F0FKUeoF5wROP61KLsIeuW+0JGAlIfSA==
 From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
 To:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>
 Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
@@ -39,62 +40,48 @@ Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Russell King <linux@armlinux.org.uk>,
         linux-arm-kernel@lists.infradead.org, Horatiu.Vultur@microchip.com,
-        Allan.Nielsen@microchip.com, UNGLinuxDriver@microchip.com
-Subject: [PATCH net-next 0/4] net: Introduce QUSGMII phy mode
-Date:   Thu, 28 Jul 2022 16:52:48 +0200
-Message-Id: <20220728145252.439201-1-maxime.chevallier@bootlin.com>
+        Allan.Nielsen@microchip.com, UNGLinuxDriver@microchip.com,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH net-next 2/4] dt-bindings: net: ethernet-controller: add QUSGMII mode
+Date:   Thu, 28 Jul 2022 16:52:50 +0200
+Message-Id: <20220728145252.439201-3-maxime.chevallier@bootlin.com>
 X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220728145252.439201-1-maxime.chevallier@bootlin.com>
+References: <20220728145252.439201-1-maxime.chevallier@bootlin.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello everyone,
+Add a new QUSGMII mode, standing for "Quad Universal Serial Gigabit
+Media Independent Interface", a derivative of USGMII which, similarly to
+QSGMII, allows to multiplex 4 1Gbps links to a Quad-PHY.
 
-This is the V2 of a previous series [1] initially aimed at introducing
-inband extensions, with modes like QUSGMII. This mode allows passing
-info in the ethernet preamble between the MAC and the PHY, such s
-timestamps.
+The main difference with QSGMII is that QUSGMII can include an extension
+instead of the standard 7bytes ethernet preamble, allowing to convey
+arbitrary data such as Timestamps.
 
-This series has now become a preliminary series, that simply introduces
-the new interface mode, without support for inband extensions, that will
-come later.
+Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
+Acked-by: Rob Herring <robh@kernel.org>
+---
+V1->V2 : Added Rob's acked-by
 
-The reasonning is that work will need to be done in the networking
-subsystem, but also in the generic phy driver subsystem to allow serdes
-configuration for qusgmii.
+ Documentation/devicetree/bindings/net/ethernet-controller.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-This series add the mode, the relevant binding changes, adds support for
-it in the lan966x driver, and also introduces a small helper to get the
-number of links a given phy mode can carry (think 1 for SGMII and 4 for
-QSGMII). This allows for better readability and will prove useful
-when (if) we support PSGMII (5 links on 1 interface) and OUSGMII (8
-links on one interface).
-
-Best regards,
-
-Maxime
-
-[1] : https://lore.kernel.org/netdev/20220519135647.465653-1-maxime.chevallier@bootlin.com/
-
-Maxime Chevallier (4):
-  net: phy: Introduce QUSGMII PHY mode
-  dt-bindings: net: ethernet-controller: add QUSGMII mode
-  net: phy: Add helper to derive the number of ports from a phy mode
-  net: lan966x: Add QUSGMII support for lan966x
-
- .../bindings/net/ethernet-controller.yaml     |  1 +
- Documentation/networking/phy.rst              |  9 ++++
- .../ethernet/microchip/lan966x/lan966x_main.c |  2 +
- .../microchip/lan966x/lan966x_phylink.c       |  3 +-
- .../ethernet/microchip/lan966x/lan966x_port.c | 22 +++++---
- .../ethernet/microchip/lan966x/lan966x_regs.h |  6 +++
- drivers/net/phy/phy-core.c                    | 52 +++++++++++++++++++
- drivers/net/phy/phylink.c                     |  3 ++
- include/linux/phy.h                           |  5 ++
- 9 files changed, 96 insertions(+), 7 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/net/ethernet-controller.yaml b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+index 56d9aca8c954..eb69a720575f 100644
+--- a/Documentation/devicetree/bindings/net/ethernet-controller.yaml
++++ b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
+@@ -67,6 +67,7 @@ properties:
+       - gmii
+       - sgmii
+       - qsgmii
++      - qusgmii
+       - tbi
+       - rev-mii
+       - rmii
 -- 
 2.37.1
 
