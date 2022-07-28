@@ -2,151 +2,391 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E4EEC19F2C
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 06:09:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3B66C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 06:11:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233710AbiG1GJE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 02:09:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52032 "EHLO
+        id S233779AbiG1GLD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 02:11:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229832AbiG1GJC (ORCPT
+        with ESMTP id S229814AbiG1GK7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 02:09:02 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E57FC5D0C5;
-        Wed, 27 Jul 2022 23:09:00 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id 4DAE15FD0D;
-        Thu, 28 Jul 2022 09:08:59 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1658988539;
-        bh=D6opYFkipKCS3N3a04jMOPNzwBO0XwrHBaVmWEuE3uo=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=AqdjO08aq/IQqfV0ttwwreBbkh7cVJZ8OcRYaPZyuJHFafhJEZnf2Wv2IEoNndqty
-         54/Z/d7WJy4E20QdLpIlC1s3e5RJSByOJClBn8XtCWAZhWyrByz8FOGVClLww1iuAj
-         mJ+rfGJ/iHb0pK1dck/fIuz+fOcoyLYgcqM7Ii2/uyaT9LbRMM1J4jlI+D6QnQgccB
-         5KIUKc+6uPPBiB1P6xZEzkVKazXjok3SZEsmCsvuGLWGboJnxPNysQbaDG/xfG7mru
-         nxmlQZFWFtVBYeUzf7lA/oCAi5BusNIjlqQhJLQyn8cbqz3q/HtgvPieWz6XyTlw3J
-         mLQ9f+NFaKlhQ==
-Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Thu, 28 Jul 2022 09:08:57 +0300 (MSK)
-From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-To:     Stefano Garzarella <sgarzare@redhat.com>,
-        Bryan Tan <bryantan@vmware.com>,
-        Vishnu Dasa <vdasa@vmware.com>,
-        VMware PV-Drivers Reviewers <pv-drivers@vmware.com>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        "kys@microsoft.com" <kys@microsoft.com>,
-        "haiyangz@microsoft.com" <haiyangz@microsoft.com>,
-        "sthemmin@microsoft.com" <sthemmin@microsoft.com>,
-        "wei.liu@kernel.org" <wei.liu@kernel.org>,
-        "Dexuan Cui" <decui@microsoft.com>,
-        Krasnov Arseniy <oxffffaa@gmail.com>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>
-Subject: Re: [RFC PATCH v2 0/9] vsock: updates for SO_RCVLOWAT handling
-Thread-Topic: [RFC PATCH v2 0/9] vsock: updates for SO_RCVLOWAT handling
-Thread-Index: AQHYn/u277di/gNdd06E3+5muuhZo62R+OsAgAEl3oA=
-Date:   Thu, 28 Jul 2022 06:08:38 +0000
-Message-ID: <d5166d4e-4892-4cdf-df01-4da43b8e269d@sberdevices.ru>
-References: <19e25833-5f5c-f9b9-ac0f-1945ea17638d@sberdevices.ru>
- <20220727123710.pwzy6ag3gavotxda@sgarzare-redhat>
-In-Reply-To: <20220727123710.pwzy6ag3gavotxda@sgarzare-redhat>
-Accept-Language: en-US, ru-RU
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <369A9F40B249D74CA28AE174FDD1ED9F@sberdevices.ru>
-Content-Transfer-Encoding: base64
+        Thu, 28 Jul 2022 02:10:59 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81E9031356;
+        Wed, 27 Jul 2022 23:10:58 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id E3B6334BBA;
+        Thu, 28 Jul 2022 06:10:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1658988657; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8XQuxJINSr8IzME74nr/Ktk1WRgB/GcLBhw4EaRBaus=;
+        b=MyrnTEMTUqt8Fe5SLV4DlWAysg4I7FIe3ikqzv9yA279btVmLdUTqcEsPikYC640kAyioL
+        Mn4tnVZSDO+Wp5WWs0nlBiajJ3sMKtz9/z+YOC/tNeALq6//jutGZyY3gJcaA6uihOzCiZ
+        43v63zlseQ5WUyhj+nor9n04tSa4ypo=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1658988657;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8XQuxJINSr8IzME74nr/Ktk1WRgB/GcLBhw4EaRBaus=;
+        b=1FPjygj5MmQfPONTg+6tV23FvtOKRIfZLxjZjz2LWszuel7QBuK5O5myKID7NOeqOFQODJ
+        dJc1Di4fDm5tYvDw==
+Received: from localhost.localdomain (unknown [10.100.208.98])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id F1E382C142;
+        Thu, 28 Jul 2022 06:10:56 +0000 (UTC)
+From:   Jiri Slaby <jslaby@suse.cz>
+To:     gregkh@linuxfoundation.org
+Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiri Slaby <jslaby@suse.cz>
+Subject: [PATCH 2/6] Documentation: serial: dedup kernel-doc for uart functions
+Date:   Thu, 28 Jul 2022 08:10:52 +0200
+Message-Id: <20220728061056.20799-2-jslaby@suse.cz>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220728061056.20799-1-jslaby@suse.cz>
+References: <20220728061056.20799-1-jslaby@suse.cz>
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/07/28 02:09:00 #19985101
-X-KSMG-AntiVirus-Status: Clean, skipped
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-T24gMjcuMDcuMjAyMiAxNTozNywgU3RlZmFubyBHYXJ6YXJlbGxhIHdyb3RlOg0KPiBIaSBBcnNl
-bml5LA0KPiANCj4gT24gTW9uLCBKdWwgMjUsIDIwMjIgYXQgMDc6NTQ6MDVBTSArMDAwMCwgQXJz
-ZW5peSBLcmFzbm92IHdyb3RlOg0KPj4gSGVsbG8sDQo+Pg0KPj4gVGhpcyBwYXRjaHNldCBpbmNs
-dWRlcyBzb21lIHVwZGF0ZXMgZm9yIFNPX1JDVkxPV0FUOg0KPj4NCj4+IDEpIGFmX3Zzb2NrOg0K
-Pj4gwqAgRHVyaW5nIG15IGV4cGVyaW1lbnRzIHdpdGggemVyb2NvcHkgcmVjZWl2ZSwgaSBmb3Vu
-ZCwgdGhhdCBpbiBzb21lDQo+PiDCoCBjYXNlcywgcG9sbCgpIGltcGxlbWVudGF0aW9uIHZpb2xh
-dGVzIFBPU0lYOiB3aGVuIHNvY2tldCBoYXMgbm9uLQ0KPj4gwqAgZGVmYXVsdCBTT19SQ1ZMT1dB
-VChlLmcuIG5vdCAxKSwgcG9sbCgpIHdpbGwgYWx3YXlzIHNldCBQT0xMSU4gYW5kDQo+PiDCoCBQ
-T0xMUkROT1JNIGJpdHMgaW4gJ3JldmVudHMnIGV2ZW4gbnVtYmVyIG9mIGJ5dGVzIGF2YWlsYWJs
-ZSB0byByZWFkDQo+PiDCoCBvbiBzb2NrZXQgaXMgc21hbGxlciB0aGFuIFNPX1JDVkxPV0FUIHZh
-bHVlLiBJbiB0aGlzIGNhc2UsdXNlciBzZWVzDQo+PiDCoCBQT0xMSU4gZmxhZyBhbmQgdGhlbiB0
-cmllcyB0byByZWFkIGRhdGEoZm9yIGV4YW1wbGUgdXNpbmfCoCAncmVhZCgpJw0KPj4gwqAgY2Fs
-bCksIGJ1dCByZWFkIGNhbGwgd2lsbCBiZSBibG9ja2VkLCBiZWNhdXNlwqAgU09fUkNWTE9XQVQg
-bG9naWMgaXMNCj4+IMKgIHN1cHBvcnRlZCBpbiBkZXF1ZXVlIGxvb3AgaW4gYWZfdnNvY2suYy4g
-QnV0IHRoZSBzYW1lIHRpbWUswqAgUE9TSVgNCj4+IMKgIHJlcXVpcmVzIHRoYXQ6DQo+Pg0KPj4g
-wqAgIlBPTExJTsKgwqDCoMKgIERhdGEgb3RoZXIgdGhhbiBoaWdoLXByaW9yaXR5IGRhdGEgbWF5
-IGJlIHJlYWQgd2l0aG91dA0KPj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgYmxvY2tpbmcu
-DQo+PiDCoMKgIFBPTExSRE5PUk0gTm9ybWFsIGRhdGEgbWF5IGJlIHJlYWQgd2l0aG91dCBibG9j
-a2luZy4iDQo+Pg0KPj4gwqAgU2VlIGh0dHBzOi8vd3d3Lm9wZW4tc3RkLm9yZy9qdGMxL3NjMjIv
-b3Blbi9uNDIxNy5wZGYsIHBhZ2UgMjkzLg0KPj4NCj4+IMKgIFNvLCB3ZSBoYXZlLCB0aGF0IHBv
-bGwoKSBzeXNjYWxsIHJldHVybnMgUE9MTElOLCBidXQgcmVhZCBjYWxsIHdpbGwNCj4+IMKgIGJl
-IGJsb2NrZWQuDQo+Pg0KPj4gwqAgQWxzbyBpbiBtYW4gcGFnZSBzb2NrZXQoNykgaSBmb3VuZCB0
-aGF0Og0KPj4NCj4+IMKgICJTaW5jZSBMaW51eCAyLjYuMjgsIHNlbGVjdCgyKSwgcG9sbCgyKSwg
-YW5kIGVwb2xsKDcpIGluZGljYXRlIGENCj4+IMKgIHNvY2tldCBhcyByZWFkYWJsZSBvbmx5IGlm
-IGF0IGxlYXN0IFNPX1JDVkxPV0FUIGJ5dGVzIGFyZSBhdmFpbGFibGUuIg0KPj4NCj4+IMKgIEkg
-Y2hlY2tlZCBUQ1AgY2FsbGJhY2sgZm9yIHBvbGwoKShuZXQvaXB2NC90Y3AuYywgdGNwX3BvbGwo
-KSksIGl0DQo+PiDCoCB1c2VzIFNPX1JDVkxPV0FUIHZhbHVlIHRvIHNldCBQT0xMSU4gYml0LCBh
-bHNvIGkndmUgdGVzdGVkIFRDUCB3aXRoDQo+PiDCoCB0aGlzIGNhc2UgZm9yIFRDUCBzb2NrZXQs
-IGl0IHdvcmtzIGFzIFBPU0lYIHJlcXVpcmVkLg0KPj4NCj4+IMKgIEkndmUgYWRkZWQgc29tZSBm
-aXhlcyB0byBhZl92c29jay5jIGFuZCB2aXJ0aW9fdHJhbnNwb3J0X2NvbW1vbi5jLA0KPj4gwqAg
-dGVzdCBpcyBhbHNvIGltcGxlbWVudGVkLg0KPj4NCj4+IDIpIHZpcnRpby92c29jazoNCj4+IMKg
-IEl0IGFkZHMgc29tZSBvcHRpbWl6YXRpb24gdG8gd2FrZSB1cHMsIHdoZW4gbmV3IGRhdGEgYXJy
-aXZlZC4gTm93LA0KPj4gwqAgU09fUkNWTE9XQVQgaXMgY29uc2lkZXJlZCBiZWZvcmUgd2FrZSB1
-cCBzbGVlcGVycyB3aG8gd2FpdCBuZXcgZGF0YS4NCj4+IMKgIFRoZXJlIGlzIG5vIHNlbnNlLCB0
-byBraWNrIHdhaXRlciwgd2hlbiBudW1iZXIgb2YgYXZhaWxhYmxlIGJ5dGVzDQo+PiDCoCBpbiBz
-b2NrZXQncyBxdWV1ZSA8IFNPX1JDVkxPV0FULCBiZWNhdXNlIGlmIHdlIHdha2UgdXAgcmVhZGVy
-IGluDQo+PiDCoCB0aGlzIGNhc2UsIGl0IHdpbGwgd2FpdCBmb3IgU09fUkNWTE9XQVQgZGF0YSBh
-bnl3YXkgZHVyaW5nIGRlcXVldWUsDQo+PiDCoCBvciBpbiBwb2xsKCkgY2FzZSwgUE9MTElOL1BP
-TExSRE5PUk0gYml0cyB3b24ndCBiZSBzZXQsIHNvIHN1Y2gNCj4+IMKgIGV4aXQgZnJvbSBwb2xs
-KCkgd2lsbCBiZSAic3B1cmlvdXMiLiBUaGlzIGxvZ2ljIGlzIGFsc28gdXNlZCBpbiBUQ1ANCj4+
-IMKgIHNvY2tldHMuDQo+IA0KPiBOaWNlLCBpdCBsb29rcyBnb29kIQ0KVGhhbmsgWW91IQ0KPiAN
-Cj4+DQo+PiAzKSB2bWNpL3Zzb2NrOg0KPj4gwqAgU2FtZSBhcyAyKSwgYnV0IGknbSBub3Qgc3Vy
-ZSBhYm91dCB0aGlzIGNoYW5nZXMuIFdpbGwgYmUgdmVyeSBnb29kLA0KPj4gwqAgdG8gZ2V0IGNv
-bW1lbnRzIGZyb20gc29tZW9uZSB3aG8ga25vd3MgdGhpcyBjb2RlLg0KPiANCj4gSSBDQ2VkIFZN
-Q0kgbWFpbnRhaW5lcnMgdG8gdGhlIHBhdGNoIGFuZCBhbHNvIHRvIHRoaXMgY292ZXIsIG1heWJl
-IGJldHRlciB0byBrZWVwIHRoZW0gaW4gdGhlIGxvb3AgZm9yIG5leHQgdmVyc2lvbnMuDQo+IA0K
-PiAoSm9yZ2VuJ3MgYW5kIFJhamVzaCdzIGVtYWlscyBib3VuY2VkIGJhY2ssIHNvIEknbSBDQ2lu
-ZyBoZXJlIG9ubHkgQnJ5YW4sIFZpc2hudSwgYW5kIHB2LWRyaXZlcnNAdm13YXJlLmNvbSkNCk9r
-LCBpJ2xsIENDIHRoZW0gaW4gdGhlIG5leHQgdmVyc2lvbg0KPiANCj4+DQo+PiA0KSBIeXBlci1W
-Og0KPj4gwqAgQXMgRGV4dWFuIEN1aSBtZW50aW9uZWQsIGZvciBIeXBlci1WIHRyYW5zcG9ydCBp
-dCBpcyBkaWZmaWN1bHQgdG8NCj4+IMKgIHN1cHBvcnQgU09fUkNWTE9XQVQsIHNvIGhlIHN1Z2dl
-c3RlZCB0byBkaXNhYmxlIHRoaXMgZmVhdHVyZSBmb3INCj4+IMKgIEh5cGVyLVYuDQo+IA0KPiBJ
-IGxlZnQgYSBjb3VwbGUgb2YgY29tbWVudHMgaW4gc29tZSBwYXRjaGVzLCBidXQgaXQgc2VlbXMg
-dG8gbWUgdG8gYmUgaW4gYSBnb29kIHN0YXRlIDotKQ0KPiANCj4gSSB3b3VsZCBqdXN0IHN1Z2dl
-c3QgYSBiaXQgb2YgYSByZS1vcmdhbml6YXRpb24gb2YgdGhlIHNlcmllcyAodGhlIHBhdGNoZXMg
-YXJlIGZpbmUsIGp1c3QgdGhlIG9yZGVyKToNCj4gwqAgLSBpbnRyb2R1Y2UgdnNvY2tfc2V0X3Jj
-dmxvd2F0KCkNCj4gwqAgLSBkaXNhYmxpbmcgaXQgZm9yIGh2X3NvY2sNCj4gwqAgLSB1c2UgJ3Rh
-cmdldCcgaW4gdmlydGlvIHRyYW5zcG9ydHMNCj4gwqAgLSB1c2UgJ3RhcmdldCcgaW4gdm1jaSB0
-cmFuc3BvcnRzDQo+IMKgIC0gdXNlIHNvY2tfcmN2bG93YXQgaW4gdnNvY2tfcG9sbCgpDQo+IMKg
-wqAgwqBJIHRoaW5rIGlzIGJldHRlciB0byBwYXNzIHNvY2tfcmN2bG93YXQoKSBhcyAndGFyZ2V0
-JyB3aGVuIHRoZQ0KPiDCoMKgwqAgdHJhbnNwb3J0cyBhcmUgYWxyZWFkeSBhYmxlIHRvIHVzZSBp
-dA0KPiDCoCAtIGFkZCB2c29ja19kYXRhX3JlYWR5KCkNCj4gwqAgLSB1c2UgdnNvY2tfZGF0YV9y
-ZWFkeSgpIGluIHZpcnRpbyB0cmFuc3BvcnRzDQo+IMKgIC0gdXNlIHZzb2NrX2RhdGFfcmVhZHko
-KSBpbiB2bWNpIHRyYW5zcG9ydHMNCj4gwqAgLSB0ZXN0cw0KPiANCj4gV2hhdCBkbyB5b3UgdGhp
-bms/DQpObyBwcm9ibGVtISBJIHRoaW5rIGkgY2FuIHdhaXQgZm9yIHJlcGx5IGZyb20gVk1XYXJl
-IGd1eXMgYmVmb3JlIHByZXBhcmluZyB2Mw0KPiANCj4gVGhhbmtzLA0KPiBTdGVmYW5vDQo+IA0K
-DQo=
+Some of the serial (uart_*) functions are documented twice. Once as
+kernel-doc along their sources and once in Documentation. So deduplicate
+these texts, merge them into kernel-doc in the sources, and link them
+using kernel-doc: from the Documentation.
+
+To be properly linked and rendered, tabulators had to be removed from
+the comments.
+
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+---
+ Documentation/driver-api/serial/driver.rst |  84 +-----------
+ drivers/tty/serial/serial_core.c           | 141 ++++++++++++---------
+ 2 files changed, 87 insertions(+), 138 deletions(-)
+
+diff --git a/Documentation/driver-api/serial/driver.rst b/Documentation/driver-api/serial/driver.rst
+index cb0ec6db4f1e..ac9620e97f4b 100644
+--- a/Documentation/driver-api/serial/driver.rst
++++ b/Documentation/driver-api/serial/driver.rst
+@@ -69,85 +69,11 @@ uart_ops
+ Other functions
+ ---------------
+ 
+-uart_update_timeout(port,cflag,baud)
+-	Update the frame timing information according to the number of bits,
+-	parity, stop bits and baud rate. The FIFO drain timeout is derived
+-	from the frame timing information.
+-
+-	Locking: caller is expected to take port->lock
+-
+-	Interrupts: n/a
+-
+-uart_get_baud_rate(port,termios,old,min,max)
+-	Return the numeric baud rate for the specified termios, taking
+-	account of the special 38400 baud "kludge".  The B0 baud rate
+-	is mapped to 9600 baud.
+-
+-	If the baud rate is not within min..max, then if old is non-NULL,
+-	the original baud rate will be tried.  If that exceeds the
+-	min..max constraint, 9600 baud will be returned.  termios will
+-	be updated to the baud rate in use.
+-
+-	Note: min..max must always allow 9600 baud to be selected.
+-
+-	Locking: caller dependent.
+-
+-	Interrupts: n/a
+-
+-uart_get_divisor(port,baud)
+-	Return the divisor (baud_base / baud) for the specified baud
+-	rate, appropriately rounded.
+-
+-	If 38400 baud and custom divisor is selected, return the
+-	custom divisor instead.
+-
+-	Locking: caller dependent.
+-
+-	Interrupts: n/a
+-
+-uart_match_port(port1,port2)
+-	This utility function can be used to determine whether two
+-	uart_port structures describe the same port.
+-
+-	Locking: n/a
+-
+-	Interrupts: n/a
+-
+-uart_write_wakeup(port)
+-	A driver is expected to call this function when the number of
+-	characters in the transmit buffer have dropped below a threshold.
+-
+-	Locking: port->lock should be held.
+-
+-	Interrupts: n/a
+-
+-uart_register_driver(drv)
+-	Register a uart driver with the core driver.  We in turn register
+-	with the tty layer, and initialise the core driver per-port state.
+-
+-	drv->port should be NULL, and the per-port structures should be
+-	registered using uart_add_one_port after this call has succeeded.
+-
+-	Locking: none
+-
+-	Interrupts: enabled
+-
+-uart_unregister_driver()
+-	Remove all references to a driver from the core driver.  The low
+-	level driver must have removed all its ports via the
+-	uart_remove_one_port() if it registered them with uart_add_one_port().
+-
+-	Locking: none
+-
+-	Interrupts: enabled
+-
+-**uart_suspend_port()**
+-
+-**uart_resume_port()**
+-
+-**uart_add_one_port()**
+-
+-**uart_remove_one_port()**
++.. kernel-doc:: drivers/tty/serial/serial_core.c
++   :identifiers: uart_update_timeout uart_get_baud_rate uart_get_divisor
++           uart_match_port uart_write_wakeup uart_register_driver
++           uart_unregister_driver uart_suspend_port uart_resume_port
++           uart_add_one_port uart_remove_one_port
+ 
+ Other notes
+ -----------
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index ae32bdb87235..810dba0b92e3 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -97,9 +97,16 @@ static inline struct uart_port *uart_port_check(struct uart_state *state)
+ 	return state->uart_port;
+ }
+ 
+-/*
+- * This routine is used by the interrupt handler to schedule processing in
+- * the software interrupt portion of the driver.
++/**
++ * uart_write_wakeup - schedule write processing
++ * @port: port to be processed
++ *
++ * This routine is used by the interrupt handler to schedule processing in the
++ * software interrupt portion of the driver. A driver is expected to call this
++ * function when the number of characters in the transmit buffer have dropped
++ * below a threshold.
++ *
++ * Locking: @port->lock should be held
+  */
+ void uart_write_wakeup(struct uart_port *port)
+ {
+@@ -327,14 +334,16 @@ static void uart_shutdown(struct tty_struct *tty, struct uart_state *state)
+ }
+ 
+ /**
+- *	uart_update_timeout - update per-port frame timing information.
+- *	@port:  uart_port structure describing the port
+- *	@cflag: termios cflag value
+- *	@baud:  speed of the port
++ * uart_update_timeout - update per-port frame timing information
++ * @port: uart_port structure describing the port
++ * @cflag: termios cflag value
++ * @baud: speed of the port
+  *
+- *	Set the port frame timing information from which the FIFO timeout
+- *	value is derived. The @cflag value should reflect the actual hardware
+- *	settings.
++ * Set the @port frame timing information from which the FIFO timeout value is
++ * derived. The @cflag value should reflect the actual hardware settings as
++ * number of bits, parity, stop bits and baud rate is taken into account here.
++ *
++ * Locking: caller is expected to take @port->lock
+  */
+ void
+ uart_update_timeout(struct uart_port *port, unsigned int cflag,
+@@ -349,23 +358,25 @@ uart_update_timeout(struct uart_port *port, unsigned int cflag,
+ EXPORT_SYMBOL(uart_update_timeout);
+ 
+ /**
+- *	uart_get_baud_rate - return baud rate for a particular port
+- *	@port: uart_port structure describing the port in question.
+- *	@termios: desired termios settings.
+- *	@old: old termios (or NULL)
+- *	@min: minimum acceptable baud rate
+- *	@max: maximum acceptable baud rate
++ * uart_get_baud_rate - return baud rate for a particular port
++ * @port: uart_port structure describing the port in question.
++ * @termios: desired termios settings
++ * @old: old termios (or %NULL)
++ * @min: minimum acceptable baud rate
++ * @max: maximum acceptable baud rate
++ *
++ * Decode the termios structure into a numeric baud rate, taking account of the
++ * magic 38400 baud rate (with spd_* flags), and mapping the %B0 rate to 9600
++ * baud.
+  *
+- *	Decode the termios structure into a numeric baud rate,
+- *	taking account of the magic 38400 baud rate (with spd_*
+- *	flags), and mapping the %B0 rate to 9600 baud.
++ * If the new baud rate is invalid, try the @old termios setting. If it's still
++ * invalid, we try 9600 baud.
+  *
+- *	If the new baud rate is invalid, try the old termios setting.
+- *	If it's still invalid, we try 9600 baud.
++ * The @termios structure is updated to reflect the baud rate we're actually
++ * going to be using. Don't do this for the case where B0 is requested ("hang
++ * up").
+  *
+- *	Update the @termios structure to reflect the baud rate
+- *	we're actually going to be using. Don't do this for the case
+- *	where B0 is requested ("hang up").
++ * Locking: caller dependent
+  */
+ unsigned int
+ uart_get_baud_rate(struct uart_port *port, struct ktermios *termios,
+@@ -450,11 +461,17 @@ uart_get_baud_rate(struct uart_port *port, struct ktermios *termios,
+ EXPORT_SYMBOL(uart_get_baud_rate);
+ 
+ /**
+- *	uart_get_divisor - return uart clock divisor
+- *	@port: uart_port structure describing the port.
+- *	@baud: desired baud rate
++ * uart_get_divisor - return uart clock divisor
++ * @port: uart_port structure describing the port
++ * @baud: desired baud rate
++ *
++ * Calculate the divisor (baud_base / baud) for the specified @baud,
++ * appropriately rounded.
+  *
+- *	Calculate the uart clock divisor for the port.
++ * If 38400 baud and custom divisor is selected, return the custom divisor
++ * instead.
++ *
++ * Locking: caller dependent
+  */
+ unsigned int
+ uart_get_divisor(struct uart_port *port, unsigned int baud)
+@@ -2678,17 +2695,19 @@ static const struct tty_port_operations uart_port_ops = {
+ };
+ 
+ /**
+- *	uart_register_driver - register a driver with the uart core layer
+- *	@drv: low level driver structure
++ * uart_register_driver - register a driver with the uart core layer
++ * @drv: low level driver structure
++ *
++ * Register a uart driver with the core driver. We in turn register with the
++ * tty layer, and initialise the core driver per-port state.
+  *
+- *	Register a uart driver with the core driver.  We in turn register
+- *	with the tty layer, and initialise the core driver per-port state.
++ * We have a proc file in /proc/tty/driver which is named after the normal
++ * driver.
+  *
+- *	We have a proc file in /proc/tty/driver which is named after the
+- *	normal driver.
++ * @drv->port should be %NULL, and the per-port structures should be registered
++ * using uart_add_one_port() after this call has succeeded.
+  *
+- *	drv->port should be NULL, and the per-port structures should be
+- *	registered using uart_add_one_port after this call has succeeded.
++ * Locking: none, Interrupts: enabled
+  */
+ int uart_register_driver(struct uart_driver *drv)
+ {
+@@ -2752,13 +2771,14 @@ int uart_register_driver(struct uart_driver *drv)
+ EXPORT_SYMBOL(uart_register_driver);
+ 
+ /**
+- *	uart_unregister_driver - remove a driver from the uart core layer
+- *	@drv: low level driver structure
++ * uart_unregister_driver - remove a driver from the uart core layer
++ * @drv: low level driver structure
++ *
++ * Remove all references to a driver from the core driver. The low level
++ * driver must have removed all its ports via the uart_remove_one_port() if it
++ * registered them with uart_add_one_port(). (I.e. @drv->port is %NULL.)
+  *
+- *	Remove all references to a driver from the core driver.  The low
+- *	level driver must have removed all its ports via the
+- *	uart_remove_one_port() if it registered them with uart_add_one_port().
+- *	(ie, drv->port == NULL)
++ * Locking: none, Interrupts: enabled
+  */
+ void uart_unregister_driver(struct uart_driver *drv)
+ {
+@@ -3007,16 +3027,15 @@ static const struct attribute_group tty_dev_attr_group = {
+ };
+ 
+ /**
+- *	uart_add_one_port - attach a driver-defined port structure
+- *	@drv: pointer to the uart low level driver structure for this port
+- *	@uport: uart port structure to use for this port.
++ * uart_add_one_port - attach a driver-defined port structure
++ * @drv: pointer to the uart low level driver structure for this port
++ * @uport: uart port structure to use for this port.
+  *
+- *	Context: task context, might sleep
++ * Context: task context, might sleep
+  *
+- *	This allows the driver to register its own uart_port structure
+- *	with the core driver.  The main purpose is to allow the low
+- *	level uart drivers to expand uart_port, rather than having yet
+- *	more levels of structures.
++ * This allows the driver @drv to register its own uart_port structure with the
++ * core driver. The main purpose is to allow the low level uart drivers to
++ * expand uart_port, rather than having yet more levels of structures.
+  */
+ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
+ {
+@@ -3111,15 +3130,14 @@ int uart_add_one_port(struct uart_driver *drv, struct uart_port *uport)
+ EXPORT_SYMBOL(uart_add_one_port);
+ 
+ /**
+- *	uart_remove_one_port - detach a driver defined port structure
+- *	@drv: pointer to the uart low level driver structure for this port
+- *	@uport: uart port structure for this port
++ * uart_remove_one_port - detach a driver defined port structure
++ * @drv: pointer to the uart low level driver structure for this port
++ * @uport: uart port structure for this port
+  *
+- *	Context: task context, might sleep
++ * Context: task context, might sleep
+  *
+- *	This unhooks (and hangs up) the specified port structure from the
+- *	core driver.  No further calls will be made to the low-level code
+- *	for this port.
++ * This unhooks (and hangs up) the specified port structure from the core
++ * driver. No further calls will be made to the low-level code for this port.
+  */
+ int uart_remove_one_port(struct uart_driver *drv, struct uart_port *uport)
+ {
+@@ -3191,8 +3209,13 @@ int uart_remove_one_port(struct uart_driver *drv, struct uart_port *uport)
+ }
+ EXPORT_SYMBOL(uart_remove_one_port);
+ 
+-/*
+- *	Are the two ports equivalent?
++/**
++ * uart_match_port - are the two ports equivalent?
++ * @port1: first port
++ * @port2: second port
++ *
++ * This utility function can be used to determine whether two uart_port
++ * structures describe the same port.
+  */
+ bool uart_match_port(const struct uart_port *port1,
+ 		const struct uart_port *port2)
+-- 
+2.37.1
+
