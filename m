@@ -2,134 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EFB2C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 07:40:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40B20C19F2B
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 07:43:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234072AbiG1Hki (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 03:40:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33546 "EHLO
+        id S234635AbiG1HnC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 03:43:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234230AbiG1Hkf (ORCPT
+        with ESMTP id S234230AbiG1HnB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 03:40:35 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5753D4D83D;
-        Thu, 28 Jul 2022 00:40:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D264AB82284;
-        Thu, 28 Jul 2022 07:40:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21B61C43470;
-        Thu, 28 Jul 2022 07:40:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1658994031;
-        bh=p81wbSl4jQvNdxEQIWuCLFSph+3DQKM11CCOw6EGVc4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cv5PwUYCCTni2XA0aQzBYgUcsAonaMU5j+FBsyqzk1VBGaUBwrzetTytavedUvCdv
-         oSg/NaVW1sccm2S21QeVGOyR1WM91YMv4P9yxSS7MSeF543QvBSwiKkuZ6QY8IzHze
-         IXXPphSIebXXWzKADTcb8tz4gH5C6DlKkfx8oIXcYjaqkXOXSKrD9X7bvIgAbeyAEH
-         hLFbMjVVFD7ONHyHCMfWpdGYm0ln5egrWHzeuKff2JN3TpGNhKoI//vy5s3bHUeRcY
-         cWWmFbwBBKWhGj2msQyHoMmDM4sJ7bKKc9vKPtOCRSCrdeyUhH+5/lKCptXnTGYayu
-         ftYnFgLCqFFbg==
-Date:   Thu, 28 Jul 2022 10:40:28 +0300
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Stefan Berger <stefanb@linux.ibm.com>
-Cc:     kexec@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-integrity@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, nayna@linux.ibm.com,
-        nasastry@in.ibm.com, mpe@ellerman.id.au,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>
-Subject: Re: [PATCH v5 4/6] tpm: of: Make of-tree specific function commonly
- available
-Message-ID: <YuI9bLmqGsZwn4n6@kernel.org>
-References: <20220706152329.665636-1-stefanb@linux.ibm.com>
- <20220706152329.665636-5-stefanb@linux.ibm.com>
- <YsuTRny45aBxGjm5@kernel.org>
- <3a9196b3-c510-0c32-8b70-572d9c4fe69d@linux.ibm.com>
+        Thu, 28 Jul 2022 03:43:01 -0400
+Received: from out20-206.mail.aliyun.com (out20-206.mail.aliyun.com [115.124.20.206])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA55960685;
+        Thu, 28 Jul 2022 00:42:58 -0700 (PDT)
+X-Alimail-AntiSpam: AC=CONTINUE;BC=0.1063008|-1;BR=01201311R191S62rulernew998_84748_2000303;CH=blue;DM=|CONTINUE|false|;DS=CONTINUE|ham_regular_dialog|0.168038-0.000676144-0.831286;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047204;MF=longjin@ringotek.cn;NM=1;PH=DS;RN=7;RT=7;SR=0;TI=SMTPD_---.OfhcAno_1658994164;
+Received: from localhost.localdomain(mailfrom:longjin@RinGoTek.cn fp:SMTPD_---.OfhcAno_1658994164)
+          by smtp.aliyun-inc.com;
+          Thu, 28 Jul 2022 15:42:55 +0800
+From:   fslongjin <longjin@RinGoTek.cn>
+To:     corbet@lwn.net, twoerner@gmail.com, keescook@chromium.org
+Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        fslongjin <fslongjin@vip.qq.com>, longjin <longjin@RinGoTek.cn>
+Subject: [PATCH] Documentation: Fixed errors in the title level of coding style documents
+Date:   Thu, 28 Jul 2022 15:42:24 +0800
+Message-Id: <20220728074224.155298-1-longjin@RinGoTek.cn>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3a9196b3-c510-0c32-8b70-572d9c4fe69d@linux.ibm.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 15, 2022 at 12:01:36PM -0400, Stefan Berger wrote:
-> 
-> 
-> On 7/10/22 23:04, Jarkko Sakkinen wrote:
-> > On Wed, Jul 06, 2022 at 11:23:27AM -0400, Stefan Berger wrote:
-> > > Simplify tpm_read_log_of() by moving reusable parts of the code into
-> > > an inline function that makes it commonly available so it can be
-> > > used also for kexec support. Call the new of_tpm_get_sml_parameters()
-> > > function from the TPM Open Firmware driver.
-> > > 
-> > > Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
-> > > Cc: Jarkko Sakkinen <jarkko@kernel.org>
-> > > Cc: Jason Gunthorpe <jgg@ziepe.ca>
-> > > Cc: Rob Herring <robh+dt@kernel.org>
-> > > Cc: Frank Rowand <frowand.list@gmail.com>
-> > > 
-> > > ---
-> > > v4:
-> > >   - converted to inline function
-> > > ---
-> > >   drivers/char/tpm/eventlog/of.c | 31 +++++--------------------------
-> > >   include/linux/tpm.h            | 27 +++++++++++++++++++++++++++
-> > >   2 files changed, 32 insertions(+), 26 deletions(-)
-> > > 
-> > > diff --git a/drivers/char/tpm/eventlog/of.c b/drivers/char/tpm/eventlog/of.c
-> > > index a9ce66d09a75..f9462d19632e 100644
-> > > --- a/drivers/char/tpm/eventlog/of.c
-> > > +++ b/drivers/char/tpm/eventlog/of.c
-> > > @@ -12,6 +12,7 @@
-> > >   #include <linux/slab.h>
-> > >   #include <linux/of.h>
-> > > +#include <linux/tpm.h>
-> > >   #include <linux/tpm_eventlog.h>
-> > >   #include "../tpm.h"
-> > > @@ -20,11 +21,10 @@
-> > >   int tpm_read_log_of(struct tpm_chip *chip)
-> > >   {
-> > >   	struct device_node *np;
-> > > -	const u32 *sizep;
-> > > -	const u64 *basep;
-> > >   	struct tpm_bios_log *log;
-> > >   	u32 size;
-> > >   	u64 base;
-> > > +	int ret;
-> > >   	log = &chip->log;
-> > >   	if (chip->dev.parent && chip->dev.parent->of_node)
-> > > @@ -35,30 +35,9 @@ int tpm_read_log_of(struct tpm_chip *chip)
-> > >   	if (of_property_read_bool(np, "powered-while-suspended"))
-> > >   		chip->flags |= TPM_CHIP_FLAG_ALWAYS_POWERED;
-> > > -	sizep = of_get_property(np, "linux,sml-size", NULL);
-> > > -	basep = of_get_property(np, "linux,sml-base", NULL);
-> > > -	if (sizep == NULL && basep == NULL)
-> > > -		return -ENODEV;
-> > > -	if (sizep == NULL || basep == NULL)
-> > > -		return -EIO;
-> > > -
-> > > -	/*
-> > > -	 * For both vtpm/tpm, firmware has log addr and log size in big
-> > > -	 * endian format. But in case of vtpm, there is a method called
-> > > -	 * sml-handover which is run during kernel init even before
-> > > -	 * device tree is setup. This sml-handover function takes care
-> > > -	 * of endianness and writes to sml-base and sml-size in little
-> > > -	 * endian format. For this reason, vtpm doesn't need conversion
-> > > -	 * but physical tpm needs the conversion.
-> > > -	 */
-> 
-> 
-> Jarkko,
-> 
->  can I apply your R-b tag after putting this lost comment back into the
-> inline function?
->    Stefan
+From: fslongjin <fslongjin@vip.qq.com>
 
-If there's a change I want to see the updated patch first.
+In Section 3, `Placing Braces and Spaces`. In the previous document, only
+`Spaces` is written in the subtitle without the `Braces`. I think this
+ may be a format error caused by negligence, so I fixed it.
 
-BR, Jarkko
+Signed-off-by: longjin <longjin@RinGoTek.cn>
+Signed-off-by: fslongjin <fslongjin@vip.qq.com>
+---
+ Documentation/process/coding-style.rst | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/process/coding-style.rst b/Documentation/process/coding-style.rst
+index 03eb53fd029a..2a26bcb9f391 100644
+--- a/Documentation/process/coding-style.rst
++++ b/Documentation/process/coding-style.rst
+@@ -120,6 +120,9 @@ that breaks the ability to grep for them.
+ 3) Placing Braces and Spaces
+ ----------------------------
+ 
++3.1) Braces
++***********
++
+ The other issue that always comes up in C styling is the placement of
+ braces.  Unlike the indent size, there are few technical reasons to
+ choose one placement strategy over the other, but the preferred way, as
+@@ -231,7 +234,7 @@ Also, use braces when a loop contains more than a single simple statement:
+ 			do_something();
+ 	}
+ 
+-3.1) Spaces
++3.2) Spaces
+ ***********
+ 
+ Linux kernel style for use of spaces depends (mostly) on
+-- 
+2.20.1
+
