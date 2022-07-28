@@ -2,62 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD895C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 19:06:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50B67C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 19:06:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233105AbiG1TGl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 15:06:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60272 "EHLO
+        id S232582AbiG1TGo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 15:06:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233247AbiG1TGV (ORCPT
+        with ESMTP id S233111AbiG1TGW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 15:06:21 -0400
+        Thu, 28 Jul 2022 15:06:22 -0400
 Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B715176970
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAE5576974
         for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 12:06:20 -0700 (PDT)
 Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26SIlmNv018629;
-        Thu, 28 Jul 2022 19:06:07 GMT
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26SIloKW018672;
+        Thu, 28 Jul 2022 19:05:54 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=donn9f9OyDlvKkxd3kbeRn/TBljkOOfnH5TovPnfwlU=;
- b=Biz6XjWRMlzVT+5hy1MPkRbbmmK0LpR2iqgRHB6PE1aVse1xoAjMgQlBAQwRGnUCbm8u
- lgIzQf5oMLBduONPfDm2Ek0QeDYwd2qi7MufTmV6L90DMAAgi3VYFfqt7mNHwedTgfem
- Hd1kqa7ByUFMF40Kyr8RVU1ZR/5zCddhxHH5Pcv3zHhOeHq6BX9jkJ4QZ7BTcoUmytKl
- aaVbC4g0E77esld1DAsfVcysqa8hRe6i7aIEX20fnnrLEl8bLGef3WVmGowK8rHx3Dsk
- zqOB2VYk75C8jQd7CWMJ88yDTe3Qc1pFGIRDwK8QIrDH7UJYJz3Ce1Q/UPKAJAkeOOFX VA== 
+ : date : message-id : in-reply-to : references : content-transfer-encoding
+ : mime-version; s=pp1; bh=uTJDX5S3TUopqT6N3AIdKKSI+mqbGEFWWY/1SYf1XMU=;
+ b=BfCBa6Ri4r4wepH1CxPYCwmLspilQmTwtgzY3Vu62y0YkC5/rbCLrbJ6PqaPVc95BH9O
+ wSvwBf5NB7D5JbBypq7YADV57R0LxWENbmNh5PfurbOvgZdOsrSRea3cnWkbXvjQvGK0
+ URjEsOf8ljYS2cWK9ynG/1e+pjtlWUTGXq8irNGOP/pj1GBsx4+o/WsM1BRBNBN82TsT
+ hb4xOfZA40jidKS+eFrW5+XH+ddB4qNBlADmQV/Xdcz2k+0BN3lai7JBix9JU1tRoH0w
+ ggBJRlGP6Wq4zLrE9+gOvdpIjOfmmffIxotOl+7psJxCuq3g7RDZ8xAcVeckPOu+HNOw nA== 
 Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hm0238suv-1
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hm0238sem-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 28 Jul 2022 19:06:06 +0000
+        Thu, 28 Jul 2022 19:05:53 +0000
 Received: from m0098409.ppops.net (m0098409.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26SIpDKe029798;
-        Thu, 28 Jul 2022 19:05:34 GMT
-Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hm0238s15-1
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26SIlsKw018778;
+        Thu, 28 Jul 2022 19:05:28 GMT
+Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hm0238qqn-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 28 Jul 2022 19:05:34 +0000
-Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
-        by ppma01dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26SJ5HZd003793;
-        Thu, 28 Jul 2022 19:05:21 GMT
-Received: from b03cxnp07027.gho.boulder.ibm.com (b03cxnp07027.gho.boulder.ibm.com [9.17.130.14])
-        by ppma01dal.us.ibm.com with ESMTP id 3hg98shehf-1
+        Thu, 28 Jul 2022 19:05:27 +0000
+Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
+        by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26SJ2B7l018194;
+        Thu, 28 Jul 2022 19:05:02 GMT
+Received: from b03cxnp08026.gho.boulder.ibm.com (b03cxnp08026.gho.boulder.ibm.com [9.17.130.18])
+        by ppma02dal.us.ibm.com with ESMTP id 3hhfpj63f4-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 28 Jul 2022 19:05:20 +0000
+        Thu, 28 Jul 2022 19:05:02 +0000
 Received: from b03ledav003.gho.boulder.ibm.com (b03ledav003.gho.boulder.ibm.com [9.17.130.234])
-        by b03cxnp07027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26SJ5JQV34931180
+        by b03cxnp08026.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26SJ51vR39452940
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 28 Jul 2022 19:05:19 GMT
+        Thu, 28 Jul 2022 19:05:01 GMT
 Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C3C8F6A047;
-        Thu, 28 Jul 2022 19:05:19 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 0D4746A054;
+        Thu, 28 Jul 2022 19:05:01 +0000 (GMT)
 Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1D53B6A04D;
-        Thu, 28 Jul 2022 19:05:14 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id D45016A04D;
+        Thu, 28 Jul 2022 19:04:54 +0000 (GMT)
 Received: from skywalker.ibmuc.com (unknown [9.43.25.218])
         by b03ledav003.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Thu, 28 Jul 2022 19:05:13 +0000 (GMT)
+        Thu, 28 Jul 2022 19:04:54 +0000 (GMT)
 From:   "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
 To:     linux-mm@kvack.org, akpm@linux-foundation.org
 Cc:     Wei Xu <weixugc@google.com>, Huang Ying <ying.huang@intel.com>,
@@ -72,18 +71,20 @@ Cc:     Wei Xu <weixugc@google.com>, Huang Ying <ying.huang@intel.com>,
         Alistair Popple <apopple@nvidia.com>,
         Dan Williams <dan.j.williams@intel.com>,
         Johannes Weiner <hannes@cmpxchg.org>, jvgediya.oss@gmail.com,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
-Subject: [PATCH v11 4/8] mm/demotion/dax/kmem: Set node's abstract distance to MEMTIER_ADISTANCE_PMEM
-Date:   Fri, 29 Jul 2022 00:34:32 +0530
-Message-Id: <20220728190436.858458-5-aneesh.kumar@linux.ibm.com>
+        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        Jagdish Gediya <jvgediya@linux.ibm.com>
+Subject: [PATCH v11 1/8] mm/demotion: Add support for explicit memory tiers
+Date:   Fri, 29 Jul 2022 00:34:29 +0530
+Message-Id: <20220728190436.858458-2-aneesh.kumar@linux.ibm.com>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220728190436.858458-1-aneesh.kumar@linux.ibm.com>
 References: <20220728190436.858458-1-aneesh.kumar@linux.ibm.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: bfrT-tiO2ZblNXq2-UMQiu6skOp8YqYG
-X-Proofpoint-ORIG-GUID: Ypt4IbU8PiVovesu1XT-nRNVpzAaJ7hM
+X-Proofpoint-GUID: Z1w32zoRkLjpVRSMY3eUyjA4weG8iv1n
+X-Proofpoint-ORIG-GUID: pE09Hj9K4GLlc_Q8_Ci0p3aPWfuGMvd-
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+MIME-Version: 1.0
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-07-28_06,2022-07-28_02,2022-06-22_01
@@ -96,72 +97,126 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-By default, all nodes are assigned to the default memory tier which
-is the memory tier designated for nodes with DRAM
+In the current kernel, memory tiers are defined implicitly via a demotion path
+relationship between NUMA nodes, which is created during the kernel
+initialization and updated when a NUMA node is hot-added or hot-removed. The
+current implementation puts all nodes with CPU into the highest tier, and builds
+the tier hierarchy tier-by-tier by establishing the per-node demotion targets
+based on the distances between nodes.
 
-Set dax kmem device node's tier to slower memory tier by assigning
-abstract distance to MEMTIER_ADISTANCE_PMEM. PMEM tier
-appears below the default memory tier in demotion order.
+This current memory tier kernel implementation needs to be improved for several
+important use cases,
 
+The current tier initialization code always initializes each memory-only NUMA
+node into a lower tier. But a memory-only NUMA node may have a high performance
+memory device (e.g. a DRAM-backed memory-only node on a virtual machine) that
+should be put into a higher tier.
+
+The current tier hierarchy always puts CPU nodes into the top tier. But on a
+system with HBM or GPU devices, the memory-only NUMA nodes mapping these devices
+should be in the top tier, and DRAM nodes with CPUs are better to be placed into
+the next lower tier.
+
+With current kernel higher tier node can only be demoted to nodes with shortest
+distance on the next lower tier as defined by the demotion path, not any other
+node from any lower tier. This strict, demotion order does not work in all use
+cases (e.g. some use cases may want to allow cross-socket demotion to another
+node in the same demotion tier as a fallback when the preferred demotion node is
+out of space), This demotion order is also inconsistent with the page allocation
+fallback order when all the nodes in a higher tier are out of space: The page
+allocation can fall back to any node from any lower tier, whereas the demotion
+order doesn't allow that.
+
+This patch series address the above by defining memory tiers explicitly.
+
+Linux kernel presents memory devices as NUMA nodes and each memory device is of
+a specific type. The memory type of a device is represented by its abstract
+distance. A memory tier corresponds to a range of abstract distance. This allows
+for classifying memory devices with a specific performance range into a memory
+tier.
+
+This patch configures the range/chunk size to be 128. The default DRAM
+abstract distance is 512. We can have 4 memory tiers below the default DRAM
+abstract distance which cover the range 0 - 127, 127 - 255, 256- 383, 384 - 511.
+Slower memory devices like persistent memory will have abstract distance below
+the default DRAM level and hence will be placed in these 4 lower tiers.
+
+A kernel parameter is provided to override the default memory tier.
+
+Link: https://lore.kernel.org/linux-mm/CAAPL-u9Wv+nH1VOZTj=9p9S70Y3Qz3+63EkqncRDdHfubsrjfw@mail.gmail.com
+Link: https://lore.kernel.org/linux-mm/7b72ccf4-f4ae-cb4e-f411-74d055482026@linux.ibm.com
+
+Signed-off-by: Jagdish Gediya <jvgediya@linux.ibm.com>
 Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
 ---
- drivers/dax/kmem.c           |  9 +++++++++
- include/linux/memory-tiers.h | 19 ++++++++++++++++++-
- mm/memory-tiers.c            | 28 ++++++++++++++++------------
- 3 files changed, 43 insertions(+), 13 deletions(-)
+ include/linux/memory-tiers.h |  17 ++++++
+ mm/Makefile                  |   1 +
+ mm/memory-tiers.c            | 102 +++++++++++++++++++++++++++++++++++
+ 3 files changed, 120 insertions(+)
+ create mode 100644 include/linux/memory-tiers.h
+ create mode 100644 mm/memory-tiers.c
 
-diff --git a/drivers/dax/kmem.c b/drivers/dax/kmem.c
-index a37622060fff..6b0d5de9a3e9 100644
---- a/drivers/dax/kmem.c
-+++ b/drivers/dax/kmem.c
-@@ -11,6 +11,7 @@
- #include <linux/fs.h>
- #include <linux/mm.h>
- #include <linux/mman.h>
-+#include <linux/memory-tiers.h>
- #include "dax-private.h"
- #include "bus.h"
- 
-@@ -41,6 +42,12 @@ struct dax_kmem_data {
- 	struct resource *res[];
- };
- 
-+static struct memory_dev_type default_pmem_type  = {
-+	.adistance = MEMTIER_ADISTANCE_PMEM,
-+	.tier_sibiling = LIST_HEAD_INIT(default_pmem_type.tier_sibiling),
-+	.nodes  = NODE_MASK_NONE,
-+};
-+
- static int dev_dax_kmem_probe(struct dev_dax *dev_dax)
- {
- 	struct device *dev = &dev_dax->dev;
-@@ -62,6 +69,8 @@ static int dev_dax_kmem_probe(struct dev_dax *dev_dax)
- 		return -EINVAL;
- 	}
- 
-+	init_node_memory_type(numa_node, &default_pmem_type);
-+
- 	for (i = 0; i < dev_dax->nr_range; i++) {
- 		struct range range;
- 
 diff --git a/include/linux/memory-tiers.h b/include/linux/memory-tiers.h
-index 976f43a5e3be..4f4baf0bf430 100644
---- a/include/linux/memory-tiers.h
+new file mode 100644
+index 000000000000..8d7884b7a3f0
+--- /dev/null
 +++ b/include/linux/memory-tiers.h
-@@ -2,6 +2,8 @@
- #ifndef _LINUX_MEMORY_TIERS_H
- #define _LINUX_MEMORY_TIERS_H
- 
+@@ -0,0 +1,17 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef _LINUX_MEMORY_TIERS_H
++#define _LINUX_MEMORY_TIERS_H
++
++/*
++ * Each tier cover a abstrace distance chunk size of 128
++ */
++#define MEMTIER_CHUNK_BITS	7
++#define MEMTIER_CHUNK_SIZE	(1 << MEMTIER_CHUNK_BITS)
++/*
++ * For now let's have 4 memory tier below default DRAM tier.
++ */
++#define MEMTIER_ADISTANCE_DRAM	(1 << (MEMTIER_CHUNK_BITS + 2))
++/* leave one tier below this slow pmem */
++#define MEMTIER_ADISTANCE_PMEM	(1 << MEMTIER_CHUNK_BITS)
++
++#endif  /* _LINUX_MEMORY_TIERS_H */
+diff --git a/mm/Makefile b/mm/Makefile
+index 6f9ffa968a1a..d30acebc2164 100644
+--- a/mm/Makefile
++++ b/mm/Makefile
+@@ -92,6 +92,7 @@ obj-$(CONFIG_KFENCE) += kfence/
+ obj-$(CONFIG_FAILSLAB) += failslab.o
+ obj-$(CONFIG_MEMTEST)		+= memtest.o
+ obj-$(CONFIG_MIGRATION) += migrate.o
++obj-$(CONFIG_NUMA) += memory-tiers.o
+ obj-$(CONFIG_DEVICE_MIGRATION) += migrate_device.o
+ obj-$(CONFIG_TRANSPARENT_HUGEPAGE) += huge_memory.o khugepaged.o
+ obj-$(CONFIG_PAGE_COUNTER) += page_counter.o
+diff --git a/mm/memory-tiers.c b/mm/memory-tiers.c
+new file mode 100644
+index 000000000000..01cfd514c192
+--- /dev/null
++++ b/mm/memory-tiers.c
+@@ -0,0 +1,102 @@
++// SPDX-License-Identifier: GPL-2.0
 +#include <linux/types.h>
 +#include <linux/nodemask.h>
- /*
-  * Each tier cover a abstrace distance chunk size of 128
-  */
-@@ -15,12 +17,27 @@
- #define MEMTIER_ADISTANCE_PMEM	(1 << MEMTIER_CHUNK_BITS)
- #define MEMTIER_HOTPLUG_PRIO	100
- 
-+struct memory_tier;
++#include <linux/slab.h>
++#include <linux/lockdep.h>
++#include <linux/memory-tiers.h>
++
++struct memory_tier {
++	/* hierarchy of memory tiers */
++	struct list_head list;
++	/* list of all memory types part of this tier */
++	struct list_head memory_types;
++	/*
++	 * start value of abstract distance. memory tier maps
++	 * an abstract distance  range,
++	 * adistance_start .. adistance_start + MEMTIER_CHUNK_SIZE
++	 */
++	int adistance_start;
++};
++
 +struct memory_dev_type {
 +	/* list of memory types that are are part of same tier as this type */
 +	struct list_head tier_sibiling;
@@ -172,71 +227,78 @@ index 976f43a5e3be..4f4baf0bf430 100644
 +	struct memory_tier *memtier;
 +};
 +
- #ifdef CONFIG_NUMA
--#include <linux/types.h>
- extern bool numa_demotion_enabled;
-+struct memory_dev_type *init_node_memory_type(int node, struct memory_dev_type *default_type);
- 
- #else
- 
- #define numa_demotion_enabled	false
-+static inline struct memory_dev_type *init_node_memory_type(int node, struct memory_dev_type *default_type)
++static DEFINE_MUTEX(memory_tier_lock);
++static LIST_HEAD(memory_tiers);
++struct memory_dev_type *node_memory_types[MAX_NUMNODES];
++/*
++ * For now let's have 4 memory tier below default DRAM tier.
++ */
++static struct memory_dev_type default_dram_type  = {
++	.adistance = MEMTIER_ADISTANCE_DRAM,
++	.tier_sibiling = LIST_HEAD_INIT(default_dram_type.tier_sibiling),
++};
++
++static struct memory_tier *find_create_memory_tier(struct memory_dev_type *memtype)
 +{
-+	return ERR_PTR(-EINVAL);
++	bool found_slot = false;
++	struct memory_tier *memtier, *new_memtier;
++	int adistance = memtype->adistance;
++	unsigned int memtier_adistance_chunk_size = MEMTIER_CHUNK_SIZE;
++
++	lockdep_assert_held_once(&memory_tier_lock);
++
++	/*
++	 * If the memtype is already part of a memory tier,
++	 * just return that.
++	 */
++	if (memtype->memtier)
++		return memtype->memtier;
++
++	adistance = round_down(adistance, memtier_adistance_chunk_size);
++	list_for_each_entry(memtier, &memory_tiers, list) {
++		if (adistance == memtier->adistance_start) {
++			memtype->memtier = memtier;
++			list_add(&memtype->tier_sibiling, &memtier->memory_types);
++			return memtier;
++		} else if (adistance < memtier->adistance_start) {
++			found_slot = true;
++			break;
++		}
++	}
++
++	new_memtier = kzalloc(sizeof(struct memory_tier), GFP_KERNEL);
++	if (!new_memtier)
++		return ERR_PTR(-ENOMEM);
++
++	new_memtier->adistance_start = adistance;
++	INIT_LIST_HEAD(&new_memtier->list);
++	INIT_LIST_HEAD(&new_memtier->memory_types);
++	if (found_slot)
++		list_add_tail(&new_memtier->list, &memtier->list);
++	else
++		list_add_tail(&new_memtier->list, &memory_tiers);
++	memtype->memtier = new_memtier;
++	list_add(&memtype->tier_sibiling, &new_memtier->memory_types);
++	return new_memtier;
 +}
- #endif	/* CONFIG_NUMA */
- #endif  /* _LINUX_MEMORY_TIERS_H */
-diff --git a/mm/memory-tiers.c b/mm/memory-tiers.c
-index c9854a394d9b..109be75fa554 100644
---- a/mm/memory-tiers.c
-+++ b/mm/memory-tiers.c
-@@ -1,6 +1,4 @@
- // SPDX-License-Identifier: GPL-2.0
--#include <linux/types.h>
--#include <linux/nodemask.h>
- #include <linux/slab.h>
- #include <linux/lockdep.h>
- #include <linux/memory.h>
-@@ -19,16 +17,6 @@ struct memory_tier {
- 	int adistance_start;
- };
- 
--struct memory_dev_type {
--	/* list of memory types that are are part of same tier as this type */
--	struct list_head tier_sibiling;
--	/* abstract distance for this specific memory type */
--	int adistance;
--	/* Nodes of same abstract distance */
--	nodemask_t nodes;
--	struct memory_tier *memtier;
--};
--
- static DEFINE_MUTEX(memory_tier_lock);
- static LIST_HEAD(memory_tiers);
- struct memory_dev_type *node_memory_types[MAX_NUMNODES];
-@@ -141,6 +129,22 @@ static void clear_node_memory_tier(int node)
- 	mutex_unlock(&memory_tier_lock);
- }
- 
-+struct memory_dev_type *init_node_memory_type(int node, struct memory_dev_type *default_type)
++
++static int __init memory_tier_init(void)
 +{
-+	struct memory_dev_type *mem_type;
++	struct memory_tier *memtier;
 +
 +	mutex_lock(&memory_tier_lock);
-+	if (node_memory_types[node]) {
-+		mem_type = node_memory_types[node];
-+	} else {
-+		node_memory_types[node] = default_type;
-+		node_set(node, default_type->nodes);
-+		mem_type = default_type;
-+	}
-+	mutex_unlock(&memory_tier_lock);
-+	return mem_type;
-+}
++	/* CPU only nodes are not part of memory tiers. */
++	default_dram_type.nodes = node_states[N_MEMORY];
 +
- static int __meminit memtier_hotplug_callback(struct notifier_block *self,
- 					      unsigned long action, void *_arg)
- {
++	memtier = find_create_memory_tier(&default_dram_type);
++	if (IS_ERR(memtier))
++		panic("%s() failed to register memory tier: %ld\n",
++		      __func__, PTR_ERR(memtier));
++	mutex_unlock(&memory_tier_lock);
++
++	return 0;
++}
++subsys_initcall(memory_tier_init);
 -- 
 2.37.1
 
