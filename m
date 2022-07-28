@@ -2,212 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35238C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 11:57:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A516C19F29
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 11:58:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236438AbiG1L5g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 07:57:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33950 "EHLO
+        id S236652AbiG1L6Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 07:58:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229648AbiG1L5e (ORCPT
+        with ESMTP id S235764AbiG1L6L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 07:57:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A234668DFB
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 04:57:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659009451;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=lXdadE5tFLQU4NSWbSKARNnxeWjymRpUklOO5iznGkM=;
-        b=iRN18K7mjP9pMLasTpqTFDt4o+6p70ZzpVPpzk882KVquAB5z+hwoDMPU01zqc+DFOf5O7
-        NDYrzbgsp5r8JOHDw23uacMTvtecDw2pCzSOihK//R9WKDlFvtQl3/uwSsNPwLxCsLqWp2
-        AWQYQ5Z3RXGpw3YPUr5mJZdf4Yb08e8=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-609-dgA2mKRaNWOviA_y7sqHww-1; Thu, 28 Jul 2022 07:57:28 -0400
-X-MC-Unique: dgA2mKRaNWOviA_y7sqHww-1
-Received: by mail-ej1-f69.google.com with SMTP id gt38-20020a1709072da600b0072f21d7d12dso536683ejc.7
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 04:57:28 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=lXdadE5tFLQU4NSWbSKARNnxeWjymRpUklOO5iznGkM=;
-        b=NiJ2bUC0whjv6yEuAFWbDHBlp3cWxqMiXfvCpU2herRHLY1JJlSwQ+zqgQhDiutIVE
-         9we3D09AG2k8ohCtyB+zSn5A8N3Flb2S2saxhGiEYwt12RU1wcmWgQ5qnIun5N5yjDDF
-         oKKNSAyWdJFXJpf1AXkbFJG5cX+xfCEAKjg3nW4FKANkOzgp0z44L08Q3Rih09Lp02+W
-         l3+sCXTBEleiapnUDq9XE++YjwRy+TSK3FW3W5STAJaFR2ASajfQKYEBqw6Akx7335lD
-         OlQmkoGrZ7BCa2HQ8igxfqdfdJ7Z2hmUM285l+WDaVM3HHFEG+yokBnzom4+2XMHToJK
-         sQ4g==
-X-Gm-Message-State: AJIora/xhuKqVVxaNCDgSkHRGf3jpelek0PZXspmcaCYlgFfVBD3xwoQ
-        GIsnrXcuPNXWP1PSYCdpeDb87Fuy7b/P28BLR1vJ5bUe9cBD7+54x/Z6aQBrzhhQlEQZupYc2zT
-        4dlpDj8lpXDcsHOEZ/kQ8YstM
-X-Received: by 2002:a17:907:b590:b0:72f:90ba:bef0 with SMTP id qx16-20020a170907b59000b0072f90babef0mr20756569ejc.333.1659009447398;
-        Thu, 28 Jul 2022 04:57:27 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tuXpvxXmwR6QuCBW2oFr9VUVUTxVb5GbohLTgM1ifkzzjiPM+iEnf7FFka48eZWK+hylu/Zg==
-X-Received: by 2002:a17:907:b590:b0:72f:90ba:bef0 with SMTP id qx16-20020a170907b59000b0072f90babef0mr20756550ejc.333.1659009446888;
-        Thu, 28 Jul 2022 04:57:26 -0700 (PDT)
-Received: from ?IPV6:2001:1c00:c1e:bf00:d69d:5353:dba5:ee81? (2001-1c00-0c1e-bf00-d69d-5353-dba5-ee81.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:d69d:5353:dba5:ee81])
-        by smtp.gmail.com with ESMTPSA id z16-20020a17090665d000b0072faba43409sm348039ejn.58.2022.07.28.04.57.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 28 Jul 2022 04:57:26 -0700 (PDT)
-Message-ID: <55368a65-c536-93c7-c501-9f6086e308d2@redhat.com>
-Date:   Thu, 28 Jul 2022 13:57:25 +0200
+        Thu, 28 Jul 2022 07:58:11 -0400
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com [210.118.77.12])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BB5F691D0
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 04:58:06 -0700 (PDT)
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20220728115801euoutp02cf5463a13bfd4af2e8361413c0c85c72~F-FVTttTo0414304143euoutp02x
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 11:58:01 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20220728115801euoutp02cf5463a13bfd4af2e8361413c0c85c72~F-FVTttTo0414304143euoutp02x
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1659009481;
+        bh=3wL6UYWnFyL5s9rW2QWUADaEzHZmXHPlLMYsmZLcFyg=;
+        h=Date:Subject:To:CC:From:In-Reply-To:References:From;
+        b=U5fgsxibB97qsa0zcKisscq9gJy0zeal5WvDGG4q83Lc/iXS51s3RUn8PEniDv1hi
+         TCuSSwF93AeQ6dXmflnxsqu84eB6XkROP/rkQC0fJQSCIPqmInRMlo55358eZAhAmH
+         rZ3g1+Auk0jtIV02OhOYPgFH/i3UblRuxCsvhI54=
+Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
+        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
+        20220728115800eucas1p1cfc0536b8810df81ea18e3f25a846771~F-FU-7W-02681226812eucas1p1O;
+        Thu, 28 Jul 2022 11:58:00 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+        eusmges2new.samsung.com (EUCPMTA) with SMTP id 28.E3.10067.8C972E26; Thu, 28
+        Jul 2022 12:58:00 +0100 (BST)
+Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
+        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+        20220728115800eucas1p1ef291627fc0b897e1a8b9eec57c6f561~F-FUlA6Ay1218012180eucas1p15;
+        Thu, 28 Jul 2022 11:58:00 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20220728115800eusmtrp2a03c0e871dd6ae6be0ac755217f4daa5~F-FUkG1QQ1863418634eusmtrp2T;
+        Thu, 28 Jul 2022 11:58:00 +0000 (GMT)
+X-AuditID: cbfec7f4-dc1ff70000002753-b5-62e279c8453c
+Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
+        eusmgms2.samsung.com (EUCPMTA) with SMTP id 4A.82.09038.8C972E26; Thu, 28
+        Jul 2022 12:58:00 +0100 (BST)
+Received: from CAMSVWEXC01.scsc.local (unknown [106.1.227.71]) by
+        eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20220728115800eusmtip2a18e1ce7d66d68ae6bb638c7ef0e7597~F-FUVbZpZ1315713157eusmtip2a;
+        Thu, 28 Jul 2022 11:58:00 +0000 (GMT)
+Received: from [106.110.32.100] (106.110.32.100) by CAMSVWEXC01.scsc.local
+        (2002:6a01:e347::6a01:e347) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
+        Thu, 28 Jul 2022 12:57:58 +0100
+Message-ID: <e0606903-c007-43f1-538f-b70ee607be0a@samsung.com>
+Date:   Thu, 28 Jul 2022 13:57:58 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2] platform/x86/intel/ifs: Allow non-default names for
- IFS image
+        Thunderbird/91.11.0
+Subject: Re: [PATCH v8 00/11] support non power of 2 zoned device
 Content-Language: en-US
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        Jithu Joseph <jithu.joseph@intel.com>
-Cc:     markgross@kernel.org, ashok.raj@intel.com, tony.luck@intel.com,
-        ravi.v.shankar@intel.com, linux-kernel@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org, patches@lists.linux.dev
-References: <20220710160011.995800-1-jithu.joseph@intel.com>
- <YssFjbveghDLNn4N@kroah.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <YssFjbveghDLNn4N@kroah.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+To:     Bart Van Assche <bvanassche@acm.org>,
+        <damien.lemoal@opensource.wdc.com>, <hch@lst.de>,
+        <axboe@kernel.dk>, <snitzer@kernel.org>,
+        <Johannes.Thumshirn@wdc.com>
+CC:     <matias.bjorling@wdc.com>, <gost.dev@samsung.com>,
+        <linux-kernel@vger.kernel.org>, <hare@suse.de>,
+        <linux-block@vger.kernel.org>, <pankydev8@gmail.com>,
+        <jaegeuk@kernel.org>, <dm-devel@redhat.com>,
+        <linux-nvme@lists.infradead.org>
+From:   Pankaj Raghav <p.raghav@samsung.com>
+In-Reply-To: <51255650-ddc2-4f3d-52e5-14007b9ff538@acm.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [106.110.32.100]
+X-ClientProxiedBy: CAMSVWEXC01.scsc.local (2002:6a01:e347::6a01:e347) To
+        CAMSVWEXC01.scsc.local (2002:6a01:e347::6a01:e347)
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrFKsWRmVeSWpSXmKPExsWy7djPc7onKh8lGfQf17ZYfbefzWLah5/M
+        Fr/Pnme22PtuNqvFnkWTmCxWrj7KZPFk/Sxmi79d95gs9t7Stri8aw6bxfxlT9ktJrR9ZbZY
+        c/Mpi8WJW9IOfB6Xr3h77Jx1l93j8tlSj02rOtk8Ni+p99h9s4HNY2frfVaP9/uuAoVOV3t8
+        3iTn0X6gmymAO4rLJiU1J7MstUjfLoEr4/m8FtaCY+wVk/fdYmtg7GLrYuTkkBAwkZi1exU7
+        iC0ksIJRYs21+C5GLiD7C6PE7WkfmCCcz4wS+2+cBergAOuYd6kMomE5o8SXD8FwNQtP3oFq
+        2M0osfvTElaQKl4BO4kFO+cwgtgsAqoS07+sYoKIC0qcnPmEBcQWFYiUWLP7LNgZwgKOEh+f
+        fQOrZxYQl7j1ZD7YUBGBpYwS/25fZANxmAU+MEpcau9gBTmJTUBLorETrJlTwFpi+owtzBDN
+        mhKt23+zQ9jyEs1bZzND/KwkMWHefaj/ayXWHjvDDjJTQuAWp0TPtmNQRS4ST/+/hCoSlnh1
+        fAs7hC0j8X/nfCYIu1ri6Y3fzBDNLYwS/TvXQ8PIWqLvTA5EjaPE9i3nWCDCfBI33gpC3MMn
+        MWnbdOYJjKqzkMJiFpKfZyF5YRaSFxYwsqxiFE8tLc5NTy02ykst1ytOzC0uzUvXS87P3cQI
+        TH6n/x3/soNx+auPeocYmTgYDzFKcDArifAmRN9PEuJNSaysSi3Kjy8qzUktPsQozcGiJM6b
+        nLkhUUggPbEkNTs1tSC1CCbLxMEp1cDEJlu6N3etXV2+6POepSv6GMxr1cS9tUymybrrzu3X
+        XJDRbHHIRuzVY8MLF1wbdH8Y1EdwnxIUexp0gK/yJ8fBRdt+tp7kmlNcFHSskzljrUbDuZwp
+        6wVn7swNOdGUsU2ymYPrmLyroGXFzv5yrZ82NV1TFPZ/rH7G/3PGse9l+nl7rk9YH2UYuvDf
+        uwxWJh27eXar1uzO47uiOuHv71uzDjirqbqFrn1msGseg3DgdbeexV2vPtcIa58uDVcwvF7y
+        QmorBx/7p5vf9yzlXW44/06ak7z7TB2tr9cWb8lff05+haGi6JFlywRXzGO6PlPWOOuzcfPl
+        b9UfLfdqld/0reM0PZO1flEsV63i+rVKLMUZiYZazEXFiQD0Zw0g7QMAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprAKsWRmVeSWpSXmKPExsVy+t/xe7onKh8lGczcxGux+m4/m8W0Dz+Z
+        LX6fPc9ssffdbFaLPYsmMVmsXH2UyeLJ+lnMFn+77jFZ7L2lbXF51xw2i/nLnrJbTGj7ymyx
+        5uZTFosTt6Qd+DwuX/H22DnrLrvH5bOlHptWdbJ5bF5S77H7ZgObx87W+6we7/ddBQqdrvb4
+        vEnOo/1AN1MAd5SeTVF+aUmqQkZ+cYmtUrShhZGeoaWFnpGJpZ6hsXmslZGpkr6dTUpqTmZZ
+        apG+XYJexvN5LawFx9grJu+7xdbA2MXWxcjBISFgIjHvUlkXIxeHkMBSRonem0tYuhg5geIy
+        Ep+ufGSHsIUl/lwDqecEKvrIKHFwvz1Ew25GieUX3jKCJHgF7CQW7JwDZrMIqEpM/7KKCSIu
+        KHFy5hOwoaICkRIPlzWBxYUFHCU+PvsGVs8sIC5x68l8JpChIiBXzJn5hBHEYRb4wChxqb2D
+        FWLdfkaJM+u3M4PczSagJdHYCXYep4C1xPQZW5ghJmlKtG7/zQ5hy0s0b53NDPGCksSEeffZ
+        IOxaiVf3dzNOYBSdheTAWUgOmYVk1CwkoxYwsqxiFEktLc5Nzy020itOzC0uzUvXS87P3cQI
+        TBrbjv3csoNx5auPeocYmTgYDzFKcDArifAmRN9PEuJNSaysSi3Kjy8qzUktPsRoCgylicxS
+        osn5wLSVVxJvaGZgamhiZmlgamlmrCTO61nQkSgkkJ5YkpqdmlqQWgTTx8TBKdXApPM/xdil
+        7GibE+++LP7Aw10fZ2QyLpj1sCf51faKgz+VE8omPNXQqZnLdZdtkqiAQUPa4uocgfdWG81z
+        f3F6fnWNnCj+UnPlxkX99ZdOxCRzHnp6OHbJ7y7+9LaFlVfNJsm3np7M9/LfkdVZdvxFitov
+        F4a7TFmsNXP5xi2zX6nGM/jyv0p+tFN5mX/AQ9+t3yrF5kftau/SZ/2got5VPb91q3fTgjc7
+        X0yIu6Txxoar7uYh8eXfS3peVVQulBA18vbn7pH7djTj9eOELd3HN1fu2e/Xdba6lk8v7V2k
+        YepnqcS8s6ev/Jna4MGs3Bxj9TTZ7aFwyrXfSguV2D/cmfglWzzzkvPqk70bAlmuKLEUZyQa
+        ajEXFScCAFkXhv6jAwAA
+X-CMS-MailID: 20220728115800eucas1p1ef291627fc0b897e1a8b9eec57c6f561
+X-Msg-Generator: CA
+X-RootMTR: 20220727162246eucas1p1a758799f13d36ba99d30bf92cc5e2754
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20220727162246eucas1p1a758799f13d36ba99d30bf92cc5e2754
+References: <CGME20220727162246eucas1p1a758799f13d36ba99d30bf92cc5e2754@eucas1p1.samsung.com>
+        <20220727162245.209794-1-p.raghav@samsung.com>
+        <51255650-ddc2-4f3d-52e5-14007b9ff538@acm.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Hi Bart,
 
-On 7/10/22 18:59, Greg KH wrote:
-> On Sun, Jul 10, 2022 at 09:00:11AM -0700, Jithu Joseph wrote:
->> Existing implementation limits IFS images to be loaded only from
->> a default file-name /lib/firmware/intel/ifs/ff-mm-ss.scan.
+On 2022-07-28 01:19, Bart Van Assche wrote:
+> On 7/27/22 09:22, Pankaj Raghav wrote:
+>> This series adds support to npo2 zoned devices in the block and nvme
+>> layer and a new **dm target** is added: dm-po2z-target. This new
+>> target will be initially used for filesystems such as btrfs and
+>> f2fs that does not have native npo2 zone support.
 > 
-> That was by design, why is this suddenly not acceptable?
+> Should any SCSI changes be included in this patch series? From sd_zbc.c:
 > 
->> But there are situations where there may be multiple scan files
->> that can be run on a particular system stored in /lib/firmware/intel/ifs
+>     if (!is_power_of_2(zone_blocks)) {
+>         sd_printk(KERN_ERR, sdkp,
+>               "Zone size %llu is not a power of two.\n",
+>               zone_blocks);
+>         return -EINVAL;
+>     }
 > 
-> Again, this was by design.
+I would keep these changes out of the current patch series because it
+will also increase the test scope. I think once the block layer
+constraint is removed as a part of this series, we can work on the SCSI
+changes in the next cycle.
+> Thanks,
 > 
->> E.g.
->> 1. Because test contents are larger than the memory reserved for IFS by BIOS
-> 
-> What does the BIOS have to do with this?
-> 
->> 2. To provide increased test coverage
-> 
-> Test coverage of what?
-> 
->> 3. Custom test files to debug certain specific issues in the field
-> 
-> Why can't you rename the existing file?
-> 
->> Renaming each of these to ff-mm-ss.scan and then loading might be
->> possible in some environments. But on systems where /lib is read-only
->> this is not a practical solution.
-> 
-> What system puts /lib/ as read-only that you want to have loading
-> hardware firmware?  That kind of defeats the security implications of
-> having a read-only /lib/, right?
-> 
->> Modify the semantics of the driver file
->> /sys/devices/virtual/misc/intel_ifs_0/reload such that,
->> it interprets the input as the filename to be loaded.
-> 
-> So you are now going to allow any file to be read from the system, in an
-> unknown filesystem namespace, by this driver?
-
-@Intel folks to me this is the big blocker which needs to be solved before
-we can move forward with figuring out how to allow loading multiple
-different sets of test patterns through IFS.
-
-Which in turn is required to remove the broken marking...
-
-How about echoing a suffix to be appended to the default filename to
-the reload attribute? This suffix would then need to be sanity checked
-to only contain [a-z][0-9] (we don't want '/' but it seems better to
-limit this further) to avoid directory traversal attacks. 
-
-(and echoing an empty suffix can be used to force reloading the
-default test-patterns after a linux-firmware pkg upgrade)
-
-This way we avoid the allowing user to load an arbitrary file issue.
-
-Greg, would using a suffix appended to the default filename be
-acceptable to you as a solution to solving the load arbitrary
-file issue?
-
-Also as Greg has mentioned for the next version the commit message
-+ ABI docs need to a better job of explaining why support for more
-then one set of test patterns per CPU model is necessary.
-
-Since there has been no progress on this I'm going to drop this
-as well as the "[PATCH 0/2] Two fixes for IFS" patch series from
-my patch queue. Lets continue discussing the userspace API issue
-in this thread and then once it is solved please post a v3 patch/series
-addressing all the issues.
-
-Regards,
-
-Hans
-
-
-
-
-> How wise is that?  How
-> much has this been fuzzed and tested to ensure that it can not now be
-> instantly abused by anyone with access to this sysfs file?
-> 
-> Be aware that most systems have now locked down the ability for
-> userspace to pick filenames for stuff like this for good reason.  This
-> feels like a step backwards from those protections.  Are you _SURE_ you
-> want to do this?
-> 
->> diff --git a/drivers/platform/x86/intel/ifs/ifs.h b/drivers/platform/x86/intel/ifs/ifs.h
->> index 73c8e91cf144..577cee7db86a 100644
->> --- a/drivers/platform/x86/intel/ifs/ifs.h
->> +++ b/drivers/platform/x86/intel/ifs/ifs.h
->> @@ -34,12 +34,13 @@
->>   * socket in a two step process using writes to MSRs to first load the
->>   * SHA hashes for the test. Then the tests themselves. Status MSRs provide
->>   * feedback on the success/failure of these steps. When a new test file
->> - * is installed it can be loaded by writing to the driver reload file::
->> + * is installed it can be loaded by writing the filename to the driver reload file::
->>   *
->> - *   # echo 1 > /sys/devices/virtual/misc/intel_ifs_0/reload
->> + *   # echo mytest > /sys/devices/virtual/misc/intel_ifs_0/reload
->>   *
->> - * Similar to microcode, the current version of the scan tests is stored
->> - * in a fixed location: /lib/firmware/intel/ifs.0/family-model-stepping.scan
->> + * The file will be loaded from /lib/firmware/intel/ifs/mytest
->> + * The default file /lib/firmware/intel/ifs/family-model-stepping.scan
->> + * will be loaded during module insertion.
-> 
-> So you have a default directory, what happened to your read-only /lib/ ?
-> 
-> This also does not properly document what the kernel code does.
-> 
-> {sigh}
-> 
-> Please do not rush this, it's not acceptable as-is at all.
-> 
->> --- a/Documentation/ABI/testing/sysfs-platform-intel-ifs
->> +++ b/Documentation/ABI/testing/sysfs-platform-intel-ifs
->> @@ -35,5 +35,4 @@ What:		/sys/devices/virtual/misc/intel_ifs_<N>/reload
->>  Date:		April 21 2022
->>  KernelVersion:	5.19
->>  Contact:	"Jithu Joseph" <jithu.joseph@intel.com>
->> -Description:	Write "1" (or "y" or "Y") to reload the IFS image from
->> -		/lib/firmware/intel/ifs/ff-mm-ss.scan.
->> +Description:	Write <file_name> to reload the IFS image from /lib/firmware/intel/<file_name>.
-> 
-> "reload" should not be for specifying the filename, please use a sane
-> interface instead of this overloading logic.
-> 
-> greg k-h
-> 
-
+> Bart.
