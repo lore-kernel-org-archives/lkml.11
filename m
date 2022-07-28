@@ -2,124 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2320AC04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 06:00:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9C5BC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 06:04:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233365AbiG1F77 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 01:59:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44740 "EHLO
+        id S231792AbiG1GEY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 02:04:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229832AbiG1F75 (ORCPT
+        with ESMTP id S229832AbiG1GEV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 01:59:57 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1B635C371
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 22:59:56 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id w5so839187edd.13
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 22:59:56 -0700 (PDT)
+        Thu, 28 Jul 2022 02:04:21 -0400
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F69C5C95B
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 23:04:20 -0700 (PDT)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-31f445bd486so8370337b3.13
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 23:04:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=rH1rWR5ceTocR8VYoz9QhZ22rfTktTyDsu+u/jdxD/Q=;
-        b=jzHtRPaAaJDnpz9SiuozBQxsMBqdeJjMfVgqccRSJ+MblMg7rHVBhDZ4UE9478uH4O
-         z/EA9vkBxik9lBdxRsPyVZhvCMMtlmo51p/Il0Aryrh7H4HApIBsYLMjhhFaAA+05A5J
-         l4gX+6bbiPv2mP4DWUukI9aV1Gp4dRhqbogTJv6htXYXKgXAlsFAdEvlneq2jssNRtwJ
-         yWLI9V6GdjrUOlrEblpSiitXvOWbZ2Zm1T2+HPwdRlaC4Pr/pEdsmFN73Z/dNXZyydOT
-         ee0eBg3/5oq2BszaE3buaDIj2fO/kdrevm7T2sj2V5a03q2GYkx32iWl15Hy7YyQvZLG
-         q2dQ==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CA4wATDSYUWB9Gpjzl6nBaY/UX8ZMyWfJ9JqsbS9J10=;
+        b=ZqZo9AKJEwlaUWQDb0iOO1tLCjpPom4IAWxcinWucbh9rSYXGka3QSSV/Z5Ce/Vtxd
+         G1TBGbz4Uq9bTL/e0Hf4maFiVDLquc6ak5ku7fvn2gXLCdKIrC+C/ZTmDsdXuMWaACa/
+         h1z2tZU7fQcrxPlJK45IFfQ28LuocH021UpxVapmlB0Zl9aADmjaV0uLNL5xoXDQj540
+         7QwMs6JmAlfImuFEbkbaEKVn0yJIr3WaG85YkWbbmNPNrB44AB6OC61n5Ju0OpFxqioz
+         TXBNHzP8wT2hIEXD8qy2cGYctY5p7Q+5BY4mEp/yffq1u0YiPQWQB4HvxIEnwpLXefU7
+         OWmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=rH1rWR5ceTocR8VYoz9QhZ22rfTktTyDsu+u/jdxD/Q=;
-        b=duisqj3FmyRfd81b4q9+q5Z0mos9puoeupDE+bCVUphD41nOZOg/WG523qeDbEkuKs
-         9++tqqbU0DAaXifJjhQniE8/N/o+ze2XJsgBJg30bz9BoxVmc/qGKHyczyYLXaAy4i5r
-         3ynSHSnp4WGWY6ZmCb0tHal5yO4Nk5oC8YZnDNkJ9oBvcODn4SLFVBt8T7lypBdrISMS
-         nFQoS7bzWpmz7+Nxh3xcDzCXxC/mjnHt1vTs0TPYYGXXh3fO4lnyyNIrXGeNJeA1OpX3
-         0SwKAhUVPBVp7qaZG7GXLlYiUL35FcmZI5cKAE9eBx0bsVrY++Ec/elXaalK9Sh+469m
-         WmGg==
-X-Gm-Message-State: AJIora80VT7zK8mwilH22/MjdlbtJpLCv6RDEFcXO5eIRJzR0G0A7oqr
-        +A7bY7eEU3NZpVAUUUXXZPE=
-X-Google-Smtp-Source: AGRyM1tNRoBAGcwHk4I42NrE7AFYYHSvBxuMDhDuUsRdnvfCvBHD/tpsn0YsNBYhExzd0QHq/FAm9Q==
-X-Received: by 2002:a05:6402:11c9:b0:43b:b905:cb88 with SMTP id j9-20020a05640211c900b0043bb905cb88mr26000024edw.102.1658987995255;
-        Wed, 27 Jul 2022 22:59:55 -0700 (PDT)
-Received: from matrix-ESPRIMO-P710 (p54a07b82.dip0.t-ipconnect.de. [84.160.123.130])
-        by smtp.gmail.com with ESMTPSA id bx13-20020a0564020b4d00b0043a75f62155sm73395edb.86.2022.07.27.22.59.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 22:59:54 -0700 (PDT)
-Date:   Thu, 28 Jul 2022 07:59:45 +0200
-From:   Philipp Hortmann <philipp.g.hortmann@gmail.com>
-To:     Forest Bond <forest@alittletooquiet.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 2/2] staging: vt6655: Convert macro
- vt6655_mac_clear_stck_ds to function
-Message-ID: <cbfe5cc170b68564ff45bb7f45c63de241c2a664.1658986804.git.philipp.g.hortmann@gmail.com>
-References: <cover.1658986804.git.philipp.g.hortmann@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CA4wATDSYUWB9Gpjzl6nBaY/UX8ZMyWfJ9JqsbS9J10=;
+        b=woTc8ObbTOhXC6/qrfHTXTloK7GOD6dRa9G18ssff2djFvKv0/oItHB4KJjmr4PWpb
+         fVKdi2NHBWnftRqRxP6eMludg3iV5kgeKaO+IGoFrQLUac36lNzatW4M+xqdl9r0MWgf
+         Yb8VdpCP5UFm2LFqZ2ybyKZZ6v12lB+SPVX3WDtGEmH3lj3ZrVIgt/b4y6oVjmMein0h
+         f6+NWq1ARi5RuK6oz5ZpnEFtvYMj0VjeGPNJX98GdMgALT/mVaiUGvbbVnMBQpYx/X/b
+         qbGdofRxdqlRMRN+OddscuqnBwmQYE5eUJ6k7nxeezXwdpRH60q5niBbDsV4+iBvaqS7
+         PSLg==
+X-Gm-Message-State: AJIora/D6VW+vYHQO/bAtPUofieXoChtxRhXY8MYeQ3lPwzf3mYa0H9t
+        w2X2q8kncmcgDlQH8hYfumzlWmFKXfA67trRzloyzw==
+X-Google-Smtp-Source: AGRyM1udlf3/HhTv0KnlYVLgoG36EzZB0C9m8/ZLmxBcNlB5imRW/rCGDa9yRafy4GMMrBICMoGoRw64/lyMtA4d3Bo=
+X-Received: by 2002:a81:d542:0:b0:31e:c878:7565 with SMTP id
+ l2-20020a81d542000000b0031ec8787565mr21125377ywj.382.1658988259228; Wed, 27
+ Jul 2022 23:04:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1658986804.git.philipp.g.hortmann@gmail.com>
+References: <20220723224949.1089973-1-luzmaximilian@gmail.com>
+ <20220723224949.1089973-5-luzmaximilian@gmail.com> <20220726143005.wt4be7yo7sbd3xut@bogus>
+ <829c8fee-cae5-597d-933d-784b4b57bd73@gmail.com> <20220726154138.74avqs6iqlzqpzjk@bogus>
+ <d1bc99bb-82ce-aa6e-7fad-e9309fa1c19b@gmail.com> <7284953b-52bb-37ac-fbe1-1fa845c44ff9@linaro.org>
+ <3d752603-365d-3a33-e13e-ca241cee9a11@gmail.com> <20220727132437.pjob3z2nyxsuxgam@bogus>
+In-Reply-To: <20220727132437.pjob3z2nyxsuxgam@bogus>
+From:   Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Date:   Thu, 28 Jul 2022 09:03:42 +0300
+Message-ID: <CAC_iWj+Pn+h8k=fuDHzYwqD0g4m6jGRt8sCzcz+5+rYqvz9q4w@mail.gmail.com>
+Subject: Re: [PATCH 4/4] dt-bindings: firmware: Add Qualcomm UEFI Secure
+ Application client
+To:     Sudeep Holla <sudeep.holla@arm.com>
+Cc:     Maximilian Luz <luzmaximilian@gmail.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Steev Klimaszewski <steev@kali.org>,
+        Shawn Guo <shawn.guo@linaro.org>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-arm-msm@vger.kernel.org, linux-efi@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Convert once used macro to static function. Multiline macros are not
-liked by kernel community. Rename variable byOrgValue to reg_value to
-avoid CamelCase which is not accepted by checkpatch.pl. Change variable
-declaration to u8 as this improves readability.
+Hi all,
 
-Signed-off-by: Philipp Hortmann <philipp.g.hortmann@gmail.com>
----
-V1 -> V2: Combind patch "Rename byOrgValue to reg_val..." with this one
-          Removed function declaration
-          Changed variable declaration
-          Improved patch description
----
- drivers/staging/vt6655/mac.c | 9 +++++++++
- drivers/staging/vt6655/mac.h | 8 --------
- 2 files changed, 9 insertions(+), 8 deletions(-)
+On Wed, 27 Jul 2022 at 16:24, Sudeep Holla <sudeep.holla@arm.com> wrote:
+>
+> On Wed, Jul 27, 2022 at 03:03:49PM +0200, Maximilian Luz wrote:
+> >
+> > Is there really a good way around it?
+>
+> Yes rely on the firmware preferably auto discover, if that is not an option,
+> how about query. It seem to be working in your case.
 
-diff --git a/drivers/staging/vt6655/mac.c b/drivers/staging/vt6655/mac.c
-index d7ee42df7062..dcc649532737 100644
---- a/drivers/staging/vt6655/mac.c
-+++ b/drivers/staging/vt6655/mac.c
-@@ -70,6 +70,15 @@ void vt6655_mac_word_reg_bits_off(void __iomem *iobase, const u8 reg_offset, con
- 	iowrite16(reg_value & ~(bit_mask), iobase + reg_offset);
- }
- 
-+static void vt6655_mac_clear_stck_ds(void __iomem *iobase)
-+{
-+	u8 reg_value;
-+
-+	reg_value = ioread8(iobase + MAC_REG_STICKHW);
-+	reg_value = reg_value & 0xFC;
-+	iowrite8(reg_value, iobase + MAC_REG_STICKHW);
-+}
-+
- /*
-  * Description:
-  *      Test if all test bits off
-diff --git a/drivers/staging/vt6655/mac.h b/drivers/staging/vt6655/mac.h
-index 3d6d53d5b383..467c599a3289 100644
---- a/drivers/staging/vt6655/mac.h
-+++ b/drivers/staging/vt6655/mac.h
-@@ -537,14 +537,6 @@
- 
- /*---------------------  Export Macros ------------------------------*/
- 
--#define vt6655_mac_clear_stck_ds(iobase)				\
--do {									\
--	unsigned char byOrgValue;					\
--	byOrgValue = ioread8(iobase + MAC_REG_STICKHW);			\
--	byOrgValue = byOrgValue & 0xFC;					\
--	iowrite8(byOrgValue, iobase + MAC_REG_STICKHW);			\
--} while (0)
--
- #define MACvSelectPage0(iobase)				\
- 	iowrite8(0, iobase + MAC_REG_PAGE1SEL)
- 
--- 
-2.37.1
+That's a good point.  We have a similar situation with some Arm
+devices and U-Boot.  Let me try to explain a bit.
 
+There's code plugged in in OP-TEE and U-Boot atm which allows you to
+store EFI variables on an RPMB.  This is a nice alternative if your
+device doesn't have any other secure storage,  however it presents
+some challenges after ExitBootServices, similar to the ones you have
+here.
+
+The eMMC controller usually lives in the non-secure world.  OP-TEE
+can't access that, so it relies on a userspace supplicant to perform
+the RPMB accesses.  That supplicant is present in U-Boot and
+Get/SetVariable works fine before ExitBootServices.  Once Linux boots,
+ the 'U-Boot supplicant' goes away and we launch the linux equivalent
+one from userspace.  Since variable accessing is a runtime service and
+it still has to go through the firmware we can't use those anymore
+since U-Boot doesn't preserve the supplicant, the eMMC driver and the
+OP-TEE portions needed in the runtime section(and even if it did we
+would now have 2 drivers racing to access the same hardware).  Instead
+U-Boot copies the variables in runtime memory and
+GetVariable/GetNextVariable still works, but SetVariable returns
+EFI_UNSUPPORTED.
+
+I've spent enough time looking at available solutions and although
+this indeed breaks the EFI spec, something along the lines of
+replacing the runtime services with ones that give you direct access
+to the secure world, completely bypassing the firmware is imho our
+least bad option.
+
+I have an ancient branch somewhere that I can polish up and send an
+RFC [1],  but the way I enabled that was to install an empty config
+table from the firmware.  That empty table is basically an indication
+to the kernel saying "Hey I can't store variables, can you do that for
+me".
+
+Is there any chance we can do something similar on that device (or
+find a reasonable way of inferring that we need to replace some
+services).  That way we could at least have a common entry point to
+the kernel and leave out the DT changes.
+
+[1] https://git.linaro.org/people/ilias.apalodimas/net-next.git/log/?h=setvar_rt_optee_3
+
+Thanks
+/Ilias
+
+>
+> > As far as I can see the alternative (especially for the apps that
+> > need to be loaded manually) is hard-coding everything in the driver.
+> > Which IMHO just spreads device specific information everywhere.
+> >
+>
+> It may not be too bad compared to putting loads of firmware details
+> in the DT. What happens if you get a firmware upgrade with changed
+> number of firmware entities or even if the names are changed.
+>
+> Are these name user ABI in a way that they won't be changed ? Generally
+> these entities tend to use UUID and the name you have might get changed.
+>
+> I would ideally prefer even the name to be supplied from the userspace.
+> In this particular case, make this a driver and have the name as the
+> parameter. If the secure side services are used by some non-secure
+> applications, then you will need to have a user-interface which means
+> you can get the named from the userspace. No need to change the driver
+> in either case. Please let me know if I am missing anything to consider
+> here.
+>
+> > Also: Let's use the TPM app as example. If that would be a SPI or I2C
+> > device, you'd model it in the DT. Just because it's a hardware device
+> > that's accessible via SCM/firmware you now don't?
+> >
+>
+> Not sure if I understand the comparison here. But if there is some device
+> that is access restricted but needs to be accessed and has mechanism to
+> access, then you would model it as device in DT.
+>
+> But the one $subject is addressing looks pure software and doesn't make
+> sense to model in DT IMO.
+>
+> > If I were absolutely certain that there is a reliable mechanism to
+> > detect these apps, I'd agree with having a driver to instantiate those
+> > devices. But I am not.
+> >
+>
+> You did say you use some query API to check this. I haven't seen the driver,
+> so relying on what you said earlier.
+>
+> --
+> Regards,
+> Sudeep
