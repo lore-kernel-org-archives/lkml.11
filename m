@@ -2,166 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAF47C19F2B
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 14:52:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4513C19F2B
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 14:53:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231838AbiG1Owy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 10:52:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60684 "EHLO
+        id S231294AbiG1OxD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 10:53:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229550AbiG1Oww (ORCPT
+        with ESMTP id S229751AbiG1OxB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 10:52:52 -0400
-Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EDCC5E320;
-        Thu, 28 Jul 2022 07:52:51 -0700 (PDT)
-Received: by mail-wm1-x332.google.com with SMTP id b6so1082689wmq.5;
-        Thu, 28 Jul 2022 07:52:51 -0700 (PDT)
+        Thu, 28 Jul 2022 10:53:01 -0400
+Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD6045D0FA
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 07:53:00 -0700 (PDT)
+Received: by mail-oi1-x229.google.com with SMTP id n206so2672523oia.6
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 07:53:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=LeWUujqUUuiOXJGzjNUETMmb8nohrj2ZZRb1epQbHFk=;
-        b=moPHxaWXP3cr7Si6/x+QRMQbL6jeZTgh0WL8q+R3F86u3P098i6+0rFsoV0tqigSnQ
-         zH/f0FnGyWQQ8div8AovHJ9+SJWIqvzwJuiYugZs53e+H2K4E2QAsRVul7O/IBvE0m8N
-         +Fway6zrPNVG+LHr+fLr+7fujrggd7hLzXI2hSVljE3WeFNfEXTwNabYKIVUGNsQsVw7
-         w4q7DB4WuBkzXJX1GfLKyZdQjv+SPottmch25I+47q8lIUadGf3PU265/iNLZRam7Uq6
-         vO9pNjaCQpzfrxKK7UbDV0kBUPVZisvS6i7dPW/hyEep20OPhVE0ROU1jKBMrsRMDevn
-         Gqpg==
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=OzaFTfFjJcBqeTt4+aAXn7s/cwrwl9JZ8wjMvkdATBg=;
+        b=hAYopeDIjkC3heXdVb/Lb9okyGlITFJJJnujN8M3uPUVG75NLrD8xgCza//DxNNjmD
+         P04P+KqPxvocSYLdyw3W/z2Cdqkah7HM1rz/h5jvJVvsj71F/rKJioHG0PoS8rI2x3Me
+         2wj1DIpCedWMNpM+ctFq14ojwxhr7uIjOtlYE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=LeWUujqUUuiOXJGzjNUETMmb8nohrj2ZZRb1epQbHFk=;
-        b=HrHu8uSEna8TeVwS+3VRqWsoicDc1NsjSMTvqiXf7OsSnxLo5YZnme+kCTfSL5y8mE
-         JHwLsNFChA0yTXaDMZn3nIv6soBydkntajReht1XLrDfYL92tD8nxM+llS/sQGO+8D3d
-         Y7siuuW6b6qqWjgZ4Etcw0QNwKKpaymhle3ycP9Ku5PN2WGDpiwhvWc+7VrAQB/WOatg
-         JqocZmCqtVWdaRnw/HzbYM1gjXp1IuUqYy4zOLY4hvYPoQ2xx4Jt7X2krBLOWFYDVRTs
-         vK07tANHSfVoN8a9c2yNuDJ32spu/IU68vJojkmHPptML2agAbh+PsO0waqL3dUJYLvP
-         r6MQ==
-X-Gm-Message-State: AJIora+pMJ4cqV/iJBqHZBfCn3y2JP/G8H6KJztBqBYztO74qQr1p8Gu
-        oIVd6kISmdepe9YXZQ1ZuQA=
-X-Google-Smtp-Source: AGRyM1tDgKjTqzIVR9eANcLwwwOjNs5YN+u0THQUFjYz7G8PROY+O+6EjLMN8+fA0mjwP+9QiKAnGg==
-X-Received: by 2002:a05:600c:21d7:b0:3a3:2088:bbc6 with SMTP id x23-20020a05600c21d700b003a32088bbc6mr6768686wmj.68.1659019969612;
-        Thu, 28 Jul 2022 07:52:49 -0700 (PDT)
-Received: from opensuse.localnet (host-79-56-6-250.retail.telecomitalia.it. [79.56.6.250])
-        by smtp.gmail.com with ESMTPSA id p6-20020a1c5446000000b003a2f96935c0sm6840625wmi.9.2022.07.28.07.52.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Jul 2022 07:52:48 -0700 (PDT)
-From:   "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-To:     Ira Weiny <ira.weiny@intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-        Jonathan Corbet <corbet@lwn.net>
-Cc:     Mike Rapoport <rppt@linux.ibm.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH 3/7] Documentation/mm: Don't kmap*() pages which can't come from HIGHMEM
-Date:   Thu, 28 Jul 2022 16:52:45 +0200
-Message-ID: <7426546.EvYhyI6sBW@opensuse>
-In-Reply-To: <87czdykw4j.fsf@meer.lwn.net>
-References: <20220721210206.13774-1-fmdefrancesco@gmail.com> <20220721210206.13774-4-fmdefrancesco@gmail.com> <87czdykw4j.fsf@meer.lwn.net>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=OzaFTfFjJcBqeTt4+aAXn7s/cwrwl9JZ8wjMvkdATBg=;
+        b=mUG9EbDRsdkKNUfp5RHypm+/u4OFDCE+vG2xbUmn8FQLasKzNVHQZrbJc3WnhSx68l
+         yBv5y7nVl0BUZ4CcusDN/l4sQj0Tqb5BBGyg/DM8I0g5T5VMmV7iSPyzaTr7XErTtvHx
+         fOEZPGg9/WNHYK/9Wufhh1j0jQpRTfF0OTPOIQci4//PsbDhL9r5bQjWFJ4kHQ6NhRG+
+         smWk/FuJYrpJfs8o/7EedAaa2p5GbqigOs7yb7uxCgVhUQ46WzEGWmEESCRnZWWjJmC8
+         UN3W2JxxBe//+W78rUy60K1+r7NaQYUd0/HiZ+etf6b5Ybv73X7YiWtPS1aySdWl4EWi
+         4kyg==
+X-Gm-Message-State: AJIora86D5miA0/6AD3qt935t2OBLAK/NZaG2FZW8x5HxSoZiqU+YaP5
+        /fZTIwx2MqV/jVmIgKSmKeobng==
+X-Google-Smtp-Source: AGRyM1u4oe9L4dQ9fEMwdz3b4J9ov/Jni73YxJ8sfm2poCcNqkLa2HDNpw2dtDnRVfo6k26hkLBUPA==
+X-Received: by 2002:a05:6808:23c2:b0:33a:ad0e:f85e with SMTP id bq2-20020a05680823c200b0033aad0ef85emr4071998oib.203.1659019979967;
+        Thu, 28 Jul 2022 07:52:59 -0700 (PDT)
+Received: from [192.168.1.128] ([38.15.45.1])
+        by smtp.gmail.com with ESMTPSA id d184-20020aca36c1000000b00339e6212ea7sm321607oia.55.2022.07.28.07.52.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Jul 2022 07:52:59 -0700 (PDT)
+Subject: Re: [PATCH 4.9 00/26] 4.9.325-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220727160959.122591422@linuxfoundation.org>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <75abf2b3-b6f6-1c8f-ab1f-8533e09804b2@linuxfoundation.org>
+Date:   Thu, 28 Jul 2022 08:52:58 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <20220727160959.122591422@linuxfoundation.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On gioved=C3=AC 21 luglio 2022 23:13:00 CEST Jonathan Corbet wrote:
-> "Fabio M. De Francesco" <fmdefrancesco@gmail.com> writes:
->=20
-> > There is no need to kmap*() pages which are guaranteed to come from
-> > ZONE_NORMAL (or lower). Linux has currently several call sites of
-> > kmap{,_atomic,_local_page}() on pages allocated, for instance, with
-> > alloc_page(GFP_NOFS) and other similar allocations.
-> >
-> > Therefore, add a paragraph to highmem.rst, to explain better that a
-> > plain page_address() should be used for getting the address of pages
-> > which cannot come from ZONE_HIGHMEM.
-> >
-> > Cc: Andrew Morton <akpm@linux-foundation.org>
-> > Cc: Matthew Wilcox (Oracle) <willy@infradead.org>
-> > Cc: Mike Rapoport <rppt@linux.ibm.com>
-> > Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> > Cc: Thomas Gleixner <tglx@linutronix.de>
-> > Suggested-by: Ira Weiny <ira.weiny@intel.com>
-> > Signed-off-by: Fabio M. De Francesco <fmdefrancesco@gmail.com>
-> > ---
-> >  Documentation/vm/highmem.rst | 6 ++++++
-> >  1 file changed, 6 insertions(+)
-> >
-> > diff --git a/Documentation/vm/highmem.rst b/Documentation/vm/
-highmem.rst
-> > index c9887f241c6c..f266354c82ab 100644
-> > --- a/Documentation/vm/highmem.rst
-> > +++ b/Documentation/vm/highmem.rst
-> > @@ -71,6 +71,12 @@ list shows them in order of preference of use.
-> >    kmap_local_page() always returns a valid virtual address and it is=20
-assumed
-> >    that kunmap_local() will never fail.
-> > =20
-> > +  On CONFIG_HIGHMEM=3Dn kernels and for low memory pages this returns=
-=20
-the
-> > +  virtual address of the direct mapping. Only real highmem pages are
-> > +  temporarily mapped. Therefore, users should instead call a plain
-> > +  page_address() for getting the address of memory pages which,=20
-depending
-> > +  on the GFP_* flags, cannot come from ZONE_HIGHMEM.
-> > +
->=20
-> Is this good advice?
+On 7/27/22 10:10 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 4.9.325 release.
+> There are 26 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Fri, 29 Jul 2022 16:09:50 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.325-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.9.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
+> 
 
-Well... yes and no :-)=20
+Compiled and booted on my test system. No dmesg regressions.
 
-However yours is a legit objection.=20
+Tested-by: Shuah Khan <skhan@linuxfoundation.org>
 
-I'm taking most of the suggestion from Ira (from an email in this same=20
-thread) and send the v2 of this series.
-
-My intention was to avoid things like those I encountered when converting=20
-fs/btrfs:
-
-page =3D alloc_page(GFP_NOFS);
-kaddr =3D kmap(page);
-
-Why one should kmap*() pages allocated one or two lines above with=20
-GFP_NOFS?=20
-
-=46urthermore, since nesting kmap_local_page() / kunmap_local() is last in=
-=20
-first out (LIFO), I had several problems with several un-mappings until=20
-David Sterba made me notice that GFP_NOFS is not OR'ed with __GFP_HIGHMEM=20
-and suggested to use plain page_address() instead of those unnecessary=20
-mappings.
-
-However, you are right about the fact that, with most of other allocations,=
-=20
-it is not so clear where and how pages are being allocated.
-
-Thanks,
-
-=46abio=20
-
-> First, it requires developers to worry about
-> whether their pages might be in highmem, which is kind of like worrying
-> about having coins in your pocket in case you need a payphone.  But it
-> would also run afoul of other semantics for kmap*(), such as PKS, should
-> that ever be merged:
->=20
->   https://lwn.net/Articles/894531/
->
-> Thanks,
->=20
-> jon
->=20
-
-
-
-
+thanks,
+-- Shuah
