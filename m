@@ -2,97 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4513C19F2B
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 14:53:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3857C19F2C
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 14:53:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231294AbiG1OxD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 10:53:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60822 "EHLO
+        id S232604AbiG1OxJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 10:53:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229751AbiG1OxB (ORCPT
+        with ESMTP id S232246AbiG1OxF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 10:53:01 -0400
-Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD6045D0FA
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 07:53:00 -0700 (PDT)
-Received: by mail-oi1-x229.google.com with SMTP id n206so2672523oia.6
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 07:53:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=OzaFTfFjJcBqeTt4+aAXn7s/cwrwl9JZ8wjMvkdATBg=;
-        b=hAYopeDIjkC3heXdVb/Lb9okyGlITFJJJnujN8M3uPUVG75NLrD8xgCza//DxNNjmD
-         P04P+KqPxvocSYLdyw3W/z2Cdqkah7HM1rz/h5jvJVvsj71F/rKJioHG0PoS8rI2x3Me
-         2wj1DIpCedWMNpM+ctFq14ojwxhr7uIjOtlYE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=OzaFTfFjJcBqeTt4+aAXn7s/cwrwl9JZ8wjMvkdATBg=;
-        b=mUG9EbDRsdkKNUfp5RHypm+/u4OFDCE+vG2xbUmn8FQLasKzNVHQZrbJc3WnhSx68l
-         yBv5y7nVl0BUZ4CcusDN/l4sQj0Tqb5BBGyg/DM8I0g5T5VMmV7iSPyzaTr7XErTtvHx
-         fOEZPGg9/WNHYK/9Wufhh1j0jQpRTfF0OTPOIQci4//PsbDhL9r5bQjWFJ4kHQ6NhRG+
-         smWk/FuJYrpJfs8o/7EedAaa2p5GbqigOs7yb7uxCgVhUQ46WzEGWmEESCRnZWWjJmC8
-         UN3W2JxxBe//+W78rUy60K1+r7NaQYUd0/HiZ+etf6b5Ybv73X7YiWtPS1aySdWl4EWi
-         4kyg==
-X-Gm-Message-State: AJIora86D5miA0/6AD3qt935t2OBLAK/NZaG2FZW8x5HxSoZiqU+YaP5
-        /fZTIwx2MqV/jVmIgKSmKeobng==
-X-Google-Smtp-Source: AGRyM1u4oe9L4dQ9fEMwdz3b4J9ov/Jni73YxJ8sfm2poCcNqkLa2HDNpw2dtDnRVfo6k26hkLBUPA==
-X-Received: by 2002:a05:6808:23c2:b0:33a:ad0e:f85e with SMTP id bq2-20020a05680823c200b0033aad0ef85emr4071998oib.203.1659019979967;
-        Thu, 28 Jul 2022 07:52:59 -0700 (PDT)
-Received: from [192.168.1.128] ([38.15.45.1])
-        by smtp.gmail.com with ESMTPSA id d184-20020aca36c1000000b00339e6212ea7sm321607oia.55.2022.07.28.07.52.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 28 Jul 2022 07:52:59 -0700 (PDT)
-Subject: Re: [PATCH 4.9 00/26] 4.9.325-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, slade@sladewatkins.com,
-        Shuah Khan <skhan@linuxfoundation.org>
-References: <20220727160959.122591422@linuxfoundation.org>
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <75abf2b3-b6f6-1c8f-ab1f-8533e09804b2@linuxfoundation.org>
-Date:   Thu, 28 Jul 2022 08:52:58 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        Thu, 28 Jul 2022 10:53:05 -0400
+Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::223])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 579236050A;
+        Thu, 28 Jul 2022 07:53:02 -0700 (PDT)
+Received: (Authenticated sender: maxime.chevallier@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 0114760004;
+        Thu, 28 Jul 2022 14:52:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1659019980;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9EcP+9/stfB5EXECkZZmXmTw+rS+fOUz4yGICEAjfH8=;
+        b=KzhElMPONR6+NIurGD5gkalAb09py/fu3eojj4JomY45vNUMiCL22n14frh3xePoj1IUkJ
+        t5IYFf0kTkDfsl2esrdkLFHjuWZld120suUITNrcjTsiSvFv9AmCXTjTqPDnAfHP5CZD6C
+        SqcK6ZmVICBrU6HfSnxXX3rQTjXZ//B3xpERrYJkN1yHKDUSD3abCfG6kn9szq9Atqv0cg
+        5PXq+qDGC5NTnyrG5v84UB5rzDZRlGBxbHYv/HhPt8h8FK7UIFlf6cObLKPD9S9GWc6nKk
+        FTgFHraNbu4ysljHM9gzzxNoA+3J4sb9Qgn99R7atdIS1lGLcl0CBKTbRlDLuw==
+From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
+To:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>
+Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, thomas.petazzoni@bootlin.com,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org, Horatiu.Vultur@microchip.com,
+        Allan.Nielsen@microchip.com, UNGLinuxDriver@microchip.com
+Subject: [PATCH net-next 1/4] net: phy: Introduce QUSGMII PHY mode
+Date:   Thu, 28 Jul 2022 16:52:49 +0200
+Message-Id: <20220728145252.439201-2-maxime.chevallier@bootlin.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220728145252.439201-1-maxime.chevallier@bootlin.com>
+References: <20220728145252.439201-1-maxime.chevallier@bootlin.com>
 MIME-Version: 1.0
-In-Reply-To: <20220727160959.122591422@linuxfoundation.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/27/22 10:10 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 4.9.325 release.
-> There are 26 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Fri, 29 Jul 2022 16:09:50 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v4.x/stable-review/patch-4.9.325-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-4.9.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-> 
+The QUSGMII mode is a derivative of Cisco's USXGMII standard. This
+standard is pretty similar to SGMII, but allows for faster speeds, and
+has the build-in bits for Quad and Octa variants (like QSGMII).
 
-Compiled and booted on my test system. No dmesg regressions.
+The main difference with SGMII/QSGMII is that USXGMII/QUSGMII re-uses
+the preamble to carry various information, named 'Extensions'.
 
-Tested-by: Shuah Khan <skhan@linuxfoundation.org>
+As of today, the USXGMII standard only mentions the "PCH" extension,
+which is used to convey timestamps, allowing in-band signaling of PTP
+timestamps without having to modify the frame itself.
 
-thanks,
--- Shuah
+This commit adds support for that mode. When no extension is in use, it
+behaves exactly like QSGMII, although it's not compatible with QSGMII.
+
+Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
+---
+V1->V2 : No changes
+
+ Documentation/networking/phy.rst | 9 +++++++++
+ drivers/net/phy/phylink.c        | 3 +++
+ include/linux/phy.h              | 3 +++
+ 3 files changed, 15 insertions(+)
+
+diff --git a/Documentation/networking/phy.rst b/Documentation/networking/phy.rst
+index 704f31da5167..712e44caebd0 100644
+--- a/Documentation/networking/phy.rst
++++ b/Documentation/networking/phy.rst
+@@ -308,6 +308,15 @@ Some of the interface modes are described below:
+     rate of 125Mpbs using a 4B/5B encoding scheme, resulting in an underlying
+     data rate of 100Mpbs.
+ 
++``PHY_INTERFACE_MODE_QUSGMII``
++    This defines the Cisco the Quad USGMII mode, which is the Quad variant of
++    the USGMII (Universal SGMII) link. It's very similar to QSGMII, but uses
++    a Packet Control Header (PCH) instead of the 7 bytes preamble to carry not
++    only the port id, but also so-called "extensions". The only documented
++    extension so-far in the specification is the inclusion of timestamps, for
++    PTP-enabled PHYs. This mode isn't compatible with QSGMII, but offers the
++    same capabilities in terms of link speed and negociation.
++
+ Pause frames / flow control
+ ===========================
+ 
+diff --git a/drivers/net/phy/phylink.c b/drivers/net/phy/phylink.c
+index 9bd69328dc4d..d2455df1d8d2 100644
+--- a/drivers/net/phy/phylink.c
++++ b/drivers/net/phy/phylink.c
+@@ -321,6 +321,7 @@ void phylink_get_linkmodes(unsigned long *linkmodes, phy_interface_t interface,
+ 	case PHY_INTERFACE_MODE_RGMII_ID:
+ 	case PHY_INTERFACE_MODE_RGMII:
+ 	case PHY_INTERFACE_MODE_QSGMII:
++	case PHY_INTERFACE_MODE_QUSGMII:
+ 	case PHY_INTERFACE_MODE_SGMII:
+ 	case PHY_INTERFACE_MODE_GMII:
+ 		caps |= MAC_1000HD | MAC_1000FD;
+@@ -632,6 +633,7 @@ static int phylink_parse_mode(struct phylink *pl, struct fwnode_handle *fwnode)
+ 		switch (pl->link_config.interface) {
+ 		case PHY_INTERFACE_MODE_SGMII:
+ 		case PHY_INTERFACE_MODE_QSGMII:
++		case PHY_INTERFACE_MODE_QUSGMII:
+ 			phylink_set(pl->supported, 10baseT_Half);
+ 			phylink_set(pl->supported, 10baseT_Full);
+ 			phylink_set(pl->supported, 100baseT_Half);
+@@ -2929,6 +2931,7 @@ void phylink_mii_c22_pcs_decode_state(struct phylink_link_state *state,
+ 
+ 	case PHY_INTERFACE_MODE_SGMII:
+ 	case PHY_INTERFACE_MODE_QSGMII:
++	case PHY_INTERFACE_MODE_QUSGMII:
+ 		phylink_decode_sgmii_word(state, lpa);
+ 		break;
+ 
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 87638c55d844..6b96b810a4d8 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -152,6 +152,7 @@ typedef enum {
+ 	PHY_INTERFACE_MODE_USXGMII,
+ 	/* 10GBASE-KR - with Clause 73 AN */
+ 	PHY_INTERFACE_MODE_10GKR,
++	PHY_INTERFACE_MODE_QUSGMII,
+ 	PHY_INTERFACE_MODE_MAX,
+ } phy_interface_t;
+ 
+@@ -267,6 +268,8 @@ static inline const char *phy_modes(phy_interface_t interface)
+ 		return "10gbase-kr";
+ 	case PHY_INTERFACE_MODE_100BASEX:
+ 		return "100base-x";
++	case PHY_INTERFACE_MODE_QUSGMII:
++		return "qusgmii";
+ 	default:
+ 		return "unknown";
+ 	}
+-- 
+2.37.1
+
