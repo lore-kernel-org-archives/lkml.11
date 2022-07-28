@@ -2,149 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95693C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 23:52:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1838C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 23:53:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233413AbiG1Xwz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 19:52:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35264 "EHLO
+        id S233351AbiG1Xw6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 19:52:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230357AbiG1Xwt (ORCPT
+        with ESMTP id S231617AbiG1Xwu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 19:52:49 -0400
+        Thu, 28 Jul 2022 19:52:50 -0400
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2A6776E2DF;
-        Thu, 28 Jul 2022 16:52:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ABB2071731;
+        Thu, 28 Jul 2022 16:52:49 -0700 (PDT)
 Received: from localhost.localdomain (unknown [76.135.27.191])
-        by linux.microsoft.com (Postfix) with ESMTPSA id BB61420FE89F;
-        Thu, 28 Jul 2022 16:52:47 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com BB61420FE89F
+        by linux.microsoft.com (Postfix) with ESMTPSA id 1622920FE9AF;
+        Thu, 28 Jul 2022 16:52:49 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 1622920FE9AF
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1659052367;
-        bh=blXIlYFe5nKFVDiHVRlRnoomVR8gpOFVwvph2pxvkg4=;
-        h=From:To:Cc:Subject:Date:From;
-        b=gmRmVNFkIp5KSAJqBm//CMQTrcb37RdY2r35eW/bH2gS6UUk0eXn5tXfbAJ59ejVV
-         DjussXcr2M6gyDsnVoPnwfx8FTOirzPD2G5rhJL0cwvDe+77fPAQqFiD1gYgZQg5Bb
-         d5iXr+50M60Ob6vM+m1kJIjxayqElpby86RJmVSs=
+        s=default; t=1659052369;
+        bh=HaSDfOxma22GjtN+QHmKmuwb7fowkhGpnjJEeEWHD1I=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=IDSBV9uuzKRNHwoO6GlvQi96BtvNyXgAz4hmeQ3SoHWgTlhfTdVOS1Tcj3L40RsuS
+         IQlildg0Z9sasvdYcs1qs+LO4imtcTyDrfiiSg3vF8wdJGdQB/mmCY95ZE72uT/N9i
+         Pg5GTptIYrD96jUTKpbPcrY3PggMGZEadWDT4Wus=
 From:   Beau Belgrave <beaub@linux.microsoft.com>
 To:     rostedt@goodmis.org, mhiramat@kernel.org,
         mathieu.desnoyers@efficios.com
 Cc:     linux-trace-devel@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [RFC PATCH v2 0/7] tracing: Add tracing namespace API for user
-Date:   Thu, 28 Jul 2022 16:52:34 -0700
-Message-Id: <20220728235241.2249-1-beaub@linux.microsoft.com>
+Subject: [RFC PATCH v2 6/7] tracing/user_events: Enable setting event limit within namespace
+Date:   Thu, 28 Jul 2022 16:52:40 -0700
+Message-Id: <20220728235241.2249-7-beaub@linux.microsoft.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220728235241.2249-1-beaub@linux.microsoft.com>
+References: <20220728235241.2249-1-beaub@linux.microsoft.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This series is based on the ftrace/core branch.
+When granting non-admin users the ability to register and write data to
+user events they should have a limit imposed. Using the namespace
+options file, operators can change the limit of the events that are
+allowed to be created.
 
-You will need the following series to apply this series:
-Link: https://lore.kernel.org/all/20220728233309.1896-1-beaub@linux.microsoft.com/
+There is also a new line in the user_events_status file to let users
+know the current limit (and to ask the operator for more if required).
 
-User facing tracing systems, such as user_events and LTTng, sometimes
-require multiple events with the same name, but from different
-containers. This can cause event name conflicts and leak out details
-of events not owned by the container.
-
-To create a tracing namespace, run mkdir under the new tracefs directory
-named "namespaces" (/sys/kernel/tracing/namespaces typically). This
-directory largely works the same as "instances" where the new directory
-will have files populated within it via the tracing system
-automatically. The tracing systems will put their files under the "root"
-directory, which is meant to be the directory that you can bind mount
-out to containers. The "options" file is meant to allow operators to
-configure the namespaces via the registered systems.
-
-The tracing namespace allows those user facing systems to register with
-the tracing namespace. When an operator creates a namespace directory
-under /sys/kernel/tracing/namespaces the registered systems will have
-their create operation run for that namespace. The systems can then create
-files in the new directory used for tracing via user programs. These
-files will then isolate events between each namespace the operator
-creates.
-
-Typically the system name of the event will have the tracing namespace
-name appended onto the system name. For example, if a namespace
-directory was created named "mygroup", then the system name would be
-"<system_name>.mygroup". Since the system names are different for each
-namespace, per-namespace recording/playback can be done by specifying the
-per-namespace system name and the event name. However, this decision is
-up to the registered tracing system for each namespace.
-
-The operator can then bind mount each namespace directory into
-containers. This provides isolation between events and containers, if
-required. It's also possible for several containers to share an
-isolation via bind mounts instead of having an isolation per-container.
-With these files being isolated, different permissions can be added for
-these files than normal tracefs files. This helps scenarios where
-non-admin processes would like to trace, but currently cannot.
-
-To create a namespace called isolated and limited to 256 events run:
-mkdir /sys/kernel/tracing/namespaces/isolated
-cd /sys/kernel/tracing/namespaces/isolated
+For example, to limit the namespace to only 256 events:
 echo user_events_limit=256 > options
 
-To bind mount the isolated root to /isolated for use by others run:
-mkdir /isolated
-mount --bind /sys/kernel/tracing/namespaces/isolated/root /isolated
-
-Reading /isolated/user_events_status then outputs the following:
-
-Active: 0
-Busy: 0
-Max: 32768
+From within the namespace root:
+cat user_events_status
+...
 Limit: 256
 
-The normal user_event ABI methods work just as before, however, the
-events are now registered under a different system name and have
-their own status file/bitmap.
+Signed-off-by: Beau Belgrave <beaub@linux.microsoft.com>
+---
+ kernel/trace/trace_events_user.c | 57 +++++++++++++++++++++++++++++---
+ 1 file changed, 52 insertions(+), 5 deletions(-)
 
-There's been some previous discussion about this both in the tracefs
-meetings as well as on the mailing lists:
-Link: https://lore.kernel.org/all/20220312010140.1880-1-beaub@linux.microsoft.com/
-Link: https://lore.kernel.org/all/20220425184631.2068-1-beaub@linux.microsoft.com/
-
-V2 Changes:
-Fixed typos and missing carriage return.
-Rebased to v3 user_events patch on ftrace/core.
-
-Beau Belgrave (7):
-  tracing/user_events: Remove BROKEN and restore user_events.h location
-  tracing: Add namespace instance directory to tracefs
-  tracing: Add tracing namespace API for systems to register with
-  tracing/user_events: Move pages/locks into groups to prepare for
-    namespaces
-  tracing/user_events: Register with trace namespace API
-  tracing/user_events: Enable setting event limit within namespace
-  tracing/user_events: Add self-test for namespace integration
-
- fs/tracefs/inode.c                            | 119 +++-
- include/linux/tracefs.h                       |   5 +
- include/{ => uapi}/linux/user_events.h        |   0
- kernel/trace/Kconfig                          |  12 +-
- kernel/trace/Makefile                         |   1 +
- kernel/trace/trace.c                          |  39 ++
- kernel/trace/trace_events_user.c              | 592 +++++++++++++++---
- kernel/trace/trace_namespace.c                | 568 +++++++++++++++++
- kernel/trace/trace_namespace.h                |  57 ++
- .../selftests/user_events/ftrace_test.c       | 150 +++++
- 10 files changed, 1457 insertions(+), 86 deletions(-)
- rename include/{ => uapi}/linux/user_events.h (100%)
- create mode 100644 kernel/trace/trace_namespace.c
- create mode 100644 kernel/trace/trace_namespace.h
-
-
-base-commit: 26b2da5fc0b41a9a6a5e30b858da28572a6f4cbc
-prerequisite-patch-id: bb3e38a639be23a2df781547e4c87bc5bb1a05d0
-prerequisite-patch-id: e7c8f170457cbb6d467ddec6f9282e2cdd81bb32
-prerequisite-patch-id: ffbe40150b26469168a3f4abe97849d8708785d5
-prerequisite-patch-id: a5c2a495793f9db8103c13a4f1e5380ea0f78902
-prerequisite-patch-id: a9e7b35a0d03b12cec5be60a53fa0ff5cdaf8d63
-prerequisite-patch-id: 5df583c86e6de3fc504b478e52e91068c85fa2b9
+diff --git a/kernel/trace/trace_events_user.c b/kernel/trace/trace_events_user.c
+index 9694eee27956..1dc88bbd04f9 100644
+--- a/kernel/trace/trace_events_user.c
++++ b/kernel/trace/trace_events_user.c
+@@ -41,6 +41,7 @@
+ #define MAX_PAGES (1 << MAX_PAGE_ORDER)
+ #define MAX_BYTES (MAX_PAGES * PAGE_SIZE)
+ #define MAX_EVENTS (MAX_BYTES * 8)
++#define MAX_LIMIT (MAX_EVENTS - 1)
+ 
+ /* Limit how long of an event name plus args within the subsystem. */
+ #define MAX_EVENT_DESC 512
+@@ -85,6 +86,7 @@ struct user_event_group {
+ 	DECLARE_BITMAP(page_bitmap, MAX_EVENTS);
+ 	refcount_t refcnt;
+ 	int id;
++	int reg_limit;
+ };
+ 
+ static DEFINE_HASHTABLE(group_table, 8);
+@@ -252,6 +254,13 @@ static struct user_event_group *user_event_group_create(const char *name,
+ 			goto error;
+ 	}
+ 
++	/*
++	 * Register limit is based on available events:
++	 * The ABI states event 0 is reserved, so the real max is the amount
++	 * of bits in the bitmap minus 1 (the reserved event slot).
++	 */
++	group->reg_limit = MAX_LIMIT;
++
+ 	group->pages = alloc_pages(GFP_KERNEL | __GFP_ZERO, MAX_PAGE_ORDER);
+ 
+ 	if (!group->pages)
+@@ -1276,8 +1285,7 @@ static int user_event_parse(struct user_event_group *group, char *name,
+ 			    char *args, char *flags,
+ 			    struct user_event **newuser)
+ {
+-	int ret;
+-	int index;
++	int ret, index, limit;
+ 	u32 key;
+ 	struct user_event *user;
+ 
+@@ -1296,9 +1304,16 @@ static int user_event_parse(struct user_event_group *group, char *name,
+ 		return 0;
+ 	}
+ 
+-	index = find_first_zero_bit(group->page_bitmap, MAX_EVENTS);
++	/*
++	 * 0 is a reserved bit, so the real limit needs to be one higher.
++	 * An example of this is a limit of 1, bit 0 is always set. To make
++	 * this work, the limit must be 2 in this case (bit 1 will be set).
++	 */
++	limit = min(group->reg_limit + 1, (int)MAX_EVENTS);
++
++	index = find_first_zero_bit(group->page_bitmap, limit);
+ 
+-	if (index == MAX_EVENTS)
++	if (index == limit)
+ 		return -EMFILE;
+ 
+ 	user = kzalloc(sizeof(*user), GFP_KERNEL);
+@@ -1831,6 +1846,7 @@ static int user_seq_show(struct seq_file *m, void *p)
+ 	seq_printf(m, "Active: %d\n", active);
+ 	seq_printf(m, "Busy: %d\n", busy);
+ 	seq_printf(m, "Max: %ld\n", MAX_EVENTS);
++	seq_printf(m, "Limit: %d\n", group->reg_limit);
+ 
+ 	return 0;
+ }
+@@ -2010,13 +2026,44 @@ static int user_event_ns_remove(struct trace_namespace *ns)
+ 	return ret;
+ }
+ 
++#define NS_EVENT_LIMIT_PREFIX "user_events_limit="
++
+ static int user_event_ns_parse(struct trace_namespace *ns, const char *command)
+ {
+-	return -ECANCELED;
++	struct user_event_group *group = user_event_group_find(ns->id);
++	int len, value, ret = -ECANCELED;
++
++	if (!group)
++		return -ECANCELED;
++
++	len = str_has_prefix(command, NS_EVENT_LIMIT_PREFIX);
++	if (len && !kstrtouint(command + len, 0, &value)) {
++		if (value <= 0 || value > MAX_LIMIT) {
++			ret = -EINVAL;
++			goto out;
++		}
++
++		group->reg_limit = value;
++		ret = 0;
++		goto out;
++	}
++out:
++	user_event_group_release(group);
++
++	return ret;
+ }
+ 
+ static int user_event_ns_show(struct trace_namespace *ns, struct seq_file *m)
+ {
++	struct user_event_group *group = user_event_group_find(ns->id);
++
++	if (!group)
++		return 0;
++
++	seq_printf(m, "%s%d\n", NS_EVENT_LIMIT_PREFIX, group->reg_limit);
++
++	user_event_group_release(group);
++
+ 	return 0;
+ }
+ 
 -- 
 2.25.1
 
