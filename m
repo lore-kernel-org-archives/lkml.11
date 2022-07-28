@@ -2,67 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BF7EC04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 15:50:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4392C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 15:50:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230406AbiG1PuU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 11:50:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60198 "EHLO
+        id S232004AbiG1PuX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 11:50:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229613AbiG1PuK (ORCPT
+        with ESMTP id S230265AbiG1PuU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 11:50:10 -0400
-Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D95A92642
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 08:50:09 -0700 (PDT)
-Received: by mail-il1-f199.google.com with SMTP id k11-20020a92c24b000000b002dd46b47e01so1397037ilo.14
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 08:50:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=h9dKTPCnNry06qps4eymbd89NnvSJWefjx7WIqIa/x4=;
-        b=PJW/bxUDy1a/6KIvj3dBM6UQ5m1UUz1Dp2q4Bab2aBJe+UhfGk+YhbgzOGd5j+S5OX
-         K21qlIm0Iu2IMnwOdfR8lmvukmICOB/DfbbzOu5HmPI4Rs0NMKvvtyfrK9GSE/NrUi1g
-         6qy4BxKx6xXXFOZZP+iXxx+o5v9g6KgPxh/xFLt4phjaW8koS7rjluDZUoY9JBT5cL2g
-         8uGz+qnmhDBIVE2D+Opf1sCZ5BaXMn3/GxFsQ9OdgX6lXT6Fe7oAFuk45o7r7khFdRrq
-         PhAmsJox3erFhmYF3cjs7QTwgwvdVAtEIyVZXODTCuKsHvnsTEEgybj7Az+3GZsRanEq
-         ri0Q==
-X-Gm-Message-State: AJIora9l+quwDuWxTwxy6WIz608/MqNRcCRY5ANc91CRO8wmOAvWddZ6
-        GW+LJt5Zl7IE/dlqZBovl4CaCmy8AXgRFDBwxxC0WqU2Ofng
-X-Google-Smtp-Source: AGRyM1sxc8Mt8MIzkh7Woic2/J2uzAfzsfdWw6ekwztoCwEAMIwi1HQogRQ9b8JBFGmR+aubHnysr5+saF4eDdmjVlNmy2aipFJv
+        Thu, 28 Jul 2022 11:50:20 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 297712642
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 08:50:18 -0700 (PDT)
+Received: from zn.tnic (p57969665.dip0.t-ipconnect.de [87.150.150.101])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 6B3DA1EC06A7;
+        Thu, 28 Jul 2022 17:50:12 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1659023412;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=XryKy09UuWtP8D8t3mI1EtihwsObFJOpejpf+3O7+6M=;
+        b=N4atjYjSlxbOF970f9MDxwHhojViIeynh9Dl2VSqpOgL+/CYZAxHFs4Bq6csVhNq8/t9sT
+        YMEgfe7Kg03FUPX48hjvuF6V2hbOFIwBBxpbWBoqkeWQHgrjnfX2nVLhjW15Rffh26XgrP
+        bksM+hMcuIFae0xqM5mMfqmfZwHBE8I=
+Date:   Thu, 28 Jul 2022 17:50:06 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Dimitri John Ledkov <dimitri.ledkov@canonical.com>,
+        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
+        Andrew Cooper <andrew.cooper3@citrix.com>
+Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [PATCH] x86/bugs: Do not enable IBPB at firmware entry when IBPB
+ is not available
+Message-ID: <YuKwLnYlzC0R8xrF@zn.tnic>
+References: <20220728122602.2500509-1-cascardo@canonical.com>
+ <YuKCpLOLeDOI7GII@zn.tnic>
+ <CADWks+aosM99jv9WwLvFo3LPEnsqts+2bJPzMnRqJX70qz51cg@mail.gmail.com>
+ <YuKoxyUdAWsTfKez@zn.tnic>
 MIME-Version: 1.0
-X-Received: by 2002:a02:c9c4:0:b0:33f:4f44:11bd with SMTP id
- c4-20020a02c9c4000000b0033f4f4411bdmr10905577jap.240.1659023409218; Thu, 28
- Jul 2022 08:50:09 -0700 (PDT)
-Date:   Thu, 28 Jul 2022 08:50:09 -0700
-In-Reply-To: <182456e25c7.cd7fb4c79569.3198675383666226894@siddh.me>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000fb0ea205e4df7c67@google.com>
-Subject: Re: [syzbot] KASAN: use-after-free Read in post_one_notification
-From:   syzbot <syzbot+c70d87ac1d001f29a058@syzkaller.appspotmail.com>
-To:     christophe.jaillet@wanadoo.fr, code@siddh.me, dhowells@redhat.com,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YuKoxyUdAWsTfKez@zn.tnic>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
++ Cooper to sanity-check me.
 
-syzbot has tested the proposed patch and the reproducer did not trigger any issue:
+On Thu, Jul 28, 2022 at 05:18:31PM +0200, Borislav Petkov wrote:
+> On Thu, Jul 28, 2022 at 03:33:35PM +0100, Dimitri John Ledkov wrote:
+> > Azure public cloud (so it is Azure custom hyper-v hypervisor) these
+> > instance types https://docs.microsoft.com/en-us/azure/virtual-machines/dav4-dasv4-series
+> 
+> Thank you both for the info.
+> 
+> Virt is an awful piece of sh*t when it goes and emulates all kinds of
+> imaginary CPUs. And AMD machine *without* an IBPB which is affected by
+> retbleed. Well, f*ck that.
+> 
+> Does that say somewhere on azure that those guests need to even enable
+> the mitigation or does the HV mitigate it for them?
+> 
+> Because I wouldn't mind to simply disable the mitigation when on a
+> hypervisor which doesn't support IBPB.
 
-Reported-and-tested-by: syzbot+c70d87ac1d001f29a058@syzkaller.appspotmail.com
+So for 5.19 we probably should take the one-liner just so that we
+release with all known issues fixed.
 
-Tested on:
+Going forward, I'm thinking all that FW-mitigation selection should go
+into a function called something like firmware_select_mitigations()
+which gets called at the end of check_bugs(), after all mitigation
+selectors have run.
 
-commit:         16007670 kernel/watch_queue: Make pipe NULL while clea..
-git tree:       https://github.com/siddhpant/linux.git post_one_notification
-console output: https://syzkaller.appspot.com/x/log.txt?x=11a6eade080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=95c061eee05f8e15
-dashboard link: https://syzkaller.appspot.com/bug?extid=c70d87ac1d001f29a058
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+And in there, the first check should be if X86_FEATURE_HYPERVISOR and if
+set, not set any mitigations for firmware calls.
 
-Note: no patches were applied.
-Note: testing is done by a robot and is best-effort only.
+Because, frankly, is there any point in protecting against firmware
+calls in the guest? The guest firmware is part of the hypervisor which
+gets supplied by the guest owner or cloud provider or so.
+
+In the former case you probably don't need protection and in the latter,
+you don't have a choice.
+
+But I'm unclear on the fw-in-the-guest thing - I'm sure Andy has a
+better idea...
+
+Thx.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
