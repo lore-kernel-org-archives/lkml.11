@@ -2,95 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 112C7C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 10:35:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D397C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 10:37:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236003AbiG1Ke5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 06:34:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59958 "EHLO
+        id S236017AbiG1KhE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 06:37:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234823AbiG1Kez (ORCPT
+        with ESMTP id S234747AbiG1KhC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 06:34:55 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 191DE4B0DD;
-        Thu, 28 Jul 2022 03:34:53 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id B362320AEE;
-        Thu, 28 Jul 2022 10:34:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1659004491; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
+        Thu, 28 Jul 2022 06:37:02 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2609550A2;
+        Thu, 28 Jul 2022 03:36:57 -0700 (PDT)
+Date:   Thu, 28 Jul 2022 10:36:54 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1659004616;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=15xB0syOxpUyZLtSuSwIo1ykSjFTZ54OBZTEcJ1JHjs=;
-        b=sF03yEIbEmLKh4FG3rgx6HBm4sfXwOFDufJiJQxSvS04UV1OQ8JVZj+OaHkBGilnUQsPog
-        7Ig1+Q49JkLxKAEFJG4nLAQDh9+dHIHNlawg9jT7+SIx3/JHMQXhImhNvgLHSKPhXydBO2
-        qgF+2uUKDHnkersI+NggaghUCnK0Kn8=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1659004491;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
+        bh=JVccKH/+cS/nkRyUbjIqFuCIi86SXRUxMIXY8M6McjY=;
+        b=kKI+sr9bBnHJ4MPpbIOmLqbvbl9JFYuAdP6wN41kDnXFNAuPHEclPqAbtzpYtTdzvVCWW0
+        FZ6+nmnnWDDMd8wPUo5qo1H0NKGLerWg2cwsrH/yDKqb2zmHdIxyVtCdDYjuXL4MZgMj84
+        C8sjS6xrj8AlT3g/4VTG13I5t9bdrmD2YpQJ+xnHQjuJjO4h4AfXTSzBiRSi4itcYLtyDk
+        6Vpk9hQNR/hj3GjQQlUj1oWiz/Vd7JGH7UFOGFAayp21OKVDNHuPh9kv/VaahCe0KDWlIU
+        WOqIwkaYwniFtRtrHzBEIWfbRT1hiOsrSUj6RdxZbPGqdKaNk4uQbTFlfgJdzg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1659004616;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=15xB0syOxpUyZLtSuSwIo1ykSjFTZ54OBZTEcJ1JHjs=;
-        b=P4RoukuqRFQYYDjnXnsfVbF8GhRAF5bEXd9/BKjztctPGVgEbzdZ7WRX0rcvBA1i+SnOrd
-        lzHnB20DNyTZB7DA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 7680913427;
-        Thu, 28 Jul 2022 10:34:51 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id YqskHEtm4mIYbAAAMHmgww
-        (envelope-from <tiwai@suse.de>); Thu, 28 Jul 2022 10:34:51 +0000
-Date:   Thu, 28 Jul 2022 12:34:50 +0200
-Message-ID: <87a68tmsol.wl-tiwai@suse.de>
-From:   Takashi Iwai <tiwai@suse.de>
-To:     Lucas Tanure <tanureal@opensource.cirrus.com>
-Cc:     Jaroslav Kysela <perex@perex.cz>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Takashi Iwai <tiwai@suse.com>,
-        Cameron Berkenpas <cam@neo-zeon.de>,
-        <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
-        <linux-kernel@vger.kernel.org>, <linux-acpi@vger.kernel.org>,
-        <platform-driver-x86@vger.kernel.org>
-Subject: Re: [PATCH v2 0/4] Add support for CLSA0101
-In-Reply-To: <20220727095924.80884-1-tanureal@opensource.cirrus.com>
-References: <20220727095924.80884-1-tanureal@opensource.cirrus.com>
-User-Agent: Wanderlust/2.15.9 (Almost Unreal) Emacs/27.2 Mule/6.0
-MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
-Content-Type: text/plain; charset=US-ASCII
+        bh=JVccKH/+cS/nkRyUbjIqFuCIi86SXRUxMIXY8M6McjY=;
+        b=s24o7FXdwQ2xBCF7wDtiq11NEfBG98H3alR3rYCn4NtSmxw2TqX68F737KcfZnpy6YhzvQ
+        etOGwH8vqhJxrCDg==
+From:   "tip-bot2 for Lukas Bulwahn" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: x86/urgent] x86/configs: Update configs in x86_debug.config
+Cc:     Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Borislav Petkov <bp@suse.de>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220722121815.27535-1-lukas.bulwahn@gmail.com>
+References: <20220722121815.27535-1-lukas.bulwahn@gmail.com>
+MIME-Version: 1.0
+Message-ID: <165900461486.15455.1011348453705809248.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 27 Jul 2022 11:59:20 +0200,
-Lucas Tanure wrote:
-> 
-> Add Support for the CLSA0101 laptop, an Intel version of CLSA0100.
-> This patch has been tested using the CLSA0100, ensuring it
-> doesn't break the sound for it.
-> We appreciate it if someone with CLSA0101 could verify that this
-> the patch works for them.
-> 
-> Changes from V1:
->  - Add CLSA0101 id into scan.c, serial-multi-instantiate.c
->  and cs35l41_hda_i2c.c
-> 
-> Lucas Tanure (4):
->   ALSA: hda: cs35l41: Use the CS35L41 HDA internal define
->   ALSA: hda: cs35l41: Support CLSA0101
->   ACPI: scan: Add CLSA0101 Laptop Support
->   platform/x86: serial-multi-instantiate: Add CLSA0101 Laptop
+The following commit has been merged into the x86/urgent branch of tip:
 
-Applied all four patches now.  Thanks.
+Commit-ID:     871808fd6981bcc6bb48f71032f983ca77748e96
+Gitweb:        https://git.kernel.org/tip/871808fd6981bcc6bb48f71032f983ca77748e96
+Author:        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+AuthorDate:    Fri, 22 Jul 2022 14:18:15 +02:00
+Committer:     Borislav Petkov <bp@suse.de>
+CommitterDate: Wed, 27 Jul 2022 18:09:11 +02:00
 
+x86/configs: Update configs in x86_debug.config
 
-Takashi
+Commit
+
+  4675ff05de2d ("kmemcheck: rip it out")
+
+removed kmemcheck and its corresponding build config KMEMCHECK.
+
+Commit
+
+  0f620cefd775 ("objtool: Rename "VMLINUX_VALIDATION" -> "NOINSTR_VALIDATION"")
+
+renamed the debug config option.
+
+Adjust x86_debug.config to those changes in debug configs.
+
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20220722121815.27535-1-lukas.bulwahn@gmail.com
+---
+ kernel/configs/x86_debug.config | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/kernel/configs/x86_debug.config b/kernel/configs/x86_debug.config
+index dcd86f3..6fac5b4 100644
+--- a/kernel/configs/x86_debug.config
++++ b/kernel/configs/x86_debug.config
+@@ -7,12 +7,11 @@ CONFIG_DEBUG_SLAB=y
+ CONFIG_DEBUG_KMEMLEAK=y
+ CONFIG_DEBUG_PAGEALLOC=y
+ CONFIG_SLUB_DEBUG_ON=y
+-CONFIG_KMEMCHECK=y
+ CONFIG_DEBUG_OBJECTS=y
+ CONFIG_DEBUG_OBJECTS_ENABLE_DEFAULT=1
+ CONFIG_GCOV_KERNEL=y
+ CONFIG_LOCKDEP=y
+ CONFIG_PROVE_LOCKING=y
+ CONFIG_SCHEDSTATS=y
+-CONFIG_VMLINUX_VALIDATION=y
++CONFIG_NOINSTR_VALIDATION=y
+ CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT=y
