@@ -2,157 +2,169 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A89DCC04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 09:02:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9566C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 09:02:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235347AbiG1JCe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 05:02:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42950 "EHLO
+        id S235365AbiG1JCr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 05:02:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234654AbiG1JCc (ORCPT
+        with ESMTP id S235350AbiG1JCo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 05:02:32 -0400
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87D316564C
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 02:02:31 -0700 (PDT)
-Received: by mail-lj1-x231.google.com with SMTP id u17so1270236lji.5
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 02:02:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=yfi+fc1Zb5qV2V2Wb3g8x7DGlXgAZj2Jvy0KQfSodWs=;
-        b=BwyXq3EaFf0Zk/XqgsIyi1kp3V1mOAX5f18FjumLF+gccBiXx1HjsbONcMZ5QNMedw
-         qBdvcDNoFoRD5ftiEAV8xn5QAfa+MrQPfJ5dU3yN5m22KH2s+nvoD0ht9nT6F7gXxPbc
-         rPV85IBQZgWDggbXBX1wYRVVyjuT8+CafQDIc8dEt8L+vjvSOmAMfHsHgghhh0HDUQBL
-         ZXOH0VMgtp6O4V0MCvEmE/QMXM7vxwkqlnz8I0mxwDBn0Te5PJBIKmBbUrGW9NT0PztB
-         0M/i+IHtl1GHGK/WLthwFQOgXtpIUX+BsN37ymtq6SByXSx+DmeQmgvatDFKdxCfxSoT
-         Cadw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=yfi+fc1Zb5qV2V2Wb3g8x7DGlXgAZj2Jvy0KQfSodWs=;
-        b=J88nKiZw6hSnpgidGG9jS3Blm/RLirGgLVaHnYrFDVJOoiLhO27znh8O2979xB8JBG
-         4c6B0UYZHXe3sHvKAi+c3a0B7U83bz8w0XLh04WiPX+TxutGpDPt/4e3fBmbnoAWWnsC
-         AIo8PTZkf4+fmf/2LjUwU2Mz/tc4smU5LYpcHpws6xD63U0wCNBkJIbSktWUjFryhPQ6
-         sI7YJDLJWghoLQn+aSzz8W9eQjCZ2KqyMAJzUcRG7JsNc8H0QYWFJmI3mfch4payP+NF
-         axVXkZ+jl92QmEI3pkaYQqG4cEGBXa/TjJjGy2xh0qv9Gz3AFSR8Ay9+4T0XQxL9mdvf
-         oGNQ==
-X-Gm-Message-State: AJIora+MeqUhvbUW1qF4ji2WpbbQ0Oecz6FdCEYd0PTy89/ZAKvitmKn
-        7gtBZMeq1bXeqYjjl1RINfZ3CA==
-X-Google-Smtp-Source: AGRyM1uhBJjljnPuyZUlcYQa2GgWlNAIASCeOULAJ0BJ+SvIe68yj6eKdiqLW80f0YKUzSiOuu+4OQ==
-X-Received: by 2002:a2e:910d:0:b0:25d:f7e7:8cce with SMTP id m13-20020a2e910d000000b0025df7e78ccemr8115318ljg.252.1658998949558;
-        Thu, 28 Jul 2022 02:02:29 -0700 (PDT)
-Received: from [192.168.3.197] (78-26-46-173.network.trollfjord.no. [78.26.46.173])
-        by smtp.gmail.com with ESMTPSA id l13-20020a19c20d000000b00489c6c76385sm97465lfc.268.2022.07.28.02.02.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 28 Jul 2022 02:02:29 -0700 (PDT)
-Message-ID: <367cf98b-ef06-8f44-76c8-9099a1ec13dc@linaro.org>
-Date:   Thu, 28 Jul 2022 11:02:27 +0200
+        Thu, 28 Jul 2022 05:02:44 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CE7B6566C
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 02:02:43 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1oGzPc-0004ja-6B; Thu, 28 Jul 2022 11:02:32 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id C4EBBBCB24;
+        Thu, 28 Jul 2022 09:02:29 +0000 (UTC)
+Date:   Thu, 28 Jul 2022 11:02:28 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Cc:     Max Staudt <max@enpas.org>, linux-kernel@vger.kernel.org,
+        linux-can@vger.kernel.org,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        michael@amarulasolutions.com,
+        Amarula patchwork <linux-amarula@amarulasolutions.com>,
+        Jeroen Hofstee <jhofstee@victronenergy.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Wolfgang Grandegger <wg@grandegger.com>, netdev@vger.kernel.org
+Subject: Re: [RFC PATCH v3 8/9] can: slcan: add support to set bit time
+ register (btr)
+Message-ID: <20220728090228.nckgpmfe7rpnfcyr@pengutronix.de>
+References: <20220726210217.3368497-1-dario.binacchi@amarulasolutions.com>
+ <20220726210217.3368497-9-dario.binacchi@amarulasolutions.com>
+ <20220727113054.ffcckzlcipcxer2c@pengutronix.de>
+ <20220727192839.707a3453.max@enpas.org>
+ <20220727182414.3mysdeam7mtnqyfx@pengutronix.de>
+ <CABGWkvoE8i--g_2cNU6ToAfZk9WE6uK-nLcWy7J89hU6RidLWw@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
-Subject: Re: [PATCH V2 1/3] dt-bindings: clk: meson: add S4 SoC clock
- controller bindings
-Content-Language: en-US
-To:     Jerome Brunet <jbrunet@baylibre.com>, Yu Tu <yu.tu@amlogic.com>,
-        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-References: <20220728054202.6981-1-yu.tu@amlogic.com>
- <20220728054202.6981-2-yu.tu@amlogic.com>
- <82e3fd36-df96-a555-4cea-47fabd26502b@linaro.org>
- <1jv8rhfw8h.fsf@starbuckisacylon.baylibre.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <1jv8rhfw8h.fsf@starbuckisacylon.baylibre.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="5tukwidie4thhway"
+Content-Disposition: inline
+In-Reply-To: <CABGWkvoE8i--g_2cNU6ToAfZk9WE6uK-nLcWy7J89hU6RidLWw@mail.gmail.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 28/07/2022 10:50, Jerome Brunet wrote:
-> 
-> On Thu 28 Jul 2022 at 10:41, Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
-> 
->> On 28/07/2022 07:42, Yu Tu wrote:
->>> Add new clock controller compatible and dt-bindings header for the
->>> Everything-Else domain of the S4 SoC.
->>>
->>> Signed-off-by: Yu Tu <yu.tu@amlogic.com>
->>
->>
->>
->>> diff --git a/MAINTAINERS b/MAINTAINERS
->>> index c1abc53f9e91..f872d0c0c253 100644
->>> --- a/MAINTAINERS
->>> +++ b/MAINTAINERS
->>> @@ -1775,6 +1775,7 @@ F:	Documentation/devicetree/bindings/clock/amlogic*
->>>  F:	drivers/clk/meson/
->>>  F:	include/dt-bindings/clock/gxbb*
->>>  F:	include/dt-bindings/clock/meson*
->>> +F:	include/dt-bindings/clock/s4-clkc.h
->>>  
->>>  ARM/Amlogic Meson SoC Crypto Drivers
->>>  M:	Corentin Labbe <clabbe@baylibre.com>
->>> diff --git a/include/dt-bindings/clock/s4-clkc.h b/include/dt-bindings/clock/s4-clkc.h
->>> new file mode 100644
->>> index 000000000000..b686c8877419
->>> --- /dev/null
->>> +++ b/include/dt-bindings/clock/s4-clkc.h
->>
->> Filename with vendor prefix, so:
->> amlogic,s4-clkc.h
->>
->>> @@ -0,0 +1,146 @@
->>> +/* SPDX-License-Identifier: (GPL-2.0+ OR MIT) */
->>> +/*
->>> + * Copyright (c) 2021 Amlogic, Inc. All rights reserved.
->>> + * Author: Yu Tu <yu.tu@amlogic.com>
->>> + */
->>> +
->>> +#ifndef _DT_BINDINGS_CLOCK_S4_CLKC_H
->>> +#define _DT_BINDINGS_CLOCK_S4_CLKC_H
->>> +
->>> +/*
->>> + * CLKID index values
->>> + */
->>> +
->>> +#define CLKID_FIXED_PLL			1
->>> +#define CLKID_FCLK_DIV2			3
->>> +#define CLKID_FCLK_DIV3			5
->>> +#define CLKID_FCLK_DIV4			7
->>> +#define CLKID_FCLK_DIV5			9
->>> +#define CLKID_FCLK_DIV7			11
->>
->> Why these aren't continuous? IDs are expected to be incremented by 1.
->>
-> 
-> All clocks have IDs, it is one big table in the driver, but we are not exposing them all.
-> For example, with composite 'mux / div / gate' assembly, we usually need
-> only the leaf.
 
-I understand you do not expose them all, but that is not the reason to
-increment ID by 2 or 3... Otherwise these are not IDs and you are not
-expected to put register offsets into the bindings (you do not bindings
-in such case).
+--5tukwidie4thhway
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+On 28.07.2022 09:36:21, Dario Binacchi wrote:
+> > Most of the other CAN drivers write the BTR values into the register of
+> > the hardware. How are these BTR values transported into the driver?
+> >
+> > There are 2 ways:
+> >
+> > 1) - user space configures a bitrate
+> >    - the kernel calculates with the "struct can_bittiming_const" [1] gi=
+ven
+> >      by driver and the CAN clock rate the low level timing parameters.
+> >
+> >      [1] https://elixir.bootlin.com/linux/v5.18/source/include/uapi/lin=
+ux/can/netlink.h#L47
+> >
+> > 2) - user space configures low level bit timing parameter
+> >      (Sample point in one-tenth of a percent, Time quanta (TQ) in
+> >       nanoseconds, Propagation segment in TQs, Phase buffer segment 1 in
+> >       TQs, Phase buffer segment 2 in TQs, Synchronisation jump width in
+> >       TQs)
+> >     - the kernel calculates the Bit-rate prescaler from the given TQ and
+> >       CAN clock rate
+> >
+> > Both ways result in a fully calculated "struct can_bittiming" [2]. The
+> > driver translates this into the hardware specific BTR values and writes
+> > the into the registers.
+> >
+> > If you know the CAN clock and the bit timing const parameters of the
+> > slcan's BTR register you can make use of the automatic BTR calculation,
+> > too. Maybe the framework needs some tweaking if the driver supports both
+> > fixed CAN bit rate _and_ "struct can_bittiming_const".
+>=20
+> Does it make sense to use the device tree
 
-> Same has been done for the other AML controllers:
-> For ex:
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/dt-bindings/clock/gxbb-clkc.h
+The driver doesn't support DT and DT only works for static serial
+interfaces.
 
-This cannot be fixed now, but it is very poor argument. Like saying "we
-had a bug in other driver, so we implemented the bug here as well".
+> to provide the driver with those
+> parameters required for the automatic calculation of the BTR (clock rate,
+> struct can_bittiming_const, ...) that depend on the connected
+> controller?
 
-Best regards,
-Krzysztof
+The device tree usually says it's a CAN controller compatible to X and
+the following clock(s) are connected. The driver for CAN controller X
+knows the bit timing const. Some USB CAN drivers query the bit timing
+const from the USB device.
+
+> In this way the solution should be generic and therefore scalable. I
+> think we should also add some properties to map the calculated BTR
+> value on the physical register of the controller.
+
+The driver knows how to map the "struct can_bittiming" to the BTR
+register values of the hardware.
+
+What does the serial protocol say to the BTR values? Are these standard
+SJA1000 layout with 8 MHz CAN clock or are those adapter specific?
+
+> Or, use the device tree to extend the bittates supported by the controller
+> to the fixed ones (struct can_priv::bitrate_const)?
+
+The serial protocol defines fixed bit rates, no need to describe them in
+the DT:
+
+|           0            10 Kbit/s
+|           1            20 Kbit/s
+|           2            50 Kbit/s
+|           3           100 Kbit/s
+|           4           125 Kbit/s
+|           5           250 Kbit/s
+|           6           500 Kbit/s
+|           7           800 Kbit/s
+|           8          1000 Kbit/s
+
+Are there more bit rates?
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--5tukwidie4thhway
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmLiUKEACgkQrX5LkNig
+0117QggAjrRUz25+oJjtGLVN5SEFPDVNMFeaVARhoxHZX/v7IfAyQpAT/HjiT/Sx
+5YyBaN98+KS86zMu5qjHrdlhjqbIH+uOYdN/y42hEhiRXGkOSnC2l8cKuuYowOgO
+U9QfZrOIFv4pfstQ+yRRSNG30wGUezJtISk1U+TkYaxwFcihU1SIMm9p1hhofjQJ
+iIPc41SbKRzgTtzyAjBS0d2Ti6gXKv4k7vCVfjgEM5ai/jRcIvlqf5xvEmhxfP2I
+tqabd4hSh8rDZe1I9eaNrpOslOVx1bWW6Vycycoq8oN1QcNkng1BHvF/xFctmfoN
+MKZ/u90EzFCwX/H2Ndc/dsrm2RnN6g==
+=+ALT
+-----END PGP SIGNATURE-----
+
+--5tukwidie4thhway--
