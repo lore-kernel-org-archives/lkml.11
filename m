@@ -2,183 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80D96C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 16:13:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93C4BC04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 16:13:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233032AbiG1QNW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 12:13:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54412 "EHLO
+        id S232160AbiG1QNq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 12:13:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232179AbiG1QNF (ORCPT
+        with ESMTP id S232492AbiG1QNX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 12:13:05 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02A7E6E2F9;
-        Thu, 28 Jul 2022 09:12:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=QX9Hvrhq1tv4fuik2gar58r4BELAfbzt39ubLuFRRa0=; b=Ifec17vWKOORU7KJ0UJ0qxyM7V
-        BfbF1rc539Oq5wXb9QGSZDhcZIxZrMfngNDwDuR4D+GSRfUyIo8Fe/Xaqkfn5Cs1wzUc6F3ZVHwwe
-        mtO12JyefeJ7YdQmoOuRZQCqE572PizMAdBqXJ8mUOd5jCCSuS+GTUt1Nw+l1+FkON8j4UXVeCl96
-        6MU8fzYK9ecQS31LIlcFNfz+XChPvIfmAgZ+xlR2xC4fOR27U3A0wrrIkHf0K8Defjfv0PnUtg7tI
-        mmj+4hZuc8EF5rXHdTzBcy4JvZ+MN536BLqZ7b5+38+RKCN49IC8+cCL7wNRdpdz12jaiiAvRoNli
-        9P6xh4NA==;
-Received: from [165.90.126.25] (helo=mail.igalia.com)
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
-        id 1oH67S-00A3YA-MD; Thu, 28 Jul 2022 18:12:14 +0200
-Date:   Thu, 28 Jul 2022 15:11:55 -0100
-From:   Melissa Wen <mwen@igalia.com>
-To:     =?utf-8?B?TWHDrXJh?= Canal <mairacanal@riseup.net>
-Cc:     Isabella Basso <isabbasso@riseup.net>, magalilemes00@gmail.com,
-        tales.aparecida@gmail.com, andrealmeid@riseup.net,
-        siqueirajordao@riseup.net, Trevor Woerner <twoerner@gmail.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        =?utf-8?B?Sm9zw6kgRXhww7NzaXRv?= <jose.exposito89@gmail.com>,
-        David Gow <davidgow@google.com>,
-        Daniel Latypov <dlatypov@google.com>,
-        brendanhiggins@google.com, Guenter Roeck <linux@roeck-us.net>,
-        kernel test robot <lkp@intel.com>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-kselftest@vger.kernel.org, kunit-dev@googlegroups.com
-Subject: Re: [PATCH] drm/tests: Split up test cases in
- igt_check_drm_format_min_pitch
-Message-ID: <20220728161155.tzjalvrxaezk556t@mail.igalia.com>
-References: <20220717184336.1197723-1-mairacanal@riseup.net>
+        Thu, 28 Jul 2022 12:13:23 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AAB26F7E3
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 09:13:11 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id D697B1FBAD;
+        Thu, 28 Jul 2022 16:13:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1659024789; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=uFNLMsmaiX/KJpwTe1Kl7r0olPyBVX9u4w3byywnZaQ=;
+        b=usHCPZMY4s4WbBkvRuD2vTWO1umj/trRQm5sTbc39MjAG/uLxnnEVAKF9Bim0Z73MR6wjZ
+        /UEfFFonAjwfqvAYBi5JNx47btffkBIfJWtAU1He1/hO3WuKve4QYe30NouUak4TfIBPwB
+        F3rxOAieDIrRLeVYZHDGtD3oLR6PpNw=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1659024789;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=uFNLMsmaiX/KJpwTe1Kl7r0olPyBVX9u4w3byywnZaQ=;
+        b=BamlEN9VBPnmc6zaO2Wyiok82LF254+J3XaWxFoJcCvvsGOldWETK2stJ6hX9DHKrZ6GK/
+        +7UKQ4UJEU1JeLCA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id AA7E913427;
+        Thu, 28 Jul 2022 16:13:09 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 4Ai7KJW14mKZDgAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Thu, 28 Jul 2022 16:13:09 +0000
+Message-ID: <33ae1986-6f92-aa15-1be5-c7ae79320a34@suse.cz>
+Date:   Thu, 28 Jul 2022 18:13:09 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="cycfpb3jug72cn35"
-Content-Disposition: inline
-In-Reply-To: <20220717184336.1197723-1-mairacanal@riseup.net>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v3 09/15] mm/slab_common: cleanup kmalloc_large()
+Content-Language: en-US
+To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Joe Perches <joe@perches.com>,
+        Vasily Averin <vasily.averin@linux.dev>,
+        Matthew WilCox <willy@infradead.org>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org
+References: <20220712133946.307181-1-42.hyeyoo@gmail.com>
+ <20220712133946.307181-10-42.hyeyoo@gmail.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <20220712133946.307181-10-42.hyeyoo@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On 7/12/22 15:39, Hyeonggon Yoo wrote:
+> Now that kmalloc_large() and kmalloc_large_node() do mostly same job,
+> make kmalloc_large() wrapper of __kmalloc_large_node_notrace().
+> 
+> In the meantime, add missing flag fix code in
+> __kmalloc_large_node_notrace().
+> 
+> Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
 
---cycfpb3jug72cn35
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
 
-On 07/17, Ma=EDra Canal wrote:
-> The igt_check_drm_format_min_pitch() function had a lot of
-> KUNIT_EXPECT_* calls, all of which ended up allocating and initializing
-> various test assertion structures on the stack.
->=20
-> This behavior was producing -Wframe-larger-than warnings on PowerPC, i386,
-> and MIPS architectures, such as:
->=20
-> drivers/gpu/drm/tests/drm_format_test.c: In function 'igt_check_drm_forma=
-t_min_pitch':
-> drivers/gpu/drm/tests/drm_format_test.c:271:1: error: the frame size of
-> 3712 bytes is larger than 2048 bytes
->=20
-> So, the igt_check_drm_format_min_pitch() test case was split into three
-> smaller functions: one testing single plane formats, one testing multiple
-> planes formats, and the other testing tiled formats.
->=20
-Hi Ma=EDra,
-
-Could you add a Fixes tag to indicate the commit that introduces the
-issue?
-
-Thanks,
-
-Melissa
-
-> Reported-by: kernel test robot <lkp@intel.com>
-> Reported-by: Guenter Roeck <linux@roeck-us.net>
-> Signed-off-by: Ma=EDra Canal <mairacanal@riseup.net>
 > ---
->  drivers/gpu/drm/tests/drm_format_test.c | 16 ++++++++++++++--
->  1 file changed, 14 insertions(+), 2 deletions(-)
->=20
-> diff --git a/drivers/gpu/drm/tests/drm_format_test.c b/drivers/gpu/drm/te=
-sts/drm_format_test.c
-> index 056cb8599d6d..28f2b8f88818 100644
-> --- a/drivers/gpu/drm/tests/drm_format_test.c
-> +++ b/drivers/gpu/drm/tests/drm_format_test.c
-> @@ -91,7 +91,7 @@ static void igt_check_drm_format_block_height(struct ku=
-nit *test)
->  	KUNIT_EXPECT_FALSE(test, drm_format_info_block_height(info, -1));
+>  mm/slab_common.c | 36 +++++++++++++-----------------------
+>  1 file changed, 13 insertions(+), 23 deletions(-)
+> 
+> diff --git a/mm/slab_common.c b/mm/slab_common.c
+> index dc872e0ef0fc..9c46e2f9589f 100644
+> --- a/mm/slab_common.c
+> +++ b/mm/slab_common.c
+> @@ -932,29 +932,6 @@ gfp_t kmalloc_fix_flags(gfp_t flags)
+>   * directly to the page allocator. We use __GFP_COMP, because we will need to
+>   * know the allocation order to free the pages properly in kfree.
+>   */
+> -void *kmalloc_large(size_t size, gfp_t flags)
+> -{
+> -	void *ret = NULL;
+> -	struct page *page;
+> -	unsigned int order = get_order(size);
+> -
+> -	if (unlikely(flags & GFP_SLAB_BUG_MASK))
+> -		flags = kmalloc_fix_flags(flags);
+> -
+> -	flags |= __GFP_COMP;
+> -	page = alloc_pages(flags, order);
+> -	if (likely(page)) {
+> -		ret = page_address(page);
+> -		mod_lruvec_page_state(page, NR_SLAB_UNRECLAIMABLE_B,
+> -				      PAGE_SIZE << order);
+> -	}
+> -	ret = kasan_kmalloc_large(ret, size, flags);
+> -	/* As ret might get tagged, call kmemleak hook after KASAN. */
+> -	kmemleak_alloc(ret, size, 1, flags);
+> -	trace_kmalloc(_RET_IP_, ret, NULL, size, PAGE_SIZE << order, flags);
+> -	return ret;
+> -}
+> -EXPORT_SYMBOL(kmalloc_large);
+>  
+>  static __always_inline
+>  void *__kmalloc_large_node_notrace(size_t size, gfp_t flags, int node)
+> @@ -963,6 +940,9 @@ void *__kmalloc_large_node_notrace(size_t size, gfp_t flags, int node)
+>  	void *ptr = NULL;
+>  	unsigned int order = get_order(size);
+>  
+> +	if (unlikely(flags & GFP_SLAB_BUG_MASK))
+> +		flags = kmalloc_fix_flags(flags);
+> +
+>  	flags |= __GFP_COMP;
+>  	page = alloc_pages_node(node, flags, order);
+>  	if (page) {
+> @@ -978,6 +958,16 @@ void *__kmalloc_large_node_notrace(size_t size, gfp_t flags, int node)
+>  	return ptr;
 >  }
-> =20
-> -static void igt_check_drm_format_min_pitch(struct kunit *test)
-> +static void igt_check_drm_format_min_pitch_for_single_plane(struct kunit=
- *test)
+>  
+> +void *kmalloc_large(size_t size, gfp_t flags)
+> +{
+> +	void *ret = __kmalloc_large_node_notrace(size, flags, NUMA_NO_NODE);
+> +
+> +	trace_kmalloc(_RET_IP_, ret, NULL, size,
+> +		      PAGE_SIZE << get_order(size), flags);
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL(kmalloc_large);
+> +
+>  void *kmalloc_large_node_notrace(size_t size, gfp_t flags, int node)
 >  {
->  	const struct drm_format_info *info =3D NULL;
-> =20
-> @@ -175,6 +175,11 @@ static void igt_check_drm_format_min_pitch(struct ku=
-nit *test)
->  			(uint64_t)UINT_MAX * 4);
->  	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 0, (UINT_MAX - 1)=
-),
->  			(uint64_t)(UINT_MAX - 1) * 4);
-> +}
-> +
-> +static void igt_check_drm_format_min_pitch_for_multiple_planes(struct ku=
-nit *test)
-> +{
-> +	const struct drm_format_info *info =3D NULL;
-> =20
->  	/* Test 2 planes format */
->  	info =3D drm_format_info(DRM_FORMAT_NV12);
-> @@ -249,6 +254,11 @@ static void igt_check_drm_format_min_pitch(struct ku=
-nit *test)
->  			(uint64_t)(UINT_MAX - 1) / 2);
->  	KUNIT_EXPECT_EQ(test, drm_format_info_min_pitch(info, 2, (UINT_MAX - 1)=
- / 2),
->  			(uint64_t)(UINT_MAX - 1) / 2);
-> +}
-> +
-> +static void igt_check_drm_format_min_pitch_for_tiled_format(struct kunit=
- *test)
-> +{
-> +	const struct drm_format_info *info =3D NULL;
-> =20
->  	/* Test tiled format */
->  	info =3D drm_format_info(DRM_FORMAT_X0L2);
-> @@ -273,7 +283,9 @@ static void igt_check_drm_format_min_pitch(struct kun=
-it *test)
->  static struct kunit_case drm_format_tests[] =3D {
->  	KUNIT_CASE(igt_check_drm_format_block_width),
->  	KUNIT_CASE(igt_check_drm_format_block_height),
-> -	KUNIT_CASE(igt_check_drm_format_min_pitch),
-> +	KUNIT_CASE(igt_check_drm_format_min_pitch_for_single_plane),
-> +	KUNIT_CASE(igt_check_drm_format_min_pitch_for_multiple_planes),
-> +	KUNIT_CASE(igt_check_drm_format_min_pitch_for_tiled_format),
->  	{ }
->  };
-> =20
-> --=20
-> 2.36.1
->=20
+>  	return __kmalloc_large_node_notrace(size, flags, node);
 
---cycfpb3jug72cn35
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEd8WOo/JViG+Tu+XIwqF3j0dLehwFAmLitTIACgkQwqF3j0dL
-ehwt4A/+IqGJpHDAaqlrXh3uSs6Sz5+Ca8yyh0YOHdzqDY64qUdT1DYXohXpy7MV
-fmgbtKGJL5erww3V5Jqg01+zpV1Q9MaC02Nb1txXqBreI1k8c1ALkB/m1Mlj6nLl
-UavoEhVhxA5utbETxtATCoEq3C/LxC65hZ6LPdwj2kQQaPOOHEccpuPC3CYTu9do
-qRblunLb6+VKPxdSmUFVwK2Ocshg1Efoa3ZJ9AipJjVmOQUSzXI644hr9l6biPOF
-a/5aS8R08FL7QhQQU9lzNU2zUeJuPSXdXDcUnZ3vkcOFR5bXejdedlMcK/SPbJbA
-4W5u6fNjE5PBer3AZDyc33xWUNUbc7kevBJj2oiqAGikQ6gLwJxTnQo8vRHwHoW0
-psyGiheXTlpMo4CPBmsHvGDSDSo8eQ6GNiyoXdMNC6LMal++ly/DgH7nMlhA83SS
-G2QwCvmHVgpR3BJ/R7voFcFoMn9DpTnwjvcAZqoXribwbOA9CIEhV0zVejlBbGoR
-HoassarpIU+B+I/c6i19qXt+crD4MW2x3W+X7hbrFTuOvE30QGtpFqP3CLBPUj3E
-ySNjplYAP3ZrK6ZGERzPThNavFDQB4ZzSUUclTRo0KxFqY2kNZfbc3ZVeg71UriN
-mPtuXUUC9tb7xsRRVaKCoJcRyur/nSG0RKce7dSUbdI5OdPVsHg=
-=OvDL
------END PGP SIGNATURE-----
-
---cycfpb3jug72cn35--
