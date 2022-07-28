@@ -2,146 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD8CDC19F21
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 09:35:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E55AC04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 09:37:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235583AbiG1Jf3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 05:35:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42416 "EHLO
+        id S235595AbiG1Jhv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 05:37:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235539AbiG1Jf0 (ORCPT
+        with ESMTP id S235577AbiG1Jhs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 05:35:26 -0400
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E15965727B
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 02:35:24 -0700 (PDT)
-Received: by mail-wm1-x330.google.com with SMTP id v67-20020a1cac46000000b003a1888b9d36so2254271wme.0
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 02:35:24 -0700 (PDT)
+        Thu, 28 Jul 2022 05:37:48 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2564A61DA4
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 02:37:46 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id t17so2087185lfk.0
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 02:37:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=references:user-agent:from:to:subject:date:in-reply-to:message-id
-         :mime-version;
-        bh=k3WJMzc4VlzWe028CTMpp0rc55xqANnpObGj9ASfF4g=;
-        b=kOiWRnnN6mtieKOLjkH8T/0NvwhYzh0u+fsDATST0slwNj6In1/nzfpCUEkvXm7Pyk
-         O/2OKtZs1s4n4YFLLn78mYDpEhfEGHm62+fkQZWOyUz/SEbcaUnE9VKWANHVfee0vKD+
-         QQjzOWZVkRGBmbP+ld5BkAyuZbQ/CaVT+aAvvbFHaNer0Hr8ncc99WZ3ua5goVCC6Ahw
-         XG+RS0KBxgVyH7uiruCjp6x3+yowOOT+5dFJZtNdB5qeEcDKQLfrMMlq4WQ5CUxQUJte
-         Y7aQe6ROKacO/PpnXLfb8LmfCkEGVkvsb1YrN9d9+qwOmZeKKUz3Mu43NYu27HJBzICF
-         QTlw==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8JmHUzVejHKie8HTRAolerKNkqFMF0TC8kqIrcN4GZo=;
+        b=lB4vLEJrwzE71UKK834Pf5O06Jg6ogSa3Dvcuxgp+4S9Dv2VCMquOICJcCHjYPJBxU
+         +9N8GJXdyV1ldMUygXvuKCCVNfE7A5I8DLufpcbN1Oh63jFmkt+b5oqcqY7yCy9b5UoH
+         GvWUuKdeRBFbZUN+4GyppsL5WyINRw+S3yU4ikzpHQ9QpK0EzS+1J9zjxm92nAbGUNzv
+         uc5dmvrIus5SHp6D/8zRmJrYFgrYJ58GMytqNIoZr0yYejJSoVOaO98qek8O1XiffeGn
+         TyFtqDmFBR8oeEzkzabFg359QGWVyBi98dWr86IEtlyznGquiSScimQHoD7dh2WuUoPn
+         5h4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:user-agent:from:to:subject:date
-         :in-reply-to:message-id:mime-version;
-        bh=k3WJMzc4VlzWe028CTMpp0rc55xqANnpObGj9ASfF4g=;
-        b=3fTsld+2J/jceL7EWJZ6F7ohb0qlcrgEkGaOJU6yj960aPFd893NbmfZ1PMFSBHRCD
-         bztA7OrmlKewV6VOf/I5sLad6KTFwECqRf7B9CT4Nwv/6bug5wb5Fy768QUTsch9Sntq
-         dFPHB/TZ+sek9Xl/Vq4YGqRk0mmW5ekjsseAOMSsxLAKG9vgmYDkdUHKN6Su2aBHIcVK
-         InGB2lQjsKJu76vnRRBZusuOXUPJKcsjHe5XHlpOom6SyXDIFywtJoCyrcvgYQ3qkEjI
-         VrlW87d+1OF9lWm+XASVDmVrpxC8aFAKYPBlK5OgSo9R0ehxoRNud1H2jpTp7EzuCrfE
-         y6Og==
-X-Gm-Message-State: AJIora+4WtdfvDKDyFURY4WLPSEmMREzdX739Hj9kK8AKPZ3hcF2MGnl
-        tZpAJVWFOHIdmXiPi91Uvm3uEg==
-X-Google-Smtp-Source: AGRyM1urGG1USTxB/ciyzDD0khYnDOQsI8Zs2PyCwuGAPjHdiKK1K1HzIvms+8txwfUegpyR48kRGg==
-X-Received: by 2002:a1c:2783:0:b0:3a2:fd82:bf46 with SMTP id n125-20020a1c2783000000b003a2fd82bf46mr5863699wmn.29.1659000923324;
-        Thu, 28 Jul 2022 02:35:23 -0700 (PDT)
-Received: from localhost (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.gmail.com with ESMTPSA id u13-20020a05600c19cd00b003a2e1883a27sm6126778wmq.18.2022.07.28.02.35.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Jul 2022 02:35:22 -0700 (PDT)
-References: <20220728054202.6981-1-yu.tu@amlogic.com>
- <20220728054202.6981-2-yu.tu@amlogic.com>
- <82e3fd36-df96-a555-4cea-47fabd26502b@linaro.org>
- <1jv8rhfw8h.fsf@starbuckisacylon.baylibre.com>
- <367cf98b-ef06-8f44-76c8-9099a1ec13dc@linaro.org>
-User-agent: mu4e 1.8.6; emacs 27.1
-From:   Jerome Brunet <jbrunet@baylibre.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Yu Tu <yu.tu@amlogic.com>, linux-clk@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: Re: [PATCH V2 1/3] dt-bindings: clk: meson: add S4 SoC clock
- controller bindings
-Date:   Thu, 28 Jul 2022 11:09:52 +0200
-In-reply-to: <367cf98b-ef06-8f44-76c8-9099a1ec13dc@linaro.org>
-Message-ID: <1jmtctfuli.fsf@starbuckisacylon.baylibre.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8JmHUzVejHKie8HTRAolerKNkqFMF0TC8kqIrcN4GZo=;
+        b=5dKwql7eT2d+EJArbPEtTsnIsdMc9/WgBtIsrrSS4euLvajOydlXGuHeQAiDQNofGe
+         5P8tRbrXo2SvYfcYS4HRZWSA8Ed5sfaCRjHs2Twy3clMkRHrJuxJqzA0xGmeEvs/Qo3U
+         BSmDi6HmFsofFPOfI9H285Oa4F4wHOoENnwUSz88DtUjCPG/gTmsJbJl9WyVo/bwLmjj
+         GmyzVo9pIEq41qLCJ8Hd18jU69uUdkDElvYWCYBx0FfGzK6qGFEFvpgzDJWo2awUQmSD
+         GX3Edt1nEzrGT596ASQ6Rya11hicYBuZiTJeUvFy1COl7o5+9fU55wSFEB66vrtk/tRQ
+         OzEg==
+X-Gm-Message-State: AJIora9a7hix9qD9isDkLKSUP+dp8i9RCZ9E6O3YRXQ14v32urCqhRu5
+        5cyS+o+uJJrMN283rvgFQOR41hOAJelNf5MHE5KZvA==
+X-Google-Smtp-Source: AGRyM1tFoTcCL8AhPA0bTHZG2PZ20h0N/CQpdR8GaxfVYWkeyLmZlM9lQ/QSu/W9u2xGpTHGHte/WaxMGINcPl4jCNo=
+X-Received: by 2002:a05:6512:2a8e:b0:48a:6b7d:617d with SMTP id
+ dt14-20020a0565122a8e00b0048a6b7d617dmr10219035lfb.167.1659001064322; Thu, 28
+ Jul 2022 02:37:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20220609150851.23084-1-max.oss.09@gmail.com> <CACRpkdZ0=8poNcFaCYSmMyg1GBfkHLAr3QvvzFKweLPr3UM2vg@mail.gmail.com>
+ <CAEHkU3Wya0nRhaBDisAQBm5kf=2YcdJYzz2jKiL___mZQzL_Sw@mail.gmail.com>
+ <CAPDyKFrEYCx3L94gz27Pk_=HdwA4GNGE9Lvz+HGUW0P7Qt-mBw@mail.gmail.com> <20220726160337.GA41736@francesco-nb.int.toradex.com>
+In-Reply-To: <20220726160337.GA41736@francesco-nb.int.toradex.com>
+From:   Ulf Hansson <ulf.hansson@linaro.org>
+Date:   Thu, 28 Jul 2022 11:37:07 +0200
+Message-ID: <CAPDyKFqGFjywJ-Vmmn9=-NOzJX=24mH9A03H9djS=nJotKWK8A@mail.gmail.com>
+Subject: Re: [PATCH v1 0/5] power: domain: Add driver for a PM domain provider
+ which controls
+To:     Francesco Dolcini <francesco.dolcini@toradex.com>
+Cc:     Max Krummenacher <max.oss.09@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Max Krummenacher <max.krummenacher@toradex.com>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Kevin Hilman <khilman@kernel.org>,
+        Andrejs Cainikovs <andrejs.cainikovs@toradex.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Fabio Estevam <festevam@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>, Vinod Koul <vkoul@kernel.org>,
+        Will Deacon <will@kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-On Thu 28 Jul 2022 at 11:02, Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
-
-> On 28/07/2022 10:50, Jerome Brunet wrote:
->> 
->> On Thu 28 Jul 2022 at 10:41, Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
->> 
->>> On 28/07/2022 07:42, Yu Tu wrote:
-[...]
->>>> +/*
->>>> + * CLKID index values
->>>> + */
->>>> +
->>>> +#define CLKID_FIXED_PLL			1
->>>> +#define CLKID_FCLK_DIV2			3
->>>> +#define CLKID_FCLK_DIV3			5
->>>> +#define CLKID_FCLK_DIV4			7
->>>> +#define CLKID_FCLK_DIV5			9
->>>> +#define CLKID_FCLK_DIV7			11
->>>
->>> Why these aren't continuous? IDs are expected to be incremented by 1.
->>>
->> 
->> All clocks have IDs, it is one big table in the driver, but we are not exposing them all.
->> For example, with composite 'mux / div / gate' assembly, we usually need
->> only the leaf.
+On Tue, 26 Jul 2022 at 18:03, Francesco Dolcini
+<francesco.dolcini@toradex.com> wrote:
 >
-> I understand you do not expose them all, but that is not the reason to
-> increment ID by 2 or 3... Otherwise these are not IDs and you are not
-> expected to put register offsets into the bindings (you do not bindings
-> in such case).
+> Hello Ulf and everybody,
+>
+> On Wed, Jul 13, 2022 at 01:43:28PM +0200, Ulf Hansson wrote:
+> > On Thu, 23 Jun 2022 at 18:14, Max Krummenacher <max.oss.09@gmail.com> wrote:
+> > > So our plan is to explicitly handle a (shared) regulator in every
+> > > driver involved, adding that regulator capability for drivers not
+> > > already having one.
+> >
+> > Please don't! I have recently rejected a similar approach for Tegra
+> > platforms, which now have been converted into using the power domain
+> > approach.
+>
+> Just to quickly re-iterate how our hardware design looks like, we do
+> have a single gpio that control the power of a whole board area that is
+> supposed to be powered-off in suspend mode, this area could contains
+> devices that have a proper Linux driver and some passive driver-less
+> components (e.g. level shifter) - the exact mix varies.
+>
+> Our proposal in this series was to model this as a power domain that
+> could be controlled with a regulator. Krzysztof, Robin and others
+> clearly argued against this idea.
 
-Why is it not an IDs if it not continuous in the bindings ?
+Well, historically we haven't modelled these kinds of power-rails
+other than through power-domains. And this is exactly what genpd and
+PM domains in Linux are there to help us with.
 
-If there is technical reason, we'll probably end up exposing everything. It
-would not be a dramatic change. I asked for this over v1 because we have
-done that is the past and I think it makes sense.
+Moreover, on another SoC/platform, maybe the power-rails are deployed
+differently and maybe those have the ability to scale performance too.
+Then it doesn't really fit well with the regulator model anymore.
 
-I'm happy to be convinced to do things differently. Just looking for the
-technical reason that require contiuous exposed IDs.
-
-The other IDs exists, but we do not expose them as bindings.
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/clk/meson/gxbb.h#n125
+If we want to continue to keep drivers portable, I don't see any
+better option than continuing to model these power-rails as
+power-domains.
 
 >
+> The other approach would be to have a single regulator shared with the
+> multiple devices we have there (still not clear how that would work in
+> case we have only driver-less passive components). This is just a
+> device-tree matter, maybe we would need to add support for a supply to
+> some device drivers.
 >
->> Same has been done for the other AML controllers:
->> For ex:
->> 
->> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/include/dt-bindings/clock/gxbb-clkc.h
->
-> This cannot be fixed now, but it is very poor argument. Like saying "we
-> had a bug in other driver, so we implemented the bug here as well".
+> Honestly my conclusion from this discussion is that the only viable
+> option is this second one, do I miss something?
 
-I agree, "done before" is not a good argument. I was trying to provide a
-better picutre. I'm just surprised to have this new requirement that IDs
-have to be incremented by 1 (in the bindings) and I'd like to understand
-why what we had done could be considered a bug now.
+No thanks!
 
-For example the simple-reset driver compute the reset offset from the IDs:
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/reset/reset-simple.c
-There might be holes in the IDs if not all bits have reset maps.
-I don't think that would be a bug either.
+Well, unless you can convince me there are benefits to this approach
+over the power-domain approach.
 
 >
-> Best regards,
-> Krzysztof
+> > If it's a powerail that is shared between controllers (devices), used
+> > to keep their registers values for example, that should be modelled as
+> > a power domain. Moreover for power domains, we can support
+> > voltage/frequency (performance) scaling, which isn't really applicable
+> > to a plain regulator.
+> >
+> > However, if the actual powerrail fits well to be modelled as
+> > regulator, please go ahead. Although, in this case, the regulator must
+> > only be controlled behind a genpd provider's on/off callback, so you
+> > still need the power domain approach, rather than using the regulator
+> > in each driver and for each device.
+>
+> Francesco
+>
 
+Kind regards
+Uffe
