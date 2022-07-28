@@ -2,78 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A987CC19F21
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 12:02:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC186C19F29
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 12:03:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237529AbiG1MCF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 08:02:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38870 "EHLO
+        id S237636AbiG1MDG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 08:03:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237232AbiG1MBq (ORCPT
+        with ESMTP id S235664AbiG1MDE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 08:01:46 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22A1B24F1B;
-        Thu, 28 Jul 2022 05:01:43 -0700 (PDT)
-Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Ltq0B3BFWzWfcW;
-        Thu, 28 Jul 2022 19:57:46 +0800 (CST)
-Received: from kwepemm600003.china.huawei.com (7.193.23.202) by
- dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 28 Jul 2022 20:01:41 +0800
-Received: from ubuntu1804.huawei.com (10.67.174.61) by
- kwepemm600003.china.huawei.com (7.193.23.202) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 28 Jul 2022 20:01:40 +0800
-From:   Yang Jihong <yangjihong1@huawei.com>
-To:     <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
-        <mark.rutland@arm.com>, <alexander.shishkin@linux.intel.com>,
-        <jolsa@kernel.org>, <namhyung@kernel.org>,
-        <colin.i.king@gmail.com>, <linux-kernel@vger.kernel.org>,
-        <linux-perf-users@vger.kernel.org>
-CC:     <pc@us.ibm.com>, <yhs@fb.com>, <andrii.nakryiko@gmail.com>,
-        <songliubraving@fb.com>, <yangjihong1@huawei.com>
-Subject: [PATCH 4/5] perf kwork: Fix spelling mistake: "PRINT_TIME_UNIT_MESC_WIDTH" -> "PRINT_TIME_UNIT_MSEC_WIDTH"
-Date:   Thu, 28 Jul 2022 19:58:53 +0800
-Message-ID: <20220728115854.80399-5-yangjihong1@huawei.com>
-X-Mailer: git-send-email 2.30.GIT
-In-Reply-To: <20220728115854.80399-1-yangjihong1@huawei.com>
-References: <20220728115854.80399-1-yangjihong1@huawei.com>
+        Thu, 28 Jul 2022 08:03:04 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8998C67151;
+        Thu, 28 Jul 2022 05:03:03 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id c3so1725019pfb.13;
+        Thu, 28 Jul 2022 05:03:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=6nvKbT9kndzSOUcfK+zc9MvubXEZk6miyWHNHn+5OxY=;
+        b=f1YeSeTjLcomvltM6VYE8CROdkCKG4NTbFMbj45rMThgoM6sGFv8czsgRRZfgd1WKt
+         f/08GfGCfpugkNkzhZUBer6T79p1kpE4c4DXPGSZNsCf2T0QJ2VCkuWLqJo0ziYiPCDz
+         GvwVufYfxqJRU595/YjWWArmjF9unlseUWacHYEBZmo13XHJxCJ6tuyGAbG65R+7HwNr
+         uo2WTpmy2euBKPbcYPy28keUFAt/3oP9OJ1JFjEoaHfZYfyWUBB8/FpBtlv3XNF1hiO5
+         3uFGN7/p7PfTIf+xlNLn/R9PWIus6jG9WetHyv8CdccXU0FfYs4GlnzKyd9hXY1rfNE5
+         AbFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=6nvKbT9kndzSOUcfK+zc9MvubXEZk6miyWHNHn+5OxY=;
+        b=C0+fM6FK8o5hemvJkcpS2lrO5toy6iD96j0HqQ8WkWxPt9uURaZ3e1FTOnTQNUZHiW
+         AHThJpUB+bnrRlCP3cYGy2ZyIhk74ycZt8UwNZruQwi0a21vhPa2R/q0paSQDHyCQvf2
+         +sy/AMU/XMT6GXozQNcha5PeVFBWkH9QTIrVxsYQlMe3amfMQTeix4gtPOlmF0qbOmtn
+         DsBCz05bCQhNnUF1ltKZlWfuMgmI11N2kv2qVr37/n6W4kkLupxsPqJPb5pZDc3nOU9U
+         PpSLjqIGPb38DNtl/ODGv+aIN+b/Wan37CvU6X7INknrn5HIXPJh05l6QEhmlJKLvq+i
+         C/aA==
+X-Gm-Message-State: AJIora+brUw6vrhrPJaqsfjwnUsWGbrqp1qUPWUq72jJvJS21GEY5AOl
+        qmWX6IvQugzoLdizGHPqvdbjK0Ghn5oOlw==
+X-Google-Smtp-Source: AGRyM1ufvExeCGCzYxqGycF0uLOFYtynrFUL0MSe6SOxjvtAeuwZiJkNue2cpzf3SNcK4og20Lnzyg==
+X-Received: by 2002:a65:6494:0:b0:419:9527:2a69 with SMTP id e20-20020a656494000000b0041995272a69mr22789010pgv.80.1659009782991;
+        Thu, 28 Jul 2022 05:03:02 -0700 (PDT)
+Received: from [192.168.255.10] ([103.7.29.32])
+        by smtp.gmail.com with ESMTPSA id q12-20020a170902a3cc00b0016397da033csm1108413plb.62.2022.07.28.05.03.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Jul 2022 05:03:02 -0700 (PDT)
+Message-ID: <271bddfa-9e48-d5f6-6147-af346d7946bf@gmail.com>
+Date:   Thu, 28 Jul 2022 20:02:53 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.174.61]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- kwepemm600003.china.huawei.com (7.193.23.202)
-X-CFilter-Loop: Reflected
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.11.0
+Subject: Re: [PATCH 1/3] KVM: x86: Refresh PMU after writes to
+ MSR_IA32_PERF_CAPABILITIES
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220727233424.2968356-1-seanjc@google.com>
+ <20220727233424.2968356-2-seanjc@google.com>
+From:   Like Xu <like.xu.linux@gmail.com>
+In-Reply-To: <20220727233424.2968356-2-seanjc@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Suggested-by: Namhyung Kim <namhyung@kernel.org>
-Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
----
- tools/perf/builtin-kwork.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+On 28/7/2022 7:34 am, Sean Christopherson wrote:
+> Refresh the PMU if userspace modifies MSR_IA32_PERF_CAPABILITIES.  KVM
+> consumes the vCPU's PERF_CAPABILITIES when enumerating PEBS support, but
+> relies on CPUID updates to refresh the PMU.  I.e. KVM will do the wrong
+> thing if userspace stuffs PERF_CAPABILITIES _after_ setting guest CPUID.
 
-diff --git a/tools/perf/builtin-kwork.c b/tools/perf/builtin-kwork.c
-index 9e8b9f9e0472..d6c09044a929 100644
---- a/tools/perf/builtin-kwork.c
-+++ b/tools/perf/builtin-kwork.c
-@@ -37,9 +37,9 @@
- #define RPINT_DECIMAL_WIDTH 3
- #define PRINT_BRACKETPAIR_WIDTH 2
- #define PRINT_TIME_UNIT_SEC_WIDTH 2
--#define PRINT_TIME_UNIT_MESC_WIDTH 3
--#define PRINT_RUNTIME_HEADER_WIDTH (PRINT_RUNTIME_WIDTH + PRINT_TIME_UNIT_MESC_WIDTH)
--#define PRINT_LATENCY_HEADER_WIDTH (PRINT_LATENCY_WIDTH + PRINT_TIME_UNIT_MESC_WIDTH)
-+#define PRINT_TIME_UNIT_MSEC_WIDTH 3
-+#define PRINT_RUNTIME_HEADER_WIDTH (PRINT_RUNTIME_WIDTH + PRINT_TIME_UNIT_MSEC_WIDTH)
-+#define PRINT_LATENCY_HEADER_WIDTH (PRINT_LATENCY_WIDTH + PRINT_TIME_UNIT_MSEC_WIDTH)
- #define PRINT_TIMEHIST_CPU_WIDTH (PRINT_CPU_WIDTH + PRINT_BRACKETPAIR_WIDTH)
- #define PRINT_TIMESTAMP_HEADER_WIDTH (PRINT_TIMESTAMP_WIDTH + PRINT_TIME_UNIT_SEC_WIDTH)
- 
--- 
-2.30.GIT
+Unwise userspace should reap its consequences if it does not break KVM or host.
 
+When a guest feature can be defined/controlled by multiple KVM APIs entries,
+(such as SET_CPUID2, msr_feature, KVM_CAP, module_para), should KVM
+define the priority of these APIs (e.g. whether they can override each other) ?
+
+Removing this ambiguity ensures consistency in the architecture and behavior of 
+all KVM features.
+Any further performance optimizations can be based on these finalized values as 
+you do.
+
+> 
+> Opportunistically fix a curly-brace indentation.
+> 
+> Fixes: c59a1f106f5c ("KVM: x86/pmu: Add IA32_PEBS_ENABLE MSR emulation for extended PEBS")
+> Cc: Like Xu <like.xu.linux@gmail.com>
+> Signed-off-by: Sean Christopherson <seanjc@google.com>
+> ---
+>   arch/x86/kvm/x86.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+> index 5366f884e9a7..362c538285db 100644
+> --- a/arch/x86/kvm/x86.c
+> +++ b/arch/x86/kvm/x86.c
+> @@ -3543,9 +3543,9 @@ int kvm_set_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+>   			return 1;
+>   
+>   		vcpu->arch.perf_capabilities = data;
+> -
+> +		kvm_pmu_refresh(vcpu);
+
+I had proposed this diff but was met with silence.
+
+>   		return 0;
+> -		}
+> +	}
+>   	case MSR_EFER:
+>   		return set_efer(vcpu, msr_info);
+>   	case MSR_K7_HWCR:
