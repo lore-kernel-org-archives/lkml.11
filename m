@@ -2,186 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B732C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 12:23:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6C25C19F29
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 12:24:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238338AbiG1MXx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 08:23:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60962 "EHLO
+        id S238341AbiG1MYw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 08:24:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235980AbiG1MXs (ORCPT
+        with ESMTP id S236326AbiG1MYs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 08:23:48 -0400
-Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30DC915828
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 05:23:47 -0700 (PDT)
-Received: from fsav415.sakura.ne.jp (fsav415.sakura.ne.jp [133.242.250.114])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 26SCNTq3090536;
-        Thu, 28 Jul 2022 21:23:29 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav415.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav415.sakura.ne.jp);
- Thu, 28 Jul 2022 21:23:29 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav415.sakura.ne.jp)
-Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 26SCNSPB090528
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-        Thu, 28 Jul 2022 21:23:29 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Message-ID: <21b9c1ac-64b7-7f4b-1e62-bf2f021fffcd@I-love.SAKURA.ne.jp>
-Date:   Thu, 28 Jul 2022 21:23:25 +0900
+        Thu, 28 Jul 2022 08:24:48 -0400
+Received: from unicom145.biz-email.net (unicom145.biz-email.net [210.51.26.145])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A1A76BD61;
+        Thu, 28 Jul 2022 05:24:45 -0700 (PDT)
+Received: from ([60.208.111.195])
+        by unicom145.biz-email.net ((D)) with ASMTP (SSL) id XLB00042;
+        Thu, 28 Jul 2022 20:24:42 +0800
+Received: from Jtjnmail201613.home.langchao.com (10.100.2.13) by
+ Jtjnmail201615.home.langchao.com (10.100.2.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.9; Thu, 28 Jul 2022 20:24:41 +0800
+Received: from Jtjnmail201613.home.langchao.com ([fe80::b8bf:393:bebe:1197])
+ by Jtjnmail201613.home.langchao.com ([fe80::b8bf:393:bebe:1197%12]) with mapi
+ id 15.01.2507.009; Thu, 28 Jul 2022 20:24:41 +0800
+From:   =?utf-8?B?QW5keSBHdW8gKOmDreWNq+aWjCk=?= <guoweibin@inspur.com>
+To:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+CC:     "b-liu@ti.com" <b-liu@ti.com>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: =?utf-8?B?UkU6IOetlOWkjTogW3ZnZXIua2VybmVsLm9yZ+S7o+WPkV1SZTogW1BBVENI?=
+ =?utf-8?B?IHYyXSB1c2I6IG11c2I6IEZpeCBtdXNiX2dhZGdldC5jIHJ4c3RhdGUgbWF5?=
+ =?utf-8?Q?_cause_request->buf_overflow_problems?=
+Thread-Topic: =?utf-8?B?562U5aSNOiBbdmdlci5rZXJuZWwub3Jn5Luj5Y+RXVJlOiBbUEFUQ0ggdjJd?=
+ =?utf-8?B?IHVzYjogbXVzYjogRml4IG11c2JfZ2FkZ2V0LmMgcnhzdGF0ZSBtYXkgY2F1?=
+ =?utf-8?Q?se_request->buf_overflow_problems?=
+Thread-Index: AdihlK58/c/eW9hwTTW0SyWnHPS6Pf//hjMA//94hRCAAfBDgP//HpSA
+Date:   Thu, 28 Jul 2022 12:24:41 +0000
+Message-ID: <7ab29bb9ed094ee593ebcf2e351665dd@inspur.com>
+References: <28d16ec3ed25603cdda2c5fb3fbf1470@sslemail.net>
+ <YuEElC563HN5ldMu@kroah.com> <2c234d13d7274763b0102b83ce65b8ff@inspur.com>
+ <YuIzOeJZ7YKe4KDZ@kroah.com>
+In-Reply-To: <YuIzOeJZ7YKe4KDZ@kroah.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: yes
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.180.162.69]
+Content-Type: multipart/signed; protocol="application/x-pkcs7-signature";
+        micalg=SHA1; boundary="----=_NextPart_000_0203_01D8A2C0.10078B20"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Content-Language: en-US
-To:     Tejun Heo <tj@kernel.org>, Lai Jiangshan <jiangshanlai@gmail.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Hillf Danton <hdanton@sina.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>
-From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Subject: [PATCH] workqueue: don't skip lockdep wq dependency in
- cancel_work_sync()
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+tUid:   20227282024422d4ffad0d3e43ad8f4512b35f066eb3e
+X-Abuse-Reports-To: service@corp-email.com
+Abuse-Reports-To: service@corp-email.com
+X-Complaints-To: service@corp-email.com
+X-Report-Abuse-To: service@corp-email.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Like Hillf Danton mentioned
+------=_NextPart_000_0203_01D8A2C0.10078B20
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
-  syzbot should have been able to catch cancel_work_sync() in work context
-  by checking lockdep_map in __flush_work() for both flush and cancel.
+I'm sorroy,
+I use Enterprise mailbox doesn't work very well.
+I will send this patch through another mailbox.
 
-in [1], being unable to report an obvious deadlock scenario shown below is
-broken. From locking dependency perspective, sync version of cancel request
-should behave as if flush request, for it waits for completion of work if
-that work has already started execution.
+Thanks
 
-  ----------
-  #include <linux/module.h>
-  #include <linux/sched.h>
-  static DEFINE_MUTEX(mutex);
-  static void work_fn(struct work_struct *work)
-  {
-    schedule_timeout_uninterruptible(HZ / 5);
-    mutex_lock(&mutex);
-    mutex_unlock(&mutex);
-  }
-  static DECLARE_WORK(work, work_fn);
-  static int __init test_init(void)
-  {
-    schedule_work(&work);
-    schedule_timeout_uninterruptible(HZ / 10);
-    mutex_lock(&mutex);
-    cancel_work_sync(&work);
-    mutex_unlock(&mutex);
-    return -EINVAL;
-  }
-  module_init(test_init);
-  MODULE_LICENSE("GPL");
-  ----------
+guoweibin
 
-Link: https://lkml.kernel.org/r/20220504044800.4966-1-hdanton@sina.com [1]
-Reported-by: Hillf Danton <hdanton@sina.com>
-Fixes: d6e89786bed977f3 ("workqueue: skip lockdep wq dependency in cancel_work_sync()")
-Cc: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
----
- kernel/workqueue.c | 45 ++++++++++++++++++---------------------------
- 1 file changed, 18 insertions(+), 27 deletions(-)
+-----Original Message-----
+From: gregkh@linuxfoundation.org <gregkh@linuxfoundation.org>=20
+Sent: Thursday, July 28, 2022 2:57 PM
+To: Andy Guo (=E9=83=AD=E5=8D=AB=E6=96=8C) <guoweibin@inspur.com>
+Cc: b-liu@ti.com; linux-usb@vger.kernel.org; =
+linux-kernel@vger.kernel.org
+Subject: Re: =E7=AD=94=E5=A4=8D: [vger.kernel.org=E4=BB=A3=E5=8F=91]Re: =
+[PATCH v2] usb: musb: Fix musb_gadget.c rxstate may cause request->buf =
+overflow problems
 
-diff --git a/kernel/workqueue.c b/kernel/workqueue.c
-index 1ea50f6be843..e6df688f84db 100644
---- a/kernel/workqueue.c
-+++ b/kernel/workqueue.c
-@@ -3000,8 +3000,7 @@ void drain_workqueue(struct workqueue_struct *wq)
- }
- EXPORT_SYMBOL_GPL(drain_workqueue);
- 
--static bool start_flush_work(struct work_struct *work, struct wq_barrier *barr,
--			     bool from_cancel)
-+static bool start_flush_work(struct work_struct *work, struct wq_barrier *barr)
- {
- 	struct worker *worker = NULL;
- 	struct worker_pool *pool;
-@@ -3043,8 +3042,7 @@ static bool start_flush_work(struct work_struct *work, struct wq_barrier *barr,
- 	 * workqueues the deadlock happens when the rescuer stalls, blocking
- 	 * forward progress.
- 	 */
--	if (!from_cancel &&
--	    (pwq->wq->saved_max_active == 1 || pwq->wq->rescuer)) {
-+	if (pwq->wq->saved_max_active == 1 || pwq->wq->rescuer) {
- 		lock_map_acquire(&pwq->wq->lockdep_map);
- 		lock_map_release(&pwq->wq->lockdep_map);
- 	}
-@@ -3056,7 +3054,18 @@ static bool start_flush_work(struct work_struct *work, struct wq_barrier *barr,
- 	return false;
- }
- 
--static bool __flush_work(struct work_struct *work, bool from_cancel)
-+/**
-+ * flush_work - wait for a work to finish executing the last queueing instance
-+ * @work: the work to flush
-+ *
-+ * Wait until @work has finished execution.  @work is guaranteed to be idle
-+ * on return if it hasn't been requeued since flush started.
-+ *
-+ * Return:
-+ * %true if flush_work() waited for the work to finish execution,
-+ * %false if it was already idle.
-+ */
-+bool flush_work(struct work_struct *work)
- {
- 	struct wq_barrier barr;
- 
-@@ -3066,12 +3075,10 @@ static bool __flush_work(struct work_struct *work, bool from_cancel)
- 	if (WARN_ON(!work->func))
- 		return false;
- 
--	if (!from_cancel) {
--		lock_map_acquire(&work->lockdep_map);
--		lock_map_release(&work->lockdep_map);
--	}
-+	lock_map_acquire(&work->lockdep_map);
-+	lock_map_release(&work->lockdep_map);
- 
--	if (start_flush_work(work, &barr, from_cancel)) {
-+	if (start_flush_work(work, &barr)) {
- 		wait_for_completion(&barr.done);
- 		destroy_work_on_stack(&barr.work);
- 		return true;
-@@ -3079,22 +3086,6 @@ static bool __flush_work(struct work_struct *work, bool from_cancel)
- 		return false;
- 	}
- }
--
--/**
-- * flush_work - wait for a work to finish executing the last queueing instance
-- * @work: the work to flush
-- *
-- * Wait until @work has finished execution.  @work is guaranteed to be idle
-- * on return if it hasn't been requeued since flush started.
-- *
-- * Return:
-- * %true if flush_work() waited for the work to finish execution,
-- * %false if it was already idle.
-- */
--bool flush_work(struct work_struct *work)
--{
--	return __flush_work(work, false);
--}
- EXPORT_SYMBOL_GPL(flush_work);
- 
- struct cwt_wait {
-@@ -3159,7 +3150,7 @@ static bool __cancel_work_timer(struct work_struct *work, bool is_dwork)
- 	 * isn't executing.
- 	 */
- 	if (wq_online)
--		__flush_work(work, true);
-+		flush_work(work);
- 
- 	clear_work_data(work);
- 
--- 
-2.18.4
+On Thu, Jul 28, 2022 at 01:14:17AM +0000, Andy Guo =
+(=E9=83=AD=E5=8D=AB=E6=96=8C) wrote:
+
+As can be seen in the archives:
+	=
+https://lore.kernel.org/all/2c234d13d7274763b0102b83ce65b8ff@inspur.com/
+this message could not be decoded, sorry.
+
+Please resend in plain text format.
+
+thanks,
+
+greg k-h
+
+
+------=_NextPart_000_0203_01D8A2C0.10078B20
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExCzAJBgUrDgMCGgUAMIAGCSqGSIb3DQEHAQAAoIIHYjCCB14w
+ggZGoAMCAQICE34AAR03Lnlt8vAH3sgAAAABHTcwDQYJKoZIhvcNAQELBQAwWTETMBEGCgmSJomT
+8ixkARkWA2NvbTEYMBYGCgmSJomT8ixkARkWCGxhbmdjaGFvMRQwEgYKCZImiZPyLGQBGRYEaG9t
+ZTESMBAGA1UEAxMJSU5TUFVSLUNBMB4XDTIxMDkyODAyMzcyNVoXDTI2MDkyNzAyMzcyNVowgbYx
+EzARBgoJkiaJk/IsZAEZFgNjb20xGDAWBgoJkiaJk/IsZAEZFghsYW5nY2hhbzEUMBIGCgmSJomT
+8ixkARkWBGhvbWUxNjA0BgNVBAsMLeWxseS4nOa1qua9ruS6uuW3peaZuuiDveeglOeptumZouac
+iemZkOWFrOWPuDESMBAGA1UEAwwJ6YOt5Y2r5paMMSMwIQYJKoZIhvcNAQkBFhRndW93ZWliaW5A
+aW5zcHVyLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKN1kpWcEFprxAKE8FNL
++AJNR9+ooGd0WOUsK7Mp02bTN0uSAs7HzvQPbXzLylGDj2EyI/g1hhustIl7qQQ9RJeEIcwQyHVZ
+Fh+KUoEuMX3duzsrLhIp89b+yCP6T5+g7m4Pp+/Mw+3ClBY7cAF0Ps3SeWFCv+h4aA2VeN8jsMpq
+G/p9/Le/+cO2v3q9AiLhc5lnG/drzDSfqU6rtaoBtoZaIJg+L+AQ4yCqFvWqUnGEGdJbNj+r8Hzb
+mx59kZlEnwooocutyEcZbwkC4x4/0ejHcvpaFmvxKld13vzXGw0ux2J9dqJkJF57423QoGOOD571
+LTYKGMs3jI28NZdwm7ECAwEAAaOCA78wggO7MD0GCSsGAQQBgjcVBwQwMC4GJisGAQQBgjcVCILy
+qR+Egdd6hqmRPYaA9xWD2I9cgUr9iyaBlKdNAgFkAgFhMCkGA1UdJQQiMCAGCCsGAQUFBwMCBggr
+BgEFBQcDBAYKKwYBBAGCNwoDBDALBgNVHQ8EBAMCBaAwNQYJKwYBBAGCNxUKBCgwJjAKBggrBgEF
+BQcDAjAKBggrBgEFBQcDBDAMBgorBgEEAYI3CgMEMEQGCSqGSIb3DQEJDwQ3MDUwDgYIKoZIhvcN
+AwICAgCAMA4GCCqGSIb3DQMEAgIAgDAHBgUrDgMCBzAKBggqhkiG9w0DBzAdBgNVHQ4EFgQUxCys
+sH6w+RFelyTb976/cxtlJVIwHwYDVR0jBBgwFoAUXlkDprRMWGCRTvYetaU5pjLBNWowggEPBgNV
+HR8EggEGMIIBAjCB/6CB/KCB+YaBumxkYXA6Ly8vQ049SU5TUFVSLUNBLENOPUpUQ0EyMDEyLENO
+PUNEUCxDTj1QdWJsaWMlMjBLZXklMjBTZXJ2aWNlcyxDTj1TZXJ2aWNlcyxDTj1Db25maWd1cmF0
+aW9uLERDPWhvbWUsREM9bGFuZ2NoYW8sREM9Y29tP2NlcnRpZmljYXRlUmV2b2NhdGlvbkxpc3Q/
+YmFzZT9vYmplY3RDbGFzcz1jUkxEaXN0cmlidXRpb25Qb2ludIY6aHR0cDovL0pUQ0EyMDEyLmhv
+bWUubGFuZ2NoYW8uY29tL0NlcnRFbnJvbGwvSU5TUFVSLUNBLmNybDCCASkGCCsGAQUFBwEBBIIB
+GzCCARcwgbEGCCsGAQUFBzAChoGkbGRhcDovLy9DTj1JTlNQVVItQ0EsQ049QUlBLENOPVB1Ymxp
+YyUyMEtleSUyMFNlcnZpY2VzLENOPVNlcnZpY2VzLENOPUNvbmZpZ3VyYXRpb24sREM9aG9tZSxE
+Qz1sYW5nY2hhbyxEQz1jb20/Y0FDZXJ0aWZpY2F0ZT9iYXNlP29iamVjdENsYXNzPWNlcnRpZmlj
+YXRpb25BdXRob3JpdHkwYQYIKwYBBQUHMAKGVWh0dHA6Ly9KVENBMjAxMi5ob21lLmxhbmdjaGFv
+LmNvbS9DZXJ0RW5yb2xsL0pUQ0EyMDEyLmhvbWUubGFuZ2NoYW8uY29tX0lOU1BVUi1DQS5jcnQw
+RQYDVR0RBD4wPKAkBgorBgEEAYI3FAIDoBYMFGd1b3dlaWJpbkBpbnNwdXIuY29tgRRndW93ZWli
+aW5AaW5zcHVyLmNvbTANBgkqhkiG9w0BAQsFAAOCAQEAcbsy8EKbqOnyvky62q4tgbiQXLrWAfqc
+J8ct2AWBJ09cxv5Id95DxyFzbyJMl2e9LHuoSyqIPSIK7Kt2h1s0E0dq0bHOt5avwL1TeKfjpl/a
+RAqdkkGs4o1g9aWD2Mz0av9luhQAWJAEw3Von8L/EreNRD4HwlW69whXp47pSe+vCXdRczoJ4/qi
+8/nMNmF2NHilHpSBE0fP/3dpo5AYP9PvrJSJQEFlgJrhSH3GY+hUuYFTG5E1zgr5C+nCuNUIyF4J
+6kSWRnCb+rPxLJro/mwZqD7qt+HhFJhc37vgjZmBSqMGBoswrhnbgOQHhpAFHsYAG2u3yaJrsxBb
+DpWD+jGCA5MwggOPAgEBMHAwWTETMBEGCgmSJomT8ixkARkWA2NvbTEYMBYGCgmSJomT8ixkARkW
+CGxhbmdjaGFvMRQwEgYKCZImiZPyLGQBGRYEaG9tZTESMBAGA1UEAxMJSU5TUFVSLUNBAhN+AAEd
+Ny55bfLwB97IAAAAAR03MAkGBSsOAwIaBQCgggH4MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEw
+HAYJKoZIhvcNAQkFMQ8XDTIyMDcyODEyMjQzOVowIwYJKoZIhvcNAQkEMRYEFJzDPCBndwv0nGQO
+If67To9UkXhZMH8GCSsGAQQBgjcQBDFyMHAwWTETMBEGCgmSJomT8ixkARkWA2NvbTEYMBYGCgmS
+JomT8ixkARkWCGxhbmdjaGFvMRQwEgYKCZImiZPyLGQBGRYEaG9tZTESMBAGA1UEAxMJSU5TUFVS
+LUNBAhN+AAEdNy55bfLwB97IAAAAAR03MIGBBgsqhkiG9w0BCRACCzFyoHAwWTETMBEGCgmSJomT
+8ixkARkWA2NvbTEYMBYGCgmSJomT8ixkARkWCGxhbmdjaGFvMRQwEgYKCZImiZPyLGQBGRYEaG9t
+ZTESMBAGA1UEAxMJSU5TUFVSLUNBAhN+AAEdNy55bfLwB97IAAAAAR03MIGTBgkqhkiG9w0BCQ8x
+gYUwgYIwCgYIKoZIhvcNAwcwCwYJYIZIAWUDBAEqMAsGCWCGSAFlAwQBFjALBglghkgBZQMEAQIw
+DgYIKoZIhvcNAwICAgCAMA0GCCqGSIb3DQMCAgFAMAcGBSsOAwIaMAsGCWCGSAFlAwQCAzALBglg
+hkgBZQMEAgIwCwYJYIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAF6+XPhx+xzKGT5LWETr0wKi
+YtDMJ9J7cIxKmkfQy9pq70cd6Q1h5N2pViEvWGjmvTCzlGc6PJNKrGSIfbj3PaZSywJSppfp2T3G
+mowqKyGcjCm792xOKJci2Mb/N4pASL6YZGmtzdxAh8BOp7H1XA1OYd9c5QIym61hnGikKSnbXTD2
+H8T9AyKnOoAfjbpzw4dA0E3gfSmdj7mhBNOAtAxS1nKze1LcEVnkiRHFLkp88IQ6VsmYWrVBWRqW
+OUJ44RJ0EZ7sW+h9KgyfmgiYMIiQ+s5fEmN1DFdvdHVRQsc+pgRf+wJNeMXSCuhqH8hK519l7kLo
+qBq0dqQp1Q069YEAAAAAAAA=
+
+------=_NextPart_000_0203_01D8A2C0.10078B20--
