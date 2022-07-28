@@ -2,100 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00D24C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 03:17:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A8AEC04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 03:18:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234669AbiG1DRy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 23:17:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36466 "EHLO
+        id S234897AbiG1DSS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 23:18:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231945AbiG1DRv (ORCPT
+        with ESMTP id S235118AbiG1DSN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 23:17:51 -0400
-Received: from conuserg-07.nifty.com (conuserg-07.nifty.com [210.131.2.74])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A439310C5;
-        Wed, 27 Jul 2022 20:17:49 -0700 (PDT)
-Received: from grover.jp (133-32-177-133.west.xps.vectant.ne.jp [133.32.177.133]) (authenticated)
-        by conuserg-07.nifty.com with ESMTP id 26S3GWoJ002867;
-        Thu, 28 Jul 2022 12:16:32 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-07.nifty.com 26S3GWoJ002867
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1658978193;
-        bh=RYkKgpGc0xvZ84PUQwSu4qoomjBRQz+D5mvuwNjwuJw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=bAgqnrzwPXzw8tFPySIxsAxax3DySTRS8VglEvwkqGMzPboHHWBbJr5dBbcYwCBZJ
-         wDvaxPp4f3c8ALHby1xD6bQYC6rQo7dKBu7cZNHxG4TqmH2zvizDoixvI5NuPgK/ph
-         t98ws0B4UGEEV+yyEBNl7Ef4g3su2FqCAxM7U81IiqkdJ3vPotXW7z+kCRrTQH0d8I
-         s9IZQ5ebPLXkmscfyjkrf7/vhrTrR6pps5kLXHvHl9dS1N+5YEs8Rvm6UQNAgdDrzR
-         HMLtVT2eHVbLnDvU6B9zXOaRC+JLHexQDa3+bn+PERdwRfGidNXVWDzDM8KB5qRjhy
-         +clNRQjDKf9YQ==
-X-Nifty-SrcIP: [133.32.177.133]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     David Laight <David.Laight@aculab.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] kbuild: set EXIT trap before creating temporary directory
-Date:   Thu, 28 Jul 2022 12:14:33 +0900
-Message-Id: <20220728031433.1077354-1-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        Wed, 27 Jul 2022 23:18:13 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 477D6240A0;
+        Wed, 27 Jul 2022 20:18:12 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LtbSf4JbGz4x1V;
+        Thu, 28 Jul 2022 13:18:10 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
+        s=201909; t=1658978290;
+        bh=0a1SfDZjYD0OjVyntTUgHptnneGyXdJhKfGnfOBAcAk=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=a48R+Va3VM2n7bEBvtkDWOplWR6rP69PNaK3OuAIn8INxiKx7288pkLbBWhnRs16G
+         iYTj9nx+eF16wfWB51OkE0Le6h1HYKKmqagmGUL/GeuTdOGjdAl+CwvP+0EPhmznMS
+         pmXU69swH3Pi1WD7yCK9FCG2/G471to6MX9Lut3Pu2VaMkBJOpdzdrYekLYkzuzrA6
+         yspLWaTi3ljnnWDvHlwbL/hDkdnZ2Bd+5blK8aqa/TSfOBYfQnOO4/WadyGmYFedqC
+         emdvFN3PhdFum3waxqwwJSesFdnHrzFOVo5phJ40S/lewFI1hMBJGYTB3zPD9jro3a
+         cplF1dyD6Rf+w==
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     Laurent Dufour <ldufour@linux.ibm.com>
+Cc:     linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-next@vger.kernel.org, Sachin Sant <sachinp@linux.ibm.com>
+Subject: Re: [PATCH] watchdog: Fix build error when
+ CONFIG_SOFTLOCKUP_DETECTOR is not set
+In-Reply-To: <4dd9afa4-ddc1-c6c9-1205-bca28a858022@linux.ibm.com>
+References: <20220727092109.31362-1-ldufour@linux.ibm.com>
+ <87sfmmaipn.fsf@mpe.ellerman.id.au>
+ <4dd9afa4-ddc1-c6c9-1205-bca28a858022@linux.ibm.com>
+Date:   Thu, 28 Jul 2022 13:18:06 +1000
+Message-ID: <87ilni9b81.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Swap the order of 'mkdir' and 'trap' just in case the subshell is
-interrupted between 'mkdir' and 'trap' although the effect might be
-subtle.
+Laurent Dufour <ldufour@linux.ibm.com> writes:
+> Le 27/07/2022 =C3=A0 13:38, Michael Ellerman a =C3=A9crit=C2=A0:
+>> Laurent Dufour <ldufour@linux.ibm.com> writes:
+>>> Sachin reported the following build error when CONFIG_SOFTLOCKUP_DETECT=
+OR
+>>> is not set:
+>>>
+>>> kernel/watchdog.c:597:20: error: static declaration of 'lockup_detector=
+_reconfigure' follows non-static declaration
+>>>  static inline void lockup_detector_reconfigure(void)
+>>>                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+>>> In file included from kernel/watchdog.c:17:
+>>> ./include/linux/nmi.h:125:6: note: previous declaration of 'lockup_dete=
+ctor_reconfigure' was here
+>>>  void lockup_detector_reconfigure(void);
+>>>       ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+>>>
+>>> The definition of lockup_detector_reconfigure should be exported even in
+>>> that case, and __lockup_detector_reconfigure should remain static.
+>>>
+>>> Fixes: 24a1260705b7 ("watchdog: export lockup_detector_reconfigure")
+>>> Reported-by: Sachin Sant <sachinp@linux.ibm.com>
+>>> Signed-off-by: Laurent Dufour <ldufour@linux.ibm.com>
+>>> ---
+>>>  kernel/watchdog.c | 4 ++--
+>>>  1 file changed, 2 insertions(+), 2 deletions(-)
+>>=20
+>> Thanks.
+>>=20
+>> I'll squash that in to the original commit.
+>
+> Thanks Michael,
+>
+> I was thinking this is too late for such a squash.
 
-Please not this is not a perfect solution to avoid the left-over tmp
-directory. There are more cases that miss to remove the tmp directory,
-for example:
+It usually would be, if I was organised, so sending a follow-up was the
+correct thing for you to do :)
 
- - When interrupted, dash does not invoke the EXIT trap (bash does)
-
- - 'rm' command might be interrupted before removing the directory
-
-I am not addressing all the cases since the tmp directory is harmless
-after all.
-
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
----
-
- scripts/Kconfig.include   | 2 +-
- scripts/Makefile.compiler | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/scripts/Kconfig.include b/scripts/Kconfig.include
-index c1f4222d223d..a0ccceb22cf8 100644
---- a/scripts/Kconfig.include
-+++ b/scripts/Kconfig.include
-@@ -25,7 +25,7 @@ failure = $(if-success,$(1),n,y)
- 
- # $(cc-option,<flag>)
- # Return y if the compiler supports <flag>, n otherwise
--cc-option = $(success,mkdir .tmp_$$; trap "rm -rf .tmp_$$" EXIT; $(CC) -Werror $(CLANG_FLAGS) $(1) -c -x c /dev/null -o .tmp_$$/tmp.o)
-+cc-option = $(success,trap "rm -rf .tmp_$$" EXIT; mkdir .tmp_$$; $(CC) -Werror $(CLANG_FLAGS) $(1) -c -x c /dev/null -o .tmp_$$/tmp.o)
- 
- # $(ld-option,<flag>)
- # Return y if the linker supports <flag>, n otherwise
-diff --git a/scripts/Makefile.compiler b/scripts/Makefile.compiler
-index 86ecd2ac874c..94d0d40cddb3 100644
---- a/scripts/Makefile.compiler
-+++ b/scripts/Makefile.compiler
-@@ -21,8 +21,8 @@ TMPOUT = $(if $(KBUILD_EXTMOD),$(firstword $(KBUILD_EXTMOD))/).tmp_$$$$
- # automatically cleaned up.
- try-run = $(shell set -e;		\
- 	TMP=$(TMPOUT)/tmp;		\
--	mkdir -p $(TMPOUT);		\
- 	trap "rm -rf $(TMPOUT)" EXIT;	\
-+	mkdir -p $(TMPOUT);		\
- 	if ($(1)) >/dev/null 2>&1;	\
- 	then echo "$(2)";		\
- 	else echo "$(3)";		\
--- 
-2.34.1
-
+cheers
