@@ -2,59 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BA7CC04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 10:45:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B6D4C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 10:46:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236657AbiG1Kpu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 06:45:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40596 "EHLO
+        id S236155AbiG1KqF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 06:46:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236226AbiG1Kox (ORCPT
+        with ESMTP id S236534AbiG1KpA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 06:44:53 -0400
+        Thu, 28 Jul 2022 06:45:00 -0400
 Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5C22664DC;
-        Thu, 28 Jul 2022 03:44:22 -0700 (PDT)
-Date:   Thu, 28 Jul 2022 10:44:19 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97224664ED;
+        Thu, 28 Jul 2022 03:44:24 -0700 (PDT)
+Date:   Thu, 28 Jul 2022 10:44:21 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1659005060;
+        s=2020; t=1659005062;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=28vTh1xrKraBbKk4KDvuJQ4oTbXOPi/qO6kFvmSS7fo=;
-        b=Rw1crhnpbXtMKEvHxWVMcH6nj6NLCLiMncuXP7VSa9+RLMPcjK1SL4RwkDt81FA9/lUJpn
-        qF8K/nPN7SyVyCKtRgbAhoK+E6WUbBtZlZ2Mix8ZrK2/DULMPU3yxPnlht2Ubb7+EpR3o7
-        4LmU4erogWi1m83XqH2fDLCRV+TCRgSmDnaidyoXVpGjvboIu/xHO3IvqQUVqDFH/EP/5D
-        4rPumBwTIorkKjl//alXIzlmQ+yywN/B8tI3QplaJ7NG5647q+pVwcU4ccK8xv/iiePrqW
-        unBcUkfgoEBCaPmGTQeOPAgqMZ42sgP1iZEznnKtD0BVErbC0j9DM9P9bV/mRQ==
+        bh=BwoAYgZZzTuULxuR7KdOJAlMVrYrVIxLgqZSyrclnxQ=;
+        b=LE/vRynijmMST+2rZWCw3Vo5BgeDvNek6J73T1XUuVWayEcFLvaSFlZATmEKWDEjWiNEf7
+        ZuZBp9S6RLzYQcbmHVSkOtj6y4u8urJOyeg75Ln1wX/9ETNAjuHQ5a4gnQ8Huj6gpRsq8g
+        OQXBoIzHnsscxuOE/B+90Ja5oT/Kkt9QZZ58jylwaG8+nm/lPrewMq86jZHOUE7COh48fl
+        JNoKyFq4if4DpWKFpMHgh/HmA4gbo/fgPnbfPwyVmt5/SFbR1xFWwaYUDR/Kvz7ac5PZZp
+        LbMVYk21q11KxH2lQI+MQijqMCjcpZsnn6PIgfAXH5HlA8mLKr2qOfmssRNzHw==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1659005060;
+        s=2020e; t=1659005062;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=28vTh1xrKraBbKk4KDvuJQ4oTbXOPi/qO6kFvmSS7fo=;
-        b=A9XZc8Z6ANoSzQ9mHLTPO6ECPr+W6bKyTIOMTwBOr/wEEKjdXZ59eqolRMHqJlzqjvWjwX
-        hw7f3D6CnkgR8ZBg==
-From:   "tip-bot2 for Randy Dunlap" <tip-bot2@linutronix.de>
+        bh=BwoAYgZZzTuULxuR7KdOJAlMVrYrVIxLgqZSyrclnxQ=;
+        b=yXiUuTfpFtgQUBmdIRFw/u1HXJIy/5tWPtMXpBuN/ang+8G31XtuvfUBR+AYlTcXMqf2WO
+        pvovpxnQH2XBq3DA==
+From:   "tip-bot2 for Thomas Gleixner" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: timers/core] clocksource/drivers/arm_global_timer: Fix Kconfig
- "its" grammar
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-arm-kernel@lists.infradead.org, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220715015852.12523-1-rdunlap@infradead.org>
-References: <20220715015852.12523-1-rdunlap@infradead.org>
+Subject: [tip: timers/core] Merge tag 'timers-v5.20-rc1' of
+ https://git.linaro.org/people/daniel.lezcano/linux into timers/core
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org
+In-Reply-To: <7472984e-f502-5f27-82bf-070127dd85a5@linaro.org>
+References: <7472984e-f502-5f27-82bf-070127dd85a5@linaro.org>
 MIME-Version: 1.0
-Message-ID: <165900505923.15455.14416342051577650910.tip-bot2@tip-bot2>
+Message-ID: <165900506117.15455.179308820042682784.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -65,39 +60,51 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the timers/core branch of tip:
 
-Commit-ID:     6f6f3e313f39f91ed5ffd59bfaf29748ced9d24c
-Gitweb:        https://git.kernel.org/tip/6f6f3e313f39f91ed5ffd59bfaf29748ced9d24c
-Author:        Randy Dunlap <rdunlap@infradead.org>
-AuthorDate:    Thu, 14 Jul 2022 18:58:52 -07:00
-Committer:     Daniel Lezcano <daniel.lezcano@linaro.org>
-CommitterDate: Sat, 16 Jul 2022 00:33:29 +02:00
+Commit-ID:     75fed76ebc8f75e7a9f8c9ca39482aa34932ad41
+Gitweb:        https://git.kernel.org/tip/75fed76ebc8f75e7a9f8c9ca39482aa34932ad41
+Author:        Thomas Gleixner <tglx@linutronix.de>
+AuthorDate:    Thu, 28 Jul 2022 12:33:34 +02:00
+Committer:     Thomas Gleixner <tglx@linutronix.de>
+CommitterDate: Thu, 28 Jul 2022 12:33:34 +02:00
 
-clocksource/drivers/arm_global_timer: Fix Kconfig "its" grammar
+Merge tag 'timers-v5.20-rc1' of https://git.linaro.org/people/daniel.lezcano/linux into timers/core
 
-Use the possessive "its" instead of the contraction "it's"
-where appropriate.
+Pull clockevent/source updates from Daniel Lezcano:
 
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Patrice Chotard <patrice.chotard@foss.st.com>
-Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: linux-arm-kernel@lists.infradead.org
-Link: https://lore.kernel.org/r/20220715015852.12523-1-rdunlap@infradead.org
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+  - Add the missing DT bindings for the MTU nomadik timer (Linus
+    Walleij)
+
+  - Fix grammar typo in the ARM global timer Kconfig option (Randy
+    Dunlap)
+
+  - Add the tegra186 timer and use it on the tegra234 board (Thierry
+    Reding)
+
+  - Add the 'CPUXGPT' CPU timer for Mediatek MT6795 and implement a
+    workaround to overcome an ATF bug where the timer is not correctly
+    initialized (AngeloGioacchino Del Regno)
+
+  - Rework the suspend/resume approach to enable the feature on the
+    timer even it is not an active clock and fix a compilation warning
+    (Claudiu Beznea)
+
+  - Add the Add R-Car Gen4 timer support along with the DT bindings
+    (Wolfram Sang)
+
+  - Add compatible for ti,am654-timer to support AM6 SoC (Tony Lindgren)
+
+  - Fix Kconfig option to put it back to 'bool' instead of 'tristate'
+    for the tegra186 (Daniel Lezcano)
+
+  - Sort 'family,type' DT bindings for the Renesas timers (Geert
+    Uytterhoeven)
+
+  - Add compatible 'allwinner,sun20i-d1-timer' for Allwinner D1 (Samuel
+    Holland)
+
+  - Remove unnecessary (void*) conversions for sun4i (XU pengfei)
+
+  - Remove unnecessary (void*) conversions for sun5i (Li zeming)
+
+Link: https://lore.kernel.org/all/7472984e-f502-5f27-82bf-070127dd85a5@linaro.org
 ---
- drivers/clocksource/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/clocksource/Kconfig b/drivers/clocksource/Kconfig
-index 8182ff2..0367a1c 100644
---- a/drivers/clocksource/Kconfig
-+++ b/drivers/clocksource/Kconfig
-@@ -367,7 +367,7 @@ config ARM_GT_INITIAL_PRESCALER_VAL
- 	depends on ARM_GLOBAL_TIMER
- 	help
- 	  When the ARM global timer initializes, its current rate is declared
--	  to the kernel and maintained forever. Should it's parent clock
-+	  to the kernel and maintained forever. Should its parent clock
- 	  change, the driver tries to fix the timer's internal prescaler.
- 	  On some machs (i.e. Zynq) the initial prescaler value thus poses
- 	  bounds about how much the parent clock is allowed to decrease or
