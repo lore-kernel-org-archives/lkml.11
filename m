@@ -2,45 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11CFAC04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 11:20:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D61F8C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 11:21:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236387AbiG1LU4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 07:20:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47926 "EHLO
+        id S236947AbiG1LVB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 07:21:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235803AbiG1LTs (ORCPT
+        with ESMTP id S235989AbiG1LTs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 28 Jul 2022 07:19:48 -0400
 Received: from mail.baikalelectronics.com (unknown [87.245.175.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D90A067C88;
-        Thu, 28 Jul 2022 04:19:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 628F667162;
+        Thu, 28 Jul 2022 04:19:26 -0700 (PDT)
 Received: from mail (mail.baikal.int [192.168.51.25])
-        by mail.baikalelectronics.com (Postfix) with ESMTP id 5F5C716D3;
-        Thu, 28 Jul 2022 14:21:53 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 5F5C716D3
+        by mail.baikalelectronics.com (Postfix) with ESMTP id 3F00A16D7;
+        Thu, 28 Jul 2022 14:21:46 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 3F00A16D7
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1659007313;
-        bh=ygMX+bu6gc/yMuo4QKjk1bUpr5VLHBbRrZJps6eSGfc=;
+        d=baikalelectronics.ru; s=mail; t=1659007306;
+        bh=PN5otZtaF9CvsvN8xDg4hfI27Py58tK5oPBqkl4So5E=;
         h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=mD6brgMiUNOdvxnpCVROBRRnHXWNhZpxZp+6N+umPslZM0lu3IEe+xsT1wTephkJ3
-         vFtKrf/Dj99EJXRlQC+DqL0qpivZtTA3gbgoPpCE1va3H76g5rsWeH13CFhfxbVsDm
-         JOUl7eQfqiIqFuUQwpD5ZeGgyoWlwdtzK3atFpD8=
+        b=df3MQX0szmnTC5vPaNKeLMR/BD2BT4LyJLZaqnji8/ECQ/Un3K9mPnMU0YuYOfhI4
+         AxA0X41TPAmQZovd6xDmM+E7e78tEeJhWopFCNtOV3JK5HGBfnK5P+DCNOh1SkX0GX
+         9pNs7rgIlmFdRFSMNQHJimXxsgow5mrsphbx2/GQ=
 Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 28 Jul 2022 14:19:28 +0300
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 28 Jul 2022 14:19:21 +0300
 From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
 To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
         Hans de Goede <hdegoede@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>, Hannes Reinecke <hare@suse.de>
+        Jens Axboe <axboe@kernel.dk>, Hannes Reinecke <hare@suse.de>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Patrice Chotard <patrice.chotard@foss.st.com>
 CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
         Serge Semin <fancer.lancer@gmail.com>,
         Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
         Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
         Rob Herring <robh+dt@kernel.org>, <linux-ide@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
-Subject: [PATCH RESEND v6 15/23] ata: ahci: Convert __ahci_port_base to accepting hpriv as arguments
-Date:   Thu, 28 Jul 2022 14:18:56 +0300
-Message-ID: <20220728111905.12427-16-Sergey.Semin@baikalelectronics.ru>
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>
+Subject: [PATCH RESEND v6 09/23] ata: libahci_platform: Parse ports-implemented property in resources getter
+Date:   Thu, 28 Jul 2022 14:18:50 +0300
+Message-ID: <20220728111905.12427-10-Sergey.Semin@baikalelectronics.ru>
 In-Reply-To: <20220728111905.12427-1-Sergey.Semin@baikalelectronics.ru>
 References: <20220728111905.12427-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
@@ -51,65 +55,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The port base address may be required even before the ata_host instance is
-initialized and activated, for instance in the ahci_save_initial_config()
-method which we are about to update (consider this modification as a
-preparation for that one). Seeing the __ahci_port_base() function isn't
-used much it's the best candidate to provide the required functionality.
-So let's convert it to accepting the ahci_host_priv structure pointer.
+The ports-implemented property is mainly used on the OF-based platforms
+with no ports mapping initialized by a bootloader/BIOS firmware. Seeing
+the same of_property_read_u32()-based pattern has already been implemented
+in the generic AHCI LLDD (glue) driver and in the Mediatek, St AHCI
+drivers let's move the property read procedure to the generic
+ahci_platform_get_resources() method. Thus we'll have the forced ports
+mapping feature supported for each OF-based platform which requires that,
+and stop re-implementing the same pattern in there a bit simplifying the
+code.
 
 Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Reviewed-by: Hannes Reinecke <hare@suse.de>
-
 ---
+ drivers/ata/ahci_mtk.c         | 2 --
+ drivers/ata/ahci_platform.c    | 3 ---
+ drivers/ata/ahci_st.c          | 3 ---
+ drivers/ata/libahci_platform.c | 3 +++
+ 4 files changed, 3 insertions(+), 8 deletions(-)
 
-Changelog v5:
-- Fix some grammar notes in the patchlog. (@Damien)
----
- drivers/ata/ahci.c | 2 +-
- drivers/ata/ahci.h | 7 ++++---
- 2 files changed, 5 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/ata/ahci.c b/drivers/ata/ahci.c
-index bacb597a0d32..51c0c1dd91ea 100644
---- a/drivers/ata/ahci.c
-+++ b/drivers/ata/ahci.c
-@@ -690,7 +690,7 @@ static void ahci_pci_init_controller(struct ata_host *host)
- 			mv = 2;
- 		else
- 			mv = 4;
--		port_mmio = __ahci_port_base(host, mv);
-+		port_mmio = __ahci_port_base(hpriv, mv);
+diff --git a/drivers/ata/ahci_mtk.c b/drivers/ata/ahci_mtk.c
+index 1f6c85fde983..c056378e3e72 100644
+--- a/drivers/ata/ahci_mtk.c
++++ b/drivers/ata/ahci_mtk.c
+@@ -118,8 +118,6 @@ static int mtk_ahci_parse_property(struct ahci_host_priv *hpriv,
+ 				   SYS_CFG_SATA_EN);
+ 	}
  
- 		writel(0, port_mmio + PORT_IRQ_MASK);
- 
-diff --git a/drivers/ata/ahci.h b/drivers/ata/ahci.h
-index cc4f40e6c924..5d9db5e7476c 100644
---- a/drivers/ata/ahci.h
-+++ b/drivers/ata/ahci.h
-@@ -432,10 +432,9 @@ int ahci_host_activate(struct ata_host *host, struct scsi_host_template *sht);
- void ahci_error_handler(struct ata_port *ap);
- u32 ahci_handle_port_intr(struct ata_host *host, u32 irq_masked);
- 
--static inline void __iomem *__ahci_port_base(struct ata_host *host,
-+static inline void __iomem *__ahci_port_base(struct ahci_host_priv *hpriv,
- 					     unsigned int port_no)
- {
--	struct ahci_host_priv *hpriv = host->private_data;
- 	void __iomem *mmio = hpriv->mmio;
- 
- 	return mmio + 0x100 + (port_no * 0x80);
-@@ -443,7 +442,9 @@ static inline void __iomem *__ahci_port_base(struct ata_host *host,
- 
- static inline void __iomem *ahci_port_base(struct ata_port *ap)
- {
--	return __ahci_port_base(ap->host, ap->port_no);
-+	struct ahci_host_priv *hpriv = ap->host->private_data;
-+
-+	return __ahci_port_base(hpriv, ap->port_no);
+-	of_property_read_u32(np, "ports-implemented", &hpriv->force_port_map);
+-
+ 	return 0;
  }
  
- static inline int ahci_nr_ports(u32 cap)
+diff --git a/drivers/ata/ahci_platform.c b/drivers/ata/ahci_platform.c
+index 28a8de5b48b9..9b56490ecbc3 100644
+--- a/drivers/ata/ahci_platform.c
++++ b/drivers/ata/ahci_platform.c
+@@ -56,9 +56,6 @@ static int ahci_probe(struct platform_device *pdev)
+ 	if (rc)
+ 		return rc;
+ 
+-	of_property_read_u32(dev->of_node,
+-			     "ports-implemented", &hpriv->force_port_map);
+-
+ 	if (of_device_is_compatible(dev->of_node, "hisilicon,hisi-ahci"))
+ 		hpriv->flags |= AHCI_HFLAG_NO_FBS | AHCI_HFLAG_NO_NCQ;
+ 
+diff --git a/drivers/ata/ahci_st.c b/drivers/ata/ahci_st.c
+index 7526653c843b..068621099c00 100644
+--- a/drivers/ata/ahci_st.c
++++ b/drivers/ata/ahci_st.c
+@@ -168,9 +168,6 @@ static int st_ahci_probe(struct platform_device *pdev)
+ 
+ 	st_ahci_configure_oob(hpriv->mmio);
+ 
+-	of_property_read_u32(dev->of_node,
+-			     "ports-implemented", &hpriv->force_port_map);
+-
+ 	err = ahci_platform_init_host(pdev, hpriv, &st_ahci_port_info,
+ 				      &ahci_platform_sht);
+ 	if (err) {
+diff --git a/drivers/ata/libahci_platform.c b/drivers/ata/libahci_platform.c
+index 579039956917..02171ac02306 100644
+--- a/drivers/ata/libahci_platform.c
++++ b/drivers/ata/libahci_platform.c
+@@ -486,6 +486,9 @@ struct ahci_host_priv *ahci_platform_get_resources(struct platform_device *pdev,
+ 		goto err_out;
+ 	}
+ 
++	of_property_read_u32(dev->of_node,
++			     "ports-implemented", &hpriv->force_port_map);
++
+ 	if (child_nodes) {
+ 		for_each_child_of_node(dev->of_node, child) {
+ 			u32 port;
 -- 
 2.35.1
 
