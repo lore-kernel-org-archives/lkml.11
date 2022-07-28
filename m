@@ -2,105 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CAECC04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 22:18:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45A9FC04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 22:21:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232852AbiG1WSa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 18:18:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55318 "EHLO
+        id S232122AbiG1WVB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 18:21:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232478AbiG1WSQ (ORCPT
+        with ESMTP id S229614AbiG1WU4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 18:18:16 -0400
-Received: from mail-yw1-x114a.google.com (mail-yw1-x114a.google.com [IPv6:2607:f8b0:4864:20::114a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E00BC7968F
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 15:18:07 -0700 (PDT)
-Received: by mail-yw1-x114a.google.com with SMTP id 00721157ae682-31ea3f0e357so27201587b3.16
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 15:18:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:reply-to:from:to:cc;
-        bh=dlAQ25g7cHOrtPCAbZedzQqF/rNgEGei+alqD2VO+U0=;
-        b=ranUuoK5voHAwixMI/x/m9wejbxqlpuz1JUNeOylf+rBUm8WJMT/OqkOdy1q5Eb6Dr
-         3JR7xS4Cb91uCyZl/BnVBFA6ZBZ70u24gdmu35wwVkYOEXskLd7TSLZ56bymQ3DBRgIv
-         fgHzaKbKOA1SJTw0JcEm0LOA8ZuLsWaDMweTh2vUz4LgEPmmqcSkKNi59UYoyEP8Kchn
-         6198Ja4Yxa/LKkTkcbmKL0dK0mfdD/moAs4VaaEnOeIGscD+r31xHr+OxH4CJ3UxRlPt
-         5nzqwOmitScFftivZL4DtMG1BVSQ+cHmrF40SEyqoe/3E5VGH4fRXYJt6nWGRAubgjPK
-         7Eeg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:from:subject:references:mime-version:message-id:in-reply-to
-         :date:reply-to:x-gm-message-state:from:to:cc;
-        bh=dlAQ25g7cHOrtPCAbZedzQqF/rNgEGei+alqD2VO+U0=;
-        b=AXmo/1yYE3yKjDOo81WtFYM3Ik69p87+ntkQHmQDrEzwa54+RfuR7VtwuBs3rAzlSH
-         fEBTCCt0ug48iNjTfTVz4m/J9hqjheAaYYqdQ92yaiQKrZgf1+7vudSdWXy2yDiuWT7D
-         mS/JovbzhcU5+U83ByWIFEdLlFbQQm5ZH360Yg1dGpQs7ShtF0kgzDR3v1d1zlb0ISkM
-         SdPFH2LrJyOEXxFrt2tzUDRc+YxwTc7mAVfX1PDsTHgRejoiv/si1lQ64wWkjmYDDMEo
-         /7JQr5CPwNLdqGm49OcWoP/OxM+lAEYOi8Ajha/R+N2EY6eEI/sBJ8EO266Aw7Ol0y3G
-         JYWQ==
-X-Gm-Message-State: ACgBeo1fJBFyqFDw34VBe9jSDSUXqpkDeljh6RDaJIqeNtjv0rZWjPTg
-        4AwP/1Rx9ms2/I9GzSdRVOyMW1kkPHY=
-X-Google-Smtp-Source: AA6agR4I1F5vmYYMNMXJj9swMHJA4N7Yx/Yl22BHI4TcelA/kfsehihejzDsmTQCFZAm5dVxzayZxDkP9LQ=
-X-Received: from zagreus.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:5c37])
- (user=seanjc job=sendgmr) by 2002:a25:2613:0:b0:671:810e:8e75 with SMTP id
- m19-20020a252613000000b00671810e8e75mr575929ybm.625.1659046687139; Thu, 28
- Jul 2022 15:18:07 -0700 (PDT)
-Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Thu, 28 Jul 2022 22:17:58 +0000
-In-Reply-To: <20220728221759.3492539-1-seanjc@google.com>
-Message-Id: <20220728221759.3492539-4-seanjc@google.com>
-Mime-Version: 1.0
-References: <20220728221759.3492539-1-seanjc@google.com>
-X-Mailer: git-send-email 2.37.1.455.g008518b4e5-goog
-Subject: [PATCH 3/4] KVM: SVM: Adjust MMIO masks (for caching) before doing
- SEV(-ES) setup
-From:   Sean Christopherson <seanjc@google.com>
-To:     Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Michael Roth <michael.roth@amd.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>
-Content-Type: text/plain; charset="UTF-8"
+        Thu, 28 Jul 2022 18:20:56 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3981D78DEA;
+        Thu, 28 Jul 2022 15:20:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Disposition:
+        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:From:
+        Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Content-Disposition:
+        In-Reply-To:References; bh=alEH1WwUjVCElaffThQK0Suy1kY+uR7uRYgblI7vhIY=; b=Op
+        Ms15cG37Mp5ahueu4ZFT91aBVuu61pybdt4tWRkuIM7bySs4MdBR1kl6u2Hx9+D0dgGNWDIk3n+aY
+        wrMBqy8YSvxCbb1efxfD+jbOnArPvuG/95X11McX1vgHmmJpb8cGMctPOLCXLZ2xJS2FYKG/FVwAQ
+        BGL4OVrAPmrgMCM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oHBsA-00Bqex-7A; Fri, 29 Jul 2022 00:20:50 +0200
+Date:   Fri, 29 Jul 2022 00:20:50 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Marcin Wojtas <mw@semihalf.com>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Grzegorz Bernacki <gjb@semihalf.com>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>,
+        Tomasz Nowicki <tn@semihalf.com>,
+        Samer El-Haj-Mahmoud <Samer.El-Haj-Mahmoud@arm.com>,
+        upstream@semihalf.com
+Subject: Re: [net-next: PATCH v3 6/8] net: core: switch to
+ fwnode_find_net_device_by_node()
+Message-ID: <YuMLwlqfhQoaNh6K@lunn.ch>
+References: <20220727064321.2953971-7-mw@semihalf.com>
+ <20220727143147.u6yd6wqslilspyhw@skbuf>
+ <CAPv3WKc88KQN=athEqBg=Z5Bd1SC3QSOPZpDH7dfuYGHhR+oVg@mail.gmail.com>
+ <20220727163848.f4e2b263zz3vl2hc@skbuf>
+ <CAPv3WKe+e6sFd6+7eoZbA2iRTPhBorD+mk6W+kJr-f9P8SFh+w@mail.gmail.com>
+ <20220727211112.kcpbxbql3tw5q5sx@skbuf>
+ <CAPv3WKcc2i6HsraP3OSrFY0YiBOAHwBPxJUErg_0p7mpGjn3Ug@mail.gmail.com>
+ <20220728195607.co75o3k2ggjlszlw@skbuf>
+ <YuLvFQiZP6qmWcME@lunn.ch>
+ <CAPv3WKeD_ZXeH-Y_YP91Ba6nZagzBVPoWbmFE8WtRw-NYxdEaA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAPv3WKeD_ZXeH-Y_YP91Ba6nZagzBVPoWbmFE8WtRw-NYxdEaA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adjust KVM's MMIO masks to account for the C-bit location prior to doing
-SEV(-ES) setup.  A future patch will consume enable_mmio caching during
-SEV setup as SEV-ES _requires_ MMIO caching, i.e. KVM needs to disallow
-SEV-ES if MMIO caching is disabled.
+On Thu, Jul 28, 2022 at 11:23:31PM +0200, Marcin Wojtas wrote:
+> czw., 28 lip 2022 o 22:18 Andrew Lunn <andrew@lunn.ch> napisał(a):
+> >
+> > > The 'label' thing is actually one of the things that I'm seriously
+> > > considering skipping parsing if this is an ACPI system, simply because
+> > > best practices are different today than they were when the OF bindings
+> > > were created.
+> >
+> > Agreed. We want the ACPI binding to learn from what has worked and not
+> > worked in DT. We should clean up some of the historical mess. And
+> > enforce things we don't in DT simply because there is too much
+> > history.
+> >
+> > So a straight one to one conversion is not going to happen.
+> 
+> I understand your standpoint - there is a long history, possible
+> clean-ups, backward compatibility considerations, etc. that should not
+> be zero-day baggage of ACPI. Otoh, we don't need to be worried about
+> the ACPI binding too much now - as agreed it was removed from this
+> series, beginning from v2. IMO it may be better to return to that once
+> the ACPI Spec is updated with the MDIOSerialBus and the patches are
+> resubmitted on whatever shape of the DSA subsystem is established
+> within the next weeks/months from now.
+> 
+> In v1 we discussed also the resubmission of the non-ACPI-related
+> patches, which would pave the way to dropping the explicit OF_
+> dependency in the DSA and moving to a generic hardware description
+> kernel API - without any functional change.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Sean Christopherson <seanjc@google.com>
----
- arch/x86/kvm/svm/svm.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+Ideally, we want to keep all the ugly DT stuff in DT. We want to
+ensure that any "generic hardware description kernel API" does not
+inherit all the ugly DT stuff.
 
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index aef63aae922d..62e89db83bc1 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -5034,13 +5034,16 @@ static __init int svm_hardware_setup(void)
- 	/* Setup shadow_me_value and shadow_me_mask */
- 	kvm_mmu_set_me_spte_mask(sme_me_mask, sme_me_mask);
- 
--	/* Note, SEV setup consumes npt_enabled. */
-+	svm_adjust_mmio_mask();
-+
-+	/*
-+	 * Note, SEV setup consumes npt_enabled and enable_mmio_caching (which
-+	 * may be modified by svm_adjust_mmio_mask()).
-+	 */
- 	sev_hardware_setup();
- 
- 	svm_hv_hardware_setup();
- 
--	svm_adjust_mmio_mask();
--
- 	for_each_possible_cpu(cpu) {
- 		r = svm_cpu_init(cpu);
- 		if (r)
--- 
-2.37.1.455.g008518b4e5-goog
+ACPI and DT are different things, so i don't see why they need to
+share code.
 
+      Andrew
