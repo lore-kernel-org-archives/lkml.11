@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73EC2C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 03:44:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EF34C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 03:45:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237984AbiG1Doy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 23:44:54 -0400
+        id S234209AbiG1DpC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 23:45:02 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237458AbiG1Dod (ORCPT
+        with ESMTP id S230233AbiG1Doe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 23:44:33 -0400
+        Wed, 27 Jul 2022 23:44:34 -0400
 Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FD315C96C
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DE3D5C9DB
         for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 20:44:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1658979872; x=1690515872;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=WZM+sHwR5mKiQlxSD/3pVSMcPhO4y2IgNx/fpEOJQAI=;
-  b=CDJfi8AyBXfK1pAt/ARQEZs8l0BevZxQpwiweYv/PWzhBC77N7zx0KpU
-   TqwHd6IgmLG1+naRGAYuZ2V3qBqUnTqIwl2XCdGN4oLb5JgTfpZuQopCS
-   iSDYK5h/YDe7k0fmTMtiivkFE9Zl125a4vcDmnWqlRPATh9fNd5syVO5c
-   Pc5+kXvoFIhiOeI9+8pILC36Nf/RfZT9T6nXYwCle5VwFvJjDzGaEsAA8
-   Qaj+97gKrC5K5Iiq2Wn2MlLnnu2sYKbqXEo0W31vD7XNx5kL40+jdgOD3
-   BcwLE0Z10QSq2DascZdcQlvUGLPHQUfe/QyicxRUQ6v5f/oaqN1imWhJ4
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10421"; a="275292808"
+  bh=d8bKUQNIiVTi4UIB+oY/NGaVnZ9s0q27vb0caK8QMJg=;
+  b=F2dkKSEAfLlU0bmCgw34H2ioixGCuZ1d7tAKkXW/lP64ZELF5OTFkdZq
+   xFUH/X482Rv75F6b7GByUtMX0HsJCdM6lwj/kpqvK3zkfF//cUOLEhrlK
+   6OIFuXNA42V3E+OVp7gczwEI8BbUffrXn23TjdAn6W5wUFnLZxeuTNhco
+   tgIPolgIQMkEmClsGIcfjc/wBtgoMreBJETEdTqG1G50I/kt/vkTdqu6/
+   c0DVUCPkglnE3GTjCIC+UuLdAJsuXGCq/64NKKb7b66QwazsaL4NLsX02
+   U15a8DmaKcNVfrbLjIOv2zqxrm7OiLa+cdWHXUxCb+NaJrs2FZp5Wc8cm
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10421"; a="275292815"
 X-IronPort-AV: E=Sophos;i="5.93,196,1654585200"; 
-   d="scan'208";a="275292808"
+   d="scan'208";a="275292815"
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
   by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2022 20:44:31 -0700
 X-IronPort-AV: E=Sophos;i="5.93,196,1654585200"; 
-   d="scan'208";a="600676742"
+   d="scan'208";a="600676749"
 Received: from hurleyst-mobl.amr.corp.intel.com (HELO skuppusw-desk1.amr.corp.intel.com) ([10.209.106.108])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2022 20:44:30 -0700
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2022 20:44:31 -0700
 From:   Kuppuswamy Sathyanarayanan 
         <sathyanarayanan.kuppuswamy@linux.intel.com>
 To:     Thomas Gleixner <tglx@linutronix.de>,
@@ -54,9 +54,9 @@ Cc:     "H . Peter Anvin" <hpa@zytor.com>,
         marcelo.cerri@canonical.com, tim.gardner@canonical.com,
         khalid.elmously@canonical.com, philip.cox@canonical.com,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v9 4/6] x86/coco: Add cc_decrypted_alloc/free() interfaces
-Date:   Wed, 27 Jul 2022 20:44:18 -0700
-Message-Id: <20220728034420.648314-5-sathyanarayanan.kuppuswamy@linux.intel.com>
+Subject: [PATCH v9 6/6] selftests: tdx: Test GetQuote TDX attestation feature
+Date:   Wed, 27 Jul 2022 20:44:20 -0700
+Message-Id: <20220728034420.648314-7-sathyanarayanan.kuppuswamy@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220728034420.648314-1-sathyanarayanan.kuppuswamy@linux.intel.com>
 References: <20220728034420.648314-1-sathyanarayanan.kuppuswamy@linux.intel.com>
@@ -66,190 +66,141 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Confidential computing platforms, such as AMD SEV and Intel TDX,
-protect memory from VMM access. Any memory that is required for
-communication with the VMM must be explicitly shared. It involves
-adjusting page table entries to indicate that the memory is shared and
-notifies VMM about the change.
+In TDX guest, the second stage of the attestation process is Quote
+generation. This process is required to convert the locally generated
+TDREPORT into a remotely verifiable Quote. It involves sending the
+TDREPORT data to a Quoting Enclave (QE) which will verify the
+integerity of the TDREPORT and sign it with an attestation key.
 
-set_memory_decrypted() converts memory to shared. Before freeing
-memory it has to be converted back with set_memory_encrypted().
+Intel's TDX attestation driver exposes TDX_CMD_GET_QUOTE IOCTL to
+allow user agent get the TD Quote.
 
-The interface works fine for long-term allocations, but for frequent
-short-lived allocations it causes problems. Conversion takes time and
-direct mapping modification leads to its fracturing and performance
-degradation over time.
+Add a kernel selftest module to verify the Quote generation feature.
 
-Direct mapping modifications can be avoided by creating a vmap that
-maps allocated pages as shared while direct mapping is untouched.
+TD Quote generation involves following steps:
 
-But having private mapping of a shared memory causes problems too.
-Any access of such memory via private mapping in TDX guest would
-trigger unrecoverable SEPT violation and termination of the virtual
-machine. It is known that load_unaligned_zeropad() can issue such
-unwanted loads across page boundaries that can trigger the issue.
+* Get the TDREPORT data using TDX_CMD_GET_REPORT IOCTL.
+* Embed the TDREPORT data in quote buffer and request for quote
+  generation via TDX_CMD_GET_QUOTE IOCTL request.
+* Upon completion of the GetQuote request, check for non zero value
+  in the status field of Quote header to make sure the generated
+  quote is valid.
 
-It can also be fixed by allocating a guard page in front of any memory
-that has to be converted to shared, so load_unaligned_zeropad() will
-roll off to the guard page instead. But it is wasteful and does not
-address cost of the memory conversion.
-
-The next logical step is to introduce a pool of shared memory that can
-share a single guard page and makes conversion less frequent.
-
-Fortunately, the kernel already has such a pool of memory: SWIOTLB
-buffer is used by the DMA API to allocate memory for I/O. The buffer is
-allocated once during the boot, so direct mapping fracturing is not an
-issue and no need for vmap tricks.
-
-Tapping into the SWIOTLB pool requires a device structure and using DMA
-API. Provide a couple of simple helpers to allocate and free shared
-memory that hide required plumbing.
-
+Reviewed-by: Tony Luck <tony.luck@intel.com>
+Reviewed-by: Andi Kleen <ak@linux.intel.com>
+Acked-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 ---
- arch/x86/coco/Makefile      |  2 +-
- arch/x86/coco/mem.c         | 90 +++++++++++++++++++++++++++++++++++++
- arch/x86/include/asm/coco.h | 10 +++++
- 3 files changed, 101 insertions(+), 1 deletion(-)
- create mode 100644 arch/x86/coco/mem.c
+ tools/testing/selftests/tdx/tdx_attest_test.c | 74 ++++++++++++++++---
+ 1 file changed, 64 insertions(+), 10 deletions(-)
 
-diff --git a/arch/x86/coco/Makefile b/arch/x86/coco/Makefile
-index c816acf78b6a..96fc4ec4497f 100644
---- a/arch/x86/coco/Makefile
-+++ b/arch/x86/coco/Makefile
-@@ -3,6 +3,6 @@ CFLAGS_REMOVE_core.o	= -pg
- KASAN_SANITIZE_core.o	:= n
- CFLAGS_core.o		+= -fno-stack-protector
+diff --git a/tools/testing/selftests/tdx/tdx_attest_test.c b/tools/testing/selftests/tdx/tdx_attest_test.c
+index 7155cc751eaa..14125b97e308 100644
+--- a/tools/testing/selftests/tdx/tdx_attest_test.c
++++ b/tools/testing/selftests/tdx/tdx_attest_test.c
+@@ -23,6 +23,7 @@
  
--obj-y += core.o
-+obj-y += core.o mem.o
+ #define devname         "/dev/tdx-guest"
+ #define HEX_DUMP_SIZE	8
++#define QUOTE_SIZE	8192
  
- obj-$(CONFIG_INTEL_TDX_GUEST)	+= tdx/
-diff --git a/arch/x86/coco/mem.c b/arch/x86/coco/mem.c
-new file mode 100644
-index 000000000000..78bcce11452e
---- /dev/null
-+++ b/arch/x86/coco/mem.c
-@@ -0,0 +1,90 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Confidential Computing Decrypted Memory Allocator
-+ *
-+ * Copyright (C) 2022 Intel Corporation, Inc.
-+ *
-+ */
-+
-+#undef pr_fmt
-+#define pr_fmt(fmt)     "cc/mem: " fmt
-+
-+#include <linux/export.h>
-+#include <linux/mm.h>
-+#include <linux/cc_platform.h>
-+#include <linux/set_memory.h>
-+#include <linux/platform_device.h>
-+#include <linux/dma-mapping.h>
-+#include <linux/dma-direct.h>
-+
-+#include <asm/coco.h>
-+#include <asm/processor.h>
-+
-+#define CC_MEM_DRIVER		"ccmem"
-+
-+static struct platform_device *mem_pdev;
-+
-+static inline dma_addr_t virt_to_dma(void *vaddr)
-+{
-+	return phys_to_dma(&mem_pdev->dev, virt_to_phys(vaddr));
-+}
-+
-+/* Allocate decrypted memory of given size */
-+void *cc_decrypted_alloc(size_t size, gfp_t gfp)
-+{
-+	dma_addr_t handle;
-+	void *vaddr;
-+
-+	if (!mem_pdev)
-+		return NULL;
-+
-+	vaddr = dma_alloc_coherent(&mem_pdev->dev, size, &handle, gfp);
-+
-+	/*
-+	 * Since we rely on virt_to_dma() in cc_decrypted_free() to
-+	 * calculate DMA address, make sure address translation works.
-+	 */
-+	VM_BUG_ON(virt_to_dma(vaddr) != handle);
-+
-+	return vaddr;
-+}
-+
-+/* Free the given decrypted memory */
-+void cc_decrypted_free(void *addr, size_t size)
-+{
-+	if (!mem_pdev || !addr)
-+		return;
-+
-+	dma_free_coherent(&mem_pdev->dev, size, addr, virt_to_phys(addr));
-+}
-+
-+static struct platform_driver cc_mem_driver = {
-+	.driver.name = CC_MEM_DRIVER,
-+};
-+
-+static int __init cc_mem_init(void)
-+{
-+	struct platform_device *pdev;
-+	int ret;
-+
-+	if (!cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT))
-+		return -ENODEV;
-+
-+	ret =  platform_driver_register(&cc_mem_driver);
-+	if (ret)
-+		return ret;
-+
-+	pdev = platform_device_register_simple(CC_MEM_DRIVER, -1, NULL, 0);
-+	if (IS_ERR(pdev)) {
-+		platform_driver_unregister(&cc_mem_driver);
-+		return PTR_ERR(pdev);
-+	}
-+
-+	if (dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(64)))
-+		return -EIO;
-+
-+	mem_pdev = pdev;
-+
-+	return 0;
-+}
-+device_initcall(cc_mem_init);
-diff --git a/arch/x86/include/asm/coco.h b/arch/x86/include/asm/coco.h
-index 3d98c3a60d34..74e10213289c 100644
---- a/arch/x86/include/asm/coco.h
-+++ b/arch/x86/include/asm/coco.h
-@@ -17,6 +17,8 @@ void cc_set_mask(u64 mask);
- #ifdef CONFIG_ARCH_HAS_CC_PLATFORM
- u64 cc_mkenc(u64 val);
- u64 cc_mkdec(u64 val);
-+void *cc_decrypted_alloc(size_t size, gfp_t gfp);
-+void cc_decrypted_free(void *addr, size_t size);
- #else
- static inline u64 cc_mkenc(u64 val)
- {
-@@ -27,6 +29,14 @@ static inline u64 cc_mkdec(u64 val)
- {
- 	return val;
+ /*
+  * struct td_info - It contains the measurements and initial configuration of
+@@ -114,17 +115,11 @@ static void print_array_hex(const char *title, const char *prefix_str,
  }
-+
-+static inline void *cc_decrypted_alloc(size_t size, gfp_t gfp)
-+{
-+	return NULL;
-+}
-+
-+static inline void cc_decrypted_free(void *addr, size_t size) { }
-+
  #endif
  
- #endif /* _ASM_X86_COCO_H */
+-TEST(verify_report)
++/* Helper function to get TDREPORT */
++long get_tdreport(int devfd, __u8 *reportdata, __u8 *tdreport)
+ {
+-	__u8 reportdata[TDX_REPORTDATA_LEN];
+-	struct tdreport_data *tdr_data;
+-	__u8 tdreport[TDX_REPORT_LEN];
+ 	struct tdx_report_req req;
+-	int devfd, i;
+-
+-	devfd = open(devname, O_RDWR | O_SYNC);
+-
+-	ASSERT_LT(0, devfd);
++	int i;
+ 
+ 	/* Generate sample report data */
+ 	for (i = 0; i < TDX_REPORTDATA_LEN; i++)
+@@ -137,8 +132,22 @@ TEST(verify_report)
+ 	req.tdreport    = (__u64)tdreport;
+ 	req.tdr_len     = TDX_REPORT_LEN;
+ 
++	return ioctl(devfd, TDX_CMD_GET_REPORT, &req);
++}
++
++TEST(verify_report)
++{
++	__u8 reportdata[TDX_REPORTDATA_LEN];
++	struct tdreport_data *tdr_data;
++	__u8 tdreport[TDX_REPORT_LEN];
++	int devfd;
++
++	devfd = open(devname, O_RDWR | O_SYNC);
++
++	ASSERT_LT(0, devfd);
++
+ 	/* Get TDREPORT */
+-	ASSERT_EQ(0, ioctl(devfd, TDX_CMD_GET_REPORT, &req));
++	ASSERT_EQ(0, get_tdreport(devfd, reportdata, tdreport));
+ 
+ 	tdr_data = (struct tdreport_data *)tdreport;
+ 
+@@ -157,4 +166,49 @@ TEST(verify_report)
+ 	ASSERT_EQ(0, close(devfd));
+ }
+ 
++TEST(verify_quote)
++{
++	__u8 reportdata[TDX_REPORTDATA_LEN];
++	struct tdx_quote_hdr *quote_hdr;
++	struct tdx_quote_req quote_req;
++	__u8 *quote_buf = NULL;
++	__u64 quote_buf_size;
++	int devfd;
++
++	/* Open attestation device */
++	devfd = open(devname, O_RDWR | O_SYNC);
++
++	ASSERT_LT(0, devfd);
++
++	/* Add size for quote header */
++	quote_buf_size = sizeof(*quote_hdr) + QUOTE_SIZE;
++
++	/* Allocate quote buffer */
++	quote_buf = malloc(quote_buf_size);
++	ASSERT_NE(NULL, quote_buf);
++
++	quote_hdr = (struct tdx_quote_hdr *)quote_buf;
++
++	/* Initialize GetQuote header */
++	quote_hdr->version = 1;
++	quote_hdr->status  = GET_QUOTE_SUCCESS;
++	quote_hdr->in_len  = TDX_REPORT_LEN;
++	quote_hdr->out_len = 0;
++
++	/* Get TDREPORT data */
++	ASSERT_EQ(0, get_tdreport(devfd, reportdata,
++				(__u8 *)&quote_hdr->data));
++
++	/* Fill GetQuote request */
++	quote_req.buf	  = (__u64)quote_buf;
++	quote_req.len	  = quote_buf_size;
++
++	ASSERT_EQ(0, ioctl(devfd, TDX_CMD_GET_QUOTE, &quote_req));
++
++	/* Check whether GetQuote request is successful */
++	EXPECT_EQ(0, quote_hdr->status);
++
++	free(quote_buf);
++}
++
+ TEST_HARNESS_MAIN
 -- 
 2.25.1
 
