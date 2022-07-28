@@ -2,156 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2B9FC04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 14:29:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBFF5C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 14:29:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231934AbiG1O3F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 10:29:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56688 "EHLO
+        id S231960AbiG1O3J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 10:29:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231793AbiG1O2y (ORCPT
+        with ESMTP id S231807AbiG1O2y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 28 Jul 2022 10:28:54 -0400
-Received: from mail.baikalelectronics.com (unknown [87.245.175.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C898166138;
-        Thu, 28 Jul 2022 07:28:51 -0700 (PDT)
-Received: from mail (mail.baikal.int [192.168.51.25])
-        by mail.baikalelectronics.com (Postfix) with ESMTP id D981716DA;
-        Thu, 28 Jul 2022 17:31:11 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com D981716DA
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F12C565D66;
+        Thu, 28 Jul 2022 07:28:52 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id j22so3491429ejs.2;
+        Thu, 28 Jul 2022 07:28:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1659018671;
-        bh=7oLw/2AhgIVJCvfWvzCTZhpGsbkyp+RYN+Vqy2ODNO8=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=Jut5Q5gAbNqR7sReGQO//RYYR/SOXqFUkGMFYkmDstaaoP5hOTtMY4MPAZZwMVQ9i
-         QZRKoIo+xXg3u+WYv0JC9A1AeZ8nR6+Xx1hiRLDxWFvGcAl0TTyddNokYLdRP4GP36
-         w9ffYLCZ/FCwViwbM9wJtiJKb+ysPBYZ6zKToh8Y=
-Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 28 Jul 2022 17:28:46 +0300
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Vinod Koul <vkoul@kernel.org>, Rob Herring <robh@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Jingoo Han <jingoohan1@gmail.com>, Frank Li <Frank.Li@nxp.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
-        <linux-pci@vger.kernel.org>, <dmaengine@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Gustavo Pimentel <Gustavo.Pimentel@synopsys.com>
-Subject: [PATCH v4 03/24] dmaengine: dw-edma: Convert ll/dt phys-address to PCIe bus/DMA address
-Date:   Thu, 28 Jul 2022 17:28:20 +0300
-Message-ID: <20220728142841.12305-4-Sergey.Semin@baikalelectronics.ru>
-In-Reply-To: <20220728142841.12305-1-Sergey.Semin@baikalelectronics.ru>
-References: <20220728142841.12305-1-Sergey.Semin@baikalelectronics.ru>
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=+qxi1BsKPmynG3xfpNZLp6J5s/IWJprPFoEGd6KJx1s=;
+        b=Dqobgjs1nII8eXteQLjz2ED1bVraj/SM6DyKm259IZRg1sN9fXwxKHIjnG2b0D3INP
+         CJtDIdhUiiT3FrZ8VGIV5YyCY/B5CS56vg2LrtG2qoKAVoBPg5C5Rc4irrfAhqzUR8Gh
+         +kybMZBZKngEWg1dyX5m4BVx0V2laC+H53UD1uGBiO18QUV/cjUgIsNB5O4VSdrtTV9W
+         Cjr63Q11WQXEj+bfEst6CJpV6b6nywbFMPcaGL39fGMjwTeOGbNRQn9EtmKqq7ZN4xwN
+         pF26gzooknPqRasWoevZQAJ4FehkqRleQDodSdYOcvnJ8YGzspu/VUm+wAjSwHvBT353
+         9FoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=+qxi1BsKPmynG3xfpNZLp6J5s/IWJprPFoEGd6KJx1s=;
+        b=HBiH159v6FP5hmFNEK1MbJWvrDYIqVclT5Dl+AOO0iKd0yHrkxHnbsO58UF3dO770+
+         hEF952flatyyhaMQX7pTelv6SWMFjW4K5pNdiwlOLxNqGzDT97hVFYlyapWCorZpMtWB
+         0uy1lu/vysX5fUd+pQ312MxgwSDyR+FWIjCCVHCKb7RXa74Py+xi8/yCN9wztZVszwu1
+         GTXHlYHs/+5b71YUB1HZ2jW2x48TesaXd4Emr5jK5yZkvg11JRqyK7k7lM5b33GMteZL
+         KK7erNO0ijxdKiqNWS+huOqDTYzVhj2khydwnOiBS507h+9QHCqQKuGJKwlaVt1POxvM
+         SAXQ==
+X-Gm-Message-State: AJIora+rHdZaamCrYfr2AnIh9uK5Ad2uAfyA0RKBUHuj0fIWP6egv66r
+        YAux1owDDUEwsfCbH1hbPclwCQiID5pQIKCj
+X-Google-Smtp-Source: AGRyM1thhqvyGnz1B8Vxf/2phwUgpIo+oFuDvwayWQtnd+524pm6oLNhycj5/sutoRUawvMv1D4DGA==
+X-Received: by 2002:a17:907:6089:b0:72f:56db:ccb6 with SMTP id ht9-20020a170907608900b0072f56dbccb6mr21020085ejc.318.1659018530972;
+        Thu, 28 Jul 2022 07:28:50 -0700 (PDT)
+Received: from nergzd-desktop.localdomain ([23.154.177.9])
+        by smtp.gmail.com with ESMTPSA id y1-20020aa7d501000000b0043cce1d3a0fsm755949edq.87.2022.07.28.07.28.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Jul 2022 07:28:50 -0700 (PDT)
+From:   Markuss Broks <markuss.broks@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        Markuss Broks <markuss.broks@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Helge Deller <deller@gmx.de>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Borislav Petkov <bp@suse.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Michal Suchanek <msuchanek@suse.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Wei Ming Chen <jj251510319013@gmail.com>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        Tony Lindgren <tony@atomide.com>, linux-doc@vger.kernel.org,
+        linux-efi@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        Petr Mladek <pmladek@suse.com>
+Subject: [PATCH 1/2] drivers: serial: earlycon: Pass device-tree node
+Date:   Thu, 28 Jul 2022 17:28:18 +0300
+Message-Id: <20220728142824.3836-2-markuss.broks@gmail.com>
+X-Mailer: git-send-email 2.37.0
+In-Reply-To: <20220728142824.3836-1-markuss.broks@gmail.com>
+References: <20220728142824.3836-1-markuss.broks@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In accordance with the dw_edma_region.paddr field semantics it is supposed
-to be initialized with a memory base address visible by the DW eDMA
-controller. If the DMA engine is embedded into the DW PCIe Host/EP
-controller, then the address should belong to the Local CPU/Application
-memory. If eDMA is remotely accessible across the PCIe bus via the PCIe
-memory IOs, then the address needs to be a part of the PCIe bus memory
-space. The later case hasn't been well covered in the corresponding
-glue-driver. Since in general the PCIe memory space doesn't have to match
-the CPU memory space and the pci_dev.resource[] arrays contain the
-resources defined in the CPU memory space, a proper conversion needs to be
-performed, otherwise either the driver won't properly work or much worse
-the memory corruption will happen. The conversion can be done by means of
-the pci_bus_address() method. Let's use it to retrieve the LL, DT and CSRs
-PCIe memory ranges.
+Pass a pointer to device-tree node in case the driver probed from
+OF. This makes early console drivers able to fetch options from
+device-tree node properties.
 
-Note in addition to that we need to extend the dw_edma_region.paddr field
-size. The field normally contains a memory range base address to be set in
-the DW eDMA Linked-List pointer register or as a base address of the
-Linked-List data buffer. In accordance with [1] the LL range is supposed
-to be created in the Local CPU/Application memory, but depending on the DW
-eDMA utilization the memory can be created as a part of the PCIe bus
-address space (as in the case of the DW PCIe EP prototype kit). Thus in
-the former case the dw_edma_region.paddr field should have the dma_addr_t
-type, while in the later one - pci_bus_addr_t. Seeing the corresponding
-CSRs are always 64-bits wide let's convert the dw_edma_region.paddr field
-type to be u64 and let the client code logic to make sure it has a valid
-address visible by the DW eDMA controller. For instance the DW eDMA PCIe
-glue-driver initializes the field with the addresses from the PCIe bus
-memory space.
-
-[1] DesignWare Cores PCI Express Controller Databook - DWC PCIe Root Port,
-    v.5.40a, March 2019, p.1103
-
-Fixes: 41aaff2a2ac0 ("dmaengine: Add Synopsys eDMA IP PCIe glue-logic")
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Tested-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Acked-By: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
 ---
- drivers/dma/dw-edma/dw-edma-pcie.c | 8 ++++----
- include/linux/dma/edma.h           | 2 +-
- 2 files changed, 5 insertions(+), 5 deletions(-)
+ drivers/tty/serial/earlycon.c | 3 +++
+ include/linux/serial_core.h   | 1 +
+ 2 files changed, 4 insertions(+)
 
-diff --git a/drivers/dma/dw-edma/dw-edma-pcie.c b/drivers/dma/dw-edma/dw-edma-pcie.c
-index d6b5e2463884..04c95cba1244 100644
---- a/drivers/dma/dw-edma/dw-edma-pcie.c
-+++ b/drivers/dma/dw-edma/dw-edma-pcie.c
-@@ -231,7 +231,7 @@ static int dw_edma_pcie_probe(struct pci_dev *pdev,
- 			return -ENOMEM;
- 
- 		ll_region->vaddr += ll_block->off;
--		ll_region->paddr = pdev->resource[ll_block->bar].start;
-+		ll_region->paddr = pci_bus_address(pdev, ll_block->bar);
- 		ll_region->paddr += ll_block->off;
- 		ll_region->sz = ll_block->sz;
- 
-@@ -240,7 +240,7 @@ static int dw_edma_pcie_probe(struct pci_dev *pdev,
- 			return -ENOMEM;
- 
- 		dt_region->vaddr += dt_block->off;
--		dt_region->paddr = pdev->resource[dt_block->bar].start;
-+		dt_region->paddr = pci_bus_address(pdev, dt_block->bar);
- 		dt_region->paddr += dt_block->off;
- 		dt_region->sz = dt_block->sz;
+diff --git a/drivers/tty/serial/earlycon.c b/drivers/tty/serial/earlycon.c
+index 57c70851f22a0e78805f34d1a7700708104b6f6a..14e8a7fe54486a1c377a6659c37a73858de5bf0b 100644
+--- a/drivers/tty/serial/earlycon.c
++++ b/drivers/tty/serial/earlycon.c
+@@ -304,6 +304,9 @@ int __init of_setup_earlycon(const struct earlycon_id *match,
+ 		strlcpy(early_console_dev.options, options,
+ 			sizeof(early_console_dev.options));
  	}
-@@ -256,7 +256,7 @@ static int dw_edma_pcie_probe(struct pci_dev *pdev,
- 			return -ENOMEM;
- 
- 		ll_region->vaddr += ll_block->off;
--		ll_region->paddr = pdev->resource[ll_block->bar].start;
-+		ll_region->paddr = pci_bus_address(pdev, ll_block->bar);
- 		ll_region->paddr += ll_block->off;
- 		ll_region->sz = ll_block->sz;
- 
-@@ -265,7 +265,7 @@ static int dw_edma_pcie_probe(struct pci_dev *pdev,
- 			return -ENOMEM;
- 
- 		dt_region->vaddr += dt_block->off;
--		dt_region->paddr = pdev->resource[dt_block->bar].start;
-+		dt_region->paddr = pci_bus_address(pdev, dt_block->bar);
- 		dt_region->paddr += dt_block->off;
- 		dt_region->sz = dt_block->sz;
- 	}
-diff --git a/include/linux/dma/edma.h b/include/linux/dma/edma.h
-index 7baf16fd4f23..7102a870a159 100644
---- a/include/linux/dma/edma.h
-+++ b/include/linux/dma/edma.h
-@@ -18,7 +18,7 @@
- struct dw_edma;
- 
- struct dw_edma_region {
--	phys_addr_t	paddr;
-+	u64		paddr;
- 	void __iomem	*vaddr;
- 	size_t		sz;
++
++	early_console_dev.node = node;
++
+ 	earlycon_init(&early_console_dev, match->name);
+ 	err = match->setup(&early_console_dev, options);
+ 	earlycon_print_info(&early_console_dev);
+diff --git a/include/linux/serial_core.h b/include/linux/serial_core.h
+index cbd5070bc87f42aa450c4ca7af8a9b59fbe88574..3295721f33e482124fae8370b5889d5d6c012303 100644
+--- a/include/linux/serial_core.h
++++ b/include/linux/serial_core.h
+@@ -349,6 +349,7 @@ struct earlycon_device {
+ 	struct uart_port port;
+ 	char options[16];		/* e.g., 115200n8 */
+ 	unsigned int baud;
++	unsigned long node;
  };
+ 
+ struct earlycon_id {
 -- 
-2.35.1
+2.37.0
 
