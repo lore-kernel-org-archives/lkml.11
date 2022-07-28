@@ -2,76 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41ED3C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 10:57:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85FB6C19F21
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 10:58:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236593AbiG1K5w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 06:57:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55072 "EHLO
+        id S236741AbiG1K6E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 06:58:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236609AbiG1K5t (ORCPT
+        with ESMTP id S236578AbiG1K55 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 06:57:49 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C06C61D95;
-        Thu, 28 Jul 2022 03:57:48 -0700 (PDT)
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Ltncq31LHzmVN3;
-        Thu, 28 Jul 2022 18:55:55 +0800 (CST)
-Received: from kwepemm600015.china.huawei.com (7.193.23.52) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 28 Jul 2022 18:57:46 +0800
-Received: from [10.174.176.52] (10.174.176.52) by
- kwepemm600015.china.huawei.com (7.193.23.52) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 28 Jul 2022 18:57:45 +0800
-Message-ID: <882a28de-3bd5-23e5-fbad-bfdc2a4a24e4@huawei.com>
-Date:   Thu, 28 Jul 2022 18:57:44 +0800
+        Thu, 28 Jul 2022 06:57:57 -0400
+Received: from mail.baikalelectronics.com (unknown [87.245.175.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0ACF161136;
+        Thu, 28 Jul 2022 03:57:49 -0700 (PDT)
+Received: from mail (mail.baikal.int [192.168.51.25])
+        by mail.baikalelectronics.com (Postfix) with ESMTP id 738B216CC;
+        Thu, 28 Jul 2022 14:00:11 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 738B216CC
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baikalelectronics.ru; s=mail; t=1659006011;
+        bh=BveNLPY/YG4fFAd5N/AaPUO76c/YnxfM372ERsi7TmM=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
+        b=bGCljDdsVryxjaz0biJCv36iFs44c720g/ck2YmtYO3ML7Lv+zvZG44Zuio+jmV7V
+         oMFD7fWLwRi4RNHvNfoXZnK6p/BTVFrjVBGJW6FL0oV5AOoJVu6ef5ZuECc7mpkosO
+         0J1t7GYS3eiBI9rUvx7OvBphKkhP8VxGdQIk0hqM=
+Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
+ Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 28 Jul 2022 13:57:46 +0300
+From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
+To:     Stephen Boyd <sboyd@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Luca Ceresoli <luca@lucaceresoli.net>,
+        Marek Vasut <marek.vasut@gmail.com>
+CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        <linux-clk@vger.kernel.org>, <linux-mips@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, Stephen Boyd <sboyd@codeaurora.org>
+Subject: [PATCH v9 1/7] clk: vc5: Fix 5P49V6901 outputs disabling when enabling FOD
+Date:   Thu, 28 Jul 2022 13:57:29 +0300
+Message-ID: <20220728105736.8266-2-Sergey.Semin@baikalelectronics.ru>
+In-Reply-To: <20220728105736.8266-1-Sergey.Semin@baikalelectronics.ru>
+References: <20220728105736.8266-1-Sergey.Semin@baikalelectronics.ru>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.1
-Subject: Re: [PATCH] xfs: fix NULL pointer dereference in xfs_getbmap()
-To:     "Darrick J. Wong" <djwong@kernel.org>
-CC:     <linux-xfs@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <guoxuenan@huawei.com>, <liuyongqiang13@huawei.com>,
-        <yi.zhang@huawei.com>, <zhangxiaoxu5@huawei.com>
-References: <20220727085230.4073478-1-chenxiaosong2@huawei.com>
- <YuFW4OLWCuAhrC7R@magnolia>
-From:   "chenxiaosong (A)" <chenxiaosong2@huawei.com>
-In-Reply-To: <YuFW4OLWCuAhrC7R@magnolia>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.176.52]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemm600015.china.huawei.com (7.193.23.52)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
+X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-在 2022/7/27 23:16, Darrick J. Wong 写道:
+We have discovered random glitches during the system boot up procedure.
+The problem investigation led us to the weird outcomes: when none of the
+Renesas 5P49V6901 ports are explicitly enabled by the kernel driver, the
+glitches disappeared. It was a mystery since the SoC external clock
+domains were fed with different 5P49V6901 outputs. The driver code didn't
+seem like bogus either. We almost despaired to find out a root cause when
+the solution has been found for a more modern revision of the chip. It
+turned out the 5P49V6901 clock generator stopped its output for a short
+period of time during the VC5_OUT_DIV_CONTROL register writing. The same
+problem was found for the 5P49V6965 revision of the chip and was
+successfully fixed in commit fc336ae622df ("clk: vc5: fix output disabling
+when enabling a FOD") by enabling the "bypass_sync" flag hidden inside
+"Unused Factory Reserved Register". Even though the 5P49V6901 registers
+description and programming guide doesn't provide any intel regarding that
+flag, setting it up anyway in the officially unused register completely
+eliminated the denoted glitches. Thus let's activate the functionality
+submitted in commit fc336ae622df ("clk: vc5: fix output disabling when
+enabling a FOD") for the Renesas 5P49V6901 chip too in order to remove the
+ports implicit inter-dependency.
 
-> Heh.  Is this worth an fstest?  It probably is, since prior to 5.20 this
-> would have been a UAF bug on top of a NULL deref.
+Fixes: dbf6b16f5683 ("clk: vc5: Add support for IDT VersaClock 5P49V6901")
+Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Reviewed-by: Luca Ceresoli <luca@lucaceresoli.net>
 
-I will try to add regression test to xfstests for this commit when it is 
-merged into mainline.
+---
 
-> 
-> Nit: it's ILOCK, not i_lock.  Otherwise... this looks correct to me --
-> take the IOLOCK and ILOCK in shared mode before accessing the inode fork
-> structures.
-> 
-> Do you have any suggestions for Fixes:?  I suspect this has been broken
-> for quite some time.
+Changelog v4:
+- This is a new patch added on v4 lap of the series.
 
-The "Fixes:" label is: abbf9e8a4507 ("xfs: rewrite getbmap using the 
-xfs_iext_* helpers")
+Changelog v5:
+- Fix some grammar mistakes in the commit log. (@Sergey Shtylyov)
+---
+ drivers/clk/clk-versaclock5.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> 
-> No need to fix the nit, I'll do that when I commit this.
-> Reviewed-by: Darrick J. Wong <djwong@kernel.org>
-> 
-> --D
-> 
+diff --git a/drivers/clk/clk-versaclock5.c b/drivers/clk/clk-versaclock5.c
+index e7be3e54b9be..03cfef494b49 100644
+--- a/drivers/clk/clk-versaclock5.c
++++ b/drivers/clk/clk-versaclock5.c
+@@ -1204,7 +1204,7 @@ static const struct vc5_chip_info idt_5p49v6901_info = {
+ 	.model = IDT_VC6_5P49V6901,
+ 	.clk_fod_cnt = 4,
+ 	.clk_out_cnt = 5,
+-	.flags = VC5_HAS_PFD_FREQ_DBL,
++	.flags = VC5_HAS_PFD_FREQ_DBL | VC5_HAS_BYPASS_SYNC_BIT,
+ };
+ 
+ static const struct vc5_chip_info idt_5p49v6965_info = {
+-- 
+2.35.1
+
