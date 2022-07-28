@@ -2,110 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99B11C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 12:17:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA568C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 12:18:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238128AbiG1MRb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 08:17:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52034 "EHLO
+        id S238087AbiG1MSP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 08:18:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237869AbiG1MRI (ORCPT
+        with ESMTP id S238274AbiG1MSB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 08:17:08 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BBEB691D0;
-        Thu, 28 Jul 2022 05:17:07 -0700 (PDT)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26SA4n5n032223;
-        Thu, 28 Jul 2022 05:17:01 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=+BixbfkLRoEVSlMXKnuj4O4Z7KmNTMJZZpE1nhzCvQ0=;
- b=fvuvuK+Mdo6RCYpAle6aT1GKo3qpLVGTq4lrrzpHyfIC8XEATabrrc/nb3c/mrm+zn6j
- rHXZIwnluBzDop4B546MeLyrQgy4m02+DTn1dXrSV5gMdtt8Z3wri7QhKpl1Jkok7nkI
- TmAC1KLMzMNcQRYc6XPEybu+r7YY9/ArPkLxtp9jLPIIzWApr8rDvCJwNn6fHfC5Xfdd
- 49l0mN9UBo6nlZfjdkZRWU4+Msps3ar48ad59foirD8+2W4Y+vxJB0fGabSAdWtZYgYK
- fbYy5EWXF6whzsmBJWtOsjQZopqamXyfRChkW/vYL8KBwCXJe7NGdOlbY5NFPTGPwyMw Zg== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3hjyn8nm2u-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 28 Jul 2022 05:17:01 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 28 Jul
- 2022 05:16:59 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Thu, 28 Jul 2022 05:16:59 -0700
-Received: from #hyd1583.marvell.com (unknown [10.29.37.44])
-        by maili.marvell.com (Postfix) with ESMTP id BEB2A3F703F;
-        Thu, 28 Jul 2022 05:16:56 -0700 (PDT)
-From:   Naveen Mamindlapalli <naveenm@marvell.com>
-To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <sgoutham@marvell.com>
-CC:     Naveen Mamindlapalli <naveenm@marvell.com>
-Subject: [net-next PATCH 4/4] octeontx2-af: Initialize PTP_SEC_ROLLOVER register properly
-Date:   Thu, 28 Jul 2022 17:46:38 +0530
-Message-ID: <20220728121638.17989-5-naveenm@marvell.com>
-X-Mailer: git-send-email 2.16.5
-In-Reply-To: <20220728121638.17989-1-naveenm@marvell.com>
-References: <20220728121638.17989-1-naveenm@marvell.com>
+        Thu, 28 Jul 2022 08:18:01 -0400
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C6CE6D543
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 05:17:44 -0700 (PDT)
+Received: by mail-lj1-x22f.google.com with SMTP id w18so1785725lje.1
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 05:17:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=vTHkf3PkQuEgWJCGVwet40bcBQOgfr43zzOgeagd0v0=;
+        b=DrB888e8pgeDAoMhrEqBNUb66SA6IcaJUsXBFF5IlGsk2uCCbZekR1kwgl3aEJ26bc
+         1jNfUJm4fIzr8GBhbQcg2hRDsO2Y2tL3avvUyMynyGj610ogrHFX2ygpX8G408ESIfbB
+         KxIfBvfxPNvSDWH3LMIVnqvHC+Xzl45CXdtvtN+47GmWkNbUXVYTufPdCTUvNI4jMmbc
+         4V/bkz5hJu5XwxkgENOnMxmt9jNR558hunrovhY1W8Dr+JXrhi0bPajNHa77QPAPnhCW
+         fjeaWrZ6iNC8gwKOGfCdhldVm8vmQJ3GKrBYXu9+UkMnrtL64h6qxMSPb7SXmhZy3gSh
+         7TJA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=vTHkf3PkQuEgWJCGVwet40bcBQOgfr43zzOgeagd0v0=;
+        b=JPnAUCqcnttCmtoV6swGwgUOhSRRygv2VqUzMo8wJsSRqIpGTQy47otkPMZdaDz+9/
+         oI0DXf2eXFENbr8u3M6hEcRSJ+3/PCk2sUMnh3U2Pv2Dv7oQDMLKs9/et/OGw3CkhNaJ
+         JrmiFLQNm60cxf7epgR23mHJ/giiE3ZdNzmbRfErvdIGpNDuZu36H0q9CUo7NjB4zuVi
+         voCJlkPTGGacCGsgjLTLg8mT9DvFVoqOUtdUJjh4smqW729+cR2SXCaZ+J19f9SVv2vC
+         jMh5uz9QYA0BEwl4bD7knb+YmGiaT8dCswbsgAALqkT9juCsNyRy+GoS8EJFNawXP4eN
+         jpOA==
+X-Gm-Message-State: AJIora8VsY1eGqfPTMhmWqDb/kwdS/s6PN/T+m6voyr4Wzr6JOx/v06F
+        MDUlmAoSjxpsbLhvpeQz1MMScg==
+X-Google-Smtp-Source: AGRyM1vNyLPheoEf3KZBupmIsZAAYI+VF8waTXPJlh0mdoKFxZ1zqu+EszKS24/oZeb1UEHCkEQOTg==
+X-Received: by 2002:a2e:a315:0:b0:25e:2e8f:f5c5 with SMTP id l21-20020a2ea315000000b0025e2e8ff5c5mr597979lje.145.1659010650856;
+        Thu, 28 Jul 2022 05:17:30 -0700 (PDT)
+Received: from [192.168.3.197] (78-26-46-173.network.trollfjord.no. [78.26.46.173])
+        by smtp.gmail.com with ESMTPSA id v22-20020a056512349600b004795d64f37dsm176194lfr.105.2022.07.28.05.17.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Jul 2022 05:17:30 -0700 (PDT)
+Message-ID: <1685ecd6-cfe7-c2f1-add5-6bfff055fa06@linaro.org>
+Date:   Thu, 28 Jul 2022 14:17:29 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: tR-aVwKvL_35yGz4GRUWM3dH3Ns0YvoF
-X-Proofpoint-GUID: tR-aVwKvL_35yGz4GRUWM3dH3Ns0YvoF
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-28_05,2022-07-28_02,2022-06-22_01
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v4 2/2] drm: panel: Add novatek nt35596s panel driver
+Content-Language: en-US
+To:     Molly Sophia <mollysophia379@gmail.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org
+References: <20220728023555.8952-1-mollysophia379@gmail.com>
+ <20220728023555.8952-3-mollysophia379@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220728023555.8952-3-mollysophia379@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since the reset value of PTP_SEC_ROLLOVER is incorrect on
-CNF10KB silicon, the ptp timestamps are inaccurate. This
-patch initializes the PTP_SEC_ROLLOVER register properly
-for the CNF10KB silicon.
+On 28/07/2022 04:35, Molly Sophia wrote:
+> Novatek NT35596s is a generic DSI IC that drives command and video mode
+> panels. Add the driver for it. Currently add support for the LCD panel
+> from JDI connected with this IC, as found on Xiaomi Mi Mix2s phones.
+> 
+> Changes in v4:
+> - No change.
+> 
+> Changes in v3:
+> - Embed the support into existing driver (panel-novatek-nt36672a), as
+>   these two IC are similar with different initialization commands.
+> 
 
-Signed-off-by: Naveen Mamindlapalli <naveenm@marvell.com>
-Signed-off-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
----
- drivers/net/ethernet/marvell/octeontx2/af/ptp.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+This does not go to commit msg (---).
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/ptp.c b/drivers/net/ethernet/marvell/octeontx2/af/ptp.c
-index 01f7dbad6b92..3411e2e47d46 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/ptp.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/ptp.c
-@@ -52,12 +52,18 @@
- #define PTP_CLOCK_COMP				0xF18ULL
- #define PTP_TIMESTAMP				0xF20ULL
- #define PTP_CLOCK_SEC				0xFD0ULL
-+#define PTP_SEC_ROLLOVER			0xFD8ULL
- 
- #define CYCLE_MULT				1000
- 
- static struct ptp *first_ptp_block;
- static const struct pci_device_id ptp_id_table[];
- 
-+static bool is_ptp_dev_cnf10kb(struct ptp *ptp)
-+{
-+	return (ptp->pdev->subsystem_device == PCI_SUBSYS_DEVID_CNF10K_B_PTP) ? true : false;
-+}
-+
- static bool is_ptp_dev_cn10k(struct ptp *ptp)
- {
- 	return (ptp->pdev->device == PCI_DEVID_CN10K_PTP) ? true : false;
-@@ -290,6 +296,10 @@ void ptp_start(struct ptp *ptp, u64 sclk, u32 ext_clk_freq, u32 extts)
- 	/* sclk is in MHz */
- 	ptp->clock_rate = sclk * 1000000;
- 
-+	/* Program the seconds rollover value to 1 second */
-+	if (is_ptp_dev_cnf10kb(ptp))
-+		writeq(0x3b9aca00, ptp->reg_base + PTP_SEC_ROLLOVER);
-+
- 	/* Enable PTP clock */
- 	clock_cfg = readq(ptp->reg_base + PTP_CLOCK_CFG);
- 
--- 
-2.16.5
-
+Best regards,
+Krzysztof
