@@ -2,90 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EEF5C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 16:13:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45EA9C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 16:14:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232819AbiG1QNy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 12:13:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54564 "EHLO
+        id S232970AbiG1QOR convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 12:14:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232576AbiG1QNd (ORCPT
+        with ESMTP id S232778AbiG1QNt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 12:13:33 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1A5EB6FA1E
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 09:13:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659024795;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=VmJ2+f+Z2K0SCbonE5IauSW1u7akCNc40dQ7K7wfDHA=;
-        b=JYVNHAontht7e/AdfOIzbul7JjkIpJH5qspcsClYiAcW8eyA1pCnlyN24qyoEDGVWl2Tzn
-        9XOT8WVhYORH2NlJAvLIRMAW9kCZPLGO9Tf9rnphNqYsljxuPqZr4j2ceICFpFGZ27UZMb
-        OSeU0Vb91IuTX6w09ICs9tQC1xcyPaA=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-201-4pt9ZUUYOKK0kLNFC70acw-1; Thu, 28 Jul 2022 12:13:11 -0400
-X-MC-Unique: 4pt9ZUUYOKK0kLNFC70acw-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2E75A185A7B2;
-        Thu, 28 Jul 2022 16:13:11 +0000 (UTC)
-Received: from mpattric.remote.csb (unknown [10.22.33.169])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 722062166B26;
-        Thu, 28 Jul 2022 16:13:10 +0000 (UTC)
-From:   Mike Pattrick <mkp@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     pvalerio@redhat.com, Mike Pattrick <mkp@redhat.com>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, dev@openvswitch.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 2/2] openvswitch: Fix overreporting of drops in dropwatch
-Date:   Thu, 28 Jul 2022 12:12:59 -0400
-Message-Id: <20220728161259.1088662-2-mkp@redhat.com>
-In-Reply-To: <20220728161259.1088662-1-mkp@redhat.com>
-References: <20220728161259.1088662-1-mkp@redhat.com>
+        Thu, 28 Jul 2022 12:13:49 -0400
+X-Greylist: delayed 388 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 28 Jul 2022 09:13:48 PDT
+Received: from relay.hostedemail.com (smtprelay0017.hostedemail.com [216.40.44.17])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEDB06E8AD;
+        Thu, 28 Jul 2022 09:13:48 -0700 (PDT)
+Received: from omf01.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay10.hostedemail.com (Postfix) with ESMTP id 7D45FC14FE;
+        Thu, 28 Jul 2022 16:07:19 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: rostedt@goodmis.org) by omf01.hostedemail.com (Postfix) with ESMTPA id 59FCD60017;
+        Thu, 28 Jul 2022 16:07:17 +0000 (UTC)
+Date:   Thu, 28 Jul 2022 09:07:13 -0700
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     sedat.dilek@gmail.com, Sedat Dilek <sedat.dilek@gmail.com>,
+        Daniel Bristot de Oliveira <bristot@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+CC:     linux-kernel@vger.kernel.org, linux-trace-devel@vger.kernel.org
+Subject: Re: [PATCH V2] rtla: Fix Makefile when called from -C tools/
+User-Agent: K-9 Mail for Android
+In-Reply-To: <CA+icZUX2v-u8tL-U73hZJ0nNHXJ6XQYPupTRBV9QaQN88OF2bw@mail.gmail.com>
+References: <870c02d4d97a921f02a31fa3b229fc549af61a20.1657747763.git.bristot@kernel.org> <CA+icZUV9waE16ZW4RNEDeiemv6eRd=MetzdGbF-vpfT_u1N4_w@mail.gmail.com> <CA+icZUX2v-u8tL-U73hZJ0nNHXJ6XQYPupTRBV9QaQN88OF2bw@mail.gmail.com>
+Message-ID: <8F70EC88-7DCD-43DB-9C59-55CD13D3141C@goodmis.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 8BIT
+X-Rspamd-Queue-Id: 59FCD60017
+X-Stat-Signature: maijx8rq4potqe19ekdjge7anws66qej
+X-Rspamd-Server: rspamout03
+X-Session-Marker: 726F737465647440676F6F646D69732E6F7267
+X-Session-ID: U2FsdGVkX1+5Eq7VH7nYvxWpVY8RUXyydhWNv7z1uUI=
+X-HE-Tag: 1659024437-418652
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently queue_userspace_packet will call kfree_skb for all frames,
-whether or not an error occurred. This can result in a single dropped
-frame being reported as multiple drops in dropwatch. This patch will
-consume the skbs instead.
 
-Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=2109957
-Signed-off-by: Mike Pattrick <mkp@redhat.com>
----
- net/openvswitch/datapath.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
-index 029f9c3e1c28..3eee4b0a2005 100644
---- a/net/openvswitch/datapath.c
-+++ b/net/openvswitch/datapath.c
-@@ -561,8 +561,9 @@ static int queue_userspace_packet(struct datapath *dp, struct sk_buff *skb,
- out:
- 	if (err)
- 		skb_tx_error(skb);
--	kfree_skb(user_skb);
--	kfree_skb(nskb);
-+	consume_skb(user_skb);
-+	consume_skb(nskb);
-+
- 	return err;
- }
- 
+On July 28, 2022 1:15:34 AM PDT, Sedat Dilek <sedat.dilek@gmail.com> wrote:
+>On Thu, Jul 28, 2022 at 10:01 AM Sedat Dilek <sedat.dilek@gmail.com> wrote:
+>>
+>> Hi,
+>>
+>> what is the status of this patch?
+>>
+>> Is it missing some ACKs e.g. from Steven?
+>>
+>> Can this go directly to Linus tree as I wanted to see it in Linux v5.19 FINAL?
+>>
+>> Thanks.
+>>
+>
+>INFO:
+>
+>Steven's autoresponder says:
+>
+>I'm currently traveling and may be slow to respond (and may not at all).
+>I'll be back at my normal hours on Tuesday, Aug 2nd.
+
+
+Yes, I'm currently at the SCaLE 19x conference, but I plan on pulling in rtla and rv work while I'm here.
+
+-- Steve
+
+>
+>Here the lore-link to v2:
+>
+>[1] https://lore.kernel.org/all/870c02d4d97a921f02a31fa3b229fc549af61a20.1657747763.git.bristot@kernel.org/
+>
+>-Sedat-
+>
+>>
+>> > ---
+>> >  tools/tracing/rtla/Makefile | 2 +-
+>> >  1 file changed, 1 insertion(+), 1 deletion(-)
+>> >
+>> > diff --git a/tools/tracing/rtla/Makefile b/tools/tracing/rtla/Makefile
+>> > index 3822f4ea5f49..1bea2d16d4c1 100644
+>> > --- a/tools/tracing/rtla/Makefile
+>> > +++ b/tools/tracing/rtla/Makefile
+>> > @@ -1,6 +1,6 @@
+>> >  NAME   :=      rtla
+>> >  # Follow the kernel version
+>> > -VERSION :=     $(shell cat VERSION 2> /dev/null || make -sC ../../.. kernelversion)
+>> > +VERSION :=     $(shell cat VERSION 2> /dev/null || make -sC ../../.. kernelversion | grep -v make)
+>> >
+>> >  # From libtracefs:
+>> >  # Makefiles suck: This macro sets a default value of $(2) for the
+>> > --
+>> > 2.32.0
+>> >
+
 -- 
-2.31.1
-
+Sent from my Android device with K-9 Mail. Please excuse my brevity and top posting.
