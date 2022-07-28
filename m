@@ -2,155 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42DCBC19F29
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 11:17:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08291C19F29
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 11:17:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236123AbiG1LRC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 07:17:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44816 "EHLO
+        id S236260AbiG1LRS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 07:17:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235370AbiG1LRA (ORCPT
+        with ESMTP id S236346AbiG1LRN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 07:17:00 -0400
-Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2F1263912;
-        Thu, 28 Jul 2022 04:16:55 -0700 (PDT)
-Received: from [192.168.1.111] (91-158-154-79.elisa-laajakaista.fi [91.158.154.79])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 9F2E456D;
-        Thu, 28 Jul 2022 13:16:52 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1659007013;
-        bh=ZXDDTP7gbp5CtebP+uzx922dTPzjkRRWm+m1wpG6948=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=wXqMzzh/jxJP3crL8z8bZF3/7Mt1a2VsDJSyJRaNncQKV25vb0+TR+47op7CjPi3r
-         8He1mhylIfOxSYNuliSsjziSX0OjvipzoiXlRZOBuhTwUfkJNZRwME3cXVyykMfJbS
-         52ZU75GgIi56Iqd6M9u/g6HWOogvFxtDAevK52EU=
-Message-ID: <cac1e7f0-de7a-f8a6-59a9-65e626c92e93@ideasonboard.com>
-Date:   Thu, 28 Jul 2022 14:16:50 +0300
+        Thu, 28 Jul 2022 07:17:13 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27B2866B8E
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 04:17:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659007031; x=1690543031;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=DtIM29pjTxa4VPaINN54wUy0i5N0ICSLry3uEWs/U2Q=;
+  b=SfJrhAvaBIA3miH/4xWwFE6QXv7BJGmKjwRcYs4yBZdMMKvrSL7Jf96A
+   GolO6gRXeNm5iH/q50kULfP51rt9cQD4mbwGiIOcEmZx5a9Zll79O57AL
+   TfotQrQtVgUNGQXcmLjbLi6Pg/cNRkt7GrVnNAHpToniSfpNed3sWyz4T
+   I01UtBzElpFGsFDb5L9pZBqhoMZJKoTcE4BMuZQrifHw2PPxmOwxMZy8d
+   zKpwDNMKJ/n39Q0he+NwnnK2jIkU/9t1Q1qvPeT2JIPYWhWGwOp/dpCTT
+   0o5kdVXTeJ0XKYR3l74xDklxkz7PueUp4CyhYpw6W5MkMA2xZefKN0/ij
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10421"; a="352483186"
+X-IronPort-AV: E=Sophos;i="5.93,196,1654585200"; 
+   d="scan'208";a="352483186"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2022 04:17:08 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,196,1654585200"; 
+   d="scan'208";a="551266936"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 28 Jul 2022 04:17:07 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oH1Vq-0009vO-1j;
+        Thu, 28 Jul 2022 11:17:06 +0000
+Date:   Thu, 28 Jul 2022 19:16:12 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Steev Klimaszewski <steev@kali.org>
+Subject: [steev:sc8280xp-next-20220722 14/141]
+ drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c:1535:37: warning: unused
+ variable 'sc8280xp_regdma'
+Message-ID: <202207281931.tLjk8lkA-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 1/8] dt-bindings: display: ti,am65x-dss: Add port
- properties for DSS
-Content-Language: en-US
-To:     Aradhya Bhatia <a-bhatia1@ti.com>, Jyri Sarha <jyri.sarha@iki.fi>,
-        Rob Herring <robh+dt@kernel.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     Darren Etheridge <detheridge@ti.com>, Nishanth Menon <nm@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Rahul T R <r-ravikumar@ti.com>,
-        Krunal Bhargav <k-bhargav@ti.com>,
-        Devarsh Thakkar <devarsht@ti.com>,
-        DRI Development List <dri-devel@lists.freedesktop.org>,
-        Devicetree List <devicetree@vger.kernel.org>,
-        Linux Kernel List <linux-kernel@vger.kernel.org>
-References: <20220719080845.22122-1-a-bhatia1@ti.com>
- <20220719080845.22122-2-a-bhatia1@ti.com>
-From:   Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
-In-Reply-To: <20220719080845.22122-2-a-bhatia1@ti.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+tree:   https://github.com/steev/linux sc8280xp-next-20220722
+head:   05eac286762272a5a2e5a5cd797ecb08b8e92741
+commit: 64ab2ccaef7b7adf21c879bae5090e8c0a60135a [14/141] drm/msm/dpu: Introduce sc8280xp
+config: arm64-randconfig-r003-20220728 (https://download.01.org/0day-ci/archive/20220728/202207281931.tLjk8lkA-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 8dfaecc4c24494337933aff9d9166486ca0949f1)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm64 cross compiling tool for clang build
+        # apt-get install binutils-aarch64-linux-gnu
+        # https://github.com/steev/linux/commit/64ab2ccaef7b7adf21c879bae5090e8c0a60135a
+        git remote add steev https://github.com/steev/linux
+        git fetch --no-tags steev sc8280xp-next-20220722
+        git checkout 64ab2ccaef7b7adf21c879bae5090e8c0a60135a
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/gpu/drm/msm/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c:1535:37: warning: unused variable 'sc8280xp_regdma' [-Wunused-const-variable]
+   static const struct dpu_reg_dma_cfg sc8280xp_regdma = {
+                                       ^
+   1 warning generated.
 
 
-On 19/07/2022 11:08, Aradhya Bhatia wrote:
-> Add "ti,oldi-mode" property to indicate the tidss driver the OLDI output
-> mode. The 2 OLDI TXes on am625-dss allow a 3 different types of panel
-> connections with the board.
-> 
-> 1. Single Link / Single Mode on OLDI TX 0 OR 1.
-> 2. Single Link / Duplicate Mode on OLDI TX 0 and 1.
-> 3. Dual Link / Single Mode on OLDI TX 0 and 1.
-> 
-> Add "ti,rgb565-to-888" property to override 16bit output from a videoport
-> for a bridge that only accepts 24bit RGB888 DPI input.
-> 
-> On some boards the HDMI bridge takes a 24bit DPI input, but only 16 data
-> pins are actually enabled from the SoC.  This new property forces the
-> output to be RGB565 on a specific video port if the bridge requests a
-> 24bit RGB color space.
-> 
-> This assumes that the video port is connected like so:
-> 
-> SoC : Bridge
-> R0 ->   R3
-> R1 ->   R4
-> R2 ->   R5
-> R3 ->   R6
-> R4 ->   R7
-> G0 ->   G2
-> G1 ->   G3
-> G2 ->   G4
-> G3 ->   G5
-> G4 ->   G6
-> G5 ->   G7
-> B0 ->   B3
-> B1 ->   B4
-> B2 ->   B5
-> B3 ->   B6
-> B4 ->   B7
-> 
-> On the bridge side R0->R2, G0->G1, B0->B2 would be tied to ground.
-> The bridge sees 24bits of data,  but the lsb's are always zero.
-> 
-> Signed-off-by: Aradhya Bhatia <a-bhatia1@ti.com>
-> ---
->   .../bindings/display/ti/ti,am65x-dss.yaml     | 25 +++++++++++++++++--
->   1 file changed, 23 insertions(+), 2 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/display/ti/ti,am65x-dss.yaml b/Documentation/devicetree/bindings/display/ti/ti,am65x-dss.yaml
-> index 6bbce921479d..11d9b3821409 100644
-> --- a/Documentation/devicetree/bindings/display/ti/ti,am65x-dss.yaml
-> +++ b/Documentation/devicetree/bindings/display/ti/ti,am65x-dss.yaml
-> @@ -80,15 +80,35 @@ properties:
->   
->       properties:
->         port@0:
-> -        $ref: /schemas/graph.yaml#/properties/port
-> +        $ref: /schemas/graph.yaml#/$defs/port-base
-> +        unevaluatedProperties: false
->           description:
->             The DSS OLDI output port node form video port 1
->   
-> +        properties:
-> +          ti,oldi-mode:
-> +            description: TI specific property to indicate the mode the OLDI TXes
-> +              and the display panel are connected in.
-> +              0 -> OLDI TXes OFF (driver default for am625-dss)
-> +              1 -> Single link, Single Mode (OLDI0) (driver default for am65x-dss)
-> +              2 -> Single link, Single Mode (OLDI1)
-> +              3 -> Single link, Duplicate Mode
-> +              4 -> Dual link (Only Single Mode)
-> +            $ref: /schemas/types.yaml#/definitions/uint32
-> +            enum: [0, 1, 2, 3, 4]
-> +
->         port@1:
-> -        $ref: /schemas/graph.yaml#/properties/port
-> +        $ref: /schemas/graph.yaml#/$defs/port-base
-> +        unevaluatedProperties: false
->           description:
->             The DSS DPI output port node from video port 2
->   
-> +        properties:
-> +          ti,rgb565-to-888:
-> +            description:
-> +              property to override DPI output to 16bit for 24bit bridge
-> +            type: boolean
+vim +/sc8280xp_regdma +1535 drivers/gpu/drm/msm/disp/dpu1/dpu_hw_catalog.c
 
-So you have a board with 16 DSS pins connected, going to a bridge/panel 
-that only supports 24 bit input. I don't think there's anything TI 
-specific here, sounds like a common situation.
+  1534	
+> 1535	static const struct dpu_reg_dma_cfg sc8280xp_regdma = {
+  1536		.base = 0x0,
+  1537		.version = 0x00020000,
+  1538		.trigger_sel_off = 0x119c,
+  1539		.xin_id = 7,
+  1540		.clk_ctrl = DPU_CLK_CTRL_REG_DMA,
+  1541	};
+  1542	
 
-"rgb565-to-888" sounds like there's some kind of conversion happening, 
-but all this does is set the videoport width to 16 bits.
-
-I'm not sure if there's a better solution but in the OMAP DSS we have 
-"data-lines" property for an endpoint, which tells the driver the width 
-of the bus.
-
-  Tomi
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
