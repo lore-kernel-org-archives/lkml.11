@@ -2,109 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 600F4C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 17:23:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BEC4C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 17:24:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232217AbiG1RXR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 13:23:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33818 "EHLO
+        id S232417AbiG1RYZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 13:24:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229971AbiG1RXM (ORCPT
+        with ESMTP id S229492AbiG1RYX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 13:23:12 -0400
-Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E93185B79D
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 10:23:10 -0700 (PDT)
-Received: by mail-qk1-x72b.google.com with SMTP id o21so1904086qkm.10
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 10:23:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=1bpeiU6xJe06BhKMBB9TymWuJgsApmhu1bP3WtUTIhI=;
-        b=pQcHZGMM8cnpt7ARDuITkHvi77Yt5Zt5QtdeTeHfFp1ZXshN1/OlmE/QHCwGn9LiIC
-         TtiCHmD6pv/6lfByvazNLBF4GtYkQGjX0sMu+GEMqTFSfDamNZ3kMGX+Nh6jQWBop6j5
-         2qD6m+i9xkBSz86mC5pO/wAHYUtokUDqri3o2wud2JOURD/8DV2iUQWhHHtarF0HKoBI
-         OXA/5yWUmtmnJMVF7M41H+zE15BzHpbvvaXD4h0o793q9zohrw9gY9Z+BFJldGP7cOlK
-         ExO1s68ZGans3vqRusMj01Q8/dvfO7afHB6GRi3UNq7dxRgwm1mkfqpst8w1OZEbefOJ
-         GIyQ==
+        Thu, 28 Jul 2022 13:24:23 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D52CE5FAED
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 10:24:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659029061;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=BTCAQ/2O9rI/7HtP9wa4OSuDQhJYkbO4HcHfXDMOkEc=;
+        b=Xo5iGVdz2emTlwcGPL9VlQjCaQ6ulwWTyqtNbzscX09yLdmMyd8r6F5pO8RqVT6EHu/Q1J
+        gboYztbnmkFDOf50kRR+jCVmn0s8Uo2D32kgGc3h4WHyRR3CA59W9DlKD3IAsJRNnrGoMe
+        l3M/4jX9wHU6BYCsgSD6bWSfmIkvLUo=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-610-oopDrEpmOi-e2t_pJFAKtA-1; Thu, 28 Jul 2022 13:24:19 -0400
+X-MC-Unique: oopDrEpmOi-e2t_pJFAKtA-1
+Received: by mail-wr1-f72.google.com with SMTP id m2-20020adfc582000000b0021e28acded7so599072wrg.13
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 10:24:19 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=1bpeiU6xJe06BhKMBB9TymWuJgsApmhu1bP3WtUTIhI=;
-        b=fN62FefSW87Wwedl8QGiK5YihLXtLiPowf/iuipIUVdurtLorJdK5CHQTuPNDdnEBL
-         aOWOp1jM9x5uye/MjqKQX0GBti9kvsuxHXfwi6ZDSd3LAHjAbyBw6MlbmOyYtmtnRwiv
-         Bm+5KAczBGqI1kV8HnJsbMPNv0iQeX/HDAAl7p9iqQivB3epTM07lajbA8g3o79EXwm3
-         f+EtSFdTVElbfGxHgP42VklOU1dOmuVjfTJlKgp7edSt3sWL7MtM3CMMkLtoH7Zc+DqZ
-         +eSa908lfuBO4LUaw+bEB7TDhTVcOio043iUDWtbPFdvxGFPODTTsrABypBRN2s2A98Q
-         iuuw==
-X-Gm-Message-State: AJIora+0HvD6swelFbGhmE7f5NHyXZpvPwUXEfvaXeexIG2Uhp+B5CUn
-        l28RafM7oW+r9hvdTTL3bqc0Jw==
-X-Google-Smtp-Source: AGRyM1uOeNQ6O5O6VgA66Jbex+hGdMpMLlFOcjsQPWG4mNYu3adiReX5u8cPXRh948v4hzR2Ui1l/g==
-X-Received: by 2002:a05:620a:44d4:b0:6b6:229e:dc5b with SMTP id y20-20020a05620a44d400b006b6229edc5bmr20148181qkp.327.1659028990091;
-        Thu, 28 Jul 2022 10:23:10 -0700 (PDT)
-Received: from localhost ([2620:10d:c091:480::1:994f])
-        by smtp.gmail.com with ESMTPSA id t7-20020a375f07000000b006af50b6f10csm876959qkb.61.2022.07.28.10.23.09
+        h=mime-version:message-id:date:references:in-reply-to:subject:cc:to
+         :from:x-gm-message-state:from:to:cc;
+        bh=BTCAQ/2O9rI/7HtP9wa4OSuDQhJYkbO4HcHfXDMOkEc=;
+        b=J7273pA2tMNPlqDT1FIvW86O0EfgwKGabeqlCItkzEy2DQZa2m0+Z3t8JEAkBxNzOP
+         n5qUz1rxMXnSxKy9AfSf9AcR9JwqTFBjlps+Btr/eFmurFkTxPQrktTRbCQ+nkePix+K
+         UiYyr97kcfWJBRsq90BeGNFu6nlD/hApbtzGk7th9e0Q9bZXLtMMOY662eLyWr2WNyhS
+         eFJUqbB/hPPMjgyead3b0P6Nzy91UA3fc+/Q67FtQfukgApZy88+z4pMFX5yF0aulrIj
+         0GbT3kH4NHmTNTPCMTe26tJhIorC4+ZCCUZZYHvWCyuU1qqfZYPSpONMusEiJOyyIBY2
+         PDnQ==
+X-Gm-Message-State: AJIora+L2K0eDrjCJpF2q6Uw3A7DXHMp6nfjjOuaC2MNOSowQFC+qnX2
+        pKHoLgxCJIAHdDxpG5vs7VMQrL3AiRaF2af6dfL8F8Et2UopLk2YPHMsJwVgQCPPb0WSKAUsF18
+        9ODeDrcazzjW/5eFbHL6Q01cd
+X-Received: by 2002:a7b:ce87:0:b0:3a3:19bf:35e0 with SMTP id q7-20020a7bce87000000b003a319bf35e0mr291365wmj.120.1659029058581;
+        Thu, 28 Jul 2022 10:24:18 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1t3YZybr+YnX6CcQA+ryVcN/sTw+U4A0+0EYIenQp5eA6drZXWQb/MeyYub2TCAaLfoxlf52w==
+X-Received: by 2002:a7b:ce87:0:b0:3a3:19bf:35e0 with SMTP id q7-20020a7bce87000000b003a319bf35e0mr291356wmj.120.1659029058427;
+        Thu, 28 Jul 2022 10:24:18 -0700 (PDT)
+Received: from vschneid.remote.csb ([185.11.37.247])
+        by smtp.gmail.com with ESMTPSA id l15-20020a05600c2ccf00b003a327f19bf9sm7315026wmc.14.2022.07.28.10.24.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Jul 2022 10:23:09 -0700 (PDT)
-Date:   Thu, 28 Jul 2022 13:23:08 -0400
-From:   Johannes Weiner <hannes@cmpxchg.org>
-To:     "Huang, Ying" <ying.huang@intel.com>
-Cc:     Aneesh Kumar K V <aneesh.kumar@linux.ibm.com>,
-        Wei Xu <weixugc@google.com>, linux-mm@kvack.org,
-        akpm@linux-foundation.org, Yang Shi <shy828301@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Tim C Chen <tim.c.chen@intel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hesham Almatary <hesham.almatary@huawei.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        jvgediya.oss@gmail.com, Jagdish Gediya <jvgediya@linux.ibm.com>
-Subject: Re: [PATCH v10 1/8] mm/demotion: Add support for explicit memory
- tiers
-Message-ID: <YuLF/GG8x5lQvg/f@cmpxchg.org>
-References: <20220720025920.1373558-1-aneesh.kumar@linux.ibm.com>
- <20220720025920.1373558-2-aneesh.kumar@linux.ibm.com>
- <87k080wmvb.fsf@yhuang6-desk2.ccr.corp.intel.com>
- <9e9ba2e4-3a87-3a79-e336-8849dad4856a@linux.ibm.com>
- <87lesfuzhj.fsf@yhuang6-desk2.ccr.corp.intel.com>
+        Thu, 28 Jul 2022 10:24:17 -0700 (PDT)
+From:   Valentin Schneider <vschneid@redhat.com>
+To:     Tejun Heo <tj@kernel.org>
+Cc:     Lai Jiangshan <jiangshanlai@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Phil Auld <pauld@redhat.com>,
+        Marcelo Tosatti <mtosatti@redhat.com>
+Subject: Re: [RFC PATCH v2 1/2] workqueue: Unbind workers before sending
+ them to exit()
+In-Reply-To: <YuK6zzmlFJ376UeD@slm.duckdns.org>
+References: <20220727115327.2273547-1-vschneid@redhat.com>
+ <20220727115327.2273547-2-vschneid@redhat.com>
+ <CAJhGHyCeraX1jcea9kt_FBC561zBgECuw5qx8TAdCG0EHnT6kA@mail.gmail.com>
+ <xhsmhedy5ecdg.mognet@vschneid.remote.csb>
+ <YuK6zzmlFJ376UeD@slm.duckdns.org>
+Date:   Thu, 28 Jul 2022 18:24:17 +0100
+Message-ID: <xhsmh8roddubi.mognet@vschneid.remote.csb>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87lesfuzhj.fsf@yhuang6-desk2.ccr.corp.intel.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 09:16:08AM +0800, Huang, Ying wrote:
-> Aneesh Kumar K V <aneesh.kumar@linux.ibm.com> writes:
-> > It is an abstract concept that indicates the performance of the
-> > device. As we learn more about which device attribute makes more impact in
-> > defining hierarchy, performance level will give more weightage to that specific
-> > attribute. It could be write latency or bandwidth. For me, distance has a direct
-> > linkage to latency because that is how we define numa distance now. Adding
-> > abstract to the name is not making it more abstract than perf_level. 
-> >
-> > I am open to suggestions from others.  Wei Xu has also suggested perf_level name.
-> > I can rename this to abstract_distance if that indicates the goal better.
-> 
-> I'm open to naming.  But I think that it's good to define it at some
-> degree instead of completely opaque stuff.  If it's latency based, then
-> low value corresponds to high performance.  If it's bandwidth based,
-> then low value corresponds to low performance.
-> 
-> Hi, Wei and Johannes,
-> 
-> What do you think about this?
+On 28/07/22 06:35, Tejun Heo wrote:
+> On Thu, Jul 28, 2022 at 11:54:19AM +0100, Valentin Schneider wrote:
+>> On 28/07/22 01:13, Lai Jiangshan wrote:
+>> > system_unbound_wq doesn't have a rescuer.
+>> >
+>> > A new workqueue with a rescuer needs to be created and used for
+>> > this purpose.
+>> >
+>>
+>> Right, I think it makes sense for those work items to be attached to a
+>> WQ_MEM_RECLAIM workqueue. Should I add that as a workqueue-internal
+>> thing?
+>
+> I don't understand why this would need MEM_RECLAIM when it isn't sitting in
+> the memory reclaim path. Nothing in mm side can wait on this.
+>
 
-I'm also partial to distance. It's a familiar metric in non-uniform
-memory for guiding placement decisions, and that is how we continue to
-use it here too.
+Vaguely reading the doc I thought that'd be for anything that would
+directly or indirectly help with reclaiming memory (not explicitly sitting
+in some *mm reclaim* path), and I assumed freeing up a worker would count as
+that - but that's the understanding of someone who doesn't know much about
+all that :-)
 
-It's historically meant bus latency, but given how the kernel
-perceives and acts on the metric IMO the term works just fine to
-express differences in bandwidth and chip resonpse times as well.
+>> > Since WORKER_DIE is set, the worker can be possible freed now
+>> > if there is another source to wake it up.
+>> >
+>>
+>> My understanding for having reap_worker() be "safe" to use outside of
+>> raw_spin_lock_irq(pool->lock) is that pool->idle_list is never accessed
+>> outside of the pool->lock, and wake_up_worker() only wakes a worker that
+>> is in that list. So with destroy_worker() detaching the worker from
+>> pool->idle_list under pool->lock, I'm not aware of a codepath other than
+>> reap_worker() that could wake it up.
+>
+> There actually are spurious wakeups. We can't depend on there being no
+> wakeups than ours.
+>
+
+Myes, I suppose if a to-be-destroyed kworker spuriously wakes before having
+been unbound then there's not much point in having the unbinding (harm has
+been done and the kworker can do_exit(), though arguably we could reduce
+the harm and still move it away), but let me see what I can do here.
+
+> Thanks.
+>
+> --
+> tejun
+
