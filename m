@@ -2,124 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EFCCC04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 00:02:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4397BC19F29
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 00:04:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234563AbiG1ACe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 20:02:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47466 "EHLO
+        id S233683AbiG1AEl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 20:04:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234327AbiG1ACd (ORCPT
+        with ESMTP id S230057AbiG1AEk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 20:02:33 -0400
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 922EC491F1
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 17:02:31 -0700 (PDT)
-Received: by mail-lf1-x134.google.com with SMTP id m12so575225lfj.4
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 17:02:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=profian-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=mBsuLV2Kcuz0I195V1tt9wJXgZd8wQhbwFhjdKnnIJE=;
-        b=l3MGDDEdS9t9yQxk624TuJG1yi8Q65z7u1Kbu1NGAGE5iTZqEyvSpMIssIgZqFbcog
-         tgnqIdBLB5ZyY01UAVkhNmm08bUwvtYktXorCFReTU6g1W3UEQ71DFIvS1QxHdwBYaBe
-         l1dkPVjdWppEix7iwqiFhqXCBId631FcZLwaU+RdLbVqguhF2XtJkWgCGKKKWQ7+EOi3
-         YVyXFf9I+QMPBz/N/FzKGSfpAidyW1O2O2Q9dqX9sywEb0g7SbOSdNzAhzbhRSLirQ9R
-         f06nl3wGAqpcepN/PuNK/WvfOceNFDYHD+Bzpj+S7lEbu5x1YuTZzkIvVBFEO41MccVj
-         J/Qw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=mBsuLV2Kcuz0I195V1tt9wJXgZd8wQhbwFhjdKnnIJE=;
-        b=YfS8xulMTPwmrF7AMQ/odiIkSJKsW4OHCAlD0jYeznB4CXZUMlm8ZGyHUzYkTPfcn+
-         F/6k10L3rseS8jnH55gmbvX4DOrpGUgQar+4NOd+PvoPkkMgD6gY7t5aAC/t80jMAkkP
-         dNInA/dWPRyLx3dmDmYykv0SOclLoCGDQfZVHCS6GJUPVi3g3xMZEbOapGJrlpByy+U/
-         X2Y1LR6mD8lIWr3Pxsy8/mkN4nRYbP4pczLzFW12wa4+H1Ghh4l6Qolxmkny5mkfKyLn
-         q4WoR10kxVY0NoICD1zLcgpBtl/pivWj4zoitMVvWC9vo8ID2F4l4u8VTI3uP/VDdJR1
-         44Vw==
-X-Gm-Message-State: AJIora/ydXNObzmZHJh3FYUalpURKt6nJHsoCjqQdvUwviHLycUDlBtP
-        h9uw3G/vh3YNg0E12xjdYKUvFA==
-X-Google-Smtp-Source: AGRyM1uJOZj/Ud8yjL00jfvfNrl8tmJjn2jtL+kO+cqfm7FOI+GilysBPfZMbkNBrIU8/Qy5rZM+9g==
-X-Received: by 2002:a05:6512:1694:b0:48a:9d45:763f with SMTP id bu20-20020a056512169400b0048a9d45763fmr4368355lfb.662.1658966549714;
-        Wed, 27 Jul 2022 17:02:29 -0700 (PDT)
-Received: from localhost (91-154-92-55.elisa-laajakaista.fi. [91.154.92.55])
-        by smtp.gmail.com with ESMTPSA id q27-20020ac2515b000000b0048a897adbc9sm2096529lfd.211.2022.07.27.17.02.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 17:02:29 -0700 (PDT)
-From:   Jarkko Sakkinen <jarkko@profian.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Jarkko Sakkinen <jarkko@profian.com>, stable@vger.kernel.org,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Sean Christopherson <seanjc@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        x86@kernel.org (maintainer:X86 ARCHITECTURE (32-BIT AND 64-BIT)),
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Isaku Yamahata <isaku.yamahata@intel.com>,
-        kvm@vger.kernel.org (open list:KERNEL VIRTUAL MACHINE FOR X86 (KVM/x86)),
-        linux-kernel@vger.kernel.org (open list:X86 ARCHITECTURE (32-BIT AND
-        64-BIT))
-Subject: [PATCH] KVM: x86/mmu: Fix incorrect use of CONFIG_RETPOLINE
-Date:   Thu, 28 Jul 2022 03:02:21 +0300
-Message-Id: <20220728000221.19088-1-jarkko@profian.com>
-X-Mailer: git-send-email 2.37.1
+        Wed, 27 Jul 2022 20:04:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9360491F1;
+        Wed, 27 Jul 2022 17:04:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1115F6175A;
+        Thu, 28 Jul 2022 00:04:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 721D3C433C1;
+        Thu, 28 Jul 2022 00:04:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658966677;
+        bh=wINtCHc5eLNlHmB53FT2rtl/5x4h8+wHWDC1bCkxcbk=;
+        h=From:To:In-Reply-To:References:Subject:Date:From;
+        b=dju8klrp1eA2utIGaZDOwT8k5dc/FhHAPdDk5VpUIfEfc2/96bAGzrm/SsqnTYT2h
+         ktBwE2mZh3wrLUhVR5j5FVCkuaovYlx+Y/PjI1Y5df5ALqHc7vYdpalpE2sU9aTwSg
+         HZefOC0ohmx3Dxn7exySpyC8Q/TsbqoCBULagkrEv3XgILB3SdkkPTuhZyVnPcuUX6
+         ptwCgH2eVJyA6JW1MbISoBB26Hm6phQkr43nJ/Nyj4KnISW2ZX06sDoMfNZYk4KWTl
+         P/VWWvZdyC1wgi88hNTcmD+YS96uWLS8mNcETiWYvQLTabtOohrZmkmocRFAHHWAhx
+         KXW2WYFdQcIOw==
+From:   Mark Brown <broonie@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        - <patches@opensource.cirrus.com>,
+        Bogdan Togorean <bogdan.togorean@analog.com>,
+        alsa-devel@alsa-project.org, Rob Herring <robh+dt@kernel.org>,
+        linux-kernel@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        devicetree@vger.kernel.org
+In-Reply-To: <20220727164050.385241-1-krzysztof.kozlowski@linaro.org>
+References: <20220727164050.385241-1-krzysztof.kozlowski@linaro.org>
+Subject: Re: [PATCH] ASoC: dt-bindings: use spi-peripheral-props.yaml
+Message-Id: <165896667516.3927242.3602967595765365551.b4-ty@kernel.org>
+Date:   Thu, 28 Jul 2022 01:04:35 +0100
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+X-Mailer: b4 0.10.0-dev-d1cc2
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use "#ifdef" instead of "#if", as it is possible to select KVM
-without enabling RETPOLINE.
+On Wed, 27 Jul 2022 18:40:50 +0200, Krzysztof Kozlowski wrote:
+> Instead of listing directly properties typical for SPI peripherals,
+> reference the spi-peripheral-props.yaml schema.  This allows using all
+> properties typical for SPI-connected devices, even these which device
+> bindings author did not tried yet.
+> 
+> Remove the spi-* properties which now come via spi-peripheral-props.yaml
+> schema, except for the cases when device schema adds some constraints
+> like maximum frequency.
+> 
+> [...]
 
-Adding the following list of flags on top of tinyconfig is an
-example of a failing config file:
+Applied to
 
-CONFIG_64BIT=y
-CONFIG_PCI=y
-CONFIG_ACPI=y
-CONFIG_VIRTUALIZATION=y
-CONFIG_HIGH_RES_TIMERS=y
-CONFIG_CRYPTO=y
-CONFIG_DMADEVICES=y
-CONFIG_X86_MCE=y
-CONFIG_RETPOLINE=y
-CONFIG_MEMORY_FAILURE=y
-CONFIG_KVM=y
-CONFIG_KVM_AMD=y
-CONFIG_CRYPTO_DEV_CCP=y
-CONFIG_CRYPTO_DEV_CCP_DD=y
-CONFIG_CRYPTO_DEV_SP_CCP=y
-CONFIG_CRYPTO_DEV_SP_PSP=y
-CONFIG_KVM_AMD_SEV=y
-CONFIG_AMD_MEM_ENCRYPT=y
-CONFIG_AMD_MEM_ENCRYPT_ACTIVE_BY_DEFAULT=n
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/sound.git for-next
 
-Cc: stable@vger.kernel.org # 5.19
-Cc: Jarkko Sakkinen <jarkko@kernel.org>
-Fixes: d1f5c8366288 ("KVM: x86/mmu: Introduce kvm_mmu_map_tdp_page() for use by TDX and SNP")
-Signed-off-by: Jarkko Sakkinen <jarkko@profian.com>
----
- arch/x86/kvm/mmu/mmu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thanks!
 
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 0b99ee4ea184..e08c7e85bbb9 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -4213,7 +4213,7 @@ kvm_pfn_t kvm_mmu_map_tdp_page(struct kvm_vcpu *vcpu, gpa_t gpa,
- 		 * direct_page_fault() when appropriate.
- 		 */
- 		//r = direct_page_fault(vcpu, &fault);
--#if CONFIG_RETPOLINE
-+#ifdef CONFIG_RETPOLINE
- 		if (fault.is_tdp)
- 			r = kvm_tdp_page_fault(vcpu, &fault);
- #else
--- 
-2.36.1
+[1/1] ASoC: dt-bindings: use spi-peripheral-props.yaml
+      commit: abed2baf6814597f244cd879285b2210b0870548
 
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
+
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
+
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
+
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
