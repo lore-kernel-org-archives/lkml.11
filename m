@@ -2,204 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C07A4C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 09:28:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C888EC19F21
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 09:30:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235525AbiG1J2Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 05:28:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36492 "EHLO
+        id S235529AbiG1JaR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 05:30:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233606AbiG1J2O (ORCPT
+        with ESMTP id S235163AbiG1JaO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 05:28:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D85D65837
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 02:28:13 -0700 (PDT)
+        Thu, 28 Jul 2022 05:30:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2064BE06;
+        Thu, 28 Jul 2022 02:30:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 35EA5B82381
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 09:28:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D238CC433D6;
-        Thu, 28 Jul 2022 09:28:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7FE65B8040B;
+        Thu, 28 Jul 2022 09:30:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2432EC433C1;
+        Thu, 28 Jul 2022 09:30:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659000490;
-        bh=lk5BBdnVMgk5f2fm1o9PA39S1U41Y9NR+a2cIo5is50=;
-        h=From:To:Cc:Subject:Date:From;
-        b=a/grYEPqQL38OVfRghnD9V/a7+DIS4nogaAWl5r9GYXd0YDZishRRTVE4I3IQQsVl
-         D9ImpTy3RloRs8uRlr/GziCsMYx8VNvoIdMybVVZS+rhqd3gzr8H8m+PnCT8p+5G0N
-         DkP+qGqp1unTiTh7UcLUmGMhO7DgzY31UvXofEniKw2gVUHLkMZl6N+skbthcrCiBb
-         7H2uug+7/XwU9w+3zHprD3lkJEWfkzSZEw3l4DWF4mBS1HXW4PR03CU8n1LFg06eAB
-         jYJyBdSm3nirgoyK+weGQU8ev8DN3KMRwX/MidAsj7LcJti/z2U1Lj79TsR/siSsZL
-         fN8K90KrH7x2g==
+        s=k20201202; t=1659000611;
+        bh=RK0p45PJzf+xSyo1liQs0iRoThupe00fRizXrfLKftk=;
+        h=Date:From:To:Cc:Subject:From;
+        b=WxKxnFJL+LI4HzvHm+8/hxVki4r/bxkblBRS6RK2nIeWzptQU21Ou7g7VVQ67RrSs
+         r56W0EmhnBCJ+dpC/33zDeOtXyFS5YH6k4OnpKwZqpN+Y4ImiXsM3pxACJ31c5DKBB
+         mWm55JdqrxZM4fVwOd1oFfKOuNvWykqQjfnJjMBSfGSGT7spnfkvzmS+BwrntqPCiT
+         wV5uW3H1/zaA9YiFkX+NlpAMv00rLvP35XnTCaaFn6SsRnSX0wbh8FWK6RxWIO+wr6
+         Ah3FEfJl0LwrIHnkWj0nY2/ZipjfIzghhcj2QHWvEkziNdAbMUCbfUrpNlnCr9nEAA
+         6wAFy0tPtbg0g==
 Received: from johan by xi.lan with local (Exim 4.94.2)
-        (envelope-from <johan+linaro@kernel.org>)
-        id 1oGzod-0005WP-1t; Thu, 28 Jul 2022 11:28:23 +0200
-From:   Johan Hovold <johan+linaro@kernel.org>
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh@kernel.org>, linux-kernel@vger.kernel.org,
-        Johan Hovold <johan+linaro@kernel.org>,
-        Dmitry Torokhov <dtor@chromium.org>,
-        Jon Hunter <jonathanh@nvidia.com>
-Subject: [PATCH] irqdomain: Fix mapping-creation race
-Date:   Thu, 28 Jul 2022 11:27:10 +0200
-Message-Id: <20220728092710.21190-1-johan+linaro@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        (envelope-from <johan@kernel.org>)
+        id 1oGzqa-0005Xq-5X; Thu, 28 Jul 2022 11:30:24 +0200
+Date:   Thu, 28 Jul 2022 11:30:24 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Marc Zyngier <maz@kernel.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     Dmitry Torokhov <dtor@chromium.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-input@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Second-source devices and interrupt-mapping race
+Message-ID: <YuJXMHoT4ijUxnRb@hovoldconsulting.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Parallel probing (e.g. due to asynchronous probing) of devices that share
-interrupts can currently result in two mappings for the same hardware
-interrupt to be created.
+Hi Marc, Rob and Krzysztof,
 
-Add a serialising mapping mutex so that looking for an existing mapping
-before creating a new one is done atomically.
+When adding support for the new Lenovo Thinkpad X13s laptop, we realised
+that it comes with two different touchpad controllers.
 
-Note that serialising the lookup and creation in
-irq_create_mapping_affinity() would have been enough to prevent the
-duplicate mapping, but that could instead cause
-irq_create_fwspec_mapping() to fail when there is a race.
+To enable some early adopters to use the alternate touchpad, I tried to
+enable both nodes in the devicetree and have the i2c-hid driver bind to
+the one that is actually present.
 
-Fixes: 765230b5f084 ("driver-core: add asynchronous probing support for drivers")
-Fixes: b62b2cf5759b ("irqdomain: Fix handling of type settings for existing mappings")
-Cc: Dmitry Torokhov <dtor@chromium.org>
-Cc: Jon Hunter <jonathanh@nvidia.com>
-Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
----
- kernel/irq/irqdomain.c | 46 +++++++++++++++++++++++++++++++-----------
- 1 file changed, 34 insertions(+), 12 deletions(-)
+This turned out to be racy due to the hid driver in question enabling
+async probing so that the populated and non-populated nodes can be
+probed in parallel, which in turn lead to some interesting findings.
 
-diff --git a/kernel/irq/irqdomain.c b/kernel/irq/irqdomain.c
-index 8fe1da9614ee..d263a7dd4170 100644
---- a/kernel/irq/irqdomain.c
-+++ b/kernel/irq/irqdomain.c
-@@ -22,6 +22,7 @@
- 
- static LIST_HEAD(irq_domain_list);
- static DEFINE_MUTEX(irq_domain_mutex);
-+static DEFINE_MUTEX(irq_mapping_mutex);
- 
- static struct irq_domain *irq_default_domain;
- 
-@@ -669,7 +670,7 @@ EXPORT_SYMBOL_GPL(irq_create_direct_mapping);
- #endif
- 
- /**
-- * irq_create_mapping_affinity() - Map a hardware interrupt into linux irq space
-+ * __irq_create_mapping_affinity() - Map a hardware interrupt into linux irq space
-  * @domain: domain owning this hardware interrupt or NULL for default domain
-  * @hwirq: hardware irq number in that domain space
-  * @affinity: irq affinity
-@@ -679,9 +680,9 @@ EXPORT_SYMBOL_GPL(irq_create_direct_mapping);
-  * If the sense/trigger is to be specified, set_irq_type() should be called
-  * on the number returned from that call.
-  */
--unsigned int irq_create_mapping_affinity(struct irq_domain *domain,
--				       irq_hw_number_t hwirq,
--				       const struct irq_affinity_desc *affinity)
-+static unsigned int __irq_create_mapping_affinity(struct irq_domain *domain,
-+						  irq_hw_number_t hwirq,
-+						  const struct irq_affinity_desc *affinity)
- {
- 	struct device_node *of_node;
- 	int virq;
-@@ -724,6 +725,19 @@ unsigned int irq_create_mapping_affinity(struct irq_domain *domain,
- 
- 	return virq;
- }
-+
-+unsigned int irq_create_mapping_affinity(struct irq_domain *domain,
-+					 irq_hw_number_t hwirq,
-+					 const struct irq_affinity_desc *affinity)
-+{
-+	unsigned int virq;
-+
-+	mutex_lock(&irq_mapping_mutex);
-+	virq = __irq_create_mapping_affinity(domain, hwirq, affinity);
-+	mutex_unlock(&irq_mapping_mutex);
-+
-+	return virq;
-+}
- EXPORT_SYMBOL_GPL(irq_create_mapping_affinity);
- 
- static int irq_domain_translate(struct irq_domain *d,
-@@ -789,6 +803,8 @@ unsigned int irq_create_fwspec_mapping(struct irq_fwspec *fwspec)
- 	if (WARN_ON(type & ~IRQ_TYPE_SENSE_MASK))
- 		type &= IRQ_TYPE_SENSE_MASK;
- 
-+	mutex_lock(&irq_mapping_mutex);
-+
- 	/*
- 	 * If we've already configured this interrupt,
- 	 * don't do it again, or hell will break loose.
-@@ -801,7 +817,7 @@ unsigned int irq_create_fwspec_mapping(struct irq_fwspec *fwspec)
- 		 * interrupt number.
- 		 */
- 		if (type == IRQ_TYPE_NONE || type == irq_get_trigger_type(virq))
--			return virq;
-+			goto out;
- 
- 		/*
- 		 * If the trigger type has not been set yet, then set
-@@ -810,26 +826,26 @@ unsigned int irq_create_fwspec_mapping(struct irq_fwspec *fwspec)
- 		if (irq_get_trigger_type(virq) == IRQ_TYPE_NONE) {
- 			irq_data = irq_get_irq_data(virq);
- 			if (!irq_data)
--				return 0;
-+				goto err;
- 
- 			irqd_set_trigger_type(irq_data, type);
--			return virq;
-+			goto out;
- 		}
- 
- 		pr_warn("type mismatch, failed to map hwirq-%lu for %s!\n",
- 			hwirq, of_node_full_name(to_of_node(fwspec->fwnode)));
--		return 0;
-+		goto err;
- 	}
- 
- 	if (irq_domain_is_hierarchy(domain)) {
- 		virq = irq_domain_alloc_irqs(domain, 1, NUMA_NO_NODE, fwspec);
- 		if (virq <= 0)
--			return 0;
-+			goto err;
- 	} else {
- 		/* Create mapping */
--		virq = irq_create_mapping(domain, hwirq);
-+		virq = __irq_create_mapping_affinity(domain, hwirq, NULL);
- 		if (!virq)
--			return virq;
-+			goto err;
- 	}
- 
- 	irq_data = irq_get_irq_data(virq);
-@@ -838,13 +854,19 @@ unsigned int irq_create_fwspec_mapping(struct irq_fwspec *fwspec)
- 			irq_domain_free_irqs(virq, 1);
- 		else
- 			irq_dispose_mapping(virq);
--		return 0;
-+		goto err;
- 	}
- 
- 	/* Store trigger type */
- 	irqd_set_trigger_type(irq_data, type);
-+out:
-+	mutex_unlock(&irq_mapping_mutex);
- 
- 	return virq;
-+err:
-+	mutex_unlock(&irq_mapping_mutex);
-+
-+	return 0;
- }
- EXPORT_SYMBOL_GPL(irq_create_fwspec_mapping);
- 
--- 
-2.35.1
+Specifically, it seems like the interrupt-domain mapping code is racy in
+that it can return two different mappings for the same hwirq, and when
+the hid driver enables one of them, this may end up looking like
+spurious interrupts for the other mapping:
 
+[  +0.014042] i2c_hid_of 0-002c: i2c_device_probe
+[  +0.000001] i2c_hid_of 0-0015: i2c_device_probe
+[  +0.000025] i2c_hid_of 0-002c: i2c_device_probe - irq mapped (166)
+[  +0.000013] i2c_hid_of 0-0015: i2c_device_probe - irq mapped (167)
+[  +0.000051] i2c_hid_of 0-002c: supply vddl not found, using dummy regulator
+[  +0.000056] i2c_hid_of 0-0015: supply vddl not found, using dummy regulator
+[  +0.000016] i2c_hid_of 0-002c: HID probe called for i2c 0x2c
+[  +0.000374] i2c_hid_of 0-0015: HID probe called for i2c 0x15
+...
+[  +0.000180] i2c_hid_of 0-002c: Requesting IRQ: 166
+[  +0.000045] irq 167, desc: (____ptrval____), depth: 1, count: 0, unhandled: 0
+[  +0.000014] ->handle_irq():  (____ptrval____), handle_bad_irq+0x0/0x220
+[  +0.000015] ->irq_data.chip(): (____ptrval____), msm_gpio_irq_chip+0x0/0x108
+[  +0.000011] ->action(): 0000000000000000
+[  +0.000006]    IRQ_NOPROBE set
+
+The interrupt is eventually disabled and the populated device fails to
+probe. Note that this only happens intermittently.
+
+This second-source example could obviously be dismissed as something
+which is simply not supported (the boot firmware should have made sure
+only the populated node was enabled), but what if there were actually
+two separate devices sharing an interrupt and that now end up with two
+different virq?
+
+Async probing has been around for a while now and needs to be supported,
+even if the platform bus doesn't use it (yet). 
+
+TL;DR:
+
+1. Marc, does the irq mapping code need to be serialised to handle the
+valid case of two devices sharing an interrupt being probed in parallel?
+It may not be a common setup, but correctness first?
+
+I've just posted a patch that should address this here:
+
+	https://lore.kernel.org/r/20220728092710.21190-1-johan+linaro@kernel.org
+
+
+2. Rob, Krzysztof, I assume that handling second-source devices by
+enabling multiple variants in the devicetree can not be considered
+correct?
+
+What about the related case of simply non-populated devices (e.g. laptop
+variants without a touchscreen)?
+
+Note that we have at least two cases of "second-source" nodes in mainline
+("rtc" and "trackpad", respectively):
+
+	85a9efcd4e29 ("ARM: mvebu: add DT support for Seagate NAS 2 and 4-Bay")
+	689b937bedde ("arm64: dts: mediatek: add mt8173 elm and hana board")
+
+and that, for example, the i2c-hid driver explicitly supports
+non-populated devices:
+
+	b3a81b6c4fc6 ("HID: i2c-hid: check if device is there before really probing")
+
+and the commit message indicates that this is something that Chromebooks
+rely on.
+
+For the X13s, I'm not sure how we would go about to tell the variants
+apart (the ACPI tables that Windows use include both touchpads and an
+optional touchscreen). In the end, the boot firmware might need to
+resort to a similar kind of probing if we don't allow the kernel to do
+it.
+
+Finally, note that while disabling async probing for "second-source"
+nodes (e.g. if we could mark them as requiring that) would take care of
+the irq-mapping race, we'd still currently also need to move any
+pinconfig handles to the parent bus node (as is also done in one of the
+in-tree examples above) to suppress the corresponding pinctrl errors in
+case the populated device is probed and bound first:
+
+[  +0.010217] sc8280xp-tlmm f100000.pinctrl: pin GPIO_182 already requested by 0-0015; cannot claim for 0-002c
+
+Johan
