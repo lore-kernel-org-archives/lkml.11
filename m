@@ -2,116 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DE76C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 04:49:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2046EC04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 04:49:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232001AbiG1Etm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 00:49:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35074 "EHLO
+        id S232358AbiG1Etq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 00:49:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230180AbiG1Eti (ORCPT
+        with ESMTP id S230180AbiG1Eto (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 00:49:38 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0B8758B40
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 21:49:37 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id 12so639564pga.1
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 21:49:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dIU+0kp3XN3YAPMWZ5u0JzDJny+Q5/T546hhxY9/MfE=;
-        b=A3sLGIAmpGd9lKIDOhhq2hO5j80ogagK4XK4GFtQnARt4AIiSbaTzZIev/8/RK64dm
-         IoPap9nhtD+S410RMzgKbqmbyRJch/aDkX+U2Mbo3tGqrioZ4UdbR2Dky3+NMXqYuhCl
-         BChxx+YrgUl2Fgl1eZB2jV7hWmHzxKVSnT07A=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dIU+0kp3XN3YAPMWZ5u0JzDJny+Q5/T546hhxY9/MfE=;
-        b=edt1sfnbjsGHMh5PLqB5OAwziR7bqgWIjh2ef4GbhYXaqWR6A1ZTs6KTKEY+tZptT1
-         3EAOMiega+hkZHE4/E74IMotGhLVboUJLpnkkT+c/nGHQzPteX1Ssgxr2gdSGGAb4b9o
-         tBs7uvAgGeZSfEJ8a4eHQlrxGxis0Mtw+6k9sRFBYJuda8Xai52jt5wzomzFX8i2FGf9
-         7N4HQ6OPshoiBsJCFPRgF+eelUIA0DpnoryYHYSdY1E4Re1CGTMJTGjO2uvPQPFdKSck
-         opz5q1oo8TuZ+xH05zPYqIBs6thEufG1UHjS74efrxkIr8RR/YtaWGpWYJr31hTKcOb5
-         ANFw==
-X-Gm-Message-State: AJIora/M8Sp3fJSQMFL2BF9pFptEhXxOx5rE2PGAIUjvWp0TCb1G8cxI
-        AQYuo9o5VNK7Z5rt5XboGdX+CA==
-X-Google-Smtp-Source: AGRyM1uXJ6dajQE24lZ91bt+VAFIy4MIeVWoq2tZj6TXIQoLp+R4aE+8WfwpXl9CllMHDU7nsU4wVQ==
-X-Received: by 2002:a63:e80e:0:b0:419:d02c:fc8b with SMTP id s14-20020a63e80e000000b00419d02cfc8bmr21198632pgh.385.1658983777433;
-        Wed, 27 Jul 2022 21:49:37 -0700 (PDT)
-Received: from dlunevwfh.roam.corp.google.com (n122-107-196-14.sbr2.nsw.optusnet.com.au. [122.107.196.14])
-        by smtp.gmail.com with ESMTPSA id u8-20020a1709026e0800b001640aad2f71sm14530251plk.180.2022.07.27.21.49.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 21:49:37 -0700 (PDT)
-From:   Daniil Lunev <dlunev@chromium.org>
-To:     Adrian Hunter <adrian.hunter@intel.com>,
-        Bart Van Assche <bvanassche@acm.org>
-Cc:     Daniil Lunev <dlunev@chromium.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>,
-        Avri Altman <avri.altman@wdc.com>,
-        Bean Huo <beanhuo@micron.com>,
-        Daejun Park <daejun7.park@samsung.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org
-Subject: [PATCH] ufs: core: print capabilities in controller's sysfs node
-Date:   Thu, 28 Jul 2022 14:49:25 +1000
-Message-Id: <20220728144710.1.Id612b86fd30936dfd4c456b3341547c15cecf321@changeid>
-X-Mailer: git-send-email 2.31.0
+        Thu, 28 Jul 2022 00:49:44 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A999658B41
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 21:49:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658983783; x=1690519783;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=KssGZc6oIA9+vGGPWK2U9I+Cn2rWRyTmEEngtH2RbWA=;
+  b=MeTICfU0Y90gYc1XhI5s6OIfKq1lQ+qp/FmN01fFYuQFuisof46O2o8K
+   3lDgY2HF6ghK6olJqFhj0bcRjTUqqDt4/P+UHiQZkOVYfhtDOH9A/2VI7
+   ATHMvl7L4jDyAgY9i8HKf4xvlIqLI7EFFLl9zfLJJ9atVjEZ+QDH+QLXA
+   1PjcMbXPV010Qa8gL7Ss4mUirmAWZQmvCDR8MMRuClvqp57acI2e3NNlS
+   JRjLNqsv/FC8anZ1W4aILFVnn8G20oaWz4+k7ejI/eee/ylSq5JQ6pYNF
+   o/wMeyv3PbBnNhWxBHzwdAE9ZMD0VI9zzxPvXIQ10aF/P/Yz3RdiH1bfe
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10421"; a="289616226"
+X-IronPort-AV: E=Sophos;i="5.93,196,1654585200"; 
+   d="scan'208";a="289616226"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2022 21:49:43 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,196,1654585200"; 
+   d="scan'208";a="551133312"
+Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 27 Jul 2022 21:49:42 -0700
+Received: from kbuild by e0eace57cfef with local (Exim 4.96)
+        (envelope-from <lkp@intel.com>)
+        id 1oGvSv-0009go-2R;
+        Thu, 28 Jul 2022 04:49:41 +0000
+Date:   Thu, 28 Jul 2022 12:49:04 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [jolsa-perf:bpf/tracing_multi_4 33/34] kernel/trace/ftrace.c:5266:1:
+ warning: no previous prototype for 'ftrace_find_direct_func_list'
+Message-ID: <202207281208.EogzobID-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Allows userspace to check supported by the controller/device
-functionality, e.g. write booster.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git bpf/tracing_multi_4
+head:   1637b6b5bec11596e52cdc0a6eadfa45a15276c3
+commit: f593767b216bc743e441c394e560546dcaaacc05 [33/34] ftrace: Factor list functions for ftrace_direct_func find and alloc
+config: s390-randconfig-r044-20220728 (https://download.01.org/0day-ci/archive/20220728/202207281208.EogzobID-lkp@intel.com/config)
+compiler: s390-linux-gcc (GCC) 12.1.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git/commit/?id=f593767b216bc743e441c394e560546dcaaacc05
+        git remote add jolsa-perf https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git
+        git fetch --no-tags jolsa-perf bpf/tracing_multi_4
+        git checkout f593767b216bc743e441c394e560546dcaaacc05
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-12.1.0 make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash kernel/trace/
 
-Signed-off-by: Daniil Lunev <dlunev@chromium.org>
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
----
+All warnings (new ones prefixed by >>):
 
- drivers/ufs/core/ufs-sysfs.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+   kernel/trace/ftrace.c:295:5: warning: no previous prototype for '__register_ftrace_function' [-Wmissing-prototypes]
+     295 | int __register_ftrace_function(struct ftrace_ops *ops)
+         |     ^~~~~~~~~~~~~~~~~~~~~~~~~~
+   kernel/trace/ftrace.c:338:5: warning: no previous prototype for '__unregister_ftrace_function' [-Wmissing-prototypes]
+     338 | int __unregister_ftrace_function(struct ftrace_ops *ops)
+         |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   kernel/trace/ftrace.c:4051:15: warning: no previous prototype for 'arch_ftrace_match_adjust' [-Wmissing-prototypes]
+    4051 | char * __weak arch_ftrace_match_adjust(char *str, const char *search)
+         |               ^~~~~~~~~~~~~~~~~~~~~~~~
+>> kernel/trace/ftrace.c:5266:1: warning: no previous prototype for 'ftrace_find_direct_func_list' [-Wmissing-prototypes]
+    5266 | ftrace_find_direct_func_list(struct ftrace_direct_list *list, unsigned long addr)
+         | ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-diff --git a/drivers/ufs/core/ufs-sysfs.c b/drivers/ufs/core/ufs-sysfs.c
-index 0a088b47d5570..b0c294c367519 100644
---- a/drivers/ufs/core/ufs-sysfs.c
-+++ b/drivers/ufs/core/ufs-sysfs.c
-@@ -254,6 +254,14 @@ static ssize_t wb_on_store(struct device *dev, struct device_attribute *attr,
- 	return res < 0 ? res : count;
- }
- 
-+static ssize_t caps_show(struct device *dev, struct device_attribute *attr,
-+			 char *buf)
-+{
-+	struct ufs_hba *hba = dev_get_drvdata(dev);
-+
-+	return sysfs_emit(buf, "0x%08llx\n", hba->caps);
-+}
-+
- static DEVICE_ATTR_RW(rpm_lvl);
- static DEVICE_ATTR_RO(rpm_target_dev_state);
- static DEVICE_ATTR_RO(rpm_target_link_state);
-@@ -262,6 +270,7 @@ static DEVICE_ATTR_RO(spm_target_dev_state);
- static DEVICE_ATTR_RO(spm_target_link_state);
- static DEVICE_ATTR_RW(auto_hibern8);
- static DEVICE_ATTR_RW(wb_on);
-+static DEVICE_ATTR_RO(caps);
- 
- static struct attribute *ufs_sysfs_ufshcd_attrs[] = {
- 	&dev_attr_rpm_lvl.attr,
-@@ -272,6 +281,7 @@ static struct attribute *ufs_sysfs_ufshcd_attrs[] = {
- 	&dev_attr_spm_target_link_state.attr,
- 	&dev_attr_auto_hibern8.attr,
- 	&dev_attr_wb_on.attr,
-+	&dev_attr_caps.attr,
- 	NULL
- };
- 
+
+vim +/ftrace_find_direct_func_list +5266 kernel/trace/ftrace.c
+
+  5251	
+  5252	/**
+  5253	 * ftrace_find_direct_func - test an address if it is a registered direct caller
+  5254	 * @addr: The address of a registered direct caller
+  5255	 *
+  5256	 * This searches to see if a ftrace direct caller has been registered
+  5257	 * at a specific address, and if so, it returns a descriptor for it.
+  5258	 *
+  5259	 * This can be used by architecture code to see if an address is
+  5260	 * a direct caller (trampoline) attached to a fentry/mcount location.
+  5261	 * This is useful for the function_graph tracer, as it may need to
+  5262	 * do adjustments if it traced a location that also has a direct
+  5263	 * trampoline attached to it.
+  5264	 */
+  5265	struct ftrace_direct_func *
+> 5266	ftrace_find_direct_func_list(struct ftrace_direct_list *list, unsigned long addr)
+  5267	{
+  5268		struct ftrace_direct_func *entry;
+  5269		bool found = false;
+  5270	
+  5271		/* May be called by fgraph trampoline (protected by rcu tasks) */
+  5272		list_for_each_entry_rcu(entry, &list->funcs, next) {
+  5273			if (entry->addr == addr) {
+  5274				found = true;
+  5275				break;
+  5276			}
+  5277		}
+  5278		if (found)
+  5279			return entry;
+  5280	
+  5281		return NULL;
+  5282	}
+  5283	
+
 -- 
-2.31.0
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
