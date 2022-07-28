@@ -2,109 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDAA2C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 16:58:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FB69C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 16:59:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232253AbiG1Q6w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 12:58:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43140 "EHLO
+        id S229743AbiG1Q7K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 12:59:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231678AbiG1Q6s (ORCPT
+        with ESMTP id S232310AbiG1Q7E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 12:58:48 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81751664DB
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 09:58:47 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oH6qG-00082K-1X; Thu, 28 Jul 2022 18:58:32 +0200
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oH6qC-0001DX-8P; Thu, 28 Jul 2022 18:58:28 +0200
-Date:   Thu, 28 Jul 2022 18:58:28 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Fedor Pchelkin <pchelkin@ispras.ru>
-Cc:     Robin van der Gracht <robin@protonic.nl>,
-        Oleksij Rempel <linux@rempel-privat.de>, kernel@pengutronix.de,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
+        Thu, 28 Jul 2022 12:59:04 -0400
+X-Greylist: delayed 900 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 28 Jul 2022 09:58:59 PDT
+Received: from fudo.makrotopia.org (fudo.makrotopia.org [IPv6:2a07:2ec0:3002::71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFF2B6611D
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 09:58:59 -0700 (PDT)
+Received: from local
+        by fudo.makrotopia.org with esmtpsa (TLS1.3:TLS_AES_256_GCM_SHA384:256)
+         (Exim 4.96)
+        (envelope-from <daniel@makrotopia.org>)
+        id 1oH6Aw-0008D9-2T;
+        Thu, 28 Jul 2022 18:15:51 +0200
+Date:   Thu, 28 Jul 2022 18:14:47 +0200
+From:   Daniel Golle <daniel@makrotopia.org>
+To:     =?utf-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>,
-        Bastian Stender <bst@pengutronix.de>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Alexey Khoroshilov <khoroshilov@ispras.ru>,
-        ldv-project@linuxtesting.org
-Subject: Re: [PATCH] can: j1939: Replace WARN_ON_ONCE with pr_warn_once() in
- j1939_sk_queue_activate_next_locked()
-Message-ID: <20220728165828.GB30201@pengutronix.de>
-References: <7ea40c0e-e696-3537-c2a4-a8eccf4695d0@ispras.ru>
- <20220728163429.214758-1-pchelkin@ispras.ru>
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Sander Vanheule <sander@svanheule.net>,
+        =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>,
+        erkin.bozoglu@xeront.com,
+        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH net-next] dt-bindings: net: dsa: mediatek,mt7530:
+ completely rework binding
+Message-ID: <YuK193gAQ+Rwe26s@makrotopia.org>
+References: <20220726122406.31043-1-arinc.unal@arinc9.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220728163429.214758-1-pchelkin@ispras.ru>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220726122406.31043-1-arinc.unal@arinc9.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Fedor,
+Hi,
 
-thank you for your patch.
+please see a minor comment inline below:
 
-On Thu, Jul 28, 2022 at 07:34:29PM +0300, Fedor Pchelkin wrote:
-> We should warn user-space that it is doing something wrong when trying to
-> activate sessions with identical parameters but WARN_ON_ONCE macro can not
-> be used here as it serves a different purpose.
-> 
-> Found by Linux Verification Center (linuxtesting.org) with Syzkaller.
-> 
-> Fixes: 9d71dd0c7009 ("can: add support of SAE J1939 protocol")
-> Signed-off-by: Fedor Pchelkin <pchelkin@ispras.ru>
-> Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
-> ---
->  net/can/j1939/socket.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/can/j1939/socket.c b/net/can/j1939/socket.c
-> index f5ecfdcf57b2..67e8b50b8bc1 100644
-> --- a/net/can/j1939/socket.c
-> +++ b/net/can/j1939/socket.c
-> @@ -178,7 +178,8 @@ static void j1939_sk_queue_activate_next_locked(struct j1939_session *session)
->  	if (!first)
->  		return;
->  
-> -	if (WARN_ON_ONCE(j1939_session_activate(first))) {
-> +	if (j1939_session_activate(first)) {
-> +		pr_warn_once("can: j1939: Identical session is already activated.\n");
+On Tue, Jul 26, 2022 at 03:24:06PM +0300, Arınç ÜNAL wrote:
+> [...]
+> -  CPU-Ports need a phy-mode property:
+> -    Allowed values on mt7530 and mt7621:
+> -      - "rgmii"
+> -      - "trgmii"
+> -    On mt7531:
+> -      - "1000base-x"
+> -      - "2500base-x"
+> -      - "rgmii"
+> -      - "sgmii"
+> +  There are two versions of MT7530. MT7621AT, MT7621DAT, MT7621ST and MT7623AI
 
-please use netdev_warn_once().
-Otherwise looks good.
+There are two version of MT7530 **supported by this driver**.....
+(MT7620 also contains MT7530, switch registers are directly mapped into
+SoC's memory map rather than using MDIO like on MT7621 and standalone
+variants, and it got FastEthernet PHYs for Port 0-4)
 
->  		first->err = -EBUSY;
->  		goto activate_next;
->  	} else {
-> -- 
-> 2.25.1
-> 
-> 
-
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
