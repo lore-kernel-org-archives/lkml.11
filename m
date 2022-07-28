@@ -2,150 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 108A6C19F2B
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 07:14:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D95DEC04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 07:15:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233620AbiG1HOh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 03:14:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42740 "EHLO
+        id S234039AbiG1HPb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 03:15:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230482AbiG1HOf (ORCPT
+        with ESMTP id S233501AbiG1HP2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 03:14:35 -0400
-Received: from polaris.svanheule.net (polaris.svanheule.net [84.16.241.116])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D8AA5E33B
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 00:14:33 -0700 (PDT)
-Received: from vanadium.ugent.be (vanadium.ugent.be [157.193.99.61])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        (Authenticated sender: sander@svanheule.net)
-        by polaris.svanheule.net (Postfix) with ESMTPSA id 8944E302367;
-        Thu, 28 Jul 2022 09:14:30 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svanheule.net;
-        s=mail1707; t=1658992470;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=8PpzI60Wtg+NyCzJ8AJPimr3aOxfGcPHZgi57jrfiNY=;
-        b=LpK6m8a7Xw8wuBPm2qLtfn81rNNH6OcX6SAq47e8aWmNs+5IN/G6+sDTEcheuOa5R5GlUg
-        uyxdoxYEC0jmmOzKbTGnmzXAKmjRosH7zqMRAI5HGuugEcWfqkbRZgPREJkP+wX62BYH6B
-        jyZzSwWODxe2mXo7oW3S3YJTmsR5wR4YNGoSqO8CMUbbtYA4l4OL1KsJ9NcqPqsoWEBWkJ
-        l94WmihEUafyXtr03h4kCKZSNgurPdPrtn5lpW9HAipscdaHWTefTUQxxGSskZ6qtp4kWv
-        +lLwJtpCAZ2CIBtfwUHGh0TaB0xjue37d35jtGgGhizcbLE+ygTDQtlhGK1kmQ==
-Message-ID: <78673dc7438a03bf9ed0103a935abf0172f146ce.camel@svanheule.net>
-Subject: Re: [PATCH RFC v1] spi: realtek-rtl: Fix clearing some register bits
-From:   Sander Vanheule <sander@svanheule.net>
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bert@biot.com, mail@birger-koblitz.de
-Date:   Thu, 28 Jul 2022 09:14:28 +0200
-In-Reply-To: <CAFBinCDZYb-Pt_Vn14cDmprM6CxRoEbTUTx16FMv=cWf-pnrQw@mail.gmail.com>
-References: <20220725193547.1038414-1-martin.blumenstingl@googlemail.com>
-         <af067c133aa410370aaa4f11e334bc910b4c21e2.camel@svanheule.net>
-         <CAFBinCDZYb-Pt_Vn14cDmprM6CxRoEbTUTx16FMv=cWf-pnrQw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.3 (3.44.3-1.fc36) 
+        Thu, 28 Jul 2022 03:15:28 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16B8A59265
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 00:15:26 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id i205-20020a1c3bd6000000b003a2fa488efdso2048865wma.4
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 00:15:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=references:user-agent:from:to:subject:date:in-reply-to:message-id
+         :mime-version;
+        bh=AaIaSUDCvbW74aHuiO4CJrSTxDz4crTVOTtdXBqcE0U=;
+        b=AWbcHHbX5voPsqXsYc0lPhQLZ7zq2Rbg+WDm4j47FHMHXMKBPLuAwqpaMLT4oN34qS
+         R6hvle5W3TN4f3TJRhkhZx0QPFmqjX98W46tEqeGl2ss33pWsTUsz6ICWmUhi/rNGcp6
+         3eQgOfcF15Ov6JaO/BaW85eAfyYfbTZQOU7lHqyUe9RumDh0CPDhSAXX5tspMaURVBIN
+         hAIUu2L93pP5MlYjVltII27G+d2lmMvuyd0SOq/7MlSZeJoZH16sIqKEMA/AAaXCwDjZ
+         ZO3DlrFDankTYdhuu2q7oCaJtjXdqKBN2swatEdyWuhc0kJ1eFLYTZlGg6qxjCqabDjz
+         qUNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:references:user-agent:from:to:subject:date
+         :in-reply-to:message-id:mime-version;
+        bh=AaIaSUDCvbW74aHuiO4CJrSTxDz4crTVOTtdXBqcE0U=;
+        b=GQsYVXtWBXqr4lWS08/Fp9zg7uWfTWL7RMvXi0nGVNBFV0HBm4qQhVXZLVoLsuGjrY
+         ghHwgjeEe79BH584H8Ge3phiSdy3OZivDLplUoUV7KP37QFDH4lbQ/QuLE8nlphewNhd
+         CvsyqkEgHia8e4Xe2J/PAOf8bV4Mn6fzk9ECjUwyj8YJU5MelXPgbLdDZM/enTDGjCpN
+         lnC960PKdHgexaKL2NPxOFDX+Ao4B9Vf6S32czJANkqUtcIJSYN7p+wmOkE/gzL/HSRg
+         n3L2g49a6eb1A76KQq1FapnoN5eD9xbOe5Kk83dWaIJWJ0y2yNJBZvInkARbB9MeIF8f
+         sgYw==
+X-Gm-Message-State: AJIora9oYQVUyHFypZQeFlPG3/vTByu5WintXJAC+6qEST5l1O44bg7+
+        ZFaDysAzC/f3ylyKI2Km6AQ+ig==
+X-Google-Smtp-Source: AGRyM1uBQSHcp5qkcijv00Bu7Y7/z1KirWW8lPysYxj5MYnLBGbrvNTmEd6qDPwVfOty8mtSm4vSMw==
+X-Received: by 2002:a05:600c:1289:b0:3a4:8401:5ced with SMTP id t9-20020a05600c128900b003a484015cedmr384142wmd.148.1658992524267;
+        Thu, 28 Jul 2022 00:15:24 -0700 (PDT)
+Received: from localhost (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
+        by smtp.gmail.com with ESMTPSA id n186-20020a1ca4c3000000b003a2d87aea57sm4519126wme.10.2022.07.28.00.15.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Jul 2022 00:15:23 -0700 (PDT)
+References: <20220728054202.6981-1-yu.tu@amlogic.com>
+User-agent: mu4e 1.8.6; emacs 27.1
+From:   Jerome Brunet <jbrunet@baylibre.com>
+To:     Yu Tu <yu.tu@amlogic.com>, linux-clk@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: Re: [PATCH V2 0/3] Add S4 SoC clock controller driver
+Date:   Thu, 28 Jul 2022 09:08:44 +0200
+In-reply-to: <20220728054202.6981-1-yu.tu@amlogic.com>
+Message-ID: <1j8rodhfn9.fsf@starbuckisacylon.baylibre.com>
 MIME-Version: 1.0
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
+On Thu 28 Jul 2022 at 13:41, Yu Tu <yu.tu@amlogic.com> wrote:
 
-On Wed, 2022-07-27 at 21:13 +0200, Martin Blumenstingl wrote:
-> Hi Sander,
->=20
-> On Tue, Jul 26, 2022 at 11:03 AM Sander Vanheule <sander@svanheule.net> w=
-rote:
-> [...]
-> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 value =3D readl(REG(RTL_SP=
-I_SFCSR));
-> > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 value &=3D RTL_SPI_SFCSR_LEN_MA=
-SK;
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 value &=3D ~RTL_SPI_SFCSR_LEN_M=
-ASK;
-> >=20
-> > Although typically a field mask has the only the bits of that field set=
-,
-> > RTL_SPI_SFCSR_LEN_MASK is already inverted. So LEN_MASK has all bits se=
-t,
-> > *except* for those where LEN is stored.
-> >=20
-> > This means the code currently is:
-> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 value &=3D ~(0x3 << 28);
-> >=20
-> > which is correct AFAICT, as it clears the LEN bits, but keeps all the o=
-thers.
-> Thank you for this hint! I completely missed that when reading the
-> definition of the macro.
->=20
-> > While this part is currently not wrong, I wouldn't be opposed to a patc=
-h to make
-> > it less confusing by not inverting the field mask in the definition of
-> > RTL_SPI_SFCSR_LEN_MASK.
-> I can re-spin this patch and move the ~ operator where most people
-> expect it to be.
->=20
-> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (size =3D=3D 4)
-> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0 value |=3D RTL_SPI_SFCSR_LEN4;
-> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 else if (size =3D=3D 1)
-> > > @@ -143,7 +143,7 @@ static void init_hw(struct rtspi *rtspi)
-> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* Permanently disable CS1=
-, since it's never used */
-> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 value |=3D RTL_SPI_SFCSR_C=
-SB1;
-> > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 /* Select CS0 for use */
-> > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 value &=3D RTL_SPI_SFCSR_CS;
-> > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 value &=3D ~RTL_SPI_SFCSR_CS;
-> >=20
-> > This macro is not inverted, so it does clear any previously set bits, a=
-nd
-> > probably doesn't end up with RTL_SPI_SFCRS_CS set. However, is in an in=
-it call
-> > and it doesn't appear to cause any issues later on, right? Is this beca=
-use the
-> > SFCSR register is (unintentionally) cleared and that is actually requir=
-ed?
-> I'm not sure what's right or wrong here but the code reads strange:
-> =C2=A0=C2=A0=C2=A0 value =3D readl(...);
-> =C2=A0=C2=A0=C2=A0 value |=3D BIT(30); /* RTL_SPI_SFCSR_CSB1 */
-> =C2=A0=C2=A0=C2=A0 value &=3D BIT(24); /* RTL_SPI_SFCSR_CS */
-> What's the point in setting RTL_SPI_SFCSR_CSB1 (bit 30) when it's
-> immediately cleared in the next operation?
->=20
-> Also any bits read from the register except RTL_SPI_SFCSR_CS (bit 24)
-> are cleared - why even bother reading that register then?
+> 1. Add clock controller driver for S4 SOC.
+>
+> Yu Tu (3):
+>   dt-bindings: clk: meson: add S4 SoC clock controller bindings
+>   arm64: dts: meson: add S4 Soc clock controller in DT
+>   clk: meson: s4: add s4 SoC clock controller driver
+>
+> V1 -> V2: Change format as discussed in the email.
+>
+> Link:https://lore.kernel.org/linux-amlogic/20220708062757.3662-1-yu.tu@amlogic.com/
+>
+>  .../bindings/clock/amlogic,gxbb-clkc.txt      |    1 +
+>  MAINTAINERS                                   |    1 +
+>  arch/arm64/boot/dts/amlogic/meson-s4.dtsi     |   11 +
+>  drivers/clk/meson/Kconfig                     |   15 +
+>  drivers/clk/meson/Makefile                    |    1 +
+>  drivers/clk/meson/s4.c                        | 4732 +++++++++++++++++
+>  drivers/clk/meson/s4.h                        |  296 ++
+>  include/dt-bindings/clock/s4-clkc.h           |  146 +
+>  8 files changed, 5203 insertions(+)
+>  create mode 100644 drivers/clk/meson/s4.c
+>  create mode 100644 drivers/clk/meson/s4.h
+>  create mode 100644 include/dt-bindings/clock/s4-clkc.h
+>
+>
+> base-commit: b293bc9286ee21824e93f0fcfed3b78fdfee01e6
 
-I agree that this is rather suspicious code, to say the least. However, I h=
-ave not been involved in
-the development of this driver until now, so I would also have to look into=
- the original code to
-decipher the required behaviour.
+Please don't post until you have addressed *ALL* the comments from the
+previous version.
 
->=20
-> If you have any advice on how to change this code then I'm happy to do so=
-.
-> Otherwise I'd leave it as is, especially since I cannot test this in any =
-way.
+At first glance, I can see that this is still a single driver for
+what is obviously 2 controllers with 2 register spaces. Simple comments
+like the "<< 2" in the register declaration have not been addressed either.
 
-Since I have multiple devices available for testing, I could try out patche=
-s. You can look into this
-issue if you want, but you don't have to spend time on this if you don't ha=
-ve any to spare.
+Seeing that, I have not reviewed this version further.
+I won't until all the comments from v1 are either addressed or answered.
 
-If you (or anyone) would like to investigate more and require a reference, =
-you can use e.g. the GPL
-code archive for the TP-Link T1600G-52PS v4:
-https://static.tp-link.com/resources/gpl/t1600g-52ps-v4_gpl.tar.gz
-
-Some likely useful files under /t1600g-52ps-v4_gpl/ldk_realtek/realtek-V2.1=
-.6.pre2 would be:
- * u-boot-2011.12/board/Realtek/rtl838x/flash_spi.c
- * sdk/system/linux/linux-2.6.32.x/drivers/mtd/maps/rtk-*.c
-
-Best,
-Sander
+Regards
+Jerome
