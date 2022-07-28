@@ -2,185 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47734C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 14:10:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE5A7C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 14:10:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231219AbiG1OKx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 10:10:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38800 "EHLO
+        id S230428AbiG1OK5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 10:10:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231164AbiG1OKB (ORCPT
+        with ESMTP id S230365AbiG1OKH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 10:10:01 -0400
-Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99AE561D6F;
-        Thu, 28 Jul 2022 07:09:52 -0700 (PDT)
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26SA3AaR028446;
-        Thu, 28 Jul 2022 07:09:52 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : mime-version; s=facebook;
- bh=aJE8ipRAhMVj75DqzMcPmsdE5KkTJgnRvLnquYiA1Jo=;
- b=cKboazccL4t6T1w2F80QnBhPC+sd86UpSPxIFVvD83G7J/BURNHvnPbhsrya2oePSv5C
- gR18Ldx0Mg7oQWiyVwUSPWfWx6sPGUaiRxCFEWuuBGS7Cl12yByizmbGa/xb2BrtN7jI
- tWiuzzFpm73Ujd5y5qvRaRa7ojbTwEwhT8g= 
-Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2168.outbound.protection.outlook.com [104.47.58.168])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3hkfsk3kgw-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 28 Jul 2022 07:09:52 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HnFjiHn/P7HaDRxx5uktrkBh2GyPgnisKcnh0aBCAbfACiFSDzAh2Gp/6st6NbiaqDws7F6e8jMZoCqu+eV0Le9B8XBYxmDNKT14nEu69FbimgNW55RpfLgGjf+IGE++xl3swBL5UhNmTGRe58frlTONR3Z2gX8HSiW7OPR+sSSlk4LoPYMOaqDnmiZB8uzBe4gXUmgK7it0xyoBhbu6PSHLMM0TNUtOscCG4VnNpnYLuBI1a4rzsEv4kcjFtcwuUZwZRn/V+hMP0LWwfCM3dxWVnOStlDIzr7HwXnYzGoc6eE2d2lc/f5bFLXqLKW0ZD8/Gxu2VL9kn6PgVJiHYzA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=aJE8ipRAhMVj75DqzMcPmsdE5KkTJgnRvLnquYiA1Jo=;
- b=dLN9e+JdLM7y2tLwL4ksJrax2DmdQrf3qU1ICK6zTB8E/LeXLFuPPb5RYu36BQlZkZCLtHNodbtH2pld1+zgXcFtjNVpq+51nzVsN/t1MjjqYt0NtdEW8pPoJrpStqSWlUYe6iVmaCusCm7WUtGg3s3Z1LBhQ4f29GtMa1loVZPESJUnLk43Ac+5gKplTKE0NYyAcjFornKdhvbTrJTuoWMFAO9WWnImCu0bQto8mYsJIaBRs+jW9TY0Stlr0l8Ie6ZteV9YBgcFTb9607Syi18Lj7fJf7tnc9kpnDQqJjMf1+u9/0Kga3RL/ifnp40bcqDlGRo5lkg8BYem5wg4+A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from SJ0PR15MB4552.namprd15.prod.outlook.com (2603:10b6:a03:379::12)
- by MN2PR15MB3247.namprd15.prod.outlook.com (2603:10b6:208:3a::28) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.25; Thu, 28 Jul
- 2022 14:09:49 +0000
-Received: from SJ0PR15MB4552.namprd15.prod.outlook.com
- ([fe80::81f9:c21c:c5bf:e174]) by SJ0PR15MB4552.namprd15.prod.outlook.com
- ([fe80::81f9:c21c:c5bf:e174%8]) with mapi id 15.20.5458.025; Thu, 28 Jul 2022
- 14:09:49 +0000
-From:   Jonathan McDowell <noodles@fb.com>
-To:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
-        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>
-CC:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        Dmitry Kasatkin <dmitry.kasatkin@gmail.com>,
-        James Morris <jmorris@namei.org>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Matthew Garrett <mjg59@srcf.ucam.org>,
-        Dmitrii Potoskuev <dpotoskuev@fb.com>
-Subject: [RFC PATCH v2 6/7] HACK: Allow the use of generic decompress with
- gzip outside __init
-Thread-Topic: [RFC PATCH v2 6/7] HACK: Allow the use of generic decompress
- with gzip outside __init
-Thread-Index: AQHYoouyabqQkkqDF062tKBAwVyHtQ==
-Date:   Thu, 28 Jul 2022 14:09:49 +0000
-Message-ID: <53e15800b5e1382bfa3ce4440908726fd808ac39.1659003817.git.noodles@fb.com>
-References: <cover.1657272362.git.noodles@fb.com>
- <cover.1659003817.git.noodles@fb.com>
-In-Reply-To: <cover.1659003817.git.noodles@fb.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 679a21a2-fc36-40f2-bd1e-08da70a2d55b
-x-ms-traffictypediagnostic: MN2PR15MB3247:EE_
-x-fb-source: Internal
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: C+enTzvh/eMGAtDcYwA/kFu9KD0/agHty/Ibqm2mqHMwH2l5Ht9Xa/Uro1jJLRFRYhG8iWZCDkn754NA526wZVMtffbMx4nrPcj6PU85I8GlmuVX1NiFyGN+Wne7vlDxRg4ae8AyK78/uHa+lZ6QbqQqUaFgmoJec2baauERwnh5Hm/H1aGut7Nv7RvPuz+E7IrEsd2uJXsvNeWRkT/9djDYDmWoj+Dpr8GvS9rPrAvHpth/cOjc7LgZ83yu1bNZ8KLj2PDMcrautqdTLtwZ+Ima2myK+0dtJ/VV8KEF3ZJFWYARIjdN2jdbRPnCOVldsUnrjQ1AjsDuZjNG3tinyBbwJk7RWHwpo4NE8NBGWFp3w36dX5s08p1ESx9laUtyW5QEuCFDNp3SGZaw6EvI9tdhrWu/eQc5KIfPwxZVoGTwr+bVqIemqextYQO53S2bLPDyFlDJQmEE0/zy3W8xzNXAevcPCG3Ez93kA4Ag9OuKujQYhRHOZtyRVhzmF1QTm8x9AQ6zwWJPa6pWYwjI3q0aiZeX5IIxyAE17Gi1vA+Oy8lT/2sAedlyp+tEOR1Ew8mKlndwDjIkyd/yc3bdAbRVQF68TxbVSmxWoP1M5yr1jBDZkwIfq8XsMLkdgq0ZVFWweV2x2nkvK2NIr5fkPFkO+93E3ZkSPSWtoO2LvIakA1kmYPUo3vOa7CS6Qgo4tLBBz2W3nF+PeEtXfvtd65NMpfGZVIzINICwx8Dci0pONlQkqbzPbJEiZbexeotHn4aDf15Hfsi9IdCNqlG6PyzPwFCEY0Orgrhzf1ogq5y5yF+T2EmGVo69KrjlDnzwWI/NNWk3kR47dQDWxZL+dQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR15MB4552.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(346002)(39860400002)(136003)(366004)(376002)(396003)(6506007)(54906003)(7416002)(122000001)(186003)(83380400001)(478600001)(71200400001)(38100700002)(6486002)(41300700001)(6512007)(91956017)(66556008)(66446008)(8676002)(26005)(2616005)(66946007)(5660300002)(4326008)(110136005)(38070700005)(36756003)(76116006)(66476007)(64756008)(316002)(2906002)(8936002)(86362001)(41533002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?40oyHV3VcYMFSwNGgzUpLebg+qM0ANB7vrThtbrBMlMnpZXh7R8U8ySmDN1k?=
- =?us-ascii?Q?LLIfCgrldQLRIRJXlWkNGUSgQjqbsC6RG22+m1mWVIkMlmnezsnfmIi1bEd3?=
- =?us-ascii?Q?p2s6KrX4HH/r7qOQWIntURPc1Qp2989eZCFDxJnTl6U1UXubM3XExrMpEs2H?=
- =?us-ascii?Q?zSdr23rmbf8uaI2CMZA6OHSQK6ZRV2MWO1ViTOj/ukl/f8SbgIMYzTCuL8Gz?=
- =?us-ascii?Q?ltA3cRh5XfEz1lBvZ7KbQAveB979XzQCNj3uBiFXzhL039WixT/StK+Rb5J1?=
- =?us-ascii?Q?A878XKPz7xYy+9o9DxAAIUMP8p1N9yNb/wWoN/eI1+T3dzFD8kif4+9yl1TF?=
- =?us-ascii?Q?rHpCGinQ/MnCDcYED1BQIy63AyCCY8paoXrcssvfVM4NMTcYtwX/8aA25Pgu?=
- =?us-ascii?Q?BaG/rETEpKvu7OuSVBMgjB1WyRm1sh86ecpQFyql1gr/OzuvvwxxEAGqeHeL?=
- =?us-ascii?Q?2zwk1bw/+dvwmuiiTIr8KXjmjsxIlzEhSmyMbled4hCrpv0zrztM8Iyu5AVs?=
- =?us-ascii?Q?gmF+wN+s0PK9sOsUelfLhiKzL8poXuaNEj30l5VQT2FzNAEj0DiyDzQ4ast9?=
- =?us-ascii?Q?W12ZgGeBCx5+xyyO1L8WCwDBjoec2Ebsea8VlpfbuEFKw9h6xPJKU0sgcHXe?=
- =?us-ascii?Q?o/70hzVsuOOy2EB8X3siFfZEd0lzrwBdRVHIMC5zhOh7+VRLAFZB0VQuNX3E?=
- =?us-ascii?Q?/duPZxz6f63gDlZhxJO2oMVnlvP8Ru0tls0G47clEnGZ5sx7Ad1oT4LcTWh5?=
- =?us-ascii?Q?FgABhexsxRfTuCdcmEqUF1aCMUKjAl0ZKvor/rD22wZlyVOHIRW0O5+B917x?=
- =?us-ascii?Q?Tk9PTeF5OV2aR1ZzxB4pQmJ5UVxpLKRb1NIuQ6TKvqcl7RQ8efTFo7p1D17t?=
- =?us-ascii?Q?5IqkcUoGk8zAALMONBM5YDpmeT1PBmV3p9WMgj2cBCi4LqiakcsXk2St/coD?=
- =?us-ascii?Q?O2R4i1h4mjWyQnNl18e4xSHvJvYNWM3QcfeOZDyHOo54tfOBk3BOHX/QXvY4?=
- =?us-ascii?Q?0e7yHIjm5yQZCFP5VBb9NWbOchjawyiyTUTYyPObZU3lNZM8B3q4u71kkLp0?=
- =?us-ascii?Q?Ds8CLCaaxjj6m9SAst9etuDDKhjb5XuXIm/2DKk0zqrODe6k/vtOcVL5jJYL?=
- =?us-ascii?Q?CNyEToWKP621pUSa0r+ISaSud4kqaFTRdeKq5gfKTObbf9N9VSSwKl132Dp8?=
- =?us-ascii?Q?DqrhhS5QjeWvMHsFYYdL2Zf+wUjubq9YzcQlV3owXnG+9Qo/uhJZZ6GcnZcJ?=
- =?us-ascii?Q?41BmK4SrNgk1X+XFOKX9pMxV7G32OdQD/niLCX16NxUeylX5k2pBI/Fk5R+Y?=
- =?us-ascii?Q?CQtb8iWaM1qey1fVKTADsVd914t1t0IoUAhynw9rvRDLZHdE4+oF31ZQs7GV?=
- =?us-ascii?Q?bsJGZ5WTrLqGr8GY8sKKo3qjKN015/jas60MKNyhWSAY0fRrFFfDBbO2FdEp?=
- =?us-ascii?Q?r29oy233Rvkf+Aw54I+0cxDOoD0ahTNU/c9p6GltRNefvOiF/SKwYpbrwJL+?=
- =?us-ascii?Q?9rCfTOHZg+Sp200v9d0RraqHnbGzFyZGV3sPhXWF6IpQ4K+pn/+Evav1Nrkb?=
- =?us-ascii?Q?79flnI8LU1BR3VyuNpOEjgzmqRjEZxkjX5BsZFEk?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <477B2E5FBCD8064AA1D6F3FAD22F50C9@namprd15.prod.outlook.com>
+        Thu, 28 Jul 2022 10:10:07 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58E6163925
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 07:10:05 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id p10so3001707lfd.9
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 07:10:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=3ZkQISkEyAXqDJZYEpQ7KC461gTyV9M43PYYTAdpW9k=;
+        b=l1GF1944v4xfZOTAoyVPjRU1bI2U5o/dI5UtIc8ezqvZnf6NLuoQyXXO9lBdy/HzQ1
+         +dPIJxPqqSzNPc8VsHoSd6/JlGb5zLyq4cNxNqpiXrik6qjLpqMutKXPbBF2uuYzniUG
+         6uJShkWKsE4I29ZHjuhSpvH8rOew62e96DMQULj+zuFjt8FCGTlm4om7Uc7AiAOiidKo
+         yWpb65M38LA7CyzuIhyA8nDHIsLZNdvpiFE+V/SdsEdF2l56AfxXsuCavlsOL4mKLLra
+         F9eAhGM+agB1gTsE4kNekk0xY3vYAwuPTxec0hl0f+cn0zIY3KzN1Lj+8+ZGOYzaiidl
+         WYyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=3ZkQISkEyAXqDJZYEpQ7KC461gTyV9M43PYYTAdpW9k=;
+        b=NlG79adx2RAORK+nii8VVElUbP2nn7kAMuqc3heTDeHQoMYKA89Ws8W7moNdCUKOTw
+         Rp8j4A9Re4kmkm0kb9iKrD4WHrZAm0e5If90d1Ag3yVKlgEpyUGsKIpZEPjjc4xQ4qCI
+         h08SJgJpnx+/fY9E0jgNBdHZGx12eL7YmIA69kXSIYk0BsEzg5UyTCr9fIc9j560MzTe
+         gCrRdtI3Z1VIpd9TYxOIX2XrtZvWMGVFDsVkzpDhtv4vKhNE/wWg9fkCKA625Hg7Ls37
+         RatorUVIUe6SXlLA9wDCcVHQ8JoB4+skoGoddpbmWMZh5YZy4CruRuSm04boUXdFbo53
+         cxaQ==
+X-Gm-Message-State: AJIora8HyFl9EMbU12tr1Aosqj16oV87w3P6Zzz53ollE3jV42FFwhRx
+        XgbszH/Og1YHgBS8fMQDtVqzQw==
+X-Google-Smtp-Source: AGRyM1s6eMkW7RadgIwnMhQWUiqP2h73XK4fRJOfJ7MByx2t3fVD6PR8bOn5QnF0b3ef0tJyASGPUQ==
+X-Received: by 2002:a05:6512:151c:b0:48a:9763:5d29 with SMTP id bq28-20020a056512151c00b0048a97635d29mr6347878lfb.79.1659017403706;
+        Thu, 28 Jul 2022 07:10:03 -0700 (PDT)
+Received: from [192.168.3.197] (78-26-46-173.network.trollfjord.no. [78.26.46.173])
+        by smtp.gmail.com with ESMTPSA id e13-20020a05651236cd00b0048a727ac440sm220929lfs.45.2022.07.28.07.10.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Jul 2022 07:10:03 -0700 (PDT)
+Message-ID: <84923720-30a6-1a49-48f6-96e078a46743@linaro.org>
+Date:   Thu, 28 Jul 2022 16:10:01 +0200
 MIME-Version: 1.0
-X-OriginatorOrg: fb.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SJ0PR15MB4552.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 679a21a2-fc36-40f2-bd1e-08da70a2d55b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Jul 2022 14:09:49.2293
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: l0cHsjhYCZ8auUr0o2oWV1iv9OEBsNnsqHZP5ECeP4X/FytRJ5duPvFs1a2yus4D
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR15MB3247
-X-Proofpoint-GUID: wU1VxvurWmDl3lEGE7JNRuZNo4GXY5SP
-X-Proofpoint-ORIG-GUID: wU1VxvurWmDl3lEGE7JNRuZNo4GXY5SP
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-28_05,2022-07-28_02,2022-06-22_01
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 3/3] dt-bindings: phy: add definition for MSM8960
+Content-Language: en-US
+To:     Shinjo Park <peremen@gmail.com>
+Cc:     David Heidelberg <david@ixit.cz>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, linux-phy@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220728111740.30595-1-peremen@gmail.com>
+ <aef9bae5-b72b-d520-a8e5-8f6a838775eb@linaro.org>
+ <CAAs2AW7A4RfxAaKPsmJjA1s7s5_rnM2O4XAAFC=7x1Npttg5rQ@mail.gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <CAAs2AW7A4RfxAaKPsmJjA1s7s5_rnM2O4XAAFC=7x1Npttg5rQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The generic decompression support is only available in the __init
-section. Hack this out for now with gzip for testing. Longer term this
-needs rethought in a similar fashion to the cpio support.
+On 28/07/2022 15:54, Shinjo Park wrote:
+> Hello Krzysztof,
+> 
+> Sorry for any confusion during my first patch submission.
+> 
+> PATCH 1:
+>>> Change the reference of sleep_clk to the same as qcom-apq8064.dtsi.
+>>
+>> You add label, not change something.
+> 
+>>> - sleep_clk {
+> 
+>>> + sleep_clk: sleep_clk {
+> 
+>>
+> 
+>> Since you touch the line, make the device node sleep-clk (device node
+> 
+>> names should not have underscores) and mention this in commit msg.
+> 
+> 
+> I can change the line into "sleep_clk: sleep-clk". And the commit message
+> would be "Change the device node of sleep_clk to sleep-clk and add a
+> label"? Another problem is that in the same .dtsi file there are other
+> device nodes containing underscores (cxo_board, pxo_board). Should I also
+> change these in the patch?
+> 
+> PATCH 2:
+>>> +                     phy-names = "usb-phy";
+>>> +                     status = "disabled";
+>>
+>> status is the last property.
+>>
+>>> +                     #reset-cells = <1>;
+> 
+> I can move #reset-cells one line up and make the status last line. On the
+> other hand, the same definition is also used in
+> arch/arm/boot/dts/qcom-apq8064.dtsi (also the clock definition mentioned in
+> PATCH 1). Shall I include another patch for that file in the next revision
+> of this patch series?
 
-Signed-off-by: Jonathan McDowell <noodles@fb.com>
----
- lib/decompress.c         | 4 ++--
- lib/decompress_inflate.c | 4 ++++
- 2 files changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/lib/decompress.c b/lib/decompress.c
-index ab3fc90ffc64..89a5709e454a 100644
---- a/lib/decompress.c
-+++ b/lib/decompress.c
-@@ -48,7 +48,7 @@ struct compress_format {
- 	decompress_fn decompressor;
- };
- 
--static const struct compress_format compressed_formats[] __initconst = {
-+static const struct compress_format compressed_formats[] = {
- 	{ {0x1f, 0x8b}, "gzip", gunzip },
- 	{ {0x1f, 0x9e}, "gzip", gunzip },
- 	{ {0x42, 0x5a}, "bzip2", bunzip2 },
-@@ -60,7 +60,7 @@ static const struct compress_format compressed_formats[] __initconst = {
- 	{ {0, 0}, NULL, NULL }
- };
- 
--decompress_fn __init decompress_method(const unsigned char *inbuf, long len,
-+decompress_fn decompress_method(const unsigned char *inbuf, long len,
- 				const char **name)
- {
- 	const struct compress_format *cf;
-diff --git a/lib/decompress_inflate.c b/lib/decompress_inflate.c
-index 6130c42b8e59..b245d6e5f8a6 100644
---- a/lib/decompress_inflate.c
-+++ b/lib/decompress_inflate.c
-@@ -33,6 +33,10 @@
- 
- #define GZIP_IOBUF_SIZE (16*1024)
- 
-+/* HACK */
-+#undef INIT
-+#define INIT
-+
- static long INIT nofill(void *buffer, unsigned long len)
- {
- 	return -1;
--- 
-2.30.2
+Yes, you can rename them in other patch as well.
+
+> 
+> PATH 3:
+>> 1. Thread your submissions.
+> 
+> Shall I use this thread for all follow-ups for my first and second patch?
+
+No. One patchset, one thread.
+
+https://elixir.bootlin.com/linux/v5.19-rc5/source/Documentation/process/5.Posting.rst
+
+> 
+>> 2. Use subject prefix matching the file.
+> 
+> If I understood correctly, then this should be "dt-bindings: phy:
+> qcom,usb-hs-phy:"?
+
+Yes.
+
+
+Best regards,
+Krzysztof
