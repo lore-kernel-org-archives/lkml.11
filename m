@@ -2,82 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A255C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 03:40:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72868C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 03:44:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236208AbiG1DkV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 23:40:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53172 "EHLO
+        id S233961AbiG1DoK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 23:44:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231247AbiG1DkR (ORCPT
+        with ESMTP id S229462AbiG1DoI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 23:40:17 -0400
-Received: from mail-m975.mail.163.com (mail-m975.mail.163.com [123.126.97.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2611863FB;
-        Wed, 27 Jul 2022 20:40:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=OWL50
-        Trspqxmk9IY0VQ8b5aq34QuyRnC8h+e5TH14Oo=; b=DRDGAfivuYNqQy+6DkKBX
-        UCRW3g6XnhKnqGkEbXkacHmTGU3q7dLZjD1hhzA3sDLmfoHOFY0LdWIMB2wdVl8w
-        /uCvJ1DtWQfQbLfO6u5+kLOdgHZ5mm4P2HY2+AehK7fEzbrhCZenWwrqhfmr8sdG
-        fHsassUkgKrMT2FJmXg66E=
-Received: from localhost.localdomain (unknown [221.222.55.182])
-        by smtp5 (Coremail) with SMTP id HdxpCgB3_vL3BOJivq50Qw--.25809S4;
-        Thu, 28 Jul 2022 11:40:02 +0800 (CST)
-From:   Wentao_Liang <Wentao_Liang_g@163.com>
-To:     song@kernel.org
-Cc:     linux-raid@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Wentao_Liang <Wentao_Liang_g@163.com>
-Subject: [PATCH] drivers:md:fix a potential use-after-free bug
-Date:   Thu, 28 Jul 2022 19:39:19 +0800
-Message-Id: <20220728113919.7985-1-Wentao_Liang_g@163.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 27 Jul 2022 23:44:08 -0400
+Received: from mail-il1-f199.google.com (mail-il1-f199.google.com [209.85.166.199])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F47D237F7
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 20:44:07 -0700 (PDT)
+Received: by mail-il1-f199.google.com with SMTP id z17-20020a921a51000000b002ddff313ab2so61492ill.12
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 20:44:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=Uk8xlHZP9Ax1yPtTzB8HCmPUbJsG2uFHTHKQ1aByY5s=;
+        b=1eaIucjDZRbVlXVeNg9xhe0FZKnQxFNSQ/wm2lrNyKKBIQnjWMGMK75qAc2sELwV1W
+         re6mgIPIauJG0lChNUIPoHHnEwS5utILPAOhg45UAHZ+tsBA2jHAnWIePic9w3YsaJ9/
+         kbDXz0SSDlM0KM3vsFha4YK/vTvCKOrpWOfLLvPYXa+Sfgy1ToQezVe9GtSJq/Ghk/lR
+         PuJaXBVz8twusjIMJsTIxkYAASMRsw3Fg058IytFMnZt7jCk8syBqi5TMb4SbiT+RQRv
+         FhAJ0IO5s1ddaInzJ5Ob4MklWvpKDpYG5G5L6P1Hl4MExE+NUpJecdYTDe2+qKXBwKGR
+         y91Q==
+X-Gm-Message-State: AJIora+EmNiN8qcjWmfncQ+v2SO7yiR4lPd7ExZuSApkZ4A9o6YpiufR
+        TW/l9lpQX1PZNZu5k82FWwjhRnQpwTNqforfkXeuw2YACATG
+X-Google-Smtp-Source: AGRyM1tkiIr72bZ2vZWuPsEYNTGaH9RQy89TDaaN2rd9DNeAhbKbQ4XY5ObPv2CKU0aGanlGBJiMFf+80jJVyqzohDtD9cWnbivg
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: HdxpCgB3_vL3BOJivq50Qw--.25809S4
-X-Coremail-Antispam: 1Uf129KBjvJXoWrtFyDtw4kXFWUKFWxXF1kKrg_yoW8Jryfpa
-        yrAF43ZryDWFn8tFZxZFZ7XF1FkayaqrZ7KFWvgw1fu3W5XryIkw43tFy8tr4Dtr4Fk3yr
-        Zw1qgw15Wr1UKFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UvoGdUUUUU=
-X-Originating-IP: [221.222.55.182]
-X-CM-SenderInfo: xzhq3t5rboxtpqjbwqqrwthudrp/xtbBORJML1-POqlVoQAAs-
+X-Received: by 2002:a92:c266:0:b0:2dd:4171:ebce with SMTP id
+ h6-20020a92c266000000b002dd4171ebcemr8111918ild.190.1658979847063; Wed, 27
+ Jul 2022 20:44:07 -0700 (PDT)
+Date:   Wed, 27 Jul 2022 20:44:07 -0700
+In-Reply-To: <20220728032630.611-1-hdanton@sina.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000007951e105e4d55807@google.com>
+Subject: Re: [syzbot] INFO: rcu detected stall in net_tx_action
+From:   syzbot <syzbot+3ba0493d523d007b3819@syzkaller.appspotmail.com>
+To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In line 2884, "raid5_release_stripe(sh);" drops the reference to sh and
-may cause sh to be released. However, sh is subsequently used in lines
-2886 "if (sh->batch_head && sh != sh->batch_head)". This may result in an
-use-after-free bug.
+Hello,
 
-It can be fixed by moving "raid5_release_stripe(sh);" to the bottom of
-the function.
+syzbot tried to test the proposed patch but the build/boot failed:
 
-The bug has been confirmed by Song on 2021-08-14. Now, I resend this
-patch with my real name. I hope the patch can be updated in a near
-future.
+kernel/time/hrtimer.c:945:6: error: conflicting types for 'clock_was_set'
+kernel/time/hrtimer.c:985:16: error: 'CLOCK_SET_WALL' undeclared (first use in this function)
 
-Signed-off-by: Wentao_Liang <Wentao_Liang_g@163.com>
----
- drivers/md/raid5.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/md/raid5.c b/drivers/md/raid5.c
-index 5d09256d7f81..93fcbeac5096 100644
---- a/drivers/md/raid5.c
-+++ b/drivers/md/raid5.c
-@@ -2881,10 +2881,10 @@ static void raid5_end_write_request(struct bio *bi)
- 	if (!test_and_clear_bit(R5_DOUBLE_LOCKED, &sh->dev[i].flags))
- 		clear_bit(R5_LOCKED, &sh->dev[i].flags);
- 	set_bit(STRIPE_HANDLE, &sh->state);
--	raid5_release_stripe(sh);
- 
- 	if (sh->batch_head && sh != sh->batch_head)
- 		raid5_release_stripe(sh->batch_head);
-+	raid5_release_stripe(sh);
- }
- 
- static void raid5_error(struct mddev *mddev, struct md_rdev *rdev)
--- 
-2.25.1
+Tested on:
+
+commit:         d6765985 Revert "be2net: disable bh with spin_lock in ..
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git
+dashboard link: https://syzkaller.appspot.com/bug?extid=3ba0493d523d007b3819
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=161b38de080000
 
