@@ -2,82 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 334A7C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 06:11:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7D91C19F2B
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 06:18:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233737AbiG1GLd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 02:11:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54444 "EHLO
+        id S231732AbiG1GSD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 02:18:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233794AbiG1GLE (ORCPT
+        with ESMTP id S229832AbiG1GR7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 02:11:04 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A0AF32471;
-        Wed, 27 Jul 2022 23:11:00 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 7825034E38;
-        Thu, 28 Jul 2022 06:10:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1658988657; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=4q2YLQGouekfy4oOOVYRESJKLkvT16ir/T2A9ZdcqRo=;
-        b=v8Kt1Q6MD6zQltNlJjd/wpPuB9jWbp6SEF+Q160+WtgNTYN2lqgkFSGvXpShVzACh1B+JM
-        Gm9GX1zoKCttSEHMzdj4OFyOmReAQp+YnRA4AEmlu4+/pidpPfLg8tF4+4SpmJN4HzAUh4
-        vdMCKILwuuPo2qcxOuf3BUQa/47papw=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1658988657;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=4q2YLQGouekfy4oOOVYRESJKLkvT16ir/T2A9ZdcqRo=;
-        b=vKgoEU7osz62vusnS4Q2KkAjhb9LfWNTTrvdy/8NdtThkDB+zli3UUqQXhOSUy0FiGZcwj
-        lBHE9v1Cuwkp0ACg==
-Received: from localhost.localdomain (unknown [10.100.208.98])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 853102C142;
-        Thu, 28 Jul 2022 06:10:57 +0000 (UTC)
-From:   Jiri Slaby <jslaby@suse.cz>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiri Slaby <jslaby@suse.cz>
-Subject: [PATCH 4/6] Documentation: serial: link uart_ops properly
-Date:   Thu, 28 Jul 2022 08:10:54 +0200
-Message-Id: <20220728061056.20799-4-jslaby@suse.cz>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220728061056.20799-1-jslaby@suse.cz>
-References: <20220728061056.20799-1-jslaby@suse.cz>
+        Thu, 28 Jul 2022 02:17:59 -0400
+Received: from qproxy1-pub.mail.unifiedlayer.com (qproxy1-pub.mail.unifiedlayer.com [173.254.64.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A6325726E
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 23:17:57 -0700 (PDT)
+Received: from outbound-ss-820.bluehost.com (outbound-ss-820.bluehost.com [69.89.24.241])
+        by qproxy1.mail.unifiedlayer.com (Postfix) with ESMTP id 9EE2E802886C
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 06:17:55 +0000 (UTC)
+Received: from cmgw13.mail.unifiedlayer.com (unknown [10.0.90.128])
+        by progateway2.mail.pro1.eigbox.com (Postfix) with ESMTP id 8A9C610049605
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 06:17:33 +0000 (UTC)
+Received: from box5620.bluehost.com ([162.241.219.59])
+        by cmsmtp with ESMTP
+        id Gwpwo9ineWBOVGwpxomZoq; Thu, 28 Jul 2022 06:17:33 +0000
+X-Authority-Reason: nr=8
+X-Authority-Analysis: v=2.4 cv=cpReL30i c=1 sm=1 tr=0 ts=62e229fd
+ a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
+ a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
+ a=RgO8CyIxsXoA:10:nop_rcvd_month_year
+ a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
+ a=HaFmDPmJAAAA:8 a=49j0FZ7RFL9ueZfULrUA:9 a=QEXdDO2ut3YA:10:nop_charset_2
+ a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
+        s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
+        Message-ID:From:In-Reply-To:References:Cc:To:Subject:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=04ThL/Ir5WfZnXDToLT1mrxeXlTnqbRk4yrjXl8e34g=; b=YraBbNA/JCdPobNB/H5C0GcpDy
+        4gKCEaNb+hrbNT5XuYc+K+WLykpYr5unyFofRNBtyhuUbDXVBzbEUR/IX9x5WHtDbqRuj5Y8nJR6d
+        841lXfx6aNQ+sj/PIlw/uOuoP6gsiAqNR5JmB/MDCx9WLG/wu0SWg+SEmXHuF6H8mV+S+jVwQaGXU
+        HRqs5V7IyttkCOcalhERSV9342KQ2NCs8tJM/JiAQT37yGGgIUUvTLZBtC0ru8KJ4Z3grQFQhhWZ/
+        73312BdcMwc8fmDDYn5+P/6j3HZO5UJJg9/JR2+nvdG+PGbsMdH3Da+T4jBqPhbpX96aV2tS2IjXH
+        ryI1LXJQ==;
+Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:37750 helo=[10.0.1.48])
+        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <re@w6rz.net>)
+        id 1oGwpv-003yHc-NP;
+        Thu, 28 Jul 2022 00:17:31 -0600
+Subject: Re: [PATCH 5.18 000/158] 5.18.15-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, slade@sladewatkins.com
+References: <20220727161021.428340041@linuxfoundation.org>
+In-Reply-To: <20220727161021.428340041@linuxfoundation.org>
+From:   Ron Economos <re@w6rz.net>
+Message-ID: <774a6b89-b83e-3f97-f42f-467e810863e9@w6rz.net>
+Date:   Wed, 27 Jul 2022 23:17:29 -0700
+User-Agent: Mozilla/5.0 (X11; Linux armv7l; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - box5620.bluehost.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - w6rz.net
+X-BWhitelist: no
+X-Source-IP: 73.162.232.9
+X-Source-L: No
+X-Exim-ID: 1oGwpv-003yHc-NP
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.48]) [73.162.232.9]:37750
+X-Source-Auth: re@w6rz.net
+X-Email-Count: 2
+X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The syntax to reference a struct in text is "struct XY". So reference
-uart_ops properly, so that hyperlinks work.
+On 7/27/22 9:11 AM, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.18.15 release.
+> There are 158 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+>
+> Responses should be made by Fri, 29 Jul 2022 16:09:50 +0000.
+> Anything received after that time might be too late.
+>
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.18.15-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.18.y
+> and the diffstat can be found below.
+>
+> thanks,
+>
+> greg k-h
 
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
----
- Documentation/driver-api/serial/driver.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
 
-diff --git a/Documentation/driver-api/serial/driver.rst b/Documentation/driver-api/serial/driver.rst
-index cae280f39189..13b580e887b4 100644
---- a/Documentation/driver-api/serial/driver.rst
-+++ b/Documentation/driver-api/serial/driver.rst
-@@ -39,7 +39,7 @@ Locking
- 
- It is the responsibility of the low level hardware driver to perform the
- necessary locking using port->lock.  There are some exceptions (which
--are described in the uart_ops listing below.)
-+are described in the struct uart_ops listing below.)
- 
- There are two locks.  A per-port spinlock, and an overall semaphore.
- 
--- 
-2.37.1
+Tested-by: Ron Economos <re@w6rz.net>
 
