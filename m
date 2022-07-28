@@ -2,113 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FC48C19F29
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 14:49:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19630C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 14:49:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229929AbiG1Os6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 10:48:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56816 "EHLO
+        id S230164AbiG1Ote (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 10:49:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229472AbiG1Osz (ORCPT
+        with ESMTP id S229704AbiG1Otb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 10:48:55 -0400
-Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD06F4B4AE;
-        Thu, 28 Jul 2022 07:48:53 -0700 (PDT)
-Received: from mail-ej1-f47.google.com ([209.85.218.47]) by
- mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1N33V5-1nKxnV0UEH-013PME; Thu, 28 Jul 2022 16:48:52 +0200
-Received: by mail-ej1-f47.google.com with SMTP id sz17so3548469ejc.9;
-        Thu, 28 Jul 2022 07:48:51 -0700 (PDT)
-X-Gm-Message-State: AJIora8jmfx8KxPh9mJxdCE4Xl+HQuwEt1QFv1Jauo3yLGE1Vd8gKZ4Y
-        fG/tLP1E3k0OZJ2wKgXRTe5oEibG5By+QLE/zbA=
-X-Google-Smtp-Source: AGRyM1voWFsned5bc+ZOEVWI6Tk3nmMi4UyCDiV3OuIb+yKzChXoAAi57A5zk3bEc9tox3U8iz+5WVxVjrqfdY0QZtc=
-X-Received: by 2002:a17:907:d0f:b0:72e:db1f:9b91 with SMTP id
- gn15-20020a1709070d0f00b0072edb1f9b91mr21730608ejc.470.1659019731647; Thu, 28
- Jul 2022 07:48:51 -0700 (PDT)
+        Thu, 28 Jul 2022 10:49:31 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1C26651413
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 07:49:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659019770;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Y72epJF5d8qli+9Ce0BVC/x2v9XQ9z23UFNcVj/FJ4A=;
+        b=Fc8wIT1wXK1+SxUbIFbxzulBtkPLyuxLqHjQZLK+z2m4xY7ZV2VLKwaFIaQHZ+IOADuHLV
+        ninCdV7+fLKPvFgpz0BHFBGzuMoSfFjBwfcCvaWqgL071utlAkrTDtBozMnnYOSjWNclVR
+        qHEKerfUyM6taRzCEI4YoTWTLtZFfik=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-534-XijDdIi4PyCKyGWgOxNPkA-1; Thu, 28 Jul 2022 10:49:24 -0400
+X-MC-Unique: XijDdIi4PyCKyGWgOxNPkA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 513D81C0BC6A;
+        Thu, 28 Jul 2022 14:49:23 +0000 (UTC)
+Received: from [10.22.9.86] (unknown [10.22.9.86])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4854740CF8EB;
+        Thu, 28 Jul 2022 14:49:22 +0000 (UTC)
+Message-ID: <8e0a41e6-8d03-b0ad-02b5-04449c49c470@redhat.com>
+Date:   Thu, 28 Jul 2022 10:49:21 -0400
 MIME-Version: 1.0
-References: <20220728142824.3836-1-markuss.broks@gmail.com> <20220728142824.3836-3-markuss.broks@gmail.com>
-In-Reply-To: <20220728142824.3836-3-markuss.broks@gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 28 Jul 2022 16:48:35 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a2fZ9O6vSEyxY1KW71pG_Oyvwxp3zTbW2GuaSD6aj+Qfw@mail.gmail.com>
-Message-ID: <CAK8P3a2fZ9O6vSEyxY1KW71pG_Oyvwxp3zTbW2GuaSD6aj+Qfw@mail.gmail.com>
-Subject: Re: [PATCH 2/2] efi: earlycon: Add support for generic framebuffers
- and move to fbdev subsystem
-To:     Markuss Broks <markuss.broks@gmail.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Helge Deller <deller@gmx.de>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Borislav Petkov <bp@suse.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Michal Suchanek <msuchanek@suse.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Wei Ming Chen <jj251510319013@gmail.com>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        Tony Lindgren <tony@atomide.com>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        linux-efi <linux-efi@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Rob Herring <robh@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:Zf90xitQQ1Gka8NoneHkD8inuSBCM/3y6EK/lEwKYV8CUrERMZL
- QJFVB4Q9N59jDb4DyrlP7AMjitr941ffyLSBPOYxEOEmtBKJSwg8Lzb5I4V7zytUtqoABTF
- 7VU3wZvsAiPsd8F2vfrusHu5lum0CbuRQajFjKYsSknjMV2xGnOedJ3SFqCpxqvB0wDVVdE
- y69IB0YDRO4OzI0OE/J5w==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:32Cxq2ctUw4=:3EGbkZ21TOvU1qiHYgz/aV
- VdGqY/jn0X9t4iThTSRyyOEQcPfRD/+F3hWdIegJwJ61GrFVOh7Dk1uOUofHAt5uLK2ryj1QQ
- 3nFpJt52yX/28snx6yHlBPy1elZ1caXcrBOVA78Mbc9GVfv7NlM6X2dVgjlkrfpJ+guRjIJKO
- iXOKtH/opnq97+ZkNlJrnPn/sYeem6BgUjIIKFe6Xt1uFi4JphXmifVYu/AHhBZoNLVSBka+V
- YdK97Mx0voQuNn8/BiCn+IgRxF9/BTjYAhMv+WftbmeC/hyM84zy8/7E3Kv1ClwP70j4uyOFg
- f/FpSe0Rkcm6rLjVCsV86DLaSWBQm+/KgmH6t7v2Kk6Y1H99Z9e/wtrjr/zSFiFMyhdh1+NX7
- KFJ9hSysKMo03vAvy3S8i9SlznpcLwkMap0KPxXaiLiXoNU+Ck3rDj7PruazyrRv6MAM4BRlv
- 92boKnuBYkRVtl9Cb4JXLNZXV8auz60JvX0gA/hv6yEZA2KQu0qfCs/9GCLZYG0qbM5mYe0Ml
- rXxtqXGkbYvaelPHJ3RbfhTm8eA1AxomwxfoHWMnS9XGN3Wiu76IgRDT/0NDDxzFcLUY6IX/Q
- w1Dv6bpouxMeKgki7weTWrSQTU6nO/J7QNRwuLmBLsfIxG15ODdSCHHKPc/j1+HCsRQwBo3UX
- dfwxcSNLzmOjql+ZyHH+Kv0Acf17WHdoKO9UhUFuxDypzbmTrvaAMk7RQm8V4jHHiuM7IMXaR
- 0sbU8PEodDznxgxYCPuA3nA25e8BhNVryIPbyWiUp1D8HjrK+atO1mYpyz8RzXgScKgOB0Ovc
- JjtA1yp8MJFsZQKCeXQPq4JdADXaY/m37zjkotOtQ3f1mvjXVvPqy+TF7xZtV6qdqRjrDzPjR
- cTeSLqIy9R7Fkxibbbkw==
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 2/2] cgroup: Skip subtree root in
+ cgroup_update_dfl_csses()
+Content-Language: en-US
+To:     =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>
+Cc:     Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Valentin Schneider <vschneid@redhat.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>, cgroups@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220728005815.1715522-1-longman@redhat.com>
+ <20220728005815.1715522-2-longman@redhat.com>
+ <20220728144426.GA26631@blackbody.suse.cz>
+From:   Waiman Long <longman@redhat.com>
+In-Reply-To: <20220728144426.GA26631@blackbody.suse.cz>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 28, 2022 at 4:28 PM Markuss Broks <markuss.broks@gmail.com> wrote:
->
-> Add early console support for generic linear framebuffer devices.
-> This driver supports probing from cmdline early parameters
-> or from the device-tree using information in simple-framebuffer node.
-> The EFI functionality should be retained in whole.
-> The driver was disabled on ARM because of a bug in early_ioremap
-> implementation on ARM.
->
-> Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
-> ---
->  .../admin-guide/kernel-parameters.txt         |  12 +-
->  MAINTAINERS                                   |   5 +
->  drivers/firmware/efi/Kconfig                  |   6 +-
->  drivers/firmware/efi/Makefile                 |   1 -
->  drivers/firmware/efi/earlycon.c               | 246 --------------
->  drivers/video/fbdev/Kconfig                   |  11 +
->  drivers/video/fbdev/Makefile                  |   1 +
->  drivers/video/fbdev/earlycon.c                | 301 ++++++++++++++++++
 
-It looks like this is not actually related to fbdev, and since drivers are
-moving from fbdev/simplefb towards drm/simpledrm, maybe it would be
-better to put this into either drivers/gpu/drm/tiny/ or possibly
-drivers/video/console to let this be used without enabling fbdev?
+On 7/28/22 10:44, Michal Koutný wrote:
+> On Wed, Jul 27, 2022 at 08:58:15PM -0400, Waiman Long <longman@redhat.com> wrote:
+>> The cgroup_update_dfl_csses() function updates css associations when a
+>> cgroup's subtree_control file is modified. Any changes made to a cgroup's
+>> subtree_control file, however, will only affect its descendants but not
+>> the cgroup itself.
+> I find this correct.
+>
+>> So there is no point in migrating csses associated with that cgroup.
+>> We can skip them instead.
+> Alone it's not such a big win but it componds with the recent Tejun's
+> threadgroup_rwsem elision.
+>
+It is more an optimization patch trying to not waste cpu time doing 
+unnecessary work.
+>> ---
+>>   kernel/cgroup/cgroup.c | 9 +++++++++
+>>   1 file changed, 9 insertions(+)
+> Feel free to have
+> Reviewed-by: Michal Koutný <mkoutny@suse.com>
+>
+Thanks for the review.
 
-        Arnd
+Cheers,
+Longman
+
