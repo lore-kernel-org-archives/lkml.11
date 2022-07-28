@@ -2,74 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B033C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 18:44:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CCFAC19F29
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 18:46:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232120AbiG1Sok (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 14:44:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41576 "EHLO
+        id S232239AbiG1Sq1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 14:46:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232100AbiG1Soi (ORCPT
+        with ESMTP id S232100AbiG1SqX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 14:44:38 -0400
+        Thu, 28 Jul 2022 14:46:23 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1F9DB7539C
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 11:44:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7B4C96E2D1
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 11:46:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659033876;
+        s=mimecast20190719; t=1659033981;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=i5DZbLJbyft2xfK4rEmaQLiZfAqfd5MekksSTpFvPNo=;
-        b=Nw6/R/5pAYigatyEYVPeZRI3CxT34tvswSjl+Hhz+Xi7dvOzUhoEqSp9axHhJQAvdr6MHV
-        1WtgbTSmp1NCDJcuixwe0/U2fLLi3WTAyG1PkMI2jH1zhAXiTx76lDVgUQh0/Yb/5dntLC
-        qstTL5ElKEprXKDljLLRq5iie2HfFNo=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=UjF6W4Csz4g0rUWnnoan8g4wLstWebVhsMlFWJRzp2s=;
+        b=ERxE3KtlZZCEvOQ6ClkuypjDAhTUJdmvZ4bL7e2mD/zsPlmodfHAC/FcXtZV9G/+jZpzQ1
+        9qhjYCV7TyGPAQZFAJpZ2a2Y0k/TJJTQoicwbl3HfTsEeGhkBbGyT/pkrtlJumyPEpFtFs
+        W2tCITEda1d2z97fXyvfn29/9guIhyE=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-37-I9Mc_KvMMpeMfNJzPiygIg-1; Thu, 28 Jul 2022 14:44:34 -0400
-X-MC-Unique: I9Mc_KvMMpeMfNJzPiygIg-1
-Received: by mail-ed1-f71.google.com with SMTP id e6-20020a056402190600b0043bde36ab23so1625407edz.11
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 11:44:34 -0700 (PDT)
+ us-mta-119-Bbc-Yeo5PkuJEHbKTs5h0Q-1; Thu, 28 Jul 2022 14:46:20 -0400
+X-MC-Unique: Bbc-Yeo5PkuJEHbKTs5h0Q-1
+Received: by mail-ed1-f72.google.com with SMTP id z1-20020a05640235c100b0043bca7d9b3eso1598308edc.5
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 11:46:19 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=i5DZbLJbyft2xfK4rEmaQLiZfAqfd5MekksSTpFvPNo=;
-        b=cJR6BZrA7zgXKGR8wZ4m6suJAXlCUe9JGvTvJ5gtAWxq2IBympAisq9jWnf8LIAXmT
-         NqmuJtViETUluChOEAnegSMU5ZF1A0WSxsddZ42j1nCWLWU+NZCdHdzH5Qsj0h3ZSW9t
-         oxNSGwWx7lk10zC2qcIbzE6HvWmQrVxxkfkIukVHdDinOZ3WKkxSyLpav3TvHXH3IGx7
-         ZZtE1O3IuE2fvlcSXFE5QPxRLAwL7CmuUutOT7G5II5ApPDJ8zq+IRwUSFFce7DeZzeZ
-         xkRhdzqexdX1bbK+NSKDUMDiVceJcgWgg1hMSSOoa3tE58w7UQJ6QcebeoZRKEvPvYgV
-         2tqg==
-X-Gm-Message-State: AJIora+7aKr6pZMf+iXr+JTMhu7Y7WLwS2M8XomiAD2BHSJbRocfJrcp
-        NMnZya/2s0Y1s6MTnKSJ+m8DS3yg9wUbzAhDQkwmoWq/bwzGmj+hjQPRcE2FQt2GVhn7FkgjfTS
-        LUp3kl+Uv22UhyHIRoTpjc3ad
-X-Received: by 2002:a05:6402:3511:b0:43b:c84c:e233 with SMTP id b17-20020a056402351100b0043bc84ce233mr267140edd.211.1659033873557;
-        Thu, 28 Jul 2022 11:44:33 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1sDDQj1w6C4bmpLIJZ5NoEIbhdwKazzBeLPMikzRKiO1K6X2FI580MhCxThPTmuwssGg2ZUBg==
-X-Received: by 2002:a05:6402:3511:b0:43b:c84c:e233 with SMTP id b17-20020a056402351100b0043bc84ce233mr267129edd.211.1659033873394;
-        Thu, 28 Jul 2022 11:44:33 -0700 (PDT)
+        bh=UjF6W4Csz4g0rUWnnoan8g4wLstWebVhsMlFWJRzp2s=;
+        b=Mt/YJS3RIlrAKja8VYLa/hhB9JpH2orTeB6WP1QFVHMXtftsEdbkR2agSML3exTajo
+         boUm6OEwlcPiJsxmn3lZiDLpDDZBOpnyLToSSPooPERF4sbThtKPD5nSUk53Q6/3kGAg
+         ZZAWO8uEccXfXQSl/nzSO+05KWq1j3Y5+4sT+hwatZoGQtAqFtwUjRHSyhpiNBn9JQoe
+         dRQdPHMtKx4CLVfRDcAXivILlGGLdo/L5lDWuOy/JK0KNadsCjxyw5zNXX177LHH/i4R
+         Bo3KOxVUfdE/H2H3OyRXqgcb9Z7F3jzPw/BXydCNSF6JyUeAcyaqGU2LOyc0Ofvgd5s5
+         shZg==
+X-Gm-Message-State: AJIora8U6404hV4kQG71oPVMOwTgx6w0buntxU3hAeG3POR+J6IB6Srt
+        uGKYb3QjHALnqocWfft+kxWve/nITTEVmLS6XJYEUzb0SEm1BW7PVMa/1AkciIYTZIKO4m3yz94
+        Wtw+LVduOgA8XE0YvzOypfJS0
+X-Received: by 2002:a17:907:7ba9:b0:72f:2994:74aa with SMTP id ne41-20020a1709077ba900b0072f299474aamr198716ejc.85.1659033978863;
+        Thu, 28 Jul 2022 11:46:18 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1vp3AJuTTutmrSFCg3orG4R7IBnDwQmGu+7Ego5p5sGZrqIbp7PLCS9usMJA/fn2Q+kkUuUVA==
+X-Received: by 2002:a17:907:7ba9:b0:72f:2994:74aa with SMTP id ne41-20020a1709077ba900b0072f299474aamr198701ejc.85.1659033978404;
+        Thu, 28 Jul 2022 11:46:18 -0700 (PDT)
 Received: from ?IPV6:2001:1c00:c1e:bf00:d69d:5353:dba5:ee81? (2001-1c00-0c1e-bf00-d69d-5353-dba5-ee81.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:d69d:5353:dba5:ee81])
-        by smtp.gmail.com with ESMTPSA id a8-20020aa7d908000000b0043bc33530ddsm1153823edr.32.2022.07.28.11.44.32
+        by smtp.gmail.com with ESMTPSA id yw17-20020a170907245100b00722fadc4279sm686602ejb.124.2022.07.28.11.46.17
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 28 Jul 2022 11:44:32 -0700 (PDT)
-Message-ID: <055c43cb-26f3-9a51-8e59-e0133e3839c1@redhat.com>
-Date:   Thu, 28 Jul 2022 20:44:32 +0200
+        Thu, 28 Jul 2022 11:46:17 -0700 (PDT)
+Message-ID: <63a992e4-6016-7063-8219-ac59288a6ec0@redhat.com>
+Date:   Thu, 28 Jul 2022 20:46:17 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.11.0
-Subject: Re: [PATCH] platform/surface: gpe: Add support for 13" Intel version
- of Surface Laptop 4
+Subject: Re: [PATCH] platform/x86: Fix comment typo
 Content-Language: en-US
-To:     Maximilian Luz <luzmaximilian@gmail.com>
-Cc:     Mark Gross <markgross@kernel.org>,
-        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220721121120.2002430-1-luzmaximilian@gmail.com>
+To:     Xin Gao <gaoxin@cdjrlc.com>, paul.gortmaker@windriver.com
+Cc:     linux-kernel@vger.kernel.org
+References: <20220722022337.15903-1-gaoxin@cdjrlc.com>
 From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <20220721121120.2002430-1-luzmaximilian@gmail.com>
+In-Reply-To: <20220722022337.15903-1-gaoxin@cdjrlc.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -78,11 +76,10 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 Hi,
 
-On 7/21/22 14:11, Maximilian Luz wrote:
-> The 13" Intel version of the Surface Laptop 4 uses the same GPE as the
-> Surface Laptop Studio for wakeups via the lid. Set it up accordingly.
+On 7/22/22 04:23, Xin Gao wrote:
+> The double `of' is duplicated in line 50, remove one.
 > 
-> Signed-off-by: Maximilian Luz <luzmaximilian@gmail.com>
+> Signed-off-by: Xin Gao <gaoxin@cdjrlc.com>
 
 Thank you for your patch, I've applied this patch to my review-hans 
 branch:
@@ -103,30 +100,20 @@ Hans
 
 
 > ---
->  drivers/platform/surface/surface_gpe.c | 12 ++++++++++++
->  1 file changed, 12 insertions(+)
+>  include/linux/platform_data/x86/pmc_atom.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/platform/surface/surface_gpe.c b/drivers/platform/surface/surface_gpe.c
-> index 27365cbe1ee9..c219b840d491 100644
-> --- a/drivers/platform/surface/surface_gpe.c
-> +++ b/drivers/platform/surface/surface_gpe.c
-> @@ -171,6 +171,18 @@ static const struct dmi_system_id dmi_lid_device_table[] = {
->  		},
->  		.driver_data = (void *)lid_device_props_l4D,
->  	},
-> +	{
-> +		.ident = "Surface Laptop 4 (Intel 13\")",
-> +		.matches = {
-> +			/*
-> +			 * We match for SKU here due to different variants: The
-> +			 * AMD (15") version does not rely on GPEs.
-> +			 */
-> +			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Microsoft Corporation"),
-> +			DMI_EXACT_MATCH(DMI_PRODUCT_SKU, "Surface_Laptop_4_1950:1951"),
-> +		},
-> +		.driver_data = (void *)lid_device_props_l4B,
-> +	},
->  	{
->  		.ident = "Surface Laptop Studio",
->  		.matches = {
+> diff --git a/include/linux/platform_data/x86/pmc_atom.h b/include/linux/platform_data/x86/pmc_atom.h
+> index 6807839c718b..3edfb6d4e67a 100644
+> --- a/include/linux/platform_data/x86/pmc_atom.h
+> +++ b/include/linux/platform_data/x86/pmc_atom.h
+> @@ -47,7 +47,7 @@
+>  #define	PMC_S0I2_TMR		0x88
+>  #define	PMC_S0I3_TMR		0x8C
+>  #define	PMC_S0_TMR		0x90
+> -/* Sleep state counter is in units of of 32us */
+> +/* Sleep state counter is in units of 32us */
+>  #define	PMC_TMR_SHIFT		5
+>  
+>  /* Power status of power islands */
 
