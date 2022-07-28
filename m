@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54E79C00140
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 23:53:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 844A6C00140
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 23:53:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233548AbiG1XxB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 19:53:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35288 "EHLO
+        id S233633AbiG1XxF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 19:53:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231757AbiG1Xwu (ORCPT
+        with ESMTP id S231881AbiG1Xwu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 28 Jul 2022 19:52:50 -0400
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AB85A7171A;
-        Thu, 28 Jul 2022 16:52:49 -0700 (PDT)
-Received: from localhost.localdomain (unknown [76.135.27.191])
-        by linux.microsoft.com (Postfix) with ESMTPSA id D887820FE9AC;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 78D4C6E89A;
         Thu, 28 Jul 2022 16:52:48 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com D887820FE9AC
+Received: from localhost.localdomain (unknown [76.135.27.191])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 2DA3220FE9A5;
+        Thu, 28 Jul 2022 16:52:48 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 2DA3220FE9A5
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1659052369;
-        bh=AUgYkvSQU9ibc65r7fNJmBL+pnRrox56knfluC9Psp0=;
+        s=default; t=1659052368;
+        bh=7O98qmAn6+g8y6QrqaZ8tTTvu9eWnVBeLGCQsf5st1c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YLdQu5vLfUh67N0cayijcX5/lq1FjeIDFtaKnK3fJZTpfjspOm3paWB1+5Lf6uxQQ
-         zeavhYYpiFLpbq/WOPoXbqWmQsDMUIgAwQ37OLQVxAX/iaoxBhrSR0FpbfFkdh9n/X
-         A3Dooz/2a0QT+AxJW4xu43Xxqp1VoqjLnvyMBSlU=
+        b=iI4pP1h1fp8H82UNKonSaNZ4H6Nyug3Zdi/bXNbGwUHHZnT/aI25mCu+kY+UJt3j5
+         WLnlXyk/S1xfqBtqV60v/NxL/lYIrw0QNiEKe4s9BhGGbd7lFvAGEpvJDO7tS+iL8Q
+         hGuKYOIaVEuWpVaV10L34WCJEl2gW5curhYoS+hg=
 From:   Beau Belgrave <beaub@linux.microsoft.com>
 To:     rostedt@goodmis.org, mhiramat@kernel.org,
         mathieu.desnoyers@efficios.com
 Cc:     linux-trace-devel@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [RFC PATCH v2 5/7] tracing/user_events: Register with trace namespace API
-Date:   Thu, 28 Jul 2022 16:52:39 -0700
-Message-Id: <20220728235241.2249-6-beaub@linux.microsoft.com>
+Subject: [RFC PATCH v2 2/7] tracing: Add namespace instance directory to tracefs
+Date:   Thu, 28 Jul 2022 16:52:36 -0700
+Message-Id: <20220728235241.2249-3-beaub@linux.microsoft.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220728235241.2249-1-beaub@linux.microsoft.com>
 References: <20220728235241.2249-1-beaub@linux.microsoft.com>
@@ -42,230 +42,225 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Register user_events up to the trace namespace API to allow user
-programs to interface with isolated events when required. Each namespace
-will have their own user_events_status and user_events_data files that
-have the same ABI as before, however, the system name for events created
-will be different (user_events.<namespace_name> vs user_events).
+Some tracing systems require a group or namespace isolation, such as
+user_events. The namespace directory in tracefs is a singleton like the
+instances directory. It also acts like the instances directory in that
+user-mode processes can create a directory within the namespace if they
+have appropriate permissions.
+
+This change only covers adding the ability for a tracing system to
+create the namespace directory. A system for adding and managing
+namespaces will reside within another tracing API.
+
+Link: https://lore.kernel.org/all/20220312010140.1880-1-beaub@linux.microsoft.com/
 
 Signed-off-by: Beau Belgrave <beaub@linux.microsoft.com>
 ---
- kernel/trace/trace_events_user.c | 167 ++++++++++++++++++++++++++++++-
- 1 file changed, 166 insertions(+), 1 deletion(-)
+ fs/tracefs/inode.c      | 119 ++++++++++++++++++++++++++++++++++++++--
+ include/linux/tracefs.h |   5 ++
+ 2 files changed, 118 insertions(+), 6 deletions(-)
 
-diff --git a/kernel/trace/trace_events_user.c b/kernel/trace/trace_events_user.c
-index 44f9efd58af5..9694eee27956 100644
---- a/kernel/trace/trace_events_user.c
-+++ b/kernel/trace/trace_events_user.c
-@@ -23,6 +23,10 @@
- #include "trace.h"
- #include "trace_dynevent.h"
+diff --git a/fs/tracefs/inode.c b/fs/tracefs/inode.c
+index 81d26abf486f..7bf95cc65d78 100644
+--- a/fs/tracefs/inode.c
++++ b/fs/tracefs/inode.c
+@@ -24,6 +24,11 @@
  
-+#ifdef CONFIG_TRACE_NAMESPACE
-+#include "trace_namespace.h"
-+#endif
-+
- #define USER_EVENTS_PREFIX_LEN (sizeof(USER_EVENTS_PREFIX)-1)
+ #define TRACEFS_DEFAULT_MODE	0700
  
- #define FIELD_DEPTH_TYPE 0
-@@ -180,6 +184,18 @@ static void user_event_group_destroy(struct user_event_group *group)
- 	kfree(group);
- }
- 
-+static void user_event_group_unlink(struct user_event_group *group)
-+{
-+	if (WARN_ON(refcount_read(&group->refcnt) != 1))
-+		pr_warn("user_event: Group unlink with more than 1 ref\n");
-+
-+	mutex_lock(&group_mutex);
-+	hash_del(&group->node);
-+	mutex_unlock(&group_mutex);
-+
-+	user_event_group_destroy(group);
-+}
-+
- static char *user_event_group_system_name(const char *name)
- {
- 	char *system_name;
-@@ -262,6 +278,7 @@ static struct user_event_group *user_event_group_create(const char *name,
- 
- 	return group;
- error:
-+	/* Hash table not added, safe to destroy vs unlink */
- 	if (group)
- 		user_event_group_destroy(group);
- 
-@@ -1905,6 +1922,148 @@ static int create_user_tracefs(struct dentry *parent,
- 	return -ENODEV;
- }
- 
-+#ifdef CONFIG_TRACE_NAMESPACE
-+static int user_event_ns_create(struct trace_namespace *ns)
-+{
-+	struct user_event_group *group;
-+	int ret;
-+
-+	group = user_event_group_create(ns->name, ns->id);
-+
-+	if (!group)
-+		return -ENOMEM;
-+
-+	ret = create_user_tracefs(ns->dir, group);
-+
-+	user_event_group_release(group);
-+
-+	if (ret) {
-+		user_event_group_unlink(group);
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static int user_event_ns_remove(struct trace_namespace *ns)
-+{
-+	struct user_event_group *group = user_event_group_find(ns->id);
-+	struct user_event *user;
-+	struct hlist_node *tmp;
-+	int i, ret = 0;
-+
-+	if (!group)
-+		return -ENOENT;
-+
-+	/*
-+	 * Lock out finding this namespace while we are doing this so that
-+	 * user programs trying to open a file owned by this group will block
-+	 * until we are done here. The user program upon unblocking will then
-+	 * fail to find the group if we removed it.
-+	 */
-+	mutex_lock(&group_mutex);
-+
-+	/* Ensure we have the only reference */
-+	if (refcount_read(&group->refcnt) != 2) {
-+		ret = -EBUSY;
-+		goto out;
-+	}
-+
-+	/*
-+	 * At this point no more files can be opened by user space programs
-+	 * while we are holding the group_mutex (they'll block on group_mutex).
-+	 * To ensure other parts of the kernel aren't registering something we
-+	 * also grab the group register mutex as an extra precaution.
-+	 *
-+	 * The events might be being recorded, which will result in their
-+	 * being busy and we'll bail out.
-+	 *
-+	 * NOTE: event_mutex is held, locking reg_mutex could deadlock so we
-+	 * must try to lock it and treat as busy if we cannot.
-+	 */
-+	if (!mutex_trylock(&group->reg_mutex)) {
-+		ret = -EBUSY;
-+		goto out;
-+	}
-+
-+	hash_for_each_safe(group->register_table, i, tmp, user, node) {
-+		if (!user_event_last_ref(user)) {
-+			ret = -EBUSY;
-+			break;
-+		}
-+
-+		ret = destroy_user_event(user);
-+
-+		if (ret)
-+			break;
-+	}
-+
-+	mutex_unlock(&group->reg_mutex);
-+out:
-+	mutex_unlock(&group_mutex);
-+
-+	user_event_group_release(group);
-+
-+	if (!ret)
-+		user_event_group_unlink(group);
-+
-+	return ret;
-+}
-+
-+static int user_event_ns_parse(struct trace_namespace *ns, const char *command)
-+{
-+	return -ECANCELED;
-+}
-+
-+static int user_event_ns_show(struct trace_namespace *ns, struct seq_file *m)
-+{
-+	return 0;
-+}
-+
-+static bool user_event_ns_is_busy(struct trace_namespace *ns)
-+{
-+	struct user_event_group *group = user_event_group_find(ns->id);
-+	struct user_event *user;
-+	int i;
-+	bool busy = false;
-+
-+	if (!group)
-+		return false;
-+
-+	/*
-+	 * Quick check to ensure all events aren't busy:
-+	 * The actual remove will do a more exhaustive check including
-+	 * finding if any outstanding files are opened, etc.
-+	 *
-+	 * NOTE: event_mutex is held, locking reg_mutex could deadlock so we
-+	 * must try to lock it and treat as busy if we cannot.
-+	 */
-+	if (!mutex_trylock(&group->reg_mutex))
-+		return true;
-+
-+	hash_for_each(group->register_table, i, user, node) {
-+		if (!user_event_last_ref(user)) {
-+			busy = true;
-+			break;
-+		}
-+	}
-+
-+	mutex_unlock(&group->reg_mutex);
-+
-+	user_event_group_release(group);
-+
-+	return busy;
-+}
-+
-+static struct trace_namespace_operations user_event_ns_ops = {
-+	.create = user_event_ns_create,
-+	.remove = user_event_ns_remove,
-+	.parse = user_event_ns_parse,
-+	.show = user_event_ns_show,
-+	.is_busy = user_event_ns_is_busy,
++enum tracefs_dir_type {
++	TRACEFS_DIR_INSTANCES,
++	TRACEFS_DIR_NAMESPACES,
 +};
-+#endif
 +
- static int __init trace_events_user_init(void)
- {
- 	int ret;
-@@ -1918,7 +2077,8 @@ static int __init trace_events_user_init(void)
+ static struct vfsmount *tracefs_mount;
+ static int tracefs_mount_count;
+ static bool tracefs_registered;
+@@ -50,6 +55,8 @@ static const struct file_operations tracefs_file_operations = {
+ static struct tracefs_dir_ops {
+ 	int (*mkdir)(const char *name);
+ 	int (*rmdir)(const char *name);
++	int (*ns_mkdir)(const char *name);
++	int (*ns_rmdir)(const char *name);
+ } tracefs_ops __ro_after_init;
  
- 	if (ret) {
- 		pr_warn("user_events could not register with tracefs\n");
--		user_event_group_destroy(root_group);
-+		user_event_group_release(root_group);
-+		user_event_group_unlink(root_group);
- 		root_group = NULL;
- 		return ret;
- 	}
-@@ -1926,6 +2086,11 @@ static int __init trace_events_user_init(void)
- 	if (dyn_event_register(&user_event_dops))
- 		pr_warn("user_events could not register with dyn_events\n");
- 
-+#ifdef CONFIG_TRACE_NAMESPACE
-+	if (trace_namespace_register(&user_event_ns_ops))
-+		pr_warn("user_events could not register with namespaces\n");
-+#endif
-+
- 	return 0;
+ static char *get_dname(struct dentry *dentry)
+@@ -67,9 +74,8 @@ static char *get_dname(struct dentry *dentry)
+ 	return name;
  }
  
+-static int tracefs_syscall_mkdir(struct user_namespace *mnt_userns,
+-				 struct inode *inode, struct dentry *dentry,
+-				 umode_t mode)
++static int tracefs_syscall_mkdir_core(int type, struct inode *inode,
++				      struct dentry *dentry)
+ {
+ 	char *name;
+ 	int ret;
+@@ -84,7 +90,22 @@ static int tracefs_syscall_mkdir(struct user_namespace *mnt_userns,
+ 	 * mkdir routine to handle races.
+ 	 */
+ 	inode_unlock(inode);
+-	ret = tracefs_ops.mkdir(name);
++
++	switch (type) {
++	case TRACEFS_DIR_INSTANCES:
++		ret = tracefs_ops.mkdir(name);
++		break;
++
++	case TRACEFS_DIR_NAMESPACES:
++		ret = tracefs_ops.ns_mkdir(name);
++		break;
++
++	default:
++		pr_debug("tracefs: unknown mkdir type '%d'\n", type);
++		ret = -ENOENT;
++		break;
++	}
++
+ 	inode_lock(inode);
+ 
+ 	kfree(name);
+@@ -92,7 +113,24 @@ static int tracefs_syscall_mkdir(struct user_namespace *mnt_userns,
+ 	return ret;
+ }
+ 
+-static int tracefs_syscall_rmdir(struct inode *inode, struct dentry *dentry)
++static int tracefs_syscall_mkdir(struct user_namespace *mnt_userns,
++				 struct inode *inode, struct dentry *dentry,
++				 umode_t mode)
++{
++	return tracefs_syscall_mkdir_core(TRACEFS_DIR_INSTANCES,
++					  inode, dentry);
++}
++
++static int tracefs_syscall_ns_mkdir(struct user_namespace *mnt_userns,
++				    struct inode *inode, struct dentry *dentry,
++				    umode_t mode)
++{
++	return tracefs_syscall_mkdir_core(TRACEFS_DIR_NAMESPACES,
++					  inode, dentry);
++}
++
++static int tracefs_syscall_rmdir_core(int type, struct inode *inode,
++				      struct dentry *dentry)
+ {
+ 	char *name;
+ 	int ret;
+@@ -111,7 +149,20 @@ static int tracefs_syscall_rmdir(struct inode *inode, struct dentry *dentry)
+ 	inode_unlock(inode);
+ 	inode_unlock(d_inode(dentry));
+ 
+-	ret = tracefs_ops.rmdir(name);
++	switch (type) {
++	case TRACEFS_DIR_INSTANCES:
++		ret = tracefs_ops.rmdir(name);
++		break;
++
++	case TRACEFS_DIR_NAMESPACES:
++		ret = tracefs_ops.ns_rmdir(name);
++		break;
++
++	default:
++		pr_debug("tracefs: unknown rmdir type '%d'\n", type);
++		ret = -ENOENT;
++		break;
++	}
+ 
+ 	inode_lock_nested(inode, I_MUTEX_PARENT);
+ 	inode_lock(d_inode(dentry));
+@@ -121,12 +172,30 @@ static int tracefs_syscall_rmdir(struct inode *inode, struct dentry *dentry)
+ 	return ret;
+ }
+ 
++static int tracefs_syscall_rmdir(struct inode *inode, struct dentry *dentry)
++{
++	return tracefs_syscall_rmdir_core(TRACEFS_DIR_INSTANCES,
++					  inode, dentry);
++}
++
++static int tracefs_syscall_ns_rmdir(struct inode *inode, struct dentry *dentry)
++{
++	return tracefs_syscall_rmdir_core(TRACEFS_DIR_NAMESPACES,
++					  inode, dentry);
++}
++
+ static const struct inode_operations tracefs_dir_inode_operations = {
+ 	.lookup		= simple_lookup,
+ 	.mkdir		= tracefs_syscall_mkdir,
+ 	.rmdir		= tracefs_syscall_rmdir,
+ };
+ 
++static const struct inode_operations tracefs_dir_inode_ns_operations = {
++	.lookup		= simple_lookup,
++	.mkdir		= tracefs_syscall_ns_mkdir,
++	.rmdir		= tracefs_syscall_ns_rmdir,
++};
++
+ static struct inode *tracefs_get_inode(struct super_block *sb)
+ {
+ 	struct inode *inode = new_inode(sb);
+@@ -582,6 +651,44 @@ __init struct dentry *tracefs_create_instance_dir(const char *name,
+ 	return dentry;
+ }
+ 
++/**
++ * tracefs_create_namespace_dir - create the tracing namespaces directory
++ * @name: The name of the namespaces directory to create
++ * @parent: The parent directory that the namespaces directory will exist
++ * @mkdir: The function to call when a mkdir is performed.
++ * @rmdir: The function to call when a rmdir is performed.
++ *
++ * Only one namespaces directory is allowed.
++ *
++ * The namespaces directory is special as it allows for mkdir and rmdir
++ * to be done by userspace. When a mkdir or rmdir is performed, the inode
++ * locks are released and the methods passed in (@mkdir and @rmdir) are
++ * called without locks and with the name of the directory being created
++ * within the namespaces directory.
++ *
++ * Returns the dentry of the namespaces directory.
++ */
++__init struct dentry *tracefs_create_namespace_dir(const char *name,
++					  struct dentry *parent,
++					  int (*mkdir)(const char *name),
++					  int (*rmdir)(const char *name))
++{
++	struct dentry *dentry;
++
++	/* Only allow one instance of the namespaces directory. */
++	if (WARN_ON(tracefs_ops.ns_mkdir || tracefs_ops.ns_rmdir))
++		return NULL;
++
++	dentry = __create_dir(name, parent, &tracefs_dir_inode_ns_operations);
++	if (!dentry)
++		return NULL;
++
++	tracefs_ops.ns_mkdir = mkdir;
++	tracefs_ops.ns_rmdir = rmdir;
++
++	return dentry;
++}
++
+ static void remove_one(struct dentry *victim)
+ {
+ 	simple_release_fs(&tracefs_mount, &tracefs_mount_count);
+diff --git a/include/linux/tracefs.h b/include/linux/tracefs.h
+index 99912445974c..04870dee6c87 100644
+--- a/include/linux/tracefs.h
++++ b/include/linux/tracefs.h
+@@ -33,6 +33,11 @@ struct dentry *tracefs_create_instance_dir(const char *name, struct dentry *pare
+ 					   int (*mkdir)(const char *name),
+ 					   int (*rmdir)(const char *name));
+ 
++struct dentry *tracefs_create_namespace_dir(const char *name,
++					    struct dentry *parent,
++					    int (*mkdir)(const char *name),
++					    int (*rmdir)(const char *name));
++
+ bool tracefs_initialized(void);
+ 
+ #endif /* CONFIG_TRACING */
 -- 
 2.25.1
 
