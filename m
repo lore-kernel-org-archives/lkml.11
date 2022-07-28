@@ -2,78 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE6E8C19F2A
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 07:46:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C114FC19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 07:48:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234770AbiG1Hqt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 03:46:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39536 "EHLO
+        id S234765AbiG1HsV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 03:48:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40470 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234516AbiG1Hqq (ORCPT
+        with ESMTP id S233059AbiG1HsT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 03:46:46 -0400
-Received: from smtp98.ord1d.emailsrvr.com (smtp98.ord1d.emailsrvr.com [184.106.54.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 817EF6113F
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 00:46:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=openvpn.net;
-        s=20170822-45nk5nwl; t=1658994027;
-        bh=Ll3lGOHj0SIoQtOcdzdr6ctTpQ/ZQPVtYA+Y55SrikI=;
-        h=Date:Subject:To:From:From;
-        b=Z+RYzJuxAeKcyyVCRG3+2jFgDavsQBuV36JsLrJ1tPe6u6BeRqO7P0IcZ69LFe9vV
-         lGgfrW8ycInrKG6wT9NRcN/Sc9JEvBC82riV6ifFmXWMWd5utc79AuQ2qMWarTnMqq
-         NNCmN9WnTCLd0BWqeYZfBlQN5Qjegc+XwMF76YSk=
-X-Auth-ID: antonio@openvpn.net
-Received: by smtp5.relay.ord1d.emailsrvr.com (Authenticated sender: antonio-AT-openvpn.net) with ESMTPSA id B74C6A00C2;
-        Thu, 28 Jul 2022 03:40:26 -0400 (EDT)
-Message-ID: <c490b87c-085b-baca-b7e4-c67a3ee2c25e@openvpn.net>
-Date:   Thu, 28 Jul 2022 09:41:11 +0200
+        Thu, 28 Jul 2022 03:48:19 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99F0D61703
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 00:48:17 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id d17so1625199lfa.12
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 00:48:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=fCUzkrrVti+DuQ9YZ66uDbjkm2O9p7N93LSf/4Y1rqw=;
+        b=FcT3HD9UuvhS0fZm//5zxRGb1EhPOh3t/FJB6OWvAfsVKWqT7XUYgKcSrCYv82NtFG
+         clfqrKO3uRhEgTVGdRV1V/Xe87qmNqaL7fZmyIRmrY9XGSIyhZ7SLrWncsTLE+cVcS8o
+         H2CbJ+ZeSA39R6hTegJnVjTAFXseAMScED4CPXt1byZYCJ75/2P7zx2EdpnwnvKy63Dw
+         3RyTJxsZjPZIg3fKH3tvvgRXwYqcNg5JK/gdms/Kh5nLgVR9xwfrs5LpeyZSDRptlPOO
+         jb3hFCCV2OvHbDPxfI5cOAV8yH4UC+1hD+WJIqhefTXbVk/6UM2RTuxQ6OssTd84hObL
+         ok4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=fCUzkrrVti+DuQ9YZ66uDbjkm2O9p7N93LSf/4Y1rqw=;
+        b=SmDn1S2BViq5JF/obsBqf4+Afy4VtE1k+iZlde+5e/wwYUptLtLJldbrc5SRTd4lZE
+         8wyt5su4+yOvIg4f48x3H/NdHYOYgAYQpTQCzhQ6BjsJWfBHjfzSS6mtGHZ9NQ48HDln
+         +ZWqqjGlVfjN1RfRsynql8zHnGOUL7kxBha6d/RNvnycig3z1sRV3GiRcglpgeMbQ+tj
+         sVJEoFO+1epddxCO35nLmyUMKOzstLOsIw9qfv3VB5eW26RKmfMzOTwXUw4kAz+yZQTM
+         dTKBmUUmFhDPWvDwcl44sS0EpDx9glTXHhQsDL+OnI3xwoWaSLrXkKMIlcbGQ16RVrHV
+         bLNw==
+X-Gm-Message-State: AJIora/JjYQxXCZ/Iu7R1Hxj9UTg85luWiyzxJ2NXpV8isXnamXLcXBG
+        57fIDIgiO9gNhjRDT5JDnii59Q==
+X-Google-Smtp-Source: AGRyM1uXGhPeR606LsJssvTDJlC4T3k/CuVwOkQjtbV4yuWokpohwSrNa+3v0DyoVMsl7lRB4A4mrQ==
+X-Received: by 2002:a05:6512:220a:b0:48a:7b14:d51c with SMTP id h10-20020a056512220a00b0048a7b14d51cmr8647513lfu.267.1658994495906;
+        Thu, 28 Jul 2022 00:48:15 -0700 (PDT)
+Received: from [192.168.3.197] (78-26-46-173.network.trollfjord.no. [78.26.46.173])
+        by smtp.gmail.com with ESMTPSA id b3-20020a056512304300b0048a7ebb3151sm68149lfb.181.2022.07.28.00.48.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Jul 2022 00:48:15 -0700 (PDT)
+Message-ID: <95cbcda8-d1bc-376c-b338-92d1b923f04a@linaro.org>
+Date:   Thu, 28 Jul 2022 09:48:13 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [RFC 1/1] net: introduce OpenVPN Data Channel Offload (ovpn-dco)
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 4/4] dt-bindings: firmware: Add Qualcomm UEFI Secure
+ Application client
 Content-Language: en-US
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
-References: <20220719014704.21346-1-antonio@openvpn.net>
- <20220719014704.21346-2-antonio@openvpn.net> <YtbNBUZ0Kz7pgmWK@lunn.ch>
-From:   Antonio Quartulli <antonio@openvpn.net>
-Organization: OpenVPN Inc.
-In-Reply-To: <YtbNBUZ0Kz7pgmWK@lunn.ch>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Maximilian Luz <luzmaximilian@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Ard Biesheuvel <ardb@kernel.org>
+Cc:     Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Steev Klimaszewski <steev@kali.org>,
+        Shawn Guo <shawn.guo@linaro.org>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-arm-msm@vger.kernel.org, linux-efi@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>
+References: <20220723224949.1089973-1-luzmaximilian@gmail.com>
+ <20220723224949.1089973-5-luzmaximilian@gmail.com>
+ <e88d1036-dc58-3fc8-c388-edba9b2d62a7@linaro.org>
+ <87c19c5a-d7f4-7183-1322-f62267e01b3b@gmail.com>
+ <11e5c369-c0da-7756-b9e2-ac375dc78e9d@linaro.org>
+ <2e522bcd-5d55-e87f-126c-514f5edaa560@gmail.com>
+ <53a602e2-0590-6c6a-597b-fd55faa3a4ab@linaro.org>
+ <acd7b231-3167-e35c-5cdf-8b3127a7d710@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <acd7b231-3167-e35c-5cdf-8b3127a7d710@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Classification-ID: 82aa384a-5660-44d4-8ad5-96a212e0778c-1-1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
-
-On 19/07/2022 17:25, Andrew Lunn wrote:
->> +static void ovpn_get_drvinfo(struct net_device *dev,
->> +			     struct ethtool_drvinfo *info)
->> +{
->> +	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
->> +	strscpy(info->version, DRV_VERSION, sizeof(info->version));
->> +	strscpy(info->bus_info, "ovpn", sizeof(info->bus_info));
+On 27/07/2022 15:00, Maximilian Luz wrote:
+>>> Then again, if you prefer to name everything based on
+>>> "qcom,<device>-<soc>" I don't have any strong arguments against it and
+>>> I'm happy to change that. I just think it will unnecessarily introduce
+>>> a bunch of compatibles and doesn't reflect the interface "versioning"
+>>> situation as I see it.
+>>
+>> Why bunch? All devices could bind to one specific compatible, as they
+>> are compatible.
 > 
-> version is generally considered useless information if it comes from
-> the driver. You have no idea if this is version 42 in net-next, or
-> some backported version in an enterprise kernel with lots of out of
-> tree patches. The driver is not standalone, it runs inside the
-> kernel. So in order to understand a bug report, you need to know what
-> kernel it is. If you don't fill in version, the core will with the
-> kernel version, which is much more useful.
+> Ah, I think I misunderstood you there. I thought you were advocating for
+> creating compatibles for each SoC just because it's a new SoC and things
+> might be different. I'm not at all against naming this something like
+> qcom,tee-uefisecapp-sc8180x then using that on all platforms that work.
+> I just didn't like the idea of having a bunch of different
+> qcom,tee-uefisecapp-<soc> pointing to the exact same thing without any
+> difference at all.
 
-True.
+You start with one specific compatible and if needed later either add
+more specific upfront (qcom,sc8280x-tee-uefisecapp,
+qcom,sc8180x-tee-uefisecapp) or as entirely new one if it is not compatible.
 
-However, I guess I will still fill MODULE_VERSION() with a custom 
-string. This may also be useful when building the module out-of-tree.
+> 
+>>>>>>> +
+>>>>>>> +required:
+>>>>>>> +  - compatible
+>>>>>>> +
+>>>>>>> +additionalProperties: false
+>>>>>>> +
+>>>>>>> +examples:
+>>>>>>> +  - |
+>>>>>>> +    firmware {
+>>>>>>> +        scm {
+>>>>>>> +            compatible = "qcom,scm-sc8180x", "qcom,scm";
+>>>>>>> +        };
+>>>>>>> +        tee-uefisecapp {
+>>>>>>> +            compatible = "qcom,tee-uefisecapp";
+>>>>>>
+>>>>>> You did not model here any dependency on SCM. This is not full
+>>>>>> description of the firmware/hardware
+>>>>>
+>>>>> How would I do that? A lot of other stuff also depends on SCM being
+>>>>> present (e.g. qcom_q6v5_pas for loading mdt files) and I don't see them
+>>>>> declare this in the device tree. As far as I can tell, SCM is pretty
+>>>>> much expected to be there at all times (i.e. can't be unloaded) and
+>>>>> drivers check for it when probing via qcom_scm_is_available(),
+>>>>> deferring probe if not.
+>>>>
+>>>> It seems this will be opening a can of worms...
+>>>
+>>> Indeed.
+>>>
+>>>> The problem with existing approach is:
+>>>> 1. Lack of any probe ordering or probe deferral support.
+>>>> 2. Lack of any other dependencies, e.g. for PM.
+>>>
+>>> I'm not entirely sure what you mean by "lack of probe deferral support".
+>>> We have qcom_scm_is_available() and defer probe if that fails. So
+>>> deferral works, unless I'm misunderstanding something.
+>>
+>> And how do you differentiate that qcom_scm_is_available() failed because
+>> it is not yet available (defer probe) or it is broken and will never
+>> load? All regular consumer-provider interfaces have it sorted out.
+> 
+> Fair point. By shifting that to device links you'll at least know what
+> it's waiting for and the driver won't attempt to probe until that's
+> resolved. But your question applies to that then as well: How do you
+> differentiate between the device link or supplier being broken somehow
+> and the supplier being just not ready yet?
 
-Thanks for the hint!
+For example like tegra_bpmp_get() is doing.
 
-Regards,
-
--- 
-Antonio Quartulli
-OpenVPN Inc.
+Best regards,
+Krzysztof
