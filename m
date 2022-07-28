@@ -2,68 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69F8EC04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 12:45:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D9C4C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 12:45:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236911AbiG1Mpj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 08:45:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55558 "EHLO
+        id S237007AbiG1Mps (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 08:45:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236117AbiG1Mph (ORCPT
+        with ESMTP id S237340AbiG1Mpl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 08:45:37 -0400
-Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA5CE1A5;
-        Thu, 28 Jul 2022 05:45:30 -0700 (PDT)
-X-QQ-mid: bizesmtp65t1659012326tdbgplrz
-Received: from localhost.localdomain ( [171.223.98.80])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 28 Jul 2022 20:45:25 +0800 (CST)
-X-QQ-SSF: 01000000002000F0U000B00A0000020
-X-QQ-FEAT: SFhf6fKhx//w7iSJlCXhT6KJ3Wj3HCbMRbGOtz0uibZcblkdhhoPLS/lcCr+5
-        oXTAHNKyFmkR3glz2P8kIb2ytq6V1M1A+hBx/ENKNVok34+bOiWlyepamY3Z7Y3b9yTUY8v
-        xWtZidhoTStqYm1/zRabKyo18i8qPnpyOdbGD08FNXwbvQjjn4yDJ3YdBUFQNj/JjNj4nNK
-        J1uJSFxjHEMS5lN9K/4Giat1tr5jquS/uctZLvolG74ForJoQsQIuaesBlZlgsYL9YeiGyN
-        cfd9W1/DL2ZkQBZhLEoGSzfwMi6I9yVEosmkSzggwT5A43GWafji23FtL71pLk3mc4LV4dq
-        3oqN5euJ2DFTRKlFnTbWG8AQZUOjaHZKV1RWC1pFoTuhCl1iDpJDMzxsy5fJe+ksdITWsyy
-X-QQ-GoodBg: 0
-From:   Jason Wang <wangborong@cdjrlc.com>
-To:     tony@atomide.com
-Cc:     linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH] bus: ti-sysc: Fix comment typo
-Date:   Mon, 25 Jul 2022 12:43:33 +0800
-Message-Id: <20220725044333.9161-1-wangborong@cdjrlc.com>
-X-Mailer: git-send-email 2.35.1
+        Thu, 28 Jul 2022 08:45:41 -0400
+Received: from m12-18.163.com (m12-18.163.com [220.181.12.18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ED4A0248C3
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 05:45:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=zFbZL
+        17nGL4pVWSrFgSLqXgwNxxFONbEFRuzb2D+CqY=; b=RE32iP5dk4SPFMxv31Pou
+        +Zd7v4nBa0j6gn+o7uKHHgqDuh7JwoyptrF0p803DNSO6OlwEFhI/tl4J8fDKkjZ
+        fL/8EHZ3PO1TGwa/1RJ4+Bo8Xmef1A1ipQnKWSelAMI7xy+PPDZAN8Jwe6rLB1MQ
+        0l2Mmj4vMWiCnGdFtJI59g=
+Received: from zd-ThinkPad-X390.kernelci.com (unknown [175.9.180.245])
+        by smtp14 (Coremail) with SMTP id EsCowAC31bG0hOJihOXfPg--.2209S2;
+        Thu, 28 Jul 2022 20:44:38 +0800 (CST)
+From:   zhangduo <zduo006@163.com>
+To:     zduo006@163.com
+Cc:     anil.s.keshavamurthy@intel.com, davem@davemloft.net,
+        linux-kernel@vger.kernel.org, mhiramat@kernel.org,
+        naveen.n.rao@linux.ibm.com, zhangduo@kylinos.cn
+Subject: [PATCH 1/2] kprobes: fix the comments error
+Date:   Thu, 28 Jul 2022 20:44:27 +0800
+Message-Id: <20220728124427.59746-1-zduo006@163.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
+X-CM-TRANSID: EsCowAC31bG0hOJihOXfPg--.2209S2
+X-Coremail-Antispam: 1Uf129KBjvdXoWrAFyfKFW3uw4UZw15Xr17GFg_yoWxGwb_Cw
+        18KrW29r4Y9rW0vrn0kw4Fqrs2kry3WF4rC34UGFZ7tw43Jry5tFs8Wr1qqa93W34DGFWD
+        Aw15Wr4qqF43ZjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7xRRNeoUUUUUU==
+X-Originating-IP: [175.9.180.245]
+X-CM-SenderInfo: p2gx0iiqw6il2tof0z/1tbiYxZMc1aEKMWpJwAAs7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The double `the' is duplicated in the comment, remove one.
+From: zhangduo <zhangduo@kylinos.cn>
 
-Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
+fix the comments to 'Copy the insn slot of ap to p'
+
+Signed-off-by: zhangduo <zhangduo@kylinos.cn>
 ---
- drivers/bus/ti-sysc.c | 2 +-
+ kernel/kprobes.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/bus/ti-sysc.c b/drivers/bus/ti-sysc.c
-index 51d772bb8046..2386e8013e18 100644
---- a/drivers/bus/ti-sysc.c
-+++ b/drivers/bus/ti-sysc.c
-@@ -915,7 +915,7 @@ static int sysc_check_registers(struct sysc *ddata)
-  * within the interconnect target module range. For example, SGX has
-  * them at offset 0x1fc00 in the 32MB module address space. And cpsw
-  * has them at offset 0x1200 in the CPSW_WR child. Usually the
-- * the interconnect target module registers are at the beginning of
-+ * interconnect target module registers are at the beginning of
-  * the module range though.
-  */
- static int sysc_ioremap(struct sysc *ddata)
+diff --git a/kernel/kprobes.c b/kernel/kprobes.c
+index f214f8c08..4f3e84343 100644
+--- a/kernel/kprobes.c
++++ b/kernel/kprobes.c
+@@ -1349,7 +1349,7 @@ static int register_aggr_kprobe(struct kprobe *orig_p, struct kprobe *p)
+ 			    | KPROBE_FLAG_DISABLED;
+ 	}
+ 
+-	/* Copy the insn slot of 'p' to 'ap'. */
++	/* Copy the insn slot of 'ap' to 'p'. */
+ 	copy_kprobe(ap, p);
+ 	ret = add_new_kprobe(ap, p);
+ 
 -- 
-2.35.1
-
+2.25.1
 
