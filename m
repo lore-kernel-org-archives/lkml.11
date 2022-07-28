@@ -2,72 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40B20C19F2B
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 07:43:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2D42C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 07:43:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234635AbiG1HnC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 03:43:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34670 "EHLO
+        id S234665AbiG1Hnl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 03:43:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234230AbiG1HnB (ORCPT
+        with ESMTP id S234641AbiG1Hnh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 03:43:01 -0400
-Received: from out20-206.mail.aliyun.com (out20-206.mail.aliyun.com [115.124.20.206])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA55960685;
-        Thu, 28 Jul 2022 00:42:58 -0700 (PDT)
-X-Alimail-AntiSpam: AC=CONTINUE;BC=0.1063008|-1;BR=01201311R191S62rulernew998_84748_2000303;CH=blue;DM=|CONTINUE|false|;DS=CONTINUE|ham_regular_dialog|0.168038-0.000676144-0.831286;FP=0|0|0|0|0|-1|-1|-1;HT=ay29a033018047204;MF=longjin@ringotek.cn;NM=1;PH=DS;RN=7;RT=7;SR=0;TI=SMTPD_---.OfhcAno_1658994164;
-Received: from localhost.localdomain(mailfrom:longjin@RinGoTek.cn fp:SMTPD_---.OfhcAno_1658994164)
-          by smtp.aliyun-inc.com;
-          Thu, 28 Jul 2022 15:42:55 +0800
-From:   fslongjin <longjin@RinGoTek.cn>
-To:     corbet@lwn.net, twoerner@gmail.com, keescook@chromium.org
-Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        fslongjin <fslongjin@vip.qq.com>, longjin <longjin@RinGoTek.cn>
-Subject: [PATCH] Documentation: Fixed errors in the title level of coding style documents
-Date:   Thu, 28 Jul 2022 15:42:24 +0800
-Message-Id: <20220728074224.155298-1-longjin@RinGoTek.cn>
-X-Mailer: git-send-email 2.20.1
+        Thu, 28 Jul 2022 03:43:37 -0400
+X-Greylist: delayed 187 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 28 Jul 2022 00:43:36 PDT
+Received: from smtp86.ord1d.emailsrvr.com (smtp86.ord1d.emailsrvr.com [184.106.54.86])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4394461109
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 00:43:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=openvpn.net;
+        s=20170822-45nk5nwl; t=1658994214;
+        bh=COnHq0q10jhFOxbkwvLuP4sHO7hzKD2UTU9fvogld5o=;
+        h=Date:Subject:To:From:From;
+        b=imTyKsUTDpVzxEuwveDG9Vi/iPpqKWnZg0vHRucblp1d5tQO6MuTx+7WB+8L2f2dk
+         YW9WYmM4V2DSzo6pGqIjf7+RQEdfKJZq1B33HaqSQhxGDR/ErZ21+856eJAyrStgrV
+         eaPQ4qTYUGlrESkf2GsmhGL5N4yvZI+rwrVuiJxg=
+X-Auth-ID: antonio@openvpn.net
+Received: by smtp3.relay.ord1d.emailsrvr.com (Authenticated sender: antonio-AT-openvpn.net) with ESMTPSA id 9B1F460090;
+        Thu, 28 Jul 2022 03:43:33 -0400 (EDT)
+Message-ID: <d645f6e1-d977-e2ea-1f8e-0b5458c9438e@openvpn.net>
+Date:   Thu, 28 Jul 2022 09:44:18 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [RFC 1/1] net: introduce OpenVPN Data Channel Offload (ovpn-dco)
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
+References: <20220719014704.21346-1-antonio@openvpn.net>
+ <20220719014704.21346-2-antonio@openvpn.net> <YtbPtkF1Ah9xrBam@lunn.ch>
+From:   Antonio Quartulli <antonio@openvpn.net>
+Organization: OpenVPN Inc.
+In-Reply-To: <YtbPtkF1Ah9xrBam@lunn.ch>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Classification-ID: 8cf5a843-5e45-45b4-8822-23f11e9ecabf-1-1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: fslongjin <fslongjin@vip.qq.com>
+Hi,
 
-In Section 3, `Placing Braces and Spaces`. In the previous document, only
-`Spaces` is written in the subtitle without the `Braces`. I think this
- may be a format error caused by negligence, so I fixed it.
+On 19/07/2022 17:37, Andrew Lunn wrote:
+>> +static int ovpn_net_change_mtu(struct net_device *dev, int new_mtu)
+>> +{
+>> +	if (new_mtu < IPV4_MIN_MTU ||
+>> +	    new_mtu + dev->hard_header_len > IP_MAX_MTU)
+>> +		return -EINVAL;
+> 
+> If you set dev->min_mtu and dev->max_mtu, the core will validate this
+> for you, see dev_validate_mtu().
 
-Signed-off-by: longjin <longjin@RinGoTek.cn>
-Signed-off-by: fslongjin <fslongjin@vip.qq.com>
----
- Documentation/process/coding-style.rst | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+Yeah, thanks for the pointer.
 
-diff --git a/Documentation/process/coding-style.rst b/Documentation/process/coding-style.rst
-index 03eb53fd029a..2a26bcb9f391 100644
---- a/Documentation/process/coding-style.rst
-+++ b/Documentation/process/coding-style.rst
-@@ -120,6 +120,9 @@ that breaks the ability to grep for them.
- 3) Placing Braces and Spaces
- ----------------------------
- 
-+3.1) Braces
-+***********
-+
- The other issue that always comes up in C styling is the placement of
- braces.  Unlike the indent size, there are few technical reasons to
- choose one placement strategy over the other, but the preferred way, as
-@@ -231,7 +234,7 @@ Also, use braces when a loop contains more than a single simple statement:
- 			do_something();
- 	}
- 
--3.1) Spaces
-+3.2) Spaces
- ***********
- 
- Linux kernel style for use of spaces depends (mostly) on
+> 
+>> +static int ovpn_get_link_ksettings(struct net_device *dev,
+>> +				   struct ethtool_link_ksettings *cmd)
+>> +{
+>> +	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.supported, 0);
+>> +	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.advertising, 0);
+> 
+> These two should not be needed. Look at tun, veth etc, they don't set
+> them.
+
+I found this in tun.c:
+
+3512         ethtool_link_ksettings_zero_link_mode(cmd, supported);
+3513         ethtool_link_ksettings_zero_link_mode(cmd, advertising);
+
+Which seems a more appropriate version of my code, no?
+
+Regards,
+
 -- 
-2.20.1
-
+Antonio Quartulli
+OpenVPN Inc.
