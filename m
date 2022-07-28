@@ -2,86 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DE8AC04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 14:58:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 617A6C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 14:58:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230130AbiG1O6T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 10:58:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34302 "EHLO
+        id S229995AbiG1O6d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 10:58:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229680AbiG1O6D (ORCPT
+        with ESMTP id S230469AbiG1O61 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 10:58:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A744D25D5
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 07:58:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63F70B82483
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 14:58:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7C37C433D6;
-        Thu, 28 Jul 2022 14:57:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659020280;
-        bh=6M9eeRLOMpyd2fv8oifdFaKJnoAlGspljCnu9f2IJFk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=vBFc2PN+5phwjOZXiEV258XXch99IrfdLHkkQWzoQDxy5izyp6BpHFkat4b8DnWJX
-         DAq1/mozFFHXc3OEAGCdZD47/rEuRSqeOhfZmFfOcf1umPuBLrYQlf97iFI+d62Xku
-         R4sGoBNdPBtxe0eCEu6FqU+b/mLMkpSQ9VPSLzLCDRPC4veI1ujaBh+jzOog1lNryH
-         qRYXp8ZyrRuJuMtR+gcLEP54WGMUgC1q6NHpl57UEwE2wgCvIsJhWQWAeiEX0kuyqR
-         nrs8BDJ7fnyZr8iJ1/q6r4zYlBTBFm9XW9MV1N1n+TPuHrBJh7p/6Zvz5vtCP+hnJL
-         Vv3dKx7IYcewA==
-Date:   Thu, 28 Jul 2022 22:48:58 +0800
-From:   Jisheng Zhang <jszhang@kernel.org>
-To:     Ard Biesheuvel <ardb@kernel.org>
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] arm64: save movk instructions in mov_q when the lower
- 16|32 bits are all zero
-Message-ID: <YuKh2pmJC6/17Riy@xhacker>
-References: <20220709084830.3124-1-jszhang@kernel.org>
- <CAMj1kXEy7_zyDqQC_e9Rf1a8HuMBz_HbZOAP-WBzeeDVu8Mwmw@mail.gmail.com>
+        Thu, 28 Jul 2022 10:58:27 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB80B10F3;
+        Thu, 28 Jul 2022 07:58:22 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id mf4so3625945ejc.3;
+        Thu, 28 Jul 2022 07:58:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=tTSXNaw/6JZLwn2P0PGnuQ0WLB4Qu3elZxHzblM8fpU=;
+        b=c1vY1amK3SSb5Sk378Tzj2r3I4dfUYqRyR9XZ9mgTFi9sNzZ23GuRdYijNYiu2eX53
+         fdsboL/PunLjY5acbyZT/0UEAs/liP15aCEuppzTzwjXwLcsMMG5jUeuBECGpO9nnuUX
+         zXpoNt5vlZnf/4pVrX/7785OC8FVRcxwc0TqmFIbS3cqjDUejPDzp/8oEdwWPd363GbD
+         0+UmnBhekSdZkddQnF1bwWpmJ7EQAIdBvhqlsKgwl01vpePNvsgcCfHirsTZTdhj3Ady
+         NAWy/pA/+lGohtpaER7TXv1dWORYSk4JeTwNjJx2pzEAFaZ8Yj+Nqowj9RPJbPa7Qiaw
+         HazQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=tTSXNaw/6JZLwn2P0PGnuQ0WLB4Qu3elZxHzblM8fpU=;
+        b=s6F7Zmp294qtsm2h1ZfBixL4+zzDGEz1JY0mIur2HPLg1I9onFMreYl0u5Ni1/mdwb
+         nxPa+ejm2WfYkiWg0dnHp9fMhxkcCIpmS4/BpjAfUYp4VYM9rCbijyqYc/qoZuZjUJkP
+         osz/4LxEcv/HJ4Dio13nkCZDWzbp9hWp17UcALJh3Dc17+l/vREGccUB1lTeLXLvS2uy
+         qknuLzb9GXuR5iaQpmpEme0xQ2elVPkxtFrKCISFXbQyKXQ/lyQ+vX3byOzK63hGfWJm
+         E4SgOm+o7DsR+r5hQee9ejn9bcLF1U/6OgvkN5xdCxImVrzZEFLE7JHPMPF8VTMQBLdO
+         3C+Q==
+X-Gm-Message-State: AJIora8hC0YE7FZ7FNksR2RxDtVIytXmvgSZ00X2H5f8GLzM1TBdfuNv
+        cUai5ke/A3Wp4emKcO1DHqM=
+X-Google-Smtp-Source: AGRyM1upxJMWgGwceVicP+qb2cN5gr+enz0dwc0rY8PAmdQ62kOzzpZJEXUWQxNPjQhxhTMGjnE7kA==
+X-Received: by 2002:a17:907:6818:b0:72b:5bac:c3a3 with SMTP id qz24-20020a170907681800b0072b5bacc3a3mr20623516ejc.139.1659020301357;
+        Thu, 28 Jul 2022 07:58:21 -0700 (PDT)
+Received: from [0.0.0.0] (tor-exit-60.for-privacy.net. [185.220.101.60])
+        by smtp.gmail.com with ESMTPSA id cq3-20020a056402220300b0043bc300c499sm827109edb.79.2022.07.28.07.58.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Jul 2022 07:58:21 -0700 (PDT)
+Message-ID: <8e694cb6-c3dc-74e3-6804-fc532f108523@gmail.com>
+Date:   Thu, 28 Jul 2022 17:57:58 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAMj1kXEy7_zyDqQC_e9Rf1a8HuMBz_HbZOAP-WBzeeDVu8Mwmw@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 2/2] efi: earlycon: Add support for generic framebuffers
+ and move to fbdev subsystem
+Content-Language: en-US
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Helge Deller <deller@gmx.de>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Borislav Petkov <bp@suse.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Kees Cook <keescook@chromium.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Michal Suchanek <msuchanek@suse.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Wei Ming Chen <jj251510319013@gmail.com>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        Tony Lindgren <tony@atomide.com>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        linux-efi <linux-efi@vger.kernel.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Rob Herring <robh@kernel.org>
+References: <20220728142824.3836-1-markuss.broks@gmail.com>
+ <20220728142824.3836-3-markuss.broks@gmail.com>
+ <CAK8P3a2fZ9O6vSEyxY1KW71pG_Oyvwxp3zTbW2GuaSD6aj+Qfw@mail.gmail.com>
+From:   Markuss Broks <markuss.broks@gmail.com>
+In-Reply-To: <CAK8P3a2fZ9O6vSEyxY1KW71pG_Oyvwxp3zTbW2GuaSD6aj+Qfw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 08:15:11AM -0700, Ard Biesheuvel wrote:
-> On Sat, 9 Jul 2022 at 01:58, Jisheng Zhang <jszhang@kernel.org> wrote:
-> >
-> > Currently mov_q is used to move a constant into a 64-bit register,
-> > when the lower 16 or 32bits of the constant are all zero, the mov_q
-> > emits one or two useless movk instructions. If the mov_q macro is used
-> > in hot code path, we want to save the movk instructions as much as
-> > possible. For example, when CONFIG_ARM64_MTE is 'Y' and
-> > CONFIG_KASAN_HW_TAGS is 'N', the following code in __cpu_setup()
-> > routine is the pontential optimization target:
-> >
-> >         /* set the TCR_EL1 bits */
-> >         mov_q   x10, TCR_MTE_FLAGS
-> >
-> > Before the patch:
-> >         mov     x10, #0x10000000000000
-> >         movk    x10, #0x40, lsl #32
-> >         movk    x10, #0x0, lsl #16
-> >         movk    x10, #0x0
-> >
-> > After the patch:
-> >         mov     x10, #0x10000000000000
-> >         movk    x10, #0x40, lsl #32
-> >
-> > Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+Hi Arnd,
+
+On 7/28/22 17:48, Arnd Bergmann wrote:
+> On Thu, Jul 28, 2022 at 4:28 PM Markuss Broks <markuss.broks@gmail.com> wrote:
+>>
+>> Add early console support for generic linear framebuffer devices.
+>> This driver supports probing from cmdline early parameters
+>> or from the device-tree using information in simple-framebuffer node.
+>> The EFI functionality should be retained in whole.
+>> The driver was disabled on ARM because of a bug in early_ioremap
+>> implementation on ARM.
+>>
+>> Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
+>> ---
+>>   .../admin-guide/kernel-parameters.txt         |  12 +-
+>>   MAINTAINERS                                   |   5 +
+>>   drivers/firmware/efi/Kconfig                  |   6 +-
+>>   drivers/firmware/efi/Makefile                 |   1 -
+>>   drivers/firmware/efi/earlycon.c               | 246 --------------
+>>   drivers/video/fbdev/Kconfig                   |  11 +
+>>   drivers/video/fbdev/Makefile                  |   1 +
+>>   drivers/video/fbdev/earlycon.c                | 301 ++++++++++++++++++
 > 
-> This is broken for constants that have 0xffff in the top 16 bits, as
-> in that case, we will emit a MOVN/MOVK/MOVK sequence, and omitting the
-> MOVKs will set the corresponding field to 0xffff not 0x0.
+> It looks like this is not actually related to fbdev, and since drivers are
+> moving from fbdev/simplefb towards drm/simpledrm, maybe it would be
+> better to put this into either drivers/gpu/drm/tiny/ or possibly
+> drivers/video/console to let this be used without enabling fbdev?
 
-Thanks so much for this hint. I think you are right about the 0xffff in
-top 16bits case.
+Ideally this shouldn't depend on anything, because it isn't utilizing 
+any of fbdev code and won't be utilizing any of drm/console code. I 
+agree that either of those would be a better place for it, but which one 
+do you think would suit more for this driver?
 
+> 
+>          Arnd
+
+- Markuss
