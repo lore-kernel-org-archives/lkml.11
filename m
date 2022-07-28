@@ -2,56 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D769FC04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 10:44:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD6BDC04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 10:45:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236493AbiG1Ko6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 06:44:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39714 "EHLO
+        id S236111AbiG1KpB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 06:45:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236101AbiG1Koa (ORCPT
+        with ESMTP id S236342AbiG1Koe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 06:44:30 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 408DF5C94D;
-        Thu, 28 Jul 2022 03:44:14 -0700 (PDT)
-Date:   Thu, 28 Jul 2022 10:44:11 -0000
+        Thu, 28 Jul 2022 06:44:34 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 257306558F;
+        Thu, 28 Jul 2022 03:44:16 -0700 (PDT)
+Date:   Thu, 28 Jul 2022 10:44:13 -0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1659005052;
+        s=2020; t=1659005054;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ybF8URd1PmztB8kzuUvfuNf5s6jhru3hZaNie9RcgvI=;
-        b=TmDrl5dLU9jNLHe0+MSox6Hxp33xostTtHzytehj/OyZ14RbgBwef9mzZ5rQcxT86Wzu5E
-        JJaE431a4vgLTXAWxtT3dsG+oh031xHNT6rlMiAbS2HcR8zgl5TfpAtrxJqj0pd46r+wbt
-        O0EtrFrLcvy2Oi5oj+luBKc8spqrn21+tslC7UoNCNt71H//y2WrO3b+wY/IofyQQQzLhW
-        HKp9hInVPUXLo9KZlkreGBMXgrs8MY4FdDHLISUN1XBUsDDoViwtzc4Tgl7jDVj6YKuizB
-        cY5FZZGRxHmtl1vDPrZqNBk6ZVd8J0Pid6VXMs3IkicVAFKGVE6rEafk17vXcQ==
+        bh=f6BZ9e/h8EecDhjgWxXbZDHW7zQIJGId9eNRPxRGTT0=;
+        b=F0EsYAtejxbHRceBYStSHl/4D5vnBVlEi7sq+8ywNBcHpBSJP0BqFtho3fzEQtbgEb0bTN
+        6B4fkEpd/cdW63FpB4Q0ujlXN2Gff14lmUAC7jmI8315iul0SgRC5TfL4+WLGRSxND9Ssf
+        FVCc3wzCPAoP0Y5CPNiVridQ2Kh9XjrAhxiakvwEhphYLA/dWl8MivrCDq0TtDRgu+SAt1
+        U7m/Blx5sM5SLTKncQFHP7pIea1P2GYy+bhvAk1euTAqTXESpBXN+giAQEzD5bh3q7bSwb
+        2tmt1aJQVaQEcgh6iy9QuncqiOcLhciBkTNMTh7CnNXB6KDVZbqeOmfl2d61Eg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1659005052;
+        s=2020e; t=1659005054;
         h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
          message-id:message-id:to:to:cc:cc:mime-version:mime-version:
          content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ybF8URd1PmztB8kzuUvfuNf5s6jhru3hZaNie9RcgvI=;
-        b=Ol41gqAigzowCmezzqe6Oqct3hVmpyxBcB9VoN0siyQ2gHkvj92j+I1x3IEvZs4jkPDXFg
-        2317iepT//71BSDw==
+        bh=f6BZ9e/h8EecDhjgWxXbZDHW7zQIJGId9eNRPxRGTT0=;
+        b=Dxz3YOZC+I0xlnnorCwqSGjR0eUuCq9v4DFdRNkNxbuXXEn7jw726PdvsxqZEbMN2Z12JQ
+        UOd+D5WMBDYrScDg==
 From:   "tip-bot2 for Claudiu Beznea" <tip-bot2@linutronix.de>
 Sender: tip-bot2@linutronix.de
 Reply-to: linux-kernel@vger.kernel.org
 To:     linux-tip-commits@vger.kernel.org
-Subject: [tip: timers/core] clocksource/drivers/timer-microchip-pit64b: Fix
- compilation warnings
+Subject: [tip: timers/core] clocksource/drivers/timer-microchip-pit64b: Remove
+ suspend/resume ops for ce
 Cc:     Claudiu Beznea <claudiu.beznea@microchip.com>,
         Daniel Lezcano <daniel.lezcano@linaro.org>, x86@kernel.org,
         linux-kernel@vger.kernel.org
-In-Reply-To: <20220609094041.1796372-4-claudiu.beznea@microchip.com>
-References: <20220609094041.1796372-4-claudiu.beznea@microchip.com>
+In-Reply-To: <20220609094041.1796372-2-claudiu.beznea@microchip.com>
+References: <20220609094041.1796372-2-claudiu.beznea@microchip.com>
 MIME-Version: 1.0
-Message-ID: <165900505133.15455.9928775370704382250.tip-bot2@tip-bot2>
+Message-ID: <165900505324.15455.10001237218485518496.tip-bot2@tip-bot2>
 Robot-ID: <tip-bot2@linutronix.de>
 Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
 Content-Type: text/plain; charset="utf-8"
@@ -62,60 +62,98 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 The following commit has been merged into the timers/core branch of tip:
 
-Commit-ID:     278150b2151ee77ab66204ae2e53a3f94cb4b015
-Gitweb:        https://git.kernel.org/tip/278150b2151ee77ab66204ae2e53a3f94cb4b015
+Commit-ID:     2c9c4c9e543de46a8031d5300e3036a3a89bad28
+Gitweb:        https://git.kernel.org/tip/2c9c4c9e543de46a8031d5300e3036a3a89bad28
 Author:        Claudiu Beznea <claudiu.beznea@microchip.com>
-AuthorDate:    Thu, 09 Jun 2022 12:40:41 +03:00
+AuthorDate:    Thu, 09 Jun 2022 12:40:39 +03:00
 Committer:     Daniel Lezcano <daniel.lezcano@linaro.org>
-CommitterDate: Sat, 16 Jul 2022 00:52:43 +02:00
+CommitterDate: Sat, 16 Jul 2022 00:52:31 +02:00
 
-clocksource/drivers/timer-microchip-pit64b: Fix compilation warnings
+clocksource/drivers/timer-microchip-pit64b: Remove suspend/resume ops for ce
 
-Fix the following compilation warnings:
-timer-microchip-pit64b.c:68: warning: cannot understand function prototype: 'struct mchp_pit64b_clkevt '
-timer-microchip-pit64b.c:82: warning: cannot understand function prototype: 'struct mchp_pit64b_clksrc '
-timer-microchip-pit64b.c:283: warning: Function parameter or member 'timer' not described in 'mchp_pit64b_init_mode'
-timer-microchip-pit64b.c:283: warning: Function parameter or member 'max_rate' not described in 'mchp_pit64b_init_mode'
+Remove suspend and resume ops for clockevent and add set_state_oneshot()
+instead. Along with this mchp_pit64b_{suspend, resume}() were called on
+proper function to disable/enable clocks. This will allow disabling clocks
+for clockevent in case it is not selected as active clockevent.
 
 Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Link: https://lore.kernel.org/r/20220609094041.1796372-4-claudiu.beznea@microchip.com
+Link: https://lore.kernel.org/r/20220609094041.1796372-2-claudiu.beznea@microchip.com
 Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 ---
- drivers/clocksource/timer-microchip-pit64b.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/clocksource/timer-microchip-pit64b.c | 30 ++++++++++---------
+ 1 file changed, 16 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/clocksource/timer-microchip-pit64b.c b/drivers/clocksource/timer-microchip-pit64b.c
-index f507056..d5f1436 100644
+index abce83d..b512593 100644
 --- a/drivers/clocksource/timer-microchip-pit64b.c
 +++ b/drivers/clocksource/timer-microchip-pit64b.c
-@@ -61,7 +61,7 @@ struct mchp_pit64b_timer {
- };
+@@ -173,7 +173,8 @@ static int mchp_pit64b_clkevt_shutdown(struct clock_event_device *cedev)
+ {
+ 	struct mchp_pit64b_timer *timer = clkevt_to_mchp_pit64b_timer(cedev);
  
- /**
-- * mchp_pit64b_clkevt - PIT64B clockevent data structure
-+ * struct mchp_pit64b_clkevt - PIT64B clockevent data structure
-  * @timer: PIT64B timer
-  * @clkevt: clockevent
-  */
-@@ -75,7 +75,7 @@ struct mchp_pit64b_clkevt {
- 		struct mchp_pit64b_clkevt, clkevt))
+-	writel_relaxed(MCHP_PIT64B_CR_SWRST, timer->base + MCHP_PIT64B_CR);
++	if (!clockevent_state_detached(cedev))
++		mchp_pit64b_suspend(timer);
  
- /**
-- * mchp_pit64b_clksrc - PIT64B clocksource data structure
-+ * struct mchp_pit64b_clksrc - PIT64B clocksource data structure
-  * @timer: PIT64B timer
-  * @clksrc: clocksource
-  */
-@@ -245,8 +245,10 @@ static void __init mchp_pit64b_pres_compute(u32 *pres, u32 clk_rate,
+ 	return 0;
+ }
+@@ -182,35 +183,37 @@ static int mchp_pit64b_clkevt_set_periodic(struct clock_event_device *cedev)
+ {
+ 	struct mchp_pit64b_timer *timer = clkevt_to_mchp_pit64b_timer(cedev);
+ 
++	if (clockevent_state_shutdown(cedev))
++		mchp_pit64b_resume(timer);
++
+ 	mchp_pit64b_reset(timer, mchp_pit64b_ce_cycles, MCHP_PIT64B_MR_CONT,
+ 			  MCHP_PIT64B_IER_PERIOD);
+ 
+ 	return 0;
  }
  
- /**
-- * mchp_pit64b_init_mode - prepare PIT64B mode register value to be used at
-- *			   runtime; this includes prescaler and SGCLK bit
-+ * mchp_pit64b_init_mode() - prepare PIT64B mode register value to be used at
-+ *			     runtime; this includes prescaler and SGCLK bit
-+ * @timer: pointer to pit64b timer to init
-+ * @max_rate: maximum rate that timer's clock could use
-  *
-  * PIT64B timer may be fed by gclk or pclk. When gclk is used its rate has to
-  * be at least 3 times lower that pclk's rate. pclk rate is fixed, gclk rate
+-static int mchp_pit64b_clkevt_set_next_event(unsigned long evt,
+-					     struct clock_event_device *cedev)
++static int mchp_pit64b_clkevt_set_oneshot(struct clock_event_device *cedev)
+ {
+ 	struct mchp_pit64b_timer *timer = clkevt_to_mchp_pit64b_timer(cedev);
+ 
+-	mchp_pit64b_reset(timer, evt, MCHP_PIT64B_MR_ONE_SHOT,
++	if (clockevent_state_shutdown(cedev))
++		mchp_pit64b_resume(timer);
++
++	mchp_pit64b_reset(timer, mchp_pit64b_ce_cycles, MCHP_PIT64B_MR_ONE_SHOT,
+ 			  MCHP_PIT64B_IER_PERIOD);
+ 
+ 	return 0;
+ }
+ 
+-static void mchp_pit64b_clkevt_suspend(struct clock_event_device *cedev)
++static int mchp_pit64b_clkevt_set_next_event(unsigned long evt,
++					     struct clock_event_device *cedev)
+ {
+ 	struct mchp_pit64b_timer *timer = clkevt_to_mchp_pit64b_timer(cedev);
+ 
+-	mchp_pit64b_suspend(timer);
+-}
+-
+-static void mchp_pit64b_clkevt_resume(struct clock_event_device *cedev)
+-{
+-	struct mchp_pit64b_timer *timer = clkevt_to_mchp_pit64b_timer(cedev);
++	mchp_pit64b_reset(timer, evt, MCHP_PIT64B_MR_ONE_SHOT,
++			  MCHP_PIT64B_IER_PERIOD);
+ 
+-	mchp_pit64b_resume(timer);
++	return 0;
+ }
+ 
+ static irqreturn_t mchp_pit64b_interrupt(int irq, void *dev_id)
+@@ -395,9 +398,8 @@ static int __init mchp_pit64b_init_clkevt(struct mchp_pit64b_timer *timer,
+ 	ce->clkevt.rating = 150;
+ 	ce->clkevt.set_state_shutdown = mchp_pit64b_clkevt_shutdown;
+ 	ce->clkevt.set_state_periodic = mchp_pit64b_clkevt_set_periodic;
++	ce->clkevt.set_state_oneshot = mchp_pit64b_clkevt_set_oneshot;
+ 	ce->clkevt.set_next_event = mchp_pit64b_clkevt_set_next_event;
+-	ce->clkevt.suspend = mchp_pit64b_clkevt_suspend;
+-	ce->clkevt.resume = mchp_pit64b_clkevt_resume;
+ 	ce->clkevt.cpumask = cpumask_of(0);
+ 	ce->clkevt.irq = irq;
+ 
