@@ -2,115 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53634C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 06:40:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CCBFC19F2B
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 06:42:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233783AbiG1GkB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 02:40:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44658 "EHLO
+        id S234010AbiG1Gli (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 02:41:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233614AbiG1Gj6 (ORCPT
+        with ESMTP id S233586AbiG1GlW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 02:39:58 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3AEC5C96F
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 23:39:57 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id b133so1120951pfb.6
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 23:39:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/kUZ/dgqC7iw0jhI4uYoWyAcN87LUuqF13JYqIaofqY=;
-        b=hTxJbdtJd14HVPheUaqfh98GeNpnBo3mzEF73RKAoFpp+jNZuDAMxRDyKMNSidAYur
-         lWqQY/766U1A1JtH3lOY4TzIlJXpOZenWrAFHJlgNMpROvL18TdxgfISIWp3i0Ywll1j
-         j6Z+uq/2+NlpnaVM63F+yyb7MYeXg4cwVh15kC0KXxVuPbV5KknP7MNMI1WDeXvG45rR
-         72LX1ZOOVRsD0BMe7cAsrhhUMMk8ZoMQYwXKiBkLEwJ+93Ypmw/TCotxWMZMN0kv949x
-         Zwxy8sNaYe3oo40Hkzj5VQScEIgTDYo5hgUPhoLcawI+BU+Yzad3YwEPD0tcsne7Nkwv
-         ArRw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/kUZ/dgqC7iw0jhI4uYoWyAcN87LUuqF13JYqIaofqY=;
-        b=sbg7O671XTrcdit889lEirlRIThRPrOfOzbbzLjY7LPcyhsaDEE7Lz4AMqgw5sverC
-         sIc4wc6kZqeEYzD8gJGh88MtUjthm78qAwoW3SMsKnq6fDj/MixiPc45hAIi1PdQXckr
-         6n2wNfX9Fa46Ok5yl4fascMHL+cgYJdPiqwCcCqJ9H4H1oP7xpaMxP8A6IxtADfbrqL/
-         rYO1ys3950QsuYeGwKnWKPSVVeNTrpnYaGxD+Iuf0tREEeIYRKGu954JZXlFRs5+k4z/
-         gHq5XSWj39aMVyoLdnGOBtwXy2KWI0chArpCvpv6sA+LBfDccrXa4S/IFbvCq1Tv731U
-         Egwg==
-X-Gm-Message-State: AJIora97iKkZNJ+CaLBpn77kQQCtiCmC9sQk4kR/gkXGAcqU3xrdEWc5
-        rmZq6HNCf6AXhw7MZAJz/lQzTA==
-X-Google-Smtp-Source: AGRyM1tvBFvRXWWgx31iR7pfQeXgyc4b1FfwvZgr1t5Z3xxZ5QUrFkoWWUhy4aMXTTZ+7pxYqOhPQg==
-X-Received: by 2002:a65:57c6:0:b0:415:c329:5d49 with SMTP id q6-20020a6557c6000000b00415c3295d49mr21175206pgr.581.1658990397120;
-        Wed, 27 Jul 2022 23:39:57 -0700 (PDT)
-Received: from localhost.localdomain ([61.120.150.71])
-        by smtp.gmail.com with ESMTPSA id l1-20020a17090a384100b001f31e91200asm704723pjf.44.2022.07.27.23.39.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 23:39:56 -0700 (PDT)
-From:   Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>
-To:     miklos@szeredi.hu
-Cc:     linux-unionfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>,
-        Hongbo Yin <yinhongbo@bytedance.com>,
-        Tianci Zhang <zhangtianci.1997@bytedance.com>
-Subject: [PATCH] ovl: only WARN_ON_ONCE() if dentry is NULL in ovl_encode_fh()
-Date:   Thu, 28 Jul 2022 14:38:55 +0800
-Message-Id: <20220728063856.72705-1-zhangjiachen.jaycee@bytedance.com>
-X-Mailer: git-send-email 2.35.1
+        Thu, 28 Jul 2022 02:41:22 -0400
+Received: from xry111.site (xry111.site [89.208.246.23])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9839E50728
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 23:41:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xry111.site;
+        s=default; t=1658990480;
+        bh=fDQSFbUZY0M91qUtS+Iv4m66BChIz9OnKWn9rwXW7a8=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=EL+39Ph7bEITu8PzwGES+iF6ugZ9jlOeunCVSXGJ/r1RIVqM3360AImW/NUIrgarS
+         tvBU4piCpYWB1LawjkV0fIrMdUepuC7gXpV16UmhLKp1tmcYOs72hjXAQ0GvBg5Nqo
+         AQVwO0r1Sh+qFccIn8+RxdKMUj1TnYecvIwKA4Qg=
+Received: from localhost.localdomain (xry111.site [IPv6:2001:470:683e::1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature ECDSA (P-384) server-digest SHA384)
+        (Client did not present a certificate)
+        (Authenticated sender: xry111@xry111.site)
+        by xry111.site (Postfix) with ESMTPSA id D8A62669E8;
+        Thu, 28 Jul 2022 02:41:18 -0400 (EDT)
+Message-ID: <9a79a424a11339ae025539c38fe121104ff00804.camel@xry111.site>
+Subject: Re: [PATCH 3/5] LoongArch: Support relocation against
+ _GLOBAL_OFFSET_TABLE_
+From:   Xi Ruoyao <xry111@xry111.site>
+To:     Jinyang He <hejinyang@loongson.cn>, loongarch@lists.linux.dev
+Cc:     linux-kernel@vger.kernel.org, WANG Xuerui <kernel@xen0n.name>,
+        Huacai Chen <chenhuacai@kernel.org>
+Date:   Thu, 28 Jul 2022 14:41:16 +0800
+In-Reply-To: <10c1e0f9-8409-a0f4-9b18-a5f56dfb14e1@loongson.cn>
+References: <385f63bcbee8e37c42f479ce9cdc7e7d731d419b.camel@xry111.site>
+         <99733532831377ab6585d43ee40bf314a2d4c5a3.camel@xry111.site>
+         <10c1e0f9-8409-a0f4-9b18-a5f56dfb14e1@loongson.cn>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.3 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some code paths cannot guarantee the inode have any dentry alias. So
-WARN_ON() all !dentry may flood the kernel logs.
+On Thu, 2022-07-28 at 09:02 +0800, Jinyang He wrote:
 
-For example, when an overlayfs inode is watched by inotifywait (1), and
-someone is trying to read the /proc/$(pidof inotifywait)/fdinfo/INOTIFY_FD,
-at that time if the dentry has been reclaimed by kernel (such as
-echo 2 > /proc/sys/vm/drop_caches), there will be a WARN_ON(). The
-printed call stack would be like:
+> Hi, Ruoyao,
+>=20
+> It is possible to create a symbol when linking, which means
+> maybe we can add _GLOBAL_OFFSET_TABLE_ in 'module.lds.h'.
+> What do you think about it?
 
-    ? show_mark_fhandle+0xf0/0xf0
-    show_mark_fhandle+0x4a/0xf0
-    ? show_mark_fhandle+0xf0/0xf0
-    ? seq_vprintf+0x30/0x50
-    ? seq_printf+0x53/0x70
-    ? show_mark_fhandle+0xf0/0xf0
-    inotify_fdinfo+0x70/0x90
-    show_fdinfo.isra.4+0x53/0x70
-    seq_show+0x130/0x170
-    seq_read+0x153/0x440
-    vfs_read+0x94/0x150
-    ksys_read+0x5f/0xe0
-    do_syscall_64+0x59/0x1e0
-    entry_SYSCALL_64_after_hwframe+0x44/0xa9
+Hi Jinyang,
 
-So let's replace WARN_ON() with WARN_ON_ONCE() to avoid kernel log
-flooding.
+I think you are right, this patch can be replaced with the following,
+which is much simpler.
 
-Reported-by: Hongbo Yin <yinhongbo@bytedance.com>
-Signed-off-by: Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>
-Signed-off-by: Tianci Zhang <zhangtianci.1997@bytedance.com>
+-- >8 --
+
+With the stack-based relocations, the assembler emits three relocations
+to push the PC-relative offset of a GOT entry:
+
+    R_LARCH_SOP_PUSH_PCREL _GLOBAL_OFFSET_TABLE_
+    R_LARCH_SOP_PUSH_GPREL foo
+    R_LARCH_SOP_ADD
+
+In normal relocatable ELF object files, "_GLOBAL_OFFSET_TABLE_" is
+undefined in the symtab and the BFD linker generates it on final link.
+Define it for kernel modules so we will be able to really use
+R_LARCH_SOP_PUSH_GPREL relocation.
+
+Note that we need to use "HIDDEN" to make it a local symbol because each
+kernel module has its own GOT and the reference to it should not be
+resolved to the GOT in the main kernel image.
+
+Suggested-by: Jinyang He <hejinyang@loongson.cn>
+Signed-off-by: Xi Ruoyao <xry111@xry111.site>
 ---
- fs/overlayfs/export.c | 2 +-
+ arch/loongarch/include/asm/module.lds.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/overlayfs/export.c b/fs/overlayfs/export.c
-index 2eada97bbd23..3a8650442aec 100644
---- a/fs/overlayfs/export.c
-+++ b/fs/overlayfs/export.c
-@@ -259,7 +259,7 @@ static int ovl_encode_fh(struct inode *inode, u32 *fid, int *max_len,
- 		return FILEID_INVALID;
- 
- 	dentry = d_find_any_alias(inode);
--	if (WARN_ON(!dentry))
-+	if (WARN_ON_ONCE(!dentry))
- 		return FILEID_INVALID;
- 
- 	bytes = ovl_dentry_to_fid(ofs, dentry, fid, buflen);
--- 
-2.20.1
-
+diff --git a/arch/loongarch/include/asm/module.lds.h b/arch/loongarch/inclu=
+de/asm/module.lds.h
+index 57bbd0cedd26..42b7cca0b947 100644
+--- a/arch/loongarch/include/asm/module.lds.h
++++ b/arch/loongarch/include/asm/module.lds.h
+@@ -4,5 +4,5 @@ SECTIONS {
+ 	. =3D ALIGN(4);
+ 	.plt : { BYTE(0) }
+ 	.plt.idx : { BYTE(0) }
+-	.got : { BYTE(0) }
++	.got : { HIDDEN(_GLOBAL_OFFSET_TABLE_ =3D .); BYTE(0) }
+ }
+--=20
+2.37.0
