@@ -2,80 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC130C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 10:57:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41ED3C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 10:57:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236604AbiG1K5m (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 06:57:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54890 "EHLO
+        id S236593AbiG1K5w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 06:57:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235498AbiG1K5k (ORCPT
+        with ESMTP id S236609AbiG1K5t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 06:57:40 -0400
-Received: from mail.enpas.org (zhong.enpas.org [46.38.239.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 90A945F134;
-        Thu, 28 Jul 2022 03:57:39 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        by mail.enpas.org (Postfix) with ESMTPSA id 00AF0FFCE8;
-        Thu, 28 Jul 2022 10:57:36 +0000 (UTC)
-Date:   Thu, 28 Jul 2022 12:57:34 +0200
-From:   Max Staudt <max@enpas.org>
-To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
-Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-kernel@vger.kernel.org, linux-can@vger.kernel.org,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        michael@amarulasolutions.com,
-        Amarula patchwork <linux-amarula@amarulasolutions.com>,
-        Jeroen Hofstee <jhofstee@victronenergy.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Wolfgang Grandegger <wg@grandegger.com>, netdev@vger.kernel.org
-Subject: Re: [RFC PATCH v3 8/9] can: slcan: add support to set bit time
- register (btr)
-Message-ID: <20220728125734.1c380d25.max@enpas.org>
-In-Reply-To: <20220728105049.43gbjuctezxzmm4j@pengutronix.de>
-References: <20220726210217.3368497-1-dario.binacchi@amarulasolutions.com>
-        <20220726210217.3368497-9-dario.binacchi@amarulasolutions.com>
-        <20220727113054.ffcckzlcipcxer2c@pengutronix.de>
-        <20220727192839.707a3453.max@enpas.org>
-        <20220727182414.3mysdeam7mtnqyfx@pengutronix.de>
-        <CABGWkvoE8i--g_2cNU6ToAfZk9WE6uK-nLcWy7J89hU6RidLWw@mail.gmail.com>
-        <20220728090228.nckgpmfe7rpnfcyr@pengutronix.de>
-        <CABGWkvoYR67MMmqZ6bRLuL3szhVb-gMwuAy6Z4YMkaG0yw6Sdg@mail.gmail.com>
-        <20220728105049.43gbjuctezxzmm4j@pengutronix.de>
+        Thu, 28 Jul 2022 06:57:49 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C06C61D95;
+        Thu, 28 Jul 2022 03:57:48 -0700 (PDT)
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Ltncq31LHzmVN3;
+        Thu, 28 Jul 2022 18:55:55 +0800 (CST)
+Received: from kwepemm600015.china.huawei.com (7.193.23.52) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 28 Jul 2022 18:57:46 +0800
+Received: from [10.174.176.52] (10.174.176.52) by
+ kwepemm600015.china.huawei.com (7.193.23.52) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 28 Jul 2022 18:57:45 +0800
+Message-ID: <882a28de-3bd5-23e5-fbad-bfdc2a4a24e4@huawei.com>
+Date:   Thu, 28 Jul 2022 18:57:44 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.1
+Subject: Re: [PATCH] xfs: fix NULL pointer dereference in xfs_getbmap()
+To:     "Darrick J. Wong" <djwong@kernel.org>
+CC:     <linux-xfs@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <guoxuenan@huawei.com>, <liuyongqiang13@huawei.com>,
+        <yi.zhang@huawei.com>, <zhangxiaoxu5@huawei.com>
+References: <20220727085230.4073478-1-chenxiaosong2@huawei.com>
+ <YuFW4OLWCuAhrC7R@magnolia>
+From:   "chenxiaosong (A)" <chenxiaosong2@huawei.com>
+In-Reply-To: <YuFW4OLWCuAhrC7R@magnolia>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.176.52]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemm600015.china.huawei.com (7.193.23.52)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 28 Jul 2022 12:50:49 +0200
-Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+在 2022/7/27 23:16, Darrick J. Wong 写道:
 
-> On 28.07.2022 12:23:04, Dario Binacchi wrote:
-> > > > Does it make sense to use the device tree  
-> > >
-> > > The driver doesn't support DT and DT only works for static serial
-> > > interfaces.  
+> Heh.  Is this worth an fstest?  It probably is, since prior to 5.20 this
+> would have been a UAF bug on top of a NULL deref.
+
+I will try to add regression test to xfstests for this commit when it is 
+merged into mainline.
+
 > 
-> Have you seen my remarks about Device Tree?
+> Nit: it's ILOCK, not i_lock.  Otherwise... this looks correct to me --
+> take the IOLOCK and ILOCK in shared mode before accessing the inode fork
+> structures.
+> 
+> Do you have any suggestions for Fixes:?  I suspect this has been broken
+> for quite some time.
 
-Dario, there seems to be a misunderstanding about the Device Tree.
+The "Fixes:" label is: abbf9e8a4507 ("xfs: rewrite getbmap using the 
+xfs_iext_* helpers")
 
-It is used *only* for hardware that is permanently attached, present at
-boot, and forever after. Not for dyamically added stuff, and definitely
-not for ldiscs that have to be attached manually by the user.
-
-
-The only exception to this is if you have an embedded device with an
-slcan adapter permanently attached to one of its UARTs. Then you can
-use the serdev ldisc adapter to attach the ldisc automatically at boot.
-
-If you are actively developing for such a use case, please let us know,
-so we know what you're after and can help you better :)
-
-
-Max
+> 
+> No need to fix the nit, I'll do that when I commit this.
+> Reviewed-by: Darrick J. Wong <djwong@kernel.org>
+> 
+> --D
+> 
