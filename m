@@ -2,126 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E65B2C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 11:24:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC241C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 11:24:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236952AbiG1LYj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 07:24:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47092 "EHLO
+        id S231307AbiG1LYu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 07:24:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236948AbiG1LYU (ORCPT
+        with ESMTP id S236944AbiG1LY2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 07:24:20 -0400
-Received: from madras.collabora.co.uk (madras.collabora.co.uk [46.235.227.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6024867CB9;
-        Thu, 28 Jul 2022 04:21:47 -0700 (PDT)
-Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        (Authenticated sender: kholk11)
-        by madras.collabora.co.uk (Postfix) with ESMTPSA id 49FEE6601B43;
-        Thu, 28 Jul 2022 12:21:45 +0100 (BST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1659007305;
-        bh=cQKa4cD8+Dc8uivpLk6aRVwpns1CsSwbo+ldgdagj1g=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=WSBPIdgbeM9yM9T8Rey7+jygYbHH7L6TwPmQFrJ3SlBTQwx4Lo3qnurhN8zy2+Fef
-         TsObUv0p9KZHI2pRs72OVlwWSSgOPKBBE/qsNnVhPK2JZsEHCQL5VsTgW2ySr4Abio
-         dAhGWWa1Al86qwOxaZbTiYKSmrmu/H/vcqUMzFUSt7p4c+2VFjVFka8DasdqPBVsAP
-         OAK8xoAQp+4IyIjtszy1/Tw2Bmfjd66nZzwtQYFsJSAyuOGTSxNUNtPJm1EwxSsuFE
-         /dUpJxahzl/ZhGPMrh5FHxvUwkghSbY2tTBAgxmFrS+QzebY8hsamBrHTAjGRALmwG
-         sqxJNc8hVyi7Q==
-Message-ID: <c455adea-2d18-60af-7175-a4e283e3dcb8@collabora.com>
-Date:   Thu, 28 Jul 2022 13:21:42 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v2] arm64: dts: mt8173-oak: Switch to SMC watchdog
-Content-Language: en-US
-To:     Pin-yen Lin <treapking@chromium.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Eizan Miyamoto <eizan@chromium.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Evan Benn <evanbenn@chromium.org>,
+        Thu, 28 Jul 2022 07:24:28 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 296536D56C;
+        Thu, 28 Jul 2022 04:21:54 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1D598106F;
+        Thu, 28 Jul 2022 04:21:55 -0700 (PDT)
+Received: from bogus (e103737-lin.cambridge.arm.com [10.1.197.49])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8366F3F73B;
+        Thu, 28 Jul 2022 04:21:52 -0700 (PDT)
+Date:   Thu, 28 Jul 2022 12:21:50 +0100
+From:   Sudeep Holla <sudeep.holla@arm.com>
+To:     Maximilian Luz <luzmaximilian@gmail.com>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sudeep Holla <sudeep.holla@arm.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
-References: <20220727094034.1372745-1-treapking@chromium.org>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-In-Reply-To: <20220727094034.1372745-1-treapking@chromium.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        Steev Klimaszewski <steev@kali.org>,
+        Shawn Guo <shawn.guo@linaro.org>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-arm-msm@vger.kernel.org, linux-efi@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 4/4] dt-bindings: firmware: Add Qualcomm UEFI Secure
+ Application client
+Message-ID: <20220728112150.hs5el6wufljeoqyy@bogus>
+References: <20220723224949.1089973-1-luzmaximilian@gmail.com>
+ <20220723224949.1089973-5-luzmaximilian@gmail.com>
+ <20220726143005.wt4be7yo7sbd3xut@bogus>
+ <829c8fee-cae5-597d-933d-784b4b57bd73@gmail.com>
+ <20220726154138.74avqs6iqlzqpzjk@bogus>
+ <d1bc99bb-82ce-aa6e-7fad-e9309fa1c19b@gmail.com>
+ <20220728082330.w4ppmzvjaeywsglu@bogus>
+ <4e777590-616a-558a-031e-3ef1f1e492b4@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4e777590-616a-558a-031e-3ef1f1e492b4@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 27/07/22 11:40, Pin-yen Lin ha scritto:
-> Switch to SMC watchdog because we need direct control of HW watchdog
-> registers from kernel. The corresponding firmware was uploaded in
-> https://review.trustedfirmware.org/c/TF-A/trusted-firmware-a/+/3405.
-> 
-> Signed-off-by: Pin-yen Lin <treapking@chromium.org>
-> ---
-> 
-> Changes in v2:
-> - Move the modifications to mt8173-elm.dtsi and add some comments.
-> 
->   arch/arm64/boot/dts/mediatek/mt8173-elm.dtsi | 12 ++++++++++++
->   1 file changed, 12 insertions(+)
-> 
-> diff --git a/arch/arm64/boot/dts/mediatek/mt8173-elm.dtsi b/arch/arm64/boot/dts/mediatek/mt8173-elm.dtsi
-> index e21feb85d822..b2269770abc3 100644
-> --- a/arch/arm64/boot/dts/mediatek/mt8173-elm.dtsi
-> +++ b/arch/arm64/boot/dts/mediatek/mt8173-elm.dtsi
-> @@ -161,6 +161,18 @@ hdmi_connector_in: endpoint {
->   			};
->   		};
->   	};
-> +
-> +	soc {
-> +		/*
-> +		 * Disable the original MMIO watch dog and switch to the SMC watchdog,
-> +		 * which operates on the same MMIO.
-> +		 */
-> +		/delete-node/ watchdog@10007000;
+On Thu, Jul 28, 2022 at 12:05:15PM +0200, Maximilian Luz wrote:
+> On 7/28/22 10:23, Sudeep Holla wrote:
 
-Unfortunately, we're not quite there yet.
-The comment is fine, but...
+[...]
 
-There's no need to /delete-node/: you can just do it like
+> > Worst case I am fine with that as this needs to be one of and future
+> > platforms must get their act right in designing their f/w interface.
+>
+> Again, I fully agree with you that this situation shouldn't exist. But
+> reality is sadly different.
+>
 
-/*
-  * Disable the original MMIO watch dog and switch to the SMC watchdog,
-  * which operates on the same MMIO.
-  */
-&watchdog {
-	status = "disabled";
-};
+As I mentioned I don't have final authority to say yes or no to DT bindings.
+I have expressed my opinion and I thing allowing this to be generic via DT
+bindings gives no incentive to get the firmware story right. Hence I am happy
+to see this as one-off driver change and then we more changes are added to
+the driver or similar drivers get added in the future, we have a change to
+demand what action has been taken to fix the firmware story.
 
-and...
+Just adding DT support(which I disagree) will make future platform to just
+use it and not get improvements in areas of discovery or query from the
+firmware.
 
-> +
-> +		watchdog {
-
-This isn't addressable, hence it belongs to the root node, not to soc.
-If you did that because of naming issues, I would propose to call it
-smc-watchdog instead of watchdog.
-
-
-> +			compatible = "arm,smc-wdt";
-
-P.S.: No timeout-sec?
-
+--
 Regards,
-Angelo
-
-> +		};
-> +	};
->   };
->   
->   &mfg_async {
-> 
-
+Sudeep
