@@ -2,157 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6C0EC04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 12:18:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 538F8C19F21
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 12:19:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236262AbiG1MSk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 08:18:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53934 "EHLO
+        id S236033AbiG1MTg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 08:19:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238198AbiG1MSQ (ORCPT
+        with ESMTP id S230216AbiG1MTe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 08:18:16 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FCA7691CB
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 05:18:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659010690; x=1690546690;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=T9Bg2hHoHiLetjhY2EL+ufYLDmbp6OAojK1pZBfDiMQ=;
-  b=QsrYCeepjXMsa/LIWIFHrDZklEu66PO/4mN7n85lxx/bkgnN37uoGAn+
-   fyC4W3kLJfVkh0N6cDmNjySXOp1yLSjuO67aFFekN4REXb4NeSKUR9CJ2
-   ZQ6eAW6lPHnQmtpPKvXIdmAsBUHLJmJ+rIp2RPnEEe/GsUfGEuMc2xdGt
-   3C9pvh8arRLpPXQtSfQbW1Vwx1Vu9HoBPWZur/1OSMRzQcbmgk1/kFBWL
-   PQuAQlSShqjjFfsELS8h2EsfqVb6wQIPc5h6mKc8SwI9LxXy9jzkusxW8
-   z0dzYYSe2BUxKBtFLbYOjEQ91XgYNvTYdLt+3yE8li6B3Zs3kHPTdGzov
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10421"; a="314286131"
-X-IronPort-AV: E=Sophos;i="5.93,198,1654585200"; 
-   d="scan'208";a="314286131"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2022 05:18:10 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,198,1654585200"; 
-   d="scan'208";a="628868757"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 28 Jul 2022 05:18:08 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oH2Su-0009y6-0a;
-        Thu, 28 Jul 2022 12:18:08 +0000
-Date:   Thu, 28 Jul 2022 20:17:16 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [jolsa-perf:bpf/tracing_multi_4 23/34]
- kernel/bpf/trampoline.c:1115:15: error: implicit declaration of function
- 'set_ftrace_direct'; did you mean 'modify_ftrace_direct'?
-Message-ID: <202207282008.dkbWC7Qx-lkp@intel.com>
+        Thu, 28 Jul 2022 08:19:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 480FE46DAC;
+        Thu, 28 Jul 2022 05:19:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CE7E1B82432;
+        Thu, 28 Jul 2022 12:19:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5207DC433C1;
+        Thu, 28 Jul 2022 12:19:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659010770;
+        bh=SkS6G0rptpwlgeSV0bISNL3/MaKjQgocq5LaHbB8Mb8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=B2uohG5RUUGwrkh7g6QgjZ5er8K8kvInqsnMXjRoUgM2loTv0i1+C/JEUz5tBMfZU
+         Y3oMw+Bq4m9SE9gPD8WK2JBpZWkmYJsYWoFm31NXm9KnPi19l0bcBKVnpoFOXKnOCC
+         G9DLdUI1mc4qq0FOsP+SoAlPpPPnmRRdIOjw2GRKF9989W29sCX7LyfkNZHOH9gF9j
+         c4bQTTtzOogOwjQewaJNmEtALnKRYn3I+O+gNhAjhUYm0IwKPAKV6+w5dncEmAj3A8
+         4nQAdSlreHtX46Mv9ne8GeFVDPi8EdIbXtLR9xXMb48PpqvFhmCFbyhlALR3DrHHsA
+         oxcyrcdQHlqJw==
+Received: from johan by xi.lan with local (Exim 4.94.2)
+        (envelope-from <johan@kernel.org>)
+        id 1oH2UR-0008JE-Su; Thu, 28 Jul 2022 14:19:43 +0200
+Date:   Thu, 28 Jul 2022 14:19:43 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Johan Hovold <johan+linaro@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Stanimir Varbanov <svarbanov@mm-sol.com>,
+        Lorenzo Pieralisi <lpieralisi@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Subject: Re: [PATCH v2] PCI: qcom: Add support for modular builds
+Message-ID: <YuJ+31mJNHosH5i5@hovoldconsulting.com>
+References: <20220721193513.GA1747404@bhelgaas>
+ <20220727200257.GA220948@bhelgaas>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20220727200257.GA220948@bhelgaas>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git bpf/tracing_multi_4
-head:   1637b6b5bec11596e52cdc0a6eadfa45a15276c3
-commit: d2c85068156e7ef00b9748982859a332d50398cb [23/34] bpf: Add support to attach multi trampolines
-config: x86_64-randconfig-a006 (https://download.01.org/0day-ci/archive/20220728/202207282008.dkbWC7Qx-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.3.0-3) 11.3.0
-reproduce (this is a W=1 build):
-        # https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git/commit/?id=d2c85068156e7ef00b9748982859a332d50398cb
-        git remote add jolsa-perf https://git.kernel.org/pub/scm/linux/kernel/git/jolsa/perf.git
-        git fetch --no-tags jolsa-perf bpf/tracing_multi_4
-        git checkout d2c85068156e7ef00b9748982859a332d50398cb
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+On Wed, Jul 27, 2022 at 03:02:57PM -0500, Bjorn Helgaas wrote:
+> On Thu, Jul 21, 2022 at 02:35:13PM -0500, Bjorn Helgaas wrote:
+> > On Thu, Jul 21, 2022 at 08:47:20AM +0200, Johan Hovold wrote:
+> > > Allow the Qualcomm PCIe controller driver to be built as a module, which
+> > > is useful for multi-platform kernels as well as during development.
+> > > 
+> > > Reviewed-by: Rob Herring <robh@kernel.org>
+> > > Reviewed-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> > > Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+> > 
+> > Applied to pci/ctrl/qcom for v5.20, thanks!
+> 
+> I'm going to drop this one for now, since the module vs remove
+> discussion [1] is still ongoing.
+> 
+> This patch actually makes it both *modular* and *removable*.  I think
+> the modular part is uncontroversial and valuable by itself.
+> 
+> If you want to just make it modular and *non*-removable, I think that
+> would be fine and we can add removability next cycle if we think it's
+> safe.
+> 
+> [1] https://lore.kernel.org/r/20220721195433.GA1747571@bhelgaas
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+Nah, I prefer we conclude that discussion so that hopefully this can be
+merged as is.
 
-All errors (new ones prefixed by >>):
-
-   kernel/bpf/trampoline.c: In function 'bpf_tramp_update_set':
-   kernel/bpf/trampoline.c:1074:16: error: implicit declaration of function 'ftrace_hash_alloc' [-Werror=implicit-function-declaration]
-    1074 |         hash = ftrace_hash_alloc(FTRACE_HASH_MAX_BITS);
-         |                ^~~~~~~~~~~~~~~~~
-   kernel/bpf/trampoline.c:1074:34: error: 'FTRACE_HASH_MAX_BITS' undeclared (first use in this function)
-    1074 |         hash = ftrace_hash_alloc(FTRACE_HASH_MAX_BITS);
-         |                                  ^~~~~~~~~~~~~~~~~~~~
-   kernel/bpf/trampoline.c:1074:34: note: each undeclared identifier is reported only once for each function it appears in
-   kernel/bpf/trampoline.c:1101:33: error: implicit declaration of function 'ftrace_hash_add_entry' [-Werror=implicit-function-declaration]
-    1101 |                                 ftrace_hash_add_entry(hash, entry);
-         |                                 ^~~~~~~~~~~~~~~~~~~~~
->> kernel/bpf/trampoline.c:1115:15: error: implicit declaration of function 'set_ftrace_direct'; did you mean 'modify_ftrace_direct'? [-Werror=implicit-function-declaration]
-    1115 |         err = set_ftrace_direct(hash);
-         |               ^~~~~~~~~~~~~~~~~
-         |               modify_ftrace_direct
-   kernel/bpf/trampoline.c:1117:9: error: implicit declaration of function 'ftrace_hash_free' [-Werror=implicit-function-declaration]
-    1117 |         ftrace_hash_free(hash);
-         |         ^~~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
-
-
-vim +1115 kernel/bpf/trampoline.c
-
-  1067	
-  1068	static int bpf_tramp_update_set(struct list_head *upd)
-  1069	{
-  1070		struct bpf_trampoline *tr;
-  1071		struct ftrace_hash *hash;
-  1072		int i, err;
-  1073	
-  1074		hash = ftrace_hash_alloc(FTRACE_HASH_MAX_BITS);
-  1075		if (!hash)
-  1076			return -ENOMEM;
-  1077	
-  1078		list_for_each_entry(tr, upd, update.list) {
-  1079			struct ftrace_func_entry *entry;
-  1080			unsigned long direct;
-  1081	
-  1082			switch (tr->update.action) {
-  1083			case BPF_TRAMP_UPDATE_REG:
-  1084			case BPF_TRAMP_UPDATE_MODIFY:
-  1085				direct = (unsigned long) tr->update.im->image;
-  1086				break;
-  1087			case BPF_TRAMP_UPDATE_UNREG:
-  1088				direct = 0;
-  1089				break;
-  1090			}
-  1091	
-  1092			if (tr->multi.id_multi) {
-  1093				for (i = 0; i < tr->multi.id_multi->cnt; i++) {
-  1094					entry = kmalloc(sizeof(*entry), GFP_KERNEL);
-  1095					if (!entry) {
-  1096						err = -ENOMEM;
-  1097						goto out_free;
-  1098					}
-  1099					entry->ip = (unsigned long) tr->multi.id_multi->addr[i];
-  1100					entry->direct = direct;
-  1101					ftrace_hash_add_entry(hash, entry);
-  1102				}
-  1103			} else {
-  1104				entry = kmalloc(sizeof(*entry), GFP_KERNEL);
-  1105				if (!entry) {
-  1106					err = -ENOMEM;
-  1107					goto out_free;
-  1108				}
-  1109				entry->ip = (unsigned long) tr->func.addr;
-  1110				entry->direct = direct;
-  1111				ftrace_hash_add_entry(hash, entry);
-  1112			}
-  1113		}
-  1114	
-> 1115		err = set_ftrace_direct(hash);
-  1116	out_free:
-  1117		ftrace_hash_free(hash);
-  1118		return err;
-  1119	}
-  1120	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Johan
