@@ -2,76 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1E8EC19F2B
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 03:31:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9C16C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 03:34:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232882AbiG1Dbe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 23:31:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47324 "EHLO
+        id S234197AbiG1DeU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 23:34:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234161AbiG1Dbb (ORCPT
+        with ESMTP id S232849AbiG1DeP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 23:31:31 -0400
-Received: from mail.nfschina.com (unknown [IPv6:2400:dd01:100f:2:72e2:84ff:fe10:5f45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8BBF852DD9;
-        Wed, 27 Jul 2022 20:31:29 -0700 (PDT)
-Received: from localhost (unknown [127.0.0.1])
-        by mail.nfschina.com (Postfix) with ESMTP id B4A441E80D72;
-        Thu, 28 Jul 2022 11:31:31 +0800 (CST)
-X-Virus-Scanned: amavisd-new at test.com
-Received: from mail.nfschina.com ([127.0.0.1])
-        by localhost (mail.nfschina.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id ANGcd-Ku-b8R; Thu, 28 Jul 2022 11:31:29 +0800 (CST)
-Received: from localhost.localdomain (unknown [180.167.10.98])
-        (Authenticated sender: yuzhe@nfschina.com)
-        by mail.nfschina.com (Postfix) with ESMTPA id 4D8BE1E80CF5;
-        Thu, 28 Jul 2022 11:31:28 +0800 (CST)
-From:   Yu Zhe <yuzhe@nfschina.com>
-To:     Felix.Kuehling@amd.com, alexander.deucher@amd.com,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch
-Cc:     amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        liqiong@nfschina.com, Yu Zhe <yuzhe@nfschina.com>
-Subject: [PATCH v2] drm/amdkfd: use time_is_before_jiffies(a + b) to replace "jiffies - a > b"
-Date:   Thu, 28 Jul 2022 11:30:26 +0800
-Message-Id: <20220728033026.15952-1-yuzhe@nfschina.com>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20220727025917.22477-1-yuzhe@nfschina.com>
-References: <20220727025917.22477-1-yuzhe@nfschina.com>
+        Wed, 27 Jul 2022 23:34:15 -0400
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8848D5A3D1
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 20:34:14 -0700 (PDT)
+Received: by mail-io1-f69.google.com with SMTP id z1-20020a6b6501000000b0067c6495c03dso186776iob.8
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 20:34:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=MNz55KaaGxLrlaqs1U3qM+7ivKwtanb88ZyuIDPI5Mo=;
+        b=fJOblq6jW4330MDeCZeBI90Egfzys86BaagXuzP6udGoYICi53kX+MDRUzm9rqzjT1
+         072qzx7Pz7xg0/hgIjihVqbN3Abp7oONu8W0/p1XkvhM5XUOJTKqEBv8fD81xcp1r7Dc
+         NxNioNj/D2L9AwMKIsz6wMpiBBT1W+JdWNN7ekfgXQide9h6tNDwXzFDX25vBWUjcM2/
+         Gwerfej8dcblyc1SCHFQyR58Xw+49Mx5ew/J6HVVWBMdBCEN2z5zRl468/PWW7IOFQU9
+         QZRYIT7uOFso9q0Blh7gSXhPN+IP8fR1gAmR6cQ+JwO5OshHIMzw+LpZ7L5PUKY10sQB
+         SROg==
+X-Gm-Message-State: AJIora+nSafguUf7u5PSAaWyArOXl+QSWxrNVRUrIX2d+/ftR4STL9ct
+        1jfOOXrpCWhA9Vko8yHA3+GgIW09n/2TiPpvsWeq56V2v0ry
+X-Google-Smtp-Source: AGRyM1u7ngBipM/bsbjwlGBGsx6Kdyeri/FeEmxIk8pNogVIQ9MyEKu/P4gFHS8RL0AVTUoUFPBIfFOM/UNx1GeFevZ0dmdMj1Ta
+MIME-Version: 1.0
+X-Received: by 2002:a05:6602:168d:b0:67c:44c3:9ba5 with SMTP id
+ s13-20020a056602168d00b0067c44c39ba5mr8952708iow.190.1658979253272; Wed, 27
+ Jul 2022 20:34:13 -0700 (PDT)
+Date:   Wed, 27 Jul 2022 20:34:13 -0700
+In-Reply-To: <20220728031520.554-1-hdanton@sina.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000014c7ad05e4d535fc@google.com>
+Subject: Re: [syzbot] KASAN: use-after-free Read in __post_watch_notification
+From:   syzbot <syzbot+03d7b43290037d1f87ca@syzkaller.appspotmail.com>
+To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-time_is_before_jiffies deals with timer wrapping correctly.
+Hello,
 
-Signed-off-by: Yu Zhe <yuzhe@nfschina.com>
----
- drivers/gpu/drm/amd/amdkfd/kfd_interrupt.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+syzbot has tested the proposed patch and the reproducer did not trigger any issue:
 
-diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_interrupt.c b/drivers/gpu/drm/amd/amdkfd/kfd_interrupt.c
-index a9466d154395..34772fe74296 100644
---- a/drivers/gpu/drm/amd/amdkfd/kfd_interrupt.c
-+++ b/drivers/gpu/drm/amd/amdkfd/kfd_interrupt.c
-@@ -146,7 +146,7 @@ static void interrupt_wq(struct work_struct *work)
- 	struct kfd_dev *dev = container_of(work, struct kfd_dev,
- 						interrupt_work);
- 	uint32_t ih_ring_entry[KFD_MAX_RING_ENTRY_SIZE];
--	long start_jiffies = jiffies;
-+	unsigned long start_jiffies = jiffies;
- 
- 	if (dev->device_info.ih_ring_entry_size > sizeof(ih_ring_entry)) {
- 		dev_err_once(dev->adev->dev, "Ring entry too small\n");
-@@ -156,7 +156,7 @@ static void interrupt_wq(struct work_struct *work)
- 	while (dequeue_ih_ring_entry(dev, ih_ring_entry)) {
- 		dev->device_info.event_interrupt_class->interrupt_wq(dev,
- 								ih_ring_entry);
--		if (jiffies - start_jiffies > HZ) {
-+		if (time_is_before_jiffies(start_jiffies + HZ)) {
- 			/* If we spent more than a second processing signals,
- 			 * reschedule the worker to avoid soft-lockup warnings
- 			 */
--- 
-2.11.0
+Reported-and-tested-by: syzbot+03d7b43290037d1f87ca@syzkaller.appspotmail.com
 
+Tested on:
+
+commit:         e0dccc3b Linux 5.19-rc8
+git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+console output: https://syzkaller.appspot.com/x/log.txt?x=145fb2c2080000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=cfd2f9ae77f1f719
+dashboard link: https://syzkaller.appspot.com/bug?extid=03d7b43290037d1f87ca
+compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
+patch:          https://syzkaller.appspot.com/x/patch.diff?x=124486de080000
+
+Note: testing is done by a robot and is best-effort only.
