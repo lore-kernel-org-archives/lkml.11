@@ -2,67 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9C16C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 03:34:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD6D1C25B07
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 03:34:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234197AbiG1DeU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 23:34:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48274 "EHLO
+        id S238082AbiG1Dea (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 23:34:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232849AbiG1DeP (ORCPT
+        with ESMTP id S234588AbiG1DeY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 23:34:15 -0400
-Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8848D5A3D1
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 20:34:14 -0700 (PDT)
-Received: by mail-io1-f69.google.com with SMTP id z1-20020a6b6501000000b0067c6495c03dso186776iob.8
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 20:34:14 -0700 (PDT)
+        Wed, 27 Jul 2022 23:34:24 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 719B35A2F7;
+        Wed, 27 Jul 2022 20:34:22 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id iw1so689977plb.6;
+        Wed, 27 Jul 2022 20:34:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=v5iO3DJsdBPM2eAKiUQEswEd2u5joVshDOWMCkBSEWI=;
+        b=WopjFI8tRQsKj7xA9eC0fUlEFtVpR2QGFKPdVL1gXuQFz/suaXcXYnPrqJhZyD/MgM
+         xPzRiKv2v6pruqFlUGtoK/cL3gvLBxtKYOupZ8Hrp0fjirRR1Kxb6diOiS4CwhdCl36x
+         hXl7jt3dOgauNq9ttRk/Pn2iJJ/gJ/7M/6uj4HKWYUwv/29yFPgeXIDCGeBQCerpJegW
+         TlbRGpXiokQGKtPRQQX2ZH6VUz9uW3j5VQ3b35UNwQIBvCUIGTKbkzmmXFC+HJoQt3IY
+         WKFQnNsLkQlJBU9i6/kRoPfhvR5PAJ0DyJOj33iB+6DYmkQ+m7//Ik9S+FeEXisYJe9J
+         OkZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=MNz55KaaGxLrlaqs1U3qM+7ivKwtanb88ZyuIDPI5Mo=;
-        b=fJOblq6jW4330MDeCZeBI90Egfzys86BaagXuzP6udGoYICi53kX+MDRUzm9rqzjT1
-         072qzx7Pz7xg0/hgIjihVqbN3Abp7oONu8W0/p1XkvhM5XUOJTKqEBv8fD81xcp1r7Dc
-         NxNioNj/D2L9AwMKIsz6wMpiBBT1W+JdWNN7ekfgXQide9h6tNDwXzFDX25vBWUjcM2/
-         Gwerfej8dcblyc1SCHFQyR58Xw+49Mx5ew/J6HVVWBMdBCEN2z5zRl468/PWW7IOFQU9
-         QZRYIT7uOFso9q0Blh7gSXhPN+IP8fR1gAmR6cQ+JwO5OshHIMzw+LpZ7L5PUKY10sQB
-         SROg==
-X-Gm-Message-State: AJIora+nSafguUf7u5PSAaWyArOXl+QSWxrNVRUrIX2d+/ftR4STL9ct
-        1jfOOXrpCWhA9Vko8yHA3+GgIW09n/2TiPpvsWeq56V2v0ry
-X-Google-Smtp-Source: AGRyM1u7ngBipM/bsbjwlGBGsx6Kdyeri/FeEmxIk8pNogVIQ9MyEKu/P4gFHS8RL0AVTUoUFPBIfFOM/UNx1GeFevZ0dmdMj1Ta
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=v5iO3DJsdBPM2eAKiUQEswEd2u5joVshDOWMCkBSEWI=;
+        b=GeS0joJLabDNBx+6P5iH+X8iX9s0Ustogl7FFLdnSrL5wStz7eN/sUMq9TlXuBfZoT
+         tMeDDQXAP6b7l43JoEPTbb0n81zucTC4mGSkYy2/ax8dJU4c7nekRR9a++uZg3IJcSUD
+         QfplXdYr1YVLAsa+eUgNSM8XMw64MCkvz/LfmBNqgOcgDoF/lqeJfwd9U/Z66L52zISD
+         U5zis4L/XLOt4U07bqjLAmZ8eNWZrkwtA+I7mTIofy38BIMXvMbu/f5NV/NFOUy1o/Su
+         w5CiCC1T//6U03E0qHDVvR8bYz/MPhKqpKsl1QL9ExzH91JGZ5bAgrPeZUPxOb1+iRa/
+         76AA==
+X-Gm-Message-State: AJIora+DopQd3v5RnJNncH3l7RaT6jdFcFM9rXnstS0KdKtsXInQKMnH
+        CsNalCv1iscctC52cB8LnUU=
+X-Google-Smtp-Source: AGRyM1vrkYDWEh+Q5CKXwHq6PQq+SAM34S/j5zh3ymhk2nd7NrnqZNL26drZbsS7S6b+1oQNZRzfMQ==
+X-Received: by 2002:a17:902:ef46:b0:168:bac3:2fd4 with SMTP id e6-20020a170902ef4600b00168bac32fd4mr24230479plx.132.1658979261953;
+        Wed, 27 Jul 2022 20:34:21 -0700 (PDT)
+Received: from debian.me (subs28-116-206-12-54.three.co.id. [116.206.12.54])
+        by smtp.gmail.com with ESMTPSA id d8-20020a17090a7bc800b001f2ef3c7956sm2598035pjl.25.2022.07.27.20.34.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jul 2022 20:34:21 -0700 (PDT)
+Received: by debian.me (Postfix, from userid 1000)
+        id E106D104A91; Thu, 28 Jul 2022 10:34:16 +0700 (WIB)
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+To:     linux-doc@vger.kernel.org, linux-next@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linuxppc-dev@lists.ozlabs.org,
+        linux-doc-tw-discuss@lists.sourceforge.net
+Cc:     linux-kernel@vger.kernel.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>, Alex Shi <alexs@kernel.org>,
+        Yanteng Si <siyanteng@loongson.cn>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Segher Boessenkool <segher@kernel.crashing.org>,
+        Bagas Sanjaya <bagasdotme@gmail.com>
+Subject: [PATCH 0/3] Documentation: powerpc: documentation fixes for Documentation/powerpc/elf_hwcaps.rst
+Date:   Thu, 28 Jul 2022 10:33:30 +0700
+Message-Id: <20220728033332.27836-1-bagasdotme@gmail.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220727220050.549db613@canb.auug.org.au>
+References: <20220727220050.549db613@canb.auug.org.au>
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:168d:b0:67c:44c3:9ba5 with SMTP id
- s13-20020a056602168d00b0067c44c39ba5mr8952708iow.190.1658979253272; Wed, 27
- Jul 2022 20:34:13 -0700 (PDT)
-Date:   Wed, 27 Jul 2022 20:34:13 -0700
-In-Reply-To: <20220728031520.554-1-hdanton@sina.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000014c7ad05e4d535fc@google.com>
-Subject: Re: [syzbot] KASAN: use-after-free Read in __post_watch_notification
-From:   syzbot <syzbot+03d7b43290037d1f87ca@syzkaller.appspotmail.com>
-To:     hdanton@sina.com, linux-kernel@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+After merging powerpc tree for linux-next integration testing, Stephen
+Rothwell reported htmldocs warnings at [1]. Fix these with self-explanatory
+fixes in the shortlog below.
 
-syzbot has tested the proposed patch and the reproducer did not trigger any issue:
+[1]: https://lore.kernel.org/linuxppc-dev/20220727220050.549db613@canb.auug.org.au/
 
-Reported-and-tested-by: syzbot+03d7b43290037d1f87ca@syzkaller.appspotmail.com
+Bagas Sanjaya (3):
+  Documentation: powerpc: fix indentation warnings
+  Documentation: use different label names for each arch's
+    elf_hwcaps.rst
+  Documentation: powerpc: add elf_hwcaps to table of contents
 
-Tested on:
+ Documentation/arm64/elf_hwcaps.rst              |  2 +-
+ Documentation/powerpc/elf_hwcaps.rst            | 17 +++++++----------
+ Documentation/powerpc/index.rst                 |  1 +
+ .../translations/zh_CN/arm64/elf_hwcaps.rst     |  2 +-
+ .../translations/zh_TW/arm64/elf_hwcaps.rst     |  2 +-
+ 5 files changed, 11 insertions(+), 13 deletions(-)
 
-commit:         e0dccc3b Linux 5.19-rc8
-git tree:       https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-console output: https://syzkaller.appspot.com/x/log.txt?x=145fb2c2080000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=cfd2f9ae77f1f719
-dashboard link: https://syzkaller.appspot.com/bug?extid=03d7b43290037d1f87ca
-compiler:       Debian clang version 13.0.1-++20220126092033+75e33f71c2da-1~exp1~20220126212112.63, GNU ld (GNU Binutils for Debian) 2.35.2
-patch:          https://syzkaller.appspot.com/x/patch.diff?x=124486de080000
 
-Note: testing is done by a robot and is best-effort only.
+base-commit: d6b551b8f90cc92c7d3c09cf38c748efe305ecb4
+-- 
+An old man doll... just what I always wanted! - Clara
+
