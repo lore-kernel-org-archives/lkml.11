@@ -2,131 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50DFEC04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 20:44:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83506C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 20:45:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232051AbiG1Uop (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 16:44:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44300 "EHLO
+        id S232324AbiG1UpO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 16:45:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229620AbiG1Uon (ORCPT
+        with ESMTP id S229620AbiG1UpM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 16:44:43 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8603F6D2CD;
-        Thu, 28 Jul 2022 13:44:42 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id a7-20020a17090a008700b001f325db8b90so1855166pja.0;
-        Thu, 28 Jul 2022 13:44:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc;
-        bh=zEBR1Ky5G7KTNBelOELZjj3LDNqMPsUpTpOuJi2OqTg=;
-        b=Vm+WbZZse7CT3sDU0lYolZ3mhefbqlwbQBYN/UAU0F8JiRqHSZBzfnSWzucq+4hhLu
-         j6+ozXndQXd9WCCaXO9a9sMcuHjAzyJARs8DgbvUB+rQCPAzUHX1MbNIvEkpCHpe3kHt
-         jjhHOhd+pYA+XbD5JbQMjo8hBGEKm5UexIvk+V6w+d31/y/N8kFiOrLATmyGCpAKR9l+
-         /kONg+NMwMVyPs1zhKcCtCaTKxyytjwAGNTkJLazYcpBTcf9vuVFqUfH5CqlpQYeRVEv
-         6b3oOuWAg8y8eJK0iT5VmtqkI4k5V4l+j7tD/Bpn9BaNjwmjEoe9DWTPcptFk6atOUGy
-         tQ0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
-        bh=zEBR1Ky5G7KTNBelOELZjj3LDNqMPsUpTpOuJi2OqTg=;
-        b=hvJs46aqdyRxM5xywlZB0Z1UOxJ3vtiZ3SGR7SRQPH+T1bO24TugivD8U13N3Bt2nw
-         zPLmBDZ9IhFPS82raMzBEc17TNE37OPfBLsraZs+uwWZVGXk0mAxfu+zo+MjcnoR55zk
-         V7Lr6NtXeBS+2dgoOby2q2908FypC65SIU8x2CkBygebKFCrHqZxJoV0osGLNeWud1W2
-         ACeraJBJIK3jSg0xCfZ8sdgAMV2gnxfGQ5ULK5fzVWiYFyQKyBKIwQDlcLdp1yI5YLTn
-         jREZkNHi3i6QJQb9QYG8y8bEAiWeBeynYDETogGVGtKJzjJFePlfcC0I7XyAMPTghlU6
-         hXTA==
-X-Gm-Message-State: ACgBeo1o56zImgD0GzelgCeOBAV/40rO3x4p5vzX3aXvo7303YC8P5tN
-        sFxJwKvYoh0b1jhibOczv6b6CuI95b0=
-X-Google-Smtp-Source: AA6agR4NJeonS2cJ+HFzH46XzQhbj1kWHezl9LtVmnH3LAN8Irv0cfx9aEAoLWt/4l0BVJaaN5vHHQ==
-X-Received: by 2002:a17:90b:3a84:b0:1f2:8d9d:46f3 with SMTP id om4-20020a17090b3a8400b001f28d9d46f3mr1172274pjb.174.1659041081677;
-        Thu, 28 Jul 2022 13:44:41 -0700 (PDT)
-Received: from localhost ([2620:10d:c090:400::5:23b6])
-        by smtp.gmail.com with ESMTPSA id d70-20020a621d49000000b0052ab9f1fe45sm1180234pfd.120.2022.07.28.13.44.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Jul 2022 13:44:40 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Thu, 28 Jul 2022 10:44:38 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Waiman Long <longman@redhat.com>
-Cc:     Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>, cgroups@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] cgroup/cpuset: Keep current cpus list if cpus
- affinity was explicitly set
-Message-ID: <YuL1NijxSEv2xadk@slm.duckdns.org>
-References: <20220728005815.1715522-1-longman@redhat.com>
- <YuLF+xXaCzwWi2BR@slm.duckdns.org>
- <1ae1cc6c-dca9-4958-6b22-24a5777c5e8d@redhat.com>
- <YuLdX7BYGvo57LNU@slm.duckdns.org>
- <606ed69e-8ad0-45d5-9de7-48739df7f48d@redhat.com>
+        Thu, 28 Jul 2022 16:45:12 -0400
+Received: from 7of9.schinagl.nl (7of9.connected.by.freedominter.net [185.238.129.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ED5D2736;
+        Thu, 28 Jul 2022 13:45:10 -0700 (PDT)
+Received: from [10.2.12.24] (unknown [10.2.12.24])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by 7of9.schinagl.nl (Postfix) with ESMTPSA id D199A185B6D3;
+        Thu, 28 Jul 2022 22:45:08 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=schinagl.nl; s=7of9;
+        t=1659041108; bh=sRx6mGd0303ZII+oO6mGwJJLQl14UFRwzsiN7PVXODI=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=FOt8x21Z6bw3LuZdK6m0JupoRUGI/KDf+41PDQHiRX4C2mZXnipYCEeg/ctcd0Az9
+         8y4dS87aj1ThxyPSgxiZQoSjYpLZU1UeRCaixGocCeaJqvBxp2pGKF1HPKL08vZMse
+         9cLLEGyp72ZWDMjxhekSJh2C19xokcit8dgU4SW8=
+Message-ID: <5bd688b0-7694-0a96-67e6-7137c018c9a5@schinagl.nl>
+Date:   Thu, 28 Jul 2022 22:45:08 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <606ed69e-8ad0-45d5-9de7-48739df7f48d@redhat.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 00/13] [RFC] Rust support
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Gary Guo <gary@garyguo.net>
+Cc:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>,
+        Miguel Ojeda <ojeda@kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        rust-for-linux <rust-for-linux@vger.kernel.org>,
+        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+References: <20210414184604.23473-1-ojeda@kernel.org>
+ <fae4873e-2ff9-df35-0ab9-34bf4417b717@schinagl.nl>
+ <CANiq72mRxM-7griYF+0FWqYoSoNL8ad=L-i6a2-GsaCeb0C6qQ@mail.gmail.com>
+ <ba8cb315-9d73-2f45-8bf9-d9473d369dca@schinagl.nl>
+ <CANiq72kz+Txauo+103_-fN_J8PhhCdJUH5XepShUQmJzW6a4tA@mail.gmail.com>
+ <5c0bb1db-5589-32ca-ac22-4aafb3c15751@schinagl.nl>
+ <20220728112114.0000003a@garyguo.net> <YuJ8lWGKXEk03u3M@kroah.com>
+From:   Olliver Schinagl <oliver+list@schinagl.nl>
+In-Reply-To: <YuJ8lWGKXEk03u3M@kroah.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+Hey Greg,
 
-On Thu, Jul 28, 2022 at 03:21:26PM -0400, Waiman Long wrote:
-> On 7/28/22 15:02, Tejun Heo wrote:
-> > On Thu, Jul 28, 2022 at 02:57:28PM -0400, Waiman Long wrote:
-> > > There can be a counter argument that if a user found out that there is not
-> > > enough cpus in a cpuset to meet its performance target, one can always
-> > > increase the number of cpus in the cpuset. Generalizing this behavior to all
-> > > the tasks irrespective if they have explicitly set cpus affinity before will
-> > > disallow this use case.
-> > This is nasty.
+On 28-07-2022 14:09, Greg Kroah-Hartman wrote:
+> On Thu, Jul 28, 2022 at 11:21:14AM +0100, Gary Guo wrote:
+>> Rust requires braces around branches of if expression, and C doesn't.
+>> So in kernel coding style you often have:
+>>
+>> 	if (condition) do_something();
 > 
-> That is a nasty example, I know. There may be users depending on the
-> existing behavior even if they don't know it. So I am a bit hesitant to
-> change the default behavior like that. On the other hand, tasks that have
-> explicitly set its cpu affinity certainly don't want to have unexpected
-> change to that.
+> That is not a valid kernel coding style, and our tools should catch this
+> and prevent it from being added to the kernel tree.
+Are you sure? I'm not sure if this isn't true today, but I've certainly 
+seen old code where this definitely was done. Was all of this cleaned up 
+in the last 2+ years?
 
-Yeah, I hear you. I'm on the same page.
+Olliver
 
-> > The real solution here is separating out what user requested
-> > and the mask that cpuset (or cpu hotplug) needs to apply on top. ie.
-> > remember what the user requested in a separate cpumask and compute the
-> > intersection into p->cpus_maks whenever something changes and apply
-> > fallbacks on that final mask. Multiple parties updating the same variable is
-> > never gonna lead to anything consistent and we're patching up for whatever
-> > the immediate use case seems to need at the moment. That said, I'm not
-> > necessarily against patching it up but if you're interested in delving into
-> > it deeper, that'd be great.
 > 
-> I believe the current code is already restricting what cpu affinity that a
-> user can request by limiting to those allowed by the current cpuset. Hotplug
-> is another issue that may need to be addressed. I will update my patch to
-> make it handle hotplug in a more graceful way.
+> thanks,
+> 
+> greg k-h
 
-So, the patch you proposed is making the code remember one special aspect of
-user requested configuration - whether it configured it or not, and trying
-to preserve that particular state as cpuset state changes. It addresses the
-immediate problem but it is a very partial approach. Let's say a task wanna
-be affined to one logical thread of each core and set its mask to 0x5555.
-Now, let's say cpuset got enabled and enforced 0xff and affined the task to
-0xff. After a while, the cgroup got more cpus allocated and its cpuset now
-has 0xfff. Ideally, what should happen is the task now having the effective
-mask of 0x555. In practice, tho, it either would get 0xf55 or 0x55 depending
-on which way we decide to misbehave.
-
-Thanks.
-
--- 
-tejun
