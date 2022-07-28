@@ -2,106 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDB56C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 21:07:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B16EC04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 21:07:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232038AbiG1VHK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 17:07:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36604 "EHLO
+        id S232064AbiG1VH2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 17:07:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229735AbiG1VHI (ORCPT
+        with ESMTP id S233025AbiG1VHX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 17:07:08 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B83F1D0F3;
-        Thu, 28 Jul 2022 14:07:06 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id b11so5152518eju.10;
-        Thu, 28 Jul 2022 14:07:06 -0700 (PDT)
+        Thu, 28 Jul 2022 17:07:23 -0400
+Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 625906D2D1;
+        Thu, 28 Jul 2022 14:07:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=Ab/60a7ap/TF4pOEKknPkIZ19AphsfkpAIUOdyILIjA=;
-        b=BFQmBltvDWAyd4EdZYjsfo++kYP1bOdlRa9ZabzH2Q0s39aOYP2Y9NvADlWYjuszT/
-         sTTbfR4WsUrQknG5OkKNVhyCz2YsQOcE9D9ycG3InxB3xxFnjWNuAaBCGKkZG8wkajtr
-         Rpp0Ou4GkMHSI5QluJniDpEFg8FcoBv+Mlo3lDJPwnQlcSxPqoxWG/+x5BX1rqPDSLBE
-         vEbHIgLuYsOWUV80Eb7WOysCdlpoNo2GuSdJhK3dUVp3ETfDy7wn/8SpsbiqL3dGH3pD
-         cu3dPlrqBZ+j7I4xlFNAWN7vdVcdt94CO3SHK3O5euZXrxoISXO6IN8cqUKHG+Dfo6N+
-         oZ5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=Ab/60a7ap/TF4pOEKknPkIZ19AphsfkpAIUOdyILIjA=;
-        b=JeP98h9YPfzMzmLlxkCavGcuoQ9i/VnK3mFIQNN293k01XyKC+H6bmsMfyP+x78dH3
-         EGDK7zmwnAsvm7cWrT20F9NxVOCz/QtEUcI6LfymVJaGURgiyvlxrBQsTCWSAyLxW9iy
-         IAwoyShAmqc9fU3xnDLF6fr1sFYgpyEt5BjFJTcjNELsMGDLWtRu2lY6ehWExZUZzz4l
-         u41pW+UIDkaTq7uP9VTY4AnSxjzQw8Bz0NIZjik1Fh7T0+LgYSDbkXH2b3v+d90cyypv
-         wkfuhR/Gf1zTYd7oz1+h7DmjUKAyIu8uAF8veQ1TQ/oHyB4YgnQ7pq1HH/glwXoamiws
-         E26g==
-X-Gm-Message-State: AJIora/DChNoH8Y29SmxOuLJdVU727obb+oGXlwrD3TQtqbRay1IW1+3
-        ia8XyaPCGVK1pngy/H0x5mYfvl4PgsoZmu/WdVs=
-X-Google-Smtp-Source: AGRyM1tRri2yxGEFn1QQ0Ft0YIQaCW8e+5RgcNCLhZwZ5P2GWyRFBLmCsyKL5A2sFwjM3h12cHNdVratAckuZRN8iZI=
-X-Received: by 2002:a17:907:6e02:b0:72b:9f16:1bc5 with SMTP id
- sd2-20020a1709076e0200b0072b9f161bc5mr564451ejc.676.1659042424819; Thu, 28
- Jul 2022 14:07:04 -0700 (PDT)
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1659042441; x=1690578441;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=mDjr9pk15K3HDo23mFhJv0WTCFDPNDJy6bT+G7ZkmPg=;
+  b=HuXtV6E9CFuFK+MWnKCg2SaZN87ydRnc2GTwODYFr7GU1wtoozup+fL4
+   Wu2Tcn1xFHj3VLXY3AuuV74bOOjYlMR8dMjJBmtS1EMtkQJ0H7z8CLNRr
+   ONIQ9E84UUlogSy8OcLjWdQ2mx1Q9VLjSgPJCUYh/Jdv2C8yjAPz0+K/i
+   U=;
+Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 28 Jul 2022 14:07:21 -0700
+X-QCInternal: smtphost
+Received: from unknown (HELO nasanex01a.na.qualcomm.com) ([10.52.223.231])
+  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2022 14:07:20 -0700
+Received: from [10.110.38.152] (10.80.80.8) by nasanex01a.na.qualcomm.com
+ (10.52.223.231) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 28 Jul
+ 2022 14:07:19 -0700
+Message-ID: <6da1447d-01d6-222e-fc98-7e96b154d2d0@quicinc.com>
+Date:   Thu, 28 Jul 2022 14:07:19 -0700
 MIME-Version: 1.0
-References: <20220728142824.3836-1-markuss.broks@gmail.com>
- <20220728142824.3836-3-markuss.broks@gmail.com> <YuKfnAjB4gV0ki4A@kroah.com> <30ce6f21-0a91-81cb-8b03-5acff17c59ee@gmail.com>
-In-Reply-To: <30ce6f21-0a91-81cb-8b03-5acff17c59ee@gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 28 Jul 2022 23:06:27 +0200
-Message-ID: <CAHp75VeNM5vc58WAOLwHnhpDBwMk_FbzfnNRAEUDdZTBq9L73w@mail.gmail.com>
-Subject: Re: [PATCH 2/2] efi: earlycon: Add support for generic framebuffers
- and move to fbdev subsystem
-To:     Markuss Broks <markuss.broks@gmail.com>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Helge Deller <deller@gmx.de>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Borislav Petkov <bp@suse.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Kees Cook <keescook@chromium.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Michal Suchanek <msuchanek@suse.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Wei Ming Chen <jj251510319013@gmail.com>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Linux Documentation List <linux-doc@vger.kernel.org>,
-        linux-efi <linux-efi@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        "open list:FRAMEBUFFER LAYER" <linux-fbdev@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Rob Herring <robh@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0.3
+Subject: Re: [PATCH 1/2] scsi: ufs: Add Multi-Circular Queue support
+To:     Bart Van Assche <bvanassche@acm.org>,
+        John Garry <john.garry@huawei.com>,
+        Can Guo <quic_cang@quicinc.com>, <stanley.chu@mediatek.com>,
+        <adrian.hunter@intel.com>, <alim.akhtar@samsung.com>,
+        <avri.altman@wdc.com>, <beanhuo@micron.com>,
+        <quic_nguyenb@quicinc.com>, <quic_ziqichen@quicinc.com>,
+        <linux-scsi@vger.kernel.org>, <kernel-team@android.com>
+CC:     "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Daejun Park <daejun7.park@samsung.com>,
+        Jinyoung Choi <j-young.choi@samsung.com>,
+        Kiwoong Kim <kwmad.kim@samsung.com>,
+        open list <linux-kernel@vger.kernel.org>
+References: <1658214120-22772-1-git-send-email-quic_cang@quicinc.com>
+ <1658214120-22772-2-git-send-email-quic_cang@quicinc.com>
+ <f93045ec-569c-bd09-3617-d7d7aca4e5cd@huawei.com>
+ <ea33dee8-673c-0716-1640-28df7c983ca7@quicinc.com>
+ <10288041-8c3d-7e3a-9049-10b9fcd8baed@acm.org>
+From:   "Asutosh Das (asd)" <quic_asutoshd@quicinc.com>
+In-Reply-To: <10288041-8c3d-7e3a-9049-10b9fcd8baed@acm.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01a.na.qualcomm.com (10.52.223.231)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 28, 2022 at 4:58 PM Markuss Broks <markuss.broks@gmail.com> wrote:
-> On 7/28/22 17:39, Greg Kroah-Hartman wrote:
-> > On Thu, Jul 28, 2022 at 05:28:19PM +0300, Markuss Broks wrote:
+On 7/28/2022 1:29 PM, Bart Van Assche wrote:
+> On 7/28/22 12:15, Asutosh Das (asd) wrote:
+>> Hello John,
+>>
+>> On 7/28/2022 12:10 PM, John Garry wrote:
+>>> On 19/07/2022 08:01, Can Guo wrote:
+>>>> +
+>>>> +    hba->nr_queues[HCTX_TYPE_DEFAULT] = num_possible_cpus();
+>>>> +    hba->nr_queues[HCTX_TYPE_READ] = 0;
+>>>> +    hba->nr_queues[HCTX_TYPE_POLL] = 1;
+>>>> +
+>>>> +    for (i = 0; i < HCTX_MAX_TYPES; i++)
+>>>> +        host->nr_hw_queues += hba->nr_queues[i];
+>>>> +
+>>>> +    host->can_queue = hba->nutrs;
+>>>> +    host->cmd_per_lun = hba->nutrs;
+>>>> +
+>>>> +    /* One more reserved for dev_cmd_queue */
+>>>> +    hba->nr_hw_queues = host->nr_hw_queues + 1;
+>>>> +
+>>>
+>>> So this would mean that the host can accept .can_queue * 
+>>> .nr_hw_queues numbers of requests simultaneously - is that true?
+>>
+>> That would mean that .can_queue * .nr_hw_queues numbers of request may 
+>> be queued to the host.
+>> Please can you elaborate if you see an issue.
+> 
+> Hi Asutosh,
+> 
+> The `host_tagset` flag has been introduced by John and Hannes some time 
+> ago. See also commit bdb01301f3ea ("scsi: Add host and host template 
+> flag 'host_tagset'"). This flag supports sharing tags across hardware 
+> queues and could be used to support UFSHCI 4.0 controllers that do not 
+> support the EXT_IID feature.
+> 
+> In order not to complicate the implementation further, I propose to fall 
+> back to the UFSHCI 3.0 compatibility mode for UFSHCI 4.0 controllers 
+> that do not support the EXT_IID feature.
+> 
+> To answer John's question: the maximum number of outstanding commands is 
+> 16 * hba->nutrs if EXT_IID is supported (EXT_IID is a four bits field). 
+> If the hardware queue index is encoded in the EXT_IID field, hba->nutrs 
+> is the number of commands per hardware queue.
+> 
+> Thanks,
+> 
+> Bart.
 
-> >>   delete mode 100644 drivers/firmware/efi/earlycon.c
-> >>   create mode 100644 drivers/video/fbdev/earlycon.c
-> >
-> > That should be a rename, not a delete/create, right?
->
-> Should this change be split into two separate commits,
-> one for moving the file and the second for making changes?
+Thanks Bart, I wasn't aware of the background of John's Q. I will 
+consider your proposal and get back.
 
-I think it's a pointer to use `git format-patch -M -C ...` when
-preparing patches.
-
--- 
-With Best Regards,
-Andy Shevchenko
+-asd
