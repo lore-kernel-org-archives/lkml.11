@@ -2,118 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2D9EC19F29
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 15:50:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC71AC04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 15:50:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232099AbiG1Pua (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 11:50:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34368 "EHLO
+        id S232084AbiG1Puc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 11:50:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231791AbiG1PuX (ORCPT
+        with ESMTP id S231897AbiG1PuX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 28 Jul 2022 11:50:23 -0400
-Received: from mail-vs1-xe32.google.com (mail-vs1-xe32.google.com [IPv6:2607:f8b0:4864:20::e32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD35D2C659;
-        Thu, 28 Jul 2022 08:50:21 -0700 (PDT)
-Received: by mail-vs1-xe32.google.com with SMTP id a63so1995634vsa.3;
-        Thu, 28 Jul 2022 08:50:21 -0700 (PDT)
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C185D2F38B;
+        Thu, 28 Jul 2022 08:50:22 -0700 (PDT)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-32194238c77so24014817b3.4;
+        Thu, 28 Jul 2022 08:50:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=googlemail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=juoHghnTH32Kj8QlI0i1YTL6DmztcBwrLPBQKpcOZMI=;
-        b=n0sSIBhNYa6kx90pgcTt7Lkyv45jX4qx/E8T3eJ/FoHc6a0frmm81j+MtOFijSl+N8
-         5alA/gnLJmptcpuLEsffjJqe0/W8jNqUkqHT65svJcl/y3WwY0ft/xsDRLBO14VgrfFo
-         uDFqsP29P5axCTkpKsM7XoZiiVHxnO1qsc9Dw+7IFCylF8W0+UWdoP1TmTBqPD0Wyaez
-         rHtEgXCmOK07tHwueeW5+watPJ+FBqcugOO9JjVIyyPd7PNQqW7IGvRgRGZq/+9SfnnO
-         65yqUww1/EnQk4Xf6ycVy0dCeBxf+Q6F7gmgAfb+y80JgXTTcQ2qfX1dRjHVocI6rLOL
-         oZZw==
+        bh=36Hwq/qRh8es4w9GNvXSHTYjfUFBDsjRYb3TlEw3sq4=;
+        b=ZyvciRQzuZ/9hIqed2BbMuHs1hzBRUKrIBDWJxHTuQ6IoAwV92sl34ptvlovkyMG7H
+         D+L4GeAu+b+e5E0bO8OSbgoa1xgDWknpiBF/oKNF1kG7nEbQuxBLmvOu+JmzW3WlPBrp
+         1sJFaxmDc57DVhK0dRne0McvWNBVqRdTAYNR5+1le1pm1TWFLXYL54vtBX/i8Ggf7uSD
+         +8o2vGJDXZSGtCnEdTWpfTRyXcAW/0iXYRIUhIsjVsdU1zu4SABYlFX9KsYKTmnhDo/Q
+         AIAOvX3LkvxYnKNh5fFmK+Tie06dMmClDDaDMYE1e4Qh7KKdsxbqGXwWxKMQQImAF891
+         ksoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=juoHghnTH32Kj8QlI0i1YTL6DmztcBwrLPBQKpcOZMI=;
-        b=I//IiI7ZTbb0Xo4+WmiHWM1C3Jjp2Hi6D6bHTyGOY0ntAko14QSqGJ8EfPEIYUrT9x
-         9yhcpvr9HytgThI38ueam5nzfHf8/ZqvG1XOchc7kjwehYDPRRuTSJeA6FX7tvOdZvl+
-         BitOgnsUnk7sVqdm0Ntl6jCrmlD54ytQDHwqn3O+m48vD3UJpQPcotnmacN9W2MK68Q8
-         LvNdQMErWsbd6pVGIrgbpej/j2/8SAqo1rlFiInK6c0nPpoixQhyvvoRDm+FAHHIx9+N
-         rCiC13cL/XjN/UM/VPB6siy/HNdr7w3g9DeVuqFvBPIBBSDrHZ/+PD629GKmkPAl7gFq
-         TuUw==
-X-Gm-Message-State: AJIora/bcT5GTjLYJpVkwAkRPqey7vj4XYxAvRYPuPQWAAV0qnH8i7Ed
-        jUE/zkpLQDsXSuG/szTrqs+5dl48L0P8f/30SPCoWAn2Jx/Y2vTZ
-X-Google-Smtp-Source: AGRyM1vpuFNgo7HIa/fGEhMt/kzGZB5qof4A3otEJacdUABYApLReXpj0Ho2OHifa++57hKbxoP9uTd6S+SOzf4nBmw=
-X-Received: by 2002:a67:eb98:0:b0:358:6274:71b3 with SMTP id
- e24-20020a67eb98000000b00358627471b3mr5972297vso.72.1659023420760; Thu, 28
- Jul 2022 08:50:20 -0700 (PDT)
+        bh=36Hwq/qRh8es4w9GNvXSHTYjfUFBDsjRYb3TlEw3sq4=;
+        b=xJ63/GdDxwjxu6LcniptGkka+5ttQng4zUrv9oKSE9JeBVyj0Ly/DuicrhPZRAPXXs
+         OTdzvRtJlMGjXtoljPyOuqw/cOOQNaQ6zP5xoseRPOzZtti+IuZA6a0Trwi8maVRF/qH
+         DoNbPkMqLvnwr1ejdysRF76SBKCc/BfRiAZ2gQjwsoD4fad8sAvFXmRuaIg7PtY+iUfW
+         lyh62J939VBFeTQo9LH0VmkKZ9q/abI1z0srficVb8dCfDIOkYaPs5n63IBvKf6jU/TJ
+         7uRdBCFABHnzoaOatC3zvHrRvwtAoN8GNznFcn89rbCMQ3v1EfnbONkFkBgYRUWYN72Z
+         Pg5g==
+X-Gm-Message-State: AJIora9g5htS1OVILkiiWw/u6BHS6LijHbnHMmGAf8DIcKQhEzWuS4Fy
+        osL+bGkuZfnsyrGtWkC0f4ssiSCzx3yh/9PDObE=
+X-Google-Smtp-Source: AGRyM1u//aTCa0acrH/zETJEn1/xi//6B9XOsR1Vh4eitow4Zipho038DMVJtbm8PRn+kbrW3v/a7g+FgP76xWRfkBI=
+X-Received: by 2002:a81:a149:0:b0:31f:fded:b121 with SMTP id
+ y70-20020a81a149000000b0031ffdedb121mr6161578ywg.122.1659023421655; Thu, 28
+ Jul 2022 08:50:21 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220728114915.91021-1-zhangjiachen.jaycee@bytedance.com> <CAJfpegtxUrytqTFjVG0J03ZmEzzpFr8Ra1KP8HiZNPzTtgY3kw@mail.gmail.com>
-In-Reply-To: <CAJfpegtxUrytqTFjVG0J03ZmEzzpFr8Ra1KP8HiZNPzTtgY3kw@mail.gmail.com>
-From:   Amir Goldstein <amir73il@gmail.com>
-Date:   Thu, 28 Jul 2022 17:50:09 +0200
-Message-ID: <CAOQ4uxgbVi4F9hbsVAG9v1Ay8P_MB=QBTLv2-y9M2f9jcbq5NA@mail.gmail.com>
-Subject: Re: [PATCH v2] ovl: drop WARN_ON() dentry is NULL in ovl_encode_fh()
-To:     Miklos Szeredi <miklos@szeredi.hu>
-Cc:     Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>,
-        overlayfs <linux-unionfs@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        songmuchun@bytedance.com, Hongbo Yin <yinhongbo@bytedance.com>,
-        Tianci Zhang <zhangtianci.1997@bytedance.com>
+References: <20220702190705.5319-1-olek2@wp.pl> <3c9a032edd0fb9b9608ad3ca08d6e3cc38f21464.camel@svanheule.net>
+ <87fsjen2kl.wl-maz@kernel.org> <20220706081901.GA10797@alpha.franken.de>
+ <CAFBinCAsj=RNvitj2tXJU6pTLSbanRXdKM9H4vyF=N9N=PP06g@mail.gmail.com>
+ <20220707100630.GC9894@alpha.franken.de> <CAFBinCBn3+MbKFE84Y0KjW4qG_88+HuBTzRhPQSDqzqGhyhhZw@mail.gmail.com>
+ <20220707143930.GA14693@alpha.franken.de>
+In-Reply-To: <20220707143930.GA14693@alpha.franken.de>
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date:   Thu, 28 Jul 2022 17:50:10 +0200
+Message-ID: <CAFBinCBq3ydoxtj1VG=kjqbq5NjP1ZnQe_dOAS2Gjm2fNkK9Yg@mail.gmail.com>
+Subject: Re: [PATCH] MIPS: smp-mt: enable all hardware interrupts on second VPE
+To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc:     Marc Zyngier <maz@kernel.org>,
+        Sander Vanheule <sander@svanheule.net>,
+        Aleksander Jan Bajkowski <olek2@wp.pl>,
+        Hauke Mehrtens <hauke@hauke-m.de>, git@birger-koblitz.de,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 28, 2022 at 3:06 PM Miklos Szeredi <miklos@szeredi.hu> wrote:
+Hi Thomas,
+
+On Thu, Jul 7, 2022 at 4:40 PM Thomas Bogendoerfer
+<tsbogend@alpha.franken.de> wrote:
+[...]
+> > Or can you point me to the code in
+> > drivers/irqchip/irq-mips-cpu.c that's responsible for enabling the
+> > interrupts on VPE 1 (is it simply unmask_mips_irq)?
 >
-> On Thu, 28 Jul 2022 at 13:49, Jiachen Zhang
-> <zhangjiachen.jaycee@bytedance.com> wrote:
-> >
-> > Some code paths cannot guarantee the inode have any dentry alias. So
-> > WARN_ON() all !dentry may flood the kernel logs.
-> >
-> > For example, when an overlayfs inode is watched by inotifywait (1), and
-> > someone is trying to read the /proc/$(pidof inotifywait)/fdinfo/INOTIFY_FD,
-> > at that time if the dentry has been reclaimed by kernel (such as
-> > echo 2 > /proc/sys/vm/drop_caches), there will be a WARN_ON(). The
-> > printed call stack would be like:
-> >
-> >     ? show_mark_fhandle+0xf0/0xf0
-> >     show_mark_fhandle+0x4a/0xf0
-> >     ? show_mark_fhandle+0xf0/0xf0
-> >     ? seq_vprintf+0x30/0x50
-> >     ? seq_printf+0x53/0x70
-> >     ? show_mark_fhandle+0xf0/0xf0
-> >     inotify_fdinfo+0x70/0x90
-> >     show_fdinfo.isra.4+0x53/0x70
-> >     seq_show+0x130/0x170
-> >     seq_read+0x153/0x440
-> >     vfs_read+0x94/0x150
-> >     ksys_read+0x5f/0xe0
-> >     do_syscall_64+0x59/0x1e0
-> >     entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> >
-> > So let's drop WARN_ON() to avoid kernel log flooding.
->
->
-> Applied, thanks.
+> IMHO there is the problem, irq-mips-cpu.c can only do CPU irq operations
+> on the same CPU. I've checked MIPS MT specs and it's possible do
+> modify CP0 registers between VPEs. Using that needs changes in
+> irq-mips-cpu.c. But mabye that's not woth the effort as probably
+> all SMP cabable platforms have some multi processort capable
+> interrupt controller implemented.
+On Lantiq the "multi processor capable interrupt controller" solution
+seems not very sophisticated: there's simply two identical copies of
+the IRQ controller IP, one connected to CPU0 and the other to CPU1.
 
-FWIW, no objection to this fix, but for the record, encode_fh
-is basically an inode operation, so it shouldn't require an alias.
+> I thought about another way solve the issue. By introducing a
+> new function in smp-mt.c which sets the value of the interrupt
+> mask for the secondary CPU, which is then used in vsmp_init_secondary().
+> Not sure if this is worth the effort compared to a .boot_secondary
+> override.
+I think for the Realtek SoC's this would be problematic because it's
+using MIPS_GENERIC. My understanding is that in an ideal world all
+platforms would switch to MIPS_GENERIC.
+As an alternative to making irq-mips-cpu capable of changing another
+CPU's registers: would you also be happy with a change that implements
+the following idea (pseudocode) in vsmp_init_secondary():
+    struct device_node *root_node = of_find_node_by_path("/");
 
-The only thing in the call chain down from ovl_encode_fh()
-that needs the ovl dentry is ovl_connect_layer(). The rest of the
-referenced to ovl dentry can use an ovl inode instead.
+    if (mips_gic_present() ||
+        of_device_is_compatible(root_node, "lantiq,xrx200") ||
+        of_device_is_compatible(root_node, "realtek,some-relevant-soc"))
+        change_c0_status(ST0_IM, STATUSF_IP2 | STATUSF_IP3 |
+            STATUSF_IP4 | STATUSF_IP5 |
+            STATUSF_IP6 | STATUSF_IP7);
+    else
+       ...
 
-In some cases (e.g. non-dir or pure upper dir), ovl_connect_layer()
-will not be called at all, but even if it would need to be called, it is
-better to skip it and encode the lower inode if there is no ovl dentry
-available.
+    of_node_put(root_node);
 
-The possible eventual outcome of an fh changing after disconnected
-dir copy up is probably better than failing encode_fh out right.
+That way we don't risk enabling interrupt lines which shouldn't be
+enabled (on SoCs which we don't know).
+And also it would not cause any issues with MIPS_GENERIC support.
 
-No need to make any of those changes for this corner case IMO.
-Just wanted to add this analysis to the thread.
 
-Thanks,
-Amir.
+Best regards,
+Martin
