@@ -2,202 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C623C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 22:11:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B708C19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 22:13:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232135AbiG1WLp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 18:11:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50484 "EHLO
+        id S231886AbiG1WNf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 18:13:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52340 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230005AbiG1WLh (ORCPT
+        with ESMTP id S229570AbiG1WNd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 18:11:37 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 264DA78DF7;
-        Thu, 28 Jul 2022 15:11:36 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 77A42113E;
-        Thu, 28 Jul 2022 15:11:36 -0700 (PDT)
-Received: from mammon-tx2.austin.arm.com (mammon-tx2.austin.arm.com [10.118.28.62])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id B64233F70D;
-        Thu, 28 Jul 2022 15:11:35 -0700 (PDT)
-From:   Jeremy Linton <jeremy.linton@arm.com>
-To:     linux-pm@vger.kernel.org
-Cc:     rafael@kernel.org, lenb@kernel.org, viresh.kumar@linaro.org,
-        robert.moore@intel.com, devel@acpica.org,
-        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jeremy Linton <jeremy.linton@arm.com>
-Subject: [PATCH v2 1/1] ACPI: CPPC: Disable FIE if registers in PCC regions
-Date:   Thu, 28 Jul 2022 17:10:43 -0500
-Message-Id: <20220728221043.4161903-2-jeremy.linton@arm.com>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220728221043.4161903-1-jeremy.linton@arm.com>
-References: <20220728221043.4161903-1-jeremy.linton@arm.com>
+        Thu, 28 Jul 2022 18:13:33 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2E3C785AB
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 15:13:32 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id o3so2972057ple.5
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 15:13:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=l+5rBl2AK20PKGSH65YU4OKpcYRMAbAXO924wPV6Eik=;
+        b=G8r95Q5hVuJdINZ5QqtY3e6DleLLl6mJ8NIAFZtg9iYDfXUfTrEfqm91RDT9EPqoXH
+         v/h2kLU9U4IM03G3Y3Syt3PeuvRfeMeHuytOAsJFNn4HkAS0CWdFNUNxpK9Xqm1z69Yz
+         ofZSMnadJWIBesKXLIWCCNeW5w5zzy2Lgrph55zYPmUWos4Sx638KPd/A2K+CbOKnexw
+         FJMZw6w3cOeJydQGZ89N8ZOyWsVESGDUsZSKlzzPSoRmAH3b5eDw0j/SASSXovoly4EG
+         pgoJKE3WAWl6SLP4OioP1JsCteYpM+rVXi/iwQyxpJuYAWSRfKaqTbRU2udnrO2F6eKS
+         42ug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=l+5rBl2AK20PKGSH65YU4OKpcYRMAbAXO924wPV6Eik=;
+        b=ZIhRk+GIXA60f/vWxAIbUjE06Af9sXKm6UK4BJTP3Z8dwE8JI+7bQLpCdsKlpxDjmy
+         SwT33p7fgMMy7G13XHxnFwT7pyfx6Z9pJyIbrNfaPAqsKA7VAmq3gwQvb9ZoA3FcO6t1
+         A3ycm03L9RJ3+9EIN1ZOxZJUYRfuOmy/jfP/Vz64PcO3Eyupix9/uBngGfgCgzITTtgM
+         p/f4TCJ7eOivoOoduy6tLS5vlvbbI7nhSPElO0i+3WWPl6AIn+YdCF5bE1hAOWZKNhff
+         OjonPoN1zGTJ3V5s5jMtjteksNJvxmrKzQTPhTDMhXWqUargizB/TzfeX3d5CNmQnozX
+         y5uw==
+X-Gm-Message-State: ACgBeo1rgqzFzLPpYjv9OY1xwc0Sghwe84fd268bXPTL4HFnMMoC6mFx
+        CDop6XhiqQq6Zd05oDySeToDAQ==
+X-Google-Smtp-Source: AA6agR6+VxdW2AncFaQzR2JNzm9++SeJViANFTSi6sftkYixtXxow5mvN8+au9fN/WbG/faRu1Swfg==
+X-Received: by 2002:a17:902:cf06:b0:16b:cc33:5bce with SMTP id i6-20020a170902cf0600b0016bcc335bcemr864483plg.152.1659046412192;
+        Thu, 28 Jul 2022 15:13:32 -0700 (PDT)
+Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
+        by smtp.gmail.com with ESMTPSA id 13-20020a170902c24d00b0016db7f49cc2sm1826843plg.115.2022.07.28.15.13.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Jul 2022 15:13:31 -0700 (PDT)
+Date:   Thu, 28 Jul 2022 22:13:27 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org,
+        Anirudh Rayabharam <anrayabh@linux.microsoft.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Maxim Levitsky <mlevitsk@redhat.com>,
+        linux-hyperv@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 09/25] KVM: VMX: nVMX: Support TSC scaling and
+ PERF_GLOBAL_CTRL with enlightened VMCS
+Message-ID: <YuMKBzeB2cE/NZ2K@google.com>
+References: <20220714091327.1085353-1-vkuznets@redhat.com>
+ <20220714091327.1085353-10-vkuznets@redhat.com>
+ <YtnMIkFI469Ub9vB@google.com>
+ <48de7ea7-fc1a-6a83-3d6f-e04d26ea2f05@redhat.com>
+ <Yt7ehL0HfR3b97FQ@google.com>
+ <870d507d-a516-5601-4d21-2bfd571cf008@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <870d507d-a516-5601-4d21-2bfd571cf008@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PCC regions utilize a mailbox to set/retrieve register values used by
-the CPPC code. This is fine as long as the operations are
-infrequent. With the FIE code enabled though the overhead can range
-from 2-11% of system CPU overhead (ex: as measured by top) on Arm
-based machines.
+On Thu, Jul 28, 2022, Paolo Bonzini wrote:
+> On 7/25/22 20:18, Sean Christopherson wrote:
+> > > I kind of like the idea of having a two-dimensional array based on the enums
+> > > instead of switch statements, so for now I'll keep Vitaly's enums.
+> > I don't have a strong opinion on using a 2d array, but unless I'm missing something,
+> > that's nowhere to be found in this patch.  IMO, having the enums without them
+> > providing any unique value is silly and obfuscates the code.
+> 
+> Yeah, like this:
+> 
+> diff --git a/arch/x86/kvm/vmx/evmcs.c b/arch/x86/kvm/vmx/evmcs.c
+> index d8da4026c93d..8055128d8638 100644
+> --- a/arch/x86/kvm/vmx/evmcs.c
+> +++ b/arch/x86/kvm/vmx/evmcs.c
+> @@ -342,9 +342,10 @@ uint16_t nested_get_evmcs_version(struct kvm_vcpu *vcpu)
+>  	return 0;
+>  }
+> -enum evmcs_v1_revision {
+> +enum evmcs_revision {
+>  	EVMCSv1_2016,
+>  	EVMCSv1_2022,
+> +	EVMCS_REVISION_MAX,
+>  };
+>  enum evmcs_unsupported_ctrl_type {
+> @@ -353,13 +354,37 @@ enum evmcs_unsupported_ctrl_type {
+>  	EVMCS_2NDEXEC,
+>  	EVMCS_PINCTRL,
+>  	EVMCS_VMFUNC,
+> +	EVMCS_CTRL_MAX,
+> +};
+> +
+> +static u32 evmcs_unsupported_ctls[EVMCS_CTRL_MAX][EVMCS_REVISION_MAX] = {
 
-So, before enabling FIE assure none of the registers used by
-cppc_get_perf_ctrs() are in the PCC region. Furthermore lets also
-enable a module parameter which can also disable it at boot or module
-reload.
+Can this be const?
 
-Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
----
- drivers/acpi/cppc_acpi.c       | 41 ++++++++++++++++++++++++++++++++++
- drivers/cpufreq/cppc_cpufreq.c | 19 ++++++++++++----
- include/acpi/cppc_acpi.h       |  5 +++++
- 3 files changed, 61 insertions(+), 4 deletions(-)
+> +	[EVMCS_EXIT_CTLS] = {
+> +		[EVMCSv1_2016] = EVMCS1_UNSUPPORTED_VMEXIT_CTRL | VM_EXIT_LOAD_IA32_PERF_GLOBAL_CTRL,
+> +		[EVMCSv1_2022] = EVMCS1_UNSUPPORTED_VMEXIT_CTRL,
+> +	},
+> +	[EVMCS_ENTRY_CTLS] = {
+> +		[EVMCSv1_2016] = EVMCS1_UNSUPPORTED_VMENTRY_CTRL | VM_ENTRY_LOAD_IA32_PERF_GLOBAL_CTRL,
+> +		[EVMCSv1_2022] =  EVMCS1_UNSUPPORTED_VMENTRY_CTRL,
+> +	},
+> +	[EVMCS_2NDEXEC] = {
+> +		[EVMCSv1_2016] = EVMCS1_UNSUPPORTED_2NDEXEC | SECONDARY_EXEC_TSC_SCALING,
+> +		[EVMCSv1_2022] = EVMCS1_UNSUPPORTED_2NDEXEC,
+> +	},
+> +	[EVMCS_PINCTRL] = {
+> +		[EVMCSv1_2016] = EVMCS1_UNSUPPORTED_PINCTRL,
+> +		[EVMCSv1_2022] = EVMCS1_UNSUPPORTED_PINCTRL,
+> +	},
+> +	[EVMCS_VMFUNC] = {
+> +		[EVMCSv1_2016] = EVMCS1_UNSUPPORTED_VMFUNC,
+> +		[EVMCSv1_2022] = EVMCS1_UNSUPPORTED_VMFUNC,
+> +	},
+>  };
 
-diff --git a/drivers/acpi/cppc_acpi.c b/drivers/acpi/cppc_acpi.c
-index 3c6d4ef87be0..38b881db14c7 100644
---- a/drivers/acpi/cppc_acpi.c
-+++ b/drivers/acpi/cppc_acpi.c
-@@ -1246,6 +1246,47 @@ int cppc_get_perf_caps(int cpunum, struct cppc_perf_caps *perf_caps)
- }
- EXPORT_SYMBOL_GPL(cppc_get_perf_caps);
- 
-+/**
-+ * cppc_perf_ctrs_in_pcc - Check if any perf counters are in a PCC region.
-+ *
-+ * CPPC has flexibility about how counters describing CPU perf are delivered.
-+ * One of the choices is PCC regions, which can have a high access latency. This
-+ * routine allows callers of cppc_get_perf_ctrs() to know this ahead of time.
-+ *
-+ * Return: true if any of the counters are in PCC regions, false otherwise
-+ */
-+bool cppc_perf_ctrs_in_pcc(void)
-+{
-+	int cpu;
-+
-+	for_each_present_cpu(cpu) {
-+		struct cpc_register_resource *ref_perf_reg;
-+		struct cpc_desc *cpc_desc;
-+
-+		cpc_desc = per_cpu(cpc_desc_ptr, cpu);
-+
-+		if (CPC_IN_PCC(&cpc_desc->cpc_regs[DELIVERED_CTR]) ||
-+		    CPC_IN_PCC(&cpc_desc->cpc_regs[REFERENCE_CTR]) ||
-+		    CPC_IN_PCC(&cpc_desc->cpc_regs[CTR_WRAP_TIME]))
-+			return true;
-+
-+
-+		ref_perf_reg = &cpc_desc->cpc_regs[REFERENCE_PERF];
-+
-+		/*
-+		 * If reference perf register is not supported then we should
-+		 * use the nominal perf value
-+		 */
-+		if (!CPC_SUPPORTED(ref_perf_reg))
-+			ref_perf_reg = &cpc_desc->cpc_regs[NOMINAL_PERF];
-+
-+		if (CPC_IN_PCC(ref_perf_reg))
-+			return true;
-+	}
-+	return false;
-+}
-+EXPORT_SYMBOL_GPL(cppc_perf_ctrs_in_pcc);
-+
- /**
-  * cppc_get_perf_ctrs - Read a CPU's performance feedback counters.
-  * @cpunum: CPU from which to read counters.
-diff --git a/drivers/cpufreq/cppc_cpufreq.c b/drivers/cpufreq/cppc_cpufreq.c
-index 24eaf0ec344d..ed607e27d6bb 100644
---- a/drivers/cpufreq/cppc_cpufreq.c
-+++ b/drivers/cpufreq/cppc_cpufreq.c
-@@ -63,7 +63,11 @@ static struct cppc_workaround_oem_info wa_info[] = {
- 
- static struct cpufreq_driver cppc_cpufreq_driver;
- 
-+static bool fie_disabled;
-+
- #ifdef CONFIG_ACPI_CPPC_CPUFREQ_FIE
-+module_param(fie_disabled, bool, 0444);
-+MODULE_PARM_DESC(fie_disabled, "Disable Frequency Invariance Engine (FIE)");
- 
- /* Frequency invariance support */
- struct cppc_freq_invariance {
-@@ -158,7 +162,7 @@ static void cppc_cpufreq_cpu_fie_init(struct cpufreq_policy *policy)
- 	struct cppc_freq_invariance *cppc_fi;
- 	int cpu, ret;
- 
--	if (cppc_cpufreq_driver.get == hisi_cppc_cpufreq_get_rate)
-+	if (fie_disabled)
- 		return;
- 
- 	for_each_cpu(cpu, policy->cpus) {
-@@ -199,7 +203,7 @@ static void cppc_cpufreq_cpu_fie_exit(struct cpufreq_policy *policy)
- 	struct cppc_freq_invariance *cppc_fi;
- 	int cpu;
- 
--	if (cppc_cpufreq_driver.get == hisi_cppc_cpufreq_get_rate)
-+	if (fie_disabled)
- 		return;
- 
- 	/* policy->cpus will be empty here, use related_cpus instead */
-@@ -229,7 +233,12 @@ static void __init cppc_freq_invariance_init(void)
- 	};
- 	int ret;
- 
--	if (cppc_cpufreq_driver.get == hisi_cppc_cpufreq_get_rate)
-+	if (cppc_perf_ctrs_in_pcc()) {
-+		pr_debug("FIE not enabled on systems with registers in PCC\n");
-+		fie_disabled = true;
-+	}
-+
-+	if (fie_disabled)
- 		return;
- 
- 	kworker_fie = kthread_create_worker(0, "cppc_fie");
-@@ -247,7 +256,7 @@ static void __init cppc_freq_invariance_init(void)
- 
- static void cppc_freq_invariance_exit(void)
- {
--	if (cppc_cpufreq_driver.get == hisi_cppc_cpufreq_get_rate)
-+	if (fie_disabled)
- 		return;
- 
- 	kthread_destroy_worker(kworker_fie);
-@@ -940,6 +949,8 @@ static void cppc_check_hisi_workaround(void)
- 		}
- 	}
- 
-+	fie_disabled = true;
-+
- 	acpi_put_table(tbl);
- }
- 
-diff --git a/include/acpi/cppc_acpi.h b/include/acpi/cppc_acpi.h
-index d389bab54241..fe6dc3e5a454 100644
---- a/include/acpi/cppc_acpi.h
-+++ b/include/acpi/cppc_acpi.h
-@@ -140,6 +140,7 @@ extern int cppc_get_perf_ctrs(int cpu, struct cppc_perf_fb_ctrs *perf_fb_ctrs);
- extern int cppc_set_perf(int cpu, struct cppc_perf_ctrls *perf_ctrls);
- extern int cppc_set_enable(int cpu, bool enable);
- extern int cppc_get_perf_caps(int cpu, struct cppc_perf_caps *caps);
-+extern bool cppc_perf_ctrs_in_pcc(void);
- extern bool acpi_cpc_valid(void);
- extern bool cppc_allow_fast_switch(void);
- extern int acpi_get_psd_map(unsigned int cpu, struct cppc_cpudata *cpu_data);
-@@ -173,6 +174,10 @@ static inline int cppc_get_perf_caps(int cpu, struct cppc_perf_caps *caps)
- {
- 	return -ENOTSUPP;
- }
-+static inline bool cppc_perf_ctrs_in_pcc(void)
-+{
-+	return false;
-+}
- static inline bool acpi_cpc_valid(void)
- {
- 	return false;
--- 
-2.35.3
+...
 
+> +	return evmcs_unsupported_ctls[ctrl_type][evmcs_rev];
+>  }
+
+The only flaw in this is if KVM gets handed a CPUID model that enumerates support
+for 2025 (or whenever the next update comes) but not 2022.  Hmm, though if Microsoft
+defines each new "version" as a full superset, then even that theoretical bug goes
+away.  I'm happy to be optimistic for once and give this a shot.  I definitely like
+that it makes it easier to see the deltas between versions.
