@@ -2,163 +2,294 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53506C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 17:32:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18DFCC19F2B
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 17:32:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232600AbiG1RcG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 13:32:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41498 "EHLO
+        id S232677AbiG1Rcf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 13:32:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbiG1RcE (ORCPT
+        with ESMTP id S230187AbiG1Rcd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 13:32:04 -0400
-Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com [199.106.114.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B99E66FA1D;
-        Thu, 28 Jul 2022 10:32:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1659029523; x=1690565523;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=YQvYcqlg0bldJyhOidSW8usnpHXc8Hrf8nik6LWDg4M=;
-  b=Eomk54XIq6SiipPeR4wfLwuo8MEguJlYnWne+uTaXIuF9ehj1LYijQdN
-   3/7k9ZSwgElt4iyNQPYcTa9zFFKVPNfZANLio30hWleRq9O8G5FbGPugs
-   Mq7aNwzTvc3vZFH7uxKr8JBOZgFcaMfnr5JjlxHUHND0h0WbNIMEqRm4t
-   8=;
-Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 28 Jul 2022 10:32:03 -0700
-X-QCInternal: smtphost
-Received: from unknown (HELO nasanex01a.na.qualcomm.com) ([10.52.223.231])
-  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2022 10:32:03 -0700
-Received: from hu-cchinnad-hyd.qualcomm.com (10.80.80.8) by
- nasanex01a.na.qualcomm.com (10.52.223.231) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Thu, 28 Jul 2022 10:32:01 -0700
-From:   Chetan C R <quic_cchinnad@quicinc.com>
-To:     <bvanassche@acm.org>
-CC:     <jejb@linux.ibm.com>, <linux-kernel@vger.kernel.org>,
-        <linux-scsi@vger.kernel.org>,
-        Chetan C R <quic_cchinnad@quicinc.com>
-Subject: [PATCH V2] scsi: ufs: Get boot device storage type from command line
-Date:   Thu, 28 Jul 2022 23:00:42 +0530
-Message-ID: <1659029442-19135-2-git-send-email-quic_cchinnad@quicinc.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1659029442-19135-1-git-send-email-quic_cchinnad@quicinc.com>
-References: <1659029442-19135-1-git-send-email-quic_cchinnad@quicinc.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01a.na.qualcomm.com (10.52.223.231)
+        Thu, 28 Jul 2022 13:32:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3968574352
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 10:32:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E4792B824B5
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 17:32:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66744C433C1;
+        Thu, 28 Jul 2022 17:32:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659029548;
+        bh=nNnuBCpVyH3x9kHuriUFccdMchpBJrgqK2YxrMxw+8s=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=dfd4PJLWKn1nKqaEC/RrMYYpY/jBx7YElf1hZaHzyO3nzM2bsSfG50ES3q63FlnEB
+         Sy0GV5d2Rd3oA/b3gySEx0pc0+pmr0AltR9tGgY5Hvj2SqkzIQol9hGiyf994GmrTf
+         14lbXeUTxYaOftBI4wjhQ79UpBPDjkcVJhs9/EaL4TIvbUn04RrUZ9/37tZNO/kvfC
+         TmvfBHLuwdDtIkQaLPVvUV2UAlDQpXAJK1QzdeKEOLmMJSEgjTGoR95TApj8B9E205
+         dDKfqhliOWATgsrdhF/RpG7ewJCO4WrmRFXj41uSLWZXl6S3nuKClK+ICqQez5E6FE
+         lm3Smzz9WcBug==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <maz@kernel.org>)
+        id 1oH7N3-00Ainm-Q7;
+        Thu, 28 Jul 2022 18:32:26 +0100
+Date:   Thu, 28 Jul 2022 18:32:25 +0100
+Message-ID: <87tu71w3bq.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Sean Anderson <sean.anderson@seco.com>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "Z.Q. Hou" <zhiqiang.hou@nxp.com>, Biwen Li <biwen.li@nxp.com>
+Subject: Re: [PATCH v4] irqchip/ls-extirq: fix invalid wait context by avoiding to use regmap
+In-Reply-To: <532c8141-2a8b-6842-c9a2-cc4d17afd73d@seco.com>
+References: <20220728144254.175385-1-vladimir.oltean@nxp.com>
+        <501b52ba-7691-0263-c007-38174c7e5c22@seco.com>
+        <20220728152815.6h4ytx52ll2gzjj3@skbuf>
+        <532c8141-2a8b-6842-c9a2-cc4d17afd73d@seco.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: sean.anderson@seco.com, vladimir.oltean@nxp.com, linux-kernel@vger.kernel.org, lee.jones@linaro.org, tglx@linutronix.de, linux@rasmusvillemoes.dk, arnd@arndb.de, zhiqiang.hou@nxp.com, biwen.li@nxp.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Get the boot device storage type by reading it from
-kernel command line arguments and export the same
-information to ufs modules.
+Sean
 
-Signed-off-by: Chetan C R <quic_cchinnad@quicinc.com>
----
- drivers/ufs/host/Kconfig       | 10 ++++++++
- drivers/ufs/host/Makefile      |  1 +
- drivers/ufs/host/ufs-cmdline.c | 54 ++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 65 insertions(+)
- create mode 100644 drivers/ufs/host/ufs-cmdline.c
+Please don't mix the threads. This makes it impossible to follow.
 
-diff --git a/drivers/ufs/host/Kconfig b/drivers/ufs/host/Kconfig
-index 8259022..02fe817 100644
---- a/drivers/ufs/host/Kconfig
-+++ b/drivers/ufs/host/Kconfig
-@@ -68,6 +68,16 @@ config SCSI_UFS_QCOM
- 	  Select this if you have UFS controller on QCOM chipset.
- 	  If unsure, say N.
- 
-+config UFS_QCOM_CMDLINE
-+	bool "Get the boot device type from kernel command line for Qcom devices"
-+	default y if ARCH_QCOM
-+	help
-+	  This selects the support of getting the boot device storage type
-+	  from kernel command line arguments and export this information
-+	  to the Qcom UFS controller platform driver.
-+
-+	  If unsure, say N.
-+
- config SCSI_UFS_MEDIATEK
- 	tristate "Mediatek specific hooks to UFS controller platform driver"
- 	depends on SCSI_UFSHCD_PLATFORM && ARCH_MEDIATEK
-diff --git a/drivers/ufs/host/Makefile b/drivers/ufs/host/Makefile
-index e4be542..a9463f1 100644
---- a/drivers/ufs/host/Makefile
-+++ b/drivers/ufs/host/Makefile
-@@ -6,6 +6,7 @@ obj-$(CONFIG_SCSI_UFS_CDNS_PLATFORM) += cdns-pltfrm.o
- obj-$(CONFIG_SCSI_UFS_QCOM) += ufs_qcom.o
- ufs_qcom-y += ufs-qcom.o
- ufs_qcom-$(CONFIG_SCSI_UFS_CRYPTO) += ufs-qcom-ice.o
-+obj-$(CONFIG_UFS_QCOM_CMDLINE)          += ufs-cmdline.o
- obj-$(CONFIG_SCSI_UFS_EXYNOS) += ufs-exynos.o
- obj-$(CONFIG_SCSI_UFSHCD_PCI) += ufshcd-pci.o
- obj-$(CONFIG_SCSI_UFSHCD_PLATFORM) += ufshcd-pltfrm.o
-diff --git a/drivers/ufs/host/ufs-cmdline.c b/drivers/ufs/host/ufs-cmdline.c
-new file mode 100644
-index 0000000..408755c
---- /dev/null
-+++ b/drivers/ufs/host/ufs-cmdline.c
-@@ -0,0 +1,54 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (c) 2022, The Linux Foundation. All rights reserved.
-+ */
-+
-+#include <linux/init.h>
-+#include <linux/printk.h>
-+#include <linux/string.h>
-+
-+#ifdef CONFIG_BOOT_CONFIG
-+#include <linux/bootconfig.h>
-+#endif
-+
-+#define ANDROID_BOOT_DEV_MAX_V3    30
-+
-+static char android_boot_dev_v3[ANDROID_BOOT_DEV_MAX_V3];
-+static const char *android_boot_dev_v4;
-+
-+const char *get_storage_boot_device(void)
-+{
-+	if (android_boot_dev_v4 && strlen(android_boot_dev_v4))
-+		return android_boot_dev_v4;
-+
-+	else if (strlen(android_boot_dev_v3))
-+		return android_boot_dev_v3;
-+
-+	pr_err("Not able to get Bootconfig or Kernel command line param\n");
-+	return NULL;
-+};
-+EXPORT_SYMBOL_GPL(get_storage_boot_device);
-+
-+/* boot image header version 3 android boot device type */
-+static int __init get_android_boot_dev_v3(char *str)
-+{
-+	strscpy(android_boot_dev_v3, str, ANDROID_BOOT_DEV_MAX_V3);
-+	return 1;
-+}
-+__setup("androidboot.bootdevice=", get_android_boot_dev_v3);
-+
-+#ifdef CONFIG_BOOT_CONFIG
-+/* boot image header version 4 android boot device type */
-+static int __init get_android_boot_dev_v4(void)
-+{
-+	struct xbc_node *vnode = NULL;
-+
-+	android_boot_dev_v4 = xbc_find_value("androidboot.bootdevice", &vnode);
-+
-+	if (vnode && xbc_node_is_array(vnode))
-+		xbc_array_for_each_value(vnode, android_boot_dev_v4);
-+
-+	return 0;
-+}
-+fs_initcall(get_android_boot_dev_v4);
-+#endif
+On Thu, 28 Jul 2022 16:43:40 +0100,
+Sean Anderson <sean.anderson@seco.com> wrote:
+> 
+> 
+> 
+> On 7/28/22 11:28 AM, Vladimir Oltean wrote:
+> > On Thu, Jul 28, 2022 at 11:25:23AM -0400, Sean Anderson wrote:
+> >> Could we just use use_raw_spinlock in the regmap config?
+> > 
+> > That was v2, essentially:
+> > https://lore.kernel.org/lkml/874jz6dcp6.wl-maz@kernel.org/
+> > 
+> 
+> On 7/24/22 6:31 AM, Marc Zyngier wrote:
+> > On Fri, 22 Jul 2022 21:40:19 +0100,
+> > Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
+> >>
+> >> The irqchip->irq_set_type method is called by __irq_set_trigger() under
+> >> the desc->lock raw spinlock.
+> >>
+> >> The ls-extirq implementation, ls_extirq_irq_set_type(), uses an MMIO
+> >> regmap created by of_syscon_register(), which uses plain spinlocks
+> >> (the kind that are sleepable on RT).
+> >>
+> >> Therefore, this is an invalid locking scheme for which we get a kernel
+> >> splat stating just that ("[ BUG: Invalid wait context ]"), because the
+> >> context in which the plain spinlock may sleep is atomic due to the raw
+> >> spinlock. We need to go raw spinlocks all the way.
+> >>
+> >> Make this driver create its own MMIO regmap, with use_raw_spinlock=true,
+> >> and stop relying on syscon to provide it. Since the regmap we got from
+> >> syscon belonged to the parent and this one belongs to us, the offset to
+> >> the INTPCR register is now 0, because of the address translation that
+> >> takes place through the device tree.
+> >>
+> >> Another complication that we need to deal with is the fact that we need
+> >> to parse the 'little-endian'/'big-endian' specifiers that exist in
+> >> device trees for the parent ourselves now, since we no longer involve
+> >> syscon.
+> >>
+> >> And yet one final complication, due to the fact that this driver uses
+> >> IRQCHIP_DECLARE rather than traditional platform devices with probe and
+> >> remove methods, is that we cannot use devres, so we need to implement a
+> >> full-blown cleanup procedure on the error path.
+> >>
+> >> This patch depends on commit 67021f25d952 ("regmap: teach regmap to use
+> >> raw spinlocks if requested in the config").
+> > 
+> > This information doesn't belong to the commit message (and please read
+> > the documentation about the use of "This patch").
+> > 
+> >>
+> >> Fixes: 0dcd9f872769 ("irqchip: Add support for Layerscape external interrupt lines")
+> >> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> >> ---
+> >> v1->v2: create a separate regmap for the ls-extirq driver rather than
+> >>         relying on the one provided by syscon or modifying that.
+> >>
+> >> For reference, v1 is at:
+> >> https://lore.kernel.org/lkml/20210825205041.927788-3-vladimir.oltean@nxp.com/
+> >>
+> >> For extra reviewer convenience, the ls-extirq appears in the following
+> >> SoC device trees:
+> >> https://elixir.bootlin.com/linux/v5.18.13/source/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi#L289
+> >> https://elixir.bootlin.com/linux/v5.18.13/source/arch/arm64/boot/dts/freescale/fsl-ls1088a.dtsi#L249
+> >> https://elixir.bootlin.com/linux/v5.18.13/source/arch/arm64/boot/dts/freescale/fsl-ls1043a.dtsi#L319
+> >> https://elixir.bootlin.com/linux/v5.18.13/source/arch/arm64/boot/dts/freescale/fsl-ls1046a.dtsi#L325
+> >> https://elixir.bootlin.com/linux/v5.18.13/source/arch/arm64/boot/dts/freescale/fsl-lx2160a.dtsi#L682
+> >> https://elixir.bootlin.com/linux/v5.18.13/source/arch/arm/boot/dts/ls1021a.dtsi#L182
+> >>
+> >> Patch tested on LX2160A and LS1021A.
+> >>
+> >>  drivers/irqchip/irq-ls-extirq.c | 81 +++++++++++++++++++++++----------
+> >>  1 file changed, 58 insertions(+), 23 deletions(-)
+> >>
+> >> diff --git a/drivers/irqchip/irq-ls-extirq.c b/drivers/irqchip/irq-ls-extirq.c
+> >> index 853b3972dbe7..94a22642b3f2 100644
+> >> --- a/drivers/irqchip/irq-ls-extirq.c
+> >> +++ b/drivers/irqchip/irq-ls-extirq.c
+> >> @@ -6,7 +6,7 @@
+> >>  #include <linux/irqchip.h>
+> >>  #include <linux/irqdomain.h>
+> >>  #include <linux/of.h>
+> >> -#include <linux/mfd/syscon.h>
+> >> +#include <linux/of_address.h>
+> >>  #include <linux/regmap.h>
+> >>  #include <linux/slab.h>
+> >>  
+> >> @@ -16,8 +16,7 @@
+> >>  #define LS1021A_SCFGREVCR 0x200
+> >>  
+> >>  struct ls_extirq_data {
+> >> -	struct regmap		*syscon;
+> >> -	u32			intpcr;
+> >> +	struct regmap		*regmap;
+> >>  	bool			is_ls1021a_or_ls1043a;
+> >>  	u32			nirq;
+> >>  	struct irq_fwspec	map[MAXIRQ];
+> >> @@ -51,7 +50,10 @@ ls_extirq_set_type(struct irq_data *data, unsigned int type)
+> >>  	default:
+> >>  		return -EINVAL;
+> >>  	}
+> >> -	regmap_update_bits(priv->syscon, priv->intpcr, mask, value);
+> >> +	/* INTPCR is the only register of our regmap,
+> >> +	 * therefore its offset is 0
+> >> +	 */
+> > 
+> > For multi-line comments, please use the normal kernel comment style,
+> > not the one that is mandated for net.
+> > 
+> >> +	regmap_update_bits(priv->regmap, 0, mask, value);
+> >>  
+> >>  	return irq_chip_set_type_parent(data, type);
+> >>  }
+> >> @@ -143,48 +145,81 @@ ls_extirq_parse_map(struct ls_extirq_data *priv, struct device_node *node)
+> >>  static int __init
+> >>  ls_extirq_of_init(struct device_node *node, struct device_node *parent)
+> >>  {
+> >> -
+> >> +	struct regmap_config extirq_regmap_config = {
+> >> +		.name = "intpcr",
+> >> +		.reg_bits = 32,
+> >> +		.val_bits = 32,
+> >> +		.reg_stride = 4,
+> >> +		.use_raw_spinlock = true,
+> >> +	};
+> >>  	struct irq_domain *domain, *parent_domain;
+> >>  	struct ls_extirq_data *priv;
+> >> +	void __iomem *base;
+> >>  	int ret;
+> >>  
+> >>  	parent_domain = irq_find_host(parent);
+> >>  	if (!parent_domain) {
+> >>  		pr_err("Cannot find parent domain\n");
+> >> -		return -ENODEV;
+> >> +		ret = -ENODEV;
+> >> +		goto err_irq_find_host;
+> >>  	}
+> >>  
+> >>  	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
+> >> -	if (!priv)
+> >> -		return -ENOMEM;
+> >> -
+> >> -	priv->syscon = syscon_node_to_regmap(node->parent);
+> >> -	if (IS_ERR(priv->syscon)) {
+> >> -		ret = PTR_ERR(priv->syscon);
+> >> -		pr_err("Failed to lookup parent regmap\n");
+> >> -		goto out;
+> >> +	if (!priv) {
+> >> +		ret = -ENOMEM;
+> >> +		goto err_alloc_priv;
+> >> +	}
+> >> +
+> >> +	/* All extirq OF nodes are under a scfg/syscon node with
+> >> +	 * the 'ranges' property
+> >> +	 */
+> >> +	base = of_iomap(node, 0);
+> >> +	if (!base) {
+> >> +		pr_err("Cannot ioremap OF node %pOF\n", node);
+> >> +		ret = -ENOMEM;
+> >> +		goto err_iomap;
+> >>  	}
+> >> -	ret = of_property_read_u32(node, "reg", &priv->intpcr);
+> >> -	if (ret) {
+> >> -		pr_err("Missing INTPCR offset value\n");
+> >> -		goto out;
+> >> +
+> >> +	/* Parse the parent device's DT node for an endianness specification */
+> >> +	if (of_property_read_bool(parent, "big-endian"))
+> >> +		extirq_regmap_config.val_format_endian = REGMAP_ENDIAN_BIG;
+> >> +	else if (of_property_read_bool(parent, "little-endian"))
+> >> +		extirq_regmap_config.val_format_endian = REGMAP_ENDIAN_LITTLE;
+> >> +	else if (of_property_read_bool(parent, "native-endian"))
+> >> +		extirq_regmap_config.val_format_endian = REGMAP_ENDIAN_NATIVE;
+> > 
+> > All of this should be rewritten to use of_device_is_big_endian(), and
+> > reduce the whole thing to two cases (I don't think native endian makes
+> > much sense anyway). I also wonder what the result is if none of these
+> > properties is present...
+> 
+> I think regmap_get_val_endian would be better here.
+
+Why?
+
+> 
+> >> +
+> >> +	priv->regmap = regmap_init_mmio(NULL, base, &extirq_regmap_config);
+> 
+> It could also be done automatically if we pass the syscon dev instead of
+> NULL. The only downside is that some regmap error messages will use the
+> syscon device
+> 
+> >> +	if (IS_ERR(priv->regmap)) {
+> >> +		pr_err("Cannot create MMIO regmap: %pe\n", priv->regmap);
+> >> +		ret = PTR_ERR(priv->regmap);
+> >> +		goto err_regmap_init;
+> > 
+> > Finally, what is the actual benefit of using a regmap here? It seems
+> > like a very roundabout way of performing a RMW on a register whilst
+> > holding a lock... Passing NULL for a device to regmap_init_mmio() also
+> > seems to be an extremely rare idiom (only 5 cases in the tree), and
+> > this doesn't seem completely right to me.
+> 
+> The benefit is that you don't have to write (yet another) set of
+> endian-converting read/write functions. The above (non-NULL) usage of
+> regmap_init would also address your criticism here.
+
+I really don't see the point of adding yet another abstraction layer
+for something can be efficiently be managed locally.
+
+regmap is good at managing things that are repeatedly updated, and
+keep the most up to date version. This isn't the case here. This
+register is read/written *once* per interrupt being configured. There
+is no performance requirement.
+
+So no, I don't think we need this at all.
+
+	M.
+
 -- 
-2.7.4
-
+Without deviation from the norm, progress is not possible.
