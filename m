@@ -2,85 +2,220 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D159C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 03:56:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F16F9C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 03:58:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234642AbiG1D4p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 23:56:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36380 "EHLO
+        id S234875AbiG1D6H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 23:58:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232465AbiG1D4n (ORCPT
+        with ESMTP id S234085AbiG1D6F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 23:56:43 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0C76481FF
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 20:56:42 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id z22so671862edd.6
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 20:56:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=89cQYoQQ7JVoZPEZvY+m6QaTS5rutXILVa1TKYLXWdA=;
-        b=ni5FbjN1qo1IcwXc0V6jy4L1VolTDNx9NxXUNOxtd+C5QHAkL/v2mFJcLSuZ91Avus
-         6BownTzDkI2RA95Rvu3CJqUDx+0GrXOOiU6vemDC9npkFirDi2n0YFuoJD3fMmmz4VFL
-         ACizRnHI/KQAxhhoQHyOKqVNuyXAYbalzQQXGIJCiovZdzLd7zXSD81Q/FAvJJTddZ7T
-         RdTqY4IdQS8VamfwfO9ePWI5WEVxh0xMyyuZ/OFbW7HkURa7XUiAvrlafBC+d5TjiNP1
-         MwAG5hUjRxUrLxmYvWfRcJEAOqArv96RA9sh3wFPBtqZvBZ9sKgbFwjsf6EkJR8E5WaN
-         1Opg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=89cQYoQQ7JVoZPEZvY+m6QaTS5rutXILVa1TKYLXWdA=;
-        b=ny9ELyxcYVVZj6lPM5BNTPhDs3GFErgr1fiOi4TCW0NXzbNicruSmuJK6+pZEBK9bg
-         FhlLIidSg2FBzt8eIJUoosFmdFsHe+p59qF1+bs3S1p57oIAdcjPP7IZ79K2cUq37PQ9
-         OgoUSkQ5CdWCmY3bO9dH5tjGN/QyC3MSGE4QyE7mKrcsBnJwXYTLSRtBVIG5QVYr4BU1
-         sYPJRn2mMBdHcPiXqQQOym1LZqSnd+E9AhhVADvj4UNdzHFm3BnL56ibMryeU5ik274D
-         AcVk4RZpoLVcCa6B5xBBM2IUKY+dGza6Kitz8BKJHv9FpDjVLAV9NN6r4qaHJFyaPPLM
-         bXtA==
-X-Gm-Message-State: AJIora/+Eh2ygrX39F6SRl9x+LHXkq3e9Fhf+hvUBjZ1vfUhF/ja7qBc
-        PGkaFS9qHQwTThb1IVO4LxzpkqcbuKgH5q4F1Xg=
-X-Google-Smtp-Source: AGRyM1u7dJsyxJCRo/V6Dl4LAU1JVfq9c+j1rRuqYJvCJODT7OQYqZytRXwXmzqpKR1zZXpv5dFnUlpQBRwYXrl2J+c=
-X-Received: by 2002:a05:6402:249b:b0:43c:8ce6:8890 with SMTP id
- q27-20020a056402249b00b0043c8ce68890mr8391507eda.74.1658980601132; Wed, 27
- Jul 2022 20:56:41 -0700 (PDT)
+        Wed, 27 Jul 2022 23:58:05 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61C6C481FF
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 20:58:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1658980684; x=1690516684;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=rveEgmV9RWZSzZ8jsgQMx2q5Z94soNvnQgHkt+FOIVI=;
+  b=kP1z3pwsAoEt9h8A7X/Uf0eId2jmxgUII7h4eQf2oTKlxEG9epS18wtl
+   b8X6klidnn7dkYM6pO9S/CGnf8i7kdaZzdH5W3QpdNb19L2A55mcsVpl9
+   wnf/iWk/3O3TQxHM38Gdc+rJYCyEJ06zs/3o61NaMT9WiJqwCn6ji21kG
+   NJCuAHh6B6IiQala8LEqAaQjrxoR+Nn2FdPthVIjITBxBF0mqbLccLhJ6
+   NxHTXExjpBP9qFwfBuS6D7erI4XkfbiWnyrjxAbW9AjGjqvaLD0SKMWEm
+   0UFE5sPkdGhvLOcndIX4f4yRDQ4PDue/FWz6lxY6mkuj4wsuz5zG+iT5p
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10421"; a="288425994"
+X-IronPort-AV: E=Sophos;i="5.93,196,1654585200"; 
+   d="scan'208";a="288425994"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2022 20:58:03 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.93,196,1654585200"; 
+   d="scan'208";a="668640698"
+Received: from q.bj.intel.com ([10.238.154.102])
+  by fmsmga004.fm.intel.com with ESMTP; 27 Jul 2022 20:58:01 -0700
+From:   shaoqin.huang@intel.com
+To:     rppt@kernel.org
+Cc:     Shaoqin Huang <shaoqin.huang@intel.com>,
+        Karolina Drobnik <karolinadrobnik@gmail.com>,
+        David Hildenbrand <david@redhat.com>,
+        Rebecca Mckeever <remckee0@gmail.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] memblock test: Add test to memblock_add() 129th region
+Date:   Thu, 28 Jul 2022 13:00:47 -0600
+Message-Id: <20220728190051.237437-1-shaoqin.huang@intel.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <20220701185303.284082-1-dakr@redhat.com> <1c0cbab1-f920-3565-f326-189cbac56da0@redhat.com>
-In-Reply-To: <1c0cbab1-f920-3565-f326-189cbac56da0@redhat.com>
-From:   Dave Airlie <airlied@gmail.com>
-Date:   Thu, 28 Jul 2022 13:56:30 +1000
-Message-ID: <CAPM=9tyJNMgupHLyNZDLmXW+UC9+pc-C2Mt+qjuLUAkVfRrvuA@mail.gmail.com>
-Subject: Re: [PATCH 00/10] drm: use idr_init_base() over idr_init() if applicable
-To:     Danilo Krummrich <dakr@redhat.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Maxime Ripard <mripard@kernel.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
-Cc:     Dave Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        "Koenig, Christian" <christian.koenig@amd.com>,
-        Eric Anholt <emma@anholt.net>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 13 Jul 2022 at 00:24, Danilo Krummrich <dakr@redhat.com> wrote:
->
-> Hi Laurent,
->
-> On 7/1/22 20:52, dakr@redhat.com wrote:
-> > From: Danilo Krummrich <dakr@redhat.com>
-> >
-> > This patch series initializes IDRs with idr_init_base(&idr, 1) rather than
-> > idr_init(&idr) in case for the particular IDR no IDs < 1 are ever requested -
-> > this avoids unnecessary tree walks.
-> >
-> Guess this would go through drm-misc too?
+From: Shaoqin Huang <shaoqin.huang@intel.com>
 
-Could someone from the misc team pick this up, Danilo doesn't have
-commit rights yet.
+Add 129th region into the memblock, and this will trigger the
+memblock_double_array() function, this needs valid memory regions. So
+using dummy_physical_memory_init() to allocate some valid memory, when
+memblock_double_array() choose a new memory region from memory.regions,
+it will always choose a valid memory region if we add all valid memory
+region, so the memblock_double_array() must success.
 
-Dave.
+Another thing should be done is to restore the memory.regions after
+memblock_double_array(), due to now the memory.regions is pointing to a
+memory region allocated by dummy_physical_memory_init(). And it will
+affect the subsequent tests if we don't restore the memory region. So
+Simply record the origin region, and restore it after the test.
+
+Signed-off-by: Shaoqin Huang <shaoqin.huang@intel.com>
+---
+ tools/testing/memblock/tests/basic_api.c | 65 ++++++++++++++++++++++++
+ tools/testing/memblock/tests/common.c    |  9 ++--
+ tools/testing/memblock/tests/common.h    |  5 ++
+ 3 files changed, 76 insertions(+), 3 deletions(-)
+
+diff --git a/tools/testing/memblock/tests/basic_api.c b/tools/testing/memblock/tests/basic_api.c
+index 66f46f261e66..ded93f97d98e 100644
+--- a/tools/testing/memblock/tests/basic_api.c
++++ b/tools/testing/memblock/tests/basic_api.c
+@@ -326,6 +326,70 @@ static int memblock_add_twice_check(void)
+ 	return 0;
+ }
+ 
++static int memblock_add_many_check(void)
++{
++	int i;
++	void *base[INIT_MEMBLOCK_REGIONS + 1];
++	void *orig_region;
++	struct region r = {
++		.base = SZ_16K,
++		.size = MEM_SIZE,
++	};
++
++	PREFIX_PUSH();
++
++	reset_memblock_regions();
++	memblock_allow_resize();
++
++	for (i = 0; i < INIT_MEMBLOCK_REGIONS; i++) {
++		dummy_physical_memory_init();
++		append_memblock();
++		base[i] = memory_block.base;
++
++		assert(memblock.memory.cnt == i + 1);
++		assert(memblock.memory.total_size == (i + 1) * MEM_SIZE);
++	}
++
++	orig_region = memblock.memory.regions;
++
++	/* This adds the 129 memory_region, and makes it double array. */
++	dummy_physical_memory_init();
++	append_memblock();
++	base[i] = memory_block.base;
++
++	assert(memblock.memory.cnt == INIT_MEMBLOCK_REGIONS + 1);
++	assert(memblock.memory.total_size == (INIT_MEMBLOCK_REGIONS + 1) * MEM_SIZE);
++	assert(memblock.memory.max == INIT_MEMBLOCK_REGIONS * 2);
++
++	/* The base is very small, so it should be insert to the first region. */
++	memblock_add(r.base, r.size);
++	assert(memblock.memory.regions[0].base == r.base);
++	assert(memblock.memory.regions[0].size == r.size);
++
++	assert(memblock.memory.cnt == INIT_MEMBLOCK_REGIONS + 2);
++	assert(memblock.memory.total_size == (INIT_MEMBLOCK_REGIONS + 2) * MEM_SIZE);
++	assert(memblock.memory.max == INIT_MEMBLOCK_REGIONS * 2);
++
++	/* Free these allocated memory. */
++	for (i = 0; i < INIT_MEMBLOCK_REGIONS + 1; i++) {
++		memory_block.base = base[i];
++		dummy_physical_memory_cleanup();
++	}
++
++	/*
++	 * The current memory.regions is occupying a range of memory that
++	 * allocated from dummy_physical_memory_init(). After free the memory,
++	 * we must not use it. So restore the origin memory region to make sure
++	 * the tests can run as normal and not affected by the double array.
++	 */
++	memblock.memory.regions = orig_region;
++	memblock.memory.cnt = INIT_MEMBLOCK_REGIONS;
++
++	test_pass_pop();
++
++	return 0;
++}
++
+ static int memblock_add_checks(void)
+ {
+ 	prefix_reset();
+@@ -339,6 +403,7 @@ static int memblock_add_checks(void)
+ 	memblock_add_overlap_bottom_check();
+ 	memblock_add_within_check();
+ 	memblock_add_twice_check();
++	memblock_add_many_check();
+ 
+ 	prefix_pop();
+ 
+diff --git a/tools/testing/memblock/tests/common.c b/tools/testing/memblock/tests/common.c
+index e43b2676af81..4741e860123a 100644
+--- a/tools/testing/memblock/tests/common.c
++++ b/tools/testing/memblock/tests/common.c
+@@ -5,12 +5,10 @@
+ #include <linux/memory_hotplug.h>
+ #include <linux/build_bug.h>
+ 
+-#define INIT_MEMBLOCK_REGIONS			128
+-#define INIT_MEMBLOCK_RESERVED_REGIONS		INIT_MEMBLOCK_REGIONS
+ #define PREFIXES_MAX				15
+ #define DELIM					": "
+ 
+-static struct test_memory memory_block;
++struct test_memory memory_block;
+ static const char __maybe_unused *prefixes[PREFIXES_MAX];
+ static int __maybe_unused nr_prefixes;
+ 
+@@ -64,6 +62,11 @@ void setup_memblock(void)
+ 	memblock_add((phys_addr_t)memory_block.base, MEM_SIZE);
+ }
+ 
++void append_memblock(void)
++{
++	memblock_add((phys_addr_t)memory_block.base, MEM_SIZE);
++}
++
+ void dummy_physical_memory_init(void)
+ {
+ 	memory_block.base = malloc(MEM_SIZE);
+diff --git a/tools/testing/memblock/tests/common.h b/tools/testing/memblock/tests/common.h
+index 3e7f23d341d7..8946a3b77f24 100644
+--- a/tools/testing/memblock/tests/common.h
++++ b/tools/testing/memblock/tests/common.h
+@@ -11,6 +11,8 @@
+ #include <../selftests/kselftest.h>
+ 
+ #define MEM_SIZE SZ_16K
++#define INIT_MEMBLOCK_REGIONS			128
++#define INIT_MEMBLOCK_RESERVED_REGIONS		INIT_MEMBLOCK_REGIONS
+ 
+ /**
+  * ASSERT_EQ():
+@@ -65,9 +67,12 @@ struct region {
+ 	phys_addr_t size;
+ };
+ 
++extern struct test_memory memory_block;
++
+ void reset_memblock_regions(void);
+ void reset_memblock_attributes(void);
+ void setup_memblock(void);
++void append_memblock(void);
+ void dummy_physical_memory_init(void);
+ void dummy_physical_memory_cleanup(void);
+ void parse_args(int argc, char **argv);
+-- 
+2.30.2
+
