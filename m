@@ -2,93 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C8E9C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 11:16:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42DCBC19F29
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 11:17:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235441AbiG1LQ2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 07:16:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44314 "EHLO
+        id S236123AbiG1LRC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 07:17:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230216AbiG1LQ1 (ORCPT
+        with ESMTP id S235370AbiG1LRA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 07:16:27 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AC2263912;
-        Thu, 28 Jul 2022 04:16:26 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id m8so1728051edd.9;
-        Thu, 28 Jul 2022 04:16:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=I1hcQDsRPMnRc56BCmzgeV/mUPsQfxRSFDip2MB+Kss=;
-        b=q70S7u6oJiCsrKuJPZt99845aiVMvcyznOEvoqs0xtppse3X4bNHBeucluhRlRIB17
-         Hfee1lCq6qk0BFvYf6Kxex6JHeLUqa0j5St90+LzbAuGcEjWJHeUHp94UZj79kp/LuEr
-         T0g8u5bXJB+FohCvoHnyQ2UdhGA3louCqsa2EhAWJnxcTJ71rzBtLPFEeAqhWCnQ0crA
-         J1I6FZFBCVI961ESYAn/cRc1haxmewRSJP3Eqr8OrdTyxXjE7F/5B4k//Ak41fu0fRQ0
-         4CqeUpIQK8IYOOjG3SJRnmatNbV3W7EV2XCoZ0WQX/fEPbk8anmDRVxlLPUx9UVy1Qh5
-         3QHw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=I1hcQDsRPMnRc56BCmzgeV/mUPsQfxRSFDip2MB+Kss=;
-        b=4vm8Hfynp/dtSv++K1LfsCt9AKiMS1mkL6fYkKJY5akmxpfMzv4yB088bs1eOwMeef
-         p1N/l4Obn0BTbr5J0NSP/oKqUcTYWaCPEPOzOHeVAdYQCcq9C1B28zqGVG5PxMtgEGqr
-         uyjolKavdba5aYa6onCGwYIoH8CTiYlHhYssBdmJiJqIN7+b8Wnmlz52bgN/MTKAQpHl
-         nJ5khiqyvYBKAPk98QnVL7ek/Q1OjhJHt7DKArJWaYYUv21kpUuS2r4jiT9rqE0cudnx
-         4AoZayY8dRbJ+g+kc/0BWLkmXpL1rhQzQFeJA1gyzmSOYjwYXZ5qBByEwjOKbXtD4brr
-         XYxA==
-X-Gm-Message-State: AJIora8nm/F1SV82yAfYHEpe6UfA/Bbca8vf9uIppf1g7SpSdzSO/sOj
-        I3YN2cW19G6/XMuj7thDtdY=
-X-Google-Smtp-Source: AGRyM1voPgPgibrhvl7h3F9hwBmh2W/rUdGDc8VASe+RSNb8IV4fCxzHIbqAtTVnhr2RBOEovu7gaQ==
-X-Received: by 2002:a05:6402:4cc:b0:43c:cd5c:dcfb with SMTP id n12-20020a05640204cc00b0043ccd5cdcfbmr4601784edw.277.1659006984597;
-        Thu, 28 Jul 2022 04:16:24 -0700 (PDT)
-Received: from brandenburg.sect.tu-berlin.de ([130.149.39.100])
-        by smtp.gmail.com with ESMTPSA id vj16-20020a170907131000b006fec27575f1sm295803ejb.123.2022.07.28.04.16.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Jul 2022 04:16:21 -0700 (PDT)
-From:   Shinjo Park <peremen@gmail.com>
-Cc:     peremen@gmail.com, David Heidelberg <david@ixit.cz>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 1/3] ARM: dts: qcom: msm8960: add reference to sleep_clk
-Date:   Thu, 28 Jul 2022 13:16:02 +0200
-Message-Id: <20220728111603.30503-1-peremen@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        Thu, 28 Jul 2022 07:17:00 -0400
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2F1263912;
+        Thu, 28 Jul 2022 04:16:55 -0700 (PDT)
+Received: from [192.168.1.111] (91-158-154-79.elisa-laajakaista.fi [91.158.154.79])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 9F2E456D;
+        Thu, 28 Jul 2022 13:16:52 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1659007013;
+        bh=ZXDDTP7gbp5CtebP+uzx922dTPzjkRRWm+m1wpG6948=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=wXqMzzh/jxJP3crL8z8bZF3/7Mt1a2VsDJSyJRaNncQKV25vb0+TR+47op7CjPi3r
+         8He1mhylIfOxSYNuliSsjziSX0OjvipzoiXlRZOBuhTwUfkJNZRwME3cXVyykMfJbS
+         52ZU75GgIi56Iqd6M9u/g6HWOogvFxtDAevK52EU=
+Message-ID: <cac1e7f0-de7a-f8a6-59a9-65e626c92e93@ideasonboard.com>
+Date:   Thu, 28 Jul 2022 14:16:50 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 1/8] dt-bindings: display: ti,am65x-dss: Add port
+ properties for DSS
+Content-Language: en-US
+To:     Aradhya Bhatia <a-bhatia1@ti.com>, Jyri Sarha <jyri.sarha@iki.fi>,
+        Rob Herring <robh+dt@kernel.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     Darren Etheridge <detheridge@ti.com>, Nishanth Menon <nm@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Rahul T R <r-ravikumar@ti.com>,
+        Krunal Bhargav <k-bhargav@ti.com>,
+        Devarsh Thakkar <devarsht@ti.com>,
+        DRI Development List <dri-devel@lists.freedesktop.org>,
+        Devicetree List <devicetree@vger.kernel.org>,
+        Linux Kernel List <linux-kernel@vger.kernel.org>
+References: <20220719080845.22122-1-a-bhatia1@ti.com>
+ <20220719080845.22122-2-a-bhatia1@ti.com>
+From:   Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>
+In-Reply-To: <20220719080845.22122-2-a-bhatia1@ti.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Change the reference of sleep_clk to the same as qcom-apq8064.dtsi.
 
-Signed-off-by: Shinjo Park <peremen@gmail.com>
-Reviewed-by: David Heidelberg <david@ixit.cz>
----
- arch/arm/boot/dts/qcom-msm8960.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/qcom-msm8960.dtsi b/arch/arm/boot/dts/qcom-msm8960.dtsi
-index e8cd1c9c0..991eb1948 100644
---- a/arch/arm/boot/dts/qcom-msm8960.dtsi
-+++ b/arch/arm/boot/dts/qcom-msm8960.dtsi
-@@ -71,7 +71,7 @@ pxo_board: pxo_board {
- 			clock-output-names = "pxo_board";
- 		};
- 
--		sleep_clk {
-+		sleep_clk: sleep_clk {
- 			compatible = "fixed-clock";
- 			#clock-cells = <0>;
- 			clock-frequency = <32768>;
--- 
-2.34.1
+On 19/07/2022 11:08, Aradhya Bhatia wrote:
+> Add "ti,oldi-mode" property to indicate the tidss driver the OLDI output
+> mode. The 2 OLDI TXes on am625-dss allow a 3 different types of panel
+> connections with the board.
+> 
+> 1. Single Link / Single Mode on OLDI TX 0 OR 1.
+> 2. Single Link / Duplicate Mode on OLDI TX 0 and 1.
+> 3. Dual Link / Single Mode on OLDI TX 0 and 1.
+> 
+> Add "ti,rgb565-to-888" property to override 16bit output from a videoport
+> for a bridge that only accepts 24bit RGB888 DPI input.
+> 
+> On some boards the HDMI bridge takes a 24bit DPI input, but only 16 data
+> pins are actually enabled from the SoC.  This new property forces the
+> output to be RGB565 on a specific video port if the bridge requests a
+> 24bit RGB color space.
+> 
+> This assumes that the video port is connected like so:
+> 
+> SoC : Bridge
+> R0 ->   R3
+> R1 ->   R4
+> R2 ->   R5
+> R3 ->   R6
+> R4 ->   R7
+> G0 ->   G2
+> G1 ->   G3
+> G2 ->   G4
+> G3 ->   G5
+> G4 ->   G6
+> G5 ->   G7
+> B0 ->   B3
+> B1 ->   B4
+> B2 ->   B5
+> B3 ->   B6
+> B4 ->   B7
+> 
+> On the bridge side R0->R2, G0->G1, B0->B2 would be tied to ground.
+> The bridge sees 24bits of data,  but the lsb's are always zero.
+> 
+> Signed-off-by: Aradhya Bhatia <a-bhatia1@ti.com>
+> ---
+>   .../bindings/display/ti/ti,am65x-dss.yaml     | 25 +++++++++++++++++--
+>   1 file changed, 23 insertions(+), 2 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/display/ti/ti,am65x-dss.yaml b/Documentation/devicetree/bindings/display/ti/ti,am65x-dss.yaml
+> index 6bbce921479d..11d9b3821409 100644
+> --- a/Documentation/devicetree/bindings/display/ti/ti,am65x-dss.yaml
+> +++ b/Documentation/devicetree/bindings/display/ti/ti,am65x-dss.yaml
+> @@ -80,15 +80,35 @@ properties:
+>   
+>       properties:
+>         port@0:
+> -        $ref: /schemas/graph.yaml#/properties/port
+> +        $ref: /schemas/graph.yaml#/$defs/port-base
+> +        unevaluatedProperties: false
+>           description:
+>             The DSS OLDI output port node form video port 1
+>   
+> +        properties:
+> +          ti,oldi-mode:
+> +            description: TI specific property to indicate the mode the OLDI TXes
+> +              and the display panel are connected in.
+> +              0 -> OLDI TXes OFF (driver default for am625-dss)
+> +              1 -> Single link, Single Mode (OLDI0) (driver default for am65x-dss)
+> +              2 -> Single link, Single Mode (OLDI1)
+> +              3 -> Single link, Duplicate Mode
+> +              4 -> Dual link (Only Single Mode)
+> +            $ref: /schemas/types.yaml#/definitions/uint32
+> +            enum: [0, 1, 2, 3, 4]
+> +
+>         port@1:
+> -        $ref: /schemas/graph.yaml#/properties/port
+> +        $ref: /schemas/graph.yaml#/$defs/port-base
+> +        unevaluatedProperties: false
+>           description:
+>             The DSS DPI output port node from video port 2
+>   
+> +        properties:
+> +          ti,rgb565-to-888:
+> +            description:
+> +              property to override DPI output to 16bit for 24bit bridge
+> +            type: boolean
 
+So you have a board with 16 DSS pins connected, going to a bridge/panel 
+that only supports 24 bit input. I don't think there's anything TI 
+specific here, sounds like a common situation.
+
+"rgb565-to-888" sounds like there's some kind of conversion happening, 
+but all this does is set the videoport width to 16 bits.
+
+I'm not sure if there's a better solution but in the OMAP DSS we have 
+"data-lines" property for an endpoint, which tells the driver the width 
+of the bus.
+
+  Tomi
