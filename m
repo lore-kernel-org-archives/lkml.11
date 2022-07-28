@@ -2,67 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5525DC19F29
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 12:32:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1C62C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 12:33:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238622AbiG1Mcn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 08:32:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43100 "EHLO
+        id S238652AbiG1MdL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 08:33:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235098AbiG1Mcl (ORCPT
+        with ESMTP id S235098AbiG1MdJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 08:32:41 -0400
-Received: from smtpbg.qq.com (biz-43-154-54-12.mail.qq.com [43.154.54.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18CC0402F7;
-        Thu, 28 Jul 2022 05:32:36 -0700 (PDT)
-X-QQ-mid: bizesmtp82t1659011550t9m7phva
-Received: from localhost.localdomain ( [171.223.98.80])
-        by bizesmtp.qq.com (ESMTP) with 
-        id ; Thu, 28 Jul 2022 20:32:29 +0800 (CST)
-X-QQ-SSF: 01000000002000F0U000B00A0000020
-X-QQ-FEAT: cHEuLz3LyUiN53M7ojyHa3bsJ+TbgZG9r8Gm+iPf2zZo5RLoM/uRWyjwU5UFq
-        JnAU4A1vm+HLTK/Kf7GEA00TX4eIN5NOTWxaIZMffzaXiApSWD7gKSpMohymXayfouNjJwA
-        sgA9lruQkn13SeK4beMDXJw8xseNjN3P9FRQ5vOvzsCT3vSWY2lYhE2I5KjiQxuynvBCam3
-        B/lVv1dymhlaNiPxLt4gW57xsqCe6hCjl0InZOLn0KHRjWWNP1blKIqpg0fqZUqb0LSaCzo
-        CNlO2GsLd7ipW/bwhHhYWul3a0aIhaBKvTu/PVGbOoY61lSDuIdSvLhDAbQO/DE25cjzl3L
-        ggwzytbB48+M9SACgb2JKmMxuwT1Fwi43wG40BOUITkkWaMJaE5vablkykyclp0E5y+0vxb
-X-QQ-GoodBg: 0
-From:   Jason Wang <wangborong@cdjrlc.com>
-To:     dmitry.torokhov@gmail.com
-Cc:     linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jason Wang <wangborong@cdjrlc.com>
-Subject: [PATCH] Input: sx8654 - Fix comment typo
-Date:   Mon, 25 Jul 2022 12:30:34 +0800
-Message-Id: <20220725043034.5565-1-wangborong@cdjrlc.com>
-X-Mailer: git-send-email 2.35.1
+        Thu, 28 Jul 2022 08:33:09 -0400
+Received: from xry111.site (xry111.site [89.208.246.23])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E70B16AA24
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 05:33:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xry111.site;
+        s=default; t=1659011588;
+        bh=wgUEdEUzAPkvfx+LCe0/REt2EPrTetdCcJc+ofCUePo=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=Ta3w8Y0tsDh7SjVXyZkq8ly40U3v+6/wAmEnbmhOFfL6VAXQ/9B0DH7GNKJdPb3ME
+         ygaVx6vI9YFG2YNuQrze2kHHEsILgyvg0YvYwzWaohrBh5Z4CBxzx1lLKAcLO3I3FB
+         i73En8jDwYBrKbR+EZt2q16Ov27kat4EdFX7PezA=
+Received: from localhost.localdomain (xry111.site [IPv6:2001:470:683e::1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature ECDSA (P-384) server-digest SHA384)
+        (Client did not present a certificate)
+        (Authenticated sender: xry111@xry111.site)
+        by xry111.site (Postfix) with ESMTPSA id 3F4FC66A59;
+        Thu, 28 Jul 2022 08:33:07 -0400 (EDT)
+Message-ID: <55786176319d210319d7c1b296568db14f76267e.camel@xry111.site>
+Subject: Re: [PATCH 2/4] LoongArch: Support R_LARCH_SOP_PUSH_GPREL
+ relocation type in kernel module
+From:   Xi Ruoyao <xry111@xry111.site>
+To:     Huacai Chen <chenhuacai@kernel.org>
+Cc:     loongarch@lists.linux.dev, LKML <linux-kernel@vger.kernel.org>,
+        WANG Xuerui <kernel@xen0n.name>,
+        Youling Tang <tangyouling@loongson.cn>,
+        Jinyang He <hejinyang@loongson.cn>
+Date:   Thu, 28 Jul 2022 20:33:05 +0800
+In-Reply-To: <CAAhV-H4vurz+-jwJm4SCQeaChLkXhrPFginpzNpYX6HkcD_xqA@mail.gmail.com>
+References: <c596e7a73953a1c49e8f5e94ec2db642f72e7813.camel@xry111.site>
+         <81c67c5f4c5f20fa5e6862f260884c61cafcaf93.camel@xry111.site>
+         <CAAhV-H4vurz+-jwJm4SCQeaChLkXhrPFginpzNpYX6HkcD_xqA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.3 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-QQ-SENDSIZE: 520
-Feedback-ID: bizesmtp:cdjrlc.com:qybglogicsvr:qybglogicsvr6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The double `mode' is duplicated in the comment, remove one.
+On Thu, 2022-07-28 at 20:30 +0800, Huacai Chen wrote:
+> Hi, Ruoyao,
+>=20
+> Missing V2 in the title?
 
-Signed-off-by: Jason Wang <wangborong@cdjrlc.com>
----
- drivers/input/touchscreen/sx8654.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Yes :(.
 
-diff --git a/drivers/input/touchscreen/sx8654.c b/drivers/input/touchscreen/sx8654.c
-index de85e57b2486..984d79bfea80 100644
---- a/drivers/input/touchscreen/sx8654.c
-+++ b/drivers/input/touchscreen/sx8654.c
-@@ -292,7 +292,7 @@ static void sx8654_close(struct input_dev *dev)
- 	if (!sx8654->data->has_irq_penrelease)
- 		del_timer_sync(&sx8654->timer);
- 
--	/* enable manual mode mode */
-+	/* enable manual mode */
- 	error = i2c_smbus_write_byte(client, sx8654->data->cmd_manual);
- 	if (error) {
- 		dev_err(&client->dev, "writing command CMD_MANUAL failed");
--- 
-2.35.1
 
+--=20
+Xi Ruoyao <xry111@xry111.site>
+School of Aerospace Science and Technology, Xidian University
