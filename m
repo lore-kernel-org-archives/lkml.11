@@ -2,91 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 996B8C19F29
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 16:53:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5885C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 16:55:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231784AbiG1Qxv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 12:53:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37860 "EHLO
+        id S231754AbiG1Qzm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 12:55:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231722AbiG1Qxq (ORCPT
+        with ESMTP id S229747AbiG1Qzj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 12:53:46 -0400
-Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7802774372
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 09:53:44 -0700 (PDT)
-Received: by mail-qk1-x729.google.com with SMTP id e16so1858355qka.5
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 09:53:44 -0700 (PDT)
+        Thu, 28 Jul 2022 12:55:39 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FAE5550A5;
+        Thu, 28 Jul 2022 09:55:36 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id f11-20020a17090a4a8b00b001f2f7e32d03so5522593pjh.0;
+        Thu, 28 Jul 2022 09:55:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=xGVPmZSPrbx+eKc83ja2PpqsvLm/DDS+QFGGJ9xOY4g=;
-        b=Q6NVBueFd1MERNeCHWlZriu8t3DSS4Vh5eg8xjAwp+mj77zvsaROKzSgr5ponhokAm
-         hQ1DRpdJ0f0KwgNA4laYrazBJ8TXkUJliDtljK8/n+ZXTdPi9ElJsmaKxUNvBbDYutzE
-         BlWWjW30PpEqtWNA0GY5AZPUXsVuRqQkXyVnrJnWBNOrbZO2wbtqSsSCAdr8HH8jUsgr
-         Qzd1081JdtoeNc6KW8DwjeOnmfOZ/BBalk1zjyGR1wbxguXVFgeT2C3Qp9cxlyWgg/G0
-         mdUTCbD3USjmp3BFvPTNPMVrufp2v22xn9SrllvRj/rWgowPyxjVyUacMtPeXjSEE37W
-         P4IQ==
+        d=gmail.com; s=20210112;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:sender
+         :from:to:cc;
+        bh=/v3Gcn+hTL0SOyI/tztq8lNP5D0RrTqazuF4o/1KF3k=;
+        b=KhZWRDXn2xsiTaRpuC25WJC2oEAedK39KKmcClr8IAYxJKLTnKimRaDfLzkdZcQN0O
+         yhKQ1DOrbZYICCUCx7cFxq0fQbI3q/V/4/IcFYnleE9gemq31ZU9e+Vf8sryx0qKVHu0
+         taudKvAkkTIflxzG55p9RIeN1ji5KjqbvTr8wRNt6/ybqVSm9CLEIHsh0B6c3nrqeJkb
+         kz2oJruSwXOeZdvyOieGQotwUPsfmJWgVM38LrcLHIVXo0UQdqgPLqOhyf9ErM1VP0Mq
+         kyD9+JIyR7g/q/CNR7jAn/+uArIZcSFGqY3L0dUPjQBvffcMuHTqB9eMgI79oKVC8wSH
+         /R1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=xGVPmZSPrbx+eKc83ja2PpqsvLm/DDS+QFGGJ9xOY4g=;
-        b=6u3QdtP53l2jwxT1wgpJc999kxo4Q1Tq+ypXZXUqi+ERnaIW4s05pgsRO9gfSLSt3C
-         j04x6ki2Yb/Fgw+lqFJwAJm6V1LFZoNwYWwqJl7LgKsucQ4mX0PV+uGxkJPKBWCiEeqB
-         P4Uv7eb56acuNfjY2JhEfKL4DaCfSmEULw0jaq9EsQyNL47ZpzRm3d9FskDvEZHEZOtx
-         wE3eOVM9OOXr8BWk3XslDUhEM7Z/nIU1rUBBiTd7XJgjYYRAZLWETJBSSMyb2f4tbaHH
-         1+1RjhVrqNqHHy3C04Azh84B3hDWOHtmZSTJZxKWyfiVt+2saUjU+8DAoftrQXV+f2wi
-         FQ7g==
-X-Gm-Message-State: AJIora9/fwymwMBbggrJgqTdoDyCjpLRs2EwH3XSA6DgMYWo67L+51oQ
-        V4EfQnWXHmg/hbozeyp0BpKwNw==
-X-Google-Smtp-Source: AGRyM1vTkbqOAk/zj3B6akQKXO1r+tl0s/E1AShNSvjVsV09iOkh2TMcmnz+vWyiVYdnwXH0Z+Q6hA==
-X-Received: by 2002:ae9:f704:0:b0:6b2:42da:3ad with SMTP id s4-20020ae9f704000000b006b242da03admr20741386qkg.439.1659027223429;
-        Thu, 28 Jul 2022 09:53:43 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
-        by smtp.gmail.com with ESMTPSA id ay43-20020a05620a17ab00b006b66d9dd916sm809067qkb.32.2022.07.28.09.53.42
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:sender
+         :x-gm-message-state:from:to:cc;
+        bh=/v3Gcn+hTL0SOyI/tztq8lNP5D0RrTqazuF4o/1KF3k=;
+        b=OXoi0Jw7HVvNcRlTB6vSVJeJouXG741tL6P3Z6LZZarPd1rRXV9xUkYxq76kGG9gXQ
+         aGQoYXsg8NFkD2EhYrZDJuoPlSs+2gNNUqG34p4t4ipCkeSpYynvFwmkfR+N6Q9N2Qb2
+         n0sWaCyh4R9xsGWz1E3cdwiFDhRRFrowuQcxAL2kmT3YgI7b7/RbvEUMi/Z4xr38BYRI
+         G+MihBRrbqCjWpDMepwxR/g3j9UAHgYRCJ4ZHYxLntZy8LKa5olGZVdapuVEL3ZA4FFv
+         Ad3Rl95RqxHVTh31rxeWO0FMgBCUUDgokQoETMC0F2WsPiA+5dogJPWZk2yOxxgtn5c1
+         oqag==
+X-Gm-Message-State: AJIora8xisGpsWUnRCIGwrK5mlBMMny7rjQGB3D0G8zgJIgojogcRhqY
+        4G5UFBVUZ1/GhpRJyPTjAA0=
+X-Google-Smtp-Source: AGRyM1v91WoHUfzBJ1uaof84UM74engDsn1pKS4xnYLdVfhv/5BBIuniD7LFRW3JxEk6r72ET/ecgw==
+X-Received: by 2002:a17:902:7089:b0:16c:91d7:e422 with SMTP id z9-20020a170902708900b0016c91d7e422mr27423533plk.73.1659027335302;
+        Thu, 28 Jul 2022 09:55:35 -0700 (PDT)
+Received: from localhost (2603-800c-1a02-1bae-a7fa-157f-969a-4cde.res6.spectrum.com. [2603:800c:1a02:1bae:a7fa:157f:969a:4cde])
+        by smtp.gmail.com with ESMTPSA id f77-20020a623850000000b00528d41a998csm1066688pfa.15.2022.07.28.09.55.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Jul 2022 09:53:42 -0700 (PDT)
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-X-Google-Original-From: Jason Gunthorpe <jgg@nvidia.com>
-Received: from jgg by wakko with local (Exim 4.95)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1oH6lZ-001DFn-FG;
-        Thu, 28 Jul 2022 13:53:41 -0300
-Date:   Wed, 27 Jul 2022 15:17:55 -0300
-To:     Michael Guralnik <michaelgur@nvidia.com>
-Cc:     leonro@nvidia.com, maorg@nvidia.com, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        saeedm@nvidia.com
-Subject: Re: [PATCH rdma-next v1 0/5] MR cache cleanup
-Message-ID: <YuGBU4QqOVJRUM77@nvidia.com>
-References: <20220726071911.122765-1-michaelgur@nvidia.com>
+        Thu, 28 Jul 2022 09:55:34 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Thu, 28 Jul 2022 06:55:33 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Yu Kuai <yukuai1@huaweicloud.com>
+Cc:     Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
+        axboe@kernel.dk, ming.lei@redhat.com, cgroups@vger.kernel.org,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        yi.zhang@huawei.com, "yukuai (C)" <yukuai3@huawei.com>
+Subject: Re: [PATCH RESEND v6 4/8] blk-throttle: fix io hung due to config
+ updates
+Message-ID: <YuK/hXnFA+qu5EMB@slm.duckdns.org>
+References: <20220701093441.885741-1-yukuai1@huaweicloud.com>
+ <20220701093441.885741-5-yukuai1@huaweicloud.com>
+ <YuGGVxdlOVk/eF2l@slm.duckdns.org>
+ <20220728093346.GA2281@blackbody.suse.cz>
+ <0bbf3d0c-88c4-8120-3df3-960dda041864@huaweicloud.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220726071911.122765-1-michaelgur@nvidia.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <0bbf3d0c-88c4-8120-3df3-960dda041864@huaweicloud.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jul 26, 2022 at 10:19:06AM +0300, Michael Guralnik wrote:
-> Hi,
+On Thu, Jul 28, 2022 at 06:34:44PM +0800, Yu Kuai wrote:
+> Hi
 > 
-> In this series, Aharon continues to clean mlx5 MR cache logic.
+> 在 2022/07/28 17:33, Michal Koutný 写道:
+> > On Wed, Jul 27, 2022 at 08:39:19AM -1000, Tejun Heo <tj@kernel.org> wrote:
+> > > I'm not quiet sure this is correct. What if the limit keeps changing across
+> > > different values? Then we'd be calculating the skipped amount based on the
+> > > last configuration only which would be incorrect.
+> > 
+> > When one change of configuration is correct, then all changes must be
+> > correct by induction. It's sufficient to take into account only the one
+> > old config and the new one.
+> > 
+> > This __tg_update_skipped() calculates bytes_skipped with the limit
+> > before the change and bytes_skipped are used (divided by) the new limit
+> > in tg_with_in_bps_limit().
+> > The accumulation of bytes_skipped across multiple changes (until slice
+> > properly ends) is proportional to how bytes_allowed would grow over
+> > time.
+> > That's why I find this correct (I admit I had to look back into my
+> > notes when this was first discussed).
+> > 
+> > HTH,
+> > Michal
+> > 
 > 
-> Thanks
+> Hi, Tejun
 > 
-> v1: Change push_mkey to eliminate locking on mail flow
-> v0: http://lore.kernel.org/all/cover.1654601897.git.leonro@nvidia.com/
-> 
-> Aharon Landau (5):
->   RDMA/mlx5: Replace ent->lock with xa_lock
->   RDMA/mlx5: Replace cache list with Xarray
->   RDMA/mlx5: Store the number of in_use cache mkeys instead of total_mrs
->   RDMA/mlx5: Store in the cache mkeys instead of mrs
->   RDMA/mlx5: Rename the mkey cache variables and functions
+> Michal already explain it very well, please let me know if you still
+> thinks there are better ways.
 
-Applied to for-next, thanks
+Ah, I see, so it's integrating into the skipped counters across multiple
+updates. I think it can definitely use comments explaining how it's working
+but that looks okay.
 
-Jason
+Thanks.
+
+-- 
+tejun
