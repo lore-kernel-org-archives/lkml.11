@@ -2,22 +2,22 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7599C19F21
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 09:42:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A18DAC19F29
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 09:42:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235287AbiG1JmH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 05:42:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48522 "EHLO
+        id S235693AbiG1Jm4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 05:42:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234848AbiG1JmG (ORCPT
+        with ESMTP id S235042AbiG1Jmy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 05:42:06 -0400
+        Thu, 28 Jul 2022 05:42:54 -0400
 Received: from jabberwock.ucw.cz (jabberwock.ucw.cz [46.255.230.98])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2D0465D5C;
-        Thu, 28 Jul 2022 02:42:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53F0565D63;
+        Thu, 28 Jul 2022 02:42:54 -0700 (PDT)
 Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 185881C0003; Thu, 28 Jul 2022 11:42:03 +0200 (CEST)
-Date:   Thu, 28 Jul 2022 11:42:02 +0200
+        id 2402B1C0003; Thu, 28 Jul 2022 11:42:53 +0200 (CEST)
+Date:   Thu, 28 Jul 2022 11:42:52 +0200
 From:   Pavel Machek <pavel@denx.de>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
@@ -26,36 +26,36 @@ Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
         lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
         f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
         slade@sladewatkins.com
-Subject: Re: [PATCH 4.9 00/26] 4.9.325-rc1 review
-Message-ID: <20220728094202.GA27693@duo.ucw.cz>
-References: <20220727160959.122591422@linuxfoundation.org>
+Subject: Re: [PATCH 4.19 00/62] 4.19.254-rc1 review
+Message-ID: <20220728094252.GB27693@duo.ucw.cz>
+References: <20220727161004.175638564@linuxfoundation.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="opJtzjQTFsWo+cga"
+        protocol="application/pgp-signature"; boundary="eJnRUKwClWJh1Khz"
 Content-Disposition: inline
-In-Reply-To: <20220727160959.122591422@linuxfoundation.org>
+In-Reply-To: <20220727161004.175638564@linuxfoundation.org>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
---opJtzjQTFsWo+cga
+--eJnRUKwClWJh1Khz
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
 Hi!
 
-> This is the start of the stable review cycle for the 4.9.325 release.
-> There are 26 patches in this series, all will be posted as a response
+> This is the start of the stable review cycle for the 4.19.254 release.
+> There are 62 patches in this series, all will be posted as a response
 > to this one.  If anyone has any issues with these being applied, please
 > let me know.
 
 CIP testing did not find any problems here:
 
 https://gitlab.com/cip-project/cip-testing/linux-stable-rc-ci/-/tree/linux-=
-4.9.y
+4.19.y
 
 Tested-by: Pavel Machek (CIP) <pavel@denx.de>
 
@@ -65,14 +65,14 @@ Best regards,
 DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
 HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
 
---opJtzjQTFsWo+cga
+--eJnRUKwClWJh1Khz
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYuJZ6gAKCRAw5/Bqldv6
-8nomAJwMfl4IdowpxV4HE4fhDZVWmLQ39gCgwJoIIjkSClX3AGNAyb4/AbLM4xQ=
-=/4PC
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYuJaHAAKCRAw5/Bqldv6
+8pTRAKCom+LW7CaFmXu/XQbQR0VByJVOSQCgo0D2XwJLmBTnb8A8opnTgrRgi2w=
+=HKAV
 -----END PGP SIGNATURE-----
 
---opJtzjQTFsWo+cga--
+--eJnRUKwClWJh1Khz--
