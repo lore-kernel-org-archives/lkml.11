@@ -2,114 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D95DEC04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 07:15:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAC1CC04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 07:22:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234039AbiG1HPb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 03:15:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44252 "EHLO
+        id S234136AbiG1HWa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 03:22:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233501AbiG1HP2 (ORCPT
+        with ESMTP id S231701AbiG1HW2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 03:15:28 -0400
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16B8A59265
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 00:15:26 -0700 (PDT)
-Received: by mail-wm1-x32f.google.com with SMTP id i205-20020a1c3bd6000000b003a2fa488efdso2048865wma.4
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 00:15:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=references:user-agent:from:to:subject:date:in-reply-to:message-id
-         :mime-version;
-        bh=AaIaSUDCvbW74aHuiO4CJrSTxDz4crTVOTtdXBqcE0U=;
-        b=AWbcHHbX5voPsqXsYc0lPhQLZ7zq2Rbg+WDm4j47FHMHXMKBPLuAwqpaMLT4oN34qS
-         R6hvle5W3TN4f3TJRhkhZx0QPFmqjX98W46tEqeGl2ss33pWsTUsz6ICWmUhi/rNGcp6
-         3eQgOfcF15Ov6JaO/BaW85eAfyYfbTZQOU7lHqyUe9RumDh0CPDhSAXX5tspMaURVBIN
-         hAIUu2L93pP5MlYjVltII27G+d2lmMvuyd0SOq/7MlSZeJoZH16sIqKEMA/AAaXCwDjZ
-         ZO3DlrFDankTYdhuu2q7oCaJtjXdqKBN2swatEdyWuhc0kJ1eFLYTZlGg6qxjCqabDjz
-         qUNQ==
+        Thu, 28 Jul 2022 03:22:28 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6034D32D8E
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 00:22:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1658992946;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=JE/wrsFQ4IE04NndGihc8P0L8CV49vxlmbLKxjK57Ow=;
+        b=ezeorW6wcs5vvIKTplu339DudMeocqm1gIHDnW+IA3TzJoxOfqifZExjo/GzrbiFCus3fx
+        hNFyR015lMl124Ja2M0R+I08DZ4PbnJeylSUrWV1eA9gJJinLvCHhM/9F8h0vSNys3d43p
+        kctC/ttsjJddA2uXnsVrJbxs8l6Dyug=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-44-EpRutzYoMLmtJS8Ai-ziZg-1; Thu, 28 Jul 2022 03:22:24 -0400
+X-MC-Unique: EpRutzYoMLmtJS8Ai-ziZg-1
+Received: by mail-wr1-f71.google.com with SMTP id n7-20020adfc607000000b0021a37d8f93aso129381wrg.21
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 00:22:24 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:user-agent:from:to:subject:date
-         :in-reply-to:message-id:mime-version;
-        bh=AaIaSUDCvbW74aHuiO4CJrSTxDz4crTVOTtdXBqcE0U=;
-        b=GQsYVXtWBXqr4lWS08/Fp9zg7uWfTWL7RMvXi0nGVNBFV0HBm4qQhVXZLVoLsuGjrY
-         ghHwgjeEe79BH584H8Ge3phiSdy3OZivDLplUoUV7KP37QFDH4lbQ/QuLE8nlphewNhd
-         CvsyqkEgHia8e4Xe2J/PAOf8bV4Mn6fzk9ECjUwyj8YJU5MelXPgbLdDZM/enTDGjCpN
-         lnC960PKdHgexaKL2NPxOFDX+Ao4B9Vf6S32czJANkqUtcIJSYN7p+wmOkE/gzL/HSRg
-         n3L2g49a6eb1A76KQq1FapnoN5eD9xbOe5Kk83dWaIJWJ0y2yNJBZvInkARbB9MeIF8f
-         sgYw==
-X-Gm-Message-State: AJIora9oYQVUyHFypZQeFlPG3/vTByu5WintXJAC+6qEST5l1O44bg7+
-        ZFaDysAzC/f3ylyKI2Km6AQ+ig==
-X-Google-Smtp-Source: AGRyM1uBQSHcp5qkcijv00Bu7Y7/z1KirWW8lPysYxj5MYnLBGbrvNTmEd6qDPwVfOty8mtSm4vSMw==
-X-Received: by 2002:a05:600c:1289:b0:3a4:8401:5ced with SMTP id t9-20020a05600c128900b003a484015cedmr384142wmd.148.1658992524267;
-        Thu, 28 Jul 2022 00:15:24 -0700 (PDT)
-Received: from localhost (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.gmail.com with ESMTPSA id n186-20020a1ca4c3000000b003a2d87aea57sm4519126wme.10.2022.07.28.00.15.23
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=JE/wrsFQ4IE04NndGihc8P0L8CV49vxlmbLKxjK57Ow=;
+        b=rU4QulB2Ed98HpvO1s7aW4B76lqoJ5oCwCBfV1ZJjlTXs+2h3emyptRPfOXoQPmfz+
+         LKUpgTqUbPiqS9uPD4vttdG/RLR//5YXmZ9t+jJq/u0s4m7idlatIfOdV260YVZwEB8s
+         /AfRuRXbBWtPwVEPjn5qYZDcn/Zz/MeDXtFSIyC3+3HUvE0w0QNKvtSaB3OmoeWluv2j
+         qDxF2huChMW9DsEFp9co4hQ9LyC8Ca849PoIHIFceNAI8xdx75kz2OA1OlXPfLxVkoMi
+         ow5lZZm/TVYSwA20Qm9LDjWMM+EW5TmZHZPNxMvjVaYdrXFTMAX+L/tkSb4hTXkf3Ak0
+         znsQ==
+X-Gm-Message-State: AJIora/jE5pgvscXRp7rRP2dUIXNPZ4gSjPqvSG77PQuh6Eb4v0KLouw
+        vbXvE/EisQQGWRz9Po/PDfkg7YjGOpb18F6yJgIJECWFTFPKpF2r0dvsjnEvuZ/ouWkZLXQ7I04
+        8IumHG9I6bOLJ1KERhpNtNG4=
+X-Received: by 2002:a5d:64c7:0:b0:21d:a743:394 with SMTP id f7-20020a5d64c7000000b0021da7430394mr15843653wri.628.1658992943270;
+        Thu, 28 Jul 2022 00:22:23 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1u3d8HNVPxziDqqmZRHhJn8tEmGPDtxLHvknbiGk9JeaU8V7vBGGLOYnxRBG5VgEQQq43RkUg==
+X-Received: by 2002:a5d:64c7:0:b0:21d:a743:394 with SMTP id f7-20020a5d64c7000000b0021da7430394mr15843636wri.628.1658992942925;
+        Thu, 28 Jul 2022 00:22:22 -0700 (PDT)
+Received: from localhost (cpc111743-lutn13-2-0-cust979.9-3.cable.virginm.net. [82.17.115.212])
+        by smtp.gmail.com with ESMTPSA id j5-20020a05600c1c0500b003a317ee3036sm397160wms.2.2022.07.28.00.22.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Jul 2022 00:15:23 -0700 (PDT)
-References: <20220728054202.6981-1-yu.tu@amlogic.com>
-User-agent: mu4e 1.8.6; emacs 27.1
-From:   Jerome Brunet <jbrunet@baylibre.com>
-To:     Yu Tu <yu.tu@amlogic.com>, linux-clk@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: Re: [PATCH V2 0/3] Add S4 SoC clock controller driver
-Date:   Thu, 28 Jul 2022 09:08:44 +0200
-In-reply-to: <20220728054202.6981-1-yu.tu@amlogic.com>
-Message-ID: <1j8rodhfn9.fsf@starbuckisacylon.baylibre.com>
+        Thu, 28 Jul 2022 00:22:21 -0700 (PDT)
+Date:   Thu, 28 Jul 2022 08:22:20 +0100
+From:   Aaron Tomlin <atomlin@redhat.com>
+To:     jan.kiszka@siemens.com, kbingham@kernel.org
+Cc:     atomlin@atomlin.com, linux-kernel@vger.kernel.org,
+        swboyd@chromium.org, dianders@chromium.org,
+        skhan@linuxfoundation.org
+Subject: Re: [PATCH v2] scripts/gdb: Ensure the absolute path is generated on
+ initial source
+Message-ID: <20220728072220.xhyg65izemzcdojr@ava.usersys.com>
+X-PGP-Key: http://pgp.mit.edu/pks/lookup?search=atomlin%40redhat.com
+X-PGP-Fingerprint: 7906 84EB FA8A 9638 8D1E  6E9B E2DE 9658 19CC 77D6
+References: <20220712110248.1404125-1-atomlin@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220712110248.1404125-1-atomlin@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue 2022-07-12 12:02 +0100, Aaron Tomlin wrote:
+> Post 'make scripts_gdb' a symbolic link to scripts/gdb/vmlinux-gdb.py
+> is created. Currently 'os.path.dirname(__file__)' does not generate
+> the absolute path to scripts/gdb resulting in the following:
+> 
+>     (gdb) source vmlinux-gdb.py
+>     Traceback (most recent call last):
+>       File "scripts/gdb/vmlinux-gdb.py", line 25, in <module>
+> 	import linux.utils
+>     ModuleNotFoundError: No module named 'linux'
+> 
+> This patch ensures that the absolute path to scripts/gdb in relation to
+> the given file is generated so each module can be located accordingly.
+> 
+> Signed-off-by: Aaron Tomlin <atomlin@redhat.com>
+> ---
+>  scripts/gdb/vmlinux-gdb.py | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/scripts/gdb/vmlinux-gdb.py b/scripts/gdb/vmlinux-gdb.py
+> index 4136dc2c59df..3e8d3669f0ce 100644
+> --- a/scripts/gdb/vmlinux-gdb.py
+> +++ b/scripts/gdb/vmlinux-gdb.py
+> @@ -13,7 +13,7 @@
+>  
+>  import os
+>  
+> -sys.path.insert(0, os.path.dirname(__file__) + "/scripts/gdb")
+> +sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)) + "/scripts/gdb")
+>  
+>  try:
+>      gdb.parse_and_eval("0")
+> -- 
+> 2.34.3
 
-On Thu 28 Jul 2022 at 13:41, Yu Tu <yu.tu@amlogic.com> wrote:
+Any feedback?
 
-> 1. Add clock controller driver for S4 SOC.
->
-> Yu Tu (3):
->   dt-bindings: clk: meson: add S4 SoC clock controller bindings
->   arm64: dts: meson: add S4 Soc clock controller in DT
->   clk: meson: s4: add s4 SoC clock controller driver
->
-> V1 -> V2: Change format as discussed in the email.
->
-> Link:https://lore.kernel.org/linux-amlogic/20220708062757.3662-1-yu.tu@amlogic.com/
->
->  .../bindings/clock/amlogic,gxbb-clkc.txt      |    1 +
->  MAINTAINERS                                   |    1 +
->  arch/arm64/boot/dts/amlogic/meson-s4.dtsi     |   11 +
->  drivers/clk/meson/Kconfig                     |   15 +
->  drivers/clk/meson/Makefile                    |    1 +
->  drivers/clk/meson/s4.c                        | 4732 +++++++++++++++++
->  drivers/clk/meson/s4.h                        |  296 ++
->  include/dt-bindings/clock/s4-clkc.h           |  146 +
->  8 files changed, 5203 insertions(+)
->  create mode 100644 drivers/clk/meson/s4.c
->  create mode 100644 drivers/clk/meson/s4.h
->  create mode 100644 include/dt-bindings/clock/s4-clkc.h
->
->
-> base-commit: b293bc9286ee21824e93f0fcfed3b78fdfee01e6
 
-Please don't post until you have addressed *ALL* the comments from the
-previous version.
+Kind regards,
 
-At first glance, I can see that this is still a single driver for
-what is obviously 2 controllers with 2 register spaces. Simple comments
-like the "<< 2" in the register declaration have not been addressed either.
+-- 
+Aaron Tomlin
 
-Seeing that, I have not reviewed this version further.
-I won't until all the comments from v1 are either addressed or answered.
-
-Regards
-Jerome
