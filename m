@@ -2,132 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3851EC04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 11:42:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC52EC04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 11:42:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236950AbiG1LmB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 07:42:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45974 "EHLO
+        id S236656AbiG1Lmy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 07:42:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237631AbiG1Llo (ORCPT
+        with ESMTP id S235746AbiG1Lmv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 07:41:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE27B691EE;
-        Thu, 28 Jul 2022 04:41:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3B777B82321;
-        Thu, 28 Jul 2022 11:41:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED0BAC433C1;
-        Thu, 28 Jul 2022 11:41:31 +0000 (UTC)
-From:   Huacai Chen <chenhuacai@loongson.cn>
-To:     Arnd Bergmann <arnd@arndb.de>, Huacai Chen <chenhuacai@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Dinh Nguyen <dinguyen@kernel.org>
-Cc:     loongarch@lists.linux.dev, linux-arch@vger.kernel.org,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Feiyang Chen <chenfeiyang@loongson.cn>,
-        Huacai Chen <chenhuacai@loongson.cn>
-Subject: [PATCH V6 4/4] LoongArch: Enable ARCH_WANT_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
-Date:   Thu, 28 Jul 2022 19:38:01 +0800
-Message-Id: <20220728113801.2235151-5-chenhuacai@loongson.cn>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220728113801.2235151-1-chenhuacai@loongson.cn>
-References: <20220728113801.2235151-1-chenhuacai@loongson.cn>
+        Thu, 28 Jul 2022 07:42:51 -0400
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDCDA274
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 04:42:50 -0700 (PDT)
+Received: by mail-lf1-x12b.google.com with SMTP id d17so2403478lfa.12
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 04:42:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ZdeLo/HEqDcBsBJZCtTsZcIieSbE3G0c5YaVE49SxhM=;
+        b=D/2g/QjrEK8fnbPdip0C4HLBdUCVf1+o0vuESGDzjqER7MbdY0B/Po3zAuvNBt1e10
+         WO9vbtKX1sn1Mu/grWuVAdCAk9DappVyhyBvldWRSQNsVYhYtRdhOIM0YQEwBPmKCuff
+         Y7cSyaTCaGporSRlv5/Sy4MK8wgwiR8GV//hfP0+8em4n8ySU+AcxdUxUEj0ZheyLkhe
+         nV5yFu32FsGqrNXaykZNMJMwAFl1ZmYVP1mVXadkm5gLrqL4OS4uskymswtd9GIMhzLP
+         2FtQcW0QmnwVl8wd6enixv3vQek9QkAlT1kBOIFtDdVX35ki7EJ8FCeT19d9rWUdid4K
+         ZA+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ZdeLo/HEqDcBsBJZCtTsZcIieSbE3G0c5YaVE49SxhM=;
+        b=xkh1UY9bQgH1yhNhBuDQlMvRnzHEa+CoTF1V3RbLTDnhU3i/tm5CL2knuXwmTUwPzI
+         nbDfit4X9EjG0Iqw1WGOnbTGKEiPZMT/40kmjw3BQPMeY/HiIyeGbnag7dx+AHTVnQkI
+         vW/nElQ5FdyqSfQu38Qv9md0aafapP5LjCCxZ72rfJmroKBSylYlCo3JukvvqOjxUN0o
+         jcyoDiQIKbsd3gHgqppxtnv2hKg4N/9pAB4h26IKzj5nm+O66pYhkmzLdYdgKNQIsJXp
+         6FmLDyv1S2jDD21zAGXt+nkMdn6GWLsN78DI1fHRDExj/BSfQ3S1SvbyzdB+IvUXSjev
+         vIpA==
+X-Gm-Message-State: AJIora9Xk2PFMUk5SZdaVIKeU3cce3kd+OvYHpqEI6yN1tQw8GLlwnkS
+        DbrRu7QHpPnDeMzWUoDL5I9d+Q==
+X-Google-Smtp-Source: AGRyM1vj/7RBruIhGdOeZdiOwv0g82Q6nua4rpfJQIzPlJvLjQrz3CgmbPncXFOcdWxaf2eze6H8Lg==
+X-Received: by 2002:ac2:5b1d:0:b0:48a:718b:d21d with SMTP id v29-20020ac25b1d000000b0048a718bd21dmr10235584lfn.488.1659008569059;
+        Thu, 28 Jul 2022 04:42:49 -0700 (PDT)
+Received: from [192.168.3.197] (78-26-46-173.network.trollfjord.no. [78.26.46.173])
+        by smtp.gmail.com with ESMTPSA id t11-20020a056512208b00b0048a78c1fc1dsm162825lfr.111.2022.07.28.04.42.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Jul 2022 04:42:48 -0700 (PDT)
+Message-ID: <a810ec42-825c-1a85-568f-b70f04b58280@linaro.org>
+Date:   Thu, 28 Jul 2022 13:42:47 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH] dt-bindings: spmi: add compatible for mt8188
+Content-Language: en-US
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Sen Chu <sen.chu@mediatek.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Hsin-Hsiung Wang <hsin-hsiung.wang@mediatek.com>
+Cc:     Hui Liu <hui.liu@mediatek.com>, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220726103729.24525-1-sen.chu@mediatek.com>
+ <d0d24ba1-e870-2ba0-8259-c405cb029d2f@collabora.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <d0d24ba1-e870-2ba0-8259-c405cb029d2f@collabora.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Feiyang Chen <chenfeiyang@loongson.cn>
+On 28/07/2022 13:29, AngeloGioacchino Del Regno wrote:
+> Il 26/07/22 12:37, Sen Chu ha scritto:
+>> Add dt-binding documentation of spmi for Mediatek MT8188 SoC platform.
+>>
+>> Signed-off-by: Sen Chu <sen.chu@mediatek.com>
+>> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>> ---
+>>   Documentation/devicetree/bindings/spmi/mtk,spmi-mtk-pmif.yaml | 1 +
+>>   1 file changed, 1 insertion(+)
+>>
+>> diff --git a/Documentation/devicetree/bindings/spmi/mtk,spmi-mtk-pmif.yaml b/Documentation/devicetree/bindings/spmi/mtk,spmi-mtk-pmif.yaml
+>> index 2445c5e0b0ef..05801e0199f9 100644
+>> --- a/Documentation/devicetree/bindings/spmi/mtk,spmi-mtk-pmif.yaml
+>> +++ b/Documentation/devicetree/bindings/spmi/mtk,spmi-mtk-pmif.yaml
+>> @@ -20,6 +20,7 @@ properties:
+>>     compatible:
+>>       enum:
+>>         - mediatek,mt6873-spmi
+>> +      - mediatek,mt8188-spmi
+> 
+> I think that you'll be adding a SPMI node that will have:
+> 
+> compatible = "mediatek,mt8188-spmi", "mediatek,mt8195-spmi";
+> 
+> Which means that this is actually wrong, so, please fix it by
+> adding items...
 
-The feature of minimizing overhead of struct page associated with each
-HugeTLB page is implemented on x86_64. However, the infrastructure of
-this feature is already there, so just select ARCH_WANT_HUGETLB_PAGE_
-OPTIMIZE_VMEMMAP is enough to enable this feature for LoongArch.
+I wished bindings were not coming along but with DTS so we can check if
+submitter understands what he/she/they are coding...
 
-To avoid the following build error on LoongArch we should include linux/
-static_key.h in page-flags.h.
+I also wished bindings in schema were used for testing their own DTBS
+without sending.
 
-In file included from ./include/linux/mmzone.h:22,
-from ./include/linux/gfp.h:6,
-from ./include/linux/mm.h:7,
-from arch/loongarch/kernel/asm-offsets.c:9:
-./include/linux/page-flags.h:208:1: warning: data definition has no
-type or storage class
-208 | DECLARE_STATIC_KEY_MAYBE(CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON,
-| ^~~~~~~~~~~~~~~~~~~~~~~~
-./include/linux/page-flags.h:208:1: error: type defaults to 'int' in
-declaration of 'DECLARE_STATIC_KEY_MAYBE' [-Werror=implicit-int]
-./include/linux/page-flags.h:209:26: warning: parameter names (without
-types) in function declaration
-209 | hugetlb_optimize_vmemmap_key);
-| ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-./include/linux/page-flags.h: In function 'hugetlb_optimize_vmemmap_enabled':
-./include/linux/page-flags.h:213:16: error: implicit declaration of
-function 'static_branch_maybe' [-Werror=implicit-function-declaration]
-213 | return static_branch_maybe(CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON,
-| ^~~~~~~~~~~~~~~~~~~
-./include/linux/page-flags.h:213:36: error:
-'CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON' undeclared (first
-use in this function); did you mean
-'CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP'?
-213 | return static_branch_maybe(CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP_DEFAULT_ON,
-| ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-| CONFIG_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
-./include/linux/page-flags.h:213:36: note: each undeclared identifier
-is reported only once for each function it appears in
-./include/linux/page-flags.h:214:37: error:
-'hugetlb_optimize_vmemmap_key' undeclared (first use in this
-function); did you mean 'hugetlb_optimize_vmemmap_enabled'?
-214 | &hugetlb_optimize_vmemmap_key);
-| ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-| hugetlb_optimize_vmemmap_enabled
-
-Signed-off-by: Feiyang Chen <chenfeiyang@loongson.cn>
-Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
----
- arch/loongarch/Kconfig     | 1 +
- include/linux/page-flags.h | 1 +
- 2 files changed, 2 insertions(+)
-
-diff --git a/arch/loongarch/Kconfig b/arch/loongarch/Kconfig
-index cff781d92c81..de78c86a205c 100644
---- a/arch/loongarch/Kconfig
-+++ b/arch/loongarch/Kconfig
-@@ -49,6 +49,7 @@ config LOONGARCH
- 	select ARCH_USE_CMPXCHG_LOCKREF
- 	select ARCH_USE_QUEUED_RWLOCKS
- 	select ARCH_WANT_DEFAULT_TOPDOWN_MMAP_LAYOUT
-+	select ARCH_WANT_HUGETLB_PAGE_OPTIMIZE_VMEMMAP
- 	select ARCH_WANTS_NO_INSTR
- 	select BUILDTIME_TABLE_SORT
- 	select COMMON_CLK
-diff --git a/include/linux/page-flags.h b/include/linux/page-flags.h
-index e66f7aa3191d..28a53ac7aa3e 100644
---- a/include/linux/page-flags.h
-+++ b/include/linux/page-flags.h
-@@ -9,6 +9,7 @@
- #include <linux/types.h>
- #include <linux/bug.h>
- #include <linux/mmdebug.h>
-+#include <linux/static_key.h>
- #ifndef __GENERATING_BOUNDS_H
- #include <linux/mm_types.h>
- #include <generated/bounds.h>
--- 
-2.31.1
-
+Ehh.... :(
+Best regards,
+Krzysztof
