@@ -2,73 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77B8CC04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 10:31:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AB90C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 10:32:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235679AbiG1Kah (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 06:30:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57574 "EHLO
+        id S235942AbiG1KcD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 06:32:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233296AbiG1Kaf (ORCPT
+        with ESMTP id S235257AbiG1KcB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 06:30:35 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2AE7643C;
-        Thu, 28 Jul 2022 03:30:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Transfer-Encoding:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=U3nI+Dk03TsFhKliasBzCqNdnQznxo+muaRKiNshSuY=; b=DoknfXSTWH6Zj0VygdQvr0QmiU
-        n3MBGvZvhPEFAiDYNcsplITEjAUg8GjB0EjIdovXr9DMAWKceqzB1X00wpuAfOPT0rd14gfho5lej
-        Cea7D/u12vnurMUcIqiJUIVdZ7fxAY2iHbUkSlC4ghl7mLfwL+46das3fo0EemF3c0MCYQaDOoWE/
-        Gpdw7ThlFbzXOJYPg1N8thEeDwUQ/0eOakgSxbfT1lF340nCCBAc1+Oo9XL+StraJ1EeOTvqvwj+S
-        w2bhehT6r2x+aMyEKKmGn2cive6opClxIfPNulf55c6iZfVzSev7RjV84AJaerI1G3Na5uq2NqbC6
-        C7gY0xbA==;
-Received: from j130084.upc-j.chello.nl ([24.132.130.84] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oH0mM-003kPI-If; Thu, 28 Jul 2022 10:30:06 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 09FD998040A; Thu, 28 Jul 2022 12:30:05 +0200 (CEST)
-Date:   Thu, 28 Jul 2022 12:30:04 +0200
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Yu Zhe <yuzhe@nfschina.com>
-Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        liqiong@nfschina.com
-Subject: Re: [PATCH] x86/aperfmperf: use time_is_before_jiffies(a + b) to
- replace "jiffies - a > b"
-Message-ID: <YuJlLK4x9aUuqHQZ@worktop.programming.kicks-ass.net>
-References: <20220727031405.26892-1-yuzhe@nfschina.com>
- <YuFhIgsUgNJ+o9xG@worktop.programming.kicks-ass.net>
- <ecd4dcc3-321c-e228-96a3-bac08c56794a@nfschina.com>
+        Thu, 28 Jul 2022 06:32:01 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7E82BC86
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 03:31:59 -0700 (PDT)
+Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Ltn326tBqzmVKj
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 18:30:06 +0800 (CST)
+Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
+ dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 28 Jul 2022 18:31:57 +0800
+Received: from huawei.com (10.67.174.169) by dggpemm500001.china.huawei.com
+ (7.185.36.107) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 28 Jul
+ 2022 18:31:57 +0800
+From:   Chen Lifu <chenlifu@huawei.com>
+To:     <tglx@linutronix.de>
+CC:     <linux-kernel@vger.kernel.org>, <chenlifu@huawei.com>
+Subject: [PATCH v2 -next] genirq: Separate warning messages of enable of suspended irq
+Date:   Thu, 28 Jul 2022 18:29:12 +0800
+Message-ID: <20220728102912.474772-1-chenlifu@huawei.com>
+X-Mailer: git-send-email 2.37.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <ecd4dcc3-321c-e228-96a3-bac08c56794a@nfschina.com>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.174.169]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ dggpemm500001.china.huawei.com (7.185.36.107)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 28, 2022 at 10:55:51AM +0800, Yu Zhe wrote:
-> 在 2022年07月28日 00:00, Peter Zijlstra 写道:
-> 
-> > On Wed, Jul 27, 2022 at 11:14:05AM +0800, Yu Zhe wrote:
-> > > time_is_before_jiffies deals with timer wrapping correctly.
-> > Please explain how the current code does not.
-> 
-> 1. If the timer wrap changes in the future you won't have to alter your code.
-> 
-> 2. unsigned long ut;
-> 
->    ut = ULONG_MAX + 4;
-> 
->    printf("time_after(ut, ULONG_MAX), ut:%d, %d --> %d\n", ut,
->              time_after(ut, ULONG_MAX), (ULONG_MAX - ut) < 0);
-> 
-> 
->    In this case, time_after returns true, it's correct.
+Both unbalanced enable for irq and enable of suspended irq
+print same warning messages, such as:
+......
+[20220314100142]------------[ cut here ]------------
+[20220314100142]WARNING: CPU: 1 PID: 10332 at kernel/irq/manage.c:723 __enable_irq+0x58/0xa4
+[20220314100142]Unbalanced enable for IRQ 38
+......
 
-Now try the same with the existing code...
+It's confusing. Separate the warning messages to make it clear.
+No functional changes.
+
+Signed-off-by: Chen Lifu <chenlifu@huawei.com>
+---
+ kernel/irq/manage.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
+index 40fe7806cc8c..bf4f5f63b2d3 100644
+--- a/kernel/irq/manage.c
++++ b/kernel/irq/manage.c
+@@ -775,17 +775,19 @@ void disable_nmi_nosync(unsigned int irq)
+ 
+ void __enable_irq(struct irq_desc *desc)
+ {
+ 	switch (desc->depth) {
+ 	case 0:
+- err_out:
+ 		WARN(1, KERN_WARNING "Unbalanced enable for IRQ %d\n",
+ 		     irq_desc_get_irq(desc));
+ 		break;
+ 	case 1: {
+-		if (desc->istate & IRQS_SUSPENDED)
+-			goto err_out;
++		if (desc->istate & IRQS_SUSPENDED) {
++			WARN(1, KERN_WARNING "Enable of suspended IRQ %d\n",
++			     irq_desc_get_irq(desc));
++			break;
++		}
+ 		/* Prevent probing on this irq: */
+ 		irq_settings_set_noprobe(desc);
+ 		/*
+ 		 * Call irq_startup() not irq_enable() here because the
+ 		 * interrupt might be marked NOAUTOEN. So irq_startup()
+-- 
+2.37.0
+
