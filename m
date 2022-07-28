@@ -2,436 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A8D3C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 11:40:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26B66C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 11:41:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237572AbiG1Lkf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 07:40:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41044 "EHLO
+        id S237152AbiG1LlN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 07:41:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237187AbiG1LkS (ORCPT
+        with ESMTP id S237281AbiG1Lk5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 07:40:18 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEFDD675A4;
-        Thu, 28 Jul 2022 04:39:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 71345B82322;
-        Thu, 28 Jul 2022 11:39:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2D57C433C1;
-        Thu, 28 Jul 2022 11:39:15 +0000 (UTC)
-From:   Huacai Chen <chenhuacai@loongson.cn>
-To:     Arnd Bergmann <arnd@arndb.de>, Huacai Chen <chenhuacai@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Dinh Nguyen <dinguyen@kernel.org>
-Cc:     loongarch@lists.linux.dev, linux-arch@vger.kernel.org,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Guo Ren <guoren@kernel.org>, Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Feiyang Chen <chenfeiyang@loongson.cn>,
-        Huacai Chen <chenhuacai@loongson.cn>
-Subject: [PATCH V6 1/4] MIPS&LoongArch&NIOS2: Adjust prototypes of p?d_init()
-Date:   Thu, 28 Jul 2022 19:37:58 +0800
-Message-Id: <20220728113801.2235151-2-chenhuacai@loongson.cn>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220728113801.2235151-1-chenhuacai@loongson.cn>
-References: <20220728113801.2235151-1-chenhuacai@loongson.cn>
+        Thu, 28 Jul 2022 07:40:57 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 691885F43
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 04:40:15 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id k11so1827987wrx.5
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 04:40:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ZTE4cnVobwmiqOUoS9ukGmjCOG+lX5jwP+r9zIdwDR4=;
+        b=POCt2LdXxGBz03FDFBw0TqGivbwIbMfy3yVn0vuquDPrOK51EiKmVXwPUuGsbI5Y3o
+         //9o2GyvPB+UJ9t5A7r1v4n3gMDLNDcECNpqAyNY9XuZ7I1adAmgT+eGie172lemzll2
+         VZTyqRdpKrDFrvuUYj7+NHwPUffQXOkyAAwOFklWw0mESAHY5n51/znIUcDHIAsWjjyB
+         CqYYW1aCrzDukJqTyi1PsZqhrW1Q22v8gceNYThdJhzKBpO3NmQf4w4mSHIlfx4A99i6
+         afRf9W0e12L+dHchYBiHfskWdktZwcuSivkE1yoCLKjKhPvhz1LhqcMuBpbTLqii+uP2
+         0Syw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ZTE4cnVobwmiqOUoS9ukGmjCOG+lX5jwP+r9zIdwDR4=;
+        b=Yj8sLUWgnMjGj0CVlIJjdkPW1xcdqTZq4WldkLMXEZBLEGHCxTYrPriIt7k4d3pIzw
+         hnJ3t2sgfWh8uDXQEpJWaQvMrU4lF3YivFKi0+BdTn5/sJcCYDi49tL6S3MaNxcJF4B1
+         ls9wgYcVlOFYQttfLoxTWQ7xcRGtmSSFH2q8BZUqylDipCSnovDuXym913dQ8NBGQ/89
+         rHY/FGrvrkWS5J8AqVMIUZ2majJ0Tww3btYNQNrlq0yoBTvCjeKjff1VZjC9pw1hynIQ
+         ehpiRFCRXyOG+zuTeEomyhEBCj9OPP1i3514gOkbXihqny4xci0ojAvU+m011eGew1ns
+         2+xw==
+X-Gm-Message-State: AJIora8iVjenaK9qSLWpSIvgmnSqAVDpSpVelp3AEQGdNAXo5kPAheJD
+        1qA7AUklu1E+JfLeJYe5vyx/rQ==
+X-Google-Smtp-Source: AGRyM1vYKooOSjgWwIWNujjfVy6VuQq0Lw3mcwRtcB1YbS1NSaJR2CGc58Mg2l7pDrGhc3/H3W2OmQ==
+X-Received: by 2002:a05:6000:156e:b0:21d:c50a:7cdb with SMTP id 14-20020a056000156e00b0021dc50a7cdbmr17180485wrz.16.1659008413733;
+        Thu, 28 Jul 2022 04:40:13 -0700 (PDT)
+Received: from linaro.org ([94.52.112.99])
+        by smtp.gmail.com with ESMTPSA id r41-20020a05600c322900b003a2e89d1fb5sm4444116wmp.42.2022.07.28.04.40.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Jul 2022 04:40:13 -0700 (PDT)
+Date:   Thu, 28 Jul 2022 14:40:11 +0300
+From:   Abel Vesa <abel.vesa@linaro.org>
+To:     XU pengfei <xupengfei@nfschina.com>
+Cc:     Kernel@nfschina.com, agross@kernel.org, bjorn.andersson@linaro.org,
+        konrad.dybcio@somainline.org, linux-arm-msm@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mturquette@baylibre.com, sboyd@kernel.org
+Subject: Re: [PATCH v2] clk/qcom/gcc-sm6350: Remove unnecessary semicolon
+Message-ID: <20220728114011.2fztt7htj6ekwiz2@linaro.org>
+References: <Yt5FAJiEv0WWuDNV@linaro.org>
+ <20220728090719.3056-1-xupengfei@nfschina.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220728090719.3056-1-xupengfei@nfschina.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Feiyang Chen <chenfeiyang@loongson.cn>
+On 22-07-28 17:07:20, XU pengfei wrote:
+> Remove unnecessary semicolon after qcom_cc_really_probe call.
+>
+> Signed-off-by: XU pengfei <xupengfei@nfschina.com>
+> ---
 
-We are preparing to add sparse vmemmap support to LoongArch. MIPS and
-LoongArch need to call pgd_init()/pud_init()/pmd_init() when populating
-page tables, so adjust their prototypes to make generic helpers can call
-them.
+Thanks for this new version, but there are still some issues with it.
 
-NIOS2 declares pmd_init() but doesn't use, just remove it to avoid build
-errors.
+First of, don't use slashes in subject. Use semicolons instead.
+Have a look at how other commits look like by running:
 
-Signed-off-by: Feiyang Chen <chenfeiyang@loongson.cn>
-Signed-off-by: Huacai Chen <chenhuacai@loongson.cn>
----
- arch/loongarch/include/asm/pgalloc.h | 13 ++-----------
- arch/loongarch/include/asm/pgtable.h |  8 ++++----
- arch/loongarch/kernel/numa.c         |  4 ++--
- arch/loongarch/mm/pgtable.c          | 23 +++++++++++++----------
- arch/mips/include/asm/pgalloc.h      |  8 ++++----
- arch/mips/include/asm/pgtable-64.h   |  8 ++++----
- arch/mips/kvm/mmu.c                  |  3 +--
- arch/mips/mm/pgtable-32.c            | 10 +++++-----
- arch/mips/mm/pgtable-64.c            | 18 ++++++++++--------
- arch/mips/mm/pgtable.c               |  2 +-
- arch/nios2/include/asm/pgalloc.h     |  5 -----
- 11 files changed, 46 insertions(+), 56 deletions(-)
+git log --oneline drivers/clk/qcom/
 
-diff --git a/arch/loongarch/include/asm/pgalloc.h b/arch/loongarch/include/asm/pgalloc.h
-index b0a57b25c131..6a492d7aeeec 100644
---- a/arch/loongarch/include/asm/pgalloc.h
-+++ b/arch/loongarch/include/asm/pgalloc.h
-@@ -42,15 +42,6 @@ static inline void p4d_populate(struct mm_struct *mm, p4d_t *p4d, pud_t *pud)
- 
- extern void pagetable_init(void);
- 
--/*
-- * Initialize a new pmd table with invalid pointers.
-- */
--extern void pmd_init(unsigned long page, unsigned long pagetable);
--
--/*
-- * Initialize a new pgd / pmd table with invalid pointers.
-- */
--extern void pgd_init(unsigned long page);
- extern pgd_t *pgd_alloc(struct mm_struct *mm);
- 
- #define __pte_free_tlb(tlb, pte, address)			\
-@@ -76,7 +67,7 @@ static inline pmd_t *pmd_alloc_one(struct mm_struct *mm, unsigned long address)
- 	}
- 
- 	pmd = (pmd_t *)page_address(pg);
--	pmd_init((unsigned long)pmd, (unsigned long)invalid_pte_table);
-+	pmd_init(pmd);
- 	return pmd;
- }
- 
-@@ -92,7 +83,7 @@ static inline pud_t *pud_alloc_one(struct mm_struct *mm, unsigned long address)
- 
- 	pud = (pud_t *) __get_free_pages(GFP_KERNEL, PUD_ORDER);
- 	if (pud)
--		pud_init((unsigned long)pud, (unsigned long)invalid_pmd_table);
-+		pud_init(pud);
- 	return pud;
- }
- 
-diff --git a/arch/loongarch/include/asm/pgtable.h b/arch/loongarch/include/asm/pgtable.h
-index d9e86cfa53e2..9c811c3f7572 100644
---- a/arch/loongarch/include/asm/pgtable.h
-+++ b/arch/loongarch/include/asm/pgtable.h
-@@ -243,11 +243,11 @@ extern void set_pmd_at(struct mm_struct *mm, unsigned long addr, pmd_t *pmdp, pm
- #define pfn_pmd(pfn, prot)	__pmd(((pfn) << _PFN_SHIFT) | pgprot_val(prot))
- 
- /*
-- * Initialize a new pgd / pmd table with invalid pointers.
-+ * Initialize a new pgd / pud / pmd table with invalid pointers.
-  */
--extern void pgd_init(unsigned long page);
--extern void pud_init(unsigned long page, unsigned long pagetable);
--extern void pmd_init(unsigned long page, unsigned long pagetable);
-+extern void pgd_init(void *addr);
-+extern void pud_init(void *addr);
-+extern void pmd_init(void *addr);
- 
- /*
-  * Non-present pages:  high 40 bits are offset, next 8 bits type,
-diff --git a/arch/loongarch/kernel/numa.c b/arch/loongarch/kernel/numa.c
-index a13f92593cfd..eb5d3a4c8a7a 100644
---- a/arch/loongarch/kernel/numa.c
-+++ b/arch/loongarch/kernel/numa.c
-@@ -78,7 +78,7 @@ void __init pcpu_populate_pte(unsigned long addr)
- 		new = memblock_alloc(PAGE_SIZE, PAGE_SIZE);
- 		pgd_populate(&init_mm, pgd, new);
- #ifndef __PAGETABLE_PUD_FOLDED
--		pud_init((unsigned long)new, (unsigned long)invalid_pmd_table);
-+		pud_init(new);
- #endif
- 	}
- 
-@@ -89,7 +89,7 @@ void __init pcpu_populate_pte(unsigned long addr)
- 		new = memblock_alloc(PAGE_SIZE, PAGE_SIZE);
- 		pud_populate(&init_mm, pud, new);
- #ifndef __PAGETABLE_PMD_FOLDED
--		pmd_init((unsigned long)new, (unsigned long)invalid_pte_table);
-+		pmd_init(new);
- #endif
- 	}
- 
-diff --git a/arch/loongarch/mm/pgtable.c b/arch/loongarch/mm/pgtable.c
-index 0569647152e9..e79cc41acac5 100644
---- a/arch/loongarch/mm/pgtable.c
-+++ b/arch/loongarch/mm/pgtable.c
-@@ -16,7 +16,7 @@ pgd_t *pgd_alloc(struct mm_struct *mm)
- 	ret = (pgd_t *) __get_free_pages(GFP_KERNEL, PGD_ORDER);
- 	if (ret) {
- 		init = pgd_offset(&init_mm, 0UL);
--		pgd_init((unsigned long)ret);
-+		pgd_init(ret);
- 		memcpy(ret + USER_PTRS_PER_PGD, init + USER_PTRS_PER_PGD,
- 		       (PTRS_PER_PGD - USER_PTRS_PER_PGD) * sizeof(pgd_t));
- 	}
-@@ -25,7 +25,7 @@ pgd_t *pgd_alloc(struct mm_struct *mm)
- }
- EXPORT_SYMBOL_GPL(pgd_alloc);
- 
--void pgd_init(unsigned long page)
-+void pgd_init(void *addr)
- {
- 	unsigned long *p, *end;
- 	unsigned long entry;
-@@ -38,7 +38,7 @@ void pgd_init(unsigned long page)
- 	entry = (unsigned long)invalid_pte_table;
- #endif
- 
--	p = (unsigned long *) page;
-+	p = (unsigned long *)addr;
- 	end = p + PTRS_PER_PGD;
- 
- 	do {
-@@ -56,11 +56,12 @@ void pgd_init(unsigned long page)
- EXPORT_SYMBOL_GPL(pgd_init);
- 
- #ifndef __PAGETABLE_PMD_FOLDED
--void pmd_init(unsigned long addr, unsigned long pagetable)
-+void pmd_init(void *addr)
- {
- 	unsigned long *p, *end;
-+	unsigned long pagetable = (unsigned long)invalid_pte_table;
- 
--	p = (unsigned long *) addr;
-+	p = (unsigned long *)addr;
- 	end = p + PTRS_PER_PMD;
- 
- 	do {
-@@ -79,9 +80,10 @@ EXPORT_SYMBOL_GPL(pmd_init);
- #endif
- 
- #ifndef __PAGETABLE_PUD_FOLDED
--void pud_init(unsigned long addr, unsigned long pagetable)
-+void pud_init(void *addr)
- {
- 	unsigned long *p, *end;
-+	unsigned long pagetable = (unsigned long)invalid_pmd_table;
- 
- 	p = (unsigned long *)addr;
- 	end = p + PTRS_PER_PUD;
-@@ -98,6 +100,7 @@ void pud_init(unsigned long addr, unsigned long pagetable)
- 		p[-1] = pagetable;
- 	} while (p != end);
- }
-+EXPORT_SYMBOL_GPL(pud_init);
- #endif
- 
- pmd_t mk_pmd(struct page *page, pgprot_t prot)
-@@ -119,12 +122,12 @@ void set_pmd_at(struct mm_struct *mm, unsigned long addr,
- void __init pagetable_init(void)
- {
- 	/* Initialize the entire pgd.  */
--	pgd_init((unsigned long)swapper_pg_dir);
--	pgd_init((unsigned long)invalid_pg_dir);
-+	pgd_init(swapper_pg_dir);
-+	pgd_init(invalid_pg_dir);
- #ifndef __PAGETABLE_PUD_FOLDED
--	pud_init((unsigned long)invalid_pud_table, (unsigned long)invalid_pmd_table);
-+	pud_init(invalid_pud_table);
- #endif
- #ifndef __PAGETABLE_PMD_FOLDED
--	pmd_init((unsigned long)invalid_pmd_table, (unsigned long)invalid_pte_table);
-+	pmd_init(invalid_pmd_table);
- #endif
- }
-diff --git a/arch/mips/include/asm/pgalloc.h b/arch/mips/include/asm/pgalloc.h
-index 867e9c3db76e..9f7d117c5ebf 100644
---- a/arch/mips/include/asm/pgalloc.h
-+++ b/arch/mips/include/asm/pgalloc.h
-@@ -33,7 +33,7 @@ static inline void pmd_populate(struct mm_struct *mm, pmd_t *pmd,
- /*
-  * Initialize a new pmd table with invalid pointers.
-  */
--extern void pmd_init(unsigned long page, unsigned long pagetable);
-+extern void pmd_init(void *addr);
- 
- #ifndef __PAGETABLE_PMD_FOLDED
- 
-@@ -44,9 +44,9 @@ static inline void pud_populate(struct mm_struct *mm, pud_t *pud, pmd_t *pmd)
- #endif
- 
- /*
-- * Initialize a new pgd / pmd table with invalid pointers.
-+ * Initialize a new pgd table with invalid pointers.
-  */
--extern void pgd_init(unsigned long page);
-+extern void pgd_init(void *addr);
- extern pgd_t *pgd_alloc(struct mm_struct *mm);
- 
- static inline void pgd_free(struct mm_struct *mm, pgd_t *pgd)
-@@ -77,7 +77,7 @@ static inline pmd_t *pmd_alloc_one(struct mm_struct *mm, unsigned long address)
- 	}
- 
- 	pmd = (pmd_t *)page_address(pg);
--	pmd_init((unsigned long)pmd, (unsigned long)invalid_pte_table);
-+	pmd_init(pmd);
- 	return pmd;
- }
- 
-diff --git a/arch/mips/include/asm/pgtable-64.h b/arch/mips/include/asm/pgtable-64.h
-index 41921acdc9d8..8ac76bbb4b38 100644
---- a/arch/mips/include/asm/pgtable-64.h
-+++ b/arch/mips/include/asm/pgtable-64.h
-@@ -323,11 +323,11 @@ static inline pmd_t *pud_pgtable(pud_t pud)
- #endif
- 
- /*
-- * Initialize a new pgd / pmd table with invalid pointers.
-+ * Initialize a new pgd / pud / pmd table with invalid pointers.
-  */
--extern void pgd_init(unsigned long page);
--extern void pud_init(unsigned long page, unsigned long pagetable);
--extern void pmd_init(unsigned long page, unsigned long pagetable);
-+extern void pgd_init(void *addr);
-+extern void pud_init(void *addr);
-+extern void pmd_init(void *addr);
- 
- /*
-  * Non-present pages:  high 40 bits are offset, next 8 bits type,
-diff --git a/arch/mips/kvm/mmu.c b/arch/mips/kvm/mmu.c
-index 1bfd1b501d82..cb10a92ad3ae 100644
---- a/arch/mips/kvm/mmu.c
-+++ b/arch/mips/kvm/mmu.c
-@@ -122,8 +122,7 @@ static pte_t *kvm_mips_walk_pgd(pgd_t *pgd, struct kvm_mmu_memory_cache *cache,
- 		if (!cache)
- 			return NULL;
- 		new_pmd = kvm_mmu_memory_cache_alloc(cache);
--		pmd_init((unsigned long)new_pmd,
--			 (unsigned long)invalid_pte_table);
-+		pmd_init(new_pmd);
- 		pud_populate(NULL, pud, new_pmd);
- 	}
- 	pmd = pmd_offset(pud, addr);
-diff --git a/arch/mips/mm/pgtable-32.c b/arch/mips/mm/pgtable-32.c
-index 61891af25019..88819a21d97e 100644
---- a/arch/mips/mm/pgtable-32.c
-+++ b/arch/mips/mm/pgtable-32.c
-@@ -13,9 +13,9 @@
- #include <asm/pgalloc.h>
- #include <asm/tlbflush.h>
- 
--void pgd_init(unsigned long page)
-+void pgd_init(void *addr)
- {
--	unsigned long *p = (unsigned long *) page;
-+	unsigned long *p = (unsigned long *)addr;
- 	int i;
- 
- 	for (i = 0; i < USER_PTRS_PER_PGD; i+=8) {
-@@ -61,9 +61,9 @@ void __init pagetable_init(void)
- #endif
- 
- 	/* Initialize the entire pgd.  */
--	pgd_init((unsigned long)swapper_pg_dir);
--	pgd_init((unsigned long)swapper_pg_dir
--		 + sizeof(pgd_t) * USER_PTRS_PER_PGD);
-+	pgd_init(swapper_pg_dir);
-+	pgd_init((void *)((unsigned long)swapper_pg_dir
-+		 + sizeof(pgd_t) * USER_PTRS_PER_PGD));
- 
- 	pgd_base = swapper_pg_dir;
- 
-diff --git a/arch/mips/mm/pgtable-64.c b/arch/mips/mm/pgtable-64.c
-index 7536f7804c44..b4386a0e2ef8 100644
---- a/arch/mips/mm/pgtable-64.c
-+++ b/arch/mips/mm/pgtable-64.c
-@@ -13,7 +13,7 @@
- #include <asm/pgalloc.h>
- #include <asm/tlbflush.h>
- 
--void pgd_init(unsigned long page)
-+void pgd_init(void *addr)
- {
- 	unsigned long *p, *end;
- 	unsigned long entry;
-@@ -26,7 +26,7 @@ void pgd_init(unsigned long page)
- 	entry = (unsigned long)invalid_pte_table;
- #endif
- 
--	p = (unsigned long *) page;
-+	p = (unsigned long *) addr;
- 	end = p + PTRS_PER_PGD;
- 
- 	do {
-@@ -43,11 +43,12 @@ void pgd_init(unsigned long page)
- }
- 
- #ifndef __PAGETABLE_PMD_FOLDED
--void pmd_init(unsigned long addr, unsigned long pagetable)
-+void pmd_init(void *addr)
- {
- 	unsigned long *p, *end;
-+	unsigned long pagetable = (unsigned long)invalid_pte_table;
- 
--	p = (unsigned long *) addr;
-+	p = (unsigned long *)addr;
- 	end = p + PTRS_PER_PMD;
- 
- 	do {
-@@ -66,9 +67,10 @@ EXPORT_SYMBOL_GPL(pmd_init);
- #endif
- 
- #ifndef __PAGETABLE_PUD_FOLDED
--void pud_init(unsigned long addr, unsigned long pagetable)
-+void pud_init(void *addr)
- {
- 	unsigned long *p, *end;
-+	unsigned long pagetable = (unsigned long)invalid_pmd_table;
- 
- 	p = (unsigned long *)addr;
- 	end = p + PTRS_PER_PUD;
-@@ -108,12 +110,12 @@ void __init pagetable_init(void)
- 	pgd_t *pgd_base;
- 
- 	/* Initialize the entire pgd.  */
--	pgd_init((unsigned long)swapper_pg_dir);
-+	pgd_init(swapper_pg_dir);
- #ifndef __PAGETABLE_PUD_FOLDED
--	pud_init((unsigned long)invalid_pud_table, (unsigned long)invalid_pmd_table);
-+	pud_init(invalid_pud_table);
- #endif
- #ifndef __PAGETABLE_PMD_FOLDED
--	pmd_init((unsigned long)invalid_pmd_table, (unsigned long)invalid_pte_table);
-+	pmd_init(invalid_pmd_table);
- #endif
- 	pgd_base = swapper_pg_dir;
- 	/*
-diff --git a/arch/mips/mm/pgtable.c b/arch/mips/mm/pgtable.c
-index 05560b042d82..98e5e880927a 100644
---- a/arch/mips/mm/pgtable.c
-+++ b/arch/mips/mm/pgtable.c
-@@ -15,7 +15,7 @@ pgd_t *pgd_alloc(struct mm_struct *mm)
- 	ret = (pgd_t *) __get_free_pages(GFP_KERNEL, PGD_ORDER);
- 	if (ret) {
- 		init = pgd_offset(&init_mm, 0UL);
--		pgd_init((unsigned long)ret);
-+		pgd_init(ret);
- 		memcpy(ret + USER_PTRS_PER_PGD, init + USER_PTRS_PER_PGD,
- 		       (PTRS_PER_PGD - USER_PTRS_PER_PGD) * sizeof(pgd_t));
- 	}
-diff --git a/arch/nios2/include/asm/pgalloc.h b/arch/nios2/include/asm/pgalloc.h
-index 3c4ae74d5798..ecd1657bb2ce 100644
---- a/arch/nios2/include/asm/pgalloc.h
-+++ b/arch/nios2/include/asm/pgalloc.h
-@@ -26,11 +26,6 @@ static inline void pmd_populate(struct mm_struct *mm, pmd_t *pmd,
- 	set_pmd(pmd, __pmd((unsigned long)page_address(pte)));
- }
- 
--/*
-- * Initialize a new pmd table with invalid pointers.
-- */
--extern void pmd_init(unsigned long page, unsigned long pagetable);
--
- extern pgd_t *pgd_alloc(struct mm_struct *mm);
- 
- #define __pte_free_tlb(tlb, pte, addr)				\
--- 
-2.31.1
+Also, do not send subsquent versions of a patch as a reply to old ones.
 
+
+>  drivers/clk/qcom/gcc-sm6350.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/clk/qcom/gcc-sm6350.c b/drivers/clk/qcom/gcc-sm6350.c
+> index a4f7fba70393..69412400efa4 100644
+> --- a/drivers/clk/qcom/gcc-sm6350.c
+> +++ b/drivers/clk/qcom/gcc-sm6350.c
+> @@ -2558,7 +2558,7 @@ static int gcc_sm6350_probe(struct platform_device *pdev)
+>  	if (ret)
+>  		return ret;
+>
+> -	return qcom_cc_really_probe(pdev, &gcc_sm6350_desc, regmap);;
+> +	return qcom_cc_really_probe(pdev, &gcc_sm6350_desc, regmap);
+>  }
+>
+>  static struct platform_driver gcc_sm6350_driver = {
+> --
+> 2.18.2
+>
