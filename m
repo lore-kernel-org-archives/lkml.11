@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20AA1C25B06
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 11:38:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2267FC04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 11:38:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236480AbiG1LiB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 07:38:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39018 "EHLO
+        id S236552AbiG1LiE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 07:38:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236050AbiG1Lh5 (ORCPT
+        with ESMTP id S236088AbiG1LiA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 07:37:57 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F84B54CA0
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 04:37:56 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id y11so2421516lfs.6
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 04:37:56 -0700 (PDT)
+        Thu, 28 Jul 2022 07:38:00 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9123052DF5
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 04:37:58 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id t1so2410774lft.8
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 04:37:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=9Z9G71U6yLmqYfV3H8Vzk5oXbo1KOQzHy1FVjJVxjZ0=;
-        b=jPn5dwmxRH7oG307eBZWzUVnxWvZlOPYR+X8VYe13hfRRfP3WGFJD3mD7Vx7XDhrmC
-         +wXIcdSGQaFsg8UezbRvwrKKFloRf389WtVOlQTDS8MrnW+o+RrORkGAOWc1zFIfY9j9
-         djH/D9Chz241Wl+WF2e4sABTyDdIIFntlO3sVt+/DsRwYQYbwQ/UX5pnUWVln1nQkYJW
-         J+vI/PuE6uIge84qYgsughBvBXKAQ7D2E98RazmZYAfWwyZPZMTthv2Ao0u+HnCFjR7J
-         qhPWxSGOv8nRe7dPcDMjc75SpG1YcQlcwwYlEcEb2+RJ9rjS3LAm0UJD0URkF7sAxe3o
-         vlFA==
+        bh=6jxkS7/ms1db5yL2dzxTICIKKExj7puACAAi6Hsp2r4=;
+        b=BP4WxWJfZP9C0iIqVnO6veQ7kEEeQwbnrYoi//uSqcoG6QACxPT+Hsm4WbZqkDH/Rm
+         xy2OeGxKmVE6RgUw36lYlYjPUlr8intYwl8bfAzC5HBFkbCj4v/JLwb6AoxbrhudicaI
+         HvJCPzymY8590cxiEZBq+cJhGqlOY5xktGllTMqohiIuCw6nbpD1fsi+lZbp5yUaF0BD
+         v9FLRNFzsOzgq2DPWuZGFT7xS+wNTbmnuDpjMhmDU9ZXUVnq6WhzblLR89ORjNJW4/zg
+         5/kE2AfKb+ZnrCZZB+ndmQRP5BPTBcB0EFJE3VwdLi3wMNvaLKOs5ZBD7FSIwqH6jPAf
+         mDAQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=9Z9G71U6yLmqYfV3H8Vzk5oXbo1KOQzHy1FVjJVxjZ0=;
-        b=m99p344bG0qd5/TIP+DgAtLYxsMQnlrfiZ1KKfRj/40PpwcL25eNWxsM6/YqySqp87
-         dI22Msssy6Cs1Ul5izJFPzOm7+mkZpDdg7qUIwCw7CwuO1M0rVJ4isln3jEP7MlxDeIH
-         Czw0Tn0UyhPggQ0ObDA9zf6xoQct2O0ibG6fz++ym8G2w9Rq0CvPon+rO+ydq8l7fx/Q
-         5HT25woJ5e+l2RU8i2Vxkfo2oTDm5ZrY1GgBydotTcFo52rCCStUPBzWspi2fSTtC8zf
-         j2HQpt0R7sMc2E706S8Mpy+U6ycqQe+elI0BLsXTpGhW/WGqzVeGhyPqlM3GJz3HitWR
-         CXug==
-X-Gm-Message-State: AJIora8NGIGw1Us0rF1D+Pv+SB559cqYOjpEFJEdgcDIpxloBAKgdDlU
-        R4Cyi5aa4JChnZ8izvy8511fAw==
-X-Google-Smtp-Source: AGRyM1vr2dtmQX/ZVXdnig8yHC5mMpLA/k7pAOp/xe4XpWw+rAAikE8IilhkjwO549DcXYOQ4NZFeg==
-X-Received: by 2002:a05:6512:e99:b0:48a:9728:3bd1 with SMTP id bi25-20020a0565120e9900b0048a97283bd1mr6351936lfb.325.1659008274425;
-        Thu, 28 Jul 2022 04:37:54 -0700 (PDT)
+        bh=6jxkS7/ms1db5yL2dzxTICIKKExj7puACAAi6Hsp2r4=;
+        b=znTlDl+LwjR75RbXn8f4/mXk7CRGke2c+gW83mbtX8vw7sXAzAFxFqI+jojYgtBJjQ
+         dJUzVgsJv7MIaHIEaRT/EmpqBX7+Wt+4JW6EQ0UZd8+HN02ovJQkjw+WdvXcltJOiy57
+         x9lPx3zz9WZsLejzuPC+p7NmlaSe1EMOJJbLtreODSbEcTv9ouu471ITi6ir4IyrzTIF
+         YM1hzYz+xomGRBDnH+WlYSpN9cm9oP2vxxI59+WVznS8dexHusvGVnzMqHDqANKyJjRH
+         GKKpkz/hTeyZv5Dol0ML5s/JomWNwJ8m0/JkcQBuKC5SbiHyLYxXn4MmdAzraWtb3pAR
+         hoDg==
+X-Gm-Message-State: AJIora9PZm0oTdk1zYKG27DWAQWq/IJMgKW0fP4hbfSPXA+mefs6p3o+
+        Kua2I1exPHQUVGNsQ5v4O+xccQ==
+X-Google-Smtp-Source: AGRyM1vqo2kECSeNqRT/11i8yeK+k68/7tONmD12YcAGOuzStG6+YPxeGukes24HgLmGopZ6zJSjHA==
+X-Received: by 2002:a05:6512:1690:b0:48a:c5b6:17cc with SMTP id bu16-20020a056512169000b0048ac5b617ccmr1028550lfb.375.1659008276907;
+        Thu, 28 Jul 2022 04:37:56 -0700 (PDT)
 Received: from krzk-bin.lan (78-26-46-173.network.trollfjord.no. [78.26.46.173])
-        by smtp.gmail.com with ESMTPSA id l12-20020a2ea80c000000b0025e0396786dsm98192ljq.93.2022.07.28.04.37.53
+        by smtp.gmail.com with ESMTPSA id l12-20020a2ea80c000000b0025e0396786dsm98192ljq.93.2022.07.28.04.37.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Jul 2022 04:37:53 -0700 (PDT)
+        Thu, 28 Jul 2022 04:37:56 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         Andy Gross <agross@kernel.org>,
@@ -58,11 +58,10 @@ To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
         linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Rajendra Nayak <quic_rjendra@quicinc.com>,
-        Sibi Sankar <quic_sibis@quicinc.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v2 01/11] dt-bindings: interconnect: qcom,msm8998-bwmon: add support for SDM845 LLCC BWMON
-Date:   Thu, 28 Jul 2022 13:37:38 +0200
-Message-Id: <20220728113748.170548-2-krzysztof.kozlowski@linaro.org>
+        Sibi Sankar <quic_sibis@quicinc.com>
+Subject: [PATCH v2 03/11] soc: qcom: icc-bwmon: drop unused registers
+Date:   Thu, 28 Jul 2022 13:37:40 +0200
+Message-Id: <20220728113748.170548-4-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220728113748.170548-1-krzysztof.kozlowski@linaro.org>
 References: <20220728113748.170548-1-krzysztof.kozlowski@linaro.org>
@@ -72,31 +71,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add compatible for SDM845 Bandwidth Monitor instance measuring traffic
-between LLCC and memory.  It comes with different register layout:
-called v5.
+BWMON_GLOBAL_IRQ_STATUS and BWMON_ZONE_COUNT defines are not used.
 
 Cc: Rajendra Nayak <quic_rjendra@quicinc.com>
 Cc: Sibi Sankar <quic_sibis@quicinc.com>
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Acked-by: Rob Herring <robh@kernel.org>
 Reviewed-by: Sibi Sankar <quic_sibis@quicinc.com>
 ---
- .../devicetree/bindings/interconnect/qcom,msm8998-bwmon.yaml     | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/soc/qcom/icc-bwmon.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/interconnect/qcom,msm8998-bwmon.yaml b/Documentation/devicetree/bindings/interconnect/qcom,msm8998-bwmon.yaml
-index c2e697f6e6cf..32e2892d736b 100644
---- a/Documentation/devicetree/bindings/interconnect/qcom,msm8998-bwmon.yaml
-+++ b/Documentation/devicetree/bindings/interconnect/qcom,msm8998-bwmon.yaml
-@@ -27,6 +27,7 @@ properties:
-               - qcom,sdm845-bwmon
-           - const: qcom,msm8998-bwmon
-       - const: qcom,msm8998-bwmon       # BWMON v4
-+      - const: qcom,sdm845-llcc-bwmon   # BWMON v5
+diff --git a/drivers/soc/qcom/icc-bwmon.c b/drivers/soc/qcom/icc-bwmon.c
+index 3415f42523cd..9295ea04356a 100644
+--- a/drivers/soc/qcom/icc-bwmon.c
++++ b/drivers/soc/qcom/icc-bwmon.c
+@@ -31,7 +31,6 @@
+ /* Internal sampling clock frequency */
+ #define HW_TIMER_HZ				19200000
  
-   interconnects:
-     maxItems: 1
+-#define BWMON_GLOBAL_IRQ_STATUS			0x0
+ #define BWMON_GLOBAL_IRQ_CLEAR			0x8
+ #define BWMON_GLOBAL_IRQ_ENABLE			0xc
+ #define BWMON_GLOBAL_IRQ_ENABLE_ENABLE		BIT(0)
+@@ -105,7 +104,6 @@
+ 
+ /* BWMONv4 count registers use count unit of 64 kB */
+ #define BWMON_COUNT_UNIT_KB			64
+-#define BWMON_ZONE_COUNT			0x2d8
+ #define BWMON_ZONE_MAX(zone)			(0x2e0 + 4 * (zone))
+ 
+ struct icc_bwmon_data {
 -- 
 2.34.1
 
