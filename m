@@ -2,179 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE6CEC04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 05:42:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F02CC19F2A
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 05:43:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231335AbiG1Fm4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 01:42:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34430 "EHLO
+        id S231942AbiG1FnZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 01:43:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229682AbiG1Fmz (ORCPT
+        with ESMTP id S229896AbiG1FnV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 01:42:55 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A31C156B81
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 22:42:53 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id b11so1268879eju.10
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 22:42:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=ttQBTfBPAuZC/QPk3IKhegjmv5hY3rggjF2R8MxwGiQ=;
-        b=SLXyjq2CljaMgfGfZWUfDSyFvEK92Dy/MwXs/vnPvorgO6j5U/59OwbJS2swvY7QuN
-         myA8m4OvkMFi42JfFXhLQ53eBQ9DN4xMfuE0iuAa2MqrxPGU9x5Tsr2KHU4ipqSb2G27
-         KnMQtHs7xkMHG++7P/wjo+RkGwzX/QRJ5h9xZYXgmRiXgv8cUAjYr4cInO3qn2hMmeAa
-         0OyybkrKd5DWFLVc0kzQfCL/Zn2SPV0g1tQfx9bMSX2AZbkabdmPQwbbWAzLA6bGLhy9
-         AbQKhYmBHb0Z1KrNtvOtpef/O6MnhbpyRC/5EeaJ/hJIyP1TOTtMuiLRHMEMfXMhRfsa
-         1qTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=ttQBTfBPAuZC/QPk3IKhegjmv5hY3rggjF2R8MxwGiQ=;
-        b=JM198rFTqirNn01/eyULPN2rPQXO+l0a7eryjYnmQwhgTCnXFNxLSIkd4aoRf2hhXf
-         ifXVEwZtHwfl0wvKr1b4RnMqEiT3aFbVMEMsiDGvkjL5UAh5EOqz/virgjq9giUcZP7p
-         kCP7eORIdEL2yp28CNS+zz8dvM/y+8SRcikTjx9Wzakpverl0It8FmzAWZqMhxIhZL01
-         WNx74gaEYSZVRrV/qIrFGDCCSOyvEc6J/Wd6TSdRs+/YOUnRkPJK6fFPYZWsEZUdWDxz
-         NLzCXWxkYQo9vB8BRN/cRZv+G9HN9TPCC7EzyU/b5jEsyev+ijRoiW/6WHaQXh2MEjEh
-         Ub2A==
-X-Gm-Message-State: AJIora+T8p5QMisMuFbh9LsShlAFgmgmyEBwCki+frzkImMFdnE2dI1C
-        GiGakOPD/ZD0wth7mmCUFf7DA+gw1eHXEXHYGm6MIQ==
-X-Google-Smtp-Source: AGRyM1smQmvhedkJJ69RHJuWTSM1EYN8J0z9GpsFezSupx8I6PR4ICzyNwMg+rUaX0py1TME18HGJeHIE4FbrF49l9U=
-X-Received: by 2002:a17:906:7b88:b0:72f:d080:415 with SMTP id
- s8-20020a1709067b8800b0072fd0800415mr15488570ejo.169.1658986971998; Wed, 27
- Jul 2022 22:42:51 -0700 (PDT)
+        Thu, 28 Jul 2022 01:43:21 -0400
+Received: from mail-sh.amlogic.com (mail-sh.amlogic.com [58.32.228.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45B5056BA2;
+        Wed, 27 Jul 2022 22:43:20 -0700 (PDT)
+Received: from droid06.amlogic.com (10.18.11.248) by mail-sh.amlogic.com
+ (10.18.11.5) with Microsoft SMTP Server id 15.1.2176.14; Thu, 28 Jul 2022
+ 13:43:17 +0800
+From:   Yu Tu <yu.tu@amlogic.com>
+To:     <linux-clk@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-amlogic@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+CC:     Yu Tu <yu.tu@amlogic.com>
+Subject: [PATCH V2 0/3] Add S4 SoC clock controller driver
+Date:   Thu, 28 Jul 2022 13:41:59 +0800
+Message-ID: <20220728054202.6981-1-yu.tu@amlogic.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-References: <20220727161026.977588183@linuxfoundation.org>
-In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Thu, 28 Jul 2022 11:12:40 +0530
-Message-ID: <CA+G9fYuedr9ahpTRUYyVTF3W_Rr3KVhmO8_sZCGED7xKGs9R=w@mail.gmail.com>
-Subject: Re: [PATCH 5.15 000/201] 5.15.58-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.18.11.248]
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 27 Jul 2022 at 22:07, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> This is the start of the stable review cycle for the 5.15.58 release.
-> There are 201 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Fri, 29 Jul 2022 16:09:50 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
->         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
-5.15.58-rc1.gz
-> or in the git tree and branch at:
->         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
--rc.git linux-5.15.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+1. Add clock controller driver for S4 SOC.
 
-Results from Linaro=E2=80=99s test farm.
-No regressions on arm64, arm, x86_64, and i386.
+Yu Tu (3):
+  dt-bindings: clk: meson: add S4 SoC clock controller bindings
+  arm64: dts: meson: add S4 Soc clock controller in DT
+  clk: meson: s4: add s4 SoC clock controller driver
 
-Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
+V1 -> V2: Change format as discussed in the email.
 
-## Build
-* kernel: 5.15.58-rc1
-* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
-* git branch: linux-5.15.y
-* git commit: 6a9b4e0a656c73ff2dc9a24b5714c6afccff043c
-* git describe: v5.15.57-202-g6a9b4e0a656c
-* test details:
-https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.15.y/build/v5.15=
-.57-202-g6a9b4e0a656c
+Link:https://lore.kernel.org/linux-amlogic/20220708062757.3662-1-yu.tu@amlogic.com/
 
-## Test Regressions (compared to v5.15.57)
-No test regressions found.
+ .../bindings/clock/amlogic,gxbb-clkc.txt      |    1 +
+ MAINTAINERS                                   |    1 +
+ arch/arm64/boot/dts/amlogic/meson-s4.dtsi     |   11 +
+ drivers/clk/meson/Kconfig                     |   15 +
+ drivers/clk/meson/Makefile                    |    1 +
+ drivers/clk/meson/s4.c                        | 4732 +++++++++++++++++
+ drivers/clk/meson/s4.h                        |  296 ++
+ include/dt-bindings/clock/s4-clkc.h           |  146 +
+ 8 files changed, 5203 insertions(+)
+ create mode 100644 drivers/clk/meson/s4.c
+ create mode 100644 drivers/clk/meson/s4.h
+ create mode 100644 include/dt-bindings/clock/s4-clkc.h
 
-## Metric Regressions (compared to v5.15.57)
-No metric regressions found.
 
-## Test Fixes (compared to v5.15.57)
-No test fixes found.
+base-commit: b293bc9286ee21824e93f0fcfed3b78fdfee01e6
+-- 
+2.33.1
 
-## Metric Fixes (compared to v5.15.57)
-No metric fixes found.
-
-## Test result summary
-total: 141611, pass: 127731, fail: 395, skip: 12661, xfail: 824
-
-## Build Summary
-* arc: 10 total, 10 passed, 0 failed
-* arm: 313 total, 310 passed, 3 failed
-* arm64: 68 total, 66 passed, 2 failed
-* i386: 57 total, 50 passed, 7 failed
-* mips: 50 total, 47 passed, 3 failed
-* parisc: 14 total, 14 passed, 0 failed
-* powerpc: 59 total, 56 passed, 3 failed
-* riscv: 27 total, 27 passed, 0 failed
-* s390: 26 total, 23 passed, 3 failed
-* sh: 26 total, 24 passed, 2 failed
-* sparc: 14 total, 14 passed, 0 failed
-* x86_64: 62 total, 60 passed, 2 failed
-
-## Test suites summary
-* fwts
-* igt-gpu-tools
-* kunit
-* kvm-unit-tests
-* libgpiod
-* libhugetlbfs
-* log-parser-boot
-* log-parser-test
-* ltp-cap_bounds
-* ltp-commands
-* ltp-containers
-* ltp-controllers
-* ltp-cpuhotplug
-* ltp-crypto
-* ltp-cve
-* ltp-dio
-* ltp-fcntl-locktests
-* ltp-filecaps
-* ltp-fs
-* ltp-fs_bind
-* ltp-fs_perms_simple
-* ltp-fsx
-* ltp-hugetlb
-* ltp-io
-* ltp-ipc
-* ltp-math
-* ltp-mm
-* ltp-nptl
-* ltp-open-posix-tests
-* ltp-pty
-* ltp-sched
-* ltp-securebits
-* ltp-smoke
-* ltp-syscalls
-* ltp-tracing
-* network-basic-tests
-* packetdrill
-* rcutorture
-* ssuite
-* v4l2-compliance
-* vdso
-
---
-Linaro LKFT
-https://lkft.linaro.org
