@@ -2,149 +2,524 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EE52C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 03:34:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 003EBC04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 03:36:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234361AbiG1De4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 23:34:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48418 "EHLO
+        id S238199AbiG1DgE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 23:36:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232849AbiG1De0 (ORCPT
+        with ESMTP id S238243AbiG1Dfg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 23:34:26 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B6EB5C340;
-        Wed, 27 Jul 2022 20:34:23 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id ha11so820505pjb.2;
-        Wed, 27 Jul 2022 20:34:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=j10ToGanO3cd/vYuHa5Kn8foeTs8uMlyZtELPg2UY1U=;
-        b=ZCpCWijzlJKFs64G+1k7Jl5GKh6G4zOE6ybwGhhR/exQ9bGqHu5jiznO5HvWlqa/rJ
-         6blTRDDSiBqKmbeZa1uCPh2Nyo9/0lSgoBae4muND+4qWPGNamj5AmdAYBJUEm7SGqbw
-         HXf6QFOrlDBQfF0eLDtdaVtzxe79XUj6OMXvc70gPfydf9HkHcRXdr6fvkFRltTf5//h
-         6Fy6RAqzfsW2N7ZbZKzdwib5zi2mCAOr5ScVrstEYPdirvZgJ8zOFm9HKdRn/Y5LPWwJ
-         ZY60cdEvLCP8iXWLUhJQo99JJiatYHysQCuaGzKDYXD6AMFLvjVx1VTyMSLscmEAgq2B
-         xtsg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=j10ToGanO3cd/vYuHa5Kn8foeTs8uMlyZtELPg2UY1U=;
-        b=3dLL3LT2qKsh8dbz4Bx4kgWtoBbBlMC6LVGI3xXskWibh6XCSGPyuGySavy565uRXE
-         N0jObY7l9dbf70Zn3zjpy9VfmvG6sei46CJ9nhIgmdbRrtUxtIt0WPAyDSANFEicoLbC
-         r9Akq1d9C55tSWBuO/qLd73TWyFWGK+ScZGff2mlDZPCpZElTS/jR9vGsMtyy8xTrDwy
-         Fi9wBGe1payuBtHLM0y652fEVT8MDqfp7DdE/W8cynjCVi4XrxZrJaXditXGBlBlgFr4
-         RwGhFiWA83Nte7GKnjmPfzIF7BWFiOxhS27M6mnhLxh0v6qenthx5M04/e+ld+UrZSY3
-         5+cA==
-X-Gm-Message-State: AJIora/UMYlmY4NBEjWpdw8lPgGbHY69mATFZqdWVGakJyWk6aFTVtTA
-        2F4NRNdyYo4GYunhmFD63oA=
-X-Google-Smtp-Source: AGRyM1stnTgNjHqQvTX8yokSMFJC+fEv40VFSklSquPlJzshMGe0L5wVcYIHWCUudBsD3zBQBgCCow==
-X-Received: by 2002:a17:902:d54f:b0:16d:3bce:c40e with SMTP id z15-20020a170902d54f00b0016d3bcec40emr24861840plf.87.1658979262545;
-        Wed, 27 Jul 2022 20:34:22 -0700 (PDT)
-Received: from debian.me (subs28-116-206-12-54.three.co.id. [116.206.12.54])
-        by smtp.gmail.com with ESMTPSA id m17-20020a170902db1100b0016d33b8a231sm8418629plx.270.2022.07.27.20.34.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 20:34:21 -0700 (PDT)
-Received: by debian.me (Postfix, from userid 1000)
-        id 5F5C7104A8C; Thu, 28 Jul 2022 10:34:16 +0700 (WIB)
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-To:     linux-doc@vger.kernel.org, linux-next@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linuxppc-dev@lists.ozlabs.org,
-        linux-doc-tw-discuss@lists.sourceforge.net
-Cc:     linux-kernel@vger.kernel.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>, Alex Shi <alexs@kernel.org>,
-        Yanteng Si <siyanteng@loongson.cn>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Segher Boessenkool <segher@kernel.crashing.org>,
-        Bagas Sanjaya <bagasdotme@gmail.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-Subject: [PATCH 2/3] Documentation: use different label names for each arch's elf_hwcaps.rst
-Date:   Thu, 28 Jul 2022 10:33:32 +0700
-Message-Id: <20220728033332.27836-3-bagasdotme@gmail.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220727220050.549db613@canb.auug.org.au>
-References: <20220727220050.549db613@canb.auug.org.au>
+        Wed, 27 Jul 2022 23:35:36 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10D6C10F4;
+        Wed, 27 Jul 2022 20:35:22 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 2FE79CE23DF;
+        Thu, 28 Jul 2022 03:35:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D9D6C43140;
+        Thu, 28 Jul 2022 03:35:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658979318;
+        bh=au+kwQgQmHtFfgr5KeR9B4+9JRSPO2Wa28WWxJN3FqM=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=fcWSsZ0fbIWgNMRI97wMttdLlJhbQBWYD7kuEURfcfZF5KFobxOb+habsoB6unXH3
+         6OGwSus28ioDIdOP7wGI1WWLENhwd+x5ZuiWggLdz6ma1ZlTnpJrBYVp1mrpa5IRuO
+         3/AZyFCfSnDK4Uhz4G2rWrPHMnNrScdZSD94D5sKEd9az+OgdUi2r7XSnZiATOsjy0
+         xRa9KFCdxIvvv3NB7UcMh+TQuVioenXMrjj3JIhTAumyj/PCLH+LKXzVSGQUDXYa1V
+         vSbmXAKDKY3cyCfOx6IHtznJtAS69wtM9RlJ2bYCJUgbu1XvlGKW4/PeClzV51LP+9
+         /aMu0Vq02jWzw==
+Received: by mail-lf1-f45.google.com with SMTP id a23so1013461lfm.10;
+        Wed, 27 Jul 2022 20:35:18 -0700 (PDT)
+X-Gm-Message-State: AJIora90H9/OmmP/v/YNikh0tm/9E463soKd4pNaLznFVKCgYPK3Xb2V
+        x1gIOsrzZxtUzKnj5Tz1EzFO9gb3vfp1heKEXHw=
+X-Google-Smtp-Source: AGRyM1uDk7g/TXHi7YU0u5F5W0WDTP8JtZAUD8vZgANdd+itx2kTEFhqdc3DjkIp+dODtCOog9Qn+oIGPX9bXdl+uZs=
+X-Received: by 2002:a05:6512:ba7:b0:48a:be43:91d8 with SMTP id
+ b39-20020a0565120ba700b0048abe4391d8mr1568824lfv.542.1658979316033; Wed, 27
+ Jul 2022 20:35:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220724122517.1019187-8-guoren@kernel.org> <202207280822.VHS6qieH-lkp@intel.com>
+In-Reply-To: <202207280822.VHS6qieH-lkp@intel.com>
+From:   Guo Ren <guoren@kernel.org>
+Date:   Thu, 28 Jul 2022 11:35:03 +0800
+X-Gmail-Original-Message-ID: <CAJF2gTQRV+6CZVkvhtsY19zv6XVbyDeRY-SdLPhkF0akHqvBWA@mail.gmail.com>
+Message-ID: <CAJF2gTQRV+6CZVkvhtsY19zv6XVbyDeRY-SdLPhkF0akHqvBWA@mail.gmail.com>
+Subject: Re: [PATCH V8 07/10] riscv: Add qspinlock support
+To:     Palmer Dabbelt <palmer@rivosinc.com>
+Cc:     =?UTF-8?Q?Heiko_St=C3=BCbner?= <heiko@sntech.de>,
+        Christoph Hellwig <hch@infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Will Deacon <will@kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Waiman Long <longman@redhat.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Philipp Tomsich <philipp.tomsich@vrull.eu>,
+        Christoph Muellner <cmuellner@linux.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        David Laight <David.Laight@aculab.com>, llvm@lists.linux.dev,
+        kbuild-all@lists.01.org,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        linux-csky@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sphinx reported duplicate label warning:
+Hi Palmer,
 
-WARNING: duplicate label elf_hwcaps_index, other instance in Documentation/arm64/elf_hwcaps.rst
+The warning is from a clang problem.
 
-The warning is caused by elf_hwcaps_index label name is already used for
-arm64 documentation, whileas powerpc use the same name.
+drivers/net/wireguard/queueing.c:
+static void __wg_prev_queue_enqueue(struct prev_queue *queue, struct
+sk_buff *skb)
+{
+        WRITE_ONCE(NEXT(skb), NULL);
+        WRITE_ONCE(NEXT(xchg_release(&queue->head, skb)), skb);
+}
 
-Disambiguate the label name for each architecture's documentation. While
-at it, also adjust original reference in translated documentation.
+The queue->head is 64bit pointer size.
 
-Link: https://lore.kernel.org/linuxppc-dev/20220727220050.549db613@canb.auug.org.au/
-Fixes: 3df1ff42e69e91 ("powerpc: add documentation for HWCAPs")
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
----
- Documentation/arm64/elf_hwcaps.rst                    | 2 +-
- Documentation/powerpc/elf_hwcaps.rst                  | 2 +-
- Documentation/translations/zh_CN/arm64/elf_hwcaps.rst | 2 +-
- Documentation/translations/zh_TW/arm64/elf_hwcaps.rst | 2 +-
- 4 files changed, 4 insertions(+), 4 deletions(-)
+#define __xchg_relaxed(ptr, new, size)                                  \
+({                                                                      \
+        __typeof__(ptr) __ptr = (ptr);                                  \
+        __typeof__(new) __new = (new);                                  \
+        __typeof__(*(ptr)) __ret;                                       \
+        switch (size) {                                                 \
+        case 2: {                                                       \
+... Clang shouldn't give warning from here, because code won't enter the path.
+                break;                                                  \
+        }                                                               \
+        case 4:                                                         \
+...
+                break;                                                  \
+        case 8:                                                         \
+... The case would enter this path.
+                break;                                                  \
+        default:                                                        \
+                BUILD_BUG();                                            \
+        }                                                               \
+        __ret;                                                          \
+})
 
-diff --git a/Documentation/arm64/elf_hwcaps.rst b/Documentation/arm64/elf_hwcaps.rst
-index 3d116fb536c538..63b75080ec4544 100644
---- a/Documentation/arm64/elf_hwcaps.rst
-+++ b/Documentation/arm64/elf_hwcaps.rst
-@@ -1,4 +1,4 @@
--.. _elf_hwcaps_index:
-+.. _elf_hwcaps_arm64:
- 
- ================
- ARM64 ELF hwcaps
-diff --git a/Documentation/powerpc/elf_hwcaps.rst b/Documentation/powerpc/elf_hwcaps.rst
-index bb7438cebf36e8..3366e5b18e6759 100644
---- a/Documentation/powerpc/elf_hwcaps.rst
-+++ b/Documentation/powerpc/elf_hwcaps.rst
-@@ -1,4 +1,4 @@
--.. _elf_hwcaps_index:
-+.. _elf_hwcaps_powerpc:
- 
- ==================
- POWERPC ELF HWCAPs
-diff --git a/Documentation/translations/zh_CN/arm64/elf_hwcaps.rst b/Documentation/translations/zh_CN/arm64/elf_hwcaps.rst
-index 9aa4637eac979c..39a94ff5383c01 100644
---- a/Documentation/translations/zh_CN/arm64/elf_hwcaps.rst
-+++ b/Documentation/translations/zh_CN/arm64/elf_hwcaps.rst
-@@ -1,6 +1,6 @@
- .. include:: ../disclaimer-zh_CN.rst
- 
--:Original: :ref:`Documentation/arm64/elf_hwcaps.rst <elf_hwcaps_index>`
-+:Original: :ref:`Documentation/arm64/elf_hwcaps.rst <elf_hwcaps_arm64>`
- 
- Translator: Bailu Lin <bailu.lin@vivo.com>
- 
-diff --git a/Documentation/translations/zh_TW/arm64/elf_hwcaps.rst b/Documentation/translations/zh_TW/arm64/elf_hwcaps.rst
-index 3eb1c623ce31b0..76164d851d0b5e 100644
---- a/Documentation/translations/zh_TW/arm64/elf_hwcaps.rst
-+++ b/Documentation/translations/zh_TW/arm64/elf_hwcaps.rst
-@@ -2,7 +2,7 @@
- 
- .. include:: ../disclaimer-zh_TW.rst
- 
--:Original: :ref:`Documentation/arm64/elf_hwcaps.rst <elf_hwcaps_index>`
-+:Original: :ref:`Documentation/arm64/elf_hwcaps.rst <elf_hwcaps_arm64>`
- 
- Translator: Bailu Lin <bailu.lin@vivo.com>
-             Hu Haowen <src.res@email.cn>
+On Thu, Jul 28, 2022 at 8:05 AM kernel test robot <lkp@intel.com> wrote:
+>
+> Hi,
+>
+> I love your patch! Perhaps something to improve:
+>
+> [auto build test WARNING on arnd-asm-generic/master]
+> [also build test WARNING on linus/master v5.19-rc8 next-20220727]
+> [If your patch is applied to the wrong git tree, kindly drop us a note.
+> And when submitting patch, we suggest to use '--base' as documented in
+> https://git-scm.com/docs/git-format-patch#_base_tree_information]
+>
+> url:    https://github.com/intel-lab-lkp/linux/commits/guoren-kernel-org/arch-Add-qspinlock-support-with-combo-style/20220724-202743
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/arnd/asm-generic.git master
+> config: riscv-randconfig-r026-20220727 (https://download.01.org/0day-ci/archive/20220728/202207280822.VHS6qieH-lkp@intel.com/config)
+> compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 8dfaecc4c24494337933aff9d9166486ca0949f1)
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # install riscv cross compiling tool for clang build
+>         # apt-get install binutils-riscv64-linux-gnu
+>         # https://github.com/intel-lab-lkp/linux/commit/980c0acb7f432777e3473ab9a5696044e03b3f3d
+>         git remote add linux-review https://github.com/intel-lab-lkp/linux
+>         git fetch --no-tags linux-review guoren-kernel-org/arch-Add-qspinlock-support-with-combo-style/20220724-202743
+>         git checkout 980c0acb7f432777e3473ab9a5696044e03b3f3d
+>         # save the config file
+>         mkdir build_dir && cp config build_dir/.config
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash drivers/net/wireguard/
+>
+> If you fix the issue, kindly add following tag where applicable
+> Reported-by: kernel test robot <lkp@intel.com>
+>
+> All warnings (new ones prefixed by >>):
+>
+>    In file included from drivers/net/wireguard/queueing.c:6:
+>    In file included from drivers/net/wireguard/queueing.h:9:
+>    In file included from drivers/net/wireguard/peer.h:9:
+>    In file included from drivers/net/wireguard/device.h:9:
+>    In file included from drivers/net/wireguard/noise.h:8:
+>    In file included from drivers/net/wireguard/messages.h:10:
+>    In file included from include/crypto/chacha20poly1305.h:10:
+>    In file included from include/linux/scatterlist.h:9:
+>    In file included from arch/riscv/include/asm/io.h:136:
+>    include/asm-generic/io.h:547:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            val = __raw_readb(PCI_IOBASE + addr);
+>                              ~~~~~~~~~~ ^
+>    include/asm-generic/io.h:560:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
+>                                                            ~~~~~~~~~~ ^
+>    include/uapi/linux/byteorder/little_endian.h:37:51: note: expanded from macro '__le16_to_cpu'
+>    #define __le16_to_cpu(x) ((__force __u16)(__le16)(x))
+>                                                      ^
+>    In file included from drivers/net/wireguard/queueing.c:6:
+>    In file included from drivers/net/wireguard/queueing.h:9:
+>    In file included from drivers/net/wireguard/peer.h:9:
+>    In file included from drivers/net/wireguard/device.h:9:
+>    In file included from drivers/net/wireguard/noise.h:8:
+>    In file included from drivers/net/wireguard/messages.h:10:
+>    In file included from include/crypto/chacha20poly1305.h:10:
+>    In file included from include/linux/scatterlist.h:9:
+>    In file included from arch/riscv/include/asm/io.h:136:
+>    include/asm-generic/io.h:573:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
+>                                                            ~~~~~~~~~~ ^
+>    include/uapi/linux/byteorder/little_endian.h:35:51: note: expanded from macro '__le32_to_cpu'
+>    #define __le32_to_cpu(x) ((__force __u32)(__le32)(x))
+>                                                      ^
+>    In file included from drivers/net/wireguard/queueing.c:6:
+>    In file included from drivers/net/wireguard/queueing.h:9:
+>    In file included from drivers/net/wireguard/peer.h:9:
+>    In file included from drivers/net/wireguard/device.h:9:
+>    In file included from drivers/net/wireguard/noise.h:8:
+>    In file included from drivers/net/wireguard/messages.h:10:
+>    In file included from include/crypto/chacha20poly1305.h:10:
+>    In file included from include/linux/scatterlist.h:9:
+>    In file included from arch/riscv/include/asm/io.h:136:
+>    include/asm-generic/io.h:584:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            __raw_writeb(value, PCI_IOBASE + addr);
+>                                ~~~~~~~~~~ ^
+>    include/asm-generic/io.h:594:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
+>                                                          ~~~~~~~~~~ ^
+>    include/asm-generic/io.h:604:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
+>                                                          ~~~~~~~~~~ ^
+>    include/asm-generic/io.h:1107:55: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+>            return (port > MMIO_UPPER_LIMIT) ? NULL : PCI_IOBASE + port;
+>                                                      ~~~~~~~~~~ ^
+> >> drivers/net/wireguard/queueing.c:68:18: warning: cast to smaller integer type 'u32' (aka 'unsigned int') from 'typeof (_x_)' (aka 'struct sk_buff *') [-Wpointer-to-int-cast]
+>            WRITE_ONCE(NEXT(xchg_release(&queue->head, skb)), skb);
+>                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/atomic/atomic-instrumented.h:1901:2: note: expanded from macro 'xchg_release'
+>            arch_xchg_release(__ai_ptr, __VA_ARGS__); \
+>            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/atomic/atomic-arch-fallback.h:24:2: note: expanded from macro 'arch_xchg_release'
+>            __atomic_op_release(arch_xchg, __VA_ARGS__)
+>            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/atomic.h:68:2: note: expanded from macro '__atomic_op_release'
+>            op##_relaxed(args);                                             \
+>            ^~~~~~~~~~~~~~~~~~
+>    note: (skipping 7 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+>    include/linux/compiler_types.h:352:22: note: expanded from macro 'compiletime_assert'
+>            _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+>                                ^~~~~~~~~
+>    include/linux/compiler_types.h:340:23: note: expanded from macro '_compiletime_assert'
+>            __compiletime_assert(condition, msg, prefix, suffix)
+>                                 ^~~~~~~~~
+>    include/linux/compiler_types.h:332:9: note: expanded from macro '__compiletime_assert'
+>                    if (!(condition))                                       \
+>                          ^~~~~~~~~
+> >> drivers/net/wireguard/queueing.c:68:18: warning: cast to 'typeof (*((__ai_ptr)))' (aka 'struct sk_buff *') from smaller integer type 'unsigned int' [-Wint-to-pointer-cast]
+>            WRITE_ONCE(NEXT(xchg_release(&queue->head, skb)), skb);
+>            ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/atomic/atomic-instrumented.h:1901:2: note: expanded from macro 'xchg_release'
+>            arch_xchg_release(__ai_ptr, __VA_ARGS__); \
+>            ^
+>    include/linux/atomic/atomic-arch-fallback.h:24:2: note: expanded from macro 'arch_xchg_release'
+>            __atomic_op_release(arch_xchg, __VA_ARGS__)
+>            ^
+>    include/linux/atomic.h:68:2: note: expanded from macro '__atomic_op_release'
+>            op##_relaxed(args);                                             \
+>            ^
+>    note: (skipping 7 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+>    include/linux/compiler_types.h:352:22: note: expanded from macro 'compiletime_assert'
+>            _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+>            ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/compiler_types.h:340:23: note: expanded from macro '_compiletime_assert'
+>            __compiletime_assert(condition, msg, prefix, suffix)
+>            ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/compiler_types.h:332:9: note: expanded from macro '__compiletime_assert'
+>                    if (!(condition))                                       \
+>                          ^~~~~~~~~
+> >> drivers/net/wireguard/queueing.c:68:18: warning: cast to smaller integer type 'u32' (aka 'unsigned int') from 'typeof (_x_)' (aka 'struct sk_buff *') [-Wpointer-to-int-cast]
+>            WRITE_ONCE(NEXT(xchg_release(&queue->head, skb)), skb);
+>                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/atomic/atomic-instrumented.h:1901:2: note: expanded from macro 'xchg_release'
+>            arch_xchg_release(__ai_ptr, __VA_ARGS__); \
+>            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/atomic/atomic-arch-fallback.h:24:2: note: expanded from macro 'arch_xchg_release'
+>            __atomic_op_release(arch_xchg, __VA_ARGS__)
+>            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/atomic.h:68:2: note: expanded from macro '__atomic_op_release'
+>            op##_relaxed(args);                                             \
+>            ^~~~~~~~~~~~~~~~~~
+>    note: (skipping 7 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+>    include/linux/compiler_types.h:352:22: note: expanded from macro 'compiletime_assert'
+>            _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+>                                ^~~~~~~~~
+>    include/linux/compiler_types.h:340:23: note: expanded from macro '_compiletime_assert'
+>            __compiletime_assert(condition, msg, prefix, suffix)
+>                                 ^~~~~~~~~
+>    include/linux/compiler_types.h:332:9: note: expanded from macro '__compiletime_assert'
+>                    if (!(condition))                                       \
+>                          ^~~~~~~~~
+> >> drivers/net/wireguard/queueing.c:68:18: warning: cast to 'typeof (*((__ai_ptr)))' (aka 'struct sk_buff *') from smaller integer type 'unsigned int' [-Wint-to-pointer-cast]
+>            WRITE_ONCE(NEXT(xchg_release(&queue->head, skb)), skb);
+>            ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/atomic/atomic-instrumented.h:1901:2: note: expanded from macro 'xchg_release'
+>            arch_xchg_release(__ai_ptr, __VA_ARGS__); \
+>            ^
+>    include/linux/atomic/atomic-arch-fallback.h:24:2: note: expanded from macro 'arch_xchg_release'
+>            __atomic_op_release(arch_xchg, __VA_ARGS__)
+>            ^
+>    include/linux/atomic.h:68:2: note: expanded from macro '__atomic_op_release'
+>            op##_relaxed(args);                                             \
+>            ^
+>    note: (skipping 7 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+>    include/linux/compiler_types.h:352:22: note: expanded from macro 'compiletime_assert'
+>            _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+>            ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/compiler_types.h:340:23: note: expanded from macro '_compiletime_assert'
+>            __compiletime_assert(condition, msg, prefix, suffix)
+>            ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/compiler_types.h:332:9: note: expanded from macro '__compiletime_assert'
+>                    if (!(condition))                                       \
+>                          ^~~~~~~~~
+> >> drivers/net/wireguard/queueing.c:68:18: warning: cast to smaller integer type 'u32' (aka 'unsigned int') from 'typeof (_x_)' (aka 'struct sk_buff *') [-Wpointer-to-int-cast]
+>            WRITE_ONCE(NEXT(xchg_release(&queue->head, skb)), skb);
+>                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/atomic/atomic-instrumented.h:1901:2: note: expanded from macro 'xchg_release'
+>            arch_xchg_release(__ai_ptr, __VA_ARGS__); \
+>            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/atomic/atomic-arch-fallback.h:24:2: note: expanded from macro 'arch_xchg_release'
+>            __atomic_op_release(arch_xchg, __VA_ARGS__)
+>            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/atomic.h:68:2: note: expanded from macro '__atomic_op_release'
+>            op##_relaxed(args);                                             \
+>            ^~~~~~~~~~~~~~~~~~
+>    note: (skipping 7 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+>    include/linux/compiler_types.h:352:22: note: expanded from macro 'compiletime_assert'
+>            _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+>                                ^~~~~~~~~
+>    include/linux/compiler_types.h:340:23: note: expanded from macro '_compiletime_assert'
+>            __compiletime_assert(condition, msg, prefix, suffix)
+>                                 ^~~~~~~~~
+>    include/linux/compiler_types.h:332:9: note: expanded from macro '__compiletime_assert'
+>                    if (!(condition))                                       \
+>                          ^~~~~~~~~
+> >> drivers/net/wireguard/queueing.c:68:18: warning: cast to 'typeof (*((__ai_ptr)))' (aka 'struct sk_buff *') from smaller integer type 'unsigned int' [-Wint-to-pointer-cast]
+>            WRITE_ONCE(NEXT(xchg_release(&queue->head, skb)), skb);
+>            ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/atomic/atomic-instrumented.h:1901:2: note: expanded from macro 'xchg_release'
+>            arch_xchg_release(__ai_ptr, __VA_ARGS__); \
+>            ^
+>    include/linux/atomic/atomic-arch-fallback.h:24:2: note: expanded from macro 'arch_xchg_release'
+>            __atomic_op_release(arch_xchg, __VA_ARGS__)
+>            ^
+>    include/linux/atomic.h:68:2: note: expanded from macro '__atomic_op_release'
+>            op##_relaxed(args);                                             \
+>            ^
+>    note: (skipping 7 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+>    include/linux/compiler_types.h:352:22: note: expanded from macro 'compiletime_assert'
+>            _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+>            ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/compiler_types.h:340:23: note: expanded from macro '_compiletime_assert'
+>            __compiletime_assert(condition, msg, prefix, suffix)
+>            ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/compiler_types.h:332:9: note: expanded from macro '__compiletime_assert'
+>                    if (!(condition))                                       \
+>                          ^~~~~~~~~
+> >> drivers/net/wireguard/queueing.c:68:18: warning: cast to smaller integer type 'u32' (aka 'unsigned int') from 'typeof (_x_)' (aka 'struct sk_buff *') [-Wpointer-to-int-cast]
+>            WRITE_ONCE(NEXT(xchg_release(&queue->head, skb)), skb);
+>                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/atomic/atomic-instrumented.h:1901:2: note: expanded from macro 'xchg_release'
+>            arch_xchg_release(__ai_ptr, __VA_ARGS__); \
+>            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/atomic/atomic-arch-fallback.h:24:2: note: expanded from macro 'arch_xchg_release'
+>            __atomic_op_release(arch_xchg, __VA_ARGS__)
+>            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/atomic.h:68:2: note: expanded from macro '__atomic_op_release'
+>            op##_relaxed(args);                                             \
+>            ^~~~~~~~~~~~~~~~~~
+>    note: (skipping 7 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+>    include/linux/compiler_types.h:352:22: note: expanded from macro 'compiletime_assert'
+>            _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+>                                ^~~~~~~~~
+>    include/linux/compiler_types.h:340:23: note: expanded from macro '_compiletime_assert'
+>            __compiletime_assert(condition, msg, prefix, suffix)
+>                                 ^~~~~~~~~
+>    include/linux/compiler_types.h:332:9: note: expanded from macro '__compiletime_assert'
+>                    if (!(condition))                                       \
+>                          ^~~~~~~~~
+> >> drivers/net/wireguard/queueing.c:68:18: warning: cast to 'typeof (*((__ai_ptr)))' (aka 'struct sk_buff *') from smaller integer type 'unsigned int' [-Wint-to-pointer-cast]
+>            WRITE_ONCE(NEXT(xchg_release(&queue->head, skb)), skb);
+>            ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/atomic/atomic-instrumented.h:1901:2: note: expanded from macro 'xchg_release'
+>            arch_xchg_release(__ai_ptr, __VA_ARGS__); \
+>            ^
+>    include/linux/atomic/atomic-arch-fallback.h:24:2: note: expanded from macro 'arch_xchg_release'
+>            __atomic_op_release(arch_xchg, __VA_ARGS__)
+>            ^
+>    include/linux/atomic.h:68:2: note: expanded from macro '__atomic_op_release'
+>            op##_relaxed(args);                                             \
+>            ^
+>    note: (skipping 7 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+>    include/linux/compiler_types.h:352:22: note: expanded from macro 'compiletime_assert'
+>            _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+>            ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/compiler_types.h:340:23: note: expanded from macro '_compiletime_assert'
+>            __compiletime_assert(condition, msg, prefix, suffix)
+>            ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/compiler_types.h:332:9: note: expanded from macro '__compiletime_assert'
+>                    if (!(condition))                                       \
+>                          ^~~~~~~~~
+> >> drivers/net/wireguard/queueing.c:68:18: warning: cast to smaller integer type 'u32' (aka 'unsigned int') from 'typeof (_x_)' (aka 'struct sk_buff *') [-Wpointer-to-int-cast]
+>            WRITE_ONCE(NEXT(xchg_release(&queue->head, skb)), skb);
+>                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/atomic/atomic-instrumented.h:1901:2: note: expanded from macro 'xchg_release'
+>            arch_xchg_release(__ai_ptr, __VA_ARGS__); \
+>            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/atomic/atomic-arch-fallback.h:24:2: note: expanded from macro 'arch_xchg_release'
+>            __atomic_op_release(arch_xchg, __VA_ARGS__)
+>            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/atomic.h:68:2: note: expanded from macro '__atomic_op_release'
+>            op##_relaxed(args);                                             \
+>            ^~~~~~~~~~~~~~~~~~
+>    note: (skipping 6 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+>    include/linux/compiler_types.h:352:22: note: expanded from macro 'compiletime_assert'
+>            _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+>                                ^~~~~~~~~
+>    include/linux/compiler_types.h:340:23: note: expanded from macro '_compiletime_assert'
+>            __compiletime_assert(condition, msg, prefix, suffix)
+>                                 ^~~~~~~~~
+>    include/linux/compiler_types.h:332:9: note: expanded from macro '__compiletime_assert'
+>                    if (!(condition))                                       \
+>                          ^~~~~~~~~
+> >> drivers/net/wireguard/queueing.c:68:18: warning: cast to 'typeof (*((__ai_ptr)))' (aka 'struct sk_buff *') from smaller integer type 'unsigned int' [-Wint-to-pointer-cast]
+>            WRITE_ONCE(NEXT(xchg_release(&queue->head, skb)), skb);
+>            ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/atomic/atomic-instrumented.h:1901:2: note: expanded from macro 'xchg_release'
+>            arch_xchg_release(__ai_ptr, __VA_ARGS__); \
+>            ^
+>    include/linux/atomic/atomic-arch-fallback.h:24:2: note: expanded from macro 'arch_xchg_release'
+>            __atomic_op_release(arch_xchg, __VA_ARGS__)
+>            ^
+>    include/linux/atomic.h:68:2: note: expanded from macro '__atomic_op_release'
+>            op##_relaxed(args);                                             \
+>            ^
+>    note: (skipping 6 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+>    include/linux/compiler_types.h:352:22: note: expanded from macro 'compiletime_assert'
+>            _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+>            ~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/compiler_types.h:340:23: note: expanded from macro '_compiletime_assert'
+>            __compiletime_assert(condition, msg, prefix, suffix)
+>            ~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/compiler_types.h:332:9: note: expanded from macro '__compiletime_assert'
+>                    if (!(condition))                                       \
+>                          ^~~~~~~~~
+> >> drivers/net/wireguard/queueing.c:68:18: warning: cast to smaller integer type 'u32' (aka 'unsigned int') from 'typeof (_x_)' (aka 'struct sk_buff *') [-Wpointer-to-int-cast]
+>            WRITE_ONCE(NEXT(xchg_release(&queue->head, skb)), skb);
+>                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/atomic/atomic-instrumented.h:1901:2: note: expanded from macro 'xchg_release'
+>            arch_xchg_release(__ai_ptr, __VA_ARGS__); \
+>            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/atomic/atomic-arch-fallback.h:24:2: note: expanded from macro 'arch_xchg_release'
+>            __atomic_op_release(arch_xchg, __VA_ARGS__)
+>            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/atomic.h:68:2: note: expanded from macro '__atomic_op_release'
+>            op##_relaxed(args);                                             \
+>            ^~~~~~~~~~~~~~~~~~
+>    note: (skipping 3 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+>    drivers/net/wireguard/queueing.c:49:21: note: expanded from macro 'NEXT'
+>    #define NEXT(skb) ((skb)->prev)
+>                        ^~~
+>    include/asm-generic/rwonce.h:61:15: note: expanded from macro 'WRITE_ONCE'
+>            __WRITE_ONCE(x, val);                                           \
+>                         ^
+>    include/asm-generic/rwonce.h:55:20: note: expanded from macro '__WRITE_ONCE'
+>            *(volatile typeof(x) *)&(x) = (val);                            \
+>                              ^
+> >> drivers/net/wireguard/queueing.c:68:18: warning: cast to 'typeof (*((__ai_ptr)))' (aka 'struct sk_buff *') from smaller integer type 'unsigned int' [-Wint-to-pointer-cast]
+>            WRITE_ONCE(NEXT(xchg_release(&queue->head, skb)), skb);
+>            ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/atomic/atomic-instrumented.h:1901:2: note: expanded from macro 'xchg_release'
+>            arch_xchg_release(__ai_ptr, __VA_ARGS__); \
+>            ^
+>    include/linux/atomic/atomic-arch-fallback.h:24:2: note: expanded from macro 'arch_xchg_release'
+>            __atomic_op_release(arch_xchg, __VA_ARGS__)
+>            ^
+>    include/linux/atomic.h:68:2: note: expanded from macro '__atomic_op_release'
+>            op##_relaxed(args);                                             \
+>            ^
+>    note: (skipping 3 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+>    drivers/net/wireguard/queueing.c:49:21: note: expanded from macro 'NEXT'
+>    #define NEXT(skb) ((skb)->prev)
+>                        ^
+>    include/asm-generic/rwonce.h:61:15: note: expanded from macro 'WRITE_ONCE'
+>            __WRITE_ONCE(x, val);                                           \
+>            ~~~~~~~~~~~~~^~~~~~~
+>    include/asm-generic/rwonce.h:55:20: note: expanded from macro '__WRITE_ONCE'
+>            *(volatile typeof(x) *)&(x) = (val);                            \
+>                              ^
+> >> drivers/net/wireguard/queueing.c:68:18: warning: cast to smaller integer type 'u32' (aka 'unsigned int') from 'typeof (_x_)' (aka 'struct sk_buff *') [-Wpointer-to-int-cast]
+>            WRITE_ONCE(NEXT(xchg_release(&queue->head, skb)), skb);
+>                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/atomic/atomic-instrumented.h:1901:2: note: expanded from macro 'xchg_release'
+>            arch_xchg_release(__ai_ptr, __VA_ARGS__); \
+>            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/atomic/atomic-arch-fallback.h:24:2: note: expanded from macro 'arch_xchg_release'
+>            __atomic_op_release(arch_xchg, __VA_ARGS__)
+>            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/atomic.h:68:2: note: expanded from macro '__atomic_op_release'
+>            op##_relaxed(args);                                             \
+>            ^~~~~~~~~~~~~~~~~~
+>    note: (skipping 3 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+>    drivers/net/wireguard/queueing.c:49:21: note: expanded from macro 'NEXT'
+>    #define NEXT(skb) ((skb)->prev)
+>                        ^~~
+>    include/asm-generic/rwonce.h:61:15: note: expanded from macro 'WRITE_ONCE'
+>            __WRITE_ONCE(x, val);                                           \
+>                         ^
+>    include/asm-generic/rwonce.h:55:27: note: expanded from macro '__WRITE_ONCE'
+>            *(volatile typeof(x) *)&(x) = (val);                            \
+>                                     ^
+> >> drivers/net/wireguard/queueing.c:68:18: warning: cast to 'typeof (*((__ai_ptr)))' (aka 'struct sk_buff *') from smaller integer type 'unsigned int' [-Wint-to-pointer-cast]
+>            WRITE_ONCE(NEXT(xchg_release(&queue->head, skb)), skb);
+>            ~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>    include/linux/atomic/atomic-instrumented.h:1901:2: note: expanded from macro 'xchg_release'
+>            arch_xchg_release(__ai_ptr, __VA_ARGS__); \
+>            ^
+>    include/linux/atomic/atomic-arch-fallback.h:24:2: note: expanded from macro 'arch_xchg_release'
+>            __atomic_op_release(arch_xchg, __VA_ARGS__)
+>            ^
+>    include/linux/atomic.h:68:2: note: expanded from macro '__atomic_op_release'
+>            op##_relaxed(args);                                             \
+>            ^
+>    note: (skipping 3 expansions in backtrace; use -fmacro-backtrace-limit=0 to see all)
+>    drivers/net/wireguard/queueing.c:49:21: note: expanded from macro 'NEXT'
+>    #define NEXT(skb) ((skb)->prev)
+>                        ^
+>    include/asm-generic/rwonce.h:61:15: note: expanded from macro 'WRITE_ONCE'
+>            __WRITE_ONCE(x, val);                                           \
+>            ~~~~~~~~~~~~~^~~~~~~
+>    include/asm-generic/rwonce.h:55:27: note: expanded from macro '__WRITE_ONCE'
+>            *(volatile typeof(x) *)&(x) = (val);                            \
+>                                     ^
+>    21 warnings generated.
+>
+>
+> vim +68 drivers/net/wireguard/queueing.c
+>
+> 8b5553ace83cced7 Jason A. Donenfeld 2021-02-22  64
+> 8b5553ace83cced7 Jason A. Donenfeld 2021-02-22  65  static void __wg_prev_queue_enqueue(struct prev_queue *queue, struct sk_buff *skb)
+> 8b5553ace83cced7 Jason A. Donenfeld 2021-02-22  66  {
+> 8b5553ace83cced7 Jason A. Donenfeld 2021-02-22  67      WRITE_ONCE(NEXT(skb), NULL);
+> 8b5553ace83cced7 Jason A. Donenfeld 2021-02-22 @68      WRITE_ONCE(NEXT(xchg_release(&queue->head, skb)), skb);
+> 8b5553ace83cced7 Jason A. Donenfeld 2021-02-22  69  }
+> 8b5553ace83cced7 Jason A. Donenfeld 2021-02-22  70
+>
+> --
+> 0-DAY CI Kernel Test Service
+> https://01.org/lkp
+
+
+
 -- 
-An old man doll... just what I always wanted! - Clara
-
+Best Regards
+ Guo Ren
