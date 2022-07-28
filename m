@@ -2,119 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FA9DC04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 15:52:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDBD3C19F29
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 15:53:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232486AbiG1PwD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 11:52:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36248 "EHLO
+        id S232060AbiG1PxS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 11:53:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37162 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232435AbiG1PwB (ORCPT
+        with ESMTP id S229539AbiG1PxQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 11:52:01 -0400
-Received: from sender-of-o53.zoho.in (sender-of-o53.zoho.in [103.117.158.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 819766BC35;
-        Thu, 28 Jul 2022 08:51:58 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1659023494; cv=none; 
-        d=zohomail.in; s=zohoarc; 
-        b=Uoivu6Vw8N4PfBieS8/LwV2EQRNlD+AssZI3OJn5KE0QEVhIQfeIIvNXCVf0fWZSxTJGRTqElYNdVo5QCmsl9KKqY5H0BV6IqN3i+SIYyXbvD7fO9cKcizRRYSWAJfh2IczAHtdjCQ8d86DVa1zRPtSAZdCbFAsOubhDbPooMs4=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.in; s=zohoarc; 
-        t=1659023494; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
-        bh=eIVJdUXeEoFT0XsTWsjdI7cmvorFUz8L2j4z7229AqY=; 
-        b=RVch7ePCikqtfxJqLaM+nv8llTUaXEANzYlKNrGZn09b2WiBWDcFingqQn1ztDMm+Qo/4Ta/LmqduVa1kCugIU+55e8oUlIeOq6W2omdIzZORaB7QLqUwWzXCBTcnWkZo+2KICsCACSJnhXZ1HPxvASKVtUYNNgJAa9F+B5wD+w=
-ARC-Authentication-Results: i=1; mx.zohomail.in;
-        dkim=pass  header.i=siddh.me;
-        spf=pass  smtp.mailfrom=code@siddh.me;
-        dmarc=pass header.from=<code@siddh.me>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1659023494;
-        s=zmail; d=siddh.me; i=code@siddh.me;
-        h=From:From:To:To:Cc:Cc:Message-ID:Subject:Subject:Date:Date:MIME-Version:Content-Transfer-Encoding:Content-Type:Message-Id:Reply-To;
-        bh=eIVJdUXeEoFT0XsTWsjdI7cmvorFUz8L2j4z7229AqY=;
-        b=N6d4JhE7ZNMe/aFMTTJJsjLy6QJLLpWLY/QbLPU1ywmqu6AXmKXNk3+CV0gNPZhg
-        owpUBrPVFeu9XqnZZN9JKcEn06olrfFAotIDh7BukRhSC+KlhRwrD2Motes9YjZDKor
-        H8bneZk037DCCPqx+T1QJD7cIV0hFpj3cQIQkAGU=
-Received: from localhost.localdomain (43.250.165.51 [43.250.165.51]) by mx.zoho.in
-        with SMTPS id 1659023493370468.4685004171713; Thu, 28 Jul 2022 21:21:33 +0530 (IST)
-From:   Siddh Raman Pant <code@siddh.me>
-To:     David Howells <dhowells@redhat.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Eric Dumazet <edumazet@google.com>,
-        "Fabio M. De Francesco" <fmdefrancesco@gmail.com>
-Cc:     linux-security-modules <linux-security-module@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-kernel-mentees 
-        <linux-kernel-mentees@lists.linuxfoundation.org>,
-        syzbot+c70d87ac1d001f29a058@syzkaller.appspotmail.com
-Message-ID: <20220728155121.12145-1-code@siddh.me>
-Subject: [PATCH v3] kernel/watch_queue: Make pipe NULL while clearing watch_queue
-Date:   Thu, 28 Jul 2022 21:21:21 +0530
-X-Mailer: git-send-email 2.35.1
+        Thu, 28 Jul 2022 11:53:16 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A25C46BD42
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 08:53:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659023594;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cyh9GNwkSeiWX8VVWJet6cmrStrv1Y1BhHYKMAKCy08=;
+        b=CR7W8yzle9Zr6nPa3nWK0fbYLGoAXfhatxVa3PcQEOnfHlNL3N53sWk0hiH4MWKad2nh/E
+        59aZW5AU9W/hgptHHpgeQw4+ldnMUlsMdGVabDM7mZ3/SxURgQ2T3beFYGdHEKh15RzRVf
+        tcMTGMmYbZItnL/Ao9Gtk3TtkXVvOrw=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-244-olAj2n4-PheOrD8EZVlfTA-1; Thu, 28 Jul 2022 11:53:13 -0400
+X-MC-Unique: olAj2n4-PheOrD8EZVlfTA-1
+Received: by mail-ej1-f70.google.com with SMTP id hr24-20020a1709073f9800b0072b57c28438so766737ejc.5
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 08:53:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=cyh9GNwkSeiWX8VVWJet6cmrStrv1Y1BhHYKMAKCy08=;
+        b=gyf9fVMSna5FqvCLa0eVQaK9tfxJhwwolZ/piTAhqHXbeQrU33VVhDqI4NN9ZD7s2U
+         Y2t9hYq4kr5BhIA5p/XrQsHVKz97QzYdbe7FhuQxQGFfhlOf2PH10Asyu+VNzMKMhVa8
+         RZsCoILsxkGv7tOD51VVdldOIdmYdGQ/iy+6Cafb7r2iWXq7FUIfirO7QeJYzUGO3rZz
+         8OkFsN+9KwviMT86NGAkHCQXGLPvkw8F+owMJbmcmYqYeLRv566F1Smv7IHeUcaXARRY
+         agYJRYumJLqJb7VSyYONY2i3biayQsRnQci/idaEWqMReFfBkegU/j6b8im57oFKLWwp
+         ZA8Q==
+X-Gm-Message-State: AJIora+0UzkPQnkXwtyFSt7bHbR7sshdXHf9Rx8pWWhulsfE5fldI8Nq
+        rFhIjkj9H3H85wditxhEqgzD8V3RSSMHctUJLrN1JoHgwyODdHWEcc2LvSr3wXus79VhEaO/QPn
+        Ilzf5rSHRXi/Rk5X5pz2GgOj0
+X-Received: by 2002:a05:6402:11c9:b0:43b:b905:cb88 with SMTP id j9-20020a05640211c900b0043bb905cb88mr28005157edw.102.1659023591967;
+        Thu, 28 Jul 2022 08:53:11 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1uQ0WGkcljQ8+LQm9jJHKMMx05xV2P+kXpPzT5FmSEfnOq9qHwys5h+KfxqBoBs5xEkKeffGQ==
+X-Received: by 2002:a05:6402:11c9:b0:43b:b905:cb88 with SMTP id j9-20020a05640211c900b0043bb905cb88mr28005135edw.102.1659023591576;
+        Thu, 28 Jul 2022 08:53:11 -0700 (PDT)
+Received: from goa-sendmail ([93.56.169.184])
+        by smtp.gmail.com with ESMTPSA id a12-20020a170906368c00b0072af890f52dsm548037ejc.88.2022.07.28.08.53.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Jul 2022 08:53:10 -0700 (PDT)
+From:   Paolo Bonzini <pbonzini@redhat.com>
+To:     Jarkko Sakkinen <jarkko@profian.com>
+Cc:     stable@vger.kernel.org, Jarkko Sakkinen <jarkko@kernel.org>,
+        Sean Christopherson <seanjc@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "maintainer : X86 ARCHITECTURE 32-BIT AND 64-BIT" <x86@kernel.org>,
+        "H . Peter Anvin" <hpa@zytor.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Isaku Yamahata <isaku.yamahata@intel.com>,
+        "open list : KERNEL VIRTUAL MACHINE FOR X86 KVM/x86" 
+        <kvm@vger.kernel.org>,
+        "open list : X86 ARCHITECTURE 32-BIT AND 64-BIT" 
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] KVM: x86/mmu: Fix incorrect use of CONFIG_RETPOLINE
+Date:   Thu, 28 Jul 2022 17:53:07 +0200
+Message-Id: <20220728155307.277425-1-pbonzini@redhat.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220728000221.19088-1-jarkko@profian.com>
+References: 
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-ZohoMailClient: External
-Content-Type: text/plain; charset=utf8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If not done, a reference to a freed pipe remains in the watch_queue,
-as this function is called before freeing a pipe in free_pipe_info()
-(see line 834 of fs/pipe.c).
+Queued, thanks.
 
-This causes a UAF when post_one_notification() tries to access the pipe
-on a key update, which is reported by syzbot.
-
-We also need to use READ_ONCE() in post_one_notification() to prevent the
-compiler from optimising and loading a non-NULL value from wqueue->pipe.
-
-Bug report: https://syzkaller.appspot.com/bug?id=3D1870dd7791ba05f2ea7f47f7=
-cbdde701173973fc
-Reported-and-tested-by: syzbot+c70d87ac1d001f29a058@syzkaller.appspotmail.c=
-om
-
-Signed-off-by: Siddh Raman Pant <code@siddh.me>
----
-Changes in v3:
-- Restore the original unlock order, and clear before unlock.
-- Use READ_ONCE() in post path.
-
-This was explained by David Howells <dhowells@redhat.com> in
-reply to v1. Not added Suggested-by since he didn't reply yet.
-
-Changes in v2:
-- Removed the superfluous ifdef guard.
-
- kernel/watch_queue.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
-
-diff --git a/kernel/watch_queue.c b/kernel/watch_queue.c
-index bb9962b33f95..617425e34252 100644
---- a/kernel/watch_queue.c
-+++ b/kernel/watch_queue.c
-@@ -99,7 +99,7 @@ static bool post_one_notification(struct watch_queue *wqu=
-eue,
- =09=09=09=09  struct watch_notification *n)
- {
- =09void *p;
--=09struct pipe_inode_info *pipe =3D wqueue->pipe;
-+=09struct pipe_inode_info *pipe =3D READ_ONCE(wqueue->pipe);
- =09struct pipe_buffer *buf;
- =09struct page *page;
- =09unsigned int head, tail, mask, note, offset, len;
-@@ -637,6 +637,12 @@ void watch_queue_clear(struct watch_queue *wqueue)
- =09=09spin_lock_bh(&wqueue->lock);
- =09}
-=20
-+=09/* Clearing the watch queue, so we should clean the associated pipe. */
-+=09if (wqueue->pipe) {
-+=09=09wqueue->pipe->watch_queue =3D NULL;
-+=09=09wqueue->pipe =3D NULL;
-+=09}
-+
- =09spin_unlock_bh(&wqueue->lock);
- =09rcu_read_unlock();
- }
---=20
-2.35.1
+Paolo
 
 
