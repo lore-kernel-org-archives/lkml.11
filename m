@@ -2,85 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F6BFC04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 20:57:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE67CC04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 20:57:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233338AbiG1U5l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 16:57:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55846 "EHLO
+        id S229882AbiG1U5p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 16:57:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233066AbiG1U5a (ORCPT
+        with ESMTP id S233060AbiG1U5a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Thu, 28 Jul 2022 16:57:30 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2443E7821B;
-        Thu, 28 Jul 2022 13:57:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6B2178219;
+        Thu, 28 Jul 2022 13:57:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ACD5361871;
-        Thu, 28 Jul 2022 20:57:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E6B6C433D6;
-        Thu, 28 Jul 2022 20:57:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EE33461865;
+        Thu, 28 Jul 2022 20:57:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21CC8C43470;
+        Thu, 28 Jul 2022 20:57:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659041847;
-        bh=fG+3nCW7qlAcg2TRLEYO2j/tO09JErrxFIGTuZ1+Pkw=;
+        s=korg; t=1659041846;
+        bh=+yWtLXs1Zq1z9BhFpIxlo5zOYx6a+00PO/tsLikHY7I=;
         h=From:Date:Subject:References:In-Reply-To:To:Cc:From;
-        b=0/5X582XPxczuTXnk7ACfcWOa2ZKA1vmxSM+qKOfITTzTkSFClTvq27pI2+/YjS3R
-         PHvittK0SFrABTC8euKI6f6vfRG9DpmoDppNwOnn94/Ic1mI35GpL4liwiQvQHsial
-         bd2wXSd9yICLuB1SJOC8sFXOQWAdsHUVMtyRcX4c=
+        b=QVWc14yNV0R8Jiqd6bgGJ+4DJ8b1CYQhZMxnQE4eTnVh3VsScJw/yTs7wpFANSybY
+         ALi4nSFe+jpoMhtLak5d9qvOUIAK94Z+z+hgLk1fBQSBfxSbrSaPcJFtBUXBMP4NM2
+         KhZWpLP5xWMd/4TVjHFsgxeOHjmRp3z4Bka/wTOI=
 From:   Konstantin Ryabitsev <konstantin@linuxfoundation.org>
-Date:   Thu, 28 Jul 2022 16:57:08 -0400
-Subject: [PATCH v1 5/5] maintainer-pgp-guide: minor wording tweaks
+Date:   Thu, 28 Jul 2022 16:57:06 -0400
+Subject: [PATCH v1 3/5] maintainer-pgp-guide: update ECC support information
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Message-Id: <20220727-docs-pgp-guide-v1-5-c48fb06cb9af@linuxfoundation.org>
+Message-Id: <20220727-docs-pgp-guide-v1-3-c48fb06cb9af@linuxfoundation.org>
 References: <20220727-docs-pgp-guide-v1-0-c48fb06cb9af@linuxfoundation.org>
 In-Reply-To: <20220727-docs-pgp-guide-v1-0-c48fb06cb9af@linuxfoundation.org>
 To:     Jonathan Corbet <corbet@lwn.net>
 Cc:     linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org
 X-Mailer: b4 0.10.0-dev-49460
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1447;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2325;
  i=konstantin@linuxfoundation.org; h=from:subject:message-id;
- bh=fG+3nCW7qlAcg2TRLEYO2j/tO09JErrxFIGTuZ1+Pkw=;
- b=owGbwMvMwCW27YjM47CUmTmMp9WSGJIe/TD3cVbhvLDXX71r4cy+BfyWTe+WzTM/6nTA8pDlXUvD
- uK5XHaUsDGJcDLJiiixl+2I3BRU+9JBL7zGFmcPKBDKEgYtTACbSUsDIcFjOoc6Db4p1tqa6/1e51S
- WOv82NX73Zs9vXZcODwtjDXowMlwz+B0ul7O77ovBitbXzeX6d+k+3yvL4mfN4Hqd9izdhBgA=
+ bh=+yWtLXs1Zq1z9BhFpIxlo5zOYx6a+00PO/tsLikHY7I=;
+ b=owGbwMvMwCW27YjM47CUmTmMp9WSGJIe/TDtZA3RLup0Ugk/erEurenM6RlCbdZqYtXWS/aLF85j
+ yuvpKGVhEONikBVTZCnbF7spqPChh1x6jynMHFYmkCEMXJwCMBElLUaGs1KTfr8OW5NgXC/06XO0Zu
+ Pe671Lltu+L3wuv6tky2ZvRYb/sc33F6faOP/LW+2VyH08rUB+77Gc2se7OI/E3zn0elslHwA=
 X-Developer-Key: i=konstantin@linuxfoundation.org; a=openpgp;
  fpr=DE0E66E32F1FDD0902666B96E63EDCA9329DD07E
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Tweak some wording to remove redundant information or fix spacing.
+Update ECC sections with the latest details, now that Yubikeys are able
+to support ED25519 curves. Tweak a few links to smartcard devices to
+reflect the latest URL changes.
 
 Signed-off-by: Konstantin Ryabitsev <konstantin@linuxfoundation.org>
 
 diff --git a/Documentation/process/maintainer-pgp-guide.rst b/Documentation/process/maintainer-pgp-guide.rst
-index 2ce38e5d547d..ea74c87d09d8 100644
+index 01112ac7723e..62b0bab5d7c5 100644
 --- a/Documentation/process/maintainer-pgp-guide.rst
 +++ b/Documentation/process/maintainer-pgp-guide.rst
-@@ -265,9 +265,7 @@ home, such as your bank vault.
-     Your printer is probably no longer a simple dumb device connected to
-     your parallel port, but since the output is still encrypted with
-     your passphrase, printing out even to "cloud-integrated" modern
--    printers should remain a relatively safe operation. One option is to
--    change the passphrase on your master key immediately after you are
--    done with paperkey.
-+    printers should remain a relatively safe operation.
+@@ -227,11 +227,9 @@ separate signing subkey::
+     recommend that you create an ECC signing subkey for your kernel
+     work.
  
- Back up your whole GnuPG directory
- ----------------------------------
-@@ -311,7 +309,7 @@ Remove the Certify key from your homedir
- ----------------------------------------
+-    If for some reason you prefer to stay with RSA subkeys, just replace
+-    "ed25519" with "rsa2048" in the above command. Additionally, if you
+-    plan to use a hardware device that does not support ED25519 ECC
+-    keys, like Nitrokey Pro or a Yubikey, then you should use
+-    "nistp256" instead or "ed25519."
++    Note, that if you plan to use a hardware device that does not
++    support ED25519 ECC keys, you should choose "nistp256" instead or
++    "ed25519."
  
- The files in our home directory are not as well protected as we like to
--think.  They can be leaked or stolen via many different means:
-+think. They can be leaked or stolen via many different means:
  
- - by accident when making quick homedir copies to set up a new workstation
- - by systems administrator negligence or malice
+ Back up your Certify key for disaster recovery
+@@ -437,7 +435,8 @@ functionality. There are several options available:
+ - `Yubikey 5`_: proprietary hardware and software, but cheaper than
+   Nitrokey Pro and comes available in the USB-C form that is more useful
+   with newer laptops. Offers additional security features such as FIDO
+-  U2F, among others, and now finally supports ECC keys (NISTP).
++  U2F, among others, and now finally supports NISTP and ED25519 ECC
++  keys.
+ 
+ `LWN has a good review`_ of some of the above models, as well as several
+ others. Your choice will depend on cost, shipping availability in your
+@@ -450,7 +449,7 @@ geographical region, and open/proprietary hardware considerations.
+     Foundation.
+ 
+ .. _`Nitrokey Start`: https://shop.nitrokey.com/shop/product/nitrokey-start-6
+-.. _`Nitrokey Pro 2`: https://shop.nitrokey.com/shop/product/nitrokey-pro-2-3
++.. _`Nitrokey Pro 2`: https://shop.nitrokey.com/shop/product/nkpr2-nitrokey-pro-2-3
+ .. _`Yubikey 5`: https://www.yubico.com/products/yubikey-5-overview/
+ .. _Gnuk: https://www.fsij.org/doc-gnuk/
+ .. _`LWN has a good review`: https://lwn.net/Articles/736231/
 
 -- 
 b4 0.10.0-dev-49460
