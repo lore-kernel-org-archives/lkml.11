@@ -2,117 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC186C19F29
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 12:03:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ECE9C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 12:03:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237636AbiG1MDG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 08:03:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39978 "EHLO
+        id S237604AbiG1MDY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 08:03:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235664AbiG1MDE (ORCPT
+        with ESMTP id S236715AbiG1MDW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 08:03:04 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8998C67151;
-        Thu, 28 Jul 2022 05:03:03 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id c3so1725019pfb.13;
-        Thu, 28 Jul 2022 05:03:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=6nvKbT9kndzSOUcfK+zc9MvubXEZk6miyWHNHn+5OxY=;
-        b=f1YeSeTjLcomvltM6VYE8CROdkCKG4NTbFMbj45rMThgoM6sGFv8czsgRRZfgd1WKt
-         f/08GfGCfpugkNkzhZUBer6T79p1kpE4c4DXPGSZNsCf2T0QJ2VCkuWLqJo0ziYiPCDz
-         GvwVufYfxqJRU595/YjWWArmjF9unlseUWacHYEBZmo13XHJxCJ6tuyGAbG65R+7HwNr
-         uo2WTpmy2euBKPbcYPy28keUFAt/3oP9OJ1JFjEoaHfZYfyWUBB8/FpBtlv3XNF1hiO5
-         3uFGN7/p7PfTIf+xlNLn/R9PWIus6jG9WetHyv8CdccXU0FfYs4GlnzKyd9hXY1rfNE5
-         AbFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=6nvKbT9kndzSOUcfK+zc9MvubXEZk6miyWHNHn+5OxY=;
-        b=C0+fM6FK8o5hemvJkcpS2lrO5toy6iD96j0HqQ8WkWxPt9uURaZ3e1FTOnTQNUZHiW
-         AHThJpUB+bnrRlCP3cYGy2ZyIhk74ycZt8UwNZruQwi0a21vhPa2R/q0paSQDHyCQvf2
-         +sy/AMU/XMT6GXozQNcha5PeVFBWkH9QTIrVxsYQlMe3amfMQTeix4gtPOlmF0qbOmtn
-         DsBCz05bCQhNnUF1ltKZlWfuMgmI11N2kv2qVr37/n6W4kkLupxsPqJPb5pZDc3nOU9U
-         PpSLjqIGPb38DNtl/ODGv+aIN+b/Wan37CvU6X7INknrn5HIXPJh05l6QEhmlJKLvq+i
-         C/aA==
-X-Gm-Message-State: AJIora+brUw6vrhrPJaqsfjwnUsWGbrqp1qUPWUq72jJvJS21GEY5AOl
-        qmWX6IvQugzoLdizGHPqvdbjK0Ghn5oOlw==
-X-Google-Smtp-Source: AGRyM1ufvExeCGCzYxqGycF0uLOFYtynrFUL0MSe6SOxjvtAeuwZiJkNue2cpzf3SNcK4og20Lnzyg==
-X-Received: by 2002:a65:6494:0:b0:419:9527:2a69 with SMTP id e20-20020a656494000000b0041995272a69mr22789010pgv.80.1659009782991;
-        Thu, 28 Jul 2022 05:03:02 -0700 (PDT)
-Received: from [192.168.255.10] ([103.7.29.32])
-        by smtp.gmail.com with ESMTPSA id q12-20020a170902a3cc00b0016397da033csm1108413plb.62.2022.07.28.05.03.00
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 28 Jul 2022 05:03:02 -0700 (PDT)
-Message-ID: <271bddfa-9e48-d5f6-6147-af346d7946bf@gmail.com>
-Date:   Thu, 28 Jul 2022 20:02:53 +0800
+        Thu, 28 Jul 2022 08:03:22 -0400
+Received: from xry111.site (xry111.site [89.208.246.23])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EE2A69F38
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 05:03:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xry111.site;
+        s=default; t=1659009800;
+        bh=EZnr0YR7ZPeHRwzChn24PNNI7AiTGk9fxiN8hdbqu60=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=hXenhSPsjPRMpq5CIREu1VrkYsOOPEmswShcZXu3GwJj2sGUc1LvoncO4ESwrFELm
+         FaUfdfZkesyG3d6jMJr+KyGpMXWK/79vvgLqdh2ErOdH2azcj+pdrdA88vEdud1bAL
+         vZ36JUctXypGxlvymR+jU/45MKyWbc1KM7iKCHk8=
+Received: from localhost.localdomain (xry111.site [IPv6:2001:470:683e::1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature ECDSA (P-384) server-digest SHA384)
+        (Client did not present a certificate)
+        (Authenticated sender: xry111@xry111.site)
+        by xry111.site (Postfix) with ESMTPSA id 896B466961;
+        Thu, 28 Jul 2022 08:03:19 -0400 (EDT)
+Message-ID: <e95cfe70e2e5faa5b9cdc9452bdb3ab8d664aff0.camel@xry111.site>
+Subject: [PATCH v2 3/4] LoongArch: Stop using undocumented assembler options
+From:   Xi Ruoyao <xry111@xry111.site>
+To:     loongarch@lists.linux.dev
+Cc:     linux-kernel@vger.kernel.org, WANG Xuerui <kernel@xen0n.name>,
+        Huacai Chen <chenhuacai@kernel.org>,
+        Youling Tang <tangyouling@loongson.cn>,
+        Jinyang He <hejinyang@loongson.cn>
+Date:   Thu, 28 Jul 2022 20:03:17 +0800
+In-Reply-To: <c596e7a73953a1c49e8f5e94ec2db642f72e7813.camel@xry111.site>
+References: <c596e7a73953a1c49e8f5e94ec2db642f72e7813.camel@xry111.site>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.3 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.11.0
-Subject: Re: [PATCH 1/3] KVM: x86: Refresh PMU after writes to
- MSR_IA32_PERF_CAPABILITIES
-Content-Language: en-US
-To:     Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220727233424.2968356-1-seanjc@google.com>
- <20220727233424.2968356-2-seanjc@google.com>
-From:   Like Xu <like.xu.linux@gmail.com>
-In-Reply-To: <20220727233424.2968356-2-seanjc@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 28/7/2022 7:34 am, Sean Christopherson wrote:
-> Refresh the PMU if userspace modifies MSR_IA32_PERF_CAPABILITIES.  KVM
-> consumes the vCPU's PERF_CAPABILITIES when enumerating PEBS support, but
-> relies on CPUID updates to refresh the PMU.  I.e. KVM will do the wrong
-> thing if userspace stuffs PERF_CAPABILITIES _after_ setting guest CPUID.
+Now we can handle GOT and GOT-based relocations properly, remove the
+undocumented `-Wa,-mla-{global,local}-with-{pcrel,abs}` assembler hacks.
 
-Unwise userspace should reap its consequences if it does not break KVM or host.
+And, -fplt is the default of all supported compilers (GCC, and maybe
+Clang in the future), so it can be removed as well.
 
-When a guest feature can be defined/controlled by multiple KVM APIs entries,
-(such as SET_CPUID2, msr_feature, KVM_CAP, module_para), should KVM
-define the priority of these APIs (e.g. whether they can override each other) ?
+Adjust assembly code to explicitly use "la.pcrel" where necessary.
 
-Removing this ambiguity ensures consistency in the architecture and behavior of 
-all KVM features.
-Any further performance optimizations can be based on these finalized values as 
-you do.
+Signed-off-by: Xi Ruoyao <xry111@xry111.site>
+---
+ arch/loongarch/Makefile      |  4 ----
+ arch/loongarch/kernel/head.S | 10 +++++-----
+ 2 files changed, 5 insertions(+), 9 deletions(-)
 
-> 
-> Opportunistically fix a curly-brace indentation.
-> 
-> Fixes: c59a1f106f5c ("KVM: x86/pmu: Add IA32_PEBS_ENABLE MSR emulation for extended PEBS")
-> Cc: Like Xu <like.xu.linux@gmail.com>
-> Signed-off-by: Sean Christopherson <seanjc@google.com>
-> ---
->   arch/x86/kvm/x86.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-> index 5366f884e9a7..362c538285db 100644
-> --- a/arch/x86/kvm/x86.c
-> +++ b/arch/x86/kvm/x86.c
-> @@ -3543,9 +3543,9 @@ int kvm_set_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
->   			return 1;
->   
->   		vcpu->arch.perf_capabilities = data;
-> -
-> +		kvm_pmu_refresh(vcpu);
+diff --git a/arch/loongarch/Makefile b/arch/loongarch/Makefile
+index 039dcc4fe1f3..800349ea9310 100644
+--- a/arch/loongarch/Makefile
++++ b/arch/loongarch/Makefile
+@@ -40,10 +40,6 @@ endif
+=20
+ cflags-y			+=3D -G0 -pipe -msoft-float
+ LDFLAGS_vmlinux			+=3D -G0 -static -n -nostdlib
+-KBUILD_AFLAGS_KERNEL		+=3D -Wa,-mla-global-with-pcrel
+-KBUILD_CFLAGS_KERNEL		+=3D -Wa,-mla-global-with-pcrel
+-KBUILD_AFLAGS_MODULE		+=3D -Wa,-mla-global-with-abs
+-KBUILD_CFLAGS_MODULE		+=3D -fplt -Wa,-mla-global-with-abs,-mla-local-with-=
+abs
+=20
+ cflags-y +=3D -ffreestanding
+ cflags-y +=3D $(call cc-option, -mno-check-zero-division)
+diff --git a/arch/loongarch/kernel/head.S b/arch/loongarch/kernel/head.S
+index 74ea7bf6c8d6..193329ed6e8c 100644
+--- a/arch/loongarch/kernel/head.S
++++ b/arch/loongarch/kernel/head.S
+@@ -60,17 +60,17 @@ SYM_CODE_START(kernel_entry)			# kernel entry point
+ 	la.abs		t0, 0f
+ 	jirl		zero, t0, 0
+ 0:
+-	la		t0, __bss_start		# clear .bss
++	la.pcrel	t0, __bss_start		# clear .bss
+ 	st.d		zero, t0, 0
+-	la		t1, __bss_stop - LONGSIZE
++	la.pcrel	t1, __bss_stop - LONGSIZE
+ 1:
+ 	addi.d		t0, t0, LONGSIZE
+ 	st.d		zero, t0, 0
+ 	bne		t0, t1, 1b
+=20
+-	la		t0, fw_arg0
++	la.pcrel	t0, fw_arg0
+ 	st.d		a0, t0, 0		# firmware arguments
+-	la		t0, fw_arg1
++	la.pcrel	t0, fw_arg1
+ 	st.d		a1, t0, 0
+=20
+ 	/* KSave3 used for percpu base, initialized as 0 */
+@@ -78,7 +78,7 @@ SYM_CODE_START(kernel_entry)			# kernel entry point
+ 	/* GPR21 used for percpu base (runtime), initialized as 0 */
+ 	or		u0, zero, zero
+=20
+-	la		tp, init_thread_union
++	la.pcrel	tp, init_thread_union
+ 	/* Set the SP after an empty pt_regs.  */
+ 	PTR_LI		sp, (_THREAD_SIZE - 32 - PT_SIZE)
+ 	PTR_ADD		sp, sp, tp
+--=20
+2.37.0
 
-I had proposed this diff but was met with silence.
 
->   		return 0;
-> -		}
-> +	}
->   	case MSR_EFER:
->   		return set_efer(vcpu, msr_info);
->   	case MSR_K7_HWCR:
