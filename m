@@ -2,118 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC71AC04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 15:50:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A077C19F29
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 15:51:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232084AbiG1Puc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 11:50:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34408 "EHLO
+        id S232360AbiG1Pvy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 11:51:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231897AbiG1PuX (ORCPT
+        with ESMTP id S231586AbiG1Pvw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 11:50:23 -0400
-Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C185D2F38B;
-        Thu, 28 Jul 2022 08:50:22 -0700 (PDT)
-Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-32194238c77so24014817b3.4;
-        Thu, 28 Jul 2022 08:50:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=36Hwq/qRh8es4w9GNvXSHTYjfUFBDsjRYb3TlEw3sq4=;
-        b=ZyvciRQzuZ/9hIqed2BbMuHs1hzBRUKrIBDWJxHTuQ6IoAwV92sl34ptvlovkyMG7H
-         D+L4GeAu+b+e5E0bO8OSbgoa1xgDWknpiBF/oKNF1kG7nEbQuxBLmvOu+JmzW3WlPBrp
-         1sJFaxmDc57DVhK0dRne0McvWNBVqRdTAYNR5+1le1pm1TWFLXYL54vtBX/i8Ggf7uSD
-         +8o2vGJDXZSGtCnEdTWpfTRyXcAW/0iXYRIUhIsjVsdU1zu4SABYlFX9KsYKTmnhDo/Q
-         AIAOvX3LkvxYnKNh5fFmK+Tie06dMmClDDaDMYE1e4Qh7KKdsxbqGXwWxKMQQImAF891
-         ksoA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=36Hwq/qRh8es4w9GNvXSHTYjfUFBDsjRYb3TlEw3sq4=;
-        b=xJ63/GdDxwjxu6LcniptGkka+5ttQng4zUrv9oKSE9JeBVyj0Ly/DuicrhPZRAPXXs
-         OTdzvRtJlMGjXtoljPyOuqw/cOOQNaQ6zP5xoseRPOzZtti+IuZA6a0Trwi8maVRF/qH
-         DoNbPkMqLvnwr1ejdysRF76SBKCc/BfRiAZ2gQjwsoD4fad8sAvFXmRuaIg7PtY+iUfW
-         lyh62J939VBFeTQo9LH0VmkKZ9q/abI1z0srficVb8dCfDIOkYaPs5n63IBvKf6jU/TJ
-         7uRdBCFABHnzoaOatC3zvHrRvwtAoN8GNznFcn89rbCMQ3v1EfnbONkFkBgYRUWYN72Z
-         Pg5g==
-X-Gm-Message-State: AJIora9g5htS1OVILkiiWw/u6BHS6LijHbnHMmGAf8DIcKQhEzWuS4Fy
-        osL+bGkuZfnsyrGtWkC0f4ssiSCzx3yh/9PDObE=
-X-Google-Smtp-Source: AGRyM1u//aTCa0acrH/zETJEn1/xi//6B9XOsR1Vh4eitow4Zipho038DMVJtbm8PRn+kbrW3v/a7g+FgP76xWRfkBI=
-X-Received: by 2002:a81:a149:0:b0:31f:fded:b121 with SMTP id
- y70-20020a81a149000000b0031ffdedb121mr6161578ywg.122.1659023421655; Thu, 28
- Jul 2022 08:50:21 -0700 (PDT)
+        Thu, 28 Jul 2022 11:51:52 -0400
+Received: from madras.collabora.co.uk (madras.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e5ab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA37B2FFF2;
+        Thu, 28 Jul 2022 08:51:50 -0700 (PDT)
+Received: from [192.168.1.100] (2-237-20-237.ip236.fastwebnet.it [2.237.20.237])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        (Authenticated sender: kholk11)
+        by madras.collabora.co.uk (Postfix) with ESMTPSA id E145C6601B38;
+        Thu, 28 Jul 2022 16:51:48 +0100 (BST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1659023509;
+        bh=nI5LpKShenHgPTD6bJf1SzWZXrJS0BX0gmqnjEX+i7w=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=UG7DkYETX6GEoZQvkA3B/J4GAGt8vLnuOJLdAmjjdHy2J0r/757BpDxP+9t+VGDxG
+         PDMf3D+K/lChMrZXhpFnX873iwOtlED+V0vk6vDSbtIA1XxvQyIwj9jc9uglA2AwgV
+         y5mwcizu7aBPJvnMd7yYfGPgBpPV2xCemQ3cWBBr3Ct7AFUoLod3btfQXEQXexVPb7
+         /SomR4/cxboHfP3aYRYXwYyooCg9MWMwSSVneWAVwJdsuLVSMiWnomqYPm0anCoADG
+         ggpWVS0+KLMbh47c3SDwMMkqZuffVHBDHYbw9kUlWM3qK+W357oQ7sL1zof/W/M9Ng
+         kxH6YMxuokrQg==
+Message-ID: <689b439f-531b-9b3d-2e48-b7b83c50b3dd@collabora.com>
+Date:   Thu, 28 Jul 2022 17:51:46 +0200
 MIME-Version: 1.0
-References: <20220702190705.5319-1-olek2@wp.pl> <3c9a032edd0fb9b9608ad3ca08d6e3cc38f21464.camel@svanheule.net>
- <87fsjen2kl.wl-maz@kernel.org> <20220706081901.GA10797@alpha.franken.de>
- <CAFBinCAsj=RNvitj2tXJU6pTLSbanRXdKM9H4vyF=N9N=PP06g@mail.gmail.com>
- <20220707100630.GC9894@alpha.franken.de> <CAFBinCBn3+MbKFE84Y0KjW4qG_88+HuBTzRhPQSDqzqGhyhhZw@mail.gmail.com>
- <20220707143930.GA14693@alpha.franken.de>
-In-Reply-To: <20220707143930.GA14693@alpha.franken.de>
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Thu, 28 Jul 2022 17:50:10 +0200
-Message-ID: <CAFBinCBq3ydoxtj1VG=kjqbq5NjP1ZnQe_dOAS2Gjm2fNkK9Yg@mail.gmail.com>
-Subject: Re: [PATCH] MIPS: smp-mt: enable all hardware interrupts on second VPE
-To:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Cc:     Marc Zyngier <maz@kernel.org>,
-        Sander Vanheule <sander@svanheule.net>,
-        Aleksander Jan Bajkowski <olek2@wp.pl>,
-        Hauke Mehrtens <hauke@hauke-m.de>, git@birger-koblitz.de,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v2] arm64: dts: mt8173-oak: Switch to SMC watchdog
+Content-Language: en-US
+To:     Pin-yen Lin <treapking@chromium.org>
+Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Eizan Miyamoto <eizan@chromium.org>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Evan Benn <evanbenn@chromium.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+References: <20220727094034.1372745-1-treapking@chromium.org>
+ <c455adea-2d18-60af-7175-a4e283e3dcb8@collabora.com>
+ <CAEXTbpc7W40-vYcTVTNo7ikQ-n0O246AsbPntNb4q2nBErYVQw@mail.gmail.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+In-Reply-To: <CAEXTbpc7W40-vYcTVTNo7ikQ-n0O246AsbPntNb4q2nBErYVQw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Thomas,
+Il 28/07/22 17:39, Pin-yen Lin ha scritto:
+> On Thu, Jul 28, 2022 at 7:21 PM AngeloGioacchino Del Regno
+> <angelogioacchino.delregno@collabora.com> wrote:
+>>
+>> Il 27/07/22 11:40, Pin-yen Lin ha scritto:
+>>> Switch to SMC watchdog because we need direct control of HW watchdog
+>>> registers from kernel. The corresponding firmware was uploaded in
+>>> https://review.trustedfirmware.org/c/TF-A/trusted-firmware-a/+/3405.
+>>>
+>>> Signed-off-by: Pin-yen Lin <treapking@chromium.org>
+>>> ---
+>>>
+>>> Changes in v2:
+>>> - Move the modifications to mt8173-elm.dtsi and add some comments.
+>>>
+>>>    arch/arm64/boot/dts/mediatek/mt8173-elm.dtsi | 12 ++++++++++++
+>>>    1 file changed, 12 insertions(+)
+>>>
+>>> diff --git a/arch/arm64/boot/dts/mediatek/mt8173-elm.dtsi b/arch/arm64/boot/dts/mediatek/mt8173-elm.dtsi
+>>> index e21feb85d822..b2269770abc3 100644
+>>> --- a/arch/arm64/boot/dts/mediatek/mt8173-elm.dtsi
+>>> +++ b/arch/arm64/boot/dts/mediatek/mt8173-elm.dtsi
+>>> @@ -161,6 +161,18 @@ hdmi_connector_in: endpoint {
+>>>                        };
+>>>                };
+>>>        };
+>>> +
+>>> +     soc {
+>>> +             /*
+>>> +              * Disable the original MMIO watch dog and switch to the SMC watchdog,
+>>> +              * which operates on the same MMIO.
+>>> +              */
+>>> +             /delete-node/ watchdog@10007000;
+>>
+>> Unfortunately, we're not quite there yet.
+>> The comment is fine, but...
+>>
+>> There's no need to /delete-node/: you can just do it like
+>>
+>> /*
+>>    * Disable the original MMIO watch dog and switch to the SMC watchdog,
+>>    * which operates on the same MMIO.
+>>    */
+>> &watchdog {
+>>          status = "disabled";
+>> };
+>>
+>> and...
+>>
+>>> +
+>>> +             watchdog {
+>>
+>> This isn't addressable, hence it belongs to the root node, not to soc.
+>> If you did that because of naming issues, I would propose to call it
+>> smc-watchdog instead of watchdog.
+>>
+>>
+>>> +                     compatible = "arm,smc-wdt";
+>>
+> Thanks for the suggestion. I'll modify it accordingly in v3.
+> 
+>> P.S.: No timeout-sec?
+> 
+> The example in the binding file has a timeout-sec property, but it is
+> not defined in the binding nor used in the driver...
+> The driver seems to talk with the firmware to get a timeout value[1]
+> instead of reading it from the devicetree.
+> 
 
-On Thu, Jul 7, 2022 at 4:40 PM Thomas Bogendoerfer
-<tsbogend@alpha.franken.de> wrote:
-[...]
-> > Or can you point me to the code in
-> > drivers/irqchip/irq-mips-cpu.c that's responsible for enabling the
-> > interrupts on VPE 1 (is it simply unmask_mips_irq)?
->
-> IMHO there is the problem, irq-mips-cpu.c can only do CPU irq operations
-> on the same CPU. I've checked MIPS MT specs and it's possible do
-> modify CP0 registers between VPEs. Using that needs changes in
-> irq-mips-cpu.c. But mabye that's not woth the effort as probably
-> all SMP cabable platforms have some multi processort capable
-> interrupt controller implemented.
-On Lantiq the "multi processor capable interrupt controller" solution
-seems not very sophisticated: there's simply two identical copies of
-the IRQ controller IP, one connected to CPU0 and the other to CPU1.
+Oh. I admit I trusted the binding blindly, didn't check the actual driver code.
 
-> I thought about another way solve the issue. By introducing a
-> new function in smp-mt.c which sets the value of the interrupt
-> mask for the secondary CPU, which is then used in vsmp_init_secondary().
-> Not sure if this is worth the effort compared to a .boot_secondary
-> override.
-I think for the Realtek SoC's this would be problematic because it's
-using MIPS_GENERIC. My understanding is that in an ideal world all
-platforms would switch to MIPS_GENERIC.
-As an alternative to making irq-mips-cpu capable of changing another
-CPU's registers: would you also be happy with a change that implements
-the following idea (pseudocode) in vsmp_init_secondary():
-    struct device_node *root_node = of_find_node_by_path("/");
+On a note, we should check why is that binding partially wrong and eventually
+fix it (remove the property), or add the capability to the driver, but feel free
+to ignore that for now, as this is not relevant for the context of this specific
+change that you're trying to do here.
 
-    if (mips_gic_present() ||
-        of_device_is_compatible(root_node, "lantiq,xrx200") ||
-        of_device_is_compatible(root_node, "realtek,some-relevant-soc"))
-        change_c0_status(ST0_IM, STATUSF_IP2 | STATUSF_IP3 |
-            STATUSF_IP4 | STATUSF_IP5 |
-            STATUSF_IP6 | STATUSF_IP7);
-    else
-       ...
+P.S.: I just noticed that the commit title is also wrong. s/mt8173-oak/mt8173-elm/g
 
-    of_node_put(root_node);
-
-That way we don't risk enabling interrupt lines which shouldn't be
-enabled (on SoCs which we don't know).
-And also it would not cause any issues with MIPS_GENERIC support.
+Waiting for a v3!
 
 
-Best regards,
-Martin
+> [1]: https://elixir.bootlin.com/linux/latest/source/drivers/watchdog/arm_smc_wdt.c#L138
+>>
+>> Regards,
+>> Angelo
+>>
+>>> +             };
+>>> +     };
+>>>    };
+>>>
+>>>    &mfg_async {
+>>>
+>>
+
