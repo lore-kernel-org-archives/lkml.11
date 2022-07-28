@@ -2,120 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 722F5C19F2C
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 08:14:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D1F3C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 08:16:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235041AbiG1IOr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 04:14:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59724 "EHLO
+        id S235052AbiG1IP7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 04:15:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33250 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233818AbiG1IOp (ORCPT
+        with ESMTP id S233818AbiG1IP4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 04:14:45 -0400
-Received: from mail-sh.amlogic.com (mail-sh.amlogic.com [58.32.228.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D781761D77;
-        Thu, 28 Jul 2022 01:14:43 -0700 (PDT)
-Received: from [10.18.29.47] (10.18.29.47) by mail-sh.amlogic.com (10.18.11.5)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.14; Thu, 28 Jul
- 2022 16:14:41 +0800
-Message-ID: <da68bb01-0ec9-4b18-c0f5-0cf3b830d4c3@amlogic.com>
-Date:   Thu, 28 Jul 2022 16:14:41 +0800
+        Thu, 28 Jul 2022 04:15:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 459F3CE01;
+        Thu, 28 Jul 2022 01:15:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D9CA961BA0;
+        Thu, 28 Jul 2022 08:15:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1410C433D6;
+        Thu, 28 Jul 2022 08:15:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658996155;
+        bh=/m2yuIjtmhX7sFDuqcZZi68Qe5oW8kgCP6tQn5ihcTU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=l8z0fA4d3WL4ubdKlk1TEtv4uuRaGIdw+/nCBM5JFlX8Ev8QIzGaTJG7tmRZbmlJV
+         kreAeNNOwZE4BvzB4yD/AYYAUMYEDqZbeJgR6CPy5CDSelNxDu0GfK6ZkFpxWux6Oa
+         cnNOU2gY4f8kNAyn0ugAdQ6wWHqt9w+Z0Y7PHsRZzoRZbi1tNLHJGmh7yGDvR/eXDf
+         x79f+UeTVlR9Zohn1XCHsjVFIdAg8d13MTqo4N+Xq6bDncF6iDgVrBJ9UHox8bpLGm
+         WRHVN6DWXztRQsnNx7kFki8BJcK+7mMrarnPvkWJD0JGilxoZXuQMRDfD6fIeEHrAP
+         NSTq889MeP24Q==
+Date:   Thu, 28 Jul 2022 11:15:52 +0300
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Cc:     peterhuewe@gmx.de, jgg@ziepe.ca, stefanb@linux.vnet.ibm.com,
+        linux@mniewoehner.de, linux-integrity@vger.kernel.org,
+        linux-kernel@vger.kernel.org, l.sanfilippo@kunbus.com,
+        lukas@wunner.de, p.rosenberger@kunbus.com
+Subject: Re: [PATCH v7 07/10] tmp, tmp_tis: Implement usage counter for
+ locality
+Message-ID: <YuJFuBFtImG/k+C0@kernel.org>
+References: <20220629232653.1306735-1-LinoSanfilippo@gmx.de>
+ <20220629232653.1306735-8-LinoSanfilippo@gmx.de>
+ <Yr4x6KRSvzlXNdH2@kernel.org>
+ <f0e33bc4-335c-322a-9295-18d6bc0b8286@gmx.de>
+ <YsuQEoVuVa00gIdE@kernel.org>
+ <744ad6e1-c4ad-1e6d-f94d-98aa5b105dc6@gmx.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH V2 0/3] Add S4 SoC clock controller driver
-Content-Language: en-US
-From:   Yu Tu <yu.tu@amlogic.com>
-To:     Jerome Brunet <jbrunet@baylibre.com>, <linux-clk@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-amlogic@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-References: <20220728054202.6981-1-yu.tu@amlogic.com>
- <1j8rodhfn9.fsf@starbuckisacylon.baylibre.com>
- <032b3c3f-f899-bf53-ecbb-35191d39392b@amlogic.com>
-In-Reply-To: <032b3c3f-f899-bf53-ecbb-35191d39392b@amlogic.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.18.29.47]
-X-ClientProxiedBy: mail-sh.amlogic.com (10.18.11.5) To mail-sh.amlogic.com
- (10.18.11.5)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <744ad6e1-c4ad-1e6d-f94d-98aa5b105dc6@gmx.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi JB,
-	We suspect that you are not looking carefully. You only see two base 
-addresses for controllers, so you think you should use two clock 
-controllers. But you're missing their direct connection.
+On Wed, Jul 27, 2022 at 02:16:56PM +0200, Lino Sanfilippo wrote:
+> 
+> 
+> On 11.07.22 04:50, Jarkko Sakkinen wrote:
+> > On Mon, Jul 04, 2022 at 07:45:12PM +0200, Lino Sanfilippo wrote:
+> >>
+> >>
+> >> On 01.07.22 01:29, Jarkko Sakkinen wrote:
+> >>
+> >>>
+> >>> I'm kind of thinking that should tpm_tis_data have a lock for its
+> >>> contents?
+> >>
+> >> Most of the tpm_tis_data structure elements are set once during init and
+> >> then never changed but only read. So no need for locking for these. The
+> >> exceptions I see are
+> >>
+> >> - flags
+> >> - locality_count
+> >> - locality
+> >
+> > I'd still go for single data struct lock, since this lock would
+> > be taken in every transmit flow. It makes the whole thing easier
+> > to maintain over time, and does not really affect scalability.
+> >
+> 
+> This means switching to a complete new locking scheme which affects many
+> parts of the TIS core code. It is also not directly related to what this patch series
+> is about, namely activating the interrupts for TPM TIS.
+> 
+> I suggest to first finish polishing this series especially since there have
+> only been minor issues in the last versions. Once the interrupts work we
+> still can think of implementing another lock handling in a follow up series.
 
-On 2022/7/28 16:06, Yu Tu wrote:
-> Hi JB，
-> 
-> On 2022/7/28 15:08, Jerome Brunet wrote:
->> [ EXTERNAL EMAIL ]
->>
->>
->> On Thu 28 Jul 2022 at 13:41, Yu Tu <yu.tu@amlogic.com> wrote:
->>
->>> 1. Add clock controller driver for S4 SOC.
->>>
->>> Yu Tu (3):
->>>    dt-bindings: clk: meson: add S4 SoC clock controller bindings
->>>    arm64: dts: meson: add S4 Soc clock controller in DT
->>>    clk: meson: s4: add s4 SoC clock controller driver
->>>
->>> V1 -> V2: Change format as discussed in the email.
->>>
->>> Link:https://lore.kernel.org/linux-amlogic/20220708062757.3662-1-yu.tu@amlogic.com/ 
->>>
->>>
->>>   .../bindings/clock/amlogic,gxbb-clkc.txt      |    1 +
->>>   MAINTAINERS                                   |    1 +
->>>   arch/arm64/boot/dts/amlogic/meson-s4.dtsi     |   11 +
->>>   drivers/clk/meson/Kconfig                     |   15 +
->>>   drivers/clk/meson/Makefile                    |    1 +
->>>   drivers/clk/meson/s4.c                        | 4732 +++++++++++++++++
->>>   drivers/clk/meson/s4.h                        |  296 ++
->>>   include/dt-bindings/clock/s4-clkc.h           |  146 +
->>>   8 files changed, 5203 insertions(+)
->>>   create mode 100644 drivers/clk/meson/s4.c
->>>   create mode 100644 drivers/clk/meson/s4.h
->>>   create mode 100644 include/dt-bindings/clock/s4-clkc.h
->>>
->>>
->>> base-commit: b293bc9286ee21824e93f0fcfed3b78fdfee01e6
->>
->> Please don't post until you have addressed *ALL* the comments from the
->> previous version.
-> The last email asked you to adopt A1 method, but you did not reply?
-> 
->>
->> At first glance, I can see that this is still a single driver for
->> what is obviously 2 controllers with 2 register spaces. Simple comments
->> like the "<< 2" in the register declaration have not been addressed 
->> either.
-> I understand that this should be a controller, just two address 
-> descriptions. One is the various PLL registers and one is the clock for 
-> the peripherals. And PLL is to provide a clock source for various 
-> peripheral clocks. So a clock controller is reasonable. I think you got 
-> it wrong.
-> 
-> Ok, if you insist on using two clock controllers,, please provide your 
-> the reason and example code?
-> 
->>
->> Seeing that, I have not reviewed this version further.
->> I won't until all the comments from v1 are either addressed or answer
->>
->> Regards
->> Jerome
->>
->> .
+So what if you would use kref instead here?
+
+On surface this looks like ad-hoc kref but I could wrong too (as always).
+
+BR, Jarkko
