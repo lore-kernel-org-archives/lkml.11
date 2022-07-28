@@ -2,144 +2,210 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDD39C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 11:48:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6433C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 11:48:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236842AbiG1LsP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 07:48:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52414 "EHLO
+        id S236757AbiG1Lsa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 07:48:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52756 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236421AbiG1LsK (ORCPT
+        with ESMTP id S236346AbiG1Ls2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 07:48:10 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2852267CB5
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 04:48:08 -0700 (PDT)
+        Thu, 28 Jul 2022 07:48:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F323167CAB
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 04:48:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B7DD3B82322
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 11:48:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D021CC433D6;
-        Thu, 28 Jul 2022 11:48:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659008885;
-        bh=bmnhC51lVRzoD/ELMNtwN9HgEsw5L7dsWpRX5ebkBro=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=EOoz2dA3JGhA5JyMErivTV72PA+VRiO5m8C8ALB1WflGRyykUDZHAPN9H4z/C0PXG
-         Vhaf+aYKKO5xNpKGMAPL55GNqO8ww6N0Lakj+NaMDHFdsfzDpUkpQYYNWrsYvakPBz
-         4G4YORB8EM1u2+fvdgEOe8ZrdexKvvrRJE1qRx9c=
-Date:   Thu, 28 Jul 2022 13:48:02 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Richard Fitzgerald <rf@opensource.cirrus.com>
-Cc:     rafael@kernel.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, patches@opensource.cirrus.com
-Subject: Re: [PATCH] component: try_module_get() to prevent unloading while
- in use
-Message-ID: <YuJ3cuuQETb2A7gv@kroah.com>
-References: <20220725160859.1274472-1-rf@opensource.cirrus.com>
- <Yt7cT66p0Bn+aXn5@kroah.com>
- <4165774b-2b96-83d1-67eb-f7c49dd8041e@opensource.cirrus.com>
- <YuAkQtik4ud6xw8L@kroah.com>
- <85bb9c36-33e9-c3e2-1838-9ef45311669b@opensource.cirrus.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <85bb9c36-33e9-c3e2-1838-9ef45311669b@opensource.cirrus.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8F89A61B77
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 11:48:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB467C433C1;
+        Thu, 28 Jul 2022 11:48:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659008907;
+        bh=g1ToiQ9ikGco4SSXQkZwptv+T6Xj8qP+/AAmx1sioq8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=K5qvEpGP7bx3f+MSRtC197Sy96M+qHZEKBLeRJ6yALzvwptSVGk4MhRRKTUzg61DT
+         fhM5/DBwGp3ezfhgWTtrm2qNfYmJzR3xD393pU+RatyA5dwhPVXciYoIOHTi8Yzwaq
+         Ebw7TIa+8sYn4y9w2oCsCTpXd2VEO2EfZMjf5JlkyCTjsiUcuRXw/fvFJbJS5fZX+Y
+         xmihqrGCRF6C84KHLIqqW3jWBYr63ERJ8oA0Hn7VifYbOqR/WivB8RUf0w5QiK3fCi
+         Z9dt+i8a1H1YOqY3uo9AFhppnzac7+qs2Ytz4jH5gvRRlyxStW305cW33lTYzcYkMl
+         Lapv7GAuPoXSQ==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <maz@kernel.org>)
+        id 1oH208-00AefZ-Bw;
+        Thu, 28 Jul 2022 12:48:24 +0100
+Date:   Thu, 28 Jul 2022 12:48:23 +0100
+Message-ID: <87wnbxwj94.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Johan Hovold <johan+linaro@kernel.org>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Rob Herring <robh@kernel.org>, linux-kernel@vger.kernel.org,
+        Dmitry Torokhov <dtor@chromium.org>,
+        Jon Hunter <jonathanh@nvidia.com>
+Subject: Re: [PATCH] irqdomain: Fix mapping-creation race
+In-Reply-To: <20220728092710.21190-1-johan+linaro@kernel.org>
+References: <20220728092710.21190-1-johan+linaro@kernel.org>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: johan+linaro@kernel.org, tglx@linutronix.de, gregkh@linuxfoundation.org, robh@kernel.org, linux-kernel@vger.kernel.org, dtor@chromium.org, jonathanh@nvidia.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 28, 2022 at 11:49:57AM +0100, Richard Fitzgerald wrote:
-> On 26/07/2022 18:28, Greg KH wrote:
-> > On Tue, Jul 26, 2022 at 11:32:28AM +0100, Richard Fitzgerald wrote:
-> > > On 25/07/2022 19:09, Greg KH wrote:
-> > > > On Mon, Jul 25, 2022 at 05:08:59PM +0100, Richard Fitzgerald wrote:
-> > > > > Call try_module_get() on a component before attempting to call its
-> > > > > bind() function, to ensure that a loadable module cannot be
-> > > > > unloaded while we are executing its bind().
-> > > > 
-> > > > How can bind be called while the module is unloaded?
-> > > > 
-> > > 
-> > > I didn't say it could. What I said is "unloaded while we are executing
-> > > its bind()". Maybe that's already guaranteed to be safe somehow. It's
-> > > actually the problem below that I was trying to fix but placing the
-> > > try_module_get() before the bind() rather than after bind() seemed a
-> > > trivial extra safety.
-> > 
-> > It should be safe, bind() can't race with module remove as the driver
-> > core locks will handle this.
-> > 
-> > > > > If the bind is successful the module_put() is called only after it
-> > > > > has been unbound. This ensures that the module cannot be unloaded
-> > > > > while it is in use as an aggregate device.
-> > > > 
-> > > > That's almost never the correct thing to do, what problem is this
-> > > > solving?
-> > > > 
-> > > 
-> > > What I see is that when a loadable module has been made part of an
-> > > aggregate it is still possible to rmmod'd it.
-> > > 
-> > > An alternative workaround would be for the parent to softdep to every
-> > > driver that _might_ provide the aggregated components. Softdeps aren't
-> > > unusual (we use it in some drivers that are directly related but don't
-> > > directly link into each other). But to me this feels like a hack when
-> > > used with the component framework - isn't the idea that the parent
-> > > doesn't know (or doesn't need to know) which drivers will be aggregated?
-> > > Wouldn't it be better that when a component driver is bound into an
-> > > aggregate its module is automatically marked in-use?
-> > > 
-> > > If there's a better way to mark the module in-use while is it bound
-> > > into an aggregate, let me know and I'll look at implementing it.
-> > 
-> > No module references should be incremented if a device is bound to a
-> > driver, that's the old (1990's) way of thinking.  If a module wants to
-> > be unloaded, let it, and clean up everything that it was
-> > controlling/talking to before the module remove is finished.
-> > 
-> > That's the way all busses should be working, you don't increment a
-> > module count when a driver binds to a device, otherwise how would you
-> > unload a module that was being used at all?
-> > 
-> > So just remove the components controlled by the module properly when it
-> > is removed and all should be good.
-> > 
-> > Do you have example code in the kernel tree today that does not properly
-> > do this?  Why not just fix that instead?
-> > 
+On Thu, 28 Jul 2022 10:27:10 +0100,
+Johan Hovold <johan+linaro@kernel.org> wrote:
 > 
-> The actual code I'm working on isn't upstream yet, but it's a derivative
-> of the way these two interoperate:
->  sound/pci/hda/patch_realtek
->  sound/pci/hda/cs35l41_hda.c
+> Parallel probing (e.g. due to asynchronous probing) of devices that share
+> interrupts can currently result in two mappings for the same hardware
+> interrupt to be created.
+
+And I thought nobody would be using shared interrupts anymore. Turns
+out people are still building braindead HW... :-/
+
 > 
-> In these systems the host audio interface is HDA but the amps are not
-> HDA devices. Audio goes through the Realtek HDA codec to the amp but
-> the amp is on a different bus (i2c or spi). The modules in the HDA stack
-> all get marked as in-use, but the amp driver doesn't. So if it's
-> unloaded the audio system is left in a limbo state where ALSA and the
-> HDA stack are still up but the amp driver code has gone.
+> Add a serialising mapping mutex so that looking for an existing mapping
+> before creating a new one is done atomically.
 > 
-> However I realised that my try_module_get() isn't a fix anyway.
-> It's claiming use of the module implementing the component but not
-> of the bus that owns that module. I assume that's what you were
-> referring to by having to deal with an unload instead of trying to
-> prevent the unload.
+> Note that serialising the lookup and creation in
+> irq_create_mapping_affinity() would have been enough to prevent the
+> duplicate mapping, but that could instead cause
+> irq_create_fwspec_mapping() to fail when there is a race.
+> 
+> Fixes: 765230b5f084 ("driver-core: add asynchronous probing support for drivers")
+> Fixes: b62b2cf5759b ("irqdomain: Fix handling of type settings for existing mappings")
+> Cc: Dmitry Torokhov <dtor@chromium.org>
+> Cc: Jon Hunter <jonathanh@nvidia.com>
+> Signed-off-by: Johan Hovold <johan+linaro@kernel.org>
+> ---
+>  kernel/irq/irqdomain.c | 46 +++++++++++++++++++++++++++++++-----------
+>  1 file changed, 34 insertions(+), 12 deletions(-)
+> 
+> diff --git a/kernel/irq/irqdomain.c b/kernel/irq/irqdomain.c
+> index 8fe1da9614ee..d263a7dd4170 100644
+> --- a/kernel/irq/irqdomain.c
+> +++ b/kernel/irq/irqdomain.c
+> @@ -22,6 +22,7 @@
+>  
+>  static LIST_HEAD(irq_domain_list);
+>  static DEFINE_MUTEX(irq_domain_mutex);
+> +static DEFINE_MUTEX(irq_mapping_mutex);
 
-Yes.
+I'd really like to avoid a global mutex. At the very least this should
+be a per-domain mutex, otherwise this will serialise a lot more than
+what is needed.
 
-Also there is no requirement that a module increment its reference count
-even if it is being used, as long as it can properly tear things down
-when it is removed.  Look at network modules for examples of that
-working properly.  Odds are other modules should move to that model over
-time, and we are not going to try to go backwards and add module
-reference counting to the driver core.
+>  
+>  static struct irq_domain *irq_default_domain;
+>  
+> @@ -669,7 +670,7 @@ EXPORT_SYMBOL_GPL(irq_create_direct_mapping);
+>  #endif
+>  
+>  /**
+> - * irq_create_mapping_affinity() - Map a hardware interrupt into linux irq space
+> + * __irq_create_mapping_affinity() - Map a hardware interrupt into linux irq space
+>   * @domain: domain owning this hardware interrupt or NULL for default domain
+>   * @hwirq: hardware irq number in that domain space
+>   * @affinity: irq affinity
+> @@ -679,9 +680,9 @@ EXPORT_SYMBOL_GPL(irq_create_direct_mapping);
+>   * If the sense/trigger is to be specified, set_irq_type() should be called
+>   * on the number returned from that call.
+>   */
 
-module references lock code, you are modifying data here, two different
-things.
+This comment should be moved to the exported function, instead of
+documenting something that nobody can call...
 
-thanks,
+> -unsigned int irq_create_mapping_affinity(struct irq_domain *domain,
+> -				       irq_hw_number_t hwirq,
+> -				       const struct irq_affinity_desc *affinity)
+> +static unsigned int __irq_create_mapping_affinity(struct irq_domain *domain,
+> +						  irq_hw_number_t hwirq,
+> +						  const struct irq_affinity_desc *affinity)
+>  {
+>  	struct device_node *of_node;
+>  	int virq;
+> @@ -724,6 +725,19 @@ unsigned int irq_create_mapping_affinity(struct irq_domain *domain,
+>  
+>  	return virq;
+>  }
+> +
+> +unsigned int irq_create_mapping_affinity(struct irq_domain *domain,
+> +					 irq_hw_number_t hwirq,
+> +					 const struct irq_affinity_desc *affinity)
+> +{
+> +	unsigned int virq;
+> +
+> +	mutex_lock(&irq_mapping_mutex);
+> +	virq = __irq_create_mapping_affinity(domain, hwirq, affinity);
+> +	mutex_unlock(&irq_mapping_mutex);
+> +
+> +	return virq;
+> +}
+>  EXPORT_SYMBOL_GPL(irq_create_mapping_affinity);
+>  
+>  static int irq_domain_translate(struct irq_domain *d,
+> @@ -789,6 +803,8 @@ unsigned int irq_create_fwspec_mapping(struct irq_fwspec *fwspec)
+>  	if (WARN_ON(type & ~IRQ_TYPE_SENSE_MASK))
+>  		type &= IRQ_TYPE_SENSE_MASK;
+>  
+> +	mutex_lock(&irq_mapping_mutex);
+> +
+>  	/*
+>  	 * If we've already configured this interrupt,
+>  	 * don't do it again, or hell will break loose.
+> @@ -801,7 +817,7 @@ unsigned int irq_create_fwspec_mapping(struct irq_fwspec *fwspec)
+>  		 * interrupt number.
+>  		 */
+>  		if (type == IRQ_TYPE_NONE || type == irq_get_trigger_type(virq))
+> -			return virq;
+> +			goto out;
+>  
+>  		/*
+>  		 * If the trigger type has not been set yet, then set
+> @@ -810,26 +826,26 @@ unsigned int irq_create_fwspec_mapping(struct irq_fwspec *fwspec)
+>  		if (irq_get_trigger_type(virq) == IRQ_TYPE_NONE) {
+>  			irq_data = irq_get_irq_data(virq);
+>  			if (!irq_data)
+> -				return 0;
+> +				goto err;
+>  
+>  			irqd_set_trigger_type(irq_data, type);
+> -			return virq;
+> +			goto out;
+>  		}
+>  
+>  		pr_warn("type mismatch, failed to map hwirq-%lu for %s!\n",
+>  			hwirq, of_node_full_name(to_of_node(fwspec->fwnode)));
+> -		return 0;
+> +		goto err;
+>  	}
+>  
+>  	if (irq_domain_is_hierarchy(domain)) {
+>  		virq = irq_domain_alloc_irqs(domain, 1, NUMA_NO_NODE, fwspec);
+>  		if (virq <= 0)
+> -			return 0;
+> +			goto err;
+>  	} else {
+>  		/* Create mapping */
+> -		virq = irq_create_mapping(domain, hwirq);
+> +		virq = __irq_create_mapping_affinity(domain, hwirq, NULL);
 
-greg k-h
+This rechecks for the existence of the mapping. Surely we can do a bit
+better by rejigging this (admittedly bitrotting) code.
+
+Thanks,
+
+	M.
+
+-- 
+Without deviation from the norm, progress is not possible.
