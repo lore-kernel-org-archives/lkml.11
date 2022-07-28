@@ -2,84 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59264C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 07:43:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84037C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 07:45:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234701AbiG1Hn5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 03:43:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35876 "EHLO
+        id S234719AbiG1HpF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 03:45:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233440AbiG1Hnz (ORCPT
+        with ESMTP id S233440AbiG1HpD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 03:43:55 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29BD260685;
-        Thu, 28 Jul 2022 00:43:55 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id t2so1120837ply.2;
-        Thu, 28 Jul 2022 00:43:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=ld02fAkkfQOOuyOTcOJP2ZPoGVJcKXaJAF1qWkKBQFU=;
-        b=BolG1kEwisLqRQ4VzpTH7v/DNlxzLqYO51lMC29vIUlJIBcvaDLGJURQWrJsxrs8U/
-         j4VFGHkB9qBs7D+iEa4fzmt5UMHpQwnrDz+gZJ6ilVU+hSrJR21sKTx7JMiZIc8YZDI4
-         rC7eS/foBYSGPL7A5ZKIWxEJlCFjndMohFV14u4UQBeR4o5NDTi/ihWG0TUgRYj2AjF2
-         nMhi+SXmG9D7t21+APP9p0Wo3T+iDRV2TFCGFcKlzil2Sy+7XMOfSrjamMKmqeM4IycZ
-         5RRUcDD+Q96ErSGZatsEL1qHi0/FuFqf5odyXzRyOSQmNxCo+0Wdu+24YucPZ81x4tSJ
-         Jqvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=ld02fAkkfQOOuyOTcOJP2ZPoGVJcKXaJAF1qWkKBQFU=;
-        b=ZwetXX3cw6N7YoFFj6zapYj5lh2W8O7j7D9vulgxRK9zuSFsixVdjpZBIknZ3Za4ay
-         8pFIN5S6yREnO3ghw3EA8fW0vLb+UL181mwAs64ry+yC0TorH0LYViONOuBoetIjqOAg
-         x1HOq5/1xps1w6nmD+BWD+4ATOTBsS3DzVdBcixx25m0VEtC3UrHSd6WSOZ8vVR1ErrK
-         BDe8Tp0P6VUi0C3rp9Pnn039qn97LQEf41vvgv1ZkCN2Cu2IasMA47r76cWXVMQDvYgm
-         1e9tXipGT80FR8mHhSBoDa6R4qO7x/r9xX4a18A4vva6xG8mD7T8+Ylr04y1uSYawqSo
-         g+1Q==
-X-Gm-Message-State: AJIora/jjUU+y1joHDd5M3fFIGuulqPbVGQdsgY2/yF8NzUgFJhb0SV8
-        QRChhArUmeAZXmv0KJhy6Y0=
-X-Google-Smtp-Source: AGRyM1s3HzMpz9c1oBbT1x2dnRdj1bGj85TmFHhbUHZBPlgBgNdAPgaDx3NA0OrcBtUzk+6HlPev4Q==
-X-Received: by 2002:a17:90a:fec:b0:1f2:8c1f:210b with SMTP id 99-20020a17090a0fec00b001f28c1f210bmr8913583pjz.114.1658994234573;
-        Thu, 28 Jul 2022 00:43:54 -0700 (PDT)
-Received: from debian.me (subs02-180-214-232-25.three.co.id. [180.214.232.25])
-        by smtp.gmail.com with ESMTPSA id i2-20020a626d02000000b0052c0a9234e0sm80pfc.11.2022.07.28.00.43.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Jul 2022 00:43:54 -0700 (PDT)
-Received: by debian.me (Postfix, from userid 1000)
-        id C45B1104A8A; Thu, 28 Jul 2022 14:43:49 +0700 (WIB)
-Date:   Thu, 28 Jul 2022 14:43:49 +0700
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        slade@sladewatkins.com
-Subject: Re: [PATCH 5.15 000/201] 5.15.58-rc1 review
-Message-ID: <YuI+NZPGYYg9g/T3@debian.me>
-References: <20220727161026.977588183@linuxfoundation.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220727161026.977588183@linuxfoundation.org>
+        Thu, 28 Jul 2022 03:45:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37E1660687
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 00:45:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C7CDA61B50
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 07:45:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36D70C433C1;
+        Thu, 28 Jul 2022 07:45:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1658994301;
+        bh=8wAwxJHj72HBZYIRbP52E2RJVCjjZw/lFPUg234x34E=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=OnMF6WSRoFlELzImTeG4w6aj8DsFNilwkuiHoyAECiKioWFsHHkg0KS9OyCHFYdI2
+         NFfulpCZDhYEhuLI6Qe5BiBjWHvPX7/IGkKMPPWO2tP33tLZWWUCfwcvjxb4+apk9q
+         Orw3n4FOa5MgywQZwWySFDpgBXi/A3RmZEUylnkXlmglYHGIx+Oo8fI5dWAz2agBpD
+         OmtBsQ++bOlai18NBGDNOUmfQvSMUCLqYdB+cmY9vkXOR2KVxRMuuow5yMxBn817ns
+         FqXSTwQL40FLra9eTZX2+SpB9fdK+h2NkUDI7e/9vHroru21KZSSrwimJ3KwVLalcA
+         gsRpcxsoBOrSg==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.95)
+        (envelope-from <maz@kernel.org>)
+        id 1oGyCY-00AbRB-W0;
+        Thu, 28 Jul 2022 08:44:59 +0100
+Date:   Thu, 28 Jul 2022 08:44:58 +0100
+Message-ID: <87zggtwuit.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     linux-kernel@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Hou Zhiqiang <Zhiqiang.Hou@nxp.com>,
+        Biwen Li <biwen.li@nxp.com>,
+        Sean Anderson <sean.anderson@seco.com>
+Subject: Re: [PATCH v3] irqchip/ls-extirq: fix invalid wait context by avoiding to use regmap
+In-Reply-To: <20220727160915.3648155-1-vladimir.oltean@nxp.com>
+References: <20220727160915.3648155-1-vladimir.oltean@nxp.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: vladimir.oltean@nxp.com, linux-kernel@vger.kernel.org, lee.jones@linaro.org, tglx@linutronix.de, linux@rasmusvillemoes.dk, arnd@arndb.de, Zhiqiang.Hou@nxp.com, biwen.li@nxp.com, sean.anderson@seco.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 06:08:24PM +0200, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.15.58 release.
-> There are 201 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+On Wed, 27 Jul 2022 17:09:15 +0100,
+Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
+> 
+> The irqchip->irq_set_type method is called by __irq_set_trigger() under
+> the desc->lock raw spinlock.
+> 
+> The ls-extirq implementation, ls_extirq_irq_set_type(), uses an MMIO
+> regmap created by of_syscon_register(), which uses plain spinlocks
+> (the kind that are sleepable on RT).
+> 
+> Therefore, this is an invalid locking scheme for which we get a kernel
+> splat stating just that ("[ BUG: Invalid wait context ]"), because the
+> context in which the plain spinlock may sleep is atomic due to the raw
+> spinlock. We need to go raw spinlocks all the way.
 
-Successfully cross-compiled for arm64 (bcm2711_defconfig, GCC 10.2.0)
-and powerpc (ps3_defconfig, GCC 12.1.0).
+Interesting you say that...
 
-Tested-by: Bagas Sanjaya <bagasdotme@gmail.com>
+> 
+> Make this driver ioremap its INTPCR register on its own, and stop
+> relying on syscon to provide a regmap. Since the regmap we got from
+> syscon belonged to the parent and the newly ioremapped region belongs
+> just to us, the offset to the INTPCR register is now 0, because of the
+> address translation that takes place through the device tree.
+> 
+> One complication, due to the fact that this driver uses IRQCHIP_DECLARE
+> rather than traditional platform devices with probe and remove methods,
+> is that we cannot use devres, so we need to implement a full-blown
+> cleanup procedure on the error path.
+> 
+> Fixes: 0dcd9f872769 ("irqchip: Add support for Layerscape external interrupt lines")
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
+> v2->v3:
+> - stop using regmap, do the rmw manually using function pointers for BE/LE
+> - adapt comment style to the subsystem
+> - use of_device_is_big_endian
+> - reword commit message
+> 
+> v1->v2:
+> - create a separate regmap for the ls-extirq driver rather than relying
+>   on the one provided by syscon or modifying that.
+> 
+> For reference, v1 is at:
+> https://lore.kernel.org/lkml/20210825205041.927788-3-vladimir.oltean@nxp.com/
+> and v2 is at:
+> https://lore.kernel.org/lkml/20220722204019.969272-1-vladimir.oltean@nxp.com/
+> 
+> For extra reviewer convenience, the ls-extirq appears in the following
+> SoC device trees:
+> https://elixir.bootlin.com/linux/v5.18.13/source/arch/arm64/boot/dts/freescale/fsl-ls208xa.dtsi#L289
+> https://elixir.bootlin.com/linux/v5.18.13/source/arch/arm64/boot/dts/freescale/fsl-ls1088a.dtsi#L249
+> https://elixir.bootlin.com/linux/v5.18.13/source/arch/arm64/boot/dts/freescale/fsl-ls1043a.dtsi#L319
+> https://elixir.bootlin.com/linux/v5.18.13/source/arch/arm64/boot/dts/freescale/fsl-ls1046a.dtsi#L325
+> https://elixir.bootlin.com/linux/v5.18.13/source/arch/arm64/boot/dts/freescale/fsl-lx2160a.dtsi#L682
+> https://elixir.bootlin.com/linux/v5.18.13/source/arch/arm/boot/dts/ls1021a.dtsi#L182
+> 
+> Patch tested on LX2160A and LS1021A.
+> 
+>  drivers/irqchip/irq-ls-extirq.c | 91 ++++++++++++++++++++++++---------
+>  1 file changed, 66 insertions(+), 25 deletions(-)
+> 
+> diff --git a/drivers/irqchip/irq-ls-extirq.c b/drivers/irqchip/irq-ls-extirq.c
+> index 853b3972dbe7..cfbbe5959c8e 100644
+> --- a/drivers/irqchip/irq-ls-extirq.c
+> +++ b/drivers/irqchip/irq-ls-extirq.c
+> @@ -6,8 +6,7 @@
+>  #include <linux/irqchip.h>
+>  #include <linux/irqdomain.h>
+>  #include <linux/of.h>
+> -#include <linux/mfd/syscon.h>
+> -#include <linux/regmap.h>
+> +#include <linux/of_address.h>
+>  #include <linux/slab.h>
+>  
+>  #include <dt-bindings/interrupt-controller/arm-gic.h>
+> @@ -16,19 +15,40 @@
+>  #define LS1021A_SCFGREVCR 0x200
+>  
+>  struct ls_extirq_data {
+> -	struct regmap		*syscon;
+> -	u32			intpcr;
+> +	void __iomem		*intpcr;
+> +	u32			(*read)(void __iomem *addr);
+> +	void			(*write)(void __iomem *addr, u32 val);
+>  	bool			is_ls1021a_or_ls1043a;
+>  	u32			nirq;
+>  	struct irq_fwspec	map[MAXIRQ];
+>  };
+>  
+> +static u32 ls_extirq_read_be(void __iomem *addr)
+> +{
+> +	return ioread32be(addr);
+> +}
+> +
+> +static u32 ls_extirq_read(void __iomem *addr)
+> +{
+> +	return ioread32(addr);
+> +}
+> +
+> +static void ls_extirq_write_be(void __iomem *addr, u32 val)
+> +{
+> +	iowrite32be(val, addr);
+> +}
+> +
+> +static void ls_extirq_write(void __iomem *addr, u32 val)
+> +{
+> +	iowrite32(val, addr);
+> +}
+> +
+>  static int
+>  ls_extirq_set_type(struct irq_data *data, unsigned int type)
+>  {
+>  	struct ls_extirq_data *priv = data->chip_data;
+>  	irq_hw_number_t hwirq = data->hwirq;
+> -	u32 value, mask;
+> +	u32 intpcr, value, mask;
+>  
+>  	if (priv->is_ls1021a_or_ls1043a)
+>  		mask = 1U << (31 - hwirq);
+> @@ -51,7 +71,11 @@ ls_extirq_set_type(struct irq_data *data, unsigned int type)
+>  	default:
+>  		return -EINVAL;
+>  	}
+> -	regmap_update_bits(priv->syscon, priv->intpcr, mask, value);
+> +
+> +	intpcr = priv->read(priv->intpcr);
+> +	intpcr &= ~mask;
+> +	intpcr |= value;
+> +	priv->write(priv->intpcr, intpcr);
+
+Which really begs a few questions:
+
+- Where is the locking gone? Sure, the warning is gone. But the driver
+  is now broken for *all* configurations, and not only RT. Result!
+
+- Is it *really* worth it to have 4 dumb helpers that bring nothing in
+  terms of abstraction, and two indirections for something that could
+  equally be expressed with a conditional?
+
+	M.
 
 -- 
-An old man doll... just what I always wanted! - Clara
+Without deviation from the norm, progress is not possible.
