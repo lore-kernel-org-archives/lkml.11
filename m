@@ -2,81 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87A62C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 13:01:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1111AC19F21
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 13:05:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231272AbiG1NBm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 09:01:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40572 "EHLO
+        id S238854AbiG1NFZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 09:05:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236063AbiG1NBi (ORCPT
+        with ESMTP id S237806AbiG1NFV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 09:01:38 -0400
-X-Greylist: delayed 251 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 28 Jul 2022 06:01:37 PDT
-Received: from outpost1.zedat.fu-berlin.de (outpost1.zedat.fu-berlin.de [130.133.4.66])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FC2831921;
-        Thu, 28 Jul 2022 06:01:37 -0700 (PDT)
-Received: from inpost2.zedat.fu-berlin.de ([130.133.4.69])
-          by outpost.zedat.fu-berlin.de (Exim 4.95)
-          with esmtps (TLS1.3)
-          tls TLS_AES_256_GCM_SHA384
-          (envelope-from <glaubitz@zedat.fu-berlin.de>)
-          id 1oH30q-001ykm-C0; Thu, 28 Jul 2022 14:53:12 +0200
-Received: from p5b13af7b.dip0.t-ipconnect.de ([91.19.175.123] helo=[192.168.178.81])
-          by inpost2.zedat.fu-berlin.de (Exim 4.95)
-          with esmtpsa (TLS1.3)
-          tls TLS_AES_128_GCM_SHA256
-          (envelope-from <glaubitz@physik.fu-berlin.de>)
-          id 1oH30p-0025iU-UV; Thu, 28 Jul 2022 14:53:12 +0200
-Message-ID: <28f1be2e-ca7c-1c95-535a-2099ebf607f2@physik.fu-berlin.de>
-Date:   Thu, 28 Jul 2022 14:53:11 +0200
+        Thu, 28 Jul 2022 09:05:21 -0400
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E92E41D11;
+        Thu, 28 Jul 2022 06:05:20 -0700 (PDT)
+Received: from pyrite.rasen.tech (h175-177-042-159.catv02.itscom.jp [175.177.42.159])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id B245556D;
+        Thu, 28 Jul 2022 15:05:15 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1659013518;
+        bh=JEmOw0Vyk+XDbX3u+/p8dfRLUILJaGP7HXoicnF/1D0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=DXcIO3rXXjb+r77sLtxhZqRYaIiJLPkJywLCFq4zEEqY73p+RYLB+VduC48swjD94
+         rB+NU3cR0WDeP9uExu1Pfzkc5vwsMuVb7b0/cn9Ez3eTm/c9huFOF3Sn+Yr65jHYuE
+         7zwF7PIi6hZepO8bVQNWHE651GRwdJY+1UqqFNoM=
+From:   Paul Elder <paul.elder@ideasonboard.com>
+To:     linux-media@vger.kernel.org
+Cc:     Paul Elder <paul.elder@ideasonboard.com>,
+        Dafna Hirschfeld <dafna@fastmail.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        laurent.pinchart@ideasonboard.com,
+        linux-rockchip@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/2] media: rkisp1: Add support for UYVY output
+Date:   Thu, 28 Jul 2022 22:05:03 +0900
+Message-Id: <20220728130505.2077842-1-paul.elder@ideasonboard.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.0.2
-Subject: Re: [PATCH V2 2/3] LoongArch: cpuinfo: Fix a warning for
- CONFIG_CPUMASK_OFFSTACK
-Content-Language: en-US
-To:     Huacai Chen <chenhuacai@gmail.com>,
-        Huacai Chen <chenhuacai@loongson.cn>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Yoshinori Sato <ysato@users.sourceforge.jp>,
-        Rich Felker <dalias@libc.org>, loongarch@lists.linux.dev,
-        linux-arch <linux-arch@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, Guo Ren <guoren@kernel.org>,
-        Xuerui Wang <kernel@xen0n.name>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        "open list:MIPS" <linux-mips@vger.kernel.org>,
-        Linux-sh list <linux-sh@vger.kernel.org>,
-        stable <stable@vger.kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-References: <20220714084136.570176-1-chenhuacai@loongson.cn>
- <20220714084136.570176-2-chenhuacai@loongson.cn>
- <CAAhV-H7W8V8XdJXX5FvyvvSCAbeTSgLEKhHLivm89T-Nd59Umw@mail.gmail.com>
-From:   John Paul Adrian Glaubitz <glaubitz@physik.fu-berlin.de>
-In-Reply-To: <CAAhV-H7W8V8XdJXX5FvyvvSCAbeTSgLEKhHLivm89T-Nd59Umw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Original-Sender: glaubitz@physik.fu-berlin.de
-X-Originating-IP: 91.19.175.123
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi!
+This series adds support for UYVY as an output format in the rkisp1
+driver, for devices that support it. Notably, the i.MX8MP supports it,
+while the rk3399 does not.
 
-On 7/28/22 14:42, Huacai Chen wrote:
-> Since the SH maintainer hasn't responded, I suppose it is better to
-> let both LoongArch fix and SH fix go through your asm-generic tree?
+This series is based on branch pinchartl/v5.19/isp/1 [1] at this repo [2].
 
-I could test on actual SuperH hardware if needed. CC'ing Geert who has
-SH hardware as well.
+[1] https://gitlab.com/ideasonboard/nxp/linux/-/commits/pinchartl/v5.19/isp/1
+[2] https://gitlab.com/ideasonboard/nxp/linux
 
-Adrian
+
+Paul Elder (2):
+  media: rkisp1: Add YC swap capability
+  media: rkisp1: Add UYVY as an output format
+
+ .../platform/rockchip/rkisp1/rkisp1-capture.c | 67 +++++++++++++++++--
+ .../platform/rockchip/rkisp1/rkisp1-common.h  |  2 +
+ .../platform/rockchip/rkisp1/rkisp1-dev.c     |  3 +-
+ 3 files changed, 64 insertions(+), 8 deletions(-)
 
 -- 
-  .''`.  John Paul Adrian Glaubitz
-: :' :  Debian Developer
-`. `'   Physicist
-   `-    GPG: 62FF 8A75 84E0 2956 9546  0006 7426 3B37 F5B5 F913
+2.30.2
 
