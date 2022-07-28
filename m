@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48249C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 03:44:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73EC2C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 03:44:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238095AbiG1Dos (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 23:44:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55576 "EHLO
+        id S237984AbiG1Doy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 23:44:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237282AbiG1Doc (ORCPT
+        with ESMTP id S237458AbiG1Dod (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 23:44:32 -0400
+        Wed, 27 Jul 2022 23:44:33 -0400
 Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0819237F7
-        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 20:44:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FD315C96C
+        for <linux-kernel@vger.kernel.org>; Wed, 27 Jul 2022 20:44:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1658979870; x=1690515870;
+  t=1658979872; x=1690515872;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=C5Rrok48VPOQeWvMWINZH+IgbNSJ+qjOaUdcyANRJcU=;
-  b=Efvu8/C30roHnfUvjzLXCYPMGYDm0bY5LVlU7iNz10GmEv2eKxfH0bbd
-   VsPNo2xlfzW4yKDPyf5Gjm+u+9UcE0lzXpfiTRFAbhkGXzDSv2M7MY+PM
-   9uVyi/Y19qeB7+9EN0YLX9Kmu/HwJz5I+GS9pLCfuLBR3W1Az1QFNejwW
-   AFr6KmIYnstLgV/qBfVtEQaHqTFHRk13sGhRLIkatasgCoM66WhjORz45
-   qBPYPvCFTYv0aB2DLQuL0gS3QD4esvbGMkhRoB+D7Zauq1Rjbs+KiuSN8
-   jNUgOcEbPv6lN1L1nCGE01LoLM2gWx0nb2j++BGPUgSWtJDsvEsTwoGoy
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10421"; a="275292804"
+  bh=WZM+sHwR5mKiQlxSD/3pVSMcPhO4y2IgNx/fpEOJQAI=;
+  b=CDJfi8AyBXfK1pAt/ARQEZs8l0BevZxQpwiweYv/PWzhBC77N7zx0KpU
+   TqwHd6IgmLG1+naRGAYuZ2V3qBqUnTqIwl2XCdGN4oLb5JgTfpZuQopCS
+   iSDYK5h/YDe7k0fmTMtiivkFE9Zl125a4vcDmnWqlRPATh9fNd5syVO5c
+   Pc5+kXvoFIhiOeI9+8pILC36Nf/RfZT9T6nXYwCle5VwFvJjDzGaEsAA8
+   Qaj+97gKrC5K5Iiq2Wn2MlLnnu2sYKbqXEo0W31vD7XNx5kL40+jdgOD3
+   BcwLE0Z10QSq2DascZdcQlvUGLPHQUfe/QyicxRUQ6v5f/oaqN1imWhJ4
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10421"; a="275292808"
 X-IronPort-AV: E=Sophos;i="5.93,196,1654585200"; 
-   d="scan'208";a="275292804"
+   d="scan'208";a="275292808"
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2022 20:44:30 -0700
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2022 20:44:31 -0700
 X-IronPort-AV: E=Sophos;i="5.93,196,1654585200"; 
-   d="scan'208";a="600676736"
+   d="scan'208";a="600676742"
 Received: from hurleyst-mobl.amr.corp.intel.com (HELO skuppusw-desk1.amr.corp.intel.com) ([10.209.106.108])
   by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jul 2022 20:44:30 -0700
 From:   Kuppuswamy Sathyanarayanan 
@@ -54,242 +54,202 @@ Cc:     "H . Peter Anvin" <hpa@zytor.com>,
         marcelo.cerri@canonical.com, tim.gardner@canonical.com,
         khalid.elmously@canonical.com, philip.cox@canonical.com,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v9 2/6] selftests: tdx: Test GetReport TDX attestation feature
-Date:   Wed, 27 Jul 2022 20:44:16 -0700
-Message-Id: <20220728034420.648314-3-sathyanarayanan.kuppuswamy@linux.intel.com>
+Subject: [PATCH v9 4/6] x86/coco: Add cc_decrypted_alloc/free() interfaces
+Date:   Wed, 27 Jul 2022 20:44:18 -0700
+Message-Id: <20220728034420.648314-5-sathyanarayanan.kuppuswamy@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220728034420.648314-1-sathyanarayanan.kuppuswamy@linux.intel.com>
 References: <20220728034420.648314-1-sathyanarayanan.kuppuswamy@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In TDX guest, attestation is used to verify the trustworthiness of a
-TD. During the TD bring-up, Intel TDX module measures and records the
-initial contents and configuration of TD, and at runtime, TD software
-uses runtime measurement registers (RMTRs) to measure and record
-details related to kernel image, command line params, ACPI tables,
-initrd, etc. At TD runtime, Intel SGX attestation infrastructure is
-re-used to attest to these measurement data.
+Confidential computing platforms, such as AMD SEV and Intel TDX,
+protect memory from VMM access. Any memory that is required for
+communication with the VMM must be explicitly shared. It involves
+adjusting page table entries to indicate that the memory is shared and
+notifies VMM about the change.
 
-First step in the TDX attestation process is to get the TDREPORT data.
-It is fixed size data structure generated by the TDX module which
-includes the above mentioned measurements data, a MAC to protect the
-integerity of the TDREPORT, and a 64-Byte of user specified data passed
-during TDREPORT request which can uniquely identify the TDREPORT.
+set_memory_decrypted() converts memory to shared. Before freeing
+memory it has to be converted back with set_memory_encrypted().
 
-Intel's TDX guest driver exposes TDX_CMD_GET_REPORT IOCTL interface to
-get the TDREPORT from the user space.
+The interface works fine for long-term allocations, but for frequent
+short-lived allocations it causes problems. Conversion takes time and
+direct mapping modification leads to its fracturing and performance
+degradation over time.
 
-Add a kernel selftest module to test this ABI and verify the validity
-of generated TDREPORT.
+Direct mapping modifications can be avoided by creating a vmap that
+maps allocated pages as shared while direct mapping is untouched.
 
-Reviewed-by: Tony Luck <tony.luck@intel.com>
-Reviewed-by: Andi Kleen <ak@linux.intel.com>
-Acked-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+But having private mapping of a shared memory causes problems too.
+Any access of such memory via private mapping in TDX guest would
+trigger unrecoverable SEPT violation and termination of the virtual
+machine. It is known that load_unaligned_zeropad() can issue such
+unwanted loads across page boundaries that can trigger the issue.
+
+It can also be fixed by allocating a guard page in front of any memory
+that has to be converted to shared, so load_unaligned_zeropad() will
+roll off to the guard page instead. But it is wasteful and does not
+address cost of the memory conversion.
+
+The next logical step is to introduce a pool of shared memory that can
+share a single guard page and makes conversion less frequent.
+
+Fortunately, the kernel already has such a pool of memory: SWIOTLB
+buffer is used by the DMA API to allocate memory for I/O. The buffer is
+allocated once during the boot, so direct mapping fracturing is not an
+issue and no need for vmap tricks.
+
+Tapping into the SWIOTLB pool requires a device structure and using DMA
+API. Provide a couple of simple helpers to allocate and free shared
+memory that hide required plumbing.
+
 Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 ---
- tools/testing/selftests/Makefile              |   1 +
- tools/testing/selftests/tdx/Makefile          |   7 +
- tools/testing/selftests/tdx/tdx_attest_test.c | 160 ++++++++++++++++++
- 3 files changed, 168 insertions(+)
- create mode 100644 tools/testing/selftests/tdx/Makefile
- create mode 100644 tools/testing/selftests/tdx/tdx_attest_test.c
+ arch/x86/coco/Makefile      |  2 +-
+ arch/x86/coco/mem.c         | 90 +++++++++++++++++++++++++++++++++++++
+ arch/x86/include/asm/coco.h | 10 +++++
+ 3 files changed, 101 insertions(+), 1 deletion(-)
+ create mode 100644 arch/x86/coco/mem.c
 
-diff --git a/tools/testing/selftests/Makefile b/tools/testing/selftests/Makefile
-index de11992dc577..807a839d69c4 100644
---- a/tools/testing/selftests/Makefile
-+++ b/tools/testing/selftests/Makefile
-@@ -69,6 +69,7 @@ TARGETS += sync
- TARGETS += syscall_user_dispatch
- TARGETS += sysctl
- TARGETS += tc-testing
-+TARGETS += tdx
- TARGETS += timens
- ifneq (1, $(quicktest))
- TARGETS += timers
-diff --git a/tools/testing/selftests/tdx/Makefile b/tools/testing/selftests/tdx/Makefile
+diff --git a/arch/x86/coco/Makefile b/arch/x86/coco/Makefile
+index c816acf78b6a..96fc4ec4497f 100644
+--- a/arch/x86/coco/Makefile
++++ b/arch/x86/coco/Makefile
+@@ -3,6 +3,6 @@ CFLAGS_REMOVE_core.o	= -pg
+ KASAN_SANITIZE_core.o	:= n
+ CFLAGS_core.o		+= -fno-stack-protector
+ 
+-obj-y += core.o
++obj-y += core.o mem.o
+ 
+ obj-$(CONFIG_INTEL_TDX_GUEST)	+= tdx/
+diff --git a/arch/x86/coco/mem.c b/arch/x86/coco/mem.c
 new file mode 100644
-index 000000000000..281db209f9d6
+index 000000000000..78bcce11452e
 --- /dev/null
-+++ b/tools/testing/selftests/tdx/Makefile
-@@ -0,0 +1,7 @@
-+# SPDX-License-Identifier: GPL-2.0
-+
-+CFLAGS += -O3 -Wl,-no-as-needed -Wall -static
-+
-+TEST_GEN_PROGS := tdx_attest_test
-+
-+include ../lib.mk
-diff --git a/tools/testing/selftests/tdx/tdx_attest_test.c b/tools/testing/selftests/tdx/tdx_attest_test.c
-new file mode 100644
-index 000000000000..7155cc751eaa
---- /dev/null
-+++ b/tools/testing/selftests/tdx/tdx_attest_test.c
-@@ -0,0 +1,160 @@
-+// SPDX-License-Identifier: GPL-2.0
++++ b/arch/x86/coco/mem.c
+@@ -0,0 +1,90 @@
++// SPDX-License-Identifier: GPL-2.0-only
 +/*
-+ * Test TDX attestation feature
++ * Confidential Computing Decrypted Memory Allocator
 + *
-+ * Copyright (C) 2022 Intel Corporation. All rights reserved.
++ * Copyright (C) 2022 Intel Corporation, Inc.
 + *
-+ * Author: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 + */
 +
++#undef pr_fmt
++#define pr_fmt(fmt)     "cc/mem: " fmt
 +
-+#include <errno.h>
-+#include <fcntl.h>
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <sys/ioctl.h>
-+#include <sys/time.h>
-+#include <sys/types.h>
-+#include <time.h>
-+#include <unistd.h>
++#include <linux/export.h>
++#include <linux/mm.h>
++#include <linux/cc_platform.h>
++#include <linux/set_memory.h>
++#include <linux/platform_device.h>
++#include <linux/dma-mapping.h>
++#include <linux/dma-direct.h>
 +
-+#include "../kselftest_harness.h"
-+#include "../../../../arch/x86/include/uapi/asm/tdx.h"
++#include <asm/coco.h>
++#include <asm/processor.h>
 +
-+#define devname         "/dev/tdx-guest"
-+#define HEX_DUMP_SIZE	8
++#define CC_MEM_DRIVER		"ccmem"
 +
-+/*
-+ * struct td_info - It contains the measurements and initial configuration of
-+ * the TD that was locked at initialization and a set of measurement
-+ * registers that are run-time extendable. These values are copied from the
-+ * TDCS by the TDG.MR.REPORT function.
-+ */
-+struct td_info {
-+	/* TD attributes (like debug, spet_disable, etc) */
-+	__u8 attr[8];
-+	__u64 xfam;
-+	/* Measurement registers */
-+	__u64 mrtd[6];
-+	__u64 mrconfigid[6];
-+	__u64 mrowner[6];
-+	__u64 mrownerconfig[6];
-+	/* Runtime measurement registers */
-+	__u64 rtmr[24];
-+	__u64 reserved[14];
-+};
++static struct platform_device *mem_pdev;
 +
-+/*
-+ * Trusted Execution Environment (TEE) report (TDREPORT_STRUCT) type,
-+ * sub type and version..
-+ */
-+struct tdreport_type {
-+	/* 0 - SGX, 81 -TDX, rest are reserved */
-+	__u8 type;
-+	/* Default value is 0 */
-+	__u8 sub_type;
-+	/* Default value is 0 */
-+	__u8 version;
-+	__u8 reserved;
-+};
-+
-+/*
-+ * struct reportmac - First field in the TEE report structure
-+ * (TRDREPORT_STRUCT). It is common to Intel’s TEE's e.g., SGX and TDX.
-+ * It is MAC-protected and contains hashes of the remainder of the report
-+ * structure which includes the TEE’s measurements, and where applicable,
-+ * the measurements of additional TCB elements not reflected in CPUSVN –
-+ * e.g., a SEAM’s measurements.
-+ */
-+struct reportmac {
-+	struct tdreport_type type;
-+	__u8 reserved1[12];
-+	/* CPU security version */
-+	__u8 cpu_svn[16];
-+	/* SHA384 hash of TEE TCB INFO */
-+	__u8 tee_tcb_info_hash[48];
-+	/* SHA384 hash of TDINFO_STRUCT */
-+	__u8 tee_td_info_hash[48];
-+	/* User defined unique data passed in TDG.MR.REPORT request */
-+	__u8 reportdata[64];
-+	__u8 reserved2[32];
-+	__u8 mac[32];
-+};
-+
-+struct tee_tcb_info {
-+	__u8 data[239];
-+};
-+
-+struct tdreport_data {
-+	struct reportmac _reportmac;
-+	struct tee_tcb_info _tcb_info;
-+	__u8 reserved[17];
-+	struct td_info _tdinfo;
-+};
-+
-+#ifdef DEBUG
-+static void print_array_hex(const char *title, const char *prefix_str,
-+		const void *buf, int len)
++static inline dma_addr_t virt_to_dma(void *vaddr)
 +{
-+	const __u8 *ptr = buf;
-+	int i, rowsize = HEX_DUMP_SIZE;
++	return phys_to_dma(&mem_pdev->dev, virt_to_phys(vaddr));
++}
 +
-+	if (!len || !buf)
++/* Allocate decrypted memory of given size */
++void *cc_decrypted_alloc(size_t size, gfp_t gfp)
++{
++	dma_addr_t handle;
++	void *vaddr;
++
++	if (!mem_pdev)
++		return NULL;
++
++	vaddr = dma_alloc_coherent(&mem_pdev->dev, size, &handle, gfp);
++
++	/*
++	 * Since we rely on virt_to_dma() in cc_decrypted_free() to
++	 * calculate DMA address, make sure address translation works.
++	 */
++	VM_BUG_ON(virt_to_dma(vaddr) != handle);
++
++	return vaddr;
++}
++
++/* Free the given decrypted memory */
++void cc_decrypted_free(void *addr, size_t size)
++{
++	if (!mem_pdev || !addr)
 +		return;
 +
-+	printf("\t\t%s", title);
++	dma_free_coherent(&mem_pdev->dev, size, addr, virt_to_phys(addr));
++}
 +
-+	for (i = 0; i < len; i++) {
-+		if (!(i % rowsize))
-+			printf("\n%s%.8x:", prefix_str, i);
-+		printf(" %.2x", ptr[i]);
++static struct platform_driver cc_mem_driver = {
++	.driver.name = CC_MEM_DRIVER,
++};
++
++static int __init cc_mem_init(void)
++{
++	struct platform_device *pdev;
++	int ret;
++
++	if (!cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT))
++		return -ENODEV;
++
++	ret =  platform_driver_register(&cc_mem_driver);
++	if (ret)
++		return ret;
++
++	pdev = platform_device_register_simple(CC_MEM_DRIVER, -1, NULL, 0);
++	if (IS_ERR(pdev)) {
++		platform_driver_unregister(&cc_mem_driver);
++		return PTR_ERR(pdev);
 +	}
 +
-+	printf("\n");
-+}
-+#endif
++	if (dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(64)))
++		return -EIO;
 +
-+TEST(verify_report)
++	mem_pdev = pdev;
++
++	return 0;
++}
++device_initcall(cc_mem_init);
+diff --git a/arch/x86/include/asm/coco.h b/arch/x86/include/asm/coco.h
+index 3d98c3a60d34..74e10213289c 100644
+--- a/arch/x86/include/asm/coco.h
++++ b/arch/x86/include/asm/coco.h
+@@ -17,6 +17,8 @@ void cc_set_mask(u64 mask);
+ #ifdef CONFIG_ARCH_HAS_CC_PLATFORM
+ u64 cc_mkenc(u64 val);
+ u64 cc_mkdec(u64 val);
++void *cc_decrypted_alloc(size_t size, gfp_t gfp);
++void cc_decrypted_free(void *addr, size_t size);
+ #else
+ static inline u64 cc_mkenc(u64 val)
+ {
+@@ -27,6 +29,14 @@ static inline u64 cc_mkdec(u64 val)
+ {
+ 	return val;
+ }
++
++static inline void *cc_decrypted_alloc(size_t size, gfp_t gfp)
 +{
-+	__u8 reportdata[TDX_REPORTDATA_LEN];
-+	struct tdreport_data *tdr_data;
-+	__u8 tdreport[TDX_REPORT_LEN];
-+	struct tdx_report_req req;
-+	int devfd, i;
-+
-+	devfd = open(devname, O_RDWR | O_SYNC);
-+
-+	ASSERT_LT(0, devfd);
-+
-+	/* Generate sample report data */
-+	for (i = 0; i < TDX_REPORTDATA_LEN; i++)
-+		reportdata[i] = i;
-+
-+	/* Initialize IOCTL request */
-+	req.subtype     = 0;
-+	req.reportdata  = (__u64)reportdata;
-+	req.rpd_len     = TDX_REPORTDATA_LEN;
-+	req.tdreport    = (__u64)tdreport;
-+	req.tdr_len     = TDX_REPORT_LEN;
-+
-+	/* Get TDREPORT */
-+	ASSERT_EQ(0, ioctl(devfd, TDX_CMD_GET_REPORT, &req));
-+
-+	tdr_data = (struct tdreport_data *)tdreport;
-+
-+#ifdef DEBUG
-+	print_array_hex("\n\t\tTDX report data\n", "", reportdata,
-+			sizeof(reportdata));
-+
-+	print_array_hex("\n\t\tTDX tdreport data\n", "", &tdreport,
-+			sizeof(tdreport));
-+#endif
-+
-+	/* Make sure TDREPORT data includes the REPORTDATA passed */
-+	ASSERT_EQ(0, memcmp(&tdr_data->_reportmac.reportdata[0], reportdata,
-+				sizeof(reportdata)));
-+
-+	ASSERT_EQ(0, close(devfd));
++	return NULL;
 +}
 +
-+TEST_HARNESS_MAIN
++static inline void cc_decrypted_free(void *addr, size_t size) { }
++
+ #endif
+ 
+ #endif /* _ASM_X86_COCO_H */
 -- 
 2.25.1
 
