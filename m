@@ -2,153 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D522C19F29
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 08:16:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14460C19F29
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 08:20:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235083AbiG1IQS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 04:16:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33536 "EHLO
+        id S235122AbiG1IUx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 04:20:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233818AbiG1IQQ (ORCPT
+        with ESMTP id S234999AbiG1IUv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 04:16:16 -0400
-Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0D535A2DE;
-        Thu, 28 Jul 2022 01:16:11 -0700 (PDT)
-Received: by mail-oi1-x235.google.com with SMTP id n206so1640381oia.6;
-        Thu, 28 Jul 2022 01:16:11 -0700 (PDT)
+        Thu, 28 Jul 2022 04:20:51 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2C23DF3C
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 01:20:50 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id oy13so1903710ejb.1
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 01:20:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
-         :subject:to:cc;
-        bh=7lsW98oKPVkPLCsPCUl6IaHz/uaCklhdsPPA2BI505I=;
-        b=H1Z3mYYSuNgVzgTaMnKhTChwXt+zdTh2l2xOuhRSEwAzLofUyuHfBEUdrnklEexybx
-         F7SAUywk/419CihGTiYx5D7f3Yt932xZq94tpP8oU10oim8NwhGGXZZ3+lvFvBNBPamt
-         gZig97+R4szINucIMvgTQOjtsQOIDZ9HIvYAALDIJoEvFbzELVHjSav+dbEoF1QArtCc
-         VWfvmOyWZksumrEcAShJEII3LHYxotFwFBZ4tIY4q3tip5i6BbBcTBkt3zYqR9nBb0OF
-         QeZPIcWFSUlc8C9IL97fOjtF/H4fZLkwWi29k6vgQkHpqj01E1ZnXO8blJXMaDJ0voiy
-         kVkQ==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=b8yaGykLxy3JXgAVB99MNI414UbxUnFpphZzzQcU4IM=;
+        b=sRGDS4/DJdbYg3UbPttpXR1hJehsQSxGyURnB6pco2hLtFGiQKUVuS6pzvclVoAq+R
+         vzx+BUyQtPIw0zD9dVI0Qsi5p+eZts+X5sL+Ohy4cgPn/WOxgLW90IYSnxFB5py0amTS
+         6wjg2NkJyJHh0bUXJ6uWkqeXB6ttBSAm6yugu2UrUSEqwO/SUZfTcHt6xcUUgKUhgzQc
+         9F5cDXoyVOwlj8Ee41///K7NeqUuW2gVUcPx9KSsAyr4AevWtcmnXQu64eXxC6EzHKqX
+         RLyFjmfw0e3TkzZOsuHSL6l7snjKsI8UNPHleG01nrYipcVfaeRn3nBCjj0w346+aCzK
+         3zcA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
-         :from:date:message-id:subject:to:cc;
-        bh=7lsW98oKPVkPLCsPCUl6IaHz/uaCklhdsPPA2BI505I=;
-        b=dbssjRcc/Nvsitx4NE3huDqNaB6Nk8WrNlqQq5RaeC8xeQj/YyRomr6gbhvVZzlqUB
-         lRqHYyvHkZUu45WtHT/VDgePe8W6DQ0A8/ikJROQyhUMr4F05AbyV49Fqc/D4/bfQxse
-         5DNJcgiEvyeXDNxc5ZK2+45+hlST3NVLxH3HUrvv/IyIFfRRRV5wNYVtXAfQWSAsAebL
-         EpbI4ixUcP9HvYgd/7uCVuByS3ccE3/Mh5dXNbW/wR2m2YbQMKuKrzzZPDUPhtAzyvQL
-         ekSkkL9n2Vh64xg5ld+nnE4j0wLFGRgMlaqa0etjQH/jYWZq31Kp5eWKr3RT2S8qyRNS
-         muLQ==
-X-Gm-Message-State: AJIora9wGUtsbqz40FhC8EesiRRo4pn8qE/TkbDv1cYYrv+dJmHo7tn3
-        01wBtvgPbnyw0PlplYLBADKKKUAzizhf7ByVmDQ8BFjcKqPeMA==
-X-Google-Smtp-Source: AGRyM1tGfo1Q6iew4ExpxYfhfjIpNHORqOyeSbAd494+gj107w43w2CJ9gxJXOFv/vgtpvTWQLmATunfa20FS1014gg=
-X-Received: by 2002:a05:6808:302b:b0:2f9:eeef:f03 with SMTP id
- ay43-20020a056808302b00b002f9eeef0f03mr3518377oib.128.1658996170924; Thu, 28
- Jul 2022 01:16:10 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=b8yaGykLxy3JXgAVB99MNI414UbxUnFpphZzzQcU4IM=;
+        b=2Oi95XD6Ocn1Z1b39KGb72KeoGnrjAOrUNJvjzuvcnxjKzwl/JgTUwa3ukkQGALEIU
+         pnOcfxlnP8fzVBf9TP0Tc2wt5zgNJUAVlB6qSGmEe+gpucKQBYPqEdRnfn/Tv3jH+ih/
+         w0P6jbLkNIQVx6tZVhdy8RkedobZQ1x54lUsurvf5L7LVPPEsXiaQq44jouhnrvKMT7J
+         aK6tcxSdmUqgot+OIuJWlg3WsrrDDplXqB0wD1peBimGTdMx1RFBxqS/UBHhgDrNAexq
+         /dMctQjG9bDZNpM7dcKuwXuHmj7X3d+4oJKhUmvUSn8oVQvLkw9yCVw0gp7XBxUZPTMt
+         tc3A==
+X-Gm-Message-State: AJIora8KGi87/2li44uWqGLi/d16oYE+p1VJ0U8FfHDSD259jXMUbcN4
+        NI/pGwXMUKM2fDfC/n7uT0adli/DJsSd81Wo1dXJIDOv4r3P1g==
+X-Google-Smtp-Source: AGRyM1tyV3Y/sjzyFu9itiyDXCvn6rfhxdEc566pCiXbN7NLo+tvxxivyTL74rRpWihOr23c9JRpZmuxTIfJXDm0JaE=
+X-Received: by 2002:a17:907:87b0:b0:72f:ceb6:5fd2 with SMTP id
+ qv48-20020a17090787b000b0072fceb65fd2mr16476753ejc.448.1658996449106; Thu, 28
+ Jul 2022 01:20:49 -0700 (PDT)
 MIME-Version: 1.0
-References: <870c02d4d97a921f02a31fa3b229fc549af61a20.1657747763.git.bristot@kernel.org>
- <CA+icZUV9waE16ZW4RNEDeiemv6eRd=MetzdGbF-vpfT_u1N4_w@mail.gmail.com>
-In-Reply-To: <CA+icZUV9waE16ZW4RNEDeiemv6eRd=MetzdGbF-vpfT_u1N4_w@mail.gmail.com>
-Reply-To: sedat.dilek@gmail.com
-From:   Sedat Dilek <sedat.dilek@gmail.com>
-Date:   Thu, 28 Jul 2022 10:15:34 +0200
-Message-ID: <CA+icZUX2v-u8tL-U73hZJ0nNHXJ6XQYPupTRBV9QaQN88OF2bw@mail.gmail.com>
-Subject: Re: [PATCH V2] rtla: Fix Makefile when called from -C tools/
-To:     Daniel Bristot de Oliveira <bristot@kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     linux-kernel@vger.kernel.org, linux-trace-devel@vger.kernel.org,
-        Steven Rostedt <rostedt@goodmis.org>
+References: <20220727161012.056867467@linuxfoundation.org>
+In-Reply-To: <20220727161012.056867467@linuxfoundation.org>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Thu, 28 Jul 2022 13:50:35 +0530
+Message-ID: <CA+G9fYv0sqJuPeKHXp5Wq0AWyp=KtSd4RqJnwy8W4p2WJHtS2w@mail.gmail.com>
+Subject: Re: [PATCH 5.10 000/105] 5.10.134-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 28, 2022 at 10:01 AM Sedat Dilek <sedat.dilek@gmail.com> wrote:
+On Wed, 27 Jul 2022 at 22:02, Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
 >
-> On Wed, Jul 13, 2022 at 11:32 PM Daniel Bristot de Oliveira
-> <bristot@kernel.org> wrote:
-> >
-> > Sedat Dilek reported an error on rtla Makefile when running:
-> >
-> >     $ make -C tools/ clean
-> >     [...]
-> >     make[2]: Entering directory
-> >     '/home/dileks/src/linux-kernel/git/tools/tracing/rtla'
-> >     [...]
-> >     '/home/dileks/src/linux-kernel/git/Documentation/tools/rtla'
-> >     /bin/sh: 1: test: rtla-make[2]:: unexpected operator    <------ The problem
-> >     rm: cannot remove '/home/dileks/src/linux-kernel/git': Is a directory
-> >     make[2]: *** [Makefile:120: clean] Error 1
-> >     make[2]: Leaving directory
-> >
-> > This occurred because the rtla calls kernel's Makefile to get the
-> > version in silence mode, e.g.,
-> >
-> >     $ make -sC ../../.. kernelversion
-> >     5.19.0-rc4
-> >
-> > But the -s is being ignored when rtla's makefile is called indirectly,
-> > so the output looks like this:
-> >
-> >     $ make -C ../../.. kernelversion
-> >     make: Entering directory '/root/linux'
-> >     5.19.0-rc4
-> >     make: Leaving directory '/root/linux'
-> >
-> > Using 'grep -v make' avoids this problem, e.g.,
-> >
-> >     $ make -C ../../.. kernelversion | grep -v make
-> >     5.19.0-rc4
-> >
-> > Thus, add | grep -v make.
-> >
-> > Cc: Steven Rostedt <rostedt@goodmis.org>
-> > Fixes: 8619e32825fd ("rtla: Follow kernel version")
-> > Reported-by: Sedat Dilek <sedat.dilek@gmail.com>
-> > Tested-by: Sedat Dilek <sedat.dilek@gmail.com>
-> > Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+> This is the start of the stable review cycle for the 5.10.134 release.
+> There are 105 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 >
-> Hi,
+> Responses should be made by Fri, 29 Jul 2022 16:09:50 +0000.
+> Anything received after that time might be too late.
 >
-> what is the status of this patch?
+> The whole patch series can be found in one patch at:
+>         https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-=
+5.10.134-rc1.gz
+> or in the git tree and branch at:
+>         git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable=
+-rc.git linux-5.10.y
+> and the diffstat can be found below.
 >
-> Is it missing some ACKs e.g. from Steven?
+> thanks,
 >
-> Can this go directly to Linus tree as I wanted to see it in Linux v5.19 FINAL?
->
-> Thanks.
->
+> greg k-h
 
-INFO:
+Results from Linaro=E2=80=99s test farm.
+No regressions on arm64, arm, x86_64, and i386.
 
-Steven's autoresponder says:
+Tested-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-I'm currently traveling and may be slow to respond (and may not at all).
-I'll be back at my normal hours on Tuesday, Aug 2nd.
+## Build
+* kernel: 5.10.134-rc1
+* git: https://gitlab.com/Linaro/lkft/mirrors/stable/linux-stable-rc
+* git branch: linux-5.10.y
+* git commit: d2801d3917f2749cb2ec1788ee94021acbb8c2ad
+* git describe: v5.10.133-106-gd2801d3917f2
+* test details:
+https://qa-reports.linaro.org/lkft/linux-stable-rc-linux-5.10.y/build/v5.10=
+.133-106-gd2801d3917f2
 
-Here the lore-link to v2:
+## Test Regressions (compared to v5.10.133)
+No test regressions found.
 
-[1] https://lore.kernel.org/all/870c02d4d97a921f02a31fa3b229fc549af61a20.1657747763.git.bristot@kernel.org/
+## Metric Regressions (compared to v5.10.133)
+No metric regressions found.
 
--Sedat-
+## Test Fixes (compared to v5.10.133)
+No test fixes found.
 
->
-> > ---
-> >  tools/tracing/rtla/Makefile | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/tools/tracing/rtla/Makefile b/tools/tracing/rtla/Makefile
-> > index 3822f4ea5f49..1bea2d16d4c1 100644
-> > --- a/tools/tracing/rtla/Makefile
-> > +++ b/tools/tracing/rtla/Makefile
-> > @@ -1,6 +1,6 @@
-> >  NAME   :=      rtla
-> >  # Follow the kernel version
-> > -VERSION :=     $(shell cat VERSION 2> /dev/null || make -sC ../../.. kernelversion)
-> > +VERSION :=     $(shell cat VERSION 2> /dev/null || make -sC ../../.. kernelversion | grep -v make)
-> >
-> >  # From libtracefs:
-> >  # Makefiles suck: This macro sets a default value of $(2) for the
-> > --
-> > 2.32.0
-> >
+## Metric Fixes (compared to v5.10.133)
+No metric fixes found.
+
+## Test result summary
+total: 131801, pass: 119019, fail: 509, skip: 11715, xfail: 558
+
+## Build Summary
+* arc: 10 total, 10 passed, 0 failed
+* arm: 308 total, 308 passed, 0 failed
+* arm64: 62 total, 60 passed, 2 failed
+* i386: 52 total, 50 passed, 2 failed
+* mips: 45 total, 45 passed, 0 failed
+* parisc: 12 total, 12 passed, 0 failed
+* powerpc: 51 total, 51 passed, 0 failed
+* riscv: 27 total, 27 passed, 0 failed
+* s390: 21 total, 21 passed, 0 failed
+* sh: 24 total, 24 passed, 0 failed
+* sparc: 12 total, 12 passed, 0 failed
+* x86_64: 56 total, 54 passed, 2 failed
+
+## Test suites summary
+* fwts
+* igt-gpu-tools
+* kunit
+* kvm-unit-tests
+* libgpiod
+* libhugetlbfs
+* log-parser-boot
+* log-parser-test
+* ltp-cap_bounds
+* ltp-commands
+* ltp-containers
+* ltp-controllers
+* ltp-cpuhotplug
+* ltp-crypto
+* ltp-cve
+* ltp-dio
+* ltp-fcntl-locktests
+* ltp-filecaps
+* ltp-fs
+* ltp-fs_bind
+* ltp-fs_perms_simple
+* ltp-fsx
+* ltp-hugetlb
+* ltp-io
+* ltp-ipc
+* ltp-math
+* ltp-mm
+* ltp-nptl
+* ltp-open-posix-tests
+* ltp-pty
+* ltp-sched
+* ltp-securebits
+* ltp-smoke
+* ltp-syscalls
+* ltp-tracing
+* network-basic-tests
+* packetdrill
+* rcutorture
+* ssuite
+* v4l2-compliance
+* vdso
+
+--
+Linaro LKFT
+https://lkft.linaro.org
