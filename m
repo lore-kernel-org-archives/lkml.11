@@ -2,226 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 384DCC19F21
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 00:00:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93E6CC19F21
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 00:02:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234277AbiG1AAy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 27 Jul 2022 20:00:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46682 "EHLO
+        id S234324AbiG1ACc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 27 Jul 2022 20:02:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234253AbiG1AAv (ORCPT
+        with ESMTP id S232834AbiG1ACa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 27 Jul 2022 20:00:51 -0400
-Received: from mail-oa1-f54.google.com (mail-oa1-f54.google.com [209.85.160.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF773BE06;
-        Wed, 27 Jul 2022 17:00:47 -0700 (PDT)
-Received: by mail-oa1-f54.google.com with SMTP id 586e51a60fabf-10e49d9a59bso480174fac.5;
-        Wed, 27 Jul 2022 17:00:47 -0700 (PDT)
+        Wed, 27 Jul 2022 20:02:30 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18C1818345;
+        Wed, 27 Jul 2022 17:02:29 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id ha11so490062pjb.2;
+        Wed, 27 Jul 2022 17:02:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:from:subject:to:cc
+         :references:content-language:in-reply-to:content-transfer-encoding;
+        bh=5f8IoG6sGlHPscn1UbjAGOabACLzRqwoDg7QWMu4BQc=;
+        b=A9yH6cKVVd2fkMr1M4QzDODZN8DR01SPOXG88EjVD5mWcXwQQ5AIXq4LPLs2LtXqaa
+         j5ISHHLSBCphqBmgt9Zs2Wb9ZdqKU3WgAJGCLmyh1FNyyCy6Co7S7rm/pYDiW3A1Pm/f
+         mtZ5/2EdFhPnlt3F3rLXqKdYMV1iiGA+435DG83c3EaUKqckMDbDnU2vj23n24Plclwx
+         2NBrS33O6GW8ZoGlD4OUHOIMDm48Fv6vowRPhcZNnd6TNsFdnFne2JwmRIspYzpmGr2I
+         NvG6VnSQTzen3zTzDdQwOWWiG6tgqr3k5S8kMFgvoxHFi/irtKiYO1frWqacEuOTHQye
+         ckhg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=X+oQUWY05StzsJvhE+BaApcn8j4FoC6AtwezEzT7oX0=;
-        b=rWkjMr9Sa7TN0ybcv5H4lp5PBUrfb6s5tWC00sWKLmwpx3yir/8gMKAYZDlb0KcyTE
-         gwslKIeMPb2/cWg+nndgYQq76qlPIRXD4kNUcMLejUJ0YiTFerPk/UCgHQy6mu0xpqwz
-         p/fhMEHc+aAanMMboaKHngt0pH1UvFueq/wkCRWwoy5b8AMbP54mTck4Xa5a6LBlvn5m
-         R2EgDtPzswp3ReZnU1qUq0/AQ7xl7aI6XzOWz3xor2vaK+FscII4hPiuy54BuBhAOhPl
-         aL0IAtyfhMFZ53WpH8ox9zoyhDvannOiV7aJ1Bm81/FgK15zgwF4cV317wIbi3+0ptLJ
-         R/Bw==
-X-Gm-Message-State: AJIora+3lPSIeM/dagvQV/lTPheigsHvO5GAYFXa9kn1TMC8+etl38a1
-        00RGB0kfW98eZwj7p8u92ydU38wAlyZvl3B/Jls=
-X-Google-Smtp-Source: AGRyM1viIoXr0rlMUG/E0FM08nH62aWSlzNyzw1mjtt3Ds673zB0a1i9H/FYZP+R2SCW7l7K6CLmAJubY4b6PdcNMgI=
-X-Received: by 2002:a05:6870:a182:b0:10b:efbe:e65d with SMTP id
- a2-20020a056870a18200b0010befbee65dmr3466726oaf.5.1658966447128; Wed, 27 Jul
- 2022 17:00:47 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
+         :subject:to:cc:references:content-language:in-reply-to
+         :content-transfer-encoding;
+        bh=5f8IoG6sGlHPscn1UbjAGOabACLzRqwoDg7QWMu4BQc=;
+        b=MbJpkDyHocmzVcdTeV6Vr6Zkpri/cX2TQ/mVQyk3387/NRl7zixmX/AtiZisXNwy0N
+         aSTWieSPmH8mb68RQOK+VCQPJl+/KqjjUaeViktvfNTZQd+acqqZv8TfjpKit0b3cw5v
+         gjH20WDE+4nmvICFUL2P00UwBdhC7kk34FafoYqBD6/Z7g2Bif9wHkvHLbzlEg0fXxcd
+         FuB4QSEFBJMYhgloWgteEh1Hh8hvj2RKbhcRq+JInEdd1LpRrRh//pAgcfLyzdwsduSc
+         s/KC5i7X8NhoqaDZlEraVfJXbf/sYVSqha5DQ2T5oqyKWqzDUlZtL7I7rp7dNZN0Iuou
+         BDhw==
+X-Gm-Message-State: AJIora/x9AQKba79goOFwtEEP6mjx+k9/panXfz9Hgo5nzUAxwUKuIM/
+        gcREKfGftVTnZMafnevrfW8=
+X-Google-Smtp-Source: AGRyM1uDkSsvQfFFg5Le8P14DjyhSYOh7iqPZWpWN9Y8DHAqW954IXboZeVKO7fKHTqtvEtP5Lutxw==
+X-Received: by 2002:a17:902:f609:b0:168:dcbe:7c4d with SMTP id n9-20020a170902f60900b00168dcbe7c4dmr23651260plg.169.1658966548461;
+        Wed, 27 Jul 2022 17:02:28 -0700 (PDT)
+Received: from [192.168.1.102] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id o3-20020a1709026b0300b0016b953872a7sm14265664plk.201.2022.07.27.17.02.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 Jul 2022 17:02:27 -0700 (PDT)
+Message-ID: <d57329c9-0600-3930-3f24-f1ceae735b20@gmail.com>
+Date:   Wed, 27 Jul 2022 17:02:26 -0700
 MIME-Version: 1.0
-References: <20220709015033.38326-1-yangjihong1@huawei.com> <20220709015033.38326-7-yangjihong1@huawei.com>
-In-Reply-To: <20220709015033.38326-7-yangjihong1@huawei.com>
-From:   Namhyung Kim <namhyung@kernel.org>
-Date:   Wed, 27 Jul 2022 17:00:36 -0700
-Message-ID: <CAM9d7chkZzYmuuo3XZ4NdpAErv-5ermDBtOQ+ZaO30t=KuTNQg@mail.gmail.com>
-Subject: Re: [RFC v3 06/17] perf kwork: Implement perf kwork report
-To:     Yang Jihong <yangjihong1@huawei.com>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@kernel.org>, Paul Clarke <pc@us.ibm.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-perf-users <linux-perf-users@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
+ Thunderbird/102.0.3
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [PATCH 5.10 000/105] 5.10.134-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+References: <20220727161012.056867467@linuxfoundation.org>
+Content-Language: en-US
+In-Reply-To: <20220727161012.056867467@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 8, 2022 at 6:53 PM Yang Jihong <yangjihong1@huawei.com> wrote:
->
-> Implements framework of perf kwork report, which is used to report time
-> properties such as run time and frequency:
->
-> Test cases:
->
->   # perf kwork
->
->    Usage: perf kwork [<options>] {record|report}
->
->       -D, --dump-raw-trace  dump raw trace in ASCII
->       -f, --force           don't complain, do it
->       -k, --kwork <kwork>   list of kwork to profile (irq, softirq, workqueue, etc)
->       -v, --verbose         be more verbose (show symbol address, etc)
->
->   # perf kwork report -h
->
->    Usage: perf kwork report [<options>]
->
->       -C, --cpu <cpu>       list of cpus to profile
->       -i, --input <file>    input file name
->       -n, --name <name>     event name to profile
->       -s, --sort <key[,key2...]>
->                             sort by key(s): runtime, max, count
->       -S, --with-summary    Show summary with statistics
->           --time <str>      Time span for analysis (start,stop)
->
->   # perf kwork report
->
->     Kwork Name                     | Cpu  | Total Runtime | Count     | Max runtime   | Max runtime start   | Max runtime end     |
->    --------------------------------------------------------------------------------------------------------------------------------
->    --------------------------------------------------------------------------------------------------------------------------------
->
->   # perf kwork report -S
->
->     Kwork Name                     | Cpu  | Total Runtime | Count     | Max runtime   | Max runtime start   | Max runtime end     |
->    --------------------------------------------------------------------------------------------------------------------------------
->    --------------------------------------------------------------------------------------------------------------------------------
->     Total count            :         0
->     Total runtime   (msec) :     0.000 (0.000% load average)
->     Total time span (msec) :     0.000
->    --------------------------------------------------------------------------------------------------------------------------------
->
->   # perf kwork report -C 0,100
->   Requested CPU 100 too large. Consider raising MAX_NR_CPUS
->   Invalid cpu bitmap
->
->   # perf kwork report -s runtime1
->     Error: Unknown --sort key: `runtime1'
->
->    Usage: perf kwork report [<options>]
->
->       -C, --cpu <cpu>       list of cpus to profile
->       -i, --input <file>    input file name
->       -n, --name <name>     event name to profile
->       -s, --sort <key[,key2...]>
->                             sort by key(s): runtime, max, count
->       -S, --with-summary    Show summary with statistics
->           --time <str>      Time span for analysis (start,stop)
->
->   # perf kwork report -i perf_no_exist.data
->   failed to open perf_no_exist.data: No such file or directory
->
->   # perf kwork report --time 00FFF,
->   Invalid time span
->
-> Since there are no report supported events, the output is empty.
->
-> Briefly describe the data structure:
-> 1. "class" indicates event type. For example, irq and softiq correspond
-> to different types.
-> 2. "cluster" refers to a specific event corresponding to a type. For
-> example, RCU and TIMER in softirq correspond to different clusters,
-> which contains three types of events: raise, entry, and exit.
+On 7/27/22 09:09, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.10.134 release.
+> There are 105 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Fri, 29 Jul 2022 16:09:50 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.134-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
 
-Maybe I'm too late... but it's now "work", right?
+On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels and build tested on 
+BMIPS_GENERIC:
 
-> 3. "atom" includes time of each sample and sample of the previous phase.
-> (For example, exit corresponds to entry, which is used for timehist.)
->
-> Signed-off-by: Yang Jihong <yangjihong1@huawei.com>
-> ---
->  tools/perf/Documentation/perf-kwork.txt |  33 +
->  tools/perf/builtin-kwork.c              | 859 +++++++++++++++++++++++-
->  tools/perf/util/kwork.h                 | 161 +++++
->  3 files changed, 1051 insertions(+), 2 deletions(-)
->
-> diff --git a/tools/perf/Documentation/perf-kwork.txt b/tools/perf/Documentation/perf-kwork.txt
-> index c5b52f61da99..b79b2c0d047e 100644
-> --- a/tools/perf/Documentation/perf-kwork.txt
-> +++ b/tools/perf/Documentation/perf-kwork.txt
-> @@ -17,8 +17,11 @@ There are several variants of 'perf kwork':
->    'perf kwork record <command>' to record the kernel work
->    of an arbitrary workload.
->
-> +  'perf kwork report' to report the per kwork runtime.
-> +
->      Example usage:
->          perf kwork record -- sleep 1
-> +        perf kwork report
->
->  OPTIONS
->  -------
-> @@ -38,6 +41,36 @@ OPTIONS
->  --verbose::
->         Be more verbose. (show symbol address, etc)
->
-> +OPTIONS for 'perf kwork report'
-> +----------------------------
-> +
-> +-C::
-> +--cpu::
-> +       Only show events for the given CPU(s) (comma separated list).
-> +
-> +-i::
-> +--input::
-> +       Input file name. (default: perf.data unless stdin is a fifo)
-> +
-> +-n::
-> +--name::
-> +       Only show events for the given name.
-> +
-> +-s::
-> +--sort::
-> +       Sort by key(s): runtime, max, count
-> +
-> +-S::
-> +--with-summary::
-> +       Show summary with statistics
-> +
-> +--time::
-> +       Only analyze samples within given time window: <start>,<stop>. Times
-> +       have the format seconds.microseconds. If start is not given (i.e., time
-> +       string is ',x.y') then analysis starts at the beginning of the file. If
-> +       stop time is not given (i.e, time string is 'x.y,') then analysis goes
-> +       to end of file.
-> +
->  SEE ALSO
->  --------
->  linkperf:perf-record[1]
-> diff --git a/tools/perf/builtin-kwork.c b/tools/perf/builtin-kwork.c
-> index 8086236b7513..9c488d647995 100644
-> --- a/tools/perf/builtin-kwork.c
-> +++ b/tools/perf/builtin-kwork.c
-> @@ -25,6 +25,460 @@
->  #include <linux/time64.h>
->  #include <linux/zalloc.h>
->
-> +/*
-> + * report header elements width
-> + */
-> +#define PRINT_CPU_WIDTH 4
-> +#define PRINT_COUNT_WIDTH 9
-> +#define PRINT_RUNTIME_WIDTH 10
-> +#define PRINT_TIMESTAMP_WIDTH 17
-> +#define PRINT_KWORK_NAME_WIDTH 30
-> +#define RPINT_DECIMAL_WIDTH 3
-> +#define PRINT_TIME_UNIT_SEC_WIDTH 2
-> +#define PRINT_TIME_UNIT_MESC_WIDTH 3
-
-MSEC ?
-
-Thanks,
-Namhyung
-
-
-> +#define PRINT_RUNTIME_HEADER_WIDTH (PRINT_RUNTIME_WIDTH + PRINT_TIME_UNIT_MESC_WIDTH)
-> +#define PRINT_TIMESTAMP_HEADER_WIDTH (PRINT_TIMESTAMP_WIDTH + PRINT_TIME_UNIT_SEC_WIDTH)
-> +
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
