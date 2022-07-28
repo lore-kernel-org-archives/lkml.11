@@ -2,115 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65AC8C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 11:49:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9E75C19F2C
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 11:50:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236719AbiG1Ltv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 07:49:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53774 "EHLO
+        id S236520AbiG1LuY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 07:50:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236167AbiG1Ltr (ORCPT
+        with ESMTP id S236850AbiG1LuT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 07:49:47 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 470C2691E1
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 04:49:46 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id pw15so1625697pjb.3
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 04:49:46 -0700 (PDT)
+        Thu, 28 Jul 2022 07:50:19 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D0D813E1E
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 04:50:18 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id w15so2433642lft.11
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 04:50:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FuGo2hGCGa82jk275UGlQ/lMBHWW+gC0TJ/OSJFNVVg=;
-        b=FTKOAJsOgk6g90cTCOXS+Q0GEu2Eh/zcFwc4Kl3pJny2BfESLuzfyKZcN4Sh+KfTD5
-         oTYH8gTgLno9nNaCmGySvu80n4iTRTArslvqls6yRLLW5CIUCXxfxeZyRKF5/5GOXMFi
-         M2XiaesdcoWVKi33w2bh9QyR8cxY+QNSNufUGse+I8Us5zSfvx4fKKgePwvXprVXZecy
-         4Go9fu/YdhOgdRyY0VGLN17DRtIuP+XDds4Cjp6hrOUWTedVVJmJGSO4897NQOfqG9Ih
-         yQ2V99H1NuLoNLNoK13w30v/fCGdJVs8HwjPru2BrBKZylJbjS5IW/5gfZ/HxvlJ7/gC
-         1UIg==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=7xpPHdGqf/twjarqLThIKnxxVR76bJ0+Y4hOdD6FTH0=;
+        b=u9RxphfEhlesMJTgJ2DTHDXp2Is+k+Yy6xHKD/10S8uOdq7uzCt1W2XYvdxDzhXztZ
+         c33fK2uiiX/zGMz54CexpA3Sllzj/9EaYd7ZV0sbG7JTAaljvjGU1o0APd4Tf+oiOuRi
+         dHLO3+QXs45GLqryQq2oN147NTNMGzEGq8WTpGHCo77FZDgC80+mgbvsjE0aUcYNpe3Z
+         Oc+XaUdhjtuENe6nqBnYhxu2KGzzP0NESPHglrlcTK54eC5hP5bC/NH54ZMrMawjUz1U
+         gXwELDJTyehwB9Jv3q9JOyyXsvKF9aCL8TfoPxcXR2sXRYnOHNTbBtVazD49FNOqrXJI
+         iOXg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=FuGo2hGCGa82jk275UGlQ/lMBHWW+gC0TJ/OSJFNVVg=;
-        b=7SLkgwAAmMdcHe80X5IfaJYhwAsyuoheNDFl4ZV4ne8OIATZMsuQbks+wWwQsD6Oim
-         UHgKvvzFQInDohNXc/gGX+J1xYna7sJRPRQVr4/9ge38HhndRL5kT6NltvEBoUlvS/Vf
-         fFgaUjGg/vWXTJk4wCsUlcxJR3i+0CgT5IaqOVu8C83yb43eeo33JLaOUvv3ejiC+1bh
-         gks2XK24sFURSG259dCvwcbRkL5u0feXkcN6rKTMHSMk8dE3ZJJLwckeQXSHF/aCvWWe
-         OMo9s9NyTQ7uMKeKWi0vQNfNuje1auuTDAcNqblFY/0suLfV9wqmE0kZ0WJczigpYjhh
-         +x4w==
-X-Gm-Message-State: AJIora9qn9Z17k6lhfifyHLRB1gjqmH5+UFgSRZo0vB40df11iRFdHX4
-        pC5NuS19CFSZEIzEBR06BijuFA==
-X-Google-Smtp-Source: AGRyM1vRx4Ytrd2vFeDMnd3OtaGgG6/z+Iwyu3C5PKp8GWsE/nyxpX848go4H8AyshSw+bjyqFsQ5w==
-X-Received: by 2002:a17:90b:1d12:b0:1f1:8d48:abaa with SMTP id on18-20020a17090b1d1200b001f18d48abaamr10158277pjb.96.1659008985827;
-        Thu, 28 Jul 2022 04:49:45 -0700 (PDT)
-Received: from bogon.bytedance.net ([61.120.150.71])
-        by smtp.gmail.com with ESMTPSA id f4-20020a62db04000000b005251fc16ff8sm477419pfg.220.2022.07.28.04.49.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Jul 2022 04:49:45 -0700 (PDT)
-From:   Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>
-To:     miklos@szeredi.hu
-Cc:     linux-unionfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        songmuchun@bytedance.com,
-        Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>,
-        Hongbo Yin <yinhongbo@bytedance.com>,
-        Tianci Zhang <zhangtianci.1997@bytedance.com>
-Subject: [PATCH v2] ovl: drop WARN_ON() dentry is NULL in ovl_encode_fh()
-Date:   Thu, 28 Jul 2022 19:49:15 +0800
-Message-Id: <20220728114915.91021-1-zhangjiachen.jaycee@bytedance.com>
-X-Mailer: git-send-email 2.35.1
+        bh=7xpPHdGqf/twjarqLThIKnxxVR76bJ0+Y4hOdD6FTH0=;
+        b=SLxRfnv++XxeGo9UEk/+/XsqWrfwoOP6E/TDaaEQkFYy+fWaF9mvufmCvM76bfqBLy
+         GZtw1YuTdw+UysPvweWMkk1C2hKPjlex26LJZwfItBl67QKoPSs+5/iuFA9lOKoLMxZk
+         WSxIKuSHw3L4PdyvRziqxdBnRWWZfma17gmVEfaICyjJ9tjjUGhTCTYf1ugppC1iklRI
+         PJJALrl/CO1yEwTq6aFKnGOxC3LSx+bx00o78Eye21HIIOoGijpaqNFwnDQXyh1rc6X/
+         FXk+uU/3KYe+6F3GPCZE/s+VCGwpfqLOh87ZvborMFj08CMR0fh2H/9tydTmj7tLXIyO
+         XHrw==
+X-Gm-Message-State: AJIora/4Inwlle4ONAtPaU4WIF6X2913WhrwBHgK0Z7h140ylPuY7i75
+        roA8gN7StHPxSKmHlnIhf1XBhw==
+X-Google-Smtp-Source: AGRyM1v/NiequENiAj7aR5vCW9GvvpY8xU5xz6IyBFp6PvvVx8Zz8iDfP8Up4QHmcWvCQ7F+NHVtWQ==
+X-Received: by 2002:a05:6512:3403:b0:481:60ae:7ebc with SMTP id i3-20020a056512340300b0048160ae7ebcmr10262663lfr.358.1659009016201;
+        Thu, 28 Jul 2022 04:50:16 -0700 (PDT)
+Received: from [192.168.3.197] (78-26-46-173.network.trollfjord.no. [78.26.46.173])
+        by smtp.gmail.com with ESMTPSA id s6-20020a056512202600b0048a833a14edsm163625lfs.201.2022.07.28.04.50.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Jul 2022 04:50:15 -0700 (PDT)
+Message-ID: <76ed8999-c211-f8ea-c70c-21fddd75a896@linaro.org>
+Date:   Thu, 28 Jul 2022 13:50:14 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 2/3] ARM: dts: qcom: msm8960: add references to USB1
+Content-Language: en-US
+To:     Shinjo Park <peremen@gmail.com>
+Cc:     David Heidelberg <david@ixit.cz>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220728111635.30540-1-peremen@gmail.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220728111635.30540-1-peremen@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some code paths cannot guarantee the inode have any dentry alias. So
-WARN_ON() all !dentry may flood the kernel logs.
+On 28/07/2022 13:16, Shinjo Park wrote:
+> Use the same USB definition as qcom-apq8064.dtsi, tested on Casio GzOne.
+> 
+> Signed-off-by: Shinjo Park <peremen@gmail.com>
+> Reviewed-by: David Heidelberg <david@ixit.cz>
 
-For example, when an overlayfs inode is watched by inotifywait (1), and
-someone is trying to read the /proc/$(pidof inotifywait)/fdinfo/INOTIFY_FD,
-at that time if the dentry has been reclaimed by kernel (such as
-echo 2 > /proc/sys/vm/drop_caches), there will be a WARN_ON(). The
-printed call stack would be like:
+Thank you for your patch. There is something to discuss/improve.
 
-    ? show_mark_fhandle+0xf0/0xf0
-    show_mark_fhandle+0x4a/0xf0
-    ? show_mark_fhandle+0xf0/0xf0
-    ? seq_vprintf+0x30/0x50
-    ? seq_printf+0x53/0x70
-    ? show_mark_fhandle+0xf0/0xf0
-    inotify_fdinfo+0x70/0x90
-    show_fdinfo.isra.4+0x53/0x70
-    seq_show+0x130/0x170
-    seq_read+0x153/0x440
-    vfs_read+0x94/0x150
-    ksys_read+0x5f/0xe0
-    do_syscall_64+0x59/0x1e0
-    entry_SYSCALL_64_after_hwframe+0x44/0xa9
+Similar problems as with previous patch - thread your patches and how
+did you get review?
 
-So let's drop WARN_ON() to avoid kernel log flooding.
+> ---
+>  arch/arm/boot/dts/qcom-msm8960.dtsi | 32 +++++++++++++++++++++++++++++
+>  1 file changed, 32 insertions(+)
+> 
+> diff --git a/arch/arm/boot/dts/qcom-msm8960.dtsi b/arch/arm/boot/dts/qcom-msm8960.dtsi
+> index 991eb1948..a32073d61 100644
+> --- a/arch/arm/boot/dts/qcom-msm8960.dtsi
+> +++ b/arch/arm/boot/dts/qcom-msm8960.dtsi
+> @@ -4,6 +4,7 @@
+>  #include <dt-bindings/interrupt-controller/arm-gic.h>
+>  #include <dt-bindings/clock/qcom,gcc-msm8960.h>
+>  #include <dt-bindings/clock/qcom,lcc-msm8960.h>
+> +#include <dt-bindings/reset/qcom,gcc-msm8960.h>
+>  #include <dt-bindings/mfd/qcom-rpm.h>
+>  #include <dt-bindings/soc/qcom,gsbi.h>
+>  
+> @@ -201,6 +202,37 @@ regulators {
+>  			};
+>  		};
+>  
+> +		usb1: usb@12500000 {
+> +			compatible = "qcom,ci-hdrc";
+> +			reg = <0x12500000 0x200>,
+> +			      <0x12500200 0x200>;
+> +			interrupts = <GIC_SPI 100 IRQ_TYPE_LEVEL_HIGH>;
+> +			clocks = <&gcc USB_HS1_XCVR_CLK>, <&gcc USB_HS1_H_CLK>;
+> +			clock-names = "core", "iface";
+> +			assigned-clocks = <&gcc USB_HS1_XCVR_CLK>;
+> +			assigned-clock-rates = <60000000>;
+> +			resets = <&gcc USB_HS1_RESET>;
+> +			reset-names = "core";
+> +			phy_type = "ulpi";
+> +			ahb-burst-config = <0>;
+> +			phys = <&usb_hs1_phy>;
+> +			phy-names = "usb-phy";
+> +			status = "disabled";
 
-Reported-by: Hongbo Yin <yinhongbo@bytedance.com>
-Signed-off-by: Jiachen Zhang <zhangjiachen.jaycee@bytedance.com>
-Signed-off-by: Tianci Zhang <zhangtianci.1997@bytedance.com>
----
- fs/overlayfs/export.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+status is the last property.
 
-diff --git a/fs/overlayfs/export.c b/fs/overlayfs/export.c
-index 2eada97bbd23..e065a5b9a442 100644
---- a/fs/overlayfs/export.c
-+++ b/fs/overlayfs/export.c
-@@ -259,7 +259,7 @@ static int ovl_encode_fh(struct inode *inode, u32 *fid, int *max_len,
- 		return FILEID_INVALID;
- 
- 	dentry = d_find_any_alias(inode);
--	if (WARN_ON(!dentry))
-+	if (!dentry)
- 		return FILEID_INVALID;
- 
- 	bytes = ovl_dentry_to_fid(ofs, dentry, fid, buflen);
--- 
-2.20.1
+> +			#reset-cells = <1>;
 
+
+
+Best regards,
+Krzysztof
