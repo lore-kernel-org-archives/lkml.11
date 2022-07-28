@@ -2,75 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BB63C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 17:32:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8D8CC04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 17:34:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232708AbiG1Rcg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 13:32:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41940 "EHLO
+        id S232444AbiG1Re3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 13:34:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbiG1Rcd (ORCPT
+        with ESMTP id S229447AbiG1Re1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 13:32:33 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30AB36FA1D;
-        Thu, 28 Jul 2022 10:32:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659029553; x=1690565553;
-  h=from:to:cc:subject:date:message-id;
-  bh=nxECpsQv3k/IAi03chUuVK2iod+aGpSLArSaR5fV8dk=;
-  b=nuqvCvgxq/Mb1zlt5oZqTW74jgHfM5fC4DhMQxICEbTXg0sb56X4p5d1
-   xfM4VAkXAZEP6V0KLqfXkhEJvQI28zgUUnr5+qayLuB9VNU4pkwX5IMIP
-   JT2oylNsym6Bij/W1swBMZWFpPmmO9vfjChca7rq1SD/sP8wezx2nGTui
-   i4FvEb70hJZm7+WYbU+mThYNligw6UVRDtWvVDH9Y3v9GR/XcVhm5UXs7
-   LEHnYxUtNVP1Ig+MLbmjpfOUeh78EoQKQckmxEwI2LqtRCcaXqTNPNbV1
-   YC+MhcxxzcnmP8vddVD35uNX2JfqQW5yFq7PbgjKpd3TeVCla65fA8a13
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10422"; a="374875950"
-X-IronPort-AV: E=Sophos;i="5.93,198,1654585200"; 
-   d="scan'208";a="374875950"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2022 10:32:33 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,198,1654585200"; 
-   d="scan'208";a="659830926"
-Received: from srpawnik-desktop.iind.intel.com ([10.223.107.152])
-  by fmsmga008.fm.intel.com with ESMTP; 28 Jul 2022 10:32:31 -0700
-From:   Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>
-To:     rafael@kernel.org, rui.zhang@intel.com, daniel.lezcano@linaro.org,
-        linux-pm@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, sumeet.r.pawnikar@intel.com
-Subject: [PATCH] thermal: intel: Add TCC cooling support for Alder Lake-N and Raptor Lake-P
-Date:   Thu, 28 Jul 2022 23:24:56 +0530
-Message-Id: <20220728175456.2796-1-sumeet.r.pawnikar@intel.com>
-X-Mailer: git-send-email 2.17.1
+        Thu, 28 Jul 2022 13:34:27 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C89DC6FA29
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 10:34:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1659029666; x=1690565666;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=o+fn6h9fFDfk07b94ykcs0xYkUzKgqQtjInlwWCLcjs=;
+  b=jwQ1HpKjEiU8jJBoBqrTA2eeN9TvXocWLVLHZoc7WyC+XYhAEiapTpfy
+   RvYEDigEeJp3pbAbMBj0sWqf+ELL7Ru3CnYFdqwj2QmYpnY6qjCMkl/Uw
+   9vxvvAnudidKFA+99g1z6tu0bmAJYvl7u1yKZW20ZyeAfx6W/9wITgXBo
+   A=;
+Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  by alexa-out.qualcomm.com with ESMTP; 28 Jul 2022 10:34:25 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2022 10:34:25 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Thu, 28 Jul 2022 10:34:24 -0700
+Received: from [10.111.167.242] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 28 Jul
+ 2022 10:34:21 -0700
+Message-ID: <5c8ca71c-5f0b-d5f5-9f16-e312dec0d01b@quicinc.com>
+Date:   Thu, 28 Jul 2022 10:34:19 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.6.2
+Subject: Re: [RFC PATCH] drm/edid: Make 144 Hz not preferred on Sharp
+ LQ140M1JW46
+Content-Language: en-US
+To:     Rob Clark <robdclark@gmail.com>,
+        Doug Anderson <dianders@chromium.org>
+CC:     dri-devel <dri-devel@lists.freedesktop.org>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        "David Airlie" <airlied@linux.ie>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+References: <20220721152314.RFC.1.Ie333b3e4aff6e4a5b58c4aa805e030e561be8773@changeid>
+ <269f2610-425b-f296-dcfc-89bdc2e1d587@quicinc.com>
+ <CAD=FV=XSVXasU5PMR2kL0WQjQ458xDePuTGd1m14_v9JO5B6oA@mail.gmail.com>
+ <CAF6AEGv_Vikf80v-7ccz90fvGPrk5pV1tOxRoWKxKHYuEW8=aA@mail.gmail.com>
+From:   Abhinav Kumar <quic_abhinavk@quicinc.com>
+In-Reply-To: <CAF6AEGv_Vikf80v-7ccz90fvGPrk5pV1tOxRoWKxKHYuEW8=aA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add Alder Lake-N and Raptor Lake-P to the list of processor models
-supported by the Intel TCC cooling driver.
+Hi Rob and Doug
 
-Signed-off-by: Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>
----
- drivers/thermal/intel/intel_tcc_cooling.c | 2 ++
- 1 file changed, 2 insertions(+)
+On 7/22/2022 10:36 AM, Rob Clark wrote:
+> On Fri, Jul 22, 2022 at 9:48 AM Doug Anderson <dianders@chromium.org> wrote:
+>>
+>> Hi,
+>>
+>> On Fri, Jul 22, 2022 at 9:37 AM Abhinav Kumar <quic_abhinavk@quicinc.com> wrote:
+>>>
+>>> + sankeerth
+>>>
+>>> Hi Doug
+>>>
+>>> On 7/21/2022 3:23 PM, Douglas Anderson wrote:
+>>>> The Sharp LQ140M1JW46 panel is on the Qualcomm sc7280 CRD reference
+>>>> board. This panel supports 144 Hz and 60 Hz. In the EDID, the 144 Hz
+>>>> mode is listed first and thus is marked preferred. The EDID decode I
+>>>> ran says:
+>>>>
+>>>>     First detailed timing includes the native pixel format and preferred
+>>>>     refresh rate.
+>>>>
+>>>>     ...
+>>>>
+>>>>     Detailed Timing Descriptors:
+>>>>       DTD 1:  1920x1080  143.981 Hz  16:9   166.587 kHz  346.500 MHz
+>>>>                    Hfront   48 Hsync  32 Hback  80 Hpol N
+>>>>                    Vfront    3 Vsync   5 Vback  69 Vpol N
+>>>>       DTD 2:  1920x1080   59.990 Hz  16:9    69.409 kHz  144.370 MHz
+>>>>                    Hfront   48 Hsync  32 Hback  80 Hpol N
+>>>>                    Vfront    3 Vsync   5 Vback  69 Vpol N
+>>>>
+>>>> I'm proposing here that the above is actually a bug and that the 60 Hz
+>>>> mode really should be considered preferred by Linux.
 
-diff --git a/drivers/thermal/intel/intel_tcc_cooling.c b/drivers/thermal/intel/intel_tcc_cooling.c
-index a9596e7562ea..95adac427b6f 100644
---- a/drivers/thermal/intel/intel_tcc_cooling.c
-+++ b/drivers/thermal/intel/intel_tcc_cooling.c
-@@ -81,7 +81,9 @@ static const struct x86_cpu_id tcc_ids[] __initconst = {
- 	X86_MATCH_INTEL_FAM6_MODEL(COMETLAKE, NULL),
- 	X86_MATCH_INTEL_FAM6_MODEL(ALDERLAKE, NULL),
- 	X86_MATCH_INTEL_FAM6_MODEL(ALDERLAKE_L, NULL),
-+	X86_MATCH_INTEL_FAM6_MODEL(ALDERLAKE_N, NULL),
- 	X86_MATCH_INTEL_FAM6_MODEL(RAPTORLAKE, NULL),
-+	X86_MATCH_INTEL_FAM6_MODEL(RAPTORLAKE_P, NULL),
- 	{}
- };
- 
--- 
-2.17.1
+Its a bit tricky to say that this is a bug but I think we can certainly 
+add here that for an internal display we would have ideally had the 
+lower resolution first to indicate it as default.
 
+>>>>
+>>>> The argument here is that this is a laptop panel and on a laptop we
+>>>> know power will always be a concern. Presumably even if someone using
+>>>> this panel wanted to use 144 Hz for some use cases they would only do
+>>>> so dynamically and would still want the default to be 60 Hz.
+>>>>
+>>>> Let's change the default to 60 Hz using a standard quirk.
+>>>>
+>>>> Signed-off-by: Douglas Anderson <dianders@chromium.org>
+>>>
+>>> Yes, we were aware that 144Hz was getting picked. We found that while
+>>> debugging the screen corruption issue.
+>>>
+>>> Well, yes power would be less with 60Hz but so will be the performance.
+>>
+>> What performance specifically will be less with 60 Hz? In general the
+>> sc7280 CPU is a bit memory-bandwidth constrained and the LCD refresh
+>> from memory is a non-trivial part of that. Reducing to 60 Hz will
+>> relieve some of the memory bandwidth pressure and will actually allow
+>> tasks on the CPU to run _faster_. I guess the downside is that some
+>> animations might be a little less smooth...
+> 
+> I guess he is referring to something that is vblank sync'd running
+> faster than 60fps.
+> 
+> but OTOH it is a bit of a waste for fbcon to be using 144Hz.  And
+> there are enough android games that limit themselves to 30fps to save
+> your "phone" battery.  So it seems a lot more sane to default to 60Hz
+> and let userspace that knows it wants more pick the 144Hz rate when
+> needed.
+> 
+> BR,
+> -R
+
+Yes i was referring to vblank synced apps.
+
+> 
+>>
+>>
+>>> The test teams have been validating with 144Hz so far so we are checking
+>>> internally with the team whether its OKAY to goto 60Hz now since that
+>>> kind of invalidates the testing they have been doing.
+>>
+>> You're worried that the panel itself won't work well at 60 Hz, or
+>> something else about the system won't? The whole system in general
+>> needs to work well with 60 Hz displays and I expect them to be much
+>> more common than 144 Hz displays. Quite honestly if switching to 60 Hz
+>> uncovers a problem that would be a huge benefit of landing this patch
+>> because it would mean we'd find it now rather than down the road when
+>> someone hooks up a different panel.
+
+I was worried that it will invalidate the testing they did so far but 
+since you have confirmed that you would prefer 60Hz to be more 
+thoroughly tested than 144Hz, I have informed the internal teams of this 
+change and given the heads up.
+
+You can have my R-b for this change,
+
+Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+
+I would also wait to see if others have different thought about this.
+
+>>
+>> -Doug
