@@ -2,94 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03DCBC04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 08:26:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9C49C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 08:27:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234928AbiG1I0S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 04:26:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41964 "EHLO
+        id S234614AbiG1I1T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 04:27:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234026AbiG1I0O (ORCPT
+        with ESMTP id S233460AbiG1I1Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 04:26:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 579225A899;
-        Thu, 28 Jul 2022 01:26:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F115D61BB0;
-        Thu, 28 Jul 2022 08:26:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1499C433D6;
-        Thu, 28 Jul 2022 08:26:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1658996773;
-        bh=BE1Uf+u1Zq72ZASnCeBKBLimp68pHrCgnFdgo08tN54=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZpNAlTLjLV4qOnyUNzXseY2L3I4tIZRxIiIHi304cDyWHFa1ZfCLGo22Rz/hworxb
-         2mr8AxqZLRaAqGvt+l6JNKNQxgXXc4Zklo/UXQxUfWQKV/WNwisSKUeNhChEAEkd/f
-         g/NXEjIk6kfIzf+bfvGD3ZjW9ZWdFe//6UrahDRY=
-Date:   Thu, 28 Jul 2022 10:26:10 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Xingrui Yi <yixingrui@linux.alibaba.com>
-Cc:     linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] vt: remove old FONT ioctls definitions in uapi
-Message-ID: <YuJIIl/LwGwuYdib@kroah.com>
-References: <20220722061133.7765-1-yixingrui@linux.alibaba.com>
+        Thu, 28 Jul 2022 04:27:16 -0400
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D40C4E61C
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 01:27:15 -0700 (PDT)
+Received: by mail-yb1-xb35.google.com with SMTP id i62so370749yba.5
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 01:27:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NuOwg8zLZYTNGp3dnBE/duFf3jptoCHmwZgBs/JWqoM=;
+        b=xzzKH7sPcQmkwiVdKloGauRpi7blCjAQCrDKrQeTUx6AIgCVlOJdE1tfKV3OgeeetB
+         3mbYapqzRhUe6nAZt/YPteZ4qVYbv3uJ+bYn/NpTa5VxxnxIsPQRFBaMWvPjZI/3ljeR
+         sNK/xeV3AykoDIT3fjdWS4aw3rXihp8s+P+ptoMpX0C3Ox7tttbQEgm01eTkjwlImdar
+         dNBdNe5wTcQVPXTBQgToL5PIgNkx0IIUMMW7n1Wb2NSanE/ynAKQj/mnXKaFqlb3frQK
+         M9e+V1X8rIEZEj/Cv7EfRB+fwzFP1bdKpzE4gTDonF2WPCGGsuR9l9XKG6KYc7SzQ8LI
+         UQXw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NuOwg8zLZYTNGp3dnBE/duFf3jptoCHmwZgBs/JWqoM=;
+        b=2NcPfaapIMYqpyq6Y3O5TuZWDCv5VuBJ3dPnrSq2yP57GaNBqEScaeK6hDGh/ilYik
+         w/ZB/k32aQOS6PHpRtyLdJ4piUhA5yht2rkz0xVW9Y75YkhG9zLGPdBL49nisEUsV7uc
+         RyXp4Pcbw88rAv/7xSODlnnyT9HfaAH18FvjQUbb1mvCFIKYiBvfItVR9tDifj2pP0md
+         gfYSOHMWrFykyvAeXonF7+R+qQM6/Sxq7eZ1ebRi1b8fTYY4tSzFZce3sdqL07AVXH8M
+         61T0AVmQ0IsltVs2a5vNTKUAjOMY8Dbp1I9AF5nARyCgbGkPxmDO346nCK/HB7hE9CMc
+         dMfQ==
+X-Gm-Message-State: AJIora9sUGKSVz5KQRFG8NsyEskm21tGJKQUTICaXfoL34WcelOJ63gf
+        7VSwkel9ksB/sZ4dwVuskhZgaeSz8LqOEjA8zKUoW/tKEg==
+X-Google-Smtp-Source: AGRyM1sAHvU7GqvfvAsRUKf5bk0NJRLPcZj8A+NCDwrJZ9G5gB688U1aoOSGAj4+vfJQQNS9bmYBSTnMzyY0j2jSh5k=
+X-Received: by 2002:a5b:cc6:0:b0:66e:45c6:2a25 with SMTP id
+ e6-20020a5b0cc6000000b0066e45c62a25mr20619329ybr.304.1658996834580; Thu, 28
+ Jul 2022 01:27:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220722061133.7765-1-yixingrui@linux.alibaba.com>
+References: <20220728032000.127-1-xieyongji@bytedance.com> <20220728032000.127-6-xieyongji@bytedance.com>
+ <CACGkMEuN0zqyLQ6vD7MvjAhtJVvmMhsn_T4b5ww0vviwq5hBrg@mail.gmail.com>
+ <CACycT3uYFWvmdJ1MzQZv=L7N0WzEiFvx5wJX+OwM1ew5Z0w0jw@mail.gmail.com> <CACGkMEtru8qaebnTXVu94oCV21JovkjshxYxdyzeSf=FTN0=xA@mail.gmail.com>
+In-Reply-To: <CACGkMEtru8qaebnTXVu94oCV21JovkjshxYxdyzeSf=FTN0=xA@mail.gmail.com>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Thu, 28 Jul 2022 16:27:03 +0800
+Message-ID: <CACycT3swFhETEOPNNmLbSFaYUZEJYUkPXrddQ=w0TALE=D40Lw@mail.gmail.com>
+Subject: Re: [PATCH v4 5/5] vduse: Support querying information of IOVA regions
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     mst <mst@redhat.com>, Liu Xiaodong <xiaodong.liu@intel.com>,
+        Maxime Coquelin <maxime.coquelin@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        songmuchun@bytedance.com,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 22, 2022 at 02:11:33PM +0800, Xingrui Yi wrote:
-> As was demonstrated by commit ff2047fb755d ("vt: drop old FONT ioctls"),
-> old font ioctls like PIO_FONT have been deleted and KDFONTOP ioctl is used
-> for years instead.
-> 
-> However, unused definitions of these ioctl numbers and "strut
-> consolefontdesc" still exist in a uapi header. They could have been removed
-> since no userspace was using them. Otherwise they will become a
-> misleading for users, and users will fail with ENOTTY with wrong call.
-> 
-> We are moving old font ioctl numbers definitions here to guide users to
-> use KDFONTOP.
-> 
-> Signed-off-by: Xingrui Yi <yixingrui@linux.alibaba.com>
-> ---
->  include/uapi/linux/kd.h | 13 -------------
->  1 file changed, 13 deletions(-)
-> 
-> diff --git a/include/uapi/linux/kd.h b/include/uapi/linux/kd.h
-> index ee929ece4112..d739b17fc942 100644
-> --- a/include/uapi/linux/kd.h
-> +++ b/include/uapi/linux/kd.h
-> @@ -6,19 +6,6 @@
->  
->  /* 0x4B is 'K', to avoid collision with termios and vt */
->  
-> -#define GIO_FONT	0x4B60	/* gets font in expanded form */
-> -#define PIO_FONT	0x4B61	/* use font in expanded form */
-> -
-> -#define GIO_FONTX	0x4B6B	/* get font using struct consolefontdesc */
-> -#define PIO_FONTX	0x4B6C	/* set font using struct consolefontdesc */
-> -struct consolefontdesc {
-> -	unsigned short charcount;	/* characters in font (256 or 512) */
-> -	unsigned short charheight;	/* scan lines per character (1-32) */
-> -	char __user *chardata;		/* font data in expanded form */
-> -};
-> -
-> -#define PIO_FONTRESET   0x4B6D	/* reset to default font */
-> -
->  #define GIO_CMAP	0x4B70	/* gets colour palette on VGA+ */
->  #define PIO_CMAP	0x4B71	/* sets colour palette on VGA+ */
->  
+On Thu, Jul 28, 2022 at 2:45 PM Jason Wang <jasowang@redhat.com> wrote:
+>
+> On Thu, Jul 28, 2022 at 2:36 PM Yongji Xie <xieyongji@bytedance.com> wrote:
+> >
+> > On Thu, Jul 28, 2022 at 1:58 PM Jason Wang <jasowang@redhat.com> wrote:
+> > >
+> > > On Thu, Jul 28, 2022 at 11:20 AM Xie Yongji <xieyongji@bytedance.com> wrote:
+> > > >
+> > > > This introduces a new ioctl: VDUSE_IOTLB_GET_INFO to
+> > > > support querying some information of IOVA regions.
+> > > >
+> > > > Now it can be used to query whether the IOVA region
+> > > > supports userspace memory registration.
+> > > >
+> > > > Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+> > > > ---
+> > > >  drivers/vdpa/vdpa_user/vduse_dev.c | 39 ++++++++++++++++++++++++++++++
+> > > >  include/uapi/linux/vduse.h         | 24 ++++++++++++++++++
+> > > >  2 files changed, 63 insertions(+)
+> > > >
+> > > > diff --git a/drivers/vdpa/vdpa_user/vduse_dev.c b/drivers/vdpa/vdpa_user/vduse_dev.c
+> > > > index eedff0a3885a..e820c37dcba8 100644
+> > > > --- a/drivers/vdpa/vdpa_user/vduse_dev.c
+> > > > +++ b/drivers/vdpa/vdpa_user/vduse_dev.c
+> > > > @@ -1228,6 +1228,45 @@ static long vduse_dev_ioctl(struct file *file, unsigned int cmd,
+> > > >                                            umem.size);
+> > > >                 break;
+> > > >         }
+> > > > +       case VDUSE_IOTLB_GET_INFO: {
+> > > > +               struct vduse_iova_info info;
+> > > > +               struct vhost_iotlb_map *map;
+> > > > +               struct vduse_iova_domain *domain = dev->domain;
+> > > > +
+> > > > +               ret = -EFAULT;
+> > > > +               if (copy_from_user(&info, argp, sizeof(info)))
+> > > > +                       break;
+> > > > +
+> > > > +               ret = -EINVAL;
+> > > > +               if (info.start > info.last)
+> > > > +                       break;
+> > > > +
+> > > > +               if (!is_mem_zero((const char *)info.reserved,
+> > > > +                                sizeof(info.reserved)))
+> > > > +                       break;
+> > > > +
+> > > > +               spin_lock(&domain->iotlb_lock);
+> > > > +               map = vhost_iotlb_itree_first(domain->iotlb,
+> > > > +                                             info.start, info.last);
+> > > > +               if (map) {
+> > > > +                       info.start = map->start;
+> > > > +                       info.last = map->last;
+> > > > +                       info.capability = 0;
+> > > > +                       if (domain->bounce_map && map->start >= 0 &&
+> > > > +                           map->last < domain->bounce_size)
+> > > > +                               info.capability |= VDUSE_IOVA_CAP_UMEM;
+> > > > +               }
+> > > > +               spin_unlock(&domain->iotlb_lock);
+> > > > +               if (!map)
+> > > > +                       break;
+> > > > +
+> > > > +               ret = -EFAULT;
+> > > > +               if (copy_to_user(argp, &info, sizeof(info)))
+> > > > +                       break;
+> > > > +
+> > > > +               ret = 0;
+> > > > +               break;
+> > > > +       }
+> > > >         default:
+> > > >                 ret = -ENOIOCTLCMD;
+> > > >                 break;
+> > > > diff --git a/include/uapi/linux/vduse.h b/include/uapi/linux/vduse.h
+> > > > index 9885e0571f09..11bd48c72c6c 100644
+> > > > --- a/include/uapi/linux/vduse.h
+> > > > +++ b/include/uapi/linux/vduse.h
+> > > > @@ -233,6 +233,30 @@ struct vduse_iova_umem {
+> > > >  /* De-register the userspace memory. Caller should set iova and size field. */
+> > > >  #define VDUSE_IOTLB_DEREG_UMEM _IOW(VDUSE_BASE, 0x19, struct vduse_iova_umem)
+> > > >
+> > > > +/**
+> > > > + * struct vduse_iova_info - information of one IOVA region
+> > > > + * @start: start of the IOVA region
+> > > > + * @last: last of the IOVA region
+> > > > + * @capability: capability of the IOVA regsion
+> > > > + * @reserved: for future use, needs to be initialized to zero
+> > > > + *
+> > > > + * Structure used by VDUSE_IOTLB_GET_INFO ioctl to get information of
+> > > > + * one IOVA region.
+> > > > + */
+> > > > +struct vduse_iova_info {
+> > > > +       __u64 start;
+> > > > +       __u64 last;
+> > > > +#define VDUSE_IOVA_CAP_UMEM (1 << 0)
+> > > > +       __u64 capability;
+> > > > +       __u64 reserved[3];
+> > > > +};
+> > > > +
+> > > > +/*
+> > > > + * Find the first IOVA region that overlaps with the range [start, last]
+> > >
+> > > So the code is actually find the IOVA region that is the super range
+> > > of [start, last] instead of overlap:
+> > >
+> >
+> > This is achieved by vhost_iotlb_itree_first(). And can't the super
+> > range of [start,last] be considered overlapping?
+>
+> Ok, but what I want to ask is, under which condition can we hit the
+> following case
+>
+> map->last >= domain->bounce_size ?
+>
 
-Did you rebuild a distribution like Debian to verify that these values
-and structure are not used anywhere?
+I think we would not hit this case currently.
 
-thanks,
-
-greg k-h
+Thanks,
+Yongji
