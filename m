@@ -2,84 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E39E2C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 22:11:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D75AAC04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 22:11:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231160AbiG1WLa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 18:11:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50530 "EHLO
+        id S229607AbiG1WLk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 18:11:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231809AbiG1WLZ (ORCPT
+        with ESMTP id S231993AbiG1WLg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 18:11:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 147D1785A6;
-        Thu, 28 Jul 2022 15:11:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 85A3C61B54;
-        Thu, 28 Jul 2022 22:11:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97EB9C433D6;
-        Thu, 28 Jul 2022 22:11:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659046282;
-        bh=vp6m+L9NT4VOGQFGhTGWKhJ+KeHAmVR6ZlUE3kmLqwo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=OVWwxA6TrLNqjrPLMMlsdyH5BSH0sI2F2NZpv/X4HtMwy8C36kYfRBPUJgmZ6W6XP
-         t4ii7bUoL+B2HUSGLNdl4UglXKyEg03AR2eEy1+ms4DUqKMKOK8fTdxL3lMDQUnEUo
-         3irc0aMX511EfdFlP9OZDZuul86sq3cYe1876wH3lX9VJ6V0BjtwFaY+Z0aT/mA1BC
-         rMpmKBPSIzMdWATDtErF+FKsWVNNVa7fuY+hZJT0XNKNSbDjrNKKNBPu3C2A7ZZqyb
-         MIJCr9p33GFqz1g+XFIQfV63LePmtZ6V+eIFiTSB04bAH/HUcWzVMLlC0VYNX+azzH
-         fjp4lvB7x6Psw==
-Date:   Thu, 28 Jul 2022 17:11:20 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Cc:     Rob Herring <robh@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Frank Li <Frank.Li@nxp.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, linux-pci@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RESEND v4 15/15] PCI: dwc: Introduce dma-ranges property
- support for RC-host
-Message-ID: <20220728221120.GA330510@bhelgaas>
+        Thu, 28 Jul 2022 18:11:36 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 82FF678DD5;
+        Thu, 28 Jul 2022 15:11:35 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AC431106F;
+        Thu, 28 Jul 2022 15:11:35 -0700 (PDT)
+Received: from mammon-tx2.austin.arm.com (mammon-tx2.austin.arm.com [10.118.28.62])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id DF4D13F70D;
+        Thu, 28 Jul 2022 15:11:34 -0700 (PDT)
+From:   Jeremy Linton <jeremy.linton@arm.com>
+To:     linux-pm@vger.kernel.org
+Cc:     rafael@kernel.org, lenb@kernel.org, viresh.kumar@linaro.org,
+        robert.moore@intel.com, devel@acpica.org,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jeremy Linton <jeremy.linton@arm.com>
+Subject: [PATCH v2 0/1] Disable FIE on machines with slow counters
+Date:   Thu, 28 Jul 2022 17:10:42 -0500
+Message-Id: <20220728221043.4161903-1-jeremy.linton@arm.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220624143947.8991-16-Sergey.Semin@baikalelectronics.ru>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 24, 2022 at 05:39:47PM +0300, Serge Semin wrote:
-> In accordance with the generic PCIe Root Port DT-bindings the "dma-ranges"
-> property has the same format as the "ranges" property. The only difference
-> is in their semantics. The "dma-ranges" property describes the PCIe-to-CPU
-> memory mapping in opposite to the CPU-to-PCIe mapping of the "ranges"
-> property. Even though the DW PCIe controllers are normally equipped with
-> the internal Address Translation Unit which inbound and outbound tables
-> can be used to implement both properties semantics, it was surprising for
-> me to discover that the host-related part of the DW PCIe driver currently
-> supports the "ranges" property only while the "dma-ranges" windows are
-> just ignored. Having the "dma-ranges" supported in the driver would be
-> very handy for the platforms, that don't tolerate the 1:1 CPU-PCIe memory
-> mapping and require a customized PCIe memory layout. So let's fix that by
-> introducing the "dma-ranges" property support.
+FIE assumes the delivered/relative perf registers are fast to read so
+it goes ahead and hits them quite frequently. On a couple Arm
+platforms though they end up in PCC regions which require mailbox
+handshaking with other parts of the platform.
 
-Do we have a platform that requires this yet?  Or does this fix a bug?
+This results in a lot of overhead in the cppc_fie task. As such lets
+runtime disable FIE if we detect it enabled on one of those platforms.
+Also allow the user to manually disable it via a module parameter.
 
-I see that dw_pcie_host_init() calls devm_pci_alloc_host_bridge(),
-which eventually parses "dma-ranges", but I don't see any DWC DT
-bindings that use it yet.
+v1->v2:
+	Apply Rafael's review comments.
+	Move the MODULE_PARAM into the ifdef
+	Fix compiler warning when ACPI_CPPC_LIB is disabled.
+	
+Jeremy Linton (1):
+  ACPI: CPPC: Disable FIE if registers in PCC regions
 
-I'm not clear on what value this adds today.
+ drivers/acpi/cppc_acpi.c       | 41 ++++++++++++++++++++++++++++++++++
+ drivers/cpufreq/cppc_cpufreq.c | 19 ++++++++++++----
+ include/acpi/cppc_acpi.h       |  5 +++++
+ 3 files changed, 61 insertions(+), 4 deletions(-)
 
-Bjorn
+-- 
+2.35.3
+
