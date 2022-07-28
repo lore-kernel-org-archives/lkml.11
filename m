@@ -2,95 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6822DC19F2B
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 15:26:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D0AFC04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 15:27:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229493AbiG1P0u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 11:26:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41408 "EHLO
+        id S231621AbiG1P1O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 11:27:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231676AbiG1P0l (ORCPT
+        with ESMTP id S230180AbiG1P1L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 11:26:41 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49C985F9B4
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 08:26:41 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D150961B7C
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 15:26:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9827EC433C1;
-        Thu, 28 Jul 2022 15:26:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659022000;
-        bh=OY1CFZWT7ad7PEe4fFSJDPEcJ11GALMZHQVGZ3Tqumo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=f9HytRqrLmomx4xvTJW+cidOARGraS/srKv4Akng2xTx86OJwLfVXVsQNcUJe/lUx
-         FSRGeGiMnAZZEfv7CZKiUgWdyhmUTnyfQN11WTrQY0Pd2mkEWw7v2IOoNeR7ykcVU1
-         QxTddwr5DpEWzduPI2YTdW9uizrIMy2GXFZWpIIw7sxnhJpz05suP/6Qvkrqk7kz6p
-         5wcDu9SGemwnxkdCGm1RztjLoQyZ68jhQHwMMiqtS88KqDpDIOUHsIrk1z4HpFoTht
-         rsCjPt5wg5mRIOXMgH5zQ0WZHCPK3AvzyL/+A3rjLTMR2mrAk0cR0LuasMgPYNrzMb
-         rS9qHXl3UX4hg==
-Date:   Thu, 28 Jul 2022 23:17:38 +0800
-From:   Jisheng Zhang <jszhang@kernel.org>
-To:     Ard Biesheuvel <ardb@kernel.org>
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] arm64: save movk instructions in mov_q when the lower
- 16|32 bits are all zero
-Message-ID: <YuKokvBjDxATePpH@xhacker>
-References: <20220709084830.3124-1-jszhang@kernel.org>
- <CAMj1kXEy7_zyDqQC_e9Rf1a8HuMBz_HbZOAP-WBzeeDVu8Mwmw@mail.gmail.com>
- <YuKh2pmJC6/17Riy@xhacker>
+        Thu, 28 Jul 2022 11:27:11 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8827752460
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 08:27:10 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id f7so2404063pjp.0
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 08:27:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=csSpCZse6HkYpD0alLhYtbnpKIryDbXXSRH4Zixe2I0=;
+        b=DkCdzxLK5NMyhbrRcX2IZyC+qb3fASA7xm+FklYTyIR9i/BtuJCrGtnZ+AdUf0X0wm
+         hGWnJ2oNm7620mgjU+M3EsIbnX9EOpgInxnyAH4HoQucT4UJh+HDjoWAUyeJ+WsbPayP
+         jWsjtVh/hMHN7ORsq0XS+MXrT4EbO9ByEAyycoW2W6ogA76kfiecl+tobRog/ZwdtR2/
+         ZUKCtjOm4My2QJZRlWG8SmorApa8fR3ZFp9TTfOaJgn7R78s1zs/vAHZzkhtK8vr7Q5g
+         b15cKKmG3mRaTCY3npAWbsJ0rBfv8LLQAzK9L8QPC/UxuKQr6Xu/7Ssu/zmG2oXqHLEn
+         WVyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=csSpCZse6HkYpD0alLhYtbnpKIryDbXXSRH4Zixe2I0=;
+        b=I9ko0nWxE/l8Uzo8E1aWMl0KhfhOd2zNUIgjsBpDmiO4sSxTDzqbx7fUYiQ2B7E5Nh
+         ia4Rs/6SSzDiSNJMvKLzOL/+BL06kvLe3lExiZ43nTv2+Bd/sUdRiu2hTgA/fM0IJm6q
+         LhLPwbajFxe9E5FW2yvFh+oJAC8YvT5Dc9JRbiJeHAqAa9sPUxdxQK9j7ELsDJz59JK0
+         vRY3xE3sKLnwJcTWSOaqtj7iCnOhlNijozbAS4KY1rHudZKYaFyjhptFuqdVV7IJsuXU
+         rBtJQxx7m1Svgc6t3gLSE1nZv1KxjKmzUlNqfJh3hqb7Ojc3iYAo/pNi66aj4FjyoQAp
+         Y5kw==
+X-Gm-Message-State: AJIora9iqO7hRg1gbkq+T1+JVHvJkuC6miAZHvvOU+qIpWw5SXLFT30K
+        nvedWQh0wL9MmYfz7damJKd00Ayzi656bA==
+X-Google-Smtp-Source: AGRyM1sSrhEeTcGBug/hRwN/UzMJ5vxfJ6sRHheRoPfJs89jT56gNZ6MA6i+bGEizG7IcFl0eZ8aig==
+X-Received: by 2002:a17:902:ea07:b0:16c:1efb:916e with SMTP id s7-20020a170902ea0700b0016c1efb916emr26478459plg.25.1659022029899;
+        Thu, 28 Jul 2022 08:27:09 -0700 (PDT)
+Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
+        by smtp.gmail.com with ESMTPSA id h14-20020a056a00000e00b005255263a864sm881752pfk.169.2022.07.28.08.27.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Jul 2022 08:27:09 -0700 (PDT)
+Date:   Thu, 28 Jul 2022 15:27:05 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Like Xu <like.xu.linux@gmail.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/3] KVM: x86: Refresh PMU after writes to
+ MSR_IA32_PERF_CAPABILITIES
+Message-ID: <YuKqyTvbVx2UyP2w@google.com>
+References: <20220727233424.2968356-1-seanjc@google.com>
+ <20220727233424.2968356-2-seanjc@google.com>
+ <271bddfa-9e48-d5f6-6147-af346d7946bf@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YuKh2pmJC6/17Riy@xhacker>
+In-Reply-To: <271bddfa-9e48-d5f6-6147-af346d7946bf@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 28, 2022 at 10:49:02PM +0800, Jisheng Zhang wrote:
-> On Wed, Jul 27, 2022 at 08:15:11AM -0700, Ard Biesheuvel wrote:
-> > On Sat, 9 Jul 2022 at 01:58, Jisheng Zhang <jszhang@kernel.org> wrote:
-> > >
-> > > Currently mov_q is used to move a constant into a 64-bit register,
-> > > when the lower 16 or 32bits of the constant are all zero, the mov_q
-> > > emits one or two useless movk instructions. If the mov_q macro is used
-> > > in hot code path, we want to save the movk instructions as much as
-> > > possible. For example, when CONFIG_ARM64_MTE is 'Y' and
-> > > CONFIG_KASAN_HW_TAGS is 'N', the following code in __cpu_setup()
-> > > routine is the pontential optimization target:
-> > >
-> > >         /* set the TCR_EL1 bits */
-> > >         mov_q   x10, TCR_MTE_FLAGS
-> > >
-> > > Before the patch:
-> > >         mov     x10, #0x10000000000000
-> > >         movk    x10, #0x40, lsl #32
-> > >         movk    x10, #0x0, lsl #16
-> > >         movk    x10, #0x0
-> > >
-> > > After the patch:
-> > >         mov     x10, #0x10000000000000
-> > >         movk    x10, #0x40, lsl #32
-> > >
-> > > Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+On Thu, Jul 28, 2022, Like Xu wrote:
+> On 28/7/2022 7:34 am, Sean Christopherson wrote:
+> > Refresh the PMU if userspace modifies MSR_IA32_PERF_CAPABILITIES.  KVM
+> > consumes the vCPU's PERF_CAPABILITIES when enumerating PEBS support, but
+> > relies on CPUID updates to refresh the PMU.  I.e. KVM will do the wrong
+> > thing if userspace stuffs PERF_CAPABILITIES _after_ setting guest CPUID.
+> 
+> Unwise userspace should reap its consequences if it does not break KVM or host.
+
+I don't think this is a case of userspace being weird or unwise.  IMO, setting
+CPUID before MSRs is perfectly logical and intuitive.
+
+> When a guest feature can be defined/controlled by multiple KVM APIs entries,
+> (such as SET_CPUID2, msr_feature, KVM_CAP, module_para), should KVM
+> define the priority of these APIs (e.g. whether they can override each other) ?
+
+KVM does have "rules" in the sense that it has an established ABI for things
+like KVM_CAP and module params, though documentation may be lacking in some cases.
+The CPUID and MSR ioctls don't have a prescribe ordering though.
+
+> Removing this ambiguity ensures consistency in the architecture and behavior
+> of all KVM features.
+
+Agreed, but the CPUID and MSR ioctls (among many others) have existed for quite
+some time.  KVM likely can't retroactively force a specific order without breaking
+one userspace or another.
+
+> Any further performance optimizations can be based on these finalized values
+> as you do.
+> 
 > > 
-> > This is broken for constants that have 0xffff in the top 16 bits, as
-> > in that case, we will emit a MOVN/MOVK/MOVK sequence, and omitting the
-> > MOVKs will set the corresponding field to 0xffff not 0x0.
+> > Opportunistically fix a curly-brace indentation.
+> > 
+> > Fixes: c59a1f106f5c ("KVM: x86/pmu: Add IA32_PEBS_ENABLE MSR emulation for extended PEBS")
+> > Cc: Like Xu <like.xu.linux@gmail.com>
+> > Signed-off-by: Sean Christopherson <seanjc@google.com>
+> > ---
+> >   arch/x86/kvm/x86.c | 4 ++--
+> >   1 file changed, 2 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+> > index 5366f884e9a7..362c538285db 100644
+> > --- a/arch/x86/kvm/x86.c
+> > +++ b/arch/x86/kvm/x86.c
+> > @@ -3543,9 +3543,9 @@ int kvm_set_msr_common(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+> >   			return 1;
+> >   		vcpu->arch.perf_capabilities = data;
+> > -
+> > +		kvm_pmu_refresh(vcpu);
 > 
-> Thanks so much for this hint. I think you are right about the 0xffff in
-> top 16bits case.
-> 
+> I had proposed this diff but was met with silence.
 
-the patch breaks below usage case:
-mov_q x0, 0xffffffff00000000
-
-I think the reason is mov_q starts from high bits, if we change the
-macro to start from LSB, then that could solve the breakage. But this
-needs a rewrite of mov_q
+My apologies, I either missed it or didn't connect the dots.
