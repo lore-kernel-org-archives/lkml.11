@@ -2,155 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93C4BC04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 16:13:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61753C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 16:13:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232160AbiG1QNq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 12:13:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54504 "EHLO
+        id S232798AbiG1QNv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 12:13:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232492AbiG1QNX (ORCPT
+        with ESMTP id S232066AbiG1QN3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 12:13:23 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AAB26F7E3
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 09:13:11 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        Thu, 28 Jul 2022 12:13:29 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 76E006FA19
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 09:13:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659024794;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=MRkkBYKQp9oZk2da5EZBbCrPfbUp3tpj2MKHxygzUhg=;
+        b=Cz7pWuNPsk9m/Ae7JoWKJpwHjYN578rLj8pv8hbmpG5PY3dvTeJfnpx+m7INk0ey0mt0lj
+        QYAXFFVxuSGuMT7k5TwqLkmseR3G1Dc1vDkKlF/YRIsY6QViHNJjkebHllJfDzrIYd2FHw
+        W3aWdE7svQUaCp/xoUyhN92SHti2yws=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-247-NvNJMH7cM-aUgzJnPGvSSA-1; Thu, 28 Jul 2022 12:13:08 -0400
+X-MC-Unique: NvNJMH7cM-aUgzJnPGvSSA-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id D697B1FBAD;
-        Thu, 28 Jul 2022 16:13:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1659024789; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=uFNLMsmaiX/KJpwTe1Kl7r0olPyBVX9u4w3byywnZaQ=;
-        b=usHCPZMY4s4WbBkvRuD2vTWO1umj/trRQm5sTbc39MjAG/uLxnnEVAKF9Bim0Z73MR6wjZ
-        /UEfFFonAjwfqvAYBi5JNx47btffkBIfJWtAU1He1/hO3WuKve4QYe30NouUak4TfIBPwB
-        F3rxOAieDIrRLeVYZHDGtD3oLR6PpNw=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1659024789;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=uFNLMsmaiX/KJpwTe1Kl7r0olPyBVX9u4w3byywnZaQ=;
-        b=BamlEN9VBPnmc6zaO2Wyiok82LF254+J3XaWxFoJcCvvsGOldWETK2stJ6hX9DHKrZ6GK/
-        +7UKQ4UJEU1JeLCA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id AA7E913427;
-        Thu, 28 Jul 2022 16:13:09 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 4Ai7KJW14mKZDgAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Thu, 28 Jul 2022 16:13:09 +0000
-Message-ID: <33ae1986-6f92-aa15-1be5-c7ae79320a34@suse.cz>
-Date:   Thu, 28 Jul 2022 18:13:09 +0200
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 66DF58037AA;
+        Thu, 28 Jul 2022 16:13:07 +0000 (UTC)
+Received: from mpattric.remote.csb (unknown [10.22.33.169])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4836A2166B26;
+        Thu, 28 Jul 2022 16:13:06 +0000 (UTC)
+From:   Mike Pattrick <mkp@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     pvalerio@redhat.com, Mike Pattrick <mkp@redhat.com>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, dev@openvswitch.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 1/2] openvswitch: Fix double reporting of drops in dropwatch
+Date:   Thu, 28 Jul 2022 12:12:58 -0400
+Message-Id: <20220728161259.1088662-1-mkp@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH v3 09/15] mm/slab_common: cleanup kmalloc_large()
-Content-Language: en-US
-To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Joe Perches <joe@perches.com>,
-        Vasily Averin <vasily.averin@linux.dev>,
-        Matthew WilCox <willy@infradead.org>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org
-References: <20220712133946.307181-1-42.hyeyoo@gmail.com>
- <20220712133946.307181-10-42.hyeyoo@gmail.com>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20220712133946.307181-10-42.hyeyoo@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 7/12/22 15:39, Hyeonggon Yoo wrote:
-> Now that kmalloc_large() and kmalloc_large_node() do mostly same job,
-> make kmalloc_large() wrapper of __kmalloc_large_node_notrace().
-> 
-> In the meantime, add missing flag fix code in
-> __kmalloc_large_node_notrace().
-> 
-> Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Frames sent to userspace can be reported as dropped in
+ovs_dp_process_packet, however, if they are dropped in the netlink code
+then netlink_attachskb will report the same frame as dropped.
 
-Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
+This patch checks for error codes which indicate that the frame has
+already been freed.
 
-> ---
->  mm/slab_common.c | 36 +++++++++++++-----------------------
->  1 file changed, 13 insertions(+), 23 deletions(-)
-> 
-> diff --git a/mm/slab_common.c b/mm/slab_common.c
-> index dc872e0ef0fc..9c46e2f9589f 100644
-> --- a/mm/slab_common.c
-> +++ b/mm/slab_common.c
-> @@ -932,29 +932,6 @@ gfp_t kmalloc_fix_flags(gfp_t flags)
->   * directly to the page allocator. We use __GFP_COMP, because we will need to
->   * know the allocation order to free the pages properly in kfree.
->   */
-> -void *kmalloc_large(size_t size, gfp_t flags)
-> -{
-> -	void *ret = NULL;
-> -	struct page *page;
-> -	unsigned int order = get_order(size);
-> -
-> -	if (unlikely(flags & GFP_SLAB_BUG_MASK))
-> -		flags = kmalloc_fix_flags(flags);
-> -
-> -	flags |= __GFP_COMP;
-> -	page = alloc_pages(flags, order);
-> -	if (likely(page)) {
-> -		ret = page_address(page);
-> -		mod_lruvec_page_state(page, NR_SLAB_UNRECLAIMABLE_B,
-> -				      PAGE_SIZE << order);
-> -	}
-> -	ret = kasan_kmalloc_large(ret, size, flags);
-> -	/* As ret might get tagged, call kmemleak hook after KASAN. */
-> -	kmemleak_alloc(ret, size, 1, flags);
-> -	trace_kmalloc(_RET_IP_, ret, NULL, size, PAGE_SIZE << order, flags);
-> -	return ret;
-> -}
-> -EXPORT_SYMBOL(kmalloc_large);
->  
->  static __always_inline
->  void *__kmalloc_large_node_notrace(size_t size, gfp_t flags, int node)
-> @@ -963,6 +940,9 @@ void *__kmalloc_large_node_notrace(size_t size, gfp_t flags, int node)
->  	void *ptr = NULL;
->  	unsigned int order = get_order(size);
->  
-> +	if (unlikely(flags & GFP_SLAB_BUG_MASK))
-> +		flags = kmalloc_fix_flags(flags);
-> +
->  	flags |= __GFP_COMP;
->  	page = alloc_pages_node(node, flags, order);
->  	if (page) {
-> @@ -978,6 +958,16 @@ void *__kmalloc_large_node_notrace(size_t size, gfp_t flags, int node)
->  	return ptr;
->  }
->  
-> +void *kmalloc_large(size_t size, gfp_t flags)
-> +{
-> +	void *ret = __kmalloc_large_node_notrace(size, flags, NUMA_NO_NODE);
-> +
-> +	trace_kmalloc(_RET_IP_, ret, NULL, size,
-> +		      PAGE_SIZE << get_order(size), flags);
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL(kmalloc_large);
-> +
->  void *kmalloc_large_node_notrace(size_t size, gfp_t flags, int node)
->  {
->  	return __kmalloc_large_node_notrace(size, flags, node);
+Bugzilla: https://bugzilla.redhat.com/show_bug.cgi?id=2109946
+Signed-off-by: Mike Pattrick <mkp@redhat.com>
+---
+ net/openvswitch/datapath.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
+
+diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
+index 7e8a39a35627..029f9c3e1c28 100644
+--- a/net/openvswitch/datapath.c
++++ b/net/openvswitch/datapath.c
+@@ -252,10 +252,20 @@ void ovs_dp_process_packet(struct sk_buff *skb, struct sw_flow_key *key)
+ 
+ 		upcall.mru = OVS_CB(skb)->mru;
+ 		error = ovs_dp_upcall(dp, skb, key, &upcall, 0);
+-		if (unlikely(error))
+-			kfree_skb(skb);
+-		else
++		switch (error) {
++		case 0:
++			fallthrough;
++		case -EAGAIN:
++			fallthrough;
++		case -ERESTARTSYS:
++			fallthrough;
++		case -EINTR:
+ 			consume_skb(skb);
++			break;
++		default:
++			kfree_skb(skb);
++			break;
++		}
+ 		stats_counter = &stats->n_missed;
+ 		goto out;
+ 	}
+-- 
+2.31.1
 
