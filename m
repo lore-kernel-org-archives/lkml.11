@@ -2,79 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74248C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 17:52:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 188A9C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 17:52:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233245AbiG1RwE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 13:52:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56946 "EHLO
+        id S233042AbiG1RwI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 13:52:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233024AbiG1Rvr (ORCPT
+        with ESMTP id S233016AbiG1Rvu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 13:51:47 -0400
-Received: from mail-io1-f45.google.com (mail-io1-f45.google.com [209.85.166.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20D8974CDA;
-        Thu, 28 Jul 2022 10:51:46 -0700 (PDT)
-Received: by mail-io1-f45.google.com with SMTP id o2so1919271iof.8;
-        Thu, 28 Jul 2022 10:51:45 -0700 (PDT)
+        Thu, 28 Jul 2022 13:51:50 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A9C774CC9
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 10:51:48 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id v18so2410349plo.8
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 10:51:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=MeLnh0rabjFUt9GPWYnFusxmYFD63xDhBBKxQm/Xe2E=;
+        b=WJkVfWqlO5MKqhzLt48P5aPy5h9mWBJeqgspIJDVus196oRpW0WDUAQteBPcWZY2z/
+         Gip+HmFZrf7OPUZWz2uWofCr/lpVq35xWdaECrgE11x7GKt8/zsJt1Z9Mbu6NYdQia+D
+         ismdqCjNccvQNmauP9DO0ZCeKQU8l8bs8GGR0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=pzdOsIQ1Y26ZpedDpUj1LMMDG9wHQ8yPKUPV4/zQYvU=;
-        b=zEoB9EkBX2xu7n1QjSjBWhYNeC/K+rCgx1C20ljOXK+iutaHE90Sxj/XE3WHEXYnCe
-         TPq/Bie8FWUKZBxO0gWeV3XJ4tu2yRl/30PE+dwfqqIqratRpvB2uoDcmSZG+x2OucQq
-         Yjq6id5eQjcJCQwZbJiXLoVA8rS9y6wkt3gazD2FMDWqUO20QGDcAYDNtObbY90vvrYY
-         b4D5DEgTr5w7uolFktSgcm45WBslieROKqo+9p7/x8JFMOr1MzxkFxhwhJGeD/ITDEID
-         MLkYghpXtr6mwRobdil/TvigJe1/Ay2/cD4HNGIvVo7wtMVkjbEPzb5Ly9JAcY5sxXW3
-         /kxQ==
-X-Gm-Message-State: AJIora/UF0yTUsPSUOkc++bzofuM2eWqmfQzPF6MpkojL0WzbTp0HCOo
-        t+kbkTXmIHv9LcBdSzQYZw==
-X-Google-Smtp-Source: AGRyM1uE8Gpxa1EzQyPI5qU5/FxUiJRmY+OBx4u+FL1d203xvf+27hN3L3hFcxlM8veTQxXRGTHXvg==
-X-Received: by 2002:a05:6638:d93:b0:341:5cab:4d9 with SMTP id l19-20020a0566380d9300b003415cab04d9mr11578144jaj.146.1659030704990;
-        Thu, 28 Jul 2022 10:51:44 -0700 (PDT)
-Received: from xps15.herring.priv ([64.188.179.248])
-        by smtp.googlemail.com with ESMTPSA id y31-20020a029522000000b0033f3782eccfsm618069jah.89.2022.07.28.10.51.43
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=MeLnh0rabjFUt9GPWYnFusxmYFD63xDhBBKxQm/Xe2E=;
+        b=jQ0ZsS0XhGi3lsNoPMwMHqc3tQC1oZWLEH/e2p0oOrlX3wEk9h8Jw30cTYzLPJZIWV
+         kVYPJ+fMJAPKAJIEkmfPwHq3Ple3V/lEyBW30BE7Vvga6mFiu12iCITzx7pJ6NVo883s
+         qHbWCrMwvQxdipbDxhvybaAaUYQUaEusIvQq2sTblq9Ex9Yn6fnt1vY76N1AfK65z23e
+         iR7X7OklYpl1dCRo0/1UqZTN2XXyX0ECyALh3KrITrJY9x0jn6c8fYWVKHBSCLFmDkGC
+         MaSQLz7cMRVyFJafbbVgSWdvO+a8Yeq4tbmrQxNG/Btgd7SC/A0tPT2MkQYDHcGtapKW
+         APDg==
+X-Gm-Message-State: ACgBeo0LuI+H2U9AI1uO0M1jKhskjA8OQFpPWqUfiqKSfHffQYyuXrDB
+        mxzd1qwqjWcjNgMatdTETkFSdhulgi1D1g==
+X-Google-Smtp-Source: AA6agR7yxjxkWmktYJbcRF1Vs4zVcwK33yOxw5+tpNb/w4yg6CT9nnfZkcCoqWB5wVRHT1fPy2eyJg==
+X-Received: by 2002:a17:902:f101:b0:16d:c0ae:acd5 with SMTP id e1-20020a170902f10100b0016dc0aeacd5mr20194plb.70.1659030707553;
+        Thu, 28 Jul 2022 10:51:47 -0700 (PDT)
+Received: from moragues-cloud.c.googlers.com.com (252.157.168.34.bc.googleusercontent.com. [34.168.157.252])
+        by smtp.gmail.com with ESMTPSA id t14-20020a17090a3e4e00b001f315f73ef1sm2696136pjm.0.2022.07.28.10.51.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Jul 2022 10:51:44 -0700 (PDT)
-From:   Rob Herring <robh@kernel.org>
-To:     Will Deacon <will@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] dt-bindings: PCI: host-generic-pci: Allow IOMMU and MSI properties
-Date:   Thu, 28 Jul 2022 11:51:37 -0600
-Message-Id: <20220728175137.1172841-1-robh@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        Thu, 28 Jul 2022 10:51:47 -0700 (PDT)
+From:   Bob Moragues <moragues@chromium.org>
+X-Google-Original-From: Bob Moragues <moragues@google.com>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     dianders@chromium.org, swboyd@chromium.org, mka@chromium.org,
+        Bob Moragues <moragues@chromium.org>,
+        Bob Moragues <moragues@google.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org
+Subject: [PATCH v2 2/2] arm64: dts: qcom: sc7280: Add support for zoglin
+Date:   Thu, 28 Jul 2022 10:51:11 -0700
+Message-Id: <20220728105005.v2.2.I7d57fb9c4806a8b3fe3501c766b64f4987c271ef@changeid>
+X-Mailer: git-send-email 2.37.1.455.g008518b4e5-goog
+In-Reply-To: <20220728105005.v2.1.I5b9006878bdabd6493b866b46dbd6149968d545b@changeid>
+References: <20220728105005.v2.1.I5b9006878bdabd6493b866b46dbd6149968d545b@changeid>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Allow 'iommu-map', 'iommu-map-mask', and 'msi-parent' properties for
-generic host. This fixes unevaluated property warnings on Arm Juno, AMD
-Seattle, and FSL LS1028a.
+From: Bob Moragues <moragues@chromium.org>
 
-Signed-off-by: Rob Herring <robh@kernel.org>
+Zoglin is a Hoglin Chromebook with SPI Flash reduced from 64MB to 8MB.
+Zoglin is identical to Hoglin except for the SPI Flash.
+The actual SPI Flash is dynamically probed at and not specified in DTS.
+
+Signed-off-by: Bob Moragues <moragues@chromium.org>
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Signed-off-by: Bob Moragues <moragues@google.com>
 ---
- Documentation/devicetree/bindings/pci/host-generic-pci.yaml | 3 +++
- 1 file changed, 3 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/pci/host-generic-pci.yaml b/Documentation/devicetree/bindings/pci/host-generic-pci.yaml
-index 6bcaa8f2c3cf..d25423aa7167 100644
---- a/Documentation/devicetree/bindings/pci/host-generic-pci.yaml
-+++ b/Documentation/devicetree/bindings/pci/host-generic-pci.yaml
-@@ -106,6 +106,9 @@ properties:
-     maxItems: 3
+Changes in v2:
+- Fixed Signed-off-by
+- Added reviews / acks
+
+ arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts b/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
+index 6d324ac2dda1..98d09187fc69 100644
+--- a/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
++++ b/arch/arm64/boot/dts/qcom/sc7280-herobrine-crd.dts
+@@ -13,7 +13,7 @@
  
-   dma-coherent: true
-+  iommu-map: true
-+  iommu-map-mask: true
-+  msi-parent: true
+ / {
+ 	model = "Qualcomm Technologies, Inc. sc7280 CRD platform (rev5+)";
+-	compatible = "google,hoglin", "qcom,sc7280";
++	compatible = "google,zoglin", "google,hoglin", "qcom,sc7280";
  
- required:
-   - compatible
+ 	/* FIXED REGULATORS */
+ 
 -- 
-2.34.1
+2.37.1.455.g008518b4e5-goog
 
