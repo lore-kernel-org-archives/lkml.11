@@ -2,97 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79083C19F29
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 13:15:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E4B0C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 13:17:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238335AbiG1NPp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 09:15:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53732 "EHLO
+        id S236930AbiG1NRs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 09:17:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239173AbiG1NPe (ORCPT
+        with ESMTP id S235859AbiG1NRq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 09:15:34 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2DB071FCC5
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 06:15:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659014131;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=HUKi8MrGrEGip8RjX9SW44lSQ53nVGkUaTRQzQgM+mc=;
-        b=gLzMiK6EOJCsSWOB0QuecMtYp6D0ACaCpvZzzQklddlD2Nk2uu7/9v7njNmcnR2Hs0LA+a
-        xF3EDf+WUmo7mQAXkU5EGgawVaqsrCwruNH/iKL7yz7VfjHv/m2DA7PWMLeVvH4H4oYhrr
-        OMzMQTBlUiyGBvAZ1zYZmdRAwbo9vdE=
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
- [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-468-YODipXbcMAutpxEFrV0FlA-1; Thu, 28 Jul 2022 09:15:29 -0400
-X-MC-Unique: YODipXbcMAutpxEFrV0FlA-1
-Received: by mail-qv1-f71.google.com with SMTP id ei6-20020ad45a06000000b004746f72008dso1279092qvb.11
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 06:15:29 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=HUKi8MrGrEGip8RjX9SW44lSQ53nVGkUaTRQzQgM+mc=;
-        b=VK14tbLY5A2c2Sa2YVR6zF7zhpT81jSPDFbz31q+Q/ZV8Kz+6XOPs3QPzaQoturdkq
-         4JLlNhchwIsQGPOSdVNgmzTk/xKI69jzVOXNPA3dNi0OL/aVZ8E8z5F5+0Lk0G960AA7
-         i4fAGFwtgPoitnjaMEpSQj0Knj08c0xxl6e9Xs6Uc5DOyyUc6im66nnW+uSo1Dh7h7wA
-         cvsK2WqMH3jiNkeIuvgnpZXA0ei4NTmFrLF96RhazeGpepFQUzc/TvijnKEMUPjve3qH
-         sjhjERHxIf3vTZpFOlPQwIqbLeYw1T+3u8byr/0E9p68GjvyTq3maUNd9oa+4eyGc2rq
-         JOAQ==
-X-Gm-Message-State: AJIora/+r0pSEE1VoSLQZnRXDfBMYhxVL9Gi/zCmmllI7emgNG9/PhZD
-        xJPlzEolb8yIYXyyUpUvDC3zAxMjSZRHI6VjnpZPUYHi75JHSwEF8ZCaN6t/M6b/w20MoMySZt7
-        6RTOMUktOjPE+efAStwEFIghz
-X-Received: by 2002:a05:6214:cc8:b0:474:6de0:f8a5 with SMTP id 8-20020a0562140cc800b004746de0f8a5mr10225709qvx.105.1659014128592;
-        Thu, 28 Jul 2022 06:15:28 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vnztfGuboYDJJTLbZyvBfyH4pWFGcQG4mFGGhLbhGjmrdN/43PJLdxBRtlxurmakQ1oR06+w==
-X-Received: by 2002:a05:6214:cc8:b0:474:6de0:f8a5 with SMTP id 8-20020a0562140cc800b004746de0f8a5mr10225677qvx.105.1659014128310;
-        Thu, 28 Jul 2022 06:15:28 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-104-164.dyn.eolo.it. [146.241.104.164])
-        by smtp.gmail.com with ESMTPSA id bt8-20020ac86908000000b0031f16e7f899sm437997qtb.45.2022.07.28.06.15.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Jul 2022 06:15:27 -0700 (PDT)
-Message-ID: <8275d40f7154c3a4e4acc4d3779af38abb061df5.camel@redhat.com>
-Subject: Re: [PATCH] net: dsa: microchip: remove of_match_ptr() from
- ksz9477_dt_ids
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Souptick Joarder <jrdr.linux@gmail.com>, woojung.huh@microchip.com,
-        UNGLinuxDriver@microchip.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel test robot <lkp@intel.com>
-Date:   Thu, 28 Jul 2022 15:15:23 +0200
-In-Reply-To: <20220727025255.61232-1-jrdr.linux@gmail.com>
-References: <20220727025255.61232-1-jrdr.linux@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        Thu, 28 Jul 2022 09:17:46 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4FC5237D5
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 06:17:42 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oH3OL-0004rS-Ts; Thu, 28 Jul 2022 15:17:29 +0200
+Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oH3OJ-000Jl3-Pg; Thu, 28 Jul 2022 15:17:27 +0200
+Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1oH3OI-000AYl-Vm; Thu, 28 Jul 2022 15:17:26 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH net v1 1/1] net: dsa: microchip: don't try do read Gbit registers on non Gbit chips
+Date:   Thu, 28 Jul 2022 15:17:25 +0200
+Message-Id: <20220728131725.40492-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-07-27 at 08:22 +0530, Souptick Joarder wrote:
-> From: "Souptick Joarder (HPE)" <jrdr.linux@gmail.com>
-> 
-> > > drivers/net/dsa/microchip/ksz9477_i2c.c:89:34:
-> warning: 'ksz9477_dt_ids' defined but not used [-Wunused-const-variable=]
->       89 | static const struct of_device_id ksz9477_dt_ids[] = {
->          |                                  ^~~~~~~~~~~~~~
-> 
-> Removed of_match_ptr() from ksz9477_dt_ids.
-> 
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Souptick Joarder (HPE) <jrdr.linux@gmail.com>
+Do not try to read not existing or wrong register on chips without
+GBIT_SUPPORT.
 
-As this looks like a fix, could you please post a new revision of the
-patch including into the commit message a proper 'Fixes' tag?
+Fixes: c2e866911e25 ("net: dsa: microchip: break KSZ9477 DSA driver into two files")
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ drivers/net/dsa/microchip/ksz9477.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-Thanks!
-
-Paolo
+diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
+index c73bb6d383ad..f6bbd9646c85 100644
+--- a/drivers/net/dsa/microchip/ksz9477.c
++++ b/drivers/net/dsa/microchip/ksz9477.c
+@@ -316,7 +316,13 @@ void ksz9477_r_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 *data)
+ 			break;
+ 		}
+ 	} else {
+-		ksz_pread16(dev, addr, 0x100 + (reg << 1), &val);
++		/* No gigabit support.  Do not read wrong registers. */
++		if (!(dev->features & GBIT_SUPPORT) &&
++		    (reg == MII_CTRL1000 || reg == MII_ESTATUS ||
++		     reg == MII_STAT1000))
++			val = 0;
++		else
++			ksz_pread16(dev, addr, 0x100 + (reg << 1), &val);
+ 	}
+ 
+ 	*data = val;
+-- 
+2.30.2
 
