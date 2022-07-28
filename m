@@ -2,195 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C1C1C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 11:22:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FDF9C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 11:23:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236928AbiG1LWY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 07:22:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50450 "EHLO
+        id S237171AbiG1LXZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 07:23:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236921AbiG1LUd (ORCPT
+        with ESMTP id S237008AbiG1LW6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 07:20:33 -0400
-Received: from mail.baikalelectronics.com (unknown [87.245.175.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1F22A683C4;
-        Thu, 28 Jul 2022 04:19:39 -0700 (PDT)
-Received: from mail (mail.baikal.int [192.168.51.25])
-        by mail.baikalelectronics.com (Postfix) with ESMTP id 45B3116CF;
-        Thu, 28 Jul 2022 14:22:02 +0300 (MSK)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.baikalelectronics.com 45B3116CF
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baikalelectronics.ru; s=mail; t=1659007322;
-        bh=MT1vicVBKMErOF29vUfCHo0rtXuUWIvTz+zjXl8btBY=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=Gpi1x6iEoe7PdGKilas3oYKaOI4PHh1fngmc15buUAXpbrWbhYfb+IaMY26P7lDvb
-         m2mDn1/M767LN9OGU7/Samrpgph7Fr5RIkQhcgpJ1x889eJFXysoY7/t+4ktyqYr9g
-         WvSIyZtisjY8KwN5EPqy35MqYrWy9KmnJKthkUVY=
-Received: from localhost (192.168.53.207) by mail (192.168.51.25) with
- Microsoft SMTP Server (TLS) id 15.0.1395.4; Thu, 28 Jul 2022 14:19:37 +0300
-From:   Serge Semin <Sergey.Semin@baikalelectronics.ru>
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Jens Axboe <axboe@kernel.dk>, Hannes Reinecke <hare@suse.de>,
-        Serge Semin <fancer.lancer@gmail.com>
-CC:     Serge Semin <Sergey.Semin@baikalelectronics.ru>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Rob Herring <robh+dt@kernel.org>, <linux-ide@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
-Subject: [PATCH RESEND v6 22/23] ata: ahci-dwc: Add Baikal-T1 AHCI SATA interface support
-Date:   Thu, 28 Jul 2022 14:19:03 +0300
-Message-ID: <20220728111905.12427-23-Sergey.Semin@baikalelectronics.ru>
-In-Reply-To: <20220728111905.12427-1-Sergey.Semin@baikalelectronics.ru>
-References: <20220728111905.12427-1-Sergey.Semin@baikalelectronics.ru>
+        Thu, 28 Jul 2022 07:22:58 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81D76DFA3;
+        Thu, 28 Jul 2022 04:20:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4801F61AB3;
+        Thu, 28 Jul 2022 11:20:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 99F4FC433D6;
+        Thu, 28 Jul 2022 11:20:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659007213;
+        bh=NLoiJ85ooOY7R0E1mdDICk95Ib07s5ReQ95M35FsNP8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=CtJiaLq0Pg+RbjKkSZftsWHn4zILUyHarxPVefZNFH+QM9vN/UGSYFp7KsqYovY9Y
+         ooptd/uvJKd2LvW0YVExiA0RkPkrNsRBwzx1amROBM1bbrhM1TEXbdtpgSQbFcMZtx
+         PICV9XZoX9mE99Dx6Y945GpXVSdQM7YeneUaf8kotFNIkFP2efzQPwHgVMPii+eUbM
+         hfnVcwBYXzh0DjIoiJO3HwA3pYJwR7zO+jO4C2M7WBpaLA6IMQwYNYc+8r+wtPL0nh
+         200iBkvU++/OoGDdIdvfVLKiLsVB3Le69iHpx1LBEB4sjrg3lHhRS4Zp5s1/B9SKvP
+         BwoAdkswenKNw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7E97CC43142;
+        Thu, 28 Jul 2022 11:20:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MAIL.baikal.int (192.168.51.25) To mail (192.168.51.25)
+Subject: Re: [PATCH v2 1/2] dt-bindings: net: cdns,macb: use correct xlnx prefix
+ for Xilinx
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165900721351.27752.17529636503507674443.git-patchwork-notify@kernel.org>
+Date:   Thu, 28 Jul 2022 11:20:13 +0000
+References: <20220726070802.26579-1-krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220726070802.26579-1-krzysztof.kozlowski@linaro.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, nicolas.ferre@microchip.com,
+        claudiu.beznea@microchip.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        robh@kernel.org, harini.katakam@xilinx.com,
+        radhey.shyam.pandey@xilinx.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It's almost fully compatible DWC AHCI SATA IP-core derivative except the
-reference clocks source, which need to be very carefully selected. In
-particular the DWC AHCI SATA PHY can be clocked either from the pads
-ref_pad_clk_{m,p} or from the internal wires ref_alt_clk_{m,n}. In the
-later case the clock signal is generated from the Baikal-T1 CCU SATA PLL.
-The clocks source is selected by means of the ref_use_pad wire connected
-to the CCU SATA reference clock CSR.
+Hello:
 
-In normal situation it would be much more handy to use the internal
-reference clock source, but alas we haven't managed to make the AHCI
-controller working well with it so far. So it's preferable to have the
-controller clocked from the external clock generator and fallback to the
-internal clock source only as a last resort. Other than that the
-controller is full compatible with the DWC AHCI SATA IP-core.
+This series was applied to netdev/net-next.git (master)
+by Paolo Abeni <pabeni@redhat.com>:
 
-Signed-off-by: Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Reviewed-by: Hannes Reinecke <hare@suse.de>
+On Tue, 26 Jul 2022 09:08:01 +0200 you wrote:
+> Use correct vendor for Xilinx versions of Cadence MACB/GEM Ethernet
+> controller.  The Versal compatible was not released, so it can be
+> changed.  Zynq-7xxx and Ultrascale+ has to be kept in new and deprecated
+> form.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> 
+> [...]
 
----
+Here is the summary with links:
+  - [v2,1/2] dt-bindings: net: cdns,macb: use correct xlnx prefix for Xilinx
+    https://git.kernel.org/netdev/net-next/c/afa950b8adc9
+  - [v2,2/2] net: cdns,macb: use correct xlnx prefix for Xilinx
+    https://git.kernel.org/netdev/net-next/c/623cd8700698
 
-Changelog v2:
-- Rename 'syscon' property to 'baikal,bt1-syscon'.
-- Change the local objects prefix from 'dwc_ahci_' to 'ahci_dwc_',
-  from 'bt1_ahci_' to 'ahci_bt1_'. (@Damien)
-
-Changelog v4:
-- Convert ahci_bt1_plat to being statically defined. (@kbot)
-- Drop Baikal-T1 syscon reference relying on the clock controller
-  and the platform setup having the proper clock source selected. (@Rob)
----
- drivers/ata/Kconfig    |  1 +
- drivers/ata/ahci_dwc.c | 55 ++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 56 insertions(+)
-
-diff --git a/drivers/ata/Kconfig b/drivers/ata/Kconfig
-index 675bb44144d3..79242d82c755 100644
---- a/drivers/ata/Kconfig
-+++ b/drivers/ata/Kconfig
-@@ -179,6 +179,7 @@ config AHCI_DM816
- config AHCI_DWC
- 	tristate "Synopsys DWC AHCI SATA support"
- 	select SATA_HOST
-+	select MFD_SYSCON if (MIPS_BAIKAL_T1 || COMPILE_TEST)
- 	help
- 	  This option enables support for the Synopsys DWC AHCI SATA
- 	  controller implementation.
-diff --git a/drivers/ata/ahci_dwc.c b/drivers/ata/ahci_dwc.c
-index 44a9bb7696ab..03a1af1c2b1f 100644
---- a/drivers/ata/ahci_dwc.c
-+++ b/drivers/ata/ahci_dwc.c
-@@ -13,10 +13,12 @@
- #include <linux/kernel.h>
- #include <linux/libata.h>
- #include <linux/log2.h>
-+#include <linux/mfd/syscon.h>
- #include <linux/module.h>
- #include <linux/of_device.h>
- #include <linux/platform_device.h>
- #include <linux/pm.h>
-+#include <linux/regmap.h>
- 
- #include "ahci.h"
- 
-@@ -90,6 +92,20 @@
- #define AHCI_DWC_PORT_PHYCR		0x74
- #define AHCI_DWC_PORT_PHYSR		0x78
- 
-+/* Baikal-T1 AHCI SATA specific registers */
-+#define AHCI_BT1_HOST_PHYCR		AHCI_DWC_HOST_GPCR
-+#define AHCI_BT1_HOST_MPLM_MASK		GENMASK(29, 23)
-+#define AHCI_BT1_HOST_LOSDT_MASK	GENMASK(22, 20)
-+#define AHCI_BT1_HOST_CRR		BIT(19)
-+#define AHCI_BT1_HOST_CRW		BIT(18)
-+#define AHCI_BT1_HOST_CRCD		BIT(17)
-+#define AHCI_BT1_HOST_CRCA		BIT(16)
-+#define AHCI_BT1_HOST_CRDI_MASK		GENMASK(15, 0)
-+
-+#define AHCI_BT1_HOST_PHYSR		AHCI_DWC_HOST_GPSR
-+#define AHCI_BT1_HOST_CRA		BIT(16)
-+#define AHCI_BT1_HOST_CRDO_MASK		GENMASK(15, 0)
-+
- struct ahci_dwc_plat_data {
- 	unsigned int pflags;
- 	unsigned int hflags;
-@@ -106,6 +122,39 @@ struct ahci_dwc_host_priv {
- 	u32 dmacr[AHCI_MAX_PORTS];
- };
- 
-+static int ahci_bt1_init(struct ahci_host_priv *hpriv)
-+{
-+	struct ahci_dwc_host_priv *dpriv = hpriv->plat_data;
-+	int ret;
-+
-+	/* APB, application and reference clocks are required */
-+	if (!ahci_platform_find_clk(hpriv, "pclk") ||
-+	    !ahci_platform_find_clk(hpriv, "aclk") ||
-+	    !ahci_platform_find_clk(hpriv, "ref")) {
-+		dev_err(&dpriv->pdev->dev, "No system clocks specified\n");
-+		return -EINVAL;
-+	}
-+
-+	/*
-+	 * Fully reset the SATA AXI and ref clocks domain to ensure the state
-+	 * machine is working from scratch especially if the reference clocks
-+	 * source has been changed.
-+	 */
-+	ret = ahci_platform_assert_rsts(hpriv);
-+	if (ret) {
-+		dev_err(&dpriv->pdev->dev, "Couldn't assert the resets\n");
-+		return ret;
-+	}
-+
-+	ret = ahci_platform_deassert_rsts(hpriv);
-+	if (ret) {
-+		dev_err(&dpriv->pdev->dev, "Couldn't de-assert the resets\n");
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
- static struct ahci_host_priv *ahci_dwc_get_resources(struct platform_device *pdev)
- {
- 	struct ahci_dwc_host_priv *dpriv;
-@@ -416,9 +465,15 @@ static struct ahci_dwc_plat_data ahci_dwc_plat = {
- 	.pflags = AHCI_PLATFORM_GET_RESETS,
- };
- 
-+static struct ahci_dwc_plat_data ahci_bt1_plat = {
-+	.pflags = AHCI_PLATFORM_GET_RESETS | AHCI_PLATFORM_RST_TRIGGER,
-+	.init = ahci_bt1_init,
-+};
-+
- static const struct of_device_id ahci_dwc_of_match[] = {
- 	{ .compatible = "snps,dwc-ahci", &ahci_dwc_plat },
- 	{ .compatible = "snps,spear-ahci", &ahci_dwc_plat },
-+	{ .compatible = "baikal,bt1-ahci", &ahci_bt1_plat },
- 	{},
- };
- MODULE_DEVICE_TABLE(of, ahci_dwc_of_match);
+You are awesome, thank you!
 -- 
-2.35.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
