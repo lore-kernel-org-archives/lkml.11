@@ -2,69 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29F56C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 09:26:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E863C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 09:27:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235508AbiG1J0i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 05:26:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35352 "EHLO
+        id S235520AbiG1J1Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 05:27:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234953AbiG1J0g (ORCPT
+        with ESMTP id S235398AbiG1J1X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 05:26:36 -0400
-Received: from fornost.hmeau.com (helcar.hmeau.com [216.24.177.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2682F65825;
-        Thu, 28 Jul 2022 02:26:33 -0700 (PDT)
-Received: from gwarestrin.arnor.me.apana.org.au ([192.168.103.7])
-        by fornost.hmeau.com with smtp (Exim 4.94.2 #2 (Debian))
-        id 1oGzmX-005Ou3-Pj; Thu, 28 Jul 2022 19:26:15 +1000
-Received: by gwarestrin.arnor.me.apana.org.au (sSMTP sendmail emulation); Thu, 28 Jul 2022 17:26:14 +0800
-Date:   Thu, 28 Jul 2022 17:26:14 +0800
-From:   Herbert Xu <herbert@gondor.apana.org.au>
-To:     Leonard Crestez <cdleonard@gmail.com>
-Cc:     Dmitry Safonov <dima@arista.com>, linux-kernel@vger.kernel.org,
-        Dmitry Safonov <0x7f454c46@gmail.com>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        David Ahern <dsahern@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Biggers <ebiggers@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Francesco Ruggeri <fruggeri@arista.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Salam Noureddine <noureddine@arista.com>,
-        netdev@vger.kernel.org, linux-crypto@vger.kernel.org
-Subject: Re: [PATCH 0/6] net/crypto: Introduce crypto_pool
-Message-ID: <YuJWNgIupkBPvsCD@gondor.apana.org.au>
-References: <20220726201600.1715505-1-dima@arista.com>
- <YuCEN7LKcVLL0zBn@gondor.apana.org.au>
- <5b88eea6-1d84-8c16-36f4-358053e247f2@gmail.com>
+        Thu, 28 Jul 2022 05:27:23 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9FBF165D40
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 02:27:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659000441;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=LrxQSWciaWJjGdDz7VQeuucGTXw62npYksns5+Sozgk=;
+        b=ATfVOxmWSkRH7ZBFtBSI0o29I/urswpG32IhmuGaqdeGpNu4UO2g0fIuWfsUgf2+jdExaG
+        SoCYU5hGiw14UF68thT0ChujJ4giRzasVQqFoD0owyLhdsc8RY0ZF45hWuH7bRK5GDikxg
+        hFNXvKrc0nyNvQWvs3rb7qk8F+i1FnY=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-391-PnlwxStjMfqH-71LQUt28g-1; Thu, 28 Jul 2022 05:27:20 -0400
+X-MC-Unique: PnlwxStjMfqH-71LQUt28g-1
+Received: by mail-wm1-f71.google.com with SMTP id z20-20020a1c4c14000000b003a3020da654so263080wmf.5
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 02:27:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=LrxQSWciaWJjGdDz7VQeuucGTXw62npYksns5+Sozgk=;
+        b=Qvi/RAori9QMLaSENCbCxMD2Dm8UzQwXXEhqCphc35kOgJydOtWFxyyksIyZfbrKDO
+         s/sSondalxsg4Dz5Hg6kaQweorkfenW2qNAoYTj9nQ4CZshEyufsBYN7oK37QOC/fsV/
+         tJAZhbkfqjYfTDvWyvyJIJOalG92MXYZffKBiEl2qJRNHHjjmEQxpuEK6p5mEwmR3IFH
+         C1fJraSKTrrNQ4xAFNSHTvKkDhWPdM+NoyCgMvsJQ7NGobIC0uwKqYInkutUUrn6zlyG
+         yh/vDF1gIpxdSmR59bhNSrt1YY35tCOPjqzciLpRroaZqMHgvKjUCbQZuQwooil00vrJ
+         ws0w==
+X-Gm-Message-State: AJIora8Z1Wke/+/PJjQ1N8orPzwtDX4uSkWSXWOyAZtyDryeOrwo9hlt
+        S4Ujb6P43JxBLb3OveYnH7V5sJ+kvXar2ZjclXpNg718nIDMxviFc9cYUv5AbR5LExc2a7ZpHA0
+        eGPHjaxpepF65kH9sIriLUejF
+X-Received: by 2002:adf:ffc1:0:b0:21d:66a1:c3ee with SMTP id x1-20020adfffc1000000b0021d66a1c3eemr16041387wrs.364.1659000439057;
+        Thu, 28 Jul 2022 02:27:19 -0700 (PDT)
+X-Google-Smtp-Source: AGRyM1upxqCVjXPJAiQREZPjwda4AYwu3LBOidqDUdl61pYBbKHbL+vvbmNlzGyLJV5MOoy3LxjH1A==
+X-Received: by 2002:adf:ffc1:0:b0:21d:66a1:c3ee with SMTP id x1-20020adfffc1000000b0021d66a1c3eemr16041365wrs.364.1659000438748;
+        Thu, 28 Jul 2022 02:27:18 -0700 (PDT)
+Received: from vschneid.remote.csb ([185.11.37.247])
+        by smtp.gmail.com with ESMTPSA id g17-20020a5d4891000000b0021f0558e51asm444942wrq.55.2022.07.28.02.27.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Jul 2022 02:27:18 -0700 (PDT)
+From:   Valentin Schneider <vschneid@redhat.com>
+To:     Zhen Lei <thunder.leizhen@huawei.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        linux-kernel@vger.kernel.org
+Cc:     Zhen Lei <thunder.leizhen@huawei.com>
+Subject: Re: [PATCH] sched: Print each field value left-aligned in
+ sched_show_task()
+In-Reply-To: <20220727060819.1085-1-thunder.leizhen@huawei.com>
+References: <20220727060819.1085-1-thunder.leizhen@huawei.com>
+Date:   Thu, 28 Jul 2022 10:27:17 +0100
+Message-ID: <xhsmhh731egei.mognet@vschneid.remote.csb>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5b88eea6-1d84-8c16-36f4-358053e247f2@gmail.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 06:52:27PM +0300, Leonard Crestez wrote:
+On 27/07/22 14:08, Zhen Lei wrote:
+> Currently, the values of some fields are printed right-aligned, causing
+> the field value to be next to the next field name rather than next to its
+> own field name. So print each field value left-aligned, to make it more
+> readable.
 >
-> The fact that setkey is implemented at the crypto_ahash instead of the
-> ahash_request level is baked into all algorithm implementations (including
-> many hardware-specific ones). Changing this seems extremely difficult.
+> Before:
+>       stack:    0 pid:  307 ppid:     2 flags:0x00000008
+> After
+>       stack:0     pid:308   ppid:2      flags:0x0000000a
+>
+> This also makes them print in the same style as the other two fields:
+>       task:demo0           state:R  running task
+>
+> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
 
-What I had in mind is simply making the tfm setkey optional.  That
-way you could then have an additional setkey at the request level.
+Reviewed-by: Valentin Schneider <vschneid@redhat.com>
 
-If the key is provided in either place you're allowed to perform
-the hash.
-
-This should have minimal impact on existing code.
-
-Cheers,
--- 
-Email: Herbert Xu <herbert@gondor.apana.org.au>
-Home Page: http://gondor.apana.org.au/~herbert/
-PGP Key: http://gondor.apana.org.au/~herbert/pubkey.txt
