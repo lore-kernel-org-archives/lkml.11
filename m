@@ -2,202 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF40CC04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 20:43:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50DFEC04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 20:44:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231259AbiG1Unh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 16:43:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43338 "EHLO
+        id S232051AbiG1Uop (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 16:44:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbiG1Und (ORCPT
+        with ESMTP id S229620AbiG1Uon (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 16:43:33 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B58B6BD74;
-        Thu, 28 Jul 2022 13:43:32 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id va17so5213024ejb.0;
-        Thu, 28 Jul 2022 13:43:32 -0700 (PDT)
+        Thu, 28 Jul 2022 16:44:43 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8603F6D2CD;
+        Thu, 28 Jul 2022 13:44:42 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id a7-20020a17090a008700b001f325db8b90so1855166pja.0;
+        Thu, 28 Jul 2022 13:44:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=YqQ/iPV80N4mxWzia0Xd1NcSXuCfeJGClLLA16J1BeY=;
-        b=cVnBHhLkFiQtW0++kx4EfEPl7JrDchSbhY7SSxHfPM0hW5k8u8TYMTA061tf+SPReu
-         f5F5DOf4YPrNbxV3lRvasj1NNt2nkF3WKKaxuxAYaitymTO4EnWGakFpzg0Vo0GN94eR
-         /WIvNWqTB/fBLlWPp5Tr0gK0zlZpXxKmLYCSGPFmpz5OHBQUXx0RE0+TGNRUWI4KchWC
-         23vYHPmJJkD5R432CuD+eztTwc9fgTZtXW8vL/v9jXraHnFLgYirRl+SwkXvrOlYPaIn
-         FshocVpYShqy930pnV39kWgxNvSdav4IAL2UAuQTQZ+d9Is2kqsHzoGXIJrVZVVvEU6B
-         wBpw==
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:from:to:cc;
+        bh=zEBR1Ky5G7KTNBelOELZjj3LDNqMPsUpTpOuJi2OqTg=;
+        b=Vm+WbZZse7CT3sDU0lYolZ3mhefbqlwbQBYN/UAU0F8JiRqHSZBzfnSWzucq+4hhLu
+         j6+ozXndQXd9WCCaXO9a9sMcuHjAzyJARs8DgbvUB+rQCPAzUHX1MbNIvEkpCHpe3kHt
+         jjhHOhd+pYA+XbD5JbQMjo8hBGEKm5UexIvk+V6w+d31/y/N8kFiOrLATmyGCpAKR9l+
+         /kONg+NMwMVyPs1zhKcCtCaTKxyytjwAGNTkJLazYcpBTcf9vuVFqUfH5CqlpQYeRVEv
+         6b3oOuWAg8y8eJK0iT5VmtqkI4k5V4l+j7tD/Bpn9BaNjwmjEoe9DWTPcptFk6atOUGy
+         tQ0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=YqQ/iPV80N4mxWzia0Xd1NcSXuCfeJGClLLA16J1BeY=;
-        b=T6DirdEArMcBbL6jarV8IUhX5HxF8CHImdHl2Cvx64d36IAL18V29ty0X/u5Zq35GY
-         MZMjXihc56ysOn3dsaWDe9KFtqzk8Q4Yy5hZCd1fvkYc7XtuTo42A7+bidQcBMj8pDIw
-         yElh0XvpPTPfHlZrqJJUC+/Lrxg38zN3jxwXECIEcTU6Io/B21ftelmRLfFxOHNeVkOx
-         u3Y1rQOeAIBtHq/Ki8Vml9pp1V66/R7LaN4AsbnvWuXF7JyQUaWuMO+XRirebk8Nz8ux
-         77cenlxY+VIBzNum67ml1NAsdgFk8Cu0RWL3dA1iwWCgVAFqZfRfcF7+qoU664gWJYWK
-         S/TQ==
-X-Gm-Message-State: AJIora/mJuzph8Mk+S8hrJIJJGXr52ruMkdNmwMvI/bbrlQCIG8Pt825
-        3dFXTtDfqO3W9xSlIHKroOS1zQ0WbiQbss5zuK4=
-X-Google-Smtp-Source: AGRyM1viOpUKpMdSj6ghbFS3dvhA2vr2GVmGKnHUyCL6GpFC9YiN19lIwm+4UsRQkWVeFYxBi558+ZYXu1L2HPSd9VQ=
-X-Received: by 2002:a17:907:9706:b0:72b:4b0d:86a2 with SMTP id
- jg6-20020a170907970600b0072b4b0d86a2mr495492ejc.242.1659041010491; Thu, 28
- Jul 2022 13:43:30 -0700 (PDT)
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
+        bh=zEBR1Ky5G7KTNBelOELZjj3LDNqMPsUpTpOuJi2OqTg=;
+        b=hvJs46aqdyRxM5xywlZB0Z1UOxJ3vtiZ3SGR7SRQPH+T1bO24TugivD8U13N3Bt2nw
+         zPLmBDZ9IhFPS82raMzBEc17TNE37OPfBLsraZs+uwWZVGXk0mAxfu+zo+MjcnoR55zk
+         V7Lr6NtXeBS+2dgoOby2q2908FypC65SIU8x2CkBygebKFCrHqZxJoV0osGLNeWud1W2
+         ACeraJBJIK3jSg0xCfZ8sdgAMV2gnxfGQ5ULK5fzVWiYFyQKyBKIwQDlcLdp1yI5YLTn
+         jREZkNHi3i6QJQb9QYG8y8bEAiWeBeynYDETogGVGtKJzjJFePlfcC0I7XyAMPTghlU6
+         hXTA==
+X-Gm-Message-State: ACgBeo1o56zImgD0GzelgCeOBAV/40rO3x4p5vzX3aXvo7303YC8P5tN
+        sFxJwKvYoh0b1jhibOczv6b6CuI95b0=
+X-Google-Smtp-Source: AA6agR4NJeonS2cJ+HFzH46XzQhbj1kWHezl9LtVmnH3LAN8Irv0cfx9aEAoLWt/4l0BVJaaN5vHHQ==
+X-Received: by 2002:a17:90b:3a84:b0:1f2:8d9d:46f3 with SMTP id om4-20020a17090b3a8400b001f28d9d46f3mr1172274pjb.174.1659041081677;
+        Thu, 28 Jul 2022 13:44:41 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::5:23b6])
+        by smtp.gmail.com with ESMTPSA id d70-20020a621d49000000b0052ab9f1fe45sm1180234pfd.120.2022.07.28.13.44.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Jul 2022 13:44:40 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Thu, 28 Jul 2022 10:44:38 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Waiman Long <longman@redhat.com>
+Cc:     Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Valentin Schneider <vschneid@redhat.com>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>, cgroups@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] cgroup/cpuset: Keep current cpus list if cpus
+ affinity was explicitly set
+Message-ID: <YuL1NijxSEv2xadk@slm.duckdns.org>
+References: <20220728005815.1715522-1-longman@redhat.com>
+ <YuLF+xXaCzwWi2BR@slm.duckdns.org>
+ <1ae1cc6c-dca9-4958-6b22-24a5777c5e8d@redhat.com>
+ <YuLdX7BYGvo57LNU@slm.duckdns.org>
+ <606ed69e-8ad0-45d5-9de7-48739df7f48d@redhat.com>
 MIME-Version: 1.0
-References: <20220728125435.3336618-1-potin.lai.pt@gmail.com> <20220728125435.3336618-3-potin.lai.pt@gmail.com>
-In-Reply-To: <20220728125435.3336618-3-potin.lai.pt@gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 28 Jul 2022 22:42:52 +0200
-Message-ID: <CAHp75VebJQH_Ab3MjLhNr_=AJ8eZhUMzU7GnDXL4Gw8j_3vH7A@mail.gmail.com>
-Subject: Re: [PATCH v5 2/2] iio: humidity: hdc100x: add manufacturer and
- device ID check
-To:     Potin Lai <potin.lai.pt@gmail.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Patrick Williams <patrick@stwcx.xyz>,
-        Potin Lai <potin.lai@quantatw.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <606ed69e-8ad0-45d5-9de7-48739df7f48d@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 28, 2022 at 3:32 PM Potin Lai <potin.lai.pt@gmail.com> wrote:
->
-> Add manufacturer and device ID checking during probe, and skip the
-> checking if chip model not supported.
->
-> Supported:
-> - HDC1000
-> - HDC1010
-> - HDC1050
-> - HDC1080
->
-> Not supported:
-> - HDC1008
+Hello,
 
-This one is okay now, thanks!
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+On Thu, Jul 28, 2022 at 03:21:26PM -0400, Waiman Long wrote:
+> On 7/28/22 15:02, Tejun Heo wrote:
+> > On Thu, Jul 28, 2022 at 02:57:28PM -0400, Waiman Long wrote:
+> > > There can be a counter argument that if a user found out that there is not
+> > > enough cpus in a cpuset to meet its performance target, one can always
+> > > increase the number of cpus in the cpuset. Generalizing this behavior to all
+> > > the tasks irrespective if they have explicitly set cpus affinity before will
+> > > disallow this use case.
+> > This is nasty.
+> 
+> That is a nasty example, I know. There may be users depending on the
+> existing behavior even if they don't know it. So I am a bit hesitant to
+> change the default behavior like that. On the other hand, tasks that have
+> explicitly set its cpu affinity certainly don't want to have unexpected
+> change to that.
 
-> Signed-off-by: Potin Lai <potin.lai.pt@gmail.com>
-> ---
->  drivers/iio/humidity/hdc100x.c | 67 ++++++++++++++++++++++++++++------
->  1 file changed, 56 insertions(+), 11 deletions(-)
->
-> diff --git a/drivers/iio/humidity/hdc100x.c b/drivers/iio/humidity/hdc100x.c
-> index 0d514818635cb..31f18cc1cf63c 100644
-> --- a/drivers/iio/humidity/hdc100x.c
-> +++ b/drivers/iio/humidity/hdc100x.c
-> @@ -34,6 +34,23 @@
->  #define HDC100X_REG_CONFIG_ACQ_MODE            BIT(12)
->  #define HDC100X_REG_CONFIG_HEATER_EN           BIT(13)
->
-> +#define HDC100X_REG_MFR_ID     0xFE
-> +#define HDC100X_REG_DEV_ID     0xFF
-> +
-> +#define HDC100X_MFR_ID 0x5449
-> +
-> +struct hdc100x_chip_data {
-> +       bool support_mfr_check;
-> +};
-> +
-> +static const struct hdc100x_chip_data hdc100x_chip_data = {
-> +       .support_mfr_check      = true,
-> +};
-> +
-> +static const struct hdc100x_chip_data hdc1008_chip_data = {
-> +       .support_mfr_check      = false,
-> +};
-> +
->  struct hdc100x_data {
->         struct i2c_client *client;
->         struct mutex lock;
-> @@ -351,8 +368,32 @@ static const struct iio_info hdc100x_info = {
->         .attrs = &hdc100x_attribute_group,
->  };
->
-> +static int hdc100x_read_mfr_id(struct i2c_client *client)
-> +{
-> +       return i2c_smbus_read_word_swapped(client, HDC100X_REG_MFR_ID);
-> +}
-> +
-> +static int hdc100x_read_dev_id(struct i2c_client *client)
-> +{
-> +       return i2c_smbus_read_word_swapped(client, HDC100X_REG_DEV_ID);
-> +}
-> +
-> +static bool is_valid_hdc100x(struct i2c_client *client)
-> +{
-> +       int mfr_id, dev_id;
-> +
-> +       mfr_id = hdc100x_read_mfr_id(client);
-> +       dev_id = hdc100x_read_dev_id(client);
-> +       if (mfr_id == HDC100X_MFR_ID &&
-> +          (dev_id == 0x1000 || dev_id == 0x1050))
-> +               return true;
-> +
-> +       return false;
-> +}
-> +
->  static int hdc100x_probe(struct i2c_client *client)
->  {
-> +       const struct hdc100x_chip_data *chip_data;
->         struct iio_dev *indio_dev;
->         struct hdc100x_data *data;
->         int ret;
-> @@ -361,6 +402,10 @@ static int hdc100x_probe(struct i2c_client *client)
->                                      I2C_FUNC_SMBUS_BYTE | I2C_FUNC_I2C))
->                 return -EOPNOTSUPP;
->
-> +       chip_data = device_get_match_data(&client->dev);
-> +       if (chip_data->support_mfr_check && !is_valid_hdc100x(client))
-> +               return -EINVAL;
-> +
->         indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
->         if (!indio_dev)
->                 return -ENOMEM;
-> @@ -396,22 +441,22 @@ static int hdc100x_probe(struct i2c_client *client)
->  }
->
->  static const struct i2c_device_id hdc100x_id[] = {
-> -       { "hdc100x", 0 },
-> -       { "hdc1000", 0 },
-> -       { "hdc1008", 0 },
-> -       { "hdc1010", 0 },
-> -       { "hdc1050", 0 },
-> -       { "hdc1080", 0 },
-> +       { "hdc100X", (kernel_ulong_t)&hdc100x_chip_data },
-> +       { "hdc1000", (kernel_ulong_t)&hdc100x_chip_data },
-> +       { "hdc1008", (kernel_ulong_t)&hdc1008_chip_data },
-> +       { "hdc1010", (kernel_ulong_t)&hdc100x_chip_data },
-> +       { "hdc1050", (kernel_ulong_t)&hdc100x_chip_data },
-> +       { "hdc1080", (kernel_ulong_t)&hdc100x_chip_data },
->         { }
->  };
->  MODULE_DEVICE_TABLE(i2c, hdc100x_id);
->
->  static const struct of_device_id hdc100x_dt_ids[] = {
-> -       { .compatible = "ti,hdc1000" },
-> -       { .compatible = "ti,hdc1008" },
-> -       { .compatible = "ti,hdc1010" },
-> -       { .compatible = "ti,hdc1050" },
-> -       { .compatible = "ti,hdc1080" },
-> +       { .compatible = "ti,hdc1000", .data = &hdc100x_chip_data },
-> +       { .compatible = "ti,hdc1008", .data = &hdc1008_chip_data },
-> +       { .compatible = "ti,hdc1010", .data = &hdc100x_chip_data },
-> +       { .compatible = "ti,hdc1050", .data = &hdc100x_chip_data },
-> +       { .compatible = "ti,hdc1080", .data = &hdc100x_chip_data },
->         { }
->  };
->  MODULE_DEVICE_TABLE(of, hdc100x_dt_ids);
-> --
-> 2.31.1
->
+Yeah, I hear you. I'm on the same page.
 
+> > The real solution here is separating out what user requested
+> > and the mask that cpuset (or cpu hotplug) needs to apply on top. ie.
+> > remember what the user requested in a separate cpumask and compute the
+> > intersection into p->cpus_maks whenever something changes and apply
+> > fallbacks on that final mask. Multiple parties updating the same variable is
+> > never gonna lead to anything consistent and we're patching up for whatever
+> > the immediate use case seems to need at the moment. That said, I'm not
+> > necessarily against patching it up but if you're interested in delving into
+> > it deeper, that'd be great.
+> 
+> I believe the current code is already restricting what cpu affinity that a
+> user can request by limiting to those allowed by the current cpuset. Hotplug
+> is another issue that may need to be addressed. I will update my patch to
+> make it handle hotplug in a more graceful way.
+
+So, the patch you proposed is making the code remember one special aspect of
+user requested configuration - whether it configured it or not, and trying
+to preserve that particular state as cpuset state changes. It addresses the
+immediate problem but it is a very partial approach. Let's say a task wanna
+be affined to one logical thread of each core and set its mask to 0x5555.
+Now, let's say cpuset got enabled and enforced 0xff and affined the task to
+0xff. After a while, the cgroup got more cpus allocated and its cpuset now
+has 0xfff. Ideally, what should happen is the task now having the effective
+mask of 0x555. In practice, tho, it either would get 0xf55 or 0x55 depending
+on which way we decide to misbehave.
+
+Thanks.
 
 -- 
-With Best Regards,
-Andy Shevchenko
+tejun
