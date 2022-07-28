@@ -2,156 +2,348 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2388AC04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 10:05:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B12B1C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 10:05:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235635AbiG1KDt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 06:03:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34788 "EHLO
+        id S235690AbiG1KFv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 06:05:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234767AbiG1KDq (ORCPT
+        with ESMTP id S235934AbiG1KFd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 06:03:46 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B081661D64
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 03:03:43 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id l4so1507531wrm.13
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 03:03:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=references:user-agent:from:to:subject:date:in-reply-to:message-id
-         :mime-version;
-        bh=y4T0HC+LgWXmkogwugZt7HLiFgtmRV8VQfPIoPRbde0=;
-        b=csdItTfYI8AMJ6g7jI8x9ssnGKX+BNs9aZD4R1pd2bQRdogBMITspj/oV2UzNUupdo
-         MBwl06n5qBT34W0MDXH3vcscdrnedwcSZdAk35NNTINrlJgG5JhkMzXc0tO4+O8fNh1A
-         FjBmJHspacXIgWkhDNxtqGEdmf8LK4zRFY0uvJJ0pVlPRwbfMFlsRKGZ7FKRhG/HykKi
-         OWVgf63m6zJ0Xom3esoEzx10YevVuBsL2h0ZbqwtVJD4AZVgxCggyhq991xFotWZUijv
-         n3D5glVbGwxbTrgZax66+8MSsTjxdNiYgBGgcEeDUwQhP6gD91X6kybOqly3tEP+9/Hy
-         CMEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:user-agent:from:to:subject:date
-         :in-reply-to:message-id:mime-version;
-        bh=y4T0HC+LgWXmkogwugZt7HLiFgtmRV8VQfPIoPRbde0=;
-        b=GytChp5CvL9IM81S0kJhYNAgq2eggkgKJnSgtYoffA5m3KVssnSmo+fYC9fZjdKYr6
-         3NXqSj91VfY/b7EOVBX5QToK2+zOum1zQp+THGz3CVtgDmlnLeU9gMdYyHpYT+1zmQ8D
-         G16Kf79SBuerC83/S+hB0EuEB1yT3dfe56cAoa+I8rXbeaO7bFPzqNvdQd5X45jtjY3F
-         ZTcLRJEXw2U4HEG+Tga7fNgX5fq0G6g2iEwuz0gg0pMPy56raRhKlkBMINEjI0zIEcHu
-         dd8NjlKu0w5hQ4/pUati2u7rCB4inkgWeP6kKhGLQkxEwZmX7T3xZ8Lcgx96EduNLP3W
-         GUbQ==
-X-Gm-Message-State: AJIora+ppPC3CKLBvL5mr/1G+es+BbhbJRyGtveWHlhRtpRdhLslUoSc
-        8Oipog+rxteiA8rl6he445kQcg==
-X-Google-Smtp-Source: AGRyM1sVUOYVm8VpDrMDKjr0I9JufvhLIMmqV/AteNtB09x3qu5lBkrmNvYEnEoreb0NoNtADZen7w==
-X-Received: by 2002:a5d:6dc6:0:b0:21e:a87c:91bc with SMTP id d6-20020a5d6dc6000000b0021ea87c91bcmr7694254wrz.165.1659002622171;
-        Thu, 28 Jul 2022 03:03:42 -0700 (PDT)
-Received: from localhost (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.gmail.com with ESMTPSA id m20-20020a056000181400b0021e571a99d5sm526097wrh.17.2022.07.28.03.03.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Jul 2022 03:03:41 -0700 (PDT)
-References: <20220728054202.6981-1-yu.tu@amlogic.com>
- <20220728054202.6981-2-yu.tu@amlogic.com>
- <82e3fd36-df96-a555-4cea-47fabd26502b@linaro.org>
- <1jv8rhfw8h.fsf@starbuckisacylon.baylibre.com>
- <367cf98b-ef06-8f44-76c8-9099a1ec13dc@linaro.org>
- <1jmtctfuli.fsf@starbuckisacylon.baylibre.com>
- <c088e01c-0714-82be-8347-6140daf56640@linaro.org>
-User-agent: mu4e 1.8.6; emacs 27.1
-From:   Jerome Brunet <jbrunet@baylibre.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Yu Tu <yu.tu@amlogic.com>, linux-clk@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: Re: [PATCH V2 1/3] dt-bindings: clk: meson: add S4 SoC clock
- controller bindings
-Date:   Thu, 28 Jul 2022 11:54:49 +0200
-In-reply-to: <c088e01c-0714-82be-8347-6140daf56640@linaro.org>
-Message-ID: <1jfsilftab.fsf@starbuckisacylon.baylibre.com>
+        Thu, 28 Jul 2022 06:05:33 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F1405247A;
+        Thu, 28 Jul 2022 03:05:29 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 577CFB82398;
+        Thu, 28 Jul 2022 10:05:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CB8FC433B5;
+        Thu, 28 Jul 2022 10:05:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1659002726;
+        bh=bHkAUUJ8s9fL6+SCkEHpALg68TWhAv30Y5oWcfi3Dyc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Qr0udpQzvizSkLpGfOnZu9Jg/2C1UycmicxD2MmCsRua5PnQSkwyD08NzFdVUqOUD
+         8HfDlwWGck0JNcu4CQbKOg0mnDvt2aAKP3b1mO3pu8pHCZJFcFqnMLYYItVrOdZBxm
+         mw+37B/L9RAnpDjLIPusQlDxTbTW0eyVGIDwhouc=
+Date:   Thu, 28 Jul 2022 12:05:23 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Martin =?utf-8?B?WmHFpW92acSN?= <m.zatovic1@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        mani@kernel.org, hemantk@codeaurora.org, elder@linaro.org,
+        f.fainelli@gmail.com, linus.walleij@linaro.org,
+        Michael.Srba@seznam.cz, jeffrey.l.hugo@gmail.com,
+        bjorn.andersson@linaro.org, saravanak@google.com,
+        krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org
+Subject: Re: [PATCH RFC v1 1/2] bus: add Wiegand write-only GPIO driver
+Message-ID: <YuJfY1sfYQgKVQa7@kroah.com>
+References: <20220728091712.13395-1-m.zatovic1@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220728091712.13395-1-m.zatovic1@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Jul 28, 2022 at 11:17:11AM +0200, Martin Zaťovič wrote:
+> +static dev_t base_devno;
+> +static int max_devices = 1;
+> +static struct class *wiegand_gpio_cl;
 
-On Thu 28 Jul 2022 at 11:48, Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
+No need for your own class and stuff, just use the misc_device interface
+and dynamically create a device node that way.  It will make your code
+much simaller and simpler overall.
 
-> On 28/07/2022 11:09, Jerome Brunet wrote:
->> 
->> On Thu 28 Jul 2022 at 11:02, Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
->> 
->>> On 28/07/2022 10:50, Jerome Brunet wrote:
->>>>
->>>> On Thu 28 Jul 2022 at 10:41, Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
->>>>
->>>>> On 28/07/2022 07:42, Yu Tu wrote:
->> [...]
->>>>>> +/*
->>>>>> + * CLKID index values
->>>>>> + */
->>>>>> +
->>>>>> +#define CLKID_FIXED_PLL			1
->>>>>> +#define CLKID_FCLK_DIV2			3
->>>>>> +#define CLKID_FCLK_DIV3			5
->>>>>> +#define CLKID_FCLK_DIV4			7
->>>>>> +#define CLKID_FCLK_DIV5			9
->>>>>> +#define CLKID_FCLK_DIV7			11
->>>>>
->>>>> Why these aren't continuous? IDs are expected to be incremented by 1.
->>>>>
->>>>
->>>> All clocks have IDs, it is one big table in the driver, but we are not exposing them all.
->>>> For example, with composite 'mux / div / gate' assembly, we usually need
->>>> only the leaf.
->>>
->>> I understand you do not expose them all, but that is not the reason to
->>> increment ID by 2 or 3... Otherwise these are not IDs and you are not
->>> expected to put register offsets into the bindings (you do not bindings
->>> in such case).
->> 
->> Why is it not an IDs if it not continuous in the bindings ?
->> 
->> If there is technical reason, we'll probably end up exposing everything. It
->> would not be a dramatic change. I asked for this over v1 because we have
->> done that is the past and I think it makes sense.
->> 
->> I'm happy to be convinced to do things differently. Just looking for the
->> technical reason that require contiuous exposed IDs.
->> 
->> The other IDs exists, but we do not expose them as bindings.
->> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/clk/meson/gxbb.h#n125
->
-> https://lore.kernel.org/linux-devicetree/CAK8P3a1APzs74YTcZ=m43G3zrmwJZKcYSTvV5eDDQX-37UY7Tw@mail.gmail.com/
->
-> https://lore.kernel.org/linux-devicetree/CAK8P3a0fDJQvGLEtG0fxLkG08Fh9V7LEMPsx4AaS+2Ldo_xWxw@mail.gmail.com/
->
-> https://lore.kernel.org/linux-devicetree/b60f5fd2-dc48-9375-da1c-ffcfe8292683@linaro.org/
->
-> The IDs are abstract numbers, where the number does not matter because
-> it is not tied to driver implementation or device programming model. The
-> driver maps ID to respective clock.
->
-> Using some meaningful numbers as these IDs, means you tied bindings to
-> your implementation and any change in implementation requires change in
-> the bindings. This contradicts the idea of bindings.
->
 
-I totally agree. Bindings ID are abstract numbers.
-We do follow that. We even document it:
+> +static unsigned int wiegand_gpio_get_payload_size(
+> +						unsigned long payload_len_bits,
+> +						enum wiegand_format fmt)
+> +{
+> +	unsigned int ret;
+> +
+> +	if (fmt == WIEGAND_CUSTOM)
+> +		ret = wiegand_gpio_calc_bytes(payload_len_bits);
+> +	else
+> +		/* add 2 for parity bits */
+> +		ret = wiegand_gpio_calc_bytes(payload_len_bits + 2);
+> +
+> +	return ret;
+> +}
+> +
+> +static int wiegand_gpio_calc_parity8(uint8_t v)
 
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/clk/meson/gxbb.h#n118
+Note, "unit8_t" is not a real kernel type, please just use u8 for this
+(and all other variable types you have here.)  The "_t" types are for
+userspace code only, doesn't really belong in the kernel.
 
-It is just a choice to not expose some IDs.
-It is not tied to the implementation at all.
-I think we actually follow the rules and the idea behind it.
+And yes, I know, there are lots of in-kernel users, but no need to make
+more when you don't have to.
 
-We can expose then all If you still think what we are doing is not appropriate.
+> +{
+> +	v = (v >> 4) ^ (v & ((1 << 4)-1));
+> +	v = (v >> 2) ^ (v & ((1 << 2)-1));
+> +	v = (v >> 1) ^ (v & ((1 << 1)-1));
+> +	return v;
+> +}
+> +
+> +static void wiegand_gpio_add_parity_to_data(unsigned char *tmp, uint8_t *data,
+> +						enum wiegand_format fmt)
+> +{
+> +	switch (fmt) {
+> +	case WIEGAND_V26:
+> +		data[0] = (tmp[0] >> 1) | (wiegand_gpio_calc_parity8(
+> +						tmp[0] ^ (tmp[1] & 0xf0)) << 7);
+> +		data[1] = (tmp[0] << 7) | (tmp[1] >> 1);
+> +		data[2] = (tmp[1] << 7) | (tmp[2] >> 1);
+> +		data[3] = (tmp[2] << 7) | (!wiegand_gpio_calc_parity8(
+> +						(tmp[1] & 0x0f) ^ tmp[2]) << 6);
+> +
+> +#ifdef DEBUG
+> +		printk(KERN_DEBUG
+> +			"%s: d[%02x,%02x,%02x] -> w[%02x,%02x,%02x,%02x]\n",
+> +			__func__,
+> +			tmp[0], tmp[1], tmp[2],
+> +			data[0], data[1],
+> +			data[2], data[3]);
+> +#endif
 
-I'd like things to be consistent though. So if the decision is to
-expose everything, I'll probably end up doing the same for the old SoCs.
+dev_dbg() is your friend, no need for any #ifdef comments.  As you have
+a real device everywhere, always use dev_*() calls, never a raw printk()
+or pr_*() call.
+
+Also with dev_dbg(), no need for the addition of __func__ as it's added
+automatically by the kernel if you ask for it.
+
+> +static int wiegand_gpio_open(struct inode *ino, struct file *filp)
+> +{
+> +	struct wiegand_gpio_device *wiegand_gpio;
+> +	struct wiegand_gpio_instance *info;
+> +	int rc;
+> +
+> +	wiegand_gpio = container_of(ino->i_cdev,
+> +			struct wiegand_gpio_device, cdev);
+> +
+> +	mutex_lock(&wiegand_gpio->mutex);
+> +
+> +	/* Only one device instance allowed */
+> +	if (wiegand_gpio->flags) {
+
+This check really will not work, sorry.  Don't worry about userspace
+trying to open the device node multiple times, you can't prevent this,
+and any kernel code that tries to is wrong (think about duplicating a
+file handle and passing it to other processes...)
+
+So just don't care, if userspace wants to do something foolish like
+this, let it, it will have to deal with the pieces when things fall
+apart :)
+
+
+> +static ssize_t store_ulong(unsigned long *val, const char *buf,
+> +				size_t size, unsigned long max)
+> +{
+> +	int ret;
+> +	unsigned long new;
+> +
+> +	ret = kstrtoul(buf, 0, &new);
+> +	if (ret)
+> +		return ret;
+> +	if (max != 0 && new > max)
+> +		return -EINVAL;
+> +
+> +	*val = new;
+> +	return size;
+> +}
+
+We have this function in the kernel already, right?
+
+> +
+> +/* sysfs functions */
+> +static ssize_t show_ulong(unsigned long val, char *buf)
+> +{
+> +	return snprintf(buf, PAGE_SIZE, "%lu\n", val);
+
+sysfs_emit() please.
+
+Also, you have sysfs files in this driver, but no Documentation/ABI
+entries, which is always needed.
+
+> +}
+> +
+> +ssize_t pulse_len_show(struct device *dev, struct device_attribute *attr,
+> +		char *buf)
+> +{
+> +	struct wiegand_gpio_device *device = dev_get_drvdata(dev);
+> +
+> +	if (!device)
+> +		return -ENODEV;
+> +
+> +	return show_ulong(device->setup.pulse_len, buf);
+
+Just do a sysfs_emit(), no need for the show_ulong() call.
+
+> +static int wiegand_gpio_dev_probe(struct platform_device *pdev)
+> +{
+> +	int rc;
+> +	struct wiegand_gpio_device *wiegand_gpio;
+> +	struct wiegand_gpio_platform_data *pdata = pdev->dev.platform_data;
+> +
+> +	if (!pdata) {
+> +		if (IS_ERR(pdata))
+> +			return PTR_ERR(pdata);
+> +	}
+> +
+> +	wiegand_gpio = kzalloc(sizeof(struct wiegand_gpio_device), GFP_KERNEL);
+> +	if (!wiegand_gpio)
+> +		return -ENOMEM;
+> +
+> +	wiegand_gpio->dev = &pdev->dev;
+> +
+> +	/* Initialize character device */
+> +	cdev_init(&wiegand_gpio->cdev, &wiegand_gpio_fops);
+> +	wiegand_gpio->cdev.owner = THIS_MODULE;
+> +
+> +	rc = cdev_add(&wiegand_gpio->cdev, MKDEV(MAJOR(base_devno),
+> +				pdev->id == -1 ? 0 : pdev->id), 1);
+> +	if (rc < 0) {
+> +		dev_err(&pdev->dev, "Failed to allocate cdev: %d\n", rc);
+> +		kfree(wiegand_gpio);
+> +		return rc;
+> +	}
+> +
+> +	wiegand_gpio->dev->devt = wiegand_gpio->cdev.dev;
+> +	mutex_init(&wiegand_gpio->mutex);
+> +
+> +	/* Get GPIO lines using device tree bindings. */
+> +	wiegand_gpio->gpio_data_lo = devm_gpiod_get(wiegand_gpio->dev,
+> +			"wiegand-data-lo", GPIOD_OUT_HIGH);
+> +	if (IS_ERR(wiegand_gpio->gpio_data_lo)) {
+> +		dev_info(wiegand_gpio->dev,
+> +			"Failed to get wiegand-data-lo pin.\n");
+
+dev_err()?
+
+> +		return PTR_ERR(wiegand_gpio->gpio_data_lo);
+
+You also just leaked memory :(
+
+> +	}
+> +	wiegand_gpio->gpio_data_hi = devm_gpiod_get(wiegand_gpio->dev,
+> +			"wiegand-data-hi", GPIOD_OUT_HIGH);
+> +	if (IS_ERR(wiegand_gpio->gpio_data_hi)) {
+> +		dev_info(wiegand_gpio->dev,
+> +			"Failed to get wiegand-data-hi pin.\n");
+
+dev_err()?
+
+> +		return PTR_ERR(wiegand_gpio->gpio_data_hi);
+
+memory leak :(
+
+> +	}
+> +
+> +	memcpy(&wiegand_gpio->setup, &WIEGAND_SETUP,
+> +			sizeof(struct wiegand_setup));
+> +
+> +	platform_set_drvdata(pdev, wiegand_gpio);
+> +
+> +	dev_info(&pdev->dev, "devno=%d:%d\n",
+> +		 MAJOR(wiegand_gpio->dev->devt),
+> +		 MINOR(wiegand_gpio->dev->devt));
+
+When drivers work properly, they are quiet, no need for this.  Make it
+dev_dbg() if you really want it.
+
+> +
+> +	rc = device_create_file(wiegand_gpio->dev, &dev_attr_pulse_len);
+> +	rc |= device_create_file(wiegand_gpio->dev, &dev_attr_interval_len);
+> +	rc |= device_create_file(wiegand_gpio->dev, &dev_attr_frame_gap);
+> +	rc |= device_create_file(wiegand_gpio->dev, &dev_attr_format);
+> +	rc |= device_create_file(wiegand_gpio->dev,
+> +				&dev_attr_payload_len);
+> +	if (rc != 0)
+> +		dev_warn(&pdev->dev,
+> +				"Failed to register attribute files(%d)\n", rc);
+
+Use an attribute group please.
+
+Also, you just raced with userspace and lost, never create/remove your
+own sysfs files.  Have the driver core do it automatically for you in a
+safe way (also less code for you to write.)  Use the default_groups
+attribute of the platform device please.
+
+> +static int __init wiegand_gpio_init(void)
+> +{
+> +	int rc;
+> +	struct device *wiegand_device;
+> +	struct class *cl;
+> +
+> +	rc = alloc_chrdev_region(&base_devno, 0, max_devices, "wiegand-gpio");
+> +	if (rc < 0) {
+> +		pr_err("%s: Failed to allocate chardev region: %d\n",
+> +			__func__, rc);
+> +		return rc;
+> +	}
+> +
+> +	cl = class_create(THIS_MODULE, "chardrv");
+
+Very generic name for a specific driver :)
+
+Anyway, as mentioned above, this is not needed at all, just use the misc
+device layer instead.  Much simpler code overall.
+
+
+> +	if (IS_ERR(cl)) {
+> +		pr_err("Failed to create a class for character device");
+> +		unregister_chrdev_region(base_devno, max_devices);
+> +		return PTR_ERR(cl);
+> +	}
+> +	wiegand_gpio_cl = cl;
+> +
+> +	wiegand_device = device_create(cl, NULL, base_devno, NULL,
+> +			"wiegand-gpio");
+> +	if (IS_ERR(wiegand_device)) {
+> +		class_destroy(cl);
+> +		unregister_chrdev_region(base_devno, max_devices);
+> +		return PTR_ERR(wiegand_device);
+> +	}
+> +
+> +	rc = platform_driver_register(&wiegand_gpio_driver);
+> +	if (rc < 0) {
+> +		pr_err("Error %d while registering wiegand-gpio driver\n", rc);
+> +		unregister_chrdev_region(base_devno, max_devices);
+> +		return rc;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static void __exit wiegand_gpio_exit(void)
+> +{
+> +	platform_driver_unregister(&wiegand_gpio_driver);
+> +	unregister_chrdev_region(base_devno, max_devices);
+> +	device_destroy(wiegand_gpio_cl, base_devno);
+> +	class_destroy(wiegand_gpio_cl);
+> +}
+> +
+> +module_init(wiegand_gpio_init);
+> +module_exit(wiegand_gpio_exit);
+> +MODULE_LICENSE("GPL");
+> +MODULE_DESCRIPTION("Wiegand write-only driver realized by GPIOs");
+> +MODULE_AUTHOR("Martin Zaťovič <m.zatovic1@gmail.com>");
+> diff --git a/drivers/bus/wiegand-gpio.h b/drivers/bus/wiegand-gpio.h
+> new file mode 100644
+> index 000000000000..f0f389d5bfec
+> --- /dev/null
+> +++ b/drivers/bus/wiegand-gpio.h
+
+No need for a .h file for only a single .c file.  Put this all in the
+driver file itself.
+
+thanks,
+
+greg k-h
