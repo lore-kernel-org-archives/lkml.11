@@ -2,102 +2,301 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 270F2C19F29
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 19:03:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0EB7C19F2B
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 19:05:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232868AbiG1TDI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 15:03:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57214 "EHLO
+        id S232927AbiG1TFd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 15:05:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229793AbiG1TDF (ORCPT
+        with ESMTP id S232775AbiG1TFa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 15:03:05 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F26953C15A;
-        Thu, 28 Jul 2022 12:03:04 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id 23so2238177pgc.8;
-        Thu, 28 Jul 2022 12:03:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:from:to:cc;
-        bh=PWjIAmKrG0eGARGnUAKYiT1lYkiSHVZ1Sr+4FZSAYxg=;
-        b=ksr0sVCDXJtHVWTGYRs6udLXbSRcNqPqF8cH0ACW6cKjvQVmA5weo37e+Eopue0wU/
-         ZNvMmqCx3FhEnbbDzsNh5oM30sf4voiO5TOuZGgUwgIUWbd8HVNH0EJpf1igfj7nCThO
-         uYXY03CYxCcobHkUVOKBQLudEOxJJhMpvI7tE0Cfkt6zJyV7DkrjtHLIdRAk0meelh7d
-         po6PXn9dUzyB3g83pYcmcs0a9NJiSxXWLJs02p8RIWAiEiW/HLMvB4AtTtJPKxrw7Wj/
-         QEKX3x1t+/Dh2lcam+fpLLLXo+LGfU78S78F4HECzGv9eJMNzRr9L6+EJWY25fFknMmi
-         TaBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:sender:x-gm-message-state:from:to:cc;
-        bh=PWjIAmKrG0eGARGnUAKYiT1lYkiSHVZ1Sr+4FZSAYxg=;
-        b=R6hq9e7myYUcA6RDo1nZbMG4+xfWNShsUNCRDEnuauf5Ewsy1UTJO3AauIeMMeJMeg
-         zw/3yBofWyUVbYrvhryGwR59F8s6MslD/iVKOnHAOm4J19Ew9gWFyB8OlU6Z87Q59tY3
-         xt0VHqId9YrexXDVP1C9uWL9CLBFtG7f1YIS9UUCAqcNseooqyaVNUEFDrLyP6RAQmNe
-         jWODm5E3bq8/LCrZRA3IRXf4Qsy0L1d+j0JYXDTGK/A9QdN0DnHJBSO7SQfVPQ/vJCJ6
-         SDfRIvMM9w1mfqVzy84eKsxRak0PEPFL+BIgWs27e3o7nshjKqLuzLnokoTrB198Eq3Q
-         esIw==
-X-Gm-Message-State: AJIora/SDC0Nb4bu8+2aAX6mLM033ms3MgdKr/h/o2z+ifGR0ESEt/Ko
-        GDQPX01ufvTDVf23yrElH1g=
-X-Google-Smtp-Source: AGRyM1uHrDVG/cMBiaEmc094cji+F72tZjjruHBYb/AtSWLsyCjIa3CRmmESKjlAtNumvWNiAarMXA==
-X-Received: by 2002:a05:6a00:150e:b0:52a:ee55:4806 with SMTP id q14-20020a056a00150e00b0052aee554806mr28075437pfu.37.1659034984146;
-        Thu, 28 Jul 2022 12:03:04 -0700 (PDT)
-Received: from localhost ([2620:10d:c090:400::5:23b6])
-        by smtp.gmail.com with ESMTPSA id t128-20020a625f86000000b0052ad49292f0sm1128306pfb.48.2022.07.28.12.02.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Jul 2022 12:02:57 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Thu, 28 Jul 2022 09:02:55 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Waiman Long <longman@redhat.com>
-Cc:     Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>, cgroups@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] cgroup/cpuset: Keep current cpus list if cpus
- affinity was explicitly set
-Message-ID: <YuLdX7BYGvo57LNU@slm.duckdns.org>
-References: <20220728005815.1715522-1-longman@redhat.com>
- <YuLF+xXaCzwWi2BR@slm.duckdns.org>
- <1ae1cc6c-dca9-4958-6b22-24a5777c5e8d@redhat.com>
+        Thu, 28 Jul 2022 15:05:30 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E482733341
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 12:05:27 -0700 (PDT)
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26SJ2vpU007517;
+        Thu, 28 Jul 2022 19:05:10 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=MYjCoNay1r368gChTs21KO0Bpf66/k6EEnGmtXI3wP4=;
+ b=CX5jxO0cFcfndCqvWE/YPKN7+hA8stNVxt6KCN7fd/XtjOZop5jOoBgnuG0sFesmR0l9
+ HRads/i8w6mQuz+KQodMP6vntx4M6Bz8h43fMmUi4+VFR3VdSSkuCePl0WepGESq9/mp
+ D7kYmOkEhUmE2KTpsfepd9KHpOdCgRqF0TybTk5oHLB4UHGHko3ILuP6Hl6ofvTl57G5
+ I5txvhoNrGf46Fa7ggELH9/WVrmQPwN/vLzUNIDSHAjnI/0FoHVMK6dwI5iYaks3fyQi
+ ujWH/M20/iBSSaNF2W1avp/+EfBOlMeVOTMr968Ruu4F0umqi8wyYYWOP2tEURd5d73i QA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hm097r29m-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 28 Jul 2022 19:05:10 +0000
+Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26SJ59g7017815;
+        Thu, 28 Jul 2022 19:05:09 GMT
+Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hm097r28t-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 28 Jul 2022 19:05:09 +0000
+Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
+        by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26SJ2CqJ018209;
+        Thu, 28 Jul 2022 19:05:08 GMT
+Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
+        by ppma02dal.us.ibm.com with ESMTP id 3hhfpj63fs-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 28 Jul 2022 19:05:08 +0000
+Received: from b03ledav003.gho.boulder.ibm.com (b03ledav003.gho.boulder.ibm.com [9.17.130.234])
+        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26SJ57JL33096054
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 28 Jul 2022 19:05:07 GMT
+Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4025F6A04D;
+        Thu, 28 Jul 2022 19:05:07 +0000 (GMT)
+Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 8E6E26A047;
+        Thu, 28 Jul 2022 19:05:01 +0000 (GMT)
+Received: from skywalker.ibmuc.com (unknown [9.43.25.218])
+        by b03ledav003.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Thu, 28 Jul 2022 19:05:01 +0000 (GMT)
+From:   "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
+To:     linux-mm@kvack.org, akpm@linux-foundation.org
+Cc:     Wei Xu <weixugc@google.com>, Huang Ying <ying.huang@intel.com>,
+        Yang Shi <shy828301@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Tim C Chen <tim.c.chen@intel.com>,
+        Michal Hocko <mhocko@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Hesham Almatary <hesham.almatary@huawei.com>,
+        Dave Hansen <dave.hansen@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alistair Popple <apopple@nvidia.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Johannes Weiner <hannes@cmpxchg.org>, jvgediya.oss@gmail.com,
+        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
+Subject: [PATCH v11 2/8] mm/demotion: Move memory demotion related code
+Date:   Fri, 29 Jul 2022 00:34:30 +0530
+Message-Id: <20220728190436.858458-3-aneesh.kumar@linux.ibm.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220728190436.858458-1-aneesh.kumar@linux.ibm.com>
+References: <20220728190436.858458-1-aneesh.kumar@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1ae1cc6c-dca9-4958-6b22-24a5777c5e8d@redhat.com>
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: NPjpWOj_lKAFhxSJdIOxsJojmKM3kTX1
+X-Proofpoint-ORIG-GUID: QaVtC0VuAJfO0msP6BNjLRcmLMMFRFjv
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-07-28_06,2022-07-28_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 phishscore=0
+ adultscore=0 impostorscore=0 suspectscore=0 mlxlogscore=999
+ lowpriorityscore=0 clxscore=1015 bulkscore=0 priorityscore=1501
+ malwarescore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2206140000 definitions=main-2207280086
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+This move memory demotion related code to mm/memory-tiers.c.
+No functional change in this patch.
 
-On Thu, Jul 28, 2022 at 02:57:28PM -0400, Waiman Long wrote:
-> There can be a counter argument that if a user found out that there is not
-> enough cpus in a cpuset to meet its performance target, one can always
-> increase the number of cpus in the cpuset. Generalizing this behavior to all
-> the tasks irrespective if they have explicitly set cpus affinity before will
-> disallow this use case.
+Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
+---
+ include/linux/memory-tiers.h |  8 +++++
+ include/linux/migrate.h      |  2 --
+ mm/memory-tiers.c            | 62 ++++++++++++++++++++++++++++++++++++
+ mm/migrate.c                 | 60 +---------------------------------
+ mm/vmscan.c                  |  1 +
+ 5 files changed, 72 insertions(+), 61 deletions(-)
 
-This is nasty. The real solution here is separating out what user requested
-and the mask that cpuset (or cpu hotplug) needs to apply on top. ie.
-remember what the user requested in a separate cpumask and compute the
-intersection into p->cpus_maks whenever something changes and apply
-fallbacks on that final mask. Multiple parties updating the same variable is
-never gonna lead to anything consistent and we're patching up for whatever
-the immediate use case seems to need at the moment. That said, I'm not
-necessarily against patching it up but if you're interested in delving into
-it deeper, that'd be great.
-
-Thanks.
-
+diff --git a/include/linux/memory-tiers.h b/include/linux/memory-tiers.h
+index 8d7884b7a3f0..b85901c0caba 100644
+--- a/include/linux/memory-tiers.h
++++ b/include/linux/memory-tiers.h
+@@ -14,4 +14,12 @@
+ /* leave one tier below this slow pmem */
+ #define MEMTIER_ADISTANCE_PMEM	(1 << MEMTIER_CHUNK_BITS)
+ 
++#ifdef CONFIG_NUMA
++#include <linux/types.h>
++extern bool numa_demotion_enabled;
++
++#else
++
++#define numa_demotion_enabled	false
++#endif	/* CONFIG_NUMA */
+ #endif  /* _LINUX_MEMORY_TIERS_H */
+diff --git a/include/linux/migrate.h b/include/linux/migrate.h
+index 069a89e847f3..43e737215f33 100644
+--- a/include/linux/migrate.h
++++ b/include/linux/migrate.h
+@@ -78,7 +78,6 @@ static inline int migrate_huge_page_move_mapping(struct address_space *mapping,
+ #if defined(CONFIG_MIGRATION) && defined(CONFIG_NUMA)
+ extern void set_migration_target_nodes(void);
+ extern void migrate_on_reclaim_init(void);
+-extern bool numa_demotion_enabled;
+ extern int next_demotion_node(int node);
+ #else
+ static inline void set_migration_target_nodes(void) {}
+@@ -87,7 +86,6 @@ static inline int next_demotion_node(int node)
+ {
+         return NUMA_NO_NODE;
+ }
+-#define numa_demotion_enabled  false
+ #endif
+ 
+ #ifdef CONFIG_COMPACTION
+diff --git a/mm/memory-tiers.c b/mm/memory-tiers.c
+index 01cfd514c192..03e43f3dc942 100644
+--- a/mm/memory-tiers.c
++++ b/mm/memory-tiers.c
+@@ -100,3 +100,65 @@ static int __init memory_tier_init(void)
+ 	return 0;
+ }
+ subsys_initcall(memory_tier_init);
++
++bool numa_demotion_enabled = false;
++
++#ifdef CONFIG_MIGRATION
++#ifdef CONFIG_SYSFS
++static ssize_t numa_demotion_enabled_show(struct kobject *kobj,
++					  struct kobj_attribute *attr, char *buf)
++{
++	return sysfs_emit(buf, "%s\n",
++			  numa_demotion_enabled ? "true" : "false");
++}
++
++static ssize_t numa_demotion_enabled_store(struct kobject *kobj,
++					   struct kobj_attribute *attr,
++					   const char *buf, size_t count)
++{
++	ssize_t ret;
++
++	ret = kstrtobool(buf, &numa_demotion_enabled);
++	if (ret)
++		return ret;
++
++	return count;
++}
++
++static struct kobj_attribute numa_demotion_enabled_attr =
++	__ATTR(demotion_enabled, 0644, numa_demotion_enabled_show,
++	       numa_demotion_enabled_store);
++
++static struct attribute *numa_attrs[] = {
++	&numa_demotion_enabled_attr.attr,
++	NULL,
++};
++
++static const struct attribute_group numa_attr_group = {
++	.attrs = numa_attrs,
++};
++
++static int __init numa_init_sysfs(void)
++{
++	int err;
++	struct kobject *numa_kobj;
++
++	numa_kobj = kobject_create_and_add("numa", mm_kobj);
++	if (!numa_kobj) {
++		pr_err("failed to create numa kobject\n");
++		return -ENOMEM;
++	}
++	err = sysfs_create_group(numa_kobj, &numa_attr_group);
++	if (err) {
++		pr_err("failed to register numa group\n");
++		goto delete_obj;
++	}
++	return 0;
++
++delete_obj:
++	kobject_put(numa_kobj);
++	return err;
++}
++subsys_initcall(numa_init_sysfs);
++#endif /* CONFIG_SYSFS */
++#endif
+diff --git a/mm/migrate.c b/mm/migrate.c
+index 6c1ea61f39d8..fce7d4a9e940 100644
+--- a/mm/migrate.c
++++ b/mm/migrate.c
+@@ -2509,64 +2509,6 @@ void __init migrate_on_reclaim_init(void)
+ 	set_migration_target_nodes();
+ 	cpus_read_unlock();
+ }
++#endif /* CONFIG_NUMA */
+ 
+-bool numa_demotion_enabled = false;
+-
+-#ifdef CONFIG_SYSFS
+-static ssize_t numa_demotion_enabled_show(struct kobject *kobj,
+-					  struct kobj_attribute *attr, char *buf)
+-{
+-	return sysfs_emit(buf, "%s\n",
+-			  numa_demotion_enabled ? "true" : "false");
+-}
+-
+-static ssize_t numa_demotion_enabled_store(struct kobject *kobj,
+-					   struct kobj_attribute *attr,
+-					   const char *buf, size_t count)
+-{
+-	ssize_t ret;
+-
+-	ret = kstrtobool(buf, &numa_demotion_enabled);
+-	if (ret)
+-		return ret;
+-
+-	return count;
+-}
+-
+-static struct kobj_attribute numa_demotion_enabled_attr =
+-	__ATTR(demotion_enabled, 0644, numa_demotion_enabled_show,
+-	       numa_demotion_enabled_store);
+-
+-static struct attribute *numa_attrs[] = {
+-	&numa_demotion_enabled_attr.attr,
+-	NULL,
+-};
+-
+-static const struct attribute_group numa_attr_group = {
+-	.attrs = numa_attrs,
+-};
+-
+-static int __init numa_init_sysfs(void)
+-{
+-	int err;
+-	struct kobject *numa_kobj;
+ 
+-	numa_kobj = kobject_create_and_add("numa", mm_kobj);
+-	if (!numa_kobj) {
+-		pr_err("failed to create numa kobject\n");
+-		return -ENOMEM;
+-	}
+-	err = sysfs_create_group(numa_kobj, &numa_attr_group);
+-	if (err) {
+-		pr_err("failed to register numa group\n");
+-		goto delete_obj;
+-	}
+-	return 0;
+-
+-delete_obj:
+-	kobject_put(numa_kobj);
+-	return err;
+-}
+-subsys_initcall(numa_init_sysfs);
+-#endif /* CONFIG_SYSFS */
+-#endif /* CONFIG_NUMA */
+diff --git a/mm/vmscan.c b/mm/vmscan.c
+index f7d9a683e3a7..3a8f78277f99 100644
+--- a/mm/vmscan.c
++++ b/mm/vmscan.c
+@@ -50,6 +50,7 @@
+ #include <linux/printk.h>
+ #include <linux/dax.h>
+ #include <linux/psi.h>
++#include <linux/memory-tiers.h>
+ 
+ #include <asm/tlbflush.h>
+ #include <asm/div64.h>
 -- 
-tejun
+2.37.1
+
