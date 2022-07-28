@@ -2,100 +2,230 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEF94C04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 12:29:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B498C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 12:30:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235022AbiG1M35 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 08:29:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39548 "EHLO
+        id S238527AbiG1MaU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 08:30:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231272AbiG1M3z (ORCPT
+        with ESMTP id S236301AbiG1MaO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 08:29:55 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BB0F76BC09
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 05:29:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1659011393;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=DVcjc9aGp+5z1mxJ4Ml6zvFn8nDWG68bHV4wWJvB5yk=;
-        b=MswelC7M4GcWI/rqW5n3b9dIRIqJVwdEwopXoKHcKyfY5+LAdZ6Z84YQAgAErQnZLgMGvP
-        Y0Rx3fcMz0nODP+5Btyvhl13JK/ZilFuP7oSVc5I8D+Oz5JV91qLiZDVHo2DRd81QTjrGV
-        N3PRWLk9xbaZohNZn3M3v6hmq4rYW1I=
-Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com
- [209.85.167.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-308-emypzbQePM-mEpIAGhK1fw-1; Thu, 28 Jul 2022 08:29:52 -0400
-X-MC-Unique: emypzbQePM-mEpIAGhK1fw-1
-Received: by mail-oi1-f197.google.com with SMTP id r24-20020a056808211800b0033a6f896c8aso674785oiw.18
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 05:29:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=DVcjc9aGp+5z1mxJ4Ml6zvFn8nDWG68bHV4wWJvB5yk=;
-        b=eINBrU64V2ftB6g1+/lS9R/H1DGHos4S1bP0GfqgUEVzyApfoP+FllkGTmqecMZA/L
-         bWQzeBIpzkASsH+DDjsWAzgYkx+4ZFRwNjr8GxfwuqBDjeoxBhWJW6JsHxeOFZpYt0YB
-         urU2dB8u724AUfsE1s0k790D0YuTcILwJNQoUge1/ECSFojKpH619rgizZSeHxkP3dEs
-         Zkv0UC0PleW6GNQ7X/zpgEFCa6TqjlWpphTVG9zfKfdCCV+hQHc2bZQ6nzHwSA4Yr1sU
-         FimScniTuJI40syN85hIMZwhqwO58dbHWJfbyg0xBUvq66/hBQhRmczEQw1CXaRkGgMu
-         B6Xw==
-X-Gm-Message-State: AJIora9joZNm6u/VuFdVGB3AMoC58Va1G9Q2f6EuSfrMR5S8Drwcn41Q
-        uADT1wClknj4tn7VZZuv5mW2rETZ1rZgRAI9BYjTCTpQlj08mu4ySrVrf90wjBEPqmkg7Zolfs9
-        R9N6JI4eEf8PwK9h8oF50NZjNzT5gpK+W3CZOA8yCDGjP+BAbVyFgV9HvE6mdIF2A+6SPTpY=
-X-Received: by 2002:a4a:a981:0:b0:435:bd5a:7e5f with SMTP id w1-20020a4aa981000000b00435bd5a7e5fmr9218539oom.76.1659011391709;
-        Thu, 28 Jul 2022 05:29:51 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1uFGMuinIsJqCT9rk8zdxkHpWjdWvhZVScblBpoUcod9Lk+uEhgVp6FLm1lfVIiviIN1kkv9w==
-X-Received: by 2002:a4a:a981:0:b0:435:bd5a:7e5f with SMTP id w1-20020a4aa981000000b00435bd5a7e5fmr9218527oom.76.1659011391465;
-        Thu, 28 Jul 2022 05:29:51 -0700 (PDT)
-Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id c5-20020a056830000500b00616c46f6daasm226415otp.31.2022.07.28.05.29.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 28 Jul 2022 05:29:50 -0700 (PDT)
-Subject: Re: [PATCH] fpga: microchip-spi: add missing module author entry
-To:     Conor Dooley <conor.dooley@microchip.com>,
-        Ivan Bornyakov <i.bornyakov@metrotek.ru>,
-        Moritz Fischer <mdf@kernel.org>, Wu Hao <hao.wu@intel.com>,
-        Xu Yilun <yilun.xu@intel.com>
-Cc:     linux-fpga@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220728075012.3136914-1-conor.dooley@microchip.com>
-From:   Tom Rix <trix@redhat.com>
-Message-ID: <53f6e675-1fc5-fb17-ce6f-aa952d61132f@redhat.com>
-Date:   Thu, 28 Jul 2022 05:29:48 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Thu, 28 Jul 2022 08:30:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD55B319
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 05:30:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A4D861C5E
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 12:30:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5DE0C433D7;
+        Thu, 28 Jul 2022 12:30:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659011406;
+        bh=lAAONVrnfPLFQfTjiURwY9vl1P8lEZl8i30JEcp0dys=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=tNSpxrRyQA0I2aCw84FcIY6T4kdjBDyGS+StTCphgE86guGdZSE90GZl7Jejk2jaL
+         dPp7hUAOD8nS345Bi9qHA8640W8UxEdxprKYwldWGaoTbcaNlwvlkcWQLgWovP5rMg
+         1AkOb/KqUsuC38vpoBoqOIHcdYujQD1LhpjjwYAdEp30id86v+s2t6cTwWzfoNOLdg
+         ES4VVrrkJi3Tg8qPejlbRTU6eJwqGKEuXwqIbC9iCC4R7sxdkcrsHhyz02tEjfkKer
+         M8i2n0A8aN0RSrLwuE5TMw9d66WsOjhIrt42HfyadDD+zCkPdQ3kRJV3xJjimRnhqT
+         pBlTOpUyO0IHQ==
+Received: from mchehab by mail.kernel.org with local (Exim 4.95)
+        (envelope-from <mchehab@kernel.org>)
+        id 1oH2eS-005W6a-Cq;
+        Thu, 28 Jul 2022 14:30:04 +0200
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Chris Wilson <chris.p.wilson@intel.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 2/2] drm/i915/gt: document TLB cache invalidation functions
+Date:   Thu, 28 Jul 2022 14:30:03 +0200
+Message-Id: <44fd40009e1cc67232d7453cbe09088e78226594.1659011328.git.mchehab@kernel.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <cover.1659011328.git.mchehab@kernel.org>
+References: <cover.1659011328.git.mchehab@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20220728075012.3136914-1-conor.dooley@microchip.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Add a description for the TLB cache invalidation algorithm and for
+the related kAPI functions.
 
-On 7/28/22 12:50 AM, Conor Dooley wrote:
-> Add the missing MODULE_AUTHOR entry for the Microchip spi-slave FPGA
-> programming driver.
->
-> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
-Reviewed-by: Tom Rix <trix@redhat.com>
-> ---
->   drivers/fpga/microchip-spi.c | 1 +
->   1 file changed, 1 insertion(+)
->
-> diff --git a/drivers/fpga/microchip-spi.c b/drivers/fpga/microchip-spi.c
-> index bd284c7b8dc9..7436976ea904 100644
-> --- a/drivers/fpga/microchip-spi.c
-> +++ b/drivers/fpga/microchip-spi.c
-> @@ -395,4 +395,5 @@ static struct spi_driver mpf_driver = {
->   module_spi_driver(mpf_driver);
->   
->   MODULE_DESCRIPTION("Microchip Polarfire SPI FPGA Manager");
-> +MODULE_AUTHOR("Ivan Bornyakov <i.bornyakov@metrotek.ru>");
->   MODULE_LICENSE("GPL");
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+---
+
+To avoid mailbombing on a large number of people, only mailing lists were C/C on the cover.
+See [PATCH 0/2] at: https://lore.kernel.org/all/cover.1659011328.git.mchehab@kernel.org/
+
+ drivers/gpu/drm/i915/gt/intel_tlb.c | 25 +++++++++
+ drivers/gpu/drm/i915/gt/intel_tlb.h | 83 +++++++++++++++++++++++++++++
+ 2 files changed, 108 insertions(+)
+
+diff --git a/drivers/gpu/drm/i915/gt/intel_tlb.c b/drivers/gpu/drm/i915/gt/intel_tlb.c
+index af8cae979489..d5df2e0f77fb 100644
+--- a/drivers/gpu/drm/i915/gt/intel_tlb.c
++++ b/drivers/gpu/drm/i915/gt/intel_tlb.c
+@@ -145,6 +145,18 @@ static void mmio_invalidate_full(struct intel_gt *gt)
+ 	intel_uncore_forcewake_put_delayed(uncore, FORCEWAKE_ALL);
+ }
+ 
++/**
++ * intel_gt_invalidate_tlb_full - do full TLB cache invalidation
++ * @gt: GT structure
++ * @seqno: sequence number
++ *
++ * Do a full TLB cache invalidation if the @seqno is bigger than the last
++ * full TLB cache invalidation.
++ *
++ * Note:
++ * The TLB cache invalidation logic depends on GEN-specific registers.
++ * It currently supports GEN8 to GEN12 and GuC-based TLB cache invalidation.
++ */
+ void intel_gt_invalidate_tlb_full(struct intel_gt *gt, u32 seqno)
+ {
+ 	intel_wakeref_t wakeref;
+@@ -171,12 +183,25 @@ void intel_gt_invalidate_tlb_full(struct intel_gt *gt, u32 seqno)
+ 	}
+ }
+ 
++/**
++ * intel_gt_init_tlb - initialize TLB-specific vars
++ * @gt: GT structure
++ *
++ * TLB cache invalidation logic internally uses some resources that require
++ * initialization. Should be called before doing any TLB cache invalidation.
++ */
+ void intel_gt_init_tlb(struct intel_gt *gt)
+ {
+ 	mutex_init(&gt->tlb.invalidate_lock);
+ 	seqcount_mutex_init(&gt->tlb.seqno, &gt->tlb.invalidate_lock);
+ }
+ 
++/**
++ * intel_gt_fini_tlb - initialize TLB-specific vars
++ * @gt: GT structure
++ *
++ * Frees any resources needed by TLB cache invalidation logic.
++ */
+ void intel_gt_fini_tlb(struct intel_gt *gt)
+ {
+ 	mutex_destroy(&gt->tlb.invalidate_lock);
+diff --git a/drivers/gpu/drm/i915/gt/intel_tlb.h b/drivers/gpu/drm/i915/gt/intel_tlb.h
+index 46ce25bf5afe..d186f5d5901f 100644
+--- a/drivers/gpu/drm/i915/gt/intel_tlb.h
++++ b/drivers/gpu/drm/i915/gt/intel_tlb.h
+@@ -11,16 +11,99 @@
+ 
+ #include "intel_gt_types.h"
+ 
++/**
++ * DOC: TLB cache invalidation logic
++ *
++ * The way the current algorithm works is that drm_i915_gem_object can be
++ * created on any order. At unbind/evict time, the object is warranted that
++ * it won't be used anymore. So, they store a sequence number provided by
++ * intel_gt_next_invalidate_tlb_full().This can happen either at
++ * __vma_put_pages(), for VMA sync unbind, or at ppgtt_unbind_vma(), for
++ * VMA async VMA bind.
++ *
++ * At __i915_gem_object_unset_pages(), intel_gt_invalidate_tlb() is called,
++ * where it checks if the sequence number of the object was already invalidated
++ * or not. If not, it increments it::
++ *
++ *   void intel_gt_invalidate_tlb(struct intel_gt *gt, u32 seqno)
++ *   {
++ *   ...
++ * 	with_intel_gt_pm_if_awake(gt, wakeref) {
++ * 		mutex_lock(&gt->tlb.invalidate_lock);
++ * 		if (tlb_seqno_passed(gt, seqno))
++ * 				goto unlock;
++ *
++ * 		mmio_invalidate_full(gt);
++ *
++ * 		write_seqcount_invalidate(&gt->tlb.seqno); // increment seqno
++ *    ...
++ *
++ * So, let's say the current seqno is 2 and 3 new objects were created,
++ * on this order:
++ *
++ * 	obj1
++ * 	obj2
++ * 	obj3
++ *
++ * They can be unbind/evict on a different order. At unbind/evict time,
++ * the mm.tlb will be stamped with the sequence number, using the number
++ * from the last TLB flush, plus 1.
++ *
++ * Different threads may be used on unbind/evict and/or unset pages.
++ *
++ * As the logic at void intel_gt_invalidate_tlb() is protected by a mutex,
++ * for simplicity, let's consider just two threads::
++ *
++ *   sequence number	Thread 0		Thread 1
++ *
++ *   seqno=2
++ *			unbind/evict event
++ * 			obj3.mm.tlb = seqno | 1
++ *
++ *			unbind/evict event
++ * 			obj1.mm.tlb = seqno | 1
++ * 						__i915_gem_object_unset_pages()
++ * 						called for obj3 => TLB flush
++ * 						invalidating both obj1 and obj2.
++ * 						seqno += 2
++ *   seqno=4
++ *			unbind/evict event
++ * 			obj2.mm.tlb = seqno | 1
++ * 						__i915_gem_object_unset_pages()
++ * 						called for obj1, don't flush,
++ *						as past flush invalidated obj1
++ *
++ * 						__i915_gem_object_unset_pages()
++ *						called for obj2 => TLB flush
++ * 						seqno += 2
++ *   seqno=6
++ */
++
+ void intel_gt_invalidate_tlb_full(struct intel_gt *gt, u32 seqno);
+ 
+ void intel_gt_init_tlb(struct intel_gt *gt);
+ void intel_gt_fini_tlb(struct intel_gt *gt);
+ 
++/**
++ * intel_gt_tlb_seqno - Returns the current TLB invlidation sequence number
++ *
++ * @gt: GT structure
++ *
++ * There's no need to lock while calling it, as seqprop_sequence is thread-safe
++ */
+ static inline u32 intel_gt_tlb_seqno(const struct intel_gt *gt)
+ {
+ 	return seqprop_sequence(&gt->tlb.seqno);
+ }
+ 
++/**
++ * intel_gt_next_invalidate_tlb_full - Returns the next TLB full invalidation
++ *	sequence number
++ *
++ * @gt: GT structure
++ *
++ * There's no need to lock while calling it, as seqprop_sequence is thread-safe
++ */
+ static inline u32 intel_gt_next_invalidate_tlb_full(const struct intel_gt *gt)
+ {
+ 	return intel_gt_tlb_seqno(gt) | 1;
+-- 
+2.36.1
 
