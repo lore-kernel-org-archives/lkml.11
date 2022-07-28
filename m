@@ -2,121 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFC0BC04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 17:51:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC959C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 17:51:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232849AbiG1RvR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 13:51:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56708 "EHLO
+        id S232999AbiG1Rvo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 13:51:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232697AbiG1RvO (ORCPT
+        with ESMTP id S232925AbiG1Rvi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 13:51:14 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A92B22A408
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 10:51:13 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id id17so1422640wmb.1
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 10:51:13 -0700 (PDT)
+        Thu, 28 Jul 2022 13:51:38 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C42B574CDB
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 10:51:34 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id b21-20020a05600c4e1500b003a32bc8612fso1436995wmq.3
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 10:51:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=YlUW33qUz1u3QNCrgfswPy2v8jgmUdUSwTGtmme6eU0=;
-        b=gDYHTL3xoRdr9vSsvTGmVAXGy9L+evVGkWjk2OYYBZuR3GD/xaOvfRkn5MD9/JBvBS
-         1RG64ID8OmN79RzUkupMYuRwR9GVfZ8Vhv/H4sStkU54BxKUX3rgso3H4KtGUU9T56hh
-         KVfvjsoxRlp6eOr1RznozlMDbt3+I11MFFR4OURGxDxXIjcX1gKbM9E0uMybS9JV2vVa
-         BLwoHeAk3b1rF3BPi45vczhNH9mhBCtEfJKcgi9u0a056e4c64yrlyBkc4sTtU0g0zVr
-         +0OABpJqa8AmK0MimMB8sHLzCPwiVgSpOYlQQhAmG74kvPB1W66EWov+AVSVGOquACHr
-         X+qw==
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=DRglWFr4DTWj8W0OlEgwT2U+TB7+T+ug/9NREhYgClQ=;
+        b=2a8KnT+wEv/LQYe1L9vxUSd6YePQZGg78VnMEwFZPOOwMIm05BJMJTv+a5E0pLMzUT
+         FfX68p2a9++nXOP6D3JrKBeFsgr8M3KnrTsbp41ycnoLEVeQy0G5O3+VwEzE8UjDxf8j
+         4UESLOOiKh9SRnwhPWKO0+lnUR0NRynHbYQO2fknvBm2H/86AtAJOYrguLqn9TYHWnJq
+         NrYo0rXe2cfiCaZqpFLnuWIWWGcih4c7w/0n1D6IMBzpuMQo/x295e+uI0doasO6KqQR
+         Zjk68J9aAy4ZliKhIR4gSZ5vNAdkpJGmg+AJ5L33wQwqCKk3LdnKJmtZZlEyeYapt4i9
+         R9lw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=YlUW33qUz1u3QNCrgfswPy2v8jgmUdUSwTGtmme6eU0=;
-        b=YHqPvN0u+nusnXhvlRg2k8NqVFWkN7LllejLdVQ0EmKblMlydBrj329WwTnaJH7WF8
-         a2XmctDYJmCJ34SUZvuXn6LqOY345NmsvuVm26mEWmusUa9XyMUP/8A8GX1/GMVNTcAk
-         jHyiOz5b6PRubwh7yK/PeES4PkV4MV62gJ+EsldwIGaoouCYgfVoHpR9+7OPf4fcP3Jr
-         UM8hqX2j2OskUc2dzXRIq1OjBhoslNiLIzNbJnBvte8kYwyuINyuMopTvh9om5XH3o+c
-         kUTgUqGlEOjz/1IvrrfvgMJJr489D+eDOedQR9iFgfhzkwLfqEnUeqPG/3OZs2pbpqod
-         PmQA==
-X-Gm-Message-State: AJIora/FROld/AH9V2J7tGa/sKSbXnME1GERFrE2eTbbIZltmpWPMwCi
-        RKLf4Nva7Om0DoE8ILyW5HU=
-X-Google-Smtp-Source: AGRyM1sPPRMmaaBCJ523PjfKUrU6TnxSMuf4S7TtJszu0YhyO9G/4nJ7bk51F33yS1etRuoMHzthGQ==
-X-Received: by 2002:a05:600c:510f:b0:3a3:254c:b081 with SMTP id o15-20020a05600c510f00b003a3254cb081mr345788wms.65.1659030672106;
-        Thu, 28 Jul 2022 10:51:12 -0700 (PDT)
-Received: from elementary ([94.73.33.57])
-        by smtp.gmail.com with ESMTPSA id n40-20020a05600c3ba800b003a2ed2a40e4sm6526699wms.17.2022.07.28.10.51.10
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=DRglWFr4DTWj8W0OlEgwT2U+TB7+T+ug/9NREhYgClQ=;
+        b=be983GBVozHCfvwa+O9P9+LCPnqim2qM1draCB3trsQAbOsAiURN3RK9OwgsiDZiVz
+         mphSZNIYj/Rb5yNg2lHk6Rtx+//k6oV/Lzb7aFhZePly2qOgbJY87idXD+1x3T2tSIAv
+         lVvombnp5mbjNrXhr1nTYI/Bs8eF9DIzZFssCODx3BS5oVLd8LN2dP1QtM5brkKReTCl
+         v9ScO+paCJnCWx4qgJRNpUXIerYHJPVDsUeD+K/IGw2JzfdTEu9xyxKQn4QnJm5zO9Rz
+         grl8DtrRK+qx0//jfuZeHSbJQPJzHsMYUNvZKi44J9NOUtyYQtuGVeRB64jfZfZKu1fY
+         VgPQ==
+X-Gm-Message-State: AJIora/lpfJPkJne4Au6UDTirMZEgE37Z3xyRVNEvZT3uXEPBCV7aADM
+        Lcx/6GaxSabBkxiqiITnJbUPDw==
+X-Google-Smtp-Source: AGRyM1tuM+lYq5TgHTKJ5iYFPZRPwmXdTjOFOxn1iT6jEyOBu1VwJ1R9H7NC6R9lj+2puxxsmD/t7g==
+X-Received: by 2002:a05:600c:240a:b0:3a3:5452:4262 with SMTP id 10-20020a05600c240a00b003a354524262mr25238wmp.86.1659030693374;
+        Thu, 28 Jul 2022 10:51:33 -0700 (PDT)
+Received: from localhost.localdomain (33.169.185.81.rev.sfr.net. [81.185.169.33])
+        by smtp.gmail.com with ESMTPSA id c5-20020a05600c0a4500b003a3442f1229sm8274027wmq.29.2022.07.28.10.51.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Jul 2022 10:51:11 -0700 (PDT)
-Date:   Thu, 28 Jul 2022 19:51:08 +0200
-From:   =?iso-8859-1?Q?Jos=E9_Exp=F3sito?= <jose.exposito89@gmail.com>
-To:     javierm@redhat.com
-Cc:     davidgow@google.com, dlatypov@google.com, tzimmermann@suse.de,
-        mripard@kernel.org, daniel@ffwll.ch, airlied@linux.ie,
-        maarten.lankhorst@linux.intel.com, jani.nikula@linux.intel.com,
-        maira.canal@usp.br, isabbasso@riseup.net, magalilemes00@gmail.com,
-        tales.aparecida@gmail.com, geert@linux-m68k.org,
-        dri-devel@lists.freedesktop.org, kunit-dev@googlegroups.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 0/4] KUnit tests for RGB565 conversion
-Message-ID: <20220728175108.GB52359@elementary>
-References: <20220726230916.390575-1-jose.exposito89@gmail.com>
+        Thu, 28 Jul 2022 10:51:32 -0700 (PDT)
+From:   Julien Panis <jpanis@baylibre.com>
+To:     jic23@kernel.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org
+Cc:     lars@metafoo.de, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mranostay@ti.com, Julien Panis <jpanis@baylibre.com>
+Subject: [PATCH v3 0/2] ECAP support on TI AM62x SoC
+Date:   Thu, 28 Jul 2022 19:51:22 +0200
+Message-Id: <20220728175124.468461-1-jpanis@baylibre.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220726230916.390575-1-jose.exposito89@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jul 27, 2022 at 01:09:12AM +0200, José Expósito wrote:
-> Hello everyone,
-> 
-> This series is a follow up of the XRGB8888 to RGB332 conversion KUnit
-> tests.
-> 
-> As I mentioned in v2 [1] I suspected that the inconsistency handling
-> the endian might need to be fixed.
-> Fortunately, Geert Uytterhoeven fixed it in commit 4d9db10576ff
-> ("drm/format-helper: Fix endianness in drm_fb_*_to_*() conversion
-> helpers"), so I updated the tests to reflect his change.
-> 
-> Changes since v1:
-> 
->  - Fix a bug reported by David Gow in the XRGB8888 to RGB332 tests
->  - Simplify the test structure as suggested by David Gow
->  - Add Tested-by Tales L. Aparecida and Acked-by Thomas Zimmermann
->  - Fix link in the last patch (Thomas Zimmermann)
-> 
-> Changes since v2:
-> 
->  - Test endian as fixed in commit 4d9db10576ff ("drm/format-helper: Fix
->    endianness in drm_fb_*_to_*() conversion helpers")
->  - Fix Sparse warning reported by David Gow
->  - Add Reviewed-by David Gow
-> 
-> [1] https://lore.kernel.org/dri-devel/20220709115837.560877-1-jose.exposito89@gmail.com/
-> 
-> José Expósito (4):
->   drm/format-helper: Fix test on big endian architectures
->   drm/format-helper: Rename test cases to make them more generic
->   drm/format-helper: Support multiple target formats results
->   drm/format-helper: Add KUnit tests for drm_fb_xrgb8888_to_rgb565()
-> 
->  .../gpu/drm/tests/drm_format_helper_test.c    | 169 ++++++++++++++----
->  1 file changed, 139 insertions(+), 30 deletions(-)
-> 
-> -- 
-> 2.25.1
-> 
+The Enhanced Capture (ECAP) module can be used to timestamp events
+detected on signal input pin. It can be used for time measurements
+of pulse train signals.
 
-As suggested by Thomas [1] I pushed the series to drm-misc-next.
+ECAP module includes 4 timestamp capture registers. For all 4 sequenced
+timestamp capture events (0->1->2->3->0->...), edge polarity (falling/rising
+edge) can be selected. Moreover, input signal can be prescaled.
 
-I've found some conflicts in drm-tip in unreleated files I'm trying to
-figure out on IRC though :(
+This driver leverages IIO subsystem to :
+- select edge polarity for all 4 capture events (event mode)
+- log both event index and timestamp for each capture event
+Event polarity, event indexes, and timestamps give all the information
+about the input pulse train. Further information can easily be computed :
+period and/or duty cycle if frequency is constant, elapsed time between
+pulses, etc...
 
-Jose
+Modifications since v2:
+	- Fix yaml file name
+	- Remove unnecessary node in yaml 'examples' section
+	- Remove unnecessary error messages in probe function
 
-[1] https://lore.kernel.org/dri-devel/4ba57f80-5025-c3a0-5f65-ec52643f0122@suse.de/
+Userspace commands :
+	cd /sys/devices/platform/bus@f0000/23120000.capture/iio\:device2/
+
+	# Configure/Enable data buffers
+	echo 1 > scan_elements/in_index_en
+	echo 1 > scan_elements/in_timestamp_en
+	echo 100 > buffer/length
+	echo 1 > buffer/enable
+
+	# Set event mode in range [0 ; 15]
+	# One bit for each CAPx register : 1 = falling edge / 0 = rising edge
+	# e.g. mode = 13 = 0xd = 0b1101
+	# -> falling edge for CAP1-3-4 / rising edge for CAP2
+	echo 13 > events/change_falling_value
+
+	# Run ECAP
+	echo 1 > en
+
+	# Get the number of available data
+	cat buffer/data_available
+
+	# Read data
+	hexdump -v /dev/iio\:device2
+
+	# Stop ECAP
+	echo 0 > en
+
+Julien Panis (2):
+  dt-binding: iio: time: add ti,am62-ecap-capture.yaml
+  iio: time: capture-tiecap: capture driver support for ECAP
+
+ .../iio/time/ti,am62-ecap-capture.yaml        |  61 +++
+ drivers/iio/Kconfig                           |   1 +
+ drivers/iio/Makefile                          |   1 +
+ drivers/iio/time/Kconfig                      |  22 +
+ drivers/iio/time/Makefile                     |   6 +
+ drivers/iio/time/capture-tiecap.c             | 517 ++++++++++++++++++
+ 6 files changed, 608 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/time/ti,am62-ecap-capture.yaml
+ create mode 100644 drivers/iio/time/Kconfig
+ create mode 100644 drivers/iio/time/Makefile
+ create mode 100644 drivers/iio/time/capture-tiecap.c
+
+-- 
+2.25.1
+
