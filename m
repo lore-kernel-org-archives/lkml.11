@@ -2,99 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEBFCC04A68
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 19:15:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95CB9C19F2B
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 19:16:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233016AbiG1TP3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 15:15:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41482 "EHLO
+        id S233217AbiG1TQR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 15:16:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42302 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229585AbiG1TP0 (ORCPT
+        with ESMTP id S229585AbiG1TQP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 15:15:26 -0400
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com [199.106.114.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6EE12F019;
-        Thu, 28 Jul 2022 12:15:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1659035725; x=1690571725;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=o0F5wy3XOw205GrsS1q6nC/o+IEYDXZlzsjeKeIuF/w=;
-  b=dQoJjR0qA0jvzrCDBXdiUKk5gmde7ZTtO/uCTckT8zW2BSt2QQOy+RBk
-   y69NDhk3SW/nE/63G0ALwCpePtcrfifHX6aCOhx+eiYNl4AopqNHcqMVj
-   KlJIS3ST9heRQ0f9UJ4c35rOT97j9wYQ4Hsb4YCzLm4Sk/BKjDf5SOJHn
-   Q=;
-Received: from unknown (HELO ironmsg03-sd.qualcomm.com) ([10.53.140.143])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 28 Jul 2022 12:15:25 -0700
-X-QCInternal: smtphost
-Received: from unknown (HELO nasanex01a.na.qualcomm.com) ([10.52.223.231])
-  by ironmsg03-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2022 12:15:25 -0700
-Received: from [10.110.38.152] (10.80.80.8) by nasanex01a.na.qualcomm.com
- (10.52.223.231) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Thu, 28 Jul
- 2022 12:15:24 -0700
-Message-ID: <ea33dee8-673c-0716-1640-28df7c983ca7@quicinc.com>
-Date:   Thu, 28 Jul 2022 12:15:23 -0700
+        Thu, 28 Jul 2022 15:16:15 -0400
+Received: from smtp117.ord1d.emailsrvr.com (smtp117.ord1d.emailsrvr.com [184.106.54.117])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A550A2F019
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 12:16:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=openvpn.net;
+        s=20170822-45nk5nwl; t=1659035774;
+        bh=SeMSQnT6wZkcTf3H3sQpzQpbLlpeUjeQJXewNPiwe+0=;
+        h=Date:Subject:To:From:From;
+        b=cr/rxuPX78wSfyIUVkoK9+1hub+katxpA/Xlb2aAaEVDL/iG4pjI7p43Gt1dKu5k1
+         fRGGGguDje1vqVhvyC+b2mBe0g0SNNsWjWirccEFmY7CbvXBjouCSWn60nDcKc1Tsb
+         QVQWRF8KybegjRFGt4741w/sZ1MoJrBWYM4GGhl8=
+X-Auth-ID: antonio@openvpn.net
+Received: by smtp15.relay.ord1d.emailsrvr.com (Authenticated sender: antonio-AT-openvpn.net) with ESMTPSA id 0BF92601D4;
+        Thu, 28 Jul 2022 15:16:12 -0400 (EDT)
+Message-ID: <7c690a60-103d-47c6-022a-5f2588c1fd87@openvpn.net>
+Date:   Thu, 28 Jul 2022 21:16:57 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101
- Thunderbird/102.0.3
-Subject: Re: [PATCH 1/2] scsi: ufs: Add Multi-Circular Queue support
-To:     John Garry <john.garry@huawei.com>,
-        Can Guo <quic_cang@quicinc.com>, <bvanassche@acm.org>,
-        <stanley.chu@mediatek.com>, <adrian.hunter@intel.com>,
-        <alim.akhtar@samsung.com>, <avri.altman@wdc.com>,
-        <beanhuo@micron.com>, <quic_nguyenb@quicinc.com>,
-        <quic_ziqichen@quicinc.com>, <linux-scsi@vger.kernel.org>,
-        <kernel-team@android.com>
-CC:     "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Daejun Park <daejun7.park@samsung.com>,
-        Jinyoung Choi <j-young.choi@samsung.com>,
-        Kiwoong Kim <kwmad.kim@samsung.com>,
-        open list <linux-kernel@vger.kernel.org>
-References: <1658214120-22772-1-git-send-email-quic_cang@quicinc.com>
- <1658214120-22772-2-git-send-email-quic_cang@quicinc.com>
- <f93045ec-569c-bd09-3617-d7d7aca4e5cd@huawei.com>
-From:   "Asutosh Das (asd)" <quic_asutoshd@quicinc.com>
-In-Reply-To: <f93045ec-569c-bd09-3617-d7d7aca4e5cd@huawei.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanex01a.na.qualcomm.com (10.52.223.231)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [RFC 1/1] net: introduce OpenVPN Data Channel Offload (ovpn-dco)
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        David Miller <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org
+References: <20220719014704.21346-1-antonio@openvpn.net>
+ <20220719014704.21346-2-antonio@openvpn.net> <YtbNBUZ0Kz7pgmWK@lunn.ch>
+ <c490b87c-085b-baca-b7e4-c67a3ee2c25e@openvpn.net>
+ <20220728092848.36c6ccd5@kernel.org>
+From:   Antonio Quartulli <antonio@openvpn.net>
+Organization: OpenVPN Inc.
+In-Reply-To: <20220728092848.36c6ccd5@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Classification-ID: 42921ce1-6c69-4280-8ab3-968aa8b9941a-1-1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello John,
-
-On 7/28/2022 12:10 PM, John Garry wrote:
-> On 19/07/2022 08:01, Can Guo wrote:
->> +
->> +    hba->nr_queues[HCTX_TYPE_DEFAULT] = num_possible_cpus();
->> +    hba->nr_queues[HCTX_TYPE_READ] = 0;
->> +    hba->nr_queues[HCTX_TYPE_POLL] = 1;
->> +
->> +    for (i = 0; i < HCTX_MAX_TYPES; i++)
->> +        host->nr_hw_queues += hba->nr_queues[i];
->> +
->> +    host->can_queue = hba->nutrs;
->> +    host->cmd_per_lun = hba->nutrs;
->> +
->> +    /* One more reserved for dev_cmd_queue */
->> +    hba->nr_hw_queues = host->nr_hw_queues + 1;
->> +
+On 28/07/2022 18:28, Jakub Kicinski wrote:
+> On Thu, 28 Jul 2022 09:41:11 +0200 Antonio Quartulli wrote:
+>> However, I guess I will still fill MODULE_VERSION() with a custom
+>> string. This may also be useful when building the module out-of-tree.
 > 
-> So this would mean that the host can accept .can_queue * .nr_hw_queues 
-> numbers of requests simultaneously - is that true?
-> 
-That would mean that .can_queue * .nr_hw_queues numbers of request may 
-be queued to the host.
-Please can you elaborate if you see an issue.
+> Please use the kernel versions for versioning the out of tree code.
+> Whenever a new release is cut upstream you bump the number
+> appropriately in oot, and adjust whatever compat code needs adjusting.
 
-> thanks,
-> John
+Thanks for the hint about the versioning!
+Will definitely use the kernel version once we are hooked.
 
--asd
 
+-- 
+Antonio Quartulli
+OpenVPN Inc.
