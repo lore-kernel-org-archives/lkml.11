@@ -2,86 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BC7BC19F2B
-	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 15:31:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94207C04A68
+	for <linux-kernel@archiver.kernel.org>; Thu, 28 Jul 2022 15:35:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231789AbiG1Pbp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 11:31:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46458 "EHLO
+        id S231164AbiG1Pfi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 11:35:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229862AbiG1Pbm (ORCPT
+        with ESMTP id S229449AbiG1Pff (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 11:31:42 -0400
-Received: from imap4.hz.codethink.co.uk (imap4.hz.codethink.co.uk [188.40.203.114])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 892FD61DA9;
-        Thu, 28 Jul 2022 08:31:41 -0700 (PDT)
-Received: from cpc152649-stkp13-2-0-cust121.10-2.cable.virginm.net ([86.15.83.122] helo=[192.168.0.17])
-        by imap4.hz.codethink.co.uk with esmtpsa  (Exim 4.94.2 #2 (Debian))
-        id 1oH5Tr-006dKi-BO; Thu, 28 Jul 2022 16:31:19 +0100
-Message-ID: <0d644682-094d-6151-aa2f-86552c8f9a87@codethink.co.uk>
-Date:   Thu, 28 Jul 2022 16:31:17 +0100
+        Thu, 28 Jul 2022 11:35:35 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 70D2B20F66
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 08:35:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659022533;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=x2lk2hqDKcE3DDLOhqbpwiGyywL02+HBUzoqQOKIEfY=;
+        b=iCb5vOn5wMdFQEJyCuwcxsij+ENGJzjsShHIrtCq51UbVEWpUvb/+PXU2CvyME+GjjnSse
+        Mc/bGkzZSWo8iYbuNUl4+V0mhZpH3/3klJlwe9DaDIUGVtc9LyxAv++dSoqlIwyUFT4/jS
+        h+0GeorFyY017SFid/rwWmdO7s99eLU=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-557-PA64DZPlMt2YhMyv00gn8g-1; Thu, 28 Jul 2022 11:35:28 -0400
+X-MC-Unique: PA64DZPlMt2YhMyv00gn8g-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1473E8037B5;
+        Thu, 28 Jul 2022 15:35:28 +0000 (UTC)
+Received: from [10.22.9.86] (unknown [10.22.9.86])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 91DDB2166B26;
+        Thu, 28 Jul 2022 15:35:26 +0000 (UTC)
+Message-ID: <a252d963-aedd-c9fe-e507-2b8fea8d375d@redhat.com>
+Date:   Thu, 28 Jul 2022 11:35:26 -0400
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH RESEND v4 03/15] PCI: dwc: Convert to using native IP-core
- versions representation
-Content-Language: en-GB
-To:     Bjorn Helgaas <helgaas@kernel.org>,
-        Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Cc:     Rob Herring <robh@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Lorenzo Pieralisi <lpieralisi@kernel.org>,
-        =?UTF-8?Q?Krzysztof_Wilczy=c5=84ski?= <kw@linux.com>,
-        Rahul Tanwar <rtanwar@maxlinear.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Frank Li <Frank.Li@nxp.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, linux-pci@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-tegra@vger.kernel.org
-References: <20220728152418.GA302516@bhelgaas>
-From:   Ben Dooks <ben.dooks@codethink.co.uk>
-Organization: Codethink Limited.
-In-Reply-To: <20220728152418.GA302516@bhelgaas>
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 1/2] cgroup/cpuset: Keep current cpus list if cpus
+ affinity was explicitly set
+Content-Language: en-US
+To:     =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>
+Cc:     Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Valentin Schneider <vschneid@redhat.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>, cgroups@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220728005815.1715522-1-longman@redhat.com>
+ <20220728144420.GA27407@blackbody.suse.cz>
+ <a58852b4-313a-9271-f31d-f79a91ec188b@redhat.com>
+ <20220728152355.GB25894@blackbody.suse.cz>
+From:   Waiman Long <longman@redhat.com>
+In-Reply-To: <20220728152355.GB25894@blackbody.suse.cz>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 28/07/2022 16:24, Bjorn Helgaas wrote:
-> On Fri, Jun 24, 2022 at 05:39:35PM +0300, Serge Semin wrote:
->> Since DWC PCIe v4.70a the controller version can be read from the
->> PORT_LOGIC.PCIE_VERSION_OFF register. Version is represented in the FourCC
->> format [1]. It's standard versioning approach for the Synopsys DWC
->> IP-cores. Moreover some of the DWC kernel drivers already make use of it
->> to fixup version-dependent functionality (See DWC USB3, Stmicro STMMAC or
->> recent DW SPI driver).
-> 
-> These references to other drivers might be useful, but without a
-> function name or file name, I can't easily find them.
-> 
->> In order to preserve the standard version
->> representation and prevent the data conversion back and forth, we suggest
->> to preserve the native version representation in the DWC PCIe driver too
->> in the same way as it has already been done in the rest of the DWC
->> drivers. IP-core version reading from the CSR will be introduced in the
->> next commit together with a simple macro-based API to use it.
->>
->> [1] https://en.wikipedia.org/wiki/FourCC
-> 
+On 7/28/22 11:23, Michal Koutný wrote:
+> On Thu, Jul 28, 2022 at 10:59:01AM -0400, Waiman Long <longman@redhat.com> wrote:
+>> Cgroup v1 doesn't have this problem.
+> v1 analogy would be:
+>
+> 	echo 2-3 >$dst/cpuset.cpus
+> 	# job runs in $dst
+> 	# one task T in $dst sets affinity just to one cpu
+> 	# I rethink my config, I want to allow $dst more space
+> 	echo 2-5 >$dst/cpuset.cpus
+>
+> Most tasks in $dst happily utilize the new cpus but it breaks affinity
+> for T -- this must have been broken since ever.
+>
+> (Or I'd argue that per-thread affinities are just recommendations, if I
+> have a task for nohz CPU, I should enforce its placement with cpuset
+> from the beginning.)
 
-I'm currently looking at a OF based dw-apb-timers-pwm driver, so also
-would like to follow this.
+I should have clarified that what I meant is systemd on a cgroup v1 
+environment doesn't cause this cpu list reset to happen. It doesn't mean 
+that cgroup v1 has no similar problem. Sorry for the confusion.
 
--- 
-Ben Dooks				http://www.codethink.co.uk/
-Senior Engineer				Codethink - Providing Genius
+Cheers,
+Longman
 
-https://www.codethink.co.uk/privacy.html
