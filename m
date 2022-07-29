@@ -2,122 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2819C19F2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 15:17:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 911AFC19F2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 15:18:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237026AbiG2PRr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 11:17:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44520 "EHLO
+        id S237149AbiG2PSG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 11:18:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231158AbiG2PRp (ORCPT
+        with ESMTP id S237092AbiG2PSE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 11:17:45 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E01E459B6
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 08:17:44 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id ss3so9041109ejc.11
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 08:17:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=8uOzxUeHyhbXm38NMH0o9xKNocW39uZURlmCfdDfHVQ=;
-        b=X5JFM6ncTKhP0dvBkT3+YMgOXuX7B74bsPN/NF0g+oPNYeC1Ct5yDA690tfkf1XHu7
-         GwVt67m+Jb57vP0D/EEdsBmctPZCaptJeV7rTU8Jo/I1sqdIPycTLh0uIArioQ59k/4W
-         MIa4fLHpde6VL+mfDFfo/+Pt09NJvWxRLImMv0CuoWiggS5ADBEBOAFchKqPnlENnmKV
-         2j7EsqvvumTYVHn7dnmOpYTrv55QmTZ3Bjf00AmvFMyy2/rRV58cXuOhGPev4PTmpwVY
-         uemEFnPVxYNOrretMEd0T+AOIYDo8r9/wOLrt3kcmw/YYN1EX/tPDbu906tCsFAZvaPT
-         V8PQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=8uOzxUeHyhbXm38NMH0o9xKNocW39uZURlmCfdDfHVQ=;
-        b=L3AsB/FSFXzI0n8SN877VsKWHU7tTWCApBvvC6Oenmso0F89WhZP+m+ux/td705iZQ
-         hMIrS45Z0GvJ+lCt7BB8PyG0Rt+ykAchFRcHQFn3mFQXXIA6wH/3yVZ0o2Gv+42rD/r5
-         Gm3AEbUxkxbjC+AjLqAj0YAH/1+20VH/wdaaAhOzfXeF2DfdnYC5THHLbFlbSEvUguXE
-         hw8WUX6k3S64bKY/82zK+3aKmV1XRkL435An/kgEjrIf5s8naT6BKECb9V9Yjb89Siyk
-         z7K4vphjdd7v0YdmcSTdoruTHi2pl98mP2IKlUlLyffPOloULcysi5+o5sfrDOgM3yRd
-         foFA==
-X-Gm-Message-State: AJIora9lUBFiqFFjw9rJ/11YSbsOJ1dIiRUqPQ1sIGzy30DH6C8eVg1k
-        n4NDOseNxxob4/jD9g3ITw==
-X-Google-Smtp-Source: AGRyM1unZD4CDaqGRE4CcewGTDSkgkSwfbx6+pGS5X/ZxyjvhfDPVd5wl1V9pG7ZMKxGNSQeMm5MRQ==
-X-Received: by 2002:a17:907:3ea6:b0:72b:4a06:989a with SMTP id hs38-20020a1709073ea600b0072b4a06989amr3359081ejc.168.1659107862822;
-        Fri, 29 Jul 2022 08:17:42 -0700 (PDT)
-Received: from localhost.localdomain ([46.53.249.83])
-        by smtp.gmail.com with ESMTPSA id c12-20020a056402120c00b0043cc2c9f5adsm2433441edw.40.2022.07.29.08.17.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Jul 2022 08:17:40 -0700 (PDT)
-Date:   Fri, 29 Jul 2022 18:17:38 +0300
-From:   Alexey Dobriyan <adobriyan@gmail.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Jagdish Gediya <jvgediya@linux.ibm.com>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        ying.huang@intel.com, dave.hansen@intel.com,
-        Jonathan.Cameron@huawei.com, akpm@linux-foundation.org,
-        rf@opensource.cirrus.com, pmladek@suse.com, will@kernel.org
-Subject: Re: [PATCH v3 1/2] lib/kstrtox.c: Add "false"/"true" support to
- kstrtobool()
-Message-ID: <YuP6Evijb2oZqD3D@localhost.localdomain>
-References: <20220426180203.70782-1-jvgediya@linux.ibm.com>
- <Yt6u34sigPEkeZ0Y@FVFF77S0Q05N.cambridge.arm.com>
- <Yt605xj898VSAsA3@casper.infradead.org>
- <YuPwLq+D8k53GZa3@smile.fi.intel.com>
+        Fri, 29 Jul 2022 11:18:04 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD06A63914;
+        Fri, 29 Jul 2022 08:18:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1659107881; x=1690643881;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=eK/W5ETq5QSYGd3HgstGbsh5CACgeNdBiLnNdZM3OOk=;
+  b=FoJqZWCVulv3Fha2UbJ6MlIdP9BpraHKADkXZEAdJCOHzXW8KBrWP8kX
+   qpBFteCRhcYd7i/cnrCsOCbBkXT84Wi8YmOl9JKeR9irmAqfIwrq/hxv9
+   naYBfLf/4NjV5Gh92ZC8m1e1zOogXfx1SMjEtRQ5r8U+wjr4wmnWqfJGX
+   U6aDcCiUtoxi6/MUMg5+sHhJ+XW71vbFYlLJANkmXNuItsoCLDNjvj90u
+   IoyygF+aW2Y5QE4MPjPz0U/2QHQMM7wIEKzMCWO//GXTetXpNHg5ji3tL
+   n/4ILzbGbhRiSbV2AyThnRXjd/DmswJKZ1GWnmYh0ZzKRL7wH0QtpJtka
+   w==;
+X-IronPort-AV: E=Sophos;i="5.93,201,1654585200"; 
+   d="scan'208";a="174162666"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 Jul 2022 08:18:00 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 29 Jul 2022 08:17:59 -0700
+Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Fri, 29 Jul 2022 08:17:48 -0700
+From:   Arun Ramadoss <arun.ramadoss@microchip.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     Woojung Huh <woojung.huh@microchip.com>,
+        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Russell King" <linux@armlinux.org.uk>
+Subject: [Patch RFC net-next 0/4] net: dsa: microchip: vlan configuration for bridge_vlan_unaware ports
+Date:   Fri, 29 Jul 2022 20:47:29 +0530
+Message-ID: <20220729151733.6032-1-arun.ramadoss@microchip.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YuPwLq+D8k53GZa3@smile.fi.intel.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 29, 2022 at 05:35:26PM +0300, Andy Shevchenko wrote:
-> On Mon, Jul 25, 2022 at 04:21:11PM +0100, Matthew Wilcox wrote:
-> > On Mon, Jul 25, 2022 at 03:55:27PM +0100, Mark Rutland wrote:
-> > > On Tue, Apr 26, 2022 at 11:32:02PM +0530, Jagdish Gediya wrote:
-> > > > At many places in kernel, It is necessary to convert sysfs input
-> > > > to corrosponding bool value e.g. "false" or "0" need to be converted
-> > > > to bool false, "true" or "1" need to be converted to bool true,
-> > > > places where such conversion is needed currently check the input
-> > > > string manually, kstrtobool() can be utilized at such places but
-> > > > currently it doesn't have support to accept "false"/"true".
-> > > > 
-> > > > Add support to accept "false"/"true" as valid string in kstrtobool().
-> > > > 
-> > > > Signed-off-by: Jagdish Gediya <jvgediya@linux.ibm.com>
-> > > > Reviewed-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-> > > 
-> > > I've just spotted that this broke arm64's "rodata=full" command line option,
-> > 
-> > That isn't a documented option.
-> > 
-> >         rodata=         [KNL]
-> >                 on      Mark read-only kernel memory as read-only (default).
-> >                 off     Leave read-only kernel memory writable for debugging.
-> > 
-> > Hopefully this is an object lesson in why you need to update the
-> > documentation when you extend a feature.
-> > 
-> > > since "full" gets parsed as 'f' = FALSE, when previously that would have been
-> > > rejected. So anyone passing "rodata=full" on the command line will have rodata
-> > > disabled, which is not what they wanted.
-> > > 
-> > > The current state of things is a bit messy (we prase the option twice because
-> > > arch code needs it early), and we can probably fix that with some refactoring,
-> > > but I do wonder if we actually want to open up the sysfs parsing to accept
-> > > anything *beginning* with [tTfF] rather than the full "true" and "false"
-> > > strings as previously, or whether it's worth reverting this for now in case
-> > > anything else is affected.
-> > 
-> > Well, that's going to break people who've started using the new option.
-> > As a quick fix, how about only allowing either "f\0" or "fa"?
-> 
-> I think we need to be more strict in kstrtobool(), i.e. 'f\0' ('t\0') and 'fal'
-> ('tru') perhaps?
+During refactoring of ksz spi probe, ds->configure_vlan_while_filtering flag is
+set in the ksz_setup function. It makes the extack warning when vlan_add
+command is used when vlan_filtering is turned off for the port.
+To allow the vlan_add for the bridge vlan unaware ports, private pvid is used
+for it. This pvid is used for the vlan_unaware ports. The private pvid is added
+to the vlan_table during the port_setup function.
+For the vlan aware ports, pvid issued by the user application will be used.
+Bridge vlan pvid is stored in the ksz port structure which can be used during
+transition between the vlan aware to unaware and vice versa.
 
-lol what?
+Tested using the following sequence for ksz9477 and lan937x
+----------------
+Setup -> Host1 --- LAN1 -- LAN2 --- Host2
 
-the only way to be strict is to accept "0" and "1" with optional
-newline and delete all the rubbish entirely.
+ip link set dev br0 type bridge vlan_filtering 0
+bridge vlan add vid 5 dev lan1 pvid untagged
+bridge vlan add vid 5 dev lan2 pvid untagged
+bridge vlan del vid 5 dev lan1
+bridge vlan del vid 5 dev lan2
+
+After each step of execution, transmitted the packets from Host1 and
+successfully received by the Host2.
+
+Arun Ramadoss (4):
+  net: dsa: microchip: modify vlan_add function prototype
+  net: dsa: microchip: lan937x: remove vlan_filtering_is_global flag
+  net: dsa: microchip: common ksz pvid get and set function
+  net: dsa: microchip: use private pvid for bridge_vlan_unwaware
+
+ drivers/net/dsa/microchip/ksz8.h         |  6 +-
+ drivers/net/dsa/microchip/ksz8795.c      | 42 +++-------
+ drivers/net/dsa/microchip/ksz9477.c      | 40 ++++------
+ drivers/net/dsa/microchip/ksz9477.h      |  5 +-
+ drivers/net/dsa/microchip/ksz_common.c   | 98 +++++++++++++++++++++++-
+ drivers/net/dsa/microchip/ksz_common.h   | 21 ++++-
+ drivers/net/dsa/microchip/lan937x_main.c |  5 --
+ 7 files changed, 142 insertions(+), 75 deletions(-)
+
+
+base-commit: ba323f6bee1d1e70aed280f8c89ac06959559855
+-- 
+2.36.1
+
