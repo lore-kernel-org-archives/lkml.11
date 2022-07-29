@@ -2,167 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8E06C00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 14:23:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 629C2C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 14:24:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236293AbiG2OX1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 10:23:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60400 "EHLO
+        id S236990AbiG2OY1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 10:24:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231230AbiG2OXZ (ORCPT
+        with ESMTP id S231230AbiG2OYZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 10:23:25 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 551106D9DC
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 07:23:23 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id BF4E934B1C;
-        Fri, 29 Jul 2022 14:23:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1659104601; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=41yTqV34Y9S/L+H/w43+RTmir3H4LTje1VGve6f4RDU=;
-        b=g4e8RkVotq+qshmeZR5PldOGSHDtXeCHF643L5YFJSvubFf8NpSSh02YreA7qWwBK5oaq7
-        t+KznGB12iPdKHpj57zBPmmZCBLbbS8S4AnFJeDZk8zKkhBA66scK9HwUunEE25bWWpSgR
-        KnPKszz7TFJwx1bp0Eha+ZaakGxpU94=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1659104601;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=41yTqV34Y9S/L+H/w43+RTmir3H4LTje1VGve6f4RDU=;
-        b=tG9PlLHEzBx4R6SnDnH8mnJ2jtVkxqABaeWviAc6YFeCL5OdXahdIrxFrgU/cADu1ktln/
-        mb6ke0H4wYMftOBg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 851AE13A1B;
-        Fri, 29 Jul 2022 14:23:21 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id qjxKH1nt42JzZAAAMHmgww
-        (envelope-from <tzimmermann@suse.de>); Fri, 29 Jul 2022 14:23:21 +0000
-Message-ID: <a68022f4-28d0-7743-27fe-6df652082184@suse.de>
-Date:   Fri, 29 Jul 2022 16:23:21 +0200
+        Fri, 29 Jul 2022 10:24:25 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9414D56B8B
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 07:24:24 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id w10so4785723plq.0
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 07:24:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:subject:from:to:mime-version;
+        bh=UConN5gGUaEKejzmj0/FeH3qdQlU3JzNGuCzI1IImJs=;
+        b=ie0Fsxa6BJS/R/ucTt6BbbZY2nH/R5Ghz+cihlgyZHEslUpxe/OsloQHsjd3SC0uhF
+         4SfN3XO3t5wYLbuDqlZFoYp2jqMdc1UYyqMpuG2RI4LVjvrkEPQU6SR4NH8o05hd2+28
+         5t7fjn7N1IuGIRWr66+aZd9toKEkYoqGSCE/svsE9Actdk7T2vkFHN4mV/lXf4w9xZn7
+         FwEipySPT0rFQkTT+BDwB8PXdIAXD8M8C4PZnj0mLwDj1PyBPGjTqDNWHd0z8nc/3R7A
+         T8FUiiz04Nu2Ds/ADzMc8UOzANSAa+CYF6WCliga7PaSiKgJhyDl0Exee1QwMsbvKW9g
+         4r/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:subject:from:to:mime-version;
+        bh=UConN5gGUaEKejzmj0/FeH3qdQlU3JzNGuCzI1IImJs=;
+        b=0OkwqKDxC4FuQaZXa8OmTS7nxn35gUEMQ5VTqQABzylPJcExMQDPbjbiUqadA0xxQZ
+         ntcB7VYTjkdeSit0UMVendF5z4NAnyerGhROfN5VuPw1EDmooApoBpUpHZUspDwHfgim
+         xt2qmKVemxvKw2dQT/jOdtOLTtmWyZJT7duI/nD36Lg8mAR42mzP8LLMmdu4/JJbe2MQ
+         67sDV2IVaHlBwbyAZZJf6JOqFybd7OyTocDwAimLMvXgdGD2JnQtqcOM+4zYrg0qOI//
+         sxZvo4tLAgKkJ31H0IRmt5nbeOaM+d4xmquHtl6KO1AdY4jQxnvUmzr1fGjqFp8kIZHp
+         5Lvg==
+X-Gm-Message-State: ACgBeo1avaOeaaJ5sGJlYaO5fNEJd3P4f/QN7vd3YeXRB0Q/E7ICHII2
+        b4OjK3fryu6vSocLYm3cI/arVRFxBBI=
+X-Google-Smtp-Source: AA6agR7V8NxMV0KCFdI0LcFRIlsaytitehvoL81NcR1G3XKcKSxzn4Rbyr3xZkE5ZMHku4p44tUkRw==
+X-Received: by 2002:a17:903:2683:b0:16e:c630:fb2e with SMTP id jf3-20020a170903268300b0016ec630fb2emr666485plb.52.1659104663845;
+        Fri, 29 Jul 2022 07:24:23 -0700 (PDT)
+Received: from [10.2.0.2] ([185.230.126.2])
+        by smtp.gmail.com with ESMTPSA id ij19-20020a170902ab5300b0016daee46b72sm394895plb.237.2022.07.29.07.24.22
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Jul 2022 07:24:23 -0700 (PDT)
+Message-ID: <62e3ed97.170a0220.77fc4.08a7@mx.google.com>
+Date:   Fri, 29 Jul 2022 07:24:23 -0700 (PDT)
+Subject: Your E Receipt has been renewed on July 25, 202242488611 of item
+From:   hdhgyhcjgnhuy57475bhfnch@gmail.com
+To:     linux-kernel@vger.kernel.org
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] drm/kmb: fix dereference before NULL check in
- kmb_plane_atomic_update()
-Content-Language: en-US
-To:     Zeng Jingxiang <zengjx95@gmail.com>, anitha.chrisanthus@intel.com,
-        edmund.j.dea@intel.com, airlied@linux.ie, daniel@ffwll.ch,
-        laurent.pinchart@ideasonboard.com, maxime@cerno.tech,
-        ville.syrjala@linux.intel.com
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Zeng Jingxiang <linuszeng@tencent.com>
-References: <20220729030711.2117849-1-zengjx95@gmail.com>
-From:   Thomas Zimmermann <tzimmermann@suse.de>
-In-Reply-To: <20220729030711.2117849-1-zengjx95@gmail.com>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="------------dFxj7YZV00EUycLoniKD5Q4Y"
+Content-Type: multipart/mixed; boundary="===============9033940074199228714=="
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------dFxj7YZV00EUycLoniKD5Q4Y
-Content-Type: multipart/mixed; boundary="------------sj5f9zrJyPyQK1Z5Zze4SzFW";
- protected-headers="v1"
-From: Thomas Zimmermann <tzimmermann@suse.de>
-To: Zeng Jingxiang <zengjx95@gmail.com>, anitha.chrisanthus@intel.com,
- edmund.j.dea@intel.com, airlied@linux.ie, daniel@ffwll.ch,
- laurent.pinchart@ideasonboard.com, maxime@cerno.tech,
- ville.syrjala@linux.intel.com
-Cc: dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
- Zeng Jingxiang <linuszeng@tencent.com>
-Message-ID: <a68022f4-28d0-7743-27fe-6df652082184@suse.de>
-Subject: Re: [PATCH] drm/kmb: fix dereference before NULL check in
- kmb_plane_atomic_update()
-References: <20220729030711.2117849-1-zengjx95@gmail.com>
-In-Reply-To: <20220729030711.2117849-1-zengjx95@gmail.com>
+--===============9033940074199228714==
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
---------------sj5f9zrJyPyQK1Z5Zze4SzFW
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To linux-kernel@vger.kernel.org,
+
+Congratulations! You=C3=A2=E2=82=AC=E2=84=A2re now a part of the GEEK SQUAD f=
+amily.
+=20
+You=C3=A2=E2=82=AC=E2=84=A2ve made a great decision and we=C3=A2=E2=82=AC=E2=
+=84=A2re eager to hear about your impression about the SUBSCRIPTION you=C3=A2=
+=E2=82=AC=E2=84=A2ve recently purchased.
+=20
+Find Your 67267869203.
+
+Order Number   : 672545678
+Order Date     : 29-JULY-2022
+Product Key    : 2FABF-766CDAGH
+
+Product : SUBSCRIPTION RENEWED FOR THE MONTH OF JULY 2022
+Quantity Term Price  (US) : $349.99
+
+Grand Total: $349.99
+For any queries like installations, error or cancellation regarding this orde=
+r feel free to contact us at (+1 888 314 7528). We hope for a positive reply.
+
+--===============9033940074199228714==
+Content-Type: application/octet-stream
 Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="Bill42488611.pdf"
+MIME-Version: 1.0
 
-SGkNCg0KQW0gMjkuMDcuMjIgdW0gMDU6MDcgc2NocmllYiBaZW5nIEppbmd4aWFuZzoNCj4g
-RnJvbTogWmVuZyBKaW5neGlhbmcgPGxpbnVzemVuZ0B0ZW5jZW50LmNvbT4NCj4gDQo+IFRo
-ZSAicGxhbmUiIHBvaW50ZXIgd2FzIGFjY2VzcyBiZWZvcmUgY2hlY2tpbmcgaWYgaXQgd2Fz
-IE5VTEwuDQo+IA0KPiBUaGUgZHJtX2F0b21pY19nZXRfb2xkX3BsYW5lX3N0YXRlKCkgZnVu
-Y3Rpb24gd2lsbCBkZXJlZmVyZW5jZQ0KPiB0aGUgcG9pbnRlciAicGxhbmUiLg0KPiAzNDUJ
-c3RydWN0IGRybV9wbGFuZV9zdGF0ZSAqb2xkX3BsYW5lX3N0YXRlID0NCj4gCQlkcm1fYXRv
-bWljX2dldF9vbGRfcGxhbmVfc3RhdGUoc3RhdGUsIHBsYW5lKTsNCj4gMzQ2CXN0cnVjdCBk
-cm1fcGxhbmVfc3RhdGUgKm5ld19wbGFuZV9zdGF0ZSA9DQo+IAkJZHJtX2F0b21pY19nZXRf
-bmV3X3BsYW5lX3N0YXRlKHN0YXRlLCBwbGFuZSk7DQo+IA0KPiBBIE5VTEwgY2hlY2sgZm9y
-ICJwbGFuZSIgaW5kaWNhdGVzIHRoYXQgaXQgbWF5IGJlIE5VTEwNCj4gMzYzCWlmICghcGxh
-bmUgfHwgIW5ld19wbGFuZV9zdGF0ZSB8fCAhb2xkX3BsYW5lX3N0YXRlKQ0KDQpJcyB0aGlz
-IGFuIGFjdHVhbCBidWcgdGhhdCBoYXBwZW5zPw0KDQpBbGwgcGxhbmVzIHNob3VsZCBhbHdh
-eXMgaGF2ZSBhIHN0YXRlLiBUaGVyZWZvcmUgdGhlIHRlc3RzIGZvciANCiFuZXdfcGxhbmVf
-c3RhdGUgYW5kICFvbGRfcGxhbmVfc3RhdGUgY2FuIGJlIHJlbW92ZWQsIEknZCBzYXkuDQoN
-CkJlc3QgcmVnYXJkcw0KVGhvbWFzDQoNCj4gDQo+IEZpeGVzOiA5Nzc2OTdlMjBiM2QgKCJk
-cm0vYXRvbWljOiBQYXNzIHRoZSBmdWxsIHN0YXRlIHRvIHBsYW5lcyBhdG9taWMgZGlzYWJs
-ZSBhbmQgdXBkYXRlIikNCj4gRml4ZXM6IDM3NDE4YmYxNGMxMyAoImRybTogVXNlIHN0YXRl
-IGhlbHBlciBpbnN0ZWFkIG9mIHRoZSBwbGFuZSBzdGF0ZSBwb2ludGVyIikNCj4gU2lnbmVk
-LW9mZi1ieTogWmVuZyBKaW5neGlhbmcgPGxpbnVzemVuZ0B0ZW5jZW50LmNvbT4NCj4gLS0t
-DQo+ICAgZHJpdmVycy9ncHUvZHJtL2ttYi9rbWJfcGxhbmUuYyB8IDEzICsrKysrKysrLS0t
-LS0NCj4gICAxIGZpbGUgY2hhbmdlZCwgOCBpbnNlcnRpb25zKCspLCA1IGRlbGV0aW9ucygt
-KQ0KPiANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvZ3B1L2RybS9rbWIva21iX3BsYW5lLmMg
-Yi9kcml2ZXJzL2dwdS9kcm0va21iL2ttYl9wbGFuZS5jDQo+IGluZGV4IDI3MzViOGViMzUz
-Ny4uZDJiYzk5OGI2NWNlIDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL2dwdS9kcm0va21iL2tt
-Yl9wbGFuZS5jDQo+ICsrKyBiL2RyaXZlcnMvZ3B1L2RybS9rbWIva21iX3BsYW5lLmMNCj4g
-QEAgLTM0MiwxMCArMzQyLDcgQEAgc3RhdGljIHZvaWQga21iX3BsYW5lX3NldF9hbHBoYShz
-dHJ1Y3Qga21iX2RybV9wcml2YXRlICprbWIsDQo+ICAgc3RhdGljIHZvaWQga21iX3BsYW5l
-X2F0b21pY191cGRhdGUoc3RydWN0IGRybV9wbGFuZSAqcGxhbmUsDQo+ICAgCQkJCSAgICBz
-dHJ1Y3QgZHJtX2F0b21pY19zdGF0ZSAqc3RhdGUpDQo+ICAgew0KPiAtCXN0cnVjdCBkcm1f
-cGxhbmVfc3RhdGUgKm9sZF9wbGFuZV9zdGF0ZSA9IGRybV9hdG9taWNfZ2V0X29sZF9wbGFu
-ZV9zdGF0ZShzdGF0ZSwNCj4gLQkJCQkJCQkJCQkgcGxhbmUpOw0KPiAtCXN0cnVjdCBkcm1f
-cGxhbmVfc3RhdGUgKm5ld19wbGFuZV9zdGF0ZSA9IGRybV9hdG9taWNfZ2V0X25ld19wbGFu
-ZV9zdGF0ZShzdGF0ZSwNCj4gLQkJCQkJCQkJCQkgcGxhbmUpOw0KPiArCXN0cnVjdCBkcm1f
-cGxhbmVfc3RhdGUgKm9sZF9wbGFuZV9zdGF0ZSwgKm5ld19wbGFuZV9zdGF0ZTsNCj4gICAJ
-c3RydWN0IGRybV9mcmFtZWJ1ZmZlciAqZmI7DQo+ICAgCXN0cnVjdCBrbWJfZHJtX3ByaXZh
-dGUgKmttYjsNCj4gICAJdW5zaWduZWQgaW50IHdpZHRoOw0KPiBAQCAtMzYwLDcgKzM1Nywx
-MyBAQCBzdGF0aWMgdm9pZCBrbWJfcGxhbmVfYXRvbWljX3VwZGF0ZShzdHJ1Y3QgZHJtX3Bs
-YW5lICpwbGFuZSwNCj4gICAJc3RhdGljIGRtYV9hZGRyX3QgYWRkcltNQVhfU1VCX1BMQU5F
-U107DQo+ICAgCXN0cnVjdCBkaXNwX2NmZyAqaW5pdF9kaXNwX2NmZzsNCj4gICANCj4gLQlp
-ZiAoIXBsYW5lIHx8ICFuZXdfcGxhbmVfc3RhdGUgfHwgIW9sZF9wbGFuZV9zdGF0ZSkNCj4g
-KwlpZiAoIXBsYW5lKQ0KPiArCQlyZXR1cm47DQo+ICsNCj4gKwlvbGRfcGxhbmVfc3RhdGUg
-PSBkcm1fYXRvbWljX2dldF9vbGRfcGxhbmVfc3RhdGUoc3RhdGUsIHBsYW5lKTsNCj4gKwlu
-ZXdfcGxhbmVfc3RhdGUgPSBkcm1fYXRvbWljX2dldF9uZXdfcGxhbmVfc3RhdGUoc3RhdGUs
-IHBsYW5lKTsNCj4gKw0KPiArCWlmICghbmV3X3BsYW5lX3N0YXRlIHx8ICFvbGRfcGxhbmVf
-c3RhdGUpDQo+ICAgCQlyZXR1cm47DQo+ICAgDQo+ICAgCWZiID0gbmV3X3BsYW5lX3N0YXRl
-LT5mYjsNCg0KLS0gDQpUaG9tYXMgWmltbWVybWFubg0KR3JhcGhpY3MgRHJpdmVyIERldmVs
-b3Blcg0KU1VTRSBTb2Z0d2FyZSBTb2x1dGlvbnMgR2VybWFueSBHbWJIDQpNYXhmZWxkc3Ry
-LiA1LCA5MDQwOSBOw7xybmJlcmcsIEdlcm1hbnkNCihIUkIgMzY4MDksIEFHIE7DvHJuYmVy
-ZykNCkdlc2Now6RmdHNmw7xocmVyOiBJdm8gVG90ZXYNCg==
+JVBERi0xLjQKMSAwIG9iago8PAovVGl0bGUgKP7/KQovQ3JlYXRvciAo/v8AdwBrAGgAdABtAGwA
+dABvAHAAZABmACAAMAAuADEAMgAuADYpCi9Qcm9kdWNlciAo/v8AUQB0ACAANAAuADgALgA3KQov
+Q3JlYXRpb25EYXRlIChEOjIwMjIwNzI5MTQyNDIyWikKPj4KZW5kb2JqCjMgMCBvYmoKPDwKL1R5
+cGUgL0V4dEdTdGF0ZQovU0EgdHJ1ZQovU00gMC4wMgovY2EgMS4wCi9DQSAxLjAKL0FJUyBmYWxz
+ZQovU01hc2sgL05vbmU+PgplbmRvYmoKNCAwIG9iagpbL1BhdHRlcm4gL0RldmljZVJHQl0KZW5k
+b2JqCjYgMCBvYmoKPDwKL1R5cGUgL0NhdGFsb2cKL1BhZ2VzIDIgMCBSCj4+CmVuZG9iago1IDAg
+b2JqCjw8Ci9UeXBlIC9QYWdlCi9QYXJlbnQgMiAwIFIKL0NvbnRlbnRzIDcgMCBSCi9SZXNvdXJj
+ZXMgOSAwIFIKL0Fubm90cyAxMCAwIFIKL01lZGlhQm94IFswIDAgNTk1IDg0Ml0KPj4KZW5kb2Jq
+CjkgMCBvYmoKPDwKL0NvbG9yU3BhY2UgPDwKL1BDU3AgNCAwIFIKL0NTcCAvRGV2aWNlUkdCCi9D
+U3BnIC9EZXZpY2VHcmF5Cj4+Ci9FeHRHU3RhdGUgPDwKL0dTYSAzIDAgUgo+PgovUGF0dGVybiA8
+PAo+PgovRm9udCA8PAo+PgovWE9iamVjdCA8PAo+Pgo+PgplbmRvYmoKMTAgMCBvYmoKWyBdCmVu
+ZG9iago3IDAgb2JqCjw8Ci9MZW5ndGggOCAwIFIKL0ZpbHRlciAvRmxhdGVEZWNvZGUKPj4Kc3Ry
+ZWFtCnic03cPTlRIL1bQdw4uUEiG0s7BXAZ65qYGEKAAgrrIAkYWelC2goWhMZStkJzLVahQyBXI
+FQgkYTRIby6XuaG5HkiNoSmQm4PMNTQwMdMzszS0tACKG6BzQYozuMK1FPK4kAxWCOQCABQNJg4K
+ZW5kc3RyZWFtCmVuZG9iago4IDAgb2JqCjEwOQplbmRvYmoKMiAwIG9iago8PAovVHlwZSAvUGFn
+ZXMKL0tpZHMgClsKNSAwIFIKXQovQ291bnQgMQovUHJvY1NldCBbL1BERiAvVGV4dCAvSW1hZ2VC
+IC9JbWFnZUNdCj4+CmVuZG9iagp4cmVmCjAgMTEKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAw
+MDA5IDAwMDAwIG4gCjAwMDAwMDA4MzQgMDAwMDAgbiAKMDAwMDAwMDE1NyAwMDAwMCBuIAowMDAw
+MDAwMjUyIDAwMDAwIG4gCjAwMDAwMDAzMzggMDAwMDAgbiAKMDAwMDAwMDI4OSAwMDAwMCBuIAow
+MDAwMDAwNjMyIDAwMDAwIG4gCjAwMDAwMDA4MTUgMDAwMDAgbiAKMDAwMDAwMDQ1NyAwMDAwMCBu
+IAowMDAwMDAwNjEyIDAwMDAwIG4gCnRyYWlsZXIKPDwKL1NpemUgMTEKL0luZm8gMSAwIFIKL1Jv
+b3QgNiAwIFIKPj4Kc3RhcnR4cmVmCjkzMgolJUVPRgo=
 
---------------sj5f9zrJyPyQK1Z5Zze4SzFW--
-
---------------dFxj7YZV00EUycLoniKD5Q4Y
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
-
------BEGIN PGP SIGNATURE-----
-
-wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmLj7VkFAwAAAAAACgkQlh/E3EQov+Ad
-Zg//R4VYlh2BljVqjozhuI2AHSb42lYJ4w8vMJigf0CR6rHQNj3t4FVREFRA6Mgru5ekCUz9+vFy
-SFUwg0kZjMr57vT/iWBzm60DNkUSiizkyNXPpwUxW82m11dhtPjsp7nh5rgHVXlbrTjnQNi2M0QJ
-Qya+EySc8bUy4Oytczg2pGrJXlY48UlNOnLyUI8ZY8B9Qzm7UlqkMmxqrAeFEfhoPDP/jIG27whs
-Y2ip3XcCPtY62+Xj3EiHOsWvCq6cKmJ20u8YRUypij6VuoJWOrJ/vrfj4VwVlEZkP/K/KhOo+5BH
-cK75WSOPzzvIZLkuy/qkwHc8NL941+F2gu4d2BPmjgVNwU3QiTW9ezol8XvS+nB5typ0sEN/LTZ+
-mFfh8BBoY3aGY1eU1LMOBhC6YO0KGglfuDtedFKXYiHim2AvPLt36uvMjDcEfPOLo2HCmx25mlqT
-kkqh0Moe/GR48GW6/soiexuF1NslXd+xvMtOnv+TP0E5e5p4mCysZ6txEmwmJTMpMYwt4VBY32T0
-8fPMTSPi8wE+Ej64reX4Ash+ULxBBpW2S61cVknUajrkZiRFrY7Jph1zNeMslOW7A5t0chx3exIQ
-sPD0xb2VfKH65x9MTsBqfWpS0aiXn9DWdzXsJrbjYvAPS5/YCnkAhEasCX49WyCsmIshjk2TP9p/
-pY0=
-=VE1D
------END PGP SIGNATURE-----
-
---------------dFxj7YZV00EUycLoniKD5Q4Y--
+--===============9033940074199228714==--
