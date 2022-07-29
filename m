@@ -2,113 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5650DC19F2A
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 18:15:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3390C00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 18:22:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238399AbiG2SPZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 14:15:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49726 "EHLO
+        id S237978AbiG2SWv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 14:22:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229593AbiG2SPX (ORCPT
+        with ESMTP id S229509AbiG2SWs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 14:15:23 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66F661ADAC
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 11:15:21 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id 23so4599210pgc.8
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 11:15:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc;
-        bh=Obk/pcqF68Ks7EntsqYVj2QhxCZophsW8ZmQm6Eytd0=;
-        b=sdNmm3lLFIdBbY9ez5s+LiPHA0B79x8tQ1YJzPIc62ADvFEVyR6qw9k2bOtcfRWF/1
-         QVKJrGQFjgxWtK4j9SVMWTC2uu7nEKyh5pxHBwgLIR1eNfHQ7hRGGiByQ70p6TWHI78q
-         +xAaZPpgMHO0AeTlIJzRI00J4P/Nd24j8doXNytxXZXuPv8I9CjMq1tDu42BMi7Qiw3h
-         G/dWVytyQYCgnE7SuD+OUsUtZ951KJf3smo8WTiuTY6vNJ9vp6Qx6WOmFMPlgAWHm9P6
-         AHZyVKiPkewv86zzPZc4Uq+BEdRLvKI2eb+4Ygk81F4u/w24SmLfxsOqIzEaQR8aMRo/
-         V5ZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
-        bh=Obk/pcqF68Ks7EntsqYVj2QhxCZophsW8ZmQm6Eytd0=;
-        b=abwTw9nF0YL5JlSJgN/Lka4Nrds5p4zRTGQoOIoT//o6lJ0y+zocpbY7WfapkZlK77
-         8tmQnfSF0/baPp9bg5YS6d3upF3rH8unGaYN+oJQFt6ZjzM8gu+cMEMuI7UFXa5lJt/v
-         /Gp/EfsAXuDsJAr+lMrUrZq/uB1G2EWGSYFZUyd0K+aRYmWnlE6c1ySiuhKtBxTlZ/O2
-         mwbe7cz7krwNmq5OUJQH+D4Gixx8jMLF9gFImlypi/D3KFFRWviYM3tbktOx9RppCRas
-         Fi3bMA69g+3Lpz7RjTSd4Pet9z20Ybk5m0bNalzBT/cOYivVOgIjU+g+/EmYdcEPt0ME
-         C0nA==
-X-Gm-Message-State: AJIora9dNPlG5kQxs4+UITQ9Hdi10rOwIthI6P1AeUCL8TZ8U5ErlWIZ
-        C8u1+lBMWYEMRp7UpHaSVAfuGQ==
-X-Google-Smtp-Source: AGRyM1svUsmBEpgf5T4GJq5zfLGGMtiYdIybjaQglORa4rlytr4GMQJOh2HBpI9hYelo6x2YrG5qWw==
-X-Received: by 2002:a63:f011:0:b0:41a:6262:bfcd with SMTP id k17-20020a63f011000000b0041a6262bfcdmr3842848pgh.40.1659118520814;
-        Fri, 29 Jul 2022 11:15:20 -0700 (PDT)
-Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
-        by smtp.gmail.com with ESMTPSA id x11-20020a1709028ecb00b0016c38eb1f3asm3861796plo.214.2022.07.29.11.15.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Jul 2022 11:15:20 -0700 (PDT)
-Date:   Fri, 29 Jul 2022 18:15:16 +0000
-From:   Sean Christopherson <seanjc@google.com>
-To:     Kai Huang <kai.huang@intel.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Michael Roth <michael.roth@amd.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>
-Subject: Re: [PATCH 3/4] KVM: SVM: Adjust MMIO masks (for caching) before
- doing SEV(-ES) setup
-Message-ID: <YuQjtLK1uk3/bhK/@google.com>
-References: <20220728221759.3492539-1-seanjc@google.com>
- <20220728221759.3492539-4-seanjc@google.com>
- <9bdfbad2dc9f193fb57f7ee113db7f1c2b96973c.camel@intel.com>
+        Fri, 29 Jul 2022 14:22:48 -0400
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F107C45057
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 11:22:46 -0700 (PDT)
+Received: from zn.tnic (p57969665.dip0.t-ipconnect.de [87.150.150.101])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 4E79A1EC04CB;
+        Fri, 29 Jul 2022 20:22:41 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1659118961;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=GWJUI0U1W5ywU2OH1p9iE3oY+56py9fLb6+OGTHG8KU=;
+        b=g7zUaw4wzmaBskwPa+ar+pwDz9DAJenFceA98+ELtTGGyv84CNMsYLpVxw9lsMogDyyq/p
+        GJYeoF/tZLoZxZh2VkX/LExLgv+oH+q+S/RdcADQD3okxXi5PCf7Q9RgQCcqQDCpwINAjW
+        ldAetvo8CyvuAn7gKZ4/H4jqN+TGcZA=
+Date:   Fri, 29 Jul 2022 20:22:36 +0200
+From:   Borislav Petkov <bp@alien8.de>
+To:     Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Cc:     Dimitri John Ledkov <dimitri.ledkov@canonical.com>,
+        Andrew Cooper <andrew.cooper3@citrix.com>,
+        linux-kernel@vger.kernel.org, x86@kernel.org,
+        Peter Zijlstra <peterz@infradead.org>
+Subject: Re: [PATCH] x86/bugs: Do not enable IBPB at firmware entry when IBPB
+ is not available
+Message-ID: <YuQlbFSBC6U/yGeL@zn.tnic>
+References: <20220728122602.2500509-1-cascardo@canonical.com>
+ <YuKCpLOLeDOI7GII@zn.tnic>
+ <CADWks+aosM99jv9WwLvFo3LPEnsqts+2bJPzMnRqJX70qz51cg@mail.gmail.com>
+ <YuKoxyUdAWsTfKez@zn.tnic>
+ <YuKwLnYlzC0R8xrF@zn.tnic>
+ <YuLBBe2BXrC7CNiu@quatroqueijos>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <9bdfbad2dc9f193fb57f7ee113db7f1c2b96973c.camel@intel.com>
+In-Reply-To: <YuLBBe2BXrC7CNiu@quatroqueijos>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 29, 2022, Kai Huang wrote:
-> On Thu, 2022-07-28 at 22:17 +0000, Sean Christopherson wrote:
-> > Adjust KVM's MMIO masks to account for the C-bit location prior to doing
-> > SEV(-ES) setup.  A future patch will consume enable_mmio caching during
-> > SEV setup as SEV-ES _requires_ MMIO caching, i.e. KVM needs to disallow
-> > SEV-ES if MMIO caching is disabled.
-> > 
-> > Cc: stable@vger.kernel.org
-> > Signed-off-by: Sean Christopherson <seanjc@google.com>
-> > ---
-> >  arch/x86/kvm/svm/svm.c | 9 ++++++---
-> >  1 file changed, 6 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-> > index aef63aae922d..62e89db83bc1 100644
-> > --- a/arch/x86/kvm/svm/svm.c
-> > +++ b/arch/x86/kvm/svm/svm.c
-> > @@ -5034,13 +5034,16 @@ static __init int svm_hardware_setup(void)
-> >  	/* Setup shadow_me_value and shadow_me_mask */
-> >  	kvm_mmu_set_me_spte_mask(sme_me_mask, sme_me_mask);
-> >  
-> > -	/* Note, SEV setup consumes npt_enabled. */
-> > +	svm_adjust_mmio_mask();
-> > +
-> > +	/*
-> > +	 * Note, SEV setup consumes npt_enabled and enable_mmio_caching (which
-> > +	 * may be modified by svm_adjust_mmio_mask()).
-> > +	 */
-> >  	sev_hardware_setup();
+On Thu, Jul 28, 2022 at 02:01:57PM -0300, Thadeu Lima de Souza Cascardo wrote:
+> I may be completely wrong here, so excuse me throwing out this idea.
 > 
-> If I am not seeing mistakenly, the code in latest queue branch doesn't consume
-> enable_mmio_caching.  It is only added in your later patch.
+> But isn't it also possible that userspace attacks the kernel by leveraging
+> speculative execution when in firmware? So even when firmware is trusted, it
+> might not have mitigations like retpoline and rethunks. So userspace will train
+> the BTB in order to make a RET in the firmware speculate to a firmware gadget
+> that may spill out kernel bits to the cache.
 > 
-> So perhaps adjust the comment or merge patches together?
+> Even though there is some limited mapping when doing the firmware calls, there
+> are still some kernel pages mapped.
 
-Oooh, I see what you're saying.  I split the patches so that if this movement turns
-out to break something then bisection will point directly here, but that's a pretty
-weak argument since both patches are tiny.  And taking patch 4 without patch 3,
-e.g. in the unlikely event this movement needs to be reverted, is probably worse
-than not having patch 4 at all, i.e. having somewhat obvious breakage is better.
+Yah, I dunno. That's why I raised this and added Andy. I certainly see
+your point tho.
 
-So yeah, I'll squash this with patch 4.
+And what I know is, I don't want to be dealing with imaginary virt guest
+configurations just because some cloud providers wanna do whatever they
+like.
 
-Thanks!
+I've put this mitigation selection spaghetti on my to-give-a-stern-look
+list. Because it is looking insane already and it'll get even worse with
+time.
+
+Thx.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
