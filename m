@@ -2,96 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4756DC19F2A
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 06:13:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1041BC00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 06:14:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234113AbiG2GNX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 02:13:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59920 "EHLO
+        id S234235AbiG2GOV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 02:14:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229973AbiG2GNU (ORCPT
+        with ESMTP id S229528AbiG2GOU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 02:13:20 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22ED27C18A;
-        Thu, 28 Jul 2022 23:13:20 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id a7-20020a17090a008700b001f325db8b90so2876252pja.0;
-        Thu, 28 Jul 2022 23:13:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=bC82jqnlZyE9sFwaX+pW7l900XlAr1Ide/meMXZQ3zU=;
-        b=efKYn1RFw4ObOgo+diWgkXAEUlt2BpQvDEJ/5tZwPH+PATP0+lrB8bossz0ofM0PqY
-         l6XNhSMJGcl950L93pnsgc23tea4IInLNuv6G7BDEj5WiM72Kc2dOLMdRBHE9q4881+D
-         qElUGYGTukPTUlEd20LZ3v7Eey5dLI6qOOWpAJqovTXWhV5Aa4bw4fneVYc6hCekuWpm
-         TL08X1/gXWBDqqI3Bswz98nyv6AY2tnYtaYciovrohxZvrycDvtMxM5m36PJmPuTRhE4
-         vgdQ19nEXoY/GPupGOfh9i9LhlJmGSuCC/DGH47vPj0/kA57Yf8w4kAaTX6hMcBLBlCp
-         78zQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=bC82jqnlZyE9sFwaX+pW7l900XlAr1Ide/meMXZQ3zU=;
-        b=aqzXRs3CkYsqbd6WZJVlznfUS6fdKNekL2fRsic6iHlh3Hjkhe3zuc9H15eCu4cEG8
-         Fp72SA3ufn+YDE7LcXUMBjMLi4ZQW8CVV9LuTGuusXeXkkmJaCOEMUXIr/joIrzKnoDY
-         2E8ID2ue3Kgob5Z8LYo/UjBu2QNE97a9VO4ZhOwF30DjRan2T0kEX7zJwt4BMlfRZMpt
-         yMd+ZGD4ljalIxO824glEJ9qLyhkyBLNFM12yT78sBNzXix5pR9qfRqFm466Je8OkhqJ
-         /bNXEoC5weCrqShGfxg0KsGSxHkwWc+9MO2uCDdR5cYFSCgqr9BIJr6aERjqIfNvR9bS
-         LURQ==
-X-Gm-Message-State: ACgBeo0tYZXZoNsUSxyPW0G9qxwGxgTThR/PWeRj09eE1goP/rpBuoQK
-        juq9bVZj64+t2q5X4tSe+wM=
-X-Google-Smtp-Source: AA6agR7rnSWQpFmI80wFZp4oXEFtiGZFlWfLEzTT5EkDlgqiJ+8Nw/w0TV0AqVLHRvbzuIfFtG5iUg==
-X-Received: by 2002:a17:902:cccf:b0:168:c4c3:e8ca with SMTP id z15-20020a170902cccf00b00168c4c3e8camr2375160ple.40.1659075199634;
-        Thu, 28 Jul 2022 23:13:19 -0700 (PDT)
-Received: from localhost.localdomain ([43.132.141.4])
-        by smtp.gmail.com with ESMTPSA id u15-20020a17090a400f00b001f2c22fa4ddsm4960511pjc.50.2022.07.28.23.13.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Jul 2022 23:13:19 -0700 (PDT)
-From:   Zeng Jingxiang <zengjx95@gmail.com>
-To:     ast@kernel.org, daniel@iogearbox.net, john.fastabend@gmail.com,
-        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
-        yhs@fb.com, kpsingh@kernel.org, sdf@google.com, haoluo@google.com,
-        jolsa@kernel.org
-Cc:     bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Zeng Jingxiang <linuszeng@tencent.com>
-Subject: [PATCH] bpf/verifier: fix control flow issues in __reg32_bound_s64()
-Date:   Fri, 29 Jul 2022 14:13:12 +0800
-Message-Id: <20220729061312.2157151-1-zengjx95@gmail.com>
-X-Mailer: git-send-email 2.27.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Fri, 29 Jul 2022 02:14:20 -0400
+Received: from smtpbguseast3.qq.com (smtpbguseast3.qq.com [54.243.244.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 852B67E835
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 23:14:18 -0700 (PDT)
+X-QQ-mid: bizesmtp65t1659075238t28h5q6i
+Received: from smtpclient.apple ( [111.193.9.146])
+        by bizesmtp.qq.com (ESMTP) with 
+        id ; Fri, 29 Jul 2022 14:13:57 +0800 (CST)
+X-QQ-SSF: 01400000000000B0V000000A0000000
+X-QQ-FEAT: XSXWadnVjOQ/cwvcZHolvRFzZWW29l/wu70fdE/ClqLW2tUxKIdarmnhLiAym
+        45Vfoa8BO113Z6/mLCwvQB+Qb4EmlfM1JpLk/aPP6fkRZEIQC0P1WaxnKx4hQvU4oaiEjGy
+        PejTiJr6+RB/9+vN2ux62GbC8eUfDMQR3rY7WzaQGDIbWunGd0d9SPjJ6koo1PvB6QjRszX
+        dZ2o677DDYc4S1+qY6kx9KivFx4OjCdOA8YyaVyiJ+EaXDxWHkIeRq4m+XOfRNVgdOE7D/Q
+        xGF0FtRbyUV7By1nPG7k0UB375oDLwtz0t49vSaCln06cQVh7A76pA+cZ9gUCtyywIFs4AM
+        +isLKFlipIOCVvMNY60E02Z58R4IKZ6WNvxWfX4hiu2ssruYTyrCCIW5gjr+w==
+X-QQ-GoodBg: 2
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.100.31\))
+Subject: Re: [PATCH] USB: usb-serial-simple: add new device id for OPPO R11
+From:   sdlyyxy <sdlyyxy@bupt.edu.cn>
+In-Reply-To: <Yt1WfSZk03Plpnan@hovoldconsulting.com>
+Date:   Fri, 29 Jul 2022 14:13:56 +0800
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Reinhard Speyerer <rspmn@arcor.de>, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+Message-Id: <B47DDA3C-3CE2-4E25-B764-1744A4AA04A0@bupt.edu.cn>
+References: <20220715142444.4173681-1-gregkh@linuxfoundation.org>
+ <119D7B0F-7809-464A-AFF1-DF72FFF9E63F@bupt.edu.cn>
+ <YtKrbucYNulPEKUp@arcor.de> <YtRtswctFMLxeglu@kroah.com>
+ <YtXG3EVrRKAG7WVx@arcor.de> <YtwjiWG5ZFBvCZ1M@hovoldconsulting.com>
+ <Yt1QhCIiUf97Dl3D@kroah.com> <Yt1WfSZk03Plpnan@hovoldconsulting.com>
+To:     Johan Hovold <johan@kernel.org>
+X-Mailer: Apple Mail (2.3696.100.31)
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:bupt.edu.cn:qybgforeign:qybgforeign8
+X-QQ-Bgrelay: 1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zeng Jingxiang <linuszeng@tencent.com>
 
-expression "a <= S32_MAX" is always true
-1580	static bool __reg32_bound_s64(s32 a)
-1581	{
-1582		return a >= 0;
-1583	}
+> On Jul 24, 2022, at 22:26, Johan Hovold <johan@kernel.org> wrote:
+> 
+> On Sun, Jul 24, 2022 at 04:00:36PM +0200, Greg Kroah-Hartman wrote:
+>> On Sat, Jul 23, 2022 at 06:36:25PM +0200, Johan Hovold wrote:
+>>> On Mon, Jul 18, 2022 at 10:47:24PM +0200, Reinhard Speyerer wrote:
+> 
+>>>> Please don't give the OPPO R11 diag port on Linux a bad name by letting
+>>>> the usb-serial-simple driver handle it.
+>>> 
+>>> So while I'm not sure bandwidth is really a problem, I still tend to
+>>> agree that we should add this one to the option driver for now as that
+>>> is how we handle (non-GOBI) Qualcomm modems and their QCDM ports.
+>> 
+>> If you want it to stay on the option driver, that's fine, but I still
+>> think it feels odd as it obviously does not follow the vendor-specific
+>> protocol that the option driver supports.
+> 
+> But we've been dumping modem device-id entries in there since forever.
+> 
+> The entries added to option have been for devices whose interfaces did
+> not follow any particular pattern (e.g. unlike the old GOBI modems).
+> 
+> And as Reinhard mentioned, the line-control requests (which follow CDC)
+> are actually required by some Qualcomm modems so moving things out would
+> need to be done carefully.
+> 
+> On the other hand, that request likely isn't needed for any QCDM/DIAG
+> ports, but who knows for sure.
 
-Fixes: e572ff80f05c ("bpf: Make 32->64 bounds propagation slightly more robust")
-Signed-off-by: Zeng Jingxiang <linuszeng@tencent.com>
----
- kernel/bpf/verifier.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Test result for bandwidth problem:
+Sending 0x1f mask (diag command: 0x7d0500001f000000) and running LTE
+speedtest on the device, both option and simple can dump more than 80Mbps.
+The CRC of diag packets is OK at this high speed, so it seems that
+there is no message loss. I think this bandwidth is enough.
 
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 0efbac0fd126..bd154bcf1599 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -1579,7 +1579,7 @@ static void reg_bounds_sync(struct bpf_reg_state *reg)
- 
- static bool __reg32_bound_s64(s32 a)
- {
--	return a >= 0 && a <= S32_MAX;
-+	return a >= 0;
- }
- 
- static void __reg_assign_32_into_64(struct bpf_reg_state *reg)
--- 
-2.27.0
+For the flow control problem, it seems the SetControlLineState request
+send by option (usb_wwan) has no effect on the device. Both with and
+without this request the diag port works the same.
+
+Hope this can help you decide which driver to choose :)
+
+Thanks,
+sdlyyxy
+
 
