@@ -2,109 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 267D2C00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 10:22:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 856B1C00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 10:22:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235894AbiG2KWC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 06:22:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47438 "EHLO
+        id S235639AbiG2KWQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 06:22:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235375AbiG2KV6 (ORCPT
+        with ESMTP id S230217AbiG2KWN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 06:21:58 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A08C677579
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 03:21:57 -0700 (PDT)
-Received: from ptz.office.stw.pengutronix.de ([2a0a:edc0:0:900:1d::77] helo=[127.0.0.1])
-        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <a.fatoum@pengutronix.de>)
-        id 1oHN7j-0002Ai-P4; Fri, 29 Jul 2022 12:21:39 +0200
-Message-ID: <e78ff391-3141-bf0b-6fe1-4ff7204414fb@pengutronix.de>
-Date:   Fri, 29 Jul 2022 12:21:31 +0200
+        Fri, 29 Jul 2022 06:22:13 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [IPv6:2001:67c:2178:6::1c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A4B277A5C
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 03:22:13 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id C5B7334799;
+        Fri, 29 Jul 2022 10:22:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1659090131; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=AXJurmmWk+dsq+v4DUm1cBaNx/5LOxDT/x9+D4yvHFs=;
+        b=f+5N+nfdDu83yRjlcQoriH4yYv8SO2x/2s89DGw/wwYQekraqG8nQ7gPMRHv20hKHVPp+d
+        7KymJyQb2YmlPcFCjjOIXeWsJbOGDbQJzBwLNcStPHw9y8Q7x9HuNYGSf8wG0EIa/XnvTc
+        jTf7/+gntL00uX8DQoQGCMAERKfgHuQ=
+Received: from suse.cz (unknown [10.100.208.146])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 2C8982C141;
+        Fri, 29 Jul 2022 10:22:11 +0000 (UTC)
+Date:   Fri, 29 Jul 2022 12:22:08 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc:     linux-kernel@vger.kernel.org,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Theodore Ts'o <tytso@mit.edu>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        John Ogness <john.ogness@linutronix.de>,
+        Mike Galbraith <efault@gmx.de>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH] random: Initialize vsprintf's pointer hash once the
+ random core is ready.
+Message-ID: <YuO00GBXXNBhU4yL@alley>
+References: <YuOf6qu453dOkR+S@linutronix.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v1] Moving init_completion before request_irq
-Content-Language: en-US
-To:     Kshitiz Varshney <kshitiz.varshney@nxp.com>,
-        Horia Geanta <horia.geanta@nxp.com>,
-        Pankaj Gupta <pankaj.gupta@nxp.com>,
-        Varun Sethi <V.Sethi@nxp.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S . Miller" <davem@davemloft.net>,
-        Iuliana Prodan <iuliana.prodan@nxp.com>,
-        Gaurav Jain <gaurav.jain@nxp.com>,
-        Rahul Kumar Yadav <rahulkumar.yadav@nxp.com>,
-        Vabhav Sharma <vabhav.sharma@nxp.com>,
-        Sahil Malhotra <sahil.malhotra@nxp.com>,
-        Matt Mackall <mpm@selenic.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        Steffen Trumtrar <s.trumtrar@pengutronix.de>,
-        PrasannaKumar Muralidharan <prasannatsmkumar@gmail.com>,
-        Martin Kaiser <martin@kaiser.cx>
-Cc:     linux-imx@nxp.com, linux-crypto@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220729100211.2204126-1-kshitiz.varshney@nxp.com>
-From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
-In-Reply-To: <20220729100211.2204126-1-kshitiz.varshney@nxp.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:900:1d::77
-X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YuOf6qu453dOkR+S@linutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Kshitiz,
-
-On 29.07.22 12:02, Kshitiz Varshney wrote:
-> Issue:
-> While servicing interrupt, trying to access variable rng_op_done,
-> which is not yet initalized hence causing kernel to crash
-> while booting.
+On Fri 2022-07-29 10:52:58, Sebastian Andrzej Siewior wrote:
+> The printk code invokes vnsprintf in order to compute the complete
+> string before adding it into its buffer. This happens in an IRQ-off
+> region which leads to a warning on PREEMPT_RT in the random code if the
+> format strings contains a %p for pointer printing. This happens because
+> the random core acquires locks which become sleeping locks on PREEMPT_RT
+> which must not be acquired with disabled interrupts and or preemption.
+> By default the pointers are hashed which requires a random value on the
+> first invocation (either by printk or another user which comes first.
 > 
-> Fix:
-> Moving initialization of rng_op_done before request_irq.
+> One could argue that there is no need for printk to disable interrupts
+> during the vsprintf() invocation which would fix the just mentioned
+> problem. However printk itself can be invoked in a context with
+> disabled interrupts which would lead to the very same problem.
 > 
-> Fixes: 1d5449445bd0 (hwrng: mx-rngc - add a driver for Freescale RNGC)
-> Signed-off-by: Kshitiz Varshney <kshitiz.varshney@nxp.com>
+> This late init via printk can be avoided by explicitly initializing
+> vsprintf's random value once the random-core has been initialized.
+> 
+> Remove the on demand init from __ptr_to_hashval() and keep the -EAGAIN if
+> the init has not yet been performed. Move the actual init bits to
+> vsprintf_init_hash_pointer() which are invoked from random-core once it
+> has been initialized and get_random_bytes() is available.
 
-Thanks for your patch.
+> --- a/drivers/char/random.c
+> +++ b/drivers/char/random.c
+> @@ -221,10 +222,15 @@ static void crng_reseed(void)
+>  		++next_gen;
+>  	WRITE_ONCE(base_crng.generation, next_gen);
+>  	WRITE_ONCE(base_crng.birth, jiffies);
+> -	if (!static_branch_likely(&crng_is_ready))
+> +	if (!static_branch_likely(&crng_is_ready)) {
+>  		crng_init = CRNG_READY;
+> +		init_hash_pointer = true;
 
-> +	init_completion(&rngc->rng_op_done);
+I am not familiar with the crng code. I wonder if the following would work:
+
+	if (!static_branch_likely(&crng_is_ready) && crng_init != CRNG_READY) {
+		crng_init = CRNG_READY;
+		init_hash_pointer = true;
+	}
+
+The point is that vsprintf_init_hash_pointer() will be called only by
+the first caller. It would allow to remove the @filling spin lock.
+
+> +	}
+>  	spin_unlock_irqrestore(&base_crng.lock, flags);
+>  	memzero_explicit(key, sizeof(key));
 > +
->  	ret = devm_request_irq(&pdev->dev,
->  			irq, imx_rngc_irq, 0, pdev->name, (void *)rngc);
-
-This should probably be moved below imx_rngc_irq_mask_clear(rngc).
-init_completion can stay where it is. That way:
-
- - You initialize rngc fully before registering the IRQ handler
- - You don't handle pending IRQs that you want to dismiss anyway
- - If the IRQ happens to be because of a SEED_DONE due to a previous
-   boot stage, you don't end up completing the completion prematurely.
-
-Cheers,
-Ahmad
-
->  	if (ret) {
-> @@ -277,7 +279,6 @@ static int imx_rngc_probe(struct platform_device *pdev)
->  		goto err;
->  	}
+> +	if (init_hash_pointer)
+> +		vsprintf_init_hash_pointer();
+>  }
 >  
-> -	init_completion(&rngc->rng_op_done);
+>  /*
+> diff --git a/lib/vsprintf.c b/lib/vsprintf.c
+> index 3c1853a9d1c09..6fa2ebb9f9b9e 100644
+> --- a/lib/vsprintf.c
+> +++ b/lib/vsprintf.c
+> @@ -751,36 +751,30 @@ static int __init debug_boot_weak_hash_enable(char *str)
+>  early_param("debug_boot_weak_hash", debug_boot_weak_hash_enable);
 >  
->  	rngc->rng.name = pdev->name;
->  	rngc->rng.init = imx_rngc_init;
+>  static DEFINE_STATIC_KEY_FALSE(filled_random_ptr_key);
+> +static siphash_key_t ptr_key __read_mostly;
+>  
+> -static void enable_ptr_key_workfn(struct work_struct *work)
+> +void vsprintf_init_hash_pointer(void)
+>  {
+> -	static_branch_enable(&filled_random_ptr_key);
+> +	static DEFINE_SPINLOCK(filling);
+> +	unsigned long flags;
+> +	static bool filled;
+> +
+> +	spin_lock_irqsave(&filling, flags);
+> +	if (!filled) {
+> +		get_random_bytes(&ptr_key, sizeof(ptr_key));
+> +		filled = true;
+> +		static_branch_enable(&filled_random_ptr_key);
 
+This can't be called in an atomic context. Is crng_reseed() always
+called in a non-atomic context?
 
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+That said, the static branch is an overkill. vsprintf() is a slow
+path. It should be enough to use a simple boolean. It might require
+a simple memory barrier to serialize @ptr_key and the new boolean
+read&write.
+
+> +	}
+> +	spin_unlock_irqrestore(&filling, flags);
+>  }
+
+Best Regards,
+Petr
