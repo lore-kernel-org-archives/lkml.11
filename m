@@ -2,95 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38259C00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 16:32:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B263EC00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 16:35:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237249AbiG2Qcg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 12:32:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50192 "EHLO
+        id S234338AbiG2Qfx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 12:35:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229519AbiG2Qcb (ORCPT
+        with ESMTP id S229519AbiG2Qfu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 12:32:31 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 485871263A
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 09:32:30 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oHSuU-0000YK-3x; Fri, 29 Jul 2022 18:32:22 +0200
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1oHSuS-00013U-EU; Fri, 29 Jul 2022 18:32:20 +0200
-Date:   Fri, 29 Jul 2022 18:32:20 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Woojung Huh <woojung.huh@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, UNGLinuxDriver@microchip.com,
-        Eric Dumazet <edumazet@google.com>, kernel@pengutronix.de,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Subject: Re: [PATCH net v1 1/1] net: dsa: microchip: KSZ9893: do not write to
- not supported Output Clock Control Register
-Message-ID: <20220729163220.GE10850@pengutronix.de>
-References: <20220728131852.41518-1-o.rempel@pengutronix.de>
- <20220728222316.1d538cb3@kernel.org>
- <20220729094840.GB10850@pengutronix.de>
- <20220729084149.5a061772@kernel.org>
+        Fri, 29 Jul 2022 12:35:50 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DD5B69F01
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 09:35:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C487261DC9
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 16:35:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89D7CC433B5;
+        Fri, 29 Jul 2022 16:35:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1659112549;
+        bh=La2xENc04xNZ++CRjJjr81vraFM/tBTfKc0zkbxL07E=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Ai+TTWjmeaNevgg3tHuabKwJ/OUSPJeCf8KNC5FCR6S8p06ebHufJO7NlYqR5265M
+         PJP0gKQsstwJcGiKpB9lVRRPlVnK4K7NHV+R67+kUus9Qk5pU91pq7Jcc6LxJbudru
+         QtM957VOIZjIYsFu+h712QYiBdXv7S2XtaNbD3gs=
+Date:   Fri, 29 Jul 2022 18:35:45 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        Vinod Koul <vkoul@kernel.org>,
+        Sanyog Kale <sanyog.r.kale@intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>
+Subject: Re: [PATCH 2/5] soundwire: sysfs: cleanup the logic for creating the
+ dp0 sysfs attributes
+Message-ID: <YuQMYRYFo9gTk1yL@kroah.com>
+References: <20220729135041.2285908-1-gregkh@linuxfoundation.org>
+ <20220729135041.2285908-2-gregkh@linuxfoundation.org>
+ <9365e038-2146-98f8-f989-02827f221c34@linux.intel.com>
+ <YuP0Ffs3G7ZBR0AC@kroah.com>
+ <cfacb124-a9ff-0a93-8f92-93d164b15966@linux.intel.com>
+ <YuP2pjhyKTTfpXQq@kroah.com>
+ <5caffe2a-f5a6-e312-a564-5fe29c4e2323@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220729084149.5a061772@kernel.org>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+In-Reply-To: <5caffe2a-f5a6-e312-a564-5fe29c4e2323@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 29, 2022 at 08:41:49AM -0700, Jakub Kicinski wrote:
-> On Fri, 29 Jul 2022 11:48:40 +0200 Oleksij Rempel wrote:
-> > On Thu, Jul 28, 2022 at 10:23:16PM -0700, Jakub Kicinski wrote:
-> > > On Thu, 28 Jul 2022 15:18:52 +0200 Oleksij Rempel wrote:  
-> > > > KSZ9893 compatible chips do not have "Output Clock Control Register 0x0103".
-> > > > So, avoid writing to it.  
-> > > 
-> > > Respin will be needed regardless of the answer to Andrew - patch does
-> > > not apply.  
+On Fri, Jul 29, 2022 at 10:52:28AM -0500, Pierre-Louis Bossart wrote:
+> 
+> >>>>> diff --git a/drivers/soundwire/sysfs_slave.c b/drivers/soundwire/sysfs_slave.c
+> >>>>> index 83e3f6cc3250..3723333a5c2b 100644
+> >>>>> --- a/drivers/soundwire/sysfs_slave.c
+> >>>>> +++ b/drivers/soundwire/sysfs_slave.c
+> >>>>> @@ -174,6 +174,16 @@ static ssize_t words_show(struct device *dev,
+> >>>>>  }
+> >>>>>  static DEVICE_ATTR_RO(words);
+> >>>>>  
+> >>>>> +static umode_t dp0_is_visible(struct kobject *kobj, struct attribute *attr,
+> >>>>> +			      int n)
+> >>>>> +{
+> >>>>> +	struct sdw_slave *slave = dev_to_sdw_dev(kobj_to_dev(kobj));
+> >>>>> +
+> >>>>> +	if (slave->prop.dp0_prop)
+> >>>>> +		return attr->mode;
+> >>>>> +	return 0;
+> >>>>> +}
+> >>>>
+> >>>> This changes the results slightly by creating an empty 'dp0' directory
+> >>>> with no attributes inside.
+> >>>>
+> >>>> Before:
+> >>>>
+> >>>> [root@fedora ~]# cd /sys/bus/soundwire/devices/sdw:3:025d:0714:01
+> >>>> [root@fedora sdw:3:025d:0714:01]# ls dp0
+> >>>> ls: cannot access 'dp0': No such file or directory
+> >>>>
+> >>>> After:
+> >>>> [root@fedora sdw:3:025d:0714:01]# ls dp0
+> >>>
+> >>> That should be fine, tools should just be looking for the attributes,
+> >>> not the existance of a directory, right?
+> >>
+> >> The idea what that we would only expose ports that actually exist.
+> >> That's helpful information anyone with a basic knowledge of the
+> >> SoundWire specification would understand.
 > > 
-> > Hm, this driver was hardly refactored in net-next. I'll better send it
-> > against net-next otherwise things will break.
+> > Is "dp0" a port?  If so, why isn't it a real device?
 > 
-> Probably fine either way, with the net-next patch (i.e. this patch) 
-> on the list we shouldn't have problems resolving the conflict correctly.
+> The SoundWire spec defines the concept of 'data port'. The valid ranges
+> are 1..14, but in all existing devices the number of data ports is way
+> smaller, typically 2 to 4. Data ports (DPn) are source or sink, and
+> there's no firm rule that data ports needs to be contiguous.
 > 
-> The real question is whether it's okay for 5.19 to not have this patch.
-> It'd be good to have the user-visible impact specified in the commit
-> message.
+> DP0 is a 'special case' where the data transport is used for control
+> information, e.g. programming large set of registers or firmware
+> download. DP0 is completely optional in hardware, and not handled in
+> Linux for now.
+> 
+> DP0 and DPn expose low-level transport registers, which define how the
+> contents of a FIFO will be written or read from the bus. Think of it as
+> a generalization of the concept of TDM slots, where instead of having a
+> fixed slot per frame the slot position/repetition/runlength can be
+> programmed.
+> 
+> The data ports could be as simple as 1-bit PDM, or support 8ch PCM
+> 24-bits. That's the sort of information reported in attributes.
 
-So far I'm not aware about issues related to this, only warning in the data
-sheet:
-"RESERVED address space must not be written under any circumstances. Failure
-to heed this warning may result in untoward operation and unexpected results."
+Why not make them a real device like we do for USB endpoints?
 
-I have send this patch as part of register access validation patch set.
-There are move fixes any way.
+What uses these sysfs files today that would be confused about an empty
+directory?
 
-Regards,
-Oleksij
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+thanks,
+
+greg k-h
