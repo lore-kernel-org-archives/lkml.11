@@ -2,84 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D29EC00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 10:25:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E37EDC19F2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 10:25:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229471AbiG2KZH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 06:25:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49386 "EHLO
+        id S235917AbiG2KZR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 06:25:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235352AbiG2KZF (ORCPT
+        with ESMTP id S235352AbiG2KZK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 06:25:05 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F54E82449;
-        Fri, 29 Jul 2022 03:25:01 -0700 (PDT)
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.56])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LvNp744mJzWg1n;
-        Fri, 29 Jul 2022 18:21:03 +0800 (CST)
-Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 29 Jul 2022 18:24:52 +0800
-Received: from localhost.localdomain (10.67.165.24) by
- kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 29 Jul 2022 18:24:51 +0800
-From:   Guangbin Huang <huangguangbin2@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <edumazet@google.com>,
-        <pabeni@redhat.com>, <snelson@pensando.io>, <brett@pensando.io>,
-        <drivers@pensando.io>, <anthony.l.nguyen@intel.com>,
-        <jesse.brandeburg@intel.com>
-CC:     <intel-wired-lan@lists.osuosl.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <lipeng321@huawei.com>,
-        <huangguangbin2@huawei.com>
-Subject: [PATCH net 2/2] net: ionic: fix error check for vlan flags in ionic_set_nic_features()
-Date:   Fri, 29 Jul 2022 18:17:55 +0800
-Message-ID: <20220729101755.4798-3-huangguangbin2@huawei.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20220729101755.4798-1-huangguangbin2@huawei.com>
-References: <20220729101755.4798-1-huangguangbin2@huawei.com>
+        Fri, 29 Jul 2022 06:25:10 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE20A82450;
+        Fri, 29 Jul 2022 03:25:02 -0700 (PDT)
+X-UUID: 1899f163b777413ca0fe6c7d74e23ee5-20220729
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.8,REQID:83e7240c-24e5-45f9-a811-6e74ce692894,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:-5
+X-CID-META: VersionHash:0f94e32,CLOUDID:1e7eba24-a982-4824-82d2-9da3b6056c2a,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+        ,QS:nil,BEC:nil,COL:0
+X-UUID: 1899f163b777413ca0fe6c7d74e23ee5-20220729
+Received: from mtkmbs11n2.mediatek.inc [(172.21.101.187)] by mailgw01.mediatek.com
+        (envelope-from <hui.liu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 47033403; Fri, 29 Jul 2022 18:24:56 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Fri, 29 Jul 2022 18:24:54 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 29 Jul 2022 18:24:53 +0800
+From:   Hui Liu <hui.liu@mediatek.com>
+To:     <linus.walleij@linaro.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <matthias.bgg@gmail.com>
+CC:     <Project_Global_Chrome_Upstream_Group@mediatek.com>,
+        <hui.liu@mediatek.com>, <jianguo.zhang@mediatek.com>,
+        <zhiyong.tao@mediatek.com>, <sean.wang@mediatek.com>,
+        <linux-gpio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH v3 0/2] MediaTek pinctrl patch on mt8188
+Date:   Fri, 29 Jul 2022 18:24:50 +0800
+Message-ID: <20220729102452.9478-1-hui.liu@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- kwepemm600016.china.huawei.com (7.193.23.20)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jian Shen <shenjian15@huawei.com>
+This series include 2 patches:
+1.Add pinmux definition file and pinctrl binding document for mt8188.
+2.Add pinctrl driver for mt8188.
 
-The prototype of input features of ionic_set_nic_features() is
-netdev_features_t, but the vlan_flags is using the private
-definition of ionic drivers. It should use the variable
-ctx.cmd.lif_setattr.features, rather than features to check
-the vlan flags. So fixes it.
+Changes in patch v4:
+1.Add gpio-line-names in binding document.
+2.Fix typo in driver files.
 
-Fixes: beead698b173 ("ionic: Add the basic NDO callbacks for netdev support")
+Changes in patch v3:
+1.Fix binding document dt_binding_check fail issue.
 
-Signed-off-by: Jian Shen <shenjian15@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
----
- drivers/net/ethernet/pensando/ionic/ionic_lif.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Changes in patch v2:
+1.Change pinmux definition file name to mediatek,mt8188-pinfunc.h.
+2.Change binding document name to mediatek,mt8188-pinctrl.yaml.
+3.Update yaml description.
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_lif.c b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-index f3568901eb91..1443f788ee37 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_lif.c
-@@ -1437,7 +1437,7 @@ static int ionic_set_nic_features(struct ionic_lif *lif,
- 	if ((old_hw_features ^ lif->hw_features) & IONIC_ETH_HW_RX_HASH)
- 		ionic_lif_rss_config(lif, lif->rss_types, NULL, NULL);
- 
--	if ((vlan_flags & features) &&
-+	if ((vlan_flags & le64_to_cpu(ctx.cmd.lif_setattr.features)) &&
- 	    !(vlan_flags & le64_to_cpu(ctx.comp.lif_setattr.features)))
- 		dev_info_once(lif->ionic->dev, "NIC is not supporting vlan offload, likely in SmartNIC mode\n");
- 
--- 
-2.33.0
+Changes in patch v1:
+1.Add pinmux definition file.
+2.Add binding document.
+3.Add mt8188 pinctrl drivers.
+
+*** BLURB HERE ***
+
+Hui.Liu (2):
+  dt-bindings: pinctrl: add support for mediatek mt8188
+  pinctrl: mediatek: add mt8188 driver
+
+ .../pinctrl/mediatek,mt8188-pinctrl.yaml      |  238 ++
+ drivers/pinctrl/mediatek/Kconfig              |   12 +
+ drivers/pinctrl/mediatek/Makefile             |    1 +
+ drivers/pinctrl/mediatek/pinctrl-mt8188.c     | 1669 ++++++++++++
+ drivers/pinctrl/mediatek/pinctrl-mtk-mt8188.h | 2260 +++++++++++++++++
+ .../pinctrl/mediatek,mt8188-pinfunc.h         | 1280 ++++++++++
+ 6 files changed, 5460 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/pinctrl/mediatek,mt8188-pinctrl.yaml
+ create mode 100644 drivers/pinctrl/mediatek/pinctrl-mt8188.c
+ create mode 100644 drivers/pinctrl/mediatek/pinctrl-mtk-mt8188.h
+ create mode 100644 include/dt-bindings/pinctrl/mediatek,mt8188-pinfunc.h
+
+--
+2.18.0
+
 
