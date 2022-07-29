@@ -2,123 +2,183 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CB45C00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 02:54:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F26A7C00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 02:55:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233538AbiG2CyZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 22:54:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38496 "EHLO
+        id S233688AbiG2CzY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 22:55:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232907AbiG2CyX (ORCPT
+        with ESMTP id S229559AbiG2CzV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 22:54:23 -0400
-Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7718E7393A
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 19:54:22 -0700 (PDT)
-Received: from fsav314.sakura.ne.jp (fsav314.sakura.ne.jp [153.120.85.145])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 26T2s20D085518;
-        Fri, 29 Jul 2022 11:54:02 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav314.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav314.sakura.ne.jp);
- Fri, 29 Jul 2022 11:54:02 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav314.sakura.ne.jp)
-Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 26T2s2nj085515
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-        Fri, 29 Jul 2022 11:54:02 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Message-ID: <0a85696a-b0b9-0f4a-7c00-cd89edc9304c@I-love.SAKURA.ne.jp>
-Date:   Fri, 29 Jul 2022 11:54:02 +0900
+        Thu, 28 Jul 2022 22:55:21 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD2ACDF56
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 19:55:19 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.53])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4LvBsd0nvlzmVNx;
+        Fri, 29 Jul 2022 10:53:25 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 29 Jul 2022 10:55:15 +0800
+Subject: Re: [RFC PATCH v4 6/8] hugetlb: add vma based lock for pmd sharing
+ synchronization
+To:     Mike Kravetz <mike.kravetz@oracle.com>, <linux-mm@kvack.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Muchun Song <songmuchun@bytedance.com>,
+        Michal Hocko <mhocko@suse.com>, Peter Xu <peterx@redhat.com>,
+        Naoya Horiguchi <naoya.horiguchi@linux.dev>,
+        David Hildenbrand <david@redhat.com>,
+        "Aneesh Kumar K . V" <aneesh.kumar@linux.vnet.ibm.com>,
+        Andrea Arcangeli <aarcange@redhat.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Prakash Sangappa <prakash.sangappa@oracle.com>,
+        James Houghton <jthoughton@google.com>,
+        Mina Almasry <almasrymina@google.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Ray Fucillo <Ray.Fucillo@intersystems.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+References: <20220706202347.95150-1-mike.kravetz@oracle.com>
+ <20220706202347.95150-7-mike.kravetz@oracle.com>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <5b8c6b49-e17a-2c0b-4440-ccf3c5493cb2@huawei.com>
+Date:   Fri, 29 Jul 2022 10:55:15 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: [PATCH v2] workqueue: don't skip lockdep work dependency in
- cancel_work_sync()
+In-Reply-To: <20220706202347.95150-7-mike.kravetz@oracle.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-To:     Johannes Berg <johannes.berg@intel.com>,
-        Lai Jiangshan <jiangshanlai@gmail.com>,
-        Tejun Heo <tj@kernel.org>
-Cc:     Hillf Danton <hdanton@sina.com>,
-        LKML <linux-kernel@vger.kernel.org>
-References: <21b9c1ac-64b7-7f4b-1e62-bf2f021fffcd@I-love.SAKURA.ne.jp>
- <YuK78Jiy12BJG/Tp@slm.duckdns.org>
- <0ad532b2-df5f-331a-ae7f-21460fc62fe2@I-love.SAKURA.ne.jp>
- <97cbf8a9-d5e1-376f-6a49-3474871ea6b4@I-love.SAKURA.ne.jp>
- <afa1ac2c-a023-a91e-e596-60931b38247e@I-love.SAKURA.ne.jp>
- <7d034f7b-af42-4dbc-0887-60f4bdb3dcca@I-love.SAKURA.ne.jp>
-In-Reply-To: <7d034f7b-af42-4dbc-0887-60f4bdb3dcca@I-love.SAKURA.ne.jp>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Like Hillf Danton mentioned
+On 2022/7/7 4:23, Mike Kravetz wrote:
+> Allocate a rw semaphore and hang off vm_private_data for
+> synchronization use by vmas that could be involved in pmd sharing.  Only
+> add infrastructure for the new lock here.  Actual use will be added in
+> subsequent patch.
+> 
+> Signed-off-by: Mike Kravetz <mike.kravetz@oracle.com>
+> ---
+>  include/linux/hugetlb.h |  36 +++++++++-
+>  kernel/fork.c           |   6 +-
+>  mm/hugetlb.c            | 150 ++++++++++++++++++++++++++++++++++++----
+>  mm/rmap.c               |   8 ++-
+>  4 files changed, 178 insertions(+), 22 deletions(-)
+> 
 
-  syzbot should have been able to catch cancel_work_sync() in work context
-  by checking lockdep_map in __flush_work() for both flush and cancel.
+<snip>
 
-in [1], being unable to report an obvious deadlock scenario shown below is
-broken. From locking dependency perspective, sync version of cancel request
-should behave as if flush request, for it waits for completion of work if
-that work has already started execution.
+>  
+>  /* Forward declaration */
+>  static int hugetlb_acct_memory(struct hstate *h, long delta);
+> +static bool vma_pmd_shareable(struct vm_area_struct *vma);
+>  
+>  static inline bool subpool_is_free(struct hugepage_subpool *spool)
+>  {
+> @@ -904,6 +905,89 @@ resv_map_set_hugetlb_cgroup_uncharge_info(struct resv_map *resv_map,
+>  #endif
+>  }
+>  
+> +static bool __vma_shareable_flags_pmd(struct vm_area_struct *vma)
+> +{
+> +	return vma->vm_flags & (VM_MAYSHARE | VM_SHARED) &&
 
-  ----------
-  #include <linux/module.h>
-  #include <linux/sched.h>
-  static DEFINE_MUTEX(mutex);
-  static void work_fn(struct work_struct *work)
-  {
-    schedule_timeout_uninterruptible(HZ / 5);
-    mutex_lock(&mutex);
-    mutex_unlock(&mutex);
-  }
-  static DECLARE_WORK(work, work_fn);
-  static int __init test_init(void)
-  {
-    schedule_work(&work);
-    schedule_timeout_uninterruptible(HZ / 10);
-    mutex_lock(&mutex);
-    cancel_work_sync(&work);
-    mutex_unlock(&mutex);
-    return -EINVAL;
-  }
-  module_init(test_init);
-  MODULE_LICENSE("GPL");
-  ----------
+Should me make __vma_aligned_range_pmd_shareable check (VM_MAYSHARE | VM_SHARED) like above
+instead of VM_MAYSHARE to make code more consistent?
 
-Link: https://lkml.kernel.org/r/20220504044800.4966-1-hdanton@sina.com [1]
-Reported-by: Hillf Danton <hdanton@sina.com>
-Fixes: 87915adc3f0acdf0 ("workqueue: re-add lockdep dependencies for flushing")
-Cc: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
----
-Changes in v2:
-  Check work's dependency and do not check workqueue's dependency.
+> +		vma->vm_private_data;
+> +}
+> +
+> +void hugetlb_vma_lock_read(struct vm_area_struct *vma)
+> +{
+> +	if (__vma_shareable_flags_pmd(vma))
+> +		down_read((struct rw_semaphore *)vma->vm_private_data);
+> +}
+> +
+> +void hugetlb_vma_unlock_read(struct vm_area_struct *vma)
+> +{
+> +	if (__vma_shareable_flags_pmd(vma))
+> +		up_read((struct rw_semaphore *)vma->vm_private_data);
+> +}
+> +
+> +void hugetlb_vma_lock_write(struct vm_area_struct *vma)
+> +{
+> +	if (__vma_shareable_flags_pmd(vma))
+> +		down_write((struct rw_semaphore *)vma->vm_private_data);
+> +}
+> +
+> +void hugetlb_vma_unlock_write(struct vm_area_struct *vma)
+> +{
+> +	if (__vma_shareable_flags_pmd(vma))
+> +		up_write((struct rw_semaphore *)vma->vm_private_data);
+> +}
+> +
+> +int hugetlb_vma_trylock_write(struct vm_area_struct *vma)
+> +{
+> +	if (!__vma_shareable_flags_pmd(vma))
+> +		return 1;
+> +
+> +	return down_write_trylock((struct rw_semaphore *)vma->vm_private_data);
+> +}
+> +
+> +void hugetlb_vma_assert_locked(struct vm_area_struct *vma)
+> +{
+> +	if (__vma_shareable_flags_pmd(vma))
+> +		lockdep_assert_held((struct rw_semaphore *)
+> +				vma->vm_private_data);
+> +}
+> +
+> +static void hugetlb_free_vma_lock(struct vm_area_struct *vma)
+> +{
+> +	/* Only present in sharable vmas */
+> +	if (!vma || !(vma->vm_flags & (VM_MAYSHARE | VM_SHARED)))
+> +		return;
+> +
+> +	if (vma->vm_private_data) {
+> +		kfree(vma->vm_private_data);
+> +		vma->vm_private_data = NULL;
+> +	}
+> +}
+> +
+> +static void hugetlb_alloc_vma_lock(struct vm_area_struct *vma)
+> +{
+> +	struct rw_semaphore *vma_sema;
+> +
+> +	/* Only establish in (flags) sharable vmas */
+> +	if (!vma || !(vma->vm_flags & (VM_MAYSHARE | VM_SHARED)))
+> +		return;
+> +> +	if (!vma_pmd_shareable(vma)) {
+> +		vma->vm_private_data = NULL;
+> +		return;
+> +	}
+> +
+> +	vma_sema = kmalloc(sizeof(*vma_sema), GFP_KERNEL);
+> +	if (!vma_sema) {
+> +		/*
+> +		 * If we can not allocate semaphore, then vma can not
+> +		 * participate in pmd sharing.
+> +		 */
+> +		vma->vm_private_data = NULL;
+> +	} else {
+> +		init_rwsem(vma_sema);
+> +		vma->vm_private_data = vma_sema;
+> +	}
 
- kernel/workqueue.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+This code is really subtle. If it's called from hugetlb_vm_op_open during fork after
+hugetlb_dup_vma_private is done, there should already be a kmalloc-ed vma_sema for this
+vma (because hugetlb_alloc_vma_lock is also called by hugetlb_dup_vma_private). So we
+can't simply change the value of vm_private_data here or vma_sema will be leaked ? But
+when hugetlb_alloc_vma_lock is called from hugetlb_reserve_pages, it should work fine.
+Or am I miss something?
 
-diff --git a/kernel/workqueue.c b/kernel/workqueue.c
-index 1ea50f6be843..01c5abf7fc61 100644
---- a/kernel/workqueue.c
-+++ b/kernel/workqueue.c
-@@ -3066,10 +3066,8 @@ static bool __flush_work(struct work_struct *work, bool from_cancel)
- 	if (WARN_ON(!work->func))
- 		return false;
- 
--	if (!from_cancel) {
--		lock_map_acquire(&work->lockdep_map);
--		lock_map_release(&work->lockdep_map);
--	}
-+	lock_map_acquire(&work->lockdep_map);
-+	lock_map_release(&work->lockdep_map);
- 
- 	if (start_flush_work(work, &barr, from_cancel)) {
- 		wait_for_completion(&barr.done);
--- 
-2.18.4
-
+Thanks.
