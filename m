@@ -2,142 +2,216 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FD87C00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 00:11:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32229C00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 00:18:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232909AbiG2ALU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 20:11:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48664 "EHLO
+        id S233370AbiG2ASa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 20:18:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230007AbiG2ALS (ORCPT
+        with ESMTP id S230007AbiG2AS0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 20:11:18 -0400
-Received: from mail-oa1-x31.google.com (mail-oa1-x31.google.com [IPv6:2001:4860:4864:20::31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B26284F66C
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 17:11:16 -0700 (PDT)
-Received: by mail-oa1-x31.google.com with SMTP id 586e51a60fabf-10d6ddda695so4684529fac.0
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 17:11:16 -0700 (PDT)
+        Thu, 28 Jul 2022 20:18:26 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE1D778200
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 17:18:24 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id bp15so5783606ejb.6
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 17:18:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=j3vlQ1+c29TL6mpbmECY5+yY16HdPfE9WGc99Ei1lTA=;
-        b=gjG3hrkjszPaHeVvTBCRlrsS5Qgf8pBwLl35vWw0HlVci/jm11c5P23IRYoZvMcrf1
-         iQkjlo6thoZ8ODwjf14ufqWBQ+MsrEpfMnUjE1CmW4/NvlcrknXhSLL3rsfvZrPC+Dzd
-         4ml/iNJbLAeCUVKzLkptwOU0+JS3447Ju3Vw5Wef/f/NusiGAuPHx+5C+28FcnFUVWhr
-         Zq1dBphR89YdmGc0dXm5VNDRTZPOd2mzYCyAopUq5vn8L/2FwIg8ik2WgRw/qzyXkbID
-         JkMTjlXjPW5NIcB0ddlo3SEbqLkzZ5BPCGr1aEuPObP4OOGzH3uZa3h7m2HVpwgzxT9R
-         +WTg==
+        d=chromium.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=o9Qlz38dt4Pm7UqIGc26yx76w2m2409/U8B2FImofJI=;
+        b=Z/qA05wUv45cjgiTkkEsLFsOLVvS74jX49Pi+dafJVf9QFL1AXDBE+Fa6t0VX5sn7d
+         T90z2o94rEC2Givhz3yrcuCFjuIS1OU94Hk2IJ3TIVZTHUz6FmOMqcqosPuzeFXE6eEz
+         1HyqTz/fE9h79uoQq5YBbiWekMUdv5SUyrcfM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=j3vlQ1+c29TL6mpbmECY5+yY16HdPfE9WGc99Ei1lTA=;
-        b=U6xNf2ZB3EhlCxMm7f6Sjd4/8A6HG4GLIX7oYQ1kDYGiLAkKiNiiKJhSJROcRMAcDF
-         aw3h6GZf05loYZJM4L/ZwW7AanuP7H/n3D+mAez97NM0l1ZTYq0Mv0Uu5vmJNKKo+TI4
-         hu6wJHT48tG8mdYg8kQvqimOXRDL03kId69HToRDLTQSuF8ndKPDoEDe3NDxZJp7Kl3w
-         95F0U8jaLJdL2+OyNAwQOQjCOi5kIfxJy8kBwItjrRhgGXgcx9cCrBgMSfa8rHz2uUdl
-         wni42bFeFd0NgCuaJ9yQV3V+wfDDN+LIuOsSzz3RQRSt4S2Da1GmT084mEkK6bIYR1Eg
-         u4Sw==
-X-Gm-Message-State: AJIora9u2U9ZKvaeVY7qPpx66qcGjwgb+fKLM8lgDpYASMojBFaiL8IV
-        tgov/M6LeuborBEl9VXVo4k=
-X-Google-Smtp-Source: AGRyM1vdzFO/fulZy1Zr2qwsOG2c0IEwL0uxVw72ke/1PjyKZPx9VpShAVpSlwvn+5jjk00BQN/ceA==
-X-Received: by 2002:a05:6870:e997:b0:10c:6f42:b05e with SMTP id r23-20020a056870e99700b0010c6f42b05emr517826oao.89.1659053476019;
-        Thu, 28 Jul 2022 17:11:16 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id w29-20020a056870339d00b00101bd4914f9sm1032441oae.43.2022.07.28.17.11.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Jul 2022 17:11:15 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Date:   Thu, 28 Jul 2022 17:11:13 -0700
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Yury Norov <yury.norov@gmail.com>,
-        Dennis Zhou <dennis@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: Linux 5.19-rc8
-Message-ID: <20220729001113.GA1979316@roeck-us.net>
-References: <CAHk-=wiWwDYxNhnStS0e+p-NTFAQSHvab=2-8LwxunCVuY5-2A@mail.gmail.com>
- <20220725161141.GA1306881@roeck-us.net>
- <CAHk-=whtGUwJwHUSNsXd4g7cok=n0Zwje7nACp8skh1fa2NtJA@mail.gmail.com>
- <Yt+v9brPqxun0nhA@shell.armlinux.org.uk>
- <YuLVRiblUzo18gST@shell.armlinux.org.uk>
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=o9Qlz38dt4Pm7UqIGc26yx76w2m2409/U8B2FImofJI=;
+        b=LDMm4NqUSY2oXC5nC4tGll5e+vuR4Sh6TNh0qaWkE40knN6YtkcLAZtbx4S7phJTeF
+         +NjTYYs7/LPcYHRcdRjSttww1okdnT8+8vWemkThgTOqTZHcpNGlYQe2bEvWm+WjM/Ym
+         vT5ID0fQVHapuarMKCWZe0Mliv+pmjGwc5tHAqN/AWcxDmuzcMYGtKtCtrHkw6sXZxzQ
+         4kUwuyqrka2K+zg9tKpl1345FPRThyC8Il0xjQHN583ink1ASKlpMP2GCznVnDmXjcAn
+         EdBzX7EOIdKaUwRgIoIw/x8OgUvSq7knCMBLltd8vBGqs2nlDJ1RZMvbE0zfDSZpQhHz
+         0QUw==
+X-Gm-Message-State: AJIora+rusHRnLZ+DPiR2NMZnMXwZVtWtG+czUGr9hPEYZWA+QRi5arn
+        cKuSBeVUPzD76oG3U7MRJjKIdW7/Bn+IfLvF
+X-Google-Smtp-Source: AGRyM1sWjuO6iX9/U2GF3Raps0XNGyFHKMWHkmZvqIuO/EMjseloKJd7BHFLpGLVerMP0NQ5OucMuw==
+X-Received: by 2002:a17:906:8454:b0:730:254f:cdcb with SMTP id e20-20020a170906845400b00730254fcdcbmr624457ejy.142.1659053903073;
+        Thu, 28 Jul 2022 17:18:23 -0700 (PDT)
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com. [209.85.221.41])
+        by smtp.gmail.com with ESMTPSA id d4-20020a056402078400b00435651c4a01sm1517938edy.56.2022.07.28.17.18.20
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Jul 2022 17:18:22 -0700 (PDT)
+Received: by mail-wr1-f41.google.com with SMTP id i8so4146723wro.11
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 17:18:20 -0700 (PDT)
+X-Received: by 2002:adf:fb12:0:b0:20c:79b2:a200 with SMTP id
+ c18-20020adffb12000000b0020c79b2a200mr737214wrr.617.1659053899738; Thu, 28
+ Jul 2022 17:18:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YuLVRiblUzo18gST@shell.armlinux.org.uk>
+References: <1657544224-10680-1-git-send-email-quic_vpolimer@quicinc.com> <1657544224-10680-2-git-send-email-quic_vpolimer@quicinc.com>
+In-Reply-To: <1657544224-10680-2-git-send-email-quic_vpolimer@quicinc.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Thu, 28 Jul 2022 17:18:06 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=WW1BxjW9B9Vg99UOeTBePE32J++O24unnddecXXcaZ+Q@mail.gmail.com>
+Message-ID: <CAD=FV=WW1BxjW9B9Vg99UOeTBePE32J++O24unnddecXXcaZ+Q@mail.gmail.com>
+Subject: Re: [PATCH v6 01/10] drm/msm/disp/dpu: clear dpu_assign_crtc and get
+ crtc from connector state instead of dpu_enc
+To:     Vinod Polimera <quic_vpolimer@quicinc.com>
+Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        Rob Clark <robdclark@gmail.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        quic_kalyant <quic_kalyant@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        "Kuogee Hsieh (QUIC)" <quic_khsieh@quicinc.com>,
+        quic_vproddut <quic_vproddut@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        "Aravind Venkateswaran (QUIC)" <quic_aravindh@quicinc.com>,
+        "Abhinav Kumar (QUIC)" <quic_abhinavk@quicinc.com>,
+        Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 28, 2022 at 07:28:22PM +0100, Russell King (Oracle) wrote:
-> On Tue, Jul 26, 2022 at 10:12:21AM +0100, Russell King (Oracle) wrote:
-> > First I'm aware of it. Was it reported to linux-arm-kernel? I'm guessing
-> > the report wasn't Cc'd to me - I can't find anything in my mailbox about
-> > it.
-> > 
-> > > I think the fix might be something like this:
-> > > 
-> > >   diff --git a/arch/arm/lib/findbit.S b/arch/arm/lib/findbit.S
-> > >   index b5e8b9ae4c7d..b36ca301892e 100644
-> > >   --- a/arch/arm/lib/findbit.S
-> > >   +++ b/arch/arm/lib/findbit.S
-> > >   @@ -83,6 +83,8 @@ ENDPROC(_find_first_bit_le)
-> > >    ENTRY(_find_next_bit_le)
-> > >                 teq     r1, #0
-> > >                 beq     3b
-> > >   +             cmp     r2, r1
-> > >   +             bhs     3b
-> > >                 ands    ip, r2, #7
-> > >                 beq     1b                      @ If new byte, goto old routine
-> > >     ARM(                ldrb    r3, [r0, r2, lsr #3]    )
-> > > 
-> > > but my ARM asm is so broken that the above is just really random noise
-> > > that may or may not build - much less work.
-> > > 
-> > > I'll leave it to Russell &co to have a tested and working patch.
-> > 
-> > I think it needs a bit more than that, but as you point out in later
-> > emails, the compiler may do a better job for this.
-> 
-> Okay, I've moved my patch that fixes this (without adding a single line
-> of code!) to my fixes branch, which I'll ask you to pull in the next
-> couple of days.
-> 
-I downloaded your patch and ran it through my testbed.
-With it applied, the problem is no longer seen.
-Feel free to add
+Hi,
 
-Tested-by: Guenter Roeck <linux@roeck-us.net>
+On Mon, Jul 11, 2022 at 5:57 AM Vinod Polimera
+<quic_vpolimer@quicinc.com> wrote:
+>
+> Update crtc retrieval from dpu_enc to dpu_enc connector state,
+> since new links get set as part of the dpu enc virt mode set.
+> The dpu_enc->crtc cache is no more needed, hence cleaning it as
+> part of this change.
 
-Thanks,
-Guenter
+I don't know this driver terribly well, but _why_ is it no longer
+needed? According to the kernel-doc for the "crtc" variable you're
+removing it was because we used to need it after the disable()
+callback. Maybe that's no longer the case after commit a796ba2cb3dd
+("drm/msm: dpu: Separate crtc assignment from vblank enable")?
 
-> Each of the _find_next_* functions had:
-> 
-> 	teq	r1, #0
-> 	beq	3b
-> 
-> at the beginning to catch the case where size == 0. This is now:
-> 
-> 	cmp	r2, r1
-> 	bhs	3b
-> 
-> which is the C equivalent of:
-> 
-> 	if (offset >= size)
-> 		goto 3b;
-> 
-> where both are unsigned, and nicely covers the case where size == 0 as
-> before (since if size is 0, the condition is always true irrespective
-> of the value of offset.)
-> 
-> We can sort out the question of keeping this code or not later, but I
-> think as this has been spotted as an issue, it's important to get it
-> fixed.
-> 
-> -- 
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+
+> Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
+> ---
+>  drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c    |  4 ----
+>  drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c | 30 ++++++++++++++---------------
+>  drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h |  8 --------
+>  3 files changed, 14 insertions(+), 28 deletions(-)
+>
+> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
+> index b56f777..f91e3d1 100644
+> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
+> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c
+> @@ -972,7 +972,6 @@ static void dpu_crtc_disable(struct drm_crtc *crtc,
+>                  */
+>                 if (dpu_encoder_get_intf_mode(encoder) == INTF_MODE_VIDEO)
+>                         release_bandwidth = true;
+> -               dpu_encoder_assign_crtc(encoder, NULL);
+>         }
+>
+>         /* wait for frame_event_done completion */
+> @@ -1042,9 +1041,6 @@ static void dpu_crtc_enable(struct drm_crtc *crtc,
+>         trace_dpu_crtc_enable(DRMID(crtc), true, dpu_crtc);
+>         dpu_crtc->enabled = true;
+>
+> -       drm_for_each_encoder_mask(encoder, crtc->dev, crtc->state->encoder_mask)
+> -               dpu_encoder_assign_crtc(encoder, crtc);
+> -
+>         /* Enable/restore vblank irq handling */
+>         drm_crtc_vblank_on(crtc);
+>  }
+> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+> index 52516eb..0fddc9d 100644
+> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c
+> @@ -181,7 +181,6 @@ struct dpu_encoder_virt {
+>
+>         bool intfs_swapped;
+>
+> -       struct drm_crtc *crtc;
+
+This structure is documented by kernel-doc. That means you need to
+remove the documentation for "crtc".
+
+
+>         struct drm_connector *connector;
+>
+>         struct dentry *debugfs_root;
+> @@ -1245,6 +1244,7 @@ static void dpu_encoder_vblank_callback(struct drm_encoder *drm_enc,
+>                 struct dpu_encoder_phys *phy_enc)
+>  {
+>         struct dpu_encoder_virt *dpu_enc = NULL;
+> +       struct drm_crtc *crtc;
+>         unsigned long lock_flags;
+>
+>         if (!drm_enc || !phy_enc)
+> @@ -1253,9 +1253,14 @@ static void dpu_encoder_vblank_callback(struct drm_encoder *drm_enc,
+>         DPU_ATRACE_BEGIN("encoder_vblank_callback");
+>         dpu_enc = to_dpu_encoder_virt(drm_enc);
+>
+> +       if (!dpu_enc->connector || !dpu_enc->connector->state)
+> +               return;
+
+FWIW: your patch doesn't apply cleanly to msm-next. It conflicts with
+commit c28d76d360f9 ("drm/msm/dpu: Increment vsync_cnt before waking
+up userspace").
+
+I suspect that you'll want your changes to come _after_ the increment
+(AKA you want to increment even if the connector is NULL), but dunno
+for sure.
+
+
+> +
+> +       crtc = dpu_enc->connector->state->crtc;
+> +
+>         spin_lock_irqsave(&dpu_enc->enc_spinlock, lock_flags);
+> -       if (dpu_enc->crtc)
+> -               dpu_crtc_vblank_callback(dpu_enc->crtc);
+> +       if (crtc)
+> +               dpu_crtc_vblank_callback(crtc);
+
+Effectively you are checking for NULLness at 3 levels:
+
+1. dpu_enc->connector
+2. dpu_enc->connector->state
+3. dpu_enc->connector->state->crtc
+
+You check two of those things outside of the spinlock and one of those
+things inside the spinlock. Why? Should they all be inside the
+spinlock, or can they all be outside of the spinlock, or is there some
+reason it is the way it is?
+
+
+>  void dpu_encoder_toggle_vblank_for_crtc(struct drm_encoder *drm_enc,
+>                                         struct drm_crtc *crtc, bool enable)
+>  {
+>         struct dpu_encoder_virt *dpu_enc = to_dpu_encoder_virt(drm_enc);
+> +       struct drm_crtc *new_crtc;
+>         unsigned long lock_flags;
+>         int i;
+>
+>         trace_dpu_enc_vblank_cb(DRMID(drm_enc), enable);
+>
+> +       if (!dpu_enc->connector || !dpu_enc->connector->state)
+> +               return;
+> +
+> +       new_crtc = dpu_enc->connector->state->crtc;
+>         spin_lock_irqsave(&dpu_enc->enc_spinlock, lock_flags);
+> -       if (dpu_enc->crtc != crtc) {
+> +       if (!new_crtc || new_crtc != crtc) {
+>                 spin_unlock_irqrestore(&dpu_enc->enc_spinlock, lock_flags);
+
+Even if there was some reason for your choice of where you did the
+spinlock in the previous case, I'm 95% sure that this one is absurd.
+You're locking a spinlock around a test of local variables? I'm pretty
+sure nobody else could be messing with your local variables...
+
+
+-Doug
