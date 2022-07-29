@@ -2,69 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A51B7C19F2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 02:36:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 700ACC19F2A
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 02:36:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233935AbiG2CgX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 22:36:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53822 "EHLO
+        id S233950AbiG2Cgx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 22:36:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233595AbiG2CgU (ORCPT
+        with ESMTP id S232456AbiG2Cgv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 22:36:20 -0400
-Received: from out20-85.mail.aliyun.com (out20-85.mail.aliyun.com [115.124.20.85])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 784BA52FE3;
-        Thu, 28 Jul 2022 19:36:11 -0700 (PDT)
-X-Alimail-AntiSpam: AC=CONTINUE;BC=0.1142877|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_regular_dialog|0.091604-0.000316197-0.90808;FP=11801277814066224926|4|1|5|0|-1|-1|-1;HT=ay29a033018047205;MF=longjin@ringotek.cn;NM=1;PH=DS;RN=6;RT=6;SR=0;TI=SMTPD_---.OgOkP57_1659062123;
-Received: from localhost.localdomain(mailfrom:longjin@RinGoTek.cn fp:SMTPD_---.OgOkP57_1659062123)
-          by smtp.aliyun-inc.com;
-          Fri, 29 Jul 2022 10:35:38 +0800
-From:   fslongjin <longjin@RinGoTek.cn>
-To:     corbet@lwn.net, twoerner@gmail.com, keescook@chromium.org
-Cc:     linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        fslongjin <longjin@RinGoTek.cn>
-Subject: [PATCH] Documentation: Fixed errors in the title level of coding style documents
-Date:   Fri, 29 Jul 2022 10:34:54 +0800
-Message-Id: <20220729023454.18085-1-longjin@RinGoTek.cn>
-X-Mailer: git-send-email 2.20.1
+        Thu, 28 Jul 2022 22:36:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEDC363912;
+        Thu, 28 Jul 2022 19:36:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 62445B82677;
+        Fri, 29 Jul 2022 02:36:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B4BCC433D6;
+        Fri, 29 Jul 2022 02:36:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659062208;
+        bh=cVG+ATCgcUfwL3lkHWG2UgB0F2FCWRxuUaK7fXxdEU8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=b3DfgOJ/48XvUjyLkvp4sM+3H+kdMfqje6D7jrV9svFvhRpP57dS1ramWfEBMpZnh
+         n+Rg71eHPUQVCEqTpEwgvl2F9r8Y/GsLXqtnJXvJ7QqMEIohCA1VOJbYYFB//PaBf1
+         5FvAbpvjG/gxMX3YkvLbatQOwjkOvoAIk9Qj+zlHDWCJvbIBwIodGeMCHL70Rbfuva
+         yciGQ83UTAyyOxT4kP1RzU90saNROlCZxA7arsxcRk5QINL09Qkkgn8bEh4GM3v51Q
+         IaIbwqyszRJqqrAeio9dEvulEHlbNJqwmiFlBCqEJzyUVoEATIZVNID1efOhKf75kL
+         a9efKhVjxEzQw==
+Date:   Thu, 28 Jul 2022 21:36:45 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
+Cc:     Rob Herring <robh@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
+        Serge Semin <fancer.lancer@gmail.com>,
+        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
+        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
+        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
+        Frank Li <Frank.Li@nxp.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>, linux-pci@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RESEND v4 00/15] PCI: dwc: Add hw version and dma-ranges
+ support
+Message-ID: <20220729023645.GA423256@bhelgaas>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220624143947.8991-1-Sergey.Semin@baikalelectronics.ru>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In Section 3, `Placing Braces and Spaces`. In the previous document, only
-`Spaces` is written in the subtitle without the `Braces`. I think this
- may be a format error caused by negligence, so I fixed it.
+On Fri, Jun 24, 2022 at 05:39:32PM +0300, Serge Semin wrote:
+> This patchset is a second one in the series created in the framework of
+> my Baikal-T1 PCIe/eDMA-related work:
 
-Signed-off-by: fslongjin <longjin@RinGoTek.cn>
----
- Documentation/process/coding-style.rst | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+> Serge Semin (15):
+>   PCI: dwc: Add more verbose link-up message
+>   PCI: dwc: Detect iATU settings after getting "addr_space" resource
+>   PCI: dwc: Convert to using native IP-core versions representation
+>   PCI: dwc: Add IP-core version detection procedure
+>   PCI: dwc: Introduce Synopsys IP-core versions/types interface
+>   PCI: intel-gw: Drop manual DW PCIe controller version setup
+>   PCI: tegra194: Drop manual DW PCIe controller version setup
+>   PCI: dwc: Add host de-initialization callback
+>   PCI: dwc: Drop inbound iATU types enumeration - dw_pcie_as_type
+>   PCI: dwc: Drop iATU regions enumeration - dw_pcie_region_type
+>   PCI: dwc: Simplify in/outbound iATU setup methods
+>   PCI: dwc: Add iATU regions size detection procedure
+>   PCI: dwc: Verify in/out regions against iATU constraints
+>   PCI: dwc: Check iATU in/outbound ranges setup methods status
 
-diff --git a/Documentation/process/coding-style.rst b/Documentation/process/coding-style.rst
-index 03eb53fd029a..2a26bcb9f391 100644
---- a/Documentation/process/coding-style.rst
-+++ b/Documentation/process/coding-style.rst
-@@ -120,6 +120,9 @@ that breaks the ability to grep for them.
- 3) Placing Braces and Spaces
- ----------------------------
- 
-+3.1) Braces
-+***********
-+
- The other issue that always comes up in C styling is the placement of
- braces.  Unlike the indent size, there are few technical reasons to
- choose one placement strategy over the other, but the preferred way, as
-@@ -231,7 +234,7 @@ Also, use braces when a loop contains more than a single simple statement:
- 			do_something();
- 	}
- 
--3.1) Spaces
-+3.2) Spaces
- ***********
- 
- Linux kernel style for use of spaces depends (mostly) on
--- 
-2.20.1
+I applied the above to pci/ctrl/dwc for v5.20, thanks!
 
+>   PCI: dwc: Introduce dma-ranges property support for RC-host
+
+I deferred this one for now because the current value isn't clear yet.
+If we have a user for it, I'll be glad to add it.
+
+Bjorn
