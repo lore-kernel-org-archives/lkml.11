@@ -2,67 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59E10C19F2A
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 16:46:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 669DBC00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 16:46:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238198AbiG2Qqb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 12:46:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36342 "EHLO
+        id S238173AbiG2Qqf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 12:46:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238173AbiG2Qpv (ORCPT
+        with ESMTP id S238156AbiG2Qpu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 12:45:51 -0400
+        Fri, 29 Jul 2022 12:45:50 -0400
 Received: from new4-smtp.messagingengine.com (new4-smtp.messagingengine.com [66.111.4.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0821088F32
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D064988F2E
         for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 09:45:49 -0700 (PDT)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailnew.nyi.internal (Postfix) with ESMTP id A131058092C;
-        Fri, 29 Jul 2022 12:35:46 -0400 (EDT)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id EA71058094B;
+        Fri, 29 Jul 2022 12:36:19 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute5.internal (MEProxy); Fri, 29 Jul 2022 12:35:46 -0400
+  by compute4.internal (MEProxy); Fri, 29 Jul 2022 12:36:19 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
         :cc:content-transfer-encoding:content-type:date:date:from:from
         :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm2; t=1659112546; x=
-        1659119746; bh=eMs+w/CffVwE2ame872l8/WaiNcHNKMJmaLvcqBWcoA=; b=S
-        E+rW9gvtNFtb8V+V7ubutGHjhd9PmCzG+r64L/Yjsymx1qpIfZUGA7qwG0HfE84O
-        BrWusApulAuKTaLSZN/C1YF6j4LGVSmjWcArgqH81DOuHamhlZV7bXzYHe21whvg
-        8Qqyy/oPKnM4LghOVatGhxb9zTLUS1pQOFMTktQhBzcQrCjlvcxnl2F8PCPVWNjm
-        d+6PSvL30Kd1DEkH1KAEg5wD/1orsG1uwHBS5hwr3H5uq/hDX2u6jW0E96ID1gHT
-        X/kXoykNUhdcw8BhCTkQMiDKkIRQhFb3PpuKyEAkvge2JCGpKcSGmopglHni/2HG
-        wZyhZeG1qpl93ZzWhntOA==
+        :reply-to:sender:subject:subject:to:to; s=fm2; t=1659112579; x=
+        1659119779; bh=we2+5Gor+ytUnMBu5xTu1/9nZ//mY4WLMl0azuUC8IU=; b=t
+        bPTTMExsQw9FnJ7cdg0tSKxMS82fZGoc+6CUtoONHdMB/1zWy9k2/vhceC9EhIsO
+        Yb34RLL8LfEH4od+r2+GGfc0wivpBWANmIwBor36tVvM1phFj0WBI49eONSf/+LB
+        Uz9cVJMs0SRAK8qS05hjwZzPwvv/sJGcOpktEeRLjLULh/wP+cy1nv7qu7Pzdfjv
+        aUoMSQ446ns1k6myTDUhzo1MotXt5MJWT3/UNrAAsCB6o1ge/W2wsH+xAkPeIi6l
+        xaJdJE4ZUTHyE5ry+/9Doz/TdzThmaXI4zpKnqbSdJJGWJmyBJSvkUqp4XgbYp43
+        8J5MnD/JaysgXIrarycVw==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-transfer-encoding
         :content-type:date:date:feedback-id:feedback-id:from:from
         :in-reply-to:in-reply-to:message-id:mime-version:references
         :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1659112546; x=
-        1659119746; bh=eMs+w/CffVwE2ame872l8/WaiNcHNKMJmaLvcqBWcoA=; b=P
-        ETyWHiCEk9Ru/BIg+QQQXIgCuA8tM7gbdN8R1rJl3ZcQFBBHJL79tNzhGcKSzODU
-        V73KEqDL6fA56w8t/pmmAOffHlx7bB4TaAGdOJtqFZvopYoXjnVsc1lZXNXgDmcc
-        OVVMZ6EEHAaVIFRjQgYIxkPnpbR8L+ef+b14QK02OIUu7HYqVGLEkdN+dluTyaOT
-        6bpBc7+Dbs3FNs8nLF/qX3BOqcxAGZIxGRRExZblAE8af2Bioy3xeLicPuAL6zQn
-        Fmo4zbS8bPmePUVGmx5g1LSweaxo3z1DM6OZ6mLSxZ5MqV6Q+XXPQEDhs6QuVpIQ
-        N6LEiKf+IkgAVPFYN2Erw==
-X-ME-Sender: <xms:YgzkYlXGuQnuvJjpJDSg2tNp0HCBf6WKs2Yet2pneMAYCuT0di5_wg>
-    <xme:YgzkYlnsm-DnkEYxdW05gAqflqMm2q75nevMfg6F7NTFApCvGPdkZJ4NxSTxRLxM9
-    ybt1eemE5BWGvYVyjA>
-X-ME-Received: <xmr:YgzkYhbwJ8CKe26W35DsQWZXIeYkpr-IiPCVFJTdzowtpvdv6hW0EKM1pqVbc9yA4wzRg7cHQam0X-tXock>
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1659112579; x=
+        1659119779; bh=we2+5Gor+ytUnMBu5xTu1/9nZ//mY4WLMl0azuUC8IU=; b=t
+        +vXR9bSbVnww4amDF9/gVST21vjey3iqivWmJjgGd2KKu34U0PL3xnA7IdywGF25
+        urgvIdC06v0sz6S6neBHOMXmW5TJnQn1Kc64Pt4QMBBQm7nIZVvNRD5Hx0QKxGk2
+        IH0NBCCwrLzF5yyqOxnhE4R1JgEM0ak8MRpDub0CTg+zuwG4DmKvqIxBLR0bsxpZ
+        TS/3LlYCCNM46R2LTVHqqmRWmUGvrvSwXa85P4BvcPekKxc99sKclY1m+Kfh5//a
+        mZNQU2SxLe7JZdrutqrdVq9A4JK2SgLIrNJLnnUqWVck5HmpBc5Lb9hsk8aHX9bt
+        0EXbxB4lvB2lTqDUXRDgQ==
+X-ME-Sender: <xms:gwzkYtdmUNQ9HlFAOIdFpEniYQma9GRYco-4afzBNjMAGp-2uqxqkA>
+    <xme:gwzkYrMPyyolQPDqqSvtcjy3FtD2s75ph6rcXkxUjczFkX2Whvff0tIX0mxKFbfnP
+    BcfmIGVKCALP4XYpjI>
+X-ME-Received: <xmr:gwzkYmjZ9FJuPh9BLdTf5p4FxdPtwM75qy_119dG4eIvBvPnMGT8og5AncdUQnrnBpi2jpvH7WaQkm5oJ2g>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvddujedguddtfecutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
     necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
     enucfjughrpefhvfevufffkffojghfgggtoffgsehtkeertdertdejnecuhfhrohhmpefo
     rgigihhmvgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecugg
     ftrfgrthhtvghrnhepgfffgfetffduudelhfevieffffduleevgfegkeeutefgffejheel
-    leekjeefhfejnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrh
+    leekjeefhfejnecuvehluhhsthgvrhfuihiivgepudenucfrrghrrghmpehmrghilhhfrh
     homhepmhgrgihimhgvsegtvghrnhhordhtvggthh
-X-ME-Proxy: <xmx:YgzkYoVp4F_9i_TkrPQ9rOs3p2xcehTgvd1Ie10GnDv_zzShFN1Wxw>
-    <xmx:YgzkYvkvOkq4oOnpEHZKUxdMk7Zh4SZzprpyKRZqJmaHPxu6HD-QwA>
-    <xmx:YgzkYle_Uoo9lu6wQWfjF1AJOCIhwRG-z6nyJif3FhQHDQ-320c5MA>
-    <xmx:YgzkYj2VJtvfN4pn6AEV6O6eEwF5mfLC3zf-Obvy5FlUVZMEeJ62Fw>
+X-ME-Proxy: <xmx:gwzkYm9tVy7St1rxnhy40N4nONHxEpSrEAvKXdeb6wCLgkUU_5qMXg>
+    <xmx:gwzkYpsWI6iu6N6XyjPLp6d0KO6P2oy7saaTyFykugoB9gSHy0q8wQ>
+    <xmx:gwzkYlF-Ct_WCTG04fn6H7pZ8CnK0ZeEG-sn61DBr-nby9zruyva-A>
+    <xmx:gwzkYo-PjIshaMMUhFL1yvzeUrjFTryhV-OQdEsE9LjsYioOjDEOKA>
 Feedback-ID: i8771445c:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 29 Jul 2022 12:35:45 -0400 (EDT)
+ 29 Jul 2022 12:36:18 -0400 (EDT)
 From:   Maxime Ripard <maxime@cerno.tech>
 To:     Jernej Skrabec <jernej.skrabec@gmail.com>,
         Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
@@ -86,211 +86,54 @@ Cc:     Maxime Ripard <maxime@cerno.tech>, linux-sunxi@lists.linux.dev,
         Dave Stevenson <dave.stevenson@raspberrypi.com>,
         linux-amlogic@lists.infradead.org, dri-devel@lists.freedesktop.org,
         Dom Cobley <dom@raspberrypi.com>
-Subject: [PATCH v1 05/35] drm/connector: Add TV standard property
-Date:   Fri, 29 Jul 2022 18:34:48 +0200
-Message-Id: <20220728-rpi-analog-tv-properties-v1-5-3d53ae722097@cerno.tech>
+Subject: [PATCH v1 15/35] drm/vc4: vec: Remove empty mode_fixup
+Date:   Fri, 29 Jul 2022 18:34:58 +0200
+Message-Id: <20220728-rpi-analog-tv-properties-v1-15-3d53ae722097@cerno.tech>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
 References: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 X-Mailer: b4 0.10.0-dev-49460
-X-Developer-Signature: v=1; a=openpgp-sha256; l=8238; i=maxime@cerno.tech; h=from:subject:message-id; bh=jGJUS/VA2iyHNwRJXvB4FtOdyf/I7gunEXYaaarTrag=; b=owGbwMvMwCHc4XzqmfnC7acZT6slMSQ94VHiuhjjyKu6sbMwIPWU79r0t1d+xKXxFs1uEn64t/zk 7y3bO0pZGIQ5GGTFFFmuC7614wuLcovg+bAZZg4rE8gQBi5OAZjITD6Gf/aMS299rN5e0hj79qhWSf ckHvsLfD85L+0ScJixn3Pi190M/136CzTrXT4mSOcf3qafsPsQQ7ZQnPkXj/z/uTnOrC89dAA=
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1269; i=maxime@cerno.tech; h=from:subject:message-id; bh=9K0X2b4CC7vPlBBRjtYOkzUbCYIm/F5a/oUghA5nq0o=; b=owGbwMvMwCHc4XzqmfnC7acZT6slMSQ94VFifHJgR6+cxa2y8n+HKhRTA37+3+55zXtVaOUeHnG9 NuuQjlIWBmEOBlkxRZbrgm/t+MKi3CJ4PmyGmcPKBDKEgYtTACbCzsnw371n5RZx3cTAVd/mXD6aOP OWm9q8PTXHnwoujn934l7kgf2MDO+ixT26zVIqy0XSMueF/NKaKrn4VVjkTKNsoUg/kXPnbgMA
 X-Developer-Key: i=maxime@cerno.tech; a=openpgp; fpr=BE5675C37E818C8B5764241C254BCFC56BF6CE8D
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The TV mode property has been around for a while now to select and get the
-current TV mode output on an analog TV connector.
-
-Despite that property name being generic, its content isn't and has been
-driver-specific which makes it hard to build any generic behaviour on top
-of it, both in kernel and user-space.
-
-Let's create a new bitmask tv norm property, that can contain any of the
-analog TV standards currently supported by kernel drivers. Each driver can
-then pass in a bitmask of the modes it supports.
-
-We'll then be able to phase out the older tv mode property.
+The mode_fixup hooks are deprecated, and the behaviour we implement is the
+default one anyway. Let's remove it.
 
 Signed-off-by: Maxime Ripard <maxime@cerno.tech>
 
-diff --git a/drivers/gpu/drm/drm_atomic_uapi.c b/drivers/gpu/drm/drm_atomic_uapi.c
-index c06d0639d552..d7ff6c644c2f 100644
---- a/drivers/gpu/drm/drm_atomic_uapi.c
-+++ b/drivers/gpu/drm/drm_atomic_uapi.c
-@@ -700,6 +700,8 @@ static int drm_atomic_connector_set_property(struct drm_connector *connector,
- 		state->tv.margins.bottom = val;
- 	} else if (property == config->tv_mode_property) {
- 		state->tv.mode = val;
-+	} else if (property == config->tv_norm_property) {
-+		state->tv.norm = val;
- 	} else if (property == config->tv_brightness_property) {
- 		state->tv.brightness = val;
- 	} else if (property == config->tv_contrast_property) {
-@@ -810,6 +812,8 @@ drm_atomic_connector_get_property(struct drm_connector *connector,
- 		*val = state->tv.margins.bottom;
- 	} else if (property == config->tv_mode_property) {
- 		*val = state->tv.mode;
-+	} else if (property == config->tv_norm_property) {
-+		*val = state->tv.norm;
- 	} else if (property == config->tv_brightness_property) {
- 		*val = state->tv.brightness;
- 	} else if (property == config->tv_contrast_property) {
-diff --git a/drivers/gpu/drm/drm_connector.c b/drivers/gpu/drm/drm_connector.c
-index e3142c8142b3..68a4e47f85a9 100644
---- a/drivers/gpu/drm/drm_connector.c
-+++ b/drivers/gpu/drm/drm_connector.c
-@@ -1637,6 +1637,7 @@ EXPORT_SYMBOL(drm_mode_create_tv_margin_properties);
- /**
-  * drm_mode_create_tv_properties - create TV specific connector properties
-  * @dev: DRM device
-+ * @supported_tv_norms: Bitmask of TV norms supported (See DRM_MODE_TV_NORM_*)
-  * @num_modes: number of different TV formats (modes) supported
-  * @modes: array of pointers to strings containing name of each format
-  *
-@@ -1649,11 +1650,40 @@ EXPORT_SYMBOL(drm_mode_create_tv_margin_properties);
-  * 0 on success or a negative error code on failure.
-  */
- int drm_mode_create_tv_properties(struct drm_device *dev,
-+				  unsigned int supported_tv_norms,
- 				  unsigned int num_modes,
- 				  const char * const modes[])
- {
-+	static const struct drm_prop_enum_list tv_norm_values[] = {
-+		{ __builtin_ffs(DRM_MODE_TV_NORM_NTSC_443) - 1, "NTSC-443" },
-+		{ __builtin_ffs(DRM_MODE_TV_NORM_NTSC_J) - 1, "NTSC-J" },
-+		{ __builtin_ffs(DRM_MODE_TV_NORM_NTSC_M) - 1, "NTSC-M" },
-+		{ __builtin_ffs(DRM_MODE_TV_NORM_PAL_60) - 1, "PAL-60" },
-+		{ __builtin_ffs(DRM_MODE_TV_NORM_PAL_B) - 1, "PAL-B" },
-+		{ __builtin_ffs(DRM_MODE_TV_NORM_PAL_D) - 1, "PAL-D" },
-+		{ __builtin_ffs(DRM_MODE_TV_NORM_PAL_G) - 1, "PAL-G" },
-+		{ __builtin_ffs(DRM_MODE_TV_NORM_PAL_H) - 1, "PAL-H" },
-+		{ __builtin_ffs(DRM_MODE_TV_NORM_PAL_I) - 1, "PAL-I" },
-+		{ __builtin_ffs(DRM_MODE_TV_NORM_PAL_M) - 1, "PAL-M" },
-+		{ __builtin_ffs(DRM_MODE_TV_NORM_PAL_N) - 1, "PAL-N" },
-+		{ __builtin_ffs(DRM_MODE_TV_NORM_PAL_NC) - 1, "PAL-Nc" },
-+		{ __builtin_ffs(DRM_MODE_TV_NORM_SECAM_60) - 1, "SECAM-60" },
-+		{ __builtin_ffs(DRM_MODE_TV_NORM_SECAM_B) - 1, "SECAM-B" },
-+		{ __builtin_ffs(DRM_MODE_TV_NORM_SECAM_D) - 1, "SECAM-D" },
-+		{ __builtin_ffs(DRM_MODE_TV_NORM_SECAM_G) - 1, "SECAM-G" },
-+		{ __builtin_ffs(DRM_MODE_TV_NORM_SECAM_K) - 1, "SECAM-K" },
-+		{ __builtin_ffs(DRM_MODE_TV_NORM_SECAM_K1) - 1, "SECAM-K1" },
-+		{ __builtin_ffs(DRM_MODE_TV_NORM_SECAM_L) - 1, "SECAM-L" },
-+		{ __builtin_ffs(DRM_MODE_TV_NORM_HD480I) - 1, "hd480i" },
-+		{ __builtin_ffs(DRM_MODE_TV_NORM_HD480P) - 1, "hd480p" },
-+		{ __builtin_ffs(DRM_MODE_TV_NORM_HD576I) - 1, "hd576i" },
-+		{ __builtin_ffs(DRM_MODE_TV_NORM_HD576P) - 1, "hd576p" },
-+		{ __builtin_ffs(DRM_MODE_TV_NORM_HD720P) - 1, "hd720p" },
-+		{ __builtin_ffs(DRM_MODE_TV_NORM_HD1080I) - 1, "hd1080i" },
-+	};
- 	struct drm_property *tv_selector;
- 	struct drm_property *tv_subconnector;
-+	struct drm_property *tv_norm;
- 	unsigned int i;
- 
- 	if (dev->mode_config.tv_select_subconnector_property)
-@@ -1686,6 +1716,13 @@ int drm_mode_create_tv_properties(struct drm_device *dev,
- 	if (drm_mode_create_tv_margin_properties(dev))
- 		goto nomem;
- 
-+	tv_norm = drm_property_create_bitmask(dev, 0, "tv norm",
-+					   tv_norm_values, ARRAY_SIZE(tv_norm_values),
-+					   supported_tv_norms);
-+	if (!tv_norm)
-+		goto nomem;
-+	dev->mode_config.tv_norm_property = tv_norm;
-+
- 	dev->mode_config.tv_mode_property =
- 		drm_property_create(dev, DRM_MODE_PROP_ENUM,
- 				    "mode", num_modes);
 diff --git a/drivers/gpu/drm/vc4/vc4_vec.c b/drivers/gpu/drm/vc4/vc4_vec.c
-index 4a788c1c9058..457529e5d857 100644
+index 457529e5d857..17a6afac61cd 100644
 --- a/drivers/gpu/drm/vc4/vc4_vec.c
 +++ b/drivers/gpu/drm/vc4/vc4_vec.c
-@@ -573,7 +573,9 @@ static int vc4_vec_bind(struct device *dev, struct device *master, void *data)
- 	struct vc4_vec *vec;
- 	int ret;
+@@ -483,14 +483,6 @@ static void vc4_vec_encoder_enable(struct drm_encoder *encoder)
+ 	drm_dev_exit(idx);
+ }
  
--	ret = drm_mode_create_tv_properties(drm, ARRAY_SIZE(tv_mode_names),
-+	ret = drm_mode_create_tv_properties(drm,
-+					    0,
-+					    ARRAY_SIZE(tv_mode_names),
- 					    tv_mode_names);
- 	if (ret)
- 		return ret;
-diff --git a/include/drm/drm_connector.h b/include/drm/drm_connector.h
-index 1e9996b33cc8..78275e68ff66 100644
---- a/include/drm/drm_connector.h
-+++ b/include/drm/drm_connector.h
-@@ -143,6 +143,32 @@ enum subpixel_order {
- 
+-
+-static bool vc4_vec_encoder_mode_fixup(struct drm_encoder *encoder,
+-				       const struct drm_display_mode *mode,
+-				       struct drm_display_mode *adjusted_mode)
+-{
+-	return true;
+-}
+-
+ static void vc4_vec_encoder_atomic_mode_set(struct drm_encoder *encoder,
+ 					struct drm_crtc_state *crtc_state,
+ 					struct drm_connector_state *conn_state)
+@@ -518,7 +510,6 @@ static int vc4_vec_encoder_atomic_check(struct drm_encoder *encoder,
+ static const struct drm_encoder_helper_funcs vc4_vec_encoder_helper_funcs = {
+ 	.disable = vc4_vec_encoder_disable,
+ 	.enable = vc4_vec_encoder_enable,
+-	.mode_fixup = vc4_vec_encoder_mode_fixup,
+ 	.atomic_check = vc4_vec_encoder_atomic_check,
+ 	.atomic_mode_set = vc4_vec_encoder_atomic_mode_set,
  };
- 
-+#define DRM_MODE_TV_NORM_NTSC_443	(1 << 0)
-+#define DRM_MODE_TV_NORM_NTSC_J		(1 << 1)
-+#define DRM_MODE_TV_NORM_NTSC_M		(1 << 2)
-+#define DRM_MODE_TV_NORM_PAL_60		(1 << 3)
-+#define DRM_MODE_TV_NORM_PAL_B		(1 << 4)
-+#define DRM_MODE_TV_NORM_PAL_D		(1 << 5)
-+#define DRM_MODE_TV_NORM_PAL_G		(1 << 6)
-+#define DRM_MODE_TV_NORM_PAL_H		(1 << 7)
-+#define DRM_MODE_TV_NORM_PAL_I		(1 << 8)
-+#define DRM_MODE_TV_NORM_PAL_M		(1 << 9)
-+#define DRM_MODE_TV_NORM_PAL_N		(1 << 10)
-+#define DRM_MODE_TV_NORM_PAL_NC		(1 << 11)
-+#define DRM_MODE_TV_NORM_SECAM_60	(1 << 12)
-+#define DRM_MODE_TV_NORM_SECAM_B	(1 << 13)
-+#define DRM_MODE_TV_NORM_SECAM_D	(1 << 14)
-+#define DRM_MODE_TV_NORM_SECAM_G	(1 << 15)
-+#define DRM_MODE_TV_NORM_SECAM_K	(1 << 16)
-+#define DRM_MODE_TV_NORM_SECAM_K1	(1 << 17)
-+#define DRM_MODE_TV_NORM_SECAM_L	(1 << 18)
-+#define DRM_MODE_TV_NORM_HD480I		(1 << 19)
-+#define DRM_MODE_TV_NORM_HD480P		(1 << 20)
-+#define DRM_MODE_TV_NORM_HD576I		(1 << 21)
-+#define DRM_MODE_TV_NORM_HD576P		(1 << 22)
-+#define DRM_MODE_TV_NORM_HD720P		(1 << 23)
-+#define DRM_MODE_TV_NORM_HD1080I	(1 << 24)
-+
- /**
-  * struct drm_scrambling: sink's scrambling support.
-  */
-@@ -687,6 +713,7 @@ struct drm_tv_connector_state {
- 	enum drm_mode_subconnector subconnector;
- 	struct drm_connector_tv_margins margins;
- 	unsigned int mode;
-+	unsigned int norm;
- 	unsigned int brightness;
- 	unsigned int contrast;
- 	unsigned int flicker_reduction;
-@@ -1779,6 +1806,7 @@ void drm_connector_attach_dp_subconnector_property(struct drm_connector *connect
- 
- int drm_mode_create_tv_margin_properties(struct drm_device *dev);
- int drm_mode_create_tv_properties(struct drm_device *dev,
-+				  unsigned int supported_tv_norms,
- 				  unsigned int num_modes,
- 				  const char * const modes[]);
- void drm_connector_attach_tv_margin_properties(struct drm_connector *conn);
-diff --git a/include/drm/drm_mode_config.h b/include/drm/drm_mode_config.h
-index 6b5e01295348..d9e79def8b92 100644
---- a/include/drm/drm_mode_config.h
-+++ b/include/drm/drm_mode_config.h
-@@ -704,6 +704,12 @@ struct drm_mode_config {
- 	 */
- 	struct drm_property *dp_subconnector_property;
- 
-+	/**
-+	 * @tv_norm_property: Optional TV property to select the TV
-+	 * standard output on the connector.
-+	 */
-+	struct drm_property *tv_norm_property;
-+
- 	/**
- 	 * @tv_subconnector_property: Optional TV property to differentiate
- 	 * between different TV connector types.
 
 -- 
 b4 0.10.0-dev-49460
