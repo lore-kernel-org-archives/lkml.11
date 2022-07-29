@@ -2,148 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D42F8C00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 00:20:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EE1FC19F2A
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 00:22:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233592AbiG2AUu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 20:20:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55002 "EHLO
+        id S233438AbiG2AWh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 20:22:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233558AbiG2AUs (ORCPT
+        with ESMTP id S230007AbiG2AWg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 20:20:48 -0400
-X-Greylist: delayed 357 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 28 Jul 2022 17:20:47 PDT
-Received: from new2-smtp.messagingengine.com (new2-smtp.messagingengine.com [66.111.4.224])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B3841903F;
-        Thu, 28 Jul 2022 17:20:46 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 77CB758099B;
-        Thu, 28 Jul 2022 20:14:48 -0400 (EDT)
-Received: from imap50 ([10.202.2.100])
-  by compute3.internal (MEProxy); Thu, 28 Jul 2022 20:14:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aj.id.au; h=cc
-        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to; s=fm2; t=1659053688; x=1659060888; bh=1CqIgEzBLY
-        47OHaV4sSf/xZhANJWym0dF7Lbe51Gho8=; b=Prja2fJywNoccXxpjpow3zGOJ2
-        xOO4vfXVawIaKmJc0bhYtRFydLKuH0fHCgcVLRM1lUuLNu9BBN//3X9ouCnjhWE/
-        h6CzOrA/fHh2fcolx+w5V5tq6TCq2bQIPsf3ZACWLAKEpf25e8ZY9XU3KFQic2se
-        Jtce8nCqDD9jE+OjT6DxHmtBE41TY8DYxcrHiNxcyS8kN3p2GQxDzYsllntF8mJS
-        FS2T7PKKNAKPR8aJRiKi728rbnqI8yzpnLur/gXgoHLFMmia3zmPWCK9KTleynRy
-        jOxuw5ngIWElnzlSjMqsH07YSliZTA7wCA1cjU76B4SvQw24/jF2rPXTu1qg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
-        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
-        :mime-version:references:reply-to:sender:subject:subject:to:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; t=1659053688; x=1659060888; bh=1CqIgEzBLY47OHaV4sSf/xZhANJW
-        ym0dF7Lbe51Gho8=; b=rk1BZHZ1UaKHog5lKRuUrUckMq4BFSl4BtoMl4GVeEqA
-        uP8Q/U4l30FCDS6Lcw3xoSku/ZK/qU0Ppk3IwCHStdpczFzStmnmO+vC8fgdqtMF
-        L/9J11RH73L9sx+hzEM7Eu5L2OQZDiRt+J4fkyFq50/7oqrhR+fyh3f2zJfKWvbX
-        G5oB1PIDRUU4HJ25E1M0KtG9dyqUyrQTA3jbvGkorG2/yaqJAjlBAAjd5Q2fWxl8
-        Itq4r/XIBs9hQu2qdc6/UCMqpnavTMvAaMxWwoxGtCPMptiR3o/ZgbZKMSuVjAu9
-        GxafBtrfUIcHJLVFoN5Y5kI4k3zq1mPqBv0rN8j4eQ==
-X-ME-Sender: <xms:dibjYq61WULSSvHAb-Fw6g_a4fXhuLh8dvOAfkntuhZvcfdlvl7Pww>
-    <xme:dibjYj7LyoGVphHU_BmO-2rYwgaulvBbRFulbawl0I52oSGsa9-e4LnjM3ZcB2utm
-    iqBTBR4VqJXRHgcMw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdduhedgudefiecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpefofgggkfgjfhffhffvvefutgesthdtredtreertdenucfhrhhomhepfdet
-    nhgurhgvficulfgvfhhfvghrhidfuceorghnughrvgifsegrjhdrihgurdgruheqnecugg
-    ftrfgrthhtvghrnhepkedvkeejkefgjeduffetteegjeekteetudevtdfftdeluddthfeh
-    veefteekieetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrh
-    homheprghnughrvgifsegrjhdrihgurdgruh
-X-ME-Proxy: <xmx:dibjYpeVeo5Y5h9hpZreusiUaYr9cd-GNjqdKKjoELpg2MwQwS2j_g>
-    <xmx:dibjYnLHruoskZDhofIBZdqd2L6PUeOuHZh_12EOvd8nk4fKXELcKA>
-    <xmx:dibjYuIb9-it4epXA9PpIvUcVGm0Og35TN2M0qLz4e-5zACCQcRfjQ>
-    <xmx:eCbjYsQMVZNaGfoD93vj0O0QSde7ARYF5pisHwVHhhgcCI35mR2OAg>
-Feedback-ID: idfb84289:Fastmail
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 183BA1700083; Thu, 28 Jul 2022 20:14:45 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.7.0-alpha0-757-gc3ad9c75d3-fm-20220722.001-gc3ad9c75
-Mime-Version: 1.0
-Message-Id: <833e10d7-ceb1-4859-8028-e724d41421f1@www.fastmail.com>
-In-Reply-To: <20220721141325.2413920-2-arnd@kernel.org>
-References: <20220721141325.2413920-1-arnd@kernel.org>
- <20220721141325.2413920-2-arnd@kernel.org>
-Date:   Fri, 29 Jul 2022 09:44:25 +0930
-From:   "Andrew Jeffery" <andrew@aj.id.au>
-To:     "Arnd Bergmann" <arnd@kernel.org>,
-        linux-arm-kernel@lists.infradead.org
-Cc:     "Andrew Lunn" <andrew@lunn.ch>,
-        "Alexandre Belloni" <alexandre.belloni@bootlin.com>,
-        linux-aspeed@lists.ozlabs.org,
-        "Neil Armstrong" <narmstrong@baylibre.com>,
-        "Tony Lindgren" <tony@atomide.com>,
-        "Catalin Marinas" <catalin.marinas@arm.com>,
-        "Lorenzo Pieralisi" <lpieralisi@kernel.org>,
-        "Liviu Dudau" <liviu.dudau@arm.com>,
-        "Alexandre Torgue" <alexandre.torgue@foss.st.com>,
-        linux-kernel@vger.kernel.org,
-        "Thierry Reding" <thierry.reding@gmail.com>,
-        "Alim Akhtar" <alim.akhtar@samsung.com>,
-        "Fabio Estevam" <festevam@gmail.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        "Florian Fainelli" <f.fainelli@gmail.com>,
-        "Alexander Shiyan" <shc_work@mail.ru>,
-        "Aaro Koskinen" <aaro.koskinen@iki.fi>,
-        "Will Deacon" <will@kernel.org>,
-        "Gregory Clement" <gregory.clement@bootlin.com>,
-        linux-sh@vger.kernel.org,
-        "Janusz Krzysztofik" <jmkrzyszt@gmail.com>,
-        "Russell King" <linux@armlinux.org.uk>,
-        "Jernej Skrabec" <jernej.skrabec@gmail.com>,
-        "Jonathan Hunter" <jonathanh@nvidia.com>,
-        "Chen-Yu Tsai" <wens@csie.org>,
-        bcm-kernel-feedback-list@broadcom.com,
-        "NXP Linux Team" <linux-imx@nxp.com>, linux-sunxi@lists.linux.dev,
-        "Sebastian Hesselbarth" <sebastian.hesselbarth@gmail.com>,
-        "Maxime Coquelin" <mcoquelin.stm32@gmail.com>,
-        "Arnd Bergmann" <arnd@arndb.de>, "Ray Jui" <rjui@broadcom.com>,
-        "Sascha Hauer" <s.hauer@pengutronix.de>,
-        "Takao Orito" <orito.takao@socionext.com>,
-        "Vladimir Zapolskiy" <vz@mleia.com>,
-        linux-samsung-soc@vger.kernel.org,
-        linux-rpi-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
-        linux-omap@vger.kernel.org,
-        "Scott Branden" <sbranden@broadcom.com>,
-        "Taichi Sugaya" <sugaya.taichi@socionext.com>,
-        "Samuel Holland" <samuel@sholland.org>,
-        "Nicolas Ferre" <nicolas.ferre@microchip.com>,
-        "Dinh Nguyen" <dinguyen@kernel.org>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>,
-        "Pengutronix Kernel Team" <kernel@pengutronix.de>,
-        "Sudeep Holla" <sudeep.holla@arm.com>, linux-oxnas@groups.io,
-        "Shawn Guo" <shawnguo@kernel.org>,
-        "Claudiu Beznea" <claudiu.beznea@microchip.com>
-Subject: Re: [PATCH 1/6] ARM: refresh defconfig files
-Content-Type: text/plain
+        Thu, 28 Jul 2022 20:22:36 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8ED17B1DB
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 17:22:34 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id z22so4061780edd.6
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 17:22:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc;
+        bh=YbqiOPzZmbvFzZa130GwJGGGwEXthWuw9oeJXPqxLMw=;
+        b=kRjkFi56KoI/XZGvwlf6yOjdbiP1tOmPWovRkV0lQ9r/9z+zKKFuNvzZ526mN8SbkY
+         2TdEpBoXlMQ+lVoNCpoWhAPvoC8JWZChWscjFpUjaHrW9+uuQyrM093O5JJ2ch0W3yhw
+         53t5JnC3EDdl/YBCZLn7vwtZGg7twxgkwE0VE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc;
+        bh=YbqiOPzZmbvFzZa130GwJGGGwEXthWuw9oeJXPqxLMw=;
+        b=p3CjOnbZoPmqHBOLtD0YsJ/QD2gTnFVZlBH/+fqKQpqsIVyCwbBib2gXZVncwFzWg6
+         g7U//Rlcihq3SDkMQgXPkaxbv4apqG4xS5+YJ1ZFKvdBKW6UiKRMSRQmmMSvS5haN5ry
+         jahrFNnnGXFz3Ws3XLdcqIb7+lyAhT+6lOgi2tcwlFoBML5134kjdiZDXuyozWLESuMh
+         gmGccZk4Ji0aW2WAJJpEs7NIARQcpi/3dAJTFW+H/oXTvPh/KdfdFS+SgIRBO7RCcGeq
+         /IJfiLqifgDWWupHCfAxT1/RgfiiASXQrIRm36NpXqGhnQoccnEkIXqA+I4hy8xYhGdp
+         Q67A==
+X-Gm-Message-State: AJIora/U41iTYZMh9uhCQOgg+xLwtXdTtTPhJZkvtcwuSU1KSM/1mNTh
+        7uW4TAwavfcjsB7ajhhtdaGTkLLtsE1pe+Kz
+X-Google-Smtp-Source: AGRyM1v9U0affx8c2UR6ktBOCNW1Fm+wDn+p+QQphTV1LNSgR9yomZr50Kfx4j6noExSVqfWT/Jb6g==
+X-Received: by 2002:a05:6402:5191:b0:43b:d047:dcb5 with SMTP id q17-20020a056402519100b0043bd047dcb5mr1256841edd.390.1659054152849;
+        Thu, 28 Jul 2022 17:22:32 -0700 (PDT)
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com. [209.85.221.41])
+        by smtp.gmail.com with ESMTPSA id f11-20020a170906560b00b0072b2eab813fsm964008ejq.75.2022.07.28.17.22.31
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Jul 2022 17:22:31 -0700 (PDT)
+Received: by mail-wr1-f41.google.com with SMTP id k8so1995701wrd.5
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 17:22:31 -0700 (PDT)
+X-Received: by 2002:adf:fb12:0:b0:20c:79b2:a200 with SMTP id
+ c18-20020adffb12000000b0020c79b2a200mr744258wrr.617.1659054151464; Thu, 28
+ Jul 2022 17:22:31 -0700 (PDT)
+MIME-Version: 1.0
+References: <1657544224-10680-1-git-send-email-quic_vpolimer@quicinc.com>
+In-Reply-To: <1657544224-10680-1-git-send-email-quic_vpolimer@quicinc.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Thu, 28 Jul 2022 17:22:18 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=U_GStziLOCVLs_FC_2Vr=ykGfbb4ZtUp79iV8V=B0cEA@mail.gmail.com>
+Message-ID: <CAD=FV=U_GStziLOCVLs_FC_2Vr=ykGfbb4ZtUp79iV8V=B0cEA@mail.gmail.com>
+Subject: Re: [PATCH v6 00/10] Add PSR support for eDP
+To:     Vinod Polimera <quic_vpolimer@quicinc.com>
+Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        Rob Clark <robdclark@gmail.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        quic_kalyant <quic_kalyant@quicinc.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        "Kuogee Hsieh (QUIC)" <quic_khsieh@quicinc.com>,
+        quic_vproddut <quic_vproddut@quicinc.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        "Aravind Venkateswaran (QUIC)" <quic_aravindh@quicinc.com>,
+        "Abhinav Kumar (QUIC)" <quic_abhinavk@quicinc.com>,
+        Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi,
 
-
-On Thu, 21 Jul 2022, at 23:43, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
+On Mon, Jul 11, 2022 at 5:57 AM Vinod Polimera
+<quic_vpolimer@quicinc.com> wrote:
 >
-> A lot of Kconfig options have changed over the years, and we tend
-> to not do a blind 'make defconfig' to refresh the files, to ensure
-> we catch options that should not have gone away.
+> Changes in v2:
+>   - Use dp bridge to set psr entry/exit instead of dpu_enocder.
+>   - Don't modify whitespaces.
+>   - Set self refresh aware from atomic_check.
+>   - Set self refresh aware only if psr is supported.
+>   - Provide a stub for msm_dp_display_set_psr.
+>   - Move dp functions to bridge code.
 >
-> I used some a bit of scripting to only rework the bits where an
-> option moved around in any of the defconfig files, without also
-> dropping any of the other lines, to make it clearer which options
-> we no longer have.
+> Changes in v3:
+>   - Change callback names to reflect atomic interfaces.
+>   - Move bridge callback change to separate patch as suggested by Dmitry.
+>   - Remove psr function declaration from msm_drv.h.
+>   - Set self_refresh_aware flag only if psr is supported.
+>   - Modify the variable names to simpler form.
+>   - Define bit fields for PSR settings.
+>   - Add comments explaining the steps to enter/exit psr.
+>   - Change DRM_INFO to drm_dbg_db.
 >
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
->  arch/arm/configs/am200epdkit_defconfig    |  26 ++---
->  arch/arm/configs/aspeed_g4_defconfig      |  16 +--
->  arch/arm/configs/aspeed_g5_defconfig      |  16 +--
+> Changes in v4:
+>   - Move the get crtc functions to drm_atomic.
+>   - Add atomic functions for DP bridge too.
+>   - Add ternary operator to choose eDP or DP ops.
+>   - Return true/false instead of 1/0.
+>   - mode_valid missing in the eDP bridge ops.
+>   - Move the functions to get crtc into drm_atomic.c.
+>   - Fix compilation issues.
+>   - Remove dpu_assign_crtc and get crtc from drm_enc instead of dpu_enc.
+>   - Check for crtc state enable while reserving resources.
+>
+> Changes in v5:
+>   - Move the mode_valid changes into a different patch.
+>   - Complete psr_op_comp only when isr is set.
+>   - Move the DP atomic callback changes to a different patch.
+>   - Get crtc from drm connector state crtc.
+>   - Move to separate patch for check for crtc state enable while
+> reserving resources.
+>
+> Changes in v6:
+>   - Remove crtc from dpu_encoder_virt struct.
+>   - fix crtc check during vblank toggle crtc.
+>   - Misc changes.
+>
+> Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+> Signed-off-by: Kalyan Thota <quic_kalyant@quicinc.com>
+> Signed-off-by: Vinod Polimera <quic_vpolimer@quicinc.com>
+>
+> Vinod Polimera (10):
+>   drm/msm/disp/dpu: clear dpu_assign_crtc and get crtc from connector
+>     state instead of dpu_enc
+>   drm: add helper functions to retrieve old and new crtc
+>   drm/msm/dp: use atomic callbacks for DP bridge ops
+>   drm/msm/dp: Add basic PSR support for eDP
+>   drm/msm/dp: use the eDP bridge ops to validate eDP modes
+>   drm/bridge: use atomic enable/disable callbacks for panel bridge
+>   drm/bridge: add psr support for panel bridge callbacks
+>   drm/msm/disp/dpu: use atomic enable/disable callbacks for encoder
+>     functions
+>   drm/msm/disp/dpu: add PSR support for eDP interface in dpu driver
+>   drm/msm/disp/dpu: check for crtc enable rather than crtc active to
+>     release shared resources
+>
+>  drivers/gpu/drm/bridge/panel.c              |  68 ++++++++--
+>  drivers/gpu/drm/drm_atomic.c                |  60 +++++++++
+>  drivers/gpu/drm/msm/disp/dpu1/dpu_crtc.c    |  17 ++-
+>  drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.c |  56 +++++----
+>  drivers/gpu/drm/msm/disp/dpu1/dpu_encoder.h |   8 --
+>  drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c     |   2 +-
+>  drivers/gpu/drm/msm/dp/dp_catalog.c         |  81 ++++++++++++
+>  drivers/gpu/drm/msm/dp/dp_catalog.h         |   4 +
+>  drivers/gpu/drm/msm/dp/dp_ctrl.c            |  73 +++++++++++
+>  drivers/gpu/drm/msm/dp/dp_ctrl.h            |   3 +
+>  drivers/gpu/drm/msm/dp/dp_display.c         |  31 +++--
+>  drivers/gpu/drm/msm/dp/dp_display.h         |   2 +
+>  drivers/gpu/drm/msm/dp/dp_drm.c             | 184 ++++++++++++++++++++++++++--
+>  drivers/gpu/drm/msm/dp/dp_drm.h             |   9 +-
+>  drivers/gpu/drm/msm/dp/dp_link.c            |  36 ++++++
+>  drivers/gpu/drm/msm/dp/dp_panel.c           |  22 ++++
+>  drivers/gpu/drm/msm/dp/dp_panel.h           |   6 +
+>  drivers/gpu/drm/msm/dp/dp_reg.h             |  27 ++++
+>  include/drm/drm_atomic.h                    |   7 ++
+>  19 files changed, 631 insertions(+), 65 deletions(-)
 
-For the Aspeed bits:
+I spent some time looking at the first few patches. I can try to look
+at more later this week, though (as you've noticed) many of my reviews
+are more nit-picks because I don't really have experience with PSR and
+my overall knowledge of the Qualcomm DP driver is pretty weak.
 
-Reviewed-by: Andrew Jeffery <andrew@aj.id.au>
+I tried to at least pick to give a Tested-by, but when I did that it
+didn't work flawlessly. I picked this series to the chromeos-5.15
+tree, which is pretty close to mainline right now. I left it sitting
+at a screen with a blinking cursor which pretty much means it's always
+transitioning into and out of PSR. I've seen several glitches on the
+screen with the series applied. :( No idea what's wrong--that's just
+me black-box testing. I did try to add debug printouts to see if we
+were hitting "PSR_UPDATE_ERROR_INT | PSR_WAKE_ERROR_INT" but I didn't
+see my printouts...
+
+FWIW: I'm running with KASAN enabled which could affect timings...
+Glitches happen every few minutes or so for me and so far I haven't
+see any glitches without KASAN, but that could just be chance...
+
+-Doug
