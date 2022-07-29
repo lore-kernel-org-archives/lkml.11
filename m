@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E0CAC00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 02:39:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BAA7C00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 02:39:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233867AbiG2CjN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 22:39:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56142 "EHLO
+        id S233973AbiG2CjR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 22:39:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231277AbiG2CjK (ORCPT
+        with ESMTP id S233707AbiG2CjL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 22:39:10 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E6037B34C
+        Thu, 28 Jul 2022 22:39:11 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67BD07B34F
         for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 19:39:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1659062350; x=1690598350;
   h=date:from:to:cc:subject:message-id:mime-version:
    content-transfer-encoding;
-  bh=q3zrx4UCHlK57YlBLf4pbI7diFMk4njT/phr3YEwp7Y=;
-  b=TS/+YBCDIIyy13ydAImTq1yBhU4XX0Ov4nQuIvlpROkskkIAfrS92i+B
-   hw43exBWdWrpDEfUXgLQ6R1du/YEB12vWSWueBFUS3vfyiFwkQPl1ck9i
-   0H0zdxQlOlMOWfPGhDm9iDWjVcLdttUt0v5MagLtAf4B00Cw8GxGK3EYx
-   gp+AEaxtjtILpFpg7OJq9oy8LSUDR9avZSG0kM/qRLE0ZiwumR9qPv5/o
-   K0aVGrWjD982KBOVnqcs0au6T5VhdU+8Ild3RRz72rZCnT6uqIaswal3W
-   kZLkhUBv95RIKzBM2MBNAYBr+cuSwYwBvgkr8v+pNdlhfJcikZfXjGlyy
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10422"; a="268438797"
+  bh=zCpg9s8GdSsKsyfxti/dxX9LBiQxyB6bV7Mzfp27zpg=;
+  b=Oj88aii9Wv5cDuk+EobXkPTznLxGU4aDon6vcmT0E3KoFraRyK7ZzYG9
+   0e7lzYbAJCoCgxUprXdxLrd+FKuLpA3xBhaV9J8RIUr+4WmhLXseRhTVm
+   IQL9vypcEKHvbJjb87b2KD/egqPsfHu7lReCdnjTXHJ787sXOjDbfC/CZ
+   iBJIhLtn+unhIKDsOC7fH5lHX3hmP2vVs++6VNV43RMa2UGJEqKXxx63F
+   Sn1NwS5KCDPWMx2C7AJLeJwEDqIawQY4K5ZlXfOW6JAxhW2ruK1M9XTVl
+   OdbM9t/4mT76+aNHYUyNUFOCE1x6qlZW/eyXHgEpIL8xD7bZabhxruzfM
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10422"; a="288687697"
 X-IronPort-AV: E=Sophos;i="5.93,200,1654585200"; 
-   d="scan'208";a="268438797"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2022 19:39:09 -0700
+   d="scan'208";a="288687697"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2022 19:39:10 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,200,1654585200"; 
-   d="scan'208";a="604823463"
+   d="scan'208";a="660047063"
 Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 28 Jul 2022 19:39:08 -0700
+  by fmsmga008.fm.intel.com with ESMTP; 28 Jul 2022 19:39:08 -0700
 Received: from kbuild by e0eace57cfef with local (Exim 4.96)
         (envelope-from <lkp@intel.com>)
-        id 1oHFu8-000AwU-0i;
+        id 1oHFu8-000AwW-0o;
         Fri, 29 Jul 2022 02:39:08 +0000
-Date:   Fri, 29 Jul 2022 10:38:08 +0800
+Date:   Fri, 29 Jul 2022 10:38:58 +0800
 From:   kernel test robot <lkp@intel.com>
 To:     "x86-ml" <x86@kernel.org>
 Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:x86/core] BUILD SUCCESS
- a1a5482a2c6e38a3ebed32e571625c56a8cc41a6
-Message-ID: <62e34810.psKhsnpD/CFysWf/%lkp@intel.com>
+Subject: [tip:x86/misc] BUILD SUCCESS
+ d906fa730827456711ce29c1f2994a0ccaff49dc
+Message-ID: <62e34842.jCIiUey/+Vm/UlwI%lkp@intel.com>
 User-Agent: Heirloom mailx 12.5 6/20/10
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -57,10 +57,10 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git x86/core
-branch HEAD: a1a5482a2c6e38a3ebed32e571625c56a8cc41a6  x86/extable: Fix ex_handler_msr() print condition
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git x86/misc
+branch HEAD: d906fa730827456711ce29c1f2994a0ccaff49dc  hwmon: (k10temp): Add support for new family 17h and 19h models
 
-elapsed time: 2441m
+elapsed time: 2442m
 
 configs tested: 188
 configs skipped: 5
@@ -109,13 +109,13 @@ m68k                        m5307c3_defconfig
 x86_64                        randconfig-a011
 x86_64                        randconfig-a013
 x86_64                        randconfig-a015
+arm                            lart_defconfig
+ia64                          tiger_defconfig
+sh                  sh7785lcr_32bit_defconfig
 powerpc                           allnoconfig
 mips                             allyesconfig
 powerpc                          allmodconfig
 sh                               allmodconfig
-arm                            lart_defconfig
-ia64                          tiger_defconfig
-sh                  sh7785lcr_32bit_defconfig
 sh                          rsk7269_defconfig
 sh                           sh2007_defconfig
 openrisc                            defconfig
@@ -137,13 +137,13 @@ parisc                generic-64bit_defconfig
 sh                          landisk_defconfig
 sh                           se7343_defconfig
 powerpc                     asp8347_defconfig
+x86_64                        randconfig-c001
+arm                  randconfig-c002-20220727
 s390                                defconfig
 s390                             allmodconfig
 arc                                 defconfig
 alpha                               defconfig
 s390                             allyesconfig
-x86_64                        randconfig-c001
-arm                  randconfig-c002-20220727
 nios2                            allyesconfig
 parisc64                            defconfig
 parisc                           allyesconfig
