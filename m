@@ -2,127 +2,297 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85BEDC00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 16:18:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1DE0C19F2A
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 16:18:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236473AbiG2QSU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 12:18:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42292 "EHLO
+        id S237207AbiG2QSs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 12:18:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230501AbiG2QSP (ORCPT
+        with ESMTP id S230501AbiG2QSr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 12:18:15 -0400
-Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABF0C88CEC
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 09:18:10 -0700 (PDT)
-Received: from in01.mta.xmission.com ([166.70.13.51]:36524)
-        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1oHSgj-006ViV-07; Fri, 29 Jul 2022 10:18:09 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:34452 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1oHSgh-003rm2-VS; Fri, 29 Jul 2022 10:18:08 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Tycho Andersen <tycho@tycho.pizza>
-Cc:     Oleg Nesterov <oleg@redhat.com>,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        linux-kernel@vger.kernel.org
-References: <YthsgqAZYnwHZLn+@tycho.pizza>
-        <20220721015459.GA4297@mail.hallyn.com> <YuFdUj5X4qckC/6g@tycho.pizza>
-        <20220727175538.GC18822@redhat.com> <YuGBXnqb5rPwAlYk@tycho.pizza>
-        <20220727191949.GD18822@redhat.com> <YuGUyayVWDB7R89i@tycho.pizza>
-        <20220728091220.GA11207@redhat.com> <YuL9uc8WfiYlb2Hw@tycho.pizza>
-        <87pmhofr1q.fsf@email.froward.int.ebiederm.org>
-        <YuPlqp0jSvVu4WBK@tycho.pizza>
-Date:   Fri, 29 Jul 2022 11:15:28 -0500
-In-Reply-To: <YuPlqp0jSvVu4WBK@tycho.pizza> (Tycho Andersen's message of "Fri,
-        29 Jul 2022 07:50:34 -0600")
-Message-ID: <87v8rfevz3.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Fri, 29 Jul 2022 12:18:47 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C952788CEE;
+        Fri, 29 Jul 2022 09:18:45 -0700 (PDT)
+Date:   Fri, 29 Jul 2022 18:18:43 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1659111524;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=ccHi5rpdoxagvk/VMmpwdyqLPl6kfS83BVw+V7teFMs=;
+        b=EXsW3S2hMw9RB5yAYHiTJzh7sLUDN/pEhVwOMBoD2EAk4Tfe9vO+q5TDgvkvQcDRp1pIOp
+        9wCUsfnEHZXvQviXglQhFDunsbcb1ViTQmKAgM//wAqbeioyHkitaie2tGlP0iBELuJUbX
+        7ItjfHTHFisvrttTr8RXtCoZikqJGXVbIOIoDGdwLuoEX4b5DMrphNmy6QrRDo0WUpfShW
+        gloBtgT6YDzR2UJYoXTaqmrjpqQ9jfgBonUb98EFhM4K/0K4IdVoGzGnbeRsvuzPUkGC+N
+        X7dDm4HTCuaekGamtlysS6Bb27s9whQbM/IpMr9E3I6FXUKwWvCzEBeEzpn8Gw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1659111524;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=ccHi5rpdoxagvk/VMmpwdyqLPl6kfS83BVw+V7teFMs=;
+        b=kib4G+q7LID5qN7Q/Nrs9+zjt800o+Vyi6fMK1ybYqM5xZOrUlYmWx+b4iio0QzOfrwH8h
+        EL+JyJzjp5vWfkCg==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        linux-rt-users@vger.kernel.org,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: [ANNOUNCE] v5.19-rc8-rt9
+Message-ID: <YuQIY/NA2o5j9HVR@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1oHSgh-003rm2-VS;;;mid=<87v8rfevz3.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX190TV86l60ISfkFnfhVXBGwRERgjN7W5wI=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH] sched: __fatal_signal_pending() should also check
- PF_EXITING
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Tycho Andersen <tycho@tycho.pizza> writes:
+Dear RT folks!
 
-> On Fri, Jul 29, 2022 at 12:04:17AM -0500, Eric W. Biederman wrote:
->> Tycho Andersen <tycho@tycho.pizza> writes:
->> 
->> > On Thu, Jul 28, 2022 at 11:12:20AM +0200, Oleg Nesterov wrote:
->
->> >> Finally. if fuse_flush() wants __fatal_signal_pending() == T when the
->> >> caller exits, perhaps it can do it itself? Something like
->> >> 
->> >> 	if (current->flags & PF_EXITING) {
->> >> 		spin_lock_irq(siglock);
->> >> 		set_thread_flag(TIF_SIGPENDING);
->> >> 		sigaddset(&current->pending.signal, SIGKILL);
->> >> 		spin_unlock_irq(siglock);
->> >> 	}
->> >> 
->> >> Sure, this is ugly as hell. But perhaps this can serve as a workaround?
->> >
->> > or even just
->> >
->> >     if (current->flags & PF_EXITING)
->> >         return;
->> >
->> > since we don't have anyone to send the result of the flush to anyway.
->> > If we don't end up converging on a fix here, I'll just send that
->> > patch. Thanks for the suggestion.
->> 
->> If that was limited to the case you care about that would be reasonable.
->> 
->> That will have an effect on any time a process that opens files on a
->> fuse filesystem exits and depends upon the exit path to close it's file
->> descriptors to the fuse filesystem.
->> 
->> 
->> I do see a plausible solution along those lines.
->> 
->> In fuse_flush instead of using fuse_simple_request call an equivalent
->> function that when PF_EXITING is true skips calling request_wait_answer.
->> Or perhaps when PF_EXITING is set uses schedule_work to call the
->> request_wait_answer.
->
-> I don't see why this is any different than what I proposed. It changes
-> the semantics to flush happening out-of-order with task exit, instead
-> of strictly before, which you point out might be a problem. What am I
-> missing?
+I'm pleased to announce the v5.19-rc8-rt9 patch set. 
 
-What you proposed skips the flush operation entirely.  Which means
-that a fuse server that tracks opens and closes of a file descriptor
-will see more opens than closes and will have a reference counting
-problem (probably resulting in things not being freed).
+Changes since v5.19-rc8-rt8:
 
-Simply skipping the wait for the result from the fuse server means
-the fuse server sees what it has always seen.  The kernel simply won't
-block until that result has been returned.  Which means the other file
-descriptors can be closed.
+  - Redo the dcache patch based on feedback from upstream.
+
+  - Add a comment to the scheduler code based on feedback from upstream.
+
+  - Printing a pointer usually leads to warning on PREEMPT_RT. Reported
+    by Mike Galbraith.
 
 
-For the specific case you are looking at with the server being killed
-and server's file descriptors not yet being closed, the difference
-does not matter.  In the ordinary case of a process exit closing file
-descriptors to a fuse filesystem where the server continues to live
-and function not waiting for the response from the server simply
-winds up being an optimization, in exit.  The key part is the fuse
-server continues to see the same traffic.  In particular the open
-requests and the flush requests continue to balance, so reference
-counting in the fuse server is not broken.
+Known issues
+     - Valentin Schneider reported a few splats on ARM64, see
+          https://lkml.kernel.org/r/20210810134127.1394269-1-valentin.schneider@arm.com
 
-Eric
+The delta patch against v5.19-rc8-rt8 is appended below and can be found here:
+ 
+     https://cdn.kernel.org/pub/linux/kernel/projects/rt/5.19/incr/patch-5.19-rc8-rt8-rt9.patch.xz
+
+You can get this release via the git tree at:
+
+    git://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-rt-devel.git v5.19-rc8-rt9
+
+The RT patch against v5.19-rc8 can be found here:
+
+    https://cdn.kernel.org/pub/linux/kernel/projects/rt/5.19/older/patch-5.19-rc8-rt9.patch.xz
+
+The split quilt queue is available at:
+
+    https://cdn.kernel.org/pub/linux/kernel/projects/rt/5.19/older/patches-5.19-rc8-rt9.tar.xz
+
+Sebastian
+
+diff --git a/fs/dcache.c b/fs/dcache.c
+index 0b5fd3a17ff7c..a95064f972c80 100644
+--- a/fs/dcache.c
++++ b/fs/dcache.c
+@@ -2239,6 +2239,7 @@ struct dentry *d_add_ci(struct dentry *dentry, struct inode *inode,
+ 		} 
+ 	}
+ 	res = d_splice_alias(inode, found);
++	d_lookup_done(found);
+ 	if (res) {
+ 		dput(found);
+ 		return res;
+@@ -2580,11 +2581,13 @@ static inline unsigned start_dir_add(struct inode *dir)
+ 	}
+ }
+ 
+-static inline void end_dir_add(struct inode *dir, unsigned n)
++static inline void end_dir_add(struct inode *dir, unsigned int n,
++			       wait_queue_head_t *d_wait)
+ {
+ 	smp_store_release(&dir->i_dir_seq, n + 2);
+ 	if (IS_ENABLED(CONFIG_PREEMPT_RT))
+ 		preempt_enable();
++	wake_up_all(d_wait);
+ }
+ 
+ static void d_wait_lookup(struct dentry *dentry)
+@@ -2735,13 +2738,13 @@ static wait_queue_head_t *__d_lookup_unhash(struct dentry *dentry)
+ 	return d_wait;
+ }
+ 
+-void __d_lookup_done(struct dentry *dentry)
++void __d_lookup_unhash_wake(struct dentry *dentry)
+ {
+ 	spin_lock(&dentry->d_lock);
+ 	wake_up_all(__d_lookup_unhash(dentry));
+ 	spin_unlock(&dentry->d_lock);
+ }
+-EXPORT_SYMBOL(__d_lookup_done);
++EXPORT_SYMBOL(__d_lookup_unhash_wake);
+ 
+ /* inode->i_lock held if inode is non-NULL */
+ 
+@@ -2750,7 +2753,6 @@ static inline void __d_add(struct dentry *dentry, struct inode *inode)
+ 	wait_queue_head_t *d_wait;
+ 	struct inode *dir = NULL;
+ 	unsigned n;
+-
+ 	spin_lock(&dentry->d_lock);
+ 	if (unlikely(d_in_lookup(dentry))) {
+ 		dir = dentry->d_parent->d_inode;
+@@ -2766,10 +2768,8 @@ static inline void __d_add(struct dentry *dentry, struct inode *inode)
+ 		fsnotify_update_flags(dentry);
+ 	}
+ 	__d_rehash(dentry);
+-	if (dir) {
+-		end_dir_add(dir, n);
+-		wake_up_all(d_wait);
+-	}
++	if (dir)
++		end_dir_add(dir, n, d_wait);
+ 	spin_unlock(&dentry->d_lock);
+ 	if (inode)
+ 		spin_unlock(&inode->i_lock);
+@@ -2982,10 +2982,8 @@ static void __d_move(struct dentry *dentry, struct dentry *target,
+ 	write_seqcount_end(&target->d_seq);
+ 	write_seqcount_end(&dentry->d_seq);
+ 
+-	if (dir) {
+-		end_dir_add(dir, n);
+-		wake_up_all(d_wait);
+-	}
++	if (dir)
++		end_dir_add(dir, n, d_wait);
+ 
+ 	if (dentry->d_parent != old_parent)
+ 		spin_unlock(&dentry->d_parent->d_lock);
+diff --git a/include/linux/dcache.h b/include/linux/dcache.h
+index a07a51c858fb4..c73e5e327e76f 100644
+--- a/include/linux/dcache.h
++++ b/include/linux/dcache.h
+@@ -349,7 +349,7 @@ static inline void dont_mount(struct dentry *dentry)
+ 	spin_unlock(&dentry->d_lock);
+ }
+ 
+-extern void __d_lookup_done(struct dentry *dentry);
++extern void __d_lookup_unhash_wake(struct dentry *dentry);
+ 
+ static inline int d_in_lookup(const struct dentry *dentry)
+ {
+@@ -359,7 +359,7 @@ static inline int d_in_lookup(const struct dentry *dentry)
+ static inline void d_lookup_done(struct dentry *dentry)
+ {
+ 	if (unlikely(d_in_lookup(dentry)))
+-		__d_lookup_done(dentry);
++		__d_lookup_unhash_wake(dentry);
+ }
+ 
+ extern void dput(struct dentry *);
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 377e7d4139d87..fd7b06dcab48f 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -3300,6 +3300,36 @@ int migrate_swap(struct task_struct *cur, struct task_struct *p,
+ #endif /* CONFIG_NUMA_BALANCING */
+ 
+ #ifdef CONFIG_PREEMPT_RT
++
++/*
++ * Consider:
++ *
++ *  set_special_state(X);
++ *
++ *  do_things()
++ *    // Somewhere in there is an rtlock that can be contended:
++ *    current_save_and_set_rtlock_wait_state();
++ *    [...]
++ *    schedule_rtlock(); (A)
++ *    [...]
++ *    current_restore_rtlock_saved_state();
++ *
++ *  schedule(); (B)
++ *
++ * If p->saved_state is anything else than TASK_RUNNING, then p blocked on an
++ * rtlock (A) *before* voluntarily calling into schedule() (B) after setting its
++ * state to X. For things like ptrace (X=TASK_TRACED), the task could have more
++ * work to do upon acquiring the lock in do_things() before whoever called
++ * wait_task_inactive() should return. IOW, we have to wait for:
++ *
++ *   p.saved_state = TASK_RUNNING
++ *   p.__state     = X
++ *
++ * which implies the task isn't blocked on an RT lock and got to schedule() (B).
++ *
++ * Also see comments in ttwu_state_match().
++ */
++
+ static __always_inline bool state_mismatch(struct task_struct *p, unsigned int match_state)
+ {
+ 	unsigned long flags;
+diff --git a/lib/vsprintf.c b/lib/vsprintf.c
+index 3c1853a9d1c09..371d6f5abaad5 100644
+--- a/lib/vsprintf.c
++++ b/lib/vsprintf.c
+@@ -750,37 +750,40 @@ static int __init debug_boot_weak_hash_enable(char *str)
+ }
+ early_param("debug_boot_weak_hash", debug_boot_weak_hash_enable);
+ 
+-static DEFINE_STATIC_KEY_FALSE(filled_random_ptr_key);
++static bool filled_random_ptr_key;
++static siphash_key_t ptr_key __read_mostly;
+ 
+-static void enable_ptr_key_workfn(struct work_struct *work)
++static void fill_ptr_key_workfn(struct work_struct *work)
+ {
+-	static_branch_enable(&filled_random_ptr_key);
++	int ret;
++
++	ret = get_random_bytes_wait(&ptr_key, sizeof(ptr_key));
++	if (WARN_ON(ret < 0))
++		return;
++	/* Pairs with smp_rmb() before reading ptr_key. */
++	smp_wmb();
++	WRITE_ONCE(filled_random_ptr_key, true);
+ }
+ 
++static int vsprintf_init_hashval(void)
++{
++	static DECLARE_WORK(fill_ptr_key_work, fill_ptr_key_workfn);
++
++	queue_work(system_unbound_wq, &fill_ptr_key_work);
++	return 0;
++}
++subsys_initcall(vsprintf_init_hashval)
++
+ /* Maps a pointer to a 32 bit unique identifier. */
+ static inline int __ptr_to_hashval(const void *ptr, unsigned long *hashval_out)
+ {
+-	static siphash_key_t ptr_key __read_mostly;
+ 	unsigned long hashval;
+ 
+-	if (!static_branch_likely(&filled_random_ptr_key)) {
+-		static bool filled = false;
+-		static DEFINE_SPINLOCK(filling);
+-		static DECLARE_WORK(enable_ptr_key_work, enable_ptr_key_workfn);
+-		unsigned long flags;
+-
+-		if (!system_unbound_wq || !rng_is_initialized() ||
+-		    !spin_trylock_irqsave(&filling, flags))
+-			return -EAGAIN;
+-
+-		if (!filled) {
+-			get_random_bytes(&ptr_key, sizeof(ptr_key));
+-			queue_work(system_unbound_wq, &enable_ptr_key_work);
+-			filled = true;
+-		}
+-		spin_unlock_irqrestore(&filling, flags);
+-	}
++	if (!READ_ONCE(filled_random_ptr_key))
++		return -EBUSY;
+ 
++	/* Pairs with smp_wmb() after writing ptr_key. */
++	smp_rmb();
+ 
+ #ifdef CONFIG_64BIT
+ 	hashval = (unsigned long)siphash_1u64((u64)ptr, &ptr_key);
+diff --git a/localversion-rt b/localversion-rt
+index 700c857efd9ba..22746d6390a42 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt8
++-rt9
