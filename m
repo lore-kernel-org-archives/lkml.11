@@ -2,83 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C63E5C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 13:09:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7686C00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 13:11:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236432AbiG2NJD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 09:09:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59818 "EHLO
+        id S236654AbiG2NLO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 09:11:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236394AbiG2NI5 (ORCPT
+        with ESMTP id S236501AbiG2NKr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 09:08:57 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF701C56;
-        Fri, 29 Jul 2022 06:08:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=XV4FYkS/nsQW9JhqD1MLPoDv6thr9pzmU6vmVArakKA=; b=A+X10RUu2sgNy6OI75yTPLCpL4
-        pdimq9m6r+Irwi35Ae5QGvmdLS6ff/m6GGKdMzcSpfRdAH8dhMIxQ4Zk7qSIenpTP10PCFngmHkzt
-        AtBagkT7qH0v+R36jBsoAP0qwh+RZLenM7dnMBfgAM+Tjo3PeVfCm0+jwnmJU6F7fysI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1oHPjL-00Bv17-Va; Fri, 29 Jul 2022 15:08:39 +0200
-Date:   Fri, 29 Jul 2022 15:08:39 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Pandey, Radhey Shyam" <radhey.shyam.pandey@amd.com>
-Cc:     "michal.simek@xilinx.com" <michal.simek@xilinx.com>,
-        "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>,
-        "claudiu.beznea@microchip.com" <claudiu.beznea@microchip.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "ronak.jain@xilinx.com" <ronak.jain@xilinx.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "git@xilinx.com" <git@xilinx.com>, "git (AMD-Xilinx)" <git@amd.com>
-Subject: Re: [PATCH net-next 2/2] net: macb: Add zynqmp SGMII dynamic
- configuration support
-Message-ID: <YuPb141ykzLTWLbC@lunn.ch>
-References: <1658477520-13551-1-git-send-email-radhey.shyam.pandey@amd.com>
- <1658477520-13551-3-git-send-email-radhey.shyam.pandey@amd.com>
- <Yt15J6fO5j9jxFxp@lunn.ch>
- <MN0PR12MB59537FD82D25E5B6BE17D1B6B7959@MN0PR12MB5953.namprd12.prod.outlook.com>
- <Yt7OqU9LXl4SDqYx@lunn.ch>
- <MN0PR12MB5953571B73BE19D01BCF12D4B7949@MN0PR12MB5953.namprd12.prod.outlook.com>
- <MN0PR12MB59535036A5EA7F7EE488FC56B7999@MN0PR12MB5953.namprd12.prod.outlook.com>
+        Fri, 29 Jul 2022 09:10:47 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EB5565AF;
+        Fri, 29 Jul 2022 06:10:44 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LvSYs5qW8z4x1d;
+        Fri, 29 Jul 2022 23:10:41 +1000 (AEST)
+From:   Michael Ellerman <patch-notifications@ellerman.id.au>
+To:     linux-doc-tw-discuss@lists.sourceforge.net,
+        linux-doc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Bagas Sanjaya <bagasdotme@gmail.com>,
+        linux-next@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Cc:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Yanteng Si <siyanteng@loongson.cn>,
+        Alex Shi <alexs@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+        Segher Boessenkool <segher@kernel.crashing.org>,
+        linux-kernel@vger.kernel.org, Nicholas Piggin <npiggin@gmail.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>
+In-Reply-To: <20220728033332.27836-1-bagasdotme@gmail.com>
+References: <20220727220050.549db613@canb.auug.org.au> <20220728033332.27836-1-bagasdotme@gmail.com>
+Subject: Re: [PATCH 0/3] Documentation: powerpc: documentation fixes for Documentation/powerpc/elf_hwcaps.rst
+Message-Id: <165909979455.253830.7633506902686535863.b4-ty@ellerman.id.au>
+Date:   Fri, 29 Jul 2022 23:03:14 +1000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <MN0PR12MB59535036A5EA7F7EE488FC56B7999@MN0PR12MB5953.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> > > How robust is this? What if somebody specified a different power domain?
-> > 
-> > Some background - init_reset_optional() fn is implemented for three
-> > platforms i.e., zynqmp, versal, MPFS.
-> > 
-> > zynqmp_pm_set_gem_config API expect first argument as GEM node id so,
-> > power-domain DT property is passed to get node ID.
-> > 
-> > However, power-domain property is read only if underlying firmware
-> > supports configuration of GEM secure space. It's only true for zynqmp SGMII
-> > case and for zynqmp power domain is fixed.
-> > In addition to it there is an error handling in power-domain property parsing.
-> > Hope this answers the question.
+On Thu, 28 Jul 2022 10:33:30 +0700, Bagas Sanjaya wrote:
+> After merging powerpc tree for linux-next integration testing, Stephen
+> Rothwell reported htmldocs warnings at [1]. Fix these with self-explanatory
+> fixes in the shortlog below.
 > 
-> Please let me know the implementation looks fine or needs any modification?
+> [1]: https://lore.kernel.org/linuxppc-dev/20220727220050.549db613@canb.auug.org.au/
+> 
+> Bagas Sanjaya (3):
+>   Documentation: powerpc: fix indentation warnings
+>   Documentation: use different label names for each arch's
+>     elf_hwcaps.rst
+>   Documentation: powerpc: add elf_hwcaps to table of contents
+> 
+> [...]
 
-Given that explanation, it looks fine.
+Applied to powerpc/next.
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+[1/3] Documentation: powerpc: fix indentation warnings
+      https://git.kernel.org/powerpc/c/4515862b66d3bdaf681cade1c72f047c93d94d01
+[2/3] Documentation: use different label names for each arch's elf_hwcaps.rst
+      https://git.kernel.org/powerpc/c/0595a216920cb035030c73cec3ab9fe413ef1d77
+[3/3] Documentation: powerpc: add elf_hwcaps to table of contents
+      https://git.kernel.org/powerpc/c/a05aae92f84ba6d2705f6dac206ef5dcf097ea96
 
-    Andrew
+cheers
