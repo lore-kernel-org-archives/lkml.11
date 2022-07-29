@@ -2,150 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C60BC3F6B0
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 01:01:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3018DC19F2A
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 01:07:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232531AbiG2BAQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 21:00:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46694 "EHLO
+        id S232830AbiG2BHT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 21:07:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229535AbiG2BAO (ORCPT
+        with ESMTP id S229535AbiG2BHR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 21:00:14 -0400
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E81205F80
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 18:00:12 -0700 (PDT)
-Received: by mail-pg1-x52e.google.com with SMTP id f65so2815757pgc.12
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 18:00:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=USR2zvqLThZbyU5A3Qws0c7W/e7hlltOBwwvVk3Sj2g=;
-        b=HT82TppWLVwueR0E/3j3UDnFBXBgTuLCOeGo3TkS8HaubmuKaiTh9JM217y+wu0938
-         tRbjooD8r7hxC7T5K98Zo3a7rP9pGWHuNcYi6guo3sNoLf+ZQI0WMkQr1AE46bNSmODj
-         k+oQDsiTvdvXA0zVltRYrPWFE/R0r+i69a/5H/3tA7X6hB3FlTJfYwYoo9WwQlDdBtjp
-         Wd3xtj0F7c4Up//ZKhb/3TraJz2U9Gu+MMVstmYIZZpcVYxUdlzhJfqBQ/UVjkW+UJWq
-         zSWo4sR/S3Sv4FLNjUeL6DZiQ6J12Ka6zTihhkIDGe5VVghLKL2dnICPXzjv0obNnMF8
-         C4eg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=USR2zvqLThZbyU5A3Qws0c7W/e7hlltOBwwvVk3Sj2g=;
-        b=cfC4CJ7Xcr1u+enS2Mi6GCC56Ymk4rgABd4IDd03iCKSwFgrOkxlJrqPlKJwaZHk9E
-         KReiuoHAK/vZmwBjfK1JS26tprnpJGCzuMgwlem5CGbaGB2Ys+GWOPGF32Qh4OI5HOMy
-         1oIlANfK42AhN247OgpF/Ib3waakFuH5ivzZny/5jvqb6Dj3EP4thTvMLDrIFSk4EyUP
-         PnWhb0JqrpvUHrUQblutqUFOafQpCP9NGMLuRaE0CQbWiqyVMpfEJRrGEhZzkmPW/de2
-         z6FsVOsK2RghBWE9RjK/pz3s+aB/XrYS7pL0KdNy87Oca+7kVVS4SOq3TrRZScfCTxPu
-         wf+w==
-X-Gm-Message-State: AJIora8/FRVPV11WmCV7LylYOpGJmJLxczHU49s7NVETN/luf7bjyqD0
-        6m+5qPIUelSBvD6eleIRsNM=
-X-Google-Smtp-Source: AGRyM1si/DG3TbMHqNqDoIa0ug0YoGaiincrRbirQlQefwA0R5+uG1WpX1JVsOdnULZbN/qJrjFNAA==
-X-Received: by 2002:a63:1220:0:b0:411:f661:f819 with SMTP id h32-20020a631220000000b00411f661f819mr1064703pgl.250.1659056412359;
-        Thu, 28 Jul 2022 18:00:12 -0700 (PDT)
-Received: from [192.168.0.10] (KD106168128197.ppp-bb.dion.ne.jp. [106.168.128.197])
-        by smtp.gmail.com with ESMTPSA id j10-20020a17090276ca00b0016d5cf36ff4sm1893361plt.289.2022.07.28.18.00.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 28 Jul 2022 18:00:11 -0700 (PDT)
-Message-ID: <9db2f4c2-cc41-9c06-e0ec-7480529cad13@gmail.com>
-Date:   Fri, 29 Jul 2022 10:00:08 +0900
+        Thu, 28 Jul 2022 21:07:17 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F9704BD1A
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 18:07:15 -0700 (PDT)
+Received: from canpemm500002.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Lv8Rj6y3pzjXXh;
+        Fri, 29 Jul 2022 09:04:17 +0800 (CST)
+Received: from [10.174.177.76] (10.174.177.76) by
+ canpemm500002.china.huawei.com (7.192.104.244) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 29 Jul 2022 09:07:13 +0800
+Subject: Re: [PATCH 2/6] hugetlb_cgroup: remove unneeded header file
+To:     Mina Almasry <almasrymina@google.com>
+CC:     <akpm@linux-foundation.org>, <mike.kravetz@oracle.com>,
+        <linux-mm@kvack.org>, <linux-kernel@vger.kernel.org>
+References: <20220728121949.20985-1-linmiaohe@huawei.com>
+ <20220728121949.20985-3-linmiaohe@huawei.com>
+ <CAHS8izNM8aPdus_EVygtug+8b6CUNozz_se+mpqRe7SUZEcOwQ@mail.gmail.com>
+ <CAHS8izML04ujw1+1622JPQjKH0RHt0zHSEQvbLXZaZ1edfF=bQ@mail.gmail.com>
+From:   Miaohe Lin <linmiaohe@huawei.com>
+Message-ID: <23841f02-2611-6945-868f-f8f15c325219@huawei.com>
+Date:   Fri, 29 Jul 2022 09:07:12 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH 3/6] mtd: spi-nor: remember full JEDEC flash ID
+In-Reply-To: <CAHS8izML04ujw1+1622JPQjKH0RHt0zHSEQvbLXZaZ1edfF=bQ@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-To:     Michael Walle <michael@walle.cc>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>
-Cc:     linux-kernel@vger.kernel.org, linux-mtd@lists.infradead.org
-References: <20220513133520.3945820-1-michael@walle.cc>
- <20220513133520.3945820-4-michael@walle.cc>
-From:   Takahiro Kuwano <tkuw584924@gmail.com>
-In-Reply-To: <20220513133520.3945820-4-michael@walle.cc>
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.177.76]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500002.china.huawei.com (7.192.104.244)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 5/13/2022 10:35 PM, Michael Walle wrote:
-> At the moment, we print the JEDEC ID that is stored in our database. The
-> generic flash support won't have such an entry in our database. To find
-> out the JEDEC ID later we will have to cache it. There is also another
-> advantage: If the flash is found in the database, the ID could be
-> truncated because the ID of the entry is used which can be shorter. Some
-> flashes still holds valuable information in the bytes after the JEDEC ID
-> and come in handy during debugging of when coping with INFO6() entries.
-> These are not accessible for now.
+On 2022/7/29 2:02, Mina Almasry wrote:
+> On Thu, Jul 28, 2022 at 10:45 AM Mina Almasry <almasrymina@google.com> wrote:
+>>
+>> On Thu, Jul 28, 2022 at 5:20 AM Miaohe Lin <linmiaohe@huawei.com> wrote:
+>>>
+>>> The header file slab.h is unneeded now. Remove it.
+>>>
+>>> Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+>>
+>> Acked-by: Mina Almasry <almasrymina@google.com>
+>>
 > 
-> Save a copy of the ID bytes after reading and display it via debugfs.
-> 
-> Signed-off-by: Michael Walle <michael@walle.cc>
-> ---
->  drivers/mtd/spi-nor/core.c    | 5 +++++
->  drivers/mtd/spi-nor/debugfs.c | 2 +-
->  include/linux/mtd/spi-nor.h   | 3 +++
->  3 files changed, 9 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
-> index ce5d69317d46..65cd8e668579 100644
-> --- a/drivers/mtd/spi-nor/core.c
-> +++ b/drivers/mtd/spi-nor/core.c
-> @@ -1664,6 +1664,11 @@ static const struct flash_info *spi_nor_detect(struct spi_nor *nor)
->  		return ERR_PTR(ret);
->  	}
->  
-> +	/* Cache the complete flash ID. */
-> +	nor->id = devm_kmemdup(nor->dev, id, SPI_NOR_MAX_ID_LEN, GFP_KERNEL);
-> +	if (!nor->id)
-> +		return ERR_PTR(-ENOMEM);
-> +
->  	info = spi_nor_match_id(nor, id);
->  	if (!info) {
->  		dev_err(nor->dev, "unrecognized JEDEC id bytes: %*ph\n",
-> diff --git a/drivers/mtd/spi-nor/debugfs.c b/drivers/mtd/spi-nor/debugfs.c
-> index eaf84f7a0676..23d51e7ba0a7 100644
-> --- a/drivers/mtd/spi-nor/debugfs.c
-> +++ b/drivers/mtd/spi-nor/debugfs.c
-> @@ -81,7 +81,7 @@ static int spi_nor_params_show(struct seq_file *s, void *data)
->  	int i;
->  
->  	seq_printf(s, "name\t\t%s\n", info->name);
-> -	seq_printf(s, "id\t\t%*ph\n", info->id_len, info->id);
-> +	seq_printf(s, "id\t\t%*ph\n", SPI_NOR_MAX_ID_LEN, nor->id);
->  	string_get_size(params->size, 1, STRING_UNITS_2, buf, sizeof(buf));
->  	seq_printf(s, "size\t\t%s\n", buf);
->  	seq_printf(s, "write size\t%u\n", params->writesize);
-> diff --git a/include/linux/mtd/spi-nor.h b/include/linux/mtd/spi-nor.h
-> index 1ede4c89805a..4dd6cd7389ca 100644
-> --- a/include/linux/mtd/spi-nor.h
-> +++ b/include/linux/mtd/spi-nor.h
-> @@ -349,6 +349,8 @@ struct spi_nor_flash_parameter;
->   * @bouncebuf:		bounce buffer used when the buffer passed by the MTD
->   *                      layer is not DMA-able
->   * @bouncebuf_size:	size of the bounce buffer
-> + * @id:			The flash's ID bytes. Always contains
-> + *			SPI_NOR_MAX_ID_LEN bytes.
->   * @info:		SPI NOR part JEDEC MFR ID and other info
->   * @manufacturer:	SPI NOR manufacturer
->   * @addr_width:		number of address bytes
-> @@ -379,6 +381,7 @@ struct spi_nor {
->  	struct spi_mem		*spimem;
->  	u8			*bouncebuf;
->  	size_t			bouncebuf_size;
-> +	u8			*id;
->  	const struct flash_info	*info;
->  	const struct spi_nor_manufacturer *manufacturer;
->  	u8			addr_width;
+> Actually, sorry, but this file calls kzalloc_node() which comes from
+> linux/slab.h, no? Can we keep the include then? slab.h is probably
+> included by other include files but for clarity it's better that
+> hugetlb_cgroup.c to include slab.h if it is calling functions declared
+> there.
 
-Reviewed-by: Takahiro Kuwano <Takahiro.Kuwano@infineon.com>
+I have browsed the code to verify it but I still missed kzalloc_node in this file.
+Will drop this patch. Many thanks for your review.
 
-Thanks,
-Takahiro
+> 
+>>> ---
+>>>  mm/hugetlb_cgroup.c | 1 -
+>>>  1 file changed, 1 deletion(-)
+>>>
+>>> diff --git a/mm/hugetlb_cgroup.c b/mm/hugetlb_cgroup.c
+>>> index d16eb00c947d..99e9a367e1e5 100644
+>>> --- a/mm/hugetlb_cgroup.c
+>>> +++ b/mm/hugetlb_cgroup.c
+>>> @@ -19,7 +19,6 @@
+>>>
+>>>  #include <linux/cgroup.h>
+>>>  #include <linux/page_counter.h>
+>>> -#include <linux/slab.h>
+>>>  #include <linux/hugetlb.h>
+>>>  #include <linux/hugetlb_cgroup.h>
+>>>
+>>> --
+>>> 2.23.0
+>>>
+> .
+> 
 
