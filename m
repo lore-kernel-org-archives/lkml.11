@@ -2,129 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C41DC00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 15:22:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B492FC19F2C
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 15:24:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237534AbiG2PWo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 11:22:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50634 "EHLO
+        id S237118AbiG2PYN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 11:24:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237522AbiG2PWS (ORCPT
+        with ESMTP id S237468AbiG2PX7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 11:22:18 -0400
-Received: from mail-yw1-x112e.google.com (mail-yw1-x112e.google.com [IPv6:2607:f8b0:4864:20::112e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F057A8723E
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 08:21:44 -0700 (PDT)
-Received: by mail-yw1-x112e.google.com with SMTP id 00721157ae682-31e7ca45091so54676277b3.3
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 08:21:44 -0700 (PDT)
+        Fri, 29 Jul 2022 11:23:59 -0400
+Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B435085FA6
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 08:23:40 -0700 (PDT)
+Received: by mail-oi1-x230.google.com with SMTP id u76so6124817oie.3
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 08:23:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Ftd/Rb29GQlI+ogXgIbEomupaph/9xpI+7Ojh5eQKHs=;
-        b=D8EmA+zZy9pWMwqNjrwN7EkBpYkgDmiACAU/RNngnePGi8cWmMrb32U5Nvr5TvYv8h
-         BvMIWXk5GZaq9Lt8kTmdhNMNTDel1fyC+ftzQ9DK74gWjFPishoY1zk68gFsjqhPAzFl
-         JFRITUJoIJ7otDFSPvEokmCgPcue5/EXJoTxRc6AmwG1TmJDGuBs/GzhndJkKhrZtNQ1
-         t0aMPbtBbkDlBKakdy40VXMF1rNygq1k1L5oqFMhd+mHHpDPomipFHHpK6cRRCgpHf3x
-         e3JZWvPXRJcct9cgxSws3JSkOq+qGc7ptHJ6Gj5dwU4LnmW1NP8lMpPDZqp3hlCI9TKW
-         126A==
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=4wO1MjeUsCDlwsXxvP/E1eIWCLhJk0oKRDyI5lcSaFI=;
+        b=WgESSMakprr85bnAIQPsz93hHqlVj8N5EH6D+DWehMU4PB6BlOaHdBjAkTgO/LJ0Rt
+         EEm6Rqosm6t46MPPgz5qOllPMZwC2TnrYVsdSK4VTAxsBocYtfk3hc7mR4iW+atazhhw
+         uDDk3khZEOrUq+CH1dHeKhoH6+QSbkYBfTVb9pa3oQk5H6IDBMFv8JYTJF+UVTOvXVlJ
+         +mnfFG1b5E682/EDOhbA7SF9QMgYcsFaT8f8u0gyAwfL6979t6yKtlvKATjgfhPgtAtw
+         7AwV/iZnBQ7m2870ZxKq/WfbviEeLlfZCzjnt8JZ9T8m9JpnrovfgOvL71Y2P4bRRCgM
+         wOqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Ftd/Rb29GQlI+ogXgIbEomupaph/9xpI+7Ojh5eQKHs=;
-        b=2sTn3y/p5jGqZq3RxE1/Gs5nDd+RADhO4OEGxmpwtRZmTgCp2pP+rMaYdMTzgUccVM
-         eFOXUrZfPkRKLWQcr/BwqE/5Cn+uNaJ7KPe2yZXqxYrpNpay0BTFenN592eQ/f3EwKUN
-         5w1gRH8mqHrLrGR3egngr9LXU9HuZBV7nvSa8AXISFaTpfGlxtn0hrAQUX2QWB6MV4Gh
-         eqed/uUCy+B5KJQU/6FITIOe/KbuRJtZe+dyeKjj6MZ4tXB1Jn2E81x4zZJf9CIrECGh
-         MyDPauWAMwZH03aIdaaFq8ZBeGncU83HFQIHC0XccVPjXz7dw+6fVem7oo1FaAMzujH1
-         z9qA==
-X-Gm-Message-State: ACgBeo1QgF3HnswjKEdf+HDWj+U4CO5FO3WOt4Q8htxXT+fE9tIZahbv
-        EvyC6STBWzZi6JNsh0/xfMvndk9r/IU8p/zig59EDw==
-X-Google-Smtp-Source: AA6agR7KILU9FPTu9cuWQZ1lp+wXnpmNjyMLgZNJ652RF6rhJLbpSdQ09FhDCprQUhwn+0k1aqCEro02i1Fj3jahtmw=
-X-Received: by 2002:a81:6e87:0:b0:323:828:2175 with SMTP id
- j129-20020a816e87000000b0032308282175mr3598423ywc.71.1659108103971; Fri, 29
- Jul 2022 08:21:43 -0700 (PDT)
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=4wO1MjeUsCDlwsXxvP/E1eIWCLhJk0oKRDyI5lcSaFI=;
+        b=5Jw9+RDwsAakExgWdfJivZZb/lWZC6tDyZF/wL+7HtwiSMJryLBd7SgR0R0QtvxvBe
+         hngZau1a8Q1wcLDH+p/5hU+MpJB37Uj3ju+vwrNPWuKYhRRc4wCcb3lvZxo2w1vqtW9a
+         GkwUfjswPsP6YkyubpvhmKkJGu65rHqfnE1+XFW8v40QyQjRofzLShBg0zoPGdsgGPp9
+         xq8lJjmH0cKsnBBfSLf5+e+034hUJCHXH7zmJ/Te4aK7zFhMOy5pfSvvVQe3itwfAic1
+         uZGFCc6+J+Ewb70Na+tzCvDm6G2M09UlFeUuttIZBx4IW+FXP/Ttdn1pYy73GnTIviGU
+         +FPQ==
+X-Gm-Message-State: AJIora/O4Ho2drD82ooghVm259nOZ8IO5BhbIC83AYwcccNij+wk6mS5
+        HnZa1FjnAJ7hU9VD9vVZ5RU0md8ryC08Ew==
+X-Google-Smtp-Source: AGRyM1s9mfSHeJiHkYhOkAbabMp3nfsDf8Y8VBHSW1TC3hP58L/6Rs9Y9EPWOom4qOR+6FOm1Op0PQ==
+X-Received: by 2002:a05:6808:1201:b0:325:75e1:25a8 with SMTP id a1-20020a056808120100b0032575e125a8mr2048230oil.18.1659108219452;
+        Fri, 29 Jul 2022 08:23:39 -0700 (PDT)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id g8-20020a9d6208000000b0061cbd18bd18sm1304415otj.45.2022.07.29.08.23.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Jul 2022 08:23:37 -0700 (PDT)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Date:   Fri, 29 Jul 2022 08:23:35 -0700
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Stafford Horne <shorne@gmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Jonas Bonn <jonas@southpole.se>,
+        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
+        openrisc@lists.librecores.org
+Subject: Re: [PATCH] openrisc: io: Define iounmap argument as volatile
+Message-ID: <20220729152335.GA431060@roeck-us.net>
+References: <20220729110726.3635262-1-shorne@gmail.com>
 MIME-Version: 1.0
-References: <20220726135506.485108-1-bchihi@baylibre.com> <20220726135506.485108-2-bchihi@baylibre.com>
- <24250d03-b25f-e521-5abd-f36109885c36@linaro.org> <CAGuA+opxZ7DDrWHcnTRhMcm7YveCAypdy9MDSytt58asgekayw@mail.gmail.com>
-In-Reply-To: <CAGuA+opxZ7DDrWHcnTRhMcm7YveCAypdy9MDSytt58asgekayw@mail.gmail.com>
-From:   Balsam CHIHI <bchihi@baylibre.com>
-Date:   Fri, 29 Jul 2022 17:21:07 +0200
-Message-ID: <CAGuA+ooOUXaBM+uPvEEohFLtO8sRd4T=DMcc6Fvo9P92gsq4yg@mail.gmail.com>
-Subject: Re: [PATCH v8 1/6] thermal: mediatek: Relocate driver to mediatek folder
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc:     rafael@kernel.org, rui.zhang@intel.com, amitk@kernel.org,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        khilman@baylibre.com, mka@chromium.org, robh+dt@kernel.org,
-        krzk+dt@kernel.org, matthias.bgg@gmail.com, p.zabel@pengutronix.de,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, james.lo@mediatek.com,
-        fan.chen@mediatek.com, louis.yu@mediatek.com,
-        rex-bc.chen@mediatek.com, abailon@baylibre.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220729110726.3635262-1-shorne@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 29, 2022 at 5:19 PM Balsam CHIHI <bchihi@baylibre.com> wrote:
->
-> On Thu, Jul 28, 2022 at 10:53 AM Daniel Lezcano
-> <daniel.lezcano@linaro.org> wrote:
-> >
-> >
-> > Hi Balsam,
-> >
-> > On 26/07/2022 15:55, Balsam CHIHI wrote:
-> > > Add Mediatek proprietary folder to upstream more thermal zone and cooler
-> > > drivers. Relocate the original thermal controller driver to it and rename
-> > > as soc_temp.c to show its purpose more clearly.
-> >
-> > I realize the Kconfig, Makefiles format are not consistent across the
-> > boards. Before I fix this, you can comply to the format:
-> >
-> > drivers/thermal/Kconfig:
-> >
-> > menu "Mediatek thermal drivers"
-> > depends on ARCH_MEDIATEK || COMPILE_TEST
-> > source "drivers/thermal/mediatek/Kconfig"
-> > endmenu
-> >
-> > drivers/thermal/Makefile:
-> >
-> > -obj-$(CONFIG_MTK_THERMAL)      += mtk_thermal.o
-> > +obj-y                          += mediatek
-> >
-> > drivers/thermal/mediatek/Kconfig:
-> >
-> > config MTK_SOC_THERMAL
-> >         tristate "Temperature sensor driver for MediaTek SoCs"
-> >         depends on HAS_IOMEM
-> >         depends on NVMEM
-> >         depends on RESET_CONTROLLER
-> >         help
-> >                 Enable this option if you want to get SoC temperature
-> >                 information for MediaTek platforms. This driver
-> >                 configures thermal controllers to collect temperature
-> >                 via AUXADC interface.
-> >
-> > drivers/thermal/mediatek/Makefile:
-> >
-> > obj-$(MTK_SOC_THERMAL)  += soc_temp.o
-> >
-> > However, rename 'soc_temp' to something more SoC explicit, eg.
-> > mtxxx_thermal.c
-> >
-> > Thanks
-> >
-> >    -- Daniel
->
-> Hello Daniel,
->
-> Thank you for the feedback.
-> Changes have been made as you suggested.
-> Resubmitting seen.
-*soon.
->
-> Best regards.
-> Balsam.
+On Fri, Jul 29, 2022 at 08:07:25PM +0900, Stafford Horne wrote:
+> When OpenRISC enables PCI it allows for more drivers to be compiled
+> resulting in exposing the following with -Werror.
+> 
+>     drivers/video/fbdev/riva/fbdev.c: In function 'rivafb_probe':
+>     drivers/video/fbdev/riva/fbdev.c:2062:42: error:
+> 	    passing argument 1 of 'iounmap' discards 'volatile' qualifier from pointer target type
+> 
+>     drivers/video/fbdev/nvidia/nvidia.c: In function 'nvidiafb_probe':
+>     drivers/video/fbdev/nvidia/nvidia.c:1414:20: error:
+> 	    passing argument 1 of 'iounmap' discards 'volatile' qualifier from pointer target type
+> 
+>     drivers/scsi/aic7xxx/aic7xxx_osm.c: In function 'ahc_platform_free':
+>     drivers/scsi/aic7xxx/aic7xxx_osm.c:1231:41: error:
+> 	    passing argument 1 of 'iounmap' discards 'volatile' qualifier from pointer target type
+> 
+> Most architectures define the iounmap argument to be volatile.  To fix this
+> issue we do the same for OpenRISC.  This patch must go before PCI is enabled on
+> OpenRISC to avoid any compile failures.
+> 
+> Link: https://lore.kernel.org/lkml/20220729033728.GA2195022@roeck-us.net/
+> Reported-by: Guenter Roeck <linux@roeck-us.net>
+> Signed-off-by: Stafford Horne <shorne@gmail.com>
+
+Tested-by: Guenter Roeck <linux@roeck-us.net>
+
+> ---
+>  arch/openrisc/include/asm/io.h | 2 +-
+>  arch/openrisc/mm/ioremap.c     | 2 +-
+>  2 files changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/openrisc/include/asm/io.h b/arch/openrisc/include/asm/io.h
+> index 625ac6ad1205..ee6043a03173 100644
+> --- a/arch/openrisc/include/asm/io.h
+> +++ b/arch/openrisc/include/asm/io.h
+> @@ -31,7 +31,7 @@
+>  void __iomem *ioremap(phys_addr_t offset, unsigned long size);
+>  
+>  #define iounmap iounmap
+> -extern void iounmap(void __iomem *addr);
+> +extern void iounmap(volatile void __iomem *addr);
+>  
+>  #include <asm-generic/io.h>
+>  
+> diff --git a/arch/openrisc/mm/ioremap.c b/arch/openrisc/mm/ioremap.c
+> index daae13a76743..8ec0dafecf25 100644
+> --- a/arch/openrisc/mm/ioremap.c
+> +++ b/arch/openrisc/mm/ioremap.c
+> @@ -77,7 +77,7 @@ void __iomem *__ref ioremap(phys_addr_t addr, unsigned long size)
+>  }
+>  EXPORT_SYMBOL(ioremap);
+>  
+> -void iounmap(void __iomem *addr)
+> +void iounmap(volatile void __iomem *addr)
+>  {
+>  	/* If the page is from the fixmap pool then we just clear out
+>  	 * the fixmap mapping.
+> -- 
+> 2.37.1
+> 
