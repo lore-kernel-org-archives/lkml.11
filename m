@@ -2,69 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 002F8C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 07:43:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F0DDC19F2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 07:44:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234206AbiG2HnF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 03:43:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52662 "EHLO
+        id S234871AbiG2HoF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 03:44:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234154AbiG2HnD (ORCPT
+        with ESMTP id S234154AbiG2HoD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 03:43:03 -0400
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C498630F45;
-        Fri, 29 Jul 2022 00:43:02 -0700 (PDT)
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.57])
-        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LvKGN2xPCz9t0j;
-        Fri, 29 Jul 2022 15:41:48 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 29 Jul 2022 15:42:50 +0800
-Received: from huawei.com (10.175.113.25) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 29 Jul
- 2022 15:42:49 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-cifs@vger.kernel.org>
-CC:     <sprasad@microsoft.com>, <stfrench@microsoft.com>
-Subject: [PATCH -next] cifs: fix wrong unlock before return from cifs_tree_connect()
-Date:   Fri, 29 Jul 2022 15:49:35 +0800
-Message-ID: <20220729074935.115072-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.20.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
+        Fri, 29 Jul 2022 03:44:03 -0400
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1928665666
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 00:44:02 -0700 (PDT)
+Received: by mail-pj1-x1049.google.com with SMTP id jx17-20020a17090b46d100b001f33b230098so260305pjb.7
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 00:44:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=1Wg9cHm2UMgNHmJrbWYqWjDLkwNy+fZSAbVTsV+UQns=;
+        b=imxY0j49nHkgRuVEtqcu1lSRSM5vwuyb3SjeUn8WrBKKWgIK3aBc/DJkUn0uVgqwOh
+         Ej0opAKoYwLjSbESFDo0kegDOw4cDV0ByjwDcaEb6ChpE7xPt2dRxOjNZCN74daQ6OTF
+         8t37Vx+QadrW8tIzFFrrZG7lRomzlJ7cQsjdFeQmXPwnlSXdqoqJvbhVyX31Qa8Ybn4v
+         V10uDxd0aNexsoDvQTOuXWxJ4ZGA2aQjrkkDzW+9zzNx6B3m4wqlza2fBJIMKZIGfXxq
+         CPmT9NEsvcORRgNR4d0aIXB0JJN5C9i+yR1gseWIHqK6ALt4WvQy++imDh4cGjVOu6vQ
+         QdUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=1Wg9cHm2UMgNHmJrbWYqWjDLkwNy+fZSAbVTsV+UQns=;
+        b=HZSdZUy/PYdajux/rVgi3QOg7V1Pj4oGYx131OjHj1H9s7uK4IYNBAA/V70B0XLhK/
+         tnuKmsjoD7atIrT41wB+JNN6Ta58mXrDfFFCUgeC9dESXv0W88cx2zzlbDn73+x7nDwA
+         AX4Uchfz9OPTZ54RXe0acV3EGpcU2vTXX9FJTB3Ci1ypXt+kQzsuNt2UuHCEAN+6O6Go
+         8t3sIS6/MSQTIeUDZRBBM8u5MpVox4i7/zpfH3IsYillB2IUZM3tlxhSPL/YxXxr05pu
+         OQdVq4w6tLAy5rPYzBOul0QU9fOBzsv9uo27ME/q429olgg00TJO87yh9bdZYQDky2G1
+         jNYw==
+X-Gm-Message-State: AJIora88vSdjIXooz2KzZy18FUwRt82KQIJ0NjG82q7qv44ovdEfkgZX
+        wmCxtpGuNsQXbDlU2hGFz3h5KGCEIUUB
+X-Google-Smtp-Source: AGRyM1s5Kyemr2tcw/wnsGgnx2UTjqJzLMWlkCo84p8rnvtDM0dFBbz53/1DqEA7btgqXB4XxzCpKr2k1GtG
+X-Received: from irogers.svl.corp.google.com ([2620:15c:2d4:203:524b:47b4:2aeb:1b49])
+ (user=irogers job=sendgmr) by 2002:a05:6a00:1ac7:b0:52b:37ac:442c with SMTP
+ id f7-20020a056a001ac700b0052b37ac442cmr2234362pfv.76.1659080641572; Fri, 29
+ Jul 2022 00:44:01 -0700 (PDT)
+Date:   Fri, 29 Jul 2022 00:43:34 -0700
+Message-Id: <20220729074351.138260-1-irogers@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.37.1.455.g008518b4e5-goog
+Subject: [PATCH v3 00/17] Compress the pmu_event tables
+From:   Ian Rogers <irogers@google.com>
+To:     John Garry <john.garry@huawei.com>, Will Deacon <will@kernel.org>,
+        James Clark <james.clark@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
+        Ravi Bangoria <ravi.bangoria@amd.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-perf-users@vger.kernel.org
+Cc:     Stephane Eranian <eranian@google.com>,
+        Ian Rogers <irogers@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It should unlock 'tcon->tc_lock' before return from cifs_tree_connect().
+jevents.py creates a number of large arrays from the json events. The
+arrays contain pointers to strings that need relocating. The
+relocations have file size, run time and memory costs. These changes
+refactor the pmu_events API so that the storage of the pmu_event
+struct isn't exposed. The format is then changed to an offset within a
+combined big string, with adjacent pmu_event struct variables being
+next to each other in the string separated by \0 - meaning only the
+first variable of the struct needs its offset recording.
 
-Fixes: fe67bd563ec2 ("cifs: avoid use of global locks for high contention data")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- fs/cifs/connect.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Some related fixes are contained with the patches. The architecture
+jevents.py creates tables for can now be set by the JEVENTS_ARCH make
+variable, with a new 'all' that generates the events and metrics for
+all architectures.
 
-diff --git a/fs/cifs/connect.c b/fs/cifs/connect.c
-index 931d4b6fafc8..1362210f3ece 100644
---- a/fs/cifs/connect.c
-+++ b/fs/cifs/connect.c
-@@ -4583,7 +4583,7 @@ int cifs_tree_connect(const unsigned int xid, struct cifs_tcon *tcon, const stru
- 	if (tcon->ses->ses_status != SES_GOOD ||
- 	    (tcon->status != TID_NEW &&
- 	    tcon->status != TID_NEED_TCON)) {
--		spin_unlock(&tcon->ses->ses_lock);
-+		spin_unlock(&tcon->tc_lock);
- 		return 0;
- 	}
- 	tcon->status = TID_IN_TCON;
+An example of the improvement to the file size on x86 is:
+no jevents - the same 19,788,464bytes
+x86 jevents - ~16.7% file size saving 23,744,288bytes vs 28,502,632bytes
+all jevents - ~19.5% file size saving 24,469,056bytes vs 30,379,920bytes
+default build options plus NO_LIBBFD=1.
+
+I originally suggested fixing this problem in:
+https://lore.kernel.org/linux-perf-users/CAP-5=fVB8G4bdb9T=FncRTh9oBVKCS=+=eowAO+YSgAhab+Dtg@mail.gmail.com/
+
+v3. Fix an ARM build issue with a missed weak symbol. Perform some
+    pytype clean up.
+v2. Split the substring folding optimization to its own patch and
+    comment tweaks as suggested by Namhyung Kim
+    <namhyung@kernel.org>. Recompute the file size savings with the
+    latest json events and metrics.
+
+Ian Rogers (17):
+  perf jevents: Clean up pytype warnings
+  perf jevents: Simplify generation of C-string
+  perf jevents: Add JEVENTS_ARCH make option
+  perf jevent: Add an 'all' architecture argument
+  perf jevents: Remove the type/version variables
+  perf jevents: Provide path to json file on error
+  perf jevents: Sort json files entries
+  perf pmu-events: Hide pmu_sys_event_tables
+  perf pmu-events: Avoid passing pmu_events_map
+  perf pmu-events: Hide pmu_events_map
+  perf test: Use full metric resolution
+  perf pmu-events: Move test events/metrics to json
+  perf pmu-events: Don't assume pmu_event is an array
+  perf pmu-events: Hide the pmu_events
+  perf metrics: Copy entire pmu_event in find metric
+  perf jevents: Compress the pmu_events_table
+  perf jevents: Fold strings optimization
+
+ tools/perf/arch/arm64/util/pmu.c              |   4 +-
+ tools/perf/pmu-events/Build                   |   6 +-
+ .../arch/test/test_soc/cpu/metrics.json       |  64 +++
+ tools/perf/pmu-events/empty-pmu-events.c      | 204 +++++++-
+ tools/perf/pmu-events/jevents.py              | 495 ++++++++++++++----
+ tools/perf/pmu-events/pmu-events.h            |  40 +-
+ tools/perf/tests/expand-cgroup.c              |  25 +-
+ tools/perf/tests/parse-metric.c               |  77 +--
+ tools/perf/tests/pmu-events.c                 | 466 +++++++----------
+ tools/perf/util/metricgroup.c                 | 275 ++++++----
+ tools/perf/util/metricgroup.h                 |   5 +-
+ tools/perf/util/pmu.c                         | 139 ++---
+ tools/perf/util/pmu.h                         |   8 +-
+ tools/perf/util/s390-sample-raw.c             |  50 +-
+ 14 files changed, 1140 insertions(+), 718 deletions(-)
+ create mode 100644 tools/perf/pmu-events/arch/test/test_soc/cpu/metrics.json
+
 -- 
-2.25.1
+2.37.1.455.g008518b4e5-goog
 
