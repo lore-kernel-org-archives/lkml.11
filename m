@@ -2,78 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D6EAC00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 02:34:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 195E5C19F2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 02:34:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233700AbiG2CeF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 22:34:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51328 "EHLO
+        id S233888AbiG2Cex (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 22:34:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231522AbiG2CeD (ORCPT
+        with ESMTP id S231522AbiG2Cev (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 22:34:03 -0400
-Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 454937B1F0
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 19:33:59 -0700 (PDT)
-Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-2ef5380669cso37831147b3.9
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 19:33:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bhKqWbjoKDCkljIXjd3L5hRrxiXqibk3EBcu7l45Nl0=;
-        b=0UyNGR35PMfbACWYluMYhSrKoeO7t3MQF9pr5+Uy3iUinWpuXCs2Pp2kU+WZvbdi41
-         Px/sk01RbCmHEDbBCNN0R3AsnzjdnqLVZusBAG41xhITboYh6fD1GvPRW93HAjGTgJMr
-         NTw+Ei5wjRa0UtppH/nsYrcStfSl5rFr5Pvrecm2GL/VasxoUjGG9cZXNn2YBRN/wn3Z
-         7E9lwFLhWok6Ech10K+mM4ptlrGdUlJJug3yfljaCHKl47khufKy7KNymkr4VYjcFXeG
-         R+a5drl20TxEuyTUcnBOVI6OXJir6EAaiUkIFy+yuu0/tJUqAapThMZiGQeRA1ghPjHz
-         j/WA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bhKqWbjoKDCkljIXjd3L5hRrxiXqibk3EBcu7l45Nl0=;
-        b=pHIKIawFrPvjqE61247KUhVvsaplwgOT00QK9QgtgZPUcOK+rvMoLIApunXmIZceVE
-         xnsb0kDKJ5d9Vj9S5YKHY5lHQ8JZxuZ7fFFHWuBKUnSpZbVqpWFAsgBu0v3h1fFSz8qQ
-         H5065x7E+FNKIUqyAg5BNxDF1T7loQzFw075g5qHMSvlmhObuJhvAM3V4SxzkptsJey4
-         8qdA/lbeuTUbEuswKuKCDweiav6H/jAA4+Y+NqYA/m0pXRy3mAZe301NKqpHEyjQjTg7
-         RIr+9FGxLEDXYloxXeT/D3oQLHxsWsvDe0qrRvpjblw+bNEC13zA40pDeAFPKHmyOqsx
-         nVng==
-X-Gm-Message-State: ACgBeo3yxx2HLVn+ngScyyO5ktOF2K8D1Rln/iBX5Uq1fX8dc0MWuvzM
-        ebgW+psqRv486jnvFD/7rIvqsIMh8WYPjOUfkhgMDg==
-X-Google-Smtp-Source: AA6agR48qYuFMVFSm9BB/b98bUBorupQvIHSeW37mOpWAs8ai7c+L+x/iSr4a75JK/OJQnaYWFb86y2tAKc8RgFc5A8=
-X-Received: by 2002:a05:690c:826:b0:321:57d:27f0 with SMTP id
- by6-20020a05690c082600b00321057d27f0mr1428734ywb.141.1659062038535; Thu, 28
- Jul 2022 19:33:58 -0700 (PDT)
+        Thu, 28 Jul 2022 22:34:51 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A7B27B1F0;
+        Thu, 28 Jul 2022 19:34:49 -0700 (PDT)
+Received: from dggpemm500022.china.huawei.com (unknown [172.30.72.57])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4LvBMc35pnzWfby;
+        Fri, 29 Jul 2022 10:30:52 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 29 Jul 2022 10:34:47 +0800
+Received: from huawei.com (10.175.113.25) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 29 Jul
+ 2022 10:34:47 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-fbdev@vger.kernel.org>
+CC:     <u.kleine-koenig@pengutronix.de>, <deller@gmx.de>
+Subject: [PATCH -next] video: fbdev: imxfb: fix return value check in imxfb_probe()
+Date:   Fri, 29 Jul 2022 10:41:34 +0800
+Message-ID: <20220729024134.159942-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <20220728032000.127-1-xieyongji@bytedance.com> <20220728032000.127-3-xieyongji@bytedance.com>
-In-Reply-To: <20220728032000.127-3-xieyongji@bytedance.com>
-From:   Muchun Song <songmuchun@bytedance.com>
-Date:   Fri, 29 Jul 2022 10:33:22 +0800
-Message-ID: <CAMZfGtVGjn1bkC345EykA0b86HoR2m6tmc_JYs7GnEvBCh9ETA@mail.gmail.com>
-Subject: Re: [PATCH v4 2/5] vduse: Use memcpy_{to,from}_page() in do_bounce()
-To:     Xie Yongji <xieyongji@bytedance.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>, xiaodong.liu@intel.com,
-        maxime.coquelin@redhat.com, stefanha@redhat.com,
-        virtualization@lists.linux-foundation.org,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 28, 2022 at 11:20 AM Xie Yongji <xieyongji@bytedance.com> wrote:
->
-> kmap_atomic() is being deprecated in favor of kmap_local_page().
->
-> The use of kmap_atomic() in do_bounce() is all thread local therefore
-> kmap_local_page() is a sufficient replacement.
->
-> Convert to kmap_local_page() but, instead of open coding it,
-> use the helpers memcpy_to_page() and memcpy_from_page().
->
-> Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-> Acked-by: Jason Wang <jasowang@redhat.com>
+If devm_ioremap_resource() fails, it never return NULL, replace
+NULL test with IS_ERR().
 
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+Fixes: b083c22d5114 ("video: fbdev: imxfb: Convert request_mem_region + ioremap to devm_ioremap_resource")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/video/fbdev/imxfb.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/video/fbdev/imxfb.c b/drivers/video/fbdev/imxfb.c
+index c48477893dd0..d97d7456d15a 100644
+--- a/drivers/video/fbdev/imxfb.c
++++ b/drivers/video/fbdev/imxfb.c
+@@ -971,9 +971,9 @@ static int imxfb_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	fbi->regs = devm_ioremap_resource(&pdev->dev, res);
+-	if (fbi->regs == NULL) {
++	if (IS_ERR(fbi->regs)) {
+ 		dev_err(&pdev->dev, "Cannot map frame buffer registers\n");
+-		ret = -ENOMEM;
++		ret = PTR_ERR(fbi->regs);
+ 		goto failed_ioremap;
+ 	}
+ 
+-- 
+2.25.1
+
