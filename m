@@ -2,62 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C35FC00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 13:12:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F078C19F2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 13:13:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236614AbiG2NMN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 09:12:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34278 "EHLO
+        id S236515AbiG2NNV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 09:13:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236647AbiG2NK7 (ORCPT
+        with ESMTP id S236728AbiG2NM7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 09:10:59 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 639573B961
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 06:10:58 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LvSZ73gb6z4x1f;
-        Fri, 29 Jul 2022 23:10:55 +1000 (AEST)
-From:   Michael Ellerman <patch-notifications@ellerman.id.au>
-To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        linuxppc-dev@lists.ozlabs.org,
-        Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Segher Boessenkool <segher@kernel.crashing.org>,
-        Helge Deller <deller@gmx.de>, linux-kernel@vger.kernel.org
-In-Reply-To: <20220725015619.618070-1-masahiroy@kernel.org>
-References: <20220725015619.618070-1-masahiroy@kernel.org>
-Subject: Re: [PATCH v2] powerpc/purgatory: Omit use of bin2c
-Message-Id: <165909973721.253830.12640822046249290787.b4-ty@ellerman.id.au>
-Date:   Fri, 29 Jul 2022 23:02:17 +1000
+        Fri, 29 Jul 2022 09:12:59 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E41357234;
+        Fri, 29 Jul 2022 06:12:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=1V1EPIx5SWj6VhkkBaKrSzdQ8VeFraOV5vkmO7pp+ZI=; b=cml+Ja7pPUqiLDpd+4o90bg8hR
+        kt2rrlGhY32N0WuXoh6rEfMdftCIe9WJM+2BFwShQKVr+s/cZSmVP1U+h5hzeuF5DSiKsjpUhe6hu
+        jlxfc9OymUbOCQuYV2lgWbZuoD/03bbe5bcFknsqNDAmU35falGqQKC3OHzYbNm4FooI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1oHPmk-00Bv3L-FD; Fri, 29 Jul 2022 15:12:10 +0200
+Date:   Fri, 29 Jul 2022 15:12:10 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net v1 1/1] net: dsa: microchip: don't try do read Gbit
+ registers on non Gbit chips
+Message-ID: <YuPcqscMzyURL3V/@lunn.ch>
+References: <20220728131725.40492-1-o.rempel@pengutronix.de>
+ <YuKOTzS89D2+O8Ye@lunn.ch>
+ <20220729090513.GA10850@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220729090513.GA10850@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 25 Jul 2022 10:56:19 +0900, Masahiro Yamada wrote:
-> The .incbin assembler directive is much faster than bin2c + $(CC).
+On Fri, Jul 29, 2022 at 11:05:13AM +0200, Oleksij Rempel wrote:
+> On Thu, Jul 28, 2022 at 03:25:35PM +0200, Andrew Lunn wrote:
+> > On Thu, Jul 28, 2022 at 03:17:25PM +0200, Oleksij Rempel wrote:
+> > > Do not try to read not existing or wrong register on chips without
+> > > GBIT_SUPPORT.
+> > > 
+> > > Fixes: c2e866911e25 ("net: dsa: microchip: break KSZ9477 DSA driver into two files")
+> > > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> > > ---
+> > >  drivers/net/dsa/microchip/ksz9477.c | 8 +++++++-
+> > >  1 file changed, 7 insertions(+), 1 deletion(-)
+> > > 
+> > > diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
+> > > index c73bb6d383ad..f6bbd9646c85 100644
+> > > --- a/drivers/net/dsa/microchip/ksz9477.c
+> > > +++ b/drivers/net/dsa/microchip/ksz9477.c
+> > > @@ -316,7 +316,13 @@ void ksz9477_r_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 *data)
+> > >  			break;
+> > >  		}
+> > >  	} else {
+> > > -		ksz_pread16(dev, addr, 0x100 + (reg << 1), &val);
+> > > +		/* No gigabit support.  Do not read wrong registers. */
+> > > +		if (!(dev->features & GBIT_SUPPORT) &&
+> > > +		    (reg == MII_CTRL1000 || reg == MII_ESTATUS ||
+> > > +		     reg == MII_STAT1000))
+> > 
+> > Does this actually happen?
+> > 
+> > If i remember this code correctly, it tries to make the oddly looking
+> > PHY look like a normal PHY. phylib is then used to drive the PHY?
+> > 
+> > If i have that correct, why is phylib trying to read these registers?
+> > It should know there is no 1G support, and should skip them.
 > 
-> Do similar refactoring as in commit 4c0f032d4963 ("s390/purgatory:
-> Omit use of bin2c").
+> It looks like currently undocumented silicon errata. According to the
+> data sheet, the BMSR_ESTATEN should not be set BMSR_ERCAP, but this bits
+> are set.
 > 
-> Please note the .quad directive matches to size_t in C (both 8 byte)
-> because the purgatory is compiled only for the 64-bit kernel.
-> (KEXEC_FILE depends on PPC64).
-> 
-> [...]
+> The question is what is the proper place to implement it. There is same
+> PHYid for most KSZ switch PHYs, it is no possible to detect it by PHYid.
+> I have following options:
+> - add chips specific quirk in the ksz9477_r_phy(), just remove
+>   BMSR_ESTATEN and BMSR_ERCAP.
+> - notify about errata over get_phy_flags and implement get_caps quirk in
+>   the PHY driver.
 
-Applied to powerpc/next.
+I would do the first. The DSA driver is already doing some emulation
+of a normal PHY, so it seems odd to push a workaround into the PHY
+driver when it can be part of the emulation.
 
-[1/1] powerpc/purgatory: Omit use of bin2c
-      https://git.kernel.org/powerpc/c/9257971377e2fe6e82f41f688651a82a2f160a88
-
-cheers
+    Andrew
