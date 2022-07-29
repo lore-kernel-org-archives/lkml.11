@@ -2,144 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75664C00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 09:07:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70700C19F2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 09:08:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235516AbiG2JHs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 05:07:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43910 "EHLO
+        id S235499AbiG2JId (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 05:08:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231381AbiG2JHp (ORCPT
+        with ESMTP id S231381AbiG2JIb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 05:07:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 107DA84EEA
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 02:07:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Fri, 29 Jul 2022 05:08:31 -0400
+X-Greylist: delayed 422 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 29 Jul 2022 02:08:29 PDT
+Received: from mx1.emlix.com (mx1.emlix.com [136.243.223.33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6520C84EF0;
+        Fri, 29 Jul 2022 02:08:29 -0700 (PDT)
+Received: from mailer.emlix.com (unknown [81.20.119.6])
+        (using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 72C5BB826F0
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 09:07:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C751FC433D6;
-        Fri, 29 Jul 2022 09:07:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659085661;
-        bh=4fwOa4L80btdPUQ6tY3Y/SsKFmMhkgyP5o1hf2otJ5Q=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=jQ5iR/3pFPrVxO7ZExQzpcBJpTE11inHfjTqO3Y8IRF1WLOU7GeXRcZh/RzVecDDX
-         7sw3SwcyelgbBqvtbnoybzm0+ynwq197FCEZlQZ7+xEmuPn5VGK1MZDFnBLL9WGusJ
-         2Skh+yB7IdmY67ZIG0WTKv8N7oRzzGbfxa39bmJo=
-Date:   Fri, 29 Jul 2022 11:07:38 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Mingyi Kang <jerrykang026@gmail.com>
-Cc:     martyn@welchs.me.uk, manohar.vanga@gmail.com,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev
-Subject: Re: [PATCH] staging: vme_user: Put quoted string in a single line
-Message-ID: <YuOjWlnHX6SwhNKj@kroah.com>
-References: <20220729084806.22479-1-jerrykang026@gmail.com>
+        by mx1.emlix.com (Postfix) with ESMTPS id 7EB5F60344;
+        Fri, 29 Jul 2022 11:01:24 +0200 (CEST)
+Date:   Fri, 29 Jul 2022 11:01:24 +0200
+From:   Daniel =?iso-8859-1?Q?Gl=F6ckner?= <dg@emlix.com>
+To:     Ivan Bornyakov <i.bornyakov@metrotek.ru>
+Cc:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
+        trix@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-fpga@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        system@metrotek.ru,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: Re: [PATCH v5 2/2] dt-bindings: fpga: add binding doc for ecp5-spi
+ fpga mgr
+Message-ID: <20220729090123.GA28299@homes.emlix.com>
+References: <20220719112335.9528-1-i.bornyakov@metrotek.ru>
+ <20220719112335.9528-3-i.bornyakov@metrotek.ru>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220729084806.22479-1-jerrykang026@gmail.com>
+In-Reply-To: <20220719112335.9528-3-i.bornyakov@metrotek.ru>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 29, 2022 at 04:48:06PM +0800, Mingyi Kang wrote:
-> This patch resolves the follwing checkpatch warnings:
-> 
-> WARNING: quoted string split across lines
-> +			dev_err(tsi148_bridge->parent, "VME Mailbox %d received"
-> +				": 0x%x\n", i, val);
-> 
-> WARNING: quoted string split across lines
-> +	dev_err(tsi148_bridge->parent, "PCI Exception at address: 0x%08x:%08x, "
-> +		"attributes: %08x\n",
-> 
-> WARNING: quoted string split across lines
-> +	dev_err(tsi148_bridge->parent, "PCI-X attribute reg: %08x, PCI-X split "
-> +		"completion reg: %08x\n",
-> 
-> WARNING: quoted string split across lines
-> +		dev_err(tsi148_bridge->parent, "VME Bus Exception Overflow "
-> +			"Occurred\n");
-> 
-> WARNING: quoted string split across lines
-> +		dev_err(tsi148_bridge->parent, "Can't get assigned pci irq "
-> +			"vector %02X\n", pdev->irq);
-> 
-> WARNING: quoted string split across lines
-> +		dev_err(tsi148_bridge->parent, "Failed to allocate mem "
-> +			"resource for window %d size 0x%lx start 0x%lx\n",
-> 
-> WARNING: quoted string split across lines
-> +		dev_err(tsi148_bridge->parent, "Invalid VME Window "
-> +			"alignment\n");
-> WARNING: quoted string split across lines
-> +		dev_err(tsi148_bridge->parent, "Size must be non-zero for "
-> +			"enabled windows\n");
-> 
-> WARNING: quoted string split across lines
-> +		dev_err(tsi148_bridge->parent, "Unable to allocate memory for "
-> +			"resource\n");
-> 
-> WARNING: quoted string split across lines
-> +		dev_err(tsi148_bridge->parent, "Invalid VME Offset "
-> +			"alignment\n");
-> 
-> WARNING: quoted string split across lines
-> +		dev_warn(tsi148_bridge->parent, "Currently not setting "
-> +			"Broadcast Select Registers\n");
-> 
-> WARNING: quoted string split across lines
-> +		dev_err(dev, "Currently not setting Broadcast Select "
-> +			"Registers\n");
-> 
-> WARNING: quoted string split across lines
-> +		dev_err(dev, "Currently not setting Broadcast Select "
-> +			"Registers\n");
-> 
-> WARNING: quoted string split across lines
-> +		dev_err(tsi148_bridge->parent, "Descriptor not aligned to 8 "
-> +			"byte boundary as required: %p\n",
-> 
-> warning: quoted string split across lines
-> +			dev_err(tsi148_bridge->parent, "location monitor "
-> +				"callback attached, can't reset\n");
-> 
-> WARNING: quoted string split across lines
-> +		dev_err(tsi148_bridge->parent, "Location monitor not properly "
-> +			"configured\n");
-> 
-> WARNING: quoted string split across lines
-> +		dev_err(tsi148_bridge->parent, "Failed to allocate memory for "
-> +			"CR/CSR image\n");
-> 
-> WARNING: quoted string split across lines
-> +			dev_err(tsi148_bridge->parent, "Configuring flush image"
-> +				" failed\n");
-> 
-> Signed-off-by: Mingyi Kang <jerrykang026@gmail.com>
-> ---
->  drivers/staging/vme_user/vme_tsi148.c | 57 +++++++++------------------
->  1 file changed, 19 insertions(+), 38 deletions(-)
-> 
-> diff --git a/drivers/staging/vme_user/vme_tsi148.c b/drivers/staging/vme_user/vme_tsi148.c
-> index 956476213241..40bb432861c8 100644
-> --- a/drivers/staging/vme_user/vme_tsi148.c
-> +++ b/drivers/staging/vme_user/vme_tsi148.c
-> @@ -125,8 +125,7 @@ static u32 tsi148_MB_irqhandler(struct vme_bridge *tsi148_bridge, u32 stat)
->  	for (i = 0; i < 4; i++) {
->  		if (stat & TSI148_LCSR_INTS_MBS[i]) {
->  			val = ioread32be(bridge->base +	TSI148_GCSR_MBOX[i]);
-> -			dev_err(tsi148_bridge->parent, "VME Mailbox %d received"
-> -				": 0x%x\n", i, val);
-> +			dev_err(tsi148_bridge->parent, "VME Mailbox %d received: 0x%x\n", i, val);
+Hi,
 
-Unwrapping the string is fine, but not the arguments.  Did you run
-checkpatch on this change?  I see some warnings on it, please don't
-introduce new ones.
+On Tue, Jul 19, 2022 at 02:23:35PM +0300, Ivan Bornyakov wrote:
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - lattice,ecp5-fpga-mgr
 
-thanks,
+Since this driver uses the same interface as the existing
+drivers/fpga/machxo2-spi.c driver, wouldn't it be advisable to use a
+similar compatible id, i.e. lattice,ecp5-slave-spi?
 
-greg k-h
+> +required:
+> +  - compatible
+> +  - reg
+> +  - program-gpios
+> +  - init-gpios
+> +  - done-gpios
+
+I think some of the GPIOs can be made optional by reading the status
+register or using the refresh command, assuming the slave spi interface
+stayed enabled after previous programming and we are not dealing with
+several chained FPGAs. But that can of course be left as an exercise for
+other developers.
+
+Best regards,
+
+  Daniel
