@@ -2,94 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82E3EC00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 10:51:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EB74C19F2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 10:52:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235721AbiG2KvV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 06:51:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47960 "EHLO
+        id S234462AbiG2Kwz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 06:52:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232387AbiG2KvT (ORCPT
+        with ESMTP id S232387AbiG2Kwy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 06:51:19 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39FEEDF27
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 03:51:18 -0700 (PDT)
-Date:   Fri, 29 Jul 2022 12:51:14 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1659091876;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+        Fri, 29 Jul 2022 06:52:54 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B778DF27
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 03:52:53 -0700 (PDT)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id ED30A20AED;
+        Fri, 29 Jul 2022 10:52:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1659091971; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=BVT0gX+sjhINrg63wCZePpCeJDQ5FLRBslXE3pXrKFA=;
-        b=NnZTBBsfckoHY4uBEsfyzgjPArktQXWcZ6w3wHj0mgYBrCkoMJbT9N95e9YgFcfcjzLsmc
-        T2UFUwfUI6ER/1GOSOEm5lBMsWg8iP+b/l19dEIBNrsR23khbKIblzN18uAoz0A1ZPO9WX
-        OzbCtOmEGTc6G2rR5A4WTD65vF/DuNa0N8EDrk471cdUWTX1zy1RQued68RyLO7FkVVYMk
-        xyd4t1vlft8/gCz5Y8iDom3QYoEKhxZKKN3f2gaFht/QtkfU+Y5efkFq3Viu19SvP+POZT
-        QFLynKqWhx2tp9W/ew/fdVsBT83QtZ4kPGOnWB6R1EhkJ4g6/jsbbd7smsBbfQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1659091876;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+        bh=2jFk7KjatevBX9qkUNyew5+Z48AxgI4rYcE1gHhuGkI=;
+        b=VkgSS74AZQQjyEi870a9fUXR6xg4szvzKgogtvoOm1HspLBHDylf3Ehby6bQ99P5RLcuwk
+        ZD6N2o2155wuQiUs/BBvl0/6FHGXZaAVPHWhHYAOPsZNvf5Zd7+Ku04NRBayUX3YKNvkZv
+        C8Q0XJRBzhQW2lId0aurR78goaRCpvQ=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1659091971;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=BVT0gX+sjhINrg63wCZePpCeJDQ5FLRBslXE3pXrKFA=;
-        b=SWNCbpgPqlmjIe2gJlja5zeTrL4YpAOMxUokWQquj9LbgjXwunFFgffU0+bXyyf7CM5Xx0
-        BjUVDZ4KVmBVvEDQ==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-kernel@vger.kernel.org, Theodore Ts'o <tytso@mit.edu>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Mike Galbraith <efault@gmx.de>, Petr Mladek <pmladek@suse.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH] random: Initialize vsprintf's pointer hash once the
- random core is ready.
-Message-ID: <YuO7ommLFTSLQQ6h@linutronix.de>
-References: <YuOf6qu453dOkR+S@linutronix.de>
- <YuOyeJu8PPAVnXiN@zx2c4.com>
- <YuO0p8lMhVmQj/K2@linutronix.de>
- <YuO4jj8rg9hjHErN@zx2c4.com>
+        bh=2jFk7KjatevBX9qkUNyew5+Z48AxgI4rYcE1gHhuGkI=;
+        b=1uHNLdFMX8WtqVJXB0jYlK2rliNu1vPjyrKWSpEqr+A+tLCDuldudh9cFTqvb1BpEqZ8VX
+        FNVq+IOnSrCWFBBg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id C8ADE13A8E;
+        Fri, 29 Jul 2022 10:52:51 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id +idEMAO842KFCQAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Fri, 29 Jul 2022 10:52:51 +0000
+Message-ID: <aabdcc5b-d303-fda4-f3c9-4478a4adcf0b@suse.cz>
+Date:   Fri, 29 Jul 2022 12:52:51 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <YuO4jj8rg9hjHErN@zx2c4.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v3 13/15] mm/slab_common: unify NUMA and UMA version of
+ tracepoints
+Content-Language: en-US
+To:     Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Joe Perches <joe@perches.com>,
+        Vasily Averin <vasily.averin@linux.dev>,
+        Matthew WilCox <willy@infradead.org>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org
+References: <20220712133946.307181-1-42.hyeyoo@gmail.com>
+ <20220712133946.307181-14-42.hyeyoo@gmail.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <20220712133946.307181-14-42.hyeyoo@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-07-29 12:38:06 [+0200], Jason A. Donenfeld wrote:
-> Hi Sebastian,
-Hi Jason,
+On 7/12/22 15:39, Hyeonggon Yoo wrote:
+> Drop kmem_alloc event class, rename kmem_alloc_node to kmem_alloc, and
+> remove _node postfix for NUMA version of tracepoints.
+> 
+> This will break some tools that depend on {kmem_cache_alloc,kmalloc}_node,
+> but at this point maintaining both kmem_alloc and kmem_alloc_node
+> event classes does not makes sense at all.
+> 
+> Signed-off-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
 
-> On Fri, Jul 29, 2022 at 12:21:27PM +0200, Sebastian Andrzej Siewior wrote:
-> > So launching a worker to obtain the random data? That would mean that
-> > the first %p print won't have nothing, right? I could do it as part of
->=20
-> "First" isn't very meaningful here. If the rng isn't initialized by
-> add_bootloader_randomness() or similar, then it'll almost miss some
-> amount of %p anyway.
-
-only if that printk happens during boot. But it could happen much later.
-In that case !RT won't lose that pointer but RT will.
-
-> But anyway, it sounds like you only need to hoist into a worker IF
-> you're `IS_ENABLED(CONFIG_PREEMPT_RT) && in_hardirq()`, right? So just
-> conditionalize it on that, and this should have pretty minimal impact.
-
-I need always to hoist into a worker because there could warning in a
-preempt-off region leading to this error.
-Maybe I am putting too much importance into this. Let me do what you
-suggest and always lose that first pointer and if someone complains than
-maybe we think about something else=E2=80=A6
-
-> I don't think this patch will require touching random.c.
->=20
-> Jason
-
-Sebastian
+Reviewed-by: Vlastimil Babka <vbabka@suse.cz>
