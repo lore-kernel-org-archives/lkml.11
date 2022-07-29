@@ -2,149 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20F9AC19F2A
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 19:46:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEA7BC00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 19:47:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238916AbiG2Tqz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 15:46:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59128 "EHLO
+        id S238719AbiG2Tr4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 15:47:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238894AbiG2Tqv (ORCPT
+        with ESMTP id S229931AbiG2Trx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 15:46:51 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B32D88747;
-        Fri, 29 Jul 2022 12:46:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=1wgWQHyf41Q4C/D0b3udJRG2sHG+B+p4zwm51LjrGK0=; b=oCPi7V9p9/OkdOMDupFy+1UUfk
-        7jRgYnYqnn0bjOD2MKIVi2UnGtBW+2GWtq+SejmyGPXMGE/CvyqOKYqCuNC8hisl8iujG7Oysk2fg
-        YAiT92UIssrhaNbw3sL6Zr104YzxTchOaqVK8p9XBzgSKiRC/OhBg+XOZMEDBIZQVhKRxHLvQxEnN
-        L1f3k0k6P5fAi1zV8/5BIzYunZ8UvkZ7Ntv4BkM44TLUeeZDoYExL582Yu2+TvWQ8OFsiFlMCSHp3
-        CszL1OT3wxpUsMdvKxxafF7c3xzyBvFsT5OS3BpgVSqCWWRSi3Avx0Lp5CsN9/qKO+nSVy3Y9x2B6
-        BkQkW/dQ==;
-Received: from [177.83.209.223] (helo=localhost)
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
-        id 1oHVwa-00BMCN-NS; Fri, 29 Jul 2022 21:46:48 +0200
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-To:     ardb@kernel.org, linux-efi@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, kernel-dev@igalia.com,
-        kernel@gpiccoli.net, anton@enomsg.org, ccross@android.com,
-        keescook@chromium.org, matt@codeblueprint.co.uk,
-        mjg59@srcf.ucam.org, tony.luck@intel.com,
-        "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Subject: [PATCH v2 1/3] efi: Add a generic helper to convert strings to unicode
-Date:   Fri, 29 Jul 2022 16:45:30 -0300
-Message-Id: <20220729194532.228403-2-gpiccoli@igalia.com>
+        Fri, 29 Jul 2022 15:47:53 -0400
+Received: from wout2-smtp.messagingengine.com (wout2-smtp.messagingengine.com [64.147.123.25])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D491067586;
+        Fri, 29 Jul 2022 12:47:50 -0700 (PDT)
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailout.west.internal (Postfix) with ESMTP id 992A0320085B;
+        Fri, 29 Jul 2022 15:47:49 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute1.internal (MEProxy); Fri, 29 Jul 2022 15:47:50 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=cc
+        :cc:content-transfer-encoding:date:date:from:from:in-reply-to
+        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
+         s=fm2; t=1659124069; x=1659210469; bh=gBa96b9MFSOKIkAQUuKyhWNI9
+        gnNQPrOWjHllrefEKQ=; b=DMw+2TH4p+EGsByQMMnfEmDk7MOAFql/S3rJLmwTi
+        HDpDD67r+CqezaXRZ5O4nfFC0E5Xfx3QY7YIjZIhGnGF+LLoFJ3T6xy7PgnO3E9x
+        uUIMY9B9xs+mYGkoGeHHBHYJcXD+lsg/JTyQquYKD6od99tJmjNBHAXy0cl6aED9
+        ZwCIPILC1vCnk4t0+eY3RdbxaEtgftrQLoqy2QjeaAYiuZkAhcAFTrvNJ00kjNaT
+        IAFBHf6+WHqTLyy+0/rZ1tmmoQbjrXFIa4cLt1BbwD1WFu3nSAsRMQqqgGteig1X
+        +94kR4xUnDhQomxw56iVQ9ao/8skkvP+7fxc+LFbV5/sA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
+        :feedback-id:feedback-id:from:from:in-reply-to:message-id
+        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=
+        1659124069; x=1659210469; bh=gBa96b9MFSOKIkAQUuKyhWNI9gnNQPrOWjH
+        llrefEKQ=; b=1E4CKwbQ5XIjXKz36456d/ffDHyU/2IwHkMxy/1mNazZ4YvRpdU
+        A2ljIqse8I1Vx6yz77SURPN2hJeH4kC0qWCvk8FYJjrXX0elIBNLAyeqSHTiPYt5
+        UWHnX/joR8UXq1Mxvb0O9muJne0xSMrzgmRWNte5+UnOeN2S2kTu5ZrsXR4aIpWw
+        cNM6XfdGz0l1lBaaj8LnT/PeeMkvsQNTE8v1px+YNwxUzgLkJ9U7mUcw7Swjp53S
+        D/9E5Ov+Acey1lzQwZRlRCzQ8MQTOav51rS4ofTppUKzTTdPfV2LjTH6XJetHKI0
+        oQP9hpiXNSkabFVFyFkMO7WkVdZHRIJL7Jw==
+X-ME-Sender: <xms:ZDnkYvbg_5MxdkoycBIWhETxDpUnmN4KB_i4coJUf2HvI2TkXUKfNg>
+    <xme:ZDnkYubozeZg38Zo7jv2EdTU70Pjij4gBHEyEd2mjZfu5nqfK-otl8xwXnWrPGAoP
+    Ta6j0KaCWE37e6-rg>
+X-ME-Received: <xmr:ZDnkYh8mU2Qk6BYVm3k6viPSfRp_ep3iVOjeZ8PTD5mzPJ1pxbl28redj0vjfPW0tWXCXCfvzMJB>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvddujedgudegfecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecufghrlhcuvffnffculdejtddmnecujfgurhephf
+    fvvefufffkofgggfestdekredtredttdenucfhrhhomhepffgrnhhivghlucgiuhcuoegu
+    gihusegugihuuhhurdighiiiqeenucggtffrrghtthgvrhhnpedvgefgtefgleehhfeufe
+    ekuddvgfeuvdfhgeeljeduudfffffgteeuudeiieekjeenucevlhhushhtvghrufhiiigv
+    pedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegugihusegugihuuhhurdighiii
+X-ME-Proxy: <xmx:ZDnkYlqBHrdT1_g0_b7eiBGaZKtiaB7Aqh2mmYMwg4XyjTn0Z9oGmw>
+    <xmx:ZDnkYqqzb-fq00BTAYrLTtPD3RwgDL2eZ0d2iMCRBz31su013nwGNg>
+    <xmx:ZDnkYrTXmHMNDW6TCjxpKIyNvq7fKdMUFfkduHNq7eiOWKz0WhgOvg>
+    <xmx:ZTnkYjnrrblwJsKW4BtqWiq15cYh6X6FKN2swtfm8fD7TQKKPYjp1w>
+Feedback-ID: i6a694271:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 29 Jul 2022 15:47:48 -0400 (EDT)
+From:   Daniel Xu <dxu@dxuuu.xyz>
+To:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org
+Cc:     Daniel Xu <dxu@dxuuu.xyz>, linux-kernel@vger.kernel.org
+Subject: [PATCH bpf] bpf: Fix oudated __bpf_skc_lookup() comment
+Date:   Fri, 29 Jul 2022 14:45:41 -0500
+Message-Id: <2c105a1ff3071796189093c536218e44ea3b1aa0.1659122785.git.dxu@dxuuu.xyz>
 X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220729194532.228403-1-gpiccoli@igalia.com>
-References: <20220729194532.228403-1-gpiccoli@igalia.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently both efi-pstore and efibc rely in simple for-loops to convert
-from regular char pointers to u16/unicode strings; so let's export this
-functionality as a helper to common EFI code to prevent code duplication.
-This helper will also be used in a subsequent patch (adding a new module).
+The function returns a pointer now.
 
-Notice that efi-pstore didn't write the end NULL char in the unicode
-string before this patch, but this should not change anything in a
-relevant way for this module - other than that, no functional change is
-expected.
-
-Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
+Fixes: edbf8c01de5a ("bpf: add skc_lookup_tcp helper")
+Signed-off-by: Daniel Xu <dxu@dxuuu.xyz>
 ---
- drivers/firmware/efi/efi-pstore.c |  4 +---
- drivers/firmware/efi/efibc.c      |  9 ++++-----
- include/linux/efi.h               | 17 +++++++++++++++++
- 3 files changed, 22 insertions(+), 8 deletions(-)
+ net/core/filter.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/firmware/efi/efi-pstore.c b/drivers/firmware/efi/efi-pstore.c
-index 3bddc152fcd4..965a4c0d6e60 100644
---- a/drivers/firmware/efi/efi-pstore.c
-+++ b/drivers/firmware/efi/efi-pstore.c
-@@ -167,7 +167,6 @@ static int efi_pstore_write(struct pstore_record *record)
- 	char name[DUMP_NAME_LEN];
- 	efi_char16_t efi_name[DUMP_NAME_LEN];
- 	efi_status_t status;
--	int i;
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 5d16d66727fc..866ca05f95e0 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -6463,8 +6463,6 @@ static struct sock *sk_lookup(struct net *net, struct bpf_sock_tuple *tuple,
  
- 	record->id = generic_id(record->time.tv_sec, record->part,
- 				record->count);
-@@ -180,8 +179,7 @@ static int efi_pstore_write(struct pstore_record *record)
- 		 (long long)record->time.tv_sec,
- 		 record->compressed ? 'C' : 'D');
- 
--	for (i = 0; i < DUMP_NAME_LEN; i++)
--		efi_name[i] = name[i];
-+	efi_str8_to_str16(efi_name, name, DUMP_NAME_LEN - 1);
- 
- 	if (efivar_trylock())
- 		return -EBUSY;
-diff --git a/drivers/firmware/efi/efibc.c b/drivers/firmware/efi/efibc.c
-index 8ced7af8e56d..7e3bf60d24e0 100644
---- a/drivers/firmware/efi/efibc.c
-+++ b/drivers/firmware/efi/efibc.c
-@@ -39,7 +39,7 @@ static int efibc_reboot_notifier_call(struct notifier_block *notifier,
- 						    : L"shutdown";
- 	const u8 *str = data;
- 	efi_char16_t *wdata;
--	unsigned long l;
-+	size_t len;
- 	int ret;
- 
- 	ret = efibc_set_variable(L"LoaderEntryRebootReason", reason,
-@@ -48,11 +48,10 @@ static int efibc_reboot_notifier_call(struct notifier_block *notifier,
- 		return NOTIFY_DONE;
- 
- 	wdata = kmalloc(MAX_DATA_LEN * sizeof(efi_char16_t), GFP_KERNEL);
--	for (l = 0; l < MAX_DATA_LEN - 1 && str[l] != '\0'; l++)
--		wdata[l] = str[l];
--	wdata[l] = L'\0';
- 
--	efibc_set_variable(L"LoaderEntryOneShot", wdata, l);
-+	len = efi_str8_to_str16(wdata, str, MAX_DATA_LEN - 1);
-+
-+	efibc_set_variable(L"LoaderEntryOneShot", wdata, len);
- 
- 	kfree(wdata);
- 	return NOTIFY_DONE;
-diff --git a/include/linux/efi.h b/include/linux/efi.h
-index d2b84c2fec39..c0ea01be3772 100644
---- a/include/linux/efi.h
-+++ b/include/linux/efi.h
-@@ -1030,6 +1030,23 @@ struct efivars {
- 
- #define EFI_VAR_NAME_LEN	1024
- 
-+/*
-+ * Helper that converts regular char buffer to u16 unicode-like strings;
-+ * notice that the unicode buffer requires to be at least len+1 in size.
-+ */
-+static inline size_t
-+efi_str8_to_str16(efi_char16_t *str16, const char *str8, size_t len)
-+{
-+	size_t i;
-+
-+	for (i = 0; i < len && str8[i] != '\0'; i++)
-+		str16[i] = str8[i];
-+
-+	str16[i] = L'\0';
-+
-+	return i;
-+}
-+
- int efivars_register(struct efivars *efivars,
- 		     const struct efivar_operations *ops,
- 		     struct kobject *kobject);
+ /* bpf_skc_lookup performs the core lookup for different types of sockets,
+  * taking a reference on the socket if it doesn't have the flag SOCK_RCU_FREE.
+- * Returns the socket as an 'unsigned long' to simplify the casting in the
+- * callers to satisfy BPF_CALL declarations.
+  */
+ static struct sock *
+ __bpf_skc_lookup(struct sk_buff *skb, struct bpf_sock_tuple *tuple, u32 len,
 -- 
 2.37.1
 
