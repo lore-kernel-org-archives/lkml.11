@@ -2,72 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDFD9C00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 16:57:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D80A9C19F2A
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 16:59:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237958AbiG2Q5A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 12:57:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45778 "EHLO
+        id S238112AbiG2Q67 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 12:58:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236366AbiG2Q46 (ORCPT
+        with ESMTP id S232321AbiG2Q65 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 12:56:58 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A30B189A51
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 09:56:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3F317B828AB
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 16:56:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB712C433D6;
-        Fri, 29 Jul 2022 16:56:54 +0000 (UTC)
-Date:   Fri, 29 Jul 2022 12:56:47 -0400
-From:   Steven Rostedt <rostedt@goodmis.org>
-To:     liqiong <liqiong@nfschina.com>
-Cc:     Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org,
-        yuzhe@nfschina.com, renyu@nfschina.com, jiaming@nfschina.com
-Subject: Re: [PATCH] tracing: Do PTR_ERR() after IS_ERR()
-Message-ID: <20220729125647.746379e5@rorschach.local.home>
-In-Reply-To: <efce3a4c-4480-99f5-0229-a44009ebe9d8@nfschina.com>
-References: <20220727153519.6697-1-liqiong@nfschina.com>
-        <20220727122847.6b00e29d@rorschach.local.home>
-        <efce3a4c-4480-99f5-0229-a44009ebe9d8@nfschina.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        Fri, 29 Jul 2022 12:58:57 -0400
+Received: from mail.pr-group.ru (mail.pr-group.ru [178.18.215.3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C881E89A63;
+        Fri, 29 Jul 2022 09:58:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+        d=metrotek.ru; s=mail;
+        h=from:subject:date:message-id:to:cc:mime-version:content-type:
+         content-transfer-encoding:in-reply-to:references;
+        bh=HcyS1kHLPZESdGp9R+oyPMtufBfDWfydet05Vxb7ves=;
+        b=cjwCDrbFQMPGAFMf7CwS3hbVeF0L1QgdRtCzntfr6jV/Nde1TBFZlb+iQ1Go80mbJBsNC5wxGBzNg
+         Po6YVgkyCIjsNH9NMTnXj7MZud6wK91Aw3GrM7jtIo+r5ke1lLEqvtbUUbXhgwnaEFg30SoykgSNDu
+         GXLKyQ0jQZNOhYXQsLAWnh1TOqCR1zHgB+bJAZCn5nuNGzQoTHDdlJVqAK4IMX/DyblhVE5dZbjdci
+         VzlNoUGHc3AqGEY7BF0dI3umPdyQoKAxQzxup33pYjF3hASj0BNeImHt1LLyv89CrpDZsOEnam9dpa
+         K0zDQ35r5/9PLn19/BebA1KzYIPKKxA==
+X-Kerio-Anti-Spam:  Build: [Engines: 2.16.3.1424, Stamp: 3], Multi: [Enabled, t: (0.000012,0.006052)], BW: [Enabled, t: (0.000035,0.000001)], RTDA: [Enabled, t: (0.081346), Hit: No, Details: v2.41.0; Id: 15.52k00k.1g95ealga.9p5; mclb], total: 0(700)
+X-Footer: bWV0cm90ZWsucnU=
+Received: from x260 ([85.93.58.13])
+        (authenticated user i.bornyakov@metrotek.ru)
+        by mail.pr-group.ru with ESMTPSA
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits));
+        Fri, 29 Jul 2022 19:58:36 +0300
+Date:   Fri, 29 Jul 2022 19:33:47 +0300
+From:   Ivan Bornyakov <i.bornyakov@metrotek.ru>
+To:     Daniel =?utf-8?B?R2zDtmNrbmVy?= <dg@emlix.com>
+Cc:     mdf@kernel.org, hao.wu@intel.com, yilun.xu@intel.com,
+        trix@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-fpga@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        system@metrotek.ru,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: Re: [PATCH v5 2/2] dt-bindings: fpga: add binding doc for ecp5-spi
+ fpga mgr
+Message-ID: <20220729163347.irqqqcvh2biliqg2@x260>
+References: <20220719112335.9528-1-i.bornyakov@metrotek.ru>
+ <20220719112335.9528-3-i.bornyakov@metrotek.ru>
+ <20220729090123.GA28299@homes.emlix.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220729090123.GA28299@homes.emlix.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 28 Jul 2022 08:28:08 +0800
-liqiong <liqiong@nfschina.com> wrote:
+On Fri, Jul 29, 2022 at 11:01:24AM +0200, Daniel Glöckner wrote:
+> Hi,
+> 
+> On Tue, Jul 19, 2022 at 02:23:35PM +0300, Ivan Bornyakov wrote:
+> > +properties:
+> > +  compatible:
+> > +    enum:
+> > +      - lattice,ecp5-fpga-mgr
+> 
+> Since this driver uses the same interface as the existing
+> drivers/fpga/machxo2-spi.c driver, wouldn't it be advisable to use a
+> similar compatible id, i.e. lattice,ecp5-slave-spi?
+> 
 
-> It's all right, assign  PTR_ERR()  to 'ret'  anyway.
-> But this assignment is valid only at the "IS_ERR()" path.
-> Maybe it is better put "PTR_ERR()" at error path, keep the code clear.
+To quote Krzysztof Kozlowski from v1 review:
+ > Do not encode interface name in compatible so no "spi"
 
-No it does not. It adds unnecessary brackets.
+See https://lore.kernel.org/linux-fpga/044a9736-a4ec-c250-7755-c80a5bcbe38b@linaro.org/
 
-It is common in the kernel to have:
+> > +required:
+> > +  - compatible
+> > +  - reg
+> > +  - program-gpios
+> > +  - init-gpios
+> > +  - done-gpios
+> 
+> I think some of the GPIOs can be made optional by reading the status
+> register or using the refresh command, assuming the slave spi interface
+> stayed enabled after previous programming and we are not dealing with
+> several chained FPGAs. But that can of course be left as an exercise for
+> other developers.
 
-	ret = ERROR;
-	if (some_condition())
-		goto out;
+I would prefer the latter.
 
-	ret = ERROR1;
-	if (some_other_condition())
-		goto out;
-
-	ret = ERROR2;
-	if (some_new_condition())
-		goto out;
-
-	ret = 0;
-out:
-	return ret;
-
-And your change breaks this.
-
--- Steve
