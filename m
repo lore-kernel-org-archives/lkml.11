@@ -2,211 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45762C19F2A
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 00:20:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D42F8C00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 00:20:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233510AbiG2AUX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 20:20:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54020 "EHLO
+        id S233592AbiG2AUu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 20:20:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230007AbiG2AUW (ORCPT
+        with ESMTP id S233558AbiG2AUs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 20:20:22 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2271D18B24
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 17:20:21 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id va17so5907935ejb.0
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 17:20:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=tGjb0yv2qHz2eed9IZ1i5rTk8Eynn94CI4Wx2sUGweo=;
-        b=W9UAjOx5uPpd1JmlPNKp+NtqaVYeLK4GU1GwKzuPItS0Z1ouoQaVMhWQsrgrYFQOp0
-         aUa26Wr96X2xIdpAxHirM+flYD2rApHRg6w2J8IJPrwyPRbaLlUmbV9Ybol+YsHq94gB
-         8CpnLiwr6jQWt/Q3/NbCJzjMzVDbbpAazFGn0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=tGjb0yv2qHz2eed9IZ1i5rTk8Eynn94CI4Wx2sUGweo=;
-        b=hdhk5uKqr086VRBAtyJgDvxtL5/q/iLEG3i6t3GEG0775eDd0lyFCHQ3NleaE7mHsI
-         0eExhXUJ5YUvQDBVK2tCVXvLookuhwmnoHZFRIBlSkuEDHXt7hzmC7vtmaz2973SpOCm
-         p/crXV/ej43HyNEHw2z/A7n+ogtbeHwNpHMygNZu0EM7P7ylGn2NrMEyb9iCMaUk41Nx
-         zfgNkMZlFfEhjIPCM3KCtojWq4YstXg3oFd91UXJuBDFgxCgJ065OQVNAMtEBHg/A5S4
-         df6rE0jgdTe2e/S7ZI4VGkWOCUwBW80UutSWLjQrPuo+RiHMWltAS7OTokWW5cjKRh8V
-         dJ+w==
-X-Gm-Message-State: AJIora8KFdQLMM4yqDe89MdGoGbB1PxWoY+N4qeg52tLgNwSo0LdFXZy
-        d3d1LC9ditx/vdRTig5XM74L0Fhx0ntOm8IW
-X-Google-Smtp-Source: AGRyM1vd7yYUtpZm89N/PU/bqH7I3f6RMxfY9Ep6WLeRIQvtJvfs7D7bBXKb1yZmSXDQPEj/emyJww==
-X-Received: by 2002:a17:907:2d86:b0:72b:4aee:7729 with SMTP id gt6-20020a1709072d8600b0072b4aee7729mr948693ejc.143.1659054019082;
-        Thu, 28 Jul 2022 17:20:19 -0700 (PDT)
-Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com. [209.85.221.52])
-        by smtp.gmail.com with ESMTPSA id k21-20020a17090632d500b0072af102e65csm946471ejk.152.2022.07.28.17.20.18
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 28 Jul 2022 17:20:18 -0700 (PDT)
-Received: by mail-wr1-f52.google.com with SMTP id l22so4162931wrz.7
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 17:20:18 -0700 (PDT)
-X-Received: by 2002:a5d:5889:0:b0:21d:bccd:38e3 with SMTP id
- n9-20020a5d5889000000b0021dbccd38e3mr698162wrf.659.1659054018014; Thu, 28 Jul
- 2022 17:20:18 -0700 (PDT)
-MIME-Version: 1.0
-References: <1657544224-10680-1-git-send-email-quic_vpolimer@quicinc.com> <1657544224-10680-5-git-send-email-quic_vpolimer@quicinc.com>
-In-Reply-To: <1657544224-10680-5-git-send-email-quic_vpolimer@quicinc.com>
-From:   Doug Anderson <dianders@chromium.org>
-Date:   Thu, 28 Jul 2022 17:20:05 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=UN2tFNL=T+eXE4j7bnp6zWgCN4Nz8Q=qgu7y67yRPpdA@mail.gmail.com>
-Message-ID: <CAD=FV=UN2tFNL=T+eXE4j7bnp6zWgCN4Nz8Q=qgu7y67yRPpdA@mail.gmail.com>
-Subject: Re: [PATCH v6 04/10] drm/msm/dp: Add basic PSR support for eDP
-To:     Vinod Polimera <quic_vpolimer@quicinc.com>
-Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        freedreno <freedreno@lists.freedesktop.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        Rob Clark <robdclark@gmail.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        quic_kalyant <quic_kalyant@quicinc.com>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        "Kuogee Hsieh (QUIC)" <quic_khsieh@quicinc.com>,
-        quic_vproddut <quic_vproddut@quicinc.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        "Aravind Venkateswaran (QUIC)" <quic_aravindh@quicinc.com>,
-        "Abhinav Kumar (QUIC)" <quic_abhinavk@quicinc.com>,
-        Sankeerth Billakanti <quic_sbillaka@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"
+        Thu, 28 Jul 2022 20:20:48 -0400
+X-Greylist: delayed 357 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 28 Jul 2022 17:20:47 PDT
+Received: from new2-smtp.messagingengine.com (new2-smtp.messagingengine.com [66.111.4.224])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B3841903F;
+        Thu, 28 Jul 2022 17:20:46 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 77CB758099B;
+        Thu, 28 Jul 2022 20:14:48 -0400 (EDT)
+Received: from imap50 ([10.202.2.100])
+  by compute3.internal (MEProxy); Thu, 28 Jul 2022 20:14:48 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aj.id.au; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm2; t=1659053688; x=1659060888; bh=1CqIgEzBLY
+        47OHaV4sSf/xZhANJWym0dF7Lbe51Gho8=; b=Prja2fJywNoccXxpjpow3zGOJ2
+        xOO4vfXVawIaKmJc0bhYtRFydLKuH0fHCgcVLRM1lUuLNu9BBN//3X9ouCnjhWE/
+        h6CzOrA/fHh2fcolx+w5V5tq6TCq2bQIPsf3ZACWLAKEpf25e8ZY9XU3KFQic2se
+        Jtce8nCqDD9jE+OjT6DxHmtBE41TY8DYxcrHiNxcyS8kN3p2GQxDzYsllntF8mJS
+        FS2T7PKKNAKPR8aJRiKi728rbnqI8yzpnLur/gXgoHLFMmia3zmPWCK9KTleynRy
+        jOxuw5ngIWElnzlSjMqsH07YSliZTA7wCA1cjU76B4SvQw24/jF2rPXTu1qg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm3; t=1659053688; x=1659060888; bh=1CqIgEzBLY47OHaV4sSf/xZhANJW
+        ym0dF7Lbe51Gho8=; b=rk1BZHZ1UaKHog5lKRuUrUckMq4BFSl4BtoMl4GVeEqA
+        uP8Q/U4l30FCDS6Lcw3xoSku/ZK/qU0Ppk3IwCHStdpczFzStmnmO+vC8fgdqtMF
+        L/9J11RH73L9sx+hzEM7Eu5L2OQZDiRt+J4fkyFq50/7oqrhR+fyh3f2zJfKWvbX
+        G5oB1PIDRUU4HJ25E1M0KtG9dyqUyrQTA3jbvGkorG2/yaqJAjlBAAjd5Q2fWxl8
+        Itq4r/XIBs9hQu2qdc6/UCMqpnavTMvAaMxWwoxGtCPMptiR3o/ZgbZKMSuVjAu9
+        GxafBtrfUIcHJLVFoN5Y5kI4k3zq1mPqBv0rN8j4eQ==
+X-ME-Sender: <xms:dibjYq61WULSSvHAb-Fw6g_a4fXhuLh8dvOAfkntuhZvcfdlvl7Pww>
+    <xme:dibjYj7LyoGVphHU_BmO-2rYwgaulvBbRFulbawl0I52oSGsa9-e4LnjM3ZcB2utm
+    iqBTBR4VqJXRHgcMw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdduhedgudefiecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpefofgggkfgjfhffhffvvefutgesthdtredtreertdenucfhrhhomhepfdet
+    nhgurhgvficulfgvfhhfvghrhidfuceorghnughrvgifsegrjhdrihgurdgruheqnecugg
+    ftrfgrthhtvghrnhepkedvkeejkefgjeduffetteegjeekteetudevtdfftdeluddthfeh
+    veefteekieetnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrh
+    homheprghnughrvgifsegrjhdrihgurdgruh
+X-ME-Proxy: <xmx:dibjYpeVeo5Y5h9hpZreusiUaYr9cd-GNjqdKKjoELpg2MwQwS2j_g>
+    <xmx:dibjYnLHruoskZDhofIBZdqd2L6PUeOuHZh_12EOvd8nk4fKXELcKA>
+    <xmx:dibjYuIb9-it4epXA9PpIvUcVGm0Og35TN2M0qLz4e-5zACCQcRfjQ>
+    <xmx:eCbjYsQMVZNaGfoD93vj0O0QSde7ARYF5pisHwVHhhgcCI35mR2OAg>
+Feedback-ID: idfb84289:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id 183BA1700083; Thu, 28 Jul 2022 20:14:45 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.7.0-alpha0-757-gc3ad9c75d3-fm-20220722.001-gc3ad9c75
+Mime-Version: 1.0
+Message-Id: <833e10d7-ceb1-4859-8028-e724d41421f1@www.fastmail.com>
+In-Reply-To: <20220721141325.2413920-2-arnd@kernel.org>
+References: <20220721141325.2413920-1-arnd@kernel.org>
+ <20220721141325.2413920-2-arnd@kernel.org>
+Date:   Fri, 29 Jul 2022 09:44:25 +0930
+From:   "Andrew Jeffery" <andrew@aj.id.au>
+To:     "Arnd Bergmann" <arnd@kernel.org>,
+        linux-arm-kernel@lists.infradead.org
+Cc:     "Andrew Lunn" <andrew@lunn.ch>,
+        "Alexandre Belloni" <alexandre.belloni@bootlin.com>,
+        linux-aspeed@lists.ozlabs.org,
+        "Neil Armstrong" <narmstrong@baylibre.com>,
+        "Tony Lindgren" <tony@atomide.com>,
+        "Catalin Marinas" <catalin.marinas@arm.com>,
+        "Lorenzo Pieralisi" <lpieralisi@kernel.org>,
+        "Liviu Dudau" <liviu.dudau@arm.com>,
+        "Alexandre Torgue" <alexandre.torgue@foss.st.com>,
+        linux-kernel@vger.kernel.org,
+        "Thierry Reding" <thierry.reding@gmail.com>,
+        "Alim Akhtar" <alim.akhtar@samsung.com>,
+        "Fabio Estevam" <festevam@gmail.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        "Florian Fainelli" <f.fainelli@gmail.com>,
+        "Alexander Shiyan" <shc_work@mail.ru>,
+        "Aaro Koskinen" <aaro.koskinen@iki.fi>,
+        "Will Deacon" <will@kernel.org>,
+        "Gregory Clement" <gregory.clement@bootlin.com>,
+        linux-sh@vger.kernel.org,
+        "Janusz Krzysztofik" <jmkrzyszt@gmail.com>,
+        "Russell King" <linux@armlinux.org.uk>,
+        "Jernej Skrabec" <jernej.skrabec@gmail.com>,
+        "Jonathan Hunter" <jonathanh@nvidia.com>,
+        "Chen-Yu Tsai" <wens@csie.org>,
+        bcm-kernel-feedback-list@broadcom.com,
+        "NXP Linux Team" <linux-imx@nxp.com>, linux-sunxi@lists.linux.dev,
+        "Sebastian Hesselbarth" <sebastian.hesselbarth@gmail.com>,
+        "Maxime Coquelin" <mcoquelin.stm32@gmail.com>,
+        "Arnd Bergmann" <arnd@arndb.de>, "Ray Jui" <rjui@broadcom.com>,
+        "Sascha Hauer" <s.hauer@pengutronix.de>,
+        "Takao Orito" <orito.takao@socionext.com>,
+        "Vladimir Zapolskiy" <vz@mleia.com>,
+        linux-samsung-soc@vger.kernel.org,
+        linux-rpi-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
+        linux-omap@vger.kernel.org,
+        "Scott Branden" <sbranden@broadcom.com>,
+        "Taichi Sugaya" <sugaya.taichi@socionext.com>,
+        "Samuel Holland" <samuel@sholland.org>,
+        "Nicolas Ferre" <nicolas.ferre@microchip.com>,
+        "Dinh Nguyen" <dinguyen@kernel.org>,
+        "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>,
+        "Pengutronix Kernel Team" <kernel@pengutronix.de>,
+        "Sudeep Holla" <sudeep.holla@arm.com>, linux-oxnas@groups.io,
+        "Shawn Guo" <shawnguo@kernel.org>,
+        "Claudiu Beznea" <claudiu.beznea@microchip.com>
+Subject: Re: [PATCH 1/6] ARM: refresh defconfig files
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
 
-On Mon, Jul 11, 2022 at 5:57 AM Vinod Polimera
-<quic_vpolimer@quicinc.com> wrote:
+
+On Thu, 21 Jul 2022, at 23:43, Arnd Bergmann wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
 >
-> @@ -359,6 +367,24 @@ void dp_catalog_ctrl_lane_mapping(struct dp_catalog *dp_catalog)
->                         ln_mapping);
->  }
+> A lot of Kconfig options have changed over the years, and we tend
+> to not do a blind 'make defconfig' to refresh the files, to ensure
+> we catch options that should not have gone away.
 >
-> +void dp_catalog_ctrl_psr_mainlink_enable(struct dp_catalog *dp_catalog,
-> +                                               bool enable)
-> +{
-> +       u32 val;
-> +       struct dp_catalog_private *catalog = container_of(dp_catalog,
-> +                               struct dp_catalog_private, dp_catalog);
-> +
-> +       val = dp_read_link(catalog, REG_DP_MAINLINK_CTRL);
-> +       val &= ~DP_MAINLINK_CTRL_ENABLE;
-
-nit: the line above is useless. Remove. In the case that you're
-enabling you're just adding the bit back in. In the case that you're
-disabling you're doing the exact same operation below.
-
-
-> @@ -610,6 +636,47 @@ void dp_catalog_ctrl_hpd_config(struct dp_catalog *dp_catalog)
->         dp_write_aux(catalog, REG_DP_DP_HPD_CTRL, DP_DP_HPD_CTRL_HPD_EN);
->  }
+> I used some a bit of scripting to only rework the bits where an
+> option moved around in any of the defconfig files, without also
+> dropping any of the other lines, to make it clearer which options
+> we no longer have.
 >
-> +static void dp_catalog_enable_sdp(struct dp_catalog_private *catalog)
-> +{
-> +       /* trigger sdp */
-> +       dp_write_link(catalog, MMSS_DP_SDP_CFG3, UPDATE_SDP);
-> +       dp_write_link(catalog, MMSS_DP_SDP_CFG3, !UPDATE_SDP);
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+>  arch/arm/configs/am200epdkit_defconfig    |  26 ++---
+>  arch/arm/configs/aspeed_g4_defconfig      |  16 +--
+>  arch/arm/configs/aspeed_g5_defconfig      |  16 +--
 
-!UPDATE_SDP is a really counter-intuitive way to say 0x0.
+For the Aspeed bits:
 
-
-> @@ -645,6 +712,20 @@ u32 dp_catalog_hpd_get_intr_status(struct dp_catalog *dp_catalog)
->         return isr & (mask | ~DP_DP_HPD_INT_MASK);
->  }
->
-> +int dp_catalog_ctrl_read_psr_interrupt_status(struct dp_catalog *dp_catalog)
-
-Why is the return type "int" and not "u32". It's a hardware register.
-It's u32 here. The caller assigns it to a u32.
-
-
-> +void dp_ctrl_set_psr(struct dp_ctrl *dp_ctrl, bool enter)
-> +{
-> +       struct dp_ctrl_private *ctrl = container_of(dp_ctrl,
-> +                       struct dp_ctrl_private, dp_ctrl);
-> +
-> +       if (!ctrl->panel->psr_cap.version)
-> +               return;
-> +
-> +       /*
-> +        * When entering PSR,
-> +        * 1. Send PSR enter SDP and wait for the PSR_UPDATE_INT
-> +        * 2. Turn off video
-> +        * 3. Disable the mainlink
-> +        *
-> +        * When exiting PSR,
-> +        * 1. Enable the mainlink
-> +        * 2. Send the PSR exit SDP
-> +        */
-> +       if (enter) {
-> +               reinit_completion(&ctrl->psr_op_comp);
-> +               dp_catalog_ctrl_set_psr(ctrl->catalog, true);
-> +
-> +               if (!wait_for_completion_timeout(&ctrl->psr_op_comp,
-> +                       PSR_OPERATION_COMPLETION_TIMEOUT_JIFFIES)) {
-> +                       DRM_ERROR("PSR_ENTRY timedout\n");
-> +                       dp_catalog_ctrl_set_psr(ctrl->catalog, false);
-> +                       return;
-> +               }
-> +
-> +               dp_catalog_ctrl_state_ctrl(ctrl->catalog, 0);
-> +
-> +               dp_catalog_ctrl_psr_mainlink_enable(ctrl->catalog, false);
-> +       } else {
-> +               dp_catalog_ctrl_psr_mainlink_enable(ctrl->catalog, true);
-> +
-> +               dp_catalog_ctrl_set_psr(ctrl->catalog, false);
-
-My PSR knowledge is not very strong, but I do remember a recent commit
-from Brian Norris fly by for the Analogix controller. See commit
-c4c6ef229593 ("drm/bridge: analogix_dp: Make PSR-exit block less").
-
-In that commit it sounds as if we need to wait for _something_ (resync
-I guess?) here and not just return instantly.
-
-
-> @@ -388,6 +388,8 @@ static int dp_display_process_hpd_high(struct dp_display_private *dp)
->
->         edid = dp->panel->edid;
->
-> +       dp->dp_display.psr_supported = !!dp->panel->psr_cap.version;
-> +
-
-nit: remove the "!!". You're already storing this in a "bool" which
-will handle this for you.
-
-
-> +static const struct drm_bridge_funcs edp_bridge_ops = {
-> +       .atomic_enable = edp_bridge_atomic_enable,
-> +       .atomic_disable = edp_bridge_atomic_disable,
-> +       .atomic_post_disable = edp_bridge_atomic_post_disable,
-> +       .mode_set = dp_bridge_mode_set,
-> +       .mode_valid = dp_bridge_mode_valid,
-> +       .atomic_reset = drm_atomic_helper_bridge_reset,
-> +       .atomic_duplicate_state = drm_atomic_helper_bridge_duplicate_state,
-> +       .atomic_destroy_state = drm_atomic_helper_bridge_destroy_state,
-> +       .atomic_check = edp_bridge_atomic_check,
-> +};
-
-nit: the location of your new functions is a little weird. You've got:
-
-1. DP functions
-2. eDP functions
-3. eDP structure
-4. DP structure
-
-I'd expect:
-
-1. DP functions
-2. DP structure
-3. eDP functions
-4. eDP structure
-
--Doug
+Reviewed-by: Andrew Jeffery <andrew@aj.id.au>
