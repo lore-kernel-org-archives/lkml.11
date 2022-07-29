@@ -2,157 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5343C00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 20:07:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB4FCC04A68
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 20:08:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239049AbiG2UHa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 16:07:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44842 "EHLO
+        id S239059AbiG2UIF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 16:08:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229564AbiG2UH2 (ORCPT
+        with ESMTP id S239046AbiG2UIC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 16:07:28 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7647D7968E
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 13:07:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659125247; x=1690661247;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=G3EYJuCImAFppAcSlVnUcEfwImmJRRAzetmU8K028Uo=;
-  b=ZJ2znwYdu4xtfmvTw0e/6H7GDv/aKGMf4ueL9XHpaJdVQREQ4ahTdeBy
-   LZ+d1roAPeZEUIE3zNR0G6uR/EqELRfhQFxK+YvPrHNyJ1eHRZQfpL9D8
-   0Zz3Rqf988cjsjS0HsWz1Lp9FPiv8+N8cCTt101ZeSV7OIS3cz0+ZYjNd
-   q4kFa+zzuCYIWvGpmzVfkdXbnXC0ABXwrYTOOPUxrV8Or74XYvazDi1bV
-   NRpsmwMOhOn9bP4uye2F2z4svnzYzBL+chOYc6KWWJSCgCGyynMg+sgqh
-   0D/ukUzuelobEPNXmh5afk/swOqAQboizyOt0eqrYT/mghL8zSndcATEC
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10423"; a="352843331"
-X-IronPort-AV: E=Sophos;i="5.93,202,1654585200"; 
-   d="scan'208";a="352843331"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2022 13:07:27 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,202,1654585200"; 
-   d="scan'208";a="605067850"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 29 Jul 2022 13:07:21 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oHWGW-000C3P-1J;
-        Fri, 29 Jul 2022 20:07:20 +0000
-Date:   Sat, 30 Jul 2022 04:06:25 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Maxime Ripard <maxime@cerno.tech>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Daniel Vetter <daniel@ffwll.ch>, Emma Anholt <emma@anholt.net>,
-        David Airlie <airlied@linux.ie>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Noralf =?iso-8859-1?Q?Tr=F8nnes?= <noralf@tronnes.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Maxime Ripard <mripard@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-sunxi@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Phil Elwell <phil@raspberrypi.com>,
-        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        linux-amlogic@lists.infradead.org, dri-devel@lists.freedesktop.org,
-        Dom Cobley <dom@raspberrypi.com>
-Subject: Re: [PATCH v1 33/35] drm/connector: Remove TV modes property
-Message-ID: <202207300305.EGSDOjh4-lkp@intel.com>
-References: <20220728-rpi-analog-tv-properties-v1-33-3d53ae722097@cerno.tech>
+        Fri, 29 Jul 2022 16:08:02 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ADE07CB51;
+        Fri, 29 Jul 2022 13:08:01 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id o3so5529277ple.5;
+        Fri, 29 Jul 2022 13:08:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:sender:from:to:cc;
+        bh=ek+Ls/Nc1cCImKTTFp3CMyhusWpQs8VhRYTO+ff+y+4=;
+        b=VGwDDVVWgD+Qs3NIGLdIQi05fC3drE9GxCopUDL2KFilHBA6Hf5PUFhx/ijHB+//ri
+         i7iY3VjOtiT0gW6uvZI+g1nuW0jb2eHPfSXxAPjZnACQRCAnUwfJci5sblNeC5saM8xN
+         hciKTpTWh63AKwFYfnwL0+1SdMwV1yNWPstS0+IvWvsw8eca4PPBm6V4EtewOxjzgw5g
+         S91dtYJyeu888Hl+oZ+vYNJRtx9hR9A1kAAAe9uZ/OHjKzRefk1IHMbA/6L79OxWCtGs
+         HyKW1MhnJHkg8w93hUIz4EHcXdedz9yCaakOym1IjjMzm3LTN6fO5lzshPG8D0u2LiOT
+         VlnQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:sender:x-gm-message-state:from
+         :to:cc;
+        bh=ek+Ls/Nc1cCImKTTFp3CMyhusWpQs8VhRYTO+ff+y+4=;
+        b=ruwpt54SlUBYTbn/smYursuTLBCikr7qOQbPgKXqsfudZk1WzJ+HMwiC8B3aNw6w73
+         6cEpGH/Rh+dsMi01HIdHftFc3q3d14x5PirG7SB9WQ1X3dE6cZfOw+AMkfgl38uVM4ah
+         TB3BLcYWdFEEp2CQvr7OmLHRNzG3xVTpgmBmpVHU6VxUNQ1n6yHJcmDmtgYn+cxJkUAt
+         Ed8a4eOL2R7dcM9M0hKIQzpuRTDF5xa/quVGm8dXW6MwxS9eR+z3qNr1V/36KbuKzumU
+         AzeC9WQNnX9nWzEWSNwundTrfNOgI9nfTr6iwUP7zLWJS+KblBKCwbruqx145fZlVv1v
+         WIzQ==
+X-Gm-Message-State: ACgBeo0kO8d1ZNcW2tUnE3vIujOEys1nN2WInehlZ6ru+5zOcJGLm9bF
+        v7mX3khSdostXQyvVAUFbYxGrmSBhe4=
+X-Google-Smtp-Source: AA6agR5roehGZYzs6TUhV5HbzfkapFS1wL6KKdunD5/pXZoBE1eR3xon8t6Qvk1Ot8I7eiXXnXPwiQ==
+X-Received: by 2002:a17:90a:9dc7:b0:1f3:1a8:41a1 with SMTP id x7-20020a17090a9dc700b001f301a841a1mr5977098pjv.23.1659125280379;
+        Fri, 29 Jul 2022 13:08:00 -0700 (PDT)
+Received: from balhae.hsd1.ca.comcast.net ([2601:647:6780:1010:c01e:2ed5:25ca:3acb])
+        by smtp.gmail.com with ESMTPSA id o18-20020a170903211200b0016be14a776asm3929823ple.286.2022.07.29.13.07.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Jul 2022 13:08:00 -0700 (PDT)
+Sender: Namhyung Kim <namhyung@gmail.com>
+From:   Namhyung Kim <namhyung@kernel.org>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>
+Cc:     Ingo Molnar <mingo@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        linux-perf-users@vger.kernel.org, Will Deacon <will@kernel.org>,
+        Waiman Long <longman@redhat.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        Stephane Eranian <eranian@google.com>,
+        Blake Jones <blakejones@google.com>
+Subject: [PATCH 1/3] perf lock: Pass machine pointer to is_lock_function()
+Date:   Fri, 29 Jul 2022 13:07:54 -0700
+Message-Id: <20220729200756.666106-2-namhyung@kernel.org>
+X-Mailer: git-send-email 2.37.1.455.g008518b4e5-goog
+In-Reply-To: <20220729200756.666106-1-namhyung@kernel.org>
+References: <20220729200756.666106-1-namhyung@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220728-rpi-analog-tv-properties-v1-33-3d53ae722097@cerno.tech>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Maxime,
+This is a preparation for later change to expose the function externally
+so that it can be used without the implicit session data.
 
-I love your patch! Yet something to improve:
+Signed-off-by: Namhyung Kim <namhyung@kernel.org>
+---
+ tools/perf/builtin-lock.c | 15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
 
-[auto build test ERROR on 37b355fdaf31ee18bda9a93c2a438dc1cbf57ec9]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Maxime-Ripard/drm-Analog-TV-Improvements/20220730-004859
-base:   37b355fdaf31ee18bda9a93c2a438dc1cbf57ec9
-config: hexagon-randconfig-r041-20220729 (https://download.01.org/0day-ci/archive/20220730/202207300305.EGSDOjh4-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 8dfaecc4c24494337933aff9d9166486ca0949f1)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/83327cd72054a9c8d02b6f632453a8bdc90d3797
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Maxime-Ripard/drm-Analog-TV-Improvements/20220730-004859
-        git checkout 83327cd72054a9c8d02b6f632453a8bdc90d3797
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/gpu/drm/i2c/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> drivers/gpu/drm/i2c/ch7006_drv.c:253:51: error: too many arguments to function call, expected 2, have 3
-           drm_mode_create_tv_properties(dev, NUM_TV_NORMS, ch7006_tv_norm_names);
-           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                    ^~~~~~~~~~~~~~~~~~~~
-   include/drm/drm_connector.h:1807:5: note: 'drm_mode_create_tv_properties' declared here
-   int drm_mode_create_tv_properties(struct drm_device *dev,
-       ^
-   1 error generated.
-
-
-vim +253 drivers/gpu/drm/i2c/ch7006_drv.c
-
-6ee738610f41b5 Ben Skeggs   2009-12-11  245  
-6ee738610f41b5 Ben Skeggs   2009-12-11  246  static int ch7006_encoder_create_resources(struct drm_encoder *encoder,
-6ee738610f41b5 Ben Skeggs   2009-12-11  247  					   struct drm_connector *connector)
-6ee738610f41b5 Ben Skeggs   2009-12-11  248  {
-6ee738610f41b5 Ben Skeggs   2009-12-11  249  	struct ch7006_priv *priv = to_ch7006_priv(encoder);
-6ee738610f41b5 Ben Skeggs   2009-12-11  250  	struct drm_device *dev = encoder->dev;
-6ee738610f41b5 Ben Skeggs   2009-12-11  251  	struct drm_mode_config *conf = &dev->mode_config;
-6ee738610f41b5 Ben Skeggs   2009-12-11  252  
-6ee738610f41b5 Ben Skeggs   2009-12-11 @253  	drm_mode_create_tv_properties(dev, NUM_TV_NORMS, ch7006_tv_norm_names);
-6ee738610f41b5 Ben Skeggs   2009-12-11  254  
-d9bc3c02e36d84 Sascha Hauer 2012-02-06  255  	priv->scale_property = drm_property_create_range(dev, 0, "scale", 0, 2);
-44084efc2fd804 Insu Yun     2016-01-28  256  	if (!priv->scale_property)
-44084efc2fd804 Insu Yun     2016-01-28  257  		return -ENOMEM;
-6ee738610f41b5 Ben Skeggs   2009-12-11  258  
-ec61c71d0dba24 Rob Clark    2012-10-11  259  	drm_object_attach_property(&connector->base, conf->tv_select_subconnector_property,
-6ee738610f41b5 Ben Skeggs   2009-12-11  260  				      priv->select_subconnector);
-ec61c71d0dba24 Rob Clark    2012-10-11  261  	drm_object_attach_property(&connector->base, conf->tv_subconnector_property,
-6ee738610f41b5 Ben Skeggs   2009-12-11  262  				      priv->subconnector);
-ec61c71d0dba24 Rob Clark    2012-10-11  263  	drm_object_attach_property(&connector->base, conf->tv_left_margin_property,
-6ee738610f41b5 Ben Skeggs   2009-12-11  264  				      priv->hmargin);
-ec61c71d0dba24 Rob Clark    2012-10-11  265  	drm_object_attach_property(&connector->base, conf->tv_bottom_margin_property,
-6ee738610f41b5 Ben Skeggs   2009-12-11  266  				      priv->vmargin);
-ec61c71d0dba24 Rob Clark    2012-10-11  267  	drm_object_attach_property(&connector->base, conf->tv_mode_property,
-6ee738610f41b5 Ben Skeggs   2009-12-11  268  				      priv->norm);
-ec61c71d0dba24 Rob Clark    2012-10-11  269  	drm_object_attach_property(&connector->base, conf->tv_brightness_property,
-6ee738610f41b5 Ben Skeggs   2009-12-11  270  				      priv->brightness);
-ec61c71d0dba24 Rob Clark    2012-10-11  271  	drm_object_attach_property(&connector->base, conf->tv_contrast_property,
-6ee738610f41b5 Ben Skeggs   2009-12-11  272  				      priv->contrast);
-ec61c71d0dba24 Rob Clark    2012-10-11  273  	drm_object_attach_property(&connector->base, conf->tv_flicker_reduction_property,
-6ee738610f41b5 Ben Skeggs   2009-12-11  274  				      priv->flicker);
-ec61c71d0dba24 Rob Clark    2012-10-11  275  	drm_object_attach_property(&connector->base, priv->scale_property,
-6ee738610f41b5 Ben Skeggs   2009-12-11  276  				      priv->scale);
-6ee738610f41b5 Ben Skeggs   2009-12-11  277  
-6ee738610f41b5 Ben Skeggs   2009-12-11  278  	return 0;
-6ee738610f41b5 Ben Skeggs   2009-12-11  279  }
-6ee738610f41b5 Ben Skeggs   2009-12-11  280  
-
+diff --git a/tools/perf/builtin-lock.c b/tools/perf/builtin-lock.c
+index 041801d8b6ac..10b854315b7a 100644
+--- a/tools/perf/builtin-lock.c
++++ b/tools/perf/builtin-lock.c
+@@ -947,10 +947,9 @@ static int report_lock_release_event(struct evsel *evsel,
+ 	return 0;
+ }
+ 
+-static bool is_lock_function(u64 addr)
++static bool is_lock_function(struct machine *machine, u64 addr)
+ {
+ 	if (!sched_text_start) {
+-		struct machine *machine = &session->machines.host;
+ 		struct map *kmap;
+ 		struct symbol *sym;
+ 
+@@ -1002,6 +1001,7 @@ static int lock_contention_caller(struct evsel *evsel, struct perf_sample *sampl
+ {
+ 	struct thread *thread;
+ 	struct callchain_cursor *cursor = &callchain_cursor;
++	struct machine *machine = &session->machines.host;
+ 	struct symbol *sym;
+ 	int skip = 0;
+ 	int ret;
+@@ -1010,8 +1010,7 @@ static int lock_contention_caller(struct evsel *evsel, struct perf_sample *sampl
+ 	if (show_thread_stats)
+ 		return -1;
+ 
+-	thread = machine__findnew_thread(&session->machines.host,
+-					 -1, sample->pid);
++	thread = machine__findnew_thread(machine, -1, sample->pid);
+ 	if (thread == NULL)
+ 		return -1;
+ 
+@@ -1038,7 +1037,7 @@ static int lock_contention_caller(struct evsel *evsel, struct perf_sample *sampl
+ 			goto next;
+ 
+ 		sym = node->ms.sym;
+-		if (sym && !is_lock_function(node->ip)) {
++		if (sym && !is_lock_function(machine, node->ip)) {
+ 			struct map *map = node->ms.map;
+ 			u64 offset;
+ 
+@@ -1060,13 +1059,13 @@ static int lock_contention_caller(struct evsel *evsel, struct perf_sample *sampl
+ static u64 callchain_id(struct evsel *evsel, struct perf_sample *sample)
+ {
+ 	struct callchain_cursor *cursor = &callchain_cursor;
++	struct machine *machine = &session->machines.host;
+ 	struct thread *thread;
+ 	u64 hash = 0;
+ 	int skip = 0;
+ 	int ret;
+ 
+-	thread = machine__findnew_thread(&session->machines.host,
+-					 -1, sample->pid);
++	thread = machine__findnew_thread(machine, -1, sample->pid);
+ 	if (thread == NULL)
+ 		return -1;
+ 
+@@ -1091,7 +1090,7 @@ static u64 callchain_id(struct evsel *evsel, struct perf_sample *sample)
+ 		if (++skip <= CONTENTION_STACK_SKIP)
+ 			goto next;
+ 
+-		if (node->ms.sym && is_lock_function(node->ip))
++		if (node->ms.sym && is_lock_function(machine, node->ip))
+ 			goto next;
+ 
+ 		hash ^= hash_long((unsigned long)node->ip, 64);
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.37.1.455.g008518b4e5-goog
+
