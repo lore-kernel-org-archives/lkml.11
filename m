@@ -2,176 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1606C19F2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 09:41:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52299C00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 09:43:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236026AbiG2Jlh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 05:41:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41330 "EHLO
+        id S235574AbiG2Jnt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 05:43:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235902AbiG2Jk4 (ORCPT
+        with ESMTP id S233605AbiG2Jnr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 05:40:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 579517C1B1;
-        Fri, 29 Jul 2022 02:40:40 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0647BB8270B;
-        Fri, 29 Jul 2022 09:40:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23480C4347C;
-        Fri, 29 Jul 2022 09:40:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659087627;
-        bh=b8X+BFzH2iCZK+xpE2p+40Q5LRHdNFPjgm8yK8trTBQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QeHeJ8s+6pafXdao7/owo8n9jZhvY4Y9okbI92hUti3u2yunW2LZ30ScOVFilHB2Z
-         6iFaxa4LYns+Xw0BDf1dypr84xzl+pgETtsfx/wTkL8xe6LuisAWk9SOwgAqBoQEWy
-         i+8NVn0MXePlsPtskbMk+wiicurGzDon9grkLBfvkPF9ElEsaT+X21pDAPXPQTO8Rp
-         CMhL9SiX5tEqXlWw32HpaI8EFnuxDHsHdI+zVwmqfF9DOazMUNrk7LmJ52PuhZt2yv
-         mU85srS0N74786oRq7uSgfLewh9547jiAG+sdfm3kBOdOFE8x/Pqv83AiVAQtjOQ3g
-         sayvBoL5D4QGw==
-From:   Daniel Bristot de Oliveira <bristot@kernel.org>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Will Deacon <will@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Marco Elver <elver@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Gabriele Paoloni <gpaoloni@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Clark Williams <williams@redhat.com>,
-        Tao Zhou <tao.zhou@linux.dev>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-trace-devel@vger.kernel.org
-Subject: [PATCH V9 16/16] rv/reactor: Add the panic reactor
-Date:   Fri, 29 Jul 2022 11:38:55 +0200
-Message-Id: <729aae3aba95f35738b8f8180e626d747d1d9da2.1659052063.git.bristot@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <cover.1659052063.git.bristot@kernel.org>
-References: <cover.1659052063.git.bristot@kernel.org>
+        Fri, 29 Jul 2022 05:43:47 -0400
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F13C1F5
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 02:43:44 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id s206so3623505pgs.3
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 02:43:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dryKzknTwjOf+VunOu1ss5DcnVHNtdSKVmRMmz8L7/M=;
+        b=RmegUcAao+BR1SjifamXxiAd7dUw4XR+bu86vHq/s/P/1pGQSqeuT4SW8+0IaFNX8D
+         Vwrc7D59ZwOG3ianRT7wF6cptOrXrpoVd74iQm5DJ6prrvQKzXtbjMAjEpiPeeUtMeYn
+         kcF0s4Fa+TRsmjMFUw049o9THXkDAisBqya7GdDgF8Ev+zMg60a4LkQPg4kow676F9/K
+         5UnH1t3Gj6N8qLcy1Xhx87uPBCdzif5UVqwYFqMYoowRPuKI2J3HsNuusRL6KJcVhHKz
+         Q20b1DBQI40tsS1eQCXxRpTK1TG6BuPlaAr2Gy07GkGhhRBaDxPKl2MxaPHQcbyiq1dn
+         60qA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=dryKzknTwjOf+VunOu1ss5DcnVHNtdSKVmRMmz8L7/M=;
+        b=MM8EljvAOF/rrbcLc/XU+qH47vekRV/EoxxZ/YQfTR+qXESCZXStwtMmNUMj1JEYj5
+         M2N86M18jlFoN++kFf0DT98PMOTBPiWqkMsYYUZhB/DIqKiJ7P6loU+mW/b3Znpj+PN3
+         KoXCXWHQjvmYG+bHgIgLKP7s1GzWDP5L9I/1XDFm5jmx4rXn2avmCQpTp7xs3qpejpV/
+         zWGTc//WCofc/Ywiz8zMRV0rUuEimObRxdSbZv+SWM5zXAdNcNF68xUfTt3kTLKaDolz
+         TjASgxW0odmVDcbEO+nMdw2xfdpP6K2aiN0YmTG6vrLGA/2qVnkjJ2TFLbbfeA+tejeF
+         IiFg==
+X-Gm-Message-State: AJIora9viCV+d6z+RARWYc0BGWKS39V9D1VaSD6udfZSqU/ypQuvxsIN
+        wLEOBmA3idc0U68SkJycWtF9cnGK5S4=
+X-Google-Smtp-Source: AGRyM1vEoz3kXJjr0a1E2TYq1Ga+O49AjHwlkCiVuRthWguGtQcS/b9nUEdQuALL19nzzsb/cWzDeA==
+X-Received: by 2002:a63:d456:0:b0:41a:aa82:cd9e with SMTP id i22-20020a63d456000000b0041aaa82cd9emr2321179pgj.271.1659087823198;
+        Fri, 29 Jul 2022 02:43:43 -0700 (PDT)
+Received: from localhost ([47.89.225.180])
+        by smtp.gmail.com with ESMTPSA id h2-20020a656382000000b003fadfd7be5asm2256495pgv.18.2022.07.29.02.43.42
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 29 Jul 2022 02:43:42 -0700 (PDT)
+From:   Lai Jiangshan <jiangshanlai@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Lai Jiangshan <jiangshan.ljs@antgroup.com>,
+        Tejun Heo <tj@kernel.org>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Zqiang <qiang1.zhang@intel.com>
+Subject: [PATCH] workqueue: Avoid a false warning in unbind_workers()
+Date:   Fri, 29 Jul 2022 17:44:38 +0800
+Message-Id: <20220729094438.3941-1-jiangshanlai@gmail.com>
+X-Mailer: git-send-email 2.19.1.6.gb485710b
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sample reactor that panics the system when an exception is found. This
-is useful both to capture a vmcore, or to fail-safe a critical system.
+From: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 
-Cc: Wim Van Sebroeck <wim@linux-watchdog.org>
-Cc: Guenter Roeck <linux@roeck-us.net>
-Cc: Jonathan Corbet <corbet@lwn.net>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Will Deacon <will@kernel.org>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Marco Elver <elver@google.com>
-Cc: Dmitry Vyukov <dvyukov@google.com>
-Cc: "Paul E. McKenney" <paulmck@kernel.org>
-Cc: Shuah Khan <skhan@linuxfoundation.org>
-Cc: Gabriele Paoloni <gpaoloni@redhat.com>
-Cc: Juri Lelli <juri.lelli@redhat.com>
-Cc: Clark Williams <williams@redhat.com>
-Cc: Tao Zhou <tao.zhou@linux.dev>
-Cc: Randy Dunlap <rdunlap@infradead.org>
-Cc: linux-doc@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Cc: linux-trace-devel@vger.kernel.org
-Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+Doing set_cpus_allowed_ptr() with wq_unbound_cpumask can be possible
+fails and trigger the false warning.
+
+Use cpu_possible_mask instead when wq_unbound_cpumask has no active CPUs.
+
+It is very easy to trigger the warning:
+  Set wq_unbound_cpumask to a small set of CPUs.
+  Offline all the CPUs of wq_unbound_cpumask.
+  Offline an extra CPU and trigger the warning.
+
+Fixes: 10a5a651e3af("workqueue: Restrict kworker in the offline CPU pool running on housekeeping CPUs")
+Signed-off-by: Lai Jiangshan <jiangshan.ljs@antgroup.com>
 ---
- kernel/trace/rv/Kconfig         |  8 ++++++
- kernel/trace/rv/Makefile        |  1 +
- kernel/trace/rv/reactor_panic.c | 43 +++++++++++++++++++++++++++++++++
- 3 files changed, 52 insertions(+)
- create mode 100644 kernel/trace/rv/reactor_panic.c
+ kernel/workqueue.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/trace/rv/Kconfig b/kernel/trace/rv/Kconfig
-index e82d5015e6ab..831779607e84 100644
---- a/kernel/trace/rv/Kconfig
-+++ b/kernel/trace/rv/Kconfig
-@@ -68,3 +68,11 @@ config RV_REACT_PRINTK
- 	help
- 	  Enables the printk reactor. The printk reactor emits a printk()
- 	  message if an exception is found.
-+
-+config RV_REACT_PANIC
-+	bool "Panic reactor"
-+	depends on RV_REACTORS
-+	default y
-+	help
-+	  Enables the panic reactor. The panic reactor emits a printk()
-+	  message if an exception is found and panic()s the system.
-diff --git a/kernel/trace/rv/Makefile b/kernel/trace/rv/Makefile
-index a13c750a35c1..963d14875b45 100644
---- a/kernel/trace/rv/Makefile
-+++ b/kernel/trace/rv/Makefile
-@@ -5,3 +5,4 @@ obj-$(CONFIG_RV_MON_WIP) += monitors/wip/wip.o
- obj-$(CONFIG_RV_MON_WWNR) += monitors/wwnr/wwnr.o
- obj-$(CONFIG_RV_REACTORS) += rv_reactors.o
- obj-$(CONFIG_RV_REACT_PRINTK) += reactor_printk.o
-+obj-$(CONFIG_RV_REACT_PANIC) += reactor_panic.o
-diff --git a/kernel/trace/rv/reactor_panic.c b/kernel/trace/rv/reactor_panic.c
-new file mode 100644
-index 000000000000..b698d05dd069
---- /dev/null
-+++ b/kernel/trace/rv/reactor_panic.c
-@@ -0,0 +1,43 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (C) 2019-2022 Red Hat, Inc. Daniel Bristot de Oliveira <bristot@kernel.org>
-+ *
-+ * Panic RV reactor:
-+ *   Prints the exception msg to the kernel message log and panic().
-+ */
-+
-+#include <linux/ftrace.h>
-+#include <linux/tracepoint.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/init.h>
-+#include <linux/rv.h>
-+
-+static void rv_panic_reaction(char *msg)
-+{
-+	panic(msg);
-+}
-+
-+static struct rv_reactor rv_panic = {
-+	.name = "panic",
-+	.description = "panic the system if an exception is found.",
-+	.react = rv_panic_reaction
-+};
-+
-+static int register_react_panic(void)
-+{
-+	rv_register_reactor(&rv_panic);
-+	return 0;
-+}
-+
-+static void unregister_react_panic(void)
-+{
-+	rv_unregister_reactor(&rv_panic);
-+}
-+
-+module_init(register_react_panic);
-+module_exit(unregister_react_panic);
-+
-+MODULE_LICENSE("GPL");
-+MODULE_AUTHOR("Daniel Bristot de Oliveira");
-+MODULE_DESCRIPTION("panic rv reactor: panic if an exception is found.");
+diff --git a/kernel/workqueue.c b/kernel/workqueue.c
+index 355897b790a5..a429b50b06e6 100644
+--- a/kernel/workqueue.c
++++ b/kernel/workqueue.c
+@@ -4975,7 +4975,10 @@ static void unbind_workers(int cpu)
+ 
+ 		for_each_pool_worker(worker, pool) {
+ 			kthread_set_per_cpu(worker->task, -1);
+-			WARN_ON_ONCE(set_cpus_allowed_ptr(worker->task, wq_unbound_cpumask) < 0);
++			if (cpumask_intersects(wq_unbound_cpumask, cpu_active_mask))
++				WARN_ON_ONCE(set_cpus_allowed_ptr(worker->task, wq_unbound_cpumask) < 0);
++			else
++				WARN_ON_ONCE(set_cpus_allowed_ptr(worker->task, cpu_possible_mask) < 0);
+ 		}
+ 
+ 		mutex_unlock(&wq_pool_attach_mutex);
 -- 
-2.35.1
+2.19.1.6.gb485710b
 
