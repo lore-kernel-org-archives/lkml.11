@@ -2,171 +2,346 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67CD6C19F2A
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 15:37:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEECDC3F6B0
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 15:37:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237642AbiG2PhS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 11:37:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39608 "EHLO
+        id S237863AbiG2Phb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 11:37:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237797AbiG2Pg6 (ORCPT
+        with ESMTP id S237236AbiG2PhI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 11:36:58 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2060d.outbound.protection.outlook.com [IPv6:2a01:111:f400:7eab::60d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D51F487236;
-        Fri, 29 Jul 2022 08:36:54 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Je/PiDbTJg0oOe1MPwO9bJK2y8V3r4VFnX7sDtSFAOFfQY9TuAy+ZpPDdd+C1zQ9c1M0dB/l8lt5dluyfRS+HNTXTc+wCehTRyIngp4tS6RQomIKbHl6Y1ssWCiGSNcRKbErCQox+x487YFNtUHDSYTWFNv1rhpMXC1I89e3ylHvKPll/Vrp1nMUtXq79Ju5VGb9cNh8vVK97Im3B2BmqVUrkBjIT4vw+FnBDYivrGJjVQh3J52rIvA8pjP8yuRf0VUkeUxFJKA2JO2MogJJZKDzHW5n46+2V+g2KlVyU84DqhpBZzOpTtrJE/ua/NaJ9cesfr205qoBvY4rzUpxIw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1N/7/XvPykj/YHjS0eRexhoibRmT1bwQEg8OR9IPb5E=;
- b=iYXtxMSPeD8gM5DG2graJuH2LDXS4JMe2SFPJs37zZOEZ4L0K4qmWjqab0RWbsRcCBMaSi3TnwmNYtMNTPkYVueWULn7XuIk9gWV7YlG1WtSdGvY0xB2z6ox2bE5uLSipXheDhrq0FKvOA/O22m+APSAKZdaZ02/wqVracPIDhWq6VS3VILEHZ+91/sdBNmpSwiw3LOJf9x51dZ3Wys6OH06c/oEkIXVWSxw2mBcounhxTDQLuiM6u2OnqzD017EXEit/6v/8KNjVbK89/4Tz5ZY69kuUrf7mz37CqCeNrODuQVJUWQOh5gXP5h06CLIFUn043O8YXnEUVfuTyluMQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1N/7/XvPykj/YHjS0eRexhoibRmT1bwQEg8OR9IPb5E=;
- b=HH1F1H1CkzT4nWV/ftdMK+9yovbYfV+MWC869ix+uoI8Z5wTNGtYtYwo0JENTrAsb07+Gif8Nm9AZVkXcpTkZE1FSHxJk8C2TiQp+o0r5TkHBSXM8rgJIc3w3CIre0Z5XS+ZxG1Ok2XOhBf7W6nDuJPclqBWm1iCxLM0V3+ylW0=
-Received: from DS7PR05CA0013.namprd05.prod.outlook.com (2603:10b6:5:3b9::18)
- by DM6PR12MB3211.namprd12.prod.outlook.com (2603:10b6:5:15c::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.19; Fri, 29 Jul
- 2022 15:36:49 +0000
-Received: from DM6NAM11FT030.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:3b9:cafe::c2) by DS7PR05CA0013.outlook.office365.com
- (2603:10b6:5:3b9::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5482.1 via Frontend
- Transport; Fri, 29 Jul 2022 15:36:49 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com; pr=C
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT030.mail.protection.outlook.com (10.13.172.146) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5482.10 via Frontend Transport; Fri, 29 Jul 2022 15:36:33 +0000
-Received: from ethanolx5619host.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.28; Fri, 29 Jul
- 2022 10:36:18 -0500
-From:   Jay Lu <jaylu102@amd.com>
-To:     <jaylu102@amd.com>, <linux-kernel@vger.kernel.org>,
-        <rafael@kernel.org>, <lenb@kernel.org>, <james.morse@arm.com>,
-        <tony.luck@intel.com>, <bp@alien8.de>,
-        <dave.hansen@linux.intel.com>, <jarkko@kernel.org>,
-        <xueshuai@linux.alibaba.com>
-CC:     <terry.bowman@amd.com>, <yazen.ghannam@amd.com>,
-        <smita.koralahallichannabasappa@amd.com>, <robert.richter@amd.com>,
-        <linux-acpi@vger.kernel.org>, <jayakumar.govindankalivu@amd.com>
-Subject: [PATCH 2/3] ACPI, APEI, EINJ: Refactor available_error_type_show
-Date:   Fri, 29 Jul 2022 10:35:49 -0500
-Message-ID: <20220729153550.181209-3-jaylu102@amd.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220729153550.181209-1-jaylu102@amd.com>
-References: <20220729153550.181209-1-jaylu102@amd.com>
+        Fri, 29 Jul 2022 11:37:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 135A686C0E;
+        Fri, 29 Jul 2022 08:37:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9429CB8283F;
+        Fri, 29 Jul 2022 15:37:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D50DDC433C1;
+        Fri, 29 Jul 2022 15:36:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1659109019;
+        bh=2MBNzet9AbeGiILVPT9CY5a1SsTx+MbXXaEpYofTgVk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=NyvhHFDNXLXvAhnnyXGH5UhZ8U80IXyUxCd85/EwZEVezuyudXms1w/HvA2eQkobD
+         8I6JGpT295KuAITb8O/iHxG14wH4S3sPZ/VC/AA09zd4VItFFyfNPOGFtSwjxOHPJu
+         EzeajnHsJU3YIbzZ9icA35xvL2mgQjrFnICPktkM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
+        torvalds@linux-foundation.org, stable@vger.kernel.org
+Cc:     lwn@lwn.net, jslaby@suse.cz,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Linux 5.10.134
+Date:   Fri, 29 Jul 2022 17:36:55 +0200
+Message-Id: <165910901581134@kroah.com>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9f15713a-ac99-4c24-d770-08da71781e1f
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3211:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: GDruPMef7Kd40odrEdxGUcpOOFIUCprUeqLkn2o6qPDcfnhRIATFalwNqY29WUZg2SWiahODsqAkcSOECuyUin+yu8uzmpAOKp0wlyYCQ01R6E77vs8d0cxZBQQfEga+IYXKudIe1lxnh4F3YWxm6aagki8GfVDPJ7VX1G31JDEO4eEI81/XXm/zGmqw9w1tqXmFITpEv5J07E/oynmzu1+y+OCrvx+BsF5bB9knJplBdzu0R6MtV8RlItlDS8mDCHtvRBqQrGfBaueQoVHXvXp08c8Il+oC2fAn2FlILKgFUvaxoWipWDA8DSeuDTolxzJILiXlkOaD80CnvCTLVAwYeHBY3MNXJ9M1JnBuuMK88pUo0Lh2xjz4xkH15aSHe/xmIBnwNAE/SBu0oM8rleuz+RPwwf4ZMwNYoe9PRuInj/r5Vr2hlre9ffsozQZop6D/1aVhT6EuT42kudLjSxRW5wcRM+Vlz8HFsfYeMFWbed3m1ZoUhwVkQ4xjeHmdaZYJLy46KGb2oPT6eG2Egcm/ifkptFZFiqLbK467/q0EBUeWs7euwz0BevHhc9c94s5Wxr+1TYCGjO37LMngCpaQo1DAPW+5ToARaAs/nIJSVKDxAJdUHt2ky7msXlEP+uMlSLEv9A132grl2AvkxtmgUmAu2Dd8nPMSsru593CSjJxKpT3r2frm18gdKtRl6UcpQuml1fCMI74sNLUix688Fc9y+m19UCbNF79ESrn660iyW3zHv5qg9cFAAjGcF0WT+6T0Z0zl7idnLwxIpPn7JV3let6eSC6fxlBp1JLk/Nwq1ONfjHByRS9844zLIQd5X5Iqve0y9BnjCF81BC+n0VDVrM7+UcwleX/IcKM=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230016)(4636009)(39860400002)(376002)(136003)(396003)(346002)(46966006)(36840700001)(40470700004)(356005)(2616005)(336012)(47076005)(921005)(1076003)(81166007)(186003)(82740400003)(16526019)(316002)(54906003)(110136005)(83380400001)(426003)(70586007)(26005)(2906002)(478600001)(40460700003)(7696005)(36756003)(8936002)(8676002)(4326008)(70206006)(7416002)(82310400005)(36860700001)(41300700001)(40480700001)(5660300002)(6666004)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jul 2022 15:36:33.8639
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9f15713a-ac99-4c24-d770-08da71781e1f
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT030.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3211
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move error type descriptions into an array and loop over error types
-to improve readability and maintainability.
+I'm announcing the release of the 5.10.134 kernel.
 
-Replace seq_printf() with seq_puts() as recommended by checkpatch.pl.
+All users of the 5.10 kernel series must upgrade.
 
-Signed-off-by: Jay Lu <jaylu102@amd.com>
----
- drivers/acpi/apei/einj.c | 41 +++++++++++++++++-----------------------
- 1 file changed, 17 insertions(+), 24 deletions(-)
+The updated 5.10.y git tree can be found at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-5.10.y
+and can be browsed at the normal kernel.org git web browser:
+	https://git.kernel.org/?p=linux/kernel/git/stable/linux-stable.git;a=summary
 
-diff --git a/drivers/acpi/apei/einj.c b/drivers/acpi/apei/einj.c
-index da039c630fd0..a68103280f74 100644
---- a/drivers/acpi/apei/einj.c
-+++ b/drivers/acpi/apei/einj.c
-@@ -569,6 +569,20 @@ static u64 error_param2;
- static u64 error_param3;
- static u64 error_param4;
- static struct dentry *einj_debug_dir;
-+static const char * const einj_error_type_string[] = {
-+	"0x00000001\tProcessor Correctable\n",                          /* bit 0  */
-+	"0x00000002\tProcessor Uncorrectable non-fatal\n",              /* bit 1  */
-+	"0x00000004\tProcessor Uncorrectable fatal\n",                  /* bit 2  */
-+	"0x00000008\tMemory Correctable\n",                             /* bit 3  */
-+	"0x00000010\tMemory Uncorrectable non-fatal\n",                 /* bit 4  */
-+	"0x00000020\tMemory Uncorrectable fatal\n",                     /* bit 5  */
-+	"0x00000040\tPCI Express Correctable\n",                        /* bit 6  */
-+	"0x00000080\tPCI Express Uncorrectable non-fatal\n",            /* bit 7  */
-+	"0x00000100\tPCI Express Uncorrectable fatal\n",                /* bit 8  */
-+	"0x00000200\tPlatform Correctable\n",                           /* bit 9  */
-+	"0x00000400\tPlatform Uncorrectable non-fatal\n",               /* bit 10 */
-+	"0x00000800\tPlatform Uncorrectable fatal\n",                   /* bit 11 */
-+};
- 
- static int available_error_type_show(struct seq_file *m, void *v)
- {
-@@ -578,30 +592,9 @@ static int available_error_type_show(struct seq_file *m, void *v)
- 	rc = einj_get_available_error_type(&available_error_type);
- 	if (rc)
- 		return rc;
--	if (available_error_type & 0x0001)
--		seq_printf(m, "0x00000001\tProcessor Correctable\n");
--	if (available_error_type & 0x0002)
--		seq_printf(m, "0x00000002\tProcessor Uncorrectable non-fatal\n");
--	if (available_error_type & 0x0004)
--		seq_printf(m, "0x00000004\tProcessor Uncorrectable fatal\n");
--	if (available_error_type & 0x0008)
--		seq_printf(m, "0x00000008\tMemory Correctable\n");
--	if (available_error_type & 0x0010)
--		seq_printf(m, "0x00000010\tMemory Uncorrectable non-fatal\n");
--	if (available_error_type & 0x0020)
--		seq_printf(m, "0x00000020\tMemory Uncorrectable fatal\n");
--	if (available_error_type & 0x0040)
--		seq_printf(m, "0x00000040\tPCI Express Correctable\n");
--	if (available_error_type & 0x0080)
--		seq_printf(m, "0x00000080\tPCI Express Uncorrectable non-fatal\n");
--	if (available_error_type & 0x0100)
--		seq_printf(m, "0x00000100\tPCI Express Uncorrectable fatal\n");
--	if (available_error_type & 0x0200)
--		seq_printf(m, "0x00000200\tPlatform Correctable\n");
--	if (available_error_type & 0x0400)
--		seq_printf(m, "0x00000400\tPlatform Uncorrectable non-fatal\n");
--	if (available_error_type & 0x0800)
--		seq_printf(m, "0x00000800\tPlatform Uncorrectable fatal\n");
-+	for (int pos = 0; pos < ARRAY_SIZE(einj_error_type_string); pos++)
-+		if (available_error_type & (BIT(0) << pos))
-+			seq_puts(m, einj_error_type_string[pos]);
- 
- 	return 0;
- }
--- 
-2.27.0
+thanks,
+
+greg k-h
+
+------------
+
+ Documentation/networking/netdevices.rst                     |  171 ++++++++
+ Makefile                                                    |    2 
+ arch/alpha/kernel/srmcons.c                                 |    2 
+ arch/m68k/Kconfig.bus                                       |    2 
+ arch/riscv/Makefile                                         |    1 
+ arch/x86/include/asm/cpufeatures.h                          |    1 
+ arch/x86/include/asm/mshyperv.h                             |    7 
+ arch/x86/include/asm/nospec-branch.h                        |    2 
+ arch/x86/kernel/alternative.c                               |    4 
+ arch/x86/kernel/cpu/bugs.c                                  |   14 
+ drivers/accessibility/speakup/spk_ttyio.c                   |    4 
+ drivers/gpio/gpio-pca953x.c                                 |   22 -
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c           |   33 +
+ drivers/gpu/drm/imx/dcss/dcss-dev.c                         |    3 
+ drivers/gpu/drm/imx/dcss/dcss-plane.c                       |    2 
+ drivers/i2c/busses/i2c-cadence.c                            |   30 -
+ drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c |    6 
+ drivers/net/ethernet/emulex/benet/be_cmds.c                 |   10 
+ drivers/net/ethernet/emulex/benet/be_cmds.h                 |    2 
+ drivers/net/ethernet/emulex/benet/be_ethtool.c              |   31 -
+ drivers/net/ethernet/intel/i40e/i40e_main.c                 |   13 
+ drivers/net/ethernet/intel/iavf/iavf_txrx.c                 |    5 
+ drivers/net/ethernet/intel/igc/igc_main.c                   |    3 
+ drivers/net/ethernet/intel/igc/igc_regs.h                   |    5 
+ drivers/net/ethernet/intel/ixgbe/ixgbe.h                    |    1 
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c               |    3 
+ drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c              |    6 
+ drivers/net/ethernet/mellanox/mlxsw/spectrum_router.c       |    5 
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c           |    3 
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c           |   17 
+ drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c       |    8 
+ drivers/net/usb/ax88179_178a.c                              |   20 -
+ drivers/pci/controller/pci-hyperv.c                         |   99 ++++-
+ drivers/pinctrl/stm32/pinctrl-stm32.c                       |   18 
+ drivers/power/reset/arm-versatile-reboot.c                  |    1 
+ drivers/s390/char/keyboard.h                                |    4 
+ drivers/spi/spi-bcm2835.c                                   |   12 
+ drivers/staging/mt7621-pinctrl/pinctrl-rt2880.c             |    2 
+ drivers/tty/cyclades.c                                      |    6 
+ drivers/tty/goldfish.c                                      |    2 
+ drivers/tty/moxa.c                                          |    4 
+ drivers/tty/pty.c                                           |   14 
+ drivers/tty/serial/lpc32xx_hs.c                             |    2 
+ drivers/tty/serial/mvebu-uart.c                             |   25 -
+ drivers/tty/tty_buffer.c                                    |   66 ++-
+ drivers/tty/vt/keyboard.c                                   |    6 
+ drivers/tty/vt/vt.c                                         |    2 
+ drivers/xen/gntdev.c                                        |    3 
+ fs/dlm/lock.c                                               |    3 
+ fs/io_uring.c                                               |    2 
+ include/linux/bitfield.h                                    |   19 
+ include/linux/tty_flip.h                                    |    4 
+ include/net/bluetooth/bluetooth.h                           |   65 +++
+ include/net/inet_sock.h                                     |    5 
+ include/net/ip.h                                            |    6 
+ include/net/tcp.h                                           |   18 
+ include/net/udp.h                                           |    2 
+ kernel/bpf/core.c                                           |    8 
+ kernel/events/core.c                                        |   45 +-
+ kernel/sched/deadline.c                                     |    5 
+ kernel/watch_queue.c                                        |   53 +-
+ mm/mempolicy.c                                              |    2 
+ net/8021q/vlan.c                                            |    4 
+ net/bluetooth/rfcomm/core.c                                 |   50 ++
+ net/bluetooth/rfcomm/sock.c                                 |   46 --
+ net/bluetooth/sco.c                                         |   30 -
+ net/core/dev.c                                              |  233 +++++-------
+ net/core/filter.c                                           |    4 
+ net/core/rtnetlink.c                                        |   23 -
+ net/core/secure_seq.c                                       |    4 
+ net/ipv4/af_inet.c                                          |    4 
+ net/ipv4/fib_semantics.c                                    |    2 
+ net/ipv4/icmp.c                                             |    2 
+ net/ipv4/igmp.c                                             |   25 -
+ net/ipv4/inet_connection_sock.c                             |    2 
+ net/ipv4/ip_forward.c                                       |    2 
+ net/ipv4/ip_sockglue.c                                      |    6 
+ net/ipv4/route.c                                            |    2 
+ net/ipv4/syncookies.c                                       |    9 
+ net/ipv4/sysctl_net_ipv4.c                                  |    6 
+ net/ipv4/tcp.c                                              |   10 
+ net/ipv4/tcp_fastopen.c                                     |    9 
+ net/ipv4/tcp_input.c                                        |   51 +-
+ net/ipv4/tcp_ipv4.c                                         |    2 
+ net/ipv4/tcp_metrics.c                                      |    3 
+ net/ipv4/tcp_minisocks.c                                    |    2 
+ net/ipv4/tcp_output.c                                       |   29 -
+ net/ipv4/tcp_recovery.c                                     |    6 
+ net/ipv4/tcp_timer.c                                        |   20 -
+ net/ipv6/af_inet6.c                                         |    2 
+ net/ipv6/syncookies.c                                       |    3 
+ net/sctp/protocol.c                                         |    2 
+ net/smc/smc_llc.c                                           |    2 
+ net/tls/tls_device.c                                        |    8 
+ net/xfrm/xfrm_policy.c                                      |    5 
+ net/xfrm/xfrm_state.c                                       |    2 
+ security/integrity/ima/ima_policy.c                         |    4 
+ sound/core/memalloc.c                                       |    1 
+ virt/kvm/kvm_main.c                                         |    5 
+ 99 files changed, 1009 insertions(+), 552 deletions(-)
+
+Alex Deucher (1):
+      drm/amdgpu/display: add quirk handling for stutter mode
+
+Alexander Aring (1):
+      dlm: fix pending remove if msg allocation fails
+
+Alexey Kardashevskiy (1):
+      KVM: Don't null dereference ops->destroy
+
+Ben Dooks (1):
+      riscv: add as-options for modules with assembly compontents
+
+Biao Huang (1):
+      net: stmmac: fix unbalanced ptp clock issue in suspend/resume flow
+
+Dawid Lukwinski (1):
+      i40e: Fix erroneous adapter reinitialization during recovery process
+
+Demi Marie Obenour (1):
+      xen/gntdev: Ignore failure to unmap INVALID_GRANT_HANDLE
+
+Eric Dumazet (1):
+      bpf: Make sure mac_header was set before using it
+
+Eric Snowberg (1):
+      lockdown: Fix kexec lockdown bypass with ima policy
+
+Fabien Dessenne (1):
+      pinctrl: stm32: fix optional IRQ support to gpios
+
+Greg Kroah-Hartman (2):
+      Revert "m68knommu: only set CONFIG_ISA_DMA_API for ColdFire sub-arch"
+      Linux 5.10.134
+
+Haibo Chen (3):
+      gpio: pca953x: only use single read/write for No AI mode
+      gpio: pca953x: use the correct range when do regmap sync
+      gpio: pca953x: use the correct register address when regcache sync during init
+
+Hangyu Hua (1):
+      xfrm: xfrm_policy: fix a possible double xfrm_pols_put() in xfrm_bundle_lookup()
+
+Hristo Venev (1):
+      be2net: Fix buffer overflow in be_get_module_eeprom
+
+Ido Schimmel (1):
+      mlxsw: spectrum_router: Fix IPv4 nexthop gateway indication
+
+Jakub Kicinski (7):
+      docs: net: explain struct net_device lifetime
+      net: make free_netdev() more lenient with unregistering devices
+      net: make sure devices go through netdev_wait_all_refs
+      net: move net_set_todo inside rollback_registered()
+      net: inline rollback_registered()
+      net: move rollback_registered_many()
+      net: inline rollback_registered_many()
+
+Jeffrey Hugo (4):
+      PCI: hv: Fix multi-MSI to allow more than one MSI vector
+      PCI: hv: Fix hv_arch_irq_unmask() for multi-MSI
+      PCI: hv: Reuse existing IRTE allocation in compose_msi_msg()
+      PCI: hv: Fix interrupt mapping for multi-MSI
+
+Jiri Slaby (5):
+      tty: drivers/tty/, stop using tty_schedule_flip()
+      tty: the rest, stop using tty_schedule_flip()
+      tty: drop tty_schedule_flip()
+      tty: extract tty_flip_buffer_commit() from tty_flip_buffer_push()
+      tty: use new tty_insert_flip_string_and_push_buffer() in pty_write()
+
+Jose Alonso (1):
+      net: usb: ax88179_178a needs FLAG_SEND_ZLP
+
+Junxiao Chang (1):
+      net: stmmac: fix dma queue left shift overflow issue
+
+Juri Lelli (1):
+      sched/deadline: Fix BUG_ON condition for deboosted tasks
+
+Kees Cook (1):
+      x86/alternative: Report missing return thunk details
+
+Kuniyuki Iwashima (37):
+      ip: Fix data-races around sysctl_ip_no_pmtu_disc.
+      ip: Fix data-races around sysctl_ip_fwd_use_pmtu.
+      ip: Fix data-races around sysctl_ip_fwd_update_priority.
+      ip: Fix data-races around sysctl_ip_nonlocal_bind.
+      ip: Fix a data-race around sysctl_ip_autobind_reuse.
+      ip: Fix a data-race around sysctl_fwmark_reflect.
+      tcp/dccp: Fix a data-race around sysctl_tcp_fwmark_accept.
+      tcp: Fix data-races around sysctl_tcp_mtu_probing.
+      tcp: Fix data-races around sysctl_tcp_base_mss.
+      tcp: Fix data-races around sysctl_tcp_min_snd_mss.
+      tcp: Fix a data-race around sysctl_tcp_mtu_probe_floor.
+      tcp: Fix a data-race around sysctl_tcp_probe_threshold.
+      tcp: Fix a data-race around sysctl_tcp_probe_interval.
+      igmp: Fix data-races around sysctl_igmp_llm_reports.
+      igmp: Fix a data-race around sysctl_igmp_max_memberships.
+      igmp: Fix data-races around sysctl_igmp_max_msf.
+      tcp: Fix data-races around keepalive sysctl knobs.
+      tcp: Fix data-races around sysctl_tcp_syncookies.
+      tcp: Fix data-races around sysctl_tcp_reordering.
+      tcp: Fix data-races around some timeout sysctl knobs.
+      tcp: Fix a data-race around sysctl_tcp_notsent_lowat.
+      tcp: Fix a data-race around sysctl_tcp_tw_reuse.
+      tcp: Fix data-races around sysctl_max_syn_backlog.
+      tcp: Fix data-races around sysctl_tcp_fastopen.
+      tcp: Fix data-races around sysctl_tcp_fastopen_blackhole_timeout.
+      ipv4: Fix a data-race around sysctl_fib_multipath_use_neigh.
+      ip: Fix data-races around sysctl_ip_prot_sock.
+      udp: Fix a data-race around sysctl_udp_l3mdev_accept.
+      tcp: Fix data-races around sysctl knobs related to SYN option.
+      tcp: Fix a data-race around sysctl_tcp_early_retrans.
+      tcp: Fix data-races around sysctl_tcp_recovery.
+      tcp: Fix a data-race around sysctl_tcp_thin_linear_timeouts.
+      tcp: Fix data-races around sysctl_tcp_slow_start_after_idle.
+      tcp: Fix a data-race around sysctl_tcp_retrans_collapse.
+      tcp: Fix a data-race around sysctl_tcp_stdurg.
+      tcp: Fix a data-race around sysctl_tcp_rfc1337.
+      tcp: Fix data-races around sysctl_tcp_max_reordering.
+
+Lee Jones (1):
+      io_uring: Use original task for req identity in io_identity_cow()
+
+Lennert Buytenhek (1):
+      igc: Reinstate IGC_REMOVED logic and implement it properly
+
+Liang He (1):
+      drm/imx/dcss: Add missing of_node_put() in fail path
+
+Linus Torvalds (2):
+      watchqueue: make sure to serialize 'wqueue->defunct' properly
+      watch-queue: remove spurious double semicolon
+
+Luiz Augusto von Dentz (7):
+      Bluetooth: Add bt_skb_sendmsg helper
+      Bluetooth: Add bt_skb_sendmmsg helper
+      Bluetooth: SCO: Replace use of memcpy_from_msg with bt_skb_sendmsg
+      Bluetooth: RFCOMM: Replace use of memcpy_from_msg with bt_skb_sendmmsg
+      Bluetooth: Fix passing NULL to PTR_ERR
+      Bluetooth: SCO: Fix sco_send_frame returning skb->len
+      Bluetooth: Fix bt_skb_sendmmsg not allocating partial chunks
+
+Marc Kleine-Budde (1):
+      spi: bcm2835: bcm2835_spi_handle_err(): fix NULL pointer deref for non DMA transfers
+
+Miaoqian Lin (1):
+      power/reset: arm-versatile: Fix refcount leak in versatile_reboot_probe
+
+Pali Rohár (1):
+      serial: mvebu-uart: correctly report configured baudrate value
+
+Pawan Gupta (1):
+      x86/bugs: Warn when "ibrs" mitigation is selected on Enhanced IBRS parts
+
+Peter Zijlstra (3):
+      perf/core: Fix data race between perf_event_set_output() and perf_mmap_close()
+      bitfield.h: Fix "type of reg too small for mask" test
+      x86/amd: Use IBPB for firmware calls
+
+Piotr Skajewski (1):
+      ixgbe: Add locking to prevent panic when setting sriov_numvfs to zero
+
+Przemyslaw Patynowski (1):
+      iavf: Fix handling of dummy receive descriptors
+
+Robert Hancock (1):
+      i2c: cadence: Change large transfer count reset logic to be unconditional
+
+Takashi Iwai (1):
+      ALSA: memalloc: Align buffer allocations in page size
+
+Tariq Toukan (1):
+      net/tls: Fix race in TLS device down flow
+
+Wang Cheng (1):
+      mm/mempolicy: fix uninit-value in mpol_rebind_policy()
+
+Wang ShaoBo (1):
+      drm/imx/dcss: fix unused but set variable warnings
+
+William Dean (1):
+      pinctrl: ralink: Check for null return of devm_kcalloc
 
