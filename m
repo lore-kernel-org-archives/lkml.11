@@ -2,87 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 700ACC19F2A
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 02:36:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B74FC00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 02:38:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233950AbiG2Cgx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 22:36:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54474 "EHLO
+        id S231598AbiG2CiE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 22:38:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232456AbiG2Cgv (ORCPT
+        with ESMTP id S232173AbiG2CiC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 22:36:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEDC363912;
-        Thu, 28 Jul 2022 19:36:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 62445B82677;
-        Fri, 29 Jul 2022 02:36:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B4BCC433D6;
-        Fri, 29 Jul 2022 02:36:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659062208;
-        bh=cVG+ATCgcUfwL3lkHWG2UgB0F2FCWRxuUaK7fXxdEU8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=b3DfgOJ/48XvUjyLkvp4sM+3H+kdMfqje6D7jrV9svFvhRpP57dS1ramWfEBMpZnh
-         n+Rg71eHPUQVCEqTpEwgvl2F9r8Y/GsLXqtnJXvJ7QqMEIohCA1VOJbYYFB//PaBf1
-         5FvAbpvjG/gxMX3YkvLbatQOwjkOvoAIk9Qj+zlHDWCJvbIBwIodGeMCHL70Rbfuva
-         yciGQ83UTAyyOxT4kP1RzU90saNROlCZxA7arsxcRk5QINL09Qkkgn8bEh4GM3v51Q
-         IaIbwqyszRJqqrAeio9dEvulEHlbNJqwmiFlBCqEJzyUVoEATIZVNID1efOhKf75kL
-         a9efKhVjxEzQw==
-Date:   Thu, 28 Jul 2022 21:36:45 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Cc:     Rob Herring <robh@kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-        Serge Semin <fancer.lancer@gmail.com>,
-        Alexey Malahov <Alexey.Malahov@baikalelectronics.ru>,
-        Pavel Parkhomenko <Pavel.Parkhomenko@baikalelectronics.ru>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>,
-        Frank Li <Frank.Li@nxp.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, linux-pci@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RESEND v4 00/15] PCI: dwc: Add hw version and dma-ranges
- support
-Message-ID: <20220729023645.GA423256@bhelgaas>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220624143947.8991-1-Sergey.Semin@baikalelectronics.ru>
+        Thu, 28 Jul 2022 22:38:02 -0400
+Received: from wout5-smtp.messagingengine.com (wout5-smtp.messagingengine.com [64.147.123.21])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A25C463912;
+        Thu, 28 Jul 2022 19:38:01 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.west.internal (Postfix) with ESMTP id 210843200947;
+        Thu, 28 Jul 2022 22:38:00 -0400 (EDT)
+Received: from imap50 ([10.202.2.100])
+  by compute3.internal (MEProxy); Thu, 28 Jul 2022 22:38:01 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=aj.id.au; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm2; t=1659062279; x=1659148679; bh=aaUG1mcxXt
+        LJd6pJT4Mmr22bhPN8UW3nBoduqUAhorI=; b=mImxyGLELzdD7jJHUUBF3Gj4qh
+        rlz5Fhm0uibFRRSfzHRTQ/FaY2LhJOcl5WMYVDlApzE6hDzSxn3GIISPHcZLN47b
+        s8JNtNip7qccGKCFznnQuP1W6fGnefsD/gcrRH8OqPZsj/6gUI/6LWB090LOOXj1
+        ElFvtCpqzDcFAJl1E2I1NFglXACoyviYzJj1WCFwpcPCz/9fqaiZ9AMfTfRpYayD
+        +bG38jRDEzHgcpCtc98Qs9t9oS8HjbMS1fEpYfuUFWNU74osX02UHZXtg4f/R75Y
+        NJoZvKou2GfSpytooovJTBIze4mb5c7tLzqeRTetg3/IAv+S9jsj4JF16E3w==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm3; t=1659062279; x=1659148679; bh=aaUG1mcxXtLJd6pJT4Mmr22bhPN8
+        UW3nBoduqUAhorI=; b=q/prQ8epZ9Qewn+WWlYrl+kyFsw0agNBcIPxZFs7u1zy
+        u//U1XrLIGJ9cG6h22PBoiqPjGC8uGR6WJvu7ERfvk/0YoxpXtvxxY72OLHycfnf
+        uMIgVyT/Hyx2O/gKTUQZievzR4BMTHqt/VtD5ck0hMianwxs9Gx+j/R6g3RGYPSJ
+        SgcDnGzN9vIuCfxk0MXHW5R6wjwwMESI4es5swRsCTgVhoLUvTQ2lVsmsQ+RQL8b
+        CbAkJ201vq28wSZmp9MNuZI/DzYvQQplhIJpM5zHCSD9nQShRm/Fja1VtdPZNCOw
+        Hmiwj8MIp+9qwbP2LlQvDiTkyc39wyQmDAq6c3DsAQ==
+X-ME-Sender: <xms:B0jjYgOrJycyyjnFZ_TTROgwG23dByHtixnqgOpiI8ASobf3FpWRiQ>
+    <xme:B0jjYm-eQtjiu5dt3aHZ7a6QYsNpy0-c9z6ZDvQGK6WLdZOY3yAMpEZJi9sEDr0dw
+    Qe8J0cQwI_3CzaTLg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvdduiedgtdeiucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepofgfggfkjghffffhvfevufgtsehttdertderredtnecuhfhrohhmpedftehn
+    ughrvgifucflvghffhgvrhihfdcuoegrnhgurhgvfiesrghjrdhiugdrrghuqeenucggtf
+    frrghtthgvrhhnpeekvdekjeekgfejudffteetgeejkeetteduvedtffdtledutdfhheev
+    feetkeeiteenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
+    hmpegrnhgurhgvfiesrghjrdhiugdrrghu
+X-ME-Proxy: <xmx:B0jjYnSHaTZbMHBPNqDww-5R_DvrFx8qxjPSIAe19rgGzCM_vx652Q>
+    <xmx:B0jjYotQdLac_0ijgykjgG14Z7LXmDWDRb5PxitBO3We8F0yaoQ92Q>
+    <xmx:B0jjYofxSjZrzSfq-iWb7SZwZiM91VECDoyNKvULkHxQwQPsM8Yg8w>
+    <xmx:B0jjYmui3MpcCVacr6fDqnUO71MaaMQOiNRD2Iy_5z5kk-9Fpj9bHw>
+Feedback-ID: idfb84289:Fastmail
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id 647541700083; Thu, 28 Jul 2022 22:37:59 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.7.0-alpha0-758-ge0d20a54e1-fm-20220729.001-ge0d20a54
+Mime-Version: 1.0
+Message-Id: <62143648-8a90-4ff4-bfe1-f311b40cd50c@www.fastmail.com>
+In-Reply-To: <20220501105644.355062-1-zhangjian.3032@bytedance.com>
+References: <20220501105644.355062-1-zhangjian.3032@bytedance.com>
+Date:   Fri, 29 Jul 2022 12:07:39 +0930
+From:   "Andrew Jeffery" <andrew@aj.id.au>
+To:     "Jian Zhang" <zhangjian.3032@bytedance.com>,
+        openbmc@lists.ozlabs.org, "Joel Stanley" <joel@jms.id.au>,
+        =?UTF-8?Q?C=C3=A9dric_Le_Goater?= <clg@kaod.org>
+Cc:     zhangjian_linux@163.com, "Mark Brown" <broonie@kernel.org>,
+        "open list" <linux-kernel@vger.kernel.org>,
+        "open list:SPI SUBSYSTEM" <linux-spi@vger.kernel.org>,
+        "moderated list:ARM/ASPEED MACHINE SUPPORT" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/ASPEED MACHINE SUPPORT" 
+        <linux-aspeed@lists.ozlabs.org>
+Subject: Re: [PATCH linux dev-5.15] soc: aspeed: abr: Add sysfs attrs for flash toggle
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jun 24, 2022 at 05:39:32PM +0300, Serge Semin wrote:
-> This patchset is a second one in the series created in the framework of
-> my Baikal-T1 PCIe/eDMA-related work:
+Hi Jian Zhang,
 
-> Serge Semin (15):
->   PCI: dwc: Add more verbose link-up message
->   PCI: dwc: Detect iATU settings after getting "addr_space" resource
->   PCI: dwc: Convert to using native IP-core versions representation
->   PCI: dwc: Add IP-core version detection procedure
->   PCI: dwc: Introduce Synopsys IP-core versions/types interface
->   PCI: intel-gw: Drop manual DW PCIe controller version setup
->   PCI: tegra194: Drop manual DW PCIe controller version setup
->   PCI: dwc: Add host de-initialization callback
->   PCI: dwc: Drop inbound iATU types enumeration - dw_pcie_as_type
->   PCI: dwc: Drop iATU regions enumeration - dw_pcie_region_type
->   PCI: dwc: Simplify in/outbound iATU setup methods
->   PCI: dwc: Add iATU regions size detection procedure
->   PCI: dwc: Verify in/out regions against iATU constraints
->   PCI: dwc: Check iATU in/outbound ranges setup methods status
+On Sun, 1 May 2022, at 20:26, Jian Zhang wrote:
+> Implement the flash toggle function in soc ast2600.
+> Add two sysfs attrs named "access_primary" and "access_backup"
 
-I applied the above to pci/ctrl/dwc for v5.20, thanks!
+If you're proposing this patch for upstream then it needs to be based on
+an upstream kernel tree, not the OpenBMC kernel tree. You also should
+not use e.g. `linux dev-5.15` in the patch subject prefix, as that would
+be inappropriate for an upstream patch.
 
->   PCI: dwc: Introduce dma-ranges property support for RC-host
+As you're adding sysfs attributes you'll also need to add the
+corresponding ABI documentation.
 
-I deferred this one for now because the current value isn't clear yet.
-If we have a user for it, I'll be glad to add it.
+Cheers,
 
-Bjorn
+Andrew
