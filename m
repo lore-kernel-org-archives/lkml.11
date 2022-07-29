@@ -2,197 +2,242 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5FC2C25B0D
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 10:25:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0FCCC19F2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 10:28:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236024AbiG2KZ6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 06:25:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51622 "EHLO
+        id S235080AbiG2K2a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 06:28:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235867AbiG2KZh (ORCPT
+        with ESMTP id S230272AbiG2K20 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 06:25:37 -0400
-Received: from server.lespinasse.org (server.lespinasse.org [63.205.204.226])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A9645592;
-        Fri, 29 Jul 2022 03:25:14 -0700 (PDT)
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed;
- d=lespinasse.org; i=@lespinasse.org; q=dns/txt; s=srv-79-ed;
- t=1659090298; h=date : from : to : cc : subject : message-id :
- references : mime-version : content-type : in-reply-to : from;
- bh=a/XS8F6DJ0UncG2aNUIYHtQzj6v+HgUrBJ1uNti4iPo=;
- b=z07fAc3s82E8eDjOmWqCiQ8bXbav83TEx3/Re97NlSxxiCQo28PSqhP5HNIn+14JJNint
- RyzSM6g4CHMlWDtCg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lespinasse.org;
- i=@lespinasse.org; q=dns/txt; s=srv-79-rsa; t=1659090298; h=date :
- from : to : cc : subject : message-id : references : mime-version :
- content-type : in-reply-to : from;
- bh=a/XS8F6DJ0UncG2aNUIYHtQzj6v+HgUrBJ1uNti4iPo=;
- b=I1XE4PG3J6WdBxHBHPO8gz729jU9NwxFGePQBg2SGh03K5MaVR21Or0F1Ed2fJkedXwqn
- 73ZEg9HBg/VtqO2lKkpr4whjhup8i+ouV+MRlyl12YqkOIbBlxYxGShIJKbmEieaOBGjn22
- ZXDWImDNaRHLW7cNGx8eSPR5smKlm5X/Vadfwpk61igIRp4T13wJ8QuAfpZsGCdgjSHCAt3
- xICHC0gdRmgeZ4VsHAxcqkS8UkYtj/62Fy/MANXsihH037ZiFlqRtJ1IH4+gKYbMZ+SX1Jj
- 7eSPi+obGVy9GT10OfxqZ1++H06soXF8UFwZNT5FhqZM4eGuNqJqYx1H9gbg==
-Received: by server.lespinasse.org (Postfix, from userid 1000)
-        id 43C591608FB; Fri, 29 Jul 2022 03:24:58 -0700 (PDT)
-Date:   Fri, 29 Jul 2022 03:24:58 -0700
-From:   Michel Lespinasse <michel@lespinasse.org>
-To:     "Paul E. McKenney" <paulmck@kernel.org>
-Cc:     Michel Lespinasse <michel@lespinasse.org>,
-        Peter Zijlstra <peterz@infradead.org>, rth@twiddle.net,
-        ink@jurassic.park.msu.ru, mattst88@gmail.com, vgupta@kernel.org,
-        linux@armlinux.org.uk, ulli.kroll@googlemail.com,
-        linus.walleij@linaro.org, shawnguo@kernel.org,
-        Sascha Hauer <s.hauer@pengutronix.de>, kernel@pengutronix.de,
-        festevam@gmail.com, linux-imx@nxp.com, tony@atomide.com,
-        khilman@kernel.org, catalin.marinas@arm.com, will@kernel.org,
-        guoren@kernel.org, bcain@quicinc.com, chenhuacai@kernel.org,
-        kernel@xen0n.name, geert@linux-m68k.org, sammy@sammy.net,
-        monstr@monstr.eu, tsbogend@alpha.franken.de, dinguyen@kernel.org,
-        jonas@southpole.se, stefan.kristiansson@saunalahti.fi,
-        shorne@gmail.com, James.Bottomley@HansenPartnership.com,
-        deller@gmx.de, mpe@ellerman.id.au, benh@kernel.crashing.org,
-        paulus@samba.org, paul.walmsley@sifive.com, palmer@dabbelt.com,
-        aou@eecs.berkeley.edu, hca@linux.ibm.com, gor@linux.ibm.com,
-        agordeev@linux.ibm.com, borntraeger@linux.ibm.com,
-        svens@linux.ibm.com, ysato@users.sourceforge.jp, dalias@libc.org,
-        davem@davemloft.net, richard@nod.at,
-        anton.ivanov@cambridgegreys.com, johannes@sipsolutions.net,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, hpa@zytor.com,
-        acme@kernel.org, mark.rutland@arm.com,
-        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
-        namhyung@kernel.org, jgross@suse.com, srivatsa@csail.mit.edu,
-        amakhalov@vmware.com, pv-drivers@vmware.com,
-        boris.ostrovsky@oracle.com, chris@zankel.net, jcmvbkbc@gmail.com,
-        rafael@kernel.org, lenb@kernel.org, pavel@ucw.cz,
-        gregkh@linuxfoundation.org, mturquette@baylibre.com,
-        sboyd@kernel.org, daniel.lezcano@linaro.org, lpieralisi@kernel.org,
-        sudeep.holla@arm.com, agross@kernel.org,
-        bjorn.andersson@linaro.org, anup@brainfault.org,
-        thierry.reding@gmail.com, jonathanh@nvidia.com,
-        jacob.jun.pan@linux.intel.com, Arnd Bergmann <arnd@arndb.de>,
-        yury.norov@gmail.com, andriy.shevchenko@linux.intel.com,
-        linux@rasmusvillemoes.dk, rostedt@goodmis.org, pmladek@suse.com,
-        senozhatsky@chromium.org, john.ogness@linutronix.de,
-        frederic@kernel.org, quic_neeraju@quicinc.com,
-        josh@joshtriplett.org, mathieu.desnoyers@efficios.com,
-        jiangshanlai@gmail.com, joel@joelfernandes.org,
-        juri.lelli@redhat.com, vincent.guittot@linaro.org,
-        dietmar.eggemann@arm.com, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com, vschneid@redhat.com, jpoimboe@kernel.org,
-        linux-alpha@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-snps-arc@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-omap@vger.kernel.org,
-        linux-csky@vger.kernel.org, linux-hexagon@vger.kernel.org,
-        linux-ia64@vger.kernel.org, linux-m68k@lists.linux-m68k.org,
-        linux-mips@vger.kernel.org, openrisc@lists.librecores.org,
-        linux-parisc@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
-        linux-sh@vger.kernel.org, sparclinux@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-perf-users@vger.kernel.org,
+        Fri, 29 Jul 2022 06:28:26 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0DFFEB6C
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 03:28:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1659090504;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=as0dSaDJ9Kz1ka/wV5ZX8Zqed6rUUwP8w5uBz6jTo54=;
+        b=Cx4FItA8GTlzS2V+4B/VuSwlcaJ32WcyUZnb2BGIjaiNm3flr6y5sS0/Qu20BV7OqM/kJc
+        YiDfAhx4eFMeusDEqKdbMIsRKiy/D1EUgCaRjQCX2p8xemTHVTCkk6t6yqs7DVzfWX0Sit
+        TNLgsihCjE4LWGD7ycp4Pgr0YEkyPXI=
+Received: from mail-pj1-f72.google.com (mail-pj1-f72.google.com
+ [209.85.216.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-377-wPobRwnhMy6IoOvknihrCw-1; Fri, 29 Jul 2022 06:28:23 -0400
+X-MC-Unique: wPobRwnhMy6IoOvknihrCw-1
+Received: by mail-pj1-f72.google.com with SMTP id q5-20020a17090a7a8500b001f0253f5aa3so2241490pjf.4
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 03:28:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=as0dSaDJ9Kz1ka/wV5ZX8Zqed6rUUwP8w5uBz6jTo54=;
+        b=6AYaQEk/myezfyJ4uCrsrUYO4iv4BYh8B591Q56oTpXb/v9Px6sRn5LNxE/txMAE+F
+         EU6uu+iWuDa0oGoPXDQzBmCxAoROFK3JcbPT2A5J0qu36PsdIvKr12wpbikdRcGjWLIG
+         pWN+mgZYESM2GIuXb663vHB9+0pnC+0Wdo6bLQIEnObY/6Q0nCAYJmmDPYkopv1g95qS
+         GrTW/wEAEOe+IHcGhh14PuSUU/NyTfiUNWHwDDOp0rwkIQ5RJFCrxxOE0QL9H8JxDhw4
+         qm3kZ9AC2lxvajQpOnC0sCHbbir4lGhXdf7fw7RPqYLR38mu2HFTJtd1y2iBOvMCyCMH
+         A30g==
+X-Gm-Message-State: ACgBeo3o+B3MsWnuAPNc2lHeB9vMhMiKxZOF15929J6TiCsYg0sTEYQ4
+        5X/jAlVGD8DslwGc2OCsrVpcZhTTWWd7+ZUMibHsbj21T2AheW9fsFjAmzCliTEdzVxFo62M5Yo
+        Q2VT8Zmy/XFB54Zl9WPeikinn
+X-Received: by 2002:a17:902:b948:b0:16d:93c8:403a with SMTP id h8-20020a170902b94800b0016d93c8403amr3216210pls.45.1659090501909;
+        Fri, 29 Jul 2022 03:28:21 -0700 (PDT)
+X-Google-Smtp-Source: AA6agR5hAd0t3DvlQMWZfOHeSmTJlLymjssvgghLzSj+panQJWzipIbxqyehtkXAIZsMvvBYYnvbCA==
+X-Received: by 2002:a17:902:b948:b0:16d:93c8:403a with SMTP id h8-20020a170902b94800b0016d93c8403amr3216163pls.45.1659090501513;
+        Fri, 29 Jul 2022 03:28:21 -0700 (PDT)
+Received: from localhost.localdomain ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id d14-20020aa797ae000000b005289eafbd08sm2618289pfq.18.2022.07.29.03.28.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Jul 2022 03:28:20 -0700 (PDT)
+Date:   Fri, 29 Jul 2022 18:28:09 +0800
+From:   Tao Liu <ltao@redhat.com>
+To:     Tom Lendacky <thomas.lendacky@amd.com>
+Cc:     Joerg Roedel <joro@8bytes.org>, x86@kernel.org,
+        kvm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
         virtualization@lists.linux-foundation.org,
-        xen-devel@lists.xenproject.org, linux-xtensa@linux-xtensa.org,
-        linux-acpi@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-arch@vger.kernel.org,
-        rcu@vger.kernel.org, rh0@fb.com
-Subject: Re: [PATCH 04/36] cpuidle,intel_idle: Fix CPUIDLE_FLAG_IRQ_ENABLE
-Message-ID: <20220729102458.GA1695@lespinasse.org>
-References: <20220608142723.103523089@infradead.org>
- <20220608144516.172460444@infradead.org>
- <20220725194306.GA14746@lespinasse.org>
- <20220728172053.GA3607379@paulmck-ThinkPad-P17-Gen-1>
+        Arvind Sankar <nivedita@alum.mit.edu>, hpa@zytor.com,
+        Jiri Slaby <jslaby@suse.cz>,
+        David Rientjes <rientjes@google.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Martin Radev <martin.b.radev@gmail.com>,
+        Joerg Roedel <jroedel@suse.de>,
+        Kees Cook <keescook@chromium.org>,
+        Cfir Cohen <cfir@google.com>, linux-coco@lists.linux.dev,
+        Andy Lutomirski <luto@kernel.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Juergen Gross <jgross@suse.com>,
+        Mike Stunes <mstunes@vmware.com>,
+        Sean Christopherson <seanjc@google.com>,
+        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Eric Biederman <ebiederm@xmission.com>,
+        Erdem Aktas <erdemaktas@google.com>
+Subject: Re: [PATCH v3 00/10] x86/sev: KEXEC/KDUMP support for SEV-ES guests
+Message-ID: <YuO2OUp4OmnXoqUa@localhost.localdomain>
+References: <20220127101044.13803-1-joro@8bytes.org>
+ <YmuqifsJltdh7rpv@localhost.localdomain>
+ <46b27b72-aabf-f37d-7304-29debeefd8ae@amd.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220728172053.GA3607379@paulmck-ThinkPad-P17-Gen-1>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <46b27b72-aabf-f37d-7304-29debeefd8ae@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 28, 2022 at 10:20:53AM -0700, Paul E. McKenney wrote:
-> On Mon, Jul 25, 2022 at 12:43:06PM -0700, Michel Lespinasse wrote:
-> > On Wed, Jun 08, 2022 at 04:27:27PM +0200, Peter Zijlstra wrote:
-> > > Commit c227233ad64c ("intel_idle: enable interrupts before C1 on
-> > > Xeons") wrecked intel_idle in two ways:
-> > > 
-> > >  - must not have tracing in idle functions
-> > >  - must return with IRQs disabled
-> > > 
-> > > Additionally, it added a branch for no good reason.
-> > > 
-> > > Fixes: c227233ad64c ("intel_idle: enable interrupts before C1 on Xeons")
-> > > Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Hi Tom,
+
+On Fri, Apr 29, 2022 at 08:08:28AM -0500, Tom Lendacky wrote:
+> On 4/29/22 04:06, Tao Liu wrote:
+> > On Thu, Jan 27, 2022 at 11:10:34AM +0100, Joerg Roedel wrote:
+> 
 > > 
-> > After this change was introduced, I am seeing "WARNING: suspicious RCU
-> > usage" when booting a kernel with debug options compiled in. Please
-> > see the attached dmesg output. The issue starts with commit 32d4fd5751ea
-> > and is still present in v5.19-rc8.
+> > Hi Joerg,
 > > 
-> > I'm not sure, is this too late to fix or revert in v5.19 final ?
+> > I tried the patch set with 5.17.0-rc1 kernel, and I have a few questions:
+> > 
+> > 1) Is it a bug or should qemu-kvm 6.2.0 be patched with specific patch? Because
+> >     I found it will exit with 0 when I tried to reboot the VM with sev-es enabled.
+> >     However with only sev enabled, the VM can do reboot with no problem:
 > 
-> I finally got a chance to take a quick look at this.
+> Qemu was specifically patched to exit on reboot with SEV-ES guests. Qemu
+> performs a reboot by resetting the vCPU state, which can't be done with an
+> SEV-ES guest because the vCPU state is encrypted.
 > 
-> The rcu_eqs_exit() function is making a lockdep complaint about
-> being invoked with interrupts enabled.  This function is called from
-> rcu_idle_exit(), which is an expected code path from cpuidle_enter_state()
-> via its call to rcu_idle_exit().  Except that rcu_idle_exit() disables
-> interrupts before invoking rcu_eqs_exit().
-> 
-> The only other call to rcu_idle_exit() does not disable interrupts,
-> but it is via rcu_user_exit(), which would be a very odd choice for
-> cpuidle_enter_state().
-> 
-> It seems unlikely, but it might be that it is the use of local_irq_save()
-> instead of raw_local_irq_save() within rcu_idle_exit() that is causing
-> the trouble.  If this is the case, then the commit shown below would
-> help.  Note that this commit removes the warning from lockdep, so it
-> is necessary to build the kernel with CONFIG_RCU_EQS_DEBUG=y to enable
-> equivalent debugging.
-> 
-> Could you please try your test with the -rce commit shown below applied?
 
-Thanks for looking into it.
+Sorry for the late response, and thank you for the explanation!
 
-After checking out Peter's commit 32d4fd5751ea,
-cherry picking your commit ed4ae5eff4b3,
-and setting CONFIG_RCU_EQS_DEBUG=y in addition of my usual debug config,
-I am now seeing this a few seconds into the boot:
+> > 
+> > [root@dell-per7525-03 ~]# virsh start TW-SEV-ES --console
+> > ....
+> > Fedora Linux 35 (Server Edition)
+> > Kernel 5.17.0-rc1 on an x86_64 (ttyS0)
+> > ....
+> > [root@fedora ~]# reboot
+> > .....
+> > [   48.077682] reboot: Restarting system
+> > [   48.078109] reboot: machine restart
+> >                         ^^^^^^^^^^^^^^^ guest vm reached restart
+> > [root@dell-per7525-03 ~]# echo $?
+> > 0
+> > ^^^ qemu-kvm exit with 0, no reboot back to normal VM kernel
+> > [root@dell-per7525-03 ~]#
+> > 
+> > 2) With sev-es enabled and the 2 patch sets applied: A) [PATCH v3 00/10] x86/sev:
+> > KEXEC/KDUMP support for SEV-ES guests, and B) [PATCH v6 0/7] KVM: SVM: Add initial
+> > GHCB protocol version 2 support. I can enable kdump and have vmcore generated:
+> > 
+> > [root@fedora ~]# dmesg|grep -i sev
+> > [    0.030600] SEV: Hypervisor GHCB protocol version support: min=1 max=2
+> > [    0.030602] SEV: Using GHCB protocol version 2
+> > [    0.296144] AMD Memory Encryption Features active: SEV SEV-ES
+> > [    0.450991] SEV: AP jump table Blob successfully set up
+> > [root@fedora ~]# kdumpctl status
+> > kdump: Kdump is operational
+> > 
+> > However without the 2 patch sets, I can also enable kdump and have vmcore generated:
+> > 
+> > [root@fedora ~]# dmesg|grep -i sev
+> > [    0.295754] AMD Memory Encryption Features active: SEV SEV-ES
+> >                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ patch set A & B
+> > 	       not applied, so only have this string.
+> > [root@fedora ~]# echo c > /proc/sysrq-trigger
+> > ...
+> > [    2.759403] kdump[549]: saving vmcore-dmesg.txt to /sysroot/var/crash/127.0.0.1-2022-04-18-05:58:50/
+> > [    2.804355] kdump[555]: saving vmcore-dmesg.txt complete
+> > [    2.806915] kdump[557]: saving vmcore
+> >                             ^^^^^^^^^^^^^ vmcore can still be generated
+> > ...
+> > [    7.068981] reboot: Restarting system
+> > [    7.069340] reboot: machine restart
+> > 
+> > [root@dell-per7525-03 ~]# echo $?
+> > 0
+> > ^^^ same exit issue as question 1.
+> > 
+> > I doesn't have a complete technical background of the patch set, but isn't
+> > it the issue which this patch set is trying to solve? Or I missed something?
+> 
+> The main goal of this patch set is to really to solve the ability to perform
+> a kexec. I would expect kdump to work since kdump shuts down all but the
+> executing vCPU and performs its operations before "rebooting" (which will
+> exit Qemu as I mentioned above). But kexec requires the need to restart the
+> APs from within the guest after they have been stopped. That requires
+> specific support and actions on the part of the guest kernel in how the APs
+> are stopped and restarted.
 
-[    3.010650] ------------[ cut here ]------------
-[    3.010651] WARNING: CPU: 0 PID: 0 at kernel/sched/clock.c:397 sched_clock_tick+0x27/0x60
-[    3.010657] Modules linked in:
-[    3.010660] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.19.0-rc1-test-00005-g1be22fea0611 #1
-[    3.010662] Hardware name: LENOVO 30BFS44D00/1036, BIOS S03KT51A 01/17/2022
-[    3.010663] RIP: 0010:sched_clock_tick+0x27/0x60
-[    3.010665] Code: 1f 40 00 53 eb 02 5b c3 66 90 8b 05 2f c3 40 01 85 c0 74 18 65 8b 05 60 88 8f 4e 85 c0 75 0d 65 8b 05 a9 85 8f 4e 85 c0 74 02 <0f> 0b e8 e2 6c 89 00 48 c7 c3 40 d5 02 00
- 89 c0 48 03 1c c5 c0 98
-[    3.010667] RSP: 0000:ffffffffb2803e28 EFLAGS: 00010002
-[    3.010670] RAX: 0000000000000001 RBX: ffffc8ce7fa07060 RCX: 0000000000000001
-[    3.010671] RDX: 0000000000000000 RSI: ffffffffb268dd21 RDI: ffffffffb269ab13
-[    3.010673] RBP: 0000000000000001 R08: ffffffffffc300d5 R09: 000000000002be80
-[    3.010674] R10: 000003625b53183a R11: ffffa012b802b7a4 R12: ffffffffb2aa9e80
-[    3.010675] R13: ffffffffb2aa9e00 R14: 0000000000000001 R15: 0000000000000000
-[    3.010677] FS:  0000000000000000(0000) GS:ffffa012b8000000(0000) knlGS:0000000000000000
-[    3.010678] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[    3.010680] CR2: ffffa012f81ff000 CR3: 0000000c99612001 CR4: 00000000003706f0
-[    3.010681] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[    3.010682] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[    3.010683] Call Trace:
-[    3.010685]  <TASK>
-[    3.010688]  cpuidle_enter_state+0xb7/0x4b0
-[    3.010694]  cpuidle_enter+0x29/0x40
-[    3.010697]  do_idle+0x1d4/0x210
-[    3.010702]  cpu_startup_entry+0x19/0x20
-[    3.010704]  rest_init+0x117/0x1a0
-[    3.010708]  arch_call_rest_init+0xa/0x10
-[    3.010711]  start_kernel+0x6d8/0x6ff
-[    3.010716]  secondary_startup_64_no_verify+0xce/0xdb
-[    3.010728]  </TASK>
-[    3.010729] irq event stamp: 44179
-[    3.010730] hardirqs last  enabled at (44179): [<ffffffffb2000ccb>] asm_sysvec_apic_timer_interrupt+0x1b/0x20
-[    3.010734] hardirqs last disabled at (44177): [<ffffffffb22003f0>] __do_softirq+0x3f0/0x498
-[    3.010736] softirqs last  enabled at (44178): [<ffffffffb2200332>] __do_softirq+0x332/0x498
-[    3.010738] softirqs last disabled at (44171): [<ffffffffb16c760b>] irq_exit_rcu+0xab/0xf0
-[    3.010741] ---[ end trace 0000000000000000 ]---
+Recently I got one sev-es flaged machine borrowed and retested the patch, which
+worked fine for kexec when sev-es enabled. With the patchset applied in 5.17.0-rc1, 
+kexec'ed kernel can bring up all APs with no problem.
+
+However as for kdump, I find one issue. Although kdump kernel can work well on one
+cpu, but we can still enable multi-cpus by removing the "nr_cpus=1" kernel parameter
+in kdump sysconfig. I was expecting kdump kernel can bring up all APs as kexec did,
+however:
+
+[    0.000000] Command line: elfcorehdr=0x5b000000 BOOT_IMAGE=(hd0,gpt2)/vmlinuz-5.17.0-rc1+ ro resume=/dev/mapper/rhel-swap biosdevname=0 net.ifnames=0 console=ttyS0 irqpoll reset_devices cgroup_disable=memory mce=off numa=off udev.children-max=2 panic=10 rootflags=nofail acpi_no_memhotplug transparent_hugepage=never nokaslr novmcoredd hest_disable disable_cpu_apicid=0 iTCO_wdt.pretimeout=0
+...
+[    0.376663] smp: Bringing up secondary CPUs ...
+[    0.377599] x86: Booting SMP configuration:
+[    0.378342] .... node  #0, CPUs:      #1
+[   10.377698] smpboot: do_boot_cpu failed(-1) to wakeup CPU#1
+[   10.379882]  #2
+[   20.379645] smpboot: do_boot_cpu failed(-1) to wakeup CPU#2
+[   20.380648] smp: Brought up 1 node, 1 CPU
+[   20.381600] smpboot: Max logical packages: 4
+[   20.382597] smpboot: Total of 1 processors activated (4192.00 BogoMIPS)
+
+Turns out for kdump, the APs were not stopped properly, so I modified the following code:
+
+--- a/arch/x86/kernel/reboot.c
++++ b/arch/x86/kernel/reboot.c
+@@ -26,6 +26,7 @@
+ #include <asm/cpu.h>
+ #include <asm/nmi.h>
+ #include <asm/smp.h>
++#include <asm/sev.h>
+ 
+ #include <linux/ctype.h>
+ #include <linux/mc146818rtc.h>
+@@ -821,6 +822,7 @@ static int crash_nmi_callback(unsigned int val, struct pt_regs *regs)
+ 
+        atomic_dec(&waiting_for_crash_ipi);
+        /* Assume hlt works */
++       sev_es_stop_this_cpu();
+        halt();
+        for (;;)
+                cpu_relax();
+
+[    0.000000] Command line: elfcorehdr=0x5b000000 BOOT_IMAGE=(hd0,gpt2)/vmlinuz-5.17.0-rc1-hack+ ro resume=/dev/mapper/rhel-swap biosdevname=0 net.ifnames=0 console=ttyS0 irqpoll reset_devices cgroup_disable=memory mce=off numa=off udev.children-max=2 panic=10 rootflags=nofail acpi_no_memhotplug transparent_hugepage=never nokaslr novmcoredd hest_disable disable_cpu_apicid=0 iTCO_wdt.pretimeout=0
+...
+[    0.402618] smp: Bringing up secondary CPUs ...
+[    0.403308] x86: Booting SMP configuration:
+[    0.404171] .... node  #0, CPUs:      #1 #2 #3
+[    0.407362] smp: Brought up 1 node, 4 CPUs
+[    0.408907] smpboot: Max logical packages: 4
+[    0.409172] smpboot: Total of 4 processors activated (16768.01 BogoMIPS)
+
+Now all APs can work in kdump kernel.
+
+Thanks,
+Tao Liu
+
+> 
+> Thanks,
+> Tom
+> 
+> > 
+> > Thanks,
+> > Tao Liu
+> > > _______________________________________________
+> > > Virtualization mailing list
+> > > Virtualization@lists.linux-foundation.org
+> > > https://lists.linuxfoundation.org/mailman/listinfo/virtualization
+> > 
+> 
+
