@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74CBCC04A68
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 16:46:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FBC9C00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 16:46:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238143AbiG2QqT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 12:46:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36302 "EHLO
+        id S238148AbiG2QqY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 12:46:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238146AbiG2Qpu (ORCPT
+        with ESMTP id S238164AbiG2Qpu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 29 Jul 2022 12:45:50 -0400
 Received: from new4-smtp.messagingengine.com (new4-smtp.messagingengine.com [66.111.4.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A73A88F14
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5688A88F39
         for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 09:45:49 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id D479858075F;
-        Fri, 29 Jul 2022 12:35:49 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Fri, 29 Jul 2022 12:35:49 -0400
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 0752358092E;
+        Fri, 29 Jul 2022 12:35:44 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute1.internal (MEProxy); Fri, 29 Jul 2022 12:35:44 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
         :cc:content-transfer-encoding:content-type:date:date:from:from
         :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm2; t=1659112549; x=
-        1659119749; bh=Vukv1YK6KFpFeMtPU+pPqM7OIglwqAumIwUtACYHZg8=; b=X
-        OfQJnrbmK4CI59PvH5b1/hLH2Q+RKy53EhMj8XRRW6gDowlzepM6ZLKuSjGufzWp
-        L9sblTBBWyAKfbeXmz6Zh6w52+U22zVCzmQGzDH3GswQLFaHV8IGjYxgcrcIMJIN
-        LXbJgMLplAjj8O97diFI1vpCUQMz60nQemZBQc7xxSaaMu32l59zO/SfHm4dkT21
-        6rp7Ui5RBcQ9ZQ9hu8X3tnoKtc7lk78GEgflGTOmQTRAAB/7l5IN9pjHq83aDDbQ
-        hoYOFzD8dAy6yzWy5G0N619ti4ZBO4z4lJkIGqa/+ErfnPSRlQHpFYMNgf9rUB8W
-        iPyydpv69nrgVJkkswB9A==
+        :reply-to:sender:subject:subject:to:to; s=fm2; t=1659112544; x=
+        1659119744; bh=Piuly92aaJFxSVJhjTs+noDe9qR4aoY87LMU5VgChJc=; b=X
+        fIQg4wGk1mpoOyBrgDyHTSVX8OBs3DOMREVVij2Nnpp846qxvqYJVhI9pvwG/22X
+        oIX8TNTNBSwKiMEixZZ6piR56Ass3a+ERuc6Cg5IfxWEakM0mdF2ux/8hcccw1FK
+        Oob6m/6lsQuRpkOS2OpiuTx95JeryS+1JtCQCk60ao4L2reifjPPwM/kOIEnbpnC
+        ze09ixdffeVLYCDH6cvIn6QhK8g1Pf8WCUO74cb4fr2QdSvq/+t+wXez2ESP4TPU
+        qJMheVw4pVB4nbzKAxX3SQ8dOlDQDAZQOyQHkUBIMvPiAeoMpn3M0sOu2yPxbhlp
+        j/wL+7uPGJtiSt76J/RPQ==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-transfer-encoding
         :content-type:date:date:feedback-id:feedback-id:from:from
         :in-reply-to:in-reply-to:message-id:mime-version:references
         :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1659112549; x=
-        1659119749; bh=Vukv1YK6KFpFeMtPU+pPqM7OIglwqAumIwUtACYHZg8=; b=y
-        yGdVrMndN2GDHe5hUwKEWAjUKorz7JejanyGgNntt16a6aMpjYJTp94GLkff+s/g
-        2UqmpWGn4Vzogr1ccbW2qKm9/PGvZNYTOTeJfgz2czRalaCE7sG05bOhHrqyptWS
-        FweumVeHzlH6DtU/lrl6EDHmTsriCtFfBxDt5VD+8KvPwScCE5qY3v2jABGoFgdP
-        yzY+WOnSmAf/CBfT4hQR3TD9FOD8GQ7Mz0x/Jkmq56NUAEF67xperhMMRK5aigrd
-        C5DiK00rTGtUCb4mU80V7RB8vSdX73hQ97InCVj2XzhA4gdV/0WmMlOiGbcVGzQb
-        Tcb/bJ8NpPk85+TinEWAg==
-X-ME-Sender: <xms:ZQzkYhdfyLogS4Steh6hSkUQ_et08A84GWMG9_pHtPzwatkzX3LYAA>
-    <xme:ZQzkYvNC6W9CZWZbCkBCAcouNulshoxN6spV3lBk8y0inZf6jfBnqm8mVIj6tMW44
-    yJ5rnKJunNh7FVj4Xk>
-X-ME-Received: <xmr:ZQzkYqgr3KG1wT3GSwxqoweT5sbiMKV5XnYImoXoITGXqT4SOrIEpCZ3cZ1J5Bms4o5C7ndItf0t4DIkLuA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvddujedguddtfecutefuodetggdotefrod
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1659112544; x=
+        1659119744; bh=Piuly92aaJFxSVJhjTs+noDe9qR4aoY87LMU5VgChJc=; b=0
+        18t6rjhQDFxsIgcAsYF/tIyElFrpkRbpoXO9mTFyN2XvoO09mX0vx3CwuEfIhLFI
+        P+WSO64i9Lx2d3ufEhwI4S3zGVM1b7UesNNRLY4W1JUDM35S35cWdLbtAw7daf3d
+        Epy9bvQErHE0Duwuu5XmJalzPQQHWaWfJ/ZHeWY1WGhC+B1wuIOkFB1V6t0bkHaE
+        aHzZF9ka09uJBVgmZMY7Z6ke1xO8MDHN/cGb2S8TzmrvtKfqJ31Go6pkQPUFAz/8
+        c7EYTiJFttFVfICJUODf38mLJuolbxCE6xvFUbbFOAM0VxC8KxJt6Q3dOMJrEWIt
+        rT0KbIeDu8a7kdD/Hbv7g==
+X-ME-Sender: <xms:XwzkYkTmN0ugPpymP-aGSrpRxnc0PR4DvuhVzfe-uTLSoRUAca1JLw>
+    <xme:XwzkYhw_VMZzYILKO8FG0_NkQK_XfAwSR9vQkXPTDNlRrbxQGdUc4HPOt7luRMBef
+    N1NE0sSYZ9d7uziTls>
+X-ME-Received: <xmr:XwzkYh1fwo9U_dmHY-WZCus6uxOXgKAhX9JDfE5RKmaDU7i32xvsS3oe8T9DfNanq8WTVpA_EEkAKsOMY6M>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvddujedguddtgecutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
     necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
     enucfjughrpefhvfevufffkffojghfgggtoffgsehtkeertdertdejnecuhfhrohhmpefo
@@ -56,13 +56,13 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvddujedguddtfecutefuodetgg
     ftrfgrthhtvghrnhepgfffgfetffduudelhfevieffffduleevgfegkeeutefgffejheel
     leekjeefhfejnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrh
     homhepmhgrgihimhgvsegtvghrnhhordhtvggthh
-X-ME-Proxy: <xmx:ZQzkYq_yuu3WWlrIgXHt8H_J6PixUhgtfvCKHRo8v7X8SAr_jaNyWg>
-    <xmx:ZQzkYttSOubmL35-USJakD8DariUAu5tyiudJq7PmcLc42pTn9DCgg>
-    <xmx:ZQzkYpGlEDqjJtm8lkr3NK2mfEvyeVIHGUdsuqwt8eG8iZK4uDKSog>
-    <xmx:ZQzkYs8BygWcGtiTlDA0w0V22JWzM5SXTs1buM91ON03jPg08sgyaw>
+X-ME-Proxy: <xmx:XwzkYoD51fBbLDDHr-X5MfyLWJ4uS4KwuaIsYgf2hGDiowbh6xLEZg>
+    <xmx:XwzkYtj_hwfh-4ovQb4TG2D_j4QJ0_8hV7qDMkNE-XMZ3LZq82DrXw>
+    <xmx:XwzkYkqbyhCTz96SW7ch1j2Y_7UsWL5Y8UPyd_yBnjBIPWSnzgkJxA>
+    <xmx:YAzkYsQTINi6znJnaXUeMwDhtLrFUZ4VkceZFMQ24D94Fv3XjGlgTw>
 Feedback-ID: i8771445c:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 29 Jul 2022 12:35:48 -0400 (EDT)
+ 29 Jul 2022 12:35:42 -0400 (EDT)
 From:   Maxime Ripard <maxime@cerno.tech>
 To:     Jernej Skrabec <jernej.skrabec@gmail.com>,
         Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
@@ -86,70 +86,136 @@ Cc:     Maxime Ripard <maxime@cerno.tech>, linux-sunxi@lists.linux.dev,
         Dave Stevenson <dave.stevenson@raspberrypi.com>,
         linux-amlogic@lists.infradead.org, dri-devel@lists.freedesktop.org,
         Dom Cobley <dom@raspberrypi.com>
-Subject: [PATCH v1 06/35] drm/connector: Only register TV mode property if present
-Date:   Fri, 29 Jul 2022 18:34:49 +0200
-Message-Id: <20220728-rpi-analog-tv-properties-v1-6-3d53ae722097@cerno.tech>
+Subject: [PATCH v1 04/35] drm/modes: Introduce 480i and 576i modes
+Date:   Fri, 29 Jul 2022 18:34:47 +0200
+Message-Id: <20220728-rpi-analog-tv-properties-v1-4-3d53ae722097@cerno.tech>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
 References: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 X-Mailer: b4 0.10.0-dev-49460
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1716; i=maxime@cerno.tech; h=from:subject:message-id; bh=r0YGPY/lR3DbpNDfMeJZNI+IjZaGoFc9GNv9eKuIsNA=; b=owGbwMvMwCHc4XzqmfnC7acZT6slMSQ94VHq+DhJr3FT9FW/hPvh5RJJm696M5x7WdSZZ13l9FZf q2ZSRykLgzAHg6yYIst1wbd2fGFRbhE8HzbDzGFlAhnCwMUpABMpfMXIsOmnq2Sb1fa8oKOvuJa9e1 S24xdXs84euxsa63YwGL/Iv8zwP/UvX4tdlV+k8tSlv5iPKU2auWZqjnspq5D4mktS1j9C+gA=
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3987; i=maxime@cerno.tech; h=from:subject:message-id; bh=cMSAEXdEomRu9CA2Xoi4TxGpQx4Z47j7hj4nQ3DGJ0M=; b=owGbwMvMwCHc4XzqmfnC7acZT6slMSQ94VH61eca8fWR0ZYnorV83/3XPzvM4LrK5tXy6OSA483G AkrCHaUsDMIcDLJiiizXBd/a8YVFuUXwfNgMM4eVCWQIAxenAEyEv47hf3LoDjeJSSKPZxrsdI6b9P KBbJPFmd6Dz92i/hWGRahv+s7wz+JL0YELZo8/6aSF1jJev5BoeljpidqhK3p/lv3KEk58aA0A
 X-Developer-Key: i=maxime@cerno.tech; a=openpgp; fpr=BE5675C37E818C8B5764241C254BCFC56BF6CE8D
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The drm_create_tv_properties() will create the TV mode property
-unconditionally.
+Multiple drivers (meson, vc4) define the analog TV 525-lines and 625-lines
+modes in the drivers.
 
-However, since we'll gradually phase it out, let's register it only if we
-have a list passed as an argument. This will make the transition easier.
+Since those modes are fairly standards, and that we'll need to use them in
+more places in the future, let's move the meson definition into the
+framework.
+
+The meson one was chosen because vc4's isn't accurate and doesn't amount to
+525 and 625 lines.
 
 Signed-off-by: Maxime Ripard <maxime@cerno.tech>
 
-diff --git a/drivers/gpu/drm/drm_connector.c b/drivers/gpu/drm/drm_connector.c
-index 68a4e47f85a9..d73a68764b6e 100644
---- a/drivers/gpu/drm/drm_connector.c
-+++ b/drivers/gpu/drm/drm_connector.c
-@@ -1684,7 +1684,6 @@ int drm_mode_create_tv_properties(struct drm_device *dev,
- 	struct drm_property *tv_selector;
- 	struct drm_property *tv_subconnector;
- 	struct drm_property *tv_norm;
--	unsigned int i;
+diff --git a/drivers/gpu/drm/drm_modes.c b/drivers/gpu/drm/drm_modes.c
+index 304004fb80aa..a4c1bd688338 100644
+--- a/drivers/gpu/drm/drm_modes.c
++++ b/drivers/gpu/drm/drm_modes.c
+@@ -48,6 +48,24 @@
  
- 	if (dev->mode_config.tv_select_subconnector_property)
- 		return 0;
-@@ -1723,15 +1722,19 @@ int drm_mode_create_tv_properties(struct drm_device *dev,
- 		goto nomem;
- 	dev->mode_config.tv_norm_property = tv_norm;
+ #include "drm_crtc_internal.h"
  
--	dev->mode_config.tv_mode_property =
--		drm_property_create(dev, DRM_MODE_PROP_ENUM,
--				    "mode", num_modes);
--	if (!dev->mode_config.tv_mode_property)
--		goto nomem;
-+	if (num_modes) {
-+		unsigned int i;
- 
--	for (i = 0; i < num_modes; i++)
--		drm_property_add_enum(dev->mode_config.tv_mode_property,
--				      i, modes[i]);
-+		dev->mode_config.tv_mode_property =
-+			drm_property_create(dev, DRM_MODE_PROP_ENUM,
-+					    "mode", num_modes);
-+		if (!dev->mode_config.tv_mode_property)
-+			goto nomem;
++const struct drm_display_mode drm_mode_480i = {
++	DRM_MODE("720x480i", DRM_MODE_TYPE_DRIVER, 13500,
++		 720, 739, 801, 858, 0,
++		 480, 488, 494, 525, 0,
++		 DRM_MODE_FLAG_INTERLACE),
++	.picture_aspect_ratio = HDMI_PICTURE_ASPECT_4_3,
++};
++EXPORT_SYMBOL_GPL(drm_mode_480i);
 +
-+		for (i = 0; i < num_modes; i++)
-+			drm_property_add_enum(dev->mode_config.tv_mode_property,
-+					      i, modes[i]);
-+	}
++const struct drm_display_mode drm_mode_576i = {
++	DRM_MODE("720x576i", DRM_MODE_TYPE_DRIVER, 13500,
++		 720, 732, 795, 864, 0,
++		 576, 580, 586, 625, 0,
++		 DRM_MODE_FLAG_INTERLACE),
++	.picture_aspect_ratio = HDMI_PICTURE_ASPECT_4_3,
++};
++EXPORT_SYMBOL_GPL(drm_mode_576i);
++
+ /**
+  * drm_mode_debug_printmodeline - print a mode to dmesg
+  * @mode: mode to print
+diff --git a/drivers/gpu/drm/meson/meson_encoder_cvbs.c b/drivers/gpu/drm/meson/meson_encoder_cvbs.c
+index 8110a6e39320..98ec3e563155 100644
+--- a/drivers/gpu/drm/meson/meson_encoder_cvbs.c
++++ b/drivers/gpu/drm/meson/meson_encoder_cvbs.c
+@@ -45,21 +45,11 @@ struct meson_encoder_cvbs {
+ struct meson_cvbs_mode meson_cvbs_modes[MESON_CVBS_MODES_COUNT] = {
+ 	{ /* PAL */
+ 		.enci = &meson_cvbs_enci_pal,
+-		.mode = {
+-			DRM_MODE("720x576i", DRM_MODE_TYPE_DRIVER, 13500,
+-				 720, 732, 795, 864, 0, 576, 580, 586, 625, 0,
+-				 DRM_MODE_FLAG_INTERLACE),
+-			.picture_aspect_ratio = HDMI_PICTURE_ASPECT_4_3,
+-		},
++		.mode = &drm_mode_576i,
+ 	},
+ 	{ /* NTSC */
+ 		.enci = &meson_cvbs_enci_ntsc,
+-		.mode = {
+-			DRM_MODE("720x480i", DRM_MODE_TYPE_DRIVER, 13500,
+-				720, 739, 801, 858, 0, 480, 488, 494, 525, 0,
+-				DRM_MODE_FLAG_INTERLACE),
+-			.picture_aspect_ratio = HDMI_PICTURE_ASPECT_4_3,
+-		},
++		.mode = &drm_mode_480i,
+ 	},
+ };
  
- 	dev->mode_config.tv_brightness_property =
- 		drm_property_create_range(dev, 0, "brightness", 0, 100);
+@@ -71,7 +61,7 @@ meson_cvbs_get_mode(const struct drm_display_mode *req_mode)
+ 	for (i = 0; i < MESON_CVBS_MODES_COUNT; ++i) {
+ 		struct meson_cvbs_mode *meson_mode = &meson_cvbs_modes[i];
+ 
+-		if (drm_mode_match(req_mode, &meson_mode->mode,
++		if (drm_mode_match(req_mode, meson_mode->mode,
+ 				   DRM_MODE_MATCH_TIMINGS |
+ 				   DRM_MODE_MATCH_CLOCK |
+ 				   DRM_MODE_MATCH_FLAGS |
+@@ -104,7 +94,7 @@ static int meson_encoder_cvbs_get_modes(struct drm_bridge *bridge,
+ 	for (i = 0; i < MESON_CVBS_MODES_COUNT; ++i) {
+ 		struct meson_cvbs_mode *meson_mode = &meson_cvbs_modes[i];
+ 
+-		mode = drm_mode_duplicate(priv->drm, &meson_mode->mode);
++		mode = drm_mode_duplicate(priv->drm, meson_mode->mode);
+ 		if (!mode) {
+ 			dev_err(priv->dev, "Failed to create a new display mode\n");
+ 			return 0;
+diff --git a/drivers/gpu/drm/meson/meson_encoder_cvbs.h b/drivers/gpu/drm/meson/meson_encoder_cvbs.h
+index 61d9d183ce7f..26cefb202924 100644
+--- a/drivers/gpu/drm/meson/meson_encoder_cvbs.h
++++ b/drivers/gpu/drm/meson/meson_encoder_cvbs.h
+@@ -16,7 +16,7 @@
+ 
+ struct meson_cvbs_mode {
+ 	struct meson_cvbs_enci_mode *enci;
+-	struct drm_display_mode mode;
++	const struct drm_display_mode *mode;
+ };
+ 
+ #define MESON_CVBS_MODES_COUNT	2
+diff --git a/include/drm/drm_modes.h b/include/drm/drm_modes.h
+index a80ae9639e96..b4a440e2688c 100644
+--- a/include/drm/drm_modes.h
++++ b/include/drm/drm_modes.h
+@@ -394,6 +394,9 @@ struct drm_display_mode {
+ 
+ };
+ 
++extern const struct drm_display_mode drm_mode_480i;
++extern const struct drm_display_mode drm_mode_576i;
++
+ /**
+  * DRM_MODE_FMT - printf string for &struct drm_display_mode
+  */
 
 -- 
 b4 0.10.0-dev-49460
