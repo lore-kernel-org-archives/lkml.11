@@ -2,334 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 170F9C19F2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 08:48:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AEEAC19F2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 08:49:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235166AbiG2Is5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 04:48:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55874 "EHLO
+        id S235224AbiG2Its (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 04:49:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234622AbiG2Isw (ORCPT
+        with ESMTP id S234622AbiG2Itq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 04:48:52 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18F0080F47
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 01:48:51 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id q16so3516293pgq.6
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 01:48:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wgsqotyBOfZqy1W9KnKshpP046wKgYKrPJ2KCRawRzE=;
-        b=eGPLof6qAfDzxFOJCPcERm02FQ+hj43MXgSOA6Ib/cVIE6lu6+uuejwvmd+uTGGMaI
-         NXP29LbjnKT6uafpFas6wGtB6lOj9E1GTWjcrsoQhNNNboO/uiZcxyundIAZuqvmuDr1
-         lxHuk00U8pogYQYNq5AJUiwFuKah5ptzPaFLukmGtzBJQxTPQMyJUuhoBMnCDDUTYK1V
-         28ncmf/J4Y24KtF0XNMFwq9JPU/7JKTtMUyaaITcXMCD/1X4DnJ4+BfqJSn7o+SN0e7x
-         36GxhqbdLI9dLoSlUqIBlY0Gf9gIj4ZkEtzDMfVQ2VprMmKrI/zsNSoa39htsm9RyQl3
-         XAbw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wgsqotyBOfZqy1W9KnKshpP046wKgYKrPJ2KCRawRzE=;
-        b=dn6burl6ggnTd6Dv7Smcq2SiYUT0mDCcp+do6LOaJzvHLuY7vCMmTB0wnjPf5v6BhZ
-         XuLbzweKSlo8eVgTwU//FEd06RMSAhE+l8NQN9kkndlMjOruv+YV78M2sTjmls0I+v92
-         iqgH2CT1qsAQriWBpwcrru4cSlGMzobFecnFS0F9dgFdEgmUwN+QE51+YfcfT6b5uvuG
-         pjRW9tdKwPW3ZjcAZ2TsJQAZylkS3qNBz45oXunDjGS89QvEZYXGk/d2y2hzwumz3d0R
-         wVu0unFgh272OOg3oFHkbz0u5zhTPzHad7mpG7kGf2wqHmzEka6XaPPWOcZX54j92iR5
-         KgXg==
-X-Gm-Message-State: AJIora/iN7Vph66km/XWQLmZBa/5k7gT6qq2EaV3DjZZ2iR5sw3GNx81
-        j08zeyTd7y75/0a8VSXW4FpZ0Ywm4LEi
-X-Google-Smtp-Source: AGRyM1tBddUjXNgNbie6OEGtgEB6z3OWa8S/Kr55dyHPzFPfG534mZPHiB4LDG2Y83J+mxIXAPujrw==
-X-Received: by 2002:a63:d14b:0:b0:419:57b9:d444 with SMTP id c11-20020a63d14b000000b0041957b9d444mr2129847pgj.619.1659084530521;
-        Fri, 29 Jul 2022 01:48:50 -0700 (PDT)
-Received: from localhost.localdomain ([120.239.75.76])
-        by smtp.gmail.com with ESMTPSA id w13-20020aa79a0d000000b0052b36de51cdsm2231977pfj.111.2022.07.29.01.48.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Jul 2022 01:48:50 -0700 (PDT)
-From:   Mingyi Kang <jerrykang026@gmail.com>
-To:     gregkh@linuxfoundation.org, martyn@welchs.me.uk,
-        manohar.vanga@gmail.com, linux-kernel@vger.kernel.org,
-        linux-staging@lists.linux.dev
-Cc:     Mingyi Kang <jerrykang026@gmail.com>
-Subject: [PATCH] staging: vme_user: Put quoted string in a single line
-Date:   Fri, 29 Jul 2022 16:48:06 +0800
-Message-Id: <20220729084806.22479-1-jerrykang026@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 29 Jul 2022 04:49:46 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CECD677A5D;
+        Fri, 29 Jul 2022 01:49:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659084585; x=1690620585;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=fKTCNCY3yUBltG+96gLo8Nmj+3drJD5/kMapSzBWqjk=;
+  b=kXcCp2rw+Y/6JzqD0gPg9iwxfxu74rHAE1sM20jA32BtI1OxsM40fgLt
+   +CNQcq0iOtAIRXVHAHUwo1LwUBKqwOLd91G1/2HTRVw7uLbYzwyVH464S
+   qd0hHVfpgvmf5JDDdLrWoNIV1l3/LqDRKCon9sOO5yyR18qIS4evfH+sr
+   6NltFJy26BKRvGPvRDOzcdSIVDxhCKHxrzykVjI1u4l+wYYyldAPQyqNZ
+   uC1TEEqx3/JSNJg7m86GM4p3dyNL489Sn3y/9iys0CRAS1hmae9stKvzq
+   NMAszfY/VjkCipkj1mxbjFzNfKv9JEs3KU/aVDvhnWWxmtaYW/bGB4hVf
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10422"; a="275610155"
+X-IronPort-AV: E=Sophos;i="5.93,200,1654585200"; 
+   d="scan'208";a="275610155"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2022 01:49:44 -0700
+X-IronPort-AV: E=Sophos;i="5.93,200,1654585200"; 
+   d="scan'208";a="629299371"
+Received: from ahunter6-mobl1.ger.corp.intel.com (HELO [10.0.2.15]) ([10.252.46.142])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2022 01:49:42 -0700
+Message-ID: <c297fc36-5d0e-6c89-af4a-0d63977811c4@intel.com>
+Date:   Fri, 29 Jul 2022 11:49:40 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.11.0
+Subject: Re: [PATCH V1 1/1] mmc:sdhci-pci-o2micro:fix some SD cards
+ compatibility issue at ddr50 mode
+Content-Language: en-US
+To:     Chevron Li <chevron.li@bayhubtech.com>, ulf.hansson@linaro.org,
+        linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     shaper.liu@bayhubtech.com, shirley.her@bayhubtech.com,
+        xiaoguang.yu@bayhubtech.com
+References: <20220727033123.304-1-chevron.li@bayhubtech.com>
+From:   Adrian Hunter <adrian.hunter@intel.com>
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
+ Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+In-Reply-To: <20220727033123.304-1-chevron.li@bayhubtech.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch resolves the follwing checkpatch warnings:
+On 27/07/22 06:31, Chevron Li wrote:
+> Bayhub chips have better compatibility support for sdr50 than ddr50
 
-WARNING: quoted string split across lines
-+			dev_err(tsi148_bridge->parent, "VME Mailbox %d received"
-+				": 0x%x\n", i, val);
+Upper case would be better for SDR50 and DDR50
 
-WARNING: quoted string split across lines
-+	dev_err(tsi148_bridge->parent, "PCI Exception at address: 0x%08x:%08x, "
-+		"attributes: %08x\n",
+> and both mode have the same R/W performance.
 
-WARNING: quoted string split across lines
-+	dev_err(tsi148_bridge->parent, "PCI-X attribute reg: %08x, PCI-X split "
-+		"completion reg: %08x\n",
+Only if the max frequency is 100 MHz.  Is that always the case?
 
-WARNING: quoted string split across lines
-+		dev_err(tsi148_bridge->parent, "VME Bus Exception Overflow "
-+			"Occurred\n");
+Perhaps comment on that in the commit message.
 
-WARNING: quoted string split across lines
-+		dev_err(tsi148_bridge->parent, "Can't get assigned pci irq "
-+			"vector %02X\n", pdev->irq);
+> Disable ddr50 mode and use sdr50 instead.
 
-WARNING: quoted string split across lines
-+		dev_err(tsi148_bridge->parent, "Failed to allocate mem "
-+			"resource for window %d size 0x%lx start 0x%lx\n",
+Upper case would be better for SDR50 and DDR50
 
-WARNING: quoted string split across lines
-+		dev_err(tsi148_bridge->parent, "Invalid VME Window "
-+			"alignment\n");
-WARNING: quoted string split across lines
-+		dev_err(tsi148_bridge->parent, "Size must be non-zero for "
-+			"enabled windows\n");
+> 
+> Signed-off-by: Chevron Li<chevron.li@bayhubtech.com>
 
-WARNING: quoted string split across lines
-+		dev_err(tsi148_bridge->parent, "Unable to allocate memory for "
-+			"resource\n");
+For neatness, a space before "<" above would be better, and
+also a space after ":" in the subject
 
-WARNING: quoted string split across lines
-+		dev_err(tsi148_bridge->parent, "Invalid VME Offset "
-+			"alignment\n");
-
-WARNING: quoted string split across lines
-+		dev_warn(tsi148_bridge->parent, "Currently not setting "
-+			"Broadcast Select Registers\n");
-
-WARNING: quoted string split across lines
-+		dev_err(dev, "Currently not setting Broadcast Select "
-+			"Registers\n");
-
-WARNING: quoted string split across lines
-+		dev_err(dev, "Currently not setting Broadcast Select "
-+			"Registers\n");
-
-WARNING: quoted string split across lines
-+		dev_err(tsi148_bridge->parent, "Descriptor not aligned to 8 "
-+			"byte boundary as required: %p\n",
-
-warning: quoted string split across lines
-+			dev_err(tsi148_bridge->parent, "location monitor "
-+				"callback attached, can't reset\n");
-
-WARNING: quoted string split across lines
-+		dev_err(tsi148_bridge->parent, "Location monitor not properly "
-+			"configured\n");
-
-WARNING: quoted string split across lines
-+		dev_err(tsi148_bridge->parent, "Failed to allocate memory for "
-+			"CR/CSR image\n");
-
-WARNING: quoted string split across lines
-+			dev_err(tsi148_bridge->parent, "Configuring flush image"
-+				" failed\n");
-
-Signed-off-by: Mingyi Kang <jerrykang026@gmail.com>
----
- drivers/staging/vme_user/vme_tsi148.c | 57 +++++++++------------------
- 1 file changed, 19 insertions(+), 38 deletions(-)
-
-diff --git a/drivers/staging/vme_user/vme_tsi148.c b/drivers/staging/vme_user/vme_tsi148.c
-index 956476213241..40bb432861c8 100644
---- a/drivers/staging/vme_user/vme_tsi148.c
-+++ b/drivers/staging/vme_user/vme_tsi148.c
-@@ -125,8 +125,7 @@ static u32 tsi148_MB_irqhandler(struct vme_bridge *tsi148_bridge, u32 stat)
- 	for (i = 0; i < 4; i++) {
- 		if (stat & TSI148_LCSR_INTS_MBS[i]) {
- 			val = ioread32be(bridge->base +	TSI148_GCSR_MBOX[i]);
--			dev_err(tsi148_bridge->parent, "VME Mailbox %d received"
--				": 0x%x\n", i, val);
-+			dev_err(tsi148_bridge->parent, "VME Mailbox %d received: 0x%x\n", i, val);
- 			serviced |= TSI148_LCSR_INTC_MBC[i];
- 		}
- 	}
-@@ -143,14 +142,12 @@ static u32 tsi148_PERR_irqhandler(struct vme_bridge *tsi148_bridge)
- 
- 	bridge = tsi148_bridge->driver_priv;
- 
--	dev_err(tsi148_bridge->parent, "PCI Exception at address: 0x%08x:%08x, "
--		"attributes: %08x\n",
-+	dev_err(tsi148_bridge->parent, "PCI Exception at address: 0x%08x:%08x, attributes: %08x\n",
- 		ioread32be(bridge->base + TSI148_LCSR_EDPAU),
- 		ioread32be(bridge->base + TSI148_LCSR_EDPAL),
- 		ioread32be(bridge->base + TSI148_LCSR_EDPAT));
- 
--	dev_err(tsi148_bridge->parent, "PCI-X attribute reg: %08x, PCI-X split "
--		"completion reg: %08x\n",
-+	dev_err(tsi148_bridge->parent, "PCI-X attribute reg: %08x, PCI-X split completion reg: %08x\n",
- 		ioread32be(bridge->base + TSI148_LCSR_EDPXA),
- 		ioread32be(bridge->base + TSI148_LCSR_EDPXS));
- 
-@@ -181,8 +178,7 @@ static u32 tsi148_VERR_irqhandler(struct vme_bridge *tsi148_bridge)
- 
- 	/* Check for exception register overflow (we have lost error data) */
- 	if (error_attrib & TSI148_LCSR_VEAT_VEOF) {
--		dev_err(tsi148_bridge->parent, "VME Bus Exception Overflow "
--			"Occurred\n");
-+		dev_err(tsi148_bridge->parent, "VME Bus Exception Overflow Occurred\n");
- 	}
- 
- 	if (err_chk)
-@@ -317,8 +313,7 @@ static int tsi148_irq_init(struct vme_bridge *tsi148_bridge)
- 			     IRQF_SHARED,
- 			     driver_name, tsi148_bridge);
- 	if (result) {
--		dev_err(tsi148_bridge->parent, "Can't get assigned pci irq "
--			"vector %02X\n", pdev->irq);
-+		dev_err(tsi148_bridge->parent, "Can't get assigned pci irq vector %02X\n", pdev->irq);
- 		return result;
- 	}
- 
-@@ -529,8 +524,7 @@ static int tsi148_slave_set(struct vme_slave_resource *image, int enabled,
- 		return -EINVAL;
- 	}
- 	if (pci_offset_low & (granularity - 1)) {
--		dev_err(tsi148_bridge->parent, "Invalid PCI Offset "
--			"alignment\n");
-+		dev_err(tsi148_bridge->parent, "Invalid PCI Offset alignment\n");
- 		return -EINVAL;
- 	}
- 
-@@ -762,8 +756,7 @@ static int tsi148_alloc_resource(struct vme_master_resource *image,
- 		&image->bus_resource, size, 0x10000, PCIBIOS_MIN_MEM,
- 		0, NULL, NULL);
- 	if (retval) {
--		dev_err(tsi148_bridge->parent, "Failed to allocate mem "
--			"resource for window %d size 0x%lx start 0x%lx\n",
-+		dev_err(tsi148_bridge->parent, "Failed to allocate mem resource for window %d size 0x%lx start 0x%lx\n",
- 			image->number, (unsigned long)size,
- 			(unsigned long)image->bus_resource.start);
- 		goto err_resource;
-@@ -827,15 +820,13 @@ static int tsi148_master_set(struct vme_master_resource *image, int enabled,
- 
- 	/* Verify input data */
- 	if (vme_base & 0xFFFF) {
--		dev_err(tsi148_bridge->parent, "Invalid VME Window "
--			"alignment\n");
-+		dev_err(tsi148_bridge->parent, "Invalid VME Window alignment\n");
- 		retval = -EINVAL;
- 		goto err_window;
- 	}
- 
- 	if ((size == 0) && (enabled != 0)) {
--		dev_err(tsi148_bridge->parent, "Size must be non-zero for "
--			"enabled windows\n");
-+		dev_err(tsi148_bridge->parent, "Size must be non-zero for enabled windows\n");
- 		retval = -EINVAL;
- 		goto err_window;
- 	}
-@@ -849,8 +840,7 @@ static int tsi148_master_set(struct vme_master_resource *image, int enabled,
- 	retval = tsi148_alloc_resource(image, size);
- 	if (retval) {
- 		spin_unlock(&image->lock);
--		dev_err(tsi148_bridge->parent, "Unable to allocate memory for "
--			"resource\n");
-+		dev_err(tsi148_bridge->parent, "Unable to allocate memory for resource\n");
- 		goto err_res;
- 	}
- 
-@@ -890,8 +880,7 @@ static int tsi148_master_set(struct vme_master_resource *image, int enabled,
- 	}
- 	if (vme_offset_low & 0xFFFF) {
- 		spin_unlock(&image->lock);
--		dev_err(tsi148_bridge->parent, "Invalid VME Offset "
--			"alignment\n");
-+		dev_err(tsi148_bridge->parent, "Invalid VME Offset alignment\n");
- 		retval = -EINVAL;
- 		goto err_gran;
- 	}
-@@ -937,8 +926,7 @@ static int tsi148_master_set(struct vme_master_resource *image, int enabled,
- 		temp_ctl |= TSI148_LCSR_OTAT_TM_2eSST;
- 	}
- 	if (cycle & VME_2eSSTB) {
--		dev_warn(tsi148_bridge->parent, "Currently not setting "
--			"Broadcast Select Registers\n");
-+		dev_warn(tsi148_bridge->parent, "Currently not setting Broadcast Select Registers\n");
- 		temp_ctl &= ~TSI148_LCSR_OTAT_TM_M;
- 		temp_ctl |= TSI148_LCSR_OTAT_TM_2eSSTB;
- 	}
-@@ -1451,8 +1439,7 @@ static int tsi148_dma_set_vme_src_attributes(struct device *dev, __be32 *attr,
- 		val |= TSI148_LCSR_DSAT_TM_2eSST;
- 
- 	if (cycle & VME_2eSSTB) {
--		dev_err(dev, "Currently not setting Broadcast Select "
--			"Registers\n");
-+		dev_err(dev, "Currently not setting Broadcast Select Registers\n");
- 		val |= TSI148_LCSR_DSAT_TM_2eSSTB;
- 	}
- 
-@@ -1550,8 +1537,7 @@ static int tsi148_dma_set_vme_dest_attributes(struct device *dev, __be32 *attr,
- 		val |= TSI148_LCSR_DDAT_TM_2eSST;
- 
- 	if (cycle & VME_2eSSTB) {
--		dev_err(dev, "Currently not setting Broadcast Select "
--			"Registers\n");
-+		dev_err(dev, "Currently not setting Broadcast Select Registers\n");
- 		val |= TSI148_LCSR_DDAT_TM_2eSSTB;
- 	}
- 
-@@ -1639,8 +1625,7 @@ static int tsi148_dma_list_add(struct vme_dma_list *list,
- 
- 	/* Test descriptor alignment */
- 	if ((unsigned long)&entry->descriptor & 0x7) {
--		dev_err(tsi148_bridge->parent, "Descriptor not aligned to 8 "
--			"byte boundary as required: %p\n",
-+		dev_err(tsi148_bridge->parent, "Descriptor not aligned to 8 byte boundary as required: %p\n",
- 			&entry->descriptor);
- 		retval = -EINVAL;
- 		goto err_align;
-@@ -1935,8 +1920,7 @@ static int tsi148_lm_set(struct vme_lm_resource *lm, unsigned long long lm_base,
- 	for (i = 0; i < lm->monitors; i++) {
- 		if (bridge->lm_callback[i]) {
- 			mutex_unlock(&lm->mtx);
--			dev_err(tsi148_bridge->parent, "Location monitor "
--				"callback attached, can't reset\n");
-+			dev_err(tsi148_bridge->parent, "Location monitor callback attached, can't reset\n");
- 			return -EBUSY;
- 		}
- 	}
-@@ -2051,8 +2035,7 @@ static int tsi148_lm_attach(struct vme_lm_resource *lm, int monitor,
- 	lm_ctl = ioread32be(bridge->base + TSI148_LCSR_LMAT);
- 	if ((lm_ctl & (TSI148_LCSR_LMAT_PGM | TSI148_LCSR_LMAT_DATA)) == 0) {
- 		mutex_unlock(&lm->mtx);
--		dev_err(tsi148_bridge->parent, "Location monitor not properly "
--			"configured\n");
-+		dev_err(tsi148_bridge->parent, "Location monitor not properly configured\n");
- 		return -EINVAL;
- 	}
- 
-@@ -2196,8 +2179,7 @@ static int tsi148_crcsr_init(struct vme_bridge *tsi148_bridge,
- 						  VME_CRCSR_BUF_SIZE,
- 						  &bridge->crcsr_bus, GFP_KERNEL);
- 	if (!bridge->crcsr_kernel) {
--		dev_err(tsi148_bridge->parent, "Failed to allocate memory for "
--			"CR/CSR image\n");
-+		dev_err(tsi148_bridge->parent, "Failed to allocate memory for CR/CSR image\n");
- 		return -ENOMEM;
- 	}
- 
-@@ -2237,8 +2219,7 @@ static int tsi148_crcsr_init(struct vme_bridge *tsi148_bridge,
- 			(vstat * 0x80000), 0x80000, VME_CRCSR, VME_SCT,
- 			VME_D16);
- 		if (retval)
--			dev_err(tsi148_bridge->parent, "Configuring flush image"
--				" failed\n");
-+			dev_err(tsi148_bridge->parent, "Configuring flush image failed\n");
- 	}
- 
- 	return 0;
--- 
-2.25.1
+> ---
+> Changes on V1:
+> 1.Set quirks2 flag SDHCI_QUIRK2_BROKEN_DDR50 for bayhub chips.
+> 2.Use bayhub hardware input tuning for SDR50 mode instead of standard tuning flow.
+> ---
+>  drivers/mmc/host/sdhci-pci-o2micro.c | 7 +++++--
+>  1 file changed, 5 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/mmc/host/sdhci-pci-o2micro.c b/drivers/mmc/host/sdhci-pci-o2micro.c
+> index 0d4d343dbb77..ad457cd9cbaa 100644
+> --- a/drivers/mmc/host/sdhci-pci-o2micro.c
+> +++ b/drivers/mmc/host/sdhci-pci-o2micro.c
+> @@ -317,11 +317,12 @@ static int sdhci_o2_execute_tuning(struct mmc_host *mmc, u32 opcode)
+>  	u32 reg_val;
+>  
+>  	/*
+> -	 * This handler only implements the eMMC tuning that is specific to
+> +	 * This handler implements the hardware tuning that is specific to
+>  	 * this controller.  Fall back to the standard method for other TIMING.
+>  	 */
+>  	if ((host->timing != MMC_TIMING_MMC_HS200) &&
+> -		(host->timing != MMC_TIMING_UHS_SDR104))
+> +		(host->timing != MMC_TIMING_UHS_SDR104) &&
+> +		(host->timing != MMC_TIMING_UHS_SDR50))
+>  		return sdhci_execute_tuning(mmc, opcode);
+>  
+>  	if (WARN_ON((opcode != MMC_SEND_TUNING_BLOCK_HS200) &&
+> @@ -631,6 +632,8 @@ static int sdhci_pci_o2_probe_slot(struct sdhci_pci_slot *slot)
+>  		if (reg & 0x1)
+>  			host->quirks |= SDHCI_QUIRK_MULTIBLOCK_READ_ACMD12;
+>  
+> +		host->quirks2 |= SDHCI_QUIRK2_BROKEN_DDR50;
+> +
+>  		sdhci_pci_o2_enable_msi(chip, host);
+>  
+>  		if (chip->pdev->device == PCI_DEVICE_ID_O2_SEABIRD0) {
+> 
+> base-commit: 68e77ffbfd06ae3ef8f2abf1c3b971383c866983
 
