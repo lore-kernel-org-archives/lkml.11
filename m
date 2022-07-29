@@ -2,116 +2,254 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EC22C00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 15:18:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E8EDC00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 15:18:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236814AbiG2PSZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 11:18:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45106 "EHLO
+        id S236632AbiG2PSe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 11:18:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230063AbiG2PSS (ORCPT
+        with ESMTP id S237092AbiG2PSU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 11:18:18 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A491A459B6;
-        Fri, 29 Jul 2022 08:18:17 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id l23so9082186ejr.5;
-        Fri, 29 Jul 2022 08:18:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=m+O4lYrHKgUVBwG7qSHfHs7iGGU+8cpiows8bQnp47A=;
-        b=iveYsw9mfb3TzlP217SkKdM8vhrxKjUYrNfzgYbuYBUXSGtrXzXcXsNxrjWQOWj8lF
-         pk4i1Y1W3nMdxvvxLqvuwLn3ExoJdomPX4ptRDy6molLoNo3afguxqLSuIKyfdFaw7dN
-         21wXn65Hi2DRNdStp4I9KcH0pkYh/QUpj8Yi6oJ3ZBkGvPHDO3jNHm/Hf75xAz+5/75c
-         XTPAzEirzqP333zWg7zi4N+PTpIQzHMw8AiwVonscJzWPRN1HV6zup32hSIzeDy00iEN
-         YHSdpEdKKdQphUiUeC+tDxTymqeN9geL4w82qSMt+SiYyxo2IGE4FgTbIONM5GtYqd4C
-         hDjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=m+O4lYrHKgUVBwG7qSHfHs7iGGU+8cpiows8bQnp47A=;
-        b=20z88Uc47dgOYIDaGCztv7SMscZp4n7fMs6JV+BlstWMQS0qFisK442iI8d7lCJ12T
-         pqOsjKHgeQ9N785u8FGk3Pz8vd9zXsFpALEplO/GOfBj5KBFEvwLFrMm+v1WpuSo/eO4
-         ArmMx7fzI46wRR0N0XJFYf0UPaedEqBc18LCpv7GOMgwl+oFYk0PjDyRi1p/fZ66lk3Y
-         VPYAaunoCZA4/mccGohI5liGaz+Vor39RlxlHH58VBYjWHZWep/ULNrLO8hpwVXHVWtZ
-         K4aKDAga1SKXPSRvAujzuIyApZT0LnzrMaYWez1FSW/LMR5Y/g4ToN9jmsW6IU0CxYy3
-         GrnA==
-X-Gm-Message-State: AJIora8oACBawbQlRzIGD541VLgo2IL7GTkDe+HBmnn2dor/vCh7iJFo
-        YsOjp4hMJoM5BoaAQBZBgx0f7gxXNObTvxXc7M2o/zLFZIU=
-X-Google-Smtp-Source: AGRyM1vvb6+mchGfXjJRTp1+ZGCw0IVKg00+3XBmmlF9Pb4aCHqrZLOxWAB0WyiGzDvJXgA99OQomfsv0OGHwMOaoTw=
-X-Received: by 2002:a17:907:2722:b0:72b:735a:d3b4 with SMTP id
- d2-20020a170907272200b0072b735ad3b4mr3180478ejl.363.1659107895813; Fri, 29
- Jul 2022 08:18:15 -0700 (PDT)
+        Fri, 29 Jul 2022 11:18:20 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12E83820E0;
+        Fri, 29 Jul 2022 08:18:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1659107898; x=1690643898;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=v2vkp0VgcYELO7alefVTwDXvmUx4EHSuC1lz4h1SOaE=;
+  b=CB0agdPzwkp+yiFN4w6Q67859dAkiStnNFTI8BHzsV7a3PbPaKAI6PKz
+   Azhr0dTgHcJctYt5MwcV1KXHHd9QUxvgg7E9v6RU2TUAWW6Y8o7UlhWnI
+   xbWCFLV/N45f+zjt+8dXx82vbk9Fs/d5mTNnKAkuQN5CXfGKe87d5oqDP
+   fqR6LVeY452e2NNVT9YIzljYneD+Us70Szkv1Kl96ti+Nme6bA8zU39Vy
+   m1V2pbYy73439TBg5SQZoiawyX0TV5q+yI4K5f0et9RdV+7uinXfNDLoK
+   /Jo8eS1NdKuZAg3DfSuV1Jx5zgERX9SccY1EIDyRv1CzmuKRaKiWlaS/h
+   A==;
+X-IronPort-AV: E=Sophos;i="5.93,201,1654585200"; 
+   d="scan'208";a="174336074"
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 29 Jul 2022 08:18:17 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Fri, 29 Jul 2022 08:18:13 -0700
+Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Fri, 29 Jul 2022 08:18:03 -0700
+From:   Arun Ramadoss <arun.ramadoss@microchip.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     Woojung Huh <woojung.huh@microchip.com>,
+        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Russell King" <linux@armlinux.org.uk>
+Subject: [Patch RFC net-next 1/4] net: dsa: microchip: modify vlan_add function prototype
+Date:   Fri, 29 Jul 2022 20:47:30 +0530
+Message-ID: <20220729151733.6032-2-arun.ramadoss@microchip.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220729151733.6032-1-arun.ramadoss@microchip.com>
+References: <20220729151733.6032-1-arun.ramadoss@microchip.com>
 MIME-Version: 1.0
-References: <20220728190810.1290857-1-robh@kernel.org> <CABb+yY2jV7c8oX7=F=nocfvGrOMHJAYov7zS2nT0=qFoNyoxJQ@mail.gmail.com>
- <CABb+yY0JzztBB+giBu+RCt-dzgwYWF32sCR3WKKP9U5K9UvhxA@mail.gmail.com> <20220729111051.5me4vklrzskvsj4w@bogus>
-In-Reply-To: <20220729111051.5me4vklrzskvsj4w@bogus>
-From:   Jassi Brar <jassisinghbrar@gmail.com>
-Date:   Fri, 29 Jul 2022 10:18:04 -0500
-Message-ID: <CABb+yY1=cppy9QAN=cLWmhvmYrQ5QpY5adE+nRev1rVrtp-QUw@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: mailbox: arm,mhu: Make secure interrupt optional
-To:     Sudeep Holla <sudeep.holla@arm.com>
-Cc:     Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Jassi Brar <jaswinder.singh@linaro.org>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 29, 2022 at 6:10 AM Sudeep Holla <sudeep.holla@arm.com> wrote:
-> On Thu, Jul 28, 2022 at 04:07:45PM -0500, Jassi Brar wrote:
+To use the vlan_add from the function other the .port_vlan_add dsa hook,
+changed the ksz8_vlan_add and ksz9477_vlan_del function prototype which
+uses only the vlan->vid and vlan->flags.
 
-> > >
-> > I could learn why specifying secure irq isn't desirable?
-> > No non-secure client node would ask for that secure irq/channel, which
-> > will simply lay unused.
->
-> Did you mean would or wouldn't ?
->
-I mean what's written.
+Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+---
+ drivers/net/dsa/microchip/ksz8.h       |  5 ++---
+ drivers/net/dsa/microchip/ksz8795.c    | 19 +++++++++----------
+ drivers/net/dsa/microchip/ksz9477.c    | 25 ++++++++++---------------
+ drivers/net/dsa/microchip/ksz9477.h    |  4 +---
+ drivers/net/dsa/microchip/ksz_common.c |  2 +-
+ drivers/net/dsa/microchip/ksz_common.h |  4 +---
+ 6 files changed, 24 insertions(+), 35 deletions(-)
 
-> Anyways I can insert a module that requests this channel and bring down
-> the system as accessing anything configure secure from non-secure side
-> on Juno results in system hang/error.
->
-Why go to those lengths? These are already simpler options available  ;-)
-1)   while (1) ;      // preferably in some atomic context
-2)   *((int *) 0) = 0;   // you might want to iterate over offset for
-guaranteed results
-3) Slightly more work, but you also have the opportunity to erase your
-storage device
+diff --git a/drivers/net/dsa/microchip/ksz8.h b/drivers/net/dsa/microchip/ksz8.h
+index 42c50cc4d853..6529f2e2426a 100644
+--- a/drivers/net/dsa/microchip/ksz8.h
++++ b/drivers/net/dsa/microchip/ksz8.h
+@@ -38,9 +38,8 @@ int ksz8_mdb_del(struct ksz_device *dev, int port,
+ 		 const struct switchdev_obj_port_mdb *mdb, struct dsa_db db);
+ int ksz8_port_vlan_filtering(struct ksz_device *dev, int port, bool flag,
+ 			     struct netlink_ext_ack *extack);
+-int ksz8_port_vlan_add(struct ksz_device *dev, int port,
+-		       const struct switchdev_obj_port_vlan *vlan,
+-		       struct netlink_ext_ack *extack);
++int ksz8_port_vlan_add(struct ksz_device *dev, int port, u16 vlan_vid,
++		       u16 flags);
+ int ksz8_port_vlan_del(struct ksz_device *dev, int port,
+ 		       const struct switchdev_obj_port_vlan *vlan);
+ int ksz8_port_mirror_add(struct ksz_device *dev, int port,
+diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
+index c79a5128235f..5dd73e994142 100644
+--- a/drivers/net/dsa/microchip/ksz8795.c
++++ b/drivers/net/dsa/microchip/ksz8795.c
+@@ -962,11 +962,10 @@ static void ksz8_port_enable_pvid(struct ksz_device *dev, int port, bool state)
+ 	}
+ }
+ 
+-int ksz8_port_vlan_add(struct ksz_device *dev, int port,
+-		       const struct switchdev_obj_port_vlan *vlan,
+-		       struct netlink_ext_ack *extack)
++int ksz8_port_vlan_add(struct ksz_device *dev, int port, u16 vlan_vid,
++		       u16 flags)
+ {
+-	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
++	bool untagged = flags & BRIDGE_VLAN_INFO_UNTAGGED;
+ 	struct ksz_port *p = &dev->ports[port];
+ 	u16 data, new_pvid = 0;
+ 	u8 fid, member, valid;
+@@ -979,7 +978,7 @@ int ksz8_port_vlan_add(struct ksz_device *dev, int port,
+ 	 * Ignore VID 0, which is always untagged.
+ 	 * Ignore CPU port, which will always be tagged.
+ 	 */
+-	if (untagged != p->remove_tag && vlan->vid != 0 &&
++	if (untagged != p->remove_tag && vlan_vid != 0 &&
+ 	    port != dev->cpu_port) {
+ 		unsigned int vid;
+ 
+@@ -989,7 +988,7 @@ int ksz8_port_vlan_add(struct ksz_device *dev, int port,
+ 		 */
+ 		for (vid = 1; vid < dev->info->num_vlans; ++vid) {
+ 			/* Skip the VID we are going to add or reconfigure */
+-			if (vid == vlan->vid)
++			if (vid == vlan_vid)
+ 				continue;
+ 
+ 			ksz8_from_vlan(dev, dev->vlan_cache[vid].table[0],
+@@ -1002,7 +1001,7 @@ int ksz8_port_vlan_add(struct ksz_device *dev, int port,
+ 		p->remove_tag = untagged;
+ 	}
+ 
+-	ksz8_r_vlan_table(dev, vlan->vid, &data);
++	ksz8_r_vlan_table(dev, vlan_vid, &data);
+ 	ksz8_from_vlan(dev, data, &fid, &member, &valid);
+ 
+ 	/* First time to setup the VLAN entry. */
+@@ -1014,11 +1013,11 @@ int ksz8_port_vlan_add(struct ksz_device *dev, int port,
+ 	member |= BIT(port);
+ 
+ 	ksz8_to_vlan(dev, fid, member, valid, &data);
+-	ksz8_w_vlan_table(dev, vlan->vid, data);
++	ksz8_w_vlan_table(dev, vlan_vid, data);
+ 
+ 	/* change PVID */
+-	if (vlan->flags & BRIDGE_VLAN_INFO_PVID)
+-		new_pvid = vlan->vid;
++	if (flags & BRIDGE_VLAN_INFO_PVID)
++		new_pvid = vlan_vid;
+ 
+ 	if (new_pvid) {
+ 		u16 vid;
+diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
+index 4b14d80d27ed..81d24b89958b 100644
+--- a/drivers/net/dsa/microchip/ksz9477.c
++++ b/drivers/net/dsa/microchip/ksz9477.c
+@@ -370,21 +370,18 @@ int ksz9477_port_vlan_filtering(struct ksz_device *dev, int port,
+ 	return 0;
+ }
+ 
+-int ksz9477_port_vlan_add(struct ksz_device *dev, int port,
+-			  const struct switchdev_obj_port_vlan *vlan,
+-			  struct netlink_ext_ack *extack)
++int ksz9477_port_vlan_add(struct ksz_device *dev, int port, u16 vlan_vid,
++			  u16 flags)
+ {
+ 	u32 vlan_table[3];
+-	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
++	bool untagged = flags & BRIDGE_VLAN_INFO_UNTAGGED;
+ 	int err;
+ 
+-	err = ksz9477_get_vlan_table(dev, vlan->vid, vlan_table);
+-	if (err) {
+-		NL_SET_ERR_MSG_MOD(extack, "Failed to get vlan table");
++	err = ksz9477_get_vlan_table(dev, vlan_vid, vlan_table);
++	if (err)
+ 		return err;
+-	}
+ 
+-	vlan_table[0] = VLAN_VALID | (vlan->vid & VLAN_FID_M);
++	vlan_table[0] = VLAN_VALID | (vlan_vid & VLAN_FID_M);
+ 	if (untagged)
+ 		vlan_table[1] |= BIT(port);
+ 	else
+@@ -393,15 +390,13 @@ int ksz9477_port_vlan_add(struct ksz_device *dev, int port,
+ 
+ 	vlan_table[2] |= BIT(port) | BIT(dev->cpu_port);
+ 
+-	err = ksz9477_set_vlan_table(dev, vlan->vid, vlan_table);
+-	if (err) {
+-		NL_SET_ERR_MSG_MOD(extack, "Failed to set vlan table");
++	err = ksz9477_set_vlan_table(dev, vlan_vid, vlan_table);
++	if (err)
+ 		return err;
+-	}
+ 
+ 	/* change PVID */
+-	if (vlan->flags & BRIDGE_VLAN_INFO_PVID)
+-		ksz_pwrite16(dev, port, REG_PORT_DEFAULT_VID, vlan->vid);
++	if (flags & BRIDGE_VLAN_INFO_PVID)
++		ksz_pwrite16(dev, port, REG_PORT_DEFAULT_VID, vlan_vid);
+ 
+ 	return 0;
+ }
+diff --git a/drivers/net/dsa/microchip/ksz9477.h b/drivers/net/dsa/microchip/ksz9477.h
+index cd278b307b3c..30a1fff9b8ec 100644
+--- a/drivers/net/dsa/microchip/ksz9477.h
++++ b/drivers/net/dsa/microchip/ksz9477.h
+@@ -25,9 +25,7 @@ void ksz9477_freeze_mib(struct ksz_device *dev, int port, bool freeze);
+ void ksz9477_port_init_cnt(struct ksz_device *dev, int port);
+ int ksz9477_port_vlan_filtering(struct ksz_device *dev, int port,
+ 				bool flag, struct netlink_ext_ack *extack);
+-int ksz9477_port_vlan_add(struct ksz_device *dev, int port,
+-			  const struct switchdev_obj_port_vlan *vlan,
+-			  struct netlink_ext_ack *extack);
++int ksz9477_port_vlan_add(struct ksz_device *dev, int port, u16 vid, u16 flags);
+ int ksz9477_port_vlan_del(struct ksz_device *dev, int port,
+ 			  const struct switchdev_obj_port_vlan *vlan);
+ int ksz9477_port_mirror_add(struct ksz_device *dev, int port,
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index 02e58760cf7b..97dbccb065a9 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -1351,7 +1351,7 @@ static int ksz_port_vlan_add(struct dsa_switch *ds, int port,
+ 	if (!dev->dev_ops->vlan_add)
+ 		return -EOPNOTSUPP;
+ 
+-	return dev->dev_ops->vlan_add(dev, port, vlan, extack);
++	return dev->dev_ops->vlan_add(dev, port, vlan->vid, vlan->flags);
+ }
+ 
+ static int ksz_port_vlan_del(struct dsa_switch *ds, int port,
+diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
+index 764ada3a0f42..9bb378b79a94 100644
+--- a/drivers/net/dsa/microchip/ksz_common.h
++++ b/drivers/net/dsa/microchip/ksz_common.h
+@@ -267,9 +267,7 @@ struct ksz_dev_ops {
+ 	void (*r_mib_stat64)(struct ksz_device *dev, int port);
+ 	int  (*vlan_filtering)(struct ksz_device *dev, int port,
+ 			       bool flag, struct netlink_ext_ack *extack);
+-	int  (*vlan_add)(struct ksz_device *dev, int port,
+-			 const struct switchdev_obj_port_vlan *vlan,
+-			 struct netlink_ext_ack *extack);
++	int  (*vlan_add)(struct ksz_device *dev, int port, u16 vid, u16 flags);
+ 	int  (*vlan_del)(struct ksz_device *dev, int port,
+ 			 const struct switchdev_obj_port_vlan *vlan);
+ 	int (*mirror_add)(struct ksz_device *dev, int port,
+-- 
+2.36.1
 
-
-> > index f6c55877fbd94..004b1566be74d 100644
-> > --- a/arch/arm64/boot/dts/arm/juno-base.dtsi
-> > +++ b/arch/arm64/boot/dts/arm/juno-base.dtsi
-> > @@ -26,7 +26,8 @@ mailbox: mhu@2b1f0000 {
-> >         compatible = "arm,mhu", "arm,primecell";
-> >         reg = <0x0 0x2b1f0000 0x0 0x1000>;
-> >         interrupts = <GIC_SPI 36 IRQ_TYPE_LEVEL_HIGH>,
-> > -                <GIC_SPI 35 IRQ_TYPE_LEVEL_HIGH>;
-> > +                <GIC_SPI 35 IRQ_TYPE_LEVEL_HIGH>,
-> > +                <GIC_SPI 37 IRQ_TYPE_LEVEL_HIGH>;
-> >         interrupt-names = "mhu_lpri_rx",
-> >                   "mhu_hpri_rx";
-> >         #mbox-cells = <1>;
-> >
-> > If this works for you, I could submit a proper patch.
->
-> No this doesn't work IMO.
->
-If you _really_ tested and faced an error, please share it.
-
-> Yes standalone everything looks fine, but you can
-> insert a module requesting this channel and bring down the system.
->
-If anyone other than a super-user is able to do that, then you have a
-serious security problem at hand.
-If you do that as a super-user, have fun.
-
-cheers.
