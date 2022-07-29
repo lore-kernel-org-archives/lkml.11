@@ -2,99 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEA7BC00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 19:47:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 883BFC00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 19:48:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238719AbiG2Tr4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 15:47:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59866 "EHLO
+        id S238926AbiG2TsA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 15:48:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229931AbiG2Trx (ORCPT
+        with ESMTP id S229931AbiG2Tr4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 15:47:53 -0400
-Received: from wout2-smtp.messagingengine.com (wout2-smtp.messagingengine.com [64.147.123.25])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D491067586;
-        Fri, 29 Jul 2022 12:47:50 -0700 (PDT)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.west.internal (Postfix) with ESMTP id 992A0320085B;
-        Fri, 29 Jul 2022 15:47:49 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute1.internal (MEProxy); Fri, 29 Jul 2022 15:47:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dxuuu.xyz; h=cc
-        :cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :message-id:mime-version:reply-to:sender:subject:subject:to:to;
-         s=fm2; t=1659124069; x=1659210469; bh=gBa96b9MFSOKIkAQUuKyhWNI9
-        gnNQPrOWjHllrefEKQ=; b=DMw+2TH4p+EGsByQMMnfEmDk7MOAFql/S3rJLmwTi
-        HDpDD67r+CqezaXRZ5O4nfFC0E5Xfx3QY7YIjZIhGnGF+LLoFJ3T6xy7PgnO3E9x
-        uUIMY9B9xs+mYGkoGeHHBHYJcXD+lsg/JTyQquYKD6od99tJmjNBHAXy0cl6aED9
-        ZwCIPILC1vCnk4t0+eY3RdbxaEtgftrQLoqy2QjeaAYiuZkAhcAFTrvNJ00kjNaT
-        IAFBHf6+WHqTLyy+0/rZ1tmmoQbjrXFIa4cLt1BbwD1WFu3nSAsRMQqqgGteig1X
-        +94kR4xUnDhQomxw56iVQ9ao/8skkvP+7fxc+LFbV5/sA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :feedback-id:feedback-id:from:from:in-reply-to:message-id
-        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=
-        1659124069; x=1659210469; bh=gBa96b9MFSOKIkAQUuKyhWNI9gnNQPrOWjH
-        llrefEKQ=; b=1E4CKwbQ5XIjXKz36456d/ffDHyU/2IwHkMxy/1mNazZ4YvRpdU
-        A2ljIqse8I1Vx6yz77SURPN2hJeH4kC0qWCvk8FYJjrXX0elIBNLAyeqSHTiPYt5
-        UWHnX/joR8UXq1Mxvb0O9muJne0xSMrzgmRWNte5+UnOeN2S2kTu5ZrsXR4aIpWw
-        cNM6XfdGz0l1lBaaj8LnT/PeeMkvsQNTE8v1px+YNwxUzgLkJ9U7mUcw7Swjp53S
-        D/9E5Ov+Acey1lzQwZRlRCzQ8MQTOav51rS4ofTppUKzTTdPfV2LjTH6XJetHKI0
-        oQP9hpiXNSkabFVFyFkMO7WkVdZHRIJL7Jw==
-X-ME-Sender: <xms:ZDnkYvbg_5MxdkoycBIWhETxDpUnmN4KB_i4coJUf2HvI2TkXUKfNg>
-    <xme:ZDnkYubozeZg38Zo7jv2EdTU70Pjij4gBHEyEd2mjZfu5nqfK-otl8xwXnWrPGAoP
-    Ta6j0KaCWE37e6-rg>
-X-ME-Received: <xmr:ZDnkYh8mU2Qk6BYVm3k6viPSfRp_ep3iVOjeZ8PTD5mzPJ1pxbl28redj0vjfPW0tWXCXCfvzMJB>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvddujedgudegfecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecufghrlhcuvffnffculdejtddmnecujfgurhephf
-    fvvefufffkofgggfestdekredtredttdenucfhrhhomhepffgrnhhivghlucgiuhcuoegu
-    gihusegugihuuhhurdighiiiqeenucggtffrrghtthgvrhhnpedvgefgtefgleehhfeufe
-    ekuddvgfeuvdfhgeeljeduudfffffgteeuudeiieekjeenucevlhhushhtvghrufhiiigv
-    pedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegugihusegugihuuhhurdighiii
-X-ME-Proxy: <xmx:ZDnkYlqBHrdT1_g0_b7eiBGaZKtiaB7Aqh2mmYMwg4XyjTn0Z9oGmw>
-    <xmx:ZDnkYqqzb-fq00BTAYrLTtPD3RwgDL2eZ0d2iMCRBz31su013nwGNg>
-    <xmx:ZDnkYrTXmHMNDW6TCjxpKIyNvq7fKdMUFfkduHNq7eiOWKz0WhgOvg>
-    <xmx:ZTnkYjnrrblwJsKW4BtqWiq15cYh6X6FKN2swtfm8fD7TQKKPYjp1w>
-Feedback-ID: i6a694271:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 29 Jul 2022 15:47:48 -0400 (EDT)
-From:   Daniel Xu <dxu@dxuuu.xyz>
-To:     bpf@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org
-Cc:     Daniel Xu <dxu@dxuuu.xyz>, linux-kernel@vger.kernel.org
-Subject: [PATCH bpf] bpf: Fix oudated __bpf_skc_lookup() comment
-Date:   Fri, 29 Jul 2022 14:45:41 -0500
-Message-Id: <2c105a1ff3071796189093c536218e44ea3b1aa0.1659122785.git.dxu@dxuuu.xyz>
+        Fri, 29 Jul 2022 15:47:56 -0400
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 063E267586;
+        Fri, 29 Jul 2022 12:47:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=gSESq/zVK6WSQ3xcbCVSVTd/pkQVDwB+RHkhs8Ulxac=; b=gNAcLB5d5hgvc2ZzPkGFjiZVW7
+        0wze4qmrg6EMBcxInS7qXkVTjCCvh+IdzCRriHcL10eYbixF8Fqa7w/I9C07CmmJIMPxBDt7O5VHJ
+        75RVNHJd//nqO9xg5YO7UFgFbQE0GmGCv8A+gECGgvVeTpeGw3BSLBiW36dO/wStv3fsz7pxq1zAF
+        wZU9FHxDfm8wx9NyiextdgXREkwhSoz4tRJ+r26MOhdEh9xz1DgVzY/qSM/+4kSZ9KKRdvsRn3Poo
+        OPJHBOf05KYUFR+QRMLKXfLtzM7jqKM7B332IBErDQ21kEZKCnzqyZlETL3ipEjedfzqbpOsKuU3L
+        M+ikN8QQ==;
+Received: from [177.83.209.223] (helo=localhost)
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
+        id 1oHVxf-00BMHE-D5; Fri, 29 Jul 2022 21:47:54 +0200
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+To:     ardb@kernel.org, linux-efi@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, kernel-dev@igalia.com,
+        kernel@gpiccoli.net, anton@enomsg.org, ccross@android.com,
+        keescook@chromium.org, matt@codeblueprint.co.uk,
+        mjg59@srcf.ucam.org, tony.luck@intel.com,
+        "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Subject: [PATCH v2 2/3] efi: efibc: Guard against allocation failure
+Date:   Fri, 29 Jul 2022 16:45:31 -0300
+Message-Id: <20220729194532.228403-3-gpiccoli@igalia.com>
 X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220729194532.228403-1-gpiccoli@igalia.com>
+References: <20220729194532.228403-1-gpiccoli@igalia.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The function returns a pointer now.
+There is a single kmalloc in this driver, and it's not currently
+guarded against allocation failure. Do it here by just letting the
+reboot handler to proceed, in case this tentative allocation fails.
 
-Fixes: edbf8c01de5a ("bpf: add skc_lookup_tcp helper")
-Signed-off-by: Daniel Xu <dxu@dxuuu.xyz>
+Fixes: 416581e48679 ("efi: efibc: avoid efivar API for setting variables")
+Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
 ---
- net/core/filter.c | 2 --
- 1 file changed, 2 deletions(-)
 
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 5d16d66727fc..866ca05f95e0 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -6463,8 +6463,6 @@ static struct sock *sk_lookup(struct net *net, struct bpf_sock_tuple *tuple,
+Notice the sha-1 hash of the efibc patch we're fixing is from efi/next,
+might change in upstream once such patch is merged.
+Feel free to remove the fixes tag if it makes sense, no issues from me =)
+
+ drivers/firmware/efi/efibc.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/firmware/efi/efibc.c b/drivers/firmware/efi/efibc.c
+index 7e3bf60d24e0..9a8d914f91a6 100644
+--- a/drivers/firmware/efi/efibc.c
++++ b/drivers/firmware/efi/efibc.c
+@@ -48,6 +48,8 @@ static int efibc_reboot_notifier_call(struct notifier_block *notifier,
+ 		return NOTIFY_DONE;
  
- /* bpf_skc_lookup performs the core lookup for different types of sockets,
-  * taking a reference on the socket if it doesn't have the flag SOCK_RCU_FREE.
-- * Returns the socket as an 'unsigned long' to simplify the casting in the
-- * callers to satisfy BPF_CALL declarations.
-  */
- static struct sock *
- __bpf_skc_lookup(struct sk_buff *skb, struct bpf_sock_tuple *tuple, u32 len,
+ 	wdata = kmalloc(MAX_DATA_LEN * sizeof(efi_char16_t), GFP_KERNEL);
++	if (!wdata)
++		return NOTIFY_DONE;
+ 
+ 	len = efi_str8_to_str16(wdata, str, MAX_DATA_LEN - 1);
+ 
 -- 
 2.37.1
 
