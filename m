@@ -2,102 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B325C19F2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 15:06:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09C11C19F2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 15:08:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236823AbiG2PGt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 11:06:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37496 "EHLO
+        id S236626AbiG2PIG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 11:08:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230516AbiG2PGr (ORCPT
+        with ESMTP id S236038AbiG2PID (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 11:06:47 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBA6C7E812;
-        Fri, 29 Jul 2022 08:06:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659107207; x=1690643207;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=VLTg2DanJb0NwEo+jRGiYXD1Cu9WCDAEVpiydaB9dbg=;
-  b=lWpTvNcsDHQfLaFGbaOg4Bj7CG5J0q6yxUf8MbWt794A/Vlzrs9n3O4O
-   e+j1Df0VggDfDpIVhnaiPF59LnT0jyc4BMXsUE8wEieeAnaMHkT8G3lii
-   c8Czs+oJKYtIulSl4lZkODHMzbGYwMn87rfGNpdYGhGtqyl7vTHTgr+NI
-   HHp/J1QiWDUe8EGVzcAu+6Qnww5qjzo2o9zF9mndAuXznumIcpbQfZSwP
-   ZQgCw3NYybmEEoYJeORb7yFCVa/wb98QRfl+1H+37VcFMC/GwGhYIdHrn
-   xc5K+Su3o3OpofnGiqlJiwFBchlsy6RYcGfs3m0eQ86qCeslR9SpcI2ii
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10423"; a="288797737"
-X-IronPort-AV: E=Sophos;i="5.93,201,1654585200"; 
-   d="scan'208";a="288797737"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2022 08:06:46 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,201,1654585200"; 
-   d="scan'208";a="660269187"
-Received: from yilunxu-optiplex-7050.sh.intel.com (HELO localhost) ([10.239.159.165])
-  by fmsmga008.fm.intel.com with ESMTP; 29 Jul 2022 08:06:43 -0700
-Date:   Fri, 29 Jul 2022 22:57:57 +0800
-From:   Xu Yilun <yilun.xu@intel.com>
-To:     Daniel =?iso-8859-1?Q?Gl=F6ckner?= <dg@emlix.com>
-Cc:     Ivan Bornyakov <i.bornyakov@metrotek.ru>, mdf@kernel.org,
-        hao.wu@intel.com, trix@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, linux-fpga@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        system@metrotek.ru,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: Re: [PATCH v5 2/2] dt-bindings: fpga: add binding doc for ecp5-spi
-  fpga mgr
-Message-ID: <20220729145757.GA2601292@yilunxu-OptiPlex-7050>
-References: <20220719112335.9528-1-i.bornyakov@metrotek.ru>
- <20220719112335.9528-3-i.bornyakov@metrotek.ru>
- <20220729090123.GA28299@homes.emlix.com>
+        Fri, 29 Jul 2022 11:08:03 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 919AB7F525
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 08:08:02 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id p1so4839644plr.11
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 08:08:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=CvT5d2Uml4zSYK74zNGu6gfXjeWpkRQwLmz3buaPtes=;
+        b=l6Kkj/TiL0A33Ps7q+Lj2N4BqxMTHm6c5+Hf7aDbC1bWNTo5CGQj2ZGxiT31ad2qCr
+         TUvj+2uAqPqiG0ZExrrTMudERXR+yW1OgUwp8G0RWLXae1TbE9+GFJAaBZlvvwJ1Diw5
+         ca8eaU3YeTw0eQg2JxIVMBi/k0ANOBMnwD5HznKNFIZFljmw1oo5VpFTPBqHY7YgPuQ+
+         7T1xizLPeyX4MYfBYnBBoGRBnUAKWcdfOORA40WO+NGuOnZVa33RR3MxHZZiq9j1YJIL
+         VHr4FgCwpfe+nNEv/LsSJV1FVUOw2jn++bZNS6kDSRmLhX39OmkNXx/N1s+vCDXX1m+n
+         6eKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=CvT5d2Uml4zSYK74zNGu6gfXjeWpkRQwLmz3buaPtes=;
+        b=jltioXDkjZQxagc0ciuNPBwS3G74/OWVLZiPk4LBILhciRbWRVhY++SsQAuS1nD2lT
+         ei+q731QiAGsjjVYiu7FUSiXpimmNsgJWcsDZjly2W7BSF+0oI0wWsrUWJNTDPhueGtW
+         IGa/RixcAybDzgzKXUSpDIwS77BJnDqf973Pdr0a9BPyQN/XMcI1b/Rb82f/+mIOCmdW
+         PAYAimbrod4tut2yWosBD5cGBaFJY154p7g3AXZU9PtOBg1R9QCwttm6wXtrQK7OehNk
+         GCF2FNV+jWK1LwSg1VDwBDYilFIL2Ba9xVilyZWU/uHLEpB86Mx1jG1ZXqpX+uI64DqX
+         xpXQ==
+X-Gm-Message-State: ACgBeo3GEK7w4lpjijP7OBvo4ZwiaO0TXvOPIRcQgDo8B2u+xvABiyGa
+        nyf8TXDdZrq8EP/f5OMSCtzDxQ==
+X-Google-Smtp-Source: AA6agR5Wvr+L32gHkej9UgwrHzDHH7qVdbrxRlzLjnTkIDFbEIEx5UPc7lnO+jzihd9V9k4+U9eIkA==
+X-Received: by 2002:a17:902:ce05:b0:16b:e725:6f6c with SMTP id k5-20020a170902ce0500b0016be7256f6cmr4355459plg.110.1659107281282;
+        Fri, 29 Jul 2022 08:08:01 -0700 (PDT)
+Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
+        by smtp.gmail.com with ESMTPSA id b126-20020a621b84000000b0052859441ad3sm2948663pfb.214.2022.07.29.08.08.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Jul 2022 08:08:00 -0700 (PDT)
+Date:   Fri, 29 Jul 2022 15:07:56 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Kai Huang <kai.huang@intel.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Michael Roth <michael.roth@amd.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>
+Subject: Re: [PATCH 2/4] KVM: x86/mmu: Fully re-evaluate MMIO caching when
+ SPTE masks change
+Message-ID: <YuP3zGmpiALuXfW+@google.com>
+References: <20220728221759.3492539-1-seanjc@google.com>
+ <20220728221759.3492539-3-seanjc@google.com>
+ <9104e22da628fef86a6e8a02d9d2e81814a9d598.camel@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220729090123.GA28299@homes.emlix.com>
+In-Reply-To: <9104e22da628fef86a6e8a02d9d2e81814a9d598.camel@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 29, 2022 at 11:01:24AM +0200, Daniel Glöckner wrote:
-> Hi,
-> 
-> On Tue, Jul 19, 2022 at 02:23:35PM +0300, Ivan Bornyakov wrote:
-> > +properties:
-> > +  compatible:
-> > +    enum:
-> > +      - lattice,ecp5-fpga-mgr
-> 
-> Since this driver uses the same interface as the existing
-> drivers/fpga/machxo2-spi.c driver, wouldn't it be advisable to use a
-> similar compatible id, i.e. lattice,ecp5-slave-spi?
+On Fri, Jul 29, 2022, Kai Huang wrote:
+> On Thu, 2022-07-28 at 22:17 +0000, Sean Christopherson wrote:
+> > Fully re-evaluate whether or not MMIO caching can be enabled when SPTE
+> > masks change; simply clearing enable_mmio_caching when a configuration
+> > isn't compatible with caching fails to handle the scenario where the
+> > masks are updated, e.g. by VMX for EPT or by SVM to account for the C-bit
+> > location, and toggle compatibility from false=>true.
+> > 
+> > Snapshot the original module param so that re-evaluating MMIO caching
+> > preserves userspace's desire to allow caching.  Use a snapshot approach
+> > so that enable_mmio_caching still reflects KVM's actual behavior.
+> > 
 
-That's a good clue for me. I searched the machxo2 & ecp5 Programming
-Usage Guide and seems they share the similar slave SPI sysCONFIG
-interface, at least the command word tables are the same. So could we
-have a generic driver for the lattice slave SPI sysCONFIG interface,
-rather than create similar drivers for each board?
+..
 
-Thanks,
-Yilun
+> > @@ -340,6 +353,12 @@ void kvm_mmu_set_mmio_spte_mask(u64 mmio_value, u64 mmio_mask, u64 access_mask)
+> >  	BUG_ON((u64)(unsigned)access_mask != access_mask);
+> >  	WARN_ON(mmio_value & shadow_nonpresent_or_rsvd_lower_gfn_mask);
+> >  
+> > +	/*
+> > +	 * Reset to the original module param value to honor userspace's desire
+> > +	 * to (dis)allow MMIO caching.  Update the param itself so that
+> > +	 * userspace can see whether or not KVM is actually using MMIO caching.
+> > +	 */
+> > +	enable_mmio_caching = allow_mmio_caching;
+> 
+> I think the problem comes from MMIO caching mask/value are firstly set in
+> kvm_mmu_reset_all_pte_masks() (which calls kvm_mmu_set_mmio_spte_mask() and may
+> change enable_mmio_caching), and later vendor specific code _may_ or _may_not_
+> call kvm_mmu_set_mmio_spte_mask() again to adjust the mask/value.  And when it
+> does, the second call from vendor specific code shouldn't depend on the
+> 'enable_mmio_caching' value calculated in the first call in 
+> kvm_mmu_reset_all_pte_masks().
 
+Correct.
+
+> Instead of using 'allow_mmio_caching', should we just remove
+> kvm_mmu_set_mmio_spte_mask() in kvm_mmu_reset_all_pte_masks() and enforce vendor
+> specific code to always call kvm_mmu_set_mmio_spte_mask() depending on whatever
+> hardware feature the vendor uses?
+
+Hmm, I'd rather not force vendor code to duplicate the "basic" functionality.
+It's somewhat silly to preserve the common path since both SVM and VMX need to
+override it, but on the other hand those overrides are conditional.
+
+Case in point, if I'm reading the below patch correctly, svm_shadow_mmio_mask will
+be left '0' if the platform doesn't support memory encryption (svm_adjust_mmio_mask()
+will bail early).  That's a solvable problem, but then I think KVM just ends up
+punting this issue to SVM to some extent.
+
+Another flaw in the below patch is that enable_mmio_caching doesn't need to be
+tracked on a per-VM basis.  VMX with EPT can have different masks, but barring a
+massive change in KVM or hardware, there will never be a scenario where caching is
+enabled for one VM but not another.
+
+And isn't the below patch also broken for TDX?  For TDX, unless things have changed,
+the mask+value is supposed to be SUPPRES_VE==0 && RWX==0.  So either KVM is generating
+the wrong mask (MAXPHYADDR < 51), or KVM is incorrectly marking MMIO caching as disabled
+in the TDX case.
+
+Lastly, in prepration for TDX, enable_mmio_caching should be changed to key off
+of the _mask_, not the value.  E.g. for TDX, the value will be '0', but the mask
+should be SUPPRESS_VE | RWX.
+
+> I am suggesting this way because in Isaku's TDX patch
 > 
-> > +required:
-> > +  - compatible
-> > +  - reg
-> > +  - program-gpios
-> > +  - init-gpios
-> > +  - done-gpios
+> [PATCH v7 037/102] KVM: x86/mmu: Track shadow MMIO value/mask on a per-VM basis
 > 
-> I think some of the GPIOs can be made optional by reading the status
-> register or using the refresh command, assuming the slave spi interface
-> stayed enabled after previous programming and we are not dealing with
-> several chained FPGAs. But that can of course be left as an exercise for
-> other developers.
+> we will enable per-VM MMIO mask/value, which will remove global
+> shadow_mmio_mask/shadow_mmio_value, and I am already suggesting something
+> similar:
 > 
-> Best regards,
+> https://lore.kernel.org/all/20220719084737.GU1379820@ls.amr.corp.intel.com/
 > 
->   Daniel
