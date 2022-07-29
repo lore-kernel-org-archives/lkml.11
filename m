@@ -2,70 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3657DC19F2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 07:41:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 002F8C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 07:43:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234922AbiG2HlL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 03:41:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51752 "EHLO
+        id S234206AbiG2HnF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 03:43:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234154AbiG2HlJ (ORCPT
+        with ESMTP id S234154AbiG2HnD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 03:41:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC65A30F45;
-        Fri, 29 Jul 2022 00:41:07 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 747BFB826FC;
-        Fri, 29 Jul 2022 07:41:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B969C433C1;
-        Fri, 29 Jul 2022 07:41:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659080465;
-        bh=FGL1aL6A/RUi4MWxUt1uEuHn+zfgp4GeIxmcVsCw1F4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=fJ7gKeTugfJH/h3B7n7K/CEU0tl9h/jM/Ej149hPw1vYLEJ0ZjlSpxZIwDEE6e1aa
-         sG1QMS3ATbpyFb/mhLL2L2JIBqBDPAV2d18egaraTDGb31CqxjIvIXkuECBjX9KY+L
-         kOUEipqVnksAgmpdlpxnEwJA++KoIihZ2z6a2dcs=
-Date:   Fri, 29 Jul 2022 09:41:02 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Coleman Dietsch <dietschc@csp.edu>
-Cc:     kvm@vger.kernel.org, x86@kernel.org,
-        Sean Christopherson <seanjc@google.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        linux-kernel@vger.kernel.org,
-        syzbot+e54f930ed78eb0f85281@syzkaller.appspotmail.com,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        linux-kernel-mentees@lists.linuxfoundation.org
-Subject: Re: [PATCH] KVM: x86/xen: Fix bug in kvm_xen_vcpu_set_attr()
-Message-ID: <YuOPDpy+RqD09n3j@kroah.com>
-References: <20220728194736.383727-1-dietschc@csp.edu>
+        Fri, 29 Jul 2022 03:43:03 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C498630F45;
+        Fri, 29 Jul 2022 00:43:02 -0700 (PDT)
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4LvKGN2xPCz9t0j;
+        Fri, 29 Jul 2022 15:41:48 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 29 Jul 2022 15:42:50 +0800
+Received: from huawei.com (10.175.113.25) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 29 Jul
+ 2022 15:42:49 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-cifs@vger.kernel.org>
+CC:     <sprasad@microsoft.com>, <stfrench@microsoft.com>
+Subject: [PATCH -next] cifs: fix wrong unlock before return from cifs_tree_connect()
+Date:   Fri, 29 Jul 2022 15:49:35 +0800
+Message-ID: <20220729074935.115072-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220728194736.383727-1-dietschc@csp.edu>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 28, 2022 at 02:47:37PM -0500, Coleman Dietsch wrote:
-> This crash appears to be happening when vcpu->arch.xen.timer is already set and kvm_xen_init_timer(vcpu) is called.
+It should unlock 'tcon->tc_lock' before return from cifs_tree_connect().
 
-What does "this crash" refer to ?
+Fixes: fe67bd563ec2 ("cifs: avoid use of global locks for high contention data")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ fs/cifs/connect.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> 
-> During testing with the syzbot reproducer code it seemed apparent that the else if statement in the KVM_XEN_VCPU_ATTR_TYPE_TIMER switch case was not being reached, which is where the kvm_xen_stop_timer(vcpu) call is located.
+diff --git a/fs/cifs/connect.c b/fs/cifs/connect.c
+index 931d4b6fafc8..1362210f3ece 100644
+--- a/fs/cifs/connect.c
++++ b/fs/cifs/connect.c
+@@ -4583,7 +4583,7 @@ int cifs_tree_connect(const unsigned int xid, struct cifs_tcon *tcon, const stru
+ 	if (tcon->ses->ses_status != SES_GOOD ||
+ 	    (tcon->status != TID_NEW &&
+ 	    tcon->status != TID_NEED_TCON)) {
+-		spin_unlock(&tcon->ses->ses_lock);
++		spin_unlock(&tcon->tc_lock);
+ 		return 0;
+ 	}
+ 	tcon->status = TID_IN_TCON;
+-- 
+2.25.1
 
-Please properly wrap your kernel changelog at 72 columns.
-
-Didn't checkpatch.pl complain about this?
-
-thanks,
-
-greg k-h
