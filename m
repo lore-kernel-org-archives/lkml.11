@@ -2,301 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CFEEC00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 07:02:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1538C00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 07:04:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234015AbiG2HCL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 03:02:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48264 "EHLO
+        id S234334AbiG2HEE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 03:04:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234386AbiG2HBn (ORCPT
+        with ESMTP id S232907AbiG2HEB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 03:01:43 -0400
-Received: from polaris.svanheule.net (polaris.svanheule.net [IPv6:2a00:c98:2060:a004:1::200])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79D251F2E7
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 00:01:41 -0700 (PDT)
-Received: from terra.. (unknown [IPv6:2a02:a03f:eaf9:8401:aa9f:5d01:1b2a:e3cd])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        Fri, 29 Jul 2022 03:04:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71DC02F39D;
+        Fri, 29 Jul 2022 00:04:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: sander@svanheule.net)
-        by polaris.svanheule.net (Postfix) with ESMTPSA id AEC5F302C30;
-        Fri, 29 Jul 2022 09:01:34 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svanheule.net;
-        s=mail1707; t=1659078096;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=U38/SCcfeOS4YYtk9BamiWe1ZOK+KPSRSMapins/TDY=;
-        b=J67qNbqZBxZRXWfmZKdDOzgJvZ74beVOu1SVrFu4txZ2gvcJplOHzntqRYI+ucQ65D1qcH
-        LACJARL2+LxTnnaSHBTJZKBcF6Pq0uuor+B01AaIZlWjICPjBkzm00DulMtJJwVAIPoh3s
-        IkptGcyuOstNaGcVwVoNdFqyS7C2zGcLQd7ROamLrbuoR6fYRIBVeOHtNEQe1BXWqQs+ib
-        dXvmnJ41T4jkCfNhxmBvpyuuC8UGxl11jKPNvOWYcQNwMy1R6vZVFcCvDqO1cY9Ktj+51v
-        GHtakfFotiyKiUWU4UkzTnydPfDE5R6BsQDKbD3mZwQGpCzwHREz+eS+X8s0yg==
-From:   Sander Vanheule <sander@svanheule.net>
-To:     linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        David Gow <davidgow@google.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "H . Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
-        =?UTF-8?q?Ma=C3=ADra=20Canal?= <mairacanal@riseup.net>,
-        Marco Elver <elver@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Valentin Schneider <vschneid@redhat.com>,
-        Yury Norov <yury.norov@gmail.com>,
-        Sander Vanheule <sander@svanheule.net>
-Subject: [PATCH v5 4/5] lib/test: introduce cpumask KUnit test suite
-Date:   Fri, 29 Jul 2022 09:01:21 +0200
-Message-Id: <85217b5de6d62257313ad7fde3e1969421acad75.1659077534.git.sander@svanheule.net>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <cover.1659077534.git.sander@svanheule.net>
-References: <cover.1659077534.git.sander@svanheule.net>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F64861A15;
+        Fri, 29 Jul 2022 07:04:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65564C433D7;
+        Fri, 29 Jul 2022 07:03:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659078239;
+        bh=fzCBMgJfZnLfcaUhqg9JhjJadviES9eqpXWT+njnHTg=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Yyf+039YkXdBICHTs98ag+yEw6yF8QT8bAC4OODtkBlfhp67tCKgZ0MU0tvVTt3P7
+         ztzi//nINQlNfrWF/sRHa9IbEpSr8xHs3szShKGlnKD4Xz+GlZJuL2podux/40S7O2
+         rFAtudqi+0tdIV3mNkmc3BFMRyETo55M/BW1I/jdxu/k+Af2/lexXThSYjJ4HhFWtC
+         K1LXYO7FQZVrvJKw+k0j6lgO7zEU3Fyrfl8/mKhqGproj2TD3rF9LvN05xkh1zdPRr
+         YzRUBYS7UWan8d4R0g6R3WI67B3G6Br3q37o9b7fkn0Cmsmm8DwsjyZcZUbzCVg5BN
+         MYmUuL6/R7E2w==
+Received: from mchehab by mail.kernel.org with local (Exim 4.95)
+        (envelope-from <mchehab@kernel.org>)
+        id 1oHK2O-005nBq-Vd;
+        Fri, 29 Jul 2022 09:03:56 +0200
+From:   Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/2] Move TLB invalidation code for its own file and document it
+Date:   Fri, 29 Jul 2022 09:03:53 +0200
+Message-Id: <cover.1659077372.git.mchehab@kernel.org>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a basic suite of tests for cpumask, providing some tests for empty and
-completely filled cpumasks.
+There are more things to be added to TLB invalidation. Before doing that,
+move the code to its own file, and add the relevant documentation.
 
-Signed-off-by: Sander Vanheule <sander@svanheule.net>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Suggested-by: Yury Norov <yury.norov@gmail.com>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: Dave Hansen <dave.hansen@linux.intel.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: "H. Peter Anvin" <hpa@zytor.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Marco Elver <elver@google.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Valentin Schneider <vschneid@redhat.com>
-Cc: Brendan Higgins <brendanhiggins@google.com>
-Cc: David Gow <davidgow@google.com>
-Cc: Maíra Canal <mairacanal@riseup.net>
+Patch 1 only moves the code and do some function renames. No functional
+change.
+
+Patch 2 adds documentation for the TLB invalidation algorithm and functions.
+
 ---
-Changes since v4:
-- Belated addition of Yury's Suggested-by:
-- Follow KUnit style more closely
-- Drop full check on cpu_possible_mask
-- Update last check on cpu_possible_mask
-- Log masks when starting test
-- Update commit message 
-  
-Changes since v3:
-- Test for_each_cpu*() over empty mask and cpu_possible_mask
-- Add Andy's Reviewed-by
-- Use num_{online,present,possible}_cpus() for builtin masks
-- Guard against CPU hotplugging during test for dynamic builtin CPU masks
- 
-Changes since v2:
-- Rework for_each_* test macros, as suggested by Yury
 
-Changes since v1:
-- New patch
+v2: only patch 2 (kernel-doc) was modified:
 
- lib/Kconfig.debug  |  12 ++++
- lib/Makefile       |   1 +
- lib/cpumask_test.c | 147 +++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 160 insertions(+)
- create mode 100644 lib/cpumask_test.c
+  - The kernel-doc markups for TLB were added to i915.rst doc;
+  - Some minor fixes at the texts;
+  - Use a table instead of a literal block while explaining how the algorithm works.
+    That should make easier to understand the logic, both in text form and after
+    its conversion to HTML/PDF;
+  - Remove mention for GuC, as this depends on a series that will be sent later.
 
-diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-index 2e24db4bff19..e85e74646178 100644
---- a/lib/Kconfig.debug
-+++ b/lib/Kconfig.debug
-@@ -2021,6 +2021,18 @@ config LKDTM
- 	Documentation on how to use the module can be found in
- 	Documentation/fault-injection/provoke-crashes.rst
- 
-+config CPUMASK_KUNIT_TEST
-+	tristate "KUnit test for cpumask" if !KUNIT_ALL_TESTS
-+	depends on KUNIT
-+	default KUNIT_ALL_TESTS
-+	help
-+	  Enable to turn on cpumask tests, running at boot or module load time.
-+
-+	  For more information on KUnit and unit tests in general, please refer
-+	  to the KUnit documentation in Documentation/dev-tools/kunit/.
-+
-+	  If unsure, say N.
-+
- config TEST_LIST_SORT
- 	tristate "Linked list sorting test" if !KUNIT_ALL_TESTS
- 	depends on KUNIT
-diff --git a/lib/Makefile b/lib/Makefile
-index bcc7e8ea0cde..9f9db1376538 100644
---- a/lib/Makefile
-+++ b/lib/Makefile
-@@ -59,6 +59,7 @@ obj-$(CONFIG_TEST_BPF) += test_bpf.o
- obj-$(CONFIG_TEST_FIRMWARE) += test_firmware.o
- obj-$(CONFIG_TEST_BITOPS) += test_bitops.o
- CFLAGS_test_bitops.o += -Werror
-+obj-$(CONFIG_CPUMASK_KUNIT_TEST) += cpumask_test.o
- obj-$(CONFIG_TEST_SYSCTL) += test_sysctl.o
- obj-$(CONFIG_TEST_SIPHASH) += test_siphash.o
- obj-$(CONFIG_HASH_KUNIT_TEST) += test_hash.o
-diff --git a/lib/cpumask_test.c b/lib/cpumask_test.c
-new file mode 100644
-index 000000000000..0f8059a5e93b
---- /dev/null
-+++ b/lib/cpumask_test.c
-@@ -0,0 +1,147 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * KUnit tests for cpumask.
-+ *
-+ * Author: Sander Vanheule <sander@svanheule.net>
-+ */
-+
-+#include <kunit/test.h>
-+#include <linux/cpu.h>
-+#include <linux/cpumask.h>
-+
-+#define EXPECT_FOR_EACH_CPU_EQ(test, mask)			\
-+	do {							\
-+		const cpumask_t *m = (mask);			\
-+		int mask_weight = cpumask_weight(m);		\
-+		int cpu, iter = 0;				\
-+		for_each_cpu(cpu, m)				\
-+			iter++;					\
-+		KUNIT_EXPECT_EQ((test), mask_weight, iter);	\
-+	} while (0)
-+
-+#define EXPECT_FOR_EACH_CPU_NOT_EQ(test, mask)					\
-+	do {									\
-+		const cpumask_t *m = (mask);					\
-+		int mask_weight = cpumask_weight(m);				\
-+		int cpu, iter = 0;						\
-+		for_each_cpu_not(cpu, m)					\
-+			iter++;							\
-+		KUNIT_EXPECT_EQ((test), nr_cpu_ids - mask_weight, iter);	\
-+	} while (0)
-+
-+#define EXPECT_FOR_EACH_CPU_WRAP_EQ(test, mask)			\
-+	do {							\
-+		const cpumask_t *m = (mask);			\
-+		int mask_weight = cpumask_weight(m);		\
-+		int cpu, iter = 0;				\
-+		for_each_cpu_wrap(cpu, m, nr_cpu_ids / 2)	\
-+			iter++;					\
-+		KUNIT_EXPECT_EQ((test), mask_weight, iter);	\
-+	} while (0)
-+
-+#define EXPECT_FOR_EACH_CPU_BUILTIN_EQ(test, name)		\
-+	do {							\
-+		int mask_weight = num_##name##_cpus();		\
-+		int cpu, iter = 0;				\
-+		for_each_##name##_cpu(cpu)			\
-+			iter++;					\
-+		KUNIT_EXPECT_EQ((test), mask_weight, iter);	\
-+	} while (0)
-+
-+static cpumask_t mask_empty;
-+static cpumask_t mask_all;
-+
-+#define STR_MASK(m)			#m
-+#define TEST_CPUMASK_PRINT(test, mask)	\
-+	kunit_info(test, "%s = '%*pbl'\n", STR_MASK(mask), nr_cpumask_bits, cpumask_bits(mask))
-+
-+static void test_cpumask_weight(struct kunit *test)
-+{
-+	KUNIT_EXPECT_TRUE(test, cpumask_empty(&mask_empty));
-+	KUNIT_EXPECT_TRUE(test, cpumask_full(&mask_all));
-+
-+	KUNIT_EXPECT_EQ(test, 0, cpumask_weight(&mask_empty));
-+	KUNIT_EXPECT_EQ(test, nr_cpu_ids, cpumask_weight(cpu_possible_mask));
-+	KUNIT_EXPECT_EQ(test, nr_cpumask_bits, cpumask_weight(&mask_all));
-+}
-+
-+static void test_cpumask_first(struct kunit *test)
-+{
-+	KUNIT_EXPECT_LE(test, nr_cpu_ids, cpumask_first(&mask_empty));
-+	KUNIT_EXPECT_EQ(test, 0, cpumask_first(cpu_possible_mask));
-+
-+	KUNIT_EXPECT_EQ(test, 0, cpumask_first_zero(&mask_empty));
-+	KUNIT_EXPECT_LE(test, nr_cpu_ids, cpumask_first_zero(cpu_possible_mask));
-+}
-+
-+static void test_cpumask_last(struct kunit *test)
-+{
-+	KUNIT_EXPECT_LE(test, nr_cpumask_bits, cpumask_last(&mask_empty));
-+	KUNIT_EXPECT_EQ(test, nr_cpu_ids - 1, cpumask_last(cpu_possible_mask));
-+}
-+
-+static void test_cpumask_next(struct kunit *test)
-+{
-+	KUNIT_EXPECT_EQ(test, 0, cpumask_next_zero(-1, &mask_empty));
-+	KUNIT_EXPECT_LE(test, nr_cpu_ids, cpumask_next_zero(-1, cpu_possible_mask));
-+
-+	KUNIT_EXPECT_LE(test, nr_cpu_ids, cpumask_next(-1, &mask_empty));
-+	KUNIT_EXPECT_EQ(test, 0, cpumask_next(-1, cpu_possible_mask));
-+}
-+
-+static void test_cpumask_iterators(struct kunit *test)
-+{
-+	EXPECT_FOR_EACH_CPU_EQ(test, &mask_empty);
-+	EXPECT_FOR_EACH_CPU_NOT_EQ(test, &mask_empty);
-+	EXPECT_FOR_EACH_CPU_WRAP_EQ(test, &mask_empty);
-+
-+	EXPECT_FOR_EACH_CPU_EQ(test, cpu_possible_mask);
-+	EXPECT_FOR_EACH_CPU_NOT_EQ(test, cpu_possible_mask);
-+	EXPECT_FOR_EACH_CPU_WRAP_EQ(test, cpu_possible_mask);
-+}
-+
-+static void test_cpumask_iterators_builtin(struct kunit *test)
-+{
-+	EXPECT_FOR_EACH_CPU_BUILTIN_EQ(test, possible);
-+
-+	/* Ensure the dynamic masks are stable while running the tests */
-+	cpu_hotplug_disable();
-+
-+	TEST_CPUMASK_PRINT(test, cpu_online_mask);
-+	TEST_CPUMASK_PRINT(test, cpu_present_mask);
-+
-+	EXPECT_FOR_EACH_CPU_BUILTIN_EQ(test, online);
-+	EXPECT_FOR_EACH_CPU_BUILTIN_EQ(test, present);
-+
-+	cpu_hotplug_enable();
-+}
-+
-+static int test_cpumask_init(struct kunit *test)
-+{
-+	cpumask_clear(&mask_empty);
-+	cpumask_setall(&mask_all);
-+
-+	TEST_CPUMASK_PRINT(test, &mask_all);
-+	TEST_CPUMASK_PRINT(test, cpu_possible_mask);
-+
-+	return 0;
-+}
-+
-+static struct kunit_case test_cpumask_cases[] = {
-+	KUNIT_CASE(test_cpumask_weight),
-+	KUNIT_CASE(test_cpumask_first),
-+	KUNIT_CASE(test_cpumask_last),
-+	KUNIT_CASE(test_cpumask_next),
-+	KUNIT_CASE(test_cpumask_iterators),
-+	KUNIT_CASE(test_cpumask_iterators_builtin),
-+	{}
-+};
-+
-+static struct kunit_suite test_cpumask_suite = {
-+	.name = "cpumask",
-+	.init = test_cpumask_init,
-+	.test_cases = test_cpumask_cases,
-+};
-+kunit_test_suite(test_cpumask_suite);
-+
-+MODULE_LICENSE("GPL");
+Chris Wilson (1):
+  drm/i915/gt: Move TLB invalidation to its own file
+
+Mauro Carvalho Chehab (1):
+  drm/i915/gt: document TLB cache invalidation functions
+
+ Documentation/gpu/i915.rst                |   7 +
+ drivers/gpu/drm/i915/Makefile             |   1 +
+ drivers/gpu/drm/i915/gem/i915_gem_pages.c |   4 +-
+ drivers/gpu/drm/i915/gt/intel_gt.c        | 168 +----------------
+ drivers/gpu/drm/i915/gt/intel_gt.h        |  12 --
+ drivers/gpu/drm/i915/gt/intel_tlb.c       | 208 ++++++++++++++++++++++
+ drivers/gpu/drm/i915/gt/intel_tlb.h       | 130 ++++++++++++++
+ drivers/gpu/drm/i915/i915_vma.c           |   1 +
+ 8 files changed, 352 insertions(+), 179 deletions(-)
+ create mode 100644 drivers/gpu/drm/i915/gt/intel_tlb.c
+ create mode 100644 drivers/gpu/drm/i915/gt/intel_tlb.h
+
 -- 
-2.37.1
+2.36.1
+
 
