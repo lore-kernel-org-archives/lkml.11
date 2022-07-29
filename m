@@ -2,154 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00466C00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 10:34:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68E31C19F29
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 10:35:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235395AbiG2Ke6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 06:34:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58038 "EHLO
+        id S235965AbiG2KfI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 06:35:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235562AbiG2Keu (ORCPT
+        with ESMTP id S235889AbiG2Ke4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 06:34:50 -0400
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9527974368
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 03:34:49 -0700 (PDT)
-Date:   Fri, 29 Jul 2022 12:34:46 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1659090887;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9wjKEfFoBLpJFt2YF9dVqJ/jX3GLUdZNKUnxCD/vP2U=;
-        b=WdK32WKmR764zOr9uTC5dH/mB097scq2HOTJmpd6/amAP12jMqt5l06CFPAWb6Y/UFDe1K
-        aLBc5h2FvGlCzELDTtGdNIBr7oNHQ/qFq7zT0+TSNv3w0uX7FOluK9+B9+ZpRTgiUW1bOx
-        miCFGSgm44YFY5Z+EPR/9ftkeWxDxrNiZaB+oo+OUy3LaBPo+vjd6pHL0a5ceWu1mHioAC
-        9nAEfFeRWN1YXjGQv19/JDKfRsDuD4cNAAAecFqd5jc2NDKa7q0EEMWzHXl/9r6mrDsdA1
-        yc557HG/y0xpZO0Bs69KpR8USRJthXkk3pT0TEXQUn9l3XuLlC5s7FPeoQ/u8A==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1659090887;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9wjKEfFoBLpJFt2YF9dVqJ/jX3GLUdZNKUnxCD/vP2U=;
-        b=WVnf+1hZ0YFVmKOGk4NY0XUs6g0r8NJEnz4OvAkq4qv5lk9GC1u9w4T6tWAr3k4su/L1KE
-        PYWtie4lxKwTd1AQ==
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     linux-kernel@vger.kernel.org,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Theodore Ts'o <tytso@mit.edu>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        Mike Galbraith <efault@gmx.de>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Sergey Senozhatsky <senozhatsky@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH] random: Initialize vsprintf's pointer hash once the
- random core is ready.
-Message-ID: <YuO3xmYr/UsKxten@linutronix.de>
-References: <YuOf6qu453dOkR+S@linutronix.de>
- <YuO00GBXXNBhU4yL@alley>
+        Fri, 29 Jul 2022 06:34:56 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EA7677545;
+        Fri, 29 Jul 2022 03:34:54 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id c12so5304982ede.3;
+        Fri, 29 Jul 2022 03:34:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=Zk6yHET57f/wYXBe4yiexZ1AAMItVqOz1Jv1kut5E8E=;
+        b=IsM5N0dJ2jSYwlQl9rbwt+OLNPEKaCRVIniuh9/fK2UA5cEWqol8qEt2eY1KAFImh0
+         xgKtFlDvRwmal8EgGb4Op+XBno/E/HH8Bxy8BPnkUU2nIxz44g1exMkT0mBgnzczAkOM
+         jEEdvopg/k2e5S3/4OLDkdml7fNMgGZXJmK2pxORFJYNKUIs9dcrZpTPKP/PyTRRiDnU
+         4AbNyblEPeQVwrctPIK+zUGSC8WmuyEHQXK0TllYSTMZqHtKbYQ+rO3pNAksc0uoqvC9
+         H7uLLtXO9go/uW0Ye5nZLjgde4OuJHwsb257PiiTAEQZboCcDlee7NJuUdg+WQoQdZGF
+         8sKg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=Zk6yHET57f/wYXBe4yiexZ1AAMItVqOz1Jv1kut5E8E=;
+        b=QV3GjVqcXmZkzYvOvw6OgT3i4XSD7Gfdy313J3JcSvuqH0c+EYx/ZOsdwC2ux5OW58
+         2tN1M7mF5DZYbELP0pwzMG/Pa2RuKLZAzhW+OlyYRvr0Rg2aaoqsbkxzOdw1QPztnc8l
+         KPkkL0D0qpWL9goqpbA5LaGeBEoPvCvTWTjz/7lRZQdBd+Zvx4F7A/cgHoH54/uiranJ
+         cE3PY7JtbB5HhpOtnKluTtn18C5Bj72TI1j1OCB2pJkrXa42kmZPURPQeTiQko+AQjHB
+         Gg/9S5LyLbL89/gOPWwJMmY5HnLamveXxTLeQG9poE5pDU23LBUXRUHxl2adb7g0BtVK
+         wH1Q==
+X-Gm-Message-State: AJIora90pI00yBVTJwuF7e7ebXlM+Me5FQxFoyqIf0VRtl9Qi19H3SCa
+        vpYjgYQdjSa8C1sVboZqseomTPcUf/IqlribDhE=
+X-Google-Smtp-Source: AGRyM1thJcc6VzDaeaE+EySViKuCRpu348iS7jC1QI3PpaFzkcmRpNMn9JsAnkR2MfsFuw188nD7QnVuUJohoFdGXiU=
+X-Received: by 2002:a05:6402:501d:b0:437:e000:a898 with SMTP id
+ p29-20020a056402501d00b00437e000a898mr2923947eda.265.1659090892398; Fri, 29
+ Jul 2022 03:34:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+References: <20220722102407.2205-1-peterwu.pub@gmail.com> <20220722102407.2205-13-peterwu.pub@gmail.com>
+ <CAHp75Vf85_uzA9fRxTizbPJxODcXFpM4wuU6DxP2j9UA47B_2g@mail.gmail.com> <CA+hk2fYcw0szJ7bBvfEjtyUE_Z61_A1vFWmPSdhe-gmd5jbC6g@mail.gmail.com>
+In-Reply-To: <CA+hk2fYcw0szJ7bBvfEjtyUE_Z61_A1vFWmPSdhe-gmd5jbC6g@mail.gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 29 Jul 2022 12:34:14 +0200
+Message-ID: <CAHp75VctFBkPYumu-4+iGNATt=zE7HJ3n0kRSdDduJZ=h6FDEQ@mail.gmail.com>
+Subject: Re: [PATCH v6 12/13] leds: flash: mt6370: Add MediaTek MT6370
+ flashlight support
+To:     szuni chen <szunichen@gmail.com>
+Cc:     ChiaEn Wu <peterwu.pub@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@ucw.cz>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        "Krogerus, Heikki" <heikki.krogerus@linux.intel.com>,
+        Helge Deller <deller@gmx.de>,
+        ChiaEn Wu <chiaen_wu@richtek.com>,
+        Alice Chen <alice_chen@richtek.com>,
+        cy_huang <cy_huang@richtek.com>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Linux LED Subsystem <linux-leds@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        USB <linux-usb@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        "open list:FRAMEBUFFER LAYER" <linux-fbdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <YuO00GBXXNBhU4yL@alley>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-07-29 12:22:08 [+0200], Petr Mladek wrote:
-> > --- a/drivers/char/random.c
-> > +++ b/drivers/char/random.c
-> > @@ -221,10 +222,15 @@ static void crng_reseed(void)
-> >  		++next_gen;
-> >  	WRITE_ONCE(base_crng.generation, next_gen);
-> >  	WRITE_ONCE(base_crng.birth, jiffies);
-> > -	if (!static_branch_likely(&crng_is_ready))
-> > +	if (!static_branch_likely(&crng_is_ready)) {
-> >  		crng_init =3D CRNG_READY;
-> > +		init_hash_pointer =3D true;
->=20
-> I am not familiar with the crng code. I wonder if the following would wor=
-k:
->=20
-> 	if (!static_branch_likely(&crng_is_ready) && crng_init !=3D CRNG_READY) {
-> 		crng_init =3D CRNG_READY;
-> 		init_hash_pointer =3D true;
-> 	}
->=20
-> The point is that vsprintf_init_hash_pointer() will be called only by
-> the first caller. It would allow to remove the @filling spin lock.
+On Fri, Jul 29, 2022 at 8:17 AM szuni chen <szunichen@gmail.com> wrote:
+> Andy Shevchenko <andy.shevchenko@gmail.com> =E6=96=BC 2022=E5=B9=B47=E6=
+=9C=8825=E6=97=A5 =E9=80=B1=E4=B8=80 =E4=B8=8B=E5=8D=884:51=E5=AF=AB=E9=81=
+=93=EF=BC=9A
+> > On Fri, Jul 22, 2022 at 12:25 PM ChiaEn Wu <peterwu.pub@gmail.com> wrot=
+e:
+> > >
+> > > From: Alice Chen <alice_chen@richtek.com>
 
-Not sure about the resulting code gen but crng_is_ready is swapped with
-"crng_init =3D=3D CRNG_READY" and this patch already put init_hash_pointer
-in an unlikely path so it might already what you suggest.
+...
 
-> > +	}
-> >  	spin_unlock_irqrestore(&base_crng.lock, flags);
-> >  	memzero_explicit(key, sizeof(key));
-> > +
-> > +	if (init_hash_pointer)
-> > +		vsprintf_init_hash_pointer();
-> >  }
-> > =20
-> >  /*
-> > diff --git a/lib/vsprintf.c b/lib/vsprintf.c
-> > index 3c1853a9d1c09..6fa2ebb9f9b9e 100644
-> > --- a/lib/vsprintf.c
-> > +++ b/lib/vsprintf.c
-> > @@ -751,36 +751,30 @@ static int __init debug_boot_weak_hash_enable(cha=
-r *str)
-> >  early_param("debug_boot_weak_hash", debug_boot_weak_hash_enable);
-> > =20
-> >  static DEFINE_STATIC_KEY_FALSE(filled_random_ptr_key);
-> > +static siphash_key_t ptr_key __read_mostly;
-> > =20
-> > -static void enable_ptr_key_workfn(struct work_struct *work)
-> > +void vsprintf_init_hash_pointer(void)
-> >  {
-> > -	static_branch_enable(&filled_random_ptr_key);
-> > +	static DEFINE_SPINLOCK(filling);
-> > +	unsigned long flags;
-> > +	static bool filled;
-> > +
-> > +	spin_lock_irqsave(&filling, flags);
-> > +	if (!filled) {
-> > +		get_random_bytes(&ptr_key, sizeof(ptr_key));
-> > +		filled =3D true;
-> > +		static_branch_enable(&filled_random_ptr_key);
->=20
-> This can't be called in an atomic context. Is crng_reseed() always
-> called in a non-atomic context?
+> > > Signed-off-by: Alice Chen <alice_chen@richtek.com>
+> >
+> > This SoB chain is wrong. Prioritize and read Submitting Patches!
+>
+> After reading the Submitted Patches,
+> ChiaEn Wu wasn't involved in the development but he submitted the patch,
+> So, ChiaEn Wu <chiaen_wu@richtek.com> should be the last SoB, right?
 
-Since a "recent" change, get_random_bytes() and friends can't be called
-=66rom an explicit IRQ-off/preempt-off region. There was a little bit of
-fallout on the RT side with this change including lockdep and something
-else I don't recall. So two users that invoked that from an IRQ-off
-region on RT which is in general not the rule and the code was altered.
+Right. Submitter's SoB is the last SoB in the chain.
 
-This (vsprintf) popped up recently since there isn't much that uses %p.
-And since printk can (and should) be invoked everywhere I would like to
-keep that working.
+> I will revise SoB to
+>
+> Signed-off-by: SzuNi Chen <alice_chen@richtek.com>
 
-> That said, the static branch is an overkill. vsprintf() is a slow
-> path. It should be enough to use a simple boolean. It might require
-> a simple memory barrier to serialize @ptr_key and the new boolean
-> read&write.
+Not sure I understand the SzuNi <--> Alice transformation...
 
-I could do that if it is preferred. It was already there, this isn't
-something I just added=E2=80=A6
+> Signed-off-by: ChiaEn Wu <chiaen_wu@richtek.com>
+>
+> If there is anything else I need to fix, please let me know. Thank you.
 
-> > +	}
-> > +	spin_unlock_irqrestore(&filling, flags);
-> >  }
->=20
-> Best Regards,
-> Petr
-
-Sebastian
+--=20
+With Best Regards,
+Andy Shevchenko
