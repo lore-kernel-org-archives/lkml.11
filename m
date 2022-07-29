@@ -2,287 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 144B5C00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 16:36:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F05EC00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 16:36:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237024AbiG2Qgq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 12:36:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53162 "EHLO
+        id S237349AbiG2Qgw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 12:36:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236887AbiG2Qgi (ORCPT
+        with ESMTP id S237051AbiG2Qgl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 12:36:38 -0400
-Received: from esa.hc4959-67.iphmx.com (esa.hc4959-67.iphmx.com [216.71.153.94])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1999823B7;
-        Fri, 29 Jul 2022 09:36:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=seagate.com; i=@seagate.com; q=dns/txt; s=stxiport;
-  t=1659112597; x=1690648597;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=Rj4DLUZzOBWl0i+H6ZkSAlszY10JN1/oHojFXuAaolM=;
-  b=HgSi5+fbAw06z4ih5RAUPDN3tJgVQcocqZ7UnF9mvSmFiyzHSHQB1ZFH
-   RDYHz85AVZP546UK9FHKeVQrgbr7kpZbTesoEXxodAAJEvgxkUe/sWGe8
-   4xj1OfbuV8laM23myLHCUjlWRO071D9jlalrRVqP2QrwGibYsOgwHLhNv
-   I=;
-Received: from mail-dm6nam10lp2104.outbound.protection.outlook.com (HELO NAM10-DM6-obe.outbound.protection.outlook.com) ([104.47.58.104])
-  by ob1.hc4959-67.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2022 09:36:35 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QVvjoAsDXmeen5qc7P5cR0iMMXt20wENcrtu5NLsA2/1gWccxt3j57nw0tl+zkOQxK+u3ycOMw5unhgm5CVDvTVSqeNSQfvqoAZfGBbI+TkB8WhdN39dyf92bN+p2dYT5DNe1K0mDlXGdZsgcuhBfts+hWQ5XBiN2dIB3YaflYrU1g9btVQaeWT2Tcv/YLOjI10fHBWb6qGJ69akFS0rS03WEBDitfzhbca8y3gYD+B13SNFH4pHA8wl3sBK8TsQs1HI5y3/PChkR2Cvn0YP59vin/AraYmydmCm2bkU9pwPVe1mO9lcAfi75t43E687/dWUpFWVJvn/1KgNHTYEQw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NN0c2KkoAgFzfN9JcV8U95Rp9SoIMY//PJJyQjsdriA=;
- b=ncITXdLt0WCFmtsWdbMukqyF9dZ+zXVsSc3lkQ8met5SINKXQEPUFT4WsSoQE4s3gHCeX9WEQ9wCLvcvGWkxm02sUbX3rjcHcf9ViWScm2/eUkeZHarHy+V8XRlWG3tAKFOqe7n++xWzMzOMEu5/8Yk0LRUIVulgaCrtkOd+YH/coZDUdE+ZQrqkxhgp/Yn0y57aiSKo/dNzB+AZvAWvZhqxTiZnVR4w5RP+XKfMq05y5Rp7LldR0Z9ms8lqnRif3trGMzJ34DaZqv0sTWGyVM/h6clIyZdkON5k8kXsPGfviSsszSWt0XSQZk5bPFyFUI+HUns29spRe07Qb/uFag==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=seagate.com; dmarc=pass action=none header.from=seagate.com;
- dkim=pass header.d=seagate.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seagate.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NN0c2KkoAgFzfN9JcV8U95Rp9SoIMY//PJJyQjsdriA=;
- b=Tqnrf/KxiCLSazTCHt1ydGisH8+QlB35jberpAz8qUdPuyXGR4BPGgifF4iYuogMdEgZX4ewW6EuxhBNek/eLNxArc+UPT3YCrhE4sQxReITplr9n3sYkhyRoaBE/mD9g+OuPpDGGV0fstJfuq4Fjmd6FO8vJYjvILC0n04GMms=
-Received: from DM4PR20MB5061.namprd20.prod.outlook.com (2603:10b6:8:88::22) by
- DM5PR20MB1562.namprd20.prod.outlook.com (2603:10b6:3:13b::18) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5482.12; Fri, 29 Jul 2022 16:36:33 +0000
-Received: from DM4PR20MB5061.namprd20.prod.outlook.com
- ([fe80::7165:446e:8314:33e2]) by DM4PR20MB5061.namprd20.prod.outlook.com
- ([fe80::7165:446e:8314:33e2%6]) with mapi id 15.20.5458.024; Fri, 29 Jul 2022
- 16:36:33 +0000
-From:   Arie van der Hoeven <arie.vanderhoeven@seagate.com>
-To:     Rory Chen <rory.c.chen@seagate.com>,
-        Paolo Valente <paolo.valente@linaro.org>
-CC:     "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "jack@suse.cz" <jack@suse.cz>,
-        "andrea.righi@canonical.com" <andrea.righi@canonical.com>,
-        "glen.valante@linaro.org" <glen.valante@linaro.org>,
-        "axboe@kernel.dk" <axboe@kernel.dk>,
-        Tyler Erickson <tyler.erickson@seagate.com>,
-        Muhammad Ahmad <muhammad.ahmad@seagate.com>,
-        Michael English <michael.english@seagate.com>,
-        Andrew Ring <andrew.ring@seagate.com>,
-        Varun Boddu <varunreddy.boddu@seagate.com>
-Subject: Re: [PATCH 0/8] block, bfq: extend bfq to support multi-actuator
- drives
-Thread-Topic: [PATCH 0/8] block, bfq: extend bfq to support multi-actuator
- drives
-Thread-Index: AQHYhxl16wZu53I2nkyhDu//lRykYq2Hfy1sgAI9feCACXh9iYAA5pIEgAGob5M=
-Date:   Fri, 29 Jul 2022 16:36:33 +0000
-Message-ID: <DM4PR20MB5061EF9EC0FD7606C6E27DD3F1999@DM4PR20MB5061.namprd20.prod.outlook.com>
-References: <20220623155335.6147-1-paolo.valente@linaro.org>
- <PH7PR20MB505849512979A89E8A66FB24F18E9@PH7PR20MB5058.namprd20.prod.outlook.com>
- <SJ0PR20MB44097AAA14A819BB2C7B4AB3A0909@SJ0PR20MB4409.namprd20.prod.outlook.com>
- <DM4PR20MB50613F96089AC468679FB415F1969@DM4PR20MB5061.namprd20.prod.outlook.com>
- <DM4PR20MB5061638AB3F389ECD0714029F1969@DM4PR20MB5061.namprd20.prod.outlook.com>
-In-Reply-To: <DM4PR20MB5061638AB3F389ECD0714029F1969@DM4PR20MB5061.namprd20.prod.outlook.com>
-Accept-Language: en-US, en-001
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_56e366eb-86f1-4645-85a7-f29555b26fee_Enabled=True;MSIP_Label_56e366eb-86f1-4645-85a7-f29555b26fee_SiteId=d466216a-c643-434a-9c2e-057448c17cbe;MSIP_Label_56e366eb-86f1-4645-85a7-f29555b26fee_SetDate=2022-07-29T16:36:31.714Z;MSIP_Label_56e366eb-86f1-4645-85a7-f29555b26fee_Name=Seagate
- Internal;MSIP_Label_56e366eb-86f1-4645-85a7-f29555b26fee_ContentBits=0;MSIP_Label_56e366eb-86f1-4645-85a7-f29555b26fee_Method=Standard;
-suggested_attachment_session_id: 3e6fde08-85d2-018a-a881-26e82f5155e8
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=seagate.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 6bb3bee2-7e39-4383-08c0-08da71807f7d
-x-ms-traffictypediagnostic: DM5PR20MB1562:EE_
-stx-hosted-ironport-oubound: True
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: u5KH0bngu5HGhOXmNUrIol9UKnlc86Ig1dcCwXFN5dNeV0Oc9aZaGmEHZNQcgTme3KhWV4aSra9CnilV6y/WWhteG3q/D2c/xeX4ylRrwzYv3dGF4DEk6kyVJ7uXrNj7PNUF+xiTAJTm9hWqLTmsW57zqfqA2QFFXHgz7D2rbGplmZgnVYJbo4k0RuWTbfIs6rTc4mf7BhHW9C+TLPR4+RNVtMfntDVmgAeKWS/XmaWpqFaUQs5AB/H9W7VkpwQMJFiVzKGhB6Hmirvo4FsSpIyliGr9nJrCOzndDxZ2K02AGBMw+MzR5ebax03ma3C7mpst+WE1g6KrFYcCE3s9WiFq4gBj8ZiSs11vbEN1kUq+lYYwOuNnELwJ92q09dCzNWEZHhqxGIXXwlKqdODgySHhsZfmnFiB/LijHD8Fovp/t1hqaqnAm27T7VzxWOM/90FP0toai4IhsUnZUBTr6j2+aHMv+EPLZGzFaXapXFv/YOAju0UEEwADnqWzQDWKvtN/YMyfz5Ir1ZoT2tT5pRhyfdJp31kNopb01JbUY2gsr96YnD0zgnZJryclq7r2hJhPT71r3vjuHQ6Y+/vU8SD5UGJzd6wqCumKdNWrhSNxQbRq6Jxbtoojz0B4twSU/TNXibgv6oYIEVuet6fOlJoForxh5E2ODWty2csoh9I3Z4bMRWq23OheWRJ1ZF/DoJ0xxS7dACVQYXNeR3/MdebLShdKGyIn3HkD+fXnyOuXa9wAj9ChXuWRDp1vXwWuU4xkMaQngspZGHwiOrdk/Bs+8UOMK0TRabx1x5WXTGbh2u/N8yY5gbgKPFUIjeghs6JlgvSEI38toP9Diktjgg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR20MB5061.namprd20.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(366004)(346002)(136003)(376002)(39860400002)(396003)(9686003)(26005)(2906002)(7696005)(83380400001)(41300700001)(53546011)(86362001)(6506007)(478600001)(55016003)(316002)(8676002)(38070700005)(52536014)(54906003)(71200400001)(122000001)(38100700002)(5660300002)(186003)(76116006)(66946007)(110136005)(966005)(107886003)(4326008)(91956017)(33656002)(66556008)(66476007)(8936002)(64756008)(66446008);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?Windows-1252?Q?0Yp+84uPYDkq5hG6RbjptQadk03JS8QOBqXadBK+oiAGCFONXVfYs5/e?=
- =?Windows-1252?Q?XQEfSpsfvBz4bKQXXoLHXzLNIwYt/P7lmM1dLeEUxjZMP0KJP2CRIaF1?=
- =?Windows-1252?Q?B0LzOZh5+LgJaHsyMJbSfswFvTukT/UzEOPXf6pqhqHObcr7CUSQoJkM?=
- =?Windows-1252?Q?yUcCXi25/WLU++1kZKhiGKWHc8bxlBgeAyKRCT1dtakvE5MN7xRV+YfN?=
- =?Windows-1252?Q?49+2VnBczI/IB/F1wTVZ8Z5fa3K32m+aclOr6NKe8LaXxoz5KrL102xF?=
- =?Windows-1252?Q?ahfIsdycv8XEck5ZeFo88EgyvIuiS8gr5tKT4oEDBQJu0eWHCW1lDgB0?=
- =?Windows-1252?Q?Sh22EYAFulbtcVK0G1Wl9wdneiO6WXxRu9E9PsmJiHPrCEWjQJ41HZUy?=
- =?Windows-1252?Q?nKAdip0DEibgVVTC5UKszZPI4RMp7a5XirT27agP+LtzE1dJBAQp7cYz?=
- =?Windows-1252?Q?TKAIzgwfcn8KEC3bn9xfvN6o1GfiKKZ45qRMiY8rOogzdHOCQT0lcPtr?=
- =?Windows-1252?Q?iKGqlyX+IQkdZrzW3DWB4cHZiOIX/49U0VzEKn/H/KPpwxgs9XjPQPH6?=
- =?Windows-1252?Q?f+8JtFRKRVbjp8y1pt77pRsAKpEoc4qWMns7isVOZV6OPr+34+BOdIYt?=
- =?Windows-1252?Q?Cfyisx/YTgOIoUZkya0X9eUE4LdSHXqWCCJA23g70zwuiSlOxi9oVs3u?=
- =?Windows-1252?Q?wqW4DKaLnC8BM3KhpzZh/EEB8msFa5CUYWnVDzsowHSPkZ4TX6U8u/wO?=
- =?Windows-1252?Q?Zb+E20yMWD8rmZdt929IzBFgae48wCap02WqjlpVmm/Oo6/sGHISJeGw?=
- =?Windows-1252?Q?uwzK4U/9Khw9CM4BDIXieIZWwkiryRzeID2oQzlWO9yxw6f8sR62y9lL?=
- =?Windows-1252?Q?y08YAHdo5ZLl25QW1QO6TCpmO14CYY+r0npM09HvMMqzP5Vud79/JKQN?=
- =?Windows-1252?Q?5gutjludnqqEZaAwU4TitoI4UOwveaf/b9Ixk2ME8/PlqEAxy9/oxmxz?=
- =?Windows-1252?Q?ySJoQny2ewwU2LHUJDpdosF/1g8LuiG0uvp8icbRFM8F0BmHJVZaA0oG?=
- =?Windows-1252?Q?pPquQfrqCzHbq/vP2/DO5Fip2gLy1LnftGJrH9HDgb92Y+/5d/0L2XHY?=
- =?Windows-1252?Q?vf8/aNzB7sIT4dpQoaRE1ouxQwOwc/wCgWRcIppHun2PnVhpr9a01Ixp?=
- =?Windows-1252?Q?RxpyFkEABpOtxw+XSwTKeAkyYK4Fo5iluMRoJseqsncCfGWpycv4Kp2W?=
- =?Windows-1252?Q?RLgoA0Q8z84104jCkvO4/owRTllSxSA2lzVUfay8HQpBQY0TRslGEk4A?=
- =?Windows-1252?Q?dyQc9IbGTtW3LhTN7r6iQQbkTRrUIJGL6uK7cZ8BYoW9jCW7vqTxfXAp?=
- =?Windows-1252?Q?UO3mvp8m9k2at5VmnzoZ8dAqCGPgcvhi7B0MP2q6w4SPbwjKD2mrJnnJ?=
- =?Windows-1252?Q?2tyojze1td6+X9vKKc+VwYNF6B+mVvTG+5fnS9UOnCSehQve/30Hzk+r?=
- =?Windows-1252?Q?CGauPpHWzzQFYcgVN3dADnbOrcj6BK6ufQ1xLwWmHKaSlvLyc+oNigXN?=
- =?Windows-1252?Q?ryilyUEnHKmopvT7QfFlau9lVXJvFL2Q0K4SZEUKC67o++AGCxkUxJeR?=
- =?Windows-1252?Q?0Q3XeppqNH1ONCuFaVa3Rl4qy95Vq02sLskbq5AccVgG51HWwIDlHfbT?=
- =?Windows-1252?Q?p0Ln20WWVL63gJA/yQEN8E9xnVD63DezmsaOs6ksp+6FhB76eyeXGw?=
- =?Windows-1252?Q?=3D=3D?=
-Content-Type: text/plain; charset="Windows-1252"
-Content-Transfer-Encoding: quoted-printable
+        Fri, 29 Jul 2022 12:36:41 -0400
+Received: from new4-smtp.messagingengine.com (new4-smtp.messagingengine.com [66.111.4.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CE11823A8
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 09:36:40 -0700 (PDT)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id C9F1958095A;
+        Fri, 29 Jul 2022 12:36:39 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Fri, 29 Jul 2022 12:36:39 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm2; t=1659112599; x=
+        1659119799; bh=AbNcPzJA6v/1uyYWumbYgSqegXZI6Xt12q0cobRS6KU=; b=S
+        2ZADGuo9ZIFB5W0yiNQUOgLYWbIvo3HriE7GN2yzby9+XyODXiuUp4zd12rZnkq7
+        PznbIbn/ZssNgWJh0/XoDoMC794l1lBDZ+3iqkQEn+Wf8Fjfs/Vxss3a/Ivj0GFa
+        RvmIIbjotac56Ab8FrKPH8ZQpH+4pBNZsQJw/Da4sJkv2s2SDFbJgCXs61rSgVWy
+        teSAmefS3UgPmHaJ/4Ag3bu7t6bQZUlzWNSjJvM+2bkqXNMH3pK/W1MIYvgpMHaI
+        qTWJxPE/M51B1iBA68ot4ODqW5bHK/NVa7pEjXe9+WIgsv7LH6mnfFPk9Sd+tXw3
+        1QnVG5BUidOVd9uYR5EkQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1659112599; x=
+        1659119799; bh=AbNcPzJA6v/1uyYWumbYgSqegXZI6Xt12q0cobRS6KU=; b=c
+        uXI7RYXu/CYtaumHSYijNmhPTAc69E6acqDsOPEiJV2DhisNYOMCEPnyvHyQZN4e
+        ANEog9t3IJ/EfK6UukMBauG4sOKb4asdVZ5KEQkVGh+Ike51K5Qx3mry3ZTzYPXm
+        LF6AQmFom6pP+pXN9J2Z/jt59PqUiTAlXrKy+iVAYPmJzwPhpzZqGGPu5deJE3V+
+        z6SDqU6KJP7lPXrBH8FkvC3pjHzfuxWLg5YDWyOGjlgtKtoOWmhIdOnDc4UkOrbL
+        eLmtZrUeCuTZgwVK2syhHpfD15lsAXrCNfCvm74q3EMB51ducvJSO8WLI6cjRyZY
+        vQgojyOliaep7cfJCcY9Q==
+X-ME-Sender: <xms:lwzkYrlwtQbB9iUJk1UbRBhYZZRkFDu0gcRDFIJ2v8jrOOmZAJttRQ>
+    <xme:lwzkYu1QCX8d1xOUk4s8Puw3GJl-3Fc4VtsNifpylob9Qv9LZu8vr8tyElTb07eBo
+    mYS-toW75hQOeB_BRY>
+X-ME-Received: <xmr:lwzkYhq7iI00-l5t1a6YTQnQ5fGBEb1Tdc6hUbEXtkOkTrPg7GGuzhIdl2Pg07ARMaziBROLbsKhg9eyUPA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvddujedguddtfecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpefhvfevufffkffojghfgggtoffgsehtkeertdertdejnecuhfhrohhmpefo
+    rgigihhmvgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecugg
+    ftrfgrthhtvghrnhepgfffgfetffduudelhfevieffffduleevgfegkeeutefgffejheel
+    leekjeefhfejnecuvehluhhsthgvrhfuihiivgepfeenucfrrghrrghmpehmrghilhhfrh
+    homhepmhgrgihimhgvsegtvghrnhhordhtvggthh
+X-ME-Proxy: <xmx:lwzkYjlyLGinsBuVLZofx8nnnRUx2NrpK1IBbo_CEYH9ohfL0hWL-A>
+    <xmx:lwzkYp2cW0CWHRhw4WbOKTaManrumGwEiDVsrHJPooatTp2SHQrFNA>
+    <xmx:lwzkYitZWb2WbmxenJVAsYbFkt5v2bnekBwkxuviQNS6oikBpUwoIw>
+    <xmx:lwzkYkEyfQPOf0np-oHcelKkmbaysisF36WQNRIwvbJPRXrn_gkSOg>
+Feedback-ID: i8771445c:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 29 Jul 2022 12:36:38 -0400 (EDT)
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Daniel Vetter <daniel@ffwll.ch>, Emma Anholt <emma@anholt.net>,
+        David Airlie <airlied@linux.ie>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        =?UTF-8?q?Noralf=20Tr=C3=B8nnes?= <noralf@tronnes.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Maxime Ripard <mripard@kernel.org>
+Cc:     Maxime Ripard <maxime@cerno.tech>, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, Phil Elwell <phil@raspberrypi.com>,
+        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        linux-amlogic@lists.infradead.org, dri-devel@lists.freedesktop.org,
+        Dom Cobley <dom@raspberrypi.com>
+Subject: [PATCH v1 20/35] drm/vc4: vec: Switch for common modes
+Date:   Fri, 29 Jul 2022 18:35:03 +0200
+Message-Id: <20220728-rpi-analog-tv-properties-v1-20-3d53ae722097@cerno.tech>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
+References: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
 MIME-Version: 1.0
-X-OriginatorOrg: seagate.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR20MB5061.namprd20.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6bb3bee2-7e39-4383-08c0-08da71807f7d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Jul 2022 16:36:33.4531
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: d466216a-c643-434a-9c2e-057448c17cbe
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ZR/MF1+jiezT3t+U9m40bPaOD4fBtfKCQJGOnzQNWcrURyaF97VlIQMP+SuFpzvjHRnfQrf7TLk43A73D5d9LivPdNayRpRZ3G5Rihg75nM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR20MB1562
+Content-Type: text/plain; charset="utf-8"
+X-Mailer: b4 0.10.0-dev-49460
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1771; i=maxime@cerno.tech; h=from:subject:message-id; bh=D8SpF+ipMcOmIfOKSwAuLhopKhw+DWNbLfscw43wats=; b=owGbwMvMwCHc4XzqmfnC7acZT6slMSQ94VFK2TaX/aiA1Achtoznca7X69ijj0Tuj30usYIxbZJd 9WTTjlIWBmEOBlkxRZbrgm/t+MKi3CJ4PmyGmcPKBDKEgYtTACbCsZGRYdol8Ulb9X32PT1Q9btpcf zy+2v1uZzqw9Vu8bS0rWnVnMnI8OXmB/vuB15sk04aqmrlFM8UvDg1JkNmqx5f7YtQt0y2mwA=
+X-Developer-Key: i=maxime@cerno.tech; a=openpgp; fpr=BE5675C37E818C8B5764241C254BCFC56BF6CE8D
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-<Resending as plain text>
+Now that the core has a definition for the 525 and 625 lines analog TV
+modes, let's switch to it for vc4.
 
-Adding Tyler Erickson who worked on the patch for concurrent positioning ra=
-nges that may be related.  Adding others at Seagate who worked on validatin=
-g the patch as well.  (Muhammad, Michael, Andrew, Varun)
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
 
-Thanks,
---Arie
+diff --git a/drivers/gpu/drm/vc4/vc4_vec.c b/drivers/gpu/drm/vc4/vc4_vec.c
+index 8f30a530b2d5..255bba563fce 100644
+--- a/drivers/gpu/drm/vc4/vc4_vec.c
++++ b/drivers/gpu/drm/vc4/vc4_vec.c
+@@ -224,38 +224,24 @@ static const struct debugfs_reg32 vec_regs[] = {
+ 	VC4_REG32(VEC_DAC_MISC),
+ };
+ 
+-static const struct drm_display_mode ntsc_mode = {
+-	DRM_MODE("720x480", DRM_MODE_TYPE_DRIVER, 13500,
+-		 720, 720 + 14, 720 + 14 + 64, 720 + 14 + 64 + 60, 0,
+-		 480, 480 + 7, 480 + 7 + 6, 525, 0,
+-		 DRM_MODE_FLAG_INTERLACE)
+-};
+-
+-static const struct drm_display_mode pal_mode = {
+-	DRM_MODE("720x576", DRM_MODE_TYPE_DRIVER, 13500,
+-		 720, 720 + 20, 720 + 20 + 64, 720 + 20 + 64 + 60, 0,
+-		 576, 576 + 4, 576 + 4 + 6, 625, 0,
+-		 DRM_MODE_FLAG_INTERLACE)
+-};
+-
+ static const struct vc4_vec_tv_mode vc4_vec_tv_modes[] = {
+ 	[VC4_VEC_TV_MODE_NTSC] = {
+-		.mode = &ntsc_mode,
++		.mode = &drm_mode_480i,
+ 		.config0 = VEC_CONFIG0_NTSC_STD | VEC_CONFIG0_PDEN,
+ 		.config1 = VEC_CONFIG1_C_CVBS_CVBS,
+ 	},
+ 	[VC4_VEC_TV_MODE_NTSC_J] = {
+-		.mode = &ntsc_mode,
++		.mode = &drm_mode_480i,
+ 		.config0 = VEC_CONFIG0_NTSC_STD,
+ 		.config1 = VEC_CONFIG1_C_CVBS_CVBS,
+ 	},
+ 	[VC4_VEC_TV_MODE_PAL] = {
+-		.mode = &pal_mode,
++		.mode = &drm_mode_576i,
+ 		.config0 = VEC_CONFIG0_PAL_BDGHI_STD,
+ 		.config1 = VEC_CONFIG1_C_CVBS_CVBS,
+ 	},
+ 	[VC4_VEC_TV_MODE_PAL_M] = {
+-		.mode = &pal_mode,
++		.mode = &drm_mode_576i,
+ 		.config0 = VEC_CONFIG0_PAL_BDGHI_STD,
+ 		.config1 = VEC_CONFIG1_C_CVBS_CVBS | VEC_CONFIG1_CUSTOM_FREQ,
+ 		.custom_freq = 0x223b61d1,
 
-From: Rory Chen <rory.c.chen@seagate.com>
-Sent: Thursday, July 21, 2022 5:59 PM
-To: Paolo Valente <paolo.valente@linaro.org>
-Cc: linux-block@vger.kernel.org <linux-block@vger.kernel.org>; linux-kernel=
-@vger.kernel.org <linux-kernel@vger.kernel.org>; jack@suse.cz <jack@suse.cz=
->; andrea.righi@canonical.com <andrea.righi@canonical.com>; glen.valante@li=
-naro.org <glen.valante@linaro.org>; Arie van der Hoeven <arie.vanderhoeven@=
-seagate.com>; axboe@kernel.dk <axboe@kernel.dk>
-Subject: RE: [PATCH 0/8] block, bfq: extend bfq to support multi-actuator d=
-rives
-
-Hi Paolo,
-
-I=92m from Seagate China and face a problem when I=92m evaluating the bfq p=
-atches. Could you please check ? Thanks
-
-Issue statement
-When running performance test on bfq patch, I observed warning message =93b=
-fq_actuator_index: bio sector out of ranges: end=3D35156656128=94 and OS hu=
-ng suddenly after some hours.
-The warning message is reported from function bfq_actuator_index which dete=
-rmines IO request is in which index of actuators.  The bio_end_sector is 35=
-156656128 but the max LBA for the drive is 35156656127 so it=92s beyond the=
- LBA range.  I captured the block trace and didn=92t found request LBA 3515=
-6656128 instead only found max request LBA 35156656127.
-I=92m not sure if this warning message is related to later OS hung.  /var/l=
-og/messages file is attached.
-
-
-Problem environment
-Kernel base is 5.18.9
-Test HDD drive is Seagate ST18000NM0092 dual actuator SATA.
-Actuator LBA mapping by reading VPD B9
-Concurrent positioning ranges VPD page (SBC):
-LBA range number: 0
-number of storage elements: 1
-starting LBA: 0x0
-number of LBAs: 0x417c00000 [17578328064]
-LBA range number: 1
-number of storage elements: 1
-starting LBA: 0x417c00000
-number of LBAs: 0x417c00000 [17578328064]
-
-
-
-Seagate Internal
-From: Arie van der Hoeven <arie.vanderhoeven@seagate.com>
-Sent: Wednesday, July 20, 2022 10:41 PM
-To: Rory Chen <rory.c.chen@seagate.com>
-Subject: Fw: [PATCH 0/8] block, bfq: extend bfq to support multi-actuator d=
-rives
-
-
-
-From: Paolo Valente <paolo.valente@linaro.org>
-Sent: Thursday, June 23, 2022 8:53 AM
-To: Jens Axboe <axboe@kernel.dk>
-Cc: linux-block@vger.kernel.org <linux-block@vger.kernel.org>; linux-kernel=
-@vger.kernel.org <linux-kernel@vger.kernel.org>; jack@suse.cz <jack@suse.cz=
->; andrea.righi@canonical.com <andrea.righi@canonical.com>; glen.valante@li=
-naro.org <glen.valante@linaro.org>; Arie van der Hoeven <arie.vanderhoeven@=
-seagate.com>; Paolo Valente <paolo.valente@linaro.org>
-Subject: [PATCH 0/8] block, bfq: extend bfq to support multi-actuator drive=
-s
-
-
-This message has originated from an External Source. Please use proper judg=
-ment and caution when opening attachments, clicking links, or responding to=
- this email.
-
-
-Hi,
-this patch series extends BFQ so as to optimize I/O dispatch to
-multi-actuator drives. In particular, this extension addresses the
-following issue. Multi-actuator drives appear as a single device to
-the I/O subsystem [1].  Yet they address commands to different
-actuators internally, as a function of Logical Block Addressing
-(LBAs). A given sector is reachable by only one of the actuators. For
-example, Seagate=92s Serial Advanced Technology Attachment (SATA)
-version contains two actuators and maps the lower half of the SATA LBA
-space to the lower actuator and the upper half to the upper actuator.
-
-Evidently, to fully utilize actuators, no actuator must be left idle
-or underutilized while there is pending I/O for it. To reach this
-goal, the block layer must somehow control the load of each actuator
-individually. This series enriches BFQ with such a per-actuator
-control, as a first step. Then it also adds a simple mechanism for
-guaranteeing that actuators with pending I/O are never left idle.
-
-See [1] for a more detailed overview of the problem and of the
-solutions implemented in this patch series. There you will also find
-some preliminary performance results.
-
-Thanks,
-Paolo
-
-[1] https://secure-web.cisco.com/1hcxnN1C3h1nW7mby7S66_LE8szirQwbQI0fBpYePr=
-A0GTWfyuQyl0GpZaOn32xMSkNT0BUQWloDHFzZ23aYDZdi8NfdrEFLY9pQDBblIvn08LRiTVoIO=
-UC8zWSG_r2PCyLtx3ppZq5cWOib_8azxteRRcbKWGdbLPSqg9hfSJSqltth0ByLONHEoI3p3e9Q=
-NIn6nVAeQbsT3aOQe-F95XrQvaPrFJXx6RGL9kDXyfkbXIHcdcLBf895gYBFn5S2WjBDQq2kzDz=
-ZOlc1HekRUhg0qDQcFY6NydVfrqNfLbpAHAth6KyREscQhVTMVREEVa1b6bQByX6grF5pn3pTIo=
-0lODyfX6yRmcbReSYNfOZ65ZPvp-nH530FQ-5nXoRxFf74WIKDrNTALs3xQvg03DH4jLez-T2M9=
-xEu-sfEDAEdTGF7BcnmBW6vrPO4_p3k4/https%3A%2F%2Fwww.linaro.org%2Fblog%2Fbudg=
-et-fair-queueing-bfq-linux-io-scheduler-optimizations-for-multi-actuator-sa=
-ta-hard-drives%2F
-
-Davide Zini (3):
-  block, bfq: split also async bfq_queues on a per-actuator basis
-  block, bfq: inject I/O to underutilized actuators
-  block, bfq: balance I/O injection among underutilized actuators
-
-Federico Gavioli (1):
-  block, bfq: retrieve independent access ranges from request queue
-
-Paolo Valente (4):
-  block, bfq: split sync bfq_queues on a per-actuator basis
-  block, bfq: forbid stable merging of queues associated with different
-    actuators
-  block, bfq: turn scalar fields into arrays in bfq_io_cq
-  block, bfq: turn BFQ_NUM_ACTUATORS into BFQ_MAX_ACTUATORS
-
- block/bfq-cgroup.c  |  97 +++++----
- block/bfq-iosched.c | 488 +++++++++++++++++++++++++++++---------------
- block/bfq-iosched.h | 149 ++++++++++----
- block/bfq-wf2q.c    |   2 +-
- 4 files changed, 493 insertions(+), 243 deletions(-)
-
---
-2.20.1
-
-Seagate Internal
-
-Seagate Internal
+-- 
+b4 0.10.0-dev-49460
