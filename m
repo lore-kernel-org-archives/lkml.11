@@ -2,157 +2,229 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0182C00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 16:41:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA19DC19F2A
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 16:42:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236204AbiG2Ql1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 12:41:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59074 "EHLO
+        id S237719AbiG2QmW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 12:42:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237719AbiG2Qkw (ORCPT
+        with ESMTP id S238129AbiG2QmK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 12:40:52 -0400
-Received: from new4-smtp.messagingengine.com (new4-smtp.messagingengine.com [66.111.4.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E81201EC51
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 09:40:48 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailnew.nyi.internal (Postfix) with ESMTP id E0C1658091A;
-        Fri, 29 Jul 2022 12:35:36 -0400 (EDT)
+        Fri, 29 Jul 2022 12:42:10 -0400
+Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49E1388F0F
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 09:41:40 -0700 (PDT)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 986255C00BF;
+        Fri, 29 Jul 2022 12:41:39 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Fri, 29 Jul 2022 12:35:36 -0400
+  by compute3.internal (MEProxy); Fri, 29 Jul 2022 12:41:39 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm2; t=1659112536; x=
-        1659119736; bh=Euo0R55Q5eE4uezB3NLXuLB/3k2AluGBavdHuX5AB78=; b=O
-        ZtQIJn9Dcw7lzoPMyYuQPImxUHaawiXM4gOSm3BB52LxgmSHjd9EOLiREyLcvAXJ
-        OoSChlaGSxt+k7qICpUPUfbMf/fKOSnFl7bCKLz6phsAtOW/0t8nLTeBnMbOMDbp
-        +Nl/zkHaUTSMM+Vd+UtvTBsCB2uo9olWBKlJ8hdJYG3Cj4X9RTqkD3BPIfNwUlWx
-        7z9sgA3C9ZjQJOWPsjVqI0dUcodCxa9+CQ2Q7nQyCR/YhWb4+53Hp0PfTpo83Fl2
-        ziF8/SqfT8YSw4s/Yr94QEbDpNc5oDOZaBKo+I3ADuUkpp/VpvlKyYnLzNSDF4OL
-        uhU/c/erfNn9D+B+rTBtQ==
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm2; t=1659112899; x=1659199299; bh=vwJQ7sD4dG
+        7A8X3sl4630p9ybNJbGIZPkCYHWDFRHOw=; b=nrQh9TATJ0OuMlig2AOr1ZntXY
+        KU4u61qMFVMlEBwNZ4IZZcc5MmGTz9EOcLvKr3kSzlrdHZXfF0P8d8WtjLrppS3k
+        PvgBE9jz0VEqnJBi2K9+z1Cl3/O69lXCwEXQW+zKYajT63PJHroXCFhQg8d6Jorb
+        rIQcFR5uNXqe8E8A8qKc1SwDSXwdr6S9tiI5JgbzmLyITAFJeFWNgw/N24wBfl7q
+        E9XhlD62gB6Gxs/lhHkjjfiKpijtmIMPoN08uOIXAb3BRZH6ZtFSRzEou0SaHCCi
+        CssmSeayqZ49dZkI7Tw+JlhQZ5NtaLllvavpr5B+2s+8i64NHjKlLWnisSkQ==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:feedback-id:feedback-id:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1659112536; x=
-        1659119736; bh=Euo0R55Q5eE4uezB3NLXuLB/3k2AluGBavdHuX5AB78=; b=w
-        HLcs/hFtpVmYTgrP2RMYU4e71QabxsECT3duh9IxsTqTQBd3RqkmltazhnqXhWNc
-        1+bOnNihmcin2pothzFt2T/9jAhu5wczwcGH6rZRqhrjzcSBnwcWUSs4KGaTLRKG
-        5oEZMQ0xMJCjIjz9Uzz6EAWKIo6aeZ4OkokvjmFEuyzoxmEjA3JImQ6j7FbDRBDG
-        dcRsB233CAUaT8/g2jlEW4ZgJQhV+UqZ/Gou/G40S2ucauM8DijAA2Dq47jbm8b2
-        S9mzZim+CWTH2m0X1X/FztMRHyY1pzaad/61nxEJQQaCeWxEgRn1lerruNy8vSdl
-        LZ0k03Ti2u1t4BWutX0Yw==
-X-ME-Sender: <xms:WAzkYh-srNCJQ9nBlprlTpkQIsH_D0mrNqIse-JAkDmgQ_Q9NY01Sg>
-    <xme:WAzkYls_s9Lzjz64rQuj9aiv9h34ELnMfc_J4N96DcG41BCUPQ5BT2NZ5a6M06hq2
-    3aDSKWbeDaI1MUaxH8>
-X-ME-Received: <xmr:WAzkYvATggqROnJEAwi_WEUxdqtljVLFE_T092CwgxcksFx-n8fOBm5hHZSqR_M42lwaje1k-jt3AZPJtps>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvddujedguddtgecutefuodetggdotefrod
+        messagingengine.com; h=cc:cc:content-type:date:date:feedback-id
+        :feedback-id:from:from:in-reply-to:in-reply-to:message-id
+        :mime-version:references:reply-to:sender:subject:subject:to:to
+        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+        fm3; t=1659112899; x=1659199299; bh=vwJQ7sD4dG7A8X3sl4630p9ybNJb
+        GIZPkCYHWDFRHOw=; b=vspUWQJZtY3/RMVDt3OwYtIZFUFyfUI0y/KyDGjjqo7s
+        v6XuTaLxcuw3bU+2p5M4666jwTAVvcVAIPgHEdEWdremwHGkHzvUKWlTqq8228wJ
+        VMWhfY33skzOver9P9k36SEct7mYuzEiUx53lhDK+wdYaUgpA3DebKepWNKtAIIV
+        uucp2awRnstfO0pVqgMa/4fsJyZPPLD1+lZpR+fU0NDp/iGFmlEAzg0WFD1RAdGP
+        I5aWrxTXj+lKqhPQ01CFu9V9ZU9MgNXT765qUctvRzQuvhu2mtwx/rESKrhu/GnG
+        FLBlQpUudD8l+dI1qQRp6xL8IdPE33C54J8Reip9yQ==
+X-ME-Sender: <xms:ww3kYt9nIZ_NZQkj-7yXIDhmxVEjy3lT25ITx0BMatv2SWHoEF7wEg>
+    <xme:ww3kYhuwFTBY8YgMbnJLIwvlsuHwassnPtzRKRGsD6BWNBgoRJnWORK95SfrpGRt1
+    TZBRuYC-sE6LFEUyww>
+X-ME-Received: <xmr:ww3kYrCVuK90gokBAUGueeKioFX53eU84Iln3c9-1PofaodJ7bch3e3h7XNkZg_AVcq5_tISYeE1HziFvMI>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvddujedguddthecutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
     necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpefhvfevufffkffojghfgggtoffgsehtkeertdertdejnecuhfhrohhmpefo
-    rgigihhmvgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecugg
-    ftrfgrthhtvghrnhepgfffgfetffduudelhfevieffffduleevgfegkeeutefgffejheel
-    leekjeefhfejnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrh
-    homhepmhgrgihimhgvsegtvghrnhhordhtvggthh
-X-ME-Proxy: <xmx:WAzkYleJbx1AFUCHCYGIZdhiLdcc5RxHE2seRjZdL2SNWmpKYNmNpw>
-    <xmx:WAzkYmNoWQj4V0NU7Rm36Ez1Kfwx33GDaFHFyuTBRUBI40iJ3IS3Mg>
-    <xmx:WAzkYnkABXiDWCA7PeQ8sWeSRU1dguly1VRgSPlFK8LvaXPAgiEzSw>
-    <xmx:WAzkYheuMZJ3K_2hwqlN1GTOE7IPWkfzrQ3miwTizQCItWTK4Sx6vA>
+    enucfjughrpeffhffvvefukfhfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgig
+    ihhmvgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrf
+    grthhtvghrnhepteefffefgfektdefgfeludfgtdejfeejvddttdekteeiffejvdfgheeh
+    fffhvedunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
+    epmhgrgihimhgvsegtvghrnhhordhtvggthh
+X-ME-Proxy: <xmx:ww3kYhdIN4vbnHbTvJazERlLA8AMdkclpSR-AJxLgUc6zDD3S4crsA>
+    <xmx:ww3kYiMgxpTzUwDxt62LMntejyIGGl_qdM2he3BD1PkNgk5vSsyVnA>
+    <xmx:ww3kYjm9ZdQOoWNH8_r-ljnc1W2f_lWjFBiA0Zmn7HX9ItHz8Nw1ZQ>
+    <xmx:ww3kYpqcGi_8EgEjNqoOjPu0dDOqcyj9x6RSOxG3DLHNe4Tj0ovYsA>
 Feedback-ID: i8771445c:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 29 Jul 2022 12:35:34 -0400 (EDT)
+ 29 Jul 2022 12:41:38 -0400 (EDT)
+Date:   Fri, 29 Jul 2022 18:41:36 +0200
 From:   Maxime Ripard <maxime@cerno.tech>
-To:     Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Daniel Vetter <daniel@ffwll.ch>, Emma Anholt <emma@anholt.net>,
+To:     Doug Anderson <dianders@chromium.org>
+Cc:     Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Rob Clark <robdclark@gmail.com>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
         David Airlie <airlied@linux.ie>,
         Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        =?UTF-8?q?Noralf=20Tr=C3=B8nnes?= <noralf@tronnes.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Maxime Ripard <mripard@kernel.org>
-Cc:     Maxime Ripard <maxime@cerno.tech>, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org, Phil Elwell <phil@raspberrypi.com>,
-        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        linux-amlogic@lists.infradead.org, dri-devel@lists.freedesktop.org,
-        Dom Cobley <dom@raspberrypi.com>
-Subject: [PATCH v1 02/35] drm/connector: Rename subconnector state variable
-Date:   Fri, 29 Jul 2022 18:34:45 +0200
-Message-Id: <20220728-rpi-analog-tv-properties-v1-2-3d53ae722097@cerno.tech>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
-References: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+Subject: Re: [RFC PATCH] drm/edid: Make 144 Hz not preferred on Sharp
+ LQ140M1JW46
+Message-ID: <20220729164136.opucqg64qz4ypmvo@penduick>
+References: <20220721152314.RFC.1.Ie333b3e4aff6e4a5b58c4aa805e030e561be8773@changeid>
+ <269f2610-425b-f296-dcfc-89bdc2e1d587@quicinc.com>
+ <CAD=FV=XSVXasU5PMR2kL0WQjQ458xDePuTGd1m14_v9JO5B6oA@mail.gmail.com>
+ <CAF6AEGv_Vikf80v-7ccz90fvGPrk5pV1tOxRoWKxKHYuEW8=aA@mail.gmail.com>
+ <5c8ca71c-5f0b-d5f5-9f16-e312dec0d01b@quicinc.com>
+ <CAD=FV=UGYV1mZenDCRrbpC+gpE12-Uis7fm_=H3PeEjK=t36yA@mail.gmail.com>
+ <20220729075118.ofnpk52tk4usm3n3@penduick>
+ <CAD=FV=WUB68-DQ-pAFjGaG-kid33ve4Qc3iqb8OUh61xTBohmg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-X-Mailer: b4 0.10.0-dev-49460
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2193; i=maxime@cerno.tech; h=from:subject:message-id; bh=Rj7Ciymqp8SGZkmcJZM8z2NaF1Fg70qcRKx4zs2X0Gk=; b=owGbwMvMwCHc4XzqmfnC7acZT6slMSQ94VHyURXfWtdnVloX+mkO+xSjPGOh/fcf2N7JPGF8bWIp X7ZZRykLgzAHg6yYIst1wbd2fGFRbhE8HzbDzGFlAhnCwMUpABPZH8/IsDfBODvE7YaymumTCw+Oyn lpPKiT212VJsVx7/cOlUjxuQz/61TOnTpRX1AV7KlVyOUbVtjUttCf4ZK8gLpa5xlJJ5HVAA==
-X-Developer-Key: i=maxime@cerno.tech; a=openpgp; fpr=BE5675C37E818C8B5764241C254BCFC56BF6CE8D
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="nmnf5qri3rvyhvwr"
+Content-Disposition: inline
+In-Reply-To: <CAD=FV=WUB68-DQ-pAFjGaG-kid33ve4Qc3iqb8OUh61xTBohmg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There is two TV subconnector related properties registered by
-drm_mode_create_tv_properties(): subconnector and select subconnector.
 
-While the select subconnector property is stored in the kernel by the
-drm_tv_connector_state structure, the subconnector property isn't stored
-anywhere.
+--nmnf5qri3rvyhvwr
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Worse, the select subconnector property is stored in a field called
-subconnector, creating some ambiguity about which property content we're
-accessing.
+On Fri, Jul 29, 2022 at 07:50:20AM -0700, Doug Anderson wrote:
+> On Fri, Jul 29, 2022 at 12:51 AM Maxime Ripard <maxime@cerno.tech> wrote:
+> >
+> > On Thu, Jul 28, 2022 at 02:18:38PM -0700, Doug Anderson wrote:
+> > > Hi,
+> > >
+> > > On Thu, Jul 28, 2022 at 10:34 AM Abhinav Kumar
+> > > <quic_abhinavk@quicinc.com> wrote:
+> > > >
+> > > > Hi Rob and Doug
+> > > >
+> > > > On 7/22/2022 10:36 AM, Rob Clark wrote:
+> > > > > On Fri, Jul 22, 2022 at 9:48 AM Doug Anderson <dianders@chromium.=
+org> wrote:
+> > > > >>
+> > > > >> Hi,
+> > > > >>
+> > > > >> On Fri, Jul 22, 2022 at 9:37 AM Abhinav Kumar <quic_abhinavk@qui=
+cinc.com> wrote:
+> > > > >>>
+> > > > >>> + sankeerth
+> > > > >>>
+> > > > >>> Hi Doug
+> > > > >>>
+> > > > >>> On 7/21/2022 3:23 PM, Douglas Anderson wrote:
+> > > > >>>> The Sharp LQ140M1JW46 panel is on the Qualcomm sc7280 CRD refe=
+rence
+> > > > >>>> board. This panel supports 144 Hz and 60 Hz. In the EDID, the =
+144 Hz
+> > > > >>>> mode is listed first and thus is marked preferred. The EDID de=
+code I
+> > > > >>>> ran says:
+> > > > >>>>
+> > > > >>>>     First detailed timing includes the native pixel format and=
+ preferred
+> > > > >>>>     refresh rate.
+> > > > >>>>
+> > > > >>>>     ...
+> > > > >>>>
+> > > > >>>>     Detailed Timing Descriptors:
+> > > > >>>>       DTD 1:  1920x1080  143.981 Hz  16:9   166.587 kHz  346.5=
+00 MHz
+> > > > >>>>                    Hfront   48 Hsync  32 Hback  80 Hpol N
+> > > > >>>>                    Vfront    3 Vsync   5 Vback  69 Vpol N
+> > > > >>>>       DTD 2:  1920x1080   59.990 Hz  16:9    69.409 kHz  144.3=
+70 MHz
+> > > > >>>>                    Hfront   48 Hsync  32 Hback  80 Hpol N
+> > > > >>>>                    Vfront    3 Vsync   5 Vback  69 Vpol N
+> > > > >>>>
+> > > > >>>> I'm proposing here that the above is actually a bug and that t=
+he 60 Hz
+> > > > >>>> mode really should be considered preferred by Linux.
+> > > >
+> > > > Its a bit tricky to say that this is a bug but I think we can certa=
+inly
+> > > > add here that for an internal display we would have ideally had the
+> > > > lower resolution first to indicate it as default.
+> > >
+> > > Yeah, it gets into the vagueness of the EDID spec in general. As far
+> > > as I can find it's really up to the monitor to decide by what means it
+> > > chooses the "preferred" refresh rate if the monitor can support many.
+> > > Some displays may decide that the normal rate is "preferred" and some
+> > > may decide that the high refresh rate is "preferred". Neither display
+> > > is "wrong" per say, but it's nice to have some consistency here and to
+> > > make it so that otherwise "dumb" userspace will get something
+> > > reasonable by default. I'll change it to say:
+> > >
+> > > While the EDID spec appears to allow a display to use any criteria for
+> > > picking which refresh mode is "preferred" or "optimal", that vagueness
+> > > is a bit annoying. From Linux's point of view let's choose the 60 Hz
+> > > one as the default.
+> >
+> > And if we start making that decision, it should be for all panels with a
+> > similar constraint, so most likely handled by the core, and the new
+> > policy properly documented.
+> >
+> > Doing that just for a single panel is weird.
+>=20
+> Yeah, though having a "general policy" in the core can be problematic.
+>=20
+> In general I think panel EDIDs are only trustworthy as far as you can
+> throw them. They are notorious for having wrong and incorrect
+> information, which is why the EDID quirk list exists to begin with.
+> Trying to change how we're going to interpret all EDIDs, even all
+> EDIDs for eDP panels, seems like it will break someone somewhere.
+> Maybe there are EDIDs out there that were only ever validated at the
+> higher refresh rate and they don't work / flicker / cause digitizer
+> noise at the lower refresh rate. Heck, we've seen eDP panel vendors
+> that can't even get their checksum correct, so I'm not sure I want to
+> make a global assertion that all panels validated their "secondary"
+> display mode.
+>
+> In this particular case, we have validated that this particular Sharp
+> panel works fine at the lower refresh rate.
+>=20
+> I would also note that, as far as I understand it, ODMs actually can
+> request different EDIDs from the panel vendors. In the past we have
+> been able to get panel vendors to change EDIDs. Thus for most panels
+> I'd expect that we would discover this early, change the EDID default,
+> and be done with it. The case here is a little unusual in that by the
+> time we got involved and started digging into this panel too many were
+> created and nobody wants to throw away those old panels. This is why
+> I'm treating it as a quirk/bug. Really: we should have updated the
+> EDID of the panel but we're unable to in this case.
 
-Let's rename that field to one called select_subconnector to make it move
-obvious what it's about.
+You raise some good points, but most of the discussion around that patch
+were mostly around performances, power consumption and so on.
 
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+This is very much a policy decision, and if there is some panel where
+the EDID reports 60Hz but is broken, then that panel should be the
+exception to the policy
 
-diff --git a/drivers/gpu/drm/drm_atomic_uapi.c b/drivers/gpu/drm/drm_atomic_uapi.c
-index 79730fa1dd8e..c74c78a28171 100644
---- a/drivers/gpu/drm/drm_atomic_uapi.c
-+++ b/drivers/gpu/drm/drm_atomic_uapi.c
-@@ -687,7 +687,7 @@ static int drm_atomic_connector_set_property(struct drm_connector *connector,
- 		 */
- 		return -EINVAL;
- 	} else if (property == config->tv_select_subconnector_property) {
--		state->tv.subconnector = val;
-+		state->tv.select_subconnector = val;
- 	} else if (property == config->tv_left_margin_property) {
- 		state->tv.margins.left = val;
- 	} else if (property == config->tv_right_margin_property) {
-@@ -795,7 +795,7 @@ drm_atomic_connector_get_property(struct drm_connector *connector,
- 		else
- 			*val = connector->dpms;
- 	} else if (property == config->tv_select_subconnector_property) {
--		*val = state->tv.subconnector;
-+		*val = state->tv.select_subconnector;
- 	} else if (property == config->tv_left_margin_property) {
- 		*val = state->tv.margins.left;
- 	} else if (property == config->tv_right_margin_property) {
-diff --git a/include/drm/drm_connector.h b/include/drm/drm_connector.h
-index f185ad862cb1..f8091edf9a33 100644
---- a/include/drm/drm_connector.h
-+++ b/include/drm/drm_connector.h
-@@ -682,7 +682,7 @@ struct drm_connector_tv_margins {
-  * @hue: hue in percent
-  */
- struct drm_tv_connector_state {
--	enum drm_mode_subconnector subconnector;
-+	enum drm_mode_subconnector select_subconnector;
- 	struct drm_connector_tv_margins margins;
- 	unsigned int mode;
- 	unsigned int brightness;
+But doing it for a single panel is just odd
 
--- 
-b4 0.10.0-dev-49460
+Maxime
+
+--nmnf5qri3rvyhvwr
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABMIAB0WIQTXEe0+DlZaRlgM8LOIQ8rmN6G3ywUCYuQNwAAKCRCIQ8rmN6G3
+y5K/AQDd8eMgde6zHk1UUtFFYseaBoCI45v37aTnSvYvhz5dGAD9HdDh4twH58Ei
+LYXUH5k7b/x3Tui590b7dKKqyxIT+9E=
+=5sio
+-----END PGP SIGNATURE-----
+
+--nmnf5qri3rvyhvwr--
