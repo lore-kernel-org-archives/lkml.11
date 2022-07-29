@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0157C00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 13:04:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7D08C00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 13:04:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236337AbiG2NEa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 09:04:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52532 "EHLO
+        id S236347AbiG2NEe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 09:04:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236182AbiG2NEF (ORCPT
+        with ESMTP id S236186AbiG2NEG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 09:04:05 -0400
+        Fri, 29 Jul 2022 09:04:06 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6952481FC
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 06:04:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64D0E48E81
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 06:04:05 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1oHPeh-0006nK-9j; Fri, 29 Jul 2022 15:03:51 +0200
+        id 1oHPeh-0006nN-9c; Fri, 29 Jul 2022 15:03:51 +0200
 Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1oHPee-000VuM-P0; Fri, 29 Jul 2022 15:03:48 +0200
+        id 1oHPef-000VuV-83; Fri, 29 Jul 2022 15:03:49 +0200
 Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1oHPed-00CQYr-KI; Fri, 29 Jul 2022 15:03:47 +0200
+        id 1oHPed-00CQY8-HF; Fri, 29 Jul 2022 15:03:47 +0200
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     Woojung Huh <woojung.huh@microchip.com>,
         UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
@@ -39,9 +39,9 @@ To:     Woojung Huh <woojung.huh@microchip.com>,
         Paolo Abeni <pabeni@redhat.com>
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v1 09/10] net: dsa: microchip: add regmap_range for KSZ8563 chip
-Date:   Fri, 29 Jul 2022 15:03:45 +0200
-Message-Id: <20220729130346.2961889-10-o.rempel@pengutronix.de>
+Subject: [PATCH net-next v1 04/10] net: dsa: microchip: ksz9477: add error handling to ksz9477_r/w_phy
+Date:   Fri, 29 Jul 2022 15:03:40 +0200
+Message-Id: <20220729130346.2961889-5-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220729130346.2961889-1-o.rempel@pengutronix.de>
 References: <20220729130346.2961889-1-o.rempel@pengutronix.de>
@@ -55,162 +55,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add register validation for KSZ8563.
+Now ksz_pread/ksz_pwrite can return error value. So, make use of it.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/net/dsa/microchip/ksz_common.c | 131 +++++++++++++++++++++++++
- 1 file changed, 131 insertions(+)
+ drivers/net/dsa/microchip/ksz9477.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
-index d3a9836c706f..97b5fb75b489 100644
---- a/drivers/net/dsa/microchip/ksz_common.c
-+++ b/drivers/net/dsa/microchip/ksz_common.c
-@@ -412,6 +412,135 @@ static const u8 lan937x_shifts[] = {
- 	[ALU_STAT_INDEX]		= 8,
- };
+diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
+index 9d749537cf01..074d4c16d427 100644
+--- a/drivers/net/dsa/microchip/ksz9477.c
++++ b/drivers/net/dsa/microchip/ksz9477.c
+@@ -283,6 +283,7 @@ static void ksz9477_r_phy_quirks(struct ksz_device *dev, u16 addr, u16 reg,
+ int ksz9477_r_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 *data)
+ {
+ 	u16 val = 0xffff;
++	int ret;
  
-+static const struct regmap_range ksz8563_valid_regs[] = {
-+	regmap_reg_range(0x0000, 0x0003),
-+	regmap_reg_range(0x0006, 0x0006),
-+	regmap_reg_range(0x000f, 0x001f),
-+	regmap_reg_range(0x0100, 0x0100),
-+	regmap_reg_range(0x0104, 0x0107),
-+	regmap_reg_range(0x010d, 0x010d),
-+	regmap_reg_range(0x0110, 0x0113),
-+	regmap_reg_range(0x0120, 0x012b),
-+	regmap_reg_range(0x0201, 0x0201),
-+	regmap_reg_range(0x0210, 0x0213),
-+	regmap_reg_range(0x0300, 0x0300),
-+	regmap_reg_range(0x0302, 0x031b),
-+	regmap_reg_range(0x0320, 0x032b),
-+	regmap_reg_range(0x0330, 0x0336),
-+	regmap_reg_range(0x0338, 0x033e),
-+	regmap_reg_range(0x0340, 0x035f),
-+	regmap_reg_range(0x0370, 0x0370),
-+	regmap_reg_range(0x0378, 0x0378),
-+	regmap_reg_range(0x037c, 0x037d),
-+	regmap_reg_range(0x0390, 0x0393),
-+	regmap_reg_range(0x0400, 0x040e),
-+	regmap_reg_range(0x0410, 0x042f),
-+	regmap_reg_range(0x0500, 0x0519),
-+	regmap_reg_range(0x0520, 0x054b),
-+	regmap_reg_range(0x0550, 0x05b3),
+ 	/* No real PHY after this. Simulate the PHY.
+ 	 * A fixed PHY can be setup in the device tree, but this function is
+@@ -323,7 +324,10 @@ int ksz9477_r_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 *data)
+ 			break;
+ 		}
+ 	} else {
+-		ksz_pread16(dev, addr, 0x100 + (reg << 1), &val);
++		ret = ksz_pread16(dev, addr, 0x100 + (reg << 1), &val);
++		if (ret)
++			return ret;
 +
-+	/* port 1 */
-+	regmap_reg_range(0x1000, 0x1001),
-+	regmap_reg_range(0x1004, 0x100b),
-+	regmap_reg_range(0x1013, 0x1013),
-+	regmap_reg_range(0x1017, 0x1017),
-+	regmap_reg_range(0x101b, 0x101b),
-+	regmap_reg_range(0x101f, 0x1021),
-+	regmap_reg_range(0x1030, 0x1030),
-+	regmap_reg_range(0x1100, 0x1111),
-+	regmap_reg_range(0x111a, 0x111d),
-+	regmap_reg_range(0x1122, 0x1127),
-+	regmap_reg_range(0x112a, 0x112b),
-+	regmap_reg_range(0x1136, 0x1139),
-+	regmap_reg_range(0x113e, 0x113f),
-+	regmap_reg_range(0x1300, 0x1301),
-+	regmap_reg_range(0x1303, 0x1303),
-+	regmap_reg_range(0x1400, 0x1401),
-+	regmap_reg_range(0x1403, 0x1403),
-+	regmap_reg_range(0x1410, 0x1417),
-+	regmap_reg_range(0x1420, 0x1423),
-+	regmap_reg_range(0x1500, 0x1507),
-+	regmap_reg_range(0x1600, 0x1612),
-+	regmap_reg_range(0x1800, 0x180f),
-+	regmap_reg_range(0x1900, 0x1907),
-+	regmap_reg_range(0x1914, 0x191b),
-+	regmap_reg_range(0x1a00, 0x1a03),
-+	regmap_reg_range(0x1a04, 0x1a08),
-+	regmap_reg_range(0x1b00, 0x1b01),
-+	regmap_reg_range(0x1b04, 0x1b04),
-+	regmap_reg_range(0x1c00, 0x1c05),
-+	regmap_reg_range(0x1c08, 0x1c1b),
-+
-+	/* port 2 */
-+	regmap_reg_range(0x2000, 0x2001),
-+	regmap_reg_range(0x2004, 0x200b),
-+	regmap_reg_range(0x2013, 0x2013),
-+	regmap_reg_range(0x2017, 0x2017),
-+	regmap_reg_range(0x201b, 0x201b),
-+	regmap_reg_range(0x201f, 0x2021),
-+	regmap_reg_range(0x2030, 0x2030),
-+	regmap_reg_range(0x2100, 0x2111),
-+	regmap_reg_range(0x211a, 0x211d),
-+	regmap_reg_range(0x2122, 0x2127),
-+	regmap_reg_range(0x212a, 0x212b),
-+	regmap_reg_range(0x2136, 0x2139),
-+	regmap_reg_range(0x213e, 0x213f),
-+	regmap_reg_range(0x2300, 0x2301),
-+	regmap_reg_range(0x2303, 0x2303),
-+	regmap_reg_range(0x2400, 0x2401),
-+	regmap_reg_range(0x2403, 0x2403),
-+	regmap_reg_range(0x2410, 0x2417),
-+	regmap_reg_range(0x2420, 0x2423),
-+	regmap_reg_range(0x2500, 0x2507),
-+	regmap_reg_range(0x2600, 0x2612),
-+	regmap_reg_range(0x2800, 0x280f),
-+	regmap_reg_range(0x2900, 0x2907),
-+	regmap_reg_range(0x2914, 0x291b),
-+	regmap_reg_range(0x2a00, 0x2a03),
-+	regmap_reg_range(0x2a04, 0x2a08),
-+	regmap_reg_range(0x2b00, 0x2b01),
-+	regmap_reg_range(0x2b04, 0x2b04),
-+	regmap_reg_range(0x2c00, 0x2c05),
-+	regmap_reg_range(0x2c08, 0x2c1b),
-+
-+	/* port 3 */
-+	regmap_reg_range(0x3000, 0x3001),
-+	regmap_reg_range(0x3004, 0x300b),
-+	regmap_reg_range(0x3013, 0x3013),
-+	regmap_reg_range(0x3017, 0x3017),
-+	regmap_reg_range(0x301b, 0x301b),
-+	regmap_reg_range(0x301f, 0x3021),
-+	regmap_reg_range(0x3030, 0x3030),
-+	regmap_reg_range(0x3100, 0x3111),
-+	regmap_reg_range(0x311a, 0x311d),
-+	regmap_reg_range(0x3122, 0x3127),
-+	regmap_reg_range(0x312a, 0x312b),
-+	regmap_reg_range(0x3136, 0x3139),
-+	regmap_reg_range(0x313e, 0x313f),
-+	regmap_reg_range(0x3300, 0x3301),
-+	regmap_reg_range(0x3303, 0x3303),
-+	regmap_reg_range(0x3400, 0x3401),
-+	regmap_reg_range(0x3403, 0x3403),
-+	regmap_reg_range(0x3410, 0x3417),
-+	regmap_reg_range(0x3420, 0x3423),
-+	regmap_reg_range(0x3500, 0x3507),
-+	regmap_reg_range(0x3600, 0x3612),
-+	regmap_reg_range(0x3800, 0x380f),
-+	regmap_reg_range(0x3900, 0x3907),
-+	regmap_reg_range(0x3914, 0x391b),
-+	regmap_reg_range(0x3a00, 0x3a03),
-+	regmap_reg_range(0x3a04, 0x3a08),
-+	regmap_reg_range(0x3b00, 0x3b01),
-+	regmap_reg_range(0x3b04, 0x3b04),
-+	regmap_reg_range(0x3c00, 0x3c05),
-+	regmap_reg_range(0x3c08, 0x3c1b),
-+};
-+
-+static const struct regmap_access_table ksz8563_register_set = {
-+	.yes_ranges = ksz8563_valid_regs,
-+	.n_yes_ranges = ARRAY_SIZE(ksz8563_valid_regs),
-+};
-+
- const struct ksz_chip_data ksz_switch_chips[] = {
- 	[KSZ8795] = {
- 		.chip_id = KSZ8795_CHIP_ID,
-@@ -596,6 +725,8 @@ const struct ksz_chip_data ksz_switch_chips[] = {
- 		.supports_rmii = {false, false, true},
- 		.supports_rgmii = {false, false, true},
- 		.internal_phy = {true, true, false},
-+		.wr_table = &ksz8563_register_set,
-+		.rd_table = &ksz8563_register_set,
- 	},
+ 		ksz9477_r_phy_quirks(dev, addr, reg, &val);
+ 	}
  
- 	[KSZ9567] = {
+@@ -340,11 +344,9 @@ int ksz9477_w_phy(struct ksz_device *dev, u16 addr, u16 reg, u16 val)
+ 
+ 	/* No gigabit support.  Do not write to this register. */
+ 	if (!(dev->features & GBIT_SUPPORT) && reg == MII_CTRL1000)
+-		return 0;
++		return -ENOTSUPP;
+ 
+-	ksz_pwrite16(dev, addr, 0x100 + (reg << 1), val);
+-
+-	return 0;
++	return ksz_pwrite16(dev, addr, 0x100 + (reg << 1), val);
+ }
+ 
+ void ksz9477_cfg_port_member(struct ksz_device *dev, int port, u8 member)
 -- 
 2.30.2
 
