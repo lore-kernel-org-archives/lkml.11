@@ -2,83 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF3A4C19F2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 11:08:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B087C19F29
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 11:09:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235738AbiG2LIy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 07:08:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58494 "EHLO
+        id S235032AbiG2LJ1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 07:09:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231428AbiG2LIw (ORCPT
+        with ESMTP id S235625AbiG2LJY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 07:08:52 -0400
-X-Greylist: delayed 532 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 29 Jul 2022 04:08:52 PDT
-Received: from mail.thorsis.com (mail.thorsis.com [92.198.35.195])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 062456F7DE;
-        Fri, 29 Jul 2022 04:08:51 -0700 (PDT)
-From:   Alexander Dahl <ada@thorsis.com>
-To:     linux-mtd@lists.infradead.org
-Cc:     Tudor Ambarus <tudor.ambarus@microchip.com>,
-        miquel.raynal@bootlin.com, richard@nod.at, vigneshr@ti.com,
-        peda@axentia.se, nicolas.ferre@microchip.com,
-        alexandre.belloni@bootlin.com, claudiu.beznea@microchip.com,
-        bbrezillon@kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH] mtd: rawnand: atmel: Unmap streaming DMA mappings
-Date:   Fri, 29 Jul 2022 12:59:55 +0200
-Message-ID: <2099405.mp5hVA6q5l@ada>
-In-Reply-To: <20220728074014.145406-1-tudor.ambarus@microchip.com>
-References: <20220728074014.145406-1-tudor.ambarus@microchip.com>
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Clacks-Overhead: GNU Terry Pratchett
+        Fri, 29 Jul 2022 07:09:24 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6573571718
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 04:09:23 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id w15so6785049lft.11
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 04:09:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf.com; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=I1jjF3teWXwIXWhjG2K4l3lswL2POP7iGvppKXLJfOo=;
+        b=uDtLGan9oxoNLOE1+DLxNadposAOgT51BLm1P0nx3Jsza3mVlhuHXEJu7V3UN1rPAb
+         4f5tpfn5Plrm4DSv7/mBmN0BDpJy+7xTr/MixiBBm7VeK7rfi5pD0J6ySzWjMluXejMY
+         YCfPIXmNtBh0hEHEEJTF1ZDUowEbiCdJ0PWK/QxOirZNflMOb0EuK1VHJ84aHsVcPlgm
+         HVdKCBHB7oLeEjOvc6DrWgObHDkWEGJpa6BKV2ivUR1YMP/czGsYPWhIAArLGcRbEjhR
+         UGWPhqe5F/8rv5dwUPS/+gGmNNBv9BxZ8CVc+m8qyMb2V3jVVlBacI4hKvHHYe+ET+EO
+         iujg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=I1jjF3teWXwIXWhjG2K4l3lswL2POP7iGvppKXLJfOo=;
+        b=iJlmBFEsbFG33Dm7fsjE7ZBpZS4pmPSC0I6EY0cxoJdr+ZpRKgRhP2z1aS1q7Cf9nb
+         ucZCl1nmPzNk3F05mQ7RXby649Qf8vVhfuuOssUwIJmuPYpQkDbljOZ5Ic6SCP1C0qyW
+         DJzxx5uQphXeaH5nhGAOnpcuT3USZxaEQnyCd84tHXrNPYMs+1pToOUuNzLktCqjzYNV
+         NZmqp2lzyV9CCDoIdeQwj7OSUFRJ4lo9EI2WCxPTG++WzAmKc3fZiEQsl1AoEtc/2+L7
+         v/sFRL/3W6XB91GP5S9D1JsEAS8a5dy4Sa4BJENj2ImUiX7AoWGf8Jh7rb5oFFbmPq2h
+         WxrQ==
+X-Gm-Message-State: AJIora8T/XnJ6SFFtC2jKn/1UMfXxNc5v90EQv9gZauyOaaaS8O5dn4f
+        A42IHUGs50+il+zG3iQbw2xLcQ==
+X-Google-Smtp-Source: AGRyM1v+xj5pQJMfZ4lmaVj4tdX9ZjkVQL/6zKCe6bRcDdJznwYtm5d2uSEFrnBGcvR62TftvBoSZQ==
+X-Received: by 2002:a05:6512:1293:b0:48a:8759:db42 with SMTP id u19-20020a056512129300b0048a8759db42mr1155666lfs.558.1659092961692;
+        Fri, 29 Jul 2022 04:09:21 -0700 (PDT)
+Received: from [10.43.1.253] ([83.142.187.84])
+        by smtp.gmail.com with ESMTPSA id t24-20020a056512209800b0048a9d43b978sm622785lfr.239.2022.07.29.04.09.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 29 Jul 2022 04:09:21 -0700 (PDT)
+Message-ID: <1cdff41c-c917-1344-02bc-ad5cf5c79ab1@semihalf.com>
+Date:   Fri, 29 Jul 2022 13:09:19 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 1/3] KVM: x86: Move kvm_(un)register_irq_mask_notifier()
+ to generic KVM
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org,
+        Eric Auger <eric.auger@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Rong L Liu <rong.l.liu@intel.com>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>,
+        Tomasz Nowicki <tn@semihalf.com>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>,
+        Dmitry Torokhov <dtor@google.com>
+References: <20220715155928.26362-1-dmy@semihalf.com>
+ <20220715155928.26362-2-dmy@semihalf.com> <YuLZng8mW0qn4MFk@google.com>
+From:   Dmytro Maluka <dmy@semihalf.com>
+In-Reply-To: <YuLZng8mW0qn4MFk@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Tudor,
-
-Am Donnerstag, 28. Juli 2022, 09:40:14 CEST schrieb Tudor Ambarus:
-> Every dma_map_single() call should have its dma_unmap_single() counterpart,
-> because the DMA address space is a shared resource and one could render the
-> machine unusable by consuming all DMA addresses.
+On 7/28/22 20:46, Sean Christopherson wrote:
+> On Fri, Jul 15, 2022, Dmytro Maluka wrote:
+>> In preparation for implementing postponing resamplefd event until the
+>> interrupt is unmasked, move kvm_(un)register_irq_mask_notifier() from
+>> x86 to arch-independent code to make it usable by irqfd.
 > 
-> Cc: stable@vger.kernel.org
-> Fixes: f88fc122cc34 ("mtd: nand: Cleanup/rework the atmel_nand driver")
-> Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-> ---
->  drivers/mtd/nand/raw/atmel/nand-controller.c | 1 +
->  1 file changed, 1 insertion(+)
+> This patch needs to move more than just the helpers, e.g. mask_notifier_list
+> needs to be in "struct kvm", not "stuct kvm_arch".
 > 
-> diff --git a/drivers/mtd/nand/raw/atmel/nand-controller.c
-> b/drivers/mtd/nand/raw/atmel/nand-controller.c index
-> 6ef14442c71a..330d2dafdd2d 100644
-> --- a/drivers/mtd/nand/raw/atmel/nand-controller.c
-> +++ b/drivers/mtd/nand/raw/atmel/nand-controller.c
-> @@ -405,6 +405,7 @@ static int atmel_nand_dma_transfer(struct
-> atmel_nand_controller *nc,
-> 
->  	dma_async_issue_pending(nc->dmac);
->  	wait_for_completion(&finished);
-> +	dma_unmap_single(nc->dev, buf_dma, len, dir);
-> 
->  	return 0;
+> arch/arm64/kvm/../../../virt/kvm/eventfd.c: In function ‘kvm_register_irq_mask_notifier’:
+> arch/arm64/kvm/../../../virt/kvm/eventfd.c:528:51: error: ‘struct kvm_arch’ has no member named ‘mask_notifier_list’
+>   528 |         hlist_add_head_rcu(&kimn->link, &kvm->arch.mask_notifier_list);
+>       |                                                   ^
+> make[3]: *** [scripts/Makefile.build:249: arch/arm64/kvm/../../../virt/kvm/eventfd.o] Error 1
+> make[3]: *** Waiting for unfinished jobs....
+>   AR      kernel/entry/built-in.a
 
-Acked-by: Alexander Dahl <ada@thorsis.com>
+Oops, sorry.
 
-After studying 
-https://www.kernel.org/doc/html/latest/core-api/dma-api-howto.html
-this seems like the correct thing to do to me.
+> And kvm_fire_mask_notifiers() should probably be moved as well, otherwise there's
+> no point in moving the registration to common code.
 
-I was made aware of this patch in IRC, after discussing a strange lzo 
-decompression and/or page reading error with Richard after upgrading from 
-kernel v5.2.21-rt13 to v5.15.49-rt47.
+Good point, we can move it right away, even though it is not called on
+other architectures for now.
 
-Now testing this on top of 5.15.49-rt47 on two boards, both with Microchip 
-sama5d27c 128MiB SiP and Spansion S34ML02G1 raw nand flash. Will report later.
+> The other option would be to make the generic functions wrappers around arch-specific
+> hooks.  But IIRC won't this eventually be needed for other architectures?
 
-Thanks and greets
-Alex
+Right, I assume we will eventually need it for ARM at least. Not in the
+near future though, and at the moment I have no non-x86 hardware on hand
+to implement it for other architectures.
 
+Actually I feel a bit uncomfortable with generic irqfd relying on
+kvm_register_irq_mask_notifier() which silently has no effect on other
+architectures. Maybe it's better to keep
+kvm_(un)register_irq_mask_notifier() in the x86 code, and for the
+generic code add a weak version which e.g. just prints a warning like
+"irq mask notifiers not implemented on this arch". (Or maybe instead of
+weak functions introduce arch-specific hooks as you suggested, and print
+such a warning if no hook is provided.) What do you think?
 
+Thanks,
+Dmytro
 
