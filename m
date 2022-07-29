@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4097C00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 16:46:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1B59C00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 16:46:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238258AbiG2Qqq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 12:46:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36334 "EHLO
+        id S238271AbiG2Qqs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 12:46:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238153AbiG2Qpu (ORCPT
+        with ESMTP id S238152AbiG2Qpu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 29 Jul 2022 12:45:50 -0400
 Received: from new4-smtp.messagingengine.com (new4-smtp.messagingengine.com [66.111.4.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C78A588F2D
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5677888F37
         for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 09:45:49 -0700 (PDT)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id EF557580934;
-        Fri, 29 Jul 2022 12:35:53 -0400 (EDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 6BA35580942;
+        Fri, 29 Jul 2022 12:36:06 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Fri, 29 Jul 2022 12:35:53 -0400
+  by compute2.internal (MEProxy); Fri, 29 Jul 2022 12:36:06 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
         :cc:content-transfer-encoding:content-type:date:date:from:from
         :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm2; t=1659112553; x=
-        1659119753; bh=YWzd1M45UJ404WTbCsULbW4KUvX+gwYYJ16acMe7FbA=; b=X
-        UlA55IazycpWrng33oGOZjKDBcXEBEtCPzoC9xCLjQUHZglaSZbN57EODWPZWXF9
-        VhjKvMYqJaqP06Def9hzPeLQWu4GJnaKaA1SALnMRB6KnQQRzpW98hfPnNQmJkjC
-        5TCiOn5vtoKgsakxMv+WU2uFg4vx089YxYtVfIM17NiGf5W7twXh1Tn6V8LRAGoq
-        sHq87bOw1FOGsmx2oJ/0v0ILsQcm4QR2guPJ1eJMvmCBNe12y2H2lAyXn3nU0AN0
-        tJGrCu6Il8I0AVw/nOmyr3lsBQOOKGv0KWJLVOPGrLgSYaZo/YvwSHwsX1OReTlB
-        qMh5Zq+gzIRPIsCDy2F5Q==
+        :reply-to:sender:subject:subject:to:to; s=fm2; t=1659112566; x=
+        1659119766; bh=xVYLKG9KFFYmuOaTAKRLm+p8P7z09nrupInjkJzNlvg=; b=p
+        eGkvPp9VkszCbBMSvqhe2K521WOU5cEUHToD9XxGzIfDWbJJPr+H6dqaUzk9G1cD
+        b+08PM7zxoIsqqCRGLR/+8JyZo7zz6gfIC9xafnA8b43D8b0P676C9/mvdSWwUhs
+        aLkF29Fx77MbrU9rlTgCTmKH+1P7yKWYEnn9KVOxM+uGkY2IoDonvMIwEBaP5PDS
+        81X3ki1IHhB5/j4yJNDCZkFI1SAiPHDGlhgCy04HWUYpPZI0Dtd/ebYaVH68rnI0
+        BPRidxXjFSG8Wr3nj1KBE0j8xzoZ1M/y1EXVAyomt6GrZbNd1edgUKsoibSys3Js
+        /tFDmLl6UiTlh5ad5u01g==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-transfer-encoding
         :content-type:date:date:feedback-id:feedback-id:from:from
         :in-reply-to:in-reply-to:message-id:mime-version:references
         :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1659112553; x=
-        1659119753; bh=YWzd1M45UJ404WTbCsULbW4KUvX+gwYYJ16acMe7FbA=; b=y
-        r0ThaqJ/KJUkyoGPxyMP1PzOWIyvCPqanUCJ21AEWpRAPqWZjxcEVkRd/Rw+8efu
-        riKGHAFPbHtiFGeDXXFraXWK8qP7WqpP56NTy1+AU8keJ2tKTUwwK8wFm78QVulr
-        HEeULZTwMlKeDbhATRz6laOo73pw+2Jyy4LiwfP3DkMOgBw0qBEi9n/xJmbLkjsA
-        j0ppPjjJbYRnN/iG7+LbCYhJWtryIG6zkcYeocUWDXFd5qfb7ZNvlvjRLh+6Jf0x
-        Nf89bZDGsdSViQgrj+Xgop2nHYbin+yaCP93DtCZwyKbc6LgTTKzYpTMnJxDZdU6
-        Vr8qvsYtmAJhs4dsLwswA==
-X-ME-Sender: <xms:aQzkYqyC1xDGZK3BwkAWRwR4yFdftXfR9E4su9MA_MQZr_MK_VpCiA>
-    <xme:aQzkYmRHr7EeEUnInUMxc73lZRvwIuhohC5_rdfi-zY1ubjEzTYM2Yarba-kLjn9G
-    KQ_O_SF8PSa3ngKDfA>
-X-ME-Received: <xmr:aQzkYsWVVaHjlYnZXpKhJLTXXpLLFbgw5rv4W6-j43PK1zdHFPH5_pe0a6z1wjrIZ6oMd2bco702e5lmtus>
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1659112566; x=
+        1659119766; bh=xVYLKG9KFFYmuOaTAKRLm+p8P7z09nrupInjkJzNlvg=; b=1
+        D201QYH+jhj5T7xGEgRqCS2cA0hqz3QnILFtJywMR6tcMSnaMUNqJVTnSMxZqoym
+        76NEZOpWqd1ED/RqqPj/570LsmIdurCy5MfUNPPVPscoUNQyKJv9hdsekYMOd7Oo
+        EWTMyenmGaPtXNCn7zp4WbNAWijODYgqbyiDOtquvbEkMdrH3thr8Zd7ltQFBo/k
+        mKMrTy6nP/ZRA38kysqG8lX2ujjF5UDO1idAZOlO5SWTjcY4E4EyMGBvLzvRwVom
+        EM8zVhrXQ5N1/nL0gxSmTtOsKcxmZbYxEcXK5Z+grTPSC0MQ6xkJnsj+h/dlYxIs
+        0Pe1Q4po+xlRn9Ggwv+JQ==
+X-ME-Sender: <xms:dgzkYk2BMFe6IlW7XEWt9Zd1PCm0fv3U6QdsTSEG0ehKJBRnN4S1hg>
+    <xme:dgzkYvFXxPQAhxukA0ojKdCe600G3cDPLeF0OH-NbOAtT1Nb4OIK_htrbd0HdXTNv
+    BTCOLeZST4sojAwkKY>
+X-ME-Received: <xmr:dgzkYs5PKKYXyOW5OczTsWLN7AD8q3DHaYQdWDtUzy36lnEg2QPaHZmbMbSRLhQhipVd_6UHS6hTzRAygm0>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvddujedguddtgecutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
     necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
@@ -56,13 +56,13 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvddujedguddtgecutefuodetgg
     ftrfgrthhtvghrnhepgfffgfetffduudelhfevieffffduleevgfegkeeutefgffejheel
     leekjeefhfejnecuvehluhhsthgvrhfuihiivgepudenucfrrghrrghmpehmrghilhhfrh
     homhepmhgrgihimhgvsegtvghrnhhordhtvggthh
-X-ME-Proxy: <xmx:aQzkYggvf8ILTAkDv2QiqBE2OmHdAbkDsEiREydkkFR1GTkPoTRG4Q>
-    <xmx:aQzkYsD6C5yIq-mdRxBQsBWTms7LgsklydXDAboZwJyIK-K7R_FbZg>
-    <xmx:aQzkYhLgSF4Uh_YzGhlcS8kUiGhjMtKZzG_SZ-OLcoxOBI_peusljg>
-    <xmx:aQzkYmy-G10uTbxQJwab9pMO_--EEeZZZ8DN6sdU-_ZFExFe1IQPfA>
+X-ME-Proxy: <xmx:dgzkYt16qHHK42HYu-VGLpBImaQ0ithtjM2up0DB0OuxBKo1y9YZHQ>
+    <xmx:dgzkYnGiHunAAId1ZKwS4edR-O2_CtVLKT6FHqk3kcCPEzwkr2Qvog>
+    <xmx:dgzkYm9MDwent-LImtPSrE4DwzIN32_CGylVWzo-Pn_KOGDHETcYlw>
+    <xmx:dgzkYvUwKZYvB5olNpS7zIbdX2MkPT76qllhGq4ywK7PSVNtfTpQjA>
 Feedback-ID: i8771445c:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 29 Jul 2022 12:35:52 -0400 (EDT)
+ 29 Jul 2022 12:36:05 -0400 (EDT)
 From:   Maxime Ripard <maxime@cerno.tech>
 To:     Jernej Skrabec <jernej.skrabec@gmail.com>,
         Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
@@ -86,68 +86,61 @@ Cc:     Maxime Ripard <maxime@cerno.tech>, linux-sunxi@lists.linux.dev,
         Dave Stevenson <dave.stevenson@raspberrypi.com>,
         linux-amlogic@lists.infradead.org, dri-devel@lists.freedesktop.org,
         Dom Cobley <dom@raspberrypi.com>
-Subject: [PATCH v1 07/35] drm/modes: Only consider bpp and refresh before options
-Date:   Fri, 29 Jul 2022 18:34:50 +0200
-Message-Id: <20220728-rpi-analog-tv-properties-v1-7-3d53ae722097@cerno.tech>
+Subject: [PATCH v1 11/35] drm/modes: Fill drm_cmdline mode from named modes
+Date:   Fri, 29 Jul 2022 18:34:54 +0200
+Message-Id: <20220728-rpi-analog-tv-properties-v1-11-3d53ae722097@cerno.tech>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
 References: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 X-Mailer: b4 0.10.0-dev-49460
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1546; i=maxime@cerno.tech; h=from:subject:message-id; bh=0dDWMayp8tTv4iediPV+Th9ldEA0clkjbey5Bc39YFo=; b=owGbwMvMwCHc4XzqmfnC7acZT6slMSQ94VHS+bvy0CbL/BcxfRX31OoO3U4T3Ml02bK8bFFfv9S+ XO7rHaUsDMIcDLJiiizXBd/a8YVFuUXwfNgMM4eVCWQIAxenAExEejnD/wzjHzrzmEKfOfJu33CgXv tcKNutvdPr/ooX97F1a82fNZ2R4bNJTO9KrViujNObVlv/4N0y7Vu66nXjiZ2hB2K852S5/QQA
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1439; i=maxime@cerno.tech; h=from:subject:message-id; bh=NWuztsnfEBMwtrwGZAZ89RBSXbuMUAK6h8TPssl7ueY=; b=owGbwMvMwCHc4XzqmfnC7acZT6slMSQ94VFatr10tcm+HI8krRuTQr8mfAkyKmqcsXSbdwP31w2/ Y08UdpSyMAhzMMiKKbJcF3xrxxcW5RbB82EzzBxWJpAhDFycAjCR/YcZGR7ppvMEqYY8j2Pa/WDVgf lCS/ZWCwarVn+adbx93vncny8YGWa5Bx3lusat82xuXLT5NsZ/P2LCRU37244JmZ0wnDn9SBUA
 X-Developer-Key: i=maxime@cerno.tech; a=openpgp; fpr=BE5675C37E818C8B5764241C254BCFC56BF6CE8D
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some video= options might have a value that contains a dash. However, the
-command line parsing mode considers all dashes as the separator between the
-mode and the bpp count.
+The current code to deal with named modes will only set the mode name, and
+then it's up to drivers to try to match that name to whatever mode or
+configuration they see fit.
 
-Let's rework the parsing code a bit to only consider a dash as the bpp
-separator if it before a comma, the options separator.
-
-A follow-up patch will add a unit-test for this once such an option is
-introduced.
+The plan is to remove that need and move the named mode handling out of
+drivers and into the core, and only rely on modes and properties. Let's
+start by properly filling drm_cmdline_mode from a named mode.
 
 Signed-off-by: Maxime Ripard <maxime@cerno.tech>
 
 diff --git a/drivers/gpu/drm/drm_modes.c b/drivers/gpu/drm/drm_modes.c
-index a4c1bd688338..06a006e0b2e3 100644
+index 1421e5da49e0..78ea520f2822 100644
 --- a/drivers/gpu/drm/drm_modes.c
 +++ b/drivers/gpu/drm/drm_modes.c
-@@ -1819,20 +1819,22 @@ bool drm_mode_parse_command_line_for_connector(const char *mode_option,
+@@ -1770,11 +1770,12 @@ static int drm_mode_parse_cmdline_options(const char *str,
  
- 	name = mode_option;
+ struct drm_named_mode {
+ 	const char *name;
++	const struct drm_display_mode *mode;
+ };
  
-+	/* Locate the start of named options */
-+	options_ptr = strchr(name, ',');
-+	if (options_ptr)
-+		options_off = options_ptr - name;
-+	else
-+		options_off = strlen(name);
-+
- 	/* Try to locate the bpp and refresh specifiers, if any */
--	bpp_ptr = strchr(name, '-');
-+	bpp_ptr = strnchr(name, options_off, '-');
- 	if (bpp_ptr)
- 		bpp_off = bpp_ptr - name;
+ static const struct drm_named_mode drm_named_modes[] = {
+-	{ "NTSC", },
+-	{ "PAL", },
++	{ "NTSC", &drm_mode_480i, },
++	{ "PAL", &drm_mode_576i, },
+ };
  
--	refresh_ptr = strchr(name, '@');
-+	refresh_ptr = strnchr(name, options_off, '@');
- 	if (refresh_ptr)
- 		refresh_off = refresh_ptr - name;
+ static bool drm_mode_parse_cmdline_named_mode(const char *name,
+@@ -1792,6 +1793,9 @@ static bool drm_mode_parse_cmdline_named_mode(const char *name,
+ 			continue;
  
--	/* Locate the start of named options */
--	options_ptr = strchr(name, ',');
--	if (options_ptr)
--		options_off = options_ptr - name;
--
- 	/* Locate the end of the name / resolution, and parse it */
- 	if (bpp_ptr) {
- 		mode_end = bpp_off;
+ 		strcpy(cmdline_mode->name, mode->name);
++		cmdline_mode->xres = mode->mode->hdisplay;
++		cmdline_mode->yres = mode->mode->vdisplay;
++		cmdline_mode->interlace = !!(mode->mode->flags & DRM_MODE_FLAG_INTERLACE);
+ 		cmdline_mode->specified = true;
+ 
+ 		return true;
 
 -- 
 b4 0.10.0-dev-49460
