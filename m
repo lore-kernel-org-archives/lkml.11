@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0041AC00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 09:40:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 129F6C00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 09:41:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235906AbiG2Jk4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 05:40:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40178 "EHLO
+        id S235805AbiG2JlB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 05:41:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235900AbiG2Jk2 (ORCPT
+        with ESMTP id S235704AbiG2Jk3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 05:40:28 -0400
+        Fri, 29 Jul 2022 05:40:29 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 960351134;
-        Fri, 29 Jul 2022 02:40:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 901DD2DE7;
+        Fri, 29 Jul 2022 02:40:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 335E361DAB;
-        Fri, 29 Jul 2022 09:39:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AC99C433C1;
-        Fri, 29 Jul 2022 09:39:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3054D61D43;
+        Fri, 29 Jul 2022 09:40:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 128B8C433C1;
+        Fri, 29 Jul 2022 09:40:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659087597;
-        bh=l07iqYvDCIzM91o7dR81Qc67Abtk1LTX8NhlRBkyDUE=;
+        s=k20201202; t=1659087607;
+        bh=GB41tQKICNtDkQFxA/QWse4BCeG2/JC8OIwADKGp+BU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JB4l0TfUxKC7nBWmAHvg+zvn+y4I13Ez97GrPMI+V+TIxTNpJCWKIwdLyBF+3Q/EK
-         UtkHEPNXYVphBvfiwDCn1lfnsKA/S49YeSnKHUMkdZrZVCXnTMCvxdZTGIyBjpI+Rq
-         edez/pgumo5NKX5f6NTXidY8I/KP9sEGPt5bH0jtAf5QBb6YWqIz4xO3fLOQiyqDTm
-         AcYbOUvFeN/U2rP/eIKUFL74P/BXmq2xmhyMgrH+du7y3yJq7+5mG8v1k+vT0hfjAh
-         RIULwz9Uql1HH25T6bP1xHXuxs5q1dMMlZL00CaqSNrz2CGddOmFrIGbOR5vjiuPBg
-         1WVqLaPb/NTpQ==
+        b=pvP9bRcs4U6a5SmepAWpwIoR+qz/7LIz2zGFSZPptkjsfslE3iQK58d14RCFnGdvd
+         SNMdS54F88ov9m1UE0re11B6pCEubY3CVmJVQuYEiwxo7CF3LIaPCGmVYVnpnsi2in
+         Gyxhlud23+XUFtL1t7z8j/lkJxb+bqn++t52TeTmVxAColqge5i73VNJ+FSSpQWbdB
+         8e9A2TmuFyjWCjvezAUmJC5jqEd+VPAdSToszJxjmYcFZWz6E1IG/+NLCRU56YlOKP
+         yOhjvQ3ahWd+3LAWOcRJfNqNSGbyWWtV5ziZxzqzP65MaqKqqoUidjIJ33XPsOf617
+         IfNf4ZERkj+oQ==
 From:   Daniel Bristot de Oliveira <bristot@kernel.org>
 To:     Steven Rostedt <rostedt@goodmis.org>
 Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
@@ -54,9 +54,9 @@ Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
         Randy Dunlap <rdunlap@infradead.org>,
         linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-trace-devel@vger.kernel.org
-Subject: [PATCH V9 10/16] Documentation/rv: Add deterministic automata monitor synthesis documentation
-Date:   Fri, 29 Jul 2022 11:38:49 +0200
-Message-Id: <7873bdb7b2e5d2bc0b2eb6ca0b324af9a0ba27a0.1659052063.git.bristot@kernel.org>
+Subject: [PATCH V9 12/16] rv/monitor: Add the wip monitor skeleton created by dot2k
+Date:   Fri, 29 Jul 2022 11:38:51 +0200
+Message-Id: <5eb7a9118917e8a814c5e49853a72fc62be0a101.1659052063.git.bristot@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <cover.1659052063.git.bristot@kernel.org>
 References: <cover.1659052063.git.bristot@kernel.org>
@@ -66,8 +66,15 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the da_monitor_synthesis.rst introduces some concepts behind the
-Deterministic Automata (DA) monitor synthesis and interface.
+THIS CODE IS NOT LINKED TO THE MAKEFILE.
+
+This model does not compile because it lacks the instrumentation
+part, which will be added next. In the typical case, there will be
+only one patch, but it was split into two patches for educational
+purposes.
+
+This is the direct output this command line:
+  $ dot2k -d tools/verification/models/wip.dot -t per_cpu
 
 Cc: Wim Van Sebroeck <wim@linux-watchdog.org>
 Cc: Guenter Roeck <linux@roeck-us.net>
@@ -92,218 +99,179 @@ Cc: linux-kernel@vger.kernel.org
 Cc: linux-trace-devel@vger.kernel.org
 Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
 ---
- .../trace/rv/da_monitor_synthesis.rst         | 147 ++++++++++++++++++
- Documentation/trace/rv/index.rst              |   1 +
- include/rv/da_monitor.h                       |   3 +
- tools/verification/dot2/dot2k                 |   3 +
- tools/verification/dot2/dot2k.py              |   3 +
- 5 files changed, 157 insertions(+)
- create mode 100644 Documentation/trace/rv/da_monitor_synthesis.rst
+ kernel/trace/rv/monitors/wip/wip.c | 109 +++++++++++++++++++++++++++++
+ kernel/trace/rv/monitors/wip/wip.h |  46 ++++++++++++
+ 2 files changed, 155 insertions(+)
+ create mode 100644 kernel/trace/rv/monitors/wip/wip.c
+ create mode 100644 kernel/trace/rv/monitors/wip/wip.h
 
-diff --git a/Documentation/trace/rv/da_monitor_synthesis.rst b/Documentation/trace/rv/da_monitor_synthesis.rst
+diff --git a/kernel/trace/rv/monitors/wip/wip.c b/kernel/trace/rv/monitors/wip/wip.c
 new file mode 100644
-index 000000000000..0dbdcd1e62b9
+index 000000000000..79a054ca0cde
 --- /dev/null
-+++ b/Documentation/trace/rv/da_monitor_synthesis.rst
-@@ -0,0 +1,147 @@
-+Deterministic Automata Monitor Synthesis
-+========================================
++++ b/kernel/trace/rv/monitors/wip/wip.c
+@@ -0,0 +1,109 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <linux/ftrace.h>
++#include <linux/tracepoint.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/init.h>
++#include <linux/rv.h>
++#include <rv/instrumentation.h>
++#include <rv/da_monitor.h>
 +
-+The starting point for the application of runtime verification (RV) technics
-+is the *specification* or *modeling* of the desired (or undesired) behavior
-+of the system under scrutiny.
++#define MODULE_NAME "wip"
 +
-+The formal representation needs to be then *synthesized* into a *monitor*
-+that can then be used in the analysis of the trace of the system. The
-+*monitor* connects to the system via an *instrumentation* that converts
-+the events from the *system* to the events of the *specification*.
++/*
++ * XXX: include required tracepoint headers, e.g.,
++ * #include <linux/trace/events/sched.h>
++ */
++#include <trace/events/rv.h>
 +
++/*
++ * This is the self-generated part of the monitor. Generally, there is no need
++ * to touch this section.
++ */
++#include "wip.h"
 +
-+In Linux terms, the runtime verification monitors are encapsulated inside
-+the *RV monitor* abstraction. The RV monitor includes a set of instances
-+of the monitor (per-cpu monitor, per-task monitor, and so on), the helper
-+functions that glue the monitor to the system reference model, and the
-+trace output as a reaction to event parsing and exceptions, as depicted
-+below::
-+
-+ Linux  +----- RV Monitor ----------------------------------+ Formal
-+  Realm |                                                   |  Realm
-+  +-------------------+     +----------------+     +-----------------+
-+  |   Linux kernel    |     |     Monitor    |     |     Reference   |
-+  |     Tracing       |  -> |   Instance(s)  | <-  |       Model     |
-+  | (instrumentation) |     | (verification) |     | (specification) |
-+  +-------------------+     +----------------+     +-----------------+
-+         |                          |                       |
-+         |                          V                       |
-+         |                     +----------+                 |
-+         |                     | Reaction |                 |
-+         |                     +--+--+--+-+                 |
-+         |                        |  |  |                   |
-+         |                        |  |  +-> trace output ?  |
-+         +------------------------|--|----------------------+
-+                                  |  +----> panic ?
-+                                  +-------> <user-specified>
-+
-+DA monitor synthesis
-+--------------------
-+
-+The synthesis of automata-based models into the Linux *RV monitor* abstraction
-+is automated by the dot2k tool and the rv/da_monitor.h header file that
-+contains a set of macros that automatically generate the monitor's code.
-+
-+dot2k
-+-----
-+
-+The dot2k utility leverages dot2c by converting an automaton model in
-+the DOT format into the C representation [1] and creating the skeleton of
-+a kernel monitor in C.
-+
-+For example, it is possible to transform the wip.dot model present in
-+[1] into a per-cpu monitor with the following command::
-+
-+  $ dot2k -d wip.dot -t per_cpu
-+
-+This will create a directory named wip/ with the following files:
-+
-+- wip.h: the wip model in C
-+- wip.c: the RV monitor
-+
-+The wip.c file contains the monitor declaration and the starting point for
-+the system instrumentation.
-+
-+Monitor macros
-+--------------
-+
-+The rv/da_monitor.h enables automatic code generation for the *Monitor
-+Instance(s)* using C macros.
-+
-+The benefits of the usage of macro for monitor synthesis are 3-fold as it:
-+
-+- Reduces the code duplication;
-+- Facilitates the bug fix/improvement;
-+- Avoids the case of developers changing the core of the monitor code
-+  to manipulate the model in a (let's say) non-standard way.
-+
-+This initial implementation presents three different types of monitor instances:
-+
-+- ``#define DECLARE_DA_MON_GLOBAL(name, type)``
-+- ``#define DECLARE_DA_MON_PER_CPU(name, type)``
-+- ``#define DECLARE_DA_MON_PER_TASK(name, type)``
-+
-+The first declares the functions for a global deterministic automata monitor,
-+the second for monitors with per-cpu instances, and the third with per-task
-+instances.
-+
-+In all cases, the 'name' argument is a string that identifies the monitor, and
-+the 'type' argument is the data type used by dot2k on the representation of
-+the model in C.
-+
-+For example, the wip model with two states and three events can be
-+stored in an 'unsigned char' type. Considering that the preemption control
-+is a per-cpu behavior, the monitor declaration in the 'wip.c' file is::
-+
-+  DECLARE_DA_MON_PER_CPU(wip, unsigned char);
-+
-+The monitor is executed by sending events to be processed via the functions
-+presented below::
-+
-+  da_handle_event_$(MONITOR_NAME)($(event from event enum));
-+  da_handle_start_event_$(MONITOR_NAME)($(event from event enum));
-+  da_handle_start_run_event_$(MONITOR_NAME)($(event from event enum));
-+
-+The function ``da_handle_event_$(MONITOR_NAME)()`` is the regular case where
-+the event will be processed if the monitor is processing events.
-+
-+When a monitor is enabled, it is placed in the initial state of the automata.
-+However, the monitor does not know if the system is in the *initial state*.
-+
-+The ``da_handle_start_event_$(MONITOR_NAME)()`` function is used to notify the
-+monitor that the system is returning to the initial state, so the monitor can
-+start monitoring the next event.
-+
-+The ``da_handle_start_run_event_$(MONITOR_NAME)()`` function is used to notify
-+the monitor that the system is known to be in the initial state, so the
-+monitor can start monitoring and monitor the current event.
-+
-+Using the wip model as example, the events "preempt_disable" and
-+"sched_waking" should be sent to monitor, respectively, via [2]::
-+
-+  da_handle_event_wip(preempt_disable_wip);
-+  da_handle_event_wip(sched_waking_wip);
-+
-+While the event "preempt_enabled" will use::
-+
-+  da_handle_start_event_wip(preempt_enable_wip);
-+
-+To notify the monitor that the system will be returning to the initial state,
-+so the system and the monitor should be in sync.
-+
-+Final remarks
-+-------------
-+
-+With the monitor synthesis in place using the rv/da_monitor.h and
-+dot2k, the developer's work should be limited to the instrumentation
-+of the system, increasing the confidence in the overall approach.
-+
-+[1] For details about deterministic automata format and the translation
-+from one representation to another, see::
-+
-+  Documentation/trace/rv/deterministic_automata.rst
-+
-+[2] dot2k appends the monitor's name suffix to the events enums to
-+avoid conflicting variables when exporting the global vmlinux.h
-+use by BPF programs.
-diff --git a/Documentation/trace/rv/index.rst b/Documentation/trace/rv/index.rst
-index 013a41a410cf..46d47f33052c 100644
---- a/Documentation/trace/rv/index.rst
-+++ b/Documentation/trace/rv/index.rst
-@@ -8,3 +8,4 @@ Runtime Verification
- 
-    runtime-verification.rst
-    deterministic_automata.rst
-+   da_monitor_synthesis.rst
-diff --git a/include/rv/da_monitor.h b/include/rv/da_monitor.h
-index 001bc298289f..9eb75683e012 100644
---- a/include/rv/da_monitor.h
-+++ b/include/rv/da_monitor.h
-@@ -6,6 +6,9 @@
-  * with automata models in C generated by the dot2k tool.
-  *
-  * The dot2k tool is available at tools/verification/dot2k/
++/*
++ * Declare the deterministic automata monitor.
 + *
-+ * For further information, see:
-+ *   Documentation/trace/rv/da_monitor_synthesis.rst
-  */
- 
- #include <rv/automata.h>
-diff --git a/tools/verification/dot2/dot2k b/tools/verification/dot2/dot2k
-index 69106f4b7682..9dcd38abe20a 100644
---- a/tools/verification/dot2/dot2k
-+++ b/tools/verification/dot2/dot2k
-@@ -4,6 +4,9 @@
- # Copyright (C) 2019-2022 Red Hat, Inc. Daniel Bristot de Oliveira <bristot@kernel.org>
- #
- # dot2k: transform dot files into a monitor for the Linux kernel.
-+#
-+# For further information, see:
-+#   Documentation/trace/rv/da_monitor_synthesis.rst
- 
- if __name__ == '__main__':
-     from dot2.dot2k import dot2k
-diff --git a/tools/verification/dot2/dot2k.py b/tools/verification/dot2/dot2k.py
-index d85f755e3bc7..016550fccf1f 100644
---- a/tools/verification/dot2/dot2k.py
-+++ b/tools/verification/dot2/dot2k.py
-@@ -4,6 +4,9 @@
- # Copyright (C) 2019-2022 Red Hat, Inc. Daniel Bristot de Oliveira <bristot@kernel.org>
- #
- # dot2k: transform dot files into a monitor for the Linux kernel.
-+#
-+# For further information, see:
-+#   Documentation/trace/rv/da_monitor_synthesis.rst
- 
- from dot2.dot2c import Dot2c
- import platform
++ * The rv monitor reference is needed for the monitor declaration.
++ */
++struct rv_monitor rv_wip;
++DECLARE_DA_MON_PER_CPU(wip, unsigned char);
++
++/*
++ * This is the instrumentation part of the monitor.
++ *
++ * This is the section where manual work is required. Here the kernel events
++ * are translated into model's event.
++ *
++ */
++static void handle_preempt_disable(void *data, /* XXX: fill header */)
++{
++	da_handle_event_wip(preempt_disable_wip);
++}
++
++static void handle_preempt_enable(void *data, /* XXX: fill header */)
++{
++	da_handle_event_wip(preempt_enable_wip);
++}
++
++static void handle_sched_waking(void *data, /* XXX: fill header */)
++{
++	da_handle_event_wip(sched_waking_wip);
++}
++
++static int enable_wip(void)
++{
++	int retval;
++
++	retval = da_monitor_init_wip();
++	if (retval)
++		return retval;
++
++	rv_attach_trace_probe("wip", /* XXX: tracepoint */, handle_preempt_disable);
++	rv_attach_trace_probe("wip", /* XXX: tracepoint */, handle_preempt_enable);
++	rv_attach_trace_probe("wip", /* XXX: tracepoint */, handle_sched_waking);
++
++	return 0;
++}
++
++static void disable_wip(void)
++{
++	rv_wip.enabled = 0;
++
++	rv_detach_trace_probe("wip", /* XXX: tracepoint */, handle_preempt_disable);
++	rv_detach_trace_probe("wip", /* XXX: tracepoint */, handle_preempt_enable);
++	rv_detach_trace_probe("wip", /* XXX: tracepoint */, handle_sched_waking);
++
++	da_monitor_destroy_wip();
++}
++
++/*
++ * This is the monitor register section.
++ */
++struct rv_monitor rv_wip = {
++	.name = "wip",
++	.description = "auto-generated wip",
++	.enable = enable_wip,
++	.disable = disable_wip,
++	.reset = da_monitor_reset_all_wip,
++	.enabled = 0,
++};
++
++static int register_wip(void)
++{
++	rv_register_monitor(&rv_wip);
++	return 0;
++}
++
++static void unregister_wip(void)
++{
++	rv_unregister_monitor(&rv_wip);
++}
++
++module_init(register_wip);
++module_exit(unregister_wip);
++
++MODULE_LICENSE("GPL");
++MODULE_AUTHOR("dot2k: auto-generated");
++MODULE_DESCRIPTION("wip");
+diff --git a/kernel/trace/rv/monitors/wip/wip.h b/kernel/trace/rv/monitors/wip/wip.h
+new file mode 100644
+index 000000000000..c1c47e2305ef
+--- /dev/null
++++ b/kernel/trace/rv/monitors/wip/wip.h
+@@ -0,0 +1,46 @@
++/*
++ * Automatically generated C representation of wip automaton
++ * For further information about this format, see kernel documentation:
++ *   Documentation/trace/rv/deterministic_automata.rst
++ */
++
++enum states_wip {
++	preemptive_wip = 0,
++	non_preemptive_wip,
++	state_max_wip
++};
++
++#define INVALID_STATE state_max_wip
++
++enum events_wip {
++	preempt_disable_wip = 0,
++	preempt_enable_wip,
++	sched_waking_wip,
++	event_max_wip
++};
++
++struct automaton_wip {
++	char *state_names[state_max_wip];
++	char *event_names[event_max_wip];
++	unsigned char function[state_max_wip][event_max_wip];
++	unsigned char initial_state;
++	bool final_states[state_max_wip];
++};
++
++struct automaton_wip automaton_wip = {
++	.state_names = {
++		"preemptive",
++		"non_preemptive"
++	},
++	.event_names = {
++		"preempt_disable",
++		"preempt_enable",
++		"sched_waking"
++	},
++	.function = {
++		{ non_preemptive_wip,      INVALID_STATE,      INVALID_STATE },
++		{      INVALID_STATE,     preemptive_wip, non_preemptive_wip },
++	},
++	.initial_state = preemptive_wip,
++	.final_states = { 1, 0 },
++};
 -- 
 2.35.1
 
