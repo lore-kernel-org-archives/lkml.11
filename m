@@ -2,178 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C91B5C00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 19:12:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11643C00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 19:22:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238780AbiG2TMp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 15:12:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34082 "EHLO
+        id S238211AbiG2TW0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 15:22:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237395AbiG2TMh (ORCPT
+        with ESMTP id S229549AbiG2TWY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 15:12:37 -0400
-Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AA988210A
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 12:12:35 -0700 (PDT)
-Received: by mail-qv1-xf29.google.com with SMTP id mk9so1456679qvb.11
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 12:12:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=MD/Y1Ux36S7YhGnDVVwMOyxaB+EoqSrFVx9rgP9aahY=;
-        b=S4AT4Ada+qIIoQWVjxhyOOAUEoHPwY3fwslxsVJJvK4hTaUep3WogZjhTKdxr1jPTj
-         NiAFRDaIffdXgXTe0VuKReiQwhVGzrMVJIOOYVtzOyBFGxHzaaeKdtC8oLNszTrztzok
-         Rqk9lyUKpvIWzYcNpUmJHjXubVxeTe4NqQ9gdTUEVCwmoZ46YM5vI/wKHUGHMqcTFzaj
-         T2jbKkmWQY+DFZAKkBQI6hLto1jK74J3gpTOL7DyLaxU03xLOMtKIXzQk8w0EIcKb//b
-         z3EH9nla/6PrrKE7pJRHlnKl1aHxOxgOQh3zgmQLWuyjeKH3+TJli3dQuVjHhAXjuSnu
-         +4kw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=MD/Y1Ux36S7YhGnDVVwMOyxaB+EoqSrFVx9rgP9aahY=;
-        b=cK6GRetfLV/WmgAMt6FW2omCv8KJKYKLX4Y5+j1QHWSGtmXIGfvEZzAHDPSergO2Rt
-         5/1KzPSvFEwhVwaanj55BL9brtRfB0l0W8/Y29yhNern07spWwM79FbNfI5odoSvSjfy
-         ps12qVNaFu3/ZzQw85wwo1ogsr2L5LFIfscR1O7JSn/GhUfzAc3CK5QAmrpKkyXZBpyZ
-         OKGytPDu4Pze552ff9/Z2xQh+n5A7hvEPohshmAf6pzLCVgDVzzRLEj7yRppig1i46xk
-         4vJXXJtBtKT1J1KrQwtEXjKb2Y0v/RpAwxo1Ci6kRQ9hJ3BDz5kmEO58rc5VH4gFXd49
-         hQ2g==
-X-Gm-Message-State: ACgBeo0qwGQNUz9aPqg9pUEZ5rVbFVqXddjYiiJkfrn+lf62ndSbvKGQ
-        hlJvAkX4wuij1SvUAgXa/uh/rw==
-X-Google-Smtp-Source: AA6agR5WsDNzyc0U213ntxGsYAkELGXY7PUQTdYmx68YyABWFqKq6a8LfzXgGUZihcOAo5ixikG6Hw==
-X-Received: by 2002:a05:6214:248a:b0:474:3739:6007 with SMTP id gi10-20020a056214248a00b0047437396007mr4723247qvb.57.1659121953858;
-        Fri, 29 Jul 2022 12:12:33 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
-        by smtp.gmail.com with ESMTPSA id dm26-20020a05620a1d5a00b006af147d4876sm3035166qkb.30.2022.07.29.12.12.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Jul 2022 12:12:32 -0700 (PDT)
-Received: from jgg by wakko with local (Exim 4.95)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1oHVPU-000D7g-3B;
-        Fri, 29 Jul 2022 16:12:32 -0300
-Date:   Fri, 29 Jul 2022 16:12:32 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Long Li <longli@microsoft.com>
-Cc:     Dexuan Cui <decui@microsoft.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "shiraz.saleem@intel.com" <shiraz.saleem@intel.com>,
-        Ajay Sharma <sharmaajay@microsoft.com>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
-Subject: Re: [Patch v4 03/12] net: mana: Handle vport sharing between devices
-Message-ID: <YuQxIKxGAvUIwVmj@ziepe.ca>
-References: <1655345240-26411-1-git-send-email-longli@linuxonhyperv.com>
- <1655345240-26411-4-git-send-email-longli@linuxonhyperv.com>
- <SN6PR2101MB13272044B91D6E37F7F5124FBF879@SN6PR2101MB1327.namprd21.prod.outlook.com>
- <PH7PR21MB3263F08C111C5D06C99CC32ACE869@PH7PR21MB3263.namprd21.prod.outlook.com>
- <20220720234209.GP5049@ziepe.ca>
- <PH7PR21MB3263F5FD2FA4BA6669C21509CE919@PH7PR21MB3263.namprd21.prod.outlook.com>
- <20220721143858.GV5049@ziepe.ca>
- <PH7PR21MB326339501D9CA5ABE69F8AE9CE919@PH7PR21MB3263.namprd21.prod.outlook.com>
- <20220721183219.GA6833@ziepe.ca>
- <PH7PR21MB326304834D36451E7609D102CE999@PH7PR21MB3263.namprd21.prod.outlook.com>
+        Fri, 29 Jul 2022 15:22:24 -0400
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (mail-dm6nam04on2042.outbound.protection.outlook.com [40.107.102.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6151C4F6AD
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 12:22:23 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=H/c1zlXHtPy+MJOxwi7lIx+b2j4YEz5QBSmqMl9oE7hYekoh+b5yLCfrUq+83cODkXlVzWAj8kNKCW9MY0kdiFqiGsY5AfN3Pzgxg6URhusaevos9e117Tl9MZZyR3p0/HWmN9etojwXsAC9ZfoQf5+/SbkCjAVqSeOyh4YTUtnG0mq2l1ijhSgQ+mlcZpE6ejtVVA+zphff/yC+iG7AkmbMfQja1zO+GNnAwpB+h/qkL2kL1Wr2mgz+yTwXyti43xgV5VchoqzQPm+Xw1X/zOEjSYk73m7NzpLYXyN9H1QhxQNHr7VWdX3yrC2KHZ4Wb+W4pgdAixQGKvXjZK47iw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=pFUQ89UuK/x7geZ0EUmiYvZrF6Y+kjDrmYr0YakvQEo=;
+ b=XtDZknQVaQMpPtJ09qAufnhgyAoCMl4795PFm7M110IJgd7tg57qYvMj3xSM/Zi+9qAsZP2F3iz4MFhl1PFDHUWnfHomcl/0TiYUW6VxyYEoy1UIyVYmqwU92eN4FENK5Gkub3OZYltPOL1u4OzturGhGaHD/IdQxOp4VkXER6GWiflwWXrMNXU/DsJOld1+BE8OZQKToMrlirCYJFTKuvb30TNUSAdKCdYrpXIsdrZBVN8PMKTlh3cn2hKixuvaB2qygyVyGhUmVT+D2BsJXsVG9MOxnTDIORWzAqgl4xvEhLqM44CT9HasYShSN8ax/YlMf3rMe1hFW4N8jMlNng==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pFUQ89UuK/x7geZ0EUmiYvZrF6Y+kjDrmYr0YakvQEo=;
+ b=JatUaGOLt8z1GYO1V8bofwqCnYvMcuTokg/dOx9MhyILIslgHzXUMPsYlg0fAPvSc41rRUSIhdOT1LX/Tt2CYd0+k/vvNRzjlTZUpkiK2HrQlrWkV6d6SI+wiwKoATYyIFJ+aBmPp85WHAFzZFJ+ARvOAKoR4dfgTlfzXdnEcBQ=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DM4PR12MB5229.namprd12.prod.outlook.com (2603:10b6:5:398::12)
+ by CY4PR12MB1320.namprd12.prod.outlook.com (2603:10b6:903:40::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.20; Fri, 29 Jul
+ 2022 19:22:21 +0000
+Received: from DM4PR12MB5229.namprd12.prod.outlook.com
+ ([fe80::1dac:1301:78a3:c0d0]) by DM4PR12MB5229.namprd12.prod.outlook.com
+ ([fe80::1dac:1301:78a3:c0d0%4]) with mapi id 15.20.5482.012; Fri, 29 Jul 2022
+ 19:22:21 +0000
+Message-ID: <efde397b-35fc-c47b-b21e-898fa2ec6920@amd.com>
+Date:   Fri, 29 Jul 2022 14:22:18 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH v1 1/2] x86/sev: Use per-CPU PSC structure in prep for
+ unaccepted memory support
+Content-Language: en-US
+To:     Dave Hansen <dave.hansen@intel.com>, linux-kernel@vger.kernel.org,
+        x86@kernel.org
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "Kirill A. Shutemov" <kirill@shutemov.name>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Michael Roth <michael.roth@amd.com>,
+        Joerg Roedel <jroedel@suse.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>
+References: <20220614120231.48165-1-kirill.shutemov@linux.intel.com>
+ <cover.1659103274.git.thomas.lendacky@amd.com>
+ <658c455c40e8950cb046dd885dd19dc1c52d060a.1659103274.git.thomas.lendacky@amd.com>
+ <d27e42a8-b2af-f922-4cea-b1ddaa2a0af0@intel.com>
+ <9da5204f-5c8f-b47b-bcc6-d68ca63db08d@amd.com>
+ <377f6c30-bdfc-55a4-bda7-f29c60c53300@intel.com>
+From:   Tom Lendacky <thomas.lendacky@amd.com>
+In-Reply-To: <377f6c30-bdfc-55a4-bda7-f29c60c53300@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SA0PR12CA0027.namprd12.prod.outlook.com
+ (2603:10b6:806:6f::32) To DM4PR12MB5229.namprd12.prod.outlook.com
+ (2603:10b6:5:398::12)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <PH7PR21MB326304834D36451E7609D102CE999@PH7PR21MB3263.namprd21.prod.outlook.com>
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: efd62e2c-ab2f-446d-22f5-08da7197a8a3
+X-MS-TrafficTypeDiagnostic: CY4PR12MB1320:EE_
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: atleBMGabiGbyxTdaHWLzu1yvlVJ5h9jFcWbJhc7IsOZkWnNbNq1iJrDdhg4f+HU5MzUFB650suRzKl9Am+n/7F5nmkFOAi/FSJcc2aapaMOAqlK5TMgiOelaEu0VPXfqD1Vdx5QaUvO2a6MsqsGmGUWAgVU4WMJ88osK174egDVxT3V3vRKLalG6zI2TjiJ7QjnhsXpFmzii8J2RTb6e5eNnPXxoV0SggDm75e3SgEC7ng0AQyLdfuHKnGX2wd9Sqa0Q0rCLuy/OwokOYZhFUjJLnST6hi7PZoSDPKxj3jLmC2GVcpFWa5r8zMLZ+jsg3eYNVDXyupfWKIySzcrYxSDzwdCDy7iXzFw79+UMjDKj5V8NhP+8kM0O0Et4iQjGdE+RjM0lauRfAHO/Z+kWYYcEUBcPAzgClKpvJxn67T/gysDQcHShH9E3ZhoUpfgStBa71ZLajA7VcX75aYdU8Ml3oYYnyTPm0bmFgw00KfvuHp8Yu81tUuioppbA/RqWB4yG/+HIiCm9PfhtCaZB2mZ4JF/kGufDzeqfUpyveC5b4nPjb2sn5lRzM0szmxASTZGSqtcQmnbJtr1Xkupotl5e5Y4vXDVDk4LdNvJz2i9ytMYrKfd+U/Z+M9Ex+fQPeCYX/gv6pmpdeKsVVZBKEmDDeHp2d2yDuCiEbNlR4g8+JLl6OJzC4a4KBqmtsyUuMwXwkjImvzH4NWbNzmW8rUf0RUcb9SxcOc44UU0ezueRDl+PWa3TtIwCI0TrJQMbM8kppA0PmcDMHqrLRnyLaFeaschcokPDyL4E4lXZGff3MqeqZ49aTsJ93B2+pn5Wm6u3YfFIk3h6fCupYtfJw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5229.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(4636009)(136003)(366004)(346002)(396003)(376002)(39860400002)(4744005)(6486002)(2616005)(6666004)(86362001)(38100700002)(36756003)(83380400001)(31696002)(31686004)(41300700001)(7416002)(186003)(5660300002)(6512007)(66946007)(54906003)(8936002)(8676002)(66556008)(4326008)(478600001)(66476007)(2906002)(26005)(53546011)(316002)(6506007)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?WE1IZTdsam1GZlRPYXFaZm5GTUVRNGJkMkJYRVhnSFpJZXB4dFFlQTBpSmxH?=
+ =?utf-8?B?NndoYWRiQWN2azdOTjl6RUVmaDdyaGJEWEduejFZRmdoUEdFYWFUeHJGS3JY?=
+ =?utf-8?B?eFdxSXNVNjM1S3JYQ1ArajRtQURjWmhxZER3U1YwbnN5STRocHFzcFhBdFZH?=
+ =?utf-8?B?OXpWZHFNcVZQQVd3eWJ0SENuRE53YWpCd0YzdnM3dWZhM2lQSkZSaWxrSTVq?=
+ =?utf-8?B?aTU0V2lPbGdFWXl6UTYwQTRxZ0tjVnRsUExXUmladVB4TEtEZ0dYMnhOWVlj?=
+ =?utf-8?B?V1BUby9uZnNpbVVuQWh5WVNTanRNMVhhelZJbW5yWFhWOGRCRXphT1VRVjM3?=
+ =?utf-8?B?a3p5ejd0MmhEWUExUWlSeUJhMEFqUGh2SHhuTWMzMXhvdTJYRUZlNjQwUzdK?=
+ =?utf-8?B?V2k1Sm9XTE1kWEl3MWhlTVpvWlVBMXBnQkxrRm91dzNqYUxoaTcrWUpGWVc4?=
+ =?utf-8?B?ZitIM2h2K2lrLzE3OVA5Yys0WlNmS0xKTDBXWXdiN2k5c213T2JjS2pldjk4?=
+ =?utf-8?B?bzBVNmhWUFJFSWtpaTQ5OVhLNnlVZTBIVmZaNnRvOWpJWDFobjFWT2ROUGwx?=
+ =?utf-8?B?WFlwUmJvYmdTNEdNT2RDZ1NHUmpESHVIU2xvbnN5VUpENHNUVm1HakdSWW5D?=
+ =?utf-8?B?V0hUR3N6RjRhYnRBNHluRkNXaEM3QmtNaG4zRXZWR2E4U1BJajlWdzdQRDlw?=
+ =?utf-8?B?Mjh3eStjd3BndFZhaTlva0NIYUxOVGE4UXBXYkJmRk9QUGRxOEJGWllyWkhm?=
+ =?utf-8?B?cEtodFRvRjJ1d3Nvb1dQMVBYeEZFdlpIYmptWUtGT3Q2WHFqd0RNWWFTWVJB?=
+ =?utf-8?B?ek9seXpYbXNHVEFqMGpST0ZHQXdQYVJ0QkRQR1RSLyt5aUxSTnN0U3AxWnFl?=
+ =?utf-8?B?RzB1M3VyOHFoWDIzQXc2UkNHRzk5TWd1amhndTFDNkFleGxjS1UvblRRNlNh?=
+ =?utf-8?B?VXZHeDNEQVBRVDRRQ3lEcXNjODVrenUvYzJSQ3MzTFVuWEY0dGFmWDEwR1Ju?=
+ =?utf-8?B?RVUxUVUzZmg1M3QwcjF3Qm15ai81OFpQNnIxdzZCWUFoZWcyWDlaMEYyRUFE?=
+ =?utf-8?B?L1FCUk42VzJ3ckdjdXQxcURrRG9KM2twWDlNam1DMEJwWWExWkFYaytIZ1FS?=
+ =?utf-8?B?eStodzdldkx0bFZiMU5GclR6b2ZkUEY3eWxMWTdKUkppTUlTTnpZZ3ZsKzdr?=
+ =?utf-8?B?czE3alUwOVUvT1FyWUlHUHJDdnh5bXNzMTNjWUs4TVJCa1VKYUFxbElBbHhj?=
+ =?utf-8?B?WnJRTlJWYlEvKzRCdmxpcHpWY2RTbVRROVpiZFF3VS9NVEw0TXV0N2pKRWRC?=
+ =?utf-8?B?NzIzR2NXQ1p5ZTcxaEtiY1BkUVlzT2NYNmpKdjNhTmtqQ2JPWGh1NGhlK0xB?=
+ =?utf-8?B?UzFJTUp1VFhtZlI3QUptUFhEQ3gxVHErYW1FVll1ZXZlZXYySzYxc20vQUFY?=
+ =?utf-8?B?MzN2Z1l4MnUrMGxFemlKeGlQV3A0RXlQUEpsaWZTV2c3YUN2VUdOS3RTY0lp?=
+ =?utf-8?B?VTdPbi9EaGFXOVRmNzhrUk5xU1ppUWtVVnlmZDU2S2xkNy9jbUhmTFA0NmJR?=
+ =?utf-8?B?dGYwd3Z0dDhzN2x1MWNhTnkzRW5JTVZ3akFRSk50aDhQNHVFRWlpc3lyRU5m?=
+ =?utf-8?B?VzBiK1pEeHlSUVFXc2MycCtnbmRqVVBEeWV2SXFYSlB5SUZTUm1qU2xFK05k?=
+ =?utf-8?B?WGphODIrSXhaYjNhbDQ2SXJrNEpwYytBUDNMN3JZZ2N4NlRybFppVStPcytF?=
+ =?utf-8?B?Z0drc00zTk51QkZjcmtFUUFBYVArWG5lRnp0OWo0STlXNHMxeFU4cjNtUmNE?=
+ =?utf-8?B?VWN5QXlxRHlSVTYxZ2lQcFNGdDYyOW5MdHNGbWdmV05GUncweHk5QlhDSDZw?=
+ =?utf-8?B?TG9aY2ExM01BTitzZ2p4b0xJQ0xadjFuejJxRWY1b3d0YWlrdXp4K0MwUjgz?=
+ =?utf-8?B?WkpZb3FEZTBhWVVyeUoyeERqUWFQbENWbGgyZlpsS2syVmZuNm1jblZTKzJE?=
+ =?utf-8?B?ZjJuS1N0eHRidlF5djhpZ1o0Z2EvK0JUTmlQQjIwUlhoNnZneUdHRXVKelp4?=
+ =?utf-8?B?em42Rm52R2lpU1dseVFrUFZOWk1mc1hjVWtHZzRqY3RhQkU5T0J2WlkwN0NS?=
+ =?utf-8?Q?FG+1lFvaoPC85m2+gWdV6zWQd?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: efd62e2c-ab2f-446d-22f5-08da7197a8a3
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5229.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jul 2022 19:22:21.0860
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: mxrX238n+W1xIPWrCS3XYAJ5Tv81c2VVumZjZvlrPanyWevSpBP0EwGPhuMolWg786D33naQ/51lap6Fr/4uIQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1320
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 29, 2022 at 06:44:22PM +0000, Long Li wrote:
-> > Subject: Re: [Patch v4 03/12] net: mana: Handle vport sharing between devices
-> > 
-> > On Thu, Jul 21, 2022 at 05:58:39PM +0000, Long Li wrote:
-> > > > > "vport" is a hardware resource that can either be used by an
-> > > > > Ethernet device, or an RDMA device. But it can't be used by both
-> > > > > at the same time. The "vport" is associated with a protection
-> > > > > domain and doorbell, it's programmed in the hardware. Outgoing
-> > > > > traffic is enforced on this vport based on how it is programmed.
-> > > >
-> > > > Sure, but how is the users problem to "get this configured right"
-> > > > and what exactly is the user supposed to do?
-> > > >
-> > > > I would expect the allocation of HW resources to be completely
-> > > > transparent to the user. Why is it not?
-> > > >
-> > >
-> > > In the hardware, RDMA RAW_QP shares the same hardware resource (in
-> > > this case, the vPort in hardware table) with the ethernet NIC. When an
-> > > RDMA user creates a RAW_QP, we can't just shut down the ethernet. The
-> > > user is required to make sure the ethernet is not in used when he
-> > > creates this QP type.
-> > 
-> > You haven't answered my question - how is the user supposed to achieve this?
+On 7/29/22 14:08, Dave Hansen wrote:
+> On 7/29/22 07:25, Tom Lendacky wrote:
+>>> Considering that runtime acceptance is already single-threaded[1] *and*
+>>> there's a fallback method, why not just have a single copy of this
+>>> guarded by a single lock?
+>>
+>> This function is called for more than just memory acceptance. It's also
+>> called for any changes from or to private or shared, which isn't
+>> single-threaded.
 > 
-> The user needs to configure the network interface so the kernel will not use it when the user creates a RAW QP on this port.
+> I think this tidbit from the changelog threw me off:
 > 
-> This can be done via system configuration to not bring this
-> interface online on system boot, or equivalently doing "ifconfig xxx
-> down" to make the interface down when creating a RAW QP on this
-> port.
-
-That sounds horrible, why allow the user to even bind two drivers if
-the two drivers can't be used together?
-
-> > And now I also want to know why the ethernet device and rdma device can even
-> > be loaded together if they cannot share the physical port?
-> > Exclusivity is not a sharing model that any driver today implements.
+>> Protect the use of the per-CPU structure by disabling interrupts during
+>> memory acceptance.
 > 
-> This physical port limitation only applies to the RAW QP. For RC QP,
-> the hardware doesn't have this limitation. The user can create RC
-> QPs on a physical port up to the hardware limits independent of the
-> Ethernet usage on the same port.
+> Could you please revise that to accurately capture the impact of this
+> change?
 
-.. and it is because you support sharing models in other cases :\
+Is s/memory acceptance/page state changes/ enough of what you are looking 
+for or something more?
 
-> Scenario 1: The Ethernet loses TCP connection.
-
-> 1. User A runs a program listing on a TCP port, accepts an incoming
-> TCP connection and is communicating with the remote peer over this
-> TCP connection.
-> 2. User B creates an RDMA RAW_QP on the same port on the device.
-> 3. As soon as the RAW_QP is created, the program in 1 can't
-> send/receive data over this TCP connection. After some period of
-> inactivity, the TCP connection terminates.
-
-It is a little more complicated than that, but yes, that could
-possibly happen if the userspace captures the right traffic.
-
-> Please note that this may also pose a security risk. User B with
-> RAW_QP can potentially hijack this TCP connection from the kernel by
-> framing the correct Ethernet packets and send over this QP to trick
-> the remote peer, making it believe it's User A.
-
-Any root user can do this with the netstack using eg tcpdump, bpf,
-XDP, raw sockets, etc. This is why the capability is guarded by
-CAP_NET_RAW. It is nothing unusual.
-
-> Scenario 2: The Ethernet port state changes after RDMA RAW_QP is used on the port.
-> 1. User uses "ifconfig ethx down" on the NIC, intending to make it offline
-> 2. User creates a RDMA RAW_QP on the same port on the device.
-> 3. User destroys this RAW_QP.
-> 4. The ethx device in 1 reports carrier state in step 2, in many
-> Linux distributions this makes it online without user
-> interaction. "ifconfig ethx" shows its state changes to "up".
-
-This I'm not familiar with, it actually sounds like a bug that the
-RAW_QP's interfere with the netdev carrier state.
-
-> the Mellanox NICs implement the RAW_QP. IMHO, it's better to have
-> the user explicitly decide whether to use Ethernet or RDMA RAW_QP on
-> a specific port.
-
-It should all be carefully documented someplace.
-
-Jason
+Thanks,
+Tom
