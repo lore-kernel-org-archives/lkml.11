@@ -2,80 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CF7CC19F2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 07:18:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30F75C19F2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 07:19:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234653AbiG2HSx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 03:18:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33298 "EHLO
+        id S234539AbiG2HT3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 03:19:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234009AbiG2HSu (ORCPT
+        with ESMTP id S234630AbiG2HT1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 03:18:50 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83AEA5A3EF;
-        Fri, 29 Jul 2022 00:18:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0C787CE2686;
-        Fri, 29 Jul 2022 07:18:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A51A2C433C1;
-        Fri, 29 Jul 2022 07:18:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659079124;
-        bh=QQZCBDkWE41LYYccsVLmpba4/GdB3x9VzH1J6ETItTQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=s3cFpaJinyDBzCiTRLZZzo4mzOSSoA6Gkdlgwx2b7LLo9ad1SDFIMHviys9HNU19L
-         P/IMcPpoTsFCjpWoxlWjKcnTCl0uSFWW+N0d0fdgynMZAE1b6JXauRYSWcFVA3K6L2
-         qIXsD7i4YhzWA/XPJbu60xKVMjksJFGCpsJynaPrP3Q8CuZYFsAFhrG92fZaoPMHi1
-         vhWCG/wHguQ8KeL13M8gfSGSAiearlO5lkrcELhwLP4OndwRI5M7DIK+HHNzYyi7rO
-         t2k9vjPKfAAw77RKgVJ5tEU9dVsDUxDGATR0PyeBKBJ814JsdM7aqWkOVoRLQNwGaT
-         gikL2T6HgmjQw==
-Date:   Fri, 29 Jul 2022 00:18:42 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Li zeming <zeming@nfschina.com>, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] sched/net/act: Remove temporary state variables
-Message-ID: <20220729001842.5bc9f0b2@kernel.org>
-In-Reply-To: <YuOFd2oqA1Cbl+at@nanopsycho>
-References: <20220727094146.5990-1-zeming@nfschina.com>
-        <20220728201556.230b9efd@kernel.org>
-        <YuN+i2WtzfA0wDQb@nanopsycho>
-        <20220728235121.43bedc43@kernel.org>
-        <YuOFd2oqA1Cbl+at@nanopsycho>
+        Fri, 29 Jul 2022 03:19:27 -0400
+X-Greylist: delayed 1200 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 29 Jul 2022 00:19:25 PDT
+Received: from dggsgout12.his.huawei.com (dggsgout12.his.huawei.com [45.249.212.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0432380F47;
+        Fri, 29 Jul 2022 00:19:24 -0700 (PDT)
+Received: from mail02.huawei.com (unknown [172.30.67.153])
+        by dggsgout12.his.huawei.com (SkyGuard) with ESMTP id 4LvHtg4Xrrz6PjSJ;
+        Fri, 29 Jul 2022 14:39:39 +0800 (CST)
+Received: from huaweicloud.com (unknown [10.175.127.227])
+        by APP3 (Coremail) with SMTP id _Ch0CgD3_9PlgONidnlHBQ--.46322S4;
+        Fri, 29 Jul 2022 14:40:52 +0800 (CST)
+From:   Zhang Wensheng <zhangwensheng@huaweicloud.com>
+To:     stable@vger.kernel.org
+Cc:     axboe@kernel.dk, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        zhangwensheng5@huawei.com, yukuai3@huawei.com
+Subject: [PATCH 5.10] block: fix null-deref in percpu_ref_put
+Date:   Fri, 29 Jul 2022 14:52:43 +0800
+Message-Id: <20220729065243.1786222-1-zhangwensheng@huaweicloud.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: _Ch0CgD3_9PlgONidnlHBQ--.46322S4
+X-Coremail-Antispam: 1UD129KBjvJXoWxur18Ar1fWF1xKr4kAr48Xrb_yoWrAry3pF
+        WDKF4Ikw10gr4UWrW8Jw47ZasFgw4qkFyxCa93KrWYyFnFgF1vvr1kCrs8Xr48Cr4kArWU
+        ZrWDWrsIkryUWFDanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkIb4IE77IF4wAFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k2
+        6cxKx2IYs7xG6r1S6rWUM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4
+        vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7Cj
+        xVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x
+        0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG
+        6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFV
+        Cjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JM4IIrI8v6xkF7I0E8cxan2IY04v7MxAIw28I
+        cxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2
+        IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI
+        42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42
+        IY6xAIw20EY4v20xvaj40_Wr1j6rW3Jr1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2
+        z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7IU1zuWJUUUUU==
+X-CM-SenderInfo: x2kd0wpzhq2xhhqjqx5xdzvxpfor3voofrz/
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 29 Jul 2022 09:00:07 +0200 Jiri Pirko wrote:
-> >> What backports do you have in mind exactly?  
-> >
-> >Code backports. I don't understand the question.  
-> 
-> Code backports of what where?
-> Are you talking about:
-> 1) mainline kernels
-> 2) distrubutions kernels? Or even worse, in-house kernels of companies?
-> 
-> If 2), I believe it is not relevant for the upstream discussion, at all.
+From: Zhang Wensheng <zhangwensheng5@huawei.com>
 
-Fixes and stable. Frankly it's just a generic justification 
-to discourage people from sending subjective code cleanups.
-I'd never argue for the benefit of (2) :)
+In the use of q_usage_counter of request_queue, blk_cleanup_queue using
+"wait_event(q->mq_freeze_wq, percpu_ref_is_zero(&q->q_usage_counter))"
+to wait q_usage_counter becoming zero. however, if the q_usage_counter
+becoming zero quickly, and percpu_ref_exit will execute and ref->data
+will be freed, maybe another process will cause a null-defef problem
+like below:
 
-There's been a string of patches cleaning up return values
-of functions in the last few days. If people have a lot of
-time on their hands they should go do something useful, like
-converting netdev features to a bitmap. Hell, go fix W=1 warnings, 
-even easier.
+	CPU0                             CPU1
+blk_cleanup_queue
+ blk_freeze_queue
+  blk_mq_freeze_queue_wait
+				scsi_end_request
+				 percpu_ref_get
+				 ...
+				 percpu_ref_put
+				  atomic_long_sub_and_test
+  percpu_ref_exit
+   ref->data -> NULL
+   				   ref->data->release(ref) -> null-deref
 
-The time spent reviewing those "cleanups" adds up, and I suspect
-there's hundreds of places they can be applied. Hence my question
-about automation... 
+Fix it by setting flag(QUEUE_FLAG_USAGE_COUNT_SYNC) to add synchronization
+mechanism, when ref->data->release is called, the flag will be setted,
+and the "wait_event" in blk_mq_freeze_queue_wait must wait flag becoming
+true as well, which will limit percpu_ref_exit to execute ahead of time.
+
+Signed-off-by: Zhang Wensheng <zhangwensheng5@huawei.com>
+---
+ block/blk-core.c       | 4 +++-
+ block/blk-mq.c         | 7 +++++++
+ include/linux/blk-mq.h | 1 +
+ include/linux/blkdev.h | 2 ++
+ 4 files changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/block/blk-core.c b/block/blk-core.c
+index 26664f2a139e..238d0f3cd279 100644
+--- a/block/blk-core.c
++++ b/block/blk-core.c
+@@ -385,7 +385,8 @@ void blk_cleanup_queue(struct request_queue *q)
+ 	 * prevent that blk_mq_run_hw_queues() accesses the hardware queues
+ 	 * after draining finished.
+ 	 */
+-	blk_freeze_queue(q);
++	blk_freeze_queue_start(q);
++	blk_mq_freeze_queue_wait_sync(q);
+ 
+ 	rq_qos_exit(q);
+ 
+@@ -500,6 +501,7 @@ static void blk_queue_usage_counter_release(struct percpu_ref *ref)
+ 	struct request_queue *q =
+ 		container_of(ref, struct request_queue, q_usage_counter);
+ 
++	blk_queue_flag_set(QUEUE_FLAG_USAGE_COUNT_SYNC, q);
+ 	wake_up_all(&q->mq_freeze_wq);
+ }
+ 
+diff --git a/block/blk-mq.c b/block/blk-mq.c
+index c5d82b21a1cc..15c4e4530c87 100644
+--- a/block/blk-mq.c
++++ b/block/blk-mq.c
+@@ -134,6 +134,7 @@ void blk_freeze_queue_start(struct request_queue *q)
+ {
+ 	mutex_lock(&q->mq_freeze_lock);
+ 	if (++q->mq_freeze_depth == 1) {
++		blk_queue_flag_clear(QUEUE_FLAG_USAGE_COUNT_SYNC, q);
+ 		percpu_ref_kill(&q->q_usage_counter);
+ 		mutex_unlock(&q->mq_freeze_lock);
+ 		if (queue_is_mq(q))
+@@ -144,6 +145,12 @@ void blk_freeze_queue_start(struct request_queue *q)
+ }
+ EXPORT_SYMBOL_GPL(blk_freeze_queue_start);
+ 
++void blk_mq_freeze_queue_wait_sync(struct request_queue *q)
++{
++	wait_event(q->mq_freeze_wq, percpu_ref_is_zero(&q->q_usage_counter) &&
++			test_bit(QUEUE_FLAG_USAGE_COUNT_SYNC, &q->queue_flags));
++}
++
+ void blk_mq_freeze_queue_wait(struct request_queue *q)
+ {
+ 	wait_event(q->mq_freeze_wq, percpu_ref_is_zero(&q->q_usage_counter));
+diff --git a/include/linux/blk-mq.h b/include/linux/blk-mq.h
+index f8ea27423d1d..95b2c904375f 100644
+--- a/include/linux/blk-mq.h
++++ b/include/linux/blk-mq.h
+@@ -522,6 +522,7 @@ void blk_mq_freeze_queue(struct request_queue *q);
+ void blk_mq_unfreeze_queue(struct request_queue *q);
+ void blk_freeze_queue_start(struct request_queue *q);
+ void blk_mq_freeze_queue_wait(struct request_queue *q);
++void blk_mq_freeze_queue_wait_sync(struct request_queue *q);
+ int blk_mq_freeze_queue_wait_timeout(struct request_queue *q,
+ 				     unsigned long timeout);
+ 
+diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
+index 98fdf5a31fd6..b61461e3a734 100644
+--- a/include/linux/blkdev.h
++++ b/include/linux/blkdev.h
+@@ -629,6 +629,8 @@ struct request_queue {
+ #define QUEUE_FLAG_RQ_ALLOC_TIME 27	/* record rq->alloc_time_ns */
+ #define QUEUE_FLAG_HCTX_ACTIVE	28	/* at least one blk-mq hctx is active */
+ #define QUEUE_FLAG_NOWAIT       29	/* device supports NOWAIT */
++/* sync for q_usage_counter */
++#define QUEUE_FLAG_USAGE_COUNT_SYNC    30
+ 
+ #define QUEUE_FLAG_MQ_DEFAULT	((1 << QUEUE_FLAG_IO_STAT) |		\
+ 				 (1 << QUEUE_FLAG_SAME_COMP) |		\
+-- 
+2.31.1
+
