@@ -2,99 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14348C00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 17:23:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88AB9C19F2A
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 17:24:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238418AbiG2RX5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 13:23:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40612 "EHLO
+        id S237340AbiG2RYu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 13:24:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236366AbiG2RXn (ORCPT
+        with ESMTP id S229979AbiG2RYr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 13:23:43 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DD7A82F84;
-        Fri, 29 Jul 2022 10:23:40 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id 4D7AD5FD04;
-        Fri, 29 Jul 2022 20:23:38 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1659115418;
-        bh=GtXHsLQ6ogBma9gmqvBjy7eEPphOp16VWCwaSJGGTnU=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=Y2FEP8yNDt2CjJ+ZMkTstl4/4hszIAmsV5QkUY8v9t9YRwj6xJyFWuqKCSFr99BHl
-         Rfgu6OOMscXMkJ1OGMQreqlTUxB1UWxsHyYXRcYZUf+1SD9JRRms4EBhUO+7OpOElN
-         YpxqbSGpbK9sqlybLSVkIl4EvzEBBvrYsE1DdcgQbb86GfhvujjSQcnSDLVCFNK41T
-         nZYbtA4IYegg/iOpSLgarLjstVPVZ6y9CCreEUv9Z9IpgU92FiHkdIDYMO1QNzR+o0
-         kh2+9Zj8q+aAGYe/KbWrw8FJ+36tDkxqEK6RnynI1QV5eeUvl4cCp9lzngXy+brm03
-         umQAXvAeNG9QA==
-Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Fri, 29 Jul 2022 20:23:37 +0300 (MSK)
-From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
-To:     "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "andriy.shevchenko@linux.intel.com" 
-        <andriy.shevchenko@linux.intel.com>,
-        "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "wsa@kernel.org" <wsa@kernel.org>,
-        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "Michael.Hennerich@analog.com" <Michael.Hennerich@analog.com>,
-        "jbhayana@google.com" <jbhayana@google.com>
-CC:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Dmitry Rokosov <DDRokosov@sberdevices.ru>
-Subject: [PATCH v2 1/3] units: complement the set of Hz units
-Thread-Topic: [PATCH v2 1/3] units: complement the set of Hz units
-Thread-Index: AQHYo2/exMPEjcXGek6GXlZKNuELJw==
-Date:   Fri, 29 Jul 2022 17:23:07 +0000
-Message-ID: <20220729172332.19118-2-ddrokosov@sberdevices.ru>
-References: <20220729172332.19118-1-ddrokosov@sberdevices.ru>
-In-Reply-To: <20220729172332.19118-1-ddrokosov@sberdevices.ru>
-Accept-Language: ru-RU, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        Fri, 29 Jul 2022 13:24:47 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 066EF82F84;
+        Fri, 29 Jul 2022 10:24:47 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id p1so5158690plr.11;
+        Fri, 29 Jul 2022 10:24:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=t3eByXtJ0XeVrYLlyDivCVp5NffCEVyzgKFMHnhoveE=;
+        b=Gmu8jWxm59OnKqdWuCOyYdil6Mkd+LO7XWujoUKtDx78QIZY0+Z2F2x3siVaCuHuM+
+         JR+YFZn19bFMfXqLaKh2XEYoWUtpV1zT0t8GALEtCrQqf5R32Eh4Qd/DPQwgiN/55wYM
+         sn4fQnkkjhKPF7v17RsJg3jtsrs1nLYJIX043ygE9QljEo5iK//xSIEWzMYTRCs3U0G6
+         3vUwEj+7OuAQnD8VFcQzuOro8DTvcTD3mJCA1ptOABjxvQT22FVjDya2xOHPFM4etons
+         YowpdqtHEkdRxGWWTasK+EA3jSlIsW+99CqtwH53pXXRV+wLDVNSCOIcSSMbRQyiA/WL
+         UFFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=t3eByXtJ0XeVrYLlyDivCVp5NffCEVyzgKFMHnhoveE=;
+        b=EkxpPQGzVuwRH6IBFXNZ39WP4eL3jwISZU5V4MMVzJBIkTdA38UrViAc4vA/Zg+qab
+         mrtYLpMbUDDLR7ln4FSs1ETuX9GRBoVk1BpVwnbsRn1LvnLCmlaK/E0AVmwzGMSeXrdj
+         8UOJB+hE+aghKiLdzdNiHXCvT2dLjIWs6OOCcNCfAXhteiDVAIAydlG9oubLJkDgGAdg
+         I6xN0SXvaPmlltEEiueGcr0iPPZIcI9XE57J7etLKovmh11ZTcMDthZY9NiKYvMzwznt
+         eLpsFkf7iCbKR3ocKbUytjEyz2gpuk2jOyrIXr2ufZapClMSRLPLfBOrX/gzaRT0xQY/
+         cAOQ==
+X-Gm-Message-State: ACgBeo0+JzvPqhqVLNrBM8/HLp2vTbBEXv2UscRj2QigALDhIo8YTqSD
+        AYjfpG8rbgbK63hdUGIo+I4=
+X-Google-Smtp-Source: AA6agR4tMKuCfO5JYkcdncSVHk3ZvSPZLm7kuXEJVHzvYFXSJiXFlWVxRf531L6Uv+1BelSJA9BpjQ==
+X-Received: by 2002:a17:903:1c4:b0:16c:4e45:38a4 with SMTP id e4-20020a17090301c400b0016c4e4538a4mr4801395plh.151.1659115486411;
+        Fri, 29 Jul 2022 10:24:46 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id oa15-20020a17090b1bcf00b001ef89019352sm13211566pjb.3.2022.07.29.10.24.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 29 Jul 2022 10:24:45 -0700 (PDT)
+Message-ID: <b454a691-0ea3-7837-3cde-4223007ffd9c@gmail.com>
+Date:   Fri, 29 Jul 2022 10:24:42 -0700
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/07/29 15:10:00 #20001216
-X-KSMG-AntiVirus-Status: Clean, skipped
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 5.10 000/101] 5.10.134-rc2 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, sudipm.mukherjee@gmail.com,
+        slade@sladewatkins.com
+References: <20220728150340.045826831@linuxfoundation.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220728150340.045826831@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently, Hz units do not have milli, micro and nano Hz coefficients.
-Some drivers (IIO especially) use their analogues to calculate
-appropriate Hz values. This patch includes them to units.h definitions,
-so they can be used from different kernel places.
+On 7/28/22 08:05, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.10.134 release.
+> There are 101 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Sat, 30 Jul 2022 15:03:14 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.134-rc2.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
 
-Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
----
- include/linux/units.h | 3 +++
- 1 file changed, 3 insertions(+)
+On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels, build tested on BMIPS_GENERIC:
 
-diff --git a/include/linux/units.h b/include/linux/units.h
-index 681fc652e3d7..8bb83c6ea97d 100644
---- a/include/linux/units.h
-+++ b/include/linux/units.h
-@@ -20,6 +20,9 @@
- #define PICO	1000000000000ULL
- #define FEMTO	1000000000000000ULL
-=20
-+#define NHZ_PER_HZ		1000000000UL
-+#define UHZ_PER_HZ		1000000UL
-+#define MILLIHZ_PER_HZ		1000UL
- #define HZ_PER_KHZ		1000UL
- #define KHZ_PER_MHZ		1000UL
- #define HZ_PER_MHZ		1000000UL
---=20
-2.36.0
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
