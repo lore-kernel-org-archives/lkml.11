@@ -2,88 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0BC2C19F2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 07:31:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 317D5C00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 07:33:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234681AbiG2HbP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 03:31:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43506 "EHLO
+        id S234840AbiG2HdD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 03:33:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234558AbiG2HbN (ORCPT
+        with ESMTP id S233985AbiG2HdB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 03:31:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D6B37B34F
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 00:31:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 166E1B826F6
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 07:31:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46E87C433D7;
-        Fri, 29 Jul 2022 07:31:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659079869;
-        bh=uVqBBUFDgwzLq6Qvi2MmJujKdCy1mCzQvzDS8fkCihQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Lgz+wvqbhvqGsia7w8nMspgAsBmZZu0VNhISB5W3pqXF/Vstcsxvo6EqmtqpAxSLi
-         FuUmYBC7DhWN/o7fehdbabwiX+vVZDzO7pwFGtrGMuNobgJs5tIW11znOQDMOP5xfa
-         pryq5GGZImBGh+aIIiMmRgfp/pQ6ugyQdRVgUFkg=
-Date:   Fri, 29 Jul 2022 09:31:06 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Tong Zhang <ztong0001@gmail.com>
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Colin Ian King <colin.king@intel.com>,
-        Saurav Girepunje <saurav.girepunje@gmail.com>,
-        Johan Hovold <johan@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-staging@lists.linux.dev
-Subject: Re: [PATCH v3 2/3] staging: rtl8192u: move debug files to debugfs
-Message-ID: <YuOMun7jQov+InCw@kroah.com>
-References: <YuDdHMaB6jWARQzA@kroah.com>
- <20220729035230.226172-1-ztong0001@gmail.com>
- <20220729035230.226172-3-ztong0001@gmail.com>
+        Fri, 29 Jul 2022 03:33:01 -0400
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1F597C1B4;
+        Fri, 29 Jul 2022 00:32:59 -0700 (PDT)
+Received: (Authenticated sender: maxime.chevallier@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id ED1271C000D;
+        Fri, 29 Jul 2022 07:32:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1659079978;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Qr9dBtRHpEsZnY4WwAGh3TdMzUoTMBzq+LV/3YLwXZc=;
+        b=X2aEFCq12Cd3VqkHThYBrZGJKoeYCB29lOCN6l1FKfrPKFfgmf8d2jGeBok/AgqU7LwszH
+        1TmrFcfbqn4eYwSCoY08CR/FcrC+OrSQH/BF9s7jUGsJKuhZjrSYQU6PNPxb1IHyWW/W5E
+        /DkybKlTUjBy+7aBrfRIVwJS681owU9kOlTNXCY9b22+jDBvFBW9cFZKcfXvk7i894pmnO
+        pJm9kXfZjbF9jdWAu5cTO0M0VbvMhzBLVGzHsbgFqvwf8rQGUxXRQ6Y8kil5O946VIfTS+
+        uuNmsJPIApRj1LuLoH4UfOdajD44yRUFGmhQjWR6oOyxCrxIImT9a5wNq7C2gw==
+Date:   Fri, 29 Jul 2022 09:32:52 +0200
+From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, thomas.petazzoni@bootlin.com,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org, Horatiu.Vultur@microchip.com,
+        Allan.Nielsen@microchip.com, UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH net-next 3/4] net: phy: Add helper to derive the number
+ of ports from a phy mode
+Message-ID: <20220729093252.50977d5c@pc-10.home>
+In-Reply-To: <YuMAdACnRKsL8/xD@lunn.ch>
+References: <20220728145252.439201-1-maxime.chevallier@bootlin.com>
+        <20220728145252.439201-4-maxime.chevallier@bootlin.com>
+        <YuMAdACnRKsL8/xD@lunn.ch>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220729035230.226172-3-ztong0001@gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 28, 2022 at 08:52:19PM -0700, Tong Zhang wrote:
->  
-> -static struct proc_dir_entry *rtl8192_proc;
-> -static int __maybe_unused proc_get_stats_ap(struct seq_file *m, void *v)
-> +#define R8192U_DEBUGFS_DIR_NAME "r8192u_usb"
+On Thu, 28 Jul 2022 23:32:36 +0200
+Andrew Lunn <andrew@lunn.ch> wrote:
 
-KBUILD_MODNAME is a better thing to use here.
+> > +int phy_interface_num_ports(phy_interface_t interface)
+> > +{
+> > +	switch (interface) {
+> > +	case PHY_INTERFACE_MODE_NA:
+> > +	case PHY_INTERFACE_MODE_INTERNAL:
+> > +		return 0;  
+> 
+> I've not yet looked at how this is used. Returning 0 could have
+> interesting effects i guess? INTERNAL clearly does have some sort of
+> path between the MAC and the PHY, so i think 1 would be a better
+> value. NA is less clear, it generally means Don't touch. But again,
+> there still needs to be a path between the MAC and PHY, otherwise
+> there would not be any to touch.
+> 
+> Why did you pick 0?
+> 
+> > +
+> > +	case PHY_INTERFACE_MODE_MII:
+> > +	case PHY_INTERFACE_MODE_GMII:
+> > +	case PHY_INTERFACE_MODE_TBI:
+> > +	case PHY_INTERFACE_MODE_REVMII:
+> > +	case PHY_INTERFACE_MODE_RMII:
+> > +	case PHY_INTERFACE_MODE_REVRMII:
+> > +	case PHY_INTERFACE_MODE_RGMII:
+> > +	case PHY_INTERFACE_MODE_RGMII_ID:
+> > +	case PHY_INTERFACE_MODE_RGMII_RXID:
+> > +	case PHY_INTERFACE_MODE_RGMII_TXID:
+> > +	case PHY_INTERFACE_MODE_RTBI:
+> > +	case PHY_INTERFACE_MODE_XGMII:
+> > +	case PHY_INTERFACE_MODE_XLGMII:
+> > +	case PHY_INTERFACE_MODE_MOCA:
+> > +	case PHY_INTERFACE_MODE_TRGMII:
+> > +	case PHY_INTERFACE_MODE_USXGMII:
+> > +	case PHY_INTERFACE_MODE_SGMII:
+> > +	case PHY_INTERFACE_MODE_SMII:
+> > +	case PHY_INTERFACE_MODE_1000BASEX:
+> > +	case PHY_INTERFACE_MODE_2500BASEX:
+> > +	case PHY_INTERFACE_MODE_5GBASER:
+> > +	case PHY_INTERFACE_MODE_10GBASER:
+> > +	case PHY_INTERFACE_MODE_25GBASER:
+> > +	case PHY_INTERFACE_MODE_10GKR:
+> > +	case PHY_INTERFACE_MODE_100BASEX:
+> > +	case PHY_INTERFACE_MODE_RXAUI:
+> > +	case PHY_INTERFACE_MODE_XAUI:
+> > +		return 1;
+> > +	case PHY_INTERFACE_MODE_QSGMII:
+> > +	case PHY_INTERFACE_MODE_QUSGMII:
+> > +		return 4;
+> > +
+> > +	default:
+> > +		return 0;
+> > +	}
+> > +}  
+> 
+> Have you tried without a default: ? I _think_ gcc will then warn about
+> missing enum values, which will help future developers when they add
+> further values to the enum.
 
-> +void rtl8192_debugfs_init_one(struct net_device *dev)
-> +{
-> +	struct r8192_priv *priv = (struct r8192_priv *)ieee80211_priv(dev);
+Without the default clause, I get an error about the missing
+PHY_INTERFACE_MODE_MAX case, which I don't think belongs here...
 
-No need to cast.
+Too bad :/
 
-> +	struct dentry *parent_dir = debugfs_lookup(R8192U_DEBUGFS_DIR_NAME, NULL);
-> +	struct dentry *dir = debugfs_create_dir(dev->name, parent_dir);
-> +
-> +	debugfs_create_file("stats-rx", 0444, dir, dev, &rtl8192_usb_stats_rx_fops);
-> +	debugfs_create_file("stats-tx", 0444, dir, dev, &rtl8192_usb_stats_tx_fops);
-> +	debugfs_create_file("stats-ap", 0444, dir, dev, &rtl8192_usb_stats_ap_fops);
-> +	debugfs_create_file("registers", 0444, dir, dev, &rtl8192_usb_registers_fops);
-> +
-> +	priv->debugfs_dir = dir;
-> +}
-> +
-> +void rtl8192_debugfs_exit_one(struct net_device *dev)
->  {
-> -	RT_TRACE(COMP_INIT, "Initializing proc filesystem");
-> -	rtl8192_proc = proc_mkdir(RTL819XU_MODULE_NAME, init_net.proc_net);
-> +	struct r8192_priv *priv = (struct r8192_priv *)ieee80211_priv(dev);
+> 	Andrew
 
-No need for a cast.
-
-thanks,
-
-greg k-h
