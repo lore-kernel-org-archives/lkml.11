@@ -2,182 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CCFCC19F2A
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 15:21:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F64FC00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 15:21:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237492AbiG2PVR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 11:21:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48856 "EHLO
+        id S237091AbiG2PVX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 11:21:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236861AbiG2PUq (ORCPT
+        with ESMTP id S237401AbiG2PUx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 11:20:46 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E12B1FCE2;
-        Fri, 29 Jul 2022 08:20:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 20C4BB8282F;
-        Fri, 29 Jul 2022 15:20:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D781C433C1;
-        Fri, 29 Jul 2022 15:20:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659108041;
-        bh=XGaai7hG74Cu2F6G+twaAISaIF6/BHkdiIhZ4xytfZQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Z5G9K/fMFUaJbXMCdkt2gzSHHDfJQfTc+V9IPFa9CLUD7FPqXH4NgJS+ia1HT+/Rj
-         5rzGXKS0mPvUG5fk1ZJoH5wGA+pqEYztS68lAKHVZqwnzGeBwWVmBMb9hXZ2QGejSY
-         ZH4mfwZdXOr7BnwsU0jmL5PGj/lRUh/MseQdMEis=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
-        torvalds@linux-foundation.org, stable@vger.kernel.org
-Cc:     lwn@lwn.net, jslaby@suse.cz,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Linux 4.14.290
-Date:   Fri, 29 Jul 2022 17:20:27 +0200
-Message-Id: <165910802795200@kroah.com>
-X-Mailer: git-send-email 2.37.1
+        Fri, 29 Jul 2022 11:20:53 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1858F82FA0;
+        Fri, 29 Jul 2022 08:20:48 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4275B1063;
+        Fri, 29 Jul 2022 08:20:48 -0700 (PDT)
+Received: from [192.168.122.164] (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 53E383F73B;
+        Fri, 29 Jul 2022 08:20:47 -0700 (PDT)
+Message-ID: <a0bdc45a-c5c6-65ba-1ab8-e52dd26652d7@arm.com>
+Date:   Fri, 29 Jul 2022 10:20:46 -0500
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v2 1/1] ACPI: CPPC: Disable FIE if registers in PCC
+ regions
+Content-Language: en-US
+To:     Punit Agrawal <punit.agrawal@bytedance.com>
+Cc:     linux-pm@vger.kernel.org, rafael@kernel.org, lenb@kernel.org,
+        viresh.kumar@linaro.org, robert.moore@intel.com, devel@acpica.org,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220728221043.4161903-1-jeremy.linton@arm.com>
+ <20220728221043.4161903-2-jeremy.linton@arm.com> <871qu4krb4.fsf@stealth>
+From:   Jeremy Linton <jeremy.linton@arm.com>
+In-Reply-To: <871qu4krb4.fsf@stealth>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I'm announcing the release of the 4.14.290 kernel.
+Hi,
 
-All users of the 4.14 kernel series must upgrade.
+On 7/29/22 07:59, Punit Agrawal wrote:
+> Hi Jeremy,
+> 
+> One comment / query below.
+> 
+> Jeremy Linton <jeremy.linton@arm.com> writes:
+> 
+>> PCC regions utilize a mailbox to set/retrieve register values used by
+>> the CPPC code. This is fine as long as the operations are
+>> infrequent. With the FIE code enabled though the overhead can range
+>> from 2-11% of system CPU overhead (ex: as measured by top) on Arm
+>> based machines.
+>>
+>> So, before enabling FIE assure none of the registers used by
+>> cppc_get_perf_ctrs() are in the PCC region. Furthermore lets also
+>> enable a module parameter which can also disable it at boot or module
+>> reload.
+>>
+>> Signed-off-by: Jeremy Linton <jeremy.linton@arm.com>
+>> ---
+>>   drivers/acpi/cppc_acpi.c       | 41 ++++++++++++++++++++++++++++++++++
+>>   drivers/cpufreq/cppc_cpufreq.c | 19 ++++++++++++----
+>>   include/acpi/cppc_acpi.h       |  5 +++++
+>>   3 files changed, 61 insertions(+), 4 deletions(-)
+>>
+> 
+> [...]
+> 
+>> diff --git a/drivers/cpufreq/cppc_cpufreq.c b/drivers/cpufreq/cppc_cpufreq.c
+>> index 24eaf0ec344d..ed607e27d6bb 100644
+>> --- a/drivers/cpufreq/cppc_cpufreq.c
+>> +++ b/drivers/cpufreq/cppc_cpufreq.c
+> 
+> [...]
+> 
+>> @@ -229,7 +233,12 @@ static void __init cppc_freq_invariance_init(void)
+>>   	};
+>>   	int ret;
+>>   
+>> -	if (cppc_cpufreq_driver.get == hisi_cppc_cpufreq_get_rate)
+>> +	if (cppc_perf_ctrs_in_pcc()) {
+>> +		pr_debug("FIE not enabled on systems with registers in PCC\n");
+> 
+> The message should probably be promoted to a pr_info() and exposed as
+> part of the kernel logs. It is a change in the default behaviour we've
+> had until now. The message will provide some hint about why it was
+> disabled.
+> 
+> Thoughts?
 
-The updated 4.14.y git tree can be found at:
-	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-4.14.y
-and can be browsed at the normal kernel.org git web browser:
-	https://git.kernel.org/?p=linux/kernel/git/stable/linux-stable.git;a=summary
+I personally flip flopped between making it pr_info or pr_debug and 
+settled on debug because no one else was complaining about the cppc_fie 
+consumption. Which to me, meant that the users of platforms utilizing 
+PCC regions weren't sensitive to the problem, or weren't yet running a 
+distro/kernel with it enabled, or any number of other reasons why the 
+problem wasn't getting more attention. Mostly I concluded the FIE code 
+hadn't shown up in "enterprise" distros yet..
 
-thanks,
 
-greg k-h
+But, yah, if no one is going to complain about the extra messages 
+pr_info() is a better plan.
 
-------------
+Thanks for looking at this!
 
- Makefile                                          |    2 
- arch/alpha/kernel/srmcons.c                       |    2 
- drivers/char/random.c                             |    4 
- drivers/gpu/drm/tilcdc/tilcdc_crtc.c              |   28 ++----
- drivers/gpu/drm/tilcdc/tilcdc_drv.c               |    1 
- drivers/gpu/drm/tilcdc/tilcdc_drv.h               |    2 
- drivers/gpu/drm/tilcdc/tilcdc_external.c          |   96 ++------------------
- drivers/gpu/drm/tilcdc/tilcdc_external.h          |    1 
- drivers/gpu/drm/tilcdc/tilcdc_panel.c             |    9 -
- drivers/gpu/drm/tilcdc/tilcdc_tfp410.c            |    9 -
- drivers/i2c/busses/i2c-cadence.c                  |   30 +-----
- drivers/net/ethernet/emulex/benet/be_cmds.c       |   10 +-
- drivers/net/ethernet/emulex/benet/be_cmds.h       |    2 
- drivers/net/ethernet/emulex/benet/be_ethtool.c    |   31 ++++--
- drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c |    3 
- drivers/net/usb/ax88179_178a.c                    |   16 +--
- drivers/pci/host/pci-hyperv.c                     |  101 ++++++++++++++++++----
- drivers/power/reset/arm-versatile-reboot.c        |    1 
- drivers/s390/char/keyboard.h                      |    4 
- drivers/staging/speakup/spk_ttyio.c               |    4 
- drivers/tty/cyclades.c                            |    6 -
- drivers/tty/goldfish.c                            |    2 
- drivers/tty/moxa.c                                |    4 
- drivers/tty/pty.c                                 |   14 ---
- drivers/tty/serial/lpc32xx_hs.c                   |    2 
- drivers/tty/tty_buffer.c                          |   66 +++++++++-----
- drivers/tty/vt/keyboard.c                         |    6 -
- drivers/tty/vt/vt.c                               |    2 
- drivers/xen/gntdev.c                              |    3 
- include/linux/tty_flip.h                          |    4 
- include/net/bluetooth/bluetooth.h                 |   65 ++++++++++++++
- include/net/inet_sock.h                           |    3 
- include/net/ip.h                                  |    2 
- include/net/tcp.h                                 |    2 
- kernel/bpf/core.c                                 |    8 +
- kernel/events/core.c                              |   45 ++++++---
- mm/mempolicy.c                                    |    2 
- net/bluetooth/rfcomm/core.c                       |   50 +++++++++-
- net/bluetooth/rfcomm/sock.c                       |   46 ++--------
- net/bluetooth/sco.c                               |   30 ++----
- net/ipv4/igmp.c                                   |   23 +++--
- net/ipv4/tcp_output.c                             |    4 
- net/xfrm/xfrm_policy.c                            |    5 -
- sound/core/memalloc.c                             |    1 
- 44 files changed, 409 insertions(+), 342 deletions(-)
 
-Demi Marie Obenour (1):
-      xen/gntdev: Ignore failure to unmap INVALID_GRANT_HANDLE
-
-Eric Dumazet (1):
-      bpf: Make sure mac_header was set before using it
-
-Greg Kroah-Hartman (1):
-      Linux 4.14.290
-
-Hangyu Hua (1):
-      xfrm: xfrm_policy: fix a possible double xfrm_pols_put() in xfrm_bundle_lookup()
-
-Hristo Venev (1):
-      be2net: Fix buffer overflow in be_get_module_eeprom
-
-Jason A. Donenfeld (1):
-      Revert "Revert "char/random: silence a lockdep splat with printk()""
-
-Jeffrey Hugo (4):
-      PCI: hv: Fix multi-MSI to allow more than one MSI vector
-      PCI: hv: Fix hv_arch_irq_unmask() for multi-MSI
-      PCI: hv: Reuse existing IRTE allocation in compose_msi_msg()
-      PCI: hv: Fix interrupt mapping for multi-MSI
-
-Jiri Slaby (5):
-      tty: drivers/tty/, stop using tty_schedule_flip()
-      tty: the rest, stop using tty_schedule_flip()
-      tty: drop tty_schedule_flip()
-      tty: extract tty_flip_buffer_commit() from tty_flip_buffer_push()
-      tty: use new tty_insert_flip_string_and_push_buffer() in pty_write()
-
-Jose Alonso (1):
-      net: usb: ax88179_178a needs FLAG_SEND_ZLP
-
-Junxiao Chang (1):
-      net: stmmac: fix dma queue left shift overflow issue
-
-Jyri Sarha (1):
-      drm/tilcdc: Remove obsolete crtc_mode_valid() hack
-
-Kuniyuki Iwashima (7):
-      ip: Fix a data-race around sysctl_fwmark_reflect.
-      tcp/dccp: Fix a data-race around sysctl_tcp_fwmark_accept.
-      tcp: Fix a data-race around sysctl_tcp_probe_threshold.
-      tcp: Fix a data-race around sysctl_tcp_probe_interval.
-      igmp: Fix data-races around sysctl_igmp_llm_reports.
-      igmp: Fix a data-race around sysctl_igmp_max_memberships.
-      tcp: Fix a data-race around sysctl_tcp_notsent_lowat.
-
-Luiz Augusto von Dentz (7):
-      Bluetooth: Add bt_skb_sendmsg helper
-      Bluetooth: Add bt_skb_sendmmsg helper
-      Bluetooth: SCO: Replace use of memcpy_from_msg with bt_skb_sendmsg
-      Bluetooth: RFCOMM: Replace use of memcpy_from_msg with bt_skb_sendmmsg
-      Bluetooth: Fix passing NULL to PTR_ERR
-      Bluetooth: SCO: Fix sco_send_frame returning skb->len
-      Bluetooth: Fix bt_skb_sendmmsg not allocating partial chunks
-
-Miaoqian Lin (1):
-      power/reset: arm-versatile: Fix refcount leak in versatile_reboot_probe
-
-Peter Zijlstra (1):
-      perf/core: Fix data race between perf_event_set_output() and perf_mmap_close()
-
-Robert Hancock (1):
-      i2c: cadence: Change large transfer count reset logic to be unconditional
-
-Takashi Iwai (1):
-      ALSA: memalloc: Align buffer allocations in page size
-
-Wang Cheng (1):
-      mm/mempolicy: fix uninit-value in mpol_rebind_policy()
-
-Xiaomeng Tong (1):
-      tilcdc: tilcdc_external: fix an incorrect NULL check on list iterator
 
