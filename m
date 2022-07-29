@@ -2,81 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B503C00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 13:50:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA6E1C00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 13:51:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236497AbiG2Nun (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 09:50:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35644 "EHLO
+        id S236237AbiG2Nu7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 09:50:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235605AbiG2Nuk (ORCPT
+        with ESMTP id S236687AbiG2Nu4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 09:50:40 -0400
-Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com [209.85.128.175])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E30BE31DF3
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 06:50:37 -0700 (PDT)
-Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-2ef5380669cso51634497b3.9
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 06:50:37 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fc7yLt5IYorojKO3ICCa0CRVv9oy13vBhJXBMrvr6OM=;
-        b=LVKyykhNekRqURRcFK+KkrZlN6nDcbnoroZTsLOyhSnIfzEeOR0C32i8AroUuM4MrU
-         D+fdeLN+bsNp8i892mZaIYhiJXm+/GrFg9qKxWNuy8SMuXFrTNX/jUGt8bk49QHsww+d
-         4wz2MLiAGLir6BCeYlJXVAP8OlvIbeB77enAYuSErzf/O8AdZezRbIYVrQajabatlG0+
-         vVsErnsFF54VyoHMzX4P4Oy//XFBVEQWyFr5oJzM+epd2JHzggg1pYvGiWeazg8fnJ/u
-         TarJKPr/B9w7aQ1LPi1Eyo4RE4468Kbgn/Me2KHb1DNcW+Ahs3bWFGSVktCDPDfrAo9U
-         ld3Q==
-X-Gm-Message-State: ACgBeo0o4VZOYV8hyMsTQRzOwuv36KTTta7mKRU7H6p8griqJsaSxeCU
-        At/Jne+3Qm9sxjFoM8cwMQV+YnXHzOaLQvoBtU0=
-X-Google-Smtp-Source: AA6agR7N06JTGpJ4QLYk8Z03zUx9Fp/OjHDhdx95SiBZbwtm8248SKOxxs7Nw8cRMeKx3XT3PDI3yYivm1OLHs6L5QI=
-X-Received: by 2002:a81:1145:0:b0:31f:61b7:fda6 with SMTP id
- 66-20020a811145000000b0031f61b7fda6mr3099724ywr.45.1659102637070; Fri, 29 Jul
- 2022 06:50:37 -0700 (PDT)
+        Fri, 29 Jul 2022 09:50:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61BCA4D14E
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 06:50:48 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 02123B827C6
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 13:50:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25E0EC433D6;
+        Fri, 29 Jul 2022 13:50:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1659102645;
+        bh=EP6Yu3dCPvwyTA4MaOkILpl77d2Wl68YPVt+IAE/yX8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=JUwCS+jctbLKighaJvxZGtBxHAWr9YA6UQ0DzapxLFd762XQvhyosSWYc0bad7ic9
+         tA7eynlL3DjsTcUPbCrFYRm8xPnzYUbnjesMIrOaGrGB0za0QDASpTG4Xj3xqEKWD/
+         +jIFL0ZsvVy8YTeQFGpcreYBYX/iZEdIuHNg23UY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     alsa-devel@alsa-project.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Sanyog Kale <sanyog.r.kale@intel.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 2/5] soundwire: sysfs: cleanup the logic for creating the dp0 sysfs attributes
+Date:   Fri, 29 Jul 2022 15:50:38 +0200
+Message-Id: <20220729135041.2285908-2-gregkh@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220729135041.2285908-1-gregkh@linuxfoundation.org>
+References: <20220729135041.2285908-1-gregkh@linuxfoundation.org>
 MIME-Version: 1.0
-References: <20220511160319.1045812-1-mailhol.vincent@wanadoo.fr>
- <20220723151521.51451-1-mailhol.vincent@wanadoo.fr> <CAMZ6Rq+KohWoRurA3cKog18D=NuXNj_k4+ZmPRiakZd7ZPS1OQ@mail.gmail.com>
- <YuPRDvELE+Sx5p2c@zn.tnic>
-In-Reply-To: <YuPRDvELE+Sx5p2c@zn.tnic>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Fri, 29 Jul 2022 22:50:25 +0900
-Message-ID: <CAMZ6Rq+FXiJHRK5NC6nBj1uuu11rPpR8vVWNdY61ZiZeWHi=8Q@mail.gmail.com>
-Subject: Re: [RESEND PATCH v4 0/2] x86/asm/bitops: optimize ff{s,z} functions
- for constant expressions
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, x86@kernel.org,
-        Peter Zijlstra <peterz@infradead.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H . Peter Anvin" <hpa@zytor.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Tom Rix <trix@redhat.com>, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, David Howells <dhowells@redhat.com>,
-        Jan Beulich <JBeulich@suse.com>,
-        Christophe Jaillet <christophe.jaillet@wanadoo.fr>,
-        Joe Perches <joe@perches.com>,
-        Josh Poimboeuf <jpoimboe@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2218; i=gregkh@linuxfoundation.org; h=from:subject; bh=EP6Yu3dCPvwyTA4MaOkILpl77d2Wl68YPVt+IAE/yX8=; b=owGbwMvMwCRo6H6F97bub03G02pJDEmPn25Y2nKgevpxoUhnD0nvr7UR/lwfEld+eaWj5ve+8ed+ lUtZHbEsDIJMDLJiiixftvEc3V9xSNHL0PY0zBxWJpAhDFycAjCRvK8MC3ZLmxnt0LvLlbL4pj2b0Y N/X05de8IwV0pbcEuZvsX8w3u0lPM2LLG5Jy29FAA=
+X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp; fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri. 29 Jul. 2022 at 21:22, Borislav Petkov <bp@alien8.de> worte:
-> On Fri, Jul 29, 2022 at 08:24:58PM +0900, Vincent MAILHOL wrote:
-> > This patch series [1] has been waiting for more than two months
-> > already. So far, I have not heard back from any of the x86 mainteners.
-> > Do you see anything wrong with this series? If not, any chances to
-> > have someone of you to pick it up?
->
-> They're on my todo list but you have to be patient. If you haven't
-> heard, we're still busy with this thing called retbleed.
+There's no need to special-case the dp0 sysfs attributes, the
+is_visible() callback in the attribute group can handle that for us, so
+add that and add it to the attribute group list making the logic simpler
+overall.
 
-Understood and thanks for the update!
-If this is on your radar, then no more worries on my side. I wish you
-courage and good luck for the retbleed fix!
+This is a step on the way to moving all of the sysfs attribute handling
+into the default driver core attribute group logic so that the soundwire
+core does not have to do any of it manually.
 
+Cc: Vinod Koul <vkoul@kernel.org>
+Cc: Bard Liao <yung-chuan.liao@linux.intel.com>
+Cc: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Cc: Sanyog Kale <sanyog.r.kale@intel.com>
+Cc: alsa-devel@alsa-project.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/soundwire/sysfs_slave.c | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
-Yours sincerely,
-Vincent Mailhol
+diff --git a/drivers/soundwire/sysfs_slave.c b/drivers/soundwire/sysfs_slave.c
+index 83e3f6cc3250..3723333a5c2b 100644
+--- a/drivers/soundwire/sysfs_slave.c
++++ b/drivers/soundwire/sysfs_slave.c
+@@ -174,6 +174,16 @@ static ssize_t words_show(struct device *dev,
+ }
+ static DEVICE_ATTR_RO(words);
+ 
++static umode_t dp0_is_visible(struct kobject *kobj, struct attribute *attr,
++			      int n)
++{
++	struct sdw_slave *slave = dev_to_sdw_dev(kobj_to_dev(kobj));
++
++	if (slave->prop.dp0_prop)
++		return attr->mode;
++	return 0;
++}
++
+ static struct attribute *dp0_attrs[] = {
+ 	&dev_attr_max_word.attr,
+ 	&dev_attr_min_word.attr,
+@@ -190,12 +200,14 @@ static struct attribute *dp0_attrs[] = {
+  */
+ static const struct attribute_group dp0_group = {
+ 	.attrs = dp0_attrs,
++	.is_visible = dp0_is_visible,
+ 	.name = "dp0",
+ };
+ 
+ static const struct attribute_group *slave_groups[] = {
+ 	&slave_attr_group,
+ 	&sdw_slave_dev_attr_group,
++	&dp0_group,
+ 	NULL,
+ };
+ 
+@@ -207,12 +219,6 @@ int sdw_slave_sysfs_init(struct sdw_slave *slave)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	if (slave->prop.dp0_prop) {
+-		ret = devm_device_add_group(&slave->dev, &dp0_group);
+-		if (ret < 0)
+-			return ret;
+-	}
+-
+ 	if (slave->prop.source_ports || slave->prop.sink_ports) {
+ 		ret = sdw_slave_sysfs_dpn_init(slave);
+ 		if (ret < 0)
+-- 
+2.37.1
+
