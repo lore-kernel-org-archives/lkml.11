@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23BFBC00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 13:11:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAA4DC00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 13:12:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236193AbiG2NL4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 09:11:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34224 "EHLO
+        id S236505AbiG2NMB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 09:12:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236595AbiG2NKy (ORCPT
+        with ESMTP id S236598AbiG2NKy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 29 Jul 2022 09:10:54 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92D0A45F77;
-        Fri, 29 Jul 2022 06:10:51 -0700 (PDT)
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4832E3AE69
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 06:10:53 -0700 (PDT)
 Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LvSZ12Mrfz4xG8;
-        Fri, 29 Jul 2022 23:10:49 +1000 (AEST)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4LvSZ35wn0z4xG2;
+        Fri, 29 Jul 2022 23:10:51 +1000 (AEST)
 From:   Michael Ellerman <patch-notifications@ellerman.id.au>
-To:     deller@gmx.de, mrochs@linux.ibm.com,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        ukrishn@linux.ibm.com, manoj@linux.ibm.com, tzimmermann@suse.de,
-        Nicholas Piggin <npiggin@gmail.com>,
-        martin.petersen@oracle.com, jejb@linux.ibm.com
-Cc:     dri-devel@lists.freedesktop.org, linux-scsi@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        linux-fbdev@vger.kernel.org
-In-Reply-To: <f75b383673663e27f6b57e50b4abfb9fe3780b00.1657264228.git.christophe.leroy@csgroup.eu>
-References: <f75b383673663e27f6b57e50b4abfb9fe3780b00.1657264228.git.christophe.leroy@csgroup.eu>
-Subject: Re: [PATCH v3 1/4] video: fbdev: offb: Include missing linux/platform_device.h
-Message-Id: <165909976850.253830.18083403914079325529.b4-ty@ellerman.id.au>
-Date:   Fri, 29 Jul 2022 23:02:48 +1000
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Cc:     linuxppc-dev@lists.ozlabs.org,
+        Rashmica Gupta <rashmica.g@gmail.com>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        Madhavan Srinivasan <maddy@linux.vnet.ibm.com>,
+        linux-kernel@vger.kernel.org,
+        Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+In-Reply-To: <20c0ee7f99dbf0dbf8658df6b39f84753e6db1ef.1657204631.git.christophe.leroy@csgroup.eu>
+References: <20c0ee7f99dbf0dbf8658df6b39f84753e6db1ef.1657204631.git.christophe.leroy@csgroup.eu>
+Subject: Re: [PATCH v5 1/2] powerpc/perf: Use PVR rather than oprofile field to determine CPU version
+Message-Id: <165909975658.253830.11461450313523332819.b4-ty@ellerman.id.au>
+Date:   Fri, 29 Jul 2022 23:02:36 +1000
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -43,25 +44,22 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 8 Jul 2022 09:11:05 +0200, Christophe Leroy wrote:
-> A lot of drivers were getting platform and of headers
-> indirectly via headers like asm/pci.h or asm/prom.h
+On Thu, 7 Jul 2022 16:37:17 +0200, Christophe Leroy wrote:
+> From: Rashmica Gupta <rashmica.g@gmail.com>
 > 
-> Most of them were fixed during 5.19 cycle but a newissue was
-> introduced by commit 52b1b46c39ae ("of: Create platform devices
-> for OF framebuffers")
+> Currently the perf CPU backend drivers detect what CPU they're on using
+> cur_cpu_spec->oprofile_cpu_type.
+> 
+> Although that works, it's a bit crufty to be using oprofile related fields,
+> especially seeing as oprofile is more or less unused these days.
 > 
 > [...]
 
 Applied to powerpc/next.
 
-[1/4] video: fbdev: offb: Include missing linux/platform_device.h
-      https://git.kernel.org/powerpc/c/ebef8abc963b9e537c0a0d619dd8faf1b8f2b183
-[2/4] scsi: cxlflash: Include missing linux/irqdomain.h
-      https://git.kernel.org/powerpc/c/61657dcd528b75cd196adaf56890124c13953c8d
-[3/4] powerpc: Remove asm/prom.h from asm/mpc52xx.h and asm/pci.h
-      https://git.kernel.org/powerpc/c/4d5c5bad51935482437528f7fa4dffdcb3330d8b
-[4/4] powerpc: Finally remove unnecessary headers from asm/prom.h
-      https://git.kernel.org/powerpc/c/36afe68714d45edf34430d28e3dc787425ad8b22
+[1/2] powerpc/perf: Use PVR rather than oprofile field to determine CPU version
+      https://git.kernel.org/powerpc/c/ec3eb9d941a98f4c0dac263110729680a734279b
+[2/2] powerpc: Remove remaining parts of oprofile
+      https://git.kernel.org/powerpc/c/62ccae78820b25a0ac64bb0f648388ec834fcb3c
 
 cheers
