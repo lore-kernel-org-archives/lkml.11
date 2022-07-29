@@ -2,59 +2,149 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77D48C3F6B0
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 19:46:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20F9AC19F2A
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 19:46:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238884AbiG2Tqs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 15:46:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58998 "EHLO
+        id S238916AbiG2Tqz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 15:46:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238755AbiG2Tqp (ORCPT
+        with ESMTP id S238894AbiG2Tqv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 15:46:45 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BF7267586
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 12:46:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=7Uyb73v5rTeGi6O22hmhJ+u8gllUvmeLKJcs+R3V8JY=; b=fGF3arBN3qZwrpge7TrypIPvtU
-        lqSRvYisb02UGydgHErTPZdJUjvC8IilC6S4OQ+JNwa+4MV37da9is0EM6tVOs8imwcccqdsuLEzs
-        qDhvWgPZBdEgI2fiBKwXv6V0Ltaxje17UqBPUroWL4oqJCcrRny9j0na/OoOs0QYjw7k456Tqib0D
-        IgyYXviQHOt808H80OQ1mCYrMjs1yB+Nda4h/F6y2pXpGcrPbns0M8tIn+0mFjJyzoOIWubHkOWn+
-        AD2gJDLSd7cVTdJJOFbvMKeGI4mOoAPF/zGpiPYjfwkMlO23ykt+frY8ddmhWhfKTpz0Jx44jkVbZ
-        vs6YnXnw==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1oHVwL-0050n0-CU; Fri, 29 Jul 2022 19:46:29 +0000
-Date:   Fri, 29 Jul 2022 20:46:29 +0100
-From:   Matthew Wilcox <willy@infradead.org>
-To:     alexlzhu@fb.com
-Cc:     linux-mm@kvack.org, kernel-team@fb.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] x86/sys_x86_64: fix VMA alginment for mmap file to THP
-Message-ID: <YuQ5FYWMXLw+LpVA@casper.infradead.org>
-References: <20220729194214.1309313-1-alexlzhu@fb.com>
+        Fri, 29 Jul 2022 15:46:51 -0400
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B32D88747;
+        Fri, 29 Jul 2022 12:46:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=1wgWQHyf41Q4C/D0b3udJRG2sHG+B+p4zwm51LjrGK0=; b=oCPi7V9p9/OkdOMDupFy+1UUfk
+        7jRgYnYqnn0bjOD2MKIVi2UnGtBW+2GWtq+SejmyGPXMGE/CvyqOKYqCuNC8hisl8iujG7Oysk2fg
+        YAiT92UIssrhaNbw3sL6Zr104YzxTchOaqVK8p9XBzgSKiRC/OhBg+XOZMEDBIZQVhKRxHLvQxEnN
+        L1f3k0k6P5fAi1zV8/5BIzYunZ8UvkZ7Ntv4BkM44TLUeeZDoYExL582Yu2+TvWQ8OFsiFlMCSHp3
+        CszL1OT3wxpUsMdvKxxafF7c3xzyBvFsT5OS3BpgVSqCWWRSi3Avx0Lp5CsN9/qKO+nSVy3Y9x2B6
+        BkQkW/dQ==;
+Received: from [177.83.209.223] (helo=localhost)
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
+        id 1oHVwa-00BMCN-NS; Fri, 29 Jul 2022 21:46:48 +0200
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+To:     ardb@kernel.org, linux-efi@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, kernel-dev@igalia.com,
+        kernel@gpiccoli.net, anton@enomsg.org, ccross@android.com,
+        keescook@chromium.org, matt@codeblueprint.co.uk,
+        mjg59@srcf.ucam.org, tony.luck@intel.com,
+        "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Subject: [PATCH v2 1/3] efi: Add a generic helper to convert strings to unicode
+Date:   Fri, 29 Jul 2022 16:45:30 -0300
+Message-Id: <20220729194532.228403-2-gpiccoli@igalia.com>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220729194532.228403-1-gpiccoli@igalia.com>
+References: <20220729194532.228403-1-gpiccoli@igalia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220729194214.1309313-1-alexlzhu@fb.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 29, 2022 at 12:42:14PM -0700, alexlzhu@devvm6390.atn0.facebook.com wrote:
-> From: alexlzhu <alexlzhu@fb.com>
-> 
-> With CONFIG_READ_ONLY_THP_FOR_FS, the Linux kernel supports using THPs for
-> read-only mmapped files, such as shared libraries. However, on x86 the
-> kernel makes no attempt to actually align those mappings on 2MB boundaries,
-> which makes it impossible to use those THPs most of the time. This issue
-> applies to general file mapping THP as well as existing setups using
-> CONFIG_READ_ONLY_THP_FOR_FS. This is easily fixed by using the alignment
-> info passed to vm_unmapped_area. The problem can be seen in
-> /proc/PID/smaps where THPeligible is set to 0 on mappings to eligible
-> shared object files as shown below.
+Currently both efi-pstore and efibc rely in simple for-loops to convert
+from regular char pointers to u16/unicode strings; so let's export this
+functionality as a helper to common EFI code to prevent code duplication.
+This helper will also be used in a subsequent patch (adding a new module).
 
-Can't your filesystem just use thp_get_unmapped_area() like
-ext2/ext4/fuse/xfs do?
+Notice that efi-pstore didn't write the end NULL char in the unicode
+string before this patch, but this should not change anything in a
+relevant way for this module - other than that, no functional change is
+expected.
+
+Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
+---
+ drivers/firmware/efi/efi-pstore.c |  4 +---
+ drivers/firmware/efi/efibc.c      |  9 ++++-----
+ include/linux/efi.h               | 17 +++++++++++++++++
+ 3 files changed, 22 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/firmware/efi/efi-pstore.c b/drivers/firmware/efi/efi-pstore.c
+index 3bddc152fcd4..965a4c0d6e60 100644
+--- a/drivers/firmware/efi/efi-pstore.c
++++ b/drivers/firmware/efi/efi-pstore.c
+@@ -167,7 +167,6 @@ static int efi_pstore_write(struct pstore_record *record)
+ 	char name[DUMP_NAME_LEN];
+ 	efi_char16_t efi_name[DUMP_NAME_LEN];
+ 	efi_status_t status;
+-	int i;
+ 
+ 	record->id = generic_id(record->time.tv_sec, record->part,
+ 				record->count);
+@@ -180,8 +179,7 @@ static int efi_pstore_write(struct pstore_record *record)
+ 		 (long long)record->time.tv_sec,
+ 		 record->compressed ? 'C' : 'D');
+ 
+-	for (i = 0; i < DUMP_NAME_LEN; i++)
+-		efi_name[i] = name[i];
++	efi_str8_to_str16(efi_name, name, DUMP_NAME_LEN - 1);
+ 
+ 	if (efivar_trylock())
+ 		return -EBUSY;
+diff --git a/drivers/firmware/efi/efibc.c b/drivers/firmware/efi/efibc.c
+index 8ced7af8e56d..7e3bf60d24e0 100644
+--- a/drivers/firmware/efi/efibc.c
++++ b/drivers/firmware/efi/efibc.c
+@@ -39,7 +39,7 @@ static int efibc_reboot_notifier_call(struct notifier_block *notifier,
+ 						    : L"shutdown";
+ 	const u8 *str = data;
+ 	efi_char16_t *wdata;
+-	unsigned long l;
++	size_t len;
+ 	int ret;
+ 
+ 	ret = efibc_set_variable(L"LoaderEntryRebootReason", reason,
+@@ -48,11 +48,10 @@ static int efibc_reboot_notifier_call(struct notifier_block *notifier,
+ 		return NOTIFY_DONE;
+ 
+ 	wdata = kmalloc(MAX_DATA_LEN * sizeof(efi_char16_t), GFP_KERNEL);
+-	for (l = 0; l < MAX_DATA_LEN - 1 && str[l] != '\0'; l++)
+-		wdata[l] = str[l];
+-	wdata[l] = L'\0';
+ 
+-	efibc_set_variable(L"LoaderEntryOneShot", wdata, l);
++	len = efi_str8_to_str16(wdata, str, MAX_DATA_LEN - 1);
++
++	efibc_set_variable(L"LoaderEntryOneShot", wdata, len);
+ 
+ 	kfree(wdata);
+ 	return NOTIFY_DONE;
+diff --git a/include/linux/efi.h b/include/linux/efi.h
+index d2b84c2fec39..c0ea01be3772 100644
+--- a/include/linux/efi.h
++++ b/include/linux/efi.h
+@@ -1030,6 +1030,23 @@ struct efivars {
+ 
+ #define EFI_VAR_NAME_LEN	1024
+ 
++/*
++ * Helper that converts regular char buffer to u16 unicode-like strings;
++ * notice that the unicode buffer requires to be at least len+1 in size.
++ */
++static inline size_t
++efi_str8_to_str16(efi_char16_t *str16, const char *str8, size_t len)
++{
++	size_t i;
++
++	for (i = 0; i < len && str8[i] != '\0'; i++)
++		str16[i] = str8[i];
++
++	str16[i] = L'\0';
++
++	return i;
++}
++
+ int efivars_register(struct efivars *efivars,
+ 		     const struct efivar_operations *ops,
+ 		     struct kobject *kobject);
+-- 
+2.37.1
+
