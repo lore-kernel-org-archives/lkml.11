@@ -2,126 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F16E8C00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 15:20:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 401B5C19F2A
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 15:20:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236938AbiG2PUa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 11:20:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48322 "EHLO
+        id S236746AbiG2PUk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 11:20:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236806AbiG2PUY (ORCPT
+        with ESMTP id S237298AbiG2PUf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 11:20:24 -0400
-Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAE222018D
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 08:20:22 -0700 (PDT)
-Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-324293f1414so19817627b3.0
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 08:20:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=JpxH+0pcpwdGFQIy9DRev+uNqMcyJUe+RuBBYCncU+8=;
-        b=uaoD4+E11ru9kzNBwgCQg73wXXd8Qu535Vg4usFywm+XxTbn2bQFO0gYrVGIETI09L
-         1Mum+2d/sLV21Vijzmrbj3cHaNttcffFcy9nAvdaTJvNLtd0s0nXHj44Wrm7u+85uV7W
-         svON+Shi7/KnZtWbSC9jkTaLZoqmXf57fYb62YNvFdcmHwtVGMvoFiz+icftdxSUGTVY
-         IoD2YK4GiJMI9Hh9/GR2wDrnRc1RCTLMRNvx3O/BydKEgRdLTdksjyPUwC/YKeuOnt0P
-         zmd1FGJUhOgqBbv2Ujh1SwpPJLhxb1YEYgiLyVuf2J0qeDpX38Tlx+1J9/WRnFqfz6HI
-         tCGw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=JpxH+0pcpwdGFQIy9DRev+uNqMcyJUe+RuBBYCncU+8=;
-        b=olBlFCP9ZrMU4CZoOzUwH2dWykt6NWguIjW9OVLS2Zt1dt851PhI984V0Rcon/dPOt
-         srOTw59duWJx8k70CAEEzq5oH+XmO4e9sFzQUztHftPaxc13TWpLYcVG+bDAPgWGpooq
-         81W2IsuyX9Gb+gkWUwM/xu8gDDbnZ10OrmFytxNwDtfyjzqpjbnQjlliMsu6TYNMHGnZ
-         RglfhNC3upDWXrXq2G/nu31dQ92rMsp2Xg2pGmofGqsDs9mtUHFFH1qOtSLj4UulRM6Q
-         SgblX1QLMmVk8fFwZBbHQoST9PlZ3e9fHLtFhIq3hpiIkDiVc8wFR0KKzAPAe1kwS8rD
-         ITvA==
-X-Gm-Message-State: ACgBeo0ogbBFbhiPw4G7l1NASgnzON693X2R3A1faoVqOBGsTJrdNFj7
-        vcylJd79F1Ext4oaNaYRXdiD2peXaWlWumezS6slHA==
-X-Google-Smtp-Source: AA6agR5LgLR6pYTs5w5w5fc+1Z3RdxkEoqGGkvJvcfN8qQUqzHYmYQWuz6pJKO/kmJsT/6k5rd+apjFglbV7OmOEMoc=
-X-Received: by 2002:a81:b046:0:b0:31d:bd47:7fb with SMTP id
- x6-20020a81b046000000b0031dbd4707fbmr3601026ywk.88.1659108021846; Fri, 29 Jul
- 2022 08:20:21 -0700 (PDT)
+        Fri, 29 Jul 2022 11:20:35 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAD2D3C8EC;
+        Fri, 29 Jul 2022 08:20:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4BCF1B82830;
+        Fri, 29 Jul 2022 15:20:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83199C433C1;
+        Fri, 29 Jul 2022 15:20:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1659108029;
+        bh=3GIzD6g4X4SJPWe6lx8YgGQyy1pNa8SOC2UO8Xmqp9Q=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Tqwop40c1edQ37549A7EROrUauwWCxusXKfwwL7ULA7f3Uzc5SbTrQ93iWs83521v
+         QdM8BYeEUjgtGelzHPqv3gQgLNty0h0xNYedB6Thoap8lWJgIY3iJHHnMish46Uyf1
+         DU+cEXK5/HYGE+eHQliK6PGr/Zlno5gPjLN+Goyc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
+        torvalds@linux-foundation.org, stable@vger.kernel.org
+Cc:     lwn@lwn.net, jslaby@suse.cz,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Linux 4.9.325
+Date:   Fri, 29 Jul 2022 17:20:22 +0200
+Message-Id: <1659108023161245@kroah.com>
+X-Mailer: git-send-email 2.37.1
 MIME-Version: 1.0
-References: <20220726135506.485108-1-bchihi@baylibre.com> <20220726135506.485108-2-bchihi@baylibre.com>
- <24250d03-b25f-e521-5abd-f36109885c36@linaro.org>
-In-Reply-To: <24250d03-b25f-e521-5abd-f36109885c36@linaro.org>
-From:   Balsam CHIHI <bchihi@baylibre.com>
-Date:   Fri, 29 Jul 2022 17:19:45 +0200
-Message-ID: <CAGuA+opxZ7DDrWHcnTRhMcm7YveCAypdy9MDSytt58asgekayw@mail.gmail.com>
-Subject: Re: [PATCH v8 1/6] thermal: mediatek: Relocate driver to mediatek folder
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc:     rafael@kernel.org, rui.zhang@intel.com, amitk@kernel.org,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        khilman@baylibre.com, mka@chromium.org, robh+dt@kernel.org,
-        krzk+dt@kernel.org, matthias.bgg@gmail.com, p.zabel@pengutronix.de,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, james.lo@mediatek.com,
-        fan.chen@mediatek.com, louis.yu@mediatek.com,
-        rex-bc.chen@mediatek.com, abailon@baylibre.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 28, 2022 at 10:53 AM Daniel Lezcano
-<daniel.lezcano@linaro.org> wrote:
->
->
-> Hi Balsam,
->
-> On 26/07/2022 15:55, Balsam CHIHI wrote:
-> > Add Mediatek proprietary folder to upstream more thermal zone and cooler
-> > drivers. Relocate the original thermal controller driver to it and rename
-> > as soc_temp.c to show its purpose more clearly.
->
-> I realize the Kconfig, Makefiles format are not consistent across the
-> boards. Before I fix this, you can comply to the format:
->
-> drivers/thermal/Kconfig:
->
-> menu "Mediatek thermal drivers"
-> depends on ARCH_MEDIATEK || COMPILE_TEST
-> source "drivers/thermal/mediatek/Kconfig"
-> endmenu
->
-> drivers/thermal/Makefile:
->
-> -obj-$(CONFIG_MTK_THERMAL)      += mtk_thermal.o
-> +obj-y                          += mediatek
->
-> drivers/thermal/mediatek/Kconfig:
->
-> config MTK_SOC_THERMAL
->         tristate "Temperature sensor driver for MediaTek SoCs"
->         depends on HAS_IOMEM
->         depends on NVMEM
->         depends on RESET_CONTROLLER
->         help
->                 Enable this option if you want to get SoC temperature
->                 information for MediaTek platforms. This driver
->                 configures thermal controllers to collect temperature
->                 via AUXADC interface.
->
-> drivers/thermal/mediatek/Makefile:
->
-> obj-$(MTK_SOC_THERMAL)  += soc_temp.o
->
-> However, rename 'soc_temp' to something more SoC explicit, eg.
-> mtxxx_thermal.c
->
-> Thanks
->
->    -- Daniel
+I'm announcing the release of the 4.9.325 kernel.
 
-Hello Daniel,
+All users of the 4.9 kernel series must upgrade.
 
-Thank you for the feedback.
-Changes have been made as you suggested.
-Resubmitting seen.
+The updated 4.9.y git tree can be found at:
+	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git linux-4.9.y
+and can be browsed at the normal kernel.org git web browser:
+	https://git.kernel.org/?p=linux/kernel/git/stable/linux-stable.git;a=summary
 
-Best regards.
-Balsam.
+thanks,
+
+greg k-h
+
+------------
+
+ Makefile                                       |    2 
+ arch/alpha/kernel/srmcons.c                    |    2 
+ drivers/char/random.c                          |    4 -
+ drivers/i2c/busses/i2c-cadence.c               |   30 +----------
+ drivers/mfd/rtsx_usb.c                         |   27 +++++++---
+ drivers/net/ethernet/emulex/benet/be_cmds.c    |   10 +--
+ drivers/net/ethernet/emulex/benet/be_cmds.h    |    2 
+ drivers/net/ethernet/emulex/benet/be_ethtool.c |   31 +++++++----
+ drivers/net/usb/ax88179_178a.c                 |   14 ++---
+ drivers/power/reset/arm-versatile-reboot.c     |    1 
+ drivers/s390/char/keyboard.h                   |    4 -
+ drivers/tty/cyclades.c                         |    6 +-
+ drivers/tty/goldfish.c                         |    2 
+ drivers/tty/moxa.c                             |    4 -
+ drivers/tty/pty.c                              |   14 -----
+ drivers/tty/serial/lpc32xx_hs.c                |    2 
+ drivers/tty/tty_buffer.c                       |   66 ++++++++++++++++---------
+ drivers/tty/vt/keyboard.c                      |    6 +-
+ drivers/tty/vt/vt.c                            |    2 
+ drivers/xen/gntdev.c                           |    3 -
+ include/linux/lsm_hooks.h                      |    7 --
+ include/linux/mfd/rtsx_usb.h                   |    2 
+ include/linux/security.h                       |    6 --
+ include/linux/tty_flip.h                       |    4 +
+ include/net/inet_sock.h                        |    3 -
+ include/net/ip.h                               |    2 
+ include/net/tcp.h                              |    2 
+ kernel/bpf/core.c                              |    8 +--
+ kernel/events/core.c                           |   45 +++++++++++------
+ kernel/exit.c                                  |   19 -------
+ mm/mempolicy.c                                 |    2 
+ net/ipv4/igmp.c                                |   23 +++++---
+ net/ipv4/tcp_output.c                          |    2 
+ net/xfrm/xfrm_policy.c                         |    5 +
+ security/security.c                            |    6 --
+ security/selinux/hooks.c                       |    6 --
+ security/smack/smack_lsm.c                     |   20 -------
+ sound/core/memalloc.c                          |    1 
+ 38 files changed, 188 insertions(+), 207 deletions(-)
+
+Demi Marie Obenour (1):
+      xen/gntdev: Ignore failure to unmap INVALID_GRANT_HANDLE
+
+Eric Dumazet (1):
+      bpf: Make sure mac_header was set before using it
+
+Greg Kroah-Hartman (1):
+      Linux 4.9.325
+
+Hangyu Hua (1):
+      xfrm: xfrm_policy: fix a possible double xfrm_pols_put() in xfrm_bundle_lookup()
+
+Hristo Venev (1):
+      be2net: Fix buffer overflow in be_get_module_eeprom
+
+Jason A. Donenfeld (1):
+      Revert "Revert "char/random: silence a lockdep splat with printk()""
+
+Jiri Slaby (5):
+      tty: drivers/tty/, stop using tty_schedule_flip()
+      tty: the rest, stop using tty_schedule_flip()
+      tty: drop tty_schedule_flip()
+      tty: extract tty_flip_buffer_commit() from tty_flip_buffer_push()
+      tty: use new tty_insert_flip_string_and_push_buffer() in pty_write()
+
+Jose Alonso (1):
+      net: usb: ax88179_178a needs FLAG_SEND_ZLP
+
+Kuniyuki Iwashima (6):
+      ip: Fix a data-race around sysctl_fwmark_reflect.
+      tcp/dccp: Fix a data-race around sysctl_tcp_fwmark_accept.
+      tcp: Fix a data-race around sysctl_tcp_probe_threshold.
+      igmp: Fix data-races around sysctl_igmp_llm_reports.
+      igmp: Fix a data-race around sysctl_igmp_max_memberships.
+      tcp: Fix a data-race around sysctl_tcp_notsent_lowat.
+
+Miaoqian Lin (1):
+      power/reset: arm-versatile: Fix refcount leak in versatile_reboot_probe
+
+Peter Zijlstra (1):
+      perf/core: Fix data race between perf_event_set_output() and perf_mmap_close()
+
+Robert Hancock (1):
+      i2c: cadence: Change large transfer count reset logic to be unconditional
+
+Shuah Khan (3):
+      misc: rtsx_usb: fix use of dma mapped buffer for usb bulk transfer
+      misc: rtsx_usb: use separate command and response buffers
+      misc: rtsx_usb: set return value in rsp_buf alloc err path
+
+Stephen Smalley (1):
+      security,selinux,smack: kill security_task_wait hook
+
+Takashi Iwai (1):
+      ALSA: memalloc: Align buffer allocations in page size
+
+Wang Cheng (1):
+      mm/mempolicy: fix uninit-value in mpol_rebind_policy()
+
