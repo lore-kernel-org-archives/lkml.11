@@ -2,101 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D7EFC00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 16:13:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB400C00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 16:13:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237239AbiG2QNV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 12:13:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38106 "EHLO
+        id S237370AbiG2QN0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 12:13:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236129AbiG2QNT (ORCPT
+        with ESMTP id S236263AbiG2QNU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 12:13:19 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D5EEC8052F;
-        Fri, 29 Jul 2022 09:13:16 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 3F1571063;
-        Fri, 29 Jul 2022 09:13:17 -0700 (PDT)
-Received: from localhost.localdomain (H2XD2X12VG.cambridge.arm.com [10.1.36.148])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id CF6F13F73B;
+        Fri, 29 Jul 2022 12:13:20 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A057E80514
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 09:13:15 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id v5so2801500wmj.0
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 09:13:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=arista.com; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=ndPzYPx7a+lxlREQ5VWInpGZ4vTgIRtRwCd3iQNfXK8=;
+        b=bjZweXK8UJ0AlRVWS2sdMyAkg5VvIQ9Xi02IPaDT1VpXCdn4TO6E0No+orkEsE9PUL
+         +NZXNQQMK/XOIlS0xFFW2tMNWhgXGNzA+XBsvUR9xGmCZa2PCBWKx/cXxHFNV10zW1X4
+         Gb+8csJTKV9du0EVWYkmAB+Xe0gOERqGu+GAHd/noVjOFYNYzgj8OAeZhn0OJK0aPuih
+         XX91oCAOv6QPXvjH/lrorxNY+G+UJPWHNivXZwtw4dqQQ0FlfuiCWthsqaTMQ/ZtbPe7
+         wInugXnkB42bZeUX33y4whDL3gipGhknOvNemnsPf34IN3cDl0rDq+KYnYpg6OgNZGxC
+         Dl2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=ndPzYPx7a+lxlREQ5VWInpGZ4vTgIRtRwCd3iQNfXK8=;
+        b=dkFOppodcfS0CFG229sauFpExsljPHY0pJQiUv3ugayG3s1SlLfgswdwz7GHmcXyoC
+         TTyde4P5mey0UsgXypdeUxmZrqHpiGva12Fx4MwIc/6ayNkbKGZvnfJ+9fm6UAwowMmf
+         p3vj51tVRX3Zmgf4et9FxrbBg2Um2pvVHIaxRW+24bzGIU+iLT0qrMlaWcM64cv3Baza
+         KsrUdNLJQOLRBKShIXCQIl9UWyUgZZ0fSY+m1f5NURSaB9fwQFR673HBVglLQMLalyZE
+         LIuv9TU6RS+7cHYLwYy5YHu796p8Kz8t2DjxFb23qQsuJcxOAftgdJBVMl86LMw1M2aM
+         iBfg==
+X-Gm-Message-State: AJIora+Q6S/cc48ktThMVfnxf0+qxdtkPliHgLtHbwQfJTREEORtrXGk
+        /YFi2G4Lhp8WulvX05s+cxRPVA==
+X-Google-Smtp-Source: AGRyM1s2nA7c8Bvd3lIiVE5hNAV55JnHcmqJb/93IsJEAn/pPyJxekokYnyBgpPVwFGRF0BfAtRSBA==
+X-Received: by 2002:a7b:c3c5:0:b0:3a2:e327:ba6d with SMTP id t5-20020a7bc3c5000000b003a2e327ba6dmr3284954wmj.184.1659111194003;
         Fri, 29 Jul 2022 09:13:14 -0700 (PDT)
-From:   =?UTF-8?q?Adri=C3=A1n=20Herrera=20Arcila?= <adrian.herrera@arm.com>
-To:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        acme@kernel.org
-Cc:     peterz@infradead.org, mingo@redhat.com, mark.rutland@arm.com,
-        alexander.shishkin@linux.intel.com, jolsa@kernel.org,
-        namhyung@kernel.org, leo.yan@linaro.org, songliubraving@fb.com,
-        james.clark@arm.com,
-        =?UTF-8?q?Adri=C3=A1n=20Herrera=20Arcila?= <adrian.herrera@arm.com>
-Subject: [PATCH 1/2] perf stat: refactor __run_perf_stat common code
-Date:   Fri, 29 Jul 2022 16:12:43 +0000
-Message-Id: <20220729161244.10522-1-adrian.herrera@arm.com>
-X-Mailer: git-send-email 2.36.1
+Received: from [10.83.37.24] ([217.173.96.166])
+        by smtp.gmail.com with ESMTPSA id d10-20020adffbca000000b0021e4f446d43sm4047932wrs.58.2022.07.29.09.13.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 29 Jul 2022 09:13:13 -0700 (PDT)
+Message-ID: <26d5955b-3807-a015-d259-ccc262f665c2@arista.com>
+Date:   Fri, 29 Jul 2022 17:13:06 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH 0/6] net/crypto: Introduce crypto_pool
+Content-Language: en-US
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     linux-kernel@vger.kernel.org,
+        Dmitry Safonov <0x7f454c46@gmail.com>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        David Ahern <dsahern@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Biggers <ebiggers@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Francesco Ruggeri <fruggeri@arista.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Leonard Crestez <cdleonard@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Salam Noureddine <noureddine@arista.com>,
+        netdev@vger.kernel.org, linux-crypto@vger.kernel.org
+References: <20220726201600.1715505-1-dima@arista.com>
+ <YuCEN7LKcVLL0zBn@gondor.apana.org.au>
+From:   Dmitry Safonov <dima@arista.com>
+In-Reply-To: <YuCEN7LKcVLL0zBn@gondor.apana.org.au>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This extracts common code from the branches of the forks if-then-else.
-enable_counters(), which was at the beginning of both branches of the
-conditional, is now unconditional; evlist__start_workload is extracted
-to a different if, which enables making the common clocking code
-unconditional.
+Hi Herbert,
 
-Signed-off-by: Adrián Herrera Arcila <adrian.herrera@arm.com>
----
- tools/perf/builtin-stat.c | 25 +++++++++----------------
- 1 file changed, 9 insertions(+), 16 deletions(-)
+On 7/27/22 01:17, Herbert Xu wrote:
+> On Tue, Jul 26, 2022 at 09:15:54PM +0100, Dmitry Safonov wrote:
+>> Add crypto_pool - an API for allocating per-CPU array of crypto requests
+>> on slow-path (in sleep'able context) and to use them on a fast-path,
+>> which is RX/TX for net/ users (or in any other bh-disabled users).
+>> The design is based on the current implementations of md5sig_pool.
+>>
+>> Previously, I've suggested to add such API on TCP-AO patch submission [1], 
+>> where Herbert kindly suggested to help with introducing new crypto API.
+> 
+> What I was suggesting is modifying the actual ahash interface so
+> that the tfm can be shared between different key users by moving
+> the key into the request object.
 
-diff --git a/tools/perf/builtin-stat.c b/tools/perf/builtin-stat.c
-index d2ecd4d29624..318ffd119dad 100644
---- a/tools/perf/builtin-stat.c
-+++ b/tools/perf/builtin-stat.c
-@@ -966,18 +966,18 @@ static int __run_perf_stat(int argc, const char **argv, int run_idx)
- 			return err;
- 	}
- 
--	/*
--	 * Enable counters and exec the command:
--	 */
--	if (forks) {
--		err = enable_counters();
--		if (err)
--			return -1;
-+	err = enable_counters();
-+	if (err)
-+		return -1;
-+
-+	/* Exec the command, if any */
-+	if (forks)
- 		evlist__start_workload(evsel_list);
- 
--		t0 = rdclock();
--		clock_gettime(CLOCK_MONOTONIC, &ref_time);
-+	t0 = rdclock();
-+	clock_gettime(CLOCK_MONOTONIC, &ref_time);
- 
-+	if (forks) {
- 		if (interval || timeout || evlist__ctlfd_initialized(evsel_list))
- 			status = dispatch_events(forks, timeout, interval, &times);
- 		if (child_pid != -1) {
-@@ -995,13 +995,6 @@ static int __run_perf_stat(int argc, const char **argv, int run_idx)
- 		if (WIFSIGNALED(status))
- 			psignal(WTERMSIG(status), argv[0]);
- 	} else {
--		err = enable_counters();
--		if (err)
--			return -1;
--
--		t0 = rdclock();
--		clock_gettime(CLOCK_MONOTONIC, &ref_time);
--
- 		status = dispatch_events(forks, timeout, interval, &times);
- 	}
- 
--- 
-2.36.1
+My impression here is that we're looking at different issues.
+1. The necessity of allocating per-CPU ahash_requests.
+2. Managing the lifetime and sharing of ahash_request between different
+kernel users.
 
+Removing (1) will allow saving (num_possible_cpus() - 1)*(sizeof(struct
+ahash_request) + crypto_ahash_reqsize(tfm)) bytes. Which would be very
+nice for the new fancy CPUs with hundreds of threads.
+
+For (2) many kernel users try manage it themselves, resulting in
+different implementations, as well as some users trying to avoid using
+any complication like ref counting and allocating the request only once,
+without freeing it until the module is unloaded. Here for example,
+introducing TCP-AO would result in copy'n'paste of tcp_md5sig_pool code.
+As well as RFC5925 for TCP-AO let user to have any supported hashing
+algorithms, with the requirement from RFC5926 of hmac(sha1) & aes(cmac).
+If a user wants more algorithms that implementation would need to be
+patched.
+
+I see quite a few net/ users that could use some common API for this
+besides TCP-MD5 and TCP-AO. That have the same pattern of allocating
+crypto algorithm on a slow-path (adding a key or module initialization)
+and using it of a fast-path, which is RX/TX.
+Besides of sharing and lifetime managing, those users need a temporary
+buffer (usually the name is `scratch'), IIUC, it is needed for async
+algorithms that could use some hardware accelerator instead of CPU and
+need to write the result anywhere, but on vmapped stack.
+
+So, here I'm trying to address (2) in order to avoid copy'n'pasting of
+tcp_md5sig_pool code for introduction of TCP-AO support.
+I've also patched tcp-md5 code to dynamically disable the static branch,
+which is not crypto change.
+
+There's also a chance I've misunderstood what is your proposal :-)
+
+Thanks,
+          Dmitry
