@@ -2,103 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F261C00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 22:19:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3C4DC19F2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 22:22:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239318AbiG2WTc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 18:19:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50612 "EHLO
+        id S239330AbiG2WWq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 18:22:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52940 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238953AbiG2WT3 (ORCPT
+        with ESMTP id S238561AbiG2WWo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 18:19:29 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69F8F747AE
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 15:19:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659133168; x=1690669168;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=7e1IU0/1VL/UlTDUWskyup1/DxjZcpExuYk7fPqQkS4=;
-  b=EriA1AuC0pBWUj+d/kIPDTyMNiHKMCzQAPNaxbzG5UZouSY/+PYQ3mZX
-   U1KMFpsZznCcHiKCegwcWy1tBxhA3qIG5tRgNS4bkyNVVrrtiIrK4+i4C
-   pxUj8rgeH+EsvVOSqQmWqq124YrcoU6fgauUQ0Gl8tLCmAmTkz8fFvfWY
-   t882x1KFMpowHND0Z20K1p6VX52oN53IO9imQQ3BQbjC8W3cDhUfvjCKe
-   fIXHvXKPRIii2VRoNNlbfkXQtGjYWogFtT7HDPcQdhiDZHbHfefuK2lo0
-   F20vLkSTFVukvNV8yX4cXSbLJBfzw6pVcEU8lPxcNwQedfN5eEuotRqsw
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10423"; a="352861652"
-X-IronPort-AV: E=Sophos;i="5.93,202,1654585200"; 
-   d="scan'208";a="352861652"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2022 15:19:28 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,202,1654585200"; 
-   d="scan'208";a="629537051"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 29 Jul 2022 15:19:26 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oHYKL-000C8r-2A;
-        Fri, 29 Jul 2022 22:19:25 +0000
-Date:   Sat, 30 Jul 2022 06:18:39 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "Jason A. Donenfeld" <zx2c4@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Ammar Faizi <ammarfaizi2@gnuweeb.org>,
-        GNU/Weeb Mailing List <gwml@vger.gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:crng/random/jd/vdso 8/8]
- arch/x86/entry/vdso/vgetrandom.c:10:9: warning: no previous prototype for
- function '__vdso_getrandom'
-Message-ID: <202207300604.XFoJYXtZ-lkp@intel.com>
+        Fri, 29 Jul 2022 18:22:44 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA3233F318;
+        Fri, 29 Jul 2022 15:22:43 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 44D49B829DA;
+        Fri, 29 Jul 2022 22:22:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 960F2C433C1;
+        Fri, 29 Jul 2022 22:22:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1659133360;
+        bh=bOE0cFSfd9j0Ebec4rZcMchvAjKnySFjPVmPPm0v4SM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=IBnQ9kguUzE0r+FypL9wCXYrfXepKex/VI76VfwXTyN8nhXho0sLaY7Q5pzNCkpY6
+         XHyPeQ0uu/En8bP9RQdZf6j0uGYoinTiwYE13v/kjE7c/Q3H8xDfggOyVsqJPPxqWs
+         NugTwjKjY/7x+821a08n1tSJS+007L9Tk20sU6+VE4YdmuFi4Me1+xyi6tTkYKxKpV
+         i+F6qqsgy71d8rh0XPFAT5GUGcNTOgYOqd3o9+K5+fmdcrkvikOCG+W/p/nUZU43Yl
+         zpOP/Ln3QrDpEcMGFbPOYncBeg26GB9WChyrqWplvKTxQyJ1dO1CJaMAMH2KB5qsl+
+         Hb9AQMD/iomXA==
+Date:   Fri, 29 Jul 2022 17:22:38 -0500
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
+        linux-pci@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        it+x86@molgen.mpg.de, Robert Dinse <nanook@eskimo.com>
+Subject: Re: acpi PNP0A03:00: fail to add MMCONFIG information, can't access
+ extended PCI configuration space under this bridge.
+Message-ID: <20220729222238.GA491273@bhelgaas>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <f42e3f0f-2156-669a-e15e-51970b438ed4@molgen.mpg.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block crng/random/jd/vdso
-head:   7f252f719a107b2d29b14c2f7143a80d4fa14349
-commit: 7f252f719a107b2d29b14c2f7143a80d4fa14349 [8/8] random: implement getrandom() in vDSO
-config: x86_64-randconfig-a012 (https://download.01.org/0day-ci/archive/20220730/202207300604.XFoJYXtZ-lkp@intel.com/config)
-compiler: clang version 16.0.0 (https://github.com/llvm/llvm-project 52cd00cabf479aa7eb6dbb063b7ba41ea57bce9e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/7f252f719a107b2d29b14c2f7143a80d4fa14349
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block crng/random/jd/vdso
-        git checkout 7f252f719a107b2d29b14c2f7143a80d4fa14349
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash arch/x86/entry/vdso/
+[+cc Robert]
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
+On Mon, Feb 15, 2021 at 05:53:51PM +0100, Paul Menzel wrote:
+> Dear Linux folks,
+> 
+> 
+> All the way up to QEMU emulator version 5.2.0 (Debian 1:5.2+dfsg-5) and
+> Linux 5.10.13, Linux logs the warning below:
+> 
+>     acpi PNP0A03:00: fail to add MMCONFIG information, can't access extended
+> PCI configuration space under this bridge.
+> 
+> One way to reproduce it:
+> 
+>     qemu-system-x86_64 -enable-kvm -m 2G -hda /dev/shm/debian.img -kernel
+> /boot/vmlinuz-5.10.0-3-amd64 -initrd /boot/initrd.img-5.10.0-3-amd64 -append
+> root="/dev/sda1 console=ttyS0,115200" -serial stdio
+> 
+> Please find more details and the full log in the Bugzilla issue #211765 [1].
+> 
+> 
+> Kind regards,
+> 
+> Paul
+> 
+> 
+> [1]: https://bugzilla.kernel.org/show_bug.cgi?id=211765
+>      "[Bug 211765] acpi PNP0A03:00: fail to add MMCONFIG information, can't
+> access extended PCI configuration space under this bridge."
 
-All warnings (new ones prefixed by >>):
+Do you know whether qemu implements extended config space?  Extended
+config space is offsets 0x100-0xfff.  I think Linux only supports
+extended capabilities in that area (AER, VC, ACS, SR-IOV, etc).  Most
+of these are probably not of interest in a virtualized environment, so
+I wouldn't be surprised if qemu doesn't support them.
 
->> arch/x86/entry/vdso/vgetrandom.c:10:9: warning: no previous prototype for function '__vdso_getrandom' [-Wmissing-prototypes]
-   ssize_t __vdso_getrandom(void **state, void *buffer, size_t len, unsigned long flags)
-           ^
-   arch/x86/entry/vdso/vgetrandom.c:10:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   ssize_t __vdso_getrandom(void **state, void *buffer, size_t len, unsigned long flags)
-   ^
-   static 
-   1 warning generated.
-
-
-vim +/__vdso_getrandom +10 arch/x86/entry/vdso/vgetrandom.c
-
-     9	
-  > 10	ssize_t __vdso_getrandom(void **state, void *buffer, size_t len, unsigned long flags)
-    11	{
-    12		return __cvdso_getrandom(state, buffer, len, flags);
-    13	}
-    14	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Bjorn
