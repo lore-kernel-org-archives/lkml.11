@@ -2,169 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66F92C00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 18:23:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07D16C19F2A
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 18:23:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238270AbiG2SXG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 14:23:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54370 "EHLO
+        id S238431AbiG2SX3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 14:23:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54738 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238195AbiG2SXD (ORCPT
+        with ESMTP id S238287AbiG2SXZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 14:23:03 -0400
-X-Greylist: delayed 63 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 29 Jul 2022 11:23:02 PDT
-Received: from alln-iport-6.cisco.com (alln-iport-6.cisco.com [173.37.142.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72A346391C
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 11:23:02 -0700 (PDT)
+        Fri, 29 Jul 2022 14:23:25 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0377A62A67
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 11:23:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=cisco.com; i=@cisco.com; l=4323; q=dns/txt; s=iport;
-  t=1659118982; x=1660328582;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659119004; x=1690655004;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=9brC4OueP9hGIkrSu1+D/+bQmxzFBGuNt0XX9xeckfA=;
-  b=aTF6EoJcGMo0PNWamUfwrAXqrViC4FOh05E/NtIQP8HVyGEDI8WI3wMn
-   shPKHP4WxKtl9g5UT1ozbVplL3Qzr2rL7Zw0TXEZbiwV7WLqyT6BbloEj
-   0G+W38bS1NqKEZYOaXc30r9KfkJvW3NuuthXQCXEIYRFm6E6E+vZ/V+oT
-   4=;
-X-IronPort-AV: E=Sophos;i="5.93,201,1654560000"; 
-   d="scan'208";a="943018207"
-Received: from alln-core-1.cisco.com ([173.36.13.131])
-  by alln-iport-6.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 29 Jul 2022 18:21:59 +0000
-Received: from zorba (sjc-vpn6-1252.cisco.com [10.21.124.228])
-        by alln-core-1.cisco.com (8.15.2/8.15.2) with ESMTPS id 26TILuru014577
-        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Fri, 29 Jul 2022 18:21:58 GMT
-Date:   Fri, 29 Jul 2022 11:21:56 -0700
-From:   Daniel Walker <danielwa@cisco.com>
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        George Cherian <george.cherian@marvell.com>,
-        sgoutham@marvell.com, "BOBBY Liu (bobbliu)" <bobbliu@cisco.com>,
-        xe-linux-external@cisco.com, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] genirq: allow selection of number of sparse irqs
-Message-ID: <20220729182156.GS821407@zorba>
-References: <20220728030420.2279713-1-danielwa@cisco.com>
- <980a561ed87c5530aab2e2b067074862@kernel.org>
+  bh=X2VF3pNp8E/hZzwDvRsZjaNCBkmtMXVopMiWXQZ7zTY=;
+  b=ICv9sTvPXKXviwoSVJlnrvRBuq6DR5284aAxslYdveaUeiOIam7Sn90G
+   qWpfwra8rOwMjKZ7uaZsP9+3wQWfIalh1zix4dMAWD4BENSi7/bnKbBsi
+   XKuQJTrPaBh36pmYfpY/hJZ0fTcSw7bzU/6VcfR738zZ8QBu5ZZayMdem
+   /JKOwM4/KLOOJ8aquoz1szsewWXXf0ZqJx63N1qJr4MqfoZxednkb4QN2
+   grtD9aCWS10rRGIt71D3d97ZuQzFjXWwK5EWAEVk35HgFhnHAQEGmYdIi
+   jtBIScyvYnHw4n6hLjar2sXiE3Nd76ePxoMRIq7yezkpsnbgDqEU97OIU
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10423"; a="375126867"
+X-IronPort-AV: E=Sophos;i="5.93,201,1654585200"; 
+   d="scan'208";a="375126867"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2022 11:23:12 -0700
+X-IronPort-AV: E=Sophos;i="5.93,201,1654585200"; 
+   d="scan'208";a="743616506"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2022 11:23:11 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.96)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1oHUdg-001eiV-3C;
+        Fri, 29 Jul 2022 21:23:08 +0300
+Date:   Fri, 29 Jul 2022 21:23:08 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jean Delvare <jdelvare@suse.de>
+Cc:     linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 1/1] firmware: dmi: Don't take garbage into
+ consideration in dmi_smbios3_present()
+Message-ID: <YuQljCM4LZXhSkbh@smile.fi.intel.com>
+References: <20220726094329.1725-1-andriy.shevchenko@linux.intel.com>
+ <20220727102504.6bbefcf9@endymion.delvare>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <980a561ed87c5530aab2e2b067074862@kernel.org>
-X-Auto-Response-Suppress: DR, OOF, AutoReply
-X-Outbound-SMTP-Client: 10.21.124.228, sjc-vpn6-1252.cisco.com
-X-Outbound-Node: alln-core-1.cisco.com
+In-Reply-To: <20220727102504.6bbefcf9@endymion.delvare>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 28, 2022 at 09:52:18AM +0100, Marc Zyngier wrote:
-> On 2022-07-28 04:04, Daniel Walker wrote:
-> > Currently the maximum number of interrupters is capped at 8260 (64 +
-> > 8196) in most of the architectures were CONFIG_SPARSE_IRQ is selected.
-> > This upper limit is not sufficient for couple of existing SoC's from
-> > Marvell.
-> > For eg: Octeon TX2 series of processors support a maximum of 32K
-> > interrupters.
-> > 
-> > Allow configuration of the upper limit of the number of interrupts.
-> > 
-> > Cc: George Cherian <george.cherian@marvell.com>
-> > Cc: sgoutham@marvell.com
-> > Cc: "BOBBY Liu (bobbliu)" <bobbliu@cisco.com>
-> > Cc: xe-linux-external@cisco.com
-> > Signed-off-by: Daniel Walker <danielwa@cisco.com>
-> > ---
-> >  kernel/irq/Kconfig     | 23 +++++++++++++++++++++++
-> >  kernel/irq/internals.h | 10 +++++++++-
-> >  2 files changed, 32 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/kernel/irq/Kconfig b/kernel/irq/Kconfig
-> > index db3d174c53d4..b356217abcfe 100644
-> > --- a/kernel/irq/Kconfig
-> > +++ b/kernel/irq/Kconfig
-> > @@ -125,6 +125,29 @@ config SPARSE_IRQ
-> > 
-> >  	  If you don't know what to do here, say N.
-> > 
-> > +choice
-> > +	prompt "Select number of sparse irqs"
-> > +	depends on SPARSE_IRQ
-> > +	default SPARSE_IRQ_EXTEND_8K
-> > +	help
-> > +          Allows choosing the number of sparse irq's available on the
-> > +          system. For each 8k of additional irqs added there is
-> > approximatly
-> > +          1kb of kernel size increase.
-> > +
-> > +config SPARSE_IRQ_EXTEND_8K
-> > +	bool "8k"
-> > +
-> > +config SPARSE_IRQ_EXTEND_16K
-> > +	bool "16K"
-> > +
-> > +config SPARSE_IRQ_EXTEND_32K
-> > +	bool "32K"
-> > +
-> > +config SPARSE_IRQ_EXTEND_64K
-> > +	bool "64K"
-> > +
-> > +endchoice
-> > +
-> >  config GENERIC_IRQ_DEBUGFS
-> >  	bool "Expose irq internals in debugfs"
-> >  	depends on DEBUG_FS
-> > diff --git a/kernel/irq/internals.h b/kernel/irq/internals.h
-> > index f09c60393e55..25fe5abf6c16 100644
-> > --- a/kernel/irq/internals.h
-> > +++ b/kernel/irq/internals.h
-> > @@ -12,7 +12,15 @@
-> >  #include <linux/sched/clock.h>
-> > 
-> >  #ifdef CONFIG_SPARSE_IRQ
-> > -# define IRQ_BITMAP_BITS	(NR_IRQS + 8196)
-> > +# if defined(CONFIG_SPARSE_IRQ_EXTEND_8K)
-> > +# define IRQ_BITMAP_BITS	(NR_IRQS + 8192 + 4)
-> > +# elif defined(CONFIG_SPARSE_IRQ_EXTEND_16K)
-> > +# define IRQ_BITMAP_BITS	(NR_IRQS + 16384 + 4)
-> > +# elif defined(CONFIG_SPARSE_IRQ_EXTEND_32K)
-> > +# define IRQ_BITMAP_BITS	(NR_IRQS + 32768 + 4)
-> > +# elif defined(CONFIG_SPARSE_IRQ_EXTEND_64K)
-> > +# define IRQ_BITMAP_BITS	(NR_IRQS + 65536 + 4)
-> > +# endif
-> >  #else
-> >  # define IRQ_BITMAP_BITS	NR_IRQS
-> >  #endif
+On Wed, Jul 27, 2022 at 10:25:04AM +0200, Jean Delvare wrote:
+> On Tue, 26 Jul 2022 12:43:29 +0300, Andy Shevchenko wrote:
+> > The byte at offset 6 represent length. Don't take it and drop it immediately
+> > by using proper accessor, i.e. get_unaligned_be24().
 > 
-> It really feels like the wrong approach. If your system
-> supports a large number of interrupt (I guess it has
-> a GICv3 ITS), this shouldn't impact the lesser machines
-> (most people are using a distro kernel).
-> 
-> It also doesn't really scale: the GICv3 architecture gives
-> you up to 24 bits of interrupts. Are we going to allocate
-> 2MB worth of bitmap? Future interrupt architectures may have
-> even larger interrupt spaces.
-> 
-> As it turns out, we already store the irqdesc in an rb-tree.
-> It doesn't take too much imagination to turn this into a
-> xarray and use it for both allocation and tracking.
-> 
-> It would also conveniently replace the irqs_resend bitmap
-> if using marks to flag the IRQs to be resent.
+> The subject sounds like you are fixing a bug, while this is only, at
+> best, a minor optimization.
 
-Marvell submitted a similar change, but non-selectable, about a month ago.
+I don't know how to improve it, but it kinda a bug in a logic for non-prepared
+reader, esp. as specification suggests different thing about version offset.
 
-The limitation prevents Cisco and Marvell hardware from functioning. I don't
-think we're well versed enough on the generic irq system to implement what your
-suggesting, even if we did Thomas would not likely accept it.
+...
 
-Your suggestion is more of a long term solution vs. our short term solution. I'm
-not wedded to any solution, we just need to relieve the limitation so our
-hardware starts working. I would imagine other companies have this issue, but I
-don't know which ones currently.
+> > -		dmi_ver = get_unaligned_be32(buf + 6) & 0xFFFFFF;
+> > +		dmi_ver = get_unaligned_be24(buf + 7);
 
-I would rather to use an upstream solution verses holding the patches privately.
-I would suggest if this limitation would not be overcome for 3-4 releases the
-short term solution should be acceptable over that time frame to be replaced by
-something else after that.
+> I admit I did not know about get_unaligned_be24(). While I agree that
+> it makes the source code look better, one downside is that it actually
+> increases the binary size on x86_64. The reason is that
+> get_unaligned_be32() is optimized by assembly instruction bswapl, while
+> get_unaligned_be24() is not. Situation appears to be the same on ia64
+> and arm. Only arm64 would apparently benefit from your proposed
+> change.
 
-Daniel
+Good to know!
+But here it's not a hot path, right?
+
+> I'm not too sure what is preferred in such situations.
+
+For cold paths I think the correctness prevail the performance.
+
+Alternatively we might add a comment in the code explaining the trick,
+although I won't like to do it.
+
+Another way is to have a subset of 24-/48-bit unaligned accessors that
+use the trick specifically for hot paths with a caveat that they may
+access data out of the 24-/48-bit boundaries.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
