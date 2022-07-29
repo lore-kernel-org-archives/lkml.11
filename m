@@ -2,123 +2,251 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B263EC00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 16:35:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44487C00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 16:36:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234338AbiG2Qfx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 12:35:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52626 "EHLO
+        id S236210AbiG2Qge (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 12:36:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229519AbiG2Qfu (ORCPT
+        with ESMTP id S229519AbiG2Qgb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 12:35:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DD5B69F01
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 09:35:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C487261DC9
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 16:35:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89D7CC433B5;
-        Fri, 29 Jul 2022 16:35:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659112549;
-        bh=La2xENc04xNZ++CRjJjr81vraFM/tBTfKc0zkbxL07E=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Ai+TTWjmeaNevgg3tHuabKwJ/OUSPJeCf8KNC5FCR6S8p06ebHufJO7NlYqR5265M
-         PJP0gKQsstwJcGiKpB9lVRRPlVnK4K7NHV+R67+kUus9Qk5pU91pq7Jcc6LxJbudru
-         QtM957VOIZjIYsFu+h712QYiBdXv7S2XtaNbD3gs=
-Date:   Fri, 29 Jul 2022 18:35:45 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        Vinod Koul <vkoul@kernel.org>,
-        Sanyog Kale <sanyog.r.kale@intel.com>,
-        Bard Liao <yung-chuan.liao@linux.intel.com>
-Subject: Re: [PATCH 2/5] soundwire: sysfs: cleanup the logic for creating the
- dp0 sysfs attributes
-Message-ID: <YuQMYRYFo9gTk1yL@kroah.com>
-References: <20220729135041.2285908-1-gregkh@linuxfoundation.org>
- <20220729135041.2285908-2-gregkh@linuxfoundation.org>
- <9365e038-2146-98f8-f989-02827f221c34@linux.intel.com>
- <YuP0Ffs3G7ZBR0AC@kroah.com>
- <cfacb124-a9ff-0a93-8f92-93d164b15966@linux.intel.com>
- <YuP2pjhyKTTfpXQq@kroah.com>
- <5caffe2a-f5a6-e312-a564-5fe29c4e2323@linux.intel.com>
+        Fri, 29 Jul 2022 12:36:31 -0400
+X-Greylist: delayed 60 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 29 Jul 2022 09:36:29 PDT
+Received: from new4-smtp.messagingengine.com (new4-smtp.messagingengine.com [66.111.4.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB04712A85
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 09:36:29 -0700 (PDT)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 08BC6580951;
+        Fri, 29 Jul 2022 12:36:29 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute4.internal (MEProxy); Fri, 29 Jul 2022 12:36:29 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm2; t=1659112589; x=
+        1659119789; bh=xVGYG5LL1TbN6HzfjsLCzXmVKf2LOPhGZdr8USk7meY=; b=p
+        sUv3q5i+eOKguiIImUQZjbGJyoHNNhvkb2t+VGuXB5IClNxqPzKYyAnHHT3vzZHy
+        E6/fYXzf1DMsQuhv2VNT1zSJrRyNfsau+S4DLyqiVVRfHPx83YDp944G1vbFC6Ff
+        W5yJ3IdfRTWWDHySAyuS+S3GPg6DDs1v2Vsqw8kjb+lwBS99A5gNaiXYkfry7/TS
+        Vmr7rzftZS7RBzTLqZqBEFww3MiyzpdDR6b2Q1FCbGCceZTR1qQw3E9F+20xwotR
+        USLQpnjD/4B/MtuCWCgY75uoB90DZ5Ba3maV/VZL/3yIyCFEQOlJ95e5BqB7OSLb
+        X1DbxcB3Q/gGhVFbyGlpA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1659112589; x=
+        1659119789; bh=xVGYG5LL1TbN6HzfjsLCzXmVKf2LOPhGZdr8USk7meY=; b=A
+        SwGXUrqj4EmXJlUL0MlMca60jel0G/0BdWq4AKtJgbUk2+Z415jf7iCPLxDXvtqa
+        pHKSTb4Vt7VcGsZ4KoXkLKQeap7bdv9iOxMWFygwVdTmOyQtmLwPpngPJee4Giri
+        vgyHzt4URsvg/qX8TVUU4z9HzwqUsRl3V3tz4Bzqs7VKF1Ojd32N2y2mf4Z+p+C7
+        SGbRYLG9eo3j3ZRIOUNaRKO5LGn+LlVnJnAQfKhU/KIOLZQ9rl4E7qwM2Q0DQML/
+        vJsJZSY/f859ci4OpnFCB0qMVPVtvhZCgy+r+jZpBJ0LnryzvPeincjdlcWV1266
+        Ohi6e/Thnl8kRnAhK8EGQ==
+X-ME-Sender: <xms:jAzkYve5CRcbHVTdnVmb1Gj7lw1cliMyPUqry7Mvj5U8gCwPsIPT3Q>
+    <xme:jAzkYlM04nX9l-erxTblGp_XvcIFIyO_QtJnaWVT8wklliMdbpwNpYROqL2o_Zlyj
+    wy3MqaIfAvReLCDaLs>
+X-ME-Received: <xmr:jAzkYogxN5oFnyn1H3mksBVDsUaro-XWMSoS4x0WNqPIvYVCglEAVUC7xb0ZDCItCW-xCCra4boPVxKhz88>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvddujedguddtfecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpefhvfevufffkffojghfgggtoffgsehtkeertdertdejnecuhfhrohhmpefo
+    rgigihhmvgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecugg
+    ftrfgrthhtvghrnhepgfffgfetffduudelhfevieffffduleevgfegkeeutefgffejheel
+    leekjeefhfejnecuvehluhhsthgvrhfuihiivgepvdenucfrrghrrghmpehmrghilhhfrh
+    homhepmhgrgihimhgvsegtvghrnhhordhtvggthh
+X-ME-Proxy: <xmx:jAzkYg-zQx4ynVmr7E6m7SkQRTI3zcpOZ2RACKvE6g38Ac_KpNHd_g>
+    <xmx:jAzkYrt7ygVOEWAH12qSZ3tzenrxONQgiGq1kVlSBBxq_rABaeJcFA>
+    <xmx:jAzkYvFMqx0tWkHkMnN5uUL6h9sP4ZQI2qyWVUQf5krvbEGnBqD9jQ>
+    <xmx:jQzkYq93fXjd52PPMzdA-jwe_WxG3CJGLxUWfukPFUxzKGWLodZZCw>
+Feedback-ID: i8771445c:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 29 Jul 2022 12:36:27 -0400 (EDT)
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Daniel Vetter <daniel@ffwll.ch>, Emma Anholt <emma@anholt.net>,
+        David Airlie <airlied@linux.ie>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        =?UTF-8?q?Noralf=20Tr=C3=B8nnes?= <noralf@tronnes.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Maxime Ripard <mripard@kernel.org>
+Cc:     Maxime Ripard <maxime@cerno.tech>, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, Phil Elwell <phil@raspberrypi.com>,
+        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        linux-amlogic@lists.infradead.org, dri-devel@lists.freedesktop.org,
+        Dom Cobley <dom@raspberrypi.com>
+Subject: [PATCH v1 17/35] drm/vc4: vec: Refactor VEC TV mode setting
+Date:   Fri, 29 Jul 2022 18:35:00 +0200
+Message-Id: <20220728-rpi-analog-tv-properties-v1-17-3d53ae722097@cerno.tech>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
+References: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5caffe2a-f5a6-e312-a564-5fe29c4e2323@linux.intel.com>
+Content-Type: text/plain; charset="utf-8"
+X-Mailer: b4 0.10.0-dev-49460
+X-Developer-Signature: v=1; a=openpgp-sha256; l=4172; i=maxime@cerno.tech; h=from:subject:message-id; bh=O/9+DbxGFhrV8t/G57jPy8C5DgCC7v+vV6zzCbqSKNs=; b=owGbwMvMwCHc4XzqmfnC7acZT6slMSQ94VHKtvsgPEGAadeceQIW801MC7y4uz0L+num9/jOc5GW P2jWUcrCIMzBICumyHJd8K0dX1iUWwTPh80wc1iZQIYwcHEKwES21DAyvPZht+Wcx2DHc+5as6NJXY DLL9uzTvFRcjkSmSab0hffYWTYGt2TcElkfXZCq0/XZl/GrKoL3bybAiUzV/LUms3Knf0LAA==
+X-Developer-Key: i=maxime@cerno.tech; a=openpgp; fpr=BE5675C37E818C8B5764241C254BCFC56BF6CE8D
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 29, 2022 at 10:52:28AM -0500, Pierre-Louis Bossart wrote:
-> 
-> >>>>> diff --git a/drivers/soundwire/sysfs_slave.c b/drivers/soundwire/sysfs_slave.c
-> >>>>> index 83e3f6cc3250..3723333a5c2b 100644
-> >>>>> --- a/drivers/soundwire/sysfs_slave.c
-> >>>>> +++ b/drivers/soundwire/sysfs_slave.c
-> >>>>> @@ -174,6 +174,16 @@ static ssize_t words_show(struct device *dev,
-> >>>>>  }
-> >>>>>  static DEVICE_ATTR_RO(words);
-> >>>>>  
-> >>>>> +static umode_t dp0_is_visible(struct kobject *kobj, struct attribute *attr,
-> >>>>> +			      int n)
-> >>>>> +{
-> >>>>> +	struct sdw_slave *slave = dev_to_sdw_dev(kobj_to_dev(kobj));
-> >>>>> +
-> >>>>> +	if (slave->prop.dp0_prop)
-> >>>>> +		return attr->mode;
-> >>>>> +	return 0;
-> >>>>> +}
-> >>>>
-> >>>> This changes the results slightly by creating an empty 'dp0' directory
-> >>>> with no attributes inside.
-> >>>>
-> >>>> Before:
-> >>>>
-> >>>> [root@fedora ~]# cd /sys/bus/soundwire/devices/sdw:3:025d:0714:01
-> >>>> [root@fedora sdw:3:025d:0714:01]# ls dp0
-> >>>> ls: cannot access 'dp0': No such file or directory
-> >>>>
-> >>>> After:
-> >>>> [root@fedora sdw:3:025d:0714:01]# ls dp0
-> >>>
-> >>> That should be fine, tools should just be looking for the attributes,
-> >>> not the existance of a directory, right?
-> >>
-> >> The idea what that we would only expose ports that actually exist.
-> >> That's helpful information anyone with a basic knowledge of the
-> >> SoundWire specification would understand.
-> > 
-> > Is "dp0" a port?  If so, why isn't it a real device?
-> 
-> The SoundWire spec defines the concept of 'data port'. The valid ranges
-> are 1..14, but in all existing devices the number of data ports is way
-> smaller, typically 2 to 4. Data ports (DPn) are source or sink, and
-> there's no firm rule that data ports needs to be contiguous.
-> 
-> DP0 is a 'special case' where the data transport is used for control
-> information, e.g. programming large set of registers or firmware
-> download. DP0 is completely optional in hardware, and not handled in
-> Linux for now.
-> 
-> DP0 and DPn expose low-level transport registers, which define how the
-> contents of a FIFO will be written or read from the bus. Think of it as
-> a generalization of the concept of TDM slots, where instead of having a
-> fixed slot per frame the slot position/repetition/runlength can be
-> programmed.
-> 
-> The data ports could be as simple as 1-bit PDM, or support 8ch PCM
-> 24-bits. That's the sort of information reported in attributes.
+From: Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>
 
-Why not make them a real device like we do for USB endpoints?
+Change the mode_set function pointer logic to declarative config0,
+config1 and custom_freq fields, to make TV mode setting logic more
+concise and uniform.
 
-What uses these sysfs files today that would be confused about an empty
-directory?
+Signed-off-by: Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
 
-thanks,
+diff --git a/drivers/gpu/drm/vc4/vc4_vec.c b/drivers/gpu/drm/vc4/vc4_vec.c
+index ba0a81250d08..02cef4134f2f 100644
+--- a/drivers/gpu/drm/vc4/vc4_vec.c
++++ b/drivers/gpu/drm/vc4/vc4_vec.c
+@@ -194,7 +194,9 @@ enum vc4_vec_tv_mode_id {
+ 
+ struct vc4_vec_tv_mode {
+ 	const struct drm_display_mode *mode;
+-	void (*mode_set)(struct vc4_vec *vec);
++	u32 config0;
++	u32 config1;
++	u32 custom_freq;
+ };
+ 
+ static const struct debugfs_reg32 vec_regs[] = {
+@@ -224,34 +226,6 @@ static const struct debugfs_reg32 vec_regs[] = {
+ 	VC4_REG32(VEC_DAC_MISC),
+ };
+ 
+-static void vc4_vec_ntsc_mode_set(struct vc4_vec *vec)
+-{
+-	struct drm_device *drm = vec->connector.dev;
+-	int idx;
+-
+-	if (!drm_dev_enter(drm, &idx))
+-		return;
+-
+-	VEC_WRITE(VEC_CONFIG0, VEC_CONFIG0_NTSC_STD | VEC_CONFIG0_PDEN);
+-	VEC_WRITE(VEC_CONFIG1, VEC_CONFIG1_C_CVBS_CVBS);
+-
+-	drm_dev_exit(idx);
+-}
+-
+-static void vc4_vec_ntsc_j_mode_set(struct vc4_vec *vec)
+-{
+-	struct drm_device *drm = vec->connector.dev;
+-	int idx;
+-
+-	if (!drm_dev_enter(drm, &idx))
+-		return;
+-
+-	VEC_WRITE(VEC_CONFIG0, VEC_CONFIG0_NTSC_STD);
+-	VEC_WRITE(VEC_CONFIG1, VEC_CONFIG1_C_CVBS_CVBS);
+-
+-	drm_dev_exit(idx);
+-}
+-
+ static const struct drm_display_mode ntsc_mode = {
+ 	DRM_MODE("720x480", DRM_MODE_TYPE_DRIVER, 13500,
+ 		 720, 720 + 14, 720 + 14 + 64, 720 + 14 + 64 + 60, 0,
+@@ -259,37 +233,6 @@ static const struct drm_display_mode ntsc_mode = {
+ 		 DRM_MODE_FLAG_INTERLACE)
+ };
+ 
+-static void vc4_vec_pal_mode_set(struct vc4_vec *vec)
+-{
+-	struct drm_device *drm = vec->connector.dev;
+-	int idx;
+-
+-	if (!drm_dev_enter(drm, &idx))
+-		return;
+-
+-	VEC_WRITE(VEC_CONFIG0, VEC_CONFIG0_PAL_BDGHI_STD);
+-	VEC_WRITE(VEC_CONFIG1, VEC_CONFIG1_C_CVBS_CVBS);
+-
+-	drm_dev_exit(idx);
+-}
+-
+-static void vc4_vec_pal_m_mode_set(struct vc4_vec *vec)
+-{
+-	struct drm_device *drm = vec->connector.dev;
+-	int idx;
+-
+-	if (!drm_dev_enter(drm, &idx))
+-		return;
+-
+-	VEC_WRITE(VEC_CONFIG0, VEC_CONFIG0_PAL_BDGHI_STD);
+-	VEC_WRITE(VEC_CONFIG1,
+-		  VEC_CONFIG1_C_CVBS_CVBS | VEC_CONFIG1_CUSTOM_FREQ);
+-	VEC_WRITE(VEC_FREQ3_2, 0x223b);
+-	VEC_WRITE(VEC_FREQ1_0, 0x61d1);
+-
+-	drm_dev_exit(idx);
+-}
+-
+ static const struct drm_display_mode pal_mode = {
+ 	DRM_MODE("720x576", DRM_MODE_TYPE_DRIVER, 13500,
+ 		 720, 720 + 20, 720 + 20 + 64, 720 + 20 + 64 + 60, 0,
+@@ -300,19 +243,24 @@ static const struct drm_display_mode pal_mode = {
+ static const struct vc4_vec_tv_mode vc4_vec_tv_modes[] = {
+ 	[VC4_VEC_TV_MODE_NTSC] = {
+ 		.mode = &ntsc_mode,
+-		.mode_set = vc4_vec_ntsc_mode_set,
++		.config0 = VEC_CONFIG0_NTSC_STD | VEC_CONFIG0_PDEN,
++		.config1 = VEC_CONFIG1_C_CVBS_CVBS,
+ 	},
+ 	[VC4_VEC_TV_MODE_NTSC_J] = {
+ 		.mode = &ntsc_mode,
+-		.mode_set = vc4_vec_ntsc_j_mode_set,
++		.config0 = VEC_CONFIG0_NTSC_STD,
++		.config1 = VEC_CONFIG1_C_CVBS_CVBS,
+ 	},
+ 	[VC4_VEC_TV_MODE_PAL] = {
+ 		.mode = &pal_mode,
+-		.mode_set = vc4_vec_pal_mode_set,
++		.config0 = VEC_CONFIG0_PAL_BDGHI_STD,
++		.config1 = VEC_CONFIG1_C_CVBS_CVBS,
+ 	},
+ 	[VC4_VEC_TV_MODE_PAL_M] = {
+ 		.mode = &pal_mode,
+-		.mode_set = vc4_vec_pal_m_mode_set,
++		.config0 = VEC_CONFIG0_PAL_BDGHI_STD,
++		.config1 = VEC_CONFIG1_C_CVBS_CVBS | VEC_CONFIG1_CUSTOM_FREQ,
++		.custom_freq = 0x223b61d1,
+ 	},
+ };
+ 
+@@ -470,7 +418,16 @@ static void vc4_vec_encoder_enable(struct drm_encoder *encoder,
+ 	/* Mask all interrupts. */
+ 	VEC_WRITE(VEC_MASK0, 0);
+ 
+-	vec->tv_mode->mode_set(vec);
++	VEC_WRITE(VEC_CONFIG0, vec->tv_mode->config0);
++	VEC_WRITE(VEC_CONFIG1, vec->tv_mode->config1);
++
++	if (vec->tv_mode->custom_freq != 0) {
++		VEC_WRITE(VEC_FREQ3_2,
++			  (vec->tv_mode->custom_freq >> 16) &
++			  0xffff);
++		VEC_WRITE(VEC_FREQ1_0,
++			  vec->tv_mode->custom_freq & 0xffff);
++	}
+ 
+ 	VEC_WRITE(VEC_DAC_MISC,
+ 		  VEC_DAC_MISC_VID_ACT | VEC_DAC_MISC_DAC_RST_N);
 
-greg k-h
+-- 
+b4 0.10.0-dev-49460
