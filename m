@@ -2,219 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA716C19F2A
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 19:48:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7276DC00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 19:51:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238500AbiG2Tsr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 15:48:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60620 "EHLO
+        id S238920AbiG2Tvm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 15:51:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237998AbiG2Tsp (ORCPT
+        with ESMTP id S238561AbiG2Tvh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 15:48:45 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A915E88E0B;
-        Fri, 29 Jul 2022 12:48:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=IIBd4JO9tjHfeGjjy6pkVi9dYz0wqG2cJ6lj/g2SiG4=; b=I2VaxXyS7tS1t2SfreP/xJuVJj
-        JxJEHs03tnPSZE1E95bh2aCH+zc9XrgSn0MEeImpRw8+c6+JcTShDDQG2roisqt++Syksty+QD3/E
-        KQ6SWESD2WgE0c+BYj3u1RJgD6i+E6i9I695AZNGeuj6l0rNw5+BbPyUDgLpdyPVtrEuUrjiKW5Jp
-        EHdgPfijK76ETsB5nmACeG+wPVHIwK7wmN/R4G6OEQEESJtYwxbRMEiAB22AHLp67SgtbbuR8Gs+A
-        /BePOTUv7QVLBZ1EAcSXzblhhldizDiMNUFCFUJRvE13nRDabzp+dJ1+dix6/KrkFjMJZQHRz7W5B
-        4DYpcLew==;
-Received: from [177.83.209.223] (helo=localhost)
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256) (Exim)
-        id 1oHVyS-00BML8-D5; Fri, 29 Jul 2022 21:48:42 +0200
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-To:     ardb@kernel.org, linux-efi@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, kernel-dev@igalia.com,
-        kernel@gpiccoli.net, anton@enomsg.org, ccross@android.com,
-        keescook@chromium.org, matt@codeblueprint.co.uk,
-        mjg59@srcf.ucam.org, tony.luck@intel.com,
-        "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Subject: [PATCH v2 3/3] efi-panic: Introduce the UEFI panic notification mechanism
-Date:   Fri, 29 Jul 2022 16:45:32 -0300
-Message-Id: <20220729194532.228403-4-gpiccoli@igalia.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220729194532.228403-1-gpiccoli@igalia.com>
-References: <20220729194532.228403-1-gpiccoli@igalia.com>
+        Fri, 29 Jul 2022 15:51:37 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1584777549
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 12:51:34 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id t2so5509142ply.2
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 12:51:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=Dstciygn1YsoqcejBVc0D+MFf2Th1tfQSWlbVTNdSdk=;
+        b=OrhOLugCM8Cj6h/411/1G13LNCne89tLk5CN5RFMmNJSVoJNIumYmTLvlzznytVtNN
+         +65DB/Lckye6fIPxvoZypOO8+mrNMPNNKas4vW7cgtVmxrweDNwCISCeiu0QCKuS2RZ6
+         ttaT5y9tC05NWhrlcjtdCsb6bWH7km4UaVw4OedOk2ltG35dSvYrKBj7OmyLILdt3Upf
+         Iy9drzJziV1Aq+PbxPImfRw3PlkeRVsHRBoYCrTRvuKjXPhLz/a00+HdWIEf7gUQxdPD
+         LSVaC821KNqpxBCP0G4SRoMSzSCEBj/43FxcrRa86Ms3qiqAbpkt93nq+xufg884dyHM
+         3E1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=Dstciygn1YsoqcejBVc0D+MFf2Th1tfQSWlbVTNdSdk=;
+        b=t1d9Q0VTDUC535ONnUyEjvXdFmp5AjrCDhiRLfkVWU+N9VMFy8cGwpGSJiFTDXaJ8/
+         rNkvJbTwndomSEbdwByR51+xic0JT0bq35yht+Vk3Jgq6HHrgybK5rA0XLp9Zv6Rrevi
+         YotaKmmTKjHtX7fc1plkQj3pFdH2Vm8272+4FfoDcaULNZUYdXLx9Vp5R+QP+vk6kKyt
+         6JU7VAZzIVGfkPEs89tnNW8CDcZg/9JMyZhVynDiXutPzcQcNxNxKd2xML9Y+ddBkihl
+         QcWPfmpKPvcrmrYzhsRyCD8/DDc7UqABKJI4tkpBkdMHqdMA74y1dQD01ynvl6cdE9qx
+         agdg==
+X-Gm-Message-State: ACgBeo0yMnWiOk8tMuusl7byHayDIlx5G4yvYH7fYIq1pnVOtvbdz1rg
+        mjur77ybPqOF06rHgJ5+kzLMQA==
+X-Google-Smtp-Source: AA6agR63sDQRf5W5vFXYY3BbXk7I5lysrOCYAyeVjEMh41/Jj9OO8QiEjQjnyE/PUlhIQQOKevQ85Q==
+X-Received: by 2002:a17:902:7e47:b0:16c:7115:84d6 with SMTP id a7-20020a1709027e4700b0016c711584d6mr5524717pln.93.1659124294027;
+        Fri, 29 Jul 2022 12:51:34 -0700 (PDT)
+Received: from google.com (7.104.168.34.bc.googleusercontent.com. [34.168.104.7])
+        by smtp.gmail.com with ESMTPSA id u5-20020a170902714500b0016c574aa0fdsm4057346plm.76.2022.07.29.12.51.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 29 Jul 2022 12:51:33 -0700 (PDT)
+Date:   Fri, 29 Jul 2022 19:51:29 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Chao Peng <chao.p.peng@linux.intel.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-api@vger.kernel.org, linux-doc@vger.kernel.org,
+        qemu-devel@nongnu.org, linux-kselftest@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
+        Hugh Dickins <hughd@google.com>,
+        Jeff Layton <jlayton@kernel.org>,
+        "J . Bruce Fields" <bfields@fieldses.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Shuah Khan <shuah@kernel.org>, Mike Rapoport <rppt@kernel.org>,
+        Steven Price <steven.price@arm.com>,
+        "Maciej S . Szmigiero" <mail@maciej.szmigiero.name>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Vishal Annapurve <vannapurve@google.com>,
+        Yu Zhang <yu.c.zhang@linux.intel.com>,
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
+        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
+        ak@linux.intel.com, david@redhat.com, aarcange@redhat.com,
+        ddutile@redhat.com, dhildenb@redhat.com,
+        Quentin Perret <qperret@google.com>,
+        Michael Roth <michael.roth@amd.com>, mhocko@suse.com,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: Re: [PATCH v7 09/14] KVM: Extend the memslot to support fd-based
+ private memory
+Message-ID: <YuQ6QWcdZLdStkWl@google.com>
+References: <20220706082016.2603916-1-chao.p.peng@linux.intel.com>
+ <20220706082016.2603916-10-chao.p.peng@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220706082016.2603916-10-chao.p.peng@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Despite we have pstore, kdump and other panic-time mechanisms,
-there's no generic way to let the firmware know a panic event
-happened. Some hypervisors might have special code for that, but
-that's not generic.
+On Wed, Jul 06, 2022, Chao Peng wrote:
+> @@ -1332,9 +1332,18 @@ yet and must be cleared on entry.
+>  	__u64 userspace_addr; /* start of the userspace allocated memory */
+>    };
+>  
+> +  struct kvm_userspace_memory_region_ext {
+> +	struct kvm_userspace_memory_region region;
+> +	__u64 private_offset;
+> +	__u32 private_fd;
+> +	__u32 pad1;
+> +	__u64 pad2[14];
+> +};
+> +
+>    /* for kvm_memory_region::flags */
+>    #define KVM_MEM_LOG_DIRTY_PAGES	(1UL << 0)
+>    #define KVM_MEM_READONLY	(1UL << 1)
+> +  #define KVM_MEM_PRIVATE		(1UL << 2)
 
-The UEFI panic notification module hereby proposed aims to fill
-this need: once we face a panic, through the panic notifier
-infrastructure we set a UEFI variable named PanicWarn with a
-value - default is 0xFF, but it's adjustable via module parameter.
-The firmware is then enabled to take a proper action.
+Very belatedly following up on prior feedback...
 
-The module also let the users know that last execution likely
-panicked if the UEFI variable is present on module load - then
-it clears that to avoid confusing users, only the last panic
-event is recorded.
+  | I think a flag is still needed, the problem is private_fd can be safely
+  | accessed only when this flag is set, e.g. without this flag, we can't
+  | copy_from_user these new fields since they don't exist for previous
+  | kvm_userspace_memory_region callers.
 
-Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
----
- drivers/firmware/efi/Kconfig     | 10 ++++
- drivers/firmware/efi/Makefile    |  1 +
- drivers/firmware/efi/efi-panic.c | 89 ++++++++++++++++++++++++++++++++
- include/linux/efi.h              |  1 +
- 4 files changed, 101 insertions(+)
- create mode 100644 drivers/firmware/efi/efi-panic.c
+I forgot about that aspect of things.  We don't technically need a dedicated
+PRIVATE flag to handle that, but it does seem to be the least awful soltuion.
+We could either add a generic KVM_MEM_EXTENDED_REGION or an entirely new
+ioctl(), e.g. KVM_SET_USER_MEMORY_REGION2, but in both approaches there's a decent
+chance that we'll end up needed individual "this field is valid" flags anways.
 
-diff --git a/drivers/firmware/efi/Kconfig b/drivers/firmware/efi/Kconfig
-index 6cb7384ad2ac..f1ed6128d623 100644
---- a/drivers/firmware/efi/Kconfig
-+++ b/drivers/firmware/efi/Kconfig
-@@ -147,6 +147,16 @@ config EFI_BOOTLOADER_CONTROL
- 	  bootloader reads this reboot reason and takes particular
- 	  action according to its policy.
- 
-+config EFI_PANIC_NOTIFIER
-+	tristate "UEFI Panic Notifier"
-+	depends on EFI
-+	default n
-+	help
-+	  With this module, kernel creates the UEFI variable "PanicWarn" if
-+	  the system faces a panic event. With that, the firmware is entitled
-+	  to take an action if the last kernel panicked; it also shows a
-+	  message during boot time if last run faced a panic event.
+E.g. if KVM requires pad1 and pad2 to be zero to carve out future extensions,
+then we're right back here if some future extension needs to treat '0' as a legal
+input.
+
+TL;DR: adding KVM_MEM_PRIVATE still seems like the best approach.
+
+> @@ -4631,14 +4658,35 @@ static long kvm_vm_ioctl(struct file *filp,
+>  		break;
+>  	}
+>  	case KVM_SET_USER_MEMORY_REGION: {
+> -		struct kvm_userspace_memory_region kvm_userspace_mem;
+> +		struct kvm_user_mem_region mem;
+> +		unsigned long size;
+> +		u32 flags;
+> +
+> +		kvm_sanity_check_user_mem_region_alias();
+> +
+> +		memset(&mem, 0, sizeof(mem));
+>  
+>  		r = -EFAULT;
+> -		if (copy_from_user(&kvm_userspace_mem, argp,
+> -						sizeof(kvm_userspace_mem)))
+> +
+> +		if (get_user(flags,
+> +			(u32 __user *)(argp + offsetof(typeof(mem), flags))))
+> +			goto out;
+
+
+Indentation is funky.  It's hard to massage this into something short and
+readable  What about capturing the offset separately?  E.g.
+
+                struct kvm_user_mem_region mem;
+                unsigned int flags_offset = offsetof(typeof(mem), flags));
+                unsigned long size;
+                u32 flags;
+
+                kvm_sanity_check_user_mem_region_alias();
+
+		memset(&mem, 0, sizeof(mem));
+
+                r = -EFAULT;
+                if (get_user(flags, (u32 __user *)(argp + flags_offset)))
+                        goto out;
+
+But this can actually be punted until KVM_MEM_PRIVATE is fully supported.  As of
+this patch, KVM doesn't read the extended size, so I believe the diff for this
+patch can simply be:
+
+diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+index da263c370d00..5194beb7b52f 100644
+--- a/virt/kvm/kvm_main.c
++++ b/virt/kvm/kvm_main.c
+@@ -4640,6 +4640,10 @@ static long kvm_vm_ioctl(struct file *filp,
+                                                sizeof(kvm_userspace_mem)))
+                        goto out;
+
++               r = -EINVAL;
++               if (mem.flags & KVM_MEM_PRIVATE)
++                       goto out;
 +
- config EFI_CAPSULE_LOADER
- 	tristate "EFI capsule loader"
- 	depends on EFI && !IA64
-diff --git a/drivers/firmware/efi/Makefile b/drivers/firmware/efi/Makefile
-index 8d151e332584..c7cf3dcb284e 100644
---- a/drivers/firmware/efi/Makefile
-+++ b/drivers/firmware/efi/Makefile
-@@ -25,6 +25,7 @@ obj-$(CONFIG_EFI_RUNTIME_WRAPPERS)	+= runtime-wrappers.o
- subdir-$(CONFIG_EFI_STUB)		+= libstub
- obj-$(CONFIG_EFI_FAKE_MEMMAP)		+= fake_map.o
- obj-$(CONFIG_EFI_BOOTLOADER_CONTROL)	+= efibc.o
-+obj-$(CONFIG_EFI_PANIC_NOTIFIER)	+= efi-panic.o
- obj-$(CONFIG_EFI_TEST)			+= test/
- obj-$(CONFIG_EFI_DEV_PATH_PARSER)	+= dev-path-parser.o
- obj-$(CONFIG_APPLE_PROPERTIES)		+= apple-properties.o
-diff --git a/drivers/firmware/efi/efi-panic.c b/drivers/firmware/efi/efi-panic.c
-new file mode 100644
-index 000000000000..02ffa4930039
---- /dev/null
-+++ b/drivers/firmware/efi/efi-panic.c
-@@ -0,0 +1,89 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * efi-panic: UEFI panic notification mechanism
-+ */
-+
-+#define pr_fmt(fmt) "efi-panic: " fmt
-+
-+#include <linux/efi.h>
-+#include <linux/module.h>
-+#include <linux/panic_notifier.h>
-+
-+#define EFI_PANIC_ATTR		(EFI_VARIABLE_NON_VOLATILE |\
-+				 EFI_VARIABLE_BOOTSERVICE_ACCESS |\
-+				 EFI_VARIABLE_RUNTIME_ACCESS)
-+
-+#define EFI_DATA_SIZE		(2 * sizeof(efi_char16_t))
-+
-+static efi_char16_t *panic_warn_name = L"PanicWarn";
-+
-+static u8 panic_warn_val = 0xFF;
-+module_param(panic_warn_val, byte, 0644);
-+MODULE_PARM_DESC(panic_warn_val,
-+		 "Value written to PanicWarn efivar on panic event [default=0xFF]");
-+
-+static int efi_panic_cb(struct notifier_block *nb, unsigned long ev,
-+			void *unused)
-+{
-+	efi_char16_t val[2];
-+	efi_status_t ret;
-+
-+	efi_str8_to_str16(val, &panic_warn_val, 1);
-+	ret = efi.set_variable_nonblocking(panic_warn_name,
-+					      &LINUX_EFI_PANIC_WARN_GUID,
-+					      EFI_PANIC_ATTR, EFI_DATA_SIZE,
-+					      val);
-+
-+	if (ret != EFI_SUCCESS)
-+		pr_err("failed notifying UEFI about the panic (0x%lx)\n", ret);
-+
-+	return NOTIFY_DONE;
-+}
-+
-+static struct notifier_block efi_panic_notifier = {
-+	.notifier_call = efi_panic_cb,
-+};
-+
-+static int __init efi_panic_init(void)
-+{
-+	unsigned long sz = EFI_DATA_SIZE;
-+	u8 data[EFI_DATA_SIZE];
-+	efi_status_t ret;
-+
-+	if (!efi_rt_services_supported(EFI_RT_SUPPORTED_SET_VARIABLE))
-+		return -ENODEV;
-+
-+	ret = efi.get_variable(panic_warn_name, &LINUX_EFI_PANIC_WARN_GUID,
-+			       NULL, &sz, data);
-+
-+	if (ret == EFI_SUCCESS) {
-+		pr_info("previous kernel (likely) had a panic\n");
-+
-+		ret = efi.set_variable(panic_warn_name,
-+				       &LINUX_EFI_PANIC_WARN_GUID,
-+				       EFI_PANIC_ATTR, 0, NULL);
-+		if (ret != EFI_SUCCESS)
-+			pr_warn("cannot delete the UEFI variable\n");
-+
-+	} else {
-+		if (ret != EFI_NOT_FOUND)
-+			pr_err("can't read the UEFI variable (err=%lx)\n", ret);
-+	}
-+
-+	atomic_notifier_chain_register(&panic_notifier_list,
-+				       &efi_panic_notifier);
-+
-+	return 0;
-+}
-+module_init(efi_panic_init);
-+
-+static void __exit efi_panic_exit(void)
-+{
-+	atomic_notifier_chain_unregister(&panic_notifier_list,
-+					 &efi_panic_notifier);
-+}
-+module_exit(efi_panic_exit);
-+
-+MODULE_AUTHOR("Guilherme G. Piccoli <gpiccoli@igalia.com>");
-+MODULE_DESCRIPTION("UEFI Panic Notification Mechanism");
-+MODULE_LICENSE("GPL");
-diff --git a/include/linux/efi.h b/include/linux/efi.h
-index c0ea01be3772..38a5056cc72a 100644
---- a/include/linux/efi.h
-+++ b/include/linux/efi.h
-@@ -367,6 +367,7 @@ void efi_native_runtime_setup(void);
- #define EFI_GLOBAL_VARIABLE_GUID		EFI_GUID(0x8be4df61, 0x93ca, 0x11d2,  0xaa, 0x0d, 0x00, 0xe0, 0x98, 0x03, 0x2b, 0x8c)
- #define UV_SYSTEM_TABLE_GUID			EFI_GUID(0x3b13a7d4, 0x633e, 0x11dd,  0x93, 0xec, 0xda, 0x25, 0x56, 0xd8, 0x95, 0x93)
- #define LINUX_EFI_CRASH_GUID			EFI_GUID(0xcfc8fc79, 0xbe2e, 0x4ddc,  0x97, 0xf0, 0x9f, 0x98, 0xbf, 0xe2, 0x98, 0xa0)
-+#define LINUX_EFI_PANIC_WARN_GUID		EFI_GUID(0x9e85b665, 0x08d4, 0x42c9,  0x83, 0x24, 0x47, 0xed, 0x5f, 0xe5, 0x0b, 0xf3)
- #define LOADED_IMAGE_PROTOCOL_GUID		EFI_GUID(0x5b1b31a1, 0x9562, 0x11d2,  0x8e, 0x3f, 0x00, 0xa0, 0xc9, 0x69, 0x72, 0x3b)
- #define EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID	EFI_GUID(0x9042a9de, 0x23dc, 0x4a38,  0x96, 0xfb, 0x7a, 0xde, 0xd0, 0x80, 0x51, 0x6a)
- #define EFI_UGA_PROTOCOL_GUID			EFI_GUID(0x982c298b, 0xf4fa, 0x41cb,  0xb8, 0x38, 0x77, 0xaa, 0x68, 0x8f, 0xb8, 0x39)
--- 
-2.37.1
+                r = kvm_vm_ioctl_set_memory_region(kvm, &kvm_userspace_mem);
+                break;
+        }
 
