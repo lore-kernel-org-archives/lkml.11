@@ -2,178 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 940CBC19F2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 11:17:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CA1CC00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 11:19:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235794AbiG2LRE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 07:17:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36534 "EHLO
+        id S235927AbiG2LTf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 07:19:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233922AbiG2LRC (ORCPT
+        with ESMTP id S233298AbiG2LTc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 07:17:02 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5C2F7FE5C;
-        Fri, 29 Jul 2022 04:17:00 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 23E5EB82779;
-        Fri, 29 Jul 2022 11:16:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C00AC433D6;
-        Fri, 29 Jul 2022 11:16:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659093417;
-        bh=RXYoK6oz0l5y7J6IuTr4803g99DXwdBPQzEWV2FGtZI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=ZISK5VAYZOAKJnI9umDVFUWwzO+abJ/Z+Gj7BkCazpuBC/7Yts3Zw/DSwyf9iXmVF
-         SBrjtLpkhsE5ASJfFsqv6Q898r9SIgTVOCDEtHMnw/04DdOOcifjf9fw2SHpESAdZx
-         iKHq96IseBfanP6ywzFnTws3+Vt5sY1g6Ur1u6r8=
-Date:   Fri, 29 Jul 2022 13:16:54 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Zhang Wensheng <zhangwensheng@huaweicloud.com>
-Cc:     axboe@kernel.dk, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        yukuai3@huawei.com
-Subject: Re: [PATCH -next] [RFC] block: fix null-deref in percpu_ref_put
-Message-ID: <YuPBpn0jIEy65T6P@kroah.com>
-References: <20220729105036.2202791-1-zhangwensheng@huaweicloud.com>
+        Fri, 29 Jul 2022 07:19:32 -0400
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19B5086C03
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 04:19:31 -0700 (PDT)
+Received: by mail-lj1-x232.google.com with SMTP id r14so4830969ljp.2
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 04:19:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf.com; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=bh/CEcIftmSrIW2GaToQmbXoa6n4IYUuUScyol0fs4Q=;
+        b=U+RlMEFKQsQY7/BKW5LFtpT6fuhSCpUxh05B4UD5/DTv9ZTavjQnR6ydaKoiCeNYHz
+         mmkzfKuxhh9Lh7R1WNqluQwiYlVN86WAzReQljl4z6bEvwhZFZmJRyjfFQT/QvNII9LL
+         kgnUlMlE+6N6Oz/F826TBgh0B7qbJ9EtcdSEExRfnlFdz66gxejQjzLvSvz6mSVc43jh
+         Y/kYmrFly9+6MQ3w1lKMCFF+ioGoFuzuZUUm4Kx0It/u5zn7lH28pX8i/6bG8DaHQMMC
+         IBP2y9LEtYztpZNhm2jhuBoZqzJpNbZxJkMcO41Zv2mGjZRntQ7Kq8Kx+Tumc8lYFmV8
+         dzlQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=bh/CEcIftmSrIW2GaToQmbXoa6n4IYUuUScyol0fs4Q=;
+        b=SdFqzQd06z22d7ERQek3jSOc6LNrkzsFmX1TWXzwf57Nru8+YDetePW44Luq0oIRRf
+         8JRKwmbpaGJvrheS4cQLsAmRIP5vjy+BjTHDNXaoyF7vi7BwwH9G49iZpq1P5n8TapIb
+         8wKbrkTe+hyjEJqs5HCMCXpvh2umXWSew5qrzFEBtkTWBNr64g1HTnrp9dRASwi6yBIA
+         Ijd7NJ7Mf2DbwEox0y5c6FhHKVn2lv51J2G80af03jmw/+1zHCz/cUXGPG9m6S3Nmfoj
+         4vCAX4ny/64zRAS2Mw1H95sEi4L+CDg6MgK0qb2Zsm/Pmv+yHd8+WZweS3nU7qIySy0w
+         Xg8w==
+X-Gm-Message-State: AJIora8fVEcwAAevB2cvjfLtZPkg4YfefnG+Z0RM1zKBg5YGCEsemYex
+        sQO8P6P50wgl9II3GSh7CVBjlg==
+X-Google-Smtp-Source: AGRyM1tPqpP8jEpOz2ysUR8bxRF6JUOONEukO1NDa+lKcaKZbJRi8itU1IzZ9lwIihvx5ziEMGXUuw==
+X-Received: by 2002:a05:651c:2208:b0:25d:9ab8:b368 with SMTP id y8-20020a05651c220800b0025d9ab8b368mr1015760ljq.359.1659093569300;
+        Fri, 29 Jul 2022 04:19:29 -0700 (PDT)
+Received: from [10.43.1.253] ([83.142.187.84])
+        by smtp.gmail.com with ESMTPSA id q13-20020a2eb4ad000000b0025e33bd156bsm441423ljm.19.2022.07.29.04.19.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 29 Jul 2022 04:19:28 -0700 (PDT)
+Message-ID: <f7c9943a-6818-beed-5623-21689bf1d159@semihalf.com>
+Date:   Fri, 29 Jul 2022 13:19:27 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220729105036.2202791-1-zhangwensheng@huaweicloud.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.11.0
+Subject: Re: [PATCH 3/3] KVM: irqfd: Postpone resamplefd notify for oneshot
+ interrupts
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org,
+        Eric Auger <eric.auger@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Rong L Liu <rong.l.liu@intel.com>,
+        Zhenyu Wang <zhenyuw@linux.intel.com>,
+        Tomasz Nowicki <tn@semihalf.com>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>,
+        Dmitry Torokhov <dtor@google.com>
+References: <20220715155928.26362-1-dmy@semihalf.com>
+ <20220715155928.26362-4-dmy@semihalf.com> <YuLbvl7BBuLTBXO7@google.com>
+From:   Dmytro Maluka <dmy@semihalf.com>
+In-Reply-To: <YuLbvl7BBuLTBXO7@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 29, 2022 at 06:50:36PM +0800, Zhang Wensheng wrote:
-> From: Zhang Wensheng <zhangwensheng5@huawei.com>
+On 7/28/22 20:55, Sean Christopherson wrote:
+> On Fri, Jul 15, 2022, Dmytro Maluka wrote:
+>> +static void
+>> +irqfd_resampler_mask(struct kvm_irq_mask_notifier *kimn, bool masked)
 > 
-> A problem was find in stable 5.10 and the root cause of it like below.
-
-5.10 is very old, is this still an issue in Linus's tree?
-
+> Ugh, I see you're just following the existing "style" in this file.  Linus provided
+> a lengthy explanation of why this style is unwanted[*].  And this file is straight up
+> obnoxious, e.g. a large number of functions put the return type on a separate line
+> even though it would fit without any wrap.
 > 
-> In the use of q_usage_counter of request_queue, blk_cleanup_queue using
-> "wait_event(q->mq_freeze_wq, percpu_ref_is_zero(&q->q_usage_counter))"
-> to wait q_usage_counter becoming zero. however, if the q_usage_counter
-> becoming zero quickly, and percpu_ref_exit will execute and ref->data
-> will be freed, maybe another process will cause a null-defef problem
-> like below:
-> 
-> 	CPU0                             CPU1
-> blk_cleanup_queue
->  blk_freeze_queue
->   blk_mq_freeze_queue_wait
-> 				scsi_end_request
-> 				 percpu_ref_get
-> 				 ...
-> 				 percpu_ref_put
-> 				  atomic_long_sub_and_test
->   percpu_ref_exit
->    ref->data -> NULL
->    				   ref->data->release(ref) -> null-deref
-> 
-> Fix it by setting flag(QUEUE_FLAG_USAGE_COUNT_SYNC) to add synchronization
-> mechanism, when ref->data->release is called, the flag will be setted,
-> and the "wait_event" in blk_mq_freeze_queue_wait must wait flag becoming
-> true as well, which will limit percpu_ref_exit to execute ahead of time.
-> 
-> Although the problem was not reproduced in mainline, it may also has
-> problem when the passthrough IO which will go directly to
-> blk_cleanup_queue and cause the problem as well.
-> 
-> Signed-off-by: Zhang Wensheng <zhangwensheng5@huawei.com>
+> My vote is to break from this file's style for this patch, and then do a follow-up
+> patch to fix all the existing funky wraps.
 
-As the documentation said, this is not how you mark things for stable
-backports.
+Ok, I can do that.
 
-> ---
->  block/blk-core.c       | 4 +++-
->  block/blk-mq.c         | 7 +++++++
->  include/linux/blk-mq.h | 1 +
->  include/linux/blkdev.h | 2 ++
->  4 files changed, 13 insertions(+), 1 deletion(-)
-> 
-> diff --git a/block/blk-core.c b/block/blk-core.c
-> index 27fb1357ad4b..4b73f46e62ec 100644
-> --- a/block/blk-core.c
-> +++ b/block/blk-core.c
-> @@ -312,7 +312,8 @@ void blk_cleanup_queue(struct request_queue *q)
->  	 * prevent that blk_mq_run_hw_queues() accesses the hardware queues
->  	 * after draining finished.
->  	 */
-> -	blk_freeze_queue(q);
-> +	blk_freeze_queue_start(q);
-> +	blk_mq_freeze_queue_wait_sync(q);
->  
->  	blk_queue_flag_set(QUEUE_FLAG_DEAD, q);
->  
-> @@ -403,6 +404,7 @@ static void blk_queue_usage_counter_release(struct percpu_ref *ref)
->  	struct request_queue *q =
->  		container_of(ref, struct request_queue, q_usage_counter);
->  
-> +	blk_queue_flag_set(QUEUE_FLAG_USAGE_COUNT_SYNC, q);
->  	wake_up_all(&q->mq_freeze_wq);
->  }
->  
-> diff --git a/block/blk-mq.c b/block/blk-mq.c
-> index 93d9d60980fb..44e764257511 100644
-> --- a/block/blk-mq.c
-> +++ b/block/blk-mq.c
-> @@ -165,6 +165,7 @@ void blk_freeze_queue_start(struct request_queue *q)
->  {
->  	mutex_lock(&q->mq_freeze_lock);
->  	if (++q->mq_freeze_depth == 1) {
-> +		blk_queue_flag_clear(QUEUE_FLAG_USAGE_COUNT_SYNC, q);
->  		percpu_ref_kill(&q->q_usage_counter);
->  		mutex_unlock(&q->mq_freeze_lock);
->  		if (queue_is_mq(q))
-> @@ -175,6 +176,12 @@ void blk_freeze_queue_start(struct request_queue *q)
->  }
->  EXPORT_SYMBOL_GPL(blk_freeze_queue_start);
->  
-> +void blk_mq_freeze_queue_wait_sync(struct request_queue *q)
-> +{
-> +	wait_event(q->mq_freeze_wq, percpu_ref_is_zero(&q->q_usage_counter) &&
-> +			test_bit(QUEUE_FLAG_USAGE_COUNT_SYNC, &q->queue_flags));
+Would you also like if I rename resampler->notifier to
+resampler->ack_notifier and irqfd_resampler_mask() to
+irqfd_resampler_mask_notify() for more clarity?
 
-No timeout ever?
+Thanks,
+Dmytro
 
-
-> +}
-> +
->  void blk_mq_freeze_queue_wait(struct request_queue *q)
->  {
->  	wait_event(q->mq_freeze_wq, percpu_ref_is_zero(&q->q_usage_counter));
-> diff --git a/include/linux/blk-mq.h b/include/linux/blk-mq.h
-> index e2d9daf7e8dd..50fd56f85b31 100644
-> --- a/include/linux/blk-mq.h
-> +++ b/include/linux/blk-mq.h
-> @@ -868,6 +868,7 @@ void blk_mq_freeze_queue(struct request_queue *q);
->  void blk_mq_unfreeze_queue(struct request_queue *q);
->  void blk_freeze_queue_start(struct request_queue *q);
->  void blk_mq_freeze_queue_wait(struct request_queue *q);
-> +void blk_mq_freeze_queue_wait_sync(struct request_queue *q);
->  int blk_mq_freeze_queue_wait_timeout(struct request_queue *q,
->  				     unsigned long timeout);
->  
-> diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
-> index 2f7b43444c5f..93ed8b166d66 100644
-> --- a/include/linux/blkdev.h
-> +++ b/include/linux/blkdev.h
-> @@ -575,6 +575,8 @@ struct request_queue {
->  #define QUEUE_FLAG_HCTX_ACTIVE	28	/* at least one blk-mq hctx is active */
->  #define QUEUE_FLAG_NOWAIT       29	/* device supports NOWAIT */
->  #define QUEUE_FLAG_SQ_SCHED     30	/* single queue style io dispatch */
-> +/* sync for q_usage_counter */
-> +#define QUEUE_FLAG_USAGE_COUNT_SYNC    31
-
-Why not put the comment a the end of the line like everything else in
-this list?
-
-And why not use tabs?
-
-thanks,
-
-greg k-h
+> [*] https://lore.kernel.org/all/CAHk-=wjoLAYG446ZNHfg=GhjSY6nFmuB_wA8fYd5iLBNXjo9Bw@mail.gmail.com
