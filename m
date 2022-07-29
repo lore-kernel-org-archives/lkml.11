@@ -2,142 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35760C00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 06:16:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07530C00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 06:17:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234140AbiG2GQl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 02:16:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60874 "EHLO
+        id S234540AbiG2GR1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 02:17:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234409AbiG2GQ3 (ORCPT
+        with ESMTP id S234402AbiG2GRZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 02:16:29 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB2AD2AF6
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 23:16:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659075388; x=1690611388;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=XSZk6bvGXGWoh6yAStIVSnzdroxffXE+J0Cq7nDNA38=;
-  b=jXfjrU6yhH5BSpEbQUTPA+Yy5wgEQQhfEHprUePEjFMkOPmdpHPu7DWN
-   4ugwzV3HDhTki7s9sOZ7CoFsWNniM9U+qQY65rh6yCPo2SUFPA/6BtjvB
-   0xRI42ZDdo7PnEMT3Jkjay5wIXv9LIbHOhn0XTki+BEixPJ5sQNrlvvc9
-   djv/M84biK4xxDRbAP03Hat05YLroJS0Q0FlSxMMg9iuYMDLD40Rtzk7m
-   y8/FVw1WqiExXceQDDMKxoQEXbeTwj4xYZneVBNOSaU6Ine5OjK70A+xu
-   4W6pntvf7pntWD5akGKWLk/kCc/SP5K0w52HdoHr6sEJIjus8Z+1xYX5u
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10422"; a="289471083"
-X-IronPort-AV: E=Sophos;i="5.93,200,1654585200"; 
-   d="scan'208";a="289471083"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2022 23:16:28 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,200,1654585200"; 
-   d="scan'208";a="576828302"
-Received: from lkp-server01.sh.intel.com (HELO e0eace57cfef) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 28 Jul 2022 23:16:27 -0700
-Received: from kbuild by e0eace57cfef with local (Exim 4.96)
-        (envelope-from <lkp@intel.com>)
-        id 1oHJIP-000BBO-2A;
-        Fri, 29 Jul 2022 06:16:25 +0000
-Date:   Fri, 29 Jul 2022 14:16:04 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "x86-ml" <x86@kernel.org>
-Cc:     linux-kernel@vger.kernel.org
-Subject: [tip:master] BUILD SUCCESS
- 5469982f2cdacdb7d9757479a71633e35e4f1e63
-Message-ID: <62e37b24.+7G5EOFU9Z7fr422%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        Fri, 29 Jul 2022 02:17:25 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E49822BEC;
+        Thu, 28 Jul 2022 23:17:24 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id f7so4038983pjp.0;
+        Thu, 28 Jul 2022 23:17:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=EW499GBzYHaTH/WArZ0WtZvIkRlpsncxTw1RlPqz+v8=;
+        b=bBJrwZNNbNwZOSdpiHnZjxTBlhq5e5F5z/aB01/7Rhm7XVlQWB/jv1YB3Yg3stPpPN
+         SmPojYXgxob/8myvBqE/AYKB3hUIDzGgtgzp4td+2Rutu5SZSMSBz+TEPl7HNs7Bb9MW
+         W7TCxTINNO2IXJYHAUFDEo60ceS/hW+jhm95xlptfVEjnS/+i/uxEzpBJqVXlteEWYKP
+         MLSVJZ2NRzFuZR5K2IulKBp8EOOR/C3KOurSc/13nA+jBRKeS6G6Ni3gVaAmjbINYeTP
+         Y/exdADOpBiQOL0wbDkY7ixd3HtrsRWGX3QW7Rcr/xwq05d0Ejbdfk37De6Lis+ytz3+
+         Mzvg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=EW499GBzYHaTH/WArZ0WtZvIkRlpsncxTw1RlPqz+v8=;
+        b=cPmxhGU7MgqV4EBa4XWT5LuS360COaAYZ6cDzOzjw8SmwjaJ1rTeBi3L+mFbxZE6vS
+         DZZBOxxfbSv13xQrsElyP7O1Ee8NmkOjgT+KiyavRF84YVFLxHPqwX0oNdyCBIG7wcQP
+         4HXBZy/2TPS+Uk1Ml+ct/Snyc/3TJ9F8rJQifEr6WKMhhGqucrFEkMt36QSE4PzbQPn0
+         y9iYeBZtcA4w+D7ztS40tlnNGpTEbDTctwEXrisw9PDPucuw10AUC2P6TFhs+JzvOX47
+         nd2s87rEcXApCbW+oQd16cUPfixPX7jNKY6LS7gQHVbb5Ul/+HuTO5IeEu67SDSfXrHd
+         ggJQ==
+X-Gm-Message-State: ACgBeo17wSnN1z33QLUnK4eooIxonOjnmRpB2YaxDgyDCEzcj0SBt3Qc
+        9lTKE01qpSBls2DN+3OTgBcrpewOZyFK1U10NVc=
+X-Google-Smtp-Source: AA6agR5CfpBYT1/n0Fz3b0mpL30Y1BQpcR5ZJ1q53vOkI+o8r7h1QJKT9bGnP/JXhqgwA8TQcF5sWeEJfeZ5+jaoGc0=
+X-Received: by 2002:a17:902:f646:b0:168:e2da:8931 with SMTP id
+ m6-20020a170902f64600b00168e2da8931mr2450692plg.84.1659075444381; Thu, 28 Jul
+ 2022 23:17:24 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+References: <20220722102407.2205-1-peterwu.pub@gmail.com> <20220722102407.2205-13-peterwu.pub@gmail.com>
+ <CAHp75Vf85_uzA9fRxTizbPJxODcXFpM4wuU6DxP2j9UA47B_2g@mail.gmail.com>
+In-Reply-To: <CAHp75Vf85_uzA9fRxTizbPJxODcXFpM4wuU6DxP2j9UA47B_2g@mail.gmail.com>
+From:   szuni chen <szunichen@gmail.com>
+Date:   Fri, 29 Jul 2022 14:17:13 +0800
+Message-ID: <CA+hk2fYcw0szJ7bBvfEjtyUE_Z61_A1vFWmPSdhe-gmd5jbC6g@mail.gmail.com>
+Subject: Re: [PATCH v6 12/13] leds: flash: mt6370: Add MediaTek MT6370
+ flashlight support
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     ChiaEn Wu <peterwu.pub@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Jingoo Han <jingoohan1@gmail.com>, Pavel Machek <pavel@ucw.cz>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        "Krogerus, Heikki" <heikki.krogerus@linux.intel.com>,
+        Helge Deller <deller@gmx.de>,
+        ChiaEn Wu <chiaen_wu@richtek.com>,
+        Alice Chen <alice_chen@richtek.com>,
+        cy_huang <cy_huang@richtek.com>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Linux LED Subsystem <linux-leds@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        USB <linux-usb@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        "open list:FRAMEBUFFER LAYER" <linux-fbdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/peterz/queue.git master
-branch HEAD: 5469982f2cdacdb7d9757479a71633e35e4f1e63  Merge x86/urgent into tip/master
+Andy Shevchenko <andy.shevchenko@gmail.com> =E6=96=BC 2022=E5=B9=B47=E6=9C=
+=8825=E6=97=A5 =E9=80=B1=E4=B8=80 =E4=B8=8B=E5=8D=884:51=E5=AF=AB=E9=81=93=
+=EF=BC=9A
+>
+> On Fri, Jul 22, 2022 at 12:25 PM ChiaEn Wu <peterwu.pub@gmail.com> wrote:
+> >
+> > From: Alice Chen <alice_chen@richtek.com>
+> >
+> > The MediaTek MT6370 is a highly-integrated smart power management IC,
+> > which includes a single cell Li-Ion/Li-Polymer switching battery
+> > charger, a USB Type-C & Power Delivery (PD) controller, dual Flash
+> > LED current sources, a RGB LED driver, a backlight WLED driver,
+> > a display bias driver and a general LDO for portable devices.
+> >
+> > The Flash LED in MT6370 has 2 channels and support torch/strobe mode.
+> > Add the support of MT6370 FLASH LED.
+> >
+> > Signed-off-by: Alice Chen <alice_chen@richtek.com>
+>
+> This SoB chain is wrong. Prioritize and read Submitting Patches!
+>
+Hi Andy,
 
-elapsed time: 1119m
+After reading the Submitted Patches,
+ChiaEn Wu wasn't involved in the development but he submitted the patch,
+So, ChiaEn Wu <chiaen_wu@richtek.com> should be the last SoB, right?
+I will revise SoB to
 
-configs tested: 66
-configs skipped: 2
+Signed-off-by: SzuNi Chen <alice_chen@richtek.com>
+Signed-off-by: ChiaEn Wu <chiaen_wu@richtek.com>
 
-The following configs have been built successfully.
-More configs may be tested in the coming days.
+If there is anything else I need to fix, please let me know. Thank you.
 
-gcc tested configs:
-um                             i386_defconfig
-um                           x86_64_defconfig
-i386                                defconfig
-powerpc                          allmodconfig
-i386                             allyesconfig
-x86_64                        randconfig-a004
-arm                                 defconfig
-arc                  randconfig-r043-20220728
-sh                               allmodconfig
-x86_64                        randconfig-a013
-riscv                randconfig-r042-20220728
-x86_64                        randconfig-a002
-x86_64                        randconfig-a011
-s390                 randconfig-r044-20220728
-mips                             allyesconfig
-i386                          randconfig-a014
-x86_64                        randconfig-a006
-powerpc                           allnoconfig
-i386                          randconfig-a012
-x86_64                        randconfig-a015
-i386                          randconfig-a016
-arm                              allyesconfig
-i386                          randconfig-a001
-arm64                            allyesconfig
-x86_64                           rhel-8.3-kvm
-i386                          randconfig-a003
-x86_64                    rhel-8.3-kselftests
-x86_64                           rhel-8.3-syz
-x86_64                          rhel-8.3-func
-x86_64                         rhel-8.3-kunit
-ia64                             allmodconfig
-i386                          randconfig-a005
-x86_64                              defconfig
-x86_64                               rhel-8.3
-x86_64                           allyesconfig
-m68k                             allyesconfig
-alpha                            allyesconfig
-arc                              allyesconfig
-m68k                             allmodconfig
-csky                              allnoconfig
-alpha                             allnoconfig
-arc                               allnoconfig
-riscv                             allnoconfig
-s390                       zfcpdump_defconfig
-openrisc                         alldefconfig
-i386                          randconfig-c001
 
-clang tested configs:
-hexagon              randconfig-r045-20220728
-hexagon              randconfig-r041-20220728
-x86_64                        randconfig-a014
-i386                          randconfig-a013
-x86_64                        randconfig-a005
-x86_64                        randconfig-a016
-x86_64                        randconfig-a001
-i386                          randconfig-a015
-x86_64                        randconfig-a012
-x86_64                        randconfig-a003
-i386                          randconfig-a011
-i386                          randconfig-a002
-i386                          randconfig-a004
-i386                          randconfig-a006
-arm                         hackkit_defconfig
-powerpc                      ppc44x_defconfig
-powerpc                   microwatt_defconfig
-powerpc                      ppc64e_defconfig
-mips                          rm200_defconfig
-arm                  colibri_pxa270_defconfig
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Best Regards,
+Szuni Chen
