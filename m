@@ -2,86 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FF7EC19F2B
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 02:50:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5403CC00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 02:51:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233958AbiG2CuZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 22:50:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35200 "EHLO
+        id S233466AbiG2CvH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 22:51:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233845AbiG2CuR (ORCPT
+        with ESMTP id S230483AbiG2CvF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 22:50:17 -0400
-Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18D321275B
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 19:50:13 -0700 (PDT)
-Received: from fsav315.sakura.ne.jp (fsav315.sakura.ne.jp [153.120.85.146])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 26T2nrRM084526;
-        Fri, 29 Jul 2022 11:49:53 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav315.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav315.sakura.ne.jp);
- Fri, 29 Jul 2022 11:49:53 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav315.sakura.ne.jp)
-Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 26T2nqCi084519
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-        Fri, 29 Jul 2022 11:49:52 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Message-ID: <7d034f7b-af42-4dbc-0887-60f4bdb3dcca@I-love.SAKURA.ne.jp>
-Date:   Fri, 29 Jul 2022 11:49:51 +0900
+        Thu, 28 Jul 2022 22:51:05 -0400
+Received: from xry111.site (xry111.site [89.208.246.23])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A249F13D32
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 19:51:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=xry111.site;
+        s=default; t=1659063062;
+        bh=CFRXsQSgGZPmMci7VZMi7Cg1t1nxFRUf8fi3wwhGew4=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=l2YFMuq9czxdVPVJi0ZRftHO46JsNcw+r7r76pcOeoufSm2nYjS61J5W1bRMf2WNK
+         5xDvtLs5GKzX1CoaOgvseSis2lL58mK76K6kPQ+JlbE46Y9LRaqtpCww3+MMSgp71r
+         5l3mupB/g/IRXM4/Rnv1coEFkVUV+aJX4S/WBTKg=
+Received: from localhost.localdomain (xry111.site [IPv6:2001:470:683e::1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature ECDSA (P-384))
+        (Client did not present a certificate)
+        (Authenticated sender: xry111@xry111.site)
+        by xry111.site (Postfix) with ESMTPSA id CC86F65938;
+        Thu, 28 Jul 2022 22:51:00 -0400 (EDT)
+Message-ID: <54026014a1894a3f1eb0056dbc61a8ce31f4d2da.camel@xry111.site>
+Subject: Re: [PATCH v3 3/4] LoongArch: Remove -fplt and -Wa,-mla-* from
+ CFLAGS
+From:   Xi Ruoyao <xry111@xry111.site>
+To:     loongarch@lists.linux.dev, Huacai Chen <chenhuacai@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, WANG Xuerui <kernel@xen0n.name>,
+        Youling Tang <tangyouling@loongson.cn>,
+        Jinyang He <hejinyang@loongson.cn>
+Date:   Fri, 29 Jul 2022 10:50:59 +0800
+In-Reply-To: <4da7ce6a6e5b6d609c37ebf6815caacc3b3b8297.camel@xry111.site>
+References: <bb7824d39a694b13069718c2b8193379f79229b4.camel@xry111.site>
+         <4da7ce6a6e5b6d609c37ebf6815caacc3b3b8297.camel@xry111.site>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
+User-Agent: Evolution 3.44.3 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [PATCH] workqueue: don't skip lockdep wq dependency in
- cancel_work_sync()
-Content-Language: en-US
-From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-To:     Johannes Berg <johannes.berg@intel.com>
-Cc:     Lai Jiangshan <jiangshanlai@gmail.com>,
-        Hillf Danton <hdanton@sina.com>,
-        LKML <linux-kernel@vger.kernel.org>, Tejun Heo <tj@kernel.org>
-References: <21b9c1ac-64b7-7f4b-1e62-bf2f021fffcd@I-love.SAKURA.ne.jp>
- <YuK78Jiy12BJG/Tp@slm.duckdns.org>
- <0ad532b2-df5f-331a-ae7f-21460fc62fe2@I-love.SAKURA.ne.jp>
- <97cbf8a9-d5e1-376f-6a49-3474871ea6b4@I-love.SAKURA.ne.jp>
- <afa1ac2c-a023-a91e-e596-60931b38247e@I-love.SAKURA.ne.jp>
-In-Reply-To: <afa1ac2c-a023-a91e-e596-60931b38247e@I-love.SAKURA.ne.jp>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/07/29 11:28, Tetsuo Handa wrote:
-> Thinking more, I might be confused by difference between
-> 
->   the lockdep "struct work_struct" dependency handling
-
-the lockdep "struct workqueue_struct" dependency handling
-
-> 
-> and
-> 
->   the lockdep "struct work" dependency handling
-
-the lockdep "struct work_struct" dependency handling
-
-
-On 2022/07/29 11:38, Lai Jiangshan wrote:
-> The commit fd1a5b04dfb8("workqueue: Remove now redundant lock
-> acquisitions wrt. workqueue flushes") removed this lockdep check.
-> 
-> And the commit 87915adc3f0a("workqueue: re-add lockdep
-> dependencies for flushing") added it back for non-canceling cases.
-> 
-> It seems the commit fd1a5b04dfb8 is the culprit and 87915adc3f0a
-> didn't fixes all the problem of it.
-> 
-> So it is better to complete 87915adc3f0a by making __flush_work()
-> does lock_map_acquire(&work->lockdep_map) for both canceling and
-> non-canceling cases.
-
-Yes, commit 87915adc3f0acdf0 was incomplete.
+T24gRnJpLCAyMDIyLTA3LTI5IGF0IDEwOjA5ICswODAwLCBYaSBSdW95YW8gd3JvdGU6Cj4gLWZw
+bHQgaXMgdGhlIGRlZmF1bHQgb2YgYWxsIHN1cHBvcnRlZCBjb21waWxlcnMgKEdDQywgYW5kIG1h
+eWJlIENsYW5nIGluCj4gdGhlIGZ1dHVyZSksIHNvIGl0IG5lZWRzIG5vdCB0byBiZSBleHBsaWNp
+dGx5IHNwZWNpZmllZC4KPiAKPiAtV2EsLW1sYS0qIG9wdGlvbnMgd2VyZSB1c2VkIHRvIHByZXZl
+bnQgdGhlIGFzc2VtYmxlciBmcm9tIGdlbmVyYXRpbmcKPiBHT1QgYWNjZXNzZXMgZm9yICJsYS5s
+b2NhbCIgYW5kICJsYS5nbG9iYWwiIG1hY3Jvcy7CoCBCdXQgR0NDID49IDEzIHdpbGwKPiBnZW5l
+cmF0ZSBHT1QgYWNjZXNzIGV4cGxpY2l0bHkgd2l0aG91dCB1c2Ugb2YgdGhlc2UgbWFjcm9zCgpX
+aWxsIGFkZCAiYnkgZGVmYXVsdCB3aXRoIGFuIGFzc2VtYmxlciBzdXBwb3J0aW5nIGV4cGxpY2l0
+IHJlbG9jYXRpb25zLAphbmQgaXQncyBub3QgcmVjb21tZW5kZWQgdG8gb3ZlcnJpZGUgdGhlIGRl
+ZmF1bHQiIGhlcmUgaW4gVjQuCgo+IG9wdGlvbnMgYXJlIGluZWZmZWN0aXZlIGZvciBzeW1ib2wg
+YWRkcmVzc2luZyBpbiBDIGNvZGUgd2l0aCBHQ0MgPj0gMTMuCj4gTm93IHdlIGNhbiBoYW5kbGUg
+R09UIGFuZCBHT1QtYmFzZWQgcmVsb2NhdGlvbnMgcHJvcGVybHksIHNvIHdlIGNhbgo+IHJlbW92
+ZSB0aGVzZSBvcHRpb25zIGFuZCB1c2UgR09UIGFjY2VzcyBmb3IgYm90aCBHQ0MgMTIgYW5kIDEz
+Cj4gKG9yIG5ld2VyKS4KPiAKPiBHQVMgPD0gMi4zOSBkb2VzIG5vdCBzdXBwb3J0ICJsYS5nb3Qg
+W3JlZ10sIFtzeW1dICsgW29mZnNldF0iIHdpdGggYQo+IG5vbi16ZXJvIG9mZnNldC7CoCBTbyBp
+biB0aGUgYXNzZW1ibHkgY29kZSB3ZSBleHBsaWNpdGx5IHVzZSAibGEucGNyZWwiCj4gaW5zdGVh
+ZCBvZiAibGEiIChub3cgZGVmYXVsdGVkIHRvICJsYS5nb3QiKSB3aGVyZSBhIFBDLXJlbGF0aXZl
+Cj4gYWRkcmVzc2luZyBpcyBzdWl0YWJsZSwgaW4gb3JkZXIgdG8gd29yayBhcm91bmQgdGhpcyBs
+aW1pdGF0aW9uIGFuZCBrZWVwCj4gdGhlIGNvbXBhdGliaWxpdHkgd2l0aCBvbGQgdG9vbGNoYWlu
+cy4KPiAKPiBTaWduZWQtb2ZmLWJ5OiBYaSBSdW95YW8gPHhyeTExMUB4cnkxMTEuc2l0ZT4KPiAt
+LS0KPiDCoGFyY2gvbG9vbmdhcmNoL01ha2VmaWxlwqDCoMKgwqDCoCB8wqAgNCAtLS0tCj4gwqBh
+cmNoL2xvb25nYXJjaC9rZXJuZWwvaGVhZC5TIHwgMTAgKysrKystLS0tLQo+IMKgMiBmaWxlcyBj
+aGFuZ2VkLCA1IGluc2VydGlvbnMoKyksIDkgZGVsZXRpb25zKC0pCj4gCj4gZGlmZiAtLWdpdCBh
+L2FyY2gvbG9vbmdhcmNoL01ha2VmaWxlIGIvYXJjaC9sb29uZ2FyY2gvTWFrZWZpbGUKPiBpbmRl
+eCAwMzlkY2M0ZmUxZjMuLjgwMDM0OWVhOTMxMCAxMDA2NDQKPiAtLS0gYS9hcmNoL2xvb25nYXJj
+aC9NYWtlZmlsZQo+ICsrKyBiL2FyY2gvbG9vbmdhcmNoL01ha2VmaWxlCj4gQEAgLTQwLDEwICs0
+MCw2IEBAIGVuZGlmCj4gwqAKPiDCoGNmbGFncy15wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoCs9IC1HMCAtcGlwZSAtbXNvZnQtZmxvYXQKPiDCoExERkxBR1Nf
+dm1saW51eMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCs9
+IC1HMCAtc3RhdGljIC1uIC1ub3N0ZGxpYgo+IC1LQlVJTERfQUZMQUdTX0tFUk5FTMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqArPSAtV2EsLW1sYS1nbG9iYWwtd2l0aC1wY3JlbAo+IC1LQlVJTERfQ0ZM
+QUdTX0tFUk5FTMKgwqDCoMKgwqDCoMKgwqDCoMKgwqArPSAtV2EsLW1sYS1nbG9iYWwtd2l0aC1w
+Y3JlbAo+IC1LQlVJTERfQUZMQUdTX01PRFVMRcKgwqDCoMKgwqDCoMKgwqDCoMKgwqArPSAtV2Es
+LW1sYS1nbG9iYWwtd2l0aC1hYnMKPiAtS0JVSUxEX0NGTEFHU19NT0RVTEXCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgKz0gLWZwbHQgLVdhLC1tbGEtZ2xvYmFsLXdpdGgtYWJzLC1tbGEtbG9jYWwtd2l0
+aC1hYnMKPiDCoAo+IMKgY2ZsYWdzLXkgKz0gLWZmcmVlc3RhbmRpbmcKPiDCoGNmbGFncy15ICs9
+ICQoY2FsbCBjYy1vcHRpb24sIC1tbm8tY2hlY2stemVyby1kaXZpc2lvbikKPiBkaWZmIC0tZ2l0
+IGEvYXJjaC9sb29uZ2FyY2gva2VybmVsL2hlYWQuUyBiL2FyY2gvbG9vbmdhcmNoL2tlcm5lbC9o
+ZWFkLlMKPiBpbmRleCA3NGVhN2JmNmM4ZDYuLjE5MzMyOWVkNmU4YyAxMDA2NDQKPiAtLS0gYS9h
+cmNoL2xvb25nYXJjaC9rZXJuZWwvaGVhZC5TCj4gKysrIGIvYXJjaC9sb29uZ2FyY2gva2VybmVs
+L2hlYWQuUwo+IEBAIC02MCwxNyArNjAsMTcgQEAgU1lNX0NPREVfU1RBUlQoa2VybmVsX2VudHJ5
+KcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCMga2VybmVs
+IGVudHJ5IHBvaW50Cj4gwqDCoMKgwqDCoMKgwqDCoGxhLmFic8KgwqDCoMKgwqDCoMKgwqDCoMKg
+dDAsIDBmCj4gwqDCoMKgwqDCoMKgwqDCoGppcmzCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqB6ZXJv
+LCB0MCwgMAo+IMKgMDoKPiAtwqDCoMKgwqDCoMKgwqBsYcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqB0MCwgX19ic3Nfc3RhcnTCoMKgwqDCoMKgwqDCoMKgwqAjIGNsZWFyIC5ic3MKPiArwqDC
+oMKgwqDCoMKgwqBsYS5wY3JlbMKgwqDCoMKgwqDCoMKgwqB0MCwgX19ic3Nfc3RhcnTCoMKgwqDC
+oMKgwqDCoMKgwqAjIGNsZWFyIC5ic3MKPiDCoMKgwqDCoMKgwqDCoMKgc3QuZMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoHplcm8sIHQwLCAwCj4gLcKgwqDCoMKgwqDCoMKgbGHCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgdDEsIF9fYnNzX3N0b3AgLSBMT05HU0laRQo+ICvCoMKgwqDCoMKgwqDC
+oGxhLnBjcmVswqDCoMKgwqDCoMKgwqDCoHQxLCBfX2Jzc19zdG9wIC0gTE9OR1NJWkUKPiDCoDE6
+Cj4gwqDCoMKgwqDCoMKgwqDCoGFkZGkuZMKgwqDCoMKgwqDCoMKgwqDCoMKgdDAsIHQwLCBMT05H
+U0laRQo+IMKgwqDCoMKgwqDCoMKgwqBzdC5kwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgemVybywg
+dDAsIDAKPiDCoMKgwqDCoMKgwqDCoMKgYm5lwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqB0MCwg
+dDEsIDFiCj4gwqAKPiAtwqDCoMKgwqDCoMKgwqBsYcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqB0MCwgZndfYXJnMAo+ICvCoMKgwqDCoMKgwqDCoGxhLnBjcmVswqDCoMKgwqDCoMKgwqDCoHQw
+LCBmd19hcmcwCj4gwqDCoMKgwqDCoMKgwqDCoHN0LmTCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBh
+MCwgdDAsIDDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAjIGZpcm13YXJlIGFyZ3VtZW50
+cwo+IC3CoMKgwqDCoMKgwqDCoGxhwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHQwLCBmd19h
+cmcxCj4gK8KgwqDCoMKgwqDCoMKgbGEucGNyZWzCoMKgwqDCoMKgwqDCoMKgdDAsIGZ3X2FyZzEK
+PiDCoMKgwqDCoMKgwqDCoMKgc3QuZMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoGExLCB0MCwgMAo+
+IMKgCj4gwqDCoMKgwqDCoMKgwqDCoC8qIEtTYXZlMyB1c2VkIGZvciBwZXJjcHUgYmFzZSwgaW5p
+dGlhbGl6ZWQgYXMgMCAqLwo+IEBAIC03OCw3ICs3OCw3IEBAIFNZTV9DT0RFX1NUQVJUKGtlcm5l
+bF9lbnRyeSnCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAjIGtlcm5lbCBlbnRy
+eSBwb2ludAo+IMKgwqDCoMKgwqDCoMKgwqAvKiBHUFIyMSB1c2VkIGZvciBwZXJjcHUgYmFzZSAo
+cnVudGltZSksIGluaXRpYWxpemVkIGFzIDAgKi8KPiDCoMKgwqDCoMKgwqDCoMKgb3LCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgdTAsIHplcm8sIHplcm8KPiDCoAo+IC3CoMKgwqDCoMKgwqDC
+oGxhwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoHRwLCBpbml0X3RocmVhZF91bmlvbgo+ICvC
+oMKgwqDCoMKgwqDCoGxhLnBjcmVswqDCoMKgwqDCoMKgwqDCoHRwLCBpbml0X3RocmVhZF91bmlv
+bgo+IMKgwqDCoMKgwqDCoMKgwqAvKiBTZXQgdGhlIFNQIGFmdGVyIGFuIGVtcHR5IHB0X3JlZ3Mu
+wqAgKi8KPiDCoMKgwqDCoMKgwqDCoMKgUFRSX0xJwqDCoMKgwqDCoMKgwqDCoMKgwqBzcCwgKF9U
+SFJFQURfU0laRSAtIDMyIC0gUFRfU0laRSkKPiDCoMKgwqDCoMKgwqDCoMKgUFRSX0FERMKgwqDC
+oMKgwqDCoMKgwqDCoHNwLCBzcCwgdHAKCi0tIApYaSBSdW95YW8gPHhyeTExMUB4cnkxMTEuc2l0
+ZT4KU2Nob29sIG9mIEFlcm9zcGFjZSBTY2llbmNlIGFuZCBUZWNobm9sb2d5LCBYaWRpYW4gVW5p
+dmVyc2l0eQo=
 
