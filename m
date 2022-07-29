@@ -2,145 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1B59C00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 16:46:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18673C00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 16:47:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238271AbiG2Qqs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 12:46:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36330 "EHLO
+        id S238207AbiG2QrJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 12:47:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238152AbiG2Qpu (ORCPT
+        with ESMTP id S238206AbiG2Qqy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 12:45:50 -0400
-Received: from new4-smtp.messagingengine.com (new4-smtp.messagingengine.com [66.111.4.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5677888F37
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 09:45:49 -0700 (PDT)
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 6BA35580942;
-        Fri, 29 Jul 2022 12:36:06 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Fri, 29 Jul 2022 12:36:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
-        :cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm2; t=1659112566; x=
-        1659119766; bh=xVYLKG9KFFYmuOaTAKRLm+p8P7z09nrupInjkJzNlvg=; b=p
-        eGkvPp9VkszCbBMSvqhe2K521WOU5cEUHToD9XxGzIfDWbJJPr+H6dqaUzk9G1cD
-        b+08PM7zxoIsqqCRGLR/+8JyZo7zz6gfIC9xafnA8b43D8b0P676C9/mvdSWwUhs
-        aLkF29Fx77MbrU9rlTgCTmKH+1P7yKWYEnn9KVOxM+uGkY2IoDonvMIwEBaP5PDS
-        81X3ki1IHhB5/j4yJNDCZkFI1SAiPHDGlhgCy04HWUYpPZI0Dtd/ebYaVH68rnI0
-        BPRidxXjFSG8Wr3nj1KBE0j8xzoZ1M/y1EXVAyomt6GrZbNd1edgUKsoibSys3Js
-        /tFDmLl6UiTlh5ad5u01g==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:feedback-id:feedback-id:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
-        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1659112566; x=
-        1659119766; bh=xVYLKG9KFFYmuOaTAKRLm+p8P7z09nrupInjkJzNlvg=; b=1
-        D201QYH+jhj5T7xGEgRqCS2cA0hqz3QnILFtJywMR6tcMSnaMUNqJVTnSMxZqoym
-        76NEZOpWqd1ED/RqqPj/570LsmIdurCy5MfUNPPVPscoUNQyKJv9hdsekYMOd7Oo
-        EWTMyenmGaPtXNCn7zp4WbNAWijODYgqbyiDOtquvbEkMdrH3thr8Zd7ltQFBo/k
-        mKMrTy6nP/ZRA38kysqG8lX2ujjF5UDO1idAZOlO5SWTjcY4E4EyMGBvLzvRwVom
-        EM8zVhrXQ5N1/nL0gxSmTtOsKcxmZbYxEcXK5Z+grTPSC0MQ6xkJnsj+h/dlYxIs
-        0Pe1Q4po+xlRn9Ggwv+JQ==
-X-ME-Sender: <xms:dgzkYk2BMFe6IlW7XEWt9Zd1PCm0fv3U6QdsTSEG0ehKJBRnN4S1hg>
-    <xme:dgzkYvFXxPQAhxukA0ojKdCe600G3cDPLeF0OH-NbOAtT1Nb4OIK_htrbd0HdXTNv
-    BTCOLeZST4sojAwkKY>
-X-ME-Received: <xmr:dgzkYs5PKKYXyOW5OczTsWLN7AD8q3DHaYQdWDtUzy36lnEg2QPaHZmbMbSRLhQhipVd_6UHS6hTzRAygm0>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvddujedguddtgecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpefhvfevufffkffojghfgggtoffgsehtkeertdertdejnecuhfhrohhmpefo
-    rgigihhmvgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecugg
-    ftrfgrthhtvghrnhepgfffgfetffduudelhfevieffffduleevgfegkeeutefgffejheel
-    leekjeefhfejnecuvehluhhsthgvrhfuihiivgepudenucfrrghrrghmpehmrghilhhfrh
-    homhepmhgrgihimhgvsegtvghrnhhordhtvggthh
-X-ME-Proxy: <xmx:dgzkYt16qHHK42HYu-VGLpBImaQ0ithtjM2up0DB0OuxBKo1y9YZHQ>
-    <xmx:dgzkYnGiHunAAId1ZKwS4edR-O2_CtVLKT6FHqk3kcCPEzwkr2Qvog>
-    <xmx:dgzkYm9MDwent-LImtPSrE4DwzIN32_CGylVWzo-Pn_KOGDHETcYlw>
-    <xmx:dgzkYvUwKZYvB5olNpS7zIbdX2MkPT76qllhGq4ywK7PSVNtfTpQjA>
-Feedback-ID: i8771445c:Fastmail
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 29 Jul 2022 12:36:05 -0400 (EDT)
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Daniel Vetter <daniel@ffwll.ch>, Emma Anholt <emma@anholt.net>,
-        David Airlie <airlied@linux.ie>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        =?UTF-8?q?Noralf=20Tr=C3=B8nnes?= <noralf@tronnes.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Maxime Ripard <mripard@kernel.org>
-Cc:     Maxime Ripard <maxime@cerno.tech>, linux-sunxi@lists.linux.dev,
-        linux-kernel@vger.kernel.org, Phil Elwell <phil@raspberrypi.com>,
-        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        linux-amlogic@lists.infradead.org, dri-devel@lists.freedesktop.org,
-        Dom Cobley <dom@raspberrypi.com>
-Subject: [PATCH v1 11/35] drm/modes: Fill drm_cmdline mode from named modes
-Date:   Fri, 29 Jul 2022 18:34:54 +0200
-Message-Id: <20220728-rpi-analog-tv-properties-v1-11-3d53ae722097@cerno.tech>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
-References: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
+        Fri, 29 Jul 2022 12:46:54 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B4C689AA9
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 09:46:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659113209; x=1690649209;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=9jM9mztwAIfVEKsgETMmbLznTItKcbywHJIDqBixobk=;
+  b=hAsuST5M0HjRr6DApr/KPaSY4QnErblvLhag+WnjTsWz4B/fI2KapGtg
+   bvuJRWUHNRT/oahoIIYsInEb3bHAzReqF8K5fGZxeXwsv7tboYPCrD1Jf
+   FhhyIw2sLwUtNopNjtMbvNYIUHYv5dcrHEjV23/IIDsUnUVLIlqT1IanP
+   NrTXwGA+lt+cuWF3btbH36xeH1lkLwRGpPUjH7o1zaIIK7GHKLlHQoyD7
+   kNYLa1uB6gt+t0KASTUOstbv8pqsLuYKDtgqV5KzFU/8Xskm+ENroDL1M
+   fqUxsIRp2tmzTFTC5vcz8yWklXoE28nAvn/CB/t10hYEtlLxk9DjB0+Wd
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10423"; a="290005899"
+X-IronPort-AV: E=Sophos;i="5.93,201,1654585200"; 
+   d="scan'208";a="290005899"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2022 09:46:48 -0700
+X-IronPort-AV: E=Sophos;i="5.93,201,1654585200"; 
+   d="scan'208";a="605014348"
+Received: from kaholo-mobl.amr.corp.intel.com (HELO [10.212.97.86]) ([10.212.97.86])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2022 09:46:47 -0700
+Message-ID: <701aa1ba-9b25-51eb-8bd7-2389b501d79c@linux.intel.com>
+Date:   Fri, 29 Jul 2022 11:46:32 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-X-Mailer: b4 0.10.0-dev-49460
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1439; i=maxime@cerno.tech; h=from:subject:message-id; bh=NWuztsnfEBMwtrwGZAZ89RBSXbuMUAK6h8TPssl7ueY=; b=owGbwMvMwCHc4XzqmfnC7acZT6slMSQ94VFatr10tcm+HI8krRuTQr8mfAkyKmqcsXSbdwP31w2/ Y08UdpSyMAhzMMiKKbJcF3xrxxcW5RbB82EzzBxWJpAhDFycAjCR/YcZGR7ppvMEqYY8j2Pa/WDVgf lCS/ZWCwarVn+adbx93vncny8YGWa5Bx3lusat82xuXLT5NsZ/P2LCRU37244JmZ0wnDn9SBUA
-X-Developer-Key: i=maxime@cerno.tech; a=openpgp; fpr=BE5675C37E818C8B5764241C254BCFC56BF6CE8D
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Firefox/91.0 Thunderbird/91.11.0
+Subject: Re: [PATCH 2/5] soundwire: sysfs: cleanup the logic for creating the
+ dp0 sysfs attributes
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Vinod Koul <vkoul@kernel.org>, alsa-devel@alsa-project.org,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        linux-kernel@vger.kernel.org, Sanyog Kale <sanyog.r.kale@intel.com>
+References: <20220729135041.2285908-1-gregkh@linuxfoundation.org>
+ <20220729135041.2285908-2-gregkh@linuxfoundation.org>
+ <9365e038-2146-98f8-f989-02827f221c34@linux.intel.com>
+ <YuP0Ffs3G7ZBR0AC@kroah.com>
+ <cfacb124-a9ff-0a93-8f92-93d164b15966@linux.intel.com>
+ <YuP2pjhyKTTfpXQq@kroah.com>
+ <5caffe2a-f5a6-e312-a564-5fe29c4e2323@linux.intel.com>
+ <YuQMYRYFo9gTk1yL@kroah.com>
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+In-Reply-To: <YuQMYRYFo9gTk1yL@kroah.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The current code to deal with named modes will only set the mode name, and
-then it's up to drivers to try to match that name to whatever mode or
-configuration they see fit.
 
-The plan is to remove that need and move the named mode handling out of
-drivers and into the core, and only rely on modes and properties. Let's
-start by properly filling drm_cmdline_mode from a named mode.
+>>>>> That should be fine, tools should just be looking for the attributes,
+>>>>> not the existance of a directory, right?
+>>>>
+>>>> The idea what that we would only expose ports that actually exist.
+>>>> That's helpful information anyone with a basic knowledge of the
+>>>> SoundWire specification would understand.
+>>>
+>>> Is "dp0" a port?  If so, why isn't it a real device?
+>>
+>> The SoundWire spec defines the concept of 'data port'. The valid ranges
+>> are 1..14, but in all existing devices the number of data ports is way
+>> smaller, typically 2 to 4. Data ports (DPn) are source or sink, and
+>> there's no firm rule that data ports needs to be contiguous.
+>>
+>> DP0 is a 'special case' where the data transport is used for control
+>> information, e.g. programming large set of registers or firmware
+>> download. DP0 is completely optional in hardware, and not handled in
+>> Linux for now.
+>>
+>> DP0 and DPn expose low-level transport registers, which define how the
+>> contents of a FIFO will be written or read from the bus. Think of it as
+>> a generalization of the concept of TDM slots, where instead of having a
+>> fixed slot per frame the slot position/repetition/runlength can be
+>> programmed.
+>>
+>> The data ports could be as simple as 1-bit PDM, or support 8ch PCM
+>> 24-bits. That's the sort of information reported in attributes.
+> 
+> Why not make them a real device like we do for USB endpoints?
 
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+I don't see what adding another layer of hierarchy would bring. In their
+simplest configuration, there are 6 registers 8-bit exposed. And the
+port registers, when present, are accessed with a plain vanilla offset.
 
-diff --git a/drivers/gpu/drm/drm_modes.c b/drivers/gpu/drm/drm_modes.c
-index 1421e5da49e0..78ea520f2822 100644
---- a/drivers/gpu/drm/drm_modes.c
-+++ b/drivers/gpu/drm/drm_modes.c
-@@ -1770,11 +1770,12 @@ static int drm_mode_parse_cmdline_options(const char *str,
- 
- struct drm_named_mode {
- 	const char *name;
-+	const struct drm_display_mode *mode;
- };
- 
- static const struct drm_named_mode drm_named_modes[] = {
--	{ "NTSC", },
--	{ "PAL", },
-+	{ "NTSC", &drm_mode_480i, },
-+	{ "PAL", &drm_mode_576i, },
- };
- 
- static bool drm_mode_parse_cmdline_named_mode(const char *name,
-@@ -1792,6 +1793,9 @@ static bool drm_mode_parse_cmdline_named_mode(const char *name,
- 			continue;
- 
- 		strcpy(cmdline_mode->name, mode->name);
-+		cmdline_mode->xres = mode->mode->hdisplay;
-+		cmdline_mode->yres = mode->mode->vdisplay;
-+		cmdline_mode->interlace = !!(mode->mode->flags & DRM_MODE_FLAG_INTERLACE);
- 		cmdline_mode->specified = true;
- 
- 		return true;
+> What uses these sysfs files today that would be confused about an empty
+> directory?
 
--- 
-b4 0.10.0-dev-49460
+That's a good question. I am not aware of any tools making use of those
+attributes. To a large degree, they are helpful only for debug and
+support, all these read-only attributes could be moved to debugfs. That
+could be a way to simplify everyone's life....
