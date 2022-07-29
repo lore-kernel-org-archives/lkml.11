@@ -2,79 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8367C00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 05:00:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C7C8C00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 05:05:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234301AbiG2FA0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 01:00:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38272 "EHLO
+        id S234152AbiG2FFQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 01:05:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234086AbiG2FAT (ORCPT
+        with ESMTP id S234028AbiG2FFN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 01:00:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33CB414D2A;
-        Thu, 28 Jul 2022 22:00:17 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B95E961E86;
-        Fri, 29 Jul 2022 05:00:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 15A31C43470;
-        Fri, 29 Jul 2022 05:00:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659070816;
-        bh=z517bwqpLwRNFxwY2OWBD6UCFulSnp5eNBeV/7/0QvY=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=t+BZgeEuOcXdPI1Fpemxz5vd51wa/0gxmOhnUBu2fwjP8NYW8i6zHbWCNxtXx4iFA
-         5Bvi7rXMgIUwNnNK24wxM127+WZyIchnK5sZPwoPicNe24VNLURYjtZUyUh5ttGHuy
-         a+BbOmUEQt/E11Z07NzD67I1w0kNCcet3lMKIHT4la/6ZUesiEIitBvtWkh9FTUXuS
-         MLVuREw7xeT/ffj8afbHXopd/d0PeEvzzRt1O/zPKT33npja5wxfLPZlcApJdWAq6V
-         d+q/rIemSEi46jpvXQynQ4gDLXU988LDlDHjK0K08QKWSttKSU75YgLxWDEcbaf0Q+
-         jON3MqWe/nO4Q==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E5F90C43145;
-        Fri, 29 Jul 2022 05:00:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Fri, 29 Jul 2022 01:05:13 -0400
+Received: from out03.mta.xmission.com (out03.mta.xmission.com [166.70.13.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0C541145
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 22:05:11 -0700 (PDT)
+Received: from in02.mta.xmission.com ([166.70.13.52]:53520)
+        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1oHIBR-005Cnt-OT; Thu, 28 Jul 2022 23:05:09 -0600
+Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:53696 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1oHIBQ-00D4at-CA; Thu, 28 Jul 2022 23:05:09 -0600
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Tycho Andersen <tycho@tycho.pizza>
+Cc:     Oleg Nesterov <oleg@redhat.com>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        linux-kernel@vger.kernel.org
+References: <20220713175305.1327649-1-tycho@tycho.pizza>
+        <20220720150328.GA30749@mail.hallyn.com>
+        <YthsgqAZYnwHZLn+@tycho.pizza> <20220721015459.GA4297@mail.hallyn.com>
+        <YuFdUj5X4qckC/6g@tycho.pizza> <20220727175538.GC18822@redhat.com>
+        <YuGBXnqb5rPwAlYk@tycho.pizza> <20220727191949.GD18822@redhat.com>
+        <YuGUyayVWDB7R89i@tycho.pizza> <20220728091220.GA11207@redhat.com>
+        <YuL9uc8WfiYlb2Hw@tycho.pizza>
+Date:   Fri, 29 Jul 2022 00:04:17 -0500
+In-Reply-To: <YuL9uc8WfiYlb2Hw@tycho.pizza> (Tycho Andersen's message of "Thu,
+        28 Jul 2022 15:20:57 -0600")
+Message-ID: <87pmhofr1q.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH -next v2] tls: rx: Fix unsigned comparison with less than zero
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165907081593.3346.3097118939302829413.git-patchwork-notify@kernel.org>
-Date:   Fri, 29 Jul 2022 05:00:15 +0000
-References: <20220728031019.32838-1-yang.lee@linux.alibaba.com>
-In-Reply-To: <20220728031019.32838-1-yang.lee@linux.alibaba.com>
-To:     Yang Li <yang.lee@linux.alibaba.com>
-Cc:     kuba@kernel.org, borisp@nvidia.com, john.fastabend@gmail.com,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        abaci@linux.alibaba.com
+Content-Type: text/plain
+X-XM-SPF: eid=1oHIBQ-00D4at-CA;;;mid=<87pmhofr1q.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
+X-XM-AID: U2FsdGVkX1+xY1DQDwcgSlpnOL04/GOdO24m7Mn2rX8=
+X-SA-Exim-Connect-IP: 68.227.174.4
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: [PATCH] sched: __fatal_signal_pending() should also check
+ PF_EXITING
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+Tycho Andersen <tycho@tycho.pizza> writes:
 
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+> On Thu, Jul 28, 2022 at 11:12:20AM +0200, Oleg Nesterov wrote:
+>> This is clear, but it seems you do not understand me. Let me try again
+>> to explain and please correct me if I am wrong.
+>> 
+>> To simplify, lets suppose we have a single-thread task T which simply
+>> does
+>> 	__set_current_state(TASK_KILLABLE);
+>> 	schedule();
+>> 
+>> in the do_exit() paths after exit_signals() which sets PF_EXITING. Btw,
+>> note that it even documents that this thread is not "visible" for the
+>> group-wide signals, see below.
+>> 
+>> Now, suppose that this task is running and you send SIGKILL. T will
+>> dequeue SIGKILL from T->penging and call do_exit(). However, it won't
+>> remove SIGKILL from T->signal.shared_pending(), and this means that
+>> signal_pending(T) is still true.
+>> 
+>> Now. If we add a PF_EXITING or sigismember(shared_pending, SIGKILL) check
+>> into __fatal_signal_pending(), then yes, T won't block in schedule(),
+>> schedule()->signal_pending_state() will return true.
+>> 
+>> But what if T exits on its own? It will block in schedule() forever.
+>> schedule()->signal_pending_state() will not even check __fatal_signal_pending(),
+>> signal_pending() == F.
+>> 
+>> Now if you send SIGKILL to this task, SIGKILL won't wake it up or even
+>> set TIF_SIGPENDING, complete_signal() will do nothing.
+>> 
+>> See?
+>> 
+>> I agree, we should probably cleanup this logic and define how exactly
+>> the exiting task should react to signals (not only fatal signals). But
+>> your patch certainly doesn't look good to me and it is not enough.
+>> May be we can change get_signal() to not remove SIGKILL from t->pending
+>> for the start... not sure, this needs another discussion.
+>
+> Thank you for this! Between that and Eric's line about:
+>
+>> Frankly that there are some left over SIGKILL bits in the pending mask
+>> is a misfeature, and it is definitely not something you should count on.
+>
+> I think I finally maybe understand the objections.
+>
+> Is it fair to say that a task with PF_EXITING should never wait? I'm
+> wondering if a solution would be to patch the wait code to look for
+> PF_EXITING, in addition to checking the signal state.
 
-On Thu, 28 Jul 2022 11:10:19 +0800 you wrote:
-> The return from the call to tls_rx_msg_size() is int, it can be
-> a negative error code, however this is being assigned to an
-> unsigned long variable 'sz', so making 'sz' an int.
-> 
-> Eliminate the following coccicheck warning:
-> ./net/tls/tls_strp.c:211:6-8: WARNING: Unsigned expression compared with zero: sz < 0
-> 
-> [...]
+That will at a minimum change zap_pid_ns_processes to busy wait
+instead of sleeping while it waits for children to die.
 
-Here is the summary with links:
-  - [-next,v2] tls: rx: Fix unsigned comparison with less than zero
-    https://git.kernel.org/netdev/net-next/c/8fd1e1517792
+So we would need to survey the waits that can happen when closing file
+descriptors and any other place on the exit path to see how much impact
+a such a change would do.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
 
+It might be possible to allow an extra SIGKILL to terminate such waits.
+We do something like that for coredumps.  But that is incredibly subtle
+and a pain to maintain so I want to avoid that if we can.
+
+
+>> Finally. if fuse_flush() wants __fatal_signal_pending() == T when the
+>> caller exits, perhaps it can do it itself? Something like
+>> 
+>> 	if (current->flags & PF_EXITING) {
+>> 		spin_lock_irq(siglock);
+>> 		set_thread_flag(TIF_SIGPENDING);
+>> 		sigaddset(&current->pending.signal, SIGKILL);
+>> 		spin_unlock_irq(siglock);
+>> 	}
+>> 
+>> Sure, this is ugly as hell. But perhaps this can serve as a workaround?
+>
+> or even just
+>
+>     if (current->flags & PF_EXITING)
+>         return;
+>
+> since we don't have anyone to send the result of the flush to anyway.
+> If we don't end up converging on a fix here, I'll just send that
+> patch. Thanks for the suggestion.
+
+If that was limited to the case you care about that would be reasonable.
+
+That will have an effect on any time a process that opens files on a
+fuse filesystem exits and depends upon the exit path to close it's file
+descriptors to the fuse filesystem.
+
+
+I do see a plausible solution along those lines.
+
+In fuse_flush instead of using fuse_simple_request call an equivalent
+function that when PF_EXITING is true skips calling request_wait_answer.
+Or perhaps when PF_EXITING is set uses schedule_work to call the
+request_wait_answer.
+
+That will allow everything to work as it does today.  It will optimize
+the fuse when file descriptors are called on the exit path.  It will
+avoid the hang by removing an indefinite wait on userspace.
+
+This should even generalize into the vfs.  I looked and nfs also looks
+like it has the potential to optimize out the wait for the result of the
+flush.  A correctly implemented flush method looks to flush any
+write-back data when the file is closed and to return any errors from
+that flush to the caller of close.  For .flush called from the exit path
+aka exit_files aka close_files there is no way to place to return an
+error status to, so there is no need to wait for the flush to complete.
+
+That said solve I think it makes sense to solve the problem for fuse
+first, and the we can figure out support for other filesystems.
+
+Eric
 
