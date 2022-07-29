@@ -2,269 +2,259 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 718A0C00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 06:15:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ECBDC19F2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 06:15:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234679AbiG2GP2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 02:15:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32990 "EHLO
+        id S234677AbiG2GPt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 02:15:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234600AbiG2GO7 (ORCPT
+        with ESMTP id S234673AbiG2GPY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 02:14:59 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B88877C1B6
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 23:14:56 -0700 (PDT)
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 26T6DcCQ037411;
-        Fri, 29 Jul 2022 06:14:44 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=ihDSNqc+mrTfemNnrHJsO9nvs/AbV0Z1flG5zdRFI1I=;
- b=d7dnFj4SXv+k7jIrC9UonXfeMbV+vKXYLFa6xqVZehD+ALFP3a9+JR3y0NukkXKmUi/g
- xZOrJEXxt1E+r7VibxbnHrZ/MlewIy/W2JyA1+PBMwEL0bLMqbUuSx3rIFZuLC0XKWt3
- 2apm4zsQbel8e17t3pwFhuOl0myMhbLYXJTgHNNOq7wnr03E7Q8r+ewFR1f8a/jdja2N
- J0EGqlwfSWGqIbY7yyp8/OjVE/pkl3knc6Tucl3N/9ruX8zqE37THvUauQIFFrJpdWRS
- TOvpBobWG6xNu0yJdUYDNLB2Pm0LrTD7fJDM7pTqH8MSss5SPHDdmWYBMicss8zJUgTX Ag== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hma3bg0q5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 29 Jul 2022 06:14:43 +0000
-Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 26T6EhEA003297;
-        Fri, 29 Jul 2022 06:14:43 GMT
-Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hma3bg0pq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 29 Jul 2022 06:14:42 +0000
-Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
-        by ppma04wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 26T66U2l011418;
-        Fri, 29 Jul 2022 06:14:42 GMT
-Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
-        by ppma04wdc.us.ibm.com with ESMTP id 3hg94b3y02-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 29 Jul 2022 06:14:42 +0000
-Received: from b03ledav004.gho.boulder.ibm.com (b03ledav004.gho.boulder.ibm.com [9.17.130.235])
-        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 26T6EfVf38732268
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 29 Jul 2022 06:14:41 GMT
-Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 45AE37805E;
-        Fri, 29 Jul 2022 06:14:41 +0000 (GMT)
-Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6E59478060;
-        Fri, 29 Jul 2022 06:14:36 +0000 (GMT)
-Received: from skywalker.ibmuc.com (unknown [9.43.86.244])
-        by b03ledav004.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Fri, 29 Jul 2022 06:14:36 +0000 (GMT)
-From:   "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
-To:     linux-mm@kvack.org, akpm@linux-foundation.org
-Cc:     Wei Xu <weixugc@google.com>, Huang Ying <ying.huang@intel.com>,
-        Yang Shi <shy828301@gmail.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        Tim C Chen <tim.c.chen@intel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hesham Almatary <hesham.almatary@huawei.com>,
-        Dave Hansen <dave.hansen@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alistair Popple <apopple@nvidia.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Johannes Weiner <hannes@cmpxchg.org>, jvgediya.oss@gmail.com,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
-Subject: [PATCH v12 8/8] mm/demotion: Update node_is_toptier to work with memory tiers
-Date:   Fri, 29 Jul 2022 11:43:49 +0530
-Message-Id: <20220729061349.968148-9-aneesh.kumar@linux.ibm.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220729061349.968148-1-aneesh.kumar@linux.ibm.com>
-References: <20220729061349.968148-1-aneesh.kumar@linux.ibm.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: xIOrblx1FhfU37JUCahrI7n7XX5VG2zm
-X-Proofpoint-GUID: a6o7aIHrKSHp7NUkVM93M5PHabrHpyHN
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-07-28_06,2022-07-28_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 bulkscore=0
- priorityscore=1501 lowpriorityscore=0 phishscore=0 impostorscore=0
- adultscore=0 spamscore=0 mlxlogscore=999 clxscore=1015 mlxscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2206140000 definitions=main-2207290023
+        Fri, 29 Jul 2022 02:15:24 -0400
+Received: from mail-il1-x14a.google.com (mail-il1-x14a.google.com [IPv6:2607:f8b0:4864:20::14a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 443A11153
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 23:15:07 -0700 (PDT)
+Received: by mail-il1-x14a.google.com with SMTP id l17-20020a056e02067100b002dc8a10b55eso2464200ilt.1
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 23:15:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=hjVlZubyermfSkZizgaaxGB+KlUF18YguF7xhPiT/Ik=;
+        b=mpb2InHEhH2Sm2XbOc+6nFidWtRjX48upV3ID2C0mZq33mBbL2LkFJDrwU0RgRfcfp
+         CGD/5pjCizX/0U2QYQDrmNV6cxJPPVVrXc6JoqnuC3S6TlIgPIOgiv4JMFfw5iX1yQwZ
+         uVQOwuh108d/qhSCddg4TYbrkdw8qB1afCSPXDA3StlvbI+X88SxRkRzNULWeei6GS+l
+         LqAP3YzqRqGidDfaT7SlBaH/HCFCczYSPbdiaDKp23k/W0m+RwmMD1ZTNx6y51UlCnJG
+         CFEn7BKNrVf2EHB0NrXGZ8i7oz8R8rUar3ilz/J444yv+8rBH8lb34dAI+B8yLNbkzI5
+         CP7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=hjVlZubyermfSkZizgaaxGB+KlUF18YguF7xhPiT/Ik=;
+        b=DSfTyj1zcv0GnywE7JtJPMt4ubY1dxW53gpkdwXHDt950voI9BaDlzTVpPFDtZae4J
+         PTCS7Oiz0JRUxWZooWaoTjAjO1M30S4yhCI3EiLlfcFJlkIaVgKXv0Gm8kQ5JoR0ZY0L
+         Hxb1T/G+cdxalZgwKK/LGAPHDBuhi5tK9tEqs5+eBVIgeyuX9u5/8NBhPHwbD7Hdb+UU
+         MXBQVxCmIdnJhdTgMLcfCfdQO/8afh5ljX7StMKj2yierAbS2m2L9wSq2J0KW20MRTIF
+         he1dIlXy5PDMJhLWjXpV7hSJb+xwjlsHiq7yo8eM1TPxThV8SRwPNAqwXM2f3/TsQep3
+         i8RQ==
+X-Gm-Message-State: AJIora+IWrQjvxWz46Wl8Ke6MjLXFLPlp6AvLHHi9DWiBMgIi9Gi/Zxf
+        tfbpsn8X6IZZbZKUH5O94SuaneAHZ+0=
+X-Google-Smtp-Source: AGRyM1sNSfg4OzUat+/XKg7JS3pq2fMNP0DXAZQDKp78R0vaRsinGs45PmzZCFSPn5h/qfz1QMFtWKG16Bw=
+X-Received: from jeffxuk510a.c.googlers.com ([fda3:e722:ac3:cc00:2b:ff92:c0a8:65b])
+ (user=jeffxu job=sendgmr) by 2002:a05:6602:2e8d:b0:67c:c24c:fec4 with SMTP id
+ m13-20020a0566022e8d00b0067cc24cfec4mr683187iow.134.1659075307329; Thu, 28
+ Jul 2022 23:15:07 -0700 (PDT)
+Date:   Fri, 29 Jul 2022 06:15:03 +0000
+In-Reply-To: <6f71a4f3-8f8e-926b-883c-1df630cfc1a0@linuxfoundation.org>
+Message-Id: <20220729061504.744140-1-jeffxu@google.com>
+Mime-Version: 1.0
+References: <6f71a4f3-8f8e-926b-883c-1df630cfc1a0@linuxfoundation.org>
+X-Mailer: git-send-email 2.37.1.455.g008518b4e5-goog
+Subject: [PATCH 3/4] selftests/memfd: add tests for F_SEAL_EXEC
+From:   Jeff Xu <jeffxu@google.com>
+To:     skhan@linuxfoundation.org
+Cc:     akpm@linux-foundation.org, dmitry.torokhov@gmail.com,
+        dverkamp@chromium.org, hughd@google.com, jeffxu@google.com,
+        jorgelo@chromium.org, keescook@chromium.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-mm@kvack.org, mnissler@chromium.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-With memory tiers support we can have memory only NUMA nodes
-in the top tier from which we want to avoid promotion tracking NUMA
-faults. Update node_is_toptier to work with memory tiers.
-All NUMA nodes are by default top tier nodes. With lower memory
-tiers added we consider all memory tiers above a memory tier having
-CPU NUMA nodes as a top memory tier
+From: Daniel Verkamp <dverkamp@chromium.org>
 
-Signed-off-by: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
+Basic tests to ensure that user/group/other execute bits cannot be
+changed after applying F_SEAL_EXEC to a memfd.
+
+Co-developed-by: Jeff Xu <jeffxu@google.com>
+Signed-off-by: Jeff Xu <jeffxu@google.com>
+Signed-off-by: Daniel Verkamp <dverkamp@chromium.org>
 ---
- include/linux/memory-tiers.h | 11 ++++++++++
- include/linux/node.h         |  5 -----
- mm/huge_memory.c             |  1 +
- mm/memory-tiers.c            | 42 ++++++++++++++++++++++++++++++++++++
- mm/migrate.c                 |  1 +
- mm/mprotect.c                |  1 +
- 6 files changed, 56 insertions(+), 5 deletions(-)
+ tools/testing/selftests/memfd/memfd_test.c | 129 ++++++++++++++++++++-
+ 1 file changed, 128 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/memory-tiers.h b/include/linux/memory-tiers.h
-index 6be1c9fca01f..5553461978f7 100644
---- a/include/linux/memory-tiers.h
-+++ b/include/linux/memory-tiers.h
-@@ -34,6 +34,7 @@ struct memory_dev_type *init_node_memory_type(int node, struct memory_dev_type *
- #ifdef CONFIG_MIGRATION
- int next_demotion_node(int node);
- void node_get_allowed_targets(pg_data_t *pgdat, nodemask_t *targets);
-+bool node_is_toptier(int node);
- #else
- static inline int next_demotion_node(int node)
- {
-@@ -44,6 +45,11 @@ static inline void node_get_allowed_targets(pg_data_t *pgdat, nodemask_t *target
- {
- 	*targets = NODE_MASK_NONE;
- }
+diff --git a/tools/testing/selftests/memfd/memfd_test.c b/tools/testing/selftests/memfd/memfd_test.c
+index 94df2692e6e4..1d7e7b36bbdd 100644
+--- a/tools/testing/selftests/memfd/memfd_test.c
++++ b/tools/testing/selftests/memfd/memfd_test.c
+@@ -28,12 +28,44 @@
+ #define MFD_DEF_SIZE 8192
+ #define STACK_SIZE 65536
+ 
++#ifndef F_SEAL_EXEC
++#define F_SEAL_EXEC	0x0020
++#endif
 +
-+static inline bool node_is_toptier(int node)
-+{
-+	return true;
-+}
- #endif
- 
- #else
-@@ -63,5 +69,10 @@ static inline void node_get_allowed_targets(pg_data_t *pgdat, nodemask_t *target
- {
- 	*targets = NODE_MASK_NONE;
- }
++#ifndef MAX_PATH
++#define MAX_PATH 256
++#endif
 +
-+static inline bool node_is_toptier(int node)
-+{
-+	return true;
-+}
- #endif	/* CONFIG_NUMA */
- #endif  /* _LINUX_MEMORY_TIERS_H */
-diff --git a/include/linux/node.h b/include/linux/node.h
-index 40d641a8bfb0..9ec680dd607f 100644
---- a/include/linux/node.h
-+++ b/include/linux/node.h
-@@ -185,9 +185,4 @@ static inline void register_hugetlbfs_with_node(node_registration_func_t reg,
- 
- #define to_node(device) container_of(device, struct node, dev)
- 
--static inline bool node_is_toptier(int node)
--{
--	return node_state(node, N_CPU);
--}
--
- #endif /* _LINUX_NODE_H_ */
-diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-index 834f288b3769..8405662646e9 100644
---- a/mm/huge_memory.c
-+++ b/mm/huge_memory.c
-@@ -35,6 +35,7 @@
- #include <linux/numa.h>
- #include <linux/page_owner.h>
- #include <linux/sched/sysctl.h>
-+#include <linux/memory-tiers.h>
- 
- #include <asm/tlb.h>
- #include <asm/pgalloc.h>
-diff --git a/mm/memory-tiers.c b/mm/memory-tiers.c
-index 82556f8e76e0..4b442bd61973 100644
---- a/mm/memory-tiers.c
-+++ b/mm/memory-tiers.c
-@@ -32,6 +32,7 @@ static DEFINE_MUTEX(memory_tier_lock);
- static LIST_HEAD(memory_tiers);
- struct memory_dev_type *node_memory_types[MAX_NUMNODES];
- #ifdef CONFIG_MIGRATION
-+static int top_tier_adistance;
  /*
-  * node_demotion[] examples:
-  *
-@@ -161,6 +162,31 @@ static struct memory_tier *__node_get_memory_tier(int node)
- }
+  * Default is not to test hugetlbfs
+  */
+ static size_t mfd_def_size = MFD_DEF_SIZE;
+ static const char *memfd_str = MEMFD_STR;
  
- #ifdef CONFIG_MIGRATION
-+bool node_is_toptier(int node)
++static ssize_t fd2name(int fd, char *buf, size_t bufsize)
 +{
-+	bool toptier;
-+	pg_data_t *pgdat;
-+	struct memory_tier *memtier;
++	char buf1[MAX_PATH];
++	int size;
++	ssize_t nbytes;
 +
-+	pgdat = NODE_DATA(node);
-+	if (!pgdat)
-+		return false;
-+
-+	rcu_read_lock();
-+	memtier = rcu_dereference(pgdat->memtier);
-+	if (!memtier) {
-+		toptier = true;
-+		goto out;
++	size = snprintf(buf1, MAX_PATH, "/proc/self/fd/%d", fd);
++	if (size < 0) {
++		printf("snprintf(%d) failed on %m\n", fd);
++		abort();
 +	}
-+	if (memtier->adistance_start <= top_tier_adistance)
-+		toptier = true;
-+	else
-+		toptier = false;
-+out:
-+	rcu_read_unlock();
-+	return toptier;
++
++	/*
++	 * reserver one byte for string termination.
++	 */
++	nbytes = readlink(buf1, buf, bufsize-1);
++	if (nbytes == -1) {
++		printf("readlink(%s) failed %m\n", buf1);
++		abort();
++	}
++	buf[nbytes] = '\0';
++	return nbytes;
 +}
 +
- void node_get_allowed_targets(pg_data_t *pgdat, nodemask_t *targets)
+ static int mfd_assert_new(const char *name, loff_t sz, unsigned int flags)
  {
- 	struct memory_tier *memtier;
-@@ -317,6 +343,22 @@ static void establish_demotion_targets(void)
- 			}
- 		} while (1);
+ 	int r, fd;
+@@ -98,11 +130,14 @@ static unsigned int mfd_assert_get_seals(int fd)
+ 
+ static void mfd_assert_has_seals(int fd, unsigned int seals)
+ {
++	char buf[MAX_PATH];
++	int nbytes;
+ 	unsigned int s;
++	fd2name(fd, buf, MAX_PATH);
+ 
+ 	s = mfd_assert_get_seals(fd);
+ 	if (s != seals) {
+-		printf("%u != %u = GET_SEALS(%d)\n", seals, s, fd);
++		printf("%u != %u = GET_SEALS(%s)\n", seals, s, buf);
+ 		abort();
  	}
-+	/*
-+	 * Promotion is allowed from a memory tier to higher
-+	 * memory tier only if the memory tier doesn't include
-+	 * compute. We want to skip promotion from a memory tier,
-+	 * if any node that is part of the memory tier have CPUs.
-+	 * Once we detect such a memory tier, we consider that tier
-+	 * as top tiper from which promotion is not allowed.
-+	 */
-+	list_for_each_entry_reverse(memtier, &memory_tiers, list) {
-+		tier_nodes = get_memtier_nodemask(memtier);
-+		nodes_and(tier_nodes, node_states[N_CPU], tier_nodes);
-+		if (!nodes_empty(tier_nodes)) {
-+			top_tier_adistance = memtier->adistance_start;
-+			break;
-+		}
+ }
+@@ -594,6 +629,64 @@ static void mfd_fail_grow_write(int fd)
+ 	}
+ }
+ 
++static void mfd_assert_mode(int fd, int mode)
++{
++	struct stat st;
++	char buf[MAX_PATH];
++	int nbytes;
++
++	fd2name(fd, buf, MAX_PATH);
++
++	if (fstat(fd, &st) < 0) {
++		printf("fstat(%s) failed: %m\n", buf);
++		abort();
 +	}
- 	/*
- 	 * Now build the lower_tier mask for each node collecting node mask from
- 	 * all memory tier below it. This allows us to fallback demotion page
-diff --git a/mm/migrate.c b/mm/migrate.c
-index c758c9c21d7d..1da81136eaaa 100644
---- a/mm/migrate.c
-+++ b/mm/migrate.c
-@@ -50,6 +50,7 @@
- #include <linux/memory.h>
- #include <linux/random.h>
- #include <linux/sched/sysctl.h>
-+#include <linux/memory-tiers.h>
++
++	if ((st.st_mode & 07777) != mode) {
++		printf("fstat(%s) wrong file mode 0%04o, but expected 0%04o\n",
++		       buf, (int)st.st_mode & 07777, mode);
++		abort();
++	}
++}
++
++static void mfd_assert_chmod(int fd, int mode)
++{
++	char buf[MAX_PATH];
++	int nbytes;
++
++	fd2name(fd, buf, MAX_PATH);
++
++	if (fchmod(fd, mode) < 0) {
++		printf("fchmod(%s, 0%04o) failed: %m\n", buf, mode);
++		abort();
++	}
++
++	mfd_assert_mode(fd, mode);
++}
++
++static void mfd_fail_chmod(int fd, int mode)
++{
++	struct stat st;
++	char buf[MAX_PATH];
++	int nbytes;
++
++	fd2name(fd, buf, MAX_PATH);
++
++	if (fstat(fd, &st) < 0) {
++		printf("fstat(%s) failed: %m\n", buf);
++		abort();
++	}
++
++	if (fchmod(fd, mode) == 0) {
++		printf("fchmod(%s, 0%04o) didn't fail as expected\n",
++		       buf, mode);
++		abort();
++	}
++
++	/* verify that file mode bits did not change */
++	mfd_assert_mode(fd, st.st_mode & 07777);
++}
++
+ static int idle_thread_fn(void *arg)
+ {
+ 	sigset_t set;
+@@ -880,6 +973,39 @@ static void test_seal_resize(void)
+ 	close(fd);
+ }
  
- #include <asm/tlbflush.h>
++/*
++ * Test SEAL_EXEC
++ * Test that chmod() cannot change x bits after sealing
++ */
++static void test_seal_exec(void)
++{
++	int fd;
++
++	printf("%s SEAL-EXEC\n", memfd_str);
++
++	fd = mfd_assert_new("kern_memfd_seal_exec",
++			    mfd_def_size,
++			    MFD_CLOEXEC | MFD_ALLOW_SEALING);
++
++	mfd_assert_mode(fd, 0777);
++
++	mfd_assert_chmod(fd, 0644);
++
++	mfd_assert_has_seals(fd, 0);
++	mfd_assert_add_seals(fd, F_SEAL_EXEC);
++	mfd_assert_has_seals(fd, F_SEAL_EXEC);
++
++	mfd_assert_chmod(fd, 0600);
++	mfd_fail_chmod(fd, 0777);
++	mfd_fail_chmod(fd, 0670);
++	mfd_fail_chmod(fd, 0605);
++	mfd_fail_chmod(fd, 0700);
++	mfd_fail_chmod(fd, 0100);
++	mfd_assert_chmod(fd, 0666);
++
++	close(fd);
++}
++
+ /*
+  * Test sharing via dup()
+  * Test that seals are shared between dupped FDs and they're all equal.
+@@ -1059,6 +1185,7 @@ int main(int argc, char **argv)
+ 	test_seal_shrink();
+ 	test_seal_grow();
+ 	test_seal_resize();
++	test_seal_exec();
  
-diff --git a/mm/mprotect.c b/mm/mprotect.c
-index ba5592655ee3..92a2fc0fa88b 100644
---- a/mm/mprotect.c
-+++ b/mm/mprotect.c
-@@ -31,6 +31,7 @@
- #include <linux/pgtable.h>
- #include <linux/sched/sysctl.h>
- #include <linux/userfaultfd_k.h>
-+#include <linux/memory-tiers.h>
- #include <asm/cacheflush.h>
- #include <asm/mmu_context.h>
- #include <asm/tlbflush.h>
+ 	test_share_dup("SHARE-DUP", "");
+ 	test_share_mmap("SHARE-MMAP", "");
 -- 
-2.37.1
+2.37.1.455.g008518b4e5-goog
 
