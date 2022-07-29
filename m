@@ -2,65 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E778C00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 16:41:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0182C00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 16:41:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237721AbiG2QlU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 12:41:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59072 "EHLO
+        id S236204AbiG2Ql1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 12:41:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237718AbiG2Qkw (ORCPT
+        with ESMTP id S237719AbiG2Qkw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 29 Jul 2022 12:40:52 -0400
 Received: from new4-smtp.messagingengine.com (new4-smtp.messagingengine.com [66.111.4.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F4581D0EE
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 09:40:47 -0700 (PDT)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 46506580897;
-        Fri, 29 Jul 2022 12:35:26 -0400 (EDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E81201EC51
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 09:40:48 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailnew.nyi.internal (Postfix) with ESMTP id E0C1658091A;
+        Fri, 29 Jul 2022 12:35:36 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute4.internal (MEProxy); Fri, 29 Jul 2022 12:35:26 -0400
+  by compute2.internal (MEProxy); Fri, 29 Jul 2022 12:35:36 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
         :cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:message-id:mime-version:reply-to:sender:subject
-        :subject:to:to; s=fm2; t=1659112526; x=1659119726; bh=C+jYJd9Wl4
-        W0Bkfo1PkjL8TjpKm/fWgkUOf3TUKzFyM=; b=DdzWy2FJrRnhVSk2PuB20leyMs
-        LAJ0CpCpMV4sUP0q5x4VUToFQK4HcyKBIAAeUs/ea9oOEcS82Ux2npZLQE1krJ/J
-        c1pOHywZR+RXbbhIswbAXdVIi4A5XG9pr9lGtwD7QexmzWSCvu27D0N5SPj1/p6j
-        aQEmJS5W+SVu0izC/2lAHI9w9hUVfFX1IzkFQN0a1DP0tFNbf6eJD3ZCpI3aDKHt
-        ms0bcPom61SgjdE1zPJZvKzE4WJiH6/wDAYJK62M2i/7Aoe5rPeejYoR0podU/6y
-        wc98iFpiWyEtCK7CcyPj4qeU/mPNMKtf1YW2IZisoGxgPkkWuddQoQaURdDQ==
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm2; t=1659112536; x=
+        1659119736; bh=Euo0R55Q5eE4uezB3NLXuLB/3k2AluGBavdHuX5AB78=; b=O
+        ZtQIJn9Dcw7lzoPMyYuQPImxUHaawiXM4gOSm3BB52LxgmSHjd9EOLiREyLcvAXJ
+        OoSChlaGSxt+k7qICpUPUfbMf/fKOSnFl7bCKLz6phsAtOW/0t8nLTeBnMbOMDbp
+        +Nl/zkHaUTSMM+Vd+UtvTBsCB2uo9olWBKlJ8hdJYG3Cj4X9RTqkD3BPIfNwUlWx
+        7z9sgA3C9ZjQJOWPsjVqI0dUcodCxa9+CQ2Q7nQyCR/YhWb4+53Hp0PfTpo83Fl2
+        ziF8/SqfT8YSw4s/Yr94QEbDpNc5oDOZaBKo+I3ADuUkpp/VpvlKyYnLzNSDF4OL
+        uhU/c/erfNn9D+B+rTBtQ==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:cc:content-transfer-encoding
         :content-type:date:date:feedback-id:feedback-id:from:from
-        :in-reply-to:message-id:mime-version:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm3; t=1659112526; x=1659119726; bh=C+jYJd9Wl4W0B
-        kfo1PkjL8TjpKm/fWgkUOf3TUKzFyM=; b=0hzRTYxuABZCCa2X82Xi4Cz2bz6xU
-        zmmuBf+0g7Ly80aNp15UxfXPqeVBCvX75o2xF1b9PTMx0LHVhrAqzWUjjnIb5LZW
-        sl0pVzRk9ZDi4pcLumRPdg3fUXIJIBjzjAOEjeVIsVlXuS8PKfkMdV9Pt3ds4RH+
-        D6ZTQbnkqzw3wHOIxXT2kIjzApYOPGeemxMBVTciO5g5l08EZUcZSh+SEJ2T1tgA
-        KakrCj2oiwmvOmah0CDfnS9S+sISl8a+qNrTY6h53nQhL6r3yJjblE9iT7RC0Wfe
-        P5NnmYVbH4TmG/HxDNRdLrg4UgBz8wIKvZ0Cy9Sc64ZJtTmixBtzTDCPw==
-X-ME-Sender: <xms:TAzkYk0_3v55mHGgA5q4a62N2Gwx8x5pPrnyfJxgdKUQtv4G5V4V-w>
-    <xme:TAzkYvE9cppfgymTw2A9YKGh7GomblLynNX8VSM2RUU4PwdbPsQeGJISCeYu06NFg
-    1A1L0d0wuGN_b7smmg>
-X-ME-Received: <xmr:TAzkYs4913WNJZR38mkvbq3dMYLlmaFBSNIKcWBAh5tZ4Ye-foZALbkvIfto7DIDg1bbXJC4mdouS2XgkJM>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvddujedguddtfecutefuodetggdotefrod
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1659112536; x=
+        1659119736; bh=Euo0R55Q5eE4uezB3NLXuLB/3k2AluGBavdHuX5AB78=; b=w
+        HLcs/hFtpVmYTgrP2RMYU4e71QabxsECT3duh9IxsTqTQBd3RqkmltazhnqXhWNc
+        1+bOnNihmcin2pothzFt2T/9jAhu5wczwcGH6rZRqhrjzcSBnwcWUSs4KGaTLRKG
+        5oEZMQ0xMJCjIjz9Uzz6EAWKIo6aeZ4OkokvjmFEuyzoxmEjA3JImQ6j7FbDRBDG
+        dcRsB233CAUaT8/g2jlEW4ZgJQhV+UqZ/Gou/G40S2ucauM8DijAA2Dq47jbm8b2
+        S9mzZim+CWTH2m0X1X/FztMRHyY1pzaad/61nxEJQQaCeWxEgRn1lerruNy8vSdl
+        LZ0k03Ti2u1t4BWutX0Yw==
+X-ME-Sender: <xms:WAzkYh-srNCJQ9nBlprlTpkQIsH_D0mrNqIse-JAkDmgQ_Q9NY01Sg>
+    <xme:WAzkYls_s9Lzjz64rQuj9aiv9h34ELnMfc_J4N96DcG41BCUPQ5BT2NZ5a6M06hq2
+    3aDSKWbeDaI1MUaxH8>
+X-ME-Received: <xmr:WAzkYvATggqROnJEAwi_WEUxdqtljVLFE_T092CwgxcksFx-n8fOBm5hHZSqR_M42lwaje1k-jt3AZPJtps>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvddujedguddtgecutefuodetggdotefrod
     ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
     necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpefhvfevufffkffogggtoffgsehtkeertdertdejnecuhfhrohhmpeforgig
-    ihhmvgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrf
-    grthhtvghrnhepffekvddvteekuedujefhtdfgffevkefgvdevieejgfetgfefjefftddu
-    ueevkeehnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
-    epmhgrgihimhgvsegtvghrnhhordhtvggthh
-X-ME-Proxy: <xmx:TAzkYt3Q93C_8U2ffTmsguxAQAdH1fGgWUBiaATjtkZu8mRZ5YEbpA>
-    <xmx:TAzkYnFAKi2aE4JGma4jdjyel1v83kDqVZeBlBs2tHHgMU3BLFNetQ>
-    <xmx:TAzkYm-S9Rd7JcsxGKV7LL2U0i8U1Wsv2Ff6iE7J8Ocn4zup7CvLBw>
-    <xmx:TgzkYvUe5z14LSmSdUkDBcj0Za7-KBUn43_60swCh265RngFZFwiag>
+    enucfjughrpefhvfevufffkffojghfgggtoffgsehtkeertdertdejnecuhfhrohhmpefo
+    rgigihhmvgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecugg
+    ftrfgrthhtvghrnhepgfffgfetffduudelhfevieffffduleevgfegkeeutefgffejheel
+    leekjeefhfejnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrh
+    homhepmhgrgihimhgvsegtvghrnhhordhtvggthh
+X-ME-Proxy: <xmx:WAzkYleJbx1AFUCHCYGIZdhiLdcc5RxHE2seRjZdL2SNWmpKYNmNpw>
+    <xmx:WAzkYmNoWQj4V0NU7Rm36Ez1Kfwx33GDaFHFyuTBRUBI40iJ3IS3Mg>
+    <xmx:WAzkYnkABXiDWCA7PeQ8sWeSRU1dguly1VRgSPlFK8LvaXPAgiEzSw>
+    <xmx:WAzkYheuMZJ3K_2hwqlN1GTOE7IPWkfzrQ3miwTizQCItWTK4Sx6vA>
 Feedback-ID: i8771445c:Fastmail
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
- 29 Jul 2022 12:35:23 -0400 (EDT)
+ 29 Jul 2022 12:35:34 -0400 (EDT)
 From:   Maxime Ripard <maxime@cerno.tech>
 To:     Jernej Skrabec <jernej.skrabec@gmail.com>,
         Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
@@ -84,148 +86,73 @@ Cc:     Maxime Ripard <maxime@cerno.tech>, linux-sunxi@lists.linux.dev,
         Dave Stevenson <dave.stevenson@raspberrypi.com>,
         linux-amlogic@lists.infradead.org, dri-devel@lists.freedesktop.org,
         Dom Cobley <dom@raspberrypi.com>
-Subject: [PATCH v1 00/35] drm: Analog TV Improvements
-Date:   Fri, 29 Jul 2022 18:34:43 +0200
-Message-Id: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
+Subject: [PATCH v1 02/35] drm/connector: Rename subconnector state variable
+Date:   Fri, 29 Jul 2022 18:34:45 +0200
+Message-Id: <20220728-rpi-analog-tv-properties-v1-2-3d53ae722097@cerno.tech>
 X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
+References: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 X-Mailer: b4 0.10.0-dev-49460
-X-Developer-Signature: v=1; a=openpgp-sha256; l=6103; i=maxime@cerno.tech; h=from:subject:message-id; bh=oyH2EBYkTjIG+9yKJt/0byzyaDW2WxQwQX0bPCZ5n1g=; b=owGbwMvMwCHc4XzqmfnC7acZT6slMSQ94VH6F3vJp+Tlnxie3Zt/WM3udno3M/LmF8Mdp1UOPdQ4 VLNlR0cpC4MwB4OsmCLLdcG3dnxhUW4RPB82w8xhZQIZwsDFKQATCZvCyLBGP39fX0vEM13dpvbixx n74rtqrz+aedpzdp3OpHjfedwMf8Uqj5nuvHXi8ewLJ80T/D2k2beLCxRVFjs6sT09/TTk7nwA
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2193; i=maxime@cerno.tech; h=from:subject:message-id; bh=Rj7Ciymqp8SGZkmcJZM8z2NaF1Fg70qcRKx4zs2X0Gk=; b=owGbwMvMwCHc4XzqmfnC7acZT6slMSQ94VHyURXfWtdnVloX+mkO+xSjPGOh/fcf2N7JPGF8bWIp X7ZZRykLgzAHg6yYIst1wbd2fGFRbhE8HzbDzGFlAhnCwMUpABPZH8/IsDfBODvE7YaymumTCw+Oyn lpPKiT212VJsVx7/cOlUjxuQz/61TOnTpRX1AV7KlVyOUbVtjUttCf4ZK8gLpa5xlJJ5HVAA==
 X-Developer-Key: i=maxime@cerno.tech; a=openpgp; fpr=BE5675C37E818C8B5764241C254BCFC56BF6CE8D
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+There is two TV subconnector related properties registered by
+drm_mode_create_tv_properties(): subconnector and select subconnector.
 
-Here's a series aiming at improving the command line named modes support,
-and more importantly how we deal with all the analog TV variants.
+While the select subconnector property is stored in the kernel by the
+drm_tv_connector_state structure, the subconnector property isn't stored
+anywhere.
 
-The named modes support were initially introduced to allow to specify the
-analog TV mode to be used.
+Worse, the select subconnector property is stored in a field called
+subconnector, creating some ambiguity about which property content we're
+accessing.
 
-However, this was causing multiple issues:
+Let's rename that field to one called select_subconnector to make it move
+obvious what it's about.
 
-  * The mode name parsed on the command line was passed directly to the
-    driver, which had to figure out which mode it was suppose to match;
-
-  * Figuring that out wasn't really easy, since the video= argument or what
-    the userspace might not even have a name in the first place, but
-    instead could have passed a mode with the same timings;
-
-  * The fallback to matching on the timings was mostly working as long as
-    we were supporting one 525 lines (most likely NSTC) and one 625 lines
-    (PAL), but couldn't differentiate between two modes with the same
-    timings (NTSC vs PAL-M vs NSTC-J for example); 
-
-  * There was also some overlap with the tv mode property registered by 
-    drm_mode_create_tv_properties(), but named modes weren't interacting
-    with that property at all.
-
-  * Even though that property was generic, its possible values were
-    specific to each drivers, which made some generic support difficult.
-
-Thus, I chose to tackle in multiple steps:
-
-  * A new TV norm property was introduced, with generic values, each driver
-    reporting through a bitmask what standard it supports to the userspace;
-
-  * This option was added to the command line parsing code to be able to
-    specify it on the kernel command line, and new atomic_check and reset
-    helpers were created to integrate properly into atomic KMS;
-
-  * The named mode parsing code is now creating a proper display mode for
-    the given named mode, and the TV standard will thus be part of the
-    connector state;
-
-  * Two drivers were converted and tested for now (vc4 and sun4i), with
-    some backward compatibility code to translate the old TV mode to the
-    new TV mode;
-
-Unit tests were created along the way. Nouveau, ch7006 and gud are
-currently broken for now since I expect that work to be reworked fairly
-significantly. I'm also not entirely sure about how to migrate GUD to the
-new property.
-
-Let me know what you think,
-Maxime
-
-Cc: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: "Noralf Trønnes" <noralf@tronnes.org>
-Cc: Dave Stevenson <dave.stevenson@raspberrypi.com>
-Cc: Dom Cobley <dom@raspberrypi.com>
-Cc: Phil Elwell <phil@raspberrypi.com>
-Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
-Cc: Thomas Zimmermann <tzimmermann@suse.de>
-Cc: Daniel Vetter <daniel@ffwll.ch>
-Cc: David Airlie <airlied@linux.ie>
-Cc: <dri-devel@lists.freedesktop.org>
 Signed-off-by: Maxime Ripard <maxime@cerno.tech>
 
----
-Mateusz Kwiatkowski (5):
-      drm/vc4: vec: Refactor VEC TV mode setting
-      drm/vc4: vec: Remove redundant atomic_mode_set
-      drm/vc4: vec: Fix timings for VEC modes
-      drm/vc4: vec: Fix definition of PAL-M mode
-      drm/vc4: vec: Add support for more analog TV standards
+diff --git a/drivers/gpu/drm/drm_atomic_uapi.c b/drivers/gpu/drm/drm_atomic_uapi.c
+index 79730fa1dd8e..c74c78a28171 100644
+--- a/drivers/gpu/drm/drm_atomic_uapi.c
++++ b/drivers/gpu/drm/drm_atomic_uapi.c
+@@ -687,7 +687,7 @@ static int drm_atomic_connector_set_property(struct drm_connector *connector,
+ 		 */
+ 		return -EINVAL;
+ 	} else if (property == config->tv_select_subconnector_property) {
+-		state->tv.subconnector = val;
++		state->tv.select_subconnector = val;
+ 	} else if (property == config->tv_left_margin_property) {
+ 		state->tv.margins.left = val;
+ 	} else if (property == config->tv_right_margin_property) {
+@@ -795,7 +795,7 @@ drm_atomic_connector_get_property(struct drm_connector *connector,
+ 		else
+ 			*val = connector->dpms;
+ 	} else if (property == config->tv_select_subconnector_property) {
+-		*val = state->tv.subconnector;
++		*val = state->tv.select_subconnector;
+ 	} else if (property == config->tv_left_margin_property) {
+ 		*val = state->tv.margins.left;
+ 	} else if (property == config->tv_right_margin_property) {
+diff --git a/include/drm/drm_connector.h b/include/drm/drm_connector.h
+index f185ad862cb1..f8091edf9a33 100644
+--- a/include/drm/drm_connector.h
++++ b/include/drm/drm_connector.h
+@@ -682,7 +682,7 @@ struct drm_connector_tv_margins {
+  * @hue: hue in percent
+  */
+ struct drm_tv_connector_state {
+-	enum drm_mode_subconnector subconnector;
++	enum drm_mode_subconnector select_subconnector;
+ 	struct drm_connector_tv_margins margins;
+ 	unsigned int mode;
+ 	unsigned int brightness;
 
-Maxime Ripard (30):
-      drm/atomic-helper: Rename drm_atomic_helper_connector_tv_reset to avoid ambiguity
-      drm/connector: Rename subconnector state variable
-      drm/atomic: Add TV subconnector property to get/set_property
-      drm/modes: Introduce 480i and 576i modes
-      drm/connector: Add TV standard property
-      drm/connector: Only register TV mode property if present
-      drm/modes: Only consider bpp and refresh before options
-      drm/client: Add some tests for drm_connector_pick_cmdline_mode()
-      drm/modes: Move named modes parsing to a separate function
-      drm/modes: Switch to named mode descriptors
-      drm/modes: Fill drm_cmdline mode from named modes
-      drmi/modes: Properly generate a drm_display_mode from a named mode
-      drm/atomic-helper: Add a TV properties reset helper
-      drm/atomic-helper: Add an analog TV atomic_check implementation
-      drm/vc4: vec: Remove empty mode_fixup
-      drm/vc4: vec: Convert to atomic helpers
-      drm/vc4: vec: Switch for common modes
-      drm/vc4: vec: Use TV Reset implementation
-      drm/vc4: vec: Convert to the new TV mode property
-      drm/sun4i: tv: Remove unused mode_valid
-      drm/sun4i: tv: Convert to atomic hooks
-      drm/sun4i: tv: Merge mode_set into atomic_enable
-      drm/sun4i: tv: Remove useless function
-      drm/sun4i: tv: Remove useless destroy function
-      drm/sun4i: tv: Rename error label
-      drm/sun4i: tv: Add missing reset assertion
-      drm/sun4i: tv: Convert to the new TV mode property
-      drm/connector: Remove TV modes property
-      drm/modes: Introduce the tv_mode property as a command-line option
-      drm/modes: Introduce more named modes
-
- drivers/gpu/drm/drm_atomic_state_helper.c       | 166 +++++++++-
- drivers/gpu/drm/drm_atomic_uapi.c               |  12 +-
- drivers/gpu/drm/drm_client_modeset.c            |   4 +
- drivers/gpu/drm/drm_connector.c                 |  46 ++-
- drivers/gpu/drm/drm_modes.c                     | 198 +++++++++--
- drivers/gpu/drm/gud/gud_connector.c             |   2 +-
- drivers/gpu/drm/meson/meson_encoder_cvbs.c      |  18 +-
- drivers/gpu/drm/meson/meson_encoder_cvbs.h      |   2 +-
- drivers/gpu/drm/sun4i/sun4i_tv.c                | 173 +++-------
- drivers/gpu/drm/tests/drm_cmdline_parser_test.c | 295 +++++++++++++++++
- drivers/gpu/drm/tests/drm_mode_test.c           | 255 +++++++++++++++
- drivers/gpu/drm/vc4/vc4_hdmi.c                  |   2 +-
- drivers/gpu/drm/vc4/vc4_vec.c                   | 418 ++++++++++++++++--------
- include/drm/drm_atomic_state_helper.h           |   4 +
- include/drm/drm_connector.h                     |  40 ++-
- include/drm/drm_mode_config.h                   |   6 +
- include/drm/drm_modes.h                         |   3 +
- 17 files changed, 1314 insertions(+), 330 deletions(-)
----
-base-commit: 37b355fdaf31ee18bda9a93c2a438dc1cbf57ec9
-change-id: 20220728-rpi-analog-tv-properties-0914dfcee460
-
-Best regards,
 -- 
-Maxime Ripard <maxime@cerno.tech>
+b4 0.10.0-dev-49460
