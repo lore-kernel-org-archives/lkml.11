@@ -2,86 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27893C00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 05:31:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A18C7C00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 05:31:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234593AbiG2Fa6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 01:30:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57186 "EHLO
+        id S234556AbiG2FbN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 01:31:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234386AbiG2Fa0 (ORCPT
+        with ESMTP id S234539AbiG2Fap (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 01:30:26 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E9C519C22;
-        Thu, 28 Jul 2022 22:30:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 29E4761E9B;
-        Fri, 29 Jul 2022 05:30:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 1AC28C4314C;
-        Fri, 29 Jul 2022 05:30:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659072620;
-        bh=3y4iCzvWHSGEPHGXdD/2/vW0USQnjAW6Y8oAhqC27sA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=FNRtTfovGowpOU2x9WPLh9rWkDHalOY2BY9IXgnOTqCPAEYz10D9IQGQ51b9QCFKG
-         echeI6p8+ocxCjAgwY4f9BuCVzXYwBVDtbZuJiw0Eu3aDJTAh46k40jdC83U36uesz
-         ukoPironiGLRjmdKM/cQde/wfI91bVLTjICf1yVUqt/yqqiJ2ZPrpGbi8qZ4vAOEwL
-         zj08RZU+L+GR50GKoIzl5tkowX29JWtww2k1S2F/Rg2Aw4l8IytFAlV9981Oc276Jr
-         S520Tf9zdZbliOvRd5WzSml1PM91gcA79Tt4IgNIpDpwkfKtg2bydw4Znf8TaovNtH
-         dRU1pT0xH2oZg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id F3045C43140;
-        Fri, 29 Jul 2022 05:30:19 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        Fri, 29 Jul 2022 01:30:45 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [217.72.192.73])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF46B2252B;
+        Thu, 28 Jul 2022 22:30:43 -0700 (PDT)
+Received: from [192.168.1.107] ([37.4.248.80]) by mrelayeu.kundenserver.de
+ (mreue106 [212.227.15.183]) with ESMTPSA (Nemesis) id
+ 1MVdUQ-1nrtva20Yu-00RZCZ; Fri, 29 Jul 2022 07:30:26 +0200
+Message-ID: <2217188c-7009-f142-3e7e-b3e61d2c1324@i2se.com>
+Date:   Fri, 29 Jul 2022 07:30:25 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 1/2] dt-bindings: nfc: use spi-peripheral-props.yaml
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165907261999.17632.4241150043277609522.git-patchwork-notify@kernel.org>
-Date:   Fri, 29 Jul 2022 05:30:19 +0000
-References: <20220727164130.385411-1-krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220727164130.385411-1-krzysztof.kozlowski@linaro.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org, mgreer@animalcreek.com,
-        kvalo@kernel.org, jerome.pouiller@silabs.com,
-        adham.abozaeid@microchip.com, ajay.kathat@microchip.com,
-        tony@atomide.com, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-wireless@vger.kernel.org
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [Regression] ext4: changes to mb_optimize_scan cause issues on
+ Raspberry Pi
+Content-Language: en-US
+To:     Jan Kara <jack@suse.cz>
+Cc:     linux-ext4@vger.kernel.org, Ojaswin Mujoo <ojaswin@linux.ibm.com>,
+        Harshad Shirwadkar <harshadshirwadkar@gmail.com>,
+        Theodore Ts'o <tytso@mit.edu>,
+        Ritesh Harjani <riteshh@linux.ibm.com>,
+        linux-fsdevel@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Geetika.Moolchandani1@ibm.com, regressions@lists.linux.dev
+References: <0d81a7c2-46b7-6010-62a4-3e6cfc1628d6@i2se.com>
+ <20220728100055.efbvaudwp3ofolpi@quack3>
+From:   Stefan Wahren <stefan.wahren@i2se.com>
+In-Reply-To: <20220728100055.efbvaudwp3ofolpi@quack3>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Provags-ID: V03:K1:FNwSToRwLJFsGPwaWndrCkF2afnJZmdTz8/LvCWfTqfzb+Wj0fG
+ C+5a+Gl7+RwsgqdTkryfEOtAq+3TwLsOpYzpdKf64zVjv61poSLT4WLcW5Ff5BAPCD+lr8r
+ +0nFRCM81tCMEuPI8T9N+xJprm01eip07MWJN0p42DGtBJsepV9s259mNUD2kmLohkDDrZP
+ mNUCZf6Q2mpB4m1+6NlCA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:db/sxB+DMa0=:AkfFhuXq5Uq+wEnTYFMCIM
+ zP1mAxYsVg2LrNKjrrYZLTDnv1LdlGNjRCC9eCOEQqy6wEJ+rVcu4lVXZG4zIucRlvfG2PhsI
+ rAwinCwvyTy7NJ4I0RY3iFzByfvKdnrvgoy36RLz0URMQVx0x+K+9aZCBnxINdTrTvzsJo6np
+ gOlhm+GPqTUQvvDQZRqyEQPggQPSbTmOpfLHFfEpEVgOfiPv/241LgGcGjZSj6fSHYoFhgGww
+ z7j0ivYQJZS68lkAncx0O3+zgR+LMuUEuPtCZfKq2CQJdjyv8YFjUvP6Psw8XrjtUnlMHOp/R
+ P3IasBIXTKbF3ekElozrNitOX2ThVPdG53NyyWF/UrSTZUyIenwTEiVAFongYwYymHQhmiGGb
+ cjnhXJE4psItTLZXeaRfyuLwLhH6ZRir4vnX298tUbbcfYgHav7GzEYoQNwFj5atnXCShSkEW
+ IWSEmg1GU0/8xTaBWou/j8fBTdup4JXp41sl05TtLuDXjQOk6cT6d3GK+97ydU5gwvvsUbIEU
+ npuQ5dTusXruuBpVCKMcjiIT2trV5LozA8O6QZTLNmGAUG8Z+FZ00bv4PZEUsVo3oowDMN+IT
+ wzeOe0M5kje23ToytOQrqAFUQpUpXke5cJ3IGX2312KD9H4eJ2FkZSbMQvMQ/WyBMt9OjWN5q
+ eoVRL4J645bG0Q5u1ZG3m2di1dimrtR2JLkUmuDzXx1hupc1e9gtXr8DmhY4OfvoY91pRHpcA
+ A7s7xQNY9ykSSb28ZwEBa+QqVQ1H1P8aGCh2OnAb56Fd+5m6xFXFTMfFUgY=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
+Hi Jan,
 
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Wed, 27 Jul 2022 18:41:29 +0200 you wrote:
-> Instead of listing directly properties typical for SPI peripherals,
-> reference the spi-peripheral-props.yaml schema.  This allows using all
-> properties typical for SPI-connected devices, even these which device
-> bindings author did not tried yet.
-> 
-> Remove the spi-* properties which now come via spi-peripheral-props.yaml
-> schema, except for the cases when device schema adds some constraints
-> like maximum frequency.
-> 
-> [...]
-
-Here is the summary with links:
-  - [1/2] dt-bindings: nfc: use spi-peripheral-props.yaml
-    https://git.kernel.org/netdev/net-next/c/ba323f6bee1d
-  - [2/2] dt-bindings: wireless: use spi-peripheral-props.yaml
-    (no matching commit)
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Am 28.07.22 um 12:00 schrieb Jan Kara:
+> Hello!
+> Can you run "iostat -x 1" while the download is running so that we can see
+> roughly how the IO pattern looks?
+>
+> Also can get filesystem metadata image of your card like:
+>    e2image -r <fs-device> - | gzip >/tmp/ext4-image.gz
+>
+> and put it somewhere for download? The image will contain only fs metadata,
+> not data so it should be relatively small and we won't have access to your
+> secrets ;). With the image we'd be able to see how the free space looks
+> like and whether it perhaps does not trigger some pathological behavior.
+>
+> My current suspicion is that because the new allocator strategy spreads
+> allocations over more block groups, we end up with more open erase blocks
+> on the SD card which forces the firmware to do more garbage collection and
+> RMW of erase blocks and write performance tanks...
+>
+> Thanks.
+thanks for your feedback. Unfortunately i'm busy the next days, so it 
+will take some time to provide this.
+> 								Honza
+>
