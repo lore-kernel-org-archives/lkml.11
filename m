@@ -2,197 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E6DBC00140
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 03:17:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F14DC00140
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 03:21:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233947AbiG2DRs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 23:17:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55956 "EHLO
+        id S233970AbiG2DVF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 23:21:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230469AbiG2DRp (ORCPT
+        with ESMTP id S232555AbiG2DVB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 23:17:45 -0400
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F2F57A51C
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 20:17:43 -0700 (PDT)
-Received: by mail-yb1-xb36.google.com with SMTP id 123so6231186ybv.7
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 20:17:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fvtHQoV3o8Kw99ckk4tHGijVcTk5oIgJe4e2tLoWlZw=;
-        b=D+zZKxZmfL3MitPoh6PDqhuLHIkE23fFZBbIftQDrWvzZ8F7Yg+IFE6B/Z4YP+lhVx
-         gSYSiCxlOFfccBGG3zljtf5DdlnAkIsvI893HRFut7SRil78G5ZvF871e60L213m5oU5
-         gK8ptX1lRYyNOHk2Y66jwJnjUmi8M1cErcLFxFBOcj5ScznBnJoxVYUH0LXsdahuRbgK
-         JXt9b58EZ7dknEWfJw+jqEs59LvQcxusUf7V9FxNUaro6VrnlY9l1ojbUGVhw+2DHGhe
-         ZLl4jhYheRG1FhXj+XtDlQWNXAE1SuV0M5nSm7BAh7P5RLfg7kVM/2oHoX309p3vs4c7
-         2Ivw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fvtHQoV3o8Kw99ckk4tHGijVcTk5oIgJe4e2tLoWlZw=;
-        b=mm7+E+R3rhBTdueurFh3U5u1Y1u/gbRF4A8QYsdmeRNBK0x5xkuQFmJpsJ+SyIJcIr
-         SiPAoiC1emrCe+yZQt79W7/8j2Oosaua2+eUtI3/SKiL3F+ohSAovwyNkWMBzwoc3iYu
-         K9vChlsDW11spuaQ0YnUuwqd75tWUvmogK7L9CE3GYsN+J5crg4lrmg/ahLUF7mQJRF9
-         Hadsyl2YceCb9sCKcxvXGrERYLEmNNDHOuJXGxREi/niRkcexjElaxPqSAsmp8Igg7Qv
-         vf1oRA3Umt3TVNxPHN7pTGlN2wxOBleXzj1Yd0qDB2X1ygks09DN/CoXrgLULX9QfCvn
-         Kgrw==
-X-Gm-Message-State: ACgBeo1yNOs9t98YFyu8C2n4Li1jlGbPgG7GXx5T0G8JOG+OS1ddfTpf
-        trORfITpJj9cuNIukBT7CrxnjcqN7ceVvpFbxQ6JoJESbQ==
-X-Google-Smtp-Source: AA6agR6ThtpVBg6Qpw/8IaSLk7kSVvXMyFqqkweougqEV90S2VMNePIWhG/oPtyRZ8uTQtcOmgCougz49G3EUlNHKN8=
-X-Received: by 2002:a5b:cc6:0:b0:66e:45c6:2a25 with SMTP id
- e6-20020a5b0cc6000000b0066e45c62a25mr1236780ybr.304.1659064662559; Thu, 28
- Jul 2022 20:17:42 -0700 (PDT)
+        Thu, 28 Jul 2022 23:21:01 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC6462B18F
+        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 20:21:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1659064860; x=1690600860;
+  h=message-id:date:mime-version:cc:subject:to:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=kJsMSRMn4triv25Il9mhWiVI3dfthWPMlrBpNxMmXo8=;
+  b=HxoJB8l2cZUZxCvw9kxqxj47RIaYTCvnO6hO6hqw0oU9MC4F0hxqPyH9
+   1ciQVsHkW3inqFJm+NAgOx5omvYDWu4v2i+Md6fFAFTBf3dXS5R2GF/uq
+   PvIe+9UivPRuxE3AWUcSLOeOtQIAS7KH7pn3JjmSqKN/Oce7MjbNLhd9I
+   j1u3TrxmJnbjRXXgvwtD/O/R9wR5K3gq/JwbSLKd/t1mN5gRTb53WcStQ
+   ACEO5szQIIX2gk9jf6AS1vh7ZBWI+AWee+TCVYq9HiUv/H5AUScYyf227
+   wyyUfyMiQxv9Goa9pkIqPTe42HfdKnui1Lyni62gUPrBVup+TgHBqanQ2
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10422"; a="314476136"
+X-IronPort-AV: E=Sophos;i="5.93,200,1654585200"; 
+   d="scan'208";a="314476136"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2022 20:20:55 -0700
+X-IronPort-AV: E=Sophos;i="5.93,200,1654585200"; 
+   d="scan'208";a="660057778"
+Received: from xuzhenzh-mobl.ccr.corp.intel.com (HELO [10.249.174.84]) ([10.249.174.84])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jul 2022 20:20:51 -0700
+Message-ID: <64667345-7f7f-74ec-215a-f2d36be0f9ce@linux.intel.com>
+Date:   Fri, 29 Jul 2022 11:20:49 +0800
 MIME-Version: 1.0
-References: <20220728032000.127-1-xieyongji@bytedance.com> <20220728032000.127-6-xieyongji@bytedance.com>
- <CACGkMEuN0zqyLQ6vD7MvjAhtJVvmMhsn_T4b5ww0vviwq5hBrg@mail.gmail.com>
- <CACycT3uYFWvmdJ1MzQZv=L7N0WzEiFvx5wJX+OwM1ew5Z0w0jw@mail.gmail.com>
- <CACGkMEtru8qaebnTXVu94oCV21JovkjshxYxdyzeSf=FTN0=xA@mail.gmail.com>
- <CACycT3swFhETEOPNNmLbSFaYUZEJYUkPXrddQ=w0TALE=D40Lw@mail.gmail.com> <CACGkMEsGt4=2c20xfi-4ZYfnn9NYHQ=CQm8TrP7HSYiwwDCWag@mail.gmail.com>
-In-Reply-To: <CACGkMEsGt4=2c20xfi-4ZYfnn9NYHQ=CQm8TrP7HSYiwwDCWag@mail.gmail.com>
-From:   Yongji Xie <xieyongji@bytedance.com>
-Date:   Fri, 29 Jul 2022 11:17:31 +0800
-Message-ID: <CACycT3vJcJp6dr6XFg=v_EUv05SZRpCzWOEPnXfoLDedBufSnQ@mail.gmail.com>
-Subject: Re: [PATCH v4 5/5] vduse: Support querying information of IOVA regions
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     mst <mst@redhat.com>, Liu Xiaodong <xiaodong.liu@intel.com>,
-        Maxime Coquelin <maxime.coquelin@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        songmuchun@bytedance.com,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Cc:     baolu.lu@linux.intel.com, Joerg Roedel <joro@8bytes.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.com>,
+        "Jiang, Dave" <dave.jiang@intel.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Eric Auger <eric.auger@redhat.com>,
+        "Liu, Yi L" <yi.l.liu@intel.com>,
+        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
+        Zhangfei Gao <zhangfei.gao@linaro.org>,
+        "Zhu, Tony" <tony.zhu@intel.com>,
+        "iommu@lists.linux.dev" <iommu@lists.linux.dev>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: Re: [PATCH v10 04/12] iommu: Add attach/detach_dev_pasid iommu
+ interface
+Content-Language: en-US
+To:     "Tian, Kevin" <kevin.tian@intel.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+References: <20220705050710.2887204-1-baolu.lu@linux.intel.com>
+ <20220705050710.2887204-5-baolu.lu@linux.intel.com>
+ <20220723141118.GD79279@nvidia.com>
+ <686b137f-232a-2a78-beb0-e4373bd20959@linux.intel.com>
+ <20220725144005.GE3747@nvidia.com>
+ <6da27a6b-b580-4ba4-24c8-ebdfb2d9345d@linux.intel.com>
+ <20220726135722.GC4438@nvidia.com>
+ <BN9PR11MB5276974ABA5981A7361953708C979@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <20220727115339.GM4438@nvidia.com>
+ <BN9PR11MB52766C3D37FA985DEBDC30C78C969@BN9PR11MB5276.namprd11.prod.outlook.com>
+ <YuJ6MXoNTj0RKCb8@nvidia.com>
+ <78376ca4-9b55-7609-abf1-27a1a376a8e0@linux.intel.com>
+ <BN9PR11MB52761058CFCB9397F6A73A958C999@BN9PR11MB5276.namprd11.prod.outlook.com>
+From:   Baolu Lu <baolu.lu@linux.intel.com>
+In-Reply-To: <BN9PR11MB52761058CFCB9397F6A73A958C999@BN9PR11MB5276.namprd11.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jul 28, 2022 at 5:02 PM Jason Wang <jasowang@redhat.com> wrote:
->
-> On Thu, Jul 28, 2022 at 4:27 PM Yongji Xie <xieyongji@bytedance.com> wrote:
-> >
-> > On Thu, Jul 28, 2022 at 2:45 PM Jason Wang <jasowang@redhat.com> wrote:
-> > >
-> > > On Thu, Jul 28, 2022 at 2:36 PM Yongji Xie <xieyongji@bytedance.com> wrote:
-> > > >
-> > > > On Thu, Jul 28, 2022 at 1:58 PM Jason Wang <jasowang@redhat.com> wrote:
-> > > > >
-> > > > > On Thu, Jul 28, 2022 at 11:20 AM Xie Yongji <xieyongji@bytedance.com> wrote:
-> > > > > >
-> > > > > > This introduces a new ioctl: VDUSE_IOTLB_GET_INFO to
-> > > > > > support querying some information of IOVA regions.
-> > > > > >
-> > > > > > Now it can be used to query whether the IOVA region
-> > > > > > supports userspace memory registration.
-> > > > > >
-> > > > > > Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-> > > > > > ---
-> > > > > >  drivers/vdpa/vdpa_user/vduse_dev.c | 39 ++++++++++++++++++++++++++++++
-> > > > > >  include/uapi/linux/vduse.h         | 24 ++++++++++++++++++
-> > > > > >  2 files changed, 63 insertions(+)
-> > > > > >
-> > > > > > diff --git a/drivers/vdpa/vdpa_user/vduse_dev.c b/drivers/vdpa/vdpa_user/vduse_dev.c
-> > > > > > index eedff0a3885a..e820c37dcba8 100644
-> > > > > > --- a/drivers/vdpa/vdpa_user/vduse_dev.c
-> > > > > > +++ b/drivers/vdpa/vdpa_user/vduse_dev.c
-> > > > > > @@ -1228,6 +1228,45 @@ static long vduse_dev_ioctl(struct file *file, unsigned int cmd,
-> > > > > >                                            umem.size);
-> > > > > >                 break;
-> > > > > >         }
-> > > > > > +       case VDUSE_IOTLB_GET_INFO: {
-> > > > > > +               struct vduse_iova_info info;
-> > > > > > +               struct vhost_iotlb_map *map;
-> > > > > > +               struct vduse_iova_domain *domain = dev->domain;
-> > > > > > +
-> > > > > > +               ret = -EFAULT;
-> > > > > > +               if (copy_from_user(&info, argp, sizeof(info)))
-> > > > > > +                       break;
-> > > > > > +
-> > > > > > +               ret = -EINVAL;
-> > > > > > +               if (info.start > info.last)
-> > > > > > +                       break;
-> > > > > > +
-> > > > > > +               if (!is_mem_zero((const char *)info.reserved,
-> > > > > > +                                sizeof(info.reserved)))
-> > > > > > +                       break;
-> > > > > > +
-> > > > > > +               spin_lock(&domain->iotlb_lock);
-> > > > > > +               map = vhost_iotlb_itree_first(domain->iotlb,
-> > > > > > +                                             info.start, info.last);
-> > > > > > +               if (map) {
-> > > > > > +                       info.start = map->start;
-> > > > > > +                       info.last = map->last;
-> > > > > > +                       info.capability = 0;
-> > > > > > +                       if (domain->bounce_map && map->start >= 0 &&
-> > > > > > +                           map->last < domain->bounce_size)
-> > > > > > +                               info.capability |= VDUSE_IOVA_CAP_UMEM;
-> > > > > > +               }
-> > > > > > +               spin_unlock(&domain->iotlb_lock);
-> > > > > > +               if (!map)
-> > > > > > +                       break;
-> > > > > > +
-> > > > > > +               ret = -EFAULT;
-> > > > > > +               if (copy_to_user(argp, &info, sizeof(info)))
-> > > > > > +                       break;
-> > > > > > +
-> > > > > > +               ret = 0;
-> > > > > > +               break;
-> > > > > > +       }
-> > > > > >         default:
-> > > > > >                 ret = -ENOIOCTLCMD;
-> > > > > >                 break;
-> > > > > > diff --git a/include/uapi/linux/vduse.h b/include/uapi/linux/vduse.h
-> > > > > > index 9885e0571f09..11bd48c72c6c 100644
-> > > > > > --- a/include/uapi/linux/vduse.h
-> > > > > > +++ b/include/uapi/linux/vduse.h
-> > > > > > @@ -233,6 +233,30 @@ struct vduse_iova_umem {
-> > > > > >  /* De-register the userspace memory. Caller should set iova and size field. */
-> > > > > >  #define VDUSE_IOTLB_DEREG_UMEM _IOW(VDUSE_BASE, 0x19, struct vduse_iova_umem)
-> > > > > >
-> > > > > > +/**
-> > > > > > + * struct vduse_iova_info - information of one IOVA region
-> > > > > > + * @start: start of the IOVA region
-> > > > > > + * @last: last of the IOVA region
-> > > > > > + * @capability: capability of the IOVA regsion
-> > > > > > + * @reserved: for future use, needs to be initialized to zero
-> > > > > > + *
-> > > > > > + * Structure used by VDUSE_IOTLB_GET_INFO ioctl to get information of
-> > > > > > + * one IOVA region.
-> > > > > > + */
-> > > > > > +struct vduse_iova_info {
-> > > > > > +       __u64 start;
-> > > > > > +       __u64 last;
-> > > > > > +#define VDUSE_IOVA_CAP_UMEM (1 << 0)
-> > > > > > +       __u64 capability;
-> > > > > > +       __u64 reserved[3];
-> > > > > > +};
-> > > > > > +
-> > > > > > +/*
-> > > > > > + * Find the first IOVA region that overlaps with the range [start, last]
-> > > > >
-> > > > > So the code is actually find the IOVA region that is the super range
-> > > > > of [start, last] instead of overlap:
-> > > > >
-> > > >
-> > > > This is achieved by vhost_iotlb_itree_first(). And can't the super
-> > > > range of [start,last] be considered overlapping?
-> > >
-> > > Ok, but what I want to ask is, under which condition can we hit the
-> > > following case
-> > >
-> > > map->last >= domain->bounce_size ?
-> > >
-> >
-> > I think we would not hit this case currently.
->
-> I wonder if it's worthwhile to have a WARN or just remove this check.
->
+On 2022/7/29 10:56, Tian, Kevin wrote:
+>> +static bool iommu_group_device_pasid_viable(struct iommu_group *group,
+>> +					    struct device *dev)
+>> +{
+>> +	int count;
+>> +
+>> +	count = iommu_group_device_count(group);
+>> +	if (count != 1)
+>> +		return false;
+>> +
+>> +	/*
+>> +	 * Block PASID attachment in cases where the PCI fabric is
+>> +	 * routing based on address. PCI/ACS disables that.
+>> +	 */
+>> +	if (dev_is_pci(dev))
+>> +		return pci_acs_path_enabled(to_pci_dev(dev), NULL,
+>> +					    REQ_ACS_FLAGS);
+> I think we are leaning toward doing above check in pci_enable_pasid().
+> Then no singleton check inside iommu core.
 
-I think we can't remove the check since not only the bounce region
-will match the condition: map->start >= 0.
+The iommu grouping also considers other things, like PCI alias. There
+are many calls of pci_add_dma_alias() in drivers/pci/quirks.c.
+Therefore, I believe that pci_acs_path_enabled() returning true doesn't
+guarantees a singleton group.
 
-Or changing to map->start == 0 && map->last == domain->bounce_size - 1 ?
+> 
+> Presumably similar check can be done in DT/ACPI path of enabling pasid?
+> 
 
-Thanks,
-Yongji
+I can't find the pasid (or anything similar) enabling interfaces for
+DT or ACPI. They are device specific?
+
+Best regards,
+baolu
