@@ -2,240 +2,208 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40FA6C19F2A
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 16:40:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A046C3F6B0
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 16:41:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238011AbiG2Qkp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 12:40:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58720 "EHLO
+        id S237467AbiG2QlJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 12:41:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237719AbiG2Qkc (ORCPT
+        with ESMTP id S236839AbiG2Qkw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 12:40:32 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D6DF21E1D
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 09:40:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1659112830; x=1690648830;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=CYque/qqe8+sxkoN3DLojI44Tx36I/xTy+0UfACcqsM=;
-  b=AjzjmUO0Dz5Of4jL0WLtNu418m4dJGadPeFQnQfUg21YpGDy6ltuwt9x
-   k8j41Tn57OdH72eSWUEhqRQtk2v6sO00hRW9+fWeeahs9Ds7fTRim9Ije
-   scUyxFEjEGrbbSZmF7mSgPNxD1t4kon4/Du/7OTimnPvCsls7K4UMujMm
-   lnf2dXEBthMk/lfW/127UmLdSstw25wkn7yApFEcU4auz53Y0mdaD9dxD
-   wEUbH4u9FtOUJeJu/f4M6jWOy99hs8Dd0IPXQVainijiTkSeJ54I+YKRK
-   pRcT15qGm9FCUaAugzoYa46J8kXGrfb4TYuME3zXSs2GzTYW9i+isuAsG
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10423"; a="350508951"
-X-IronPort-AV: E=Sophos;i="5.93,201,1654585200"; 
-   d="scan'208";a="350508951"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jul 2022 09:40:30 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.93,201,1654585200"; 
-   d="scan'208";a="660306122"
-Received: from orsmsx605.amr.corp.intel.com ([10.22.229.18])
-  by fmsmga008.fm.intel.com with ESMTP; 29 Jul 2022 09:40:29 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Fri, 29 Jul 2022 09:40:29 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28 via Frontend Transport; Fri, 29 Jul 2022 09:40:29 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.47) by
- edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2375.28; Fri, 29 Jul 2022 09:40:28 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XCa6ZokproKq7gsM1/s+U1t0xAIqIS58et4UiTUIIVcKCVPcxHDUCdTOhu82PofwNbcGcdV7oUmLdncutBa3qRf3OmBNnawN6FDFRI6IYuR8Cb6AI7Jhvo7uplPMg+qOqmMZgvw7UFvm5mgwvR9uVaDnTFYXUEA1+HVBfEIlqza1spUoZcIordHZGrgSYwqYe2RPbMZOQn7AK/VOBVzRSRzj810ZySAsXJFDqmC2dpVPHM59XoCiENGfaIGiVSW18WAZcfMMtZHJ2ww8U5RdOHGw1yiVcb4yQxoPUpAHKmVbFEU+KQ+8G+ti5L1oCf4PEG33gQCgU22aRZ6MYU2bxw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=CYque/qqe8+sxkoN3DLojI44Tx36I/xTy+0UfACcqsM=;
- b=WfScZZLwaDKJ68oSKBLCc55DNu9A8/SkBW0f3mTSNdqQyWeHourIc8X/MBihFbrDQQIN2iEiL7/j8vK+m7fhOFSW+ixVynB1NrAB6zxGH1JUipCKR9nZAmCAqqEtUz8+Jzgom6QnhqHAXKPnXDJ8KDA/kR7lGBX9+yGDoUTGJiQbxagOzQrwg2WhCqGxiw3C4n0410T1VbK9ceWKMhzmYqOozSlq635Jl1ZCJA9np1zMFTVPMHVpxQ0Lmalgx6zEGBwRLXgHLkH2oRQslqTUpfmFuwkUrgQmksLmoZqXdu+7ngd4eoZm+N2NZ4t+3BTDLcWfBeHI6gkY+D4kzGdMzQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from BY5PR11MB4182.namprd11.prod.outlook.com (2603:10b6:a03:183::10)
- by DM6PR11MB3355.namprd11.prod.outlook.com (2603:10b6:5:5d::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5458.23; Fri, 29 Jul
- 2022 16:40:27 +0000
-Received: from BY5PR11MB4182.namprd11.prod.outlook.com
- ([fe80::5c0d:3883:7fe4:627b]) by BY5PR11MB4182.namprd11.prod.outlook.com
- ([fe80::5c0d:3883:7fe4:627b%7]) with mapi id 15.20.5482.012; Fri, 29 Jul 2022
- 16:40:27 +0000
-From:   "Chrisanthus, Anitha" <anitha.chrisanthus@intel.com>
-To:     Thomas Zimmermann <tzimmermann@suse.de>,
-        Zeng Jingxiang <zengjx95@gmail.com>,
-        "edmund.j.dea@intel.com" <edmund.j.dea@intel.com>,
-        "airlied@linux.ie" <airlied@linux.ie>,
-        "daniel@ffwll.ch" <daniel@ffwll.ch>,
-        "laurent.pinchart@ideasonboard.com" 
-        <laurent.pinchart@ideasonboard.com>,
-        "maxime@cerno.tech" <maxime@cerno.tech>,
-        "ville.syrjala@linux.intel.com" <ville.syrjala@linux.intel.com>
-CC:     Zeng Jingxiang <linuszeng@tencent.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>
-Subject: RE: [PATCH] drm/kmb: fix dereference before NULL check in
- kmb_plane_atomic_update()
-Thread-Topic: [PATCH] drm/kmb: fix dereference before NULL check in
- kmb_plane_atomic_update()
-Thread-Index: AQHYovha9jwL5q3OmE+pLUQWk+vsja2VZ5GAgAAArQCAACP6YA==
-Date:   Fri, 29 Jul 2022 16:40:26 +0000
-Message-ID: <BY5PR11MB41828228EF0D27174703431B8C999@BY5PR11MB4182.namprd11.prod.outlook.com>
-References: <20220729030711.2117849-1-zengjx95@gmail.com>
- <a68022f4-28d0-7743-27fe-6df652082184@suse.de>
- <fef74b28-80f1-9184-efa5-25f3343ace40@suse.de>
-In-Reply-To: <fef74b28-80f1-9184-efa5-25f3343ace40@suse.de>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-version: 11.6.500.17
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f290c150-3ef5-48d7-4d20-08da71810aab
-x-ms-traffictypediagnostic: DM6PR11MB3355:EE_
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Mt947Z0NCUtBuCh2aHOO2PRgUiBBk4OFK1s3k3ocm9AFlgqmxWxWnRZAt7U/qsUey/1Y4nXdNqqdayC8l6eRQtbZoM4K78rA0qo28oLNxFfRJHwVONTLwfAgDVBtdeDZseoTAgjYTbWDNbdLnhmUIxByxByfyGBjwWXdG56jECI5Fn2/RZ2UVIyo7tJyVDcM0v3o34rCLUSBud5lDsrKX3fySh/1GXR49jiyau8+R20EsoW9yzc8Gvt1LCinmz3GZXQRUUAkPVX1/+MLm5SnoFuvGA9ShMdgxnKsgwXwNtIXex/ed2ZZbZo2h2pA6gcKVax4fB3YzNpX9bcg2HKz8d4mcJRiCNubIJnsfNF9koDJ2lzdkAPNZcawRVLsOzOHzirZiSRz/nGZ2ApLRvEVc1xmP+Vmp7devWpBX3UQltAaRSz6ANQW9NlvBA84SFCrqMENsZ+hH3sGIevR1CPzKP+8fWtKsGlJRLp8qcBx/s92rxoAECSJa9Wmwo83wtQafz/WwKkfQYsBlBEZoFbGkL48W6gq1cBUJPYvchT7rRPFrfg/fFSs14XBMDUF0HrG4q2XRwyqxNxP3234BvcZI8Sr06WSIxvLq9zLRSac+1xQfl2ScD5W34DsXHibxfRJJQ+I0iFdnTYml+wkv9SyvQdOtLV12bq5F08VjwV3DStm8KgOVS7dv9ZkeS6ZuHubXRahVRUFs1xX1pJTRPdfyGm4mgHlrTH/gVPi5kxFPwnqRlw+IzeUe4Jg9mB5Azi2YfiYdsxYySx7JZe1N2qREi1MSOIPUwf3VcWP4fV6EsArj4fIvzoEwzX6fL7ntUr0
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR11MB4182.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(136003)(376002)(366004)(39860400002)(346002)(396003)(53546011)(71200400001)(82960400001)(83380400001)(2906002)(122000001)(86362001)(66556008)(76116006)(54906003)(38100700002)(8676002)(66476007)(66446008)(110136005)(38070700005)(26005)(66946007)(64756008)(5660300002)(6506007)(8936002)(33656002)(316002)(41300700001)(7696005)(4326008)(55016003)(52536014)(66574015)(9686003)(7416002)(478600001)(186003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?ZXYySHltWlBtTG5CRFI1c1ppbDNuQm1ad1NkTmNBZEpUOFJOdGpFSzFxWXBX?=
- =?utf-8?B?djVicGV5YTJvU2VZaThSQ0N6S0YyS2JXczRFYlMvUHJldEZwbVhsTE5UTnJ5?=
- =?utf-8?B?cGc0NTZGc201OUUwTGtsRXhpWmE2cVduTDNsRXlScnYwdFYzYjEvUTdOSWhn?=
- =?utf-8?B?bDV4d2oxZ2NHZTZNUWpiOGdOdXBMTEUxR0trdFBzZU9pVFR0YUF3OUF4UHhj?=
- =?utf-8?B?cDlpSW1rZjA0S3p3U3NpUnFmS0pUVW0zMTY5VkxLNE5rZk1QV2VoU1pkUUlD?=
- =?utf-8?B?L3ZPYTU1OHBOK3ZGTUdUZzBpRVJYZDI4MVNBUCtrNVhvZWFiSjZ4SWhCMWVY?=
- =?utf-8?B?MXFKZi9qdTIxY3lwMUkvWE9wODltMk8vaDhtaVh5SkhrUVVUN0czSzBTcURR?=
- =?utf-8?B?NDFNYU42WEVtdkpIaVcvZHp4ZEVOLzJLNkJXc01rSWgwQThoVXp1QXo2QnU5?=
- =?utf-8?B?cEpJOFpZbVBaZmR4SUVMRUhBWDR3Y3pUaXdVck9xTE9FQThMc2d1L2xlQ1pN?=
- =?utf-8?B?TmkzR2ZveEdwZEYrQjAxY3BZYkx6UFoycXhsQVdWc3kxNHJyOXVPSkpBSGZ5?=
- =?utf-8?B?MWZJamtzcm5PdlVrM21mMjNiYXoyUWozNkVmZzE3bzg3RE1YakV4T3U2V0tP?=
- =?utf-8?B?ZjB3RnAwWlFMdU9jU0t3MWpJUE5lbXViTkVsZVlWd3FhbUFrQThpZ08zZ2x2?=
- =?utf-8?B?ajMwN0lBVjZndXJLbVVZM29XZDZHNzd5N2ZldlpHVzdhSDQreTJxTnpXcVp2?=
- =?utf-8?B?Y3NqQjdpUm56NGs2Y2ZpUmcwSTNZcWxEVCtWV3hSYzZwSncrZVA0K09NZzRQ?=
- =?utf-8?B?WFk2OTE0eUhsR0pGMGNpSjRCL2FibFNFaFE1dFl4NTBOMVgzMlY5dFgwMEFM?=
- =?utf-8?B?ZEdwTE1FcFZBdVpDTUJ3VUZwQTNFWFdwTFFkdm93R05uaHlFT2tJcDNzdHZz?=
- =?utf-8?B?SEZia0FoN2Q1WXdmc0NaNnhSK05zOXZuNDhOS1RuQ3cyMnd0aUtSYXdVTVl5?=
- =?utf-8?B?T2lGM2RyaCtoTTBWTllwU09yOE5tWklFZlpQbFZNSDFuVmx5UmhuZ1BKWGRv?=
- =?utf-8?B?UGRBZGtyS051RDZwUWxLR0ZmZ1B2Wk1nUjBidzdYamF4TmRyVU5JOUpwdGk0?=
- =?utf-8?B?RzNBQ0pYOFcxVEpJOGRQUnZLSFhWMmJYY3dPdThCVXRQMDVwWkIwTUhzR1R2?=
- =?utf-8?B?cVFiUDRtdWliR0V2SkZYOEcvSTJsS0VLSFBaaGtaSytUUXNPTnRNTG9MZGVv?=
- =?utf-8?B?Y3Byd1FlWEFwSVBwYTcvclhObEhCaUdlZ2x2L1FmQWkxTG5ZYWNkdXRjS1Rn?=
- =?utf-8?B?emtmMmt4cWdrOW90TDNIc2NPRGkrVEZ3aWNVcWREL25WdmlHaXlnellaWEhC?=
- =?utf-8?B?S2NpZEdyTStSVHJhcnBWL0dHWFJ2RC9Tdm9PYXk3RllzRXM4cGdYSmhCZjY2?=
- =?utf-8?B?eWs5OVlTWU1xekZOOGpGWW1qWEtKTm1zMFhDc1hZcEZrRTZnRlhVdlhxUlJH?=
- =?utf-8?B?d0thV3BCcGNzVU5KRVY0L3pwY01KNHlrdUpvd3dZY3ZqLzY1eXd0NzVPcVJQ?=
- =?utf-8?B?QXdlczlyeVlmZVdZVy94MzlCekdXazlmdmgxNE0rSE9jL0plb08wblZvalJT?=
- =?utf-8?B?UVRpTjZxR0J3d0tFNnA1Q1pOOFBJWXhpTFVvWHIzYWJwVVZ5WXZZcVFRaklR?=
- =?utf-8?B?K0ovUTVTN3pha245R0orMURLbUVzTGMwOUJYVG45QUpUYm5rTmNtVW1ibEMz?=
- =?utf-8?B?c3ZYTEpLUTNZd1prQWEwVGZOUE5RaUNLbGhsb3R4dTlkRkdlc1Z1ZURiOTM1?=
- =?utf-8?B?djZQSjNEVVFkdXVUcDFZZHBqaWc4a2lXMGNybUluaDBjcXFPYlRvYlQ4MEJD?=
- =?utf-8?B?d0RqUGRKdkYvbnpNdmQvV1RuQ0xXNER1TjgrdElwTTd4WXlJMWQ1Y0ViWnBI?=
- =?utf-8?B?U0QyTE5vQVdGL1Y2S0JHclZ1TE1PaE9oWWN1d2ZZVFA4NHk1bHlzbWRvVmVD?=
- =?utf-8?B?WTVLanZuSHo4cEI5QkhEQWtqelJNekhMNjVVUldJM2ZHOEhvZkFwbnExSUFK?=
- =?utf-8?B?QlFheGZFRk5jRTRhWlkwR2FSSEo2SWsvZGFXZjcrdGgyZzhtYlRnTkR0S0xH?=
- =?utf-8?B?ejdpeHJLamR2UjNZR0h6a1Z3eXV3T0tEeFZUUFNkZjRKeTVMY2lJdHdpV2Jy?=
- =?utf-8?B?b0E9PQ==?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Fri, 29 Jul 2022 12:40:52 -0400
+Received: from new4-smtp.messagingengine.com (new4-smtp.messagingengine.com [66.111.4.230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4086845F77
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 09:40:48 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 94D405808FB;
+        Fri, 29 Jul 2022 12:35:30 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Fri, 29 Jul 2022 12:35:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=cc
+        :cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm2; t=1659112530; x=
+        1659119730; bh=rHszA6yTYdadm9FE2nCZkXzGtjsFgA60URB5qXutatY=; b=t
+        HevhV/aL4JbnO4YUhip09KVnzHeXZ5uMk0SmoPApJgCAw1qetKVzlKy8SvHSaAxd
+        zcHf4+ijP95IG0JNdzbEs7SMrXr2Fi+ZWoxTkzob2724jprkM/LdPidCxskleQC+
+        sb6v7+ST9oZZBsUWn2pm/gEDIIIVOfvxBvIcDxkdH7j9qsfCy2gufLOK610NxP/k
+        ERCKNhJQXS5MugMywsaMu63WX5/Q5E79miCZb24S4lghuvm8cq5pO87iA2/Fa86j
+        RZu/Wj4cEVweaHKq5OY3lfqTUuxnaJzzeAOgJ513/RWmHaVSNTPdUtfcaiwRV+AS
+        q9iNq4r88ETGaaOqfYKtw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; t=1659112530; x=
+        1659119730; bh=rHszA6yTYdadm9FE2nCZkXzGtjsFgA60URB5qXutatY=; b=S
+        +pzdQa4XXXBdex7hWuyCDHEzTEzn1vLNrXWbKGbey1v1OtBP/xcjt39YBUjfbBZl
+        8ZTu6V1GhEtIUqecwoWE8aKoD9+HMtaCq8+3tJH2BvJ905+p0AtG81h2yiSG+Qca
+        wISXfvplLouHH1A5Ncjldnc4/VE5e1bf4C7dTvYRAWhDbRygGFdfSHNDzr7M1Wl3
+        k8MoKSyd5da/4l1ooF2t2rwxh2ViLuUFe+R2+cNqtsNHAp/9ICprz2Qq7TuIstLU
+        myz0DeFU9sgauxFrRWQqjukYR4/kTu7IvnaCHR4IIIiilM4tgyZRRatxA2P3ZROJ
+        NJUz71nhpDhAv2uU1m+WQ==
+X-ME-Sender: <xms:UgzkYjHh0jsQboqLfAwCBX_4evynMkTFfHFj1G1vEEkMJbjCBr4UuQ>
+    <xme:UgzkYgUEPk5T4YsfXbrz42ZqArvJ62mfAhUQrjRyx5zS2CgnBafX9OhKkCfnO9iNR
+    A7Wk5oVoCRzWkNeZMI>
+X-ME-Received: <xmr:UgzkYlKMAAqA-b-ISQMxlJIacrFOLQZeNZqbC9IMOcI4EUi3gCSpBzB0JIjjQ0bE4ki0o_2awRK17RydS8k>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrvddujedguddtgecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpefhvfevufffkffojghfgggtoffgsehtkeertdertdejnecuhfhrohhmpefo
+    rgigihhmvgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecugg
+    ftrfgrthhtvghrnhepgfduhffhkeeiteejledtieeuteehkeehieekgedugeffudekjedu
+    geffieethfeinecuffhomhgrihhnpehmrghrghhinhhsrdhtohhpnecuvehluhhsthgvrh
+    fuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmhgrgihimhgvsegtvghrnhho
+    rdhtvggthh
+X-ME-Proxy: <xmx:UgzkYhHXyHzyEsijorJenWyJQRWYTQEi50NwDGP3HCHoKwbKYZViIA>
+    <xmx:UgzkYpWcrNCFCUeGt-AnHJWJ1TUgD6yhqXKDQyuVQ3kDM8Us4-xDJQ>
+    <xmx:UgzkYsMlb_65NvdyS_Ez9NIoLziTP-li7xWFzP8d3YIQ-pbYUYta6g>
+    <xmx:UgzkYnn_DfkCYzHymEMpsqvqLFMXyArN-BVKCgAtf84pDTCawQjNSQ>
+Feedback-ID: i8771445c:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Fri,
+ 29 Jul 2022 12:35:29 -0400 (EDT)
+From:   Maxime Ripard <maxime@cerno.tech>
+To:     Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Samuel Holland <samuel@sholland.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Daniel Vetter <daniel@ffwll.ch>, Emma Anholt <emma@anholt.net>,
+        David Airlie <airlied@linux.ie>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        =?UTF-8?q?Noralf=20Tr=C3=B8nnes?= <noralf@tronnes.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Maxime Ripard <mripard@kernel.org>
+Cc:     Maxime Ripard <maxime@cerno.tech>, linux-sunxi@lists.linux.dev,
+        linux-kernel@vger.kernel.org, Phil Elwell <phil@raspberrypi.com>,
+        Mateusz Kwiatkowski <kfyatek+publicgit@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        linux-amlogic@lists.infradead.org, dri-devel@lists.freedesktop.org,
+        Dom Cobley <dom@raspberrypi.com>
+Subject: [PATCH v1 01/35] drm/atomic-helper: Rename drm_atomic_helper_connector_tv_reset to avoid ambiguity
+Date:   Fri, 29 Jul 2022 18:34:44 +0200
+Message-Id: <20220728-rpi-analog-tv-properties-v1-1-3d53ae722097@cerno.tech>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
+References: <20220728-rpi-analog-tv-properties-v1-0-3d53ae722097@cerno.tech>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR11MB4182.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f290c150-3ef5-48d7-4d20-08da71810aab
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Jul 2022 16:40:26.9596
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: EtxHRy9vDF4IOfGVeTEPT0hFCOj9enXZLyrATlvJjpyNEaJBz01p9qcfVopDM9ILzNS/P19sEGF4GvGAm0x+vKiaF/C3qjf1+jvLGlgDsbE=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB3355
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset="utf-8"
+X-Mailer: b4 0.10.0-dev-49460
+X-Developer-Signature: v=1; a=openpgp-sha256; l=4882; i=maxime@cerno.tech; h=from:subject:message-id; bh=3LO0aI1Yh755iBsOxkpa0oEMVEvSmtsQbweMjXCmxKE=; b=owGbwMvMwCHc4XzqmfnC7acZT6slMSQ94VFSYDLgbmbSKuGIuKvUeU9zUly2iUq0YMf2fuO3do4L WYU6SlkYhDkYZMUUWa4LvrXjC4tyi+D5sBlmDisTyBAGLk4BmEjXVIZ/2nLzX3sYL1SPSQi84JJS9T AjXuJIgUOIzylXoZcmjpOPM/yVcTD+v2TVn/paPre2zbU/YjI2Tak9v/JK0+9m+xSzV03FAA==
+X-Developer-Key: i=maxime@cerno.tech; a=openpgp; fpr=BE5675C37E818C8B5764241C254BCFC56BF6CE8D
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-QWdyZWUgd2l0aCBUaG9tYXMsIGRybV9hdG9taWNfY29tbWl0KCkgd2lsbCBub3QgY2FsbCBrbWJf
-YXRvbWljX3VwZGF0ZSgpIHdpdGggYSBOVUxMIHBsYW5lLiBUaGlzIGlzIG5vdCBhbiBhY3R1YWwg
-YnVnLg0KDQpUaGFua3MsDQpBbml0aGEgDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0N
-Cj4gRnJvbTogVGhvbWFzIFppbW1lcm1hbm4gPHR6aW1tZXJtYW5uQHN1c2UuZGU+DQo+IFNlbnQ6
-IEZyaWRheSwgSnVseSAyOSwgMjAyMiA3OjI2IEFNDQo+IFRvOiBaZW5nIEppbmd4aWFuZyA8emVu
-Z2p4OTVAZ21haWwuY29tPjsgQ2hyaXNhbnRodXMsIEFuaXRoYQ0KPiA8YW5pdGhhLmNocmlzYW50
-aHVzQGludGVsLmNvbT47IGVkbXVuZC5qLmRlYUBpbnRlbC5jb207IGFpcmxpZWRAbGludXguaWU7
-DQo+IGRhbmllbEBmZndsbC5jaDsgbGF1cmVudC5waW5jaGFydEBpZGVhc29uYm9hcmQuY29tOyBt
-YXhpbWVAY2Vybm8udGVjaDsNCj4gdmlsbGUuc3lyamFsYUBsaW51eC5pbnRlbC5jb20NCj4gQ2M6
-IFplbmcgSmluZ3hpYW5nIDxsaW51c3plbmdAdGVuY2VudC5jb20+OyBsaW51eC1rZXJuZWxAdmdl
-ci5rZXJuZWwub3JnOw0KPiBkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnDQo+IFN1Ympl
-Y3Q6IFJlOiBbUEFUQ0hdIGRybS9rbWI6IGZpeCBkZXJlZmVyZW5jZSBiZWZvcmUgTlVMTCBjaGVj
-ayBpbg0KPiBrbWJfcGxhbmVfYXRvbWljX3VwZGF0ZSgpDQo+IA0KPiBIaQ0KPiANCj4gQW0gMjku
-MDcuMjIgdW0gMTY6MjMgc2NocmllYiBUaG9tYXMgWmltbWVybWFubjoNCj4gPiBIaQ0KPiA+DQo+
-ID4gQW0gMjkuMDcuMjIgdW0gMDU6MDcgc2NocmllYiBaZW5nIEppbmd4aWFuZzoNCj4gPj4gRnJv
-bTogWmVuZyBKaW5neGlhbmcgPGxpbnVzemVuZ0B0ZW5jZW50LmNvbT4NCj4gPj4NCj4gPj4gVGhl
-ICJwbGFuZSIgcG9pbnRlciB3YXMgYWNjZXNzIGJlZm9yZSBjaGVja2luZyBpZiBpdCB3YXMgTlVM
-TC4NCj4gPj4NCj4gPj4gVGhlIGRybV9hdG9taWNfZ2V0X29sZF9wbGFuZV9zdGF0ZSgpIGZ1bmN0
-aW9uIHdpbGwgZGVyZWZlcmVuY2UNCj4gPj4gdGhlIHBvaW50ZXIgInBsYW5lIi4NCj4gPj4gMzQ1
-wqDCoMKgIHN0cnVjdCBkcm1fcGxhbmVfc3RhdGUgKm9sZF9wbGFuZV9zdGF0ZSA9DQo+ID4+IMKg
-wqDCoMKgwqDCoMKgIGRybV9hdG9taWNfZ2V0X29sZF9wbGFuZV9zdGF0ZShzdGF0ZSwgcGxhbmUp
-Ow0KPiA+PiAzNDbCoMKgwqAgc3RydWN0IGRybV9wbGFuZV9zdGF0ZSAqbmV3X3BsYW5lX3N0YXRl
-ID0NCj4gPj4gwqDCoMKgwqDCoMKgwqAgZHJtX2F0b21pY19nZXRfbmV3X3BsYW5lX3N0YXRlKHN0
-YXRlLCBwbGFuZSk7DQo+ID4+DQo+ID4+IEEgTlVMTCBjaGVjayBmb3IgInBsYW5lIiBpbmRpY2F0
-ZXMgdGhhdCBpdCBtYXkgYmUgTlVMTA0KPiA+PiAzNjPCoMKgwqAgaWYgKCFwbGFuZSB8fCAhbmV3
-X3BsYW5lX3N0YXRlIHx8ICFvbGRfcGxhbmVfc3RhdGUpDQo+ID4NCj4gPiBJcyB0aGlzIGFuIGFj
-dHVhbCBidWcgdGhhdCBoYXBwZW5zPw0KPiA+DQo+ID4gQWxsIHBsYW5lcyBzaG91bGQgYWx3YXlz
-IGhhdmUgYSBzdGF0ZS4gVGhlcmVmb3JlIHRoZSB0ZXN0cyBmb3INCj4gPiAhbmV3X3BsYW5lX3N0
-YXRlIGFuZCAhb2xkX3BsYW5lX3N0YXRlIGNhbiBiZSByZW1vdmVkLCBJJ2Qgc2F5Lg0KPiANCj4g
-SnVzdCB0byBjbGFyaWZ5OiBtb3ZpbmcgdGhlIHRlc3QgZm9yICFwbGFuZSBiZWZvcmUgdXNpbmcg
-b25lIG9mIHRoZQ0KPiBnZXRfcGxhbmVfc3RhdGUgZnVuY3Rpb25zIGlzIGEgY29ycmVjdCBidWdm
-aXguDQo+IA0KPiBCZXN0IHJlZ2FyZHMNCj4gVGhvbWFzDQo+IA0KPiA+DQo+ID4gQmVzdCByZWdh
-cmRzDQo+ID4gVGhvbWFzDQo+ID4NCj4gPj4NCj4gPj4gRml4ZXM6IDk3NzY5N2UyMGIzZCAoImRy
-bS9hdG9taWM6IFBhc3MgdGhlIGZ1bGwgc3RhdGUgdG8gcGxhbmVzIGF0b21pYw0KPiA+PiBkaXNh
-YmxlIGFuZCB1cGRhdGUiKQ0KPiA+PiBGaXhlczogMzc0MThiZjE0YzEzICgiZHJtOiBVc2Ugc3Rh
-dGUgaGVscGVyIGluc3RlYWQgb2YgdGhlIHBsYW5lIHN0YXRlDQo+ID4+IHBvaW50ZXIiKQ0KPiA+
-PiBTaWduZWQtb2ZmLWJ5OiBaZW5nIEppbmd4aWFuZyA8bGludXN6ZW5nQHRlbmNlbnQuY29tPg0K
-PiA+PiAtLS0NCj4gPj4gwqAgZHJpdmVycy9ncHUvZHJtL2ttYi9rbWJfcGxhbmUuYyB8IDEzICsr
-KysrKysrLS0tLS0NCj4gPj4gwqAgMSBmaWxlIGNoYW5nZWQsIDggaW5zZXJ0aW9ucygrKSwgNSBk
-ZWxldGlvbnMoLSkNCj4gPj4NCj4gPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvZ3B1L2RybS9rbWIv
-a21iX3BsYW5lLmMNCj4gPj4gYi9kcml2ZXJzL2dwdS9kcm0va21iL2ttYl9wbGFuZS5jDQo+ID4+
-IGluZGV4IDI3MzViOGViMzUzNy4uZDJiYzk5OGI2NWNlIDEwMDY0NA0KPiA+PiAtLS0gYS9kcml2
-ZXJzL2dwdS9kcm0va21iL2ttYl9wbGFuZS5jDQo+ID4+ICsrKyBiL2RyaXZlcnMvZ3B1L2RybS9r
-bWIva21iX3BsYW5lLmMNCj4gPj4gQEAgLTM0MiwxMCArMzQyLDcgQEAgc3RhdGljIHZvaWQga21i
-X3BsYW5lX3NldF9hbHBoYShzdHJ1Y3QNCj4gPj4ga21iX2RybV9wcml2YXRlICprbWIsDQo+ID4+
-IMKgIHN0YXRpYyB2b2lkIGttYl9wbGFuZV9hdG9taWNfdXBkYXRlKHN0cnVjdCBkcm1fcGxhbmUg
-KnBsYW5lLA0KPiA+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAg
-c3RydWN0IGRybV9hdG9taWNfc3RhdGUgKnN0YXRlKQ0KPiA+PiDCoCB7DQo+ID4+IC3CoMKgwqAg
-c3RydWN0IGRybV9wbGFuZV9zdGF0ZSAqb2xkX3BsYW5lX3N0YXRlID0NCj4gPj4gZHJtX2F0b21p
-Y19nZXRfb2xkX3BsYW5lX3N0YXRlKHN0YXRlLA0KPiA+PiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqAgcGxhbmUpOw0KPiA+PiAtwqDCoMKgIHN0cnVjdCBkcm1fcGxhbmVfc3RhdGUgKm5ld19wbGFu
-ZV9zdGF0ZSA9DQo+ID4+IGRybV9hdG9taWNfZ2V0X25ld19wbGFuZV9zdGF0ZShzdGF0ZSwNCj4g
-Pj4gLcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHBsYW5lKTsNCj4gPj4gK8KgwqDCoCBzdHJ1Y3Qg
-ZHJtX3BsYW5lX3N0YXRlICpvbGRfcGxhbmVfc3RhdGUsICpuZXdfcGxhbmVfc3RhdGU7DQo+ID4+
-IMKgwqDCoMKgwqAgc3RydWN0IGRybV9mcmFtZWJ1ZmZlciAqZmI7DQo+ID4+IMKgwqDCoMKgwqAg
-c3RydWN0IGttYl9kcm1fcHJpdmF0ZSAqa21iOw0KPiA+PiDCoMKgwqDCoMKgIHVuc2lnbmVkIGlu
-dCB3aWR0aDsNCj4gPj4gQEAgLTM2MCw3ICszNTcsMTMgQEAgc3RhdGljIHZvaWQga21iX3BsYW5l
-X2F0b21pY191cGRhdGUoc3RydWN0DQo+ID4+IGRybV9wbGFuZSAqcGxhbmUsDQo+ID4+IMKgwqDC
-oMKgwqAgc3RhdGljIGRtYV9hZGRyX3QgYWRkcltNQVhfU1VCX1BMQU5FU107DQo+ID4+IMKgwqDC
-oMKgwqAgc3RydWN0IGRpc3BfY2ZnICppbml0X2Rpc3BfY2ZnOw0KPiA+PiAtwqDCoMKgIGlmICgh
-cGxhbmUgfHwgIW5ld19wbGFuZV9zdGF0ZSB8fCAhb2xkX3BsYW5lX3N0YXRlKQ0KPiA+PiArwqDC
-oMKgIGlmICghcGxhbmUpDQo+ID4+ICvCoMKgwqDCoMKgwqDCoCByZXR1cm47DQo+ID4+ICsNCj4g
-Pj4gK8KgwqDCoCBvbGRfcGxhbmVfc3RhdGUgPSBkcm1fYXRvbWljX2dldF9vbGRfcGxhbmVfc3Rh
-dGUoc3RhdGUsIHBsYW5lKTsNCj4gPj4gK8KgwqDCoCBuZXdfcGxhbmVfc3RhdGUgPSBkcm1fYXRv
-bWljX2dldF9uZXdfcGxhbmVfc3RhdGUoc3RhdGUsIHBsYW5lKTsNCj4gPj4gKw0KPiA+PiArwqDC
-oMKgIGlmICghbmV3X3BsYW5lX3N0YXRlIHx8ICFvbGRfcGxhbmVfc3RhdGUpDQo+ID4+IMKgwqDC
-oMKgwqDCoMKgwqDCoCByZXR1cm47DQo+ID4+IMKgwqDCoMKgwqAgZmIgPSBuZXdfcGxhbmVfc3Rh
-dGUtPmZiOw0KPiA+DQo+IA0KPiAtLQ0KPiBUaG9tYXMgWmltbWVybWFubg0KPiBHcmFwaGljcyBE
-cml2ZXIgRGV2ZWxvcGVyDQo+IFNVU0UgU29mdHdhcmUgU29sdXRpb25zIEdlcm1hbnkgR21iSA0K
-PiBNYXhmZWxkc3RyLiA1LCA5MDQwOSBOw7xybmJlcmcsIEdlcm1hbnkNCj4gKEhSQiAzNjgwOSwg
-QUcgTsO8cm5iZXJnKQ0KPiBHZXNjaMOkZnRzZsO8aHJlcjogSXZvIFRvdGV2DQo=
+We currently have two sets of TV properties.
+
+The first one is there to deal with analog TV properties, creating
+properties such as the TV mode, subconnectors, saturation, hue and so on.
+It's created by calling the drm_mode_create_tv_properties() function.
+
+The second one is there to deal with properties that might be useful on a
+TV, creating the overscan margins for example. It's created by calling the
+drm_mode_create_tv_margin_properties().
+
+However, we also have a drm_atomic_helper_connector_tv_reset() function
+that will reset the TV margin properties to their default values, and thus
+is supposed to be called for the latter set. This creates an ambiguity due
+to the inconsistent naming.
+
+We can thus rename the drm_atomic_helper_connector_tv_reset() function to
+drm_atomic_helper_connector_tv_margins_reset() to remove that ambiguity
+and hopefully make it more obvious.
+
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+
+diff --git a/drivers/gpu/drm/drm_atomic_state_helper.c b/drivers/gpu/drm/drm_atomic_state_helper.c
+index bf31b9d92094..dfb57217253b 100644
+--- a/drivers/gpu/drm/drm_atomic_state_helper.c
++++ b/drivers/gpu/drm/drm_atomic_state_helper.c
+@@ -464,12 +464,12 @@ void drm_atomic_helper_connector_reset(struct drm_connector *connector)
+ EXPORT_SYMBOL(drm_atomic_helper_connector_reset);
+ 
+ /**
+- * drm_atomic_helper_connector_tv_reset - Resets TV connector properties
++ * drm_atomic_helper_connector_tv_margins_reset - Resets TV connector properties
+  * @connector: DRM connector
+  *
+  * Resets the TV-related properties attached to a connector.
+  */
+-void drm_atomic_helper_connector_tv_reset(struct drm_connector *connector)
++void drm_atomic_helper_connector_tv_margins_reset(struct drm_connector *connector)
+ {
+ 	struct drm_cmdline_mode *cmdline = &connector->cmdline_mode;
+ 	struct drm_connector_state *state = connector->state;
+@@ -479,7 +479,7 @@ void drm_atomic_helper_connector_tv_reset(struct drm_connector *connector)
+ 	state->tv.margins.top = cmdline->tv_margins.top;
+ 	state->tv.margins.bottom = cmdline->tv_margins.bottom;
+ }
+-EXPORT_SYMBOL(drm_atomic_helper_connector_tv_reset);
++EXPORT_SYMBOL(drm_atomic_helper_connector_tv_margins_reset);
+ 
+ /**
+  * __drm_atomic_helper_connector_duplicate_state - copy atomic connector state
+diff --git a/drivers/gpu/drm/gud/gud_connector.c b/drivers/gpu/drm/gud/gud_connector.c
+index d0addd478815..fa636206f232 100644
+--- a/drivers/gpu/drm/gud/gud_connector.c
++++ b/drivers/gpu/drm/gud/gud_connector.c
+@@ -355,7 +355,7 @@ static void gud_connector_reset(struct drm_connector *connector)
+ 	drm_atomic_helper_connector_reset(connector);
+ 	connector->state->tv = gconn->initial_tv_state;
+ 	/* Set margins from command line */
+-	drm_atomic_helper_connector_tv_reset(connector);
++	drm_atomic_helper_connector_tv_margins_reset(connector);
+ 	if (gconn->initial_brightness >= 0)
+ 		connector->state->tv.brightness = gconn->initial_brightness;
+ }
+diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
+index 719a3c3b4ef6..66e38760d5aa 100644
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -397,7 +397,7 @@ static void vc4_hdmi_connector_reset(struct drm_connector *connector)
+ 	new_state->base.max_bpc = 8;
+ 	new_state->base.max_requested_bpc = 8;
+ 	new_state->output_format = VC4_HDMI_OUTPUT_RGB;
+-	drm_atomic_helper_connector_tv_reset(connector);
++	drm_atomic_helper_connector_tv_margins_reset(connector);
+ }
+ 
+ static struct drm_connector_state *
+diff --git a/include/drm/drm_atomic_state_helper.h b/include/drm/drm_atomic_state_helper.h
+index 3f8f1d627f7c..192766656b88 100644
+--- a/include/drm/drm_atomic_state_helper.h
++++ b/include/drm/drm_atomic_state_helper.h
+@@ -70,7 +70,7 @@ void __drm_atomic_helper_connector_state_reset(struct drm_connector_state *conn_
+ void __drm_atomic_helper_connector_reset(struct drm_connector *connector,
+ 					 struct drm_connector_state *conn_state);
+ void drm_atomic_helper_connector_reset(struct drm_connector *connector);
+-void drm_atomic_helper_connector_tv_reset(struct drm_connector *connector);
++void drm_atomic_helper_connector_tv_margins_reset(struct drm_connector *connector);
+ void
+ __drm_atomic_helper_connector_duplicate_state(struct drm_connector *connector,
+ 					   struct drm_connector_state *state);
+diff --git a/include/drm/drm_connector.h b/include/drm/drm_connector.h
+index 2c6fa746efac..f185ad862cb1 100644
+--- a/include/drm/drm_connector.h
++++ b/include/drm/drm_connector.h
+@@ -671,7 +671,7 @@ struct drm_connector_tv_margins {
+ 
+ /**
+  * struct drm_tv_connector_state - TV connector related states
+- * @subconnector: selected subconnector
++ * @select_subconnector: selected subconnector
+  * @margins: TV margins
+  * @mode: TV mode
+  * @brightness: brightness in percent
+
+-- 
+b4 0.10.0-dev-49460
