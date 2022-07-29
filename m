@@ -2,36 +2,36 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA488C19F2C
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 09:40:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97DAAC19F2B
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 09:40:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235787AbiG2Jkc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 05:40:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38736 "EHLO
+        id S235790AbiG2Jkw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 05:40:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235707AbiG2JkI (ORCPT
+        with ESMTP id S235902AbiG2Jk2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 05:40:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCB23863E3;
-        Fri, 29 Jul 2022 02:39:50 -0700 (PDT)
+        Fri, 29 Jul 2022 05:40:28 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E508218C;
+        Fri, 29 Jul 2022 02:40:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D8D2FB826F8;
-        Fri, 29 Jul 2022 09:39:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E94E8C433C1;
-        Fri, 29 Jul 2022 09:39:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3528261D97;
+        Fri, 29 Jul 2022 09:40:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F37AC4347C;
+        Fri, 29 Jul 2022 09:39:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659087587;
-        bh=qSQyTWfkKzEDzU3CxXWDxGtFFKdu6RDV4KVTqfCnI6A=;
+        s=k20201202; t=1659087602;
+        bh=CCZnCiGIC2XrY3X8NeTs1iYP+uKvFbdPaa4pIVTAjAw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ar6tLgjYA6OSKTfQv8kSl9NNZzP5rB19A1VcMFl8i3MLzenhPGtTnZ/8IO3zcps+H
-         X4my9vShRlmucX30grVe2mwD7yVPM7MWytO3YSFEL3E9ks7MaP6FHTHPAvnwNDjDty
-         /HdZEqn7betps+7OLi+uDlg1eXdIeqb8de7u2R4H07VlfRRkrNmekq05rRuAZQENlZ
-         3ClS1w0KNtYj5S2iZYtBrSz5hRLsoFuqsJ+AywBuYkRkDzXX60oXYZSPnhcy9HvnSi
-         ITJnPvVURIB1dU6htKNgVNchXhyC0D9PYeBUIvOrpSRtd0q7ainbhiDGRBEAqK8PVU
-         AhB6eWdo9AMng==
+        b=fVxasy3v50AjSlKBz9atN+FLSf8+QBuP8/8AOgiPUMVxIuyYrSMinl1aQndO17lLy
+         b13gTSdELcCTApA08Ddd6tx7zpXPIRhhTkTT0ZGgux2HDS2mNXkzrjKD5nRcYsGaad
+         E2Bym9HozZgJRa5k3xV9m7dk0tjyTzgZoWu+NoeAn5fGuyCua1K1DebDM7POHXs3wq
+         nmPPJ+ssAs8rIRDPfBygEoofew6JOexhjV8Jtk1o9dJIw3gKKxi46Yhm11gE3djoI2
+         QF/5/5wRUhLh1CJ3ayj1pScvx1VkchMhNgAHuUUEyzHAchjUMi3cjA0HH97lULXQHC
+         4WnQ/gOYV251A==
 From:   Daniel Bristot de Oliveira <bristot@kernel.org>
 To:     Steven Rostedt <rostedt@goodmis.org>
 Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
@@ -54,9 +54,9 @@ Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
         Randy Dunlap <rdunlap@infradead.org>,
         linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-trace-devel@vger.kernel.org
-Subject: [PATCH V9 08/16] Documentation/rv: Add deterministic automaton documentation
-Date:   Fri, 29 Jul 2022 11:38:47 +0200
-Message-Id: <387edaed87630bd5eb37c4275045dfd229700aa6.1659052063.git.bristot@kernel.org>
+Subject: [PATCH V9 11/16] Documentation/rv: Add deterministic automata instrumentation documentation
+Date:   Fri, 29 Jul 2022 11:38:50 +0200
+Message-Id: <0557d5c68e2fc252f2643c2cc5295a67e2b73277.1659052063.git.bristot@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <cover.1659052063.git.bristot@kernel.org>
 References: <cover.1659052063.git.bristot@kernel.org>
@@ -66,8 +66,8 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add documentation about deterministic automaton and its possible
-representations (formal, graphic, .dot and C).
+Add the da_monitor_instrumentation.rst. It describes the basics
+of RV monitor instrumentation.
 
 Cc: Wim Van Sebroeck <wim@linux-watchdog.org>
 Cc: Guenter Roeck <linux@roeck-us.net>
@@ -92,255 +92,197 @@ Cc: linux-kernel@vger.kernel.org
 Cc: linux-trace-devel@vger.kernel.org
 Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
 ---
- .../trace/rv/deterministic_automata.rst       | 184 ++++++++++++++++++
+ .../trace/rv/da_monitor_instrumentation.rst   | 171 ++++++++++++++++++
  Documentation/trace/rv/index.rst              |   1 +
- tools/verification/dot2/automata.py           |   3 +
- tools/verification/dot2/dot2c                 |   3 +
- tools/verification/dot2/dot2c.py              |   3 +
- 5 files changed, 194 insertions(+)
- create mode 100644 Documentation/trace/rv/deterministic_automata.rst
+ 2 files changed, 172 insertions(+)
+ create mode 100644 Documentation/trace/rv/da_monitor_instrumentation.rst
 
-diff --git a/Documentation/trace/rv/deterministic_automata.rst b/Documentation/trace/rv/deterministic_automata.rst
+diff --git a/Documentation/trace/rv/da_monitor_instrumentation.rst b/Documentation/trace/rv/da_monitor_instrumentation.rst
 new file mode 100644
-index 000000000000..d0638f95a455
+index 000000000000..6c67c7b57811
 --- /dev/null
-+++ b/Documentation/trace/rv/deterministic_automata.rst
-@@ -0,0 +1,184 @@
-+Deterministic Automata
-+======================
++++ b/Documentation/trace/rv/da_monitor_instrumentation.rst
+@@ -0,0 +1,171 @@
++Deterministic Automata Instrumentation
++======================================
 +
-+Formally, a deterministic automaton, denoted by G, is defined as a quintuple:
++The RV monitor file created by dot2k, with the name "$MODEL_NAME.c"
++includes a section dedicated to instrumentation.
 +
-+        *G* = { *X*, *E*, *f*, x\ :subscript:`0`, X\ :subscript:`m` }
++In the example of the wip.dot monitor created on [1], it will look like::
 +
-+where:
-+
-+- *X* is the set of states;
-+- *E* is the finite set of events;
-+- x\ :subscript:`0` is the initial state;
-+- X\ :subscript:`m` (subset of *X*) is the set of marked (or final) states.
-+- *f* : *X* x *E* -> *X* $ is the transition function. It defines the state
-+  transition in the occurrence of an event from *E* in the state *X*. In the
-+  special case of deterministic automata, the occurrence of the event in *E*
-+  in a state in *X* has a deterministic next state from *X*.
-+
-+For example, a given automaton named 'wip' (wakeup in preemptive) can
-+be defined as:
-+
-+- *X* = { ``preemptive``, ``non_preemptive``}
-+- *E* = { ``preempt_enable``, ``preempt_disable``, ``sched_waking``}
-+- x\ :subscript:`0` = ``preemptive``
-+- X\ :subscript:`m` = {``preemptive``}
-+- *f* =
-+   - *f*\ (``preemptive``, ``preempt_disable``) = ``non_preemptive``
-+   - *f*\ (``non_preemptive``, ``sched_waking``) = ``non_preemptive``
-+   - *f*\ (``non_preemptive``, ``preempt_enable``) = ``preemptive``
-+
-+One of the benefits of this formal definition is that it can be presented
-+in multiple formats. For example, using a *graphical representation*, using
-+vertices (nodes) and edges, which is very intuitive for *operating system*
-+practitioners, without any loss.
-+
-+The previous 'wip' automaton can also be represented as::
-+
-+                       preempt_enable
-+          +---------------------------------+
-+          v                                 |
-+        #============#  preempt_disable   +------------------+
-+    --> H preemptive H -----------------> |  non_preemptive  |
-+        #============#                    +------------------+
-+                                            ^              |
-+                                            | sched_waking |
-+                                            +--------------+
-+
-+Deterministic Automaton in C
-+----------------------------
-+
-+In the paper "Efficient formal verification for the Linux kernel",
-+the authors present a simple way to represent an automaton in C that can
-+be used as regular code in the Linux kernel.
-+
-+For example, the 'wip' automata can be presented as (augmented with comments)::
-+
-+  /* enum representation of X (set of states) to be used as index */
-+  enum states {
-+	preemptive = 0,
-+	non_preemptive,
-+	state_max
-+  };
-+
-+  #define INVALID_STATE state_max
-+
-+  /* enum representation of E (set of events) to be used as index */
-+  enum events {
-+	preempt_disable = 0,
-+	preempt_enable,
-+	sched_waking,
-+	event_max
-+  };
-+
-+  struct automaton {
-+	char *state_names[state_max];                   // X: the set of states
-+	char *event_names[event_max];                   // E: the finite set of events
-+	unsigned char function[state_max][event_max];   // f: transition function
-+	unsigned char initial_state;                    // x_0: the initial state
-+	bool final_states[state_max];                   // X_m: the set of marked states
-+  };
-+
-+  struct automaton aut = {
-+	.state_names = {
-+		"preemptive",
-+		"non_preemptive"
-+	},
-+	.event_names = {
-+		"preempt_disable",
-+		"preempt_enable",
-+		"sched_waking"
-+	},
-+	.function = {
-+		{ non_preemptive,  INVALID_STATE,  INVALID_STATE },
-+		{  INVALID_STATE,     preemptive, non_preemptive },
-+	},
-+	.initial_state = preemptive,
-+	.final_states = { 1, 0 },
-+  };
-+
-+The *transition function* is represented as a matrix of states (lines) and
-+events (columns), and so the function *f* : *X* x *E* -> *X* can be solved
-+in O(1). For example::
-+
-+  next_state = automaton_wip.function[curr_state][event];
-+
-+Graphviz .dot format
-+--------------------
-+
-+The Graphviz open-source tool can produce the graphical representation
-+of an automaton using the (textual) DOT language as the source code.
-+The DOT format is widely used and can be converted to many other formats.
-+
-+For example, this is the 'wip' model in DOT::
-+
-+  digraph state_automaton {
-+        {node [shape = circle] "non_preemptive"};
-+        {node [shape = plaintext, style=invis, label=""] "__init_preemptive"};
-+        {node [shape = doublecircle] "preemptive"};
-+        {node [shape = circle] "preemptive"};
-+        "__init_preemptive" -> "preemptive";
-+        "non_preemptive" [label = "non_preemptive"];
-+        "non_preemptive" -> "non_preemptive" [ label = "sched_waking" ];
-+        "non_preemptive" -> "preemptive" [ label = "preempt_enable" ];
-+        "preemptive" [label = "preemptive"];
-+        "preemptive" -> "non_preemptive" [ label = "preempt_disable" ];
-+        { rank = min ;
-+                "__init_preemptive";
-+                "preemptive";
-+        }
++  /*
++   * This is the instrumentation part of the monitor.
++   *
++   * This is the section where manual work is required. Here the kernel events
++   * are translated into model's event.
++   *
++   */
++  static void handle_preempt_disable(void *data, /* XXX: fill header */)
++  {
++	da_handle_event_wip(preempt_disable_wip);
 +  }
 +
-+This DOT format can be transformed into a bitmap or vectorial image
-+using the dot utility, or into an ASCII art using graph-easy. For
-+instance::
++  static void handle_preempt_enable(void *data, /* XXX: fill header */)
++  {
++	da_handle_event_wip(preempt_enable_wip);
++  }
 +
-+  $ dot -Tsvg -o wip.svg wip.dot
-+  $ graph-easy wip.dot > wip.txt
++  static void handle_sched_waking(void *data, /* XXX: fill header */)
++  {
++	da_handle_event_wip(sched_waking_wip);
++  }
 +
-+dot2c
-+-----
++  static int enable_wip(void)
++  {
++	int retval;
 +
-+dot2c is a utility that can parse a .dot file containing an automaton as
-+in the example above and automatically convert it to the C representation
-+presented in [3].
++	retval = da_monitor_init_wip();
++	if (retval)
++		return retval;
 +
-+For example, having the previous 'wip' model into a file named 'wip.dot',
-+the following command will transform the .dot file into the C
-+representation (previously shown) in the 'wip.h' file::
++	rv_attach_trace_probe("wip", /* XXX: tracepoint */, handle_preempt_disable);
++	rv_attach_trace_probe("wip", /* XXX: tracepoint */, handle_preempt_enable);
++	rv_attach_trace_probe("wip", /* XXX: tracepoint */, handle_sched_waking);
 +
-+  $ dot2c wip.dot > wip.h
++	return 0;
++  }
 +
-+The 'wip.h' content is the code sample in section 'Deterministic Automaton
-+in C'.
++The comment at the top of the section explains the general idea: the
++instrumentation section translates *kernel events* into the *model's
++event*.
 +
-+Remarks
-+-------
++Tracing callback functions
++--------------------------
 +
-+The automata formalism allows modeling discrete event systems (DES) in
-+multiple formats, suitable for different applications/users.
++The first three functions are the starting point of the callback *handler
++functions* for each of the three events from the wip model. The developer
++does not necessarily need to use them: they are just starting points.
 +
-+For example, the formal description using set theory is better suitable
-+for automata operations, while the graphical format for human interpretation;
-+and computer languages for machine execution.
++Using the example of::
 +
-+References
-+----------
++ void handle_preempt_disable(void *data, /* XXX: fill header */)
++ {
++        da_handle_event_wip(preempt_disable_wip);
++ }
 +
-+Many textbooks cover automata formalism. For a brief introduction see::
++The preempt_disable event from the model connects directly to the
++preemptirq:preempt_disable. The preemptirq:preempt_disable event
++has the following signature, from include/trace/events/preemptirq.h::
 +
-+  O'Regan, Gerard. Concise guide to software engineering. Springer,
-+  Cham, 2017.
++  TP_PROTO(unsigned long ip, unsigned long parent_ip)
 +
-+For a detailed description, including operations, and application on Discrete
-+Event Systems (DES), see::
++Hence, the handle_preempt_disable() function will look like::
 +
-+  Cassandras, Christos G., and Stephane Lafortune, eds. Introduction to discrete
-+  event systems. Boston, MA: Springer US, 2008.
++  void handle_preempt_disable(void *data, unsigned long ip, unsigned long parent_ip)
 +
-+For the C representation in kernel, see::
++In this case, the kernel event translates one to one with the automata
++event, and indeed, no other change is required for this function.
 +
-+  De Oliveira, Daniel Bristot; Cucinotta, Tommaso; De Oliveira, Romulo
-+  Silva. Efficient formal verification for the Linux kernel. In:
-+  International Conference on Software Engineering and Formal Methods.
-+  Springer, Cham, 2019. p. 315-332.
++The next handler function, handle_preempt_enable() has the same argument
++list from the handle_preempt_disable(). The difference is that the
++preempt_enable event will be used to synchronize the system to the model.
++
++Initially, the *model* is placed in the initial state. However, the *system*
++might or might not be in the initial state. The monitor cannot start
++processing events until it knows that the system has reached the initial state.
++Otherwise, the monitor and the system could be out-of-sync.
++
++Looking at the automata definition, it is possible to see that the system
++and the model are expected to return to the initial state after the
++preempt_enable execution. Hence, it can be used to synchronize the
++system and the model at the initialization of the monitoring section.
++
++The start is informed via a special handle function, the
++"da_handle_start_event_$(MONITOR_NAME)(event)", in this case::
++
++  da_handle_start_event_wip(preempt_enable_wip);
++
++So, the callback function will look like::
++
++  void handle_preempt_enable(void *data, unsigned long ip, unsigned long parent_ip)
++  {
++        da_handle_start_event_wip(preempt_enable_wip);
++  }
++
++Finally, the "handle_sched_waking()" will look like::
++
++  void handle_sched_waking(void *data, struct task_struct *task)
++  {
++        da_handle_event_wip(sched_waking_wip);
++  }
++
++And the explanation is left for the reader as an exercise.
++
++enable and disable functions
++----------------------------
++
++dot2k automatically creates two special functions::
++
++  enable_$(MONITOR_NAME)()
++  disable_$(MONITOR_NAME)()
++
++These functions are called when the monitor is enabled and disabled,
++respectively.
++
++They should be used to *attach* and *detach* the instrumentation to the running
++system. The developer must add to the relative function all that is needed to
++*attach* and *detach* its monitor to the system.
++
++For the wip case, these functions were named::
++
++ enable_wip()
++ disable_wip()
++
++But no change was required because: by default, these functions *attach* and
++*detach* the tracepoints_to_attach, which was enough for this case.
++
++Instrumentation helpers
++-----------------------
++
++To complete the instrumentation, the *handler functions* need to be attached to a
++kernel event, at the monitoring enable phase.
++
++The RV interface also facilitates this step. For example, the macro "rv_attach_trace_probe()"
++is used to connect the wip model events to the relative kernel event. dot2k automatically
++adds "rv_attach_trace_probe()" function call for each model event in the enable phase, as
++a suggestion.
++
++For example, from the wip sample model::
++
++  static int enable_wip(void)
++  {
++        int retval;
++
++        retval = da_monitor_init_wip();
++        if (retval)
++                return retval;
++
++        rv_attach_trace_probe("wip", /* XXX: tracepoint */, handle_preempt_enable);
++        rv_attach_trace_probe("wip", /* XXX: tracepoint */, handle_sched_waking);
++        rv_attach_trace_probe("wip", /* XXX: tracepoint */, handle_preempt_disable);
++
++        return 0;
++  }
++
++The probes then need to be detached at the disable phase.
++
++[1] The wip model is presented in::
++
++  Documentation/trace/rv/deterministic_automata.rst
++
++The wip monitor is presented in::
++
++  Documentation/trace/rv/da_monitor_synthesis.rst
 diff --git a/Documentation/trace/rv/index.rst b/Documentation/trace/rv/index.rst
-index b54e49b1d0de..013a41a410cf 100644
+index 46d47f33052c..db2ae3f90b90 100644
 --- a/Documentation/trace/rv/index.rst
 +++ b/Documentation/trace/rv/index.rst
-@@ -7,3 +7,4 @@ Runtime Verification
-    :glob:
- 
+@@ -9,3 +9,4 @@ Runtime Verification
     runtime-verification.rst
-+   deterministic_automata.rst
-diff --git a/tools/verification/dot2/automata.py b/tools/verification/dot2/automata.py
-index f22e1dff19ce..baffeb960ff0 100644
---- a/tools/verification/dot2/automata.py
-+++ b/tools/verification/dot2/automata.py
-@@ -4,6 +4,9 @@
- # Copyright (C) 2019-2022 Red Hat, Inc. Daniel Bristot de Oliveira <bristot@kernel.org>
- #
- # Automata object: parse an automata in dot file digraph format into a python object
-+#
-+# For further information, see:
-+#   Documentation/trace/rv/deterministic_automata.rst
- 
- import ntpath
- 
-diff --git a/tools/verification/dot2/dot2c b/tools/verification/dot2/dot2c
-index 8a8cd84bdfcf..3fe89ab88b65 100644
---- a/tools/verification/dot2/dot2c
-+++ b/tools/verification/dot2/dot2c
-@@ -9,6 +9,9 @@
- #  de Oliveira, D. B. and Cucinotta, T. and de Oliveira, R. S.
- #  "Efficient Formal Verification for the Linux Kernel." International
- #  Conference on Software Engineering and Formal Methods. Springer, Cham, 2019.
-+#
-+# For further information, see:
-+#   Documentation/trace/rv/deterministic_automata.rst
- 
- if __name__ == '__main__':
-     from dot2 import dot2c
-diff --git a/tools/verification/dot2/dot2c.py b/tools/verification/dot2/dot2c.py
-index bca902eec483..fa73353f7e56 100644
---- a/tools/verification/dot2/dot2c.py
-+++ b/tools/verification/dot2/dot2c.py
-@@ -9,6 +9,9 @@
- #  de Oliveira, D. B. and Cucinotta, T. and de Oliveira, R. S.
- #  "Efficient Formal Verification for the Linux Kernel." International
- #  Conference on Software Engineering and Formal Methods. Springer, Cham, 2019.
-+#
-+# For further information, see:
-+#   Documentation/trace/rv/deterministic_automata.rst
- 
- from dot2.automata import Automata
- 
+    deterministic_automata.rst
+    da_monitor_synthesis.rst
++   da_monitor_instrumentation.rst
 -- 
 2.35.1
 
