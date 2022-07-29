@@ -2,133 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D968AC19F2D
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 03:51:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F8AFC19F2C
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 03:51:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234187AbiG2Dvp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 28 Jul 2022 23:51:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49784 "EHLO
+        id S234203AbiG2Dvr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 28 Jul 2022 23:51:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230483AbiG2Dvk (ORCPT
+        with ESMTP id S234127AbiG2Dvl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 28 Jul 2022 23:51:40 -0400
-Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88B775A175
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 20:51:39 -0700 (PDT)
-Received: by mail-qt1-x82f.google.com with SMTP id b21so2538468qte.12
-        for <linux-kernel@vger.kernel.org>; Thu, 28 Jul 2022 20:51:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VVLENy3LPh95mhi2xJgnxH73SWwfWDHHc6Zw1S4ewWk=;
-        b=F7bVwxDS/4ZPprmVkY+83whgQIzky9i9rpHH2Fi6UWwicsVJeUJHzAEpCMTkObQOQO
-         I9NbyePISPve9zoHOGKUCklWyFSlPlDNbiiSki7jK+UdCJnmS4d540SvWxp8DTSMe/Yj
-         81Q4UV9XTArpjEswH+iVJEKrhc6IGnoI6C0SiefLECVrX8XGwHz2sCTfenjrHOcioxj2
-         qTzMrVHdsbXN49m3HCO/NcSYHUIWuy4txYJLrWTas38jnEZDVBfXBpzD+Scjuw5ifVTi
-         2XqqLav+8ekiN07l7AsAjqjgpSI57GZnNr8iSnUaobaVVh8dPSMDOf5O0/t4T8WCrpHS
-         Y47Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VVLENy3LPh95mhi2xJgnxH73SWwfWDHHc6Zw1S4ewWk=;
-        b=3NGZJiow+114VKWqN/HiUGSvtFcMK/t1Ne+isAkyny1hWPPva1LuQyWKlEMPk+rI89
-         xYaTuB/98k++d7a/fsUfr6P0MXV4l5XY1wXTbOLKxWIOwCUa7JHYAdcs6NEIbgNq1XdB
-         Ss/TjqqVRl4m6DTSUtDV075aOrVllDjOmVTQ9y78iDybo1av0zn+H/uAkE+7UW65+hLg
-         MrOZuhdJpEoWTWT6mipnEcZiXHQOwG8sxuejwaYdohI5Gep7j5nNW6oav4o1Vs0GSjli
-         jlj2x0RyE0XnyIrBloeUcG3iyRYbNGIPWD2IvcZcuPQz256Ey+yCAfLGVq4g8UfYCWjc
-         Xzlw==
-X-Gm-Message-State: AJIora92JMAvNBy69Cb9tG2aDkAisUxtpe9ui8ir/MLJ9GfkpFgeXHTt
-        F5Vh/1zV+804RIn8L24sxrE/tVE0gxpbVyCzX7YmZQ==
-X-Google-Smtp-Source: AGRyM1tyWsBKFwm7MLq/p6gIvRY/SWoM7rjgG997eKwFx2E6u2vlATwbax3QGVPc9I7M0AyJc9BJQDz2APoVErrJ/vA=
-X-Received: by 2002:ac8:5793:0:b0:31f:4aa:81dd with SMTP id
- v19-20020ac85793000000b0031f04aa81ddmr1808965qta.299.1659066698566; Thu, 28
- Jul 2022 20:51:38 -0700 (PDT)
+        Thu, 28 Jul 2022 23:51:41 -0400
+Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE7D07CB5B;
+        Thu, 28 Jul 2022 20:51:39 -0700 (PDT)
+X-UUID: 7b8fb5f6b6054ae9b4b432e5ec5e4d5b-20220729
+X-CID-P-RULE: Release_Ham
+X-CID-O-INFO: VERSION:1.1.8,REQID:a50d1b30-8045-4e09-b1df-05fae615385b,OB:0,LO
+        B:0,IP:0,URL:0,TC:0,Content:-5,EDM:0,RT:0,SF:0,FILE:0,RULE:Release_Ham,ACT
+        ION:release,TS:-5
+X-CID-META: VersionHash:0f94e32,CLOUDID:d1a6a5d0-841b-4e95-ad42-8f86e18f54fc,C
+        OID:IGNORED,Recheck:0,SF:nil,TC:nil,Content:0,EDM:-3,IP:nil,URL:0,File:nil
+        ,QS:nil,BEC:nil,COL:0
+X-UUID: 7b8fb5f6b6054ae9b4b432e5ec5e4d5b-20220729
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
+        (envelope-from <irui.wang@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 924437438; Fri, 29 Jul 2022 11:51:33 +0800
+Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
+ mtkmbs11n1.mediatek.inc (172.21.101.185) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Fri, 29 Jul 2022 11:51:31 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkmbs11n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.15 via Frontend
+ Transport; Fri, 29 Jul 2022 11:51:30 +0800
+From:   Irui Wang <irui.wang@mediatek.com>
+To:     Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        <angelogioacchino.delregno@collabora.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Alexandre Courbot <acourbot@chromium.org>,
+        Tiffany Lin <tiffany.lin@mediatek.com>,
+        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
+        Tzung-Bi Shih <tzungbi@chromium.org>,
+        Tomasz Figa <tfiga@google.com>,
+        <nicolas.dufresne@collabora.com>
+CC:     Maoguang Meng <maoguang.meng@mediatek.com>,
+        Longfei Wang <longfei.wang@mediatek.com>,
+        Yunfei Dong <yunfei.dong@mediatek.com>,
+        Irui Wang <irui.wang@mediatek.com>,
+        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Subject: [PATCH v5, 0/8] Support H264 multi-core encoder on MT8195
+Date:   Fri, 29 Jul 2022 11:51:21 +0800
+Message-ID: <20220729035129.3634-1-irui.wang@mediatek.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220729033033.3022-1-liulin063@gmail.com>
-In-Reply-To: <20220729033033.3022-1-liulin063@gmail.com>
-From:   Hao Luo <haoluo@google.com>
-Date:   Thu, 28 Jul 2022 20:51:27 -0700
-Message-ID: <CA+khW7hVwRQwXshymZCotPZyHmWXj7gjZvJO1_NnjnBSNjYj+A@mail.gmail.com>
-Subject: Re: [PATCH bpf] bpf: Do more tight ALU bounds tracking
-To:     Kuee K1r0a <liulin063@gmail.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, john.fastabend@gmail.com,
-        andrii@kernel.org, martin.lau@linux.dev, song@kernel.org,
-        yhs@fb.com, kpsingh@kernel.org, sdf@google.com, jolsa@kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+MT8195 has two H264 encoder hardware, named core0 and core1, this two
+cores can encode two input frames separately at the same time to achieve
+higher performance.
 
-On Thu, Jul 28, 2022 at 8:31 PM Kuee K1r0a <liulin063@gmail.com> wrote:
->
-> 32bit bounds and 64bit bounds are updated separately in
-> adjust_scalar_min_max_vals() currently, let them learn from each other to
-> get more tight bounds tracking. Similar operation can be found in
-> reg_set_min_max().
->
-> Before:
->
->     func#0 @0
->     0: R1=ctx(off=0,imm=0) R10=fp0
->     0: (b7) r0 = 0                        ; R0_w=0
->     1: (b7) r1 = 0                        ; R1_w=0
->     2: (87) r1 = -r1                      ; R1_w=scalar()
->     3: (87) r1 = -r1                      ; R1_w=scalar()
->     4: (c7) r1 s>>= 63                    ; R1_w=scalar(smin=-1,smax=0)
->     5: (07) r1 += 2                       ; R1_w=scalar(umin=1,umax=2,var_off=(0x0; 0xffffffff))  <--- [*]
->     6: (95) exit
->
-> It can be seen that even if the 64bit bounds is clear here, the 32bit
-> bounds is still in the state of 'UNKNOWN'.
->
-> After:
->
->     func#0 @0
->     0: R1=ctx(off=0,imm=0) R10=fp0
->     0: (b7) r0 = 0                        ; R0_w=0
->     1: (b7) r1 = 0                        ; R1_w=0
->     2: (87) r1 = -r1                      ; R1_w=scalar()
->     3: (87) r1 = -r1                      ; R1_w=scalar()
->     4: (c7) r1 s>>= 63                    ; R1_w=scalar(smin=-1,smax=0)
->     5: (07) r1 += 2                       ; R1_w=scalar(umin=1,umax=2,var_off=(0x0; 0x3))  <--- [*]
->     6: (95) exit
->
-> Fixes: 3f50f132d840 ("bpf: Verifier, do explicit ALU32 bounds tracking")
-> Signed-off-by: Kuee K1r0a <liulin063@gmail.com>
+This series of patches are used to enable the two H264 encoder cores,
+the difference between encoding process before and after enable two
+cores is just like as below:
+As-Is: Synchronous
+V4L2_VIDIOC_QBUF#0 --> device_run(triger encoder) --> wait encoder IRQ
+-->
+encoding done with result --> job_finish
+V4l2_VIDIOC_QBUF#1 --> device_run(triger encoder) --> wait encoder IRQ
+-->
+encoding done with result --> job_finish
+...
+To-Be: Asynchronous
+V4L2_VIDIOC_QBUF#0 --> device_run(triger encoder) --> job_finish
+..V4l2_VIDIOC_QBUF#1 --> device_run(triger encoder) --> job_finish
+(venc core0 may encode done here, done the encoding result to client)
+V4L2_VIDIOC_QBUF#2 --> device_run(triger encoder) --> job_finish.
 
-Please sign with your real name. Thanks.
+---
+changes compared with v4:
+- reabse to the newer linux media stage tree.
+- remove "mediatek,venc-multi-core" property since sub-device can
+  be probed by of_platform_populate api directly.
+- some modifications for patch v4's review comments.
 
+changes compared with v3:
+- rebase to the newer linux media stage.
+- add a capability to indicate scp firmware support multi-core.
+- probe core0 as main device, core1 as sub-device.
 
-> ---
->  kernel/bpf/verifier.c | 9 ++++++---
->  1 file changed, 6 insertions(+), 3 deletions(-)
->
-> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> index 0efbac0fd126..888aa50fbdc0 100644
-> --- a/kernel/bpf/verifier.c
-> +++ b/kernel/bpf/verifier.c
-> @@ -8934,10 +8934,13 @@ static int adjust_scalar_min_max_vals(struct bpf_verifier_env *env,
->                 break;
->         }
->
-> -       /* ALU32 ops are zero extended into 64bit register */
-> -       if (alu32)
-> +       if (alu32) {
-> +               /* ALU32 ops are zero extended into 64bit register */
->                 zext_32_to_64(dst_reg);
-> -       reg_bounds_sync(dst_reg);
-> +               __reg_combine_32_into_64(dst_reg);
-> +       } else {
-> +               __reg_combine_64_into_32(dst_reg);
-> +       }
->         return 0;
->  }
->
-> --
-> 2.25.1
->
+changes compared with v2:
+- update venc core dt-bindings, add two new properties for current
+  usage.
+- parse venc multi_core mode from device tree.
+- rebase to the newer linux media stage.
+
+changes compared with v1:
+- of_platform_populate was used in place of the component framework.
+- new yaml file for venc cores.
+- some modifications for patch v1's review comments.
+---
+
+Irui Wang (8):
+  dt-bindings: media: mediatek: vcodec: Adds encoder cores dt-bindings
+    for mt8195
+  media: mediatek: vcodec: Enable venc dual core usage
+  media: mediatek: vcodec: Refactor venc power manage function
+  media: mediatek: vcodec: Add more extra processing for multi-core
+    encoding
+  media: mediatek: vcodec: Add venc power on/off function
+  media: mediatek: vcodec: Refactor encoder clock on/off function
+  media: mediatek: vcodec: Add multi-core encoding process
+  media: mediatek: vcodec: Return encoding result in asynchronous mode
+
+ .../media/mediatek,vcodec-encoder-core.yaml   | 218 ++++++++++++++++
+ .../media/mediatek,vcodec-encoder.yaml        |   1 -
+ .../media/platform/mediatek/vcodec/Makefile   |   4 +-
+ .../platform/mediatek/vcodec/mtk_vcodec_drv.h |  28 +-
+ .../platform/mediatek/vcodec/mtk_vcodec_enc.c | 113 ++++++--
+ .../platform/mediatek/vcodec/mtk_vcodec_enc.h |  11 +-
+ .../mediatek/vcodec/mtk_vcodec_enc_drv.c      |  44 +++-
+ .../mediatek/vcodec/mtk_vcodec_enc_hw.c       | 156 +++++++++++
+ .../mediatek/vcodec/mtk_vcodec_enc_hw.h       |  34 +++
+ .../mediatek/vcodec/mtk_vcodec_enc_pm.c       | 178 +++++++++++--
+ .../mediatek/vcodec/mtk_vcodec_enc_pm.h       |  11 +-
+ .../mediatek/vcodec/mtk_vcodec_util.c         |  19 ++
+ .../mediatek/vcodec/mtk_vcodec_util.h         |   3 +
+ .../mediatek/vcodec/venc/venc_h264_if.c       | 243 ++++++++++++++----
+ .../mediatek/vcodec/venc/venc_vp8_if.c        |   3 +-
+ .../platform/mediatek/vcodec/venc_drv_if.c    |  75 ++++--
+ .../platform/mediatek/vcodec/venc_drv_if.h    |   6 +
+ .../platform/mediatek/vcodec/venc_vpu_if.c    |   9 +-
+ .../platform/mediatek/vcodec/venc_vpu_if.h    |   3 +-
+ 19 files changed, 1028 insertions(+), 131 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/media/mediatek,vcodec-encoder-core.yaml
+ create mode 100644 drivers/media/platform/mediatek/vcodec/mtk_vcodec_enc_hw.c
+ create mode 100644 drivers/media/platform/mediatek/vcodec/mtk_vcodec_enc_hw.h
+
+-- 
+2.18.0
+
