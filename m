@@ -2,33 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0802C00144
-	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 13:51:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C83AFC00144
+	for <linux-kernel@archiver.kernel.org>; Fri, 29 Jul 2022 13:51:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236689AbiG2NvD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 29 Jul 2022 09:51:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36142 "EHLO
+        id S236578AbiG2NvH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 29 Jul 2022 09:51:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236688AbiG2NvA (ORCPT
+        with ESMTP id S236202AbiG2NvE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 29 Jul 2022 09:51:00 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EF9850050
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 06:50:51 -0700 (PDT)
+        Fri, 29 Jul 2022 09:51:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E442651A0C
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 06:50:54 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0C524B827E2
-        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 13:50:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36D7CC433C1;
-        Fri, 29 Jul 2022 13:50:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7742161F59
+        for <linux-kernel@vger.kernel.org>; Fri, 29 Jul 2022 13:50:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49381C433C1;
+        Fri, 29 Jul 2022 13:50:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1659102648;
-        bh=PdD5DoxCq3xT3nYlDAEaxAsKCwoQDZbmle9bPVklpBM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=l9YUvb/aAavgCsJD0172mHm5qBzjtuZsfVrR6MwfV/IDB+HALe4kHhHHUmiiCfDre
-         YrHTcPABa772LBEmED/G1ggBWngQ61Yaxi3JoaC4M7UUHHNT7DEJb5/R2jSgl+CHXY
-         3tswxNHTFXsbu48LNVASnrSDN7ODfBWrEm8ie/K0=
+        s=korg; t=1659102653;
+        bh=Xi/suYWq5yRzsGd5eqkdgLrr3CqV7gd+MC6h1EUQO6c=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=zW/P9BcvxuXQG/nj4vKXKn27AqgRPEXH+PyQL/1e9uxxEihUmwncXHzB4uGPKDpaN
+         eihpB0EsgHA0As6n36gcGWBmB3tPeASifzER7qSjrwJ35U+C+WRAjU6BhVA7HZOihS
+         ShBvUvhsJNwXQkmR0BHFKJIJj5Z/qslXTQUJRDrE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     alsa-devel@alsa-project.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -37,25 +37,24 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
         Sanyog Kale <sanyog.r.kale@intel.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 1/5] soundwire: sysfs: move sdw_slave_dev_attr_group into the existing list of groups
-Date:   Fri, 29 Jul 2022 15:50:37 +0200
-Message-Id: <20220729135041.2285908-1-gregkh@linuxfoundation.org>
+Subject: [PATCH 3/5] soundwire: sysfs: have the driver core handle the creation of the device groups
+Date:   Fri, 29 Jul 2022 15:50:39 +0200
+Message-Id: <20220729135041.2285908-3-gregkh@linuxfoundation.org>
 X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220729135041.2285908-1-gregkh@linuxfoundation.org>
+References: <20220729135041.2285908-1-gregkh@linuxfoundation.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1988; i=gregkh@linuxfoundation.org; h=from:subject; bh=PdD5DoxCq3xT3nYlDAEaxAsKCwoQDZbmle9bPVklpBM=; b=owGbwMvMwCRo6H6F97bub03G02pJDEmPn66/43DHLLLju1AKw1VT9mgmvkyjAv7JDT1CiSWlQjf8 nbZ2xLIwCDIxyIopsnzZxnN0f8UhRS9D29Mwc1iZQIYwcHEKwERmszPMZDzXfl/ozZGog0nH/n2x4C jfESvAybBgQqTj9K7Oddlq/XwP9xW5mTQJ1PoAAA==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2699; i=gregkh@linuxfoundation.org; h=from:subject; bh=Xi/suYWq5yRzsGd5eqkdgLrr3CqV7gd+MC6h1EUQO6c=; b=owGbwMvMwCRo6H6F97bub03G02pJDEmPn274xhL0prnw/j+zp17aHMu6MsJadO7lfVg1/UKfdXrq tCD+jlgWBkEmBlkxRZYv23iO7q84pOhlaHsaZg4rE8gQBi5OAZhIxVSG+aHnu3Wdv5unsKiH3V3TFN e/bsfiSQyzWTwPz8heoLCvMoKzro7163fPuKvuAA==
 X-Developer-Key: i=gregkh@linuxfoundation.org; a=openpgp; fpr=F4B60CC5BF78C2214A313DCB3147D40DDB2DFB29
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The sysfs logic already creates a list of groups for the device, so add
-the sdw_slave_dev_attr_group group to that list instead of having to do
-a two-step process of adding a group list and then an individual group.
-
-This is a step on the way to moving all of the sysfs attribute handling
-into the default driver core attribute group logic so that the soundwire
-core does not have to do any of it manually.
+The driver core supports the ability to handle the creation and removal
+of device-specific sysfs files in a race-free manner.  Take advantage of
+that by converting this driver to use this by moving the sysfs
+attributes into a group and assigning the dev_groups pointer to it.
 
 Cc: Vinod Koul <vkoul@kernel.org>
 Cc: Bard Liao <yung-chuan.liao@linux.intel.com>
@@ -65,48 +64,60 @@ Cc: alsa-devel@alsa-project.org
 Cc: linux-kernel@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/soundwire/sysfs_slave.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ drivers/soundwire/bus_type.c    | 1 +
+ drivers/soundwire/sysfs_local.h | 3 +++
+ drivers/soundwire/sysfs_slave.c | 6 +-----
+ 3 files changed, 5 insertions(+), 5 deletions(-)
 
+diff --git a/drivers/soundwire/bus_type.c b/drivers/soundwire/bus_type.c
+index 893296f3fe39..81c77e6ddbad 100644
+--- a/drivers/soundwire/bus_type.c
++++ b/drivers/soundwire/bus_type.c
+@@ -193,6 +193,7 @@ int __sdw_register_driver(struct sdw_driver *drv, struct module *owner)
+ 
+ 	drv->driver.owner = owner;
+ 	drv->driver.probe = sdw_drv_probe;
++	drv->driver.dev_groups = sdw_attr_groups;
+ 
+ 	if (drv->remove)
+ 		drv->driver.remove = sdw_drv_remove;
+diff --git a/drivers/soundwire/sysfs_local.h b/drivers/soundwire/sysfs_local.h
+index 7268bc24c538..3ab8658a7782 100644
+--- a/drivers/soundwire/sysfs_local.h
++++ b/drivers/soundwire/sysfs_local.h
+@@ -11,6 +11,9 @@
+ /* basic attributes to report status of Slave (attachment, dev_num) */
+ extern const struct attribute_group *sdw_slave_status_attr_groups[];
+ 
++/* attributes for all soundwire devices */
++extern const struct attribute_group *sdw_attr_groups[];
++
+ /* additional device-managed properties reported after driver probe */
+ int sdw_slave_sysfs_init(struct sdw_slave *slave);
+ int sdw_slave_sysfs_dpn_init(struct sdw_slave *slave);
 diff --git a/drivers/soundwire/sysfs_slave.c b/drivers/soundwire/sysfs_slave.c
-index 3210359cd944..83e3f6cc3250 100644
+index 3723333a5c2b..4c716c167493 100644
 --- a/drivers/soundwire/sysfs_slave.c
 +++ b/drivers/soundwire/sysfs_slave.c
-@@ -105,7 +105,10 @@ static struct attribute *slave_attrs[] = {
- 	&dev_attr_modalias.attr,
- 	NULL,
- };
--ATTRIBUTE_GROUPS(slave);
-+
-+static const struct attribute_group slave_attr_group = {
-+	.attrs = slave_attrs,
-+};
- 
- static struct attribute *slave_dev_attrs[] = {
- 	&dev_attr_mipi_revision.attr,
-@@ -190,6 +193,12 @@ static const struct attribute_group dp0_group = {
+@@ -204,7 +204,7 @@ static const struct attribute_group dp0_group = {
  	.name = "dp0",
  };
  
-+static const struct attribute_group *slave_groups[] = {
-+	&slave_attr_group,
-+	&sdw_slave_dev_attr_group,
-+	NULL,
-+};
-+
- int sdw_slave_sysfs_init(struct sdw_slave *slave)
+-static const struct attribute_group *slave_groups[] = {
++const struct attribute_group *sdw_attr_groups[] = {
+ 	&slave_attr_group,
+ 	&sdw_slave_dev_attr_group,
+ 	&dp0_group,
+@@ -215,10 +215,6 @@ int sdw_slave_sysfs_init(struct sdw_slave *slave)
  {
  	int ret;
-@@ -198,10 +207,6 @@ int sdw_slave_sysfs_init(struct sdw_slave *slave)
- 	if (ret < 0)
- 		return ret;
  
--	ret = devm_device_add_group(&slave->dev, &sdw_slave_dev_attr_group);
+-	ret = devm_device_add_groups(&slave->dev, slave_groups);
 -	if (ret < 0)
 -		return ret;
 -
- 	if (slave->prop.dp0_prop) {
- 		ret = devm_device_add_group(&slave->dev, &dp0_group);
+ 	if (slave->prop.source_ports || slave->prop.sink_ports) {
+ 		ret = sdw_slave_sysfs_dpn_init(slave);
  		if (ret < 0)
 -- 
 2.37.1
